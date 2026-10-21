@@ -11,7 +11,7 @@ description: >-
   page check, check gate, quality gate. Drafting and revising prose is
   haipipe-draft-writing (the writer). Trigger: /haipipe-draft-review, /haipipe-writing, /haipipe-draft-check.
 metadata:
-  version: "0.1.0"
+  version: "0.2.0"
   last_updated: "2026-10-16"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---

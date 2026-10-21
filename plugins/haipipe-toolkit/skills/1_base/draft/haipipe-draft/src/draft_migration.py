@@ -322,9 +322,10 @@ def _archive_root_pagex(folder: Path, home: Path, *, dry_run: bool) -> dict:
 
 # ---- `outline/` → `draft/` in text that names a Page's plan folder -------------
 
-# `results/` keeps its words. Nothing else is sealed: no receipt pins a file by a
+# A Result keeps its words: `results/<run>/`, or since one folder per Run (0.125)
+# `runs/<run>/passes/pNN-<MMDD>/`. Nothing else is sealed: no receipt pins a file by a
 # content hash (JL 260928), so a sweep rewrites every other file.
-SEALED = {"results"}
+SEALED = {"results", "passes"}
 # Generated output is never edited, only rebuilt (AGENTS.md: never modify a generated file).
 # A sweep names each generated file that still cites `outline/` so the person reruns its build.
 GENERATED = {"delivery", "board"}

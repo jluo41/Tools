@@ -1,6 +1,19 @@
 haipipe-job · Changelog
 =======================
 
+## [0.3.0] · 2026-10-21 · A Job says what it hands on
+
+- `ref/job-contract.md`: a work Job's face carries `emoji:` and `## Deliverables`, one yaml list of what it hands on
+  (what, kind, task, means as bullets, files, count, run, checked_by, from, open, used_by, example, browse, opens),
+  the to-do list the workflow layout's Goal view ticks from disk (LLMRec b01 and b02; JL 261020 "like the TODO
+  list", 261021 "可以用 bullet points 吗"). Keep only the latest: an item names the final view, never its passes.
+  After a fresh agent's b03 trial: the kind words in use (table, card, site), a Task with nothing yet (a ☐ item), a
+  replaced Task still read (listed with `open:`), and `runs:` (every listed Run must finish; workbench-work ticks so).
+  After the b04 trial: `scripts/new_job.py check` also checks the list (`check_deliverables`: it parses, each item has
+  what, a known kind, means, files or opens, and every Task and Run it names exists); path bases and person-only
+  closes are written down. Tests: `DeliverablesCheckTest`.
+  `haipipe-project audit --today` reports a work Job without them; `/wb update` lists them to write.
+
 ## [0.2.2] · 2026-10-21 · A cowork Job's material is not a Task
 
 - `scripts/new_job.py check`: `emails/`, `meetings/`, `materials/`, `design/`, `files/` and `related/` beside a

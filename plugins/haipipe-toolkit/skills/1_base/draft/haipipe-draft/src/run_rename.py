@@ -33,6 +33,8 @@ _PJ = re.compile(r"^(p[._]?j\d+[._]?t\d+[._]?r\d+)(?:_(?P<slug>.*))?$", re.I)
 _OLD_ITEM_KIND = {"values": "value", "displays": "display", "citations": "citation"}
 # A ticket one folder deeper climbs one more level; moving it back up undoes that.
 _SCRIPT_DOWN = re.compile(r'(\$\(cd "(?:\$\(dirname [^)]*\)|\$\{?\w+\}?))/\.\./\.\.(" && pwd\))')
+# the inverse: a script moved one folder deeper (runs/<name>.sh → runs/<name>/<name>.sh) climbs one more
+_SCRIPT_UP = re.compile(r'(\$\(cd "(?:\$\(dirname [^)]*\)|\$\{?\w+\}?))/\.\.(" && pwd\))')
 
 
 def _page(target) -> tuple[Path, str]:
@@ -174,9 +176,9 @@ def plan(page) -> dict:
         if kind is None and not paths:
             kind, item = _legacy_result(folder, stem, old, item)
         if kind in (None, "delivery"):
-            # An older numbered build (rdNN_<lane>) stays as history: nothing reads it, and the lane's
-            # one Delivery Run (run-delivery-<lane>) takes over (JL 260928).
-            why = "older Delivery build, history" if kind == "delivery" else "not a Page Run"
+            # An older numbered build (rdNN_<lane>) is replaced by the lane's one Delivery Run
+            # (run-delivery-<lane>, JL 260928); apply prunes it once the Page has those (_prune_builds).
+            why = "older Delivery build, replaced" if kind == "delivery" else "not a Page Run"
             kept.append({"old": old, "why": why + ("; result has no ticket" if not paths else "")})
             continue
         anchor = paths[0] if paths else folder / "results" / old
@@ -265,18 +267,27 @@ def _into_folders(folder: Path, days: dict[str, str] | None = None) -> dict[str,
     from .page_export import RUN_NAMES
     runs, results = folder / "runs", folder / "results"
     lanes = set(RUN_NAMES.values())
-    moved = {}
-    for ticket in sorted(p for p in runs.iterdir() if p.is_file()) if runs.is_dir() else []:
-        name = ticket.stem
+    moved, flat = {}, {}
+    for path in sorted(p for p in runs.iterdir() if p.is_file()) if runs.is_dir() else []:
+        name = path.stem
         if not run_names.is_run_name(name) or name in lanes or run_names.is_dated(name):
             continue
+        flat.setdefault(name, []).append(path)   # a run may hold its ticket and a check script
+    for name, tickets in flat.items():
         dest = runs / name
         if dest.exists():
             raise FileExistsError("%s already exists" % dest.relative_to(folder))
         dest.mkdir()
+        ticket = next((t for t in tickets if t.suffix == ".md"), tickets[0])   # the card reads the ticket
         res = results / name
         day = _pass_day(res, ticket, (days or {}).get(name, "")) if res.is_dir() else ""
-        ticket.rename(dest / ticket.name)
+        for path in tickets:
+            path.rename(dest / path.name)
+            if path.suffix in {".sh", ".ps1"}:   # one folder deeper: the page is one more `..` up
+                text = (dest / path.name).read_text(encoding="utf-8")
+                fixed = _SCRIPT_UP.sub(r"\1/../..\2", text)
+                if fixed != text:
+                    (dest / path.name).write_text(fixed, encoding="utf-8")
         info = {"ext": ticket.suffix, "pass": ""}
         if res.is_dir():
             pdir = dest / "passes" / ("p01-%s" % day)
@@ -294,6 +305,78 @@ def _into_folders(folder: Path, days: dict[str, str] | None = None) -> dict[str,
     return moved
 
 
+_BUILD = re.compile(r"^rd\d{2}_[a-z]+$")
+
+
+def _prune_builds(folder: Path) -> list[str]:
+    """Older numbered Delivery builds (`rdNN_<lane>`, `rd00_content`) go once the Page has its fixed
+    Delivery Runs (`run-delivery-<lane>`, rerun by `page.py export`): a replaced Run is deleted, git
+    keeps it (JL 261019: "we will just keep the meaningful runs")."""
+    import shutil
+    from .page_export import RUN_NAMES
+    runs, results = folder / "runs", folder / "results"
+    if not runs.is_dir() or not any((runs / name).is_dir() for name in RUN_NAMES.values()):
+        return []
+    gone = set()
+    for root in (runs, results):
+        for path in sorted(root.iterdir()) if root.is_dir() else []:
+            stem = path.name if path.is_dir() else path.name.split(".")[0]
+            if _BUILD.match(stem):
+                shutil.rmtree(path) if path.is_dir() else path.unlink()
+                gone.add(stem)
+    if results.is_dir() and not any(results.iterdir()):
+        results.rmdir()
+    return sorted(gone)
+
+
+def _fold_scripts(folder: Path) -> list[str]:
+    """A Page Run's ticket is `<name>.md`; only a Delivery Run keeps its one command, `.sh` (haipipe-project
+    ladder). A run that kept only its command, or a check script beside its ticket, folds the script into
+    the ticket verbatim, under `## Command` or `## Check`, and the script goes (JL 261020)."""
+    from .page_export import RUN_NAMES
+    runs = folder / "runs"
+    lanes = set(RUN_NAMES.values())
+    folded = []
+    for home in sorted(p for p in runs.iterdir() if p.is_dir()) if runs.is_dir() else []:
+        name = home.name
+        scripts = [home / (name + ext) for ext in (".sh", ".ps1") if (home / (name + ext)).is_file()]
+        if name in lanes or not run_names.is_run_name(name) or not scripts:
+            continue
+        ticket, card = home / (name + ".md"), _read(home / "run.yaml")
+        if ticket.is_file():
+            text, head = ticket.read_text(encoding="utf-8").rstrip() + "\n", "## Check"
+        else:
+            pass_dirs = sorted(p for p in (home / "passes").iterdir() if p.is_dir()) \
+                if (home / "passes").is_dir() else []
+            result = pass_dirs[-1].relative_to(folder).as_posix() + "/" if pass_dirs else ""
+            status = "closed" if _field(card, "status") == "done" or pass_dirs else "open"
+            text = ("---\nrun: %s\nkind: %s\nfamily: page\nstatus: %s\n%s---\n\n# %s\n\n"
+                    "- Written by page.py run-names on %s from the run's command, which it replaces.\n"
+                    % (name, run_names.kind_of(name) or "", status,
+                       ("result: %s\n" % result) if result else "", name, dt.date.today().isoformat()))
+            head = "## Command"
+        for script in scripts:
+            text += "\n%s\n\n```%s\n%s\n```\n" % (head, "bash" if script.suffix == ".sh" else "powershell",
+                                                 script.read_text(encoding="utf-8").rstrip())
+            script.unlink()
+        ticket.write_text(text, encoding="utf-8")
+        write_card(folder, name, ticket=ticket.name)
+        folded.append(name)
+    if folded:   # whatever named the script now names the ticket
+        alt = "|".join(re.escape(n) for n in sorted(folded, key=len, reverse=True))
+        script_ref = re.compile(r"(runs/(%s)/\2)\.(?:sh|ps1)(?![\w.-])" % alt)
+        for path in folder.rglob("*"):
+            rel = path.relative_to(folder).parts
+            if not path.is_file() or path.suffix not in TEXT or rel[0] in {"delivery", ".git"} \
+                    or "passes" in rel or "results" in rel:
+                continue
+            text = path.read_text(encoding="utf-8", errors="replace")
+            new = script_ref.sub(r"\1.md", text)
+            if new != text:
+                path.write_text(new, encoding="utf-8")
+    return folded
+
+
 def _rewrite_folds(folder: Path, moved: dict[str, dict]) -> int:
     """`runs/<name>.md` → `runs/<name>/<name>.md` and `results/<name>` → its first pass."""
     if not moved:
@@ -301,6 +384,8 @@ def _rewrite_folds(folder: Path, moved: dict[str, dict]) -> int:
     alt = "|".join(re.escape(n) for n in sorted(moved, key=len, reverse=True))
     ticket_re = re.compile(r"(?<![A-Za-z0-9_/.-])runs/(%s)(\.(?:md|sh|yaml|yml|ps1))(?![A-Za-z0-9_-])" % alt)
     result_re = re.compile(r"(?<![A-Za-z0-9_/.-])results/(%s)(?![A-Za-z0-9_-])" % alt)
+    # a script names it from the Page root: "$page_dir/results/<name>/candidate.md"
+    script_re = re.compile(r"(\$\{?\w+\}?/)results/(%s)(?![A-Za-z0-9_-])" % alt)
     changed = 0
     for path in folder.rglob("*"):
         rel = path.relative_to(folder).parts
@@ -309,6 +394,8 @@ def _rewrite_folds(folder: Path, moved: dict[str, dict]) -> int:
         text = path.read_text(encoding="utf-8", errors="replace")
         new = ticket_re.sub(lambda m: "runs/%s/%s%s" % (m.group(1), m.group(1), m.group(2)), text)
         new = result_re.sub(lambda m: moved[m.group(1)]["pass"] or m.group(0), new)
+        new = script_re.sub(lambda m: m.group(1) + moved[m.group(2)]["pass"] if moved[m.group(2)]["pass"]
+                            else m.group(0), new)
         if new != text:
             path.write_text(new, encoding="utf-8")
             changed += 1
@@ -383,12 +470,17 @@ def apply(page, *, dry_run: bool = False) -> dict:
     moved = _into_folders(folder, days)
     report["folded"] = sorted(moved)
     report["files_rewritten"] += _rewrite_folds(folder, moved)
+    for name, info in moved.items():   # its receipt keeps the paths it had (haipipe-project ladder)
+        if info["pass"]:
+            write_card(folder, name, moved_from="results/%s/" % name)
     from .page_export import RUN_NAMES, docx_author, write_ticket
     flat_lanes = [lane for lane, name in RUN_NAMES.items() if (runs / (name + ".sh")).is_file()]
     for lane in sorted(set(report.get("fixed", [])) | set(flat_lanes)):   # each lane's one Delivery Run ticket
         write_ticket(folder, lane, docx_author(folder, report["page"]) if lane == "word" else None)
     if flat_lanes:
         report["files_rewritten"] += _rewrite_folds(folder, {RUN_NAMES[lane]: {"pass": ""} for lane in flat_lanes})
+    report["scripts_folded"] = _fold_scripts(folder)
+    report["builds_pruned"] = _prune_builds(folder)
     for space in SPACE_FOLDERS:
         path = runs / space
         if path.is_dir() and not any(path.iterdir()):
@@ -411,6 +503,11 @@ def render(report: dict) -> str:
     if report.get("folded"):
         lines.append("  %d run(s) moved into their own folder (runs/<name>/, result as passes/p01-<MMDD>/)"
                      % len(report["folded"]))
+    if report.get("scripts_folded"):
+        lines.append("  %d run(s) folded their command into their ticket (<name>.md)" % len(report["scripts_folded"]))
+    if report.get("builds_pruned"):
+        lines.append("  %d older Delivery build(s) pruned (%s)" % (len(report["builds_pruned"]),
+                                                                ", ".join(report["builds_pruned"][:4])))
     if "files_rewritten" in report:
         lines.append("  %d file(s) rewritten; rebuild delivery with page.py export" % report["files_rewritten"])
     return "\n".join(lines)

@@ -83,8 +83,8 @@ grouped Job → Task, one line each: its mark, its status and the day it finishe
 `frame.studio_runs`). A Job and a Task each carry a tally (✅ complete · ❌ failed · 🟧 blocked · ▶️ running · ⏳ queued
 · ⬜ planned or not run). It reads each Run's `result/runtime.yaml`, else its `run.yaml`; soft Runs (`run-*`) and
 `history/` copies are left out, and nothing is written. SPACE Home uses the same reader (`frame.runs_tally`,
-`frame.runs_list`): a Project's line and each Block row count their Runs, and an opened Block row lists them
-(b10 s06-D08).
+`frame.run_cells`): a Project's line and each Block row count their Runs, and an opened Block row shows each
+Job with its Runs: its tally on the Job row, each Task's Runs under it when opened (b10 s06-D08, s06-D10).
 
 Timeline is the Studio's fifth folding part, under Runs (JL 261011: "add another section of the
 Timeline"; b10 s08-studio-timeline): what moved when, on one axis down the page, the oldest day at the

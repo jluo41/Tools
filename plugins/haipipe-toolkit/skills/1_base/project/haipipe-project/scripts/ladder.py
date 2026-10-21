@@ -5,7 +5,9 @@
     ladder.py update <path> [--apply] [--today]            dry run unless --apply
 
 --today adds b10's rules since 261012 (the table's `today:` key): studio topics, the Questions register,
-reports/ for each Block Question, related/ and delivery/ at the Block only (b10 s10).
+reports/ for each Block Question, related/ and delivery/ at the Block only (b10 s10); and, at a work Block, the
+workflow rules since 261021: the face's workbench-layout line, each Job's ## Deliverables and emoji, each work
+Task's goal and close, each Run card's role (update --today --apply writes it), no stand-in receipt.
 
 The shape rules live in ../ref/ladder.md (its yaml block); this script only reads them.
 """
@@ -246,8 +248,9 @@ def audit_run(d: Path, fam: str, work_task: bool, where: str, root: Path) -> Nod
     # A moved Run's old receipt is history (JL 261009): it keeps the path it recorded; tickets and
     # receipts written since stay strict.
     receipt = None if card.get("moved_from") else d / "result" / "runtime.yaml"
-    scan_text(node, [t for t in [ticket, d / "run.yaml", receipt] if t]
-              + sorted(d.glob("passes/*/runtime.yaml")), root)
+    # a soft Run moved from results/<run>/ keeps that old receipt as its first pass (page.py run-names)
+    passes = sorted(d.glob("passes/*/runtime.yaml"))[1 if card.get("moved_from") else 0:]
+    scan_text(node, [t for t in [ticket, d / "run.yaml", receipt] if t] + passes, root)
     scan_heavy(node, d / "result", root)
     return node
 
@@ -383,7 +386,92 @@ def today_findings(block: Path) -> list[tuple[str, str]]:
                 out.append(("debt", f"today: {rel_}/{name}/ belongs at the Block"))
         if (lvl / "studio").is_dir() and any(topic.match(d.name) for d in (lvl / "studio").iterdir() if d.is_dir()):
             out.append(("debt", f"today: {rel_}/studio/ holds topics: they belong in the Block's studio/"))
+    if family_of(block) == "task":
+        out += workflow_findings(block, text, jobs, tasks)
     return out
+
+
+WORKFLOW = TODAY.get("workflow") or {}
+
+
+def few(names: list[str]) -> str:
+    return ", ".join(names[:6]) + (f" +{len(names) - 6}" if len(names) > 6 else "")
+
+
+def run_cards(block: Path) -> list[Path]:
+    """The Run cards of a Block's Tasks, as haipipe-run's run_roles.py reads them: a role groups a Task's Runs, so a
+    Block's or a Job's soft Runs (drawings, a pipeline) are left out, and so is _old/, which is history."""
+    return [c for c in sorted(block.glob("**/runs/*/run.yaml"))
+            if "_old" not in c.relative_to(block).parts and NAMES["task"].match(c.parent.parent.parent.name)]
+
+
+def stand_in(receipt: Path) -> bool:
+    """A receipt that only stands in: a migration wrote `status: blocked` and a `repair:` note where the ticket wrote
+    none (the workbench's 📦 "ran, no receipt")."""
+    text = face_text(receipt)
+    if "repair:" not in text:
+        return False
+    try:
+        rec = yaml.safe_load(text) or {}
+    except yaml.YAMLError:
+        return False
+    return isinstance(rec, dict) and rec.get("status") == "blocked" and isinstance(rec.get("repair"), dict)
+
+
+def workflow_findings(block: Path, face: str, jobs: list[Path], tasks: list[Path]) -> list[tuple[str, str]]:
+    """The workflow rules of a work Block (LLMRec b01 and b02, 261021): the face opts in, each Job says what it hands
+    on and its emoji, each work Task its goal and close, each Run card its role, and no Run keeps a stand-in receipt."""
+    if not WORKFLOW:
+        return []
+    out: list[tuple[str, str]] = []
+    if not re.search(WORKFLOW.get("layout", r"(?m)^workbench-layout:[ \t]*workflow"), face):
+        out.append(("debt", "today: the face has no workbench-layout: workflow line"))
+    faces = {j: face_text(j / f"{j.name}.md") for j in jobs}
+    miss = [j.name for j in jobs if not re.search(WORKFLOW.get("job_section", r"(?m)^## Deliverables"), faces[j])]
+    if miss:
+        out.append(("debt", f"today: {len(miss)} Job face(s) have no ## Deliverables: {few(miss)}"))
+    for key in WORKFLOW.get("job_fields", []):
+        miss = [j.name for j in jobs if not field_of(faces[j], key)]
+        if miss:
+            out.append(("debt", f"today: {len(miss)} Job face(s) have no {key}: line: {few(miss)}"))
+    work = [t for t in tasks if field_of(face_text(t / f"{t.name}.md"), "task-kind") != "page"   # a Page Task, or a draft
+            and field_of(face_text(t / f"{t.name}.md"), "task-type") != "draft"]                  # Task, keeps its own face
+    for key in WORKFLOW.get("task_fields", []):
+        miss = [f"{t.parent.name.split('_')[0]}/{t.name}" for t in work if not field_of(face_text(t / f"{t.name}.md"), key)]
+        if miss:
+            out.append(("debt", f"today: {len(miss)} Task face(s) have no {key}: line: {few(miss)}"))
+    cards = run_cards(block)
+    if WORKFLOW.get("run_role"):
+        miss = [c for c in cards if not re.search(r"(?m)^role:", face_text(c))]
+        if miss:
+            out.append(("debt", f"today: {len(miss)} Task Run card(s) have no role: line, update --today --apply writes it"))
+    if WORKFLOW.get("stand_in"):
+        miss = [c.parent for c in cards if stand_in(c.parent / "result" / "runtime.yaml")]
+        if miss:
+            names = [f"{r.parent.parent.name.split('_')[0]}/{r.name}" for r in miss]
+            out.append(("debt", f"today: {len(miss)} Run(s) ran but keep only a stand-in receipt, rebuild it from the "
+                                f"files it left: {few(names)}"))
+    return out
+
+
+def role_writes(block: Path) -> list[tuple[Path, str]]:
+    """The Run cards of a work Block with no role:, and the role haipipe-run's run_roles.py proposes for each."""
+    if family_of(block) != "task" or not WORKFLOW.get("run_role"):
+        return []
+    import importlib.util
+    path = Path(__file__).resolve().parents[2] / "haipipe-run" / "scripts" / "run_roles.py"
+    spec = importlib.util.spec_from_file_location("haipipe_run_roles", path)
+    roles = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(roles)
+    return [(c, roles.propose(c.parent.name)) for c in run_cards(block) if not re.search(r"(?m)^role:", face_text(c))]
+
+
+def write_role(card: Path, role: str) -> None:
+    """One line after `kind:` (else after the first line); nothing else in the card changes (run_roles.py's rule)."""
+    lines = card.read_text(encoding="utf-8").splitlines(keepends=True)
+    at = next((i + 1 for i, line in enumerate(lines) if line.startswith("kind:")), 1)
+    lines.insert(at, f"role: {role}\n")
+    card.write_text("".join(lines), encoding="utf-8")
 
 
 def today_moves(block: Path) -> list[tuple[Path, Path, str]]:
@@ -654,6 +742,39 @@ def runs_folders(path: Path) -> list[Path]:
     return sorted(set(out))
 
 
+def kind_fixes(path: Path, fam: str) -> list[tuple[Path, str]]:
+    """Run cards whose `kind:` disagrees with the Run's name, where the folder agrees with the name: a hard name with a
+    hard ticket (.sh, .cmd, .yaml) and no .md one, or a soft name with its .md ticket and no result/. The card follows
+    them (LLMRec 261021: 27 figure Runs written with kind: soft). A folder that disagrees too is left for a person."""
+    out = []
+    for runs in runs_folders(path):
+        for d in sorted(x for x in runs.iterdir() if x.is_dir() and (x / "run.yaml").is_file()):
+            kind = run_kind(d.name, fam)
+            try:
+                said = (yaml.safe_load(face_text(d / "run.yaml")) or {}).get("kind")
+            except yaml.YAMLError:
+                continue
+            if not kind or said == kind:
+                continue
+            hard_ticket = any((d / f"{d.name}{e}").is_file() for e in (".sh", ".cmd", ".yaml", ".yml"))
+            md_ticket = (d / f"{d.name}.md").is_file()
+            if (kind == "hard" and hard_ticket and not md_ticket) or \
+                    (kind == "soft" and md_ticket and not (d / "result").exists()):
+                out.append((d / "run.yaml", kind))
+    return out
+
+
+def write_kind(card: Path, kind: str) -> None:
+    text = card.read_text(encoding="utf-8")
+    if re.search(r"(?m)^kind:", text):
+        text = re.sub(r"(?m)^kind:.*$", f"kind: {kind}", text, count=1)
+    else:
+        lines = text.splitlines(keepends=True)
+        lines.insert(1, f"kind: {kind}\n")
+        text = "".join(lines)
+    card.write_text(text, encoding="utf-8")
+
+
 def tidy_moves(path: Path) -> list[tuple[Path, Path, str]]:
     """Folder moves the ladder names as debt and that are safe to make whole: a Job's notebooks/<task>/
     into that Task's notebooks/, and a retired diagram/ into studio/ (studio/diagram/ when studio/ exists)."""
@@ -728,6 +849,20 @@ def update(path: Path, root: Path, apply: bool, today: bool = False) -> int:
     tidy = tidy_moves(path)
     if today and block_of(path):
         tidy += today_moves(block_of(path))
+    kinds = kind_fixes(path, fam)
+    if kinds:
+        print("\nkind (a card that disagrees with its name and its folder):")
+    for card, kind in kinds:
+        print(f"    kind  {kind:<9} {card.parent.relative_to(root)}")
+        if apply:
+            write_kind(card, kind)
+    roles = role_writes(block_of(path)) if today and block_of(path) else []
+    if roles:
+        print("\nroles (one line each card lacks, haipipe-run run_roles.py):")
+    for card, role in roles:
+        print(f"    role  {role:<9} {card.parent.relative_to(root)}")
+        if apply:
+            write_role(card, role)
     if tidy:
         print("\ntidy (folders the ladder retires):")
     for a, b, why in tidy:
@@ -765,7 +900,8 @@ def update(path: Path, root: Path, apply: bool, today: bool = False) -> int:
         if apply and r.is_dir() and not any(r.iterdir()):
             r.rmdir()
     verb = "done" if apply else "planned (dry run; --apply to do it)"
-    print(f"\n{n_moves} Run folder(s), {n_cards} run.yaml card(s), {n_refs} reference(s) in {n_files} file(s) {verb}")
+    print(f"\n{n_moves} Run folder(s), {n_cards} run.yaml card(s), {len(kinds)} kind(s), {len(roles)} role(s), {n_refs} reference(s) in "
+          f"{n_files} file(s) {verb}")
     return 0
 
 

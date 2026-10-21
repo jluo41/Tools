@@ -1,3 +1,19 @@
+## 1.29.0 · 2026-10-21 · /wb update brings a work Block to the workflow layout
+
+- `cli/wb_update.py`: step 2 shows the workflow rules (haipipe-project 0.17.0), step 4 `--apply` also writes the
+  Run cards' missing `role:`, and `proposals.md` lists the face work an agent writes (`## Workflow layout`); steps 1 and 3 say how many lines
+  they left out and the command that shows them.
+- SKILL.md § Update, steps 6 and 7: write each Job's `## Deliverables` and `emoji:` and each work Task's `goal:` and
+  `close:` from its records, rebuild stand-in receipts, then keep only the latest (`prune_runs.py`, `--to-old`).
+
+## 1.28.2 · 2026-10-19 · SPACE Home: each Job row carries its Runs (JL 261019)
+
+- A Block card's Jobs and Runs are one group (JL 261019: "put the run status under the jobs ... merge the jobs and
+  runs ... to save the spaces"). Each Job row shows `2 Tasks · 5 Runs` and its tally (`✅2 🟧1 ⬜2`) beside ↗;
+  opened, each Task lists its Runs (mark · Run · status · finish day), then the Job's face. The head reads
+  `🗂 Jobs 3 · ⚙️ 145 Runs`, the legend once under the Jobs. Runs of a Task in no listed Job stay as a card there.
+- `frame.run_cells` is the one Run-line writer, shared by the Studio's Runs part and Home (b10 s06-D10).
+
 ## 1.28.1 · 2026-10-19 · Runs on SPACE Home read every layout and show a running Run's start (JL 261019)
 
 - The Runs group a Block card gained today (and the Studio's Runs part, both `frame.hard_runs`) also reads the older

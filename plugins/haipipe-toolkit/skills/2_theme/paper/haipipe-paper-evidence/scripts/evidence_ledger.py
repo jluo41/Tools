@@ -5,14 +5,14 @@
 A version is a Job, `jNN_v<MMDD>_<desk>/`; its Sections, the Abstract and its letters are its Tasks, `tNN_<name>/`, each a
 draft Task (haipipe-paper-draft). A Task's evidence is read in either of its two shapes:
 
-    evidence/cards.yaml                    haipipe-evidence cards (CITE from discovery Runs, WORK from work Runs), 261016 on
+    evidence/cards.yaml                    haipipe-evidence cards (CITE from discovery Runs, VALUE from work Runs), 261016 on; VALUE was WORK until 261020
     draft/<stem>-evidence-items.md         an older Page's typed Evidence Items (CITE · VALUE · DISPLAY), read by
                                            haipipe-draft's item_table, the one parser the Page workbench also uses
     display/Display<n>-<slug>/             its displays (haipipe-display)
 
 A base skill sees one Task at a time; this reads the whole version, so it can say what no single Task can:
 
-    ❗ one value, two Runs            the same WORK value (source, file, key) read from different Runs in two Sections
+    ❗ one value, two Runs            the same VALUE (source, file, key) read from different Runs in two Sections
     ❗ one label, different estimates  an older VALUE label whose Results report different estimates, in one unit
     ❗ one citation key, two entries   the same key with another year or title in two Sections' .bib files
     ❗ too many displays              main-text displays over the venue's limit (--max-displays)
@@ -68,9 +68,9 @@ def read_cards(task: Path, project: Path | None) -> tuple[list[dict], list[str]]
             row = {"kind": ev.LABEL.get(card.get("kind"), "?"), "source": card.get("source", ""), "run": it.get("run", ""),
                    "for": it.get("for", []), "anchor": it.get("anchor", []), "file": it.get("file", ""),
                    "key": it.get("key", ""), "need": it.get("need", ""), "value": it.get("value")}
-            if row["kind"] == "WORK" and row["run"] and row["key"] and project:
+            if row["kind"] == "VALUE" and row["run"] and row["key"] and project:
                 try:
-                    res = ev.resolve(project, "work", f"{row['source']}.{row['run']}")
+                    res = ev.resolve(project, "value", f"{row['source']}.{row['run']}")
                     row["value"] = ev.work_value(res, row["file"], row["key"])
                 except (ValueError, KeyError, IndexError, FileNotFoundError):
                     pass                                         # cards.check has named it
@@ -193,10 +193,10 @@ def ledger(job: Path, max_displays: int | None = None) -> dict:
         items = read_items(t)
         shows = displays(t, items)
         cite = [r for r in rows if r["kind"] == "CITE"] + [i for i in items if i["type"] == "CITE"]
-        work = [r for r in rows if r["kind"] == "WORK"] + [i for i in items if i["type"] == "VALUE"]
+        work = [r for r in rows if r["kind"] == "VALUE"] + [i for i in items if i["type"] == "VALUE"]
         open_cite = sum(1 for r in rows if r["kind"] == "CITE" and r["need"]) + \
             sum(1 for i in items if i["type"] == "CITE" and not i["verified"])
-        open_value = sum(1 for r in rows if r["kind"] == "WORK" and r["need"]) + \
+        open_value = sum(1 for r in rows if r["kind"] == "VALUE" and r["need"]) + \
             sum(1 for i in items if i["type"] == "VALUE" and not i["result"])
         sections.append({"task": t.name, "part": part_of(t.name), "printed": not order or t.name in order,
                          "shape": "cards" if rows else "items" if items else "none", "cite": len(cite), "work": len(work), "displays": shows, "open_cite": open_cite,
@@ -208,7 +208,7 @@ def ledger(job: Path, max_displays: int | None = None) -> dict:
     seen: dict[tuple, dict[str, list[str]]] = {}
     for s in printed:
         for r in s["rows"]:
-            if r["kind"] == "WORK" and r["key"] and r["run"]:
+            if r["kind"] == "VALUE" and r["key"] and r["run"]:
                 seen.setdefault((r["source"], r["file"], r["key"]), {}).setdefault(r["run"], []).append(s["task"])
     for (src, file, key), runs in seen.items():
         if len(runs) > 1:
@@ -262,7 +262,7 @@ def ledger(job: Path, max_displays: int | None = None) -> dict:
 
 def show(L: dict) -> str:
     out = [f"{L['version']} · one evidence ledger", "",
-           f"{'Section':26} {'part':9} {'read from':10} {'CITE':>5} {'WORK':>5} {'displays':>8} {'open':>6}"]
+           f"{'Section':26} {'part':9} {'read from':10} {'CITE':>5} {'VALUE':>5} {'displays':>8} {'open':>6}"]
     for s in L["sections"]:
         part = s["part"] if s["printed"] else "⏸ off"
         out.append(f"{s['task']:26} {part:9} {s['shape']:10} {s['cite']:5} {s['work']:5} {len(s['displays']):8} "

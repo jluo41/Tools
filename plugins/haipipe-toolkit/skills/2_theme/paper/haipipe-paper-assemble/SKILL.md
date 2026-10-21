@@ -10,7 +10,7 @@ description: >-
   export the complete paper, regenerate submission files, or audit whether a
   document is stale.
 metadata:
-  version: "0.11.3"
+  version: "0.11.4"
   last_updated: "2026-10-13"
   summary: "Paper-level source-driven document assembly; page-level Word export remains a separate workbench."
 ---

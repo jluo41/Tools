@@ -473,7 +473,7 @@ measured authority is `not specified`, never recalled from memory.
 ② ADDRESS   every card and Evidence Item Target names a bullet this plan has
 ③ VALUE     every 🧮 number recomputes (checks/values.py)
 ④ SHAPE     divisions match the type's mode · legacy heads or Point statements
-            4 to 11 words · Notes/annotations ≤ 30 words · no Note quotes the page · nothing V3 refuses ·
+            4 to 11 words · paragraph names ≤ 11 words · Notes/annotations ≤ 30 words · no Note quotes the page · nothing V3 refuses ·
             every defensive boundary explains a mechanism/interpretation or moves
             to Limitations · no two displays have the same reader purpose
 ```

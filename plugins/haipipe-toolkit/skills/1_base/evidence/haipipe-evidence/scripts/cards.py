@@ -1,8 +1,13 @@
 """Evidence cards: read a card list, find each Run it names, and say what is missing.
 
 A card is one topic holding many items. CITE cards come from the Project's discovery/ world (someone else's paper,
-and any value or figure the paper reports); WORK cards come from its work/ world (our own Runs). The card format is
-in ../SKILL.md; the sibling skills haipipe-evidence-cite and haipipe-evidence-work say how to find each kind.
+and any value or figure the paper reports); VALUE cards come from its work/ world (a number one of our Runs wrote;
+kind `work` until 261020, still read as `value`). The card format is in ../SKILL.md; the sibling skills
+haipipe-evidence-cite and haipipe-evidence-work say how to find each kind.
+
+A card's topic is its Task: a needed item joins the card of the Task its proposal would be made in (`order`), so no
+card is a bag of "Sources still needed" (JL 261020: "cite 1's name is very weird ... make it into different cite with
+the topic").
 
     from cards import load, resolve, title_of, paper, facts, work_value, order, check, proposals, LABEL, COLOR
     python cards.py check   <task>/evidence/cards.yaml [--sentences <file.json>]
@@ -29,9 +34,11 @@ from pathlib import Path
 
 import yaml
 
-LABEL = {'cite': 'CITE', 'work': 'WORK'}
-COLOR = {'cite': '#1971c2', 'work': '#7048e8', 'need': '#e03131'}   # external blue, internal violet, needed red
-THEME = {'cite': 'discovery', 'work': 'work'}
+# VALUE, not WORK: what the item is, a number (JL 261020: "the work 1's name is not good ... more like something else")
+LABEL = {'cite': 'CITE', 'value': 'VALUE'}
+COLOR = {'cite': '#1971c2', 'value': '#7048e8', 'need': '#e03131'}   # external blue, internal violet, needed red
+THEME = {'cite': 'discovery', 'value': 'work'}
+OLD_KIND = {'work': 'value'}
 
 
 def project_root(path):
@@ -84,31 +91,94 @@ def paper(result):
 
 
 def facts(result, ids):
-    """The quoted fact sentences, '"…" (F09)', from a discovery Run's facts.md."""
+    """The fact lines of a discovery Run's facts.md, `- `ID` · label: <fact> Locator: …`: a quoted sentence as
+    '"…" (T06)', its closing quote followed by a stop or not ("…". Locator); a table's rows, which are not a sentence,
+    as they are written, '… (T05)' (r20 Oca 2023: its counts are Table 1 and Table 3 rows)."""
     text = (Path(result) / 'facts.md').read_text(encoding='utf-8')
     out = []
     for k in ids:
-        m = re.search(r'^- `' + k + r'` · [^:]*: "(.*?)" Locator', text, re.M)
-        if not m:
+        line = re.search(r'^- `' + re.escape(k) + r'` · (.*)$', text, re.M)
+        if not line:
             raise ValueError(f'{Path(result).parent.name}: no fact {k}.')
-        out.append(f'"{m[1]}" ({k})')
+        quote = re.match(r'[^:]*: "(.*)"[.;,]?\s+Locator', line[1])
+        rows = re.match(r'[^:]*:\s*(.*?)\.?\s+Locator:', line[1])
+        if quote:
+            out.append(f'"{quote[1]}" ({k})')
+        elif rows:
+            out.append(f'{rows[1]} ({k})')
+        else:
+            raise ValueError(f'{Path(result).parent.name}: fact {k} has no quote or rows before its Locator.')
     return ' '.join(out)
 
 
 def work_value(result, file, key):
-    """A value from a work Run's own output: `key` (dotted) in a .json or .yaml file in its result/."""
+    """A value from a work Run's own output: `key` (dotted) in a .json or .yaml file in its result/; `len(<key>)` counts
+    the entries there (the six agents are the six keys of `metrics.b_by_model`, so a sentence's "6 AI agents" is read,
+    not typed)."""
     path = Path(result) / file
     data = json.loads(path.read_text()) if path.suffix == '.json' else yaml.safe_load(path.read_text())
-    for part in key.split('.'):
+    count = re.fullmatch(r'len\((.+)\)', key.strip())
+    for part in (count[1] if count else key).split('.'):
         data = data[int(part)] if isinstance(data, list) else data[part]
-    return data
+    return len(data) if count else data
+
+
+def sentence_key(n):
+    """A sentence id's place in reading order: `5`, `"5a"` and `"S5b"` sort as (5, ''), (5, 'a'), (5, 'b'). A sentence
+    added between two others takes a letter (S2a after S2), so `for` may hold a string (JL 261020)."""
+    m = re.match(r"S?(\d+)([a-z]*)$", str(n).strip())
+    return (int(m.group(1)), m.group(2)) if m else (10 ** 9, str(n))
+
+
+def _first(it):
+    return min((sentence_key(n) for n in it.get('for') or []), default=(10 ** 9, ''))
+
+
+def by_topic(cards):
+    """The cards as topics: a needed item whose proposal names where it would be made sits in that place's card, a Run
+    in a Task the Task's card (opened if the list has none), a new Task, Job or topic a card of its own named by it,
+    whichever card it was written in; a need with no such proposal stays where it is. Items in reading order."""
+    out, home = [], {}
+    for c in cards:                       # one card per topic: two cards of the same Task are one
+        c = dict(c, items=list(c['items']))
+        key = (c['kind'], c.get('source'))
+        if c.get('source') and key in home:
+            home[key]['items'] += c['items']
+            continue
+        if c.get('source'):
+            home[key] = c
+        out.append(c)
+    for c in list(out):
+        keep = []
+        for it in c['items']:
+            p = it.get('propose') or {}
+            to = str(p.get('in') or '')
+            if not it.get('need') or not to:
+                keep.append(it)
+                continue
+            if p.get('level', 'task') == 'run' and re.fullmatch(r'b\d+\.j\d+\.t\d+', to):
+                key, new = (c['kind'], to), {'kind': c['kind'], 'source': to, 'items': []}
+            else:
+                name = str(p.get('name') or '').replace('_', ' ').strip()
+                key = (c['kind'], f"{to}+{p.get('level', 'task')}+{name}")
+                new = {'kind': c['kind'], 'title': f"{name or 'new ' + p.get('level', 'task')} · to make in {to}",
+                       'items': []}
+            home.setdefault(key, new)
+            if home[key] is c:
+                keep.append(it)
+                continue
+            if home[key] is new:
+                out.append(new)
+            home[key]['items'].append(it)
+        c['items'] = keep
+    return [dict(c, items=sorted(c['items'], key=_first)) for c in out if c['items']]
 
 
 def order(cards):
-    """[(card, 'CITE 3')] in narrative order: by the first sentence each card backs, CITE and WORK in one sequence,
-    numbered within their kind."""
+    """[(card, 'CITE 3')] in narrative order: the cards as topics (by_topic), by the first sentence each backs, CITE
+    and VALUE in one sequence, numbered within their kind."""
     count, out = {}, []
-    for card in sorted(cards, key=lambda c: min(n for it in c['items'] for n in it['for'])):
+    for card in sorted(by_topic(cards), key=lambda c: min(_first(it) for it in c['items'])):
         count[card['kind']] = count.get(card['kind'], 0) + 1
         out.append((card, f"{LABEL[card['kind']]} {count[card['kind']]}"))
     return out
@@ -120,7 +190,7 @@ def check(cards, project, sentences=None):
     problems = []
     for card, label in order(cards):
         if card['kind'] not in LABEL:
-            problems.append(f"{label}: kind {card['kind']!r} is not cite or work.")
+            problems.append(f"{label}: kind {card['kind']!r} is not cite or value.")
             continue
         src = card.get('source')
         try:
@@ -152,12 +222,12 @@ def check(cards, project, sentences=None):
 
 LEVELS = ('run', 'task', 'job', 'topic')
 MAKER = {'cite': {'run': 'haipipe-discovery', 'task': 'haipipe-discovery', 'job': 'haipipe-job', 'topic': 'haipipe-studio'},
-         'work': {'run': 'haipipe-task', 'task': 'haipipe-task', 'job': 'haipipe-job', 'topic': 'haipipe-studio'}}
+         'value': {'run': 'haipipe-task', 'task': 'haipipe-task', 'job': 'haipipe-job', 'topic': 'haipipe-studio'}}
 
 
 def proposals(cards, page):
     """One flagged proposal per needed item: (id, line). An item's `propose: {level, in, name}` says what to make;
-    without it, a CITE need proposes a new discovery Task in the card's `propose_in` Job, a WORK need a new work Task."""
+    without it, a CITE need proposes a new discovery Task in the card's `propose_in` Job, a VALUE need a new work Task."""
     out = []
     for card, label in order(cards):
         for it in card['items']:
@@ -190,12 +260,15 @@ def write_proposals(path, items):
 
 
 def load(path, key=None):
-    """The card list from evidence/cards.yaml (`evidence:` at the top), or from a face's yaml block under `key`."""
+    """The card list from evidence/cards.yaml (`evidence:` at the top), or from a face's yaml block under `key`; a card
+    written as `kind: work` before 261020 reads as `value`."""
     path = Path(path)
     if path.suffix in ('.yaml', '.yml'):
-        return yaml.safe_load(path.read_text(encoding='utf-8'))['evidence']
-    block = re.search(r'```yaml\n(.*?)\n```', path.read_text(encoding='utf-8'), re.S)[1]
-    return yaml.safe_load(block)[key]['evidence']
+        cards = yaml.safe_load(path.read_text(encoding='utf-8'))['evidence']
+    else:
+        block = re.search(r'```yaml\n(.*?)\n```', path.read_text(encoding='utf-8'), re.S)[1]
+        cards = yaml.safe_load(block)[key]['evidence']
+    return [dict(c, kind=OLD_KIND.get(c.get('kind'), c.get('kind'))) for c in cards]
 
 
 def main():

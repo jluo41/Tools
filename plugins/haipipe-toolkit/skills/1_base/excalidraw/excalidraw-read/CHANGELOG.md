@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.9.0 · 2026-10-20 · A Section's paragraphs, each cut whole
+
+- JL 261020, of the examples frame on t01's Section canvas: "你每个自然段应该独立成段，你这截的根本不是一个完整的自然段，完全乱截啊".
+  `ref/read_paper.py paras <reading.yaml>` (also run at the end of `shoot` and `all` when the reading names
+  `section.pages`) cuts each paragraph of the Section whole from the PDF, from its first body line to the heading
+  named `section.until`: `body_lines` keeps the running text (the body's line height, a superscript line 1 pt taller
+  included; a short line only as the last line of the one above, so a boxed aside or heading is left out; a drop
+  cap kept beside its lines), in column order; a paragraph starts at a first-line indent. A paragraph that runs on
+  into the next column is stacked below its first part; the excerpts' quotes inside it stay highlighted. Writes
+  `shots/para-P<k>.jpg` and `shots/paras.json` (each paragraph's lines, parts and excerpts, and the article kind
+  its running head prints, such as Original Investigation). Read on four JAMA IM Introductions: every line placed;
+  Seamans 2018 has 3 paragraphs, not the 4 its reading said.
+
+## 0.8.1 · 2026-10-19 · Every reading has a key point
+
+- A reading with no `key:` takes its key point from its own logic: "Its claim: …", else "What it found: …" (its last
+  result), so its first frame carries the one key-point colour excalidraw-studio ⑤ asks for (14 readings of
+  Physician-SPACE Paper-LLMRecPhy-Quick had none).
+
 ## 0.8.0 · 2026-10-19 · Each step says how it was done
 
 - JL 261019, on a paper's logic frame: "we can make it a bit more details (but not too much) that after reading it,
@@ -44,7 +63,7 @@
   `reads/<id>-<paper>/`. Act 1 is the theme (key point, what the papers share, why it matters, one card per
   paper, the open choices in red); then one row per paper: its pages whole with the read passages highlighted
   and a numbered note level with each (excalidraw-task's `transcript_frame`, which gains `noun` and `us`), then
-  its logic and the links to our paper. A paper not read yet is one red card. First used on Paper-LLMRecPhy
+  its logic and the links to our paper. A paper not read yet is one red card. First used on Paper-LLMRecPhy-Quick
   s06 to s10.
 - Each paper's row starts with its reference frame (JL 261013: "for each paper, you didn't give the paper
   reference, the names, the authors"): title, every author, venue and year, link, PDF, deep read and the version

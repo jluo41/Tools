@@ -1,3 +1,28 @@
+## 0.25.2 · 2026-10-21 · A Revise pass opens with its review report
+
+- JL 261021: "我感觉这里面每一句话都写得非常不顺畅。你来 review 一下它，我觉得你应该先写一个 review report，然后再
+  propose 怎么去改这些内容"; on the whole-Section card: "单独作为一个卡片放到 revise card 里面。名字你可以写 current draft
+  review report"; then "above the section of 'The text and its Revise cards' you should give me the section 'Revise
+  Review Report' and tell me for each rubric, how you feel about this draft". ref/revise.md: a pass opens with
+  `### Revise review report` (Reviewer, Verdict, one row per rubric axis plus the venue's rule, each with its verdict,
+  reading and smallest fix, then Now and Proposed), no State, then its cards; a sentence the person wrote is carded as
+  a Review, never an Edit.
+- JL 261021: "你这个 rubric 怎么没有分数？... 句子连贯性、反 AI 写法 ... 你有没有拿那个来测试"; "还是一个 sentence
+  一个 sentence 改吧"; "我觉得还是用十分制吧". Each report row carries a score out of 10 (haipipe-draft-review 0.2.0); two rows join the four axes, Coherence and
+  Anti-AI (haipipe-draft-review's `cli/anti_slop.py audit` and `ref/ai-tells.md`); a `Cards:` line scores the
+  cards' own text on that audit; cards are one per sentence with a finding.
+
+## 0.25.1 · 2026-10-20 · Revise is 5 · Revise
+
+- ref/revise.md: a Section's Revise cards are in the draft Task's 5 · Revise tab (4 · Display came before it, 261020).
+
+## 0.25.0 · 2026-10-20 · Where a Section's Revise cards live (b32 s41)
+
+- `ref/revise.md`: the 4 · Revise tab's cards are `draft/records/<stem>-revise.md`, one `### <kind> · S<n> · <what>`
+  card each with Why, Original, Expected and State; an accepted card goes into `## 3 · Draft` as the next version.
+- A pass per run (`## Pass <k> · <yymmdd> · on draft v<N>`), and the reviewer's stance first: who reviews, what they
+  look for, how; then Section questions on structure before Edit and Review cards (JL 261020).
+
 ## 0.23.0 · 2026-10-16 · Auto revise (JL 261016, b32 s41-D13)
 
 - `ref/auto-revise.md` and `cli/auto_revise.py`: rounds of revising a candidate copy, each judged by a fresh

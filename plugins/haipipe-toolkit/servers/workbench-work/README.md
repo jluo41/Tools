@@ -4,6 +4,54 @@ One `tasks/bNN_<block>/` folder with `board-kind: task-block` opens one live
 Workbench on the existing shared host. Task owns Questions and execution;
 Page owns readable reports; the Workbench reads those records.
 
+
+Workflow layout in the shared frame
+-----------------------------------
+
+A Block may opt in with `workbench-layout: workflow` in `board.md`.
+Its Block, Job and ordinary Task Report and Work views then share
+**Goal · Plan · Execution · Results**. Draft Tasks keep their own layout.
+The shared Guide, Studio, Description, Runs and Delivery stay available.
+Switching Report and Work keeps a subview both sides offer.
+
+- Goal reads `goal`, `spine`, `develops`, then Opening; `close` is the
+  completion rule. Optional `goal-scope` and `goal-status` are explicit
+  declarations. Run counts never infer goal acceptance or a percentage.
+- Goal comes first, as a to-do list (also on Description): a face's
+  `## Deliverables` (its contract is haipipe-job's `ref/job-contract.md`; an item's `means` may be a
+  list, shown as bullets under "What it is"; a fenced yaml `deliverables:` list of `what`, `kind`,
+  `files` (glob or list; SPACE-relative from `_WorkSpace/` or `code/`), `count`, `run`,
+  optional `task` or `job`), drawn as one tree like the folders: the goal at
+  the root, then each Job, its Tasks and their deliverables, and last the
+  Block's own list ("Across all Jobs"). An item ticks ✅ only when its files
+  are on disk and its named Run finished; 🚧 while it runs, 🔶 some files
+  (also a Run short of its gate), ❌ a failed Run with nothing on disk, ⬜
+  none. A Task, Job or goal is ✅ or 🔶, never ❌ for one open item. Paths
+  show on hover, never in the line.
+- A receipt that says `started` and `ended` (a Databricks ticket's) reads as
+  `started_at` and `finished_at`; one with no `headline` says its own numbers as one line,
+  from its `summary:` or `counts:`, the tables its `outputs:` lists, else `result/metrics.json`.
+- A Task's Runs are grouped by their card's `role:` (trial, make, fix, check,
+  describe, figures, evidence, publish; else `run_type` main, figures,
+  delivery), in that order, each role named once.
+- Plan reads `workflow/plan.yaml` Run Specs. Without one, child goals and
+  existing Run purposes (a card's `goal`, else its `aim`) are shown as a work index, never a saved plan.
+  Code, config, review and notebooks remain under its Build fold.
+- Execution joins Run cards to the shared native reader, preserving exact
+  Ticket/Result pairing and redirected stores. Host, timestamps, duration,
+  progress and errors come from receipts; missing values stay unknown.
+- Results reads headlines (a receipt's `headline`, else `result/headline.txt`) and links the existing Task explanation, execution
+  report and Question reports. It does not generate or accept conclusions.
+- Goal and Execution reread source records every 20 seconds while visible.
+  Running is a recorded state, not a process health check. Refresh failure
+  leaves the last snapshot visible with a failure message.
+- A Run opens `/_board/workbench?view=work-run&path=<task>&run=<run>` in the
+  shared pop-out. The handler checks the scope and exact Run identity;
+  files outside the served root receive no download link.
+
+The presenter is `work_progress.py`; it never launches work or writes data.
+Work actions use the existing Runs panel and owning Task skill.
+
 ## Spaces and Views
 
 The page follows the Insight Workbench (`servers/workbench-insight/insightboard.py`): the

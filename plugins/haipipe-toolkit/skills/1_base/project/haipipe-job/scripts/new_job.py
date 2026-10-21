@@ -170,6 +170,59 @@ def check(job: Path) -> list[str]:
     out += [f"{n}/ is not in ## Tasks" for n in on_disk if n not in names]
     dup = sorted({n for n in names if names.count(n) > 1})
     out += [f"## Tasks names {n} twice" for n in dup]
+    return out + check_deliverables(job, jmd.read_text(encoding="utf-8"))
+
+
+KINDS = {"data", "table", "figure", "card", "check", "site", "view", "code", "doc"}   # ref/job-contract.md, rule 6
+
+
+def run_found(job: Path, name: str) -> bool:
+    """A Run an item names: `<task>/<run>` from the Job (or `../<job>/<task>/<run>`), or a bare `<run>` in one of the
+    Job's Tasks or its own runs/."""
+    if "/" in name:
+        where, run = name.rsplit("/", 1)
+        return (job / where / "runs" / run).is_dir()
+    return (job / "runs" / name).is_dir() or any(job.glob(f"*/runs/{name}"))
+
+
+def check_deliverables(job: Path, text: str) -> list[str]:
+    """The face's ## Deliverables, as ref/job-contract.md writes it: one yaml list that parses; each item a what (once),
+    a kind of the list, means, files or opens; every Task and Run it names is here. Files may be missing: an item
+    not made yet is a to-do. [] when there is no section or nothing is off (the b04 trial, 261021: no tool checked it)."""
+    m = re.search(r"(?ms)^## Deliverables[ \t]*\n(.*?)(?=^## |\Z)", text)
+    if not m:
+        return []
+    fence = re.search(r"(?ms)^```ya?ml[ \t]*\n(.*?)^```", m.group(1))
+    if not fence:
+        return ["## Deliverables has no ```yaml block"]
+    import yaml
+    try:
+        items = (yaml.safe_load(fence.group(1)) or {}).get("deliverables")
+    except yaml.YAMLError as err:
+        return [f"## Deliverables does not parse: {str(err).splitlines()[0]}"]
+    if not isinstance(items, list):
+        return ["## Deliverables holds no deliverables: list"]
+    out, whats = [], [str(x.get("what")) for x in items if isinstance(x, dict)]
+    for n, x in enumerate(items, 1):
+        if not isinstance(x, dict) or not x.get("what"):
+            out.append(f"deliverable {n} has no what:")
+            continue
+        at = f"deliverable '{x['what']}'"
+        if whats.count(str(x["what"])) > 1:
+            out.append(f"{at} is named twice")
+        if x.get("kind") and x["kind"] not in KINDS:
+            out.append(f"{at}: kind {x['kind']} is not one of {', '.join(sorted(KINDS))}")
+        if not x.get("means"):
+            out.append(f"{at} has no means:")
+        if not x.get("files") and not x.get("opens"):
+            out.append(f"{at} has no files: (or opens:)")
+        if x.get("opens") and x["opens"] not in whats:
+            out.append(f"{at} opens '{x['opens']}', which is not an item here")
+        if x.get("task") and not (job / str(x["task"])).is_dir():
+            out.append(f"{at}: task {x['task']} is not a Task folder of {job.name}")
+        named = [x.get("run"), x.get("checked_by")] + [r.get("run") if isinstance(r, dict) else r for r in x.get("runs") or []]
+        named += [b.get("run") for b in x.get("from") or [] if isinstance(b, dict)]
+        out += [f"{at}: Run {r} is not here" for r in named if r and not run_found(job, str(r))]
     return out
 
 

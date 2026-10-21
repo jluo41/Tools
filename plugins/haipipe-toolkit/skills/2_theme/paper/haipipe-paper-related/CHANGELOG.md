@@ -9,13 +9,13 @@ haipipe-paper-related, to find the most related papers".
 - New skill. A paper Board's related work is the 10 to 30 papers closest to ours, sorted into at most nine
   types: `studio/s10-related-work-map/` maps them all beside our paper; s11 to s19 read one type each, paper by
   paper, with excalidraw-read.
-- `scripts/related_map.py`: the s10 drawing, generalized from Paper-LLMRecPhy's s05 builder (2026-10-13). Every
+- `scripts/related_map.py`: the s10 drawing, generalized from Paper-LLMRecPhy-Quick's s05 builder (2026-10-13). Every
   frame but the map is optional; a Closest row the face does not place is drawn red.
 - `scripts/related_topics.py`: `map` and `group` scaffold the topics with forwarding builders; `check` names
   every Closest row not placed or not typed; `band` moves an older Board's related-work topics into s10-s19 in
   one pass (folders, files, soft Runs, every mention, `renamed-from:`).
 - `ref/map-face.md`: the s10 face's yaml blocks, from the LLMRec example.
-- First Board moved: Paper-LLMRecPhy, s05 to s10 became s10 to s15.
+- First Board moved: Paper-LLMRecPhy-Quick, s05 to s10 became s10 to s15.
 - First new Board: Paper-AgreeablePrescriptionDiscretion (MISQ), by a fresh agent: 14 closest papers in 3
   types (s11-s13), all placed, check exit 0. Its 14 notes, fixed before release:
   - `map` and `group` add the six paper columns to a six-column table (`ensure_columns`); the SKILL lists them.

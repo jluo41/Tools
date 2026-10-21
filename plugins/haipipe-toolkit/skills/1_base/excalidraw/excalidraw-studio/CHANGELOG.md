@@ -1,6 +1,35 @@
 excalidraw-studio · Changelog
 =============================
 
+**0.3.10 · 2026-10-19 · check.py names the shapes that keep their own rules**
+
+- `check.py` now does what the shapes table says (JL 261019: "please go ahead and do it"): a paper read onto a canvas
+  (a reading under `reads/<pNN>/`, or a topic its builder says excalidraw-read draws) keeps excalidraw-read's words,
+  so ⑥ and ⑦ name it; s00's index keeps its words for ⑥ too, not only ⑦; a drawing with no frames, the building map
+  of a paper's s03-paper-dataflow, is named at ③ instead of passing as "one frame". The table gains the building map.
+
+**[unreleased] · 2026-10-20 · a signboard holds its scale's share of words**
+
+- haipipe-studio's `canvas.signboard(frame, k)` marks a main frame drawn k times a frame's size, words and boxes alike,
+  holding content the smaller frames would carry (JL 261020: "就跟我们招牌一样 ... 它是主，其他都是次"; "把一些外部的东西
+  给塞进去，让它变得越大越好"); it is also marked large. ⑦ then lets it hold 200 × k words instead of 200. First user:
+  excalidraw-story's main frame (k = 3).
+- `canvas.columns(frame, n)` marks a frame read as n panels side by side, each a frame's width (JL 261020: "one very
+  wide frame for each RQ"); ⑨ then judges a wall of text per panel, 600 × n words. First user: excalidraw-story's
+  question frames (n = 3).
+
+**[unreleased] · 2026-10-19 · grid_table takes `head`**
+
+- `Drawing.grid_table(..., head=28)`: the column names' size; excalidraw-job passes 22 for a table of six columns or more (LLMRec b03 s22, 261019).
+- `Drawing.fill_words`: `words_in` with each part of a folder name counted; check.py ⑥ measures how full a frame is
+  with it, while the caps (⑦ 200, ⑨ 600) keep `words_in`, where a name reads as one. Drawings now name Jobs, Tasks and
+  Runs by their folders (JL 261019: "we don't need to create the new named"), and b01 s23's frame ② fell to 74 of 88.
+- check.py ⑨ leaves file references out of its 600 words: a line led by 📂 📥 📤 🧾 ⚙ (a path, a Run's in and out, its
+  ticket and config) fills a frame but is looked up, not read; b01 s21-s23 held 180 to 313 such words a frame. Both
+  changes only let a check pass more: over 260 Studio drawings, none fails anew.
+- `Drawing.words_per_mpx`, the frame's own badge, counts with `fill_words` too, so the badge and check.py ⑥ agree (b01
+  s23's badge read ❌ 74 of 88 while ⑥ passed, 261019).
+
 ## [0.3.10] · 2026-10-14 · An emoji is a picture, not a word
 
 - `Drawing.words_in` no longer counts a token made only of emoji: principle 7's 200 words and ⑨'s 600 count the words
@@ -10,7 +39,7 @@ excalidraw-studio · Changelog
 ## [0.3.9] · 2026-10-14 · The ideation shape has its own skill
 
 - A paper's s01-ideation (every idea as steps, small frames as stairs) is drawn by the new excalidraw-ideation,
-  lifted from Paper-LLMRecPhy's builder (JL 261014); one row in the shapes table.
+  lifted from Paper-LLMRecPhy-Quick's builder (JL 261014); one row in the shapes table.
 
 ## [0.3.8] · 2026-10-13 · 主次分明: a main frame, small frames that explain it, frames as stairs
 

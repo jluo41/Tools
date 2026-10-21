@@ -83,8 +83,8 @@ def test_make_draws_the_whole_job(tmp_path):
     assert "Explain the losses LLMs use." in words                       # the Job row: its aim, from the goal: line
     assert "How are entropy and KL related" in words                     # a Task row: its question
     assert "❓ close: not written on the Job face" in words               # the Job row: what is missing, in red
-    assert "r01 · 熵与交叉熵" in words and "⬜ no Run yet" in words        # a Run by its original name (its Result
-                                                                          # Card's title, 261014); an empty Task
+    assert "r01_video" in words and "📄 熵与交叉熵" in words              # a Run by its folder name (JL 261019), its
+    assert "⬜ no Run yet" in words                                       # Result Card's title beside it; an empty Task
     assert "Cross-entropy is the next-token loss of every LLM." in words  # right of the Task: its finding
     assert "a video's own point" not in words                             # division 1 only, not a Run's
     assert "Is KL a distance?" not in words                               # a Task's detail is its own topic's
@@ -160,7 +160,7 @@ def test_explained_layout_makes_the_words_from_zero_the_main_frame(tmp_path):
     f = fs[0]
     assert f["width"] <= 3600                                             # it ends at its widest step, no margin
     texts = {e["text"].split("\n")[0]: e for e in els if e["type"] == "text"}
-    steps = [next(e for k_, e in texts.items() if k_.startswith(f"🧩 {k} ·")) for k in ("t01", "t02")]
+    steps = [next(e for k_, e in texts.items() if k_.startswith(f"🧩 {k}_")) for k in ("t01", "t02")]   # folder names
     assert steps[1]["y"] > steps[0]["y"] and steps[1]["x"] > steps[0]["x"]  # a step lower and further right
     r1, r2 = (texts[f"📊 {t} result"] for t in ("t01", "t02"))
     assert r1["x"] > f["width"] and not r1.get("frameId")                 # outside ①, on its right
@@ -169,7 +169,7 @@ def test_explained_layout_makes_the_words_from_zero_the_main_frame(tmp_path):
     assert "4.70 → 3.10" in words and "1m → 1b" in words                 # its result a table: low → high, from disk
     assert "4.70" in words and "3.10" in words and "num" in words          # the Job's chart as a table too
     assert "💡 KL is the extra surprise." in words and "never evaluated" in words   # t02 has no number: dashed
-    assert "r01 · video" in words                                         # its Runs, a card each, beside its step
+    assert "r01_video" in words                                           # its Runs, by folder name, beside its step
     assert "read from, under the Project's work/" in words and "→ rmse" in words   # each result names its files
     assert "b01_demo/j01_losses/t01_entropy_kl/runs/r01_video/result/m.json" in words
     assert check(out)["③"].startswith(("✅", "🔶"))

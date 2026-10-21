@@ -35,6 +35,12 @@ def _files(folder: Path, root: Path, pattern: str) -> list:
 
 
 def spaces(level, folder, root, sub):
+    from live import work_progress
+    if work_progress.enabled(folder, root):
+        from live.frame import task_type
+        if level == "Task" and task_type(folder) == "draft":
+            return {}  # Draft keeps its own shared type layout.
+        return work_progress.spaces(level, folder, root, sub, THEME)
     if level != "Task":
         return {}
     md = face(folder)

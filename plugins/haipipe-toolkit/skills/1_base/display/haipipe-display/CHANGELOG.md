@@ -1,5 +1,9 @@
 # haipipe-display · Changelog
 
+## 0.3.8 · 2026-10-20 · built_on names VALUE cards
+
+- haipipe-evidence 0.6.0: a unit's `built_on:` names CITE and VALUE cards (VALUE was WORK); a draft Task shows its units in 4 · Display.
+
 ## 0.3.7 · 2026-10-16 · display/ beside draft/ and evidence/ (JL 261016)
 
 - § Where the unit lands: a draft Task's units go to `<task>/display/Display<n>-<slug>/`, and each names the

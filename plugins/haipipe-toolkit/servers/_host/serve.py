@@ -620,6 +620,25 @@ class Handler(ShareMixin, AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteM
             res, err = self.design_board_act(p)
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/draft-card":
+            # a person's Accept, Reject or edited Expected on one Revise card of a draft Task (b32 s41-D32)
+            from urllib.parse import urlparse
+            origin = self.headers.get("Origin") or ""
+            if origin and urlparse(origin).netloc != (self.headers.get("Host") or ""):
+                return self.reply(403, {"ok": False, "err": "cross-origin write refused"})
+            from live.draft_steps import card_act
+            code, res = card_act(self.root, p, read_only=getattr(self.server, "read_only", False))
+            return self.reply(code, res)
+        if self.path == "/_board/draft-plan":
+            # a person's change on a draft Task's §1 mind map: a point's words or role, a paragraph's name, a point
+            # added, taken out or moved (JL 261020: "how could I operate and edit it?")
+            from urllib.parse import urlparse
+            origin = self.headers.get("Origin") or ""
+            if origin and urlparse(origin).netloc != (self.headers.get("Host") or ""):
+                return self.reply(403, {"ok": False, "err": "cross-origin write refused"})
+            from live.draft_steps import plan_act
+            code, res = plan_act(self.root, p, read_only=getattr(self.server, "read_only", False))
+            return self.reply(code, res)
         if self.path == "/_board/labeling/items":
             # an items Task's Sign or Agree on a planned Run's card (b15 s41-D10)
             code, res = self.labeling_items_act(p)

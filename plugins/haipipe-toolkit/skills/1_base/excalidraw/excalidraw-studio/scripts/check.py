@@ -13,9 +13,13 @@ What it can read from the file it checks; what only a person can judge it says s
   ⑥ a text frame's words per million px against its floor (120); a map is measured by ⑦; a picture or screen
     not measured
   ⑦ a map (a workflow, a mind map) holds few words: at most MAP_WORDS (200), at most SMALL_SHARE (a quarter) of
-    them under SMALL (28 px, a detail's size); the badge and green notes not counted
+    them under SMALL (28 px, a detail's size); the badge and green notes not counted; a signboard drawn k times a
+    frame's size (canvas.signboard, JL 261020) holds k times as many
 A slide draft (s61-s69) keeps its own layout, sizes and words (excalidraw-slide): ① ③ ⑤ ⑥ ⑦ name it, not judge.
-A Block's s00 keeps its own words (block_index.py: an index names every topic and Job): ⑦ names it, not judge.
+A Block's s00 keeps its own words (block_index.py: an index names every topic and Job): ⑥ ⑦ name it, not judge.
+A paper read onto a canvas keeps excalidraw-read's own words (a reading under reads/<pNN>/, or a topic drawn from its
+readings by topic_drawing.py): ⑥ ⑦ name it, not judge, as the shapes table in SKILL.md says.
+A drawing with no frames (excalidraw-workflow's building map keeps its own column layout): ③ names it, not judge.
 A detail frame (Drawing.detail: a video's full frame) holds the detail ⑦ sends out: ⑥ measures it instead.
 """
 from __future__ import annotations
@@ -31,6 +35,11 @@ from draw import FLOOR, KEY, MAP_WORDS, SMALL, SMALL_SHARE, Drawing, canvas  # n
 WALL_WORDS = 600   # ⑨: a frame with no picture and more words than this is a wall of text (asked 261012: "things like
                    # this should be forbiden, so rigid, not vivid, no one have the incentive to zoom in and read")
 
+# A file reference (a path, a Run's 📥 in and 📤 out, its 🧾 ticket and ⚙ config, what a result/ 📂 holds) fills a
+# frame but is looked up, not read: ⑥ counts it, ⑨'s wall of text does not (JL 261019 asked every In, Out and Run to
+# show its files; b01 s21-s23 then held 180 to 313 such words a frame).
+REFERENCE = re.compile(r"^\s*(📂|📥|📤|🧾|⚙|❓ not on this machine)")
+
 SCREEN = 2560 * 1440
 
 
@@ -45,6 +54,17 @@ def inside(e, f):
 SLIDE_OWN = "🎞️ a slide draft's own (excalidraw-slide)"
 DETAIL_OWN = "📖 a detail frame: the detail ⑦ sends out; ⑥ measures it (draw.Drawing.detail)"
 S00_OWN = "🗂️ s00's own: an index names every topic and Job (block_index.py)"
+READ_OWN = "📖 a paper read onto a canvas: excalidraw-read's own words (SKILL.md, shapes that keep their own rules)"
+NO_FRAMES = "— no frames: a shape with its own layout (excalidraw-workflow's building map); nothing to judge here"
+
+
+def is_reading(path):
+    """A reading (reads/<pNN>/<pNN>.excalidraw) or a topic drawn from its readings by excalidraw-read's topic_drawing.py."""
+    p = Path(path).resolve()
+    if p.parent.parent.name == "reads":
+        return True
+    return any("excalidraw-read" in b.read_text(encoding="utf-8", errors="ignore")[:600]
+               for b in p.parent.glob("build_*.py"))
 # a badge's own words, as draw.py writes them now (canvas.aside) and wrote them before 0.3.0; a node that only starts
 # with the same emoji (a principle titled "📊 ⑥ …") is counted (found on b31 s01, 261012: ⑦'s count was 17 short)
 BADGE = re.compile(r"^(📊 \d+ words per million px|🪶 \d+ words, \d+% small|[✅❌] a (map|text)[ :]|🖼️ holds)")
@@ -54,12 +74,14 @@ def is_badge(e):
     return bool((e.get("customData") or {}).get("aside")) or bool(BADGE.match(str(e.get("text", ""))))
 
 
-def check_frame(els, f, slide=False, s00=False):
+def check_frame(els, f, slide=False, s00=False, read=False):
     mine = [e for e in els if inside(e, f)]
     texts = [e for e in mine if e["type"] == "text" and not is_badge(e)]         # the badge counts the rest
     words = sum(Drawing.words_in(t.get("text", "")) for t in texts if t.get("strokeColor") != canvas.GREEN)
     kind = Drawing.kind(els, f)
-    per = round(words / max(Drawing.area_of(els, f) / 1e6, 0.01))    # ⑧: a frame with room is measured over its boxes
+    fill = sum(Drawing.fill_words(t.get("text", "")) for t in texts if t.get("strokeColor") != canvas.GREEN)
+    per = round(fill / max(Drawing.area_of(els, f) / 1e6, 0.01))     # ⑧: a frame with room is measured over its boxes;
+                                                                     #   a folder name fills the room of its parts
     detail = Drawing.is_detail(f)                              # the detail ⑦ sends out: ⑥ measures it
     floor = None if kind == "map" and not detail else FLOOR    # a map: ⑦ measures it, not a floor
     tiny = sum(Drawing.words_in(t.get("text", "")) for t in texts
@@ -85,8 +107,9 @@ def check_frame(els, f, slide=False, s00=False):
         f"key point {'yes' if keys else 'none'}"
     out["⑥"] = "🖼️ not measured" if kind == "picture" else "🗺️ a map: ⑦ measures it" if kind == "map" else \
         ("✅" if per >= floor else "❌") + f" {per} (floor {floor})"
-    out["⑦"] = (("✅" if words <= MAP_WORDS and tiny <= SMALL_SHARE * max(words, 1) else "❌") +
-                f" {words} words (at most {MAP_WORDS}), {round(100 * tiny / max(words, 1))}% under {SMALL} px "
+    cap = round(MAP_WORDS * getattr(canvas, "signboard_scale", lambda e: 1)(f))   # a signboard: its scale's share
+    out["⑦"] = (("✅" if words <= cap and tiny <= SMALL_SHARE * max(words, 1) else "❌") +
+                f" {words} words (at most {cap}), {round(100 * tiny / max(words, 1))}% under {SMALL} px "
                 f"(at most {round(100 * SMALL_SHARE)}%)") if kind == "map" else \
         "🖼️ not measured" if kind == "picture" else "— a text frame: ⑥ measures it"
     if detail and kind != "picture":                     # a detail frame is read up close: ⑥, its floor by its type
@@ -99,14 +122,20 @@ def check_frame(els, f, slide=False, s00=False):
         out["⑥"] = out["⑦"] = "— small on purpose: its room is the point (canvas.explains)"
         out["⑤"] = ("❌" if small > 0.2 * max(words, 1) else "✅") + \
             f" words under {canvas.TEXT_MIN} px: {round(100 * small / max(words, 1))}% · its key point is the main frame's"
-    out["⑨"] = ("❌ a wall of text: " + f"{words} words and no picture (at most {WALL_WORDS}); draw a chart, a real row, "
-                "a screenshot or a scoreboard, and keep the words in the face") \
-        if kind != "picture" and words > WALL_WORDS and tree < 10 \
+    prose = words - sum(Drawing.words_in(t.get("text", "")) for t in texts
+                        if REFERENCE.match(str(t.get("text", ""))) and t.get("strokeColor") != canvas.GREEN)
+    wall = WALL_WORDS * getattr(canvas, "columns_of", lambda e: 1)(f)     # a frame of panels: per panel
+    out["⑨"] = ("❌ a wall of text: " + f"{prose} words and no picture (at most {wall}, file references not "
+                "counted); draw a chart, a real row, a screenshot or a scoreboard, and keep the words in the face") \
+        if kind != "picture" and prose > wall and tree < 10 \
         else "✅ vivid: a picture, a folder tree (④), or few enough words"
     if s00 and kind == "map":                            # s00's index names each topic and Job: its own words
         out["⑦"] = S00_OWN
     if s00:
         out["⑨"] = "— s00's index keeps its own shape"
+        out["⑥"] = S00_OWN if kind == "text" else out["⑥"]
+    if read and kind != "picture":                       # excalidraw-read's own words: a reading, or its topic
+        out["⑥"] = out["⑦"] = READ_OWN
     if slide:                                            # a slide draft keeps its own sizes and words
         out["①"] = out["⑤"] = out["⑥"] = out["⑦"] = out["⑨"] = SLIDE_OWN
     return out
@@ -153,12 +182,15 @@ def check(path):
     fs = frames_of(els)
     slide = canvas.is_slide_draft(path)                  # s61-s69: excalidraw-slide's sizes and words
     s00 = canvas.is_s00(path)                            # a Block's s00: block_index.py's words (⑦)
-    rows = [check_frame(els, f, slide, s00) for f in fs]
+    read = is_reading(path)                              # a paper read onto a canvas: excalidraw-read's words
+    rows = [check_frame(els, f, slide, s00, read) for f in fs]
     free = [e for e in els if not e.get("frameId") and e["type"] in ("text", "arrow")]
     acts = [e for e in free if e["type"] == "text" and re.match(r"(?i)^act\s*\d", str(e.get("text", "")))]
     arrows = [e for e in free if e["type"] == "arrow"]
     if slide:                                            # its frames read left to right, no acts
         story = SLIDE_OWN + ": logic flow · the slides · on disk, left to right"
+    elif not fs:                                         # a building map: its own column layout, no frames
+        story = NO_FRAMES
     elif len(fs) <= 1:                                   # one frame: no step between frames to name
         story = f"✅ one frame{', its act named' if acts else ''}"
     else:

@@ -1,3 +1,20 @@
+## 0.17.0 · 2026-10-21 · today's rules: a work Block's workflow layout
+
+- `ref/ladder.md` `today: workflow:` and `scripts/ladder.py` `workflow_findings`: at a work Block (family task),
+  `audit --today` reports as debt a face without `workbench-layout: workflow`, a Job face without `## Deliverables`
+  or `emoji:` (haipipe-job), a work Task face without `goal:` or `close:` (haipipe-task), Run cards without `role:`
+  and Runs that keep only a stand-in receipt (haipipe-run). One counted line per rule, six names then `+N`.
+- `update --today --apply` writes each missing `role:` line through haipipe-run's `run_roles.py`; it writes no
+  other word. `update` (with or without `--today`) also sets a card's `kind:` when the Run's name and folder agree
+  against it (`kind_fixes`: 27 LLMRec figure Runs were written `kind: soft`). Test: `tests/test_ladder_workflow.py`. After a
+  fresh agent's b03 trial: a draft Task (`task-type: draft`) keeps its own face, and roles count a Task's Runs only. LLMRec b01 is clean; b02 owes 2 stand-in receipts.
+
+## 0.16.1 · 2026-10-20 · a moved soft Run's first pass is its old receipt
+
+- `scripts/ladder.py`: a Run whose `run.yaml` names `moved_from:` keeps its first `passes/*/runtime.yaml` unchecked
+  for absolute paths, as a hard Run's `result/runtime.yaml` already was (JL 261009): `page.py run-names` makes the
+  old `results/<run>/` that first pass. Passes written since stay strict.
+
 ## 0.16.0 · 2026-10-16 · `note/`, the Project's inbox
 
 - `ref/project-structure.md` gains `## note/` (JL 261016, b10 s10-D10): any session writes a quick note or a random

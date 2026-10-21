@@ -1128,6 +1128,9 @@ def check_head_style(plan_text: str):
     """-> (fails, gaps) · the head and Note teeth of ref/plan-grammar.md.
 
     fails  `head-too-long`     a head over 11 words
+           `name-too-long`     a paragraph name (`### C1.P2 · name`) over 11
+                               words: a name, not the paragraph's argument
+                               (JL 261020, a 20-word name boxed the mind map)
            `note-too-long`     a Note over NOTE_MAX words, its wrapped source
                                lines joined (a hard wrap is still one Note)
     gaps   `head-too-short`    a head under 4 words (`Trait relevance`): the
@@ -1135,6 +1138,10 @@ def check_head_style(plan_text: str):
                                is visible without failing every old plan"""
     plan_text = canonical_plan(plan_text)
     fails, gaps = [], []
+    for m in re.finditer(r"(?m)^### (C\d+\.P\d+)\s*·\s*(.+)$", plan_text):
+        n = len([w for w in re.split(r"\s+", m.group(2).strip()) if w and not re.fullmatch(r"[\W_]+", w)])
+        if n > 11:
+            fails.append("%s name-too-long: %d words (max 11): %r" % (m.group(1), n, m.group(2)[:60]))
     for addr, head, notes, extra in _bullets_with_notes(plan_text):
         n = len(_head_words(head))
         if n > 11:

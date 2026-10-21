@@ -1,7 +1,7 @@
 ---
 name: haipipe-paper-evidence
 description: >-
-  What backs a paper, the paper's rules on top of the base haipipe-evidence (cards: CITE from discovery Runs, WORK
+  What backs a paper, the paper's rules on top of the base haipipe-evidence (cards: CITE from discovery Runs, VALUE
   from work Runs) and haipipe-display (figures and tables). A paper Section is a draft Task: its draft/ is
   haipipe-paper-draft's, its evidence/ and display/ follow this skill. The rules: a citation comes from a verified
   CITE Result and never from bank.bib; one result gives one number in every Section; displays are numbered for the
@@ -13,8 +13,8 @@ description: >-
   everywhere, numbers disagree, verify citations, display numbering, display limit, /haipipe-paper-evidence.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-10-19"
+  version: "0.1.1"
+  last_updated: "2026-10-20"
   # version history: ./CHANGELOG.md
 ---
 
@@ -38,7 +38,7 @@ is the ledger below.
 
 | base skill | does, for any page | this skill adds, for a paper |
 |---|---|---|
-| `haipipe-evidence` | the card format, CITE and WORK, `cards.py check · propose` | the citation and number rules; the version ledger |
+| `haipipe-evidence` | the card format, CITE and VALUE, `cards.py check · propose` | the citation and number rules; the version ledger |
 | `haipipe-evidence-cite` | a discovery Run's `.bib` and `facts.md` | verified before a Section closes; never `bank.bib` |
 | `haipipe-evidence-work` | a work Run's value at `file` + `key` | the same Run for the same value in every Section |
 | `haipipe-display` | `Display<n>-<slug>/`, built on cards | numbered for the paper; within the venue's limit |
@@ -53,7 +53,7 @@ The rules
    `bank.bib` or the paper's `delivery/reference.bib`. A source with no Result yet is `\citep{TOADD}` and a red
    card with `need`. Check every entry against Google Scholar or its DOI record before the Section closes. Never cite
    one paper in back-to-back sentences.
-2. **One result, one number.** A number in prose comes from a WORK card (`file` + `key` in a Run's `result/`), best
+2. **One result, one number.** A number in prose comes from a VALUE card (`file` + `key` in a Run's `result/`), best
    through the research question's report (`reports/qNN_<question>/`). The same result reads from the same Run, and
    shows the same number, in the Abstract, the Results, the Discussion and the letters.
 3. **Displays are the paper's.** Each `Display<n>-<slug>/` is built on cards (haipipe-display). The paper numbers them
@@ -84,7 +84,7 @@ Sections in the version face's `haipipe:compile-order` block are numbered, count
 `⏸ off`.
 
 ```text
-❗ one value, two Runs            the same WORK value (source, file, key) read from different Runs in two Sections
+❗ one value, two Runs            the same VALUE value (source, file, key) read from different Runs in two Sections
 ❗ one label, different estimates  an older VALUE label whose Results report different estimates, compared in
                                   one unit (a key with pp or percentage_point is in percentage points)
 ❗ one citation key, two entries   the same key with another year or title in two Sections' .bib files

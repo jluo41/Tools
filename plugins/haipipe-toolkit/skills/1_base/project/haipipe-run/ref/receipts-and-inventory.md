@@ -14,6 +14,7 @@ the ticket at each pass, the soft-Run writer, haipipe-project `update`), never a
 run: r03_<slug>                 # = the folder name = the ticket stem
 kind: hard                      # hard | soft
 type: [fit, evaluate]           # one or more Run types; one close rule settles them all
+role: make                      # its one job in its Task: trial make fix check describe figures evidence publish
 scope: <block>/<job>/<task>     # SPACE-relative folder holding this runs/
 target: <data-version> / <config>
 ticket: r03_<slug>.sh
@@ -26,6 +27,10 @@ writes: [result/]               # soft: the items it touched, e.g. [draft/<secti
 feeds: [reports/qNN_<topic>]    # who reads its output
 moved_from: []                  # only after haipipe-project update moved an older layout
 ```
+
+`role:` groups a Task's Runs in the workbench, in that order (JL 261020: "各司其职"). `scripts/run_roles.py`
+proposes it from the Run's name (first match: evidence, check, publish, figures, describe, fix, trial; else make)
+and writes it after `kind:`; a ticket generator imports its `propose()` so a new card has one.
 
 Unknown values stay null; never fill a field by guessing. `run.yaml` indexes the Run;
 the receipt (`runtime.yaml`, in each pass and in a hard `result/`) stays the record of
@@ -75,7 +80,7 @@ Use the native profile to decide completion and permissible retries.
 | Complete with required owner evidence | Done |
 | Failed | Failed |
 | Blocked, unresolved, missing/invalid required records | Held / Needs attention |
-| Superseded | Historical; distinguish from current work |
+| Superseded | Replaced; pruned once nothing in use reads it (SKILL.md, Keep only meaningful Runs) |
 
 This is a projection, not another persisted state ledger. Preserve native
 state detail. Missing receipts do not imply Ready; claimed complete records
@@ -161,7 +166,7 @@ Ticket · Result · Receipt · Participation · Findings
 ```
 
 A Workflow report joins each managed instance to its Spec. Existing accepted
-Results can appear as reused dependencies with exact version/hash; report new
+Results can appear as reused dependencies with exact version and date; report new
 allocation count separately. Cardinality belongs to the definition. Controller
 receipts, Cells, Steps, calls, retries, passes, Result files, Cards, Labels,
 and supporting aliases do not create additional logical Run rows.
@@ -179,3 +184,26 @@ claim of complete coverage. Never execute workers merely to answer a read-only
 inventory request. Repair goes through the owner with its existing authority.
 Keep safe pointers and summaries in shared views; never copy protected raw
 artifacts or credentials into a receipt or presentation layer.
+
+## Rebuilt receipts
+
+A Run that ran before its ticket wrote a receipt keeps only a stand-in: a migration's `status: blocked` with a
+`repair:` note (the workbench's 📦 "ran, no receipt"; `haipipe-project audit --today` counts them). Rebuild it from
+the files the Run left, never from memory: what it counted from its own outputs (a fetch log's asked and answered,
+a summary's rows, a metrics file), its times from its logs, else from its output files' own times, and its gate
+from its supervisor log when it has one. LLMRec b01 rebuilt 25 from fetch, supervisor and builder logs (261021); b02
+rebuilt an analysis Run's from its summary.md. What to read differs per Project, so the tool is the Project's. The rebuilt receipt keeps the stand-in under `earlier:` and says how it was made:
+
+```yaml
+status: complete
+headline: 19,549 of 19,790 searches answered
+receipt:
+  rebuilt_on: 2026-10-21
+  rebuilt_by: work/_tools/rebuild_receipts.py      # the Project's tool: what to read differs per Project
+  read_from: [<the files it read>]
+  why: its ticket wrote no receipt; this one is read from the files the Run left
+earlier: <the stand-in's repair: note>
+```
+
+A Run that left nothing to read keeps its stand-in and stays 📦. A receipt another tool owns (a binder's) is
+never rebuilt here; send its owner the list.

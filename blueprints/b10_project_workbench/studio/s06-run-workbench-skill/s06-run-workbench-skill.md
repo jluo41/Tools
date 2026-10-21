@@ -145,7 +145,7 @@ s06-D07 · The Studio's fourth folding part is Runs, under Delivery (JL 261019, 
     `_host/tests/test_frame.py`; Timeline and Folder moved to the fifth and sixth parts.
 s06-D08 · SPACE Home counts Runs too (JL 261019: "能不能整个 project level 也看一下它跑得怎么样", "在 project level
     下面，也可以加个 run"): a Project's line carries its hard Runs by status (`▶️ 284 · ✅96 ❌46 🟧90 ⏳4 ⬜48`
-    for Proj12), each Block row its own tally, and an opened Block row a third group, ▶️ Runs, after Studio and
+    for Proj12), each Block row its own tally, and an opened Block row a third group, ▶️ Runs (merged into Jobs, s06-D10), after Studio and
     Jobs, drawn by the same `frame.runs_list` as the Studio's Runs part. Built in `servers/space-home/home.py`,
     tested in haipipe-draft `tests/test_home.py`.
 s06-D09 · The Runs read as card rows, like the Jobs rows (JL 261019, on bare nested lists: "they are not in the good
@@ -153,6 +153,13 @@ s06-D09 · The Runs read as card rows, like the Jobs rows (JL 261019, on bare ne
     each Task a heading and its Runs an aligned table (mark · Run · status · finish day); the legend one short
     line. One look on both pages: `frame.RUN_CSS`, used by the Studio and SPACE Home (class `rn-card`, not
     `topic`, so the Studio's topic scripts leave it alone).
+s06-D10 · On SPACE Home the Runs sit under their Jobs, one group, not two (JL 261019: "put the run status under the
+    jobs, I mean merge the jobs and runs and no need to separate them, to save the spaces"): a Job row reads
+    `j01_… · 2 Tasks · 5 Runs` with its tally `✅2 🟧1 ⬜2` beside ↗; opened, each Task with its status and tally,
+    its Runs under it (mark · Run · status · finish day), then the Job's face. The Jobs head reads
+    `🗂 Jobs 3 · ⚙️ 145 Runs`; the legend is one line under the Jobs. Built in `servers/space-home/home.py`
+    (`_job_rows`, `_task_runs`), one Run-line writer `frame.run_cells`; tested in haipipe-draft
+    `tests/test_home.py`. The Studio's Runs part (s06-D07) keeps its own card per Job.
 
 
 Proposed

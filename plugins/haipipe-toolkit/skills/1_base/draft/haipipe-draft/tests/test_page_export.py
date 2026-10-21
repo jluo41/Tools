@@ -62,8 +62,9 @@ def test_each_lane_has_one_fixed_run_whose_ticket_code_writes(tmp_path):
     assert (page / "runs" / "run-delivery-latex" / "run-delivery-latex.sh").is_file()
 
 
-def test_run_names_keeps_old_builds_and_adds_each_built_lanes_run(tmp_path):
-    """An older numbered build (rd01_latex) stays as history; each lane with built files gets its one Run."""
+def test_run_names_prunes_old_builds_and_adds_each_built_lanes_run(tmp_path):
+    """Each lane with built files gets its one Run, and the older numbered build (rd01_latex) it replaces
+    goes (JL 261019: keep only the meaningful Runs; git keeps the rest)."""
     from src import run_rename
     board, page = _space(tmp_path)
     (page / "runs").mkdir()
@@ -72,7 +73,7 @@ def test_run_names_keeps_old_builds_and_adds_each_built_lanes_run(tmp_path):
     (page / "delivery" / "latex" / "S-X-Main-1-Intro.pdf").write_bytes(b"PDF")
     report = run_rename.apply(page)
     assert [k["old"] for k in report["kept"]] == ["rd01_latex"] and report["fixed"] == ["latex"]
-    assert (page / "runs" / "rd01_latex.md").is_file()
+    assert report["builds_pruned"] == ["rd01_latex"] and not (page / "runs" / "rd01_latex.md").exists()
     assert (page / "runs" / "run-delivery-latex" / "run-delivery-latex.sh").is_file()
     assert run_rename.plan(page)["fixed"] == []                 # a second pass adds nothing
 

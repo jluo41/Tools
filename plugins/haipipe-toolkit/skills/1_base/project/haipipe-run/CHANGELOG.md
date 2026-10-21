@@ -1,3 +1,69 @@
+## 0.35.0 · 2026-10-21 · Each Run says its role; rebuilt receipts; prune to _old
+
+- `scripts/run_roles.py` (from LLMRec `work/_tools/`, which now loads this copy): proposes each Run card's `role:`
+  from its name and writes it after `kind:`, for a Task's Runs only (a Block's drawings take no role); `haipipe-project ladder.py update --today --apply` writes the roles a
+  work Block lacks through it. `ref/receipts-and-inventory.md` adds `role:` to the card.
+- `ref/receipts-and-inventory.md` § Rebuilt receipts: a Run that keeps only a migration's stand-in gets a receipt read
+  from the files it left, marked `receipt: {rebuilt_on, rebuilt_by, read_from}` (LLMRec b01, 25 Runs); the rule says what to read for any Run,
+  an analysis Run included, and that the tool is the Project's.
+- `scripts/prune_runs.py --to-old`: moves each pruned Run and its configs to
+  `work/_old/<bNN>_pruned_<YYMMDD>/<jNN>_<task>_runs/` instead of deleting it, so a Run git does not hold is kept.
+  Tests: `test_run_roles.py`, `test_to_old_moves_an_untracked_run_and_its_config_instead_of_deleting`.
+
+## 0.34.2 · 2026-10-20 · Build figure / table opens in 4 · Display
+
+- run-types-by-space: a draft Task's tabs are seven; `run-display-<slug>` opens in 4 · Display, Revise's three in 5 · Revise.
+
+## 0.34.1 · 2026-10-20 · A draft Task's buttons by step tab (b32 s41)
+
+- `ref/run-types-by-space.md`: the Page Task table is now the Draft Task table, each button under the step tab it
+  sits in (Studio · 1 · Plan · 2 · Write · 3 · Evidence · 4 · Revise · Delivery), with the Studio's `run-draw-<sNN>`;
+  the names come from `task_draft.PAGE_RUN_NAMES`.
+
+## 0.34.0 · 2026-10-19 · Keep only meaningful Runs (JL 261019)
+
+- JL 261019, on a drawing that still showed six replaced parse Runs: "why not delete them!!!! why we have the new
+  run????" and "we will just keep the meaningful runs". SKILL.md gains `## Keep only meaningful Runs`: a hard Run
+  stays while it is current, open, or read by something in use. A Run another Run supersedes, or one that never ran
+  and is not planned, is pruned once nothing in use reads it. Immutable means never edited, not kept forever; git is
+  the archive.
+- The title "preserved history" becomes "only meaningful Runs". The Result paragraph no longer says to preserve the
+  historical Result. The "Choose the next action" table prunes the replaced Run. `ref/identity-and-history.md` and
+  `ref/receipts-and-inventory.md` (the Superseded row) say the same, and so does haipipe-task's
+  `ref/runtime-yaml-schema.md`.
+- `scripts/prune_runs.py`: new. A dry run prints each hard Run's verdict and who reads it; `--apply` deletes the
+  Runs it marks, with their configs; `--only` prunes a named candidate once a person judges its reader stale. It
+  counts as readers: configs, tickets and run cards of Runs that stay, code that names the Task and the Run, and
+  Pages outside the Task. It does not count receipts, its own Task page or Studio faces; it lists those to update,
+  with the heavy folders to remove where they live. A Run counts as ran when its config's output path holds
+  files. A Run whose output is not on this machine is marked check, never pruned by `--apply`.
+  `tests/test_prune_runs.py` checks it.
+- First used on Physician-SPACE LLMRec `work/` (442 hard Runs), JL 261019 "go through the whole runs":
+  - The first version marked 172 b01/b02 Runs "never ran", nearly all wrongly: their output is in `_WorkSpace/`.
+    After the store check, 33 were marked to prune and 59 to check.
+  - By hand, some prune verdicts were kept: two that did run (their store folder named by a collection version),
+    two pricing snapshots a cost report reads by a shortened name, and b04's planned tickets.
+  - 14 b01/b02 deletions were restored from git and handed to those Blocks' owner sessions. b02's status export
+    globs its pre-SDK config folders, a reader the first version could not see.
+  - b03 (this session's Block) lost 23 Runs; every Run its pipeline ticket calls still exists.
+- A fresh-context reviewer of the first version found more problems; all are now fixed and tested
+  (`PruneRunsCasesTest`):
+  - same-named Runs in sibling Tasks kept each other (the tool now reads the Task number just before the name);
+  - frozen configs of replaced Runs counted as readers;
+  - deleting a middle Run lost the supersedes chain (`--apply` now marks the older Run `status: superseded`);
+  - bare `--only` names matched several Tasks;
+  - nothing checked that git held a copy;
+  - companion configs such as `driver_tags_r03.yaml` were left behind.
+  SKILL.md adds who prunes (the Block's owner session), the snapshot warning, and what the tool cannot see
+  (`_old/`, short ranges in prose).
+- No content hashes (JL 260928), swept here: the SKILL's reuse row and heavy-output pointer, and
+  `ref/identity-and-history.md`, `ref/receipts-and-inventory.md` and `ref/run-catalog.md` now name versions
+  and dates, not hashes. haipipe-task 1.15.1 stops its Ticket template from writing sha256 into `heavy.yaml`.
+- A paper Board's Pages cite Runs by address range ("b03.j01.t02 r08 to r13"), and the tool missed them
+  (LLMRec MISQ story E18, 261020). It now reads addresses, alone or as a range, and counts any Studio face outside
+  the Run's own Block as a reader. Before, every Studio `.md` was a mention, so a story citing a Run could not
+  keep it.
+
 ## 0.33.1 · 2026-10-09 · Theme folders are singular
 
 - Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,

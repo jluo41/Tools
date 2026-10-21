@@ -1,3 +1,35 @@
+## 0.40.0 · 2026-10-20 · The Board's Work is its steps, then its Jobs
+
+- Block › Work Details is Idea · Story · DataFlow · PaperFlow · Jobs (JL 261020: "Like in the work, we might also have
+  Studio (studio is already in the top), and then the Idea, and then the Story, and DataFlow, and PaperFlow ... and
+  later we can have many Jobs"). Each step is Operation over Result as a Section's steps are: Input (its topic, what
+  it is, its Stage, Decided · Open) and a prompt to copy, then the topic's drawing opened straight onto it and its Open
+  and Decided points. A step reads the Board's studio topics by group (`**Tags:**`): Idea `Ideation`, Story `Story`,
+  DataFlow and PaperFlow `Plan` with `dataflow` or `workflow` in the name (`paper_theme._board_work`). Its chip: no
+  topic yet → next, open points → asked, else done; a bare link opens the first step with no topic, else Jobs. Main ·
+  Appendix · Evidence are gone from the Board (a version's Work keeps its Sections); their old links open Jobs.
+- Idea shows each idea as a card to read and review (JL 261020: "show each idea as a card and we can review them ...
+  Make it very easy to read"): under the groups of the ranked list's sketch, its id, verdict and call, then one
+  labelled line each for its question, hypothesis, test, closest work, risk and next step (each field's first
+  sentence), then its novelty · pilot · venue status (`_idea_card`). Story shows its face as sections (JL: "make the
+  topics here into different section in the results"): the question and pitch, a card per research question (how,
+  why it matters, now, what we expect, if answered, claims, work), the narrative if answered, stakes, what we will
+  not claim, the evidence, the work and where it could go (`_story_sections`). The open points and decisions follow,
+  the drawing folded last; Idea stays asked while an idea waits for G0.
+- Both are laid out as their drawings and every card folds closed (JL 261020: "让它的 layout 跟我们 draw 里面长得比较相似
+  一些"; "可以把它们也都变成闭合的吗"). Idea reads the topic's drawing words (`<topic>-drawing.yaml`) when it has them:
+  the question in the yellow key box, the setting (① one search key, read two ways, with its numbers), the drawing's
+  groups, each idea folded to its short question and state and opened as its drawing card (why it matters, data beside
+  method, if we find → it would mean, now, next), then the path to G0. Story: the paper's question in the key box, the
+  pitch, a folded card per research question opened as the drawing's row (the question → what we expect, and why →
+  what the paper can say; each hypothesis ✅ or 🔶 from the evidence rows it is tested by), then the narrative, stakes,
+  what we will not claim, the evidence, the work and the venues, each folded (`_folded`, `_cols`, `_key`, `_mini`).
+- Then made quiet (JL 261020: "看起来太咋咋呼呼了，就没有重点 ... 我还是喜欢这种模式的", pointing at 1 · Plan's rows):
+  every row is an emoji and a bold title, folded, as 1 · Plan's are; its state is the first grey line inside. No yellow
+  key box, no big-number tiles, no box inside a row, no headings over the Story's rows; the ideas' groups are one grey
+  label each. Opened, an idea and the setting are labelled lines; a research question keeps its three columns as
+  plain text.
+
 ## 0.39.1 · 2026-10-19 · The Section's skill is haipipe-paper-draft
 
 - `paper_theme.py` reads a Section's reader contract from `haipipe-paper-draft` (was haipipe-paper-section,

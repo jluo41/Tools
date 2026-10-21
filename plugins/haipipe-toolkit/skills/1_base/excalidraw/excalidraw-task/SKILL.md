@@ -11,8 +11,8 @@ description: >-
   /excalidraw-task.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 metadata:
-  version: "0.6.0"
-  last_updated: "2026-10-13"
+  version: "0.6.1"
+  last_updated: "2026-10-19"
   # version history: ./CHANGELOG.md
 ---
 

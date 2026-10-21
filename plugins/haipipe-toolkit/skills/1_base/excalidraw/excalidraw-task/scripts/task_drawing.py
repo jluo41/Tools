@@ -762,15 +762,16 @@ def idea_frame(d: Drawing, task: dict, folder: Path, runs: list, cfg: dict, asse
     how = step_rows(mech, [], "⚙️", per_row=0 if wide else 3, lead=[x for x in lead if x]) if mech else []
     width = chain_width(how) if wide else W                         # a work Task keeps ⑥'s density at W
     title = re.sub(r"^t\d+\s*·\s*", "", task["title"])          # a page titled "t05 · …" would say t05 twice
-    f = d.frame(f"⓪ {tid} · {title}: the idea and its {len(runs)} {noun}", width, TALLEST)
+    f = d.frame(f"⓪ {folder.name}: the idea and its {len(runs)} {noun}", width, TALLEST)   # folder names (261019)
     done = sum(video_checked(r["state"]) for r in task["runs"])
     key = str(cfg.get("reading") or idea.get("question") or task["question"] or task["title"])
-    y = heading(d, f"{tid} · {title}", f"{folder.parent.name} · {len(task['runs'])} {noun}" +
+    y = heading(d, folder.name, f"{folder.parent.name} · {len(task['runs'])} {noun}" +
                 ("" if noun == "Runs" else f" · {done} checked against the video"), key, width)
     work = noun == "Runs"
     det = steps_items(idea.get("details") or task["details"], [])
-    vids = [f"{jr.mark(r['state']) if work else '★' if r['star'] else '🎬'} {r['rid'] if not work else r['rid'][:3]} · "
-            f"{(words.get(r['rid']) or {}).get('name') or r['short']}" for r in runs]
+    vids = [f"{jr.mark(r['state'])} {r['rid']}" if work else            # a Run by its folder name (JL 261019); a
+            f"{'★' if r['star'] else '🎬'} {r['rid']} · {(words.get(r['rid']) or {}).get('name') or r['short']}"
+            for r in runs]                                                 #   video beside its own filed title
     if not vids:                                                   # an empty box says why it is empty
         vids = ["⬜ no Run in this Task yet"] if work else ["❓ no video listed on the page"]
     if not work and any(r["star"] for r in runs):                  # what the marks shown mean
@@ -1265,8 +1266,8 @@ def board_frame(d: Drawing, run: dict, w: dict, assets: Path, us: str = "This Ta
 def source_frame(d: Drawing, run: dict, w: dict, assets: Path, stairs: bool = True, passages: bool = True) -> dict:
     """One video for someone who knows nothing yet: what it says; what the screen shows and the words to know
     first; its formula explained and its steps, each with why; how to say it and what to check (red)."""
-    name = f"{run['rid']} · {w.get('name') or run['short']}"
     work = run.get("work")
+    name = run["rid"] if work else f"{run['rid']} · {w.get('name') or run['short']}"   # a Run: its folder name
     mine = sorted((assets.parent / "transcripts").glob(f"{run['rid']}-*.md"))
     if mine:
         run["transcript_file"] = f"transcripts/{mine[0].name}"

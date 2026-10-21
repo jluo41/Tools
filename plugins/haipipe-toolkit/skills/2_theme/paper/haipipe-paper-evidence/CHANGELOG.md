@@ -1,5 +1,9 @@
 # haipipe-paper-evidence · changelog
 
+## 0.1.1 · 2026-10-20 · the ledger counts VALUE
+
+- haipipe-evidence 0.6.0 renamed WORK to VALUE; `evidence_ledger.py` reads and prints VALUE, and its test writes `kind: value`.
+
 ## 0.1.0 · 2026-10-19 · What backs a paper, and one ledger per version
 
 - New skill (JL 261019: "and also have a haipipe-paper-evidence? ... it is like we have the paper to combine the

@@ -1,5 +1,5 @@
 """A Studio topic of related papers, each read with excalidraw-read: the theme first, then one row per paper.
-Asked 261013 on Paper-LLMRecPhy: "add more sNN to show the related paper by topics, just like ... s52-t06 ...
+Asked 261013 on Paper-LLMRecPhy-Quick: "add more sNN to show the related paper by topics, just like ... s52-t06 ...
 using /excalidraw-read"; "we might want to see the most relevant papers in the details".
 
     python topic_drawing.py draw <topic folder>      redraw one topic (what its builder calls)

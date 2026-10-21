@@ -1,8 +1,8 @@
 ---
 name: haipipe-job
 description: >-
-  Owns the Job level: a Job's face `jNN_<job>.md` (title, goal, close, answers:, Topic, its
-  Tasks in order), its six Spaces at Job level and the buttons it owns there (Update the
+  Owns the Job level: a Job's face `jNN_<job>.md` (title, goal, close, emoji, answers:, Topic,
+  its Tasks in order, its ## Deliverables: what it hands on, ticked from disk), its six Spaces at Job level and the buttons it owns there (Update the
   description, Add a Task, Build the delivery), a new-Job scaffold that also adds Task slots
   in order, a check of the Tasks list against the folders, and a theme's own Job and Task
   names (Theme.level_patterns). Use to create a Job, add a Task to it, reorder or check its
@@ -10,7 +10,7 @@ description: >-
   in order, level_patterns, version group, /haipipe-job.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.2.2"
+  version: "0.3.0"
   last_updated: "2026-10-21"
   # version history: ./CHANGELOG.md
 ---
@@ -33,7 +33,7 @@ its Tasks; building each Task is `haipipe-task`'s, the folder's shape `haipipe-p
 
 ```text
 bNN_<block>/jNN_<job>/
-├── jNN_<job>.md      the face: # jNN · <title> · goal · close · answers: · Topic · ## Tasks
+├── jNN_<job>.md      the face: # jNN · <title> · goal · close · emoji · answers: · Topic · ## Tasks · ## Deliverables
 ├── runs/ studio/     soft Runs (haipipe-run) · its own topics (haipipe-studio)
 ├── src/ sbatch/      code its Tasks share
 └── tNN_<task>/       its Tasks, in the order ## Tasks lists them

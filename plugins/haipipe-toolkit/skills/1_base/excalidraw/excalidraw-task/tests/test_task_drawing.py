@@ -115,7 +115,7 @@ class TaskDrawingTest(unittest.TestCase):
         self.assertIn("name: j01_decoding/t01_sampling", (topic / f"{topic.name}.md").read_text())
         els, frames = self.frames(outs[0])
         names = [f["name"] for f in frames]
-        self.assertTrue(names[0].startswith("① 🪜 t01 · Decoding and Sampling"))     # the staircase, the main frame
+        self.assertTrue(names[0].startswith("① 🪜 t01_sampling"))     # the staircase, by its folder name (261019)
         self.assertTrue(all("explains" in (f.get("customData") or {}) for f in frames[1:]))   # the rest explain it
         text = " ".join(" ".join(e.get("text", "").split()) for e in els if e["type"] == "text")
         steps = {e["text"].split(" · ")[0][-3:]: e["y"] for e in els if e["type"] == "text" and

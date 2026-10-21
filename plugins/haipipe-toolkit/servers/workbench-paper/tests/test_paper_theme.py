@@ -56,7 +56,7 @@ ROUND = """# RD01-demo
 SUBS = {"Description": ("Scope", "Venue", "Resources"), "Related": ("",), "Idea Studio": ("",),
         "Audience Report": ("Ideation", "Narrative", "High-level logic + Low-level work", "Related Questions",
                             "Related Papers"),
-        "Work Details": ("Jobs", "Main", "Appendix", "Evidence"), "Runs": ("",),
+        "Work Details": ("Idea", "Story", "DataFlow", "PaperFlow", "Jobs"), "Runs": ("",),
         "Delivery": ("delivery/", "LaTeX", "Word", "Cover letter", "Rounds")}
 
 
@@ -91,6 +91,77 @@ class PaperThemeTest(unittest.TestCase):
             if subs != ("",):
                 self.assertEqual(tuple(spaces[space]["subspaces"]), subs)
         self.assertTrue(spaces["Runs"]["run_types"])
+
+    def test_the_board_work_is_its_steps_then_its_jobs(self):
+        # JL 261020: "Like in the work, we might also have ... the Idea, and then the Story, and DataFlow, and PaperFlow
+        # ... and later we can have many Jobs": each step reads its Studio group's topic, Operation over Result
+        from live.paper_theme import spaces
+        story = self.board / "studio" / "s02-story-demo"
+        story.mkdir(parents=True)
+        (story / "s02-story-demo.md").write_text(
+            "s02 · the story\n\n**Tags:** `Story`\n\n**Stage:** explore\n\n**Topic:** one telling of the paper. More.\n\n"
+            "Decided\n-------\n\n- s02-D01 · three questions (JL 261020)\n\nOpen\n----\n\n1. Which venue first?\n",
+            encoding="utf-8")
+        (story / "s02-story-demo.excalidraw").write_text("{}", encoding="utf-8")
+        work = spaces("Block", self.board, self.root, "Story")["Work Details"]
+        self.assertEqual((work.open, work.subspaces), ("Story", ("Idea", "Story", "DataFlow", "PaperFlow", "Jobs")))
+        for needle in ("Operation", "Result", "📖 Story", "/haipipe-paper story", "studio/s02-story-demo",
+                       "one telling of the paper.", "s02-story-demo.excalidraw", "🙋 Open · 1", "Which venue first?",
+                       "✅ Decided · 1", "🔶 asked"):
+            self.assertIn(needle, work.html)
+        self.assertNotIn("More.", work.html)
+        idea = spaces("Block", self.board, self.root, "Idea")["Work Details"]
+        self.assertIn("none yet in the Ideation group", idea.html)
+        self.assertIn("/haipipe-paper ideate", idea.html)
+        # a bare link opens the first step with no topic yet; an old tab name opens Jobs
+        self.assertEqual(spaces("Block", self.board, self.root, "")["Work Details"].open, "Idea")
+        self.assertEqual(spaces("Block", self.board, self.root, "Evidence")["Work Details"].open, "Jobs")
+
+    def test_a_story_reads_as_sections_and_an_idea_as_a_card(self):
+        # JL 261020: "is there a way to show each idea as a card and we can review them? ... Make it very easy to read";
+        # "we want to do the same to the story as well ... make the topics here into different section in the results"
+        from live.paper_theme import _idea_card, _story_sections
+        face = ("### 1 · Identity\n\n**One sentence**: we ask one thing.\n\n### 2 · Pitch\n\n"
+                "1. **Tension**: patients ask agents.\n2. **Who cares**: patients.\n\n### 3 · Research Questions\n\n"
+                "**The paper's question**: Which doctors do patients see?\n\n"
+                "**The narrative, if the questions are answered** (what it can say):\n\n1. Agents name real doctors (RQ1).\n\n"
+                "#### 3.1 · Question 1 · RQ1\n- **Name**: Real doctors?\n- **Research question**: Are they real? (RQ1a: how many?)\n"
+                "- **Question**: We match names. Then more.\n- **Answer state**: 🔶 measured. Then more.\n\n**Hypotheses**\n"
+                "- **1a** · Mostly real: most are real · tested by Ework02\n\n**Potential claims**\n"
+                "- **1a** · C1 · from 1a · Real: the names are real.\n  - **Role**: boundary\n\n**Potential work**\n- **T1** · for 1a\n\n"
+                "### 5 · Evidence Basis and Boundaries\n\n| E | evidence | source | state |\n|---|---|---|---|\n"
+                "| Ework02 | names match | b03 | established |\n\n**We will not claim**:\n- that named is better;\n- a cause.\n")
+        html = _story_sections(face)
+        # laid out as the drawing (JL 261020: "让它的 layout 跟我们 draw 里面长得比较相似一些"), every card folded
+        # ("可以把它们也都变成闭合的吗"): the question in the key box, a research question's row in three columns
+        for needle in ("📖 The paper's question", "Which doctors do patients see?", "we ask one thing.", "Tension",
+                       "RQ1 · Real doctors?", "🔶", "Are they real?", "We match names.",
+                       "❓ The question →", "🔮 What we expect, and why →", "📣 What the paper can say",
+                       "1 hypothesis: 1 with evidence in hand, 0 waiting for a Run", "✅ 1a · Mostly real", "most are real",
+                       "tested by Ework02", "C1 · Real", "the names are real.", "Work: T1",
+                       "📜 The narrative", "Agents name real doctors (RQ1).", "🚫 What we will not claim", "that named is better;",
+                       "🧾 The evidence", "Ework02"):
+            self.assertIn(needle, html)
+        # quiet (JL 261020: "看起来太咋咋呼呼了，就没有重点"): no yellow key box, no box inside a card, no headings over rows
+        for gone in ("RQ1a", "Then more.", "Role", "<details class=\"topic work-task\" open", "#ffd43b", "border:1px solid",
+                     "❓ The research questions"):
+            self.assertNotIn(gone, html)
+        card = _idea_card({"id": "i13", "title": "Who gets named?", "verdict": "⬜ open",
+                           "fields": [("novelty", "⬜ unverified (cross-model check only)"), ("verdict", "⬜ open")],
+                           "substance": [("Hypothesis", ["the premium sits in reading answers. More words."]),
+                                         ("Recommendation", ["test-ready; pick 1 of 3."])]})
+        for needle in ('id="idea-i13"', "<b>i13 · Who gets named?</b>", "the premium sits in reading answers.",
+                       "novelty ⬜ unverified", "test-ready", '<details class="topic work-task"'):
+            self.assertIn(needle, card)
+        drawn = _idea_card({"id": "i13", "title": "Who gets named?", "fields": [], "substance": []},
+                           {"short": "Does it repeat the sites?", "why": "The sites would decide.", "data": ["answers"],
+                            "method": ["tag each URL"], "results": [{"find": "the gap only where read", "means": "it re-presents"}],
+                            "now": "pilot pending"})
+        for needle in ("i13 · Does it repeat the sites?", "Why it matters", "The sites would decide.", ">Data<",
+                       "1. tag each URL", "If we find", "the gap only where read", "it re-presents", "pilot pending"):
+            self.assertIn(needle, drawn)
+        self.assertNotIn("More words.", card)
+        self.assertNotIn("cross-model check only", card)
 
     def test_related_folds_inside_the_studio(self):
         # b10 s04, JL 261011: Related is the Studio's second folding part; a Related link, or an old
@@ -169,8 +240,8 @@ class PaperThemeTest(unittest.TestCase):
             self.assertEqual(got[name], base[name])
 
     def test_a_section_carries_the_paper_lines(self):
-        # ◆ (b16 s13): the reader contract in Scope, the SUB-* rows in Requirement, the form over the
-        # Table, and "ready for the build" apart from "done" in Delivery
+        # ◆ (b16 s13): the reader contract in Scope, the SUB-* rows beside the Requirement in Work › 1 · Plan
+        # (b32 s41 Ⓐ), the form over the Table, and "ready for the build" apart from "done" in Delivery
         from live.paper_theme import spaces
         section = self.board / "Ba-desk-Main" / "S-desk-Main-1-Introduction"
         (section / "S-desk-Main-1-Introduction.md").write_text(SECTION, encoding="utf-8")
@@ -179,7 +250,10 @@ class PaperThemeTest(unittest.TestCase):
         scope = spaces("Task", section, self.root, "Scope")["Description"].html
         self.assertIn("The reader contract", scope)
         self.assertIn("&lt;the one question this Section answers&gt;", scope)
-        self.assertIn("SUB-INTRO-01", spaces("Task", section, self.root, "Requirement")["Description"].html)
+        self.assertIn("SUB-INTRO-01", spaces("Task", section, self.root, "1 · Plan")["Work Details"].html)
+        evidence = spaces("Task", section, self.root, "3 · Evidence")["Work Details"].html
+        self.assertIn("/haipipe-paper-evidence ", evidence)                  # the paper's rules on its Sections
+        self.assertNotIn("/haipipe-evidence ", evidence)
         self.assertNotIn("◆ form", spaces("Task", section, self.root, "Table")["Audience Report"].html)
         delivery = spaces("Task", section, self.root, "LaTeX")["Delivery"].html
         self.assertIn("displays with preview.pdf: 0 of 1", delivery)

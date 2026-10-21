@@ -10,8 +10,8 @@ description: >-
   creating, refreshing, or comparing a venue Page, or adding or checking a
   paper's venue.
 metadata:
-  version: "0.10.0"
-  last_updated: "2026-10-07"
+  version: "0.11.0"
+  last_updated: "2026-10-19"
   page_ruling: none
   outline:
     mode: fixed
@@ -40,6 +40,14 @@ version breaks. A version's face names its one venue; its build and its Requirem
 The shared Venue Page below (`QBv<n>-<slug>`, the bank) stays the library: what a desk rewards and refuses, for
 every paper. A Board's `call.md` names the bank Page it follows (`bank:`) and copies none of its prose. Whether the
 two become one home is open (b16 Q02).
+
+## 🧭 The story's venue list (0.11.0)
+
+A telling's face keeps its own venue list, `### 9 · Venues` in `studio/sNN-story-<desk>-<idea>/`: each venue, its kind,
+why it fits, the research questions it would lead with, what it still needs, and its desk record here (or "none
+yet") (JL 261019: "我们要不要把这个 venue 直接塞到这个 story 里面去？ ... 也要想想它适合什么样的 journal，然后搞出来一个 journal list or conference list"). The list says where the story could go; this skill keeps what each venue requires (its desk record in
+`venue/bank/1-QBv-desks/`, and a paper's `venues/<venue>/call.md`). A list row never copies a rule; a venue with no
+record has none checked, and `excalidraw-story` draws it red. First list: Project-LLMRec-Physician's MIS Quarterly s02, ten venues.
 
 ## 🏛 Grain and boundary
 

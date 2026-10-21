@@ -2090,6 +2090,13 @@ def runs_tally(rows: list) -> str:
     return _tally(rows)
 
 
+def run_cells(rows: list) -> str:
+    """One Task's hard Runs as the cells of an aligned `rn-grid`: mark · Run · status · finish day (the Studio's
+    Runs part and SPACE Home's Job rows share it)."""
+    return "".join(f'<span class=rn-mark title="{_e(st)}">{RUN_MARK.get(st, "⬜")}</span><code>{_e(name)}</code>'
+                   f'<span class=rn-st>{_e(st)}</span><span class=rn-day>{_e(day)}</span>' for _, _, name, st, day in rows)
+
+
 def runs_list(rows: list) -> str:
     """Hard Runs as card rows like the Jobs rows (JL 261019, on the bare lists: "they are not in the good format"):
     one folded card per Job, its Task and Run counts and tally on the right; opened, each Task a heading and its
@@ -2102,10 +2109,8 @@ def runs_list(rows: list) -> str:
         jrows = [r for rs in tasks.values() for r in rs]
         body = []
         for task, rs in tasks.items():
-            cells = "".join(f'<span class=rn-mark title="{_e(st)}">{RUN_MARK.get(st, "⬜")}</span><code>{_e(name)}</code>'
-                            f'<span class=rn-st>{_e(st)}</span><span class=rn-day>{_e(day)}</span>' for _, _, name, st, day in rs)
             body.append(f'<div class=rn-task><b>{_e(task)}</b><span class=rn-meta>{len(rs)} Run{"s" * (len(rs) != 1)}'
-                        f'</span><span class=rn-tally>{_tally(rs)}</span></div><div class=rn-grid>{cells}</div>')
+                        f'</span><span class=rn-tally>{_tally(rs)}</span></div><div class=rn-grid>{run_cells(rs)}</div>')
         nt, nr = len(tasks), len(jrows)
         cards.append(f'<details class=rn-card><summary><b>{_e(job)}</b><span class=rn-meta>{nt} Task{"s" * (nt != 1)} · '
                      f'{nr} Run{"s" * (nr != 1)}</span><span class=rn-tally>{_tally(jrows)}</span></summary>'
@@ -2590,6 +2595,16 @@ def _answering(folder: Path, level: str, qid: str, root: Path) -> list:
     return found
 
 
+def _studio_links(page: Path) -> list:
+    """(link text, drawing) for each link in a report Page to a drawing under a studio/ folder, in order."""
+    out = []
+    for name, href in re.findall(r"\[([^\]]+)\]\(([^)\s]+\.excalidraw)\)", page.read_text(encoding="utf-8", errors="ignore")):
+        p = (page.parent / href).resolve()
+        if "studio" in p.parts and p.is_file():
+            out.append((name, p))
+    return out
+
+
 def _report_cell(qid: str, page: Path | None, root: Path, work: str = "") -> str:
     """The Report cell: the title (the Page in the pop-out), its answer line, then the work behind it (`work`, the
     Jobs, Tasks and Runs on this Question; b10 s32-D23, JL 261012: "the logic and report (which contains the work
@@ -2605,6 +2620,10 @@ def _report_cell(qid: str, page: Path | None, root: Path, work: str = "") -> str
         pic = (f'<div class=rp-live title="Click to pan and zoom"><iframe class=rp-draw inert loading=lazy '   # inert: it never
                f'title="{_e(page.stem)}" src="{_e(_draw_url(drawing, root))}" referrerpolicy=no-referrer></iframe></div>'  # takes focus
                f'<p class=rp-full>{pop(_draw_url(drawing, root), qid + " · Drawing · generated, view only", "full size ↗")}</p>')
+    elif studio := _studio_links(page):                       # a report that draws nothing links the Studio frames
+        pic = ('<p class=rp-full><span class=mut>Studio:</span> '   # that show it (b51, JL 261021: "No more draw in
+               + " · ".join(pop(_draw_url(p, root), f"{qid} · Studio · {name}", f"{name} ↗") for name, p in studio)
+               + '</p>')                                              # the reports")
     else:
         pic = '<p class=mut>no drawing yet</p>'
     answer = _opening(page)
@@ -3126,7 +3145,12 @@ function hashTarget(){
   var matches=Array.from(document.querySelectorAll('[data-studio-name]')).filter(function(r){return r.dataset.studioName===name&&!r.closest('[data-group-kind]');});
   return matches.find(function(r){return path.endsWith('/'+r.dataset.studioSource);})||matches[0]||null;
 }
-document.querySelectorAll('details.topic').forEach(function(d){d.addEventListener('toggle',function(){load(d);});});
+// a row a person clicks open scrolls so its drawing sits in the middle of the window (JL 261019: "when I click it,
+// the draw will in the center of the page"); rows the page opens itself (a #link, a restored Current) do not jump
+var clicked=0;document.addEventListener('click',function(e){if(e.target.closest('details.topic > summary'))clicked=Date.now();},true);
+document.querySelectorAll('details.topic').forEach(function(d){d.addEventListener('toggle',function(){load(d);
+  if(d.open&&Date.now()-clicked<1500){var f=d.querySelector(':scope > iframe.st-frame')||d;
+    setTimeout(function(){f.scrollIntoView({behavior:'smooth',block:'center'});},60);}});});
 // a #question-QNN link opens that Question's card in the Report (b10 s05: each Question is a folding card)
 (function(){var h=decodeURIComponent(location.hash.slice(1));if(h.indexOf('question-')!==0)return;
   var el=document.getElementById(h),card=el&&el.closest('details.q-card');if(card){card.open=true;el.scrollIntoView();}})();
@@ -3642,7 +3666,7 @@ def _options(theme: Theme, root: Path, space: str, options: list, here, sub: str
                    for g, opts in groups.items())
 
 
-def _spaces_row(theme, root, folder, space) -> str:
+def _spaces_row(theme, root, folder, space, sub="", views=None) -> str:
     out, last = [], None
     for name, group, optional in SPACES:
         if name in TOP_ROW or name in IN_STUDIO:  # the top row's own, or folded in the Studio (b10 s09-D05, s04)
@@ -3652,7 +3676,10 @@ def _spaces_row(theme, root, folder, space) -> str:
         last = group
         cls = "tab" + (" on" if name == space else "") + (" opt" if optional else "")
         label = SPACE_LABELS.get(name, name)
-        out.append(f'<a class="{cls}" href="{_e(href(folder, root, theme, name))}">{_e(label)}</a>')
+        shared = (sub if space in ("Audience Report", "Work Details")
+                  and name in ("Audience Report", "Work Details")
+                  and sub in (views or {}).get(name, Space()).subspaces else "")
+        out.append(f'<a class="{cls}" href="{_e(href(folder, root, theme, name, shared))}">{_e(label)}</a>')
     return '<nav class="row spaces">' + "".join(out) + "</nav>"
 
 
@@ -3939,14 +3966,15 @@ def delivery_view(folder: Path, root: Path, theme=None) -> str:
 # that human need to interact with as well") ────────────────────────────────────────────────────────────────
 def task_action(task: Path, root: Path, theme=None):
     """(label, href) when a person works inside this Task, else None: the theme's own rule (a labeling Task's
-    rounds), or a draft a person writes (its face says `task-type: draft`), opened on its Draft."""
+    rounds), or a draft a person writes (its face says `task-type: draft`), opened on its Work, at the step that
+    waits (b32 s41)."""
     theme = theme or VANILLA
     if theme.task_action:
         got = theme.task_action(task, root)
         if got:
             return got
     if task_type(task) == "draft":
-        return "✎ Write", href(task, root, theme, "Audience Report", "Draft")
+        return "✎ Write", href(task, root, theme, "Work Details")
     return None
 
 
@@ -4031,7 +4059,8 @@ def _work_task(task: Path, root: Path, theme, open_: bool = False) -> str:
     return (f'<details class="topic work-task{" work-human" if act else ""}"{" open" if open_ else ""}><summary>'
             f'<span class=related-head><b>{_e(task.name)}</b><br><span class=topic-meta>{meta}</span></span>'
             f'<span class=topic-pop>{button}{_link(ROUTE + "?" + urlencode({"path": _rel(task, root)}), "↗")}</span>'
-            f'</summary><div class=work-body>{_work_runs(task, root)}</div></details>')
+            f'</summary><div class=work-body>{task_card(task, root, getattr(theme, "name", ""))}'
+            f'{_work_runs(task, root)}</div></details>')
 
 
 def _work_job(job: Path, root: Path, theme, open_: bool = False) -> str:
@@ -4089,6 +4118,14 @@ WORK_CSS = """
 .work-files a{text-decoration:none}.work-sub{color:var(--mut);font-size:13px;margin:10px 0 2px}
 .work-act{display:inline-block;padding:2px 10px;border:1px solid var(--tab-on);border-radius:6px;color:var(--tab-on);
 background:var(--tab-wash);text-decoration:none;font-size:13px}.work-human>summary b::after{content:" ✎";color:var(--tab-on)}
+.workflow-view .work-table-scroll{overflow-x:auto;max-width:100%}
+.workflow-view .wf-table{width:100%;overflow-wrap:anywhere}
+.workflow-view details{margin:10px 0}.workflow-view summary{overflow-wrap:anywhere}
+.workflow-view .work-execution-table{table-layout:fixed}
+.work-execution-table th:nth-child(1){width:22%}.work-execution-table th:nth-child(2){width:9%}
+.work-execution-table th:nth-child(3){width:11%}.work-execution-table th:nth-child(4){width:17%}
+.work-execution-table th:nth-child(5){width:9%}.work-execution-table th:nth-child(6){width:32%}
+@media(max-width:720px){.workflow-view .work-table-scroll>.wf-table{min-width:700px}}
 .work-none{margin:6px 0}.st{font-size:12px;padding:0 6px;border:1px solid var(--line);border-radius:999px}
 .st-done,.st-ok,.st-answered{color:var(--ok);border-color:var(--ok)}.st-failed,.st-error{color:var(--miss);border-color:var(--miss)}
 """
@@ -4177,7 +4214,7 @@ def render(theme: Theme, root: Path, folder: Path, space: str = "", sub: str = "
         work_rows = ((_delivery_row(theme, root, block, folder) if block else "")   # lanes row if there is a choice
                      + (_subs_row(theme, root, folder, space, view) if len(view.subspaces or ()) > 1 else ""))
     else:
-        work_rows = _spaces_row(theme, root, folder, space) + _subs_row(theme, root, folder, space, view)
+        work_rows = _spaces_row(theme, root, folder, space, view.open, views) + _subs_row(theme, root, folder, space, view)
     body_class = ("frame-body studio-body" if studio else "frame-body delivery-body" if delivery
                   else "frame-body")
     # No band line: the title keeps the Block context when the top button just says Block
@@ -4239,6 +4276,11 @@ def task_layouts(theme: str = "") -> dict:
     """{task type: spaces(folder, root, sub)} for one theme: every `workbench-task-<type>/task_<type>.py` in
     servers/workbench/ (every theme's), then the theme's own in servers/workbench-<theme>/ (that theme's only, so
     a labeling `task-type: eval` never lays out a work Task). A layout names its TASK_TYPE, or several TASK_TYPES."""
+    return {name: layout.spaces for name, layout in _task_modules(theme).items()}
+
+
+def _task_modules(theme: str = "") -> dict:
+    """{task type: its layout module} for one theme (task_layouts' search)."""
     import importlib
     from host_registry import task_folders, workbench_name
     found = {}
@@ -4251,8 +4293,18 @@ def task_layouts(theme: str = "") -> dict:
         if (folder / f"{module}.py").is_file():
             layout = importlib.import_module(f"live.{module}")
             for name in getattr(layout, "TASK_TYPES", None) or (layout.TASK_TYPE,):
-                found[name] = layout.spaces
+                found[name] = layout
     return found
+
+
+def task_card(task: Path, root: Path, theme: str = "") -> str:
+    """A Task type's own lines on the Task's Work card in its Job (its layout's optional `work_card(task, root)`):
+    a draft Task's seven steps, each a link to its tab (b32 s41); "" for a type that has none."""
+    layout = _task_modules(theme).get(task_type(task))
+    try:
+        return layout.work_card(task, root) if layout is not None and hasattr(layout, "work_card") else ""
+    except Exception:                            # a Task type's lines never break the base's tree
+        return ""
 
 
 # ── what the Guide's Space cards read live (b03 s31-D06): each level's sub · runs, from here ─────

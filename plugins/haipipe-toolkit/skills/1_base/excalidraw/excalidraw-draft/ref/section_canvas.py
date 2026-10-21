@@ -11,7 +11,7 @@ yaml block; only `draft_folder` is required:
       section: C5                                   every paragraph C5.P<n>; or paragraphs: [C5.P13, C5.P14]
       pages: {render: <delivery render/ folder>, name: <file name>, pick: [5, 6]}
                                                     the newest version's page pictures (haipipe-delivery word_round.py)
-      evidence: <path to evidence/cards.yaml>       CITE blue, WORK violet, a needed item red (haipipe-evidence)
+      evidence: <path to evidence/cards.yaml>       CITE blue, VALUE violet, a needed item red (haipipe-evidence)
       plan_face: <face.md>  plan_key: <key>  part: "4"
                                                     a revise plan (excalidraw-draft Revise mode): its edits become
                                                     change cards and red asks, its replies the comments
@@ -66,8 +66,19 @@ DEFAULTS = {
     'comment_title': '💬 Comments',
     'edits_title': "✏️ Changes: the file's words → the draft's",
     'footer': ['Words stay black; a pale box marks what a card is about. Blue = a paper (CITE), violet = our own Run '
-               '(WORK), red = still needed, yellow = a comment.'],
+               '(VALUE), red = still needed, yellow = a comment.'],
 }
+
+
+def sid(x):
+    """A sentence id as the files write it after the S: 4 is 4, and a sentence added after S4 (S4a) is '4a'."""
+    return int(x) if str(x).isdigit() else str(x)
+
+
+def in_order(n):
+    """S4, S4a, S5: a sentence id's place in reading order."""
+    m = re.match(r'(\d+)(.*)', str(n))
+    return (int(m[1]), m[2]) if m else (10 ** 6, str(n))
 
 
 def spec_of(face):
@@ -110,18 +121,18 @@ def build(face, out=None, builder=None):
     rows, logic = [], []                     # rows: (address, b, n, text); logic: (address, title, [(n, tag, changes)])
     for address in paragraphs:
         _, text = block('## 3 · Draft', address)
-        rows += [(address, int(b), int(n), t) for b, n, t in re.findall(r'^- B(\d+) · S(\d+) · (.+)$', text, re.M)]
+        rows += [(address, int(b), sid(n), t) for b, n, t in re.findall(r'^- B(\d+) · S(\d+[a-z]*) · (.+)$', text, re.M)]
         title, plan_ = block('## 1 · Structure', address)
         bullets = []
-        for m in re.finditer(r'^- B\d+ · S(\d+) · (.+)(?:\n\s+Change: (.+))?$', plan_, re.M):
-            bullets.append((int(m[1]), m[2], [int(i) for i in re.findall(r'(?:^|, )(\d+) · ', m[3] or '')]))
+        for m in re.finditer(r'^- B\d+ · S(\d+[a-z]*) · (.+)(?:\n\s+Change: (.+))?$', plan_, re.M):
+            bullets.append((sid(m[1]), m[2], [int(i) for i in re.findall(r'(?:^|, )(\d+) · ', m[3] or '')]))
         logic.append((address, title, bullets))
     sentence = {n: t for _, _, n, t in rows}
     changes_of = {n: ids for _, _, bl in logic for n, _, ids in bl}
 
     def where(anchor, among=None):
         """The sentence an anchor's words are in, or None when the text no longer has them."""
-        return next((n for n, t in sentence.items() if anchor in t and (among is None or n in among)), None)
+        return next((n for n, t in sentence.items() if anchor in t and (among is None or n in map(sid, among))), None)
 
     # The file today: the newest version's page pictures, or the picture a plan face's drawing holds.
     pictures, picture_note = [], ''
@@ -154,13 +165,18 @@ def build(face, out=None, builder=None):
         except ValueError:
             pass
 
+    # the comments and changes column only when there is one of them: an empty column is only room (JL 261020, the
+    # LLMRec Sections, built before any page or comment: check.py ⑥ read 62-73 against 88 on all five)
+    talk = bool(reply or edits)
+    W = 2800 if talk else 2190
     d = Drawing()
-    f = d.frame(f"{section} · the Section canvas", 2800, 1600)
+    f = d.frame(f"{section} · the Section canvas", W, 1600)
     canvas.reads_down(f)
+    canvas.columns(f, 4 if talk else 3)      # logic · text · evidence (· comments): ⑨ reads each panel as one
     Drawing.detail(f)
     d.text(40, 24, spec.get('title') or f'{section} · the Section canvas', 60)
     d.text(42, 104, spec['subtitle'], 26, GREY)
-    d.key(40, 150, 2200, 52, sw=1)
+    d.key(40, 150, min(2200, W - 80), 52, sw=1)
     d.text(56, 162, spec['key'], 25)
 
     def aside(x, y, text, w, size=21, color=INK):
@@ -214,20 +230,21 @@ def build(face, out=None, builder=None):
     for item in (reply or {}).get('items', []):
         if (n := where(item['anchor'])):
             mark(n, item['anchor'], YELLOW)
-    d.text(MX, 240, f"{spec['text_title']} {version} · {', '.join(paragraphs)}", 30)
+    span = ', '.join(paragraphs) if len(paragraphs) <= 3 else f"{paragraphs[0]} to {paragraphs[-1]}"
+    d.text(MX, 240, f"{spec['text_title']} {version} · {span}", 30)
     note_end = aside(MX, 284, f"from {files[0].parent.parent.name}/draft/{files[0].name}; words in black, a pale box "
                      f"under what a card is about", MW, 20, GREY)
     anchor_y, yy, last, body = {}, max(330, note_end + 20), None, None
     for address, b, n, text in rows:
         if address != last:
             if last is not None:
-                body['height'] = yy - body['y'] + 14
-                yy += 40
+                body['height'] = yy - body['y'] + 10
+                yy += 22
             title = next(t for a, t, _ in logic if a == address)
             d.text(MX, yy, f'{address.split(".")[1]} · {title}', 28)
-            yy += 46
+            yy += 40
             body = d.box(MX, yy, MW, 10, INK, 1.8)
-            yy += 18
+            yy += 14
             last = address
         wrapped = d.wrap(text, MW - 70, SIZE)
         offset = 0
@@ -246,7 +263,7 @@ def build(face, out=None, builder=None):
         e['customData'] = {'sentence': {'address': f'{address}.B{b}', 'n': n, 'built': text}}
         canvas.aside(d.text(MX + 12, yy + 3, f'S{n}', 19, GREY))
         anchor_y[n] = yy + e['height'] / 2
-        yy += e['height'] + 12
+        yy += e['height'] + 8
     if body:
         body['height'] = yy - body['y'] + 14
     middle_bottom = yy + 30
@@ -276,18 +293,25 @@ def build(face, out=None, builder=None):
                 title = None
         lines = []
         for it in c['items']:
-            hit = [n for n in it['for'] if n in sentence]
+            hit = [n for n in it['for'] if sid(n) in sentence]
             words = it.get('need') or it.get('note') or '; '.join(it.get('anchor', []))
             state = 'needed' if it.get('need') else f"{c.get('source', '')}.{it.get('run', '')}".strip('.')
+            if c['kind'] == 'value' and it.get('run') and it.get('key') and project:
+                try:                         # the number itself, read from the Run's output (as the Evidence tab shows it)
+                    value = ev_cards.work_value(ev_cards.resolve(project, 'value', f"{c['source']}.{it['run']}"),
+                                                it['file'], it['key'])
+                    state += f" = {value:.4g}" if isinstance(value, float) else f" = {value}"
+                except (ValueError, KeyError, IndexError, FileNotFoundError):
+                    state += ' · ❗ its value does not read'
             lines.append((f"S{','.join(map(str, it['for']))} · {words[:160]}{'…' if len(words) > 160 else ''}",
                           ev_cards.COLOR['need'] if it.get('need') else INK, 19))
             lines.append((state, GREY, 18))
-        if not any(n in sentence for it in c['items'] for n in it['for']):
+        if not any(sid(n) in sentence for it in c['items'] for n in it['for']):
             continue                         # a card for sentences outside this Section
         box, ey = card(EX, ey, EW, f"{label} · {title or c.get('source', '')}", lines, colour)
         ey += 16
         for it in c['items']:
-            for n in sorted({n for n in it['for'] if n in sentence}):
+            for n in sorted({sid(n) for n in it['for'] if sid(n) in sentence}, key=in_order):
                 links.append((box, n, ev_cards.COLOR['need'] if it.get('need') else colour))
     for c in edits:                          # a revise plan's asks: who must answer, and on which words
         asks = c.get('evidence') or []
@@ -307,8 +331,9 @@ def build(face, out=None, builder=None):
         ey = aside(EX, ey, 'no evidence cards: add evidence/cards.yaml (haipipe-evidence)', EW, 19, GREY)
 
     CX, CW = 2180, 590
-    d.text(CX, 240, spec['comment_title'], 28)
     cy = 300
+    if talk:
+        d.text(CX, 240, spec['comment_title'], 28)
     if reply:
         lines = [(f"“{reply['said']}”", INK, 22), (f"our answer: {reply['brief']}", GREY, 19)]
         _, cy = card(CX, cy, CW, f"{reply['to']} · {reply['when']}", lines, INK)
@@ -322,14 +347,12 @@ def build(face, out=None, builder=None):
             cy += 10
             if n:
                 links.append((rb, n, YELLOW))
-    else:
-        cy = aside(CX, cy, 'no comments on this Section', CW, 19, GREY)
     if edits:
         cy += 40
         d.text(CX, cy, spec['edits_title'], 28)
         cy += 56
         for c in edits:
-            hit = sorted(n for n, ids in changes_of.items() if c['id'] in ids)
+            hit = sorted((n for n, ids in changes_of.items() if c['id'] in ids), key=in_order)
             old = ' '.join(str(c.get('find', '')).split())
             lines = [(f"why: {c['why']}", INK, 20),
                      (f"file: {old[:150]}{'…' if len(old) > 150 else ''}", RED, 19),
@@ -350,19 +373,116 @@ def build(face, out=None, builder=None):
 
     footer = max(left_bottom, middle_bottom, ey, cy) + 40
     for i, words in enumerate(spec['footer']):
-        aside(MX, footer + i * 40, words, 2200, 22, RED if words.startswith('❓') else INK)
+        aside(MX, footer + i * 40, words, W - MX - 40, 22, RED if words.startswith('❓') else INK)
     f['height'] = footer + 40 * len(spec['footer']) + 60
     d.badge(f)
+    if spec.get('examples'):                 # how other papers open the same Section, in a frame beside ours
+        examples_frame(d, base / spec['examples'], f, spec)
     if builder is None:
         builder = Path(__file__).resolve()
         builder = next((builder.relative_to(p).as_posix() for p in builder.parents if (p / 'plugins').is_dir()),
                        builder.name)
     d.write(out, builder)
-    preview(d, f, out.with_suffix('.png'))
+    frames = [e for e in d.els if e['type'] == 'frame']          # the preview holds every frame drawn
+    preview(d, {'width': max(e['x'] + e['width'] for e in frames), 'height': max(e['y'] + e['height'] for e in frames)},
+            out.with_suffix('.png'))
     print(f"{section} in one frame: {len(rows)} sentences, {sum(1 for _ in cards)} evidence cards, {k} asks, "
           f"{len((reply or {}).get('items', []))} replies, {len(edits)} change cards, "
           f"{sum(len(v) for v in marks.values())} pale boxes → {out.name}")
     return out
+
+
+SMALL = {"a", "an", "and", "as", "at", "by", "for", "from", "in", "into", "of", "on", "or", "the", "to", "vs", "with"}
+
+
+def title_case(t):
+    """A paper's title in title case, a word already holding a capital (LLM, US) kept as it is."""
+    words = str(t).split()
+    return " ".join(w if any(c.isupper() for c in w) or (0 < k < len(words) - 1 and w.lower() in SMALL)
+                    else w[:1].upper() + w[1:] for k, w in enumerate(words))
+
+
+def examples_frame(d, topic, main, spec):
+    """Beside the Section canvas, how other papers open the same Section (JL 261020: "In the canvas, could you add other
+    paper's introduction as well?"): one column per paper read in `topic`'s reads/ (excalidraw-read's reading.yaml).
+    Each paper leads with its title, large and in title case, then its authors, year, journal and article kind, so a
+    reader sees what it is; then the Section paragraph by paragraph, each cut whole from the PDF
+    (`shots/para-P<k>.jpg`, `read_paper.py paras`) under the moves it makes, the sentence that carries each move
+    highlighted (JL 261020: "paper 的名字一定要大写一下"; "这都是啥 paper 啊？"; "你每个自然段应该独立成段"). A reading
+    shot before paragraphs were cut shows its excerpts instead. Returns the frame, or None with no readings."""
+    reads = sorted((Path(topic) / 'reads').glob('*/reading.yaml'))
+    if not reads:
+        return None
+    papers = [(r, yaml.safe_load(r.read_text(encoding='utf-8')) or {}) for r in reads]
+    venue_of = lambda y: (re.search(r"\.\s+([A-Z][^.]+)\.\s+(?:19|20)\d{2}", str((y.get('paper') or {}).get('cite', '')))
+                          or [None, ''])[1]
+    venues = {venue_of(y) for _, y in papers} - {''}
+    name = (spec.get('title') or '').split(' · ')[0] or 'Section'
+    X0, CW, GAP = main['x'] + main['width'] + 200, 620, 40
+    g = d.frame(spec.get('examples_title') or f"How {len(papers)} {venues.pop() + ' ' if len(venues) == 1 else ''}"
+                f"papers open their {name}", 80 + len(papers) * CW + (len(papers) - 1) * GAP, 1600)
+    g['x'], g['y'] = X0, main['y']
+    canvas.reads_down(g)
+    d.text(X0 + 40, 24, g['name'], 60)
+    d.text(X0 + 42, 104, spec.get('examples_subtitle') or f"read in {Path(topic).name}: each paragraph whole, as printed, "
+           "the sentence that carries its move highlighted", 26, GREY)
+    # its key point, the one slight colour: what the papers share, from the topic face's `key:` (principle 5)
+    face_ = next(iter(sorted(Path(topic).glob(f"{Path(topic).name}.md"))), None)
+    y_ = re.search(r"(?ms)^```yaml\n(.*?)^```", face_.read_text(encoding='utf-8')) if face_ else None
+    key = str(((yaml.safe_load(y_.group(1)) or {}).get('related') or {}).get('key') or '') if y_ else ''
+    top = 200
+    if key:
+        lines = d.wrap(key, g['width'] - 112, 30)
+        h = len(str(lines).split("\n")) * 30 * 1.25 + 28
+        d.key(X0 + 40, 160, g['width'] - 80, h, sw=1)
+        d.text(X0 + 56, 174, lines, 30)
+        top = 160 + h + 40
+    bottom = 0
+    for i, (r, y) in enumerate(papers):
+        x = X0 + 40 + i * (CW + GAP)
+        paper = y.get('paper') or {}
+        cite = str(paper.get('cite', ''))
+        first = cite.split(',')[0].split() if cite else []              # "Christopher Y. K. Williams, …"
+        who = (first[-1] + (' et al.' if cite.count(',') > 1 else '')) if first else r.parent.name
+        year = (re.search(r"\b(?:19|20)\d{2}\b", cite) or [''])[0]
+        pj = r.parent / 'shots' / 'paras.json'
+        paras = json.loads(pj.read_text()) if pj.is_file() else {}
+        yy = d.para(x, top, title_case(paper.get('title', '')), CW, 34) + 10
+        yy = d.para(x, yy, " · ".join(v for v in (f"{who} {year}".strip(), venue_of(y), paras.get('kind', '')) if v),
+                    CW, 24, GREY) + 6
+        words = next((m.group(0) for k in (y.get('section') or {}).get('key') or []
+                      if (m := re.search(r"about \d[\d,]* words", str(k)))), '')
+        if paras.get('paragraphs'):
+            yy = d.para(x, yy, " · ".join(v for v in (f"{len(paras['paragraphs'])} paragraphs", words) if v), CW, 22) + 4
+            moves = {}                                   # each paragraph's moves: the logic steps its excerpts carry
+            for item in y.get('logic') or []:
+                k = next((p['p'] for p in paras['paragraphs'] for e in item.get('excerpts') or [] if e in p['excerpts']),
+                         None)
+                if k:
+                    moves.setdefault(k, []).append(re.sub(r"^P\d+\s*·\s*", "", str(item.get('text', ''))))
+            for p in paras['paragraphs']:
+                label = f"P{p['p']}" + (" · " + " · ".join(moves[p['p']]) if p['p'] in moves else "")
+                yy = d.para(x, yy + 22, label, CW, 24) + 8
+                shot = r.parent / p['shot']
+                if shot.is_file():
+                    yy += d.picture(shot, x, yy, CW, 4000, fid=f"img-{r.parent.name}-{shot.stem}".lower()) + 6
+        else:
+            for k in (y.get('section') or {}).get('key') or []:
+                yy = d.para(x, yy, str(k), CW, 22) + 4
+            for item in y.get('logic') or []:
+                yy = d.para(x, yy + 18, str(item.get('text', '')), CW, 24) + 6
+                for ex in item.get('excerpts') or []:
+                    shot = next(iter(sorted((r.parent / 'shots').glob(f'{ex}-p*.jpg'))), None)
+                    if shot:
+                        yy += d.picture(shot, x, yy, CW, 320, fid=f"img-{r.parent.name}-{shot.stem}".lower()) + 8
+        bottom = max(bottom, yy)
+    g['height'] = bottom + 60
+    # the two frames are one act, ours beside theirs, named at the left of the row outside both (principle 3)
+    fid, d.fid = d.fid, None
+    d.para(main['x'] - 820, main['y'] + 20, f"Act 1 · our {name}, beside how {len(papers)} published papers open "
+           "theirs", 760, 56)
+    d.fid = fid
+    return g
 
 
 def preview(d, f, png):
@@ -477,7 +597,7 @@ def sync(face, out=None, dry=False):
                 section = m[2]
             if (m := re.match(r'^### (C\d+\.P\d+)', line)):
                 para = m[1]
-            m = re.match(r'^(- B(\d+) · S\d+ · )(.*\S)\s*$', line)
+            m = re.match(r'^(- B(\d+) · S\d+[a-z]* · )(.*\S)\s*$', line)
             if section == 'Draft' and m and (f'{para}.B{m[2]}', m[3]) in want:
                 lines[k] = m[1] + want[(f'{para}.B{m[2]}', m[3])]
                 hit += 1

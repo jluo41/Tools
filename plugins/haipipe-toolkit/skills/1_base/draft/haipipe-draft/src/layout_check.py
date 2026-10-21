@@ -227,10 +227,11 @@ def check_page_folder(target: Path) -> dict:
     _rule(rules, "no links the Page server refuses", "0.118", not links,
           ", ".join(links[:4]) or "none", "replace each link with the real folder or remove it")
 
-    from .draft_migration import _PY_JOIN, is_prose_outline, kept_by_result
+    from .draft_migration import _PY_JOIN, SEALED, is_prose_outline, kept_by_result
     cited = []
-    for path in folder.rglob("*"):
-        if path.is_file() and path.suffix in TEXT and not path.is_symlink() and "results" not in path.parts:
+    for path in folder.rglob("*"):   # a Result keeps its words (SEALED), and so does retired _archive/ material
+        if path.is_file() and path.suffix in TEXT and not path.is_symlink() \
+                and not (SEALED | {"_archive"}) & set(path.relative_to(folder).parts):
             try:
                 body_text = path.read_text(encoding="utf-8", errors="replace")
             except OSError:

@@ -133,7 +133,7 @@ def story_questions(lines):
             continue
         if cur is None:
             continue
-        m = re.match(r"^- \*\*(Name|Question|Section)\*\*: (.*)$", ln)
+        m = re.match(r"^- \*\*(Name|Question|Research question|Section)\*\*: (.*)$", ln)
         if m:
             cur[m[1].lower()] = m[2].strip()
             continue
@@ -149,12 +149,13 @@ def story_questions(lines):
             m = re.match(r"^- \*\*(\w+)\*\* · (.+?) · tested by (.+)$", ln)
             if m:
                 name, what = short(m[2])
-                cur["hyp"].append({"code": m[1], "name": name, "what": what, "tested": re.findall(r"E\d+", m[3])})
+                cur["hyp"].append({"code": m[1], "name": name, "what": what, "tested": re.findall(r"E(?:work|cite)?\d+", m[3])})
         elif part == "Potential claims":
-            m = re.match(r"^- \*\*(\w+)\*\* · (C\d+) · from \S+ · (.+)$", ln)
+            m = re.match(r"^- \*\*(\w+)\*\* · (C\d+) · from ([^·]+?) · (.+)$", ln)     # from 1a, 1b · …
             if m:
-                name, what = short(m[3])
-                cur["claims"].append({"code": m[1], "c": m[2], "name": name, "what": what})
+                name, what = short(m[4])
+                cur["claims"].append({"code": m[1], "c": m[2], "name": name, "what": what,
+                                      "from": [h.strip() for h in m[3].split(",") if h.strip()]})
             m = re.match(r"^\s+- \*\*(Role|Now)\*\*: (.*)$", ln)
             if m and cur["claims"]:
                 cur["claims"][-1][m[1].lower()] = m[2].strip()
@@ -190,10 +191,23 @@ class Telling:
         if not self.qs:
             raise SystemExit(f"{self.face.name}: no '#### 3.N · Question N · RQN' block in the reports or the face")
         self.T = {r["T"]: r for r in story_table(lines, "T")}
+        for r in self.T.values():          # a drawn telling's short table: | T | work | where | state | starts |
+            r.setdefault("name", r.get("work", ""))
+            r.setdefault("question", "")
+            addr = r"b\d\d\.j\d\d"           # the folders: `where` when it names them, else `feeds` (§7's long table)
+            r["folders"] = r.get("where", "") if re.search(addr, r.get("where", "")) else r.get("feeds", "")
         self.D = {r["D"]: r for r in story_table(lines, "D")}
         self.E = {r["E"]: e_state(r.get("support state", "")) for r in story_table(lines, "E")}
         topic = next((ln for ln in lines if ln.startswith("**Topic:**")), "")       # a telling's topic face
-        if topic:
+        asked = next((i for i, ln in enumerate(lines) if ln.startswith("**The paper's question**:")), None)
+        if asked is not None:                                # a drawn telling (0.23): its one question, maybe wrapped
+            words = [lines[asked].split(":", 1)[1].strip()]
+            for ln in lines[asked + 1:]:
+                if not ln.strip() or ln.startswith(("#", "**", "- ", "|")):
+                    break
+                words.append(ln.strip())
+            self.call = " ".join(words)
+        elif topic:
             self.call = topic.replace("**Topic:**", "").strip()
         elif "## Opening" in lines:                                                    # an older Story Page
             self.call = next((ln for ln in lines[lines.index("## Opening") + 1:] if ln.strip()), "")
@@ -414,6 +428,12 @@ class Map:
         self.t, self.spec, self.rv = telling, spec, review
         self.c = Canvas()
         self.at = {}                       # card key -> (x, y, w, h)
+        self.root = space_root(telling.board)
+        try:                               # the displays, named once on the Board's s04-paper-workflow face
+            from paperflow_drawing import displays_by_question
+            self.shown = displays_by_question(telling.board)
+        except (ImportError, SystemExit):
+            self.shown = {}
 
     # one foundation card, from its SPEC entry
     def fcard(self, item, x, y, w):
@@ -423,7 +443,7 @@ class Map:
                    for q in t.qs if q["n"] == item.get("tasks_of") for k, name, what in q["tasks"]]
         if item.get("task"):
             row = t.T.get(item["task"], {})
-            dirs = t.task_folders(row.get("feeds", ""))
+            dirs = t.task_folders(row.get("folders", ""))
             done = any(r for *_, r in dirs)
             where = item.get("where") or (", ".join(f"{j} {n}" for j, n, _ in dirs[:2]) if dirs else "no task folder yet")
             state = item.get("state", "ran" if done else "not run")
@@ -505,7 +525,8 @@ class Map:
         for q in t.qs:
             gtop = y
             c.text(XA, y + 4, f"Question {q['n']} · {q.get('name', q['rq'])}", 18, INK)
-            qlines = wrap(q.get("question", ""), RIGHT - XA - 20, 13)
+            asked = (q.get("research question") or q.get("question", "")).split(" (RQ")[0]   # sub-questions stay out
+            qlines = wrap(asked, RIGHT - XA - 20, 13)
             for k, s in enumerate(qlines):
                 c.text(XA, y + 32 + 18 * k, s, 13, INK2)
             y += 40 + 18 * len(qlines)
@@ -521,11 +542,18 @@ class Map:
                     continue
                 seen[wid] = q["n"]
                 if wid in t.T:
-                    dirs = t.task_folders(row.get("feeds", ""))
+                    dirs = t.task_folders(row.get("folders", ""))
                     done = any(r for *_, r in dirs)
+                    if row.get("state"):             # a drawn telling's short table says it: a new Run in a Task
+                        done = row["state"].strip().lower().startswith("done")   # that ran before is not done
                     where = (", ".join(f"{j} {n}" for j, n, _ in dirs[:2]) if dirs else "no task folder yet")
+                    if re.search(r"\.r\d\d", row.get("where", "")):   # the T row names its Runs: show them
+                        where = row["where"]
                     lines = [(f"{wid} {row['name']}", 15, INK), (row.get("question", ""), 12, INK2), (where, 12, INK3),
                              ("ran" if done else "not run", 12, INK if done else INK3)]
+                    got = spec.get("numbers", {}).get(wid)     # its answer, read from the Result(s) that hold it
+                    for k, one in enumerate(got if isinstance(got, list) else [got] if got else []):
+                        lines.insert(3 + k, (count_line(one, self.root), 13, INK))
                     dashed = not done
                 else:
                     folder = row.get("folder", "")
@@ -538,7 +566,10 @@ class Map:
                 a_edges.append((XA + WA, ay + h / 2, dashed))
                 ay += h + 10
             cy, c_mids, c_dash = y, [], []
-            claims = {cl["code"]: cl for cl in q["claims"]}
+            claims, drawn = {}, {}
+            for cl in q["claims"]:                       # each hypothesis a claim rests on: `from 1a, 1b`
+                for h in cl.get("from") or [cl["code"]]:
+                    claims.setdefault(h, cl)
             for hy in q["hyp"]:
                 states = [(e, t.E.get(e, "?")) for e in hy["tested"]]
                 dashed = all(s == "absent" for _, s in states)
@@ -546,7 +577,12 @@ class Map:
                 cl = claims.get(hy["code"])
                 lines = [(f"Q{hy['code']}  {hy['name']}", 15, INK), ("guess: " + hy["what"], 12, INK2)]
                 keys = [f"Q{hy['code']}"]
-                if cl:
+                if cl and cl["c"] in drawn:              # the same claim, drawn on an earlier hypothesis
+                    lines += [(f"with Q{drawn[cl['c']]} → {cl['c']} · {cl['name']}", 14, INK3 if dashed else ACC),
+                              (tested, 12, INK3)]
+                    keys.append(cl["c"])
+                elif cl:
+                    drawn[cl["c"]] = hy["code"]
                     now = re.split(r"(?<=[.;])\s", cl.get("now", ""))[0].rstrip(".;")
                     lines += [(f"{cl['c']} · {cl['name']}", 15, INK3 if dashed else ACC),
                               (cl.get("role", "").rstrip("."), 12, INK2), (tested, 12, INK3)]
@@ -562,8 +598,10 @@ class Map:
                 c_dash.append(dashed)
                 cy += h + 10
             contrib = q["contrib"][0] if q["contrib"] else "none yet"
-            lines = [(spec.get("figures", {}).get(q["n"], "no display named yet"), 15, INK), (q.get("section", ""), 13, INK2),
-                     ("a reader gains: " + contrib, 12, INK2), (spec.get("figures_state", "drawn by its display script"), 12, INK3)]
+            shown = spec.get("figures", {}).get(q["n"]) or self.shown.get(q["n"], "no display named yet")
+            lines = [(shown, 15, INK), (q.get("section", ""), 13, INK2)] + \
+                    ([("a reader gains: " + contrib, 12, INK2)] if q["contrib"] else []) + \
+                    [(spec.get("figures_state", "drawn by its display script"), 12, INK3)]
             extra, stroke = self.rv.lines([f"Q{q['n']}"])
             fh = card(c, XF, y, WF, lines + extra, dashed=True, stroke=stroke or INK)
             f_mid = y + fh / 2
@@ -631,9 +669,26 @@ class Map:
 
 def count_line(spec, root):
     """A grey line counted from a JSON file on disk, on every build (a number is never typed): `{json: <path from the
-    SPACE root>, list: <key>, where: {<field>: <value>}, say: "… {n} … {<field of the first match>}", none: "…"}`."""
+    SPACE root>, list: <key>, where: {<field>: <value>}, say: "… {n} … {<field of the first match>}", none: "…"}`.
+    With no `list:`, a JSON object's own values fill `say`, nested keys joined by `_` (`{share_of_n_none:.1%}`)."""
     p = root / spec["json"]
     data = json.loads(p.read_text(encoding="utf-8")) if p.is_file() else {}
+    if isinstance(data, dict) and "list" not in spec:
+        if not data:
+            return spec.get("none", f"{p.name} not on disk")
+        flat = {}
+
+        def walk(d, pre=""):
+            for k, v in d.items():
+                if isinstance(v, dict):
+                    walk(v, f"{pre}{k}_")
+                else:
+                    flat[re.sub(r"\W", "_", f"{pre}{k}")] = v
+        walk(data)
+        try:
+            return spec.get("say", p.name).format(**flat)
+        except (KeyError, ValueError, IndexError) as e:
+            return f"❓ {p.name}: {e}"
     rows = data.get(spec.get("list", ""), []) if isinstance(data, dict) else data
     hit = [r for r in rows if all(str(r.get(k)) == str(v) for k, v in (spec.get("where") or {}).items())]
     if not hit:
@@ -671,6 +726,8 @@ def draw(topic, out=None):
     out = Path(out) if out else topic / f"{topic.name}.excalidraw"
     builder = next(iter(sorted(topic.glob("build_*.py"))), None)
     canvas.write(out, els, builder.name if builder else Path(__file__).name, palette=False)
+    from render_png import render                       # haipipe-studio's, on the path above
+    render(out, out.with_suffix(".png"))
     rel = out.relative_to(root) if out.is_relative_to(root) else out
     print(f"{len(els)} elements · {len(telling.qs)} questions · {len(items)} Review Items "
           f"({len({i for i, _ in m.rv.drawn})} on cards) -> {rel}")
@@ -707,31 +764,33 @@ TEMPLATE = """# The words of {name}'s building map (excalidraw-workflow). Edit h
 title: "The paper: from the data to the answer"
 sub: "names read from the telling and the Board Questions' reports · solid = exists on disk · dashed = not run"
 columns:
-  D: ["THE DATA", "what every question reads · T1"]
-  S: ["THE SOURCES", "what the study builds from the data"]
-  T: ["THE TESTS", "what checks it"]
-  A: ["ANALYSIS", "the work each sub-question needs"]
-  C: ["SUB-QUESTION → CLAIM", "the guess, and what the paper would say if it holds"]
-  F: ["IN THE PAPER", "where each answer lands"]
+  D: ["THE DATA", "what every question reads"]
+  S: ["THE LINKING", "how the inputs are matched or built"]
+  T: ["THE TABLES", "what every question stands on"]
+  A: ["ANALYSIS", "the Runs each question waits on (s02 §7)"]
+  C: ["HYPOTHESIS → CLAIM", "the guess, and what the paper would say if it holds"]
+  F: ["IN THE PAPER", "the displays, from s04-paper-workflow"]
 foundation:
   D:
   - {{key: data, title: "The data", lines: ["what it holds"], gray: "where it lives"}}
+  # count: {{json: "<path from the SPACE root to a Result's metrics.json>", say: "{{<key>:,}} <unit>"}}
   S:
-  - {{key: method, title: "How the study works", tasks_of: 1}}
+  - {{key: link, title: "How the inputs are linked", lines: ["<bNN.jNN.tNN>"]}}
   T:
-  - {{key: test, title: "The test", lines: ["what it checks"], gray: "not run", dashed: true}}
+  - {{key: table, title: "The table", lines: ["<bNN.jNN.tNN>"]}}
 links:
-- {{from: data, to: method}}
-feeds: {{1: test}}
-figures: {{1: "Figure 2 (proposed)"}}
-figures_state: "drawn by its display script"
+- {{from: data, to: link}}
+feeds: {{1: table}}
+# numbers: {{T5: {{json: "<a Result's metrics.json>", say: "…"}}}}   # an analysis card's answer, read from its Result
+# figures: {{1: "…"}}   # only to override the displays s04-paper-workflow names for a question
+figures_state: "made by a figure Run inside its Job"
 overview:
-- [D, "THE DATA", "what it holds", "T1"]
-- [S, "THE SOURCES", "what is built", "T2"]
-- [T, "THE TESTS", "what checks it", "T3"]
-- [A, "ANALYSIS", "the work each sub-question needs", "{{analysis}}"]
-- [C, "SUB-QUESTION → CLAIM", "{{questions}} questions · {{subq}} sub-questions", "{{claims}}"]
-- [F, "IN THE PAPER", "Results, Discussion", "one script per display"]
+- [D, "THE DATA", "what it holds", "<Blocks>"]
+- [S, "THE LINKING", "what is built", "<Job>"]
+- [T, "THE TABLES", "what every question stands on", "<Job>"]
+- [A, "ANALYSIS", "{{analysis}}", "<Job>"]
+- [C, "HYPOTHESIS → CLAIM", "{{questions}} questions · {{subq}} hypotheses", "{{claims}}"]
+- [F, "IN THE PAPER", "the displays, from s04", "figure Runs in each Job"]
 notes: []
 """
 

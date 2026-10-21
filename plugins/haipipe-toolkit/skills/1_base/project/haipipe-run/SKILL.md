@@ -9,15 +9,17 @@ description: >-
   evidence; rNN_<slug>, or run-<type>-<target> where its theme names every Run so,
   as Design does, with kind: in run.yaml) or soft (run-<type>-<target>, writes into
   its scope), with passes and a run.yaml card. Names every workbench button's Run and owning skill, Space by Space,
-  and writes a soft Run's card and passes. Trigger: Run contract, Run catalogue, hard or
-  soft Run, pass, run.yaml, Run ticket, runtime receipt, orphan Result, which skill owns
-  this button, run types by Space, soft_run.py, /haipipe-run.
+  and writes a soft Run's card and passes. Keeps only meaningful Runs: a hard Run that was
+  replaced or never ran is pruned once nothing in use reads it (prune_runs.py). Trigger: Run
+  contract, Run catalogue, hard or soft Run, pass, run.yaml, Run ticket, runtime receipt, orphan
+  Result, which skill owns this button, run types by Space, soft_run.py, prune runs, delete old
+  runs, superseded Run, keep only meaningful Runs, prune_runs.py, /haipipe-run.
 metadata:
-  version: "0.33.1"
-  last_updated: "2026-10-09"
+  version: "0.35.0"
+  last_updated: "2026-10-21"
 ---
 
-# /haipipe-run · one commission, one identity, preserved history
+# /haipipe-run · one commission, one identity, only meaningful Runs
 
 A Run is one durable, addressable commission for a bounded target and close
 rule, kept in one folder. The ladder is Block → Job → Task → Run → pass: a Run
@@ -206,12 +208,13 @@ A controller `Run()` label is adapter metadata, not an authority or Run node.
 
 | Situation | Action |
 |---|---|
-| Exact accepted Result satisfies the request | reuse its full identity, version, path and hash |
+| Exact accepted Result satisfies the request | reuse its full identity, version and path |
 | Matching open commission exists | resume through its owner |
 | Same frozen contract failed | preserve the failed pass; add the next pass |
 | Open soft Run receives feedback within its goal | append a Step to the open pass |
 | Same target is worked on again (a later session, a reopen) | the same Run, a new pass; closed passes stay as they are |
-| Frozen data, goal, target, or acceptance changes materially | new Run; record supersedes only for an actual replacement |
+| Frozen data, goal, target, or acceptance changes materially | new Run; record `supersedes:` for an actual replacement, then prune the old Run |
+| A hard Run was replaced, or never ran and is not planned | prune it once nothing in use reads it (Keep only meaningful Runs, below) |
 | Input/authority/profile is missing | report the gap; do not invent a Ticket, identity, approval, or completed Result |
 
 Interactive history is a scoped exception: do not apply evolving soft-Run
@@ -219,6 +222,77 @@ feedback to frozen Execution or Discovery inputs. A pass is append-only while
 open and immutable after closure; the Run's history is its `passes/`, kept in
 the Run folder (no separate journal folder). New participants, sentences,
 labels, Steps, or passes do not allocate child Runs.
+
+## Keep only meaningful Runs
+
+JL 261019: "why not delete them!!!! why we have the new run????" and "we will just keep the meaningful runs". A
+Run's folder is a working record, not an archive; git is the archive.
+
+1. **Keep**: a Run that is current, open, or read by something in use.
+2. **Replaced**: a Run another Run supersedes goes once nothing in use reads it.
+3. **Never ran**: a ticket that never ran and is not planned goes.
+4. **Immutable, not forever**: a closed Result is never edited, but it can be deleted.
+5. **Git keeps it**: the deleted folder stays in git; heavy output goes where it lives.
+
+```text
+current · open · read by something in use      ─▶ keep
+replaced (supersedes:) or never ran, unread    ─▶ prune: its folder, its config, orphan companion configs
+output in a store this machine cannot see      ─▶ check: a person looks
+readers:   configs, tickets and run cards of current Runs; code naming its Task and Run, or globbing its
+           Task's config folder; Pages and Studio faces outside its Block, by name or address (b03.j01.t02 r08 to r13)
+not:       a replaced Run's config (frozen input), receipts, its own Task page, its own Block's Studio faces (update these)
+```
+
+```bash
+S=Tools/plugins/haipipe-toolkit/skills/1_base/project/haipipe-run/scripts
+python $S/prune_runs.py <Task, Job or Block>                         # dry run: each Run's verdict and readers
+python $S/prune_runs.py <scope> --apply                              # delete the Runs marked prune
+python $S/prune_runs.py <scope> --apply --only t03/<run> [<run> …]   # delete these candidates only
+python $S/prune_runs.py <scope> --apply --to-old [--only …]          # move them to work/_old/ instead
+```
+
+**Who prunes.** The session that owns the Block does. If another session owns it, send it the dry run's list
+instead (LLMRec 261019: the b01 and b02 deletions were restored from git and handed to their owners). Rerun the
+dry run right before `--apply`: it is a snapshot.
+
+**Safety checks in `--apply`.**
+- **Git:** it refuses a Run git does not hold, at its path or at its `moved_from:` path. Commit first, or check by
+  hand and pass `--untracked-ok`, or pass `--to-old`: the Run and its configs move to
+  `work/_old/<bNN>_pruned_<YYMMDD>/<jNN>_<task>_runs/`, so nothing is lost (LLMRec b01 j51, 261021).
+- **Chain:** it marks `status: superseded` on any Run a deleted Run had replaced, so a chain such as r02 → r03 →
+  r04 is not lost when r03 goes.
+- **Names:** `--only` takes `<task>/<run>` (a Task folder name or its `tNN`); a bare name that two Tasks hold is
+  refused.
+
+A rerun does not keep the Run it replaces. A changed contract makes a new Run with `supersedes:`; an unchanged
+retry is a new pass of the same Run. Either way, the old Run's job ends when the new one replaces it. A Run that
+never ran and has no plan to run (a migration placeholder, a ticket with no arguments) is not a plan: mark a real
+plan `status: planned`, and the tool keeps it.
+
+A person reads the dry run before `--apply`. The tool marks each hard Run keep, prune or check:
+- **Check**: a Run with no file in `result/` whose config writes to a store (`_WorkSpace/`, an LLM call store, a
+  search store) that does not hold its output here. It may have run on another machine, or be running now, so it
+  is never pruned by `--apply`. A person looks, then uses `--only`.
+- **"Never ran" can still be wrong**: a script may build the output path from a name in the config (a collection
+  name, a version), so the path never appears as a key. Before deleting, look for its output in the store.
+- **Stale readers**: a reader the tool finds may be stale, for example a report builder that compares the old Run
+  with the new one. Once that reader is judged stale, `--only` prunes the candidate anyway.
+- **Missed readers**: the tool misses a reader that uses a shortened name (a cost report reading
+  `pricing_2026-08-19`, not `r11_pricing_2026-08-19`). Before `--apply`, grep the distinctive part of each name.
+- **Unseen history**: `_old/` is skipped, so a Run it calls "never ran" may have an earlier execution there.
+  A Page citing a Run by address, alone or as a range (`b03.j01.t02 r08 to r13`), is a reader; a bare range with
+  no address ("r01–r03 superseded") is not matched, so fix those sentences by hand. An address also matches a
+  Discovery Run with the same prefixes (`discovery/b01` against `work/b01`), which only keeps more.
+
+LLMRec, 261019: the first dry run over `work/` marked 172 of 442 Runs "never ran", nearly all wrongly; their output
+is in `_WorkSpace/`. After the store check, 33 were marked to prune and 59 to check. A fresh reviewer then found the
+tool keeping Runs because of same-named Runs in sibling Tasks, and losing a supersedes chain; both are fixed. A kept
+Run's Result stands on its own: its receipt names what it read, and those inputs need not stay. After pruning:
+- update the Task pages and Studio faces the tool lists;
+- remove the heavy folders it lists, on the machine that holds them (haipipe-data-remote; never `--sync`);
+- rebuild the drawings.
+
+A soft Run is a work record of its target (its passes) and is not pruned by this rule.
 
 ## Lifecycle
 
@@ -255,8 +329,8 @@ call, retry, Result file, consumer, or controller invocation.
 reports, and pointers: whatever a reader or a Page needs to see what the Run
 found. A Run's heavy output (a model, an array, a cache, a row-level table
 beyond a small sample, any file over 10 MB) lives outside the Result, and the
-Result records a pointer to it: a SPACE-relative path with each file's size and
-hash. A Task Run's heavy output has its own folder,
+Result records a pointer to it: a SPACE-relative path with each file's size (no
+content hash, JL 260928). A Task Run's heavy output has its own folder,
 `_WorkSpace/ProjectResult/<Project>/<block>/<job>/<task>/<run>/`, the Run's
 address below `work/` (the Ticket exports it as `HEAVY_DIR`, and writes the
 pointer `heavy.yaml` into the Result); a pipeline asset (a SourceSet, an
@@ -272,8 +346,9 @@ A Result may be a checked artifact, judgment, or truthful failure.
 The Result gate belongs to its profile. Evidence admission and downstream
 promotion are separate facts; an unused valid Result stays valid. Feedback
 and accepted writing history are authoritative records, not regenerable caches.
-When upstream data changes, preserve the historical Result and mark affected
-downstream bindings stale until new work or valid reuse resolves them.
+When upstream data changes, mark affected downstream bindings stale until new
+work or valid reuse resolves them; the old Result stays only while something in
+use still reads it (Keep only meaningful Runs).
 
 For a Task-to-Page handoff: Page proposes work, Task allocates/executes its
 native Run, Task returns the Result/receipt, and Page binds the full identity
@@ -302,7 +377,8 @@ tokens, PHI, or raw sensitive rows in shared receipts.
 ## Files
 
 The `ref/` files own the shared catalogue, identity/history, receipt/audit detail,
-and the Run types by Space; `scripts/soft_run.py` writes a soft Run's card and passes, and
-`tests/` checks both. Domain references linked by the catalogue own their concrete profiles.
+and the Run types by Space; `scripts/soft_run.py` writes a soft Run's card and passes,
+`scripts/prune_runs.py` lists and prunes the hard Runs that mean nothing now, `scripts/run_roles.py` writes each
+Run card's `role:` (the one job it does in its Task), and `tests/` checks all three. Domain references linked by the catalogue own their concrete profiles.
 `agents/openai.yaml` supplies invocation metadata; `CHANGELOG.md` records
 changes. Do not duplicate domain schemas or fabricate a missing implementation.

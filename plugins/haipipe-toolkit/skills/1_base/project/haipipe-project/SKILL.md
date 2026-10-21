@@ -12,8 +12,8 @@ description: >-
   owned by their domain skills.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.16.0"
-  last_updated: "2026-10-16"
+  version: "0.17.0"
+  last_updated: "2026-10-21"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

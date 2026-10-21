@@ -1,9 +1,9 @@
 ---
 name: haipipe-evidence
-description: "Find the evidence a claim needs and show it as cards: CITE (someone else's paper, from a discovery Run, external, blue) and WORK (our own result, from a work Run, internal, violet). One card is one topic, a discovery or work Task or Job, holding many items; each item names the sentences it backs, the exact words it backs (anchor), and the Run it comes from. Reads the paper, quoted fact or value from the Run's result/, orders cards by the narrative, checks every address, and for each missing piece flags a proposal (a new Run, Task, Job or Studio topic, proposed by evidence, for a stated purpose) for a person to tick. Used by any page that needs support: a Section canvas, a Page's Evidence Space, a report, slides. Trigger: evidence, evidence card, CITE, WORK, find the evidence, what backs this sentence, missing evidence, propose a run for evidence, /haipipe-evidence. Also a Page's evidence Runs (the old haipipe-draft-evidence, now ref/page-evidence.md): page evidence, evidence Run, land evidence items, embed the result, fold evidence, /haipipe-draft-evidence."
+description: "Find the evidence a claim needs and show it as cards: CITE (someone else's paper, from a discovery Run, external, blue) and VALUE (our own result, from a work Run, internal, violet). One card is one topic, a discovery or work Task or Job, holding many items; each item names the sentences it backs, the exact words it backs (anchor), and the Run it comes from. Reads the paper, quoted fact or value from the Run's result/, orders cards by the narrative, checks every address, and for each missing piece flags a proposal (a new Run, Task, Job or Studio topic, proposed by evidence, for a stated purpose) for a person to tick. Used by any page that needs support: a Section canvas, a Page's Evidence Space, a report, slides. Trigger: evidence, evidence card, CITE, VALUE, find the evidence, what backs this sentence, missing evidence, propose a run for evidence, /haipipe-evidence. Also a Page's evidence Runs (the old haipipe-draft-evidence, now ref/page-evidence.md): page evidence, evidence Run, land evidence items, embed the result, fold evidence, /haipipe-draft-evidence."
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-10-16"
+  version: "0.6.1"
+  last_updated: "2026-10-21"
 ---
 
 # /haipipe-evidence · what backs each sentence, and what to make when nothing does
@@ -17,18 +17,29 @@ proposes; it never runs a discovery or a work Task itself, and it never writes t
 ```text
 kind   comes from                         colour   example card
 CITE   discovery/ world (external paper)  blue     CITE 3 · b01.j21.t05 · Glucose forecasters with meal ... inputs
-WORK   work/ world (our own Run)          violet   WORK 1 · b51.j02.t01 · Lab against the Hopkins design
-needed either, no source yet              red      CITE 2 · Sources still needed
+VALUE  work/ world (a number our Run wrote) violet VALUE 1 · b51.j02.t01 · Lab against the Hopkins design
+needed an item with no Run yet            red      ❓ inside its topic's card, CITE 1.2
 ```
 
+VALUE was WORK until 261020; it names what the item is, a number (JL 261020: "the work 1's name is not good ... I
+think the work here is more like something else?"). `kind: work` in an older cards.yaml still reads as `value`.
+
+**A card is a topic, and its topic is a Task.** A needed item goes in the card of the Task its proposal would be made
+in (`propose: {level: run, in: bNN.jNN.tNN}`), beside that Task's items it already has; a new Task, Job or Studio
+topic is a card of its own named by its `name`. There is no "Sources still needed" card (JL 261020: "cite 1's name is
+very weird ... we might want to make it into different cite with the topic"). `cards.py order()` places an older
+list's needs so, whatever the file still says. An item's id is its card and its place there, in reading order:
+CITE 1.2, VALUE 3.1; the text's mark and the workbench show the same id.
+
 A value or a figure a paper reports is CITE ("if the value is from the citation, then it should be the Ecite",
-JL 261016). A figure or table built on evidence is a Display (haipipe-display), not a kind of evidence card. How to
+JL 261016). A figure or table built on evidence is a Display (haipipe-display), not a kind of evidence card: a draft
+Task shows its displays in their own step, 4 · Display, after 3 · Evidence (JL 261020). How to
 find, fill and check each kind is its own skill (split 261016, JL: "I think we might want to separate them now"):
 
 ```text
 haipipe-evidence        the door: card format, narrative order, proposals, scripts/cards.py, a Page's evidence Runs
 ├── haipipe-evidence-cite   CITE: a discovery Run's .bib and facts.md; proposals to haipipe-discovery
-└── haipipe-evidence-work   WORK: a work Run's value at file + key; proposals to haipipe-task
+└── haipipe-evidence-work   VALUE: a work Run's value at file + key; proposals to haipipe-task
 ```
 
 ## 📁 Where the cards live
@@ -52,26 +63,27 @@ in its yaml still works (`--key`) for a page made before the folder existed. Fir
 
 ```yaml
 evidence:
-  - kind: cite                      # cite | work
+  - kind: cite                      # cite | value
     source: b01.j21.t05             # the topic: a Task (bNN.jNN.tNN) or a Job (bNN.jNN)
     items:
       - {run: r02, for: [5], anchor: ["30-minute error from 21.0 to 18.6 mg/dL"], fact: [F09, F11]}
-  - kind: work
+  - kind: value
     source: b51.j02.t01
     items:
       - {run: r01, for: [7], anchor: ["12 rows"], file: metrics.json, key: rows_total, what: "rows checked"}
   - kind: cite
-    title: "Sources still needed"   # no source: a list of needs
-    propose_in: b01.j21             # where its proposals go by default
+    source: b01.j21.t01             # a need sits in the card of the Task its Run would be made in
     items:
       - {need: "a CDC source for the count", for: [1], anchor: ["More than 38 million"],
          propose: {level: run, in: b01.j21.t01}}
+      - {need: "a registry of the 2024 rates", for: [3], anchor: ["2024 rates"],
+         propose: {level: task, in: b01.j21, name: diabetes_registry_rates}}   # a new Task: its own card
 ```
 
 1. **`run`** completes the address: `rNN` under a Task, `tNN.rNN` under a Job.
 2. **`for`** names the sentences; **`anchor`** the exact words, boxed in the text by the page's builder.
 3. **`fact`** quotes lines of a discovery Run's `facts.md`; **`file` + `key`** read a work Run's own output.
-4. **`need`** marks what is missing; **`propose`** says what to make for it.
+4. **`need`** marks what is missing; **`propose`** says what to make for it, and so which topic's card it is in.
 
 ## 🔧 The script
 
@@ -80,12 +92,13 @@ evidence:
 ```text
 python cards.py check   <task>/evidence/cards.yaml [--sentences s.json]   every address, fact, value, anchor
 python cards.py propose <task>/evidence/cards.yaml [--page <name>] [--write]   writes evidence/proposals.md
+python from_items.py <task>… [--write]   an older Page's draft/<stem>-evidence-items.md → cards.yaml + proposals.md
 ```
 
-An address resolves in the Project's own world: `<project>/discovery/` for CITE, `<project>/work/` for WORK, the
+An address resolves in the Project's own world: `<project>/discovery/` for CITE, `<project>/work/` for VALUE, the
 Project being the folder that holds `project.yaml`. A Run is found as `tNN_*/runs/rNN_*/result/` or, for a Task whose
 Results sit in its Job, `jNN_*/results/tNN_*/rNN_*/`. `order()` sorts cards by the first sentence each backs (the
-narrative), CITE and WORK in one sequence, numbered within their kind. A builder calls `check()` first and stops on
+narrative), CITE and VALUE in one sequence, numbered within their kind. A builder calls `check()` first and stops on
 any problem, so a canvas never shows a card that does not resolve.
 
 ## ⚑ Proposing what to make
@@ -116,6 +129,6 @@ unchanged, and Pages made before then keep working. The producer is `haipipe-dra
 ## 🔗 Who calls it
 
 1. **A Page's evidence Runs** (`ref/page-evidence.md`): a Page's LAND and EMBED read and bind cards in this format.
-2. **haipipe-task-for-evidence**: a work Task that computes values for a page; its Runs become WORK items.
-3. **Section canvases** (b21 s05 first): CITE and WORK cards along the bottom, anchors boxed in the text.
+2. **haipipe-task-for-evidence**: a work Task that computes values for a page; its Runs become VALUE items.
+3. **Section canvases** (b21 s05 first): CITE and VALUE cards along the bottom, anchors boxed in the text.
 4. **Reports and slides**: any claim that needs a backing card.

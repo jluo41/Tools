@@ -466,7 +466,7 @@ class StandaloneServerTests(unittest.TestCase):
         # Revise is the second bounded write: one form per paragraph, one box
         # per Bullet Draft, hidden outside the Revise view.
         self.assertEqual(writable.count('<form class="revise-form"'), 1)
-        self.assertIn('data-revise-save', writable)
+        self.assertIn('class="revise-status"', writable)
         self.assertIn('class="revise-box" data-bullets="[{&quot;address&quot;:&quot;C1.P1.B1&quot;', writable)
         self.assertIn('id="bullet-C1-P1-B1"', writable)
         self.assertIn("'bullet-'+id.replace(/\\./g,'-')", writable)
@@ -475,7 +475,7 @@ class StandaloneServerTests(unittest.TestCase):
         self.assertEqual(code, 200)
         markup = body.decode().split('<body', 1)[1].split('<script', 1)[0]
         self.assertNotIn('function readParagraph(group)', body.decode())
-        self.assertNotIn('data-revise-save', body.decode())
+        self.assertNotIn('class="revise-status"', body.decode())
         self.assertIn('class="revise-box" data-bullets=', body.decode())
         self.assertNotIn('data-structure-edit', body.decode())
         self.assertIn('Example content.', markup)

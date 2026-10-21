@@ -515,6 +515,8 @@ PANEL_JS = r"""
   /* a prompt box that takes notes (b15 s41-D14): the person's notes go with the prompt */
   var nb=b.closest('.run-prompt-box'),notes=nb&&nb.querySelector('textarea.run-notes');
   if(notes&&notes.value.trim())text+='\nuser feedback: '+notes.value.trim();
+  /* then the lines that send it to its session, wherever it is pasted (JL 261020) */
+  if(b.dataset.tail)text+='\n'+b.dataset.tail;
   copy(text,b);
  });
  /* the notes stay in this browser until sent; a pasted image is kept by the host and its path written in */

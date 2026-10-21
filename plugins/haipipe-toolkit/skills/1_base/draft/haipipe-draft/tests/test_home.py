@@ -122,7 +122,8 @@ class SpaceHomeTest(unittest.TestCase):
             self.assertEqual(cards["Design"]["kind"], "Design Board")
             self.assertEqual(cards["Paper Skill"]["kind"], "Skill Board")
             page = render_home(root)
-            for title in ("Task", "Discovery", "Paper", "Design", "Paper Skill"):
+            # a bNN folder leads its title with the number (JL 261019: "show the bNN before ... as well")
+            for title in ("Task", "b01 · Discovery", "Paper", "Design", "Paper Skill"):
                 self.assertIn(f'>{title}</a>\n  <span class="home-folder">', page)
             for project in ("Project-A", "SPACE / Shared", "Tools &amp; Skills"):
                 self.assertIn(f'<span class="project-name">{project}</span>', page)
@@ -366,8 +367,8 @@ class SpaceViewTest(unittest.TestCase):
             self.assertIn('<span class="theme-name">tasks</span>\n  '
                           '<span class="theme-count" aria-label="2 blocks">2</span>', page)
             self.assertIn('<span class="project-count" aria-label="7 blocks">7</span>', page)
-            self.assertLess(page.index('>Task One</a>\n  <span class="home-folder">'),
-                            page.index('>Task Two</a>\n  <span class="home-folder">'))
+            self.assertLess(page.index('>b01 · Task One</a>\n  <span class="home-folder">'),
+                            page.index('>b02 · Task Two</a>\n  <span class="home-folder">'))
             for kind in ("task", "discovery", "cowork", "paper", "insight", "design"):
                 self.assertIn(f'data-kind="{kind}"', page)
             # the card: kind emoji, title, folder, and only the state word
@@ -441,11 +442,18 @@ class SpaceViewTest(unittest.TestCase):
             (root / base / "tasks" / "b01_data" / "j01_clean" / "j01_clean.md").write_text("# Clean\n")
             (runs.parent / "t01_load.md").write_text("# Load\n")
             page = render_home(root)
-            self.assertIn('<span class="project-runs" title="hard Runs in this Project, by status">▶️ 2 · ✅1 ❌1</span>', page)
+            self.assertIn('<span class="project-runs" title="hard Runs in this Project, by status (▶️ is running)">⚙️ 2 Runs · ✅1 ❌1</span>', page)
             card = page[page.index('b01_data"'):]
-            self.assertIn('<span class="home-runs-tally" title="hard Runs, by status">▶️ 2 · ✅1 ❌1</span>', card)
-            self.assertIn('data-group="runs"', card)
-            self.assertIn("<code>r02_bad</code><span class=rn-st>failed", card)
+            self.assertIn('<span class="home-runs-tally" title="hard Runs, by status (▶️ is running)">⚙️ 2 Runs · ✅1 ❌1</span>', card)
+            # the Runs sit under their Job, no third group (JL 261019: "merge the jobs and runs ... to save the spaces")
+            self.assertNotIn('data-group="runs"', card)
+            jobs = card[card.index('data-group="jobs"'):]
+            self.assertIn('⚙️ <span class="block-cards-count">2 Runs</span>', jobs)
+            job = jobs[jobs.index("<b>j01_clean</b>"):]
+            self.assertIn("1 Task · 2 Runs", job[:job.index("</summary>")])
+            self.assertIn('<span class="rn-tally job-tally">✅1 ❌1</span>', job[:job.index("</summary>")])
+            self.assertIn("<b>t01_load</b>", job)
+            self.assertIn("<code>r02_bad</code><span class=rn-st>failed", job)
             self.assertNotIn("<code>run-build-t01</code>", card)
 
     def test_a_block_card_folds_over_its_studio_topics_and_its_jobs(self):
@@ -484,7 +492,7 @@ class SpaceViewTest(unittest.TestCase):
             job = re.search(r'<details class="topic">.*?</details>', jobs, re.S).group(0)
             self.assertIn('<b>j01_clean</b><span class="topic-meta">Clean the data · 1 Task</span>', job)
             self.assertIn('<span class="job-st job-st-active">active</span>', job)
-            self.assertIn('<b>t01_load</b></a> Load', job)                         # its Tasks, listed
+            self.assertIn('<b>t01_load</b></a><span class="rn-meta">Load</span>', job)  # its Tasks, listed
             self.assertIn('data-src="/_board/page?path=%2Fexamples%2FProject-A%2Ftasks%2Fb01_data%2Fj01_clean%2F'
                           'j01_clean.md"', job)                                  # its face, loaded on open
             self.assertIn("#topic-s01-the-tree", card)                        # it opens the topic in the Studio
@@ -505,7 +513,7 @@ class SpaceViewTest(unittest.TestCase):
             for name in ("examples/Project-A", "Project-A", "project-a", "/examples/Project-A/"):
                 page = render_home(root, project=name)
                 self.assertNotIn("Other Task", page, name)
-                self.assertIn('>Task One</a>\n  <span class="home-folder">', page)
+                self.assertIn('>b01 · Task One</a>\n  <span class="home-folder">', page)
                 self.assertIn("<title>Project-A · ", page)
                 self.assertIn('Project <b>Project-A</b> · <a href="?">all Projects</a>', page)
                 self.assertIn(' role="listitem" open>', page)     # one Project: open
@@ -538,7 +546,7 @@ class SpaceViewTest(unittest.TestCase):
             body = request.wfile.getvalue().decode("utf-8")
             self.assertEqual(request.code, 200)
             self.assertIn("Other Task", body)
-            self.assertNotIn('>Task One</a>\n  <span class="home-folder">', body)
+            self.assertNotIn('>b01 · Task One</a>\n  <span class="home-folder">', body)
 
     def test_projects_start_open_only_when_the_view_is_small(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -574,11 +582,11 @@ class SpaceViewTest(unittest.TestCase):
             hrefs = dict(re.findall(
                 r'<a class="t" href="([^"]+)">([^<]+)</a>', page))
             by_title = {title: href for href, title in hrefs.items()}
-            self.assertEqual(by_title["Task One"], "/w/b01_data")
+            self.assertEqual(by_title["b01 · Task One"], "/w/b01_data")
             self.assertEqual(by_title["Paper X"], "/w/paper-x")
-            self.assertEqual(by_title["Discovery X"], "/w/b01_evidence")
-            self.assertTrue(by_title["Shared A"].startswith("/_board/workbench?path="))
-            self.assertEqual(by_title["Plain"], "/w/b10_plain")       # the frame opens any Block
+            self.assertEqual(by_title["b01 · Discovery X"], "/w/b01_evidence")
+            self.assertTrue(by_title["b09 · Shared A"].startswith("/_board/workbench?path="))
+            self.assertEqual(by_title["b10 · Plain"], "/w/b10_plain")       # the frame opens any Block
             for title, href in by_title.items():
                 if href.startswith("/w/"):
                     target, reason = resolve_workbench(root, href[3:])

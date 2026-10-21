@@ -14,8 +14,8 @@ description: >-
   /excalidraw-draft, /excalidraw-section, /excalidraw-revise.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 metadata:
-  version: "2.2.0"
-  last_updated: "2026-10-19"
+  version: "2.4.0"
+  last_updated: "2026-10-20"
   # version history: ./CHANGELOG.md
 ---
 

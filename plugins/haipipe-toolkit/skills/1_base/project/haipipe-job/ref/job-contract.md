@@ -27,6 +27,7 @@ A Job groups Tasks that share inputs, code or one question. A Job holds no `scri
 
 goal: <what this Job delivers>
 close: <what must be true for this Job to close>
+emoji: 🧭                       # its own emoji on the Goal tree line (a work Block, 261021)
 answers: Q01                    # optional: the Block Question it answers (haipipe-report's link rule)
 
 ## Topic
@@ -37,6 +38,8 @@ answers: Q01                    # optional: the Block Question it answers (haipi
 2. t02_<task> · <title>
 
 ## Questions                    # optional: the Job's own register, when its Questions are its own
+
+## Deliverables                 # a work Block: what the Job hands on, the Goal's to-do list (below)
 ```
 
 1. **Title line**: `# jNN · <title>`, or the theme's folder name for a theme's own Job.
@@ -48,6 +51,67 @@ answers: Q01                    # optional: the Block Question it answers (haipi
    moves. `new_job.py check` says when the list and the folders disagree.
 5. **Questions at a Job**: a Job may keep its own register; its Audience Report then draws
    its rows at Job level, the same row as a Block's (`haipipe-report`).
+6. **emoji**: one lively emoji per Job, different from every other Job's in its Block (JL 261020:
+   "这个 job 的 emoji 应该更活泼一些"); the Goal tree shows it before the Job's name.
+7. **## Deliverables**: a work Job's to-do list, below. `haipipe-project audit --today` reports a
+   work Job without it, or without `emoji:`, as debt; `/wb update` lists them to write.
+
+## The Deliverables: what a Job hands on (LLMRec b01 and b02, 261021)
+
+JL 261020: "I want it like the TODO list ... for each job, what are the delivery and outcome to
+provide ... make the Goal to be the first one". The face's `## Deliverables` holds one fenced
+`yaml` block; the workflow layout's Goal view (workbench-work `work_progress.py`) draws it as one
+folded tree, Goal → Job → Task → item, and ticks each item from disk, never from a person's word.
+
+```yaml
+deliverables:
+- what: C2B rerank answers, fold00       # its short name; quote it when it holds ": "
+  kind: data                             # data · table · figure · card · check · site · view · code · doc
+  task: t03_c2b_llm_rerank               # the Task it sits under (else its run's Task, else the Job)
+  means:                                 # what it is: 2 to 5 short bullets, plain words
+  - C2B is the second step, rerank.
+  - For each search, a model gets only the doctors it kept in C2A.
+  files: _WorkSpace/A-Store/fold00/c2b-rerank/*/*reconciled*/run_manifest.json   # a glob or a list
+  count: 6                               # the files that make it whole
+  run: t03_c2b_llm_rerank/r24_fold00     # the Run whose finish ticks it; several: runs: [{run, part}], each must finish
+  checked_by: t01_pool/r01_pool_build    # a Run that rebuilt or compared it, never its maker
+  from: [{what: Retry, means: [...], files: ..., run: ...}]   # the batches it was gathered in
+  open: [Terra is still answering]       # what keeps it 🔶
+  used_by: [b03 j01 t06]                 # who reads it
+  example: {file: ..., columns: [...]}   # one row or record a reader sees first
+  browse: {root: ..., index: ...}        # a finished set, opened level by level
+  opens: <another item's what>           # a view: it ticks only when that item's browse index is on disk
+```
+
+1. **One thing handed on**: an item is what a reader of the Job uses, not a step. Keep only the
+   latest (JL 261021): `files` names the final view (a reconciled set, the published build),
+   never the passes and retries that made it; those are its `from:` batches when they matter.
+2. **means**: bullets a newcomer reads first (JL 261021: "make this part a little big";
+   "可以用 bullet points 吗"). Each bullet one point; the first says what the step is, a term is
+   defined where it first appears (`NPI: the national ID every US doctor has`), real model and
+   folder names, no shorthand a stranger cannot read.
+3. **The tick**: ✅ its files are on disk (`count` of them) and its Run finished; 🔶 some files, a
+   Run short of its gate, or an `open:` line; 🚧 its Run is running; ❌ a failed Run with nothing on
+   disk; ☐ nothing yet. A Task, a Job and the Goal are ✅ or 🔶, never ❌ for one open item. The tick
+   reads only the disk: a close that needs a person (read, signed) stays an `open:` line until then.
+4. **Paths**: `files` is read from the face's folder, unless it starts with `_WorkSpace/` or
+   `code/` (then from the SPACE root); `example.file` and `browse.root` are always from the SPACE
+   root. The view says a path from its Task (`runs/<run>/result/...`).
+5. **The Block's own**: a Block's `board.md` may hold its own `## Deliverables` for what no Job
+   owns (a drawing across Jobs); the tree shows them last, as "Across all Jobs". A table made by a
+   Run is a Job's: a hard Run lives in a Task (LLMRec b01 j09 holds the five-source comparison).
+6. **kind**: data (a stored set), table (one table), figure (charts), card (a Table Card), check
+   (an audit or comparison verdict), site (a published build), view (a link that opens a set),
+   code, doc.
+7. **A Task with nothing yet**: list what it will hand on, with no file on disk; it shows ☐ todo.
+   The Goal tree shows only a Task that has an item, so a Task with none is invisible there.
+8. **A replaced Task still read**: list its output while another Run still reads it, with an
+   `open:` line naming the readers and what replaces it; drop the item once they have moved.
+9. **Write it from the records**: the Runs' receipts, the Tasks' faces and the files on disk, by
+   the agent that knows the Job. `/wb update` names a Job that lacks it; it never writes one.
+10. **Check it**: `new_job.py check <job>` also checks the list: it parses, each item has `what`
+   (once), a `kind` of rule 6, `means`, and `files` or `opens`, and every Task and Run it names is
+   there. A file not made yet is a to-do, not an error. Then open the Goal view and read the ticks.
 
 ## The six Spaces at Job level
 

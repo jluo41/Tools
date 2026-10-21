@@ -1,0 +1,1379 @@
+"""Goal, Plan, Execution and Results over existing work records.
+
+A Block opts in with workbench-layout: workflow. Reading never creates plans,
+changes Run status, or infers goal acceptance from completed execution counts.
+"""
+from collections import Counter
+import json
+import time
+from datetime import datetime, timezone
+from pathlib import Path
+import os
+import re
+from urllib.parse import urlencode, quote
+
+import yaml
+from live import frame
+
+VIEWS = ("Goal", "Plan", "Execution", "Results")
+MODES = ("Audience Report", "Work Details")
+PURPOSES = {
+    "asset-contract": "Define output fields and usage rules",
+    "asset-build": "Build a reference table from raw inputs",
+    "asset-freeze": "Save service answers for a specific version for later reuse",
+    "asset-validate": "Check output tables against field and data rules",
+    "asset-parity": "Check whether frozen answers match the corresponding service answers",
+    "asset-compare": "Compare outputs from two versions",
+    "asset-release": "Pin the exact version of each table in the release",
+    "asset-gallery": "Check outputs for different input types across the full workflow",
+    "unit-test": "Check shared code behavior and compatibility",
+    "eval-ab": "Compare results with and without a specific change",
+    "external-corpus": "Check method performance on external data",
+}
+e = frame.esc
+
+
+_LOADER = getattr(yaml, "CSafeLoader", yaml.SafeLoader)          # libyaml when present: about ten times faster
+_READ = {}
+_TTL = {}
+
+
+def read_yaml(path):
+    """A YAML or JSON file as a dict, parsed once until the file changes (JL 261021: "每一次 change 的时候，它都会花很长时间")."""
+    try:
+        if not path:
+            return {}
+        st = path.stat()
+        if st.st_size > 2_000_000:
+            return {}
+        key = (str(path), st.st_mtime_ns, st.st_size)
+        if key not in _READ:
+            text = path.read_text(encoding="utf-8")
+            try:
+                value = json.loads(text) if path.suffix == ".json" else yaml.load(text, Loader=_LOADER)
+            except yaml.YAMLError:
+                value = top_level(text)
+            _READ[key] = value if isinstance(value, dict) else {}
+        return _READ[key]
+    except (OSError, ValueError, yaml.YAMLError):
+        return {}
+
+
+def top_level(text):
+    """A receipt YAML cannot parse still has its top-level `key: value` lines: an older receipt wrote an unquoted
+    headline with a colon in it (`headline: B1 food: FAIL, ...`), and dropping the whole file read a complete Run as
+    "Not recorded" (b51 j01 t12-t15, 261021)."""
+    out = {}
+    for line in text.splitlines():
+        m = re.match(r"^([A-Za-z_][\w-]*):[ \t]*(.*?)[ \t]*$", line)
+        if m and m.group(2) and m.group(2) not in ("|", ">", "|-", ">-"):
+            out.setdefault(m.group(1), None if m.group(2) == "null" else m.group(2).strip("\"'"))
+    return out
+
+
+def kept(key, make, seconds=8.0):
+    """A value kept for a few seconds, so one page and its own 20-second refresh never rebuild it twice."""
+    now = time.monotonic()
+    hit = _TTL.get(key)
+    if hit and now - hit[0] < seconds:
+        return hit[1]
+    value = make()
+    _TTL[key] = (now, value)
+    return value
+
+
+def receipt_of(path):
+    """A Run's receipt with its times under one name: a Databricks ticket's receipt says `started` and `ended`, read
+    here as `started_at` and `finished_at`."""
+    rec = read_yaml(path)
+    alias = {k: rec[v] for k, v in (("started_at", "started"), ("finished_at", "ended")) if not rec.get(k) and rec.get(v)}
+    return dict(rec, **alias) if alias else rec
+
+
+def summary_line(summary):
+    """A receipt's `summary:` said as one line, number first (28 tables · 1,562,150,228 rows total), when the receipt
+    writes no headline of its own."""
+    if not isinstance(summary, dict):
+        return ""
+    out = []
+    for k, v in summary.items():
+        words = str(k).replace("_", " ")
+        if isinstance(v, bool) or v in (None, "", [], {}):
+            continue
+        if isinstance(v, (int, float)):
+            out.append(f"{v:,} {words}")
+        elif isinstance(v, str) and len(v) <= 40:
+            out.append(f"{words} {v}")
+        elif isinstance(v, list) and all(isinstance(x, (str, int, float)) for x in v):
+            out.append(f"{words}: {', '.join(map(str, v[:3]))}" + (" …" if len(v) > 3 else ""))
+    return " · ".join(out[:6])[:240]
+
+
+def said_of(receipt, result):
+    """A Run's key result from its own numbers when it writes no headline: its receipt's `summary:` or `counts:`, the
+    tables its `outputs:` lists (patient_universe: 466,745 rows · 7 columns), else its result/metrics.json."""
+    for key in ("summary", "counts"):
+        line = summary_line(receipt.get(key))
+        if line:
+            return line
+    outs = [o for o in receipt.get("outputs") or [] if isinstance(o, dict)] if isinstance(receipt.get("outputs"), list) else []
+    if outs:
+        return " · ".join(f"{o.get('table') or o.get('name') or 'output'}: "
+                          + summary_line({k: o[k] for k in ("rows", "columns") if k in o}) for o in outs[:3])[:240]
+    return summary_line(read_yaml(result / "metrics.json")) if result else ""
+
+
+def text_of(path):
+    try:
+        return path.read_text(encoding="utf-8", errors="replace") if path else ""
+    except OSError:
+        return ""
+
+
+def section(text, name):
+    match = re.search(rf"(?ims)^##\s+{re.escape(name)}\s*\n(.*?)(?=^##\s|\Z)", text)
+    return match.group(1).strip() if match else ""
+
+
+def face_fields(folder):
+    md = frame.face(folder)
+    if not md:
+        return {}
+    return dict(frame.fields(md, keys=(
+        "goal", "spine", "develops", "close", "input", "output", "state",
+        "goal-status", "goal-scope", "workbench-layout", "emoji")))
+
+
+def enabled(folder, root):
+    block = frame.chain(folder, root).get("Block")
+    return bool(block and face_fields(block).get("workbench-layout") == "workflow")
+
+
+def goal(folder):
+    fields = {k: v for k, v in face_fields(folder).items()          # a new face's `goal: open` is a placeholder, not
+              if str(v).strip().lower() not in ("open", "<open>", "none", "-")}   # a goal (212 work Jobs, 261021)
+    opening = section(text_of(frame.face(folder)), "Opening")
+    return (fields.get("goal") or fields.get("spine") or fields.get("develops")
+            or frame._first_sentence(opening, 300) or "Goal not yet specified")
+
+
+SPACE_DIRS = ("_WorkSpace/", "code/")         # a deliverable's files said from the SPACE root: its data store and its code package
+TICKS = {"done": "✅", "running": "🚧", "failed": "❌", "partly": "🔶", "todo": "⬜"}
+
+
+def deliverables(folder):
+    """A face's `## Deliverables`: a ```yaml block of `deliverables:`, each with what, kind, files (a glob or a list of
+    them, SPACE-relative when it starts with _WorkSpace/ or code/, else from the face's folder), count, and the Run that makes it
+    (JL 261020: "what are the deliveries? data? files? we want to have, eventually, after this block and for each job")."""
+    text = section(text_of(frame.face(folder)), "Deliverables") if folder else ""
+    found = re.search(r"```ya?ml\s*\n(.*?)```", text, re.S)
+    try:
+        items = (yaml.safe_load(found.group(1)) or {}).get("deliverables") if found else []
+    except yaml.YAMLError:
+        return []
+    return [dict(i, owner=folder) for i in items or [] if isinstance(i, dict) and i.get("what")]
+
+
+def task_of(item):
+    """The Task an item sits under: its `task`, else the Task of the Run that made it, checked it, or made a part of it."""
+    runs = [item.get("run"), item.get("checked_by")] + [r.get("run") for r in item.get("runs") or [] if isinstance(r, dict)]
+    return item.get("task") or next((str(r).split("/")[0] for r in runs if r and "/" in str(r) and not str(r).startswith("..")), "")
+
+
+def run_of(folder, ref, data):
+    """A deliverable's Run, `tNN_<task>/rNN_<run>` under its face's folder or `rNN_<run>` of the folder itself."""
+    if not ref:
+        return None
+    task_name, _, run = str(ref).rpartition("/")
+    task = (folder / task_name).resolve() if task_name else folder
+    rows = data.get(task)
+    row = next((r for r in (rows if rows is not None else records(task) if task.is_dir() else []) if r["run"] == run), None)
+    path = task / "runs" / run
+    if row or not path.is_dir():
+        return row
+    receipt, card_ = receipt_of(path / "result/runtime.yaml"), read_yaml(path / "run.yaml")   # a Block's own Run
+    return {"run": run, "task": task, "path": path, "receipt": receipt, "card": card_, "receipt_path": path / "result/runtime.yaml",
+            "status": str(receipt.get("status") or card_.get("status") or "Not recorded"),
+            "headline": receipt.get("headline") or first_line(path / "result/headline.txt") or said_of(receipt, path / "result")}
+
+
+def item_state(item, root, data, with_hits=False):
+    """✅ when every file is on disk and its Run (when named) finished; 🚧 or ❌ from that Run; 🔶 some files; ⬜ none."""
+    pats = item.get("files") or []
+    pats = [str(x) for x in (pats if isinstance(pats, list) else [pats])]
+    hits = set()
+    for pat in pats:
+        base = root if pat.startswith(SPACE_DIRS) else item["owner"]
+        hits.update(kept(("glob", str(base), pat), lambda: list(base.glob(pat)), seconds=30.0))   # one page's three uses, and its refresh
+    need = int(item.get("count") or max(len(pats), 1))
+    gate = item.get("run") or item.get("checked_by")                      # the Run that made it, else the one that checked it
+    row = run_of(item["owner"], gate, data)
+    ran = state_of(row) if row else None
+    listed = [x.get("run") if isinstance(x, dict) else x for x in (item.get("runs") or [])]
+    if not gate and listed:                     # several makers: done only when every one finished (b03 trial, 261021)
+        states = [state_of(r) if r else None for r in (run_of(item["owner"], x, data) for x in listed)]
+        gate, ran = True, ("running" if "running" in states else "failed" if "failed" in states else
+                           "finished" if all(x == "finished" for x in states) else "unfinished")
+    state = ("running" if ran == "running" else
+             "done" if len(hits) >= need and (not gate or ran == "finished") else
+             "partly" if hits else "failed" if ran == "failed" else "todo")      # a Run short of its gate with files on disk is partly there
+    state = "partly" if state == "done" and item.get("open") else state     # something typed as still open
+    return (state, len(hits), need, pats, row) + ((hits,) if with_hits else ())
+
+
+def group_state(states):
+    """A Task, Job or goal: ✅ when every item is, 🚧 while one runs, else 🔶 in progress; never ❌ for one open item
+    (JL 261020: "we should not call it X, it is very negative")."""
+    if states and all(s == "done" for s in states):
+        return "done"
+    return "running" if "running" in states else "partly" if {"done", "partly", "failed"} & set(states) else "todo"
+
+
+TREE_CSS = """<style>
+.dtree,.dtree ul{list-style:none;margin:0;padding-left:22px}
+.dtree{padding-left:6px;margin:8px 0 4px}
+.dtree li{position:relative;padding:2px 0 2px 22px;line-height:1.5}
+.dtree>li{padding-top:5px}
+.dtree>li::after{top:17px}
+.dtree>li:last-child::before{height:17px}
+.dtree details{margin:0}
+.dtree li::before{content:"";position:absolute;left:0;top:0;bottom:0;border-left:1.5px solid var(--tab-line,#ced4da)}
+.dtree li:last-child::before{bottom:auto;height:14px}
+.dtree li::after{content:"";position:absolute;left:0;top:14px;width:17px;border-top:1.5px solid var(--tab-line,#ced4da)}
+.dtree summary{list-style:none;cursor:pointer;border-radius:6px;padding:1px 4px;margin-left:-4px}
+.dtree summary:hover{background:rgba(127,127,127,.08)}
+.dtree summary::-webkit-details-marker{display:none}
+.dtree summary::before{content:"▸";color:var(--mut,#6f6f6b);display:inline-block;width:14px}
+.dtree details[open]>summary::before{content:"▾"}
+.dtree .lvl{font-weight:650}
+.dtree .job{font-size:15.5px}
+.dtree .chip{display:inline-block;font-size:11.5px;line-height:18px;padding:0 8px;border-radius:9px;background:var(--wash,#f6f6f7);border:1px solid var(--line,#e3e3e6);color:var(--mut,#6f6f6b);margin-left:10px;vertical-align:1px}
+.dtree .chip.ok{color:var(--ok,#24733d)}
+.dtree .chip.part{color:var(--warn,#996b00)}
+.dtree .chip.todo{background:transparent;border-style:dashed}
+.dtree .m{color:var(--mut,#6f6f6b);font-size:12.5px;margin-left:10px}
+.dtree .means{color:var(--fg,#1c1c1c);font-size:13px;margin:0 0 4px}
+.dtree .box .lead{font-size:15px;line-height:1.6;margin:2px 0 12px;max-width:820px}   /* what the item is, read first (JL 261021) */
+.dtree .box ul.means{list-style:disc;padding-left:22px}
+.dtree .box ul.means li{padding:1px 0;line-height:1.55}
+.dtree .box ul.means li::before,.dtree .box ul.means li::after{display:none}
+.dtree .box{margin:4px 0 4px 21px;padding:6px 12px 6px 14px;border-left:3px solid var(--line,#e3e3e6);font-size:12.5px;color:var(--mut,#6f6f6b);max-width:980px}
+.dtree .box h5{margin:6px 0 2px;font-size:12px;color:var(--fg,#1c1c1c);font-weight:650}
+.dtree .box h5:first-child{margin-top:0}
+.dtree .box .f{margin-left:20px}
+.dtree .box details{margin:2px 0}
+.dtree .box details>summary{margin-left:0}
+.dtree .box details>:not(summary){margin-left:18px}
+.dtree .hollow{display:inline-block;width:18px;text-align:center;color:var(--mut,#6f6f6b)}
+.dtree-tools{display:inline-flex;margin:8px 0 2px;border:1px solid var(--line,#e3e3e6);border-radius:999px;overflow:hidden;background:var(--card,#fff)}
+.dtree-tools button{all:unset;cursor:pointer;font-size:12.5px;line-height:22px;padding:0 12px;color:var(--mut,#6f6f6b)}
+.dtree-tools button+button{border-left:1px solid var(--line,#e3e3e6)}
+.dtree-tools button:hover{background:var(--tab-wash,#e7f5ff);color:var(--tab-on,#1864ab)}
+</style>"""
+TREE_TOOLS = ('<div><span class=dtree-tools><button type=button title="Open every Job and Task" onclick="this.closest(\'.dtree-wrap\')'
+              '.querySelectorAll(\'details.branch\').forEach(d=>d.open=true)">▾ Open all</button><button type=button '
+              'title="Fold every Job, Task and item" onclick="this.closest(\'.dtree-wrap\').querySelectorAll(\'details\')'
+              '.forEach(d=>d.open=false)">▸ Fold all</button></span></div>')
+
+
+def mark(state):
+    """An item's mark: done, partly, running, failed; an item not started is an empty box marked todo (JL 261020:
+    "如果是没完成的，就变成一个中括号 ... todo、plan 之类的")."""
+    return '<span class=hollow>☐</span>' if state == "todo" else TICKS[state]
+
+
+def chip(state, text):
+    kind = {"done": "ok", "todo": "todo"}.get(state, "part")
+    return f'<span class="chip {kind}">{e(text)}</span>'
+
+
+def run_mark(row):
+    """A Run's own mark (JL 261020: "这些 run 应该也要有不同的状态或者标识"): ✅ finished; 🔶 finished with searches
+    unanswered or its gate missed; a receipt rebuilt from the Run's files counts the same as one its ticket wrote."""
+    state = state_of(row)
+    rec = row["receipt"]
+    out = rec.get("outcome") if isinstance(rec.get("outcome"), dict) else {}
+    asked, answered = out.get("searches_asked"), out.get("searches_answered")
+    counted = f"{answered:,} of {asked:,} answered" if isinstance(asked, int) and isinstance(answered, int) else ""
+    if not counted and isinstance(rec.get("expected_rows"), int) and isinstance(rec.get("stored_rows"), int):
+        asked, answered = rec["expected_rows"], rec["stored_rows"]          # a CallStore receipt (bind_callstore_receipts.py)
+        counted = f"{answered:,} of {asked:,} stored" + (f", audit {rec['audit_verdict']}" if rec.get("audit_verdict") else "")
+    gate = str(rec.get("gate") or "")
+    if state == "finished":
+        if gate.startswith("missed"):
+            return "🔶 finished, gate " + gate + (f"; {counted}" if counted else "")
+        if counted and answered < asked:
+            return f"🔶 finished, {counted}"
+        return "✅ finished" + (f", {counted}" if counted and rec.get("audit_verdict") else "")
+    if state == "partial":
+        return "🔶 partial" + (f", {counted}" if counted else "")
+    if state == "blocked" and isinstance(rec.get("repair"), dict):
+        return f"📦 ran {str(rec['repair'].get('newest_file_at') or '')[:10]}, no receipt"
+    return {"running": "🚧 running", "failed": "❌ failed", "blocked": "⛔ blocked", "waiting": "◌ planned"}.get(state, "⚪ no record")
+
+
+def written(row, root):
+    """The folders a Run recorded writing: its result/, its heavy.yaml paths, its metrics.json collection_root."""
+    path = row.get("path")
+    if not path or not path.is_dir():
+        return []
+    res = path / "result"
+    out = [frame.rel(res, root)] if res.is_dir() else []
+    out += [str(h.get("path")) for h in read_yaml(res / "heavy.yaml").get("heavy") or [] if isinstance(h, dict) and h.get("path")]
+    folder = read_yaml(res / "metrics.json").get("collection_root")
+    rec = row["receipt"]
+    receipt = [str(w) for w in rec.get("writes") or [] if str(w).startswith("_WorkSpace/")]
+    receipt += [str(rec[k]) for k in ("store",) if str(rec.get(k) or "").startswith("_WorkSpace/")]
+    receipt += [str(Path(str(rec["audit_receipt"])).parent) for k in ("audit_receipt",) if str(rec.get(k) or "").startswith("_WorkSpace/")]
+    return out + ([str(folder)] if folder else []) + receipt
+
+
+def makers(item, hits, root, data):
+    """The Runs that made an item (JL 261020: "what is one item with different runs?"): the ones it names, then any Run
+    of its Job that recorded writing one of its files; each with the part it made."""
+    owner, out, seen = item["owner"], [], set()
+
+    def add(row, part):
+        if row and (str(row["task"]), row["run"]) not in seen:
+            seen.add((str(row["task"]), row["run"]))
+            out.append((row, part))
+    add(run_of(owner, item.get("run"), data), "")
+    for spec in item.get("runs") or []:
+        if isinstance(spec, dict):
+            add(run_of(owner, spec.get("run"), data), str(spec.get("part") or ""))
+    rels = [fast_rel(h, root) for h in hits]
+    if rels and frame.level_of(owner) == "Job":
+        for task in frame.children(owner, "Job"):
+            for row in sorted(data.get(task) if data.get(task) is not None else records(task), key=lambda r: r["run"]):
+                for folder in kept(("written", str(row.get("path")), row["status"]), lambda: written(row, root), seconds=30.0):
+                    if any(r == folder or r.startswith(folder.rstrip("/") + "/") for r in rels):
+                        add(row, folder.rstrip("/").rsplit("/", 1)[-1] if "_WorkSpace" in folder else "")
+                        break
+    out.sort(key=lambda m: (ROLE_ORDER.get(role_of(m[0]), len(ROLES)), m[0]["run"]))   # first passes, then retries and fixes
+    return out
+
+
+def short_folder(item, base, root):
+    """A folder said from where the tree already stands (JL 261021: "我们就已经知道它是属于哪一个 job 的哪一个 task 了，
+    你就直接从 run 开始写这个路径"): inside its Task, from runs/; in the Task's copy under _WorkSpace, the same, marked so."""
+    owner = item["owner"]
+    task = owner / task_of(item) if task_of(item) else owner
+    for home in (task, owner):
+        rel = frame.rel(home, root)
+        if base == rel or base.startswith(rel + "/"):
+            return base[len(rel) + 1:] or "."
+        mirror = "/".join(Path(rel).parts[-3:]) if len(Path(rel).parts) >= 3 else rel
+        if base.startswith("_WorkSpace/") and "/" + mirror + "/" in base:
+            return "_WorkSpace › " + base.split("/" + mirror + "/", 1)[1]
+    return base
+
+
+def fast_rel(path, root):
+    """A path from the root by trimming its text: a deliverable's files come from globs under the root, so no symlink
+    needs resolving (resolving each of 500,000 answer files was most of a 40-second b02 page)."""
+    text, base = str(path), str(root).rstrip("/") + "/"
+    return text[len(base):] if text.startswith(base) else frame.rel(path, root)
+
+
+def file_lines(item, pats, hits, root):
+    """An item's folder said from its Task, then every one of its files on its own line (JL 261021)."""
+    rels = sorted(fast_rel(h, root) for h in hits)
+    if not rels:
+        return "<div>Not on disk yet. It goes to</div>" + "".join(f"<div class=f><code>{e(short_folder(item, x, root))}</code></div>" for x in pats)
+    base = str(Path(rels[0]).parent) if len(rels) == 1 else os.path.commonpath(rels)
+    out = f"<div>📁 <code>{e(short_folder(item, base, root))}/</code></div>"
+    shown = 24                                  # every file of a small set (JL 261021: "该列就列出来")
+    if len(rels) > shown:                       # thousands of answers: each folder once, with how many files it holds
+        folders = Counter(r[len(base) + 1:].rsplit("/", 1)[0] for r in rels)
+        out += "".join(f'<div class=f>{e(f)}/<span class=m>{n:,} files</span></div>' for f, n in sorted(folders.items())[:shown])
+        return out + (f"<div class=f>… and {len(folders) - shown:,} more folders</div>" if len(folders) > shown else "")
+    by_rel = {fast_rel(h, root): h for h in hits}
+    for rel in rels:
+        hit, name = by_rel[rel], rel[len(base) + 1:]
+        readable = hit.suffix in (".md", ".csv", ".json", ".png", ".html", ".txt") and not rel.startswith("_WorkSpace/")
+        out += f"<div class=f>{source_link(hit, root, name) if readable else e(name)}</div>"
+    return out
+
+
+def run_line(row, part, root, when=False):
+    roles = {k: l.split(" ")[0] for k, l, _ in ROLES}
+    return (f'<div>{roles.get(role_of(row), "▫️")} {run_link(row, root)} <span class=m>{e(run_mark(row))}</span>'
+            + (f'<span class=m>{e(clock(row["receipt"].get("finished_at")))}</span>' if when else "")
+            + (f'<span class=m>{e(part)}</span>' if part else "") + "</div>")
+
+
+def batches(item, root, data):
+    """The batches one deliverable was gathered in (JL 261021: "the google search results should have three batches,
+    is that so?"): each batch its files and the Runs that wrote them, folded inside the deliverable, never an item."""
+    out, specs = "", [b for b in item.get("from") or [] if isinstance(b, dict)]
+    for n, spec in enumerate(specs):
+        sub = dict(spec, owner=item["owner"], what=spec.get("what") or f"batch {n + 1}")
+        state, got, need, pats, _, hits = item_state(sub, root, data, with_hits=True)
+        made = makers(sub, hits, root, data)
+        out += (f'<details data-work-key="batch-{e(item["owner"].name)}-{e(item["what"])}-{n}"><summary>{mark(state)} '
+                f'<b>{e(sub["what"])}</b><span class=m>{got} of {need} files</span><span class=m>{len(made)} Runs</span></summary>'
+                + (means_html(spec["means"]) if spec.get("means") else "")
+                + file_lines(sub, pats, hits, root) + "".join(run_line(row, part, root) for row, part in made) + "</details>")
+    return (f"<h5>From {len(specs)} batches</h5>" + out) if specs else ""
+
+
+def example_section(item, root):
+    """One real example of what a deliverable holds (JL 261021: "它 eventually 不应该是产生一个所谓的 set 吗？那这一个 set
+    包含一个医生的什么东西，我怎么能看到呢？"): its first rows, then its first record whole, as a reader of it sees it,
+    with its picture and every field."""
+    ex = item.get("example")
+    if not isinstance(ex, dict) or not ex.get("file"):
+        return ""
+    browse = ""
+    if item.get("browse") and frame.level_of(item["owner"]) in ("Job", "Block"):
+        n = next((i for i, x in enumerate(deliverables(item["owner"])) if x["what"] == item["what"]), 0)
+        browse = f'<div style="margin:2px 0 6px">🔎 {frame.link(browse_url(item["owner"], root, n), "Browse the whole set")}</div>'
+    path = root / str(ex["file"])
+    if not path.is_file():
+        return "<h5>One example</h5><div class=m style='margin-left:0'>Not on disk yet.</div>"
+    import base64
+    import pyarrow.parquet as pq
+    from live import page_reader
+    table = kept(("example", str(path), path.stat().st_mtime_ns), lambda: pq.read_table(path, partitioning=None), seconds=300)
+    cols = [c for c in ex.get("columns") or table.schema.names[:8] if c in table.schema.names]
+    first = table.slice(0, 1).to_pylist()[0] if table.num_rows else {}
+    out = (f"<h5>One example</h5>{browse}<div>{e(str(ex.get('says') or ''))}</div>"
+           f"<div class=m style='margin-left:0'>📄 {e(short_folder(item, frame.rel(path, root), root))} · "
+           f"{table.num_rows:,} rows × {table.num_columns} columns, first {min(12, table.num_rows)} shown</div>"
+           + rows_table(cols, [[r.get(c) for c in cols] for r in table.select(cols).slice(0, 12).to_pylist()]))
+    if not first:
+        return out
+    pic = first.get(ex.get("image")) if ex.get("image") else None
+    kind = first.get("portrait_content_type") or "image/jpeg"
+    img = (f'<img src="data:{e(str(kind))};base64,{base64.b64encode(pic).decode()}" alt="portrait" style="width:120px;flex:none">'
+           if isinstance(pic, (bytes, bytearray)) and pic else "")
+    text = page_reader.markdown_html(str(first.get(ex.get("record")) or "")) if ex.get("record") else ""
+    out += ("<h5>One record, whole</h5>"
+            f'<div style="display:flex;gap:16px;align-items:flex-start">{img}<div class=dossier style="flex:1;min-width:0">{text}</div></div>')
+    fields = [(k, v) for k, v in first.items() if not isinstance(v, (bytes, bytearray))]
+    out += (f'<details data-work-key="fields-{e(item["what"])}"><summary><b>All {len(first)} fields of this record</b></summary>'
+            + rows_table(("field", "value"), [(k, v) for k, v in fields]) + "</details>")
+    return out
+
+
+def details_box(item, pats, hits, root, data):
+    """What an opened item shows: where its data is put, the Runs that made it, the batches it was gathered in, what is
+    still open, who reads it."""
+    out = "<h5>Where</h5>" + file_lines(item, pats, hits, root) + example_section(item, root)
+    made = makers(item, hits, root, data)
+    if made or item.get("note"):
+        out += "<h5>Made by</h5>" + "".join(run_line(row, part, root) for row, part in made)
+        out += f'<div class=m style="margin-left:0">{e(item["note"])}</div>' if item.get("note") else ""
+    out += batches(item, root, data)
+    check = run_of(item["owner"], item.get("checked_by"), data)
+    if check:                                  # a Run that rebuilt or compared it, never one that wrote it (JL 261021)
+        out += "<h5>Checked by</h5>" + run_line(check, "", root, when=True)
+    still = item.get("open")
+    still = still if isinstance(still, list) else [still] if still else []
+    out += ("<h5>Still open</h5>" + "".join(f"<div>🔶 {e(str(x))}</div>" for x in still)) if still else ""
+    used = item.get("used_by")
+    used = used if isinstance(used, list) else [used] if used else []
+    return out + (f"<h5>Read by</h5><div>{e('; '.join(map(str, used)))}</div>" if used else "")
+
+
+def means_html(means, cls="means"):
+    """What an item or batch is: a list is bullets, one short point each (JL 261021: "这里可以用 bullet points 吗"); a
+    sentence stays one paragraph."""
+    if isinstance(means, list):
+        return f'<ul class="{cls}">' + "".join(f"<li>{e(str(x))}</li>" for x in means) + "</ul>"
+    return f'<div class="{cls}">{e(str(means))}</div>'
+
+
+def node(head, kids="", key="", body="", open_=False, below=""):
+    """One branch of the Goal tree, a folder structure (JL 261020: "像 folder 那种 structure 的 mind map"; "could I
+    collapse them"): a Job or Task folds its children; a deliverable folds its details. Everything starts folded (JL
+    261021: "could you make the fold all to be default?"); what a reader opens stays open across a refresh."""
+    inner = (f"<ul>{kids}</ul>" if kids else "") + (f"<div class=box>{body}</div>" if body else "")
+    summary = head + (f"<div class=means>{below}</div>" if below else "")
+    if not inner:
+        return f"<li>{summary}</li>"
+    kind = "branch" if kids else "leaf"
+    return (f'<li><details class={kind}{" open" if open_ else ""} data-work-key="{e(key)}"><summary>{summary}</summary>'
+            f"{inner}</details></li>")
+
+
+def item_node(item, root, data, key=""):
+    """A deliverable, folded to one line: its mark, its short name, its kind and file count, the first words of its
+    result (JL 261021: "默认关闭的状态下越简洁越好"); opened, what it holds, where it is, the Runs that made it, who reads it."""
+    state, got, need, pats, row, hits = item_state(item, root, data, with_hits=True)
+    link = ""
+    if item.get("opens"):                                # a view a reader opens: ticked only when it really opens
+        mates = deliverables(item["owner"])
+        n = next((i for i, x in enumerate(mates) if x["what"] == item["opens"]), None)
+        target = mates[n] if n is not None else {}
+        index = root / str((target.get("browse") or {}).get("root") or "") / str((target.get("browse") or {}).get("index") or "")
+        if target.get("browse") and index.is_file():
+            link = frame.link(browse_url(item["owner"], root, n), "🔎 open it")
+        elif state == "done":
+            state = "todo"
+    said = str((row or {}).get("headline") or "").split(";")[0].strip()
+    said = "" if row and said.startswith(row["run"]) else said              # a reader's line, never "<run>: key=value"
+    head = (f'{mark(state)} <b>{e(item["what"])}</b>'
+            + (f'<span class=chip>{e(item["kind"])}</span>' if item.get("kind") else "")
+            + (chip("todo", "todo") if state == "todo" else "")
+            + (f'<span class=m>{got} of {need} files</span>' if need > 1 else "")
+            + (f'<span class=m>{link}</span>' if link else "")
+            + (f'<span class=m>{e(said[:110])}</span>' if said else ""))
+    means = ("<h5>What it is</h5>" + means_html(item["means"], "means lead")         # big enough to read (JL 261021:
+             if item.get("means") else "")                                        # "make this part a little big")
+    return state, node(head, key=key, body=means + details_box(item, pats, hits, root, data), open_=False)   # folded: one line (JL 261021)
+
+
+def items_nodes(items, root, data):
+    def key(i, n):                              # the item as written and its face's date: an edit shows at once
+        face = frame.face(i["owner"])
+        return ("item", str(i["owner"]), n, repr(sorted((k, str(v)) for k, v in i.items() if k != "owner")),
+                face.stat().st_mtime_ns if face else 0)
+    made = [kept(key(i, n), lambda i=i, n=n: item_node(i, root, data, key=f"tree-{i['owner'].name}-{n}-{i['what']}"), seconds=5.0)
+            for n, i in enumerate(items)]
+    return [st for st, _ in made], "".join(h for _, h in made)
+
+
+def tally(states):
+    return f"{sum(st == 'done' for st in states)} of {len(states)}"
+
+
+def level_head(icon, name, states, job=False):
+    state = group_state(states) if states else "todo"
+    return (f'<span class="lvl{" job" if job else ""}">{icon} {name}</span>'
+            + chip(state, f"{TICKS[state] if state != 'todo' else '☐'} {tally(states)}" if states else "no deliverables listed"))
+
+
+def task_nodes(job, items, root, data, mode):
+    """A Job's deliverables under their Tasks, in folder order; one that names no Task sits under the Job itself."""
+    states, html_ = items_nodes([i for i in items if not task_of(i)], root, data)
+    for task in frame.children(job, "Job"):
+        mine = [i for i in items if task_of(i) == task.name]
+        if mine:
+            got, kids = items_nodes(mine, root, data)
+            states += got
+            html_ += node(level_head("📂", nav(task, root, mode, "Goal", e(task.name)), got), kids,
+                          key="tree-" + frame.rel(task, root))
+    return states, html_
+
+
+def goal_cards(level, folder, root, data, mode):
+    """The Goal first, as one tree like the folders (JL 261020: "like the TODO list ... Large TODO items, and small TODO
+    items, and the final check list"; "你这两个合成一块儿吧 ... 像 folder 那种 structure 的 mind map"): the goal at
+    the root, then each Job, its Tasks, and each deliverable, ticked from disk and never typed."""
+    if level == "Block":
+        states, html_ = [], ""
+        for job in frame.children(folder, "Block"):
+            got, kids = task_nodes(job, deliverables(job), root, data, mode)
+            states += got
+            icon = face_fields(job).get("emoji") or "🗂"
+            html_ += node(level_head(icon, nav(job, root, mode, "Goal", e(job.name)), got, job=True), kids,
+                          key="tree-" + frame.rel(job, root))
+        got, kids = items_nodes(deliverables(folder), root, data)
+        if got:
+            states += got
+            html_ += node(level_head("🧩", "Across all Jobs", got, job=True), kids, key="tree-across")
+    elif level == "Job":
+        states, html_ = task_nodes(folder, deliverables(folder), root, data, mode)
+    else:
+        job = frame.chain(folder, root).get("Job")
+        states, html_ = items_nodes([i for i in deliverables(job) if task_of(i) == folder.name] if job else [], root, data)
+    accepted = face_fields(folder).get("goal-status") or "not recorded"
+    state = group_state(states) if states else "todo"
+    head = (f'<p class=stat-line style="margin-bottom:2px">{mark(state)} <b>{e(goal(folder))}</b>'
+            f'<span class=mut style="margin-left:12px">{tally(states)} delivered</span></p>')
+    if not states:
+        head = f'<p class=stat-line><b>🎯 {e(goal(folder))}</b></p><p class=mut>No deliverables listed yet: add a ## Deliverables list to the face.</p>'
+    return (part("Goal") + TREE_CSS + CSVP_CSS + '<div class=dtree-wrap>' + head + (TREE_TOOLS + f'<ul class=dtree>{html_}</ul>' if html_ else "")
+            + f'<p class=mut style="font-size:12px">Goal accepted by a person: {e(accepted)}</p></div>')
+
+
+def task_folders(level, folder):
+    if level == "Task":
+        return [folder]
+    kids = frame.children(folder, level)
+    return [t for j in kids for t in frame.children(j, "Job")] if level == "Block" else kids
+
+
+def first_line(path):
+    """A Run's own one-line result, `result/headline.txt` (frame.py's Run reader reads the same file)."""
+    text = text_of(path) if path and path.is_file() else ""
+    return text.strip().splitlines()[0][:240] if text.strip() else ""
+
+
+_RECORDS = {}
+
+
+def records(task):
+    """A Task's Run records, rebuilt only when one of its Run cards or receipts changed (reading them is most of a
+    page's time; a file's date is cheap to check)."""
+    stamp = []
+    runs = task / "runs"
+    for run in sorted(runs.iterdir()) if runs.is_dir() else []:
+        for f in (run / "run.yaml", run / "result/runtime.yaml", run / "result/headline.txt"):
+            try:
+                stamp.append((run.name, f.name, f.stat().st_mtime_ns))
+            except OSError:
+                pass
+    face = frame.face(task)
+    key = (tuple(stamp), face.stat().st_mtime_ns if face else 0)
+    hit = _RECORDS.get(str(task))
+    if not hit or hit[0] != key:
+        hit = _RECORDS[str(task)] = (key, _records(task))
+    return hit[1]
+
+
+def _records(task):
+    """Join cards to the shared native reader, including redirected Result stores."""
+    from live.runs import local_runs
+    md = frame.face(task)
+    native = local_runs(md) if md else []
+    by_name = {r["ticket"].stem: r for r in native if r.get("ticket")}
+    result, seen = [], set()
+    for row in frame.runs_of(task):
+        if row["kind"] != "hard" or row["run"] in seen:
+            continue
+        seen.add(row["run"])
+        path = row["path"]
+        card = read_yaml(path / "run.yaml") if path.is_dir() else {}
+        if card.get("kind") == "soft":
+            continue
+        source = by_name.get(row["run"], {})
+        receipt_path = source.get("runtime") or (path / "result/runtime.yaml" if path.is_dir() else None)
+        receipt = receipt_of(receipt_path)
+        types = card.get("type") or receipt.get("operation") or source.get("operation") or []
+        types = types if isinstance(types, list) else [types]
+        purpose = (card.get("goal") or card.get("aim") or source.get("goal")   # excalidraw-job writes a Run's purpose as aim
+                   or next((PURPOSES[t] for t in types if t in PURPOSES), ""))
+        result.append(dict(row, task=task, card=card, receipt=receipt, receipt_path=receipt_path,
+                           source=source, types=types, purpose=purpose,
+                           status=str(receipt.get("status") or card.get("status") or "Not recorded"),
+                           target=receipt.get("target") or card.get("target") or source.get("target") or "",
+                           headline=receipt.get("headline") or source.get("outcome") or first_line(path / "result/headline.txt")
+                           or said_of(receipt, Path(receipt_path).parent if receipt_path else None)))
+    return result
+
+
+def snapshot(level, folder):
+    return {task: records(task) for task in task_folders(level, folder)}
+
+
+def show(value):
+    if value is None or value == "" or value == [] or value == {}:
+        return "Not recorded"
+    if isinstance(value, (dict, list)):
+        return yaml.safe_dump(value, allow_unicode=True, sort_keys=False).strip()
+    return str(value)
+
+
+def moment(value):
+    try:
+        return value if isinstance(value, datetime) else datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except (ValueError, TypeError):
+        return None
+
+
+def elapsed(receipt):
+    start, end = moment(receipt.get("started_at")), moment(receipt.get("finished_at"))
+    live = bool(start and not end and str(receipt.get("status")).lower() == "running")
+    if live and start.tzinfo:
+        end = datetime.now(timezone.utc)
+    if not start or not end:
+        return "Not recorded"
+    try:
+        seconds = int((end - start).total_seconds())
+    except TypeError:
+        return "Not recorded"
+    if seconds < 0:
+        return "Conflicting timestamps"
+    h, rem = divmod(seconds, 3600)
+    m, s = divmod(rem, 60)
+    return ("Elapsed " if live else "") + (f"{h} h " if h else "") + (f"{m} min " if m else "") + f"{s} s"
+
+
+def location(receipt):
+    execution = receipt.get("execution") or {}
+    execution = execution if isinstance(execution, dict) else {}
+    return next((receipt[k] for k in ("host", "hostname", "machine", "platform") if receipt.get(k)),
+                execution.get("host") or execution.get("platform") or "Not recorded")
+
+
+def address(row, root):
+    chain = frame.chain(row["task"], root)
+    return " / ".join([chain[k].name for k in ("Block", "Job", "Task") if k in chain] + [row["run"]])
+
+
+def run_link(row, root):
+    url = frame.ROUTE + "?" + urlencode({"view": "work-run", "path": frame.rel(row["task"], root), "run": row["run"]})
+    return frame.pop(url, address(row, root), row["run"])
+
+
+def nav(folder, root, mode, view, label):
+    url = frame.ROUTE + "?" + urlencode({"path": frame.rel(folder, root), "space": mode, "sub": view})
+    return frame.link(url, label)
+
+
+def source_link(path, root, label=None):
+    if not path or not path.is_file() or not path.resolve().is_relative_to(root.resolve()):
+        return ""
+    rel = frame.rel(path, root)
+    url = frame.reader(path, root) if path.suffix == ".md" else "/" + "/".join(quote(p) for p in rel.split("/"))
+    return frame.pop(url, label or rel, label or path.name)
+
+
+def counts(rows):
+    """Runs by state, five words with their icons ("complete" and "completed" are one), then any without a record."""
+    tally = Counter(state_of(r) for r in rows)
+    icon = {k: l.split(" ")[0] for k, l, _ in STATE}
+    out = [f"{icon[k]} {tally[k]}" for k, _, _ in STATE if tally[k]]
+    return " · ".join(out + ([f"no record {tally['no record']}"] if tally["no record"] else [])) or "no Runs yet"
+
+
+def plan_data(folder):
+    plan = read_yaml(folder / "workflow/plan.yaml")
+    specs = plan.get("run_specs") or []
+    return plan, [s for s in specs if isinstance(s, dict)] if isinstance(specs, list) else []
+
+
+def studio(folder, root):
+    """The Studio topics of this folder, each with its drawing shown (JL 261021: "这个 Studio 在这里应该可以直接看到吧"),
+    a click opening the topic in the Block's Studio."""
+    block = frame.chain(folder, root).get("Block")
+    if not block:
+        return ""
+    rows = []
+    for owner, topic, _ in frame.studio_inventory(block, root):
+        notes = frame._notes(topic)
+        if folder != block and folder.name not in text_of(notes) and not owner.is_relative_to(folder):
+            continue
+        url = frame.ROUTE + "?" + urlencode({"path": frame.rel(folder, root), "studio": "1", "studio_group": "all"})
+        url += "#" + frame.studio_anchor(topic, owner, block)
+        name = frame.title(notes) if notes else topic.name
+        png = topic / f"{topic.name}.png"
+        png = png if png.is_file() else next(iter(sorted(topic.glob("*.png"))), None)
+        picture = (f'<a href="{e(url)}"><img src="{file_url(png, root)}" alt="{e(name)}" loading=lazy '
+                   f'style="width:100%;display:block"></a>') if png else '<p class=mut>No drawing yet.</p>'   # no frame of its own inside the card (JL 261021: "box 套 box")
+        rows.append(f'<figure style="margin:0"><figcaption style="margin:0 0 6px">{frame.link(url, name)}</figcaption>{picture}</figure>')
+    url = frame.ROUTE + "?" + urlencode({"path": frame.rel(folder, root), "studio": "1", "studio_group": "all"})
+    if not rows:
+        return '<p class=mut>No Studio topic for this folder yet.</p><p>' + frame.link(url, "Open the Block's Studio") + '</p>'
+    columns = "1fr" if len(rows) == 1 else "repeat(auto-fill,minmax(440px,1fr))"   # its drawings seen here (JL 261021)
+    return (f'<div style="display:grid;grid-template-columns:{columns};gap:18px">' + "".join(rows) + '</div><p>'
+            + frame.link(url, "Open the Block's Studio") + '</p>')
+
+
+def runs_n(n):
+    return f"{n} Run" + ("" if n == 1 else "s")
+
+
+def part(name):
+    """A part of a view, as the Draft page parts its tabs: Operation over Result (draft_steps._part)."""
+    return f'<h3 style="margin:18px 0 6px">{e(name)}</h3>'
+
+
+def card(title, body, tag="", open_=False, key=""):
+    """A folded card, as the Draft page's (draft_steps._fold): an emoji title, a small grey tag, the body opened."""
+    return (f'<details class="topic work-task"{" open" if open_ else ""}' + (f' data-work-key="{e(key)}"' if key else "")
+            + f'><summary><span class=related-head><b>{e(title)}</b>'
+            + (f' <span class=mut style="font-weight:400;font-size:12.5px">{e(tag)}</span>' if tag else "")
+            + f'</span></summary><div class=work-body>{body}</div></details>')
+
+
+def child_rows(level, folder, root, data, mode, view):
+    """One row per Job (a Block) or Task (a Job): its goal, its Tasks or Runs, its Runs by state, its last finish. The
+    number columns never wrap; the goal gives way (JL 261020: "this is not readable")."""
+    nw = ' style="white-space:nowrap"'
+    heads = ["Job" if level == "Block" else "Task", "Goal"] + (["Tasks"] if level == "Block" else []) + [
+        "Runs", "✅", "🚧", "❌", "⛔", "◌", "last finished"]
+    rows = []
+    for child in frame.children(folder, level):
+        tasks = [t for t in data if t == child or child in t.parents]
+        runs = [r for t in tasks for r in data[t]]
+        c = Counter(state_of(r) for r in runs)
+        when, _ = last_finish(runs)
+        g = goal(child)
+        cells = [(nav(child, root, mode, view, child.name), ""), (e(g if len(g) <= 120 else g[:117] + "…"), "")]
+        cells += [(e(str(len(tasks))), nw)] if level == "Block" else []
+        cells += [(e(str(len(runs))), nw)] + [(e(str(c[k]) if c[k] else ""), nw)
+                                             for k in ("finished", "running", "failed", "blocked", "waiting")]
+        cells += [(e(when[:16].replace("T", " ")) if when else "", nw)]
+        rows.append("<tr>" + "".join(f"<td{st}>{v}</td>" for v, st in cells) + "</tr>")
+    if not rows:
+        return "<p class=mut>Nothing here yet.</p>"
+    head = "".join(f"<th{nw if i > 1 else ''}>{e(h)}</th>" for i, h in enumerate(heads))
+    return f"<table class=wf-table><thead><tr>{head}</tr></thead><tbody>{''.join(rows)}</tbody></table>" + LEGEND
+
+
+LEGEND = ("<p class=mut>✅ finished · 🚧 running · ❌ failed · ⛔ blocked · ◌ waiting for a person to start it. Read from each "
+          "Run's receipt (runtime.yaml), else its card; a finished Run is not the goal accepted.</p>")
+
+
+def clock(value):
+    """A receipt's time to the minute, as a reader says it (2026-10-21 01:43)."""
+    return str(value)[:16].replace("T", " ") if value else "Not recorded"
+
+
+ROLES = (("trial", "🧪 trial", "a small try before the full Run"),
+         ("make", "🔨 make", "makes the Task's output"),
+         ("fix", "🔁 retry or fix", "asks again what a Run missed, or repairs it"),
+         ("check", "🔎 check", "audits or compares an output"),
+         ("describe", "📋 describe", "says what an output holds"),
+         ("figures", "📊 figures", "draws results as charts"),
+         ("evidence", "🧾 evidence", "one value or display for a page"),
+         ("publish", "📤 publish", "releases or delivers an output"))
+ROLE_ORDER = {k: i for i, (k, _, _) in enumerate(ROLES)}
+
+
+def role_of(row):
+    """The one job a Run does in its Task (JL 261020: "各司其职"): its card's `role:`, else what its run_type says."""
+    card_ = row.get("card") or {}
+    role = str(card_.get("role") or {"main": "make", "figures": "figures", "delivery": "publish"}.get(str(card_.get("run_type")), ""))
+    return role if role in ROLE_ORDER else "other"
+
+
+def run_rows(rows, root, full=True):
+    """A Task's Runs (full): grouped by role in the order a Task lives (trial, make, fix, check, describe, figures,
+    evidence, publish), the role named once at the top of its group. Not full: Runs across Tasks, as a list."""
+    label = dict((k, l) for k, l, _ in STATE)
+    nb = lambda v: e(v).replace(" ", "&nbsp;")                               # a state or a time never breaks in two
+    if not full:
+        return frame.table(("Run", "Task", "Started at", "What it says"), [
+            (run_link(r, root), e(r["task"].name), nb(clock(r["receipt"].get("started_at"))),
+             e(str(r["receipt"].get("failure") or r["card"].get("failure") or r["headline"] or ""))[:200]) for r in rows])
+    if not rows:
+        return '<p class=mut>Nothing here yet.</p>'
+    names = {k: (l, why) for k, l, why in ROLES}
+    rows = sorted(rows, key=lambda r: (ROLE_ORDER.get(role_of(r), len(ROLES)), r["run"]))
+    body, last = [], None
+    for r in rows:
+        role = role_of(r)
+        first = role != last
+        last = role
+        n = sum(1 for x in rows if role_of(x) == role)
+        name, why = names.get(role, ("◻ no role", "its card names no role"))
+        cell = (f'<b>{nb(name)}</b> <span class=mut>{n}</span><div class=mut style="font-size:12px">{e(why)}</div>'
+                if first else "")
+        cells = (cell, run_link(r, root), nb(label.get(state_of(r), "no record")), e(show(location(r["receipt"]))),
+                 nb(clock(r["receipt"].get("started_at"))), nb(elapsed(r["receipt"])),
+                 e("" if str(r["headline"]).startswith(r["run"]) else r["headline"]))
+        style = ' style="border-top:2px solid #d0d7de"' if first and body else ""
+        body.append(f"<tr{style}>" + "".join(f"<td>{c}</td>" for c in cells) + "</tr>")
+    head = "".join(f"<th>{h}</th>" for h in ("Role", "Run", "Status", "Where", "Started at", "Elapsed", "Key result"))
+    return f"<table class=wf-table><thead><tr>{head}</tr></thead><tbody>{''.join(body)}</tbody></table>"
+
+
+RUN_MARKS = ("✅", "🔶", "🚧", "❌", "📦", "⛔", "◌", "⚪")
+RUN_LEGEND = ("<p class=mut style='font-size:12px'>✅ finished · 🔶 finished, some searches unanswered or its gate missed · "
+              "🚧 running · ❌ failed · 📦 ran, no receipt · ⛔ blocked · ◌ planned · ⚪ no record. From each Run's receipt "
+              "(runtime.yaml), else its card; an old Run's receipt is rebuilt from the files it left (work/_tools/"
+              "rebuild_receipts.py). A finished Run is not the goal accepted.</p>")
+
+
+def run_tally(rows):
+    """How many Runs carry each mark, in one fixed order: ✅ 10 📦 13 ❌ 1."""
+    c = Counter(run_mark(r).split(" ")[0] for r in rows)
+    return "  ".join(f"{m} {c[m]}" for m in RUN_MARKS if c[m])
+
+
+def run_node(row, root, task=False):
+    """One Run on one line: its mark, its name, and only what its receipt holds: when it finished, how long it took,
+    the first words of its result (JL 261021: "result 跟 go 一样的 structure"); where it ran shows on hover."""
+    mark_, word = run_mark(row).split(" ", 1)
+    rec = row["receipt"]
+    said = str(row.get("headline") or "").split(";")[0].strip()
+    said = "" if said.startswith(row["run"]) else said
+    took = elapsed(rec)
+    meta = ([e(row["task"].name)] if task else []) + [e(word)] + ([e(clock(rec["finished_at"]))] if rec.get("finished_at") else []) \
+        + ([e(took)] if took not in ("Not recorded", "Conflicting timestamps") else []) + ([e(said[:110])] if said else [])
+    tip = f"Ran on {show(location(rec))}; started {clock(rec.get('started_at'))}"
+    return f'<li><span title="{e(tip)}">{mark_} {run_link(row, root)}</span>' + "".join(f"<span class=m>{m}</span>" for m in meta) + "</li>"
+
+
+def role_nodes(task, rows, root):
+    """A Task's Runs by the job each does (trial, make, fix, check, describe, figures, evidence, publish), each group
+    folded at first."""
+    groups, names, out = {}, {k: l for k, l, _ in ROLES}, ""
+    for row in rows:
+        groups.setdefault(role_of(row), []).append(row)
+    for role in sorted(groups, key=lambda k: ROLE_ORDER.get(k, len(ROLES))):
+        rs = sorted(groups[role], key=lambda r: r["run"])
+        head = f'<span class=lvl>{e(names.get(role, "◻ no role"))}</span><span class=chip>{runs_n(len(rs))}  {e(run_tally(rs))}</span>'
+        out += node(head, "".join(run_node(r, root) for r in rs), key=f"runs-{task.name}-{role}")
+    return out
+
+
+def task_run_node(task, rows, root, mode):
+    head = (f'<span class=lvl>📂 {nav(task, root, mode, "Execution", e(task.name))}</span>'
+            f'<span class=chip>{runs_n(len(rows))}  {e(run_tally(rows))}</span>')
+    return node(head, role_nodes(task, rows, root) or "<li class=m>No Runs yet.</li>", key="runs-" + frame.rel(task, root))
+
+
+def status_tree(level, folder, root, data, mode):
+    """Every Run as one tree like the Goal's: Job, Task, the job a Run does, the Run (JL 261021: "result 跟 go 一样的
+    structure 可以吗？")."""
+    every = [r for rs in data.values() for r in rs]
+    if level == "Block":
+        html_ = ""
+        for job in frame.children(folder, "Block"):
+            tasks = [t for t in data if job in t.parents]
+            runs = [r for t in tasks for r in data[t]]
+            head = (f'<span class="lvl job">{face_fields(job).get("emoji") or "🗂"} {nav(job, root, mode, "Execution", e(job.name))}</span>'
+                    f'<span class=chip>{runs_n(len(runs))}  {e(run_tally(runs))}</span>')
+            html_ += node(head, "".join(task_run_node(t, data[t], root, mode) for t in tasks), key="runs-" + frame.rel(job, root))
+    elif level == "Job":
+        html_ = "".join(task_run_node(t, rows, root, mode) for t, rows in data.items())
+    else:
+        html_ = role_nodes(folder, data.get(folder, []), root)
+    head = f'<p class=stat-line style="margin-bottom:2px"><b>📊 {runs_n(len(every))}</b><span class=mut style="margin-left:12px">{e(run_tally(every))}</span></p>'
+    return TREE_CSS + '<div class=dtree-wrap>' + head + TREE_TOOLS + f'<ul class=dtree>{html_}</ul>' + RUN_LEGEND + '</div>'
+
+
+def hot_runs(every, root):
+    """What runs now and what failed, each a short list of one-line Runs with their Task."""
+    out = ""
+    for k, title in (("running", "🚧 Running now"), ("failed", "❌ Failed")):
+        rows = [r for r in every if state_of(r) == k]
+        body = f'<ul class=dtree>{"".join(run_node(r, root, task=True) for r in rows)}</ul>' if rows else "<p class=mut>None.</p>"
+        out += card(f"{title} · {len(rows)}", body, "" if rows else "none", key=k)
+    return out
+
+
+def status_cards(level, folder, root, data, mode):
+    """The Result part every view opens with: every Run as a tree, then what runs now and what failed."""
+    every = [r for rs in data.values() for r in rs]
+    return status_tree(level, folder, root, data, mode) + hot_runs(every, root)
+
+
+def goal_view(level, folder, root, data, mode):
+    report = read_yaml(folder / "workflow/report.yaml")
+    summary = report.get("summary")
+    body = goal_cards(level, folder, root, data, mode)
+    body += part("Result") + status_cards(level, folder, root, data, mode)
+    body += card("📌 Current conclusion and next step",
+                 '<pre>' + e(show(summary)) + '</pre>' if summary else
+                 '<p>No summary saved yet (workflow/report.yaml). ' + nav(folder, root, mode, "Results", "Read the results") + '</p>',
+                 "saved" if summary else "not saved", key="conclusion")
+    return body + part("Operation") + card("🎨 Studio · discussions and sketches", studio(folder, root), key="studio")
+
+
+def plan_view(level, folder, root, data, mode):
+    plan, specs = plan_data(folder)
+    body = part("Operation")
+    if specs:
+        rows = [(e(s.get("id", "")), e(show(s.get("purpose") or s.get("goal"))), e(show(s.get("input"))),
+                 e(show(s.get("result") or s.get("target"))), e(show(s.get("depends_on"))), e(show(s.get("exit_gate")))) for s in specs]
+        saved = ('<p>' + source_link(folder / "workflow/plan.yaml", root, "Open the saved plan") + '</p>'
+                 + frame.table(("Work item", "Purpose", "Input", "Output", "Dependencies", "Completion criteria"), rows))
+    else:
+        saved = '<p class=mut>No workflow/plan.yaml saved. The Result below indexes what exists; it is not an execution order.</p>'
+    body += card("📋 Saved plan", saved, f"{len(specs)} work items" if specs else "none saved", open_=bool(specs), key="plan")
+    if level == "Task":
+        files = [p for pattern in ("scripts/**/*", "workflow/**/*", "tests/**/*", "CODE_REVIEW.md", "notebooks/*.ipynb")
+                 for p in sorted(folder.glob(pattern)) if p.is_file() and not any(
+                     part_.startswith(".") or part_ == "__pycache__" for part_ in p.relative_to(folder).parts)]
+        body += card("🔧 Build · code, configuration and checks", '<ul>' + ''.join(
+            '<li>' + source_link(p, root, p.relative_to(folder).as_posix()) + '</li>' for p in files) + '</ul>',
+            f"{len(files)} files", key="build")
+    body += part("Result")
+    if level == "Task":
+        roles = {k: l for k, l, _ in ROLES}
+        rows = [(e(roles.get(role_of(r), "◻ no role")), run_link(r, root),
+                 e(r["purpose"] or "Not specified. Open the Run to read its inputs and results."),
+                 e(show(r["card"].get("close") or r["receipt"].get("close"))))
+                for r in sorted(data[folder], key=lambda r: (ROLE_ORDER.get(role_of(r), len(ROLES)), r["run"]))]
+        body += card(f"🏃 Runs and their purposes · {len(rows)}", frame.table(("Role", "Run", "Purpose", "Completion criteria"), rows),
+                     counts(data[folder]), open_=True, key="purposes")
+    else:
+        kids = frame.children(folder, level)
+        body += card(f"🗂 {'Jobs' if level == 'Block' else 'Tasks'} · {len(kids)}", child_rows(level, folder, root, data, mode, "Plan"),
+                     "how the work is divided", open_=True, key="children")
+    return body
+
+
+def execution_view(level, folder, root, data):
+    every = [r for rs in data.values() for r in rs]
+    return (part("Result") + hot_runs(every, root) + status_tree(level, folder, root, data, "Audience Report")
+            + '<p class=mut>Status comes from Run records, not a process health check.</p>')
+
+
+def results_view(level, folder, root, data, mode, theme):
+    body = part("Operation")
+    report = folder / "workflow/report.yaml"
+    body += card("📝 Result interpretation", '<p>' + source_link(frame.face(folder), root, "Open the description and its interpretation")
+                 + '</p><p class=mut>Interpretations stay on their pages; the numbers below come from Runs and change no conclusion.</p>',
+                 key="interpretation")
+    body += card("🧾 Execution report", '<p>' + (source_link(report, root) or "No workflow/report.yaml saved") + '</p>',
+                 "saved" if report.is_file() else "not saved", key="report")
+    body += part("Result")
+    for task, rows in data.items():
+        chain = frame.chain(task, root)
+        name = " / ".join(chain[k].name for k in ("Job", "Task") if k in chain) or task.name
+        content = frame.table(("Run", "Key result", "Source"), [
+            (run_link(r, root), e(r["headline"] or "No result summary recorded"),
+             source_link(r["receipt_path"], root, "Run record") or "Not recorded") for r in sorted(rows, key=lambda r: r["run"])])
+        content += '<p>' + source_link(frame.face(task), root, "Read the Task's interpretation") + '</p>'
+        with_head = sum(1 for r in rows if r["headline"])
+        body += card(f"📊 {name}", content, f"{with_head} of {runs_n(len(rows))} with a key result", open_=level == "Task",
+                     key="res-" + frame.rel(task, root))
+    return body + card("❓ Questions and reports", frame.report_view(level, folder, root, theme), key="questions")
+
+
+REFRESH = """<script>(function(){
+let timer;const selector='[data-work-progress]';
+async function refresh(){
+ if(document.hidden){timer=setTimeout(refresh,20000);return;}
+ const current=document.querySelector(selector);if(!current)return;
+ if(current.contains(document.activeElement)&&/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)){
+  timer=setTimeout(refresh,20000);return;}
+ const opened=[...current.querySelectorAll('details[open][data-work-key]')].map(el=>el.dataset.workKey);
+ try{const response=await fetch(location.href,{cache:'no-store'});if(!response.ok)throw Error();
+  const doc=new DOMParser().parseFromString(await response.text(),'text/html');const next=doc.querySelector(selector);
+  if(!next)throw Error();next.querySelectorAll('details[data-work-key]').forEach(el=>el.open=opened.includes(el.dataset.workKey));
+  current.replaceWith(next);
+ }catch(err){const status=current.querySelector('[data-work-refresh]');if(status)status.textContent='Refresh failed; showing the last records';}
+ timer=setTimeout(refresh,20000);
+}
+timer=setTimeout(refresh,20000);window.addEventListener('pagehide',()=>clearTimeout(timer),{once:true});
+})();</script>"""
+
+
+STATE = (("running", "🚧 running", ("running", "started", "in_progress")),
+         ("finished", "✅ finished", ("complete", "completed", "done", "ok", "passed")),
+         ("partial", "🔶 partial", ("partial",)),      # some rows stored, the rest not (b02's binder writes it)
+         ("failed", "❌ failed", ("failed", "error", "crashed")),
+         ("blocked", "⛔ blocked", ("blocked",)),
+         ("waiting", "◌ waiting", ("proposed", "ready", "queued", "planned")))
+
+
+def state_of(row):
+    """A Run's recorded status, in one of five words (or no record): what its receipt or card says, never guessed."""
+    s = str(row.get("status") or "").strip().lower()
+    return next((k for k, _, words in STATE if s in words), "no record")
+
+
+def last_finish(rows):
+    done = [(str(r["receipt"].get("finished_at") or ""), r["run"]) for r in rows if r["receipt"].get("finished_at")]
+    return max(done) if done else ("", "")
+
+
+def status_board(level, folder, root, data=None):
+    """The Description's status (JL 261020: "show the status of each jobs and runs here ... what runs are running, and
+    what runs are finished"): the Result cards every view opens with."""
+    return part("Status") + status_cards(level, folder, root, data if data is not None else snapshot(level, folder), "Audience Report")
+
+
+def spaces(level, folder, root, sub, theme):
+    selected = sub if sub in VIEWS else "Goal"
+    data = snapshot(level, folder)
+    out = {}
+    for mode in MODES:
+        if selected == "Goal":
+            body = goal_view(level, folder, root, data, mode)
+        elif selected == "Plan":
+            body = plan_view(level, folder, root, data, mode)
+        elif selected == "Execution":
+            body = execution_view(level, folder, root, data)
+        else:
+            body = results_view(level, folder, root, data, mode, theme)
+        live = selected in ("Goal", "Execution")
+        timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+        stamp = f'<p class=mut data-work-refresh>Last read at {timestamp} · Refreshes every 20 seconds</p>' if live else ''
+        body = re.sub(r"<table(?=[\s>])", "<div class=work-table-scroll><table", body).replace('</table>', '</table></div>')   # every table, classed or not, so each wrap closes
+        body = f'<section class=workflow-view data-work-progress="{e(selected)}">{stamp}{body}</section>' + (REFRESH if live else '')
+        label, verb = {"Goal": ("Define the goal and completion criteria", "plan"), "Plan": ("Create a run plan", "plan"),
+                       "Execution": ("Execute the plan", "execute"), "Results": ("Write the result interpretation", "report")}[selected]
+        prompt = (f"/haipipe-task {verb} {{folder}}" if level == "Task" else
+                  f"Read {{folder}} and its Tasks. {label}. Preserve each Task's own plan, Runs and results.")
+        run_name = "rNN_<slug>" if verb == "execute" else f"run-{verb}-{folder.name.split('_')[0]}"
+        kinds = (frame.run_type(run_name, label, prompt, "haipipe-task"),)
+        if selected == "Plan" and mode == "Work Details":
+            kinds += (frame.run_type(f"run-build-{folder.name.split('_')[0]}", "Prepare code and configuration for the plan",
+                                     "/haipipe-task build {folder}" if level == "Task" else
+                                     "Build the planned Tasks under {folder} through each Task's own workflow.", "haipipe-task"),)
+        if mode == "Audience Report":
+            kinds = (frame.run_type(f"run-report-{folder.name.split('_')[0]}", "Update the result interpretation",
+                                   "Read {folder} and its source records. Explain what the results establish and what remains open.", "haipipe-task"),)
+        out[mode] = frame.Space(html=body, subspaces=VIEWS, open=selected, run_types=kinds, page=True,
+                               disk=(("workflow/", "saved plan and report, when present"),
+                                     ("runs/", "existing Run cards and receipts")))
+    md = frame.face(folder)                                                  # Description: the face, then its status
+    if md:
+        rows = [(e(k), e(v)) for k, v in frame._fields(md)]
+        desc = (f'<h2>{e(frame._title(md))}</h2><p class=mut>{frame.link(frame._reader(md, root), frame._rel(md, root))}</p>'
+                + (frame._table(("field", "value"), rows) if rows else ""))
+        head, fields = desc.split("<table", 1) if "<table" in desc else (desc, "")
+        out["Description"] = frame.Space(html=head + goal_cards(level, folder, root, data, "Audience Report")
+                                         + status_board(level, folder, root, data)
+                                         + (part("Face fields") + "<table" + fields if fields else "") + REFRESH)
+    return out
+
+
+IMAGES = (".png", ".jpg", ".jpeg", ".svg", ".gif", ".webp")
+TEXTS = (".json", ".yaml", ".yml", ".txt")
+
+
+def file_url(path, root):
+    return "/" + "/".join(quote(part) for part in frame.rel(path, root).split("/"))
+
+
+def csv_preview(path, n=12):
+    """A CSV's first rows as a table, and how big it is (JL 261021: "why I cannot do the preview of the csv")."""
+    import csv
+    import itertools
+    try:
+        with path.open(newline="", encoding="utf-8", errors="replace") as fh:
+            rows = list(itertools.islice(csv.reader(fh), n + 1))
+        total = sum(1 for _ in path.open(encoding="utf-8", errors="replace")) - 1 if path.stat().st_size < 30_000_000 else None
+    except (OSError, csv.Error):
+        return 0, 0, "<p class=mut>Could not read this file.</p>"
+    if not rows:
+        return 0, 0, "<p class=mut>Empty file.</p>"
+    return total, len(rows[0]), rows_table(rows[0], rows[1:])
+
+
+CSVP_CSS = ("<style>.csvp-wrap{overflow-x:auto;margin:4px 0 10px}"
+            ".csvp{margin:0;width:auto}.csvp th,.csvp td{white-space:nowrap;padding:4px 10px;font-size:12.5px}"
+            ".csvp th{position:sticky;top:0;background:var(--wash)}.csvp tr:nth-child(even) td{background:var(--wash)}"
+            ".dossier{color:var(--fg);font-size:13px;line-height:1.5}.dossier h1{font-size:17px;margin:0 0 6px}"
+            ".dossier h2{font-size:14px;margin:12px 0 4px}.dossier ul{margin:2px 0 6px;padding-left:18px;list-style:disc}"
+            ".dtree .dossier li{padding:0;line-height:1.5}.dtree .dossier li::before,.dtree .dossier li::after{display:none}</style>")
+NUMBER = re.compile(r"^-?[\d,]*\.?\d+(e-?\d+)?%?$")
+
+
+def rows_table(header, rows):
+    """A table that reads: one line per cell, a long value cut with its whole text on hover, numbers to the right
+    (JL 261021: "things here is so hard to read")."""
+    def cell(v, tag="td"):
+        v = "" if v is None else str(v)
+        short = v if len(v) <= 48 else v[:45] + "…"
+        right = ' style="text-align:right"' if tag == "td" and NUMBER.match(v.strip() or "x") else ""
+        return f'<{tag}{right} title="{e(v)}">{e(short)}</{tag}>'
+    head = "".join(cell(h, "th") for h in header)
+    body = "".join("<tr>" + "".join(cell(v) for v in r) + "</tr>" for r in rows)
+    return f'<div class=csvp-wrap><table class="wf-table csvp"><thead><tr>{head}</tr></thead><tbody>{body}</tbody></table></div>'
+
+
+def parquet_rows(path, n=12):
+    """A data table's first rows and its size, read without loading the whole file."""
+    try:
+        import pyarrow.parquet as pq
+        f = pq.ParquetFile(path)
+        batch = next(f.iter_batches(batch_size=n), None)
+        rows = batch.to_pylist() if batch is not None else []
+        return f.metadata.num_rows, f.schema_arrow.names, [[r.get(c) for c in f.schema_arrow.names] for r in rows]
+    except Exception:                                              # an unreadable file shows as unreadable, never breaks the page
+        return None, [], []
+
+
+def data_tables(row, root):
+    """The data tables a Run's page shows rows of (JL 261021: "could you show some data rows as well?"): the tables
+    it wrote (its heavy.yaml), and for a Run that describes a table, that table."""
+    res = row["path"] / "result" if row.get("path") else None
+    out = [root / str(h["path"]) for h in (read_yaml(res / "heavy.yaml").get("heavy") or [] if res else [])
+           if isinstance(h, dict) and str(h.get("path", "")).endswith(".parquet")]
+    if role_of(row) == "describe":
+        out += [root / str(x) for x in row["card"].get("reads") or [] if str(x).endswith(".parquet") and "{" not in str(x)]
+    seen = []
+    return [p for p in out if p.is_file() and not (p in seen or seen.append(p))]
+
+
+def data_section(row, root):
+    tables = data_tables(row, root)
+    if not tables:
+        return ""
+    out = f"<h3>Data rows · {len(tables)}</h3>"
+    for path in tables:
+        total, names, rows = parquet_rows(path)
+        size = f"{total:,} rows × {len(names)} columns, first {len(rows)} shown" if total is not None else "could not be read"
+        out += (f'<details open data-work-key="rows-{e(path.name)}"><summary><b>{e(path.name)}</b> <span class=mut>{e(size)}</span>'
+                f'<div class=mut style="font-size:12px">{e(frame.rel(path, root))}</div></summary>'
+                + (rows_table(names, rows) if rows else "") + "</details>")
+    return out
+
+
+def outputs(files, root):
+    """A Run's outputs shown, not only linked: figures as pictures, tables as their first rows, small text files and the
+    log folded in place; a page (.md, .html) opens in its reader."""
+    figs = [p for p in files if p.suffix.lower() in IMAGES]
+    csvs = [p for p in files if p.suffix.lower() == ".csv"]
+    texts = [p for p in files if p.suffix.lower() in TEXTS]
+    logs = [p for p in files if p.suffix.lower() == ".log"]
+    pages = [p for p in files if p not in figs + csvs + texts + logs]
+    out = CSVP_CSS
+    if figs:
+        out += f"<h3>Figures · {len(figs)}</h3><div style=\"display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:16px\">"
+        out += "".join(f'<figure style="margin:0"><a href="{file_url(f, root)}" target=_blank rel=noopener><img src="{file_url(f, root)}" '
+                       f'alt="{e(f.name)}" loading=lazy style="width:100%;border:1px solid var(--line);border-radius:8px;background:#fff"></a>'
+                       f'<figcaption class=mut style="font-size:12.5px;margin-top:4px">{e(f.name)}</figcaption></figure>' for f in figs) + "</div>"
+    if csvs:
+        out += f"<h3>Tables · {len(csvs)}</h3>"
+        for n, f in enumerate(csvs):
+            total, cols, table = csv_preview(f)
+            size = (f"{total:,} rows × {cols} columns" if total is not None else f"{cols} columns") + (", first 12 shown" if total and total > 12 else "")
+            out += (f'<details{" open" if n < 3 else ""} data-work-key="csv-{e(f.name)}"><summary><b>{e(f.name)}</b> '
+                    f'<span class=mut>{e(size)}</span> <a href="{file_url(f, root)}" target=_blank rel=noopener>open</a></summary>{table}</details>')
+    if pages:
+        out += "<h3>Pages</h3><ul>" + "".join(f"<li>{source_link(f, root)}</li>" for f in pages) + "</ul>"
+    if texts or logs:
+        out += "<h3>Records and logs</h3>"
+        for f in texts + logs:
+            text = text_of(f)
+            text = "\n".join(text.splitlines()[-60:]) if f.suffix == ".log" else text[:4000]
+            out += (f'<details data-work-key="txt-{e(f.name)}"><summary><b>{e(f.name)}</b> '
+                    f'<span class=mut>{"last 60 lines" if f.suffix == ".log" else ""}</span></summary><pre>{e(text)}</pre></details>')
+    return out
+
+
+def browse_url(folder, root, item, **keys):
+    q = {"view": "work-browse", "path": frame.rel(folder, root), "item": item}
+    q.update({k: v for k, v in keys.items() if v not in (None, "")})
+    return frame.ROUTE + "?" + urlencode(q)
+
+
+def _parquet(path, columns=None):
+    import pyarrow.parquet as pq
+    return kept(("pq", str(path), path.stat().st_mtime_ns, tuple(columns or ())),
+                lambda: pq.read_table(path, columns=columns, partitioning=None), seconds=600)
+
+
+def fact(column, value):
+    """A card's value said with its unit, so a bare number never stands alone: 58 years, 13 reviews."""
+    text = str(value).replace(",", ", ") if column.endswith("_list") else str(value)
+    if column.endswith("_years"):
+        return f"{text} years"
+    if "review_count" in column:
+        return f"{text} review" + ("" if text == "1" else "s")
+    return text
+
+
+def render_browse(folder, root, get):
+    """The finished set a deliverable describes, browsed like the site it is (JL 261021: "我在哪里可以看到我最终的 Virtual
+    Set 的成品呢？"): its index level by level (state, city, page), a page's records as cards, one record whole. Its
+    `browse:` spec names the set's folder, its index, the index's keys and the record's text and picture fields.
+    Returns (body, content type); a picture is sent as its bytes."""
+    try:
+        n = int(get("item") or 0)
+        item = deliverables(folder)[n]
+    except (ValueError, IndexError):
+        return None, ""
+    spec = item.get("browse") or {}
+    site = root / str(spec.get("root") or "")
+    index = site / str(spec.get("index") or "")
+    if not spec or not index.is_file() or not site.resolve().is_relative_to(root.resolve()):
+        return None, ""
+    keys = spec.get("keys") or ["state", "city", "specialty"]
+    man = _parquet(index).to_pandas()
+    picked = [get(k) for k in keys]
+    count = spec.get("count")
+    if all(picked):                                      # one page: its records
+        hit = man
+        for k, v in zip(keys, picked):
+            hit = hit[hit[k] == v]
+        if hit.empty:
+            return None, ""
+        page = site / str(hit.iloc[0][spec.get("file", "file_path")])
+        if not page.resolve().is_relative_to(site.resolve()):
+            return None, ""
+        table = _parquet(page)
+        if get("img") not in (None, ""):                 # a record's picture, as bytes
+            row = table.slice(int(get("img")), 1).to_pylist()
+            pic = row[0].get(spec.get("image")) if row else None
+            return (pic, str(row[0].get("portrait_content_type") or "image/jpeg")) if pic else (None, "")
+    title = "Browse · " + item["what"]
+    trail = [frame.link(browse_url(folder, root, n), "All")]
+    for i, k in enumerate(keys):
+        if picked[i]:
+            trail.append(frame.link(browse_url(folder, root, n, **dict(zip(keys[:i + 1], picked[:i + 1]))), e(picked[i])))
+    body = f'<h1>{e(title)}</h1><p class=mut>{" › ".join(trail)} · {e(short_folder(item, frame.rel(site, root), root))}</p>'
+    level = next((i for i, v in enumerate(picked) if not v), len(keys))
+    if level < len(keys):                                # a level of the index: its values, with pages and records
+        sub = man
+        for k, v in zip(keys[:level], picked[:level]):
+            sub = sub[sub[k] == v]
+        g = sub.groupby(keys[level]).agg(pages=(keys[level], "size"), **({"records": (count, "sum")} if count in sub else {}))
+        g = g.sort_values("records" if "records" in g else "pages", ascending=False)
+        links = "".join(
+            f'<a class=bw-item href="{e(browse_url(folder, root, n, **dict(zip(keys[:level + 1], picked[:level] + [name]))))}" '
+            f'data-name="{e(str(name).lower())}"><b>{e(name)}</b><span class=mut>'
+            + (f'{int(r.records):,} physicians · ' if "records" in g else "") + f'{int(r.pages):,} pages</span></a>'
+            for name, r in g.iterrows())
+        body += (f'<p><input class=bw-find placeholder="Find a {e(keys[level])}" oninput="const q=this.value.toLowerCase();'
+                 f'document.querySelectorAll(\'.bw-item\').forEach(a=>a.style.display=a.dataset.name.includes(q)?\'\':\'none\')"> '
+                 f'<span class=mut>{len(g):,} {e(keys[level])} values</span></p><div class=bw-grid>{links}</div>')
+    else:                                                # one page: its records as cards, then one whole
+        start = int(get("from") or 0)
+        cols = [c for c in spec.get("card") or [] if c in table.schema.names]
+        rows = table.select(cols).slice(start, 60).to_pylist()
+        chosen = get("row")
+        if chosen not in (None, ""):
+            full = table.slice(int(chosen), 1).to_pylist()[0]
+            from live import page_reader
+            pic = f'<img src="{e(browse_url(folder, root, n, **dict(zip(keys, picked)), img=chosen))}" style="width:140px;flex:none">' \
+                if full.get(spec.get("image")) else ""
+            body += ('<h2>One record, whole</h2><div style="display:flex;gap:18px;align-items:flex-start">' + pic
+                     + f'<div class=dossier style="flex:1;min-width:0">{page_reader.markdown_html(str(full.get(spec.get("record")) or ""))}</div></div>'
+                     + f'<details><summary><b>All {len(full)} fields</b></summary>'
+                     + rows_table(("field", "value"), [(k, v) for k, v in full.items() if not isinstance(v, (bytes, bytearray))])
+                     + "</details>")
+        cards = ""
+        for i, r in enumerate(rows, start):
+            link = browse_url(folder, root, n, **dict(zip(keys, picked)), row=i, **({"from": start} if start else {}))
+            img = browse_url(folder, root, n, **dict(zip(keys, picked)), img=i)
+            label = e(str(r.get(cols[0]) if cols else i))
+            facts = " · ".join(e(fact(c, r[c])) for c in cols[1:] if r.get(c) not in (None, "", "Not reported in the held sources"))
+            cards += (f'<a class=bw-card href="{e(link)}"><img loading=lazy src="{e(img)}" alt="" onerror="this.style.visibility=\'hidden\'">'
+                      f'<span><b>{label}</b><br><span class=mut>{facts}</span></span></a>')
+        more = (f'<p>{frame.link(browse_url(folder, root, n, **dict(zip(keys, picked)), **{"from": start + 60}), "Next 60 ▸")}</p>'
+                if start + 60 < table.num_rows else "")
+        body += f'<h2>{table.num_rows:,} records on this page</h2><div class=bw-cards>{cards}</div>{more}'
+    css = ("<style>.bw-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px 14px}"
+           ".bw-item{display:flex;justify-content:space-between;gap:8px;padding:4px 2px;text-decoration:none;color:var(--fg)}"
+           ".bw-item:hover b{text-decoration:underline}.bw-find{font:inherit;padding:4px 10px;border:1px solid var(--line);border-radius:999px;width:260px}"
+           ".bw-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px 16px}"
+           ".bw-card{display:flex;gap:10px;align-items:flex-start;text-decoration:none;color:var(--fg);padding:4px}"
+           ".bw-card img{width:48px;height:64px;object-fit:cover;flex:none;background:var(--wash)}.bw-card:hover b{text-decoration:underline}</style>")
+    page_html = ('<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">'
+                 f'<title>{e(title)}</title><style>' + frame.CSS + frame.WORK_CSS + '</style>' + CSVP_CSS + css
+                 + '</head><body><main>' + body + '</main></body></html>')
+    return page_html, "text/html; charset=utf-8"
+
+
+def render_run(folder, root, name):
+    """One exact Run; name is matched against records, never used as a path."""
+    row = next((r for r in records(folder) if r["run"] == name), None)
+    if row is None:
+        return None
+    receipt, card = row["receipt"], row["card"]
+    title = address(row, root)
+    body = '<h1>' + e(title) + '</h1><p>' + nav(folder, root, "Audience Report", "Execution", "Back to Task · Execution") + '</p>'
+    body += '<h2>Goal · Purpose and inputs</h2>' + frame.table(("Field", "Value"), [
+        ("Purpose", e(row["purpose"] or "Not recorded separately")), ("Target / version", e(row["target"])),
+        ("Input", '<pre>' + e(show(receipt.get("inputs") or card.get("inputs"))) + '</pre>'),
+        ("Completion criteria", e(show(card.get("close") or receipt.get("close"))))])
+    body += '<h2>Execution · Run record</h2>' + frame.table(("Field", "Value"), [
+        ("Status", e(row["status"])), ("Execution location", e(show(location(receipt)))),
+        ("Started at", e(show(receipt.get("started_at")))), ("Finished at", e(show(receipt.get("finished_at")))),
+        ("Elapsed time", e(elapsed(receipt))), ("Progress", e(show(receipt.get("progress")))),
+        ("Worker", e(show(receipt.get("worker") or card.get("agent")))),
+        ("Code revision", e(show(receipt.get("git_sha")))), ("Exit code", e(show(receipt.get("exit_code")))),
+        ("Error", e(show(receipt.get("failure"))))])
+    if row["source"].get("audit"):
+        body += '<h3>Record checks</h3><ul>' + ''.join('<li>' + e(note) + '</li>' for note in row["source"]["audit"]) + '</ul>'
+    body += '<h2>Results · Findings and interpretation</h2><p>' + e(row["headline"] or "No result summary recorded") + '</p>'
+    if "asset-parity" in row["types"]:
+        body += '<p>The parity check establishes whether frozen answers match the corresponding service. It does not establish answer accuracy.</p>'
+    body += '<p>' + source_link(frame.face(folder), root, "Read the full Task interpretation") + '</p>'
+    result = row["source"].get("result_path")
+    if not result and row["path"].is_dir():
+        result = row["path"] / "result"
+    files = []
+    if result and result.is_dir() and result.resolve().is_relative_to(root.resolve()):
+        files = [p for p in sorted(result.iterdir()) if p.is_file() and not p.is_symlink()][:60]
+    body += data_section(row, root) + outputs(files, root)
+    body += '<details data-work-key=passes><summary>Passes · Execution attempts within this Run</summary><pre>' + e(show(card.get("passes"))) + '</pre></details>'
+    stamp = '<p class=mut data-work-refresh>Last read at ' + datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC') + ' · Refreshes every 20 seconds</p>'
+    body = '<section class=workflow-view data-work-progress=Run>' + stamp + body + '</section>' + REFRESH
+    return ('<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">'
+            '<title>' + e(title) + '</title><style>' + frame.CSS + frame.WORK_CSS
+            + '</style></head><body><main>' + body + '</main></body></html>')
+

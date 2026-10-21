@@ -1,3 +1,8 @@
+## 0.11.0 · 2026-10-19 · The story keeps its venue list; the rules stay here
+
+- A telling lists where it could go in its face's `### 9 · Venues` (venue, kind, why it fits, the questions it leads
+  with, what it still needs, its desk record) (JL 261019: "我们要不要把这个 venue 直接塞到这个 story 里面去？ ... 也要想想它适合什么样的 journal，然后搞出来一个 journal list or conference list"). Each row links to its desk record here and copies no rule.
+
 ## 0.10.0 · 2026-10-07 · A paper's venues/<venue>/ (b16 Q05)
 
 - On the ladder a paper Board keeps its venues in `venues/<venue>/`: `call.md` (the call as read on one day; new scaffold `ref/call-template.md`) and `kit/`. The run cards Add a venue (`run-add-venue-<venue>`) and Check the rules (`run-check-venue-<venue>`) write and recheck them; a version's build and Requirement read its venue's `call.md`. The shared Venue Page stays the library, named by `bank:`; one home for both is open (Q02). `template.md` stays where it is, since the bank's Pages link to it.

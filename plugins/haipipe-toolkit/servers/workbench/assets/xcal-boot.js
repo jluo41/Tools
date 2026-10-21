@@ -222,7 +222,8 @@
     box = box ? [Math.min(box[0], b[0]), Math.min(box[1], b[1]),
                  Math.max(box[2], b[2]), Math.max(box[3], b[3])] : b;
   });
-  if (box) {
+  function fit() {                               // the whole drawing (or the frames) centred in this window
+    if (!box) return;
     var vw = innerWidth || 1200, vh = innerHeight || 800, pad = 48;
     var z = Math.min(1, (vw - 2 * pad) / Math.max(1, box[2] - box[0]),
                         (vh - 2 * pad) / Math.max(1, box[3] - box[1]));
@@ -230,6 +231,23 @@
     st.zoom = { value: z };
     st.scrollX = (vw / z - (box[2] - box[0])) / 2 - box[0];
     st.scrollY = (vh / z - (box[3] - box[1])) / 2 - box[1];
+  }
+  fit();
+  // An embed can boot before its frame is laid out (a row just opened, a tab in the background): its window is
+  // then 0 or 300 x 150 wide, and the fit above centres the drawing in a box that is not the one shown (JL 261019:
+  // "when I click it, the draw will in the center of the page"). So the app waits, at most 2 s, for a real size,
+  // and the fit is made again with it.
+  function sized() {
+    return new Promise(function (res) {
+      var t0 = Date.now();
+      (function wait() {
+        if ((innerWidth >= 200 && innerHeight >= 200) || Date.now() - t0 > 2000) return res();
+        requestAnimationFrame(wait);
+      })();
+    }).then(function () {
+      fit();
+      localStorage.setItem(K_ST, JSON.stringify(st));
+    });
   }
 
   if (canvasEdit) {
@@ -263,7 +281,7 @@
   /* ---- 1b. the images, then let the app boot ------------------------- */
   // Nothing above this point is async, so the app is held for exactly as long
   // as the image seed takes, and not one frame longer.
-  put_files(scene.files).then(start, start);
+  put_files(scene.files).then(sized, sized).then(start, start);
 
   /* ---- 2. the badge: saving is invisible otherwise -------------------- */
   /* It COLLAPSES to its emoji after a few seconds (JL 260831: the full pill

@@ -1,6 +1,48 @@
 excalidraw-job · Changelog
 ==========================
 
+## [unreleased]
+
+- A CSV table column takes `words: n`: a long text cell (a column's meaning in a Table Card's `columns.csv`) shows its
+  first n words, so a description table stays a table (asked 261020 on Physician-SPACE LLMRec b01: "could we also
+  make the data descriptions over that table?").
+
+## [0.9.5] · 2026-10-19 · results in colour from real code; every In and Out with its path
+
+- Asked 261019 on Physician-SPACE LLMRec b01 s21 ("We will use the real python code generate result to report the
+  results here … do not use this black and white anymore") and s23 ("the data here is not complete … could you also
+  show the path for these data?").
+- `job_drawing.PALETTE` (the dataviz reference palette, light) and `bar_colors`: a bar's `color:`, else the chart's
+  `colors:` by label, else its `color:`, else the face's `job.colors` by name, else blue; grey for a total or an
+  absence. `bar_png` (`charts:`), `bars_png` (before light blue, after blue) and `bars_png_rows` (a hue per column)
+  no longer draw dark grey; excalidraw-task's `task_stairs.py` passes the face's `colors:` too.
+- `io_card`: an In or Out item is a string or `{item, path}`, its path one or a list, drawn under it in grey and broken
+  only after a slash, so it reads exactly as on disk; red `❓ not on this machine:` when no folder above the Job holds
+  it. Up to 6 items each (4 in a tight Job), was 3; an item's words up to 26 (16 tight), was 14, so none ends "…".
+  The classic, detail and explained frames read `{item, path}` too.
+- A fresh-agent test (preview of b01 j02) followed the skill, drew every path and found none missing; it asked
+  whether figure Runs share the palette and why a one-source chart is not blue: SKILL.md now says both.
+- Folder names, never new ones (JL 261019: "why the name here used is not the same as the task folder name or the
+  run folder name?"): `run_label` returns the Run's folder name; the Job (`jd.name_of`, from `job_info`'s `folder`),
+  each Task step, each results block and each folded line are drawn by folder name in every layout (staircase,
+  classic, detail, explained); a family step keeps its face title; a Run's filed title stands beside it as `📄 …`.
+  `job_check.py` rule 1 now requires each Task and Run folder name exactly (it matched `r02 · q4km` before).
+- `run_io` and `fit_line` (JL 261019: "show briefly about its input and output"): every Run card gets `📥 in:` and
+  `📤 out:`, one line each at the card's size, from the face's `runs: {in, out}`, run.yaml `reads:`/`writes:`, the
+  config (`_meta.input`, `input`, `grid_path`, `source(s)`, `output_root`, `final_root`), the receipt, its heavy.yaml,
+  else what `result/` holds; a path keeps whole names, a listing as many names as fit, else a count. `run_files` now
+  holds only 🧾 ticket and ⚙ config, each by its file name; `run_config` finds a Run's config in its own folder too.
+- Tests: two new (folder names; in and out), five updated from `t01 · …` and `r01 · …` to folder names.
+- `table_cell`: a column named `npi`, `id` or `…_id`, or one with `fmt: id`, prints as written (`1619084993`, never
+  `1,619,084,993`; LLMRec b01 s27's item2npi sample, 261019).
+- b01 s21-s23: In and Out rewritten with their paths from the build configs; s23's release named as the folder that
+  holds it (`v2026-09-full-three-platforms`, built as text-clean-v2). check.py 0 ❌, job_check.py clean on all three.
+- b02 j01 (LLMRec, 261019, "for these runs, they are not well management"): a Run card's 📥 reads a config's
+  `input_csv` or its inline `smoke_rows` ("1 query written in its config"), its 📤 a config's `output_dir` (the
+  CallStore campaign); a name too long for one line drops the `out:` word and keeps the name whole, and a grey card
+  widens to a full card when its 📥 or 📤 needs it, so no name breaks. s21: 33 Runs, 0 lines wrapped.
+- Results are bigger: `CHART_W` 1,200 px, was 800 (JL 261019: "the results can be larger, no need to be small").
+
 ## [0.9.4] · 2026-10-19 · a big Task folds by what its Runs do; three staircases or more; legacy bands
 
 - Asked 261019 on Physician-SPACE LLMRec b01 ("I don't think these sNN jNN well structured", then "I think we have the
@@ -18,6 +60,22 @@ excalidraw-job · Changelog
 - A folded card is as wide as its longest line (at most RUN_W), so a list card leaves no empty box beside it.
 - A proposed Run's card says `◌ proposed <date> · waits for a yes` in ink, and `🧩 needs first:` from its
   run.yaml, so it reads apart from a Run that only has not run yet (b01 s21 reader review, 261019).
+- The face's `folds: {tNN_task: [{title, runs}]}` folds the Runs it names into one titled card at any size (b01 j03
+  t04: r01-r09 only bind t05's receipts, now one card `binds t05's r01-r09 receipts, no rebuild`; s23 reader review).
+- A proposed Run never folds into its series (b01 s22 review: r58 had been one dim line in a dashed card); a series
+  card is dashed only when none of its Runs ran.
+- A card with a plan takes a row of its own; the rest keep the grid. Before, one planned Run turned every card of
+  its Task into a 1,700 px row (b01 j02 t02: 18 rows, 5,434 px tall; now 2,706).
+- A folded line drops the `·` after its Run number, so a 45-line Task fits check.py's 600 words; `run_yaml` reads a
+  Run without its folder as no card.
+- A `tables:` CSV table names its source under it (`runs/<run>/result/<file>`), as a figure does (JL 261019: "我想
+  知道在处理的时候，它是哪一个 run，以及它是哪一个 SNN"); a column may be `{at, label, items, sep}`, a joined list
+  cell showing its first `items` and `+k more`; `widths:` gives the columns' shares; a CSV picked by `where:` is read a
+  row at a time, past job_results.load's 4 MB (LLMRec b04 s27: t04 r01's key_npi_lists.csv, 4.98 MB).
+- A table's `cite: ["N ← b01 …", "Google ← b03 j01 t06 r01"]` draws one `↳` line per source under its file path, so
+  each column group says which Run it comes from (JL 261019 on b03 s22: "I think we should have more citaitons here").
+- A table of six columns or more sets its column names at 22 px and its cells 2 px smaller, so a name such as
+  "Sonnet" is not cut mid-word; each cited source stands on its own line.
 - Tests: `test_a_big_task_folds_by_series_each_run_marked`, three parts in `test_the_face_names_steps_and_two_staircases`,
   `test_a_task_numbered_before_the_bands_takes_the_next_number`. 29 pass.
 
@@ -130,7 +188,7 @@ excalidraw-job · Changelog
 - haipipe-studio `canvas.stairs` and `canvas.grid` now count results that rise above a frame, so a second
   staircase's results never reach into the frame above it.
 - Each chart is drawn once a build (`chart_png` keeps it), though a block is measured three times.
-- A fresh-agent test of this version (261014, j08 drawn into a scratch folder): the layout held (137 px above ①,
+- A fresh-agent test of this version (261014, b03 j03 drawn into a scratch folder): the layout held (137 px above ①,
   137 below, no overlaps, no crossings), and it found three gaps, now closed. Each block is titled with its step's
   own name, larger (`📊 t02 · <name>: results`); a bent line meets its block at that title, not its blank bottom;
   `preview --face <face.md>` draws a Job with a face's `job:` yaml (before, preview ignored every face).
@@ -289,7 +347,7 @@ excalidraw-job · Changelog
   explaining frame to neither a screen's size nor a dense frame's words.
 - Tests: `tests/test_job_ladder.py` (steps right, quiet reruns, charts and a table from results, a Task's figures and
   tables, frames as stairs); `test_job_drawing.py` reads the staircase.
-- First drawn: LLMRec `work/b04_analyses_of_llm_ranks/studio/s27` (j08: six charts from three Runs' metrics.json).
+- First drawn: LLMRec `work/b04_analysis_physician_visibility/studio/s27` (b03 j03: six charts from three Runs' metrics.json).
 - From a fresh-agent trial on LLMRec b03 s21 (the same day): a 📌 current Run never folds into the "more Runs" row;
   a chart's axis has a few ticks with thousands separators (they ran together); a settings or model cell prints
   71,427, not 7.143e+04. New test.

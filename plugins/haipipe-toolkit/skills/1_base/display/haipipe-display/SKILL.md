@@ -2,8 +2,8 @@
 name: haipipe-display
 description: "THE one door for display work: say what you want shown and this routes it to the right renderer by KIND, then the renderer writes a display unit per ref/display-unit-output-contract.md. Five renderers: 📊 haipipe-display-table · 📈 haipipe-display-figure · 📐 haipipe-display-diagram · 🎨 haipipe-display-illustration · ✒️ haipipe-display-tex (hand-authored TikZ, algorithm blocks, display equations). Use when user says 做表, 生成表格, regression table, 画图, 作图, generate figures, paper plots, 架构图, concept figure, make a display, render a unit, display unit, which renderer, /haipipe-display."
 metadata:
-  version: "0.3.7"
-  last_updated: "2026-09-08"
+  version: "0.3.8"
+  last_updated: "2026-10-20"
 ---
 
 # /haipipe-display · one door, five renderers, one unit contract
@@ -81,7 +81,7 @@ FigureSpec routes.
 ## 🚪 Where the unit lands
 
 **In a draft Task: `<task>/display/Display<n>-<slug>/`**, beside `draft/` and `evidence/` (JL 261016). A display is
-built on evidence: its README names `built_on:` cards of `<task>/evidence/cards.yaml` (CITE 4, WORK 1), and the numbers
+built on evidence: its README names `built_on:` cards of `<task>/evidence/cards.yaml` (CITE 4, VALUE 1), and the numbers
 it shows come from those cards' Runs, read with haipipe-evidence's `scripts/cards.py`, so a figure and the sentence
 citing it cannot disagree.
 

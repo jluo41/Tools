@@ -339,21 +339,16 @@ LINKS="$(find "$TASK_FOLDER" -type l -not -path '*/results/*' -not -path '*/runs
 if [ -n "$LINKS" ]; then
   echo "==> [warn] the Task folder links to an absolute path or into _WorkSpace; read it through its variable: $LINKS" >&2
 fi
-# The Result keeps the pointer to the heavy output: heavy.yaml lists each file, its size and sha256.
+# The Result keeps the pointer to the heavy output: heavy.yaml lists each file and its size (no content hash, JL 260928).
 if [ -d "$HEAVY_DIR" ] && [ -n "$(ls -A "$HEAVY_DIR" 2>/dev/null)" ]; then
   python3 - "$HEAVY_DIR" "$RESULTS_DIR/heavy.yaml" "$REPO_ROOT" <<'PY' || echo "==> [warn] could not write heavy.yaml" >&2
-import hashlib, os, sys
+import os, sys
 heavy, out, root = sys.argv[1:4]
 lines = [f"dir: {os.path.relpath(heavy, root)}", "files:"]
 for base, _, names in sorted(os.walk(heavy)):
     for name in sorted(names):
         path = os.path.join(base, name)
-        digest = hashlib.sha256()
-        with open(path, 'rb') as f:
-            for chunk in iter(lambda: f.read(1 << 20), b''):
-                digest.update(chunk)
-        lines += [f"  - path: {os.path.relpath(path, heavy)}", f"    bytes: {os.path.getsize(path)}",
-                  f"    sha256: {digest.hexdigest()}"]
+        lines += [f"  - path: {os.path.relpath(path, heavy)}", f"    bytes: {os.path.getsize(path)}"]
 os.makedirs(os.path.dirname(out), exist_ok=True)
 open(out, 'w').write('\n'.join(lines) + '\n')
 PY

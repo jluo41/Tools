@@ -802,7 +802,7 @@ def mind_map(b: dict, block: Path, plan: dict, folded: list, detail: int = 2, co
     bottom = max(yy, items_bottom) + 20
     mm_w = max(widths + [1800])
     _text(out, fid, X_ROOT, 24, f"🗂 {b['name']} · {b['title']} · the index", SIZE["title"], mm_w - 2 * X_ROOT)
-    _text(out, fid, X_ITEM, bottom, "read from each topic's face, each Job's face, Tasks and CHECKLIST, and reports/; "
+    _text(out, fid, X_ITEM, bottom, "read from each topic's face, each Job's face, Tasks and CHECKLIST, and the Questions' report pages; "
           "drawn by haipipe-studio block_index.py", SIZE["small"], mm_w - X_ITEM - 40)
     out.append(canvas.change_note(X_ROOT, bottom,
                                   "Job → Task names and recorded states expanded" if plan.get("tasks") else

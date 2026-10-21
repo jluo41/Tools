@@ -7,7 +7,7 @@ The [catalogue](run-catalog.md) identifies the authoritative domain profile.
 
 Use `(owner namespace/path, native Run id)` to identify a logical Run. Carry
 the owner's global address where one exists; local `r01` alone is ambiguous.
-A Result path/hash and any execution version travel with cross-Folder reuse.
+A Result path and its execution version travel with cross-Folder reuse.
 Never rename a producer to match its consumer or copy/symlink its Result merely
 to imitate a local dialect.
 
@@ -46,7 +46,7 @@ resolver. Scripts, config, notebooks and heavy external stores are supporting
 projections only; their existence is conditional. A config file or bare output
 directory is not proof of a commissioned Run. A Page DISPLAY unit may be the
 renderer's direct, caller-authorized output destination; the governed Result
-envelope records its path/hashes without a duplicate payload copy. Where a
+envelope records its paths without a duplicate payload copy. Where a
 consumer-serving Task profile permits this narrow Page-authority exception,
 its `result.yaml` and `runtime.yaml` remain in the resolved Task Result store.
 
@@ -71,7 +71,7 @@ a recovery finding; do not hide it or manufacture the missing half.
 
 ## Reuse, attempts, and new commissions
 
-Reuse a current accepted Result by exact identity/version/hash. Resume a
+Reuse a current accepted Result by exact identity and version. Resume a
 compatible open Run through its owner. Neither action allocates a duplicate.
 A delegated retry may retain its Run id only while intent, target, frozen
 inputs and acceptance remain unchanged; each retry is the next pass. Preserve
@@ -81,7 +81,9 @@ declared history adapter or report the gap before a destructive rerun.
 A material contract change requires a new commission and identity. Use
 `supersedes` only when the new work replaces the old target/result. Independent
 datasets and separate questions are not automatically superseding lineages.
-Published Results and closed history are immutable.
+Published Results and closed passes are immutable: never edited. Immutable is
+not forever: once a Run is replaced and nothing in use reads it, it is deleted
+(SKILL.md, Keep only meaningful Runs; `scripts/prune_runs.py`).
 
 ## Page interaction
 
@@ -116,7 +118,7 @@ Insight keeps its layout (proposed 261006): a question's Runs are
 execution maps to a pass. Until its owner adopts that, the binding below holds.
 
 The [Insight item contract](../../../../2_theme/insight/haipipe-page-insight/ref/instance-items.md)
-owns one immutable `riNN` binding to a base R Ticket/hash plus frozen
+owns one immutable `riNN` binding to a base R Ticket and version plus frozen
 research data, question, target and acceptance. Cross-owner evidence uses:
 
 ```text
@@ -131,7 +133,7 @@ Independent datasets never supersede one another. Preserve the base R.
 
 Count logical RI bindings once in Run inventory; expand versions only in an
 explicit execution-history view with its own count. Always pin the exact
-execution version/hash when consuming evidence. A base recipe is not another
+execution version when consuming evidence. A base recipe is not another
 executed Run merely because RI references it. Separately commissioned upstream
 production has its own native receipt and is counted separately.
 Read [Task calls](../../../../2_theme/insight/haipipe-page-insight/ref/task-calls.md)

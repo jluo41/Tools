@@ -93,7 +93,7 @@ homes:
   - ["older display/ lane", "…/evidence/display/<unit>/", "before Page Results; 98 found, 5 shown under legacy-outline-evidence"]
   - ["built copy", "<paper>/delivery/latex/displays/<unit>/", "a copy made for the paper; 5 found"]
   - ["🆕 the Task's display/", "<task>/display/Display<n>-<slug>/", "the one home to move to: beside draft/ and evidence/"]
-  note: "❓ Open 2: what moves and what is only read. The counts are folder counts found 261016, not units checked one by one."
+  note: "❓ Open 1: what moves and what is only read. The counts are folder counts found 261016, not units checked one by one."
 folders:
   frame: "Ⓑ One unit's folder: a real one, and the one Display1 would be"
   sub: "left: a real unit (Physician-SPACE, a Page Result payload) · right: the Overview Figure as a unit of Task 2.1, not made yet"
@@ -122,24 +122,24 @@ folders:
 screen:
   task: "Task · 2.1"
   line: "Draft · Block b21 · Task 2.1 · the Overview Figure (C8), cited by C3.P6 · B7 · S7"
-  tabs: ["Studio", "1 · Plan", "2 · Write", "3 · Evidence", "4 · Revise", "Delivery"]
+  tabs: ["Studio", "1 · Plan", "2 · Write", "3 · Evidence", "4 · Display", "5 · Revise", "Delivery"]
 tabs:
 - act: "Act 2 · Need and kind"
   step_arrow: "a need"
   key: "A sentence points at a figure. First say what the figure is for and which of the five kinds it is; the door haipipe-display routes by kind. Nothing is drawn yet."
   states:
   - title: "② Display · 1 of 2: a sentence that needs a figure"
-    tab: "3 · Evidence"
+    tab: "4 · Display"
     step: "🖼 Display · need"
     chip: "→ next"
     boxes:
     - title: "Input"
       rows: {Sentence: "C3.P6 · B7 · S7 in task21-draft-v1.11.md", Words: "The work will proceed in three steps (Overview Figure).", Needs: "a picture of the three steps", Reads: "evidence/cards.yaml"}
     prompt: "/haipipe-display <task> need: S7 points to the Overview Figure; say which kind it is and what it must be built on."
-    mark: "copy it, run it in Claude or Codex; the Display step has no tab of its own yet (Open 1)"
+    mark: "copy it, run it in Claude or Codex; it is the 4 · Display tab's prompt (s41-D04)"
     arrow: "the agent picks a kind"
   - title: "③ Display · 2 of 2: the kind, by the route table"
-    tab: "3 · Evidence"
+    tab: "4 · Display"
     step: "🖼 Display · kind"
     chip: "→ next"
     boxes:
@@ -156,7 +156,7 @@ tabs:
   key: "One folder per display, in the Task's display/, beside draft/ and evidence/. Its README says what it is built on; its recipe and data make the render, so anyone can draw it again."
   states:
   - title: "④ Display · built on evidence"
-    tab: "3 · Evidence"
+    tab: "4 · Display"
     step: "🖼 Display · built_on"
     chip: "→ next"
     boxes:
@@ -172,7 +172,7 @@ tabs:
   key: "The renderer draws from recipe/ and intake/ and compiles preview.pdf. Then the numbers in the picture are matched against the cards. A number typed straight into float.tex is a defect."
   states:
   - title: "⑥ Display · 1 of 2: render"
-    tab: "3 · Evidence"
+    tab: "4 · Display"
     step: "🖼 Display · render"
     chip: "→ next"
     boxes:
@@ -182,7 +182,7 @@ tabs:
     mark: "copy it, run it in Claude or Codex"
     arrow: "the agent renders"
   - title: "⑦ Display · 2 of 2: check the numbers against the cards"
-    tab: "3 · Evidence"
+    tab: "4 · Display"
     step: "🔍 Display · check"
     chip: "→ next"
     boxes:
@@ -200,7 +200,7 @@ tabs:
   key: "Only you accept: you look at preview.pdf, then write accepted: in the README. A renderer's score is advice and never accepts."
   states:
   - title: "⑧ Display · accept"
-    tab: "3 · Evidence"
+    tab: "4 · Display"
     step: "🖼 Display · Display1"
     chip: "✍ accept"
     boxes:
@@ -249,16 +249,21 @@ s41-D01 · A display gets one procedure topic, drawn the way b32 s41 draws the d
     b34, could we have the things like b32-s41?").
 s41-D02 · The worked example is the Task 2.1 Overview Figure, shown as not yet a unit, in red.
 s41-D03 · A display step has no tab of its own: it sits in 3 · Evidence (today's Evidence-Display tab folds there,
-    b32 s41 Ⓐ).
+    b32 s41 Ⓐ). Replaced by s41-D04.
+s41-D04 · Open 1 settled: the Display step is its own tab, 4 · Display, after 3 · Evidence; Revise becomes 5 · Revise
+    (JL 261020: "If we have the display, hwo do we make it? will it be the DISPLAY X? Or we want to have a new display
+    view after the 3 - Evidence? ... Please do it"). A unit is DISPLAY <n>, its folder's number. The tab shows the text a
+    row per sentence with each display beside the first sentence that calls it (by `shown as:`, a Table or Figure in
+    `label:` or its heading, or its `\label`), then each display folded on its own; it reads `display/Display<n>-*/`, else
+    a unit still in a display Run's newest pass. Built in workbench-task-draft `draft_steps._display_step`.
 
 
 Open
 ----
 
-1. Does the Display step get its own tab, or stay inside 3 · Evidence?
-2. Which of the 260 units move to `<task>/display/`, which are only read.
-3. A check of a figure's numbers against the cards: who writes it (haipipe-evidence's cards.py, or display).
-4. The unit contract keeps `accepted:` in the Page; a Task unit needs it in its own README.
-5. The sentence is C3.P6 · B7 · S7 but the figure is Section C8: which canvas shows its Display card.
+1. Which of the 260 units move to `<task>/display/`, which are only read.
+2. A check of a figure's numbers against the cards: who writes it (haipipe-evidence's cards.py, or display).
+3. The unit contract keeps `accepted:` in the Page; a Task unit needs it in its own README.
+4. The sentence is C3.P6 · B7 · S7 but the figure is Section C8: which canvas shows its Display card.
 
 (write here, or mark the drawing in red)

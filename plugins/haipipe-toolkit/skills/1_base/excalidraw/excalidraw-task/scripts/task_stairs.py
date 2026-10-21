@@ -59,11 +59,12 @@ def results_block(d: Drawing, x: float, y: float, r: dict, w: dict, cfg: dict, a
     Returns (height, open): open, dashed, when it shows none of these."""
     cw = jl.CHART_W
     width = cw + 2 * PAD
-    yy = d.para(x + PAD, y + PAD, f"📊 {r['rid'][:3] if re.match(r'^r\d\d_', r['rid']) else r['rid']} results",
+    yy = d.para(x + PAD, y + PAD, f"📊 {r['rid']} results",            # its folder name, exactly (261019)
                 width - 2 * PAD, T_RES - 2, GREY) + 4
     shown = 0
     specs = list((cfg.get("charts") or {}).get(r["rid"]) or w.get("charts") or [])
     for k, spec in enumerate(specs[:3]):
+        spec = {**spec, "_colors": cfg.get("colors")}                   # one source, one hue (excalidraw-job 0.9.5)
         png = jl.chart_png(spec, r.get("result"), assets / f"chart-{r['rid']}-{k}.png") if r.get("result") else None
         if png:
             yy = d.para(x + PAD, yy, str(spec.get("title", "")), width - 2 * PAD, T_RES, INK) + 4
@@ -126,7 +127,7 @@ def stairs_frame(d: Drawing, task: dict, folder: Path, runs: list, cfg: dict, as
     tid = folder.name[:3]
     noun = "Run" if task.get("work") or any(r.get("work") for r in runs) else "video"
     cols = jl.columns(len(runs))
-    title = f"🪜 {tid} · {task['title']}"
+    title = f"🪜 {folder.name}"
     width = max(130 + max(cols, default=0) * SHIFT + NODE_W + 60, 40 + TASK_W + 60,
                 Drawing.measure(title, T_TITLE) + 760)                 # the title and the badge side by side
     f = d.frame(f"① {title}: its {noun}s as steps", width)
@@ -145,7 +146,7 @@ def stairs_frame(d: Drawing, task: dict, folder: Path, runs: list, cfg: dict, as
     y += kh + 80
 
     # the top step: the Task, what it is and why it matters
-    th = card(d, 40, y, TASK_W, [(f"🧩 {tid} · {task['title']}", T_TASK, INK)], sw=3)
+    th = card(d, 40, y, TASK_W, [(f"🧩 {folder.name}", T_TASK, INK)], sw=3)   # its folder name (JL 261019)
     what = idea.get("intro") or idea.get("what") or task.get("what") or ""
     why = idea.get("why") or task.get("why") or ""
     under = [(f"What it is: {words(first_sentence(what), 30)}" if what else "", T_CARD, INK),

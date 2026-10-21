@@ -11,7 +11,7 @@ description: >-
   job, job staircase, tasks and runs, job results as charts, what did the job find, /excalidraw-job.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 metadata:
-  version: "0.9.4"
+  version: "0.9.5"
   last_updated: "2026-10-19"
   # version history: ./CHANGELOG.md
 ---
@@ -19,11 +19,34 @@ metadata:
 # /excalidraw-job · a Job as one drawing, a staircase
 
 > **Every Task and every Run is explicit (JL 261019).** Each Task is its own step, and each Run is its own card with
-> its full name (`r02 · q4km throughput fullctx calib`) and its state (`complete`, `queued`, `no result yet`),
+> its folder name (`r02_q4km_throughput_fullctx_calib`) and its state (`complete`, `queued`, `no result yet`),
 > whether or not it ran. Never draw "3 Runs: r01 · r02 · r03" as one grey card. Asked on Proj12 b13 s21: "you should
 > show me the tasks and runs to be very explicit … this is what we required in the /excalidraw-job". Only a Task of
 > more than 24 Runs folds, by what its Runs do (a series across folds, a family of one first word), and each folded
 > card lists every Run by its full name, one a line, with its state.
+
+> **Results are real code, in colour; In and Out name their paths (JL 261019).** "We will use the real python code
+> generate result to report the results here … do not use this black and white anymore", and of 📥 In and 📤 Out:
+> "the data here is not complete … could you also show the path for these data?". A results panel is a PNG that a
+> Run's own Python code drew from that Run's real result files (a figure Run, `figures:`); the drawing shows it and
+> never draws or retypes a number itself. Every bar takes a colour by what it is about (the dataviz palette in
+> `job_drawing.py` `PALETTE`): one source, one hue in every chart, a chart of one source all in that hue; a total, a
+> reference or an absence grey; blue only when a bar names no source; never all-dark bars. A Project's figure drawer
+> (LLMRec's `work/_tools/figures/draw_figures.py`) keeps the same `PALETTE` and names its sources once, so a figure
+> Run and a `charts:` panel agree. Each In and Out item is `{item, path}`, every input listed, its words whole (26
+> words), its path drawn under it exactly as on disk, red when this machine has no such file.
+
+> **Folder names, never new names; each Run says what it read and wrote (JL 261019).** "Why the name here used is not
+> the same as the task folder name or the run folder name? we don't need to create the new named to add the cognitive
+> burden to us", and of the Run cards: "we might want to show briefly about its input and output". The Job, each Task
+> and each Run are drawn by their folder names, exactly (`🧱 j01_physician_pool_by_region_specialty`,
+> `🧩 t01_ranks_from_review_platforms`, `r06_fold2to9_hgvitals`); only a family step the face names (`t17-t26`) keeps
+> its face title, and a paper's or video's own filed title stands beside its Run as `📄 …`. Every Run card carries
+> `📥 in:` and `📤 out:` (a Run on its own card; a folded card lists names only), one line each (`run_io`; `+3` means
+> three more files not shown), read from the face's `runs: {in, out}`, else `run.yaml` `reads:` and
+> `writes:`, else its config (`_meta.input`, `grid_path`, `sources:`, `output_root` …), else its receipt, the output
+> falling back to what `result/` holds; a path keeps its last whole names (`…/1-CandidatePool/v2026-08/grid_folds.parquet`)
+> and an empty side says `not recorded`. `job_check.py` fails a drawing that names any Task or Run otherwise.
 
 Asked 261012: "show the sNN as the excalidraw as the job, to make the job's aim, plan and results". Asked 261013 on
 Physician-SPACE's LLMRec Blocks, with a hand sketch (the Job, then T1, T2, T3 each a step lower and further right, a
@@ -43,7 +66,7 @@ Physician-SPACE's LLMRec Blocks, with a hand sketch (the Job, then T1, T2, T3 ea
 ① 🪜 the staircase (main, large)                    outside: within ①'s top and bottom, or past both equally;
                                                      past twice ①'s height: side-by-side columns
    🎯 the reading (the key point)
-   🧱 j08 · why · done when · answers ──▶ 📥 in · 📤 out
+   🧱 b03 j03 · why · done when · answers ──▶ 📥 in · 📤 out
     └─▶ 🧩 t01 · asks · did ─ r01 · r02 (grey) · r04 📌 current ───────────▶ 📊 t01: one sentence · charts
           └─▶ 🧩 t02 · asks · did ─ its Runs ──────────────────────────────▶ 📊 t02: tables · its figures
                 └─▶ 🧩 t03 … ──────────────────────────────────────────────▶ 📊 t03 (dashed while nothing is found)
@@ -78,9 +101,13 @@ The frames
    (`fold_groups`): a series of 3 or more that differ only in a two-digit counter (`fold01-09 brave v1`) is one card,
    a family of 5 or more sharing a first word without digits (`page-evidence-item`) another, at most 12 Runs a card;
    every other Run keeps its own card. Each folded Run is its own line, named in full, with its mark (JL 261019; LLMRec
-   b01 j02 t02 had shown its newest 20 Runs and folded folds 00-05 out of sight, unmarked).
-5. **Results are pictures**: a chart per `charts:` entry (three at most), a table per `tables:` entry (two at
-   most), then the Task's own figures. Each block is titled with its step's own name: `📊 t02 · <name>: results`.
+   b01 j02 t02 had shown its newest 20 Runs and folded folds 00-05 out of sight, unmarked). A 📌 current Run and a
+   ◌ proposed one never fold; the face's `folds:` folds Runs it names into one titled card at any size. A card with
+   a plan (aim, why, settings) takes a row of its own, 1,700 px wide; the others keep the grid.
+5. **Results are pictures, from real code, in colour**: the figures a figure Run's Python code drew from its real
+   result files first (`figures:`), else a chart per `charts:` entry (three at most), a table per `tables:` entry (two
+   at most). Every bar is coloured by what it is about (`jd.bar_colors`): its own `color:`, the chart's `colors:` by
+   label, the chart's `color:`, then the face's `colors:` by name, else blue; grey for a total or an absence. Each block is titled with its step's own name: `📊 t02 · <name>: results`.
    In a block they stand side by side, up to three a row, each under the shortest column so far; a long table
    (8 rows or more, a paper table) takes the columns nothing else fills, in parts of at least 4 rows.
 6. **No left-aligned frames**: ② and ③ step down and right (`canvas.stairs`); ② is small (`canvas.explains`).
@@ -105,11 +132,16 @@ The face's words
 
 ```yaml
 job:
-  name: j08_google_vs_direct_recommendation   # the Job folder, in the topic's Block
+  name: j03_google_vs_direct_recommendation   # the Job folder, in the topic's Block
   aim: "…"                       # the Job's meaning in one sentence; empty: its face's goal: line
   reading: "…"                   # what it found: the staircase's key point, the main result first (30 words)
-  inputs: [ … ]                  # what goes in, with counts (1 to 3 drawn); 📥 beside the Job
-  outputs: [ … ]                 # what comes out (1 to 3 drawn); 📤 beside the Job
+  inputs:                        # what goes in, with counts, EVERY input (up to 6 drawn); 📥 beside the Job
+  - {item: "The j01 pool: 1,029,246 physicians", path: _WorkSpace/…/1-CandidatePool/v2026-08/npi_pool.parquet}
+  - {item: "…", path: [<file>, <folder>/]}   # a string still works; path: one or a list, each drawn under the item
+                                 #   in grey, broken only after a slash; red ❓ when not found under the Job or any
+                                 #   folder above it (_WorkSpace/ under the SPACE root, work/ under the Project)
+  outputs: [ … ]                 # what comes out, the same shape (up to 6 drawn); 📤 beside the Job
+  colors: {HealthGrades: blue, Vitals: orange}   # one source, one hue: a bar whose label holds the name takes it
   tasks:                         # per Task folder
     t01_<task>: {asked: …, did: …, found: …}   # found: one sentence first; the results block shows that sentence
   steps:                         # a family of Tasks as one step; unasked, past 8 Tasks, 3 or more of one kind
@@ -122,9 +154,14 @@ job:
                                  #   at the middle step); key: each later one's key point, else its title
   runs:                          # per Run, `tNN_task/rNN_run`: what it is and what makes it differ (18 words)
     t01_<task>/r04_<run>: {says: "p12: the same audit on parser p1.2", current: true}   # current: 📌, the one to read
+    t01_<task>/r06_<run>: {in: "fold02-09 query rows", out: [PlatformRank/v2026-08/fold02/]}   # in, out: words for
+                                                                 #   📥 and 📤 when no file on disk says them
+  folds:                         # per Task: Runs the face folds into one titled card, whatever the Task's size
+    t04_<task>: [{title: "binds t05's r01-r09 receipts, no rebuild", runs: "r0[1-9]_*"}]   # runs: a glob or a list
   show: {}                       # per Run, values picked from its result (as job_results.py's show); a table when
                                  #   the Task names no chart or table
-  charts:                        # per Task: bars drawn with matplotlib from the current Run's result (or `run:`)
+  charts:                        # per Task: bars drawn with matplotlib from the current Run's result (or `run:`),
+                                 #   each bar coloured (color:, colors: {label: grey}); a figure Run comes first
     t02_<task>:
     - {title: "Jaccard with Google, by model (95% interval)", file: metrics.json, each: metrics.by_model,
        value: jaccard_low.point, low: jaccard_low.ci_lower, high: jaccard_low.ci_upper, fmt: pct}
@@ -144,6 +181,11 @@ job:
     t02_<task>:
     - {title: "Rank agreement by model", file: rank_agreement.csv, columns: [model_dir, kendall_tau_b_mean, n],
        sort: -kendall_tau_b_mean, rows: 6}   # where: "col=v&col2=v" keeps only those rows (one model of many)
+    - {title: "Table 1 (s27 · t04 r01_…), one key", run: r01_…, file: key_npi_lists.csv, where: "query_key=…",
+       widths: [1.8, 2.6, 2.6, 1.4], columns: [engine, {at: npi_list_search, label: searched NPIs, items: 2}]}
+                                 #   a column {at, label, items, sep}: a joined list shows its first items, "+k more";
+                                 #   {at, label, words: n}: a long text cell shows its first n words (a meaning)
+                                 #   every CSV table names its source under it: runs/<run>/result/<file>
                                  #   path: <file under the Block> in place of file: (a Task whose Runs keep none)
     t01_<papers>:                # a Task of one subject per Run (a paper): a row per Run, cells from each Run
     - {title: "Its papers", runs: true, rows: 12, columns: [{label: paper, at: "runtime.yaml:subject.title"},
@@ -259,7 +301,8 @@ python $S/job_check.py <topic folder>                                 # is the d
    its last Run (r58 after r01-r57), its type kept in `run.yaml` `run_type`.
 3. **Every card's state**: ✅ completed · ❌ failed, with its cause · 🔶 running · ⬜ ready (dashed) · ◌ proposed
    (dashed, with what it is for). A proposed Task's step is dashed; its results block says it is a plan, in grey.
-4. **Every card's files**: its ticket (🧾), its config (⚙), and what its `result/` holds (📂, the first four by name).
+4. **Every card's files**: `📥 in:` and `📤 out:` (what it read, what it wrote, one line each), then its ticket (🧾) and
+   its config (⚙), each by its file name.
 5. **Evaluate in three layers**: `check.py` for how it reads; `job_check.py` for what it claims (every Task and Run
    named, every card marked, every failure explained, every percentage in the words found in a result file, or in a
    Job the face lists under `cites:`); then a fresh reviewer reads it as a newcomer (haipipe-studio
@@ -275,7 +318,7 @@ Boundary
 | `excalidraw-task` | a Task's own topic: its videos or Runs, its answers, tables, formulas; pointed to as `→ details: sNN` |
 | `haipipe-studio` | the topic folder, numbering, sessions, `canvas.write`, `canvas.stairs` (frames as stairs), `canvas.explains` (a small explaining frame); `job_results.py`, whose `dig` reads a name with a dot whole |
 | `excalidraw-studio` | the principles every frame follows, `draw.py`, `check.py` (an explaining frame is not held to a screen) |
-| `dataviz` | how a chart reads: one series, no legend, quiet axes, whiskers for intervals |
+| `dataviz` | how a chart reads: its colours (the reference palette in `PALETTE`), no legend on labelled bars, quiet axes, whiskers for intervals |
 | `haipipe-job` | the Job face itself (`goal:`, `close:`, `answers:`, its Tasks in order); this skill only reads it |
 | `haipipe-discovery`, `haipipe-task` | the Task pages and Runs it reads; it never writes them |
 
@@ -292,8 +335,10 @@ excalidraw-job/
 ├── CHANGELOG.md                its versions
 ├── agents/openai.yaml          Codex's card
 ├── scripts/job_drawing.py      the readers, make, draw, adopt, preview; the classic, plain and explained frames; draw_job
-│                               sends every Job to the staircase unless the face says layout: classic, plain or explained
-├── scripts/job_ladder.py       the staircase, its results blocks (charts, tables, figures), its words frame; each Run
+│                               sends every Job to the staircase unless the face says layout: classic, plain or explained;
+│                               PALETTE and bar_colors, every chart's colours
+├── scripts/job_ladder.py       the staircase, its In and Out with paths (io_card), its results blocks (charts, tables,
+│                               figures), its words frame; each Run
 │                               card's state (✅ ❌ 🔶 ⬜ ◌, dashed until it ran), its cause or purpose, its files
 ├── scripts/propose_tree.py     proposed Tasks and Runs from a plan, each Run numbered by its type's band
 ├── scripts/job_check.py        a drawing against its disk: names, marks, causes, every percentage claimed
@@ -303,5 +348,5 @@ excalidraw-job/
 ```
 
 The first Jobs drawn: Knowledge-Base's Proj10-LLM-Baseline `discovery/b01_ml_foundations` s21 to s23 (adopted
-261012); the staircase's first, Physician-SPACE LLMRec `work/b04_analyses_of_llm_ranks` s27 (j08, 261013). Its own
+261012); the staircase's first, Physician-SPACE LLMRec `work/b04_analysis_physician_visibility` s27 (b03 j03, 261013). Its own
 Studio topic is Tools' `blueprints/b31_excalidraw/studio/s06-excalidraw-job/`.

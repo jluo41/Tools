@@ -139,6 +139,28 @@ def is_manuscript_heading(title):
     return bool(re.match(r"^\d+(?:\.\d+)*\s", title)) or \
         any(title.startswith(x) for x in UNNUMBERED_OK)
 
+# A structured abstract prints its labels (JL 261021, the JAMA IM Abstract printed seven unlabeled
+# paragraphs): on a Page whose head says `section_kind: abstract`, `### Key Points` is a division
+# and a `#### <label>` from this list is the bold run-in label of the paragraph under it. Any other
+# `####` stays a silent paragraph boundary, so a MISQ abstract's working labels never print.
+SECTION_KIND = re.compile(r"(?m)^section_kind:\s*(\S+)\s*$")
+ABSTRACT_DIVISIONS = ("Key Points",)
+ABSTRACT_LABELS = ("Question", "Findings", "Meaning", "Importance", "Objective", "Objectives",
+                   "Design, Setting, and Participants", "Exposure", "Exposures", "Intervention",
+                   "Interventions", "Main Outcomes and Measures", "Main Outcome and Measures",
+                   "Results", "Conclusions and Relevance", "Trial Registration")
+
+
+def is_abstract_page(raw_page):
+    m = SECTION_KIND.search(raw_page.split("\n## ", 1)[0])
+    return bool(m) and m.group(1).lower() == "abstract"
+
+
+def abstract_label(title):
+    """`2.1 · Question` or `Question` -> `Question`; None when it is not a label."""
+    name = re.sub(r"^\d+(?:\.\d+)*\s*(?:·\s*)?", "", title).strip()
+    return next((x for x in ABSTRACT_LABELS if x.lower() == name.lower()), None)
+
 NUMTOK = re.compile(r"[+-]?\d[\d,]*(?:\.\d+)?%?")
 
 
@@ -616,6 +638,7 @@ def parse_page(path, keep_fences=False):
     # and Word). Every other Page keeps the manuscript rules below, byte for byte.
     insight = bool(re.search(r"(?m)^folder-kind:\s*(data|information|knowledge|wisdom)\s*$",
                              raw_page.split("\n## ", 1)[0]))
+    abstract = is_abstract_page(raw_page)
     if page_title and not own_h1:
         blocks.append(("h", 1, page_title))
     in_fence, fenced = False, 0
@@ -654,7 +677,8 @@ def parse_page(path, keep_fences=False):
                 prev_was_para = False
                 continue
             skipping = any(title.startswith(x) for x in SKIP_DIVISIONS)
-            if not skipping and not is_manuscript_heading(title):
+            if not skipping and not is_manuscript_heading(title) \
+                    and not (abstract and title in ABSTRACT_DIVISIONS):
                 # working structure, not a manuscript division: its PROSE, if it
                 # has any, still belongs to the section, so do not set `skipping`
                 prev_was_para = False
@@ -693,6 +717,9 @@ def parse_page(path, keep_fences=False):
             # heading itself IS the paragraph boundary, and nothing downstream
             # could see that before, so joining had nowhere to break.
             blocks.append(("pbreak",))
+            label = abstract_label(s[5:]) if abstract else None
+            if label:
+                blocks.append(("label", label))
             prev_was_para = False
             continue
         if not s:
@@ -1610,9 +1637,13 @@ def main():
                                        f"rasterizable figure.pdf"))
                     placed.add(unit)
 
+        label = None      # a structured abstract's label, owed to the next paragraph
         for b in blocks:
             if b[0] == "skipped-lane":
                 skipped[b[1]] = skipped.get(b[1], 0) + 1
+                continue
+            if b[0] == "label":
+                label = b[1]
                 continue
             if b[0] == "pbreak":
                 if not a.no_displays:
@@ -1635,9 +1666,12 @@ def main():
                     place_due()
                 flush()
                 d.heading(b[1], b[2])
+                label = None
                 continue
             npara += 1
             rendered, auto = inline.render(b[1])
+            if label:
+                rendered, label = "**%s** %s" % (label, rendered), None
             sl = auto + [(k, v) for k, v in b[3]]
             for k, _v in sl:
                 if k not in lanes:

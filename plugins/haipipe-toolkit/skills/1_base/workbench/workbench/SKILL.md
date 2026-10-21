@@ -13,8 +13,8 @@ description: >-
   block, find a block, workbench link, page workbench, workbench folder,
   workbench roster, workbench tab, add a workbench, /wb, /workbench.
 metadata:
-  version: "1.28.1"
-  last_updated: "2026-10-19"
+  version: "1.29.0"
+  last_updated: "2026-10-21"
   aliases: [wb]
 ---
 
@@ -92,21 +92,34 @@ like /wb update-to-date path to the block"). `cli/wb.py update <Block>` hands it
 
 ```text
 1 shape      haipipe-project ladder.py audit           names, faces, folders, Run cards
-2 today      ladder.py audit --today                   studio topics, ## Questions, reports/, Block-only delivery/
+2 today      ladder.py audit --today                   studio topics, ## Questions, reports/, Block-only delivery/;
+                                                       a work Block's workflow layout (261021, below)
 3 plan       what moves, what is made, what is proposed
-4 apply      --apply: the safe moves, then runs/run-update-<bNN>/ with a pass holding proposals.md
+4 apply      --apply: the safe moves and missing Run roles, then runs/run-update-<bNN>/ with a pass holding proposals.md
 5 topics     haipipe-studio block_inventory.py          topics the Block's own Jobs and Tasks stand on
 6 Questions  the same reading                          Block and Job Questions where the Jobs' answers differ
 7 open       the Block's Studio link
 ```
 
+What a person and the agent do around those seven script steps:
+
 1. **Dry run first**: without `--apply` nothing is written; read all seven steps.
-2. **Apply**: `--apply --no-open` moves only data files out of `studio/` and writes the pass to tick.
+2. **Apply**: `--apply --no-open` moves data files out of `studio/`, sets a Run card's `kind:` when its name
+   and folder agree against it, writes a Task Run card's missing `role:`, and writes the pass to tick; no other
+   word changes.
 3. **Word it**: rewrite that `proposals.md` in the Block's words, per `haipipe-studio` `ref/infer-topics.md`
    and `haipipe-report` `ref/infer-reports.md`: the script's lines are candidates, not the answer.
 4. **Tick**: a person ticks `[x]` the lines to keep; nothing proposed is made before (b10 s10-D03).
 5. **Make**: ticked topics by `haipipe-studio` `new_topic.py topic`, their groups in `studio/_groups.txt`;
    ticked Questions by `haipipe-report` (`add-question --group`, the topic's group).
+6. **Workflow layout** (a work Block, LLMRec b01 and b02, 261021): the agent adds `workbench-layout: workflow`
+   to the Block's face;
+   each Job face its `emoji:` and `## Deliverables` (`haipipe-job` `ref/job-contract.md`), each work Task
+   face its `goal:` and `close:`, all written from the Job's and Task's own records, never guessed. A Run
+   whose receipt only stands in gets one rebuilt from the files it left (`haipipe-run`
+   `ref/receipts-and-inventory.md`). Then open the Block's Description and read the Goal tree.
+7. **Keep only the latest**: `haipipe-run` `prune_runs.py <Block>` lists the Runs that were replaced or
+   never ran; `--apply --only …` removes those a person agrees, `--to-old` keeps one git does not hold.
 
 A whole Project or theme folder: one agent per Block, each running steps 1 to 3 on its own Block.
 

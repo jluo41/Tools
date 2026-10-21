@@ -51,6 +51,12 @@ come; where a newcomer starts; what is proposed next.
 
 **A concept or design topic**: what is decided, what the options were and why this one, what is open, who answers.
 
+**A paper's plan, s03-paper-dataflow and s04-paper-workflow** (haipipe-paper-plan): its four reader questions, in its
+Steps. A gap the face cannot close because the drawer does not show it (excalidraw-workflow's `workflow_drawing.py`
+or `paperflow_drawing.py`), or that the story owns, is written once in the topic's Open for its owner ("for
+excalidraw-workflow: …", "for the story: …") and not reviewed again; the topic is done when every gap left is so
+listed.
+
 
 ## 1. Read it as a reader (the maker)
 

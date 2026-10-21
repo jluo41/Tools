@@ -142,6 +142,13 @@ def docx_html(path):
             if st is not None:
                 style = st.get(W + "val") or ""
         pieces, open_ids = ['<span class="anchor">' for _ in carry], list(carry)
+        # a bold RUN prints bold (JL 261021: a structured abstract's labels are bold runs in the
+        # .docx, and this projection printed them plain)
+        bold = set()
+        for r in p.iter(W + "r"):
+            b = r.find(W + "rPr/" + W + "b")
+            if b is not None and (b.get(W + "val") or "true").lower() not in ("0", "false"):
+                bold.update(r.iter(W + "t"))
         for el in p.iter():
             tag = el.tag
             if tag == W + "commentRangeStart":
@@ -158,7 +165,8 @@ def docx_html(path):
                                 % (n_card, html.escape(author),
                                    html.escape(txt).replace("\n", "<br>")))
             elif tag == W + "t":
-                pieces.append(html.escape(el.text or ""))
+                text = html.escape(el.text or "")
+                pieces.append("<b>%s</b>" % text if el in bold and text else text)
             elif tag == W + "br":
                 pieces.append("<br>")
             elif tag in (A + "blip", W + "blip"):

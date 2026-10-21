@@ -50,8 +50,14 @@ def emoji(seq, px):
     return _emoji[key]
 
 
+# Chinese, Japanese and Korean characters, which the code font (Menlo) lacks: drawn in the first FONTS face that
+# has them (Arial Unicode), so a Chinese cell shows as itself, not as boxes (b51 s01 ②, 261021)
+CJK = re.compile("([\u2E80-\u303F\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF\uFF00-\uFFEF]+)")
+
+
 def line_with_emoji(im, dr, x, y, line, f, fill, size):
-    """Draw one line left-aligned: its words in `f`, each emoji as a colour picture; returns nothing."""
+    """Draw one line left-aligned: its words in `f`, each emoji as a colour picture, each run of Chinese in a face
+    that has it; returns nothing."""
     for part in EMOJI.split(line):
         if not part:
             continue
@@ -59,9 +65,24 @@ def line_with_emoji(im, dr, x, y, line, f, fill, size):
         if pic is not None:
             im.paste(pic, (int(x), int(y + size * 0.1)), pic)
             x += pic.width + size * 0.15
-        else:
-            dr.text((x, y), part, fill=fill, font=f)
-            x += f.getlength(part)
+            continue
+        for run in CJK.split(part):
+            if not run:
+                continue
+            g = cjk_font(f) if CJK.fullmatch(run) else f
+            dr.text((x, y), run, fill=fill, font=g)
+            x += g.getlength(run)
+
+
+_cjk = {}
+
+
+def cjk_font(f):
+    """A face of `f`'s size that has Chinese characters, or `f` itself when none is installed."""
+    if f.size not in _cjk:
+        path = next((p for p in FONTS if Path(p).exists() and "Unicode" in p), None)
+        _cjk[f.size] = ImageFont.truetype(path, f.size) if path else f
+    return _cjk[f.size]
 
 
 def font(size, family=2):
@@ -142,7 +163,7 @@ def render(src, dst, s=None):
         for i, line in enumerate(e["text"].split("\n")):
             if e.get("textAlign") == "center":
                 dr.text((x + e["width"] * s / 2, y + i * step), line, fill=e["strokeColor"], font=f, anchor="ma")
-            elif EMOJI.search(line):
+            elif EMOJI.search(line) or CJK.search(line):
                 line_with_emoji(im, dr, x, y + i * step, line, f, e["strokeColor"], e["fontSize"] * s)
             else:
                 dr.text((x, y + i * step), line, fill=e["strokeColor"], font=f)

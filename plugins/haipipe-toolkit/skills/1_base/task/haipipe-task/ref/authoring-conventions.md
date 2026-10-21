@@ -155,7 +155,7 @@ small tables, figures, logs, and pointers. Heavy output lives in `_WorkSpace/`:
    (`$LOCAL_SOURCE_STORE`, ...) instead, because other Runs look it up by name.
 3. **What the Result keeps**: `heavy.yaml`, which the Ticket writes after the
    worker when `HEAVY_DIR` holds files: the folder's SPACE-relative path, then
-   each file's path, bytes and sha256.
+   each file's path and bytes (no content hash, JL 260928).
 4. **Never in the Task folder**: no copy of a heavy file and no symlink to an
    absolute path or into `_WorkSpace/` (`data/`, `src/cache/`, ...). Such a link
    stores an absolute path (AGENTS.md rule 7) and dangles on every other

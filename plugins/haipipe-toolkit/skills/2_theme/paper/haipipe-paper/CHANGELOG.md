@@ -1,3 +1,24 @@
+## 1.15.1 · 2026-10-20 · 4 · Display in a Section's steps
+
+- A Section's steps table gains 🖼 4 · Display (its Tables and Figures, numbered for the paper, within the venue's
+  limit; haipipe-display · haipipe-paper-evidence); Revise is 5 · Revise.
+
+## 1.15.0 · 2026-10-20 · A Section, step by step (JL 261020, b32 s41)
+
+- JL 261020: "Update the /haipipe-paper and /haipipe-draft and then apply it to" the version's Work. New
+  `### A Section, step by step`: a Section Task is worked in haipipe-draft's six steps (Studio · 1 · Plan · 2 · Write ·
+  3 · Evidence · 4 · Revise · Delivery), with the paper's own owner on each; 3 · Evidence's prompt is
+  `/haipipe-paper-evidence <task>`.
+- The workbench table: the version's Work shows each Section's six step chips, a click each into that tab; a Section's
+  Work is the six step tabs (the SUB-* rows in 1 · Plan); Report, Description and Delivery keep the rest.
+- A Section's Scratch is typed in 1 · Plan, and 2 · Write drafts `## 3 · Draft` from §1 and its Scratch; the person types
+  in the boxes of 1 · Plan, 2 · Write and 4 · Revise (JL 261020, built in the Paper-LLMRecPhy-Quick session).
+
+## 1.14.0 · 2026-10-19 · The plan after the story: haipipe-paper-plan
+
+- The owner and routing tables name `haipipe-paper-plan`, the paper's s03-paper-dataflow and s04-paper-workflow (JL
+  261019: "plan for the data flow and plan for the paper flow"); a fresh-agent test found the door did not route to it.
+
 ## 1.13.0 · 2026-10-19 · A Section is a draft Task: haipipe-paper-draft and haipipe-paper-evidence
 
 - The Section owner is `haipipe-paper-draft` (was `haipipe-paper-section`, kept as an alias), and the new

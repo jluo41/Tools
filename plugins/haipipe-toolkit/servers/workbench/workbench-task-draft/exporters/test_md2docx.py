@@ -60,6 +60,46 @@ Most columns are usable.
         self.assertIn(("table", [["kind", "columns"], ["complete", "61"]]), blocks)
         self.assertFalse(any(b[0] in ("table",) or b[:2] == ("h", 2) for b in manuscript))
 
+    def test_structured_abstract_prints_its_labels(self):
+        """On an abstract Page, `### Key Points` is a division and a JAMA `####` label opens
+        its paragraph (JL 261021); a MISQ abstract's working `####` stays silent."""
+        body = """
+## Content
+
+### Key Points
+
+#### Question
+
+Is it real? <!-- realizes: C1.P1.B1 -->
+
+### Abstract
+
+#### Importance
+
+Patients ask agents. <!-- realizes: C2.P4.B1 -->
+It matters. <!-- realizes: C2.P4.B2 -->
+
+#### P2. Working label
+
+Not a label. <!-- realizes: C2.P5.B1 -->
+"""
+        import md2tex
+        with tempfile.TemporaryDirectory() as tmp:
+            jama = Path(tmp) / "t00_abstract.md"
+            jama.write_text("# t00_abstract · Abstract\nsection_kind: abstract\n" + body)
+            other = Path(tmp) / "S1.md"
+            other.write_text("# S1 · Abstract\n" + body)
+            blocks, _ = md2docx.parse_page(jama)
+            plain, _ = md2docx.parse_page(other)
+            tex = md2tex.build_section(str(jama), md2docx.Displays(tmp), [])
+        self.assertIn(("h", 1, "Key Points"), blocks)
+        self.assertEqual([b[1] for b in blocks if b[0] == "label"], ["Question", "Importance"])
+        self.assertFalse(any(b[0] == "label" for b in plain))
+        self.assertIn("\\section*{Key Points}", tex)
+        self.assertIn("\\section*{Abstract}", tex)
+        self.assertIn("\\noindent\\textbf{Importance} Patients ask agents. It matters.", tex)
+        self.assertIn("\n\nNot a label.", tex)
+
     def test_tex_prose_escapes_underscores_outside_math_code_and_commands(self):
         import md2tex
         self.assertEqual(md2tex.escape_prose("action_name"), "action\\_name")

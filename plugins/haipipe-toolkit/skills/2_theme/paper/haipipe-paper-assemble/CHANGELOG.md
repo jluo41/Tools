@@ -1,3 +1,11 @@
+## 0.11.4 · 2026-10-20 · the readiness gates tested with the engine
+
+- `tests/test_delivery_gates.py`: 19 tests of the compile order, outline approval and G4 (a filename or another
+  revision is not approval, a quoted approval is not current, a renderable Section does not close G4). They lived
+  in `Paper-AgreeablePrescriptionDiscretion/tests/`, where a Block keeps no `tests/` (haipipe-project ladder); they
+  now load the engine on a made-up paper. 95 tests pass with the SPACE venv (`run.sh` finds no venv from the
+  Tools-SPACE checkout and falls back to Python 3.9, which lacks `tomllib`).
+
 ## 0.11.3 · 2026-10-13 · A paper that owns its LaTeX, built and tested
 
 - Documented the opt-in keys added in 0.9.1 (JL 260929, Paper-FairGlucose-preprint): `[source] head`, `opening`, `supplement_head`, `supplement_opening`, `store`; profile `appendices = "supplement"` and `[latex] engine = "pdflatex"`; `[evidence] draft_citations`. SKILL.md § A paper that owns its LaTeX; `ref/paper-build.toml.example` lists them commented.

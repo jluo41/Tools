@@ -1,9 +1,13 @@
 <!-- TASK PAGE TEMPLATE · owned by haipipe-task/ref/task-page.md
      Copy into one canonical tNN_<task>/ Folder as tNN_<task>.md.
-     Delete every guide comment after satisfying it. -->
+     Delete every guide comment after satisfying it.
+     goal: and close: are the Task's two lines on the workflow layout's Goal tree; a work Block's
+     `haipipe-project audit --today` reports a work Task without them (261021). -->
 
 # <the question this Task was run to answer, stated in three to five words>
 state: 🔴 OPEN
+goal: <what this Task delivers, one line a stranger reads>
+close: <what must be true for this Task to close, one line>
 owner: <who>
 folder-kind: task
 task-type: <data|raw|algo|fit|eval|display|individual|agent|endpoint|page|stata|labeling>

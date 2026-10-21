@@ -61,10 +61,10 @@ def test_render_has_one_box_per_paragraph_prefilled_with_the_draft(tmp_path):
     assert body.count('<form class="revise-form"') == 2
     assert body.count('class="revise-box"') == 2
     assert 'data-paragraph="C1.P1"' in body and 'data-points="2"' in body
-    assert '>First draft.\n\nSecond draft.</textarea>' in body
+    assert '>First draft.\nSecond draft.</textarea>' in body    # each sentence a row (JL 261020)
     assert 'data-paragraph="C1.P2"' in body and 'data-points="1"' in body
     assert '&quot;address&quot;:&quot;C1.P1.B1&quot;' in body
-    assert 'data-revise-save' in body
+    assert 'class="revise-status"' in body  # no Save button: a box saves when you leave it (JL 261020)
     page_html = render('Page', parse_outline(page.read_text()), page, draft_mode='revise')
     assert 'data-draft-mode=revise' in page_html
     assert '<button type=button class="draft-mode-tab on" data-draft-mode=revise>Revise</button>' in page_html
@@ -74,7 +74,7 @@ def test_render_has_one_box_per_paragraph_prefilled_with_the_draft(tmp_path):
 def test_read_only_host_shows_a_disabled_box_without_save(tmp_path):
     page = page_fixture(tmp_path)
     body = plan_card(page, read_only=True)
-    assert 'data-revise-save' not in body and 'beforeunload' not in body
+    assert 'class="revise-status"' not in body and 'beforeunload' not in body
     assert body.count('class="revise-box"') == 2 and body.count(' disabled>') == 2
     assert save_revise(page, payload(page, 'C1.P1', 'x'), read_only=True) == (
         None, 'This host is read-only; Revise saves are disabled')
@@ -87,7 +87,7 @@ def test_save_maps_lines_to_bullets_and_opens_a_revise_run_with_a_ledger(tmp_pat
     run = result['run']
     assert re.fullmatch(r'run-revise-c1-p1', run) and result['name'] == run
     assert [c['address'] for c in result['changed']] == ['C1.P1.B1']
-    assert result['text'] == 'First draft, sharpened.\n\nSecond draft.'
+    assert result['text'] == 'First draft, sharpened.\nSecond draft.'
     drafts = read_drafts(page)
     assert drafts['C1.P1.B1']['text'] == 'First draft, sharpened.'
     assert drafts['C1.P1.B2']['text'] == 'Second draft.'
@@ -192,20 +192,20 @@ def test_box_starts_from_page_sentences_when_no_draft_exists(tmp_path):
     assert "the Page's own sentence where no Draft existed" in ledger
 
 
-def test_sentences_get_their_own_lines_and_blank_lines_separate_points(tmp_path):
+def test_sentences_split_and_a_point_keeps_its_run_of_sentences(tmp_path):
     assert split_sentences('First claim. Second claim, e.g. with Dr. Smith (p. 3.5)! Third? Done.') == [
         'First claim.', 'Second claim, e.g. with Dr. Smith (p. 3.5)!', 'Third?', 'Done.']
     assert split_sentences('Cited \\cite{a.b} here. Next.') == ['Cited \\cite{a.b} here.', 'Next.']
-    assert box_text(['One. Uno.', '', 'Two.']) == 'One.\nUno.\n\nTwo.'
+    assert box_text(['One. Uno.', '', 'Two.']) == 'One.\nUno.\nTwo.'
     page = page_fixture(tmp_path)
     save_revise(page, payload(page, 'C1.P1', 'First one. First two.\n\nSecond draft.'))
     assert read_drafts(page)['C1.P1.B1']['text'] == 'First one. First two.'
     body = plan_card(page)
-    assert '>First one.\nFirst two.\n\nSecond draft.</textarea>' in body
+    assert '>First one.\nFirst two.\nSecond draft.</textarea>' in body
     result, err = save_revise(page, payload(page, 'C1.P1', 'First one.\nFirst two, edited.\n\nSecond draft.'))
     assert err is None and [c['address'] for c in result['changed']] == ['C1.P1.B1']
     assert read_drafts(page)['C1.P1.B1']['text'] == 'First one. First two, edited.'
-    assert result['text'] == 'First one.\nFirst two, edited.\n\nSecond draft.'
+    assert result['text'] == 'First one.\nFirst two, edited.\nSecond draft.'
 
 
 DRAFT_FIRST = '''# Plan
@@ -294,3 +294,158 @@ def test_blank_lines_inside_a_multi_line_draft_survive_both_shapes():
     assert first.startswith('## C1 · A\n### C1.P1 · B\n- B1 · We estimate:\n  \n  $$\n  Y = X\n  $$\n  Point: [Model] The model is stated.\n  Note: n')
     assert [b['draft'] for b in iter_plan_bullets(first)] == [b['draft'] for b in iter_plan_bullets(classic)] == ['We estimate:\n\n$$\nY = X\n$$']
     assert draft_first_plan(first) == first and canonical_plan(canonical_plan(first)) == canonical_plan(first)
+
+
+def test_free_prose_goes_back_to_the_points_it_reads_like():
+    """JL 261020: "How could we make the editing to be more easier and free style here?" The box is prose; a Save
+    gives each point the run of sentences, in order, most like what it held, and drops nothing."""
+    from live.outline_revise import _text_to_bullets
+    pts = ['B1', 'B2', 'B3']
+    old = ['Patients search online for a physician.', 'An agent names physicians itself.',
+           'Earlier audits checked a few names by hand.']
+    assert _text_to_bullets(' '.join(old), pts, old) == dict(zip(pts, old))
+    added = _text_to_bullets(' '.join(old[:1] + ['A new idea sits here.'] + old[1:]), pts, old)
+    assert added['B2'] == old[1] and added['B3'] == old[2] and 'A new idea sits here.' in added['B1']
+    edited = _text_to_bullets(' '.join([old[0], 'An AI agent now names the physicians itself.', old[2]]), pts, old)
+    assert edited['B2'] == 'An AI agent now names the physicians itself.' and edited['B3'] == old[2]
+    dropped = _text_to_bullets(' '.join([old[0], old[2]]), pts, old)
+    assert dropped == {'B1': old[0], 'B2': '', 'B3': old[2]}
+    assert _text_to_bullets('One. Two. Three.', ['B1', 'B2'], ['', '']) == {'B1': 'One.', 'B2': 'Two. Three.'}
+    # a row ends a sentence: a line typed without its full stop stays its own sentence
+    assert _text_to_bullets('One\nTwo', ['B1', 'B2'], ['One.', 'Two.']) == {'B1': 'One', 'B2': 'Two'}
+    # a ⟦pending⟧ mark alone is its own sentence, so it stays its own point (found on a JAMA IM Results draft)
+    assert split_sentences('Overlap was low (Figure 1). ⟦pending T4: x times chance⟧.') == [
+        'Overlap was low (Figure 1).', '⟦pending T4: x times chance⟧.']
+    marks = ['Overlap was low (Figure 1).', '⟦pending T4: x times chance⟧.']
+    assert _text_to_bullets(' '.join(marks), ['B1', 'B2'], marks) == {'B1': marks[0], 'B2': marks[1]}
+
+
+SECTIONED = '''# Plan
+approved: ⬜
+
+## 1 · Structure · Bullet Point Table
+
+### Structure Overview
+
+- C1 · First
+- C1.P1 · Opening
+  → S1 to S3 · three points
+- C1.P2 · Closing
+  → S4 · one point
+
+### C1.P1 · Opening
+- B1 · S1 · [Point] One
+- B2 · S2 · [Point] Two
+- B3 · S3 · [Point] Three
+
+### C1.P2 · Closing
+- B1 · S4 · [Point] Four
+
+## 2 · Scratch · What to write here
+
+### C1.P1 · Opening
+
+### C1.P2 · Closing
+
+## 3 · Draft · Reading and Revise
+
+### C1.P1 · Opening
+- B1 · S1 · Patients search online for a physician.
+- B2 · S2 · An agent names physicians itself.
+- B3 · S3 · Earlier audits checked a few names by hand.
+
+### C1.P2 · Closing
+- B1 · S4 · We compared them.
+'''
+
+
+def sectioned_fixture(tmp_path):
+    page = tmp_path / 'Page.md'
+    page.write_text('# Page\n\n## Opening\nA question.\n')
+    (tmp_path / 'outline').mkdir()
+    (tmp_path / 'outline' / 'Page-outline-v1.1.md').write_text(SECTIONED)
+    return page
+
+
+def rows_payload(page, paragraph, rows):
+    return {'paragraph': paragraph, 'display': paragraph, 'bullets': bullets(page, paragraph),
+            'text': '\n'.join(r['text'] for r in rows), 'rows': rows}
+
+
+def test_each_row_shows_its_sentence_id_and_a_new_row_gets_the_next_free_one(tmp_path):
+    """JL 261020: "could we make each sentences to be auto generate the sentence id as well?" Each row carries its
+    Bullet and shows its sentence id; a row the person makes is a new Bullet with the id before it plus a letter."""
+    page = sectioned_fixture(tmp_path)
+    body = plan_card(page, path_q='/Board/board.md', file_q='Page.md')
+    assert '<div data-b="C1.P1.B2" data-s="S2">An agent names physicians itself.</div>' in body
+    rows = [{'b': 'C1.P1.B1', 'text': 'Patients search online for a physician.'},
+            {'b': 'C1.P1.B2', 'text': 'An agent names physicians itself.'},
+            {'b': '', 'text': 'A new sentence typed after it.'},
+            {'b': 'C1.P1.B3', 'text': 'Earlier audits checked a few names by hand. Then one more inside the row.'}]
+    result, err = save_revise(page, rows_payload(page, 'C1.P1', rows))
+    assert err is None, err
+    assert [(r['s'], r['text']) for r in result['rows']] == [
+        ('S1', 'Patients search online for a physician.'), ('S2', 'An agent names physicians itself.'),
+        ('S2a', 'A new sentence typed after it.'), ('S3', 'Earlier audits checked a few names by hand.'),
+        ('S3a', 'Then one more inside the row.')]
+    assert [c['address'] for c in result['changed']] == ['C1.P1.B4', 'C1.P1.B5']
+    plan = (tmp_path / 'outline' / 'Page-outline-v1.1.md').read_text()
+    # the point in section 1 (for the person to rename), the sentence in section 3, never renumbered
+    assert '- B2 · S2 · [Point] Two\n- B4 · S2a · [Added] A new sentence typed after it\n- B3 · S3 · [Point] Three' in plan
+    assert '- B4 · S2a · A new sentence typed after it.\n- B3 · S3 · Earlier' in plan
+    # sent again as shown: nothing changes, no second copy
+    again, err = save_revise(page, rows_payload(page, 'C1.P1', [{'b': r['b'], 'text': r['text']} for r in result['rows']]))
+    assert err is None and again['changed'] == []
+    # rows that lost their ids, and two rows joined, still find their Bullets
+    lost = [{'b': '', 'text': r['text']} for r in result['rows']]
+    assert save_revise(page, rows_payload(page, 'C1.P1', lost))[0]['changed'] == []
+    joined = [{'b': r['b'], 'text': r['text']} for r in result['rows']]
+    joined[0]['text'] += ' ' + joined.pop(1)['text']
+    assert save_revise(page, rows_payload(page, 'C1.P1', joined))[0]['changed'] == []
+    # a deleted row empties its Bullet and keeps its slot
+    gone, err = save_revise(page, rows_payload(page, 'C1.P1', [r for r in lost if not r['text'].startswith('Then')]))
+    assert [(c['address'], c['text']) for c in gone['changed']] == [('C1.P1.B5', '')]
+
+
+def test_a_new_paragraph_opens_on_one_empty_row_and_its_sentences_get_ids(tmp_path):
+    """JL 261020: "How could I add a new paragraph?" `add-paragraph` puts an empty paragraph after one; its Revise
+    form opens on one empty row, and what is typed there becomes its first Bullets."""
+    from live.outline_revise import add_paragraph
+    page = sectioned_fixture(tmp_path)
+    result, err = add_paragraph(page, {'after': 'C1.P1'})
+    assert err is None and result['paragraph'] == 'C1.P3'
+    plan = (tmp_path / 'outline' / 'Page-outline-v1.1.md').read_text()
+    assert '  → S1 to S3 · three points\n- C1.P3 · New paragraph\n- C1.P2 · Closing' in plan
+    assert plan.count('### C1.P3 · New paragraph') == 3                     # sections 1, 2 and 3
+    assert plan.index('### C1.P3') < plan.index('### C1.P2 · Closing')
+    body = plan_card(page, path_q='/Board/board.md', file_q='Page.md')
+    form = re.search(r'<form class="revise-form" data-paragraph="C1.P3".*?</form>', body, re.S).group(0)
+    assert 'data-bullets="[]"' in form and 'class="revise-rows blank"' in form and '<div><br></div>' in form
+    typed, err = save_revise(page, {'paragraph': 'C1.P3', 'display': 'C1.P3', 'bullets': [], 'text': 'x',
+                                    'rows': [{'b': '', 'text': 'First new sentence. Second new one.'}]})
+    assert err is None, err
+    assert [(r['b'], r['s']) for r in typed['rows']] == [('C1.P3.B1', 'S3a'), ('C1.P3.B2', 'S3b')]
+    assert save_revise(page, {'paragraph': 'C1.P9', 'bullets': [], 'text': '', 'rows': []})[1] == 'C1.P9 is not in the plan; reload'
+    assert add_paragraph(page, {'after': 'C1.P9'}) == (None, 'C1.P9 is not in the plan; reload')
+
+
+def test_an_empty_planned_point_takes_the_next_new_sentence_before_a_bullet_is_added(tmp_path):
+    from live.outline_revise import _rows_to_bullets
+    mapped, inserts = _rows_to_bullets([{'b': '', 'text': 'One. Two. Three.'}], ['P.B1', 'P.B2'], ['', ''])
+    assert mapped == {'P.B1': 'One.', 'P.B2': 'Two.'} and inserts == [('P.B2', ['Three.'])]
+    # a row naming a Bullet out of order is a copy, typed as new
+    mapped, inserts = _rows_to_bullets([{'b': 'P.B2', 'text': 'B.'}, {'b': 'P.B1', 'text': 'A.'}], ['P.B1', 'P.B2'], ['A.', 'B.'])
+    assert mapped == {'P.B1': '', 'P.B2': 'B.'} and inserts == [('P.B2', ['A.'])]
+
+
+def test_a_save_waits_when_the_plan_and_the_text_disagree_on_a_sentence_id():
+    # t01, 261020: a point put in after S2 took B3 and shifted the rest, so a save made the text's S3 into S2a.
+    # A sentence's id in §3 must match its point's (the same B) in §1, or nothing is saved.
+    from live.outline_revise import _id_clash
+    good = ('# T\n\n## 1 · Structure\n\n### C1.P1 · One\n- B1 · S1 · [A] first\n- B2 · S2 · [B] second\n'
+            '- B3 · S1a · [N] a new point, no sentence yet\n\n## 3 · Draft\n\n### C1.P1 · One\n'
+            '- B1 · S1 · First.\n- B2 · S2 · Second.\n')
+    assert _id_clash(good) == ''
+    shifted = good.replace('- B2 · S2 · [B] second\n- B3 · S1a · [N] a new point, no sentence yet',
+                           '- B2 · S1a · [N] a new point, no sentence yet\n- B3 · S2 · [B] second')
+    assert 'C1.P1.B2 is S1a in the plan but S2 in the text' in _id_clash(shifted)

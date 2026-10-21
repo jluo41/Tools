@@ -53,7 +53,8 @@ JOB_W, IO_W = 1400, 1000                    # the Job's box; its in and out (wid
 STEP_GAP = 170                              # room between steps
 RUN_WORDS = 280                             # the words every Run card (title + sentence) shares in ① (check.py ⑨: 600)
 RUN_COLS, RUN_GAP = 3, 28                   # a Task's Runs as a grid, up to 3 a row (JL 261013: "make it wider")
-CHART_W, NW = 800, 1200                     # a results chart on the canvas; the words frame (② , secondary)
+CHART_W, NW = 1200, 1200                    # a results chart on the canvas (JL 261019: "the results can be larger,
+                                            #   no need to be small", was 800); the words frame (② , secondary)
 NOTE_W = 620                                # the notes beside a results block: how to read its chart or table
 THUMB_W, THUMB_H = 320, 400                 # a Task topic's thumbnail, right of its results (left to right, 261014)
 PAGE_W, PAGE_H = 300, 420                   # each page of a Run's highlighted transcript, as stored (readable)
@@ -77,9 +78,10 @@ def words(s: str, most: int) -> str:
 
 
 def run_label(rid: str) -> str:
-    """`r04_fold00_six_models_p12` → `r04 · fold00 six models p12`."""
-    m = re.match(r"^(r\d+)_(.*)$", rid)
-    return f"{m.group(1)} · {m.group(2).replace('_', ' ')}" if m else rid.replace("_", " ")
+    """A Run as the drawing names it: its folder name, exactly (`r04_fold00_six_models_p12`). JL 261019: "why the
+    name here used is not the same as the task folder name or the run folder name? we don't need to create the new
+    named to add the cognitive burden to us"."""
+    return str(rid)
 
 
 def headline(result: Path, most: int = 20) -> str:
@@ -153,21 +155,95 @@ def run_why(r: dict, kind: str) -> str:
 
 def run_files(r: dict, task: Path) -> str:
     """The files a Run stands on, by name (asked 261019: "for the run, could you also show what are the related
-    files"): its ticket, its config, then what its result/ holds."""
-    name, rdir, res = r["name"], Path(r["dir"]), Path(r["result"])
+    files"): its ticket and its config; what it read and wrote are `run_io`'s lines."""
+    name, rdir = r["name"], Path(r["dir"])
     parts = []
     if (rdir / f"{name}.sh").is_file() or (rdir / f"{name}.yaml").is_file():
-        parts.append(f"🧾 {name[:3]}.sh")
-    if (task / "scripts" / "config" / f"{name}.yaml").is_file():
-        parts.append(f"⚙ config/{name[:3]}….yaml")
-    if res.is_dir():
+        parts.append(f"🧾 {name}.sh")
+    if run_config(r, task):
+        parts.append(f"⚙ {run_config(r, task).name}")
+    return " · ".join(parts)
+
+
+def run_config(r: dict, task: Path) -> Path | None:
+    """A Run's config: its own folder's config.yaml (one folder per Run), else the Task's scripts/config/<run>.yaml."""
+    for p in (Path(r["dir"]) / "config.yaml", task / "scripts" / "config" / f"{r['name']}.yaml"):
+        if p.is_file():
+            return p
+    return None
+
+
+def fit_line(lead: str, items: list, width: float, size: int) -> str:
+    """`lead`, then the first item and `+k` for the rest, on ONE line of `width`: a path keeps its last parts whole
+    (`…/1-CandidatePool/v2026-08/grid_folds.parquet`, never cut inside a name); a listing `result/: a, b, c` keeps
+    as many names as fit. Empty: `not recorded`."""
+    if not items:
+        return f"{lead}not recorded"
+    more = f" +{len(items) - 1}" if len(items) > 1 else ""
+    first = str(items[0]).strip()
+    if ": " in first:                                           # a listing: its folder, then as many names as fit
+        head, names = first.split(": ", 1)
+        names = [n for n in names.split(", ") if n]
+        for k in range(len(names), 0, -1):
+            line = f"{lead}{head}: {', '.join(names[:k])}" + (f" +{len(names) - k}" if k < len(names) else "")
+            if Drawing.measure(line, size) <= width:
+                return line
+        return f"{lead}{head}: {jd.n_of(len(names), 'file')}"    # not even one name fits: how many
+    parts = [x for x in first.rstrip("/").split("/") if x]
+    slash = "/" if first.endswith("/") else ""
+    cuts = ["_WorkSpace/…/", "…/"] if parts[0] == "_WorkSpace" else ["…/"]   # a store path says it is the store's,
+    for k in range(min(3, len(parts)), 0, -1):                  # when it fits; its last three parts, two, one: whole names
+        for cut in cuts:
+            line = f"{lead}{cut if k < len(parts) else ''}{'/'.join(parts[-k:])}{slash}{more}"
+            if Drawing.measure(line, size) <= width:
+                return line
+    return f"{lead.split()[0]} {parts[-1]}{slash}{more}" if parts else line   # a long name alone: its mark, then
+                                                                              #   the name whole (LLMRec b02 campaigns)
+
+
+def run_io(r: dict, task: Path, cfg: dict, tname: str, width: float = RUN_W, size: int = T_RUNS) -> list[str]:
+    """What a Run read and what it wrote, briefly (JL 261019: "for this run, we might want to show briefly about its
+    input and output"). In: the face's `runs: {tNN/rNN: {in: …}}`, else its run.yaml `reads:`, else its config's
+    `_meta.input`, `input`, `inputs`, `input_csv`, `grid_path`, `source`, `sources`, `source_root`, else its receipt's
+    `reads:`. Out: the face's `out:`, else run.yaml `writes:` past result/, its heavy.yaml files, its config's
+    `output_dir`, `output_root` or `final_root`, then what its result/ holds. Nothing is typed: an empty side says `not recorded`. Each side is one
+    line of the card's `width` (`fit_line`), so a path never breaks inside a name."""
+    own = ((cfg.get("runs") or {}).get(f"{tname}/{r['name']}") or {})
+    card = run_yaml(r)
+    conf_path = run_config(r, task)
+    conf = jr.load(conf_path) if conf_path else {}
+    conf = conf if isinstance(conf, dict) else {}
+    res = Path(r["result"]) if r.get("result") else None
+    rt = jr.load(res / "runtime.yaml") if res and (res / "runtime.yaml").is_file() else {}
+    rt = rt if isinstance(rt, dict) else {}
+
+    def as_list(v) -> list:                                     # a path, without the words a config adds after
+        bare = lambda x: str(x).split(" (")[0].split(" + ")[0].strip()   # it: `… (frozen draw)`, `… + API_KEY`  # noqa
+        if isinstance(v, dict):
+            return [bare(x) for x in v.values() if isinstance(x, str)]
+        return [bare(x) for x in v] if isinstance(v, list) else [bare(v)] if isinstance(v, str) else []
+
+    ins = as_list(own.get("in")) or as_list(card.get("reads")) or \
+        as_list((conf.get("_meta") or {}).get("input") if isinstance(conf.get("_meta"), dict) else None) or \
+        next((as_list(conf[k]) for k in ("input", "inputs", "input_csv", "grid_path", "source", "sources", "source_root")
+              if as_list(conf.get(k))), []) or as_list(rt.get("reads"))
+    rows = conf.get("smoke_rows")                               # a smoke test whose queries sit in its config
+    if isinstance(rows, list) and rows and (not ins or len(rows) == conf.get("expected_rows")):
+        ins = [f"{len(rows)} {'query' if len(rows) == 1 else 'queries'} written in its config"]
+    outs = as_list(own.get("out")) or [w for w in as_list(card.get("writes")) if w.rstrip("/") != "result"]
+    heavy = jr.load(res / "heavy.yaml") if res and (res / "heavy.yaml").is_file() else None
+    if not outs and isinstance(heavy, dict):
+        held = {p.name for p in res.iterdir()} if res.is_dir() else set()
+        outs = [h["file"] for h in heavy.get("heavy") or [] if isinstance(h, dict) and h.get("file") not in held]
+        outs = [f"{Path(heavy['heavy'][0]['path']).parent.name}/: " + ", ".join(outs)] if outs else []
+    if not outs:                                                # a store the Run wrote (LLMRec b02: the CallStore)
+        outs = as_list(conf.get("output_dir")) + as_list(conf.get("output_root")) + as_list(conf.get("final_root"))
+    if not outs and res and res.is_dir():
         files = sorted(p.name for p in res.iterdir() if p.is_file() and not p.name.startswith("."))
         dirs = sorted(p.name + "/" for p in res.iterdir() if p.is_dir() and not p.name.startswith("."))
-        shown = (files + dirs)[:4]
-        more = len(files) + len(dirs) - len(shown)
-        if shown:
-            parts.append("📂 " + ", ".join(shown) + (f" +{more}" if more > 0 else ""))
-    return " · ".join(parts)
+        outs = ["result/: " + ", ".join(files + dirs)] if files + dirs else []
+    room = width - 2 * PAD - 40                                 # wrap measures a little wider than measure()
+    return [fit_line("📥 in: ", ins, room, size), fit_line("📤 out: ", outs, room, size)]
 
 
 RUN_WIDE = 1700                             # a Run card with its plan: one a row, wide (JL 261019: "一个 run 占一行")
@@ -535,6 +611,52 @@ def lines_h(lines: list, w: float) -> float:
     return sum(Drawing.height(s, w - 2 * PAD, size) + 6 for s, size, _ in lines if s) + 2 * PAD - 6
 
 
+def path_text(path: str, width: float, size: int) -> str:
+    """A path broken only after a slash, each line within `width`, so it reads exactly as it is on disk."""
+    lines, cur = [], ""
+    for part in re.split(r"(?<=/)", str(path)):
+        if cur and Drawing.measure(cur + part, size, code=True) > width:
+            lines.append(cur)
+            cur = part
+        else:
+            cur += part
+    return "\n".join(lines + [cur])
+
+
+def io_found(path: str, job: Path | None) -> bool:
+    """Whether an In or Out path is on this machine: under the Job, or under any folder above it (`_WorkSpace/…`
+    under the SPACE root, `work/b01_…/…` under the Project)."""
+    if job is None:
+        return True
+    return any((base / str(path).rstrip("/")).exists() for base in [job, *job.parents])
+
+
+def io_card(d: Drawing, x: float, y: float, w: float, label: str, items: list, most: int,
+            job: Path | None) -> float:
+    """📥 In or 📤 Out: each item one line, its path under it in grey (JL 261019: "could you also show the path for
+    these data"); a path not found on this machine is red. An item is a string or {item, path}, its path one or a
+    list; returns the height."""
+    inner, size = w - 2 * PAD, T_RUNS - 6
+    parts = [(label, T_STEP - 6, INK, False)]
+    for it in items:
+        text, paths = (it.get("item", ""), it.get("path")) if isinstance(it, dict) else (it, None)
+        parts.append((f"· {words(text, most)}", T_RUNS, INK, False))
+        for path in ([paths] if isinstance(paths, str) else paths or []):
+            found = io_found(path, job)
+            lead = "📂 " if found else "❓ not on this machine: "
+            parts.append((path_text(lead + str(path), inner - 30, size), size, GREY if found else RED, True))
+    h = PAD * 2 + sum((s.count("\n") + 1) * sz * 1.25 if code else Drawing.height(s, inner, sz) for s, sz, _, code
+                      in parts) + 6 * len(parts)
+    d.box(x, y, w, h, INK, 1.5)
+    yy = y + PAD
+    for s, sz, color, code in parts:
+        if code:
+            yy += d.text(x + PAD + 30, yy, s, sz, color, code=True)["height"] + 6
+        else:
+            yy = d.para(x + PAD, yy, s, inner, sz, color) + 6
+    return h
+
+
 def card(d: Drawing, x: float, y: float, w: float, lines: list, dashed: bool = False, sw: float = 1.5) -> float:
     """A box of lines [(words, size, colour)]; returns its height."""
     h = lines_h(lines, w)
@@ -599,8 +721,9 @@ def chart_png(spec: dict, result: Path | None, out: Path) -> Path | None:
 
 
 def bar_png(spec: dict, result: Path | None, out: Path) -> Path | None:
-    """One series as horizontal bars (the dataviz skill: magnitude by category; one series, so no legend and the
-    title names it): dark bars, thin 95% whiskers when `low`/`high` are given, a zero line when a value is negative,
+    """Horizontal bars, each labelled (the dataviz skill: magnitude by category; no legend, the title names it): each
+    bar in its colour (jd.bar_colors; never all dark, JL 261019), thin 95% whiskers when `low`/`high` are given, a
+    zero line when a value is negative,
     a value at each bar's end (a handful of bars), quiet axes. None when the result holds no values for it."""
     rows = chart_rows(spec, result) if result else []
     if not rows:
@@ -619,7 +742,7 @@ def bar_png(spec: dict, result: Path | None, out: Path) -> Path | None:
     fig, ax = plt.subplots(figsize=(9, 0.62 * n + 0.9), dpi=100)
     ys = list(range(n))[::-1]
     vals = [r[1] * k for r in rows]
-    ax.barh(ys, vals, height=0.56, color="#3b3b3b")
+    ax.barh(ys, vals, height=0.56, color=jd.bar_colors(spec, [r[0] for r in rows], spec.get("_colors")))
     ends = []
     for y, (_, v, lo, hi) in zip(ys, rows):
         if lo is not None and hi is not None:
@@ -675,6 +798,53 @@ def task_pictures(t: dict, cfg: dict) -> list[Path]:
     return found[:2]
 
 
+def csv_where(path: Path, want: dict) -> list[dict] | None:
+    """The rows of a CSV that `where` picks, read a row at a time: a Result's table may pass job_results.load's 4 MB
+    (LLMRec b04 j08 t04's key_npi_lists.csv, 15,864 rows of NPI lists); numbers as numbers, as load reads them."""
+    import csv
+    if not path.is_file():
+        return None
+    def num(v):
+        try:
+            return float(v) if any(c in v for c in ".eE") else int(v)
+        except (TypeError, ValueError):
+            return v
+    with path.open(newline="", encoding="utf-8") as f:
+        return [{k: num(v) for k, v in row.items()} for row in csv.DictReader(f)
+                if all(str(row.get(k)) == v for k, v in want.items())]
+
+
+def table_cell(v, col: dict, spec: dict) -> str:
+    """One cell of a CSV table: a number as `fmt` says; with `items: n`, a joined list (`sep`, default ";") shows its
+    first n items, one a line, then how many more (LLMRec b04 s27, 261019: the key × engine table's NPI lists)."""
+    if v is None or (isinstance(v, float) and v != v) or str(v) in ("", "nan", "None"):
+        return "–"
+    name = str(col.get("at") or col.get("label") or "")
+    if str(col.get("fmt")) == "id" or re.search(r"(^|_)(npi|id)$", name):   # an id as written, never 1,619,084,993
+        return str(int(v)) if isinstance(v, float) and v == int(v) else str(v)   # (LLMRec b01 s27 item2npi, 261019)
+    if col.get("words") and isinstance(v, str):                          # a long text cell, cut to its first words
+        return words(v, int(col["words"]))                               #   (LLMRec b01 t03 Table Card, 261020)
+    if col.get("items"):
+        items = [x for x in str(v).split(str(col.get("sep", ";"))) if x.strip()]
+        n = int(col["items"])
+        return " · ".join(items[:n]) + (f" · +{len(items) - n} more" if len(items) > n else "")
+    return jr.number(v, str(col.get("fmt") or spec.get("fmt", "")))
+
+
+def table_source(t: dict, cfg: dict, spec: dict) -> str:
+    """Where a table's rows come from, under the Task: `runs/<run>/result/<file>`, so a reader knows which Run made
+    it (JL 261019: "我想知道在处理的时候，它是哪一个 run"); empty for a row-per-Run or a family table."""
+    if spec.get("runs") or spec.get("members"):
+        return ""
+    if spec.get("path"):
+        return str(spec["path"])
+    result = chart_run(t, cfg, spec)
+    try:
+        return f"{result.relative_to(t['row']['task']).as_posix()}/{spec['file']}" if result and spec.get("file") else ""
+    except ValueError:
+        return f"{result}/{spec['file']}"
+
+
 def task_tables(t: dict, cfg: dict) -> list[tuple[str, list[str], list[dict]]]:
     """The tables the face names from a Task's Run (`tables: {<tNN_task>: [{title, file, columns, rows, sort, run}]}`):
     a CSV under the Run's result, its named columns, its first `rows` rows (6), sorted by `sort` (`-col`: largest
@@ -695,23 +865,25 @@ def task_tables(t: dict, cfg: dict) -> list[tuple[str, list[str], list[dict]]]:
             continue
         result = chart_run(t, cfg, spec)
         block = t["row"]["task"].parents[1] if spec.get("path") else None   # `path:` a file anywhere in the
-        data = jr.load(block / spec["path"]) if block else \
-            jr.load(result / spec["file"]) if result else None          #   Block (a Task whose Runs keep nothing)
-        if isinstance(data, list) and spec.get("where"):
-            want = dict(c.split("=", 1) for c in str(spec["where"]).split("&"))
+        src = (block / spec["path"]) if block else (result / spec["file"]) if result else None
+        want = dict(c.split("=", 1) for c in str(spec["where"]).split("&")) if spec.get("where") else {}
+        data = csv_where(src, want) if want and src and src.suffix == ".csv" else jr.load(src) if src else None
+        if isinstance(data, list) and want:                             #   Block (a Task whose Runs keep nothing)
             data = [r for r in data if isinstance(r, dict) and all(str(r.get(k)) == v for k, v in want.items())]
         if not isinstance(data, list) or not data:
             out.append((f"❓ table {spec.get('title', spec.get('file'))}: not in the result", [], []))
             continue
         cols = spec.get("columns") or list(data[0])[:4]
-        key = str(spec.get("sort") or "")
+        cols = [c if isinstance(c, dict) else {"at": c} for c in cols]   # a column: a name, or {at, label, items,
+        key = str(spec.get("sort") or "")                               #   sep}: a list cell shows its first items
         if key:
             data = sorted(data, key=lambda r: (r.get(key.lstrip("-")) is None, r.get(key.lstrip("-"))),
                           reverse=key.startswith("-"))
         names = spec.get("labels") or {}
-        shown = [{"cells": [names.get(str(r.get(c)), short_key(r.get(c))) if i == 0 else jr.number(r.get(c), spec.get("fmt", ""))
+        shown = [{"cells": [names.get(str(r.get(c["at"])), short_key(r.get(c["at"]))) if i == 0 else table_cell(r.get(c["at"]), c, spec)
                             for i, c in enumerate(cols)], "dim": False} for r in data[:int(spec.get("rows", 6))]]
-        out.append((str(spec.get("title") or spec.get("file") or spec.get("path")), [str(c).replace("_", " ") for c in cols], shown))
+        out.append((str(spec.get("title") or spec.get("file") or spec.get("path")),
+                     [str(c.get("label") or c["at"]).replace("_", " ") for c in cols], shown))
     return out
 
 
@@ -820,6 +992,20 @@ def embed_page(d: Drawing, path: Path, x: float, y: float, w: float, fid: str, l
     return h
 
 
+WIDE_W = 2 * 1200 + 48                     # a wide picture's room: two panels and their gap
+WIDE = 1.9                                  # a picture this many times wider than tall spans a results row
+
+
+def is_wide(p: Path) -> bool:
+    """A picture much wider than tall: a screenshot of a data table, drawn across the whole results row."""
+    try:
+        from PIL import Image
+        with Image.open(p) as im:
+            return im.width >= WIDE * im.height
+    except Exception:
+        return False
+
+
 def results_block(d: Drawing, x: float, y: float, t: dict, cfg: dict, found: str,
                   assets: Path | None, thumb: tuple | None = None, cols: int = 1) -> tuple[float, float, bool]:
     """A Task's results, outside the frame: a small title and its finding in one sentence across the top; under them
@@ -835,6 +1021,7 @@ def results_block(d: Drawing, x: float, y: float, t: dict, cfg: dict, found: str
         if spec.get("members") and t.get("members"):                    # a family: a bar per member Task
             spec = {**spec, "_rows": member_rows(t, cfg, spec)}
         src = t["row"]["task"] if "_rows" in spec else chart_run(t, cfg, spec)
+        spec = {**spec, "_colors": cfg.get("colors")}                   # one source, one hue, every chart
         png = chart_png(spec, src, assets / f"chart-{t['name']}-{k}.png") if assets else None
         if not png:
             panels.append(lambda px, py, k=k, spec=spec: d.para(
@@ -847,20 +1034,32 @@ def results_block(d: Drawing, x: float, y: float, t: dict, cfg: dict, found: str
         panels.append(chart)
         drawn += 1
     charted = drawn
+    wides = []                                      # a wide picture (a screenshot of real rows) spans the row
     for k, p in enumerate(task_pictures(t, cfg)):                       # its own figures, as its Runs drew them:
+        if is_wide(p):                                                  #   (JL 261019: "could you make this wide?")
+            def wide(px, py, ww, k=k, p=p):
+                py += d.picture(p, px, py, ww, 1400, fid=f"fig-{t['name']}-{k}") + 6
+                return d.para(px, py, str(p.relative_to(t["row"]["task"])), ww, 20, GREY) + 20
+            wides.append(wide)
+            drawn += 1
+            continue
         def figure(px, py, k=k, p=p):                                   #   a figure Run's charts come first
             py += d.picture(p, px, py, CHART_W, 640, fid=f"fig-{t['name']}-{k}") + 6   # (JL 261013), then the
             return d.para(px, py, str(p.relative_to(t["row"]["task"])), CHART_W, 20, GREY) + 16   # exact rows
         panels.append(figure)
         drawn += 1
     tabled, tabs = False, []                        # (title, head, rows, widths, size, pad, after): a long one may
-    for title, head, rows in task_tables(t, cfg):  #   stand in parts, side by side, where columns are free
-        if not rows:                                                    # its tables, from its Run's own files
+    specs = ((cfg.get("tables") or {}).get(t["name"]) or [])[:2]
+    for (title, head, rows), spec in zip(task_tables(t, cfg), specs):  #   stand in parts, side by side, where
+        if not rows:                                                    #   columns are free; its tables, from its
             panels.append(lambda px, py, title=title: d.para(px, py, title, CHART_W, T_RES - 2, RED) + 8)
-            continue
+            continue                                                    #   Run's own files
         first = CHART_W * (0.1 if head[0] == "Run" else 0.46)          # a row per Run: its id is short
         rest = (CHART_W - first) / max(1, len(head) - 1)
-        tabs.append((title, head, rows, [first] + [rest] * (len(head) - 1), 24, 20, 16))
+        ws = spec.get("widths") if isinstance(spec.get("widths"), list) and len(spec["widths"]) == len(head) else None
+        widths = [CHART_W * f / sum(ws) for f in ws] if ws else [first] + [rest] * (len(head) - 1)   # the face's shares
+        src = "\n".join([table_source(t, cfg, spec)] + [f"↳ {c}" for c in (spec.get("cite") or [])])   # each column
+        tabs.append((title, head, rows, widths, 24, 20, 16, src.strip()))   #   group's own source (JL 261019)
         tabled = True
     if not charted and not tabled:
         now = [r for r in t["runs"] if run_current(cfg, t["name"], r["name"])]
@@ -875,28 +1074,34 @@ def results_block(d: Drawing, x: float, y: float, t: dict, cfg: dict, found: str
             rows = [{"cells": split(v), "dim": False} for v in vals]
             src = [r["name"] for r in (now or [r for r in t["runs"] if r["values"]][-1:]) if r["values"]]
             head = [f"measure ({run_label(src[0])})" if len(src) == 1 else "measure", "value"]
-            tabs.append(("", head, rows, [CHART_W * 0.62, CHART_W * 0.38], T_RES, 24, 10))
+            tabs.append(("", head, rows, [CHART_W * 0.62, CHART_W * 0.38], T_RES, 24, 10, ""))
             tabled = True
     spare, parts = cols - len(panels) - len(tabs), [1] * len(tabs)     # columns no panel would fill: the longest
     for i in sorted(range(len(tabs)), key=lambda i: -len(tabs[i][2])):  #   tables take them, in parts of at least
         n = min(1 + max(0, spare), len(tabs[i][2]) // TABLE_PART)        #   TABLE_PART rows (a paper table of 12
         if n > 1:                                                       #   rows, three parts of 4, JL 261014)
             parts[i], spare = n, spare - (n - 1)
-    for (title, head, rows, widths, size, pad, after), n in zip(tabs, parts):
+    for (title, head, rows, widths, size, pad, after, src), n in zip(tabs, parts):
         per = -(-len(rows) // n)
         for j in range(n):
             def table(px, py, title=title, head=head, rows=rows[j * per:(j + 1) * per], widths=widths, size=size,
-                      pad=pad, after=after, j=j):
+                      pad=pad, after=after, j=j, src=src if j == n - 1 else ""):
                 if title and not j:
                     py = d.para(px, py, title, CHART_W, T_RES, INK) + 4
                 elif title:                                             # a part: its header level with the first's
                     d.para(px, py, "(continued)", CHART_W, T_RES - 4, GREY)
                     py += Drawing.height(title, CHART_W, T_RES) + 4
-                return d.grid_table(px, py, head, rows, widths, size, pad=pad) + after
+                py = d.grid_table(px, py, head, rows, widths, size if len(head) < 6 else size - 2, pad=pad,
+                                  head=28 if len(head) < 6 else 22)    # six columns or more: smaller type
+                for k, line in enumerate(src.split("\n") if src else []):   # its Run, as a figure does; then one
+                    py = d.para(px, py + (6 if not k else 2), line, CHART_W, 20, GREY)   #   line per cited source
+                return py + after
             panels.append(table)
 
-    cols = max(1, min(cols, len(panels)))           # never a column with nothing in it
+    cols = max(1, min(cols, len(panels))) if panels else max(1, cols)   # never a column with nothing in it
     area = cols * CHART_W + (cols - 1) * PANEL_GAP
+    if wides:                                       # a wide picture needs at least two panels' room
+        area = max(area, WIDE_W)
     row = max((NAME_W + 16 + len(g["pages"]) * (PAGE_W + 10) + (16 + len(g["shots"]) * (SHOT_W + 12) if g["shots"] else 0)
                for g in pages), default=0)
     right = (len(pages) - 1) * CASCADE_DX + row if pages else 0
@@ -906,7 +1111,8 @@ def results_block(d: Drawing, x: float, y: float, t: dict, cfg: dict, found: str
     if notes:                                       #   (asked 261019: "在这两个图的右边再加一些注释吧")
         w += NOTE_W + 28
     name = re.sub(rf"^{re.escape(t['id'])}\s*[·:.\-]?\s*", "", bare(t["title"]), flags=re.I)   # column (261014); a
-    yy = d.para(x + PAD, y + PAD, f"📊 {t['id']} · {name}: results", right if under else area, T_RES + 2, INK) + 6
+    head = t["name"] if not t.get("members") else f"{t['id']} · {t['title']}"   # a Task by its folder; a family
+    yy = d.para(x + PAD, y + PAD, f"📊 {head}: results", right if under else area, T_RES + 2, INK) + 6   # by its face
     if under and found:                             # block reads as its step's without its line (261014)
         first = re.split(r"(?<=[.!?])\s+", str(found).strip())[0]
         yy = d.para(x + PAD, yy, f"💡 {words(first, 30)}", min(right, 1800), T_RES, INK) + 24
@@ -933,6 +1139,8 @@ def results_block(d: Drawing, x: float, y: float, t: dict, cfg: dict, found: str
     if found and not under:                         # one sentence; the panels carry the numbers
         first = re.split(r"(?<=[.!?])\s+", str(found).strip())[0]
         yy = d.para(x + PAD, yy, f"💡 {words(first, 18 if cols == 1 else 30)}", area, T_RES, INK) + 14
+    for wide in wides:                              # across the whole row, before the panels
+        yy = wide(x + PAD, yy, area)
     tops = [yy] * cols
     if notes:                                       # a column of short notes beside the panels, smaller: it explains
         nx = x + PAD + area + 28 + (right + 28 if right else 0)
@@ -973,7 +1181,7 @@ def ladder_frame(d: Drawing, info: dict, tasks: list[dict], cfg: dict, topics: d
                 run_cols(len(k) + len(fold_cards(t, cfg, fo))) for t in tasks for k, fo in [shown_runs(t, cfg)]), default=1)
     runs_w = grid * RUN_W + (grid - 1) * RUN_GAP
     width = max(130 + max(cols, default=0) * SHIFT + NODE_W + 110 + runs_w + 60, 40 + JOB_W + 120 + IO_W + 60)
-    title = f"🪜 {info['id']} · {part if cont and part else info['title']}"   # a second staircase: what it holds
+    title = f"🪜 {jd.name_of(info)}" + (f" · {part}" if cont and part else "")   # a second staircase: what it holds
     f = d.frame(f"{mark} {title}: " + ("its Tasks as steps, continued" if cont else "why it exists, its Tasks as steps"),
                 width)
     Drawing.room(f)                         # the room between the steps is the point; measured over the boxes
@@ -1027,18 +1235,20 @@ def ladder_frame(d: Drawing, info: dict, tasks: list[dict], cfg: dict, topics: d
 
         # the top step: the Job, why it exists and when it is done; what goes in and comes out branch to its right
         aim = str(cfg.get("aim") or info.get("goal") or "")
-        jh = card(d, 40, y, JOB_W, [(f"🧱 {info['id']} · {info['title']}", T_JOB, INK)], sw=3)
+        jh = card(d, 40, y, JOB_W, [(f"🧱 {jd.name_of(info)}", T_JOB, INK)], sw=3)   # its folder name (261019)
         why = [(f"Why: {words(aim, 40)}" if aim else "❓ no aim: the Job face has no goal: line", T_CARD, None),
                (f"Done when: {words(info['close'], 34)}" if info.get("close") else   # 22 cut its end in four
                                                                                      # OpioidRx reviews (261013)
                 "❓ close: not written on the Job face", T_CARD, None),
                (f"Answers: {info['answers']}" if info.get("answers") else "", T_CARD, INK)]
         ch = card(d, 110, y + jh + 20, JOB_W - 110, why)
-        most_io, io_words, most_open = (2, 10, 3) if tight else (3, 14, 4)
+        most_io, io_words, most_open = (4, 16, 3) if tight else (6, 26, 4)      # every input, whole, with its path
+                                                                                #   (261019: "not complete")
         io_x, yy = 40 + JOB_W + 120, y
+        job_dir = next((t["row"]["task"].parent for t in tasks if t.get("row")), None)
         for label, items in (("📥 In", (cfg.get("inputs") or [])[:most_io]), ("📤 Out", (cfg.get("outputs") or [])[:most_io])):
             if items:
-                h = card(d, io_x, yy, IO_W, [(label, T_STEP - 6, INK)] + [(f"· {words(x, io_words)}", T_RUNS, INK) for x in items])
+                h = io_card(d, io_x, yy, IO_W, label, items, io_words, job_dir)
                 d.line([(40 + JOB_W + 12, y + jh / 2), (io_x - 12, yy + 32)], sw=2)
                 yy += h + 24
         spine_x, spine_top = 60, y + jh
@@ -1051,9 +1261,8 @@ def ladder_frame(d: Drawing, info: dict, tasks: list[dict], cfg: dict, topics: d
             step, y = family_step(d, nx, y, t, cfg, spine_x)
             steps.append(step)
             continue
-        name = re.sub(rf"^{t['id']}\s*[·:.\-]?\s*", "", bare(t["title"]), flags=re.I)   # "T01 Comparison …" says t01 twice
         proposed = task_proposed(t)                                     # a proposed Task: its step dashed
-        nh = card(d, nx, y, NODE_W, [(f"{'◌' if proposed else '🧩'} {t['id']} · {name}" + (" · proposed" if proposed
+        nh = card(d, nx, y, NODE_W, [(f"{'◌' if proposed else '🧩'} {t['name']}" + (" · proposed" if proposed
                                       else ""), T_STEP, INK)], sw=1.5 if proposed else 2.5, dashed=proposed)
         found = jd.finding(t, cfg)
         asked = ((cfg.get("tasks") or {}).get(t["name"]) or {}).get("asked") or t.get("question") or ""
@@ -1062,7 +1271,8 @@ def ladder_frame(d: Drawing, info: dict, tasks: list[dict], cfg: dict, topics: d
         pages = run_pages(topic, t)                                             # its Runs' results/ first
         thumb = (t["id"], None, None, pages) if pages else None                 # no links: the results are here
         ask_most = 12 if tight else 24                                  # a big Job: fewer words a step, and no Did
-        under = [("" if not asked or QUESTION.match(name) else f"Asks: {words(asked, ask_most)}", T_CARD, INK),
+        under = [("" if not asked else f"Asks: {words(asked, ask_most)}", T_CARD, INK),   # the step shows its
+                                                                        #   folder name, so its question is said here
                  (f"Did: {words(did_of(t, cfg), 24)}" if did_of(t, cfg) and not (tight and t["runs"]) else "",
                   T_CARD, INK)]                                         # line beside Runs that already say it;
         # no "⬜ no Run yet" line: the subtitle counts the Runs and the results block says it (JL 261014: "do we
@@ -1087,13 +1297,22 @@ def ladder_frame(d: Drawing, info: dict, tasks: list[dict], cfg: dict, topics: d
             kind = card_state(r)                                        # ✅ ❌ 🔶 ⬜ ◌, dashed until it ran
             r = {**r, "mark": STATE_MARK.get(kind, r["mark"])}          #   (ref/propose-tree.md, 261019)
             dashed, why, files = kind in ("ready", "proposed"), run_why(r, kind), run_files(r, t["row"]["task"])
+            quiet_w = min(RUN_W, max(RUN_W - 160, Drawing.measure(f"{r['mark']} {r['name']}", T_RUNS - 2)
+                                     + 2 * PAD + 30))                   # wide enough for its whole folder name;
+                                                                        #   📥 in · 📤 out, at the card's size
+            io_of = lambda w_: [(s_, T_RUNS, GREY) for s_ in run_io(r, t["row"]["task"], cfg, t["name"], w_)] + [
+                (f_, T_RUNS - 6, GREY) for f_ in ([files] if Drawing.measure(files, T_RUNS - 6) <= w_ - 2 * PAD - 40
+                                                  else files.split(" · "))]   # noqa: E731  ticket, config: a line
+                                                                        #   each when together they would break a name
+            if any(Drawing.measure(s_, T_RUNS) > quiet_w - 2 * PAD - 8 for s_, _, _ in io_of(quiet_w)[:2]):
+                quiet_w = RUN_W                                         # a name too long for 📥 or 📤: full width
             plan = run_plan(r)
             if marked and not run_current(cfg, t["name"], r["name"]) and not plan:   # a rerun the current Run replaces: quiet,
                 st = str(r["state"] or "") if str(r["state"] or "") not in ("None", "null") else ""   # but it still
                 st = st or ("proposed" if kind == "proposed" else "not run yet")                     # says its state,
                 boxes.append(([(f"{r['mark']} {run_label(r['name'])}", T_RUNS - 2, GREY),            # why it failed
-                               (st + (f" · {words(why, 12)}" if why else ""), T_RUNS - 4, GREY),     # or what it is
-                               (files, T_RUNS - 6, GREY)], RUN_W - 160, 1, dashed))                   # for, its files
+                               (st + (f" · {words(why, 12)}" if why else ""), T_RUNS - 4, GREY)] +   # or what it is
+                              io_of(quiet_w), quiet_w, 1, dashed))                                    # for, its files
                 continue
             title = run_title(r)                                        # its original name (JL 261014): the card's
             whole = title and Drawing.words_in(title) <= say_most           # share holds it and its sentence: the
@@ -1115,15 +1334,18 @@ def ladder_frame(d: Drawing, info: dict, tasks: list[dict], cfg: dict, topics: d
                 if says:
                     said[says] = r["name"][:3]
             now = run_current(cfg, t["name"], r["name"])
-            label = f"{r['name'][:3]} · {short}" if short else run_label(r["name"])   # always named (JL 261019)
+            label = r["name"]                                           # its folder name, exactly (JL 261019)
+            if short:                                                   # a paper's or video's own title, filed
+                line = (f"📄 {short}" + (f" · {line[0]}" if line[0] else ""), line[1], line[2])   # on its Result Card
             if kind == "proposed":                                      # a proposal says what it is for, when it
                 when = str(run_yaml(r).get("proposed") or "")           #   was proposed, and that it waits for a yes
                 line = (f"◌ proposed {when} · waits for a yes" + (f" · {words(why, 16)}" if why and not plan else ""),
                         T_RUNS, INK)                                    #   (its plan says why once, below)
             elif why and kind == "failed" and why not in str(line[0]):
                 line = (f"{line[0]} · {words(why, 12)}".strip(" ·"), line[1], line[2])
+            card_w = RUN_WIDE if detailed or plan else RUN_W
             boxes.append(([(f"{r['mark']} {label}{'  📌 current' if now else ''}", T_RUNS, INK), line] + plan +
-                          [(files, T_RUNS - 6, GREY)], RUN_WIDE if detailed or plan else RUN_W, 2.5 if now else 1.2,
+                          io_of(card_w), card_w, 2.5 if now else 1.2,
                           dashed))
         for label, runs in fold_cards(t, cfg, folded):                  # a box a series: each Run on its own line,
             marks = [STATE_MARK.get(card_state(r), r["mark"]) for r in runs]   #   named in full, with its state
@@ -1131,7 +1353,7 @@ def ladder_frame(d: Drawing, info: dict, tasks: list[dict], cfg: dict, topics: d
             quiet = not any(tells(r, cfg, t["name"]) for r in runs)
             head = (f"🔁 {label} · {jd.n_of(len(runs), 'Run')}" if label and not SPAN.fullmatch(label)
                     else jd.n_of(len(runs), 'more Run' if keep else 'Run') + (f" · {label}" if label else ""))
-            lines = [(head, T_RUNS, INK)] + [(f"{m} {run_label(r['name']).replace(' · ', ' ', 1)}", T_RUNS - 4, GREY)
+            lines = [(head, T_RUNS, INK)] + [(f"{m} {r['name']}", T_RUNS - 4, GREY)
                                              for m, r in zip(marks, runs)] + \
                     [(" · ".join(f"{n} {s}" for s, n in tally.most_common()) +
                       (" · nothing in their local result/" if quiet else ""), T_RUNS - 6, GREY)]

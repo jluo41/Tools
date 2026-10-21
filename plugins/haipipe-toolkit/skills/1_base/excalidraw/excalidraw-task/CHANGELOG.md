@@ -1,6 +1,15 @@
 excalidraw-task · Changelog
 ===========================
 
+## [0.6.1] · 2026-10-19 · charts in colour
+
+- JL 261019 ("do not use this black and white anymore"): `task_stairs.py` passes the face's `colors:` to
+  excalidraw-job 0.9.5's `chart_png`, so a Run's bars take the dataviz palette by what they are about, never dark grey.
+- JL 261019 ("why the name here used is not the same as the task folder name or the run folder name?"): the
+  staircase, its Task card, the ⓪ frame and each work Run are drawn by their folder names (`t01_sampling`,
+  `r02_q4km_throughput`), never `t01 · Decoding and Sampling` or `r02 · q4km throughput`; a video keeps its filed title
+  beside its folder name.
+
 ## [0.6.0] · 2026-10-14 · A board or cover, read for the reader
 
 - JL 261014, on 海安雨's video covers in his GitHub index (each one the finished whiteboard, no text): "you can try

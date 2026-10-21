@@ -157,6 +157,20 @@ class FrameMixin:
                 return None
             return self.guide_send("<h1>Not found</h1><p>No such folder under this root.</p>", 404,
                                    head_only=head_only)
+        if get("view") == "work-run":
+            from live import work_progress
+            if frame.level_of(folder) != "Task" or not work_progress.enabled(folder, root):
+                return self.guide_send("<h1>Run unavailable</h1>", 404, head_only=head_only)
+            body = work_progress.render_run(folder, root, get("run"))
+            return self.guide_send(body or "<h1>Run unavailable</h1>", 200 if body else 404,
+                                   head_only=head_only)
+        if get("view") == "work-browse":                 # a deliverable's finished set, browsed (workbench-work)
+            from live import work_progress
+            if not work_progress.enabled(folder, root):
+                return self.guide_send("<h1>Set unavailable</h1>", 404, head_only=head_only)
+            body, kind = work_progress.render_browse(folder, root, get)
+            return self.guide_send(body or "<h1>Set unavailable</h1>", 200 if body else 404,
+                                   kind or "text/html; charset=utf-8", head_only=head_only)
         themes = frame.themes()
         name = get("theme") or frame.theme_of(folder, root)
         theme = themes.get(name, frame.VANILLA)

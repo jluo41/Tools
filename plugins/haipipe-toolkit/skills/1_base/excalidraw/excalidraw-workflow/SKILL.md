@@ -11,11 +11,14 @@ description: >-
   it for a paper's workflow topic whenever it is installed. Use to draw or redraw a paper's workflow, to see what
   the reviewers hit and what answers each point, or to give a new paper the same building map. Trigger: draw the
   paper workflow, building map, workflow drawing, paper structure map, what did the reviewers hit, review overlay,
-  /excalidraw-workflow.
+  /excalidraw-workflow. Its second drawer, scripts/paperflow_drawing.py, draws a paper's s04-paper-workflow: the
+  Sections in reader order with their questions, words and displays, the Run that makes each display, and the dated
+  steps to the send (haipipe-paper-plan owns both faces; the map is that skill's s03-paper-dataflow). Trigger also:
+  paper flow, s04 drawing, sections and displays, timeline to the send.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-10-14"
+  version: "0.2.0"
+  last_updated: "2026-10-19"
   # version history: ./CHANGELOG.md
 ---
 
@@ -45,12 +48,14 @@ What it reads
 
 | part of the map | read from, on every build |
 |---|---|
-| the question line | the telling's face `**Topic:**` (board.md `story-current:`; an older Board's A1-Story Page's `## Opening`) |
+| the question line | the telling's face `**The paper's question**:`, else its `**Topic:**` (board.md `story-current:`; an older Board's A1-Story Page's `## Opening`) |
 | each question row: name, question, its Tasks, sub-questions, claims, contribution, work | the Board Questions in board.md `## Questions`, each report's `#### 3.N · Question N · RQN` block (else the face) |
-| an analysis card: name, question, its folder, ran or not | the face's §7 T table and §6 D table; the Project's `work/` (or `tasks/`): a Task ran when a Run's `result/` (or an older `results/`) holds a real file |
-| a sub-question card's evidence state | the face's §5 E table |
+| an analysis card: name, question, its folder, ran or not | the face's §7 T table and §6 D table; the Project's `work/` (or `tasks/`): a Task ran when a Run's `result/` (or an older `results/`) holds a real file; a drawn telling's short table (`\| T \| work \| where \| state \| starts \|`) says it in `state` (a new Run in a Task that ran before is not done) |
+| a sub-question card's evidence state | the face's §5 E table; a claim resting on several hypotheses (`from 1a, 1b`) is drawn on the first and named beside the others |
+| an analysis card's answer | the yaml's `numbers:` (keyed by T row: `{json, say}`, read like `count:`) |
 | the foundation columns (data, sources, tests), their links, the displays | the topic's `<topic>-drawing.yaml` |
-| a count on a foundation card | its `count:`, a JSON file on disk counted now (never typed) |
+| a count on a foundation card | its `count:`, a JSON file on disk read now (never typed): a list counted (`list:`), or an object's values filling `say` (`{rows:,}`, nested keys joined by `_`) |
+| the "in the paper" card of each question | the yaml's `figures:`, else the displays the Board's `s04-paper-workflow` face names for that question |
 | the overlay | the newest version's comments reports (or `review:`), their `## Review Items` table's `hits` and `fixed by` |
 
 
@@ -120,8 +125,7 @@ Steps
 W=Tools/plugins/haipipe-toolkit/skills/1_base/excalidraw/excalidraw-workflow/scripts/workflow_drawing.py
 python $W make <topic folder> [--force]     # the forwarding builder, and a words yaml from a template if none
 #   write <topic>-drawing.yaml; fill hits and fixed by in the version's Review Items
-python <topic folder>/build_sNN_<topic>.py   # redraw; a person's marks are kept (canvas.write)
-python Tools/plugins/haipipe-toolkit/skills/1_base/project/haipipe-studio/scripts/render_png.py <x>.excalidraw <x>.png
+python <topic folder>/build_sNN_<topic>.py   # redraw and its .png; a person's marks are kept (canvas.write)
 ```
 
 `make --force` replaces a topic's own builder: keep the old one in the topic's `history/` first. Then read the
@@ -144,6 +148,27 @@ fixed in the writing).
 Older copies of the same map, not yet moved to this skill (each still reads `A1-Story/`): DrFirst-SPACE
 Paper-MessageTradeOffEgm, Paper-RxSavingsNudge and Paper-LLMSocialOutcome-PNAS2026; WellDoc-SPACE
 Paper-TimeEventDM-ISR2026.
+
+
+The paper flow (s04-paper-workflow)
+-----------------------------------
+
+`scripts/paperflow_drawing.py` draws the other half of a paper's plan (haipipe-paper-plan; JL 261019: "please think
+about to make the s03 to be the paper-dataflow, and s04 to be the s04-paper-workflow"), the way excalidraw-story draws
+s02: one main frame, small frames that explain it, as stairs.
+
+```text
+① 📝 the paper as it reads (main): the budget and the send date as its key, then each Section a step lower and
+   further right: its research questions (names read from the telling), its words, its displays; red and dashed
+   when every evidence row it names is absent; "❗ RQn has no section" when a question lands nowhere
+      ② what each Section must do            ③ the displays as stairs: what each shows, the Run that makes it
+   ④ from here to the send (below): each step with its date and who; a person's step marked 🙋
+```
+
+It reads the face's `**Budget:**` and `**Send:**` lines and its three tables (`| S | section | answers | job |
+displays | evidence | words |`, `| Display | title | kind | answers | made by | state |`, `| W | step | when | who |
+state |`), and from the telling (board.md `story-current:`) each question's name and the E table's support states.
+`paperflow_drawing.py make <topic>` writes the forwarding builder; templates are haipipe-paper-plan's `ref/faces.md`.
 
 
 Boundary

@@ -52,7 +52,7 @@ spaces:
 - - Audience Report
   - 'Ideation · Narrative · High-level logic + Low-level work · Related Questions: the question, how the Story is told and whether it attracts its audience, and every question its audience asks'
 - - Work Details
-  - 'Jobs · Main · Appendix · Evidence: the versions (Jobs), then the Sections, each a Page'
+  - 'Idea · Story · DataFlow · PaperFlow · Jobs: the paper''s steps, each its Studio topic with a prompt, then the versions (Jobs)'
 - - Runs
   - the paper's run types
 - - Delivery

@@ -8,7 +8,7 @@
 
 - `studio/s01-ideation/` is drawn by the new `excalidraw-ideation` skill whenever it is installed (JL 261014:
   "haipipe-paper-ideation will call it to draw when it is available"): one main frame of every idea as steps, small
-  frames for the setting, one card per lead idea and the path to G0, in Paper-LLMRecPhy's shape (JL 261013). Its
+  frames for the setting, one card per lead idea and the path to G0, in Paper-LLMRecPhy-Quick's shape (JL 261013). Its
   words, `s01-ideation-drawing.yaml`, are a projection of the face's divisions; the table in "The drawing" maps them.
 - The drawing's optional ⑧ shows how the lead Idea scores and where it goes: the I2 test verdicts and the venue
   ladder, a venue's rules only from a verified venue contract (JL 261014).

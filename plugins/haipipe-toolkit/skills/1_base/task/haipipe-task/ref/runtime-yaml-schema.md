@@ -52,7 +52,8 @@ Ticket arguments differ from `settings.ticket_args`. A changed contract
 requires owner recovery or a new commission.
 A complete/superseded Result cannot be overwritten by retry. Preserve any
 partial payload needed for recovery before retry; published outputs remain
-immutable. The native `.run-lock` excludes simultaneous writers. An abandoned
+immutable, never edited. A superseded Run is deleted once nothing in use reads
+it (haipipe-run, Keep only meaningful Runs; `prune_runs.py`). The native `.run-lock` excludes simultaneous writers. An abandoned
 lock requires confirmation that the prior process is no longer active before
 owner recovery removes it.
 

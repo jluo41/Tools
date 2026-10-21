@@ -91,6 +91,13 @@ today:                                   # b10's rules since 261012: `audit --to
   keep: [question-map.excalidraw, question-map.png]     # the workbench's question_map.py writes the Block's map here
   s00: s00-background-and-index          # every Block's background and index has this one name (haipipe-studio); a number
                                          # an old index gave up when it became s00 is never reused (JL 261012)
+  workflow:                              # a work Block (family task) since 261021 (LLMRec b01, b02): Goal first
+    layout: '(?m)^workbench-layout:[ \t]*workflow[ \t]*$'   # the Block face opts in (workbench-work)
+    job_fields: [emoji]                  # a Job face's own emoji on its Goal line (haipipe-job)
+    job_section: '(?m)^## Deliverables[ \t]*$'             # what the Job hands on, the Goal's to-do list (haipipe-job)
+    task_fields: [goal, close]           # a work Task face's two lines (haipipe-task); a Page Task keeps its own
+    run_role: true                       # every Run card says its role:, written by update --today --apply (haipipe-run)
+    stand_in: true                       # a receipt that only stands in (status: blocked + repair:) is rebuilt from the files
 
 checks:
   heavy_mb: 10                           # AGENTS rule 10: a Result is light
@@ -134,8 +141,27 @@ debt   studio/ has no sNN-<topic>/ topic                    proposed by /wb upda
        the face has no ## Questions register                proposed by /wb update step 6
        a registered Block Question has no reports/qNN_*/      haipipe-report makes it
        a Job's or Task's related/ or delivery/               haipipe-delivery moves it to the Block
+debt   (a work Block, family task)
+       the face has no workbench-layout: workflow line       add it: Goal · Plan · Execution · Results
+       a Job face has no ## Deliverables, or no emoji:       write them: haipipe-job ref/job-contract.md
+       a work Task face has no goal: or no close: line       write them: haipipe-task ref/task-page-template.md
+                                                             (a Page Task or a draft Task keeps its own face)
+       a Task's Run card has no role:                        written by update --today --apply (haipipe-run)
+       a Run ran but keeps only a stand-in receipt           rebuild it from the files the Run left (haipipe-run
+                                                             ref/receipts-and-inventory.md § Rebuilt receipts)
 ```
 
-`update --today --apply` makes the one safe move: a data file in a Block's `studio/` (a `.tsv`, a
+The workflow rules count, they do not list: one line per rule, the first six names, then `+N`. They
+read a Task's Runs only (a Block's or a Job's soft Runs, such as `run-draw-sNN`, take no role), and
+nothing under `_old/`, which is history.
+A Block opts out of them only by its family (a paper, insight, cowork, design, discovery or
+labeling Block keeps its own workbench).
+
+`update --today --apply` makes three safe changes. A data file in a Block's `studio/` (a `.tsv`, a
 `.yaml`; not a drawing, its builder or a note) goes to the Block root, beside the face, never over a
-file of the same name. A loose drawing waits for the topic a person names. No file's words change.
+file of the same name; a loose drawing waits for the topic a person names. A Run card whose `kind:`
+disagrees with its name, where the folder agrees with the name (a `.sh` ticket and no `.md` one is
+hard), takes the name's kind; plain `update --apply` makes this fix too. And a Run card with no
+`role:` gets the one line haipipe-run's `run_roles.py` proposes from its name, after `kind:`; no other
+field of the card changes. No file's words change. Deliverables, emoji, goal and close lines are
+words: an agent writes them from the Job's and Task's own records, never `update`.

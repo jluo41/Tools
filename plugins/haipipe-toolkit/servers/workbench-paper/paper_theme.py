@@ -11,7 +11,7 @@ the base's look only (JL 261007: no theme stylesheet): wf-table, the folding .to
     Audience Report  Ideation · Narrative · High-level logic + Low-level work · Related Questions · Related
                      Papers (by the question each bears on, JL 261009): questions
                      (JL 261007); Narrative = what the story says, how it is drawn and told, will it attract
-    Work Details     Main · Appendix · Evidence               (was Sections; a row opens its Page)
+    Work Details     Idea · Story · DataFlow · PaperFlow · Jobs   (each Operation over Result; Jobs: the versions)
     Runs             vanilla (runs/), with the paper's run types
     Delivery         LaTeX · Word · Cover letter · Rounds     (was Delivery)
 
@@ -693,21 +693,427 @@ def _report(d, block, root, sub):
     return Space(html=html, subspaces=AUDIENCE, open=s, run_types=_run_cards("Block", "Audience Report", s))
 
 
-def _sections(d, sub):
-    opts = ("Jobs", "Main", "Appendix", "Evidence")
-    s = _pick(sub, opts)
-    rows = P.section_rows(d)
-    if s == "Jobs":                                 # s11: the Board's Work Details are its Jobs, as the base's tree:
+# The Board's Work (JL 261020: "Like in the work, we might also have Studio (studio is already in the top), and then
+# the Idea, and then the Story, and DataFlow, and PaperFlow ... and later we can have many Jobs"): the paper's own
+# steps before its versions, each Operation over Result as a Section's seven steps are (draft_steps), then its Jobs.
+BOARD_STEPS = ("Idea", "Story", "DataFlow", "PaperFlow", "Jobs")
+OLD_BOARD_SUBS = {"Main": "Jobs", "Appendix": "Jobs", "Evidence": "Jobs"}     # the old Work Details tabs still open
+# step → (emoji, the Studio group whose topics it reads, a word the topic's name must hold, its prompt)
+BOARD_STEP = {
+    "Idea": ("💡", "Ideation", "", "/haipipe-paper ideate {b}: read studio/{t} and the related work (s10 to s14) and my "
+             "notes; add or test ideas, each with its question, its novelty against the closest work and a verdict; "
+             "then redraw the topic."),
+    "Story": ("📖", "Story", "", "/haipipe-paper story {b}: read the ideas that went to a story and my notes; tell the paper "
+              "in studio/{t} (the tension, what we do, the answer so far, who cares) and its research questions, one "
+              "Board Question each; then redraw the topic."),
+    "DataFlow": ("🔀", "Plan", "dataflow", "/haipipe-paper-plan {b} dataflow: read the Story's research questions and the "
+                 "Runs on disk; draw in studio/{t} how the data becomes each answer (inputs, the Runs, what each feeds), "
+                 "with what is still to run; then redraw."),
+    "PaperFlow": ("🗺", "Plan", "workflow", "/haipipe-paper-plan {b} paperflow: read the Story, the DataFlow and my notes; "
+                  "draw in studio/{t} how the answers become the paper (the Sections, the displays and the Run behind "
+                  "each, the dates to the send); then redraw."),
+}
+
+
+def _board_topics(block, group, word=""):
+    """The Board's studio topics of one group (their **Tags:** line), whose name holds `word`, in name order."""
+    out = []
+    for topic in sorted((block / "studio").glob("s[0-9][0-9]-*/")):
+        md = topic / f"{topic.name}.md"
+        text = md.read_text(encoding="utf-8", errors="replace") if md.is_file() else ""
+        tags = re.search(r"(?m)^\*\*Tags:\*\*\s*(.*)$", text)
+        names = [x.strip().strip("`").strip().casefold() for x in re.split(r"[,·|]", tags.group(1))] if tags else []
+        if group.casefold() in names and word in topic.name:
+            out.append((topic, text))
+    return out
+
+
+def _topic_lists(text, head):
+    """The items under a face's `Decided` or `Open` heading (setext or `## `): its list items, each with its wrapped
+    lines, or its `sNN-D01 · …` paragraphs; none-yet lines left out."""
+    m = re.search(r"(?ms)^(?:## )?%s\s*\n(?:-{3,}\n)?(.*?)(?=^\S[^\n]*\n-{3,}\n|^## |\Z)" % head, text)
+    body = m.group(1) if m else ""
+    items = _items(body) or [" ".join(par.split()) for par in re.split(r"\n\s*\n", body)
+                             if re.match(r"\s*s\d+-D\d+", par)]
+    return [i for i in items if not i.startswith("(none")]
+
+
+def _items(body):
+    """The top-level list items of a Markdown body (`- ` or `1. `), each joined with its wrapped lines; a nested item
+    and the text after the list are left out."""
+    out, inside = [], False
+    for line in (body or "").splitlines():
+        if re.match(r"^(?:- |\d+\. )", line):
+            out.append(re.sub(r"^(?:- |\d+\. )", "", line).strip())
+            inside = True
+        elif inside and line.startswith("  ") and line.strip() and not re.match(r"^\s+(?:- |\d+\. )", line):
+            out[-1] += " " + line.strip()
+        elif inside and line.strip() and not line.startswith(" "):
+            inside = False
+    return out
+
+
+def _topic_what(text):
+    """What the topic is, in its own first words: its **Topic:** line, else its Opening's first paragraph."""
+    m = re.search(r"(?ms)^\*\*Topic:\*\*\s*(.*?)(?:\n\s*\n)", text) or re.search(r"(?ms)^## Opening\s*\n+(.*?)(?:\n\s*\n)", text)
+    words = " ".join(m.group(1).split()) if m else ""
+    first = re.split(r"(?<=[.?!])\s", words, maxsplit=1)[0]
+    return first if len(first.split()) <= 40 else " ".join(first.split()[:40]) + " …"
+
+
+def _board_state(steps):
+    """Each step's chip: no topic yet → next (the first) or later; open points → asked; else done."""
+    out, first = {}, True
+    for name, topics in steps.items():
+        if not topics:
+            out[name], first = ("next" if first else "todo"), False
+        elif any(_topic_lists(text, "Open") for _t, text in topics):
+            out[name] = "asked"
+        else:
+            out[name] = "done"
+    return out
+
+
+# an idea card's lines, the label it reads under and the field it comes from (the Ideation contract's names)
+IDEA_LINES = (("Question", "Research Question"), ("Hypothesis", "Hypothesis"), ("Test", "Minimum Experiment"),
+              ("Closest work", "Discovery Basis"), ("Risk", "Risk"), ("Next", "Next Evidence Action"))
+
+
+def _first_sentence(text, words=45):
+    """A field's first sentence, as read (its Markdown marks kept for P.inline), cut at `words`."""
+    text = " ".join(text.split())
+    m = re.search(r"(?<=[.?!])\s+(?=[A-Z0-9(\"“])", text)
+    first = text[:m.start()] if m else text
+    ws = first.split()
+    return first if len(ws) <= words else " ".join(ws[:words]) + " …"
+
+
+def _idea_groups(text):
+    """[(mark, name, note, [ids])] from the ranked list's sketch (`🔥 first   i13 i14   the roster batch: …`)."""
+    m = re.search(r"(?ms)^### \d+ · Ideas \(ranked\).*?```text\n(.*?)```", text or "")
+    out = []
+    for line in (m.group(1).splitlines() if m else []):
+        g = re.match(r"^(\S+)\s+(.+?)\s{2,}((?:i\d+\s*)+?)\s{2,}(.*)$", line.strip())
+        if g:
+            out.append((g.group(1), g.group(2).strip(), g.group(4).strip(), g.group(3).split()))
+    return out
+
+
+def _line(label, html):
+    """One labelled line of a card: the label small and grey in its own column, the words beside it."""
+    return (f'<div style="display:grid;grid-template-columns:7.2em 1fr;gap:10px;margin:3px 0">'
+            f'<span style="color:var(--mut);font:11.5px/1.9 ui-monospace,Menlo,monospace">{esc(label)}</span>'
+            f'<span style="line-height:1.55">{html}</span></div>')
+
+
+def _card(head, rows, foot="", anchor=""):
+    """A light card: its head in bold, then its labelled lines (JL 261020: "I still want each of them to have a card")."""
+    return (f'<div class=topic style="padding:10px 16px 8px;margin:0 0 10px"{f" id={chr(34)}{esc(anchor)}{chr(34)}" if anchor else ""}>'
+            f'<div style="margin-bottom:4px">{head}</div>' + "".join(_line(k, v) for k, v in rows if v)
+            + (f'<div class=mut style="font-size:12.5px;margin-top:6px">{foot}</div>' if foot else "") + "</div>")
+
+
+def _key(html):
+    """The line to read first, as plain text (JL 261020, of yellow boxes and big numbers: "看起来太咋咋呼呼了，就没有重点")."""
+    return f'<p style="margin:2px 0 8px;line-height:1.55">{html}</p>'
+
+
+def _folded(head, meta, body, anchor=""):
+    """A row folded closed, its emoji and bold title only, as 1 · Plan's rows (JL 261020: "可以把它们也都变成闭合的吗";
+    "我还是喜欢这种模式的"); opened, its state first, then its body."""
+    head = re.sub(r"</?b>", "", head).strip()
+    return (f'<details class="topic work-task"{f" id={chr(34)}{esc(anchor)}{chr(34)}" if anchor else ""}><summary>'
+            f'<span class=related-head><b>{head}</b></span></summary><div class=work-body style="padding:4px 16px 12px">'
+            + (f'<p class=mut style="font-size:13px;margin:2px 0 8px">{meta}</p>' if meta else "") + f"{body}</div></details>")
+
+
+def _cols(cols):
+    """Columns read left to right, an arrow between them, as a drawing's row of frames; they stack on a narrow screen."""
+    return ('<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px;margin-top:6px">'
+            + "".join(f'<div><div style="font:600 12.5px system-ui,sans-serif;color:var(--mut);margin-bottom:4px">'
+                      f'{esc(title)}{" →" if k < len(cols) - 1 else ""}</div>{body}</div>' for k, (title, body) in enumerate(cols))
+            + "</div>")
+
+
+def _mini(head, text, foot=""):
+    """One entry in a column (a hypothesis, a claim, a step): its name in bold, its sentence, a grey note; no box."""
+    return (f'<div style="margin:0 0 9px;line-height:1.45"><b>{head}</b>' + (f'<br>{text}' if text else "")
+            + (f'<br><span class=mut style="font-size:12.5px">{foot}</span>' if foot else "") + "</div>")
+
+
+def _section(title, note, body):
+    """A quiet label over a run of rows (the ideas' groups), then the rows."""
+    return (f'<div class=mut style="font-size:12.5px;margin:14px 0 5px">{esc(title)}' + (f' · {esc(note)}' if note else "")
+            + f"</div>{body}")
+
+
+def _idea_card(x, words=None, mark=""):
+    """One idea, folded to its one line (its short question, verdict and state), opened as its drawing card is: why it
+    matters in the key box, its data beside its method, what each finding would mean, now and next; then the face's
+    full question, closest work and risk (JL 261020: "让它的 layout 跟我们 draw 里面长得比较相似一些")."""
+    w = words or {}
+    sub = {k.lower(): " ".join(v) for k, v in x.get("substance") or []}
+    status = {k.lower(): re.sub(r"\s*\(.*?\)", "", v) for k, v in x.get("fields") or []}
+    call = _first_sentence(sub.get("recommendation", ""), 12)
+    short = w.get("short") or _first_sentence(sub.get("research question") or x.get("title", ""), 18)
+    meta = " · ".join(esc(v) for v in ([x.get("verdict") or "⬜ open"] + [f"{k} {status[k]}" for k in ("novelty", "pilot")
+                                                                         if status.get(k)] + ([call] if call else [])))
+    why = w.get("why") or _first_sentence(sub.get("hypothesis", ""))
+    results = "<br>".join(f'{P.inline(r.get("find", ""))} <span class=mut>→</span> {P.inline(r.get("means", ""))}'
+                          for r in w.get("results") or [])
+    rows = [("Question", P.inline(sub.get("research question") or x.get("title", ""))),
+            ("Why it matters" if w.get("why") else "Hypothesis", P.inline(why)),
+            ("Data", " · ".join(P.inline(i) for i in w.get("data") or [])),
+            ("Method", "<br>".join(f"{k}. {P.inline(i)}" for k, i in enumerate(w.get("method") or [], 1))
+             or P.inline(_first_sentence(sub.get("method", "")))),
+            ("If we find", results + (' <span class=mut>(drafted)</span>' if results and w.get("drafted") else "")),
+            ("Now", P.inline(w.get("now", ""))), ("Next", P.inline(w.get("next") or _first_sentence(sub.get("next evidence action", "")))),
+            ("Closest work", P.inline(_first_sentence(sub.get("discovery basis", "")))), ("Risk", P.inline(_first_sentence(sub.get("risk", ""))))]
+    body = ["".join(_line(k, v) for k, v in rows if v)]
+    return _folded(f'{esc(mark)} <b>{esc(x["id"])} · {P.inline(short)}</b>', meta, "".join(body), f"idea-{x['id']}")
+
+
+def _drawing_words(page):
+    """The topic's drawing words (`<topic>-drawing.yaml`), {} when it has none."""
+    import yaml
+    if not page:
+        return {}
+    f = Path(page.get("path") or "")
+    try:
+        return yaml.safe_load(f.read_text(encoding="utf-8")) or {} if f.is_file() else {}
+    except Exception:
+        return {}
+
+
+def _idea_cards(d):
+    """The Ideation topic as its drawing reads: the question in the key box, the setting folded, then each group of
+    ideas (a card each, folded), then the path to G0."""
+    i = d.get("ideation") or {}
+    ideas = {x["id"]: x for x in i.get("ideas") or []} if i.get("present") else {}
+    if not ideas:
+        return ""
+    page = P.ideation_topic(d["board"])
+    text = page["text"] if page else ""
+    words = _drawing_words({"path": str(d["board"] / "studio" / page["stem"] / f'{page["stem"]}-drawing.yaml')} if page else None)
+    asked = re.search(r"(?ms)^## Opening\s*\n+(.*?)\n", text)
+    index = words.get("index") or {}
+    out = []
+    roster = words.get("roster") or {}
+    if roster:
+        flow = " → ".join(P.inline(x) for x in [roster.get("start", ""), roster.get("roster", ""),
+                                                 " / ".join(roster.get("google", [])), " / ".join(roster.get("agent", [])), roster.get("end", "")] if x)
+        rows = ([("Question", P.inline(asked.group(1).strip()))] if asked else []) + \
+               [("Pool", P.inline(index.get("key", ""))), ("Flow", flow), ("Reading", P.inline(roster.get("reading", "")))] + \
+               [(n.get("big", ""), P.inline(n.get("tag", ""))) for n in roster.get("numbers") or []]
+        out.append(_folded(f'🔑 {P.inline(roster.get("title", "The setting")).lstrip("①").strip()}', P.inline(roster.get("key", "")),
+                           "".join(_line(k, v) for k, v in rows if v)))
+    groups = [(g.get("name", ""), g.get("line", ""), g.get("ideas") or []) for g in words.get("groups") or []] or \
+             [(f"{m} {n}", note, ids) for m, n, note, ids in _idea_groups(text)]
+    sketch = {k: m for m, _n, _note, ids in _idea_groups(text) for k in ids}
+    shown = set()
+    for name, line, ids in groups:
+        cards = [_idea_card(ideas[k], (words.get("ideas") or {}).get(k), sketch.get(k, "")) for k in ids if k in ideas and k not in shown]
+        shown.update(ids)
+        if cards:
+            out.append(_section(name, line, "".join(cards)))
+    rest = [_idea_card(x, (words.get("ideas") or {}).get(k)) for k, x in ideas.items() if k not in shown]
+    if rest:
+        out.append(_section("Other ideas", "", "".join(rest)))
+    path = words.get("path") or {}
+    if path.get("steps"):
+        rows = [(st.get("title", ""), "<br>".join(P.inline(l) for l in st.get("lines") or [])) for st in path["steps"]]
+        rows += [("Also", P.inline(path.get("also", "")))] + [("Open", P.inline(q)) for q in path.get("open") or []]
+        out.append(_folded(f'🧭 {P.inline(path.get("title", "From here to G0")).lstrip("⑲").strip()}', P.inline(path.get("key", "")),
+                           "".join(_line(k, v) for k, v in rows if v)))
+    return "".join(out)
+
+
+def _division(text, title):
+    """The body of a face's `### N · <title>` division, up to the next division or setext heading."""
+    m = re.search(r"(?ms)^### \d+ · %s[^\n]*\n(.*?)(?=^### \d+ · |^\S[^\n]*\n-{3,}\n|\Z)" % re.escape(title), text or "")
+    return m.group(1) if m else ""
+
+
+def _fields(body):
+    """`**Label**: words` paragraphs and `- **Label**: words` or `1. **Label**: words` items → [(label, words)]."""
+    out = []
+    for par in re.split(r"\n\s*\n", body or ""):
+        for item in (_items(par) or [" ".join(par.split())]):
+            m = re.match(r"^\*\*(.+?)\*\*\s*:?\s*(.*)$", item.strip())
+            if m:
+                out.append((m.group(1).strip().rstrip(":"), m.group(2).strip()))
+    return out
+
+
+def _table(body, first):
+    """The rows of a division's Markdown table whose first cell matches `first`, each a list of cells."""
+    rows = [[c.strip() for c in line.strip().strip("|").split("|")] for line in (body or "").splitlines() if line.startswith("|")]
+    return [r for r in rows if re.fullmatch(first, r[0])]
+
+
+def _rq_blocks(body):
+    """§3's `#### 3.N · Question N · RQn` blocks: (id, fields, {group: [item]}), an item a dict of its code, its
+    `Name: sentence`, its other ` · ` parts and its indented `- **Label**: words` lines (a claim's Now, If it fails)."""
+    out = []
+    for m in re.finditer(r"(?ms)^#### [\d.]+ · Question \d+ · (RQ\d+)\s*\n(.*?)(?=^#### |\Z)", body or ""):
+        fields, groups, group, last = [], {}, None, None
+        for line in m.group(2).splitlines():
+            g = re.match(r"^\*\*(Hypotheses|Potential claims|Potential contributions|Potential work|Tasks)\*\*\s*$", line.strip())
+            if g:
+                group, last = g.group(1), None
+                groups[group] = []
+                continue
+            nested = re.match(r"^\s+- \*\*(.+?)\*\*\s*:\s*(.*)$", line)
+            if nested and last is not None:
+                last["more"][nested.group(1).strip().lower()] = nested.group(2).strip()
+                continue
+            item = re.match(r"^- \*\*(.+?)\*\*\s*(?::|·)\s*(.*)$", line)
+            if not item:
+                continue
+            if group is None:
+                fields.append((item.group(1), item.group(2).strip()))
+                continue
+            parts = [x.strip() for x in item.group(2).strip().split(" · ")]
+            code = next((x for x in parts if re.fullmatch(r"C\d+", x)), item.group(1))
+            said = next((x for x in parts if ":" in x), parts[-1] if parts else "")
+            last = {"code": code, "said": said, "parts": parts, "more": {}}
+            groups[group].append(last)
+        out.append((m.group(1), fields, groups))
+    return out
+
+
+def _story_sections(text):
+    """A Story topic's face laid out as its drawing (JL 261020: "让它的 layout 跟我们 draw 里面长得比较相似一些"): the
+    paper's question in the key box, then a folded card per research question, opened as the drawing's row (the question
+    → what we expect, and why → what the paper can say), then the narrative, stakes, what we will not claim, the evidence,
+    the work and where it could go, each folded (haipipe-paper-story §1 to §9)."""
+    out = []
+    ident, pitch, rqs = _fields(_division(text, "Identity")), _fields(_division(text, "Pitch")), _division(text, "Research Questions")
+    asked = next((v for k, v in _fields(rqs.split("####")[0]) if k.lower().startswith("the paper's question")), "")
+    one = next((v for k, v in ident if k.lower() == "one sentence"), "")
+    bounds = _division(text, "Evidence Basis and Boundaries")
+    ev = _table(bounds, r"E\w*\d+")
+    held = {r[0]: r[-1].lower() for r in ev}
+    if asked or one or pitch:
+        out.append(_folded("📖 The paper's question", P.inline(asked), "".join(_line(k, P.inline(v)) for k, v in
+                                                                         [("In a sentence", one)] + pitch if v)))
+    cards = []
+    for rq, fields, groups in _rq_blocks(rqs):
+        f = {k.lower(): v for k, v in fields}
+        state = f.get("answer state", "")
+        chip = state.split()[0] if state[:1] in "✅🔶⬜❗🟡" else ""
+        asked_rq = re.sub(r"\s*\(RQ\d+[a-z]:.*$", "", f.get("research question", ""))
+        col1 = (_key(f"<b>Why it matters</b> · {P.inline(_first_sentence(f.get('why it matters', '')))}")
+                + "".join(_key(f"<b>{k}</b> · {P.inline(_first_sentence(v))}") for k, v in (("How", f.get("question", "")),
+                          ("Now", re.sub(r"^\S+\s+", "", state) if chip else state)) if v))
+        hyps, in_hand = [], 0
+        for h in groups.get("Hypotheses", []):
+            tested = next((x for x in h["parts"] if x.startswith("tested by")), "")
+            rows = [held.get(e.strip()) for e in re.findall(r"E\w*\d+", tested)]
+            mark = "✅" if rows and all(r == "established" for r in rows) else "🔶" if any(r in ("established", "provisional") for r in rows) else "⬜"
+            in_hand += mark == "✅"
+            hyps.append(_mini(f"{mark} {esc(h['code'])} · {P.inline(h['said'].split(':', 1)[0])}",
+                              P.inline(h["said"].split(":", 1)[1].strip() if ":" in h["said"] else ""), esc(tested)))
+        n = len(hyps)
+        col2 = (_key(f"{n} hypothes{'is' if n == 1 else 'es'}: {in_hand} with evidence in hand, {n - in_hand} waiting for a Run")
+                + "".join(hyps)) if hyps else '<span class=mut>none yet</span>'
+        claims = [_mini(f"{esc(c['code'])} · {P.inline(c['said'].split(':', 1)[0])}",
+                        P.inline(c["said"].split(":", 1)[1].strip() if ":" in c["said"] else ""),
+                        " · ".join(f"{esc(k.capitalize())}: {P.inline(v)}" for k, v in c["more"].items() if k in ("now", "if it fails")))
+                  for c in groups.get("Potential claims", [])]
+        col3 = (_key(P.inline(_first_sentence(f.get("if answered", "")))) if f.get("if answered") else "") + "".join(claims)
+        work = " · ".join(esc(w["code"]) for w in groups.get("Potential work", []))
+        body = (_cols([("❓ The question", col1), ("🔮 What we expect, and why", col2), ("📣 What the paper can say", col3 or "—")])
+                + (f'<p class=mut style="font-size:12.5px;margin:8px 0 0">Work: {work}</p>' if work else ""))
+        cards.append(_folded(f'{esc(chip)} <b>{esc(rq)} · {esc(f.get("name", ""))}</b>', P.inline(asked_rq), body, f"story-{rq.lower()}"))
+    out += cards
+    story = re.search(r"(?ms)^\*\*The narrative, if the questions are answered\*\*.*?\n\n(.*?)(?:\n\s*\n(?=\S)(?!\d+\. )|\Z)", rqs)
+    lines = _items(story.group(1)) if story else []
+    more = []
+    if lines:
+        more.append(_folded("<b>📜 The narrative, if the questions are answered</b>", f"{len(lines)} steps",
+                            "".join(_line(str(k), P.inline(x)) for k, x in enumerate(lines, 1))))
+    stakes = _fields(_division(text, "Stakes"))
+    if stakes:
+        more.append(_folded("<b>🎯 Stakes</b>", " · ".join(esc(k) for k, _v in stakes), "".join(_line(k, P.inline(v)) for k, v in stakes)))
+    nots = _items(bounds.split("**We will not claim**", 1)[1]) if "**We will not claim**" in bounds else []
+    if nots:
+        more.append(_folded("<b>🚫 What we will not claim</b>", f"{len(nots)} boundaries",
+                            '<ul style="margin:0;padding-left:18px">' + "".join(f"<li>{P.inline(x)}</li>" for x in nots) + "</ul>"))
+    if ev:
+        done = sum(r[-1].lower() == "established" for r in ev)
+        more.append(_folded("<b>🧾 The evidence</b>", f"{len(ev)} rows · {done} established",
+                            "".join(_line(r[0], f"{P.inline(r[1])} <span class=mut>· {esc(r[-1])}</span>") for r in ev)))
+    work = _table(_division(text, "Task Roadmap"), r"T\d+")
+    if work:
+        done = sum((r[3] if len(r) > 3 else "").lower() == "done" for r in work)
+        more.append(_folded("<b>🛠 The work</b>", f"{len(work)} tasks · {done} done",
+                            "".join(_line(r[0], f"{P.inline(r[1])} <span class=mut>· {esc(r[3] if len(r) > 3 else '')}</span>") for r in work)))
+    venues = _table(_division(text, "Venues"), r"V\d+")
+    if venues:
+        more.append(_folded("<b>🧭 Where the story could go</b>", f"{len(venues)} venues · {esc(venues[0][1])} first",
+                            "".join(_line(r[0], f"<b>{P.inline(r[1])}</b> <span class=mut>· {esc(r[2])} · leads with "
+                                               f"{esc(r[4] if len(r) > 4 else '')}</span>") for r in venues)))
+    out += more
+    return "".join(out)
+
+
+def _board_step(name, topics, state, block, root, d=None):
+    """One step: its Operation (Input, Prompt) over its Result (each topic's drawing, opened, then what is open and
+    what was decided)."""
+    from live.draft_steps import _part, _prompt_box, _step_box
+    from live.frame import _draw_url
+    emoji, group, word, prompt = BOARD_STEP[name]
+    first = topics[0][0].name if topics else f"sNN-{(word or group).lower()}"
+    rows = [("Topics", ", ".join(esc(t.name) for t, _x in topics) or f'<span class=mut>none yet in the {esc(group)} group</span>')]
+    for topic, text in topics[:1]:
+        stage = re.search(r"(?m)^\*\*Stage:\*\*\s*(.*)$", text)
+        rows += [("What", esc(_topic_what(text)) or "—"), ("Stage", esc(stage.group(1).strip()) if stage else "—"),
+                 ("Decided · Open", f'{len(_topic_lists(text, "Decided"))} · {len(_topic_lists(text, "Open"))}')]
+    ask = prompt.format(b=rel(block, root), t=first)
+    op = _step_box(f"{emoji} {name}", state, "<h4>Input</h4>" + _kv(rows) + _prompt_box(ask, block, root, f"board-{name.lower()}"))
+    # Idea: the ideas themselves, a card each; Story: its parts as sections; to read and review, the drawing folded under
+    cards = (_idea_cards(d) if name == "Idea" and d else
+             "".join(_story_sections(text) for _t, text in topics) if name == "Story" else "")
+    result = [cards] if cards else []
+    for k, (topic, text) in enumerate(topics):
+        k += bool(cards)
+        drawing = topic / f"{topic.name}.excalidraw"
+        url = _draw_url(drawing, root) if drawing.is_file() else ""
+        # the first one starts open, so it loads at once (the frame's loader fills a fold's frame only when it opens)
+        frame = (f'<iframe class=st-frame title="{esc(topic.name)}" data-src="{esc(url)}"'
+                 + (f' src="{esc(url)}"' if k == 0 else "") + ' referrerpolicy=no-referrer></iframe>'
+                 if url else _empty("No drawing yet."))
+        # opened straight onto its drawing, no box in a box (JL 261020); under written sections it comes last, after
+        # the points open for the person and the decisions
+        draw = (f'<details class="topic work-task"{" open" if k == 0 else ""}><summary><span class=related-head>'
+                f'<b>🎨 {esc(topic.name)}</b></span>' + (f'<span class=topic-pop>{pop(url, topic.name, "↗")}</span>' if url else "")
+                + f'</summary>{frame}</details>')
+        opened, decided = _topic_lists(text, "Open"), _topic_lists(text, "Decided")
+        lists = ((_folded(f"🙋 Open · {len(opened)}", "", "<ol>" + "".join(f"<li>{P.inline(x)}</li>" for x in opened) + "</ol>")
+                  if opened else "")
+                 + (_folded(f"✅ Decided · {len(decided)}", "", "<ul>" + "".join(f"<li>{P.inline(x)}</li>" for x in decided) + "</ul>")
+                    if decided else ""))
+        result.append(lists + draw if cards else draw + lists)
+    return _part("Operation") + op + _part("Result") + ("".join(result) or _empty(f"No {group} topic yet: the prompt above makes {first}."))
+
+
+def _board_work(d, block, root, sub):
+    """Work Details: Idea · Story · DataFlow · PaperFlow, then Jobs, the versions (one send each)."""
+    sub = OLD_BOARD_SUBS.get(sub, sub)
+    steps = {name: _board_topics(block, BOARD_STEP[name][1], BOARD_STEP[name][2]) for name in BOARD_STEP}
+    state = _board_state(steps)
+    # an idea still waiting for the person's G0 choice keeps Idea asked, as an open point does
+    if state["Idea"] == "done" and any((x.get("verdict") or "⬜").startswith("⬜")
+                                      for x in (d.get("ideation") or {}).get("ideas") or []):
+        state["Idea"] = "asked"
+    s = sub if sub in BOARD_STEPS else next((n for n, v in state.items() if v == "next"), "Jobs")
+    if s == "Jobs":                                 # s11: the Board's Jobs, as the base's tree:
         html = (work_tree("Block", d["board"], d["root"], THEME)   # Job → Section → Run → result (b10 s32-D19)
                 or _jobs(d, d["board"], d["root"]))
-    elif s in ("Main", "Appendix"):
-        html = pv(P._section_table(d, [r for r in rows if r["part"] == s.lower()]))
     else:
-        html = table(("item", "type", "Section", "need", "state", ""),
-                     [(esc(it["id"]), esc(it["type"]), esc(it["page"]), esc(it["desc"]), esc(it["status"]),
-                       P._link(d, it["rel"], "Open ↗", lens="evidence", focus=it["id"])) for it in d["hero"]])
-    return Space(html=html, subspaces=opts, open=s, run_types=_run_cards("Block", "Work Details") + (
-        _run_cards("Job", "Work Details", "Main") if s != "Jobs" else ()))
+        html = _board_step(s, steps[s], state[s], block, root, d)
+    return Space(html=html, subspaces=BOARD_STEPS, open=s, run_types=_run_cards("Block", "Work Details"))
 
 
 def _checks(d):
@@ -1476,12 +1882,14 @@ def section_spaces(folder, root, sub):
     from dataclasses import replace
     out = draft_task_spaces(folder, root, sub)
     md = face(folder)
-    d, a, w = out["Description"], out["Audience Report"], out["Delivery"]
+    d, a, w, plan = out["Description"], out["Audience Report"], out["Delivery"], out["Work Details"]
     if d.open == "Scope":
         base = vanilla("Task", folder, root, sub).get("Description")
         out["Description"] = replace(d, html=_contract(md) + (base.html if base else ""))
-    elif d.open == "Requirement":
-        out["Description"] = replace(d, html=d.html + _sub_rows(md))
+    if plan.open == "1 · Plan":                   # the Requirement is a card of 1 · Plan (b32 s41 Ⓐ)
+        out["Work Details"] = replace(plan, html=plan.html + _sub_rows(md))
+    elif plan.open == "3 · Evidence":             # a Section's evidence follows the paper's rules (haipipe-paper 1.15)
+        out["Work Details"] = replace(plan, html=plan.html.replace("/haipipe-evidence ", "/haipipe-paper-evidence "))
     if sub == "Comments":                         # ◆ the paper's own view, after the Page's three
         a = Space(html=_reviews(folder, root), open="Comments", run_types=())
     out["Audience Report"] = replace(a, subspaces=tuple(draft_task_spaces(folder, root, "")["Audience Report"].subspaces)
@@ -1533,9 +1941,9 @@ def _disk_block(d, block, out):
         ("Audience Report", "Related Questions"): reg + rep_,
         ("Audience Report", "Related Papers"): [("related/related.md", "the related items, by question")] + tell + reg,
         ("Work Details", "Jobs"): [("j[0-9][0-9]_*/", "one version each")],
-        ("Work Details", "Main"): _section_globs(d, block, "main"),
-        ("Work Details", "Appendix"): _section_globs(d, block, "appendix"),
-        ("Work Details", "Evidence"): [("*/t[0-2][0-9]_*/draft/*-evidence-items.md", "each Section's evidence items")],
+        **{("Work Details", n): [(f"studio/{t.name}/", "its drawing and face") for t, _x in
+                                 _board_topics(block, BOARD_STEP[n][1], BOARD_STEP[n][2])]
+           or [("studio/", "no topic yet")] for n in BOARD_STEP},
         ("Runs", ""): [("runs/", "the Board's Runs")],
         ("Delivery", ""): [(f"{ddir}/paper-build.toml", "the build: order · venue · names"),
                            (f"{ddir}/build-manifest.json", "the checks"),
@@ -1595,7 +2003,7 @@ def spaces(level, folder, root, sub):
                                    "Related": _related_space(d, folder, root, sub),
                                    "Idea Studio": _studio(d, folder, root),
                                    "Audience Report": _report(d, folder, root, sub),
-                                   "Work Details": _sections(d, sub),
+                                   "Work Details": _board_work(d, folder, root, sub),
                                    "Runs": Space(run_types=_run_cards("Block", "Runs")),
                                    "Delivery": _delivery(d, sub, board=folder, root=root)})
 

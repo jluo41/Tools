@@ -39,7 +39,7 @@ pick:
 - {title: the face, lines: ['task-type: draft']}
 - {title: task_type(), lines: [reads that line]}
 - {title: task_layouts(), lines: ['draft → workbench-task-draft/task_draft.py']}
-- {title: the draft layout, key: true, lines: [Plan · Reading · Draft-Scratch · Evidence]}
+- {title: the draft layout, key: true, lines: [Studio · 1 Plan · 2 Write · 3 Evidence · 4 Revise · Delivery]}
 - {title: theme on top, lines: [paper adds Comments]}
 pick_labels: [read, look up, open, then]
 themes:

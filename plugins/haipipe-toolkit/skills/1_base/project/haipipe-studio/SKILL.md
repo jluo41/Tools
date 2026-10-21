@@ -16,7 +16,7 @@ description: >-
   together, /workbench-studio (the retired name of this screen).
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.14.4"
+  version: "0.14.5"
   last_updated: "2026-10-20"
   # version history: ./CHANGELOG.md
 ---

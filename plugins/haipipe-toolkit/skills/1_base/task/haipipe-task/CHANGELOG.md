@@ -1,3 +1,15 @@
+## 1.16.0 · 2026-10-21 · a Task face says its goal and close
+
+- `ref/task-page-template.md`: `goal:` and `close:` after `state:`, one line each; the workflow layout's Goal tree
+  shows them under the Task (LLMRec b01 and b02). `haipipe-project audit --today` reports a work Task without them.
+
+## 1.15.1 · 2026-10-20 · no content hash in heavy.yaml; superseded Runs are pruned
+
+- `ref/run-sh-template.sh` writes `heavy.yaml` with each file's path and bytes only; it no longer computes a
+  sha256 (JL 260928: no content hashes); `ref/authoring-conventions.md` says the same.
+- `ref/runtime-yaml-schema.md`: a superseded Run is deleted once nothing in use reads it (haipipe-run 0.34.0,
+  Keep only meaningful Runs, JL 261019).
+
 ## 1.15.0 · 2026-10-14 · task-type page is task-type evidence (JL 261014, b32_draft s03)
 
 - `task/10_page/haipipe-task-for-page` is `task/10_evidence/haipipe-task-for-evidence`, its type `evidence`,

@@ -105,7 +105,7 @@ open:
 screen:
   task: "Task · 2.1 · C2"
   line: "Draft · Block b21 · Task 2.1 · Section C2 · Challenge and Significance"
-  tabs: ["Studio", "1 · Plan", "2 · Write", "3 · Evidence", "4 · Revise", "Delivery"]
+  tabs: ["Studio", "1 · Plan", "2 · Write", "3 · Evidence", "4 · Display", "5 · Revise", "Delivery"]
 tabs:
 - act: "Act 2 · Find"
   step_arrow: "Find"

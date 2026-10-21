@@ -88,7 +88,7 @@ local Run validates, normalizes, and packages the focal item. It still carries
 no Page argument: EMBED owns the interpretation.
 
 How a piece of evidence is shown and checked (CITE cards from discovery Runs,
-WORK cards from work Runs, each item tied to its sentences and anchor words,
+VALUE cards from work Runs, each item tied to its sentences and anchor words,
 and the flagged proposals for what is missing) is `haipipe-evidence`'s: its
 `scripts/cards.py` resolves the addresses this skill's Supporting Runs use.
 

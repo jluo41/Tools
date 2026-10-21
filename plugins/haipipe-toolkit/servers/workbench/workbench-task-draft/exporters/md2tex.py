@@ -318,6 +318,11 @@ def build_section(page, displays, report, keep_fences=False):
         return build_latex_section(page)
     blocks, nfenced = md2docx.parse_page(page, keep_fences=keep_fences)
     declared = section_title_of(page)
+    # A structured abstract (JL 261021): its labels open their paragraphs as `\noindent\textbf{<label>}`
+    # and its unnumbered divisions print as `\section*{Key Points}`, `\section*{Abstract}`, which is
+    # the shape the paper's JAMA renderer reads (haipipe-paper-assemble latex_room_to_docx.py).
+    abstract = md2docx.is_abstract_page(pathlib.Path(page).read_text(encoding="utf-8", errors="ignore"))
+    label = None
     if nfenced and not keep_fences:
         report.append(f"{os.path.basename(page)}: {nfenced} fenced sketch(es) dropped")
     out, buf, seen = [], [], set()
@@ -333,6 +338,10 @@ def build_section(page, displays, report, keep_fences=False):
 
     for b in blocks:
         if b[0] == "skipped-lane":
+            continue
+        if b[0] == "label":
+            flush()
+            label = b[1]
             continue
         if b[0] == "fence":
             flush()
@@ -355,7 +364,9 @@ def build_section(page, displays, report, keep_fences=False):
             name = strip_number(b[2])
             if b[1] == 1 and declared:
                 name = declared
-            out.append("\n\\%s{%s}\n" % (lvl, escape_prose(name)))
+            star = "*" if abstract and not re.match(r"^\d", b[2]) else ""
+            out.append("\n\\%s%s{%s}\n" % (lvl, star, escape_prose(name)))
+            label = None
             continue
         line = b[1].strip()
         if ((line.startswith("<a ") and line.endswith("</a>"))
@@ -383,7 +394,10 @@ def build_section(page, displays, report, keep_fences=False):
                                           CODE_SPAN.sub(code_span_tex,
                                                         render_prose(m.group(2))))) + "\n\n")
             continue
-        buf.append(badge_sub(CODE_SPAN.sub(code_span_tex, render_prose(line))))
+        text = badge_sub(CODE_SPAN.sub(code_span_tex, render_prose(line)))
+        if label:
+            text, label = "\\noindent\\textbf{%s} %s" % (escape_prose(label), text), None
+        buf.append(text)
         # A Display named in this sentence is \input right after the paragraph
         # that first mentions it, which is MISQ's stated rule: "embedded in the
         # body of the paper, following the first reference".

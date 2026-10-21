@@ -4,6 +4,7 @@ words highlighted, a comment on each, and how each links to our paper (excalidra
     python read_paper.py text  <paper.pdf> --out <folder>   # paper.txt, page-marked, for reading
     python read_paper.py boxes <paper.pdf> --page N [--find s]  # each line's box in PDF points (tables, figures)
     python read_paper.py shoot <folder>/reading.yaml        # shots/<id>-p<N>.jpg, quotes highlighted
+    python read_paper.py paras <folder>/reading.yaml        # shots/para-P<k>.jpg, the Section's paragraphs whole
     python read_paper.py draw  <folder>/reading.yaml        # <folder>/<stem>.excalidraw + .png preview
     python read_paper.py all   <folder>/reading.yaml        # shoot, then draw
 
@@ -517,6 +518,146 @@ def cmd_shoot(a):
     if bad:
         print(f"{len(bad)} excerpt(s) not shot: copy the quote exactly from paper.txt, one sentence within one "
               "page; for a table row or figure, give page + crop box + mark boxes (`boxes` prints them)")
+    if (spec.get("section") or {}).get("pages"):
+        cmd_paras(a, spec_path, spec, pdf, pages)
+    return recs
+
+
+# ---------------------------------------------------------------- paragraphs: the Section, one whole paragraph each
+
+def body_lines(page):
+    """The page's running-text lines, in reading order (column by column, top to bottom), and the column each
+    starts in: a column is the left edge most full-width lines share; a heading, a boxed aside (Key Points), a
+    running head or a footer has another line height or width, so it is not body text. A drop cap, one tall
+    letter, is kept beside its lines."""
+    lines = [(bi, li, ln["b"]) for bi, bl in enumerate(page["blocks"]) for li, ln in enumerate(bl["l"])]
+    heights = sorted(round(b[3] - b[1], 1) for _, _, b in lines if b[2] - b[0] > 0.3 * page["w"])
+    if not heights:
+        return [], [], []
+    h = max(set(heights), key=heights.count)                          # the body text's line height
+    full = [b for _, _, b in lines if abs((b[3] - b[1]) - h) < 0.6 and b[2] - b[0] > 0.3 * page["w"]]
+    width = max(set(round(b[2] - b[0]) for b in full), key=[round(b[2] - b[0]) for b in full].count)
+    lefts = sorted({round(b[0]) for b in full if abs((b[2] - b[0]) - width) < 6})
+    cols = [x for i, x in enumerate(lefts) if not i or x - lefts[i - 1] > 20]
+    caps = [bl["b"] for bl in page["blocks"] if len(bl["l"]) == 1 and bl["b"][3] - bl["b"][1] > 3 * h
+            and bl["b"][2] - bl["b"][0] < 50]
+
+    def col_of(b):
+        return max([c for c in cols if b[0] >= c - 3] or [cols[0]])
+    # a line with a superscript citation stands about 1 pt taller than the rest
+    rows = sorted(((bi, li, b, col_of(b)) for bi, li, b in lines if -0.6 < (b[3] - b[1]) - h < 1.5
+                   and b[2] - b[0] <= width + 4 and b[0] >= col_of(b) - 3 and b[2] <= col_of(b) + width + 4),
+                  key=lambda t: (cols.index(t[3]), t[2][1]))
+    body = []                                       # a short line counts only as the last line of the one above it,
+    for r in rows:                                  # so a short heading (Key Points) is not body text
+        prev = body[-1] if body else None
+        if r[2][2] - r[2][0] > 0.6 * width or (prev and prev[3] == r[3] and r[2][1] - prev[2][3] < h):
+            body.append(r)
+    return body, cols, caps
+
+
+def section_paragraphs(pages, sec):
+    """The Section's paragraphs: [[(page, block, line, box, column)]], from its first body line on its first page
+    to the heading named `until` (Methods). A paragraph starts where a line is indented (about 15 pt past its
+    column's edge); a line beside a drop cap is not, and a column's first line goes on the paragraph above."""
+    first, last = sec["pages"][0], sec["pages"][-1]
+    until = norm(str(sec.get("until") or ""))
+    out = []
+    for pn in range(first, last + 1):
+        page = pages[pn - 1]
+        body, cols, caps = body_lines(page)
+        stop = None                                                   # (column, y) of the `until` heading
+        if until:
+            for bl in page["blocks"]:
+                for ln in bl["l"]:
+                    if norm(" ".join(w["t"] for w in ln["w"])) == until:
+                        c = max([x for x in cols if ln["b"][0] >= x - 3] or [cols[0]])
+                        stop = (cols.index(c), ln["b"][1])
+        for bi, li, b, c in body:
+            if stop and (cols.index(c), b[1]) >= stop:
+                return out
+            beside_cap = any(cap[0] <= b[0] and cap[1] - 2 <= b[1] <= cap[3] for cap in caps)
+            indent = b[0] - c
+            if not out or (10 <= indent <= 22 and not beside_cap):
+                out.append([])
+            out[-1].append((pn, bi, li, b, c))
+    return out
+
+
+def cmd_paras(a, spec_path=None, spec=None, pdf=None, pages=None):
+    """shots/para-P<k>.jpg: each paragraph of the Section whole (JL 261020: "你每个自然段应该独立成段，你这截的根本不是
+    一个完整的自然段"), its excerpts' quotes highlighted, a paragraph that runs on into the next column stacked
+    below; shots/paras.json names each one's parts and excerpts, and the article kind its running head prints."""
+    if spec is None:
+        spec_path, spec, pdf = load(a.spec)
+        pages = words_of(pdf)
+    sec = spec.get("section") or {}
+    shots = spec_path.parent / "shots"
+    shots.mkdir(exist_ok=True)
+    for old in shots.glob("para-*.jpg"):
+        old.unlink()
+    paras = section_paragraphs(pages, sec)
+    k = DPI / 72
+    where = {}                                                        # (page, block, line) -> paragraph
+    for i, para in enumerate(paras):
+        for pn, bi, li, _, _ in para:
+            where[(pn, bi, li)] = i
+    marks = {}                                                        # paragraph -> [(page, box)], excerpts
+    for ex in spec.get("excerpts", []):
+        if not ex.get("quote"):
+            continue
+        r, n, hits = best_page(pages, ex)
+        own = {where.get((n, bi, li)) for _, bi, li in hits} - {None}
+        if r < 0.8 or not own:
+            continue
+        i = min(own)
+        by_line = {}
+        for w, bi, li in hits:
+            by_line.setdefault((bi, li), []).append(w["b"])
+        marks.setdefault(i, {"boxes": [], "ids": []})
+        marks[i]["boxes"] += [(n, union(bs)) for bs in by_line.values()]
+        marks[i]["ids"].append(ex["id"])
+    kind = ""
+    for ln in (pages[sec["pages"][0] - 1]["blocks"][:4] if pages else []):
+        t = " ".join(w["t"] for l in ln["l"] for w in l["w"])
+        m = re.search(r"(Original Investigation|Research Letter|Special Communication|Review|Brief Report)", t)
+        kind = kind or (m.group(1) if m else "")
+    recs = []
+    with tempfile.TemporaryDirectory() as tmp:
+        for i, para in enumerate(paras):
+            parts = []
+            for pn, c in dict.fromkeys((pn, c) for pn, _, _, _, c in para):
+                page = pages[pn - 1]
+                boxes = [b for p_, _, _, b, c_ in para if (p_, c_) == (pn, c)]
+                box = union(boxes)
+                _, _, caps = body_lines(page)
+                box = union([box] + [cap for cap in caps if cap[0] >= c - 3 and box[1] - 2 <= cap[1] <= box[3]])
+                im = page_png(pdf, pn, Path(tmp))
+                mask = Image.new("RGB", im.size, (255, 255, 255))
+                d = ImageDraw.Draw(mask)
+                for mp, (x0, y0, x1, y1) in marks.get(i, {}).get("boxes", []):
+                    if mp == pn:
+                        d.rectangle([x0 * k - 2, y0 * k - 1, x1 * k + 2, y1 * k + 2], fill=HIGHLIGHT)
+                im = ImageChops.multiply(im, mask)
+                x0, y0, x1, y1 = box
+                parts.append(im.crop((max(0, int((x0 - 8) * k)), max(0, int((y0 - 3) * k)),
+                                      min(im.width, int((x1 + 8) * k)), min(im.height, int((y1 + 3) * k)))))
+                parts[-1].info["box"] = [pn, round(x0, 1), round(y0, 1), round(x1, 1), round(y1, 1)]
+            gap = int(10 * k)
+            sheet = Image.new("RGB", (max(p.width for p in parts), sum(p.height for p in parts) + gap * (len(parts) - 1)),
+                              (255, 255, 255))
+            y = 0
+            for p in parts:
+                sheet.paste(p, (0, y))
+                y += p.height + gap
+            out = shots / f"para-P{i + 1}.jpg"
+            sheet.save(out, "JPEG", quality=85, optimize=True)
+            recs.append({"p": i + 1, "lines": len(para), "parts": [p.info["box"] for p in parts],
+                         "excerpts": marks.get(i, {}).get("ids", []), "shot": str(out.relative_to(spec_path.parent))})
+    (shots / "paras.json").write_text(json.dumps({"kind": kind, "paragraphs": recs}, indent=1))
+    said = (sec.get("key") or [""])[0]
+    print(f"  {len(recs)} paragraphs ({said or 'no count in section.key'}), {kind or 'kind not printed'}: "
+          + ", ".join(f"P{r['p']} {r['lines']} lines {'+'.join(r['excerpts']) or '-'}" for r in recs))
     return recs
 
 
@@ -666,6 +807,13 @@ def draw_overview(spec, x=60):
     fr = frame(f"① {sec['name']}: how much changes" if sec.get("name") else "① Its logic, and our link", W_FRAME)
     y = para(x, 30, f"{sec['name']} as submitted" if sec.get("name") else p.get("title", ""), W_FRAME - 2 * x, T_TITLE)
     key = spec.get("key") or sec.get("key")
+    if not key:                                       # no key written: the paper's claim, else its last result
+        steps = spec.get("logic", [])
+        for role, say in (("claim", "Its claim"), ("result", "What it found")):
+            hit = [st["text"] for st in steps if st.get("role") == role]
+            if hit:
+                key = f"{say}: {hit[-1] if role == 'result' else hit[0]}"
+                break
     if key:
         lines = key if isinstance(key, list) else [key]
         b = box_start(x, y + 20, W_FRAME - 2 * x, fill=canvas.KEY)
@@ -866,7 +1014,7 @@ def main():
     b.add_argument("pdf")
     b.add_argument("--page", type=int, required=True)
     b.add_argument("--find", help="only lines containing this text")
-    for name in ("shoot", "draw", "all"):
+    for name in ("shoot", "paras", "draw", "all"):
         s = sub.add_parser(name)
         s.add_argument("spec")
         s.add_argument("--name", help="drawing name; default: the folder's name")
@@ -877,6 +1025,8 @@ def main():
         cmd_boxes(a)
     elif a.cmd == "shoot":
         cmd_shoot(a)
+    elif a.cmd == "paras":
+        cmd_paras(a)
     elif a.cmd == "draw":
         cmd_draw(a)
     else:

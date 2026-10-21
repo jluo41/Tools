@@ -9,7 +9,7 @@ description: >-
   Trigger: Paper Workbench, paper workbench, paper theme, paper tab, version tab,
   Section tab, paper spaces, /workbench-paper.
 metadata:
-  version: "0.39.1"
+  version: "0.40.0"
   last_updated: "2026-10-19"
 ---
 
@@ -50,7 +50,7 @@ of a level; anything it leaves out is the frame's vanilla Space. `level_patterns
 | Block › Description | Scope · Venue · Resources | `board.md`; `venues/*/call.md`; `## Related resources` |
 | Block › Idea Studio | one row per topic | `studio/sNN-<topic>/` (the frame's studio rows) |
 | Block › Audience Report | Ideation · Narrative · High-level logic + Low-level work · Related Questions · Related Papers | `board.md ## Questions` by `group:`, their `reports/qNN_`; the current telling's studio topic; the related papers under the question each bears on (`related/related.md`, else the telling's related-papers table) |
-| Block › Work Details | Jobs · Main · Appendix · Evidence | the versions; every Section by part; the Evidence Items |
+| Block › Work Details | Idea · Story · DataFlow · PaperFlow · Jobs | the paper's steps before its versions, each Operation (Input, Prompt) over Result (its Studio topic's drawing, then Open and Decided): Idea the Ideation topic (s01), each idea a card; Story the Story topic (s02), as sections with a card per research question; DataFlow and PaperFlow the Plan topics (s03, s04); then the versions |
 | Block › Runs · Delivery | (Delivery) LaTeX · Word · Cover letter · Rounds | the Board's `runs/`; the newest version's `delivery/jNN_<version>/`; then Sections in the build, every version's Sections from its `build-manifest.json`: ready at the build, in the build or changed after it, a link to each Section's part and its folder |
 | Job › Description | Version · Venue rules | the version face; its venue's `call.md` |
 | Job › Audience Report | Questions · Draft-Main · Draft-Appendix · Comments · Cover letter | the face's `## Questions` and the standing J1–J5; each Section as Question │ Work │ Report with its rendered draft beside its drawing; the comments reports' `## Review Items`; the letter by paragraph |

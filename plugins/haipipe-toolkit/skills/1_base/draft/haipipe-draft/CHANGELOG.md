@@ -1,3 +1,41 @@
+## 0.136.1 · 2026-10-20 · `name-too-long`: a paragraph name over 11 words
+
+- JL 261020, on t01's mind map: a paragraph name is a name, not its argument. `check_head_style` (`src/plan_shape.py`)
+  fails `C1.P3 name-too-long: 21 words (max 11)` the way it fails a long head; haipipe-draft-logic `ref/structure.md`
+  ④ SHAPE lists it.
+
+## 0.136.0 · 2026-10-20 · seven steps: 4 · Display after 3 · Evidence
+
+- JL 261020: "a new display view after the 3 - Evidence? ... Please do it". A draft Task has seven steps: 4 · Display
+  (`/haipipe-display <task>`, units in `display/`, you write `accepted:`), and Revise is 5 · Revise.
+
+## 0.135.1 · 2026-10-20 · `page.py run-names` finishes one folder per Run (Paper-AgreeablePrescriptionDiscretion)
+
+- JL 261020: "update this folder with this latest structure", on the MISQ paper's 14 Sections (444 Runs).
+- `src/run_rename.py`: a Run holding `<name>.md` and `<name>.sh` moves as one (it crashed on the second file); a
+  script moved one folder deeper climbs `../..` and reads its Result from its first pass (`$page_dir/results/<run>`).
+- A Page Run's ticket is `<name>.md` (haipipe-project ladder): a run kept as its command alone gets a ticket holding
+  it under `## Command`, a check script beside a ticket goes under `## Check`, and the script goes
+  (`_fold_scripts`); a Delivery Run keeps its `.sh`.
+- Older numbered builds (`rdNN_<lane>`, `rd00_content`) are pruned once the Page has its `run-delivery-<lane>` Runs
+  (`_prune_builds`; JL 261019, keep only the meaningful Runs), no longer kept as history.
+- Each moved Run's card names `moved_from: results/<run>/`, so the ladder reads its first pass as the old receipt.
+- `SEALED = {"results", "passes"}` (`src/draft_migration.py`), used by `src/layout_check.py`'s outline-path rule,
+  which also leaves `_archive/` alone: a Result keeps its words wherever it now sits.
+- Tests: `tests/test_run_names.py` (two-ticket Run, command-only Run, prune), `tests/test_page_export.py` updated.
+
+## 0.135.0 · 2026-10-20 · A draft Task's six steps (JL 261020, b32 s41)
+
+- JL 261020: "I think we need to make this as what we exected to see", then "Update the /haipipe-paper and
+  /haipipe-draft and then apply it to" the version's Work. New `## 🪜 A draft Task's six steps`: Studio · 1 · Plan ·
+  2 · Write · 3 · Evidence · 4 · Revise · Delivery, each with its prompt, the owner it loads, what it writes and what
+  waits for the person; the old controller operations (CONTEXT … CHECK) mapped onto them.
+- A STEP verb in the verbs block: `/haipipe-draft <task> structure | write | revise | deliver | check`, the prompts
+  the step tabs hand out (`servers/workbench/workbench-task-draft/draft_steps.py`).
+- A Section's Revise cards live in `draft/records/<stem>-revise.md` (haipipe-draft-writing `ref/revise.md`).
+- Scratch is typed in 1 · Plan (JL 261020: "for the scratch, it doesnt work anymore"; "I think we should move the
+  scratch here"); 2 · Write drafts §3 from §1 and its Scratch. A paragraph box saves on leaving it or Cmd+Enter.
+
 ## 0.134.0 · 2026-10-16 · The plan moves out to haipipe-draft-logic (JL 261016, s41-D12)
 
 - `ref/structure.md`, `ref/context.md`, `ref/scratch.md`, `ref/context-record.md` and their changelogs

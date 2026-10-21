@@ -23,7 +23,7 @@ def cards(*items: str) -> str:
     return "evidence:\n" + "".join(items)
 
 
-WORK = ("  - kind: work\n    source: b01.j01.t01\n    items:\n"
+VALUE = ("  - kind: value\n    source: b01.j01.t01\n    items:\n"
         "      - {{run: {run}, for: [1], anchor: ['4.1'], file: metrics.json, key: effect}}\n")
 CITE = "  - kind: cite\n    source: b01.j01.t01\n    items:\n      - {run: r01, for: [2], anchor: ['a demo']}\n"
 NEED = "  - kind: cite\n    title: Sources still needed\n    items:\n      - {need: 'a source', for: [3], anchor: ['x']}\n"
@@ -47,9 +47,9 @@ class LedgerTest(unittest.TestCase):
         write(root / "paper/Paper-Demo/board.md", "# Paper-Demo\n")
         for t in ("t00_abstract", "t03_results", "t05_discussion", "t21_appendix"):
             write(self.job / t / f"{t}.md", f"# {t}\ntask-type: draft\npage-type: section\n")
-        write(self.job / "t00_abstract/evidence/cards.yaml", cards(WORK.format(run="r01"), CITE))
-        write(self.job / "t03_results/evidence/cards.yaml", cards(WORK.format(run="r01"), NEED))
-        write(self.job / "t05_discussion/evidence/cards.yaml", cards(WORK.format(run="r02")))
+        write(self.job / "t00_abstract/evidence/cards.yaml", cards(VALUE.format(run="r01"), CITE))
+        write(self.job / "t03_results/evidence/cards.yaml", cards(VALUE.format(run="r01"), NEED))
+        write(self.job / "t05_discussion/evidence/cards.yaml", cards(VALUE.format(run="r02")))
         for d in ("Display1-effect", "Display2-cohort"):
             (self.job / "t03_results/display" / d).mkdir(parents=True)
         (self.job / "t21_appendix/display/Display1-cohort").mkdir(parents=True)
@@ -124,7 +124,7 @@ class LedgerTest(unittest.TestCase):
     def test_the_command_exits_1_on_a_conflict_and_prints_the_ledger(self):
         self.assertEqual(led.main([str(self.job)]), 1)
         for t in ("t03_results", "t05_discussion"):
-            (self.job / t / "evidence/cards.yaml").write_text(cards(WORK.format(run="r01")), encoding="utf-8")
+            (self.job / t / "evidence/cards.yaml").write_text(cards(VALUE.format(run="r01")), encoding="utf-8")
         (self.job / "t21_appendix/display/Display1-cohort").rename(self.job / "t21_appendix/display/Display1-extra")
         self.assertEqual(led.main([str(self.job)]), 0)
 

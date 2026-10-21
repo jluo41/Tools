@@ -1,5 +1,40 @@
 # haipipe-evidence · Changelog
 
+## 0.6.1 · 2026-10-21 · a fact may be a table's rows
+
+- `facts()` read only a quoted sentence directly followed by ` Locator`, so Oca 2023's counts (b01.j01.t01.r20: T05 Table 1
+  rows, T08 Table 3 rows) and a quote closed by a stop (T04 `". Locator`) were "no fact", and a card could not cite
+  "84 of 240 not ophthalmologists". It now reads a quote with or without a stop after it, and a table's rows as written
+  (no quotes). Every fact id named in Physician-SPACE's 18 cards.yaml files still reads.
+- `work_value()` takes `len(<key>)`: it counts the entries there, so t01 S17's "6 AI agents from 3 companies" is read from
+  b03.j03.t01.r04's `metrics.b_by_model` (6 keys), not typed (raised by t01's blind review, 261021).
+- `by_topic()` merges two cards of the same Task into one, so a need written in its own block joins the Task's card
+  (t01: Hanauer and the new survey need are one CITE card, b01.j02.t02).
+
+## 0.6.0 · 2026-10-20 · VALUE, not WORK; a card is a topic
+
+- JL 261020: "the work 1's name is not good ... I think the work here is more like something else?". The kind `work` is
+  `value`, labelled VALUE (what the item is, a number our Run wrote); `kind: work` in an older file still reads as
+  `value` (`cards.OLD_KIND`). Every Physician-SPACE cards.yaml (5 LLMRec, 13 MISQ) now says `kind: value`, and each
+  proposals.md was rewritten by `cards.py propose --write` (no tick lost).
+- JL 261020: "cite 1's name is very weird ... we might want to make it into different cite with the topic". `by_topic`:
+  a needed item sits in the card of the Task its proposal would be made in (a Run in a Task: that Task's card; a new
+  Task, Job or topic: a card named by it), so no card is a bag of "Sources still needed"; items in reading order, so an
+  item's id (CITE 1.2) follows the text. LLMRec t01 is now CITE 1 · Medical hallucination and guardrail, CITE 2 · Patient
+  choice and consultation demand, CITE 3 · Audits of LLMs naming real physicians, VALUE 1.
+- A figure or table is a Display, shown in a draft Task's own step, 4 · Display.
+
+## 0.5.0 · 2026-10-20 · `scripts/from_items.py`: an older Page's Evidence Items become cards
+
+- JL 261020: "the workbench is not the latest", on Paper-AgreeablePrescriptionDiscretion, whose 14 Sections kept
+  their evidence as `draft/<stem>-evidence-items.md`, so the draft Task's 3 · Evidence step showed nothing.
+- `from_items.py <task>… [--write]` writes `evidence/cards.yaml` and `proposals.md` from the items: a Discovery
+  Supporting Run gives a CITE item, an Execution one a WORK item, each keeping its `item:` id and label; `for` comes
+  from §1's `- B<k> · S<n>` Bullets. A Run still to make, an address that no longer resolves (a Block that moved),
+  or no Supporting Run gives one `need` per item; DISPLAY, deferred, dropped and retired items get no card.
+- The Evidence Items file stays: the Page export reads it for its gates until haipipe-draft's exporter reads cards.
+- First use: 13 Sections, 264 items, `cards.py check` clean on all 13 (t07 has no evidence to card).
+
 ## 0.4.0 · 2026-10-16 · CITE and WORK become their own skills (JL 261016)
 
 - `ref/cite.md` and `ref/work.md` move out as the sibling skills `haipipe-evidence-cite` and `haipipe-evidence-work`

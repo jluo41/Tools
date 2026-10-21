@@ -4,7 +4,7 @@ How it looks and reads: /excalidraw-studio, its principles and scripts/draw.py. 
 /haipipe-studio. A rebuild keeps whatever a person drew on the canvas (canvas.write, a seed snapshot beside it).
 Its words are the face's yaml block (s41-task-draft-procedure.md). The map, the pass loop, the tree and the screens
 are drawn the way b15 s42-task-building-procedure draws them (its helpers, copied here, as s42 copied s41's).
-Read from disk on every build: today's draft tabs (DRAFT_TASK_SUBS in servers/workbench/workbench-task-draft/task_draft.py), the version of
+Read from disk on every build: the old draft tabs and the step each became (OLD_SUBS in servers/workbench/workbench-task-draft/task_draft.py), the version of
 B21's draft, and b21 s05's Section canvas.
 
     python build_s41_task_draft_procedure.py
@@ -33,14 +33,12 @@ def words() -> dict:
     return yaml.safe_load(re.search(r"(?ms)^```yaml\n(.*?)^```", text).group(1))
 
 
-def today_tabs() -> list:
-    """(Space, tab) for every tab a draft Task opens on today: DRAFT_TASK_SUBS in task_draft.py, read as text."""
+def today_tabs() -> dict:
+    """{old tab: the step tab it became}, as the screen maps an old link: OLD_SUBS in task_draft.py, read as text
+    (the step tabs were built 2026-10-20, s41-D29)."""
     src = FRAME_PY.read_text(encoding="utf-8")
-    block = re.search(r"(?ms)^DRAFT_TASK_SUBS = \{\n(.*?)^\}", src).group(1)
-    out = []
-    for space, tabs in re.findall(r'"([^"]+)":\s*\(([^)]*)\)', block):
-        out += [(space, t) for t in re.findall(r'"([^"]+)"', tabs)]
-    return out
+    block = re.search(r"(?ms)^OLD_SUBS = \{(.*?)\}", src).group(1)
+    return dict(re.findall(r'"([^"]+)":\s*"([^"]+)"', block))
 
 
 def b21_version() -> str:
@@ -313,15 +311,17 @@ def workflow_map(d: Drawing, face: dict) -> dict:
 
 
 
-def today_frame(d: Drawing, t: dict, tabs: list) -> dict:
-    """Ⓐ today's draft tabs (read from task_draft.py), each with the step tab it becomes."""
+def today_frame(d: Drawing, t: dict, tabs: dict) -> dict:
+    """Ⓐ the draft tabs before the step tabs, each with the step tab it became (read from task_draft.py's OLD_SUBS;
+    a tab that stayed, from the face's map)."""
     f = canvas.reads_down(canvas.explains(d.frame(t["frame"], 1700, 1400)))
     d.text(40, 22, t["frame"], 44)
     d.para(40, 92, t["sub"], 1600, 28)
     rows, last = [], None
-    for space, tab in tabs:
-        rows.append({"cells": [space if space != last else "", tab, t["map"].get(tab, "❓ not placed yet")]})
-        last = space
+    for space, names in t["spaces"].items():
+        for tab in names:
+            rows.append({"cells": [space if space != last else "", tab, tabs.get(tab) or t["map"].get(tab, "❓ not placed yet")]})
+            last = space
     y = d.grid_table(40, 200, t["columns"], rows, [460, 520, 620], size=30, pad=22)
     y = d.para(40, y + 30, t["note"], 1600, 28)
     f["height"] = y + 50

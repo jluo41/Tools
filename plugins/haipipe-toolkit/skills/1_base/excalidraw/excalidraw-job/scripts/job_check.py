@@ -4,7 +4,8 @@ newcomer (haipipe-studio ref/reader-review.md).
 
     python job_check.py <topic folder>
 
-1. Every Task folder and every Run folder of the Job is named on the canvas (shared tickets excepted).
+1. Every Task folder and every Run folder of the Job is named on the canvas by its folder name, exactly (JL 261019:
+   "we don't need to create the new named"; shared tickets excepted).
 2. Every Run card carries a state mark (✅ ❌ 🔶 ⬜ ◌), and a proposed Run is drawn dashed.
 3. A failed Run says why (its receipt's `failure:` or the face's sentence).
 4. Every percentage the face's words claim (reading, findings, how sure) is found in a result file of the Job, or
@@ -87,22 +88,18 @@ def check(topic: Path) -> list[tuple[str, str]]:
     if not job.is_dir():
         return [("❌", f"the face names no Job folder: {cfg.get('name')!r}")]
     text, els = canvas_texts(topic)
-    flat = re.sub(r"[_\s]+", " ", text)
 
     # 1. every Task and Run named
     rows = jr.job_rows(block, job, {})
     for row in rows:
-        tid = row["task"].name[:3]
-        if tid not in text:
-            out.append(("❌", f"{row['task'].name}: not on the canvas"))
+        if row["task"].name not in text:
+            out.append(("❌", f"{row['task'].name}: its folder name is not on the canvas"))
         for r in row["runs"]:
-            name = r["name"]
-            short = re.sub(r"[_\s]+", " ", name[4:])[:14]
-            if name[:3] not in text or (short and short not in flat):
-                out.append(("❌", f"{row['task'].name}/{name}: no card names it"))
+            if r["name"] not in text:
+                out.append(("❌", f"{row['task'].name}/{r['name']}: no card names it by its folder name"))
     if not any(k == "❌" for k, _ in out):
         n = sum(len(r["runs"]) for r in rows)
-        out.append(("✅", f"{len(rows)} Tasks and {n} Runs, each named on the canvas"))
+        out.append(("✅", f"{len(rows)} Tasks and {n} Runs, each named on the canvas by its folder name"))
 
     # 2. states and dashed proposals; 3. failures say why
     bad_state, bad_dash, bad_why = [], [], []
@@ -139,6 +136,10 @@ def check(topic: Path) -> list[tuple[str, str]]:
 
 
 def main() -> int:
+    if len(sys.argv) != 2 or sys.argv[1] in ("-h", "--help"):
+        print(__doc__)
+        print("usage: job_check.py <topic folder>   (a Studio topic: its face and its .excalidraw)")
+        return 0 if len(sys.argv) == 2 else 2
     topic = Path(sys.argv[1]).resolve()
     res = check(topic)
     for k, s in res:

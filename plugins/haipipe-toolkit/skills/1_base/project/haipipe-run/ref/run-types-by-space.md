@@ -48,26 +48,30 @@ The button's name is the Run column; "what it does" is the small line under it.
 | Delivery | Build the delivery | `haipipe-job` | `run-delivery-<target>` | Job |
 | Delivery | Build the delivery | `haipipe-task` | `run-delivery-<target>` | Task |
 
-## Page Task (its own views; skills from the Page's run cards)
+## Draft Task (its seven step tabs; skills from the Page's run cards)
+
+Work is Studio · 1 · Plan · 2 · Write · 3 · Evidence · 4 · Display · 5 · Revise · Delivery (b32 s41, 261020); each tab carries
+its own buttons, and Report's tabs carry none.
 
 | Space | What it does (the card) | Skill | Run (the button's name) | Opens in |
 |---|---|---|---|---|
-| Work Details | Scratch | `haipipe-draft-logic` | `run-scratch-<target>` | Draft-Scratch |
-| Work Details | Structure revise | `haipipe-draft-logic` | `run-structure-<slug>` | Draft-Scratch |
-| Work Details | Evidence embed | `haipipe-evidence` | `run-<value\|display\|citation>-<slug>` | Draft-Scratch |
-| Work Details | Section revise | `haipipe-draft-writing` | `run-section-<slug>` | Draft-Revise |
-| Work Details | Paragraph revise | `haipipe-draft-writing` | `run-paragraph-<slug>` | Draft-Revise |
-| Work Details | Revise edits | `haipipe-draft-writing` | `run-revise-<target>` | Draft-Revise |
-| Work Details | Auto write | `haipipe-draft-writing` | `run-section-<slug>` | Draft-Revise |
-| Work Details | Bind / update citation | `haipipe-evidence` | `run-citation-<slug>` | Evidence-Citation |
-| Work Details | Build figure / table | `haipipe-display` | `run-display-<slug>` | Evidence-Display |
-| Work Details | Bind / update value | `haipipe-evidence` | `run-value-<slug>` | Evidence-Value |
-| Delivery | Build | `haipipe-delivery` | `run-delivery-<target>` | Delivery |
-| Delivery | Check | `haipipe-draft-review` | `run-check-<page>` | Delivery |
+| Work Details | Talk and sketch | `haipipe-studio` | `run-draw-<sNN>` | Studio |
+| Work Details | Structure revise | `haipipe-draft-logic` | `run-structure-<slug>` | 1 · Plan |
+| Work Details | Scratch | `haipipe-draft-logic` | `run-scratch-<target>` | 2 · Write |
+| Work Details | Auto write | `haipipe-draft-writing` | `run-section-<slug>` | 2 · Write |
+| Work Details | Bind / update citation | `haipipe-evidence` | `run-citation-<slug>` | 3 · Evidence |
+| Work Details | Build figure / table | `haipipe-display` | `run-display-<slug>` | 4 · Display |
+| Work Details | Bind / update value | `haipipe-evidence` | `run-value-<slug>` | 3 · Evidence |
+| Work Details | Evidence embed | `haipipe-evidence` | `run-<value\|display\|citation>-<slug>` | 3 · Evidence |
+| Work Details | Section revise | `haipipe-draft-writing` | `run-section-<slug>` | 5 · Revise |
+| Work Details | Paragraph revise | `haipipe-draft-writing` | `run-paragraph-<slug>` | 5 · Revise |
+| Work Details | Revise edits | `haipipe-draft-writing` | `run-revise-<target>` | 5 · Revise |
+| Work Details · Delivery | Build | `haipipe-delivery` | `run-delivery-<target>` | Delivery |
+| Work Details · Delivery | Check | `haipipe-draft-review` | `run-check-<page>` | Delivery |
 
 The Page's run names are its own (`haipipe-draft`'s run families); the card for each is in
 the Page's `run-cards.md`, which is where these skills are read from. The panel shows the Run's
-name (`frame.PAGE_RUN_NAMES`) and the card's label under it.
+name (`task_draft.PAGE_RUN_NAMES`) and the card's label under it.
 
 ## A theme's own buttons
 

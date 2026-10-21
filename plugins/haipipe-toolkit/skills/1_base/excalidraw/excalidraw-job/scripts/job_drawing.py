@@ -47,6 +47,27 @@ except ImportError:                                           # the drawing stil
 
 GAP = 130
 MOST_RUNS, MOST_TASKS, MOST_PICTURES, MOST_ROWS = 8, 14, 4, 14
+
+# Chart colour (JL 261019: "do not use this black and white anymore"): the dataviz skill's reference palette, light
+# mode, in its fixed order. Colour follows what a bar is about, never its rank: the face's `job.colors` ({name:
+# colour}) keeps one source the same hue in every chart of the Job; a total, a reference or an absence is grey.
+PALETTE = {"blue": "#2a78d6", "orange": "#eb6834", "aqua": "#1baf7a", "yellow": "#eda100", "magenta": "#e87ba4",
+           "green": "#008300", "violet": "#6250d6", "red": "#e34948", "grey": "#c3c2b7"}
+BLUE_LIGHT = "#86b6ef"                       # blue step 250: a "before" bar beside its blue "after"
+
+
+def bar_colors(spec: dict, labels: list[str], names: dict | None = None) -> list[str]:
+    """One hex per bar: the bar's own `color:`, else the chart's `colors:` by label, else the chart's `color:`, else
+    the first of `names` (the face's `job.colors`) its label holds, else blue. A colour is a PALETTE name or a hex."""
+    own = {str(b.get("label", b.get("at"))): b["color"] for b in spec.get("bars") or [] if b.get("color")}
+    by_label = {**(spec.get("colors") or {}), **own}
+    hex_of = lambda c: PALETTE.get(str(c).lower(), str(c))                       # noqa: E731
+    out = []
+    for label in labels:
+        low = str(label).lower().replace(" ", "")
+        named = next((c for n, c in (names or {}).items() if str(n).lower().replace(" ", "") in low), None)
+        out.append(hex_of(by_label.get(label) or spec.get("color") or named or "blue"))
+    return out
 PICTURES = (".png", ".jpg", ".jpeg")
 FOUND = re.compile(r"(?i)^(answers?|conclusions?|findings?|results?|takeaways?|key points?)$")
 BEGIN, END = jr.BEGIN, jr.END
@@ -166,6 +187,11 @@ def source_of(run: dict) -> dict:
 
 
 # ── reading the Job ──────────────────────────────────────────────────────────────────────────────────────────
+def io_item(x) -> str:
+    """An In or Out entry's words: a string, or {item, path} (its path drawn under it on the staircase, 261019)."""
+    return str(x.get("item", "")) if isinstance(x, dict) else str(x)
+
+
 def job_info(job: Path) -> dict:
     block = job.parent
     face = jr.read(jr.face_of(job)) if jr.face_of(job) else ""
@@ -174,7 +200,8 @@ def job_info(job: Path) -> dict:
             "topic": first_para(section(face, "Topic")), "block": jr.title_of(block),
             "spine": jr.field(block, "spine") or sentences(first_para(section(jr.read(block / "board.md"), "Opening")), 1)
             or sentences(first_para(section(jr.read(block / "board.md"), "Topic")), 1),
-            "block_close": jr.field(block, "close")}
+            "block_close": jr.field(block, "close"),
+            "folder": job.name}          # what every drawing calls the Job (JL 261019: no new names)
 
 
 def picked_values(row: dict, cfg: dict | None) -> list[str]:
@@ -359,7 +386,7 @@ def open_line(o, closer: bool = True) -> str:
 
 def why_frame(d: Drawing, info: dict, tasks: list[dict], cfg: dict) -> dict:
     """① its aim in the centre, each Task's question around it; the questions shorten until ⑦'s words fit."""
-    f = d.frame(f"① 🎯 Why {info['id']}: {info['title']}")
+    f = d.frame(f"① 🎯 Why {name_of(info)}")
     start = len(d.els)
     aim = str(cfg.get("aim") or "").strip() or info["goal"] or "❓ No aim yet: the Job face's goal: is open"
     for most in (400, 110, 70, 45):
@@ -374,8 +401,8 @@ def why_once(d: Drawing, f: dict, info: dict, tasks: list[dict], aim: str, most:
     d.fid = f["id"]
     asked = {t["name"]: str((words.get(t["name"]) or words.get(t["id"]) or {}).get("asked") or t["question"])
              for t in tasks}
-    top = jr.heading(d, f"🎯 Why {info['id']} · {info['title']}", "its aim, each Task's question, when it is done")
-    branches = [{"title": f"🧩 {t['id']} · {t['title']}", "by": "standing",
+    top = jr.heading(d, f"🎯 Why {name_of(info)}", "its aim, each Task's question, when it is done")
+    branches = [{"title": f"🧩 {t['name']}", "by": "standing",
                  "summary": short(asked[t["name"]], most) if asked[t["name"]] else "❓ no question on its page"}
                 for t in tasks[:5]] or [{"title": "⬜ No Task yet", "by": "standing",
                                          "summary": "the Job face lists none; its workflow is drawn once it has one"}]
@@ -460,14 +487,14 @@ def plan_frame(d: Drawing, info: dict, tasks: list[dict], topics: dict, cfg: dic
         io, level = min(step, 4), max(0, step - 4)
         f = d.frame(f"② 🔁 In → Tasks → out: what {info['id']} found")
         top = jr.heading(d, "🔁 In → Tasks → out, and what it found", "📍 where the Job stands; → a Task's own topic")
-        ins, outs = ([re.sub(r"\s*\([^)]*\)", "", str(x)) for x in cfg.get(k) or []]    # a map: no asides
+        ins, outs = ([re.sub(r"\s*\([^)]*\)", "", io_item(x)) for x in cfg.get(k) or []]   # a map: no asides
                      for k in ("inputs", "outputs"))
         most, keep = [(400, 4), (200, 3), (140, 2), (100, 2), (100, 1)][io]
         seq = [{"title": "📥 What goes in", "lines": [short(x, most) for x in ins[:keep]], "weight": 1}
                if ins else {"title": f"📥 {n_of(len(runs), word)}",
                             "lines": [f"from {', '.join(platforms)}"] if platforms else [], "weight": 0.7}]
         for t in tasks:
-            seq.append({"title": f"{'📍' if t is stand else '🧩'} {t['id']} · {t['title'] if level < 4 else short(t['title'], 28)}",
+            seq.append({"title": f"{'📍' if t is stand else '🧩'} {t['name']}",
                         "lines": task_lines(t, cfg, topics, word, level), "weight": 1.5})
         seq.append({"title": "📤 What comes out", "lines": [short(x, most) for x in outs[:keep]],
                     "weight": 1} if outs else
@@ -511,16 +538,16 @@ def detail_frame(d: Drawing, info: dict, tasks: list[dict], topics: dict, cfg: d
     would close it. Words from the face's job: yaml; numbers and states from disk. Built with excalidraw-task's boxes.
     `steps(d, f, y, boxes)`, given by layout: explained, draws the Tasks itself, as stairs, and returns the y below."""
     import task_drawing as td
-    f = d.frame(f"{mark} 📚 {info['id']} · {info['title']}: explained from zero", td.W, 1600)   # the next free mark
+    f = d.frame(f"{mark} 📚 {name_of(info)}: explained from zero", td.W, 1600)   # the next free mark
     runs = [r for t in tasks for r in t["runs"]]
-    y = td.heading(d, f"📚 {info['id']} · {info['title']}, explained from zero",
+    y = td.heading(d, f"📚 {name_of(info)}, explained from zero",
                    f"{info['block']} · {n_of(len(tasks), 'Task')} · {n_of(len(runs), 'Run')}: {states(runs)}",
                    str(cfg.get("reading") or cfg.get("aim") or info["goal"] or "❓ no reading yet"))
     intro = str(cfg.get("intro") or cfg.get("aim") or info["goal"] or info["topic"] or "❓ no aim on the Job face")
     terms = td.terms_items(cfg.get("terms"))
-    ins = [f"· {x}" for x in cfg.get("inputs") or []] or \
+    ins = [f"· {io_item(x)}" for x in cfg.get("inputs") or []] or \
         [f"· {t['id']}: {short(t['input'], 120)}" for t in tasks if t["input"]] or ["❓ inputs not written"]
-    outs = [f"· {x}" for x in cfg.get("outputs") or []] or \
+    outs = [f"· {io_item(x)}" for x in cfg.get("outputs") or []] or \
         [f"· {t['id']}: {short(t['output'], 120)}" for t in tasks if t["output"]] or ["❓ outputs not written"]
     formulas = td.formula_items(cfg.get("formula"), assets)
     words = cfg.get("tasks") or {}
@@ -542,7 +569,7 @@ def detail_frame(d: Drawing, info: dict, tasks: list[dict], topics: dict, cfg: d
         if here:
             body.append(f"→ details: its own topic, studio/{here}/; the Task page, "
                         f"{t['row']['task'].parent.name}/{t['name']}/{t['name']}.md")
-        boxes.append((f"🧩 {t['id']} · {t['title']}", body, INK))
+        boxes.append((f"🧩 {t['name']}", body, INK))
     task_rows = [boxes[k:k + 2] for k in range(0, len(boxes), 2)]
     opens = [open_line(o) for o in cfg.get("open") or []]
     concluded = [str(cfg.get("reading") or "❓ no reading yet")] + ([f"How sure: {cfg['sure']}"] if cfg.get("sure") else [])
@@ -618,8 +645,8 @@ def chart_value(block: Path, at: str):
 
 
 def bars_png(block: Path, bars: list, out: Path, legend: list | None = None) -> Path | None:
-    """Per row, before (grey) → after (black; a contrast row lighter), or one value alone (black); each value printed at
-    its end (the s24 pilot). `legend`: the two bars' names (default before, after)."""
+    """Per row, before (light blue) → after (blue; a contrast row grey), or one value alone (blue); each value printed
+    at its end (the s24 pilot). `legend`: the two bars' names (default before, after)."""
     rows = []
     for b in bars:
         at = b.get("at") or []
@@ -642,9 +669,9 @@ def bars_png(block: Path, bars: list, out: Path, legend: list | None = None) -> 
     for i, (label, before, after, contrast) in enumerate(reversed(rows)):
         dy = 0.2 if before is not None else 0
         if before is not None:
-            ax.barh(i + dy, before * k, height=0.36, color="#b8b8b8")
+            ax.barh(i + dy, before * k, height=0.36, color=BLUE_LIGHT)
             ax.text(before * k + top * 0.01, i + dy, fmt(before), va="center", fontsize=26, color="#555")
-        ax.barh(i - dy, after * k, height=0.36 if dy else 0.55, color="#8a8a8a" if contrast else "#2b2b2b")
+        ax.barh(i - dy, after * k, height=0.36 if dy else 0.55, color=PALETTE["grey"] if contrast else PALETTE["blue"])
         ax.text(after * k + top * 0.01, i - dy, fmt(after), va="center", fontsize=30, weight="bold")
     ax.set_yticks(range(len(rows)))
     ax.set_yticklabels([r[0] for r in reversed(rows)], fontsize=28)
@@ -653,7 +680,7 @@ def bars_png(block: Path, bars: list, out: Path, legend: list | None = None) -> 
         ax.axvline(0, color="#1e1e1e", linewidth=1)
     if any(r[1] is not None for r in rows):
         names = list(legend or ["before", "after"])
-        ax.legend(handles=[Patch(color="#b8b8b8", label=names[0]), Patch(color="#2b2b2b", label=names[1])],
+        ax.legend(handles=[Patch(color=BLUE_LIGHT, label=names[0]), Patch(color=PALETTE["blue"], label=names[1])],
                   loc="lower right", bbox_to_anchor=(1.0, 1.0), ncol=2, fontsize=26, frameon=False)
     fig.tight_layout()
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -1032,7 +1059,7 @@ def run_cards(t: dict, design: dict, cfg: dict) -> list[dict]:
     its count by state, why a mark is red, and where its tickets are. Both show: a new Run folder never hides the
     legacy Runs a grid still counts (Proj11 j02, 261014). [{lines, grid, dashed}]."""
     import job_ladder as jl
-    cards = [{"lines": [(f"{r['mark']} {jl.run_label(r['name'])}", jl.T_RUNS, INK),
+    cards = [{"lines": [(f"{r['mark']} {r['name']}", jl.T_RUNS, INK),
                         (str(r.get("state") or ""), jl.T_RUNS - 4, GREY)], "grid": None, "dashed": False}
              for r in t["runs"]]
     for gr in design["grids"]:
@@ -1226,9 +1253,9 @@ def draw_explained(job: Path, out: Path, cfg: dict, source: str = "") -> tuple[P
     # level with it. Measured first (each row as tall as its step or its result), then the frame is made wide.
     d = Drawing()
     STEP_X, ROW_GAP, OUT_GAP = 560, 150, 240                           # a step right; between rows; frame to results
-    f = d.frame(f"① 📚 {info['id']} · {info['title']}: explained from zero", 4000)
+    f = d.frame(f"① 📚 {name_of(info)}: explained from zero", 4000)
     Drawing.room(f)
-    d.text(40, 30, f"📚 {info['id']} · {info['title']}, explained from zero", 160)
+    d.text(40, 30, f"📚 {name_of(info)}, explained from zero", 160)
     d.para(40, 250, f"{info.get('block') or ''} · {n_of(len(tasks), 'Task')}, a step each; each one's result outside, "
            "on the right; each square one Run: green evaluated · orange half · grey not evaluated · red failed · "
            "a dot no ticket" +
@@ -1247,17 +1274,16 @@ def draw_explained(job: Path, out: Path, cfg: dict, source: str = "") -> tuple[P
 
     rows_out = []                                                       # (line y, from x, title, found, png, empty)
     aim = str(cfg.get("intro") or cfg.get("aim") or info.get("goal") or "")
-    job_label = f"🧱 {info['id']} · {info['title']}"
+    job_label = f"🧱 {name_of(info)}"
     job_w = max(jl.JOB_W, Drawing.measure(job_label, BIG) + 2 * jl.PAD + 30)
     jh = jl.card(d, 40, y, job_w, [(job_label, BIG, INK)], sw=3)
     why = [(f"Why: {jl.words(aim, 40)}" if aim else "❓ no aim: the Job face has no goal: line", jl.T_CARD, None),
            (f"Done when: {jl.words(info['close'], 34)}" if info.get("close") else "", jl.T_CARD, None)]
     ch = jl.card(d, 110, y + jh + 20, jl.JOB_W - 110, why)
     io_x, yy = 40 + job_w + 120, y
-    for label, items in (("📥 In", (cfg.get("inputs") or [])[:3]), ("📤 Out", (cfg.get("outputs") or [])[:3])):
+    for label, items in (("📥 In", (cfg.get("inputs") or [])[:6]), ("📤 Out", (cfg.get("outputs") or [])[:6])):
         if items:
-            h = jl.card(d, io_x, yy, jl.IO_W, [(label, jl.T_STEP - 6, INK)] +
-                        [(f"· {jl.words(x, 14)}", jl.T_RUNS, INK) for x in items])
+            h = jl.io_card(d, io_x, yy, jl.IO_W, label, items, 26, job)
             d.line([(40 + job_w + 12, y + jh / 2), (io_x - 12, yy + 32)], sw=2)
             yy += h + 24
     right = io_x + jl.IO_W
@@ -1276,8 +1302,7 @@ def draw_explained(job: Path, out: Path, cfg: dict, source: str = "") -> tuple[P
         w = words_of.get(t["name"]) or {}
         nx = 130 + i * STEP_X
         name = re.sub(rf"^{t['id']}\s*[·:.\-]?\s*", "", t["title"], flags=re.I)
-        short = re.sub(rf"^{t['id']}_", "", t["name"]).replace("_", " ")   # its folder's words: short, so large
-        label = f"🧩 {t['id']} · {short}"
+        label = f"🧩 {t['name']}"                                       # its folder name, as on disk (261019)
         node_w = max(jl.NODE_W, Drawing.measure(label, BIG) + 2 * jl.PAD + 30)
         nh = jl.card(d, nx, y, node_w, [(label, BIG, INK)], sw=2.5)
         own = topics.get(f"{t['row']['task'].parent.name}/{t['name']}")
@@ -1709,7 +1734,9 @@ def widths_of(cols: list[str], cells: list[list[str]], total: float, size: float
 
 
 def name_of(info: dict) -> str:
-    return info["title"] if info["title"].startswith(info["id"]) else f"{info['id']} · {info['title']}"
+    """The Job's folder name, as it is on disk (JL 261019: "why the name here used is not the same as the task folder
+    name or the run folder name? we don't need to create the new named to add the cognitive burden to us")."""
+    return info.get("folder") or info["id"]
 
 
 def table_frame(d: Drawing, info: dict, w: dict, job: Path, rows: list[dict], assets: Path,
@@ -1773,7 +1800,7 @@ def bars_png_rows(body: list[dict], bars: list[str], at: list[tuple], wpx: float
     for j, (label, vals) in enumerate(zip(bars, cols)):
         ax = fig.add_axes([sum(widths[:j]) + gap * j, 0, widths[j], 1])
         top = max([v for v in vals if v] or [1])
-        colour = "#2b2b2b" if j == 0 else "#8a8a8a"
+        colour = list(PALETTE.values())[j % 8]                       # a column its own hue, in the fixed order
         for (y, h), v in zip(at, vals):
             mid = y + h / 2
             if v:

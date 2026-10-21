@@ -14,7 +14,7 @@ description: >-
   frames, low density, mind map, workflow map, acts, named arrows, key point, folder tree, /excalidraw-studio.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 metadata:
-  version: "0.3.9"
+  version: "0.3.10"
   last_updated: "2026-10-14"
   # version history: ./CHANGELOG.md
 ---
@@ -79,7 +79,9 @@ The principles
                                        a map frame, at most a quarter of them a detail (under 28 px); the
                                        detail goes to its own frame or topic (a Task's: excalidraw-task); that
                                        frame is marked Drawing.detail and ⑥ measures it (a video's full frame),
-                                       its floor scaled by its type: 120 × (24 / body px)², 77 at 30 px
+                                       its floor scaled by its type: 120 × (24 / body px)², 77 at 30 px; a
+                                       signboard (canvas.signboard), the main frame drawn k times a frame's
+                                       size, holds 200 × k words (JL 261020: "它是主，其他都是次")
 ⑧ 🌬️ room between boxes, the numbers  each box only as wide as its words need, never stretched to fill a row;
      big                               boxes stand apart with clear space, a flow stepping right and down like
                                        stairs; nothing nested edge to edge (asked 261012: "leave some rooms, not
@@ -96,7 +98,8 @@ The principles
                                        a frame of only text boxes is forbidden (asked 261012: "things like this
                                        should be forbiden, so rigid, not vivid, no one have the incentive to
                                        zoom in and read"); check.py ⑨ fails a frame with no picture and more
-                                       than 600 words; the words stay in the face
+                                       than 600 words (600 a panel in a frame of panels, canvas.columns, JL
+                                       261020); the words stay in the face
 ```
 
 
@@ -118,10 +121,11 @@ Shapes that keep their own rules
 |---|---|---|
 | a Studio topic, sNN | the principles | this skill |
 | a screen inside a topic | the workbench's own colours, `canvas.ui_frame` | haipipe-studio `canvas.py` |
-| s00, a Block's background and index | its tree, boxes, emoji; its Studio plan; proposed sNN and jNN; its words, since an index names every topic and Job (`check.py` names it for ⑦, does not judge) | haipipe-studio `block_index.py` |
+| s00, a Block's background and index | its tree, boxes, emoji; its Studio plan; proposed sNN and jNN; its words, since an index names every topic and Job (`check.py` names it for ⑥ and ⑦, does not judge) | haipipe-studio `block_index.py` |
 | a report's drawing, a scratch | excalidraw-report | excalidraw-report |
 | a slide draft, s61 to s69 | three frames left to right, slides at half size; its own sizes, words and colours (`check.py` names it, does not judge) | excalidraw-slide |
-| a paper read onto a canvas | excalidraw-read | excalidraw-read |
+| a paper read onto a canvas, and a topic drawn from its readings | excalidraw-read; each logic frame keeps a key point (`check.py` names its words for ⑥ and ⑦, does not judge) | excalidraw-read |
+| a paper's building map, s03-paper-dataflow | excalidraw-workflow's own column layout, no frames, its blue claim cards and small card text, read zoomed in the Studio (`check.py` names it, does not judge); its s04-paper-workflow follows the principles | excalidraw-workflow |
 | a file we change, section by section beside its updated sentences | two frames: the plan, then the side-by-side that reads down (3,320 px wide on purpose) | excalidraw-draft |
 | a paper's Sections as a map | excalidraw-draft | excalidraw-draft |
 | a Job as one drawing: why, in and out, what it concluded, its tables | four frames in two acts | excalidraw-job |

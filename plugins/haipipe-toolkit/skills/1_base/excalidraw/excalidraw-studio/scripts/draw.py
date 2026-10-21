@@ -109,7 +109,7 @@ class Drawing:
                        points=[[x - x0, y - y0] for x, y in points], lastCommittedPoint=None, startBinding=None,
                        endBinding=None, startArrowhead=None, endArrowhead="arrow" if arrow else None)
 
-    def grid_table(self, x, y, columns, rows, widths, size=30, pad=40):
+    def grid_table(self, x, y, columns, rows, widths, size=30, pad=40, head=28):
         """A table drawn as b03's model × engine grid (asked 261012 of b01: "I want the tables like this"): column
         names in small type, one grey rule above each row, no boxes. `rows`: [{cells, dim}]; a cell is words, or a
         value {big, tag, color}: its number large, its mark and Run small under it (grey unchecked, red broken).
@@ -118,9 +118,9 @@ class Drawing:
         xs = [x + sum(widths[:k]) for k in range(len(widths))]
         right = x + sum(widths)
         self.rows_at = []                              # each row's (top, height): a chart beside it lines up
-        hh = max(self.height(c, w - 24, 28) for c, w in zip(columns, widths))
-        for cx, c, w in zip(xs, columns, widths):
-            self.para(cx, y, c, w - 24, 28, GREY)
+        hh = max(self.height(c, w - 24, head) for c, w in zip(columns, widths))   # `head`: the column names'
+        for cx, c, w in zip(xs, columns, widths):                                 #   size; a wide table's are
+            self.para(cx, y, c, w - 24, head, GREY)                               #   smaller (b03 s22, 261019)
         y += hh + 26
         for r in rows:
             cells, dim = r.get("cells") or [], r.get("dim")
@@ -184,6 +184,13 @@ class Drawing:
         return sum(1 for w in rest.split() if EMOJI_ONLY.sub("", w)) + (cjk + 1) // 2
 
     @staticmethod
+    def fill_words(s):
+        """The words a text fills a frame with: `words_in`, each part of a folder name counted (`r06_fold2to9_hgvitals`
+        fills the room of three). check.py ⑥ measures how full a frame is with it; the word caps (⑦, ⑨) keep
+        `words_in`, where a name reads as one (drawings name Jobs, Tasks and Runs by their folders, JL 261019)."""
+        return Drawing.words_in(str(s).replace("_", " "))
+
+    @staticmethod
     def room(frame):
         """Mark a frame laid out with room between its boxes (principle 8, asked 261012: "leave some rooms, not all
         the things nested together"): principle 6 measures its words over its boxes, not the space between them."""
@@ -201,10 +208,16 @@ class Drawing:
 
     @classmethod
     def words_per_mpx(cls, elements, fid, w, h):
-        words = sum(cls.words_in(e.get("text", "")) for e in elements
-                    if e.get("frameId") == fid and e.get("type") == "text" and e.get("strokeColor") != GREEN
-                    and not e.get("isDeleted"))
         f = next((e for e in elements if e.get("id") == fid and e.get("type") == "frame"), None)
+
+        def mine(e):                                    # tied to the frame, or lying inside it untied, as check.py
+            if e.get("frameId") == fid:                 #   counts (b02 s21-s25 261019: a badge read ❌ on a frame
+                return True                             #   check.py passed, its untied card texts uncounted)
+            return bool(f) and not e.get("frameId") and f["x"] <= e["x"] and f["y"] <= e["y"] and \
+                e["x"] + e.get("width", 0) <= f["x"] + w and e["y"] + e.get("height", 0) <= f["y"] + h
+        words = sum(cls.fill_words(e.get("text", "")) for e in elements      # a folder name fills the room of its
+                    if e.get("type") == "text" and mine(e) and e.get("strokeColor") != GREEN
+                    and not e.get("isDeleted") and not (e.get("customData") or {}).get("aside"))
         area = cls.area_of(elements, {**f, "width": w, "height": h}) if f else w * h
         return round(words / max(area / 1e6, 0.01)), words
 

@@ -18,8 +18,8 @@ description: >-
   ref/revise.md): revise, compare before and after, what changed, track
   changes, change ledger, run-revise, /haipipe-draft-revise.
 metadata:
-  version: "0.24.0"
-  last_updated: "2026-10-16"
+  version: "0.25.2"
+  last_updated: "2026-10-20"
   # version history: ./CHANGELOG.md
 ---
 

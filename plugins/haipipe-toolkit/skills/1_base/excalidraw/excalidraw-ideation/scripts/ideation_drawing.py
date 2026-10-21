@@ -1,6 +1,6 @@
 """An ideation as one drawing: every idea as a step down from the question, and small frames that explain it.
 
-Asked 261013 on Physician-SPACE's Paper-LLMRecPhy s01-ideation, whose first drawing (19 equal frames in left-aligned
+Asked 261013 on Physician-SPACE's Paper-LLMRecPhy-Quick s01-ideation, whose first drawing (19 equal frames in left-aligned
 rows) was the counterexample: "主次分明 … 一个很大的 frame，然后有一些小的 frame 是解释这些大的 frame 的 … 一定要用阶梯状
 的结构 … 不能变成一个跟棋盘一样的东西 … 你不能每一个都是朝左对齐". Lifted here 261014 from that topic's builder so every
 paper's s01-ideation draws the same way (JL 261014: "How do you think we can add it to the themes/paper skills set").
@@ -173,7 +173,7 @@ def flow_of(r: dict) -> str:
     if r.get("flow"):
         return " → ".join(r["flow"])
     keys = [r.get("start"), r.get("roster"), " · ".join(x for x in ((r.get("google") or [""])[0], (r.get("agent") or ["", ""])[1]) if x),
-            r.get("end")]                                                   # the older keys (Paper-LLMRecPhy)
+            r.get("end")]                                                   # the older keys (Paper-LLMRecPhy-Quick)
     return " → ".join(k for k in keys if k)
 
 

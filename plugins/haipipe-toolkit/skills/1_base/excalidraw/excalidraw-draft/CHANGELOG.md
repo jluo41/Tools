@@ -1,5 +1,34 @@
 # Changelog
 
+## 2.4.0 · 2026-10-20 · The examples frame shows whole paragraphs, and what each paper is
+
+- JL 261020, of "How 4 JAMA Internal Medicine papers open their Introduction": "paper 的名字一定要大写一下", "你这引的都是
+  JAMA Internal Medicine 吗？这都是啥 paper 啊？", "你每个自然段应该独立成段". `ref/section_canvas.examples_frame` leads each
+  paper with its title, large and in title case (`title_case`), then "Author et al. year · journal · article kind",
+  then the Section as printed: each paragraph whole (excalidraw-read's `shots/para-P<k>.jpg`), under the moves its
+  excerpts carry. A reading cut before paragraphs falls back to its excerpt shots.
+- The examples frame now passes excalidraw-studio's check (s22: 2 ❌ → 0): its key point is the reading topic's
+  `key:` in the one slight colour (principle 5), and the two frames are named as one act at the left of their row,
+  outside both frames (principle 3: "Act 1 · our <Section>, beside how N published papers open theirs").
+
+## 2.3.1 · 2026-10-20 · VALUE cards
+
+- `section_canvas.py` reads `value` cards (haipipe-evidence 0.6.0, was `work`); the legend says VALUE.
+
+## 2.3.0 · 2026-10-20 · A Section canvas sized to what it draws (LLMRec Sections, JL 261020)
+
+- `ref/section_canvas.py`: the comments and changes column only when the Section has a reply or a change (an empty
+  column was only room); the frame is 2190 px wide without it. `canvas.columns(f, 3 or 4)`, so check.py ⑨ reads each
+  panel as one. The text heading names the first and last paragraph when there are more than three (ten ran into the
+  Evidence heading). Tighter gaps between sentences and paragraphs. A WORK item shows the number read from its Run
+  (`= 0.1863`, four figures), as the Evidence tab does.
+- `examples: <a reading topic>` in the face: a second frame beside the Section canvas, "How <n> <venue> papers open
+  their <Section>", one column per reading in the topic's `reads/` (excalidraw-read's reading.yaml): the paper and year,
+  the Section's shape, each paragraph's move over the excerpt that carries it (JL 261020: "In the canvas, could you add
+  other paper's introduction as well?"). The preview holds every frame. First on LLMRec s22, from s26.
+- On the five LLMRec Section canvases (no page pictures yet): ⑨ passes on all five (was ❌ on three); ⑥ reads 86, 90,
+  100, 80, 96 against 88 (was 62 to 73). b21 s06 is unchanged (a picture: not measured).
+
 ## 2.2.0 · 2026-10-19 · Section canvas sync: the canvas back into the files (b32 s41-D28)
 
 - `section_canvas.py sync <face>`: a sentence typed over goes into §3 by its address (logged before → after), a

@@ -37,6 +37,8 @@ FIELD = re.compile(r"(?m)^([a-z][a-z0-9_-]*):[ \t]*(\S.*)$")
 HEAD = re.compile(r"(?m)^#{2,4}[ \t]+(?:\d+[ \t]*·[ \t]*)?(.+\?)[ \t]*$")
 BOLD = re.compile(r"\*\*(.+?)\*\*")
 STATUS = {"state", "status", "stage", "answer-status", "updated", "date"}   # where the work stands, not what it is about
+WHO = {"owner", "session", "codex-session", "goal", "close", "emoji"}   # who does it and its own lines, never a split
+                                       # (b04 trial 261021: owner: proposed a topic s01-owner)
 
 
 def face(folder: Path) -> Path | None:
@@ -128,7 +130,7 @@ def summarize(b: dict) -> dict:
         values = collections.Counter(t["fields"][key] for _, t in tasks if key in t["fields"])
         per_job = {jn: {t["fields"][key] for j2, t in tasks if j2 == jn and key in t["fields"]} for jn, _ in tasks}
         restates_job = all(len(v) <= 1 for v in per_job.values()) and len(values) > len(b["jobs"]) / 2
-        if key in STATUS:
+        if key in STATUS or key in WHO:
             continue
         if (n >= len(tasks) / 2 and 2 <= len(values) < max(3, len(b["jobs"])) and not restates_job
                 and max(len(v) for v in values) <= 60):          # a free-text field is no split

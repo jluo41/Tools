@@ -7,9 +7,11 @@
 Seven steps, each done by the skill that owns that part; a dry run writes nothing:
 
     1 shape      haipipe-project ladder.py audit                 names, faces, folders, Run cards
-    2 today      ladder.py audit --today                         studio topics, Questions register, reports/
+    2 today      ladder.py audit --today                         studio topics, Questions register, reports/;
+                                                                 at a work Block the workflow layout (261021)
     3 plan       what moves, what is made, what is proposed      printed
-    4 apply      --apply: the moves (ladder.py update --today --apply), then a pass of
+    4 apply      --apply: the moves and the Run cards' missing role: lines (ladder.py update --today
+                 --apply), then a pass of
                  <block>/runs/run-update-<bNN>/ holding proposals.md, the list a person ticks
     5 topics     haipipe-studio block_inventory.py               the topics the Block's own work stands on
     6 Questions  the same reading (haipipe-report ref/infer-reports.md): Block and Job Questions
@@ -43,6 +45,7 @@ import ladder  # noqa: E402
 import soft_run  # noqa: E402
 
 BAND = range(1, 10)                     # s01-s09: concept topics (haipipe-studio numbering)
+WORKFLOW_WORDS = re.compile(r"workbench-layout|## Deliverables|emoji:|goal: line|close: line|stand-in receipt")
 
 
 def short(block: Path) -> str:
@@ -132,6 +135,10 @@ def proposals_md(block: Path, r: dict) -> str:
              "the agent words each one from the Tasks named (haipipe-studio ref/infer-topics.md,",
              "haipipe-report ref/infer-reports.md).", "", "## Moves done by --apply", ""]
     lines += [f"- {m}" for m in r["plan"]["moves"]] or ["- none"]
+    face = [m.removeprefix("today: ") for m in r["today"] if WORKFLOW_WORDS.search(m)]
+    lines += ["", "## Workflow layout (the words an agent writes: haipipe-job ref/job-contract.md, haipipe-task",
+              "ref/task-page-template.md; a stand-in receipt is rebuilt per haipipe-run ref/receipts-and-inventory.md)", ""]
+    lines += [f"- [ ] {m}" for m in face] or ["- none"]
     lines += ["", "## Topics (haipipe-studio new_topic.py topic)", ""]
     for t in r["topics"]:
         asks = f" · asks: {' · '.join(t['asks'][:5])}" if t["asks"] else ""
@@ -212,12 +219,18 @@ def render(r: dict) -> str:
              "1 shape      " + " · ".join(f"{lvl} {sum(c.values())} (debt {c['debt']}, failed {c['failed']})"
                                         for lvl, c in counts.items())]
     lines += [f"             ✗ {f}" for f in sh["failed"][:8]]
+    if len(sh["failed"]) > 8:                   # the rest, never hidden (b03 trial, 261021)
+        lines += [f"             … +{len(sh['failed']) - 8} more: ladder.py audit {r['block']}"]
     lines += ["2 today      " + ("ok" if not r["today"] else f"{len(r['today'])} finding(s)")]
     lines += [f"             · {m.removeprefix('today: ')}" for m in r["today"]]
     planned = r["plan"]["ladder"] or "nothing to move"
     lines += ["3 plan       " + (planned.replace("planned (dry run; --apply to do it)", "applied in step 4")
                                  if r["apply"] else planned)]
     lines += [f"             mv {m}" for m in r["plan"]["moves"][:12]]
+    if re.search(r"[1-9]\d* (kind|role)\(s\)", r["plan"]["ladder"]):       # the cards it sets: listed by the ladder
+        lines += [f"             the cards: ladder.py update {r['block']} --today"]
+    if len(r["plan"]["moves"]) > 12:
+        lines += [f"             … +{len(r['plan']['moves']) - 12} more: ladder.py update {r['block']} --today"]
     lines += ["4 apply      " + (f"done; tick {r['pass']}/proposals.md" if r.get("pass") else "not run (--apply)")]
     lines += [f"5 topics     {len(r['topics'])} proposed from {r['inventory']['tasks']} Tasks in "
               f"{r['inventory']['jobs']} Jobs"]

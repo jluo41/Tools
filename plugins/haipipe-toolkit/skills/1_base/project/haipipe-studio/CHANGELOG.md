@@ -1,6 +1,11 @@
 haipipe-studio · Changelog
 ==========================
 
+## [0.14.5] · 2026-10-21 · who does a Task is never a topic
+
+- `scripts/block_inventory.py`: `owner:`, `session:`, `codex-session:` and a face's own `goal:`, `close:` and
+  `emoji:` lines are never a split (WHO), so `/wb update` stops proposing `s01-owner` (a fresh agent's b04 trial).
+
 ## [0.14.4] · 2026-10-20 · Feeds finds a report by its Question id
 
 - `scripts/job_results.py`: a new results topic's **Feeds:** line reads the Job's `answers:` as Question ids (`Q01`,
@@ -8,6 +13,21 @@ haipipe-studio · Changelog
   only `qNN_` folder names, so a Job answering `Q-food-1` was written "none yet" (b51 261020). `--jobs` with one Job
   now gives the one-Job title (`j01 · ext food: current results`), not "ext food and more". Test:
   `test_feeds_find_the_report_of_each_answered_id`.
+
+## [0.14.3] · 2026-10-19 · The reviewer knows a plan topic
+
+- `ref/reader-review.md` names the questions for a paper's s03-paper-dataflow and s04-paper-workflow (haipipe-paper-
+  plan's four), and that a gap only the drawer can close goes to the drawer's owner once instead of another round (a
+  fresh-agent test looped twice on it).
+
+## [0.14.2] · 2026-10-19 · A topic opens centred
+
+- A Studio topic a person clicks open scrolls so its drawing sits in the middle of the window, and the drawing
+  inside is fitted and centred once its frame has a real size (JL 261019: "How do you make it, when I click it, the
+  draw will in the center of the page"). `servers/workbench/frame.py` (STUDIO_JS: a clicked row scrolls to the
+  centre; rows the page opens itself do not jump) and `servers/workbench/assets/xcal-boot.js` (the fit waits, at
+  most 2 s, for the frame's size, then is made again). Checked in headless Chrome at 1440 x 900: the s02 drawing
+  sits at 120 to 780 px, the whole story fitted at 17%.
 
 **[0.14.1] · 2026-10-19 · s10-s19 is a paper Board's related work (JL 261019)**
 

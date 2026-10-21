@@ -9,8 +9,8 @@ description: >-
   work. Use for paper setup (paper_ladder.py), status, drafting, a Claude and
   Codex session per Section, complete-paper assembly, or comments and reviews.
 metadata:
-  version: "1.13.0"
-  last_updated: "2026-10-19"
+  version: "1.15.1"
+  last_updated: "2026-10-20"
   summary: "Paper owns the journey and composition; the shared Page owns each Paper Page's lifecycle and release."
 ---
 
@@ -36,7 +36,7 @@ Route a request by the level it names:
 |---|---|---|
 | Board | `Paper-<Slug>/`: face, `studio/`, `reports/`, `runs/`, `venues/`, `related/` | Story and Ideation (studio topics and Board Questions), Venue, Related through Discovery |
 | version | `jNN_v<MMDD>_<desk>/`: face with `## Narrative` and `## Questions`, its Tasks; output in Block `delivery/jNN_<version>/` | the Section release (G3), comments reports, assembly and send (G4, G5) |
-| Task | `t00_abstract` · `t0N_` Main · `t2N_` Appendix · `t3N_` letters | `haipipe-paper-draft` over the shared Page workflow |
+| Task | `t00_abstract` · `t0N_` Main · `t2N_` Appendix · `t3N_` letters | `haipipe-paper-draft` over haipipe-draft's seven steps (below) |
 | Run | `runs/run-<type>-<target>/` (its `run.yaml`, ticket and `passes/`, as `haipipe-run` has it); a Section's are the Page engine's | the run cards, `haipipe-paper-workflow/ref/run-cards.md` |
 
 Use two orders for two different jobs. First route the family request:
@@ -72,6 +72,24 @@ lifecycle, Page Run namespace, Evidence Workspace, or Page release protocol.
 
 `haipipe-paper-assemble` is a separate complete-paper verb after routing; it has its own bounded compile Spec in the Paper Workflow.
 
+### A Section, step by step (b32 s41, on screen 2026-10-20)
+
+A Section Task is a draft Task (`task-type: draft`), worked in haipipe-draft's seven steps, the seven tabs of its
+Work. The paper adds its own owner to four of them:
+
+| Step (tab) | In a paper | Owner |
+|---|---|---|
+| 🎨 Studio | the Board's topics that name the Section (its story s02, its plan s04 rows) | haipipe-studio · haipipe-paper-story · haipipe-paper-plan |
+| 📐 1 · Plan | §1 from the Section's contract (the face's reader-question … transition-out, from the version's `## Narrative` row); your Scratch, a note per paragraph; the venue's SUB-* rows beside the Requirement | haipipe-draft-logic · haipipe-paper-draft |
+| ✍️ 2 · Write | `## 3 · Draft` from §1 and its Scratch, the desk's sentence and word limits; you type in its boxes too | haipipe-paper-draft · haipipe-draft-writing |
+| 🔎 3 · Evidence | `evidence/cards.yaml` under the paper's rules (CITE from verified Results, one number everywhere); the prompt is `/haipipe-paper-evidence <task>` | haipipe-paper-evidence |
+| 🖼 4 · Display | the Section's Tables and Figures, `display/Display<n>-<slug>/`, numbered for the paper (`label: Table 1`) and within the venue's limit | haipipe-display · haipipe-paper-evidence |
+| 🔁 5 · Revise | Revise cards, then comments' Review Items routed to the Section | haipipe-draft-writing · haipipe-paper-comments |
+| 📤 Delivery | the Section's lanes in `delivery/jNN_<version>/<tNN>/`; ◆ ready for the build | haipipe-delivery · haipipe-paper-assemble |
+
+The version's Work shows each Section as a card with its seven chips (`✍ sign`, `✓ done`, `🔶 asked`, `🔁 pass k`,
+`→ next`), a click each into that Section's tab; `✎ Write` opens the step that waits.
+
 ## Paper Workflow and content owners
 
 A Paper Workflow is the `paper-runs` layer: a list of bounded owner-native
@@ -84,6 +102,7 @@ Page containers, status reads and gate records do not allocate Runs.
 | Ideation | the idea pool as `studio/s01-ideation/` and Questions (group ideation); `haipipe-paper-ideation` |
 | Related work | the closest work: `studio/s10-related-work-map/` maps it beside ours, `s11`-`s19` read one type each; `haipipe-paper-related` |
 | Story | each telling as `studio/sNN-story-<telling>/`, its research questions as Board Questions with reports, the Narrative; `haipipe-paper-story` |
+| Plan | after the story: `studio/s03-paper-dataflow/` (how the data becomes each answer) and `studio/s04-paper-workflow/` (the Sections, displays and dates to the send); `haipipe-paper-plan` |
 | Venue | shared evidence-backed desk contract; `haipipe-paper-venue` |
 | Section (draft) | one Section, the Abstract or a letter, a draft Task: its plan and sentences in `draft/`; `haipipe-paper-draft` (was haipipe-paper-section) |
 | Evidence | what backs each Section (`evidence/`, `display/`) and one ledger per version: citations, one number per result, displays; `haipipe-paper-evidence` |
@@ -122,9 +141,10 @@ Resolve the paper root and target Page before changing anything.
 | create, refresh, read or check the Paper Idea portfolio Page | `haipipe-draft` + `haipipe-draft-workflow` + `haipipe-paper-ideation`; load the semantic owner for sync/handoff |
 | ask where a paper is in the journey, or test a gate | `haipipe-paper-workflow` |
 | draft or review the whole paper, its research roadmaps or section narrative | `haipipe-paper-story` |
+| plan the data flow or the paper flow (s03, s04): which Run feeds which question, which Section answers it, the displays, the dates to the send | `haipipe-paper-plan` |
 | release work, inspect execution progress, accept a receipt, or release a Section | `haipipe-paper-workflow` plus the exact Discovery/Task/Section owner; use Story for the resulting paper meaning |
 | inspect or record a target venue | `haipipe-paper-venue` (shared reference library) |
-| write or revise one manuscript/appendix unit | `haipipe-paper-draft` |
+| write or revise one manuscript/appendix unit | `haipipe-paper-draft`, one step at a time (A Section, step by step) |
 | check a Section's or a version's evidence, citations, numbers or displays | `haipipe-paper-evidence` |
 | give each Section Page its own session, or message the Section sessions | `/haipipe-paper sessions`: [`ref/section-sessions.md`](ref/section-sessions.md) and `scripts/create_section_sessions.py` |
 | take in or answer one batch of comments (review, meeting, coauthor, advisor) | `haipipe-paper-comments` |
@@ -189,12 +209,14 @@ screen's own rules are in `workbench-paper`.
 | Board › Audience Report › Narrative | what the story says, how it is drawn, how it is told, whether it attracts an editor, a reviewer, the public | `haipipe-paper-story` |
 | Board › Audience Report › High-level logic + Low-level work | each research question: Question │ Work │ Report | `haipipe-paper-story`; the work in `haipipe-task`, `haipipe-discovery` |
 | Board › Audience Report › Related Questions | the reviewer, coauthor, editor and reader questions | `haipipe-report` |
-| Board › Work Details | the versions (and grants, slides) | `haipipe-paper` (`paper_ladder.py`) |
+| Board › Work Details › Idea · Story · DataFlow · PaperFlow | each step's Studio topic (s01, s02, s03, s04) as Operation over Result, with its prompt | `haipipe-paper-ideation` · `haipipe-paper-story` · `haipipe-paper-plan` |
+| Board › Work Details › Jobs | the versions (and grants, slides) | `haipipe-paper` (`paper_ladder.py`) |
 | version › Description › Version · Venue rules | the version face; the venue's call | `haipipe-paper` · `haipipe-paper-venue` |
 | version › Audience Report › Questions · Draft-Main · Draft-Appendix | the standing J1–J5 and the version's Questions; each Section as Question │ Work │ Report, the rendered draft beside its drawing | `haipipe-report` · `haipipe-paper-story` (Narrative review, G3 release) |
 | version › Audience Report › Comments · Cover letter | the Review Items of its comments reports; the letter, paragraph by paragraph | `haipipe-paper-comments` · `haipipe-paper-assemble` |
-| version › Work Details › Main · Appendix · Letters | its Tasks | `haipipe-paper-draft` |
-| Section › every Space | the Page Task's views, plus the reader contract, Requirement, Comments and "ready for the build" | `haipipe-paper-draft` over the Page skills |
+| version › Work Details › All · Main · Appendix · Letters | each Section's card: its six step chips, a click each into that tab; its Runs | `haipipe-paper-draft` over `haipipe-draft`'s seven steps |
+| Section › Work · Studio · 1 Plan · 2 Write · 3 Evidence · 4 Display · 5 Revise · Delivery | each step, Operation (Input, Sign, Prompt) over Result; the SUB-* rows in 1 Plan | `haipipe-draft` (the seven steps) · `haipipe-paper-draft` · `haipipe-paper-evidence` |
+| Section › Report · Description · Delivery | the steps' Results, Table, Questions, Comments; the reader contract; ◆ ready for the build | `haipipe-paper-draft` · `haipipe-paper-comments` |
 | any level › Runs | that level's own Runs, by run type | the run cards (`haipipe-paper-workflow`) |
 
 Load only what the request uses. Reuse an already loaded owner; do not recurse

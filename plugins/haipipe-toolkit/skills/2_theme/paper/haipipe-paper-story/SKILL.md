@@ -14,7 +14,7 @@ description: >-
   logic, Low-level work, Related Papers, RoadMap Draw, workflow drawing,
   /haipipe-paper-story.
 metadata:
-  version: "0.22.0"
+  version: "0.24.0"
   last_updated: "2026-10-19"
   group-token: "sNN-story-<desk>-<idea-slug>"
   outline:
@@ -45,7 +45,7 @@ the folders that show them, and this skill writes each one there:
 | the telling's drawings | the same topic, one `build_*.py` per drawing | Block › Idea Studio |
 | §3, one research question each | `board.md ## Questions` (`group:` the telling) + `reports/qNN_<question>/` | Block › Audience Report › High-level logic + Low-level work |
 | §5 · §6 · §7 | the topic face, and each report's Work as the work lands | the Question's Work column |
-| §8 + compile order | each version face's `## Narrative` | the version's Draft-Main · the build |
+| §8 + compile order | each version face's `## Narrative`; before a version, `studio/s04-paper-workflow/`'s Sections table (haipipe-paper-plan) | the version's Draft-Main · the build |
 | related papers | `related/related.md` | Studio › Related (folded under the topics; was Block › Description › Related) |
 
 The topic face keeps the studio marks every topic has (haipipe-studio `ref/topic-contract.md`: `**Tags:**`,
@@ -209,7 +209,25 @@ Cover:
 Open §3 with **the story, question by question**: `**The paper's question**: …`, then a numbered list of the
 research questions in reading order, each a plain question with its answer so far and its mark. Read top to bottom
 the list is the paper's narrative, and each question's Section is where the paper answers it (JL 261019: "the
-quesiton can be the narrative as well"). excalidraw-story titles its steps from this list.
+quesiton can be the narrative as well"). excalidraw-story titles its steps from this list. Then
+`**The narrative, if the questions are answered**`: a numbered list of what the paper can say, step by step, once each
+question is answered as expected. The face also keeps a `**G0:**` line (JL's mark, ✅ or ⬜) and a `**Desk:**` line
+under its studio marks, and §5 ends with a `**We will not claim**:` list; excalidraw-story reads all of these labels
+as written.
+
+Write each research question as one long, plain sentence a patient or a reader could ask out loud, not a short
+label (JL 261019: "你不能太简短，你要说得像人话 ... 一个 research question，肯定是相对比较长，然后比较 straightforward、比较易懂的"):
+say who asks, what, and against what; follow a factor question with its plain consequence ("What factors influence
+whether an AI agent recommends a doctor ..., and is the result fair to doctors?"); keep the sub-questions in
+parentheses after it. The `Name` stays the short label.
+
+**Two papers from one study are two Boards** (JL 261019: "我觉得你可以说我们有两篇文章嘛 ... MISQ version"; "for this
+one, we want to make it quick and most short"; "we don't need to list all of them"). The ladder keeps one paper per
+Board, so a quick, short paper gets its own `paper/Paper-<Slug>/` with its own telling. It lists only the few
+questions already answered on disk, and it never takes the long paper's headline; each face names the other as its
+companion. First: Project-LLMRec-Physician's `Paper-LLMRecPhy-Quick` (a JAMA Network Open Original Investigation, three
+questions, the project's original research; first planned as a letter) and its MIS Quarterly companion (four
+questions) on a Board of its own.
 
 Write one block per question (JL 260929: "the question is the main block"): a
 `#### 3.N · Question N · RQn` heading, the question's own fields, then four
@@ -221,15 +239,17 @@ and the work that tests each guess.
 ```markdown
 #### 3.1 · Question 1 · RQ1
 - **Name**: <a short phrase, five words or fewer>
+- **Research question**: <one long, plain sentence a reader could ask out loud> (RQ1a: <a smaller question>? RQ1b: <…>?)
 - **Question**: <one plain sentence: what we do to answer it>
-- **Why the paper needs it**: <its job in the paper>
+- **Why it matters**: <its job in the paper, and why a reader cares>
 - **Answer form**: <what evidence would answer it>
-- **Answer state**: <where the answer stands>
+- **Answer state**: <its mark ✅ 🔶 ⬜, then where the answer stands>
+- **If answered**: <what the paper can say if the answer comes out as expected, and what it says if not>
 - **Section**: Results, Discussion
 
 **Hypotheses**
-- **1a** · <Short name>: <one plain sentence> · tested by E1
-- **1b** · <Short name>: <one plain sentence> · tested by E2
+- **1a** · <Short name>: <one plain sentence> · tested by Ework01
+- **1b** · <Short name>: <one plain sentence> · tested by Ework02
 
 **Potential claims**
 - **1a** · C1 · from 1a · <Short name>: <the statement the paper would make>
@@ -246,7 +266,9 @@ and the work that tests each guess.
 - **D1** · for 1a, 1b
 ```
 
-A question's **Name** is a short phrase of five words or fewer, often itself a question ("Model or data?", "Different Prediction Horizon"), the words the Paper Workbench prints beside "Question N"; the **Question** below it is one plain sentence saying what the paper does to answer it, with no field terms ("We make the model bigger, or give it more training data, and see which one lowers the forecast error."). The precise, technical wording belongs in the hypotheses and claims, not here (JL 260930: "the question here we have are just too long"). Items are coded by question: 1a, 1b under Question 1, 2a under Question 2 (JL 260929).
+The **Research question** is the long, plain sentence (JL 261019, above); its smaller questions follow it in
+parentheses, each opening `RQ1a:`, `RQ1b:`, so excalidraw-story can move them to the card. A face written before
+261019 may lack it; the Name and the Question then stand in. A question's **Name** is a short phrase of five words or fewer, often itself a question ("Model or data?", "Different Prediction Horizon"), the words the Paper Workbench prints beside "Question N"; the **Question** below it is one plain sentence saying what the paper does to answer it, with no field terms ("We make the model bigger, or give it more training data, and see which one lowers the forecast error."). The precise, technical wording belongs in the hypotheses and claims, not here (JL 260930: "the question here we have are just too long"). Items are coded by question: 1a, 1b under Question 1, 2a under Question 2 (JL 260929).
 
 A question that sets the study's tasks instead of testing a guess (the pretraining task and
 the downstream tasks every other question is scored on) comes first, as `#### 3.0 · Question 0
@@ -260,7 +282,7 @@ A hypothesis and the claim it yields share a code; a claim keeps its paper-wide 
 (C1, C2, …, used by the Pitch, §8 and the Section Pages) right after its code. Every
 item is a short name, a colon, and one plain sentence (JL 260929: "short-phrase-name:
 explanation"), so the bold names alone read as the argument. A hypothesis guesses an
-answer and names the §5 evidence rows (E1, E2, …) that test it. A claim says which
+answer and names the §5 evidence rows (Ework01, Ecite01, …) that test it. A claim says which
 hypothesis it comes from; a hypothesis may yield no claim (a corollary the paper will
 never claim says so as `- none: <why>`). A contribution names the claims it rests on.
 A work item names a §7 Task or §6 Discovery row and the hypotheses it tests;
@@ -312,10 +334,14 @@ material and updating it as findings become available:
 - **Assumptions and open tensions** — unresolved choices that could change the
   interpretation or final arc.
 - **Hard boundaries and non-claims** — causal, construct, population,
-  generalization, ethical, or venue claims the paper will not make.
+  generalization, ethical, or venue claims the paper will not make. The face writes them as
+  the `**We will not claim**:` list, one line each.
 
 Use an E-row for each consequential proposition the paper may eventually
-defend:
+defend. Name each row by where its support comes from, never a bare number (JL 261020: "what is the
+E18? I don't want to have the name like this ... call it E-cite or E-work"): `Ework01` when it rests on the study's
+own data or Runs, `Ecite01` when it rests on a published paper; a hypothesis is then `tested by Ework03, Ecite01`.
+The drawers (excalidraw-story, excalidraw-workflow) read both forms and the older `E3`:
 
 ```text
 E | RQ | proposition | support state | basis or missing evidence | interpretation boundary
@@ -487,6 +513,16 @@ answerable**. Detailed jobs, configurations, commands, budgets, retries, and
 run receipts belong in the Task layer. A compact task id or result link is
 traceability, not Story content.
 
+A telling drawn by excalidraw-story keeps a short table instead, one row per Run it waits on: `| T | work |
+where | state | starts |`, where `state` is done, ticket next or not started, and `starts` says who presses Run, or
+`<person> starts` when the Run costs new model calls (drawn red). The rows stay here; `studio/s03-paper-dataflow/`
+(haipipe-paper-plan) draws how the data flows through them to each question, without copying them.
+
+After §7 the telling's face keeps **§9 · Venues**, its venue list from the target down to the fallbacks: one row per
+venue (`| V | venue | kind | why it fits | leads with | still needs | desk record |`). A venue changes which questions
+lead, not the questions; each venue's rules stay in its haipipe-paper-venue desk record (JL 261019: "我们要不要把这个 venue 直接塞到这个 story 里面去？ ... 也要想想它适合什么样的 journal，然后搞出来一个 journal list or conference list"). §8, the Section
+Narrative, lives in each version's face.
+
 ### 8 · Section Narrative
 
 Show how the finished paper will turn the Seed, discoveries, and produced
@@ -524,6 +560,10 @@ before the detailed Section map; they cannot be inferred merely from section
 titles. A claim has a stable id, precise proposition, E-row support, rhetorical
 role, and limit. Planned claims remain conditional where support is missing.
 One claim may appear in several Sections for different reader purposes.
+
+**Before a version exists**, the Section rows are planned on `studio/s04-paper-workflow/` (haipipe-paper-plan): one
+row per Section with the questions it answers, its job, displays, evidence and words, then the displays with the Run
+that makes each and the dated steps to the send. The first version's `## Narrative` is seeded from that table.
 
 **On the ladder this part is each version's (b16 Q04).** The rows, the claim system and the compile order are
 written in the version face's `## Narrative`, between `<!-- haipipe:compile-order:start -->` and `end`; each
@@ -584,13 +624,17 @@ questions it answers, and read in order the questions are its narrative. `excali
 question as a step titled by its narrative question, beside it the answer so far, its claim and the E rows and T
 rows behind it (✅ answered, 🔶 partly, ⬜ nothing yet, red and dashed), the pitch, what we will not claim, and the
 Runs still to make. Run `story_drawing.py make <topic>` once for the forwarding builder, then the builder after
-every change to the face. First user: Paper-LLMRecPhy `studio/s02-story-misq-agent-physician-visibility/`.
+every change to the face. First users: Project-LLMRec-Physician's two Boards, `Paper-LLMRecPhy-Quick`
+(`s02-story-jamaim-agent-google-unseen-physicians`) and its MIS Quarterly companion (`s02-story-misq-agent-physician-visibility`).
 
-A workflow drawing is the usual second one, the paper's building map: data → the study's tasks → the answer, then
-one row per question: analysis → hypothesis and claim → where the answer lands. It is `excalidraw-workflow`'s
-(`1_base/excalidraw/excalidraw-workflow/`): run `workflow_drawing.py make <topic>` for the forwarding builder and a
-`<topic>-drawing.yaml` holding only the foundation cards, their links and the displays; every other word is read
-from the telling, the Board Questions' reports and the Task folders on every build. When a version has a comments
+**The plan comes next, two topics owned by `haipipe-paper-plan`** (JL 261019: "plan for the data flow and plan for
+the paper flow"; "please think about to make the s03 to be the paper-dataflow, and s04 to be the s04-paper-workflow"):
+`s03-paper-dataflow` is the paper's building map, data → the study's tasks → the answer, then one row per question:
+analysis → hypothesis and claim → where the answer lands; `s04-paper-workflow` is the paper flow, the Sections in
+reader order with their displays and the dated steps to the send. Both are drawn by `excalidraw-workflow`
+(`1_base/excalidraw/excalidraw-workflow/`): `workflow_drawing.py make <topic>` writes the map's forwarding builder and
+a `<topic>-drawing.yaml` holding only the foundation cards and their links; every other word is read from the telling,
+the Board Questions' reports, the Task folders and s04's displays on every build; `paperflow_drawing.py` draws s04. When a version has a comments
 report whose Review Items fill `hits` and `fixed by` (haipipe-paper-comments), the map marks in red what the
 reviewers asked to change and in green the work that fixes it (JL 261014: "highlight that which part the reviewers
 wanted us to change, and how will our new field experiment and analsysis will fix it"). Never copy an older paper's

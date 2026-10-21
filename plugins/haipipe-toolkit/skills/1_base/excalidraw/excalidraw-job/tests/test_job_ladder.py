@@ -72,7 +72,7 @@ def test_runs_stand_in_a_grid_so_a_job_grows_wide_not_tall(tmp_path):
     out = tmp_path / "out" / "j01.excalidraw"
     out.parent.mkdir()
     job_ladder.draw_job(job, out, {"reading": "A and B share little."})   # no current Run: all six speak
-    heads = [t for t in texts(out) if t["text"].split("\n")[0].endswith(("· first", "· rerun", "· fixed", "· more"))]
+    heads = [t for t in texts(out) if t["text"].split("\n")[0].endswith(("_first", "_rerun", "_fixed", "_more"))]
     rows = sorted({round(t["y"]) for t in heads})
     assert len(heads) == 6 and len(rows) == 2, [(t["text"][:20], t["x"], t["y"]) for t in heads]
     frame = next(e for e in json.loads(out.read_text())["elements"] if e["type"] == "frame")
@@ -94,7 +94,7 @@ def test_the_staircase_quiet_reruns_charts_and_a_table(tmp_path):
     ts = texts(out)
     words = " ".join(e["text"].replace("\n", " ") for e in ts)
     # the steps move right: t02's box stands right of t01's
-    step = {t["text"].split(" · ")[0][-3:]: t["x"] for t in ts if t["text"].startswith("🧩 ")}
+    step = {t["text"].split()[1][:3]: t["x"] for t in ts if t["text"].startswith("🧩 ")}   # 🧩 t01_overlap
     assert step["t02"] > step["t01"]
     # once a Run is marked current, the others are grey names only; the current one speaks
     assert "📌 current" in words and "the fixed matcher" in words
@@ -287,7 +287,7 @@ def test_each_step_names_its_page_and_run_tables_filter(tmp_path):
     assert page and page[0].get("link", "").endswith("t01_overlap/t01_overlap.md")
     words = " ".join(e["text"].replace("\n", " ") for e in els if e["type"] == "text")
     assert "Only r0[12]" in words and "r03" not in [e["text"] for e in els if e["type"] == "text"]
-    assert "measure (r01 · tau)" in words                                       # t02's picks name their Run
+    assert "measure (r01_tau)" in words                                         # t02's picks name their Run
 
 
 def test_a_unit_stays_with_its_number_and_a_block_path_table(tmp_path):
@@ -405,3 +405,75 @@ def test_a_big_task_folds_by_series_each_run_marked():
     assert [r["name"] for r in keep] == ["r31_release_build"]
     assert [c for c, _ in job_ladder.fold_groups(folded, len(pages))] == [   # 30 Runs: three cards of 10, not one
         "page-evidence-item · r01-r10", "page-evidence-item · r11-r20", "page-evidence-item · r21-r30"]
+
+
+def test_bars_take_colour_by_what_they_are_about_never_all_dark():
+    """JL 261019: "do not use this black and white anymore". A bar's own colour wins, then the chart's colours by
+    label, then the chart's colour, then a name the face's job.colors gives; else blue. No bar is dark grey."""
+    jd = job_ladder.jd
+    spec = {"bars": [{"label": "asked", "at": "n", "color": "grey"}, {"label": "Alpha web", "at": "a"},
+                     {"label": "beta rerun", "at": "b"}, {"label": "other", "at": "c"}]}
+    got = jd.bar_colors(spec, ["asked", "Alpha web", "beta rerun", "other"], {"alpha": "violet", "beta": "magenta"})
+    assert got == [jd.PALETTE["grey"], jd.PALETTE["violet"], jd.PALETTE["magenta"], jd.PALETTE["blue"]]
+    assert jd.bar_colors({"color": "aqua", "colors": {"none": "grey"}}, ["Alpha url", "none"], {"alpha": "violet"}) \
+        == [jd.PALETTE["aqua"], jd.PALETTE["grey"]]          # one source's chart keeps its own hue
+    assert "#3b3b3b" not in job_ladder.Path(job_ladder.__file__).read_text()
+
+
+def test_in_and_out_show_each_path_exactly_red_when_missing(tmp_path):
+    """JL 261019: "could you also show the path for these data". An item {item, path} draws its path under it, broken
+    only after a slash, so its letters read exactly as on disk; a path not on this machine is red."""
+    job = tmp_path / "work" / "b01_x" / "j01_y"
+    job.mkdir(parents=True)
+    (tmp_path / "_WorkSpace" / "store" / "v1").mkdir(parents=True)
+    long = "_WorkSpace/store/v1/" + "/".join(f"part{i:02d}" for i in range(14))
+    assert job_ladder.path_text(long, 300, 22).replace("\n", "") == long
+    assert all(ln.endswith("/") for ln in job_ladder.path_text(long, 300, 22).split("\n")[:-1])
+    assert job_ladder.io_found("_WorkSpace/store/v1/", job) and not job_ladder.io_found("_WorkSpace/gone", job)
+    d = job_ladder.Drawing()
+    job_ladder.io_card(d, 0, 0, 1000, "📥 In", ["plain words", {"item": "the pool", "path": "_WorkSpace/store/v1"},
+                                                 {"item": "gone", "path": "_WorkSpace/gone"}], 14, job)
+    texts = {e["text"]: e["strokeColor"] for e in d.els if e["type"] == "text"}
+    assert texts["📂 _WorkSpace/store/v1"] == job_ladder.GREY
+    assert texts["❓ not on this machine: _WorkSpace/gone"] == job_ladder.RED
+    assert "· plain words" in texts
+
+
+def test_jobs_tasks_and_runs_keep_their_folder_names(tmp_path):
+    """JL 261019: "why the name here used is not the same as the task folder name or the run folder name? we don't
+    need to create the new named to add the cognitive burden to us". Every label is the folder name, exactly."""
+    job = job_with_results(tmp_path)
+    out = tmp_path / "out" / "j01.excalidraw"
+    out.parent.mkdir()
+    job_ladder.draw_job(job, out, dict(CFG))
+    words = [t["text"] for t in texts(out)]
+    assert any(w.startswith("🧱 j01_compare") for w in words)
+    assert any(w.startswith("🧩 t01_overlap") for w in words) and any(w.startswith("🧩 t02_order") for w in words)
+    assert any("r03_fixed" in w for w in words) and any("r01_tau" in w for w in words)
+    assert not any(" · " in w.split("\n")[0] and w.startswith(("🧩 t0", "🧱 j0")) for w in words)
+    assert any(w.startswith("📊 t01_overlap: results") for w in words)
+
+
+def test_a_run_card_says_its_input_and_output_on_one_line_each(tmp_path):
+    """JL 261019: "for this run, we might want to show briefly about its input and output". Read from its config's
+    _meta.input (else run.yaml reads:, the face's in:), its result/ for the output; a path keeps whole names."""
+    task = tmp_path / "t01_x"
+    (task / "scripts/config").mkdir(parents=True)
+    (task / "scripts/config/r06_fold2to9.yaml").write_text(
+        "_meta:\n  input: _WorkSpace/A-LLMRecPhy/1-CandidatePool/v2026-08/grid_folds.parquet\n")
+    res = task / "runs/r06_fold2to9/result"
+    res.mkdir(parents=True)
+    for f in ("metrics.json", "runtime.yaml"):
+        (res / f).write_text("{}")
+    r = {"name": "r06_fold2to9", "dir": str(res.parent), "result": res}
+    got = job_ladder.run_io(r, task, {}, "t01_x")
+    assert got[0] == "📥 in: …/1-CandidatePool/v2026-08/grid_folds.parquet"   # three whole names beat the root
+    assert got[1] == "📤 out: result/: metrics.json, runtime.yaml"
+    narrow = job_ladder.run_io(r, task, {}, "t01_x", width=640)
+    assert narrow[0].endswith("grid_folds.parquet") and "-" not in narrow[0].split("/")[-1][:-8]   # whole names
+    assert all(job_ladder.Drawing.measure(s, job_ladder.T_RUNS) <= 640 - 2 * job_ladder.PAD for s in narrow)
+    face = {"runs": {"t01_x/r06_fold2to9": {"in": "the fold02-09 query rows", "out": ["PlatformRank fold02-09"]}}}
+    assert job_ladder.run_io(r, task, face, "t01_x") == ["📥 in: the fold02-09 query rows",
+                                                          "📤 out: PlatformRank fold02-09"]
+    bare = {"name": "r07_none", "dir": str(tmp_path / "nowhere"), "result": tmp_path / "nowhere/result"}
+    assert job_ladder.run_io(bare, task, {}, "t01_x") == ["📥 in: not recorded", "📤 out: not recorded"]

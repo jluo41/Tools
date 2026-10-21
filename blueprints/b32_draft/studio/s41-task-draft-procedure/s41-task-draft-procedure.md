@@ -32,7 +32,8 @@ s41-task-draft-procedure/
 └── history/s21-draft-skill-map-261016/    the skill-map topic s21, folded in here on 2026-10-16
 ```
 
-Read from disk on every build: today's draft tabs (`DRAFT_TASK_SUBS` in `servers/workbench/frame.py`), B21's draft
+Read from disk on every build: the old draft tabs and the step each became (`OLD_SUBS` in
+`servers/workbench/workbench-task-draft/task_draft.py`), B21's draft
 version and sentence count (`b21_event_cgm/studio/s04-task21-updated-draft/draft/`), and b21 s05's canvas picture.
 
 ```yaml
@@ -70,21 +71,21 @@ map:
   loop: "Studio ⇄ plan, one loop"
   loop_to: 0
   loop_to_cell: 1
+- cells: [[5, "✍ Scratch", "§1's paragraphs", "§2: a note a paragraph"], [2, "scratch(notes)", "§2 · your notes", "§2 summed up", "haipipe-draft-logic ref/scratch.md"]]
+  text: "§2 Scratch"
 - step: "🔎 Evidence asks"
   screens: "⑨ · a side loop"
   cells: [[3, "cards(claims in §1)", "§1 Bullets · the Project's Runs", "a card a claim: have · ask a Job · ask a person · soften", "haipipe-evidence cards.py check · propose"], [5, "✍ Tick asks", "evidence/proposals.md", "a Run in its Job", "haipipe-task · -discovery"]]
   plan: "cards: ✅ have · 🔶 asked · ❓ person"
 - step: "✍️ Stage 2 · Write"
   screens: "⑥ ⑦"
-  cells: [[2, "scratch(§1)", "§1 · the Studio sketch", "§2 Scratch", "haipipe-draft-logic ref/scratch.md"]]
-  text: "§2 Scratch"
-- cells: [[2, "write(§2)", "§2 · the cards", "§3 v1.0 · red box where a card waits", "haipipe-draft-writing ref/writing.md"]]
+  cells: [[2, "write(§1, §2)", "§1 · its Scratch · the cards", "§3 v1.0 · red box where a card waits", "haipipe-draft-writing ref/writing.md"], [5, "type, in place", "§3, a box a paragraph", "your sentences, kept"]]
   text: "§3 Draft v1.0"
 - step: "🔎 Stage 3 · reader pass"
   screens: "⑧ ⑨"
   cells: [[3, "find(claims in §3)", "§3, read as a reader", "cards for claims the plan missed", "haipipe-evidence cards.py propose"], [5, "✍ Agree", "each new card", "bound, or asked as above"]]
   plan: "every card bound or asked"
-- step: "🔁 Stage 4 · Revise"
+- step: "🔁 Stage 5 · Revise"
   screens: "⑩ ⑪ ⑫"
   cells: [[2, "draw(Section)", "§3 · cards back from their Runs · R", "the Section canvas", "excalidraw-draft section_canvas.py"], [5, "notes, marks", "the canvas · chat", "your feedback"]]
   text: "canvas: ▓ changed words"
@@ -105,9 +106,13 @@ map:
   loop_to: 1
   loop_side: right
 today:
-  frame: "Ⓐ Today's draft tabs, and the step each becomes"
-  sub: "the 13 tabs a draft Task opens on today (read from frame.py), folded into the step tabs Studio · 1-4 · Delivery, named the same in Work and Report"
-  columns: ["Space", "tab today", "becomes"]
+  frame: "Ⓐ The draft tabs before 261020, and the step each became"
+  sub: "the 13 tabs a draft Task opened on until 2026-10-20, each with the step tab that took its place (read from task_draft.py's OLD_SUBS, which an old link follows); built 261020 (D29)"
+  columns: ["Space", "tab before", "became"]
+  spaces:
+    Description: [Scope, Plan, Requirement, Records]
+    Report: [Table, Reading, Questions]
+    Work: [Draft-Scratch, Draft-Revise, Evidence-Citation, Evidence-Display, Evidence-Value, Evidence-Supporting]
   map:
     Scope: "1 · Plan"
     Plan: "1 · Plan"
@@ -117,7 +122,7 @@ today:
     Reading: "2 · Write (its Result)"
     Questions: "Report (stays)"
     Draft-Scratch: "2 · Write"
-    Draft-Revise: "4 · Revise"
+    Draft-Revise: "5 · Revise"
     Evidence-Citation: "3 · Evidence"
     Evidence-Display: "3 · Evidence"
     Evidence-Value: "3 · Evidence"
@@ -188,11 +193,11 @@ folders:
   notes:
   - "🎨 Studio: one studio/ for Block, Job and Task; a Task's Studio tab shows the Block's sNN topics in its Job's group (s06 for C5), the same cards the Block's Studio shows"
   - "📤 Delivery: built into the Block's delivery/, under the Task's own path (delivery_dir: b/j/t → b/delivery/j/t); the Block's Delivery lists the same files"
-  - "❓ B21's j01 has no Task folder yet: <tNN> is the Section C2 Task to make (Open 4)"
+  - "❓ B21's j01 has no Task folder yet: <tNN> is the Section C2 Task to make (Open 1)"
 screen:
   task: "Task · 2.1 · C2"
   line: "Draft · Block b21 · Task 2.1 · Section C2 · Challenge and Significance"
-  tabs: ["Studio", "1 · Plan", "2 · Write", "3 · Evidence", "4 · Revise", "Delivery"]
+  tabs: ["Studio", "1 · Plan", "2 · Write", "3 · Evidence", "4 · Display", "5 · Revise", "Delivery"]
 tabs:
 - act: "Act 2 · Work › Studio"
   step_arrow: "Studio"
@@ -232,7 +237,7 @@ tabs:
     chip: "→ next"
     boxes:
     - title: "Input"
-      rows: {Task: "Task 2.1 · Gordon Gao", Section: "C2 · Challenge and Significance", Requirement: "the template: about 2 pages, 5 parts", Context: "records/<stem>-context.md"}
+      rows: {Task: "Task 2.1 · Gordon Gao", Section: "C2 · Challenge and Significance", Requirement: "the template: about 2 pages, 5 parts", Context: "records/<stem>-context.md", Scratch: "§2, your note under each paragraph, typed here"}
     prompt: "/haipipe-draft <task> structure: gather the context, write §1 Structure for C2, then stop for my Sign."
     mark: "copy it, run it in Claude or Codex"
     arrow: "the agent plans"
@@ -264,8 +269,8 @@ tabs:
     chip: "→ next"
     boxes:
     - title: "Input"
-      rows: {Plan: "§1, signed", Studio: "the logic sketch: P3 → P4 → P5", Rubric: "structure · purpose · evidence · readability", Writes: "§2 Scratch, then §3 Draft"}
-    prompt: "/haipipe-draft <task> write: scratch §2 from the plan, then write §3 for C2; mark claims you cannot support yet."
+      rows: {Plan: "§1, signed, and its Scratch", Studio: "the logic sketch: P3 → P4 → P5", Rubric: "structure · purpose · evidence · readability", Writes: "§3 Draft, keeping the sentences you typed"}
+    prompt: "/haipipe-draft <task> write: redraft C2 from my notes, its Scratch and §1; keep every sentence I typed; mark claims you cannot support yet."
     mark: "copy it, run it in Claude or Codex"
     arrow: "the agent writes"
   - title: "⑦ Work › 2 · Write · 2 of 2: the logic and the text, on the canvas"
@@ -295,13 +300,13 @@ tabs:
     fills: [0.005, 0.68]
     fills_label: "3 · Evidence: the cards along the bottom"
     mark: "each card is one topic: CITE = a discovery Task (papers, and the values they report), WORK = a work Task (our Runs' values and figures); each item tagged S5; red = still needed; Agree binds each Result"
-- act: "Act 6 · Work › Stage 4 · Revise"
+- act: "Act 6 · Work › Stage 5 · Revise"
   step_arrow: "Stage 4"
   key: "Pass by pass on the Section canvas: your notes go in with the prompt, the agent writes Revise cards (why, original, expected), the canvas is rebuilt, you accept each card. Quick by default; the full rubric only on ask."
   states:
-  - title: "⑩ Work › 4 · Revise · 1 of 3: your notes on the Section"
+  - title: "⑩ Work › 5 · Revise · 1 of 3: your notes on the Section"
     skills: [{side: left, skill: "haipipe-draft-writing", note: "reads your notes, proposes Revise cards"}, {side: right, skill: "you", note: "your notes and sketches"}]
-    tab: "4 · Revise"
+    tab: "5 · Revise"
     step: "🔁 Stage 4 · pass k"
     chip: "→ next"
     boxes:
@@ -311,18 +316,18 @@ tabs:
     prompt: "/haipipe-draft <task> revise: read my notes on C2, write Revise cards (why, original, expected), rebuild the canvas."
     mark: "copy it with your notes, run it"
     arrow: "the agent proposes"
-  - title: "⑪ Work › 4 · Revise · 2 of 3: Revise cards on the canvas"
+  - title: "⑪ Work › 5 · Revise · 2 of 3: Revise cards on the canvas"
     skills: [{side: left, skill: "haipipe-draft-writing", note: "Revise cards: why, original, expected; or auto revise: rounds until good, big decisions held for you"}, {side: right, skill: "haipipe-draft-review", note: "judges each change; never the writer"}]
     shot: "examples-0-cowork/Project-SHIFT-Study/cowork/b21_event_cgm/studio/s05-paragraph-editing-master/s05-paragraph-editing-master.png"
     fills: [0.70, 0.995]
-    fills_label: "4 · Revise: the upper boxes"
+    fills_label: "5 · Revise: the upper boxes"
     mark: "one editing unit, P3-P5: left, the old PDF over the logic · middle, one wide text card · right, the Revise box (Edit, Review, Section question), small cards as stairs, a line from each sentence · bottom, every Evidence card once, its words boxed in the text with the card name beside them"
-    open: "❓ Open 1: the Revise cards live in s05's face today, not in draft/"
+    open: "❓ b21 s05 keeps its Revise cards in its face; a draft Task's are draft/records/<stem>-revise.md (D29)"
     arrow: "you accept"
-  - title: "⑫ Work › 4 · Revise · 3 of 3: accept each card"
+  - title: "⑫ Work › 5 · Revise · 3 of 3: accept each card"
     skills: [{side: left, skill: "haipipe-draft-writing", note: "writes the accepted sentence into draft/"}, {side: right, skill: "you", note: "accept or reject each card"}]
-    tab: "4 · Revise"
-    step: "🔁 Stage 4 · Revise cards"
+    tab: "5 · Revise"
+    step: "🔁 Stage 5 · Revise cards"
     chip: "✍ accept"
     boxes:
     - title: "Edit · S1 · split into three sentences"
@@ -407,7 +412,7 @@ s41-D01 · A draft Task gets one procedure topic, drawn the way b15 s42 draws th
     can try to follow this").
 s41-D02 · The worked example is SHIFT Task 2.1, Section C2, and its canvas is b21 s05 as it stands; the drawing reads
     both from disk (JL 261015, asked after reading the Codex thread "SHIFT · Event CGM").
-s41-D03 · The step tabs are Studio, 1 · Plan, 2 · Evidence, 3 · Write, 4 · Revise, then Delivery: the Studio (talk and
+s41-D03 · The step tabs are Studio, 1 · Plan, 2 · Evidence, 3 · Write, 5 · Revise, then Delivery: the Studio (talk and
     sketch the argument) comes before the plan, and Delivery is the last tab (JL 261015: "we should also add Studio
     before the plan, So it is the Studio, 1, Plan, ..... and Delivery as the last one").
 s41-D04 · The Task's Studio tab is the Block's own Studio topic for this Task, `<block>/studio/sNN-<topic>/`, and its
@@ -416,7 +421,7 @@ s41-D04 · The Task's Studio tab is the Block's own Studio topic for this Task, 
     tNN for it, they are the same folder, and the Delivery will also be the same Delivery in the block level delivery").
 s41-D05 · Write comes before Evidence: the evidence agent reads the written Section as a reader and puts an Evidence card on
     each claim that needs support, as Codex did on B21 C2 (CITE 1 for S1). The step tabs are Studio, 1 · Plan, 2 · Write,
-    3 · Evidence, 4 · Revise, Delivery. Each step's Result is the same Section canvas from that session, filled one
+    3 · Evidence, 4 · Display, 5 · Revise, Delivery. Each step's Result is the same Section canvas from that session, filled one
     column at a time: logic (Studio, Plan), text (Write), evidence (Evidence), edits (Revise) (JL 261015: "we might
     first need the Write, and then need the Evidence, and then need the revise?"; "I think we might want the good UI
     to follow what we discussed in the codex session of SHIFT · Event CGM").
@@ -564,7 +569,7 @@ s41-D26 · Write is a first draft, not a finished text (JL 261019: "这个 Write
     Studio shows `draft/` §3 drawn on the Section canvas, to read and mark; the 2 · Write tab shows the same §2 and §3 as
     a page to type in, one paragraph under its plan line, no rule checks while writing. The evidence agent watches
     the text and proposes cards in the margin next to the sentence (proposed, not bound); you may ignore them. The
-    writing rules (haipipe-draft-review plain-rules) apply in 4 · Revise.
+    writing rules (haipipe-draft-review plain-rules) apply in 5 · Revise.
 s41-D27 · Every delivery item names the one OneDrive file it goes to (JL 261019: "每个 delivery 我们都要 point to 它
     具体要到 OneDrive 的哪个地方"). Today the Block names only its OneDrive folders (`onedrive:` in board.md) and each
     file's place sits inside a Block script (b21 word_versions.py) or a delivery.md row's words. Proposed: one row per
@@ -580,14 +585,57 @@ s41-D28 · The canvas and the step tabs are two views of the same files, kept in
     becomes a feedback record that haipipe-draft-writing or -logic turns into Revise cards or a §1 change (an agent);
     then the canvas is rebuilt from the files. Opening a canvas older than its files rebuilds it first.
 
+s41-D29 · The step tabs are built (2026-10-20; JL 261020, on the LLMRec abstract's Work: "I think we need to make
+    this as what we exected to see"; then "Update the /haipipe-paper and /haipipe-draft and then apply it to" the
+    version's Work). `servers/workbench/workbench-task-draft/draft_steps.py` draws the seven tabs, each Operation over
+    Result, read from the Task's files on every open and writing none; `task_draft.py` lays them in Work and, Results
+    only, in Report beside Table and Questions. Description is the face alone; its Plan, Requirement and Records are
+    cards of 1 · Plan (settles Open 3). Revise cards live in `draft/records/<stem>-revise.md` (settles Open 1). A person's
+    own words go in through the Page's Revise boxes, embedded in 2 · Write and 5 · Revise (JL 261020: "How could I write
+    my own changes?"; "it is kind of hard to me to modify the content, right?"). A Job's Work shows each Task's six
+    chips, a click each into that tab. An old link follows `OLD_SUBS`; haipipe-draft 0.135.0 and haipipe-paper 1.15.0
+    teach the steps and their verbs.
+
+s41-D30 · Scratch is planning, so it is typed in 1 · Plan, a note under each paragraph (`## 2 · Scratch`, the Page's
+    Scratch view embedded), and 2 · Write drafts `## 3 · Draft` from §1 and its Scratch, keeping every sentence the person
+    typed (JL 261020: "for the scratch, it doesnt work anymore"; "I think we should move the scratch here"). The person's
+    own words go in without a form: a paragraph box has no frame, saves when left or on Cmd+Enter, and Esc puts back what
+    it held (JL 261020: "i don't like the box, could you remove it?"; of Why · Reset · Save: "We might don't need this as
+    well"). A box holds the paragraph one sentence a row, a long one wrapping inside its row ("howto make this each
+    sentence a row?"), typed freely; on save each Bullet takes the sentences that read most like its old
+    Draft (JL 261020: "How could we make the editing to be more easier and free style here?"). Report shows the prompts
+    of 1 · Plan, 2 · Write and 5 · Revise ("for the plan here, I cannot see the input").
+    Built by the Paper-LLMRecPhy-Quick session on JL's asks, 261020.
+s41-D31 · Revise works in passes, and each pass starts as the reviewer. A pass is one run's new cards, `## Pass <k> ·
+    <date> · on draft v<N>` in `draft/records/<stem>-revise.md`; 5 · Revise shows the text, then the passes newest first
+    (each card old → new, a Section question as now and proposed), then the canvas (JL 261020: "between these two, you
+    should also add a new one about the Revision card, everytime to run you will have many things new"). The prompt first
+    asks the agent to say who it reviews as (the venue's reviewer), what it looks for and how, so structure comes before
+    sentences: a draft that is wrong as a whole becomes a Section question that sends it back to 1 · Plan (JL 261020:
+    "I just fell this draft is totally bad, it should have more paragraphs"; "think about yourself，就是你是一个什么样的
+    reviewer").
+s41-D32 · A Revise card is acted on where it is shown (JL 261020: "你这个 card 也不怎么交互啊，我想要那种可以交互的感觉"):
+    ✓ Accept, ✗ Reject, ✎ Edit (type the Expected words in place) and ↺ Undo, without a reload. A click writes only that
+    card's `State:` (with its time) or `Expected:` into the cards file, and is refused when the card changed on disk since
+    the page showed it. The text is untouched until the pass's "apply the accepted cards" prompt writes them as the next
+    version (settles Open 1, "What Accept writes": the card's state; the version comes with apply).
+s41-D33 · The cards file keeps one pass, the latest; a Revise run rewrites it, carrying over the undecided cards that are
+    still true, and older passes live in git (replaces D31's passes newest first; JL 261020: "we just need one of it ...
+    always keep the latest version"). A card has no box, only the thin line on its left (JL 261020, of the card borders:
+    "I don't want this"). Built by the Paper-LLMRecPhy-Quick session.
+s41-D35 · Revise reads as the text and its cards side by side (JL 261020: "How do you think we can merge them together, one
+    in the left, and one in the right? so we can link to the original text as well"): the text on the left stays in view,
+    each card on the right sits beside its sentence and lights it on hover. Each item is its own card ("I still want each
+    of them to have a card"); a paragraph-plan question is a table, now against proposed ("You can make it like the
+    table?"); a change over several sentences is a row per sentence, a sentence folded into another shown struck "→ into
+    S6" ("I think this should be sentence by sentence"). The Section canvas may hold, beside ours, how other papers open
+    the same Section, read in a reading topic (excalidraw-draft `examples:`; "In the canvas, could you add other paper's
+    introduction as well?"); first on LLMRec s22 from s26.
+
 
 Open
 ----
 
-1. Where the Revise cards live: `draft/records/<stem>-revise.md` (proposed: then Chat, the workbench and the canvas read
-   one file) or a Studio face, as b21 s05 keeps them today.
-2. What Accept writes: only the sentence into §3, or also a new draft version with the old one in `previous/`.
-3. Today's 13 tabs fold into the step tabs (Ⓐ): Table and Questions stay in Report; is Records a card under Plan?
-4. B21's draft sits under `studio/s04-task21-updated-draft/draft/`, not under a Task; a draft Task owns its `draft/`.
+1. B21's draft sits under `studio/s04-task21-updated-draft/draft/`, not under a Task; a draft Task owns its `draft/`.
 
 (write here, or mark the drawing in red)

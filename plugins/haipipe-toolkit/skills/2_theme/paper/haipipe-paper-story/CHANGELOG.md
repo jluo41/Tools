@@ -1,3 +1,26 @@
+## 0.24.0 · 2026-10-19 · The plan after the story: s03 data flow, s04 paper flow
+
+- The workflow drawing becomes the plan, two topics owned by the new `haipipe-paper-plan` (JL 261019: "plan for the
+  data flow and plan for the paper flow"; "please think about to make the s03 to be the paper-dataflow, and s04 to be
+  the s04-paper-workflow"): `s03-paper-dataflow` draws how the data flows through §7's rows to each question, and
+  `s04-paper-workflow` plans the Sections, displays and dates before a version exists and seeds its `## Narrative`.
+- §7's rows and every question stay on the story's face; the plan reads them, never copies them.
+
+## 0.23.0 · 2026-10-19 · Questions read as plain speech; a quick paper is its own Board
+
+- Each research question is one long, plain sentence a reader could ask out loud, not a short label; a factor
+  question is followed by its plain consequence ("..., and is the result fair to doctors?") (JL 261019: "你不能太简短，
+  你要说得像人话 ... 比较长，然后比较 straightforward、比较易懂的").
+- Two papers from one study are two Boards: a quick, short paper lists only the questions already answered on disk and
+  never takes the long paper's headline (JL 261019: "for this one, we want to make it quick and most short"; "we don't
+  need to list all of them"). First: Project-LLMRec-Physician's `Paper-LLMRecPhy-Quick` (since 261019 2154 the JAMA
+  Network Open article) and its MIS Quarterly companion on a Board of its own.
+- The question block template now carries the fields the faces and excalidraw-story use: `Research question` (the
+  long sentence, its sub-questions as `(RQ1a: …)`), `Why it matters` (was `Why the paper needs it`; the workbench reads
+  any `Why…` field) and `If answered`. §3 names the `**The narrative, if the questions are answered**`, `**G0:**`,
+  `**Desk:**` and `**We will not claim**:` labels; §7 names the short `| T | work | where | state | starts |` table a
+  drawn telling keeps; the §9 Venues paragraph moved from §3 to the end of §7. A fresh-agent test found each gap.
+
 ## 0.22.0 · 2026-10-19 · The story is its questions, drawn by excalidraw-story
 
 - The story is the list of research questions it answers, and read in order the questions are its narrative (JL
@@ -6,8 +29,10 @@
 - A telling's first drawing is the new `excalidraw-story`: each question a step, beside it the answer so far, its
   claim, its E and T rows and their marks; the pitch, what we will not claim, the Runs still to make. The workflow
   drawing (excalidraw-workflow) is the second.
+- The telling's face keeps §9 · Venues, its venue list from the target to the fallbacks, each row linking to its
+  haipipe-paper-venue desk record (JL 261019: "我们要不要把这个 venue 直接塞到这个 story 里面去？ ... 也要想想它适合什么样的 journal，然后搞出来一个 journal list or conference list").
 - A telling may open before G0 (JL 261019: "there are not s02, why????"); G0 is JL's mark on its face. First user:
-  Paper-LLMRecPhy `studio/s02-story-misq-agent-physician-visibility/`.
+  `studio/s02-story-misq-agent-physician-visibility/`, then on Paper-LLMRecPhy-Quick, since 261019 on the MIS Quarterly Board.
 
 ## 0.21.0 · 2026-10-14 · The workflow drawing is excalidraw-workflow's
 

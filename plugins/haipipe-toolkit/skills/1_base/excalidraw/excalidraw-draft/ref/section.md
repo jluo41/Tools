@@ -25,6 +25,7 @@ canvas:
   section: C2                                              # or paragraphs: [C2.P3, C2.P4]
   pages: {render: ../../delivery/render, name: "Task 2.1 - Gordon Gao-draft-JL", pick: [2]}
   evidence: ../s04-task21-updated-draft/evidence/cards.yaml
+  examples: ../sNN-<a reading topic>    optional: other papers' openings of this Section, a frame beside ours
   title: "Task 2.1 · Section C2 · Challenge and Significance"
 ```
 
@@ -38,7 +39,7 @@ canvas:
 |---|---|---|
 | sentences, paragraphs, their plan | `draft_folder`: `## 3 · Draft` and `## 1 · Structure` | haipipe-draft-writing, haipipe-draft-logic |
 | the file today | `pages`: the newest `render/<name>-v<N>/p-<k>.png` | haipipe-delivery `word_round.py render` |
-| evidence cards | `evidence`: cards.yaml; blue CITE, violet WORK, red needed | haipipe-evidence |
+| evidence cards | `evidence`: cards.yaml; blue CITE, violet VALUE, red needed | haipipe-evidence |
 | comments and replies, change cards, asks | a revise plan: `plan_face`, `plan_key`, `part` | Revise mode (`ref/revise-spec.md`) |
 
 A card is drawn only when it backs a sentence of this Section; a comment or ask whose words left the text is shown

@@ -191,7 +191,11 @@ class LevelPatternTest(unittest.TestCase):
 
 class PageTaskTest(unittest.TestCase):
     # A Page Task on the frame (task_draft.draft_task_spaces, b03 s13 / b16 s13): the Page's own views, embedded.
-    def test_a_page_task_opens_the_pages_views_in_the_six_spaces(self):
+    def test_a_draft_task_opens_the_seven_step_tabs(self):
+        # b32 s41 (JL 261015, 4 · Display JL 261020): Work is Studio · 1 · Plan · 2 · Write · 3 · Evidence · 4 · Display ·
+        # 5 · Revise · Delivery, each
+        # Operation over Result read from the Task's files; Report has the same tabs, Results only, plus Table and
+        # Questions; Description is the face alone; Runs and Delivery keep the Page's own views
         from urllib.parse import parse_qs, urlparse
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -199,11 +203,39 @@ class PageTaskTest(unittest.TestCase):
             section = board / "Ba-Desk-Main/S-Desk-Main-1-Intro"
             (section / "draft" / "records").mkdir(parents=True)
             (board / "board.md").write_text("# Paper\n\ndialect: paper\n")
-            (section / "S-Desk-Main-1-Intro.md").write_text("# Intro\n")
+            (section / "S-Desk-Main-1-Intro.md").write_text("# S-Desk-Main-1-Intro · Intro\n\nreader-question: Why now?\n")
             (section / "draft" / "records" / "S-Desk-Main-1-Intro-requirement.md").write_text("V1 · at most 900 words\n")
             spaces = task_draft.draft_task_spaces(section, root)
             self.assertEqual({k: v.subspaces for k, v in spaces.items()}, task_draft.DRAFT_TASK_SUBS)
-            src = re.search(r'src="([^"]+)"', spaces["Audience Report"].html).group(1)
+            self.assertEqual(spaces["Work Details"].subspaces, ("Studio", "1 · Plan", "2 · Write", "3 · Evidence",
+                                                                "4 · Display", "5 · Revise", "Delivery"))
+            work = spaces["Work Details"]
+            self.assertEqual(work.open, "1 · Plan")                              # nothing written: the plan is next
+            self.assertIn("Operation", work.html)
+            self.assertIn("Result", work.html)
+            self.assertIn("/haipipe-draft ", work.html)                          # the prompt, with its notes box
+            self.assertIn("user feedback:", work.html)
+            self.assertIn("Why now?", work.html)                                # Input, read from the face
+            self.assertIn("at most 900 words", work.html)                       # the Requirement, a card of 1 · Plan
+            self.assertIn("Rubric", work.html)
+            self.assertEqual(spaces["Audience Report"].open, "1 · Plan")
+            self.assertNotIn("Operation", spaces["Audience Report"].html)        # Report: the Results only
+            self.assertEqual(spaces["Description"].html, "")                    # the vanilla face and fields
+            # a draft with §1 waits for the Sign; once written, Write is done and Revise is next
+            (section / "draft" / "S-Desk-Main-1-Intro-draft-v0.1.md").write_text(
+                "# Intro · draft v0.1\n\napproved: ⬜\n\n## 1 · Structure\n\n### C1.P1 · Why now\n"
+                "- B1 · S1 · [Need] The problem grows\n\n## 3 · Draft\n\n### C1.P1 · Why now\n"
+                "- B1 · S1 · The problem grows ⟦pending⟧.\n")
+            states = task_draft.draft_task_spaces(section, root)["Work Details"]
+            self.assertEqual(states.open, "1 · Plan")
+            self.assertIn("✍ sign", states.html)
+            write = task_draft.draft_task_spaces(section, root, "2 · Write")["Work Details"]
+            self.assertIn("The problem grows", write.html)
+            self.assertIn("⟦pending⟧", write.html)
+            self.assertEqual(task_draft.draft_task_spaces(section, root, "Draft-Scratch")["Work Details"].open,
+                             "2 · Write")                                       # an old link lands on its step
+            table = task_draft.draft_task_spaces(section, root, "Table")["Audience Report"]
+            src = re.search(r'src="([^"]+)"', table.html).group(1)
             q = parse_qs(urlparse(src.replace("&amp;", "&")).query)
             self.assertEqual(urlparse(src).path, "/_board/draft")
             self.assertEqual((q["path"][0], q["file"][0], q["embed"][0], q["space"][0], q["view"][0]),
@@ -225,19 +257,115 @@ class PageTaskTest(unittest.TestCase):
             self.assertIn("not built yet: run Build", deliv.html)                # Word, Web … not built
             self.assertEqual([k["label"] for k in deliv.run_types], ["run-delivery-<target>", "run-check-<page>"])
             self.assertTrue(all(isinstance(x, str) and not x.startswith("[") for k in deliv.run_types for x in k["skills"]))
+            step = task_draft.draft_task_spaces(section, root, "Delivery")["Work Details"]   # the Delivery step: 4 boxes
+            self.assertIn("1 of 4 · build", step.html)
+            self.assertIn("4 of 4 · read back", step.html)
             merged = frame.spaces_for(frame.Theme(name="paper", spaces=lambda *a: task_draft.draft_task_spaces(section, root)),
                                       "Task", section, root)["Delivery"]
             self.assertEqual((merged.subspaces, [k["label"] for k in merged.run_types]),
                              ((), ["run-delivery-<target>", "run-check-<page>"]))
-            self.assertIn("tab=supporting", task_draft.draft_task_spaces(section, root, "Evidence-Supporting")["Work Details"].html)
-            self.assertIn("at most 900 words", task_draft.draft_task_spaces(section, root, "Requirement")["Description"].html)
-            self.assertIn("-requirement.md", task_draft.draft_task_spaces(section, root, "Records")["Description"].html)
-            self.assertIn("No plan yet", task_draft.draft_task_spaces(section, root, "Plan")["Description"].html)
-            self.assertEqual(spaces["Description"].html, "")              # Scope: the vanilla face and fields
 
-    def test_a_page_task_reads_in_the_audience_report_and_works_in_work_details(self):
-        # b16 s13 Decided 4-5 (JL 261007): Table and Reading carry no run types; Questions asks and
-        # answers; each Work Details view has its own run cards; Requirement carries the rubric
+    def test_the_plan_is_one_mind_map_of_section_one(self):
+        # JL 261020: "merge them together ... draw the mind map for the plan": the Section and its arc in the middle,
+        # each part (when there are several), each paragraph with the question it hands on, each Bullet a leaf
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            board = root / "Project-X/paper/Paper-Demo"
+            section = board / "Ba-Desk-Main/S-Desk-Main-2-Methods"
+            (section / "draft").mkdir(parents=True)
+            (board / "board.md").write_text("# Paper\n\ndialect: paper\n")
+            (section / "S-Desk-Main-2-Methods.md").write_text("# S-Desk-Main-2-Methods · Methods\n")
+            (section / "draft" / "S-Desk-Main-2-Methods-draft-v0.1.md").write_text(
+                "# Methods · draft v0.1\n\napproved: ⬜\narc: Design first, then the data.\n\n## 1 · Structure\n\n"
+                "### Structure Overview\n\n- C1 · Study Design\n- C1.P1 · The design\n  → S1 · cross-sectional\n"
+                "  → C2.P2: what is a query?\n- C2 · Queries\n- C2.P2 · The queries\n  → S2 · the unit\n\n"
+                "### C1.P1 · The design\n- B1 · S1 · [Design] A cross-sectional comparison\n"
+                "  Note: the review board ⟦check⟧\n\n### C2.P2 · The queries\n- B1 · S2 · [Unit] A query is 1 specialty\n")
+            html = task_draft.draft_task_spaces(section, root, "1 · Plan")["Work Details"].html
+            self.assertIn('class=pm>', html)
+            self.assertNotIn("Bullets, one job each", html)                    # merged into the one map
+            self.assertIn("Design first, then the data.", html)                 # the arc, in the middle
+            self.assertEqual(html.count('class="pm-node pm-cnode"'), 2)         # two parts: C1, C2
+            self.assertIn('data-raw="what is a query?"', html)                 # the hand-on, on the arrow (↓ in CSS)
+            self.assertIn('<li data-s="S1" title="the review board ⟦check⟧">', html)
+            self.assertIn("pm-flag", html)                                      # the ⟦check⟧ in its note, in red
+            self.assertIn("A query is 1 specialty", html)
+            # JL 261020: "how could I operate and edit it?": each piece typed into in place, written into §1
+            from live import draft_steps
+            self.assertIn('data-edit=words data-raw="A cross-sectional comparison"', html)
+            self.assertIn('data-edit=role data-raw="Unit"', html)
+            draft = section / "draft" / "S-Desk-Main-2-Methods-draft-v0.1.md"
+            act = lambda **p: draft_steps.plan_act(root, {"task": "Project-X/paper/Paper-Demo/Ba-Desk-Main/"
+                                                           "S-Desk-Main-2-Methods", "file": draft.name, **p})
+            self.assertEqual(act(what="words", s="S2", was="A query is 1 specialty", value="A query is 1 city")[0], 200)
+            self.assertIn("- B1 · S2 · [Unit] A query is 1 city\n", draft.read_text())
+            self.assertEqual(act(what="words", s="S2", was="A query is 1 specialty", value="x")[0], 409)   # stale
+            self.assertEqual(act(what="para", p="C1.P1", was="The design", value="The study design")[0], 200)
+            self.assertIn("- C1.P1 · The study design\n", draft.read_text())
+            self.assertIn("### C1.P1 · The study design\n", draft.read_text())
+            self.assertEqual(act(what="add", after="S1", value="Two arms", role="Arms")[0], 200)
+            self.assertIn("  Note: the review board ⟦check⟧\n- B2 · S1a · [Arms] Two arms\n", draft.read_text())
+            self.assertEqual(act(what="move", s="S1a", p="C2.P2")[0], 200)
+            self.assertIn("[Unit] A query is 1 city\n- B2 · S1a · [Arms] Two arms\n", draft.read_text())
+            self.assertEqual(act(what="drop", s="S1a", was="Two arms")[0], 200)
+            self.assertNotIn("Two arms", draft.read_text())
+            self.assertEqual(draft_steps.plan_act(root, {"task": "Project-X"}, read_only=True)[0], 403)
+            # JL 261020: "How could I add the P here or add the S here?": ＋ point under each paragraph's points,
+            # ＋ paragraph after each paragraph; the paragraphs after a new one move down a number everywhere
+            self.assertEqual(html.count("data-add=point"), 2)
+            self.assertEqual(html.count("data-add=para "), 2)
+            self.assertEqual(act(what="add", after="S2", p="C2.P2", value="Last in P2")[0], 200)
+            self.assertIn("- B2 · S2a · Last in P2", draft.read_text())
+            self.assertEqual(act(what="addpara", after="C1.P1", value="The setting")[0], 200)
+            text = draft.read_text()
+            self.assertIn("- C1.P1 · The study design\n  → S1 · cross-sectional\n- C1.P2 · The setting\n"
+                          "  → C2.P3: what is a query?\n", text)                # it takes over the hand-on
+            self.assertIn("### C1.P2 · The setting\n\n### C2.P3 · The queries\n", text)
+            self.assertEqual(act(what="add", after="", p="C1.P2", value="Where it ran")[0], 200)   # its first point
+            self.assertIn("### C1.P2 · The setting\n- B1 · S1a · Where it ran\n", draft.read_text())
+            self.assertEqual(act(what="ask", p="C1.P1", was="", value="where was it run?")[0], 200)
+            self.assertIn("  → S1 · cross-sectional\n  → C1.P2: where was it run?\n", draft.read_text())
+            # a newer draft written under an open page (JL 261020: "why the content is not saved here?"): a change of
+            # words still lands, in the newest draft, checked by its old words; a change placed by S ids is refused
+            newer = section / "draft" / "S-Desk-Main-2-Methods-draft-v0.2.md"
+            newer.write_text(draft.read_text())
+            code, reply = act(what="para", p="C1.P1", was="The study design", value="The design")
+            self.assertEqual((code, reply["file"]), (200, newer.name))
+            self.assertIn("### C1.P1 · The design\n", newer.read_text())
+            self.assertEqual(act(what="add", after="S1", p="C1.P1", value="x")[0], 409)
+            newer.unlink()
+            # JL 261020: "这里可不可以找一些 examples?" then "here I will expect it to be a frame of the sNN studio": no
+            # example yet gives the prompt that finds them; a Studio topic naming the Task with reads/<pNN>/reading.yaml
+            # opens as a frame onto its own drawing, and the rubric sets each paper's paragraphs beside ours
+            self.assertIn("Copy prompt · find examples", html)
+            topic = board / "studio" / "s26-methods-examples"
+            (topic / "reads" / "p01-lee2025").mkdir(parents=True)
+            (topic / "s26-methods-examples.md").write_text(
+                "s26 · Methods examples (Ba-Desk-Main/S-Desk-Main-2-Methods)\n\n```yaml\nrelated:\n  papers:\n"
+                "  - id: p01\n    item: Lee et al. 2025\n```\n")
+            (topic / "s26-methods-examples.excalidraw").write_text('{"type": "excalidraw", "elements": []}')
+            (topic / "reads" / "p01-lee2025" / "reading.yaml").write_text(
+                "section:\n  name: Methods\n  key:\n  - 2 paragraphs · about 300 words\n"
+                "logic:\n- role: method\n  text: 'P1 · Design first'\n  how:\n  - 'Size: about 120 words'\n")
+            html = task_draft.draft_task_spaces(section, root, "1 · Plan")["Work Details"].html
+            self.assertIn("📚 Examples · how 1 published papers write their Methods", html)
+            self.assertIn('class=st-frame title="s26-methods-examples" data-src="/_excalidraw/?board=', html)
+            self.assertIn("Lee et al. 2025", html)                               # the rubric's column
+            self.assertIn("Design first", html)                                  # its paragraph, beside ours
+            # JL 261020: "every time I copy it, and I paste it to any session, it will trigger that session to work":
+            # a Copy prompt ends with the Task's session (its face's `session:`, else its Job's)
+            # JL 261020: one session per Task, shared by its steps, named for it ("j01jamaim-full-t01-intro"), never
+            # its Job's; started under that name when it is not running yet
+            self.assertIn('data-tail="Run this in the Claude session &quot;Paper-Demo: Ba-Desk-Main-S-Desk-Main-2-Methods'
+                          '&quot;; start it if it is not running."', html)
+            (section / "S-Desk-Main-2-Methods.md").write_text("# S-Desk-Main-2-Methods · Methods\n\nsession: Sec-Methods\n")
+            html = task_draft.draft_task_spaces(section, root, "1 · Plan")["Work Details"].html
+            self.assertIn('data-tail="Run this in the Claude session &quot;Sec-Methods&quot;; start it if it is not '
+                          'running."', html)
+
+    def test_each_step_tab_carries_its_own_runs(self):
+        # b16 s13 Decided 4-5 (JL 261007), then b32 s41: the Report's tabs are for reading and carry no run types;
+        # Questions asks and answers; each Work step has its own run cards
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             board = root / "Project-X/paper/Paper-Demo"
@@ -252,19 +380,116 @@ class PageTaskTest(unittest.TestCase):
                 spaces = json.loads(frame.frame_json(theme, root, section, sub))["spaces"]
                 return next(s["run_types"] for s in spaces if s["name"] == space)
             self.assertEqual(runs("Table", "Audience Report"), [])
-            self.assertEqual(runs("Reading", "Audience Report"), [])
+            self.assertEqual(runs("2 · Write", "Audience Report"), [])
             page = frame.render(theme, root, section, "Audience Report", "Table")
             self.assertNotIn("read only: its content is changed", page)   # no note in the Runs panel (JL 261008)
             self.assertEqual(runs("Questions", "Audience Report"), ["run-ask-<qNN>", "run-report-<qNN>"])   # named by its Run
-            self.assertEqual(runs("Draft-Scratch", "Work Details"),
-                             ["run-scratch-<target>", "run-structure-<slug>", "run-<value|display|citation>-<slug>"])
-            self.assertEqual(runs("Draft-Revise", "Work Details"),
-                             ["run-section-<slug>", "run-paragraph-<slug>", "run-revise-<target>", "run-section-<slug>"])
-            self.assertEqual(runs("Evidence-Citation", "Work Details"), ["run-citation-<slug>"])
-            self.assertEqual([r.split("-")[:2] for r in runs("Scope", "Description")], [["run", "face"]])
+            self.assertEqual(runs("Studio", "Work Details"), ["run-draw-<sNN>"])
+            self.assertEqual(runs("1 · Plan", "Work Details"), ["run-structure-<slug>"])
+            self.assertEqual(runs("2 · Write", "Work Details"), ["run-scratch-<target>", "run-section-<slug>"])
+            self.assertEqual(runs("4 · Display", "Work Details"), ["run-display-<slug>"])
+            self.assertEqual(runs("5 · Revise", "Work Details"),
+                             ["run-section-<slug>", "run-paragraph-<slug>", "run-revise-<target>"])
+            self.assertIn("run-citation-<slug>", runs("3 · Evidence", "Work Details"))
+            self.assertEqual([r.split("-")[:2] for r in runs("", "Description")], [["run", "face"]])
             spaces = frame.spaces_for(theme, "Task", section, root, "Questions")
             self.assertIn("Why this order?", spaces["Audience Report"].html)
-            self.assertIn("Rubric", task_draft.draft_task_spaces(section, root, "Requirement")["Description"].html)
+            self.assertIn("Rubric", task_draft.draft_task_spaces(section, root, "1 · Plan")["Work Details"].html)
+
+    def test_the_evidence_step_lists_every_open_point_beside_its_sentence(self):
+        # JL 261021 ("我们的 evidence 该怎么把这些不确定的 ... 都加上去"): each ⟦…⟧ in §3 and each §1 point with
+        # `Evidence: none` is an OPEN <n> row beside its sentence, card or no card, and all of them in one fold
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            task = root / "Project-X/work/b01_topic/j01_job/t01_intro"
+            (task / "draft").mkdir(parents=True)
+            (task / "t01_intro.md").write_text("# t01_intro · Intro\n\nfolder-kind: task\ntask-type: draft\n")
+            (task / "draft" / "t01_intro-draft-v0.1.md").write_text(
+                "# Intro · draft v0.1\n\napproved: ✅\n\n## 1 · Structure\n\n### C1.P1 · Why\n- B1 · S1 · [Stakes] Why\n"
+                "  Evidence: none · paper-owned reasoning, hedged\n- B2 · S2 · [Uptake] How many\n\n"
+                "## 3 · Draft\n\n### C1.P1 · Why\n- B1 · S1 · It may matter.\n"
+                "- B2 · S2 · About 1 in 6 adults ⟦check: KFF poll, 2024⟧ ask, ⟦pending T4: ⟦x⟧ times chance⟧.\n")
+            html = task_draft.draft_task_spaces(task, root, "3 · Evidence")["Work Details"].html
+            self.assertIn("OPEN 1</b></td><td style=\"width:1%;padding:5px 8px 5px 0\">⚪", html)    # S1: no evidence
+            self.assertIn("to check</span> · <span class=mut>KFF poll, 2024", html)                     # S2: a source to verify
+            self.assertIn("waits on a Run</span> · <span class=mut>T4: ⟦x⟧ times chance", html)           # one nested mark
+            self.assertIn("❓ Open points · 1 to check or find · 1 wait on a Run · 1 with no evidence", html)
+            self.assertIn("→ next", html)                       # no cards.yaml yet: the step's prompt makes them
+
+    def test_a_draft_tasks_display_step_sets_each_display_beside_the_sentence_that_calls_it(self):
+        # b34 s41 Open 1 (JL 261020: "a new display view after the 3 - Evidence?"): 4 · Display reads display/Display<n>-*/,
+        # links a unit to the sentences that call it by its label (Table 1), and lists a call with no unit, not made yet
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            task = root / "Project-X/work/b01_topic/j01_job/t03_results"
+            (task / "draft").mkdir(parents=True)
+            (task / "t03_results.md").write_text("# t03_results · Results\n\nfolder-kind: task\ntask-type: draft\n")
+            (task / "draft" / "t03_results-draft-v0.1.md").write_text(
+                "# Results · draft v0.1\n\napproved: ✅\n\n## 1 · Structure\n\n### C1.P1 · Sample\n- B1 · S1 · Sample\n\n"
+                "## 3 · Draft\n\n### C1.P1 · Sample\n- B1 · S1 · We drew 12 queries (Table 1).\n"
+                "- B2 · S2 · Overlap was low (Figure 1).\n")
+            unit = task / "display" / "Display1-queries"
+            unit.mkdir(parents=True)
+            (unit / "README.md").write_text("# Display1-queries · Table 1\n\nkind: table\nlabel: Table 1\nclaim: the queries\n")
+            html = task_draft.draft_task_spaces(task, root, "4 · Display")["Work Details"].html
+            self.assertIn("🖼 Stage 4 · Display", html)
+            self.assertIn('data-s="S1"><b style="color:#e8590c">DISPLAY 1</b> · Table 1 · queries', html)
+            self.assertIn("planned, not built", html)                                 # no assets yet
+            self.assertIn('<b style="color:#e8590c">Figure 1</b> <span class=st>⬜ not made yet', html)
+
+    def test_a_jobs_work_card_shows_each_draft_tasks_seven_steps(self):
+        # b32 s41 (JL 261020: "apply it to" the version's Work): each draft Task's card carries its seven steps, a
+        # chip each, a link each into that tab; the ✎ Write button opens the Task's Work at the step that waits
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            job = root / "Project-X/work/b01_topic/j01_job"
+            (job / "t01_note" / "draft").mkdir(parents=True)
+            (job / "t01_note" / "t01_note.md").write_text("# t01_note · Note\n\nfolder-kind: task\ntask-type: draft\n")
+            (job / "t01_note" / "draft" / "t01_note-draft-v0.1.md").write_text(
+                "# Note · draft v0.1\n\napproved: ⬜\n\n## 1 · Structure\n\n### C1.P1 · Why\n- B1 · S1 · [Need] Why\n")
+            (job.parent / "board.md").write_text("# Topic\n")
+            tree = frame.work_tree("Job", job, root, frame.VANILLA)
+            self.assertIn("work-steps", tree)
+            for step in task_draft.STEPS:
+                self.assertIn(f">{step} ", tree.replace("&amp;", "&"))
+            self.assertIn("✍ sign", tree)                                       # §1 written, not signed
+            self.assertIn("sub=1+%C2%B7+Plan", tree)                            # a link into the Task's tab
+            label, link = frame.task_action(job / "t01_note", root)
+            self.assertEqual(label, "✎ Write")
+            self.assertIn("space=Work+Details", link)
+
+    def test_a_revise_card_is_accepted_rejected_or_edited_in_place(self):
+        # b32 s41-D31/D32 (JL 261020: "我想要那种可以交互的感觉"): 5 · Revise shows the cards by pass with their buttons;
+        # card_act writes only the card's State (or its Expected), and refuses a card that changed since it was shown
+        from live import draft_steps
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            task = root / "Project-X/work/b01_topic/j01_job/t01_note"
+            (task / "draft" / "records").mkdir(parents=True)
+            (task.parents[1] / "board.md").write_text("# Topic\n")
+            (task / "t01_note.md").write_text("# t01_note · Note\n\nfolder-kind: task\ntask-type: draft\n")
+            (task / "draft" / "t01_note-draft-v0.1.md").write_text(
+                "# Note · draft v0.1\n\n## 3 · Draft\n\n### C1.P1 · Why\n- B1 · S1 · The problem grows.\n")
+            cards = task / "draft" / "records" / "t01_note-revise.md"
+            cards.write_text("# t01_note · Revise cards\n\n## Pass 1 · 261020 · on draft v0.1\n\n### Edit · S1 · a number\n\n"
+                             "Why: open on a number\nOriginal: The problem grows.\nExpected: The problem grows by 10%.\n"
+                             "State: proposed\n")
+            html = task_draft.draft_task_spaces(task, root, "5 · Revise")["Work Details"].html
+            self.assertIn("Revise cards · Pass 1 · 261020 · on draft v0.1", html)
+            self.assertIn("data-card-act=accept", html)
+            self.assertIn('<li data-s="S1">', html)                              # a card lights its sentence
+            rel = task.relative_to(root).as_posix()
+            ask = {"task": rel, "pass": "Pass 1 · 261020 · on draft v0.1", "card": "Edit · S1 · a number"}
+            self.assertEqual(draft_steps.card_act(root, {**ask, "state": "accepted", "was": "proposed"})[0], 200)
+            self.assertIn("State: accepted · ", cards.read_text())
+            self.assertEqual(draft_steps.card_act(root, {**ask, "state": "rejected", "was": "proposed"})[0], 409)
+            code, res = draft_steps.card_act(root, {**ask, "state": "accepted", "was": "accepted",
+                                                    "expected": "The problem grows by 12%."})
+            self.assertEqual((code, "<ins" in res["change"]), (200, True))
+            self.assertIn("Expected: The problem grows by 12%.", cards.read_text())
+            self.assertIn("- B1 · S1 · The problem grows.", (task / "draft" / "t01_note-draft-v0.1.md").read_text())
+            self.assertEqual(draft_steps.card_act(root, {**ask, "task": "../..", "state": "accepted"})[0], 400)
+            self.assertEqual(draft_steps.card_act(root, {**ask, "state": "accepted"}, read_only=True)[0], 403)
 
     def test_a_theme_may_add_its_own_views_after_the_pages(self):
         # b16 s13 (JL 261007): paper adds Reviews after Table · Reading · Questions; the Space stays the

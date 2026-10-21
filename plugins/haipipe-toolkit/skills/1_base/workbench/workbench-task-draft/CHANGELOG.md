@@ -1,3 +1,207 @@
+## 0.104.13 · 2026-10-21 · ⏳ Running now under Operation ; 📜 Revise rules section
+
+- JL 261021: "如果在跑的话，能不能在这个页面里面显示正在 running？ ... 在 operation 下面要不要加 status，说你现在正在 run？".
+  `draft_steps._running` reads `draft/records/<stem>-running.md` (one `- [<step>] <what> · since <time>` line per open
+  run) and shows each line under its step's Operation heading; the agent writes the line when a run starts and removes
+  it when the run ends. A stale line still shows its start time.
+- JL 261021: "可以在这里面再加一个 section，说明一下我们 revise 的规则是什么 ... 作者提出来的那些 revise 意见 ... 在这里也记录一下".
+  5 · Revise's Result shows `draft/records/<stem>-revise-rules.md` as 📜 Revise rules, above Older versions: how a pass
+  runs, and the author's rulings, each with his words and date; it survives every pass, and blind reviewers get it as
+  constraints.
+
+## 0.104.12 · 2026-10-21 · 5 · Revise: the report is scored, with Coherence and Anti-AI rows
+
+- JL 261021: "你这个 rubric 怎么没有分数？而且里面没有提到句子连贯性、反 AI 写法之类的吗？... 你有没有拿那个来测试".
+  Then "我觉得还是用十分制吧": out of 10, the bands in haipipe-draft-review's rubric (0.2.0); an older pass's /5 still
+  reads. `_review_report` shows a score column (`<verdict> · <n>/10 · …`) and their mean ("a reading aid, never a pass mark"),
+  two more rows (Coherence; Anti-AI writing, from haipipe-draft-review's `cli/anti_slop.py audit`), and a `Cards:` line,
+  how the cards' own text scores on that audit. `RUBRIC_AXES`, `AXIS_NAME`. The Revise prompt asks for all of it.
+
+## 0.104.11 · 2026-10-21 · 5 · Revise: the Revise Review Report is its own section
+
+- JL 261021, after 0.104.9 put the report inside the cards' column: "不是，你为什么改得还不如之前的呢 ... 你给我改回去吧";
+  "above the section of 'The text and its Revise cards' you should give me the section 'Revise Review Report' and tell
+  me for each rubric, how you feel about this draft"; "把那些比较详细的 review report 单独作为一个新的 section ... 我还要
+  之前的那个 revised card section". `draft_steps._review_report` is a fold above the text and its cards: reviewer,
+  verdict, one row per rubric axis (Mechanics, Function, Evidence, Readability, Venue: verdict, how the draft reads,
+  smallest fix), then the paragraphs now against proposed. The cards section is back as it was: whole-Section cards
+  above the text, the full width; `_report_card` is gone.
+
+## 0.104.10 · 2026-10-21 · 1 · Plan: the mind map never wraps a Point
+
+- JL 261021: "怎么让这个 structure 的宽度能够无限延伸 ... 我就是想让它一直不要有这个 break". PLAN_CSS: a Point is one
+  line (`white-space:nowrap`), the map is as wide as its widest Point (`width:max-content`, `auto` columns), and the
+  §1 card scrolls sideways inside its own box, so the page never does. Measured: every Point 28 px tall (one line) on
+  t00 and t01 at 1200, 2000 and 390 px; t00 at 1200 px scrolls 1,570 px inside a 1,074 px card. On a phone the map
+  keeps its one column (`.pm{width:auto}`) and only the Points scroll.
+
+## 0.104.9 · 2026-10-21 · 5 · Revise: the review report card; sentence rows keep reading order
+
+- JL 261021: "先写一个 review report，然后再 propose"; "单独作为一个卡片放到 revise card 里面。名字你可以写 current draft
+  review report". `draft_steps._report_card` shows a pass's `### Current draft review report` as the first card in the
+  cards' column: reviewer, verdict, the paragraphs now against proposed (the Section question's table), findings; no
+  buttons. Cards on the whole Section follow it in the column, no longer above the text.
+- `_by_sentence`: a new sentence never goes to an old one before the one the sentence above it went to, so a short
+  sentence split off S10 is no longer drawn back to S7 by a few shared words.
+
+## 0.104.8 · 2026-10-21 · 3 · Evidence shows every open point
+
+- JL 261021: "你能读读这个 session，然后你想想我们的 evidence 该怎么把这些不确定的 ... 都加上去？". `_open_points` reads what
+  the text and its plan leave unsure: each ⟦…⟧ in §3 (check, pending, or to find) and each §1 point with `Evidence: none`.
+  Each is OPEN <n>, a row in its sentence's card beside the text after the evidence rows, so a ✅ card and its ⟦check⟧
+  sit together (t01 S1: CITE 1.1 ✅ Li 2021, OPEN 1 ❓ its citation not yet verified), and all of them in one fold.
+  The Input row counts them; the prompt asks the evidence Run for an item per point. Found 87 in LLMRec j01's five
+  Sections (t01: 5 to check, 1 to find, 12 with no evidence; t03: 4 waiting on a Run).
+
+## 0.104.7 · 2026-10-20 · the Plan prompt asks for short paragraph names
+
+- JL 261020: "you might want to update the content of this as well", on t01's paragraph boxes (names of 12 and 20
+  words). The Plan prompt now reads "each paragraph a short name and each Point a short head, 4 to 8 words".
+
+## 0.104.6 · 2026-10-20 · 3 · Evidence and 4 · Display laid out as 5 · Revise
+
+- JL 261020: "我不想让句子跟句子之间有这么大的空格。我想要保证这个 draft 在 revise、evidence、display 这里都保持一样的风格 ... 所以
+  句子跟句子之间不要有空格". `_text_rows` no longer makes a row per sentence: the text is one `_md` column in one
+  `.rv-split` and the cards are in `.rv-right`, each placed at its sentence by CARDS_JS `align`, in the same `_fold` as
+  Revise's; the `.ev-split` override is gone, so the text stays beside the cards and scrolls itself to a lit sentence.
+  Measured 0 px between sentences on t01 and t03 in 3 · Evidence, 4 · Display and 5 · Revise alike.
+- Beside the text an Evidence row is one line (its id, ✅ or ❓, the words and the value); what backs it shows on hover and
+  in the card's own fold, so the cards keep nearer their sentences (t03: S12's card 47 px from S12 when lit).
+
+## 0.104.5 · 2026-10-20 · 5 · Revise's text in one column, no space between sentences
+
+- JL 261020: "我不想让句子跟句子之间有这么大的空格。我想要保证这个 draft 在 revise、evidence、display 这里都保持一样的风格
+  ... 所以句子跟句子之间不要有空格". 5 · Revise's text is one column again, the same `_md` text as 2 · Write's: each card
+  is placed at its sentence's line and pushed down only to clear the card above (`CARDS_JS` `align`, which works on any
+  `.rv-split` whose `.rv-right .rv-card` names a sentence in `data-s`); the text never moves for a card. 0.104.3's rows
+  (`_text_pieces`, `_card_anchor`) are gone; a Section card stays above the text, full width. Measured on t01: the gaps
+  between sentences match 2 · Write's exactly (the only larger ones are the 3 paragraph headings).
+
+## 0.104.4 · 2026-10-20 · 3 · Evidence a row per sentence; 4 · Display; Revise is 5 · Revise
+
+- JL 261020: "I want it to be left to be the orignal text, and the right to be the evidence"; "I want s7 to be aligned
+  with evidence item". 3 · Evidence is the text a row per sentence (`draft_steps._text_rows`, shared with 4 · Display),
+  each sentence's Evidence card level with it; checked 0 px from card to sentence in all five LLMRec Sections. The text
+  and the cards scroll as one page (no inner scroll).
+- JL 261020: "should the evidence item have some index as well?". Each item is CITE 1.4, VALUE 2.1 (its card, its place
+  there, in reading order), the same id on the text's mark; hovering a row lights its sentence, a sentence its rows.
+- JL 261020: "To show each evidenence card seperately?". Each Evidence card has its own fold under the text
+  (`_card_folds`), its items with the sentences they back.
+- JL 261020: "cite 1's name is very weird ... make it into different cite with the topic"; "the work 1's name is not
+  good". The cards come from haipipe-evidence 0.6.0: a card is a topic (the Task its items come from or would be made
+  in), and WORK is VALUE (`INK["value"]`).
+- JL 261020: "Or we want to have a new display view after the 3 - Evidence? ... Please do it". A new step, 4 · Display
+  (`_display_step`, `_displays`, `_units`, `_calls`): each unit `display/Display<n>-<slug>/` (else in a display Run's
+  newest pass) is DISPLAY <n>, set beside the first sentence that calls it (by `shown as:`, a Table or Figure in
+  `label:`, its heading or Placement, or its `\label`), its picture, claim and state (⬜ planned, ✍ to accept, ✓
+  accepted); a call no unit answers is not made yet; then each display folded on its own. Its chip is `✍ sign` while a
+  built unit waits for `accepted:`. Checked on LLMRec t03 (Table 1 to Figure 3 = DISPLAY 1 to 5, planned) and MISQ t23
+  (Table 8 with its picture, beside S1 by its `\ref`).
+- Revise is 5 · Revise; `sub=4 · Revise` still opens it (`OLD_SUBS`), and "Build figure / table" moved to 4 · Display.
+  b34 s41-D04 settles its Open 1.
+
+## 0.104.3 · 2026-10-20 · 4 · Revise in rows, Accept all; every Operation folded
+
+- JL 261020, on 4 · Revise's cards drifting far below their sentences (S12's card 1,200 px under S12): a row per card's
+  place (`draft_steps._text_pieces`, `_card_anchor`): a sentence with cards starts a row, its cards level with it; a
+  card on a sentence not yet in the text (S10a) sits with the one before it, a paragraph card by its heading, a Section
+  card above the text, full width. Checked on t01 Pass 3: every sentence card starts level with its sentence (0 px).
+- JL 261020: "I will just accept all the changes here". ✓ Accept all in the cards header posts each proposed card in
+  turn (`CARDS_JS` `send`, scoped to `.rv-board`), so no two writes race on the cards file; it hides when none is left.
+- JL 261020: "please make all the operation to be hidden by default". `_step_box` defaults to folded (every step, the
+  paper Board's steps too), Delivery no longer opens its next box, and 1 · Plan's Scratch editor opens folded.
+- JL 261020: "remove this Change it yourself in the Revise, as that will be in the Writing". 4 · Revise shows no editor;
+  your own sentences are typed in 2 · Write. haipipe-draft's steps table says so.
+- JL 261020, on 3 · Evidence: "the left to be the content, and the right to be the Evidence". The first split
+  (`_text_and_evidence`, `_evidence_card`), and `CARDS_JS` lights several sentences per card; 3 · Evidence is now
+  b32_draft_ui_design-phy-evidence's, which has since made it one row per sentence.
+
+## 0.104.2 · 2026-10-20 · 1 · Plan's Result is one mind map of §1
+
+- JL 261020, on the paragraph table and the folded Bullets table: "I want you to merge them together, how do you think
+  you can draw the mind map for the plan? ... To show what is this paper about?". `draft_steps._plan_tree` reads §1 and
+  its Structure Overview (part names, each paragraph's `→ C1.P2: …` question, each Bullet's Note); `_plan_map` draws
+  the Section and its `arc:` in the middle, its parts when it has several, its paragraphs, and each Bullet as a leaf
+  with its role and its Evidence cards (from `evidence/cards.yaml` `for:`), the wires drawn after layout (`PLAN_JS`).
+  One column on a phone. Test: `test_the_plan_is_one_mind_map_of_section_one`.
+- JL 261020: "how could I operate and edit it?", then "How could I add the P here or add the S here?". The map is
+  edited in place: `plan_act` (`POST /_board/draft-plan` in `_host/serve.py`) writes one change into the newest
+  draft's §1: words, role, paragraph name, question, arc; a point added (Enter or ＋ point, id after the point above
+  it), taken out (emptied) or moved (drag its S label); a paragraph added after another (＋ paragraph; later
+  paragraphs renumbered in §1, §2 and §3, the old hand-on question moved to the new paragraph, a Scratch slot added);
+  a question typed into an empty slot. Refused (409) on stale words, a newer draft, or a signed §1.
+- JL 261020: "能不能让它默认隐身，等我鼠标移过去的时候再显示出来". The ＋ point, ＋ paragraph and empty question marks
+  are hidden until the mouse is over their paragraph or their gap (`PLAN_CSS`, `@media(hover:hover)`); they keep
+  their room, so nothing moves, and a touch screen always shows them.
+- JL 261020, on the rubric and 1 · Plan's Result: "这个 rubric 你有没有想过怎么能把它改得更好一些？比如找一些相关的论文，
+  把它们是怎么写的也放到这下面，做成一个 review", "这里可不可以找一些 examples?", then "here I will expect it to be a
+  frame of the sNN studio". New `📚 Examples` card (`_examples_card`): the Studio topic that reads the published
+  papers (excalidraw-read's `reads/<pNN>/reading.yaml` under a topic naming the Task, or the topic a Section canvas
+  names by `examples:`) opened as a frame onto its own drawing, as the Section canvas is; with none, the card copies
+  the prompt that makes one. `📋 Requirement` became `📏 Requirement and Rubric` (`_rubric_card`): the desk rule,
+  "Ours beside the examples" (size and each paragraph's move, ours against each paper, from `_examples`), a prompt
+  to review against them, and the four axes as a table instead of the rubric file's raw text. A link to a file
+  behind the root's `Tools/` link is left out (`_served`): the host does not serve it, and `_rel` raised on it,
+  which took the page down once; each card now reports its own error instead.
+- JL 261020, on the Plan prompt: "every time I copy it, and I paste it to any session, it will trigger that session
+  to work". Every step's Copy prompt now ends, after `user feedback:`, with `session: <name> runs this Task. If you
+  are not <name>, send this whole message to <name> with SendMessage and stop; if <name> is not running, do it
+  here.` (`draft_steps._session`, `_prompt_box`; the shared copy script appends a button's `data-tail`,
+  `servers/workbench/runs_panel.py`). The name is the Task face's `session:` line, else its Job face's; shown under
+  the notes box as it is copied. The Studio tab shows each topic as its own card (no "The logic sketch" box around
+  them), and a topic another one draws by `examples:` (s26 inside s22) is shown once, inside it: 1 · Plan's
+  Examples card is then that Section canvas.
+- JL 261020, of a paragraph name typed on the map and gone after a reload: "why the content is not saved here?". A
+  new draft (v0.4) was written while the page held v0.3, and `plan_act` refused every save as "newer", said only in
+  the map's corner. Now a change of words (words, role, paragraph name, question, arc, taking a point out) lands in
+  the newest draft, still checked by its old words; only a change placed by S ids (add, move, a new paragraph) is
+  refused, and then the map reloads and puts what was typed back in its paragraph, outlined red, so clicking away
+  adds it to the newest draft. Every refusal is said beside the field, and the typed words stay. Each reply names
+  the draft it wrote, which the page then holds.
+- JL 261020, of a Point wrapping onto two lines on the map: "I think the buleet point should not be too large". The
+  1 · Plan prompt now asks for each Point as a short head of 4 to 8 words, its numbers and wording in its Note,
+  inside the plan's own 4–11-word rule (`head-too-long`), which 12 of t01's 18 Points broke.
+
+## 0.104.1 · 2026-10-20 · a split sentence id counts in the step views
+
+- `servers/workbench/workbench-task-draft/draft_steps.py`: `_paragraphs` and `_sentence` read `S<n>` with a letter
+  suffix (`S3a`, `S5b`), as Pages written before the grammar settled number a split sentence; the MISQ Abstract's
+  Plan view counted 4 of its 10 Bullets before.
+
+## 0.104.0 · 2026-10-20 · A draft Task's Work is the six step tabs (b32 s41, JL 261020)
+
+- JL 261020, on the abstract Task's Work: "I think we need to make this as what we exected to see". The s41 design is
+  now the screen: Work is Studio · 1 · Plan · 2 · Write · 3 · Evidence · 4 · Revise · Delivery, each Operation (Input,
+  Sign, Prompt with `user feedback:`) over Result; Report has the same tabs with the Results only, plus Table and
+  Questions. New `servers/workbench/workbench-task-draft/draft_steps.py` reads the Task's files on every open;
+  `task_draft.py` lays the tabs out and maps the old tab links (`OLD_SUBS`). Description is the face alone; its Plan,
+  Requirement and Records are cards of 1 · Plan (s41 Open 3). The paper theme's SUB-* rows moved there too.
+- Your own words in place: 2 · Write and 4 · Revise open, in Work and Report, with the Page's Revise boxes embedded (JL
+  261020: "what if I want to revise it myself?"). A version's Work shows each Section's six chips (`task_draft.work_card`,
+  through `frame.task_card`); ✎ Write opens the Section's Work. A Studio topic naming `jNN_…/tNN_…` counts only for those
+  Tasks.
+- Scratch moved to 1 · Plan, typed in place; the paragraph boxes save on leaving them (no Why · Reset · Save row); Report
+  carries the prompts of 1 · Plan, 2 · Write and 4 · Revise (JL 261020).
+- The paragraph box shows one sentence a row, a long one wrapping inside its row (an editable list over the hidden
+  textarea that a Save still sends); the text is matched back to its Bullets by likeness on save (`outline_revise._text_to_bullets`), and
+  the embedded editor fits its content (JL 261020; built in the Paper-LLMRecPhy-Quick session).
+- 4 · Revise's Result: the Revise cards, then the text, then the Section canvas opened straight onto its drawing (JL
+  261020: "No need to have box in box"; built in the Paper-LLMRecPhy-Quick session).
+- The Revise cards sit between the text and the canvas, the latest pass only (JL 261020: "always keep the latest
+  version"; the Revise prompt rewrites the file as one pass), each card old → new in red and green, its own light box
+  with no frame around the pass ("I don't want this", of cards inside the pass's frame; "I still want each of them to
+  have a card"), a Section question as now / proposed; the Revise prompt starts as the venue's reviewer.
+- The cards act: ✓ Accept, ✗ Reject, ✎ Edit, ↺ Undo, without a reload, through `POST /_board/draft-card`
+  (`draft_steps.card_act`, routed in `_host/serve.py`); a pass ends with "Copy: apply the accepted cards".
+- One card for the text and its Revise cards, side by side, each card beside its sentence; each item its own box; a
+  paragraph-plan question as a table; a change over several sentences as a row per sentence (JL 261020).
+- Each Revise row shows its sentence id and names its Bullet (`data-b`, `data-s`); a row the person makes (Enter,
+  paste) reads "new" and its Save makes a new Bullet with the id before it plus the next free letter (S2 → S2a), its
+  point in `## 1 · Structure` and its sentence in `## 3 · Draft`, never renumbering (`outline_revise._rows_to_bullets`,
+  `_new_ids`, `_insert_bullets`; JL 261020: "could we make each sentences to be auto generate the sentence id as
+  well?"). "+ paragraph" adds an empty paragraph after one (`POST /_board/draft` `action: add-paragraph`,
+  `outline_revise.add_paragraph`), which opens on one empty row (JL 261020: "How could I add a new paragraph?").
+
 ## 0.103.0 · 2026-10-16 · The draft Task type is one folder (JL 261016, s41-D15)
 
 - `servers/workbench/workbench-task-draft/task_draft.py` now holds the draft Task's layout, moved out of `frame.py`: `draft_task_spaces`, `DRAFT_TASK_SUBS`, `DRAFT_TASK_RUNS`, `PAGE_RUN_NAMES`, `PAGE_TASK_VIEWS`, the Delivery cards, the Page views (`PAGE_VIEWS`, `with_page_views`) and `VIEW_METHODS` (from `frame_view.py`). `frame.task_layouts()` finds every `workbench-task-<type>/task_<type>.py` through `host_registry.task_folders()`, so a new Task type is a new folder, base or theme.

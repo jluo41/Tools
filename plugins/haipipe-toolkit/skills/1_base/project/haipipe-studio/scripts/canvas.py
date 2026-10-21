@@ -270,6 +270,33 @@ def is_large(e):
     return bool((e.get("customData") or {}).get("large"))
 
 
+def signboard(frame, scale):
+    """Mark the main frame drawn `scale` times a frame's size, words and boxes alike, holding the main content the
+    smaller frames would otherwise carry (JL 261020: "就跟我们招牌一样 ... 它是主，其他都是次"; "把一些外部的东西给塞进去，
+    让它变得越大越好"). check.py then lets its map hold MAP_WORDS times `scale` words: the same few words a screen,
+    at the scale it is drawn. Also marks it large. Returns it."""
+    frame.setdefault("customData", {})["signboard"] = float(scale)
+    return large(frame)
+
+
+def signboard_scale(e):
+    """A signboard's scale (signboard()), else 1."""
+    return float((e.get("customData") or {}).get("signboard") or 1)
+
+
+def columns(frame, n):
+    """Mark a frame read as n panels side by side, each a frame's width (JL 261020, of a story's questions: "could we
+    just have one frame, one very wide frame for each RQ?"). check.py then judges a wall of text (⑨) per panel:
+    WALL_WORDS times n. Returns it."""
+    frame.setdefault("customData", {})["columns"] = int(n)
+    return frame
+
+
+def columns_of(e):
+    """How many panels a frame is read as (columns()), else 1."""
+    return int((e.get("customData") or {}).get("columns") or 1)
+
+
 def aside(e):
     """Mark a side note: words beside the main content (the page pictures it explains), written smaller than
     it on purpose (JL 261011, on revise mode's notes: "The content or the font size, can be much smaller,

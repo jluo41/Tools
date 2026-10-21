@@ -10,7 +10,7 @@ description: >-
   the key parts", "how does this paper link to ours", a paper reading canvas, /excalidraw-read.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 metadata:
-  version: "0.8.0"
+  version: "0.9.0"
   last_updated: "2026-10-14"
   # version history: ./CHANGELOG.md
 ---
@@ -53,6 +53,7 @@ R=Tools/plugins/haipipe-toolkit/skills/1_base/excalidraw/excalidraw-read/ref/rea
 #   read paper.txt and our paper, then write <reading folder>/reading.yaml (ref/reading-spec.md)
 .venv/bin/python $R boxes <paper.pdf> --page N [--find text]           # line boxes, for a table or figure
 .venv/bin/python $R all <reading folder>/reading.yaml                  # shoot + draw + .png preview
+.venv/bin/python $R paras <reading folder>/reading.yaml                # shots/para-P<k>.jpg: the Section's paragraphs, each whole
 ```
 
 1. **Place the files.** The PDF and its `paper.txt` are a download: keep them in the space's
@@ -178,7 +179,7 @@ passages highlighted and a numbered note level with each, then its logic and its
 2. **One reading per paper**, `reads/<id>-<paper>/reading.yaml`, its `paper.pdf` the Block's `related/paper/` file.
 3. **Unread is red.** A paper with no reading yet shows as one red card: "PDF kept, not read yet" or "no PDF yet".
 4. The page frame is excalidraw-task's `transcript_frame` with `noun="paper"`, `us="Our paper"`. Worked example:
-   Physician-SPACE `Paper-LLMRecPhy/studio/s07-related-work-audits-of-who-llms-name/`.
+   Physician-SPACE `Paper-LLMRecPhy-Quick/studio/s07-related-work-audits-of-who-llms-name/`.
 
 
 Revise mode moved

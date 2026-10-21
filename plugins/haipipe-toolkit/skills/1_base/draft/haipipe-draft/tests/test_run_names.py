@@ -116,3 +116,56 @@ def test_rename_drops_the_day_from_a_dated_name(tmp_path):
     assert (folder / "runs" / "run-display-main-effects-2" / "passes" / "p01-1002").is_dir()
     evidence = (folder / "draft" / "Page-evidence-items.md").read_text()
     assert "run-display-0930" not in evidence and "runs/run-display-main-effects/passes/p01-0930/" in evidence
+
+
+def test_a_run_with_a_ticket_and_a_check_script_moves_as_one(tmp_path):
+    """A Run may hold `<name>.md` and `<name>.sh`: both move into runs/<name>/, and the script, now one
+    folder deeper, climbs one more `..` and reads its Result from the first pass (JL 261020)."""
+    folder = page(tmp_path)
+    name = "run-section-revise-b3"
+    (folder / "runs").mkdir()
+    (folder / "runs" / (name + ".md")).write_text("---\nstatus: complete\nresult: results/%s/result.yaml\n---\n" % name)
+    (folder / "runs" / (name + ".sh")).write_text(
+        '#!/usr/bin/env bash\nscript_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"\n'
+        'page_dir="$(cd "$script_dir/.." && pwd)"\ncandidate="$page_dir/results/%s/candidate.md"\n' % name)
+    (folder / "results" / name).mkdir(parents=True)
+    (folder / "results" / name / "runtime.yaml").write_text("started_at: '2026-09-14T10:00:00'\n")
+    rename(folder)
+    home = folder / "runs" / name
+    # the check script folds into the ticket (a Page Run's ticket is <name>.md), deepened first
+    assert sorted(p.name for p in home.iterdir()) == ["passes", name + ".md", "run.yaml"]
+    ticket = (home / (name + ".md")).read_text()
+    assert "## Check" in ticket and 'page_dir="$(cd "$script_dir/../.." && pwd)"' in ticket
+    assert '"$page_dir/runs/%s/passes/p01-0914/candidate.md"' % name in ticket
+    assert "result: runs/%s/passes/p01-0914/result.yaml" % name in ticket
+    card = (home / "run.yaml").read_text()
+    assert "ticket: %s.md" % name in card and "moved_from: results/%s/" % name in card
+
+
+def test_a_command_only_run_gets_a_ticket_and_old_builds_go(tmp_path):
+    """A run kept as its command alone gets a `<name>.md` ticket holding it; older numbered Delivery
+    builds go once the lane's fixed Delivery Run exists (JL 261019 keep only meaningful Runs)."""
+    folder = page(tmp_path)
+    name = "run-citation-guideline-foundation"
+    (folder / "runs").mkdir()
+    (folder / "runs" / (name + ".sh")).write_text(
+        '#!/usr/bin/env bash\npage_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"\n'
+        'exec python3 "$page_dir/scripts/cite.py" "$page_dir/results/%s/input.yaml"\n' % name)
+    (folder / "results" / name).mkdir(parents=True)
+    (folder / "results" / name / "runtime.yaml").write_text("started_at: '2026-09-06T10:00:00'\n")
+    (folder / "draft" / "records").mkdir()
+    (folder / "draft" / "records" / "Page-log.md").write_text("see runs/%s.sh\n" % name)
+    (folder / "runs" / "rd01_web.md").write_text("---\nrun: rd01_web\n---\n")
+    (folder / "results" / "rd01_web").mkdir()
+    (folder / "runs" / "run-delivery-webpage").mkdir()
+    (folder / "runs" / "run-delivery-webpage" / "run-delivery-webpage.sh").write_text("exit 0\n")
+    report = rename(folder)
+    home = folder / "runs" / name
+    assert sorted(p.name for p in home.iterdir()) == ["passes", name + ".md", "run.yaml"]
+    ticket = (home / (name + ".md")).read_text()
+    assert "status: closed" in ticket and "result: runs/%s/passes/p01-0906/" % name in ticket
+    assert "## Command" in ticket and '"$page_dir/runs/%s/passes/p01-0906/input.yaml"' % name in ticket
+    assert "runs/%s/%s.md" % (name, name) in (folder / "draft" / "records" / "Page-log.md").read_text()
+    assert report["builds_pruned"] == ["rd01_web"]
+    assert not (folder / "runs" / "rd01_web.md").exists() and not (folder / "results").exists()
+    assert (folder / "runs" / "run-delivery-webpage" / "run-delivery-webpage.sh").is_file()

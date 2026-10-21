@@ -8,15 +8,18 @@ description: >-
   file, without requiring a Board. Also owns the Page Face contract and router
   of a Folder: what the readable .md is on disk, how its Run Workflow/Run Spec
   owner or legacy Page Type is resolved, which Run Spec holds authority, and
-  PREVIEW, CREATE, WORK ON, RUNS, RUN. Was haipipe-page until 2026-10-11.
+  PREVIEW, CREATE, WORK ON, RUNS, RUN, and a draft Task's seven steps (Studio,
+  Plan, Write, Evidence, Display, Revise, Delivery: the tabs of its Work and the STEP
+  verbs structure, write, revise, deliver, check). Was haipipe-page until 2026-10-11.
   Trigger: draft, draft folder, file to page, HTML page, standalone page, host
   a page, open page code, create a page, update page, propose Page Runs,
   human-interaction runs, run page lifecycle, Page Face, Folder kind, legacy
-  Page Type, Run Spec, /haipipe-draft, /haipipe-page. The plan (page
+  Page Type, Run Spec, draft steps, step tabs, Operation over Result,
+  /haipipe-draft, /haipipe-page. The plan (page
   context, structure Run, scratch) is haipipe-draft-logic.
 metadata:
-  version: "0.134.0"
-  last_updated: "2026-10-16"
+  version: "0.136.1"
+  last_updated: "2026-10-20"
   aliases: [haipipe-page]
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -49,6 +52,34 @@ Page: a compute Task has a face and no draft, and a Section Task holds one (b32
 s01). A Task whose face says `task-type: draft` is a draft Task: every theme's workbench
 opens it on the base's draft layout, `servers/workbench/workbench-task-draft/` (b32 s03). The Page server (`servers/workbench/workbench-task-draft/reader`), `haipipe-page-task` and
 `haipipe-page-insight` keep their names because they serve or own a Page face.
+
+## 🪜 A draft Task's seven steps (b32 s41, on screen 2026-10-20)
+
+A draft Task is worked in seven steps, the seven tabs of its Work (JL 261015: "So it is the Studio, 1, Plan,
+..... and Delivery as the last one"). Each tab gives its prompt; this table says what the prompt's verb
+does. Only a person signs, ticks, accepts or sends.
+
+| Step (tab) | Its prompt | Owner it loads | Writes | Waits for you |
+|---|---|---|---|---|
+| 🎨 Studio | `/haipipe-studio <block> <sNN>` | haipipe-studio | the Block's `studio/sNN-<topic>/`; what you settle goes into §1 (s41-D25) | optional |
+| 📐 1 · Plan | `/haipipe-draft <task> structure` | haipipe-draft-logic `ref/context.md`, `ref/structure.md`, `ref/scratch.md` | `draft/records/<stem>-context.md`; `## 1 · Structure`; you type `## 2 · Scratch` here, a note per paragraph (JL 261020: "I think we should move the scratch here") | ✍ Sign: you type ✅ on `approved:` |
+| ✍️ 2 · Write | `/haipipe-draft <task> write` | haipipe-draft-writing `ref/writing.md` | `## 3 · Draft` from §1 and its Scratch (one sentence per Bullet, ⟦pending⟧ where a value waits), keeping the sentences you typed, in a new `-draft-v<N>.md`; the old one to `previous/` | none: a first draft, no rules yet (s41-D26) |
+| 🔎 3 · Evidence | `/haipipe-evidence <task>` | haipipe-evidence `cards.py` | `evidence/cards.yaml`, `evidence/proposals.md`; cards are CITE and VALUE, one topic (a Task) each, items CITE 1.2 | ☐ you tick each ask |
+| 🖼 4 · Display | `/haipipe-display <task>` | haipipe-display (its five renderers) | `display/Display<n>-<slug>/`: README (claim, kind, `label: Table 1`, built_on its cards), recipe, assets, preview; shown beside the sentence that calls it | ✍ you write `accepted:` in its README |
+| 🔁 5 · Revise | `/haipipe-draft <task> revise` + your notes (your own sentences are typed in 2 · Write) | haipipe-draft-writing `ref/revise.md`; excalidraw-draft `section_canvas.py` when the Section has a canvas | `draft/records/<stem>-revise.md` rewritten as one pass, the latest (`## Pass <k> · <date> · on draft v<N>`; undecided cards still true carry over, older passes stay in git), first as the venue's reviewer, structure before sentences; one `### <Edit · Review · Section question> · S<n> · <what>` card each: Why, Original, Expected, State; accepted cards into §3 as the next version | ✍ on each card ✓ Accept, ✗ Reject or ✎ Edit its words (the cards file only); then `/haipipe-draft <task> apply` writes the accepted ones as the next version |
+| 📤 Delivery | `/haipipe-draft <task> deliver`, `check`; `/haipipe-delivery` render, pull | haipipe-delivery (`page.py export`, `word_round.py`), haipipe-draft-review | the Block's `delivery/<jNN>/<tNN>/`; `render/<name>-v<N>/p-<k>.png` | ✍ you send; another round? |
+
+The old controller operations still answer and map onto the steps: CONTEXT and OUTLINE are 1 · Plan,
+EVIDENCE is 3 · Evidence and 4 · Display, CONTENT is 2 · Write and 5 · Revise, CHECK is Delivery's `check`. The screen reads
+the files above on every open and writes none of them (`servers/workbench/workbench-task-draft/draft_steps.py`);
+its chips are the state: Plan `✍ sign` until `approved:` starts with ✅, Revise `🔁 pass k` by
+`draft/previous/`, Evidence `🔶 asked` while an item or a proposal waits, Display `✍ sign` while a built unit waits for
+your `accepted:` (`· optional` when the text calls no Table or Figure). A Job's Work shows each Task's
+seven chips, a click each into that tab. Your own words go straight in: 2 · Write and 5 · Revise open, in Work and
+Report, with the Page's paragraph boxes (`outline_revise.py`), and 1 · Plan with its Scratch boxes
+(`outline_scratch.py`); a paragraph box shows one sentence a row, typed freely, each sentence matched back to the
+Bullet it reads like, and it
+saves into the draft when you leave it or press Cmd+Enter; Esc puts back what it held.
 
 ## ✏️ Fast path · change a sentence and rebuild
 
@@ -466,7 +497,7 @@ in `draft/<stem>-evidence-items.md` and `results/` until it is moved.
 tNN_<task>/
 ├── tNN_<task>.md
 ├── draft/       haipipe-draft      plan · scratch · text
-├── evidence/    haipipe-evidence   cards.yaml (CITE, WORK) · proposals.md
+├── evidence/    haipipe-evidence   cards.yaml (CITE, VALUE) · proposals.md
 └── display/     haipipe-display    Display<n>-<slug>/ (built_on: evidence cards)
 ```
 
@@ -935,7 +966,11 @@ its own.
 🔧 WORK ON    /haipipe-draft working on <page>              or just the path
 🧑 RUNS       /haipipe-draft runs <page> [focus]            propose human interaction
 🔁 RUN        /haipipe-draft run <page> [from <operation>]
+🪜 STEP       /haipipe-draft <task> structure | write | revise | deliver | check     one step tab's prompt
 ```
+
+A STEP verb is one tab's prompt (the seven steps above); text after the colon and its `user feedback:` line
+are the person's notes for that step.
 
 The RUN `from` selector accepts the existing Page controller operation names
 (CONTEXT, OUTLINE, EVIDENCE, CONTENT, CHECK); its parser/API may retain the

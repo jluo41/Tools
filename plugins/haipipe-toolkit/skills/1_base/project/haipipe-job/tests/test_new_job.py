@@ -96,5 +96,37 @@ class NewJobTest(unittest.TestCase):
         self.assertEqual(run("check", str(job)).returncode, 0)
 
 
+class DeliverablesCheckTest(unittest.TestCase):
+    """The b04 trial (261021): no tool checked a Job's ## Deliverables."""
+
+    def job(self, tmp: str, block: str) -> Path:
+        job = Path(tmp) / "b01_topic" / "j01_tables"
+        (job / "t01_answers" / "runs" / "r01_fold00").mkdir(parents=True)
+        (job / "t01_answers" / "t01_answers.md").write_text("# t01 · Answers\n")
+        (job / "j01_tables.md").write_text("# j01 · Tables\n\n## Tasks\n\n1. t01_answers · Answers\n\n## Deliverables\n\n"
+                                           "```yaml\ndeliverables:\n" + block + "```\n")
+        return job
+
+    def test_a_good_list_passes_and_missing_files_are_a_todo_not_an_error(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            job = self.job(tmp, "- what: Answers\n  kind: table\n  task: t01_answers\n  means: [One row per answer.]\n"
+                                "  files: t01_answers/runs/r01_fold00/result/answers.csv\n  run: t01_answers/r01_fold00\n")
+            self.assertEqual(new_job.check(job), [])
+
+    def test_each_broken_field_is_named(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            job = self.job(tmp, "- what: Answers\n  kind: tabel\n  task: t09_gone\n  files: x.csv\n  run: t01_answers/r09_gone\n"
+                                "- what: Answers\n  means: [Again.]\n  opens: Site\n")
+            found = "\n".join(new_job.check(job))
+            for words in ("kind tabel is not one of", "task t09_gone is not a Task folder", "Run t01_answers/r09_gone is not here",
+                          "has no means:", "is named twice", "opens 'Site', which is not an item here"):
+                self.assertIn(words, found)
+
+    def test_a_block_that_does_not_parse_says_so(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            job = self.job(tmp, "- what: Answers: the table\n")
+            self.assertTrue(new_job.check(job)[0].startswith("## Deliverables does not parse"))
+
+
 if __name__ == "__main__":
     unittest.main()

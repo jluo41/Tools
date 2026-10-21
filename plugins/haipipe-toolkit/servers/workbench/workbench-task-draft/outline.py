@@ -59,7 +59,8 @@ from live.space_views import (SPACE_CSS, SPACE_JS, delivery_space_html,
                               draft_reads_html, evidence_space_html, run_tabs)
 from live.outline_structure import (structure_card_html, save_structure,
                                     STRUCTURE_CSS, STRUCTURE_JS)
-from live.outline_revise import (save_revise, revise_rows_html,
+from live.outline_revise import (save_revise, revise_rows_html, add_paragraph,
+                                 sentence_id as revise_sentence_id,
                                  assets_html as revise_assets_html)
 
 # Aim state emoji (haipipe-draft): current set + the older ones still parsed.
@@ -2371,6 +2372,7 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
             # from the scratch"). A Save writes the Draft field either way.
             paragraph_revise.append({
                 "address": addr, "bullet_id": bullet_id,
+                "sid": revise_sentence_id(block["head"]) if block else "",
                 "text": value or " ".join(source_realizations.get(addr, [])),
                 "bullet_token": bullet_token(block) if block else "",
                 "record_token": record_token(record),
@@ -3324,6 +3326,10 @@ class OutlineMixin:
             f, board = got
             read_only = getattr(getattr(self, "server", None), "read_only", False)
             return save_revise(Path(board) / f, p, read_only=read_only)
+        if action == "add-paragraph":
+            f, board = got
+            read_only = getattr(getattr(self, "server", None), "read_only", False)
+            return add_paragraph(Path(board) / f, p, read_only=read_only)
         if action == "feedback":
             return None, "Draft comments are removed; use Scratch Mode"
         if action in {"edit-preview", "edit-bullet", "append-bullet"}:

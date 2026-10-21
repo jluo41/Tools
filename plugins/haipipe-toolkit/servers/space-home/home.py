@@ -629,10 +629,13 @@ def resolve_short(root: Path, slug: str, anchor: str = "", only=frozenset()) -> 
 
 
 def _numbered(node: dict[str, object]) -> str:
-    """A topic's or Job's face title, led by its folder number (s01, j02) when the title lacks it."""
+    """A Block's, topic's or Job's face title, led by its folder number (b01, s01, j02) when the title lacks it
+    (JL 261019: "could we show the bNN before Physician Ground Truth Tasks as well?")."""
     title = str(node.get("title") or node.get("name") or "")
-    number = re.match(r"^([sj]\d+)", str(node.get("folder") or node.get("name") or ""))
-    if number and not re.search(rf"\b{number.group(1)}\b", title.lower()):
+    number = re.match(r"^([bsj]\d+)", str(node.get("folder") or node.get("name") or ""))
+    tag = number.group(1).lower() if number else ""
+    # said once: a title that starts with it (a heading-less face falls back to "b01_x") or names it elsewhere
+    if number and not (title.lower().startswith(tag) or re.search(rf"\b{tag}\b", title.lower())):
         title = f"{number.group(1)} · {title}"
     return title
 
@@ -668,30 +671,61 @@ def _topic_rows(topics: list[dict[str, object]]) -> str:
     return f'<div class="topic-rows">{"".join(rows)}</div>'
 
 
-def _job_rows(jobs: list[dict[str, object]]) -> str:
-    """A Block's Jobs as rows like its Studio rows (JL 261012, on the Job cards: "could you make it to do the same?"):
-    one folded row each, its folder name, title and Task count, ↗ to the Job and its status; opened, its Tasks and
-    its face, read in place and loaded only then."""
+def _plural(n: int, word: str) -> str:
+    return f"{n} {word}{'s' * (n != 1)}"
+
+
+def _task_runs(task: str, href: str, title: str, status: str, runs: list) -> str:
+    """One Task inside an opened Job row: its name (the link), title and status, its tally on the right, and under
+    it its hard Runs, one aligned line each (mark · Run · status · finish day), as the Studio's Runs part draws them."""
+    name = f'<b>{html.escape(task)}</b>'
+    name = f'<a href="{html.escape(href, quote=True)}">{name}</a>' if href else name
+    meta = " · ".join(part for part in (title, _plural(len(runs), "Run") if runs else "") if part)
+    pill = f'<span class="job-st job-st-{html.escape(status)}">{html.escape(status)}</span>' if status else ""
+    if not runs:
+        return f'<div class="rn-task">{name}<span class="rn-meta">{html.escape(meta)}</span>{pill}</div>'
+    from live import frame
+    return (f'<div class="rn-task">{name}<span class="rn-meta">{html.escape(meta)}</span>{pill}'
+            f'<span class="rn-tally">{html.escape(frame.runs_tally(runs))}</span></div>'
+            f'<div class="rn-grid">{frame.run_cells(runs)}</div>')
+
+
+def _job_rows(jobs: list[dict[str, object]], runs: list = ()) -> str:
+    """A Block's Jobs as rows like its Studio rows (JL 261012, on the Job cards: "could you make it to do the same?"),
+    each carrying its own hard Runs (JL 261019: "put the run status under the jobs, merge the jobs and runs ... to
+    save the spaces"): one folded row each, its folder name, title, Task and Run counts, its Runs' tally, ↗ to the
+    Job and its status; opened, each Task with its Runs under it, then the Job's face, read in place and loaded
+    only then."""
+    by_job: dict[str, dict[str, list]] = {}
+    for run in runs:
+        by_job.setdefault(run[0], {}).setdefault(run[1], []).append(run)
     rows = []
     for job in jobs:
-        name = html.escape(str(job.get("folder") or job.get("name") or ""))
+        folder = str(job.get("folder") or job.get("name") or "")
+        name = html.escape(folder)
         tasks = [t for t in job.get("children") or [] if t.get("level") == "Task"]
+        task_runs = by_job.get(folder, {})
+        job_runs = [r for rs in task_runs.values() for r in rs]
         status = str(job.get("status") or "")
         status = "" if status == "unknown" else status
-        meta = " · ".join(part for part in (str(job.get("title") or ""), f"{len(tasks)} Task{'s' * (len(tasks) != 1)}")
-                          if part)
+        meta = " · ".join(part for part in (str(job.get("title") or ""), _plural(len(tasks), "Task"),
+                                            _plural(len(job_runs), "Run") if job_runs else "") if part)
         pill = f'<span class="job-st job-st-{html.escape(status)}">{html.escape(status)}</span>' if status else ""
-        listed = "".join(
-            f'<li><a href="{html.escape(str(t.get("href") or ""), quote=True)}"><b>{html.escape(str(t.get("folder") or ""))}</b>'
-            f'</a> {html.escape(str(t.get("title") or ""))}'
-            + (f' <span class="job-st job-st-{html.escape(str(t["status"]))}">{html.escape(str(t["status"]))}</span>'
-               if t.get("status") not in (None, "", "unknown") else "") + '</li>' for t in tasks)
+        tally = ""
+        if job_runs:
+            from live import frame
+            tally = f'<span class="rn-tally job-tally">{html.escape(frame.runs_tally(job_runs))}</span>'
+        listed = "".join(_task_runs(str(t.get("folder") or ""), str(t.get("href") or ""), str(t.get("title") or ""),
+                                    "" if t.get("status") in (None, "", "unknown") else str(t["status"]),
+                                    task_runs.get(str(t.get("folder") or ""), [])) for t in tasks)
+        known = {str(t.get("folder") or "") for t in tasks}        # Runs kept in the Job itself (the flat layout)
+        listed += "".join(_task_runs(task, "", "", "", rs) for task, rs in task_runs.items() if task not in known)
         read = str(job.get("read") or "")
-        body = ((f'<ul class="job-tasks">{listed}</ul>' if listed else "")
+        body = ((f'<div class="rn-body job-runs">{listed}</div>' if listed else "")
                 + (f'<iframe class="st-frame job-frame" title="{name}" data-src="{html.escape(read, quote=True)}" '
                    f'referrerpolicy="no-referrer"></iframe>' if read else '<p class="topic-none">No face yet.</p>'))
         rows.append(f'<details class="topic"><summary><b>{name}</b><span class="topic-meta">{html.escape(meta)}</span>'
-                    f'<span class="topic-pop"><a href="{html.escape(str(job.get("href") or ""), quote=True)}" '
+                    f'{tally}<span class="topic-pop"><a href="{html.escape(str(job.get("href") or ""), quote=True)}" '
                     f'title="Open this Job">↗</a></span>{pill}</summary>{body}</details>')
     return f'<div class="topic-rows">{"".join(rows)}</div>'
 
@@ -705,34 +739,39 @@ def _runs_of(block: Path) -> list:
     return frame.hard_runs(block)
 
 
-def _runs_group(runs: list) -> tuple[str, str]:
-    """A Block's third group, its hard Runs Job → Task → Run with their status, and its tally for the row
-    (JL 261019: "在 project level 下面，也可以加个 run，看看能不能把它的 run 给弄出来")."""
+def _runs_tally(runs: list) -> str:
+    """A Block row's hard Runs by status, on its folded line (JL 261019: "在 project level 下面，也可以加个 run")."""
     if not runs:
-        return "", ""
+        return ""
     from live import frame
-    tally = frame.runs_tally(runs)
-    body = (f'<section class="block-cards" data-group="runs"><h4 class="block-cards-head">⚙️ Runs '
-            f'<span class="block-cards-count">{len(runs)}</span></h4>{frame.runs_list(runs)}'
-            f'<p class="rn-legend">{html.escape(frame.RUN_LEGEND)}</p></section>')
-    return body, f'<span class="home-runs-tally" title="hard Runs, by status (▶️ is running)">⚙️ {len(runs)} Runs · {html.escape(tally)}</span>'
+    return (f'<span class="home-runs-tally" title="hard Runs, by status (▶️ is running)">⚙️ {len(runs)} Runs · '
+            f'{html.escape(frame.runs_tally(runs))}</span>')
 
 
-def _block_groups(node: dict[str, object] | None) -> tuple[str, str, str]:
-    """A Block's two groups, its Studio topics (sNN) and its Jobs (jNN), each a list of folded rows as the
-    workbench's Studio list draws them, read from the same chart data the Chart · Progress view draws. Returns
-    (the groups, their counts, their words to search)."""
+def _block_groups(node: dict[str, object] | None, runs: list = ()) -> tuple[str, str, str]:
+    """A Block's two groups, its Studio topics (sNN) and its Jobs (jNN) with their Runs, each a list of folded rows
+    as the workbench's Studio list draws them, read from the same chart data the Chart · Progress view draws.
+    Returns (the groups, their counts, their words to search)."""
     topics = list((node or {}).get("studios") or [])
     jobs = [child for child in (node or {}).get("children") or [] if child.get("level") == "Job"]
+    folders = {str(job.get("folder") or job.get("name") or "") for job in jobs}
+    loose = [run for run in runs if run[0] not in folders]      # Runs of Tasks that sit in no listed Job
 
     groups = []
     for key, label, items, empty in (
             ("studio", "🧠 Studio", topics, "No Studio topics yet"),
             ("jobs", "🗂 Jobs", jobs, "No Jobs yet")):
-        body = (f'<p class="block-cards-empty">{empty}</p>' if not items else
-                _topic_rows(items) if key == "studio" else _job_rows(items))
+        if key == "studio":
+            body = _topic_rows(items) if items else f'<p class="block-cards-empty">{empty}</p>'
+            head = ""
+        else:
+            body = _job_rows(items, runs) if items else ("" if loose else f'<p class="block-cards-empty">{empty}</p>')
+            head = f' · ⚙️ <span class="block-cards-count">{_plural(len(runs), "Run")}</span>' if runs else ""
+            if runs:
+                from live import frame
+                body += (frame.runs_list(loose) if loose else "") + f'<p class="rn-legend">{html.escape(frame.RUN_LEGEND)}</p>'
         groups.append(f'<section class="block-cards" data-group="{key}"><h4 class="block-cards-head">{label} '
-                      f'<span class="block-cards-count">{len(items)}</span></h4>{body}</section>')
+                      f'<span class="block-cards-count">{len(items)}</span>{head}</h4>{body}</section>')
     counts = (f'<span class="home-counts" title="Studio topics · Jobs">🧠 {len(topics)} · 🗂 {len(jobs)}</span>')
     words = " ".join(_numbered(item) for item in topics + jobs)
     return f'<div class="block-groups">{"".join(groups)}</div>', counts, words
@@ -749,20 +788,17 @@ def _project_runs(runs: list) -> str:
 def _home_row(card: dict[str, object], project_name: str, href: str,
               shown: bool, node: dict[str, object] | None = None, runs: list | None = None) -> str:
     """One Block card, folded: kind emoji, title (the link that opens the Block), folder, its counts and
-    the Board's state word; open, its Studio topics and its Jobs as two groups of cards (JL 261012)."""
+    the Board's state word; open, its Studio topics and its Jobs (each with its Runs) as two groups (JL 261012)."""
     kind_key = str(card["kind_key"])
-    title = html.escape(str(card["title"]))
+    title = html.escape(_numbered(card))            # "b01 · Physician Ground Truth Tasks", its number once
     folder = html.escape(home_folder_path(card))
     icon = html.escape(KIND_ICON.get(kind_key, str(card.get("icon") or "")))
     kind_label = html.escape(kind_key.capitalize(), quote=True)
     state = html.escape(str(card.get("board_state") or ""))
     state_html = (f'<span class="home-state" title="Board state">{state}</span>'
                   if state else "")
-    groups, counts, words = _block_groups(node)
-    runs_html, runs_tally = _runs_group(runs or [])
-    if runs_html:                                       # the Runs, a third group after Studio and Jobs
-        groups = groups[:-len("</div>")] + runs_html + "</div>"
-    counts = runs_tally + counts
+    groups, counts, words = _block_groups(node, runs or [])
+    counts = _runs_tally(runs or []) + counts
     row_search = html.escape(
         " ".join((project_name, str(card["title"]), str(card["slug"]),
                   str(card["path"]), str(card["spine"]), str(card["kind"]),
@@ -968,7 +1004,7 @@ main{{max-width:none;margin:0;padding:34px clamp(14px,2.5vw,32px) 90px}}
 .toolbar{{margin:0 0 12px}}.search{{display:block;max-width:420px}}.search input{{width:100%;min-height:38px;border:1px solid var(--line);border-radius:var(--radius-control);background:var(--card);color:var(--fg);font:inherit;padding:5px 9px;outline:none}}.search input::placeholder{{color:var(--mut)}}.search input:focus{{border-color:var(--accent)}}
 .kind-filter{{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0}}.kind-toggle{{display:inline-flex;align-items:center;gap:4px;min-height:30px;padding:2px 10px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--fg);font-size:14px;text-decoration:none}}.kind-toggle:hover{{border-color:var(--accent)}}.kind-toggle[aria-pressed="true"]{{border-color:var(--accent);background:var(--accent);color:var(--bg)}}.kind-count{{color:inherit;opacity:.7;font:12px/1 ui-monospace,Menlo,monospace}}
 .board-list{{min-width:0}}.space-section{{margin:26px 0 0}}.space-heading{{margin:0;padding:0 0 7px;border-bottom:2px solid var(--fg);font-size:12px;line-height:1.4;letter-spacing:.15em;text-transform:uppercase;color:var(--mut)}}.space-projects{{min-width:0}}.project-group{{margin:17px 0 0;min-width:0}}.project-summary{{display:flex;align-items:center;gap:7px;min-height:34px;padding:0 0 7px;border-bottom:1px solid var(--line);list-style:none;cursor:pointer;color:var(--fg);font-size:16px;font-weight:700}}.project-summary::-webkit-details-marker{{display:none}}.project-summary::before{{content:"▸";width:11px;color:var(--accent);font-size:11px;line-height:1}}.project-group[open]>.project-summary::before{{content:"▾"}}.project-grip{{color:var(--mut);font:14px/1 ui-monospace,Menlo,monospace;cursor:grab;user-select:none;touch-action:none;opacity:.72}}.project-grip:active{{cursor:grabbing}}.project-name{{min-width:0;overflow-wrap:anywhere}}.project-count,.theme-count{{color:var(--mut);font:12px/1 ui-monospace,Menlo,monospace;font-weight:400}}.project-list{{min-width:0;padding-top:2px}}.theme-group{{margin:10px 0 0 18px}}.theme-heading{{display:flex;align-items:baseline;gap:7px;margin:0;font-size:12px;line-height:1.5;letter-spacing:.08em;text-transform:lowercase;color:var(--mut);font-weight:600}}.theme-name::before{{content:"– "}}.project-group.dragging{{opacity:.55}}.project-group.drag-over>.project-summary{{border-color:var(--accent)}}.ir{{position:relative;display:flex;gap:10px;align-items:baseline;padding:9px 13px;border:1px solid var(--line);border-radius:var(--radius-surface);margin:6px 0;text-decoration:none;color:var(--fg);background:var(--card);overflow:hidden}}.ir:hover{{border-color:var(--accent)}}.home-kind{{flex:none;font-size:15px;line-height:1}}.home-copy{{display:flex;flex:1;min-width:0;flex-direction:column;gap:1px}}.ir .t{{min-width:0;overflow-wrap:anywhere;font-weight:600}}.home-folder{{min-width:0;color:var(--mut);font:12px/1.55 ui-monospace,Menlo,monospace;overflow-wrap:anywhere;word-break:break-word}}.home-state{{flex:none;color:var(--mut);font:12px/1.4 ui-monospace,Menlo,monospace;white-space:nowrap}}.empty,.no-results{{color:var(--mut);padding:14px 0}}.home-block{{margin:6px 0;min-width:0}}.home-block>.ir{{margin:0;cursor:pointer;list-style:none;align-items:center}}.home-block>.ir::-webkit-details-marker{{display:none}}.home-block>.ir::before{{content:"▸";flex:none;width:12px;color:var(--accent);font-size:15px;line-height:1}}.home-block[open]>.ir::before{{content:"▾"}}.home-block[open]>.ir{{border-radius:var(--radius-surface) var(--radius-surface) 0 0}}.ir a.t{{align-self:flex-start;color:var(--fg);text-decoration:none}}.ir a.t:hover{{color:var(--accent);text-decoration:underline}}.home-counts{{flex:none;color:var(--mut);font:12px/1.4 ui-monospace,Menlo,monospace;white-space:nowrap}}.home-runs-tally{{flex:none;color:var(--mut);font:12px/1.4 ui-monospace,Menlo,monospace;white-space:nowrap;margin-right:10px}}.project-runs{{margin-left:auto;color:var(--mut);font:12px/1 ui-monospace,Menlo,monospace;font-weight:400}}.block-groups{{display:grid;gap:10px;padding:10px 12px 12px 26px;border:1px solid var(--line);border-top:0;border-radius:0 0 var(--radius-surface) var(--radius-surface)}}.block-cards-head{{margin:0 0 4px;font-size:12px;line-height:1.5;letter-spacing:.06em;color:var(--mut);font-weight:600}}.block-cards-count{{font:12px/1 ui-monospace,Menlo,monospace;font-weight:400}}.block-cards-empty{{margin:0;color:var(--mut);font-size:13px}}
-.topic-rows .topic{{border:1px solid var(--line);border-radius:10px;background:var(--bg);margin:0 0 6px;overflow:hidden}}.topic-rows .topic>summary{{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:baseline;cursor:pointer;padding:8px 12px;list-style:none}}.topic-rows .topic>summary::-webkit-details-marker{{display:none}}.topic-rows .topic>summary::before{{content:"▸";color:var(--mut)}}.topic-rows .topic[open]>summary::before{{content:"▾"}}.topic-rows .topic[open]>summary{{border-bottom:1px solid var(--line)}}.topic-rows .topic>summary>b{{font-size:15px;overflow-wrap:anywhere}}.topic-tags{{display:inline-flex;gap:6px;flex-wrap:wrap}}.topic-tags .chip{{display:inline-block;padding:0 8px;border:1px solid var(--line);border-radius:999px;color:var(--mut);font-size:12px}}.topic-pop{{margin-left:auto}}.topic-pop a{{color:var(--accent);text-decoration:none;font-size:15px}}.topic-none{{margin:8px 12px;color:var(--mut);font-size:13px}}.st-frame{{display:block;width:100%;height:520px;border:0;background:#fff}}.job-frame{{height:440px;border-top:1px solid var(--line)}}.topic-rows .topic-meta{{color:var(--mut);font-size:13px;overflow-wrap:anywhere}}.job-tasks{{margin:8px 0;padding:0 14px 0 34px;font-size:14px}}.job-tasks li{{margin:3px 0}}.job-tasks a{{color:var(--fg);text-decoration:none}}.job-st{{display:inline-block;padding:0 9px;border:1px solid var(--mut);border-radius:999px;color:var(--mut);font-size:12px;font-weight:600;white-space:nowrap}}.job-st-active{{color:#2b8a3e;border-color:#2b8a3e}}.job-st-open{{color:#1971c2;border-color:#1971c2}}.job-st-done{{color:#495057;border-color:#495057}}.job-st-blocked{{color:#e03131;border-color:#e03131}}
+.topic-rows .topic{{border:1px solid var(--line);border-radius:10px;background:var(--bg);margin:0 0 6px;overflow:hidden}}.topic-rows .topic>summary{{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:baseline;cursor:pointer;padding:8px 12px;list-style:none}}.topic-rows .topic>summary::-webkit-details-marker{{display:none}}.topic-rows .topic>summary::before{{content:"▸";color:var(--mut)}}.topic-rows .topic[open]>summary::before{{content:"▾"}}.topic-rows .topic[open]>summary{{border-bottom:1px solid var(--line)}}.topic-rows .topic>summary>b{{font-size:15px;overflow-wrap:anywhere}}.topic-tags{{display:inline-flex;gap:6px;flex-wrap:wrap}}.topic-tags .chip{{display:inline-block;padding:0 8px;border:1px solid var(--line);border-radius:999px;color:var(--mut);font-size:12px}}.topic-pop{{margin-left:auto}}.topic-pop a{{color:var(--accent);text-decoration:none;font-size:15px}}.topic-none{{margin:8px 12px;color:var(--mut);font-size:13px}}.st-frame{{display:block;width:100%;height:520px;border:0;background:#fff}}.job-frame{{height:440px;border-top:1px solid var(--line)}}.topic-rows .topic-meta{{color:var(--mut);font-size:13px;overflow-wrap:anywhere}}.job-runs .rn-task{{flex-wrap:wrap}}.job-runs .rn-task a{{color:var(--fg);text-decoration:none}}.job-runs .rn-task a:hover{{color:var(--accent)}}.job-runs .rn-task .job-st{{align-self:center}}.job-tally+.topic-pop{{margin-left:0}}.job-st{{display:inline-block;padding:0 9px;border:1px solid var(--mut);border-radius:999px;color:var(--mut);font-size:12px;font-weight:600;white-space:nowrap}}.job-st-active{{color:#2b8a3e;border-color:#2b8a3e}}.job-st-open{{color:#1971c2;border-color:#1971c2}}.job-st-done{{color:#495057;border-color:#495057}}.job-st-blocked{{color:#e03131;border-color:#e03131}}
 .stage{{--st:#868e96;--st-bg:#f1f3f5;display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;letter-spacing:.02em;padding:2px 10px 2px 8px;border:1px solid var(--st);border-radius:999px;white-space:nowrap;color:var(--st);background:var(--st-bg)}}.stage-explore{{--st:#2b8a3e;--st-bg:#ebfbee}}.stage-shaping{{--st:#7048e8;--st-bg:#f3f0ff}}.stage-agreed{{--st:#1971c2;--st-bg:#e7f5ff}}.stage-closed{{--st:#495057;--st-bg:#f1f3f5}}@media(prefers-color-scheme:dark){{.stage{{--st-bg:transparent}}.stage-explore{{--st:#8ce99a}}.stage-shaping{{--st:#b197fc}}.stage-agreed{{--st:#74c0fc}}.stage-closed{{--st:#adb5bd}}}}.stage-steps{{display:inline-flex;gap:2px}}.stage-steps b{{width:7px;height:7px;border-radius:2px;border:1px solid var(--st);opacity:.55}}.stage-steps b.on{{background:var(--st);opacity:1}}.stage-none{{color:var(--mut);border-style:dashed;font-weight:400}}
 .home-scope{{margin:4px 0 0;color:var(--mut);font-size:14px}}.home-scope b{{color:var(--fg)}}.home-scope a{{color:var(--accent)}}[hidden]{{display:none!important}}.sr-only{{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}}
 @media (max-width:680px){{main{{padding:28px 14px 62px}}.site-head{{margin-bottom:18px}}h1{{font-size:24px}}.search input{{min-height:40px}}.ir{{padding:9px 12px}}.project-summary{{gap:5px}}.theme-group{{margin-left:8px}}.block-groups{{padding-left:12px}}}}
