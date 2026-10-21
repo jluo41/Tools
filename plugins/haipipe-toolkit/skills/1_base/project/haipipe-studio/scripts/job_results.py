@@ -481,11 +481,24 @@ def ledger(topic: Path, jobs: list[Path], all_rows: dict) -> str:
     return "\n".join(out + [END])
 
 
+def feeds_of(jobs: list[Path], block: Path) -> list[str]:
+    """The report folders the Jobs' `answers:` name, in their order: a folder name as written, or a Question id
+    (`Q01`, `Q-food-1`; a need `Q01.E2` counts for `Q01`) found as `reports/<id in lower case>_<topic>/`."""
+    out: list[str] = []
+    for j in jobs:
+        answers = field(j, "answers")
+        names = re.findall(r"q\d\d_[A-Za-z0-9_]+", answers)
+        for qid in re.findall(r"\bQ[A-Za-z0-9-]*?\d+\b", answers):
+            names += sorted(p.name for p in (block / "reports").glob(f"{qid.lower()}_*") if p.is_dir())
+        out += [n for n in names if n not in out]
+    return out
+
+
 def new_face(nn: int, slug: str, title: str, jobs: list[Path], topic: Path) -> str:
     name = f"s{nn:02d} · {title}"
     tasks = sum(len(kids(j, TASK)) for j in jobs)
     which = ", ".join(f"`{j.name}`" for j in jobs)
-    feeds = sorted({q for j in jobs for q in re.findall(r"q\d\d_[A-Za-z0-9_]+", field(j, "answers"))})
+    feeds = feeds_of(jobs, topic.parent.parent)
     yml = ["results:", "  reading:"] + [f"    {j.name}: ''" for j in jobs] + \
           ["  show: {}", "  open: []"]
     return "\n".join([
@@ -819,8 +832,9 @@ def main(argv=None) -> int:
         missing = [j.name for j in jobs if not j.is_dir()]
         if missing:
             ap.error(f"no such Job in {block.name}: {', '.join(missing)}")
-        print(make(block, jobs, a.slug or slug_of(jobs[0]), a.title or f"{title_of(jobs[0])} and more: results",
-                   a.nn, a.dry_run))
+        one = f"{jobs[0].name[:3]} · {title_of(jobs[0])}: current results"     # one Job: the same title as below
+        print(make(block, jobs, a.slug or slug_of(jobs[0]),
+                   a.title or (one if len(jobs) == 1 else f"{title_of(jobs[0])} and more: results"), a.nn, a.dry_run))
         return 0
     todo = [j for j in kids(block, JOB) if j.name not in covered(block)]
     free = [n for n in range(BAND[0], BAND[1] + 1) if n not in used(block)]

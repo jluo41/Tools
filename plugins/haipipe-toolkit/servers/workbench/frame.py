@@ -274,7 +274,8 @@ def _title(md: Path) -> str:
     return md.stem
 
 
-def _fields(md: Path, keys=("board-kind", "spine", "goal", "state", "close", "answer-status", "status")) -> list:
+def _fields(md: Path, keys=("board-kind", "spine", "goal", "state", "close", "answers", "answer-status",   # answers:
+                            "status")) -> list:                                    # the Job contract's fourth field
     out = []
     try:
         for line in md.read_text(encoding="utf-8", errors="ignore").splitlines()[:60]:
@@ -2715,7 +2716,8 @@ def _question_records(level: str, folder: Path, root: Path, keep=None) -> tuple:
     if asked:   # a Job with no Questions of its own shows the Block's its face answers: (JL 261011, an empty j51)
         owner = block
         register = [r for r in _register(face(block)) if str(r["id"]).lower() in asked]
-    reports = {q.name.split("_", 1)[0].lower(): q for q in sorted((owner / "reports").glob("q[0-9]*/"))} \
+    reports = {q.name.split("_", 1)[0].lower(): q for q in sorted((owner / "reports").glob("q*/"))   # q01_x, q-food-1_x
+               if re.match(r"(?i)q[a-z-]*\d+_", q.name)} \
         if (owner / "reports").is_dir() else {}
     rows = [dict(r) for r in register]
     known = {str(r["id"]).lower() for r in rows}
@@ -2735,7 +2737,7 @@ def _question_records(level: str, folder: Path, root: Path, keep=None) -> tuple:
         card = run["path"] / "run.yaml" if run["path"].is_dir() else None
         text = card.read_text(encoding="utf-8", errors="ignore") if card and card.is_file() else ""
         target = _yaml_scalar(text, "target")
-        if re.fullmatch(r"(?i)q\d+", target):
+        if re.fullmatch(r"(?i)q[a-z-]*\d+", target):           # q05, q-food-1
             ticket = run["path"] / (_yaml_scalar(text, "ticket") or "-")
             on_q.setdefault(target.lower(), []).append(
                 f'{_link(_reader(ticket if ticket.is_file() else card, root), run["run"])} '
@@ -2759,6 +2761,8 @@ def _question_records(level: str, folder: Path, root: Path, keep=None) -> tuple:
             here = folder.relative_to(owner).as_posix() + "/"
             work = [w[len(here):] for w in work if w.startswith(here)]
         kids = _answering(folder, level, qid, root)
+        named = {_rel(k, folder) for k in kids}  # a Task its face and the register's work: both name, once (b51 261021)
+        work = [w for w in dict.fromkeys(work) if w.rstrip("/") not in named]
         runs = on_q.get(qid.lower(), [])
         work_html = " · ".join([_link(ROUTE + "?" + urlencode({"path": _rel(k, root)}), _rel(k, folder)) for k in kids]
                                + [_link(_reader(folder / w, root), w) if (folder / w).is_file() else _e(w)

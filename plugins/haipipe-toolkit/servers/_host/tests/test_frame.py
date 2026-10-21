@@ -1444,5 +1444,35 @@ class RouteTest(unittest.TestCase):
             self.assertEqual(sent["path"], "/_board/workbench?path=P%2Ft01.md&run=r01")   # view= left out
 
 
+
+class NamedQuestionIdsTest(unittest.TestCase):
+    """A register cut by a word (Q-food-1, haipipe-report rule 1) reads like Q01 does (b51 261021): its report
+    folder q-food-1_<topic>/ is found without a report: line, a Task its face and the register's work: both name is
+    listed once, and a Job's Description shows its answers: line."""
+
+    def test_a_named_id_finds_its_report_and_its_work_once(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            block = root / "Project" / "work" / "b51_store"
+            task = block / "j01_food" / "t51_page"
+            (block / "reports" / "q-food-1_input_output").mkdir(parents=True)
+            task.mkdir(parents=True)
+            (block / "board.md").write_text(
+                "# Store\n\nboard-kind: task-block\n\n## Questions\n\n```yaml\nquestions:\n- id: Q-food-1\n"
+                "  group: Food\n  title: input and output\n  question: What goes in and what comes back?\n"
+                "  work:\n  - j01_food/t51_page\n```\n")
+            (block / "reports" / "q-food-1_input_output" / "q-food-1_input_output.md").write_text(
+                "# Food · input and output\n\nanswers: Q-food-1\nanswer-status: open\n\n## Opening\n\nNot yet.\n")
+            (block / "j01_food" / "j01_food.md").write_text("# j01 · Food\n\ngoal: g\nclose: c\nanswers: Q-food-1\n")
+            (task / "t51_page.md").write_text("# t51 · Page\n\nanswers: Q-food-1\n")
+            html, _ = frame.question_rows("Block", block, root)
+            self.assertIn("q-food-1_input_output.md", unescape(html).replace("%2F", "/"))
+            work = re.search(r"<p class=q-work>(.*?)</p>", html).group(1)
+            self.assertEqual(re.sub(r"<[^>]+>", "", work).count("j01_food/t51_page"), 1)
+            desc = frame.vanilla("Job", block / "j01_food", root)["Description"].html
+            self.assertIn("answers", desc)
+            self.assertIn("Q-food-1", desc)
+
+
 if __name__ == "__main__":
     unittest.main()

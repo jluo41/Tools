@@ -527,6 +527,18 @@ def test_a_csv_row_is_read_by_its_columns(tmp_path):
     assert jr.at_value(tmp_path, "slopes.csv:model_id=m5&context=cancer.estimate", "") == "0.12"
 
 
+def test_feeds_find_the_report_of_each_answered_id(tmp_path):
+    """A Job's answers: holds Question ids (Q01, Q-food-1, a need Q01.E2); Feeds names their report folders
+    (b51 261020: `Q-food-1` gave "none yet" because only `qNN_` folder names were read)."""
+    import job_results as jr
+    for name in ("q-food-1_input_output", "q-food-10_other", "q01_lookup", "q-all-6_check_lane_gaps"):
+        (tmp_path / "reports" / name).mkdir(parents=True)
+    job = tmp_path / "j01_x"
+    job.mkdir()
+    (job / "j01_x.md").write_text("# j01 · x\n\ngoal: g\nanswers: Q-food-1, Q01.E2, Q-all-6\n")
+    assert jr.feeds_of([job], tmp_path) == ["q-food-1_input_output", "q01_lookup", "q-all-6_check_lane_gaps"]
+
+
 class StairsTest(unittest.TestCase):
     """canvas.stairs (JL 261013: "你不能每一个都是朝左对齐"): the main frame at the origin, each next frame lower and
     further right, so no two share a left edge; each frame moves with what is drawn in it."""
