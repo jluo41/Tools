@@ -23,7 +23,8 @@ import sys
 from pathlib import Path
 
 SLUG = re.compile(r"^[a-z0-9][a-z0-9_]*$")
-SKIP = {"studio", "reports", "runs", "delivery", "src", "sbatch", "draft", "scripts", "results", "_old"}
+SKIP = {"studio", "reports", "runs", "delivery", "src", "sbatch", "draft", "scripts", "results", "_old",
+        "emails", "meetings", "materials", "design", "files", "related"}   # a cowork Job's material, not its Tasks
 
 
 def face(folder: Path) -> Path | None:

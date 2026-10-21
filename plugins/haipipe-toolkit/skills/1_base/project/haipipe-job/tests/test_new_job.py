@@ -51,6 +51,15 @@ class NewJobTest(unittest.TestCase):
         self.assertIn("## Tasks names t09_gone, which is not a Task folder here", found)
         self.assertIn("t05_stray/ is not in ## Tasks", found)
 
+    def test_a_cowork_jobs_material_is_not_a_task(self):
+        """A cowork Job keeps emails/, meetings/, materials/ and design/ beside its face and has no Tasks
+        (haipipe-cowork); an emails/emails.md is not a Task the ## Tasks list must name (Samsung b12, 261021)."""
+        md = new_job.new_job(self.block, "pace", "Pace")
+        for name in ("emails", "meetings", "materials", "design"):
+            (md.parent / name).mkdir()
+            (md.parent / name / f"{name}.md").write_text("# x\n")
+        self.assertEqual(new_job.check(md.parent), [])
+
     def test_a_theme_names_its_own_jobs_and_tasks(self):
         job = new_job.new_job(self.block, "", "Version A", name="Ba-version").parent
         self.assertEqual(job.name, "Ba-version")

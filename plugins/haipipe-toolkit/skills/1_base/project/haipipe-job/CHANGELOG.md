@@ -1,6 +1,13 @@
 haipipe-job · Changelog
 =======================
 
+## [0.2.2] · 2026-10-21 · A cowork Job's material is not a Task
+
+- `scripts/new_job.py check`: `emails/`, `meetings/`, `materials/`, `design/`, `files/` and `related/` beside a
+  Job's face are its material (haipipe-cowork: a cowork Job has no Task level), not Tasks the `## Tasks` list must
+  name; before, an `emails/emails.md` failed the check (Samsung b12 j01, j02). Test:
+  `test_a_cowork_jobs_material_is_not_a_task`.
+
 ## [0.2.1] · 2026-10-09 · Theme folders are singular
 
 - Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
