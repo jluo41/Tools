@@ -40,12 +40,59 @@ def _only_specified(row):
             and not str(row.get("result") or "").strip())
 
 
+def card_states(page_src):
+    """Evidence Item id → 'have' or 'need', from the Task's `evidence/cards.yaml` (haipipe-evidence, 261020).
+
+    Since 261020 a Section's evidence lives in its cards: an item bound there (a `run`, `value` or `fact`) is
+    'have' and is checked by haipipe-evidence `cards.py check`, not by this ledger; an item still asked for is
+    'need'. A Page without cards gets {} and keeps the ledger's rules (MISQ t01, 261022: E49 was bound in its
+    card but blocked the LaTeX export as "no Result binding")."""
+    path = Path(page_src).parent / "evidence" / "cards.yaml"
+    if not path.is_file():
+        return {}
+    import yaml
+    try:
+        doc = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    except yaml.YAMLError:
+        return {}
+    states = {}
+    for card in doc.get("evidence") or []:
+        for it in card.get("items") or []:
+            item = it.get("item")
+            if not item:
+                continue
+            have = not it.get("need") and bool(it.get("run") or it.get("value") or it.get("fact"))
+            if have or item not in states:
+                states[item] = "have" if have else "need"
+    return states
+
+
 def pending_items(page_src):
-    """The specified-only items a `delivery: draft` export leaves out, in ledger order."""
+    """The items a `delivery: draft` export leaves out, in ledger order: items with no Result yet (unless their
+    evidence card binds them), and items whose Result is not ready (a citation awaiting a person's verification)."""
     from .item_table import read_items
     if not draft_delivery(page_src) or legacy_profile(page_src):
         return []
-    return [item for item, row in read_items(Path(page_src)).items() if _only_specified(row)]
+    from .item_table import repo_root, resolve
+    cards = card_states(page_src)
+    out = []
+    for item, row in read_items(Path(page_src)).items():
+        if row.get("decision") in {"drop", "defer"}:
+            continue
+        ref = str(row.get("result") or "").strip().strip(chr(96))
+        if not ref:
+            if not (row.get("type") in {"VALUE", "CITE"} and cards.get(item) == "have"):
+                out.append(item)
+            continue
+        path = resolve(ref, repo_root(Path(page_src).parent), Path(page_src).parent)
+        if path is not None and Path(path).is_dir():
+            path = Path(path) / "result.yaml"
+        if path is not None and Path(path).name == "result.yaml" and Path(path).is_file():
+            from .page_evidence import _result_document
+            status = str(_result_document(Path(path)).get("status", "")).lower()
+            if status not in {"ready", "complete", "completed", "accepted", "resolved"}:
+                out.append(item)
+    return out
 
 
 def _unbound_manifests(home, *, strict=False):
@@ -121,12 +168,18 @@ def selected_results(page_src, *, strict=True, errors=None):
         return []
     selected = []
     draft = draft_delivery(page_src)
+    cards = card_states(page_src)
     for item, row in read_items(page_src).items():
         if row.get("decision") in {"drop", "defer"}:
             continue
         if draft and _only_specified(row):
             continue  # pending: listed by pending_items(), never a binding yet
         ref = str(row.get("result") or "").strip().strip(chr(96))
+        if not ref:
+            if row.get("type") in {"VALUE", "CITE"} and cards.get(item) == "have":
+                continue  # bound in its evidence card; cards.py check owns that binding
+            if draft:
+                continue  # no Result yet: a draft export lists it as pending (pending_items())
         try:
             path = resolve(ref, repo_root(page_src.parent), page_src.parent)
             if path is None:
@@ -159,6 +212,8 @@ def selected_results(page_src, *, strict=True, errors=None):
                 raise EvidenceSelectionError(f"{item}: selected Result does not belong to the ledger's Local Run ({owner})")
             status = str(document.get("status", "")).lower()
             if strict and status not in {"ready", "complete", "completed", "accepted", "resolved"}:
+                if draft:
+                    continue  # e.g. ready_for_human_verification: pending in a draft export, never a binding
                 raise EvidenceSelectionError(f"{item}: selected Result is not ready ({status or 'missing status'})")
             acceptance = document.get("acceptance")
             if strict and isinstance(acceptance, dict) and acceptance.get("passed") is False:

@@ -6,6 +6,22 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.11.0] · 2026-10-22 · CMS pre-flight, running from the SPACE, results back
+
+- `ref/profile-cms-stata.md` gains three sections from the 261022 upload pre-flight (JL: "the CMS server is very
+  vulnerable; keep the lessons"): **Before an upload** (gates, every register entry checked in today's code, the
+  crash-pattern scan, the dry run and what it cannot prove, server inputs, the package and its `--check`),
+  **Running on the server** (every Task by `.\work\...\sbatch\by_task\<task>.ps1` from `F:\Physician-SPACE`, the
+  laptop path minus `examples-2-cms/Project-Personality-OpioidRx/`, `-WhatIf` first, two smoke tickets after an
+  upload) and **Bringing results back** (`collect_results.ps1` with STOP / LOOK / OK review sheets).
+- Defaults name today's tools (`check_preupload.py` M10, `check_task_tree.py`, `dryrun.py`, `pack_upload.py`,
+  `collect_results.ps1`, `file_server_return.py`) and the server home `F:\Physician-SPACE\work\`; the retired
+  `sync_shared.py` and `00_cms-stata-template/` rows are gone (shared files are `SHARED COPY`, checked by M10).
+- Step 1 knows the Run-folder split (`result\` comes back, `passes\pNN-<MMDD>\` stays) and the `STOPPED:` line.
+- After a fresh-subagent test: the gate's `<UNIT>` is any part of a Job's folder name (`j21_C1D_reg_VisitLBP`), every
+  tool runs on the SPACE's `.venv/bin/python` (not `python3`), the two smoke tickets are named, and `-Block` is
+  the only filter `collect_results.ps1` has.
+
 ## [0.10.2] · 2026-10-09 · Theme folders are singular
 
 - Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,

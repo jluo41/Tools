@@ -18,7 +18,7 @@ description: >-
   ref/revise.md): revise, compare before and after, what changed, track
   changes, change ledger, run-revise, /haipipe-draft-revise.
 metadata:
-  version: "0.25.3"
+  version: "0.26.0"
   last_updated: "2026-10-20"
   # version history: ./CHANGELOG.md
 ---
@@ -59,7 +59,7 @@ Independence: whoever writes never reviews. The judge is `../haipipe-draft-revie
 
 ## ✍️ Writing prose
 
-Realize an approved plan and evidence slice as sentences, weave paragraphs, and revise existing prose by the surgical-revision rule. Read `ref/writing.md` first (its rules section is what every sentence is written by); it points to the rest of `ref/`. The plan, the evidence and the venue belong to the host workflow; a Page's human gate belongs to a person.
+**Examples first**: before a Section is written or rewritten whole, read how 3 to 4 published papers of the venue write the same Section (a Studio topic `sNN-<task>-<venue>-examples`, made by /excalidraw-read when missing), and write to their pattern, naming each departure (`ref/writing.md` § 0, JL 261022). Then realize an approved plan and evidence slice as sentences, weave paragraphs, and revise existing prose by the surgical-revision rule. Read `ref/writing.md` first (its rules section is what every sentence is written by); it points to the rest of `ref/`. The plan, the evidence and the venue belong to the host workflow; a Page's human gate belongs to a person.
 
 ## 🔤 The sentence
 

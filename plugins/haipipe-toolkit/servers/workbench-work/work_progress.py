@@ -433,9 +433,23 @@ def example_section(item, root):
     if not path.is_file():
         return "<h5>One example</h5><div class=m style='margin-left:0'>Not on disk yet.</div>"
     import base64
-    import pyarrow.parquet as pq
     from live import page_reader
-    table = kept(("example", str(path), path.stat().st_mtime_ns), lambda: pq.read_table(path, partitioning=None), seconds=300)
+    if path.suffix.lower() == ".csv":
+        # A CSV example needs only the standard library, so it shows on a host without pyarrow.
+        import csv
+        with path.open(newline="", encoding="utf-8") as fh:
+            rows = list(csv.DictReader(fh))
+        names = list(rows[0].keys()) if rows else []
+        cols = [c for c in ex.get("columns") or names[:8] if c in names]
+        return (f"<h5>One example</h5>{browse}<div>{e(str(ex.get('says') or ''))}</div>"
+                f"<div class=m style='margin-left:0'>📄 {e(short_folder(item, frame.rel(path, root), root))} · "
+                f"{len(rows):,} rows × {len(names)} columns, first {min(12, len(rows))} shown</div>"
+                + rows_table(cols, [[r.get(c) for c in cols] for r in rows[:12]]))
+    try:
+        import pyarrow.parquet as pq
+        table = kept(("example", str(path), path.stat().st_mtime_ns), lambda: pq.read_table(path, partitioning=None), seconds=300)
+    except Exception as err:   # noqa: BLE001 - a missing reader or an unreadable file becomes a note, never a broken page
+        return f"<h5>One example</h5><div class=m style='margin-left:0'>Cannot read {e(path.name)}: {e(type(err).__name__)}.</div>"
     cols = [c for c in ex.get("columns") or table.schema.names[:8] if c in table.schema.names]
     first = table.slice(0, 1).to_pylist()[0] if table.num_rows else {}
     out = (f"<h5>One example</h5>{browse}<div>{e(str(ex.get('says') or ''))}</div>"
@@ -565,30 +579,45 @@ def task_nodes(job, items, root, data, mode, about=False):
             got, kids = items_nodes(mine, root, data)
             states += got
             task_states.append(group_state(got))
-            html_ += node(level_head("📂", nav(task, root, mode, "Goal", e(task.name)), got), kids,
+            html_ += node(level_head("📂", nav(task, root, mode, "Goal", e(task.name)), got), task_about(task, root) + kids,
                           key="tree-" + frame.rel(task, root))
     if about:
         html_ = job_about(job, root, mode, states, task_states) + html_
     return states, html_
 
 
-def job_drawing(job, root):
-    """The Job's own Studio topic picture (a topic whose face names the Job, as s22-j02-…), and its link."""
-    block = frame.chain(job, root).get("Block")
+def topic_pictures(folder, root, job=None):
+    """Every Studio topic that names this Job or Task, each its picture and a link to it in the Block's Studio (JL
+    261022, sending b51's s01-food-api drawing: "we also need ... job level report and task level report"). A Job's own
+    `sNN-jNN-…` topic comes first, then each topic whose face names it; a Task's topic must also name its Job, or be
+    that Job's own topic, since Task names repeat across Jobs. s00 is the Block's index, never a Job's or a Task's."""
+    block = frame.chain(folder, root).get("Block")
     topics = list(frame.studio_inventory(block, root)) if block else []
-    jnn = job.name.split("_")[0]
-    named = [t for t in topics if re.match(rf"^s\d\d-{jnn}-", t[1].name)]          # s22-j02-…, the Job's own topic
-    mention = [t for t in topics if not t[1].name.startswith("s00") and job.name in text_of(frame._notes(t[1]))]
-    for owner, topic, _ in named + mention:
+    jnn = (job or folder).name.split("_")[0]
+    own = [t for t in topics if re.match(rf"^s\d\d-{jnn}-", t[1].name)]
+
+    def names(t):
+        said = text_of(frame._notes(t[1]))
+        return folder.name in said and (job is None or job.name in said or t in own)
+    picked = ([] if job else own) + [t for t in topics if not t[1].name.startswith("s00") and t not in
+                                     ([] if job else own) and names(t)]
+    out = []
+    for owner, topic, _ in picked:
         png = topic / f"{topic.name}.png"
         png = png if png.is_file() else next(iter(sorted(topic.glob("*.png"))), None)
         if not png:
             continue
-        url = frame.ROUTE + "?" + urlencode({"path": frame.rel(job, root), "studio": "1", "studio_group": "all"})
+        url = frame.ROUTE + "?" + urlencode({"path": frame.rel(folder, root), "studio": "1", "studio_group": "all"})
         url += "#" + frame.studio_anchor(topic, owner, block)
-        return (f'<a href="{e(url)}"><img src="{file_url(png, root)}" alt="{e(topic.name)}" loading=lazy '
-                f'style="width:100%;max-width:900px;display:block"></a><div>{frame.link(url, topic.name)}</div>')
-    return ""
+        out.append(f'<figure><a href="{e(url)}"><img src="{file_url(png, root)}" alt="{e(topic.name)}" loading=lazy '
+                   f'style="width:100%;max-width:900px;display:block"></a><figcaption class=md-file>'
+                   f'{frame.link(url, topic.name)}</figcaption></figure>')
+    return "".join(out)
+
+
+def job_drawing(job, root):
+    """The Job's Studio drawings: its own topic, then every topic that names it (topic_pictures)."""
+    return topic_pictures(job, root)
 
 
 def job_about(job, root, mode, states, task_states):
@@ -596,6 +625,78 @@ def job_about(job, root, mode, states, task_states):
     (JL 261022: "在所有 task 上面 ... 点一下，然后 pop out ... 一个 markdown file"; "这个 markdown file 是 render 得好的")."""
     url = frame.ROUTE + "?" + urlencode({"view": "work-about", "path": frame.rel(job, root)})
     return node(f'📄 {frame.pop(url, f"About · {job.name}", "About this Job")}<span class=m>{e(goal(job)[:110])}</span>')
+
+
+def task_about(task, root):
+    """A Task's first row, above its items: one line that pops out the Task's report (render_task_about), as a Job's
+    does (JL 261022: "给 task 也来一个这种 report（pop out report）")."""
+    url = frame.ROUTE + "?" + urlencode({"view": "work-about", "path": frame.rel(task, root)})
+    return node(f'📄 {frame.pop(url, f"Report · {task.name}", "About this Task")}<span class=m>{e(goal(task)[:110])}</span>')
+
+
+def render_task_about(task, root):
+    """A Task's report as one rendered Markdown page, for the pop-out: its goal, close line and state, its Runs by
+    role (mark, when it finished, its one-line result; each opens its own page), its Opening, what it hands on, and
+    the charts its figures Runs drew, all read from disk on each open."""
+    from live import page_reader
+    fields, face = face_fields(task), text_of(frame.face(task))
+    title = next((l[2:].strip() for l in face.splitlines() if l.startswith("# ")), task.name)
+    job = frame.chain(task, root).get("Job")
+    items = [i for i in deliverables(job) if task_of(i) == task.name] if job else []
+    data = snapshot("Task", task)
+    states = {id(i): item_state(i, root, data)[0] for i in items}
+    rows = records(task)
+    md = [f"# 📂 {title}", "", f"**Goal.** {goal(task)}", ""]
+    if fields.get("close"):
+        md += [f"**Close when.** {fields['close']}", ""]
+    if fields.get("state"):
+        md += [f"**State.** {fields['state']}", ""]
+    done = sum(states[id(i)] == "done" for i in items)
+    md += ["## Progress", "", f"{done} of {len(items)} items delivered" if items else "no items listed for this Task"]
+    md[-1] += f" · {runs_n(len(rows))}" + (f" · {run_tally(rows)}" if rows else "")
+    md.append("")
+    if rows:
+        names = {k: l for k, l, _ in ROLES}
+        md += ["| Role | Run | Mark | Finished | Result |", "|---|---|---|---|---|"]
+        for row in sorted(rows, key=lambda r: (ROLE_ORDER.get(role_of(r), len(ROLES)), r["run"])):
+            rec = row["receipt"]
+            url = frame.ROUTE + "?" + urlencode({"view": "work-run", "path": frame.rel(task, root), "run": row["run"]})
+            said = str(row.get("headline") or "").split(";")[0].strip()
+            said = "" if said.startswith(row["run"]) else said.replace("|", "/")
+            when = clock(rec["finished_at"]) if rec.get("finished_at") else "-"
+            md.append(f"| {names.get(role_of(row), 'no role')} | [{row['run']}]({url}) | {run_mark(row)} | {when} | "
+                      f"{said[:160] or '-'} |")
+        md.append("")
+    opening = section(face, "Opening")
+    if opening.strip():
+        md += ["## Opening", "", opening.strip(), ""]
+    html_ = page_reader.markdown_html("\n".join(md))
+    if items:
+        lines = ["## What it hands on", ""]
+        for i in items:
+            st = states[id(i)]
+            means = i.get("means")
+            first = (means[0] if isinstance(means, list) and means else str(means or "")).strip()
+            lines.append(f"- {'☐' if st == 'todo' else TICKS[st]} **{i['what']}**" + (f": {first}" if first else ""))
+        html_ += page_reader.markdown_html("\n".join(lines))
+    figures = []
+    for row in rows:                                   # the charts a figures Run drew, newest Run last
+        if role_of(row) == "figures":
+            res = task / "runs" / row["run"] / "result"
+            res = res if res.is_dir() else task / "results" / row["run"]
+            figures += sorted(res.glob("*.png"))[:6] if res.is_dir() else []
+    if figures:
+        html_ += page_reader.markdown_html("## Figures") + "".join(
+            f'<figure><img src="{file_url(f, root)}" alt="{e(f.name)}" loading=lazy><figcaption class=md-file>'
+            f'{e(f.parent.parent.name)} · {e(f.name)}</figcaption></figure>' for f in figures[:12])
+    drawings = topic_pictures(task, root, job) if job else ""
+    if drawings:                                       # the Studio topics that name this Task (JL 261022)
+        html_ += page_reader.markdown_html("## Drawings") + drawings
+    back = nav(task, root, "Audience Report", "Goal", "Open the Task page")
+    return ('<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,'
+            f'initial-scale=1"><title>Report · {e(task.name)}</title><style>{page_reader.MARKDOWN_CSS}'
+            'figure{margin:.8em 0}td:nth-child(1),td:nth-child(3),td:nth-child(4){white-space:nowrap}'
+            f'</style></head><body><p class=md-file>{e(task.name)} · report, read from disk · {back}</p>{html_}</body></html>')
 
 
 def background_md(job):
@@ -663,7 +764,7 @@ def render_about(job, root):
         html_ += page_reader.markdown_html("\n".join(lines))
     drawing = job_drawing(job, root)
     if drawing:
-        html_ += page_reader.markdown_html("## Drawing") + drawing
+        html_ += page_reader.markdown_html("## Drawings") + drawing
     back = nav(job, root, "Audience Report", "Goal", "Open the Job page")
     return ('<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,'
             f'initial-scale=1"><title>About · {e(job.name)}</title><style>{page_reader.MARKDOWN_CSS}'
@@ -1093,30 +1194,23 @@ def plan_data(folder):
 
 
 def studio(folder, root):
-    """The Studio topics of this folder, each with its drawing shown (JL 261021: "这个 Studio 在这里应该可以直接看到吧"),
-    a click opening the topic in the Block's Studio."""
+    """The Studio topics of this folder as the Studio lists them (JL 261022: "update this, to the same format"): one
+    folded row each, its name, its tags, ↗ and its stage, opened in place to its drawing, its part drawings as rows
+    inside it (frame._topic_row). A Job or Task shows the topics that name it, and the Block's s00 first."""
     block = frame.chain(folder, root).get("Block")
     if not block:
         return ""
     rows = []
-    for owner, topic, _ in frame.studio_inventory(block, root):
-        notes = frame._notes(topic)
-        if folder != block and folder.name not in text_of(notes) and not owner.is_relative_to(folder):
+    for owner, topic, drawings in frame.studio_inventory(block, root):
+        background = topic.name.startswith("s00-")
+        if folder != block and not background and folder.name not in text_of(frame._notes(topic)) \
+                and not owner.is_relative_to(folder):
             continue
-        url = frame.ROUTE + "?" + urlencode({"path": frame.rel(folder, root), "studio": "1", "studio_group": "all"})
-        url += "#" + frame.studio_anchor(topic, owner, block)
-        name = frame.title(notes) if notes else topic.name
-        png = topic / f"{topic.name}.png"
-        png = png if png.is_file() else next(iter(sorted(topic.glob("*.png"))), None)
-        picture = (f'<a href="{e(url)}"><img src="{file_url(png, root)}" alt="{e(name)}" loading=lazy '
-                   f'style="width:100%;display:block"></a>') if png else '<p class=mut>No drawing yet.</p>'   # no frame of its own inside the card (JL 261021: "box 套 box")
-        rows.append(f'<figure style="margin:0"><figcaption style="margin:0 0 6px">{frame.link(url, name)}</figcaption>{picture}</figure>')
+        rows.append(frame._topic_row(topic, drawings, root, owner))
     url = frame.ROUTE + "?" + urlencode({"path": frame.rel(folder, root), "studio": "1", "studio_group": "all"})
     if not rows:
         return '<p class=mut>No Studio topic for this folder yet.</p><p>' + frame.link(url, "Open the Block's Studio") + '</p>'
-    columns = "1fr" if len(rows) == 1 else "repeat(auto-fill,minmax(440px,1fr))"   # its drawings seen here (JL 261021)
-    return (f'<div style="display:grid;grid-template-columns:{columns};gap:18px">' + "".join(rows) + '</div><p>'
-            + frame.link(url, "Open the Block's Studio") + '</p>')
+    return '<div class=studio-topics-lite>' + "".join(rows) + '</div><p>' + frame.link(url, "Open the Block's Studio") + '</p>'
 
 
 def runs_n(n):
@@ -1310,7 +1404,7 @@ def goal_view(level, folder, root, data, mode):
                  '<pre>' + e(show(summary)) + '</pre>' if summary else
                  '<p>No summary saved yet (workflow/report.yaml). ' + nav(folder, root, mode, "Results", "Read the results") + '</p>',
                  "saved" if summary else "not saved", key="conclusion")
-    return body + part("Operation") + card("🎨 Studio · discussions and sketches", studio(folder, root), key="studio")
+    return body + part("Studio") + studio(folder, root)        # its own part, open (JL 261022: "the Studio section")
 
 
 def plan_view(level, folder, root, data, mode):

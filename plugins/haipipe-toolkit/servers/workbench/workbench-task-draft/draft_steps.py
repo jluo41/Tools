@@ -171,16 +171,30 @@ def _evidence(folder: Path) -> dict:
     return out
 
 
+class _Marks(dict):
+    """phrase → (ink, card names) over the whole text, and `by_sentence`: S id → the same map for the items that name
+    that sentence in `for` ("*" for an item that names none). A sentence boxes only its own items' anchors, so a short
+    anchor such as "1 percent" (S36a) is not boxed inside "1.41 percent" in S5b (MISQ t05, 261022)."""
+    by_sentence: dict
+
+
+def _add_mark(out: dict, phrase: str, ink: str, label: str):
+    prev = out.get(phrase, (ink, []))
+    out[phrase] = (INK["need"] if INK["need"] in (prev[0], ink) else ink, prev[1] + ([label] if label not in prev[1] else []))
+
+
 def _marks(ev: dict) -> dict:
     """Each anchor's words → (ink, the card names that back them): boxed in the text with the names beside them."""
-    out = {}
+    out = _Marks()
+    out.by_sentence = {}
     for c in ev["cards"]:
         for it in c["items"]:
             ink = INK["need"] if it["state"] != "have" else INK.get(c["kind"], INK["value"])
+            sids = ["S" + str(n).lstrip("S") for n in it.get("for") or []] or ["*"]
             for phrase in it.get("anchor") or []:
-                prev = out.get(phrase, (ink, []))
-                out[phrase] = (INK["need"] if INK["need"] in (prev[0], ink) else ink,
-                               prev[1] + ([c["label"]] if c["label"] not in prev[1] else []))
+                _add_mark(out, phrase, ink, c["label"])
+                for sid in sids:
+                    _add_mark(out.by_sentence.setdefault(sid, {}), phrase, ink, c["label"])
     return out
 
 
@@ -348,6 +362,8 @@ def _sentence(item: str, marks: dict) -> str:
     """A §3 line, `B1 · S1 · text`: its sentence number small and grey, then the sentence, each in its own span, so the
     text column can hang the numbers in a gutter on the left (CARDS_CSS)."""
     m = re.match(r"^B\d+ · (S\d+[a-z]*) · (.*)$", item)
+    if m and isinstance(marks, _Marks):
+        marks = {**marks.by_sentence.get("*", {}), **marks.by_sentence.get(m.group(1), {})}
     return (f'<span class="mut s-no" style="font-size:12px">{esc(m.group(1))}</span> '
             f'<span class=s-tx>{_inline(m.group(2), marks)}</span>' if m else _inline(item, marks))
 
@@ -1029,7 +1045,7 @@ def _served(path: Path | None, root: Path) -> str:
         return ""
 
 
-def _examples_card(exs: list, d: dict, f: dict, folder: Path, root: Path) -> str:
+def _examples_card(exs: list, d: dict, f: dict, folder: Path, root: Path, own: bool = False) -> str:
     """The Studio topic that reads the published papers, opened straight onto its drawing (JL 261020: "could you make
     things here to be the excalidraw using the /excalidraw-read, but we still use the one from the sNN studio"; "here I
     will expect it to be a frame of the sNN studio"): excalidraw-read's topic canvas, one row per paper, its passages
@@ -1038,8 +1054,9 @@ def _examples_card(exs: list, d: dict, f: dict, folder: Path, root: Path) -> str
         job = face(chain(folder, root).get("Job") or folder)
         desk = ((d or {}).get("head", {}).get("desk", "") or f["head"].get("desk", "") or
                 (_header(job.read_text(encoding="utf-8", errors="ignore")).get("desk", "") if job else "")).split(":")[0]
-        ask = (f"/excalidraw-read {f['t']}: find 3 to 4 published {desk.strip() or 'venue'} papers whose {f['section']} "
-               f"we could follow (two close to our topic, two its author guide quotes); read each PDF's {f['section']} "
+        ask = (f"/excalidraw-read {f['t']}: find 3 to 6 papers published in {desk.strip() or 'the target venue'} itself "
+               f"(only that journal, JL 261022: \"MUST NMI\"; each named by its title first) whose {f['section']} we could "
+               f"follow, close to our topic; read each PDF's {f['section']} "
                f"whole into a Studio topic sNN-{folder.name}-examples (reads/pNN-<author><year>/reading.yaml, with "
                "shots), each passage linked to the paragraph of ours it feeds.")
         return _fold("📚 Examples", _not_yet("No example papers yet.") + f'<p><button type=button class="run-copy '
@@ -1047,8 +1064,11 @@ def _examples_card(exs: list, d: dict, f: dict, folder: Path, root: Path) -> str
     inside = _drawn_inside(f)
     canvas = [(s, t, dr) for s, t, dr in f["topics"] if any(e["topic"] in inside for e in exs) and dr
               and _notes(t) and re.search(r"(?m)^\s*examples:", _notes(t).read_text(encoding="utf-8", errors="ignore"))]
-    if canvas:                                     # one canvas, ours and the examples side by side (s22 draws s26)
-        return "".join(_canvas_card(s, t, dr, root) for s, t, dr in canvas)
+    if canvas:                                     # one canvas, ours and the examples side by side (s22 draws s26);
+        # 2 · Write opens it first and says what it holds (JL 261022, of s22: "I want things like this")
+        n = len(exs)
+        return "".join(_canvas_card(s, t, dr, root, f"📚 Our text beside {n} published examples · {t.name}" if own
+                                    else "", open_=own) for s, t, dr in canvas)
     out = []
     for top in dict.fromkeys(e["topic"] for e in exs):
         n = sum(e["topic"] == top for e in exs)
@@ -1170,19 +1190,38 @@ def _write(f: dict, folder: Path, root: Path, st: str) -> tuple:
             "no §1 yet: the Section's contract")
     now = (f'{_code(d["file"], root)} · {esc(d["head"].get("version") or d["version"])}' if d else
            '<span class=mut>no draft yet</span>')
+    # examples first (JL 261022: "你应该先找 example，看看别人是怎么写 abstract 的，然后再看怎么写 ... 在 write 的时候，你应该
+    # 先找到相应的 example，这样我们就可以 follow 别人的参考了"): the published papers' same Section, read before a word
+    try:
+        exs = _examples(f, root)
+    except Exception:
+        exs = []
+    tops = list(dict.fromkeys(e["topic"].name for e in exs))
     rows = [("Plan", esc(plan)), ("Studio", esc(" · ".join(t.name for _, t, _ in f["topics"]) or "no topic")),
-            ("Writes", "§3 Draft, from §1 and its Scratch (1 · Plan), no rules yet"), ("Now", now)]
-    prompt = (f"/haipipe-draft {f['t']} write: redraft {f['section']} from my notes, its Scratch and §1; keep every "
-              "sentence I typed; no rules yet; mark each claim that waits for evidence." if d and d["text"] else
-              f"/haipipe-draft {f['t']} write: scratch §2 from the plan, then write §3 for {f['section']}; mark claims "
-              "you cannot support yet.")
+            ("Examples", esc(f'{len(exs)} papers · {" · ".join(e["short"] for e in exs)} ({", ".join(tops)})') if exs
+             else '<span class=mut>none yet: found and read first</span>'),
+            ("Writes", "§3 Draft, from §1 and its Scratch (1 · Plan), following the examples, no rules yet"), ("Now", now)]
+    follow = (f"first read the {len(exs)} examples in {', '.join(tops)} and note, for each paragraph or heading, the move "
+              "and length they share; then " if exs else
+              f"first find 3 to 4 published papers of the venue whose {f['section']} we could follow and read each one's "
+              f"{f['section']} whole into a Studio topic sNN-{folder.name}-examples (/excalidraw-read), noting the move "
+              "and length each paragraph or heading shares; then ")
+    prompt = (f"/haipipe-draft {f['t']} write: {follow}redraft {f['section']} from my notes, its Scratch and §1, "
+              "following them; keep every sentence I typed; name each place ours departs from the examples and why; no "
+              "rules yet; mark each claim that waits for evidence." if d and d["text"] else
+              f"/haipipe-draft {f['t']} write: {follow}scratch §2 from the plan, then write §3 for {f['section']} "
+              "following them; name each place ours departs and why; mark claims you cannot support yet.")
     # the drafting ask, open (JL 261020: "add the prompt to help the structure and drafting"); the structure ask is
     # 1 · Plan's, beside the Scratch
     op = _step_box("✍️ Stage 2 · Write", st, "<h4>Input</h4>" + _kv(rows)
                    + _prompt_box(prompt, folder, root, "write", "✍️ Prompt · draft"))
+    try:                                           # the examples beside the writing, as 1 · Plan shows them
+        shown = _examples_card(exs, d, f, folder, root, own=True)
+    except Exception as e:
+        shown = _fold("📚 Examples", _not_yet(f"The examples do not read: {e}"))
     if not d or not d["text"]:
-        return op, _not_yet("No text yet."), ()
-    cards = _text_and_editor(d, ev, root, folder) + "".join(_fold(f"🗒 {t}", _md(b, {})) for t, b in d["notes"])
+        return op, shown + _not_yet("No text yet."), ()
+    cards = shown + _text_and_editor(d, ev, root, folder) + "".join(_fold(f"🗒 {t}", _md(b, {})) for t, b in d["notes"])
     return op, cards, ()
 
 
@@ -1270,14 +1309,16 @@ WRITE_JS = """<style>
 </script>"""
 
 
-def _canvas_card(source: Path, topic: Path, drawings: list, root: Path) -> str:
+def _canvas_card(source: Path, topic: Path, drawings: list, root: Path, title: str = "", open_: bool = False) -> str:
     """A Section canvas opened straight onto its drawing, no topic row inside the card (JL 261020: "could I open
-    this, and the content here is shown directly? ... No need to have box in box")."""
+    this, and the content here is shown directly? ... No need to have box in box"); `title` names what it shows when
+    it is the examples beside our text (2 · Write)."""
+    head = title or f"🎨 The Section canvas · {topic.name}"
     if not drawings:
-        return _fold(f"🎨 The Section canvas · {topic.name}", _not_yet("No drawing yet."))
+        return _fold(head, _not_yet("No drawing yet."))
     url = _draw_url(drawings[0], root)
-    return (f'<details class="topic work-task"><summary><span class=related-head><b>🎨 The Section canvas · '
-            f'{esc(topic.name)}</b></span><span class=topic-pop>{pop(url, topic.name, "↗")}</span></summary>'
+    return (f'<details class="topic work-task"{" open" if open_ else ""}><summary><span class=related-head><b>'
+            f'{esc(head)}</b></span><span class=topic-pop>{pop(url, topic.name, "↗")}</span></summary>'
             f'<iframe class=st-frame title="{esc(topic.name)}" data-src="{esc(url)}" referrerpolicy=no-referrer>'
             '</iframe></details>')
 

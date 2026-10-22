@@ -19,6 +19,15 @@ foodnorm/glycemic.py: b51 j01 t21's gi_match.py, lifted whole (one guard added:
 no GI table, no GI), and matcher() to open ext_food_gi GI2008CN from the store. No
 release pins that table yet; it stays internal, and only an item's gi and gl leave.
 
+2026-10-22, items.py: the meal's total is the items' sum (b51 s01-D46). Its six came
+from normalize() of the whole meal as one string, which adds only foods matched the
+same way ("Banana; Milk 250 ml" gave the milk's 12.07 g alone); now each nutrient is
+summed over the items that matched, empty when any of them lacks it, with coverage
+the share of items counted, conf the weakest, basis theirs or "mixed". And an
+observed food with no serving type gave serving.unit NaN, which the event door
+cannot send as JSON (a 500 on about 1 meal in 150, found by t99 r09's smoke test):
+it is null now.
+
 
 0.7.0 — 2026-10-02
 --------------------------------------------------------------------------------

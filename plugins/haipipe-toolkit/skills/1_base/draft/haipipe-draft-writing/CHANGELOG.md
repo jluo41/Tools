@@ -1,3 +1,12 @@
+## 0.26.0 · 2026-10-22 · Examples first
+
+- JL 261022: "我突然忘了第一件事：你应该先找 example，看看别人是怎么写 abstract 的，然后再看怎么写。所以在 write 的时候，你应该
+  先找到相应的 example，这样我们就可以 follow 别人的参考了". New `ref/writing.md` § 0 · Examples first: before a Section is
+  written or rewritten whole, read 3 to 4 published papers of the venue writing the same Section (a Studio topic
+  `sNN-<task>-<venue>-examples`, /excalidraw-read), note each paragraph's or heading's move and length, write to that
+  pattern, and name each departure with its reason. The workbench's 2 · Write shows the 📚 Examples card and its prompt
+  starts with them (finding them first when there are none).
+
 ## 0.25.3 · 2026-10-21 · A Revise pass answers the person's comments first
 
 - JL 261021: "你每次改的时候，能不能通过我的 comments 来回复那种？"; "你的 change 怎么跟我的 comments 一起来做交互、解决我的

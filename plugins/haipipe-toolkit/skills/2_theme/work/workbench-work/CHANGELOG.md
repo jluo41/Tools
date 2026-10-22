@@ -1,3 +1,11 @@
+## 0.8.1 · 2026-10-22 · Job and Task reports show every Studio drawing that names them
+
+- The Goal tree's "📄 About this Job" and "📄 About this Task" pop out a Job's overview and a Task's report
+  (`work_progress.render_about`, `render_task_about`, built 261022). JL 261022, sending b51's s01-food-api drawing:
+  "we also need to have the so called job level report and task level report, right?". `topic_pictures` now puts
+  every Studio topic that names the Job under its `## Drawings` (its own `sNN-jNN-…` topic first; it showed only the
+  first one), and the topics that name a Task and its Job under the Task's. b51 j01 shows s21, s01-food-api and s11.
+
 ## 0.8.0 · 2026-10-21 · the workflow layout, and where an older Block is updated
 
 - SKILL.md: a Block with `workbench-layout: workflow` opens on Goal · Plan · Execution · Results (the Goal a

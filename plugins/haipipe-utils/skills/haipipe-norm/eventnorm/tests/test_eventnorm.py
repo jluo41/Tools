@@ -73,14 +73,15 @@ def t_errors():
     for bad, word in (({}, "send"), ({"raw": {"type": "fax", "rows": [{}]}}, "not one of"),
                       ({"raw": {"type": "app_log", "rows": []}}, "rows"),
                       ({"raw": {"type": "app_log", "rows": [{"x": "1"}]}}, "no shape"),
-                      ({"input": {"items": [{"amount": "1 g"}]}}, "input.items")):
+                      ({"input": {"items": [{"amount": "1 g"}]}}, "input.items"),
+                      ({"input": {"start": "2020-05-01 20:41", "source": {"kind": "guess"}}}, "input.source")):
         try:
             event(**bad)
         except ValueError as e:
             assert word in str(e), (bad, str(e))
         else:
             raise AssertionError(f"{bad} was taken")
-    return "five bad requests, each told what is wrong"
+    return "six bad requests, each told what is wrong"
 
 
 def t_typed():
@@ -91,7 +92,20 @@ def t_typed():
     assert hour == "2026-10-21 08:00 -04:00" and h["share"] == 1.0 and h["total"]["source"] == "tables"
     none = event(input={"items": [{"food": "Banana"}]})
     assert list(none["output"]) == ["no time"], list(none["output"])
-    return f"typed lines become items; Banana {h['items'][0]['macros']['carbs']}; no time is one entry"
+    carbs = [it["macros"]["carbs"] for it in h["items"]]
+    assert h["total"]["macros"]["carbs"] == "39.02 g" and h["total"]["coverage"] == 1.0, h["total"]   # 26.95 + 12.07,
+    #   the items' sum (261022); the meal asked as one string gave the milk's 12.07 g alone
+    assert h["source"] == {"kind": "logged"}, h["source"]
+    return f"typed lines become items {carbs}; total {h['total']['macros']['carbs']}; no time is one entry"
+
+
+def t_detected():
+    src = {"kind": "detected", "rule": "glucose_rise", "rise": "52 mg/dL", "peak": "21:20", "found_at": "21:05"}
+    ev = event(input={"start": "2020-05-01 20:41", "source": src})
+    (hour, h), = ev["output"].items()
+    assert list(h)[-1] == "source" and h["source"] == src, h
+    assert h["items"] is None and h["total"] is None, h
+    return "a meal a rule found: its start and its source, no items, no total"
 
 
 def run_eight():
@@ -122,6 +136,7 @@ if __name__ == "__main__":
     check("bites share an hour by their carbs", t_bites)
     check("bad requests", t_errors)
     check("typed text and no time", t_typed)
+    check("a detected meal", t_detected)
     run_eight()
     print(f"{len(PASS)} passed, {len(FAIL)} failed")
     sys.exit(1 if FAIL else 0)

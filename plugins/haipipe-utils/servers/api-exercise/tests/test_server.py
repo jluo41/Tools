@@ -233,6 +233,39 @@ def t_latency():
     assert ms < 250, f"{ms:.0f} ms per call"
     return f"{ms:.1f} ms per call"
 
+WALK = {"ExerciseType": "1001", "EntrySourceID": "23", "ObservationDateTime": "2/24/2022 3:04:13 AM",
+        "TimezoneOffset": "-360", "ExerciseDuration": "14", "CaloriesBurned": "152", "DistanceInMeters": None,
+        "ExerciseIntensity": "0"}                     # s02 ②'s Validic walk, the row's shape, no patient id
+
+
+def t_event_raw():
+    """POST /event, a logged row: the code book names it, describe-exercise gives its MET, one hour its own part."""
+    code, ev = post("/event", {"raw": {"type": "device_code", "rows": [WALK]}})
+    assert code == 200, (code, ev)
+    assert ev["input"]["items"] == [{"id": "i1", "activity": "Walking", "met": None}], ev["input"]
+    (hour, h), = ev["output"].items()
+    assert hour == "2022-02-23 21:00 -06:00" and h["total"]["minutes"] == 14 and h["total"]["met"] == 3.8, h
+    assert "share" not in h, "an exercise hour holds its own part, no share (s02-D23)"
+    return f"{hour}: {h['total']}"
+
+
+def t_event_words():
+    """POST /event, words: the activity and its minutes, an hour each its own part."""
+    code, ev = post("/event", {"raw": {"type": "text", "rows": [{"text": "brisk walking 30 min",
+                                                                  "time": "2026-10-22 08:45 -04:00"}]}})
+    assert code == 200, (code, ev)
+    mins = [h["total"]["minutes"] for h in ev["output"].values()]
+    assert mins == [15, 15], mins
+    return f"{ev['step']}: 15 + 15 minutes"
+
+
+def t_event_malformed():
+    """POST /event refuses what it cannot read, with the reason (422)."""
+    for body in ({}, {"raw": {"type": "photo", "rows": [{}]}}, {"input": {"items": [{"activity": "a"}, {"activity": "b"}]}}):
+        code, j = post("/event", body)
+        assert code == 422, (body, code, j)
+    return "no body, an unknown raw type, two items: 422"
+
 
 if __name__ == "__main__":
     print("=" * 78)
@@ -255,6 +288,9 @@ if __name__ == "__main__":
         ("the four basis cells", t_basis_matrix),
         ("empty batch is 200", t_empty_batch),
         ("length mismatch -> 422", t_length_mismatch_is_422),
+        ("POST /event: a logged row", t_event_raw),
+        ("POST /event: words", t_event_words),
+        ("POST /event: refusals are 422", t_event_malformed),
         ("malformed body -> 4xx, never 500", t_malformed_never_500),
         ("one real cook's distinct strings", t_real_cook),
         ("20,000 rows in one call", t_big_batch),

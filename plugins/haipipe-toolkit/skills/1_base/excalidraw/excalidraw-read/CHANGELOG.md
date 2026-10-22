@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.10.1 · 2026-10-22 · Every paper named by its title
+
+- JL 261022, on a related-papers topic whose frames read "p01 · Frey et al. 2023 · the paper, read": "一定要把 title
+  写上，这是最重中之重的。你光给我这个人的名字，谁他妈读得懂啊？". `ref/topic_drawing.py` gains `named(p)`, the id, the
+  paper's title and then who wrote it; every frame (the paper, the paper read, its logic) and every act use it, and
+  each theme card leads with the title, its authors, venue and year under it.
+- `read_paper.py` `section_paragraphs`: a Section's `from` now starts its first page at that row (an unheaded
+  Introduction's first words), so a page-one Introduction leaves the abstract and author block out; a page that
+  indents no paragraph (a one-column preprint) starts one where the gap above a line is wider than its lines' usual
+  gap, and after a short line when the gap is a figure's; an `until` heading split into two lines ("2", "P RELIMINARY")
+  is found on a one-column page. Two-column pages cut as before (Frey, Xiao and Gu counts unchanged).
+
 ## 0.10.0 · 2026-10-21 · An abstract's blocks, each cut whole
 
 - Asked 261021: the Abstract's Section canvas gets the frame of other papers the Introduction's has, so a structured

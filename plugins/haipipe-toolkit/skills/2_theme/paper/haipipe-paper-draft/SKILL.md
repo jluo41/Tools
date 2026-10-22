@@ -12,7 +12,7 @@ description: >-
   checking, or retargeting one paper Section. Was haipipe-paper-section (261019);
   /haipipe-paper-section still opens it.
 metadata:
-  version: "0.13.0"
+  version: "0.14.0"
   last_updated: "2026-10-19"
   aliases: [haipipe-paper-section]
   folder_owner: canonical
@@ -137,6 +137,14 @@ face's compile-order block supplies manuscript order; `board.md` is the Page ros
 A Section is never renamed merely because another
 section is inserted: the new one takes a free number in its band, and the version's compile order, not the
 number, decides where it prints.
+
+## 📚 Examples first (JL 261022)
+
+A Section, the Abstract or a letter is written after reading how 3 to 4 published papers of the same venue write the
+same part, never before: a Studio topic `sNN-<task>-<venue>-examples` (`/excalidraw-read`; two papers close to the
+topic, two the author guide quotes), named by the Section canvas's `examples:` line, so the canvas draws ours beside
+them. The writer follows their moves and lengths and names each departure (haipipe-draft-writing `ref/writing.md` § 0).
+JL 261022: "你应该先找 example，看看别人是怎么写 abstract 的，然后再看怎么写".
 
 ## ⚙️ Paper Section Run profile
 

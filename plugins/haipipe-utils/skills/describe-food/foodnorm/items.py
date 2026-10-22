@@ -15,9 +15,11 @@ WHERE EACH NUMBER COMES FROM
               (observed.EXTRA_KEYS: the answer does not carry them yet); a negative is the vendor's "not given",
               so empty, and a food matched in the USDA tables has them empty
     GI, GL    glycemic.py on ext_food_gi, by the item's name (its Chinese name first, when it has one)
-    total     the six: normalize() of the whole meal as one string (what ext_food_resolved froze), or `answer`
-              when the caller already holds the meal's answer (the photo API's); the eight: the items' sum, empty
-              when any item has none; GL: the items' GL summed
+    total     the six: the items' sum, over the items that have the number, or `answer` when the caller already
+              holds the meal's answer (the photo API's); coverage is the share of items counted, conf the weakest
+              of them. (Until 261022 the six came from normalize() of the whole meal as one string, which adds up
+              only foods matched the same way: "Banana; Milk 250 ml" gave the milk's 12.07 g alone.) The eight:
+              the items' sum, empty when any item has none; GL: the items' GL summed
 
 Numbers are written as text with their unit ("28 g", "150 kcal"), rounded to two places, null when absent: the
 event JSON's form (eventnorm/schema.py).
@@ -49,15 +51,13 @@ def enrich_items(items: List[Dict], asks: Optional[List[str]] = None, meal: Opti
     """items (each {"id", "food", "amount"?, "food_zh"?}) -> (each enriched, the meal's total).
 
     asks    the text each item is asked with (default its food); Shanghai asks the line with its grams
-    meal    the meal as one string, for the total's six (default the asks joined by "; ")
+    meal    kept for callers; the total no longer asks the meal as one string (261022)
     answer  the meal's answer already in hand (a photo API reply): its six are the total's, no second call
     """
     from . import normalize, observed as ob
     from . import glycemic as gm
     asks = list(asks) if asks is not None else [it["food"] for it in items]
-    meal = meal if meal is not None else "; ".join(asks)
-    alone = normalize(asks) if asks else []                 # two calls, never one batch: t12 C07 finds a batch can
-    tot = answer if answer is not None else (normalize([meal])[0] if asks else {})   # differ from one at a time
+    alone = normalize(asks) if asks else []
     m = gm.matcher()
     out, nums = [], []
     for it, ask, a in zip(items, asks, alone):
@@ -72,7 +72,7 @@ def enrich_items(items: List[Dict], asks: Optional[List[str]] = None, meal: Opti
         e = {"id": it["id"],
              "match": {"food": a.get("FoodNameResolved"), "source": a.get("NutritionSource"),
                        "conf": a.get("NutritionConf"), "times_logged": int(n) if n is not None and n == n else None},
-             "serving": {"basis": basis, "unit": {"per_serving": (rec or {}).get("serving_type"),
+             "serving": {"basis": basis, "unit": {"per_serving": clean((rec or {}).get("serving_type")),
                                                   "per_meal": it.get("amount"), "per_100g": "100 g"}.get(basis),
                          "grams": None}}
         e.update({g: {name: val(num.get(col), u) for name, col, u in fields} for g, fields in FOOD_GROUPS})
@@ -80,6 +80,8 @@ def enrich_items(items: List[Dict], asks: Optional[List[str]] = None, meal: Opti
         e["glycemic"] = {"gi": gly["gi"], "gl": gly["gl"], "from": gly["from"]}
         out.append(e)
         nums.append(num)
+    tot = answer if answer is not None else summed(nums, [it["match"]["conf"] for it in out],
+                                                   [it["serving"]["basis"] for it in out])
     total = {}
     for g, fields in FOOD_GROUPS:
         total[g] = {}
@@ -92,3 +94,22 @@ def enrich_items(items: List[Dict], asks: Optional[List[str]] = None, meal: Opti
     total.update({k: clean((tot or {}).get(c)) for k, c in
                   (("conf", "NutritionConf"), ("basis", "NutritionBasis"), ("coverage", "NutritionCoverage"))})
     return out, total
+
+
+CONF_ORDER = ("MEASURED", "ESTIMATED")                      # weakest last; anything else (a MISS) counts as none
+
+
+def summed(nums: List[Dict], confs: List[str], bases: List[str]) -> Dict:
+    """The meal's six as the sum of its counted items: an item with none of the six (a MISS) is not counted, and a
+    nutrient that any counted item lacks is empty, never a sum too small (as the eight). NutritionCoverage is the
+    share of items counted, NutritionConf the weakest of them, NutritionBasis theirs when they share one, else
+    "mixed"."""
+    has = lambda v: v is not None and v == v
+    got = [k for k, x in enumerate(nums) if any(has(x[c]) for c in SIX)]
+    out = {c: sum(nums[k][c] for k in got) if got and all(has(nums[k][c]) for k in got) else None for c in SIX}
+    ranks = [CONF_ORDER.index(confs[k]) if confs[k] in CONF_ORDER else len(CONF_ORDER) for k in got]
+    basis = {bases[k] for k in got}
+    out.update(NutritionCoverage=round(len(got) / len(nums), 3) if nums else None,
+               NutritionConf=(CONF_ORDER + ("MISS",))[max(ranks)] if ranks else "MISS",
+               NutritionBasis=(basis.pop() if len(basis) == 1 else "mixed") if got else None)
+    return out

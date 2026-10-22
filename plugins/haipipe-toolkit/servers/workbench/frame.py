@@ -729,6 +729,33 @@ def _studio_transcripts(topic: Path, root: Path, topic_id: str) -> str:
             + "".join(cards) + "</section>") if cards else ""
 
 
+def studio_parts(topic: Path, drawings: list) -> list:
+    """(part, label, drawing) for each of a topic's part drawings, `<topic>.<part>.excalidraw` (JL 261022: "They
+    will share the same sNN"); a part named `3a-<kind>` reads as "sNN · ③a <kind>"."""
+    if not topic.is_dir():
+        return []
+    nn = re.match(r"s\d+", topic.name)
+    out = []
+    for dr in drawings:
+        if not dr.name.startswith(topic.name + ".") or dr.name == topic.name + ".excalidraw":
+            continue
+        part = dr.name[len(topic.name) + 1:-len(".excalidraw")]
+        m = re.match(r"(\d)([a-z])-(.+)", part)
+        label = f"{'①②③④⑤⑥⑦⑧⑨'[int(m.group(1)) - 1]}{m.group(2)} {m.group(3)}" if m else part
+        out.append((part, ((nn.group(0) + " · ") if nn else "") + label, dr))
+    return out
+
+
+def _studio_parts(topic: Path, drawings: list, root: Path, topic_id: str) -> str:
+    """A topic's part drawings, `<topic>.<part>.excalidraw` beside its own (JL 261022: "one section to be one
+    excalidraw ... They will share the same sNN"): each a row inside the topic's row, opened in place like it.
+    A part named `3a-<kind>` reads as ③a <kind>."""
+    rows = [f'<details class="topic studio-part" id="{_e(topic_id + "--" + part)}"><summary><b>{_e(label)}</b></summary>'
+            f'<iframe class=st-frame title="{_e(dr.stem)}" data-src="{_e(_draw_url(dr, root))}" '
+            'referrerpolicy=no-referrer></iframe></details>' for part, label, dr in studio_parts(topic, drawings)]
+    return f'<section class="studio-parts">{"".join(rows)}</section>' if rows else ""
+
+
 def _topic_row(topic: Path, drawings: list, root: Path, folder: Path, shared: Path | None = None) -> str:
     """One closed row with its name, tags and controls; opened in place, its live drawing."""
     md = _notes(topic)
@@ -767,6 +794,7 @@ def _topic_row(topic: Path, drawings: list, root: Path, folder: Path, shared: Pa
         source = folder.relative_to(shared).as_posix() if folder != shared else ""
         attrs, focus, current, badges = _group_parts(topic.relative_to(shared).as_posix(), name, facts["tags"], source)
         tools.insert(0, current)
+    body += _studio_parts(topic, drawings, root, topic_id)
     body += _studio_transcripts(topic, root, topic_id)
     return (f'<details class=topic id="{_e(topic_id)}" data-studio-tags="{_e(json.dumps(facts["tags"]))}"'
             f' data-stage="{_e(stage)}"{attrs}>'
@@ -781,7 +809,8 @@ def _studio_topics(folder: Path) -> list:
     if studio.is_dir():
         for p in sorted(studio.iterdir()):
             if p.is_dir() and not p.name.startswith(("_", ".")):
-                out.append((p, sorted(p.glob("*.excalidraw"))))
+                out.append((p, sorted(p.glob("*.excalidraw"), key=lambda f, own=p.name + ".excalidraw":
+                                      (f.name != own, f.name))))       # the topic's own drawing first
             elif p.suffix == ".excalidraw":
                 out.append((p, [p]))
     return out
@@ -3072,7 +3101,7 @@ header.page-title h1{font-size:26px;margin:22px 0 18px;line-height:1.25}header.p
 .chip{display:inline-block;padding:0 8px;margin-right:4px;border:1px solid var(--acc);border-radius:999px;color:var(--acc);font-size:12px;text-decoration:none}
 .st-bar{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:8px 14px}
 .draw-edit{font:500 12.5px -apple-system,sans-serif;border:1px solid var(--line);border-radius:6px;padding:1px 9px;cursor:pointer;background:var(--bg);color:var(--fg)}
-.studio-transcripts{margin:16px 14px}.studio-transcripts>h3{font-size:17px;margin:0 0 12px}.studio-transcript-note,.studio-transcript-links{margin:12px 14px;font-size:14px;line-height:1.5}.studio-transcript-note{color:var(--mut)}
+.studio-parts{margin:10px 14px 16px}.studio-parts>details.topic{margin:0 0 8px}.studio-transcripts{margin:16px 14px}.studio-transcripts>h3{font-size:17px;margin:0 0 12px}.studio-transcript-note,.studio-transcript-links{margin:12px 14px;font-size:14px;line-height:1.5}.studio-transcript-note{color:var(--mut)}
 .st-frame{display:block;width:100%;height:calc(100vh - 240px);min-height:520px;border:0;border-top:1px solid var(--line);background:#fff}
 .add{margin:6px 2px 0}
 .st-ok{color:var(--ok)}.st-warn{color:var(--warn)}

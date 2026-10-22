@@ -25,14 +25,21 @@ issue file         ${REGISTER}/<YYMMDD>/issue-00N-<slug>.md
 daily findings     ${REGISTER}/<YYMMDD>/FINDINGS.md
 issue template     issue-file-template.md
 status file        <task-folder>/ISSUES.md
-static gate        python3 work/_tools/check_server_ready.py <UNIT>    19 rules
-lessons file       work/LESSON.MD
-sync command       python3 work/_tools/sync_shared.py
-drift check        python3 work/_tools/sync_shared.py --check
-canonical root     work/00_cms-stata-template/
+static gate        python work/_tools/check_server_ready.py <UNIT>     19 rules
+shared copies      python work/_tools/check_preupload.py <work dir>    M10: every SHARED COPY byte-identical
+tree check         python work/_tools/check_task_tree.py <Block dir>
+dry run            python work/_tools/dryrun/dryrun.py                every ticket, stand-in Stata, server layout
+upload package     python work/_tools/pack_upload.py <tag> [--check]
+results back       work/_tools/collect_results.ps1 (server), file_server_return.py (laptop)
+server home        F:\Physician-SPACE\work\<Block>\...                never the repo's own depth
 ```
 
-`<UNIT>` is a prefix, not a path: `R01`, `C01`, `A11`, `R03`.
+`<UNIT>` is any part of a Job's folder name, not a path: `j21_C1D_reg_VisitLBP` picks one Job (plain `j21` matches
+every visit Block's j21; the old units `R01`, `C01`, `A11` name the pre-261019 folders). No unit checks every Job.
+Every `work/_tools/` path is inside `examples-2-cms/Project-Personality-OpioidRx/`; `python` here is always the
+SPACE's `.venv/bin/python` (the Mac's system `python3` is 3.9).
+Since 261019 a file shared by many Jobs carries a `SHARED COPY` banner instead of `GENERATED FILE`: there is
+no generator to rerun, so edit every copy the same way and `check_preupload.py` must report 0 (M10).
 
 ---
 
@@ -51,6 +58,11 @@ results/<run>/data-state.tsv          row + column delta per step, one screen.
 ```
 
 Success is the `.done-*` marker file, never the exit code.
+
+A regression Run in a Run folder (since 261020) splits these: `runs\<run>\result\` keeps only what a reader
+reviews (`RUN-REPORT.md`, `tables\`, `describe\`), and each execution's `log\`, `steps\`, `.done`,
+`runtime.yaml` and `config_snapshot.do` go to `runs\<run>\passes\pNN-<MMDD>\`, which stays on the server.
+A Run that failed prints `STOPPED: <entry> ended with r(<rc>)` in that pass's log (`stata-guard.do`).
 
 ---
 
@@ -100,19 +112,19 @@ the .done marker is the      never `$proc.ExitCode -ne 0`. Start-Process
 cite as [ID] in the code     `// [C01-02] ...` at the causing line
 ```
 
-A file whose head reads `GENERATED FILE` names its canonical under
-`work/00_cms-stata-template/`. Edit there, then `sync_shared.py`. Gate rule R19
-fails until you do.
+A file whose head reads `GENERATED FILE` is written by a script: change the script and rerun it (the Task
+pages and the `sbatch\by_*` wrappers are written by `work/_tools/write_pages.py`). A `SHARED COPY` is edited in
+every copy alike (Defaults above).
 
 ---
 
 ## Step 4: the gate, and what it cannot see
 
 ```bash
-python3 work/_tools/check_server_ready.py <UNIT>
+.venv/bin/python work/_tools/check_server_ready.py <UNIT>
 ```
 
-19 rules, each one an entry in `work/LESSON.MD`, each entry a failure that has
+19 rules, each one an entry in `_old/task.old/LESSON.MD`, each entry a failure that has
 already cost a real run. Exit 0 means every rule passed.
 
 Register entry **ALL-09** is why green is not proof: a synthetic unit built to
@@ -121,6 +133,69 @@ Thirteen rules can pass on a genuine violation. Say "Gate 1 green, <n>/19" and
 never "this will run".
 
 ---
+
+## Before an upload: the pre-flight (261022)
+
+A failure on this server costs a day, so an upload is checked against every lesson first, not only the gate.
+Run all of it; each step catches what the others cannot.
+
+```
+1 gates      check_server_ready.py (R14 alone is not runtime) · check_preupload.py 0 · check_task_tree.py 0
+2 register   read SERVER-READY-CHECK.md AND every <YYMMDD>/FINDINGS.md; its status column can be stale,
+             so check each CRASH and SERVER entry in today's code, not in the table
+3 patterns   no `set batch`, no `ssc install`, no `forvalues x = ${a}/${b}`, `estat firststage, all` only
+             under capture, no PowerShell 7 syntax (`??`, `&&`, `ForEach-Object -Parallel`), no `pwsh`,
+             no Python or `.sh` in a server ticket (ENV-08), ASCII and no CR in every .do and .ps1,
+             every launcher on stata-guard.do and setting STATATMP, only installed community commands
+4 dry run    dryrun.py: every ticket through its real launcher; seed an asset only the server holds
+             (case_osteo v0001) and rerun that part with --reuse/--refresh --only
+5 inputs     what each stage reads must already be on F: (the dry run lists it); name what is missing
+6 package    pack_upload.py <tag>, then --check: 0 differences from the repo; no result\, results\, passes\
+```
+
+What the dry run proves: paths, launchers, `.done` markers, hand-offs between stages, path length. What it
+cannot prove: any number, a missing column, or a guard that depends on data (the stand-in Stata marks such
+conditions "unknown"). Read those guards in the code, and say which ones were read, not run.
+
+## Running on the server
+
+Every Task runs one way, from the SPACE folder, by its `by_task` wrapper. The laptop path minus
+`examples-2-cms/Project-Personality-OpioidRx/` is the server path:
+
+```powershell
+cd F:\Physician-SPACE
+.\work\b11_CD_visit_pain_lbp\j21_C1D_reg_VisitLBP_1stPair_yr15_20_bigfive_ols\sbatch\by_task\t04_C1_D_reg_VisitLBP_extr.ps1 -WhatIf
+.\work\b11_CD_visit_pain_lbp\j21_C1D_reg_VisitLBP_1stPair_yr15_20_bigfive_ols\sbatch\by_task\t04_C1_D_reg_VisitLBP_extr.ps1 -ContinueOnError
+```
+
+- `-WhatIf` prints the Runs and starts none; `-Sequential` runs one at a time; filters compose (`-Window af14d`).
+- The wrapper finds its Job from its own place (`$PSScriptRoot`), so the folder you start in does not matter;
+  `\` and `/` both work. `.\sbatch\run_slice.ps1` from a Job folder runs the whole Job.
+- Every Task has a wrapper, a Job of one Task too: `write_pages.py` writes them (it always writes `by_task`).
+- Never copy `work\` to the repo's depth (`F:\Physician-SPACE\examples-2-cms\...`): the deepest files pass
+  259 characters there, and the C and D launchers refuse a home folder longer than 23 characters.
+- After a new upload, run two short tickets first (the package's `README-UPLOAD.md` names them): one that reads
+  headers only (`b01_A_cms_pipeline\j01_A0_cms_description\sbatch\run_slice.ps1`), and one that MUST fail in
+  seconds (`b14_CD_visit_pain_musc\j02_C2_data_VisitMusc_1stPair_yr15_24\t01_C2_data_build_VisitMusc\runs\r02_*.ps1`,
+  Musc has no 2021-2024 case years). It proves an error ends Stata instead of opening the /e dialog (ENV-01/ENV-11);
+  if the dialog opens instead, close it and stop.
+
+## Bringing results back
+
+`collect_results.ps1 [-Block b11] [-WhatIf]` (`-Block` is a name prefix; there is no Task filter) packs only aggregate output (`RUN-REPORT.md`, `tables\`, `describe\`,
+`summary.txt`, receipts; b01's step logs) into `F:\ret\work-<yyMMdd>.zip`, by Run path, and judges every file
+for the colleague who reviews it before it leaves:
+
+```
+STOP   an identifier column (bene_id, npi_id, clm_id, pde_id) or a count 1-10: held back, never zipped
+LOOK   a log, a picture, or text that may print a small count or a 10-digit number: a person reads it
+OK     an aggregate table or receipt with no count under 11 and no identifier
+```
+
+The reviewer reads `EXPORT-REVIEW.md` first (STOP and LOOK only, grouped by reason); each Run's `REVIEW.md`
+explains every file in one line. On the laptop, `file_server_return.py <zip> --apply` files each part into its
+own Run and refuses a count 1-10 again. A file the script cannot read (a CSV with two columns of one name) is
+LOOK, never a crash of the whole pack.
 
 ## CMS status and local verification
 

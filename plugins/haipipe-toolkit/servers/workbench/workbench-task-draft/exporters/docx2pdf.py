@@ -94,6 +94,8 @@ img { max-width: 100%; }
 """
 
 
+M = "{http://schemas.openxmlformats.org/officeDocument/2006/math}"
+
 def text_of(node):
     return "".join(t.text or "" for t in node.iter(W + "t"))
 
@@ -149,8 +151,18 @@ def docx_html(path):
             b = r.find(W + "rPr/" + W + "b")
             if b is not None and (b.get(W + "val") or "true").lower() not in ("0", "false"):
                 bold.update(r.iter(W + "t"))
+        # an equation (OMML, `m:oMath`) prints its text, subscripts and superscripts lowered and raised; this
+        # projection skipped it, so "the primary test is β_LBP − β_cancer" read "the primary test is ," (MISQ
+        # j01 v2, 261022)
+        lowered = {t for s in p.iter(M + "sub") for t in s.iter(M + "t")}
+        raised = {t for s in p.iter(M + "sup") for t in s.iter(M + "t")}
         for el in p.iter():
             tag = el.tag
+            if tag == M + "t":
+                text = html.escape(el.text or "")
+                pieces.append("<sub>%s</sub>" % text if el in lowered else
+                              "<sup>%s</sup>" % text if el in raised else "<i>%s</i>" % text)
+                continue
             if tag == W + "commentRangeStart":
                 open_ids.append(el.get(W + "id"))
                 pieces.append('<span class="anchor">')

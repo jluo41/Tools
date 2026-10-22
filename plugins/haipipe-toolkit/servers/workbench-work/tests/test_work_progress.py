@@ -190,6 +190,30 @@ def test_a_tasks_runs_group_by_role(board):
     assert content.index("r01_smoke") < content.index("r02_full") < content.index("r04_full_retry") < content.index("r03_figures_counts")
 
 
+def test_each_task_opens_with_its_own_report_above_its_items(board):
+    """JL 261022: "给 task 也来一个这种 report（pop out report）"."""
+    root, block, job, task = board
+    run(task)
+    figs = run(task, "r02_figures_by_rank")
+    (figs / "run.yaml").write_text("run: r02_figures_by_rank\nkind: hard\nrole: figures\nstatus: done\n")
+    (figs / "result/01_by_rank.png").write_bytes(b"\x89PNG\r\n\x1a\n")
+    (task / "runs/r01_compare/result/table.csv").write_text("a\n1\n")
+    face = task / f"{task.name}.md"
+    face.write_text("# Answers compared\nstate: 🟡 RESULTS IN\ngoal: One table of the answers.\nclose: r01 stored it.\n"
+                    "folder-kind: task\ntask: .\n\n## Opening\n\nThe answers, **compared**.\n")
+    (job / "j01_tables.md").write_text((job / "j01_tables.md").read_text() + (
+        "\n## Deliverables\n\n```yaml\ndeliverables:\n- what: \"Answers table\"\n  means: [One row per answer.]\n"
+        "  files: t01_answers/runs/r01_compare/result/*.csv\n  run: t01_answers/r01_compare\n```\n"))
+    content = work_progress.goal_cards("Block", block, root, work_progress.snapshot("Block", block), "Audience Report")
+    row = content.index(">About this Task</a>")
+    assert content.index("t01_answers") < row < content.index("<b>Answers table</b>")   # first under the Task
+    page = work_progress.render_task_about(task, root)
+    for words in ("<h1>📂 Answers compared</h1>", "<b>Goal.</b> One table of the answers.", "<b>Close when.</b> r01 stored it.",
+                  "1 of 1 items delivered · 2 Runs", "view=work-run", ">r01_compare</a>", "📊 figures", "The answers, <b>compared</b>.",
+                  "Answers table</b>: One row per answer.", "<h2>Figures</h2>", "01_by_rank.png"):
+        assert words in page, words
+
+
 def test_each_job_opens_with_its_own_overview_above_its_tasks(board):
     """JL 261022: "在所有 task 上面 ... 点一下，然后 pop out ... 一个 markdown file"; "这个 markdown file 是 render 得好的"."""
     root, block, job, task = board

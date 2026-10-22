@@ -164,11 +164,13 @@ class FrameMixin:
             body = work_progress.render_run(folder, root, get("run"))
             return self.guide_send(body or "<h1>Run unavailable</h1>", 200 if body else 404,
                                    head_only=head_only)
-        if get("view") == "work-about":                  # a Job's overview, popped out (workbench-work, JL 261022)
+        if get("view") == "work-about":                  # a Job's overview or a Task's report, popped out (workbench-work)
             from live import work_progress
-            if frame.level_of(folder) != "Job" or not work_progress.enabled(folder, root):
-                return self.guide_send("<h1>Job unavailable</h1>", 404, head_only=head_only)
-            return self.guide_send(work_progress.render_about(folder, root), 200, head_only=head_only)
+            level = frame.level_of(folder)
+            if level not in ("Job", "Task") or not work_progress.enabled(folder, root):
+                return self.guide_send("<h1>Unavailable</h1>", 404, head_only=head_only)
+            page = work_progress.render_about(folder, root) if level == "Job" else work_progress.render_task_about(folder, root)
+            return self.guide_send(page, 200, head_only=head_only)
         if get("view") == "work-browse":                 # a deliverable's finished set, browsed (workbench-work)
             from live import work_progress
             if not work_progress.enabled(folder, root):

@@ -1,3 +1,9 @@
+## 1.29.2 · 2026-10-22 · The Examples prompt asks for the target journal only
+
+- `servers/workbench/workbench-task-draft/draft_steps.py` `_examples_card`: the prompt a Section's 1 · Plan copies when it
+  has no example papers now asks for 3 to 6 papers published in the target journal itself, each named by its title
+  (JL 261022: "MUST NMI"; "你光给我这个人的名字，谁他妈读得懂啊"); it asked for two close papers and two the author guide quotes.
+
 ## 1.29.1 · 2026-10-21 · where a new Block starts
 
 - SKILL.md § Update: a new Block starts on haipipe-block's `new_board.py` (2.2.0, born on today's face), `/wb update`

@@ -69,7 +69,8 @@ GALLERY = {"food": "_FoodInfo/0-inputs", "exercise": "_ExerciseInfo/0-inputs",
            "medication": "_MedInfo/0-inputs", "insulin": "_InsInfo/0-inputs"}
 # A lane with an event door (food: POST /food/event) shows real events instead: each a raw as it arrives, the input
 # JSON and the output by local hour, frozen when the gallery was built (b51 j01 t99 r07 writes it from s01 ③'s meals).
-EVENTS = {"food": "_FoodInfo/7-events/events.json"}
+EVENTS = {"food": "_FoodInfo/7-events/events.json",
+          "exercise": "_ExerciseInfo/7-events/events.json"}   # b51 j02 t99 r04 writes it from s02 ③ and ④
 
 
 def eventnorm_root() -> Optional[Path]:

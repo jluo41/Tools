@@ -783,8 +783,11 @@ def page_draft_bib(p):
 def citing_bib(p):
     """The Bib this build merges for a Page: its verified `page_bib`, else, when the paper
     opts in with `[evidence] draft_citations`, its draft Bib (a G4 blocker, never silent)."""
+    # A Page's draft Bib holds its verified entries plus the unverified ones (workbench export
+    # _draft_bibliography), so with draft_citations on it wins whenever it exists; taking the verified Bib
+    # alone printed every unverified key as (?) (MISQ, 261022: 25 in the assembled draft).
     verified = page_bib(p)
-    if verified.is_file() or not DRAFT_CITATIONS or not page_draft_bib(p).is_file():
+    if not DRAFT_CITATIONS or not page_draft_bib(p).is_file():
         return verified
     return page_draft_bib(p)
 

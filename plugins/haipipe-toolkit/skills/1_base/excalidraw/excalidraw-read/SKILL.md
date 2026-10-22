@@ -10,8 +10,8 @@ description: >-
   the key parts", "how does this paper link to ours", a paper reading canvas, /excalidraw-read.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 metadata:
-  version: "0.10.0"
-  last_updated: "2026-10-21"
+  version: "0.10.1"
+  last_updated: "2026-10-22"
   # version history: ./CHANGELOG.md
 ---
 

@@ -304,8 +304,21 @@ class ExportMixin:
         """Freeze a derived Bib from the selected, verified CITE Results only."""
         if legacy_profile(page_src):
             own = evidence_lane_dir(page_src.parent, "bibex") / (page_src.stem + ".bib")
-            return own if own.is_file() else None
+            if not own.is_file():
+                return None
+            # the paper build reads a Page's Bib only from delivery/latex/selected-bibliography/ (LLMRec, 261022:
+            # a legacy-profile Introduction compiled its own PDF from bibex but left the paper build no Bib)
+            target = out_dir / "selected-bibliography" / own.name
+            target.parent.mkdir(exist_ok=True)
+            text = own.read_text(encoding="utf-8")
+            if not target.is_file() or target.read_text(encoding="utf-8") != text:
+                target.write_text(text, encoding="utf-8")
+            return own
         entries = {}
+        # A draft export (`delivery: draft` with a `draft-bibliography:`) lets a CITE Result that cannot give its own
+        # keys fall back to that declared .bib, which _draft_bibliography then checks key by key (MISQ, 261022:
+        # luo2026mapping, mccrae2003personality and dowell2016cdc had no source Run yet). Final delivery stays strict.
+        draft_fallback = draft_delivery(page_src) and bool(page_head(page_src, "draft-bibliography"))
         for manifest in selected_results(page_src):
             document = _result_document(manifest)
             if str(document.get("type", "")).upper() != "CITE":
@@ -315,7 +328,13 @@ class ExportMixin:
             if (not isinstance(ref, str) or not ref) and isinstance(payload, dict) and payload.get("sources"):
                 # the older paper-local CITE shape (pj…): no payload .bib of its own, but each
                 # source names its key and the Supporting Result it comes from
-                for key, entry in self._supporting_bibliography(manifest, document).items():
+                try:
+                    own = self._supporting_bibliography(manifest, document)
+                except EvidenceSelectionError:
+                    if draft_fallback:
+                        continue
+                    raise
+                for key, entry in own.items():
                     if key in entries and entries[key].strip() != entry.strip():
                         raise EvidenceSelectionError(f"Selected CITE Results conflict on bibliography key {key}")
                     entries[key] = entry
@@ -331,6 +350,8 @@ class ExportMixin:
             except ValueError as exc:
                 raise EvidenceSelectionError(f"{manifest}: bibliography leaves its selected Result payload") from exc
             if not bib.is_file() or bib.suffix != ".bib":
+                if draft_fallback:
+                    continue
                 raise EvidenceSelectionError(f"{manifest}: selected bibliography is missing")
             raw = bib.read_text(encoding="utf-8")
             keys = re.findall(r"@\w+\s*\{\s*([^,\s]+)\s*,", raw)
@@ -368,6 +389,15 @@ class ExportMixin:
         if not source.is_file():
             raise EvidenceSelectionError(f"draft-bibliography not found: {declared}")
         text = page_src.read_text(encoding="utf-8", errors="replace")
+        # a `\cite{…}` quoted inside a code span is a note about a citation, not one (MISQ t01, 261022: a note
+        # quoting another Section's `\cite{TOADD}` stopped the Introduction's draft export)
+        text = re.sub(r"`[^`\n]*`", "", text)
+        # a table or figure the page prints may cite too (MISQ t23, 261022: the variable table's body cites three
+        # keys the text does not, and they printed as [?]); its .tex files sit in the selected DISPLAY Results
+        for manifest in selected_results(page_src, strict=False):
+            if str(_result_document(manifest).get("type", "")).upper() in {"DISPLAY", "TABLE"}:
+                for tex in sorted((manifest.parent / "payload").rglob("*.tex")):
+                    text += "\n" + tex.read_text(encoding="utf-8", errors="replace")
         keys = []
         for m in _CITE.finditer(text):
             keys += [k.strip() for k in m.group(1).split(",") if k.strip() and k.strip() not in keys]
@@ -389,7 +419,7 @@ class ExportMixin:
         """The entries an older CITE Result cites, each taken by its exact key from the
         one-entry `.bib` of a Supporting Result the Result itself names. A key found in
         none of them is refused by name: no paper-wide seed Bib, no key renaming."""
-        from src.item_table import repo_root
+        from src.item_table import moved_path, repo_root
         keys = [str(s.get("cite", "")).strip().lstrip("@").strip()
                 for s in (document.get("payload") or {}).get("sources", []) if isinstance(s, dict)]
         keys = [k for k in dict.fromkeys(keys) if k]
@@ -400,6 +430,9 @@ class ExportMixin:
         for support in document.get("supporting_results") or []:
             rel = support.get("result") if isinstance(support, dict) else None
             folder = (root / rel).resolve() if isinstance(rel, str) and rel else None
+            if folder is not None and not folder.is_dir():
+                folder = moved_path(root, rel)            # a receipt keeps its Run's old path (AGENTS.md)
+                folder = folder.resolve() if folder is not None else None
             if folder is None or not folder.is_dir():
                 continue
             try:
@@ -409,6 +442,19 @@ class ExportMixin:
             for bib in sorted(folder.glob("*.bib")):
                 for key, entry in self._bib_entries(bib.read_text(encoding="utf-8", errors="replace")).items():
                     found.setdefault(key, entry)
+        # A source whose `identity:` is a DOI is the same paper as a Supporting entry with that DOI, whatever key
+        # each names it by (MISQ t01, 261022: the text cites barnett2017opioid, the discovery Run's own Bib names
+        # it Barnett_2017; both doi:10.1056/NEJMsa1610524). The entry prints under the key the text cites.
+        doi_of = lambda text: (re.search(r"(?i)\bdoi\s*=\s*[{\"]\s*([^}\"]+)", text) or [None, ""])[1].strip().lower()
+        by_doi = {doi_of(entry): entry for entry in found.values() if doi_of(entry)}
+        for s in (document.get("payload") or {}).get("sources", []):
+            if not isinstance(s, dict):
+                continue
+            key = str(s.get("cite", "")).strip().lstrip("@").strip()
+            ident = str(s.get("identity", "")).strip().lower()
+            if key and key not in found and ident.startswith("doi:") and ident[4:].strip() in by_doi:
+                found[key] = re.sub(r"^(\s*@\w+\s*\{)\s*[^,]+,", lambda m: m.group(1) + key + ",",
+                                    by_doi[ident[4:].strip()], count=1)
         missing = [k for k in keys if k not in found]
         if missing:
             raise EvidenceSelectionError(

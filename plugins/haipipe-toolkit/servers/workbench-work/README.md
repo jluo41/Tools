@@ -34,7 +34,11 @@ Switching Report and Work keeps a subview both sides offer.
 - In the Block's Goal tree, each Job's first row, above its Tasks, is "📄 About this Job": one link that pops
   out the Job's overview (`view=work-about`, `render_about`) as a rendered Markdown page: its goal and close
   lines, its progress Task by Task, its Topic, its Background (timelines drawn), what it hands on and its Studio
-  drawing (the topic named `sNN-jNN-…`), all read from disk on each open (JL 261022).
+  drawings (its own `sNN-jNN-…` topic, then every topic that names the Job), all read from disk on each open (JL 261022).
+- Each Task's first row, above its items, is "📄 About this Task": it pops out the Task's report (`view=work-about`
+  on a Task, `render_task_about`): its goal, close line and state, its Runs by role in one table (mark, finish
+  time, one-line result; each Run name opens its Run page), its Opening, what it hands on, the charts its
+  `role: figures` Runs drew, and the Studio topics that name the Task and its Job (JL 261022: "给 task 也来一个这种 report").
 - A Task's Runs are grouped by their card's `role:` (trial, make, fix, check,
   describe, figures, evidence, publish; else `run_type` main, figures,
   delivery), in that order, each role named once.

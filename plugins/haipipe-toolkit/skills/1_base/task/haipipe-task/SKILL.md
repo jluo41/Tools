@@ -14,7 +14,7 @@ description: >-
   run-sh-template, runtime.yaml, heavy.yaml, check_task_tree, GPU queue, /haipipe-task.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "2.0.0"
+  version: "2.0.1"
   last_updated: "2026-10-21"
   folder_owner: canonical
   folder_kind: task

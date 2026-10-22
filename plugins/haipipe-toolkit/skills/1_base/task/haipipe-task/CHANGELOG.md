@@ -1,3 +1,13 @@
+## 2.0.1 · 2026-10-22 · the ticket's notebook step is SPACE-relative again
+
+Found running Proj11-CGM-FM b51 (JL 261022: "能跑的都跑"): a ticket launched from the SPACE root died with "Kernel
+died before replying to kernel_info" (the kernel started in the SPACE root, where `code/__init__.py` hides Python's
+`code` module, AGENTS rule 12), and every notebook recorded `/Users/...` in its papermill metadata and config parameter.
+
+- `ref/run-sh-template.sh` line 338 runs `(cd "$REPO_ROOT" && papermill --cwd "$TASK_FOLDER" "$(space_rel …)"
+  "$(space_rel …)" -p config "$(space_rel "$CONFIG")")`, the form the older template had: the kernel always starts in
+  the Task folder, wherever the ticket is launched, and the notebook holds only SPACE-relative paths.
+
 ## 2.0.0 · 2026-10-21 · two jobs: the Task level and the type door
 
 JL 261021: "I think it takes a role of the task in the block-job-task-run system, and also the task to all kinds of

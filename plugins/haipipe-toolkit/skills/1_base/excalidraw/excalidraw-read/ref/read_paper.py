@@ -559,8 +559,11 @@ def body_lines(page):
 
 def section_paragraphs(pages, sec):
     """The Section's paragraphs: [[(page, block, line, box, column)]], from its first body line on its first page
-    to the heading named `until` (Methods). A paragraph starts where a line is indented (about 15 pt past its
-    column's edge); a line beside a drop cap is not, and a column's first line goes on the paragraph above."""
+    (or from the row that starts with `from`: its heading, or the first words of an unheaded Introduction) to the
+    heading named `until` (Methods). A paragraph starts where a line is indented (about 15 pt past its column's edge);
+    a line beside a drop cap is not, and a column's first line goes on the paragraph above. A page that indents no
+    line (a one-column preprint, JL 261022's seven Introductions) starts one where the gap above a line is wider than
+    its lines' usual gap; a gap many times wider (a figure set between two lines) splits only after a short line."""
     first, last = sec["pages"][0], sec["pages"][-1]
     until = norm(str(sec.get("until") or ""))
     out = []
@@ -574,14 +577,29 @@ def section_paragraphs(pages, sec):
                     if norm(" ".join(w["t"] for w in ln["w"])) == until:
                         c = max([x for x in cols if ln["b"][0] >= x - 3] or [cols[0]])
                         stop = (cols.index(c), ln["b"][1])
+            if stop is None and len(cols) == 1:                       # a heading split into lines ("2", "P RELIMINARY")
+                at = heading_top(page, sec["until"])
+                stop = (0, at) if at is not None else None
+        start = heading_top(page, sec["from"]) if sec.get("from") and pn == first else None
+        indents = any(10 <= b[0] - c <= 22 for _, _, b, c in body)
+        width = max((b[2] - b[0] for _, _, b, _ in body), default=0)
+        gaps = sorted(b[1] - a[3] for (_, _, a, ca), (_, _, b, cb) in zip(body, body[1:]) if ca == cb and b[1] > a[3] - 1)
+        usual = gaps[len(gaps) // 2] if gaps else 0.0
+        wide = max(1.6 * usual, usual + 3)                            # a paragraph's gap on a page that indents none
+        prev = None
         for bi, li, b, c in body:
+            if start is not None and b[1] < start - 1:
+                continue
             if stop and (cols.index(c), b[1]) >= stop:
                 return out
             beside_cap = any(cap[0] <= b[0] and cap[1] - 2 <= b[1] <= cap[3] for cap in caps)
             indent = b[0] - c
-            if not out or (10 <= indent <= 22 and not beside_cap):
+            gap = b[1] - prev[0][3] if prev is not None and prev[1] == c else 0.0
+            ended = (not indents and gap > wide and (gap < 4 * wide or prev[0][2] - prev[0][0] < 0.85 * width))
+            if not out or (10 <= indent <= 22 and not beside_cap) or ended:
                 out.append([])
             out[-1].append((pn, bi, li, b, c))
+            prev = (b, c)
     return out
 
 

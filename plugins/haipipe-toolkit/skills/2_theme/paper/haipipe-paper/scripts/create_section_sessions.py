@@ -114,8 +114,17 @@ def appendix_pair(unit_name, page_id):
     return f"{unit_name}-{m.group(1) if m else chr(ord('A') + int(t.group(1)) - 1) if t else page_id}"
 
 
+VERSION = None   # --version: the version folder to work on, when the newest is not the one being written
+
+
 def current_version(paper):
-    """The newest version folder on the ladder, jNN_v<MMDD>_<desk>/ (b16 Q05), or None on an older Board."""
+    """The version folder on the ladder, jNN_v<MMDD>_<desk>/ (b16 Q05): the one --version names, else the newest;
+    None on an older Board. A paper with two versions in flight (a full paper and a letter) names one."""
+    if VERSION:
+        v = paper / VERSION
+        if not (v / f"{v.name}.md").is_file():
+            raise SystemExit(f"--version {VERSION}: no version face {v.name}.md under {paper}")
+        return v
     found = sorted((p for p in paper.glob("j[0-9][0-9]_v*") if p.is_dir() and (p / f"{p.name}.md").is_file()),
                    key=lambda p: int(p.name[1:3]))
     return found[-1] if found else None
@@ -202,17 +211,17 @@ def header_value(md, key):
 
 
 def write_header(md, key, value):
-    """Replace the header's `<key>:` line, or add it after `session:` / `method:` / `owner:`."""
+    """Replace the header's `<key>:` line, or add it after `session:` / `method:` / `owner:` / `state:`."""
     lines = md.read_text(encoding="utf-8").split("\n")
     head = range(min(25, len(lines)))
     hit = [i for i in head if lines[i].startswith(key + ":")]
     if hit:
         lines[hit[0]] = f"{key}: {value}"
     else:
-        after = next((idx for anchor in ("session:", "method:", "owner:")
+        after = next((idx for anchor in ("session:", "method:", "owner:", "state:")   # a ladder Task face has state:
                       for idx in [i for i in head if lines[i].startswith(anchor)][:1]), None)
         if after is None:
-            raise RuntimeError(f"{md}: no header `method:` or `owner:` line to anchor `{key}:`")
+            raise RuntimeError(f"{md}: no header `method:`, `owner:` or `state:` line to anchor `{key}:`")
         lines.insert(after + 1, f"{key}: {value}")
     md.write_text("\n".join(lines), encoding="utf-8")
 
@@ -397,7 +406,10 @@ def main():
     ap.add_argument("--codex-map", help="bind existing Codex threads: '<unit> <thread id> [thread name]' lines;"
                                         " a unit is a page id, or Appendix")
     ap.add_argument("--wait", type=int, default=900, help="seconds to wait for first turns")
+    ap.add_argument("--version", help="the version folder (jNN_v<MMDD>_<desk>) to work on; default the newest")
     a = ap.parse_args()
+    global VERSION
+    VERSION = a.version
 
     providers = {x.strip() for x in a.providers.split(",") if x.strip()}
     if not providers or providers - {"claude", "codex"}:

@@ -8,6 +8,11 @@ import re
 from ..schema import RAW_DROP
 
 FOOD_GROUPS = None                                               # filled from foodnorm.items on first use
+# A 0 that may mean "not given" (s01-D45): the app writes 0 when its vendor gave nothing, and in 207,729 food rows with
+# energy these are 0 far more often than food allows (Potassium 42.7%, Cholesterol 58.7%, TransFat 96.1%). A meal
+# states one of them only when every row gives it above 0; calories, carbs, protein, fat and sodium keep their 0.
+ZERO_MAY_BE_NONE = {"Fiber", "Sugar", "AddedSugars", "SaturatedFat", "MonoUnSaturatedFat", "PolyUnSaturatedFat",
+                    "TransFat", "Cholesterol", "Potassium"}
 
 
 def groups():
@@ -61,8 +66,9 @@ def stated_total(rows, name_col: str = None, skipped=()):
     Each of FatSecret's 14 the raw has a column for, whatever its case, summed over the meal's rows; an empty cell or
     a negative is the vendor's "not given" and is left out, never written as 0. A carb count (a row the food split
     calls no food, `skipped`) gives its carbs only; it is written on every row of its meal, so carbs that agree on
-    every row of a meal holding one are counted once; and a meal with a typed count states only its carbs. None when
-    the raw states no number."""
+    every row of a meal holding one are counted once; and a meal with a typed count states only its carbs. Of the
+    nutrients whose 0 may mean "not given" (ZERO_MAY_BE_NONE), a meal states one only when every row gives it above
+    0, since a 0 beside a real number would make the sum too small (s01-D45). None when the raw states no number."""
     import pandas as pd
     val = lambda v, u: f"{round(float(v), 2):g} {u}"
     cols = {c.lower(): c for c in rows.columns}
@@ -75,6 +81,8 @@ def stated_total(rows, name_col: str = None, skipped=()):
             if col.lower() not in cols:
                 continue
             v = pd.to_numeric(rows[cols[col.lower()]], errors="coerce")
+            if col in ZERO_MAY_BE_NONE and not (v > 0).all():   # one row's 0 may be "not given": not stated
+                continue
             v = v[(v >= 0) & ((col == "Carbs") | ~count)]
             if v.empty:
                 continue

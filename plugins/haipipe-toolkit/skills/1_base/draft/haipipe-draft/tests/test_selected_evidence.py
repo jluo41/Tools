@@ -177,3 +177,36 @@ def test_older_cite_takes_each_key_from_its_supporting_result(tmp_path):
     manifest.write_text(json.dumps(document))
     with pytest.raises(EvidenceSelectionError, match='liu2021assessing are in none of its Supporting Results'):
         ExportMixin()._selected_bibliography(page, out)
+
+
+def test_an_item_bound_in_its_evidence_card_does_not_block(tmp_path):
+    # MISQ t01 (261022): E49 was bound in evidence/cards.yaml but the ledger named no Result, and the LaTeX export
+    # stopped on "selected Result is missing"; a card binding counts, and in draft delivery an open card is pending
+    from src.evidence_selection import pending_items
+    page = tmp_path / 'Page.md'
+    page.write_text('# Page\n\n## Opening\nQuestion?\n\n## Content\n')
+    (tmp_path / 'outline').mkdir()
+    (tmp_path / 'outline' / 'Page-evidence-items.md').write_text(
+        '### E01-CITE-bound · C1.P1.B1 · Bound\n- **Local Run**: none yet\n- **Decide**: ☑ make\n\n'
+        '### E02-VALUE-asked · C1.P1.B2 · Asked\n- **Local Run**: none yet\n- **Decide**: ☑ make\n')
+    (tmp_path / 'evidence').mkdir()
+    (tmp_path / 'evidence' / 'cards.yaml').write_text(
+        'evidence:\n- kind: cite\n  source: b01.j01.t01\n  items:\n  - {run: r01, for: [1], item: E01-CITE-bound}\n'
+        '- kind: value\n  items:\n  - {need: a number, for: [2], item: E02-VALUE-asked}\n')
+    with pytest.raises(EvidenceSelectionError, match='E02-VALUE-asked: selected Result is missing'):
+        selected_results(page)                       # the bound card passes; the open one still blocks
+    page.write_text('# Page\ndelivery: draft\n\n## Opening\nQuestion?\n\n## Content\n')
+    assert selected_results(page) == []
+    assert pending_items(page) == ["E02-VALUE-asked"]
+
+
+def test_a_moved_receipt_path_and_a_trailing_note_still_resolve(tmp_path):
+    # MISQ t01/t03 (261022): a receipt names `examples/<P>/discoveries/…/results/<run>` from before the renames, and a
+    # ledger line writes "<path> · supersedes …"; both resolve to today's folder
+    from src.item_table import resolve
+    run = tmp_path / 'examples-2-cms' / 'P' / 'discovery' / 'b01' / 'j01' / 't01' / 'runs' / 'r01_x' / 'result'
+    run.mkdir(parents=True)
+    old = 'examples/P/discoveries/b01/j01/t01/results/r01_x'
+    assert resolve(old, tmp_path, tmp_path) == run
+    (tmp_path / 'r.yaml').write_text('x')
+    assert resolve('r.yaml · supersedes an older run', tmp_path, tmp_path) == tmp_path / 'r.yaml'

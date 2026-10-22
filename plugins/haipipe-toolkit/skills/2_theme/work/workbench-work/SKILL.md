@@ -13,8 +13,8 @@ description: >-
   only shows; to bring an older Block up to today's structure use /wb update
   <Block>. Execution belongs to haipipe-task; report writing to haipipe-draft.
 metadata:
-  version: "0.8.0"
-  last_updated: "2026-10-21"
+  version: "0.8.1"
+  last_updated: "2026-10-22"
 ---
 
 # Work Block Workbench (the work theme, once task)

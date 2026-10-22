@@ -19,6 +19,26 @@ The plan and evidence remain owned by the host workflow. This step owns prose
 realization, readability and change trace; it does not create a competing
 outline, evidence ledger, or claim authority.
 
+## 📚 0 · Examples first: read how the venue's papers write this Section
+
+Before a Section is written, or rewritten whole, read how 3 to 4 published papers of the same venue write the same
+Section, and write to follow them (JL 261022: "你应该先找 example，看看别人是怎么写 abstract 的，然后再看怎么写 ...
+在 write 的时候，你应该先找到相应的 example，这样我们就可以 follow 别人的参考了").
+
+1. **Find them.** The Section's examples are a Studio topic `sNN-<task>-<venue>-examples`, made by `/excalidraw-read`:
+   two papers close to the topic, two the venue's author guide quotes, each one's Section read whole (`reads/pNN-
+   <author><year>/reading.yaml`, its blocks shot from the PDF). The Section canvas names it by `examples:`, and the
+   workbench shows it as 📚 Examples in 1 · Plan and 2 · Write. With none, make it first; do not write without it.
+2. **Read what they share.** For each paragraph (or each heading of a structured abstract): its move, the words that
+   carry it, its length. One line each, kept in the topic face's `key:` and each reading's `logic:`; for example,
+   "Importance · 30 to 38 words, 1 to 2 sentences, no number, why it matters, then 'but' or 'however'".
+3. **Write to that pattern**, paragraph by paragraph, in our own words and facts; never copy their sentences.
+4. **Name each departure** with its reason (an author's ruling, our design, a cap): "Question asks three, not one
+   (R11)". A departure with no reason is a fix.
+
+The examples set the shape a reader of the venue expects; the plan (§1) sets what we say. When they disagree, the plan
+wins and the departure is named.
+
 ## 📏 The rules every sentence is written by
 
 One list, kept in one place: `../../haipipe-draft-review/ref/plain-rules.md`. The writer writes by it and the reviewer

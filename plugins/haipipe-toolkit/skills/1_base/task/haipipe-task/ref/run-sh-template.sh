@@ -335,7 +335,7 @@ else
     # && not ;: a failed conversion leaves no _source.ipynb, and papermill then
     # reports a missing file instead of the conversion error that actually broke.
     python "$REPO_ROOT/code/scripts/convert_to_notebooks.py" "$WORKER" -o "$NOTEBOOK_TEMPLATE" \
-      && papermill "$NOTEBOOK_TEMPLATE" "$NB_TARGET" -p config "$CONFIG" ${REPORT_MODE[@]+"${REPORT_MODE[@]}"}
+      && (cd "$REPO_ROOT" && papermill --cwd "$TASK_FOLDER" "$(space_rel "$NOTEBOOK_TEMPLATE")" "$(space_rel "$NB_TARGET")" -p config "$(space_rel "$CONFIG")" ${REPORT_MODE[@]+"${REPORT_MODE[@]}"})
   } || EXIT_CODE=$?
 fi
 

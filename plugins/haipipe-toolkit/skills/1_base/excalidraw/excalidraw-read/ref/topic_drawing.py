@@ -69,6 +69,12 @@ def who(item: str) -> str:
     return item.split(" · ")[0].strip()
 
 
+def named(p: dict) -> str:
+    """A paper's name everywhere on the drawing: its id and its TITLE, then who wrote it (JL 261022: "一定要把 title 写上，
+    这是最重中之重的。你光给我这个人的名字，谁他妈读得懂啊？"): an author and a year alone say nothing of what it is about."""
+    return f"{p['id']} · {ref(p)['title']} · {who(p['item'])}"
+
+
 def pdf_of(p: dict) -> str:
     """The paper's kept PDF, `paper/<file>.pdf` from its related.md link, or ''."""
     link = str((p.get("row") or {}).get("link", "")).strip("` ")
@@ -91,7 +97,8 @@ def theme_frame(d: Drawing, title: str, cfg: dict, papers: list[dict]) -> dict:
     y = td.heading(d, f"⓪ {title}", sub, str(cfg.get("key") or "❓ no key point in the face's related: yaml"))
     rows = [[("What these papers share", [str(cfg.get("what") or "❓")], INK),
              ("Why it matters to our paper", [str(cfg.get("why") or "❓")], INK)]]
-    cards = [(f"{p['id']} · {who(p['item'])}", [f"“{ref(p)['title']}”", str(p.get("says") or ""), state(p)],
+    cards = [(f"{p['id']} · {ref(p)['title']}", [f"{who(p['item'])} · {ref(p)['venue']} {ref(p)['year']}".strip(" ·"),
+                                                   str(p.get("says") or ""), state(p)],
               INK if p["reading"] else RED) for p in papers]
     rows += [cards[k:k + 3] for k in range(0, len(cards), 3)]
     labels = ["why it matters", "the papers, in reading order"] + [""] * len(cards)
@@ -106,7 +113,7 @@ def logic_frame(d: Drawing, p: dict, spec: dict) -> dict:
     step was done (a step's optional `how`: its data, models, procedure or measures; JL 261019: "after reading it, we
     know how this paper is conducted", then "why is this not embedded within ... to make the logic more fluent"), then
     one card per claim of ours that a passage links to."""
-    name = f"{p['id']} · {who(p['item'])} · its logic, and our link"
+    name = f"{named(p)} · its logic, and our link"
     f = d.frame(name, td.W, td.TALLEST)
     d.room(f)
     paper = spec.get("paper") or {}
@@ -149,7 +156,7 @@ def reference_frame(d: Drawing, p: dict) -> dict:
     """A paper's reference, first in its row: title, every author, venue and year, link, PDF, deep read, and the
     version read. A paper with no reading yet adds one red card: what to do to read it."""
     r, row, spec = ref(p), p.get("row") or {}, (p["reading"] or (None, {}))[1]
-    name = f"{p['id']} · {who(p['item'])} · the paper"
+    name = f"{named(p)} · the paper"
     f = d.frame(name, td.NARROW, 700)
     y = td.heading(d, name, f"{r['venue']} · {r['year']}", f"“{r['title']}”", td.NARROW)
     body = [f"Authors: {r['authors'] or '❓ not found'}", f"Published: {r['venue']}, {r['year']}", f"Link: {r['link']}",
@@ -198,9 +205,9 @@ def draw(topic: Path) -> Path:
         frames = [reference_frame(d, p)["id"]]
         if p["reading"]:
             pages = td.transcript_frame(d, run, w, assets, noun="paper", us=US,
-                                        name=f"{p['id']} · {who(p['item'])} · the paper, read")
+                                        name=f"{named(p)} · the paper, read")
             frames += ([pages["id"]] if pages else []) + [logic_frame(d, p, p["reading"][1])["id"]]
-        acts.append({"name": f"Act {k + 1} · {p['id']} · {who(p['item'])}", "frames": frames,
+        acts.append({"name": f"Act {k + 1} · {named(p)}", "frames": frames,
                      "arrow": ["its pages, read", "its logic"][:len(frames) - 1]})
     between = [(theme["id"], acts[1]["frames"][0], "one row per paper, in reading order")] if len(acts) > 1 else []
     between += [(acts[i]["frames"][0], acts[i + 1]["frames"][0], f"next: {papers[i]['id']}") for i in range(1, len(acts) - 1)]

@@ -3,6 +3,11 @@
 - `draft_steps.py::states` counted `## 3 · Draft` as written when it held only the `### C1.P1` headings an empty draft
   is laid out with, so ten Sections of Paper-AgreeableOpioid-Jama read `2 · Write ✓ done` with no sentence written.
   Write is now done only when a line under § 3 is neither a heading nor a comment; otherwise it is `next`.
+- JL 261022: "在 write 的时候，你应该先找到相应的 example". 2 · Write opens the Section canvas first, ours beside the
+  examples, titled "📚 Our text beside <n> published examples" (JL 261022, of s22: "I want things like this"; the
+  examples' own topic when no canvas draws them; `_examples_card(..., own=True)`), its Input names the papers, and its prompt starts with them: read
+  the examples and note each paragraph's or heading's move and length, write to that pattern, name each departure; with
+  none, find and read 3 to 4 first (haipipe-draft-writing 0.26.0 `ref/writing.md` § 0).
 
 ## 0.104.14 · 2026-10-21 · 5 · Revise: your comments on a sentence, answered by each pass; the text reads as prose
 

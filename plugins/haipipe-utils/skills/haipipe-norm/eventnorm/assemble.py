@@ -13,7 +13,7 @@ output. The output's total is the tables' when there are items, else the input's
 """
 from .hours import by_hour
 from .preprocess import preprocess
-from .schema import INPUT_KEYS, RAW_DROP
+from .schema import INPUT_KEYS, LOGGED, RAW_DROP, SOURCE_KINDS
 
 GRAMS = __import__("re").compile(r"^[0-9]*\.?[0-9]+ (g|ml)$")
 
@@ -41,11 +41,20 @@ def assemble(inp: dict, asks=None, meal=None, weight=None) -> dict:
     from foodnorm.items import enrich_items
     items, total = enrich_items(inp["items"], asks, meal) if inp.get("items") else (None, None)
     total = {**total, "source": "tables"} if total else {**inp["total"], "source": "input"} if inp.get("total") else None
-    ev = {k: inp.get(k) for k in INPUT_KEYS if k not in ("total", "items", "timeline")}
-    ev.update(total=total, items=items, timeline=inp.get("timeline"))
+    ev = {k: inp.get(k) for k in INPUT_KEYS if k not in ("total", "items", "timeline", "source")}
+    ev.update(total=total, items=items, timeline=inp.get("timeline"), source=inp.get("source") or LOGGED)
     line = inp.get("timeline") or []
     weight = weight or ("carbs" if line and all(pt.get("carbs") not in (None, "") for pt in line) else None)
     return by_hour(ev, weight) or {"no time": {"share": 1.0, **ev}}
+
+
+def source_of(src) -> dict:
+    """input.source, checked: {"kind": "logged" | "detected", ...}; logged when none is sent."""
+    if src is None:
+        return dict(LOGGED)
+    if not isinstance(src, dict) or src.get("kind") not in SOURCE_KINDS:
+        raise ValueError(f'input.source must be {{"kind": one of {sorted(SOURCE_KINDS)}, ...}}')
+    return src
 
 
 def event(raw: dict = None, input: dict = None) -> dict:
@@ -62,6 +71,7 @@ def event(raw: dict = None, input: dict = None) -> dict:
         asks = [ask_of(it) for it in given["items"] or []]
         meal = "; ".join(asks)
     inp.update(given)
+    inp["source"] = source_of(inp.get("source"))
     out = {"raw": {**{k: v for k, v in raw.items() if k != "rows"},
                    "rows": [{k: v for k, v in r.items() if k not in RAW_DROP} for r in raw["rows"]]} if raw else None,
            "input": inp, "output": assemble(inp, asks, meal), "step": pre["step"]}

@@ -57,7 +57,7 @@ tr.check td { font-size:12.5px; }
   <p class="small mut" id="hint">One input per line; each line is sent as it is, in one call.</p>
   <textarea id="box" spellcheck="false"></textarea>
   <div class="row">
-    <span id="whenArea" hidden class="small">eaten at <input type="datetime-local" id="when"></span>
+    <span id="whenArea" hidden class="small"><span id="whenWord">eaten at</span> <input type="datetime-local" id="when"></span>
     <button class="go" id="send">Send</button>
     <span id="status" class="small"></span>
   </div>
@@ -66,6 +66,13 @@ tr.check td { font-size:12.5px; }
     <input type="file" id="photo" accept="image/*">
     <button id="sendPhoto">Send the photo</button>
     <span class="small mut" id="photoHint">the photo route names the foods first (Claude vision), then answers them</span>
+  </div>
+  <div class="row" id="fileArea" hidden>
+    <span class="small">or a wearable's file:</span>
+    <input type="file" id="wfile" accept=".csv,.json,.txt">
+    <button id="sendFile">Send the file</button>
+    <span class="small mut">a CSV or JSON of a wearable's samples (a CGMacros, MetaboNet, D1NAMO or GOTOV file):
+      its columns say which stream it is, and that stream's rule finds the longest workout</span>
   </div>
 
   <div id="result" hidden>
@@ -81,6 +88,17 @@ tr.check td { font-size:12.5px; }
     </div>
     <h3 style="margin-top:12px" id="readHead">Each answer, read</h3>
     <div style="overflow:auto"><table id="answers"></table></div>
+  </div>
+
+  <div id="pyArea" hidden>
+    <h2>🐍 Call it from Python</h2>
+    <p class="small mut" id="pyHint">The request the page sends, as Python: import the API in this SPACE, or post it to the API host. It follows the box: send a meal, or run a card, and it changes.</p>
+    <div class="two">
+      <div><h3>in this SPACE · <code id="pyImport">from eventnorm import event</code></h3><pre id="pyLocal"></pre>
+        <div class="row"><button data-copy="pyLocal">Copy</button><span class="small mut">after <code>source env.sh</code>, which puts eventnorm on the path</span></div></div>
+      <div><h3>over HTTP · <code id="pyDoor">POST /food/event</code></h3><pre id="pyHttp"></pre>
+        <div class="row"><button data-copy="pyHttp">Copy</button><span class="small mut" id="pyHost"></span></div></div>
+    </div>
   </div>
 
   <h2 id="galleryHead">🖼 Gallery: every kind of input, from real rows</h2>
@@ -108,6 +126,28 @@ tr.check td { font-size:12.5px; }
       columns: ['FoodNameResolved', 'Carbs', 'Calories', 'Protein', 'Fat', 'Fiber', 'Sugar', 'NutritionBasis', 'NutritionConf', 'NutritionSource'],
       photo: true,
     },
+    exercise: {                                                    // b51 s02, s12 (JL 261022: follow food's page)
+      event: 'event',
+      py: 'from eventnorm.exercise import event',
+      readOut: ['for hour, h in ev["output"].items():', '    print(hour, h["total"])'],
+      examples: 'brisk walking 30 min',
+      read: 'exercise',
+      file: true,                                                  // a wearable's file, sent as raw type "wearable"
+      texts: {
+        title: 'a workout in, its exercise event out',
+        flow: 'raw ─▶ preprocess ─▶ input JSON ─▶ describe-exercise, the item ─▶ output by local hour, each hour its own part',
+        try: '✍️ Try a workout',
+        hint: 'Type an activity and its minutes ("brisk walking 30 min"), and when it began. Or paste a raw JSON '
+          + '<code>{"type", "rows"}</code> (a logged row, a wearable\'s samples) or an input JSON <code>{"items", ...}</code>, '
+          + 'or put a gallery card in the box.',
+        when: 'began at',
+        gallery: '🖼 Gallery: real workouts and streams, every kind of raw, its input and its output',
+        what: 'the workout',
+        py: 'The request the page sends, as Python: import the API in this SPACE, or post it to the API host. '
+          + 'It follows the box: send a workout, or run a card, and it changes.',
+        empty: 'Type a workout in the box first.',
+      },
+    },
   };
   const lane = LANES[noun];
   const EVENT = !!(lane && lane.event);
@@ -122,7 +162,7 @@ tr.check td { font-size:12.5px; }
   const rawLines = r => r ? pretty(r) : 'null';
 
   document.title = `Try describe-${noun}`;
-  $('title').textContent = EVENT ? `${EMOJI[noun] || '🔎'} describe-${noun} · a meal in, its food event out`
+  $('title').textContent = EVENT ? `${EMOJI[noun] || '🔎'} describe-${noun} · ${(lane.texts || {}).title || 'a meal in, its food event out'}`
     : `${EMOJI[noun] || '🔎'} describe-${noun} · try it`;
 
   fetch(`${base}/${noun}/healthz`).then(r => r.json()).then(h => {
@@ -130,6 +170,54 @@ tr.check td { font-size:12.5px; }
     $('health').innerHTML = `describe-${noun} ${esc(h.version || '')} · ${h.status === 'ok' ? '<span class="ok">ok</span>' : '<span class="bad">' + esc(h.status) + '</span>'}`
       + (bank ? ` · bank ${esc(bank)}` : '') + ` · <a href="${base}/${noun}/docs">every route</a>`;
   }).catch(() => { $('health').innerHTML = '<span class="bad">the API does not answer</span>'; });
+
+  // ---- the request as Python (JL 261022: "怎么用 Python 来读取它 ... from ... import ... 然后我就可以直接 call 它")
+  const py = (v, ind = '') => {
+    if (v === null || v === undefined) return 'None';
+    if (v === true) return 'True';
+    if (v === false) return 'False';
+    if (typeof v !== 'object') return JSON.stringify(v);          // a JSON string or number is a Python one too
+    const inner = ind + '    ';
+    if (Array.isArray(v)) return v.length ? '[\n' + v.map(x => inner + py(x, inner)).join(',\n') + ',\n' + ind + ']' : '[]';
+    const ks = Object.keys(v);
+    return ks.length ? '{\n' + ks.map(k => `${inner}${JSON.stringify(k)}: ${py(v[k], inner)}`).join(',\n') + ',\n' + ind + '}' : '{}';
+  };
+  // The API host for a script: this page's own origin on the API host; through the board host's login, the API
+  // host itself, which answers only on the machine that runs it.
+  const apiHost = base === '' ? location.origin : 'http://127.0.0.1:8070';
+  const readOut = ['for hour, h in ev["output"].items():',
+                   '    print(hour, h["share"], (h["total"] or {}).get("macros"))'];
+  // A file sent from the page: the Python reads the same file, not its thousands of rows written out.
+  const readFile = up => up.json
+    ? ['import json', '', `rows = json.load(open(${JSON.stringify(up.name)}))${up.key ? `[${JSON.stringify(up.key)}]` : ''}`]
+    : ['import pandas as pd', '', `rows = [{k: v for k, v in r.items() if v == v}       # an empty cell is left out`,
+       `        for r in pd.read_csv(${JSON.stringify(up.name)}, dtype=str).to_dict("records")]`];
+  function pyShow(body, up) {
+    if (!EVENT || !body) return;
+    const imp = lane.py || 'from eventnorm import event', out = lane.readOut || readOut;
+    $('pyImport').textContent = imp;
+    $('pyDoor').textContent = `POST /${noun}/${lane.event}`;
+    if (up) {
+      const raw = `{"type": ${JSON.stringify(body.raw.type)}, "file": ${JSON.stringify(up.name)}, "rows": rows}`;
+      $('pyLocal').textContent = [imp, ...readFile(up), `ev = event(raw=${raw})`, ...out].join('\n');
+      $('pyHttp').textContent = ['import requests', ...readFile(up).filter(l => l !== ''), '',
+        `body = {"raw": ${raw}}`,
+        `ev = requests.post("${apiHost}/${noun}/${lane.event}", json=body, timeout=120).json()`, ...out].join('\n');
+      $('pyHost').textContent = base === '' ? `${apiHost}: this host` : `${apiHost}: on the machine that runs the API`;
+      $('pyArea').hidden = false;
+      return;
+    }
+    const args = Object.keys(body).filter(k => k === 'raw' || k === 'input')
+      .map(k => `    ${k}=${py(body[k], '    ')},`);
+    $('pyLocal').textContent = [imp, '', 'ev = event(', ...args, ')', ...out].join('\n');
+    $('pyHttp').textContent = ['import requests', '', `body = ${py(body)}`,
+      `ev = requests.post("${apiHost}/${noun}/${lane.event}", json=body, timeout=120).json()`, ...out].join('\n');
+    $('pyHost').textContent = base === '' ? `${apiHost}: this host` : `${apiHost}: on the machine that runs the API`;
+    $('pyArea').hidden = false;
+  }
+  document.querySelectorAll('[data-copy]').forEach(b => b.onclick = () => {
+    navigator.clipboard.writeText($(b.dataset.copy).textContent).then(() => { b.textContent = 'Copied'; setTimeout(() => { b.textContent = 'Copy'; }, 1200); });
+  });
 
   // ---- local time, as the event JSON writes it: "2026-10-21 08:05 -04:00"
   const pad = n => String(n).padStart(2, '0');
@@ -147,6 +235,7 @@ tr.check td { font-size:12.5px; }
   } else {
     $('box').value = lane.examples;
     if (lane.photo) $('photoArea').hidden = false;
+    if (lane.file) $('fileArea').hidden = false;
   }
   if (EVENT) {
     $('flow').hidden = false; $('whenArea').hidden = false;
@@ -155,7 +244,14 @@ tr.check td { font-size:12.5px; }
       + 'Or paste a raw JSON <code>{"type", "rows"}</code> or an input JSON <code>{"items", ...}</code>, or put a gallery card in the box.';
     $('photoHint').textContent = 'the photo API names its foods (Claude vision); they become the input\'s items';
     $('galleryHead').textContent = '🖼 Gallery: real meals, every kind of raw, its input and its output';
+    const tx = lane.texts;                                         // a lane's own words (exercise); food keeps the above
+    if (tx) {
+      $('flow').textContent = tx.flow; $('tryHead').textContent = tx.try; $('hint').innerHTML = tx.hint;
+      $('whenWord').textContent = tx.when; $('galleryHead').textContent = tx.gallery;
+      if (tx.py) $('pyHint').textContent = tx.py;
+    }
     $('cards').classList.add('wide');
+    try { pyShow(boxBody()); } catch (e) { /* an empty box: no Python yet */ }
   }
 
   async function call(body, door) {
@@ -178,7 +274,7 @@ tr.check td { font-size:12.5px; }
   // ---- the event: what the box holds becomes a request; its answer becomes three panes and a table
   function boxBody() {
     const text = $('box').value.trim();
-    if (!text) throw new Error('Type a meal in the box first.');
+    if (!text) throw new Error(((lane || {}).texts || {}).empty || 'Type a meal in the box first.');
     if (text.startsWith('{')) {
       let j;
       try { j = JSON.parse(text); } catch (e) { throw new Error('The box starts with { but is not JSON: ' + e.message); }
@@ -193,7 +289,28 @@ tr.check td { font-size:12.5px; }
   }
 
   const words = v => v == null ? '—' : esc(v);
+  // An exercise event, read hour by hour (s02-D23): each hour its own part, then the hours added up to the event.
+  function exerciseTable(ev) {
+    if (!ev.output) return `<tr><td>no event: ${esc(ev.step || '')}</td></tr>`;
+    let html = '<tr><th>hour</th><th>from</th><th>to</th><th>activity</th><th>matched</th><th>conf</th><th>minutes</th>'
+      + '<th>MET</th><th>MET-minutes</th><th>kcal</th><th>heart rate</th></tr>';
+    const sum = { min: 0, mm: null, kcal: null };
+    for (const [hour, h] of Object.entries(ev.output)) {
+      const t = h.total || {}, it = (h.items || [])[0] || {};
+      html += `<tr><td>${esc(hour)}</td><td>${words((h.start || '').slice(11, 16) || null)}</td><td>${words((h.end || '').slice(11, 16) || null)}</td>`
+        + `<td>${words(it.activity)}</td><td>${words([it.code, it.heading].filter(Boolean).join(' · ') || null)}</td><td>${words(it.conf)}</td>`
+        + `<td>${words(t.minutes)}</td><td>${words(t.met)}</td><td>${words(t.met_minutes)}</td><td>${words(t.calories)}</td>`
+        + `<td>${t.hr_mean != null ? esc(`${t.hr_mean} · peak ${t.hr_max}`) : '—'}</td></tr>`;
+      sum.min += num(t.minutes) || 0;
+      if (t.met_minutes != null) sum.mm = (sum.mm || 0) + num(t.met_minutes);
+      if (t.calories != null) sum.kcal = (sum.kcal || 0) + num(t.calories);
+    }
+    const r = v => v == null ? '—' : Math.round(v * 10) / 10;
+    return html + `<tr class="total"><td colspan="6">the event: its hours added up</td><td>${r(sum.min)}</td><td>—</td>`
+      + `<td>${r(sum.mm)}</td><td>${r(sum.kcal)}</td><td></td></tr>`;
+  }
   function readTable(ev) {
+    if (lane.read === 'exercise') return exerciseTable(ev);
     const name = {};
     (ev.input && ev.input.items || []).forEach(it => { name[it.id] = it.food + (it.amount ? ` · ${it.amount}` : ''); });
     let html = '<tr><th>hour</th><th>share</th><th>item</th><th>matched</th><th>conf</th><th>serving</th><th>carbs</th><th>calories</th><th>GI</th><th>GL</th></tr>';
@@ -232,20 +349,25 @@ tr.check td { font-size:12.5px; }
   function showEvent(ev) {
     $('result').hidden = false; $('plain').hidden = true; $('evpanes').hidden = false;
     $('step').hidden = false; $('step').textContent = `the preprocess step: ${ev.step}`;
-    $('evraw').textContent = rawLines(ev.raw);
+    const rows = (ev.raw || {}).rows || [], keep = 20;            // a file's thousands of rows: its first ones, then a count
+    $('evraw').textContent = rows.length > 2 * keep
+      ? rawLines({ ...ev.raw, rows: [...rows.slice(0, keep), `… ${(rows.length - keep).toLocaleString()} more rows, not shown`] })
+      : rawLines(ev.raw);
     $('evin').textContent = pretty(ev.input);
     $('evout').textContent = pretty(ev.output);
     $('readHead').textContent = 'Each item, read, hour by hour';
     $('answers').innerHTML = readTable(ev);
   }
 
-  async function sendEvent(body, what) {
+  async function sendEvent(body, what, up) {
+    pyShow(body, up);
     $('status').innerHTML = '<span class="mut">asking…</span>'; $('send').disabled = true;
     try {
       const ev = await call(body, lane.event);
       showEvent(ev);
-      const n = (ev.input.items || []).length, h = Object.keys(ev.output || {}).length;
-      $('status').innerHTML = `<span class="ok">✅ ${what}: ${n} item${n === 1 ? '' : 's'}, ${h} hour${h === 1 ? '' : 's'}, below</span>`;
+      const n = ((ev.input || {}).items || []).length, h = Object.keys(ev.output || {}).length;
+      $('status').innerHTML = ev.output ? `<span class="ok">✅ ${what}: ${n} item${n === 1 ? '' : 's'}, ${h} hour${h === 1 ? '' : 's'}, below</span>`
+        : `<span class="mut">${what}: no event · ${esc(ev.step || '')}</span>`;   // a day total, a stream with no workout
       $('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
     } catch (e) { $('status').innerHTML = `<span class="bad">${esc(e.message)}</span>`; }
     finally { $('send').disabled = false; }
@@ -255,7 +377,7 @@ tr.check td { font-size:12.5px; }
     if (EVENT) {
       let body;
       try { body = boxBody(); } catch (e) { $('status').innerHTML = `<span class="bad">${esc(e.message)}</span>`; return; }
-      return sendEvent(body, 'the meal');
+      return sendEvent(body, (lane.texts || {}).what || 'the meal');
     }
     const lines = $('box').value.split('\n').map(s => s.trim()).filter(Boolean);
     if (!lines.length) { $('status').innerHTML = '<span class="bad">Type at least one line in the box.</span>'; return; }
@@ -290,6 +412,50 @@ tr.check td { font-size:12.5px; }
     } catch (e) { $('status').innerHTML = `<span class="bad">${esc(e.message)}</span>`; }
   };
 
+  // ---- a wearable's file: a CSV or JSON of its samples, sent as raw type "wearable"; the API finds its stream type
+  function csvRows(text) {
+    // RFC 4180: quoted cells may hold commas, quotes ("") and line breaks. The first line names the columns.
+    const out = []; let row = [], cell = '', q = false;
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      if (q) {
+        if (c === '"' && text[i + 1] === '"') { cell += '"'; i++; } else if (c === '"') q = false; else cell += c;
+      } else if (c === '"') q = true;
+      else if (c === ',') { row.push(cell); cell = ''; }
+      else if (c === '\n' || c === '\r') {
+        if (c === '\r' && text[i + 1] === '\n') i++;
+        row.push(cell); cell = ''; if (row.some(x => x !== '')) out.push(row); row = [];
+      } else cell += c;
+    }
+    row.push(cell); if (row.some(x => x !== '')) out.push(row);
+    const [head, ...body] = out;
+    if (!head || !body.length) throw new Error('the file holds no rows under a line of column names');
+    const cols = head.map(h => h.replace(/^﻿/, '').trim());
+    return body.map(r => Object.fromEntries(cols.map((k, j) => [k, r[j]]).filter(([k, v]) => k && v !== undefined && v !== '')));
+  }
+  function fileBody(name, text) {
+    // A JSON file: rows, {"rows"}, {"type", "rows"} or {"raw"}; anything else is read as a CSV.
+    if (/\.json$/i.test(name) || /^\s*[\[{]/.test(text)) {
+      let j;
+      try { j = JSON.parse(text); } catch (e) { throw new Error(`${name} is not JSON: ${e.message}`); }
+      if (Array.isArray(j)) return [{ raw: { type: 'wearable', file: name, rows: j } }, { name, json: true }];
+      if (j.raw) return [j, null];
+      if (Array.isArray(j.rows)) return [{ raw: { type: j.type || 'wearable', file: name, rows: j.rows } }, { name, json: true, key: 'rows' }];
+      throw new Error(`${name}: a JSON file must be a list of rows, {"rows": [...]}, or {"raw": {...}}`);
+    }
+    return [{ raw: { type: 'wearable', file: name, rows: csvRows(text) } }, { name }];
+  }
+  $('sendFile').onclick = async () => {
+    const f = $('wfile').files[0];
+    if (!f) { $('status').innerHTML = '<span class="bad">Choose a file first.</span>'; return; }
+    $('status').innerHTML = `<span class="mut">reading ${esc(f.name)}…</span>`;
+    let body, up;
+    try { [body, up] = fileBody(f.name, await f.text()); }
+    catch (e) { $('status').innerHTML = `<span class="bad">${esc(e.message)}</span>`; return; }
+    const n = ((body.raw || {}).rows || []).length;
+    return sendEvent(body, `${f.name} (${n.toLocaleString()} rows)`, up);
+  };
+
   // ---- the gallery
   let cards = [];
   const same = (a, b) => (a == null && b == null) || (typeof a === 'number' && typeof b === 'number' ? Math.abs(a - b) < 1e-6 : a === b);
@@ -320,6 +486,7 @@ tr.check td { font-size:12.5px; }
     const c = cards[i], el = $(`res-${i}`);
     if (EVENT) {
       el.innerHTML = '<span class="mut">asking…</span>';
+      pyShow(c.send);
       try {
         const ev = await call(c.send, lane.event);
         const d = firstDiff(c.input, ev.input, 'input') || firstDiff(c.output, ev.output, 'output');
@@ -381,7 +548,7 @@ tr.check td { font-size:12.5px; }
     document.querySelectorAll('[data-run]').forEach(b => b.onclick = () => runCard(+b.dataset.run));
     document.querySelectorAll('[data-put]').forEach(b => b.onclick = () => {
       const c = cards[+b.dataset.put];
-      if (EVENT) { $('box').value = pretty(c.send); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+      if (EVENT) { $('box').value = pretty(c.send); pyShow(c.send); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
       const body = lane.fromCard(c.input);
       if (body && body.foods) { $('box').value = body.foods.join('\n'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
     });

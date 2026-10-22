@@ -498,6 +498,23 @@ class PageTaskTest(unittest.TestCase):
         self.assertNotIn("VALUE 1.1", peek)
         self.assertIn("pending: overlap between agents", peek)
 
+    def test_an_anchor_is_boxed_only_in_the_sentences_its_item_names(self):
+        # MISQ t05 (261022): S36a's anchor "1 percent" was boxed inside "1.41 percent" in S5b and "26.91 percent" in S4,
+        # and S36a's "88.5" carried its card name onto S5b's 88.5; a sentence boxes only its own items' anchors
+        from live import draft_steps
+        ev = {"cards": [{"kind": "value", "label": "VALUE 1", "items": [
+                  {"for": ["5b"], "anchor": ["1.41", "88.5"], "state": "have"}]},
+                        {"kind": "value", "label": "VALUE 2", "items": [
+                  {"for": ["36a"], "anchor": ["1 percent", "88.5"], "state": "have"}]}]}
+        marks = draft_steps._marks(ev)
+        s5b = draft_steps._sentence("B2 · S5b · from 1.41 percent in cancer to 88.5 in LBP", marks)
+        s36a = draft_steps._sentence("B4 · S36a · about 1 percent in cancer (mean 88.5)", marks)
+        self.assertNotIn("VALUE 2", s5b)
+        self.assertIn("VALUE 1", s5b)
+        self.assertIn("VALUE 2", s36a)
+        self.assertNotIn("VALUE 1", s36a)
+        self.assertEqual(s5b.count("<mark"), 2)
+
     def test_a_revise_card_is_accepted_rejected_or_edited_in_place(self):
         # b32 s41-D31/D32 (JL 261020: "我想要那种可以交互的感觉"): 5 · Revise shows the cards by pass with their buttons;
         # card_act writes only the card's State (or its Expected), and refuses a card that changed since it was shown

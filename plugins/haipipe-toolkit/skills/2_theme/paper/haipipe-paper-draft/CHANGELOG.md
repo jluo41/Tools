@@ -1,3 +1,10 @@
+## 0.14.0 · 2026-10-22 · Examples first
+
+- JL 261022: "你应该先找 example，看看别人是怎么写 abstract 的，然后再看怎么写". New § 📚 Examples first: a Section, the
+  Abstract or a letter is written only after reading 3 to 4 published papers of the venue writing the same part
+  (`sNN-<task>-<venue>-examples`, /excalidraw-read), named by the Section canvas's `examples:`; the writer follows their
+  moves and lengths and names each departure (haipipe-draft-writing 0.26.0, `ref/writing.md` § 0).
+
 ## 0.13.0 · 2026-10-19 · haipipe-paper-section is haipipe-paper-draft
 
 - Renamed from `haipipe-paper-section` (JL 261019: "should we chagne this to haipipe-paper-draft? ... it is like we

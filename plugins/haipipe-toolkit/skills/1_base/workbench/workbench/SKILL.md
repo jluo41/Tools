@@ -13,8 +13,8 @@ description: >-
   block, find a block, workbench link, page workbench, workbench folder,
   workbench roster, workbench tab, add a workbench, /wb, /workbench.
 metadata:
-  version: "1.29.1"
-  last_updated: "2026-10-21"
+  version: "1.29.2"
+  last_updated: "2026-10-22"
   aliases: [wb]
 ---
 

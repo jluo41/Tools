@@ -16,14 +16,22 @@ NOT AUTHENTICATED, and bound to 127.0.0.1 by default. Exercise logs are PHI.
 Before this listens on anything routable it needs auth in front of it.
 """
 import os
-from typing import List, Optional, Union
+import sys as _sys
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Union
 
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from exnorm import FIELDS, __version__, normalize
 from exnorm.constants import DEFAULT_BANK
 from exnorm.met_db import load
+
+for _base in (Path(__file__).absolute(), Path(__file__).resolve()):      # eventnorm, beside describe-exercise
+    if (_base.parents[2] / "skills" / "haipipe-norm" / "eventnorm").is_dir():
+        _sys.path.insert(0, str(_base.parents[2] / "skills" / "haipipe-norm"))
+        break
+from eventnorm import exercise as exercise_events  # noqa: E402
 
 MAX_BATCH = int(os.environ.get("EXNORM_MAX_BATCH", "50000"))
 
@@ -57,7 +65,7 @@ def healthz():
         n = len(load())
     except Exception as e:
         raise HTTPException(503, f"bank unavailable: {e}")
-    return {"ok": True, "version": __version__, "bank": str(DEFAULT_BANK),
+    return {"ok": True, "status": "ok", "version": __version__, "bank": str(DEFAULT_BANK),
             "activities": n, "fields": list(FIELDS)}
 
 
@@ -81,3 +89,25 @@ def normalize_batch(req: Batch):
         # A length mismatch is the caller's error, not a 500.
         raise HTTPException(422, str(e))
     return {"count": len(rows), "results": rows}
+
+
+class EventIn(BaseModel):
+    raw: Optional[Dict[str, Any]] = Field(default=None, description='What arrives, as it arrives: {"type": '
+                                          '"device_code" | "app_list" | "other" | "log" | "text" | "met_stream" | '
+                                          '"steps_stream" | "named_stream" | ..., "rows": [{...}, ...]}')
+    input: Optional[Dict[str, Any]] = Field(default=None, description='An input JSON, or the fields of it to set: '
+                                            '{"start", "end", "total", "items": [{"activity", "met"?}], "timeline"}')
+
+
+@app.post("/event")
+def exercise_event(body: EventIn):
+    """ONE exercise event (b51 s12; JL 261022: "就是你要 follow 他，然后做一下跟他一样的事情", as POST /food/event): the
+    raw, the input JSON the preprocess step makes of it, and the output by local hour, each hour its own part (s02-D23),
+    its one item described by describe-exercise (words and minutes only) or by the MET its device gives."""
+    try:
+        ev = exercise_events.event(raw=body.raw, input=body.input)
+    except ValueError as e:
+        raise HTTPException(422, str(e))
+    except Exception as e:
+        raise HTTPException(500, f"event failed: {type(e).__name__}: {e}")
+    return {**ev, "version": __version__}
