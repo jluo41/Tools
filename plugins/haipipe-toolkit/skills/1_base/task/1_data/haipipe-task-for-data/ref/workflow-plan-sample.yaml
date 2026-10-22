@@ -2,17 +2,17 @@
 # Expand variants as Run Specs only when independently commissioned.
 # Resolve placeholders, catalogue key and every Workbench-owned Workspace Cell before use.
 # Steps and section labels describe internal work; they never allocate Runs.
-# Schema: task/haipipe-workflow/ref/plan-schema.md
+# Schema: project/haipipe-run/ref/plan-schema.md
 name: build-<STAGE>-<DATASET>
 purpose: Run Stage <N> builder (<FnType>) for <DATASET>
 input:
   args:
-    config: scripts/config/rNN_<run>.yaml
+    config: runs/rNN_<run>/config.yaml
     stage: <1|2|3|4>
     fn_type: <SourceFn|RecordFn|CaseFn|TfmFn|SplitFn>
   files_in: &id001
   - scripts/<worker>.py
-  - scripts/config/rNN_<run>.yaml
+  - runs/rNN_<run>/config.yaml
   - _WorkSpace/<UPSTREAM_STORE>/<UPSTREAM_ASSET>
 owner: haipipe-task-for-data
 workbench:
@@ -24,7 +24,7 @@ run_specs:
 - id: execute
   run_type: task.execute
   purpose: Run Stage <N> builder (<FnType>) for <DATASET>
-  target: tasks/bNN_<block>/jNN_<job>/tNN_<task>
+  target: work/bNN_<block>/jNN_<job>/tNN_<task>
   actor:
     mode: automatic
     owner: haipipe-task-for-data
@@ -44,7 +44,7 @@ run_specs:
     payload: &id002
       status: ok
       store_path: _WorkSpace/<N>-<STORE>/<ASSET>
-    receipt: $OUTPUT_ROOT/<task>/results/rNN_<run>/runtime.yaml
+    receipt: $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/runtime.yaml
   cardinality: 1
   cells:
   - workspace_id: <workspace-id>
@@ -98,11 +98,11 @@ run_specs:
   - section: Export
     label: export:summary
     required: true
-    prompt: Write manifest.json + summary to $OUTPUT_ROOT/<task>/results/rNN_<run>/
+    prompt: Write manifest.json + summary to $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/
     files_in: []
     files_out:
-    - $OUTPUT_ROOT/<task>/results/rNN_<run>/manifest.json
-    - $OUTPUT_ROOT/<task>/results/rNN_<run>/summary.txt
+    - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/manifest.json
+    - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/summary.txt
 entry:
 - execute
 terminal:
@@ -112,5 +112,5 @@ output:
   returns: *id002
   files_out:
   - _WorkSpace/<N>-<STORE>/<ASSET>
-  - $OUTPUT_ROOT/<task>/results/rNN_<run>/manifest.json
-  - $OUTPUT_ROOT/<task>/results/rNN_<run>/summary.txt
+  - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/manifest.json
+  - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/summary.txt

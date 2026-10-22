@@ -3,7 +3,7 @@
 Load this contract when planning, dispatching, resuming, or reporting InsightBoard
 work. The shared contracts are
 [`haipipe-run`](../../../../1_base/project/haipipe-run/SKILL.md) and
-[`Workflow Runtime`](../../../../1_base/task/haipipe-workflow/ref/workflow-runtime.md).
+[`Workflow Runtime`](../../../../1_base/project/haipipe-run/ref/workflow-runtime.md).
 Task-side `riNN` work keeps its own item contract.
 
 ## Definition and materialization

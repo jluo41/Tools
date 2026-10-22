@@ -27,8 +27,8 @@ chain acts. The Folder owner and Page Face owner supply the Page's
 outline and style policy.
 Do not route through a separate Task Page-Type layer. The owning workflow or
 canonical family skill already supplies the Page contract. For a Task Folder,
-`haipipe-task` fills both owner roles and is loaded once, together with its
-`haipipe-page-task` reader-facing companion for the display and prose contract.
+`haipipe-task` fills both owner roles and is loaded once; its `ref/task-page.md`
+(§ Displays) holds the display and prose contract.
 Load no sibling Page
 body and no board-wide checker output before reading the target Page. SHAPE may
 use only the approved arcs and decisions of declared sibling Pages and the

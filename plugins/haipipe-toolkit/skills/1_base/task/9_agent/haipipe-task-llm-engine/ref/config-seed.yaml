@@ -1,12 +1,12 @@
 _meta:
   purpose: |
     <describe what this LLM task does>
-  input: prompts/system.md + prompts/user.md
-  output: results/<run>/summary.json + _WorkSpace/LLMCallStore/...
+  input: scripts/config/prompts/system.md + scripts/config/prompts/user.md
+  output: $OUTPUT_ROOT/<task>/runs/<run>/result/summary.json + _WorkSpace/LLMCallStore/...
 
-prompts:
-  system: prompts/system.md
-  user: prompts/user.md
+prompts:  # Task-relative; every Run of the Task shares them
+  system: scripts/config/prompts/system.md
+  user: scripts/config/prompts/user.md
 
 transport: auto
 

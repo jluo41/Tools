@@ -8,8 +8,8 @@ Use for `/haipipe-task audit <task|job|block-path>`. The operation is read-only.
 - Job: enumerate its direct `tNN_*` Task Folders.
 - Block: enumerate `jNN_*/tNN_*` Task Folders.
 
-Every Task candidate must have a same-stem Page, `scripts/`,
-`scripts/config/`, and `runs/`. A container with no valid Task Folder is a
+Every Task candidate must have a same-stem Page, `scripts/` and `runs/`
+(`ref/task-folder.md`). A container with no valid Task Folder is a
 finding, not an execution target.
 
 ## Discover Run names
@@ -17,9 +17,10 @@ finding, not an execution target.
 For each Task Folder:
 
 ```text
-CONFIGS   stems of scripts/config/rNN_*.{yaml,yml,do}
-TICKETS   stems of runs/rNN_*.{sh,ps1}
-RESULTS   directory names in $OUTPUT_ROOT/<task>/results/
+RUNS      folder names runs/rNN_*/ (each with its ticket rNN_*.{sh,ps1,cmd} and run.yaml)
+CONFIGS   runs/<run>/config.{yaml,do}, else stems of scripts/config/rNN_*.{yaml,yml,do}
+TICKETS   runs/<run>/<run>.{sh,ps1,cmd}; a Block not yet moved: stems of runs/rNN_*.{sh,ps1}
+RESULTS   $OUTPUT_ROOT/<task>/runs/<run>/result/; a Block not yet moved: $OUTPUT_ROOT/<task>/results/<run>/
 NOTEBOOKS stems in $OUTPUT_ROOT/<task>/notebooks/*.ipynb, excluding _source
 ALL_RUNS  union of the four sets
 ```
@@ -33,9 +34,10 @@ Stata Tasks may omit notebooks; route engine-specific config semantics to
 For every Run:
 
 ```text
-<task>/scripts/config/<run>.<engine-config>
-<task>/runs/<run>.<ticket-extension>
-$OUTPUT_ROOT/<task>/results/<run>/runtime.yaml
+<task>/runs/<run>/config.<engine-config>   (or <task>/scripts/config/<run>.<engine-config>)
+<task>/runs/<run>/<run>.<ticket-extension>
+<task>/runs/<run>/run.yaml                 its card, with role:
+$OUTPUT_ROOT/<task>/runs/<run>/result/runtime.yaml
 $OUTPUT_ROOT/<task>/notebooks/<run>.ipynb   when notebook policy is not off
 ```
 

@@ -2,17 +2,17 @@
 # Expand variants as Run Specs only when independently commissioned.
 # Resolve placeholders, catalogue key and every Workbench-owned Workspace Cell before use.
 # Steps and section labels describe internal work; they never allocate Runs.
-# Schema: task/haipipe-workflow/ref/plan-schema.md
+# Schema: project/haipipe-run/ref/plan-schema.md
 name: train-<ALGO>-<VARIANT>
 purpose: Train <ALGO> with full hyperparams; checkpoint to ModelInstanceStore
 input:
   args:
-    config: scripts/config/rNN_<run>.yaml
+    config: runs/rNN_<run>/config.yaml
     aidata_path: <_WorkSpace path to AIData>
     algo: <algorithm class name>
   files_in: &id001
   - scripts/<worker>.py
-  - scripts/config/rNN_<run>.yaml
+  - runs/rNN_<run>/config.yaml
   - _WorkSpace/4-AIDataStore/<ParentSetName>/@v<N>AIData-<aidata_name>
 owner: haipipe-task-for-fit
 workbench:
@@ -24,7 +24,7 @@ run_specs:
 - id: execute
   run_type: task.execute
   purpose: Train <ALGO> with full hyperparams; checkpoint to ModelInstanceStore
-  target: tasks/bNN_<block>/jNN_<job>/tNN_<task>
+  target: work/bNN_<block>/jNN_<job>/tNN_<task>
   actor:
     mode: automatic
     owner: haipipe-task-for-fit
@@ -44,7 +44,7 @@ run_specs:
     payload: &id002
       status: ok
       model_path: _WorkSpace/5-ModelInstanceStore/<MODEL>
-    receipt: $OUTPUT_ROOT/<task>/results/rNN_<run>/runtime.yaml
+    receipt: $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/runtime.yaml
   cardinality: 1
   cells:
   - workspace_id: <workspace-id>
@@ -68,7 +68,7 @@ run_specs:
     required: true
     prompt: Instantiate model class + optimizer from config hyperparams
     files_in:
-    - scripts/config/rNN_<run>.yaml
+    - runs/rNN_<run>/config.yaml
     files_out: []
   - section: Train
     label: train:sweep
@@ -92,10 +92,10 @@ run_specs:
   - section: Checkpoint
     label: checkpoint:pointer
     required: true
-    prompt: Write model_path.txt pointer in $OUTPUT_ROOT/<task>/results/rNN_<run>/
+    prompt: Write model_path.txt pointer in $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/
     files_in: []
     files_out:
-    - $OUTPUT_ROOT/<task>/results/rNN_<run>/model_path.txt
+    - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/model_path.txt
   - section: Validate
     label: validate:eval
     required: false
@@ -103,8 +103,8 @@ run_specs:
     files_in:
     - _WorkSpace/5-ModelInstanceStore/<MODEL>
     files_out:
-    - $OUTPUT_ROOT/<task>/results/rNN_<run>/metrics.json
-    - $OUTPUT_ROOT/<task>/results/rNN_<run>/runtime.yaml
+    - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/metrics.json
+    - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/runtime.yaml
 entry:
 - execute
 terminal:
@@ -114,6 +114,6 @@ output:
   returns: *id002
   files_out:
   - _WorkSpace/5-ModelInstanceStore/<MODEL>
-  - $OUTPUT_ROOT/<task>/results/rNN_<run>/model_path.txt
-  - $OUTPUT_ROOT/<task>/results/rNN_<run>/metrics.json
-  - $OUTPUT_ROOT/<task>/results/rNN_<run>/runtime.yaml
+  - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/model_path.txt
+  - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/metrics.json
+  - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/runtime.yaml

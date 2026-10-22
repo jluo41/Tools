@@ -232,6 +232,15 @@ A member's benchmark is therefore small, and lives at
 `_WorkSpace/0-RawDataStore/0-EventNorm/_<Noun>Info/6-benchmark/` and a `code`
 symlink pointing back. Code in git, data in the store, one copy of each.
 
+    eventnorm  the event layer (2026-10-21, food first): raw as it arrives ->
+             preprocess/ (a file a raw type) -> the input JSON -> the noun's
+             enrich(items) -> the output by local hour (hours.py by_hour, the
+             one every event type shares). Served as POST /food/event; its
+             test sends b51 s01 ③'s eight real meals, read in place, and wants
+             them back byte for byte but for one named difference. A member
+             still answers only its items: time and the meal's own numbers
+             pass by it.
+
 
 THE EVENT RELEASE: WHERE A MEMBER'S TABLES COME FROM
 --------------------------------------------------------------------------------

@@ -14,8 +14,8 @@ description: >-
   reorganize the pages by run, each run one division.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.5.1"
-  last_updated: "2026-10-14"
+  version: "0.6.0"
+  last_updated: "2026-10-21"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -27,6 +27,22 @@ file owns the delta for `task-type: evidence`. The consumer side is a typed row 
 Supporting Run and LAND consumes its Result. This job never edits the Page,
 because it stands on the executor side of the wall.
 
+## Type contract
+
+```yaml
+task-type: evidence
+skill: haipipe-task-for-evidence
+does: Computes or extracts the values one Board Page owes from named upstream Runs into values.yaml, and proposes the upstream Task for a value with no source yet.
+worker: scripts/collect_values.py (Python), one entry per stripped question in the Run's config
+config: runs/<run>/config.yaml (one batch of questions), or scripts/config/<run>.yaml in a Block not yet moved
+ticket: runs/<run>/<run>.sh, from ../../haipipe-task/ref/run-sh-template.sh (TASK_NAME collect_values, REQUIRED_RESULTS values.yaml)
+result: $OUTPUT_ROOT/<task>/runs/<run>/result/, with runtime.yaml and values.yaml (every row landed or owed) before the receipt says complete
+heavy: none
+roles: [evidence]
+companions: [haipipe-task, haipipe-evidence, haipipe-draft-logic, haipipe-discovery]
+plan_sample: none
+```
+
 ## ⚡ Brief
 
 ```text
@@ -34,10 +50,11 @@ Q        every number this page needs: computed by execution, from named
          upstream runs, re-runnable — and every number with no source yet:
          proposed as the task that would produce it
 READS    a frozen consumer-neutral input batch (expected payload + acceptance,
-         with Page claims removed) · upstream task folders' report.yaml ·
-         results/ · workflow/report.yaml
+         with Page claims removed) · upstream Task folders'
+         runs/<run>/result/ · workflow/report.yaml
 WRITES   its own job only: plan.yaml · scripts/<collector>.py ·
-         scripts/config/rNN · $OUTPUT_ROOT/<task>/results/<run>/values.yaml · runtime/report receipts ·
+         runs/rNN_<batch>/ (ticket, config.yaml, run.yaml) ·
+         $OUTPUT_ROOT/<task>/runs/<run>/result/values.yaml · runtime/report receipts ·
          workflow/proposals.md
 NEVER    a consumer/ file or any stake · the page or its draft/ · a sibling
          job's folder · a value it computed nowhere (GATE-3: a name that does
@@ -53,18 +70,22 @@ project or owning family                          any Folder's Page Face
 work/                                           <page>/
 └── b<NN>_page_service/         one service      ├── draft/<stem>-evidence-items.md
     ├── j01_values_<pageA>/     block per project│     E<NN>-VALUE-<slug> · Supporting Runs
-    │   ├── t01_collect_values/                  ├── runs/<owner-native-Run-Ticket>
-    │   │   ├── t01_collect_values.md            └── results/<owner-native-Run>/
-    │   │   ├── scripts/
-    │   │   │   ├── collect_values.py
-    │   │   │   └── config/r01_<batch>.yaml
-    │   │   ├── runs/r01_<batch>.sh
+    │   ├── t01_collect_values/                  └── runs/<owner-native-Run>/
+    │   │   ├── t01_collect_values.md                ticket · run.yaml · result/
+    │   │   ├── scripts/collect_values.py
+    │   │   ├── runs/r01_<batch>/
+    │   │   │   ├── r01_<batch>.sh
+    │   │   │   ├── config.yaml
+    │   │   │   ├── run.yaml     role: evidence
+    │   │   │   └── result/      runtime.yaml · values.yaml
     │   │   └── workflow/  plan.yaml · report.yaml · proposals.md
-    │   └── [OUTPUT_ROOT]/t01_collect_values/results/r01_<batch>/values.yaml
+    │   └── [OUTPUT_ROOT]/t01_collect_values/runs/r01_<batch>/result/values.yaml
     └── j02_values_<pageB>/
 ```
 
 `[OUTPUT_ROOT]` denotes the generated projection after output-root resolution; it is not a literal directory to scaffold.
+A Block not yet moved still has the flat `runs/r01_<batch>.sh` and `scripts/config/r01_<batch>.yaml` beside
+`results/r01_<batch>/`; the ticket template runs both, and new Runs start in the Run folder.
 The consumer-side Ticket/Result labels above are owned by that consumer and are never allocated by this Task.
 
 - **The Evidence Item is not copied here.** Its `E<NN>-VALUE-<slug>` id stays
@@ -77,8 +98,8 @@ The consumer-side Ticket/Result labels above are owned by that consumer and are 
   `b<NN>_page_service` and `j<NN>_values_<page-stem>`. A project with an
   established compatible service block may reuse it; legacy
   `b<NN>_paper_service` remains readable but is never required for non-Paper
-  work. A run config is one batch (`r01_<batch>.yaml`), and a refresh allocates a new
-  rNN config/Ticket pair using the same worker, never a new Folder.
+  work. A Run is one batch (`runs/r01_<batch>/config.yaml`), and a refresh allocates a new
+  rNN Run folder (ticket, config, card) using the same worker, never a new Folder.
 - **The Page links Results, not a whole Folder copy.** SURVEY records the
   exact Supporting Run id; Context Workspace may separately list the related
   Task Page when it helps a reader. There is no PageX, `task/`, or Probe lane.
@@ -105,16 +126,16 @@ Every row resolves or is `owed` — a computed row with an unresolvable
 `source:` raises at run time, never defaults.
 
 ```yaml
-# $OUTPUT_ROOT/t01_collect_values/results/r01_intro_batch/values.yaml
+# $OUTPUT_ROOT/t01_collect_values/runs/r01_intro_batch/result/values.yaml
 computed: "260831 1710"
 upstream:                            # every folder this run read, pinned
-  - examples/ProjB/work/R01_Reg_TraitOpioid · report.yaml 260828
+  - examples/ProjB/work/b11_reg_pain/j01_reg_pain_ols/t01_reg_agreeableness · report.yaml 260828
 values:
   - id: adjusted-effect              # consumer-neutral Result key
     question: 2-agreeableness-effect # the Page Evidence Item's question
     value: "-0.083"
     unit: "SD opioid days per SD agreeableness"
-    source: "R01_Reg_TraitOpioid/results/j02_reg_pain/r01_baseline/coef_table.csv#agreeable.b"
+    source: "t01_reg_agreeableness/runs/r01_baseline/result/coef_table.csv#agreeable.b"
     state: landed
   - id: review-coverage
     question: 3-review-coverage
@@ -152,7 +173,7 @@ DIRECTION; direction belongs to the page's prose after EVIDENCE lands.
 
 ## 🔁 A rerun is the refresh, and staleness is mechanical
 
-Upstream reran → allocate a new rNN config/Ticket using this job's worker → `values.yaml` regenerates whole →
+Upstream reran → allocate a new rNN Run folder using this job's worker → `values.yaml` regenerates whole →
 diff against the previous run's copy names every drifted value → each mapped
 Evidence Item is a stale binding EVIDENCE re-lands and OUTLINE absorbs
 (`v<N+1>` if the plan was ✅). The page never goes stale silently, because the
@@ -165,10 +186,11 @@ in both directions.
 Plan     workflow/plan.yaml: input = the batch's questions + the upstream
          folders each should read; process = extract | compute | join;
          output = values.yaml rows + Result receipts. IPO schema:
-         task/haipipe-workflow/ref/plan-schema.md
-Build    scripts/collect_values.py + scripts/config/r<NN>_<batch>.yaml: one entry per
-         question (id, upstream path, extraction); CODE_REVIEW.md Gate 1
-Execute  bash runs/r<NN>_<batch>.sh with `TASK_NAME="collect_values"`,
+         project/haipipe-run/ref/plan-schema.md
+Build    scripts/collect_values.py + runs/r<NN>_<batch>/config.yaml: one entry per
+         question (id, upstream path, extraction); the card
+         runs/r<NN>_<batch>/run.yaml with role: evidence; CODE_REVIEW.md Gate 1
+Execute  bash runs/r<NN>_<batch>/r<NN>_<batch>.sh with `TASK_NAME="collect_values"`,
          family `Execution`, operation `collect-page-values`, target `<batch>`, and
          `REQUIRED_RESULTS=("values.yaml")`
          `RUN_INPUTS` declares every upstream Result path named by the batch.
@@ -222,7 +244,7 @@ Opening         question line unchanged; second line becomes
 ### k · rNN · <English gist, a few plain words>     one per Run, Run order
   **rNN**: one sentence on what this video says
   text block    Video → url · Title → original title · Creator → name ·
-                length · interview-marked: yes|no · Result → results/<stem>/ ·
+                length · interview-marked: yes|no · Result → runs/<stem>/result/ ·
                 State → drafted from the transcript; claims not checked
                 against the video
   [Bilibili video](...) · [Result Card](...)

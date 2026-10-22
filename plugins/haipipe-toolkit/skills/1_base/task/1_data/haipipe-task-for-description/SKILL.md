@@ -17,13 +17,36 @@ description: >-
   row, describe every column, synth_df, synthetic patient, synthetic rows.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.4.2"
-  last_updated: "2026-10-09"
+  version: "0.5.0"
+  last_updated: "2026-10-21"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-task-for-description
 ===================================
+
+## Type contract
+
+```yaml
+task-type: description
+skill: haipipe-task-for-description
+does: one stored table's Table Card, saying what one row is, what each column means, what the
+  values look like, its synth_df, what to watch out for, where each column goes and what changed
+worker: the Job's src/describe_table.py, Python in percent cells, copied from templates/describe_table.py;
+  the column dictionary is seeded by templates/seed_dictionary.py
+config: runs/<run>/config.yaml, or scripts/config/<run>.yaml in a Block not yet moved; started from
+  templates/r01_describe_table.yaml, layered over scripts/config/_defaults.yaml and the Job's
+  src/config-defaults.yaml
+ticket: runs/<run>/<run>.sh, a copy of haipipe-task ref/run-sh-template.sh with TASK_NAME=describe_table,
+  WORKER_PATH=src/describe_table.py, NOTEBOOK_NAME=<dataset>_<table> and RUN_OPERATION=table-description
+result: $OUTPUT_ROOT/<task>/runs/<run>/result/ with runtime.yaml, metrics.json, table_card.md,
+  columns.csv, grain.csv and gotchas.csv (figures/*.png beside them)
+heavy: none
+roles: [describe]
+companions: [haipipe-task-for-raw, haipipe-data-raw, haipipe-data-source, notebook-cell-python]
+plan_sample: none
+```
+
 
 A person opening a table asks five things, in this order: what is one row,
 what does each column mean, what do the values look like, what is wrong with
@@ -137,16 +160,19 @@ work/bNN_<block>/
     ├── src/describe_table.py             copied from templates/, same in every Job
     └── tNN_describe_<table>/             ONE Task per table
         ├── tNN_describe_<table>.md
-        ├── scripts/config/r01_describe_<table>.yaml
-        ├── runs/r01_describe_<table>.sh  the Block's canonical Ticket
-        ├── notebooks/r01_describe_<table>.ipynb   executed: every section inline
-        └── results/r01_describe_<table>/
-            ├── table_card.md             the card a person reads
-            ├── columns.csv               one row per column: meaning + facts
-            ├── grain.csv                 each candidate key, rows that share one
-            ├── gotchas.csv               computed or typed in the dictionary
-            ├── figures/*.png             column map, grain, one per meaning group
-            └── metrics.json              summary.headline
+        ├── notebooks/<dataset>_<table>.ipynb      executed: every section inline (rule 11: named for what it shows)
+        └── runs/r01_describe_<table>/    one folder per Run
+            ├── r01_describe_<table>.sh   the Block's canonical Ticket
+            ├── config.yaml
+            ├── run.yaml                  its card (haipipe-run), role: describe
+            └── result/
+                ├── runtime.yaml          the receipt
+                ├── table_card.md         the card a person reads
+                ├── columns.csv           one row per column: meaning + facts
+                ├── grain.csv             each candidate key, rows that share one
+                ├── gotchas.csv           computed or typed in the dictionary
+                ├── figures/*.png         column map, grain, one per meaning group
+                └── metrics.json          summary.headline
 ```
 
 - In a raw Block (`b00`), the Task sits beside the audit Tasks of each dataset
@@ -241,10 +267,14 @@ Commands
 ```
 
 **scaffold.** Copy `templates/describe_table.py` into `<job>/src/`. Make the
-Task folder above. The Ticket is a copy of the Block's canonical Ticket with
-`WORKER_NAME="describe_table"`, `RUN_OPERATION="table-description"`, and
+Task folder above. The Ticket is a copy of the Block's canonical Ticket (or of
+haipipe-task `ref/run-sh-template.sh`) with `TASK_NAME="describe_table"`,
+`WORKER_PATH="src/describe_table.py"` (the Job's shared worker), `NOTEBOOK_NAME="<dataset>_<table>"`
+(rule 11), `RUN_OPERATION="table-description"`, and
 `REQUIRED_RESULTS=("metrics.json" "table_card.md" "columns.csv" "grain.csv"
-"gotchas.csv")`. Start the config from `templates/r01_describe_table.yaml`.
+"gotchas.csv")`. Start the config `runs/r01_describe_<table>/config.yaml` from
+`templates/r01_describe_table.yaml`, and write the Run's card `run.yaml` beside it
+with `role: describe`.
 
 **seed.** Run `templates/seed_dictionary.py` from the SPACE root with every
 version of the table (`--table`), every contract that already states column

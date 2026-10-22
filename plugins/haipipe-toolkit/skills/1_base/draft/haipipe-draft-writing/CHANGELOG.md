@@ -1,3 +1,21 @@
+## 0.25.3 · 2026-10-21 · A Revise pass answers the person's comments first
+
+- JL 261021: "你每次改的时候，能不能通过我的 comments 来回复那种？"; "你的 change 怎么跟我的 comments 一起来做交互、解决我的
+  comments 呢？". ref/revise.md: a pass reads the open comments in `draft/records/<stem>-comments.md` first, as
+  rulings; it changes the sentence as an Edit card with `Answers: Comment <n>` or says why not, appends a
+  `- Reply · <time>: …` line and sets `State: answered`; only the person writes Notes, closes or deletes. The
+  running line and the Revise rules file (0.25.2's workbench side) are described there too.
+- JL 261021: "你需要给每一个 sentence 句句过关"; "每句话都要看一下上下文，review 它的逻辑关系是否通顺，并且给每句话打分".
+  A Revise review report lists every sentence in its context (haipipe-draft-review 0.3.0 `ref/sentence-logic.md`),
+  and the loop ends only when each scores 8 or more on logic and read, with no broken link.
+- JL 261021: "可以用 A、B、C 几个不同的方法去修改，propose 一些选项". A card whose fix is a choice gives 2 or 3
+  `Option A (<approach>): <sentence>` lines and `Chosen: A`; A is applied by default, the person may pick another.
+- JL 261021: "在 reply 的时候，难道不能说得更 concise 一些". A pass's Reply to a comment is at most two short
+  sentences (30 words): what changed, and its rule.
+- A pass that rewrites the cards file keeps every decision the person made on a card (State accepted, rejected or
+  edited; Chosen), refreshing the rest (`ref/revise.md`; JL 261021, after his ✓ on the Abstract's Section question was
+  written back to proposed and restored).
+
 ## 0.25.2 · 2026-10-21 · A Revise pass opens with its review report
 
 - JL 261021: "我感觉这里面每一句话都写得非常不顺畅。你来 review 一下它，我觉得你应该先写一个 review report，然后再

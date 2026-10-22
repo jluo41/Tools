@@ -3,11 +3,11 @@
 Use `/haipipe-task-for-stata report <tNN-task-path>` after execution.
 Read shared `haipipe-task/fn/stage-report.md` and the Workflow Report schema.
 
-For each actual rNN Ticket, inspect `$OUTPUT_ROOT/<task>/results/<run>/`:
-- per-step `log/*.txt`, checking Stata `r(NNN)` errors and declared completion markers;
+For each actual rNN Ticket, inspect `$OUTPUT_ROOT/<task>/runs/<run>/result/` (reg: also each `runs/<run>/passes/pNN-<MMDD>/`; a Block not yet moved: `results/<run>/`):
+- per-step `log/*.txt` (reg: in the pass), checking Stata `r(NNN)` errors and declared completion markers;
 - required `summary.txt`, `.do` config snapshot, and manifest when the topology emits one;
 - required heavy `.dta` assets in the declared Store, and light coefficient tables in Results;
-- required `runtime.yaml` written by the Task controller, checking it against original engine evidence.
+- required `runtime.yaml` (reg: one per pass) written by the Task controller, checking it against original engine evidence.
 
 Write `workflow/report.yaml` with `runs` bound to Run Spec ids and full bNNjNNtNNrNN addresses.
 `receipt` points to `runtime.yaml`, which cites exact logs/snapshots/summary paths.

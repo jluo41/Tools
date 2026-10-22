@@ -212,7 +212,7 @@ Browser
 Page outer page: servers/workbench/workbench-task-draft/outline.py
   │ Draft, Evidence, Delivery: render in place (space_views.py), each with runs_panel.py
   │ Evidence Card view: lazy iframe → /_board/evidence
-  │ Delivery previews: lazy iframes of the built files
+  │ Delivery previews: lazy iframes of the built files, each folded until opened
   │ lens=run:  lazy iframe → /_board/runs
   ▼
 Page server adapter: servers/workbench/workbench-task-draft/reader/standalone_server.py

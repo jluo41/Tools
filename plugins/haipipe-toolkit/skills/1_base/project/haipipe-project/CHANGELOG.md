@@ -1,3 +1,14 @@
+## 0.17.2 · 2026-10-21 · an empty Block owes no studio topic
+
+- `scripts/ladder.py` `today_findings`: "studio/ has no sNN-<topic>/ topic" fires only once the Block has a Job; a
+  Block haipipe-block just made has nothing to draw yet, so `/wb update` on it says today ok.
+
+## 0.17.1 · 2026-10-21 · a draft Task may hold evidence/ and display/
+
+- `ref/ladder.md`: a Task's `may_hold` gains `evidence` and `display`, the draft Task's three folders beside
+  `draft/` (haipipe-draft, JL 261016). Every Section with evidence cards had audited as debt (`evidence/ is not in
+  the ladder for a Task`, 13 Sections of Paper-AgreeablePrescriptionDiscretion).
+
 ## 0.17.0 · 2026-10-21 · today's rules: a work Block's workflow layout
 
 - `ref/ladder.md` `today: workflow:` and `scripts/ladder.py` `workflow_findings`: at a work Block (family task),

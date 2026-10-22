@@ -9,8 +9,9 @@ into its src/ and every describe Task of that Job runs it.
 Input
     Run config (RUN_CONFIG), layered over <task>/scripts/config/_defaults.yaml
     and <job>/src/config-defaults.yaml (last wins):
-        table:        SPACE-relative path; {key} is filled from the layered
-                      config, plus {job} and {block} (the Job and Block folders)
+        table:        SPACE-relative path of a .parquet or a .csv; {key} is filled from the
+                      layered config, plus {job} and {block} (the Job and Block folders)
+        csv_column_types: optional, a .csv only: {column: arrow type alias}
         dictionary:   SPACE-relative path of the column dictionary (YAML)
         compare_to:   optional SPACE-relative path of an earlier version
         compare_label, min_cell (11), top_k (8), max_value_width (60)
@@ -54,6 +55,7 @@ import numpy as np
 import pandas as pd
 import pyarrow as pa
 import pyarrow.compute as pc
+import pyarrow.csv as pacsv
 import pyarrow.parquet as pq
 import yaml
 from IPython.display import Image, Markdown, display
@@ -133,9 +135,28 @@ def meaning_of(name):
 def confirmed(meaning):
     return not str(meaning).startswith("?")
 
-PF = pq.ParquetFile(TABLE)
-SCHEMA = PF.schema_arrow
-N_ROWS = PF.metadata.num_rows
+IS_CSV = TABLE.suffix.lower() == ".csv"
+if IS_CSV:   # a CSV has no column index: it is read once and its columns served from memory (a small table)
+    CSV_TYPES = {k: pa.type_for_alias(v) for k, v in (CFG.get("csv_column_types") or {}).items()}
+    CSV_TABLE = pacsv.read_csv(TABLE, convert_options=pacsv.ConvertOptions(column_types=CSV_TYPES))
+    SCHEMA, N_ROWS = CSV_TABLE.schema, CSV_TABLE.num_rows
+else:
+    PF = pq.ParquetFile(TABLE)
+    SCHEMA, N_ROWS = PF.schema_arrow, PF.metadata.num_rows
+
+
+def read_columns(names):
+    return CSV_TABLE.select(names) if IS_CSV else pq.read_table(TABLE, columns=names)
+
+
+def iter_batches(size):
+    return CSV_TABLE.to_batches(max_chunksize=size) if IS_CSV else PF.iter_batches(batch_size=size)
+
+
+def floor(counts):
+    """A count under min_cell is not drawn (rule 3): a bar's or a bin's height is its count."""
+    counts = np.asarray(counts)
+    return np.where((counts > 0) & (counts < MIN_CELL), 0, counts)
 NAMES = SCHEMA.names
 print(f"table:          {space_rel(TABLE)}")
 print(f"dictionary:     {space_rel(DICTIONARY_PATH)}")
@@ -227,7 +248,7 @@ NUMBERS = {}   # name -> float array for a histogram
 MONTHS = {}    # name -> monthly counts
 TYPICAL = {}   # name -> the value the made-up example row shows
 for name in NAMES:
-    col = pq.read_table(TABLE, columns=[name]).column(name)
+    col = read_columns([name]).column(name)
     typ = col.type
     n_null = col.null_count
     n_blank, min_len, max_len, med_len = 0, None, None, None
@@ -366,7 +387,7 @@ for key in candidates:
     if missing:
         GRAIN.append({"key": " + ".join(key), "declared": key == declared, "note": f"absent: {', '.join(missing)}"})
         continue
-    sizes = pq.read_table(TABLE, columns=key).to_pandas().groupby(key, dropna=False, sort=False).size()
+    sizes = read_columns(key).to_pandas().groupby(key, dropna=False, sort=False).size()
     shared = int(sizes[sizes > 1].sum())
     spread = sizes.clip(upper=5).value_counts()
     GRAIN.append({
@@ -379,7 +400,7 @@ GRAIN = pd.DataFrame(GRAIN)
 GRAIN.to_csv(OUT / "grain.csv", index=False)
 
 hashes = []
-for batch in PF.iter_batches(batch_size=250_000):
+for batch in iter_batches(250_000):
     hashes.append(pd.util.hash_pandas_object(batch.to_pandas(), index=False).to_numpy())
 N_EXACT_DUP = int(N_ROWS - len(np.unique(np.concatenate(hashes)))) if hashes else 0
 
@@ -443,7 +464,8 @@ def group_figure(group, names):
     fig, axes = plt.subplots(nrows, ncols, figsize=(12, 2.6 * nrows), squeeze=False)
     for ax, name in zip(axes.flat, panels):
         if name in VALUES:
-            vc = VALUES[name].iloc[::-1]
+            vc = VALUES[name]
+            vc = vc[vc["n"] >= MIN_CELL].iloc[::-1]            # a small cell's bar would show its count
             ax.barh(range(len(vc)), vc["pct"], color=group_color.get(group))
             ax.set_yticks(range(len(vc)))
             ax.set_yticklabels([str(v)[:28] for v in vc["value"]], fontsize=7)
@@ -451,11 +473,12 @@ def group_figure(group, names):
         elif name in NUMBERS:
             arr = NUMBERS[name]
             hi = np.percentile(arr, 99) if len(arr) else 0
-            ax.hist(arr[arr <= hi], bins=30, color=group_color.get(group))
+            h, edges = np.histogram(arr[arr <= hi], bins=30)
+            ax.bar(edges[:-1], floor(h), width=np.diff(edges), align="edge", color=group_color.get(group))
             ax.set_xlabel("value (up to the 99th percentile)", fontsize=7)
         else:
             m = MONTHS[name]
-            ax.bar(range(len(m)), m.to_numpy(), color=group_color.get(group))
+            ax.bar(range(len(m)), floor(m.to_numpy()), color=group_color.get(group))
             step = max(1, len(m) // 6)
             ax.set_xticks(range(0, len(m), step))
             ax.set_xticklabels([str(p) for p in m.index[::step]], fontsize=7, rotation=30)
@@ -489,14 +512,14 @@ for group in group_order:
     show(lead, shown, fig_path)
 
 # %% [markdown]
-# ## 3. A made-up example row
+# ## 3. synth_df: a made-up example row
 #
 # Each value is the most common one (or the median) of its own column, so the row shows what values look like. It is not a real row, and the combination may never occur.
 
 # %% Example row
 example = FACTS[["group", "column", "meaning"]].copy()
 example.insert(2, "example value", [TYPICAL[c] for c in example["column"]])
-example_md = ["3. A made-up example row", "-" * 40, "",
+example_md = ["3. synth_df: a made-up example row", "-" * 40, "",
               "Each value is the most common value (or the median) of its own column, and identifying "
               "columns show a placeholder. It shows what values look like; it is not a real row, and "
               "the combination may never occur.", ""]

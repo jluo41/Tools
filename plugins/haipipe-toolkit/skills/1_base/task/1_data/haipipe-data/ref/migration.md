@@ -27,7 +27,7 @@ and the same `j5N` number is the same dataset in all four. From `b10` on,
 Blocks are per question: `b10` builds training sets (features, label, rows,
 split; it may merge datasets) and `b11`+ train on them. An AIDataSet's `j5N`
 is its own number, and at `b10` it is no longer mistaken for b03's `j5N`
-(`haipipe-task/ref/hierarchy.md` § Block number ranges).
+(`haipipe-task/ref/pipeline-blocks.md`).
 
 Does anything break?
 --------------------

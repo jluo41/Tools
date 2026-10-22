@@ -1,10 +1,10 @@
 # Plan a Stata Task
 
 Use `/haipipe-task-for-stata plan <tNN-task-path>`; Job scope enumerates direct Task children through `haipipe-task`.
-Read `ref/stata-dialect.md`, shared `haipipe-task/fn/stage-plan.md`, and `haipipe-workflow/ref/plan-schema.md`.
+Read `ref/stata-dialect.md`, shared `haipipe-task/fn/stage-plan.md`, and `haipipe-run/ref/plan-schema.md`.
 
 1. Detect cms/case/data/reg from workers and explicit input, never from a prefix letter.
-2. Scan `scripts/config/rNN_*.do` and `runs/rNN_*.ps1`; resolve shared cohort/source globals.
+2. Scan each Run folder `runs/rNN_*/` (its `rNN_*.ps1`, `config.do` and `run.yaml`; a Block not yet moved: `runs/rNN_*.ps1` with `scripts/config/rNN_*.do`); resolve shared cohort/source globals.
 3. Expand independently commissioned variants: cms year; case cohort/source/year; data cross-year spec; reg window/family/source.
 4. Use `ref/workflow-plan-sample-<stage>.yaml` to write the sole `workflow/plan.yaml` Run Spec roster.
 5. Keep dispatcher branches, parallel extraction, estimation workers, describe, and summary as internal `steps` of the variant Run.

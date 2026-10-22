@@ -20,6 +20,10 @@ swap transport without re-reading the response shape.
     POST /normalize/batch  {"foods": ["fried rice; egg", ...]}
         -> {"results": [ {...}, ... ], "n": 2, "version": "0.4.0"}
     POST /normalize        {"food": "fried rice; egg"}   -> one object
+    POST /event            {"raw": {"type", "rows"}} or {"input": {...}} or both
+        -> {"raw", "input", "output": {"<local hour>": {...}}, "step", "version"}:
+           one food event, raw to the input JSON to the output by local hour
+           (skills/haipipe-norm/eventnorm; s01 ⑦ ⑤, JL 261021)
     GET  /healthz          the bank it is actually serving, so a caller can tell
                            WHICH corpus answered before trusting a number
 """
@@ -36,6 +40,12 @@ from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from pydantic import BaseModel, Field
 
 from foodnorm import NUTRIENTS, PROVENANCE, enrich_food_to_nutrition, normalize
+import sys as _sys
+for _base in (Path(__file__).absolute(), Path(__file__).resolve()):   # the event layer, beside describe-food
+    if (_base.parents[2] / "skills" / "haipipe-norm" / "eventnorm").is_dir():
+        _sys.path.insert(0, str(_base.parents[2] / "skills" / "haipipe-norm"))
+        break
+import eventnorm
 from foodnorm import observed as _observed
 from foodnorm.constants import USDA_DB
 
@@ -140,6 +150,27 @@ def normalize_batch(body: BatchIn):
 def normalize_one(body: OneIn):
     rows = normalize([body.food], **(body.options or {}))
     return _jsonable(rows)[0]
+
+
+class EventIn(BaseModel):
+    raw: Optional[Dict[str, Any]] = Field(default=None, description='What arrives, as it arrives: {"type": '
+                                          '"app_log" | "text" | "photo" | "numbers_only", "rows": [{...}, ...]}')
+    input: Optional[Dict[str, Any]] = Field(default=None, description="An input JSON, or the fields of it to set "
+                                            "(a photo's items, named by /normalize/image)")
+
+
+@app.post("/event")
+def food_event(body: EventIn):
+    """ONE food event (JL 261021: "make the page on event to work"): the raw, the input JSON the preprocess step
+    makes of it, and the output by local hour, each item enriched (match, serving, 14 nutrients, GI and GL). The
+    food API still reads only the items; the time, the meal type and the meal's own total pass by it."""
+    try:
+        ev = eventnorm.event(raw=body.raw, input=body.input)
+    except ValueError as e:
+        raise HTTPException(422, str(e))
+    except Exception as e:
+        raise HTTPException(500, f"event failed: {type(e).__name__}: {e}")
+    return {**ev, "version": VERSION}
 
 
 # ── the image lane, over the wire ───────────────────────────────────────────

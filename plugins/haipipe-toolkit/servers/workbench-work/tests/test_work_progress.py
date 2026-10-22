@@ -412,6 +412,110 @@ def test_a_placeholder_goal_is_not_shown_as_the_goal(board):
     assert work_progress.goal(job) == "Goal not yet specified"
 
 
+def test_a_background_reads_under_the_goal_and_is_absent_without_one(board):
+    """A face's `## Background` shows under its goal as bullets, bold and code kept; a face without one draws nothing
+    (JL 261021: "可以再加一个 section，比如叫 background")."""
+    root, block, job, task = board
+    assert work_progress.background_html(job) == ""
+    (job / "j01_tables.md").write_text("# Tables\ngoal: Build the table\nclose: Validate it\n\n## Background\n\n"
+                                       "- **Why**: a model needs <one> number\n  for each row\n- **Where**: `t01` built it\n\n## Topic\nx\n")
+    out = work_progress.background_html(job)
+    assert "BACKGROUND" in out and out.count("<li>") == 2
+    assert "<b>Why</b>: a model needs &lt;one&gt; number for each row" in out
+    assert "<code>t01</code>" in out and "Topic" not in out
+
+
+def test_a_background_timeline_block_is_drawn_and_another_block_kept_as_written(board):
+    """A fenced yaml block holding `timeline:` draws the meal down its timeline: a lane per food item, a row per
+    moment, a band per bite across the items it holds (JL 261021: the Item1 to Item3, t1 to tN sketch); any other
+    fenced block shows as it is written."""
+    root, block, job, task = board
+    (job / "j01_tables.md").write_text(
+        "# Tables\ngoal: Normalize food items\n\n## Background\n\n- **A bite**: one moment\n\n```yaml\ntimeline:\n"
+        "  items: [Item 1, Item 2, Item 3]\n  times: [t1, t2, tN]\n  bites:\n"
+        "  - {name: bite 1, at: t2, items: [Item 1, Item 2]}\n  - {name: lost, at: t9, items: [Item 1]}\n"
+        "  caption: one meal\n```\n\n```text\na <plain> block\n```\n\n## Topic\nx\n")
+    out = work_progress.background_html(job)
+    assert out.count("<svg") == 1 and out.count("<li>") == 1
+    assert out.count("<rect") == 1                                   # a bite at a moment not listed is not drawn
+    assert all(f">{name}</text>" in out for name in ("Item 1", "Item 3", "t2", "tN", "bite 1"))
+    assert "<figcaption" in out and "one meal" in out
+    assert "<pre>a &lt;plain&gt; block</pre>" in out and "Topic" not in out
+
+
+def test_a_timeline_span_holds_one_lane_over_a_stretch_of_time():
+    """`spans` draw an activity in one lane from its start to its end; `aside` is dashed (s22 j02, 261021)."""
+    svg = work_progress.timeline_svg({"items": ["Row 1", "Row 2"], "times": ["00:00", "t1", "t2", "24:00"],
+                                      "spans": [{"name": "a walk", "item": "Row 1", "from": "t1", "to": "t2"},
+                                                {"name": "day total", "item": "Row 2", "from": "00:00", "to": "24:00",
+                                                 "aside": True},
+                                                {"name": "lost", "item": "Row 9", "from": "t1", "to": "t2"}]})
+    assert svg.count('rx="9"') == 2 and svg.count("stroke-dasharray") == 1
+    assert ">a walk<" in svg and ">day total<" in svg and "lost" not in svg
+
+
+def test_a_span_with_zoom_opens_into_its_own_lanes_in_the_same_picture(board):
+    """A span marked `zoom: true` and the block's `zoom:` draw one picture: the day's events, and that span opened
+    into its own items and bites beside it, joined by two dashed lines (JL 261021: "你可以把这两个图融成一个图吗")."""
+    root, block, job, task = board
+    (job / "j01_tables.md").write_text(
+        "# Tables\ngoal: Normalize food items\n\n## Background\n\n```yaml\ntimeline:\n  items: [Meal 1, Meal 2]\n"
+        "  times: [t1, t2, t3, t4]\n  spans:\n  - {name: lunch, item: Meal 1, from: t1, to: t2}\n"
+        "  - {name: dinner, item: Meal 2, from: t3, to: t4, zoom: true}\n  zoom:\n    items: [Item 1, Item 2]\n"
+        "    times: [T0, ta, T1]\n    bites:\n    - {name: bite 1, at: ta, items: [Item 1, Item 2]}\n```\n")
+    out = work_progress.background_html(job)
+    assert out.count("<svg") == 1 and out.count('stroke-dasharray="5 5"') == 2      # one picture, two zoom lines
+    assert all(f">{name}</text>" in out for name in ("lunch", "dinner", "Item 2", "bite 1", "ta"))
+    assert out.count('<g transform="translate(') == 1
+
+
+def test_a_clock_timeline_gives_every_hour_the_same_height():
+    """`clock` puts each HH:MM where its minutes put it and labels only the whole hours (s22 j02, 261021)."""
+    parts, w, h, boxes = work_progress.timeline_parts({
+        "items": ["a walk", "by the hour"], "clock": {"from": "07:00", "to": "09:00", "hour_px": 150},
+        "spans": [{"name": "a walk", "item": "a walk", "from": "07:40", "to": "08:10"},
+                  {"name": "walk 20 min", "item": "by the hour", "from": "07:00", "to": "08:00"},
+                  {"name": "walk 10 · run 30", "item": "by the hour", "from": "08:00", "to": "09:00"}]})
+    first, second = boxes["walk 20 min"], boxes["walk 10 · run 30"]
+    assert abs((first[3] - first[1]) - (second[3] - second[1])) < 1        # two hours, two equal heights
+    walk = boxes["a walk"]
+    assert abs((walk[3] - walk[1]) - (150 / 2 - 6)) < 1                    # 30 minutes: half an hour's height
+    assert ">07:00<" in parts and ">09:00<" in parts and ">07:40<" not in parts
+    assert second[2] - second[0] > 116                                      # a longer name widens its box
+
+
+def test_a_clock_runs_past_midnight_and_a_day_ends_at_24():
+    """A night (23:00 to 07:00) keeps going past midnight; a whole day is labelled to 24:00, every `mark` minutes."""
+    night, _, _, boxes = work_progress.timeline_parts({
+        "items": ["asleep"], "clock": {"from": "23:00", "to": "07:00", "hour_px": 60},
+        "spans": [{"name": "asleep", "item": "asleep", "from": "23:00", "to": "01:00"}]})
+    top, bottom = boxes["asleep"][1], boxes["asleep"][3]
+    assert abs((bottom - top) - (120 - 6)) < 1                              # two hours after 23:00, not backwards
+    assert re.findall(r">(\d\d:\d\d)<", night)[:3] == ["23:00", "00:00", "01:00"]
+    day, _, _, _ = work_progress.timeline_parts({
+        "items": ["per day"], "clock": {"from": "00:00", "to": "24:00", "hour_px": 24, "mark": 180},
+        "spans": [{"name": "day total", "item": "per day", "from": "00:00", "to": "24:00"}]})
+    assert re.findall(r">(\d\d:\d\d)<", day) == ["00:00", "03:00", "06:00", "09:00", "12:00", "15:00", "18:00",
+                                                     "21:00", "24:00"]
+
+
+def test_a_rule_draws_its_question_and_a_box_per_answer_in_the_same_picture(board):
+    """A timeline's `rule:` draws the handling rule beside it: the question, then a box per answer with its title,
+    what is done and its example; the answer that holds today is filled (JL 261021: "只记了开始、没有记结束，这时候
+    该怎么办？... 你在这个地方完全没有显示出来")."""
+    root, block, job, task = board
+    (job / "j01_tables.md").write_text(
+        "# Tables\ngoal: Normalize food items\n\n## Background\n\n```yaml\ntimeline:\n  items: [event_meals]\n"
+        "  clock: {from: '11:00', to: '13:00'}\n  spans:\n  - {name: lunch, item: event_meals, from: '11:30', to: '12:30'}\n"
+        "  rule:\n    question: Is T1 logged?\n    branches:\n"
+        "    - {answer: 'no', title: Only T0, then: all to its hour, example: snack 15:10, today: true}\n"
+        "    - {answer: 'yes', title: T0 and T1, then: shared by minutes, example: lunch half and half}\n```\n")
+    out = work_progress.background_html(job)
+    assert out.count("<svg") == 1 and ">Is T1 logged?</text>" in out
+    assert ">no</text>" in out and ">yes</text>" in out and ">Only T0</text>" in out and ">shared by minutes</text>" in out
+    assert out.count('fill="#fff3bf" stroke="currentColor" stroke-width="1.5"/>') >= 2      # today's answer, and the span
+
+
 def test_a_receipt_with_counts_or_outputs_or_metrics_says_its_numbers(board):
     root, block, job, task = board
     a = run(task, "r01_counts", headline=None, counts={"tables": 67, "min_cell": 11})

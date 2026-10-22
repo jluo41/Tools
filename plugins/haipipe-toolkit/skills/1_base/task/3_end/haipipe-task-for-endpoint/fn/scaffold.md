@@ -9,14 +9,14 @@ Step 1 — Identify project + block
 ---------------------------------------
 
 - Auto-detect project from cwd.
-- AUTO_MODE: infer group from cwd or return `status: blocked`.
+- AUTO_MODE: infer the Block and Job from cwd or return `status: blocked`.
   Interactive: ASK block. Scaffold canonical `bNN_<block_name>/` if needed.
 
 
 Step 2 — Collect metadata
 --------------------------
 
-- 2-digit NN: next free in this group.
+- 2-digit NN: the next free Task index tNN in this Job.
 - snake_case task_name (e.g., `package_mortality_xgb`).
 - Source model: `modelinstance_name` + `modelinstance_version` (Stage 5,
   must have examples from ExampleConfig).
@@ -32,16 +32,18 @@ Step 3 — Create canonical nested Task Folder
 ---------------------------------------------
 
 ```
-bNN_<group>/
+work/bNN_<block>/
 └── jNN_<job_name>/
     ├── t01_<task_name>/
     │   ├── t01_<task_name>.md          Page Face · folder-kind/task-type
     │   ├── scripts/
-    │   │   ├── <task_name>.py          exact copy of c_endpoint_nb.py
-    │   │   └── config/r01_base.yaml    from ref/config-seed.yaml
-    │   ├── runs/r01_base.sh            papermill runner
-    │   └── workflow/                   plan/report + inbox/application/
-    │   ├── results/r01_base/
+    │   │   └── <task_name>.py          exact copy of c_endpoint_nb.py (the worker)
+    │   ├── runs/r01_base/              one folder per Run
+    │   │   ├── r01_base.sh             papermill runner (the ticket)
+    │   │   ├── config.yaml             from ref/config-seed.yaml
+    │   │   ├── run.yaml                its card (role: make)
+    │   │   └── result/                 created at runtime
+    │   ├── workflow/                   plan/report + inbox/application/
     │   └── notebooks/r01_base.ipynb
     └── src/
 ```
@@ -56,7 +58,7 @@ Step 4 — Seed config
 ---------------------
 
 Copy `ref/config-seed.yaml` to
-`t01_<task_name>/scripts/config/r01_base.yaml`.
+`t01_<task_name>/runs/r01_base/config.yaml` (`scripts/config/r01_base.yaml` in a Block not yet moved).
 Fill:
 - `_meta:` block.
 - Source model block (`modelinstance_name`, `modelinstance_version` — no @ prefix).
@@ -71,15 +73,16 @@ Step 5 — Run-script
 --------------------
 
 Copy `../../../haipipe-task/ref/run-sh-template.sh` to
-`t01_<task_name>/runs/r01_base.sh`.
-Set `TASK_NAME="t01_<task_name>"`.
+`t01_<task_name>/runs/r01_base/r01_base.sh`, and write its `run.yaml` card.
+Set `TASK_NAME="<task_name>"`: the worker's file name without `.py` (the ticket runs
+`scripts/$TASK_NAME.py`), never the Task folder name `t01_<task_name>`.
 The body sources `.venv` + `env.sh` (Endpoint_Pipeline needs the haipipe import path + store env vars).
 
 
 Step 6 — Execute + verify (per SKILL.md pipeline flow)
 -------------------------------------------------------
 
-`bash t01_<task_name>/runs/r01_base.sh` drives c_endpoint_nb.py: load
+`bash t01_<task_name>/runs/r01_base/r01_base.sh` drives c_endpoint_nb.py: load
 ModelInstance_Set → Endpoint_Pipeline.run() → save to 6-EndpointStore/ → verify
 every example has payload.json → test inference on sample payloads → package
 .tar.gz.
@@ -99,7 +102,7 @@ After a successful package, suggest:
 status:    ok
 summary:   Scaffolded endpoint Task tNN_<task> under bNN_<block>/jNN_<job>.
 artifacts: [paths created]
-next:      bash t01_<task_name>/runs/r01_base.sh, then /haipipe-end deploy <target>
+next:      bash t01_<task_name>/runs/r01_base/r01_base.sh, then /haipipe-end deploy <target>
 ```
 
 

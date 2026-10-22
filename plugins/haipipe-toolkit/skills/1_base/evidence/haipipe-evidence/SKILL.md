@@ -2,7 +2,7 @@
 name: haipipe-evidence
 description: "Find the evidence a claim needs and show it as cards: CITE (someone else's paper, from a discovery Run, external, blue) and VALUE (our own result, from a work Run, internal, violet). One card is one topic, a discovery or work Task or Job, holding many items; each item names the sentences it backs, the exact words it backs (anchor), and the Run it comes from. Reads the paper, quoted fact or value from the Run's result/, orders cards by the narrative, checks every address, and for each missing piece flags a proposal (a new Run, Task, Job or Studio topic, proposed by evidence, for a stated purpose) for a person to tick. Used by any page that needs support: a Section canvas, a Page's Evidence Space, a report, slides. Trigger: evidence, evidence card, CITE, VALUE, find the evidence, what backs this sentence, missing evidence, propose a run for evidence, /haipipe-evidence. Also a Page's evidence Runs (the old haipipe-draft-evidence, now ref/page-evidence.md): page evidence, evidence Run, land evidence items, embed the result, fold evidence, /haipipe-draft-evidence."
 metadata:
-  version: "0.6.1"
+  version: "0.7.0"
   last_updated: "2026-10-21"
 ---
 
@@ -92,6 +92,7 @@ evidence:
 ```text
 python cards.py check   <task>/evidence/cards.yaml [--sentences s.json]   every address, fact, value, anchor
 python cards.py propose <task>/evidence/cards.yaml [--page <name>] [--write]   writes evidence/proposals.md
+python cards.py bib     <task>/evidence/cards.yaml --draft <draft.md> [--write]   writes draft/evidence/bibex/<task>.bib
 python from_items.py <task>… [--write]   an older Page's draft/<stem>-evidence-items.md → cards.yaml + proposals.md
 ```
 

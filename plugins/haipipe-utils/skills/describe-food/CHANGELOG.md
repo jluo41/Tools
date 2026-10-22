@@ -2,6 +2,24 @@ CHANGELOG — describe-food
 ================================================================================
 
 
+unreleased — 2026-10-21
+--------------------------------------------------------------------------------
+
+Two modules the event door (haipipe-norm/eventnorm, POST /food/event) calls; the
+door's normalize() and its answers do not change.
+
+foodnorm/items.py enrich_items(items): a meal's items, each asked alone, enriched
+with its match, the serving its numbers are for, FatSecret's 14 nutrients in four
+groups (six from normalize(), eight from the observed table where it found the
+food) and its GI and GL; the meal's total from normalize() of the whole meal as one
+string. Lifted from b51 s01's drawing builder, where it ran first. A MISS's empty
+basis is null, never a bare NaN.
+
+foodnorm/glycemic.py: b51 j01 t21's gi_match.py, lifted whole (one guard added:
+no GI table, no GI), and matcher() to open ext_food_gi GI2008CN from the store. No
+release pins that table yet; it stays internal, and only an item's gi and gl leave.
+
+
 0.7.0 — 2026-10-02
 --------------------------------------------------------------------------------
 

@@ -1,16 +1,17 @@
 # =============================================================================
-# Template for scripts/config/<NAME>.yaml — evaluation task
+# Template for runs/rNN_<run>/config.yaml — evaluation task
+# (scripts/config/rNN_<run>.yaml in a Block not yet moved; the ticket reads both)
 # =============================================================================
 
 _meta:
   purpose: |
     <e.g., Compute next-2h MAE on test-id split for clm_d128_l12 @v0007>
   note: |
-    <e.g., Compares to baseline A01.02 @v0001 — expect ≤0.5 mg/dL delta>
+    <e.g., Compares to the baseline trained by b02j01t01r02 (@v0001) — expect ≤0.5 mg/dL delta>
   input: |
     <e.g., ModelInstance clm_d128_l12/@v0007 + AIData EventGlucose/@v0001 test_id>
   output: |
-    $OUTPUT_ROOT/<task>/results/rNN_<run>/metrics.json — keys: mae, rmse, samples, horizon
+    $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/metrics.json — keys: mae, rmse, samples, horizon
 
 
 # =============================================================================

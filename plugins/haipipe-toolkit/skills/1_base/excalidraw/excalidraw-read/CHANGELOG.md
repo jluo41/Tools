@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.10.0 · 2026-10-21 · An abstract's blocks, each cut whole
+
+- Asked 261021: the Abstract's Section canvas gets the frame of other papers the Introduction's has, so a structured
+  abstract must be cut as JAMA prints it, not by paragraph indents. A reading's `section.blocks` lists its headings in
+  reading order (`{heading, page, name, group}`: the Key Points box, then IMPORTANCE to CONCLUSIONS AND RELEVANCE).
+  `read_paper.py paras` (and `shoot`, `all`) cuts each block whole (`section_blocks`): from the line its heading
+  starts, letter case kept so a lower-case "results" inside a block is not a heading, down that line's own column
+  (a side column of affiliations or links never joins) to the next block's heading or a gap of more than two line
+  heights. Each record in `shots/paras.json` adds its `name`, `group` and `words` (`block_words`: the heading and
+  the run-in `section.labels` left out, a word broken at a line end one word, a thin-spaced number one word). Read on
+  four JAMA IM abstracts: every heading found, every Key Points box whole (12 to 16 lines), 34 quotes at 1.00.
+
 ## 0.9.0 · 2026-10-20 · A Section's paragraphs, each cut whole
 
 - JL 261020, of the examples frame on t01's Section canvas: "你每个自然段应该独立成段，你这截的根本不是一个完整的自然段，完全乱截啊".

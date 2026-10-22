@@ -1,5 +1,6 @@
 # =============================================================================
-# Template for <task>/scripts/config/<RUNNAME>.yaml — display-input Task
+# Template for <task>/runs/<RUNNAME>/config.yaml — display-input Task
+# (<task>/scripts/config/<RUNNAME>.yaml in a Block not yet moved; the ticket reads both)
 # =============================================================================
 
 _meta:
@@ -8,9 +9,9 @@ _meta:
   note: |
     <e.g., 5 model sizes × 2 splits = 10 points; error bars across 3 seeds>
   input: |
-    <e.g., Eval results from tasks B01/01..05 (one per model size)>
+    <e.g., Eval Results from b03j01t01r01..r05 (one Run per model size)>
   output: |
-    $OUTPUT_ROOT/<task>/results/<run>/{source_data.csv, provenance.json}
+    $OUTPUT_ROOT/<task>/runs/<run>/result/{source_data.csv, provenance.json}
   provenance: |
     provenance.json records task holder, run, upstream artifacts, selection logic, output row count,
     and `approved_for_display_intake: true` only when this CSV is safe to snapshot into a paper.

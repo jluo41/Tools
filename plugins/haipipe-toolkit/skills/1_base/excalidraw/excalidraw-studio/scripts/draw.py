@@ -270,11 +270,17 @@ class Drawing:
         """The frame's own measure in its top right corner: a text frame's density against its floor (principle 6),
         a map's words and its small ones (principle 7); a picture or a screen is not measured."""
         kind = self.kind(self.els, f)
-        if kind == "map" and not self.is_detail(f):
+        if getattr(canvas, "is_explains", lambda e: False)(f):  # as check.py: it explains the main frame (JL 261013),
+            words, small = self.words_small(self.els, f["id"])  #   so neither ⑥ nor ⑦ holds it; the badge says so
+            ok = True
+            top = f"🪶 {words} words"
+            low = "— explains the main frame: its room is the point"
+        elif kind == "map" and not self.is_detail(f):
             words, small = self.words_small(self.els, f["id"])
-            ok = words <= MAP_WORDS and small <= SMALL_SHARE * max(words, 1)
+            cap = round(MAP_WORDS * getattr(canvas, "signboard_scale", lambda e: 1)(f))   # as check.py: a signboard
+            ok = words <= cap and small <= SMALL_SHARE * max(words, 1)              # holds its scale's share
             top = f"🪶 {words} words, {round(100 * small / max(words, 1))}% small"
-            low = f"{'✅' if ok else '❌'} a map: at most {MAP_WORDS} words, {round(100 * SMALL_SHARE)}% small"
+            low = f"{'✅' if ok else '❌'} a map: at most {cap} words, {round(100 * SMALL_SHARE)}% small"
         else:
             per, words = self.words_per_mpx(self.els, f["id"], f["width"], f["height"])
             floor = self.detail_floor(self.els, f["id"]) if self.is_detail(f) else FLOOR

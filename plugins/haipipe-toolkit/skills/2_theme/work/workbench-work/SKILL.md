@@ -6,12 +6,15 @@ description: >-
   Workbench's style: Scope (Block, Questions, Resources, RoadMap Draw with the
   generated question map), Task (one table per register group, a row per
   Question: Logic, Task Work, Report), Check and Delivery, each with the shared
-  Runs panel, and the shared Guide with its Method page. Use for visual
-  tracking across one work/bNN_* Block and opening its Question reports.
-  Execution belongs to haipipe-task; report writing to haipipe-draft.
+  Runs panel, and the shared Guide with its Method page; and, on a Block
+  whose face says workbench-layout: workflow, Goal · Plan · Execution · Results,
+  the Goal a to-do tree from each Job's ## Deliverables. Use for visual
+  tracking across one work/bNN_* Block and opening its Question reports. It
+  only shows; to bring an older Block up to today's structure use /wb update
+  <Block>. Execution belongs to haipipe-task; report writing to haipipe-draft.
 metadata:
-  version: "0.7.4"
-  last_updated: "2026-10-09"
+  version: "0.8.0"
+  last_updated: "2026-10-21"
 ---
 
 # Work Block Workbench (the work theme, once task)
@@ -27,6 +30,19 @@ page: `guide/methods.excalidraw` first, then `guide/method.md` as fold
 cards with its Run and Report method cards (`guide/methods/`); Related Paper is
 `related/papers.md`, all in `servers/workbench-work/`; RoadMap Draw opens the generated
 `Tools/blueprints/b17_theme_work/studio/s03-work-workbench/task-workbench-design.excalidraw`.
+
+## The workflow layout, and updating an older Block
+
+A Block whose `board.md` says `workbench-layout: workflow` (LLMRec b01 and b02, 261021) opens on
+**Goal · Plan · Execution · Results**: Goal is one folded to-do tree, Goal → Job → Task → item, built
+from each Job face's `## Deliverables` (haipipe-job `ref/job-contract.md`) and ticked from disk;
+Execution groups each Task's Runs by their card's `role:`. The server is
+`servers/workbench-work/work_progress.py`; its README says what each view reads.
+
+This skill only shows a Block. It never changes one. To bring an older Block up to today's
+structure, run `/wb update <Block>` (the `wb` skill): a dry run first, then `--apply`, then write the
+face lines it lists (each Job's `emoji:` and `## Deliverables`, each work Task's `goal:` and
+`close:`) from the Block's own records, and open the Block again to read the Goal tree.
 
 ## Open
 

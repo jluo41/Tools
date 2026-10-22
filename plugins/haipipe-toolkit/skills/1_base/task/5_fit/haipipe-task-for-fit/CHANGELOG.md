@@ -5,6 +5,19 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.2.0] · 2026-10-21 · One folder per Run, and the Type contract
+
+- `## Type contract` is the first section of SKILL.md (haipipe-task ref/types.md): roles [trial, make, fix],
+  heavy output in `_WorkSpace/5-ModelInstanceStore/`, companions, plan sample.
+- Every page states the current Run layout: the ticket `runs/rNN_<run>/rNN_<run>.sh`, its `config.yaml`
+  (`scripts/config/rNN_<run>.yaml` in a Block not yet moved) and `run.yaml` card, and the Result
+  `$OUTPUT_ROOT/<task>/runs/<run>/result/`, never `results/<run>/` (SKILL.md, fn/scaffold.md,
+  ref/config-seed.yaml, ref/workflow-plan-sample.yaml with `target: work/...`).
+- The ticket sets `REQUIRED_RESULTS=("metrics.json" "model_path.txt")`; the frontmatter names
+  `jNN_<job>/tNN_<task>/` Task folders, not `{NN}_<name>/` jobs.
+- The fit-owned companions follow the same layout: haipipe-task-gpu 0.3.0, haipipe-task-gpu-training 0.3.0
+  (they keep no CHANGELOG of their own).
+
 ## [0.1.5] · 2026-10-09 · Theme folders are singular
 
 - Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,

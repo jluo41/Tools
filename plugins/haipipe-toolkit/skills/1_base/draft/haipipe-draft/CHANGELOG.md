@@ -1,3 +1,27 @@
+## 0.137.1 · 2026-10-21 · A held delivery lane reads failed, not done
+
+- `page.py export` wrote each lane's Run card `status: done` before the lane ran, so a LaTeX or Word lane held by an
+  evidence gate showed `done` in the version's Work (Paper-AgreeableOpioid-Jama: 20 held lanes read done). The new
+  `src/page_export.py::mark_card` records the outcome after the build: `done`, or `failed` when a gate held the lane.
+
+## 0.137.0 · 2026-10-21 · renumber, bump, and adopt that lays out a new Page
+
+- JL 261021: "for this one, how did we update the skills and workbench accordingly so we can easily work with other
+  draft task as well". What t01_introduction needed by hand is now a command for every draft Task:
+  - `page.py renumber` (`src/page_renumber.py`): the S ids in reading order, in the Draft, `evidence/cards.yaml`'s
+    `for:` numbers, the Revise cards and rules, and each comment's target and AI reply ("我这 index 是不是要与时俱进一下");
+    `--merged OLD=INTO` for a sentence folded into another.
+  - `page.py bump` (`src/page_bump.py`): the Draft to its next version on the person's ok, the old one to `previous/`,
+    its header naming the new version, the one it supersedes and today's date.
+  - `adopt` lays out a Page whose Content holds no tagged sentence yet (the `<the Section's prose ...>` placeholder):
+    the Page's title as `###`, one `#### C<n>.P<m> · <name>` block per paragraph, each sentence tagged; the exporters
+    print a `####` as a paragraph break, never a heading.
+  - Tests: `tests/test_page_renumber_bump.py`.
+- A fresh agent, asked to deliver t02_methods from the skill alone, found the sequence and ran its dry runs; the
+  six gaps it named are closed in the Fast path: full paths to page.py and cards.py, the draft's file name, a check
+  for ⟦…⟧ marks first, the person's ok as the gate (an open Structure Run stays open), what the `state:` line holds
+  after, and render and pull as later, optional haipipe-delivery steps.
+
 ## 0.136.1 · 2026-10-20 · `name-too-long`: a paragraph name over 11 words
 
 - JL 261020, on t01's mind map: a paragraph name is a name, not its argument. `check_head_style` (`src/plan_shape.py`)

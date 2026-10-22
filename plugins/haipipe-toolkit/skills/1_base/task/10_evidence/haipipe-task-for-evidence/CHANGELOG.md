@@ -1,5 +1,13 @@
 # CHANGELOG · haipipe-task-for-evidence
 
+## 0.6.0 · 2026-10-21 · One folder per Run, and a Type contract
+
+- `SKILL.md` opens with `## Type contract` (the keys of haipipe-task `ref/types.md`), current layout only.
+- A Run is `runs/rNN_<batch>/` with its ticket, `config.yaml`, card `run.yaml` (`role: evidence`) and `result/`;
+  `values.yaml` is `$OUTPUT_ROOT/<task>/runs/<run>/result/values.yaml`. The Discovery division's Result line reads
+  `runs/<stem>/result/`. `ref/specimen-page-values.md` names current `work/` Blocks, Jobs, Tasks and Runs. The flat
+  layout is named only as what a Block not yet moved still has.
+
 ## 0.5.1 · 2026-10-16 · Proposals from haipipe-evidence (JL 261016)
 
 - The propose half: a page's WORK need can arrive as a flagged proposal from `haipipe-evidence`

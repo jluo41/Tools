@@ -1,7 +1,7 @@
 runtime.yaml — Schema
 ======================
 
-Location: `$OUTPUT_ROOT/<task>/results/<run>/runtime.yaml`.
+Location: `$OUTPUT_ROOT/<task>/runs/<run>/result/runtime.yaml` (a Block not yet moved: `$OUTPUT_ROOT/<task>/results/<run>/runtime.yaml`).
 Owner: the Run scaffolder creates `status: planned`; the authored Ticket
 updates the same receipt automatically from launch onward; never edit it by hand.
 Status: source of truth for the lifecycle facts of one Run. The typed payload,
@@ -86,8 +86,8 @@ family: Page
 operation: evidence-item
 target: E01-DISPLAY-effect
 status: running
-ticket: t01_example/runs/r01_page-evidence-item_e01-display-effect.sh
-result: t01_example/results/r01_page-evidence-item_e01-display-effect/
+ticket: t01_example/runs/r01_page-evidence-item_e01-display-effect/r01_page-evidence-item_e01-display-effect.sh
+result: t01_example/runs/r01_page-evidence-item_e01-display-effect/result/
 inputs:
   - path: t01_example/scripts/config/r01_page-evidence-item_e01-display-effect.yaml
 worker:
@@ -117,8 +117,8 @@ family: Page
 operation: evidence-item
 target: E01-DISPLAY-effect
 status: complete
-ticket: t01_example/runs/r01_page-evidence-item_e01-display-effect.sh
-result: t01_example/results/r01_page-evidence-item_e01-display-effect/
+ticket: t01_example/runs/r01_page-evidence-item_e01-display-effect/r01_page-evidence-item_e01-display-effect.sh
+result: t01_example/runs/r01_page-evidence-item_e01-display-effect/result/
 inputs:
   - path: t01_example/scripts/config/r01_page-evidence-item_e01-display-effect.yaml
 worker:

@@ -106,7 +106,7 @@ Project root, manifest, profile, Git mode,
 Task status, BJTR, Block, Job, Task, Run              -> /haipipe-task
 Discovery structure                                  -> /haipipe-discovery
 Paper/Application/Board/Page internals                -> their owning skill
-workflow, IPO, phases, plan workflow                 -> haipipe-workflow
+workflow, IPO, phases, plan workflow                 -> /haipipe-run (ref/workflow.md)
 --------------------------------------------------------------------------
 NO MATCH  (cross-cutting Project-root setup/audit/update, owner routing,
           lazy worlds, migration safety, return-contract tail, or anything
@@ -156,7 +156,7 @@ capture, so a mapped folder not existing yet is expected, not an error.
 ```
 fn/project, fn/repo-project,
 fn/audit, fn/update           haipipe-project/feedback/  (tag the fn in the item)
-haipipe-workflow              ../task/haipipe-workflow/feedback/  (lives in task/)
+haipipe-run (workflow)        ../haipipe-run/feedback/
 BJTR / scan-status            ../task/haipipe-task/feedback/
 ORCHESTRATOR FALLBACK         haipipe-project/feedback/  (this skill's own folder)
 ```

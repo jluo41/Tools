@@ -488,9 +488,9 @@ haipipe-draft
 ```
 
 Do not insert a separate Task Page-Type layer. `haipipe-task` is both canonical
-Folder owner and Page Face owner for a Task Folder, so load it once. Also load
-its `haipipe-page-task` reader-facing companion for the Task Page's display
-and prose requirements; this companion adds no execution or closure authority.
+Folder owner and Page Face owner for a Task Folder, so load it once; its
+`ref/task-page.md` (§ Displays) holds the Task Page's display and prose
+requirements, with no execution or closure authority of its own.
 
 ## 🔀 Route by broken authority
 

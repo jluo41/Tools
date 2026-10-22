@@ -1,3 +1,8 @@
+## 1.29.1 · 2026-10-21 · where a new Block starts
+
+- SKILL.md § Update: a new Block starts on haipipe-block's `new_board.py` (2.2.0, born on today's face), `/wb update`
+  keeps it current as Jobs arrive, and `workbench-work` only shows a Block.
+
 ## 1.29.0 · 2026-10-21 · /wb update brings a work Block to the workflow layout
 
 - `cli/wb_update.py`: step 2 shows the workflow rules (haipipe-project 0.17.0), step 4 `--apply` also writes the

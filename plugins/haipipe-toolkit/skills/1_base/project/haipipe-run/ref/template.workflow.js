@@ -1,4 +1,4 @@
-// haipipe-workflow Run Spec graph template.
+// haipipe-run Run Spec graph template (ref/workflow.md; was haipipe-workflow until 2026-10-21).
 // `meta.phases` and opts.phase are engine progress labels only.
 
 export const meta = {

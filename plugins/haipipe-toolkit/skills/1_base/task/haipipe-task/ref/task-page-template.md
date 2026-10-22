@@ -10,7 +10,7 @@ goal: <what this Task delivers, one line a stranger reads>
 close: <what must be true for this Task to close, one line>
 owner: <who>
 folder-kind: task
-task-type: <data|raw|algo|fit|eval|display|individual|agent|endpoint|page|stata|labeling>
+task-type: <raw|description|data|algo|fit|eval|individual|display|endpoint|agent|evidence|stata-cms|stata-case|stata-data|stata-reg|labeling>
 task: .
 
 ## Opening

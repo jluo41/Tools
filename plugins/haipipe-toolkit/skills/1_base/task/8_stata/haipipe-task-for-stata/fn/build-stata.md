@@ -87,16 +87,16 @@ For each step, create `scripts/<subdir>/<worker>.do`:
 
 cms workers: extract + clean one CMS file type per year case workers: merge cases with CMS claims within BFAF time windows data workers: filter + join + derive analysis variables (cross-year) reg workers: estimate one model specification (OLS/IV/DID)
 
-### Step 3 — Author orchestrator (cms/case stages only — data is SELF-ORCHESTRATING: runs/*.ps1 IS the orchestrator, no year axis; see SKILL.md data section)
+### Step 3 — Author orchestrator (cms/case stages only — data is SELF-ORCHESTRATING: the Run's ticket IS the orchestrator, no year axis; see SKILL.md data section)
 
 Read `ref/run-stage-year-template.ps1` as the starting template.
 
-Build the orchestrator (`run_<stage>_year.ps1`, <=30 lines) with:
-1. Param block: `$cfg`, optional `$year` consistency assertion, resolved `$resultsDir`; derive year/source from the per-run config
+Build the orchestrator (the Job's `src/run_<stage>_year.ps1`, <=30 lines) with:
+1. Param block: `$ConfigPath` (the Run's `runs/<run>/config.do`), optional `$year` consistency assertion; derive run name, year/source and the Result `runs/<run>/result/` (under the resolved OUTPUT_ROOT) from that config
 2. `$ErrorActionPreference = "Stop"`
 3. `$stata` per dialect A5: hardcoded line or Resolve-StataExe, either accepted for any stage
-4. `$dir = Split-Path -Parent $PSScriptRoot` (orchestrator is under Task scripts/) + repo root walk-up for `$ws`
-5. Config validation (`if -not Test-Path scripts/config/$cfg.do`)
+4. `$dir` = the Task folder, found from the config, never from this file's own folder (it sits in the Job's src/): `runs/<run>/config.do` and a flat Block's `scripts/config/<run>.do` both sit two levels below the Task; then repo root walk-up for `$ws`
+5. Config validation (`Resolve-Path` the config; the Task folder must match `tNN_`)
 6. `$wsRoot` + `$resultsDir` as named variables
 7. `New-Item` for results dir + log/ subdirectory
 8. `$base` + `$tail` for Stata dispatcher args
@@ -114,13 +114,13 @@ Build the orchestrator (`run_<stage>_year.ps1`, <=30 lines) with:
 Reg is DISPATCHER-LESS — each `.ps1` runner is self-contained.
 Read `ref/run-ps1-reg-template.ps1` as the starting template.
 
-Build each runner (`runs/rNN_<run>.ps1`) with:
+Build each runner (`runs/rNN_<run>/rNN_<run>.ps1`) with:
 1. `$ErrorActionPreference = "Stop"`
-2. `$TASK_DIR = Split-Path -Parent $PSScriptRoot`
+2. `$TASK_DIR`: if the ticket's folder is `runs`, the ticket is flat and the Task is that folder's parent; else the Task is its folder's grandparent
 3. Repo root walk-up via `pyproject.toml`
 4. `Resolve-StataExe` function (auto-detects edition + version)
 5. `$env:HAIPIPE_WS_ROOT` = `Join-Path $WS_ROOT "_WorkSpace"`
-6. `$env:HAIPIPE_RUN_CONFIG` = `"<RUNNAME>"` (matches per-run config stem)
+6. `$env:HAIPIPE_RUN_CONFIG` = the Run's config relative to the Task (`runs/<run>/config.do`; flat: `scripts/config/<run>.do`), with `$env:HAIPIPE_RUN_RESULT` (`runs/<run>/result/`) and `$env:HAIPIPE_PASS_DIR` (`runs/<run>/passes/pNN-<MMDD>/`)
 7. `$workers = @(...)` — list of worker .do filenames for this estimator family
 8. `Push-Location $TASK_DIR` + `foreach ($w in $workers) { & $stata /e do "scripts/$w" }`
 
@@ -142,31 +142,34 @@ Build each runner (`runs/rNN_<run>.ps1`) with:
 - `scripts/config/_source_full.do`: same for full/real
 
 **Per-run configs** (thin wrappers):
-- `scripts/config/rNN_<run>.do`: loads source selector + shared config + pins year
+- `runs/rNN_<run>/config.do`: loads source selector + shared config + pins year
 - Generated from `ref/config-seed-run.do`
 
 **Reg configs** (two-layer chain, from `ref/config-seed-reg.do` + `ref/config-seed-reg-run.do`):
-- Shared: `scripts/config/<Cohort>_<Pairing>.do` — data path + version + res_root
+- Shared: `scripts/config/<Cohort>_<Pairing>.do` — data path + version
 - Shared synth: `scripts/config/<Cohort>_<Pairing>_synth.do` — same but synth data version
-- Per-run: `scripts/config/rNN_<run>.do` — loads shared config + pins `outcome_bfaf_window` + `res_dir`
+- Per-run: `runs/rNN_<run>/config.do` — loads shared config + pins `outcome_bfaf_window` + `res_dir` (+ `pass_dir`)
 - DID per-run: same + adds `global file_policy "${ws_root}/0-External-Store/Policy/Policy-State-Year.dta"`
 - Controls, outcomes, treatment, instruments live in worker .do scripts (NOT config) because different workers within the same run have different RHS.
 
 ### Step 5 — Author thin runners + sbatch
 
-**cms/case thin runners** (`runs/rNN_<run>.ps1`) — data has no thin runner (self-orchestrating):
-- 2 lines: comment + call to orchestrator with args
-- From `ref/run-ps1-template.ps1`
+Each Run folder `runs/rNN_<run>/` gets its ticket, its `config.do` and its card `run.yaml` (`role:` make, trial or describe).
 
-**Reg runners** (`runs/rNN_<run>.ps1`):
+**cms/case thin runners** (`runs/rNN_<run>/rNN_<run>.ps1`) — data has no thin runner (self-orchestrating):
+- 2 lines: comment + `& "$PSScriptRoot\..\..\..\src\run_<stage>_year.ps1" "$PSScriptRoot\config.do"`
+- From `ref/run-ps1-template.ps1` (its lines make the same call in either layout)
+
+**Reg runners** (`runs/rNN_<run>/rNN_<run>.ps1`):
 - Self-contained (~30-38 lines): from `ref/run-ps1-reg-template.ps1`
 - NOT thin delegates — each runner IS its own orchestrator
+- Or, once the Job has a shared `src/0-libs/run-regression-pipeline.ps1`, the two-line caller that hands it `config.do`
 
 **Sbatch batchers** (`sbatch/run_all_*.ps1` or `sbatch/run-<cohort>-<est>-all.ps1`):
 - Reg: per-estimator and per-source batchers using `& powershell -File`
 - cms/case/data: multi-year batchers
 
-**Optional independently requested describe Run** (`runs/rNN_describe_<cohort>.ps1`):
+**Optional independently requested describe Run** (`runs/rNN_describe_<cohort>/`, `role: describe`):
 - Standalone (doesn't go through orchestrator)
 - Has its own Stata exe resolution + STATATMP
 - Calls dispatcher with `describe` step
@@ -178,7 +181,7 @@ Stages cms/case/data ship a mandatory describe step:
 - Walks output directory, counts rows per file
 - Uses ONLY built-in Stata (`egen tag`, `summarize`, `tabulate`)
 - NO SSC (`distinct`, `ftools`, etc.)
-- Writes human-readable report to results/
+- Writes human-readable report to the Run's result/
 
 Reg stage: describe is OPTIONAL.
 Stata logs + .tex coefficient tables are self-documenting.
@@ -212,7 +215,7 @@ MUST NOT
 - Use papermill, .ipynb, or Python — this is Stata + PowerShell
 - Use SSC packages in describe scripts
 - Use `Start-Job` in orchestrator (CMS server incompatible)
-- Write heavy .dta to results/ (they go to _WorkSpace/)
+- Write heavy .dta to a Run's result/ (they go to _WorkSpace/)
 - Skip STATATMP in orchestrator
 - Use non-ASCII in .ps1 files
 - Add comment banners, ASCII art, or box-drawing to .ps1

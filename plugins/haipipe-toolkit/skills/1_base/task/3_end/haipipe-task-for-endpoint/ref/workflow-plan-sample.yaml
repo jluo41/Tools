@@ -2,16 +2,16 @@
 # Expand variants as Run Specs only when independently commissioned.
 # Resolve placeholders, catalogue key and every Workbench-owned Workspace Cell before use.
 # Steps and section labels describe internal work; they never allocate Runs.
-# Schema: task/haipipe-workflow/ref/plan-schema.md
+# Schema: project/haipipe-run/ref/plan-schema.md
 name: package-<ENDPOINT>
 purpose: Package <MODELINSTANCE> (Stage 5) into deployable Endpoint_Set <ENDPOINT> (Stage 6)
 input:
   args:
-    config: scripts/config/rNN_<run>.yaml
+    config: runs/rNN_<run>/config.yaml
     modelinstance: <_WorkSpace path to ModelInstance_Set (with examples)>
   files_in: &id001
   - scripts/<worker>.py
-  - scripts/config/rNN_<run>.yaml
+  - runs/rNN_<run>/config.yaml
   - _WorkSpace/5-ModelInstanceStore/<MODELINSTANCE>
 owner: haipipe-task-for-endpoint
 workbench:
@@ -23,7 +23,7 @@ run_specs:
 - id: execute
   run_type: task.execute
   purpose: Package <MODELINSTANCE> (Stage 5) into deployable Endpoint_Set <ENDPOINT> (Stage 6)
-  target: tasks/bNN_<block>/jNN_<job>/tNN_<task>
+  target: work/bNN_<block>/jNN_<job>/tNN_<task>
   actor:
     mode: automatic
     owner: haipipe-task-for-endpoint
@@ -42,7 +42,7 @@ run_specs:
   result:
     payload:
       status: complete
-    receipt: $OUTPUT_ROOT/<task>/results/rNN_<run>/runtime.yaml
+    receipt: $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/runtime.yaml
   cardinality: 1
   cells:
   - workspace_id: <workspace-id>
@@ -66,7 +66,7 @@ run_specs:
     required: true
     prompt: Resolve MetaFn/TrigFn/PostFn/Src2InputFn/Input2SrcFn in code/haifn/fn_endpoint/
     files_in:
-    - scripts/config/rNN_<run>.yaml
+    - runs/rNN_<run>/config.yaml
     files_out: []
   - section: Package
     label: package:pipeline
@@ -89,16 +89,16 @@ run_specs:
     prompt: Run inference(payload) on sample payloads; responses parse
     files_in: []
     files_out:
-    - $OUTPUT_ROOT/<task>/results/rNN_<run>/inference_test.json
+    - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/inference_test.json
   - section: Report
     label: report:summary
     required: true
-    prompt: Write $OUTPUT_ROOT/<task>/results/rNN_<run>/metrics.json + runtime.yaml; note the .tar.gz
+    prompt: Write $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/metrics.json + runtime.yaml; note the .tar.gz
       path and next deploy command
     files_in: []
     files_out:
-    - $OUTPUT_ROOT/<task>/results/rNN_<run>/metrics.json
-    - $OUTPUT_ROOT/<task>/results/rNN_<run>/runtime.yaml
+    - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/metrics.json
+    - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/runtime.yaml
 entry:
 - execute
 terminal:
@@ -107,5 +107,5 @@ terminal:
 output:
   files_out:
   - _WorkSpace/6-EndpointStore/<ENDPOINT>
-  - $OUTPUT_ROOT/<task>/results/rNN_<run>/metrics.json
-  - $OUTPUT_ROOT/<task>/results/rNN_<run>/runtime.yaml
+  - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/metrics.json
+  - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/runtime.yaml

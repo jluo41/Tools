@@ -1,4 +1,4 @@
-// Cohort config — <Cohort> (e.g. VisitLBP)
+// Cohort config - <Cohort> (e.g. VisitLBP)
 // Shared ICD codes, topic flags, paths.
 // Loaded by per-run .do configs (which also load _source_{synth|full}.do).
 // Paths anchored via ${ws_root}.

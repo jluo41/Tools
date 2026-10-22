@@ -1,5 +1,5 @@
 > Historical design snapshot. Current authority: `haipipe-task/SKILL.md`,
-> `haipipe-workflow/ref/plan-schema.md`, and this family's README.
+> `project/haipipe-run/ref/plan-schema.md` (haipipe-workflow until 2026-10-21), and this family's README.
 > Workflow units are Runs; P-B-E-R are commands. Insight and Design are independent families; Application is retired as their parent.
 
 task — Task-Type Specialist Series (DESIGN)
@@ -84,7 +84,7 @@ task/                                 <- task-scope skills (THIS SECTION)
 |   |-- SKILL.md                        scope resolution + 4-phase code lifecycle dispatch
 |   |-- ref/
 |   |   |-- task-lifecycle.workflow.js  Workflow tool script for the 4-phase loop
-|   |   |-- hierarchy.md               project -> block -> job -> run
+|   |   |-- task-folder.md             the Task folder, its Runs, names (hierarchy + structure, 261021)
 |   |   |-- authoring-conventions.md   cell markers, Intent docstring, config-driven
 |   |   |-- workflow-template.yaml     task-level IPO template (Run/Gate1/Gate2)
 |   |   |-- run-sh-template.sh         papermill wrapper + pre-flight gate
@@ -92,8 +92,8 @@ task/                                 <- task-scope skills (THIS SECTION)
 |   |   |-- metrics-json-schema.md     CI-aware metrics format
 |   |   |-- runtime-yaml-schema.md     run status format
 |   |   |-- intent-docstring-template.py
-|   |   |-- invocation-modes.md        interactive vs headless
-|   |   |-- task-structure.md          group/job layout contract (from project, 2026-07-03)
+|   |   |-- types.md                   the type door: table, choosing, asked or silent (261021)
+|   |   |-- lifecycle.md               plan ▶ build ▶ run ▶ read ▶ close (261021)
 |   |   |-- scan_status/               status-scan scripts (from project, 2026-07-03)
 |   |-- fn/
 |   |   |-- stage-plan.md              procedure for Plan stage
@@ -106,7 +106,7 @@ task/                                 <- task-scope skills (THIS SECTION)
 |   |-- diagram/
 |       |-- 01-architecture.txt
 |
-|-- haipipe-workflow/                   📐 IPO plan schema + Workflow API (moved in from project/, 2026-07-03)
+|-- (haipipe-workflow/ moved to project/haipipe-run/ref/workflow.md, 2026-10-21)
 |
 |-- 1_data/                             📊 domain 1 — data
 |   |-- haipipe-data + sub-skills          run library
@@ -332,7 +332,7 @@ The relationship is **hub-and-spoke** — haipipe-task is the hub, specialists a
 - The creator-reviewer agent loop (`task-lifecycle.workflow.js`)
 - The IPO workflow schema (`ref/workflow-template.yaml`)
 - Scope resolution, routing, AUTO_MODE detection
-- Shared conventions (`ref/authoring-conventions.md`, `ref/run-sh-template.sh`, `ref/hierarchy.md`)
+- Shared conventions (`ref/authoring-conventions.md`, `ref/run-sh-template.sh`, `ref/task-folder.md`)
 
 **haipipe-task-for-xxx (spokes)** provide type-specific knowledge:
 
@@ -374,7 +374,7 @@ Path 2 — Via hub (scaffold):    /haipipe-task job eval
 
 Path 3 — Direct call:           /haipipe-task-for-stata <args>
   spoke runs on its own -> reads ../haipipe-task/ref/ for shared conventions
-  (run-sh-template.sh, hierarchy.md, authoring-conventions.md, etc.)
+  (run-sh-template.sh, task-folder.md, authoring-conventions.md, etc.)
 ```
 
 Path 1 is the most common (lifecycle on existing tasks). Path 2 is for new task creation. Path 3 is a shortcut when you already know the type — the spoke reaches back to the hub for shared resources, so nothing is lost.
@@ -402,7 +402,7 @@ What each spoke reads from the hub
 Resource                     | What the spoke gets from the hub
 -----------------------------+--------------------------------------------------
 ref/run-sh-template.sh       | papermill wrapper + pre-flight gate (copied to runs/)
-ref/hierarchy.md             | project -> block -> job -> run model
+ref/task-folder.md           | the Task folder in block -> job -> task -> run
 ref/authoring-conventions.md | cell markers, Intent docstring, config-driven rules
 ref/config-meta-template.yaml| _meta block template for configs/
 ref/workflow-template.yaml   | task-level IPO template (Run/Gate1/Gate2)

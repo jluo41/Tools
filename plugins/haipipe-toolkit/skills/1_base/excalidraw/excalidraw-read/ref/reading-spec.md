@@ -20,6 +20,12 @@ section:                                          # optional: one Section of the
     - "about 35 to 40% of its ~930 words stays"
   parts:                                            #   optional: its subsection headings, in order: a frame each
     - "2.1 Learning from Behavioral Experiments"
+  blocks:                                           #   optional, instead of pages: a Section cut at its own headings,
+    - {heading: Key Points, page: 2, group: Key Points}   #   a structured abstract; each block from the line its heading
+    - {heading: IMPORTANCE, page: 1, group: Abstract}     #   starts (letter case kept) down its own column to the next
+                                                    #   block's heading or a gap of two line heights; `paras` writes
+                                                    #   one shot a block, its name, group and words
+  labels: [Question, Findings, Meaning]             #   optional: run-in labels inside a block, left out of its words
 
 ours:
   title: "<our paper's working title>"

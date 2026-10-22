@@ -158,6 +158,16 @@ def main(argv=None):
     adopt.add_argument("pages", type=Path, nargs="+", help="Page Folders or Page Face .md files")
     adopt.add_argument("--plan", type=Path, help="Draft Markdown to adopt (default: the current one)")
     adopt.add_argument("--dry-run", action="store_true", help="Print the diff; write nothing")
+    renumber = commands.add_parser(
+        "renumber", help="Renumber the Draft's sentences S1, S2, ... in reading order, in every file that names one")
+    renumber.add_argument("pages", type=Path, nargs="+", help="Page Folders or Page Face .md files")
+    renumber.add_argument("--merged", action="append", default=[], metavar="OLD=INTO",
+                          help="an id merged into another, e.g. S15=S14, so its mentions follow it")
+    renumber.add_argument("--dry-run", action="store_true", help="Say what would change; write nothing")
+    bump = commands.add_parser("bump", help="Move the Draft to its next version, the old one to draft/previous/")
+    bump.add_argument("pages", type=Path, nargs="+", help="Page Folders or Page Face .md files")
+    bump.add_argument("--to", help="the new version, e.g. v1.0 (default: the last number up by one)")
+    bump.add_argument("--dry-run", action="store_true")
     export = commands.add_parser(
         "export",
         help="Build the Page's delivery (web, LaTeX, Word) with no server, the same files a click writes",
@@ -302,6 +312,18 @@ def main(argv=None):
             if any(report["refused"] for report in reports):
                 sys.exit(1)
             return
+        elif args.command == "renumber":
+            from src.page_renumber import render, renumber
+            merged = dict(m.split("=", 1) for m in args.merged)
+            print("\n\n".join(render(renumber(p, dry_run=args.dry_run, merged=merged)) for p in args.pages))
+            return
+        elif args.command == "bump":
+            from src.page_bump import bump as _bump, render
+            reports = [_bump(p, to=args.to, dry_run=args.dry_run) for p in args.pages]
+            print("\n".join(render(r) for r in reports))
+            if any(r["refused"] for r in reports):
+                sys.exit(1)
+            return
         elif args.command == "open-run":
             from src.run_lifecycle import open_run as _open
             print(json.dumps(_open(args.page, args.kind, args.slug, target=args.target, goal=args.goal,
@@ -316,7 +338,7 @@ def main(argv=None):
             print("\n\n".join(_render_rename(_rename(page, dry_run=args.dry_run)) for page in args.pages))
             return
         elif args.command == "export":
-            from src.page_export import export, write_ticket, repo_root
+            from src.page_export import export, mark_card, write_ticket, repo_root
             lanes = ("web", "latex", "word") if args.lane == "all" else (args.lane,)
             failed = False
             for page in args.pages:
@@ -330,6 +352,8 @@ def main(argv=None):
                 if rest:
                     results.update(export(context.folder, rest, author=args.author, root=args.root))
                 failed = failed or not all(r["ok"] for r in results.values())
+                for lane, r in results.items():
+                    mark_card(context.folder, lane, r["ok"])
                 for lane, r in results.items():
                     shown = r.get("err") or r.get("pdf") or r.get("docx") or r.get("out") or r.get("url")
                     if shown and Path(shown).is_absolute() and Path(shown).is_file():

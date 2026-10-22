@@ -2,17 +2,17 @@
 # Expand variants as Run Specs only when independently commissioned.
 # Resolve placeholders, catalogue key and every Workbench-owned Workspace Cell before use.
 # Steps and section labels describe internal work; they never allocate Runs.
-# Schema: task/haipipe-workflow/ref/plan-schema.md
+# Schema: project/haipipe-run/ref/plan-schema.md
 name: eval-<MODEL>-<SPLIT>
 purpose: Score <MODEL> on <SPLIT>; produce metrics + comparison
 input:
   args:
-    config: scripts/config/rNN_<run>.yaml
+    config: runs/rNN_<run>/config.yaml
     model_path: <_WorkSpace path to ModelInstance or Endpoint_Set>
     aidata_path: <_WorkSpace path to AIData>
   files_in: &id001
   - scripts/<worker>.py
-  - scripts/config/rNN_<run>.yaml
+  - runs/rNN_<run>/config.yaml
   - _WorkSpace/4-AIDataStore/<ParentSetName>/@v<N>AIData-<aidata_name>
   - _WorkSpace/5-ModelInstanceStore/<MODEL>
 owner: haipipe-task-for-eval
@@ -25,7 +25,7 @@ run_specs:
 - id: execute
   run_type: task.execute
   purpose: Score <MODEL> on <SPLIT>; produce metrics + comparison
-  target: tasks/bNN_<block>/jNN_<job>/tNN_<task>
+  target: work/bNN_<block>/jNN_<job>/tNN_<task>
   actor:
     mode: automatic
     owner: haipipe-task-for-eval
@@ -45,7 +45,7 @@ run_specs:
     payload: &id002
       status: ok
       verdict: <confirmed | refuted | inconclusive>
-    receipt: $OUTPUT_ROOT/<task>/results/rNN_<run>/runtime.yaml
+    receipt: $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/runtime.yaml
   cardinality: 1
   cells:
   - workspace_id: <workspace-id>
@@ -101,9 +101,9 @@ run_specs:
     prompt: Write CI-aware metrics.json per metrics-json-schema.md
     files_in: []
     files_out:
-    - $OUTPUT_ROOT/<task>/results/rNN_<run>/metrics.json
-    - $OUTPUT_ROOT/<task>/results/rNN_<run>/runtime.yaml
-    - $OUTPUT_ROOT/<task>/results/rNN_<run>/policy_comparison.md
+    - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/metrics.json
+    - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/runtime.yaml
+    - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/policy_comparison.md
 entry:
 - execute
 terminal:
@@ -112,6 +112,6 @@ terminal:
 output:
   returns: *id002
   files_out:
-  - $OUTPUT_ROOT/<task>/results/rNN_<run>/metrics.json
-  - $OUTPUT_ROOT/<task>/results/rNN_<run>/runtime.yaml
-  - $OUTPUT_ROOT/<task>/results/rNN_<run>/policy_comparison.md
+  - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/metrics.json
+  - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/runtime.yaml
+  - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/policy_comparison.md

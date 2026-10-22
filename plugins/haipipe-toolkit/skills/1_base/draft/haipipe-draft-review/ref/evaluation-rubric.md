@@ -68,7 +68,9 @@ the same verdicts, score, evidence and smallest fix (JL 261021: "句子连贯性
 - **Coherence**: each join from one sentence to the next. A join carries when the second sentence's subject or first
   words connect to what the first said; it breaks when a pronoun or "the same" points further back than one sentence,
   a turn word ("However") turns from nothing, or a new topic arrives without a link. Report the count of joins that
-  carry and name each one that breaks.
+  carry and name each one that breaks. The row sums up the per-sentence lines of `ref/sentence-logic.md`
+  (a logic and a read score for each sentence, its link and its specific problem), which a Revise review
+  report lists under `Sentences:`.
 - **Anti-AI writing**: run `cli/anti_slop.py audit` on the text (its score out of 100, its findings), then read the
   text against `ref/ai-tells.md`. Name each cluster of tells; a finding inside a placeholder mark (⟦…⟧) is not prose.
   When the reviewer also proposes text, audit that text too and say how it scores against the draft.

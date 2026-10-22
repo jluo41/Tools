@@ -35,8 +35,8 @@ workflow or canonical family skill → exact Page Face owner → plan/item/polic
 `workbench-task-draft` presenter; load its exact refs, not the presenter as
 an execution dependency. A Task Folder resolves its Page policy from
 `haipipe-task`; it fills both owner roles and is loaded once, without a
-separate Task Page-Type layer. Load its `haipipe-page-task` reader-facing
-companion for the display/prose requirements.
+separate Task Page-Type layer. Its `ref/task-page.md` (§ Displays) holds the
+display/prose requirements.
 
 **The job in one line:** SHAPE proposes the Page's logic flow, Outline Bullets,
 and one contextual Role for each proposed Bullet, then defines what each typed

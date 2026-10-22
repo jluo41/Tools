@@ -39,36 +39,43 @@ work/bNN_<block>/
         ├── draft/
         ├── workflow/                plan.yaml + report.yaml
         ├── scripts/<worker>.py
-        ├── scripts/config/rNN_<run>.yaml
-        └── runs/rNN_<run>.sh
+        ├── scripts/config/prompts/      system.md + user.md, shared by every Run
+        └── runs/rNN_<run>/              one folder per Run
+            ├── rNN_<run>.sh             the ticket
+            ├── config.yaml              this Run's settings
+            ├── run.yaml                 its card (role: trial | make)
+            └── result/                  runtime.yaml (the receipt) + the agent's outputs
 
-Generated: $OUTPUT_ROOT/tNN_<task>/results/rNN_<run>/
+Generated: $OUTPUT_ROOT/tNN_<task>/runs/rNN_<run>/result/
            $OUTPUT_ROOT/tNN_<task>/notebooks/rNN_<run>.ipynb
-Task-local prompts/system.md + prompts/user.md hold agent prompts.
 ```
 
-Note: `prompts/` is unique to agent tasks — keeps prompt content diff-friendly and out of the `.py`.
+Note: `scripts/config/prompts/` is unique to agent tasks — keeps prompt content diff-friendly and out of the `.py`.
+A Block not yet moved still has the flat `runs/rNN_<run>.sh` beside `results/rNN_<run>/`, with its config in
+`scripts/config/rNN_<run>.yaml`; scaffold new Runs in the Run folder only.
 
 
 Step 4 — Seed config + prompts
 -------------------------------
 
-Copy `ref/config-seed.yaml` to `scripts/config/rNN_<run>.yaml`.
+Copy `ref/config-seed.yaml` to `runs/rNN_<run>/config.yaml`.
 Fill in:
 - `_meta:` block.
 - `model:`, `max_tokens:`, `temperature:`.
-- `prompts.system:` and `prompts.user:` (paths to prompts/ files).
+- `prompts.system:` and `prompts.user:` (Task-relative paths to the `scripts/config/prompts/` files).
 - `tools:` (optional — list of allowed tool names).
 - `inputs:` (placeholder values for the user prompt).
 
-Seed minimal `prompts/system.md` + `prompts/user.md` stubs.
+Seed minimal `scripts/config/prompts/system.md` + `scripts/config/prompts/user.md` stubs.
 
 
 Step 5 — Run-script
 --------------------
 
-Copy `../../../haipipe-task/ref/run-sh-template.sh` to `runs/rNN_<run>.sh`.
-Set `TASK_NAME="<worker>"` (the worker filename without .py); config and Ticket share the exact `rNN_<run>` stem.
+Copy `../../../haipipe-task/ref/run-sh-template.sh` to `runs/rNN_<run>/rNN_<run>.sh`.
+Set `TASK_NAME="<worker>"` (the worker filename without .py); the Run folder and its Ticket share the exact `rNN_<run>` name.
+Write the card `runs/rNN_<run>/run.yaml` (fields: haipipe-run `ref/receipts-and-inventory.md`) with `role: trial`
+for a smoke Run and `role: make` for a campaign Run.
 
 
 Step 6 — Cross-skill link
@@ -84,16 +91,16 @@ Step 7 — Report
 ```
 status:    ok
 summary:   Scaffolded agent job <NN>_<name> under the selected bNN Block / jNN Job.
-artifacts: [paths created including prompts/system.md, prompts/user.md]
-next:      edit prompts/, set inputs in config, then run.sh
+artifacts: [paths created including scripts/config/prompts/system.md, scripts/config/prompts/user.md, runs/rNN_<run>/run.yaml]
+next:      edit scripts/config/prompts/, set inputs in runs/rNN_<run>/config.yaml, then runs/rNN_<run>/rNN_<run>.sh
 ```
 
 
 MUST NOT
 ---------
 
-- Embed prompts inline in the `.py` — they live in `prompts/*.md`.
-- Skip transcript logging — `$OUTPUT_ROOT/<task>/results/rNN_<run>/transcript.json` is mandatory
+- Embed prompts inline in the `.py` — they live in `scripts/config/prompts/*.md`.
+- Skip transcript logging — `$OUTPUT_ROOT/<task>/runs/rNN_<run>/result/transcript.json` is mandatory
   (every API call + tool call recorded for audit).
 - Hardcode an API key in the script — read from env var.
 - Create `README.md`.
@@ -102,7 +109,7 @@ MUST NOT
 First-run gate
 ---------------
 
-`runs/<RUN>.sh` blocks execution if `CODE_REVIEW.md` is missing or stale (gate inherited from `../../../haipipe-task/ref/run-sh-template.sh`).
+`runs/<RUN>/<RUN>.sh` blocks execution if `CODE_REVIEW.md` is missing or stale (gate inherited from `../../../haipipe-task/ref/run-sh-template.sh`).
 For the first run after this scaffold, do ONE of:
 
   1. **Recommended** — run the haipipe-task-reviewer-agent (Gate 1) on this
@@ -110,10 +117,10 @@ For the first run after this scaffold, do ONE of:
      `Tools/plugins/haipipe-toolkit/skills/1_base/task/agents/haipipe-task-reviewer-agent.md`
 
   2. **Temporary bypass** — set env var at launch:
-     `HAIPIPE_SKIP_REVIEW=1 bash runs/<RUN>.sh`
+     `HAIPIPE_SKIP_REVIEW=1 bash runs/<RUN>/<RUN>.sh`
      (skips the gate for one run; logs a warning to stderr.)
 
-  3. **Permanent skip for this config** — add to `scripts/config/<RUN>.yaml`:
+  3. **Permanent skip for this config** — add to `runs/<RUN>/config.yaml`:
      ```yaml
      _meta:
        skip_review: true

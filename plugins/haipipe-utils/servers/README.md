@@ -39,8 +39,30 @@ Every lane answers the same three routes under its prefix:
 
 The host adds `GET /` (the lanes, their routes, their `<NOUN>NORM_URL` names)
 and `GET /healthz` (every lane's health in one answer, `status: ok | degraded`).
+It also serves a page to try each lane, `GET /try/<noun>` (`_host/page/try.html`):
+type or upload an input and see the input JSON sent and the output JSON back; below,
+a gallery read by `GET /try/<noun>/gallery` from that noun's input folder
+(`_WorkSpace/0-RawDataStore/0-EventNorm/_FoodInfo/0-inputs` for food, or
+`$EVENTNORM_ROOT`), one card per kind of input, run live beside its frozen
+`door.json`. `?run=all` runs every card on load; `?q=<lines>` sends the box.
+Food is wired; the other lanes show their gallery's frozen answers until their
+request shape is added to the page (JL 2026-10-21).
 Each lane's interactive docs sit at `/<noun>/docs`. Food also has
 `POST /food/normalize/image` (multipart frames) and `/food/normalize/image/batch`.
+
+THE EVENT DOOR (food, 2026-10-21; JL: "make the page on event to work"). `POST /food/event`
+takes one meal as it arrives, `{"raw": {"type": "app_log" | "text" | "photo" | "numbers_only",
+"rows": [...]}}`, or an input JSON `{"input": {"items": [...], ...}}`, or both (a field given in
+`input` wins: a photo row and the photo API's names). It answers `{"raw", "input", "output",
+"step"}`: the input JSON the preprocess step made (start, end, logged_at, meal_type, the meal's
+own total, items, timeline) and the output by local hour, each item enriched (its match, serving,
+FatSecret's 14 nutrients, GI and GL). The code is `skills/haipipe-norm/eventnorm`; describe-food
+still reads only the items. A lane with an event door shows it on its try page: the box takes
+typed foods (one a line, with the time eaten), a raw JSON or an input JSON, and shows raw, input
+and output by hour; its gallery is `GET /try/<noun>/events`, real meals of every kind of raw
+(`_FoodInfo/7-events/events.json`, written by b51 j01 t99's r07 from s01 ③), each sent live beside
+the answer frozen when the gallery was built. Record ids (CarbEntryID, ObservationCreatedBy and
+the like) and photo paths never leave the host.
 
 ```
 python servers/_host/serve.py --store /path/to/_WorkSpace/ExternalStore

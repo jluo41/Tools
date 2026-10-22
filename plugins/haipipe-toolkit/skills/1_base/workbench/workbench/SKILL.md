@@ -13,7 +13,7 @@ description: >-
   block, find a block, workbench link, page workbench, workbench folder,
   workbench roster, workbench tab, add a workbench, /wb, /workbench.
 metadata:
-  version: "1.29.0"
+  version: "1.29.1"
   last_updated: "2026-10-21"
   aliases: [wb]
 ---
@@ -89,6 +89,8 @@ existed still says Not found.
 
 One door that takes any Block, old or new and of any theme, to today's rules (JL 261012: "I want it work
 like /wb update-to-date path to the block"). `cli/wb.py update <Block>` hands it to `cli/wb_update.py`.
+A new Block starts on `haipipe-block`'s `new_board.py`, which writes today's face, so this door then says
+"today ok"; run it again as Jobs and Tasks arrive. `workbench-work` only shows a Block; it never changes one.
 
 ```text
 1 shape      haipipe-project ladder.py audit           names, faces, folders, Run cards

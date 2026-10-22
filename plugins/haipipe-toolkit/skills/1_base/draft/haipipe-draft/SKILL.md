@@ -18,7 +18,7 @@ description: >-
   /haipipe-draft, /haipipe-page. The plan (page
   context, structure Run, scratch) is haipipe-draft-logic.
 metadata:
-  version: "0.136.1"
+  version: "0.137.1"
   last_updated: "2026-10-20"
   aliases: [haipipe-page]
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -50,8 +50,9 @@ adds only the Opening and the Aims. Every folder at every level (Block, Job, Tas
 report) has a face; a folder that writes prose also holds a draft. A Task is not a
 Page: a compute Task has a face and no draft, and a Section Task holds one (b32
 s01). A Task whose face says `task-type: draft` is a draft Task: every theme's workbench
-opens it on the base's draft layout, `servers/workbench/workbench-task-draft/` (b32 s03). The Page server (`servers/workbench/workbench-task-draft/reader`), `haipipe-page-task` and
-`haipipe-page-insight` keep their names because they serve or own a Page face.
+opens it on the base's draft layout, `servers/workbench/workbench-task-draft/` (b32 s03). The Page server (`servers/workbench/workbench-task-draft/reader`) and
+`haipipe-page-insight` keep their names because they serve or own a Page face; a Task Page's own rules are
+`haipipe-task`'s `ref/task-page.md` (haipipe-page-task merged into it, 2026-10-21).
 
 ## 🪜 A draft Task's seven steps (b32 s41, on screen 2026-10-20)
 
@@ -91,6 +92,33 @@ else. Three commands, then report the before and after sentence:
 .venv/bin/python Tools/plugins/haipipe-toolkit/skills/1_base/draft/haipipe-draft/cli/page.py adopt  <page-folder>   # 2. Content ← Draft; writes `content:`
 .venv/bin/python Tools/plugins/haipipe-toolkit/skills/1_base/draft/haipipe-draft/cli/page.py export <page-folder> --author "Junjie Luo"   # 3. web, LaTeX, Word
 ```
+
+Delivering a draft Task on the person's ok (t01_introduction v0.5, 261021), run from the repository root, no hand
+step:
+
+```bash
+P=Tools/plugins/haipipe-toolkit/skills/1_base/draft/haipipe-draft/cli/page.py
+C=Tools/plugins/haipipe-toolkit/skills/1_base/evidence/haipipe-evidence/scripts/cards.py
+grep -n "⟦" <page-folder>/draft/<stem>-draft-v<N>.md     # 0. a ⟦check⟧ or ⟦pending⟧ mark left in § 3 would print: stop and ask
+.venv/bin/python $P bump   <page-folder>                    # 1. draft v<N> → the next, the old one to draft/previous/
+.venv/bin/python $P adopt  <page-folder>                    # 2. Content ← Draft; a new Page's placeholder is laid out first
+.venv/bin/python $C bib    <page-folder>/evidence/cards.yaml --draft <page-folder>/draft/<stem>-draft-v<new>.md --write
+.venv/bin/python $P export <page-folder> --author "Junjie Luo"   # 4. web, then LaTeX, then Word (no --dry-run)
+.venv/bin/python $P health <page-folder>                    # 5. the Folder agrees with itself
+```
+
+- The gate is the person's ok on the text ("make it v0.5"), which is the bump; `approved:` and an open Structure Run
+  stay as they are, since the person closes a Run (Run bookends).
+- Read both PDFs: no citation may print as "?" (a key missing from the `.bib`) and no S number, paragraph label or
+  `⟦…⟧` mark may show.
+- The face's `state:` line then holds only the state word and what is still open (cards, options, entries to adopt),
+  never a version or date.
+- Rendering the pages as images, sending, and reading a returned copy back are later, optional steps of
+  `haipipe-delivery` (`render`, `pull`), after the files above exist.
+
+`page.py renumber <page-folder>` renumbers the sentences S1, S2, … in reading order in every file that names one (the
+Draft, `evidence/cards.yaml`, the Revise cards, rules and comments; a person's own notes stay as written) after a
+sentence is added, moved or merged (`--merged S15=S14`); `--dry-run` says what would change.
 
 Code keeps every record here, so an agent types none (JL 260928: agents keep
 text, code keeps records). `adopt` writes the header line `content: draft v<N> ·
@@ -746,9 +774,9 @@ remains a base variant under `page-types/`. Load the semantic owner before
 writing. After moving a skill, re-run `install.sh --global` so the installed
 symlink follows it.
 For `folder-kind: task`, the canonical Folder owner remains `haipipe-task`;
-the reader-facing companion `haipipe-page-task` adds the Task Page's
-display-rich table, figure, and diagram contract. The companion refines the
-Task Page surface and never creates a second Page frame or execution owner.
+its `ref/task-page.md` § Displays adds the Task Page's display-rich table,
+figure, and diagram contract. It refines the Task Page surface and never
+creates a second Page frame or execution owner.
 
 ## 🧭 The plan's steps
 

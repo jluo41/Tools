@@ -5,6 +5,17 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.6.0] · 2026-10-21 · Type contract, one folder per Run
+
+- `## Type contract` block added as the first section (haipipe-task `ref/types.md`): raw, roles make,
+  describe, check; no plan sample.
+- `ref/run-databricks-sh-template.sh` accepts a Block under `work/` (and the older `tasks/`) and a
+  Ticket inside `runs/<run>/`: it reads `runs/<run>/config.yaml` when present, else
+  `scripts/config/<run>.yaml`, and writes `runs/<run>/result/` (a flat Ticket keeps `results/<run>/`).
+- Pages name the current layout (Ticket, `config.yaml`, `run.yaml` card, `result/` in `runs/<run>/`);
+  REACH and WellDoc reference paths are `work/`; the scaffold sets `TASK_NAME`, the variable the
+  template reads (was `WORKER`).
+
 ## [0.5.8] · 2026-10-09 · Theme folders are singular
 
 - Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,

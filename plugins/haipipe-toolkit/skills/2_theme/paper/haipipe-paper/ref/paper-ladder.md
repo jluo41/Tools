@@ -165,6 +165,7 @@ Paper-<Slug>/
 ├── Bc-<desk>-Round/                 → jNN_v<N>_<desk>/  (RD<NN> feedback Rounds)
 └── delivery/                        → stays at Block; rebuild each version in delivery/jNN_v<N>_<desk>/
 then: rename_tasks.py <board> --date MMDD   the version dated, S-… → t0N_/t2N_, RD<NN>-… → reports/qNN_<kind>-<MMDD>/
+then: sweep_names.py <board> --apply        the old names out of draft/records/, draft/previous/ and Run tickets
 ```
 
 `migrate_paper.py` moves folders and keeps names; `rename_tasks.py` then renames each Page once (folder, face, plan

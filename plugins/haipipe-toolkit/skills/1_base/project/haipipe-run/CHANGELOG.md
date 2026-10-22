@@ -1,3 +1,11 @@
+## 0.36.0 · 2026-10-21 · the Workflow is haipipe-run's
+
+- The haipipe-workflow skill is merged in: `ref/workflow.md` (its body and the unique part of its concepts),
+  `ref/plan-schema.md`, `ref/workflow-runtime.md` and `ref/template.workflow.js` moved here with their history; its
+  JavaScript API page is dropped, since Claude Code's `workflow-authoring` skill is that reference. A planned graph of
+  Runs is a Run question; only 28 of 387 Physician-SPACE Tasks wrote a plan.yaml. Every pointer (the type skills and
+  their plan samples, haipipe-task, the paper, insight and labeling workflows, haipipe-work) now names these files.
+
 ## 0.35.0 · 2026-10-21 · Each Run says its role; rebuilt receipts; prune to _old
 
 - `scripts/run_roles.py` (from LLMRec `work/_tools/`, which now loads this copy): proposes each Run card's `role:`

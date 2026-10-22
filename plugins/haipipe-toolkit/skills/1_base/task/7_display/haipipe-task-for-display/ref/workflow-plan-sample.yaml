@@ -2,17 +2,17 @@
 # Expand variants as Run Specs only when independently commissioned.
 # Resolve placeholders, catalogue key and every Workbench-owned Workspace Cell before use.
 # Steps and section labels describe internal work; they never allocate Runs.
-# Schema: task/haipipe-workflow/ref/plan-schema.md
+# Schema: project/haipipe-run/ref/plan-schema.md
 name: display-input-<NAME>
 purpose: Produce a verified display-ready summary for <NAME> from upstream results
 input:
   args:
-    config: scripts/config/rNN_<run>.yaml
+    config: runs/rNN_<run>/config.yaml
     display_kind: <figure | table | diagram | illustration>
   files_in: &id001
-  - scripts/config/rNN_<run>.yaml
+  - runs/rNN_<run>/config.yaml
   - t01_display_input_summary/scripts/prepare_display_input.py
-  - t01_display_input_summary/scripts/config/rNN_<run>.yaml
+  - t01_display_input_summary/runs/rNN_<run>/config.yaml
   - <resolved-upstream-result>/metrics.json
 owner: haipipe-task-for-display
 workbench:
@@ -24,7 +24,7 @@ run_specs:
 - id: execute
   run_type: task.execute
   purpose: Produce a verified display-ready summary for <NAME> from upstream results
-  target: tasks/bNN_<block>/jNN_<job>/tNN_<task>
+  target: work/bNN_<block>/jNN_<job>/tNN_<task>
   actor:
     mode: automatic
     owner: haipipe-task-for-display
@@ -43,7 +43,7 @@ run_specs:
   result:
     payload: &id002
       status: complete
-    receipt: $OUTPUT_ROOT/<task>/results/rNN_<run>/runtime.yaml
+    receipt: $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/runtime.yaml
   cardinality: 1
   cells:
   - workspace_id: <workspace-id>
@@ -78,12 +78,12 @@ run_specs:
   - section: Export
     label: export:display-input
     required: true
-    prompt: Save source_data.csv + provenance.json to $OUTPUT_ROOT/t01_display_input_summary/results/<RUN>/;
+    prompt: Save source_data.csv + provenance.json to $OUTPUT_ROOT/t01_display_input_summary/runs/<RUN>/result/;
       optional diagnostics stay in diagnostics/.
     files_in: []
     files_out:
-    - $OUTPUT_ROOT/t01_display_input_summary/results/<RUN>/source_data.csv
-    - $OUTPUT_ROOT/t01_display_input_summary/results/<RUN>/provenance.json
+    - $OUTPUT_ROOT/t01_display_input_summary/runs/<RUN>/result/source_data.csv
+    - $OUTPUT_ROOT/t01_display_input_summary/runs/<RUN>/result/provenance.json
 entry:
 - execute
 terminal:
@@ -92,5 +92,5 @@ terminal:
 output:
   returns: *id002
   files_out:
-  - $OUTPUT_ROOT/t01_display_input_summary/results/<RUN>/source_data.csv
-  - $OUTPUT_ROOT/t01_display_input_summary/results/<RUN>/provenance.json
+  - $OUTPUT_ROOT/t01_display_input_summary/runs/<RUN>/result/source_data.csv
+  - $OUTPUT_ROOT/t01_display_input_summary/runs/<RUN>/result/provenance.json

@@ -3,8 +3,8 @@ name: haipipe-task-for-endpoint
 description: "Endpoint task specialist: scaffolds and executes one nested task that packages a trained ModelInstance_Set into a deployable Stage 6 Endpoint_Set via c_endpoint_nb.py. Called by /haipipe-task when task-type is endpoint; cross-references /haipipe-end for Fn authoring and deploy targets."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.3.2"
-  last_updated: "2026-10-09"
+  version: "0.4.0"
+  last_updated: "2026-10-21"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -12,7 +12,7 @@ Skill: haipipe-task-for-endpoint
 =================================
 
 Scaffolds an **endpoint Job with one nested Task Folder** under canonical BJTR.
-The Task is the Page: it takes a trained
+The Task (its face is the page a reader opens; a Task is not a Page, JL 261011) takes a trained
 ModelInstance_Set (Stage 5, with examples) and packages it into a
 self-contained Endpoint_Set (Stage 6) using `Endpoint_Pipeline`.
 
@@ -23,6 +23,22 @@ CONFIG is overridden at runtime by papermill, NOT by editing the file.
 (`haipipe-task-creator-agent` calls this skill during Phase 2: Build). Legacy
 flat endpoint jobs remain readable; every new scaffold uses the nested
 `jNN_*/tNN_*/` Task shape owned by `haipipe-task`.
+
+## Type contract
+
+```yaml
+task-type: endpoint
+skill: haipipe-task-for-endpoint
+does: Packages one trained ModelInstance_Set (Stage 5, with examples) into a deployable Endpoint_Set (Stage 6) and tests inference on its example payloads.
+worker: scripts/<task_name>.py (Python), an exact copy of code/scripts/haistepnb/c_endpoint_nb.py that papermill runs with the Run's config
+config: runs/<run>/config.yaml (seeded from ref/config-seed.yaml), or scripts/config/<run>.yaml in a Block not yet moved
+ticket: runs/<run>/<run>.sh, from ../../haipipe-task/ref/run-sh-template.sh (TASK_NAME <task_name>, the worker; it sources .venv and env.sh and runs papermill)
+result: $OUTPUT_ROOT/<task>/runs/<run>/result/, with runtime.yaml and metrics.json (REQUIRED_RESULTS, the template default) before the receipt says complete, plus inference_test.json
+heavy: _WorkSpace/6-EndpointStore/<endpoint_name>/ (the Endpoint_Set and its .tar.gz, in the stage store)
+roles: [make]
+companions: [haipipe-end, haipipe-task-for-fit]
+plan_sample: ref/workflow-plan-sample.yaml
+```
 
 
 Position in the pipeline
@@ -46,17 +62,21 @@ work/bNN_<endpoint-block>/
     ├── t01_<task_name>/
     │   ├── t01_<task_name>.md       ← Page Face (`folder-kind: task`)
     │   ├── scripts/
-    │   │   ├── <task_name>.py       ← exact copy of c_endpoint_nb.py
-    │   │   └── config/
-    │   │       └── r01_base.yaml    ← endpoint config
+    │   │   └── <task_name>.py       ← exact copy of c_endpoint_nb.py (the worker)
     │   ├── runs/
-    │   │   └── r01_base.sh          ← papermill runner
-    │   └── workflow/                ← Task Face: plan/report + inbox/
-    │       └── inbox/application/   ← immutable X2 candidates, when present
-    │   ├── results/r01_base/          ← created at runtime
+    │   │   └── r01_base/            ← one folder per Run
+    │   │       ├── r01_base.sh      ← papermill runner (the ticket)
+    │   │       ├── config.yaml      ← endpoint config
+    │   │       ├── run.yaml         ← its card (role: make)
+    │   │       └── result/          ← created at runtime: runtime.yaml, metrics.json, inference_test.json
+    │   ├── workflow/                ← Task Face: plan/report + inbox/
+    │   │   └── inbox/application/   ← immutable X2 candidates, when present
     │   └── notebooks/r01_base.ipynb
-    └── src/                           ← only if shared by multiple Tasks
+    └── src/                         ← only if shared by multiple Tasks
 ```
+
+A Block not yet moved still has the flat `runs/r01_base.sh`, `scripts/config/r01_base.yaml` and
+`results/r01_base/`; the ticket template runs both.
 
 The Page Face declares `folder-kind: task`, `task-type: endpoint`, and
 `task: .`. An X2 writer may add only a proposed packet under
@@ -148,7 +168,7 @@ Prerequisites
    - Build via the endpoint fn_develop task folder’s `{a1,b1,c1,d1,e1}_build_*.py` (legacy: `code-dev/1-PIPELINE/6-Endpoint-WorkSpace/`)
    - OR use `/haipipe-end <fn-type> design` interactively
 
-3. **ExampleConfig in B-series training config**:
+3. **ExampleConfig in the fit Task's training config**:
    ```yaml
    ExampleConfig:
      enabled: true
@@ -163,13 +183,13 @@ Execution
 CLI (A layer):
 ```bash
 python code/scripts/haistepcli/endpoint.py \
-    --config examples/.../t01_endpoint/scripts/config/r01_base.yaml
+    --config <project>/work/bNN_<block>/jNN_<job>/t01_<task_name>/runs/r01_base/config.yaml
 ```
 
 Notebook (B layer — papermill):
 ```bash
 papermill 1_endpoint_*.ipynb output.ipynb \
-    -p CONFIG examples/.../t01_endpoint/scripts/config/r01_base.yaml
+    -p CONFIG <project>/work/bNN_<block>/jNN_<job>/t01_<task_name>/runs/r01_base/config.yaml
 ```
 
 
@@ -192,8 +212,8 @@ Cross-references
 -----------------
 
 - `/haipipe-end` — Fn authoring, endpointset verbs, deploy targets
-- `/haipipe-task-for-fit` — B-series training (produces the ModelInstance_Set)
-- `/haipipe-task-for-data` — A-series data pipeline (produces the AIDataSet)
+- `/haipipe-task-for-fit` — training (produces the ModelInstance_Set)
+- `/haipipe-task-for-data` — data pipeline (produces the AIDataSet)
 - `code/scripts/haistepnb/c_endpoint_nb.py` — the template
 - `code/scripts/haistepcli/endpoint.py` — the CLI entry point
 - `ref/notebook-templates.md` (in haipipe-task-for-data) — full ABC template guide
@@ -207,8 +227,9 @@ Scaffold flow
   3. Create `t01_<task_name>/t01_<task_name>.md` and `workflow/`.
   4. Copy `c_endpoint_nb.py` to `t01_<task_name>/scripts/<task_name>.py`
      (exact copy).
-  5. Seed `scripts/config/r01_base.yaml` from `ref/config-seed.yaml`.
-  6. Create `runs/r01_base.sh` from the shared template.
+  5. Seed `runs/r01_base/config.yaml` from `ref/config-seed.yaml`.
+  6. Create `runs/r01_base/r01_base.sh` from the shared template (`TASK_NAME="<task_name>"`,
+     the worker) and its `run.yaml` card.
   7. Emit return contract.
 
 
@@ -232,7 +253,7 @@ Return contract
 status:     ok | blocked | failed
 task_folder: <path to scaffolded task folder>
 run_name:   r01_base
-artifacts:      [t01_<task_name>.md, scripts/<task_name>.py,
-             scripts/config/r01_base.yaml, runs/r01_base.sh]
+artifacts:  [t01_<task_name>.md, scripts/<task_name>.py, runs/r01_base/r01_base.sh,
+             runs/r01_base/config.yaml, runs/r01_base/run.yaml]
 next:       run the task, then /haipipe-end deploy <target>
 ```

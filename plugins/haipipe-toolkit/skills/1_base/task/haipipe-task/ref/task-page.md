@@ -2,9 +2,10 @@
 
 Load this reference when creating, reading, repairing, or checking the
 same-stem Page inside one executable Task Folder. `haipipe-task` owns the Task
-Folder identity, execution, and closure; `haipipe-page-task` supplies the
-display-rich reader extension; `haipipe-draft` supplies the shared Page frame
-and `haipipe-draft-workflow` supplies CONTEXT through CHECK.
+Folder identity, execution, closure, and (§ Displays below) the display-rich
+reader extension that was the `haipipe-page-task` skill until 2026-10-21;
+`haipipe-draft` supplies the shared Page frame and `haipipe-draft-workflow`
+supplies CONTEXT through CHECK.
 
 ## Ownership and identity
 
@@ -22,11 +23,10 @@ folder-kind: task
 task: .
 ```
 
-The execution contract remains owned by `haipipe-task`. Load the
-reader-facing companion `haipipe-page-task` when creating, outlining,
-writing, reviewing, or delivering this Page. It adds the visual evidence
-contract: a numeric Task Page is not prose-only and must plan substantive
-tables, figures, and method/provenance diagrams.
+The execution contract remains owned by `haipipe-task`. When creating,
+outlining, writing, reviewing, or delivering this Page, apply § Displays: a
+numeric Task Page is not prose-only and must plan substantive tables, figures,
+and method/provenance diagrams.
 
 ## Two entry doors and one handshake
 
@@ -59,18 +59,18 @@ its Result into a parallel answer store. The Task cannot accept paragraph
 wording, close an `rp-*` Run, or release the Page. A request that needs both doors
 may start at either one, but every handoff keeps these owner-native identities.
 
-The shared `runs/` and `results/` lanes carry disjoint namespaces:
+The shared `runs/` lane carries two disjoint namespaces, one folder per Run:
 
 ```text
-runs/rNN_<run>.sh|.ps1|.cmd       Task Ticket
-runs/`run-structure-<slug>`.md             Page structure interaction
-runs/`run-scratch-<slug>`    Page Scratch capture
-runs/`run-section-<slug>`.md                Page Section session
-runs/`run-paragraph-<slug>`      Page paragraph/group interaction
-results/<same-run>/runtime.yaml   receipt for the corresponding namespace
+runs/rNN_<run>/                    a Task Run: rNN_<run>.sh|.ps1|.cmd · run.yaml · result/runtime.yaml
+runs/run-structure-<slug>/         a Page structure interaction (soft: its .md ticket, its passes/)
+runs/run-scratch-<slug>/           a Page Scratch capture
+runs/run-section-<slug>/           a Page Section session
+runs/run-paragraph-<slug>/         a Page paragraph or group interaction
 ```
 
-`rNN` and typed `rp-*` counters never reserve, renumber, or consume one another.
+A hard `rNN_` Run writes its own `result/`; a soft `run-<type>-<target>` Run writes into the Page
+and keeps its passes (haipipe-run). The two never reserve, renumber, or consume one another's names.
 
 Add the exact `task-type:` when a specialist owns the executable dialect.
 Only `folder-kind: task` and `task: .` identify a Task Page. Task Folder = Page
@@ -153,6 +153,54 @@ Page Face, not its executable lifecycle or Result-store dialect. Diagrams,
 headings, the READING table, and Task machinery are not prose realization
 units and do not carry `realizes:`.
 
+## Displays
+
+A data-bearing or empirical Task Page carries a DISPLAY plan in SHAPE and
+normally all three reader aids: one exact-audit table (inputs, counts,
+reconciliation, status), one figure (a distribution, comparison, funnel or
+trajectory easier seen than read), and one method, provenance or
+decision-boundary diagram. Each Data or Result division carries at least one
+substantive table or figure; a Method or boundary division carries a diagram
+when a process, ownership or gate is its argument. A multi-source or
+multi-stage Page usually needs four or more distinct units; never repeat one
+chart under several headings. Only a genuinely non-numeric page records
+`DISPLAY: none` and its reason (time, missing authoring or a liking for prose
+is not one). A fenced text map is a draft sketch, not a display.
+
+Choose by the reader's move: a table to quote exact values, reconcile rows,
+inspect nulls or compare named categories; a figure to see relative size,
+distribution, trend, funnel loss or status mix; a diagram to follow a
+sequence, provenance edge, inferred join, ownership boundary or release gate.
+Each display has one job; its caption states the finding or question, scope,
+source Run and main caveat. Use grayscale-readable, colorblind-safe encoding,
+and bake no title into the asset (the caller owns caption, label, placement).
+
+A worklist or coverage Task normally shows: its source and selection funnel; a
+source-tier or field-composition table or figure; expected versus observed and
+terminal status; a provenance, matching or release-boundary diagram; and a
+duplicate or residual table when they change the reading. Adapt it to the
+Task's own question; it never licenses an invented count or a decorative chart.
+
+Each display is one typed `E<NN>-DISPLAY-<slug>` Evidence Item with one owning
+`C<n>.P<m>.B<k>` Target, a Need, an expected payload and Acceptance checks,
+placed beside the paragraph that interprets it, which names its DisplayN id.
+The unit lives in its typed DISPLAY Result
+(`workbench-task-draft/ref/evidence/displays.md`), rendered through
+haipipe-display (table, figure, diagram, tex), never as a loose PNG or a flat
+`figures/` folder. Its numbers arrive only through the Page's evidence graph:
+
+```text
+producing Task Result → haipipe-task-for-evidence values → Evidence Item Local Input
+  → display intake/ snapshot → renderer recipe → assets/ and preview.pdf
+```
+
+The renderer reads only the frozen intake snapshot; it never searches raw
+Results or types a number. A source newer than its snapshot reopens the display
+and its acceptance. A word such as "all" or "complete" in a visual binds to the
+exact coverage Result that supports it. A figure a Task's own `role: figures`
+Run draws (`runs/<run>/result/*.png`) is that Run's Result: a Page binds it by
+its full Run id like any other Result.
+
 ## Evidence and Run binding
 
 Use the shared Page evidence graph. SHAPE names typed
@@ -177,7 +225,7 @@ these exact owner-native forms:
 SURVEY, no Ticket   Local Run: Page · Evidence Item · new-run · bNNjNNtNN
 LAND, allocated     Local Run: Page · Evidence Item · registered · bNNjNNtNNrNN
 LAND, ready         Local Run: Page · Evidence Item · reuse · bNNjNNtNNrNN
-                              → $OUTPUT_ROOT/<task>/results/<RUNNAME>/
+                              → $OUTPUT_ROOT/<task>/runs/<RUNNAME>/result/
 later same contract Local Run: Page · Evidence Item · rerun · bNNjNNtNNrNN
 ```
 

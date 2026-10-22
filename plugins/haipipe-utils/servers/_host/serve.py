@@ -61,6 +61,83 @@ URL_VAR = {"food": "FOODNORM_URL", "exercise": "EXNORM_URL",
            "medication": "MEDNORM_URL", "insulin": "INSNORM_URL"}
 
 
+# The try page (JL 261021: "最终的产出就是一个类似的小网页 ... 调用我们的 API ... 下面还会有很多 gallery"): one page
+# for every lane at /try/<noun>, and its gallery read from that noun's input folder beside the store, one card per
+# kind of input as it arrives (input.json), with the answer frozen when the folder was built (door.json).
+PAGE = HOST / "page" / "try.html"
+GALLERY = {"food": "_FoodInfo/0-inputs", "exercise": "_ExerciseInfo/0-inputs",
+           "medication": "_MedInfo/0-inputs", "insulin": "_InsInfo/0-inputs"}
+# A lane with an event door (food: POST /food/event) shows real events instead: each a raw as it arrives, the input
+# JSON and the output by local hour, frozen when the gallery was built (b51 j01 t99 r07 writes it from s01 ③'s meals).
+EVENTS = {"food": "_FoodInfo/7-events/events.json"}
+
+
+def eventnorm_root() -> Optional[Path]:
+    """Where the input galleries live: $EVENTNORM_ROOT, else <_WorkSpace>/0-RawDataStore/0-EventNorm beside the
+    store the banks resolve under."""
+    if os.environ.get("EVENTNORM_ROOT"):
+        return Path(os.environ["EVENTNORM_ROOT"])
+    store = os.environ.get("LOCAL_EXTERNAL_STORE")
+    return Path(store).parent / "0-RawDataStore" / "0-EventNorm" if store else None
+
+
+import re as _re
+
+SUBJECT = _re.compile(r"\b(CGMacros)-\d+\b")           # a dataset's subject id, as its folders name it
+# a row's own record ids: whose entry it is, never needed to read the meal (the app's CarbEntryID is the same masked
+# word on every row of a meal, so a meal still reads as one)
+RECORD_ID = _re.compile(r"^(PatientID|CarbEntryID|ELogFoodItemID|ObservationCreatedBy|ExternalEntryID|FoodImageID|"
+                        r"RowVersionID)$")
+
+
+def hidden(value, key=""):
+    """A card as it may leave this host: a photo's path is never shown (it names the subject's folder), and a subject id
+    in the words becomes "<dataset>-<subject>" (JL: no patient ids, photo paths hidden)."""
+    if isinstance(value, dict):
+        return {k: hidden(v, k) for k, v in value.items()}
+    if isinstance(value, list):
+        return [hidden(v, key) for v in value]
+    if isinstance(value, str):
+        if _re.search(r"image|photo|path", key, _re.I) and value:
+            return "(photo, path hidden)"
+        if RECORD_ID.match(key) and value:
+            return "(id hidden)"
+        return SUBJECT.sub(r"\1-<subject>", value)
+    return value
+
+
+def gallery(noun: str) -> Dict:
+    """The noun's gallery: one card per input kind folder (`input.json`, `door.json`, `NOTE.md`), in folder order.
+    A card holds its title, its share of the board, its real specimen, the input as it arrives and its frozen answer."""
+    import json
+    root = eventnorm_root()
+    folder = root / GALLERY[noun] if root and noun in GALLERY else None
+    cards = []
+    for d in sorted(p for p in folder.iterdir() if (p / "input.json").is_file()) if folder and folder.is_dir() else []:
+        note = (d / "NOTE.md").read_text(encoding="utf-8") if (d / "NOTE.md").is_file() else ""
+        lines = note.splitlines()
+        title = next((ln[2:].strip() for ln in lines if ln.startswith("# ")), d.name)
+        field = lambda key: next((ln[len(key):].strip().replace("**", "") for ln in lines if ln.startswith(key + " ")), "")
+        specimen = next((par.strip() for par in note.split("\n\n") if par.startswith("SPECIMEN")), "")
+        door = d / "door.json"
+        cards.append(hidden({"kind": d.name, "title": title, "board": field("board"), "door": field("door"),
+                             "specimen": specimen, "input": json.loads((d / "input.json").read_text(encoding="utf-8")),
+                             "frozen": json.loads(door.read_text(encoding="utf-8")) if door.is_file() else None}))
+    where = f"_WorkSpace/0-RawDataStore/0-EventNorm/{GALLERY[noun]}" if noun in GALLERY else ""
+    return {"noun": noun, "folder": where, "cards": cards}
+
+
+def events(noun: str) -> Dict:
+    """The noun's event gallery: one card per real event (kind, title, step, note, the request that makes it, and the
+    raw, input and output frozen when the gallery was built), as hidden() lets them leave this host."""
+    import json
+    root = eventnorm_root()
+    f = root / EVENTS[noun] if root and noun in EVENTS else None
+    doc = json.loads(f.read_text(encoding="utf-8")) if f and f.is_file() else {}
+    return {"noun": noun, "file": f"_WorkSpace/0-RawDataStore/0-EventNorm/{EVENTS[noun]}" if noun in EVENTS else "",
+            "about": doc.get("about", ""), "cards": [hidden(c) for c in doc.get("cards") or []]}
+
+
 def url_var(noun: str) -> str:
     return URL_VAR.get(noun, f"{noun.upper()}NORM_URL")
 
@@ -181,6 +258,29 @@ def create_app(only: Optional[Iterable[str]] = None, store: Optional[str] = None
                   description="Normalizer APIs: free text in a cohort's dialect -> "
                               "a reference bank -> numbers with provenance. "
                               "One prefix per noun.")
+    from fastapi import HTTPException
+    from fastapi.responses import HTMLResponse
+
+    @app.get("/try/{noun}", response_class=HTMLResponse)
+    def try_page(noun: str):
+        """The try page: type or upload an input, see what the lane was sent and what it answered; its gallery below."""
+        if noun not in mounted:
+            raise HTTPException(404, f"no lane {noun!r}; have {sorted(mounted)}")
+        return PAGE.read_text(encoding="utf-8")
+
+    @app.get("/try/{noun}/gallery")
+    def try_gallery(noun: str):
+        if noun not in mounted:
+            raise HTTPException(404, f"no lane {noun!r}; have {sorted(mounted)}")
+        return gallery(noun)
+
+    @app.get("/try/{noun}/events")
+    def try_events(noun: str):
+        """Real events of every kind of raw, for a lane with an event door; the page sends each to it live."""
+        if noun not in mounted:
+            raise HTTPException(404, f"no lane {noun!r}; have {sorted(mounted)}")
+        return events(noun)
+
     for noun, mod in mounted.items():
         app.mount(f"/{noun}", mod.app, name=noun)
 
@@ -189,7 +289,8 @@ def create_app(only: Optional[Iterable[str]] = None, store: Optional[str] = None
         return {"service": "haipipe-utils", "version": VERSION,
                 "lanes": {noun: {"prefix": f"/{noun}", "title": mod.app.title,
                                  "version": mod.app.version, "url_var": url_var(noun),
-                                 "routes": _routes(mod.app), "docs": f"/{noun}/docs"}
+                                 "routes": _routes(mod.app), "docs": f"/{noun}/docs",
+                                 "try": f"/try/{noun}"}
                           for noun, mod in mounted.items()},
                 "failed": failed}
 

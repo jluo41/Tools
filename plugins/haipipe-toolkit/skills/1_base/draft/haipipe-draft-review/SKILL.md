@@ -8,11 +8,12 @@ description: >-
   one rendered Page version and route it CLOSE, CONTEXT, OUTLINE, EVIDENCE, CONTENT
   or HOLD. Whoever wrote a text never reviews it. Use for review prose, anti-AI,
   "too AI", humanize, writing feedback, prose evaluation, plain English check,
-  page check, check gate, quality gate. Drafting and revising prose is
+  page check, check gate, quality gate, sentence by sentence logic review (each
+  sentence scored for its logic in context and how it reads). Drafting and revising prose is
   haipipe-draft-writing (the writer). Trigger: /haipipe-draft-review, /haipipe-writing, /haipipe-draft-check.
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-10-16"
+  version: "0.3.1"
+  last_updated: "2026-10-21"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -67,6 +68,11 @@ evidence, verdicts and the smallest fixes. A local edit checks its protected
 meaning and affected seam; a Section also checks coverage and argument across
 paragraphs. Do not turn a local check into a whole-Page review.
 
+0. **Sentence by sentence logic**: [ref/sentence-logic.md](ref/sentence-logic.md). For a paragraph or a Section,
+   every sentence is read in its context and gets its own line: its link to the sentence before (the relation, and
+   carried, weak or broken), whether every pointer and every setup's payoff hold, the specific problem, a logic
+   score and a read score out of 10, and the rewrite when it is below 8. It runs first, because a sentence that
+   does not follow cannot be fixed by its words (JL 261021: "每句话都要看一下上下文，review 它的逻辑关系是否通顺").
 1. **Plain rules**: [ref/plain-rules.md](ref/plain-rules.md), including the semicolon
    rule. The test is whether a reader who does not read English well can follow it.
 2. **AI tells**: [ref/ai-tells.md](ref/ai-tells.md) says how a machine writes. When
@@ -131,6 +137,7 @@ haipipe-draft-review/
 ├── CHANGELOG.md              version history (older history in ref/history/)
 ├── ref/
 │   ├── page-check.md         mode 2: the Page check gate
+│   ├── sentence-logic.md     each sentence in context: link, pointers, setup and payoff, logic and read scores
 │   ├── plain-rules.md        the plain-English rules and the ruling behind each
 │   ├── ai-tells.md           how a machine writes
 │   ├── evaluation.md · evaluation-rubric.md   the bounded review cycle and base-v1 rubric

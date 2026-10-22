@@ -1,20 +1,10 @@
----
-name: haipipe-workflow
-description: >-
-  IPO workflow designer, builder, executor, and reporter. Defines a Workflow as
-  a list of Runs: planned Run Specs with dependencies and routes, and actual
-  auditable Run Instances. Use for workflow planning, Run Type/Spec design, gates, routes,
-  build scripts, execution, reports, or Workflow × Workspace bindings.
-  Trigger: workflow, run graph, run spec, run type, gate, route, IPO, plan
-  workflow, build workflow, execute workflow, report, /haipipe-workflow.
-allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
-metadata:
-  version: "0.3.3"
-  last_updated: "2026-10-09"
-  # version history: ./CHANGELOG.md
----
+# Workflow · compose Runs, do not invent Phases
 
-# /haipipe-workflow · compose Runs, do not invent Phases
+A Workflow is a planned graph of Runs, so it is haipipe-run's (it was the `haipipe-workflow` skill
+until 2026-10-21). Its definition is `workflow/plan.yaml` ([`plan-schema.md`](plan-schema.md)); the
+workbench's Plan view reads that file. Most Tasks need none: a Task's Runs, their cards and receipts
+are enough, and only 28 of the 387 Tasks in Physician-SPACE wrote one by 2026-10-21. Write a
+plan when several Runs share routes, gates, a human HOLD or a resume point.
 
 A Workflow is a list of independently closable Runs. Its definition lists
 Run Specs; its runtime lists allocated Instances. The graph expresses their
@@ -30,11 +20,9 @@ I → Process[Run₁, Run₂, … Runₙ] → O
 `Plan`, `Build`, `Execute`, and `Report` are commands for working with this
 definition. They are not domain Phases and do not receive runtime authority.
 
-Load `haipipe-run` whenever the Workflow has executable work. The Run Spec × Workspace
-projection lives in each family's own `ref/workflow-table.md`.
-Resolve type/profile keys through the shared
-[Run catalogue](../../project/haipipe-run/ref/run-catalog.md).
-Load [`ref/workflow-runtime.md`](ref/workflow-runtime.md) when multiple Runs,
+The Run Spec × Workspace projection lives in each family's own `ref/workflow-table.md`.
+Resolve type/profile keys through the shared [Run catalogue](run-catalog.md).
+Load [`workflow-runtime.md`](workflow-runtime.md) when multiple Runs,
 branching, resume, human HOLD, or aggregate audit state justify a Workflow
 Runtime. One straightforward Run may rely on its own receipt.
 
@@ -52,8 +40,8 @@ Runtime. One straightforward Run may rely on its own receipt.
 | Step | one internal action or interaction inside a Run | independent Workflow row or Run id |
 | Workspace | presentation and interaction surface | execution authority |
 
-The word `phase` may still appear in the low-level JavaScript Workflow API as
-progress-group metadata. It is a display label only. Never derive ownership,
+The word `phase` may still appear in the low-level JavaScript Workflow API (Claude Code's
+`workflow-authoring` skill is its reference) as progress-group metadata. It is a display label only. Never derive ownership,
 gate, route, identity, or cardinality from it.
 
 ## Run Spec contract
@@ -121,7 +109,7 @@ model call when they share one target and close rule.
 
 ## PLAN · author the graph
 
-`/haipipe-workflow plan` creates or revises `plan.yaml`.
+Plan creates or revises `workflow/plan.yaml`.
 
 1. Name Workflow purpose, Input, and Output.
 2. Resolve the Workbench-owned Workspace roster when the Workflow declares those
@@ -136,11 +124,11 @@ model call when they share one target and close rule.
 7. State entry Run Specs and Workflow terminal rules.
 8. Freeze only after every destination, close rule, and applicable Cell resolves.
 
-Use [`ref/plan-schema.md`](ref/plan-schema.md) for the complete shape.
+Use [`plan-schema.md`](plan-schema.md) for the complete shape.
 
 ## BUILD · compile the graph
 
-`/haipipe-workflow build` translates the frozen plan into an executable
+Build translates the frozen plan into an executable
 `.workflow.js` or a manual checklist.
 
 - Preserve Run Spec ids in labels and receipts.
@@ -150,12 +138,12 @@ Use [`ref/plan-schema.md`](ref/plan-schema.md) for the complete shape.
   groups; they do not recreate Phase authority.
 - Keep the generated script replaceable from the frozen plan.
 
-Use [`ref/template.workflow.js`](ref/template.workflow.js) and
-[`ref/workflow-api.md`](ref/workflow-api.md).
+Use [`template.workflow.js`](template.workflow.js); the Workflow tool's own API is Claude Code's
+`workflow-authoring` skill.
 
 ## EXECUTE · materialize Run Instances
 
-`/haipipe-workflow execute` starts from an entry Run Spec and follows Results:
+Execute starts from an entry Run Spec and follows Results:
 
 ```text
 Run Spec → allocate Instance → freeze inputs → perform action/interaction
@@ -174,7 +162,7 @@ Run and cannot replace any Run receipt.
 
 ## REPORT · echo definition with runtime truth
 
-`/haipipe-workflow report` joins each instance to its Run Spec:
+Report joins each instance to its Run Spec:
 
 | Run Instance | Run Spec | Run Type | Target | Actor | Status | Gate outcome | Route taken | Result | Receipt |
 |---|---|---|---|---|---|---|---|---|---|
@@ -213,6 +201,17 @@ Before freezing or reporting, require:
 
 On a missing target, actor, close rule, route, owner, or receipt, return `HOLD`
 with the exact unresolved field.
+
+## Gate, Route and counting
+
+Gate and Route belong to the Run: an entry Gate is conditional (omitted means `open`); an exit Gate or
+inherited close rule is required; its decision mode is `human`, `automatic`, `agent` or `hybrid`; a
+terminal Run may default to `CLOSE`; every other outcome names `SELF`, `NEW_VERSION`, `NEW_RUN`, another
+Run Spec, or `HOLD`. A Version is an immutable reopen episode of the same target.
+
+The plan may say `cardinality: N`; it does not prove N Runs exist. A Run exists only when its instance
+id, Ticket and receipt are allocated. A Result file, retry, script, model call, progress group or Runtime
+card never adds another Run identity.
 
 ## Output
 

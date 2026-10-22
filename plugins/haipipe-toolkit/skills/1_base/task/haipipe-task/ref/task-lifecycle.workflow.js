@@ -21,10 +21,10 @@ const runBuild = stages.includes('build')
 const runExecute = stages.includes('execute') && autoExecute
 const runReport = stages.includes('report')
 const shapeRule =
-  `\n\nTASK FOLDER SHAPE: input must be tNN_<task>/ with same-stem Page, ` +
-  `scripts/config/<run>.yaml, and runs/<run>.sh. Generated Results resolve at the parent Job's ` +
-  `<task>/results/<run>/ and <task>/notebooks/<run>.ipynb. Reject any input that does not ` +
-  `match the bNN/jNN/tNN hierarchy. See haipipe-task/ref/hierarchy.md.`
+  `\n\nTASK FOLDER SHAPE: input must be tNN_<task>/ with a same-stem face, scripts/, and one folder per ` +
+  `Run, runs/<run>/ (ticket <run>.sh, config.yaml or scripts/config/<run>.yaml, run.yaml). Generated ` +
+  `Results resolve at OUTPUT_ROOT/<task>/runs/<run>/result/ and <task>/notebooks/<run>.ipynb. Reject ` +
+  `any input that does not match the bNN/jNN/tNN ladder. See haipipe-task/ref/task-folder.md.`
 log(`task-lifecycle: ${taskFolder}, type=${hintType || 'auto'}, stages=[${stages}], autoExecute=${autoExecute}, maxRetries=${maxRetries}`)
 
 const CREATOR_RESULT = {
@@ -37,7 +37,7 @@ const CREATOR_RESULT = {
     script_plans: { type: 'array', items: { type: 'string' } },
     job: { type: 'string' },
     task_folder: { type: 'string' },
-    files: { type: 'array', items: { type: 'string' } }, // legacy alias
+    files: { type: 'array', items: { type: 'string' } }, // same as artifacts, kept for older callers
     artifacts: { type: 'array', items: { type: 'string' } },
     summary: { type: 'string' },
     next: { type: 'string' },
@@ -93,12 +93,12 @@ for (let attempt = 0; attempt <= maxRetries; attempt++) {
 
   planResult = await agent(
     `Stage: PLAN. Task Folder: ${taskFolder}. Type hint: ${hintType || 'auto-detect from script'}.\n\n` +
-    `Read haipipe-task/fn/stage-plan.md and haipipe-workflow/ref/plan-schema.md.\n` +
+    `Read haipipe-task/fn/stage-plan.md and haipipe-run/ref/plan-schema.md.\n` +
     `Read and improve workflow/plan.yaml in place. Read the workers and the numbered domain specialist sample.\n` +
     `Write one authoritative run_specs roster with bounded targets, catalogue keys, actors, gates, routes, receipts, cardinality and Workbench-owned Workspace Cells.\n` +
     `Preserve domain procedures under run_specs[].steps. Controller commands, Steps and gates do not allocate Runs.\n` +
     `Existing plan-script files may remain only as read-only projections using plan, run_spec_ids and steps.\n` +
-    `Resolve scripts/config/<run>, runs/<run> and OUTPUT_ROOT/<task>/results/<run> exactly.` + shapeRule + retryNote,
+    `Resolve runs/<run>/ (its ticket, config and run.yaml) and OUTPUT_ROOT/<task>/runs/<run>/result/ exactly.` + shapeRule + retryNote,
     { label: `plan:create:${attempt}`, phase: 'Plan', agentType: 'haipipe-task-creator-agent', schema: CREATOR_RESULT }
   )
 
@@ -109,7 +109,7 @@ for (let attempt = 0; attempt <= maxRetries; attempt++) {
 
   planReview = await agent(
     `Stage: PLAN review. Task Folder: ${taskFolder}.\n\n` +
-    `Review workflow/plan.yaml against haipipe-workflow/ref/plan-schema.md.\n` +
+    `Review workflow/plan.yaml against haipipe-run/ref/plan-schema.md.\n` +
     `Check run_specs as the sole roster, independent Run boundaries, real Workbench Workspace membership, catalogue keys, input/output paths, gates and route targets.\n` +
     `Any script plans must be read-only projections referencing the same Run Spec ids; internal steps do not add cardinality.\n` +
     `Return verdict: pass, warn, revise, blocked, or fail, with exact paths and feedback.`,
@@ -165,8 +165,8 @@ const templateRule = isTemplateBased
     (isTemplateBased
       ? `Verify the Task Folder structure (do NOT touch the .py script):\n` +
         `- Verify the main .py exists and is an exact template copy (DO NOT modify it)\n` +
-        `- Create missing scripts/config/<run>.yaml and runs/<run>.sh if needed\n` +
-        `- Resolve notebooks/ and results/ beneath the parent Job's OUTPUT_ROOT\n` +
+        `- Create a missing runs/<run>/ folder (ticket <run>.sh, config, run.yaml with role:) if needed\n` +
+        `- Resolve notebooks/ and runs/<run>/result/ beneath the parent Job's OUTPUT_ROOT\n` +
         `- Verify the run config has all required fields for this task type\n`
       : `Fix/scaffold the Task Folder structure:\n` +
         `- Add # %% cell markers at logical step boundaries\n` +
@@ -246,7 +246,7 @@ if (!runExecute) {
       `1. All expected outputs exist per workflow/plan.yaml\n` +
       `2. metrics.json well-formed\n` +
       `3. runtime.yaml consistent\n` +
-      `4. No heavy artifacts in results/ (should be in _WorkSpace/)\n\n` +
+      `4. No heavy artifacts in runs/<run>/result/ (they belong in HEAVY_DIR under _WorkSpace/, with heavy.yaml)\n\n` +
       `Return RUN_AUDIT.md sidecar content and verdict for the orchestrator to persist.`,
       { label: 'execute:review', phase: 'Execute', agentType: 'haipipe-task-reviewer-agent', schema: REVIEWER_RESULT }
     )
@@ -282,8 +282,8 @@ if (!runReport) {
 
     reportResult = await agent(
       `Stage: REPORT. Task Folder: ${taskFolder}.\n\n` +
-      `Read haipipe-task/fn/stage-report.md and the haipipe-workflow Report schema.\n` +
-      `Read workflow/plan.yaml, current review evidence and OUTPUT_ROOT/<task>/results/<run>/runtime.yaml.\n` +
+      `Read haipipe-task/fn/stage-report.md and the Report schema in haipipe-run/ref/plan-schema.md.\n` +
+      `Read workflow/plan.yaml, current review evidence and OUTPUT_ROOT/<task>/runs/<run>/result/runtime.yaml.\n` +
       `Write workflow/report.yaml with actual runs bound to run_spec_id and owner-native full Run ids.\n` +
       `Distinguish planned cardinality from actual count. Missing or pending external execution is not complete.\n` +
       `Script reports are read-only projections using report, run_ids and step observations.\n` +

@@ -39,54 +39,43 @@ index or introduce a second type-letter scheme.
 Step 3 - Create the Board skeleton
 ----------------------------------
 
-Create exactly:
+Make the folder and its face with haipipe-block's scaffold, then fill the face from this skill's
+work template:
+
+```bash
+python Tools/plugins/haipipe-toolkit/skills/1_base/project/haipipe-block/scripts/new_board.py <work/> --slug <block_name> --title '<title>'
+```
 
 ```
 work/bNN_{block_name}/
-├── board.md
-└── diagram/                 optional until a shared narrative is authored
+├── board.md                 from ref/block-board-template.md
+└── studio/                  made when its first topic is drawn (haipipe-studio)
 ```
 
-Start `board.md` from `ref/block-board-template.md` and set:
-
-```yaml
-board-kind: task-block
-```
-
-The Task tree is the membership and default-order authority:
+The face carries `board-kind: task-block` and `workbench-layout: workflow`, so the workbench opens on
+Goal · Plan · Execution · Results; its own `## Deliverables` holds only what no Job owns. The Task
+tree is the membership and default-order authority:
 
 ```
 Block Board -> Job Group -> Task Page -> Run execution record
 ```
 
-`## Pages` may contain Job headings and introductions without restating Task
-rows. If an explicit Task order is needed, list the full relative Page path:
+`## Pages` may contain Job headings and introductions without restating Task rows. If an explicit
+Task order is needed, list the full relative Page path (`j01_job_name/t01_task_name/t01_task_name.md`);
+never a bare Task filename, since two Jobs may hold the same Task name.
 
-```
-j01_job_name/t01_task_name/t01_task_name.md
-```
-
-Do not use a bare Task filename: two Jobs may legitimately contain the same
-Task name.
-
-When the Block is cohesive and its shared narrative is ready, create
-`diagram/` through `diagram-ascii` with the canonical overview, task map,
-progress, and design records, then bundle the canvas. Do not invent diagram
-content merely to fill the folder.
-
-For a question-driven Block, follow `haipipe-report` (`skills/1_base/project/haipipe-report/ref/block-questions.md`): register the
-Questions in `board.md`, place their Report Pages in `reports/`, and use
-`studio/` for freeform Excalidraw drawings. Create these when requested or when
-the Block's questions are known; do not prefill invented questions or answers.
-The Workbench presents these alongside the existing Task tree. Report Page
-Folders are documentation and do not become executable Tasks or Job groups.
+For a question-driven Block, follow `haipipe-report` (`ref/block-questions.md`): register the
+Questions in `board.md`, place their Report Pages in `reports/`, and draw in `studio/` topics
+(`haipipe-studio`). Create these when the Block's questions are known; never prefill invented
+questions or answers. Report Page Folders are documentation, never executable Tasks or Job groups.
 
 
 Step 4 - Optionally create the first Job
 ----------------------------------------
 
-Proceed through the Task orchestrator's Job scaffold. The Job, not the Block,
-owns `sbatch/`, shared `src/`, generated `results/`, and its Tasks.
+Make the Job with haipipe-job (`new_job.py job <block> --slug … --title … --goal … --close …`), then
+its Tasks (`new_job.py task`); the Job, not the Block, owns `sbatch/`, shared `src/` and its Tasks,
+and each Task's Runs write their own `runs/<run>/result/`. Then `/wb update <block>` checks today's rules.
 
 
 Step 5 - Check the new Board
@@ -96,7 +85,7 @@ Run both contracts before reporting the scaffold complete:
 
 ```bash
 python3 Tools/plugins/haipipe-toolkit/skills/1_base/draft/haipipe-draft/cli/check.py <block>
-python3 Tools/plugins/haipipe-toolkit/skills/1_base/task/haipipe-task/ref/check_task_tree.py <block>
+python3 Tools/plugins/haipipe-toolkit/skills/1_base/task/haipipe-task/scripts/check_task_tree.py <block>
 ```
 
 The Board check must be clean immediately. A container-only Block may also be
@@ -108,7 +97,7 @@ MUST NOT
 --------
 
 - Create `README.md` in the Block.
-- Create Block-level `sbatch/`, `src/`, `scripts/`, `results/`, or workflow
-  code. Runnable material belongs to a Job or Task.
+- Create Block-level `sbatch/`, `scripts/`, `results/`, or workflow code. Runnable material belongs to
+  a Job or Task; a Block's `src/` holds only code its Jobs share (haipipe-project ref/ladder.md).
 - Copy the Task tree into `board.md` merely to make Tasks visible.
 - Turn a Run into a Board Page.

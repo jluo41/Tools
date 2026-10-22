@@ -7,7 +7,7 @@ bind nothing.
 ## The batch config · one entry per stripped question
 
 ```yaml
-# work/b90_page_service/j01_values_sm05_results/t01_collect_values/scripts/config/r01_results_batch.yaml
+# work/b90_page_service/j01_values_sm05_results/t01_collect_values/runs/r01_results_batch/config.yaml
 batch: results_batch
 questions:
   - id: adjusted-effect               # consumer-neutral Result key
@@ -15,31 +15,31 @@ questions:
                                     # order and values.yaml records the final filename
     ask: "What is the estimated effect of physician agreeableness on opioid
           days supplied, in SD units, in the baseline pain-cohort model?"
-    upstream: examples-2-cms/Project-Personality-OpioidRx/tasks/R01_Reg_TraitOpioid
-    extract: "results/j02_reg_pain/r01_baseline/coef_table.csv#agreeable.b"
+    upstream: examples-2-cms/Project-Personality-OpioidRx/work/b11_CD_visit_pain_lbp/j21_C1D_reg_VisitLBP_1stPair_yr15_20_bigfive_ols/t01_C1_D_reg_VisitLBP_agre
+    extract: "runs/r01_D_reg_VisitLBP_1stPair_agre_af7d_ols/result/tables/coef_table.csv#agreeable.b"
   - id: cohort-physician-count
     evidence_slug: cohort-physician-count
     ask: "How many physicians remain in the pooled five-pain-cohort analysis
           sample after exclusions?"
-    upstream: examples-2-cms/Project-Personality-OpioidRx/tasks/B01_CaseData_TraitOpioid
-    extract: "results/j03_cohort_build/r02_pooled/sample_flow.csv#final.n_physicians"
+    upstream: examples-2-cms/Project-Personality-OpioidRx/work/b19_CD_visit_pain_pooled/j01_C1_data_VisitPain_pooled_yr15_20/t03_sample_flow_pooled
+    extract: "runs/r01_sample_flow_pooled/result/sample_flow.csv#final.n_physicians"
 ```
 
 ## The output · values.yaml, regenerated whole per run
 
 ```yaml
-# $OUTPUT_ROOT/t01_collect_values/results/r01_results_batch/values.yaml
+# $OUTPUT_ROOT/t01_collect_values/runs/r01_results_batch/result/values.yaml
 computed: "260831 1710"
-upstream:                     # pin the JOB that reported, not the block; a folder
+upstream:                     # pin the Task that reported, not the Block; a folder
                               # with no workflow/report.yaml records its dir mtime instead
-  - examples-2-cms/Project-Personality-OpioidRx/tasks/R01_Reg_TraitOpioid/D01-reg_visitlbp_1stpair · report.yaml 260828
-  - examples-2-cms/Project-Personality-OpioidRx/tasks/B01_CaseData_TraitOpioid · no report.yaml; dir mtime 260821
+  - examples-2-cms/Project-Personality-OpioidRx/work/b11_CD_visit_pain_lbp/j21_C1D_reg_VisitLBP_1stPair_yr15_20_bigfive_ols/t01_C1_D_reg_VisitLBP_agre · report.yaml 260828
+  - examples-2-cms/Project-Personality-OpioidRx/work/b19_CD_visit_pain_pooled/j01_C1_data_VisitPain_pooled_yr15_20 · no report.yaml; dir mtime 260821
 values:
   - id: adjusted-effect
     question: 1-agreeableness-effect
     value: "-0.083"
     unit: "SD opioid days per SD agreeableness"
-    source: "R01_Reg_TraitOpioid/results/j02_reg_pain/r01_baseline/coef_table.csv#agreeable.b"
+    source: "t01_C1_D_reg_VisitLBP_agre/runs/r01_D_reg_VisitLBP_1stPair_agre_af7d_ols/result/tables/coef_table.csv#agreeable.b"
     state: landed
   - id: cohort-physician-count
     question: 2-cohort-physician-count
@@ -52,17 +52,17 @@ values:
 ```markdown
 # workflow/proposals.md
 ### P1 · pooled sample flow is computed nowhere
-Block: B01_CaseData_TraitOpioid (existing)
-Job: j03_cohort_build (existing)
-Task: t04_sample_flow (new)
-Produces: $OUTPUT_ROOT/t04_sample_flow/results/r02_pooled/sample_flow.csv#final.n_physicians
-Needs: the five per-cohort case files j03 already builds
+Block: b19_CD_visit_pain_pooled (existing)
+Job: j01_C1_data_VisitPain_pooled_yr15_20 (existing)
+Task: t03_sample_flow_pooled (new)
+Produces: $OUTPUT_ROOT/t03_sample_flow_pooled/runs/r01_sample_flow_pooled/result/sample_flow.csv#final.n_physicians
+Needs: the pooled analysis table t01 already builds
 ```
 
 The proposal names what would be MEASURED and where it belongs; it never says
 what the count is hoped to be. The next refresh Run flips
 `cohort-physician-count` to `landed`
-when t04 exists and reports.
+when t03 exists and reports.
 
 ## The Page-side binding
 

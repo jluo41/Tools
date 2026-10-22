@@ -2,7 +2,7 @@
 """
 Seed or update a column dictionary for haipipe-task-for-description.
 
-    python seed_dictionary.py --dictionary <dict.yaml> --table <file.parquet> [--table ...]
+    python seed_dictionary.py --dictionary <dict.yaml> --table <file.parquet | file.csv> [--table ...]
                               [--seed <contract.yaml> ...] [--groups-from <module.py>]
 
 Run it from the SPACE root; every path is SPACE-relative.
@@ -84,7 +84,9 @@ def main():
 
     added = filled = 0
     for table in args.table:
-        for name in pq.ParquetFile(table).schema_arrow.names:
+        names = (pq.ParquetFile(table).schema_arrow.names if not str(table).lower().endswith(".csv")
+                 else open(table, newline="", encoding="utf-8").readline().rstrip("\r\n").split(","))   # a CSV: its header
+        for name in names:
             e = columns.get(name)
             if e is None:
                 e = columns[name] = {"group": group_of.get(name, "undescribed"), "meaning": UNKNOWN}

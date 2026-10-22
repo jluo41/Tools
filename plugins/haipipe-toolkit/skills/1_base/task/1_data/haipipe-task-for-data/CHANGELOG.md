@@ -5,6 +5,15 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.10.0] · 2026-10-21 · Type contract, one folder per Run
+
+- `## Type contract` block added as the first section (haipipe-task `ref/types.md`): data, roles make,
+  check, trial; plan sample `ref/workflow-plan-sample.yaml`.
+- Every page names the current layout: the Ticket is `runs/<run>/<run>.sh` (`.cmd` on a PHI server),
+  its config `runs/<run>/config.yaml`, its card `runs/<run>/run.yaml`, and its Result
+  `$OUTPUT_ROOT/<task>/runs/<run>/result/`, never `<task>/results/<run>/`. Plan sample target is
+  `work/...`; WellDoc Proj01 reference path is `work/b01_sourcestore/`.
+
 ## [0.9.1] · 2026-10-09 · Theme folders are singular
 
 - Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,

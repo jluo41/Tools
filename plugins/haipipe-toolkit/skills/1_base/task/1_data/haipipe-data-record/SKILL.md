@@ -75,7 +75,7 @@ Stage Scope
 ------------
 
 Owns:
-  - HumanFn / RecordFn builders in `work/b02_recordstore/j01_recordfn_<topic>/tNN_{humanfn,recordfn}_<Fn>/scripts/` (same topic number as `b01`); the RecordSet is cooked in `b02_recordstore/j5N_<cohort>_v<yymmdd>_record/` (rule: `haipipe-task/ref/hierarchy.md` § Block number ranges) (legacy workspaces: `code-dev/1-PIPELINE/2-Record-WorkSpace/`)
+  - HumanFn / RecordFn builders in `work/b02_recordstore/j01_recordfn_<topic>/tNN_{humanfn,recordfn}_<Fn>/scripts/` (same topic number as `b01`); the RecordSet is cooked in `b02_recordstore/j5N_<cohort>_v<yymmdd>_record/` (rule: `haipipe-task/ref/pipeline-blocks.md`) (legacy workspaces: `code-dev/1-PIPELINE/2-Record-WorkSpace/`)
   - Generated `code/haifn/fn_record/{human,record}/`, or `code/haifn/fn_record/<fn_version>/{human,record}/` when the Run config sets `fn_version:` (the same version as the dataset's SourceFn; see `haipipe-data/ref/0-overview.md` § Fn Versions)
   - `_WorkSpace/2-RecStore/` records
   - `templates/config.yaml` for Record_Pipeline runs

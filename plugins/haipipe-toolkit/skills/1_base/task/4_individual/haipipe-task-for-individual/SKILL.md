@@ -1,11 +1,11 @@
 ---
 name: haipipe-task-for-individual
-description: "individual-query job specialist: scaffolds {NN}_<name>/ jobs in the individual block (default E-series) that query/visualize ONE individual's data (CGM trace, meal timeline, treatment events) -> $OUTPUT_ROOT/<task>/results/rNN_<run>/{plot.pdf, table.csv}. Called by /haipipe-task when task-type=individual. Cross-references /haipipe-individual."
-argument-hint: "[project_id] [group] [job-name]"
+description: "individual-query Task specialist: scaffolds jNN_<job>/tNN_<task>/ Task folders in the individual Block that query/visualize ONE individual's data (CGM trace, meal timeline, treatment events) -> $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/{plot.pdf, table.csv}. Called by /haipipe-task when task-type=individual. Cross-references /haipipe-individual."
+argument-hint: "[project_id] [bNN_<block>/jNN_<job>] [tNN_<task>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.1.3"
-  last_updated: "2026-10-09"
+  version: "0.2.0"
+  last_updated: "2026-10-21"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -13,11 +13,26 @@ Skill: haipipe-task-for-individual
 =======================================
 
 Scaffolds an **individual-centric query job**.
-Pulls one individual's Source / Record data, applies a view (timeline, treatment-event plot, meal-vs-glucose overlay), and writes a small PDF + CSV to `$OUTPUT_ROOT/<task>/results/rNN_<run>/`.
+Pulls one individual's Source / Record data, applies a view (timeline, treatment-event plot, meal-vs-glucose overlay), and writes a small PDF + CSV to `$OUTPUT_ROOT/<task>/runs/rNN_<run>/result/`.
 
 **Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Phase 2: Build, then authors the `<TASK>.py` body).
 Always end with the structured return block (status / summary / artifacts / next — the same tail every task skill emits).
 
+## Type contract
+
+```yaml
+task-type: individual
+skill: haipipe-task-for-individual
+does: Queries one subject's Source, Record or Case data over a time window and draws one view of it (timeline, meal overlay, treatment events).
+worker: scripts/<worker>.py (Python), calling /haipipe-individual helpers; subject_id comes from the Run's config, never the code
+config: runs/<run>/config.yaml (seeded from ref/config-seed.yaml), or scripts/config/<run>.yaml in a Block not yet moved
+ticket: runs/<run>/<run>.sh, from ../../haipipe-task/ref/run-sh-template.sh (REQUIRED_RESULTS plot.pdf, plus table.csv when the view exports it)
+result: $OUTPUT_ROOT/<task>/runs/<run>/result/, with runtime.yaml and plot.pdf (and table.csv when exported) before the receipt says complete; no metrics.json
+heavy: none
+roles: [make]
+companions: [haipipe-individual, haipipe-individual-inference]
+plan_sample: ref/workflow-plan-sample.yaml
+```
 
 
 What this scaffolds
@@ -33,11 +48,16 @@ work/bNN_<block>/
         ├── draft/
         ├── workflow/                plan.yaml + report.yaml
         ├── scripts/<worker>.py
-        ├── scripts/config/rNN_<run>.yaml
-        └── runs/rNN_<run>.sh
+        └── runs/rNN_<run>/              one folder per Run
+            ├── rNN_<run>.sh             the ticket
+            ├── config.yaml              this Run's settings
+            ├── run.yaml                 its card (role: make)
+            └── result/                  runtime.yaml (the receipt) + plot.pdf, table.csv
 
-Generated: $OUTPUT_ROOT/tNN_<task>/results/rNN_<run>/
+Generated: $OUTPUT_ROOT/tNN_<task>/runs/rNN_<run>/result/
            $OUTPUT_ROOT/tNN_<task>/notebooks/rNN_<run>.ipynb
+A Block not yet moved still has the flat runs/rNN_<run>.sh, scripts/config/rNN_<run>.yaml
+and results/rNN_<run>/; the ticket template runs both.
 ```
 
 Hierarchy prefixes are bNN / jNN / tNN / rNN; domain belongs in the descriptive suffix.
@@ -59,7 +79,7 @@ Summary:
 
   1. Identify project + block.
   2. Collect metadata (NN, name, type-specific extras, _meta block).
-  3. Create the canonical Task Page, workflow/, scripts/config/, worker and matching rNN Ticket; resolve generated output through OUTPUT_ROOT.
+  3. Create the canonical Task Page, workflow/, worker and one Run folder runs/rNN_<run>/ (Ticket, config.yaml, run.yaml); resolve generated output through OUTPUT_ROOT.
   4. Seed config from `ref/config-seed.yaml`.
   5. Copy run-script from `../../haipipe-task/ref/run-sh-template.sh`.
   6. Suggest next via cross-skill link.
@@ -89,7 +109,7 @@ ref/workflow-plan-sample.yaml     ← Run Spec example with internal domain step
 ```
 
 Schema source of truth:
-  task/haipipe-workflow/ref/plan-schema.md
+  project/haipipe-run/ref/plan-schema.md
 
 Resolve `RESULT_STORE`, then the Job store declaration, then the Job root as OUTPUT_ROOT.
 Use the same output-root contract as `haipipe-task`; no physical output is moved by scaffolding.

@@ -1,7 +1,7 @@
 # Workflow Runtime Contract
 
 This reference applies the neutral
-[`haipipe-run` contract](../../../project/haipipe-run/SKILL.md)
+[`haipipe-run` contract](../SKILL.md)
 to executable HAI workflows.
 
 ## Canonical model

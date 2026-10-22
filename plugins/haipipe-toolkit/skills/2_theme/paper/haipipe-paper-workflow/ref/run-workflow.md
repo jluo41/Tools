@@ -105,7 +105,7 @@ Routine concern-table updates do not require this commission.
 ## Runtime and completion
 
 Use the shared `haipipe.workflow-runtime/v1` envelope from
-`1_base/task/haipipe-workflow/ref/workflow-runtime.md`. When an aggregate Runtime is
+`1_base/project/haipipe-run/ref/workflow-runtime.md`. When an aggregate Runtime is
 needed, keep `<paper>/workflow/paper/<workflow_runtime_id>/runtime.yaml` with
 its immutable `definition-vNNN.yaml` revisions. This is an index/control store,
 not a new Run bank. A direct single Run can rely on its native receipt.

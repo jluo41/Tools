@@ -458,6 +458,46 @@ class PageTaskTest(unittest.TestCase):
             self.assertEqual(label, "✎ Write")
             self.assertIn("space=Work+Details", link)
 
+    def test_a_comment_on_a_paragraph_sits_at_its_heading(self):
+        # JL 261021: "比如说这个 paragraph 也可以加 comments 呢？" A comment on C2.P10 is saved like a sentence's and its
+        # card carries data-p, so it aligns to the paragraph heading (which gets its own +)
+        from live import draft_steps
+        c = {"n": "6", "target": "C2.P10", "state": "open", "quote": "", "thread": [("Note", "2026-10-21 23:40", "why")]}
+        html = draft_steps._note_card(c, [])
+        self.assertIn('data-s="C2.P10"', html)
+        self.assertIn('data-p="C2.P10"', html)
+        self.assertNotIn("data-p", draft_steps._note_card({**c, "target": "S4"}, []))
+        self.assertIn("h4[data-p]", draft_steps.NOTES_JS)
+
+    def test_a_card_on_a_whole_part_sits_at_its_first_paragraph(self):
+        # JL 261021, of a `Section question · C2 · …` card above the text: "我想知道它是不是应该也当成一个 card 之类的，
+        # 放到右边去？" It goes on the right with the others, at C2's first paragraph, before that paragraph's cards
+        from live import draft_steps
+        d = {"text": [("Draft", "### C1.P1 · Question\n- B1 · S1 · One.\n\n### C2.P4 · Importance\n- B1 · S4 · Two.\n"
+                                "- B2 · S5 · Three.\n")]}
+        self.assertEqual(draft_steps._first_para("C2", d), "C2.P4")
+        whole, para, own = (draft_steps._reading_key(h, d) for h in
+                            ("Section question · C2 · room", "Review · C2.P4 · flow", "Edit · S4 · word"))
+        self.assertLess(draft_steps._reading_key("Edit · S1 · word", d), whole)
+        self.assertLess(whole, para)
+        self.assertLess(para, own)
+        html = draft_steps._revise_card("Section question · C2 · room", {"why": "w", "state": "proposed"}, "t", "p", "C2.P4")
+        self.assertIn('data-p="C2.P4"', html)
+
+    def test_a_value_evidence_card_reads_as_the_sentence_says_it(self):
+        # JL 261021, of the Abstract beside the Introduction: a value card's line shows "1,983 requests", the words in
+        # the sentence, never an item id such as "VALUE 1.1 queries in fold00"; a pending one says what it still needs
+        from live import draft_steps
+        c = {"kind": "value", "label": "VALUE 1", "source": "b03.j02.t03"}
+        it = {"run": "r11", "anchor": ["1,983 requests", "sent 1,983 requests"], "what": "queries in fold00", "state": "have"}
+        need = {"need": "overlap between agents, from a Run", "state": "need"}
+        html = draft_steps._ev_side_card("S2", [(c, it, 1), (c, need, 2)], None, "In this study of 1,983 requests, ...")
+        peek = html.split("rv-peek")[1].split("</span>")[0]
+        self.assertIn("1,983 requests", peek)
+        self.assertNotIn("sent 1,983", peek)
+        self.assertNotIn("VALUE 1.1", peek)
+        self.assertIn("pending: overlap between agents", peek)
+
     def test_a_revise_card_is_accepted_rejected_or_edited_in_place(self):
         # b32 s41-D31/D32 (JL 261020: "我想要那种可以交互的感觉"): 5 · Revise shows the cards by pass with their buttons;
         # card_act writes only the card's State (or its Expected), and refuses a card that changed since it was shown
@@ -476,7 +516,8 @@ class PageTaskTest(unittest.TestCase):
                              "State: proposed\n")
             html = task_draft.draft_task_spaces(task, root, "5 · Revise")["Work Details"].html
             self.assertIn("Revise cards · Pass 1 · 261020 · on draft v0.1", html)
-            self.assertIn("data-card-act=accept", html)
+            self.assertIn("data-card-act=confirm", html)                         # a choice, then Confirm (JL 261021)
+            self.assertIn("drop it: keep the original", html)
             self.assertIn('<li data-s="S1">', html)                              # a card lights its sentence
             rel = task.relative_to(root).as_posix()
             ask = {"task": rel, "pass": "Pass 1 · 261020 · on draft v0.1", "card": "Edit · S1 · a number"}
@@ -490,6 +531,152 @@ class PageTaskTest(unittest.TestCase):
             self.assertIn("- B1 · S1 · The problem grows.", (task / "draft" / "t01_note-draft-v0.1.md").read_text())
             self.assertEqual(draft_steps.card_act(root, {**ask, "task": "../..", "state": "accepted"})[0], 400)
             self.assertEqual(draft_steps.card_act(root, {**ask, "state": "accepted"}, read_only=True)[0], 403)
+
+    def test_a_comment_on_a_sentence_is_answered_by_a_pass_and_closed_by_its_person(self):
+        # JL 261021 ("我选中一个句子 ... 点个加号就能加注释 ... 放到 Revise 的那一栏里面"; "你的 change 怎么跟我的 comments
+        # 一起来做交互"): note_act writes the comment, a pass's card names it (Answers:), the person closes it
+        from live import draft_steps
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            task = root / "Project-X/work/b01_topic/j01_job/t01_note"
+            (task / "draft" / "records").mkdir(parents=True)
+            (task.parents[1] / "board.md").write_text("# Topic\n")
+            (task / "t01_note.md").write_text("# t01_note · Note\n\nfolder-kind: task\ntask-type: draft\n")
+            (task / "draft" / "t01_note-draft-v0.1.md").write_text(
+                "# Note · draft v0.1\n\n## 3 · Draft\n\n### C1.P1 · Why\n- B1 · S1 · The problem grows.\n"
+                "- B2 · S2 · It costs money.\n")
+            rel = task.relative_to(root).as_posix()
+            notes = task / "draft" / "records" / "t01_note-comments.md"
+            code, res = draft_steps.note_act(root, {"task": rel, "act": "add", "s": "S2", "quote": "costs",
+                                                    "text": "how  much?"})
+            self.assertEqual((code, res["n"], res["state"]), (200, "1", "open"))
+            self.assertIn("### Comment 1 · S2\nQuote: costs\nState: open\n- Note · ", notes.read_text())
+            self.assertEqual(draft_steps.note_act(root, {"task": rel, "act": "add", "s": "S9; rm", "text": "x"})[0], 400)
+            draft_steps.note_act(root, {"task": rel, "act": "add", "s": "S1", "text": "fine"})
+            self.assertEqual(draft_steps.note_act(root, {"task": rel, "act": "delete", "n": "2"})[1]["html"], "")
+            # a pass answers it: a card that names it, a Reply line, State: answered
+            (task / "draft" / "records" / "t01_note-revise.md").write_text(
+                "# t01_note · Revise cards\n\n## Pass 1 · 261021 · on draft v0.1\n\n### Edit · S2 · the cost\n\n"
+                "Why: your comment\nAnswers: Comment 1\nOriginal: It costs money.\nExpected: It costs $5 a year.\n"
+                "State: written\n")
+            notes.write_text(notes.read_text().replace("State: open", "State: answered")
+                             + "- Reply · 2026-10-21 15:00: S2 now gives the cost (card S2).\n")
+            html = task_draft.draft_task_spaces(task, root, "5 · Revise")["Work Details"].html
+            self.assertIn('data-n="1" data-s="S2"', html)
+            self.assertIn("<b>AI</b>", html)                                      # the pass's reply, marked AI
+            self.assertIn("💬 answers Comment 1", html)                        # the card names the comment
+            self.assertIn("↳ Edit · S2 · the cost", html)                       # and the comment its card
+            self.assertIn("how much?", html)                                     # its thread, the person's note
+            self.assertIn("S2 now gives the cost (card S2).", html)               # and the pass's reply
+            self.assertLess(html.index('data-n="1" data-s="S2"'), html.index("Edit · S2 · the cost</b>"))
+            self.assertEqual(draft_steps.note_act(root, {"task": rel, "act": "delete", "n": "1"})[0], 409)
+            self.assertEqual(draft_steps.note_act(root, {"task": rel, "act": "done", "n": "1", "was": "open"})[0], 409)
+            code, res = draft_steps.note_act(root, {"task": rel, "act": "done", "n": "1", "was": "answered"})
+            self.assertEqual((code, res["state"]), (200, "done"))
+            code, res = draft_steps.note_act(root, {"task": rel, "act": "reply", "n": "1", "text": "and per patient?"})
+            self.assertEqual((code, res["state"]), (200, "open"))
+            self.assertEqual(notes.read_text().count("- Note · "), 2)
+            self.assertEqual(draft_steps.note_act(root, {"task": rel, "act": "add", "s": "S1", "text": "x"},
+                                                  read_only=True)[0], 403)
+
+    def test_an_edit_card_offers_options_and_a_person_picks_one(self):
+        # JL 261021 ("可以用 A、B、C 几个不同的方法去修改，propose 一些选项"): a card's Option lines show with Use buttons;
+        # card_act with an option writes its words as Expected, the letter as Chosen, and the card accepted
+        from live import draft_steps
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            task = root / "Project-X/work/b01_topic/j01_job/t01_note"
+            (task / "draft" / "records").mkdir(parents=True)
+            (task.parents[1] / "board.md").write_text("# Topic\n")
+            (task / "t01_note.md").write_text("# t01_note · Note\n\nfolder-kind: task\ntask-type: draft\n")
+            (task / "draft" / "t01_note-draft-v0.1.md").write_text(
+                "# Note · draft v0.1\n\n## 3 · Draft\n\n### C1.P1 · Why\n- B1 · S1 · The problem grows by 10%.\n")
+            cards = task / "draft" / "records" / "t01_note-revise.md"
+            cards.write_text("# t01_note · Revise cards\n\n## Pass 2 · 261021 · on draft v0.1\n\n### Edit · S1 · the number\n"
+                             "Why: two ways (R2)\nOriginal: The problem grows.\nExpected: The problem grows by 10%.\n"
+                             "Option A (the number first): The problem grows by 10%.\n"
+                             "Option B (the cause first): Costs make the problem grow.\nChosen: A\n"
+                             "State: written · 2026-10-21 17:00\n")
+            html = task_draft.draft_task_spaces(task, root, "5 · Revise")["Work Details"].html
+            self.assertIn("2 options", html)                                      # every option listed (JL 261021)
+            self.assertIn('value="B"', html)
+            self.assertIn('<label class="rv-choice sel" data-opt="A"', html)
+            self.assertIn('<label class="rv-choice rv-drop" data-opt="drop">', html)  # C: drop it
+            self.assertNotIn("Show the 1 finished", html)                       # a choice still open is not finished
+            ask = {"task": task.relative_to(root).as_posix(), "pass": "Pass 2 · 261021 · on draft v0.1",
+                   "card": "Edit · S1 · the number", "was": "written", "state": "accepted",
+                   "expected": "Costs make the problem grow.", "option": "B"}
+            self.assertEqual(draft_steps.card_act(root, ask)[0], 200)
+            text = cards.read_text()
+            self.assertIn("Expected: Costs make the problem grow.", text)
+            self.assertIn("Chosen: B", text)
+            self.assertIn("State: accepted · ", text)
+
+    def test_a_display_shows_under_the_sentence_that_calls_it(self):
+        # JL 261021 ("如果我们有图片或者表格的话 ... PNG TO EMBED UNDER THAT SENTENCE"): a unit's preview.png sits under the
+        # first sentence that calls it, in Write, Evidence, Display and Revise alike; an unbuilt one says so
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            task = root / "Project-X/work/b01_topic/j01_job/t01_note"
+            (task / "draft" / "records").mkdir(parents=True)
+            (task.parents[1] / "board.md").write_text("# Topic\n")
+            (task / "t01_note.md").write_text("# t01_note · Note\n\nfolder-kind: task\ntask-type: draft\n")
+            (task / "draft" / "t01_note-draft-v0.1.md").write_text(
+                "# Note · draft v0.1\n\n## 3 · Draft\n\n### C1.P1 · Why\n- B1 · S1 · The problem grows.\n"
+                "- B2 · S2 · Figure 1 shows it; Table 2 counts it.\n- B3 · S3 · Figure 1 again.\n")
+            unit = task / "display" / "Display1-growth"
+            unit.mkdir(parents=True)
+            (unit / "README.md").write_text("# Display1-growth · Figure 1\n\nshown as: Figure 1\nclaim: It grows.\n")
+            (unit / "preview.png").write_bytes(b"\x89PNG\r\n\x1a\n")
+            (task / "draft" / "records" / "t01_note-revise.md").write_text(
+                "# t01_note · Revise cards\n\n## Pass 1 · 261021 · on draft v0.1\n\n### Edit · S1 · x\nWhy: y\n"
+                "Original: a\nExpected: b\nState: proposed\n")
+            for step in ("5 · Revise", "4 · Display"):
+                html = task_draft.draft_task_spaces(task, root, step)["Work Details"].html
+                at = html.index('<li data-s="S2">')
+                self.assertLess(at, html.index('<li class="disp-embed"><figure>'), step)      # under S2, not S3
+                self.assertLess(html.index('<li class="disp-embed"><figure>'), html.index('<li data-s="S3">'), step)
+                self.assertIn("display/Display1-growth/preview.png", html)
+                self.assertIn("<b>Table 2</b> · no unit in display/ yet", html)
+            html = task_draft.draft_task_spaces(task, root, "5 · Revise")["Work Details"].html
+            self.assertIn("data-cards-kind=edits", html)                         # the kind chips
+            self.assertNotIn("data-cards-all=accept", html)                      # no Accept all (JL 261021)
+            self.assertNotIn("data-cards-done", html)                            # no Show finished
+
+    def test_the_review_report_scores_each_sentence(self):
+        # JL 261021 ("让 AI 也来评评每句话，作为一个 reviewer"): a report's `Sentences:` lines become a table, one row each
+        from live import draft_steps
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "t01_note-revise.md"
+            path.write_text("# t01_note · Revise cards\n\n## Pass 2 · 261021 · on draft v0.1\n\n### Revise review report\n"
+                            "Verdict: two joins are weak.\nReadability: NEEDS WORK · 7/10 · long · Fix: split\n"
+                            "Sentences:\n- S1 · logic 9/10 · read 9/10 · link: opens the paragraph, carried · none · Fix: none\n"
+                            "- S2 · logic 6/10 · read 8/10 · link: cause, weak · the colon promises a cause, the rest gives a "
+                            "cost · Fix: It costs $5 a year.\nFlow P1: S1 the need → S2 its cost · weakest join S1 to S2\n")
+            html = draft_steps._review_report(path)
+            self.assertIn("Each sentence, in its context:", html)
+            self.assertIn("logic 7.5 · read 8.5 of 10 · 1 of 2 pass (8 or more on both, no broken link)", html)
+            # beside the text, a sentence with a problem gets the reviewer's card; one with none gets no card
+            task = Path(tmp) / "Project-X/work/b01_topic/j01_job/t01_note"
+            (task / "draft" / "records").mkdir(parents=True)
+            (task.parents[1] / "board.md").write_text("# Topic\n")
+            (task / "t01_note.md").write_text("# t01_note · Note\n\nfolder-kind: task\ntask-type: draft\n")
+            (task / "draft" / "t01_note-draft-v0.1.md").write_text(
+                "# Note · draft v0.1\n\n## 3 · Draft\n\n### C1.P1 · Why\n- B1 · S1 · The need.\n- B2 · S2 · It costs.\n")
+            (task / "draft" / "records" / "t01_note-revise.md").write_text(path.read_text())
+            html = task_draft.draft_task_spaces(task, Path(tmp), "5 · Revise")["Work Details"].html
+            # every sentence gets its Logic card beside it, and each paragraph its flow (JL 261021: "logic comments ...
+            # 应该是放到右边的")
+            self.assertIn('<b class=lg-k>Logic</b><span class=nt-s>S2</span>', html)
+            self.assertIn('<b class=lg-k>Logic</b><span class=nt-s>S1</span>', html)
+            self.assertIn("It costs $5 a year.", html)
+            self.assertIn("cause, weak", html)
+            self.assertIn("weakest join S1 to S2", html)
+            self.assertIn('data-p="C1.P1"', html)
+            self.assertIn("data-cards-kind=logic", html)                        # show or hide the logic cards
+            # an older pass's line has one score
+            path.write_text(path.read_text().split("Sentences:")[0] + "Sentences:\n- S1 · 6/10 · link: weak · odd · Fix: X.\n")
+            self.assertIn("read 6.0 of 10 · 0 of 1 pass (8 or more, no broken link)", draft_steps._review_report(path))
 
     def test_a_theme_may_add_its_own_views_after_the_pages(self):
         # b16 s13 (JL 261007): paper adds Reviews after Table · Reading · Questions; the Space stays the

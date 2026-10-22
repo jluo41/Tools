@@ -1,16 +1,16 @@
 # fn/stage-plan — audit, repair, and define Runs
 
-Use for `/haipipe-task plan <tNN-task-folder>`.
-Read `ref/hierarchy.md`, then `../../haipipe-workflow/ref/plan-schema.md` (resolved from the Task skill directory) and `ref/workflow-template.yaml`.
+Use for `/haipipe-task plan <tNN-task-folder>`: the target is one `tNN_<task>/` Task folder.
+Read `ref/task-folder.md` and `ref/lifecycle.md` § Plan, then `../../project/haipipe-run/ref/plan-schema.md` (resolved from the Task skill directory) and `ref/workflow-template.yaml`.
 A Workflow is a list of Runs; `workflow/plan.yaml` is the only authoritative definition roster.
 
 ## Procedure
 
 1. Run the audit in `fn/audit.md`; collect type, Run stems, sibling Tasks, shared configs, and findings.
 2. Preserve existing work and improve an existing plan in place. Resolve native
-   profiles through `../../../project/haipipe-run/ref/run-catalog.md` from the Task skill
+   profiles through `../../project/haipipe-run/ref/run-catalog.md` from the Task skill
    directory; `task.execute` binds this owner's Ticket/Result contract.
-3. Repair missing per-run configs under `scripts/config/`, retaining shared parameters and adding accurate `_meta` purpose, inputs, and outputs.
+3. Repair missing per-run configs (`runs/<run>/config.yaml`, or `scripts/config/<run>.yaml` in a Block not yet moved), retaining shared parameters and adding accurate `_meta` purpose, inputs, and outputs.
 4. Create missing Tickets only for explicitly commissioned work on the selected
    engine/platform; Python uses the shared shell template and Stata uses its
    PowerShell dialect. Create the paired planned receipt at allocation.

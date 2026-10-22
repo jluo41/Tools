@@ -2,16 +2,16 @@
 # Expand variants as Run Specs only when independently commissioned.
 # Resolve placeholders, catalogue key and every Workbench-owned Workspace Cell before use.
 # Steps and section labels describe internal work; they never allocate Runs.
-# Schema: task/haipipe-workflow/ref/plan-schema.md
+# Schema: project/haipipe-run/ref/plan-schema.md
 name: smoke-<ALGO>
 purpose: Verify <ALGO> class runs end-to-end on tiny config
 input:
   args:
-    config: scripts/config/rNN_<run>.yaml
+    config: runs/rNN_<run>/config.yaml
     algo: <algorithm class name>
   files_in: &id001
   - scripts/<worker>.py
-  - scripts/config/rNN_<run>.yaml
+  - runs/rNN_<run>/config.yaml
   - _WorkSpace/4-AIDataStore/<ParentSetName>/@v<N>AIData-<tiny_aidata_name>
 owner: haipipe-task-for-algo
 workbench:
@@ -23,7 +23,7 @@ run_specs:
 - id: execute
   run_type: task.execute
   purpose: Verify <ALGO> class runs end-to-end on tiny config
-  target: tasks/bNN_<block>/jNN_<job>/tNN_<task>
+  target: work/bNN_<block>/jNN_<job>/tNN_<task>
   actor:
     mode: automatic
     owner: haipipe-task-for-algo
@@ -43,7 +43,7 @@ run_specs:
     payload: &id002
       status: ok
       verdict: <pass | fail>
-    receipt: $OUTPUT_ROOT/<task>/results/rNN_<run>/runtime.yaml
+    receipt: $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/runtime.yaml
   cardinality: 1
   cells:
   - workspace_id: <workspace-id>
@@ -67,7 +67,7 @@ run_specs:
     required: true
     prompt: Instantiate <ALGO> class with minimal config
     files_in:
-    - scripts/config/rNN_<run>.yaml
+    - runs/rNN_<run>/config.yaml
     files_out: []
   - section: SmokeTest
     label: smoke:forward
@@ -93,7 +93,7 @@ run_specs:
     prompt: Write smoke test summary (pass/fail, shapes, loss curve)
     files_in: []
     files_out:
-    - $OUTPUT_ROOT/<task>/results/rNN_<run>/loss.json
+    - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/loss.json
 entry:
 - execute
 terminal:
@@ -102,4 +102,4 @@ terminal:
 output:
   returns: *id002
   files_out:
-  - $OUTPUT_ROOT/<task>/results/rNN_<run>/loss.json
+  - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/loss.json

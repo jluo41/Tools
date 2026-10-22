@@ -38,7 +38,7 @@ Stage A4 → copy code/scripts/haistepnb/a4_aidata_nb.py into tNN_<task>/scripts
 ```
 
 After copy:
-- Set CONFIG default to `examples/<project>/work/bNN_<block>/jNN_<job>/tNN_<task>/scripts/config/rNN_<run>.yaml`
+- Set CONFIG default to `examples/<project>/work/bNN_<block>/jNN_<job>/tNN_<task>/runs/rNN_<run>/config.yaml`
 - Update the docstring (first line + Input/Output) with project-specific info
 
 Result:
@@ -48,9 +48,11 @@ bNN_<block>/
     └── tNN_<task>/
         ├── tNN_<task>.md
         ├── scripts/<worker>.py
-        ├── scripts/config/r01_base.yaml
-        ├── runs/r01_base.sh
-        ├── results/
+        ├── runs/r01_base/            one folder per Run
+        │   ├── r01_base.sh           the Ticket
+        │   ├── config.yaml
+        │   ├── run.yaml              its card (haipipe-run)
+        │   └── result/               written by the Ticket
         ├── notebooks/
         ├── draft/
         └── workflow/
@@ -63,7 +65,7 @@ It is an intermediate output, not source.
 Step 4 — Seed config
 ---------------------
 
-Copy `ref/config-seed.yaml` to `scripts/config/r01_base.yaml`.
+Copy `ref/config-seed.yaml` to `runs/r01_base/config.yaml`.
 Fill in:
 - `_meta:` (purpose / input / output).
 - `stage:` (1..4).
@@ -74,8 +76,9 @@ Fill in:
 Step 5 — Run-script
 --------------------
 
-Copy `../../../haipipe-task/ref/run-sh-template.sh` to `runs/r01_base.sh`.
+Copy `../../../haipipe-task/ref/run-sh-template.sh` to `runs/r01_base/r01_base.sh`.
 Set `TASK_NAME="<worker>"` (the worker filename without .py).
+Write the Run's card `runs/r01_base/run.yaml` (haipipe-run; a build Run takes `role: make`).
 
 
 Step 6 — Cross-skill link
@@ -104,7 +107,7 @@ next:      /haipipe-data-{source|record|case|aidata}  OR run the builder
 MUST NOT
 ---------
 
-- Place heavy artifacts (`.npy`, `.h5`, `.parquet`, `.pkl > 1 MB`) in `results/`.
+- Place heavy artifacts (`.npy`, `.h5`, `.parquet`, `.pkl > 1 MB`) in a Run's `result/`.
   Heavy outputs land in `_WorkSpace/{1..4}-*Store/` per the builder contract.
 - Skip the `_meta:` block.
 - Symlink `configs/` from another task — each task owns its own.
@@ -114,7 +117,7 @@ MUST NOT
 First-run gate
 ---------------
 
-`runs/<RUN>.sh` blocks execution if `CODE_REVIEW.md` is missing or stale (gate inherited from `../../../haipipe-task/ref/run-sh-template.sh`).
+`runs/<RUN>/<RUN>.sh` blocks execution if `CODE_REVIEW.md` is missing or its verdict is `fail` (gate inherited from `../../../haipipe-task/ref/run-sh-template.sh`).
 For the first run after this scaffold, do ONE of:
 
   1. **Recommended** — run the haipipe-task-reviewer-agent (Gate 1) on this
@@ -122,10 +125,11 @@ For the first run after this scaffold, do ONE of:
      `Tools/plugins/haipipe-toolkit/skills/1_base/task/agents/haipipe-task-reviewer-agent.md`
 
   2. **Temporary bypass** — set env var at launch:
-     `HAIPIPE_SKIP_REVIEW=1 bash runs/<RUN>.sh`
+     `HAIPIPE_SKIP_REVIEW=1 bash runs/<RUN>/<RUN>.sh`
      (skips the gate for one run; logs a warning to stderr.)
 
-  3. **Permanent skip for this config** — add to `scripts/config/<RUN>.yaml`:
+  3. **Permanent skip for this config** — add to `runs/<RUN>/config.yaml` (an unmoved Block:
+     `scripts/config/<RUN>.yaml`):
      ```yaml
      _meta:
        skip_review: true

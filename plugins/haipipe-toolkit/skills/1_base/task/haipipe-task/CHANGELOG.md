@@ -1,3 +1,35 @@
+## 2.0.0 · 2026-10-21 · two jobs: the Task level and the type door
+
+JL 261021: "I think it takes a role of the task in the block-job-task-run system, and also the task to all kinds of
+the tasks, right?"
+
+- SKILL.md rewritten in two halves, A · the Task level (folder, face, life, commands) and B · the type door, with
+  the parts every type shares listed once; the GPU section moved to its owner (haipipe-task-for-fit) as one line, the
+  Block number ranges to `ref/pipeline-blocks.md`, and the Block, Job and Run levels point to their owners
+  (haipipe-block, haipipe-job, haipipe-run) instead of repeating them.
+- New refs: `ref/task-folder.md` (hierarchy.md, task-structure.md, block-job-task-run.md and naming-bjtr.md merged,
+  on one folder per Run), `ref/lifecycle.md` (plan ▶ build ▶ run ▶ read ▶ close on today's files; plan.yaml only when
+  it pays), `ref/types.md` (the type table, choosing a type, asked or silent, and the `## Type contract` every type
+  skill carries; type-inference.md and invocation-modes.md merged), `ref/pipeline-blocks.md` (staged pipeline
+  Projects only). `ref/running-process.txt` (a tasks/ and outline/ diagram) is gone.
+- `ref/task-page.md` § Displays holds the haipipe-page-task skill's rules (a numbers page needs a table, a figure and
+  a diagram; which one for which reader move; the worklist inventory; numbers only through the evidence graph);
+  haipipe-page-task is deleted, and `servers/workbench/chat.py` sends a Task face to haipipe-task.
+- `scripts/check_task_tree.py` (from ref/): R01 reads `runs/<run>/result/` and a receipt in `passes/`; S16 names a
+  path in the old `tasks/` world and skips generated `result/` paths; S17 (a src/ in every Job) dropped; Stata Runs
+  with their own `config.do` and a two-line caller pass N7 and S2; S1 skips Run snapshots. OpioidRx b11 went from
+  268 findings to 19, all real.
+- Layout fixed to one folder per Run in the schemas, authoring conventions, fn/audit.md, fn/block.md (on
+  haipipe-block's new_board.py), fn/stage-plan.md, the Databricks page and the lifecycle Workflow script;
+  `ref/block-board-template.md` gains `workbench-layout: workflow` and the Block's `## Deliverables`; the Page
+  template's type list says `evidence` (not `page`), `description`, the Stata stages and labeling.
+- `ref/run-sh-template.sh`, after a fresh agent built and ran a Task from the skills alone: it puts the SPACE's
+  `.venv/bin` first (a bare `python` ran the system one), exports REPO_ROOT, JOB_DIR, TASK_DIR, RUN_NAME and
+  RUN_CONFIG, takes an optional `WORKER_PATH` (a Job's shared worker) and `NOTEBOOK_NAME`, and sets the Run card's
+  `status:` (running, then done or failed). Proven in a scratch SPACE: venv Python, all five paths, card done.
+- Tests: the vocabulary test reads the new refs, skips the changelog and code-span paths, and a new test proves the
+  checker on one folder per Run; 8 pass (3 failed before).
+
 ## 1.16.0 · 2026-10-21 · a Task face says its goal and close
 
 - `ref/task-page-template.md`: `goal:` and `close:` after `state:`, one line each; the workflow layout's Goal tree

@@ -1,4 +1,4 @@
-// CMS production config — shared globals for all years
+// CMS production config - shared globals for all years
 // Source of truth for the CMS extract pipeline.
 // Paths anchored via ${ws_root} (set by orchestrator .ps1).
 

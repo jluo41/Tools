@@ -1,3 +1,102 @@
+## 0.104.15 · 2026-10-21 · 2 · Write is done only when § 3 holds a sentence
+
+- `draft_steps.py::states` counted `## 3 · Draft` as written when it held only the `### C1.P1` headings an empty draft
+  is laid out with, so ten Sections of Paper-AgreeableOpioid-Jama read `2 · Write ✓ done` with no sentence written.
+  Write is now done only when a line under § 3 is neither a heading nor a comment; otherwise it is `next`.
+
+## 0.104.14 · 2026-10-21 · 5 · Revise: your comments on a sentence, answered by each pass; the text reads as prose
+
+- JL 261021: "我选中一个句子，在 draft 那段的时候，可以让我加个注释（比如点个加号就能加注释），然后也放到 Revise 的那一栏
+  里面"; "你每次改的时候，能不能通过我的 comments 来回复那种？"; "我还是在这个 review 里面加 comments。然后你的 change 怎么
+  跟我的 comments 一起来做交互、解决我的 comments 呢？". A + beside each sentence (or 💬 Comment under selected words)
+  opens a comment card among the Revise cards; `draft_steps.note_act` (`POST /_board/draft-comment`) writes
+  `draft/records/<stem>-comments.md`: `### Comment <n> · S<k>`, `Quote:`, `State: open | answered | done`, then
+  `- Note · <time>: …` and `- Reply · <time>: …` lines. A card with `Answers: Comment <n>` shows it, and the comment
+  shows the card. ✓ Done, ↩ Reply, ↺ Reopen, 🗑 Delete (only before a reply). Operation's Input counts them; the
+  Revise prompt answers them first; the cards' header copies a revise-with-my-comments prompt while one is open.
+- JL 261021: "能不能把这个加号放到右边？"; "现在的 layout 读起来不是很舒服 ... 比较乱糟糟的 ... 把字体变大一些 ... 像 S5
+  这种东西能不能放到最左边". The + and 💬 sit in a gutter on the right of each sentence (`.nt-gut`). The text column
+  (CARDS_CSS `.rv-left`, every tab with text and cards) is 17px, has no bullets, hangs each S number in a left gutter
+  (`_sentence`: `.s-no`, `.s-tx`; Write's typing handler writes into `.s-tx`), and shows `\citep{…}` as its keys in
+  small grey (`.cite`). In 5 · Revise the evidence stays boxed, without its CITE labels (JL 261021: "in 2012,
+  65% of US adults <--- I think we still need the box").
+- JL 261021: "why I have this large margin". CARDS_JS `align` measured a card against its sentence on the screen;
+  the text column is pinned and scrolls by itself, so re-placing the cards while the page was scrolled pushed one
+  down by the scroll (1,541px at 1300px wide). It now measures each from its own column's top.
+- JL 261021: "让 AI 也来评评每句话，作为一个 reviewer"; "每句话都要看一下上下文，review 它的逻辑关系是否通顺，并且给每句话打分";
+  "你的这个 editing card 如果已经结束的话，就把它 hide 掉吧". The 📋 Revise Review Report shows the report's `Sentences:`
+  lines (haipipe-draft-review 0.3.0 `ref/sentence-logic.md`) as a table, Each sentence, in its context: logic, read, the
+  link from the one before, the problem, the smallest fix, with how many pass, and its `Flow P<k>:` lines. Cards written
+  into the text and comments their person closed are hidden until "Show the <n> finished"; hidden cards are not placed.
+  The Revise prompt asks for the lines and ends the loop only when every sentence passes.
+- JL 261021: "未必一下子只给一种修改结果，也可以说可以用 A、B、C 几个不同的方法去修改". A card's `Option A (<approach>):
+  <sentence>` lines show under its change, each as a word diff with its approach; the one in the card is marked, and
+  ↳ Use B (`card_act` with `option`) makes B the card's Expected, `Chosen: B`, accepted. A written card that has
+  options is not hidden as finished.
+- JL 261021: "我想说自动的话就把它 hide 起来". 📋 Revise Review Report is folded until opened.
+- JL 261021: "能不能我的鼠标一放上去的时候，它就自己打开了"; "鼠标移走的话，它就自动合上". A card opens over the cards
+  below it when pointed at (they do not move) and folds when the pointer leaves; a click pins it; writing in one pins it.
+- JL 261021: "叫 comments、logic、edit 这三块 ... accept all、show finished 之类的，我觉得就没必要加进去了 ... 这里最好也加一下
+  evidence". Four chips (Comments, Logic, Edits, Evidence) show or hide each kind in any mix; Evidence cards
+  (`_ev_side_card`) put each sentence's evidence rows beside it. Accept all and Show finished are gone.
+- JL 261021: "如果我们有图片或者表格的话 ... PNG TO EMBED UNDER THAT SENTENCE". `_embed_displays` shows each display's
+  preview.png under the first sentence that calls it (by its name or \\label) in Write, Evidence, Display and Revise.
+- JL 261021: "这些 content 它是要存到 Markdown 上的，不能存到 HTML 里面". The rule is written down: every word lives in the
+  Task's Markdown and YAML files; the page keeps nothing.
+- JL 261021: "这个 edit 你能不能自动把这几个（比如 A、B、C）都列出来 ... D 是 drop it ... 点击确认 button 就可以了". An Edit or
+  Review card is a choice: every option listed (A, B, C; one, "this change", when it has none), then the next letter,
+  "drop it: keep the original"; a radio picks one (the picked row shows its change, the others read plain) and Confirm
+  writes it through `card_act` (the option's words and `Chosen:`, accepted; or the card rejected). Picking what is
+  already in the text writes nothing. Accept and Reject buttons are gone from these cards.
+- JL 261021: "你这个 logic，你能不能说这 logic 的 quality 好还是坏呀？". A Logic card says its quality in a word before
+  its scores, from the lower of the two: ✓ good (9-10), ✓ passes (8), ⚠ weak (7), ✗ needs work (6 or less), ✗ broken.
+- JL 261021: "我需要 evidence 对应的是哪一个 paper ... 你得给个链接、给个 reference ... evidence 做的非常的不好". An Evidence
+  card names its papers by author and year when closed; opened, each item shows the paper (who, year, title, venue,
+  linked to its DOI, URL or arXiv page; `_bib_ref` reads the Run's one-entry .bib), each quoted sentence from its
+  facts.md on its own line, the words it backs, and its Run address linked to the Run's Result Card (`_ev_item`).
+- JL 261021: "我不知道这有啥用，要不然你把这个也都给删掉吧". "Copy: apply the accepted cards" is gone.
+- JL 261021: "当我鼠标停在这个 sentence 上的时候，能不能把对应的这些 card 也高亮出来". Pointing at a sentence lights every
+  card on it, of any kind (`sentlit`), with an orange frame; a paragraph's flow card stays unlit.
+- JL 261021: "当我们只有点它的最左边的时候，它才会 show up"; "鼠标不小心碰到，它就又打开了 ... 容易太跳脱了". A card opens
+  only from its label on the left (`.rv-handle`: an Edit card's title, a comment's pills, "Logic S3", "Evidence S7"),
+  and only after the pointer rests there a quarter second; a pointer crossing the column opens nothing.
+- JL 261021: "当鼠标移动到某一个句子上时 ... 卡片会移动到与该句子相齐平的位置，以这句话的中心为轴心，在上下方向展开". A sentence the
+  pointer rests on (180 ms) becomes the focus: its cards of every kind are lit and slide (translateY, 0.22 s) so their
+  group is centred on the sentence; the cards above make room upward, those below downward. The focus holds while the
+  pointer goes to the cards, follows a scroll, is laid again after any re-placing, and ends when the pointer leaves
+  the text and its cards (`focus`, `unfocus` in CARDS_JS).
+- JL 261021: "鼠标放到这个 card 上它会自动展开；鼠标移开之后，新的 card 会展开，旧的 card 会合上". Inside the focus the
+  cards are an accordion: the card the pointer rests on (160 ms, real pointer moves only) opens in place, the one
+  opened before closes, and the group is laid again around the sentence; a click keeps an opened card open. Outside
+  the focus a card still opens over the others from its label.
+- Word export (`exporters/md2docx.py`): a Citation comment anchors on the last match of its year in the sentence,
+  the in-text citation, not an earlier year ("in early 2026, ... (Gottfried et al. 2026)", t01_introduction v0.5, 261021).
+- Delivery's build prompt runs the whole sequence a draft Task needs: `page.py bump` on the person's ok, `adopt`,
+  `cards.py bib --write`, `export`, then a check that no citation prints as "?" (t01_introduction v0.5, 261021).
+- JL 261021: "回复的时候，不应该有个 AI Reply 吗？ ... 这个我看着就真的很不像一个 modern 的 UI 设计". A comment card is a
+  thread: the sentence and its state as pills on top (Open, AI replied, Resolved), each message with a round mark for
+  who wrote it (You, or AI for a pass's reply, its words on a light bubble), and small text actions (Reply, ✓ Resolve,
+  Reopen, Delete; Send and Cancel while typing). A new comment looks the same.
+- JL 261021: "这个 sentence 应该当做一个新的 type。比如说 logic comments ... 应该是放到右边的". The report's `Sentences:` lines
+  leave its table and become Logic cards (`_logic_card`), one beside every sentence, and its `Flow P<k>:` lines a
+  Logic card under each paragraph's last sentence (`_flow_card`); Hide logic filters them. Every card in the column
+  is one compact line until clicked (an Edit card's reason, a comment's last message, a Logic card's problem), and a
+  card with options shows its chosen one until "<n> more options ▸". Cards follow the text's order, which an S number
+  need not (`_reading_key`, and 3 · Evidence's `_text_rows`).
+- JL 261021: "你这个东西 by default 它不能够 hide 吗？". Delivery's Deliveries (`delivery_cards`) are folded until
+  opened: each lane is one line (`details.topic.dl-card`: its kind, its state, its files as links), and its preview
+  (the web page, the PDF, Word's PDF twin) shows on a click.
+- JL 261021, of the Abstract beside the Introduction ("你能不能跟这个 T01 比一比 ... 你看你到底差在哪儿了"): an Evidence
+  card's line beside a sentence now names its values as the sentence says them ("1,983 requests", "60.1% · 18.1%"),
+  never an item id ("VALUE 1.1 queries in fold00"), and a pending one says what it still needs; a citation card still
+  names its paper (`draft_steps._ev_side_card`, given the sentence's words).
+- JL 261021, of a `Section question · C2 · …` card running full width above the text: "我想知道它是不是应该也当成一个
+  card 之类的，放到右边去？" A card on a whole part is now a card like the others, on the right at its part's first
+  paragraph heading, before that paragraph's cards (`_first_para`, `_reading_key`, `_revise_card(..., at=)`).
+- JL 261021: "比如说这个 paragraph 也可以加 comments 呢？" Each paragraph heading (`h4[data-p]`) gets a + as each
+  sentence does; its comment is saved as `### Comment <n> · C<k>.P<n>` (note_act already took a paragraph) and its card
+  carries `data-p`, so it sits at the heading, with a 💬 there while it waits.
+
 ## 0.104.13 · 2026-10-21 · ⏳ Running now under Operation ; 📜 Revise rules section
 
 - JL 261021: "如果在跑的话，能不能在这个页面里面显示正在 running？ ... 在 operation 下面要不要加 status，说你现在正在 run？".

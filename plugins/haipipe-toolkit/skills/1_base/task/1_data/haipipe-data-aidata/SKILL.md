@@ -74,7 +74,7 @@ Stage Scope
 ------------
 
 Owns:
-  - TfmFn / SplitFn builders in `work/b10_aidatastore/jNN_{tfmfn,splitfn}_<name>/tNN_{tfmfn,splitfn}_<Fn>/scripts/`; each AIDataSet, which merges several raw datasets, is `b10_aidatastore/j5N_<aidataset>_aidata/` (rule: `haipipe-task/ref/hierarchy.md` § Block number ranges) (legacy workspaces: `code-dev/1-PIPELINE/4-AIData-WorkSpace/`)
+  - TfmFn / SplitFn builders in `work/b10_aidatastore/jNN_{tfmfn,splitfn}_<name>/tNN_{tfmfn,splitfn}_<Fn>/scripts/`; each AIDataSet, which merges several raw datasets, is `b10_aidatastore/j5N_<aidataset>_aidata/` (rule: `haipipe-task/ref/pipeline-blocks.md`) (legacy workspaces: `code-dev/1-PIPELINE/4-AIData-WorkSpace/`)
   - Generated `code/haifn/fn_aidata/`
   - `_WorkSpace/4-AIDataStore/` tensors and split definitions
   - `templates/config.yaml` for AIData_Pipeline runs

@@ -8,7 +8,7 @@ description: >-
   Question reports read. Routes a request to the skill that owns it: the Task
   folder and its Plan, Build, Execute, Report contract (haipipe-task), the work
   workbench (workbench-work), a kind of work Task (haipipe-task-for-<kind>), a
-  Run graph (haipipe-workflow), a Block Question (haipipe-report). Owns no
+  Run graph (haipipe-run `ref/workflow.md`), a Block Question (haipipe-report). Owns no
   folder contract of its own yet. Trigger: work theme, work Block, work Job,
   which work skill, where does this work go, /haipipe-work.
 metadata:
@@ -41,7 +41,7 @@ Route
 | create, run, audit or close a Task folder; Plan, Build, Execute, Report; read a Run's Result | `haipipe-task` | `1_base/task/` (base: other themes call it too) |
 | open or read the work Block on screen (Scope, Task, Check, Delivery, Runs panel) | `workbench-work` | `2_theme/work/` |
 | a Task of one kind | `haipipe-task-for-<kind>`: data, raw, description, algo, fit, eval, endpoint, individual, display, stata, agent, page | `1_base/task/<N>_<kind>/` |
-| plan a Run graph: Run Specs, dependencies, gates, routes | `haipipe-workflow` | `1_base/task/` |
+| plan a Run graph: Run Specs, dependencies, gates, routes | `haipipe-run` (`ref/workflow.md`) | `1_base/project/` |
 | a Block Question, its register and its report folder | `haipipe-report` | `1_base/project/haipipe-report/` |
 | write a Question's report Page | `haipipe-draft` | `1_base/draft/` |
 | the stage pipelines a Task runs (data, nn, end, individual) | `haipipe-data`, `haipipe-nn`, `haipipe-end`, `haipipe-individual` | `1_base/task/<N>_<stage>/`; not part of the theme |
@@ -55,8 +55,8 @@ Boundary
 - This door owns no folder contract and no scaffold yet. Until the work theme's
   Block, Job and Task contract is written, `haipipe-task` owns the Task folder,
   its tickets and its receipts.
-- Which `1_base/task` skills move into this theme (the kinds, the task agents,
-  `haipipe-page-task`) is still open; the table above names where each one is
+- Which `1_base/task` skills move into this theme (the kinds, the task agents)
+  is still open; the table above names where each one is
   today.
 - The ladder itself (what every level holds and its six Spaces) is shared by
   every theme and owned by `haipipe-project`.

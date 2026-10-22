@@ -5,6 +5,20 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.4.0] · 2026-10-21 · One folder per Run, and the Type contract
+
+- `## Type contract` is the first section of SKILL.md (haipipe-task ref/types.md): roles [make], heavy output
+  in `_WorkSpace/6-EndpointStore/`, companions, plan sample.
+- Every page states the current Run layout: the ticket `runs/r01_base/r01_base.sh`, its `config.yaml`
+  (`scripts/config/r01_base.yaml` in a Block not yet moved) and `run.yaml` card, and the Result
+  `$OUTPUT_ROOT/<task>/runs/<run>/result/`, never `results/<run>/` (SKILL.md, fn/scaffold.md,
+  ref/config-seed.yaml, ref/workflow-plan-sample.yaml with `target: work/...`); the Execution example's
+  config path is the `work/` form, not `examples/.../scripts/config/`.
+- fn/scaffold.md sets `TASK_NAME="<task_name>"`, the worker `scripts/<task_name>.py`, as the shared
+  template requires; it said `TASK_NAME="t01_<task_name>"`, the Task folder, so the ticket looked for
+  `scripts/t01_<task_name>.py` and stopped.
+- Body names the fit and data Task types, not B-series and A-series.
+
 ## [0.3.2] · 2026-10-09 · Theme folders are singular
 
 - Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,

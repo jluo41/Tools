@@ -41,45 +41,48 @@ Stage-specific tree (see SKILL.md for the full tree per stage).
 Common elements:
 
     work/bNN_<block>/board.md
-    work/bNN_<block>/jNN_<job>/src/                 shared libraries/defaults
+    work/bNN_<block>/jNN_<job>/src/                 shared runner .ps1, libraries, defaults
     work/bNN_<block>/jNN_<job>/tNN_<task>/
       tNN_<task>.md + draft/ + workflow/
-      scripts/                                    dispatcher, orchestrator, workers
-      scripts/config/rNN_<run>.do                  per-run globals
-      scripts/config/rNN_<run>.yaml                optional metadata wrapper
-      runs/rNN_<run>.ps1                           matching Ticket
+      scripts/                                    dispatcher, workers (a runner only this Task uses)
+      scripts/config/<cfg>.do                     shared globals every Run's config.do loads
+      runs/rNN_<run>/rNN_<run>.ps1                the Ticket: two lines into the Job's runner
+      runs/rNN_<run>/config.do                    this Run's globals
+      runs/rNN_<run>/config.yaml                  optional metadata wrapper (_meta + stata_config)
+      runs/rNN_<run>/run.yaml                     its card: run, kind: hard, role, type, status
       sbatch/                                     optional, Task-local only
 
-    Results: $OUTPUT_ROOT/<task>/results/rNN_<run>/ (logs, summary, snapshots)
+    Results: $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/ (logs, summary, snapshots, runtime.yaml)
+             reg: result/ keeps RUN-REPORT.md, tables/, describe/; passes/pNN-<MMDD>/ keeps logs, .done, runtime.yaml
     Resolve RESULT_STORE, then Job store declaration, then Job root before launch.
 
 Stage differences:
-- cms/case: dispatcher .do (from ref/dispatcher-do-template.do) + orchestrator .ps1 (from ref/run-stage-year-template.ps1) + scripts/ subdirs
-- data: dispatcher .do + scripts/ numbered subdirs, NO orchestrator (self-orchestrating: runs/*.ps1 IS the orchestrator)
+- cms/case: dispatcher .do (from ref/dispatcher-do-template.do) + runner .ps1 in the Job's src/ (from ref/run-stage-year-template.ps1) + scripts/ subdirs
+- data: dispatcher .do + scripts/ numbered subdirs, NO orchestrator (self-orchestrating: the Run's ticket IS the orchestrator)
 - reg: DISPATCHER-LESS -- .ps1 runners call worker .do scripts directly; no orchestrator
 
 
 Step 5 -- Seed configs
 -----------------------
 
-Copy the shared seed to `scripts/config/<cfg>.do` and create a per-run `scripts/config/rNN_<run>.do` wrapper for each Ticket.
+Copy the shared seed to `scripts/config/<cfg>.do` and create each Run's own wrapper `runs/rNN_<run>/config.do` beside its Ticket.
 The wrapper selects shared globals and pins the variant; shared configs never substitute for a Run identity.
 Fill in Stata globals (keep-vars, paths, flags).
 The `.do` is the source of truth; a companion `.yaml` carries only the `_meta:` discipline block.
 
 Stage-specific seeding:
-- cms: one `scripts/config/rNN_<run>.do` per year, loading shared `cms_production.do` and pinning `global data_year <year>`. The optional YAML `stata_config:` points to that per-run wrapper.
-- case: three layers -- (1) `_source_{synth|full}.do` source selectors, (2) `<Cohort>.do` shared cohort config, (3) thin per-run `rNN_<run>.do` from `ref/config-seed-run.do`. One YAML + one .do per (cohort x source x year).
+- cms: one `runs/rNN_<run>/config.do` per year, loading shared `cms_production.do` and pinning `global data_year <year>`. The optional `runs/rNN_<run>/config.yaml` `stata_config:` points to that wrapper.
+- case: three layers -- (1) `_source_{synth|full}.do` source selectors, (2) `<Cohort>.do` shared cohort config, (3) the Run's thin `runs/rNN_<run>/config.do` from `ref/config-seed-run.do`. One Run folder (config.do, optional config.yaml) per (cohort x source x year).
 - data: paired configs per spec (synth + real variants). No year axis.
     (1) `<Spec>.do` -- synth config (laptop-safe). `data_asset_version "v001_base_synth"`.
     (2) `<Spec>_real.do` -- real config (CMS server). `data_asset_version "v001_base_real"`.
         `case_asset_version` is TODO-tagged until real case-pipeline runs complete.
     Identical except: case_asset_version, data_asset_version, file_physician path.
-    Each spec variant is instantiated as its own `scripts/config/rNN_<run>.do` with matching Ticket + Result directory. sbatch accepts `-mode synth|real|all`.
+    Each spec variant is instantiated as its own Run folder `runs/rNN_<run>/` (config.do + Ticket + run.yaml) with its `result/`. sbatch accepts `-mode synth|real|all`.
 - reg: two-layer chain from `ref/config-seed-reg.do` + `ref/config-seed-reg-run.do`:
-    (1) `<Cohort>_<Pairing>.do` -- shared: data path + version + res_root.
+    (1) `<Cohort>_<Pairing>.do` -- shared: data path + version.
     (2) `<Cohort>_<Pairing>_synth.do` -- shared synth variant (different data_version).
-    (3) `rNN_<run>.do` -- per-run: loads shared + pins outcome_bfaf_window + res_dir.
+    (3) `runs/rNN_<run>/config.do` -- per-run: loads shared + pins outcome_bfaf_window + res_dir (+ pass_dir).
         DID per-run configs add: `global file_policy "${ws_root}/0-External-Store/Policy/..."`.
     YAML _meta companions are OPTIONAL for reg (simple 5-7 line .do configs are self-describing).
     Controls/outcomes/instruments live in worker .do scripts, NOT in configs.
@@ -88,16 +91,20 @@ Stage-specific seeding:
 Step 6 -- Run-scripts
 ----------------------
 
-**cms/case:** Copy `ref/run-ps1-template.ps1` to `runs/rNN_<run>.ps1` for each RUNNAME.
-Thin entries that delegate to the orchestrator .ps1.
+Every Run is one folder `runs/rNN_<run>/`: its Ticket `rNN_<run>.ps1`, its `config.do` (Step 5) and its card `run.yaml`
+(`run`, `kind: hard`, `role:` make, trial for a synth try, or describe; `type`, `scope`, `ticket`, `skill: haipipe-task-for-stata`, `status: planned`).
 
-**data:** Copy `ref/run-data-runner-template.ps1` to `runs/rNN_<run>.ps1`.
-Self-orchestrating entries.
+**cms/case:** Copy `ref/run-ps1-template.ps1` to `runs/rNN_<run>/rNN_<run>.ps1` for each RUNNAME.
+Thin entries that hand `config.do` to the Job's runner; in a Run folder this is the two-line caller
+`& "$PSScriptRoot\..\..\..\src\run_<stage>_year.ps1" "$PSScriptRoot\config.do"`.
 
-**reg:** Copy `ref/run-ps1-reg-template.ps1` to `runs/rNN_<run>.ps1`.
-Self-contained runners with Resolve-StataExe + HAIPIPE_RUN_CONFIG + worker list.
+**data:** Copy `ref/run-data-runner-template.ps1` to `runs/rNN_<run>/rNN_<run>.ps1`.
+Self-orchestrating entries (or the two-line caller into the Job's `src/0-libs/run-data-pipeline.ps1`).
 
-For cms/case: also copy `ref/run-stage-year-template.ps1` to scripts/ as the orchestrator .ps1.
+**reg:** Copy `ref/run-ps1-reg-template.ps1` to `runs/rNN_<run>/rNN_<run>.ps1`.
+Self-contained runners with Resolve-StataExe + HAIPIPE_RUN_CONFIG + worker list (or the two-line caller into the Job's `src/0-libs/run-regression-pipeline.ps1`).
+
+For cms/case: also copy `ref/run-stage-year-template.ps1` to the Job's `src/` as `run_<stage>_year.ps1` (a Task's `scripts/` when only that Task uses it).
 For data/reg: no separate orchestrator -- the runner IS the orchestrator.
 
 Optional: create sbatch/*.ps1 multi-run batchers.
@@ -115,7 +122,7 @@ Step 7 -- Report
 MUST NOT
 ---------
 
-- Write heavy `.dta` files to `results/` -- they go to `_WorkSpace/{1..4}-*Store/` (exception: reg writes LIGHT .tex/.csv only).
+- Write heavy `.dta` files to a Run's `result/` -- they go to `_WorkSpace/{1..4}-*Store/` (exception: reg writes LIGHT .tex/.csv only).
 - Skip `_meta:` block in any config YAML.
 - Create `README.md` -- use `diagram/` for docs.
 - Use papermill or `.ipynb` -- this is Stata + PowerShell.

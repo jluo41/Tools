@@ -1,5 +1,7 @@
 #!/bin/bash
-# Canonical Ticket: <job>/tNN_<task>/runs/rNN_<run>.sh
+# Canonical Ticket: <job>/tNN_<task>/runs/rNN_<run>/rNN_<run>.sh (one folder per Run)
+# An older Ticket sits flat in runs/ and writes results/<run>/; it still runs.
+# This Ticket converts the worker to a notebook only; Databricks executes it.
 
 set -uo pipefail
 
@@ -22,6 +24,12 @@ fail_shape() {
 
 TICKET="$(realpath "$0" 2>/dev/null || echo "$0")"
 RUNS_DIR="$(cd "$(dirname "$TICKET")" && pwd)"
+# One folder per Run (haipipe-run 0.31.0): runs/<run>/<run>.sh writes runs/<run>/result/.
+# The older flat runs/<run>.sh beside results/<run>/ still runs until haipipe-project update moves it.
+RUN_FOLDER=""
+if [ "$(basename "$RUNS_DIR")" = "$(basename "$TICKET" .sh)" ]; then
+  RUN_FOLDER="$RUNS_DIR"; RUNS_DIR="$(cd "$RUN_FOLDER/.." && pwd)"
+fi
 [ "$(basename "$RUNS_DIR")" = "runs" ] || fail_shape "Ticket must live in a Task Folder's runs/ lane"
 
 TASK_FOLDER="$(cd "$RUNS_DIR/.." && pwd)"
@@ -35,14 +43,18 @@ TASKS_DIR="$(cd "$BLOCK_FOLDER/.." && pwd)"
 case "$TASK_SEG" in t[0-9][0-9]_*) : ;; *) fail_shape "Task Folder must be named tNN_<noun>_<qualifier>" ;; esac
 case "$JOB_SEG" in j[0-9][0-9]_*) : ;; *) fail_shape "Job must be named jNN_<noun>_<qualifier>" ;; esac
 case "$BLOCK_SEG" in b[0-9][0-9]_*) : ;; *) fail_shape "Block must be named bNN_<noun>_<qualifier>" ;; esac
-[ "$(basename "$TASKS_DIR")" = "tasks" ] || fail_shape "Block must be a direct child of tasks/"
+# The Theme folder: work/ (the older tasks/ still runs).
+case "$(basename "$TASKS_DIR")" in work|tasks) : ;; *) fail_shape "Block must be a direct child of work/" ;; esac
 [ -f "$TASK_FOLDER/$TASK_SEG.md" ] || fail_shape "Task Folder requires same-stem Page $TASK_SEG.md"
 
 RUN_NAME="$(basename "$TICKET" .sh)"
 case "$RUN_NAME" in r[0-9][0-9]_*) : ;; *) fail_shape "Run must be named rNN_<noun>_<qualifier>" ;; esac
 
+[ -z "$RUN_FOLDER" ] || [ "$(basename "$RUN_FOLDER")" = "$RUN_NAME" ] || fail_shape "Run folder must be named after its Ticket"
 CONFIG_REL="$TASK_SEG/scripts/config/$RUN_NAME.yaml"
+[ -z "$RUN_FOLDER" ] || [ ! -f "$RUN_FOLDER/config.yaml" ] || CONFIG_REL="$TASK_SEG/runs/$RUN_NAME/config.yaml"
 TICKET_REL="$TASK_SEG/runs/$RUN_NAME.sh"
+[ -z "$RUN_FOLDER" ] || TICKET_REL="$TASK_SEG/runs/$RUN_NAME/$RUN_NAME.sh"
 WORKER_REL="$TASK_SEG/scripts/$TASK_NAME.py"
 CONFIG="$JOB_FOLDER/$CONFIG_REL"
 WORKER="$JOB_FOLDER/$WORKER_REL"
@@ -69,7 +81,7 @@ STORE="${RESULT_STORE:-$(sed -n 's/^store:[[:space:]]*//p' "$JOB_FOLDER/src/conf
 if [ -n "$STORE" ]; then
   case "$STORE" in /*) : ;; *) STORE="$REPO_ROOT/$STORE" ;; esac
   JOB_REL="${JOB_FOLDER#"$TASKS_DIR"/}"
-  [ "$JOB_REL" != "$JOB_FOLDER" ] || fail_shape "Job path cannot be mirrored below tasks/"
+  [ "$JOB_REL" != "$JOB_FOLDER" ] || fail_shape "Job path cannot be mirrored below work/"
   OUTPUT_ROOT="$STORE/$JOB_REL"
 else
   OUTPUT_ROOT="$JOB_FOLDER"
@@ -77,7 +89,9 @@ fi
 export OUTPUT_ROOT
 
 RUN_REL="$TASK_SEG/$RUN_NAME"
-RESULTS_DIR="$OUTPUT_ROOT/$TASK_SEG/results/$RUN_NAME"
+# One folder per Run: the Result is runs/<run>/result/ (mirrored under a store). Older: results/<run>/.
+RESULTS_DIR="$OUTPUT_ROOT/$TASK_SEG/runs/$RUN_NAME/result"
+[ -n "$RUN_FOLDER" ] || RESULTS_DIR="$OUTPUT_ROOT/$TASK_SEG/results/$RUN_NAME"
 RUNTIME_YAML="$RESULTS_DIR/runtime.yaml"
 NOTEBOOK_TEMPLATE="$OUTPUT_ROOT/$TASK_SEG/notebooks/.$RUN_NAME.source.ipynb"
 NOTEBOOK_OUT="$OUTPUT_ROOT/$TASK_SEG/notebooks/$RUN_NAME.ipynb"
@@ -140,11 +154,8 @@ if [ -n "$SKIP_REVIEW_CONFIG" ] || [ "${HAIPIPE_SKIP_REVIEW:-0}" = "1" ]; then
   echo "==> [pre-flight] code review skipped by explicit flag" >&2
 else
   [ -f "$CODE_REVIEW" ] || fail_shape "no CODE_REVIEW.md in $TASK_FOLDER"
-  REVIEW_SHA="$(grep -E '^- git_sha:' "$CODE_REVIEW" 2>/dev/null | awk '{print $3}')"
+  # a review carries no commit id; its verdict is the gate (JL 260929, as run-sh-template.sh)
   REVIEW_VERDICT="$(grep -E '^- overall_verdict:' "$CODE_REVIEW" 2>/dev/null | awk '{print $3}')"
-  if [ "$REVIEW_SHA" != "$GIT_SHA" ] && [ "$GIT_SHA" != unknown ]; then
-    fail_shape "CODE_REVIEW.md is stale: review=${REVIEW_SHA:-none}, current=$GIT_SHA"
-  fi
   case "$REVIEW_VERDICT" in
     pass|skipped) : ;;
     warn) echo "==> [pre-flight] review verdict=warn; see $CODE_REVIEW" >&2 ;;

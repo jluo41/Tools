@@ -53,7 +53,7 @@ reuse  return an existing complete Run/Result without rewriting it
 ## Required reads
 
 1. `haipipe-task/SKILL.md`
-2. `haipipe-task/ref/hierarchy.md`
+2. `haipipe-task/ref/task-folder.md` and `haipipe-task/ref/lifecycle.md`
 3. Stage procedure: `fn/stage-plan.md`, `fn/run.md`, or `fn/stage-report.md`
 4. The selected type specialist and its `ref/` when scaffolding a new task
 

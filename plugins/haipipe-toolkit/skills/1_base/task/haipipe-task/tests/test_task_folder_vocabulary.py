@@ -31,8 +31,8 @@ class TaskFolderVocabularyTest(unittest.TestCase):
         paths = (
             SKILL / "SKILL.md",
             SKILL / "fn" / "audit.md",
-            SKILL / "ref" / "hierarchy.md",
-            SKILL / "ref" / "task-structure.md",
+            SKILL / "ref" / "task-folder.md",
+            SKILL / "ref" / "lifecycle.md",
         )
         forbidden = ("alias `task-folder`", "task-folder = JOB")
         for path in paths:
@@ -52,7 +52,7 @@ class TaskFolderVocabularyTest(unittest.TestCase):
         sources = (
             SKILL / "fn" / "stage-plan.md",
             SKILL / "fn" / "stage-report.md",
-            SKILL / "ref" / "invocation-modes.md",
+            SKILL / "ref" / "types.md",
             SKILL / "ref" / "workflow-template.yaml",
         )
         for path in sources:
@@ -80,9 +80,11 @@ class TaskFolderVocabularyTest(unittest.TestCase):
         for path in SKILL.rglob("*"):
             if not path.is_file() or path.suffix not in suffixes:
                 continue
-            if "tests" in path.parts or "__pycache__" in path.parts:
-                continue
+            if "tests" in path.parts or "__pycache__" in path.parts or path.name == "CHANGELOG.md":
+                continue                                  # the changelog records what things were called
             text = self.read(path)
+            # a real folder name in a code span (WellDoc's `work/_legacy/...`) is a path, not wording
+            text = re.sub(r"`[^`\n]*/[^`\n]*`", lambda m: " " * len(m.group()), text)
             for label, pattern in patterns.items():
                 for match in pattern.finditer(text):
                     line = text.count("\n", 0, match.start()) + 1
@@ -90,7 +92,7 @@ class TaskFolderVocabularyTest(unittest.TestCase):
         self.assertEqual([], findings, "\n".join(findings))
 
     def test_tree_checker_accepts_only_canonical_task_folders(self):
-        checker = SKILL / "ref" / "check_task_tree.py"
+        checker = SKILL / "scripts" / "check_task_tree.py"
         with tempfile.TemporaryDirectory() as tmp:
             tasks = Path(tmp) / "tasks"
             block = tasks / "b01_physician_candidates"
@@ -172,6 +174,36 @@ class TaskFolderVocabularyTest(unittest.TestCase):
             )
             self.assertNotEqual(0, rejected.returncode)
             self.assertIn("S19", rejected.stdout)
+
+    def test_tree_checker_reads_one_folder_per_run(self):
+        """261021: R01 reads runs/<run>/result/ (or a pass), S16 names the old tasks/ world, no Job owes src/."""
+        checker = SKILL / "scripts" / "check_task_tree.py"
+        with tempfile.TemporaryDirectory() as tmp:
+            work = Path(tmp) / "work"
+            block = work / "b01_physician_candidates"
+            task = block / "j01_candidates_by_region" / "t01_physicians_collected"
+            (block / "board.md").parent.mkdir(parents=True)
+            (block / "board.md").write_text("board-kind: task-block\n", encoding="utf-8")
+            task.mkdir(parents=True)
+            (task / f"{task.name}.md").write_text("folder-kind: task\ntask: .\n", encoding="utf-8")
+            for name, receipt in (("r01_healthgrades_full", "result"), ("r02_vitals_full", "passes/p01-1021")):
+                run = task / "runs" / name
+                (run / "result").mkdir(parents=True)
+                (run / f"{name}.sh").write_text("#!/bin/bash\n", encoding="utf-8")
+                (run / "result" / "table.csv").write_text("a\n1\n", encoding="utf-8")
+                (run / receipt).mkdir(parents=True, exist_ok=True)
+                (run / receipt / "runtime.yaml").write_text(f"run: {name}\nstatus: complete\n", encoding="utf-8")
+            run = lambda: subprocess.run(["python3", str(checker), str(work)], capture_output=True, text=True, check=False)
+            clean = run()
+            self.assertEqual(0, clean.returncode, clean.stdout)          # no src/ in the Job, receipts in result/ and a pass
+            (task / "runs" / "r01_healthgrades_full" / "result" / "runtime.yaml").unlink()
+            (task / "scripts" / "config").mkdir(parents=True)
+            (task / "scripts" / "config" / "_defaults.yaml").write_text(
+                "source: tasks/b01_physician_candidates/j01_candidates_by_region\n", encoding="utf-8")
+            broken = run()
+            self.assertNotEqual(0, broken.returncode)
+            self.assertIn("R01", broken.stdout)
+            self.assertIn("the world is work/ since 261010", broken.stdout)
 
     def test_ticket_rejects_job_level_runs_lane(self):
         template = SKILL / "ref" / "run-sh-template.sh"

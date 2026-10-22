@@ -13,9 +13,14 @@ bNN_<block>/jNN_<job>/
     ├── scripts/
     │   ├── <entry>.py           notebook source: line 1 is `# Databricks notebook source`
     │   └── config/rNN_<run>.yaml
-    ├── runs/rNN_<run>.sh        or rNN_<run>.cmd where only cmd.exe runs
-    └── results/rNN_<run>/       fetched from the Volume; aggregates only
+    └── runs/rNN_<run>/          one folder per Run
+        ├── rNN_<run>.sh         or rNN_<run>.cmd where only cmd.exe runs
+        ├── run.yaml             its card (haipipe-run)
+        └── result/              fetched from the Volume; aggregates only
 ```
+
+A Block not yet moved keeps the flat `runs/rNN_<run>.sh` beside `results/rNN_<run>/`; the ticket
+template (`haipipe-task-for-raw` `ref/run-databricks-sh-template.sh`) reads both.
 
 The `.py` source remains authoritative. Anything generated from it (a run
 record, cluster logs) lives outside the Task Folder or under the Run's
@@ -29,7 +34,7 @@ path, and its stem is the Run and the config stem. It drives the whole loop:
 ```text
 1 DEPLOY   local -> workspace          databricks bundle deploy
 2 RUN      on the cluster              as a Job, or inline (Execution choices)
-3 FETCH    Volume -> <task>/results/<run>/   this Run's folder only
+3 FETCH    Volume -> <task>/runs/<run>/result/   this Run's folder only
 ```
 
 On a locked-down Windows desktop the ticket is `.cmd`: there is no bash, a
@@ -128,16 +133,16 @@ Run inside the address grammar and orders the batch, and the rest is the
 subject's name verbatim, so the ticket, the config and the Result folder cannot
 drift from the thing they measure.
 
-Retiring that structure does not mean deleting it. A Task whose Results were
+Replacing that structure does not mean deleting it. A Task whose Results were
 already fetched keeps them: move it beside the Tasks that supersede it, freeze
 the inputs it reads so a published number stays reproducible, and say on its
-Page that it is retired.
+Page that it is superseded.
 
 ## Results
 
 ```text
 Volume   <VB>/task-results/<block>/<job>/<task>/<run>/
-local    <task>/results/<run>/
+local    <task>/runs/<run>/result/          (a Block not yet moved: <task>/results/<run>/)
 ```
 
 - **Each Run delivers its own Result folder**, and its ticket fetches that one
@@ -219,7 +224,7 @@ SHA, and Result-gate verdict.
 
 ## Validation
 
-Before launch, verify the Task Folder with `ref/check_task_tree.py`, confirm the
+Before launch, verify the Task Folder with `scripts/check_task_tree.py`, confirm the
 Run config/Ticket stem pair, and verify that cluster output resolves to the
 same `<task>/<run>` Result identity used locally.
 

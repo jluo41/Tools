@@ -14,7 +14,7 @@ description: >-
   file, record shape, evidence bundle, delivery tab, folder tab, stale
   workbench, workbench-page, /workbench-page, /workbench-task-draft.
 metadata:
-  version: "0.104.13"
+  version: "0.104.15"
   last_updated: "2026-10-20"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -80,6 +80,52 @@ Report: the same seven, Results only · Table · Questions
   `draft_steps.card_act`; refused when the card changed on disk since it was shown). The text changes only when "apply
   the accepted cards" runs (JL 261020: "我想要那种可以交互的感觉"). Below it, the Section canvas, which may hold other
   papers' openings beside ours (excalidraw-draft `examples:`).
+- The text column reads as prose in 2 · Write, 3 · Evidence, 4 · Display and 5 · Revise alike (JL 261021: "现在的
+  layout 读起来 ... 比较乱糟糟的"; "把字体变大一些"; "像 S5 这种东西能不能放到最左边"): 17px type, no bullets, each
+  sentence's number hung in a left gutter so every sentence starts on one line (`_sentence` gives the number and the
+  words their own spans, `.s-no` and `.s-tx`), and `\citep{…}` read as its keys in small grey. In 5 · Revise only, the
+  evidence stays boxed but its CITE labels go ("I think we still need the box"); 3 · Evidence keeps both.
+- 📋 Revise Review Report also shows Each sentence, in its context: the report's `Sentences:` lines (haipipe-draft-review
+  `ref/sentence-logic.md`) as a table of logic and read scores, the link from the sentence before, the problem and the
+  smallest fix, then each paragraph's flow (JL 261021: "每句话都要看一下上下文 ... 给每句话打分"). Cards already written
+  into the text, and comments their person closed, are hidden until Show the <n> finished ("如果已经结束的话，就把它 hide
+  掉吧").
+- A card whose fix is a choice shows its options (`Option A (<approach>): <sentence>`, `Chosen: A`): the chosen one as
+  its change, the others as plain sentences, each with ↳ Use <letter> ("可以用 A、B、C 几个不同的方法去修改"). A comment is a
+  thread with You and AI marks and small text actions ("不应该有个 AI Reply 吗？ ... modern 的 UI"). The review's sentence
+  lines are Logic cards, one beside every sentence (logic and read scores, the link, the problem in one line, the fix
+  on click), and each paragraph's flow sits under its last sentence ("这个 sentence 应该当做一个新的 type ... logic
+  comments ... 应该是放到右边的"); the report keeps only their sum. Every card is one compact line until clicked, as
+  comments in a shared document are, so each stays beside its sentence. Hide comments, Hide logic and Hide edits
+  filter the column.
+- 5 · Revise's column holds four kinds of card, each switched on or off by its chip above the text, in any mix
+  (JL 261021: "叫 comments、logic、edit 这三块，然后我们选中其中一个，或者把那三个全都选中 ... 这里最好也加一下 evidence"):
+  Comments, Logic, Edits (only those still open: proposed, or with options) and Evidence (each sentence's items, the
+  rows 3 · Evidence shows, named by their paper's key or value in one line). No Accept all, no Show finished. An Edit
+  card is a choice: its options A, B, C, then "drop it: keep the original", one radio each, and Confirm. A Logic card
+  says its quality in a word (good, passes, weak, needs work, broken) before its two scores. Resting the pointer on a
+  sentence makes it the focus: its cards light up and slide level with it, centred on it. A card
+  opens over the cards below when pointed at and folds when the pointer leaves; a click pins it.
+- A Table or Figure the text calls shows under the first sentence that calls it, in Write, Evidence, Display and
+  Revise alike (`_embed_displays`; JL 261021: "PNG TO EMBED UNDER THAT SENTENCE"): the unit's preview.png, opened full
+  size on click; a link to preview.pdf when only that exists; "not built yet" when the unit has no picture. The unit in
+  display/ and the Run that made its asset stay the source; LaTeX takes its PDF, Word and the web its PNG.
+- Every word on 5 · Revise lives in a Markdown file, never in the page (JL 261021: "这些 content 它是要存到 Markdown
+  上的，不能存到 HTML 里面"): the text in `draft/<stem>-draft-v<N>.md`, the cards and the report in
+  `draft/records/<stem>-revise.md`, the comments and their replies in `<stem>-comments.md`, the rulings in
+  `<stem>-revise-rules.md`. A click writes only those files (`card_act`, `note_act`, `plan_act`); the page is built
+  from them on every open and keeps nothing itself, no browser storage. What is shown or hidden, open or folded, is
+  the view's own and is not saved.
+- A person's comments live in 5 · Revise, among the cards (JL 261021: "我选中一个句子 ... 点个加号就能加注释 ... 放到
+  Revise 的那一栏里面"; "我还是在这个 review 里面加 comments"). A + on the right of each sentence ("能不能把这个加号
+  放到右边"), shown on hover, or 💬 Comment
+  under words selected in one sentence, opens a comment card in the right column, in reading order before the cards on
+  that sentence; Save writes it to `draft/records/<stem>-comments.md` (`POST /_board/draft-comment`,
+  `draft_steps.note_act`: add · reply · done · reopen · delete, refused when its state changed on disk). A sentence a
+  comment still waits on shows 💬. Each pass answers the open comments (haipipe-draft-writing ref/revise.md): the card
+  that changes the sentence says `Answers: Comment <n>` and shows 💬 answers Comment <n>, the comment shows ↳ that card
+  and the pass's Reply, and its person closes it with ✓ Done or ↩ Reply (it opens again). The cards' header has
+  Copy: revise with my <n> open comments while one is open ("你的 change 怎么跟我的 comments 一起来做交互").
 - 3 · Evidence's Result is laid out as 5 · Revise's: the text one column with no space between sentences, and at each
   sentence on the right its card, a one-line row per Evidence item that backs it, what backs it on hover (JL 261020: "I
   want it to be left to be the orignal text, and the right to be the evidence"; "我想要保证这个 draft 在 revise、evidence、

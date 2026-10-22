@@ -27,7 +27,7 @@ Step 1 — Pre-flight
   - Check: _WorkSpace/1-CMS-Store/cms_synth/ has year dirs
 
 Step 2 — Execute
-  - Run: powershell runs/run_case_<Cohort>_synth_<year>.ps1
+  - Run: powershell runs/rNN_case_<Cohort>_synth_<year>/rNN_case_<Cohort>_synth_<year>.ps1
   - Or batch: powershell sbatch/run_all_2015-2020_synth.ps1
 
 Step 3 — Post-run
@@ -50,8 +50,8 @@ Step 1 — Pre-flight (local, before shipping)
 
 Step 2 — Package (local)
   - List all files to copy (from SERVER_CHECK.md "Files to copy")
-  - Exclude: results/, _WorkSpace/, .dta, .csv, .log, .git/
-  - Include: *.do, *.ps1, *.yaml, *.md
+  - Exclude: runs/*/result/, runs/*/passes/ (a Block not yet moved: results/), _WorkSpace/, .dta, .csv, .log, .git/
+  - Include: *.do, *.ps1, *.yaml, *.md (each Run folder's ticket, config.do and run.yaml)
 
 Step 3 — Hand-copy (user action)
   - User copies code zip to CMS server
@@ -59,7 +59,7 @@ Step 3 — Hand-copy (user action)
   - User sets $env:STATATMP if not already in orchestrator
 
 Step 4 — Execute (server, user action)
-  - User runs: powershell runs/run_case_<Cohort>_full_<year>.ps1
+  - User runs: powershell runs/rNN_case_<Cohort>_full_<year>/rNN_case_<Cohort>_full_<year>.ps1
   - Or batch: powershell sbatch/run_all_2015-2020_real.ps1
 
 Step 5 — Feedback loop (user → Claude)
@@ -69,7 +69,7 @@ Step 5 — Feedback loop (user → Claude)
   - Repeat from Step 1 until clean
 
 Step 6 — Post-run
-  - User copies results/ back (logs + summary only, no .dta)
+  - User copies each Run's result/ back (logs + summary only, no .dta; a reg Run's passes/ stays on the server)
   - Run fn/report-stata.md locally
 ```
 
@@ -92,7 +92,7 @@ LOCAL SYNTH:
   [ ] audit-stata passed
   [ ] synth configs present (_source_synth.do)
   [ ] CMS synth store exists
-  [ ] Run: powershell runs/run_*_synth_*.ps1
+  [ ] Run: powershell runs/r*_synth_*/r*_synth_*.ps1
   [ ] Logs clean (no r(...) errors)
   [ ] Summary row counts > 0
 
@@ -102,7 +102,7 @@ SERVER FULL:
   [ ] CODE_REVIEW.md + SERVER_CHECK.md generated
   [ ] Package code (no data)
   [ ] Hand-copy to server
-  [ ] User runs powershell runs/run_*_full_*.ps1
+  [ ] User runs powershell runs/r*_full_*/r*_full_*.ps1
   [ ] User pastes output
   [ ] cms-server-checklist Gate 3 (first real run)
   [ ] report-stata generated

@@ -1,5 +1,6 @@
 # =============================================================================
-# Template for scripts/config/<NAME>.yaml — algo-dev smoke-test
+# Template for runs/rNN_<run>/config.yaml — algo-dev smoke-test
+# (a Block not yet moved keeps it at scripts/config/rNN_<run>.yaml)
 # =============================================================================
 # Purpose: verify the algorithm class runs end-to-end. NOT a real training run.
 # Tiny config; expect <5 min runtime; expect NO meaningful metric.
@@ -13,7 +14,7 @@ _meta:
   input: |
     <e.g., aidata tiny_split (100 cases), no checkpoint>
   output: |
-    $OUTPUT_ROOT/<task>/results/rNN_<run>/loss.json — single loss value confirming the pipeline runs.
+    $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/loss.json — single loss value confirming the pipeline runs.
 
 
 # =============================================================================

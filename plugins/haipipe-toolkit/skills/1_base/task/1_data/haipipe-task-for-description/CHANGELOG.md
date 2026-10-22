@@ -5,6 +5,20 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.5.0] · 2026-10-21 · Type contract, one folder per Run
+
+- `## Type contract` block added as the first section (haipipe-task `ref/types.md`): description,
+  role describe, no heavy output, no plan sample.
+- The describe Task's tree names the current layout: `runs/r01_describe_<table>/` holds the Ticket,
+  `config.yaml`, the `run.yaml` card (`role: describe`) and `result/` with `runtime.yaml` and the card
+  files, never `results/r01_describe_<table>/`.
+- `templates/describe_table.py` reads a `.csv` as well as a `.parquet` (optional `csv_column_types`), and no figure
+  draws a count under `min_cell`: a value bar, a histogram bin or a month bar under it is left out (before, a hidden
+  small cell's bar still showed its length). `templates/seed_dictionary.py` reads a CSV's header. The ticket sets
+  `TASK_NAME`, `WORKER_PATH=src/describe_table.py` and `NOTEBOOK_NAME` (haipipe-task's template; `WORKER_NAME` was
+  read by nothing). The card's section ③ is titled "synth_df: a made-up example row", as the skill names it. Proven
+  on a 40-row synthetic pool: the card, 4 figures, the 10-row city left out of its chart.
+
 ## [0.4.2] · 2026-10-09 · Theme folders are singular
 
 - Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,

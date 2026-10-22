@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Try the API</title>
+<!-- The try page (haipipe-utils servers/_host, JL 261021: "最终的产出就是一个类似的小网页 ... 这个网页会调用我们的 API，
+     我们输入任何东西，它就会返回我们想要的结果 ... 网页下面还会有很多 gallery"). One page for every lane, served at
+     /try/<noun>. A lane with an event door (food: POST /food/event, JL 261021 "make the page on event to work") shows
+     the event: what arrives (raw), the input JSON the preprocess step makes of it, and the output by local hour; its
+     gallery is real meals of every kind of raw (GET /try/<noun>/events), each run live beside the answer frozen when the
+     gallery was built. A lane without one sends its box to /normalize/batch and shows its input gallery
+     (GET /try/<noun>/gallery). Add ?run=all to run every card on load, or ?q=<lines> to send the box on load. -->
+<style>
+:root { --bg:#ffffff; --fg:#1e1e1e; --mut:#6b7280; --line:#e5e7eb; --card:#fafafa; --key:#fff3bf; --ok:#15803d; --bad:#b91c1c; --code:#f4f4f5; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#16181d; --fg:#e7e7ea; --mut:#9aa0aa; --line:#2c2f36; --card:#1d2026; --key:#4a4220; --ok:#4ade80; --bad:#f87171; --code:#22252c; } }
+:root[data-theme="dark"] { --bg:#16181d; --fg:#e7e7ea; --mut:#9aa0aa; --line:#2c2f36; --card:#1d2026; --key:#4a4220; --ok:#4ade80; --bad:#f87171; --code:#22252c; }
+* { box-sizing: border-box; }
+[hidden] { display:none !important; }
+body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.5 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; }
+main { max-width:1280px; margin:0 auto; padding:24px 16px 64px; }
+h1 { font-size:24px; margin:0 0 4px; } h2 { font-size:18px; margin:32px 0 8px; } h3 { font-size:15px; margin:0 0 4px; }
+.mut { color:var(--mut); } .small { font-size:13px; }
+textarea { width:100%; min-height:130px; padding:10px; font:14px/1.45 ui-monospace, Menlo, monospace; color:var(--fg); background:var(--code); border:1px solid var(--line); border-radius:8px; }
+input[type=datetime-local] { font:inherit; font-size:14px; padding:4px 8px; border:1px solid var(--line); border-radius:8px; background:var(--code); color:var(--fg); }
+button, .btn { font:inherit; font-size:14px; padding:6px 14px; border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--fg); cursor:pointer; }
+button.go { background:var(--key); font-weight:600; }
+button:disabled { opacity:.5; cursor:default; }
+.row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin:8px 0; }
+.two { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.three { display:grid; grid-template-columns:1fr 1fr 1.25fr; gap:12px; }
+@media (max-width: 860px) { .two, .three { grid-template-columns:1fr; } }
+.three > div, .two > div { min-width:0; }
+pre { margin:0; padding:10px; background:var(--code); border:1px solid var(--line); border-radius:8px; font:12.5px/1.45 ui-monospace, Menlo, monospace; white-space:pre; overflow:auto; max-height:460px; }
+table { border-collapse:collapse; width:100%; font-size:13px; }
+th, td { text-align:left; padding:5px 8px; border-bottom:1px solid var(--line); vertical-align:top; }
+th { color:var(--mut); font-weight:600; }
+tr.total td { font-weight:600; background:var(--key); }
+tr.check td { font-size:12.5px; }
+.cards { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.cards.wide { grid-template-columns:1fr; }
+@media (max-width: 860px) { .cards { grid-template-columns:1fr; } }
+.card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:12px; display:flex; flex-direction:column; gap:8px; min-width:0; }
+.tag { display:inline-block; font-size:12px; padding:1px 8px; border-radius:999px; border:1px solid var(--line); color:var(--mut); }
+.ok { color:var(--ok); font-weight:600; } .bad { color:var(--bad); font-weight:600; }
+.note { background:var(--key); border-radius:8px; padding:8px 10px; font-size:13px; }
+.flow { font:13px/1.5 ui-monospace, Menlo, monospace; color:var(--mut); }
+</style>
+</head>
+<body>
+<main>
+  <h1 id="title">Try the API</h1>
+  <p class="mut small" id="health">checking the API…</p>
+  <p class="flow" id="flow" hidden>raw ─▶ preprocess ─▶ input JSON ─▶ describe-food, each item ─▶ output by local hour</p>
+
+  <h2 id="tryHead">✍️ Try it</h2>
+  <p class="small mut" id="hint">One input per line; each line is sent as it is, in one call.</p>
+  <textarea id="box" spellcheck="false"></textarea>
+  <div class="row">
+    <span id="whenArea" hidden class="small">eaten at <input type="datetime-local" id="when"></span>
+    <button class="go" id="send">Send</button>
+    <span id="status" class="small"></span>
+  </div>
+  <div class="row" id="photoArea" hidden>
+    <span class="small">or a photo:</span>
+    <input type="file" id="photo" accept="image/*">
+    <button id="sendPhoto">Send the photo</button>
+    <span class="small mut" id="photoHint">the photo route names the foods first (Claude vision), then answers them</span>
+  </div>
+
+  <div id="result" hidden>
+    <p class="note small" id="step" hidden></p>
+    <div class="two" id="plain">
+      <div><h3>📨 Input JSON sent</h3><pre id="sent"></pre></div>
+      <div><h3>📦 Output JSON back</h3><pre id="back"></pre></div>
+    </div>
+    <div class="three" id="evpanes" hidden>
+      <div><h3>📄 raw, as it arrives</h3><pre id="evraw"></pre></div>
+      <div><h3>📨 input JSON</h3><pre id="evin"></pre></div>
+      <div><h3>📦 output, by local hour</h3><pre id="evout"></pre></div>
+    </div>
+    <h3 style="margin-top:12px" id="readHead">Each answer, read</h3>
+    <div style="overflow:auto"><table id="answers"></table></div>
+  </div>
+
+  <h2 id="galleryHead">🖼 Gallery: every kind of input, from real rows</h2>
+  <p class="small" id="gfolder" hidden></p>
+  <div class="row"><button class="go" id="runAll">Run every card live</button><span id="summary" class="small"></span></div>
+  <div class="cards" id="cards"></div>
+</main>
+
+<script>
+(function () {
+  'use strict';
+  // The page sits at <base>/try/<noun>: base is '' on the API host, '/_api' through the board host's login.
+  const parts = location.pathname.replace(/\/+$/, '').split('/');
+  const noun = parts.pop(); parts.pop();
+  const base = parts.join('/');
+  const EMOJI = { food: '🍎', exercise: '🏃', medication: '💊', insulin: '💉' };
+  // How a gallery card's input becomes a request, and how a typed box becomes one: per lane. `event` names the lane's
+  // event door; such a lane sends its box and its cards there.
+  const LANES = {
+    food: {
+      event: 'event',
+      fromCard: inp => (inp.FoodName ? { foods: inp.FoodName } : null),
+      fromBox: lines => ({ foods: lines }),
+      examples: 'Spinach\nOriginal English Muffins\n100% Liquid Egg Whites\nHass Avocado\nCheddar Cheese',   // s01's breakfast
+      columns: ['FoodNameResolved', 'Carbs', 'Calories', 'Protein', 'Fat', 'Fiber', 'Sugar', 'NutritionBasis', 'NutritionConf', 'NutritionSource'],
+      photo: true,
+    },
+  };
+  const lane = LANES[noun];
+  const EVENT = !!(lane && lane.event);
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const pretty = v => JSON.stringify(v, null, 2);
+  // JSON broken between fields only, one field to a line; a value is never wrapped or cut (it scrolls).
+  const fieldLines = v => (v && typeof v === 'object' && !Array.isArray(v))
+    ? '{\n' + Object.entries(v).map(([k, x]) => `  ${JSON.stringify(k)}: ${JSON.stringify(x)}`).join(',\n') + '\n}'
+    : JSON.stringify(v);
+  // An event's raw: broken between fields only, a row's cells one a line, as they came (never wrapped or cut).
+  const rawLines = r => r ? pretty(r) : 'null';
+
+  document.title = `Try describe-${noun}`;
+  $('title').textContent = EVENT ? `${EMOJI[noun] || '🔎'} describe-${noun} · a meal in, its food event out`
+    : `${EMOJI[noun] || '🔎'} describe-${noun} · try it`;
+
+  fetch(`${base}/${noun}/healthz`).then(r => r.json()).then(h => {
+    const bank = String(h.bank || '').split('ExternalStore/').pop();
+    $('health').innerHTML = `describe-${noun} ${esc(h.version || '')} · ${h.status === 'ok' ? '<span class="ok">ok</span>' : '<span class="bad">' + esc(h.status) + '</span>'}`
+      + (bank ? ` · bank ${esc(bank)}` : '') + ` · <a href="${base}/${noun}/docs">every route</a>`;
+  }).catch(() => { $('health').innerHTML = '<span class="bad">the API does not answer</span>'; });
+
+  // ---- local time, as the event JSON writes it: "2026-10-21 08:05 -04:00"
+  const pad = n => String(n).padStart(2, '0');
+  function zoneOf(d) { const m = -d.getTimezoneOffset(); return `${m >= 0 ? '+' : '-'}${pad(Math.floor(Math.abs(m) / 60))}:${pad(Math.abs(m) % 60)}`; }
+  function stamp() {
+    const v = $('when').value;                                   // "2026-10-21T08:05"
+    if (!v) return null;
+    return `${v.replace('T', ' ').slice(0, 16)} ${zoneOf(new Date(v))}`;
+  }
+  { const d = new Date(); $('when').value = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`; }
+
+  if (!lane) {
+    $('hint').textContent = `This lane's page is not wired yet: its gallery shows its frozen answers only.`;
+    $('box').disabled = true; $('send').disabled = true; $('runAll').disabled = true;
+  } else {
+    $('box').value = lane.examples;
+    if (lane.photo) $('photoArea').hidden = false;
+  }
+  if (EVENT) {
+    $('flow').hidden = false; $('whenArea').hidden = false;
+    $('tryHead').textContent = '✍️ Try a meal';
+    $('hint').innerHTML = 'Type the foods, one a line, an amount in g or ml at its end, and when it was eaten. '
+      + 'Or paste a raw JSON <code>{"type", "rows"}</code> or an input JSON <code>{"items", ...}</code>, or put a gallery card in the box.';
+    $('photoHint').textContent = 'the photo API names its foods (Claude vision); they become the input\'s items';
+    $('galleryHead').textContent = '🖼 Gallery: real meals, every kind of raw, its input and its output';
+    $('cards').classList.add('wide');
+  }
+
+  async function call(body, door) {
+    const r = await fetch(`${base}/${noun}/${door || 'normalize/batch'}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const j = await r.json();
+    if (!r.ok) throw new Error(typeof j.detail === 'string' ? j.detail : JSON.stringify(j.detail || r.statusText));
+    return j;
+  }
+
+  function show(sent, back, inputs) {
+    $('result').hidden = false; $('plain').hidden = false; $('evpanes').hidden = true; $('step').hidden = true;
+    $('sent').textContent = typeof sent === 'string' ? sent : pretty(sent);
+    $('back').textContent = pretty(back);
+    const rows = back.results || (back.result ? [back.result] : []);
+    const cols = lane.columns;
+    $('answers').innerHTML = '<tr><th>input</th>' + cols.map(c => `<th>${esc(c)}</th>`).join('') + '</tr>'
+      + rows.map((r, i) => '<tr><td>' + esc(inputs[i] ?? '') + '</td>' + cols.map(c => `<td>${r && r[c] != null ? esc(r[c]) : '—'}</td>`).join('') + '</tr>').join('');
+  }
+
+  // ---- the event: what the box holds becomes a request; its answer becomes three panes and a table
+  function boxBody() {
+    const text = $('box').value.trim();
+    if (!text) throw new Error('Type a meal in the box first.');
+    if (text.startsWith('{')) {
+      let j;
+      try { j = JSON.parse(text); } catch (e) { throw new Error('The box starts with { but is not JSON: ' + e.message); }
+      if (j.raw || j.input) return j;
+      if (j.type && j.rows) return { raw: j };
+      if (j.items) return { input: j };
+      throw new Error('A JSON in the box must be a raw {"type", "rows"}, an input {"items", ...}, or {"raw", "input"}.');
+    }
+    const row = { text };
+    const t = stamp(); if (t) row.time = t;
+    return { raw: { type: 'text', rows: [row] } };
+  }
+
+  const words = v => v == null ? '—' : esc(v);
+  function readTable(ev) {
+    const name = {};
+    (ev.input && ev.input.items || []).forEach(it => { name[it.id] = it.food + (it.amount ? ` · ${it.amount}` : ''); });
+    let html = '<tr><th>hour</th><th>share</th><th>item</th><th>matched</th><th>conf</th><th>serving</th><th>carbs</th><th>calories</th><th>GI</th><th>GL</th></tr>';
+    for (const [hour, h] of Object.entries(ev.output || {})) {
+      for (const it of h.items || []) {
+        const m = it.match || {}, s = it.serving || {}, g = it.glycemic || {};
+        html += `<tr><td>${esc(hour)}</td><td>${h.share}</td><td>${esc(name[it.id] || it.id)}</td><td>${words(m.food)}</td>`
+          + `<td>${words(m.conf)}</td><td>${words([s.basis, s.unit].filter(Boolean).join(' · ') || null)}</td>`
+          + `<td>${words((it.macros || {}).carbs)}</td><td>${words((it.macros || {}).calories)}</td><td>${words(g.gi)}</td><td>${words(g.gl)}</td></tr>`;
+      }
+      const t = h.total || {};
+      html += `<tr class="total"><td>${esc(hour)}</td><td>${h.share}</td><td colspan="4">the meal's total, from ${esc(t.source || '—')}`
+        + (h.meal_type ? ` · ${esc(h.meal_type)}` : '') + `</td><td>${words((t.macros || {}).carbs)}</td><td>${words((t.macros || {}).calories)}</td>`
+        + `<td>—</td><td>${words((t.glycemic || {}).gl)}</td></tr>`;
+      if ((h.items || []).length) html += checkRow(h);
+    }
+    return html;
+  }
+
+  // The items added up, set under the meal's total (s01 ③'s check): the same, or why not. describe-food answers a
+  // meal from one table only, so a meal whose items came from two (a logged serving and USDA grams) is covered in part.
+  const num = v => v == null ? null : parseFloat(String(v));
+  function checkRow(h) {
+    const t = h.total || {}, its = h.items || [];
+    const add = k => its.some(it => num((it.macros || {})[k]) == null) ? null : its.reduce((s, it) => s + num(it.macros[k]), 0);
+    const carbs = add('carbs'), kcal = add('calories'), want = num((t.macros || {}).carbs);
+    const fmt = (v, u) => v == null ? '—' : `${Math.round(v * 100) / 100} ${u}`;
+    const same = carbs != null && want != null && Math.abs(carbs - want) < 0.01;
+    const why = same ? '<span class="ok">✅ the items add up to the total</span>'
+      : `<span class="bad">❗ the total covers ${t.coverage == null ? 'part' : Math.round(t.coverage * 100) + '%'} of the items`
+        + (t.basis ? ` (${esc(t.basis)})` : '') + '</span>: describe-food answers a meal from one table only, never adding '
+        + 'one table\'s serving to another\'s grams; each item above is answered alone';
+    return `<tr class="check"><td></td><td></td><td colspan="4">the items, added · ${why}</td><td>${fmt(carbs, 'g')}</td><td>${fmt(kcal, 'kcal')}</td><td></td><td></td></tr>`;
+  }
+
+  function showEvent(ev) {
+    $('result').hidden = false; $('plain').hidden = true; $('evpanes').hidden = false;
+    $('step').hidden = false; $('step').textContent = `the preprocess step: ${ev.step}`;
+    $('evraw').textContent = rawLines(ev.raw);
+    $('evin').textContent = pretty(ev.input);
+    $('evout').textContent = pretty(ev.output);
+    $('readHead').textContent = 'Each item, read, hour by hour';
+    $('answers').innerHTML = readTable(ev);
+  }
+
+  async function sendEvent(body, what) {
+    $('status').innerHTML = '<span class="mut">asking…</span>'; $('send').disabled = true;
+    try {
+      const ev = await call(body, lane.event);
+      showEvent(ev);
+      const n = (ev.input.items || []).length, h = Object.keys(ev.output || {}).length;
+      $('status').innerHTML = `<span class="ok">✅ ${what}: ${n} item${n === 1 ? '' : 's'}, ${h} hour${h === 1 ? '' : 's'}, below</span>`;
+      $('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch (e) { $('status').innerHTML = `<span class="bad">${esc(e.message)}</span>`; }
+    finally { $('send').disabled = false; }
+  }
+
+  $('send').onclick = async () => {
+    if (EVENT) {
+      let body;
+      try { body = boxBody(); } catch (e) { $('status').innerHTML = `<span class="bad">${esc(e.message)}</span>`; return; }
+      return sendEvent(body, 'the meal');
+    }
+    const lines = $('box').value.split('\n').map(s => s.trim()).filter(Boolean);
+    if (!lines.length) { $('status').innerHTML = '<span class="bad">Type at least one line in the box.</span>'; return; }
+    const body = lane.fromBox(lines);
+    $('status').innerHTML = '<span class="mut">asking…</span>'; $('send').disabled = true;
+    try {
+      show(body, await call(body), lines);
+      $('status').innerHTML = `<span class="ok">✅ ${lines.length} answer${lines.length > 1 ? 's' : ''} below</span>`;
+      $('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch (e) { $('status').innerHTML = `<span class="bad">${esc(e.message)}</span>`; }
+    finally { $('send').disabled = false; }
+  };
+
+  $('sendPhoto').onclick = async () => {
+    const f = $('photo').files[0];
+    if (!f) { $('status').innerHTML = '<span class="bad">Choose a photo first.</span>'; return; }
+    const fd = new FormData(); fd.append('files', f);
+    $('status').innerHTML = '<span class="mut">naming the foods in the photo…</span>';
+    try {
+      const r = await fetch(`${base}/${noun}/normalize/image`, { method: 'POST', body: fd });
+      const j = await r.json();
+      if (!r.ok) throw new Error(j.detail || r.statusText);
+      if (EVENT) {                                               // the photo API is the preprocess step: its names are the items
+        const names = String((j.result || {}).FoodNameResolved || '').split(';').map(s => s.trim()).filter(Boolean);
+        if (!names.length) throw new Error('the photo API named no food in this photo');
+        const input = { items: names.map((food, k) => ({ id: `i${k + 1}`, food })) };
+        const t = stamp(); if (t) input.start = t;
+        return sendEvent({ input }, `the photo (${names.length} foods named)`);
+      }
+      show(`POST /${noun}/normalize/image\nfiles = ${f.name} (${f.size.toLocaleString()} bytes)`, j, [f.name]);
+      $('status').innerHTML = '<span class="ok">✅ the photo\'s answer is below</span>';
+    } catch (e) { $('status').innerHTML = `<span class="bad">${esc(e.message)}</span>`; }
+  };
+
+  // ---- the gallery
+  let cards = [];
+  const same = (a, b) => (a == null && b == null) || (typeof a === 'number' && typeof b === 'number' ? Math.abs(a - b) < 1e-6 : a === b);
+
+  function compare(frozen, live) {
+    // Every key the frozen answer holds, row by row: equal, or the first difference.
+    if (!frozen) return { ok: null, text: 'no frozen answer to compare' };
+    for (let i = 0; i < frozen.length; i++) {
+      for (const k of Object.keys(frozen[i] || {})) {
+        const a = frozen[i][k], b = (live[i] || {})[k];
+        if (!same(a, b)) return { ok: false, text: `row ${i + 1}, ${k}: live ${JSON.stringify(b)} vs frozen ${JSON.stringify(a)}` };
+      }
+    }
+    return { ok: true, text: `same as frozen, ${frozen.length} answer${frozen.length > 1 ? 's' : ''}` };
+  }
+
+  function firstDiff(a, b, p) {
+    // The first field where an event's frozen part and its live answer differ, by its path; null when none does.
+    if (a && b && typeof a === 'object' && typeof b === 'object') {
+      const keys = [...new Set([...Object.keys(a), ...Object.keys(b)])];
+      for (const k of keys) { const d = firstDiff(a[k], b[k], p ? `${p}.${k}` : k); if (d) return d; }
+      return null;
+    }
+    return same(a, b) ? null : `${p}: live ${JSON.stringify(b)} vs frozen ${JSON.stringify(a)}`;
+  }
+
+  async function runCard(i) {
+    const c = cards[i], el = $(`res-${i}`);
+    if (EVENT) {
+      el.innerHTML = '<span class="mut">asking…</span>';
+      try {
+        const ev = await call(c.send, lane.event);
+        const d = firstDiff(c.input, ev.input, 'input') || firstDiff(c.output, ev.output, 'output');
+        el.innerHTML = d ? `<span class="bad">❗ ${esc(d)}</span>` : '<span class="ok">✅ input and output the same as frozen</span>';
+        return !d;
+      } catch (e) { el.innerHTML = `<span class="bad">${esc(e.message)}</span>`; return false; }
+    }
+    const body = lane && lane.fromCard(c.input);
+    if (!body) { el.innerHTML = '<span class="mut">this card has no input the lane reads as words</span>'; return null; }
+    el.innerHTML = '<span class="mut">asking…</span>';
+    try {
+      const j = await call(body);
+      const cmp = compare(c.frozen, j.results || []);
+      el.innerHTML = (cmp.ok ? `<span class="ok">✅ ${esc(cmp.text)}</span>` : cmp.ok === false ? `<span class="bad">❗ ${esc(cmp.text)}</span>` : esc(cmp.text));
+      el.dataset.ok = cmp.ok; el.dataset.n = (c.frozen || []).length;
+      return cmp.ok;
+    } catch (e) { el.innerHTML = `<span class="bad">${esc(e.message)}</span>`; return false; }
+  }
+
+  function frozenTable(f) {
+    if (!f) return '<span class="mut small">no frozen answer</span>';
+    const keys = [...new Set(f.flatMap(r => Object.keys(r || {})))];
+    return '<table><tr>' + keys.map(k => `<th>${esc(k)}</th>`).join('') + '</tr>'
+      + f.map(r => '<tr>' + keys.map(k => `<td>${r && r[k] != null ? esc(r[k]) : '—'}</td>`).join('') + '</tr>').join('') + '</table>';
+  }
+
+  // A card's note says what its step line does not: the part after the step, when it starts with it.
+  const noteOf = c => !c.note ? '' : c.step && c.note.startsWith(c.step) ? c.note.slice(c.step.length).replace(/^[;:,]\s*/, '') : c.note;
+
+  function eventCard(c, i) {
+    return `
+      <div class="card">
+        <div><h3>${esc(c.title)}</h3><span class="tag">${esc(c.kind)}</span> <span class="small mut">${esc(c.step || '')}</span></div>
+        ${noteOf(c) ? `<div class="small mut">${esc(noteOf(c))}</div>` : ''}
+        <div class="three">
+          <div><div class="small mut">📄 raw, as it arrives</div><pre>${esc(rawLines(c.raw))}</pre></div>
+          <div><div class="small mut">📨 input JSON</div><pre>${esc(pretty(c.input))}</pre></div>
+          <div><div class="small mut">📦 output, by local hour (frozen)</div><pre>${esc(pretty(c.output))}</pre></div>
+        </div>
+        <div class="row"><button data-run="${i}">Try it live</button><button data-put="${i}">Put it in the box</button><span id="res-${i}" class="small"></span></div>
+      </div>`;
+  }
+
+  function plainCard(c, i) {
+    return `
+      <div class="card">
+        <div><h3>${esc(c.title)}</h3><span class="tag">${esc(c.kind)}</span> <span class="small mut">${esc(c.board || '')}</span></div>
+        ${c.specimen ? `<div class="small mut">${esc(c.specimen)}</div>` : ''}
+        <div><div class="small mut">input, as it arrives</div><pre>${esc(fieldLines(c.input))}</pre></div>
+        <div><div class="small mut">frozen answer</div><div style="overflow:auto">${frozenTable(c.frozen)}</div></div>
+        <div class="row"><button data-run="${i}" ${lane ? '' : 'disabled'}>Try it live</button><button data-put="${i}" ${lane ? '' : 'disabled'}>Put it in the box</button><span id="res-${i}" class="small"></span></div>
+      </div>`;
+  }
+
+  fetch(`${base}/try/${noun}/${EVENT ? 'events' : 'gallery'}`).then(r => r.json()).then(g => {
+    cards = g.cards || [];
+    if (!cards.length) { $('gfolder').hidden = false; $('gfolder').innerHTML = '<span class="bad">No gallery was found for this lane.</span>'; }
+    $('cards').innerHTML = cards.map(EVENT ? eventCard : plainCard).join('');
+    document.querySelectorAll('[data-run]').forEach(b => b.onclick = () => runCard(+b.dataset.run));
+    document.querySelectorAll('[data-put]').forEach(b => b.onclick = () => {
+      const c = cards[+b.dataset.put];
+      if (EVENT) { $('box').value = pretty(c.send); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+      const body = lane.fromCard(c.input);
+      if (body && body.foods) { $('box').value = body.foods.join('\n'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    });
+    const q = new URLSearchParams(location.search);
+    if (q.get('run') === 'all') runAll();
+    if (q.get('q') && lane) { $('box').value = q.get('q'); $('send').click(); }     // a link that tries one input
+  }).catch(() => { $('gfolder').hidden = false; $('gfolder').innerHTML = '<span class="bad">the gallery did not load</span>'; });
+
+  async function runAll() {
+    $('summary').textContent = 'running…';
+    let ok = 0, n = 0, bad = 0;
+    for (let i = 0; i < cards.length; i++) {
+      const r = await runCard(i);
+      if (r === true) { ok++; n++; } else if (r === false) { bad++; n++; }
+    }
+    $('summary').innerHTML = `${ok} of ${n} cards answer as frozen` + (bad ? ` · <span class="bad">${bad} differ</span>` : ' · <span class="ok">all the same</span>');
+    document.body.dataset.done = '1';
+  }
+  $('runAll').onclick = runAll;
+})();
+</script>
+</body>
+</html>

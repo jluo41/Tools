@@ -3,17 +3,19 @@
 This is the shared knowledge pack for every Task-type specialist and creator
 agent. Engine-specific details remain in the owning specialist.
 
-## One Run, four projections
+## One Run, one folder
 
 ```text
-<task>/scripts/config/<run>.yaml        frozen authored input
-<task>/runs/<run>.sh                    authored Ticket
-$OUTPUT_ROOT/<task>/results/<run>/      generated Result and receipt
+<task>/runs/<run>/<run>.sh              authored Ticket (.ps1 for Stata, .cmd where only cmd.exe runs)
+<task>/runs/<run>/config.yaml           frozen authored input (or <task>/scripts/config/<run>.yaml)
+<task>/runs/<run>/run.yaml              the card: run, kind, role, status (haipipe-run)
+$OUTPUT_ROOT/<task>/runs/<run>/result/  generated Result and receipt
 $OUTPUT_ROOT/<task>/notebooks/<run>.ipynb
 ```
 
-The stem is always `rNN_<noun>_<qualifier>` and matches across all four
-projections. Shared Task config omits the `rNN_` prefix.
+The stem is always `rNN_<noun>_<qualifier>` and matches across the folder, the ticket, the config
+and the notebook. Shared Task config in `scripts/config/` omits the `rNN_` prefix. A Block not yet
+moved keeps `runs/<run>.sh` beside `results/<run>/` (`ref/task-folder.md`).
 
 The notebook is generated: the Ticket converts the `# %%` worker `.py` and
 executes it. Never edit a notebook, by hand, by find-and-replace, or by a
@@ -139,7 +141,7 @@ Result to an expectation, invariant, or independently computed reference.
 
 The law is haipipe-run's **A Result is light**; this is how a Task keeps it.
 
-`<task>/results/<run>/` contains light evidence: runtime and metrics files,
+`<task>/runs/<run>/result/` contains light evidence: runtime and metrics files,
 small tables, figures, logs, and pointers. Heavy output lives in `_WorkSpace/`:
 
 1. **What is heavy**: a checkpoint or model, an array, a cache, a row-level table

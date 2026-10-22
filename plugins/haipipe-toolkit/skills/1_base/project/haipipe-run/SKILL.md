@@ -4,7 +4,8 @@ description: >-
   Define, allocate, resume, count, or audit HAIPIPE Runs using their owning
   domain contracts. Use when deciding Run versus Step, resolving
   Ticket/Result/receipt identity, choosing reuse versus new work, or composing
-  Workflow Run Specs. Covers Execution, Discovery, Page, Insight, Design,
+  a Workflow: a planned graph of Run Specs in workflow/plan.yaml, its routes, gates
+  and runtime (ref/workflow.md; the haipipe-workflow skill until 261021). Covers Execution, Discovery, Page, Insight, Design,
   Paper, and Labeling profiles. A Run is one folder in runs/, hard (result/,
   evidence; rNN_<slug>, or run-<type>-<target> where its theme names every Run so,
   as Design does, with kind: in run.yaml) or soft (run-<type>-<target>, writes into
@@ -13,9 +14,10 @@ description: >-
   replaced or never ran is pruned once nothing in use reads it (prune_runs.py). Trigger: Run
   contract, Run catalogue, hard or soft Run, pass, run.yaml, Run ticket, runtime receipt, orphan
   Result, which skill owns this button, run types by Space, soft_run.py, prune runs, delete old
-  runs, superseded Run, keep only meaningful Runs, prune_runs.py, /haipipe-run.
+  runs, superseded Run, keep only meaningful Runs, prune_runs.py, workflow, run graph, run spec,
+  plan.yaml, gate, route, IPO, /haipipe-run, /haipipe-workflow.
 metadata:
-  version: "0.35.0"
+  version: "0.36.0"
   last_updated: "2026-10-21"
 ---
 
@@ -148,7 +150,7 @@ for each call. Ordinary shell commands do not automatically become Runs.
 | Which skill owns a workbench button, and the Run it makes | [Run types by Space](ref/run-types-by-space.md) |
 | Allocate, reuse, retry, reopen, or resolve storage | [Identity and history](ref/identity-and-history.md) |
 | Scaffold/read receipts, report status, count, or audit | [Receipts and inventory](ref/receipts-and-inventory.md) |
-| Compose multiple Runs or maintain a shared frontier | [Workflow](../../task/haipipe-workflow/SKILL.md) and its [runtime contract](../../task/haipipe-workflow/ref/workflow-runtime.md) |
+| Compose multiple Runs or maintain a shared frontier | [Workflow](ref/workflow.md) and its [runtime contract](ref/workflow-runtime.md) |
 | Present Runs in a Page | [Run presenter](../../workbench/workbench-task-draft/ref/run-space.md) |
 
 ## What earns a Run
@@ -377,7 +379,8 @@ tokens, PHI, or raw sensitive rows in shared receipts.
 ## Files
 
 The `ref/` files own the shared catalogue, identity/history, receipt/audit detail,
-and the Run types by Space; `scripts/soft_run.py` writes a soft Run's card and passes,
+the Run types by Space, and the Workflow (`workflow.md`, `plan-schema.md`, `workflow-runtime.md`,
+`template.workflow.js`); `scripts/soft_run.py` writes a soft Run's card and passes,
 `scripts/prune_runs.py` lists and prunes the hard Runs that mean nothing now, `scripts/run_roles.py` writes each
 Run card's `role:` (the one job it does in its Task), and `tests/` checks all three. Domain references linked by the catalogue own their concrete profiles.
 `agents/openai.yaml` supplies invocation metadata; `CHANGELOG.md` records

@@ -3,8 +3,8 @@ name: haipipe-task-for-data
 description: "Data-pipeline Job specialist: scaffolds and executes canonical BJTR Jobs whose Task Folders build or run Stage 1-4 Source/Record/Case/AIData work, including Source raw-name coverage and external-data contracts. Called by /haipipe-task when task-type=data."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.9.1"
-  last_updated: "2026-10-09"
+  version: "0.10.0"
+  last_updated: "2026-10-21"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -19,6 +19,30 @@ Heavy outputs land in `_WorkSpace/{1..4}-*Store/`; the job keeps light pointers 
 - **Execute** (existing task): runs the pipeline, stage-aware with partition support
 
 
+## Type contract
+
+```yaml
+task-type: data
+skill: haipipe-task-for-data
+does: one Stage 1-4 build, running a Source, Record, Case or AIData builder (or building its Fn)
+  for one dataset and storing the asset in its stage store
+worker: scripts/<worker>.py in the Task, Python, a copy of code/scripts/haistepnb/a1-a4_*_nb.py
+  that reads RUN_CONFIG; on a PHI server one entry scripts/run_<task>.py (Databricks); code two
+  Tasks share sits in the Job's src/
+config: runs/<run>/config.yaml, or scripts/config/<run>.yaml in a Block not yet moved; seeded from
+  ref/config-seed.yaml
+ticket: runs/<run>/<run>.sh (local) or runs/<run>/<run>.cmd (PHI server, Databricks), from
+  ../../haipipe-task/ref/run-sh-template.sh
+result: $OUTPUT_ROOT/<task>/runs/<run>/result/ with runtime.yaml, manifest.json and summary.txt
+  (a Record cook Run adds records.json)
+heavy: the stage store _WorkSpace/{1..4}-*Store/ (SourceSet, RecordSet, CaseSet, AIDataSet)
+roles: [make, check, trial]
+companions: [haipipe-data, haipipe-data-source, haipipe-data-record, haipipe-data-case,
+  haipipe-data-aidata, haipipe-data-external]
+plan_sample: ref/workflow-plan-sample.yaml
+```
+
+
 What this scaffolds
 -------------------
 
@@ -30,11 +54,12 @@ work/bNN_<block>/
         ├── tNN_<task>.md
         ├── draft/
         ├── workflow/
-        ├── scripts/
-        │   ├── <worker>.py
-        │   └── config/rNN_<run>.yaml
-        ├── runs/rNN_<run>.sh
-        ├── results/rNN_<run>/runtime.yaml
+        ├── scripts/<worker>.py
+        ├── runs/rNN_<run>/                one folder per Run
+        │   ├── rNN_<run>.sh               the Ticket (.cmd on a PHI server)
+        │   ├── config.yaml
+        │   ├── run.yaml                   its card (haipipe-run)
+        │   └── result/runtime.yaml
         └── notebooks/rNN_<run>.ipynb
 ```
 
@@ -67,10 +92,10 @@ Execution flow
 
 Two execution paths:
 
-**(a) Notebook (papermill)** — standard path via `bash runs/<RUN>.sh`:
+**(a) Notebook (papermill)** — standard path via `bash runs/<RUN>/<RUN>.sh`:
   1. `convert_to_notebooks.py` converts `.py` → `.ipynb` (template)
   2. `papermill` injects CONFIG + executes → `notebooks/<RUN>.ipynb`
-  3. `run.sh` writes `results/<RUN>/runtime.yaml`
+  3. the Ticket writes `$OUTPUT_ROOT/<task>/runs/<RUN>/result/runtime.yaml`
 
 **(b) CLI (direct)** — for parallel workers or scripted pipelines:
   ```
@@ -92,8 +117,8 @@ names the config's `cohort:` / target and fails otherwise. Review a shared
 cook worker for this before adding a Run to it.
 
 Adding a dataset by copying a Job. Copy code, configs, Tickets, and Task
-pages; never `results/`, `notebooks/`, outline logs, or another Job's
-review. Then, before the first Run:
+pages; never a Run's `result/`, `passes/` or `run.yaml` card (an unmoved
+Block's `results/`), `notebooks/`, outline logs, or another Job's review. Then, before the first Run:
   1. Retarget the one dataset-defaults file (`src/config-defaults.yaml`) and
      rename Job/Task strings; grep the old dataset name to zero hits.
   2. Every Task Folder has its same-stem page (`tNN_<task>/tNN_<task>.md`);
@@ -133,11 +158,11 @@ Stage    Partitions     CLI flags                                    Notebook pa
 SourceFn Block pattern
 ----------------------
 
-Source is Block `b01` (see `haipipe-task/ref/hierarchy.md` § Block number
+Source is Block `b01` (see `haipipe-task/ref/pipeline-blocks.md` § Block number
 ranges). Its output is `ProcName_to_ProcDf`: one table (ProcDf) per ProcName.
 Reference implementation: REACH-SPACE
 `examples/Project-REACH-PD2D/work/b01_sourcestore/` (one dataset) and WellDoc-SPACE
-`examples-1-data/Proj01-CGM-RawData/tasks/b01_sourcestore/` (11 datasets, five
+`examples-1-data/Proj01-CGM-RawData/work/b01_sourcestore/` (11 datasets, five
 topic Jobs, a fixed card number per ProcName `t11`-`t26`, cross-dataset checks
 in `j49_procdf_coverage`; migrated 260923).
 
@@ -145,14 +170,14 @@ in `j49_procdf_coverage`; migrated 260923).
 b01_sourcestore/
 ├── src/contract_card.py                   shared by every topic Job
 ├── j01_procdf_<topic>/                    topic Job: the written contract of one topic's ProcNames
-│   ├── t01_procdf_<ProcName>/             config r01_card.yaml IS the contract
+│   ├── t01_procdf_<ProcName>/             the config of Run r01_card IS the contract
 │   └── ...
 ├── j02_procdf_<topic>/ ...                j01-j49: built once, every dataset
 ├── j49_procdf_coverage/t01_coverage_matrix/   only with 2+ datasets: dataset × ProcName stored?
 └── j51_<cohort>_v<yymmdd>_source/        dataset Job: j51-j99, same number in b00-b03
     ├── t01_sourcefn_develop_and_use/
-    │   ├── runs/r01_build.cmd              regenerates code/haifn/fn_source/<SourceFn>.py
-    │   └── runs/r02_materialize.cmd        fills 1-SourceStore/<dataset>/@<SourceFn>/
+    │   ├── runs/r01_build/r01_build.cmd              regenerates code/haifn/fn_source/<SourceFn>.py
+    │   └── runs/r02_materialize/r02_materialize.cmd  fills 1-SourceStore/<dataset>/@<SourceFn>/
     ├── t02_conformance_check/              this SourceSet vs every contract
     ├── t11_procdf_<ProcName>/              card of a STORED table, in the dataset's table order
     └── ...
@@ -161,7 +186,7 @@ b01_sourcestore/
 - Contracts are grouped by topic (cohort, one signal family, EHR context),
   one Job each; the dataset Job lists its tables in that same topic order,
   numbered `t11` onward. The numbers match `b00`'s only when raw tables map
-  one to one onto ProcNames (see `haipipe-task/ref/hierarchy.md`). A contract column
+  one to one onto ProcNames (see `haipipe-task/ref/pipeline-blocks.md`). A contract column
   follows the SourceFn's existing name where there is one, else CamelCase
   (`cohort_id` → `PatientID`). Every raw column is in the contract, so
   nothing is dropped silently.
@@ -181,7 +206,7 @@ b01_sourcestore/
   ticket, as in Project-0 J21: the ticket deploys, runs the Task's ONE entry
   `scripts/run_<task>.py` (first line `# Databricks notebook source`, a `RUNS`
   map, then `code/haiutils/haistep/task_entry.py` `pick_run` + `run_task`)
-  inline on the cluster, and fetches `results/<run>/`. Workers are
+  inline on the cluster, and fetches `runs/<run>/result/`. Workers are
   `main(ctx)`; they write only counts and cards into `ctx.out`. Each Job has
   `sbatch/run_all.cmd`, and every Task has a bundle job generated by
   `safer/scripts/gen_project_run_jobs.py`; `safer/scripts/check_run_tickets.py`
@@ -285,8 +310,8 @@ Commands
 --------
 
 ```
-/haipipe-task-for-data                              ASK project / group / name
-/haipipe-task-for-data <project> <group> <name>     scaffold direct
+/haipipe-task-for-data                                 ASK project / Block / Job / Task
+/haipipe-task-for-data <project> <block>/<job> <task>  scaffold direct
 ```
 
 
@@ -299,8 +324,9 @@ Summary:
   1. Identify project + canonical `bNN_*` Block and `jNN_*` Job.
   2. Collect Task metadata (`tNN_*`, stage, Page Face, `_meta` block).
   3. Copy notebook template from `haistepnb/{N}_{stage}_nb.py`, set CONFIG default.
-  4. Seed `scripts/config/rNN_<run>.yaml` from `ref/config-seed.yaml`.
-  5. Copy run-script from `../../haipipe-task/ref/run-sh-template.sh`.
+  4. Seed `runs/rNN_<run>/config.yaml` from `ref/config-seed.yaml`.
+  5. Copy run-script from `../../haipipe-task/ref/run-sh-template.sh` to
+     `runs/rNN_<run>/rNN_<run>.sh`; write its card `runs/rNN_<run>/run.yaml`.
   6. Suggest next via cross-skill link.
   7. Emit return contract.
 
@@ -314,7 +340,8 @@ Summary:
   1. Detect stage from script imports (SourceSet/RecordSet/CaseSet/AIData).
   2. Read config for partition_number and stage-specific args.
   3. Execute via notebook (run.sh) or CLI (python -m scripts.haistepcli.{stage}).
-  4. Write `results/rNN_<run>/runtime.yaml` inside the Task Folder.
+  4. Write `$OUTPUT_ROOT/<task>/runs/rNN_<run>/result/runtime.yaml` (inside the Task Folder
+     when the Job serves itself).
   5. Emit return contract.
 
 
@@ -340,4 +367,4 @@ ref/workflow-plan-sample.yaml     ← script-level phases for this type
 ```
 
 Schema source of truth:
-  task/haipipe-workflow/ref/plan-schema.md
+  project/haipipe-run/ref/plan-schema.md

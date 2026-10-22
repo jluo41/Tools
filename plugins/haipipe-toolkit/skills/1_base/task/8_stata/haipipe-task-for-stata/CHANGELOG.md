@@ -6,6 +6,22 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.4.0] · 2026-10-21 · One folder per Run, and a Type contract
+
+- SKILL.md opens with `## Type contract` (haipipe-task ref/types.md): task-type
+  `stata-cms | stata-case | stata-data | stata-reg`, roles trial, make, describe.
+- Every layout statement names the Run folder: `runs/<run>/<run>.ps1`, `runs/<run>/config.do`,
+  `runs/<run>/run.yaml`, Result `$OUTPUT_ROOT/<task>/runs/<run>/result/`; a reg Run keeps only
+  RUN-REPORT.md, tables/ and describe/ in `result/` and each execution's logs, .done and
+  runtime.yaml in `passes/pNN-<MMDD>/`. The flat layout is named only as what an unmoved Block has.
+- Ticket templates find the Task in both layouts (a ticket in `runs/` is flat, its Task the parent;
+  else its Task is the grandparent) and show the two-line caller as the current form; the runner
+  template takes the Run's config path. Proved with pwsh on a scratch tree, Stata stubbed.
+- The dispatcher takes the Run's Task-relative config path (a bare name still means
+  `scripts/config/<name>.do`); reg Runs export `HAIPIPE_PASS_DIR`; the reg seed drops `res_root`.
+- ref/stata-dialect.md: runtime.yaml is required in every layout; RUNNAME grammars are `rNN_`;
+  plan samples say `target: work/`; STATATMP goes to `_WorkSpace/_stata-tmp/<run>`, never `result/`.
+
 ## [0.3.3] · 2026-10-09 · Theme folders are singular
 
 - Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,

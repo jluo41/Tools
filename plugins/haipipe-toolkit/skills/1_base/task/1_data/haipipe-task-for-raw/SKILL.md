@@ -10,8 +10,8 @@ description: >-
   /haipipe-task when task-type=raw. Cross-references /haipipe-data-raw.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.5.8"
-  last_updated: "2026-10-09"
+  version: "0.6.0"
+  last_updated: "2026-10-21"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -22,9 +22,33 @@ Scaffolds a **raw extraction job** — a runnable example that extracts source t
 In **Pattern 1** (non-PHI) the parquet is then processed locally with Python (pandas) and heavy outputs land in `_WorkSpace/0-RawDataStore/<raw_data_name>/`; in **Pattern 2** (PHI, server-resident — see below) everything stays on the catalog volume.
 The job keeps scripts, configs, and convert-only notebooks either way.
 
-**Invocation modes (see `../../haipipe-task/ref/invocation-modes.md`):** interactive (a human steers; missing fields get ASKed) OR headless (a full spec → run silently, no ASK).
+**Invocation modes (see `../../haipipe-task/ref/types.md` § Asked or silent):** interactive (a human steers; missing fields get ASKed) OR headless (a full spec → run silently, no ASK).
 `haipipe-task-creator-agent` calls this skill headless during fan-out, then authors the `<TASK>.py` body.
 Always end with the structured return block (status / task_folder / run_name / files).
+
+## Type contract
+
+```yaml
+task-type: raw
+skill: haipipe-task-for-raw
+does: extract one cohort's tables from an operational database into RawStore as a versioned
+  dataset <cohort>-v<yymmdd>, or profile and route that dataset version in the b00 Block
+worker: scripts/<worker>.py in the Task, Python with SQL strings in percent cells, converted to a
+  notebook and run on Databricks; on a PHI server one entry scripts/run_<task>.py; shared
+  extraction helpers in the Job's src/
+config: runs/<run>/config.yaml, or scripts/config/<run>.yaml in a Block not yet moved; seeded from
+  ref/config-seed.yaml; the Job's src/config-defaults.yaml types raw_data_name once
+ticket: runs/<run>/<run>.sh from ref/run-databricks-sh-template.sh (it converts only; the cluster
+  executes), or runs/<run>/<run>.cmd on a PHI server
+result: $OUTPUT_ROOT/<task>/runs/<run>/result/ with runtime.yaml and manifest.json; a full-read
+  Run adds description.json
+heavy: _WorkSpace/0-RawDataStore/<raw_data_name>/ (Pattern 1), or the catalog volume
+  <VOLUME_BASE>/0-RawDataStore/<raw_data_name>/ for PHI (Pattern 2)
+roles: [make, describe, check]
+companions: [haipipe-data-raw, haipipe-data-source, haipipe-data-external,
+  haipipe-task-for-description]
+plan_sample: none
+```
 
 Store boundary
 --------------
@@ -66,17 +90,19 @@ work/bNN_<raw_block>/
     └── tNN_<raw_table_or_step>/
         ├── tNN_<raw_table_or_step>.md
         ├── scripts/<worker>.py              SQL strings in Python; # %% cells
-        ├── scripts/config/rNN_<run>.yaml
-        ├── runs/rNN_<run>.sh
-        ├── results/rNN_<run>/runtime.yaml
+        ├── runs/rNN_<run>/                  one folder per Run
+        │   ├── rNN_<run>.sh                 the Ticket (.cmd on a PHI server)
+        │   ├── config.yaml
+        │   ├── run.yaml                     its card (haipipe-run)
+        │   └── result/runtime.yaml
         └── notebooks/rNN_<run>.ipynb
 ```
 
-Two kinds of raw Job, never in one Block (see `haipipe-task/ref/hierarchy.md` § Block
+Two kinds of raw Job, never in one Block (see `haipipe-task/ref/pipeline-blocks.md` § Block
 number ranges):
 - **Extraction Job**: pulls tables from an operational database into
   `0-RawDataStore/<dataset>/`. It lives in its own extraction Project, e.g.
-  REACH `Project-0-EHR-Description/tasks/b01_reach_jhu/j22_pd2d_raw_extraction`.
+  REACH `Project-0-EHR-Description/work/b01_reach_jhu/j22_pd2d_raw_extraction`.
   The Job's `src/config-defaults.yaml` types `raw_data_name` once; a refresh
   changes that line and never writes into another version's folder.
 - **Raw understanding Block `b00`**: in every Project that USES the data, one
@@ -89,7 +115,7 @@ Raw understanding Block (`b00`)
 -------------------------------
 
 Reference implementations: REACH-SPACE `examples/Project-REACH-PD2D/work/b00_rawdata/`
-(one dataset) and WellDoc-SPACE `examples-1-data/Proj01-CGM-RawData/tasks/b00_rawdata/`
+(one dataset) and WellDoc-SPACE `examples-1-data/Proj01-CGM-RawData/work/b00_rawdata/`
 (14 datasets in seven raw families, Jobs `j51`-`j96`; migrated 260923).
 
 ```
@@ -107,7 +133,7 @@ b00_rawdata/
 ```
 
 - The Job number is the dataset's number in `b01` to `b03` too
-  (`b01/j51_<cohort>_v<yymmdd>_source`); see `haipipe-task/ref/hierarchy.md`.
+  (`b01/j51_<cohort>_v<yymmdd>_source`); see `haipipe-task/ref/pipeline-blocks.md`.
   `t01`-`t09` cover the whole dataset, `t11` onward its tables, `t91`+ close it.
 - Keep only Tasks a person reads. WellDoc Proj01 has three kinds per dataset: `t01` for its
   files (`r01` what is there, `r04` where each goes), one Task per table it carries, and `t93`
@@ -183,7 +209,7 @@ _WorkSpace/                                   fixed, un-dated
 notice, and its table-timestamp catalog (`information_schema`) is
 permission-denied on REACH. The signal is the table census: rerun the census
 Run that records `n_rows` per source table (REACH:
-`Project-0-EHR-Description/tasks/b01_reach_jhu/j01_table_census/t01_table_catalog`,
+`Project-0-EHR-Description/work/b01_reach_jhu/j01_table_census/t01_table_catalog`,
 Run `r01_deid_derived`), fetch it, and `git diff` its committed
 `table_catalog.csv`. Changed `n_rows` on the tables the extraction reads means
 the source was refreshed: cut a new version. No change means no new data. It
@@ -232,7 +258,7 @@ Current shape: REACH-SPACE Project-0-EHR-Description
 `work/b01_reach_jhu/j21_adhd_raw_extraction/` (and `j22_pd2d_...`). One
 extraction Job; `src/config-defaults.yaml` holds `volume_base` and the ONE
 versioned `raw_data_name` (`reach-adhd-v260922`), so a refresh is one edit;
-each Task has one entry `scripts/run_<task>.py` and `runs/rNN_<run>.cmd`
+each Task has one entry `scripts/run_<task>.py` and `runs/rNN_<run>/rNN_<run>.cmd`
 tickets; `sbatch/run_all.cmd` runs the Job and writes `_FROZEN.yaml` after
 the last Run. No `.ipynb`, no `.sh`.
 
@@ -271,7 +297,7 @@ Unlike other task-types that use papermill for local execution, raw extraction t
 The run script only converts the `.py` to `.ipynb` — it does NOT execute locally.
 
 Extraction Run procedure:
-  1. `runs/<RUN>.sh` converts `.py` → `.ipynb` and writes `runtime.yaml`
+  1. `runs/<RUN>/<RUN>.sh` converts `.py` → `.ipynb` and writes `runs/<RUN>/result/runtime.yaml`
   2. User uploads `.ipynb` to Databricks workspace (browser Import when no
      CLI is allowed; keep converted stage notebooks in the group's
      `_databricks/` folder)
@@ -328,8 +354,8 @@ Commands
 --------
 
 ```
-/haipipe-task-for-raw                              ASK project / group / name
-/haipipe-task-for-raw <project> <group> <name>     scaffold direct
+/haipipe-task-for-raw                                 ASK project / Block / Job / Task
+/haipipe-task-for-raw <project> <block>/<job> <task>  scaffold direct
 ```
 
 
@@ -341,10 +367,10 @@ Summary:
 
   1. Identify project + block.
   2. Collect metadata (NN, name, stage number, _meta block).
-  3. Create canonical Task skeleton (`scripts/`, `scripts/config/`, `runs/`,
-     `results/`, `notebooks/`, `draft/`, `workflow/`).
-  4. Seed config from `ref/config-seed.yaml`.
-  5. Copy run-script from `ref/run-databricks-sh-template.sh`.
+  3. Create canonical Task skeleton (`scripts/`, `runs/rNN_<run>/` with its
+     `config.yaml`, `run.yaml` card and `result/`, `notebooks/`, `draft/`, `workflow/`).
+  4. Seed `runs/rNN_<run>/config.yaml` from `ref/config-seed.yaml`.
+  5. Copy run-script from `ref/run-databricks-sh-template.sh` to `runs/rNN_<run>/rNN_<run>.sh`.
   6. Suggest next via cross-skill link.
   7. Emit return contract.
 
@@ -363,7 +389,7 @@ next:      /haipipe-data-raw understand <cohort>  OR  run on Databricks
 MUST NOT
 ---------
 
-- Place heavy artifacts (`.parquet`, `.csv` > 1 MB) in `results/`.
+- Place heavy artifacts (`.parquet`, `.csv` > 1 MB) in a Run's `result/`.
   Heavy outputs land in `_WorkSpace/0-RawDataStore/<raw_data_name>/` (or the
   catalog volume for Pattern 2).
 - Write complex multi-table JOINs in SQL — extract tables separately,
@@ -379,5 +405,5 @@ MUST NOT
 First-run gate
 ---------------
 
-`runs/<RUN>.sh` does NOT execute the notebook — it only converts.
+`runs/<RUN>/<RUN>.sh` does NOT execute the notebook — it only converts.
 The code-review gate is still present (inherited from the base template pattern) but uses `skip_review: true` by default for initial scaffolding since the notebook will be reviewed manually before Databricks upload.

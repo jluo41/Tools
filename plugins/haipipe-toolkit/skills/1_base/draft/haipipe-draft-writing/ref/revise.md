@@ -6,7 +6,10 @@
 person's notes and writes `draft/records/<stem>-revise.md`, one card per change, each a `### ` heading named by its
 kind and sentence (`### Edit · S1 · split into three sentences`; kinds Edit, Review, Section question, never R1-R7),
 then four lines: `Why:`, `Original:`, `Expected:`, `State: proposed`. The person accepts or rejects each; an accepted
-card goes into `## 3 · Draft` by its sentence's address as the next version.
+card goes into `## 3 · Draft` by its sentence's address as the next version. A pass that rewrites the cards file reads
+it first and keeps every decision the person made (a `State:` accepted, rejected or edited, a `Chosen:` option), the card
+otherwise refreshed; only a card still proposed, or written by the writer, takes a new State (JL 261021, whose ✓ on a
+Section question was once written back to proposed).
 
 Each revise run is one **pass**, and the file keeps only the latest (JL 261020: "we just need one of it, do you get
 it? always keep the latest version"): the run rewrites the file as `## Pass <k> · <yymmdd> · on draft v<N>` with its
@@ -36,6 +39,33 @@ the section 'Revise Review Report' and tell me for each rubric, how you feel abo
 the workbench shows ⏳ Running now under Operation. Keep the author's rulings for the Section in `draft/records/<stem>-revise-rules.md`, one line
 each with his words and the date, added the day he gives one; the tab shows it as 📜 Revise rules, and each blind
 reviewer gets it as constraints.
+
+**Every sentence passes.** After the axis rows, the report lists `Sentences:`, one line per sentence
+read in its context (haipipe-draft-review `ref/sentence-logic.md`: its link to the sentence before, the specific
+problem, a logic and a read score out of 10, the rewrite when below 8), then a `Flow P<k>:` line per paragraph; the
+tab shows them as a table. The loop of blind reviews ends only when every sentence scores 8 or more on both, with no
+broken link (JL 261021: "你需要给每一个 sentence 句句过关"; "每句话都要看一下上下文，review 它的逻辑关系是否通顺").
+
+**Sentence numbers follow the text.** After a pass adds, moves or merges a sentence, run `page.py renumber <page>`
+(`--merged S15=S14` for a merged one): the S ids become S1, S2, … in reading order in the Draft, the evidence cards,
+the Revise cards and rules and the comments (JL 261021: "我这 index 是不是要与时俱进一下？").
+
+**Options when the fix is a choice.** Where a sentence can be fixed more than one way (another order, another
+emphasis, another link to the sentence before), its card gives 2 or 3 options, each a whole sentence with its
+approach in a few words: `Option A (<the approach>): <the sentence>`, then `Chosen: A`. The pass applies A by
+default and the card's Expected is A; the person can pick B with ↳ Use B, which makes B the card's words, accepted,
+for the apply step. A mechanical fix (a typo, a number) gets no options (JL 261021: "未必一下子只给一种修改结果，也
+可以说可以用 A、B、C 几个不同的方法去修改，propose 一些选项").
+
+**A person's comments come first.** A person leaves comments on sentences in 5 · Revise; they are in
+`draft/records/<stem>-comments.md`, one `### Comment <n> · S<k>` block each (`Quote:` the words selected, `State:`,
+then `- Note · <time>: …` lines). Each pass reads the open ones before the blind review and treats each as the
+author's ruling: change the sentence as an Edit card carrying `Answers: Comment <n>` (one per sentence, as always),
+or say why not; then append `- Reply · <yyyy-mm-dd HH:MM>: <what changed, and its rule>` (the time from the
+clock), at most two short sentences and 30 words, since the page shows it as the AI's message in the thread and set `State: answered`. Never write a Note line, mark a comment done or delete one: those are the
+person's. A comment that is a rule for the whole Section also goes into the Revise rules as a new R#. A blind
+reviewer never sees the comments; it sees the rules (JL 261021: "你每次改的时候，能不能通过我的 comments 来回复那种？";
+"你的 change 怎么跟我的 comments 一起来做交互、解决我的 comments 呢？").
 
 **LOAD `../../haipipe-draft-workflow/SKILL.md` FIRST.** This file owns the
 Revise Run's delta. The Run contract is `../../../project/haipipe-run/SKILL.md`;

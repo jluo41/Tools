@@ -49,8 +49,8 @@ The PREPARE record of `haipipe-draft-logic` (`ref/context.md`) must be fresh bef
 Do not load or route through a separate Task Page-Type layer. The Folder owner
 and exact Page Face owner supply semantic policy; this skill owns only the Page
 EVIDENCE cycles. For a Task Folder, `haipipe-task` fills both roles and is
-loaded once, with `haipipe-page-task` as its reader-facing companion for Page
-display and prose requirements, not another execution owner.
+loaded once; its `ref/task-page.md` (§ Displays) holds the Page display and
+prose requirements, not another execution owner.
 
 ## ⚡ Run card
 

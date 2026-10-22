@@ -4,7 +4,8 @@ words highlighted, a comment on each, and how each links to our paper (excalidra
     python read_paper.py text  <paper.pdf> --out <folder>   # paper.txt, page-marked, for reading
     python read_paper.py boxes <paper.pdf> --page N [--find s]  # each line's box in PDF points (tables, figures)
     python read_paper.py shoot <folder>/reading.yaml        # shots/<id>-p<N>.jpg, quotes highlighted
-    python read_paper.py paras <folder>/reading.yaml        # shots/para-P<k>.jpg, the Section's paragraphs whole
+    python read_paper.py paras <folder>/reading.yaml        # shots/para-P<k>.jpg, the Section's paragraphs (or
+                                                            #   section.blocks: an abstract's blocks) whole
     python read_paper.py draw  <folder>/reading.yaml        # <folder>/<stem>.excalidraw + .png preview
     python read_paper.py all   <folder>/reading.yaml        # shoot, then draw
 
@@ -518,7 +519,7 @@ def cmd_shoot(a):
     if bad:
         print(f"{len(bad)} excerpt(s) not shot: copy the quote exactly from paper.txt, one sentence within one "
               "page; for a table row or figure, give page + crop box + mark boxes (`boxes` prints them)")
-    if (spec.get("section") or {}).get("pages"):
+    if (spec.get("section") or {}).get("pages") or (spec.get("section") or {}).get("blocks"):
         cmd_paras(a, spec_path, spec, pdf, pages)
     return recs
 
@@ -584,10 +585,70 @@ def section_paragraphs(pages, sec):
     return out
 
 
+def flat(t):
+    return " ".join(str(t).split())
+
+
+def section_blocks(pages, sec):
+    """A Section cut at its own headings instead of its indents: a structured abstract (a Key Points box, then
+    IMPORTANCE, OBJECTIVE … CONCLUSIONS AND RELEVANCE), each block whole (261021, the Abstract canvas's examples).
+    `section.blocks` lists them in reading order, each `{heading, page, name, group}` (or just its heading): a block
+    starts at the line its heading begins, letter case kept so a lower-case "results" inside a block is not the
+    RESULTS heading, and runs down that line's own column (a side column is never mixed in) until another block's
+    heading or a gap of more than two line heights (the end of a box, or of the abstract). Returns paragraphs in
+    `section_paragraphs`' shape, one per block ([] for a heading not found), and the blocks as dicts."""
+    blocks = [dict(b) if isinstance(b, dict) else {"heading": str(b)} for b in sec.get("blocks") or []]
+    heads = [flat(b["heading"]) for b in blocks]
+    out = []
+    for b, head in zip(blocks, heads):
+        hit = None
+        for pn in ([int(b["page"])] if b.get("page") else range(1, len(pages) + 1)):
+            lines = sorted(((bi, li, ln) for bi, bl in enumerate(pages[pn - 1]["blocks"]) for li, ln in enumerate(bl["l"])),
+                           key=lambda t: (t[2]["b"][1], t[2]["b"][0]))
+            hit = next(((pn, bi, li, ln) for bi, li, ln in lines if flat(" ".join(w["t"] for w in ln["w"])).startswith(head)),
+                       None)
+            if hit:
+                break
+        if not hit:
+            print(f"  block heading not found: {head!r}")
+            out.append([])
+            continue
+        pn, _, _, ln = hit
+        hx0, ht, hx1, hb = ln["b"]
+        others = [h for h in heads if h != head]
+
+        def same_column(bx):                          # a side column (Supplemental content, affiliations) never joins
+            return min(bx[2], hx1) - max(bx[0], hx0) >= 0.5 * min(bx[2] - bx[0], hx1 - hx0)
+        col = sorted(((bi, li, l["b"], flat(" ".join(w["t"] for w in l["w"])))
+                      for bi, bl in enumerate(pages[pn - 1]["blocks"]) for li, l in enumerate(bl["l"])
+                      if l["b"][1] >= ht - 1 and same_column(l["b"])), key=lambda t: (t[2][1], t[2][0]))
+        rows = []
+        for bi, li, bx, t in col:
+            if rows and (bx[1] - rows[-1][3][3] > 2 * (hb - ht) or any(t.startswith(o) for o in others)):
+                break
+            rows.append((pn, bi, li, bx, round(hx0, 1)))
+        out.append(rows)
+    return out, blocks
+
+
+def block_words(page, rows, heading, labels):
+    """How many words a block holds, its heading and its run-in labels (Question, Findings, Meaning) left out: a word
+    broken at a line end is one word, and a number printed in thin-spaced groups (12 695 280) is one."""
+    text = ""
+    for k, (_, bi, li, _, _) in enumerate(rows):
+        t = flat(" ".join(w["t"] for w in page(rows[k][0])["blocks"][bi]["l"][li]["w"]))
+        t = t[len(flat(heading)):] if k == 0 and t.startswith(flat(heading)) else t
+        t = next((t[len(x):] for x in labels if t.startswith(x + " ")), t)
+        text = text[:-1] + t.lstrip() if text.endswith("-") and t[:1].islower() else f"{text} {t}"
+    return len(re.sub(r"(?<=\d) (?=\d{3}\b)", "", text).split())
+
+
 def cmd_paras(a, spec_path=None, spec=None, pdf=None, pages=None):
     """shots/para-P<k>.jpg: each paragraph of the Section whole (JL 261020: "你每个自然段应该独立成段，你这截的根本不是
     一个完整的自然段"), its excerpts' quotes highlighted, a paragraph that runs on into the next column stacked
-    below; shots/paras.json names each one's parts and excerpts, and the article kind its running head prints."""
+    below; shots/paras.json names each one's parts and excerpts, and the article kind its running head prints.
+    A reading with `section.blocks` (a structured abstract) is cut at its headings instead, one block a shot, each
+    record with its `name`, its `group` (Key Points or Abstract) and its `words` (section_blocks)."""
     if spec is None:
         spec_path, spec, pdf = load(a.spec)
         pages = words_of(pdf)
@@ -596,7 +657,12 @@ def cmd_paras(a, spec_path=None, spec=None, pdf=None, pages=None):
     shots.mkdir(exist_ok=True)
     for old in shots.glob("para-*.jpg"):
         old.unlink()
-    paras = section_paragraphs(pages, sec)
+    blocks = []
+    if sec.get("blocks"):
+        paras, blocks = section_blocks(pages, sec)
+        sec = {**sec, "pages": sec.get("pages") or [min(r[0] for p in paras for r in p) if any(paras) else 1]}
+    else:
+        paras = section_paragraphs(pages, sec)
     k = DPI / 72
     where = {}                                                        # (page, block, line) -> paragraph
     for i, para in enumerate(paras):
@@ -625,6 +691,8 @@ def cmd_paras(a, spec_path=None, spec=None, pdf=None, pages=None):
     recs = []
     with tempfile.TemporaryDirectory() as tmp:
         for i, para in enumerate(paras):
+            if not para:                                              # a block whose heading is not in the PDF
+                continue
             parts = []
             for pn, c in dict.fromkeys((pn, c) for pn, _, _, _, c in para):
                 page = pages[pn - 1]
@@ -654,10 +722,16 @@ def cmd_paras(a, spec_path=None, spec=None, pdf=None, pages=None):
             sheet.save(out, "JPEG", quality=85, optimize=True)
             recs.append({"p": i + 1, "lines": len(para), "parts": [p.info["box"] for p in parts],
                          "excerpts": marks.get(i, {}).get("ids", []), "shot": str(out.relative_to(spec_path.parent))})
+            if blocks:                                                # a block: its name, its group, its words
+                b = blocks[i]
+                recs[-1].update(name=str(b.get("name") or b["heading"]).strip(), group=str(b.get("group") or ""),
+                                words=block_words(lambda n: pages[n - 1], para, b["heading"], sec.get("labels") or []))
     (shots / "paras.json").write_text(json.dumps({"kind": kind, "paragraphs": recs}, indent=1))
     said = (sec.get("key") or [""])[0]
-    print(f"  {len(recs)} paragraphs ({said or 'no count in section.key'}), {kind or 'kind not printed'}: "
-          + ", ".join(f"P{r['p']} {r['lines']} lines {'+'.join(r['excerpts']) or '-'}" for r in recs))
+    print(f"  {len(recs)} {'blocks' if blocks else 'paragraphs'} ({said or 'no count in section.key'}), "
+          f"{kind or 'kind not printed'}: " + ", ".join(
+              f"{r.get('name') or 'P%d' % r['p']} {r['lines']} lines{' %d words' % r['words'] if 'words' in r else ''} "
+              f"{'+'.join(r['excerpts']) or '-'}" for r in recs))
     return recs
 
 

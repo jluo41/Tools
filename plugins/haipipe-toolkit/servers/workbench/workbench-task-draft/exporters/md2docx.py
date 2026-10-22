@@ -987,7 +987,10 @@ class Docx:
             lead = body.split("\u00b7")[0]
             for tok in NUMTOK.findall(lead):
                 if len(tok) > 1:
-                    i = text.find(tok, lo, hi)
+                    # a citation's number is its year, and its in-text citation comes after the words it backs, so
+                    # the last match is the citation, not an earlier year in the sentence ("in early 2026, ... (Gottfried
+                    # et al. 2026)", t01_introduction 261021)
+                    i = text.rfind(tok, lo, hi) if kind == "Citation" else text.find(tok, lo, hi)
                     if i >= 0:
                         span = (i, i + len(tok))
                         break

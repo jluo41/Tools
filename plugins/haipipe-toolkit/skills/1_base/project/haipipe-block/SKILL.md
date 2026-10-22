@@ -11,7 +11,7 @@ description: >-
   /haipipe-board. Was haipipe-board until 2026-10-12.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "2.1.0"
+  version: "2.2.0"
   last_updated: "2026-10-12"
   aliases: [haipipe-board]
   # version history: ./CHANGELOG.md
@@ -71,13 +71,16 @@ Create a Block
 
 ```bash
 S=Tools/plugins/haipipe-toolkit/skills/1_base/project/haipipe-block/scripts
-python $S/new_board.py <Project>/tasks --slug <topic> --title '<title>' [--questions] [--dry-run]
+python $S/new_board.py <Project>/work --slug <topic> --title '<title>' [--no-questions] [--dry-run]
 ```
 
 1. **Number**: the next free `bNN` in the Theme folder, or `--nn`; a taken one is refused.
 2. **Kind**: the Theme folder's default `board-kind`, or `--kind`.
 3. **Face only**: `board.md`; no empty folder until its first content.
-4. **Questions**: `--questions` adds an empty register; add each with `haipipe-report`.
+4. **Questions**: an empty register comes by default (`--no-questions` leaves it out); add each with
+   `haipipe-report`.
+5. **Born current**: a work Block's face also gets `workbench-layout: workflow` and an empty `## Deliverables`,
+   so `/wb update <Block>` reports nothing missing; later, as Jobs arrive, `/wb update` keeps it current.
 5. **Check**: `haipipe-project audit <block>` for its shape.
 
 

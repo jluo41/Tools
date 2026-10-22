@@ -72,5 +72,26 @@ class NewBoardTest(unittest.TestCase):
         self.assertEqual(check_report.rows(md.parent), ([], []))
 
 
+class BornCurrentTest(unittest.TestCase):
+    """JL 261021: "when I open a new block, how could I make it to update to the latest version"."""
+
+    def test_a_work_block_is_born_on_todays_layout(self):
+        import sys
+        with tempfile.TemporaryDirectory() as tmp:
+            work = Path(tmp) / "Project-Example" / "work"
+            work.mkdir(parents=True)
+            md = new_board.new_board(work, "pool_tables", "Pool tables", spine="s", close="c")
+            text = md.read_text(encoding="utf-8")
+            for line in ("board-kind: task-block", "workbench-layout: workflow", "questions: []", "deliverables: []"):
+                self.assertIn(line, text)
+            sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "haipipe-project" / "scripts"))
+            import ladder
+            self.assertEqual([], [m for _, m in ladder.today_findings(md.parent)])   # /wb update: today ok
+            cowork = Path(tmp) / "Project-Example" / "cowork"
+            cowork.mkdir()
+            other = new_board.new_board(cowork, "notes", "Notes").read_text(encoding="utf-8")
+            self.assertNotIn("workbench-layout", other)                          # only a work Block
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -486,7 +486,7 @@ def page_folder_context(f, root):
             # `for-*` names until their migration is explicit.
             page_skill = {
                 "insight": "haipipe-page-insight",
-                "task": "haipipe-page-task",
+                "task": "haipipe-task",          # its ref/task-page.md; haipipe-page-task merged in (261021)
                 "discovery": "haipipe-discovery",
             }.get(page_type, f"haipipe-page-for-{page_type}")
             out.append(f"  · {field}: {page_type}  (load {page_skill} before shaping anything)")

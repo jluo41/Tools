@@ -1,5 +1,6 @@
 set linesize 255
 // <NN>_<stage>_pipeline.do - one step, one year. Args: <config> <step> <year> <results_dir> <ws_root>
+// <config> = the Run's config, relative to the Task folder: runs/<run>/config.do (a flat Block: scripts/config/<run>.do; a bare name still means that)
 // Steps: <step_a> | <step_b> | ... | summary   (data/reg: no year axis -> 4 args)
 
 args config_file step year results_dir ws_root
@@ -12,9 +13,13 @@ if "`config_file'" == "" | "`step'" == "" | "`year'" == "" | "`results_dir'" == 
 // ws_root first: the config builds output paths from it
 global ws_root "`ws_root'"
 
-capture do "scripts/config/`config_file'.do"
+local config_path "`config_file'"
+if substr("`config_path'", -3, 3) != ".do" {
+    local config_path "scripts/config/`config_file'.do"
+}
+capture do "`config_path'"
 if _rc != 0 {
-    display as error "ERROR: could not load scripts/config/`config_file'.do"
+    display as error "ERROR: could not load `config_path'"
     exit 198
 }
 

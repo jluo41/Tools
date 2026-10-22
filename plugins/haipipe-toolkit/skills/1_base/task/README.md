@@ -1,7 +1,9 @@
 # task
 
 `task/` owns executable Task Folders and their Plan → Build → Execute → Report lifecycle.
-The hierarchy is `work/bNN_<block>/jNN_<job>/tNN_<task>` with native `rNN` Runs.
+The hierarchy is `work/bNN_<block>/jNN_<job>/tNN_<task>` with native `rNN` Runs, one folder each in `runs/`.
+`haipipe-task` does two jobs: the Task level (`ref/task-folder.md`, `ref/lifecycle.md`, `ref/task-page.md`)
+and the door to every type (`ref/types.md`); each `haipipe-task-for-<type>` carries one `## Type contract`.
 A Workflow is a list of Runs: `run_specs` defines them, routes form the execution graph,
 and reports bind actual Run Instances to definitions and durable receipts.
 Internal Steps, review gates, and the four lifecycle commands do not allocate Runs.
@@ -68,10 +70,8 @@ owners.
 
 ```text
 task/haipipe-task/ref/
-└── task-page.md                 one Task Folder and a run-bound human reading
-
-task/haipipe-page-task/
-└── SKILL.md                     display-rich reader contract for Task Pages
+└── task-page.md                 one Task Folder, its run-bound reading, and § Displays
+                                 (the display-rich contract; haipipe-page-task until 261021)
 
 insight/
 └── haipipe-page-insight/       Task-side topic/data instance with item Runs and DIKW Results
@@ -81,9 +81,9 @@ The preferred public Insight entry is `/haipipe-insight task`; the older
 `/haipipe-task insight` form remains a compatibility alias.
 
 `haipipe-task` remains the canonical owner of Task Folder identity, execution,
-results, and closure. `haipipe-page-task` extends the same-stem reader Page
-with the required evidence-display inventory: substantive tables, figures, and
-method/provenance diagrams. An Insight Page may read several Task Pages, Task
+results, and closure. Its `ref/task-page.md` § Displays extends the same-stem
+reader Page with the required evidence-display inventory: substantive tables,
+figures, and method/provenance diagrams. An Insight Page may read several Task Pages, Task
 Run Results, Discovery Pages, or prior Insight Pages. It remains
 consumer-neutral. Each item owns a question, local ticket, execution versions,
 and DIKW/RF Result; its workflow and generated item table live with the skill.
@@ -93,7 +93,7 @@ Task does not write consumer stakes or claim that their Page content is accepted
 
 ## Boundary (self-contained by design)
 
-Tasks execute internal work: a task ends at Report, having produced `results/`, and stops. Whoever consumes a task's results records the link on THEIR side; this layer keeps consumer claims out of execution inputs and delegates interpretation to the owning family.
+Tasks execute internal work: a task ends at Report, having produced its Runs' `runs/<run>/result/`, and stops. Whoever consumes a task's results records the link on THEIR side; this layer keeps consumer claims out of execution inputs and delegates interpretation to the owning family.
 
 Self-contained does not mean opaque. Questions resolve through the normal
 Run/Result contract: reuse an existing full Run id when it answers the scope;

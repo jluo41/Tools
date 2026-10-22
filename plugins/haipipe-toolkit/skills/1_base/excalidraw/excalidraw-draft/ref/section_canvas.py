@@ -409,7 +409,9 @@ def examples_frame(d, topic, main, spec):
     reader sees what it is; then the Section paragraph by paragraph, each cut whole from the PDF
     (`shots/para-P<k>.jpg`, `read_paper.py paras`) under the moves it makes, the sentence that carries each move
     highlighted (JL 261020: "paper 的名字一定要大写一下"; "这都是啥 paper 啊？"; "你每个自然段应该独立成段"). A reading
-    shot before paragraphs were cut shows its excerpts instead. Returns the frame, or None with no readings."""
+    shot before paragraphs were cut shows its excerpts instead. A reading cut into blocks (`section.blocks`: a
+    structured abstract, its Key Points box first) names each block and its words, and sums the words by group
+    ("Key Points 94 words · Abstract 374 words"). Returns the frame, or None with no readings."""
     reads = sorted((Path(topic) / 'reads').glob('*/reading.yaml'))
     if not reads:
         return None
@@ -418,14 +420,16 @@ def examples_frame(d, topic, main, spec):
                           or [None, ''])[1]
     venues = {venue_of(y) for _, y in papers} - {''}
     name = (spec.get('title') or '').split(' · ')[0] or 'Section'
+    blocks = any((y.get('section') or {}).get('blocks') for _, y in papers)    # an abstract is written, not opened
+    verb, unit = ('write', 'block') if blocks else ('open', 'paragraph')
     X0, CW, GAP = main['x'] + main['width'] + 200, 620, 40
     g = d.frame(spec.get('examples_title') or f"How {len(papers)} {venues.pop() + ' ' if len(venues) == 1 else ''}"
-                f"papers open their {name}", 80 + len(papers) * CW + (len(papers) - 1) * GAP, 1600)
+                f"papers {verb} their {name}", 80 + len(papers) * CW + (len(papers) - 1) * GAP, 1600)
     g['x'], g['y'] = X0, main['y']
     canvas.reads_down(g)
     d.text(X0 + 40, 24, g['name'], 60)
-    d.text(X0 + 42, 104, spec.get('examples_subtitle') or f"read in {Path(topic).name}: each paragraph whole, as printed, "
-           "the sentence that carries its move highlighted", 26, GREY)
+    d.text(X0 + 42, 104, spec.get('examples_subtitle') or f"read in {Path(topic).name}: each {unit} whole, as printed, "
+           f"the sentence that carries its {'job' if blocks else 'move'} highlighted", 26, GREY)
     # its key point, the one slight colour: what the papers share, from the topic face's `key:` (principle 5)
     face_ = next(iter(sorted(Path(topic).glob(f"{Path(topic).name}.md"))), None)
     y_ = re.search(r"(?ms)^```yaml\n(.*?)^```", face_.read_text(encoding='utf-8')) if face_ else None
@@ -453,15 +457,25 @@ def examples_frame(d, topic, main, spec):
         words = next((m.group(0) for k in (y.get('section') or {}).get('key') or []
                       if (m := re.search(r"about \d[\d,]* words", str(k)))), '')
         if paras.get('paragraphs'):
-            yy = d.para(x, yy, " · ".join(v for v in (f"{len(paras['paragraphs'])} paragraphs", words) if v), CW, 22) + 4
+            sums = {}                                    # a block's words, summed by its group (Key Points, Abstract)
+            for p in paras['paragraphs']:
+                if p.get('name'):
+                    sums[p.get('group') or p['name']] = sums.get(p.get('group') or p['name'], 0) + int(p.get('words') or 0)
+            count = (" · ".join(f"{k_} {n_} words" for k_, n_ in sums.items()) if sums else
+                     " · ".join(v for v in (f"{len(paras['paragraphs'])} paragraphs", words) if v))
+            yy = d.para(x, yy, count, CW, 22) + 4
+            heads = {p['p']: (f"{title_case(p['name'].lower())} · {p['words']} words" if p.get('name') else f"P{p['p']}")
+                     for p in paras['paragraphs']}
             moves = {}                                   # each paragraph's moves: the logic steps its excerpts carry
             for item in y.get('logic') or []:
                 k = next((p['p'] for p in paras['paragraphs'] for e in item.get('excerpts') or [] if e in p['excerpts']),
                          None)
                 if k:
-                    moves.setdefault(k, []).append(re.sub(r"^P\d+\s*·\s*", "", str(item.get('text', ''))))
+                    named = next((p['name'] for p in paras['paragraphs'] if p['p'] == k and p.get('name')), '')
+                    lead = r"^(P\d+" + (r"|" + re.escape(named) if named else "") + r")\s*·\s*"
+                    moves.setdefault(k, []).append(re.sub(lead, "", str(item.get('text', '')), flags=re.I))
             for p in paras['paragraphs']:
-                label = f"P{p['p']}" + (" · " + " · ".join(moves[p['p']]) if p['p'] in moves else "")
+                label = heads[p['p']] + (" · " + " · ".join(moves[p['p']]) if p['p'] in moves else "")
                 yy = d.para(x, yy + 22, label, CW, 24) + 8
                 shot = r.parent / p['shot']
                 if shot.is_file():
@@ -479,7 +493,7 @@ def examples_frame(d, topic, main, spec):
     g['height'] = bottom + 60
     # the two frames are one act, ours beside theirs, named at the left of the row outside both (principle 3)
     fid, d.fid = d.fid, None
-    d.para(main['x'] - 820, main['y'] + 20, f"Act 1 · our {name}, beside how {len(papers)} published papers open "
+    d.para(main['x'] - 820, main['y'] + 20, f"Act 1 · our {name}, beside how {len(papers)} published papers {verb} "
            "theirs", 760, 56)
     d.fid = fid
     return g

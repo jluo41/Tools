@@ -113,6 +113,21 @@ def write_ticket(folder: Path, lane: str, author: str | None = None) -> Path:
     return ticket
 
 
+def mark_card(folder: Path, lane: str, ok: bool) -> None:
+    """Record how the lane's build went on its Run card: done, or failed when a gate held it, so a held
+    LaTeX or Word lane never reads as built."""
+    import yaml
+    from src.run_folders import ticket_dir
+    card = ticket_dir(folder, RUN_NAMES[lane]) / "run.yaml"
+    if not card.is_file():
+        return
+    value = yaml.safe_load(card.read_text(encoding="utf-8")) or {}
+    status = "done" if ok else "failed"
+    if value.get("status") != status:
+        value["status"] = status
+        card.write_text(yaml.safe_dump(value, sort_keys=False, allow_unicode=True), encoding="utf-8")
+
+
 def export(folder: Path, lanes, *, author: str | None = None, root: Path | None = None) -> dict:
     """Run the `latex` and/or `word` door for the Page in `folder`; {lane: result}."""
     folder = Path(folder).resolve()

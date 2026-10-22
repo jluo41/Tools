@@ -1,5 +1,12 @@
 # haipipe-evidence · Changelog
 
+## 0.7.0 · 2026-10-21 · `cards.py bib`: the page's .bib from its cited Runs
+
+- t01_introduction v0.5's LaTeX printed 8 of 10 citations as "?": its `draft/evidence/bibex/` held 2 entries kept by
+  hand. `cards.py bib <cards.yaml> --draft <draft.md> --write` writes it from the draft's `\citep` keys in order, each
+  entry copied from the one-entry .bib of the Run its CITE item names, a comment saying which Run and whether the entry
+  is the Run's export or composed and waiting for a person; a key no CITE item names is reported, exit 1.
+
 ## 0.6.1 · 2026-10-21 · a fact may be a table's rows
 
 - `facts()` read only a quoted sentence directly followed by ` Locator`, so Oca 2023's counts (b01.j01.t01.r20: T05 Table 1

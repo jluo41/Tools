@@ -1,11 +1,11 @@
 ---
 name: haipipe-task-for-algo
-description: "algo-dev job specialist: scaffolds {NN}_<name>/ jobs in the algo-dev block (default X_algo) that smoke-test a newly developed algorithm class end-to-end on a TINY config. NOT full training -- see /haipipe-task-for-fit. Called by /haipipe-task when task-type=algo. Cross-references /haipipe-nn-algo."
-argument-hint: "[project_id] [group] [job-name]"
+description: "algo-dev Task specialist: scaffolds jNN_<job>/tNN_<task>/ Task folders in an algo-dev Block that smoke-test a newly developed algorithm class end-to-end on a TINY config. NOT full training -- see /haipipe-task-for-fit. Called by /haipipe-task when task-type=algo. Cross-references /haipipe-nn-algo."
+argument-hint: "[project_id] [bNN_<block>/jNN_<job>] [tNN_<task>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.1.3"
-  last_updated: "2026-10-09"
+  version: "0.2.0"
+  last_updated: "2026-10-21"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -19,6 +19,25 @@ This is NOT a training run — minimal config, minutes-not-hours, just "did it c
 **Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Phase 2: Build, then authors the `<TASK>.py` body).
 Always end with the structured return block (status / task_folder / run_name / files).
 
+
+## Type contract
+
+```yaml
+task-type: algo
+skill: haipipe-task-for-algo
+does: smoke-test a newly developed algorithm class (forward, loss, one update) end-to-end on a
+  tiny config; not a training run
+worker: scripts/<worker>.py in the Task, Python, calling the algorithm class under
+  code/hainn/algo/<family>/
+config: runs/<run>/config.yaml, or scripts/config/<run>.yaml in a Block not yet moved; seeded from
+  ref/config-seed.yaml (tiny knobs)
+ticket: runs/<run>/<run>.sh, from ../../haipipe-task/ref/run-sh-template.sh
+result: $OUTPUT_ROOT/<task>/runs/<run>/result/ with runtime.yaml and loss.json
+heavy: none
+roles: [trial]
+companions: [haipipe-nn-algo, haipipe-task-for-fit]
+plan_sample: ref/workflow-plan-sample.yaml
+```
 
 
 task-algo vs task-training (don't confuse them)
@@ -49,10 +68,12 @@ work/bNN_<block>/
         ├── draft/
         ├── workflow/                plan.yaml + report.yaml
         ├── scripts/<worker>.py
-        ├── scripts/config/rNN_<run>.yaml
-        └── runs/rNN_<run>.sh
+        └── runs/rNN_<run>/              one folder per Run
+            ├── rNN_<run>.sh             the Ticket
+            ├── config.yaml
+            └── run.yaml                 its card (haipipe-run), role: trial
 
-Generated: $OUTPUT_ROOT/tNN_<task>/results/rNN_<run>/
+Generated: $OUTPUT_ROOT/tNN_<task>/runs/rNN_<run>/result/
            $OUTPUT_ROOT/tNN_<task>/notebooks/rNN_<run>.ipynb
 ```
 
@@ -81,9 +102,9 @@ Summary:
 
   1. Identify project + block.
   2. Collect metadata (NN, name, type-specific extras, _meta block).
-  3. Create the canonical Task Page, workflow/, scripts/config/, worker and matching rNN Ticket; resolve generated output through OUTPUT_ROOT.
+  3. Create the canonical Task Page, workflow/, worker and the Run folder `runs/rNN_<run>/` (Ticket, `config.yaml`, `run.yaml` card); resolve generated output through OUTPUT_ROOT.
   4. Seed config from `ref/config-seed.yaml`.
-  5. Copy run-script from `../../haipipe-task/ref/run-sh-template.sh`.
+  5. Copy run-script from `../../haipipe-task/ref/run-sh-template.sh` to `runs/rNN_<run>/rNN_<run>.sh`.
   6. Suggest next via cross-skill link.
   7. Emit return contract.
 
@@ -111,7 +132,7 @@ ref/workflow-plan-sample.yaml     ← Run Spec example with internal domain step
 ```
 
 Schema source of truth:
-  task/haipipe-workflow/ref/plan-schema.md
+  project/haipipe-run/ref/plan-schema.md
 
 Resolve `RESULT_STORE`, then the Job store declaration, then the Job root as OUTPUT_ROOT.
 Use the same output-root contract as `haipipe-task`; no physical output is moved by scaffolding.

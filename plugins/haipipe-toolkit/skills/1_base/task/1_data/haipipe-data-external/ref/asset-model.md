@@ -378,7 +378,7 @@ Build Block (b51)
 =================
 
 External assets are built in an auxiliary Block (`b51`-`b59`, see
-`haipipe-task/ref/hierarchy.md`). One topic Job per group of related assets
+`haipipe-task/ref/pipeline-blocks.md`). One topic Job per group of related assets
 (usually one key kind), one Task per asset, and the asset's contract, builds
 and validations are Runs of that Task:
 

@@ -84,6 +84,24 @@ def _content_span(lines: list) -> tuple[int, int] | None:
     return start + 1, end
 
 
+def _skeleton(page_text: str, plan_text: str) -> list:
+    """The Content's lines laid out from the Draft's `## 3 · Draft`: the Page's title as a `###` heading, then one
+    `#### C<n>.P<m> · <its name>` block per paragraph holding each sentence on its own line, tagged with its address."""
+    match = DRAFT_SECTION.search(plan_text)
+    if not match:
+        return []
+    section = re.split(r"(?m)^## ", plan_text[match.end():], maxsplit=1)[0]
+    title = re.search(r"(?m)^# [^\n·]*·\s*(.+?)\s*$", page_text)
+    out = [""] + ([f"### {title.group(1)}", ""] if title else [])
+    for pid, name, body in re.findall(r"(?ms)^### (C\d+\.P\d+)\b(?:\s*·\s*([^\n]*))?\n(.*?)(?=^### |\Z)", section):
+        sentences = re.findall(r"(?m)^- (?:\[[ xX]\]\s*)?B(\d+)\s*·\s*(?:S\d+[a-z]*\s*·\s*)?(\S.*)$", body)
+        if not sentences:
+            continue
+        out += [f"#### {pid}" + (f" · {name.strip()}" if name else ""), ""]
+        out += [f"{text} <!-- realizes: {pid}.B{b} -->" for b, text in sentences] + [""]
+    return out if len(out) > 3 else []
+
+
 def _heading_blocks(lines: list) -> list:
     """Content lines → [{head, lines}] split at every `###`-or-deeper heading."""
     blocks = [{"head": None, "lines": []}]
@@ -174,6 +192,15 @@ def adopt(target, *, plan: Path | None = None) -> dict:
     if span is None:
         report["refused"].append("the Page has no `## Content` section")
         return report
+    if not any(REALIZES.search(line) for line in lines[span[0]:span[1]]):
+        # a Page whose Content holds no tagged sentence yet (a new Section's placeholder) gets its paragraph blocks
+        # laid out from the Draft, one `####` block per paragraph, which the exporters print as a paragraph break and
+        # never as a heading; the steps below then fill and check it as for any Page (t01_introduction, 261021)
+        skeleton = _skeleton(text, plan_text)
+        if skeleton:
+            lines = lines[:span[0]] + skeleton + lines[span[1]:]
+            span = (span[0], span[0] + len(skeleton))
+            report["changes"].append("laid out the Content's paragraphs from the Draft (it held no tagged sentence)")
     evidence = derive(page, blocks)
     blocks_ = _heading_blocks(lines[span[0]:span[1]])
     on_page: dict = {}

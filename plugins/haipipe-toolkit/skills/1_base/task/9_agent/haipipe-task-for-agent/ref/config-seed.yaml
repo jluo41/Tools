@@ -1,16 +1,16 @@
 # =============================================================================
-# Template for scripts/config/<NAME>.yaml — LLM agent task
+# Template for runs/rNN_<run>/config.yaml — LLM agent task (a Block not yet moved: scripts/config/rNN_<run>.yaml)
 # =============================================================================
 
 _meta:
   purpose: |
-    <e.g., Summarize eval logs across A01.01..05 runs into a markdown digest>
+    <e.g., Summarize eval logs across an eval Task's r01..r05 Runs into a markdown digest>
   note: |
     <e.g., Used Opus 4.7; expect ~3k tokens output; cost ≈ $0.10>
   input: |
-    <e.g., Each run's $OUTPUT_ROOT/<task>/results/rNN_<run>/eval_log.txt; prompts/system.md + user.md>
+    <e.g., Each run's $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/eval_log.txt; scripts/config/prompts/system.md + user.md>
   output: |
-    $OUTPUT_ROOT/<task>/results/rNN_<run>/{transcript.json, summary.md}
+    $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/{transcript.json, summary.md}
 
 
 # =============================================================================
@@ -21,9 +21,9 @@ model: claude-opus-4-8                  # or claude-sonnet-5 / claude-haiku-4-5-
 max_tokens: 4096
 temperature: 0.0
 
-prompts:
-  system: prompts/system.md
-  user:   prompts/user.md
+prompts:                                # Task-relative; every Run of the Task shares them
+  system: scripts/config/prompts/system.md
+  user:   scripts/config/prompts/user.md
 
 tools: []                               # e.g. [Read, Bash] for tool-use loops
 

@@ -154,6 +154,7 @@ def _evidence(folder: Path) -> dict:
             if it.get("run") and project:
                 try:
                     res = CARDS.resolve(project, kind, f"{src}.{it['run']}")
+                    it = {**it, "result": res}
                     if kind == "cite":
                         value = " · ".join(CARDS.paper(res))
                     elif it.get("key"):
@@ -337,14 +338,18 @@ def _inline(text: str, marks: dict) -> str:
     s = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", s)
     s = re.sub(r"`([^`]+)`", r"<code>\1</code>", s)
     s = re.sub(r"⟦([^⟧]*)⟧", r'<span style="color:#e03131;font-weight:600">⟦\1⟧</span>', s)
+    # a citation reads as its keys, quiet and small (JL 261021: "读起来比较乱糟糟的"), not as LaTeX
+    s = re.sub(r"\\citep\{([^}]*)\}", lambda m: '<span class=cite>[' + "; ".join(
+        k.strip() for k in m.group(1).split(",") if k.strip()) + "]</span>", s)
     return re.sub("\x00(\\d+)\x00", lambda m: held[int(m.group(1))], s)
 
 
 def _sentence(item: str, marks: dict) -> str:
-    """A §3 line, `B1 · S1 · text`: its sentence number small and grey, then the sentence."""
+    """A §3 line, `B1 · S1 · text`: its sentence number small and grey, then the sentence, each in its own span, so the
+    text column can hang the numbers in a gutter on the left (CARDS_CSS)."""
     m = re.match(r"^B\d+ · (S\d+[a-z]*) · (.*)$", item)
-    return (f'<span class=mut style="font-size:12px">{esc(m.group(1))}</span> {_inline(m.group(2), marks)}' if m
-            else _inline(item, marks))
+    return (f'<span class="mut s-no" style="font-size:12px">{esc(m.group(1))}</span> '
+            f'<span class=s-tx>{_inline(m.group(2), marks)}</span>' if m else _inline(item, marks))
 
 
 def _md(text: str, marks: dict) -> str:
@@ -423,8 +428,12 @@ def delivery_cards(folder: Path, root: Path, md: Path | None) -> str:
             body = '<p class="mut dl-note">built; no preview for this kind yet</p>'
         else:
             body = '<p class="mut dl-note">not built yet: run Build</p>'
-        cards.append(f'<div class=topic>{head}{legacy_note}{body}</div>')
-    return ("<h2>Deliveries</h2>" + "".join(cards) if cards else
+        # folded until opened: one line per delivery, its state and its files, and the preview on a click (JL 261021:
+        # "你这个东西 by default 它不能够 hide 吗？"); a folded preview is not loaded until then
+        cards.append(f'<details class="topic dl-card"><summary class=dl-sum>{head}</summary>'
+                     f'{legacy_note}{body}</details>')
+    css = '<style>.topic>.dl-sum{align-items:center}.dl-sum .st-bar{flex:1}</style>'   # the ▸ is .topic's own
+    return (css + "<h2>Deliveries</h2>" + "".join(cards) if cards else
             '<p class=space-empty>Nothing built yet: delivery/ holds no files. Run Build.</p>')
 
 
@@ -471,7 +480,8 @@ def facts(folder: Path, root: Path) -> dict:
 def states(f: dict) -> dict:
     """Each step's chip, from the files: done, next, waiting on a person (sign, send), asked, optional or later."""
     d, ev = f["draft"], f["ev"]
-    written = bool(d and d["text"])
+    # a sentence, not only the `### C1.P1` headings an empty § 3 is laid out with
+    written = bool(d and any(re.search(r"(?m)^(?![ \t]*(?:#|<!--))[ \t]*\S", b) for _, b in d["text"]))
     needed = any(it["state"] != "have" for c in ev["cards"] for it in c["items"])
     open_asks = any(not ticked for ticked, _ in ev["proposals"])
     return {"Studio": "done" if f["topics"] else "optional",
@@ -1196,6 +1206,7 @@ def _text_and_editor(d: dict, ev: dict, root: Path, folder: Path) -> str:
     marks = _marks(ev)
     text = "".join((f'<h3 style="margin:14px 0 4px">{esc(t)}</h3>' if len(d["text"]) > 1 else "") + _md(b, marks)
                    for t, b in d["text"])
+    text = _embed_displays(text, d, _displays(folder, d), root)
     right = (f'<h4 style="margin:0 0 4px">✍️ Write it yourself {pop(src.replace("&embed=1", ""), "Write it yourself", "↗")}</h4>'
              f'<iframe class=space-frame title="Write it yourself" src="{esc(src)}" style="{FIT_STYLE}" '
              f'onload="{FIT};window.wrHook&&window.wrHook(this)"></iframe>')
@@ -1239,8 +1250,9 @@ WRITE_JS = """<style>
      box is left, then reads it again with its evidence boxed */
   d.addEventListener('input',function(e){var r=e.target.closest&&e.target.closest('.revise-rows');if(!r)return;
    [].forEach.call(r.children,function(x){var s=x.getAttribute('data-s'),t=s&&sp.querySelector('.rv-left li[data-s="'+s+'"]');
-    if(!t)return;var w=x.innerText.replace(/\\s+/g,' ').trim(),l=t.firstElementChild;
-    if(t.dataset.typed!==w){t.dataset.typed=w;t.textContent=' '+w;if(l&&l.classList.contains('mut'))t.insertBefore(l,t.firstChild);}});});
+    if(!t)return;var w=x.innerText.replace(/\\s+/g,' ').trim(),l=t.firstElementChild,tx=t.querySelector('.s-tx');
+    if(t.dataset.typed!==w){t.dataset.typed=w;if(tx){tx.textContent=w;return;}
+     t.textContent=' '+w;if(l&&l.classList.contains('mut'))t.insertBefore(l,t.firstChild);}});});
   /* the mouse gone from the editor: back to the row being typed in, or nothing lit */
   d.documentElement.addEventListener('mouseleave',function(){var s=at();if(cur&&cur!==s){light(sp,cur,false);cur='';}on(s);});
   /* the editor's own status line, said in the corner: Saving…, then the text again, or why it did not save */
@@ -1356,7 +1368,32 @@ def _ev_card(s: str, rows: list) -> str:
             f'width:100%">{"".join(rows)}</table></div>')
 
 
-def _text_rows(d: dict, marks: dict, right: dict, rest_head: str) -> str:
+def _embed_displays(html: str, d: dict, xs, root: Path) -> str:
+    """Each Table or Figure the text calls, shown under the first sentence that calls it, as it will stand in the paper
+    (JL 261021: "如果我们有图片或者表格的话 ... PNG TO EMBED UNDER THAT SENTENCE"): its rendered preview.png, which
+    opens full size; a unit with only preview.pdf links it; one not built yet says so. The unit stays the source (its
+    README, recipe and the Run that made the asset); the page only shows its picture."""
+    order = [m for _, b in (d or {}).get("text", []) for m in re.findall(r"(?m)^- B\d+ · (S\d+[a-z]?) · ", b)]
+    for x in xs or ():
+        first = next((sid for sid in order if sid in x.get("calls", [])), "")
+        m = first and re.search(r'<li data-s="' + re.escape(first) + r'">.*?</li>', html, re.S)
+        if not m:
+            continue
+        name = x["names"][0] if x.get("names") else x["title"]
+        if x.get("pic"):
+            u = "/" + quote(_rel(x["pic"], root))
+            fig = (f'<a href="{esc(u)}" target=_blank><img src="{esc(u)}" alt="{esc(name)}"></a>'
+                   f'<figcaption><b>{esc(name)}</b> · {esc(x.get("claim") or x["title"])}</figcaption>')
+        elif x.get("pdf"):
+            fig = f'<figcaption><b>{esc(name)}</b> · {_code(x["pdf"], root)}</figcaption>'
+        else:
+            fig = (f'<figcaption><b>{esc(name)}</b> · ' + ("not built yet" if x.get("made") else "no unit in display/ yet")
+                   + (f' · {esc(x["claim"])}' if x.get("claim") else "") + '</figcaption>')
+        html = html[:m.end()] + f'<li class="disp-embed{" disp-none" if not x.get("pic") else ""}"><figure>{fig}</figure></li>' + html[m.end():]
+    return html
+
+
+def _text_rows(d: dict, marks: dict, right: dict, rest_head: str, xs=(), root: Path | None = None) -> str:
     """The text as one column, read on with no gap between sentences, and beside it the cards, `right[S]` at sentence
     S's line (CARDS_JS `align`): each pushed down only to clear the card above it, so the text never moves for a card;
     the column stays beside the cards and scrolls itself to the sentence a card lights, as 5 · Revise's (JL 261020:
@@ -1364,8 +1401,11 @@ def _text_rows(d: dict, marks: dict, right: dict, rest_head: str) -> str:
     4 · Display; a card for a sentence the text no longer has, or for none, ends the column."""
     text = "".join((f'<h3 style="margin:14px 0 4px">{esc(t)}</h3>' if len(d["text"]) > 1 else "") + _md(b, marks)
                    for t, b in d["text"])
-    have = {m for _, b in d["text"] for m in re.findall(r"(?m)^- B\d+ · (S\d+[a-z]?) · ", b)}
-    order = sorted(right, key=lambda s: _s_key(s) if s else (10 ** 7, ""))
+    text = _embed_displays(text, d, xs, root) if xs else text
+    seq = [m for _, b in d["text"] for m in re.findall(r"(?m)^- B\d+ · (S\d+[a-z]?) · ", b)]
+    have, at = set(seq), {sid: i for i, sid in enumerate(seq)}
+    # in the order the text reads, which an S number need not follow once a sentence has moved
+    order = sorted(right, key=lambda s: (0, at[s], "") if s in at else (1,) + _s_key(s) if s else (2, 10 ** 7, ""))
     cards = "".join(right[s] for s in order if s in have)
     rest = [s for s in order if s not in have]
     if rest:
@@ -1431,7 +1471,7 @@ def _open_fold(opens: list) -> str:
             '</table></div></details>')
 
 
-def _text_and_evidence(d: dict, ev: dict, root: Path, opens: list = ()) -> str:
+def _text_and_evidence(d: dict, ev: dict, root: Path, opens: list = (), xs=()) -> str:
     """The text on the left, read on as one column, and at each sentence on the right its card: a row per item that backs
     it, then the points still open there (OPEN n). An item backing two sentences shows beside both; a sentence the cards
     name that the text no longer has, or an item naming none, ends the column. With no text yet, the cards alone."""
@@ -1448,7 +1488,8 @@ def _text_and_evidence(d: dict, ev: dict, root: Path, opens: list = ()) -> str:
         return EV_CSS + CARDS_CSS + "".join(_ev_card(s, by[s]) for s in order) + CARDS_JS
     marks = _marks({"cards": one})      # each mark names its item, CITE 1.4, as its row does
     body = (f'<p class=space-reads>{_code(d["file"], root)} · {_code(ev["path"], root)}</p>'
-            + _text_rows(d, marks, {s: _ev_card(s, rows) for s, rows in by.items()}, "Cards for no sentence in this text"))
+            + _text_rows(d, marks, {s: _ev_card(s, rows) for s, rows in by.items()}, "Cards for no sentence in this text",
+                         xs, root))
     return EV_CSS + CARDS_CSS + _fold(f"🔎 The text and its Evidence · {d['version']}", body, open_=True) + CARDS_JS
 
 
@@ -1476,7 +1517,7 @@ def _evidence_step(f: dict, folder: Path, root: Path, st: str) -> tuple:
               "need with a proposal, each ⟦pending⟧ the Run it waits on, and each 'Evidence: none' a reader could "
               "doubt a source or our own value; leave the paper's own reasoning as it is. Stop for my tick.")
     op = _step_box("🔎 Stage 3 · Evidence", st, "<h4>Input</h4>" + _kv(rows) + _prompt_box(prompt, folder, root, "evidence"))
-    cards = (_text_and_evidence(d, ev, root, opens) + _card_folds(ev) + _open_fold(opens) if ev["cards"] or opens else
+    cards = (_text_and_evidence(d, ev, root, opens, f["displays"]) + _card_folds(ev) + _open_fold(opens) if ev["cards"] or opens else
              _not_yet("No Evidence cards yet."))
     if ev["proposals"]:
         lines = "".join(f'<li>{"☑" if t else "☐"} {_inline(line, {})}</li>' for t, line in ev["proposals"])
@@ -1617,7 +1658,7 @@ def _display_step(f: dict, folder: Path, root: Path, st: str) -> tuple:
         for x in xs:
             right[x["calls"][0] if x["calls"] else ""] = right.get(x["calls"][0] if x["calls"] else "", "") + _display_card(x, root)
         body = (f'<p class=space-reads>{_code(d["file"], root)}</p>'
-                + _text_rows(d, marks, right, "Displays no sentence calls"))
+                + _text_rows(d, marks, right, "Displays no sentence calls", xs, root))
         result = EV_CSS + CARDS_CSS + _fold(f"🖼 The text and its displays · {d['version']}", body, open_=True) + CARDS_JS
     # each display on its own, folded, its picture at full width
     for x in xs:
@@ -1768,30 +1809,250 @@ def _listed(text: str) -> str:
             + "".join(f'<li style="margin:2px 0">{esc(x)}</li>' for x in parts) + "</ul>")
 
 
-def _revise_card(head: str, c: dict, task: str, title: str) -> str:
+def _revise_card(head: str, c: dict, task: str, title: str, at: str = "") -> str:
     """One Revise card a person acts on (JL 261020: "我想要那种可以交互的感觉"): its kind, sentence and job, its state;
     why; the change; then ✓ Accept · ✗ Reject · ✎ Edit, or ↺ Undo once decided. Hovering it lights its sentence in the
     text above. A click writes only the card's State (or its edited Expected) in the cards file (card_act)."""
     state = c.get("state", "proposed").split()[0].lower() if c.get("state") else "proposed"
     target = (re.match(r"[^·]+·\s*(S\d+[a-z]?)\b", head) or [None, ""])[1]
-    para = (re.match(r"[^·]+·\s*(C\d+\.P\d+)\b", head) or [None, ""])[1]
+    para = (re.match(r"[^·]+·\s*(C\d+\.P\d+)\b", head) or [None, ""])[1] or at   # a whole part's card: its first paragraph
+    # a card is a choice (JL 261021: "这个 edit 你能不能自动把这几个（比如 A、B、C）都列出来 ... D 是 drop it ... 点击确认 button
+    # 就可以了"): every option listed, A, B, C (one, "this change", when the card has no options), then the next letter,
+    # drop it and keep the original; a radio picks one and Confirm writes it (card_act: the option's words, accepted,
+    # or the card rejected)
+    choice = head.lower().startswith(("edit", "review"))
     buttons = ('<p class=rv-acts style="margin:6px 0 0">'
-               '<button type=button class=work-act data-card-act=accept>✓ Accept</button> '
-               '<button type=button class=work-act data-card-act=reject>✗ Reject</button> '
-               '<button type=button class=work-act data-card-act=edit>✎ Edit</button> '
+               + ('<button type=button class="work-act rv-confirm" data-card-act=confirm>Confirm</button> ' if choice else
+                  '<button type=button class=work-act data-card-act=accept>✓ Accept</button> '
+                  '<button type=button class=work-act data-card-act=reject>✗ Reject</button> ')
+               + '<button type=button class=work-act data-card-act=edit>✎ Edit</button> '
                '<button type=button class=work-act data-card-act=undo>↺ Undo</button> '
                '<button type=button class=work-act data-card-act=save>Save the words</button> '
                '<button type=button class=work-act data-card-act=cancel>Cancel</button> '
                '<span class="rv-msg mut"></span></p>')
+    # a card made for a person's comment names it (`Answers: Comment 3`), so the comment and its change read together
+    answers = re.findall(r"Comment (\d+)", (re.search(r"(?m)^Answers:[^\S\n]*(.*)$", c.get("body", "")) or [None, ""])[1])
+    link = "".join(f' <span class="st nt-link">💬 answers Comment {esc(n)}</span>' for n in answers)
+    opts = _options(c)
+    rows = opts or [("A", "this change", c.get("expected", ""))]
+    chosen = _chosen(c, opts) or "A"
+    pick = "drop" if state == "rejected" else chosen
+    group = "pick-" + re.sub(r"\W+", "-", head)
+    drop = chr(ord("A") + len(rows))
+    orig = c.get("original", "")
+    choices = ("" if not choice else '<div class=rv-choices>' + "".join(
+        f'<label class="rv-choice{" sel" if k == pick else ""}" data-opt="{esc(k)}" data-text="{esc(text)}">'
+        f'<input type=radio name="{esc(group)}" value="{esc(k)}"{" checked" if k == pick else ""}> <b>{esc(k)}</b> '
+        f'<span class=mut>{esc(why)}</span>'
+        + (' <span class="st st-ok">✓ in the text</span>' if state == "written" and k == chosen else "")
+        + f'<div class=rv-opt-text><span class=rv-opt-diff>{_old_new(orig, text)}</span>'
+        f'<span class=rv-opt-plain>{_inline(text, {})}</span></div></label>' for k, why, text in rows)
+        + f'<label class="rv-choice rv-drop{" sel" if pick == "drop" else ""}" data-opt="drop">'
+        f'<input type=radio name="{esc(group)}" value="drop"{" checked" if pick == "drop" else ""}> <b>{drop}</b> '
+        f'<span class=mut>drop it: keep the original</span>'
+        f'<div class=rv-opt-text>{_inline(orig, {}) if orig else "<span class=mut>no sentence: the new one goes</span>"}</div>'
+        '</label></div>')
     # each item its own card, one light box (JL 261020: "I still want each of them to have a card"), and no box around
     # the pass, so never a box in a box ("I don't want this", of the cards inside the pass's frame)
-    return (f'<div class="rv-card" data-task="{esc(task)}" data-pass="{esc(title)}" data-card="{esc(head)}" '
-            f'data-state="{esc(state)}" data-s="{esc(target)}" data-p="{esc(para)}">'
-            f'<div><b>{esc(head)}</b> <span class=rv-chip>{STATE_CHIP.get(state, esc(state))}</span></div>'
+    return (f'<div class="rv-card{" has-opts" if opts else ""}{" has-choice" if choice else ""}" data-task="{esc(task)}" '
+            f'data-pass="{esc(title)}" data-card="{esc(head)}" data-state="{esc(state)}" data-s="{esc(target)}" '
+            f'data-p="{esc(para)}" data-chosen="{esc(chosen)}">'
+            f'<div><b class=rv-handle>{esc(head)}</b> <span class=rv-chip>{STATE_CHIP.get(state, esc(state))}</span>{link}'
+            + (f' <span class=mut>· {len(rows)} option{"s" if len(rows) > 1 else ""}</span>' if opts else "")
+            + f'<span class=rv-peek>{esc(c.get("why", ""))}</span></div>'
             f'<p class=mut style="margin:4px 0">{esc(c.get("why", ""))}</p>'
-            f'<div class=rv-change>{_change(head, c.get("original", ""), c.get("expected", ""))}</div>'
-            f'<div class=rv-edit contenteditable=true spellcheck=false>{esc(c.get("expected", ""))}</div>'
+            + (choices if choice else f'<div class=rv-change>{_change(head, orig, c.get("expected", ""))}</div>')
+            + f'<div class=rv-edit contenteditable=true spellcheck=false>{esc(c.get("expected", ""))}</div>'
             f'{buttons}</div>')
+
+
+def _options(c: dict) -> list:
+    """A card's options, [(letter, the approach, the sentence)], from its `Option A (<approach>): <sentence>` lines."""
+    return [(k, (why or "").strip(), text.strip()) for k, why, text in
+            re.findall(r"(?m)^Option ([A-Z])(?: \(([^)\n]*)\))?:[^\S\n]*(.*)$", c.get("body", ""))]
+
+
+def _chosen(c: dict, opts: list) -> str:
+    """The option the card holds: its `Chosen:` letter, else the option whose words are its Expected."""
+    m = re.search(r"(?m)^Chosen:[^\S\n]*([A-Z])\b", c.get("body", ""))
+    if m:
+        return m.group(1)
+    return next((k for k, _, t in opts if " ".join(t.split()) == " ".join(c.get("expected", "").split())), "")
+
+
+# ── a person's comments on the text, answered by each Revise pass ────────────────────────────────────────────────
+NOTE_TARGET = re.compile(r"^(S\d+[a-z]?|C\d+\.P\d+)$")
+
+
+def _comments_path(revise: Path) -> Path:
+    """`draft/records/<stem>-comments.md`, beside the cards file `<stem>-revise.md`."""
+    return revise.with_name(revise.name.replace("-revise.md", "-comments.md"))
+
+
+def _comments(path: Path) -> list:
+    """A person's comments on the text (JL 261021: "我选中一个句子 ... 点个加号就能加注释 ... 放到 Revise 的那一栏里面"), one
+    `### Comment <n> · <S or paragraph>` block each: `Quote:` the words selected, `State:` open (waiting for a pass),
+    answered (a pass replied) or done (the person closed it), then the thread, `- Note · <time>: …` from the person and
+    `- Reply · <time>: …` from the pass that answered it."""
+    if not path.is_file():
+        return []
+    out = []
+    for m in re.finditer(r"(?ms)^### Comment (\d+) · ([^\n]+?)[^\S\n]*\n(.*?)(?=^### |^## |\Z)",
+                         path.read_text(encoding="utf-8", errors="replace")):
+        body = m.group(3)
+        field = lambda k: (re.search(r"(?m)^" + k + r":[^\S\n]*(.*)$", body) or [None, ""])[1].strip()
+        out.append({"n": m.group(1), "target": m.group(2).strip(), "quote": field("Quote"),
+                    "state": (field("State").split() or ["open"])[0].lower(),
+                    "thread": re.findall(r"(?m)^- (Note|Reply) · (.+?): (.*)$", body)})
+    return out
+
+
+def _answered_by(revise: Path) -> dict:
+    """{comment number: the heads of the newest pass's cards that answer it (`Answers: Comment <n>`)}."""
+    out = {}
+    for head, c in (_revise_passes(revise)[:1][0][1] if revise.is_file() and _revise_passes(revise) else []):
+        for n in re.findall(r"Comment (\d+)", (re.search(r"(?m)^Answers:[^\S\n]*(.*)$", c.get("body", "")) or [None, ""])[1]):
+            out.setdefault(n, []).append(head)
+    return out
+
+
+def _note_card(c: dict, by: list) -> str:
+    """One comment, in the column of Revise cards beside its sentence, as a thread (JL 261021: "回复的时候，不应该有个
+    AI Reply 吗？ ... 很不像一个 modern 的 UI 设计"): the sentence and its state on top, the words it is on, then each
+    message with a round mark for who wrote it (You, or AI for a pass's reply), the cards that answer it, and small text
+    actions: Reply (it opens again), Resolve once answered, Reopen, or Delete while no pass has replied."""
+    st, replied = c["state"], any(w == "Reply" for w, _, _ in c["thread"])
+    when = lambda t: t[5:] if re.match(r"\d{4}-", t) else t            # 2026-10-21 14:32 → 10-21 14:32
+    msgs = "".join(
+        f'<div class="nt-msg{" nt-ai" if w == "Reply" else ""}"><span class=nt-av>{"AI" if w == "Reply" else "You"}</span>'
+        f'<div><div class=nt-who><b>{"AI" if w == "Reply" else "You"}</b> <span>{esc(when(t))}</span></div>'
+        f'<div class=nt-text>{_inline(x, {})}</div></div></div>' for w, t, x in c["thread"])
+    cards = (f'<div class=nt-cards>↳ {" · ".join(esc(h) for h in by)}</div>' if by else "")
+    acts = (["reply", "delete"] if st == "open" and not replied else ["reply"] if st == "open"
+            else ["done", "reply"] if st == "answered" else ["reopen"])
+    label = {"reply": "Reply", "done": "✓ Resolve", "reopen": "Reopen", "delete": "Delete"}
+    buttons = ('<div class=nt-acts>'
+               + "".join(f'<button type=button class="nt-btn nt-st{" nt-danger" if a == "delete" else ""}" '
+                         f'data-note-act={a}>{label[a]}</button>' for a in acts)
+               + '<button type=button class="nt-btn nt-w nt-send" data-note-act=save>Send</button>'
+               '<button type=button class="nt-btn nt-w" data-note-act=cancel>Cancel</button>'
+               '<span class="rv-msg mut"></span></div>')
+    on_p = bool(re.match(r"C\d+\.P\d+$", c["target"]))           # a comment on a whole paragraph sits at its heading
+    return (f'<div class="rv-card rv-note" data-n="{esc(c["n"])}" data-s="{esc(c["target"])}"'
+            + (f' data-p="{esc(c["target"])}"' if on_p else "") + f' data-state="{esc(st)}">'
+            f'<div class=nt-head><span class="nt-s rv-handle">{esc(c["target"])}</span> <span class="nt-state nt-{esc(st)} rv-handle">'
+            f'{NOTE_LABEL.get(st, esc(st))}</span>'
+            + (f'<span class=rv-peek style="flex:1;min-width:0">{"AI" if c["thread"][-1][0] == "Reply" else "You"}: '
+               f'{esc(c["thread"][-1][2])}</span>' if c["thread"] else "") + '</div>'
+            + (f'<div class=nt-quote>“{esc(c["quote"])}”</div>' if c["quote"] else "")
+            + msgs + cards
+            + '<textarea class=nt-box rows=2 placeholder="Reply…"></textarea>' + buttons + '</div>')
+
+
+NOTE_LABEL = {"open": "Open", "answered": "AI replied", "done": "Resolved"}
+
+
+NOTES_CSS = """<style>
+.nt-gut{flex:0 0 46px;display:flex;justify-content:flex-end;align-items:center;gap:3px;align-self:flex-start;padding-top:4px}
+.nt-plus{width:20px;height:20px;padding:0;border:1px solid var(--line);border-radius:10px;background:var(--card);
+ color:var(--acc);font-size:14px;font-weight:700;line-height:17px;cursor:pointer;opacity:0}
+.rv-left li[data-s]:hover .nt-plus,.nt-plus:focus{opacity:1}
+/* a paragraph takes a comment too (JL 261021: "比如说这个 paragraph 也可以加 comments 呢？"): a + after its heading */
+.rv-board .rv-left h4[data-p]{display:flex;align-items:center;gap:8px}
+.rv-board .rv-left h4[data-p] .nt-gut{flex:0 0 auto;padding:0;align-self:center}
+.rv-left h4[data-p]:hover .nt-plus{opacity:1}
+.nt-mark{font-size:13px;cursor:pointer}
+/* in Revise the evidence stays boxed (JL 261021: "I think we still need the box"), but its CITE labels go, as the
+   words are what is read there (3 · Evidence keeps them) */
+.rv-board .rv-left mark+sup{display:none}
+.nt-sel{position:fixed;z-index:50;display:none}
+/* a comment is a thread: rounded, a round mark for who wrote each message, small text actions */
+.rv-right .rv-note{border-radius:10px;padding:10px 12px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.nt-head{display:flex;align-items:center;gap:6px}
+.nt-s{font-size:12px;font-weight:600;color:var(--mut);background:var(--wash);border-radius:10px;padding:1px 8px}
+.nt-state{font-size:12px;border-radius:10px;padding:1px 8px;background:#fff4e6;color:#d9480f}
+.nt-state.nt-answered{background:#f3f0ff;color:#6741d9}.nt-state.nt-done{background:#ebfbee;color:#2b8a3e}
+.nt-quote{margin:6px 0 2px;font-size:13px;color:var(--mut);font-style:italic}
+.nt-msg{display:grid;grid-template-columns:26px minmax(0,1fr);gap:8px;margin:8px 0 0}
+.nt-av{width:26px;height:26px;border-radius:13px;background:#e7f5ff;color:#1971c2;font-size:10px;font-weight:700;
+ display:flex;align-items:center;justify-content:center}
+.nt-ai .nt-av{background:#f3f0ff;color:#6741d9}
+.nt-who{font-size:12px;color:var(--mut)}.nt-who b{color:var(--fg);font-weight:600;margin-right:4px}
+.nt-text{font-size:14px;line-height:1.5;margin-top:1px}
+.nt-ai .nt-text{background:var(--wash);border-radius:8px;padding:6px 10px;margin-top:3px}
+.nt-cards{margin:6px 0 0 34px;font-size:12px;color:var(--mut)}
+.nt-acts{display:flex;align-items:center;gap:2px;margin:6px 0 0 30px}
+.nt-btn{border:0;background:none;color:var(--acc);font:inherit;font-size:13px;font-weight:500;padding:3px 8px;border-radius:6px;cursor:pointer}
+.nt-btn:hover{background:var(--wash)}.nt-danger{color:#c92a2a}
+.nt-send{background:var(--acc);color:#fff}.nt-send:hover{background:var(--acc);opacity:.9}
+.rv-note .nt-box{display:none;width:calc(100% - 34px);box-sizing:border-box;margin:8px 0 0 34px;font:inherit;font-size:14px;
+ padding:7px 10px;border:1px solid var(--line);border-radius:8px;resize:vertical;outline:none}
+.rv-note .nt-box:focus{border-color:var(--acc)}
+.rv-note.writing .nt-box,.rv-note.nt-new .nt-box{display:block}
+.rv-note .nt-w{display:none}.rv-note.writing .nt-w,.rv-note.nt-new .nt-w{display:inline-block}.rv-note.writing .nt-st{display:none}
+</style>"""
+NOTES_JS = """<script>
+(function(){if(window.__rvNotes)return;window.__rvNotes=1;
+ function board(x){return (x&&x.closest('.rv-board'))||document.querySelector('.rv-board');}
+ function again(){if(window.rvAlign)window.rvAlign();marks();}
+ function msg(c,t,bad){var m=c.querySelector('.rv-msg');if(m){m.textContent=t||'';m.style.color=bad?'#c92a2a':'';}}
+ /* a + beside each sentence; a 💬 after each sentence a comment still waits on */
+ function pluses(){document.querySelectorAll('.rv-board .rv-left li[data-s]').forEach(function(li){if(li.querySelector('.nt-gut'))return;
+  var g=document.createElement('span');g.className='nt-gut';var b=document.createElement('button');b.type='button';b.className='nt-plus';
+  b.textContent='+';b.title='Comment on '+li.dataset.s;g.appendChild(b);li.appendChild(g);});
+  document.querySelectorAll('.rv-board .rv-left h4[data-p]').forEach(function(h){if(h.querySelector('.nt-gut'))return;
+   var g=document.createElement('span');g.className='nt-gut';var b=document.createElement('button');b.type='button';b.className='nt-plus';
+   b.textContent='+';b.title='Comment on the paragraph '+h.dataset.p;g.appendChild(b);h.appendChild(g);});}
+ function tgt(el){return el.dataset.s||el.dataset.p;}
+ function marks(){document.querySelectorAll('.rv-board .nt-mark').forEach(function(x){x.remove();});
+  document.querySelectorAll('.rv-board .rv-note[data-n]').forEach(function(c){if(c.dataset.state==='done')return;
+   var li=board(c).querySelector('.rv-left li[data-s="'+c.dataset.s+'"]')||(c.dataset.p&&board(c).querySelector('.rv-left h4[data-p="'+c.dataset.p+'"]'));
+   if(!li||li.querySelector('.nt-mark'))return;
+   var m=document.createElement('span');m.className='nt-mark';m.textContent='💬';m.title='Comment '+c.dataset.n;var g=li.querySelector('.nt-gut');if(g)g.insertBefore(m,g.firstChild);});}
+ /* a new comment's card goes in reading order: before the first card on its sentence or a later one */
+ function place(card,li){var sp=li.closest('.rv-split'),right=sp.querySelector('.rv-right'),before=right.querySelector('.rv-tail');
+  [].some.call(right.children,function(c){if(!c.classList.contains('rv-card'))return false;var s=(c.dataset.s||'').split(' ')[0];
+   var t=s&&sp.querySelector('.rv-left li[data-s="'+s+'"]');
+   if(t&&(t===li||(li.compareDocumentPosition(t)&Node.DOCUMENT_POSITION_FOLLOWING))){before=c;return true;}return false;});
+  right.insertBefore(card,before||null);}
+ function open(li,quote){var c=document.createElement('div');c.className='rv-card rv-note nt-new';c.dataset.s=tgt(li);c.dataset.quote=quote||'';
+  if(li.dataset.p&&!li.dataset.s)c.dataset.p=li.dataset.p;
+  c.innerHTML='<div class=nt-head><span class=nt-s>'+tgt(li)+'</span> <span class=nt-state>New comment</span></div>'+
+   (quote?'<div class=nt-quote></div>':'')+'<textarea class=nt-box rows=2 placeholder="Comment on '+tgt(li)+'…"></textarea>'+
+   '<div class=nt-acts><button type=button class="nt-btn nt-w nt-send" data-note-act=add>Comment</button>'+
+   '<button type=button class="nt-btn nt-w" data-note-act=cancel>Cancel</button><span class="rv-msg mut"></span></div>';
+  if(quote)c.querySelector('.nt-quote').textContent='“'+quote+'”';
+  place(c,li);again();c.querySelector('textarea').focus();li.classList.add('rv-lit');setTimeout(function(){li.classList.remove('rv-lit');},1400);}
+ /* select words in a sentence: a 💬 Comment button opens a comment on them */
+ var sel=document.createElement('button');sel.type='button';sel.className='work-act nt-sel';sel.textContent='💬 Comment';
+ document.addEventListener('DOMContentLoaded',function(){document.body.appendChild(sel);});if(document.body)document.body.appendChild(sel);
+ function picked(){var s=window.getSelection&&window.getSelection();if(!s||s.isCollapsed||!s.rangeCount)return null;
+  var a=s.anchorNode&&(s.anchorNode.nodeType===1?s.anchorNode:s.anchorNode.parentNode),f=s.focusNode&&(s.focusNode.nodeType===1?s.focusNode:s.focusNode.parentNode);
+  var li=a&&a.closest&&a.closest('.rv-board .rv-left li[data-s]');if(!li||!f||li!==(f.closest&&f.closest('li[data-s]')))return null;
+  var q=s.toString().replace(/\\s+/g,' ').replace(/^\\s*S\\d+[a-z]?\\s+/,'').replace(/[+💬]/g,'').trim();return q?{li:li,q:q,r:s.getRangeAt(0).getBoundingClientRect()}:null;}
+ document.addEventListener('mouseup',function(e){if(e.target===sel)return;setTimeout(function(){var p=picked();
+  if(!p){sel.style.display='none';return;}sel._p=p;sel.style.left=Math.max(4,p.r.left)+'px';sel.style.top=(p.r.bottom+6)+'px';sel.style.display='block';},0);});
+ document.addEventListener('mousedown',function(e){if(e.target!==sel)sel.style.display='none';});
+ document.addEventListener('click',function(e){if(e.target===sel&&sel._p){e.preventDefault();sel.style.display='none';open(sel._p.li,sel._p.q);return;}
+  var plus=e.target.closest&&e.target.closest('.nt-plus');if(plus){e.preventDefault();e.stopPropagation();open(plus.closest('li[data-s],h4[data-p]'),'');return;}
+  var mk=e.target.closest&&e.target.closest('.nt-mark');if(mk){var li=mk.closest('li[data-s],h4[data-p]'),c=board(li).querySelector('.rv-note[data-s="'+tgt(li)+'"]');
+   if(c){c.scrollIntoView({behavior:'smooth',block:'center'});}return;}
+  var b=e.target.closest&&e.target.closest('[data-note-act]');if(!b)return;e.preventDefault();
+  var c=b.closest('.rv-note'),act=b.dataset.noteAct,box=c.querySelector('.nt-box'),bd=board(c);
+  if(act==='reply'){if(window.rvPin)window.rvPin(c);c.classList.add('writing');box.focus();again();return;}
+  if(act==='cancel'){if(c.classList.contains('nt-new'))c.remove();else c.classList.remove('writing');again();return;}
+  var body={task:bd.dataset.task,act:act==='save'?'reply':act,n:c.dataset.n||'',s:c.dataset.s,was:c.dataset.state||''};
+  if(act==='add'||act==='save'){body.text=box.value;if(!body.text.trim()){msg(c,'write the comment first',true);return;}}
+  if(act==='add')body.quote=c.dataset.quote||'';
+  b.disabled=true;msg(c,'…');
+  fetch('/_board/draft-comment',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+   .then(function(r){return r.json();}).then(function(j){b.disabled=false;if(!j.ok){msg(c,j.err||'not saved',true);return;}
+    if(!j.html){c.remove();}else{var t=document.createElement('div');t.innerHTML=j.html;c.replaceWith(t.firstElementChild);}again();})
+   .catch(function(err){b.disabled=false;msg(c,String(err),true);});});
+ function start(){pluses();marks();}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();setTimeout(start,80);
+})();
+</script>"""
 
 
 CARDS_CSS = """<style>
@@ -1806,9 +2067,72 @@ CARDS_CSS = """<style>
 .rv-card{border:1px solid var(--line);border-radius:3px;background:var(--card);padding:10px 14px;margin:0 0 12px}
 .rv-card[data-state=rejected]{opacity:.55}
 /* a card already written into the text has nothing left to decide */
-.rv-card[data-state=written] .rv-acts{display:none}
+.rv-card[data-state=written]:not(.has-opts) .rv-acts{display:none}
+.rv-choices{margin:8px 0 0;display:flex;flex-direction:column;gap:4px}
+.rv-choice{display:block;padding:6px 8px;border:1px solid var(--line);border-radius:8px;cursor:pointer;line-height:1.5}
+.rv-choice:hover{background:var(--wash)}.rv-choice.sel{border-color:var(--acc);background:var(--wash)}
+.rv-choice input{accent-color:var(--acc);margin:0 4px 0 0;vertical-align:-2px}
+.rv-choice .rv-opt-diff{display:none}.rv-choice.sel .rv-opt-diff{display:inline}.rv-choice.sel .rv-opt-plain{display:none}
+.rv-drop .rv-opt-text{color:var(--mut)}.rv-confirm{font-weight:600}
+.rv-card.editing .rv-choices{display:none}
+.rv-opts{margin:8px 0 0}.rv-opt{padding:6px 0;border-top:1px solid var(--line)}
+.rv-opt-text{line-height:1.55;margin:2px 0 0}.rv-opt .rv-opt-mark{display:none}
+/* the option in the card shows its change; the others read as plain sentences; the card's own change is that option's */
+.rv-card.has-opts .rv-change{display:none}.rv-opt .rv-opt-diff{display:none}.rv-opt.chosen .rv-opt-diff{display:inline}
+.rv-opt.chosen .rv-opt-plain{display:none}
+.rv-card.has-opts:not(.show-opts) .rv-opt:not(.chosen){display:none}.rv-card.has-opts:not(.show-opts) .rv-opt.chosen{border-top:0}
+/* every card in the column is one compact line until clicked, as a comment in a shared document is, so each stays
+   beside its sentence (JL 261021: the Logic cards "应该是放到右边的"); a click opens it whole, with its buttons */
+.rv-right .rv-card:not(.open):not(.peek):not(.rv-rev):not(.writing):not(.nt-new):not(.editing)>*:not(:first-child){display:none}
+.rv-right .rv-card:not(.open):not(.peek):not(.rv-rev):not(.writing):not(.nt-new):not(.editing){padding-top:6px;padding-bottom:6px;margin-bottom:6px}
+.rv-right .rv-card:not(.open):not(.peek):not(.rv-rev):not(.writing):not(.nt-new):not(.editing) [data-opts-more]{display:none}
+.rv-right .rv-card:not(.rv-rev){cursor:pointer}.rv-right .rv-card.open{cursor:default}
+/* pointed at, a card opens over the cards below it (they do not move), and folds again when the pointer leaves;
+   a click pins it open in its place (JL 261021: "能不能我的鼠标一放上去的时候，它就自己打开了") */
+.rv-right .rv-card.peek{position:relative;z-index:6;background:var(--card);box-shadow:0 8px 24px rgba(0,0,0,.16)}
+.rv-right .rv-handle{cursor:pointer;display:inline-flex;align-items:center;gap:5px}.rv-right .rv-handle:hover{text-decoration:underline dotted}
+.rv-card .rv-peek{display:block;font-size:13px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.rv-board > .rv-card .rv-peek,.rv-right .rv-card.open .rv-peek,.rv-right .rv-card.peek .rv-peek,.rv-right .rv-card.writing .rv-peek,.rv-right .rv-card.editing .rv-peek{display:none}
+.rv-opt.chosen .rv-opt-mark{display:inline}.rv-opt.chosen .rv-opt-use{display:none}.rv-opt-use{margin-left:6px;padding:0 8px}
+.rv-board:not(.show-done) .rv-right .rv-card[data-state=written]:not(.has-opts),.rv-board:not(.show-done) .rv-right .rv-note[data-state=done]{display:none}
+.rv-board.hide-notes .rv-right .rv-note,.rv-board.hide-logic .rv-right .rv-rev,.rv-board.hide-ev .rv-right .rv-ev{display:none}
+.rv-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin:0 0 10px}
+.rv-kinds{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:6px;margin-left:auto}
+.rv-kind{font:inherit;font-size:13px;font-weight:600;padding:3px 12px;border-radius:14px;border:1px solid var(--acc);
+ background:transparent;color:var(--acc);cursor:pointer}
+.rv-kind span{font-weight:400;opacity:.75;margin-left:2px}.rv-kind[aria-pressed=true]{background:var(--acc);color:#fff}
+.ev-k{font-size:12px;color:#1971c2}
+.ev-item{margin:6px 0 0;padding:6px 0 0;border-top:1px solid var(--line);font-size:13.5px;line-height:1.5}
+.ev-item a{color:var(--acc)}.ev-quote{margin:3px 0;color:var(--fg)}.ev-meta{font-size:12px;color:var(--mut)}
+.rv-board.hide-edits .rv-card:not(.rv-note):not(.rv-rev):not(.rv-ev){display:none}
+/* a Logic card: small, dashed, its scores and link in one line */
+.rv-right .rv-rev{background:transparent;border-style:dashed;border-radius:8px;padding:6px 10px;font-size:13px}
+.lg-head{display:flex;flex-wrap:wrap;align-items:center;gap:5px}.lg-k{font-size:12px;color:#6741d9}
+.lg-link{font-size:12px;color:#2b8a3e}.lg-link.lg-weak{color:#d9480f}
+.lg-text{margin:3px 0 0;line-height:1.45}.rv-right .rv-rev{margin-bottom:6px;cursor:pointer}
+.rv-rev:not(.open):not(.peek) .lg-clip{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.rv-rev:not(.open):not(.peek) .lg-more{display:none}
+.rv-rev:not(.open):not(.peek) .lg-clip2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 li.rv-lit,h4.rv-lit,tr.rv-lit td{background:#fff3bf;border-radius:3px}
+.rv-right .rv-card.rv-card-lit{border-color:#f08c00;box-shadow:0 0 0 2px #ffe8a1}
+.rv-board .rv-right{position:relative;clip-path:inset(0 -30px -100000px -30px)}
+.rv-board .rv-right>.rv-card{transition:transform .22s ease}
+.rv-left li.rv-focus{background:#fff8db;border-radius:3px}
 .rv-split{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:28px;align-items:start}
+/* the text reads as prose (JL 261021: "把字体变大一些"; "像 S5 这种东西能不能放到最左边"): larger type, no bullets, each
+   sentence's number hung in a gutter on the left so every sentence starts on one line; a paragraph's head stays at
+   the far left, above the numbers */
+.rv-left{font-size:17px;line-height:1.65}
+.rv-left ul{list-style:none;margin:0 0 6px;padding:0}
+.rv-left li[data-s]{display:flex;align-items:baseline;margin:0 0 4px;border-radius:3px}
+.rv-left li[data-s] .s-no{flex:0 0 42px;box-sizing:border-box;padding-right:12px;text-align:right;font-variant-numeric:tabular-nums}
+.rv-left li[data-s] .s-tx{flex:1 1 auto;min-width:0}
+.rv-left h4{font-size:16px}
+.cite{color:var(--mut);font-size:.78em;white-space:nowrap}
+.rv-left li.disp-embed{margin:6px 0 12px 42px}.rv-left li.disp-embed figure{margin:0}
+.rv-left li.disp-embed img{display:block;max-width:100%;max-height:340px;border:1px solid var(--line);border-radius:4px}
+.rv-left li.disp-embed figcaption{font-size:13px;color:var(--mut);margin-top:4px;line-height:1.45}
+.rv-left li.disp-none figure{border:1px dashed #e8590c;border-radius:6px;padding:6px 10px}
 .rv-right .rv-card{cursor:pointer}
 .rv-split .rv-left{position:sticky;top:0;max-height:78vh;overflow-y:auto;padding-right:8px}
 @media(max-width:1000px){.rv-split{grid-template-columns:minmax(0,1fr)}.rv-split .rv-left{position:static;max-height:none}}
@@ -1832,24 +2156,99 @@ CARDS_JS = """<script>
  function align(){document.querySelectorAll('.rv-split').forEach(function(sp){var cards=sp.querySelectorAll('.rv-right .rv-card');
   cards.forEach(function(c){c.style.marginTop='';});
   if(getComputedStyle(sp).gridTemplateColumns.split(' ').length<2||!sp.offsetParent)return;
-  cards.forEach(function(c){var t=target(c);if(!t)return;var gap=t.getBoundingClientRect().top-c.getBoundingClientRect().top;
-   if(gap>0)c.style.marginTop=gap+'px';});});}
- window.addEventListener('resize',align);window.addEventListener('load',align);setTimeout(align,60);
+  /* measured from each column's own top, never from the screen: the text column is pinned (sticky) and scrolls by
+     itself, so a screen measure taken while the page is scrolled pushed a card down by the scroll (JL 261021: "why I
+     have this large margin") */
+  var left=sp.querySelector('.rv-left'),right=sp.querySelector('.rv-right');if(!left||!right)return;
+  cards.forEach(function(c){var t=target(c);if(!t||!c.offsetParent)return;
+   var at=t.getBoundingClientRect().top-left.getBoundingClientRect().top+left.scrollTop-left.clientTop;
+   var gap=at-(c.getBoundingClientRect().top-right.getBoundingClientRect().top);
+   if(gap>0)c.style.marginTop=gap+'px';});
+  if(focusS&&sp.closest('.rv-board'))focus(sp,focusS);});}
+ function peekOn(c){if(c.classList.contains('open')||c.classList.contains('peek'))return;var h=c.offsetHeight;
+  var mb=parseFloat(getComputedStyle(c).marginBottom)||0;c.classList.add('peek');c.style.marginBottom=(mb-(c.offsetHeight-h))+'px';}
+ function peekOff(c){if(!c.classList.contains('peek'))return;c.classList.remove('peek');c.style.marginBottom='';
+  if(c.matches('.writing,.editing,.nt-new'))align();}
+ /* a card being written in stays open in its place */
+ window.rvPin=function(c){if(!c)return;c.classList.remove('peek');c.style.marginBottom='';c.classList.add('open');align();};
+ /* only the label on the left opens a card (JL 261021: "当我们只有点它的最左边的时候，它才会 show up"), so a pointer
+    crossing the column opens nothing */
+ var peekT=null;
+ document.addEventListener('mouseover',function(e){var h=e.target.closest&&e.target.closest('.rv-right .rv-card .rv-handle');
+  if(!h)return;var c=h.closest('.rv-card');if(c.classList.contains('rv-card-lit'))return;clearTimeout(peekT);peekT=setTimeout(function(){if(h.matches(':hover'))peekOn(c);},250);});
+ document.addEventListener('mouseout',function(e){var h=e.target.closest&&e.target.closest('.rv-handle');
+  if(h&&!h.contains(e.relatedTarget))clearTimeout(peekT);});
+ document.addEventListener('mouseout',function(e){var c=e.target.closest&&e.target.closest('.rv-right .rv-card');
+  if(c&&!c.contains(e.relatedTarget)&&!c.matches('.writing,.editing'))peekOff(c);});
+ window.rvAlign=align;window.addEventListener('resize',align);window.addEventListener('load',align);setTimeout(align,60);
  document.addEventListener('toggle',function(){setTimeout(align,0);},true);
- document.addEventListener('click',function(e){if(!e.target.closest||e.target.closest('[data-card-act],.rv-edit,a'))return;
-  var c=e.target.closest('.rv-right .rv-card'),t=c&&target(c);if(!t)return;
+ document.addEventListener('click',function(e){if(!e.target.closest||e.target.closest('[data-card-act],[data-note-act],.rv-edit,textarea,a,.rv-choice'))return;
+  var c=e.target.closest('.rv-right .rv-card');if(c&&c.classList.contains('acc')){c.classList.remove('acc');}
+  else if(c){var was=c.classList.contains('open');c.classList.remove('peek');c.style.marginBottom='';
+   c.classList.toggle('open',!was);align();}
+  var t=c&&target(c);if(!t)return;
   t.scrollIntoView({behavior:'smooth',block:'center'});t.classList.add('rv-lit');setTimeout(function(){t.classList.remove('rv-lit');},1400);});
  function rowlit(r,on){var sp=r.closest('.rv-split');if(!sp)return;
   r.dataset.s.split(' ').forEach(function(s){var t=s&&sp.querySelector('.rv-left li[data-s="'+s+'"]');if(t)t.classList.toggle('rv-lit',on);});}
  /* the other way: a sentence in the text lights the card rows that name it */
- function sentlit(li,on){var sp=li.closest('.rv-split');if(sp)sp.querySelectorAll('.rv-right tr[data-s~="'+li.dataset.s+'"]')
-  .forEach(function(r){r.classList.toggle('rv-lit',on);});}
+ /* a sentence pointed at lights its rows and every card on it, of any kind (JL 261021: "当我鼠标停在这个 sentence 上的时候，
+    能不能把对应的这些 card 也高亮出来"); a paragraph's flow card, which names all its sentences, stays as it is */
+ function sentlit(li,on){var sp=li.closest('.rv-split');if(!sp)return;
+  sp.querySelectorAll('.rv-right tr[data-s~="'+li.dataset.s+'"]').forEach(function(r){r.classList.toggle('rv-lit',on);});}
+ /* the sentence in focus: its cards, of every kind, lit and moved so their group is centred on the sentence; the cards
+    above make room upward and those below downward, by a short slide (JL 261021: "卡片会移动到与该句子相齐平的位置，以这句话
+    的中心为轴心，在上下方向展开"). It holds while the pointer goes over to the cards and moves with the next sentence. */
+ var focusS='',focusT=null;
+ function focus(sp,sid){var right=sp.querySelector('.rv-right'),left=sp.querySelector('.rv-left');if(!right||!left)return;
+  if(sid!==focusS)sp.querySelectorAll('.rv-right > .rv-card.acc').forEach(function(x){if(!x.matches('.writing,.editing'))x.classList.remove('acc','open');});
+  var all=[].filter.call(right.children,function(c){return c.classList.contains('rv-card')&&!!c.offsetParent;});
+  var mine=all.filter(function(c){return !c.classList.contains('rv-flow')&&(' '+(c.dataset.s||'')+' ').indexOf(' '+sid+' ')>=0;});
+  var li=left.querySelector('li[data-s="'+sid+'"]');
+  left.querySelectorAll('li.rv-focus').forEach(function(x){x.classList.remove('rv-focus');});if(li)li.classList.add('rv-focus');
+  all.forEach(function(c){c.classList.toggle('rv-card-lit',mine.indexOf(c)>=0);});
+  focusS=sid;
+  if(!mine.length||!li||getComputedStyle(sp).gridTemplateColumns.split(' ').length<2){all.forEach(function(c){c.style.transform='';});return;}
+  var base=right.getBoundingClientRect().top,gap=8,cur=all.map(function(c){return base+c.offsetTop;}),h=all.map(function(c){return c.offsetHeight;});
+  var i0=all.indexOf(mine[0]),i1=all.indexOf(mine[mine.length-1]),gh=0,i;
+  for(i=i0;i<=i1;i++)gh+=h[i]+(i>i0?gap:0);
+  var lr=li.getBoundingClientRect(),t=cur.slice(),top=lr.top+lr.height/2-gh/2;
+  for(i=i0;i<=i1;i++){t[i]=top;top+=h[i]+gap;}
+  var next=top;for(i=i1+1;i<all.length;i++){t[i]=Math.max(cur[i],next);next=t[i]+h[i]+gap;}
+  var prev=t[i0]-gap;for(i=i0-1;i>=0;i--){t[i]=Math.min(cur[i],prev-h[i]);prev=t[i]-gap;}
+  all.forEach(function(c,k){var dy=Math.round(t[k]-cur[k]);c.style.transform=dy?'translateY('+dy+'px)':'';});}
+ /* in the focus, the card the pointer rests on opens where it stands and the one opened before closes, so the group
+    opens out around the sentence (JL 261021: "鼠标放到这个 card 上它会自动展开；鼠标移开之后，新的 card 会展开，旧的 card
+    会合上"); only a real move of the pointer counts, so cards sliding under a still pointer open nothing */
+ var accT=null,accNext=null;
+ function accOpen(c){var sp=c.closest('.rv-split');if(!sp)return;
+  sp.querySelectorAll('.rv-right > .rv-card.acc').forEach(function(x){if(x!==c&&!x.matches('.writing,.editing'))x.classList.remove('acc','open');});
+  if(!c.classList.contains('open')){c.classList.remove('peek');c.style.marginBottom='';c.classList.add('open','acc');}
+  if(focusS)focus(sp,focusS);}
+ document.addEventListener('mousemove',function(e){var c=e.target.closest&&e.target.closest('.rv-board .rv-right > .rv-card.rv-card-lit');
+  if(!c){accNext=null;clearTimeout(accT);return;}if(c===accNext||c.classList.contains('open'))return;
+  accNext=c;clearTimeout(accT);accT=setTimeout(function(){if(accNext===c&&c.matches(':hover'))accOpen(c);},160);});
+ function accClose(sp){sp.querySelectorAll('.rv-right > .rv-card.acc').forEach(function(x){if(!x.matches('.writing,.editing'))x.classList.remove('acc','open');});}
+ function unfocus(sp){focusS='';accClose(sp);[].forEach.call(sp.querySelectorAll('.rv-right > .rv-card'),function(c){c.style.transform='';c.classList.remove('rv-card-lit');});
+  sp.querySelectorAll('.rv-left li.rv-focus').forEach(function(x){x.classList.remove('rv-focus');});}
+ document.addEventListener('mouseover',function(e){var li=e.target.closest&&e.target.closest('.rv-board .rv-left li[data-s]');if(!li)return;
+  clearTimeout(focusT);if(li.dataset.s===focusS)return;
+  focusT=setTimeout(function(){if(li.matches(':hover'))focus(li.closest('.rv-split'),li.dataset.s);},180);});
+ document.addEventListener('mouseout',function(e){var sp=e.target.closest&&e.target.closest('.rv-board .rv-split');
+  if(sp&&!sp.contains(e.relatedTarget)){clearTimeout(focusT);unfocus(sp);}});
+ /* the text column is pinned and scrolls by itself: a scroll moves the sentence, so the focus follows it */
+ var focusRaf=0;document.addEventListener('scroll',function(){if(!focusS||focusRaf)return;focusRaf=requestAnimationFrame(function(){focusRaf=0;
+  var sp=document.querySelector('.rv-board .rv-split');if(sp&&focusS)focus(sp,focusS);});},true);
  document.addEventListener('mouseover',function(e){if(!e.target.closest)return;var li=e.target.closest('.rv-left li[data-s]');if(li){sentlit(li,true);return;}
   var r=e.target.closest('.rv-rows tr[data-s]');if(r&&r.dataset.s){var rc=r.closest('.rv-card');if(rc)lit(rc,false);rowlit(r,true);return;}
   var c=e.target.closest('.rv-card');if(c)lit(c,true);});
  document.addEventListener('mouseout',function(e){if(!e.target.closest)return;var li=e.target.closest('.rv-left li[data-s]');if(li&&!li.contains(e.relatedTarget))sentlit(li,false);
   var r=e.target.closest('.rv-rows tr[data-s]');if(r&&!r.contains(e.relatedTarget))rowlit(r,false);});
  document.addEventListener('mouseout',function(e){var c=e.target.closest&&e.target.closest('.rv-card');if(c&&!c.contains(e.relatedTarget))lit(c,false);});
+ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-opts-more]');if(!b)return;e.preventDefault();
+  e.stopPropagation();var c=b.closest('.rv-card'),on=c.classList.toggle('show-opts');b.textContent=b.textContent.replace(on?'▸':'▾',on?'▾':'▸');align();},true);
+ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-cards-kind]');if(!b)return;e.preventDefault();
+  var bd=b.closest('.rv-board'),k=b.dataset.cardsKind,off=!bd.classList.contains('hide-'+k);bd.classList.toggle('hide-'+k,off);
+  b.setAttribute('aria-pressed',!off);align();});
  /* ✓ Accept all shows while a card is still proposed */
  function scope(x){return x&&(x.closest('.rv-board')||x.closest('.rv-right'));}
  function allbtn(right){var b=right&&right.querySelector('[data-cards-all]');
@@ -1857,43 +2256,57 @@ CARDS_JS = """<script>
  /* one card's act, written in the cards file; resolves true once saved */
  function send(c,act,b){var ed=c.querySelector('.rv-edit');
   var body={task:c.dataset.task,pass:c.dataset.pass,card:c.dataset.card,was:c.dataset.state,
-            state:{accept:'accepted',reject:'rejected',undo:'proposed',save:c.dataset.state}[act]};
+            state:{accept:'accepted',reject:'rejected',undo:'proposed',save:c.dataset.state,option:'accepted'}[act]};
   if(act==='save')body.expected=ed.innerText;
+  if(act==='option'){body.expected=b.dataset.text;body.option=b.dataset.opt;}
+  if(act==='confirm'){var r=c.querySelector('.rv-choice.sel');if(!r){msg(c,'pick one first',true);return Promise.resolve(false);}
+   if(r.dataset.opt==='drop'){body.state='rejected';}
+   else if(c.dataset.state==='written'&&r.dataset.opt===c.dataset.chosen){msg(c,'already in the text');return Promise.resolve(false);}
+   else{body.state='accepted';body.expected=r.dataset.text;body.option=r.dataset.opt;}}
   if(b)b.disabled=true;msg(c,'…');
   return fetch('/_board/draft-card',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
    .then(function(r){return r.json();}).then(function(j){if(b)b.disabled=false;
      if(!j.ok){msg(c,j.err||'not saved',true);return false;}
      c.dataset.state=j.state;c.querySelector('.rv-chip').innerHTML=CHIP[j.state]||j.state;
-     if(j.change){c.querySelector('.rv-change').innerHTML=j.change;}c.classList.remove('editing');msg(c,j.note||'');
+     var ch=c.querySelector('.rv-change');if(j.change&&ch){ch.innerHTML=j.change;}if(body.expected)ed.innerText=body.expected;
+     if(body.option)c.dataset.chosen=body.option;
+     if(body.option)c.querySelectorAll('.rv-opt').forEach(function(o){o.classList.toggle('chosen',o.dataset.opt===body.option);});c.classList.remove('editing');msg(c,j.note||'');
      allbtn(scope(c));align();return true;})
    .catch(function(err){if(b)b.disabled=false;msg(c,String(err),true);return false;});}
+ document.addEventListener('change',function(e){var i=e.target;if(!i.closest||!i.closest('.rv-choice'))return;
+  var c=i.closest('.rv-card');c.querySelectorAll('.rv-choice').forEach(function(x){x.classList.toggle('sel',x.contains(i));});align();});
  document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-card-act]');if(!b)return;e.preventDefault();
   var c=b.closest('.rv-card'),act=b.dataset.cardAct,ed=c.querySelector('.rv-edit');
-  if(act==='edit'){c.classList.add('editing');c.dataset.before=ed.innerText;ed.focus();align();return;}
+  if(act==='edit'){if(window.rvPin)window.rvPin(c);c.classList.add('editing');c.dataset.before=ed.innerText;ed.focus();align();return;}
   if(act==='cancel'){ed.innerText=c.dataset.before||ed.innerText;c.classList.remove('editing');align();return;}
   send(c,act,b);});
- /* every card still proposed, one after another (a card's write reads the file the one before it wrote); the cards
-    already decided stay as they are (JL 261020: "I will just accept all the changes here") */
- document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-cards-all]');if(!b)return;e.preventDefault();
-  var right=scope(b),cs=[].slice.call(right.querySelectorAll('.rv-card[data-state=proposed]'));b.disabled=true;
-  cs.reduce(function(p,c){return p.then(function(){return send(c,'accept');});},Promise.resolve())
-   .then(function(){b.disabled=false;allbtn(right);});});
 })();
 </script>"""
 
 
+def _first_para(part: str, d: dict) -> str:
+    """The first paragraph id of a part of the text (C2 → C2.P4), where a card on the whole part is placed."""
+    body = "\n".join(b for _, b in (d or {}).get("text", []))
+    return (re.search(r"(?m)^### (" + re.escape(part) + r"\.P\d+)\b", body) or [None, ""])[1]
+
+
 def _reading_key(head: str, d: dict) -> tuple:
-    """Where a card sits in the text: the Section first, then a paragraph's first sentence, then its own sentence."""
+    """Where a card sits in the text: the Section first, then a paragraph's first sentence, then its own sentence, in
+    the order the text reads, which an S number need not follow once a sentence has moved (S5 before S4)."""
     m = re.match(r"[^·]+·\s*(?:S(\d+)([a-z]?)|(C\d+\.P\d+)|(C\d+))\b", head)
     if not m:
         return (10 ** 6, "")
-    if m.group(1):
-        return (int(m.group(1)), m.group(2))
-    if m.group(4):
-        return (-1, "")
     body = "\n".join(b for _, b in (d or {}).get("text", []))
-    sec = re.search(r"(?ms)^### " + re.escape(m.group(3)) + r"\b.*?^- B\d+ · S(\d+)", body)
-    return (int(sec.group(1)) - 0.5, "") if sec else (10 ** 6, "")
+    order = {sid: i for i, sid in enumerate(re.findall(r"(?m)^- B\d+ · (S\d+[a-z]?) · ", body))}
+    if m.group(4):                                   # a card on a whole part (C2) sits at its first paragraph, first
+        first = _first_para(m.group(4), d)           # among that paragraph's cards
+        sec = first and re.search(r"(?ms)^### " + re.escape(first) + r"\b.*?^- B\d+ · (S\d+[a-z]?)", body)
+        return (order[sec.group(1)] - 0.6, "") if sec and sec.group(1) in order else (-1, "")
+    if m.group(1):
+        sid = f"S{m.group(1)}{m.group(2)}"
+        return (order[sid], "") if sid in order else (int(m.group(1)) + 10 ** 5, m.group(2))
+    sec = re.search(r"(?ms)^### " + re.escape(m.group(3)) + r"\b.*?^- B\d+ · (S\d+[a-z]?)", body)
+    return (order[sec.group(1)] - 0.5, "") if sec and sec.group(1) in order else (10 ** 6, "")
 
 
 def _text_and_cards(d: dict, ev: dict, root: Path, path: Path, task: Path) -> str:
@@ -1905,31 +2318,83 @@ def _text_and_cards(d: dict, ev: dict, root: Path, path: Path, task: Path) -> st
     The text is one column with no space between its sentences, the same text 2 · Write, 3 · Evidence and 4 · Display
     show (JL 261020: "我不想让句子跟句子之间有这么大的空格 ... 在 revise、evidence、display 这里都保持一样的风格"): a card
     is placed at its sentence's line and pushed down only to clear the card above it (CARDS_JS `align`), the text
-    never moves for a card, and it stays in view while the cards scroll. A card on the whole Section sits above, the
-    full width."""
+    never moves for a card, and it stays in view while the cards scroll. A card on a whole part (`Section question ·
+    C2 · …`) is a card like the others, on the right at its part's first paragraph heading (JL 261021, of one above
+    the text: "我想知道它是不是应该也当成一个 card 之类的，放到右边去？")."""
     marks = _marks(ev)
     text = "".join((f'<h3 style="margin:14px 0 4px">{esc(t)}</h3>' if len(d["text"]) > 1 else "") + _md(b, marks)
                    for t, b in d["text"])
+    text = _embed_displays(text, d, _displays(task, d), root)
     passes = _revise_passes(path)[:1] if path.is_file() else []
     title, cs = passes[0] if passes else ("", [])
     t = _rel(task, root)
-    whole = lambda h: re.match(r"[^·]+·\s*C\d+\s*·", h)        # `Section question · C1 · …`, not `· C1.P2 · …`
+    whole = lambda h: re.match(r"[^·]+·\s*(C\d+)\s*·", h)      # `Section question · C1 · …`, not `· C1.P2 · …`
     cs = [(h, c) for h, c in cs if not _is_report(h)]
     cards = sorted(cs, key=lambda x: _reading_key(x[0], d))
     # the pass's review report is its own section above this one (_review_report; JL 261021: "把那些比较详细的 review
     # report 单独作为一个新的 section ... 我还要之前的那个 revised card section")
-    top = "".join(_revise_card(h, c, t, title) for h, c in cards if whole(h))
-    right = "".join(_revise_card(h, c, t, title) for h, c in cards if not whole(h))
+    top = ""
+    # a person's comments sit among the cards, each beside its sentence and before the cards on it, so a comment reads
+    # first and the change that answers it after (JL 261021: "你的 change 怎么跟我的 comments 一起来做交互、解决我的 comments")
+    notes_at = _comments_path(path)
+    notes, by = _comments(notes_at), _answered_by(path)
+    rep = next((c for h, c in (passes[0][1] if passes else []) if _is_report(h)), None)
+    said = _sentence_lines(rep.get("body", "")) if rep else []
+    paras = [pid for _, b in d["text"] for pid in re.findall(r"(?m)^### (C\d+\.P\d+)\b", b)]
+    body = "\n".join(b for _, b in d["text"])
+    sids = {pid: re.findall(r"(?m)^- B\d+ · (S\d+[a-z]?) · ", (re.search(r"(?ms)^### " + re.escape(pid) + r"\b.*?(?=^### |\Z)", body)
+                                                                 or [""])[0]) for pid in paras}
+    flows = [(k, v, next((pid for pid in paras if pid.endswith("." + k)), "")) for k, v in
+             re.findall(r"(?m)^Flow (P\d+): (.*)$", rep.get("body", "").partition("\nSentences:")[2])] if rep else []
+    words = {m.group(1): m.group(2) for _, b in d["text"] for m in re.finditer(r"(?m)^- B\d+ · (S\d+[a-z]?) · (.*)$", b)}
+    # each sentence's evidence beside it, the rows 3 · Evidence shows there (JL 261021: "这里最好也加一下 evidence ...
+    # 这一块对应的 paper 是什么 ... citation、values")
+    evs = {}
+    for c in ev.get("cards", []):
+        for n, it in enumerate(c["items"], 1):
+            for sid in _s_ids(it):
+                if sid in words:
+                    evs.setdefault(sid, []).append((c, it, n))
+    right = "".join(html for _, html in sorted(
+        [((_reading_key(h, d), 2), _revise_card(h, c, t, title)) for h, c in cards if not whole(h)]
+        + [((_reading_key(h, d), 0), _revise_card(h, c, t, title, _first_para(whole(h).group(1), d))) for h, c in cards
+           if whole(h)]
+        + [((_reading_key(f"Comment · {c['target']}", d), 0), _note_card(c, by.get(c["n"], []))) for c in notes]
+        + [((_reading_key(f"Review · {x['s']}", d), 1), _logic_card(x, words.get(x["s"], ""))) for x in said]
+        + [((_reading_key(f"Ev · {sid}", d), 1.5), _ev_side_card(sid, items, root, words.get(sid, ""))) for sid, items in evs.items()]
+        + [((_reading_key(f"Flow · {sids[pid][-1]}", d), 3), _flow_card(k, v, pid, sids[pid])) for k, v, pid in flows
+           if pid and sids.get(pid)],
+        key=lambda x: x[0]))
     some = any((c.get("state") or "proposed").split()[0].lower() == "proposed" for _, c in cs)
-    head = (f'<h4 style="margin:0 0 8px">🃏 Revise cards · {esc(title)} <button type=button class=work-act '
-            f'data-cards-all=accept style="margin-left:8px{"" if some else ";display:none"}">✓ Accept all</button></h4>'
-            if cs else '<p class=space-empty>No Revise cards yet.</p>')
-    tail = (f'<p><button type=button class="run-copy work-act" data-copy="{esc(f"/haipipe-draft {t} apply: write the accepted cards of {title} into ## 3 · Draft as the next version (the old one to previous/), mark each one written, and leave the rejected ones as they are.")}">Copy: apply the accepted cards</button></p>'
-            if cs else "")
-    body = (f'<p class=space-reads>{_code(d["file"], root)}' + (f' · {_code(path, root)}' if path.is_file() else "") + '</p>'
-            f'<div class=rv-board>{head}{top}<div class=rv-split><div class=rv-left>{text}</div>'
+    waiting = sum(c["state"] == "open" for c in notes)
+    # a card already written into the text, or a comment its person closed, is hidden until asked for (JL 261021:
+    # "你的这个 editing card 如果已经结束的话，就把它 hide 掉吧")
+    # revise + comments: a pass that answers the open comments first (JL 261021: "有的时候我让你 review，可能是加了一些我的
+    # comments 之类的 revise + comments")
+    ask = (f"/haipipe-draft {t} revise: answer my open comments in {_rel(notes_at, root)} first (each is my ruling), "
+           "then review the rest as usual. For each comment: change the sentence it names as an Edit card with "
+           "`Answers: Comment <n>`, or say why not; append `- Reply · <time from the clock>: <what you did, one or two "
+           "lines>` and set `State: answered`; a comment that is a rule for the whole Section also goes into the Revise "
+           "rules as a new R#. Apply by default, as the Revise rules say.")
+    chip = lambda k, label, n: (f'<button type=button class=rv-kind data-cards-kind={k} aria-pressed=true>{label} '
+                                f'<span>{n}</span></button>')
+    # the pass on the left, the chips at the top right, over the cards they filter (JL 261021: "不应该放到右上方吗")
+    head = ((f'<div class=rv-head><h4 style="margin:0">🃏 Revise cards · {esc(title)}</h4><div class=rv-kinds>'
+             + (chip("notes", "Comments", len(notes)) if notes else "")
+             + (chip("logic", "Logic", len(said)) if said else "")
+             + (chip("edits", "Edits", len([1 for h, c in cards if not whole(h) and (_options(c) or (c.get("state") or "").split()[:1] != ["written"])]))
+                if cs else "")
+             + (chip("ev", "Evidence", len(evs)) if evs else "")
+             + (f'<button type=button class="run-copy work-act" data-copy="{esc(ask)}">Copy: revise '
+                f'with my {waiting} open comment{"s" if waiting > 1 else ""}</button>' if waiting else "") + '</div></div>')
+            if cs or notes or said or evs else '<p class=space-empty>No Revise cards yet.</p>')
+    tail = ""
+    body = (f'<p class=space-reads>{_code(d["file"], root)}' + (f' · {_code(path, root)}' if path.is_file() else "")
+            + (f' · {_code(notes_at, root)}' if notes_at.is_file() else "") + '</p>'
+            f'<div class=rv-board data-task="{esc(t)}">{head}{top}<div class=rv-split><div class=rv-left>{text}</div>'
             f'<div class=rv-right>{right}{tail}</div></div></div>')
-    return CARDS_CSS + _fold(f"✍️ The text and its Revise cards · {d['version']}", body, open_=True) + CARDS_JS
+    return (CARDS_CSS + NOTES_CSS + _fold(f"✍️ The text and its Revise cards · {d['version']}", body, open_=True)
+            + CARDS_JS + NOTES_JS)
 
 
 def _is_report(head: str) -> bool:
@@ -1941,6 +2406,138 @@ def _is_report(head: str) -> bool:
 RUBRIC_AXES = ("Mechanics", "Function", "Evidence", "Readability", "Coherence", "Anti-AI", "Venue")
 AXIS_NAME = {"Anti-AI": "Anti-AI writing"}
 VERDICT_CHIP = {"MEETS": "st st-ok", "NEEDS WORK": "st st-warn", "NOT VERIFIABLE": "st st-warn", "N/A": "st"}
+
+
+def _score_ink(n: float) -> str:
+    return 'class="st st-ok"' if n >= 9 else 'class="st st-warn"' if n >= 8 else 'class=st style="color:#c92a2a"'
+
+
+def _sentence_lines(body: str) -> list:
+    """A review report's `Sentences:` lines (haipipe-draft-review ref/sentence-logic.md), `- S<n> · logic <n>/10 · read
+    <n>/10 · link: <relation>, <carried | weak | broken> · <the problem> · Fix: none | <the rewritten sentence>`, as
+    dicts; an older line, `- S<n> · <n>/10 · link: <state> · …`, has one score, read as its read score."""
+    out = []
+    for sid, rest in re.findall(r"(?m)^- (S\d+[a-z]?) · (.*)$", body.partition("\nSentences:")[2]):
+        two = re.match(r"logic (\d+(?:\.\d+)?)/10 · read (\d+(?:\.\d+)?)/10 · ", rest)
+        one = None if two else re.match(r"(\d+(?:\.\d+)?)/10 · ", rest)
+        if not (two or one):
+            continue
+        lo, rd = (two.group(1), two.group(2)) if two else ("", one.group(1))
+        problem, _, fix = rest[(two or one).end():].partition(" · Fix: ")
+        link = re.match(r"link: ([^·]+?) · ", problem)          # how it follows the sentence before it
+        problem = problem[link.end():] if link else problem
+        word = link.group(1).strip() if link else ""
+        state = (re.search(r"\b(carried|weak|broken)\b", word) or [None, ""])[1]
+        none = lambda t: "" if t.strip().lower() in ("", "none") else t.strip()
+        out.append({"s": sid, "logic": lo, "read": rd, "link": word, "state": state, "problem": none(problem),
+                    "fix": none(fix), "pass": float(lo or 10) >= 8 and float(rd) >= 8 and state != "broken"})
+    return out
+
+
+def _logic_card(x: dict, now: str = "") -> str:
+    """The reviewer's logic comment on one sentence, beside it in the column of cards (JL 261021: "这个 sentence 应该当做一个
+    新的 type ... logic comments ... 应该是放到右边的"): its logic and read scores, its link to the sentence before, the
+    problem, and the smallest fix (marked when it is already in the text). Read only: an Edit card changes the text."""
+    chips = "".join(f'<span {_score_ink(float(v))}>{k} {esc(v)}</span>' for k, v in (("logic", x["logic"]), ("read", x["read"])) if v)
+    low = min(float(v) for v in (x["logic"], x["read"]) if v)
+    word, ink = (("✗ broken", "color:#c92a2a") if x["state"] == "broken" else ("✗ needs work", "color:#c92a2a") if low <= 6
+                 else ("⚠ weak", "color:#d9480f") if low < 8 else ("✓ passes", "color:#2b8a3e") if low < 9
+                 else ("✓ good", "color:#2b8a3e"))
+    chips = (f'<b class=lg-q style="{ink}" title="9-10 good · 8 passes, a tiny gap · 7 weak, one clear stumble · 6 or '
+             f'less needs work">{word}</b>' + chips)
+    link = (f'<span class="lg-link{" lg-weak" if x["state"] != "carried" else ""}">{esc(x["link"])}</span>' if x["link"] else "")
+    applied = now and x["fix"] and " ".join(now.split()) == " ".join(x["fix"].split())
+    mark = ('<span class="st st-ok">✓ fix in the text</span>' if applied else '<span class="st st-warn">fix ▸</span>'
+            if x["fix"] else "")
+    # one line until clicked, so each card stays about as tall as its sentence and beside it
+    return (f'<div class="rv-card rv-rev" data-s="{esc(x["s"])}" data-state="review">'
+            f'<div class=lg-head><span class=rv-handle><b class=lg-k>Logic</b><span class=nt-s>{esc(x["s"])}</span></span>{chips}{link}{mark}</div>'
+            + (f'<div class="lg-text lg-clip">{_inline(x["problem"], {})}</div>' if x["problem"] else "")
+            + (f'<div class="lg-text lg-more mut">Fix: {_inline(x["fix"], {})}</div>' if x["fix"] else "")
+            + '</div>')
+
+
+def _bib_ref(result) -> dict:
+    """A discovery Run's one-entry .bib as a reference: who ("Ibrahim and Zaki"), year, title, venue, and a link (its DOI,
+    else its URL, else its arXiv id)."""
+    bib = next(Path(result).glob("*.bib"), None)
+    text = bib.read_text(encoding="utf-8", errors="replace") if bib else ""
+    get = lambda k: ((m := re.search(r"\b" + k + r"\s*=\s*\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}", text)) and
+                     re.sub(r"[{}]", "", m[1]).strip()) or ""
+    raw = re.search(r"\bauthor\s*=\s*\{\s*\{([^{}]+)\}\s*\}", text)        # {{U.S. Congress}}: one name, kept whole
+    names = [raw[1].strip()] if raw else [a.strip() for a in get("author").split(" and ") if a.strip()]
+    last = lambda a: a.split(",")[0].strip() if "," in a else a.split()[-1]
+    who = ((names[0] if raw else last(names[0])) + (" et al." if len(names) > 2 else f" and {last(names[1])}"
+           if len(names) == 2 else "")) if names else ""
+    doi, url, eprint = get("doi"), get("url") or get("howpublished").replace("\\url", "").strip(), get("eprint")
+    link = (f"https://doi.org/{doi}" if doi else url if url.startswith("http") else
+            f"https://arxiv.org/abs/{eprint}" if eprint else "")
+    venue = get("journal") or get("booktitle") or ("arXiv" if eprint else get("howpublished") if not get("howpublished").startswith("\\url") else "")
+    return {"who": who, "year": get("year"), "title": get("title"), "venue": venue, "link": link}
+
+
+def _ev_item(c: dict, it: dict, n: int, root: Path | None) -> str:
+    """One evidence item beside its sentence (JL 261021: "我需要 evidence 对应的是哪一个 paper ... 你得给个链接、给个 reference"):
+    its label and state; for a citation, the paper (who, year, title, venue, linked), the sentences quoted from it and
+    the words they back; for a value, the value and the file and key it is read from; and the Run that read it."""
+    ink = INK.get(c["kind"], INK["value"])
+    res, addr = it.get("result"), f'{c["source"]}.{it["run"]}' if it.get("run") else ""
+    card = Path(res) / f"{Path(res).parent.name}.md" if res else None      # the Run's Result Card, result/<run>.md
+    run = (f'<a href="/{esc(quote(_rel(card, root)))}" target=_blank>{esc(addr)}</a>' if card and root and card.is_file()
+           else esc(addr))
+    words = " · ".join(f"“{esc(a)}”" for a in it.get("anchor") or [])
+    head = f'<b style="color:{ink}">{esc(c["label"])}.{n}</b> {EV_STATE[it["state"]]}'
+    if c["kind"] == "cite" and res:
+        r = _bib_ref(res)
+        who = esc(f'{r["who"]}, {r["year"]}')
+        ref = (f'<a href="{esc(r["link"])}" target=_blank>{who}</a>' if r["link"] else who) + \
+              f' · <i>{esc(r["title"])}</i>' + (f' · {esc(r["venue"])}' if r["venue"] else "")
+        ids = it.get("fact") or []
+        ids = ids if isinstance(ids, list) else [ids]
+        try:
+            said = CARDS.facts(res, [str(x) for x in ids]) if ids and CARDS else ""
+        except Exception:
+            said = ""
+        return (f'<div class=ev-item><div>{head} {ref}</div>'
+                + "".join(f'<div class=ev-quote>{esc(q)}</div>' for q in re.split(r"(?<=\([A-Z]\d{2}\))\s+", said) if q.strip())
+                + f'<div class=ev-meta>backs {words or "the sentence"} · Run {run}</div></div>')
+    if c["kind"] != "cite" and it.get("state") == "have":
+        val = f'<b>= {esc(_num(it.get("value")))}</b>' if it.get("value") not in ("", None) else ""
+        what = esc(it.get("what") or "")
+        src = f'{run}' + (f' · {esc(it["file"])}' if it.get("file") else "") + (f' <code>{esc(it["key"])}</code>' if it.get("key") else "")
+        return (f'<div class=ev-item><div>{head} {words} {val}</div>'
+                + (f'<div class=ev-quote>{what}</div>' if what else "") + f'<div class=ev-meta>read from {src}</div></div>')
+    return f'<div class=ev-item><div>{head} {words}</div><div class=ev-meta>{esc(str(it.get("value") or it.get("need") or ""))}</div></div>'
+
+
+def _ev_side_card(sid: str, items: list, root: Path | None = None, text: str = "") -> str:
+    """A sentence's evidence beside it in 5 · Revise: one line naming its papers (who, year) or its values as the
+    sentence says them ("1,983 requests", never an item id such as "VALUE 1.1 queries in fold00"), or what a pending
+    one still needs; then, opened, each item with its reference, link, quoted sentences and the Run that read it."""
+    names = []
+    for c, it, n in items:
+        if c["kind"] == "cite" and it.get("result"):
+            r = _bib_ref(it["result"]); names.append(f'{r["who"]} {r["year"]}'.strip() or it.get("cite", ""))
+        elif it.get("need"):
+            names.append("pending: " + str(it["need"]).split(":")[0][:48])
+        else:
+            said = [a for a in it.get("anchor") or [] if a in text] or list(it.get("anchor") or [])
+            what = str(it.get("what") or "").split(":")[0]
+            names += said or [it.get("cite") or f'{c["label"]}.{n} {what[:40]}'.strip()]
+    return (f'<div class="rv-card rv-ev" data-s="{esc(sid)}" data-state="evidence">'
+            f'<div class=lg-head><span class=rv-handle><b class=ev-k>Evidence</b><span class=nt-s>{esc(sid)}</span></span>'
+            f'<span class=rv-peek style="flex:1;min-width:0;margin:0">{esc(" · ".join(dict.fromkeys(names)))}</span></div>'
+            + "".join(_ev_item(c, it, n, root) for c, it, n in items) + '</div>')
+
+
+def _flow_card(k: str, text: str, pid: str, sids: list) -> str:
+    """A paragraph's flow as the reviewer reads it, `S1 the shift → S2 … · weakest join S3 to S5`, a Logic card under
+    the paragraph's last sentence (so it never pushes the first one down); pointing at it lights all its sentences."""
+    steps, _, weak = text.partition(" · weakest join ")
+    return (f'<div class="rv-card rv-rev rv-flow" data-s="{esc(" ".join(sids))}" data-p="{esc(pid)}" data-state="review">'
+            f'<div class=lg-head><span class=rv-handle><b class=lg-k>Logic</b><span class=nt-s>{esc(k)} flow</span></span></div>'
+            f'<div class="lg-text lg-clip2">{_inline(steps, {})}</div>'
+            + (f'<div class="lg-text mut">weakest join {esc(weak)}</div>' if weak else "") + '</div>')
 
 
 def _review_report(path: Path) -> str:
@@ -1976,15 +2573,31 @@ def _review_report(path: Path) -> str:
                      f'<b>{sc.group(1)}</b><span class=mut>/{sc.group(2)}</span>' if sc else '<span class=mut>—</span>',
                      _inline(reading, {}), _inline(fix, {}) if fix else '<span class=mut>—</span>'))
     table = _change("Section question", field("Now"), field("Proposed")) if field("Now") and field("Proposed") else ""
+    # each sentence in its context, as the reviewer reads it (JL 261021: "让 AI 也来评评每句话，作为一个 reviewer"; "每句话
+    # 都要看一下上下文，review 它的逻辑关系是否通顺，并且给每句话打分"): haipipe-draft-review's ref/sentence-logic.md lines,
+    # `- S<n> · logic <n>/10 · read <n>/10 · link: <relation>, <carried | weak | broken> · <the problem> · Fix: …`,
+    # then `Flow P<k>: …`; an older line, `- S<n> · <n>/10 · link: <state> · …`, has one score
+    lines = _sentence_lines(body)
+    logic = [float(x["logic"]) for x in lines if x["logic"]]
+    read = [float(x["read"]) for x in lines]
+    fail = sum(not x["pass"] for x in lines)
+    mean = lambda xs: f"{sum(xs) / len(xs):.1f}"
+    # the lines themselves are Logic cards beside the text (_logic_card); the report keeps their sum
+    sentences = ((f'<p style="margin:10px 0 0"><b>Each sentence, in its context:</b> '
+                  + (f'logic {mean(logic)} · ' if logic else "") + f'read {mean(read)} of 10 · '
+                  f'{len(lines) - fail} of {len(lines)} pass (8 or more{" on both" if logic else ""}, no broken link) '
+                  '<span class=mut>· each sentence\'s Logic card is beside it below</span></p>') if lines else "")
     out = ((f'<p class=mut style="margin:0 0 6px">{_inline(field("Reviewer"), {})}</p>' if field("Reviewer") else "")
            + (f'<p style="margin:0 0 8px;line-height:1.6">{_inline(field("Verdict"), {})}</p>' if field("Verdict") else "")
            + (f'<p style="margin:0 0 6px"><b>Score {sum(scores) / len(scores):.1f} of 10</b> <span class=mut>· the mean '
               f'of {len(scores)} rows; a reading aid, never a pass mark</span></p>' if scores else "")
            + (_table(("rubric", "verdict", "score", "how the draft reads", "smallest fix"), rows) if rows else "")
+           + sentences
            + (f'<p style="margin:8px 0 0;line-height:1.6"><span class=mut>The cards below:</span> '
               f'{_inline(field("Cards"), {})}</p>' if field("Cards") else "")
            + (f'<h4 style="margin:14px 0 4px">The paragraphs, now and as the cards propose</h4>{table}' if table else ""))
-    return _fold(f"📋 Revise Review Report · {title}", out, open_=True)
+    # folded until opened: the text and its cards come first (JL 261021: "我想说自动的话就把它 hide 起来")
+    return _fold(f"📋 Revise Review Report · {title}", out, open_=False)
 
 
 def card_act(root: Path, p: dict, read_only: bool = False) -> tuple:
@@ -2035,9 +2648,79 @@ def card_act(root: Path, p: dict, read_only: bool = False) -> tuple:
                 if re.search(r"(?m)^Expected:", body) else body.rstrip("\n") + f"\nExpected: {words}\n\n")
         orig = re.search(r"(?m)^Original:[^\S\n]*(.*)$", body)
         change = _change(head, orig.group(1) if orig else "", words)
+        opt = str(p.get("option") or "")
+        if re.fullmatch(r"[A-Z]", opt):
+            body = (re.sub(r"(?m)^Chosen:.*$", "Chosen: " + opt, body, count=1) if re.search(r"(?m)^Chosen:", body)
+                    else body.rstrip("\n") + f"\nChosen: {opt}\n\n")
     seg = seg[:found[0].start(1)] + body + seg[found[0].end(1):]
     path.write_text(text[:start] + seg + text[end:], encoding="utf-8")
     return 200, {"ok": True, "state": state, "change": change}
+
+
+def note_act(root: Path, p: dict, read_only: bool = False) -> tuple:
+    """A person's comment on the text in 5 · Revise (JL 261021: "我选中一个句子 ... 点个加号就能加注释"), written in
+    `draft/records/<stem>-comments.md`: `add` a comment on a sentence (with the words selected, if any), `reply` (a
+    new note, so it waits on a pass again), `done`, `reopen`, or `delete` while no pass has replied. A pass answers a
+    comment by appending its Reply and setting `State: answered`; the person closes it. Returns the comment's card,
+    "" once deleted. Refused when its state changed on disk since the page showed it (`was`)."""
+    if read_only:
+        return 403, {"ok": False, "err": "this host is read-only"}
+    root = Path(root).resolve()
+    folder = (root / str(p.get("task") or "").strip("/")).resolve()
+    md = face(folder) if folder.is_dir() and root in folder.parents else None
+    if md is None:
+        return 400, {"ok": False, "err": "no such Task"}
+    revise = folder / "draft" / "records" / f"{md.stem}-revise.md"
+    path = _comments_path(revise)
+    act, n = str(p.get("act") or ""), str(p.get("n") or "")
+    words = " ".join(str(p.get("text") or "").split())
+    now = f"{datetime.datetime.now():%Y-%m-%d %H:%M}"
+    text = path.read_text(encoding="utf-8") if path.is_file() else (
+        f"# {md.stem} · comments\n\nA person's comments on the text, left in 5 · Revise; each Revise pass answers the "
+        "open ones (a Reply line, `State: answered`), and the person closes them.\n")
+    if act == "add":
+        target = str(p.get("s") or "")
+        if not NOTE_TARGET.match(target):
+            return 400, {"ok": False, "err": "a comment is on a sentence (S<n>) or a paragraph (C<n>.P<n>)"}
+        if not words:
+            return 400, {"ok": False, "err": "the comment is empty"}
+        n = str(max([int(c["n"]) for c in _comments(path)] or [0]) + 1)
+        quote = " ".join(str(p.get("quote") or "").split())[:400]
+        text = (text.rstrip("\n") + f"\n\n### Comment {n} · {target}\n" + (f"Quote: {quote}\n" if quote else "")
+                + f"State: open\n- Note · {now}: {words}\n")
+    else:
+        found = list(re.finditer(r"(?ms)^### Comment " + re.escape(n) + r" · [^\n]*\n(.*?)(?=^### |^## |\Z)", text))
+        if not n or len(found) != 1:
+            return 409, {"ok": False, "err": "the comment changed on disk; reload"}
+        body = found[0].group(1)
+        cur = (re.search(r"(?m)^State:[^\S\n]*(\S*)", body) or [None, "open"])[1].lower() or "open"
+        if p.get("was") and str(p["was"]) != cur:
+            return 409, {"ok": False, "err": f"it is {cur} on disk now; reload"}
+        if act == "delete":
+            if re.search(r"(?m)^- Reply · ", body):
+                return 409, {"ok": False, "err": "a pass has replied; mark it done instead"}
+            rest = text[found[0].end():].lstrip("\n")
+            path.write_text(text[:found[0].start()].rstrip("\n") + ("\n\n" + rest if rest.strip() else "\n"),
+                            encoding="utf-8")
+            return 200, {"ok": True, "html": ""}
+        if act == "reply":
+            if not words:
+                return 400, {"ok": False, "err": "the reply is empty"}
+            body = body.rstrip("\n") + f"\n- Note · {now}: {words}\n"
+            state = "open"
+        elif act in ("done", "reopen"):
+            state = "done" if act == "done" else "open"
+        else:
+            return 400, {"ok": False, "err": "add, reply, done, reopen or delete"}
+        line = f"State: {state}" + (f" · {now}" if state == "done" else "")
+        body = re.sub(r"(?m)^State:.*$", line, body, count=1) if re.search(r"(?m)^State:", body) else line + "\n" + body
+        if not body.endswith("\n\n") and text[found[0].end():].strip():
+            body = body.rstrip("\n") + "\n\n"
+        text = text[:found[0].start(1)] + body + text[found[0].end(1):]
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text, encoding="utf-8")
+    c = next(c for c in _comments(path) if c["n"] == n)
+    return 200, {"ok": True, "n": n, "state": c["state"], "html": _note_card(c, _answered_by(revise).get(n, []))}
 
 
 def _revise(f: dict, folder: Path, root: Path, st: str) -> tuple:
@@ -2047,9 +2730,12 @@ def _revise(f: dict, folder: Path, root: Path, st: str) -> tuple:
     paras = _paragraphs(d["structure"][1]) if d and d["structure"] else []
     section = (f"{f['section']} · {len(paras)} paragraphs · {sum(len(b) for _, b in paras)} Bullets" if paras else
                f"{f['section']} · " + " · ".join(t for t, _ in (d or {}).get("text", [])) if d else f["section"])
+    notes = _comments(_comments_path(f["revise"]))
     rows = [("Section", esc(section)),
             ("Draft", esc(f"{d['version']} · {len(d['previous'])} older in previous/") if d else '<span class=mut>—</span>'),
             ("Cards", esc(f"{len(ev['cards'])} Evidence · {revise_n} Revise")),
+            ("Comments", esc(" · ".join(f"{sum(c['state'] == s for c in notes)} {s}" for s in ("open", "answered", "done")))
+             if notes else '<span class=mut>none</span>'),
             ("Mode", "quick: no full review; the rubric only on ask")]
     job = face(chain(folder, root).get("Job") or folder)      # the draft's desk, else its version's (desk: jamaim)
     desk = ((d or {}).get("head", {}).get("desk", "") or f["head"].get("desk", "")
@@ -2059,7 +2745,9 @@ def _revise(f: dict, folder: Path, root: Path, st: str) -> tuple:
     # think as the reviewer first (JL 261020: "think about yourself，就是你是一个什么样的 reviewer，你是怎么审这篇文章的")
     prompt = (f"/haipipe-draft {f['t']} revise: first think as {who}: who you are, what you look for, and how you "
               f"will review {f['section']} (the argument and its paragraphs first, then claims and evidence, then "
-              "sentences); say it in three lines. Then read the Section and my notes, and rewrite "
+              "sentences); say it in three lines. Then read the Section, my notes and my open comments in "
+              f"draft/records/{f['stem']}-comments.md; answer each comment (an Edit card with `Answers: Comment <n>`, "
+              "or why not; then `- Reply · <time>: <one or two lines>` and `State: answered`). Then rewrite "
               f"draft/records/{f['stem']}-revise.md as one new pass (## Pass <k> · <date> · on draft {d['version'] if d else 'v<N>'}), "
               "the latest only: carry over the cards of the last pass still undecided and still true, drop the rest "
               "(git keeps them). The pass opens with `### Revise review report`, one line each: Reviewer (those three "
@@ -2067,9 +2755,15 @@ def _revise(f: dict, folder: Path, root: Path, st: str) -> tuple:
               "(run haipipe-draft-review's cli/anti_slop.py audit and read its ref/ai-tells.md) and Venue, each "
               "`<MEETS | NEEDS WORK | NOT VERIFIABLE | N/A> · <0-10>/10 · how the draft reads · Fix: the smallest fix` "
               "(haipipe-draft-review ref/evaluation-rubric.md, its score bands and its Revise review overlay), "
-              "and Cards, how the cards' own text scores on that audit, "
+              "and Cards, how the cards' own text scores on that audit, then `Sentences:`, one line for every "
+              "sentence read in its context, as haipipe-draft-review's ref/sentence-logic.md says (`- S<n> · logic "
+              "<0-10>/10 · read <0-10>/10 · link: <relation>, <carried | weak | broken> · <the specific problem> · Fix: "
+              "none | the rewritten sentence`, then a `Flow P<k>:` line per paragraph); the loop of blind reviews ends "
+              "only when every sentence scores 8 or more on both, with no broken link, "
               "then Now and Proposed (the paragraphs as `P1 <job> (S1 to S4) · P2 …`); then Section questions on the "
-              "structure, then Edit and Review cards, each with Why, Original, Expected and State: proposed. Rebuild "
+              "structure, then Edit and Review cards, each with Why, Original, Expected and State: proposed; where a "
+              "sentence can be fixed more than one way (another order, emphasis or link), give 2 or 3 `Option A (<the "
+              "approach>): <the sentence>` lines and `Chosen: A`, A applied by default. Rebuild "
               "the canvas.")
     # folded until opened: the text and its cards are what Revise is read for (JL 261020: "could you make this hidden
     # by default?")
@@ -2113,7 +2807,9 @@ def _delivery_step(f: dict, folder: Path, root: Path, st: str) -> tuple:
         ("build", "📤 1 of 4 · build", [("Text", esc(f"the text {d['version']}" if d else "no draft yet")),
                                        ("Builds", "tex · docx · pdf"), ("Into", f"<code>{esc(where)}</code>"),
                                        ("Rule", "built, never edited by hand")],
-         f"/haipipe-draft {t} deliver: build {s} into docx and pdf, and check it both ways."),
+         f"/haipipe-draft {t} deliver: on my ok, page.py bump (the next draft version), page.py adopt, cards.py bib "
+         f"--write (the .bib from the cited Runs), then page.py export --author \"Junjie Luo\" (web, LaTeX, Word); "
+         f"check that no citation prints as ?, and read both PDFs."),
         ("render", "🖼 2 of 4 · render the pages", [("Files", esc(f"{len(built)} built") if built else '<span class=mut>none yet</span>'),
                                                    ("Makes", "<code>render/&lt;name&gt;-v&lt;N&gt;/p-&lt;k&gt;.png</code>"),
                                                    ("Why", "you see it as Word lays it out")],

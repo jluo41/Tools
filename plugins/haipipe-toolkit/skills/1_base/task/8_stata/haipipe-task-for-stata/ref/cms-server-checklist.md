@@ -94,15 +94,16 @@ Synth data is small and laptop-safe -- errors are cheap to catch here.
 ## 1.1 How to run
 
 Each pipeline stage has a synth-compatible config.
-Run the same runner, different config:
+A synth Run is its own Run folder whose `config.do` loads the synth config; its two-line ticket
+and the Job's runner are the same code as the full Run's (`role: trial` on its `run.yaml`):
 
 ```
-  STAGE          COMMAND (from task folder)                          SYNTH CONFIG
-  ─────          ───────────────────────                             ────────────
-  A  cms         powershell run_cms_year.ps1 -cfg cms_synth -year 2015       cms_synth.do
-  B  case        powershell run_case_year.ps1 -source synth -year 2015       _source_synth.do
-  C  data        powershell run_data.ps1 -cfg <Cohort>_1stPair_synth         <Cohort>_1stPair_synth.do
-  D  reg         powershell run_reg.ps1 -cfg <Cohort>_1stPair_synth          <Cohort>_1stPair_synth.do
+  STAGE          COMMAND (from anywhere)                                  ITS config.do LOADS
+  ─────          ───────────────────────                                  ───────────────────
+  A  cms         powershell <task>\runs\rNN_<run>\rNN_<run>.ps1            cms_synth.do
+  B  case        powershell <task>\runs\rNN_<run>\rNN_<run>.ps1            _source_synth.do
+  C  data        powershell <task>\runs\rNN_<run>\rNN_<run>.ps1            <Cohort>_1stPair_synth.do
+  D  reg         powershell <task>\runs\rNN_<run>\rNN_<run>.ps1            <Cohort>_1stPair_synth.do
 ```
 
 The synth config sets `cms_source "synth"`, `cms_asset_name "cms_synth"`, `file_physician "PhyReview2021Synth"`.
@@ -114,12 +115,12 @@ Same runner code, different globals.
 |----|-------|---------------|------|
 | L1 | Pipeline ran to completion | Console / Stata exit code | No `r(...)` errors; all phases finished |
 | L2 | Heavy assets created | `_WorkSpace/{1-CMS,2-Case,...}-Store/` | Expected `.dta` files exist, non-zero size |
-| L3 | Light outputs created | `results/<run>/` | `log/`, `summary.txt`, config snapshot present |
-| L4 | No heavy in results/ | `results/<run>/` | Zero `.dta` files under `results/` |
+| L3 | Light outputs created | `runs/<run>/result/` (reg: also `passes/pNN-<MMDD>/`) | `log/`, `summary.txt`, config snapshot, `runtime.yaml` present (reg: `log/`, snapshot and `runtime.yaml` in the pass) |
+| L4 | No heavy in result/ | `runs/<run>/result/`, `runs/<run>/passes/` | Zero `.dta` files under any Run folder |
 | L5 | No light in _WorkSpace/ | `_WorkSpace/...-Store/` | No `.tex`/`.csv` tables leaked into store dirs |
-| L6 | Logs clean | `results/<run>/log/*.txt` | No `r(...)` error codes; no "variable not found" |
-| L7 | Describe/QC sane | `results/<run>/log/describe_*.txt` | Row counts > 0; key variables present; no all-missing |
-| L8 | Config snapshot matches | `results/<run>/config_snapshot.do` | Globals match what you intended (source, paths, version) |
+| L6 | Logs clean | `runs/<run>/result/log/*.txt` (reg: `passes/pNN-<MMDD>/log/`) | No `r(...)` error codes; no "variable not found" |
+| L7 | Describe/QC sane | `runs/<run>/result/log/describe_*.txt` | Row counts > 0; key variables present; no all-missing |
+| L8 | Config snapshot matches | `runs/<run>/result/config_snapshot.do` (reg: in the pass) | Globals match what you intended (source, paths, version) |
 | L9 | Dispatcher routes correct | Stata log for each step | Each step logged; no "step not recognized" |
 | L10 | Output paths land in _WorkSpace | Check actual file locations | All `.dta` under `_WorkSpace/`, not under task folder |
 
@@ -130,11 +131,11 @@ Same runner code, different globals.
 Get-ChildItem "$ws\_WorkSpace\1-CMS-Store\cms_synth" -Recurse -Include *.dta |
     Select-Object FullName, @{N='MB';E={[math]::Round($_.Length/1MB,1)}}
 
-# Check no .dta leaked into results/
-Get-ChildItem "results" -Recurse -Include *.dta
+# Check no .dta leaked into any Run folder
+Get-ChildItem "runs" -Recurse -Include *.dta
 
-# Scan logs for Stata errors
-Select-String -Path "results\*\log\*.txt" -Pattern 'r\(\d+\)' -Recurse
+# Scan logs for Stata errors (reg logs sit in each pass)
+Get-ChildItem "runs\*\result\log\*.txt", "runs\*\passes\*\log\*.txt" | Select-String -Pattern 'r\(\d+\)'
 ```
 
 ## 1.3 Known synth limitations (what Gate 1 CANNOT catch)
@@ -230,8 +231,8 @@ Select-String -Path *.do -Pattern '\bpreserve\b|\btempfile\b' -Recurse
 ### STATATMP redirect pattern
 
 ```powershell
-# In orchestrator .ps1, BEFORE launching Stata:
-$env:STATATMP = "$dir\results\run_cms_$year\_tmp"
+# In the runner .ps1, BEFORE launching Stata (temp files hold CMS rows: never inside result/, which travels back):
+$env:STATATMP = "$ws\_WorkSpace\_stata-tmp\$run"
 New-Item -ItemType Directory -Force -Path $env:STATATMP | Out-Null
 ```
 
@@ -245,24 +246,26 @@ Three rules -- a task must run identically on laptop and server, launched from a
 | ID | Check | Symptom if violated | Fix |
 |----|-------|---------------------|-----|
 | D1 | `$stata` = ONE editable line at top of orchestrator | Stata not found on different machine | `$stata = "C:\Program Files\Stata18\StataMP-64.exe"` at line ~5; one machine edits one line |
-| D2 | Run from `$PSScriptRoot`; `configs/` + `scripts/` relative | File not found when launched from different CWD | Orchestrator: `$dir = $PSScriptRoot`; Stata working dir = `$dir`; all code paths relative to `$dir` |
+| D2 | Run from the Task folder, found from the Run's path; `runs/<run>/config.do` + `scripts/` relative | File not found when launched from different CWD | Runner: `$dir` = the Task (two levels above the Run's `config.do`; a flat ticket's Task is the parent of its `runs/`); Stata working dir = `$dir`; all code paths relative to `$dir` |
 | D3 | Output paths from ABSOLUTE `_WorkSpace` via `pyproject.toml` walk-up | Heavy assets land in wrong place (classic: 50+ GB under task folder) | Walk up: `$ws = $dir; while ($ws -and -not (Test-Path "$ws\pyproject.toml")) { $ws = Split-Path $ws }`; pass `"$ws\_WorkSpace"` as arg |
 | D4 | Never write relative `"_WorkSpace"` in config | Outputs land wherever CWD is (not the repo) | Config: `global out_root "${ws_root}/1-CMS-Store/..."` (ws_root from dispatcher arg) |
 | D5 | No hardcoded folder name -- task folder renameable with `mv` | Script breaks if folder renamed | Use `$PSScriptRoot` not literal path segments; dispatcher `do "scripts/..."` not `do "A01_cms_pipeline/scripts/..."` |
 | D6 | Fixed external inputs (e.g. `G:\CMS\DATA`) stay absolute in config | Works on server, fails on laptop (expected -- synth has different path) | Keep in config `.do` as `global cms_data_root "G:\CMS\DATA"`; laptop config uses synth path |
 
-### Good pattern (from A01_cms_pipeline)
+### Good pattern (the Job runner src/run_cms_year.ps1; full form: ref/run-stage-year-template.ps1)
 
 ```powershell
-# run_cms_year.ps1 -- top of file
-param([string]$cfg = "cms_production", [string]$year = "2015")
+# src/run_cms_year.ps1 -- top of file; the ticket hands it "$PSScriptRoot\config.do"
+param([Parameter(Mandatory)][string]$ConfigPath)
 
 $stata = "C:\Program Files\Stata18\StataMP-64.exe"       # D1: one line
-$dir   = $PSScriptRoot                                     # D2: task root
+$cfg   = (Resolve-Path $ConfigPath).Path
+$run   = Split-Path -Leaf (Split-Path -Parent $cfg)        # runs\<run>\config.do
+$dir   = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $cfg))   # D2: the Task
 $ws    = $dir                                              # D3: walk-up
 while ($ws -and -not (Test-Path "$ws\pyproject.toml")) { $ws = Split-Path $ws }
-$base  = "do 01_cms_pipeline.do $cfg"
-$tail  = "`"$dir\results\run_cms_$year`" `"$ws\_WorkSpace`""
+$base  = "do scripts/run_cms_pipeline.do runs/$run/config.do"
+$tail  = "`"$dir\runs\$run\result`" `"$ws\_WorkSpace`""
 
 Start-Process $stata "/e $base pde $year $tail" -WorkingDirectory $dir -PassThru
 ```
@@ -271,10 +274,10 @@ Start-Process $stata "/e $base pde $year $tail" -WorkingDirectory $dir -PassThru
 
 | ID | Check | Symptom if violated | Fix |
 |----|-------|---------------------|-----|
-| E1 | HEAVY `.dta` assets -> `_WorkSpace/{1-CMS,2-Case,...}-Store/` | PHI leaks into repo; bloats git | Never place `.dta` under `results/` or in-repo paths |
-| E2 | LIGHT outputs (logs, `.tex`, `.csv` tables, `summary.txt`) -> `results/<run>/` | Results not tracked in git | Reg tables and logs go to `results/`; only data assets go to `_WorkSpace/` |
+| E1 | HEAVY `.dta` assets -> `_WorkSpace/{1-CMS,2-Case,...}-Store/` | PHI leaks into repo; bloats git | Never place `.dta` under a Run's `result/` or `passes/`, or any in-repo path |
+| E2 | LIGHT outputs (logs, `.tex`, `.csv` tables, `summary.txt`) -> `runs/<run>/result/` | Results not tracked in git | Reg tables go to `result/`, their logs to `passes/pNN-<MMDD>/`; only data assets go to `_WorkSpace/` |
 | E3 | synth vs full tagging -- outputs never collide | Synth results overwrite real or vice versa | Tag by `${cms_source}`: `case_lbp_synth` vs `case_lbp_full`; separate configs per source |
-| E4 | Only CODE ships to server (`.do`, `.ps1`, `.yaml`, `.md`) | PHI leaves server; data leaves laptop | Use `ship-to-cms-server.ps1`: excludes `.dta`, `.csv`, `.log`, `results/`, `_WorkSpace/` |
+| E4 | Only CODE ships to server (`.do`, `.ps1`, `.yaml`, `.md`) | PHI leaves server; data leaves laptop | Use `ship-to-cms-server.ps1`: excludes `.dta`, `.csv`, `.log`, every `runs/*/result/` and `runs/*/passes/` (a Block not yet moved: `results/`), `_WorkSpace/` |
 | E5 | Verify which build produced current data | Reg runs on synth n=151, crashes IV `r(459)` | Check `config_snapshot.do` -> `case_asset_name` = `case_lbp` (real) vs `case_lbp_synth` |
 
 ## 2.5 Code Style (will the reviewer pass it?)
@@ -282,8 +285,8 @@ Start-Process $stata "/e $base pde $year $tail" -WorkingDirectory $dir -PassThru
 | ID | Check | Rule | Detail |
 |----|-------|------|--------|
 | F1 | Header | 1-2 comment lines: what + args/usage | No banners, no `===`/`---` walls, no ASCII-art, no box-drawing chars |
-| F2 | Size | orchestrator `.ps1` <= ~30 lines; `runs/` entry as small as possible (ideal: 2-3 lines -- comment + call orchestrator); `sbatch/` batcher <= ~10 lines | worker `.do` = one focused step. `runs/` entries should be thin dispatch-only: set the year, call the orchestrator. All logic (path resolution, dir creation, validation) lives in the orchestrator (orchestrated stages; data/reg self-orchestrating runners hold their own logic per B3). |
-| F3 | No ceremony in RUNNERS | Runners/orchestrators write no `runtime.yaml`/`manifest.json`/snapshot logic inline | The record = Stata logs + `summary.txt` + `results/<run>/config_snapshot.do` (L3/L8; + `manifest.json` for self-orchestrating stages per dialect B3) |
+| F2 | Size | orchestrator `.ps1` <= ~30 lines; `runs/<run>/<run>.ps1` ticket as small as possible (ideal: 2 lines -- comment + hand `config.do` to the runner); `sbatch/` batcher <= ~10 lines | worker `.do` = one focused step. Tickets should be thin dispatch-only: the year sits in the Run's `config.do`, the ticket calls the runner. All logic (path resolution, dir creation, validation) lives in the orchestrator (orchestrated stages; data/reg self-orchestrating runners hold their own logic per B3). |
+| F3 | No ceremony in RUNNERS | Runners/orchestrators write no `runtime.yaml`/`manifest.json`/snapshot logic inline | The record = Stata logs + `summary.txt` + `runs/<run>/result/config_snapshot.do` (reg: in `passes/pNN-<MMDD>/`) (L3/L8; + `manifest.json` for self-orchestrating stages per dialect B3) |
 | F4 | Dispatcher braces | Multi-line braces only | `else if "step" == "x" {` then body indented, then `}` on own line. No one-liners |
 | F5 | No patch markers | No `// CHANGE (n)` in committed code | Give patch instructions in chat, not as in-file markers |
 | F6 | Orchestrator reads as | Variable block, then action lines | No interleaved logic/declarations |
@@ -321,12 +324,12 @@ summarize is_opioid_rx is_high_mme_daily, detail
 tab is_opioid_rx, missing
 
 // Check filter log tells
-// In results/<run>/log/filter_case.txt, look for:
+// In runs/<run>/result/log/filter_case.txt, look for:
 //   "Exclude cancer (dropped N)"    -- N > 0 on real data
 //   "is_mddo==1 (dropped N)"        -- N > 0 on real data
 //   "Reviews 5-100 (dropped N)"     -- N > 0 on real data
 //
-// In results/<run>/log/filter_external.txt:
+// In runs/<run>/result/log/filter_external.txt:
 //   "Not matched N"                 -- N > 0 but < total
 ```
 
@@ -401,7 +404,7 @@ The full three-gate flow:
 powershell -File examples\ProjB-PhyTrait-OpioidRx\ship-to-cms-server.ps1
 
 # Ships: *.do *.ps1 *.sh *.yaml *.yml *.md *.txt *.py *.bib *.tex
-# Drops: results/ tmp/ logs/ .git/ __pycache__/ *.dta *.csv *.log
+# Drops: runs/*/result/ runs/*/passes/ results/ tmp/ logs/ .git/ __pycache__/ *.dta *.csv *.log
 # Output: ProjB-cms-server-code-YYYYMMDD.zip
 ```
 
@@ -414,7 +417,7 @@ powershell -File examples\ProjB-PhyTrait-OpioidRx\ship-to-cms-server.ps1
   ─────────────────────────
   Run with synth config on laptop.
   Check: pipeline completes [L1], heavy in _WorkSpace [L2 L4],
-         light in results/ [L3 L5], logs clean [L6], describe sane [L7].
+         light in runs/<run>/result/ [L3 L5], logs clean [L6], describe sane [L7].
 
   GATE 2 -- SERVER PRE-FLIGHT (will it parse on the server?)
   ────────────────────────────
@@ -424,7 +427,7 @@ powershell -File examples\ProjB-PhyTrait-OpioidRx\ship-to-cms-server.ps1
   LAUNCH      .ps1 only, never editor Do button           [C3]
   TEMP        set $env:STATATMP if preserve/tempfile used [C4 C5]
   PATHS       $stata line + $PSScriptRoot + ws_root       [D1 D2 D3]
-  WORKSPACE   heavy .dta -> _WorkSpace/; light -> results/[E1 E2]
+  WORKSPACE   heavy .dta -> _WorkSpace/; light -> result/  [E1 E2]
   PHI         synth/full tagged; code-only ships          [E3 E4]
   STYLE       1-2 line header; orch<=30; runs/ as small as possible [F1 F2]
   PYTHONUTF8  $env:PYTHONUTF8="1" before Python steps    [B4]

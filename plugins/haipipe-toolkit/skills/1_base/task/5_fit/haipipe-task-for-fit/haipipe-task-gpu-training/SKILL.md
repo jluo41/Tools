@@ -7,8 +7,8 @@ description: >-
   benchmarks.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.2.1"
-  last_updated: "2026-09-21"
+  version: "0.3.0"
+  last_updated: "2026-10-21"
 ---
 
 # haipipe-task-gpu-training
@@ -33,9 +33,11 @@ Keep the normal hierarchy:
 ```text
 Job: model + training data/configuration
 └── Task: one training setting + one aim
-    ├── r01_train_baseline.sh
-    ├── r02_train_resume.sh
-    └── results/<run>/{runtime.yaml, metrics, logs}
+    └── runs/
+        ├── r01_train_baseline/
+        │   ├── r01_train_baseline.sh, config.yaml, run.yaml
+        │   └── result/{runtime.yaml, metrics, logs}
+        └── r02_train_resume/      the same files
 ```
 
 The supervisor may order Runs, but it must not mint hidden Runs or move
@@ -57,8 +59,8 @@ At terminal state, write `runtime.yaml` with the command, config path,
 checkpoint path, GPU preflight, start/end times, exit code, final metrics,
 and one of `complete`, `failed`, `blocked`, or `cancelled`.
 
-Heavy checkpoints belong in the model-instance/checkpoint store, not inside a
-small `results/` directory. The Result must contain pointers (checkpoint path
+Heavy checkpoints belong in the model-instance/checkpoint store, not inside the
+Run's small `result/` folder. The Result must contain pointers (checkpoint path
 and step) so a later evaluation can identify the exact weights.
 
 ## Lifecycle
@@ -88,8 +90,8 @@ code without a readable checkpoint and metrics receipt is incomplete.
   a warm start, not a resume.
 - Do not overwrite a healthy checkpoint with a newer partially written file;
   use an atomic temporary path and a completion marker.
-- A resumed attempt gets its own log and receipt and links to the parent
-  receipt. It must not erase the failed or interrupted attempt.
+- A resumed attempt is a new pass of the same Run (`runs/<run>/passes/pNN-<MMDD>/`)
+  with its own log and receipt, linked to the parent receipt. It must not erase the failed or interrupted attempt.
 
 ## OOM, preemption, and sweep policy
 

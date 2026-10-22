@@ -1,12 +1,13 @@
 # =============================================================================
-# Template for scripts/config/<NAME>.yaml — model-training task
+# Template for runs/rNN_<run>/config.yaml — model-training task
+# (scripts/config/rNN_<run>.yaml in a Block not yet moved; the ticket reads both)
 # =============================================================================
 
 _meta:
   purpose: |
     <e.g., Train CLM baseline at d_model=128 / num_layers=12 / lr=1e-4>
   note: |
-    <e.g., Variant of A01.01; expects MAE ≈ 24.7 at H24 on val split>
+    <e.g., Variant of b02j01t01r01; expects MAE ≈ 24.7 at H24 on val split>
   input: |
     <e.g., AIData PretrainCGM_Stride4H/@v0002 train split>
   output: |

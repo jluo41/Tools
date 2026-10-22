@@ -7,8 +7,8 @@ description: >-
   execution companion to haipipe-task-for-fit, not a model definition.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-09-21"
+  version: "0.3.0"
+  last_updated: "2026-10-21"
 ---
 
 # haipipe-task-gpu
@@ -41,8 +41,8 @@ receipts; the Run owns the computation and Result contract.
 
 ## Queue contract
 
-Every queued Run must have its own matching config, Ticket, Result directory,
-and `runtime.yaml`. The supervisor must:
+Every queued Run must have its own Run folder `runs/<run>/` (Ticket, config,
+`run.yaml` card) and its `result/` with `runtime.yaml`. The supervisor must:
 
 1. Start one declared Run at a time for an exclusive GPU set.
 2. Wait for that Run's receipt to become terminal (`complete`, `failed`,
@@ -70,7 +70,7 @@ hide those transitions.
   record `blocked` with the process snapshot and wait or stop for human input.
 - The supervisor owns only child processes it launched and should terminate
   only that process group during normal teardown.
-- Keep model weights and other heavy artifacts outside `results/`; receipts,
+- Keep model weights and other heavy artifacts outside the Run's `result/`; receipts,
   logs, metrics, and queue state remain auditable under the declared output
   root.
 
@@ -96,9 +96,11 @@ For an OOM or training-process failure:
 ```text
 Job: one model + artifact/quantization
 └── Task: one setting + one aim
-    ├── r01_capacity_calibration.sh
-    ├── r02_full_quality_at_cstar.sh
-    └── results/<run>/{runtime.yaml, logs, metrics, ...}
+    └── runs/
+        ├── r01_capacity_calibration/
+        │   ├── r01_capacity_calibration.sh, config.yaml, run.yaml
+        │   └── result/{runtime.yaml, logs, metrics, ...}
+        └── r02_full_quality_at_cstar/      the same files
 
 Queue supervisor: ordered Tickets + receipt polling + GPU preflight
 ```
@@ -111,7 +113,7 @@ folders.
 
 Before reporting success, verify:
 
-- every Ticket has a matching config and Result receipt;
+- every Ticket has a matching config, `run.yaml` card and Result receipt;
 - the receipt records the target GPU set, preflight snapshot, command,
   start/end time, and failure/fallback information;
 - no Run was launched while an unowned process occupied its GPU;

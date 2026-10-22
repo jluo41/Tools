@@ -130,7 +130,7 @@ source. A catalogue table need not duplicate the owner's complete schema.
 Gate/Route and actor modes are `human | automatic | agent | hybrid`. Each
 concrete Spec supplies cardinality and internal Steps; Workspace Cells bind
 skills and interactions when a Workflow declares those surfaces. Follow the
-[Workflow schema](../../../task/haipipe-workflow/ref/plan-schema.md).
+[Workflow schema](plan-schema.md).
 
 Audit that every selected Spec resolves its profile, actor, action, target,
 exit gate, routes and receipt without contradiction. Unknown or incomplete

@@ -1,7 +1,7 @@
 fn-scaffold: Scaffold an evaluation job
 ================================================
 
-Score a trained ModelInstance on an AIData split; produce metrics under `$OUTPUT_ROOT/<task>/results/rNN_<run>/`.
+Score a trained ModelInstance on an AIData split; produce metrics under `$OUTPUT_ROOT/<task>/runs/rNN_<run>/result/`.
 Hierarchy prefixes are bNN / jNN / tNN / rNN; domain belongs in the descriptive suffix.
 
 Output: `work/bNN_<block>/jNN_<job>/tNN_<task>/`.
@@ -40,10 +40,13 @@ work/bNN_<block>/
         ├── draft/
         ├── workflow/                plan.yaml + report.yaml
         ├── scripts/<worker>.py
-        ├── scripts/config/rNN_<run>.yaml
-        └── runs/rNN_<run>.sh
+        └── runs/rNN_<run>/              one folder per Run
+            ├── rNN_<run>.sh             the ticket
+            ├── config.yaml              this Run's settings
+            ├── run.yaml                 its card (role: make | check)
+            └── result/                  runtime.yaml (the receipt) + metrics.json
 
-Generated: $OUTPUT_ROOT/tNN_<task>/results/rNN_<run>/
+Generated: $OUTPUT_ROOT/tNN_<task>/runs/rNN_<run>/result/
            $OUTPUT_ROOT/tNN_<task>/notebooks/rNN_<run>.ipynb
 ```
 
@@ -51,7 +54,7 @@ Generated: $OUTPUT_ROOT/tNN_<task>/results/rNN_<run>/
 Step 4 — Seed config
 ---------------------
 
-Copy `ref/config-seed.yaml` to `scripts/config/rNN_<run>.yaml`.
+Copy `ref/config-seed.yaml` to `runs/rNN_<run>/config.yaml` (`scripts/config/rNN_<run>.yaml` in a Block not yet moved).
 Fill in:
 - `_meta:` block.
 - `modelinstance_name` + `version` (pin to a specific trained model).
@@ -62,8 +65,8 @@ Fill in:
 Step 5 — Run-script
 --------------------
 
-Copy `../../../haipipe-task/ref/run-sh-template.sh` to `runs/rNN_<run>.sh`.
-Set `TASK_NAME="<worker>"` (the worker filename without .py); config and Ticket share the exact `rNN_<run>` stem.
+Copy `../../../haipipe-task/ref/run-sh-template.sh` to `runs/rNN_<run>/rNN_<run>.sh`, beside its `config.yaml` and `run.yaml` card.
+Set `TASK_NAME="<worker>"` (the worker filename without .py); the Run folder and its Ticket share the exact `rNN_<run>` stem.
 
 
 Step 6 — Cross-skill link
@@ -79,7 +82,7 @@ Step 7 — Report
 
 ```
 status:    ok
-summary:   Scaffolded evaluation job <NN>_<name> under the selected bNN Block / jNN Job.
+summary:   Scaffolded evaluation Task tNN_<task> under the selected bNN Block / jNN Job.
 artifacts: [paths created]
 next:      run the eval, then /haipipe-task-for-display
 ```
@@ -97,7 +100,7 @@ MUST NOT
 First-run gate
 ---------------
 
-`runs/<RUN>.sh` blocks execution if `CODE_REVIEW.md` is missing or stale (gate inherited from `../../../haipipe-task/ref/run-sh-template.sh`).
+`runs/<RUN>/<RUN>.sh` blocks execution if `CODE_REVIEW.md` is missing or stale (gate inherited from `../../../haipipe-task/ref/run-sh-template.sh`).
 For the first run after this scaffold, do ONE of:
 
   1. **Recommended** — run the haipipe-task-reviewer-agent (Gate 1) on this
@@ -105,10 +108,11 @@ For the first run after this scaffold, do ONE of:
      `Tools/plugins/haipipe-toolkit/skills/1_base/task/agents/haipipe-task-reviewer-agent.md`
 
   2. **Temporary bypass** — set env var at launch:
-     `HAIPIPE_SKIP_REVIEW=1 bash runs/<RUN>.sh`
+     `HAIPIPE_SKIP_REVIEW=1 bash runs/<RUN>/<RUN>.sh`
      (skips the gate for one run; logs a warning to stderr.)
 
-  3. **Permanent skip for this config** — add to `scripts/config/<RUN>.yaml`:
+  3. **Permanent skip for this config** — add to the Run's `runs/<RUN>/config.yaml`
+     (`scripts/config/<RUN>.yaml` in a Block not yet moved):
      ```yaml
      _meta:
        skip_review: true

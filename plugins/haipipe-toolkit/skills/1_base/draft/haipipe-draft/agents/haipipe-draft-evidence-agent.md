@@ -39,8 +39,8 @@ Supporting/local workers. The Page surface already installs the shared
 `workbench-task-draft` presenter; load its exact refs, not the presenter as
 an execution dependency. A Task Folder resolves its Page policy from
 `haipipe-task`; it fills both owner roles and is loaded once, without a
-separate Task Page-Type layer. Load its `haipipe-page-task` reader-facing
-companion for the display/prose requirements.
+separate Task Page-Type layer. Its `ref/task-page.md` (§ Displays) holds the
+display/prose requirements.
 
 **The job in one line:** LAND validates Supporting Results, then turns their
 frozen Local Input into one focal ready Result per item; EMBED

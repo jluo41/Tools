@@ -1,5 +1,7 @@
 # task/ Skill-Set Review (2026-07-04)
 
+> Since 2026-10-21 `haipipe-workflow` is haipipe-run's `ref/workflow.md` and `haipipe-page-task` is haipipe-task's
+> `ref/task-page.md` § Displays. This record keeps the names it had when it was written.
 
 > ⚠️ **SOME PATHS IN THIS REVIEW NO LONGER RESOLVE.** Three of its references
 > point at files that have since moved or gone: `2_nn/haipipe-task-for-algo/SKILL.md`,

@@ -41,23 +41,24 @@ work/bNN_<display-input-block>/
     └── t01_display_input_summary/
         ├── t01_display_input_summary.md
         ├── scripts/
-        │   ├── prepare_display_input.py
-        │   └── config/
-        │       └── r01_<kind>_<slug>.yaml
+        │   └── prepare_display_input.py
         └── runs/
-            └── r01_<kind>_<slug>.sh
+            └── r01_<kind>_<slug>/
+                ├── r01_<kind>_<slug>.sh     the ticket
+                ├── config.yaml              this Run's settings
+                └── run.yaml                 its card (role: make)
 ```
 
-Copy `ref/config-seed.yaml` into the canonical `scripts/config/` path and
-fill every required field.
+Copy `ref/config-seed.yaml` to the Run's `runs/<RUNNAME>/config.yaml` (`scripts/config/<RUNNAME>.yaml`
+in a Block not yet moved) and fill every required field.
 All source paths remain in that config; the Python worker hardcodes none.
 
 
 Step 4 — Configure the Ticket and planned receipt
 --------------------------------------------------
 
-Copy `../../../haipipe-task/ref/run-sh-template.sh` into the Task's `runs/`
-lane and set:
+Copy `../../../haipipe-task/ref/run-sh-template.sh` to `runs/<RUNNAME>/<RUNNAME>.sh`
+and set:
 
 ```bash
 TASK_NAME="prepare_display_input"
@@ -74,10 +75,10 @@ Extend `result_gate()` to require `provenance.json` to declare
 `contains_raw_or_phi: false`, and a `row_count` matching `source_data.csv`.
 
 Resolve the planned Result at
-`$OUTPUT_ROOT/t01_display_input_summary/results/<RUNNAME>/`.
+`$OUTPUT_ROOT/t01_display_input_summary/runs/<RUNNAME>/result/`.
 Write the scaffold-time `runtime.yaml` with `status: planned` according to
 `haipipe-task/ref/runtime-yaml-schema.md`.
-Do not create a Task-local `results/` directory.
+Do not create a `results/` directory; the Ticket writes the Result under `$OUTPUT_ROOT`.
 
 
 Step 5 — Output contract
@@ -86,7 +87,7 @@ Step 5 — Output contract
 The worker writes:
 
 ```text
-$OUTPUT_ROOT/t01_display_input_summary/results/<RUNNAME>/
+$OUTPUT_ROOT/t01_display_input_summary/runs/<RUNNAME>/result/
 ├── source_data.csv
 ├── provenance.json
 ├── runtime.yaml
@@ -108,15 +109,15 @@ Step 6 — Validate and report
 
 - Run `bash -n` on the Ticket.
 - Run the Task-tree checker on the touched tree.
-- Confirm config/Ticket stems match and every source Run resolves.
+- Confirm the Run folder and Ticket stems match and every source Run resolves.
 - Confirm the planned receipt contains the neutral Run fields and config path.
-- Confirm no protected or heavy artifact is planned under `results/`.
+- Confirm no protected or heavy artifact is planned under the Run's `result/`.
 
 ```text
 status:    ok | blocked | failed
 summary:   Scaffolded one canonical display-input Task and Run.
-artifacts: [Page, script, config, Ticket, planned runtime receipt]
-next:      satisfy CODE_REVIEW, then launch <task>/runs/<RUNNAME>.sh
+artifacts: [Page, script, config, Ticket, run.yaml card, planned runtime receipt]
+next:      satisfy CODE_REVIEW, then launch <task>/runs/<RUNNAME>/<RUNNAME>.sh
 ```
 
 

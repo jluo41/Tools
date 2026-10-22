@@ -1,5 +1,6 @@
 # =============================================================================
-# Template for tNN_<task>/scripts/config/rNN_<run>.yaml
+# Template for tNN_<task>/runs/rNN_<run>/config.yaml
+# (tNN_<task>/scripts/config/rNN_<run>.yaml in a Block not yet moved; the ticket reads both)
 # =============================================================================
 
 _meta:

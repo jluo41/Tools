@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Check a block tree against the naming rules and the wiring it claims.
 
-    python3 _tools/check_task_tree.py <block-or-tasks-dir> [--expect-fail]
+    python3 scripts/check_task_tree.py <block-or-work-dir> [--expect-fail]
 
 Every rule is one this repo actually broke. Codes N* are naming, S* structural,
 R* results/runs. The dialect-neutral rows (N9 R02 S11-S15 R01 R05 S4, JL 260904)
@@ -50,7 +50,7 @@ def check(root):
     for block in rows(root):
         jobs = [p for p in sorted(block.iterdir()) if p.is_dir() and p.name.startswith("j")]
         if (block/"README.md").is_file():
-            bad("S20", block.name, "Block root README is forbidden; use board.md or diagram/")
+            bad("S20", block.name, "Block root README is forbidden; use board.md or a studio/ topic")
         # S18 every Block is one Task Block Board.
         head = block / "board.md"
         if not head.is_file():
@@ -71,7 +71,7 @@ def check(root):
         for job in jobs:
             tasks = [p for p in sorted(job.iterdir()) if p.is_dir() and p.name.startswith("t")]
             if (job/"README.md").is_file():
-                bad("S20", job.name, "Job root README is forbidden; use the Block Board or diagram/")
+                bad("S20", job.name, "Job root README is forbidden; use the Job face jNN_<job>.md")
             if not tasks:
                 bad("S19", job.name, "Job contains no tNN_ Task Folder")
             if any(job.glob("*.py")) or (job/"runs").is_dir() or (job/"config").is_dir():
@@ -101,6 +101,8 @@ def check(root):
                 if cfg_dir.is_dir() and any(cfg_dir.glob("*.do")) and len(shared) != 1:   # Stata dialect only
                     bad("N8", t.name, f"config/ must hold exactly one shared (non-rNN) .do; found {len(shared)}")
                 runcfgs = {c.stem for c in cfg_dir.rglob("r*.do")} if cfg_dir.is_dir() else set()
+                # one folder per Run (OpioidRx 261019): runs/<run>/config.do is that Run's config
+                runcfgs |= {d.name for d in (t/"runs").glob("r*/") if (d/"config.do").is_file()} if (t/"runs").is_dir() else set()
                 tickets = {k.stem for k in (t/"runs").rglob("*.ps1")} if (t/"runs").is_dir() else set()
                 for stem in sorted(tickets - runcfgs):
                     bad("N7", f"{t.name}/{stem}", "ticket has no config of the same stem")
@@ -134,6 +136,8 @@ def check(root):
 
             # S1 every do-path resolves from the JOB root (Stata's working directory)
             for f in job.rglob("*.do"):
+                if {"result", "results", "passes"} & set(f.relative_to(job).parts):
+                    continue                             # a Run's config_snapshot.do is generated history
                 for i, l in enumerate(f.read_text(errors="replace").splitlines(), 1):
                     s = l.strip()
                     if s.startswith(("//","*")) or "display" in s: continue
@@ -145,6 +149,8 @@ def check(root):
             # S2 ticket -> config, S3 config -> spine + step folder
             for k in (job.glob("t0*/runs/**/*.ps1")):
                 txt = k.read_text()
+                if re.search(r'PSScriptRoot[\\/]config\.do', txt) and (k.parent/"config.do").is_file():
+                    continue                             # a Run folder's two-line caller hands over its own config.do
                 m = re.search(r'config[\\/]((?:\S+?[\\/])?\S+?\.do)"', txt)
                 if not m: bad("S2", k.name, "ticket names no config"); continue
                 task = k.parents[0]
@@ -256,14 +262,11 @@ def check(root):
         for job in (p for p in sorted(block.iterdir()) if p.is_dir() and p.name.startswith("j")):
             tasks = [p for p in sorted(job.iterdir()) if p.is_dir() and p.name.startswith("t")]
             names = {t.name for t in tasks}
-            # S17 every job shows its src/ slot, even empty (JL 260904: a .gitkeep that
-            # says whose shared code belongs there, so a reader sees the job's shape;
-            # results/ is generated and is never pre-created)
-            if not (job/"src").is_dir():
-                bad("S17", job.name, "no src/; add src/.gitkeep naming the job's shared-code slot")
+            # S17 (a src/ in every Job) was dropped on 261021: a Job holds src/ only when two of its
+            # Tasks share code (haipipe-project ref/ladder.md), so an empty slot says nothing.
             # S12 a job-level results/ is the pre-260909 shape; Results live inside the Task that owns the Run (JL 260909)
             if (job/"results").is_dir():
-                bad("S12", f"{job.name}/results", "results/ at the job level; the law is <job>/<task>/results/<run>/")
+                bad("S12", f"{job.name}/results", "results/ at the job level; a Result lives in <task>/runs/<run>/result/")
             for t in tasks:
                 runs = t/"runs"
                 # .cmd is a first-class ticket dialect (JL 260908). On a locked-down
@@ -293,7 +296,14 @@ def check(root):
                                      if not l.lstrip().startswith("#"))
                     if re.search(r'\bbash[^\S\n]+"?[^"\n]*runs/', body):
                         bad("S11", f"{t.name}/runs/{k.name}", "calls other tickets: a batcher belongs in sbatch/")
-                # R01 every <task>/results/<run>/ carries a receipt; a stray file at results/ root is not a Run
+                # R01 a Run that wrote a Result carries its receipt: runs/<run>/result/runtime.yaml, or one
+                # in runs/<run>/passes/pNN-<MMDD>/ where each execution keeps its own (OpioidRx CD, 261019)
+                for run in sorted(p for p in runs.iterdir() if p.is_dir() and TICKET.match(p.name)) if runs.is_dir() else []:
+                    res = run/"result"
+                    if res.is_dir() and any(res.iterdir()) and not (res/"runtime.yaml").is_file() \
+                            and not any(run.glob("passes/*/runtime.yaml")):
+                        bad("R01", f"{t.name}/runs/{run.name}", "result/ without runtime.yaml (in result/ or a pass)")
+                # the older flat layout: every <task>/results/<run>/ carries a receipt
                 if (t/"results").is_dir():
                     for run in sorted(p for p in (t/"results").iterdir() if p.is_dir()):
                         if not (run/"runtime.yaml").is_file():
@@ -364,7 +374,10 @@ def check(root):
             if l.lstrip().startswith("#") or "tasks.old/" in l: continue
             for m in TP.finditer(l):
                 theme, rel = m.group(1), m.group(2).rstrip("/.,;:)\"'`")
-                if "<" in rel or "*" in rel or "$" in rel or "{" in rel or "/results/" in rel or rel.endswith("/results"): continue   # generated paths: R01/S12 own them
+                if theme == "tasks" and (proj / "work").is_dir():   # the world was renamed work/ on 261010
+                    bad("S16", f"{f.relative_to(root)}:{i}", f"names tasks/{rel}: the world is work/ since 261010")
+                    continue
+                if "<" in rel or "*" in rel or "$" in rel or "{" in rel or re.search(r"/results?(/|$)", rel): continue   # generated paths: R01/S12 own them
                 if not (proj / theme / rel).exists():
                     bad("S16", f"{f.relative_to(root)}:{i}", f"names {theme}/{rel}, which does not exist")
 

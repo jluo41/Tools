@@ -1,7 +1,7 @@
 # `insight` · enter the Task/Insights Board
 
 Use this procedure for `/haipipe-insight task "<topic>" [<board>]`.
-`/haipipe-task insight "<topic>" [<board>]` is the compatibility alias.
+`/haipipe-task insight "<topic>" [<board>]` is its older name and still opens it.
 
 ## Contract
 

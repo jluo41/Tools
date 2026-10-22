@@ -37,17 +37,18 @@ haistepnb/c_endpoint_nb.py       →   bNN_.../jNN_.../tNN_endpoint_.../scripts/
 To instantiate:
 1. Copy the template to the task folder (exact copy — do NOT edit CONFIG)
 2. Place it as `tNN_<task>/scripts/<worker>.py`
-3. Create `scripts/config/rNN_<run>.yaml` with project-specific settings
-4. Create `runs/rNN_<run>.sh` that passes CONFIG via papermill
+3. Create `runs/rNN_<run>/config.yaml` with project-specific settings
+4. Create `runs/rNN_<run>/rNN_<run>.sh` that passes CONFIG via papermill, and its card
+   `runs/rNN_<run>/run.yaml`
 
 CONFIG is injected at runtime:
 ```bash
-papermill template.ipynb output.ipynb -p CONFIG examples/.../tNN_<task>/scripts/config/r01_base.yaml
+papermill template.ipynb output.ipynb -p CONFIG examples/.../tNN_<task>/runs/r01_base/config.yaml
 ```
 
 
-Task Group → Template Mapping
--------------------------------
+Task type → Template Mapping
+------------------------------
 
 ```
 Task type      Template           Pipeline stage
@@ -124,4 +125,5 @@ code/scripts/haistepconfig/
 ```
 
 These are reference templates only — real project configs live in
-`examples/<project>/work/bNN_<block>/jNN_<job>/tNN_<task>/scripts/config/`.
+`examples/<project>/work/bNN_<block>/jNN_<job>/tNN_<task>/runs/<run>/config.yaml`
+(a Block not yet moved: `tNN_<task>/scripts/config/`).

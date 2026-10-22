@@ -1,6 +1,13 @@
 haipipe-block · Changelog
 =========================
 
+**[2.2.0] · 2026-10-21 · A new Block is born current**
+
+`scripts/new_board.py` writes the empty `## Questions` register by default (`--no-questions` leaves it out), and a
+work Block's face gets `workbench-layout: workflow` and an empty `## Deliverables` (JL 261021: "when I open a new
+block, how could I make it to update to the latest version"). A Block it makes passes `/wb update` with nothing
+missing; before, a new Block owed three items at once. Test: `test_a_work_block_is_born_on_todays_layout`.
+
 **[2.1.0] · 2026-10-12 · Named after its level**
 
 Renamed from haipipe-board to haipipe-block, so the three level skills read haipipe-block,

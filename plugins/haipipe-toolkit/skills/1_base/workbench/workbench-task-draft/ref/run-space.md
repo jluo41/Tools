@@ -393,7 +393,7 @@ allocation surfaces. The 📂 Folder tab remains the raw filesystem inventory.
 - `../../../project/haipipe-run/SKILL.md` · the neutral Level-4 identity, pairing,
   receipt, and audit contract this surface presents
 - `../../workbench/ref/roster.md` · lane and presenter roster
-- `../../../task/haipipe-task/ref/hierarchy.md` · Task Run address/dialect
+- `../../../task/haipipe-task/ref/task-folder.md` · Task Run address/dialect
 - `../../../../2_theme/discovery/haipipe-discovery/ref/paper-run-contract.md` ·
   Discovery Folder-local dialect
 - `../../../../2_theme/labeling/haipipe-labeling-building/ref/ref-run.md` · Labeling operations,

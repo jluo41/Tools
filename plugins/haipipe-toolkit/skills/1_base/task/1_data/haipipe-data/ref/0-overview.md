@@ -218,7 +218,7 @@ ls examples/*/work/b*/j*/t*/scripts/    # all canonical Task script lanes
 work/bNN_<stage>store/jNN_<fnkind>_<topic>/tNN_<fnkind>_<FnName>/scripts/<builder>.py
 ```
 
-Where each Fn kind lives (rule and reasons: `haipipe-task/ref/hierarchy.md`
+Where each Fn kind lives (rule and reasons: `haipipe-task/ref/pipeline-blocks.md`
 § Block number ranges; Block trees: `haipipe-task-for-data` § SourceFn Block
 pattern):
 

@@ -176,12 +176,87 @@ def run_food_without_bank():
         check("a missing bank degrades /healthz instead of crashing the host", t_degraded)
 
 
+def run_try_page():
+    """The try page (JL 261021: a small page that calls the API, with a gallery below): /try/<noun> serves it,
+    /try/<noun>/gallery reads one card per input folder under $EVENTNORM_ROOT, an unmounted noun is a 404."""
+    import tempfile
+    with tempfile.TemporaryDirectory() as root:
+        kind = Path(root) / "_InsInfo" / "0-inputs" / "01-one-name"
+        kind.mkdir(parents=True)
+        (kind / "input.json").write_text(json.dumps({"item": ["Novolin R"]}))
+        (kind / "door.json").write_text(json.dumps([{"InsulinClass": "short"}]))
+        (kind / "NOTE.md").write_text("# one insulin, named\n\nboard   **12 rows (1.0%)**\n\nSPECIMEN. Real rows. 'Novolin R'.\n")
+        photo = Path(root) / "_InsInfo" / "0-inputs" / "02-photo"
+        photo.mkdir(parents=True)
+        (photo / "input.json").write_text(json.dumps({"item": ["Unknown"], "ImagePath": ["x/CGMacros-001/photos/p.jpg"]}))
+        (photo / "NOTE.md").write_text("# a photo\n\nSPECIMEN. Real rows, from CGMacros-001.\n")
+        with Host("--only", "insulin", env={"EVENTNORM_ROOT": root}) as h:
+            def t_page():
+                st, body = get(h.base, "/try/insulin")
+                assert st == 200 and b"try it" in body, st
+                st, idx = get(h.base, "/")
+                assert idx["lanes"]["insulin"]["try"] == "/try/insulin", idx["lanes"]["insulin"]
+                return "the page, and the index names it"
+            check("GET /try/<noun> serves the try page", t_page)
+
+            def t_gallery():
+                st, g = get(h.base, "/try/insulin/gallery")
+                assert st == 200 and g["folder"].endswith("_InsInfo/0-inputs"), g
+                c = g["cards"][0]
+                assert len(g["cards"]) == 2 and c["kind"] == "01-one-name" and c["title"] == "one insulin, named", c
+                ph = g["cards"][1]
+                assert ph["input"]["ImagePath"] == ["(photo, path hidden)"], ph       # never a subject's folder
+                assert "CGMacros-001" not in json.dumps(g) and "CGMacros-<subject>" in ph["specimen"], ph
+                assert c["board"] == "12 rows (1.0%)" and c["specimen"].startswith("SPECIMEN"), c
+                assert c["input"] == {"item": ["Novolin R"]} and c["frozen"] == [{"InsulinClass": "short"}], c
+                return "cards: title, board, specimen, input, frozen; a photo path and a subject id hidden"
+            check("GET /try/<noun>/gallery reads the input folders", t_gallery)
+
+            def t_unmounted():
+                st, _ = get(h.base, "/try/food")
+                assert st == 404, st
+                return "404"
+            check("the try page of an unmounted lane is a 404", t_unmounted)
+
+            def t_no_events():
+                st, g = get(h.base, "/try/insulin/events")
+                assert st == 200 and g["cards"] == [], g
+                return "a lane with no event door: no cards"
+            check("GET /try/<noun>/events answers for every mounted lane", t_no_events)
+
+        def t_events():
+            """The event gallery's cards, read in process: record ids, a photo path and a subject id never leave."""
+            import importlib.util
+            f = Path(root) / "_FoodInfo" / "7-events" / "events.json"
+            f.parent.mkdir(parents=True)
+            row = {"CarbEntryID": "AA642FEE-8992-42F1-A461-C198BBAFC627", "ObservationCreatedBy": "932",
+                   "FoodName": "Spinach", "Image path": "photos/p.jpg"}
+            raw = {"type": "app_log", "file": "x/CGMacros-001/a.csv", "rows": [row]}
+            f.write_text(json.dumps({"about": "a test", "cards": [{"kind": "app_log", "title": "one row", "send": {"raw": raw},
+                                                                    "raw": raw, "input": {}, "output": {}}]}))
+            spec = importlib.util.spec_from_file_location("host_serve", SERVE)
+            mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(mod)
+            os.environ["EVENTNORM_ROOT"] = root
+            try:
+                g = mod.events("food")
+            finally:
+                os.environ.pop("EVENTNORM_ROOT", None)
+            c = g["cards"][0]
+            r = c["send"]["raw"]["rows"][0]
+            assert r["CarbEntryID"] == r["ObservationCreatedBy"] == "(id hidden)" and r["FoodName"] == "Spinach", r
+            assert r["Image path"] == "(photo, path hidden)" and "CGMacros-001" not in json.dumps(g), g
+            return "record ids, a photo path and a subject id hidden; the food kept"
+        check("the event gallery hides what is whose", t_events)
+
+
 if __name__ == "__main__":
     print(f"host: {SERVE}")
     check("--list names the lanes without importing them", t_list)
     check("--only with an unknown noun exits non-zero", t_unknown_lane)
     run_insulin_only()
     run_food_without_bank()
+    run_try_page()
     print("=" * 78)
     print(f"  {len(PASS)} passed · {len(FAIL)} failed")
     print("=" * 78)

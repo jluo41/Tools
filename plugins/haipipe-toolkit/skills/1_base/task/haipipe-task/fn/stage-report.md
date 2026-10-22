@@ -1,7 +1,7 @@
 # fn/stage-report — report actual Runs from receipts
 
-Use for `/haipipe-task report <tNN-task-folder>`.
-Read `workflow/plan.yaml` and the Report schema in `haipipe-workflow/ref/plan-schema.md`.
+Use for `/haipipe-task report <tNN-task-folder>`: the target is one `tNN_<task>/` Task folder.
+Read `workflow/plan.yaml` and the Report schema in `haipipe-run/ref/plan-schema.md`.
 Write `workflow/report.yaml` inside the Task Folder.
 
 1. Resolve `$OUTPUT_ROOT` using the shared output-root contract.

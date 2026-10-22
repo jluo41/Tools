@@ -123,6 +123,7 @@ from live.term import (TermMixin, kill_all_terms, reap_stale_terms, term_key,
                        spawn_pty, pty_pump, pty_resize, ws_send,
                        labeling_tui_hold)
 from live.xcal import XcalMixin
+from live.api_proxy import ApiProxyMixin
 from live.evidence import EvidenceTabMixin
 from live.delivery import DeliveryTabMixin
 from live.labeling import LabelingMixin
@@ -189,7 +190,7 @@ def new_route_name(path: str, method: str = "GET") -> str:
     return head + sep + query
 
 
-class Handler(ShareMixin, AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, PageReaderMixin, ExportMixin, PlugViewMixin, FolderStatMixin, InsightBoardMixin, DesignMixin, DesignBoardMixin, TaskBoardMixin, CoworkBoardMixin, DiscoveryBoardMixin, WorkbenchGuideMixin, SharedWorkbenchMixin, FrameMixin, OutlineMixin, PaperWorkbenchMixin, ValueMixin, EvidenceTabMixin, DeliveryTabMixin, LabelingMixin, PageRunsMixin, RunsTabMixin, SimpleHTTPRequestHandler):
+class Handler(ShareMixin, AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ApiProxyMixin, PageReaderMixin, ExportMixin, PlugViewMixin, FolderStatMixin, InsightBoardMixin, DesignMixin, DesignBoardMixin, TaskBoardMixin, CoworkBoardMixin, DiscoveryBoardMixin, WorkbenchGuideMixin, SharedWorkbenchMixin, FrameMixin, OutlineMixin, PaperWorkbenchMixin, ValueMixin, EvidenceTabMixin, DeliveryTabMixin, LabelingMixin, PageRunsMixin, RunsTabMixin, SimpleHTTPRequestHandler):
     root = Path(".")
     space_name = ""
     public_url = ""
@@ -302,6 +303,8 @@ class Handler(ShareMixin, AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteM
             return
         if self.reject_outside_only():
             return
+        if self.is_api_request():                # the normalizer APIs and their try pages, behind this login
+            return self.proxy_api()
         if self.is_home_request():
             return self.serve_home()
         short = self.short_request()
@@ -499,6 +502,8 @@ class Handler(ShareMixin, AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteM
             if self._term_route():
                 return
             return self.proxy_term()
+        if self.is_api_request():                # a normalizer API call from its try page, behind this login
+            return self.proxy_api()
         if not self.path.startswith("/_board/"):
             return self.send_error(404)
         try:
@@ -628,6 +633,15 @@ class Handler(ShareMixin, AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteM
                 return self.reply(403, {"ok": False, "err": "cross-origin write refused"})
             from live.draft_steps import card_act
             code, res = card_act(self.root, p, read_only=getattr(self.server, "read_only", False))
+            return self.reply(code, res)
+        if self.path == "/_board/draft-comment":
+            # a person's comment on a sentence of a draft Task, left in 5 · Revise and answered by its passes (JL 261021)
+            from urllib.parse import urlparse
+            origin = self.headers.get("Origin") or ""
+            if origin and urlparse(origin).netloc != (self.headers.get("Host") or ""):
+                return self.reply(403, {"ok": False, "err": "cross-origin write refused"})
+            from live.draft_steps import note_act
+            code, res = note_act(self.root, p, read_only=getattr(self.server, "read_only", False))
             return self.reply(code, res)
         if self.path == "/_board/draft-plan":
             # a person's change on a draft Task's §1 mind map: a point's words or role, a paragraph's name, a point

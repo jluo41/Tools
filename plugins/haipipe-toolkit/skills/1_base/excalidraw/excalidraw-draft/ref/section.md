@@ -26,6 +26,7 @@ canvas:
   pages: {render: ../../delivery/render, name: "Task 2.1 - Gordon Gao-draft-JL", pick: [2]}
   evidence: ../s04-task21-updated-draft/evidence/cards.yaml
   examples: ../sNN-<a reading topic>    optional: other papers' openings of this Section, a frame beside ours
+  examples_title: "How 4 … papers write their Key Points and Abstract"   optional: the frame's own name
   title: "Task 2.1 · Section C2 · Challenge and Significance"
 ```
 

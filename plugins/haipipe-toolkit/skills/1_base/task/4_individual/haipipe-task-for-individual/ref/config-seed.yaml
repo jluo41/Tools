@@ -1,5 +1,6 @@
 # =============================================================================
-# Template for scripts/config/<NAME>.yaml — individual-query task
+# Template for runs/rNN_<run>/config.yaml — individual-query task
+# (scripts/config/rNN_<run>.yaml in a Block not yet moved; the ticket reads both)
 # =============================================================================
 
 _meta:
@@ -7,12 +8,12 @@ _meta:
     <e.g., Visualize CGM + meal + bolus timeline for individual WD-12345
            over week of 2026-01-01>
   note: |
-    <e.g., Individual flagged in B01 eval as high-error;
+    <e.g., Individual flagged by the eval Task b03j01t01 as high-error;
            investigating meal-timing artifacts>
   input: |
     <e.g., 2-RecStore CGM5Min + meal-cam-logger annotations; cohort: WellDoc>
   output: |
-    $OUTPUT_ROOT/<task>/results/rNN_<run>/{plot.pdf, table.csv}
+    $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/{plot.pdf, table.csv}
 
 
 # =============================================================================

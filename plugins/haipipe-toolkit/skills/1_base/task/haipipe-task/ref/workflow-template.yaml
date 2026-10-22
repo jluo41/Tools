@@ -9,7 +9,7 @@ input:
   files_in: &id001
   - scripts/<worker>.py
   - scripts/config/rNN_<run>.yaml
-  - runs/rNN_<run>.sh
+  - runs/rNN_<run>/rNN_<run>.sh
 owner: haipipe-task
 workbench:
   id: <owning-workbench>
@@ -20,7 +20,7 @@ run_specs:
 - id: execute
   run_type: task.execute
   purpose: Execute one bounded Task Run
-  target: tasks/bNN_<block>/jNN_<job>/tNN_<task>
+  target: work/bNN_<block>/jNN_<job>/tNN_<task>
   actor:
     mode: automatic
     owner: haipipe-task
@@ -40,8 +40,8 @@ run_specs:
     payload:
       status: complete
       artifacts:
-      - $OUTPUT_ROOT/<task>/results/rNN_<run>/
-    receipt: $OUTPUT_ROOT/<task>/results/rNN_<run>/runtime.yaml
+      - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/
+    receipt: $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/runtime.yaml
   cardinality: 1
   cells:
   - workspace_id: <workspace-id>
@@ -63,5 +63,5 @@ output:
   - artifacts
   - receipts
   files_out:
-  - $OUTPUT_ROOT/<task>/results/rNN_<run>/runtime.yaml
+  - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/runtime.yaml
   - $OUTPUT_ROOT/<task>/notebooks/rNN_<run>.ipynb

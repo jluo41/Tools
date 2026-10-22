@@ -1,5 +1,6 @@
 # =============================================================================
-# Template for tNN_<task>/scripts/config/rNN_<run>.yaml
+# Template for tNN_<task>/runs/rNN_<run>/config.yaml
+# (a Block not yet moved keeps it at tNN_<task>/scripts/config/rNN_<run>.yaml)
 # =============================================================================
 # Inherits the _meta: block convention from
 # ../../../haipipe-task/ref/config-meta-template.yaml.

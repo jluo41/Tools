@@ -52,8 +52,9 @@ levels:
       notebooks: "a Job holds no notebooks/: they belong to a Task's Runs"
       workflow: "workflow/ at a Job is not in the ladder"
   task:
-    may_hold: [studio, reports, delivery, scripts, draft, displays, notebooks, tests, workflow,
-               sbatch, runs, _old]                 # sbatch/: this Task's own supervisor (haipipe-task)
+    may_hold: [studio, reports, delivery, scripts, draft, evidence, display, displays, notebooks, tests,
+               workflow, sbatch, runs, _old]       # sbatch/: this Task's own supervisor (haipipe-task);
+                                                   # draft/ evidence/ display/: a draft Task (haipipe-draft, 261016)
     debt:
       results: "old layout: results/<run>/ moves into runs/<run>/result/"
       diagram: "diagram/ is retired: drawings go in studio/"

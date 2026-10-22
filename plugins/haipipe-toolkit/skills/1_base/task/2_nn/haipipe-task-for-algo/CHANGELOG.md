@@ -6,6 +6,15 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.2.0] · 2026-10-21 · Type contract, one folder per Run
+
+- `## Type contract` block added as the first section (haipipe-task `ref/types.md`): algo, role trial,
+  no heavy output; plan sample `ref/workflow-plan-sample.yaml`.
+- Frontmatter says "scaffolds jNN_<job>/tNN_<task>/ Task folders in an algo-dev Block" (was
+  "{NN}_<name>/ jobs ... (default X_algo)"); the argument hint names Block, Job and Task.
+- Pages name the current layout: Ticket, `config.yaml` and `run.yaml` card in `runs/<run>/`, Result
+  `$OUTPUT_ROOT/<task>/runs/<run>/result/` (was `results/<run>/`); plan sample target is `work/...`.
+
 ## [0.1.3] · 2026-10-09 · Theme folders are singular
 
 - Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,

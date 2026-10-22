@@ -2,15 +2,16 @@
 # Expand variants as Run Specs only when independently commissioned.
 # Resolve placeholders, catalogue key and every Workbench-owned Workspace Cell before use.
 # Steps and section labels describe internal work; they never allocate Runs.
-# Schema: task/haipipe-workflow/ref/plan-schema.md
+# Schema: project/haipipe-run/ref/plan-schema.md
 name: cms-<YEAR>
 purpose: Extract and enrich raw CMS claims for year <YEAR> into 1-CMS-Store
 input:
   args:
-    config: scripts/config/rNN_<run>.do
+    config: runs/rNN_<run>/config.do
     year: <YEAR>
   files_in: &id001
-  - scripts/config/rNN_<run>.do
+  - runs/rNN_<run>/config.do
+  - runs/rNN_<run>/run.yaml
   - scripts/config/cms_production.do
   - G:/CMS/DATA/<YEAR>/Stata/pde_file[_k]_<YEAR>.dta
   - G:/CMS/DATA/<YEAR>/Stata/bcarrier_claims[_k]_<YEAR>.dta
@@ -29,7 +30,7 @@ run_specs:
 - id: execute
   run_type: task.execute
   purpose: Extract and enrich raw CMS claims for year <YEAR> into 1-CMS-Store
-  target: tasks/bNN_<block>/jNN_<job>/tNN_<task>
+  target: work/bNN_<block>/jNN_<job>/tNN_<task>
   actor:
     mode: automatic
     owner: haipipe-task-for-stata
@@ -48,7 +49,7 @@ run_specs:
   result:
     payload: &id002
       status: ok
-    receipt: $OUTPUT_ROOT/<task>/results/rNN_<run>/runtime.yaml
+    receipt: $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/runtime.yaml
   cardinality: 1
   cells:
   - workspace_id: <workspace-id>
@@ -63,7 +64,7 @@ run_specs:
   - section: Setup
     label: setup:validate
     required: true
-    prompt: Validate config exists, resolve ws_root via pyproject.toml walk-up, create $OUTPUT_ROOT/<task>/results/rNN_<run>/log/
+    prompt: Validate config exists, resolve ws_root via pyproject.toml walk-up, create $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/log/
     files_in:
     - scripts/config/cms_production.do
     files_out: []
@@ -114,7 +115,7 @@ run_specs:
     prompt: Walk year-<YEAR>/ dir, count rows per .dta, write summary.txt
     files_in: []
     files_out:
-    - $OUTPUT_ROOT/<task>/results/rNN_<run>/summary.txt
+    - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/summary.txt
 entry:
 - execute
 terminal:
@@ -128,5 +129,5 @@ output:
   - _WorkSpace/1-CMS-Store/cms_full/<VER>/year-<YEAR>/BCarrierLine-Neat-<YEAR>.dta
   - _WorkSpace/1-CMS-Store/cms_full/<VER>/year-<YEAR>/OutpatientClaim-Neat-<YEAR>.dta
   - _WorkSpace/1-CMS-Store/cms_full/<VER>/year-<YEAR>/Bene_Info-<YEAR>.dta
-  - $OUTPUT_ROOT/<task>/results/rNN_<run>/summary.txt
-  - $OUTPUT_ROOT/<task>/results/rNN_<run>/log/<step>-<YEAR>.txt
+  - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/summary.txt
+  - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/log/<step>-<YEAR>.txt

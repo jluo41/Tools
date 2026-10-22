@@ -1,3 +1,15 @@
+## 1.15.2 · 2026-10-21 · Carry-over for a hyphenated desk, and the name sweep
+
+- `scripts/carry_over/rename_tasks.py` renamed no Section of Paper-AgreeableOpioid-Jama: its patterns took the desk as
+  one token, and `S-JAMA-IM-Main-1-Introduction` holds a hyphen in its desk. The desk token now allows hyphens
+  (`S-JAMA-IM-…` → `t01_introduction`), and the MISQ and npjDM names still map as before.
+- New `scripts/carry_over/sweep_names.py` (dry run, apply, rollback): after the three carry-over scripts, it reads their
+  records and replaces the old names in the hand-written files they skip on purpose (`draft/records/`,
+  `draft/previous/`, Run tickets), longest first, so the rename covers every hand-written file (AGENTS.md rule 7). It
+  skips generated and sealed output, any line naming the predecessor Board, and board.md's `## Log`. A Story child
+  archived before the move is named by its `_archive/` home, not by `studio/`.
+- `ref/paper-ladder.md` names the step after `rename_tasks.py`.
+
 ## 1.15.1 · 2026-10-20 · 4 · Display in a Section's steps
 
 - A Section's steps table gains 🖼 4 · Display (its Tables and Figures, numbered for the paper, within the venue's

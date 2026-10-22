@@ -12,6 +12,7 @@ the topic").
     from cards import load, resolve, title_of, paper, facts, work_value, order, check, proposals, LABEL, COLOR
     python cards.py check   <task>/evidence/cards.yaml [--sentences <file.json>]
     python cards.py propose <task>/evidence/cards.yaml [--page <name>] [--write]
+    python cards.py bib     <task>/evidence/cards.yaml --draft <draft.md> [--write]
 
 The cards live in the Task's own evidence/ folder, beside draft/ and display/ (JL 261016): evidence/cards.yaml holds
 them, evidence/proposals.md the flagged proposals. A Studio face holding `evidence:` in its yaml also works
@@ -271,20 +272,64 @@ def load(path, key=None):
     return [dict(c, kind=OLD_KIND.get(c.get('kind'), c.get('kind'))) for c in cards]
 
 
+def bib(cards, project, draft_text):
+    """The page's citations as one .bib, in the order the draft's `## 3 · Draft` cites them: each key's entry copied as it
+    is from the one-entry .bib of the discovery Run its CITE item names, a comment above it saying which Run and how the
+    entry was checked (the Run's export, or composed from the source's page and waiting for a person to adopt it). A
+    cited key no CITE item names is listed as missing. (t01_introduction v0.5, 261021: the page's .bib had 2 of 10.)"""
+    where = {}
+    for card in cards:
+        if card.get('kind') != 'cite':
+            continue
+        for it in card.get('items', []):
+            if it.get('cite') and it.get('run'):
+                where[it['cite']] = (f"{card['source']}.{it['run']}", resolve(project, 'cite', f"{card['source']}.{it['run']}"))
+    m = re.search(r'(?m)^## \d+ · Draft\b', draft_text)
+    text = draft_text[m.end():] if m else draft_text
+    keys = list(dict.fromkeys(k.strip() for g in re.findall(r'\\cite[pt]?\{([^}]*)\}', text) for k in g.split(',') if k.strip()))
+    out = ["% The page's citations, in the order the text cites them, written by haipipe-evidence cards.py bib: each",
+           "% entry is copied as it is from the one-entry .bib of the discovery Run its evidence card names; the comment",
+           "% above it says which Run and how that entry was checked.", ""]
+    missing = []
+    for key in keys:
+        if key not in where:
+            missing.append(key)
+            continue
+        addr, res = where[key]
+        entry = next(Path(res).glob('*.bib')).read_text(encoding='utf-8').strip()
+        rt = Path(res) / 'runtime.yaml'
+        status = (re.search(r'(?m)^status: (\S+)', rt.read_text(encoding='utf-8')) or [None, '?'])[1] if rt.is_file() else '?'
+        how = ("composed field by field from the source's page; waits for a person to adopt it" if status == 'blocked'
+               else "the Run's export, checked when the Run was made")
+        out += [f"% {key} · Run {addr} · {status} · {how}", entry, ""]
+    return "\n".join(out), keys, missing
+
+
 def main():
     import argparse
     ap = argparse.ArgumentParser(description='Check an evidence card list.')
-    ap.add_argument('cmd', choices=['check', 'propose'])
+    ap.add_argument('cmd', choices=['check', 'propose', 'bib'])
     ap.add_argument('cards', help='evidence/cards.yaml, or a face .md with --key')
     ap.add_argument('--key', help='a face only: the yaml key holding `evidence:`')
     ap.add_argument('--sentences', help='a JSON object {"5": "sentence text"} to check anchors against')
     ap.add_argument('--page', help='the page name proposals cite (default: the folder that holds evidence/)')
-    ap.add_argument('--write', action='store_true', help='propose: write proposals.md beside cards.yaml')
+    ap.add_argument('--write', action='store_true',
+                    help='propose: write proposals.md beside cards.yaml; bib: write <task>/draft/evidence/bibex/<task>.bib')
+    ap.add_argument('--draft', help='bib: the draft whose `## 3 · Draft` cites the keys')
     a = ap.parse_args()
     src = Path(a.cards).resolve()
     cards = load(src, a.key)
     home = src.parent.parent if src.parent.name == 'evidence' else src.parent
     sentences = json.loads(Path(a.sentences).read_text()) if a.sentences else None
+    if a.cmd == 'bib':
+        text, keys, missing = bib(cards, project_root(src), Path(a.draft).read_text(encoding='utf-8'))
+        out = home / 'draft' / 'evidence' / 'bibex' / f'{home.name}.bib'
+        if a.write:
+            out.parent.mkdir(parents=True, exist_ok=True)
+            out.write_text(text, encoding='utf-8')
+        print(f"{'wrote' if a.write else 'would write'} {out.name}: {len(keys) - len(missing)} of {len(keys)} cited keys"
+              + (f"; no CITE item for {', '.join(missing)}" if missing else ''))
+        sys.exit(1 if missing else 0)
     if a.cmd == 'propose':
         items = proposals(cards, a.page or home.name)
         for pid, line in items:

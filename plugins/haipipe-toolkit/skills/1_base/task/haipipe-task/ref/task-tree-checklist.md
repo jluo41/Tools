@@ -8,19 +8,19 @@ finding code, and the command that checks it. A tree is DONE only when every
 row passes on the real folders, and the gate has been shown to FAIL on a
 known-broken tree first (GATE-1).
 
-## The six commands
+## The commands
 
 ```bash
-C=Tools/plugins/haipipe-toolkit/skills/1_base/task/haipipe-task/ref/check_task_tree.py
-T=Tools/plugins/haipipe-toolkit/skills/0_utils/task-table/ref/render_task_table.py
+C=Tools/plugins/haipipe-toolkit/skills/1_base/task/haipipe-task/scripts/check_task_tree.py
+L=Tools/plugins/haipipe-toolkit/skills/1_base/project/haipipe-project/scripts/ladder.py
 
-cp -R <one block> <scratch>/mut && rm -rf <scratch>/mut/<a task>/runs && mkdir <scratch>/mut/<a task>/results
-python3 $C <scratch>/mut --expect-fail        # 1 GATE-1: plant breaks in a COPY; R02 and S12 must fire
-python3 $C <tasks-dir>                        # 2 on the tree you built: 0 findings
-bash <one ticket per task TYPE> <its own dry flag>   # 3 a receipt lands at <job>/<task>/results/<run>/runtime.yaml
+cp -R <one block> <scratch>/mut && rm -rf <scratch>/mut/<job>/<task>/runs
+python3 $C <scratch>/mut --expect-fail        # 1 GATE-1: plant a break in a COPY; R02 must fire
+python3 $C <block or work/>                   # 2 on the tree you built: 0 findings
+python  $L audit <block> --today              # 3 the ladder's shape and today's rules: 0 failed, no debt
+bash <one ticket per task TYPE> <its own dry flag>   # 4 a receipt lands at <task>/runs/<run>/result/runtime.yaml
                                               #   (scrapers take --dry_run, builders --dry-run, checks --check; read the script)
-python3 $T <tasks-dir> --check <tasks-dir>/TASK-TABLE.md   # 4 the table on disk is CURRENT (a new receipt makes it stale)
-python3 $T <tasks-dir> --out auto             # 5 re-render after 4 fails; every task a row, every ticket a Run, Findings empty
+/wb update <block> --no-open                  # 5 every Job's Goal items tick from disk; the plan lists what is left
 find . -name _WorkSpace -not -path './_WorkSpace*'   # 6 must print nothing (a wrong root creates one)
 ```
 
@@ -35,14 +35,15 @@ NAME · every folder passes the stranger test
 
 SHAPE · one grammar at every level
 - [ ] S18 every canonical b/j/t Block has `board.md` with exact `board-kind: task-block`
-- [ ] S20 no Block, Job, or Task root contains `README.md`; use Board, Page, or `diagram/`
+- [ ] S20 no Block, Job, or Task root contains `README.md`; use the Block face, the Job face, the Task face or a `studio/` topic
 - [ ] S5  every task has `tNN_<task>.md` (the page a reader opens)
 - [ ] S10 a task's own code is `scripts/`; a job's shared code is `src/`; never the other way
-- [ ] S14 config sits inside `scripts/config/`; no config lane exists at the Task root
+- [ ] S14 a Run's config is `runs/<run>/config.yaml` (or `scripts/config/<run>.yaml` in a Block not yet moved);
+        no config lane exists at the Task root
 - [ ] S11 a `.sh` that calls other tickets is a batcher: it lives in `sbatch/`, never in `runs/`
 - [ ] S4  a kept chat session carries BOTH `digest.md` and `transcript.md`; `studio/` holds only `chat/` and `draw/`
-- [ ] R02 every task has `runs/` with at least one `rNN_` ticket, config-less scripts included
-- [ ] S17 every job has `src/`, kept visible by a `.gitkeep` that names the slot; `results/` is never pre-created
+- [ ] R02 every task has `runs/` with at least one `rNN_` Run, config-less scripts included
+- [ ] —   a Job holds `src/` only when two of its Tasks share code (S17, a `src/` in every Job, was dropped 261021)
 
 WIRING · the ticket, the config, the script
 - [ ] N7  every `rNN_` run-config has a ticket of the same stem, and the reverse when the task uses configs
@@ -52,8 +53,11 @@ WIRING · the ticket, the config, the script
 - [ ] S16 no script, config or ticket names a `work/…` path that does not exist (a hardcoded config path, an old `producer:` string)
 
 RESULTS · generated output lands where the law says
-- [ ] S12 no `results/` inside a task, and no task script writes `TASK_DIR / "results"`
-- [ ] R01 every `<task>/results/<run>/` carries `runtime.yaml`; S12 no `results/` at the Job level: Results live inside the Task that owns the Run (JL 260909)
+- [ ] R01 every Run that wrote `runs/<run>/result/` carries `runtime.yaml` there or in a `passes/pNN-<MMDD>/`;
+        a Block not yet moved: every `<task>/results/<run>/` carries one
+- [ ] S12 no `results/` at the Job level, and no task script writes `TASK_DIR / "results"`: a Result lives in
+        the Task that owns the Run (JL 260909)
+- [ ] S16 no path names the old `tasks/` world (it is `work/` since 261010) or a `work/…` path that does not exist
 - [ ] —   a script that writes its own output folder names it after `RUN_NAME`, so output sits beside its receipt
 
 ROOT · the 260811 hazard
@@ -62,12 +66,12 @@ ROOT · the 260811 hazard
 
 PROOF · nothing above is believed until it ran
 - [ ] the checker fired on a mutated COPY with planted breaks (`--expect-fail` exit 0, naming the codes) and is clean on the real tree; the pre-BJTR tree fires only N0, which proves nothing about the new rows
-- [ ] one ticket per task TYPE ran (dry run is fine) and its receipt reads `status: ok` at the job level
-- [ ] the table's Findings block is empty and `--check` is green
+- [ ] one ticket per task TYPE ran (dry run is fine) and its receipt sits in its Run's `result/`
+- [ ] `ladder.py audit --today` shows no failed and no debt, and the Goal view ticks what the disk holds
 - [ ] both numbers are written into the report a person reads
 
 ## What this list is not
 
-- Not the naming law itself: `ref/block-job-task-run.md` and `ref/hierarchy.md` own that.
+- Not the naming law itself: `ref/task-folder.md` § Names owns that.
 - Not the Stata dialect's extra rules (N2, N8, S1–S3, S7, S9): the same checker runs them when it sees `.do` and `.ps1`.
 - Not a substitute for `fn/audit.md`, which pairs the four sisters of a RUN; this list is about the TREE.

@@ -34,7 +34,7 @@ Step 1 — Identify project + block
 Step 2 — Collect metadata
 --------------------------
 
-- 2-digit NN: next free in this group (no gaps).
+- 2-digit NN: next free `tNN` in this Job (no gaps).
 - snake_case task_name: `stage{N}_{description}`
   (e.g., `stage1_extract_tables`, `stage2_process`, `stage1_extract_claims`).
 - Stage number (1, 2, 3, ...): which stage in the cohort extraction pipeline.
@@ -56,15 +56,18 @@ bNN_<raw_block>/
     └── tNN_<raw_table_or_step>/
         ├── tNN_<raw_table_or_step>.md
         ├── scripts/<worker>.py
-        ├── scripts/config/r01_base.yaml
-        ├── runs/r01_base.sh
-        ├── results/
+        ├── runs/r01_base/            one folder per Run
+        │   ├── r01_base.sh           the Ticket
+        │   ├── config.yaml
+        │   ├── run.yaml              its card (haipipe-run)
+        │   └── result/               written by the Ticket
         ├── notebooks/
         ├── draft/
         └── workflow/
 ```
 
-⚡ P2 additionally, at GROUP root (once per group, not per task):
+⚡ P2's group root below is the older REACH shape (`work/A00_rawstore_reachadhd/`): read it where it
+exists, never scaffold it for new work (SKILL.md § the older shape); a new raw Job is jNN_<cohort>_raw/:
 
 ```
 A00_rawstore_<cohort>/
@@ -78,7 +81,7 @@ A00_rawstore_<cohort>/
 Step 4 — Seed config
 ---------------------
 
-Copy `ref/config-seed.yaml` to `scripts/config/rNN_<run>.yaml`.
+Copy `ref/config-seed.yaml` to `runs/rNN_<run>/config.yaml`.
 Fill in:
 - `_meta:` (purpose / input / output).
 - `stage:` (1, 2, 3, ...).
@@ -94,8 +97,9 @@ Fill in:
 Step 5 — Run-script
 --------------------
 
-Copy `ref/run-databricks-sh-template.sh` to `runs/rNN_<run>.sh`.
-Set `WORKER="<worker>.py"`.
+Copy `ref/run-databricks-sh-template.sh` to `runs/rNN_<run>/rNN_<run>.sh`.
+Set `TASK_NAME="<worker>"` (the worker filename without .py).
+Write the Run's card `runs/rNN_<run>/run.yaml` (haipipe-run; an extraction Run takes `role: make`).
 
 This template converts `.py` → `.ipynb` only — no papermill execute.
 The notebook is meant for Databricks upload. ⚡ P2: place the converted .ipynb in the group's `_databricks/` as well; ignore the template's "sync to local" hint (Pattern 1 only).
@@ -130,7 +134,7 @@ MUST NOT
 - (Pattern 1) Use `spark.sql()` for local processing — Spark is
   extraction-only. Once data is local, use pandas.
   (⚡ P2: all-Spark is the rule; nothing comes local.)
-- Place `.parquet` files in `results/` — they go to
+- Place `.parquet` files in a Run's `result/` — they go to
   `_WorkSpace/0-RawDataStore/` (P2: the catalog volume).
 - ⚡ P2: sync PHI raw data to a laptop / local `_WorkSpace` — server-only;
   only aggregated outputs move.

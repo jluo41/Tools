@@ -12,6 +12,14 @@ from typing import Any
 
 PACKAGES = ("claude-agent-sdk", "openai-codex")
 PROJECT = Path("examples-3-nlp/Project-LLMRec-Physician")
+# First present wins. The LLMRec runtime is code/haiutils/agent_sdk/ (since 260830); a checkout
+# from before the tasks/ -> work/ rename (261010) still has the retired tasks/ files.
+RUNTIME_CANDIDATES = (Path("code/haiutils/agent_sdk"), PROJECT / "tasks/llmrec_agent_sdk.py")
+VERIFIER_CANDIDATES = (
+    PROJECT / "work/b02_llm_recommendation_runs/j03_B_open_recommendation"
+    / "t05_transport_smoke_claude_codex/scripts/verify_llmrec_agent_sdk.py",
+    PROJECT / "tasks/verify_llmrec_agent_sdk.py",
+)
 
 
 def locate_root(start: Path) -> Path:
@@ -30,6 +38,13 @@ def package_versions() -> dict[str, str | None]:
         except PackageNotFoundError:
             values[package] = None
     return values
+
+
+def first_present(root: Path, candidates: tuple[Path, ...]) -> Path:
+    for rel in candidates:
+        if (root / rel).exists():
+            return root / rel
+    return root / candidates[0]
 
 
 def receipt_summary(root: Path) -> dict[str, Any]:
@@ -61,14 +76,14 @@ def receipt_summary(root: Path) -> dict[str, Any]:
 
 
 def status(root: Path) -> dict[str, Any]:
-    runtime = root / PROJECT / "tasks/llmrec_agent_sdk.py"
-    verifier = root / PROJECT / "tasks/verify_llmrec_agent_sdk.py"
+    runtime = first_present(root, RUNTIME_CANDIDATES)
+    verifier = first_present(root, VERIFIER_CANDIDATES)
     generic = root / "code/haiutils/llm_engine"
     return {
         "repository_root": str(root),
         "llmrec": {
             "runtime": str(runtime.relative_to(root)),
-            "runtime_exists": runtime.is_file(),
+            "runtime_exists": runtime.exists(),
             "verifier": str(verifier.relative_to(root)),
             "verifier_exists": verifier.is_file(),
             "call_store": "_WorkSpace/A-LLMRecPhy/4-LLMCallStore",

@@ -73,7 +73,7 @@ Stage Scope
 ------------
 
 Owns:
-  - TriggerFn / CaseFn builders in `work/b03_casestore/jNN_{triggerfn,casefn}_<family>/tNN_{triggerfn,casefn}_<Fn>/scripts/`; one CaseSet per raw dataset in `b03_casestore/j5N_<cohort>_v<yymmdd>_case/` (rule: `haipipe-task/ref/hierarchy.md` § Block number ranges) (legacy workspaces: `code-dev/1-PIPELINE/3-Case-WorkSpace/`)
+  - TriggerFn / CaseFn builders in `work/b03_casestore/jNN_{triggerfn,casefn}_<family>/tNN_{triggerfn,casefn}_<Fn>/scripts/`; one CaseSet per raw dataset in `b03_casestore/j5N_<cohort>_v<yymmdd>_case/` (rule: `haipipe-task/ref/pipeline-blocks.md`) (legacy workspaces: `code-dev/1-PIPELINE/3-Case-WorkSpace/`)
   - Generated `code/haifn/fn_case/{fn_trigger,case_casefn}/`, or `code/haifn/fn_case/<fn_version>/{fn_trigger,case_casefn}/` when the Run config sets `fn_version:` (the same version as the dataset's SourceFn and RecordFns; the CaseSet cook Run sets it too; see `haipipe-data/ref/0-overview.md` § Fn Versions)
   - `_WorkSpace/3-CaseStore/` cases (cohort sampling)
   - `templates/config.yaml` for Case_Pipeline runs

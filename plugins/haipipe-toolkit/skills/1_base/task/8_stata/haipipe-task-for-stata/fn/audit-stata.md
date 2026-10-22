@@ -30,7 +30,7 @@ If stage=case, verify the three-layer config pattern:
 
 1. **Source selectors exist:** `scripts/config/_source_synth.do` and `scripts/config/_source_full.do`
 2. **Shared cohort config exists:** `scripts/config/<Cohort>.do` (the one WITHOUT source/year suffix)
-3. **Per-run configs exist:** `scripts/config/rNN_<run>.do` for each runner
+3. **Per-run configs exist:** each Run folder has its `runs/rNN_<run>/config.do` and card `run.yaml` (a Block not yet moved: `scripts/config/rNN_<run>.do` for each runner)
 4. **Loading order:** Each per-run config loads source selector THEN shared config
    (grep for `do scripts/config/_source_` appearing BEFORE `do scripts/config/<Cohort>.do`)
 5. **Source tag in output:** `case_asset_name` does NOT contain `${cms_source}`
@@ -106,7 +106,8 @@ This audit is a quick scan; the full checklist is the definitive check.
 ### Step 7 — Orphan / stale results
 
 Extend generic audit's stale_result classification:
-- Results folders matching old naming conventions (pre-source-dimension: `run_case_<Cohort>_<year>/` without source tag) → `stale_naming`
+- Results folders matching old naming conventions (outside the rNN_ grammar, or pre-source-dimension: `run_case_<Cohort>_<year>/` without source tag) → `stale_naming`
+- A Task that has Run folders (`runs/<run>/`) and still holds a flat `results/` → `stale_layout`
 - Results folders with `_v2603` or other version suffixes → `stale_versioned`
 - Results under `_old/` → `archived` (INFO, no action)
 

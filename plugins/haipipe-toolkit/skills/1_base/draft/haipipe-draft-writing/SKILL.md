@@ -18,7 +18,7 @@ description: >-
   ref/revise.md): revise, compare before and after, what changed, track
   changes, change ledger, run-revise, /haipipe-draft-revise.
 metadata:
-  version: "0.25.2"
+  version: "0.25.3"
   last_updated: "2026-10-20"
   # version history: ./CHANGELOG.md
 ---
@@ -33,8 +33,8 @@ Load, in order: `haipipe-draft`, `haipipe-draft-workflow`, this skill,
 Folder-owning workflow or canonical family skill, exact Page Face owner,
 `workbench-task-draft/ref/plan-grammar.md`, applicable policy and the
 selected integration/delivery workers. Load an owner only once when it fills
-both roles. For `folder-kind: task`, load the reader-facing
-`haipipe-page-task` companion for its display/form contract.
+both roles. For `folder-kind: task`, read `haipipe-task`'s
+`ref/task-page.md` (§ Displays) for its display/form contract.
 
 At adoption, build, or release, apply `../haipipe-draft/ref/release-decisions.md`
 for profile precedence and reuse of existing human decisions.

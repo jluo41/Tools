@@ -2,13 +2,15 @@
 
 A Block sits in a Project's Theme folder (work/, discovery/, cowork/, paper/, insight/, design/,
 labeling/; the older plural names still read). The face carries the title line, its header fields (board-kind, spine, close, and an
-optional workbench: naming the theme that reads it when the Theme folder names another), a Topic, and,
-with --questions, an empty Questions register for haipipe-report. No empty folders are made: studio/,
-reports/, runs/ and the Jobs come with their first content.
+optional workbench: naming the theme that reads it when the Theme folder names another), a Topic, and an
+empty Questions register for haipipe-report (--no-questions leaves it out). A work Block (board-kind
+task-block) is born on today's layout too: `workbench-layout: workflow` and an empty `## Deliverables` for
+what no Job owns (haipipe-job ref/job-contract.md), so `/wb update` finds nothing missing (261021). No empty
+folders are made: studio/, reports/, runs/ and the Jobs come with their first content.
 
     python new_board.py <theme folder> --slug <topic> --title '<title>'
         [--nn NN] [--kind <board-kind>] [--spine '…'] [--close '…'] [--workbench <theme>]
-        [--questions] [--dry-run]
+        [--no-questions] [--dry-run]
 
 It prints the new face's path. It refuses a folder or an NN that already exists.
 """
@@ -43,14 +45,19 @@ def face_text(nn: str, title: str, kind: str, spine: str, close: str, workbench:
             f"close: {close or '<what must be true for this Block to close>'}"]
     if workbench:
         head.append(f"workbench: {workbench}")
+    if kind == "task-block" and not workbench:            # a work Block opens on Goal · Plan · Execution · Results
+        head.append("workbench-layout: workflow")
     body = ["", "## Topic", "", "<Why these Jobs belong to one Block, and what this Block excludes.>", ""]
     if questions:
         body += ["## Questions", "", "```yaml", "questions: []", "```", ""]
+    if kind == "task-block" and not workbench:
+        body += ["## Deliverables", "", "What no single Job owns; each Job's own items live in its face.", "",
+                 "```yaml", "deliverables: []", "```", ""]
     return "\n".join(head + body)
 
 
 def new_board(world: Path, slug: str, title: str, nn: int | None = None, kind: str = "", spine: str = "",
-              close: str = "", workbench: str = "", questions: bool = False, dry_run: bool = False) -> Path:
+              close: str = "", workbench: str = "", questions: bool = True, dry_run: bool = False) -> Path:
     if not SLUG.match(slug):
         raise ValueError(f"slug {slug!r}: lower-case letters, digits and _ only")
     if not world.is_dir():
@@ -82,11 +89,13 @@ def main() -> int:
     ap.add_argument("--spine", default="")
     ap.add_argument("--close", default="")
     ap.add_argument("--workbench", default="", help="the theme that reads this Block, if not its folder's")
-    ap.add_argument("--questions", action="store_true", help="add an empty ## Questions register")
+    ap.add_argument("--questions", action="store_true", help="(the default) an empty ## Questions register")
+    ap.add_argument("--no-questions", action="store_true", help="leave the ## Questions register out")
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
     try:
-        md = new_board(a.world, a.slug, a.title, a.nn, a.kind, a.spine, a.close, a.workbench, a.questions, a.dry_run)
+        md = new_board(a.world, a.slug, a.title, a.nn, a.kind, a.spine, a.close, a.workbench, not a.no_questions,
+                       a.dry_run)
     except ValueError as err:
         print(f"refused: {err}", file=sys.stderr)
         return 2

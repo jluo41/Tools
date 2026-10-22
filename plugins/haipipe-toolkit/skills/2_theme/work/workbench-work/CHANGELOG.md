@@ -1,3 +1,10 @@
+## 0.8.0 · 2026-10-21 · the workflow layout, and where an older Block is updated
+
+- SKILL.md: a Block with `workbench-layout: workflow` opens on Goal · Plan · Execution · Results (the Goal a
+  to-do tree from each Job's `## Deliverables`); this skill only shows a Block, and `/wb update <Block>` is the door
+  that brings an older one up to today's structure (JL 261021: "should I call the skill of /workbench-work to update
+  the old block structure?").
+
 ## 0.7.4 · 2026-10-09 · No hand-drawn font
 
 - JL 261009: "do not use the hand written font, it is very hard to read"; "could you write to the related skill to do not use that font?". `servers/workbench-work/question_map.py` writes its words in Nunito (`fontFamily` 6), not Comic

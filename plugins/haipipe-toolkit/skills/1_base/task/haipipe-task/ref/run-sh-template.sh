@@ -6,6 +6,11 @@ set -uo pipefail
 
 # Fill these for the Task.
 TASK_NAME="worker"
+# Optional: the worker's path from the Job when it is not scripts/$TASK_NAME.py (a Job's shared worker:
+# "src/describe_table.py"). Empty means scripts/$TASK_NAME.py.
+WORKER_PATH=""
+# Optional: the notebook's name for what it shows ("welldoc_cgm"); empty means the Run's name.
+NOTEBOOK_NAME=""
 RUN_FAMILY="Execution"
 RUN_OPERATION="task-execution"
 RUN_TARGET="bounded-target"
@@ -15,6 +20,18 @@ RUN_INPUTS=()
 
 # Extend when file existence is not the complete acceptance test.
 result_gate() { return 0; }
+
+# The Run's card says where it stands (haipipe-run: the ticket writes it at each pass); only its status: line changes.
+set_card_status() {
+  [ -n "${RUN_FOLDER:-}" ] && [ -f "$RUN_FOLDER/run.yaml" ] || return 0
+  python3 - "$RUN_FOLDER/run.yaml" "$1" <<'PY' || echo "==> [warn] could not update run.yaml status" >&2
+import re, sys
+path, status = sys.argv[1], sys.argv[2]
+text = open(path).read()
+new = re.sub(r"(?m)^status:.*$", f"status: {status}", text, count=1) if re.search(r"(?m)^status:", text) else text.rstrip("\n") + f"\nstatus: {status}\n"
+open(path, "w").write(new)
+PY
+}
 
 fail_shape() {
   echo "==> BLOCKED: $1" >&2
@@ -58,6 +75,7 @@ CONFIG_REL="$TASK_SEG/scripts/config/$RUN_NAME.yaml"
 TICKET_REL="$TASK_SEG/runs/$RUN_NAME.sh"
 [ -z "$RUN_FOLDER" ] || TICKET_REL="$TASK_SEG/runs/$RUN_NAME/$RUN_NAME.sh"
 WORKER_REL="$TASK_SEG/scripts/$TASK_NAME.py"
+[ -z "$WORKER_PATH" ] || WORKER_REL="$WORKER_PATH"
 CONFIG="$JOB_FOLDER/$CONFIG_REL"
 WORKER="$JOB_FOLDER/$WORKER_REL"
 [ -f "$CONFIG" ] || fail_shape "Run config missing: $CONFIG"
@@ -74,6 +92,9 @@ while [ "$_walk" != "/" ]; do
   _walk="$(dirname "$_walk")"
 done
 [ -n "$REPO_ROOT" ] || REPO_ROOT="$(git -C "$JOB_FOLDER" rev-parse --show-toplevel)"
+# The SPACE's own interpreter (AGENTS: .venv/bin/python; a system python3 may be older): its bin/ goes first, so
+# `python` and `papermill` below are the venv's.
+[ -x "$REPO_ROOT/.venv/bin/python" ] && export PATH="$REPO_ROOT/.venv/bin:$PATH"
 PROJECT_FOLDER="$(cd "$TASKS_DIR/.." && pwd)"
 PROJECT="$(basename "$PROJECT_FOLDER")"
 STARTED="$(date -Iseconds)"
@@ -97,7 +118,7 @@ RESULTS_DIR="$OUTPUT_ROOT/$TASK_SEG/runs/$RUN_NAME/result"
 [ -n "$RUN_FOLDER" ] || RESULTS_DIR="$OUTPUT_ROOT/$TASK_SEG/results/$RUN_NAME"
 RUNTIME_YAML="$RESULTS_DIR/runtime.yaml"
 NOTEBOOK_TEMPLATE="$OUTPUT_ROOT/$TASK_SEG/notebooks/_source.ipynb"
-NOTEBOOK_OUT="$OUTPUT_ROOT/$TASK_SEG/notebooks/$RUN_NAME.ipynb"
+NOTEBOOK_OUT="$OUTPUT_ROOT/$TASK_SEG/notebooks/${NOTEBOOK_NAME:-$RUN_NAME}.ipynb"
 export RESULT_DIR="$RESULTS_DIR"
 # A Run's heavy output (haipipe-run "A Result is light") gets its own folder under
 # _WorkSpace/ProjectResult, mirroring the Run's address below work/ (or labeling/). The worker creates it
@@ -287,6 +308,7 @@ PY_HISTORY
 HISTORY_EXIT=$?
 [ "$HISTORY_EXIT" -eq 0 ] || fail_shape "retry history or changed-contract check failed"
 write_receipt running null null null null null
+set_card_status running
 
 if [ "$NOTEBOOK_MODE" = off ]; then
   NB_TARGET="$OUTPUT_ROOT/$TASK_SEG/notebooks/.$RUN_NAME.tmp.ipynb"
@@ -296,6 +318,8 @@ fi
 
 EXIT_CODE=0
 export HAIPIPE_CONFIG="$CONFIG"
+# What a worker may read about where it runs (the fresh-agent trial, 261021: the description worker needs all four).
+export REPO_ROOT JOB_DIR="$JOB_FOLDER" TASK_DIR="$TASK_FOLDER" RUN_NAME RUN_CONFIG="$CONFIG"
 if [ "$NOTEBOOK_MODE" = off ]; then
   # A Task that declared it wants no notebook should not need a notebook stack.
   # Requiring papermill + a working jupyter kernel to produce a file the Ticket
@@ -392,6 +416,7 @@ except Exception:
 ")"
 
 write_receipt "$STATUS" "$ENDED" "$EXIT_CODE" "$FAILURE" "$DURATION" "$HEADLINE"
+case "$STATUS" in complete) set_card_status done ;; *) set_card_status "$STATUS" ;; esac
 echo "==> Runtime written to $RUNTIME_YAML"
 echo "==> Next: /haipipe-task report $TASK_FOLDER"
 exit "$EXIT_CODE"

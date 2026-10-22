@@ -346,7 +346,8 @@ def today_findings(block: Path) -> list[tuple[str, str]]:
     studio = block / "studio"
     entries = sorted(studio.iterdir()) if studio.is_dir() else []
     topics = [d for d in entries if d.is_dir() and topic.match(d.name)]
-    if not topics:
+    has_jobs = any(d.is_dir() and NAMES["job"].match(d.name) for d in block.iterdir())
+    if not topics and has_jobs:                                # a Block with no Job yet has nothing to draw (261021)
         out.append(("debt", "today: studio/ has no sNN-<topic>/ topic"))
     s00 = TODAY.get("s00", "s00-background-and-index")       # one name, every Block (haipipe-studio; JL 261012)
     if topics and not (studio / s00).is_dir():

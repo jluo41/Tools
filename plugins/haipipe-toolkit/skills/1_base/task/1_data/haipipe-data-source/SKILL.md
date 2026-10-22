@@ -112,7 +112,7 @@ Stage Scope
 ------------
 
 Owns:
-  - SourceFn builders in `work/b01_sourcestore/j5N_<cohort>_v<yymmdd>_source/t01_sourcefn_develop_and_use/scripts/`; ProcName contracts in `b01_sourcestore/j01_procdf_<topic>/tNN_procdf_<ProcName>/` (rule: `haipipe-task/ref/hierarchy.md` § Block number ranges) (legacy workspaces: `code-dev/1-PIPELINE/1-Source-WorkSpace/`)
+  - SourceFn builders in `work/b01_sourcestore/j5N_<cohort>_v<yymmdd>_source/t01_sourcefn_develop_and_use/scripts/`; ProcName contracts in `b01_sourcestore/j01_procdf_<topic>/tNN_procdf_<ProcName>/` (rule: `haipipe-task/ref/pipeline-blocks.md`) (legacy workspaces: `code-dev/1-PIPELINE/1-Source-WorkSpace/`)
   - Generated `code/haifn/fn_source/`, or `code/haifn/fn_source/<fn_version>/` when the Run config sets `fn_version:` (one version shared with fn_record and fn_case; it names the `ProcName_to_ProcDf` shape: same ProcNames and columns keep it, a changed shape starts a new one; see `haipipe-data/ref/0-overview.md` § Fn Versions)
   - `_WorkSpace/1-SourceStore/` typed frames
   - `templates/config.yaml` for Source_Pipeline runs

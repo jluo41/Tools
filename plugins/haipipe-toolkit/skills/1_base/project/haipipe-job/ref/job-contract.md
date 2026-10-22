@@ -30,6 +30,9 @@ close: <what must be true for this Job to close>
 emoji: 🧭                       # its own emoji on the Goal tree line (a work Block, 261021)
 answers: Q01                    # optional: the Block Question it answers (haipipe-report's link rule)
 
+## Background                   # optional: what the work is for, a few bullets a newcomer reads first
+- **Why**: <the need behind it> · **What we build**: <...> · **Where it stands**: <real numbers, their Run>
+
 ## Topic
 <why these Tasks belong to one Job>
 
@@ -53,7 +56,25 @@ answers: Q01                    # optional: the Block Question it answers (haipi
    its rows at Job level, the same row as a Block's (`haipipe-report`).
 6. **emoji**: one lively emoji per Job, different from every other Job's in its Block (JL 261020:
    "这个 job 的 emoji 应该更活泼一些"); the Goal tree shows it before the Job's name.
-7. **## Deliverables**: a work Job's to-do list, below. `haipipe-project audit --today` reports a
+7. **## Background**: optional; what the Job is for, in plain words and real numbers, a few `- **Label**: ...`
+   bullets (why it is needed, what we build, how we know, where it stands). The Goal view shows it under the goal,
+   above the tree, its words folded under one "BACKGROUND · N points" line and its pictures in view (JL 261021: "可以再加一个 section，比如叫 background 啥的，介绍一下我们要实现什么"); the goal line
+   itself says the end state a reader wants, not the steps. A fenced `yaml` block there holding `timeline:` (items, times,
+   bites: [{name, at, items}], caption) is drawn as a picture: a lane per item, a row per moment, a band per bite
+   across the items it holds (j01_ext_food, JL 261021: "how do you think you can make the html to show this in the
+   goal"); `spans: [{name, item, from, to, aside}]` draws the other shape, one lane over a stretch of time (an
+   exercise activity from its start to its end; `aside` dashed, a device's day total; j02_ext_exercise, 261021);
+   `clock: {from: "07:00", to: "09:00", hour_px: 150}` in place of `times` draws a real clock, every hour the same
+   height and each HH:MM where its minutes put it, labelled every `mark` minutes (60 by default; 180 for a whole day,
+   which ends at 24:00); a clock whose `to` comes before its `from` (23:00 to 07:00) runs past midnight (exercise,
+   step and sleep, 261021);
+   any other fenced block shows as written. A span with `zoom: true`, and the block's `zoom: {items, times, bites}`,
+   draw one picture: the day's events, and that span opened beside them into its own lanes and bites, joined by two
+   dashed lines (j01, JL 261021: "你可以把这两个图融成一个图吗"). `rule: {question, width?, branches: [{answer, title,
+   then, example, today}]}` draws the handling rule in the same picture, top right: the question, then a box per answer,
+   the one that holds today filled (j01: what happens to a meal with no logged end). Separate timeline blocks one after another share one
+   line, side by side.
+8. **## Deliverables**: a work Job's to-do list, below. `haipipe-project audit --today` reports a
    work Job without it, or without `emoji:`, as debt; `/wb update` lists them to write.
 
 ## The Deliverables: what a Job hands on (LLMRec b01 and b02, 261021)

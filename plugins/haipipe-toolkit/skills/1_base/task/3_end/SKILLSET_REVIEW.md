@@ -1,5 +1,7 @@
 # SKILLSET_REVIEW — task/3_end + task/haipipe-task core
 
+> Since 2026-10-21 `haipipe-workflow` is haipipe-run's `ref/workflow.md` and `haipipe-page-task` is haipipe-task's
+> `ref/task-page.md` § Displays. This record keeps the names it had when it was written.
 
 > ⚠️ **ONE PATH IN THIS REVIEW NO LONGER RESOLVES** (`../_WorkSpace`). Banner
 > added 260822 during a toolkit-wide sweep, without re-diagnosing.

@@ -9,6 +9,7 @@ on one cook's worth of strings that the caller times out. None of those is
 visible from inside Python.
 
     python test_server.py                  # against $FOODNORM_URL
+    python test_server.py event            # only the checks whose name holds "event"
     FOODNORM_URL=http://host:8070/food python test_server.py
 """
 import json
@@ -202,6 +203,55 @@ def t_malformed():
     return "3 shapes -> 422"
 
 
+# ── 11b · the event door: raw in, the input JSON and the output by hour out ─
+def _strict(d):
+    """Re-read an answer as strict JSON: a bare NaN would fail here, as it fails a strict client."""
+    def no(c):
+        raise ValueError(f"{c} on the wire")
+    return json.loads(json.dumps(d), parse_constant=no)
+
+
+def t_event_raw():
+    rows = [{"CarbEntryID": "m1", "FoodName": "Banana", "ActivityTypeID": "1", "ServingsConsumed": "1",
+             "ServingSize": "1", "ServingType": "medium", "Carbs": "30", "Calories": "105",
+             "ObservationDateTime": "4/14/2021 11:17:00 AM", "ObservationEntryDateTime": "4/14/2021 11:20:00 AM",
+             "TimezoneOffset": "-240"},
+            {"CarbEntryID": "m1", "FoodName": "Just Carbs", "ActivityTypeID": "1", "Carbs": "30", "Calories": "0",
+             "ObservationDateTime": "4/14/2021 11:17:00 AM", "ObservationEntryDateTime": "4/14/2021 11:20:00 AM",
+             "TimezoneOffset": "-240"}]                        # made up, in the app's columns: a typed count
+                                                                # is written on every row of its meal (s01-D33)
+    s, d = post("/event", {"raw": {"type": "app_log", "rows": rows}})
+    assert s == 200, s
+    _strict(d)
+    i = d["input"]
+    assert i["start"] == "2021-04-14 07:17 -04:00" and i["logged_at"] == "2021-04-14 07:20 -04:00", i
+    assert i["meal_type"] == "breakfast" and [x["food"] for x in i["items"]] == ["Banana"], i
+    assert i["items"][0]["amount"] == "1 medium" and i["total"] == {"macros": {"carbs": "30 g"}}, i
+    (hour, h), = d["output"].items()
+    assert hour == "2021-04-14 07:00 -04:00" and h["share"] == 1.0 and h["total"]["source"] == "tables", h
+    assert h["items"][0]["match"]["conf"] in ("MEASURED", "ESTIMATED"), h["items"][0]
+    return f"2 rows -> 1 item ('Just Carbs' is the meal's 30 g); {hour}; Banana {h['items'][0]['macros']['carbs']}"
+
+
+def t_event_input():
+    s, d = post("/event", {"input": {"items": [{"food": "Milk", "amount": "250 ml"}]}})
+    assert s == 200 and d["raw"] is None, d
+    (hour, h), = d["output"].items()
+    assert hour == "no time" and h["items"][0]["id"] == "i1" and h["items"][0]["serving"]["unit"] == "250 ml", h
+    return "an input alone: items asked with their grams; no start, one entry"
+
+
+def t_event_malformed():
+    for bad in ({}, {"raw": {"type": "fax", "rows": [{}]}}, {"raw": {"type": "app_log", "rows": []}},
+                {"input": {"items": [{"amount": "1 g"}]}}):
+        try:
+            post("/event", bad, timeout=60)
+            raise AssertionError(f"accepted {bad}")
+        except urllib.error.HTTPError as e:
+            assert e.code == 422, f"{bad} -> {e.code}, want 422"
+    return "4 shapes -> 422"
+
+
 # ── 12 · latency a caller can plan around ───────────────────────────────────
 def t_latency():
     post("/normalize", {"food": "rice"})                     # warm
@@ -334,6 +384,9 @@ if __name__ == "__main__":
         ("oversize batch -> 413", t_oversize),
         ("16 concurrent callers agree", t_concurrent),
         ("malformed body -> 422, never 500", t_malformed),
+        ("POST /event: raw in, input and output by hour", t_event_raw),
+        ("POST /event: an input alone", t_event_input),
+        ("POST /event: malformed -> 422", t_event_malformed),
         ("single-call latency", t_latency),
         ("image upload: real frames, derived + tagged", t_image_upload),
         ("image batch via base64", t_image_b64_batch),
@@ -341,6 +394,8 @@ if __name__ == "__main__":
         ("too many frames -> 413", t_image_rejects_too_many),
         ("empty file -> 422", t_image_rejects_empty),
     ]:
+        if len(sys.argv) > 1 and sys.argv[1] not in name:       # a word picks the checks to run
+            continue
         check(name, fn)
     print("=" * 78)
     print(f"  {len(PASS)} passed · {len(FAIL)} failed")

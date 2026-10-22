@@ -10,8 +10,8 @@ description: >-
   the key parts", "how does this paper link to ours", a paper reading canvas, /excalidraw-read.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 metadata:
-  version: "0.9.0"
-  last_updated: "2026-10-14"
+  version: "0.10.0"
+  last_updated: "2026-10-21"
   # version history: ./CHANGELOG.md
 ---
 
@@ -54,6 +54,7 @@ R=Tools/plugins/haipipe-toolkit/skills/1_base/excalidraw/excalidraw-read/ref/rea
 .venv/bin/python $R boxes <paper.pdf> --page N [--find text]           # line boxes, for a table or figure
 .venv/bin/python $R all <reading folder>/reading.yaml                  # shoot + draw + .png preview
 .venv/bin/python $R paras <reading folder>/reading.yaml                # shots/para-P<k>.jpg: the Section's paragraphs, each whole
+.venv/bin/python $R paras <reading folder>/reading.yaml                #   with section.blocks: an abstract's blocks, each whole, its words counted
 ```
 
 1. **Place the files.** The PDF and its `paper.txt` are a download: keep them in the space's

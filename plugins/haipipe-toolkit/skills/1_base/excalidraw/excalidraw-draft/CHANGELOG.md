@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.5.0 · 2026-10-21 · The examples frame reads an Abstract's blocks
+
+- Asked 261021: the Abstract's Section canvas gets the same "other papers" frame the Introduction's has.
+  `ref/section_canvas.examples_frame` reads a reading cut into blocks (excalidraw-read 0.10.0, `section.blocks`): each
+  block is named by its heading in title case with its words ("Importance · 38 words · <its move>"), the paper's count
+  line sums the words by group ("Key Points 94 words · Abstract 374 words"), and the frame, its subtitle and its act
+  say "write" and "block" where a paragraph reading says "open" and "paragraph". `examples_title` in the face still
+  names the frame. A paragraph reading draws as before.
+
 ## 2.4.0 · 2026-10-20 · The examples frame shows whole paragraphs, and what each paper is
 
 - JL 261020, of "How 4 JAMA Internal Medicine papers open their Introduction": "paper 的名字一定要大写一下", "你这引的都是

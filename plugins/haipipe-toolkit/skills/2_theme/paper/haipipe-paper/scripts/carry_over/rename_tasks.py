@@ -44,12 +44,13 @@ from pathlib import Path
 
 MAP = ".paper-tasks.yaml"
 VERSION = re.compile(r"^(j\d{2})_v([^_]+)_(.+)$")
-ABSTRACT = re.compile(r"^S-[A-Za-z0-9]+-Main-Abstract$")
-MAIN = re.compile(r"^S-[A-Za-z0-9]+-Main-(\d+)-(.+)$")
-APPENDIX = re.compile(r"^S-[A-Za-z0-9]+-Appendix-([A-Z])-(.+)$")
+DESK = r"[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*?"                 # a desk may hold a hyphen: S-JAMA-IM-Main-1-…
+ABSTRACT = re.compile(rf"^S-{DESK}-Main-Abstract$")
+MAIN = re.compile(rf"^S-{DESK}-Main-(\d+)-(.+)$")
+APPENDIX = re.compile(rf"^S-{DESK}-Appendix-([A-Z])-(.+)$")
 BATCH = re.compile(r"^(?:RD|CM)(\d+)-[A-Za-z0-9]+-(.+)-\d{4}(\d{4})$")
 BATCH_DASHED = re.compile(r"^(?:RD|CM)(\d+)-(.+)-\d{4}-(\d{2})-(\d{2})$")   # RD01-positioning-2026-05-14
-BACK = re.compile(r"^S-[A-Za-z0-9]+-Main-([A-Za-z].*)$")                      # S-npjDM-Main-DataAvailability
+BACK = re.compile(rf"^S-{DESK}-Main-([A-Za-z].*)$")                      # S-npjDM-Main-DataAvailability
 ORDER = re.compile(r"(?s)<!-- haipipe:compile-order:start -->(.*?)<!-- haipipe:compile-order:end -->")
 TEXT = {".md", ".toml", ".yaml", ".yml", ".txt", ".json", ".py", ".sh"}
 SKIP = {"results", "notebooks", "runs", "sent", "released", "board", "_archive", ".git", "__pycache__",

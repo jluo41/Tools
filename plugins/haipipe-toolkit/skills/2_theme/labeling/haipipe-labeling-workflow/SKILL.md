@@ -36,7 +36,7 @@ episode, item, model call, or display row.
 Each operation name below is a Run Type used by one or more stable Run Specs.
 The Workflow Definition supplies each Spec's bounded target, actor, action,
 inputs/dependencies, entry and exit gates, allowed routes, cardinality and
-durable Result. See `haipipe-workflow`'s Run Spec contract. The P0-P5 column is
+durable Result. See haipipe-run's Run Spec contract (`ref/workflow.md`). The P0-P5 column is
 only the legacy capability tag to preserve on existing records and projections;
 the rows and their Routes are the Workflow.
 

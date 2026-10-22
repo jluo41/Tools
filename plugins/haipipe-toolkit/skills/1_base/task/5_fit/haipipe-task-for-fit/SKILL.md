@@ -1,11 +1,11 @@
 ---
 name: haipipe-task-for-fit
-description: "model-fitting job specialist: scaffolds {NN}_<name>/ jobs that fit/train a model (full hyperparam config, real GPU sweep, checkpoint to _WorkSpace/5-ModelInstanceStore/). NOT algorithm dev -- see /haipipe-task-for-algo. Called by /haipipe-task when task-type=fit. Cross-references /haipipe-nn-tuner and /haipipe-nn-instance."
-argument-hint: "[project_id] [group] [job-name]"
+description: "model-fitting Task specialist: scaffolds jNN_<job>/tNN_<task>/ Task folders that fit/train a model (full hyperparam config, real GPU sweep, checkpoint to _WorkSpace/5-ModelInstanceStore/). NOT algorithm dev -- see /haipipe-task-for-algo. Called by /haipipe-task when task-type=fit. Cross-references /haipipe-nn-tuner and /haipipe-nn-instance."
+argument-hint: "[project_id] [bNN_<block>/jNN_<job>] [tNN_<task>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.1.5"
-  last_updated: "2026-10-09"
+  version: "0.2.0"
+  last_updated: "2026-10-21"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -17,6 +17,22 @@ Full training config, heavy outputs to `_WorkSpace/5-ModelInstanceStore/`, desig
 
 **Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during the internal Build step of the owning Task authoring Run, then authors the `<TASK>.py` body).
 Always end with the structured return block (status / task_folder / run_name / files).
+
+## Type contract
+
+```yaml
+task-type: fit
+skill: haipipe-task-for-fit
+does: Trains one model with its full hyperparameters (a real GPU sweep when declared) into a ModelInstance and scores it on the validation split.
+worker: scripts/<worker>.py (Python), calling the ModelInstance and tuner classes under code/hainn/
+config: runs/<run>/config.yaml (seeded from ref/config-seed.yaml), or scripts/config/<run>.yaml in a Block not yet moved
+ticket: runs/<run>/<run>.sh, from ../../haipipe-task/ref/run-sh-template.sh (REQUIRED_RESULTS metrics.json and model_path.txt); a GPU queue runs it through haipipe-task-gpu
+result: $OUTPUT_ROOT/<task>/runs/<run>/result/, with runtime.yaml, model_path.txt and metrics.json before the receipt says complete
+heavy: _WorkSpace/5-ModelInstanceStore/<modelinstance_name>/@v<NNNN>/ (the checkpoints; the Result keeps the pointer model_path.txt)
+roles: [trial, make, fix]
+companions: [haipipe-task-gpu, haipipe-task-gpu-training, haipipe-nn-tuner, haipipe-nn-instance, haipipe-task-for-eval]
+plan_sample: ref/workflow-plan-sample.yaml
+```
 
 ## GPU queue handoff
 
@@ -50,11 +66,16 @@ work/bNN_<block>/
         ├── draft/
         ├── workflow/                plan.yaml + report.yaml
         ├── scripts/<worker>.py
-        ├── scripts/config/rNN_<run>.yaml
-        └── runs/rNN_<run>.sh
+        └── runs/rNN_<run>/              one folder per Run
+            ├── rNN_<run>.sh             the ticket
+            ├── config.yaml              this Run's settings
+            ├── run.yaml                 its card (role: trial | make | fix)
+            └── result/                  runtime.yaml (the receipt) + metrics.json, model_path.txt
 
-Generated: $OUTPUT_ROOT/tNN_<task>/results/rNN_<run>/
+Generated: $OUTPUT_ROOT/tNN_<task>/runs/rNN_<run>/result/
            $OUTPUT_ROOT/tNN_<task>/notebooks/rNN_<run>.ipynb
+A Block not yet moved still has the flat runs/rNN_<run>.sh, scripts/config/rNN_<run>.yaml
+and results/rNN_<run>/; the ticket template runs both.
 ```
 
 Hierarchy prefixes are bNN / jNN / tNN / rNN; domain belongs in the descriptive suffix.
@@ -81,7 +102,7 @@ Summary:
 
   1. Identify project + block.
   2. Collect metadata (NN, name, type-specific extras, _meta block).
-  3. Create the canonical Task Page, workflow/, scripts/config/, worker and matching rNN Ticket; resolve generated output through OUTPUT_ROOT.
+  3. Create the canonical Task Page, workflow/, worker and one Run folder runs/rNN_<run>/ (Ticket, config.yaml, run.yaml); resolve generated output through OUTPUT_ROOT.
   4. Seed config from `ref/config-seed.yaml`.
   5. Copy run-script from `../../haipipe-task/ref/run-sh-template.sh`.
   6. Suggest next via cross-skill link.
@@ -122,7 +143,7 @@ ref/workflow-plan-sample.yaml     ← Run Spec example with internal domain step
 ```
 
 Schema source of truth:
-  task/haipipe-workflow/ref/plan-schema.md
+  project/haipipe-run/ref/plan-schema.md
 
 Resolve `RESULT_STORE`, then the Job store declaration, then the Job root as OUTPUT_ROOT.
 Use the same output-root contract as `haipipe-task`; no physical output is moved by scaffolding.

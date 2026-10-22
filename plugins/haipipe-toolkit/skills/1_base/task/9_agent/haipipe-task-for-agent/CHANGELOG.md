@@ -6,6 +6,14 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.2.0] · 2026-10-21 · One folder per Run, and a Type contract
+
+- `SKILL.md` opens with `## Type contract` (the keys of haipipe-task `ref/types.md`), current layout only.
+- Every page states the current layout: a Run is `runs/rNN_<run>/` with its ticket `rNN_<run>.sh`, `config.yaml`,
+  card `run.yaml` (`role: trial | make`) and `result/`; the Result is `$OUTPUT_ROOT/<task>/runs/<run>/result/`.
+  Prompts sit in `scripts/config/prompts/`. The plan sample targets `work/`. The flat layout is named only as what
+  a Block not yet moved still has.
+
 ## [0.1.4] · 2026-10-09 · Theme folders are singular
 
 - Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,

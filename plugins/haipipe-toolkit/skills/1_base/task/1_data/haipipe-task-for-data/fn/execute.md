@@ -43,13 +43,13 @@ Notebook is the default; CLI is available for parallel workers or scripted pipel
 ### Path A: Notebook (papermill) — via run.sh
 
 ```bash
-bash runs/<RUN>.sh
+bash runs/<RUN>/<RUN>.sh
 ```
 
 This:
 1. Converts `scripts/<worker>.py` → `notebooks/_source.ipynb`
 2. Runs `papermill {template} notebooks/<RUN>.ipynb -p CONFIG {config}`
-3. Writes `results/<RUN>/runtime.yaml`
+3. Writes `$OUTPUT_ROOT/<task>/runs/<RUN>/result/runtime.yaml`
 
 The `.py` already has `NUM_PARTITIONS` and `PARTITION_INDEX` in its parameters cell. papermill can override them:
 ```bash
@@ -109,9 +109,9 @@ Step 4 — Per-stage notes
 Step 5 — Write runtime.yaml
 ------------------------------
 
-If running via CLI (not run.sh), manually write:
+If running via CLI (not the Ticket), manually write:
 ```
-results/<RUN>/runtime.yaml
+$OUTPUT_ROOT/<task>/runs/<RUN>/result/runtime.yaml
 ```
 with status, started, ended, duration, cmd, config, partitions.
 
@@ -122,7 +122,7 @@ Step 6 — Report
 ```
 status:    ok | blocked | failed
 summary:   2-3 sentences on what was executed
-artifacts: [_WorkSpace paths written, results/<RUN>/runtime.yaml]
+artifacts: [_WorkSpace paths written, $OUTPUT_ROOT/<task>/runs/<RUN>/result/runtime.yaml]
 next:      suggested next stage or /haipipe-data-{stage} review
 ```
 
