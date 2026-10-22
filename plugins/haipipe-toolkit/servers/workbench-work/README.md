@@ -31,6 +31,10 @@ Switching Report and Work keeps a subview both sides offer.
 - A receipt that says `started` and `ended` (a Databricks ticket's) reads as
   `started_at` and `finished_at`; one with no `headline` says its own numbers as one line,
   from its `summary:` or `counts:`, the tables its `outputs:` lists, else `result/metrics.json`.
+- In the Block's Goal tree, each Job's first row, above its Tasks, is "📄 About this Job": one link that pops
+  out the Job's overview (`view=work-about`, `render_about`) as a rendered Markdown page: its goal and close
+  lines, its progress Task by Task, its Topic, its Background (timelines drawn), what it hands on and its Studio
+  drawing (the topic named `sNN-jNN-…`), all read from disk on each open (JL 261022).
 - A Task's Runs are grouped by their card's `role:` (trial, make, fix, check,
   describe, figures, evidence, publish; else `run_type` main, figures,
   delivery), in that order, each role named once.

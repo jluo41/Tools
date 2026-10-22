@@ -190,6 +190,29 @@ def test_a_tasks_runs_group_by_role(board):
     assert content.index("r01_smoke") < content.index("r02_full") < content.index("r04_full_retry") < content.index("r03_figures_counts")
 
 
+def test_each_job_opens_with_its_own_overview_above_its_tasks(board):
+    """JL 261022: "在所有 task 上面 ... 点一下，然后 pop out ... 一个 markdown file"; "这个 markdown file 是 render 得好的"."""
+    root, block, job, task = board
+    run(task)
+    (task / "runs/r01_compare/result/table.csv").write_text("a\n1\n")
+    (job / "j01_tables.md").write_text("# j01 · Tables\n\ngoal: Every answer in one table.\nclose: The table is stored.\n\n"
+        "## Topic\n\nOne table of **answers**, one row each.\n\n## Background\n\n- **Why**: one place to read them\n\n"
+        "## Deliverables\n\n```yaml\ndeliverables:\n- what: \"Answers table\"\n  means: [One row per answer.]\n"
+        "  files: t01_answers/runs/r01_compare/result/*.csv\n  run: t01_answers/r01_compare\n```\n")
+    content = work_progress.goal_cards("Block", block, root, work_progress.snapshot("Block", block), "Audience Report")
+    row = content.index(">About this Job</a>")
+    assert row < content.index("t01_answers") and "view=work-about" in content[:row]     # a pop-out link, above the Tasks
+    assert 'data-pop="About · j01_tables"' in content
+    page = work_progress.render_about(job, root)                                         # the page it pops out
+    for words in ("<h1>🗂 j01 · Tables</h1>", "<b>Goal.</b> Every answer in one table.",
+                  "<b>Close when.</b> The table is stored.", "1 of 1 items delivered · 1 Tasks · Runs ✅ 1",
+                  "<th>Task</th>", "One table of <b>answers</b>", "<h2>Background</h2>",
+                  "<h2>What it hands on</h2>", "Answers table</b>: One row per answer."):
+        assert words in page, words
+    job_page = work_progress.goal_cards("Job", job, root, work_progress.snapshot("Job", job), "Audience Report")
+    assert "About this Job" not in job_page                                              # a Job page shows its goal on top
+
+
 def test_the_tree_folds_and_each_item_says_where_its_data_is(board):
     """JL 261020: "could I collapse them" and "show me where is the data to put"."""
     root, block, job, task = board

@@ -554,17 +554,121 @@ def level_head(icon, name, states, job=False):
             + chip(state, f"{TICKS[state] if state != 'todo' else '☐'} {tally(states)}" if states else "no deliverables listed"))
 
 
-def task_nodes(job, items, root, data, mode):
-    """A Job's deliverables under their Tasks, in folder order; one that names no Task sits under the Job itself."""
+def task_nodes(job, items, root, data, mode, about=False):
+    """A Job's deliverables under their Tasks, in folder order; one that names no Task sits under the Job itself.
+    With `about`, the Job's own overview row comes first, above its Tasks (job_about)."""
     states, html_ = items_nodes([i for i in items if not task_of(i)], root, data)
+    task_states = []
     for task in frame.children(job, "Job"):
         mine = [i for i in items if task_of(i) == task.name]
         if mine:
             got, kids = items_nodes(mine, root, data)
             states += got
+            task_states.append(group_state(got))
             html_ += node(level_head("📂", nav(task, root, mode, "Goal", e(task.name)), got), kids,
                           key="tree-" + frame.rel(task, root))
+    if about:
+        html_ = job_about(job, root, mode, states, task_states) + html_
     return states, html_
+
+
+def job_drawing(job, root):
+    """The Job's own Studio topic picture (a topic whose face names the Job, as s22-j02-…), and its link."""
+    block = frame.chain(job, root).get("Block")
+    topics = list(frame.studio_inventory(block, root)) if block else []
+    jnn = job.name.split("_")[0]
+    named = [t for t in topics if re.match(rf"^s\d\d-{jnn}-", t[1].name)]          # s22-j02-…, the Job's own topic
+    mention = [t for t in topics if not t[1].name.startswith("s00") and job.name in text_of(frame._notes(t[1]))]
+    for owner, topic, _ in named + mention:
+        png = topic / f"{topic.name}.png"
+        png = png if png.is_file() else next(iter(sorted(topic.glob("*.png"))), None)
+        if not png:
+            continue
+        url = frame.ROUTE + "?" + urlencode({"path": frame.rel(job, root), "studio": "1", "studio_group": "all"})
+        url += "#" + frame.studio_anchor(topic, owner, block)
+        return (f'<a href="{e(url)}"><img src="{file_url(png, root)}" alt="{e(topic.name)}" loading=lazy '
+                f'style="width:100%;max-width:900px;display:block"></a><div>{frame.link(url, topic.name)}</div>')
+    return ""
+
+
+def job_about(job, root, mode, states, task_states):
+    """The first row under a Job, above its Tasks: one line that pops out the Job's overview page (render_about)
+    (JL 261022: "在所有 task 上面 ... 点一下，然后 pop out ... 一个 markdown file"; "这个 markdown file 是 render 得好的")."""
+    url = frame.ROUTE + "?" + urlencode({"view": "work-about", "path": frame.rel(job, root)})
+    return node(f'📄 {frame.pop(url, f"About · {job.name}", "About this Job")}<span class=m>{e(goal(job)[:110])}</span>')
+
+
+def background_md(job):
+    """A face's `## Background` as Markdown pieces and drawn timelines, in order: ("md", text) or ("html", svg)."""
+    text = section(text_of(frame.face(job)), "Background")
+    out = []
+    for k, chunk in enumerate(re.split(r"^```[^\n]*\n(.*?)^```[ \t]*$", text, flags=re.M | re.S)):
+        if k % 2 == 0:
+            if chunk.strip():
+                out.append(("md", chunk))
+            continue
+        try:
+            spec = yaml.load(chunk, Loader=_LOADER)
+        except yaml.YAMLError:
+            spec = None
+        if isinstance(spec, dict) and isinstance(spec.get("timeline"), dict):
+            out.append(("html", f'<figure>{timeline_svg(spec["timeline"])}</figure>'))
+        else:
+            out.append(("md", f"```\n{chunk}```\n"))
+    return out
+
+
+def render_about(job, root):
+    """A Job's overview as one rendered Markdown page, for the pop-out: its goal and close line, its progress Task by
+    Task, its Topic, its Background, what it hands on, and its Studio drawing, all read from disk on each open."""
+    from live import page_reader
+    data = snapshot("Job", job)
+    fields, face = face_fields(job), text_of(frame.face(job))
+    title = next((l[2:].strip() for l in face.splitlines() if l.startswith("# ")), job.name)
+    items = deliverables(job)
+    states = {id(i): item_state(i, root, data)[0] for i in items}
+    tasks = frame.children(job, "Job")
+    rows = [r for t in tasks for r in records(t)]
+    done = [i for i in items if states[id(i)] == "done"]
+    md = [f"# {fields.get('emoji') or '🗂'} {title}", "", f"**Goal.** {goal(job)}", ""]
+    if fields.get("close"):
+        md += [f"**Close when.** {fields['close']}", ""]
+    md += ["## Progress", "", f"{len(done)} of {len(items)} items delivered · {len(tasks)} Tasks"
+           + (f" · Runs {run_tally(rows)}" if rows else ""), "", "| Task | What it delivers | Items | Runs |",
+           "|---|---|---|---|"]
+    for t in tasks:
+        mine = [i for i in items if task_of(i) == t.name]
+        st = group_state([states[id(i)] for i in mine]) if mine else "todo"
+        tick = "☐" if st == "todo" else TICKS[st]
+        url = frame.ROUTE + "?" + urlencode({"path": frame.rel(t, root), "space": "Audience Report", "sub": "Goal"})
+        what = (face_fields(t).get("goal") or "").replace("|", "/")
+        md.append(f"| {tick} [{t.name}]({url}) | {what} | {tally([states[id(i)] for i in mine]) if mine else '-'} | "
+                  f"{run_tally(records(t)) or '-'} |")
+    md.append("")
+    topic = section(face, "Topic")
+    if topic.strip():
+        md += ["## Topic", "", topic.strip(), ""]
+    html_ = page_reader.markdown_html("\n".join(md))
+    pieces = background_md(job)
+    if pieces:
+        html_ += page_reader.markdown_html("## Background")
+        html_ += "".join(page_reader.markdown_html(v) if k == "md" else v for k, v in pieces)
+    if items:
+        lines = ["## What it hands on", ""]
+        for i in items:
+            st = states[id(i)]
+            means = i.get("means")
+            first = (means[0] if isinstance(means, list) and means else str(means or "")).strip()
+            lines.append(f"- {'☐' if st == 'todo' else TICKS[st]} **{i['what']}**" + (f": {first}" if first else ""))
+        html_ += page_reader.markdown_html("\n".join(lines))
+    drawing = job_drawing(job, root)
+    if drawing:
+        html_ += page_reader.markdown_html("## Drawing") + drawing
+    back = nav(job, root, "Audience Report", "Goal", "Open the Job page")
+    return ('<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,'
+            f'initial-scale=1"><title>About · {e(job.name)}</title><style>{page_reader.MARKDOWN_CSS}'
+            'figure{margin:.6em 0}svg{max-width:100%;height:auto}td:nth-child(1),td:nth-child(3),td:nth-child(4){white-space:nowrap}'
+            f'</style></head><body><p class=md-file>{e(job.name)} · overview, read from disk · {back}</p>{html_}</body></html>')
 
 
 def timeline_svg(spec):
@@ -816,7 +920,7 @@ def goal_cards(level, folder, root, data, mode):
     if level == "Block":
         states, html_ = [], ""
         for job in frame.children(folder, "Block"):
-            got, kids = task_nodes(job, deliverables(job), root, data, mode)
+            got, kids = task_nodes(job, deliverables(job), root, data, mode, about=True)
             states += got
             icon = face_fields(job).get("emoji") or "🗂"
             html_ += node(level_head(icon, nav(job, root, mode, "Goal", e(job.name)), got, job=True), kids,
