@@ -166,6 +166,11 @@ Paper-<Slug>/
 └── delivery/                        → stays at Block; rebuild each version in delivery/jNN_v<N>_<desk>/
 then: rename_tasks.py <board> --date MMDD   the version dated, S-… → t0N_/t2N_, RD<NN>-… → reports/qNN_<kind>-<MMDD>/
 then: sweep_names.py <board> --apply        the old names out of draft/records/, draft/previous/ and Run tickets
+and, when a Section's words live only in its old Page-local delivery/latex/<stem>.tex (a carved manuscript):
+      import_fragments.py <board> --apply   each fragment into its Draft's § 3, one Bullet per line (content-format: latex)
+      page.py adopt <section> …             Content from the Draft
+      import_fragments.py <board> --verify  the LaTeX lane prints each fragment again, line for line
+      import_fragments.py <board> --retire  the old Page-local delivery/ leaves, so page.py export writes Block Delivery
 ```
 
 `migrate_paper.py` moves folders and keeps names; `rename_tasks.py` then renames each Page once (folder, face, plan

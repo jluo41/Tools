@@ -1,3 +1,22 @@
+## 1.17.1 · 2026-10-23 · Carry-over reuses a report already written; a carved Section's words move into its Draft
+
+- New `scripts/carry_over/import_fragments.py` (dry run, apply, verify, retire, rollback), found carrying
+  Paper-MessageTradeOffEgm onto the ladder: its 19 Sections kept their words only in an old Page-local
+  `delivery/latex/<stem>.tex` with no `% GENERATED from` mark, so `page.py export` refused to build Block Delivery and
+  the rename to `tNN_` would have orphaned them. It writes each Section a Draft (a division per `\section` or
+  `\subsection`, a paragraph per LaTeX paragraph, a Bullet per source line, § 3 as written, `content-format: latex`)
+  or fills a planned Draft's empty § 3 (the n-th sentence to the n-th Bullet, a comment or `\begin` line riding with
+  the next); `--verify` checks with md2tex's own reader that the LaTeX lane prints each fragment again; `--retire`
+  moves the old lane into the run's keep folder. On that Board all 19 rebuilt fragments equal the carved ones and the
+  assembled draft is 65 pages, as before. Test: `tests/test_import_fragments.py`. `ref/paper-ladder.md` names the step.
+
+- `scripts/carry_over/topics_paper.py` opened a second report for a question that already had one: a Board whose
+  `reports/q01_<name>/` said `answers: RQ1` before the carry-over got a new `q02_<name>/` for the same Question 1, and
+  every later question shifted by one. A report that already `answers:` a question of the current telling (`RQ1`,
+  `Q01`, `Question 1`) is now that question's report: the question takes its number, the report keeps its words and
+  folder, its `answers:` names the Board Question, and its links follow the move. Test:
+  `tests/test_carry_over.py::ReportAlreadyWrittenTest`.
+
 ## 1.17.0 · 2026-10-23 · A paper's work folder, its j21 display Job and the display plan
 
 - JL 261023: "for the paper, they will also have a work folder, one work folder to provide the content

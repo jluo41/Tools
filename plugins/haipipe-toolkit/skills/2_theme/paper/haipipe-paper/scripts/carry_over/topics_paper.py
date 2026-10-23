@@ -134,11 +134,24 @@ def plan(board):
     return {"current": current, "topics": topics, "loose": loose, "moves": moves, "map": mapping}
 
 
+def answered(board):
+    """{question number: report folder} for a report written before the carry-over that already answers a
+    telling's question (`answers: RQ1`, `Q01`, `Question 1`): the question takes that report, never a second one."""
+    out = {}
+    for p in sorted((board / "reports").glob("q[0-9][0-9]_*")):
+        m = re.search(r"(?m)^answers:\s*(?:RQ|Q|Question\s*)0*(\d+)\b", read(p / f"{p.name}.md"))
+        if m:
+            out.setdefault(int(m.group(1)), p.name)
+    return out
+
+
 def questions(board, P):
-    """[(qid, group, name, question, block, telling)]: each §3 question block, the current telling first."""
+    """[(qid, group, name, question, block, telling, report)]: each §3 question block, the current telling
+    first; report is the folder of a report that already answers it, else ''."""
     ordered = sorted(P["topics"].items(), key=lambda kv: (Path(kv[0]).name != P["current"], kv[0]))
     have = sorted(int(m.group(1)) for p in (board / "reports").glob("q[0-9][0-9]_*") for m in [re.match(r"q(\d{2})", p.name)])
     used, out = set(have), []
+    reuse = answered(board)
     for rel, topic in ordered:
         stem = Path(rel).name
         if IDEATION.match(stem):
@@ -150,10 +163,14 @@ def questions(board, P):
             # a question keeps the number its telling gave it (Question 3 -> Q03), so "Q3" in the Story's
             # tables and the meeting notes still names it; a number already taken gets the next free one
             own = QNUM.search(block.split("\n", 1)[0])
-            k = int(own.group(1)) if own and int(own.group(1)) not in used else max(used, default=0) + 1
+            report = reuse.pop(int(own.group(1)), "") if own and stem == P["current"] else ""
+            if report:                                 # its report is already written: the question takes its number
+                k = int(report[1:3])
+            else:
+                k = int(own.group(1)) if own and int(own.group(1)) not in used else max(used, default=0) + 1
             used.add(k)
             out.append((f"Q{k:02d}", Path(topic).name.split("-", 2)[-1], field(block, "Name") or f"Question {k}",
-                        field(block, "Question"), block, topic))
+                        field(block, "Question"), block, topic, report))
     return out
 
 
@@ -251,9 +268,14 @@ def rewrites(board, P, Q):
         new = f"{topic}/{name}.md"
         change[new] = (old, fix_links(text, old, new, board, mapping))
 
-    # each report, and its page.toml
+    # each report, and its page.toml; a report already written keeps its words and answers the Board Question
     for q in Q:
         r = rpath(q)
+        if q[6]:
+            rel = f"reports/{r}/{r}.md"
+            t = re.sub(r"(?m)^(answers:\s*).*$", lambda m: m.group(1) + q[0], read(board / rel), count=1)
+            change[rel] = (rel, fix_links(t, rel, rel, board, mapping))
+            continue
         create[f"reports/{r}/{r}.md"] = (
             f"# {q[2]}\nstate: ⬜ OPEN · moved from {Path(q[5]).name} §3 (b16 Q04); not answered yet\n"
             f"answers: {q[0]}\nanswer-status: open\n\n## Opening\n\n{q[3] or q[2]}\n\n"
@@ -339,7 +361,7 @@ def rewrites(board, P, Q):
 
 
 def rpath(q):
-    return f"q{q[0][1:]}_{snake(q[2])}"
+    return q[6] or f"q{q[0][1:]}_{snake(q[2])}"
 
 
 def yaml_s(s):

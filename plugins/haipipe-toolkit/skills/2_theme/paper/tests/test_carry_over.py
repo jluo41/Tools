@@ -137,5 +137,36 @@ class CarryOverTest(unittest.TestCase):
                       face)
 
 
+class ReportAlreadyWrittenTest(unittest.TestCase):
+    """A report written before the carry-over (`answers: RQ3`) is the question's report; no second one opens."""
+
+    def setUp(self) -> None:
+        self.tmp = tempfile.TemporaryDirectory()
+        b = self.board = Path(self.tmp.name) / "Paper-Demo"
+        write(b / "board.md", BOARD)
+        write(b / "A1-Story/Story00-ideation/Story00-ideation.md", "# Story00-ideation\n\n## Content\n")
+        write(b / "A1-Story/StoryA-desk-idea/StoryA-desk-idea.md", STORY)
+        write(b / "Ba-DESK-Main/S-DESK-Main-1-Introduction/S-DESK-Main-1-Introduction.md", SECTION)
+        write(b / "delivery/paper-build.toml", TOML)
+        write(b / "reports/q01_horizon/q01_horizon.md",
+              "# Question 3 · Horizon\nanswers: RQ3\n\n## Opening\n\nThe answer so far, "
+              "[from the Story](../../A1-Story/StoryA-desk-idea/StoryA-desk-idea.md).\n")
+        quiet(MIGRATE.main, [str(b), "--apply"])
+        quiet(TOPICS.main, [str(b), "--apply"])
+
+    def tearDown(self) -> None:
+        self.tmp.cleanup()
+
+    def test_the_question_takes_the_report_already_written(self) -> None:
+        reports = sorted(p.name for p in (self.board / "reports").iterdir())
+        self.assertEqual(reports, ["q00_the_tasks", "q01_horizon"])
+        text = (self.board / "reports/q01_horizon/q01_horizon.md").read_text()
+        self.assertIn("answers: Q01\n", text)
+        self.assertIn("The answer so far", text)                                # its words stay
+        self.assertIn("../../studio/s02-story-desk-idea/s02-story-desk-idea.md", text)
+        board = (self.board / "board.md").read_text()
+        self.assertIn("report: reports/q01_horizon/q01_horizon.md", board)
+
+
 if __name__ == "__main__":
     unittest.main()
