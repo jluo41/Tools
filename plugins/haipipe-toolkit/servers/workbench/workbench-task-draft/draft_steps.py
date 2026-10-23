@@ -191,7 +191,7 @@ def _marks(ev: dict) -> dict:
         for it in c["items"]:
             ink = INK["need"] if it["state"] != "have" else INK.get(c["kind"], INK["value"])
             sids = ["S" + str(n).lstrip("S") for n in it.get("for") or []] or ["*"]
-            for phrase in it.get("anchor") or []:
+            for phrase in map(str, it.get("anchor") or []):   # a bare number in YAML (3.35) reads as a float
                 _add_mark(out, phrase, ink, c["label"])
                 for sid in sids:
                     _add_mark(out.by_sentence.setdefault(sid, {}), phrase, ink, c["label"])
@@ -1420,11 +1420,12 @@ def _embed_displays(html: str, d: dict, xs, root: Path) -> str:
         m = first and re.search(r'<li data-s="' + re.escape(first) + r'">.*?</li>', html, re.S)
         if not m:
             continue
-        name = x["names"][0] if x.get("names") else x["title"]
+        # the name a reader knows (Table 2), never the LaTeX label (JL 261023: the box said "tab:online-ratings")
+        name = x.get("shown") or (x["names"][0] if x.get("names") else x["title"])
         if x.get("pic"):
             u = "/" + quote(_rel(x["pic"], root))
             fig = (f'<a href="{esc(u)}" target=_blank><img src="{esc(u)}" alt="{esc(name)}"></a>'
-                   f'<figcaption><b>{esc(name)}</b> · {esc(x.get("claim") or x["title"])}</figcaption>')
+                   f'<figcaption><b>{esc(name)}</b> · {esc(x.get("claim") or x.get("slug", "").replace("-", " ") or x["title"])}</figcaption>')
         elif x.get("pdf"):
             fig = f'<figcaption><b>{esc(name)}</b> · {_code(x["pdf"], root)}</figcaption>'
         else:
@@ -1642,8 +1643,19 @@ def _displays(folder: Path, d: dict | None) -> list:
                     "title": f"{u['shown']} · {words}" if u["shown"] else words,
                     "calls": sorted({s for n in names for s in calls[n]}, key=_s_key),
                     "ok": bool(u["accepted"]) and not u["accepted"].startswith("⬜")})
-    out += [{"label": name, "names": [name], "made": False, "title": name, "calls": ss, "ok": False}
-            for name, ss in calls.items() if name not in used]
+    # a label another Section of the same version owns (the Results text calls an eTable of the Supplement): shown from
+    # that Section's unit, not as "no unit" (JL 261023: the box said "tab:e-models · no unit in display/ yet")
+    others = [(t, u) for t in sorted(folder.parent.glob("t*")) if t.is_dir() and t != folder for u in _units(t)]
+    for name, ss in calls.items():
+        if name in used:
+            continue
+        hit = next(((t, u) for t, u in others if name in u["labels"] or (u["shown"] and name.lower() == u["shown"].lower())), None)
+        if hit:
+            t, u = hit
+            out.append({**u, "label": f"{u['shown'] or 'DISPLAY'} · {t.name}", "names": [name], "made": True,
+                        "title": u["shown"] or u["slug"].replace("-", " "), "calls": ss, "ok": bool(u["accepted"]) and not u["accepted"].startswith("⬜")})
+        else:
+            out.append({"label": name, "names": [name], "made": False, "title": name, "calls": ss, "ok": False})
     return out
 
 
@@ -2222,6 +2234,13 @@ CARDS_JS = """<script>
  document.addEventListener('mouseout',function(e){var c=e.target.closest&&e.target.closest('.rv-right .rv-card');
   if(c&&!c.contains(e.relatedTarget)&&!c.matches('.writing,.editing'))peekOff(c);});
  window.rvAlign=align;window.addEventListener('resize',align);window.addEventListener('load',align);setTimeout(align,60);
+ /* a display under its sentence opens over the page, not in a new tab (JL 261023: "pop out, not a new link") */
+ document.addEventListener('click',function(e){var i=e.target.closest&&e.target.closest('.disp-embed img');
+  if(!i||e.metaKey||e.ctrlKey||e.shiftKey)return;e.preventDefault();var b=document.createElement('div');
+  b.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(20,20,20,.82);display:flex;align-items:center;justify-content:center;cursor:zoom-out';
+  var g=document.createElement('img');g.src=i.src;g.style.cssText='max-width:96vw;max-height:94vh;background:#fff;border-radius:4px';
+  b.appendChild(g);var k=function(ev){if(ev.key==='Escape')x();};var x=function(){b.remove();document.removeEventListener('keydown',k);};
+  b.addEventListener('click',x);document.addEventListener('keydown',k);document.body.appendChild(b);},true);
  document.addEventListener('toggle',function(){setTimeout(align,0);},true);
  document.addEventListener('click',function(e){if(!e.target.closest||e.target.closest('[data-card-act],[data-note-act],.rv-edit,textarea,a,.rv-choice'))return;
   var c=e.target.closest('.rv-right .rv-card');if(c&&c.classList.contains('acc')){c.classList.remove('acc');}

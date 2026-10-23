@@ -15,6 +15,8 @@ import re
 import shutil
 import subprocess
 import os
+import sys
+from copy import deepcopy
 import tomllib
 from typing import Iterable
 
@@ -118,6 +120,7 @@ class Display:
     note: str = ""          # the float's \begin{flushleft} note, printed under a Word table (0.8.4)
     spans: list[list[int]] | None = None   # \multicolumn spans aligned with rows (0.8.4)
     header_rows: int = 1                   # rows above the first \midrule (0.8.4)
+    heading: str = ""                      # the caption's bold title (\textbf{...}); the rest is the legend (0.12.0)
 
 
 @dataclass
@@ -437,14 +440,14 @@ def latex_to_text(value: str) -> str:
     # below; that is how a table header printed "HDLD ( pp)" for "HDLD (\Delta pp)".
     value = TEX_SYMBOL.sub(lambda m: TEX_SYMBOLS[m.group(1)], value)
     replacements = {
-        "~": " ", r"\&": "&", r"\%": "%", r"\_": "_", r"\#": "#",
+        "~": " ", r"\&": "&", r"\%": "%", r"\_": "_", r"\#": "#", r"\$": "\ue000",   # a literal dollar survives the math-mode strip below
         r"\ ": " ", r"\,": " ", r"\;": " ", r"\!": " ",
         "``": '"', "''": '"', "---": "—", "--": "–",
     }
     for old, new in replacements.items():
         value = value.replace(old, new)
     value = re.sub(r"\\[A-Za-z]+\*?(?:\[[^\]]*\])?", "", value)
-    value = value.replace("{", "").replace("}", "").replace("$", "")
+    value = value.replace("{", "").replace("}", "").replace("$", "").replace("\ue000", "$")   # "\$134.5" printed "\134.5" (JL 261023)
     value = value.replace("^2", "²").replace("^3", "³")
     value = value.replace("kg/m2", "kg/m²")
     value = re.sub(r"\s+", " ", value)
@@ -669,6 +672,8 @@ def count_header_rows(block: str) -> int:
 def parse_display(block: str) -> Display:
     is_figure = bool(re.search(r"\\includegraphics(?:\[[^]]*\])?\{", block))
     caption = extract_command(block, "caption") or extract_command(block, "caption*")
+    bold = re.match(r"\s*\{?\s*\\textbf\s*(?=\{)", caption)
+    heading = latex_to_text(parse_group_at(caption, bold.end())[0]) if bold else ""
     label = extract_command(block, "label")
     notes = re.findall(r"\\begin\{flushleft\}(.*?)\\end\{flushleft\}", block, re.S)
     note = " ".join(latex_to_text(mark_emphasis(n)).strip() for n in notes if latex_to_text(n).strip())
@@ -683,14 +688,23 @@ def parse_display(block: str) -> Display:
             image_ref=image_ref,
             image_path=find_asset(image_ref) if image_ref else None,
             note=note,
+            heading=heading,
         )
     # A table note sits after the tabular in \begin{flushleft}...\end{flushleft}; the PDF
     # printed it and Word dropped it until 0.8.4 (JL 260928, MISQ official format has "Note." paragraphs).
     notes = re.findall(r"\\begin\{flushleft\}(.*?)\\end\{flushleft\}", block, re.S)
+    # 0.12.0: a note set in \parbox{\linewidth}{...} after the tabular (frame_displays.py writes this) was dropped too
+    end = max(block.rfind("\\end{tabular}"), block.rfind("\\end{tabularx}"))
+    if end >= 0:
+        for m in re.finditer(r"\\parbox(?:\[[^]]*\])?", block[end:]):
+            width = parse_group_at(block, end + m.end())
+            body = parse_group_at(block, width[1]) if width else None
+            if body:
+                notes.append(re.sub(r"\\(?:footnotesize|small|scriptsize|raggedright)\b", "", body[0]))
     note = " ".join(latex_to_text(mark_emphasis(n)).strip() for n in notes if latex_to_text(n).strip())
     return Display(kind="table", block=block, caption=latex_to_text(caption), label=label,
                    rows=parse_table_rows(block), note=note, spans=parse_table_spans(block),
-                   header_rows=count_header_rows(block))
+                   header_rows=count_header_rows(block), heading=heading)
 
 
 DISPLAY_PATTERN = re.compile(r"\\begin\{(figure\*?|table\*?)\}.*?\\end\{\1\}", re.S)
@@ -1148,12 +1162,29 @@ def mark_header_row(row) -> None:
     tr_pr.append(header)
 
 
+def add_caption(doc: Document, display: Display, title: str = "", *, compact: bool = False, keep_next: bool = False) -> None:
+    """JAMA caption (0.12.0, JL 261023 "the captions are too long"): "Table 1." and the title in bold, the legend after
+    it in plain type, single-spaced and a size smaller; it was one italic, double-spaced paragraph."""
+    full = display.caption.replace("\x0e", "").replace("\x0f", "").strip()
+    head = display.heading.replace("\x0e", "").replace("\x0f", "").strip()
+    if head and full.startswith(head):
+        legend = full[len(head):].strip()
+    else:
+        head, legend = full, ""
+    if not (title or head):
+        return
+    paragraph = doc.add_paragraph()
+    fmt = paragraph.paragraph_format
+    fmt.line_spacing, fmt.space_before, fmt.space_after, fmt.keep_with_next = 1.0, Pt(6), Pt(4), keep_next
+    lead = (f"{title}. " if title else "") + head
+    set_font(paragraph.add_run(lead.strip()), size=10 if compact else 11, bold=True)
+    if legend:
+        set_font(paragraph.add_run(" " + legend), size=9 if compact else 10)
+
+
 def add_table(doc: Document, display: Display, title: str = "", *, compact: bool = False) -> None:
     rows = display.rows or []
-    if title or display.caption:
-        caption = f"{title}. " if title else ""
-        caption += display.caption
-        add_text(doc, caption.strip(), size=10 if compact else 11, bold=True, style="Caption")
+    add_caption(doc, display, title, compact=compact, keep_next=True)
     if not rows:
         return
     cell_size = float(PROFILE_CONFIG.get("table_font_size", 8 if compact else 8.5))
@@ -1164,9 +1195,12 @@ def add_table(doc: Document, display: Display, title: str = "", *, compact: bool
     if sum(widths) > 9360:                     # a wide table runs into both margins evenly
         table.alignment = WD_TABLE_ALIGNMENT.CENTER
         table._tbl.tblPr.find(qn("w:tblInd")).set(qn("w:w"), "0")
-    if str(PROFILE_CONFIG.get("table_borders", "grid")).lower() == "horizontal":
-        set_horizontal_borders(table)   # MISQ official format: top, bottom and row rules, no vertical lines
-    header_fill = str(PROFILE_CONFIG.get("table_header_fill", "F2F4F7")).strip()
+    # 0.12.0 defaults (JL 261023 "why the color of the table is like this? we should not have it"; MISQ 260928 the
+    # same): no colour behind header rows and horizontal rules only, as journals print tables. A profile can still
+    # ask for table_borders = "grid" or a table_header_fill colour.
+    if str(PROFILE_CONFIG.get("table_borders", "horizontal")).lower() == "horizontal":
+        set_horizontal_borders(table)   # top, bottom and row rules, no vertical lines
+    header_fill = str(PROFILE_CONFIG.get("table_header_fill", "")).strip()
     heads = min(max(1, display.header_rows), len(rows))
     keep_together = len(rows) <= 25            # a short table moves to the next page whole
     for row_index, row in enumerate(rows):
@@ -1273,6 +1307,7 @@ def set_horizontal_borders(table) -> None:
 
 CODE_FONT = "Courier New"
 CODE_BOX_MARK = "verbatim"
+FLOAT_BOX_MARK = "haipipe-display-float"   # the borderless frame that floats a display to the top of its page
 
 
 def add_code_block(doc: Document, body: str, *, size: float = 9) -> None:
@@ -1335,7 +1370,8 @@ def ensure_asset(display: Display, name: str) -> Path | None:
     return target
 
 
-def add_figure(doc: Document, display: Display, title: str = "", *, compact: bool = False) -> None:
+def add_figure(doc: Document, display: Display, title: str = "", *, compact: bool = False,
+               max_height: float | None = None) -> None:
     base_name = title or Path(display.image_ref).stem or "figure"
     filename = re.sub(r"[^A-Za-z0-9._-]+", "-", base_name).strip("-") + ".png"
     image = ensure_asset(display, filename)
@@ -1347,14 +1383,104 @@ def add_figure(doc: Document, display: Display, title: str = "", *, compact: boo
     paragraph.paragraph_format.keep_with_next = True
     run = paragraph.add_run()
     shape = run.add_picture(str(image), width=Inches(6.1))
+    if max_height and shape.height > Inches(max_height):   # a floating display must fit one page with its caption
+        ratio = Inches(max_height) / shape.height
+        shape.height = Inches(max_height); shape.width = int(shape.width * ratio)
     alt = display.caption or title or display.image_ref
     shape._inline.docPr.set("descr", alt[:500])
     shape._inline.docPr.set("title", filename)
-    caption = f"{title}. " if title else ""
-    caption += display.caption
-    add_text(doc, caption.strip(), size=10 if compact else 11, style="Caption")
+    add_caption(doc, display, title, compact=compact)
     if display.note:
-        add_rich_text(doc, display.note, MATH_STORE, size=9 if compact else 10)
+        add_rich_text(doc, display.note, MATH_STORE, size=9 if compact else 10, line_spacing=1.0)
+
+
+def body_children(doc: Document) -> list:
+    """The body's block elements, without the closing section properties."""
+    return [el for el in doc.element.body if el.tag != qn("w:sectPr")]
+
+
+def float_display_to_top(doc: Document, start: int) -> None:
+    """Move what one display wrote (body elements from ``start`` on) into a borderless one-cell floating table pinned
+    to the top margin, like LaTeX's [t]: Word sets it at the top of the page where the text reaches it, and the text
+    of that page flows on below it (JL 261023: "for all the displays, they are at the top of the page")."""
+    moved = body_children(doc)[start:]
+    if not moved:
+        return
+    outer = doc.add_table(rows=1, cols=1)
+    tc = outer.cell(0, 0)._tc
+    for p in tc.findall(qn("w:p")):
+        tc.remove(p)
+    for el in moved:
+        tc.append(el)
+    if moved[-1].tag != qn("w:p"):            # a cell must end with a paragraph
+        tc.append(OxmlElement("w:p"))
+    tblPr = outer._tbl.tblPr
+    pos = OxmlElement("w:tblpPr")
+    for k, v in (("leftFromText", "0"), ("rightFromText", "0"), ("topFromText", "0"), ("bottomFromText", "240"),
+                 ("vertAnchor", "margin"), ("horzAnchor", "margin"), ("tblpXSpec", "center"), ("tblpYSpec", "top")):
+        pos.set(qn(f"w:{k}"), v)
+    tblPr.insert(0, pos)
+    overlap = OxmlElement("w:tblOverlap"); overlap.set(qn("w:val"), "never")
+    tblPr.append(overlap)
+    mark = OxmlElement("w:tblDescription"); mark.set(qn("w:val"), FLOAT_BOX_MARK)   # a frame, not a table: not counted
+    tblPr.append(mark)
+    borders = OxmlElement("w:tblBorders")
+    for side in ("top", "left", "bottom", "right", "insideH", "insideV"):
+        b = OxmlElement(f"w:{side}"); b.set(qn("w:val"), "nil"); borders.append(b)
+    old = tblPr.find(qn("w:tblBorders"))
+    if old is not None:
+        tblPr.remove(old)
+    tblPr.append(borders)
+    order = ["tblStyle", "tblpPr", "tblOverlap", "bidiVisual", "tblStyleRowBandSize", "tblStyleColBandSize", "tblW",
+             "jc", "tblCellSpacing", "tblInd", "tblBorders", "shd", "tblLayout", "tblCellMar", "tblLook", "tblCaption",
+             "tblDescription"]
+    rank = {qn(f"w:{n}"): i for i, n in enumerate(order)}
+    for child in sorted(list(tblPr), key=lambda c: rank.get(c.tag, len(order))):   # Word reads tblPr in schema order
+        tblPr.remove(child); tblPr.append(child)
+    set_cell_margins(outer.cell(0, 0), top=0, start=0, bottom=0, end=0)
+    cant_split(outer.rows[0])                 # Word split a floating Table 2 over two pages at odd rows
+    # the paragraph after a floating table anchors it; an empty one keeps two displays in a row from merging
+    anchor = doc.add_paragraph()
+    anchor.paragraph_format.space_after = Pt(0)
+    anchor.paragraph_format.line_spacing = 1.0
+    set_font(anchor.add_run(""), size=1)
+
+
+def break_before(doc: Document, start: int) -> None:
+    """Start what was written from body element ``start`` on a new page: its first paragraph gets "page break
+    before". A page-break paragraph after a full-page display spilled to the next page and left it blank."""
+    new = body_children(doc)[start:]
+    if not new:
+        return
+    if new[0].tag == qn("w:p"):
+        pPr = new[0].get_or_add_pPr()
+        node = OxmlElement("w:pageBreakBefore")
+        pPr.insert(0, node)
+        return
+    para = OxmlElement("w:p"); pPr = OxmlElement("w:pPr"); pPr.append(OxmlElement("w:pageBreakBefore")); para.append(pPr)
+    new[0].addprevious(para)
+
+
+def display_is_full_page(display: Display) -> bool:
+    """A display that needs most of a page. Word cannot hold such a float back for the next page the way LaTeX does,
+    and it splits a tall floating table at odd rows, so a full-page display gets a page of its own instead."""
+    if display.kind == "table":
+        return len(display.rows or []) > int(PROFILE_CONFIG.get("display_float_max_rows", 25))
+    image = display.image_path
+    if image is None:
+        return False
+    try:
+        if image.suffix.lower() == ".pdf":   # the page size pdfinfo prints: "Page size: 504 x 612 pts"
+            size = re.search(r"Page size:\s+([\d.]+) x ([\d.]+)",
+                             subprocess.run(["pdfinfo", str(image)], capture_output=True, text=True).stdout)
+            w, h = float(size.group(1)), float(size.group(2))
+        else:
+            from PIL import Image
+            with Image.open(image) as im:
+                w, h = im.size
+    except Exception:
+        return False
+    return 6.1 * h / max(w, 1) > float(PROFILE_CONFIG.get("display_float_max_inches", 5.5))
 
 
 def add_events(doc: Document, events: Iterable[Event], *, include_displays: bool = True, compact: bool = False,
@@ -1369,7 +1495,13 @@ def add_events(doc: Document, events: Iterable[Event], *, include_displays: bool
         prefixes = {"table": str(PROFILE_CONFIG.get("main_table_prefix", "Table ")),
                     "figure": str(PROFILE_CONFIG.get("main_figure_prefix", "Figure "))}
     letter = 0
+    # a full-page display ends its page: whatever follows starts the next one (page break before, never a break
+    # paragraph after, which spilled onto a blank page when the display filled its page; JL 261023)
+    break_next = False
     for event in events:
+        start = len(body_children(doc))
+        new_page = break_next
+        break_next = False
         if event.kind == "heading":
             title = str(event.value)
             if appendix_letters and event.level == 1:
@@ -1399,10 +1531,296 @@ def add_events(doc: Document, events: Iterable[Event], *, include_displays: bool
                 if number_displays:
                     counters[display.kind] += 1
                     title = f"{prefixes[display.kind]}{counters[display.kind]}"
+                # display_own_page (profile): each main or supplement display alone on its page (JL 261023).
+                # display_float (profile, default "top"): a display floats to the top of the page the text reaches it
+                # on, like LaTeX's [t]; one that needs most of a page gets a page of its own instead, because Word
+                # cannot hold a float back for the next page. "inline" keeps each display where its paragraph ends.
+                float_top = str(PROFILE_CONFIG.get("display_float", "top")).lower() == "top"
+                full_page = float_top and display_is_full_page(display)
+                own_page = bool(PROFILE_CONFIG.get("display_own_page", False)) or full_page
+                if float_top and not PROFILE_CONFIG.get("display_own_page") and word_can_measure():
+                    # held: placed at the top of the next page after its citing paragraph once Word has laid the
+                    # text out (save_docx), so the text fills the page before it, as LaTeX does (JL 261023: "why you
+                    # don't put the following paragraphs to fill this margin?"). Floating boxes, the fallback below,
+                    # overlapped when two landed on one page.
+                    HELD.setdefault(id(doc), []).append({"anchor": last_text_paragraph(doc), "display": display,
+                                                         "title": title, "compact": compact, "full_page": full_page})
+                    break_next = new_page
+                    continue
+                new_page = new_page or own_page
                 if display.kind == "table":
                     add_table(doc, display, title, compact=compact)
                 else:
-                    add_figure(doc, display, title, compact=compact)
+                    add_figure(doc, display, title, compact=compact, max_height=6.4 if own_page else None)
+                if float_top and not own_page:
+                    float_display_to_top(doc, start)
+                break_next = own_page
+        if new_page:
+            break_before(doc, start)
+
+
+# ---- full-page displays held for the next page (0.12.0) -------------------------------------------------------
+# Word cannot hold a display back while the text keeps filling the page, the way LaTeX does with a [p] float. So a
+# display that needs a whole page is left out at first; Microsoft Word lays the document out and reports where the
+# page that holds the citing paragraph ends; the display is then put at that boundary on a page of its own, splitting
+# the paragraph that crosses it, and the text goes on after it. Without Word (no Mac, a test) it prints at once.
+MSWORD_APP = Path("/Applications/Microsoft Word.app")
+WORD_BOX = Path.home() / "Library" / "Containers" / "com.microsoft.Word" / "Data" / "Documents" / "haipipe-measure"
+HELD: dict[int, list[dict]] = {}
+
+
+def word_can_measure() -> bool:
+    return (sys.platform == "darwin" and MSWORD_APP.exists() and os.environ.get("HAIPIPE_WORD_PREVIEW") != "html"
+            and "PYTEST_CURRENT_TEST" not in os.environ)
+
+
+def element_text(el) -> str:
+    return "".join(node.text or "" for node in el.iter(qn("w:t")))
+
+
+def last_text_paragraph(doc: Document):
+    for el in reversed(body_children(doc)):
+        if el.tag == qn("w:p") and len(element_text(el).strip()) >= 25:
+            return el
+    return None
+
+
+def _squash(text: str) -> tuple[str, list[int]]:
+    """the text without whitespace, and for each kept character its index in the original"""
+    keep = [(c, i) for i, c in enumerate(text) if not c.isspace()]
+    return "".join(c for c, _ in keep), [i for _, i in keep]
+
+
+def _applescript_string(text: str) -> str:
+    return '"' + text.replace("\\", "\\\\").replace('"', '\\"') + '"'
+
+
+def word_running() -> bool:
+    return subprocess.run(["pgrep", "-x", "Microsoft Word"], capture_output=True).returncode == 0
+
+
+def word_page_boundaries(path: Path, anchors: list[str]) -> list[str | None]:
+    """For each anchor ("E|text": the page the text ends on; "S|text": the page it starts on), the ~120 characters
+    Word lays out just before the end of that page (paragraph marks as <P>, cell marks as <C>), or None."""
+    WORD_BOX.mkdir(parents=True, exist_ok=True)
+    copy = WORD_BOX / path.name
+    shutil.copy2(path, copy)
+    finds = ", ".join(_applescript_string(a[:2] + a[2:].replace("^", "^^")) for a in anchors)
+    script = f"""
+on rep(t, a, b)
+  set AppleScript's text item delimiters to a
+  set xs to text items of t
+  set AppleScript's text item delimiters to b
+  set r to xs as text
+  set AppleScript's text item delimiters to ""
+  return r
+end rep
+tell application "Microsoft Word"
+  set d to open file name "{copy}"
+  repaginate d
+  set n to end of content of text object of d
+  set out to ""
+  repeat with a in {{{finds}}}
+   try
+    home key selection move unit a story
+    set q to a as text
+    set mode to text 1 thru 1 of q
+    set q to text 3 thru -1 of q
+    if (execute find (find object of selection) find text q match case true wrap find find stop with match forward) then
+      if mode is "S" then
+        set fe to selection start of selection
+      else
+        set fe to selection end of selection
+      end if
+      set pe to ((get range information (create range d start fe end fe) information type active end page number) as integer)
+      set lo to fe
+      set hi to n
+      if ((get range information (create range d start (hi - 1) end (hi - 1)) information type active end page number) as integer) > pe then
+        repeat while hi - lo > 1
+          set m to (lo + hi) div 2
+          if ((get range information (create range d start m end m) information type active end page number) as integer) > pe then
+            set hi to m
+          else
+            set lo to m
+          end if
+        end repeat
+        set s to hi - 120
+        if s < 0 then set s to 0
+        set bt to content of (create range d start s end hi)
+        set bt to my rep(my rep(bt, return, "<P>"), (ASCII character 7), "<C>")
+        set out to out & "OK" & tab & bt & linefeed
+      else
+        set out to out & "END" & linefeed
+      end if
+    else
+      set out to out & "MISS" & linefeed
+    end if
+   on error e
+    set out to out & "ERR " & e & linefeed
+   end try
+  end repeat
+  close d saving no
+end tell
+return out
+"""
+    try:
+        r = subprocess.run(["osascript", "-e", script], capture_output=True, text=True, timeout=600)
+    finally:
+        copy.unlink(missing_ok=True)
+    if r.returncode != 0:
+        print(f"Word could not lay out {path.name}: {r.stderr.strip()[:300]}", file=sys.stderr)
+        return [None] * len(anchors)
+    lines = [ln for ln in r.stdout.split("\n") if ln.strip()]
+    for ln in lines:
+        if not ln.startswith("OK\t"):
+            print(f"Word page end for {path.name}: {ln[:200]}", file=sys.stderr)
+    found = [ln.split("\t", 1)[1] if ln.startswith("OK\t") else None for ln in lines]
+    return (found + [None] * len(anchors))[:len(anchors)]
+
+
+def set_page_break_before(el) -> None:
+    if el is None:
+        return
+    if el.tag == qn("w:p"):
+        pPr = el.find(qn("w:pPr"))
+        if pPr is None:
+            pPr = OxmlElement("w:pPr"); el.insert(0, pPr)
+        if pPr.find(qn("w:pageBreakBefore")) is None:
+            pPr.insert(0, OxmlElement("w:pageBreakBefore"))
+        return
+    para = OxmlElement("w:p"); pPr = OxmlElement("w:pPr"); pPr.append(OxmlElement("w:pageBreakBefore")); para.append(pPr)
+    el.addprevious(para)
+
+
+def split_paragraph(p_el, offset: int):
+    """Split a body paragraph after `offset` characters of its text; the second part carries on the same paragraph
+    (no first-line indent) and is returned."""
+    new_p = OxmlElement("w:p")
+    pPr = p_el.find(qn("w:pPr"))
+    if pPr is not None:
+        new_pPr = deepcopy(pPr)
+        ind = new_pPr.find(qn("w:ind"))
+        if ind is None:
+            ind = OxmlElement("w:ind"); new_pPr.append(ind)
+        ind.set(qn("w:firstLine"), "0")
+        if ind.get(qn("w:hanging")) is not None:
+            del ind.attrib[qn("w:hanging")]
+        new_p.append(new_pPr)
+    else:
+        new_pPr = OxmlElement("w:pPr"); ind = OxmlElement("w:ind"); ind.set(qn("w:firstLine"), "0")
+        new_pPr.append(ind); new_p.append(new_pPr)
+    count, moving = 0, False
+    for child in [c for c in p_el if c.tag != qn("w:pPr")]:
+        if moving:
+            new_p.append(child)
+            continue
+        text = element_text(child)
+        if count + len(text) <= offset:
+            count += len(text)
+            continue
+        k = offset - count
+        if child.tag == qn("w:r") and 0 < k < len(text):
+            tail = deepcopy(child)
+            ts, tail_ts = child.findall(qn("w:t")), tail.findall(qn("w:t"))
+            if len(ts) == 1:
+                ts[0].text = text[:k]
+                tail_ts[0].text = text[k:].lstrip()
+                for node in (ts[0], tail_ts[0]):
+                    node.set("{http://www.w3.org/XML/1998/namespace}space", "preserve")
+                new_p.append(tail)
+                moving = True
+                continue
+        new_p.append(child)   # the split falls at this child's start
+        moving = True
+    p_el.addnext(new_p)
+    return new_p
+
+
+def boundary_target(anchor, before: str | None):
+    """The body element a held display goes in front of, splitting a paragraph when the page ends inside it."""
+    if anchor is None or before is None:
+        return None
+    following = [anchor]
+    while following[-1].getnext() is not None and following[-1].getnext().tag != qn("w:sectPr"):
+        following.append(following[-1].getnext())
+    at_par_start = before.endswith("<P>") or before.endswith("<C>")
+    segments = [s for s in re.split(r"<P>|<C>", before) if s.strip()]
+    if not segments:
+        return None
+    seg, _ = _squash(segments[-1])
+    if len(seg) < 8:
+        return None
+    for el in following:
+        squashed, index = _squash(element_text(el))
+        if at_par_start:
+            if el.tag == qn("w:p") and squashed.endswith(seg):
+                return el.getnext()
+        elif el.tag == qn("w:p"):
+            pos = squashed.find(seg)
+            if pos >= 0:
+                end = index[pos + len(seg) - 1] + 1
+                if end >= len(element_text(el).rstrip()):
+                    return el.getnext()
+                return split_paragraph(el, end)
+    return None
+
+
+def _body_index(el) -> int:
+    body = el.getparent()
+    return list(body).index(el) if body is not None else -1
+
+
+def save_docx(doc: Document, path: Path) -> None:
+    """Save; then place each held display, in order, at the top of the page after the one its citing paragraph ends
+    on, as Microsoft Word lays the document out, and save again. A display cited before the end of the one placed
+    just before it goes to the page after that one, so the order of the displays and their citations holds."""
+    doc.save(path)
+    held = HELD.pop(id(doc), [])
+    if not held:
+        return
+    was_running, placed, last = word_running(), 0, None
+    try:
+        for h in held:
+            anchor, mode = h["anchor"], "E"
+            if last is not None and (anchor is None or _body_index(anchor) < _body_index(last)):
+                anchor, mode = last.getnext(), "S"     # after the display placed just before
+                while anchor is not None and not (anchor.tag == qn("w:p") and len(element_text(anchor).strip()) >= 25):
+                    anchor = anchor.getnext()
+            target = None
+            if anchor is not None:
+                text = element_text(anchor).strip()
+                snippet = text[:50] if mode == "S" else text[-60:]
+                doc.save(path)
+                before = word_page_boundaries(Path(path), [f"{mode}|{snippet}"])[0]
+                target = boundary_target(anchor, before)
+                placed += target is not None
+                if target is None:                   # Word could not say: right after the citing paragraph
+                    target = anchor.getnext()
+            start = len(body_children(doc))
+            display = h["display"]
+            if display.kind == "table":
+                add_table(doc, display, h["title"], compact=h["compact"])
+            else:
+                add_figure(doc, display, h["title"], compact=h["compact"], max_height=6.4 if h["full_page"] else None)
+            moved = body_children(doc)[start:]
+            if target is not None and target.tag != qn("w:sectPr"):
+                for el in moved:
+                    target.addprevious(el)
+                # a figure that fills its page sends the text on to the next page; after a table, or a short
+                # figure, the text goes on below it
+                if h["full_page"] and display.kind != "table":
+                    set_page_break_before(target)
+            set_page_break_before(moved[0])
+            last = moved[-1]
+    finally:
+        if not was_running and word_running():
+            subprocess.run(["osascript", "-e", 'tell application "Microsoft Word" to quit saving no'], capture_output=True)
+            for _ in range(40):   # wait until Word has gone, or the preview step takes it for the user's own Word
+                if not word_running():
+                    break
+                import time; time.sleep(0.25)
+    doc.save(path)
+    print(f"{Path(path).name}: {len(held)} display(s) placed at the top of a page; {placed} where Word ended the page")
 
 
 def add_supplement_contents(doc: Document, events: list[Event]) -> None:
@@ -1754,7 +2172,7 @@ def write_section_snapshots(section_specs: list[tuple[str, str]], running_title:
         add_title_page(doc, label, running_title, word_count(events), 0, 0, "Authors hidden for review")
         add_events(doc, events, include_displays=True)
         output_name = source_name.replace("_", "-").replace(".tex", ".docx")
-        doc.save(DRAFT_SECTION_ROOM / output_name)
+        save_docx(doc, DRAFT_SECTION_ROOM / output_name)
         written.add(output_name)
     # the folder is regenerated whole: a snapshot no section makes any more (a renamed Section's old name) goes
     for stale in DRAFT_SECTION_ROOM.glob("*.docx"):
@@ -1949,7 +2367,11 @@ def build_jama_internal_medicine(raw_master: str, evidence: dict[str, object]) -
     add_jama_title_page(main_doc, title, author, word_count(main_events), len(main_tables), len(main_figures), evidence)
     if key_points:
         labelled_blocks(main_doc, str(PROFILE_CONFIG.get("key_points_heading", "KEY POINTS")), key_points)
+    if key_points and bool(PROFILE_CONFIG.get("abstract_new_page", False)):   # the Abstract starts a page (JL 261023)
+        main_doc.add_page_break()
     labelled_blocks(main_doc, str(PROFILE_CONFIG.get("abstract_heading", "ABSTRACT")), abstract)
+    if bool(PROFILE_CONFIG.get("abstract_own_page", False)):   # the text starts on a new page after the keywords (JL 261023)
+        main_doc.add_page_break()
     include = bool(PROFILE_CONFIG.get("include_main_displays", False))
     at_end = bool(PROFILE_CONFIG.get("main_displays_at_end", False))   # JAMA: tables, then figures, after the references
     add_events(main_doc, main_events, include_displays=include and not at_end, number_displays=True, main_numbering=True)
@@ -1960,7 +2382,7 @@ def build_jama_internal_medicine(raw_master: str, evidence: dict[str, object]) -
             for number, display in enumerate([d for d in main_displays if d.kind == kind], start=1):
                 main_doc.add_page_break()
                 adder(main_doc, display, f"{prefix}{number}")
-    main_doc.save(MAIN_PATH)
+    save_docx(main_doc, MAIN_PATH)
 
     supp_doc = Document()
     configure_document(supp_doc, body_size=11, line_spacing=1.5)
@@ -1973,7 +2395,7 @@ def build_jama_internal_medicine(raw_master: str, evidence: dict[str, object]) -
     add_events(supp_doc, supplement_events, include_displays=True, compact=True)
     if PROFILE_CONFIG.get("supplement_font"):
         restyle_runs(supp_doc, str(PROFILE_CONFIG["supplement_font"]), float(PROFILE_CONFIG.get("supplement_body_size", 10)))
-    supp_doc.save(SUPP_PATH)
+    save_docx(supp_doc, SUPP_PATH)
 
     pdf_report = render_submission_pdfs()
     write_common_receipts(main_events, main_displays, supplement_events, title, evidence, pdf_report)
@@ -2047,7 +2469,8 @@ def build() -> tuple[Path, Path]:
     configure_document(main_doc)
     add_title_page(main_doc, title, running_title, word_count(main_events), len(main_tables), len(main_figures), author)
     add_abstract(main_doc, abstract)
-    if _front_matter_on_one_page():
+    # abstract_own_page (profile): the abstract and keywords end their page and the text starts on a new one (JL 261023)
+    if _front_matter_on_one_page() or bool(PROFILE_CONFIG.get("abstract_own_page", False)):
         main_doc.add_page_break()
     # An empty heading is a defect, not a section: the MISQ build printed
     # "ARTICLE HIGHLIGHTS" with nothing under it, because the heading was
@@ -2085,7 +2508,7 @@ def build() -> tuple[Path, Path]:
     if appendices_in_main:
         add_events(main_doc, supplement_events, include_displays=True, number_displays=True,
                    appendix_letters=True)
-    main_doc.save(MAIN_PATH)
+    save_docx(main_doc, MAIN_PATH)
     if appendices_in_main:
         for stale in (SUPP_PATH, SUPP_PDF_PATH):
             if stale.exists():
@@ -2102,7 +2525,7 @@ def build() -> tuple[Path, Path]:
     supp_doc.add_page_break()
     add_events(supp_doc, supplement_events, include_displays=True, compact=True, number_displays=True,
                appendix_letters=True)
-    supp_doc.save(SUPP_PATH)
+    save_docx(supp_doc, SUPP_PATH)
 
     pdf_report = render_submission_pdfs()
     write_common_receipts(main_events, main_displays, supplement_events, running_title, evidence, pdf_report)
@@ -2130,7 +2553,8 @@ def docx_table_count(path: Path) -> int:
     import zipfile
     with zipfile.ZipFile(path) as z:
         xml = z.read("word/document.xml").decode("utf-8", "replace")
-    return xml.count("<w:tbl>") - xml.count(f'<w:tblDescription w:val="{CODE_BOX_MARK}"/>')
+    return (xml.count("<w:tbl>") - xml.count(f'<w:tblDescription w:val="{CODE_BOX_MARK}"/>')
+            - xml.count(f'<w:tblDescription w:val="{FLOAT_BOX_MARK}"/>'))   # 0.12.0: the frame of a floated display
 
 
 def record_tables_rendered(report: dict) -> None:

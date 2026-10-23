@@ -419,6 +419,15 @@ def test_profile_latex_switches_reach_the_master(paper, monkeypatch):
     assert "\\maketitle\n\\thispagestyle{empty}\n\\clearpage" in master
 
 
+def test_a_display_page_starts_at_the_top_by_default(paper, monkeypatch):
+    """float_page = "top" is the default; "center" is the expect-fail side (LaTeX's own centring)."""
+    _, master = _assemble(paper)
+    assert "\\setlength{\\@fptop}{0pt}" in master and "\\setlength{\\@fpbot}{0pt plus 1fil}" in master
+    monkeypatch.setattr(paper, "LATEX_FLOAT_PAGE", "center")
+    _, master = _assemble(paper)
+    assert "\\@fptop" not in master
+
+
 def test_misq_profile_ships_with_the_latex_table():
     import tomllib
     prof = tomllib.loads((ENGINE.parents[1] / "profiles" / "misq.toml").read_text())

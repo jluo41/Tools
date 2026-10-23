@@ -53,13 +53,14 @@ levels:
       workflow: "workflow/ at a Job is not in the ladder"
   task:
     may_hold: [studio, reports, delivery, scripts, draft, evidence, display, displays, notebooks, tests,
-               workflow, sbatch, runs, _old]       # sbatch/: this Task's own supervisor (haipipe-task);
-                                                   # draft/ evidence/ display/: a draft Task (haipipe-draft, 261016)
+               workflow, sbatch, runs, review, _old]   # sbatch/: this Task's own supervisor (haipipe-task);
+                                                   # draft/ evidence/ display/: a draft Task (haipipe-draft, 261016);
+                                                   # review/: a display Task's revise-loop rounds, rNN.md (haipipe-display)
     debt:
       results: "old layout: results/<run>/ moves into runs/<run>/result/"
       diagram: "diagram/ is retired: drawings go in studio/"
   run:
-    may_hold: [result, passes, run.yaml, config.yaml]
+    may_hold: [result, passes, run.yaml, config.yaml, config.do]   # config.do: a Stata Run (haipipe-task-for-stata)
 
 names:
   block: '^(b\d{2}_[A-Za-z0-9][A-Za-z0-9_-]*|Paper-[A-Za-z0-9][A-Za-z0-9-]*)$'   # a paper Board: Paper-<Slug>/

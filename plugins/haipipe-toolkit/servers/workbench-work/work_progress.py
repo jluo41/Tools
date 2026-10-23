@@ -1370,10 +1370,31 @@ def role_nodes(task, rows, root):
     return out
 
 
+def task_picture(task, rows):
+    """The picture a Task's newest finished Run drew: its preview.png (a display Run's table or figure), else its first
+    .png; None when it drew none."""
+    for row in sorted(rows, key=lambda r: str(r["receipt"].get("finished_at") or ""), reverse=True):
+        if state_of(row) != "finished":
+            continue
+        res = task / "runs" / row["run"] / "result"
+        res = res if res.is_dir() else task / "results" / row["run"]
+        found = sorted(res.glob("*.png")) if res.is_dir() else []
+        pick = next((f for f in found if f.name == "preview.png"), found[0] if found else None)
+        if pick:
+            return pick
+    return None
+
+
 def task_run_node(task, rows, root, mode):
     head = (f'<span class=lvl>📂 {nav(task, root, mode, "Execution", e(task.name))}</span>'
             f'<span class=chip>{runs_n(len(rows))}  {e(run_tally(rows))}</span>')
-    return node(head, role_nodes(task, rows, root) or "<li class=m>No Runs yet.</li>", key="runs-" + frame.rel(task, root))
+    # the Task's picture shows on its folded line (JL 261023: "why I cannot see the images shown by default?")
+    pic = task_picture(task, rows)
+    below = (f'<a href="{file_url(pic, root)}" target=_blank rel=noopener><img src="{file_url(pic, root)}" alt="{e(pic.name)}" '
+             'loading=lazy style="display:block;max-width:min(100%,760px);max-height:260px;margin:4px 0 8px;'
+             'border:1px solid var(--line,#e3e3e6)"></a>') if pic else ""
+    return node(head, role_nodes(task, rows, root) or "<li class=m>No Runs yet.</li>", key="runs-" + frame.rel(task, root),
+                below=below)
 
 
 def status_tree(level, folder, root, data, mode):
@@ -1504,6 +1525,25 @@ def results_view(level, folder, root, data, mode, theme):
     return body + card("❓ Questions and reports", frame.report_view(level, folder, root, theme), key="questions")
 
 
+# A picture opens over the page, not in a new tab (JL 261023: "pop out, not a new link"). One listener on the document,
+# so it keeps working after the 20-second refresh swaps the section; Cmd/Ctrl-click still opens the file in a tab.
+ZOOM = """<style>.wz-pop{position:fixed;inset:0;z-index:9999;background:rgba(20,20,20,.82);display:flex;align-items:center;
+justify-content:center;cursor:zoom-out}.wz-pop img{max-width:96vw;max-height:94vh;background:#fff;box-shadow:0 6px 30px #0008;
+border-radius:4px}.workflow-view img,figure img,a[href$='.png'] img{cursor:zoom-in}</style><script>(function(){
+if(window.__wzPop)return;window.__wzPop=1;const pic=/\\.(png|jpe?g|gif|svg|webp)(\\?|#|$)/i;
+document.addEventListener('click',ev=>{
+ const img=ev.target.closest&&ev.target.closest('img');if(!img||img.closest('.wz-pop'))return;
+ if(ev.metaKey||ev.ctrlKey||ev.shiftKey||ev.button)return;
+ const a=img.closest('a'),href=a?a.getAttribute('href')||'':'';
+ if(a?!pic.test(href):!img.closest('.workflow-view,figure'))return;
+ ev.preventDefault();const box=document.createElement('div');box.className='wz-pop';
+ const big=document.createElement('img');big.src=a?a.href:img.src;big.alt=img.alt;box.appendChild(big);
+ const close=()=>{box.remove();document.removeEventListener('keydown',key)};
+ const key=e=>{if(e.key==='Escape')close()};box.addEventListener('click',close);document.addEventListener('keydown',key);
+ document.body.appendChild(box);
+});})();</script>"""
+
+
 REFRESH = """<script>(function(){
 let timer;const selector='[data-work-progress]';
 async function refresh(){
@@ -1565,7 +1605,7 @@ def spaces(level, folder, root, sub, theme):
         timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
         stamp = f'<p class=mut data-work-refresh>Last read at {timestamp} · Refreshes every 20 seconds</p>' if live else ''
         body = re.sub(r"<table(?=[\s>])", "<div class=work-table-scroll><table", body).replace('</table>', '</table></div>')   # every table, classed or not, so each wrap closes
-        body = f'<section class=workflow-view data-work-progress="{e(selected)}">{stamp}{body}</section>' + (REFRESH if live else '')
+        body = f'<section class=workflow-view data-work-progress="{e(selected)}">{stamp}{body}</section>' + (REFRESH if live else '') + ZOOM
         label, verb = {"Goal": ("Define the goal and completion criteria", "plan"), "Plan": ("Create a run plan", "plan"),
                        "Execution": ("Execute the plan", "execute"), "Results": ("Write the result interpretation", "report")}[selected]
         prompt = (f"/haipipe-task {verb} {{folder}}" if level == "Task" else
@@ -1590,7 +1630,7 @@ def spaces(level, folder, root, sub, theme):
         head, fields = desc.split("<table", 1) if "<table" in desc else (desc, "")
         out["Description"] = frame.Space(html=head + goal_cards(level, folder, root, data, "Audience Report")
                                          + status_board(level, folder, root, data)
-                                         + (part("Face fields") + "<table" + fields if fields else "") + REFRESH)
+                                         + (part("Face fields") + "<table" + fields if fields else "") + REFRESH + ZOOM)
     return out
 
 
@@ -1858,7 +1898,7 @@ def render_run(folder, root, name):
     body += data_section(row, root) + outputs(files, root)
     body += '<details data-work-key=passes><summary>Passes · Execution attempts within this Run</summary><pre>' + e(show(card.get("passes"))) + '</pre></details>'
     stamp = '<p class=mut data-work-refresh>Last read at ' + datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC') + ' · Refreshes every 20 seconds</p>'
-    body = '<section class=workflow-view data-work-progress=Run>' + stamp + body + '</section>' + REFRESH
+    body = '<section class=workflow-view data-work-progress=Run>' + stamp + body + '</section>' + REFRESH + ZOOM
     return ('<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">'
             '<title>' + e(title) + '</title><style>' + frame.CSS + frame.WORK_CSS
             + '</style></head><body><main>' + body + '</main></body></html>')

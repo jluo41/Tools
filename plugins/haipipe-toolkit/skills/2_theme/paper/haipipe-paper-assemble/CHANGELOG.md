@@ -1,3 +1,41 @@
+## 0.12.0 · 2026-10-23 · displays where the reader meets them (Paper-AgreeableOpioid-Jama)
+
+- `[latex] float_page` (new, default `"top"`): a display alone on its page starts at the top of the page; LaTeX
+  centred it before (JL 261023: "make this as the default"). `"center"` keeps the old placement; test
+  `test_a_display_page_starts_at_the_top_by_default` has both sides.
+- `[latex] display_page`: each table or figure gets a float page of its own (`[p]`) with no `\clearpage`, so the text
+  keeps filling its page and no half-empty page sits before a display (JL: "we don't want this large margin").
+- `[latex] display_at_first_ref`: `weave_floats()` moves each `\input{displays/<key>/float}` to after the paragraph
+  that first `\ref`s one of its labels, instead of the end of the Section.
+- `[latex] abstract_new_page`: the Abstract starts a page after the Key Points.
+- Word lane (`latex_room_to_docx.py`): `abstract_own_page` breaks the page after the keywords; `display_own_page`
+  puts each display on its page without a blank page between two displays; superscript citations move after a
+  period or comma (AMA); a literal `\$` no longer prints as `\134`.
+- Word lane `display_float` (new profile key, default `"top"`): each display floats to the top of the page the text
+  reaches it on, in a borderless one-cell frame (`w:tblpPr`, top margin), like LaTeX's `[t]`; a display that needs
+  most of a page (a table over `display_float_max_rows` = 25 rows, a figure taller than `display_float_max_inches`
+  = 5.5) gets a page of its own, because Word cannot hold a float back and split a tall floating table at odd rows.
+  A full-page display starts the next content with "page break before", never a break paragraph after it, which
+  spilled into a blank page. `"inline"` keeps the old flow. The frame is not counted as a table.
+- Word lane, on a Mac with Microsoft Word (JL 261023 "why you don't put the following paragraphs to fill this
+  margin?"): every display is held back, then placed one at a time at the top of the page after the one its citing
+  paragraph ends on, where Word itself reports that page ends (`save_docx()`, `word_page_boundaries()`); the
+  paragraph that crosses the page end is split, so the page before a display is full, as in LaTeX. A figure that
+  fills its page sends the text to the next page; after a table the text goes on below it. A display cited before
+  the previous one ends goes to the page after it. Without Word (another OS, a test) the floating frame is the
+  fallback; two frames on one page overlapped in Word, which is why Word places them when it can.
+- Word captions (JL 261023 "the captions are too long"): "Table 1." and the title in bold, then the legend in plain
+  type a size smaller, single-spaced (`add_caption()`); it was one italic, double-spaced paragraph. The bold title
+  is read from the LaTeX caption's `\textbf{...}` (`Display.heading`). Figure notes are single-spaced too.
+- Word tables (JL 261023 "why the color of the table is like this? we should not have it"): no header colour and
+  horizontal rules only are now the defaults (`table_header_fill = ""`, `table_borders = "horizontal"`), as MISQ
+  already had; a profile can still ask for a colour or `"grid"`.
+- Word table notes written as `\parbox{\linewidth}{...}` after the tabular (frame_displays.py) reach Word; only
+  `flushleft` notes did.
+- The Word preview PDF beside each .docx is drawn by Microsoft Word on a Mac that has it (`word_pdf()`), so it shows
+  what a co-author sees; the HTML renderer laid displays out in text order. `HAIPIPE_WORD_PREVIEW=html` keeps it.
+- 100 tests pass with the SPACE venv.
+
 ## 0.11.4 · 2026-10-20 · the readiness gates tested with the engine
 
 - `tests/test_delivery_gates.py`: 19 tests of the compile order, outline approval and G4 (a filename or another

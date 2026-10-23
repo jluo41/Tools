@@ -62,7 +62,23 @@ def room(tmp_path):
 
 def _tables(docx: Path) -> int:
     with zipfile.ZipFile(docx) as z:
-        return z.read("word/document.xml").decode().count("<w:tbl>")
+        xml = z.read("word/document.xml").decode()
+    # 0.12.0: a display floated to the top of its page sits in a borderless one-cell frame, which is not a table
+    return xml.count("<w:tbl>") - xml.count('<w:tblDescription w:val="haipipe-display-float"/>')
+
+
+def test_a_display_floats_to_the_top_of_its_page(room):
+    """display_float = "top" (default): the display's frame is pinned to the top margin; "inline" leaves it in place."""
+    cfg = room / "delivery" / "paper-build.toml"
+    env = dict(os.environ, HAIPIPE_PAPER_BUILD_CONFIG=str(cfg))
+    supp = room / "delivery" / "word" / "D-supp.docx"   # the fixture's main tables print after the references
+    r = subprocess.run([sys.executable, str(ENGINE)], cwd=room / "delivery", env=env, capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr[-1500:]
+    assert 'w:tblpYSpec="top"' in _text(supp) and _tables(supp) == 1
+    cfg.write_text(cfg.read_text().replace('venue_label = "Test"', 'venue_label = "Test"\ndisplay_float = "inline"'))
+    r = subprocess.run([sys.executable, str(ENGINE)], cwd=room / "delivery", env=env, capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr[-1500:]
+    assert "tblpYSpec" not in _text(supp) and _tables(supp) == 1
 
 
 def _text(docx: Path) -> str:
@@ -152,10 +168,14 @@ def test_abstract_prose_before_a_keywords_label_reaches_word(room):
 def test_table_header_fill_follows_the_profile(room):
     """0.8.4 (JL 260928 "why the header is with color? are we using the MISQ format?"):
     the header fill was hard-coded F2F4F7 for every venue; MISQ's official file has none."""
-    shaded = _build_with(room, "\\begin{abstract}One sentence.\\end{abstract}")
-    assert 'w:fill="F2F4F7"' in shaded                      # default unchanged for other venues
-    plain = _build_with(room, "\\begin{abstract}One sentence.\\end{abstract}", 'table_header_fill = ""\n')
-    assert 'w:fill="F2F4F7"' not in plain and "Table 1." in plain
+    # 0.12.0 (JL 261023 "why the color of the table is like this?"): no fill and horizontal rules are the default;
+    # a profile can still ask for a colour and a grid
+    plain = _build_with(room, "\\begin{abstract}One sentence.\\end{abstract}")
+    assert "w:fill=" not in plain and "Table 1." in plain
+    assert '<w:insideV w:val="nil"/>' in plain               # no vertical lines
+    shaded = _build_with(room, "\\begin{abstract}One sentence.\\end{abstract}",
+                         'table_header_fill = "F2F4F7"\ntable_borders = "grid"\n')
+    assert 'w:fill="F2F4F7"' in shaded
 
 
 def test_misq_official_layout_front_page_tables_and_notes(room):
@@ -315,3 +335,12 @@ def test_jama_main_displays_keep_numbers_refs_and_figure_notes(room):
     assert "Table 1. Main regression." in xml and "Figure 1. Observed values." in xml
     assert "Intervals use requests." in xml
     assert "Tablemain" not in xml and "Figureobserved" not in xml
+
+
+def test_a_parbox_table_note_reaches_word(room):
+    """0.12.0 (JL 261023): Table 2's note sat in \\parbox{\\linewidth}{\\footnotesize ...} after the tabular; Word dropped it."""
+    body = room / "delivery" / "latex" / "displays" / "S-D-Main-1-Results" / "Display1-main" / "table-body.tex"
+    body.write_text(body.read_text() + "\\par\\smallskip\\parbox{\\linewidth}{\\footnotesize\\raggedright SE, standard error. * \\textit{p}$<$0.10.}\n")
+    out = _build_with(room, "\\begin{abstract}One sentence.\\end{abstract}")
+    assert "SE, standard error." in out
+

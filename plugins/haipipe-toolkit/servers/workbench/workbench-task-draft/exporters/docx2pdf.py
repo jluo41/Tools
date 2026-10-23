@@ -180,7 +180,9 @@ def docx_html(path):
                 text = html.escape(el.text or "")
                 pieces.append("<b>%s</b>" % text if el in bold and text else text)
             elif tag == W + "br":
-                pieces.append("<br>")
+                # a Word page break starts a new printed page in the preview too (JL 261023: Introduction on its own page)
+                pieces.append('<div style="break-after:page;page-break-after:always"></div>'
+                              if el.get(W + "type") == "page" else "<br>")
             elif tag in (A + "blip", W + "blip"):
                 emb = el.get("{http://schemas.openxmlformats.org/officeDocument"
                              "/2006/relationships}embed")

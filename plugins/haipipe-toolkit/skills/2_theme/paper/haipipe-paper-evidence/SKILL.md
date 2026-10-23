@@ -78,6 +78,9 @@ The rules
 2. **One result, one number.** A number in prose comes from a VALUE card (`file` + `key` in a Run's `result/`), best
    through the research question's report (`reports/qNN_<question>/`). The same result reads from the same Run, and
    shows the same number, in the Abstract, the Results, the Discussion and the letters.
+   The work Block serves them from one Job, `jNN_paper_work_evidence`, beside `jNN_paper_displays`: one Task per
+   Section, a value map `scripts/values.yaml` (each number's source Run, file and key), and a Run that writes
+   `values.json`; the Section's VALUE cards read it by id (JL 261023). A setting stated in words stays on its card.
 3. **Displays are the paper's.** Each `Display<n>-<slug>/` is built on cards (haipipe-display). The paper numbers them
    in Section order: the main text Display 1, 2 …, the appendix (`t2N_`) eDisplay 1, 2 …; each is cited in its
    Section's text; the main text stays within the venue's limit (its call, or what the person says).

@@ -9,7 +9,7 @@ description: >-
 argument-hint: "<paste the error text or screenshot>  [--profile <name>]  [--register <dir where the report is written>]  [--unit <task folder>]  [--session <name of this debugging round>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.11.0"
+  version: "0.12.0"
   last_updated: "2026-10-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---

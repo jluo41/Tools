@@ -10,8 +10,8 @@ description: >-
   export the complete paper, regenerate submission files, or audit whether a
   document is stale.
 metadata:
-  version: "0.11.4"
-  last_updated: "2026-10-13"
+  version: "0.12.0"
+  last_updated: "2026-10-23"
   summary: "Paper-level source-driven document assembly; page-level Word export remains a separate workbench."
 ---
 
@@ -301,7 +301,18 @@ appendix_newpage     true · false               \clearpage before each lettered
 title_page           inline · separate          separate = blind title page alone, then \clearpage
 abstract_page        true · false               abstract (+ keywords) alone on its page
 running_head         true · false               false = only the DRAFT word while drafting, nothing once clean
+display_page         true · false               each table or figure on a page of its own ([p]), text keeps filling
+display_at_first_ref true · false               each float moved after the paragraph that first \ref's it
+float_page           top (default) · center     where a display sits on its own page; top = page top
+abstract_new_page    true · false               the Abstract starts a page after the Key Points
 ```
+
+Word-lane keys (flat `[profile]`, 0.12.0): `display_float = "top"` (default; `"inline"` keeps text order),
+`display_float_max_rows = 25`, `display_float_max_inches = 5.5` (bigger displays get a page of their own),
+`table_header_fill = ""` and `table_borders = "horizontal"` (defaults). On a Mac with Microsoft Word the
+.docx preview PDF is drawn by Word, and Word also reports where each page ends, so every display is placed at the
+top of the page after its citation with the page before it full (a frame floated to the page top is the fallback
+without Word).
 
 Shipped: `jama-internal-medicine` (Word-side layout, eTable/eFigure supplement)
 and `misq` (double-spaced, blind title page, abstract page, lettered appendices

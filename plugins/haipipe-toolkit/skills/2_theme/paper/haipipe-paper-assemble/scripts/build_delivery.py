@@ -115,6 +115,34 @@ DOCX_ENGINE = ENGINE_DIR / "latex_room_to_docx.py"
 COVER_LETTER = ENGINE_DIR / "cover_letter.py"            # 0.9.0: run-delivery-coverletter
 # the Page workbench's renderer: a PDF drawn from the .docx package itself, so a reader can see the Word output
 DOCX2PDF = next(p for p in ENGINE_DIR.parents if p.name == "skills").parent / "servers" / "workbench" / "workbench-task-draft" / "exporters" / "docx2pdf.py"
+# 0.12.0 (JL 261023): on a Mac with Microsoft Word, Word itself draws the .docx preview, so the preview shows what a
+# co-author sees: the HTML renderer above lays displays out in text order and cannot show a display floated to the
+# top of its page. HAIPIPE_WORD_PREVIEW=html keeps the HTML renderer.
+MSWORD = Path("/Applications/Microsoft Word.app")
+
+
+def word_pdf(docx: Path, pdf: Path) -> bool:
+    if (sys.platform != "darwin" or not MSWORD.exists() or os.environ.get("HAIPIPE_WORD_PREVIEW") == "html"
+            or "PYTEST_CURRENT_TEST" in os.environ):   # a test never opens Word
+        return False
+    box = Path.home() / "Library" / "Containers" / "com.microsoft.Word" / "Data" / "Documents" / "haipipe-preview"
+    try:   # Word's sandbox reads and writes its own container without asking for file access
+        box.mkdir(parents=True, exist_ok=True)
+        src, out = box / docx.name, box / pdf.name
+        shutil.copy2(docx, src); out.unlink(missing_ok=True)
+        running = subprocess.run(["pgrep", "-x", "Microsoft Word"], capture_output=True).returncode == 0
+        script = (f'tell application "Microsoft Word"\nset d to open file name "{src}"\n'
+                  f'save as d file name "{out}" file format format PDF\nclose d saving no\n'
+                  + ("" if running else "quit saving no\n") + "end tell")
+        r = subprocess.run(["osascript", "-e", script], capture_output=True, text=True, timeout=300)
+        if r.returncode != 0 or not out.is_file():
+            return False
+        shutil.copy2(out, pdf)
+        return True
+    except Exception:
+        return False
+
+
 def _engine_version():
     skill = ENGINE_DIR.parent / "SKILL.md"
     if skill.exists():
@@ -211,6 +239,10 @@ LATEX_DISPLAYS = str(_L.get("displays", "inline"))            # inline · end (e
 LATEX_APPENDIX_NEWPAGE = bool(_L.get("appendix_newpage", False))
 LATEX_TITLE_PAGE = str(_L.get("title_page", "inline"))        # inline · separate (blind title page alone)
 LATEX_ABSTRACT_PAGE = bool(_L.get("abstract_page", False))    # abstract (+ keywords) alone on its page
+LATEX_DISPLAY_PAGE = bool(_L.get("display_page", False))      # each table or figure alone on its own page
+LATEX_DISPLAY_AT_FIRST_REF = bool(_L.get("display_at_first_ref", False))   # each float after the paragraph that first cites it
+LATEX_FLOAT_PAGE = str(_L.get("float_page", "top"))            # top (default) · center: where a display sits on a page of its own
+LATEX_ABSTRACT_NEW_PAGE = bool(_L.get("abstract_new_page", False))   # the Abstract starts a page after the Key Points (JL 261023)
 LATEX_ACKNOWLEDGMENTS = bool(_L.get("acknowledgments", True))  # false = a blind copy prints no Acknowledgments section (0.8.4)
 LATEX_RUNNING_HEAD = bool(_L.get("running_head", True))       # False: header carries only the DRAFT word while drafting
 # 0.8.2 · "per-appendix": floats restart in each lettered appendix (Table B1, C1 …); the Word lane reads the same key
@@ -660,6 +692,10 @@ def copy_unit(u: Path) -> str:
         )
         t = re.sub(r"(\\includegraphics(?:\[[^\]]*\])?)\{[^}]*\}", rf"\1{{displays/{key}/figure.pdf}}", t)
         t = re.sub(r"\\input\{[^}]*?(table-body[^}/]*)\}", rf"\\input{{displays/{key}/\1}}", t)
+        if LATEX_DISPLAY_PAGE:   # each display alone on its page, where the text first cites it (JL 261023)
+            # a float page of its own, but no \\clearpage: the text keeps filling its page and the display takes the
+            # next page alone, so no half-empty text page is left before it (JL 261023: "we don't want this large margin")
+            t = re.sub(r"\\begin\{(table|figure)(\*?)\}(\[[^\]]*\])?", r"\\begin{\1\2}[p]", t)
         (dst / "float.tex").write_text(t, encoding="utf-8")
     return key
 
@@ -720,6 +756,29 @@ def drop_room_defined(unresolved):
     return [u for u in unresolved if u["ref"] not in defined]
 
 
+def weave_floats(t: str) -> str:
+    """Move each \\input{displays/<key>/float} to just after the paragraph that first cites one of its labels
+    (JL 261023: "the display should be in the proper place of the main text", not after the Section's last
+    paragraph). A float no paragraph cites stays where it was."""
+    inputs = re.findall(r"\\input\{displays/([^}]+)/float\}", t)
+    if not inputs:
+        return t
+    body = re.sub(r"[ \t]*\\input\{displays/[^}]+/float\}[ \t]*", "", t)
+    paras = re.split(r"(\n\s*\n)", body)          # keep the separators so the text is unchanged
+    after = {}
+    for key in dict.fromkeys(inputs):
+        ft = DISP / key / "float.tex"
+        labs = re.findall(r"\\label\{([^}]+)\}", ft.read_text(encoding="utf-8", errors="replace")) if ft.exists() else []
+        hit = next((i for i, part in enumerate(paras) if any("\\ref{" + lab + "}" in part for lab in labs)), None)
+        after.setdefault(hit if hit is not None else len(paras) - 1, []).append(key)
+    out = []
+    for i, part in enumerate(paras):
+        out.append(part)
+        for key in after.get(i, []):
+            out.append("\n\n\\input{displays/" + key + "/float}\n")
+    return "".join(out)
+
+
 def place_fragment(p, dest_dir: Path, labels, unresolved):
     """copy the fragment, retarget its \\input paths, return the list of floats to \\input after it"""
     t = p["fragment"].read_text(encoding="utf-8", errors="replace")
@@ -759,6 +818,8 @@ def place_fragment(p, dest_dir: Path, labels, unresolved):
         if lines and not lines[0].startswith("\\") and len(lines[0].split()) <= 12:
             lines = lines[1:]                                             # stray title line from md2tex
         t = "\\begin{abstract}\n" + "\n".join(lines).strip() + "\n\\end{abstract}\n"
+    if LATEX_DISPLAY_AT_FIRST_REF:
+        t = weave_floats(t)
     (dest_dir / f"{p['id']}.tex").write_text(t, encoding="utf-8")
     EMBEDDED_UNITS.update(f"{pg}/{u}" for pg, u in re.findall(r"displays/([^/}]+)/([^/}]+)/", t))
     floats = []
@@ -981,6 +1042,11 @@ def write_master(main, appx, status, ready_n, total_n):
     headrule = "% a status header and its rule" if header else "\\renewcommand{\\headrulewidth}{0pt}"
     spacing_cmd = {"single": "\\singlespacing", "double": "\\doublespacing"}.get(LATEX_SPACING, "\\onehalfspacing")
     endfloat = "\\usepackage[nolists,tablesfirst,nomarkers]{endfloat}" if LATEX_DISPLAYS == "end" else "% displays inline at first reference"
+    # float_page = "top" (default, JL 261023): a display alone on its page starts at the top of the page; LaTeX
+    # centres it there by default. "center" keeps LaTeX's own placement. A paper preamble can still override.
+    float_page = ("\\makeatletter\\setlength{\\@fptop}{0pt}\\setlength{\\@fpsep}{12pt plus 1fil}"
+                  "\\setlength{\\@fpbot}{0pt plus 1fil}\\makeatother") if LATEX_FLOAT_PAGE == "top" \
+        else "% a display alone on its page stays centred (float_page = center)"
     paper_preamble = ("% paper-owned preamble · " + PREAMBLE_FILE.name + "\n" + PREAMBLE_FILE.read_text(encoding="utf-8")) \
         if PREAMBLE_FILE and PREAMBLE_FILE.exists() else "% no paper preamble declared"
     if JAMA:   # the JAMA Word renderer parses a title-page center block, not \maketitle
@@ -1007,6 +1073,7 @@ def write_master(main, appx, status, ready_n, total_n):
 \usepackage{{fvextra}}
 \RecustomVerbatimEnvironment{{verbatim}}{{Verbatim}}{{breaklines,breaksymbolleft={{}},breakindent=2ex,fontsize=\small,baselinestretch=1,frame=single,framesep=6pt}}
 {endfloat}
+{float_page}
 \providecommand{{\displayroot}}{{displays/}}
 {paper_preamble}
 {spacing_cmd}
@@ -1024,6 +1091,11 @@ def write_master(main, appx, status, ready_n, total_n):
     body = []
     for p, floats in main:
         if p.get("included", p["ready"]) and is_abstract(p):
+            if LATEX_ABSTRACT_NEW_PAGE:   # this build's own copy of the fragment: a page break before the Abstract heading
+                frag = SEC / f"{p['id']}.tex"
+                text = frag.read_text(encoding="utf-8")
+                if "\\clearpage\n\\section*{Abstract}" not in text:
+                    frag.write_text(text.replace("\\section*{Abstract}", "\\clearpage\n\\section*{Abstract}", 1), encoding="utf-8")
             body.append(rf"\input{{sections/{p['id']}}}")
             if LATEX_ABSTRACT_PAGE: body.append(r"\clearpage")   # abstract (+ keywords) alone on its page
             body.append(""); continue
@@ -1457,14 +1529,17 @@ def build():
     # JL 260929 "for the word, why we cannot preview it": each .docx gets its PDF twin beside it,
     # <stem>.pdf, drawn from the package the Word lane just wrote; the Paper Workbench's Word Preview shows it
     twins = {}
-    if DOCX2PDF.exists():
+    if DOCX2PDF.exists() or MSWORD.exists():
         for key in ("main_docx", "supplement_docx"):
             docx = rel(OUT[key]) if OUT.get(key) else None
             if docx is not None and docx.suffix == ".docx" and docx.is_file():
                 twin = docx.with_suffix(".pdf")
-                r = _run([sys.executable, str(DOCX2PDF), str(docx), "-o", str(twin)], cwd=HERE,
-                         capture_output=True, text=True, timeout=300)
-                twins[key] = str(twin.relative_to(HERE)) if getattr(r, "returncode", 1) == 0 and twin.is_file() else None
+                ok = word_pdf(docx, twin)
+                if not ok and DOCX2PDF.exists():
+                    r = _run([sys.executable, str(DOCX2PDF), str(docx), "-o", str(twin)], cwd=HERE,
+                             capture_output=True, text=True, timeout=300)
+                    ok = getattr(r, "returncode", 1) == 0 and twin.is_file()
+                twins[key] = str(twin.relative_to(HERE)) if ok else None
     # 0.9.0 (JL 260929): the submission cover letter, words from the Round page, facts from this build
     cover = None
     if COVER_LETTER.exists() and isinstance(CFG.get("coverletter"), dict):

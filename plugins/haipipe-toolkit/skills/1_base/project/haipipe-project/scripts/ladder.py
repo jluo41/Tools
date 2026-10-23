@@ -29,7 +29,7 @@ LADDER_MD = Path(__file__).resolve().parents[1] / "ref" / "ladder.md"
 # the Themes the ladder checks, each by its singular folder and its old plural one (the same table as
 # haipipe-draft src/themes.py); cowork/ has its own check; paper/, design/, insight/ keep their family layouts
 LADDER_WORLDS = ("work", "tasks", "discovery", "discoveries", "labeling", "labelings")
-TICKET_EXT = (".sh", ".cmd", ".yaml", ".yml", ".md")   # .cmd: a desktop where only cmd.exe runs (REACH SAFER)
+TICKET_EXT = (".sh", ".cmd", ".ps1", ".yaml", ".yml", ".md")   # .cmd: a desktop where only cmd.exe runs (REACH SAFER); .ps1: a server where only PowerShell runs (CMS)
 ORDER = {"ok": 0, "debt": 1, "failed": 2}
 
 
@@ -221,7 +221,7 @@ def audit_run(d: Path, fam: str, work_task: bool, where: str, root: Path) -> Nod
     # A soft Run's ticket is its ask, `.md`; a Page's Delivery Run (`run-delivery-<lane>`) is one fixed
     # command, so its ticket is that command, `.sh` (haipipe-draft 0.125, JL 261009).
     soft = (".md", ".sh") if name.startswith("run-delivery-") else (".md",)
-    tickets = [d / f"{name}{e}" for e in ((".sh", ".cmd", ".yaml", ".yml") if kind == "hard" else soft)]
+    tickets = [d / f"{name}{e}" for e in ((".sh", ".cmd", ".ps1", ".yaml", ".yml") if kind == "hard" else soft)]
     ticket = next((t for t in tickets if t.is_file()), None)
     if kind and not ticket:
         node.add("failed", f"no ticket ({tickets[0].name})")
@@ -623,7 +623,7 @@ def plan_runs(runs: Path, fam: str, root: Path) -> tuple[list, list[str]]:
     for d in sorted(p for p in runs.iterdir() if p.is_dir() and not p.name.startswith((".", "_"))):
         kind = run_kind(d.name, fam)
         if kind and not (d / "run.yaml").is_file():
-            ticket = next((f"{d.name}{e}" for e in (".sh", ".yaml", ".md") if (d / f"{d.name}{e}").is_file()), None)
+            ticket = next((f"{d.name}{e}" for e in (".sh", ".ps1", ".yaml", ".md") if (d / f"{d.name}{e}").is_file()), None)
             steps.append(("card", d, kind, ticket, [], [], None))
     return steps, skipped
 

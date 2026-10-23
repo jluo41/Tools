@@ -89,7 +89,10 @@ def t_refusals():
             assert word in str(e), str(e)
         else:
             raise AssertionError(f"{body} was not refused")
-    return "no body, an unknown raw type, two items"
+    ev = event(raw={"type": "met_stream", "rows": [{"Timestamp": f"2020-05-05 18:{m:02d}:00", "HR": "120",
+                                                     "Intensity": "2"} for m in range(15)]})
+    assert ev["input"] is None and "no METs column" in ev["step"], ev["step"]   # 11 CGMacros files (t99 r05)
+    return "no body, an unknown raw type, two items; a MET stream with no METs column stays a stream"
 
 
 def t_examples():

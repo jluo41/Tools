@@ -29,7 +29,9 @@ static gate        python work/_tools/check_server_ready.py <UNIT>     19 rules
 shared copies      python work/_tools/check_preupload.py <work dir>    M10: every SHARED COPY byte-identical
 tree check         python work/_tools/check_task_tree.py <Block dir>
 dry run            python work/_tools/dryrun/dryrun.py                every ticket, stand-in Stata, server layout
-upload package     python work/_tools/pack_upload.py <tag> [--check]
+upload package     python work/_tools/pack_upload.py <tag> --per-block  one short-named zip per Block, <tag>-PerBlock/,
+                   for every server Block of both Projects (it ignores --project); the default for an upload
+                   (or --project CmsPipeline|OpioidRx, then --check: 0 differences from the repo)
 results back       work/_tools/collect_results.ps1 (server), file_server_return.py (laptop)
 server home        F:\Physician-SPACE\work\<Block>\...                never the repo's own depth
 ```
@@ -80,6 +82,11 @@ r(459)  guard exit         this repo's chronic-condition guard uses it on purpos
 r(603)  cannot open        %TEMP% is unwritable on this server. $env:STATATMP
                            must be redirected before Stata launches.
 r(681)  preserve failed    same cause as r(603)
+zip     "The Compressed (zipped) Folder ... is invalid" in Explorer, while unzip -t on the laptop is clean:
+invalid one entry name inside passes 260 characters (v1022 to v1023b held one of 264). First compare the
+        server file's size with the build: a copy from an earlier build is the cheaper cause. Rebuild with
+        pack_upload.py --per-block (entries start at work\, none past 240) and extract with Expand-Archive
+        into F:\u. Register 261023/issue-002.
 exit 0  after an error     Stata does this. ENV-02. The marker is the only gate.
 modal   any error at all   /e mode pops a dialog and the run waits all night for
 dialog                     a click. ENV-01. `set batch` does not exist here.
@@ -141,21 +148,31 @@ Run all of it; each step catches what the others cannot.
 
 ```
 1 gates      check_server_ready.py (R14 alone is not runtime) · check_preupload.py 0 · check_task_tree.py 0
+             (check_preupload.py M12: every server path under 260, folder 248, zip entry 240; run it on every
+             Project's work/ that travels, siblings included)
 2 register   read SERVER-READY-CHECK.md AND every <YYMMDD>/FINDINGS.md; its status column can be stale,
              so check each CRASH and SERVER entry in today's code, not in the table
 3 patterns   no `set batch`, no `ssc install`, no `forvalues x = ${a}/${b}`, `estat firststage, all` only
              under capture, no PowerShell 7 syntax (`??`, `&&`, `ForEach-Object -Parallel`), no `pwsh`,
-             no Python or `.sh` in a server ticket (ENV-08), ASCII and no CR in every .do and .ps1,
+             no Python or `.sh` in a server ticket (ENV-08); check_preupload.py M11 finds the forvalues one, ASCII and no CR in every .do and .ps1,
              every launcher on stata-guard.do and setting STATATMP, only installed community commands
 4 dry run    dryrun.py: every ticket through its real launcher; seed an asset only the server holds
              (case_osteo v0001) and rerun that part with --reuse/--refresh --only
 5 inputs     what each stage reads must already be on F: (the dry run lists it); name what is missing
-6 package    pack_upload.py <tag>, then --check: 0 differences from the repo; no result\, results\, passes\
+6 package    pack_upload.py <tag> --per-block (b02B.zip, b11CD.zip, ...); no result\, results\, passes\;
+             every zip entry at most 240 characters (the packer refuses more), entries start at work\
+7 unzip      test every zip: unzip -t, every file equal to the repo, and pwsh Expand-Archive into a short
+             folder; the longest path at F:\u and at F:\Physician-SPACE must stay under 260
 ```
 
 What the dry run proves: paths, launchers, `.done` markers, hand-offs between stages, path length. What it
 cannot prove: any number, a missing column, or a guard that depends on data (the stand-in Stata marks such
 conditions "unknown"). Read those guards in the code, and say which ones were read, not run.
+
+When a whole stage fails the dry run at its input check, suspect the stand-in before the code: read the ticket's
+rows in the sandbox's `ledger.jsonl` for `unknown` (a value it could not compute). On 261023 every full-year table
+failed because `fakestata.py` had no `numlist ..., sort`, so the detected years were unknown and every year loop
+was skipped; with that command added, all seven tables passed. Fix the stand-in, never the server code, for this.
 
 ## Running on the server
 
@@ -174,11 +191,15 @@ cd F:\Physician-SPACE
 - Every Task has a wrapper, a Job of one Task too: `write_pages.py` writes them (it always writes `by_task`).
 - Never copy `work\` to the repo's depth (`F:\Physician-SPACE\examples-2-cms\...`): the deepest files pass
   259 characters there, and the C and D launchers refuse a home folder longer than 23 characters.
+- Unpack an upload with PowerShell, not by double-clicking: all zips into one short folder, then copy its `work\`
+  over `F:\Physician-SPACE\work` (add and replace, never delete):
+  `Get-ChildItem F:\<tag>-PerBlock\*.zip | ForEach-Object { Expand-Archive $_.FullName -DestinationPath F:\u -Force }`
 - After a new upload, run two short tickets first (the package's `README-UPLOAD.md` names them): one that reads
   headers only (`b01_A_cms_description\j01_A0_cms_description\sbatch\run_slice.ps1`), and one that MUST fail in
-  seconds (`b14_CD_visit_pain_musc\j02_C2_data_VisitMusc_1stPair_yr15_24\t01_C2_data_build_VisitMusc\runs\r02_*.ps1`,
-  Musc has no 2021-2024 case years). It proves an error ends Stata instead of opening the /e dialog (ENV-01/ENV-11);
-  if the dialog opens instead, close it and stop.
+  seconds (`b14_CD_visit_pain_musc\j21_D_reg_VisitMusc_1stPair_yr16_19_bigfive_ols\t01_C1_D_reg_VisitMusc_agre\runs\
+  r01_D_reg_VisitMusc_1stPair_agre_af7d_ols\r01_D_reg_VisitMusc_1stPair_agre_af7d_ols.ps1`: until the full-year table
+  is built it stops with `MISSING FILE` and r(601)). It proves an error ends Stata instead of opening the /e dialog
+  (ENV-01/ENV-11); if the dialog opens instead, close it and stop.
 
 ## Bringing results back
 

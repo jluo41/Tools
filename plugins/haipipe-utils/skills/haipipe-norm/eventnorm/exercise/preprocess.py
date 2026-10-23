@@ -217,6 +217,9 @@ def stream(rows, kind: str) -> dict:
     if runs is None or runs.empty:
         if not rule:
             why = "no rule finds a workout in it: it stays a stream (s02-D22)"
+        elif rule["by"] not in s:                               # the file lacks the column its rule reads
+            col = shape["name"] if rule["by"] == "name" else shape["values"].get(rule["by"])
+            why = f"it has no {col} column, which its rule reads: no workout can be found; it stays a stream"
         elif rule["by"] == "name":
             best = f"its best run of {rule['minutes']:g} minutes or more is {every['spm'].max():.0f} a minute" \
                 if every is not None and len(every) and "spm" in every else f"no run of {rule['minutes']:g} minutes"

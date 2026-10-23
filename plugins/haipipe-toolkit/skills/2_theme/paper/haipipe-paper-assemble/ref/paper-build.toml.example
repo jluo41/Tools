@@ -49,3 +49,6 @@ manifest = "build-manifest.json"
 # [profile.latex]
 # engine = "pdflatex"         # latexmk -pdf, for a paper head that loads no fontspec
 # bibstyle = "naturemag"
+# display_page = true        # each display on a page of its own, where the text first cites it
+# display_at_first_ref = true # each float after the paragraph that first \ref's it
+# float_page = "top"          # default; "center" keeps LaTeX's own centring of a display page

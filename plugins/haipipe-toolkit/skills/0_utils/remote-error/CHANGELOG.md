@@ -6,6 +6,18 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.12.0] · 2026-10-23 · Zips Windows can open, per-Block packages, stand-in first
+
+- `ref/profile-cms-stata.md`: the code table gains `zip invalid` (Explorer refuses a zip when one entry name passes
+  260 characters; v1022 to v1023b each held one of 264; first rule out an old copy by its size). The pre-flight's
+  step 6 now builds one short-named zip per Block (`pack_upload.py <tag> --per-block`, entries start at `work\`,
+  none past 240), and a new step 7 tests every zip (`unzip -t`, every file equal to the repo, `Expand-Archive`, the
+  longest path at `F:\u` and at `F:\Physician-SPACE`). Step 3 names `check_preupload.py` M11 for the forvalues
+  pattern. The dry run note says to suspect the stand-in Stata first when a whole stage fails at its input check.
+- Step 1 names `check_preupload.py` M12, the path-length rule (server path, folder, zip entry) for every Project.
+- Running on the server: unpack with `Expand-Archive` into `F:\u`; the must-fail smoke ticket is now the b14 j21
+  regression (the old b14 j02 C2 ticket was renamed away on 261023).
+
 ## [0.11.0] · 2026-10-22 · CMS pre-flight, running from the SPACE, results back
 
 - `ref/profile-cms-stata.md` gains three sections from the 261022 upload pre-flight (JL: "the CMS server is very
