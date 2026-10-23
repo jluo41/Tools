@@ -86,7 +86,8 @@ zip     "The Compressed (zipped) Folder ... is invalid" in Explorer, while unzip
 invalid one entry name inside passes 260 characters (v1022 to v1023b held one of 264). First compare the
         server file's size with the build: a copy from an earlier build is the cheaper cause. Rebuild with
         pack_upload.py --per-block (entries start at work\, none past 240) and extract with Expand-Archive
-        into F:\u. Register 261023/issue-002.
+        into F:\u. 7-Zip opens such a zip (it has no 260 limit), which confirms the cause. Register
+        261023/issue-002.
 exit 0  after an error     Stata does this. ENV-02. The marker is the only gate.
 modal   any error at all   /e mode pops a dialog and the run waits all night for
 dialog                     a click. ENV-01. `set batch` does not exist here.
@@ -154,7 +155,8 @@ Run all of it; each step catches what the others cannot.
              so check each CRASH and SERVER entry in today's code, not in the table
 3 patterns   no `set batch`, no `ssc install`, no `forvalues x = ${a}/${b}`, `estat firststage, all` only
              under capture, no PowerShell 7 syntax (`??`, `&&`, `ForEach-Object -Parallel`), no `pwsh`,
-             no Python or `.sh` in a server ticket (ENV-08); check_preupload.py M11 finds the forvalues one, ASCII and no CR in every .do and .ps1,
+             no Python or `.sh` in a server ticket (ENV-08); check_preupload.py M11 finds the forvalues one,
+             M13 a function in `file write` without its own parentheses (`(c(current_date))`), ASCII and no CR in every .do and .ps1,
              every launcher on stata-guard.do and setting STATATMP, only installed community commands
 4 dry run    dryrun.py: every ticket through its real launcher; seed an asset only the server holds
              (case_osteo v0001) and rerun that part with --reuse/--refresh --only

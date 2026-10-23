@@ -96,6 +96,10 @@ def stated_total(rows, name_col: str = None, skipped=()):
 
 
 AMOUNT = re.compile(r"([0-9]*\.?[0-9]+)\s*(g|ml)\s*$", re.I)
+# A line that says no food was recorded, though the food split reads it as a food (s01-D48): Shanghai writes "data
+# not available" where a meal went unrecorded; t99 r09 found it asked as a food 341 times in 1,542 Shanghai meals.
+# Kept here, not in describe-food's dialect, so the door's own answers do not change.
+NOT_RECORDED = {"data not available"}
 
 
 def lines_to_items(cell: str, zh_cell: str = None):
@@ -108,7 +112,7 @@ def lines_to_items(cell: str, zh_cell: str = None):
     items, asks, skipped = [], [], []
     for k, line in enumerate(en):
         c = split_meal(line)
-        if not c or c[0].kind != "food":
+        if not c or c[0].kind != "food" or line.lower() in NOT_RECORDED:
             skipped.append(line)
             continue
         m = AMOUNT.search(line)

@@ -96,6 +96,8 @@ def t_typed():
     assert h["total"]["macros"]["carbs"] == "39.02 g" and h["total"]["coverage"] == 1.0, h["total"]   # 26.95 + 12.07,
     #   the items' sum (261022); the meal asked as one string gave the milk's 12.07 g alone
     assert h["source"] == {"kind": "logged"}, h["source"]
+    gone = event(raw={"type": "text", "rows": [{"Dietary intake": "data not available", "Date": "2021-08-03 16:00"}]})
+    assert gone["input"]["items"] is None and "data not available" in gone["step"], gone["step"]   # s01-D48
     return f"typed lines become items {carbs}; total {h['total']['macros']['carbs']}; no time is one entry"
 
 

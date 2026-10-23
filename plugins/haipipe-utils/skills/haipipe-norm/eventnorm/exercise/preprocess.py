@@ -204,10 +204,11 @@ def runs_of(s, rule: dict):
     return runs
 
 
-def stream(rows, kind: str) -> dict:
+def stream(rows, kind: str, every_workout: bool = False):
     """A stream: its rule finds the longest workout; it becomes the input (its own amounts summed, a timeline point a
-    sample), or, when no rule reads it or none is found, it stays a stream and the step says how far short it falls."""
-    import pandas as pd
+    sample), or, when no rule reads it or none is found, it stays a stream and the step says how far short it falls.
+    With `every_workout`, a list: every workout the rule finds, in time order (a freeze's call), or the one no-workout
+    answer."""
     s, shape = samples(rows, kind)
     rule = RULES[kind]
     runs = runs_of(s, rule) if rule else None
@@ -229,8 +230,17 @@ def stream(rows, kind: str) -> dict:
             most = s[rule["by"]] / (s["dur"] if rule["by"] == "steps" else 1)
             why = (f"its rule ({rule['by']} {rule['min']:g} or more a minute, for {rule['minutes']:g} minutes) finds no "
                    f"workout: at most {most.max():.0f} a minute in {len(s):,} samples; it stays a stream (s02-D22)")
-        return {"input": None, "kind": kind, "step": why}
-    pick = runs.sort_values(["minutes", "start"], ascending=[False, True]).iloc[0]
+        none = {"input": None, "kind": kind, "step": why}
+        return [none] if every_workout else none
+    if every_workout:
+        made = [workout(s, shape, kind, p) for _, p in runs.sort_values("start").iterrows()]
+        return [dict(w, step=f"workout {k + 1} of {len(made)}: {w['step']}") for k, w in enumerate(made)]
+    return workout(s, shape, kind, runs.sort_values(["minutes", "start"], ascending=[False, True]).iloc[0])
+
+
+def workout(s, shape: dict, kind: str, pick) -> dict:
+    """One workout a stream's rule found (`pick`: its start and end): its samples become the input."""
+    import pandas as pd
     bout = s[(s["t"] >= pick["start"]) & (s["t"] <= pick["end"])].reset_index(drop=True)
     zone = f" {shape['zone']}" if shape.get("zone") else ""
     fmt = lambda t: t.strftime("%Y-%m-%d %H:%M") + zone
@@ -292,17 +302,20 @@ def kind_of(rows) -> str:
     return best
 
 
-def preprocess(raw: dict) -> dict:
+def preprocess(raw: dict, every_workout: bool = False):
+    """raw to the input. With `every_workout`, a list: a stream's every workout (a freeze's call); one answer else."""
     kind = (raw or {}).get("type")
     if kind not in RAW_TYPES:
         raise ValueError(f"raw.type {kind!r} is not one of {sorted(RAW_TYPES)}")
     rows = frame(raw)
+    one = (lambda pre: [pre]) if every_workout else (lambda pre: pre)
     if kind in LOGGED:
-        return logged(rows, kind)
+        return one(logged(rows, kind))
     if kind == "text":
-        return text(rows, kind)
+        return one(text(rows, kind))
     if kind == "wearable":                                      # an uploaded file: its columns say which stream it is
         found = kind_of(rows)
-        pre = stream(rows, found)
-        return {**pre, "step": f"a wearable file of {len(rows):,} rows, read as {found} by its columns: {pre['step']}"}
-    return stream(rows, kind)
+        said = f"a wearable file of {len(rows):,} rows, read as {found} by its columns: "
+        pres = stream(rows, found, every_workout)
+        return [{**p, "step": said + p["step"]} for p in pres] if every_workout else {**pres, "step": said + pres["step"]}
+    return stream(rows, kind, every_workout)

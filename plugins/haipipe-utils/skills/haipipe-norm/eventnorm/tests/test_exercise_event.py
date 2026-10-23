@@ -18,7 +18,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parents[1]))                       # skills/haipipe-norm, so `eventnorm` imports
-from eventnorm.exercise import event, exercise_hours            # noqa: E402
+from eventnorm.exercise import event, events, exercise_hours    # noqa: E402
 
 S02 = "examples-1-data/Proj01-CGM-RawData/work/b51_externalstore/studio/s02-exercise-api/assets/"
 FILES = ("exercise-events-every-kind.json", "exercise-streams-every-kind.json")
@@ -139,11 +139,41 @@ def t_wearable():
     return f"{n} streams found their own type; a file of unknown columns refused"
 
 
+def t_every_workout():
+    """events() gives back every workout a stream holds, in time order; event()'s one (the longest) is among them,
+    the same to the field; a logged row gives back its one event."""
+    space = next((p for p in HERE.parents if (p / "env.sh").is_file()), None)
+    space = space or next((p for p in Path.cwd().resolve().parents if (p / "env.sh").is_file()), Path.cwd())
+    path = space / S02 / FILES[1]
+    if not path.is_file():
+        return f"skipped: no {S02}{FILES[1]} on this host"
+    n = found = 0
+    for e in json.loads(path.read_text(encoding="utf-8"))["events"]:
+        rows = e["raw"].get("rows") or []
+        if not rows or not all(isinstance(r, dict) for r in rows):
+            continue
+        one, every = event(raw=e["raw"]), events(raw=e["raw"])
+        starts = [x["input"]["start"] for x in every if x["input"]]
+        assert starts == sorted(starts), starts
+        if one["input"] is None:
+            assert len(every) == 1 and every[0]["input"] is None, len(every)
+        else:
+            same = [x for x in every if not (diff(one["input"], x["input"]) or diff(one["output"], x["output"]))]
+            assert len(same) == 1, f"{e['raw']['type']}: event()'s workout is not one of events()'"
+        n += 1
+        found += len(starts)
+    row = {"ExerciseType": "1001", "EntrySourceID": "23", "ObservationDateTime": "2/24/2022 3:04:13 AM",
+           "TimezoneOffset": "-360", "ExerciseDuration": "14"}
+    assert len(events(raw={"type": "log", "rows": [row]})) == 1
+    return f"{n} streams, {found} workouts in time order, each longest the same as event()'s; a logged row gives one"
+
+
 if __name__ == "__main__":
     print("eventnorm.exercise")
     for name, fn in (("each hour its own part", t_hours_add_up), ("words to an event", t_words),
                      ("a day total is no event", t_day_total), ("what is refused", t_refusals),
-                     ("s02's examples", t_examples), ("a wearable file finds its type", t_wearable)):
+                     ("s02's examples", t_examples), ("a wearable file finds its type", t_wearable),
+                     ("every workout of a stream", t_every_workout)):
         check(name, fn)
     print(f"{len(PASS)} passed, {len(FAIL)} failed")
     sys.exit(1 if FAIL else 0)

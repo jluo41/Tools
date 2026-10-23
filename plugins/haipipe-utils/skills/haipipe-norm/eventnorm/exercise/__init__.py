@@ -9,6 +9,7 @@ eventnorm.exercise: one exercise event, raw to output (b51 s02, s12; JL 261022: 
     ev = event(raw={"type": "device_code", "rows": [{...one ELogExerciseEntry row...}]})
     ev = event(raw={"type": "text", "rows": [{"text": "brisk walking 30 min", "time": "2026-10-22 08:05 -04:00"}]})
     ev = event(input={"start": "...", "end": "...", "items": [{"activity": "Walking"}]})
+    evs = events(raw={"type": "met_stream", "rows": [...a subject's whole file...]})   # every workout, not the longest
 
     schema.py      the raw types and the input's keys
     preprocess.py  raw to input: a logged row named through the code book, words, a stream and its rule
@@ -30,6 +31,6 @@ for _base in (Path(__file__).absolute(), Path(__file__).resolve()):
             sys.path.insert(0, str(_ex))
         break
 
-from .assemble import event                     # noqa: E402
+from .assemble import event, events             # noqa: E402
 from .hours import exercise_hours, stream_hours  # noqa: E402
 from .preprocess import preprocess               # noqa: E402

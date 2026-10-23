@@ -74,6 +74,22 @@ def event(raw: dict = None, input: dict = None) -> dict:
     pre = preprocess(raw) if raw else {"input": {}, "kind": None, "step": "no raw: the input as sent"}
     shown = {**{k: v for k, v in raw.items() if k != "rows"},
              "rows": [{k: v for k, v in r.items() if k not in RAW_DROP} for r in raw["rows"]]} if raw else None
+    return assemble(pre, shown, input, bool(raw))
+
+
+def events(raw: dict) -> list:
+    """Every event a raw holds, in time order, each {"raw", "input", "output", "step"} as event() answers: a stream's
+    every workout (event() answers its longest), else the one event; a raw with none answers one no-event entry. Each
+    raw keeps its type and file and says how many rows came, never the rows: a freeze's call (t99 r05: CGMacros' 45
+    files hold 1,415 workouts)."""
+    if not raw:
+        raise ValueError('send {"type", "rows"}')
+    shown = {**{k: v for k, v in raw.items() if k != "rows"}, "rows_sent": len(raw.get("rows") or [])}
+    return [assemble(pre, shown, None, True) for pre in preprocess(raw, every_workout=True)]
+
+
+def assemble(pre: dict, shown, input, from_raw: bool) -> dict:
+    """The preprocess step's answer, with an input given beside it, to the event: the item described, the hours."""
     given = {k: v for k, v in (input or {}).items() if k in INPUT_KEYS}
     if pre["input"] is None and not given:                      # no event: a day total, a stream with no workout
         return {"raw": shown, "input": None, "output": None, "step": pre["step"]}
@@ -81,7 +97,7 @@ def event(raw: dict = None, input: dict = None) -> dict:
     if "items" in given:
         given["items"] = items_of(given["items"])
     inp.update(given)
-    step = pre["step"] + ("; given in input: " + ", ".join(given) if given and raw else "")
+    step = pre["step"] + ("; given in input: " + ", ".join(given) if given and from_raw else "")
     st = pre.get("stream")
     if st and not given:                                        # a stream's workout: each hour from its own samples
         if st["rows_met"]:
