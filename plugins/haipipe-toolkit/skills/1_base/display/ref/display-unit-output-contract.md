@@ -35,7 +35,7 @@ paper, resolves a paper root, or creates a lifecycle page.
 
 ```text
 <unit-dir>/
-├── README.md      claim / kind / caption-job / fragility / status
+├── README.md      question / claim / kind / caption-job / fragility / status / review
 ├── intake/        caller-owned, provenance-bound values and context
 │   ├── manifest.yaml
 │   └── inputs/    small approved summary CSV/JSON extracts only
@@ -46,8 +46,20 @@ paper, resolves a paper root, or creates a lifecycle page.
 ├── preview.pdf    compiled preview
 ├── assets/        the selected rendered asset; its presence is not acceptance
 ├── candidates/    candidate-mode renders, pre-decision
+├── review/        rNN.md: one blind review round each, the reviewer's text and scores
 └── versions/      superseded variants and demoted candidates, kept for history
 ```
+
+`README.md` must carry two lines beside the claim (JL 261022):
+
+```text
+question: <the ONE question this display answers, as a reader would ask it>?
+review: r02 · 8.5/10 · pass        the latest round · its overall score · pass | open
+```
+
+A unit with no `question:` is unfinished. `review:` is `none` until the first round, then names the
+latest `review/rNN.md`. Those records, the pass rule and the reviewer brief are
+`display-revise-loop.md`.
 
 The caller owns where `<unit-dir>` sits and the wrapper's semantic fields (caption, label, and
 placement). The renderer is told those fields; it does not derive, invent, or revise them.
@@ -88,11 +100,15 @@ inside that Run. Give separate Runs only to independently closable unit targets 
 receipts. `origin.run` records upstream provenance and is not renamed to the display Run.
 
 Renderer scores and self-checks are advisory. A single caller-directed render may be written to
-`assets/` while its `accepted:` status remains pending. When alternatives are being compared, keep
-unselected work in `candidates/`, show the candidate and review notes to the caller, and wait for
-the caller's selection before promoting a winner into `assets/`. Only the authorized human owner
-records `accepted:` after the selected asset has a compiled and inspected preview. A score
-threshold never selects or accepts an asset.
+`assets/` while its `accepted:` status remains pending. The score that counts is a blind review's:
+every display a reader will see goes through the revise loop in `display-revise-loop.md` (make,
+blind review by a fresh agent, revise, review again, until the pass rule holds or round 4 ends), and
+each round stays in the unit as `review/rNN.md`. The maker never scores itself. When alternatives
+are being compared, keep unselected work in `candidates/`, show the candidate and review notes to
+the caller, and wait for the caller's selection before promoting a winner into `assets/`. Only the
+authorized human owner records `accepted:`, after the selected asset has a compiled and inspected
+preview AND its latest `review/rNN.md` passes. A passing review only lets the person decide: a score threshold never
+selects or accepts an asset, and `accepted:` is never recorded before a passing round.
 
 ## Editable PowerPoint sources
 
@@ -155,8 +171,10 @@ unchanged caller-owned caption, label, and placement. Do not overwrite `float.te
    unit, follow the TeX renderer's two wrapper compiles from their own directories so relative
    `\\input` paths resolve, and write the standalone fallback to `assets/figure.pdf`. Candidate
    mode leaves the active preview unchanged until promotion.
-7. Update `README.md`: status, evidence source.
+7. Update `README.md`: `question:`, status, evidence source, and `review: none` on a new unit.
 8. Return the unit path and the result bundle. Never leave assets in a flat directory.
+9. Hand the unit to the revise loop (`display-revise-loop.md`). A renderer revising from a review
+   repeats steps 3 to 8 and leaves the review records as they are.
 
 ## Invariants
 
@@ -168,10 +186,12 @@ unchanged caller-owned caption, label, and placement. Do not overwrite `float.te
   coefficient, or a number typed into `float.tex`, is a placeholder and not a display. Concept
   renderers do not calculate values. They may show a real count, percentage, or estimate only when
   the caller declares a verified `role: values` intake source; they never invent one.
-- **Publication display hygiene.** Every rendered display must read in grayscale and be
-  colorblind-safe: encode the key contrast with position, shape, or weight, never with hue alone.
-  No title baked inside the image; the title lives only in the caller-owned `\caption{}` in
-  `float.tex`.
+- **Publication display hygiene.** A display is in colour, from the caller's one colour scheme:
+  the same thing has the same colour in every display, a colour never means two things, and tick
+  labels and axis text stay black (`display-revise-loop.md`, the colour rule). It must also read in
+  grayscale and be colorblind-safe: encode the key contrast with position, shape, or weight as well,
+  never with hue alone. No title baked inside the image; the title lives only in the caller-owned
+  `\caption{}` in `float.tex`, and the caption title is followed by the unit's `question:`.
 - **Refuse rather than guess.** Stop when the brief is incomplete, the named intake source or its
   snapshot file is missing, the snapshot is stale, or a numeric display has no verified aggregate.
   Do not search for data, invent it, or guess placement.

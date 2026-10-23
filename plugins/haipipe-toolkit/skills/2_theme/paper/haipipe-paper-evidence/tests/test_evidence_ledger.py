@@ -1,5 +1,7 @@
 """evidence_ledger.py on a made-up project: a version whose Sections read one value from two Runs, label one value
-two ways, and show more displays than the venue allows. Placeholders only, no real project data."""
+two ways, show more displays than the venue allows, show displays that have not passed the revise loop, and frame
+a picture that no work Run drew.
+Placeholders only, no real project data."""
 from __future__ import annotations
 
 import json
@@ -29,6 +31,25 @@ CITE = "  - kind: cite\n    source: b01.j01.t01\n    items:\n      - {run: r01, 
 NEED = "  - kind: cite\n    title: Sources still needed\n    items:\n      - {need: 'a source', for: [3], anchor: ['x']}\n"
 
 
+def review(unit: Path, question: str = "Does the effect differ by group?", **rounds: str) -> None:
+    """A display unit's README (with its question: when given) and its review rounds, {"r01": "<scores line>"}."""
+    write(unit / "README.md", f"# {unit.name}\n" + (f"question: {question}\n" if question else "") + "claim: a demo claim\n")
+    for rnd, line in rounds.items():
+        write(unit / "review" / f"{rnd}.md", f"# {unit.name} · review {rnd}\n\nround: {rnd}\n\n### {unit.name}\n{line}\n")
+
+
+DRAWN = "work/b03_demo/j09_demo_displays/t01_figure1_effect/runs/r01_draw/result"
+
+
+def drawn_by(unit: Path, run: str = DRAWN) -> None:
+    """The unit's intake points at the work Run that draws its picture."""
+    write(unit / "intake/manifest.yaml", f"sources:\n  - role: asset\n    path: {run}/figure.pdf\n")
+
+
+PASS = "scores: question 9 · readability 8 · honesty 8 · journal-ready 8 · overall 8.5"
+FAIL = "scores: question 6 · readability 5 · honesty 7 · journal-ready 5 · overall 5.5"
+
+
 def item(item_id: str, label: str, result: str = "") -> str:
     run = result.split("/")[1] if result else ""
     local = f"- **Local Run**: Page · Evidence Item · new-run · {run} → {result}\n" if result else ""
@@ -43,6 +64,7 @@ class LedgerTest(unittest.TestCase):
         for run, effect in (("r01_first", 0.041), ("r02_second", 0.043)):
             write(root / f"work/b01_demo/j01_demo/t01_demo/runs/{run}/result/metrics.json", json.dumps({"effect": effect}))
         write(root / "discovery/b01_demo/j01_demo/t01_demo/runs/r01_paper/result/doe2026.bib", BIB)
+        write(root / DRAWN / "figure.pdf", "%PDF placeholder\n")
         self.job = root / "paper/Paper-Demo/j01_v1019_demo"
         write(root / "paper/Paper-Demo/board.md", "# Paper-Demo\n")
         for t in ("t00_abstract", "t03_results", "t05_discussion", "t21_appendix"):
@@ -121,11 +143,72 @@ class LedgerTest(unittest.TestCase):
         L = led.ledger(self.job)
         self.assertFalse(any("ada2024" in b for b in L["bad"]), L["bad"])
 
+    def test_a_main_text_display_without_a_question_or_a_passing_review_is_flagged(self):
+        units = self.job / "t03_results/display"
+        review(units / "Display1-effect", r01=FAIL, r02=PASS)               # the latest round passes
+        review(units / "Display2-cohort", question="", r01=FAIL)            # no question:, and r01 fails
+        drawn_by(units / "Display1-effect"); drawn_by(units / "Display2-cohort")
+        L = led.ledger(self.job)
+        self.assertFalse(any("Display1-effect" in b for b in L["bad"]), L["bad"])
+        self.assertIn("display has no question: t03_results/Display2-cohort (its README names none)", L["bad"])
+        self.assertTrue(any(b.startswith("display review not passed: t03_results/Display2-cohort (r01 overall 5.5/10")
+                            and "readability 5" in b for b in L["bad"]), L["bad"])
+        # an appendix display with no review is a ⚠️, not a ❗
+        self.assertTrue(any("display review not passed: t21_appendix/Display1-cohort (no review/ round)" in w
+                            for w in L["warn"]), L["warn"])
+        self.assertFalse(any("t21_appendix" in b for b in L["bad"]), L["bad"])
+        # the listing shows the latest score
+        shown = led.show(L)
+        self.assertIn("Display1-effect   r02 8.5/10 ✅", shown)
+        self.assertIn("Display2-cohort   r01 5.5/10 open · no question:", shown)
+
+    def test_a_display_not_drawn_by_a_work_run_of_the_versions_work_block_is_flagged(self):
+        unit = self.job / "t03_results/display/Display1-effect"
+        review(unit, r01=PASS)
+        L = led.ledger(self.job)
+        self.assertIn("display drawn inside the paper: t03_results/Display1-effect (it has no intake/manifest.yaml)", L["bad"])
+        write(unit / "intake/manifest.yaml", "sources:\n  - role: values\n    path: intake/inputs/source_data.csv\n")
+        self.assertTrue(any("Display1-effect (its intake/manifest.yaml names no work Run result/)" in b
+                            for b in led.ledger(self.job)["bad"]))
+        drawn_by(unit)
+        self.assertFalse(any("Display1-effect" in b for b in led.ledger(self.job)["bad"]))
+        # the version names another work Block
+        write(self.job / f"{self.job.name}.md", "# demo\nwork-block: `work/b04_other`\n")
+        self.assertTrue(any("Display1-effect (it reads work/b03_demo, the version's work-block: is work/b04_other)" in b
+                            for b in led.ledger(self.job)["bad"]))
+        write(self.job / f"{self.job.name}.md", "# demo\nwork-block: work/b03_demo\n")
+        self.assertFalse(any("Display1-effect" in b for b in led.ledger(self.job)["bad"]))
+        # a Run that is not on disk, and a Run outside the display Job
+        drawn_by(unit, "work/b03_demo/j09_demo_displays/t01_figure1_effect/runs/r02_gone/result")
+        self.assertTrue(any("r02_gone/result is not on disk" in b for b in led.ledger(self.job)["bad"]))
+        write(self.job.parents[2] / "work/b03_demo/j02_question/t01_q/runs/r01/result/figure.pdf", "%PDF\n")
+        drawn_by(unit, "work/b03_demo/j02_question/t01_q/runs/r01/result")
+        L = led.ledger(self.job)
+        self.assertFalse(any("Display1-effect" in b for b in L["bad"]), L["bad"])
+        self.assertTrue(any(w.startswith("display outside the display Job: t03_results/Display1-effect") for w in L["warn"]))
+
+    def test_the_pass_rule_needs_overall_8_and_every_dimension_7_from_the_latest_round(self):
+        unit = self.job / "t03_results/display/Display1-effect"
+        review(unit, r09=PASS, r10="scores: question 9 · readability 6.5 · honesty 9 · journal-ready 9 · overall 8.5")
+        r = led.unit_review(unit)
+        self.assertEqual((r["round"], r["passed"]), ("r10", False))       # r10 is later than r09
+        self.assertEqual(r["why"], "r10 overall 8.5/10, readability 6.5 under 7")
+        review(unit, r11="scores: question 9/10 · readability 8/10 · honesty 9/10 · overall 8/10")
+        self.assertEqual(led.unit_review(unit)["why"], "r11 has no score for journal-ready")
+        review(unit, r12="4. **scores:** question 8 · readability 7 · honesty 7 · journal ready 7 · overall 8")
+        self.assertTrue(led.unit_review(unit)["passed"])
+
     def test_the_command_exits_1_on_a_conflict_and_prints_the_ledger(self):
         self.assertEqual(led.main([str(self.job)]), 1)
         for t in ("t03_results", "t05_discussion"):
             (self.job / t / "evidence/cards.yaml").write_text(cards(VALUE.format(run="r01")), encoding="utf-8")
         (self.job / "t21_appendix/display/Display1-cohort").rename(self.job / "t21_appendix/display/Display1-extra")
+        self.assertEqual(led.main([str(self.job)]), 1)                     # the main-text displays are not reviewed
+        for d in ("Display1-effect", "Display2-cohort"):
+            review(self.job / "t03_results/display" / d, r01=PASS)
+        self.assertEqual(led.main([str(self.job)]), 1)                     # their pictures are not drawn by a work Run
+        for d in ("Display1-effect", "Display2-cohort"):
+            drawn_by(self.job / "t03_results/display" / d)
         self.assertEqual(led.main([str(self.job)]), 0)
 
 

@@ -9,8 +9,8 @@ description: >-
   work. Use for paper setup (paper_ladder.py), status, drafting, a Claude and
   Codex session per Section, complete-paper assembly, or comments and reviews.
 metadata:
-  version: "1.15.2"
-  last_updated: "2026-10-20"
+  version: "1.17.0"
+  last_updated: "2026-10-22"
   summary: "Paper owns the journey and composition; the shared Page owns each Paper Page's lifecycle and release."
 ---
 
@@ -130,6 +130,21 @@ but never becomes a wording or evidence source.
 
 For visual displays, load `haipipe-display`; its concept-first gate owns
 composition references, editable reconstruction and candidate promotion.
+
+**A paper is a pair: the paper Board writes, its work Block computes** (JL 261022: "for /haipipe-paper, we should
+have a paper block and a work block to provide the displays and E-work, right?"). `paper/Paper-X/` holds the words;
+one work folder, a work Block `work/bNN_.../`, holds the Runs that make every number and every picture (JL 261023:
+"for the paper, they will also have a work folder, one work folder to provide the content for the paper folder"):
+the question Jobs its VALUE cards read, and its display Job `j21_paper_displays` (named for its venue when a
+Project has several, `j21_<venue>_displays`, e.g. `j21_jama_im_displays`; one Task per display, each picture or table
+body drawn by a Run's `result/`). The display Job opens with a **display plan** the authors agree before anything is
+drawn (JL 261023: "this should be a plan, proposed to the author to think about how to draw them"): one row per
+display with its number, title, the one question it answers, its layout (rows, columns or axes), its source Runs
+and its open choices, written from the team's own record (meeting notes, slides) in the Job face. The Sections write
+their numbers only after the drawn displays pass review and are accepted, so a sentence never describes a table
+that is still changing. A paper display unit only frames that Run's picture (question, caption, legend, number,
+size, review); no paper folder runs analysis or plotting code. The version face (or `board.md`) names the Block in a
+`work-block:` line. The rules are haipipe-paper-evidence's rule 3.
 
 ## 🚪 Routing
 

@@ -1,3 +1,9 @@
+## 0.8.2 · 2026-10-22 · a planned Task's deliverables stay in the Goal tree
+
+- `work_progress.task_nodes`: an item whose Task folder is not made yet sits under its Job, never dropped. Before,
+  Proj11's b12, b13, b21 and b31 each showed one done item and read ✅ "1 of 1" while 2 or 3 planned items were
+  hidden; now they read 🔶 "1 of 3" or "1 of 4", the planned items ☐.
+
 ## 0.8.1 · 2026-10-22 · Job and Task reports show every Studio drawing that names them
 
 - The Goal tree's "📄 About this Job" and "📄 About this Task" pop out a Job's overview and a Task's report

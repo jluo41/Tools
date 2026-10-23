@@ -334,7 +334,30 @@ def citation_text(match: re.Match[str]) -> str:
         return ""
     if author_date_style():
         return "(" + "; ".join(author_date_label(k) for k in present) + ")"
+    if superscript_citations():   # AMA (JAMA): superscript numbers, ranges joined, no brackets
+        return "\x0e" + number_ranges([CITATION_NUMBERS[k] for k in present]) + "\x0f"
     return "[" + ",".join(str(CITATION_NUMBERS[k]) for k in present) + "]"
+
+
+def superscript_citations() -> bool:
+    """AMA style (JAMA, JAMA IM): citations are superscript numbers, set by citation_format = "superscript"
+    in the profile (JL 261023: "JAMA's author instructions" ask for superscript Arabic numerals)."""
+    return str(PROFILE_CONFIG.get("citation_format", "brackets")).lower() == "superscript"
+
+
+def number_ranges(numbers: list[int]) -> str:
+    """[1, 2, 3, 5] -> "1-3,5" (AMA: a run of 3 or more joined by a hyphen)."""
+    out, run = [], []
+    for n in sorted(set(numbers)):
+        if run and n == run[-1] + 1:
+            run.append(n)
+            continue
+        if run:
+            out.append(f"{run[0]}-{run[-1]}" if len(run) >= 3 else ",".join(map(str, run)))
+        run = [n]
+    if run:
+        out.append(f"{run[0]}-{run[-1]}" if len(run) >= 3 else ",".join(map(str, run)))
+    return ",".join(out)
 
 
 TEX_SYMBOLS = {
@@ -438,7 +461,15 @@ def register_labels(text: str) -> None:
     pattern = re.compile(r"\\begin\{(figure\*?|table\*?)\}.*?\\end\{\1\}", re.S)
     appendix = re.search(r"\\appendix\b", text) if per_appendix_numbering() else None
     main_part = text[:appendix.start()] if appendix else text
-    for match in pattern.finditer(main_part):
+    # A \setcounter{table}{0} (JAMA's supplement restarts at eTable 1 after the references) restarts the count
+    # here too, so a \ref in the Word copy prints the number the LaTeX lane prints.
+    reset = re.compile(r"\\setcounter\{(table|figure)\}\{0\}")
+    events = sorted([(m.start(), "reset", m.group(1)) for m in reset.finditer(main_part)]
+                    + [(m.start(), "float", m) for m in pattern.finditer(main_part)], key=lambda e: e[0])
+    for _, what, match in events:
+        if what == "reset":
+            counters[match] = 0
+            continue
         kind = "figure" if match.group(1).startswith("figure") else "table"
         label = extract_command(match.group(0), "label")
         if not label:
@@ -639,6 +670,8 @@ def parse_display(block: str) -> Display:
     is_figure = bool(re.search(r"\\includegraphics(?:\[[^]]*\])?\{", block))
     caption = extract_command(block, "caption") or extract_command(block, "caption*")
     label = extract_command(block, "label")
+    notes = re.findall(r"\\begin\{flushleft\}(.*?)\\end\{flushleft\}", block, re.S)
+    note = " ".join(latex_to_text(mark_emphasis(n)).strip() for n in notes if latex_to_text(n).strip())
     if is_figure:
         image_match = re.search(r"\\includegraphics(?:\[[^]]*\])?\{([^}]+)\}", block)
         image_ref = image_match.group(1) if image_match else ""
@@ -649,6 +682,7 @@ def parse_display(block: str) -> Display:
             label=label,
             image_ref=image_ref,
             image_path=find_asset(image_ref) if image_ref else None,
+            note=note,
         )
     # A table note sits after the tabular in \begin{flushleft}...\end{flushleft}; the PDF
     # printed it and Word dropped it until 0.8.4 (JL 260928, MISQ official format has "Note." paragraphs).
@@ -941,8 +975,9 @@ def add_math_paragraph(doc: Document, latex: str, *, size: float = 12) -> None:
 # characters nor whitespace), so add_rich_text prints them bold or italic (0.8.4, JL 260928
 # appendix screenshot: "Agreeableness specification" lost its bold; 11 \textit were plain).
 EMPHASIS_MARKS = {"textbf": ("\x02", "\x03"), "textit": ("\x04", "\x05"), "emph": ("\x04", "\x05")}
-EMPHASIS_SWITCH = {"\x02": ("bold", True), "\x03": ("bold", False), "\x04": ("italic", True), "\x05": ("italic", False)}
-RICH_PART = re.compile(r"(@@MATH\d+@@|[\x02-\x05])")
+EMPHASIS_SWITCH = {"\x02": ("bold", True), "\x03": ("bold", False), "\x04": ("italic", True), "\x05": ("italic", False),
+                   "\x0e": ("superscript", True), "\x0f": ("superscript", False)}   # \x0e \x0f: an AMA citation
+RICH_PART = re.compile(r"(@@MATH\d+@@|[\x02-\x05\x0e\x0f])")
 
 
 def mark_emphasis(value: str) -> str:
@@ -964,11 +999,13 @@ def add_rich_text(doc: Document, text: str, maths: list[tuple[str, bool]], *, si
     if not RICH_PART.search(text):
         add_text(doc, text, size=size, line_spacing=line_spacing, before=before, after=after)
         return
+    text = re.sub(r"\s+\x0e", "\x0e", text)   # a superscript citation sits against its word
+    text = re.sub(r"(\x0e[^\x0f]*\x0f)([.,])", r"\2\1", text)   # AMA 3.6: after a period or comma ("reviews.14,15")
     paragraph = doc.add_paragraph(style="Normal")
     paragraph.paragraph_format.line_spacing = line_spacing
     paragraph.paragraph_format.space_before = Pt(before)
     paragraph.paragraph_format.space_after = Pt(after)
-    state = {"bold": False, "italic": False}
+    state = {"bold": False, "italic": False, "superscript": False}
     for part in RICH_PART.split(text):
         if not part:
             continue
@@ -983,14 +1020,20 @@ def add_rich_text(doc: Document, text: str, maths: list[tuple[str, bool]], *, si
             else:
                 paragraph._p.append(omath)
         else:
-            set_font(paragraph.add_run(part), size=size,
-                     bold=True if state["bold"] else None, italic=True if state["italic"] else None)
+            run = paragraph.add_run(part)
+            set_font(run, size=size, bold=True if state["bold"] else None, italic=True if state["italic"] else None)
+            if state["superscript"]:
+                run.font.superscript = True
 
 
 def add_text(doc: Document, text: str, *, size: float = 12, bold: bool = False, align=None, style: str = "Normal",
              line_spacing: float = 2.0, before: float = 0, after: float = 0) -> None:
     if not text:
         return
+    if "\x0e" in text and not bold:   # a superscript citation: the rich writer sets it
+        add_rich_text(doc, text, MATH_STORE, size=size, line_spacing=line_spacing, before=before, after=after)
+        return
+    text = text.replace("\x0e", "").replace("\x0f", "")
     paragraph = doc.add_paragraph(style=style)
     paragraph.alignment = align
     paragraph.paragraph_format.line_spacing = line_spacing
@@ -1310,6 +1353,8 @@ def add_figure(doc: Document, display: Display, title: str = "", *, compact: boo
     caption = f"{title}. " if title else ""
     caption += display.caption
     add_text(doc, caption.strip(), size=10 if compact else 11, style="Caption")
+    if display.note:
+        add_rich_text(doc, display.note, MATH_STORE, size=9 if compact else 10)
 
 
 def add_events(doc: Document, events: Iterable[Event], *, include_displays: bool = True, compact: bool = False,
@@ -1358,6 +1403,42 @@ def add_events(doc: Document, events: Iterable[Event], *, include_displays: bool
                     add_table(doc, display, title, compact=compact)
                 else:
                     add_figure(doc, display, title, compact=compact)
+
+
+def add_supplement_contents(doc: Document, events: list[Event]) -> None:
+    """The first-page list of a JAMA supplement: each section heading, then each table and figure by its caption."""
+    add_text(doc, "This supplemental material has been provided by the authors to give readers additional information "
+                  "about their work.", size=11, line_spacing=1.5, before=12)
+    for event in events:
+        if event.kind == "heading" and event.level <= 2:
+            add_text(doc, str(event.value), size=11, line_spacing=1.15)
+        elif event.kind == "display" and isinstance(event.value, Display) and event.value.caption:
+            add_text(doc, "    " + event.value.caption, size=10, line_spacing=1.15)
+
+
+def restyle_runs(doc: Document, font: str, body_size: float) -> None:
+    """Set every run, tables included, in `font`; body text at `body_size` (bold headings keep theirs up to 12 pt)."""
+    def runs():
+        for p in doc.paragraphs:
+            yield from p.runs
+        for table in doc.tables:
+            for row in table.rows:
+                for cell in row.cells:
+                    for p in cell.paragraphs:
+                        yield from p.runs
+    for run in runs():
+        run.font.name = font
+        rpr = run._element.get_or_add_rPr()
+        fonts = rpr.find(qn("w:rFonts"))
+        if fonts is None:
+            fonts = OxmlElement("w:rFonts")
+            rpr.append(fonts)
+        for attr in ("w:ascii", "w:hAnsi", "w:eastAsia", "w:cs"):
+            fonts.set(qn(attr), font)
+        if run.bold:
+            run.font.size = Pt(min(run.font.size.pt if run.font.size else 12, 12))
+        else:
+            run.font.size = Pt(min(run.font.size.pt if run.font.size else body_size, body_size))
 
 
 def add_abstract(doc: Document, block: str) -> None:
@@ -1483,6 +1564,7 @@ def extract_jama_title(center_block: str) -> tuple[str, str]:
 def jama_parts(raw_master: str) -> tuple[str, str, str, str, str, str]:
     """Split a JAMA IM desk room without requiring a generic abstract environment."""
     body = clean_fragment(raw_master, MASTER.parent, remove_abstract=False)
+    register_labels(body)
     body = body.split(r"\begin{document}", 1)[-1].split(r"\end{document}", 1)[0]
     center_match = CENTER_PATTERN.search(body)
     if center_match is None:
@@ -1509,7 +1591,8 @@ def add_jama_title_page(doc: Document, title: str, author: str, main_words: int,
                         table_count: int, figure_count: int, evidence: dict[str, object]) -> None:
     """Venue-only title packaging; all study-specific text remains in the room source."""
     add_text(doc, title, size=14, bold=True, align=WD_ALIGN_PARAGRAPH.CENTER)
-    if str(evidence.get("mode", "draft")) not in {"final", "submission", "submission-ready"}:
+    if (str(evidence.get("mode", "draft")) not in {"final", "submission", "submission-ready"}
+            and PROFILE_CONFIG.get("status_header", True)):
         add_text(doc, str(PROFILE_CONFIG.get("draft_label", "DRAFT — NOT SUBMISSION READY")),
                  align=WD_ALIGN_PARAGRAPH.CENTER)
     if author:
@@ -1867,8 +1950,16 @@ def build_jama_internal_medicine(raw_master: str, evidence: dict[str, object]) -
     if key_points:
         labelled_blocks(main_doc, str(PROFILE_CONFIG.get("key_points_heading", "KEY POINTS")), key_points)
     labelled_blocks(main_doc, str(PROFILE_CONFIG.get("abstract_heading", "ABSTRACT")), abstract)
-    add_events(main_doc, main_events, include_displays=bool(PROFILE_CONFIG.get("include_main_displays", False)))
+    include = bool(PROFILE_CONFIG.get("include_main_displays", False))
+    at_end = bool(PROFILE_CONFIG.get("main_displays_at_end", False))   # JAMA: tables, then figures, after the references
+    add_events(main_doc, main_events, include_displays=include and not at_end, number_displays=True, main_numbering=True)
     add_references(main_doc)
+    if include and at_end:
+        for kind, adder, prefix in (("table", add_table, PROFILE_CONFIG.get("main_table_prefix", "Table ")),
+                                    ("figure", add_figure, PROFILE_CONFIG.get("main_figure_prefix", "Figure "))):
+            for number, display in enumerate([d for d in main_displays if d.kind == kind], start=1):
+                main_doc.add_page_break()
+                adder(main_doc, display, f"{prefix}{number}")
     main_doc.save(MAIN_PATH)
 
     supp_doc = Document()
@@ -1876,8 +1967,12 @@ def build_jama_internal_medicine(raw_master: str, evidence: dict[str, object]) -
     add_text(supp_doc, title, size=14, bold=True, align=WD_ALIGN_PARAGRAPH.CENTER)
     add_text(supp_doc, str(PROFILE_CONFIG.get("supplement_title", "ONLINE-ONLY SUPPLEMENTAL MATERIAL")),
              bold=True, align=WD_ALIGN_PARAGRAPH.CENTER)
+    if PROFILE_CONFIG.get("supplement_contents", False):   # JAMA: every element and its title on the first page
+        add_supplement_contents(supp_doc, supplement_events)
     supp_doc.add_page_break()
     add_events(supp_doc, supplement_events, include_displays=True, compact=True)
+    if PROFILE_CONFIG.get("supplement_font"):
+        restyle_runs(supp_doc, str(PROFILE_CONFIG["supplement_font"]), float(PROFILE_CONFIG.get("supplement_body_size", 10)))
     supp_doc.save(SUPP_PATH)
 
     pdf_report = render_submission_pdfs()

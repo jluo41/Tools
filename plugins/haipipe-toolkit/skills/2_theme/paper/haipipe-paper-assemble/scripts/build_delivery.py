@@ -206,6 +206,7 @@ PROFILE = load_profile(VENUE_PROFILE)
 _L = PROFILE.get("latex", {}) if isinstance(PROFILE.get("latex"), dict) else {}
 LATEX_SPACING = str(_L.get("spacing", "onehalf"))            # single · onehalf · double
 LATEX_BIBSTYLE = str(_L.get("bibstyle", "apalike"))
+LATEX_NATBIB = str(_L.get("natbib", "authoryear,round"))   # JAMA (AMA): "super,sort&compress" with bibstyle unsrtnat
 LATEX_DISPLAYS = str(_L.get("displays", "inline"))            # inline · end (endfloat: every float after the text)
 LATEX_APPENDIX_NEWPAGE = bool(_L.get("appendix_newpage", False))
 LATEX_TITLE_PAGE = str(_L.get("title_page", "inline"))        # inline · separate (blind title page alone)
@@ -442,6 +443,13 @@ def page_display_units(page_dir: Path):
             key=lambda p: p.as_posix(),
         )
 
+    # Current draft Tasks own display/ beside draft/ and evidence/. Typed
+    # Result bindings above remain authoritative when a Page uses them.
+    direct = page_dir / "display"
+    if direct.is_dir():
+        return sorted((p for p in direct.iterdir()
+                       if p.is_dir() and not p.name.startswith(("_", "."))),
+                      key=lambda p: p.name)
     legacy = plan_home(page_dir) / "evidence" / "display"
     return sorted((p for p in legacy.glob("*/") if p.is_dir()), key=lambda p: p.name) if legacy.is_dir() else []
 
@@ -619,7 +627,9 @@ def page_unit_reference(p, raw_path: str):
     return None
 
 def unit_page(u: Path) -> str:
-    """the Section Page owning a Result unit or its retired migration folder."""
+    """The Section Page owning a direct, Result or legacy display unit."""
+    if u.parent.name == "display" and (u.parent.parent / (u.parent.parent.name + ".md")).is_file():
+        return u.parent.parent.name
     return u.parents[3].name
 
 def unit_key(u: Path) -> str:
@@ -965,14 +975,19 @@ def write_master(main, appx, status, ready_n, total_n):
     stamp = datetime.now().strftime("%Y-%m-%d %H:%M")
     # the reader's document carries only the status word, for every profile (0.7.0; JL 260908
     # "the delivered pdf or word must be clean"); counts and the build time live in build-manifest.json
-    header = status
+    # status_header = false (paper-build.toml [profile]): no status word atop every page; the build manifest still
+    # records DRAFT/READY (JL 261023: "do we need this?")
+    header = status if PROFILE.get("status_header", True) else ""
+    headrule = "% a status header and its rule" if header else "\\renewcommand{\\headrulewidth}{0pt}"
     spacing_cmd = {"single": "\\singlespacing", "double": "\\doublespacing"}.get(LATEX_SPACING, "\\onehalfspacing")
     endfloat = "\\usepackage[nolists,tablesfirst,nomarkers]{endfloat}" if LATEX_DISPLAYS == "end" else "% displays inline at first reference"
     paper_preamble = ("% paper-owned preamble · " + PREAMBLE_FILE.name + "\n" + PREAMBLE_FILE.read_text(encoding="utf-8")) \
         if PREAMBLE_FILE and PREAMBLE_FILE.exists() else "% no paper preamble declared"
     if JAMA:   # the JAMA Word renderer parses a title-page center block, not \maketitle
+        # [paper] authors (LaTeX, lines split by \\) prints the byline; a blind copy leaves it unset
+        byline = str(CFG["paper"].get("authors", "")).strip() or "[Authors blinded for review]"
         title_block = ("\\begin{document}\n\n\\begin{center}\n{\\Large\\bfseries " + title + "}\n\n\\vspace{1em}\n\n"
-                       "[Authors blinded for review]\n\n\\vspace{0.5em}\n\\end{center}")
+                       + byline + "\n\n\\vspace{0.5em}\n\\end{center}")
     else:
         title_block = "\\title{" + title + "}\n\\author{}\n\\date{}\n\\begin{document}\n\\maketitle"
         if LATEX_TITLE_PAGE == "separate":       # blind copy: the title alone on page 1
@@ -984,7 +999,7 @@ def write_master(main, appx, status, ready_n, total_n):
 \usepackage{{fontspec}}
 \IfFontExistsTF{{TeX Gyre Termes}}{{\setmainfont{{TeX Gyre Termes}}}}{{\IfFontExistsTF{{Times New Roman}}{{\setmainfont{{Times New Roman}}}}{{}}}}
 \usepackage{{microtype}}
-\usepackage[authoryear,round]{{natbib}}
+\usepackage[{LATEX_NATBIB}]{{natbib}}
 \usepackage{{graphicx,booktabs,tabularx,multirow,amsmath,amssymb,setspace,caption,float,xcolor}}
 \usepackage[hidelinks]{{hyperref}}
 \usepackage{{fancyhdr}}
@@ -1000,6 +1015,7 @@ def write_master(main, appx, status, ready_n, total_n):
 \graphicspath{{{{./}}}}
 \pagestyle{{fancy}}\fancyhf{{}}
 \fancyhead[L]{{\small {header}}}
+{headrule}
 \fancyfoot[C]{{\thepage}}
 {title_block}
 \thispagestyle{{fancy}}
@@ -1026,7 +1042,10 @@ def write_master(main, appx, status, ready_n, total_n):
     # no acknowledgments at all, since funding and thanks would unblind it; they go in the separate title-page file.
     tail = (["\\section*{Acknowledgments}", "\\noindent\\textit{[Acknowledgments, funding and disclosures are written at submission; this build is a draft.]}", ""]
             if LATEX_ACKNOWLEDGMENTS else [])
-    tail += ["\\clearpage", "\\bibliographystyle{" + LATEX_BIBSTYLE + "}", "\\bibliography{reference}", "", "\\clearpage", "\\appendix", ""]
+    tail += ["\\clearpage", "\\bibliographystyle{" + LATEX_BIBSTYLE + "}", "\\bibliography{reference}", ""]
+    if LATEX_DISPLAYS == "end":   # the main displays print here, after the references; the appendix floats stay in place
+        tail += ["\\processdelayedfloats", "\\makeatletter\\efloat@restorefloats\\makeatother", ""]
+    tail += ["\\clearpage", "\\appendix", ""]
     if JAMA:   # JAMA supplements number their floats eTable 1… / eFigure 1…, restarting after the references
         tail += ["\\setcounter{table}{0}\\renewcommand{\\tablename}{eTable}\\renewcommand{\\thetable}{\\arabic{table}}",
                  "\\setcounter{figure}{0}\\renewcommand{\\figurename}{eFigure}\\renewcommand{\\thefigure}{\\arabic{figure}}", ""]
@@ -1105,6 +1124,9 @@ def declared_number(unit):
     """the paper-level number a unit claims, read from its README ## Placement. `unit` is '<page-id>/<unit>' (0.7.5)."""
     page, _, name = unit.partition("/")
     hits = [h for g in PAGE_HOMES for h in ROOT.glob(f"{g}/{page}/results/*/payload/{name}/README.md")] if name else []
+    if not hits and name:
+        hits = [h for g in PAGE_HOMES
+                for h in ROOT.glob(f"{g}/{page}/display/{name}/README.md")]
     if not hits and name:
         # Read the retired Outline lane only for papers that have not migrated
         # their DISPLAY Results yet.

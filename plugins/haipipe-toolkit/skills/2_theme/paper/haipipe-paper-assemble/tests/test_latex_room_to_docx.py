@@ -284,3 +284,34 @@ def test_section_snapshots_can_be_switched_off(room):
     cfg.write_text(cfg.read_text().replace('section_snapshots = "word/draft-sections"', 'section_snapshots = ""'))
     _build_with(room, "\\begin{abstract}One sentence.\\end{abstract}")
     assert not (room / "delivery" / "word" / "draft-sections").exists()
+
+
+def test_jama_main_displays_keep_numbers_refs_and_figure_notes(room):
+    from PIL import Image
+    latex = room / "delivery/latex"
+    image = latex / "displays/observed.png"
+    Image.new("RGB", (12, 12), "white").save(image)
+    (latex / "master.tex").write_text(
+        r"\documentclass{article}\begin{document}\begin{center}D\end{center}"
+        r"\section*{Key Points}\textbf{Question} One?"
+        r"\section*{Abstract}\textbf{Importance} One."
+        r"\section{Introduction}See Table~\ref{tab:main} and Figure~\ref{fig:observed}."
+        r"\input{sections/S-D-Main-1-Results}"
+        r"\begin{figure}\includegraphics{displays/observed.png}"
+        r"\caption{Observed values.}\label{fig:observed}"
+        r"\begin{flushleft}Intervals use requests.\end{flushleft}\end{figure}"
+        r"\bibliography{reference}\appendix\section{Extra}One.\end{document}"
+    )
+    config = room / "delivery/paper-build.toml"
+    config.write_text(config.read_text().replace(
+        'venue_label = "Test"',
+        'venue_label = "Test"\nlayout = "jama-internal-medicine"\ninclude_main_displays = true'))
+    env = dict(os.environ, HAIPIPE_PAPER_BUILD_CONFIG=str(config))
+    result = subprocess.run([sys.executable, str(ENGINE)], cwd=room / "delivery", env=env,
+                            capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr[-1500:]
+    xml = _text(room / "delivery/word/D.docx")
+    assert "Table 1" in xml and "Figure 1" in xml
+    assert "Table 1. Main regression." in xml and "Figure 1. Observed values." in xml
+    assert "Intervals use requests." in xml
+    assert "Tablemain" not in xml and "Figureobserved" not in xml

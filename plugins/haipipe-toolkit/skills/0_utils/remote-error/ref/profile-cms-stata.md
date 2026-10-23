@@ -175,7 +175,7 @@ cd F:\Physician-SPACE
 - Never copy `work\` to the repo's depth (`F:\Physician-SPACE\examples-2-cms\...`): the deepest files pass
   259 characters there, and the C and D launchers refuse a home folder longer than 23 characters.
 - After a new upload, run two short tickets first (the package's `README-UPLOAD.md` names them): one that reads
-  headers only (`b01_A_cms_pipeline\j01_A0_cms_description\sbatch\run_slice.ps1`), and one that MUST fail in
+  headers only (`b01_A_cms_description\j01_A0_cms_description\sbatch\run_slice.ps1`), and one that MUST fail in
   seconds (`b14_CD_visit_pain_musc\j02_C2_data_VisitMusc_1stPair_yr15_24\t01_C2_data_build_VisitMusc\runs\r02_*.ps1`,
   Musc has no 2021-2024 case years). It proves an error ends Stata instead of opening the /e dialog (ENV-01/ENV-11);
   if the dialog opens instead, close it and stop.

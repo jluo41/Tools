@@ -15,8 +15,8 @@ Task, a Run, as the design theme's design_ladder.py makes its own (b16 Q05).
 board writes only the face and needs no record: it makes a new folder. A Space folder (studio/, reports/, runs/,
 venues/, related/, delivery/) comes with its first item, never ahead of it (haipipe-block); `spaces` makes a
 version's two only when asked. studio/, related/ and delivery/ are the Board's alone (b10 s09-D01, D05, s04): a
-version or a Section opens the Board's and keeps none of its own. version, next, spaces and task also edit board.md's ## Pages, so each keeps the old text of what it rewrites in <board>/.paper-version-N/ with its
-record .paper-version-N.yaml, the same records the retired version_paper.py wrote, and rollback undoes the newest.
+version or a Section opens the Board's and keeps none of its own. version, next, spaces and task also edit board.md's ## Pages, so each keeps the old text of what it rewrites in <board>/.ladder-undo/version-N/ with its
+record .ladder-undo/version-N.yaml, the same records the retired version_paper.py wrote, and rollback undoes the newest.
 A Section's Runs are the Page workflow's (page.py open-run); `run` is for the Board's and a version's own Runs, written
 by the shared writer (haipipe-run scripts/soft_run.py new): runs/run-<type>-<target>/ with its run.yaml card (skill,
 agent and signs from the paper's run card whose pattern names it) and its ticket; `soft_run.py pass` adds its passes.
@@ -90,8 +90,13 @@ def readme(name, level):
     return README[name].format(level=level, types=RUN_TYPES.get(level, "the Page workflow's (page.py open-run)"))
 
 
+UNDO = ".ladder-undo"   # one hidden folder per Board holds every undo record (JL 261023: 13 .paper-version-N
+                        # folders beside the Pages were "so hard to read"); a Board may still hold legacy ones
+
+
 def records(board):
-    found = [f for f in board.glob(".paper-version-*.yaml") if re.fullmatch(r"\.paper-version-\d+\.yaml", f.name)]
+    found = [f for f in (board / UNDO).glob("version-*.yaml") if re.fullmatch(r"version-\d+\.yaml", f.name)]
+    found += [f for f in board.glob(".paper-version-*.yaml") if re.fullmatch(r"\.paper-version-\d+\.yaml", f.name)]
     return sorted(found, key=lambda f: int(re.findall(r"\d+", f.name)[-1]))         # a rolled-back record is not one
 
 
@@ -121,9 +126,10 @@ class Run:
 
     def apply(self, what):
         b = self.board
-        k = 1 + max([int(re.match(r"\.paper-version-(\d+)", f.name).group(1)) for f in b.glob(".paper-version-*")] or [0])
-        keep = b / f".paper-version-{k}"
-        keep.mkdir()
+        k = 1 + max([int(re.findall(r"\d+", f.name)[0]) for f in [*b.glob(".paper-version-*"), *(b / UNDO).glob("version-*")]]
+                    or [0])
+        keep = b / UNDO / f"version-{k}"
+        keep.mkdir(parents=True)
         done = []
         for o, n in self.moves:
             done.append({"old": o, "new": n, "how": M.move(b, o, n)})
@@ -139,11 +145,12 @@ class Run:
             else:
                 (b / rel).write_text(text, encoding="utf-8")
         rec = {"run": date.today().isoformat(), "what": what, "tool": "haipipe-paper/scripts/paper_ladder.py",
-               "moves": done, "rewritten": sorted(self.rewrite), "created": sorted(self.create), "kept": keep.name,
+               "moves": done, "rewritten": sorted(self.rewrite), "created": sorted(self.create),
+               "kept": f"{UNDO}/{keep.name}",
                "roll_back_first": "any record newer than this one"}
-        (b / f".paper-version-{k}.yaml").write_text(M.dump(rec), encoding="utf-8")
+        (b / UNDO / f"version-{k}.yaml").write_text(M.dump(rec), encoding="utf-8")
         print(f"{what}: {len(done)} moves · {len(self.rewrite)} rewritten · {len(self.create)} created · "
-              f"record .paper-version-{k}.yaml; nothing committed")
+              f"record {UNDO}/version-{k}.yaml; nothing committed")
 
 
 def header(text, key, value):
@@ -366,7 +373,7 @@ def soft_run(folder: Path, kind: str, target: str, dry: bool) -> Path:
 # ── rollback ──────────────────────────────────────────────────────────────────────────────────────
 def rollback(board):
     if not records(board):
-        sys.exit("stop: no .paper-version-N.yaml at this Board")
+        sys.exit(f"stop: no undo record ({UNDO}/version-N.yaml) at this Board")
     path = records(board)[-1]
     rec = M.load(read(path))
     keep = board / rec["kept"]

@@ -14,6 +14,7 @@ haipipe-display-tex/        ✒️ renderer · hand-authored TeX: TikZ, algorith
                                blocks, display equations · the writer is a person
 ref/                        📜 THE CONSTITUTION · display-unit-output-contract.md
                                + display-intake-contract.md; every renderer obeys them
+                               + display-revise-loop.md; every shown display passes it
 html-ppt/                   🔧 vendored runtime (MIT, upstream github) · the board's
                                slide decks link its assets AT THIS PATH · do not move
 html-to-svg/ · icon-to-svg/ 🔧 converters

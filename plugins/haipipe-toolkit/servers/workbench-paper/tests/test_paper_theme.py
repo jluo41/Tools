@@ -126,7 +126,8 @@ class PaperThemeTest(unittest.TestCase):
                 "**The paper's question**: Which doctors do patients see?\n\n"
                 "**The narrative, if the questions are answered** (what it can say):\n\n1. Agents name real doctors (RQ1).\n\n"
                 "#### 3.1 · Question 1 · RQ1\n- **Name**: Real doctors?\n- **Research question**: Are they real? (RQ1a: how many?)\n"
-                "- **Question**: We match names. Then more.\n- **Answer state**: 🔶 measured. Then more.\n\n**Hypotheses**\n"
+                "- **Question**: We match names. Then more.\n- **Answer state**: 🔶 measured. Then more.\n\n"
+                "**Theories**\n- **Th08** · core · Consideration sets (Hauser and Wernerfelt 1990): one picks among the known · tested on N → P\n\n**Hypotheses**\n"
                 "- **1a** · Mostly real: most are real · tested by Ework02\n\n**Potential claims**\n"
                 "- **1a** · C1 · from 1a · Real: the names are real.\n  - **Role**: boundary\n\n**Potential work**\n- **T1** · for 1a\n\n"
                 "### 5 · Evidence Basis and Boundaries\n\n| E | evidence | source | state |\n|---|---|---|---|\n"
@@ -136,16 +137,25 @@ class PaperThemeTest(unittest.TestCase):
         # ("可以把它们也都变成闭合的吗"): the question in the key box, a research question's row in three columns
         for needle in ("📖 The paper's question", "Which doctors do patients see?", "we ask one thing.", "Tension",
                        "RQ1 · Real doctors?", "🔶", "Are they real?", "We match names.",
-                       "❓ The question →", "🔮 What we expect, and why →", "📣 What the paper can say",
+                       "❓ The question →", "🔮 Theory, and what we expect →", "Th08 · Consideration sets", "one picks among the known", "📣 What the paper can say",
                        "1 hypothesis: 1 with evidence in hand, 0 waiting for a Run", "✅ 1a · Mostly real", "most are real",
                        "tested by Ework02", "C1 · Real", "the names are real.", "Work: T1",
                        "📜 The narrative", "Agents name real doctors (RQ1).", "🚫 What we will not claim", "that named is better;",
                        "🧾 The evidence", "Ework02"):
             self.assertIn(needle, html)
-        # quiet (JL 261020: "看起来太咋咋呼呼了，就没有重点"): no yellow key box, no box inside a card, no headings over rows
+        # the questions also drawn as the draft's §1 mind map (JL 261022: "for the idea and for the story, or for the RQ,
+        # I want something like this"), and the Result in subsections ("for the results, should we also have the
+        # subsection as well?"): the root, each RQ a branch, its hypotheses and claims the leaves with their evidence chips
+        for needle in ("pm-root", "📖 The paper's question", "🔶 RQ1", "Real doctors?", "<span class=pm-s>1a</span>",
+                       "Mostly real", "Ework02</span>", "<span class=pm-role>claim</span>", "<span class=pm-s>Th08</span>",
+                       "<span class=pm-role>theory</span>", "Role here: core", "<i>Consideration sets</i>", "tested on N → P", ">The questions</h4>",
+                       ">The narrative</h4>", ">The evidence and the work</h4>"):
+            self.assertIn(needle, html)
+        cards = html.split("</script>")[-1]                  # the folded cards, after the map's own style and script
+        # quiet (JL 261020: "看起来太咋咋呼呼了，就没有重点"): no yellow key box, no box inside a card
         for gone in ("RQ1a", "Then more.", "Role", "<details class=\"topic work-task\" open", "#ffd43b", "border:1px solid",
                      "❓ The research questions"):
-            self.assertNotIn(gone, html)
+            self.assertNotIn(gone, cards)
         card = _idea_card({"id": "i13", "title": "Who gets named?", "verdict": "⬜ open",
                            "fields": [("novelty", "⬜ unverified (cross-model check only)"), ("verdict", "⬜ open")],
                            "substance": [("Hypothesis", ["the premium sits in reading answers. More words."]),
@@ -153,6 +163,31 @@ class PaperThemeTest(unittest.TestCase):
         for needle in ('id="idea-i13"', "<b>i13 · Who gets named?</b>", "the premium sits in reading answers.",
                        "novelty ⬜ unverified", "test-ready", '<details class="topic work-task"'):
             self.assertIn(needle, card)
+        # the ideas as a map too (JL 261022): the direction in the root, an idea a branch, its parts the leaves
+        from live.paper_theme import _idea_map
+        tree = _idea_map([{"id": "i13", "title": "Who gets named?", "verdict": "⬜ open",
+                           "fields": [("novelty", "⬜ unverified")],
+                           "substance": [("Hypothesis", ["the premium sits in reading answers. More words."]),
+                                         ("Core Claims / Novelty Check", ["| claim | status |"])]}], "who gets seen?")
+        for needle in ("💡 The direction", "who gets seen?", "⬜ i13", "Who gets named?", "pm-role>hypothesis</span>",
+                       "the premium sits in reading answers.", "pm-role>novelty</span>", "⬜ unverified"):
+            self.assertIn(needle, tree)
+        self.assertNotIn("| claim |", tree.split("</style>")[1].split("<script>")[0].replace('title="| claim', ""))
+        # the data flow as a mind map of any depth (JL 261023: "You can make more layers of the mindmap tree")
+        from live.paper_theme import _flow_sections
+        flow = _flow_sections("### 1 · Data tree\n\n- 📊 The data · fold00\n  - ① Sources · b01\n    - N · Every doctor · b01 j01\n"
+                              "      - t01 · Requests · ✅ all folds\n  - ② Joined · b03\n    - t01 · Request table · 🔶 two sources\n")
+        for needle in ("tr-wires", "📊 The data", "① Sources", "Every doctor", "✅ Requests", "all folds", "Request table",
+                       ">The data, as a tree</h4>"):
+            self.assertIn(needle, flow)
+        self.assertNotIn("<span class=pm-role></span>", flow)
+        # a count in the tree is read from a CSV on each view, never typed ("fold00 到 fold09 到底跑了几个了")
+        with tempfile.TemporaryDirectory() as tmp:
+            (Path(tmp) / "c.csv").write_text("setting,agent,of_ten\nA1,Luna,✅ 4 of 10 folds\nB,Luna,✅ 1 of 10 folds\n")
+            got = _flow_sections("### 1 · Data tree\n\n- 📊 Data · f\n  - A1 · search · b02\n    - @csv c.csv · setting=A1 · agent · of_ten\n", tmp)
+        self.assertIn("✅ Luna", got)
+        self.assertIn("4 / 10 folds</span>", got)
+        self.assertNotIn("1 of 10 folds", got)
         drawn = _idea_card({"id": "i13", "title": "Who gets named?", "fields": [], "substance": []},
                            {"short": "Does it repeat the sites?", "why": "The sites would decide.", "data": ["answers"],
                             "method": ["tag each URL"], "results": [{"find": "the gap only where read", "means": "it re-presents"}],

@@ -18,14 +18,23 @@ A base skill sees one Task at a time; this reads the whole version, so it can sa
     ❗ too many displays              main-text displays over the venue's limit (--max-displays)
     ❗ a card does not resolve        haipipe-evidence's cards.check, per Section
     ⚠️ one label, the same estimates  two Results holding the same estimates (one copies the other)
+    ❗ display drawn inside the paper  a main-text display whose intake/manifest.yaml names no work Run's result/,
+                                      one outside the version's `work-block:`, or one that is not on disk
+    ❗ display has no question        a main-text display whose README names no question:
+    ❗ display review not passed      a main-text display whose latest review/rNN.md fails the pass rule
+                                      (overall >= 8, no dimension under 7), or that has no round yet
     ⚠️ one display twice              the same display name in two Sections
+    ⚠️ the same three, on an appendix an appendix display drawn inside the paper, with no question:, or no passing review
+    ⚠️ display outside the display Job a work Run that is not in the work Block's j21_paper_displays Job
     ⬜ open                           citations not yet verified, values not yet landed, needs not yet filled
 
 Only the Sections in the version face's `haipipe:compile-order` block are numbered, counted and compared. Numbers
 typed into table bodies or prose, and wording, are not read yet.
 
 It prints and changes no file of the paper: the ledger is a view of the Tasks' own files. Exit 1 on a ❗.
-haipipe-paper-evidence 0.1.0 (JL 261019: "and also have a haipipe-paper-evidence?").
+haipipe-paper-evidence 0.1.0 (JL 261019: "and also have a haipipe-paper-evidence?"); the display review check 0.2.0
+(JL 261022: "display should also have a loop, like the draft is a loop"; the loop is haipipe-display's
+ref/display-revise-loop.md).
 """
 from __future__ import annotations
 
@@ -43,6 +52,10 @@ import cards as ev  # noqa: E402   haipipe-evidence: load, resolve, work_value, 
 from src import item_table  # noqa: E402   haipipe-draft: read_items, the older Evidence Items
 
 TASK = re.compile(r"^t(\d+)_")
+ROUND = re.compile(r"^r(\d+)\.md$")
+DIMENSIONS = ("question", "readability", "honesty", "journal-ready")
+WORK_RUN = re.compile(r"(?:^|[/\s'\"`])(work/(b\d+_[\w.-]+)/(j\d+_[\w.-]+)/(t\d+_[\w.-]+)/runs/([\w.-]+)/result)(?=[/\s'\"`]|$)", re.M)
+PASS_OVERALL, PASS_EACH = 8.0, 7.0          # haipipe-display ref/display-revise-loop.md, the pass rule
 
 
 def part_of(name: str) -> str:
@@ -180,6 +193,86 @@ def displays(task: Path, items: list[dict]) -> list[str]:
     return found + [i["label"] or i["item"] for i in items if i["type"] == "DISPLAY"]
 
 
+def work_block(job: Path) -> str:
+    """The version's work Block, `work/bNN_<topic>`, from a `work-block:` line in the version face, else in the paper
+    Board's board.md; '' when neither names one (JL 261022: the paper Board writes, its work Block computes)."""
+    for face in (job / f"{job.name}.md", job.parent / "board.md"):
+        if face.is_file():
+            m = re.search(r"(?mi)^\W*work-block:[ \t]*`?([^`\s]+)`?", face.read_text(encoding="utf-8", errors="replace"))
+            if m:
+                return m.group(1).rstrip("/")
+    return ""
+
+
+def unit_source(unit: Path, project: Path | None, block: str) -> dict:
+    """The work Run that draws a paper display: the first `work/bNN_/jNN_/tNN_/runs/<run>/result` its
+    intake/manifest.yaml names. `problem` says why the display counts as drawn inside the paper ('' when it does not)."""
+    manifest = unit / "intake" / "manifest.yaml"
+    text = manifest.read_text(encoding="utf-8", errors="replace") if manifest.is_file() else ""
+    m = WORK_RUN.search(text)
+    if not m:
+        why = "its intake/manifest.yaml names no work Run result/" if text else "it has no intake/manifest.yaml"
+        return {"run": "", "job": "", "problem": why}
+    path, blk, job = m.group(1), m.group(2), m.group(3)
+    out = {"run": path, "job": job, "problem": ""}
+    want = block[block.rfind("work/"):] if "work/" in block else block       # a longer path ends in work/bNN_
+    if block and f"work/{blk}" != want:
+        out["problem"] = f"it reads work/{blk}, the version's work-block: is {block}"
+    elif project is not None and not (project / path).is_dir():
+        out["problem"] = f"{path} is not on disk"
+    return out
+
+
+def readme_line(text: str, name: str) -> str:
+    """One `name: value` line of a unit README ('' when absent or a placeholder)."""
+    m = re.search(r"(?mi)^\W*" + re.escape(name) + r":[ \t]*(.*)$", text)
+    value = m.group(1).strip() if m else ""
+    return "" if value.lower() in ("", "none", "tbd", "todo", "-", "⬜") else value
+
+
+def scores(text: str) -> dict:
+    """{dimension: score} from a review record's `scores:` line (question N · readability N · honesty N ·
+    journal-ready N · overall N); {} when it has none."""
+    m = re.search(r"(?mi)^[\W\d]*scores:[ \t]*(.+)$", text)            # also "4. scores:" under the brief's step 4
+    if not m:
+        return {}
+    pairs = re.findall(r"(question|readability|honesty|journal[- _]?ready|overall)\s*[:=]?\s*(\d+(?:\.\d+)?)", m.group(1), re.I)
+    return {re.sub(r"journal[- _]?ready", "journal-ready", k.lower()): float(v) for k, v in pairs}
+
+
+def unit_review(unit: Path) -> dict:
+    """A display unit's question and its latest review round, judged by the pass rule (the scores, not the words)."""
+    readme = unit / "README.md"
+    text = readme.read_text(encoding="utf-8", errors="replace") if readme.is_file() else ""
+    rounds = sorted((f for f in (unit / "review").glob("r*.md") if ROUND.match(f.name)),
+                    key=lambda f: int(ROUND.match(f.name).group(1))) if (unit / "review").is_dir() else []
+    out = {"question": readme_line(text, "question"), "round": rounds[-1].stem if rounds else "", "scores": {},
+           "passed": False, "why": "no review/ round"}
+    if rounds:
+        s = scores(rounds[-1].read_text(encoding="utf-8", errors="replace"))
+        out["scores"] = s
+        low = [f"{d} {s[d]:g}" for d in DIMENSIONS if d in s and s[d] < PASS_EACH]
+        missing = [d for d in ("overall", *DIMENSIONS) if d not in s]
+        if missing:
+            out["why"] = f"{out['round']} has no score for {', '.join(missing)}"
+        elif s["overall"] < PASS_OVERALL or low:
+            out["why"] = f"{out['round']} overall {s['overall']:g}/10" + (f", {', '.join(low)} under 7" if low else "")
+        else:
+            out["passed"], out["why"] = True, ""
+    return out
+
+
+def review_said(r: dict | None) -> str:
+    """The latest score as the ledger lists it: `r02 8.5/10 ✅`, `r01 6/10 open`, or `no review`."""
+    if not r:
+        return ""
+    if not r["round"]:
+        return "no review" + ("" if r["question"] else " · no question:")
+    overall = r["scores"].get("overall")
+    said_ = f"{r['round']} {overall:g}/10" if overall is not None else f"{r['round']} no score"
+    return said_ + (" ✅" if r["passed"] else " open") + ("" if r["question"] else " · no question:")
+
+
 def ledger(job: Path, max_displays: int | None = None) -> dict:
     job = Path(job).resolve()
     try:
@@ -255,7 +348,29 @@ def ledger(job: Path, max_displays: int | None = None) -> dict:
     for _, t, d in numbered:
         shown.setdefault(re.sub(r"^Display\d+-", "", d), []).append(t)
     warn += [f"one display twice: {d} in {', '.join(ts)}" for d, ts in shown.items() if len(ts) > 1]
-    return {"version": job.name, "sections": sections, "displays": numbered, "bad": bad, "warn": warn,
+
+    # the display revise loop (haipipe-display ref/display-revise-loop.md): each unit folder names its question
+    # and its latest blind review passes; a main-text miss is a ❗, an appendix miss a ⚠️. An older Page's DISPLAY
+    # item has no unit folder, so it is not read here.
+    # the display is drawn by a Run of the paper's work Block and only framed here (JL 261022)
+    reviews: dict[str, dict] = {}
+    block = work_block(job)
+    for _, t, d in numbered:
+        unit = job / t / "display" / d
+        if not unit.is_dir():
+            continue
+        r = reviews[f"{t}/{d}"] = unit_review(unit)
+        r["source"] = unit_source(unit, project, block)
+        main_text = part_of(t) in ("abstract", "main")
+        src = r["source"]
+        if src["job"] and not src["job"].endswith("_displays"):
+            warn.append(f"display outside the display Job: {t}/{d} is drawn by {src['run']}, not in a j21_paper_displays Job")
+        problems = ([f"display drawn inside the paper: {t}/{d} ({src['problem']})"] if src["problem"] else []) + \
+                   ([] if r["question"] else [f"display has no question: {t}/{d} (its README names none)"]) + \
+                   ([] if r["passed"] else [f"display review not passed: {t}/{d} ({r['why']})"])
+        (bad if main_text else warn).extend(problems)
+    return {"version": job.name, "work_block": block, "sections": sections, "displays": numbered, "reviews": reviews,
+            "bad": bad, "warn": warn,
             "open_cite": sum(s["open_cite"] for s in printed), "open_value": sum(s["open_value"] for s in printed),
             "compile_order": bool(order)}
 
@@ -268,7 +383,9 @@ def show(L: dict) -> str:
         out.append(f"{s['task']:26} {part:9} {s['shape']:10} {s['cite']:5} {s['work']:5} {len(s['displays']):8} "
                    f"{s['open_cite'] + s['open_value']:6}")
     if L["displays"]:
-        out += ["", "Displays, numbered for the paper:"] + [f"  {n:12} {t:26} {d}" for n, t, d in L["displays"]]
+        out += ["", "Displays, numbered for the paper:"] + [
+            f"  {n:12} {t:26} {d}" + (f"   {review_said(L['reviews'].get(f'{t}/{d}'))}" if f"{t}/{d}" in L["reviews"] else "")
+            for n, t, d in L["displays"]]
     if L["compile_order"]:
         out += ["", "⏸ off: not in the version's compile order, so not numbered, counted or compared"]
     out += [""] + [f"❗ {b}" for b in L["bad"]] + [f"⚠️ {w}" for w in L["warn"]]

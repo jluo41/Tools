@@ -244,7 +244,7 @@ B6  Comment budget: ref TEMPLATES carry a ~4-line header (contract + what to
     scaffolded INSTANCES trim to a 1-2 line header + the phase labels.
 ```
 
-Illustration of the current shape (OpioidRx `b01_A_cms_pipeline/j02_A1_cms_pipeline`), trimmed.
+Illustration of the current shape (OpioidRx `b02_A_cms_pipeline/j02_A1_cms_pipeline`), trimmed.
 For new work start from the ref templates: canonical Task paths, config-owned year,
 resolved output root, and child ExitCode checks are required (`ref/run-stage-year-template.ps1`):
 

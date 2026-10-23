@@ -720,3 +720,14 @@ def test_paper_wrapper_can_load_the_shared_delivery_helpers(paper):
     exec(compile(ENGINE.read_text(), str(ENGINE), "exec"), namespace)
     assert namespace["ROOT"] == paper.ROOT
     assert namespace["HERE"] == paper.HERE
+
+
+def test_direct_task_display_is_discovered_and_keeps_page_identity(paper):
+    page = paper.ROOT / 'Ba-T-Main' / 'S-T-Main-1-Intro'
+    unit = page / 'display' / 'Display1-current'
+    unit.mkdir(parents=True)
+    (page / 'display' / '_archive').mkdir()
+    assert paper.page_display_units(page) == [unit]
+    assert paper.unit_key(unit) == 'S-T-Main-1-Intro/Display1-current'
+    (unit / 'README.md').write_text('# Current\n\n## Placement\nMain Results; Table 1.\n')
+    assert paper.declared_number(paper.unit_key(unit)) == 'Table 1'

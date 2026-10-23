@@ -1,5 +1,30 @@
 # haipipe-paper-evidence · changelog
 
+## 0.3.0 · 2026-10-23 · The display Job is j21, and it opens with a display plan
+
+- JL 261023: "for the paper, they will also have a work folder, one work folder to provide the content
+  for the paper folder"; "one of the block's job will be the j21_paper_displays"; "this should be a plan, and should be
+  proposed to the author to think about how to draw them". The display Job is `j21_paper_displays`
+  (`j21_<venue>_displays` with several venues); its face opens with a display plan the authors agree before any
+  Run draws; Sections write numbers only after the drawn displays pass review and are accepted.
+
+## 0.2.0 · 2026-10-22 · every display passes the revise loop (JL 261022)
+
+- Rule 3 grows (JL: "display should also have a loop, like the draft is a loop; a display matters as much as the main
+  text"): every main-text and eAppendix display passes haipipe-display's `ref/display-revise-loop.md` before the
+  version leaves DRAFT; one `colour-scheme.yaml` per paper, in the work Block's display Job; the set is reviewed together once; pass = overall
+  >= 8/10 and no dimension under 7, at most 4 rounds; `accepted:` only after a pass. `/haipipe-paper-display` is an
+  alias of this skill.
+- `evidence_ledger.py` reads each display unit's README `question:` and its latest `review/rNN.md` scores: ❗ for a
+  main-text display with no question or no passing review, ⚠️ for an eAppendix one, and the latest score in the
+  display listing.
+- A paper is a pair (JL 261022: "for the display, it should be in the b03?"; "for /haipipe-paper, we should have a
+  paper block and a work block to provide the displays and E-work, right?"): the work Block's display Job
+  `jNN_paper_displays` draws every picture (one Task per display, a Run's `result/`), the paper unit only frames
+  it, VALUE cards read the same Block, and the version face names it in `work-block:`. The ledger flags ❗ display
+  drawn inside the paper when a unit's `intake/manifest.yaml` names no work Run `result/`, one outside the
+  `work-block:`, or one not on disk, and ⚠️ when the Run is not in a `*_displays` Job. Three new tests.
+
 ## 0.1.1 · 2026-10-20 · the ledger counts VALUE
 
 - haipipe-evidence 0.6.0 renamed WORK to VALUE; `evidence_ledger.py` reads and prints VALUE, and its test writes `kind: value`.

@@ -471,6 +471,19 @@ def example_section(item, root):
     return out
 
 
+def picture_of(hits, root):
+    """A drawn deliverable shown, not only listed (JL 261023: "a drawing Task, and I cannot see its result?"): the
+    preview.png beside its files, else the first .png among them; a set of thousands shows nothing here."""
+    if not hits or len(hits) > 24:
+        return ""
+    folders = sorted({h.parent for h in hits})
+    pics = [f / "preview.png" for f in folders if (f / "preview.png").is_file()] or sorted(
+        h for h in hits if h.suffix.lower() == ".png")
+    return "".join(f'<h5>What it looks like</h5><a href="{file_url(p, root)}" target=_blank rel=noopener>'
+                   f'<img src="{file_url(p, root)}" alt="{e(p.name)}" loading=lazy style="max-width:100%;max-height:720px;'
+                   f'border:1px solid var(--line)"></a>' for p in pics[:2])
+
+
 def open_link(url):
     """A delivered page's address, opened in its own tab: `url:` on a deliverable, said from this host (/_api/try/food)."""
     return f'<a href="{e(str(url))}" target=_blank rel=noopener>🔗 open it</a>'
@@ -482,6 +495,7 @@ def details_box(item, pats, hits, root, data):
     out = (f'<h5>Open</h5><div>{open_link(item["url"])} <span class=mut>{e(str(item["url"]))}</span></div>'
            if item.get("url") else "")
     out += "<h5>Where</h5>" + file_lines(item, pats, hits, root) + example_section(item, root)
+    out += picture_of(hits, root)
     made = makers(item, hits, root, data)
     if made or item.get("note"):
         out += "<h5>Made by</h5>" + "".join(run_line(row, part, root) for row, part in made)
@@ -569,11 +583,14 @@ def level_head(icon, name, states, job=False):
 
 
 def task_nodes(job, items, root, data, mode, about=False):
-    """A Job's deliverables under their Tasks, in folder order; one that names no Task sits under the Job itself.
+    """A Job's deliverables under their Tasks, in folder order; one that names no Task, or a Task not made yet, sits
+    under the Job itself, never dropped (Proj11 261022: planned Tasks hid their items and the Job read ✅).
     With `about`, the Job's own overview row comes first, above its Tasks (job_about)."""
-    states, html_ = items_nodes([i for i in items if not task_of(i)], root, data)
+    tasks = frame.children(job, "Job")
+    made = {t.name for t in tasks}
+    states, html_ = items_nodes([i for i in items if task_of(i) not in made], root, data)
     task_states = []
-    for task in frame.children(job, "Job"):
+    for task in tasks:
         mine = [i for i in items if task_of(i) == task.name]
         if mine:
             got, kids = items_nodes(mine, root, data)
@@ -1462,9 +1479,27 @@ def results_view(level, folder, root, data, mode, theme):
         content = frame.table(("Run", "Key result", "Source"), [
             (run_link(r, root), e(r["headline"] or "No result summary recorded"),
              source_link(r["receipt_path"], root, "Run record") or "Not recorded") for r in sorted(rows, key=lambda r: r["run"])])
+        # the pictures the Runs drew, shown and not only linked (JL 261023: "how do I see all the tables?");
+        # a display Run writes preview.png and figure.png of the same picture, so the preview stands for both
+        pics = []
+        for r in sorted(rows, key=lambda r: r["run"]):
+            res = task / "runs" / r["run"] / "result"
+            res = res if res.is_dir() else task / "results" / r["run"]
+            found = sorted(res.glob("*.png")) if res.is_dir() else []
+            preview = [f for f in found if f.name == "preview.png"]
+            pics += (preview or found)[:4]
+        if pics:
+            content += "".join(
+                f'<figure style="margin:10px 0"><a href="{file_url(f, root)}" target=_blank rel=noopener><img src="{file_url(f, root)}" '
+                f'alt="{e(f.name)}" loading=lazy style="max-width:100%;max-height:640px;border:1px solid var(--line)"></a>'
+                f'<figcaption class=mut style="font-size:12.5px">{e(f.parent.parent.name)} · {e(f.name)}</figcaption></figure>'
+                for f in pics[:8])
         content += '<p>' + source_link(frame.face(task), root, "Read the Task's interpretation") + '</p>'
         with_head = sum(1 for r in rows if r["headline"])
-        body += card(f"📊 {name}", content, f"{with_head} of {runs_n(len(rows))} with a key result", open_=level == "Task",
+        # a Task's pictures show open at every level: a Job of displays reads at a glance (JL 261023, j21_paper_displays:
+        # "these displays don't show the big result at a glance")
+        body += card(f"📊 {name}", content, f"{with_head} of {runs_n(len(rows))} with a key result",
+                     open_=level == "Task" or bool(pics),
                      key="res-" + frame.rel(task, root))
     return body + card("❓ Questions and reports", frame.report_view(level, folder, root, theme), key="questions")
 

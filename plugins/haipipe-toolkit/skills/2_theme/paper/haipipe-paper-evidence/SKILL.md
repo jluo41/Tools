@@ -5,16 +5,23 @@ description: >-
   from work Runs) and haipipe-display (figures and tables). A paper Section is a draft Task: its draft/ is
   haipipe-paper-draft's, its evidence/ and display/ follow this skill. The rules: a citation comes from a verified
   CITE Result and never from bank.bib; one result gives one number in every Section; displays are numbered for the
-  paper and kept within the venue's limit; claim words fit the design. It also reads one whole version (a Job
+  paper and kept within the venue's limit, are drawn by Runs of the paper's work Block (its j21_paper_displays
+  Job) and only framed in the paper, and every one passes the display revise loop (one question, one colour
+  scheme, a blind review by a fresh agent, at least 8/10 with no dimension under 7) before the version leaves DRAFT,
+  with the whole set reviewed together once; claim words fit the design. It also reads one whole version (a Job
   jNN_v<MMDD>_<desk>) as one evidence ledger, every Section side by side, and flags what disagrees across Sections:
-  one value read from two Runs, one label bound to different estimates, too many displays, a display shown twice
-  (scripts/evidence_ledger.py). Use to check a Section's or a version's evidence, citations, numbers or displays
-  before a build or a send. Trigger: paper evidence, evidence ledger, check the evidence of this version, same number
-  everywhere, numbers disagree, verify citations, display numbering, display limit, /haipipe-paper-evidence.
+  one value read from two Runs, one label bound to different estimates, too many displays, a display shown twice,
+  a display drawn inside the paper, a display with no question or no passing review (scripts/evidence_ledger.py). Use to check a Section's or a
+  version's evidence, citations, numbers or displays before a build or a send, or to review and revise a paper's
+  displays. /haipipe-paper-display opens this skill (an alias, no folder of its own). Trigger: paper evidence,
+  evidence ledger, check the evidence of this version, same number everywhere, numbers disagree, verify citations,
+  display numbering, display limit, paper displays, display review, display revise loop, review the figures of the
+  paper, /haipipe-paper-evidence, /haipipe-paper-display.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.1.1"
-  last_updated: "2026-10-20"
+  version: "0.3.0"
+  last_updated: "2026-10-22"
+  aliases: [haipipe-paper-display]
   # version history: ./CHANGELOG.md
 ---
 
@@ -32,6 +39,21 @@ haipipe-display    ─▶   (this skill too)       ─┘   ├── evidence/ 
                                                     └── display/    Display<n>-<slug>/
 ```
 
+A paper is a pair (JL 261022: "for the display, it should be in the b03?"; "for /haipipe-paper, we should have a
+paper block and a work block to provide the displays and E-work, right?"). The paper Board writes; its work Block
+computes, so every number and every picture has one source:
+
+```text
+work/bNN_<topic>/                      computes                   paper/Paper-X/jNN_v<MMDD>_<desk>/   writes
+├── jNN_<question>/tNN_/runs/rNN/result/ ── VALUE card ──────────▶  tNN_<section>/evidence/cards.yaml
+└── j21_paper_displays/  colour-scheme.yaml                      tNN_<section>/display/
+    ├── t01_table1/runs/rNN/result/table-body.tex ── intake ─────▶  ├── Display1-table1-<slug>/   frames it
+    └── t02_figure1_<slug>/runs/rNN/result/figure.pdf ── intake ──▶  └── Display2-figure1-<slug>/  frames it
+                                                                       question · caption · legend · number
+                                                                       · venue size · review/rNN.md
+version face: work-block: work/bNN_<topic>
+```
+
 The base finds and shows evidence for any page; this skill adds what only a paper needs. A base skill sees one Task
 at a time, so the one thing no base skill can do is read a whole version and say where its Sections disagree: that
 is the ledger below.
@@ -41,7 +63,7 @@ is the ledger below.
 | `haipipe-evidence` | the card format, CITE and VALUE, `cards.py check · propose` | the citation and number rules; the version ledger |
 | `haipipe-evidence-cite` | a discovery Run's `.bib` and `facts.md` | verified before a Section closes; never `bank.bib` |
 | `haipipe-evidence-work` | a work Run's value at `file` + `key` | the same Run for the same value in every Section |
-| `haipipe-display` | `Display<n>-<slug>/`, built on cards | numbered for the paper; within the venue's limit |
+| `haipipe-display` | `Display<n>-<slug>/`, built on cards, the revise loop | numbered for the paper; within the venue's limit; the loop is a must, and the set is reviewed together |
 
 
 The rules
@@ -59,6 +81,38 @@ The rules
 3. **Displays are the paper's.** Each `Display<n>-<slug>/` is built on cards (haipipe-display). The paper numbers them
    in Section order: the main text Display 1, 2 …, the appendix (`t2N_`) eDisplay 1, 2 …; each is cited in its
    Section's text; the main text stays within the venue's limit (its call, or what the person says).
+   **A display is drawn by the work Block, framed by the paper** (JL 261022):
+   - The paper's work Block (`work/bNN_.../`, named by the version face's `work-block:` line, or `board.md`'s) owns
+     one display Job, `j21_paper_displays` (`j21_<venue>_displays` when the Project has several venues), with one
+     Task per display (`t01_table1`, `t02_figure1_<slug>`, ...). The Job face opens with the **display plan** the
+     authors agree before any Run draws (JL 261023): per display its number, title, one question, layout (rows,
+     columns or axes), source Runs and open choices, taken from the team's meeting notes and slides in the Block's
+     `related/`. Drawing starts after the plan is agreed; Sections write their numbers after the drawn displays pass
+     review and are accepted.
+     A Run in that Task draws the picture or the table body into its `result/` (`figure.pdf` and `figure.png`, or
+     `table-body.tex`, plus `figures.md`). A display that reads several question Jobs still lives in that one Job.
+   - The paper's unit, `tNN_<section>/display/Display<n>-<slug>/`, only frames it: its question, caption, legend,
+     number, venue size and `review/rNN.md`. Its `intake/manifest.yaml` points at the work Run's `result/`; its
+     `recipe/` copies the picture in and draws nothing. No paper folder runs analysis or plotting code.
+   - VALUE (Ework) cards point at the same work Block's Runs, so one Block is the source of every number and
+     every picture.
+   - The revise loop sends each fix where it lives: a picture problem (colour, scale, panel, denominator) goes to
+     the work Run's script, which reruns; a caption, legend or question problem goes to the paper unit.
+   **Every main-text and eAppendix display passes the display revise loop before the version leaves DRAFT** (JL
+   261022: "display should also have a loop, like the draft is a loop; a display matters as much as the main
+   text"). The loop is haipipe-display's `1_base/display/ref/display-revise-loop.md`; the paper adds three things,
+   because only the paper sees all Sections:
+   - **One colour scheme per paper**, kept where the pictures are drawn: the display Job's
+     `work/bNN_.../j21_paper_displays/colour-scheme.yaml`, read by every display Task's Run script: the same
+     thing the same colour in every display, a colour never meaning two things, tick labels black.
+   - **The set is reviewed together once**: at least one round's `{units}` is every cited display of the version,
+     main text then eAppendix in paper order, so the reviewer's cross-display verdict (one story with no gaps,
+     redundancy between displays, colour consistency) covers the whole paper. Each unit keeps its own block and
+     that verdict in `review/rNN.md`.
+   - **The pass rule holds for every cited display**: overall at least 8/10 and question, readability, honesty and
+     journal-ready each at least 7/10, in its latest round. After 4 rounds without a pass the loop stops and the
+     person gets the open problems. `accepted:` is never ticked before a pass. The ledger below shows each
+     display's latest score and flags a miss.
 4. **Claim words fit the design.** An observational design says "association", never a causal verb; a claim
    never outruns the evidence card under it.
 5. **Every consequential sentence is one of three**: backed by a card (an older Page: a typed Evidence Item and
@@ -91,7 +145,13 @@ Sections in the version face's `haipipe:compile-order` block are numbered, count
 ❗ too many displays              main-text displays over --max-displays
 ❗ a card does not resolve        haipipe-evidence's cards.check, per Section
 ⚠️ one label, the same estimates  two Results that hold the same estimates (one copies the other: point both at one)
+❗ display drawn inside the paper  a main-text display whose intake/manifest.yaml names no work Run's result/, or
+                                  one outside the version's work-block:, or one that does not exist
+❗ display has no question        a main-text display whose README names no question:
+❗ display review not passed      a main-text display whose latest review/rNN.md fails the pass rule, or that has
+                                  no round yet (the listing shows each display's latest score: r02 8.5/10 ✅)
 ⚠️ one display twice              the same display name in two Sections
+⚠️ the same three, on an appendix an eAppendix display drawn inside the paper, with no question:, or no passing review
 ⬜ open                           citations not yet verified, values not yet landed, needs not yet filled
 ```
 
@@ -127,5 +187,6 @@ haipipe-paper-evidence/
 ├── SKILL.md                      this contract
 ├── CHANGELOG.md
 ├── scripts/evidence_ledger.py    the version ledger
-└── tests/test_evidence_ledger.py a made-up version: two Runs, two estimates, too many displays
+└── tests/test_evidence_ledger.py a made-up version: two Runs, two estimates, too many displays, unreviewed displays,
+                                  a display drawn inside the paper
 ```

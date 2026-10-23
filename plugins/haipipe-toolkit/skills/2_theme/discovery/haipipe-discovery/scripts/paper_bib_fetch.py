@@ -913,6 +913,10 @@ def main() -> int:
         bib_path = args.output
         runtime_path = None
 
+    # Crossref's BibTeX can carry HTML entities ("Medicare &amp; Medicaid Research Review"), which LaTeX prints as
+    # is; an ampersand becomes \&, any other entity its character (JL 261023 build warning on bindman2013using)
+    if re.search(r"&(?:[a-zA-Z]+|#\d+);", bibtex):
+        bibtex = html.unescape(re.sub(r"(?<!\\)&amp;", r"\\&", bibtex))
     unchanged = bib_path.is_file() and bib_path.read_text(encoding="utf-8") == bibtex
     bib_path.parent.mkdir(parents=True, exist_ok=True)
     bib_path.write_text(bibtex, encoding="utf-8")

@@ -11,8 +11,8 @@ tools:
   - Skill
 model: inherit
 metadata:
-  version: "0.1.1"
-  last_updated: "2026-08-17"
+  version: "0.1.2"
+  last_updated: "2026-10-22"
   summary: "First contract. One agent per 🖼 bullet, because a unit is exactly one bullet's worth of work and fanning out per bullet is what makes the render step parallel."
   changelog: "./CHANGELOG.md"
 ---
@@ -86,6 +86,8 @@ cell is invisible in the source and obvious in the picture.
 ## 🧾 ③ The README, and the two rows that are not decoration
 
 ```text
+question:     the ONE question this display answers, as a reader asks it,
+              ending in "?" (ref/display-revise-loop.md)
 claim:        what this picture ASSERTS, in one sentence a reader could
               disagree with. "The coefficient is not stable across the ladder"
               is a claim. "Shows the ladder" is a label.
@@ -94,9 +96,14 @@ intake:       the path, the card, and when it was frozen
 fragility:    what would make this picture WRONG, and whether disk would say so
 renderer:     the exact rebuild command
 picked:       every candidate, including the ones that were wrong and why
-accepted: ⬜  🧑 never you
+accepted: ⬜  🧑 never you, and never before a passing review
+review:       none               a fresh reviewer's rounds set it; never you
 serves:       C<n>.P<n>.B<n>     the backlink; the plan never points at you
 ```
+
+Your unit then goes through the revise loop (`../ref/display-revise-loop.md`):
+a fresh agent reviews it blind, and you may be dispatched again to revise from
+`review/rNN.md`. You fix what it names; you never write or edit a review.
 
 Then name the mark in the outline: `🖼 owed · table` becomes
 `🖼 Display<N> · table`. That is the only edit you may make to the plan.

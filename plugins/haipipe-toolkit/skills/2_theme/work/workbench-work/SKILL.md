@@ -13,7 +13,7 @@ description: >-
   only shows; to bring an older Block up to today's structure use /wb update
   <Block>. Execution belongs to haipipe-task; report writing to haipipe-draft.
 metadata:
-  version: "0.8.1"
+  version: "0.8.2"
   last_updated: "2026-10-22"
 ---
 

@@ -1,9 +1,9 @@
 ---
 name: haipipe-display
-description: "THE one door for display work: say what you want shown and this routes it to the right renderer by KIND, then the renderer writes a display unit per ref/display-unit-output-contract.md. Five renderers: 📊 haipipe-display-table · 📈 haipipe-display-figure · 📐 haipipe-display-diagram · 🎨 haipipe-display-illustration · ✒️ haipipe-display-tex (hand-authored TikZ, algorithm blocks, display equations). Use when user says 做表, 生成表格, regression table, 画图, 作图, generate figures, paper plots, 架构图, concept figure, make a display, render a unit, display unit, which renderer, /haipipe-display."
+description: "THE one door for display work: say what you want shown and this routes it to the right renderer by KIND, then the renderer writes a display unit per ref/display-unit-output-contract.md. Five renderers: 📊 haipipe-display-table · 📈 haipipe-display-figure · 📐 haipipe-display-diagram · 🎨 haipipe-display-illustration · ✒️ haipipe-display-tex (hand-authored TikZ, algorithm blocks, display equations). Every display a reader sees then MUST pass the revise loop (ref/display-revise-loop.md): one question per display, one colour scheme, a blind review by a fresh agent saved as review/rNN.md, revise, review again until overall >= 8/10 with no dimension under 7, at most 4 rounds. Use when user says 做表, 生成表格, regression table, 画图, 作图, generate figures, paper plots, 架构图, concept figure, make a display, render a unit, display unit, which renderer, display review, display loop, revise the figures, blind review of displays, journal-ready figures, /haipipe-display, /haipipe-paper-display."
 metadata:
-  version: "0.3.8"
-  last_updated: "2026-10-20"
+  version: "0.4.0"
+  last_updated: "2026-10-22"
 ---
 
 # /haipipe-display · one door, five renderers, one unit contract
@@ -34,6 +34,35 @@ Pick ✒️ tex when the figure should share the document's own fonts and math, 
 One renderer invocation that produces one bounded unit may be modeled as one Run in a parent
 Workflow. Its numbered instructions, tool calls, compile, review, and retries are Steps inside that
 Run. `origin.run` remains the upstream source-provenance field.
+
+## 🔁 Revise loop (a must)
+
+A rendered unit is not done. Every display a reader will see goes through the loop in
+`../ref/display-revise-loop.md` before anyone may tick `accepted:` (JL 261022: "display should also
+have a loop, like the draft is a loop").
+
+```text
+make ─▶ blind review r01 ─▶ pass? ─ yes ─▶ the person may tick accepted:
+            ▲                 │ no (fewer than 4 rounds)
+            └─ review rNN ◀── revise: the maker fixes and re-renders
+after r04 with no pass ─▶ stop; hand the person the open problems
+```
+
+1. **Make** each unit with a README `question:` (the ONE question it answers), the one colour
+   scheme of the paper or report, and a folder name that says what it is
+   (`Display2-figure1-rq1-names-match-request`, never a method name).
+2. **Blind review**: spawn a FRESH agent (Agent tool, a new general-purpose agent, never yourself,
+   never the round before's reviewer) with the reviewer brief from the ref, pasted verbatim. Give it
+   a review packet holding only each unit's `preview.pdf` and `assets/figure.png`.
+3. **Record** its text verbatim as `<unit>/review/rNN.md` and set the README `review:` line.
+4. **Revise** from the review, re-render, recompile `preview.pdf`, and go to step 2 with a new
+   reviewer.
+5. **Pass rule**: overall >= 8/10 and question, readability, honesty and journal-ready each
+   >= 7/10, for every display. Stop after round 4 and hand the person what is still open.
+
+The maker never scores its own displays, and a pass is not acceptance: it only lets the person
+decide. A paper also reviews its whole set once, across Sections (haipipe-paper-evidence, which
+`/haipipe-paper-display` opens).
 
 ## 🧭 Concept-first gate for visual displays
 
@@ -85,6 +114,12 @@ built on evidence: its README names `built_on:` cards of `<task>/evidence/cards.
 it shows come from those cards' Runs, read with haipipe-evidence's `scripts/cards.py`, so a figure and the sentence
 citing it cannot disagree.
 
+**In a paper, the unit frames a work Run's picture** (JL 261022). The picture or table body is drawn by a Run of
+the paper's work Block (its `jNN_paper_displays` Job, one Task per display) into that Run's `result/`; the paper's
+`Display<n>-<slug>/` names the question, caption, legend, number, size and `review/rNN.md`, its `intake/manifest.yaml`
+points at the Run's `result/`, and its `recipe/` copies the picture in and draws nothing. A picture fix from the
+revise loop goes to the work Run's script. The rules are haipipe-paper-evidence's rule 3.
+
 For an older Page, the caller supplies the unit directory. For a Page DISPLAY Result, that is
 `<page>/results/<re-run>/payload/<unit>/`; a Paper Section Page uses the same Page-owned Result
 address. A View uses the View-owned path in the shared output contract. A non-Page Paper workflow
@@ -98,5 +133,8 @@ second unit copy. Page citations and the human `accepted:` decision belong to
   The unit contract every renderer writes into; if this door and it disagree, it wins.
 - `../ref/display-intake-contract.md`
   What a caller owes `intake/` before any data kind draws.
+- `../ref/display-revise-loop.md`
+  The revise loop every shown display must pass: the reviewer brief, the record, the pass rule,
+  the question, colour and naming rules.
 - `../README.md`
   The family map: renderers, the constitution, and the tooling beside them.

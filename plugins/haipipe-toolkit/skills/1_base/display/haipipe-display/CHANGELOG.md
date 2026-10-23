@@ -1,5 +1,20 @@
 # haipipe-display · Changelog
 
+## 0.4.0 · 2026-10-22 · the display revise loop is a must (JL 261022)
+
+- New `ref/display-revise-loop.md` (JL: "display should also have a loop, like the draft is a loop"): one question
+  per display, one colour scheme, a folder name that says what it is, a blind review by a fresh agent (the brief is
+  in the ref, ready to paste), `review/rNN.md` per round, revise and review again; pass = overall >= 8/10 and no
+  dimension under 7; stop after 4 rounds and hand the person what is open.
+- `ref/display-unit-output-contract.md`: README needs `question:` and `review:`; a unit keeps `review/`;
+  `accepted:` only after a passing round; displays are in colour from one scheme (and still read in grayscale).
+- SKILL.md: § Revise loop (a must); triggers display review, display loop, revise the figures, blind review of
+  displays, /haipipe-paper-display.
+- § Where the unit lands: in a paper the unit frames a picture drawn by a Run of the paper's work Block (its
+  `jNN_paper_displays` Job); the loop sends a picture fix to that Run's script, a caption fix to the unit.
+- The loop ref, after a fresh-agent test: the caption title is short and is followed by the question (it need not be
+  the answer); stop before round 4 only when every open problem needs what the maker may not change.
+
 ## 0.3.8 · 2026-10-20 · built_on names VALUE cards
 
 - haipipe-evidence 0.6.0: a unit's `built_on:` names CITE and VALUE cards (VALUE was WORK); a draft Task shows its units in 4 · Display.

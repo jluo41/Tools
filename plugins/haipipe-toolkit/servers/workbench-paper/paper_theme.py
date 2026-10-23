@@ -885,6 +885,28 @@ def _drawing_words(page):
         return {}
 
 
+def _idea_map(ideas, direction, shorts=None):
+    """The ideas as a map: the direction in the root, each idea a branch (its verdict mark and its question), and a leaf
+    for each of its hypothesis, method, smallest experiment, novelty and recommendation, cut to their first sentence."""
+    labels = (("Hypothesis", "hypothesis"), ("Method", "method"), ("Minimum Experiment", "experiment"),
+              ("novelty", "novelty"), ("Recommendation", "verdict"))
+    branches = []
+    for x in ideas:
+        sub = {k.lower(): v for k, v in x.get("substance") or []}
+        sub["novelty"] = [v for k, v in x.get("fields") or [] if k.lower() == "novelty"]   # its short mark, not the table
+        leaves = []
+        for label, tag in labels:
+            said = " ".join(sub.get(label.lower()) or [])
+            if said and not said.lstrip().startswith("|"):
+                first = _first_sentence(said)
+                leaves.append(_leaf("", tag, P.inline(first if len(first) <= 110 else first[:107].rsplit(" ", 1)[0] + " …"), note=said))
+        mark = (x.get("verdict") or "").split()[0] if (x.get("verdict") or "")[:1] in "✅🔶⬜❗🟡❌" else ""
+        # the drawing's short title when it has one (the full question shows on the card below and on hover)
+        branches.append((f"{esc(mark)} {esc(x['id'])}", P.inline((shorts or {}).get(x["id"]) or x.get("title", "")), leaves, "",
+                         f"idea-{x['id']}"))
+    return _map("💡 The direction", P.inline(direction), branches) if branches else ""
+
+
 def _idea_cards(d):
     """The Ideation topic as its drawing reads: the question in the key box, the setting folded, then each group of
     ideas (a card each, folded), then the path to G0."""
@@ -919,6 +941,16 @@ def _idea_cards(d):
     rest = [_idea_card(x, (words.get("ideas") or {}).get(k)) for k, x in ideas.items() if k not in shown]
     if rest:
         out.append(_section("Other ideas", "", "".join(rest)))
+    # the ideas also drawn as the draft's §1 mind map (JL 261022: "for the idea and for the story ... I want something
+    # like this"): the direction in the root, each idea a branch in the drawing's order, its hypothesis, method,
+    # experiment, novelty and recommendation the leaves; the cards follow under their own subsection
+    order = [k for _n, _l, ids in groups for k in ids if k in ideas] + [k for k in ideas if k not in shown]
+    direction = re.search(r"(?m)^\*\*The direction\*\*:\s*(.*)$", text)
+    shorts = {k: v.get("short") for k, v in (words.get("ideas") or {}).items() if isinstance(v, dict) and v.get("short")}
+    tree = _idea_map([ideas[k] for k in dict.fromkeys(order)], direction.group(1) if direction else (asked.group(1).strip() if asked else ""),
+                     shorts)
+    if tree:
+        out = [_sub("The ideas"), tree, _sub("Each idea")] + out
     path = words.get("path") or {}
     if path.get("steps"):
         rows = [(st.get("title", ""), "<br>".join(P.inline(l) for l in st.get("lines") or [])) for st in path["steps"]]
@@ -958,7 +990,7 @@ def _rq_blocks(body):
     for m in re.finditer(r"(?ms)^#### [\d.]+ · Question \d+ · (RQ\d+)\s*\n(.*?)(?=^#### |\Z)", body or ""):
         fields, groups, group, last = [], {}, None, None
         for line in m.group(2).splitlines():
-            g = re.match(r"^\*\*(Hypotheses|Potential claims|Potential contributions|Potential work|Tasks)\*\*\s*$", line.strip())
+            g = re.match(r"^\*\*(Theories|Hypotheses|Potential claims|Potential contributions|Potential work|Tasks)\*\*\s*$", line.strip())
             if g:
                 group, last = g.group(1), None
                 groups[group] = []
@@ -980,6 +1012,287 @@ def _rq_blocks(body):
             groups[group].append(last)
         out.append((m.group(1), fields, groups))
     return out
+
+
+def _sub(title):
+    """A subsection of a step's Result: a small grey heading over its folded cards (JL 261022: "for the results, should
+    we also have the subsection as well? ... venue will be on subsection of the results")."""
+    return (f'<h4 style="margin:20px 0 6px;font:600 12.5px system-ui,sans-serif;color:var(--mut);'
+            f'letter-spacing:.04em;text-transform:uppercase">{esc(title)}</h4>')
+
+
+def _map(root_title, root_text, branches):
+    """A tree drawn as the draft's §1 mind map (JL 261022, of the Story and the Idea: "I want something like this"): the
+    root box, each branch box with the line it hands to the next on the arrow below it, each leaf a code, a grey tag,
+    its words and its evidence chips. Read-only, but it answers a click (JL 261023: "我点击这个 button 的时候，它就会 show
+    more information"): a leaf opens its whole sentence under it, a branch opens its card below and scrolls to it. A
+    branch is (id, title, [leaf html], hand-on) or (id, title, [leaf html], hand-on, the id of its card)."""
+    from live.draft_steps import PLAN_CSS, PLAN_JS
+    paras = []
+    for k, b in enumerate(branches):
+        bid, title, leaves, handon = b[:4]
+        opens = f' data-open="{esc(b[4])}" title="open its card"' if len(b) > 4 and b[4] else ""
+        paras.append(f'<div class=pm-para><div class="pm-node pm-pnode"{opens}><span class=pm-id>{bid}</span><b>{title}</b></div>'
+                     f'<ul class=pm-leaves>{"".join(leaves)}</ul></div>'
+                     + (f'<div class=pm-q>↓ {handon}</div>' if handon and k < len(branches) - 1 else ""))
+    return (PLAN_CSS + MAP_RO + '<div style="overflow-x:auto;margin:4px 0 10px"><div class="pm pm-ro"><svg class=pm-wires aria-hidden=true></svg>'
+            f'<div class="pm-node pm-root"><b>{root_title}</b>' + (f'<p>{root_text}</p>' if root_text else "")
+            + f'</div><div>{"".join(paras)}</div></div></div>' + PLAN_JS)
+
+
+# a read-only map's clicks: a leaf shows its whole text under it (click again to close), a branch opens its card
+MAP_RO = """<style>.pm-ro .pm-leaves li[title]{cursor:pointer}.pm-ro .pm-leaves li[title]:hover .pm-t{color:var(--acc)}
+.pm-ro .pm-pnode[data-open]{cursor:pointer}.pm-ro .pm-pnode[data-open]:hover{border-color:var(--acc)}
+.pm-more{white-space:normal;max-width:680px;margin:3px 0 7px 38px;padding:6px 10px;border-left:2px solid var(--acc);
+ background:var(--wash);color:var(--fg);font-size:13px;line-height:1.55;border-radius:0 6px 6px 0;cursor:auto}</style>
+<script>(function(){if(window.__pmRo)return;window.__pmRo=1;
+ document.addEventListener('click',function(e){var t=e.target;if(!t.closest)return;
+  var n=t.closest('.pm-ro .pm-pnode[data-open]');
+  if(n){var d=document.getElementById(n.dataset.open);if(d){d.open=true;d.scrollIntoView({behavior:'smooth',block:'start'});}return;}
+  if(t.closest('.pm-more'))return;
+  var li=t.closest('.pm-ro .pm-leaves li[title]');if(!li)return;
+  var m=li.querySelector(':scope>.pm-more');
+  if(m)m.remove();else{m=document.createElement('div');m.className='pm-more';m.textContent=li.getAttribute('title');li.appendChild(m);}
+  if(window.pmDraw)window.pmDraw();});})();</script>"""
+
+
+def _leaf(code, tag, words, chips="", note=""):
+    """One leaf of a map: its code, a grey tag, its words, its chips; the whole sentence on hover."""
+    return (f'<li{(" title=" + chr(34) + esc(note) + chr(34)) if note else ""}><span class=pm-s>{esc(code)}</span>'
+            + (f'<span class=pm-role>{esc(tag)}</span>' if tag else "")      # no empty tag box (JL 261023: "干净一些")
+            + f'<span class=pm-w><span class=pm-t>{words}</span>{chips}</span></li>')
+
+
+VENUE_BRANCHES = (("The call", ("call", "editors", "window", "scope")),
+                  ("What it asks", ("what it asks", "topics", "methods", "read first")),
+                  ("The format", ("length", "words", "our budget", "submission", "same as")))
+
+
+def _venue_map(venue_div, venues, held):
+    """The target venue as a map: the venue in the root; its first frame split into the call, what it asks and the
+    format (by each point's label), and each further frame (how the paper meets the call, why it is doable) a branch of
+    its own; each point a leaf, its label the tag, its evidence rows as chips, the whole point on hover."""
+    from live.draft_steps import INK
+
+    def chip(e):
+        state = held.get(e, "absent")
+        ink = INK["need"] if state == "absent" else INK["cite"] if e.lower().startswith("ecite") else INK["value"]
+        return f' <span class=pm-card style="color:{ink};border-color:{ink}66">{esc(e)}</span>'
+
+    def leaf(point):
+        label, _, words = point.partition(":") if re.match(r"^[^:]{1,80}:", point) else ("", "", point)
+        words = re.sub(r"\s*\((?:E\w*\d+(?:, )?)+\)", "", words).strip()
+        tag = " ".join(re.sub(r"\([^)]*\)|[\"“”]", "", label).replace(",", " ").split()[:2])
+        return _leaf("", _clip(tag, 18), P.inline(_clip(words, 64)), _chips(re.findall(r"E(?:work|cite)\d+", point), chip), point)
+
+    frames = list(re.finditer(r"(?ms)^#### (V\d+) · ([^\n]+)\n(.*?)(?=^#### |\Z)", venue_div))
+    branches = []
+    for k, m in enumerate(frames):
+        points = _items(m.group(3))
+        if k == 0:
+            left = list(points)
+            for name, keys in VENUE_BRANCHES:
+                mine = [x for x in left if x.split(":", 1)[0].strip().lower().startswith(keys)]
+                left = [x for x in left if x not in mine]
+                if mine:
+                    branches.append((esc(m.group(1)), esc(name), [leaf(x) for x in mine], ""))
+            if left:
+                branches.append((esc(m.group(1)), "More", [leaf(x) for x in left], ""))
+        elif points:
+            branches.append((esc(m.group(1)), P.inline(m.group(2).strip()[:1].upper() + m.group(2).strip()[1:]), [leaf(x) for x in points], ""))
+    v = venues[0]
+    root = f"🧭 {P.inline(v[1])}" if len(v) > 1 else "🧭 The venue"
+    return _map(root, P.inline(v[3]) if len(v) > 3 else "", branches) if branches else ""
+
+
+def _clip(text, n):
+    """At most n characters, cut at a word; the whole text stays on the leaf's hover."""
+    text = re.sub(r"\s+", " ", text or "").strip()
+    return text if len(text) <= n else text[:n - 1].rsplit(" ", 1)[0].rstrip(",;:") + " …"
+
+
+# a hypothesis's theory said in one short word on its tag, as the draft map's roles are (JL 261023, of the draft's map:
+# "为什么别人的就是看起来那么的干净 ... 你能够做得干净一些吗？")
+SHORT_THEORY = (("consideration", "consideration"), ("institutional", "logics"), ("bias in", "bias in/out"),
+                ("copy of", "bias in/out"), ("cumulative", "cumulative"), ("safety", "safety"), ("long tail", "long tail"),
+                ("superstar", "superstars"), ("four ways", "regulation"), ("oversight", "oversight"),
+                ("many hands", "many hands"), ("remedial", "remedial"), ("equality", "fairness"), ("availability", "availability"))
+
+
+def _short_tag(text):
+    low = (text or "").lower()
+    found = sorted((low.find(key), short) for key, short in SHORT_THEORY if key in low)   # the theory named first wins
+    hit = found[0][1] if found else ""
+    return hit or _clip(re.sub(r"[\"()]", "", text or "").split(";")[0], 16)
+
+
+def _chips(codes, chip, keep=3):
+    """At most `keep` evidence chips on a leaf, then a grey +n."""
+    codes = list(dict.fromkeys(codes))
+    more = f' <span class=mut style="font-size:11px">+{len(codes) - keep}</span>' if len(codes) > keep else ""
+    return "".join(chip(e) for e in codes[:keep]) + more
+
+
+def _outline(body):
+    """A nested Markdown list as a tree: [(text, [children])], two spaces of indent a level."""
+    root, stack = [], [(-1, None)]
+    for line in (body or "").splitlines():
+        m = re.match(r"^(\s*)- (.*\S)", line)
+        if not m:
+            continue
+        depth, node = len(m.group(1)) // 2, (m.group(2), [])
+        while stack and stack[-1][0] >= depth:
+            stack.pop()
+        (stack[-1][1][1] if stack[-1][1] else root).append(node)
+        stack.append((depth, node))
+    return root
+
+
+def _tree_map(root_title, root_text, nodes):
+    """A mind map of any depth (JL 261023, of the data flow: "You can make more layers of the mindmap tree"): a node
+    with children is a box wired to them, a node without is a leaf; a line `title · note` puts its note grey beside it,
+    `code · title · note` adds a code, and a leading ✅ 🔶 ⬜ 🙋 ❗ marks its state. A click opens a leaf's whole line."""
+    from live.draft_steps import PLAN_CSS
+
+    def split(text):
+        parts = [x.strip() for x in text.split(" · ")]
+        code = parts.pop(0) if len(parts) > 2 and len(parts[0]) <= 14 else ""
+        return code, parts[0], " · ".join(parts[1:])
+
+    def leaf(text):
+        code, title, note = split(text)
+        mark = note[:1] if note[:1] in "✅🔶⬜🙋❗" else ""          # its state first, as the story's RQ boxes show theirs
+        note = note[1:].strip() if mark else note
+        # "n of m folds" as a badge beside the name (JL 261023: "能把这个 n of n folds 变得显眼一些？")
+        folds = re.search(r"(\d+) of (\d+) folds[;:,]?\s*", note)
+        badge = ""
+        if folds:
+            n, m = int(folds.group(1)), int(folds.group(2))
+            ink = "#2b8a3e" if n == m else "#e8590c" if n else "#adb5bd"
+            badge = (f' <span style="display:inline-block;margin:0 4px;padding:0 8px;border-radius:10px;background:{ink};'
+                     f'color:#fff;font:700 12px/1.6 system-ui,sans-serif">{n} / {m} folds</span>')
+            note = (note[:folds.start()] + note[folds.end():]).strip(" ;,:")
+        return _leaf(code, "", (f"{mark} " if mark else "") + f"{P.inline(_clip(title, 48))}" + badge + (f' <span class=mut style="font-size:12px">{P.inline(_clip(note, 70))}</span>' if note else ""),
+                     note=text)
+
+    def row(text, kids):
+        code, title, note = split(text)
+        boxes = "".join(row(t, k) for t, k in kids if k)
+        leaves = "".join(leaf(t) for t, k in kids if not k)
+        return (f'<div class=tr-row><div class="pm-node tr-box"{(" title=" + chr(34) + esc(note) + chr(34)) if note else ""}>'
+                + (f'<span class=pm-id>{esc(code)}</span>' if code else "") + f'<b>{P.inline(title)}</b>'
+                + (f'<span class=tr-note>{P.inline(_clip(note, 60))}</span>' if note else "")
+                + f'</div><div class=tr-kids>{boxes}' + (f'<ul class=pm-leaves>{leaves}</ul>' if leaves else "") + '</div></div>')
+
+    body = "".join(row(t, k) for t, k in nodes)
+    return (PLAN_CSS + MAP_RO + TREE_CSS + '<div style="overflow-x:auto;margin:4px 0 10px"><div class="tr pm-ro"><svg class=tr-wires aria-hidden=true></svg>'
+            f'<div class=tr-row><div class="pm-node pm-root tr-box"><b>{root_title}</b>' + (f'<p>{root_text}</p>' if root_text else "")
+            + f'</div><div class=tr-kids>{body}</div></div></div></div>' + TREE_JS)
+
+
+TREE_CSS = """<style>.tr{position:relative;width:max-content;min-width:100%;padding:8px 4px;box-sizing:border-box}
+.tr-wires{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}.tr-wires path{fill:none;stroke:var(--mut);stroke-opacity:.45;stroke-width:1.4}
+.tr-row{display:grid;grid-template-columns:auto auto;gap:0 44px;align-items:center;margin:5px 0}
+.tr-kids{display:flex;flex-direction:column;justify-content:center}
+.tr-box{padding:8px 12px;font-size:14px;line-height:1.35;max-width:230px}.tr-box.pm-root{max-width:250px}
+.tr-note{display:block;font-size:11.5px;color:var(--mut);margin-top:2px}
+@media(max-width:1000px){.tr,.tr-row{display:block;width:auto}.tr-wires{display:none}.tr-kids{padding-left:14px;border-left:2px solid var(--line);margin:4px 0}}</style>"""
+TREE_JS = """<script>(function(){if(window.__trMap)return;window.__trMap=1;
+ function wire(a,b,o,leaf){var p=a.getBoundingClientRect(),q=b.getBoundingClientRect();
+  var x1=p.right-o.left,y1=p.top+p.height/2-o.top,x2=q.left-o.left-6,y2=(leaf?q.top+12:q.top+q.height/2)-o.top,m=(x1+x2)/2;
+  return '<path d="M'+x1+','+y1+' C'+m+','+y1+' '+m+','+y2+' '+x2+','+y2+'"/>';}
+ function draw(){document.querySelectorAll('.tr').forEach(function(t){var svg=t.querySelector('.tr-wires');
+  if(!t.offsetParent||getComputedStyle(svg).display==='none')return;var o=t.getBoundingClientRect(),d='';
+  svg.setAttribute('width',o.width);svg.setAttribute('height',o.height);
+  t.querySelectorAll('.tr-row').forEach(function(r){var box=r.querySelector(':scope>.tr-box'),k=r.querySelector(':scope>.tr-kids');
+   k.querySelectorAll(':scope>.tr-row>.tr-box').forEach(function(c){d+=wire(box,c,o);});
+   k.querySelectorAll(':scope>ul>li').forEach(function(l){d+=wire(box,l,o,true);});});
+  svg.innerHTML=d;});}
+ window.addEventListener('resize',draw);window.addEventListener('load',draw);setTimeout(draw,60);
+ document.addEventListener('toggle',function(){setTimeout(draw,0);},true);document.addEventListener('click',function(){setTimeout(draw,0);});
+ window.trDraw=draw;})();</script>"""
+
+
+def _expand_csv(nodes, root):
+    """A tree line `@csv <path from the SPACE root> · <column>=<value> · <label column> · <value column>` becomes one leaf
+    per matching row, `label · value`, read now, so a count in the tree is never typed (JL 261023: "我们 fold00 到 fold09
+    到底跑了几个了，你也要说明一下")."""
+    import csv as _csv
+    out = []
+    for text, kids in nodes:
+        if not text.startswith("@csv "):
+            out.append((text, _expand_csv(kids, root)))
+            continue
+        parts = [x.strip() for x in text[5:].split(" · ")]
+        path = (Path(root) / parts[0]) if root else Path(parts[0])
+        if len(parts) < 4 or not path.is_file():
+            out.append((f"❗ {path.name} · not on disk", []))
+            continue
+        key, _, want = parts[1].partition("=")
+        for r in _csv.DictReader(path.open(encoding="utf-8")):
+            if r.get(key.strip()) == want.strip():
+                out.append((f"{r.get(parts[2], '')} · {r.get(parts[3], '')}", []))
+    return out
+
+
+def _flow_sections(text, root=None):
+    """The DataFlow topic's "Data tree" division drawn as a many-layered mind map."""
+    tree = _expand_csv(_outline(_division(text, "Data tree")), root)
+    if not tree:
+        return ""
+    (root, kids), rest = tree[0], tree[1:]
+    title, _, note = root.partition(" · ")
+    return _sub("The data, as a tree") + _tree_map(P.inline(title), P.inline(note), kids + rest)
+
+
+def _story_map(text):
+    """§3 drawn as a mind map: the paper's question in the root, each research question a branch (its state and name),
+    its hypotheses and claims the leaves (a hypothesis tagged with its theory and chipped with the evidence rows that
+    test it: violet a row from our own Runs, blue a cited paper, red a row still absent), and on the arrow between two
+    questions what the paper can say once the first is answered (the narrative)."""
+    from live.draft_steps import INK
+    rqs = _division(text, "Research Questions")
+    asked = next((v for k, v in _fields(rqs.split("####")[0]) if k.lower().startswith("the paper's question")), "")
+    held = {r[0]: r[-1].lower() for r in _table(_division(text, "Evidence Basis and Boundaries"), r"E\w*\d+")}
+    story = re.search(r"(?ms)^\*\*The narrative, if the questions are answered\*\*.*?\n\n(.*?)(?:\n\s*\n(?=\S)(?!\d+\. )|\Z)", rqs)
+    said = {}
+    for line in _items(story.group(1)) if story else []:
+        for rq in re.findall(r"\((RQ\d+)", line):
+            said.setdefault(rq, re.split(r"(?<=\w)[:;]|, yet |, but ", line, maxsplit=1)[0].strip())
+
+    def chip(e):
+        state = held.get(e, "absent")
+        ink = INK["need"] if state == "absent" else INK["cite"] if e.lower().startswith("ecite") else INK["value"]
+        return f' <span class=pm-card style="color:{ink};border-color:{ink}66">{esc(e)}</span>'
+
+    branches = []
+    for rq, fields, groups in _rq_blocks(rqs):
+        f = {k.lower(): v for k, v in fields}
+        state = f.get("answer state", "")
+        mark = state.split()[0] if state[:1] in "✅🔶⬜❗🟡" else ""
+        leaves = []
+        # its theories first (JL 261023: "You have C, I think you also need the Theory as well"): code, role, name;
+        # short, as the draft map is, with the whole sentence and its test on hover
+        for t in groups.get("Theories", []):
+            # tagged "theory", as a claim is tagged "claim" (JL 261023: "is the mechanism you mean the theory? could you
+            # name it to 'theory'?"); its role for this question (core, rival, ...) opens with its sentence on a click
+            role = t["parts"][0] if len(t["parts"]) > 1 and ":" not in t["parts"][0] else ""
+            name = re.sub(r"\s*\([^()]*\d{4}[^()]*\)", "", t["said"].split(":", 1)[0]).split(", with ")[0].strip()
+            note = (f"Role here: {role} · " if role else "") + " · ".join(x for x in t["parts"] if x != role)
+            leaves.append(_leaf(t["code"], "theory", f"<i>{P.inline(_clip(name, 44))}</i>", note=note))
+        for h in groups.get("Hypotheses", []):
+            name = h["said"].split(":", 1)[0]
+            theory = re.search(r"\(([^()]*)\)\s*$", h["said"].split(" · tested by")[0])
+            tested = next((x for x in h["parts"] if x.startswith("tested by")), "")
+            leaves.append(_leaf(h["code"], _short_tag(theory.group(1)) if theory else "", P.inline(_clip(name, 44)),
+                                _chips(re.findall(r"E\w*\d+", tested), chip), " · ".join(x for x in (h["said"], tested) if x)))
+        for c in groups.get("Potential claims", []):
+            leaves.append(_leaf(c["code"], "claim", f'<b>{P.inline(_clip(c["said"].split(":", 1)[0], 44))}</b>', note=c["said"]))
+        branches.append((f"{esc(mark)} {esc(rq)}", P.inline(f.get("name", "")), leaves, "", f"story-{rq.lower()}"))
+    # on the arrow, the question the next research question asks, short, as the draft's "why should physicians care?"
+    branches = [(b, n, l, (branches[k + 1][1][:1].lower() + branches[k + 1][1][1:]) if k + 1 < len(branches) else "", a)
+                for k, (b, n, l, _h, a) in enumerate(branches)]
+    return _map("📖 The paper's question", P.inline(asked), branches) if branches else ""
 
 
 def _story_sections(text):
@@ -1015,18 +1328,23 @@ def _story_sections(text):
             hyps.append(_mini(f"{mark} {esc(h['code'])} · {P.inline(h['said'].split(':', 1)[0])}",
                               P.inline(h["said"].split(":", 1)[1].strip() if ":" in h["said"] else ""), esc(tested)))
         n = len(hyps)
-        col2 = (_key(f"{n} hypothes{'is' if n == 1 else 'es'}: {in_hand} with evidence in hand, {n - in_hand} waiting for a Run")
-                + "".join(hyps)) if hyps else '<span class=mut>none yet</span>'
+        theories = [_mini(f"{esc(t['code'])} · {P.inline(t['said'].split(':', 1)[0])}",
+                          P.inline(t["said"].split(":", 1)[1].strip() if ":" in t["said"] else ""),
+                          " · ".join(esc(x) for x in t["parts"] if x != t["said"]))
+                    for t in groups.get("Theories", [])]
+        col2 = ((_key(f"{len(theories)} theor{'y' if len(theories) == 1 else 'ies'}") + "".join(theories) if theories else "")
+                + ((_key(f"{n} hypothes{'is' if n == 1 else 'es'}: {in_hand} with evidence in hand, {n - in_hand} waiting for a Run")
+                    + "".join(hyps)) if hyps else "")) or '<span class=mut>none yet</span>'
         claims = [_mini(f"{esc(c['code'])} · {P.inline(c['said'].split(':', 1)[0])}",
                         P.inline(c["said"].split(":", 1)[1].strip() if ":" in c["said"] else ""),
                         " · ".join(f"{esc(k.capitalize())}: {P.inline(v)}" for k, v in c["more"].items() if k in ("now", "if it fails")))
                   for c in groups.get("Potential claims", [])]
         col3 = (_key(P.inline(_first_sentence(f.get("if answered", "")))) if f.get("if answered") else "") + "".join(claims)
         work = " · ".join(esc(w["code"]) for w in groups.get("Potential work", []))
-        body = (_cols([("❓ The question", col1), ("🔮 What we expect, and why", col2), ("📣 What the paper can say", col3 or "—")])
+        body = (_cols([("❓ The question", col1), ("🔮 Theory, and what we expect", col2), ("📣 What the paper can say", col3 or "—")])
                 + (f'<p class=mut style="font-size:12.5px;margin:8px 0 0">Work: {work}</p>' if work else ""))
         cards.append(_folded(f'{esc(chip)} <b>{esc(rq)} · {esc(f.get("name", ""))}</b>', P.inline(asked_rq), body, f"story-{rq.lower()}"))
-    out += cards
+    out = [_sub("The questions"), _story_map(text)] + out + cards
     story = re.search(r"(?ms)^\*\*The narrative, if the questions are answered\*\*.*?\n\n(.*?)(?:\n\s*\n(?=\S)(?!\d+\. )|\Z)", rqs)
     lines = _items(story.group(1)) if story else []
     more = []
@@ -1049,12 +1367,24 @@ def _story_sections(text):
         done = sum((r[3] if len(r) > 3 else "").lower() == "done" for r in work)
         more.append(_folded("<b>🛠 The work</b>", f"{len(work)} tasks · {done} done",
                             "".join(_line(r[0], f"{P.inline(r[1])} <span class=mut>· {esc(r[3] if len(r) > 3 else '')}</span>") for r in work)))
-    venues = _table(_division(text, "Venues"), r"V\d+")
+    venue_div = _division(text, "Venues")
+    venues = _table(venue_div, r"V\d+")
     if venues:
+        # the venue drawn as the questions' map (JL 261023: "could you make this to be the layout like this as well?"),
+        # inside its own card, under the venue list ("this should be within the section, not out of the section")
         more.append(_folded("<b>🧭 Where the story could go</b>", f"{len(venues)} venues · {esc(venues[0][1])} first",
                             "".join(_line(r[0], f"<b>{P.inline(r[1])}</b> <span class=mut>· {esc(r[2])} · leads with "
-                                               f"{esc(r[4] if len(r) > 4 else '')}</span>") for r in venues)))
-    out += more
+                                               f"{esc(r[4] if len(r) > 4 else '')}</span>") for r in venues)
+                            + _venue_map(venue_div, venues, held)))
+    # each venue's frames (the call, how the paper meets it, why it is doable) are read in the map only; their bullet
+    # cards were dropped (JL 261023: "I don't need this ... otherwise, this is very hard to read")
+    # the Result in subsections (JL 261022): the questions, the narrative, why it matters, the evidence, the venue
+    groups = [("The narrative", ("📜",)), ("Why it matters, and its limits", ("🎯", "🚫")),
+              ("The evidence and the work", ("🧾", "🛠")), ("The venue", ("🧭",))]
+    for title, marks in groups:
+        mine = [c for c in more if any(f"<b>{mk}" in c for mk in marks)]
+        if mine:
+            out += [_sub(title)] + mine
     return "".join(out)
 
 
@@ -1074,7 +1404,8 @@ def _board_step(name, topics, state, block, root, d=None):
     op = _step_box(f"{emoji} {name}", state, "<h4>Input</h4>" + _kv(rows) + _prompt_box(ask, block, root, f"board-{name.lower()}"))
     # Idea: the ideas themselves, a card each; Story: its parts as sections; to read and review, the drawing folded under
     cards = (_idea_cards(d) if name == "Idea" and d else
-             "".join(_story_sections(text) for _t, text in topics) if name == "Story" else "")
+             "".join(_story_sections(text) for _t, text in topics) if name == "Story" else
+             "".join(_flow_sections(text, root) for _t, text in topics[:1]) if name == "DataFlow" else "")
     result = [cards] if cards else []
     for k, (topic, text) in enumerate(topics):
         k += bool(cards)
@@ -1094,7 +1425,7 @@ def _board_step(name, topics, state, block, root, d=None):
                   if opened else "")
                  + (_folded(f"✅ Decided · {len(decided)}", "", "<ul>" + "".join(f"<li>{P.inline(x)}</li>" for x in decided) + "</ul>")
                     if decided else ""))
-        result.append(lists + draw if cards else draw + lists)
+        result.append((_sub("Open, decided, and the drawing") if name == "Story" else "") + (lists + draw if cards else draw + lists))
     return _part("Operation") + op + _part("Result") + ("".join(result) or _empty(f"No {group} topic yet: the prompt above makes {first}."))
 
 

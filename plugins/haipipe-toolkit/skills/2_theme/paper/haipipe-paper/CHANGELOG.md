@@ -1,3 +1,18 @@
+## 1.17.0 · 2026-10-23 · A paper's work folder, its j21 display Job and the display plan
+
+- JL 261023: "for the paper, they will also have a work folder, one work folder to provide the content
+  for the paper folder"; "one of the block's job will be the j21_paper_displays"; "this should be a plan, and should be
+  proposed to the author to think about how to draw them". The display Job is `j21_paper_displays`
+  (`j21_<venue>_displays` with several venues); its face opens with a display plan the authors agree before any
+  Run draws; Sections write numbers only after the drawn displays pass review and are accepted.
+
+## 1.16.0 · 2026-10-22 · A paper is a paper Board plus a work Block
+
+- § Evidence and Page boundary (JL 261022: "for /haipipe-paper, we should have a paper block and a work block to
+  provide the displays and E-work, right?"): the paper Board writes, its work Block computes; the work Block's
+  display Job `jNN_paper_displays` draws every picture, a paper display unit only frames it, and the version face
+  names the Block in `work-block:`. Rules in haipipe-paper-evidence 0.2.0.
+
 ## 1.15.2 · 2026-10-21 · Carry-over for a hyphenated desk, and the name sweep
 
 - `scripts/carry_over/rename_tasks.py` renamed no Section of Paper-AgreeableOpioid-Jama: its patterns took the desk as

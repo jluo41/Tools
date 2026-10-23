@@ -4,6 +4,11 @@ haipipe-display-unit-agent · Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions
 match the agent's frontmatter `version:`. Newest first.
 
+## 0.1.2 · 2026-10-22 · question: and the revise loop (JL 261022)
+
+- The README names its `question:` and starts `review: none`; the unit then goes through `ref/display-revise-loop.md`,
+  and the producer revises from `review/rNN.md` but never writes a review.
+
 ## 0.1.1 · 2026-09-28 · No content hashes (JL 260928)
 
 - AGENTS.md rule 9: the intake row and receipt record the source and when it was frozen (`materialized_at`), not a `sha256`.

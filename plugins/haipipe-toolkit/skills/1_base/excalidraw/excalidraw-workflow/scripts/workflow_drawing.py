@@ -664,7 +664,54 @@ class Map:
             k += 1
         if open_:
             c.text(30, fy + 22 * k + 8, "❓ nothing fixes yet: " + " · ".join(label(x) for x, _ in open_), 14, RED)
+        tables(c, spec.get("tables") or [], self.root)
         return c.els
+
+
+def table_rows(spec, root):
+    """A `tables:` entry's header and rows: inline (`head:` and `rows:`), or a pivot of a CSV read now (`csv:` from the
+    SPACE root, `row:`, `col:`, `value:`, optional `rows_order:` and `cols_order:`), so a count is never typed."""
+    if "csv" not in spec:
+        return [str(h) for h in spec.get("head", [])], [[str(x) for x in r] for r in spec.get("rows", [])]
+    import csv as _csv
+    p = root / spec["csv"]
+    if not p.is_file():
+        return ["❓"], [[f"{p.name} not on disk: {spec.get('make', 'run its script')}"]]
+    data = list(_csv.DictReader(p.open(encoding="utf-8")))
+    rows = spec.get("rows_order") or list(dict.fromkeys(r[spec["row"]] for r in data))
+    cols = spec.get("cols_order") or list(dict.fromkeys(r[spec["col"]] for r in data))
+    cell = {(r[spec["row"]], r[spec["col"]]): r.get(spec["value"], "") for r in data}
+    return [spec.get("corner", "")] + cols, [[rw] + [cell.get((rw, cl), "") or "·" for cl in cols] for rw in rows]
+
+
+def tables(c, specs, root):
+    """Extra frames to the right of the map, one per `tables:` entry: a title, a grey line, a grid (JL 261023: "could you
+    create a frame here about how many fold and how many agent we want to use?")."""
+    x0, y = RIGHT + 160, 40
+    for spec in specs:
+        head, rows = table_rows(spec, root)
+        widths = [max(90, max(len(str(r[i])) if i < len(r) else 0 for r in [head] + rows) * 15 * CW + 28)
+                  for i in range(len(head))]
+        w, rh = sum(widths) + 40, 34
+        notes = [str(n) for n in spec.get("notes", [])]
+        h = 110 + rh * (len(rows) + 1) + 26 * len(notes) + 20
+        c.rect(x0, y, w, h, stroke=INK, sw=2)
+        c.text(x0 + 20, y + 18, str(spec.get("title", "")), 22, INK)
+        c.text(x0 + 20, y + 54, str(spec.get("sub", "")), 13, INK3)
+        gy = y + 90
+        for k, r in enumerate([head] + rows):
+            xx = x0 + 20
+            if k == 1:
+                c.line([(x0 + 20, gy - 4), (x0 + w - 20, gy - 4)], stroke=RULE, sw=1)
+            for i, v in enumerate(r):
+                col = INK if k == 0 or i == 0 else (INK3 if v in ("·", "") else GREEN if v.startswith(("✅", "0", "1")) else INK2)
+                c.text(xx, gy + 6, v, 15 if k else 14, col)
+                xx += widths[i]
+            gy += rh
+        for n in notes:
+            c.text(x0 + 20, gy + 8, n, 14, INK2)
+            gy += 26
+        y += h + 60
 
 
 def count_line(spec, root):

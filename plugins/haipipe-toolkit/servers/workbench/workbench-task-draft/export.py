@@ -756,11 +756,16 @@ document.getElementById('rebuild').onclick = function () {
                     # for figure.pdf and fell through to "nothing to print").
                     asset = next(f for f in ("figure.pdf", "figure.png", "figure.jpg")
                                  if (u["dir"] / "assets" / f).is_file())
+                    # the figure's legend (its float.tex note) prints under it, as a table's does: without it
+                    # a reader never learns what panels, markers or intervals mean (JL 261023 claim check)
+                    note = u.get("note", "")
+                    note_block = ("\\par\\smallskip\n\\begin{flushleft}\n\\footnotesize\n%s\n\\end{flushleft}\n"
+                                  % note if note else "")
                     block = ("\\begin{figure}[!htbp]\n\\centering\n"
                              "\\includegraphics[width=.85\\linewidth,"
-                             "height=.85\\textheight,keepaspectratio]"
-                             "{%s/assets/%s}\n\\caption{%s}\n%s"
-                             "\\end{figure}" % (rel, asset, u["caption"], lab))
+                             "height=.7\\textheight,keepaspectratio]"
+                             "{%s/assets/%s}\n\\caption{%s}\n%s%s"
+                             "\\end{figure}" % (rel, asset, u["caption"], lab, note_block))
                 else:
                     continue          # ⬜ no winning render yet: nothing to print
                 m = self._first_unit_mention(body, u)
