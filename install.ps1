@@ -9,6 +9,9 @@
 #   .\install.ps1 -All                  # marketplace + global + hooks
 #   .\install.ps1 -Symlink              # use symlinks instead of junctions (needs admin / Developer Mode)
 #   .\install.ps1 -NoMarketplace        # skip marketplace registration
+#   .\install.ps1 -Verify               # audit a workspace's links and write nothing
+#                                       # (exit 1 if anything is stale, missing, or
+#                                       # pointing at a folder Tools no longer uses)
 #
 # Sound hooks read the same per-OS table as install.sh (install-hooks.json), so
 # the two installers cannot drift. Each keeps its own writer, which is why this
@@ -28,13 +31,17 @@ param(
     [switch]$Hooks,
     [switch]$All,
     [switch]$Symlink,
-    [switch]$NoMarketplace
+    [switch]$NoMarketplace,
+    [switch]$Verify
 )
 
 $ErrorActionPreference = "Stop"
 $ScriptDir   = $PSScriptRoot
 $PluginsRoot = Join-Path $ScriptDir "plugins"
-$ClaudeDir   = Join-Path $env:USERPROFILE ".claude"
+# USERPROFILE is the Windows home. The fallback lets the script run under
+# pwsh on macOS/Linux for testing; on Windows it never fires.
+$userHome    = if ($env:USERPROFILE) { $env:USERPROFILE } else { $HOME }
+$ClaudeDir   = Join-Path $userHome ".claude"
 
 if ($All) { $Global = $true; $Hooks = $true }
 
@@ -100,6 +107,33 @@ function Get-Skills {
             }
             $_.Group[0]
         }
+}
+
+# Short names, as install.sh makes them: `aliases: [wb]` under `metadata:` in a
+# SKILL.md is one more link per alias to the same folder (/wb is /workbench). An
+# alias that is already a skill's own name is skipped. Shared by Install-Skills
+# and the -Verify audit, so the two can never disagree about what should exist.
+function Get-SkillAliases {
+    param([array]$Skills)
+
+    $names = @{}
+    foreach ($s in $Skills) { $names[$s.Name] = $true }
+
+    foreach ($s in $Skills) {
+        $text = Get-Content -LiteralPath (Join-Path $s.SkillDir "SKILL.md") -Raw -ErrorAction SilentlyContinue
+        if (-not $text -or -not $text.StartsWith('---')) { continue }
+        $head = ($text -split "`n---", 2)[0]
+        $m = [regex]::Match($head, '(?m)^\s+aliases:\s*\[?([^\]\r\n#]*)\]?')
+        if (-not $m.Success) { continue }
+        foreach ($alias in ($m.Groups[1].Value -split ',' | ForEach-Object { $_.Trim().Trim('"', "'") })) {
+            if ($alias -notmatch '^[a-z0-9][a-z0-9-]*$') { continue }
+            if ($names.ContainsKey($alias)) {
+                Write-Host "  . $alias (alias of $($s.Name) skipped: a skill has that name)"
+                continue
+            }
+            [pscustomobject]@{ Name = $alias; Skill = $s }
+        }
+    }
 }
 
 # ─── Agent enumeration ───────────────────────────────────────────────────────
@@ -239,6 +273,56 @@ function Install-Agents {
 }
 
 # ─── Link helpers ────────────────────────────────────────────────────────────
+# A link's target as an absolute path. Junctions store absolute targets; a
+# symlink made by install.sh (or by hand) may store a relative one, which
+# Test-Path would resolve against the current directory instead of the link's
+# own folder — turning a perfectly good link into a "dangling" one.
+function Resolve-LinkTarget {
+    param([string]$LinkPath, [string]$Target)
+    if (-not $Target) { return $null }
+    if (-not [IO.Path]::IsPathRooted($Target)) {
+        # A link at the filesystem root (/tmp on macOS is a symlink to
+        # /private/tmp) has no parent to join against.
+        $parent = Split-Path -Parent $LinkPath
+        if (-not $parent) { $parent = [IO.Path]::DirectorySeparatorChar }
+        $Target = Join-Path $parent $Target
+    }
+    try { (Resolve-Path -LiteralPath $Target).Path } catch { $null }
+}
+
+# The directory a path really is, following symlink/junction hops. install.sh's
+# audit gets this for free from Path.resolve(); PowerShell's Resolve-Path does
+# not follow a symlink, and only the last component can be one: a skill folder
+# under Knowledge-SPACE/Tools (a symlink to ../Tools-SPACE) is a plain directory.
+# Without this, every link looks like drift when the installer runs through the
+# symlink — the expected path runs through Tools, the link's target through the
+# real folder, and the two strings never match.
+function Get-RealPath {
+    param([string]$Path)
+
+    $sep = [IO.Path]::DirectorySeparatorChar
+    $real = @()
+    foreach ($part in ((Resolve-Path -LiteralPath $Path).Path -split '[\\/]')) {
+        # An absolute path splits with a leading empty part; keep it so the
+        # joined candidate still starts with the separator.
+        if (-not $part) { if ($real.Count -eq 0) { $real = @('') }; continue }
+
+        $candidate = ($real + $part) -join $sep
+        try { $item = Get-Item -LiteralPath $candidate -Force } catch { return $candidate }
+
+        if (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -eq 0) {
+            $real += $part
+            continue
+        }
+
+        $next = Resolve-LinkTarget -LinkPath $candidate -Target $item.Target
+        if (-not $next) { return $candidate }
+        $real = @((Resolve-Path -LiteralPath $next).Path -split '[\\/]')
+    }
+
+    return ($real -join $sep)
+}
+
 function New-SkillLink {
     param([string]$LinkPath, [string]$Target)
 
@@ -276,33 +360,21 @@ function Install-Skills {
         else { $kept++; Write-Host "  . $($s.Name) (kept, not a link)" }
     }
 
-    # Short names, as install.sh makes them: `aliases: [wb]` under `metadata:` in a
-    # SKILL.md is one more link per alias to the same folder (/wb is /workbench). An
-    # alias that is already a skill's own name is skipped.
-    $names = @{}; foreach ($s in $skills) { $names[$s.Name] = $true }
-    foreach ($s in $skills) {
-        $text = Get-Content -LiteralPath (Join-Path $s.SkillDir "SKILL.md") -Raw -ErrorAction SilentlyContinue
-        if (-not $text -or -not $text.StartsWith('---')) { continue }
-        $head = ($text -split "`n---", 2)[0]
-        $m = [regex]::Match($head, '(?m)^\s+aliases:\s*\[?([^\]\r\n#]*)\]?')
-        if (-not $m.Success) { continue }
-        foreach ($alias in ($m.Groups[1].Value -split ',' | ForEach-Object { $_.Trim().Trim('"', "'") })) {
-            if ($alias -notmatch '^[a-z0-9][a-z0-9-]*$') { continue }
-            if ($names.ContainsKey($alias)) {
-                Write-Host "  . $alias (alias of $($s.Name) skipped: a skill has that name)"; continue
-            }
-            $target = Join-Path $PluginsRoot ($s.Plugin + "\skills\" + ($s.RelPath -replace '/', '\'))
-            $result = New-SkillLink -LinkPath (Join-Path $SkillsDir $alias) -Target $target
-            if ($result -eq "linked") { $installed++ }
-            else { $kept++; Write-Host "  . $alias (kept, not a link)" }
-        }
+    # Short names: one more link per alias, to the same skill folder. The alias
+    # rule lives in Get-SkillAliases so the -Verify audit reads the same list.
+    foreach ($a in Get-SkillAliases $skills) {
+        $s = $a.Skill
+        $target = Join-Path $PluginsRoot ($s.Plugin + "\skills\" + ($s.RelPath -replace '/', '\'))
+        $result = New-SkillLink -LinkPath (Join-Path $SkillsDir $a.Name) -Target $target
+        if ($result -eq "linked") { $installed++ }
+        else { $kept++; Write-Host "  . $($a.Name) (kept, not a link)" }
     }
 
     # Remove stale links: reparse points whose target no longer resolves.
     $cleaned = 0
     foreach ($entry in Get-ChildItem -LiteralPath $SkillsDir -Force) {
         $isReparse = ($entry.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0
-        if ($isReparse -and -not (Test-Path -LiteralPath $entry.Target)) {
+        if ($isReparse -and -not (Resolve-LinkTarget -LinkPath $entry.FullName -Target $entry.Target)) {
             $entry.Delete(); $cleaned++
             Write-Host "  - $($entry.Name) (stale, removed)"
         }
@@ -310,6 +382,144 @@ function Install-Skills {
 
     $kind = if ($Symlink) { "symlinks" } else { "junctions" }
     Write-Host "  $installed $kind created, $kept kept, $cleaned stale removed."
+}
+
+# ─── Audit mode (-Verify) ──────────────────────────────────────────────────────
+# Read-only mirror of install.sh --verify: report what a workspace's links
+# actually point to, without touching anything. Exit 1 when anything is out of
+# date, so a setup step can gate on it. Junctions make Windows drift in a way
+# macOS rarely sees: an absolute junction survives a Tools move as long as the
+# old folder still exists somewhere, so "resolves" is not the same as "current".
+function Test-WorkspaceLinks {
+    param([string]$Project)
+
+    Write-Host "Verifying links for: $Project"
+    try {
+        $commit = (& git -C $ScriptDir rev-parse --short HEAD)
+        if ($commit) {
+            Write-Host "  Tools commit: $commit"
+            Write-Host "  Uncommitted files in Tools: $((@(& git -C $ScriptDir status --porcelain)).Count)"
+        }
+    } catch { }
+
+    $skills = @(Get-Skills $PluginsRoot)
+    $expectedSkills = @{}
+    foreach ($s in $skills) { $expectedSkills[$s.Name] = Get-RealPath $s.SkillDir }
+    foreach ($a in Get-SkillAliases $skills) {
+        $expectedSkills[$a.Name] = Get-RealPath $a.Skill.SkillDir
+    }
+
+    $expectedAgents = @{}
+    foreach ($a in Get-Agents $PluginsRoot) { $expectedAgents["$($a.Name).md"] = Get-RealPath $a.AgentFile }
+
+    $problems = 0
+    foreach ($check in @(
+        [pscustomobject]@{ Label = "Claude skills"; Dir = Join-Path $Project ".claude\skills"; Expected = $expectedSkills },
+        [pscustomobject]@{ Label = "Codex skills";  Dir = Join-Path $Project ".codex\skills";  Expected = $expectedSkills },
+        [pscustomobject]@{ Label = "Claude agents"; Dir = Join-Path $Project ".claude\agents"; Expected = $expectedAgents }
+    )) {
+        Write-Host "  $($check.Label): $($check.Dir)"
+        if (-not (Test-Path -LiteralPath $check.Dir)) {
+            Write-Host "    not installed — run the installer"
+            $problems++
+            continue
+        }
+
+        # The agent manifest is the installer's own bookkeeping, not a link.
+        $entries = @(Get-ChildItem -LiteralPath $check.Dir -Force |
+                     Where-Object { $_.Name -ne $AgentManifestName })
+        $dangling = @(); $drift = @(); $owned = @()
+        foreach ($entry in $entries) {
+            $isReparse = ($entry.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0
+            if (-not $isReparse) { $owned += $entry.Name; continue }
+            $target = Resolve-LinkTarget -LinkPath $entry.FullName -Target $entry.Target
+            if (-not $target) { $dangling += $entry.Name; continue }
+            if ($check.Expected.ContainsKey($entry.Name)) {
+                $have = (Get-RealPath $target).TrimEnd('\')
+                $want = $check.Expected[$entry.Name].TrimEnd('\')
+                if ($have -ne $want) { $drift += [pscustomobject]@{ Name = $entry.Name; Target = $have } }
+            }
+        }
+
+        $present = @($entries | ForEach-Object { $_.Name })
+        $missing = @($check.Expected.Keys | Where-Object { $present -notcontains $_ })
+        # A real directory you made is reported as yours, not as an unexplained link.
+        $unknown = @($present | Where-Object {
+            -not $check.Expected.ContainsKey($_) -and
+            $dangling -notcontains $_ -and
+            $owned -notcontains $_
+        })
+
+        Write-Host "    $($entries.Count) entries, $($check.Expected.Count) expected"
+        if ($dangling) { Write-Host "    $($dangling.Count) dangling: $($dangling -join ', ')" }
+        if ($drift) {
+            Write-Host "    $($drift.Count) resolve but point where Tools no longer keeps them:"
+            foreach ($d in $drift) { Write-Host "      $($d.Name) -> $($d.Target)" }
+        }
+        if ($missing) { Write-Host "    $($missing.Count) not linked: $($missing -join ', ')" }
+        if ($unknown) { Write-Host "    $($unknown.Count) links with no matching skill or agent on disk: $($unknown -join ', ')" }
+        if ($owned) { Write-Host "    $($owned.Count) real directories you own (the installer leaves these alone): $($owned -join ', ')" }
+
+        $problems += $dangling.Count + $drift.Count + $missing.Count
+    }
+
+    # A skill that shells out to a server is only real if that server is registered.
+    $mcpFile = Join-Path $Project ".mcp.json"
+    $registered = @()
+    if (Test-Path -LiteralPath $mcpFile) {
+        try {
+            $parsed = Get-Content -Raw -LiteralPath $mcpFile | ConvertFrom-Json
+            if ($parsed.mcpServers) { $registered = @($parsed.mcpServers.PSObject.Properties.Name) }
+        } catch { Write-Host "  .mcp.json exists but is not valid JSON" }
+    }
+
+    $servers = @()
+    foreach ($package in Get-ChildItem -LiteralPath $PluginsRoot -Directory |
+                         Where-Object { -not $_.Name.StartsWith('_') }) {
+        $root = Join-Path $package.FullName "mcp-servers"
+        if (Test-Path -LiteralPath $root) {
+            foreach ($child in Get-ChildItem -LiteralPath $root -Directory) {
+                $servers += [pscustomobject]@{ Plugin = $package.Name; Name = $child.Name }
+            }
+        }
+    }
+
+    if ($servers) {
+        Write-Host "  MCP servers in the repo:"
+        foreach ($s in $servers) {
+            $state = if ($registered -contains $s.Name) { "registered" } else { "not registered in .mcp.json" }
+            Write-Host "    $($s.Plugin)/$($s.Name): $state"
+        }
+    }
+
+    return $problems
+}
+
+if ($Verify) {
+    if (-not $Project) {
+        $parent = Split-Path -Parent $ScriptDir
+        if ((Test-Path -LiteralPath (Join-Path $parent ".claude")) -or
+            (Test-Path -LiteralPath (Join-Path $parent ".codex"))) {
+            $Project = $parent
+            Write-Host "  Auto-detected workspace: $Project"
+        }
+    }
+    if (-not $Project) {
+        Write-Host "-Verify needs a workspace: .\install.ps1 -Verify -Project C:\path\repo"
+        exit 2
+    }
+    if (-not (Test-Path -LiteralPath $Project)) {
+        Write-Host "Project path does not exist: $Project"
+        exit 2
+    }
+
+    $problems = Test-WorkspaceLinks -Project $Project
+    if ($problems -gt 0) {
+        Write-Host "  Links are out of date: re-run .\install.ps1 -Project <path>"
+        exit 1
+    }
+    Write-Host "  Links are current."
+    exit 0
 }
 
 # ─── 1. Marketplace registration ─────────────────────────────────────────────
@@ -448,5 +658,6 @@ Write-Host "Run with flags for more:"
 Write-Host "  .\install.ps1 -Global           Link skills into ~\.claude\skills"
 Write-Host "  .\install.ps1 -Project <path>   Link skills into <path>\.claude\skills and .codex\skills"
 Write-Host "  .\install.ps1 -Hooks            Configure sound hooks in settings.json"
+Write-Host "  .\install.ps1 -Verify -Project <path>  Audit a workspace's links (writes nothing)"
 Write-Host "  .\install.ps1 -All              Do everything (marketplace + global + hooks)"
 Write-Host "  .\install.ps1 -NoMarketplace    Skip marketplace registration"

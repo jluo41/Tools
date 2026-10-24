@@ -96,6 +96,10 @@ Other options:
 ./install.sh --global         # link skills and agents into ~/.claude/
 ./install.sh --hooks          # configure Claude Code sound hooks
 ./install.sh --all            # marketplace + global links + hooks
+./install.sh --verify --project /path/to/workspace
+                              # audit a workspace's links, write nothing; exit 1 if
+                              # anything is dangling, missing, or pointing at a folder
+                              # Tools no longer uses
 ```
 
 The default shell installer registers this repository as the `jluo41-tools`
@@ -128,12 +132,26 @@ Other options:
 .\install.ps1 -Hooks                  # configure Claude Code sound hooks
 .\install.ps1 -All                    # marketplace + global links + hooks
 .\install.ps1 -NoMarketplace          # skip marketplace registration
+.\install.ps1 -Verify -Project 'C:\workspace'
+                                      # audit a workspace's links, write nothing; exit 1
+                                      # if anything is dangling, missing, or pointing at
+                                      # a folder Tools no longer uses
 ```
 
 Windows junctions use absolute paths. Re-run the installer after moving the
 repository. The project auto-detection behavior differs between the shell and
 PowerShell installers, so use an explicit project path when targeting a
 workspace.
+
+### Auditing a workspace
+
+`--verify` / `-Verify` is read-only. It prints, for each of `.claude/skills`,
+`.codex/skills` and `.claude/agents`, what every link actually resolves to
+against where Tools keeps that skill today: dangling links, links that still
+resolve but point at a folder Tools no longer uses, skills that were never
+linked, and MCP servers present in the repo but missing from `.mcp.json`. It
+writes nothing and exits 1 when anything is out of date, so a setup step can
+gate on it. Real directories you made yourself are reported and left alone.
 
 ### Sound hooks
 

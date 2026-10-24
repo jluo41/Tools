@@ -14,6 +14,9 @@
 #   --hooks               Also configure sound hooks in settings.json
 #   --all                 Do everything (marketplace + global + hooks)
 #   --no-marketplace      Skip marketplace registration (mirrors install.ps1)
+#   --verify              Audit a workspace's links and write nothing (exit 1 if
+#                         anything is stale, missing, or pointing at a folder
+#                         Tools no longer uses)
 #
 # Skills are enumerated dynamically: every SKILL.md under a plugin's skills/ tree,
 # at any depth, so adding or moving a skill needs no edits here — just re-run.
@@ -46,6 +49,7 @@ SETTINGS_FILE="$CLAUDE_DIR/settings.json"
 DO_GLOBAL=false
 DO_HOOKS=false
 DO_MARKETPLACE=true
+DO_VERIFY=false
 PROJECT_PATH=""
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -53,6 +57,7 @@ while [[ $# -gt 0 ]]; do
         --hooks)          DO_HOOKS=true ;;
         --all)            DO_GLOBAL=true; DO_HOOKS=true ;;
         --no-marketplace) DO_MARKETPLACE=false ;;
+        --verify)         DO_VERIFY=true ;;
         --project)        PROJECT_PATH="$2"; shift ;;
     esac
     shift
@@ -65,6 +70,12 @@ if [ -z "$PROJECT_PATH" ]; then
         PROJECT_PATH="$PARENT_DIR"
         echo "  Auto-detected workspace: $PROJECT_PATH"
     fi
+fi
+
+# --verify writes nothing, so it skips marketplace registration too: the audit
+# is safe to run any time, including from a note that only wants a status.
+if [ "$DO_VERIFY" = true ]; then
+    DO_MARKETPLACE=false
 fi
 
 # ─── 1. Marketplace registration ─────────────────────────────────────────────
@@ -105,15 +116,22 @@ with open('$KNOWN_FILE', 'w') as f:
         echo "  Warning: $KNOWN_FILE not found. Claude Code may not be installed."
     fi
 else
-    echo "Skipping marketplace registration (--no-marketplace)."
+    if [ "$DO_VERIFY" = true ]; then
+        echo "Verify mode writes nothing, so marketplace registration is skipped."
+    else
+        echo "Skipping marketplace registration (--no-marketplace)."
+    fi
 fi
 
 # Plugin list is READ from plugins/*/.claude-plugin/plugin.json rather than typed
 # here, because a hand-written list rots: it still named a `diagram-skill` plugin
 # months after that plugin was gone, and never gained the ones added since.
-echo ""
-echo "Done! Available plugins:"
-python3 -c "
+# --verify writes nothing, so "Done!" would be misleading: the audit prints its
+# own report instead.
+if [ "$DO_VERIFY" != true ]; then
+    echo ""
+    echo "Done! Available plugins:"
+    python3 -c "
 import json, os, sys
 root = os.path.join('$SCRIPT_DIR', 'plugins')
 for d in sorted(os.listdir(root)):
@@ -131,11 +149,12 @@ for d in sorted(os.listdir(root)):
     else:
         desc = '(no plugin.json; not installable as a plugin)'
     print(f'  {name:<18}- {desc[:96]}')
-"
-echo ""
-echo "Install in Claude Code with e.g.:"
-echo "  /plugin install haipipe@jluo41-tools"
-echo "  /plugin install inlab-human@jluo41-tools"
+    "
+    echo ""
+    echo "Install in Claude Code with e.g.:"
+    echo "  /plugin install haipipe@jluo41-tools"
+    echo "  /plugin install inlab-human@jluo41-tools"
+fi
 
 # ─── 2. Global skill installation (--global) ─────────────────────────────────
 
@@ -241,6 +260,143 @@ enumerate_agents() {
         }
     '
 }
+
+# ─── Audit mode (--verify) ─────────────────────────────────────────────────────
+# Read-only. The installer already removes dangling links when it runs, so the
+# real question is different: did anyone run it since the last move? This answers
+# that without writing anything, and it catches the quieter failure a dangling
+# link check misses — a link that still resolves but points at a folder Tools no
+# longer uses. Exit 1 when anything is out of date, so it can gate a setup step.
+verify_links() {
+    local project="$1"
+    local expected_skills expected_agents rc=0
+
+    expected_skills="$(mktemp)"
+    expected_agents="$(mktemp)"
+
+    # Same enumeration the installer uses, so the audit can never disagree with
+    # what an install would link. "<name>\t<absolute path>" per skill and alias.
+    enumerate_skills "$SCRIPT_DIR/plugins" \
+        | awk -F'\t' '{ name = $1; sub(/.*\//, "", name); print name "\t" $1 }' > "$expected_skills"
+    enumerate_skills "$SCRIPT_DIR/plugins" | enumerate_aliases \
+        | awk -F'\t' '{ print $1 "\t" $2 }' >> "$expected_skills"
+    enumerate_agents "$SCRIPT_DIR/plugins" \
+        | awk -F'\t' '{ name = $1; sub(/.*\//, "", name); print name "\t" $1 }' > "$expected_agents"
+
+    echo "Verifying links for: $project"
+    if git -C "$SCRIPT_DIR" rev-parse --git-dir >/dev/null 2>&1; then
+        echo "  Tools commit: $(git -C "$SCRIPT_DIR" rev-parse --short HEAD)"
+        echo "  Uncommitted files in Tools: $(git -C "$SCRIPT_DIR" status --porcelain | wc -l | tr -d ' ')"
+    fi
+
+    VERIFY_PROJECT="$project" VERIFY_PLUGINS="$SCRIPT_DIR/plugins" \
+    VERIFY_SKILLS="$expected_skills" VERIFY_AGENTS="$expected_agents" python3 << 'PYEOF'
+import json, os
+from pathlib import Path
+
+def load_map(path):
+    mapping = {}
+    for line in Path(path).read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        name, target = line.split("\t", 1)
+        mapping[name] = Path(target).resolve()
+    return mapping
+
+project = Path(os.environ["VERIFY_PROJECT"]).resolve()
+expected_skills = load_map(os.environ["VERIFY_SKILLS"])
+expected_agents = load_map(os.environ["VERIFY_AGENTS"])
+
+problems = 0
+for label, directory, expected in (
+    ("Claude skills", project / ".claude" / "skills", expected_skills),
+    ("Codex skills", project / ".codex" / "skills", expected_skills),
+    ("Claude agents", project / ".claude" / "agents", expected_agents),
+):
+    print(f"  {label}: {directory}")
+    if not directory.is_dir():
+        print("    not installed — run the installer")
+        problems += 1
+        continue
+
+    entries = sorted(os.listdir(directory))
+    dangling, drift, owned = [], [], []
+    for name in entries:
+        entry = directory / name
+        if not entry.is_symlink():
+            owned.append(name)
+            continue
+        if not entry.exists():
+            dangling.append(name)
+        elif name in expected and entry.resolve() != expected[name]:
+            drift.append((name, entry.resolve()))
+
+    missing = sorted(set(expected) - set(entries))
+    # A real directory you made is reported as yours, not as an unexplained link.
+    unknown = sorted(set(entries) - set(expected) - set(dangling) - set(owned))
+
+    print(f"    {len(entries)} entries, {len(expected)} expected")
+    if dangling:
+        print(f"    {len(dangling)} dangling: {', '.join(dangling)}")
+    if drift:
+        print(f"    {len(drift)} resolve but point where Tools no longer keeps them:")
+        for name, target in drift:
+            print(f"      {name} -> {target}")
+    if missing:
+        print(f"    {len(missing)} not linked: {', '.join(missing)}")
+    if unknown:
+        print(f"    {len(unknown)} links with no matching skill or agent on disk: {', '.join(unknown)}")
+    if owned:
+        print(f"    {len(owned)} real directories you own (the installer leaves these alone): {', '.join(owned)}")
+
+    problems += len(dangling) + len(drift) + len(missing)
+
+# A skill that shells out to a server is only real if that server is registered.
+mcp_file = project / ".mcp.json"
+registered = set()
+if mcp_file.exists():
+    try:
+        registered = set(json.loads(mcp_file.read_text(encoding="utf-8")).get("mcpServers", {}))
+    except Exception:
+        print("  .mcp.json exists but is not valid JSON")
+
+servers = []
+for package in sorted(p for p in Path(os.environ["VERIFY_PLUGINS"]).iterdir()
+                      if p.is_dir() and not p.name.startswith(("_", "."))):
+    root = package / "mcp-servers"
+    if root.is_dir():
+        servers.extend((package.name, child.name) for child in sorted(root.iterdir()) if child.is_dir())
+
+if servers:
+    print("  MCP servers in the repo:")
+    for package, name in servers:
+        print(f"    {package}/{name}: {'registered' if name in registered else 'not registered in .mcp.json'}")
+
+raise SystemExit(1 if problems else 0)
+PYEOF
+    rc=$?
+
+    rm -f "$expected_skills" "$expected_agents"
+    if [ "$rc" = 0 ]; then
+        echo "  Links are current."
+    else
+        echo "  Links are out of date: re-run ./install.sh --project <path>"
+    fi
+    return "$rc"
+}
+
+if [ "$DO_VERIFY" = true ]; then
+    if [ -z "$PROJECT_PATH" ]; then
+        echo "--verify needs a workspace: ./install.sh --verify --project /path/to/repo" >&2
+        exit 2
+    fi
+    if [ ! -d "$PROJECT_PATH" ]; then
+        echo "Project path does not exist: $PROJECT_PATH" >&2
+        exit 2
+    fi
+    verify_links "$PROJECT_PATH"
+    exit $?
+fi
 
 if [ "$DO_GLOBAL" = true ]; then
     echo ""
@@ -504,3 +660,4 @@ echo "  ./install.sh --project /path/to/repo  Symlink skills to repo's .claude/s
 echo "  ./install.sh --hooks                 Configure sound hooks in settings.json"
 echo "  ./install.sh --all                   Do everything (marketplace + global + hooks)"
 echo "  ./install.sh --no-marketplace        Skip marketplace registration"
+echo "  ./install.sh --verify --project <path>  Audit a workspace's links (writes nothing)"
