@@ -181,19 +181,20 @@ emit_inputs_yaml() {
   done
 }
 
-# Gate 1 belongs to this exact Task Folder.
+# Gate 1 is advisory except for an explicit fail: a missing review or a warn prints a warning and the
+# Run goes ahead; a CODE_REVIEW.md that says overall_verdict: fail still stops it.
 CODE_REVIEW="$TASK_FOLDER/CODE_REVIEW.md"
 SKIP_REVIEW_CONFIG="$(grep -E '^\s*skip_review:\s*true\b' "$CONFIG" 2>/dev/null || true)"
 if [ -n "$SKIP_REVIEW_CONFIG" ] || [ "${HAIPIPE_SKIP_REVIEW:-0}" = "1" ]; then
   echo "==> [pre-flight] code review skipped by explicit flag" >&2
+elif [ ! -f "$CODE_REVIEW" ]; then
+  echo "==> [pre-flight] no CODE_REVIEW.md in $TASK_FOLDER; running anyway (review is advisory)" >&2
 else
-  [ -f "$CODE_REVIEW" ] || fail_shape "no CODE_REVIEW.md in $TASK_FOLDER"
   REVIEW_VERDICT="$(grep -E '^- overall_verdict:' "$CODE_REVIEW" 2>/dev/null | awk '{print $3}')"
   case "$REVIEW_VERDICT" in
     pass|skipped) : ;;
-    warn) echo "==> [pre-flight] review verdict=warn; see $CODE_REVIEW" >&2 ;;
-    fail) fail_shape "code review verdict=fail" ;;
-    *) fail_shape "unrecognized code review verdict: ${REVIEW_VERDICT:-none}" ;;
+    fail) fail_shape "code review verdict=fail; see $CODE_REVIEW" ;;
+    *) echo "==> [pre-flight] review verdict=${REVIEW_VERDICT:-none}; see $CODE_REVIEW (advisory, running anyway)" >&2 ;;
   esac
 fi
 
