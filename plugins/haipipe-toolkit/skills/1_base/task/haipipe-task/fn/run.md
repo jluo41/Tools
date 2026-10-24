@@ -57,8 +57,9 @@ Before launch:
 
 - confirm config and Ticket stems match;
 - confirm all declared input paths resolve;
-- confirm `CODE_REVIEW.md` exists and its verdict is `pass` (or `warn`), unless
-  the explicit skip flag is present;
+- check `CODE_REVIEW.md`: it is advisory. A missing file or a `warn` verdict prints a
+  warning and the Run still goes ahead; an explicit `fail` verdict still blocks it.
+  The owner reads the high-level change, not the code line by line;
 - confirm the Result path belongs to this `<task>/<run>` identity.
 
 Execute the exact Ticket. New Tickets check that no contract file (Ticket,
