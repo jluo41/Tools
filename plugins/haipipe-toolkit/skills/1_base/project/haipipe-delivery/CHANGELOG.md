@@ -1,6 +1,13 @@
 haipipe-delivery · Changelog
 ============================
 
+**[0.5.1] · 2026-10-23 · A SharePoint copy is still its version (Paper-AgreeableOpioid-Jama, Round1-v1023)**
+
+`scripts/word_round.py`: `held()` also matches a copy whose document, comments and footnotes equal a version's
+(`same_words()`), since SharePoint adds its own properties to every .docx it stores and `push` then took its own
+copy for someone's edits; `rel()` prints a path outside the SPACE as it is (OneDrive's real folder behind the
+`_WorkSpace/CoWork-JHU` symlink crashed `push` after the copy, before its `draft` row).
+
 **[0.5.0] · 2026-10-19 · A round: render and read back (b32 s41-D21, D23)**
 
 `scripts/word_round.py`, made shared from b21_event_cgm's `delivery/word_versions.py`: numbered versions, `render`

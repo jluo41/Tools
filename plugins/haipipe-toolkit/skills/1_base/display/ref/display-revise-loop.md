@@ -68,11 +68,28 @@ pass  =  overall >= 8/10  and  question, readability, honesty, journal-ready eac
 
 - Each display answers ONE question, written as a question a reader would ask, in the README:
   `question: Do the names the agent gives match the specialty the patient asked for?`
-- The caption title (short, in the venue's style) is followed by that question, and the caption
-  then says how to read the answer off the picture, so a reader who only reads captions knows what
-  each display is for. A caption that only describes ("X by Y and Z") is a review finding.
-- Each panel title names its sub-question (A. ...? B. ...?), never a variable name.
+- The question and the answer live in the unit, not in the printed caption: README `question:` and
+  the takeaways (`display.yaml` `takeaways:`, numbered). The text that cites the display gives the
+  finding; the caption only lets a reader read the picture (the caption rule below).
+- Each panel title is a short neutral label (A. Adjusted odds ratio; B. Agents vs search engine),
+  never a variable name, and never a question or a finding.
 - A display that answers two questions is two displays, or one question with two panels.
+
+## The caption rule
+
+A caption is short (JL 261023: "do not make it too long"; JAMA Network Open legends run 20 to 75
+words). It has two parts, and nothing else:
+
+- **Title**: a descriptive phrase of 10 to 15 words in the venue's style. It says what is shown,
+  not what was found.
+- **Legend**: at most 75 words for a figure, 120 for a table's footnotes. It defines what is drawn:
+  every symbol, error bar, line, colour, scale, the groups compared and every abbreviation. One
+  clause may say what a marker's fill means or what an axis value of 1 means.
+- **Never in a caption**: the study design, the sample build, model details beyond "adjusted for"
+  one clause, sample sizes already printed in the picture, findings, takeaways, caveats and
+  "associations, not causal" (those belong to Methods, Results and Limitations).
+- Count the words before every review round; an over-length caption is a journal-ready finding.
+  Venue limits win when the venue states them (haipipe-paper-venue).
 
 ## The colour rule
 
@@ -120,8 +137,9 @@ For EACH display, in order:
 3. List concrete problems, each as: element · where · what is wrong. (For example:
    "legend · top right of panel B · covers the last two bars".) Cover colour (one
    scheme? the same thing the same colour? a colour meaning two things? text in colour?),
-   labels, scales, denominators, confidence intervals, panel structure, and anything a
-   journal would send back.
+   labels, scales, denominators, confidence intervals, panel structure, caption length
+   (a title of 10 to 15 words; a figure legend of at most 75 words that only defines what
+   is drawn), and anything a journal would send back.
 4. Score each from 0 to 10 on one line, exactly in this form:
    scores: question N · readability N · honesty N · journal-ready N · overall N
    question = it answers one clear question, and the caption says which;

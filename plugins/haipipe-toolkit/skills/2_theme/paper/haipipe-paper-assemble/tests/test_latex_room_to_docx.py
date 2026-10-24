@@ -344,3 +344,14 @@ def test_a_parbox_table_note_reaches_word(room):
     out = _build_with(room, "\\begin{abstract}One sentence.\\end{abstract}")
     assert "SE, standard error." in out
 
+
+
+def test_a_pending_cell_is_shaded_yellow_in_word(room):
+    """0.12.0 (JL 261023: "these unfilled ones, can you highlight them?"): a cell written \\pending{--} prints on yellow
+    in Word, the mark itself never printed; the expect-fail side is the plain cell, unshaded."""
+    body = room / "delivery" / "latex" / "displays" / "S-D-Main-1-Results" / "Display1-main" / "table-body.tex"
+    body.write_text("\\providecommand{\\pending}[1]{\\colorbox{yellow}{#1}}\n"
+                    + body.read_text().replace("Observations & 765,701 & 765,701", "Observations & \\pending{--} & 765,701"))
+    out = _build_with(room, "\\begin{abstract}One sentence.\\end{abstract}")
+    assert 'w:fill="FFFF00"' in out and "\\pending" not in out and "providecommand" not in out
+    assert out.count('w:fill="FFFF00"') == 1

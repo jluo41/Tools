@@ -34,7 +34,20 @@
   `flushleft` notes did.
 - The Word preview PDF beside each .docx is drawn by Microsoft Word on a Mac that has it (`word_pdf()`), so it shows
   what a co-author sees; the HTML renderer laid displays out in text order. `HAIPIPE_WORD_PREVIEW=html` keeps it.
-- 100 tests pass with the SPACE venv.
+- The JAMA Word title page prints the `[paper] authors` byline (names, then affiliations, marks as superscripts;
+  `add_byline()`) and "Word count: N" instead of "Main-text source word count".
+- `is_abstract()` knows a ladder Task named `tNN_abstract`, so `abstract_page` breaks the page after the keywords
+  (the Introduction of Paper-AgreeableOpioid-Jama ran on after them in the PDF).
+- Word placement finds the citing paragraph's own match (the Abstract repeats Results phrases, and the first match
+  put Table 2 a page late) and waits for Word to quit, so the next file's preview does not find it still closing.
+- `word_count()` stops at the back matter (Back matter, Article Information, Acknowledgments): the JAMA title page
+  counted the Article Information as main text (3,071 words; the text is 2,760).
+- Word references are LaTeX's own (`bbl_references()` reads `master.bbl`, written by BibTeX with the venue's .bst), so
+  both copies print the same list (JL 261023: "can't LaTeX do this?"); without a .bbl, `format_reference()` now
+  writes AMA order, `Journal. Year;Volume(Issue):Pages.`, where it printed "JAMA. 2020 323 863–884".
+- A table cell written `\pending{x}` (a value still to come) prints on yellow in Word, as `\colorbox{yellow}` does in
+  the PDF (JL 261024: "can you highlight the unfilled ones?"); the mark never prints.
+- 101 tests pass with the SPACE venv.
 
 ## 0.11.4 · 2026-10-20 · the readiness gates tested with the engine
 

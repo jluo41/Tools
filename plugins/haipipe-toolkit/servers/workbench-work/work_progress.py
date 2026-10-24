@@ -1370,10 +1370,11 @@ def role_nodes(task, rows, root):
     return out
 
 
-def task_picture(task, rows):
-    """The picture a Task's newest finished Run drew: its preview.png (a display Run's table or figure), else its first
-    .png; None when it drew none."""
-    for row in sorted(rows, key=lambda r: str(r["receipt"].get("finished_at") or ""), reverse=True):
+def task_pictures(task, rows):
+    """The picture each finished Run of a Task drew, latest Run number first (r01 before a carried r00_previous_draft),
+    then by finish time: [(run, its preview.png, else its first .png)]; a Run that drew none is left out."""
+    out = []
+    for row in sorted(rows, key=lambda r: (r["run"][:3], str(r["receipt"].get("finished_at") or "")), reverse=True):
         if state_of(row) != "finished":
             continue
         res = task / "runs" / row["run"] / "result"
@@ -1381,18 +1382,23 @@ def task_picture(task, rows):
         found = sorted(res.glob("*.png")) if res.is_dir() else []
         pick = next((f for f in found if f.name == "preview.png"), found[0] if found else None)
         if pick:
-            return pick
-    return None
+            out.append((row["run"], pick))
+    return out
 
 
 def task_run_node(task, rows, root, mode):
     head = (f'<span class=lvl>📂 {nav(task, root, mode, "Execution", e(task.name))}</span>'
             f'<span class=chip>{runs_n(len(rows))}  {e(run_tally(rows))}</span>')
-    # the Task's picture shows on its folded line (JL 261023: "why I cannot see the images shown by default?")
-    pic = task_picture(task, rows)
-    below = (f'<a href="{file_url(pic, root)}" target=_blank rel=noopener><img src="{file_url(pic, root)}" alt="{e(pic.name)}" '
-             'loading=lazy style="display:block;max-width:min(100%,760px);max-height:260px;margin:4px 0 8px;'
-             'border:1px solid var(--line,#e3e3e6)"></a>') if pic else ""
+    # every Run's picture shows on the Task's folded line, side by side (JL 261023: "why I cannot see the images shown by
+    # default?"; "why this is not available in the results", of a carried previous-draft Run)
+    pics = task_pictures(task, rows)[:4]
+    width = 760 if len(pics) == 1 else 460
+    below = ('<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;margin:4px 0 8px">' + "".join(
+        f'<figure style="margin:0"><a href="{file_url(pic, root)}" target=_blank rel=noopener><img src="{file_url(pic, root)}" '
+        f'alt="{e(pic.name)}" loading=lazy style="display:block;max-width:min(100%,{width}px);max-height:260px;'
+        'border:1px solid var(--line,#e3e3e6)"></a>'
+        + (f'<figcaption class=m style="margin:2px 0 0">{e(run)}</figcaption>' if len(pics) > 1 else "") + '</figure>'
+        for run, pic in pics) + '</div>') if pics else ""
     return node(head, role_nodes(task, rows, root) or "<li class=m>No Runs yet.</li>", key="runs-" + frame.rel(task, root),
                 below=below)
 

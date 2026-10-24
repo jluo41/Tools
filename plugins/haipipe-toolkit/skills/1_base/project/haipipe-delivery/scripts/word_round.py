@@ -36,6 +36,18 @@ DPI = 110                                       # a page picture: readable on a 
 READ_REVISE = Path(__file__).resolve().parents[3] / "excalidraw/excalidraw-draft/ref"
 
 
+def same_words(a, b):
+    """True when two .docx files hold the same document, comments and footnotes, whatever else differs."""
+    parts = ("word/document.xml", "word/comments.xml", "word/footnotes.xml")
+    try:
+        with zipfile.ZipFile(a) as za, zipfile.ZipFile(b) as zb:
+            names_a, names_b = set(za.namelist()), set(zb.namelist())
+            return all((x in names_a) == (x in names_b) and (x not in names_a or za.read(x) == zb.read(x))
+                       for x in parts)
+    except (zipfile.BadZipFile, OSError):
+        return False
+
+
 class Round:
     def __init__(self, word_dir, name, onedrive=None, me=("JL", "Junjie Luo"), reader=""):
         self.word = Path(word_dir).resolve()
@@ -45,7 +57,11 @@ class Round:
         self.render_dir = self.word.parent / "render"
 
     def rel(self, p):
-        return Path(p).resolve().relative_to(self.space)
+        """A path relative to the SPACE; one outside it (OneDrive's real folder, behind a symlink) as it is."""
+        try:
+            return Path(p).resolve().relative_to(self.space)
+        except ValueError:
+            return Path(p)
 
     def versions(self):
         """[(N, path)] of the numbered Word files, oldest first."""
@@ -55,7 +71,9 @@ class Round:
 
     def held(self, path):
         """The version whose bytes equal this file, or None."""
-        return next((n for n, p in self.versions() if filecmp.cmp(p, path, shallow=False)), None)
+        # SharePoint adds its own properties to every .docx it stores, so OneDrive's copy of a version no longer
+        # matches it byte for byte; the same text and comments are still that version (JL 261023, Round1-v1023)
+        return next((n for n, p in self.versions() if filecmp.cmp(p, path, shallow=False) or same_words(p, path)), None)
 
     def delivery_md(self):
         """The Block's table of sends: the delivery.md in the nearest folder named delivery above the lane."""

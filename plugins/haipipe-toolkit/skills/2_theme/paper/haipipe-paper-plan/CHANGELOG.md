@@ -10,7 +10,7 @@
 - `s04-paper-workflow`: three tables (Sections, Displays, Timeline) and two lines (`**Budget:**`, `**Send:**`), drawn by
   excalidraw-workflow's new `paperflow_drawing.py`; a figures topic folds into it.
 - One owner per fact: the questions, E rows, T rows and venues stay on the s02 face; the plan reads them.
-- `ref/faces.md`: both faces as templates. First Board: Physician-SPACE Project-LLMRec-Physician `Paper-LLMRecPhy-Quick`.
+- `ref/faces.md`: both faces as templates. First Board: Physician-SPACE Project-LLMRec-Physician `Paper-LLMRecPhy-Jama`.
 - A fresh-agent test on a made-up paper (food apps against a map search) found 16 gaps; fixed here and in
   excalidraw-workflow 0.2.0: the paper door routes to this skill, `where` names a T row's folders, `numbers:` puts a
   Run's answer on its card, words "(outside the count)", a budget with no desk record is an own estimate, a person's

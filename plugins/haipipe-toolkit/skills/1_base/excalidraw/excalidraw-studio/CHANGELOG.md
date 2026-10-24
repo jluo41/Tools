@@ -39,7 +39,7 @@ excalidraw-studio · Changelog
 ## [0.3.9] · 2026-10-14 · The ideation shape has its own skill
 
 - A paper's s01-ideation (every idea as steps, small frames as stairs) is drawn by the new excalidraw-ideation,
-  lifted from Paper-LLMRecPhy-Quick's builder (JL 261014); one row in the shapes table.
+  lifted from Paper-LLMRecPhy-Jama's builder (JL 261014); one row in the shapes table.
 
 ## [0.3.8] · 2026-10-13 · 主次分明: a main frame, small frames that explain it, frames as stairs
 

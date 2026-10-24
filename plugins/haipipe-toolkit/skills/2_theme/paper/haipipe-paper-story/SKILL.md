@@ -225,7 +225,7 @@ parentheses after it. The `Name` stays the short label.
 one, we want to make it quick and most short"; "we don't need to list all of them"). The ladder keeps one paper per
 Board, so a quick, short paper gets its own `paper/Paper-<Slug>/` with its own telling. It lists only the few
 questions already answered on disk, and it never takes the long paper's headline; each face names the other as its
-companion. First: Project-LLMRec-Physician's `Paper-LLMRecPhy-Quick` (a JAMA Network Open Original Investigation, three
+companion. First: Project-LLMRec-Physician's `Paper-LLMRecPhy-Jama` (a JAMA Network Open Original Investigation, three
 questions, the project's original research; first planned as a letter) and its MIS Quarterly companion (four
 questions) on a Board of its own.
 
@@ -624,7 +624,7 @@ questions it answers, and read in order the questions are its narrative. `excali
 question as a step titled by its narrative question, beside it the answer so far, its claim and the E rows and T
 rows behind it (✅ answered, 🔶 partly, ⬜ nothing yet, red and dashed), the pitch, what we will not claim, and the
 Runs still to make. Run `story_drawing.py make <topic>` once for the forwarding builder, then the builder after
-every change to the face. First users: Project-LLMRec-Physician's two Boards, `Paper-LLMRecPhy-Quick`
+every change to the face. First users: Project-LLMRec-Physician's two Boards, `Paper-LLMRecPhy-Jama`
 (`s02-story-jamaim-agent-google-unseen-physicians`) and its MIS Quarterly companion (`s02-story-misq-agent-physician-visibility`).
 
 **The plan comes next, two topics owned by `haipipe-paper-plan`** (JL 261019: "plan for the data flow and plan for

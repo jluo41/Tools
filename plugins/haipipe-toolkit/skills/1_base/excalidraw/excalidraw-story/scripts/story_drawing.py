@@ -1,6 +1,6 @@
 """A paper's story as one drawing: its research questions as steps, each with what supports it and what is missing.
 
-Asked 261019 on Physician-SPACE's Paper-LLMRecPhy-Quick (JL: "In the story studio s02-story, I think we might need to list
+Asked 261019 on Physician-SPACE's Paper-LLMRecPhy-Jama (JL: "In the story studio s02-story, I think we might need to list
 the research questions, and how could we support them"; "should we have a things named /excalidraw-story?"; "This
 is more like the story, do you get it."). Drawn the way excalidraw-ideation draws s01 (one big main frame, small
 frames that explain it, as stairs; JL 261013), and read from the telling's face on every build, so the drawing can

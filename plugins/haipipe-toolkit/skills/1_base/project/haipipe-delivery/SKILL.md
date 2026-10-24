@@ -16,7 +16,7 @@ description: >-
   the file came back, pull from OneDrive, next round, /haipipe-delivery.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.5.0"
+  version: "0.5.1"
   last_updated: "2026-10-19"
   # version history: ./CHANGELOG.md
 ---

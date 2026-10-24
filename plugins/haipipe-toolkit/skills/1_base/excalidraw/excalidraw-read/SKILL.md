@@ -180,7 +180,7 @@ passages highlighted and a numbered note level with each, then its logic and its
 2. **One reading per paper**, `reads/<id>-<paper>/reading.yaml`, its `paper.pdf` the Block's `related/paper/` file.
 3. **Unread is red.** A paper with no reading yet shows as one red card: "PDF kept, not read yet" or "no PDF yet".
 4. The page frame is excalidraw-task's `transcript_frame` with `noun="paper"`, `us="Our paper"`. Worked example:
-   Physician-SPACE `Paper-LLMRecPhy-Quick/studio/s07-related-work-audits-of-who-llms-name/`.
+   Physician-SPACE `Paper-LLMRecPhy-Jama/studio/s07-related-work-audits-of-who-llms-name/`.
 
 
 Revise mode moved

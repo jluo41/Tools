@@ -13,7 +13,7 @@
   你要说得像人话 ... 比较长，然后比较 straightforward、比较易懂的").
 - Two papers from one study are two Boards: a quick, short paper lists only the questions already answered on disk and
   never takes the long paper's headline (JL 261019: "for this one, we want to make it quick and most short"; "we don't
-  need to list all of them"). First: Project-LLMRec-Physician's `Paper-LLMRecPhy-Quick` (since 261019 2154 the JAMA
+  need to list all of them"). First: Project-LLMRec-Physician's `Paper-LLMRecPhy-Jama` (since 261019 2154 the JAMA
   Network Open article) and its MIS Quarterly companion on a Board of its own.
 - The question block template now carries the fields the faces and excalidraw-story use: `Research question` (the
   long sentence, its sub-questions as `(RQ1a: …)`), `Why it matters` (was `Why the paper needs it`; the workbench reads
@@ -32,7 +32,7 @@
 - The telling's face keeps §9 · Venues, its venue list from the target to the fallbacks, each row linking to its
   haipipe-paper-venue desk record (JL 261019: "我们要不要把这个 venue 直接塞到这个 story 里面去？ ... 也要想想它适合什么样的 journal，然后搞出来一个 journal list or conference list").
 - A telling may open before G0 (JL 261019: "there are not s02, why????"); G0 is JL's mark on its face. First user:
-  `studio/s02-story-misq-agent-physician-visibility/`, then on Paper-LLMRecPhy-Quick, since 261019 on the MIS Quarterly Board.
+  `studio/s02-story-misq-agent-physician-visibility/`, then on Paper-LLMRecPhy-Jama, since 261019 on the MIS Quarterly Board.
 
 ## 0.21.0 · 2026-10-14 · The workflow drawing is excalidraw-workflow's
 

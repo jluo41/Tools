@@ -288,9 +288,9 @@
   carries the prompts of 1 · Plan, 2 · Write and 4 · Revise (JL 261020).
 - The paragraph box shows one sentence a row, a long one wrapping inside its row (an editable list over the hidden
   textarea that a Save still sends); the text is matched back to its Bullets by likeness on save (`outline_revise._text_to_bullets`), and
-  the embedded editor fits its content (JL 261020; built in the Paper-LLMRecPhy-Quick session).
+  the embedded editor fits its content (JL 261020; built in the Paper-LLMRecPhy-Jama session).
 - 4 · Revise's Result: the Revise cards, then the text, then the Section canvas opened straight onto its drawing (JL
-  261020: "No need to have box in box"; built in the Paper-LLMRecPhy-Quick session).
+  261020: "No need to have box in box"; built in the Paper-LLMRecPhy-Jama session).
 - The Revise cards sit between the text and the canvas, the latest pass only (JL 261020: "always keep the latest
   version"; the Revise prompt rewrites the file as one pass), each card old → new in red and green, its own light box
   with no frame around the pass ("I don't want this", of cards inside the pass's frame; "I still want each of them to

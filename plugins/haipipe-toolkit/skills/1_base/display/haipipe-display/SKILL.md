@@ -50,7 +50,9 @@ after r04 with no pass ─▶ stop; hand the person the open problems
 
 1. **Make** each unit with a README `question:` (the ONE question it answers), the one colour
    scheme of the paper or report, and a folder name that says what it is
-   (`Display2-figure1-rq1-names-match-request`, never a method name).
+   (`Display2-figure1-rq1-names-match-request`, never a method name). Keep the caption short:
+   a 10-15 word title and a legend of at most 75 words that only defines what is drawn
+   (symbols, bars, colours, scales, abbreviations); the finding goes in the text, not the caption.
 2. **Blind review**: spawn a FRESH agent (Agent tool, a new general-purpose agent, never yourself,
    never the round before's reviewer) with the reviewer brief from the ref, pasted verbatim. Give it
    a review packet holding only each unit's `preview.pdf` and `assets/figure.png`.

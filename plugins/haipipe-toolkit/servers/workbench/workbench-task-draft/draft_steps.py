@@ -262,7 +262,7 @@ def _code(path: Path | None, root: Path) -> str:
 
 def _task_session(folder: Path, root: Path) -> str:
     """A Task's own session name, read from its folders: `<Board>: <job>-<task>`, the Job's date stamp left out, e.g.
-    `Paper-LLMRecPhy-Quick: j01-jamaim-full-t01-introduction` (JL 261020: "Paper-LLMRecPhy-Quick: j01jamaim-full-t01-intro")."""
+    `Paper-LLMRecPhy-Jama: j01-jamaim-full-t01-introduction` (JL 261020: "Paper-LLMRecPhy-Jama: j01jamaim-full-t01-intro")."""
     c = chain(folder, root)
     slug = lambda f: re.sub(r"_v\d{4}(?=_|$)", "", f.name).replace("_", "-")
     name = "-".join(([slug(c["Job"])] if c.get("Job") else []) + [slug(folder)])
@@ -346,8 +346,9 @@ def _inline(text: str, marks: dict) -> str:
     for phrase, (ink, labels) in sorted(marks.items(), key=lambda kv: -len(kv[0])):
         p = esc(phrase)
         if p in s:
-            held.append(f'<mark style="background:{ink}1f;border:1px solid {ink}66;border-radius:3px;padding:0 2px;'
-                        f'color:inherit">{p}</mark><sup style="color:{ink};font-weight:600"> {esc(", ".join(labels))}</sup>')
+            # a quiet underline in the card's ink, filled only while its sentence is read (JL 261024: more readable)
+            held.append(f'<mark class=ev-mark style="--ink:{ink}">{p}</mark>'
+                        f'<sup style="color:{ink};font-weight:600"> {esc(", ".join(labels))}</sup>')
             s = s.replace(p, f"\x00{len(held) - 1}\x00")
     s = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", s)
     s = re.sub(r"`([^`]+)`", r"<code>\1</code>", s)
@@ -355,7 +356,10 @@ def _inline(text: str, marks: dict) -> str:
     # a citation reads as its keys, quiet and small (JL 261021: "读起来比较乱糟糟的"), not as LaTeX
     s = re.sub(r"\\citep\{([^}]*)\}", lambda m: '<span class=cite>[' + "; ".join(
         k.strip() for k in m.group(1).split(",") if k.strip()) + "]</span>", s)
-    return re.sub("\x00(\\d+)\x00", lambda m: held[int(m.group(1))], s)
+    s = re.sub("\x00(\\d+)\x00", lambda m: held[int(m.group(1))], s)
+    # a citation inside a marked phrase reads the same way (JL 261024: "\\citep{Wang_2022}" showed raw in S6)
+    return re.sub(r"\\citep\{([^}]*)\}", lambda m: '<span class=cite>[' + "; ".join(
+        k.strip() for k in m.group(1).split(",") if k.strip()) + "]</span>", s)
 
 
 def _sentence(item: str, marks: dict) -> str:
@@ -2177,7 +2181,10 @@ li.rv-lit,h4.rv-lit,tr.rv-lit td{background:#fff3bf;border-radius:3px}
    the far left, above the numbers */
 .rv-left{font-size:17px;line-height:1.65}
 .rv-left ul{list-style:none;margin:0 0 6px;padding:0}
-.rv-left li[data-s]{display:flex;align-items:baseline;margin:0 0 4px;border-radius:3px}
+.rv-left li[data-s]{display:flex;align-items:baseline;margin:0 0 10px;border-radius:3px}
+.rv-left li[data-s] .s-no{color:#9a9890;font-size:12.5px}
+.ev-mark{background:none;color:inherit;padding:0;border-bottom:2px solid color-mix(in srgb,var(--ink) 45%,transparent)}
+.rv-left li[data-s]:hover .ev-mark,.rv-left li.rv-focus .ev-mark,.rv-left li.rv-lit .ev-mark{background:color-mix(in srgb,var(--ink) 14%,transparent);border-radius:2px}
 .rv-left li[data-s] .s-no{flex:0 0 42px;box-sizing:border-box;padding-right:12px;text-align:right;font-variant-numeric:tabular-nums}
 .rv-left li[data-s] .s-tx{flex:1 1 auto;min-width:0}
 .rv-left h4{font-size:16px}
@@ -2227,8 +2234,7 @@ CARDS_JS = """<script>
  /* only the label on the left opens a card (JL 261021: "当我们只有点它的最左边的时候，它才会 show up"), so a pointer
     crossing the column opens nothing */
  var peekT=null;
- document.addEventListener('mouseover',function(e){var h=e.target.closest&&e.target.closest('.rv-right .rv-card .rv-handle');
-  if(!h)return;var c=h.closest('.rv-card');if(c.classList.contains('rv-card-lit'))return;clearTimeout(peekT);peekT=setTimeout(function(){if(h.matches(':hover'))peekOn(c);},250);});
+ /* JL 261024: "click to open, click again to close; never open by itself": no peek on hover */
  document.addEventListener('mouseout',function(e){var h=e.target.closest&&e.target.closest('.rv-handle');
   if(h&&!h.contains(e.relatedTarget))clearTimeout(peekT);});
  document.addEventListener('mouseout',function(e){var c=e.target.closest&&e.target.closest('.rv-right .rv-card');
@@ -2284,9 +2290,7 @@ CARDS_JS = """<script>
   sp.querySelectorAll('.rv-right > .rv-card.acc').forEach(function(x){if(x!==c&&!x.matches('.writing,.editing'))x.classList.remove('acc','open');});
   if(!c.classList.contains('open')){c.classList.remove('peek');c.style.marginBottom='';c.classList.add('open','acc');}
   if(focusS)focus(sp,focusS);}
- document.addEventListener('mousemove',function(e){var c=e.target.closest&&e.target.closest('.rv-board .rv-right > .rv-card.rv-card-lit');
-  if(!c){accNext=null;clearTimeout(accT);return;}if(c===accNext||c.classList.contains('open'))return;
-  accNext=c;clearTimeout(accT);accT=setTimeout(function(){if(accNext===c&&c.matches(':hover'))accOpen(c);},160);});
+ /* JL 261024: no card opens when the pointer rests on it; a click opens it, a second click closes it */
  function accClose(sp){sp.querySelectorAll('.rv-right > .rv-card.acc').forEach(function(x){if(!x.matches('.writing,.editing'))x.classList.remove('acc','open');});}
  function unfocus(sp){focusS='';accClose(sp);[].forEach.call(sp.querySelectorAll('.rv-right > .rv-card'),function(c){c.style.transform='';c.classList.remove('rv-card-lit');});
   sp.querySelectorAll('.rv-left li.rv-focus').forEach(function(x){x.classList.remove('rv-focus');});}

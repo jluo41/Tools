@@ -22,7 +22,7 @@ metadata:
 
 # /excalidraw-story · the story as its questions, each with what supports it
 
-JL 261019, on Paper-LLMRecPhy-Quick: "In the story studio s02-story, I think we might need to list the research questions,
+JL 261019, on Paper-LLMRecPhy-Jama: "In the story studio s02-story, I think we might need to list the research questions,
 and how could we support them"; "should we have a things named /excalidraw-story?"; "This is more like the story, do
 you get it."; "please make the story, I think it should be composed a list of the questions to answer, and the
 quesiton can be the narrative as well."

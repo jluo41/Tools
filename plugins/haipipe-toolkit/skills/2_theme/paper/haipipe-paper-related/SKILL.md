@@ -34,7 +34,7 @@ haipipe-paper-related    studio/s10-s19            narrow: the closest work, "wh
 
 Asked by JL 261019: "for the related work we can do things like s10-related-work, and after that, we have s11
 s12, etc"; "it is different from the literature"; "we can use haipipe-paper-related, to find the most related
-papers". The pattern is Paper-LLMRecPhy-Quick's s10 to s15, built 2026-10-13.
+papers". The pattern is Paper-LLMRecPhy-Jama's s10 to s15, built 2026-10-13.
 
 
 Related is not literature

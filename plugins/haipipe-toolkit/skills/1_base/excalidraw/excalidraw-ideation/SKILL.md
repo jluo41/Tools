@@ -18,7 +18,7 @@ metadata:
 
 # /excalidraw-ideation · an ideation as one drawing, its ideas as steps
 
-Asked 261013 on Physician-SPACE's Paper-LLMRecPhy-Quick s01-ideation, whose first drawing (19 equal frames in left-aligned
+Asked 261013 on Physician-SPACE's Paper-LLMRecPhy-Jama s01-ideation, whose first drawing (19 equal frames in left-aligned
 rows) was the counterexample:
 
 1. **主次分明**: "一个很大的 frame，然后有一些小的 frame 是解释这些大的 frame 的".
@@ -27,7 +27,7 @@ rows) was the counterexample:
 
 Lifted from that topic's builder on 261014 so every paper draws its ideation the same way (JL 261014: "How do you
 think we can add it to the themes/paper skills set"; "haipipe-paper-ideation will call it to draw when it is
-available"). The shared script reproduces Paper-LLMRecPhy-Quick's drawing element for element.
+available"). The shared script reproduces Paper-LLMRecPhy-Jama's drawing element for element.
 
 ```text
 ① 🪜 every idea as steps (main, large)                  ② the setting, in its real numbers (small)
@@ -154,7 +154,7 @@ the picture alone:
 Worked examples
 ---------------
 
-- Physician-SPACE `examples-3-nlp/Project-LLMRec-Physician/paper/Paper-LLMRecPhy-Quick/studio/s01-ideation/`: the origin,
+- Physician-SPACE `examples-3-nlp/Project-LLMRec-Physician/paper/Paper-LLMRecPhy-Jama/studio/s01-ideation/`: the origin,
   sixteen ideas in four groups, its state read from the face's table (`state: columns`).
 - DrFirst-SPACE `examples-4-learning/Project-ExpLearn-SMSDesign/paper/Paper-LoopExpLearning/studio/s01-ideation/`:
   thirteen ideas, the loop's four parts as the lead group, the state in each idea's yaml.

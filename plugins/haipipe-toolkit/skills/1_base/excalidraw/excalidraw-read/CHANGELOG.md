@@ -41,7 +41,7 @@
 
 - A reading with no `key:` takes its key point from its own logic: "Its claim: …", else "What it found: …" (its last
   result), so its first frame carries the one key-point colour excalidraw-studio ⑤ asks for (14 readings of
-  Physician-SPACE Paper-LLMRecPhy-Quick had none).
+  Physician-SPACE Paper-LLMRecPhy-Jama had none).
 
 ## 0.8.0 · 2026-10-19 · Each step says how it was done
 
@@ -87,7 +87,7 @@
   `reads/<id>-<paper>/`. Act 1 is the theme (key point, what the papers share, why it matters, one card per
   paper, the open choices in red); then one row per paper: its pages whole with the read passages highlighted
   and a numbered note level with each (excalidraw-task's `transcript_frame`, which gains `noun` and `us`), then
-  its logic and the links to our paper. A paper not read yet is one red card. First used on Paper-LLMRecPhy-Quick
+  its logic and the links to our paper. A paper not read yet is one red card. First used on Paper-LLMRecPhy-Jama
   s06 to s10.
 - Each paper's row starts with its reference frame (JL 261013: "for each paper, you didn't give the paper
   reference, the names, the authors"): title, every author, venue and year, link, PDF, deep read and the version

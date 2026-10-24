@@ -58,7 +58,7 @@
 - The workbench table: the version's Work shows each Section's six step chips, a click each into that tab; a Section's
   Work is the six step tabs (the SUB-* rows in 1 · Plan); Report, Description and Delivery keep the rest.
 - A Section's Scratch is typed in 1 · Plan, and 2 · Write drafts `## 3 · Draft` from §1 and its Scratch; the person types
-  in the boxes of 1 · Plan, 2 · Write and 4 · Revise (JL 261020, built in the Paper-LLMRecPhy-Quick session).
+  in the boxes of 1 · Plan, 2 · Write and 4 · Revise (JL 261020, built in the Paper-LLMRecPhy-Jama session).
 
 ## 1.14.0 · 2026-10-19 · The plan after the story: haipipe-paper-plan
 

@@ -177,6 +177,6 @@ Once a version exists, its Sections and `## Narrative` are the version's (`haipi
 Worked example
 --------------
 
-Physician-SPACE `examples-3-nlp/Project-LLMRec-Physician/paper/Paper-LLMRecPhy-Quick/`, the JAMA Network Open Original
-Investigation: s02 asks three questions, s03 reads its data flow from `work/b03_analysis_agent_vs_google/` (its
+Physician-SPACE `examples-3-nlp/Project-LLMRec-Physician/paper/Paper-LLMRecPhy-Jama/`, the JAMA Network Open Original
+Investigation: s02 asks three questions, s03 reads its data flow from `work/b03_jama_agent_vs_search_engine/` (its
 pipeline Run `runs/run-pipeline-fold00/`), s04 plans a 3,000-word article with five displays.

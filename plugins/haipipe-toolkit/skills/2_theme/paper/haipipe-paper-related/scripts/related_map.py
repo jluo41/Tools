@@ -13,7 +13,7 @@ Closest row the face does not place is drawn red on the map, so a paper added to
     lessons   ④ what the papers teach our methods (optional)
     papers    ⑤ on: one frame per type of paper, each paper a step: how it helps us, its method in short (optional)
 
-Generalized from Paper-LLMRecPhy-Quick's s05 builder (JL 261013: one big main frame, small frames, a staircase, white
+Generalized from Paper-LLMRecPhy-Jama's s05 builder (JL 261013: one big main frame, small frames, a staircase, white
 space); haipipe-paper-related 0.1.0 (JL 261019: "for the related work we can do things like s10-related-work").
 How it looks: /excalidraw-studio (draw.py); a rebuild keeps a person's marks (haipipe-studio canvas.write).
 """

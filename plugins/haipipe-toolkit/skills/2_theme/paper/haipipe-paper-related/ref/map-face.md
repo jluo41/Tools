@@ -2,7 +2,7 @@
 
 `scripts/related_map.py` draws `studio/s10-related-work-map/` from five yaml blocks in the face. Only `map:` is
 needed; each other block adds one small frame once there is something to say. Worked example:
-Paper-LLMRecPhy-Quick's `studio/s10-related-work-map/` (27 papers, five types, 2026-10-13).
+Paper-LLMRecPhy-Jama's `studio/s10-related-work-map/` (27 papers, five types, 2026-10-13).
 
 ```text
 map       ① main     every closest paper in four quadrants, ours as the key point

@@ -383,8 +383,13 @@ TEX_SYMBOLS = {
 TEX_SYMBOL = re.compile(r"\\(" + "|".join(sorted(TEX_SYMBOLS, key=len, reverse=True)) + r")(?![A-Za-z])")
 
 
+PENDING_MARK = "\x12"   # \pending{x}: a value still to come, kept as a mark so add_table shades its cell (0.12.0)
+
+
 def latex_to_text(value: str) -> str:
     value = value or ""
+    value = re.sub(r"\\pending\{([^{}]*)\}", lambda m: PENDING_MARK + m.group(1) + PENDING_MARK, value)
+    value = re.sub(r"\\providecommand\{\\pending\}(\[\d\])?\{[^\n]*\}", "", value)
     value = re.sub(r"\\cite(?:p|t)?(?:\[[^\]]*\])?\{([^}]+)\}", citation_text, value)
     value = re.sub(
         r"\\(?:cref|Cref)\{([^}]+)\}",
@@ -1211,8 +1216,12 @@ def add_table(doc: Document, display: Display, title: str = "", *, compact: bool
             paragraph.paragraph_format.line_spacing = 1.0
             paragraph.paragraph_format.space_after = Pt(0)
             paragraph.paragraph_format.keep_with_next = keep_together and row_index < len(rows) - 1
+            pending = PENDING_MARK in value
+            value = value.replace(PENDING_MARK, "")
             run = paragraph.add_run(value)
             set_font(run, size=cell_size, bold=(row_index < heads))
+            if pending:   # a value still to come prints on yellow, as \pending does in the PDF (JL 261023)
+                set_cell_shading(cell, "FFFF00")
             if row_index < heads and header_fill:   # profile key; "" = no fill (MISQ)
                 set_cell_shading(cell, header_fill)
         if row_index < heads:
@@ -1605,7 +1614,9 @@ def word_page_boundaries(path: Path, anchors: list[str]) -> list[str | None]:
     WORD_BOX.mkdir(parents=True, exist_ok=True)
     copy = WORD_BOX / path.name
     shutil.copy2(path, copy)
-    finds = ", ".join(_applescript_string(a[:2] + a[2:].replace("^", "^^")) for a in anchors)
+    # "E|3|text": the 3rd match of text (the Abstract repeats Results phrases, so the first match can be wrong)
+    finds = ", ".join(_applescript_string(a.split("|", 2)[0] + "|" + a.split("|", 2)[1] + "|"
+                                          + a.split("|", 2)[2].replace("^", "^^")) for a in anchors)
     script = f"""
 on rep(t, a, b)
   set AppleScript's text item delimiters to a
@@ -1624,9 +1635,19 @@ tell application "Microsoft Word"
    try
     home key selection move unit a story
     set q to a as text
-    set mode to text 1 thru 1 of q
-    set q to text 3 thru -1 of q
-    if (execute find (find object of selection) find text q match case true wrap find find stop with match forward) then
+    set AppleScript's text item delimiters to "|"
+    set parts to text items of q
+    set mode to item 1 of parts
+    set k to (item 2 of parts) as integer
+    set q to (items 3 thru -1 of parts) as text
+    set AppleScript's text item delimiters to ""
+    set ok to false
+    repeat with i from 1 to k
+      if i > 1 then set selection start of selection to (selection end of selection)
+      set ok to (execute find (find object of selection) find text q match case true wrap find find stop with match forward)
+      if not ok then exit repeat
+    end repeat
+    if ok then
       if mode is "S" then
         set fe to selection start of selection
       else
@@ -1790,8 +1811,14 @@ def save_docx(doc: Document, path: Path) -> None:
             if anchor is not None:
                 text = element_text(anchor).strip()
                 snippet = text[:50] if mode == "S" else text[-60:]
+                # which match is the anchor's own: count the matches in the body up to and including it
+                k = 0
+                for el in body_children(doc):
+                    k += element_text(el).count(snippet)
+                    if el is anchor:
+                        break
                 doc.save(path)
-                before = word_page_boundaries(Path(path), [f"{mode}|{snippet}"])[0]
+                before = word_page_boundaries(Path(path), [f"{mode}|{max(k, 1)}|{snippet}"])[0]
                 target = boundary_target(anchor, before)
                 placed += target is not None
                 if target is None:                   # Word could not say: right after the citing paragraph
@@ -2005,6 +2032,26 @@ def jama_parts(raw_master: str) -> tuple[str, str, str, str, str, str]:
     return title, author, key_points, abstract, main_text, supplement_text
 
 
+def add_byline(doc: Document, latex: str) -> None:
+    """[paper] authors (LaTeX: lines split by \\\\, affiliation marks in \\textsuperscript) as centred lines: the
+    names at body size, the affiliations a size smaller, each mark set as a superscript."""
+    text = re.sub(r"\\\\(\[[^\]]*\])?", "\n", latex)
+    text = re.sub(r"\\(small|footnotesize|normalsize)\b", "", text)
+    for i, line in enumerate(l.strip() for l in text.split("\n")):
+        if not line.strip("{} "):
+            continue
+        paragraph = doc.add_paragraph()
+        paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        paragraph.paragraph_format.line_spacing = 1.15
+        paragraph.paragraph_format.space_after = Pt(2 if i else 8)
+        for k, part in enumerate(re.split(r"\\textsuperscript\{([^}]*)\}", line)):
+            part = part.replace("{", "").replace("}", "")
+            if part:
+                run = paragraph.add_run(part)
+                set_font(run, size=12 if i == 0 else 10)
+                run.font.superscript = bool(k % 2)
+
+
 def add_jama_title_page(doc: Document, title: str, author: str, main_words: int,
                         table_count: int, figure_count: int, evidence: dict[str, object]) -> None:
     """Venue-only title packaging; all study-specific text remains in the room source."""
@@ -2015,12 +2062,14 @@ def add_jama_title_page(doc: Document, title: str, author: str, main_words: int,
                  align=WD_ALIGN_PARAGRAPH.CENTER)
     if author:
         add_text(doc, author, align=WD_ALIGN_PARAGRAPH.CENTER)
+    elif str(PAPER_CONFIG.get("authors", "")).strip():
+        add_byline(doc, str(PAPER_CONFIG["authors"]))   # JL 261023: the Word title page printed no authors
     add_text(doc, str(PROFILE_CONFIG.get("venue_label", "JAMA Internal Medicine")),
              align=WD_ALIGN_PARAGRAPH.CENTER)
     date = str(PROFILE_CONFIG.get("document_date", "")).strip()
     if date:
         add_text(doc, date, align=WD_ALIGN_PARAGRAPH.CENTER)
-    add_text(doc, f"Main-text source word count: {main_words}", align=WD_ALIGN_PARAGRAPH.CENTER)
+    add_text(doc, f"Word count: {main_words}", align=WD_ALIGN_PARAGRAPH.CENTER)
     add_text(doc, f"Main displays: {table_count} tables; {figure_count} figures", align=WD_ALIGN_PARAGRAPH.CENTER)
     if evidence.get("pending_markers"):
         add_text(doc, "Evidence placeholders remain; this build is not submission-ready.",
@@ -2053,7 +2102,30 @@ def format_authors(author_field: str) -> str:
     return ", ".join(output)
 
 
+_BBL: dict[str, str] | None = None
+
+
+def bbl_references() -> dict[str, str]:
+    """The reference list LaTeX itself printed (master.bbl, written by BibTeX with the venue's .bst), one text per key.
+    0.12.0 (JL 261023: "can't LaTeX do this?"): Word reuses it, so both copies print the same references."""
+    global _BBL
+    if _BBL is None:
+        _BBL = {}
+        bbl = next((p for p in (MASTER.with_suffix(".bbl"), LATEX_ROOM / "master.bbl") if p.is_file()), None)
+        if bbl is not None:
+            for key, body in re.findall(r"\\bibitem(?:\[[^\]]*\])?\{([^}]+)\}(.*?)(?=\\bibitem|\\end\{thebibliography\})",
+                                        bbl.read_text(encoding="utf-8", errors="replace"), re.S):
+                body = re.sub(r"\\url\{([^}]*)\}", r"\1", body.replace("\\newblock", " "))
+                body = body.replace('{\\"\\i}', "ï").replace("\\i", "i")
+                text = re.sub(r"\s+", " ", latex_to_text(body)).strip()
+                if text:
+                    _BBL[key] = text
+    return _BBL
+
+
 def format_reference(key: str) -> str:
+    if key in bbl_references():
+        return bbl_references()[key]
     fields = BIB[key]
     authors = format_authors(fields.get("author", ""))
     title = latex_to_text(fields.get("title", ""))
@@ -2062,10 +2134,17 @@ def format_reference(key: str) -> str:
     volume = latex_to_text(fields.get("volume", ""))
     pages = latex_to_text(fields.get("pages", ""))
     doi = latex_to_text(fields.get("doi", ""))
-    pieces = [part for part in (authors, title, journal) if part]
-    tail = " ".join(part for part in (year, volume, pages) if part)
-    if tail:
-        pieces.append(tail)
+    # AMA (JAMA): "Journal. Year;Volume(Issue):Pages." (0.12.0, JL 261023: Word printed "JAMA. 2020 323 863–884")
+    number = latex_to_text(fields.get("number", fields.get("issue", "")))
+    pages = re.sub(r"\s*(--|–|—)\s*", "-", pages)
+    cite = year
+    if volume:
+        cite += f";{volume}" + (f"({number})" if number else "") + (f":{pages}" if pages else "")
+    elif pages:
+        cite += f":{pages}"
+    pieces = [part.strip().rstrip(".") for part in (authors, title, journal) if part and part.strip()]
+    if cite:
+        pieces.append(cite)
     if doi:
         pieces.append("doi:" + doi)
     return ". ".join(pieces).rstrip(".") + "."
@@ -2142,9 +2221,16 @@ def clean_fragment(raw: str, base: Path, *, remove_abstract: bool = True) -> str
     return value
 
 
+BACK_MATTER_HEADINGS = {"back matter", "article information", "acknowledgments", "acknowledgements", "acknowledgment"}
+
+
 def word_count(events: Iterable[Event]) -> int:
+    """Main-text words: everything before the back matter (0.12.0, JL 261023: the JAMA title page counted the Article
+    Information, 3,071 words where the text has about 2,600; journals count the text alone)."""
     words = []
     for event in events:
+        if event.kind == "heading" and str(event.value).strip().lower() in BACK_MATTER_HEADINGS:
+            break
         if event.kind in {"text", "list"}:
             values = event.value if event.kind == "list" else [event.value]
             words.extend(re.findall(r"\b[\w%]+(?:[–-][\w%]+)?\b",
