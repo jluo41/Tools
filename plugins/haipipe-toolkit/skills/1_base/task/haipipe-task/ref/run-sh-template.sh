@@ -182,7 +182,7 @@ emit_inputs_yaml() {
 }
 
 # Gate 1 is advisory except for an explicit fail: a missing review or a warn prints a warning and the
-# Run goes ahead; a CODE_REVIEW.md that says overall_verdict: fail still stops it.
+# Run goes ahead; a CODE_REVIEW.md that says overall_verdict: fail or revise still stops it.
 CODE_REVIEW="$TASK_FOLDER/CODE_REVIEW.md"
 SKIP_REVIEW_CONFIG="$(grep -E '^\s*skip_review:\s*true\b' "$CONFIG" 2>/dev/null || true)"
 if [ -n "$SKIP_REVIEW_CONFIG" ] || [ "${HAIPIPE_SKIP_REVIEW:-0}" = "1" ]; then
@@ -193,7 +193,7 @@ else
   REVIEW_VERDICT="$(grep -E '^- overall_verdict:' "$CODE_REVIEW" 2>/dev/null | awk '{print $3}')"
   case "$REVIEW_VERDICT" in
     pass|skipped) : ;;
-    fail) fail_shape "code review verdict=fail; see $CODE_REVIEW" ;;
+    fail|revise) fail_shape "code review verdict=$REVIEW_VERDICT; see $CODE_REVIEW" ;;
     *) echo "==> [pre-flight] review verdict=${REVIEW_VERDICT:-none}; see $CODE_REVIEW (advisory, running anyway)" >&2 ;;
   esac
 fi

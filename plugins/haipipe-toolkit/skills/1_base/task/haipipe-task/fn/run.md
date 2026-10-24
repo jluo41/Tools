@@ -58,7 +58,7 @@ Before launch:
 - confirm config and Ticket stems match;
 - confirm all declared input paths resolve;
 - check `CODE_REVIEW.md`: it is advisory. A missing file or a `warn` verdict prints a
-  warning and the Run still goes ahead; an explicit `fail` verdict still blocks it.
+  warning and the Run still goes ahead; an explicit `fail` or `revise` verdict still blocks it.
   The owner reads the high-level change, not the code line by line;
 - confirm the Result path belongs to this `<task>/<run>` identity.
 
