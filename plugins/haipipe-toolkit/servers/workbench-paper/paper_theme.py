@@ -1164,13 +1164,14 @@ def _tree_map(root_title, root_text, nodes):
         mark = note[:1] if note[:1] in "✅🔶⬜🙋❗" else ""          # its state first, as the story's RQ boxes show theirs
         note = note[1:].strip() if mark else note
         # "n of m folds" as a badge beside the name (JL 261023: "能把这个 n of n folds 变得显眼一些？")
-        folds = re.search(r"(\d+) of (\d+) folds[;:,]?\s*", note)
+        # and "n of m runs" the same way (JL 261024, the ScalingGlucose data flow: "I want you to make things like this")
+        folds = re.search(r"(\d+) of (\d+) (folds|runs)[;:,]?\s*", note)
         badge = ""
         if folds:
             n, m = int(folds.group(1)), int(folds.group(2))
             ink = "#2b8a3e" if n == m else "#e8590c" if n else "#adb5bd"
             badge = (f' <span style="display:inline-block;margin:0 4px;padding:0 8px;border-radius:10px;background:{ink};'
-                     f'color:#fff;font:700 12px/1.6 system-ui,sans-serif">{n} / {m} folds</span>')
+                     f'color:#fff;font:700 12px/1.6 system-ui,sans-serif">{n} / {m} {folds.group(3)}</span>')
             note = (note[:folds.start()] + note[folds.end():]).strip(" ;,:")
         return _leaf(code, "", (f"{mark} " if mark else "") + f"{P.inline(_clip(title, 48))}" + badge + (f' <span class=mut style="font-size:12px">{P.inline(_clip(note, 70))}</span>' if note else ""),
                      note=text)
@@ -1235,14 +1236,15 @@ def _expand_csv(nodes, root):
     return out
 
 
-def _flow_sections(text, root=None):
-    """The DataFlow topic's "Data tree" division drawn as a many-layered mind map."""
-    tree = _expand_csv(_outline(_division(text, "Data tree")), root)
+def _flow_sections(text, root=None, division="Data tree", head="The data, as a tree"):
+    """A Plan topic's tree division drawn as a many-layered mind map: the DataFlow topic's "Data tree", or the
+    PaperFlow topic's "Paper tree" (JL 261024: the paper flow drawn as the data flow is)."""
+    tree = _expand_csv(_outline(_division(text, division)), root)
     if not tree:
         return ""
     (root, kids), rest = tree[0], tree[1:]
     title, _, note = root.partition(" · ")
-    return _sub("The data, as a tree") + _tree_map(P.inline(title), P.inline(note), kids + rest)
+    return _sub(head) + _tree_map(P.inline(title), P.inline(note), kids + rest)
 
 
 def _story_map(text):
@@ -1405,7 +1407,9 @@ def _board_step(name, topics, state, block, root, d=None):
     # Idea: the ideas themselves, a card each; Story: its parts as sections; to read and review, the drawing folded under
     cards = (_idea_cards(d) if name == "Idea" and d else
              "".join(_story_sections(text) for _t, text in topics) if name == "Story" else
-             "".join(_flow_sections(text, root) for _t, text in topics[:1]) if name == "DataFlow" else "")
+             "".join(_flow_sections(text, root) for _t, text in topics[:1]) if name == "DataFlow" else
+             "".join(_flow_sections(text, root, "Paper tree", "The paper, as a tree") for _t, text in topics[:1])
+             if name == "PaperFlow" else "")
     result = [cards] if cards else []
     for k, (topic, text) in enumerate(topics):
         k += bool(cards)
