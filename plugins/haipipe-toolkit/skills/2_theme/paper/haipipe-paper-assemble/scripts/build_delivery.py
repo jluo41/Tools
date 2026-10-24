@@ -135,6 +135,10 @@ def word_pdf(docx: Path, pdf: Path) -> bool:
                   f'save as d file name "{out}" file format format PDF\nclose d saving no\n'
                   + ("" if running else "quit saving no\n") + "end tell")
         r = subprocess.run(["osascript", "-e", script], capture_output=True, text=True, timeout=300)
+        for _ in range(40 if not running else 0):   # Word quits after a moment; the next file must not find it open
+            if subprocess.run(["pgrep", "-x", "Microsoft Word"], capture_output=True).returncode != 0:
+                break
+            time.sleep(0.25)
         if r.returncode != 0 or not out.is_file():
             return False
         shutil.copy2(out, pdf)
@@ -168,6 +172,54 @@ DEDUPE_EMBEDDED_FLOATS = True   # behavior A · tests flip this to prove the reg
 
 def rel(p): return (HERE / p).resolve()
 
+
+
+def _doc_parts(path: Path) -> dict:
+    """The parts a co-author changes when they edit a Word file: its text and its comments. OneDrive and SharePoint
+    rewrite a file's metadata after every upload (docProps, customXml, rels) but leave these as they were."""
+    import zipfile
+    try:
+        with zipfile.ZipFile(path) as z:
+            return {n: z.read(n) for n in ("word/document.xml", "word/comments.xml") if n in z.namelist()}
+    except (OSError, zipfile.BadZipFile):
+        return {}
+
+
+def publish(previous: dict) -> dict:
+    """[publish] (paper-build.toml): copy the delivered files to a shared folder after every build (JL 261023: "the
+    delivery will be rendered here ... we will keep rendering it"), e.g. a OneDrive or SharePoint folder the co-authors
+    open. `dir` is relative to the SPACE root (the folder with env.sh) or absolute; `files` maps an [outputs] key to
+    the name it gets there. The last copy delivered is kept in <delivery>/.published/; a shared copy whose text or
+    comments differ from it was edited by a co-author, so it is never overwritten: the new render is written beside it
+    as "<name> (render <YYMMDD-HHMM>)" and the build says so. Returns what was written."""
+    pub = CFG.get("publish")
+    if not isinstance(pub, dict) or not pub.get("dir"):
+        return {}
+    space = next((q for q in [HERE.resolve(), *HERE.resolve().parents] if (q / "env.sh").is_file()), HERE.resolve())
+    dest = Path(os.path.expanduser(pub["dir"]))
+    dest = dest if dest.is_absolute() else space / dest
+    if not dest.is_dir():
+        BUILD_WARNINGS.append(f"publish: folder not found, nothing copied: {pub['dir']}")
+        return {}
+    kept = HERE / ".published"
+    kept.mkdir(exist_ok=True)
+    done, stamp = {}, datetime.now().strftime("%y%m%d-%H%M")
+    for key, name in (pub.get("files") or {}).items():
+        src = rel(OUT[key]) if OUT.get(key) else None
+        if src is None or not src.is_file():
+            BUILD_WARNINGS.append(f"publish: {key} was not built, {name} not copied")
+            continue
+        target, last = dest / name, kept / name
+        if target.exists() and not (last.is_file() and _doc_parts(target) == _doc_parts(last)):
+            target = dest / f"{Path(name).stem} (render {stamp}){Path(name).suffix}"
+            BUILD_WARNINGS.append(f"publish: {name} in the shared folder differs from the last render (edited there?); "
+                                  f"kept it, wrote {target.name}")
+        shutil.copyfile(src, target)
+        if target.name == name:
+            shutil.copyfile(src, last)
+            done[name] = {"from": OUT[key], "at": datetime.now().isoformat(timespec="seconds")}
+        print(f"published {key} -> {target.name}")
+    return done
 
 def unrooted(text):
     """A tool's printed output with the SPACE root (the folder with env.sh) cut off its paths, so the manifest
@@ -932,6 +984,32 @@ def latex_safe_entry(entry: str):
     return "".join(out), " and ".join(sorted(fixed))
 
 
+
+def uncap_entry(body: str):
+    """A title or author typed in capitals in the source record (Crossref returns some old papers so: "THE TREATMENT
+    OF TIES IN RANKING PROBLEMS", "KENDALL, M. G.") printed in capitals in the references (JL 261023: "make it as ready
+    as possible"). An all-capitals title becomes sentence case and an all-capitals surname gets an initial capital;
+    the field is changed only when it has no lowercase letter at all. Returns (body, what changed)."""
+    changed = []
+    def field(name, fix):
+        nonlocal body
+        m = re.search(r"(\b" + name + r"\s*=\s*\{)((?:[^{}]|\{[^{}]*\})*)(\})", body, re.I)
+        if not m:
+            return
+        value = m.group(2)
+        letters = [c for c in re.sub(r"\band\b", "", value) if c.isalpha()]   # an author list's "and" is lowercase
+        if len(letters) < 4 or any(c.islower() for c in letters):
+            return
+        body = body[:m.start(2)] + fix(value) + body[m.end(2):]
+        changed.append(name)
+    def sentence(v):
+        v = v.lower()
+        return re.sub(r"(^\W*\w|[:.?!]\s+\w)", lambda m: m.group(0).upper(), v)
+    field("title", sentence)
+    field("author", lambda v: re.sub(r"[A-Za-z][A-Za-z'-]+", lambda m: m.group(0) if m.group(0) == "and" else
+                                     "-".join(w.capitalize() for w in m.group(0).split("-")), v))
+    return body, changed
+
 def merge_bib(pages):
     seen, out, bodies = set(), [], {}
     for p in pages:
@@ -958,6 +1036,9 @@ def merge_bib(pages):
                         depth -= 1
                         if depth == 0: break
                 body, fixed = latex_safe_entry(txt[start:j+1])
+                body, uncapped = uncap_entry(body)
+                if uncapped:
+                    BUILD_WARNINGS.append(f"bib key {key} ({p['id']}): {' and '.join(uncapped)} in capitals, printed in normal case")
                 if fixed:
                     BUILD_WARNINGS.append(f"bib key {key} ({p['id']}): {fixed} written as LaTeX; fix the source Bib")
                 norm = re.sub(r"\s+", " ", body).strip()
@@ -1112,7 +1193,7 @@ def write_master(main, appx, status, ready_n, total_n):
         body.append("")
     # 0.8.4 (JL 260928): the draft line below is process text in the deliverable; a blind copy (MISQ) carries
     # no acknowledgments at all, since funding and thanks would unblind it; they go in the separate title-page file.
-    tail = (["\\section*{Acknowledgments}", "\\noindent\\textit{[Acknowledgments, funding and disclosures are written at submission; this build is a draft.]}", ""]
+    tail = (["\\section*{Acknowledgments}", "\\noindent\\textit{[Author contributions, funding, conflict of interest disclosures and acknowledgments to be added.]}", ""]
             if LATEX_ACKNOWLEDGMENTS else [])
     tail += ["\\clearpage", "\\bibliographystyle{" + LATEX_BIBSTYLE + "}", "\\bibliography{reference}", ""]
     if LATEX_DISPLAYS == "end":   # the main displays print here, after the references; the appendix floats stay in place
@@ -1555,6 +1636,9 @@ def build():
     except (OSError, json.JSONDecodeError):
         manifest = {}
     purge_retired_delivery_receipts(manifest)
+    published = publish(manifest.get("published") or {})
+    if published or CFG.get("publish"):
+        manifest["published"] = {**(manifest.get("published") or {}), **published}
     submission_readiness = build_readiness(pages, unresolved, rc.returncode, docx_rc)
     status = submission_readiness["status"]
     manifest.update({
