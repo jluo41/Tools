@@ -191,7 +191,8 @@ def publish(previous: dict) -> dict:
     open. `dir` is relative to the SPACE root (the folder with env.sh) or absolute; `files` maps an [outputs] key to
     the name it gets there. The last copy delivered is kept in <delivery>/.published/; a shared copy whose text or
     comments differ from it was edited by a co-author, so it is never overwritten: the new render is written beside it
-    as "<name> (render <YYMMDD-HHMM>)" and the build says so. Returns what was written."""
+    as "<name> (new render)", one file replaced by each build, and the build says so. A copy OneDrive holds online
+    only (not downloaded) cannot be read, so it counts as changed too. Returns what was written."""
     pub = CFG.get("publish")
     if not isinstance(pub, dict) or not pub.get("dir"):
         return {}
@@ -203,7 +204,7 @@ def publish(previous: dict) -> dict:
         return {}
     kept = HERE / ".published"
     kept.mkdir(exist_ok=True)
-    done, stamp = {}, datetime.now().strftime("%y%m%d-%H%M")
+    done = {}
     for key, name in (pub.get("files") or {}).items():
         src = rel(OUT[key]) if OUT.get(key) else None
         if src is None or not src.is_file():
@@ -211,7 +212,7 @@ def publish(previous: dict) -> dict:
             continue
         target, last = dest / name, kept / name
         if target.exists() and not (last.is_file() and _doc_parts(target) == _doc_parts(last)):
-            target = dest / f"{Path(name).stem} (render {stamp}){Path(name).suffix}"
+            target = dest / f"{Path(name).stem} (new render){Path(name).suffix}"   # one file, replaced each build
             BUILD_WARNINGS.append(f"publish: {name} in the shared folder differs from the last render (edited there?); "
                                   f"kept it, wrote {target.name}")
         shutil.copyfile(src, target)
@@ -1256,8 +1257,10 @@ def page_index(pid: str) -> str:
     return "" if n == 0 else str(n) if n < 20 else chr(ord("A") + n - 21) if 21 <= n < 30 else ""
 
 def is_abstract(p) -> bool:
-    """the Abstract is an unnumbered page whose H1 title is Abstract (or a legacy id ending -Abstract)"""
-    return p["id"].endswith("-Abstract") or page_heading(p)[1].strip().lower() == "abstract"
+    """the Abstract is an unnumbered page whose H1 title is Abstract, a legacy id ending -Abstract, or a ladder Task
+    named tNN_abstract (0.12.0: t00_abstract was missed, so abstract_page printed no page break)"""
+    return (p["id"].endswith("-Abstract") or bool(re.fullmatch(r"t\d+_abstract", p["id"]))
+            or page_heading(p)[1].strip().lower() == "abstract")
 
 def tex_text(value):
     return value.replace("\\", "").replace("&", r"\&").replace("%", r"\%").replace("_", r"\_").replace("#", r"\#")
