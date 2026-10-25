@@ -91,6 +91,44 @@ invalid one entry name inside passes 260 characters (v1022 to v1023b held one of
 exit 0  after an error     Stata does this. ENV-02. The marker is the only gate.
 modal   any error at all   /e mode pops a dialog and the run waits all night for
 dialog                     a click. ENV-01. `set batch` does not exist here.
+"has    a Break, not an    "<entry> has been interrupted. Would you like the batch job to continue?" in the
+been    error              middle of a long step. A Break (the Break key, a click on a busy Stata window) passes
+inter-                     `capture`, so stata-guard.do cannot catch it. Yes resumes the step and it finishes;
+rupted"                    No ends Stata, and the step is rebuilt next time. Fix since 261025: stata-guard.do runs
+                           `nobreak cap noi do`. Register 261024/issue-004.
+FAIL:   enabled feature    check-07 of a C table: one year lacks a file its newer steps make (BFAF-NpiObsdt-PDE-
+missing a year built       OpioidRx-2019 when 2020 was built later). Rerun that year's Task (B extends in place;
+        before the step    built steps skip), then the C table. Ask for the year folder's listing, not the log.
+not     an uploaded .ps1   "<ticket>.ps1 cannot be loaded. The file ... is not digitally signed", at run_long.ps1's
+digit-  with the internet  `& ".\$x"`: the policy (RemoteSigned) refuses a script unpacked from a downloaded zip
+ally    mark               (Mark of the Web); run_long.ps1, typed on the server, runs. Fix, from F:\Physician-SPACE,
+signed                     after every upload: `gci examples-2-cms -r | unblock-file`, then `gci w -r | unblock-file`
+                           (the first gives FileNotFound on OpioidRx paths past 260; w reaches them). A Group Policy
+                           pins RemoteSigned: `set-executionpolicy bypass -scope process` and -ExecutionPolicy
+                           Bypass are both overridden ("ExecutionPolicyOverride"). Check one file: `gi <file>
+                           -stream *` lists Zone.Identifier while it is marked. 261025 r27 (b21 j31): only :$DATA,
+                           no mark, still refused; its real path is 284 characters (via w 238), and every ticket
+                           that ran is 256 or less, so a real path past 259 likely reads as not local (inferred;
+                           286 of 738 OpioidRx tickets pass 259). Fix in run_long.ps1: on PSSecurityException it
+                           runs the ticket's lines as a script block (the policy checks files, not commands),
+                           $PSScriptRoot replaced by the ticket's w folder; the launcher, a short-path file, runs.
+                           Such a Run's runtime.yaml names run_long.ps1 as its ticket.
+not     a ticket path      `.\x.ps1 : The term ... is not recognized`: a list with a path cut short (no .ps1 file
+recog-  that is a folder   name). Before 261024 run_long.ps1 had no `$ErrorActionPreference = 'Stop'`, so the
+nized                      list went on and a C table ran on half-built inputs; it stops now.
+```
+
+Normal on this server, never a fault:
+
+```
+"(Not Responding)"   a Stata window busy in a long step; it has no time to redraw. Leave it, never X it;
+                     choose Wait if Windows asks.
+[wave5] SKIPPED      run_topic_pde is 0 in the pain cohorts (no C or D step reads all-fill features); waves
+                     9-10 have no pain Task (run_topic_lines 0). The waves: b02 studio s01-case-pipeline-waves.
+a quiet C window     the C launcher printed nothing for hours before 261025; it now prints each step from
+                     log\by-step\ as it starts (run_fix_data_table.ps1 patches the server copy).
+Killing Stata (PID)  Ctrl+C in that window: its launcher stopped its own Stata. Closing a window with X skips
+                     this and leaves Stata running alone; match a dialog's run name to a live window first.
 ```
 
 Two silent-wrong-number patterns this environment has produced twice:
@@ -118,6 +156,13 @@ the .done marker is the      never `$proc.ExitCode -ne 0`. Start-Process
   only success gate          -PassThru can return $null, and $null -ne 0 is TRUE
                              in PowerShell, so a GOOD run reports as failed.
 cite as [ID] in the code     `// [C01-02] ...` at the causing line
+no paste, no file upload     every character is typed by hand (since 261025: the
+  (261025)                   CRD on-screen keyboard, /remote-keyboard-typist), so
+                             server commands stay short: a Run by its address,
+                             never its 200-character path
+a running .do is read by     Stata reads a do-file as it runs: a server patch to a
+  position                   file a live Stata is still in keeps its byte length
+                             (`capture noisily do` -> `nobreak cap noi do`)
 ```
 
 A file whose head reads `GENERATED FILE` is written by a script: change the script and rerun it (the Task
@@ -178,21 +223,26 @@ was skipped; with that command added, all seven tables passed. Fix the stand-in,
 
 ## Running on the server
 
-Every Task runs one way, from the SPACE folder, by its `by_task` wrapper. The laptop path minus
-`examples-2-cms/Project-Personality-OpioidRx/` is the server path:
+Since 261023 the server keeps the repo's own layout (`F:\Physician-SPACE\examples-2-cms\<Project>\work\`), and
+every Run starts from `F:\Physician-SPACE` through a short root script, each named for the kind of Run it starts
+(JL 261025). They live in the SPACE root of the repo and are typed onto the server by hand:
 
-```powershell
-cd F:\Physician-SPACE
-.\work\b11_CD_visit_pain_lbp\j21_C1D_reg_VisitLBP_1stPair_yr15_20_bigfive_ols\sbatch\by_task\t04_C1_D_reg_VisitLBP_extr.ps1 -WhatIf
-.\work\b11_CD_visit_pain_lbp\j21_C1D_reg_VisitLBP_1stPair_yr15_20_bigfive_ols\sbatch\by_task\t04_C1_D_reg_VisitLBP_extr.ps1 -ContinueOnError
+```
+run_long.ps1 <path>, <path> [-Parallel]   the engine: runs tickets in order, stops at the first failure; an
+                                          OpioidRx path goes through F:\Physician-SPACE\w, a junction to its
+                                          work\ (same folder, longest path 253, the C/D 23-character check met)
+run_case_year.ps1 -v <visit> -y <years>   stage B: every case Task of a visit, per year, in tNN order; any CMS
+                                          Project (LBP ... T2D, AMI, AiProc); -Parallel: a window per visit-year
+run_bjtr.ps1 b11.j21.t01.r04, ...         any one Run by its address; refuses an address with 0 or 2 tickets
+run_tables.ps1 / run_tables_pooled.ps1    stage C: the cohort tables, then b19's pooled table (it reads LBP,
+                                          Osteo, Headache, Cancer)
+run_paper_jama.ps1 / run_paper_misq.ps1   stage D: the Runs each paper's results Block (b51, b52) reads
+run_fix.ps1, run_fix_data_table.ps1       one-off server patches (the guard's nobreak; the C launcher's steps)
 ```
 
-- `-WhatIf` prints the Runs and starts none; `-Sequential` runs one at a time; filters compose (`-Window af14d`).
-- The wrapper finds its Job from its own place (`$PSScriptRoot`), so the folder you start in does not matter;
-  `\` and `/` both work. `.\sbatch\run_slice.ps1` from a Job folder runs the whole Job.
-- Every Task has a wrapper, a Job of one Task too: `write_pages.py` writes them (it always writes `by_task`).
-- Never copy `work\` to the repo's depth (`F:\Physician-SPACE\examples-2-cms\...`): the deepest files pass
-  259 characters there, and the C and D launchers refuse a home folder longer than 23 characters.
+- A Run is never started by its own long path on the server: with no paste, the address is the whole command.
+- Wait for every window of one stage (`Finished!`, or `complete`) before the next stage; each reads the last.
+- Never press Ctrl+C in a running window to copy: it stops that run. Select text first, or right-click.
 - Unpack an upload with PowerShell, not by double-clicking: all zips into one short folder, then copy its `work\`
   over `F:\Physician-SPACE\work` (add and replace, never delete):
   `Get-ChildItem F:\<tag>-PerBlock\*.zip | ForEach-Object { Expand-Archive $_.FullName -DestinationPath F:\u -Force }`

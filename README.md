@@ -85,9 +85,10 @@ marketplace:
 ./install.sh --no-marketplace --project /path/to/workspace
 ```
 
-This creates `.claude/` and `.codex/` in the target workspace, links skills
-into both tools' `skills/` directories, and links plugin agents into
-`.claude/agents/`.
+This creates `.claude/`, `.codex/` and `.agents/` in the target workspace,
+links skills into each one's `skills/` directory, and links plugin agents into
+`.claude/agents/`. `.agents/skills/` is the tool-neutral root: DeepSeek Harness
+(`dsh`) scans `<project>/.agents/skills` but not `.claude/skills`.
 
 Other options:
 
@@ -114,12 +115,12 @@ In PowerShell, create the target tool directories first, then link skills into
 them:
 
 ```powershell
-New-Item -ItemType Directory -Force -Path 'C:\workspace\.claude','C:\workspace\.codex'
+New-Item -ItemType Directory -Force -Path 'C:\workspace\.claude','C:\workspace\.codex','C:\workspace\.agents'
 .\install.ps1 -NoMarketplace -Project 'C:\workspace'
 ```
 
-The Windows installer only installs into `.claude/` and `.codex/` directories
-that already exist under the target. It creates directory junctions by default;
+The Windows installer only installs into `.claude/`, `.codex/` and `.agents/`
+directories that already exist under the target. It creates directory junctions by default;
 agents are copied and tracked so a later run can refresh installer-owned copies.
 Use `-Symlink` to create symbolic links instead, which requires Administrator
 privileges or Developer Mode.
@@ -146,7 +147,7 @@ workspace.
 ### Auditing a workspace
 
 `--verify` / `-Verify` is read-only. It prints, for each of `.claude/skills`,
-`.codex/skills` and `.claude/agents`, what every link actually resolves to
+`.codex/skills`, `.agents/skills` and `.claude/agents`, what every link actually resolves to
 against where Tools keeps that skill today: dangling links, links that still
 resolve but point at a folder Tools no longer uses, skills that were never
 linked, and MCP servers present in the repo but missing from `.mcp.json`. It

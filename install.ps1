@@ -2,8 +2,9 @@
 #
 # Usage (from the Tools/ directory):
 #   .\install.ps1                       # marketplace + auto-detected project skills
-#   .\install.ps1 -Project C:\path\repo # link skills into <repo>\.claude\skills
-#                                      # and <repo>\.codex\skills when present
+#   .\install.ps1 -Project C:\path\repo # link skills into <repo>\.claude\skills,
+#                                      # <repo>\.codex\skills and <repo>\.agents\skills
+#                                      # when present
 #   .\install.ps1 -Global               # also link skills into ~\.claude\skills
 #   .\install.ps1 -Hooks                # configure sound hooks in settings.json
 #   .\install.ps1 -All                  # marketplace + global + hooks
@@ -416,6 +417,7 @@ function Test-WorkspaceLinks {
     foreach ($check in @(
         [pscustomobject]@{ Label = "Claude skills"; Dir = Join-Path $Project ".claude\skills"; Expected = $expectedSkills },
         [pscustomobject]@{ Label = "Codex skills";  Dir = Join-Path $Project ".codex\skills";  Expected = $expectedSkills },
+        [pscustomobject]@{ Label = "Shared agents skills"; Dir = Join-Path $Project ".agents\skills"; Expected = $expectedSkills },
         [pscustomobject]@{ Label = "Claude agents"; Dir = Join-Path $Project ".claude\agents"; Expected = $expectedAgents }
     )) {
         Write-Host "  $($check.Label): $($check.Dir)"
@@ -572,6 +574,10 @@ if ($Project) {
     if (Test-Path -LiteralPath (Join-Path $Project ".codex")) {
         Install-Skills -SkillsDir (Join-Path $Project ".codex\skills") -Label "Codex project"
     }
+    # .agents\skills is the tool-neutral root that DeepSeek Harness (dsh) scans.
+    if (Test-Path -LiteralPath (Join-Path $Project ".agents")) {
+        Install-Skills -SkillsDir (Join-Path $Project ".agents\skills") -Label "Shared agents project"
+    }
 }
 
 # ─── 3. Global skills (-Global) ──────────────────────────────────────────────
@@ -656,7 +662,7 @@ Write-Host "Install in Claude Code with e.g.: /plugin install haipipe@jluo41-too
 Write-Host ""
 Write-Host "Run with flags for more:"
 Write-Host "  .\install.ps1 -Global           Link skills into ~\.claude\skills"
-Write-Host "  .\install.ps1 -Project <path>   Link skills into <path>\.claude\skills and .codex\skills"
+Write-Host "  .\install.ps1 -Project <path>   Link skills into <path>\.claude, .codex and .agents\skills"
 Write-Host "  .\install.ps1 -Hooks            Configure sound hooks in settings.json"
 Write-Host "  .\install.ps1 -Verify -Project <path>  Audit a workspace's links (writes nothing)"
 Write-Host "  .\install.ps1 -All              Do everything (marketplace + global + hooks)"

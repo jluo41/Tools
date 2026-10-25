@@ -9,8 +9,10 @@
 #
 # Options:
 #   --global              Also symlink all skills to ~/.claude/skills/
-#   --project <path>      Symlink all skills into <path>/.claude/skills/ and
-#                         <path>/.codex/skills/ (creating the local dirs)
+#   --project <path>      Symlink all skills into <path>/.claude/skills/,
+#                         <path>/.codex/skills/ and <path>/.agents/skills/
+#                         (creating the local dirs; .agents/skills is the shared
+#                         root other harnesses such as DeepSeek Harness read)
 #   --hooks               Also configure sound hooks in settings.json
 #   --all                 Do everything (marketplace + global + hooks)
 #   --no-marketplace      Skip marketplace registration (mirrors install.ps1)
@@ -25,8 +27,8 @@
 # linked flat under its folder name, so skill names must be unique. Any folder
 # whose name starts with "_" (_old, _archive, _todo, _legacy, ...) is skipped,
 # as is node_modules/. The link set is OS/machine-specific; gitignore
-# <project>/.claude/skills/, <project>/.claude/agents/, and
-# <project>/.codex/skills/ and regenerate per machine rather than committing it.
+# <project>/.claude/skills/, <project>/.claude/agents/, <project>/.codex/skills/
+# and <project>/.agents/skills/ and regenerate per machine rather than committing it.
 # (Committing real agent copies into .claude/agents/ makes the "kept, not a
 # symlink" guard below skip them, so they silently drift from Tools — keep the
 # dir gitignored and regenerate, exactly like .claude/skills/.)
@@ -311,6 +313,7 @@ problems = 0
 for label, directory, expected in (
     ("Claude skills", project / ".claude" / "skills", expected_skills),
     ("Codex skills", project / ".codex" / "skills", expected_skills),
+    ("Shared agents skills", project / ".agents" / "skills", expected_skills),
     ("Claude agents", project / ".claude" / "agents", expected_agents),
 ):
     print(f"  {label}: {directory}")
@@ -539,15 +542,20 @@ if [ -n "$PROJECT_PATH" ]; then
     fi
 
     # Project installation is intentionally local to the requested workspace.
-    # Creating both directories makes a fresh clone behave like an existing
-    # workspace without touching ~/.claude or ~/.codex.
-    mkdir -p "$PROJECT_PATH/.claude" "$PROJECT_PATH/.codex"
+    # Creating these directories makes a fresh clone behave like an existing
+    # workspace without touching ~/.claude, ~/.codex or ~/.agents.
+    mkdir -p "$PROJECT_PATH/.claude" "$PROJECT_PATH/.codex" "$PROJECT_PATH/.agents"
 
     PROJECT_SKILLS="$PROJECT_PATH/.claude/skills"
     install_project_skills "$PROJECT_SKILLS" "Claude project"
 
     CODEX_PROJECT_SKILLS="$PROJECT_PATH/.codex/skills"
     install_project_skills "$CODEX_PROJECT_SKILLS" "Codex project"
+
+    # .agents/skills is the tool-neutral root: DeepSeek Harness (dsh) scans
+    # <project>/.agents/skills, but not .claude/skills or .codex/skills.
+    AGENTS_PROJECT_SKILLS="$PROJECT_PATH/.agents/skills"
+    install_project_skills "$AGENTS_PROJECT_SKILLS" "Shared agents project"
 
     # ── Project-level agent installation ──
     PROJECT_AGENTS="$PROJECT_PATH/.claude/agents"
@@ -656,7 +664,7 @@ fi
 echo ""
 echo "Run with flags for more:"
 echo "  ./install.sh --global                Symlink skills to ~/.claude/skills/"
-echo "  ./install.sh --project /path/to/repo  Symlink skills to repo's .claude/skills/ and .codex/skills/"
+echo "  ./install.sh --project /path/to/repo  Symlink skills to repo's .claude/, .codex/ and .agents/skills/"
 echo "  ./install.sh --hooks                 Configure sound hooks in settings.json"
 echo "  ./install.sh --all                   Do everything (marketplace + global + hooks)"
 echo "  ./install.sh --no-marketplace        Skip marketplace registration"
