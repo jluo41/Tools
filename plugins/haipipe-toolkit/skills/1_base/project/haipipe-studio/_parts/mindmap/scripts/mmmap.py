@@ -199,9 +199,10 @@ CSS = """<style>
 .mm-style{display:inline-flex;margin:0 0 6px 4px;border:1px solid var(--line,#ced4da);border-radius:6px;overflow:hidden}
 .mm-style button{font:500 11.5px system-ui,sans-serif;border:0;padding:2px 9px;cursor:pointer;background:var(--mm-card);color:var(--mut,#868e96)}
 .mm-style button+button{border-left:1px solid var(--line,#ced4da)}.mm-style button[aria-pressed=true]{color:var(--mm-ink);background:var(--wash,#f1f3f5)}
-/* Branches: a branch's card edged in its colour, its leaves marked by a bar, its detail washed in it */
+/* Branches: a branch's card edged in its colour, its leaves in a thin line of it (no side bar: JL 261026, "左边这个东西
+   … 太 AI 了") */
 .mm-edit[data-style=branches] .mm-d1{border-color:var(--br);border-width:2px}
-.mm-edit[data-style=branches] .mm-d2,.mm-edit[data-style=branches] .mm-d3{border-left:4px solid var(--br)}
+.mm-edit[data-style=branches] .mm-d2,.mm-edit[data-style=branches] .mm-d3{border-color:color-mix(in srgb,var(--br) 55%,var(--mm-card))}
 /* Filled: a branch's card filled with its colour (white words; dark on yellow), its leaves tinted */
 .mm-edit[data-style=filled] .mm-d1{background:var(--br);border-color:var(--br);color:#fff}
 .mm-edit[data-style=filled] .mm-b4 .mm-d1{color:#0b0b0b}
@@ -210,10 +211,10 @@ CSS = """<style>
 .mm-edit[data-style=filled] .mm-d1 .mm-more,.mm-edit[data-style=filled] .mm-d1 .mm-open{color:inherit}
 /* Ink: black and grey only, as the draft's §1 map */
 .mm-edit[data-style=ink],.mm-edit[data-style=ink] .mm-row{--br:var(--mut,#868e96)}
-/* a detail is its own panel: washed in its branch's colour, a bar down its left, so it reads apart from the card */
-.mm-edit .mm-detail{background:color-mix(in srgb,var(--br,#868e96) 9%,var(--mm-card));border:0;
- border-left:3px solid var(--br,#868e96);border-radius:0 6px 6px 0;padding:6px 10px;margin:7px -4px 2px}
-.mm-edit[data-style=ink] .mm-detail{background:var(--wash,#f1f3f5);border-left-color:var(--line,#ced4da)}
+/* a detail is its own panel: a soft box washed in its branch's colour, so it reads apart from the card's words */
+.mm-edit .mm-detail{background:color-mix(in srgb,var(--br,#868e96) 8%,var(--mm-card));
+ border:1px solid color-mix(in srgb,var(--br,#868e96) 22%,var(--mm-card));border-radius:7px;padding:6px 10px;margin:7px -4px 2px}
+.mm-edit[data-style=ink] .mm-detail{background:var(--wash,#f1f3f5);border-color:var(--line,#ced4da)}
 .mm-edit[data-style=filled] .mm-d1 .mm-detail{color:var(--mm-ink)}
 /* the §1 Structure map's look (draft_steps.py PLAN_CSS): a node is a card, its children a column to its right */
 .mm{position:relative;width:max-content;min-width:100%;box-sizing:border-box;padding:8px 4px}

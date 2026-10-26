@@ -1,6 +1,11 @@
 mindmap (haipipe-studio part) · Changelog
 =========================================
 
+## [0.5.2] · 2026-10-26 · no side bars
+
+- JL 261026, of the thick coloured bar down a leaf's and a detail's left side: "我其实不是很想要左边这个东西，感觉它太 AI
+  了". Leaves are edged in a thin line of their branch's colour; a detail is a soft rounded box washed in it.
+
 ## [0.5.1] · 2026-10-26 · curved wires again, met at the card's words
 
 - JL 261026: "你这也太直了 … 做得跟那个 haipipe-draft paper 一样 … 还是那种曲线型的", and of the opened card's wire,
