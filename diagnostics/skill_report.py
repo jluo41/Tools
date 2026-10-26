@@ -5,6 +5,9 @@
     python3 diagnostics/skill_report.py --tag baseline  # writes reports/skill_report_baseline.{md,csv}
     python3 diagnostics/skill_report.py --html          # also runs md_to_html.py on the .md
 
+Every run also writes the latest report as reports/skill_report.{md,csv,json,html}, and,
+when reports/skill_report_baseline.* exists, a "What changed since the baseline" block.
+
 Sizes come in three scopes, each in lines, words and tokens:
   listing  the name + description, the text every session loads
   skill    the SKILL.md file, loaded when the skill runs
@@ -640,6 +643,37 @@ def write_md(path, rows, recs, summary, stats, aliases, args):
     add("```")
     add("")
 
+    base = getattr(args, "_baseline", None)
+    if base:
+        b, bnames = base
+        add("**What changed since the baseline** (%s)" % b.get("generated", "?"))
+        add("")
+        keys = [("Skills in Tools", "tools_skills"), ("Parts inside them", "tools_parts"),
+                ("Entries in `~/.claude/skills`", "claude_top"), ("Dangling links", "claude_dangling"),
+                ("Listing tokens, Tools skills", "listing_tokens_tools"),
+                ("Listing tokens, all installed", "listing_tokens_total"), ("Skills with a problem", "problems")]
+        add(md_table(["", "Baseline", "Now", "Change"],
+                     [(label, fmt(b.get(k, 0)), fmt(s.get(k, 0)), "%+d" % (s.get(k, 0) - b.get(k, 0)))
+                      for label, k in keys if k in b]))
+        add("")
+        now_names = {r["name"] for r in tools_rows}
+        gone = sorted(set(bnames) - now_names)
+        new = sorted(now_names - set(bnames))
+        mains = [(r["name"], p) for r in tools_rows for p in r["parts"].split(";") if p]
+        merged = {}
+        for g in gone:
+            hit = max((m for m in mains if g.endswith("-" + m[1])), key=lambda m: len(m[1]), default=None)
+            merged.setdefault(hit[0] if hit else "(removed)", []).append(g)
+        if gone:
+            add("Left the skill list: %d. Each is now a part of its main skill, `<main>/_parts/<name>/PART.md`:" % len(gone))
+            add("")
+            for main, names in sorted(merged.items()):
+                add("- `%s` ← %s" % (main, ", ".join(names)))
+            add("")
+        if new:
+            add("New in the list: %s." % ", ".join("`%s`" % n for n in new))
+            add("")
+
     # 2. what is there
     add("## 2. What is there, by area")
     add("")
@@ -790,9 +824,16 @@ def main():
     ap.add_argument("--no-subagents", action="store_true",
                     help="count only session transcripts, not */<session>/subagents/*.jsonl")
     ap.add_argument("--html", action="store_true", help="also write the .html with md_to_html.py")
+    ap.add_argument("--baseline", default=str(HERE / "reports" / "skill_report_baseline"),
+                    help="a tagged report (path without extension) to compare against")
     args = ap.parse_args()
 
     rows, recs, summary, stats, aliases = build(args)
+    bpath = Path(args.baseline)
+    if args.tag != bpath.name.replace("skill_report_", "") and bpath.with_suffix(".json").exists():
+        bnames = [r["name"] for r in csv.DictReader(open(bpath.with_suffix(".csv"), encoding="utf-8"))
+                  if r.get("origin") == "tools"] if bpath.with_suffix(".csv").exists() else []
+        args._baseline = (json.loads(bpath.with_suffix(".json").read_text(encoding="utf-8")), bnames)
 
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
@@ -807,8 +848,12 @@ def main():
     print("wrote %s (+ .csv, .json)" % md)
     for k in ("tools_skills", "tools_parts", "claude_top", "claude_entries", "listing_tokens_total", "listing_tokens_tools", "problems"):
         print("  %-22s %s" % (k, summary[k]))
+    # the latest run also lands under one stable name: reports/skill_report.{md,csv,json,html}
+    for ext in (".md", ".csv", ".json"):
+        (out / ("skill_report" + ext)).write_bytes((out / ("skill_report_%s%s" % (tag, ext))).read_bytes())
     if args.html:
-        subprocess.run([sys.executable, str(HERE / "md_to_html.py"), str(md)], check=True)
+        for target in (md, out / "skill_report.md"):
+            subprocess.run([sys.executable, str(HERE / "md_to_html.py"), str(target)], check=True)
 
 
 if __name__ == "__main__":

@@ -125,7 +125,7 @@ def table(lines):
         return '<div class="cards">%s</div>' % "".join(
             '<div class="card"><div class="v">%s</div><div class="k">%s</div></div>' % (inline(r[1]), inline(r[0]))
             for r in body if len(r) > 1)
-    cls = ' class="narrow"' if len(head) <= 2 else ""
+    cls = ' class="narrow"' if len(head) <= 4 else ""
     small = ' data-small="1"' if len(body) < 12 else ""
     out = ['<div class="tw"%s%s><table><thead><tr>' % (cls, small)]
     out += ["<th>%s</th>" % inline(h) for h in head]

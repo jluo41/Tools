@@ -48,6 +48,7 @@ TEXT_SUFFIXES = {".md", ".txt", ".py", ".sh", ".ps1", ".yaml", ".yml", ".json", 
                  ".js", ".ts", ".css", ".html", ".tex", ".excalidraw", ".csv", ".do", ".r", ".R"}
 TASK = "plugins/haipipe-toolkit/skills/1_base/task"
 DISPLAY = "plugins/haipipe-toolkit/skills/1_base/display"
+THEME = "plugins/haipipe-toolkit/skills/2_theme"
 
 SPECS = {
     # 261025: the task family's pipeline umbrellas and two fit/agent companions.
@@ -70,7 +71,15 @@ SPECS = {
                      TASK + "/5_fit/haipipe-task-for-fit/haipipe-task-gpu-training": "gpu-training"}},
         {"main": TASK + "/9_agent/haipipe-task-for-agent", "style": "path",
          "helpers": {TASK + "/9_agent/haipipe-task-llm-engine": "llm-engine"}},
-    ],    # 261026: the display door and its five renderers.
+    ],    # 261026: the theme helpers no workbench server, test or run card names (the rest wait for
+    # the servers to find parts: host_paths.skill_dir skips "_" folders).
+    "theme-free": [
+        {"main": THEME + "/insight/haipipe-insight", "style": "command",
+         "helpers": {THEME + "/insight/haipipe-insight-bind": "bind"}},
+        {"main": THEME + "/paper/haipipe-paper", "style": "command",
+         "helpers": {THEME + "/paper/haipipe-paper-related": "related"}},
+    ],
+    # 261026: the display door and its five renderers.
     "display": [
         {"main": DISPLAY + "/haipipe-display", "style": "command",
          "helpers": {DISPLAY + "/haipipe-display-" + p: p for p in ("table", "figure", "diagram", "illustration", "tex")}},
