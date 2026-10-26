@@ -3,8 +3,7 @@ haipipe-mindmap · Changelog
 
 ## [0.6.1] · 2026-10-26 · written maps: a kind per branch, a question between, a role per point
 
-- JL 261026: "你看你这都没有内容", "为啥这个 1 之后它就是下一行了", "你能不能再好好想想这个逻辑关系 … 你也可以自己加一加 … 太敷衍了".
-  The grey line over a branch's name is its kind (`[question] …`), or nothing; no bare number. b17's five maps are
+- The grey line over a branch's name is its kind (`[question] …`), or nothing; no bare number. b17's five maps are
   written as §1 is: each branch a step of the topic's argument, the question it hands to the next, short points with
   roles, the long text and the links (reports, faces, builders) in each detail.
 - A map with `written:` in its header keeps its branches on refresh; only its Files branch follows the disk. A node
