@@ -1,7 +1,7 @@
 """The builders: a mind map read from disk, and the refresh that keeps what a person added.
 
     from_work(path)    a world, a Block or a Job: Block → Job → Task → Run, each with its run counts
-    from_topic(topic)  a Studio topic's structured side (mNN): its face's labelled lines and sections as branches
+    from_topic(topic)  a Studio topic's structured side (its mind map): its face's labelled lines and sections as branches
 
 A built node's id starts with @ and names where it came from (`@j01_x/t02_y`); its `#hash` is the hash of the words
 its builder wrote, so a refresh can tell words a person changed (kept) from words the builder may update.
@@ -191,7 +191,8 @@ def from_topic(topic: Path) -> MT.MindMap:
         if head.lower() == "files":                      # the topic's real files, read from disk
             items = [(f"{p.name}/" if p.is_dir() else f"[{(p.suffix[1:] or 'file')[:12]}] [{p.name}]({p.name})")   # its type, §1's role
                      for p in sorted(topic.iterdir())
-                     if not p.name.startswith((".", "_")) and not re.match(r"m\d{2}[-_]", p.name)   # not its own mNN
+                     if not p.name.startswith((".", "_")) and not re.match(r"m\d{2}[-_]", p.name)   # not its own map
+                     and ".mindmap." not in p.name
                      and p.name != "__pycache__"]                     # a file is a link: its card opens it
         items = [it for it in items if not it.startswith("(write here")]
         branches.append((head, items))
@@ -206,11 +207,11 @@ def from_topic(topic: Path) -> MT.MindMap:
 
 
 def mnn_name(topic: Path) -> str:
-    """s01-work-ladder → m01-work-ladder.mindmap.md: the structured side keeps its topic's number."""
-    m = TOPIC.match(Path(topic).name)
-    if not m:
+    """s01-work-ladder → s01-work-ladder.mindmap.md: the mind map takes its topic's own name, its kind in the ending,
+    as the page (.md) and the drawing (.excalidraw) do (JL 261026; it was m01-work-ladder.mindmap.md)."""
+    if not TOPIC.match(Path(topic).name):
         raise ValueError(f"{Path(topic).name}: a Studio topic is named sNN-<topic>")
-    return f"m{m.group(1)}-{m.group(2)}{MT.SUFFIX}"
+    return f"{Path(topic).name}{MT.SUFFIX}"
 
 
 def words(mm: MT.MindMap) -> int:

@@ -834,19 +834,22 @@ def _topic_row(topic: Path, drawings: list, root: Path, folder: Path, shared: Pa
             f'{stage_badge}</summary>{body}</details>')       # the stage sits at the far right (JL 261010)
 
 
-STRUCTURED = re.compile(r"^m\d{2}[-_]")          # a topic's structured side, mNN-<topic>.mindmap.md (haipipe-studio)
+STRUCTURED = re.compile(r"^m\d{2}[-_]")          # a topic's structured side, sNN-<topic>.mindmap.md (haipipe-studio)
 READ_ONLY_MAPS = False                            # a read-only host draws the map without its editing script
 
 
 def is_structured(drawing: Path) -> bool:
-    """A file of a topic's structured side (`mNN-<topic>.…`): never the topic's main drawing."""
+    """A file of an older structured side (`mNN-<topic>.…`): never the topic's main drawing."""
     return bool(STRUCTURED.match(drawing.name)) and bool(re.match(r"s\d{2}[-_]", drawing.parent.name))
 
 
 def structured_of(topic: Path) -> Path | None:
-    """A topic's structured side, its mind map `mNN-<topic>.mindmap.md` with the topic's own number, else any mNN."""
+    """A topic's structured side, its mind map `<topic>.mindmap.md` (the topic's own name); an older one named
+    `sNN-<topic>.mindmap.md` still reads."""
     if not topic.is_dir():
         return None
+    if (topic / f"{topic.name}.mindmap.md").is_file():
+        return topic / f"{topic.name}.mindmap.md"
     found = sorted(d for d in topic.glob("m[0-9][0-9]*.mindmap.md") if is_structured(d))
     own = [d for d in found if d.name[1:3] == topic.name[1:3]]
     return (own or found or [None])[0]
@@ -865,13 +868,13 @@ def mindmap_module():
 
 
 def topic_drawings(topic: Path) -> list:
-    """A topic folder's drawings, its own first, never its structured side (mNN, the mind map)."""
+    """A topic folder's drawings, its own first, never an older structured side (mNN)."""
     return sorted((f for f in topic.glob("*.excalidraw") if not is_structured(f)),
                   key=lambda f, own=topic.name + ".excalidraw": (f.name != own, f.name))
 
 
 def _studio_topics(folder: Path) -> list:
-    """(topic, drawings) for each `studio/sNN-<topic>/`; a loose drawing is its own topic. A topic's mNN mind map
+    """(topic, drawings) for each `studio/sNN-<topic>/`; a loose drawing is its own topic. A topic's mind map
     is not among its drawings: its row shows it on the Structured side (_topic_row)."""
     studio, out = folder / "studio", []
     if studio.is_dir():
@@ -3312,7 +3315,7 @@ document.querySelectorAll('.studio-topics').forEach(function(list){
     buttons().forEach(function(b){var key=b.dataset.studioTag;
       b.querySelector('.tag-count').textContent=rows.filter(function(r){return matches(r,key);}).length;});
     rows.forEach(function(r){var b=r.querySelector('.studio-current'),on=current.has(r.dataset.studioKey);
-      b.textContent=on?'Remove from Current':'Add to Current';b.setAttribute('aria-pressed',String(on));});
+      if(b){b.textContent=on?'Remove from Current':'Add to Current';b.setAttribute('aria-pressed',String(on));}});
   }
   function apply(key,save){
     if(!button(key))key='';
@@ -3449,7 +3452,8 @@ document.querySelectorAll('.studio-topics').forEach(function(list){
     if(row&&chip)takeOut(row,chip.dataset.tag);});
   if(source)source.addEventListener('change',function(){apply(active,true);});
   rows.forEach(function(row){
-    row.querySelector('.studio-current').addEventListener('click',function(ev){
+    var cur=row.querySelector('.studio-current');   // a Delivery row has none; without this guard the throw stopped every later handler (Free | Structured)
+    if(cur)cur.addEventListener('click',function(ev){
       ev.preventDefault();ev.stopPropagation();setCurrent(row,!current.has(row.dataset.studioKey));});
     var handle=row.querySelector('.studio-drag');
     if(!handle)return;                      // a theme's own Report card (b10 s05): not draggable, its groups fixed
@@ -3584,7 +3588,7 @@ document.querySelectorAll('details.topic .draw-edit').forEach(function(b){b.addE
   ev.preventDefault();ev.stopPropagation();
   var d=b.closest('details'),f=d.querySelector(':scope > .st-pane:not([hidden]) > iframe')||d.querySelector('iframe'),on=b.textContent==='Edit';
   d.open=true;f.src=on?f.dataset.edit:f.dataset.src;b.textContent=on?'Finish editing':'Edit';});});
-// a topic with a structured side (mNN, haipipe-studio's mind map): Free | Structured, one pane a side, the mind map drawn and
+// a topic with a structured side (its mind map, <topic>.mindmap.md): Free | Structured, one pane a side, the mind map drawn and
 // edited in place as the draft's §1 map; Edit (the free canvas) shows only on Free; the ↗ opens the side showing; the
 // card remembers the choice in this browser
 document.querySelectorAll('details.topic[data-sides]').forEach(function(d){

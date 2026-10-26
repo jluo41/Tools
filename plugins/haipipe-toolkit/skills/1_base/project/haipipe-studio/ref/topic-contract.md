@@ -26,8 +26,8 @@ drawing should look (a dense scratch, a plain design prototype, a report picture
 │   ├── sNN-<topic>.png             its preview (render_png.py)
 │   ├── .sNN-<topic>.seed.json      the builder's last drawing: what canvas.write compares with
 │   ├── build_sNN_<topic>.py        the builder, when a script draws it
-│   ├── mNN-<topic>.mindmap.md      its structured side, the mind map: the source (haipipe-mindmap)
-│   ├── mNN-<topic>.mindmap.html    the mind map as a static page (git ignores it: rebuilt on every change)
+│   ├── sNN-<topic>.mindmap.md      its structured side, the mind map: the source (haipipe-mindmap)
+│   ├── sNN-<topic>.mindmap.html    the mind map as a static page (git ignores it: rebuilt on every change)
 │   └── history/                    older builders or drawings kept on a redesign
 ├── _build/                         the level's shared builder helpers and make.sh
 └── <loose>.excalidraw              a loose drawing: its own topic
@@ -41,8 +41,7 @@ drawing should look (a dense scratch, a plain design prototype, a report picture
 3. **Its drawings**: the first `.excalidraw` is the one the Idea Studio opens across the row;
    more are links beside it. A topic with a builder opens view only; one drawn by hand edits
    in place.
-4. **Its structured side, mNN**: every topic has `mNN-<topic>.mindmap.md` with its own number (s01 →
-   m01), its mind map, written with the face by `new_topic.py` from the face's labelled lines and
+4. **Its structured side, its mind map**: every topic has `sNN-<topic>.mindmap.md` with the topic's own name (s01-work-ladder → s01-work-ladder.mindmap.md), its mind map, written with the face by `new_topic.py` from the face's labelled lines and
    sections (haipipe-mindmap `from-topic`). It is not a canvas: the card's `Free | Structured` switch
    shows it as the draft's §1 Structure map, in HTML, edited in place (click and type, Enter for the
    next node, ＋ for a child, empty to take out, drag to move), each change written into the file. Edit

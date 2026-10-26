@@ -282,23 +282,23 @@ class Builders(unittest.TestCase):
         (topic / "Files.md").write_text("x")
         (topic / "s05-pics.md").write_text((topic / "s05-pics.md").read_text() + "\nFiles\n-----\n\n", encoding="utf-8")
         run("from-topic", topic)
-        mm = MT.load(topic / "m05-pics.mindmap.md")
+        mm = MT.load(topic / "s05-pics.mindmap.md")
         lf = mm.root.children[0].children[0]
         self.assertEqual(lf.text, "every kind of element the work theme …")
         self.assertEqual(lf.note, ["every kind of element the work theme draws today, side by side, so one look is picked."])
         shot = next(c for c in mm.root.children[1].children if "shot.png" in c.text)
         self.assertEqual((shot.text, shot.note), ("[png] [shot.png](shot.png)", ["![shot.png](shot.png)"]))
         (topic / "s05-pics.md").write_text((topic / "s05-pics.md").read_text().replace("every kind", "each kind"))
-        run("refresh", topic / "m05-pics.mindmap.md")                       # the builder's words change twice:
+        run("refresh", topic / "s05-pics.mindmap.md")                       # the builder's words change twice:
         (topic / "s05-pics.md").write_text((topic / "s05-pics.md").read_text().replace("each kind", "every sort"))
-        run("refresh", topic / "m05-pics.mindmap.md")                       #   both refreshes take them
-        mm = MT.load(topic / "m05-pics.mindmap.md")
+        run("refresh", topic / "s05-pics.mindmap.md")                       #   both refreshes take them
+        mm = MT.load(topic / "s05-pics.mindmap.md")
         lf = mm.root.children[0].children[0]
         self.assertEqual(lf.text, "every sort of element the work theme …")
         lf.note = ["my own detail"]                                         # a person's detail survives a refresh
-        MT.save(mm, topic / "m05-pics.mindmap.md")
-        run("refresh", topic / "m05-pics.mindmap.md")
-        self.assertEqual(MT.find(MT.load(topic / "m05-pics.mindmap.md"), lf.id)[0].note, ["my own detail"])
+        MT.save(mm, topic / "s05-pics.mindmap.md")
+        run("refresh", topic / "s05-pics.mindmap.md")
+        self.assertEqual(MT.find(MT.load(topic / "s05-pics.mindmap.md"), lf.id)[0].note, ["my own detail"])
 
     def test_a_written_map_keeps_its_own_branches_and_its_files_follow_the_disk(self):
         topic = self.root / "studio" / "s06-notes"
@@ -306,7 +306,7 @@ class Builders(unittest.TestCase):
         (topic / "s06-notes.md").write_text("s06 · Notes\n==========\n\n**Topic:** what we note.\n\nFiles\n-----\n",
                                             encoding="utf-8")
         run("from-topic", topic)
-        md = topic / "m06-notes.mindmap.md"
+        md = topic / "s06-notes.mindmap.md"
         mm = MT.load(md)
         files = next(c for c in mm.root.children if c.id == "@files")
         mm.root = MT.Node("root", "s06 · What we keep", [MT.Node("n01", "[question] Why note?"), files])
@@ -326,7 +326,7 @@ class Builders(unittest.TestCase):
         (topic / "s07-old.md").write_text("s07 · Old\n=========\n\n**Topic:** a thing.\n", encoding="utf-8")
         (topic / "s07-old.excalidraw").write_text("{}", encoding="utf-8")
         run("from-topic", topic)
-        md = topic / "m07-old.mindmap.md"
+        md = topic / "s07-old.mindmap.md"
         rc, out = run("check", md)
         self.assertEqual(rc, 0)
         self.assertNotIn("changed after this map", out)
@@ -378,7 +378,7 @@ class Builders(unittest.TestCase):
             "- who pays the court fee\n- (write here, or mark the drawing in red)\n", encoding="utf-8")
         rc, out = run("from-topic", topic)
         self.assertEqual(rc, 0, out)
-        md = topic / "m04-fees.mindmap.md"
+        md = topic / "s04-fees.mindmap.md"
         mm = MT.load(md)
         self.assertEqual(mm.meta["built"], "from-topic .")
         self.assertEqual([c.text for c in mm.root.children], ["Topic", "Feeds", "Files", "Open"])
@@ -388,7 +388,7 @@ class Builders(unittest.TestCase):
         self.assertEqual(mm.root.note, ["**Stage:** shaping"])
         files = [c.text for c in mm.root.children[2].children]
         self.assertEqual(files, ["[md] [s04-fees.md](s04-fees.md)"])          # a file is a link its card opens
-        self.assertTrue((topic / "m04-fees.mindmap.html").is_file())
+        self.assertTrue((topic / "s04-fees.mindmap.html").is_file())
         self.assertFalse(list(topic.glob("*.excalidraw")))
 
     def test_from_topic_keeps_decision_lines_apart(self):
@@ -399,7 +399,7 @@ class Builders(unittest.TestCase):
             "s05-D01 · A new job for the request (JL)\ns05-D02 · Step 2 is CCDA's query\n", encoding="utf-8")
         rc, out = run("from-topic", topic)
         self.assertEqual(rc, 0, out)
-        decided = MT.load(topic / "m05-ccda.mindmap.md").root.children[0]
+        decided = MT.load(topic / "s05-ccda.mindmap.md").root.children[0]
         self.assertEqual(len(decided.children), 2)                          # one leaf per decision, not one paragraph
 
 

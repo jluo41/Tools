@@ -1,6 +1,6 @@
 interface:
   display_name: "Mind Map"
   short_description: "the structure map shared by a draft's §1 and every Studio topic's mind map; a .mindmap.md edited in place"
-  default_prompt: "Use $haipipe-mindmap to make, show, edit or refresh a Studio topic's mind map (mNN), map a work Block, or change how the §1 structure map draws."
+  default_prompt: "Use $haipipe-mindmap to make, show, edit or refresh a Studio topic's mind map, map a work Block, or change how the §1 structure map draws."
 policy:
   allow_implicit_invocation: true

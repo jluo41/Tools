@@ -1,6 +1,13 @@
 haipipe-mindmap · Changelog
 ===========================
 
+## [0.7.0] · 2026-10-26 · a mind map takes its topic's name
+
+- `s01-work-ladder` → `s01-work-ladder.mindmap.md` (was `m01-work-ladder.mindmap.md`): one topic, one name, its kind in
+  the ending as the page (`.md`) and the drawing (`.excalidraw`) have it; no second numbering to keep in step. b17's
+  five maps renamed; the workbench still reads an older `mNN-<topic>.mindmap.md`. The Files branch leaves the map's
+  own files out.
+
 ## [0.6.2] · 2026-10-26 · a decision line is its own leaf
 
 - from-topic: a face's `Decided` lines written one under another (`s05-D01 · …`, no list marker) were read as one

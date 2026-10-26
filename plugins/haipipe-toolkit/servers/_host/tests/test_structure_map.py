@@ -83,9 +83,9 @@ class StructureMapTest(unittest.TestCase):
     def test_a_topic_mind_map_and_section_1_share_the_css_and_script(self):
         mv = draft_steps._mapview()
         with tempfile.TemporaryDirectory() as tmp:
-            md = Path(tmp) / "m01-x.mindmap.md"
+            md = Path(tmp) / "s01-x.mindmap.md"
             md.write_text("# X <!-- root -->\n\n- [kind] A branch <!-- n01 -->\n  - a point <!-- n02 -->\n", encoding="utf-8")
-            out = frame.mindmap_module().fragment(md, "m01-x.mindmap.md")
+            out = frame.mindmap_module().fragment(md, "s01-x.mindmap.md")
             self.assertIn(mv.CSS, out)
             self.assertIn(mv.JS, out)
             self.assertIn('data-endpoint="/_board/mindmap"', out)

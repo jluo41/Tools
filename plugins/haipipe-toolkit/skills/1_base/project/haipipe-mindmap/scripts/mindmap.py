@@ -3,7 +3,7 @@
 
     mindmap.py new        <x.mindmap.md> [--title T]          a new map: its root, nothing under it yet
     mindmap.py from-work  <world|Block|Job> [--out F]          Block → Job → Task → Run with run counts
-    mindmap.py from-topic <studio/sNN-topic> [--out F]         the topic's structured side, mNN-<topic>
+    mindmap.py from-topic <studio/sNN-topic> [--out F]         the topic's mind map, sNN-<topic>.mindmap.md
     mindmap.py refresh    <x.mindmap.md>                       rebuild from disk; a person's nodes and words kept
     mindmap.py render     <x.mindmap.md>                       the static page <x>.mindmap.html from the file
     mindmap.py check      <x.mindmap.md | folder> ...          grammar and ids

@@ -38,12 +38,12 @@ class StudioTest(unittest.TestCase):
     def test_a_new_topic_has_both_sides_its_drawing_and_its_mind_map(self):
         with contextlib.redirect_stdout(io.StringIO()):
             md = new_topic.new_topic(self.block, "fees", "Fees", feeds=["q02_fees"])
-        mind = md.parent / "m01-fees.mindmap.md"                         # the same number, linked: s01 and m01
+        mind = md.parent / "s01-fees.mindmap.md"                         # the same number, linked: s01 and m01
         self.assertTrue(mind.is_file())
         text = mind.read_text(encoding="utf-8")
         self.assertIn("built: from-topic .", text)
         self.assertIn("# s01 · Fees", text)
-        self.assertTrue((md.parent / "m01-fees.mindmap.html").is_file())
+        self.assertTrue((md.parent / "s01-fees.mindmap.html").is_file())
 
     def test_the_topic_count_is_guidance_and_child_inputs_use_the_block(self):
         messages = io.StringIO()

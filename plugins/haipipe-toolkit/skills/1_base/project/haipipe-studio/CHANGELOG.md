@@ -1,6 +1,12 @@
 haipipe-studio · Changelog
 ==========================
 
+## [0.14.9] · 2026-10-26 · the mind map takes the topic's name
+
+- The topic folder holds `sNN-<topic>.mindmap.md` beside `sNN-<topic>.md` and its drawing (was `mNN-<topic>…`):
+  SKILL.md, `ref/topic-contract.md`, `new_topic.py`, which now starts the map with its root, Files and "Not written
+  yet" (haipipe-mindmap `skeleton`).
+
 ## [0.14.8] — 2026-10-26
 
 Commands to the excalidraw kinds now go through the door: `/excalidraw <kind>` (the `excalidraw-*` skills are hidden from the listing). (hide 261026)

@@ -23,7 +23,7 @@ excalidraw-slide/      🎞 a deck proposed on one canvas before it is built (s6
 excalidraw-ideation/   💡 a paper's ideas as steps down from its question
 ```
 
-A Studio topic's structured side, its mind map `mNN-<topic>.mindmap.md`, is not a canvas: haipipe-mindmap
+A Studio topic's structured side, its mind map `sNN-<topic>.mindmap.md`, is not a canvas: haipipe-mindmap
 (`../project/haipipe-mindmap/`) draws it with the code that draws a draft's §1 Structure map; the workbench card
 switches between the two sides (Free · Structured).
 

@@ -4,14 +4,14 @@ description: >-
   The structure map, one renderer shared by a draft Task's §1 Structure map and every Studio topic's mind map
   (scripts/mapview.py): the root card on the left, a card per paragraph or branch with the question it hands to the
   next, a plain line per point (its number, its role pill, its words), thin grey curves, edited where it is read. A
-  topic's mind map, `mNN-<topic>.mindmap.md` beside its free drawing (s01 ↔ m01), is one Markdown file drawn with it:
+  topic's mind map, `sNN-<topic>.mindmap.md` beside its free drawing (same name, its kind in the ending), is one Markdown file drawn with it:
   built from the topic's face (`from-topic`) when the topic is made, refreshed from it after, a person's nodes and
   words kept; a Block's or a world's work too (`from-work`: Block → Job → Task → Run with run counts). On top of §1
   a mind map adds ▸ details, lines under a point, and a chip per file a point names. Use to make, show, edit or
-  refresh a mind map, or to change how §1 and the mind maps draw. Trigger: mind map, mindmap, mNN, structured side,
+  refresh a mind map, or to change how §1 and the mind maps draw. Trigger: mind map, mindmap, structured side,
   Free | Structured, structure map, §1 map, map the work, /haipipe-mindmap.
 metadata:
-  version: "0.6.2"
+  version: "0.7.0"
   last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md
 ---
@@ -24,13 +24,13 @@ they look and edit alike (JL 261026: "你把他们那个 map 也放到我们这�
 ```text
 draft/<stem>-draft-vN.md  ## 1 · Structure ──▶ draft_steps.py _plan_map ─┐
                                                                          ├─▶ mapview.render ─▶ the map (§1's look)
-studio/sNN-<topic>/mNN-<topic>.mindmap.md ──▶ mmmap.draw ────────────────┘        │ each edit, one payload
+studio/sNN-<topic>/sNN-<topic>.mindmap.md ──▶ mmmap.draw ────────────────┘        │ each edit, one payload
        ▲ from-topic (the face)                                                   ▼
        └──────────── /_board/mindmap (mmmap.act) ◀── a mind map · a draft ──▶ /_board/draft-plan (plan_act)
 ```
 
 A Studio topic has two sides, linked by number: its free drawing (`sNN-<topic>.excalidraw`) and its mind map
-(`mNN-<topic>.mindmap.md`); the workbench card switches them (Free · Structured), and `new_topic.py` (haipipe-studio)
+(`sNN-<topic>.mindmap.md`); the workbench card switches them (Free · Structured), and `new_topic.py` (haipipe-studio)
 makes both.
 
 
@@ -68,7 +68,7 @@ Commands
 
 ```text
 python scripts/mindmap.py new        <x.mindmap.md> [--title T]     a root and nothing under it yet
-python scripts/mindmap.py from-topic <studio/sNN-topic> [--out F]   the topic's mind map, mNN-<topic>
+python scripts/mindmap.py from-topic <studio/sNN-topic> [--out F]   the topic's mind map, sNN-<topic>.mindmap.md
 python scripts/mindmap.py from-work  <work/ | Block | Job> [--out F] Block → Job → Task → Run, run counts
 python scripts/mindmap.py refresh    <x.mindmap.md>                  rebuild from disk; a person's words kept
 python scripts/mindmap.py render     <x.mindmap.md>                  the static page

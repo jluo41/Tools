@@ -16,7 +16,7 @@ description: >-
   together, /workbench-studio (the retired name of this screen).
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.14.8"
+  version: "0.14.9"
   last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md
 ---
@@ -36,7 +36,7 @@ keep a person's marks, and the sessions. How a topic's drawing looks and reads i
 ├── sNN-<topic>.excalidraw    the drawing (a builder's, with the person's marks kept)
 ├── sNN-<topic>.png           its preview
 ├── build_sNN_<topic>.py      the builder, when a script draws it
-└── mNN-<topic>.mindmap.md    its structured side, the mind map: Markdown, drawn as the §1 map (haipipe-mindmap)
+└── sNN-<topic>.mindmap.md    its structured side, the mind map: Markdown, drawn as the §1 map (haipipe-mindmap)
 <block>/runs/run-draw-<sNN>/  one pass per working session
 ```
 
@@ -47,19 +47,19 @@ Two sides of a topic: its drawing and its mind map
 --------------------------------------------------
 
 Every sNN has two sides, linked by number (JL 261026): the free drawing, `sNN-<topic>.excalidraw`, and its mind map,
-`mNN-<topic>.mindmap.md`. The mind map is not a canvas: it is drawn the way a draft Task's §1 Structure map is
+`sNN-<topic>.mindmap.md`. The mind map is not a canvas: it is drawn the way a draft Task's §1 Structure map is
 (HTML, the root at the left, each node's children to its right), and a person edits it where they read it. The
 workbench card switches the two (Free · Structured).
 
 ```text
 studio/s01-work-ladder/
-  s01-work-ladder.md           the face ─── from-topic ──▶ m01-work-ladder.mindmap.md   the mind map's source
+  s01-work-ladder.md           the face ─── from-topic ──▶ s01-work-ladder.mindmap.md   the mind map's source
   s01-work-ladder.excalidraw   Free                        drawn as §1's map ◀── Structured: click, type, ＋, drag
 ```
 
 1. **Made together**: `new_topic.py topic` writes the face, then starts the mind map: its root, its Files and a note
    that it is not written yet.
-2. **Kept in step**: haipipe-mindmap's `scripts/mindmap.py refresh <mNN>` rereads the face; words a person changed
+2. **Kept in step**: haipipe-mindmap's `scripts/mindmap.py refresh <sNN-topic>.mindmap.md` rereads the face; words a person changed
    and nodes a person added stay.
 3. **Edited in place**: a change on the card is one POST to `/_board/mindmap`, written into the `.mindmap.md`.
 4. **The rest**: the grammar, a Block's or a world's work map (`from-work`), the commands:

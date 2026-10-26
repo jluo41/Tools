@@ -1208,7 +1208,7 @@ class FrameTest(unittest.TestCase):
             root = project(tmp)
             block = root / "Project/tasks/b01_topic"
             topic = block / "studio" / "s01-flow"
-            (topic / "m01-flow.mindmap.md").write_text(
+            (topic / "s01-flow.mindmap.md").write_text(
                 "---\nmindmap: 1\n---\n\n# Flow <!-- root -->\n\n- in <!-- n01 -->\n  - **raw** rows <!-- n02 -->\n")
             row_of = lambda: re.search(r'<details class=topic id="topic-s01-flow".*?</details>',
                                        frame.render(frame.VANILLA, root, block, studio=True), re.S).group(0)
@@ -1220,7 +1220,7 @@ class FrameTest(unittest.TestCase):
             self.assertIn("flow.excalidraw", unquote(free))                # the free side: the topic's own drawing
             # the structured side: the mind map drawn by the code that draws a draft's §1 map (haipipe-mindmap), no canvas
             mind = row[row.index('<div class="st-pane st-map" data-side=structured hidden>'):]
-            rel = "Project/tasks/b01_topic/studio/s01-flow/m01-flow.mindmap.md"
+            rel = "Project/tasks/b01_topic/studio/s01-flow/s01-flow.mindmap.md"
             self.assertIn(f'<div class=pm-edit data-task="{rel}" data-file="{rel}" data-endpoint="/_board/mindmap">', mind)
             self.assertIn('<div class=pm-para data-p="n01">', mind)
             self.assertIn('<li data-s="n02">', mind)
@@ -1241,7 +1241,7 @@ class FrameTest(unittest.TestCase):
             code, res = frame.mindmap_module().act(root, {"task": rel, "what": "add", "p": "n01", "after": "n02",
                                                          "value": "clean rows"})
             self.assertEqual(code, 200)
-            self.assertIn("  - clean rows <!-- n03 -->", (topic / "m01-flow.mindmap.md").read_text())
+            self.assertIn("  - clean rows <!-- n03 -->", (topic / "s01-flow.mindmap.md").read_text())
 
     def test_studio_runs_lists_every_hard_run_with_its_status(self):
         """JL 261019: "list another one to show the Hard Run, for each task, and just show their status"."""
