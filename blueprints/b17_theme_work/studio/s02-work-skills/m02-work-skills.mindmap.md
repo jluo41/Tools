@@ -15,7 +15,7 @@ built: from-topic .
 - Feeds <!-- @feeds #ffe8e9 -->
   - `../../reports/q04_work_skills/` <!-- @feeds/0 #5b57a2 -->
 - Files <!-- @files #6ce6c5 -->
-  - build_s02_work_skills.py <!-- @files/0 #5c8403 -->
-  - s02-work-skills.excalidraw <!-- @files/1 #25b7d3 -->
-  - s02-work-skills.md <!-- @files/2 #0422d0 -->
-  - s02-work-skills.png <!-- @files/3 #9ef7be -->
+  - [build_s02_work_skills.py](build_s02_work_skills.py) <!-- @files/0 #5c8403 -->
+  - [s02-work-skills.excalidraw](s02-work-skills.excalidraw) <!-- @files/1 #25b7d3 -->
+  - [s02-work-skills.md](s02-work-skills.md) <!-- @files/2 #0422d0 -->
+  - [s02-work-skills.png](s02-work-skills.png) <!-- @files/3 #9ef7be -->

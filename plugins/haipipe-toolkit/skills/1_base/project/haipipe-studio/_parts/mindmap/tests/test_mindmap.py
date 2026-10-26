@@ -110,6 +110,26 @@ class Map(Case):
         self.assertIn("fetch('/_board/mindmap'", out)
         self.assertNotIn("excalidraw", out)
 
+    def test_a_node_can_hold_nodes_at_any_depth_down_to_its_leaves(self):
+        deep = SOURCE.replace("  - May <!-- n05 -->", "  - May <!-- n05 -->\n    - week 2 <!-- n07 -->\n      - Monday <!-- n08 -->\n        - 9am <!-- n09 -->")
+        self.md.write_text(deep, encoding="utf-8")
+        out = MM.fragment(self.md, "trip.mindmap.md")
+        self.assertIn('<div class=mm-row data-id="n09"><div class="mm-node mm-d3"', out)   # five levels below the root
+        self.assertEqual([n.id for n, _p, d, _k in MT.walk(MT.load(self.md).root) if d == 5], ["n09"])
+
+    def test_a_card_that_links_a_file_opens_it(self):
+        (self.dir / "shot.png").write_bytes(b"png")
+        self.md.write_text(SOURCE.replace("- Budget `EUR`", "- [shot.png](shot.png) and [gone.md](gone.md) - Budget `EUR`"),
+                           encoding="utf-8")
+        out = MM.fragment(self.md, "trip.mindmap.md", url_of=lambda f: "/open/" + f.name)
+        self.assertIn('<a class=mm-open data-pop="shot.png" href="/open/shot.png"', out)    # a picture: 🖼, the pop-out
+        self.assertIn('title="open shot.png">🖼</a>', out)
+        self.assertNotIn("/open/gone.md", out)                                              # not on disk: no button
+        self.assertIn('data-raw="[shot.png](shot.png) and [gone.md](gone.md) - Budget `EUR`"', out)   # typed as written
+        self.assertIn(">shot.png and gone.md - Budget <code>EUR</code></span>", out)          # the card shows the words
+        page = MH.page(MT.load(self.md))
+        self.assertIn('href="shot.png"', page)                         # the static page links the file beside it
+
     def test_read_only_the_map_carries_no_editing(self):
         out = MM.draw(MT.load(self.md))
         self.assertNotIn("contenteditable", out)
@@ -263,7 +283,8 @@ class Builders(unittest.TestCase):
         self.assertEqual([c.text for c in mm.root.children[0].children], ["what the firm charges", "Two kinds of fee"])
         self.assertEqual([c.text for c in mm.root.children[3].children], ["who pays the court fee"])
         self.assertEqual(mm.root.note, ["**Stage:** shaping"])
-        self.assertNotIn("m04-fees", " ".join(c.text for c in mm.root.children[2].children))
+        files = [c.text for c in mm.root.children[2].children]
+        self.assertEqual(files, ["[s04-fees.md](s04-fees.md)"])          # a file is a link its card opens
         self.assertTrue((topic / "m04-fees.mindmap.html").is_file())
         self.assertFalse(list(topic.glob("*.excalidraw")))
 

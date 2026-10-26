@@ -167,14 +167,15 @@ def from_topic(topic: Path) -> MT.MindMap:
                 branches.append((m.group(1), leaves))
             continue
         if head.lower() == "files":                      # the topic's real files, read from disk
-            items = [p.name + ("/" if p.is_dir() else "") for p in sorted(topic.iterdir())
-                     if not p.name.startswith((".", "_")) and not re.match(r"m\d{2}[-_]", p.name)]   # not its own mNN
+            items = [(f"{p.name}/" if p.is_dir() else f"[{p.name}]({p.name})") for p in sorted(topic.iterdir())
+                     if not p.name.startswith((".", "_")) and not re.match(r"m\d{2}[-_]", p.name)   # not its own mNN
+                     and p.name != "__pycache__"]                     # a file is a link: its card opens it
         items = [it for it in items if not it.startswith("(write here")]
         branches.append((head, items))
     kids = []
     for k, (head, items) in enumerate(branches):
         key = re.sub(r"[^a-z0-9]+", "-", head.lower()).strip("-") or f"b{k}"
-        leaves = [built(f"{key}/{j}", short(it)) for j, it in enumerate(items)]
+        leaves = [built(f"{key}/{j}", it if it.startswith("[") else short(it)) for j, it in enumerate(items)]
         kids.append(built(key, head, leaves))
     root = built(".", short(title, 14), kids)
     root.id, root.note = "root", note

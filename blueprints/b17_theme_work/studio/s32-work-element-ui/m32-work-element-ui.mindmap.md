@@ -13,10 +13,10 @@ built: from-topic .
 - Feeds <!-- @feeds #ffe8e9 -->
   - `reports/` q01_work_ladder (each level's elements) · q03_questions_and_runs (a Run's display and link); b03 Q08 … <!-- @feeds/0 #3df8bf -->
 - Files <!-- @files #6ce6c5 -->
-  - build_s32_work_element_ui.py <!-- @files/0 #73f614 -->
-  - s32-work-element-ui.excalidraw <!-- @files/1 #f386a5 -->
-  - s32-work-element-ui.md <!-- @files/2 #6b37c7 -->
-  - s32-work-element-ui.png <!-- @files/3 #237716 -->
+  - [build_s32_work_element_ui.py](build_s32_work_element_ui.py) <!-- @files/0 #73f614 -->
+  - [s32-work-element-ui.excalidraw](s32-work-element-ui.excalidraw) <!-- @files/1 #f386a5 -->
+  - [s32-work-element-ui.md](s32-work-element-ui.md) <!-- @files/2 #6b37c7 -->
+  - [s32-work-element-ui.png](s32-work-element-ui.png) <!-- @files/3 #237716 -->
   - shots/ <!-- @files/4 #4d5052 -->
 - What the gallery holds <!-- @what-the-gallery-holds #69fd53 -->
   - Walked: the work Block b18 in Project-Algorithm-Design (five Questions with report Pages, three Jobs, … <!-- @what-the-gallery-holds/0 #e99175 -->

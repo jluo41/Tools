@@ -804,7 +804,8 @@ def _topic_row(topic: Path, drawings: list, root: Path, folder: Path, shared: Pa
                     + "".join(f' data-href-{k}="{_e(v[0])}" data-pop-{k}="{_e(v[1])}"' for k, v in links.items() if v)
                     + '>↗</a>')
         try:
-            mind = mindmap_module().fragment(mnn, _rel(mnn, root), editable=not READ_ONLY_MAPS)
+            opens = lambda f: _draw_url(f, root) if f.suffix == ".excalidraw" else _file_url(f, root)   # a card's file:
+            mind = mindmap_module().fragment(mnn, _rel(mnn, root), editable=not READ_ONLY_MAPS, url_of=opens)  # pop-out
         except Exception as e:            # a file that does not parse says why, in the pane, instead of a blank card
             mind = f'<p class="mut none">{_e(mnn.name)} could not be read: {_e(e)}</p>'
         body = (f'<div class=st-pane data-side=free{"" if side == "free" else " hidden"}>{body}</div>'

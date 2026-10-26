@@ -14,10 +14,10 @@ built: from-topic .
 - Feeds <!-- @feeds #ffe8e9 -->
   - none; it indexes the whole Block <!-- @feeds/0 #952c0b -->
 - Files <!-- @files #6ce6c5 -->
-  - build_s00_background_and_index.py <!-- @files/0 #fa8f09 -->
-  - s00-background-and-index.excalidraw <!-- @files/1 #42334d -->
-  - s00-background-and-index.md <!-- @files/2 #de2bb0 -->
-  - s00-background-and-index.png <!-- @files/3 #d6eace -->
+  - [build_s00_background_and_index.py](build_s00_background_and_index.py) <!-- @files/0 #fa8f09 -->
+  - [s00-background-and-index.excalidraw](s00-background-and-index.excalidraw) <!-- @files/1 #42334d -->
+  - [s00-background-and-index.md](s00-background-and-index.md) <!-- @files/2 #de2bb0 -->
+  - [s00-background-and-index.png](s00-background-and-index.png) <!-- @files/3 #d6eace -->
 - Background <!-- @background #64dd60 -->
   - One frame per entry, two at most, each a folder tree: a string is … <!-- @background/0 #7d58f6 -->
 - Open <!-- @open #cf9b77 -->

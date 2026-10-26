@@ -1,6 +1,14 @@
 mindmap (haipipe-studio part) · Changelog
 =========================================
 
+## [0.3.1] · 2026-10-26 · a card opens its file; any depth
+
+- JL 261026: "点击这个卡的时候，我能不能点出来一些内容？比如能把图片点出来". A node whose words link a file shows a button
+  beside them (🖼 a picture, ↗ else) that opens the file in the workbench's pop-out (`url_of`, passed by frame.py: a
+  drawing in its editor, a page in its reader, else the file); a link to a file not on disk gets no button; the static
+  page links the file beside it. `from-topic`'s Files branch writes each file as `[name](name)`.
+- "这个它可以是几层的吗": any depth, already; a test now holds a node five levels below the root. Tests: 23.
+
 ## [0.3.0] · 2026-10-26 · the mind map is the §1 map, not a canvas; a part of haipipe-studio
 
 - JL 261026: "the mindmap is not the excalidraw … I want that type of the mindmap" (the draft's §1 Structure map),

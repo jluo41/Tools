@@ -16,10 +16,10 @@ built: from-topic .
 - Feeds <!-- @feeds #ffe8e9 -->
   - `../../reports/` q01 (the ladder question) <!-- @feeds/0 #723053 -->
 - Files <!-- @files #6ce6c5 -->
-  - build_s01_work_ladder.py <!-- @files/0 #386087 -->
-  - s01-work-ladder.excalidraw <!-- @files/1 #238037 -->
-  - s01-work-ladder.md <!-- @files/2 #2cb635 -->
-  - s01-work-ladder.png <!-- @files/3 #1b625a -->
+  - [build_s01_work_ladder.py](build_s01_work_ladder.py) <!-- @files/0 #386087 -->
+  - [s01-work-ladder.excalidraw](s01-work-ladder.excalidraw) <!-- @files/1 #238037 -->
+  - [s01-work-ladder.md](s01-work-ladder.md) <!-- @files/2 #2cb635 -->
+  - [s01-work-ladder.png](s01-work-ladder.png) <!-- @files/3 #1b625a -->
 - Decided so far <!-- @decided-so-far #f1f0e3 -->
   - (none yet: Q01 is proposed, 261007, and open until JL settles it) <!-- @decided-so-far/0 #40a729 -->
 - Open <!-- @open #cf9b77 -->

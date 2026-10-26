@@ -10,6 +10,7 @@ before it. Each change is one POST to `/_board/mindmap`, which `act` writes into
 from __future__ import annotations
 
 import html
+import re
 from pathlib import Path
 
 import mmhtml as MH
@@ -19,35 +20,63 @@ esc = lambda s: html.escape(str(s), quote=True)
 norm = lambda s: " ".join(str(s or "").split())
 
 
-def _node(n: MT.Node, depth: int, editable: bool, last: bool = False) -> str:
+LINK = re.compile(r"\[([^\]]+)\]\(([^)\s]+)\)")
+IMAGE = (".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp")
+
+
+def _opens(raw: str, base: Path | None, url_of) -> str:
+    """A node whose words link a file (`[s01.png](s01.png)`) gets a button beside its words that opens it: a picture
+    shows as itself, a drawing in its editor, a page in its reader (url_of, the host's), else the file as it is. A
+    link to a file that is not there opens nothing."""
+    out = []
+    for label, target in LINK.findall(raw):
+        if re.match(r"^[a-z]+:", target):
+            url = target
+        else:
+            path = (base / target) if base else None
+            if url_of and path is not None:
+                url = url_of(path) if path.exists() else None
+            else:
+                url = target                              # the static page sits beside the files it links
+        if url:
+            icon = "🖼" if target.lower().endswith(IMAGE) else "↗"
+            out.append(f'<a class=mm-open data-pop="{esc(label)}" href="{esc(url)}" target=_blank rel=noopener '
+                       f'title="open {esc(label)}">{icon}</a>')
+    return "".join(out)
+
+
+def _node(n: MT.Node, depth: int, editable: bool, base: Path | None = None, url_of=None) -> str:
     raw = MT.ID_MARK.sub("", n.text)
+    shown = MH.inline(LINK.sub(lambda m: m.group(1), raw))     # the card shows a link's words; its button opens it
     words = (f'<span class=mm-t data-edit=text data-raw="{esc(raw)}" contenteditable=plaintext-only '
-             f'spellcheck=false>{MH.inline(raw)}</span>') if editable else f'<span class=mm-t>{MH.inline(raw)}</span>'
+             f'spellcheck=false>{shown}</span>') if editable else f'<span class=mm-t>{shown}</span>'
     note = " ".join(n.note)
     tip = f' title="{esc(note)}"' if note else ""
     mark = " mm-hasnote" if note else ""
-    kids = "".join(_node(c, depth + 1, editable, k == len(n.children) - 1) for k, c in enumerate(n.children))
+    kids = "".join(_node(c, depth + 1, editable, base, url_of) for c in n.children)
     plus = (f'<div class=mm-add><button type=button class=mm-plus data-add=child>＋</button></div>'
             if editable else "")
-    cls = "mm-node mm-root" if depth == 0 else f"mm-node mm-d{min(depth, 3)}"
+    cls = "mm-node mm-root" if depth == 0 else f"mm-node mm-d{min(depth, 3)}"   # any depth; the deepest, a leaf
     drag = " draggable=true" if editable and depth else ""
-    return (f'<div class=mm-row data-id="{esc(n.id)}"><div class="{cls}{mark}"{tip}{drag}>{words}</div>'
-            f'<div class=mm-kids>{kids}{plus}</div></div>')
+    return (f'<div class=mm-row data-id="{esc(n.id)}"><div class="{cls}{mark}"{tip}{drag}>{words}'
+            f'{_opens(raw, base, url_of)}</div><div class=mm-kids>{kids}{plus}</div></div>')
 
 
-def fragment(md: Path, rel: str = "", editable: bool = True) -> str:
-    """The map of one `.mindmap.md`: CSS, the map, and (editable) the script that posts each change."""
+def fragment(md: Path, rel: str = "", editable: bool = True, url_of=None) -> str:
+    """The map of one `.mindmap.md`: CSS, the map, and (editable) the script that posts each change. `url_of(path)`:
+    where the host opens a linked file (a picture, a drawing, a page)."""
     mm = MT.load(md)
     if editable and MT.ensure_ids(mm):
         MT.save(mm, md)                               # a bullet typed by hand gets its id before it can be edited
-    return draw(mm, rel, editable)
+    return draw(mm, rel, editable, Path(md).parent, url_of)
 
 
-def draw(mm: MT.MindMap, rel: str = "", editable: bool = False) -> str:
-    """The map of a tree already read; `rel`, the file's path from the host's root, is where its edits post."""
+def draw(mm: MT.MindMap, rel: str = "", editable: bool = False, base: Path | None = None, url_of=None) -> str:
+    """The map of a tree already read; `rel`, the file's path from the host's root, is where its edits post;
+    `base`, the folder its links are read from."""
     attrs = f' data-file="{esc(rel)}"' if editable else ""
     return (CSS + f'<div class=mm-edit{attrs}><span class=mm-msg role=status></span>'
-            f'<div class=mm><svg class=mm-wires aria-hidden=true></svg>{_node(mm.root, 0, editable)}</div></div>'
+            f'<div class=mm><svg class=mm-wires aria-hidden=true></svg>{_node(mm.root, 0, editable, base, url_of)}</div></div>'
             + WIRES + (EDIT if editable else ""))
 
 
@@ -137,6 +166,7 @@ CSS = """<style>
 .mm-d1{font-size:15px;font-weight:600}.mm-d2,.mm-d3{border-width:1px;border-color:var(--line,#ced4da);font-size:13.5px;white-space:nowrap;max-width:none}
 .mm-hasnote::after{content:"·";position:absolute;right:4px;top:0;color:var(--mut,#868e96)}
 .mm-node code{font-size:.92em}
+.mm-open{margin-left:7px;text-decoration:none;font-size:13px;opacity:.75}.mm-open:hover{opacity:1}
 .mm-edit{position:relative}.mm-msg{position:absolute;right:4px;top:0;font-size:12px;color:var(--mut,#868e96)}
 .mm [data-edit]{outline:none;border-radius:3px;cursor:text}.mm [data-edit]:hover{background:var(--wash,#f1f3f5)}
 .mm [data-edit]:focus{background:#fff3bf;color:#1e1e1e}.mm [data-edit].mm-bad{outline:1.5px dashed #e03131;outline-offset:2px}
