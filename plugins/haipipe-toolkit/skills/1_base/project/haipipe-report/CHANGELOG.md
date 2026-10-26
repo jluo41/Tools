@@ -1,6 +1,10 @@
 haipipe-report · Changelog
 ==========================
 
+## [0.3.1] — 2026-10-26
+
+Shorter description (1270 -> 452 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)
+
 ## [0.3.0] · 2026-10-16 · Folds in haipipe-question, -asking and -review
 
 - JL: "no need for the question anymore" (Fold into haipipe-report). `skills/1_base/question/` is gone.

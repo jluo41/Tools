@@ -1,18 +1,10 @@
 ---
 name: haipipe-insight-evidence-plan
-description: >-
-  Plan the evidence for one InsightBoard question before any run: turn its
-  "What would answer it" into evidence needs (E1, E2, … each compute, cite or
-  judge, with a pass condition) and give every compute need its work spec
-  (cut, unit, measure, grouping, uncertainty, rivals, output columns), written
-  on its register row for an independent reviewer agent to agree. The Insight workbench's "Plan the evidence" run. Never names a task
-  or a file and never answers. Trigger: plan the evidence, evidence needs,
-  what would answer it, needs for this question, plan needs, backfill needs,
-  /haipipe-insight-evidence-plan.
+description: "Plans one InsightBoard question's evidence before any run: turns \"what would answer it\" into needs (compute, cite or judge, each with a pass condition) and a work spec per compute need, for a reviewer agent to agree; never answers. The workbench's Plan the evidence run. Trigger: plan the evidence, evidence needs, backfill needs, /haipipe-insight-evidence-plan."
 allowed-tools: Read, Edit, Grep, Glob
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-10-02"
+  version: "0.4.1"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md
 ---
 

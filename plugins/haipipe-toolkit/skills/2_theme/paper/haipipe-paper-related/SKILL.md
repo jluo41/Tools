@@ -1,21 +1,10 @@
 ---
 name: haipipe-paper-related
-description: >-
-  A paper Board's related work: the 20 to 25 papers nearest to ours, found, picked, sorted into 3 or 4 types that
-  tell one story, and read closely, so the paper can say what each leaves open and what it adds. Not the literature (haipipe-discovery
-  reads many papers for citations); not the related/ folder (haipipe-related stores what came in). It owns the
-  Board's s10-s19 studio band: studio/s10-related-work-map/, every closest paper on one map beside our paper
-  (scripts/related_map.py), and s11 to s19, one topic per type of closest work, each paper read from its PDF with
-  excalidraw-read. It marks the closest rows (`bears on` = `Closest: <type>`, ★) in related/related.md, checks
-  that every one is placed and read (scripts/related_topics.py check), moves an older Board's topics into the band
-  (band), and feeds s01's novelty check (G0) and the Related Work Section. Use to find the most related papers,
-  map the closest work, open a type topic, check or renumber the related-work topics. Trigger: related work, most
-  related papers, closest work, closest papers, related-work map, s10, who did nearly this, what do we add,
-  positioning, /haipipe-paper-related.
+description: "A paper Board's closest related work: the 20 to 25 nearest papers, sorted into 3 or 4 types, mapped beside our paper (studio s10, related_map.py) and read closely in s11 to s19, so the paper can say what each leaves open and what it adds. Not the literature (haipipe-discovery) or the related/ folder (haipipe-related). Trigger: related work, closest papers, related-work map, s10, positioning, /haipipe-paper-related."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Agent, WebSearch, WebFetch
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-10-19"
+  version: "0.1.1"
+  last_updated: "2026-10-26"
   group-token: "s10-related-work-map"
   # version history: ./CHANGELOG.md
 ---

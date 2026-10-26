@@ -1,19 +1,9 @@
 ---
 name: haipipe-paper-draft
-description: >-
-  The paper's draft Task: one Section, the Abstract or a letter of one version
-  (a Task t0N_ · t2N_ · t3N_, task-type: draft, page-type: section), the paper's
-  rules on top of the base draft (haipipe-draft). A paper Section is a draft Task:
-  its draft/ (plan and sentences) is this skill's, its evidence/ and display/ follow
-  haipipe-paper-evidence. It executes exactly one row of its version face's
-  ## Narrative, resolves venue-and-kind structure, and keeps its Requirement
-  (venue and Page rules, the rubric, the SUB-* rows). The whole manuscript is
-  haipipe-paper-assemble's. Use when adding, outlining, drafting, revising,
-  checking, or retargeting one paper Section. Was haipipe-paper-section (261019);
-  /haipipe-paper-section still opens it.
+description: "The paper's draft Task: one Section, the Abstract or a letter of one version (task-type: draft), the paper's rules on top of haipipe-draft; executes one row of the version's ## Narrative and keeps its Requirement (venue rules, rubric, SUB-* rows). Evidence and displays follow haipipe-paper-evidence; the whole manuscript is haipipe-paper-assemble. Use to add, outline, draft, revise, check or retarget one Section. Also opens as /haipipe-paper-section."
 metadata:
-  version: "0.14.0"
-  last_updated: "2026-10-19"
+  version: "0.14.1"
+  last_updated: "2026-10-26"
   aliases: [haipipe-paper-section]
   folder_owner: canonical
   legacy_page_type: section

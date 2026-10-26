@@ -6,6 +6,10 @@
   the reviewers wanted us to change, and how will our new field experiment and analsysis will fix it").
 - First use: Paper-TestToLearn-MS2026's RD01, 49 points in 20 Review Items, each with its hits and fixed by.
 
+## [1.3.1] — 2026-10-26
+
+Shorter description (586 -> 388 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)
+
 ## 1.2.1 · 2026-10-11 · A meeting's notes live in related/meetings/
 
 - A meeting batch cites its notes in the Board's `related/meetings/` (one row in `related/related.md`, b10 s04-D01) instead of holding a copy in the batch; letters and memos stay in `feedback/`; an older batch's `meeting/` folder is still read.

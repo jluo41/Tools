@@ -1,19 +1,9 @@
 ---
 name: haipipe-draft-logic
-description: >-
-  The plan of a Page: deciding what to say before it is written. Gather what the
-  plan must satisfy (context, PREPARE); shape the Draft's `## 1 · Structure` and
-  survey each Bullet's evidence needs (SHAPE, SURVEY, the Structure Run
-  `run-structure-<slug>`); and keep a person's rough thinking (`## 2 · Scratch`,
-  `run-scratch-<target>`). It writes no prose (that is haipipe-draft-writing) and
-  judges nothing (that is haipipe-draft-review). Trigger: plan, logic, the logic
-  of a Section, page outline, structure Run, shape the plan, SHAPE, SURVEY, survey
-  the evidence items, outline pass, page context, PREPARE, context Run, scratch,
-  scratch note, rough thinking, /haipipe-draft-logic, /haipipe-draft-structure,
-  /haipipe-draft-context, /haipipe-draft-scratch.
+description: "The plan of a Page, before any prose: gather its context (PREPARE), shape the Structure and survey each Bullet's evidence needs (SHAPE, SURVEY, run-structure-<slug>), and keep rough thinking in Scratch. Writes no prose (haipipe-draft-writing) and judges nothing (haipipe-draft-review). Trigger: plan, page outline, structure Run, SHAPE, SURVEY, page context, scratch, /haipipe-draft-logic, /haipipe-draft-structure, /haipipe-draft-context, /haipipe-draft-scratch."
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-10-22"
+  version: "0.2.1"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

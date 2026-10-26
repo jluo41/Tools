@@ -6,6 +6,10 @@
   a heading when the heading before holds what it names; under a binding word cap a Fix names what it cuts, or the
   Venue row sums what the Fixes add; a sentence too long for one pass is shortened, never split (one sentence per S).
 
+## [0.3.2] — 2026-10-26
+
+Shorter description (824 -> 434 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)
+
 ## 0.3.0 · 2026-10-21 · sentence by sentence logic review
 
 - JL 261021: "当你去 review 整个 paragraph 的时候，能不能针对每句话提出来它有什么具体问题（比如逻辑怎样等等）？ 主要是 review

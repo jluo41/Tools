@@ -1,23 +1,10 @@
 ---
 name: haipipe-insight
-description: >-
-  The one door for insight on the ladder: two special boards that work together.
-  The Prototype (work/Prototype-bNN-<Topic>/) holds the questions and their
-  scripts, one Job per release, signed and frozen; the insight Board
-  (insight/Insight-<name>/) holds one dataset and its dated versions, one Job
-  per release × data version, a Task per question, a hard Run per cut. Owns the
-  ladder contract and its scaffold (insight_ladder.py), routes each level's Runs
-  to the question, evidence-plan, meta, level, check, wisdom and workflow
-  owners, and ends at a person-signed Design handoff, never a design. Also routes
-  a dataset-first topic to the Task-side Insight Page, and reads the older
-  Insight Block and register boards until they are carried over. Trigger:
-  insight, Prototype, release, insight Board, data version, DIKW, question,
-  partition, cut, compare Jobs, coverage, pooling verdict, Design handoff,
-  /haipipe-insight.
+description: "The door for insight: a Prototype (work/Prototype-bNN-<Topic>/, the questions and scripts, one Job per release) and an insight Board (insight/Insight-<name>/, one dataset, a Job per release × data version, a Task per question, a Run per cut). Scaffolds the ladder (insight_ladder.py), routes each Run to its owner, and ends at a signed Design handoff. Trigger: insight, Prototype, insight Board, data version, DIKW, cut, pooling, Design handoff, /haipipe-insight."
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "3.4.0"
-  last_updated: "2026-10-11"
+  version: "3.4.1"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

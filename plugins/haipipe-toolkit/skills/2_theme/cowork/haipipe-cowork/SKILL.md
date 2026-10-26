@@ -1,17 +1,9 @@
 ---
 name: haipipe-cowork
-description: >-
-  Own the CoWork Block: one coordination topic of a Project, `cowork/bNN_<topic>/`
-  with its `board.md` (board-kind: cowork-block), its Jobs (`jNN_<job>/`, one line of
-  work each, the state in the job page's header), its people Job `j00_people/`, its
-  Questions and `reports/qNN_<topic>/`, and its `studio/`. Use to create, migrate,
-  update or audit a cowork Block or Job, to record who has the next move, to place an
-  email, meeting, design note or drawing, or to decide which Block or Job a piece of
-  coordination belongs to. Trigger: cowork, cowork block, job, ticket, who are we
-  waiting on, open a job, update a job, checklist, who to ask, /haipipe-cowork.
+description: "Owns the CoWork Block (cowork/bNN_<topic>/): its board.md, its Jobs (one line of work each), its people Job j00_people/, its Questions and studio/. Use to create, update or audit a cowork Block or Job, record who has the next move, or place an email, meeting or note. Trigger: cowork, cowork block, who are we waiting on, open a job, update a job, who to ask, /haipipe-cowork."
 metadata:
-  version: "0.2.2"
-  last_updated: "2026-10-09"
+  version: "0.2.3"
+  last_updated: "2026-10-26"
 ---
 
 # CoWork Block

@@ -1,5 +1,9 @@
 # haipipe-insight-check · version history
 
+## [0.7.1] — 2026-10-26
+
+Shorter description (645 -> 368 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)
+
 ## 0.7.0 · 2026-10-05 · check_block.py (JL 261005)
 
 - `ref/check_block.py` (was check_instance.py) checks an Insight Block: question × run cells (`<dataset>_<partition>`),

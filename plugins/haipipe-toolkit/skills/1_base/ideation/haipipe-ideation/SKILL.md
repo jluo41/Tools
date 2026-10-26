@@ -1,20 +1,10 @@
 ---
 name: haipipe-ideation
-description: >-
-  One door over the Ideation capability groups: 1 Generate evidence-grounded
-  candidates, 2 Test novelty, feasibility, journal fit, and Nature-level
-  editorial shape, then 3 Select idea-and-target pairs through a human gate
-  and hand them to Paper P0. Sync the evolving evidence landscape and
-  candidate portfolio to the same evergreen Paper P0 page from Stage 1 onward,
-  while keeping working projection separate from adopted Page Content and
-  delivery.
-  Use for research directions, idea generation, novelty checks, idea pressure
-  tests, journal targeting, Nature-paper fit, and idea portfolios; use
-  haipipe-discovery for external source execution.
+description: "One door over ideation: generate evidence-grounded candidates, test novelty, feasibility, journal fit and Nature-level shape, then select idea-and-target pairs through a human gate and hand them to Paper P0. Use for research directions, idea generation, novelty checks, pressure tests and journal targeting; external sources are haipipe-discovery. Trigger: ideation, research idea, novelty check, journal fit, /haipipe-ideation."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.7.4"
-  last_updated: "2026-10-14"
+  version: "0.7.5"
+  last_updated: "2026-10-26"
   folder_owner: canonical
   primary_face: direction
   page_ruling: none

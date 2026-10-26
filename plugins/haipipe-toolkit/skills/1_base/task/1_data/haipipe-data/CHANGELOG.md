@@ -5,6 +5,10 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.4.1] — 2026-10-26
+
+Shorter description (510 -> 398 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)
+
 ## [0.4.0] — 2026-10-25
 
 Merged 7 helper skill(s) into `_parts/`: `haipipe-data-raw` -> `_parts/raw`, `haipipe-data-source` -> `_parts/source`, `haipipe-data-record` -> `_parts/record`, `haipipe-data-case` -> `_parts/case`, `haipipe-data-aidata` -> `_parts/aidata`, `haipipe-data-external` -> `_parts/external`, `haipipe-data-remote` -> `_parts/remote`. /haipipe-data reads `_parts/<name>/PART.md` instead of calling a separate skill; allowed-tools gained the parts' tools. Old commands map as `/haipipe-data-raw` -> `/haipipe-data raw`. (merge-parts 261025)

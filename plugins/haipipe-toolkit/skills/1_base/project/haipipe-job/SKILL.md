@@ -1,17 +1,10 @@
 ---
 name: haipipe-job
-description: >-
-  Owns the Job level: a Job's face `jNN_<job>.md` (title, goal, close, emoji, answers:, Topic,
-  its Tasks in order, its ## Deliverables: what it hands on, ticked from disk), its six Spaces at Job level and the buttons it owns there (Update the
-  description, Add a Task, Build the delivery), a new-Job scaffold that also adds Task slots
-  in order, a check of the Tasks list against the folders, and a theme's own Job and Task
-  names (Theme.level_patterns). Use to create a Job, add a Task to it, reorder or check its
-  Tasks, or name a theme's own Jobs. Trigger: job, new job, add a task, job face, jNN, tasks
-  in order, level_patterns, version group, /haipipe-job.
+description: "Owns the Job level: its face jNN_<job>.md (goal, close, answers:, its Tasks in order, ## Deliverables ticked from disk), its Spaces and buttons, a new-Job scaffold with Task slots, a check of Tasks against folders, and a theme's own Job and Task names. Trigger: job, new job, add a task, job face, jNN, tasks in order, level_patterns, /haipipe-job."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.3.0"
-  last_updated: "2026-10-21"
+  version: "0.3.1"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md
 ---
 

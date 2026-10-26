@@ -17,6 +17,10 @@
   folder, its `answers:` names the Board Question, and its links follow the move. Test:
   `tests/test_carry_over.py::ReportAlreadyWrittenTest`.
 
+## [1.17.2] — 2026-10-26
+
+Shorter description (527 -> 328 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)
+
 ## 1.17.0 · 2026-10-23 · A paper's work folder, its j21 display Job and the display plan
 
 - JL 261023: "for the paper, they will also have a work folder, one work folder to provide the content

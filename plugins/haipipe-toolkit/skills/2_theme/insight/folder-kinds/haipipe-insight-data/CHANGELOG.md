@@ -1,6 +1,10 @@
 # haipipe-insight-data · version history
 
 
+## [2.4.2] — 2026-10-26
+
+Shorter description (461 -> 249 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)
+
 ## 2.4.1 · 2026-10-09 · Theme folders are singular
 
 - Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,

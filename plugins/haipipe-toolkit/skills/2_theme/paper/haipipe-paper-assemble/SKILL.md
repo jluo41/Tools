@@ -1,17 +1,9 @@
 ---
 name: haipipe-paper-assemble
-description: >-
-  The paper-level assembly contract: deterministically build the manuscript
-  deliverables from the Section Pages' own LaTeX deliverables and accepted Page
-  bindings, regenerating the paper's delivery/ folder whole.
-  It separates the reusable document engine from paper configuration and venue
-  profiles, produces DOCX/PDF/supplement artifacts and source manifests, and
-  never uses a generated Word file as an input. Use for assemble, build Word,
-  export the complete paper, regenerate submission files, or audit whether a
-  document is stale.
+description: "Builds the whole manuscript deterministically from the Sections' LaTeX and accepted bindings, regenerating delivery/ (DOCX, PDF, supplement, source manifest); never reads a generated Word file back. Use to assemble, build Word, export the paper, regenerate submission files, or check whether a document is stale. Trigger: assemble, build Word, export the paper, /haipipe-paper-assemble."
 metadata:
-  version: "0.12.0"
-  last_updated: "2026-10-23"
+  version: "0.12.1"
+  last_updated: "2026-10-26"
   summary: "Paper-level source-driven document assembly; page-level Word export remains a separate workbench."
 ---
 

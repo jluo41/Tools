@@ -7,6 +7,10 @@
   pattern, and name each departure with its reason. The workbench's 2 · Write shows the 📚 Examples card and its prompt
   starts with them (finding them first when there are none).
 
+## [0.26.1] — 2026-10-26
+
+Shorter description (1311 -> 511 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)
+
 ## 0.25.3 · 2026-10-21 · A Revise pass answers the person's comments first
 
 - JL 261021: "你每次改的时候，能不能通过我的 comments 来回复那种？"; "你的 change 怎么跟我的 comments 一起来做交互、解决我的

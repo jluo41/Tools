@@ -1,25 +1,9 @@
 ---
 name: haipipe-draft-writing
-description: >-
-  THE writer of a Page: drafting and revising prose from the plan (outline to
-  prose, plain English rewrite), the sentence contract (a sentence's dotted
-  address, comment lanes, change records), and the WRITE step of a Board Page
-  (`run-section-<slug>`, `run-paragraph-<slug>`): after all planned Page Runs and
-  required evidence Task Results complete, WRITE adopts human-agreed prose in one
-  Page-level pass, integrates authorized evidence, builds declared delivery
-  projections, and pre-checks one exact version before independent CHECK. It never
-  reviews its own text: the judge is haipipe-draft-review. Evidence on a span of
-  words is haipipe-evidence's `anchor`. Retains the explicitly delegated
-  single-paragraph path. Trigger: draft prose, outline-to-prose, plain English
-  rewrite, revise this paragraph, comment on this sentence, edit this sentence,
-  sentence address, page content, adopt agreed text, writing Run, WRITE cycle,
-  publish page, build page, /haipipe-draft-writing, /haipipe-writing draft,
-  /haipipe-sentence. Also auto revise (rounds until good enough, big decisions held): auto revise, revise until good, revise rounds. Also the Revise Run (the old haipipe-draft-revise, now
-  ref/revise.md): revise, compare before and after, what changed, track
-  changes, change ledger, run-revise, /haipipe-draft-revise.
+description: "The writer of a Page: drafts and revises prose from the plan (outline to prose, plain English rewrite), edits a sentence by its address, runs the WRITE step (adopt agreed text, integrate evidence, build, pre-check), auto revise rounds, and the Revise Run (before and after, change ledger). Never reviews its own text (haipipe-draft-review does). Trigger: draft prose, revise this paragraph, edit this sentence, WRITE, auto revise, track changes, /haipipe-draft-writing, /haipipe-sentence, /haipipe-draft-revise."
 metadata:
-  version: "0.26.0"
-  last_updated: "2026-10-20"
+  version: "0.26.1"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md
 ---
 

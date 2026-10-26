@@ -5,6 +5,10 @@
   (`sNN-<task>-<venue>-examples`, /excalidraw-read), named by the Section canvas's `examples:`; the writer follows their
   moves and lengths and names each departure (haipipe-draft-writing 0.26.0, `ref/writing.md` § 0).
 
+## [0.14.1] — 2026-10-26
+
+Shorter description (737 -> 453 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)
+
 ## 0.13.0 · 2026-10-19 · haipipe-paper-section is haipipe-paper-draft
 
 - Renamed from `haipipe-paper-section` (JL 261019: "should we chagne this to haipipe-paper-draft? ... it is like we

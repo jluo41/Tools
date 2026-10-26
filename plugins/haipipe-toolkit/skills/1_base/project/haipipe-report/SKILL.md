@@ -1,25 +1,10 @@
 ---
 name: haipipe-report
-description: >-
-  Owns the Question │ Work │ Report workflow of the Audience Report at any level (Block,
-  Job, Task): what each cell of the row reads, how work links to a Question (`answers: <id>`
-  or a need `<id>.E<n>` on a Job or Task face), the walk open → partial → answered, the
-  report Page (Opening · Answer · Evidence · Limits · Next) and its header lines, its
-  `## Figures` and generated drawing, report kinds (a comments batch), and the report check.
-  Use to write, rebuild, check or read a Question's report, to link work to a Question, or
-  to say where a Question stands. Also owns what a board Question is and how it is recorded
-  (a topic, `reports/qNN_<topic>/`, the register, the open report frame), shaping an ask
-  (`ref/asking.md`) and judging it (`ref/review.md`). Use to propose, create, size, rename or
-  find a board Question. Trigger: report, write the report, answer a question,
-  answer-status, answers:, Question Work Report, Audience Report, report drawing, ## Figures,
-  rebuild report drawing, check a report, comments batch, question, board question,
-  block question, reports folder, qNN, add a question, propose a question, question
-  granularity, shape a question, review the questions, /haipipe-report,
-  /haipipe-question, /haipipe-question-asking, /haipipe-question-review.
+description: "Owns a Block's Questions and their reports at any level: what a Question is and where it lives (reports/qNN_<topic>/), shaping and reviewing asks, linking work to it (answers:), its walk open → partial → answered, and the report Page (Opening · Answer · Evidence · Limits · Next) with its figures and check. Trigger: report, answer a question, answers:, board question, qNN, propose a question, review the questions, /haipipe-report, /haipipe-question."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.3.0"
-  last_updated: "2026-10-16"
+  version: "0.3.1"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md
 ---
 

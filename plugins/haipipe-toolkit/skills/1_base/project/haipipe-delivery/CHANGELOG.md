@@ -64,3 +64,8 @@ New, beside haipipe-studio and haipipe-report (JL 261010: "should we have a skil
 rule once (b10 s02-D14, s09-D05), which haipipe-block, haipipe-report, haipipe-cowork and
 haipipe-draft-delivery each carried as a copy; they now point here. The dNN card per send is
 written as a proposal (b10 s03 Open 1), not applied.
+
+
+## [0.5.2] — 2026-10-26
+
+Shorter description (1201 -> 419 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)

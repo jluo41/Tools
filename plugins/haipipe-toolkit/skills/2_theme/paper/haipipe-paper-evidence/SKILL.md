@@ -1,26 +1,10 @@
 ---
 name: haipipe-paper-evidence
-description: >-
-  What backs a paper, the paper's rules on top of the base haipipe-evidence (cards: CITE from discovery Runs, VALUE
-  from work Runs) and haipipe-display (figures and tables). A paper Section is a draft Task: its draft/ is
-  haipipe-paper-draft's, its evidence/ and display/ follow this skill. The rules: a citation comes from a verified
-  CITE Result and never from bank.bib; one result gives one number in every Section; displays are numbered for the
-  paper and kept within the venue's limit, are drawn by Runs of the paper's work Block (its j21_paper_displays
-  Job) and only framed in the paper, and every one passes the display revise loop (one question, one colour
-  scheme, a blind review by a fresh agent, at least 8/10 with no dimension under 7) before the version leaves DRAFT,
-  with the whole set reviewed together once; claim words fit the design. It also reads one whole version (a Job
-  jNN_v<MMDD>_<desk>) as one evidence ledger, every Section side by side, and flags what disagrees across Sections:
-  one value read from two Runs, one label bound to different estimates, too many displays, a display shown twice,
-  a display drawn inside the paper, a display with no question or no passing review (scripts/evidence_ledger.py). Use to check a Section's or a
-  version's evidence, citations, numbers or displays before a build or a send, or to review and revise a paper's
-  displays. /haipipe-paper-display opens this skill (an alias, no folder of its own). Trigger: paper evidence,
-  evidence ledger, check the evidence of this version, same number everywhere, numbers disagree, verify citations,
-  display numbering, display limit, paper displays, display review, display revise loop, review the figures of the
-  paper, /haipipe-paper-evidence, /haipipe-paper-display.
+description: "A paper's evidence rules on top of haipipe-evidence and haipipe-display: citations only from verified CITE Results, one number per result in every Section, displays numbered and within the venue limit, each passing the display revise loop. Reads a whole version as one ledger and flags what disagrees (scripts/evidence_ledger.py). Use before a build or a send. Trigger: paper evidence, evidence ledger, numbers disagree, verify citations, paper displays, /haipipe-paper-evidence, /haipipe-paper-display."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.3.0"
-  last_updated: "2026-10-22"
+  version: "0.3.1"
+  last_updated: "2026-10-26"
   aliases: [haipipe-paper-display]
   # version history: ./CHANGELOG.md
 ---

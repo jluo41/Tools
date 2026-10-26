@@ -1,5 +1,9 @@
 # haipipe-insight-evidence-plan · version history
 
+## [0.4.1] — 2026-10-26
+
+Shorter description (609 -> 362 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)
+
 ## 0.4.0 · 2026-10-02 · Plan from the question layer (JL 261002)
 
 - Plans from the whole question (short wording, name, why now, what would answer it), not from the ask alone; a question that already has needs keeps them, and other changes go to the question review. Coverage adds no need: an uncovered word or a cause word is a review note. The `**Ask covered**:` line and the `ask:` quotes are dropped; the blind-drafter rule holds for a question with no needs yet.

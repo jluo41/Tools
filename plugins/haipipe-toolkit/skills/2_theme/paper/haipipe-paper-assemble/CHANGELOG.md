@@ -49,6 +49,10 @@
   the PDF (JL 261024: "can you highlight the unfilled ones?"); the mark never prints.
 - 101 tests pass with the SPACE venv.
 
+## [0.12.1] — 2026-10-26
+
+Shorter description (532 -> 386 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)
+
 ## 0.11.4 · 2026-10-20 · the readiness gates tested with the engine
 
 - `tests/test_delivery_gates.py`: 19 tests of the compile order, outline approval and G4 (a filename or another

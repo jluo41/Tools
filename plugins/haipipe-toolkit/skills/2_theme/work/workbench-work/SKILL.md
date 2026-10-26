@@ -1,20 +1,9 @@
 ---
 name: workbench-work
-description: >-
-  Open and interpret a question-driven Block Workbench of the work theme (once
-  the task theme), in the Insight
-  Workbench's style: Scope (Block, Questions, Resources, RoadMap Draw with the
-  generated question map), Task (one table per register group, a row per
-  Question: Logic, Task Work, Report), Check and Delivery, each with the shared
-  Runs panel, and the shared Guide with its Method page; and, on a Block
-  whose face says workbench-layout: workflow, Goal · Plan · Execution · Results,
-  the Goal a to-do tree from each Job's ## Deliverables. Use for visual
-  tracking across one work/bNN_* Block and opening its Question reports. It
-  only shows; to bring an older Block up to today's structure use /wb update
-  <Block>. Execution belongs to haipipe-task; report writing to haipipe-draft.
+description: "Open and read a work-theme Block Workbench: Scope (Block, Questions, Resources, RoadMap Draw), Task (a row per Question: Logic, Task Work, Report), Check and Delivery, with the Runs panel and Guide; a workflow-layout Block shows Goal · Plan · Execution · Results. It only shows: execution is haipipe-task, reports are haipipe-draft. Trigger: work workbench, work Block view, open the Block's reports, /workbench-work."
 metadata:
-  version: "0.8.2"
-  last_updated: "2026-10-22"
+  version: "0.8.3"
+  last_updated: "2026-10-26"
 ---
 
 # Work Block Workbench (the work theme, once task)

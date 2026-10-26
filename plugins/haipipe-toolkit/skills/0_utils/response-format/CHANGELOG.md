@@ -36,6 +36,10 @@ anchor, following the promotion of the former b01/j03 area.
   and unnumbered; the format never creates a topic or Question folder.
 - Updated the reply template, rule list and examples; retained the other reply rules.
 
+## [0.23.1] — 2026-10-26
+
+Shorter description (792 -> 331 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)
+
 ## [0.19.0] — 2026-10-06
 
 - **Studio** line after the Related question (JL: "besides the Question, you can

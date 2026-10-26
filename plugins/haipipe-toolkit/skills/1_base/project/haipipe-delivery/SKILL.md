@@ -1,23 +1,10 @@
 ---
 name: haipipe-delivery
-description: >-
-  Owns the Block's Delivery, shared across Block, Job and Task views: the one physical
-  `delivery/` folder of a Block, where every level's built output is kept under its source
-  path; the Delivery view at the right end of the top row (Studio | Block · Job · Task |
-  Delivery); the rule that only a person marks a delivery sent; moving old local outputs into
-  the Block; and the shared path helpers in haipipe-draft/src/common.py. How a file is built
-  stays with its lane owner (a Page's lanes: this skill's ref/page-delivery.md; the rest: haipipe-paper-assemble,
-  haipipe-design-delivery, haipipe-cowork, haipipe-labeling-handoff). Use to find where an
-  output goes, check that no Job or Task keeps its own delivery/, move old local outputs into
-  the Block, or propose a delivery item. Also a Page's Delivery Runs (the old haipipe-draft-delivery,
-  now ref/page-delivery.md): delivery run, build the pdf, build the docx, build the web page, rebuild
-  delivery, stale delivery, /haipipe-draft-delivery. Trigger: delivery, Block delivery, delivery/,
-  where does the pdf go, deliverable, handoff folder, send, sent, render the Word file, read back,
-  the file came back, pull from OneDrive, next round, /haipipe-delivery.
+description: "Owns a Block's one delivery/ folder: where every level's built output goes, the Delivery view, moving old outputs in, and the rule that only a person marks a delivery sent; also a Page's Delivery Runs (build the PDF, Word file or web page, ref/page-delivery.md). Trigger: delivery, delivery/, where does the pdf go, build the docx, rebuild delivery, sent, pull from OneDrive, /haipipe-delivery, /haipipe-draft-delivery."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.5.1"
-  last_updated: "2026-10-19"
+  version: "0.5.2"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md
 ---
 

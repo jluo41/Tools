@@ -1,24 +1,9 @@
 ---
 name: haipipe-run
-description: >-
-  Define, allocate, resume, count, or audit HAIPIPE Runs using their owning
-  domain contracts. Use when deciding Run versus Step, resolving
-  Ticket/Result/receipt identity, choosing reuse versus new work, or composing
-  a Workflow: a planned graph of Run Specs in workflow/plan.yaml, its routes, gates
-  and runtime (ref/workflow.md; the haipipe-workflow skill until 261021). Covers Execution, Discovery, Page, Insight, Design,
-  Paper, and Labeling profiles. A Run is one folder in runs/, hard (result/,
-  evidence; rNN_<slug>, or run-<type>-<target> where its theme names every Run so,
-  as Design does, with kind: in run.yaml) or soft (run-<type>-<target>, writes into
-  its scope), with passes and a run.yaml card. Names every workbench button's Run and owning skill, Space by Space,
-  and writes a soft Run's card and passes. Keeps only meaningful Runs: a hard Run that was
-  replaced or never ran is pruned once nothing in use reads it (prune_runs.py). Trigger: Run
-  contract, Run catalogue, hard or soft Run, pass, run.yaml, Run ticket, runtime receipt, orphan
-  Result, which skill owns this button, run types by Space, soft_run.py, prune runs, delete old
-  runs, superseded Run, keep only meaningful Runs, prune_runs.py, workflow, run graph, run spec,
-  plan.yaml, gate, route, IPO, /haipipe-run, /haipipe-workflow.
+description: "Defines, allocates, resumes, counts and audits Runs: Run or Step, hard or soft, the run.yaml card, ticket and receipt identity, reuse or new work, pruning superseded Runs (prune_runs.py), which skill owns each workbench button, and Workflows (a plan.yaml graph of Run Specs with routes and gates, ref/workflow.md). Trigger: Run contract, run.yaml, pass, runtime receipt, prune runs, run types by Space, workflow, run spec, /haipipe-run, /haipipe-workflow."
 metadata:
-  version: "0.36.1"
-  last_updated: "2026-10-25"
+  version: "0.36.2"
+  last_updated: "2026-10-26"
 ---
 
 # /haipipe-run · one commission, one identity, only meaningful Runs

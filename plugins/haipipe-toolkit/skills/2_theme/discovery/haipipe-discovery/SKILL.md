@@ -1,20 +1,10 @@
 ---
 name: haipipe-discovery
-description: >-
-  External-evidence executor built as Discovery Page Folders. One folder owns
-  one typed BJTR Task Page and many numbered Paper Runs; every durable paper or
-  source is analyzed through a numbered shell ticket and its exact same-stem
-  Result directory containing a Result Card, facts, runtime receipt, and
-  one-entry BibTeX. Use to add a paper/link/PDF, find and read literature,
-  review a source or field, synthesize prior work, build an evidence Bib, or
-  resolve a discovery question through Runs/Results. Trigger: discover, find paper, add paper,
-  paper run, source link, lit review, review, synthesize, 查文献, verdict,
-  landscape,
-  /haipipe-discovery.
+description: "External-evidence executor: one Discovery Page Folder per question, every paper or source analyzed by a numbered Run whose Result holds a card, facts, a receipt and one BibTeX entry. Use to add a paper, link or PDF, find and read literature, review a field, synthesize prior work, or build an evidence Bib. Trigger: discover, find paper, add paper, lit review, synthesize, 查文献, landscape, /haipipe-discovery."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.23.0"
-  last_updated: "2026-10-11"
+  version: "0.23.1"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md
 ---
 

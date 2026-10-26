@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.2.3] — 2026-10-26
+
+Shorter description (652 -> 376 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)
+
 ## 0.2.2 · 2026-10-09
 
 - A Block's `studio/` follows `haipipe-studio` (JL 261009: "We have changed a lot in

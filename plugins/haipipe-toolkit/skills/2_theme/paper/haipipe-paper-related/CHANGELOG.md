@@ -1,5 +1,9 @@
 # Changelog · haipipe-paper-related
 
+## [0.1.1] — 2026-10-26
+
+Shorter description (1159 -> 418 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)
+
 ## [0.1.0] · 2026-10-19 · The closest work, in the s10-s19 band
 
 JL 261019: "for the related work we can do things like s10-related-work, and after that, we have s11 s12, etc";

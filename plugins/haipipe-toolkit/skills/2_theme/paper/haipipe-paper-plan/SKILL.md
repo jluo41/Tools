@@ -1,21 +1,10 @@
 ---
 name: haipipe-paper-plan
-description: >-
-  A paper Board's plan, the two Studio topics after its story: studio/s03-paper-dataflow/, how the data becomes each
-  answer (the data, the matching, the tables, then for each research question the Runs, the evidence rows and the
-  claim; drawn as the building map by excalidraw-workflow's workflow_drawing.py), and studio/s04-paper-workflow/, how
-  the answers become the paper (the Sections in reader order with the question each answers, its displays, its
-  evidence and its words; each display and the Run that makes it; the dated steps to the send; drawn by
-  excalidraw-workflow's paperflow_drawing.py). The plan reads the story and never restates it: the questions, the E
-  rows and the T rows stay on the s02 face. Use to plan a paper's data flow or paper flow, to make or redraw s03 or s04,
-  to check that every question lands in a Section and every display has a Run, or to move an older s03-paper-workflow
-  building map to s03-paper-dataflow. Trigger: paper plan, data flow, dataflow, paper flow, paper workflow, s03, s04,
-  which Run feeds which question, which section answers which question, word budget, displays, timeline to the send,
-  /haipipe-paper-plan.
+description: "A paper Board's plan, the two studio topics after its story: s03 data flow (how the data becomes each answer: Runs, evidence rows, claims) and s04 paper flow (Sections in reader order with their questions, displays, evidence, words, and the dated steps to the send). Checks that every question lands in a Section and every display has a Run. Trigger: paper plan, data flow, paper flow, s03, s04, word budget, timeline to the send, /haipipe-paper-plan."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-10-19"
+  version: "0.1.1"
+  last_updated: "2026-10-26"
   group-token: "s03-paper-dataflow"
   # version history: ./CHANGELOG.md
 ---

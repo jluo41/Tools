@@ -6,6 +6,10 @@
   Runs is a Run question; only 28 of 387 Physician-SPACE Tasks wrote a plan.yaml. Every pointer (the type skills and
   their plan samples, haipipe-task, the paper, insight and labeling workflows, haipipe-work) now names these files.
 
+## [0.36.2] — 2026-10-26
+
+Shorter description (1297 -> 455 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)
+
 ## [0.36.1] — 2026-10-25
 
 Links, commands and companions repointed at the helper skills merged into `haipipe-nn`, `haipipe-end`, `haipipe-data`, `haipipe-task-for-fit`, `haipipe-task-for-agent` (now `_parts/<name>/PART.md`). (merge-parts 261025)

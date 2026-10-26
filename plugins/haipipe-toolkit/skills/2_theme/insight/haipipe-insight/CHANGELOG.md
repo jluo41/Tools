@@ -1,5 +1,9 @@
 # haipipe-insight · version history
 
+## [3.4.1] — 2026-10-26
+
+Shorter description (914 -> 463 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)
+
 ## 3.4.0 · 2026-10-12 · A readable Job name, and the Executive level
 
 - JL 261012: "I just want to show the job folder name, and make the job folder name to be human readable".

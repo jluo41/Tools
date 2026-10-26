@@ -1,8 +1,8 @@
 ---
 name: haipipe-display
-description: "THE one door for display work: say what you want shown and this routes it to the right renderer by KIND, then the renderer writes a display unit per ref/display-unit-output-contract.md. Five renderers, each a part read from _parts/<kind>/PART.md: 📊 table · 📈 figure · 📐 diagram (editable SVG) · 🎨 illustration (AI image) · ✒️ tex (hand-authored TikZ, algorithm blocks, display equations). Every display a reader sees then MUST pass the revise loop (ref/display-revise-loop.md): one question per display, one colour scheme, a blind review by a fresh agent saved as review/rNN.md, revise, review again until overall >= 8/10 with no dimension under 7, at most 4 rounds. Use when user says 做表, 生成表格, regression table, 画图, 作图, generate figures, paper plots, 架构图, concept figure, make a display, render a unit, display unit, which renderer, display review, display loop, revise the figures, blind review of displays, journal-ready figures, /haipipe-display, /haipipe-paper-display."
+description: "The one door for display work: routes by kind to its part (_parts/<kind>/PART.md): 📊 table, 📈 figure, 📐 diagram (editable SVG), 🎨 illustration (AI image), ✒️ tex (TikZ, algorithms, equations); every display then passes the blind-review revise loop (at least 8/10, at most 4 rounds). Trigger: 做表, 画图, 架构图, regression table, generate figures, paper plots, concept figure, display unit, revise the figures, /haipipe-display."
 metadata:
-  version: "0.5.0"
+  version: "0.5.1"
   last_updated: "2026-10-26"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, mcp__codex__codex, mcp__codex__codex-reply, WebSearch, mcp__codex-image2__generate, mcp__codex-image2__generate_start, mcp__codex-image2__generate_status
 ---

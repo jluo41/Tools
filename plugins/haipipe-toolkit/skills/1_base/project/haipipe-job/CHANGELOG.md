@@ -1,6 +1,10 @@
 haipipe-job · Changelog
 =======================
 
+## [0.3.1] — 2026-10-26
+
+Shorter description (655 -> 348 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)
+
 ## [0.3.0] · 2026-10-21 · A Job says what it hands on
 
 - `ref/job-contract.md`: a work Job's face carries `emoji:` and `## Deliverables`, one yaml list of what it hands on

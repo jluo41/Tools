@@ -1,15 +1,9 @@
 ---
 name: haipipe-paper-comments
-description: >-
-  The paper's comments PageType: take in what people say about a paper (a review report, an editor's letter,
-  a coauthor pass, a meeting, an advisor's notes), split each batch into points with ids by source, group
-  them into named Review Items, route each item to its owner, record the reply and its state, and propose
-  the Board questions worth answering before anyone asks again. A review batch closes with an approved
-  response. Use when taking in comments, triaging them, answering a review, or turning recurring comments
-  into questions. Replaces haipipe-paper-round (renamed 2026-10-07).
+description: "Takes in what people say about a paper (reviews, an editor's letter, coauthor notes, a meeting): splits it into points, groups them into Review Items, routes each to its owner, records replies, and proposes Board questions worth answering. Use to triage comments or answer a review. Was haipipe-paper-round. Trigger: comments, review report, respond to reviewers, /haipipe-paper-comments."
 metadata:
-  version: "1.3.0"
-  last_updated: "2026-10-14"
+  version: "1.3.1"
+  last_updated: "2026-10-26"
   group-token: "CM"
   legacy-group-token: "RD"
   outline:

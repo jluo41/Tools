@@ -1,0 +1,274 @@
+# Shorter descriptions for the most-used skills (JL 261026).
+# Why: the skill listing gets a budget (1% of the context window, docs: Skills); on overflow every
+# name stays but descriptions are dropped, least-used first. These 40 skills are used and each
+# description was over 100 tokens (four over 1,024 characters, one over the 1,536 cap).
+# Shape: what it does, when to use it, then its trigger words; aliases and old command names kept.
+# Apply with: python3 diagnostics/set_descriptions.py diagnostics/descriptions/261026.yaml
+
+haipipe-paper-evidence: >-
+  A paper's evidence rules on top of haipipe-evidence and haipipe-display: citations only from
+  verified CITE Results, one number per result in every Section, displays numbered and within the
+  venue limit, each passing the display revise loop. Reads a whole version as one ledger and flags
+  what disagrees (scripts/evidence_ledger.py). Use before a build or a send. Trigger: paper
+  evidence, evidence ledger, numbers disagree, verify citations, paper displays,
+  /haipipe-paper-evidence, /haipipe-paper-display.
+
+haipipe-draft-writing: >-
+  The writer of a Page: drafts and revises prose from the plan (outline to prose, plain English
+  rewrite), edits a sentence by its address, runs the WRITE step (adopt agreed text, integrate
+  evidence, build, pre-check), auto revise rounds, and the Revise Run (before and after, change
+  ledger). Never reviews its own text (haipipe-draft-review does). Trigger: draft prose, revise this
+  paragraph, edit this sentence, WRITE, auto revise, track changes, /haipipe-draft-writing,
+  /haipipe-sentence, /haipipe-draft-revise.
+
+haipipe-run: >-
+  Defines, allocates, resumes, counts and audits Runs: Run or Step, hard or soft, the run.yaml card,
+  ticket and receipt identity, reuse or new work, pruning superseded Runs (prune_runs.py), which
+  skill owns each workbench button, and Workflows (a plan.yaml graph of Run Specs with routes and
+  gates, ref/workflow.md). Trigger: Run contract, run.yaml, pass, runtime receipt, prune runs, run
+  types by Space, workflow, run spec, /haipipe-run, /haipipe-workflow.
+
+haipipe-report: >-
+  Owns a Block's Questions and their reports at any level: what a Question is and where it lives
+  (reports/qNN_<topic>/), shaping and reviewing asks, linking work to it (answers:), its walk open →
+  partial → answered, and the report Page (Opening · Answer · Evidence · Limits · Next) with its
+  figures and check. Trigger: report, answer a question, answers:, board question, qNN, propose a
+  question, review the questions, /haipipe-report, /haipipe-question.
+
+haipipe-delivery: >-
+  Owns a Block's one delivery/ folder: where every level's built output goes, the Delivery view,
+  moving old outputs in, and the rule that only a person marks a delivery sent; also a Page's
+  Delivery Runs (build the PDF, Word file or web page, ref/page-delivery.md). Trigger: delivery,
+  delivery/, where does the pdf go, build the docx, rebuild delivery, sent, pull from OneDrive,
+  /haipipe-delivery, /haipipe-draft-delivery.
+
+haipipe-paper-related: >-
+  A paper Board's closest related work: the 20 to 25 nearest papers, sorted into 3 or 4 types, mapped
+  beside our paper (studio s10, related_map.py) and read closely in s11 to s19, so the paper can say
+  what each leaves open and what it adds. Not the literature (haipipe-discovery) or the related/
+  folder (haipipe-related). Trigger: related work, closest papers, related-work map, s10,
+  positioning, /haipipe-paper-related.
+
+haipipe-draft: >-
+  The draft behind every Page: create, edit, build and serve a self-contained Page Folder from a
+  file, without a Board; owns the Page Face contract, which Run Spec holds authority, and a draft
+  Task's seven steps (Studio, Plan, Write, Evidence, Display, Revise, Delivery). Planning is
+  haipipe-draft-logic. Trigger: draft, draft folder, file to page, create a page, Page Face, Run
+  Spec, draft steps, /haipipe-draft, /haipipe-page.
+
+haipipe-paper-plan: >-
+  A paper Board's plan, the two studio topics after its story: s03 data flow (how the data becomes
+  each answer: Runs, evidence rows, claims) and s04 paper flow (Sections in reader order with their
+  questions, displays, evidence, words, and the dated steps to the send). Checks that every
+  question lands in a Section and every display has a Run. Trigger: paper plan, data flow, paper
+  flow, s03, s04, word budget, timeline to the send, /haipipe-paper-plan.
+
+haipipe-task-for-description: >-
+  Table-description Task: one Task per stored table writes its Table Card (what one row is, a column
+  dictionary, value pictures, one synthetic person's rows, caveats, changes since the last version)
+  for any parquet or raw table. Called by /haipipe-task when task-type=description. Trigger:
+  describe a table, table card, data dictionary, column meanings, what is one row, synth_df.
+
+haipipe-display: >-
+  The one door for display work: routes by kind to its part (_parts/<kind>/PART.md): 📊 table,
+  📈 figure, 📐 diagram (editable SVG), 🎨 illustration (AI image), ✒️ tex (TikZ, algorithms,
+  equations); every display then passes the blind-review revise loop (at least 8/10, at most 4
+  rounds). Trigger: 做表, 画图, 架构图, regression table, generate figures, paper plots, concept
+  figure, display unit, revise the figures, /haipipe-display.
+
+haipipe-task: >-
+  Owns the Task level and is the door to every kind of Task: the tNN_<task>/ folder (face,
+  scripts/, runs/ with ticket, config, run.yaml and a result/ receipt; a Task may hold a draft), its life
+  plan ▶ build ▶ run ▶ read ▶ close, and task-type routing to the type skills (data, raw,
+  description, algo, fit, eval, display, individual, endpoint, agent, evidence, stata, draft,
+  labeling). Trigger: task, tNN, task-type, task face, ticket, runtime.yaml, check_task_tree, GPU
+  queue, /haipipe-task.
+
+haipipe-design-unit: >-
+  One step of a design method on one target, as one Run: reason (t00), generate a design, revise
+  it, verify it or rank the designs (both by another agent). Reads only the Job's inputs/ fence and
+  writes only its Run's result/. Not for opening Jobs, releasing or sending. Trigger: reason design
+  ideas, generate a design, revise a design, verify a design, rank the designs,
+  run-generate-d<NN>, /haipipe-design-unit.
+
+haipipe-insight: >-
+  The door for insight: a Prototype (work/Prototype-bNN-<Topic>/, the questions and scripts, one
+  Job per release) and an insight Board (insight/Insight-<name>/, one dataset, a Job per release ×
+  data version, a Task per question, a Run per cut). Scaffolds the ladder (insight_ladder.py),
+  routes each Run to its owner, and ends at a signed Design handoff. Trigger: insight, Prototype,
+  insight Board, data version, DIKW, cut, pooling, Design handoff, /haipipe-insight.
+
+haipipe-paper-story: >-
+  Draft, review, revise or draw one paper's Story: its Seed, research questions (hypotheses,
+  claims, the work that tests them), Discovery and Task Roadmaps, related papers and Section
+  Narrative; on the ladder a studio topic (sNN-story-<desk>-<idea>/) with Board Questions. Use to
+  plan a telling or check that it holds for an editor, a reviewer and the public. Trigger: story,
+  research question, hypothesis, claim, RoadMap Draw, /haipipe-paper-story.
+
+haipipe-draft-review: >-
+  The judge of prose and of a built Page, never of its own text. Mode 1 reviews any text (plain
+  English, rubric, anti-AI, humanizer evaluators, sentence-by-sentence logic) and returns located
+  findings; Mode 2 is the Page check gate (CLOSE, CONTEXT, OUTLINE, EVIDENCE, CONTENT or HOLD).
+  Trigger: review prose, too AI, humanize, plain English check, page check, quality gate,
+  /haipipe-draft-review, /haipipe-writing, /haipipe-draft-check.
+
+workbench: >-
+  Open a workbench (/wb): no input opens the SPACE Home, a Project path that Project, a Block, Job or
+  Task path its theme's frame; plain words find the place first (cli/wb.py checks the link on the
+  running server). Also the WORKBENCH contract (STORAGE, SURFACE, WRITER, BOUNDARY; ref/roster.md).
+  Trigger: wb, open the workbench, open a project, open a block, workbench link, workbench roster,
+  /wb, /workbench.
+
+haipipe-paper-ideation: >-
+  The Paper Page Type for one research direction and its research questions (each Idea named by its
+  question): projects haipipe-ideation's sync packets and final selection into Direction,
+  Landscape, Opportunity Map and Story routes, as the Board's studio/s01-ideation/ topic.
+  Generation, novelty and selection stay with haipipe-ideation. Trigger: paper ideation, s01,
+  research direction, opportunity map, /haipipe-paper-ideation.
+
+response-format: >-
+  Spec for the assistant's chat reply format in this workspace: the answer on line 1, then
+  sections of numbered one-line scan points, a small ASCII sketch and plain prose; the last section
+  is Summary and Next. A reference spec; it does not self-activate. Trigger: response format, reply
+  format, outline format, section headers, 回复格式.
+
+workbench-work: >-
+  Open and read a work-theme Block Workbench: Scope (Block, Questions, Resources, RoadMap Draw),
+  Task (a row per Question: Logic, Task Work, Report), Check and Delivery, with the Runs panel and
+  Guide; a workflow-layout Block shows Goal · Plan · Execution · Results. It only shows: execution
+  is haipipe-task, reports are haipipe-draft. Trigger: work workbench, work Block view, open the
+  Block's reports, /workbench-work.
+
+haipipe-related: >-
+  Owns a Block's related/ folder: what came in from outside, kept once as it came (meetings,
+  papers, files, emails), its table related/related.md, its groups, and the Related view in the
+  Studio. Use to add notes, a paper, a file or an email and write its row, or say what it feeds.
+  Trigger: related, related/, related.md, meeting notes, transcript, email, add a paper,
+  /haipipe-related.
+
+haipipe-draft-logic: >-
+  The plan of a Page, before any prose: gather its context (PREPARE), shape the Structure and
+  survey each Bullet's evidence needs (SHAPE, SURVEY, run-structure-<slug>), and keep rough
+  thinking in Scratch. Writes no prose (haipipe-draft-writing) and judges nothing
+  (haipipe-draft-review). Trigger: plan, page outline, structure Run, SHAPE, SURVEY, page context,
+  scratch, /haipipe-draft-logic, /haipipe-draft-structure, /haipipe-draft-context,
+  /haipipe-draft-scratch.
+
+haipipe-paper-draft: >-
+  The paper's draft Task: one Section, the Abstract or a letter of one version (task-type: draft),
+  the paper's rules on top of haipipe-draft; executes one row of the version's ## Narrative and
+  keeps its Requirement (venue rules, rubric, SUB-* rows). Evidence and displays follow
+  haipipe-paper-evidence; the whole manuscript is haipipe-paper-assemble. Use to add, outline,
+  draft, revise, check or retarget one Section. Also opens as /haipipe-paper-section.
+
+haipipe-work: >-
+  The door of the work theme (a Project's work/ world: Blocks, Jobs, Tasks, and Runs with Results
+  and receipts): routes a request to its owner: the Task contract (haipipe-task), the work
+  workbench (workbench-work), a kind of Task (haipipe-task-for-<kind>), a Run graph (haipipe-run),
+  a Block Question (haipipe-report). Trigger: work theme, work Block, which work skill, where does
+  this work go, /haipipe-work.
+
+haipipe-block: >-
+  Owns the Block level: its face board.md (title, board-kind, spine, close, workbench:, Topic), its
+  six Spaces and buttons, a new-Block scaffold, and how a theme claims a Block. Use to create a
+  Block, edit or check its face, add a Job, or say which theme reads it. Trigger: block, new block,
+  board.md, block face, add a job, which theme, /haipipe-block, /haipipe-board.
+
+haipipe-cowork: >-
+  Owns the CoWork Block (cowork/bNN_<topic>/): its board.md, its Jobs (one line of work each), its
+  people Job j00_people/, its Questions and studio/. Use to create, update or audit a cowork Block
+  or Job, record who has the next move, or place an email, meeting or note. Trigger: cowork, cowork
+  block, who are we waiting on, open a job, update a job, who to ask, /haipipe-cowork.
+
+haipipe-insight-check: >-
+  Read-only check that every answered InsightBoard cell fits its question: each need planned, bound
+  in answers.yaml to a current ok result, and cited by a page sentence; returns OK, GAP, STALE,
+  UNBOUND or UNPLANNED per cell and flags overclaims. The workbench's Check alignment run.
+  Trigger: check alignment, insight check, overclaim, stale page, /haipipe-insight-check.
+
+haipipe-job: >-
+  Owns the Job level: its face jNN_<job>.md (goal, close, answers:, its Tasks in order, ##
+  Deliverables ticked from disk), its Spaces and buttons, a new-Job scaffold with Task slots, a
+  check of Tasks against folders, and a theme's own Job and Task names. Trigger: job, new job, add a
+  task, job face, jNN, tasks in order, level_patterns, /haipipe-job.
+
+haipipe-discovery: >-
+  External-evidence executor: one Discovery Page Folder per question, every paper or source
+  analyzed by a numbered Run whose Result holds a card, facts, a receipt and one BibTeX entry. Use to
+  add a paper, link or PDF, find and read literature, review a field, synthesize prior work, or
+  build an evidence Bib. Trigger: discover, find paper, add paper, lit review, synthesize, 查文献,
+  landscape, /haipipe-discovery.
+
+haipipe-ideation: >-
+  One door over ideation: generate evidence-grounded candidates, test novelty, feasibility, journal
+  fit and Nature-level shape, then select idea-and-target pairs through a human gate and hand them
+  to Paper P0. Use for research directions, idea generation, novelty checks, pressure tests and
+  journal targeting; external sources are haipipe-discovery. Trigger: ideation, research idea,
+  novelty check, journal fit, /haipipe-ideation.
+
+haipipe-insight-evidence-plan: >-
+  Plans one InsightBoard question's evidence before any run: turns "what would answer it" into needs
+  (compute, cite or judge, each with a pass condition) and a work spec per compute need, for a
+  reviewer agent to agree; never answers. The workbench's Plan the evidence run. Trigger: plan the
+  evidence, evidence needs, backfill needs, /haipipe-insight-evidence-plan.
+
+haipipe-paper-comments: >-
+  Takes in what people say about a paper (reviews, an editor's letter, coauthor notes, a meeting):
+  splits it into points, groups them into Review Items, routes each to its owner, records replies,
+  and proposes Board questions worth answering. Use to triage comments or answer a review. Was
+  haipipe-paper-round. Trigger: comments, review report, respond to reviewers,
+  /haipipe-paper-comments.
+
+haipipe-paper-venue: >-
+  One submission target (journal, funder, patent office): binding desk rules kept apart from
+  observed patterns, with provenance; writes the Board's venues/<venue>/ (call.md, author kit) that
+  each version reads. Use to research, add, refresh, compare or check a venue. Trigger: venue,
+  journal rules, call for papers, author kit, /haipipe-paper-venue.
+
+haipipe-paper-assemble: >-
+  Builds the whole manuscript deterministically from the Sections' LaTeX and accepted bindings,
+  regenerating delivery/ (DOCX, PDF, supplement, source manifest); never reads a generated Word file
+  back. Use to assemble, build Word, export the paper, regenerate submission files, or check whether
+  a document is stale. Trigger: assemble, build Word, export the paper, /haipipe-paper-assemble.
+
+ask-questions: >-
+  Finds and sharpens the questions in a long conversation: matches response sections to existing
+  Block questions, proposes distinct new ones, and asks a focused clarification only when the
+  answer would change. Trigger: ask questions, session questions, question association, propose a
+  question, 提问, 追问, 问题归属.
+
+haipipe-paper: >-
+  The one door for a paper on the ladder: a paper Board, one version Job per send, one Task per
+  Section, Abstract or letter; routes to the Story, Ideation, Venue, Section, comments and assembly
+  owners. Use for paper setup (paper_ladder.py), status, drafting, or reviews. Trigger: paper, paper
+  Board, version, send, /haipipe-paper.
+
+haipipe-data: >-
+  Stage 1-4 data pipeline door: reads the part for the stage (raw, source, record, case, aidata,
+  external, remote). Use for SourceFn, RecordFn, CaseFn, TfmFn and SplitFn builds, cooks,
+  dashboards and reviews, raw cohort timelines, external assets (freeze, release, parity), and
+  remote store sync. Trigger: data pipeline, source, record, case, aidata, external asset, remote
+  sync, cook, /haipipe-data.
+
+haipipe-end: >-
+  Stage 6 endpoint door: reads the part for the axis: inference Fns (meta, trig, post, src2input,
+  input2src), the Endpoint_Set (package, test, profile), and develop or deploy on local,
+  SageMaker, Databricks or MLflow. Trigger: endpoint, deploy, serve locally, package, endpointset,
+  inference Fn, /haipipe-end.
+
+haipipe-nn: >-
+  Stage 5 NN door: reads the layer's part (algo, tuner, instance, modelset) for algorithm classes,
+  tuner search spaces and sweeps, ModelInstance builds and ModelSet pipelines: dashboards, reviews,
+  generation, tests. Trigger: nn pipeline, model, algorithm, tuner, hyperparameter, checkpoint,
+  modelset, /haipipe-nn.
+
+haipipe-task-for-raw: >-
+  Raw-stage Task: extraction Jobs move cohort data from a database into RawStore as
+  <cohort>-v<yymmdd> (Spark on the server for PHI), and a raw-understanding Block profiles each table
+  and hands it to Source. Called by /haipipe-task when task-type=raw. Trigger: raw extraction,
+  RawStore, cohort extract, /haipipe-task-for-raw.
+
+haipipe-insight-data: >-
+  InsightBoard Data level: what was observed in the board's extract, from which exact run, without
+  interpretation; a Data question's page calls a task run and reports its results. Trigger: insight
+  data, observations, Data level, /haipipe-insight-data.

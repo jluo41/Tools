@@ -1,16 +1,9 @@
 ---
 name: haipipe-paper
-description: >-
-  The one door for planning, writing, and revising a paper on the ladder: a
-  paper Board, one version Job per send, one Page Task per Section, Abstract or
-  letter, and their run-<type>-<target> Runs. Routes by level to the Story,
-  Ideation, Venue, Section, comments and assembly owners; the shared Page
-  lifecycle runs each Task, and Discovery and Task owners execute the external
-  work. Use for paper setup (paper_ladder.py), status, drafting, a Claude and
-  Codex session per Section, complete-paper assembly, or comments and reviews.
+description: "The one door for a paper on the ladder: a paper Board, one version Job per send, one Task per Section, Abstract or letter; routes to the Story, Ideation, Venue, Section, comments and assembly owners. Use for paper setup (paper_ladder.py), status, drafting, or reviews. Trigger: paper, paper Board, version, send, /haipipe-paper."
 metadata:
-  version: "1.17.1"
-  last_updated: "2026-10-23"
+  version: "1.17.2"
+  last_updated: "2026-10-26"
   summary: "Paper owns the journey and composition; the shared Page owns each Paper Page's lifecycle and release."
 ---
 

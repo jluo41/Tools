@@ -1,19 +1,9 @@
 ---
 name: haipipe-work
-description: >-
-  The door of the work theme: bounded execution work in a Project's work/
-  world, where a Block (work/bNN_<topic>/) groups Jobs (jNN_<series>/), each
-  Task (tNN_<task>/) plans, builds, executes and reports, and each hard Run
-  (rNN_<noun>_<qualifier>.sh) leaves a Result and a receipt that the Block's
-  Question reports read. Routes a request to the skill that owns it: the Task
-  folder and its Plan, Build, Execute, Report contract (haipipe-task), the work
-  workbench (workbench-work), a kind of work Task (haipipe-task-for-<kind>), a
-  Run graph (haipipe-run `ref/workflow.md`), a Block Question (haipipe-report). Owns no
-  folder contract of its own yet. Trigger: work theme, work Block, work Job,
-  which work skill, where does this work go, /haipipe-work.
+description: "The door of the work theme (a Project's work/ world: Blocks, Jobs, Tasks, and Runs with Results and receipts): routes a request to its owner: the Task contract (haipipe-task), the work workbench (workbench-work), a kind of Task (haipipe-task-for-<kind>), a Run graph (haipipe-run), a Block Question (haipipe-report). Trigger: work theme, work Block, which work skill, where does this work go, /haipipe-work."
 metadata:
-  version: "0.1.1"
-  last_updated: "2026-10-09"
+  version: "0.1.2"
+  last_updated: "2026-10-26"
 ---
 
 # Work theme

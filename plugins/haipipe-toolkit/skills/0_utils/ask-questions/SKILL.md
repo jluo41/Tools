@@ -1,16 +1,9 @@
 ---
 name: ask-questions
-description: >-
-  Identify and refine questions in an ongoing conversation, associate normally
-  written response sections with existing Block questions, and propose distinct
-  new questions. Ask focused clarifications when missing information would
-  materially change the answer or next action. Use for tracing a long session
-  to questions, matching sections to Q records, or shaping candidate questions;
-  ordinary chat remains driven by the user's input. Trigger: ask questions,
-  session questions, question association, propose a question, 提问, 追问, 问题归属.
+description: "Finds and sharpens the questions in a long conversation: matches response sections to existing Block questions, proposes distinct new ones, and asks a focused clarification only when the answer would change. Trigger: ask questions, session questions, question association, propose a question, 提问, 追问, 问题归属."
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-10-03"
+  version: "0.2.1"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

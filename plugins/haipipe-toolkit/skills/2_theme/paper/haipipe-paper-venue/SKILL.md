@@ -1,17 +1,9 @@
 ---
 name: haipipe-paper-venue
-description: >-
-  Paper Page Type for one external submission target: a journal, funder, or
-  patent office. Separates binding desk rules from observed venue patterns,
-  records provenance, and hands a verified venue contract to Ideation deep fit,
-  the Story's Section Narrative rows, and Section Pages. On the ladder it also
-  writes a paper Board's venues/<venue>/ (call.md and the author kit), shown in
-  Block › Description › Venue and read by each version. Use when researching,
-  creating, refreshing, or comparing a venue Page, or adding or checking a
-  paper's venue.
+description: "One submission target (journal, funder, patent office): binding desk rules kept apart from observed patterns, with provenance; writes the Board's venues/<venue>/ (call.md, author kit) that each version reads. Use to research, add, refresh, compare or check a venue. Trigger: venue, journal rules, call for papers, author kit, /haipipe-paper-venue."
 metadata:
-  version: "0.11.0"
-  last_updated: "2026-10-19"
+  version: "0.11.1"
+  last_updated: "2026-10-26"
   page_ruling: none
   outline:
     mode: fixed

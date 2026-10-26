@@ -1,18 +1,10 @@
 ---
 name: haipipe-block
-description: >-
-  Owns the Block level: a Block's face `board.md` (title, board-kind, spine, close, optional
-  workbench:, Topic, and where its Questions register and resources go), its six Spaces at
-  Block level and the buttons it owns there (Update the description, Add a Job, Build the
-  delivery), a new-Block scaffold, and how a theme claims a Block (Theme.claims, a
-  `workbench:` field) before its Theme folder decides. Use to create a Block, edit or check
-  its face, add a Job to it, or say which theme reads it. Trigger: block, new block, board.md,
-  block face, spine, close, board-kind, add a job, which theme, claims, /haipipe-block,
-  /haipipe-board. Was haipipe-board until 2026-10-12.
+description: "Owns the Block level: its face board.md (title, board-kind, spine, close, workbench:, Topic), its six Spaces and buttons, a new-Block scaffold, and how a theme claims a Block. Use to create a Block, edit or check its face, add a Job, or say which theme reads it. Trigger: block, new block, board.md, block face, add a job, which theme, /haipipe-block, /haipipe-board."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "2.2.0"
-  last_updated: "2026-10-12"
+  version: "2.2.1"
+  last_updated: "2026-10-26"
   aliases: [haipipe-board]
   # version history: ./CHANGELOG.md
 ---

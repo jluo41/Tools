@@ -32,3 +32,8 @@ folder (meetings/, papers/, files/, and emails/, new the same day: "the related 
 well"), its table `related/related.md`, its groups (a subfolder is a group of its files, s04-D08)
 and the Related view inside the Studio. The rule was spread over b10 s01-D27, s01-D34 and the
 paper skills; the workbench's `run-add-related-<slug>` button now names this skill.
+
+
+## [0.3.2] — 2026-10-26
+
+Shorter description (770 -> 384 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)

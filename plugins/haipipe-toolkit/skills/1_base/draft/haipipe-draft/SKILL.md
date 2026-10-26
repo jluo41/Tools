@@ -1,24 +1,8 @@
 ---
 name: haipipe-draft
-description: >-
-  The draft behind every Page: its logic (the plan), its sentences and its
-  evidence, worked on in the folder's draft/ and shown to a reader as the
-  Page (the face .md and its built output). Create, edit, build and serve a
-  self-contained Page Folder from a supplied Markdown, text, HTML or other
-  file, without requiring a Board. Also owns the Page Face contract and router
-  of a Folder: what the readable .md is on disk, how its Run Workflow/Run Spec
-  owner or legacy Page Type is resolved, which Run Spec holds authority, and
-  PREVIEW, CREATE, WORK ON, RUNS, RUN, and a draft Task's seven steps (Studio,
-  Plan, Write, Evidence, Display, Revise, Delivery: the tabs of its Work and the STEP
-  verbs structure, write, revise, deliver, check). Was haipipe-page until 2026-10-11.
-  Trigger: draft, draft folder, file to page, HTML page, standalone page, host
-  a page, open page code, create a page, update page, propose Page Runs,
-  human-interaction runs, run page lifecycle, Page Face, Folder kind, legacy
-  Page Type, Run Spec, draft steps, step tabs, Operation over Result,
-  /haipipe-draft, /haipipe-page. The plan (page
-  context, structure Run, scratch) is haipipe-draft-logic.
+description: "The draft behind every Page: create, edit, build and serve a self-contained Page Folder from a file, without a Board; owns the Page Face contract, which Run Spec holds authority, and a draft Task's seven steps (Studio, Plan, Write, Evidence, Display, Revise, Delivery). Planning is haipipe-draft-logic. Trigger: draft, draft folder, file to page, create a page, Page Face, Run Spec, draft steps, /haipipe-draft, /haipipe-page."
 metadata:
-  version: "0.137.2"
+  version: "0.137.3"
   last_updated: "2026-10-26"
   aliases: [haipipe-page]
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

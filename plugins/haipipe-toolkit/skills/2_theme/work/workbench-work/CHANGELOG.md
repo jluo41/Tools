@@ -4,6 +4,10 @@
   Proj11's b12, b13, b21 and b31 each showed one done item and read ✅ "1 of 1" while 2 or 3 planned items were
   hidden; now they read 🔶 "1 of 3" or "1 of 4", the planned items ☐.
 
+## [0.8.3] — 2026-10-26
+
+Shorter description (780 -> 417 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)
+
 ## 0.8.1 · 2026-10-22 · Job and Task reports show every Studio drawing that names them
 
 - The Goal tree's "📄 About this Job" and "📄 About this Task" pop out a Job's overview and a Task's report

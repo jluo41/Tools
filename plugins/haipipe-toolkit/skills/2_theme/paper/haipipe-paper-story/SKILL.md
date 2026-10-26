@@ -1,21 +1,9 @@
 ---
 name: haipipe-paper-story
-description: >-
-  Draft, review, revise, or draw one paper's prospective Story: its Seed, its
-  research questions (each with hypotheses, claims, contributions and the work
-  that tests them), Discovery Roadmap, Task Roadmap, related papers, and Section
-  Narrative. On the ladder a telling is a studio topic
-  (studio/sNN-story-<desk>-<idea>/), its research questions are Board Questions
-  with reports, and its Section Narrative is each version face's ## Narrative.
-  Use to explain the whole paper from questions and evidence needs to its
-  intended argument, to plan a new telling, to review whether it attracts an
-  editor, a reviewer and the public, or to redraw its studio drawings.
-  Execution release and receipt handling use the Paper workflow. Trigger: story, research question, hypothesis, claim, High-level
-  logic, Low-level work, Related Papers, RoadMap Draw, workflow drawing,
-  /haipipe-paper-story.
+description: "Draft, review, revise or draw one paper's Story: its Seed, research questions (hypotheses, claims, the work that tests them), Discovery and Task Roadmaps, related papers and Section Narrative; on the ladder a studio topic (sNN-story-<desk>-<idea>/) with Board Questions. Use to plan a telling or check that it holds for an editor, a reviewer and the public. Trigger: story, research question, hypothesis, claim, RoadMap Draw, /haipipe-paper-story."
 metadata:
-  version: "0.24.0"
-  last_updated: "2026-10-19"
+  version: "0.24.1"
+  last_updated: "2026-10-26"
   group-token: "sNN-story-<desk>-<idea-slug>"
   outline:
     mode: fixed

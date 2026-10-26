@@ -1,24 +1,10 @@
 ---
 name: haipipe-task-for-description
-description: >-
-  Table-description Task specialist: one Task per stored table produces its
-  Table Card, a notebook and a card.md that say what one row is (proven by
-  counting), what each column means (typed in a column dictionary, never
-  invented), what the values look like (one picture per meaning group), its
-  synth_df (one synthetic person's rows in the table, invented values in the
-  real columns), what to watch out for, where each column goes, and
-  what changed since the earlier version. Works on any parquet table: a raw
-  release, a ProcDf, a Record table, an external asset. A raw table in any
-  format (CSV, Excel, XML, per-person JSON) gets the same card from its
-  full-read Run (description.json), and that Run fails when the card leaves a
-  question open. Called by /haipipe-task when task-type=description.
-  Trigger: describe a table, table card, what does this table look like, data
-  dictionary, column meanings, explain a table, table notebook, what is one
-  row, describe every column, synth_df, synthetic patient, synthetic rows.
+description: "Table-description Task: one Task per stored table writes its Table Card (what one row is, a column dictionary, value pictures, one synthetic person's rows, caveats, changes since the last version) for any parquet or raw table. Called by /haipipe-task when task-type=description. Trigger: describe a table, table card, data dictionary, column meanings, what is one row, synth_df."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.5.1"
-  last_updated: "2026-10-25"
+  version: "0.5.2"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

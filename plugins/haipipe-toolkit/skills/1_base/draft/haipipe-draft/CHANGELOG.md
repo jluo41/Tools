@@ -4,6 +4,10 @@
   evidence gate showed `done` in the version's Work (Paper-AgreeableOpioid-Jama: 20 held lanes read done). The new
   `src/page_export.py::mark_card` records the outcome after the build: `done`, or `failed` when a gate held the lane.
 
+## [0.137.3] — 2026-10-26
+
+Shorter description (1159 -> 426 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)
+
 ## [0.137.2] — 2026-10-26
 
 Links, commands and companions repointed at the helper skills merged into `haipipe-display` (now `_parts/<name>/PART.md`). (merge-parts 261026)

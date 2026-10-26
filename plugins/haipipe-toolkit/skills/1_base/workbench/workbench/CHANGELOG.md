@@ -4,6 +4,10 @@
   has no example papers now asks for 3 to 6 papers published in the target journal itself, each named by its title
   (JL 261022: "MUST NMI"; "你光给我这个人的名字，谁他妈读得懂啊"); it asked for two close papers and two the author guide quotes.
 
+## [1.29.3] — 2026-10-26
+
+Shorter description (808 -> 407 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)
+
 ## 1.29.1 · 2026-10-21 · where a new Block starts
 
 - SKILL.md § Update: a new Block starts on haipipe-block's `new_board.py` (2.2.0, born on today's face), `/wb update`

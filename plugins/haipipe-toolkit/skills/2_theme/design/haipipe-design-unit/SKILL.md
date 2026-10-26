@@ -1,21 +1,9 @@
 ---
 name: haipipe-design-unit
-description: >-
-  One step of a design method on one target, as one Run on the design ladder:
-  reason ② (hard, t00: the ideas and their reasoning chains), generate ③ (hard:
-  one design and its element record), revise (soft: a pass of the design's
-  revise Run, generate with a frozen base and feedback), verify ④ (hard, another
-  agent: T0 rules, T1 sources, T2 critique when the method lists it), and rank
-  ⑤ (hard, another agent: rank, keep N, a predicted effect per design; T3 pretest
-  on the kept when the method asks). Reads only the Job's inputs/ fence (and, to
-  verify or rank, the target Results); writes only its Run's result/ (a revise:
-  its pass). Use for run-reason-t00, run-generate-d<NN>, run-verify-d<NN>-v<k>,
-  run-revise-d<NN>, run-rank-t99; not for opening Jobs or Tasks, projecting,
-  releasing, sending, or measuring. Trigger: reason design ideas, generate a
-  design, revise a design, verify a design, rank the designs, /haipipe-design-unit.
+description: "One step of a design method on one target, as one Run: reason (t00), generate a design, revise it, verify it or rank the designs (both by another agent). Reads only the Job's inputs/ fence and writes only its Run's result/. Not for opening Jobs, releasing or sending. Trigger: reason design ideas, generate a design, revise a design, verify a design, rank the designs, run-generate-d<NN>, /haipipe-design-unit."
 metadata:
-  version: "0.4.1"
-  last_updated: "2026-10-07"
+  version: "0.4.2"
+  last_updated: "2026-10-26"
 ---
 
 # /haipipe-design-unit · one step of a method, one Run, one Result

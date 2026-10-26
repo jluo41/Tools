@@ -6,6 +6,10 @@
   `s04-paper-workflow` plans the Sections, displays and dates before a version exists and seeds its `## Narrative`.
 - §7's rows and every question stay on the story's face; the plan reads them, never copies them.
 
+## [0.24.1] — 2026-10-26
+
+Shorter description (876 -> 447 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)
+
 ## 0.23.0 · 2026-10-19 · Questions read as plain speech; a quick paper is its own Board
 
 - Each research question is one long, plain sentence a reader could ask out loud, not a short label; a factor

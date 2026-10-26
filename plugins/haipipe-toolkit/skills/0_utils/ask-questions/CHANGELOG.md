@@ -1,6 +1,10 @@
 ask-questions — Changelog
 ========================
 
+## [0.2.1] — 2026-10-26
+
+Shorter description (530 -> 306 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)
+
 ## [0.2.0] — 2026-10-03
 
 - Moved from `skills/0_utils/` to `skills/question/` (JL 261003: "put all the question

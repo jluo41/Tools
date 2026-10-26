@@ -1,20 +1,9 @@
 ---
 name: workbench
-description: >-
-  Open a workbench, and the WORKBENCH contract behind it. /wb is the short name.
-  No input opens the SPACE Home; a Project path opens that Project; a Block, Job
-  or Task path opens the shared frame in its theme; plain words find the place
-  first (cli/wb.py checks the link on the running server, then the matching
-  workbench-<theme> skill explains the screen). The contract: every
-  Page-material subfolder is rostered, while one category workbench may own
-  several internal storage lanes; a workbench is defined by STORAGE, SURFACE,
-  WRITER, and BOUNDARY; ref/roster.md is the single list of material names.
-  Trigger: wb, open the workbench, open the space, open a project, open a
-  block, find a block, workbench link, page workbench, workbench folder,
-  workbench roster, workbench tab, add a workbench, /wb, /workbench.
+description: "Open a workbench (/wb): no input opens the SPACE Home, a Project path that Project, a Block, Job or Task path its theme's frame; plain words find the place first (cli/wb.py checks the link on the running server). Also the WORKBENCH contract (STORAGE, SURFACE, WRITER, BOUNDARY; ref/roster.md). Trigger: wb, open the workbench, open a project, open a block, workbench link, workbench roster, /wb, /workbench."
 metadata:
-  version: "1.29.2"
-  last_updated: "2026-10-22"
+  version: "1.29.3"
+  last_updated: "2026-10-26"
   aliases: [wb]
 ---
 

@@ -1,10 +1,10 @@
 ---
 name: haipipe-end
-description: "Run any Stage 6 endpoint work: routes intent to the right part across Fn-type, artifact-verb, develop-target, and deploy-target axes. Use for designing inference Fns, packaging and profiling Endpoint_Sets, payload roundtrip tests, training a build, or deploying to a local server (FastAPI/Flask/Docker), SageMaker, Databricks Model Serving or MLflow. Trigger: endpoint, deploy, develop, train, package, endpointset, inference Fn, MetaFn, TrigFn, PostFn, Src2InputFn, Input2SrcFn, serve locally, /haipipe-end."
+description: "Stage 6 endpoint door: reads the part for the axis: inference Fns (meta, trig, post, src2input, input2src), the Endpoint_Set (package, test, profile), and develop or deploy on local, SageMaker, Databricks or MLflow. Trigger: endpoint, deploy, serve locally, package, endpointset, inference Fn, /haipipe-end."
 allowed-tools: Bash, Read, Grep, Glob, Skill, Write, Edit
 metadata:
-  version: "0.3.0"
-  last_updated: "2026-10-25"
+  version: "0.3.1"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

@@ -1,11 +1,11 @@
 ---
 name: haipipe-nn
-description: "Run any Stage 5 NN pipeline work: parses intent (layer + function) and reads the layer's part (algo/tuner/instance/modelset). Use for algorithm classes (mlpredictor/tsforecast/tefm/tediffusion/bandit: forward, loss, metric), tuner search spaces and sweeps, ModelInstance materialization, ModelSet pipelines and registries: dashboards, reviews, generation, testing. Trigger: nn pipeline, model, algorithm, tuner, hyperparameter, search space, instance, checkpoint, modelset, /haipipe-nn."
+description: "Stage 5 NN door: reads the layer's part (algo, tuner, instance, modelset) for algorithm classes, tuner search spaces and sweeps, ModelInstance builds and ModelSet pipelines: dashboards, reviews, generation, tests. Trigger: nn pipeline, model, algorithm, tuner, hyperparameter, checkpoint, modelset, /haipipe-nn."
 argument-hint: "[layer] [function] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill, Write, Edit
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-10-25"
+  version: "0.2.1"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

@@ -1,5 +1,9 @@
 # haipipe-paper-evidence · changelog
 
+## [0.3.1] — 2026-10-26
+
+Shorter description (1754 -> 503 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)
+
 ## 0.3.0 · 2026-10-23 · The display Job is j21, and it opens with a display plan
 
 - JL 261023: "for the paper, they will also have a work folder, one work folder to provide the content

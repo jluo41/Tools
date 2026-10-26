@@ -1,16 +1,9 @@
 ---
 name: haipipe-insight-data
-description: >-
-  InsightBoard level contract for Data: what was observed in the board's one
-  extract, from which exact run, with no interpretation. A Data question is
-  answered by its page's ticket calling a task run; the results in the page's
-  results/ are the evidence and the page says briefly what was observed. Use when a QD
-  question needs its answering ticket or page. Trigger: insight
-  data, observations, Data, folder-kind data, legacy page-type data,
-  /haipipe-insight-data.
+description: "InsightBoard Data level: what was observed in the board's extract, from which exact run, without interpretation; a Data question's page calls a task run and reports its results. Trigger: insight data, observations, Data level, /haipipe-insight-data."
 metadata:
-  version: "2.4.1"
-  last_updated: "2026-10-09"
+  version: "2.4.2"
+  last_updated: "2026-10-26"
   workflow: haipipe-insight-workflow
   folder_kind: data
   primary_face: task

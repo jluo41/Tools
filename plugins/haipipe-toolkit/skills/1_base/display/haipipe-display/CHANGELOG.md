@@ -1,5 +1,9 @@
 # haipipe-display · Changelog
 
+## [0.5.1] — 2026-10-26
+
+Shorter description (975 -> 421 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)
+
 ## [0.5.0] — 2026-10-26
 
 Merged 5 helper skill(s) into `_parts/`: `haipipe-display-table` -> `_parts/table`, `haipipe-display-figure` -> `_parts/figure`, `haipipe-display-diagram` -> `_parts/diagram`, `haipipe-display-illustration` -> `_parts/illustration`, `haipipe-display-tex` -> `_parts/tex`. /haipipe-display reads `_parts/<name>/PART.md` instead of calling a separate skill; allowed-tools gained the parts' tools. Old commands map as `/haipipe-display-table` -> `/haipipe-display table`. (merge-parts 261026)

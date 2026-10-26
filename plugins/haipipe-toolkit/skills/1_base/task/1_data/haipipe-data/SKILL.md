@@ -1,10 +1,10 @@
 ---
 name: haipipe-data
-description: "Run any Stage 1-4 data pipeline work: parses intent (stage + function) and reads the right part (source/record/case/aidata, plus raw/external/remote). Use for SourceFn/HumanFn/RecordFn/TriggerFn/CaseFn/TfmFn/SplitFn builds, cooks, dashboards, reviews, raw cohort timelines, external assets (freeze, release, parity, join), remote store sync (pull/push), or any data-pipeline question. Trigger: data pipeline, source, record, case, aidata, raw cohort, external asset, remote sync, fn build, cook, /haipipe-data."
+description: "Stage 1-4 data pipeline door: reads the part for the stage (raw, source, record, case, aidata, external, remote). Use for SourceFn, RecordFn, CaseFn, TfmFn and SplitFn builds, cooks, dashboards and reviews, raw cohort timelines, external assets (freeze, release, parity), and remote store sync. Trigger: data pipeline, source, record, case, aidata, external asset, remote sync, cook, /haipipe-data."
 allowed-tools: Bash, Read, Grep, Glob, Skill, Write, Edit
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-10-25"
+  version: "0.4.1"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

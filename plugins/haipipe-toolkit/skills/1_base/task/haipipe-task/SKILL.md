@@ -1,21 +1,10 @@
 ---
 name: haipipe-task
-description: >-
-  Owns the Task level of Block → Job → Task → Run and is the door to every kind of Task.
-  A Task is one folder, tNN_<task>/: its face (state, goal, close, task-type), its scripts/,
-  one folder per Run in runs/ (ticket, config, run.yaml card, result/ with its runtime.yaml
-  receipt), and a draft/ when it writes (a Task may hold a draft; a Task is not a Page). It
-  owns the folder contract, the Task's life (plan ▶ build ▶ run ▶ read ▶ close), the Task Page
-  and its displays, and the ticket body every type shares; its task-type: sends the work to
-  the type skill (data, raw, description, algo, fit, eval, display, individual, endpoint,
-  agent, evidence, stata, draft, labeling). Use to create, build, run, audit or close a Task,
-  pick its type, write its face or Task Page, or check a work/ tree. Trigger: task, task
-  folder, tNN, task-type, task face, Task Page, plan, build, execute, report, ticket,
-  run-sh-template, runtime.yaml, heavy.yaml, check_task_tree, GPU queue, /haipipe-task.
+description: "Owns the Task level and is the door to every kind of Task: the tNN_<task>/ folder (face, scripts/, runs/ with ticket, config, run.yaml and a result/ receipt; a Task may hold a draft), its life plan ▶ build ▶ run ▶ read ▶ close, and task-type routing to the type skills (data, raw, description, algo, fit, eval, display, individual, endpoint, agent, evidence, stata, draft, labeling). Trigger: task, tNN, task-type, task face, ticket, runtime.yaml, check_task_tree, GPU queue, /haipipe-task."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "2.0.2"
-  last_updated: "2026-10-25"
+  version: "2.0.3"
+  last_updated: "2026-10-26"
   folder_owner: canonical
   folder_kind: task
   primary_face: task

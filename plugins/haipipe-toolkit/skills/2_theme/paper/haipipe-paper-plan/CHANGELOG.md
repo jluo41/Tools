@@ -1,5 +1,9 @@
 # haipipe-paper-plan · changelog
 
+## [0.1.1] — 2026-10-26
+
+Shorter description (1154 -> 451 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)
+
 ## 0.1.0 · 2026-10-19 · A paper's plan: s03 the data flow, s04 the paper flow
 
 - New skill (JL 261019: "你觉得我们需要一个 plan 吗？haipipe-paper-plan / plan for the data flow and plan for the paper

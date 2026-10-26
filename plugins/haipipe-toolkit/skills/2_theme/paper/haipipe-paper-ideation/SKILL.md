@@ -1,21 +1,9 @@
 ---
 name: haipipe-paper-ideation
-description: >-
-  The reader-facing Paper Page Type for one research
-  direction and the research questions raised under it: every Idea is written
-  as the question it asks, and that question is the Idea's name. It projects
-  haipipe-ideation I1/I2 sync packets and the final I3 selection handoff into
-  Direction, Discovery Landscape, Opportunity Map, question comparisons,
-  evidence gaps, and Story routes without becoming a second semantic or
-  selection authority. On the ladder it is the Board's studio topic
-  studio/s01-ideation/ and its ideas are Board Questions (group: ideation)
-  with reports, shown in Audience Report › Ideation. Use to create, refresh,
-  read, or check the Paper Ideation (topic or older Page); route idea
-  generation, novelty testing, pressure testing, and selection to
-  haipipe-ideation.
+description: "The Paper Page Type for one research direction and its research questions (each Idea named by its question): projects haipipe-ideation's sync packets and final selection into Direction, Landscape, Opportunity Map and Story routes, as the Board's studio/s01-ideation/ topic. Generation, novelty and selection stay with haipipe-ideation. Trigger: paper ideation, s01, research direction, opportunity map, /haipipe-paper-ideation."
 metadata:
-  version: "1.4.1"
-  last_updated: "2026-10-19"
+  version: "1.4.2"
+  last_updated: "2026-10-26"
   group-token: "s01-ideation"
   outline:
     mode: grammar

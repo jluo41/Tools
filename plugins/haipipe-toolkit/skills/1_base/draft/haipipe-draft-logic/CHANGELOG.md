@@ -8,6 +8,10 @@
   "你光给我这个人的名字，谁他妈读得懂啊"). First used on Paper-ScalingGlucose-NatSeries2026 s22 (the versions) and s23
   (six Nature Machine Intelligence Introductions).
 
+## [0.2.1] — 2026-10-26
+
+Shorter description (751 -> 463 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)
+
 ## 0.1.0 · 2026-10-16 · The plan gets its own skill again (JL 261016, s41-D12)
 
 - Created. `ref/structure.md`, `ref/context.md`, `ref/scratch.md`, `ref/context-record.md` and

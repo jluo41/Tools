@@ -1,17 +1,10 @@
 ---
 name: haipipe-task-for-raw
-description: >-
-  Raw-stage Task specialist with two kinds of Job. Extraction Job: moves
-  cohort data from an operational database into RawStore as a versioned
-  dataset <cohort>-v<yymmdd> (extract-wide-process-local for non-PHI,
-  server-resident all-Spark for PHI). Raw understanding Block b00: one Job per
-  dataset version that inventories, profiles each table, routes tables to
-  ProcNames, and hands off to Source with a gated readiness. Called by
-  /haipipe-task when task-type=raw. Cross-references /haipipe-data raw.
+description: "Raw-stage Task: extraction Jobs move cohort data from a database into RawStore as <cohort>-v<yymmdd> (Spark on the server for PHI), and a raw-understanding Block profiles each table and hands it to Source. Called by /haipipe-task when task-type=raw. Trigger: raw extraction, RawStore, cohort extract, /haipipe-task-for-raw."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.6.1"
-  last_updated: "2026-10-25"
+  version: "0.6.2"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

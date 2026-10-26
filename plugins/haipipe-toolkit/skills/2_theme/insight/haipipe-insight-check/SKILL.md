@@ -1,19 +1,10 @@
 ---
 name: haipipe-insight-check
-description: >-
-  Check that every answered cell of an InsightBoard fits its question: each
-  evidence need planned on the register with its work spec, bound in the
-  page's answers.yaml to a current ok result that writes the spec's files and
-  columns through a config that lists the need, and cited by a realized page
-  sentence through its Evidence Item. Returns OK, GAP, STALE, UNBOUND or UNPLANNED per cell and flags a
-  ✅ cell that overclaims. Read-only. The Insight workbench's "Check
-  alignment" and "Review an answer" runs. Trigger: check alignment, insight
-  check, does the work fit the question, overclaim, stale page, check
-  evidence needs, /haipipe-insight-check.
+description: "Read-only check that every answered InsightBoard cell fits its question: each need planned, bound in answers.yaml to a current ok result, and cited by a page sentence; returns OK, GAP, STALE, UNBOUND or UNPLANNED per cell and flags overclaims. The workbench's Check alignment run. Trigger: check alignment, insight check, overclaim, stale page, /haipipe-insight-check."
 allowed-tools: Bash, Read, Grep, Glob
 metadata:
-  version: "0.7.0"
-  last_updated: "2026-10-05"
+  version: "0.7.1"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md
 ---
 

@@ -1,22 +1,11 @@
 ---
 name: response-format
-description: >-
-  Canonical spec for the assistant's chat reply format in this workspace: the
-  answer on line 1, then sections driven by the user's input. Numbered one-line
-  scan points state the takeaways, a short readable ASCII sketch draws the content
-  when useful, and plain prose paragraphs carry the detail. Changed files follow
-  the explanation, one short line each saying what changed. Each ordinary section
-  closes with a Studio line: the owning Block, its sNN topic and what the section
-  adds; there is no Related question line (JL 261011).
-  The last section is always the summary and next steps, without a Studio line; there is no
-  file section. This is a reference spec and
-  does not self-activate. Trigger: response format, reply format, outline format,
-  bullet points, section headers, emoji headers, 回复格式.
+description: "Spec for the assistant's chat reply format in this workspace: the answer on line 1, then sections of numbered one-line scan points, a small ASCII sketch and plain prose; the last section is Summary and Next. A reference spec; it does not self-activate. Trigger: response format, reply format, outline format, section headers, 回复格式."
 argument-hint: "(reference spec — usually not invoked directly)"
 allowed-tools: Bash, Read
 metadata:
-  version: "0.23.0"
-  last_updated: "2026-10-11"
+  version: "0.23.1"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

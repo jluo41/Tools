@@ -286,12 +286,14 @@ def usage(projects=PROJECTS, since_days=30, subagents=True):
                 mm = mmap.mmap(fh.fileno(), 0, access=mmap.ACCESS_READ)
         except (OSError, ValueError):
             continue
+        # the project a transcript belongs to: ~/.claude/projects/<project>/<session>.jsonl
+        proj = project_label(f.relative_to(projects).parts[0])
         with mm:
             for m in SKILL_CALL_RE.finditer(mm):
                 tid = m.group(1)
                 if tid in calls:
                     continue
-                calls[tid] = (m.group(2).decode("utf-8", "ignore"), line_date(mm, m.start()))
+                calls[tid] = (m.group(2).decode("utf-8", "ignore"), line_date(mm, m.start()), proj)
             for m in COMMAND_RE.finditer(mm):
                 start = mm.rfind(b"\n", 0, m.start()) + 1
                 end = mm.find(b"\n", m.end())
@@ -303,20 +305,30 @@ def usage(projects=PROJECTS, since_days=30, subagents=True):
                 if key in cmds:
                     continue
                 ts = TS_RE.search(line)
-                cmds[key] = (m.group(1).decode("utf-8", "ignore").strip(), ts.group(1).decode() if ts else "")
+                cmds[key] = (m.group(1).decode("utf-8", "ignore").strip(), ts.group(1).decode() if ts else "", proj)
     cutoff = (dt.date.today() - dt.timedelta(days=since_days)).isoformat()
-    stats = defaultdict(lambda: {"calls": 0, "commands": 0, "recent": 0, "last": ""})
-    for name, day in calls.values():
+    stats = defaultdict(lambda: {"calls": 0, "commands": 0, "recent": 0, "last": "", "projects": set()})
+    for name, day, proj in calls.values():
         s = stats[name]
+        s["projects"].add(proj)
         s["calls"] += 1
         s["recent"] += day >= cutoff
         s["last"] = max(s["last"], day)
-    for name, day in cmds.values():
+    for name, day, proj in cmds.values():
         s = stats[name]
+        s["projects"].add(proj)
         s["commands"] += 1
         s["recent"] += day >= cutoff
         s["last"] = max(s["last"], day)
     return stats, len(files)
+
+
+def project_label(folder):
+    """-Users-jl-Desktop-Tools-SPACE -> Tools-SPACE (the part after the home's Desktop/ or home)."""
+    home = str(HOME).replace("/", "-")
+    rest = folder[len(home):] if folder.startswith(home) else folder
+    rest = rest.lstrip("-")
+    return rest[len("Desktop-"):] if rest.startswith("Desktop-") else (rest or "~")
 
 
 def line_date(mm, pos):
@@ -354,7 +366,7 @@ def build(args):
     plugins = plugin_skills()
     codex = codex_links()
     if args.no_usage:
-        stats, nfiles = defaultdict(lambda: {"calls": 0, "commands": 0, "recent": 0, "last": ""}), 0
+        stats, nfiles = defaultdict(lambda: {"calls": 0, "commands": 0, "recent": 0, "last": "", "projects": set()}), 0
     else:
         stats, nfiles = usage(Path(args.projects), args.recent_days, not args.no_subagents)
 
@@ -365,7 +377,7 @@ def build(args):
             alias_of[a] = name
 
     def use_of(name):
-        s = {"calls": 0, "commands": 0, "recent": 0, "last": ""}
+        s = {"calls": 0, "commands": 0, "recent": 0, "last": "", "projects": set()}
         keys = [name] + [a for a, n in alias_of.items() if n == name]
         for k in keys:
             if k in stats:
@@ -374,6 +386,7 @@ def build(args):
                 s["commands"] += t["commands"]
                 s["recent"] += t["recent"]
                 s["last"] = max(s["last"], t["last"])
+                s["projects"] |= t["projects"]
         return s
 
     all_names = sorted(set(tools) | set(claude) | (set(agents) if not agents_same else set()) | set(plugins))
@@ -427,6 +440,7 @@ def build(args):
             "folder_tokens": size.get("folder", {}).get("tokens", 0),
             "uses": u["calls"] + u["commands"], "skill_calls": u["calls"], "commands": u["commands"],
             "uses_recent": u["recent"], "last_used": u["last"] or "-",
+            "projects": len(u["projects"]), "project_names": ";".join(sorted(u["projects"])),
             "problems": " | ".join(problems),
             "area": area_of(t["path"] if t else "", origin, name),
             "what": short_what(size.get("description", "")),
@@ -611,6 +625,7 @@ def write_md(path, rows, recs, summary, stats, aliases, args):
         ("Listing tokens every session (all installed)", fmt(s["listing_tokens_total"])),
         ("Tools skills never used", "%d of %d" % (len(unused), len(tools_rows))),
         ("Skills with a problem", s["problems"]),
+        ("Used in 2+ projects", sum(1 for r in tools_rows if r["projects"] >= 2)),
     ]))
     add("")
     add("**Key findings**")
@@ -691,9 +706,9 @@ def write_md(path, rows, recs, summary, stats, aliases, args):
         add("<summary><strong>%s</strong> · %d skills · %s uses · %s listing tokens</summary>"
             % (a, len(rs), sum(r["uses"] for r in rs), fmt(sum(r["listing_tokens"] for r in rs))))
         add("")
-        add(md_table(["Skill", "What it does", "Uses", "Last used", "List tok", "SKILL lines", "Parts"],
-                     [(r["name"], r["what"], r["uses"], r["last_used"], r["listing_tokens"], r["skill_lines"],
-                       r["parts"].replace(";", ", ")) for r in rs]))
+        add(md_table(["Skill", "What it does", "Uses", "Projects", "Last used", "List tok", "SKILL lines", "Parts"],
+                     [(r["name"], r["what"], r["uses"], r["projects"], r["last_used"], r["listing_tokens"],
+                       r["skill_lines"], r["parts"].replace(";", ", ")) for r in rs]))
         add("")
         add("</details>")
         add("")
@@ -782,8 +797,40 @@ def write_md(path, rows, recs, summary, stats, aliases, args):
         add(md_table(["Skill", "Problem"], [(n, p.replace("broken link ", "")) for n, p in group]))
         add("")
 
-    # 7. recommendations
-    add("## 7. Recommendations")
+    # 7. scope
+    add("## 7. Scope: global or per project")
+    add("")
+    add("Today every Tools skill is linked into `~/.claude/skills`, so its listing loads in every session of "
+        "every project. Grouped by how many projects used it (a project = one folder under `~/.claude/projects`):")
+    add("")
+    groups = [("Global: used in 2+ projects", [r for r in tools_rows if r["projects"] >= 2]),
+              ("One project: install there only", [r for r in tools_rows if r["projects"] == 1]),
+              ("Never used: hide or retire", [r for r in tools_rows if r["projects"] == 0])]
+    peak_g = max(sum(r["listing_tokens"] for r in g) for _, g in groups) or 1
+    add("```text")
+    for label, g in groups:
+        t = sum(r["listing_tokens"] for r in g)
+        add("%-33s %s %6s tokens  %3d skills" % (label, bar(t, peak_g), fmt(t), len(g)))
+    add("```")
+    add("")
+    add("Hiding uses the built-in front matter field `disable-model-invocation: true`: the description leaves "
+        "the listing, `/name` still works, and the folder does not move. A skill that agents or other skills "
+        "call through the Skill tool must stay visible (or be read by path, as parts are).")
+    add("")
+    for label, g in groups[:2]:
+        add("<details>")
+        add("<summary><strong>%s</strong> · %d skills · %s listing tokens</summary>"
+            % (label, len(g), fmt(sum(r["listing_tokens"] for r in g))))
+        add("")
+        add(md_table(["Skill", "Area", "Projects", "Uses", "List tok"],
+                     [(r["name"], r["area"], r["project_names"].replace(";", ", "), r["uses"], r["listing_tokens"])
+                      for r in sorted(g, key=lambda r: (-r["projects"], -r["uses"]))]))
+        add("")
+        add("</details>")
+        add("")
+
+    # 8. recommendations
+    add("## 8. Recommendations")
     add("")
     for i, (title, detail) in enumerate(recs, 1):
         add("> **%d. %s**" % (i, title))
