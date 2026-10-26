@@ -1,6 +1,17 @@
 mindmap (haipipe-studio part) · Changelog
 =========================================
 
+## [0.5.0] · 2026-10-26 · straight wires, a colour per branch, three styles
+
+- JL 261026: "为什么这个不是笔直的呀" and "这个颜色它们是非常一样的 … 能不能做一下 visualization 之类的，做一下不同风格的变化".
+  Wires are straight: a stub from the parent, one trunk halfway to its children, a straight run into each.
+- Each first-level branch takes a hue of the dataviz reference categorical palette in its fixed order (run through its
+  validator: light and dark pass; the light contrast warning is met by each branch's name on its card); a ninth
+  branch on is grey. Wires, card edges and the detail panel follow the branch.
+- A style switch above each map: Branches (default), Filled, Ink; remembered in the browser (applied to every map on
+  the page, after each reload of a map). An opened detail is its own panel, washed in its branch's colour.
+- Tests: 26 (the branch order, the three styles, no curved wire).
+
 ## [0.4.0] · 2026-10-26 · a short card, its detail behind ▸
 
 - JL 261026: "把这个 leaf 写得比较 concise 一些，点开之后就可以把它展开，有详细的介绍" and "它既有可以点开的泡泡链接，点开之后也

@@ -100,22 +100,29 @@ class Grammar(Case):
 class Map(Case):
     def test_the_map_is_html_drawn_as_the_drafts_structure_map(self):
         out = MM.fragment(self.md, "trip.mindmap.md")
-        self.assertIn('<div class=mm-edit data-file="trip.mindmap.md">', out)
+        self.assertIn('<div class=mm-edit data-file="trip.mindmap.md" data-style=branches>', out)
         self.assertIn('class="mm-node mm-root', out)
         self.assertIn("<strong>plan</strong>", out)                       # Markdown shown as Markdown
         self.assertIn("<code>EUR</code>", out)
-        detail = re.search(r'<div class=mm-row data-id="n04">.*?<div class=mm-detail hidden>(.*?)<button', out, re.S).group(1)
+        detail = re.search(r'<div class="mm-row mm-b2" data-id="n04">.*?<div class=mm-detail hidden>(.*?)<button', out, re.S).group(1)
         self.assertEqual(detail, "<p>the week after the deadline</p>")     # ▸ opens a card's detail
-        rows = re.findall(r'<div class=mm-row data-id="([^"]+)">', out)
+        rows = re.findall(r'<div class="mm-row[^"]*" data-id="([^"]+)">', out)
         self.assertEqual(rows, ["root", "n01", "n02", "n03", "n04", "n05", "n06"])
         self.assertIn("fetch('/_board/mindmap'", out)
+        # each first-level branch its own colour, in the palette's fixed order; three looks to switch between
+        self.assertEqual(re.findall(r'<div class="mm-row (mm-b\d)" data-id="(n0\d)">', out),
+                         [("mm-b1", "n01"), ("mm-b2", "n04"), ("mm-b3", "n06")])
+        self.assertIn('data-style=branches', out)
+        self.assertEqual(re.findall(r'data-mm-style=(\w+)', out), ["branches", "filled", "ink"])
+        self.assertIn("' H'", out)                                       # straight wires: runs and a trunk, no curves
+        self.assertNotIn("' C'", out)
         self.assertNotIn("excalidraw", out)
 
     def test_a_node_can_hold_nodes_at_any_depth_down_to_its_leaves(self):
         deep = SOURCE.replace("  - May <!-- n05 -->", "  - May <!-- n05 -->\n    - week 2 <!-- n07 -->\n      - Monday <!-- n08 -->\n        - 9am <!-- n09 -->")
         self.md.write_text(deep, encoding="utf-8")
         out = MM.fragment(self.md, "trip.mindmap.md")
-        self.assertIn('<div class=mm-row data-id="n09"><div class="mm-node mm-d3"', out)   # five levels below the root
+        self.assertIn('<div class="mm-row" data-id="n09"><div class="mm-node mm-d3"', out)   # five levels below the root
         self.assertEqual([n.id for n, _p, d, _k in MT.walk(MT.load(self.md).root) if d == 5], ["n09"])
 
     def test_a_card_that_links_a_file_opens_it(self):
@@ -136,7 +143,7 @@ class Map(Case):
         self.md.write_text(SOURCE.replace("  the week after the deadline",
                                           "  the week after the [plan](plan.md)\n  ![shot.png](shot.png)"), encoding="utf-8")
         out = MM.fragment(self.md, "trip.mindmap.md", url_of=lambda f: "/open/" + f.name)
-        detail = re.search(r'<div class=mm-row data-id="n04">.*?<div class=mm-detail hidden>(.*?)<button', out, re.S).group(1)
+        detail = re.search(r'<div class="mm-row mm-b2" data-id="n04">.*?<div class=mm-detail hidden>(.*?)<button', out, re.S).group(1)
         self.assertIn("the week after the plan ", detail)                  # plan.md is not on disk: its words only
         self.assertIn('<a class=mm-pic data-pop="shot.png" href="/open/shot.png"', detail)
         self.assertIn('<img src="/open/shot.png" alt="shot.png" loading=lazy>', detail)

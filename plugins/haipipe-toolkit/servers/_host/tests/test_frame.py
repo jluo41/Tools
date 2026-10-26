@@ -1220,8 +1220,8 @@ class FrameTest(unittest.TestCase):
             self.assertIn("flow.excalidraw", unquote(free))                # the free side: the topic's own drawing
             # the structured side: the mind map drawn as the draft's §1 map, HTML, edited in place; no canvas
             mind = row[row.index('<div class="st-pane st-map" data-side=structured hidden>'):]
-            self.assertIn('<div class=mm-edit data-file="Project/tasks/b01_topic/studio/s01-flow/m01-flow.mindmap.md">', mind)
-            self.assertIn('<div class=mm-row data-id="n02">', mind)
+            self.assertIn('<div class=mm-edit data-file="Project/tasks/b01_topic/studio/s01-flow/m01-flow.mindmap.md" data-style=branches>', mind)
+            self.assertIn('<div class="mm-row" data-id="n02">', mind)
             self.assertIn("<strong>raw</strong> rows", mind)
             self.assertNotIn("_excalidraw", mind.split("<script>")[0])
             # Edit opens the free canvas, so it shows on Free only, and only for a hand-drawn drawing

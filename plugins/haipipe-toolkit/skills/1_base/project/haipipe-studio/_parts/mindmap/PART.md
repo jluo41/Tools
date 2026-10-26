@@ -11,7 +11,7 @@ description: >-
   Use to make, show, edit or refresh a topic's mind map, or to map a work Block. Trigger: mind map, mindmap, mNN,
   structured side, Free | Structured, map the work, map this Block.
 metadata:
-  version: "0.4.0"
+  version: "0.5.0"
   last_updated: "2026-10-26"
 ---
 
@@ -32,22 +32,27 @@ sNN-<topic>.md (the face) ── from-topic ──▶ mNN-<topic>.mindmap.md ─
 The map
 -------
 
-1. **Look**: the root on the left in the key colour; each node a card; its children a column to its right, a curved
-   wire to each; Markdown in a node shows as Markdown.
-2. **Short card, its detail behind ▸**: a card holds a few words; ▸ opens its detail below them, the lines under its
+1. **Look**: the root on the left in the key colour; each node a card; its children a column to its right; straight
+   wires (a stub, one trunk, a straight run into each child); Markdown in a node shows as Markdown.
+2. **A colour per branch, three styles**: each first-level branch takes a hue of the dataviz reference palette in its
+   fixed order (validated light and dark; a ninth branch on is grey), its wires and cards follow it. The switch above
+   the map picks the look, remembered in the browser: **Branches** (cards edged, leaves barred in the colour),
+   **Filled** (branch cards filled, leaves tinted), **Ink** (black and grey, as §1). An opened detail is its own panel,
+   washed in its branch's colour with a bar down its left.
+3. **Short card, its detail behind ▸**: a card holds a few words; ▸ opens its detail below them, the lines under its
    bullet, as Markdown: a link opens in the pop-out, a picture (`![name](file)`) shows as itself. ✎ edits the detail
    as its Markdown; leaving the box saves it. A card with no detail shows ▸ on hover, to add one.
-3. **Edit in place**: click a node and type (it shows its raw words while typed); Enter adds the next node below it;
+4. **Edit in place**: click a node and type (it shows its raw words while typed); Enter adds the next node below it;
    ＋ (shown on hover) adds a child last; a node emptied is taken out and what hung under it moves up; a node dragged
    onto another goes before it, onto a ＋ goes last under that node. Esc puts back what it held.
-4. **Written once, where it lives**: each change is one POST to `/_board/mindmap` (`scripts/mmmap.py` `act`), which
+5. **Written once, where it lives**: each change is one POST to `/_board/mindmap` (`scripts/mmmap.py` `act`), which
    rewrites the `.mindmap.md` and its static page. A change to words that changed on disk since the page showed them
    is refused and the map reloads, so nothing typed elsewhere is lost.
-5. **Any depth**: a node may hold nodes, and those nodes more, to any depth; a node with nothing under it is a leaf.
-6. **A card opens its file**: a node whose words link a file (`[s01-work-ladder.png](s01-work-ladder.png)`) shows the
+6. **Any depth**: a node may hold nodes, and those nodes more, to any depth; a node with nothing under it is a leaf.
+7. **A card opens its file**: a node whose words link a file (`[s01-work-ladder.png](s01-work-ladder.png)`) shows the
    words and a button beside them (🖼 for a picture, ↗ else) that opens it in the workbench's pop-out: a picture as
    itself, a drawing in its editor, a page in its reader. The Files branch writes each file as such a link.
-7. **Where it shows**: the workbench topic card's Structured side (`servers/workbench/frame.py`), read from the file
+8. **Where it shows**: the workbench topic card's Structured side (`servers/workbench/frame.py`), read from the file
    on every open; the static page `<stem>.mindmap.html` (read only, git-ignored), for opening outside the workbench.
 
 

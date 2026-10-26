@@ -59,7 +59,7 @@ def _resolve(md: str, base: Path | None, url_of) -> str:
     return FULL_LINK.sub(one, md)
 
 
-def _node(n: MT.Node, depth: int, editable: bool, base: Path | None = None, url_of=None) -> str:
+def _node(n: MT.Node, depth: int, editable: bool, base: Path | None = None, url_of=None, k: int = 0) -> str:
     """A card: a few words, the bubble that opens the file it names (🖼 or ↗), and ▸ that opens its detail (the lines
     under its bullet, Markdown, with its links and pictures) below the words (JL 261026: "它既有可以点开的泡泡链接，
     点开之后也可以看到 detail information")."""
@@ -74,12 +74,13 @@ def _node(n: MT.Node, depth: int, editable: bool, base: Path | None = None, url_
     pen = (f'<button type=button class=mm-pen data-raw="{esc(note)}" title="edit the detail">✎</button>'
            if editable else "")
     detail = f'<div class=mm-detail hidden>{body}{pen}</div>' if more else ""
-    kids = "".join(_node(c, depth + 1, editable, base, url_of) for c in n.children)
+    kids = "".join(_node(c, depth + 1, editable, base, url_of, j) for j, c in enumerate(n.children))
     plus = (f'<div class=mm-add><button type=button class=mm-plus data-add=child>＋</button></div>'
             if editable else "")
     cls = "mm-node mm-root" if depth == 0 else f"mm-node mm-d{min(depth, 3)}"   # any depth; the deepest, a leaf
     drag = " draggable=true" if editable and depth else ""
-    return (f'<div class=mm-row data-id="{esc(n.id)}"><div class="{cls}"{drag}>{words}{_opens(raw, base, url_of)}'
+    branch = f" mm-b{k + 1 if k < 8 else 0}" if depth == 1 else ""   # eight hues in fixed order; a ninth on is grey
+    return (f'<div class="mm-row{branch}" data-id="{esc(n.id)}"><div class="{cls}"{drag}>{words}{_opens(raw, base, url_of)}'
             f'{more}{detail}</div><div class=mm-kids>{kids}{plus}</div></div>')
 
 
@@ -96,7 +97,10 @@ def draw(mm: MT.MindMap, rel: str = "", editable: bool = False, base: Path | Non
     """The map of a tree already read; `rel`, the file's path from the host's root, is where its edits post;
     `base`, the folder its links are read from."""
     attrs = f' data-file="{esc(rel)}"' if editable else ""
-    return (CSS + f'<div class=mm-edit{attrs}><span class=mm-msg role=status></span>'
+    styles = "".join(f'<button type=button data-mm-style={k} aria-pressed="{str(k == "branches").lower()}">{v}</button>'
+                     for k, v in STYLES)
+    return (CSS + f'<div class=mm-edit{attrs} data-style=branches><span class=mm-msg role=status></span>'
+            f'<div class=mm-style role=group aria-label="Mind map style">{styles}</div>'
             f'<div class=mm><svg class=mm-wires aria-hidden=true></svg>{_node(mm.root, 0, editable, base, url_of)}</div></div>'
             + WIRES + (EDIT if editable else ""))
 
@@ -179,11 +183,42 @@ def _inside(node: MT.Node, other: MT.Node) -> bool:
     return any(x is other for x, *_ in MT.walk(node))
 
 
+STYLES = (("branches", "Branches"), ("filled", "Filled"), ("ink", "Ink"))   # the map's looks; Branches first
+
 CSS = """<style>
+/* the branch colours: the dataviz reference categorical palette in its fixed order (validated light and dark; every
+   branch also carries its name, so no colour is read alone); a ninth branch on is grey, never a made-up hue */
+.mm-edit{--mm-c1:#2a78d6;--mm-c2:#eb6834;--mm-c3:#1baf7a;--mm-c4:#eda100;--mm-c5:#e87ba4;--mm-c6:#008300;--mm-c7:#6250d6;
+ --mm-c8:#e34948;--mm-c0:#868e96;--mm-ink:var(--fg,#1e1e1e);--mm-card:var(--card,#fff)}
+@media (prefers-color-scheme: dark){:root:where(:not([data-theme="light"])) .mm-edit{--mm-c1:#3987e5;--mm-c2:#d95926;
+ --mm-c3:#199e70;--mm-c4:#c98500;--mm-c5:#d55181;--mm-c6:#008300;--mm-c7:#9085e9;--mm-c8:#e66767}}
+:root[data-theme="dark"] .mm-edit{--mm-c1:#3987e5;--mm-c2:#d95926;--mm-c3:#199e70;--mm-c4:#c98500;--mm-c5:#d55181;
+ --mm-c6:#008300;--mm-c7:#9085e9;--mm-c8:#e66767}
+.mm-b0{--br:var(--mm-c0)}.mm-b1{--br:var(--mm-c1)}.mm-b2{--br:var(--mm-c2)}.mm-b3{--br:var(--mm-c3)}.mm-b4{--br:var(--mm-c4)}
+.mm-b5{--br:var(--mm-c5)}.mm-b6{--br:var(--mm-c6)}.mm-b7{--br:var(--mm-c7)}.mm-b8{--br:var(--mm-c8)}
+.mm-style{display:inline-flex;margin:0 0 6px 4px;border:1px solid var(--line,#ced4da);border-radius:6px;overflow:hidden}
+.mm-style button{font:500 11.5px system-ui,sans-serif;border:0;padding:2px 9px;cursor:pointer;background:var(--mm-card);color:var(--mut,#868e96)}
+.mm-style button+button{border-left:1px solid var(--line,#ced4da)}.mm-style button[aria-pressed=true]{color:var(--mm-ink);background:var(--wash,#f1f3f5)}
+/* Branches: a branch's card edged in its colour, its leaves marked by a bar, its detail washed in it */
+.mm-edit[data-style=branches] .mm-d1{border-color:var(--br);border-width:2px}
+.mm-edit[data-style=branches] .mm-d2,.mm-edit[data-style=branches] .mm-d3{border-left:4px solid var(--br)}
+/* Filled: a branch's card filled with its colour (white words; dark on yellow), its leaves tinted */
+.mm-edit[data-style=filled] .mm-d1{background:var(--br);border-color:var(--br);color:#fff}
+.mm-edit[data-style=filled] .mm-b4 .mm-d1{color:#0b0b0b}
+.mm-edit[data-style=filled] .mm-d2,.mm-edit[data-style=filled] .mm-d3{background:color-mix(in srgb,var(--br) 13%,var(--mm-card));
+ border-color:color-mix(in srgb,var(--br) 45%,var(--mm-card))}
+.mm-edit[data-style=filled] .mm-d1 .mm-more,.mm-edit[data-style=filled] .mm-d1 .mm-open{color:inherit}
+/* Ink: black and grey only, as the draft's §1 map */
+.mm-edit[data-style=ink],.mm-edit[data-style=ink] .mm-row{--br:var(--mut,#868e96)}
+/* a detail is its own panel: washed in its branch's colour, a bar down its left, so it reads apart from the card */
+.mm-edit .mm-detail{background:color-mix(in srgb,var(--br,#868e96) 9%,var(--mm-card));border:0;
+ border-left:3px solid var(--br,#868e96);border-radius:0 6px 6px 0;padding:6px 10px;margin:7px -4px 2px}
+.mm-edit[data-style=ink] .mm-detail{background:var(--wash,#f1f3f5);border-left-color:var(--line,#ced4da)}
+.mm-edit[data-style=filled] .mm-d1 .mm-detail{color:var(--mm-ink)}
 /* the §1 Structure map's look (draft_steps.py PLAN_CSS): a node is a card, its children a column to its right */
 .mm{position:relative;width:max-content;min-width:100%;box-sizing:border-box;padding:8px 4px}
 .mm-wires{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
-.mm-wires path{fill:none;stroke:var(--mut,#868e96);stroke-opacity:.45;stroke-width:1.4}
+.mm-wires path{fill:none;stroke-width:1.6;stroke-linecap:square}
 /* siblings share one column (a row's box is `display:contents` in its parent's grid), so every child of a node starts
    at one x, as §1's paragraphs do; a node sits level with the middle of what hangs from it */
 .mm>.mm-row,.mm-kids{display:grid;grid-template-columns:max-content max-content;gap:6px 56px;align-items:center}
@@ -215,18 +250,33 @@ CSS = """<style>
  .mm-wires{display:none}.mm{width:auto}.mm-d2,.mm-d3{white-space:normal}}
 </style>"""
 
-# the wires drawn after layout (as §1's PLAN_JS): from each node's right side to each child's left side
+# the wires drawn after layout, straight (JL 261026: "为什么这个不是笔直的呀"): from a node's right side a stub to one
+# trunk halfway to its children, the trunk up and down, then a straight run into each child, in its branch's colour
 WIRES = """<script>
 (function(){if(window.__mmWires)return;window.__mmWires=1;
- function wire(a,b,o){var p=a.getBoundingClientRect(),q=b.getBoundingClientRect();
-  var x1=p.right-o.left,y1=p.top+p.height/2-o.top,x2=q.left-o.left-4,y2=q.top+q.height/2-o.top,m=(x1+x2)/2;
-  return '<path d="M'+x1+','+y1+' C'+m+','+y1+' '+m+','+y2+' '+x2+','+y2+'"/>';}
+ function ink(el){var c=getComputedStyle(el).getPropertyValue('--br').trim();return c||getComputedStyle(el).getPropertyValue('--mut').trim()||'#868e96';}
  function draw(){document.querySelectorAll('.mm').forEach(function(m){var svg=m.querySelector('.mm-wires');
   if(!m.offsetParent||getComputedStyle(svg).display==='none')return;var o=m.getBoundingClientRect(),d='';
   svg.setAttribute('width',o.width);svg.setAttribute('height',o.height);
-  m.querySelectorAll('.mm-row').forEach(function(r){var n=r.querySelector(':scope>.mm-node');
-   r.querySelectorAll(':scope>.mm-kids>.mm-row>.mm-node').forEach(function(c){d+=wire(n,c,o);});});
+  m.querySelectorAll('.mm-row').forEach(function(r){var n=r.querySelector(':scope>.mm-node'),
+   kids=r.querySelectorAll(':scope>.mm-kids>.mm-row>.mm-node');if(!kids.length)return;
+   var p=n.getBoundingClientRect(),x1=Math.round(p.right-o.left),y1=Math.round(p.top+Math.min(p.height/2,18)-o.top),
+    lefts=[],ys=[y1];
+   kids.forEach(function(c){var q=c.getBoundingClientRect();lefts.push(q.left-o.left);});
+   var tx=Math.round((x1+Math.min.apply(null,lefts))/2),own=ink(n);
+   kids.forEach(function(c){var q=c.getBoundingClientRect(),y=Math.round(q.top+Math.min(q.height/2,18)-o.top);ys.push(y);
+    d+='<path stroke="'+ink(c)+'" d="M'+tx+','+y+' H'+Math.round(q.left-o.left)+'"/>';});
+   d+='<path stroke="'+own+'" d="M'+x1+','+y1+' H'+tx+' M'+tx+','+Math.min.apply(null,ys)+' V'+Math.max.apply(null,ys)+'"/>';});
   svg.innerHTML=d;});}
+ /* the style switch: Branches · Filled · Ink, remembered in this browser */
+ var KEY='workbench.mindmap.style.v1';
+ function look(h,st){h.dataset.style=st;h.querySelectorAll('.mm-style [data-mm-style]').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.mmStyle===st));});}
+ function looks(){var st=null;try{st=localStorage.getItem(KEY);}catch(e){}if(!st)return;
+  document.querySelectorAll('.mm-edit').forEach(function(h){if(h.querySelector('[data-mm-style="'+st+'"]'))look(h,st);});}
+ window.mmLooks=looks;looks();document.addEventListener('DOMContentLoaded',function(){looks();draw();});   /* maps below this script too */
+ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.mm-style [data-mm-style]');if(!b)return;
+  e.preventDefault();try{localStorage.setItem(KEY,b.dataset.mmStyle);}catch(x){}
+  document.querySelectorAll('.mm-edit').forEach(function(h){look(h,b.dataset.mmStyle);});draw();});
  /* ▸: a card's detail opens below its words; an empty one (on an editable map) opens straight into its editor */
  window.mmOpen=window.mmOpen||new Set();
  document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.mm .mm-more');if(!b)return;e.preventDefault();e.stopPropagation();
@@ -250,7 +300,7 @@ EDIT = """<script>
  /* the map again from the server, after a node was added, taken out or moved */
  function refresh(h){fetch(location.href,{credentials:'same-origin'}).then(function(r){return r.text();}).then(function(t){
   var n=new DOMParser().parseFromString(t,'text/html').querySelector('.mm-edit[data-file="'+h.dataset.file+'"]');
-  if(n)h.innerHTML=n.innerHTML;(window.mmOpen||new Set()).forEach(function(id){var r=h.querySelector('.mm-row[data-id="'+id+'"]>.mm-node');
+  if(n)h.innerHTML=n.innerHTML;if(window.mmLooks)window.mmLooks();(window.mmOpen||new Set()).forEach(function(id){var r=h.querySelector('.mm-row[data-id="'+id+'"]>.mm-node');
    if(r&&r.querySelector(':scope>.mm-detail')){r.querySelector(':scope>.mm-detail').hidden=false;r.querySelector(':scope>.mm-more').setAttribute('aria-expanded','true');}});
   if(window.mmDraw)window.mmDraw();});}
  /* ✎: the detail as its Markdown, in a box; leaving the box saves it */
