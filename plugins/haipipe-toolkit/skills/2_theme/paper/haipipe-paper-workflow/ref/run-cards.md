@@ -89,7 +89,7 @@ shows them under four buttons in Work Details. The base frame adds its own (Add 
 🧩 SKILL    excalidraw-draft
 🤖 AGENT    haipipe-studio-agent (new)
 ✍️ SIGNS    none
-💬 PROMPT   /excalidraw-draft {folder}: redraw one version's map as a Board studio topic (studio/sNN-papermap-<version>/; a version keeps no Studio of its own, b10 s09-D01): its Sections by their one-line job and each Bullet's Evidence Items, from the Draft plans.
+💬 PROMPT   /excalidraw draft {folder}: redraw one version's map as a Board studio topic (studio/sNN-papermap-<version>/; a version keeps no Studio of its own, b10 s09-D01): its Sections by their one-line job and each Bullet's Evidence Items, from the Draft plans.
 
 
 ## Block › Audience Report · Ideation, Narrative, the research questions, Related Questions, Related Papers

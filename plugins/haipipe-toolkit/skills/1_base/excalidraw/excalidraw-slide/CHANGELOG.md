@@ -1,6 +1,10 @@
 excalidraw-slide · Changelog
 ============================
 
+## [0.2.1] — 2026-10-26
+
+Hidden from the skill listing (`disable-model-invocation: true`); reached through the `/excalidraw` door, which reads this SKILL.md by path. Nothing moved; `/excalidraw-slide` still works when a person types it. (hide 261026)
+
 ## [0.2.0] · 2026-10-12 · The ask first, and j51 the job to copy
 
 - Asked 261012: "could you update the skills of the excalidraw-slide?", after b31 s03 was redrawn on j51

@@ -5,7 +5,13 @@ Every skill that draws on an Excalidraw canvas, in one folder (JL 261016: "we al
 A Studio topic's drawing is built by a script on `excalidraw-studio/scripts/draw.py` and written through
 haipipe-studio's `canvas.write`, so a rebuild keeps a person's marks.
 
+One door is listed: `/excalidraw` (`excalidraw/`, JL 261026). The ten `excalidraw-<kind>` skills stay
+here, hidden from the skill listing (`disable-model-invocation: true`); the door reads their SKILL.md by
+path, and a person can still type `/excalidraw-<kind>`. Nothing moved, so builders keep importing
+`excalidraw-studio/scripts/draw.py`.
+
 ```
+excalidraw/            🚪 THE DOOR · picks the kind, reads ../excalidraw-<kind>/SKILL.md
 excalidraw-studio/     🧭 THE LOOK · nine principles, draw.py (the helpers every builder imports), check.py
 excalidraw-report/     🗺 a scratch packed with real material, or a report's answer and its evidence
 excalidraw-draft/    🗺 a draft drawn: Map (Sections → paragraphs → Bullets → evidence) or Revise (a file's changes, the tracked Word file)

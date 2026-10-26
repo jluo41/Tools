@@ -131,7 +131,7 @@ number, decides where it prints.
 ## 📚 Examples first (JL 261022)
 
 A Section, the Abstract or a letter is written after reading how 3 to 4 published papers of the same venue write the
-same part, never before: a Studio topic `sNN-<task>-<venue>-examples` (`/excalidraw-read`; two papers close to the
+same part, never before: a Studio topic `sNN-<task>-<venue>-examples` (`/excalidraw read`; two papers close to the
 topic, two the author guide quotes), named by the Section canvas's `examples:` line, so the canvas draws ours beside
 them. The writer follows their moves and lengths and names each departure (haipipe-draft-writing `ref/writing.md` § 0).
 JL 261022: "你应该先找 example，看看别人是怎么写 abstract 的，然后再看怎么写".
@@ -379,7 +379,7 @@ On a venue change:
 
 When a version follows a sent one whose review came back (its comments report, `haipipe-paper-comments`, holds
 the Review Items), each Section first reads itself as sent, before OUTLINE/SHAPE, so the person sees how much
-changes and why (JL 261014: "How much we will chnage them ... could you use /excalidraw-read to work on each of
+changes and why (JL 261014: "How much we will chnage them ... could you use /excalidraw read to work on each of
 the section, and make each section (main section) to be a sNN tNN from the new job ... we can put thing there to
 discuss").
 

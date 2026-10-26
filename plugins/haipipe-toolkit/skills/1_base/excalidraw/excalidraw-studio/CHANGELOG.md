@@ -30,6 +30,10 @@ excalidraw-studio · Changelog
 - `Drawing.words_per_mpx`, the frame's own badge, counts with `fill_words` too, so the badge and check.py ⑥ agree (b01
   s23's badge read ❌ 74 of 88 while ⑥ passed, 261019).
 
+## [0.3.11] — 2026-10-26
+
+Hidden from the skill listing (`disable-model-invocation: true`); reached through the `/excalidraw` door, which reads this SKILL.md by path. Nothing moved; `/excalidraw-studio` still works when a person types it. (hide 261026)
+
 ## [0.3.10] · 2026-10-14 · An emoji is a picture, not a word
 
 - `Drawing.words_in` no longer counts a token made only of emoji: principle 7's 200 words and ⑨'s 600 count the words

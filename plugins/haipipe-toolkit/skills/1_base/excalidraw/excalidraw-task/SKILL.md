@@ -10,9 +10,10 @@ description: >-
   draw the task, task drawing, each task a topic, task staircase, what did the video say, task results as charts,
   /excalidraw-task.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
+disable-model-invocation: true
 metadata:
-  version: "0.6.1"
-  last_updated: "2026-10-19"
+  version: "0.6.2"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md
 ---
 

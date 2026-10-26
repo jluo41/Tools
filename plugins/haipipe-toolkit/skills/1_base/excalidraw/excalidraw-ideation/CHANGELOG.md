@@ -16,3 +16,8 @@
   a test not run is red and dashed), then the venues from ambitious to fallback as stairs (JL 261014: "we should add
   the frame about the evaluation and the targeted journal or venue"). Absent, the drawing is as before.
 - First users: Paper-LLMRecPhy-Jama (origin) and Paper-LoopExpLearning's s01 (261014).
+
+
+## [0.1.1] — 2026-10-26
+
+Hidden from the skill listing (`disable-model-invocation: true`); reached through the `/excalidraw` door, which reads this SKILL.md by path. Nothing moved; `/excalidraw-ideation` still works when a person types it. (hide 261026)

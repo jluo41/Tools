@@ -10,9 +10,10 @@ description: >-
   glance, or to give a new paper's s01 the same shape. Trigger: draw the ideation, ideation drawing, s01-ideation
   drawing, ideas as steps, idea cards, path to G0, /excalidraw-ideation.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
+disable-model-invocation: true
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-10-14"
+  version: "0.1.1"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md
 ---
 

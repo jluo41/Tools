@@ -8,7 +8,7 @@ description: >-
   as a connected tree, preview a drawing, or save a Studio session. Also covers
   proposal topics and s61-s69 slide drafts under their specific contracts.
   How a topic's drawing looks and reads is excalidraw-studio's: load
-  /excalidraw-studio before drawing or redrawing a topic (its principles,
+  /excalidraw studio before drawing or redrawing a topic (its principles,
   draw.py, check.py). Scripts: canvas.py, render_png.py, new_topic.py and
   block_index.py. Also the Page's Studio screen: one tab with the live drawing above
   the chat, and its lane contracts (ref/screen.md, chat.md, draw.md). Trigger: studio
@@ -16,7 +16,7 @@ description: >-
   together, /workbench-studio (the retired name of this screen).
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.14.7"
+  version: "0.14.8"
   last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md
 ---
@@ -27,7 +27,7 @@ The Block owns its Studio topics in `studio/`, one topic per `sNN-<topic>/`.
 Block, Job and Task views share that Studio. Each topic has a drawing to think on
 together and a short face that says what it settles and which Questions it feeds. This skill owns the folder, the face, the numbering, the builders that
 keep a person's marks, and the sessions. How a topic's drawing looks and reads is `excalidraw-studio`'s: load
-`/excalidraw-studio` before drawing or redrawing a topic (its principles, `scripts/draw.py` to draw with,
+`/excalidraw studio` before drawing or redrawing a topic (its principles, `scripts/draw.py` to draw with,
 `scripts/check.py` to check); a report's drawing is `excalidraw-report`'s.
 
 ```text
@@ -225,7 +225,7 @@ python $X/check.py <drawing>.excalidraw                            # against exc
 python $S/new_topic.py session <block> sNN --title '<session>' [--ask …] [--summary …] [--changed …]
 ```
 
-0. **Draw with excalidraw-studio**: before drawing or redrawing a topic, load `/excalidraw-studio` (the Skill
+0. **Draw with excalidraw-studio**: before drawing or redrawing a topic, load `/excalidraw studio` (the Skill
    tool) and follow its "Redraw a topic with the principles"; a new builder (`--builder`) already starts on its
    `draw.py`, and `check.py` says what still breaks. This skill keeps the folder, the face and the sessions.
 1. **Face marks**: `**Stage:**` (explore · shaping · agreed · closed), `**Topic:**`, `**Feeds:** qNN_<topic>`,

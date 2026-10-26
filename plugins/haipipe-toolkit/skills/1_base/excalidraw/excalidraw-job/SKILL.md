@@ -10,9 +10,10 @@ description: >-
   whole Job, or to see at a glance why a Job exists and what it found. Trigger: draw the job, job drawing, the whole
   job, job staircase, tasks and runs, job results as charts, what did the job find, /excalidraw-job.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
+disable-model-invocation: true
 metadata:
-  version: "0.9.5"
-  last_updated: "2026-10-19"
+  version: "0.9.6"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md
 ---
 

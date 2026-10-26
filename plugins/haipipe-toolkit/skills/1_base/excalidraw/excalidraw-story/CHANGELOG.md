@@ -1,5 +1,9 @@
 # excalidraw-story · changelog
 
+## [0.2.1] — 2026-10-26
+
+Hidden from the skill listing (`disable-model-invocation: true`); reached through the `/excalidraw` door, which reads this SKILL.md by path. Nothing moved; `/excalidraw-story` still works when a person types it. (hide 261026)
+
 ## 0.2.0 · 2026-10-19 · Room for long research questions
 
 - The main frame keeps the long, plain research questions (JL 261019: "你不能太简短，你要说得像人话 ... 比较长"): when the

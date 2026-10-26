@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.10.2] — 2026-10-26
+
+Hidden from the skill listing (`disable-model-invocation: true`); reached through the `/excalidraw` door, which reads this SKILL.md by path. Nothing moved; `/excalidraw-read` still works when a person types it. (hide 261026)
+
 ## 0.10.1 · 2026-10-22 · Every paper named by its title
 
 - JL 261022, on a related-papers topic whose frames read "p01 · Frey et al. 2023 · the paper, read": "一定要把 title

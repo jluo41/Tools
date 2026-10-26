@@ -159,7 +159,7 @@ or target is a new Run.
 🧩 SKILL    excalidraw-draft
 🤖 AGENT    haipipe-studio-agent (new)
 ✍️ SIGNS    none
-💬 PROMPT   /excalidraw-draft redraw the Section map of {page}: run excalidraw_section.py on {page} from {plan} and its Evidence Items; never edit the map by hand.
+💬 PROMPT   /excalidraw draft redraw the Section map of {page}: run excalidraw_section.py on {page} from {plan} and its Evidence Items; never edit the map by hand.
 ```
 
 ## `Page.evidence-item` · `re-value|cite|display-*`

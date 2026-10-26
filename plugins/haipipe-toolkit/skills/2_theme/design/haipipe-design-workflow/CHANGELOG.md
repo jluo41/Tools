@@ -162,3 +162,8 @@
 - The commission entry: one sentence ("design X for Y on Z, reading W") drives the round end-to-end, stopping only at the ✋ gates; a person's recorded blanket release is a person's act.
 - Owed follow-ups recorded here: haipipe-workbench-design contract bump to add prospect.md to the unit anatomy; theory anchors under verification by the 260827 discovery sweep.
 - Same day: the literature section reduced to a pointer (JL: lit lives on a board page, not in a skill) — the anchors are on ApplicationSkillBoard QD4-round-theory, the full lists in five QA files under designs/Project-Application-SMSDesign/discoveries/S02_design-process-theory/ (59 verified sources, five colliding S02 groups merged same day).
+
+
+## [0.4.1] — 2026-10-26
+
+Commands to the excalidraw kinds now go through the door: `/excalidraw <kind>` (the `excalidraw-*` skills are hidden from the listing). (hide 261026)

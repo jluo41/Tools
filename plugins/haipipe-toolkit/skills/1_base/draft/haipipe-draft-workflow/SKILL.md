@@ -11,8 +11,8 @@ description: >-
   workflow, workflow table, run a page, Run Spec, SHAPE SURVEY LAND EMBED,
   page context, page content, /haipipe-draft-workflow.
 metadata:
-  version: "0.67.0"
-  last_updated: "2026-09-29"
+  version: "0.67.1"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md
 ---
 

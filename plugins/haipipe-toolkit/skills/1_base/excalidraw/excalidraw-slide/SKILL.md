@@ -14,9 +14,10 @@ description: >-
   revise a deck before building it. Trigger: slide draft, propose a deck, what they want, the ask,
   slides.py, deck outline, logic flow of a talk, s61, presentation draft, /excalidraw-slide.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
+disable-model-invocation: true
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-10-12"
+  version: "0.2.1"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md
 ---
 

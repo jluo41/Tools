@@ -88,7 +88,7 @@ page's workbench (`servers/workbench-design/design.py`) reads them, and their on
 🧩 SKILL    excalidraw-report
 🤖 AGENT    haipipe-designer-agent
 ✍️ SIGNS    none
-💬 PROMPT   /excalidraw-report draw a studio topic of {folder}: studio/sNN-<topic>/ with its builder, as run-draw-s<NN>; keep every mark a person made.
+💬 PROMPT   /excalidraw report draw a studio topic of {folder}: studio/sNN-<topic>/ with its builder, as run-draw-s<NN>; keep every mark a person made.
 
 ## Job › Description · goal, method, inputs
 

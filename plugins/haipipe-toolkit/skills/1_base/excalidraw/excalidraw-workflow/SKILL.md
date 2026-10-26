@@ -16,9 +16,10 @@ description: >-
   steps to the send (haipipe-paper-plan owns both faces; the map is that skill's s03-paper-dataflow). Trigger also:
   paper flow, s04 drawing, sections and displays, timeline to the send.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
+disable-model-invocation: true
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-10-19"
+  version: "0.2.1"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md
 ---
 

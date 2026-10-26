@@ -17,6 +17,10 @@
 - The "in the paper" card names the displays the Board's `s04-paper-workflow` gives each question; a question with
   no contribution no longer prints "a reader gains: none yet".
 
+## [0.2.1] — 2026-10-26
+
+Hidden from the skill listing (`disable-model-invocation: true`); reached through the `/excalidraw` door, which reads this SKILL.md by path. Nothing moved; `/excalidraw-workflow` still works when a person types it. (hide 261026)
+
 ## 0.1.0 · 2026-10-14 · A paper's building map, with the review overlay
 
 - New skill (JL 261014: "could you highlight that which part the reviewers wanted us to change, and how will our new

@@ -1,6 +1,10 @@
 excalidraw-task · Changelog
 ===========================
 
+## [0.6.2] — 2026-10-26
+
+Hidden from the skill listing (`disable-model-invocation: true`); reached through the `/excalidraw` door, which reads this SKILL.md by path. Nothing moved; `/excalidraw-task` still works when a person types it. (hide 261026)
+
 ## [0.6.1] · 2026-10-19 · charts in colour
 
 - JL 261019 ("do not use this black and white anymore"): `task_stairs.py` passes the face's `colors:` to

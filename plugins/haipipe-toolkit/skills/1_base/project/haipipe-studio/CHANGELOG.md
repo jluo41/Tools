@@ -1,6 +1,10 @@
 haipipe-studio · Changelog
 ==========================
 
+## [0.14.8] — 2026-10-26
+
+Commands to the excalidraw kinds now go through the door: `/excalidraw <kind>` (the `excalidraw-*` skills are hidden from the listing). (hide 261026)
+
 ## [0.14.7] · 2026-10-26 · every topic has two sides: its drawing and its mind map
 
 - The mind map is now this skill's part, `_parts/mindmap/` (was the skill haipipe-mindmap, JL 261026: "the mindmap will

@@ -14,9 +14,10 @@ description: >-
   which are missing, or to give a new paper's story the same shape. Trigger: draw the story, story drawing, s02
   story, research questions as steps, which questions are answered, what supports each question, /excalidraw-story.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
+disable-model-invocation: true
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-10-19"
+  version: "0.2.1"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md
 ---
 

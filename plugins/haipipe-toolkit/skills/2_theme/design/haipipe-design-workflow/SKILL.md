@@ -13,8 +13,8 @@ description: >-
   design Run, design gate, design state, project a draft, project predictions,
   close a design Job, run cards, /haipipe-design-workflow.
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-10-07"
+  version: "0.4.1"
+  last_updated: "2026-10-26"
 ---
 
 # /haipipe-design-workflow · the design ladder's Runs

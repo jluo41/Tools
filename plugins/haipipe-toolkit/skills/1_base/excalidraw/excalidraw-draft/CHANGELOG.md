@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.5.1] — 2026-10-26
+
+Hidden from the skill listing (`disable-model-invocation: true`); reached through the `/excalidraw` door, which reads this SKILL.md by path. Nothing moved; `/excalidraw-draft` still works when a person types it. (hide 261026)
+
 ## 2.5.0 · 2026-10-21 · The examples frame reads an Abstract's blocks
 
 - Asked 261021: the Abstract's Section canvas gets the same "other papers" frame the Introduction's has.

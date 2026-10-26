@@ -13,9 +13,10 @@ description: >-
   changes to the draft", a tracked-changes file built from a plan, a CIR or amendment,
   /excalidraw-draft, /excalidraw-section, /excalidraw-revise.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
+disable-model-invocation: true
 metadata:
-  version: "2.5.0"
-  last_updated: "2026-10-21"
+  version: "2.5.1"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md
 ---
 

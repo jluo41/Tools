@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.8.6] — 2026-10-26
+
+Hidden from the skill listing (`disable-model-invocation: true`); reached through the `/excalidraw` door, which reads this SKILL.md by path. Nothing moved; `/excalidraw-report` still works when a person types it. (hide 261026)
+
 ## 0.8.5 · 2026-10-12 · Back to 0.8.3's rule 2
 
 - JL 261012: "I just mean for the s00 to have the tree, why you make all the others to be the tree as well". The

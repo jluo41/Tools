@@ -123,7 +123,7 @@ The workflow
    It writes their `feeds`. Then write the face's `key`, `what` and `why`, and check each `says` and `ref`.
    `--background` makes a type of `Shared background: <type>` rows instead: background read in full, never on the
    map (LLMRec's s14, s16, s17). A paper whose short name starts two rows is named by its whole item.
-4. **Read** each paper with `/excalidraw-read` into the type topic's `reads/pNN-<paper>/reading.yaml`: its logic,
+4. **Read** each paper with `/excalidraw read` into the type topic's `reads/pNN-<paper>/reading.yaml`: its logic,
    its key passages quoted and highlighted, and how each links to our paper (supports, threatens, we borrow).
    A reading needs a top-level `key:` (its one point), or excalidraw-studio's check fails ①. The PDF's extracted
    `paper.txt` is working material: `_WorkSpace/` or the session's scratchpad, never the Board. The most important

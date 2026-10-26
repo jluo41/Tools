@@ -188,7 +188,9 @@ def tools_skills():
             fm, _ = split_front_matter(text)
             meta, err = parse_front_matter(fm)
             desc = str(meta.get("description") or "")
-            listing = "%s: %s" % (meta.get("name") or name, desc)
+            hidden = bool(meta.get("disable-model-invocation"))
+            # a hidden skill (disable-model-invocation: true) is not in the model's listing
+            listing = "" if hidden else "%s: %s" % (meta.get("name") or name, desc)
             parts_dir = folder / "_parts"
             parts = sorted(p.name for p in parts_dir.iterdir() if (p / "PART.md").exists()) if parts_dir.is_dir() else []
             aliases = ((meta.get("metadata") or {}).get("aliases") or []) if isinstance(meta.get("metadata"), dict) else []
@@ -204,7 +206,7 @@ def tools_skills():
                 "name": name, "path": str(rel), "plugin": plugin, "parts": parts,
                 "aliases": [str(a) for a in aliases],
                 "version": str(((meta.get("metadata") or {}) if isinstance(meta.get("metadata"), dict) else {}).get("version", "")),
-                "description": desc,
+                "description": desc, "hidden": hidden,
                 "listing": measure(listing), "skill": measure(text), "folder": folder_size(folder),
                 "problems": problems,
             }
@@ -442,6 +444,7 @@ def build(args):
             "uses_recent": u["recent"], "last_used": u["last"] or "-",
             "projects": len(u["projects"]), "project_names": ";".join(sorted(u["projects"])),
             "problems": " | ".join(problems),
+            "hidden": "yes" if t and t.get("hidden") else "",
             "area": area_of(t["path"] if t else "", origin, name),
             "what": short_what(size.get("description", "")),
         })

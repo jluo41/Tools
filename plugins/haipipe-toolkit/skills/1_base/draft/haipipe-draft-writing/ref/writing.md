@@ -25,7 +25,7 @@ Before a Section is written, or rewritten whole, read how 3 to 4 published paper
 Section, and write to follow them (JL 261022: "你应该先找 example，看看别人是怎么写 abstract 的，然后再看怎么写 ...
 在 write 的时候，你应该先找到相应的 example，这样我们就可以 follow 别人的参考了").
 
-1. **Find them.** The Section's examples are a Studio topic `sNN-<task>-<venue>-examples`, made by `/excalidraw-read`:
+1. **Find them.** The Section's examples are a Studio topic `sNN-<task>-<venue>-examples`, made by `/excalidraw read`:
    two papers close to the topic, two the venue's author guide quotes, each one's Section read whole (`reads/pNN-
    <author><year>/reading.yaml`, its blocks shot from the PDF). The Section canvas names it by `examples:`, and the
    workbench shows it as 📚 Examples in 1 · Plan and 2 · Write. With none, make it first; do not write without it.

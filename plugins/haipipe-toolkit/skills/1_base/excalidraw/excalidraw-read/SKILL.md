@@ -9,9 +9,10 @@ description: >-
   changes, is excalidraw-draft. Use for "read this paper", "draw this paper", "screenshot
   the key parts", "how does this paper link to ours", a paper reading canvas, /excalidraw-read.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
+disable-model-invocation: true
 metadata:
-  version: "0.10.1"
-  last_updated: "2026-10-22"
+  version: "0.10.2"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md
 ---
 

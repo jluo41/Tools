@@ -3,6 +3,10 @@
 - New section: each round dispatches the writer, then a fresh reviewer agent, records the round and checks the stop
   rule with haipipe-draft-writing's `cli/auto_revise.py`.
 
+## [0.67.1] — 2026-10-26
+
+Commands to the excalidraw kinds now go through the door: `/excalidraw <kind>` (the `excalidraw-*` skills are hidden from the listing). (hide 261026)
+
 ## 0.66.1 · 2026-09-29 · outline/ to draft/ in current-layout prose (JL 260929)
 
 - Paths that describe the current Page layout say `draft/`: the plan `draft/<stem>-draft-v<G>.<S>[.<E>].md`, records `draft/records/`, `draft/previous/`, `draft/skill/`, the Evidence Markdown `draft/<stem>-evidence-items.md`, `draft/evidence/bibex/` and `draft/evidence/materials/` (JL 260929: "it should be draft"). Mentions of legacy Pages, retired `outline/evidence/` lanes and the migration keep `outline/`, as do the OUTLINE stage, the Outline table and the `outline:` grammar key.

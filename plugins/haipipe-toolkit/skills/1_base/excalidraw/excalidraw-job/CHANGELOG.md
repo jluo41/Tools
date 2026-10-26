@@ -1,6 +1,10 @@
 excalidraw-job · Changelog
 ==========================
 
+## [0.9.6] — 2026-10-26
+
+Hidden from the skill listing (`disable-model-invocation: true`); reached through the `/excalidraw` door, which reads this SKILL.md by path. Nothing moved; `/excalidraw-job` still works when a person types it. (hide 261026)
+
 ## [unreleased]
 
 - A CSV table column takes `words: n`: a long text cell (a column's meaning in a Table Card's `columns.csv`) shows its

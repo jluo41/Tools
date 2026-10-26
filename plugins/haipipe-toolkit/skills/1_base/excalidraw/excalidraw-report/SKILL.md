@@ -10,9 +10,10 @@ description: >-
   report with named frames, linked from its Evidence. Use for a scratch, a working drawing,
   "draw it so we can think", "too structured", a report's picture, plots, /excalidraw-report.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
+disable-model-invocation: true
 metadata:
-  version: "0.8.5"
-  last_updated: "2026-10-12"
+  version: "0.8.6"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md
 ---
 

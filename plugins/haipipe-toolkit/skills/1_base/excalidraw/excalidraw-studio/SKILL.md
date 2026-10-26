@@ -13,9 +13,10 @@ description: >-
   keeps a person's marks stay haipipe-studio's. Trigger: studio drawing, draw a topic, redraw, too many
   frames, low density, mind map, workflow map, acts, named arrows, key point, folder tree, /excalidraw-studio.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
+disable-model-invocation: true
 metadata:
-  version: "0.3.10"
-  last_updated: "2026-10-14"
+  version: "0.3.11"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md
 ---
 
