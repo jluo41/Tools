@@ -2,7 +2,7 @@ s04 · Design structure
 ======================
 
 **Renumbered:** s00-design-structure became s04-design-structure on 2026-10-12, so that s00 is the Block's background and index, the same
-in every Block (JL 2026-10-12: "for every block, we also want to have the s00-background-and-index").
+in every Block (JL 2026-10-12: "for every block, we also want to have the s00-overview").
 
 **Topic:** the thinking behind the design ladder (JL 261007: "for the design, the key thing is what is
 the design method, right?"), drawn as the design side of `../../../b11_theme_insight/studio/s04-insight-structure/`:

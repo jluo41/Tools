@@ -359,7 +359,7 @@ skills:
 s00, a Block's index, and what it proposes (⑤)
 -----------------------------------------------
 
-Asked 261012: "I think we should have a new frame for the s00-background-and-index for it as well. s00 should also
+Asked 261012: "I think we should have a new frame for the s00-overview for it as well. s00 should also
 work in a way for the proposing the sNN and jNN as well." s00 is drawn by haipipe-studio's `block_index.py` from
 the Block on disk and from its face's yaml (`background`, `index`, `studio_plan`, `studio_proposals`, and, asked
 for here, `job_proposals`); this frame shows that path and b31's own proposals, read from its s00 face.
@@ -510,7 +510,7 @@ s01-D12 · Decided (JL 261012: "where is the mind map frame for us to list all t
     eight summaries around the centre read as the principles in text, even zoomed out; the details stay small.
 s01-D13 · Decided (JL 261012: "I love the act things here as well, we can do it as well"): s01's frames are
     grouped into acts, a row each, the act named at the left (the `acts:` block); principle ③ says so.
-s01-D14 · Decided (JL 261012: "I think we should have a new frame for the s00-background-and-index for it as well.
+s01-D14 · Decided (JL 261012: "I think we should have a new frame for the s00-overview for it as well.
     s00 should also work in a way for the proposing the sNN and jNN as well"): frame ⑤ shows s00, the one drawing
     with its own shape: what `block_index.py` reads, what it draws, and what it proposes, topics (sNN, through
     `studio_proposals`, drawn today) and Jobs (jNN, through `job_proposals`, drawn since haipipe-studio 0.13.8), red and

@@ -50,8 +50,8 @@ Background for a newcomer, then an index of the Block's topics and Questions. St
   - [todo] A person rewrites it for a newcomer <!-- n23 -->
     Seeded from the Block's face on 2026-10-12.
 - [files] What the folder holds <!-- @files #6ce6c5 -->
-  - [py] [build_s00_background_and_index.py](build_s00_background_and_index.py) <!-- @files/0 #e05012 -->
-  - [excalidraw] [s00-background-and-index.excalidraw](s00-background-and-index.excalidraw) <!-- @files/1 #fb3adb -->
-  - [md] [s00-background-and-index.md](s00-background-and-index.md) <!-- @files/2 #e328ee -->
-  - [png] [s00-background-and-index.png](s00-background-and-index.png) <!-- @files/3 #20b395 -->
-    ![s00-background-and-index.png](s00-background-and-index.png)
+  - [py] [build_s00_overview.py](build_s00_overview.py) <!-- @files/0 #e05012 -->
+  - [excalidraw] [s00-overview.excalidraw](s00-overview.excalidraw) <!-- @files/1 #fb3adb -->
+  - [md] [s00-overview.md](s00-overview.md) <!-- @files/2 #e328ee -->
+  - [png] [s00-overview.png](s00-overview.png) <!-- @files/3 #20b395 -->
+    ![s00-overview.png](s00-overview.png)

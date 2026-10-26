@@ -10,6 +10,6 @@ The proposed Job j02 (canvas-key-colour) was done by haipipe-studio 0.13.14, so 
 
 ## Changed
 
-- `s00-background-and-index.md`
-- `s00-background-and-index.excalidraw`
-- `s00-background-and-index.png`
+- `s00-overview.md`
+- `s00-overview.excalidraw`
+- `s00-overview.png`

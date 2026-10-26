@@ -16,7 +16,7 @@ description: >-
   together, /workbench-studio (the retired name of this screen).
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.14.9"
+  version: "0.14.10"
   last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md
 ---
@@ -132,7 +132,7 @@ s10-s19 a paper Board's related work: s10 the map, s11-s19 one type each (haipip
 The next free number in the band; a number is never reused, unless a person asks for it back (b10 s09, 261012):
 then the new topic's decisions start after the old ids still kept where the old topic merged, and the old
 `runs/run-draw-<sNN>/` moves into that topic's `history/`, so the Timeline does not read it as the new one's.
-s00 is only ever `s00-background-and-index`: an older s00 topic moves to the next free s0x (b11 and b12's `s00-*-structure` became s04 on 261012).
+s00 is only ever `s00-overview`: an older s00 topic moves to the next free s0x (b11 and b12's `s00-*-structure` became s04 on 261012).
 
 
 Background and index (s00)
@@ -142,8 +142,8 @@ Read [ref/background-index.md](ref/background-index.md) when making or updating 
 It connects the Block's purpose to all its Studios and Jobs, then to what the work should produce;
 the generated inventory and the proposed finish stay distinct.
 
-Every Block has `studio/s00-background-and-index/` (JL 261012: "for every block, we also want to have the
-s00-background-and-index to show the background information, and what are the sNN and jNN and what are the
+Every Block has `studio/s00-overview/` (JL 261012: "for every block, we also want to have the
+s00-overview to show the background information, and what are the sNN and jNN and what are the
 progress of them"). It is the first topic a newcomer opens.
 
 ```text
@@ -179,7 +179,7 @@ be the tree as well"; other topics keep their own drawings):
    stripped from the faces' own words.
 
 
-The writer also creates `build_s00_background_and_index.py` in the topic. It forwards to the current
+The writer also creates `build_s00_overview.py` in the topic. It forwards to the current
 shared generator through the SPACE's `Tools` symlink, using a relative path; it contains no copied drawing
 logic. Workbench therefore recognizes the drawing as generated and opens it view only. Existing local
 builders are preserved. Rerun this builder after shared Tools changes to refresh the scene and preview.

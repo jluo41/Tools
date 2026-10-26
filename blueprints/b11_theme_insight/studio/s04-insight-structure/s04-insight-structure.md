@@ -2,7 +2,7 @@ s04 · Insight structure
 =======================
 
 **Renumbered:** s00-insight-structure became s04-insight-structure on 2026-10-12, so that s00 is the Block's background and index, the same
-in every Block (JL 2026-10-12: "for every block, we also want to have the s00-background-and-index").
+in every Block (JL 2026-10-12: "for every block, we also want to have the s00-overview").
 
 **Topic:** the thinking behind the insight ladder (JL 261007): what an Insight Project looks like; the
 Prototype as its own work Block whose Jobs are Prototype versions; the insight Board whose Jobs pin one

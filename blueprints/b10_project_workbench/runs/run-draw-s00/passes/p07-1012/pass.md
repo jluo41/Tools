@@ -10,4 +10,4 @@ s00-D01: Stage closed; its shape settled; Open 1 (13 topics vs a guide of 10) mo
 
 ## Changed
 
-- `studio/s00-background-and-index/`
+- `studio/s00-overview/`

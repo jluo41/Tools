@@ -148,7 +148,7 @@ def test_s00_keeps_its_own_words():
     d.text(40, 900, " ".join(["topic"] * 260), 21)                        # far past 200 words, all small
     d.badge(f)
     with tempfile.TemporaryDirectory() as tmp:
-        for folder, own in (("s00-background-and-index", True), ("s07-a-topic", False)):
+        for folder, own in (("s00-overview", True), ("s07-a-topic", False)):
             out = Path(tmp) / "studio" / folder / f"{folder}.excalidraw"
             out.parent.mkdir(parents=True)
             d.write(out, "test_draw.py")

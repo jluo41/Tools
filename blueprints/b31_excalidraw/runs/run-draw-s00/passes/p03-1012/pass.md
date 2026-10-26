@@ -10,6 +10,6 @@ s01 Open 6 is settled by ⑦, so s23 is a plain proposal about the text floor on
 
 ## Changed
 
-- `s00-background-and-index.md`
-- `s00-background-and-index.excalidraw`
-- `s00-background-and-index.png`
+- `s00-overview.md`
+- `s00-overview.excalidraw`
+- `s00-overview.png`

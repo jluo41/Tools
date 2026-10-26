@@ -5,7 +5,7 @@ s00 · Background and index
 
 **Topic:** what this Block stands on, for a reader new to it, and an index of its studio topics (sNN), Jobs (jNN)
 and Questions (qNN) with how far each has come. The background is the yaml below, written by a person; the index
-is read from disk on every build (JL 2026-10-12: "for every block, we also want to have the s00-background-and-index").
+is read from disk on every build (JL 2026-10-12: "for every block, we also want to have the s00-overview").
 
 **Feeds:** none; it indexes the whole Block.
 
@@ -14,10 +14,10 @@ Files
 -----
 
 ```text
-s00-background-and-index/
-├── s00-background-and-index.md          this face; its yaml is the Background frame
-├── s00-background-and-index.excalidraw  the drawing: Background, then Index; a person's marks are kept
-└── s00-background-and-index.png         its preview
+s00-overview/
+├── s00-overview.md          this face; its yaml is the Background frame
+├── s00-overview.excalidraw  the drawing: Background, then Index; a person's marks are kept
+└── s00-overview.png         its preview
 ```
 
 Rebuild: `python <haipipe-studio>/scripts/block_index.py <this Block> --draw`, haipipe-studio being
@@ -40,15 +40,14 @@ background:
     - Each recorded question has a report Page with an answer status, and every answered question names the skill,
       workbench or builder change that settled it.
   - 📖 What it is about:
-    - The insight Theme answers questions about one data extract, climbing Data → Information → Knowledge → Wisdom.
-    - 'Its new layout is a task Block (tasks/b5N_<topic>_dikw/, workbench: insight): one Job per level (j01_data
-      … j04_wisdom), one Task per question (tNN_<question>/), one hard Run per dataset × partition …'
-    - 'The older register board (insights/<Dataset>-InsightBoard/: board.md, 0-MT-meta/, one folder per partition)
-      keeps its layout until it is carried over.'
-    - Today the Insight workbench shows all of it at Block level, in five Spaces (Scope · Prototype · Insight ·
-      Check · Delivery), with the levels as Views of Prototype and the partitions as Views of Insight.
-  - 👉 Read next:
-    - 's04-insight-structure, the thinking behind the insight ladder: the Prototype and the Board, the two clocks, what starts a new release (it was s00 until 2026-10-12)'
+    - 'The discovery Theme reads outside evidence: it finds papers and sources, reviews each one through a numbered
+      Paper Run (rNN_<author><year>_<subject>/: a Result Card, facts, a runtime receipt, one BibTeX entry), and
+      …'
+    - Its Block holds inquiry Jobs;
+    - 'Today the Discovery workbench shows it at Block level in four Spaces (Scope · Work · Check · Delivery): Papers,
+      Tasks and Questions are Views of Work;'
+    - 'The shared ladder (b03) gives every level the same six Spaces: Description · Idea Studio · Audience Report
+      | Work Details | Runs · Delivery.'
   - '❓ Seeded from the Block''s face: rewrite it as the tree a newcomer needs'
 ```
 

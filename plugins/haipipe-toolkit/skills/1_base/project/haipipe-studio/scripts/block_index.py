@@ -1,10 +1,10 @@
 """A Block's s00, the background and index: what the Block stands on, and every studio topic and Job with its
-progress, drawn as folder trees (JL 261012: "for every block, we also want to have the s00-background-and-index to
+progress, drawn as folder trees (JL 261012: "for every block, we also want to have the s00-overview to
 show the background information, and what are the sNN and jNN and what are the progress of them"; "我个人更 prefer
 那种 tree 结构，就像 folder tree 那样"; "如果有 background，大概三个 frame 就差不多了").
 
     python block_index.py <block> ...                 print each index as a folder tree
-    python block_index.py <block> ... --draw          draw studio/s00-background-and-index/ and its preview
+    python block_index.py <block> ... --draw          draw studio/s00-overview/ and its preview
     python block_index.py --all <root> [--draw]       every Block under <root>; archives, history and _-folders skipped
 
 Three frames at most, read left to right (haipipe-studio, The look):
@@ -33,7 +33,7 @@ sys.path.insert(0, str(HERE))
 import canvas  # noqa: E402
 from topic_map import PAD, draw_frame, draw_map  # noqa: E402  (the drawing: trees, boxes and arrows)
 
-S00 = "s00-background-and-index"
+S00 = "s00-overview"
 FIELD = re.compile(r"(?m)^([a-z][a-z0-9_-]*):[ \t]*(\S.*)$")
 BLOCK = re.compile(r"^b\d\d_")
 SKIP = {"history", "archive", "node_modules", "tests", "fixture", "fixtures"}   # never a Block's home; nor .x or _x
@@ -340,7 +340,7 @@ FACE = """s00 · Background and index
 {tags}
 **Topic:** what this Block stands on, for a reader new to it, and an index of its studio topics (sNN), Jobs (jNN)
 and Questions (qNN) with how far each has come. The background is the yaml below, written by a person; the index
-is read from disk on every build (JL {today}: "for every block, we also want to have the s00-background-and-index").
+is read from disk on every build (JL {today}: "for every block, we also want to have the s00-overview").
 
 **Feeds:** none; it indexes the whole Block.
 
@@ -349,11 +349,11 @@ Files
 -----
 
 ```text
-s00-background-and-index/
-├── s00-background-and-index.md          this face; its yaml is the Background frame
-├── s00-background-and-index.excalidraw  the drawing: Background, then Index; a person's marks are kept
-├── build_s00_background_and_index.py  rebuild using the current shared Tools generator
-└── s00-background-and-index.png         its preview
+s00-overview/
+├── s00-overview.md          this face; its yaml is the Background frame
+├── s00-overview.excalidraw  the drawing: Background, then Index; a person's marks are kept
+├── build_s00_overview.py  rebuild using the current shared Tools generator
+└── s00-overview.png         its preview
 ```
 
 Rebuild: `python <haipipe-studio>/scripts/block_index.py <this Block> --draw`, haipipe-studio being
@@ -886,7 +886,7 @@ def ensure_builder(block: Path, topic: Path) -> Path:
     Prefer the SPACE's Tools symlink; keep a relative fallback for Tools' own blueprints.
     An existing local builder belongs to its author and is never replaced.
     """
-    runner = topic / "build_s00_background_and_index.py"
+    runner = topic / "build_s00_overview.py"
     if runner.exists():
         return runner
     scripts = HERE

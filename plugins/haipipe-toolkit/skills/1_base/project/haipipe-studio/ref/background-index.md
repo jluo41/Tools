@@ -11,7 +11,7 @@ Jobs. Account for older Job-local Studios as well as Block-owned topics; retain
 their actual paths. A missing face or state is an open point, not a completed item.
 
 Use the shared `scripts/block_index.py <block> --draw` for the canonical
-`studio/s00-background-and-index/`. It reads the inventory from disk and draws
+`studio/s00-overview/`. It reads the inventory from disk and draws
 the face's `background:` YAML. Keep project-specific older indexes readable;
 reuse their background material when updating s00, without silently removing or
 renumbering their topics. A cross-Block landing index belongs to the Project and
@@ -76,7 +76,7 @@ Use the face's background YAML for a compact connected tree of grounded
 relationships and proposed outputs. When those relationships need cross-links
 or endpoint arrows the folder-tree builder cannot draw, add a project-local
 companion drawing and builder in the same topic, linked from its face. Keep
-`s00-background-and-index.excalidraw` as the shared builder's inventory; use a
+`s00-overview.excalidraw` as the shared builder's inventory; use a
 separate name such as `work-map.excalidraw` for the companion, with `canvas.write`
 for human-mark preservation. Do not claim the generated inventory alone answers
 where to start or what must be produced.

@@ -36,7 +36,7 @@ class S00WorkbenchTest(unittest.TestCase):
 
     def test_generated_s00_is_view_only_and_runner_preserves_human_marks(self):
         scene_path = self.draw()
-        runner = self.topic / "build_s00_background_and_index.py"
+        runner = self.topic / "build_s00_overview.py"
         self.assertTrue(runner.is_file())
         self.assertIn("Tools/plugins/", runner.read_text())
         self.assertNotIn(str(self.root), runner.read_text())
@@ -55,7 +55,7 @@ class S00WorkbenchTest(unittest.TestCase):
 
     def test_existing_local_builder_is_preserved(self):
         self.topic.mkdir(parents=True)
-        runner = self.topic / "build_s00_background_and_index.py"
+        runner = self.topic / "build_s00_overview.py"
         runner.write_text("# an existing owner-written runner\n")
         self.draw()
         self.assertEqual(runner.read_text(), "# an existing owner-written runner\n")

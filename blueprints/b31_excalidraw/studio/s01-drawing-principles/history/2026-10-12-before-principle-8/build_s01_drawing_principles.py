@@ -317,7 +317,7 @@ def skills(data_):
 
 # ── ⑤ s00, a Block's index, and what it proposes ────────────────────────────────────────────────────────────
 def s00_face(block):
-    md = block / "studio/s00-background-and-index/s00-background-and-index.md"
+    md = block / "studio/s00-overview/s00-overview.md"
     t = md.read_text(encoding="utf-8") if md.is_file() else ""
 
     def get(key):

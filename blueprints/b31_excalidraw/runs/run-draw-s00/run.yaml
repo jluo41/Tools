@@ -15,12 +15,12 @@ passes:
 - p04-1012
 - p05-1012
 writes:
-- studio/s00-background-and-index/s00-background-and-index.md
-- studio/s00-background-and-index/s00-background-and-index.excalidraw
-- studio/s00-background-and-index/s00-background-and-index.png
-- s00-background-and-index.md
-- s00-background-and-index.excalidraw
-- s00-background-and-index.png
+- studio/s00-overview/s00-overview.md
+- studio/s00-overview/s00-overview.excalidraw
+- studio/s00-overview/s00-overview.png
+- s00-overview.md
+- s00-overview.excalidraw
+- s00-overview.png
 - s00 face background
 - studio_plan
 - studio_proposals

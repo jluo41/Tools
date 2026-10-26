@@ -97,8 +97,9 @@ today:                                   # b10's rules since 261012: `audit --to
   drawing: [.excalidraw, .png, .svg, .py, .md, .json]   # in studio/, these wait for a topic; other files move to the Block
   keep: [question-map.excalidraw, question-map.png]     # the workbench's question_map.py writes the Block's map here
   keep_glob: ['mind-map.*']              # and its mind map, from-work: .mindmap.md and .mindmap.html (haipipe-studio, 261024)
-  s00: s00-background-and-index          # every Block's background and index has this one name (haipipe-studio); a number
-                                         # an old index gave up when it became s00 is never reused (JL 261012)
+  s00: s00-overview                      # every Block's overview (its background and index) has this one name (haipipe-studio,
+                                         # JL 261026); a number an old index gave up when it became s00 is never reused (261012)
+  s00_was: [s00-background-and-index]    # its old names: update --today --apply renames the folder, its files and the Block's links
   workflow:                              # a work Block (family task) since 261021 (LLMRec b01, b02): Goal first
     layout: '(?m)^workbench-layout:[ \t]*workflow[ \t]*$'   # the Block face opts in (workbench-work)
     job_fields: [emoji]                  # a Job face's own emoji on its Goal line (haipipe-job)
@@ -141,8 +142,9 @@ both and plans the fix.
 ```text
 debt   studio/ has no sNN-<topic>/ topic                    proposed by /wb update step 5
        studio/<data file> is not a topic: moves to the Block   moved by update --today --apply
-       studio/ has no s00-background-and-index/                draw it: haipipe-studio block_index.py <block> --draw
-       studio/s00-<other>/ or sNN-…background-index/            renumber it: s00 is only s00-background-and-index
+       studio/ has no s00-overview/                            draw it: haipipe-studio block_index.py <block> --draw
+       studio/s00-background-and-index/ (its old name)          renamed by update --today --apply, files and links too
+       studio/s00-<other>/ or sNN-…background-index/            renumber it: s00 is only s00-overview
        studio/sNN-<topic>/ reuses the number of an old index      renumber it to the next free sNN
        studio/<drawing, builder or note>: gather into a topic   the topic step 5 names
        a Job's or Task's studio/: its topics go to the Block   the owner moves them (renumbered)

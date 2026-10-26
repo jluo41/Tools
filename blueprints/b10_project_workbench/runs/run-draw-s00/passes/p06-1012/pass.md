@@ -10,4 +10,4 @@ All 112 s00 (Tools 13, WellDoc 69, Knowledge-Base 20, jluo41-repo 10) redrawn wi
 
 ## Changed
 
-- `studio/s00-background-and-index/`
+- `studio/s00-overview/`

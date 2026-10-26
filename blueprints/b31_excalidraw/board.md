@@ -26,7 +26,7 @@ a drawing made in some Block -> its steps, scripts and timings -> a Studio topic
 
 No Jobs yet. Studio topics:
 
-- s00-background-and-index: the background, the Studio plan and the proposals (closed 261012)
+- s00-overview: the background, the Studio plan and the proposals (closed 261012)
 - s01-drawing-principles: the seven drawing principles, excalidraw-studio's topic (closed 261012)
 - s02 to s07: one topic per skill: excalidraw-report, -slide, -read, -section, -job, -task
 - s21-revise-mode-workflow: excalidraw-draft, from b31_prep_ai's s04 (SHIFT Task 3.1), 2026-10-11

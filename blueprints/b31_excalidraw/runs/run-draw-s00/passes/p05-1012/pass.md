@@ -10,6 +10,6 @@ s00-D01: Stage → closed; s22, s23 and j01 stay proposed. Redrawn by block_inde
 
 ## Changed
 
-- `s00-background-and-index.md`
-- `s00-background-and-index.excalidraw`
-- `s00-background-and-index.png`
+- `s00-overview.md`
+- `s00-overview.excalidraw`
+- `s00-overview.png`

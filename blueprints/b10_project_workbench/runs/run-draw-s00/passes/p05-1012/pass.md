@@ -10,4 +10,4 @@ block_index.py 0.13.13: a #fff3bf key point per frame; two acts with named arrow
 
 ## Changed
 
-- `studio/s00-background-and-index/`
+- `studio/s00-overview/`

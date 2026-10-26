@@ -10,6 +10,6 @@ b31's s00 face rewritten: background for the five Excalidraw skills, studio_plan
 
 ## Changed
 
-- `studio/s00-background-and-index/s00-background-and-index.md`
-- `studio/s00-background-and-index/s00-background-and-index.excalidraw`
-- `studio/s00-background-and-index/s00-background-and-index.png`
+- `studio/s00-overview/s00-overview.md`
+- `studio/s00-overview/s00-overview.excalidraw`
+- `studio/s00-overview/s00-overview.png`

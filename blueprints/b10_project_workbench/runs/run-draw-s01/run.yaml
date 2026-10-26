@@ -18,6 +18,6 @@ passes:
 - p07-1012
 writes:
 - studio/s01-overall-tree-structure/
-- studio/s00-background-and-index/
+- studio/s00-overview/
 feeds:
 - Q01

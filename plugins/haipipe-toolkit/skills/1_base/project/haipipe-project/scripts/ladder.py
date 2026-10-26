@@ -364,11 +364,13 @@ def today_findings(block: Path) -> list[tuple[str, str]]:
     has_jobs = any(d.is_dir() and NAMES["job"].match(d.name) for d in block.iterdir())
     if not topics and has_jobs:                                # a Block with no Job yet has nothing to draw (261021)
         out.append(("debt", "today: studio/ has no sNN-<topic>/ topic"))
-    s00 = TODAY.get("s00", "s00-background-and-index")       # one name, every Block (haipipe-studio; JL 261012)
+    s00 = TODAY.get("s00", "s00-overview")                   # one name, every Block (haipipe-studio; JL 261012, 261026)
     if topics and not (studio / s00).is_dir():
         out.append(("debt", f"today: studio/ has no {s00}/: draw it with haipipe-studio block_index.py --draw"))
     for d in topics:
-        if d.name != s00 and (d.name.startswith("s00") or d.name.endswith("background-index")):
+        if d.name in TODAY.get("s00_was", []):
+            out.append(("debt", f"today: studio/{d.name}/ is s00's old name: update --today --apply renames it {s00}/"))
+        elif d.name != s00 and (d.name.startswith("s00") or d.name.endswith("background-index")):
             out.append(("debt", f"today: studio/{d.name}/ is a background index: its one name is {s00}/"))
     given_up = {h.name[:3] for h in (studio / s00 / "history").glob("pre-s00-*/topic/s[0-9][0-9]-*")
                 if h.name[:3] != "s00"} if (studio / s00 / "history").is_dir() else set()
@@ -500,6 +502,52 @@ def today_moves(block: Path) -> list[tuple[Path, Path, str]]:
             if f.is_file() and f.suffix not in DRAWING and not f.name.startswith((".", "_"))
             and not kept_loose(f.name)
             and not (block / f.name).exists()]
+
+
+def s00_renames(block: Path) -> list[tuple[Path, Path]]:
+    """(old, new) when a Block's s00 still has a name it gave up (`today: s00_was:`), and the new one is free."""
+    new = block / "studio" / TODAY.get("s00", "s00-overview")
+    return [(block / "studio" / old, new) for old in TODAY.get("s00_was", [])
+            if (block / "studio" / old).is_dir() and not new.exists()][:1]
+
+
+TEXT_EXT = {".md", ".py", ".json", ".excalidraw", ".yaml", ".yml", ".toml", ".txt", ".html", ".sh", ".csv", ".tsv"}
+
+
+def rename_s00(old: Path, new: Path, block: Path, root: Path, apply: bool) -> int:
+    """The Block's s00 renamed whole: its folder, each file and builder named after it, and every mention inside the
+    Block (its faces, topics, Runs and their passes; history too, a rename is a full sweep). Returns the files changed."""
+    pairs = [(old.name, new.name), (old.name.replace("-", "_"), new.name.replace("-", "_"))]
+    print(f"    mv {old.relative_to(root)} → {new.relative_to(root)}   (s00's one name)")
+    files = [f for f in old.rglob("*") if f.is_file() and any(a in f.name for a, _ in pairs)]
+    for f in files:
+        name = f.name
+        for a, b in pairs:
+            name = name.replace(a, b)
+        print(f"       {f.relative_to(old)} → {name}")
+    if apply:
+        for f in files:
+            name = f.name
+            for a, b in pairs:
+                name = name.replace(a, b)
+            f.rename(f.with_name(name))
+        shutil.move(str(old), str(new))
+    n = 0
+    for f in block.rglob("*"):
+        if not f.is_file() or f.suffix.lower() not in TEXT_EXT or f.stat().st_size > 50_000_000:
+            continue
+        try:
+            text = f.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError):
+            continue
+        if any(a in text for a, _ in pairs):
+            n += 1
+            if apply:
+                for a, b in pairs:
+                    text = text.replace(a, b)
+                write_utf8(f, text)
+    print(f"       {n} file(s) in the Block name it: repointed")
+    return n
 
 
 def add_today(nodes: list[Node]) -> None:
@@ -872,6 +920,11 @@ def update(path: Path, root: Path, apply: bool, today: bool = False) -> int:
         print(f"    kind  {kind:<9} {card.parent.relative_to(root)}")
         if apply:
             write_kind(card, kind)
+    renames = s00_renames(block_of(path)) if today and block_of(path) else []
+    if renames:
+        print("\ns00 (its one name):")
+    for old, new in renames:
+        rename_s00(old, new, block_of(path), root, apply)
     roles = role_writes(block_of(path)) if today and block_of(path) else []
     if roles:
         print("\nroles (one line each card lacks, haipipe-run run_roles.py):")

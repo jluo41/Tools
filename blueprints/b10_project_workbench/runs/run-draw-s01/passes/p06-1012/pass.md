@@ -10,4 +10,4 @@ Frames 3 and 4 added on excalidraw-studio's draw.py (index_frame.py, words in th
 
 ## Changed
 
-- `studio/s00-background-and-index/`
+- `studio/s00-overview/`

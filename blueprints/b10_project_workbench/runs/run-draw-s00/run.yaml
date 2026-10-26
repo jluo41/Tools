@@ -17,7 +17,7 @@ passes:
 - p06-1012
 - p07-1012
 writes:
-- studio/s00-background-and-index/ (face
+- studio/s00-overview/ (face
 - drawing
 - preview); haipipe-studio 0.12.0 to 0.13.0 (block_index.py
 - topic_map.py
@@ -29,5 +29,5 @@ writes:
 - block_index.py
 - SKILL.md and CHANGELOG 0.13.5
 - excalidraw-report 0.8.5; s02 and s51 restored; 88 s00 drawings
-- studio/s00-background-and-index/
+- studio/s00-overview/
 feeds: []

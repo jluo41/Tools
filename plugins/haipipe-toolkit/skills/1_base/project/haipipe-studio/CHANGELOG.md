@@ -1,6 +1,12 @@
 haipipe-studio · Changelog
 ==========================
 
+## [0.14.10] · 2026-10-26 · s00 is s00-overview
+
+- `block_index.py` draws `studio/s00-overview/` (its builder `build_s00_overview.py`); SKILL.md,
+  `ref/background-index.md` and the tests say so. Was s00-background-and-index; haipipe-project's audit renames an
+  older one.
+
 ## [0.14.9] · 2026-10-26 · the mind map takes the topic's name
 
 - The topic folder holds `sNN-<topic>.mindmap.md` beside `sNN-<topic>.md` and its drawing (was `mNN-<topic>…`):
@@ -207,7 +213,7 @@ red line per branch naming the proposals; the Studio plan no longer lists propos
 
 **[0.13.9] · 2026-10-12 · Register generated S00 topics in Workbench**
 
-The shared S00 generator now leaves a local `build_s00_background_and_index.py` runner pointing through
+The shared S00 generator now leaves a local `build_s00_overview.py` runner pointing through
 the owning SPACE's `Tools` symlink. The current Workbench recognizes `build_*.py` as generated drawings;
 without this runner S00 incorrectly offered the hand-drawn Edit control. The runner calls the current
 shared generator on every rebuild, uses a relative path, and preserves an existing local builder.
@@ -338,8 +344,8 @@ reference), each a folder tree, never a row of slide-like frames (JL 261012: "�
 frame 里的内容又太少，它本身又不是一个 tree 结构 ... 我个人更 prefer 那种 tree 结构，就像 folder tree 那样"). `canvas.tree()`
 draws one ("? " leaves red, "✎ " green); `canvas.write` warns over `MAX_FRAMES` (`frame_limit`: s32, s61-s69,
 reports, Guides and `reads_down` pieces not counted) and on a frame under `SPARSE_MIN` words per million px
-(`sparse`, which skips a frame with no words or over FRAME_MAX). Every Block gets `studio/s00-background-and-index/`
-(JL 261012: "for every block, we also want to have the s00-background-and-index"): `scripts/block_index.py <block>
+(`sparse`, which skips a frame with no words or over FRAME_MAX). Every Block gets `studio/s00-overview/`
+(JL 261012: "for every block, we also want to have the s00-overview"): `scripts/block_index.py <block>
 --draw` (or `--all <root>`) draws the face's background trees, then the index read from disk (each topic's stage,
 decisions, passes and first open point; each Job's Tasks and their states; Questions, related, delivery); a
 Block without the face gets one seeded from its own. Drawn for all 84 Blocks of Tools and WellDoc; b11's and

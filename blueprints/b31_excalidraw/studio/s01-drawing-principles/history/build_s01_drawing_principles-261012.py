@@ -116,7 +116,7 @@ def limits():
            f"a text frame {FLOOR} words or more per million px (SPARSE_MIN); a map frame {MAP_FLOOR} (draw.py)"]
     if hasattr(canvas, "frame_limit"):
         topic = canvas.frame_limit(Path("studio/s07-x/s07-x.excalidraw"))
-        index = canvas.frame_limit(Path("studio/s00-background-and-index/s00-background-and-index.excalidraw"))
+        index = canvas.frame_limit(Path("studio/s00-overview/s00-overview.excalidraw"))
         out.append(f"frame count: {index or 'no limit'} for s00, {topic or 'no limit'} for a topic (frame_limit)")
     return out
 
@@ -375,7 +375,7 @@ def skills(data_):
 
 # ── ⑤ s00, a Block's index, and what it proposes ────────────────────────────────────────────────────────────
 def s00_face(block):
-    md = block / "studio/s00-background-and-index/s00-background-and-index.md"
+    md = block / "studio/s00-overview/s00-overview.md"
     t = md.read_text(encoding="utf-8") if md.is_file() else ""
 
     def get(key):

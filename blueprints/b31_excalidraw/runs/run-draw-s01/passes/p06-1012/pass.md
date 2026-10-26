@@ -2,7 +2,7 @@
 
 ## Ask
 
-JL 261012: do you want to update the skills for the excalidraw-studio; so for the s01, it is for the excalidraw studio, is this correct?; I think we should have a new frame for the s00-background-and-index for it as well; s00 should also work in a way for the proposing the sNN and jNN as well; and for the excalidraw report, slide, read, and section, we should have the s02, 03, 04, 05. Please go ahead and do it.
+JL 261012: do you want to update the skills for the excalidraw-studio; so for the s01, it is for the excalidraw studio, is this correct?; I think we should have a new frame for the s00-overview for it as well; s00 should also work in a way for the proposing the sNN and jNN as well; and for the excalidraw report, slide, read, and section, we should have the s02, 03, 04, 05. Please go ahead and do it.
 
 ## Summary
 

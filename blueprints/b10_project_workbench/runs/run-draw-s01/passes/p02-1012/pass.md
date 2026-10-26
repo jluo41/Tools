@@ -10,4 +10,4 @@ s09's one frame is now s01's frame 2 (studio_delivery_frame.py, called by build_
 
 ## Changed
 
-- `studio/s00-background-and-index/`
+- `studio/s00-overview/`

@@ -3,11 +3,9 @@ s00 · Background and index
 
 **Stage:** shaping
 
-**Tags:** `Structure`
-
 **Topic:** what this Block stands on, for a reader new to it, and an index of its studio topics (sNN), Jobs (jNN)
 and Questions (qNN) with how far each has come. The background is the yaml below, written by a person; the index
-is read from disk on every build (JL 2026-10-12: "for every block, we also want to have the s00-background-and-index").
+is read from disk on every build (JL 2026-10-16: "for every block, we also want to have the s00-overview").
 
 **Feeds:** none; it indexes the whole Block.
 
@@ -16,10 +14,11 @@ Files
 -----
 
 ```text
-s00-background-and-index/
-├── s00-background-and-index.md          this face; its yaml is the Background frame
-├── s00-background-and-index.excalidraw  the drawing: Background, then Index; a person's marks are kept
-└── s00-background-and-index.png         its preview
+s00-overview/
+├── s00-overview.md          this face; its yaml is the Background frame
+├── s00-overview.excalidraw  the drawing: Background, then Index; a person's marks are kept
+├── build_s00_overview.py  rebuild using the current shared Tools generator
+└── s00-overview.png         its preview
 ```
 
 Rebuild: `python <haipipe-studio>/scripts/block_index.py <this Block> --draw`, haipipe-studio being
@@ -39,13 +38,13 @@ background:
   cols: 2
   tree:
   - 🎯 Done when:
-    - Each recorded question has a report Page with an answer status, and every answered question names the skill,
-      workbench or builder change that settled it.
+    - haipipe-display makes, checks and places one real display (the b21 Overview Figure) and one table from a work
+      Run through display/;
   - 📖 What it is about:
-    - The paper Theme plans, writes and revises one venue-free paper Board.
-    - Ideation and each telling are Studio topics;
-    - A Job is one version for one venue, selecting questions and results, ordering Sections and answering comments.
-    - A Task is one Section, Abstract or letter, written as a Page Task.
+    - 'JL 261016: "and also the display?'
+    - could you call another session for the b34_display?
+    - Do you know what the display want to have?
+    - Please think about it".
   - '❓ Seeded from the Block''s face: rewrite it as the tree a newcomer needs'
 ```
 
@@ -53,6 +52,6 @@ background:
 Open
 ----
 
-1. The background was seeded from the Block's face on 2026-10-12: a person rewrites it as the tree a newcomer needs.
+1. The background was seeded from the Block's face on 2026-10-16: a person rewrites it as the tree a newcomer needs.
 
 (write here, or mark the drawing in red)

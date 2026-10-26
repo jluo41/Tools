@@ -2,7 +2,7 @@
 
 ## Ask
 
-JL 261012: every Block gets s00-background-and-index (background, the sNN and jNN and their progress); not slides; a tree; then emoji; then tree and box and -->; bigger type for zoomed out; group topics by a reason
+JL 261012: every Block gets s00-overview (background, the sNN and jNN and their progress); not slides; a tree; then emoji; then tree and box and -->; bigger type for zoomed out; group topics by a reason
 
 ## Summary
 
@@ -10,7 +10,7 @@ block_index.py draws s00 for all 82 Blocks (13 Tools, 69 WellDoc): background fr
 
 ## Changed
 
-- `studio/s00-background-and-index/ (face`
+- `studio/s00-overview/ (face`
 - `drawing`
 - `preview); haipipe-studio 0.12.0 to 0.13.0 (block_index.py`
 - `topic_map.py`

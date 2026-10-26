@@ -318,7 +318,7 @@ class StudioTest(unittest.TestCase):
         """JL 261012: "如果有 background，大概三个 frame 就差不多了 ... 就像 folder tree 那样", for s00 only: "I just mean for
         the s00 to have the tree, why you make all the others to be the tree as well"."""
         studio = self.block / "studio"
-        s00 = studio / "s00-background-and-index" / "s00-background-and-index.excalidraw"
+        s00 = studio / "s00-overview" / "s00-overview.excalidraw"
         self.assertEqual(canvas.frame_limit(s00), canvas.MAX_FRAMES)
         for free in (studio / "s05-x" / "s05-x.excalidraw", studio / "s32-element-ui" / "s32-element-ui.excalidraw",
                      studio / "s61-deck" / "s61-deck.excalidraw", self.block / "reports" / "q01_x" / "q01_x.excalidraw"):
@@ -352,7 +352,7 @@ class StudioTest(unittest.TestCase):
         self.assertIn("reads like a slide", buf.getvalue())
 
     def test_every_block_gets_its_background_and_index(self):
-        """JL 261012: "for every block, we also want to have the s00-background-and-index to show the background
+        """JL 261012: "for every block, we also want to have the s00-overview to show the background
         information, and what are the sNN and jNN and what are the progress of them"."""
         import block_index
         b = self.block

@@ -1,3 +1,11 @@
+## 0.17.4 · 2026-10-26 · s00's one name is s00-overview
+
+- `ref/ladder.md` `today: s00: s00-overview` (was s00-background-and-index, JL 261026: "maybe just call it
+  s00-overview"); `s00_was: [s00-background-and-index]` names the old one. `audit --today` flags an s00 still under
+  its old name; `update --today --apply` renames it whole (`ladder.s00_renames`, `rename_s00`): the folder, each file
+  and builder named after it, and every mention inside the Block. Tools' 15 Blocks were renamed with it. Test:
+  `test_the_old_name_is_flagged_and_renamed_whole`.
+
 ## 0.17.3 · 2026-10-25 · UTF-8 on Windows; a world's studio/ and a Block's mind map
 
 - `scripts/project.py` and `scripts/ladder.py`: faces, tickets, `project.yaml` and `run.yaml` are written as UTF-8
@@ -58,9 +66,9 @@
 ## 0.15.1 · 2026-10-12 · s00 has one name, and an old index's number is never reused
 
 - `audit --today` now checks a Block's background index (JL 261012: "s00 has a constant name"): a Block with
-  topics and no `studio/s00-background-and-index/` owes one; any other `s00-*` or `sNN-…background-index/` is debt
-  ("its one name is s00-background-and-index"); and a topic that takes the number an old index gave up when it
-  became s00 (read from `s00-background-and-index/history/pre-s00-*/topic/`) is debt. The name is the `today:`
+  topics and no `studio/s00-overview/` owes one; any other `s00-*` or `sNN-…background-index/` is debt
+  ("its one name is s00-overview"); and a topic that takes the number an old index gave up when it
+  became s00 (read from `s00-overview/history/pre-s00-*/topic/`) is debt. The name is the `today:`
   table's new `s00:` key. On Project-EB1A it found b21's `s01-charge-timeline` reusing s01; all 92 s00 topics in
   the repo, the Tools blueprints and the four SPACEs already carry the one name.
 - `tests/test_ladder_s00.py`: a clean Block, a Block without s00, a misnamed index, a reused number.

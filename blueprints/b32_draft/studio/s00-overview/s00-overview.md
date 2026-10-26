@@ -5,7 +5,7 @@ s00 · Background and index
 
 **Topic:** what this Block stands on, for a reader new to it, and an index of its studio topics (sNN), Jobs (jNN)
 and Questions (qNN) with how far each has come. The background is the yaml below, written by a person; the index
-is read from disk on every build (JL 2026-10-12: "for every block, we also want to have the s00-background-and-index").
+is read from disk on every build (JL 2026-10-12: "for every block, we also want to have the s00-overview").
 
 **Feeds:** none; it indexes the whole Block.
 
@@ -14,10 +14,10 @@ Files
 -----
 
 ```text
-s00-background-and-index/
-├── s00-background-and-index.md          this face; its yaml is the Background frame
-├── s00-background-and-index.excalidraw  the drawing: Background, then Index; a person's marks are kept
-└── s00-background-and-index.png         its preview
+s00-overview/
+├── s00-overview.md          this face; its yaml is the Background frame
+├── s00-overview.excalidraw  the drawing: Background, then Index; a person's marks are kept
+└── s00-overview.png         its preview
 ```
 
 Rebuild: `python <haipipe-studio>/scripts/block_index.py <this Block> --draw`, haipipe-studio being
@@ -39,14 +39,14 @@ background:
   - 🎯 Done when:
     - Each recorded question has a report Page with an answer status;
   - 📖 What it is about:
-    - The design theme makes N designs for one goal by one method, checks them, and releases the ones that pass;
-    - 'This Block designs that theme''s place on the ladder: The method (13 methods in 3 families, the six steps)
-      is the theme''s own: plugins/haipipe-toolkit/servers/workbench-design/guide/method.md.'
-    - Today's folder contract is haipipe-design/ref/method-folders.md beside it, where the method alone is the Job.
-    - The trees, skills and screens are defined once with every other theme's, in ../b10_project_workbench/studio/s01-overall-tree-structure/
-      (build_ladder_v4.py, level_views.py);
-  - 👉 Read next:
-    - 's04-design-structure, the thinking behind the design ladder: what a design method is and how it evolves (it was s00 until 2026-10-12)'
+    - 'JL 261011: "How do we really think about haipipe-page, it is more like the haipipe-draft, which contains
+      the logic, sentences, and evidence, and have a subfolder of draft to work on." What the Page skills manage
+      today …'
+    - The Page is the face a reader opens.
+    - This Block asks whether the base layer should be named and taught as the Draft, what a draft folder holds,
+      and how every theme (a paper Section, a report, a cowork email, a discovery or insight page) uses the same
+      draft.
+    - 'Excluded: the ladder and the shared screen (b10_project_workbench);'
   - '❓ Seeded from the Block''s face: rewrite it as the tree a newcomer needs'
 ```
 
