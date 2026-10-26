@@ -232,6 +232,8 @@ EXTRA_CSS = """<style>
 .pm-detail textarea{display:block;width:520px;min-height:90px;font:12.5px/1.5 ui-monospace,Menlo,monospace}
 .pm-sub{list-style:none;margin:0;padding:0 0 0 30px}.pm-sub li{padding:2px 0;font-size:13.5px}
 .pm-open{text-decoration:none;color:var(--mut)}.pm-open:hover{color:var(--acc)}
+.pm-pnode .pm-id:empty{display:none}           /* a branch with no kind: no grey line over its name */
+.pm-pnode .pm-id{text-transform:lowercase;letter-spacing:.02em}
 /* a point with no role keeps its pill hidden until the line is hovered, so a role can still be typed */
 .pm-leaves li .pm-role:empty,.pm-sub li .pm-role:empty{visibility:hidden}.pm-leaves li:hover>.pm-role:empty,.pm-sub li:hover>.pm-role:empty,.pm-role:empty:focus{visibility:visible}
 </style>"""

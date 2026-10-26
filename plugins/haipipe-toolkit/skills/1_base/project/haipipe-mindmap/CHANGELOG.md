@@ -1,6 +1,16 @@
 haipipe-mindmap · Changelog
 ===========================
 
+## [0.6.1] · 2026-10-26 · written maps: a kind per branch, a question between, a role per point
+
+- JL 261026: "你看你这都没有内容", "为啥这个 1 之后它就是下一行了", "你能不能再好好想想这个逻辑关系 … 你也可以自己加一加 … 太敷衍了".
+  The grey line over a branch's name is its kind (`[question] …`), or nothing; no bare number. b17's five maps are
+  written as §1 is: each branch a step of the topic's argument, the question it hands to the next, short points with
+  roles, the long text and the links (reports, faces, builders) in each detail.
+- A map with `written:` in its header keeps its branches on refresh; only its Files branch follows the disk. A node
+  with no builder hash (the root of a written map) is a person's, never rewritten. Renaming a branch keeps its kind.
+- Tests: 27.
+
 ## [0.6.0] · 2026-10-26 · one structure map, shared with the draft's §1; a skill again
 
 - JL 261026: "你把他们那个 map 也放到我们这个新的 skill 里面去 /haipipe-mindmap，这样的话他们就共享了，不用搞那么多代码了"

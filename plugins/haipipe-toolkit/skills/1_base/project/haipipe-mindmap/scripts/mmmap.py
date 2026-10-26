@@ -76,14 +76,15 @@ def draw(mm: MT.MindMap, rel: str = "", editable: bool = True, base: Path | None
     labels = {}
     paras, asks = [], {}
     for k, b in enumerate(mm.root.children):
-        labels[b.id] = str(k + 1)
+        kind, name = split_role(b.text)
+        labels[b.id] = kind                          # the grey line over a branch's name: its kind, or nothing
         asks[b.id] = split_note(b)[0]
         points = []
         for j, c in enumerate(b.children):
-            labels[c.id] = f"{k + 1}.{j + 1}"
+            labels[c.id] = f"{k + 1}.{j + 1}"           # a point's number, as §1's S1
             role, words = split_role(c.text)
             points.append((c.id, role, words, "\n".join(split_note(c)[1])))
-        paras.append((b.id, MT.ID_MARK.sub("", b.text), points))
+        paras.append((b.id, name, points))
 
     def more(s, note):
         body = MH.blocks(_resolve(note, base, url_of)) if note else ""
@@ -178,11 +179,12 @@ def act(root: Path, p: dict, read_only: bool = False) -> tuple:
             return gone
         ask, lines = split_note(node)
         if what == "para":
-            if norm(MT.ID_MARK.sub("", node.text)) != was:
+            kind, name = split_role(node.text)
+            if norm(name) != was:
                 return gone
             if not value:
                 return 400, {"ok": False, "err": "a branch needs a name"}
-            node.text = value
+            node.text = (f"[{kind}] " if kind else "") + value
         else:
             if norm(ask) != was:
                 return gone

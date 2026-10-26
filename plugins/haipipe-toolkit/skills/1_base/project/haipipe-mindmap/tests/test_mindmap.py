@@ -109,7 +109,7 @@ class Map(Case):
         self.assertIn('<p data-edit=arc data-raw="Why we go: rest."', out)  # the root's note, as §1's arc
         self.assertEqual(re.findall(r'<div class=pm-para data-p="([^"]+)">', out), ["n01", "n04", "n06"])
         self.assertEqual(re.findall(r'<li data-s="([^"]+)">', out), ["n02", "n03", "n05"])
-        self.assertIn('<span class=pm-id>2</span><b data-edit=para data-raw="When"', out)
+        self.assertIn('<span class=pm-id></span><b data-edit=para data-raw="When"', out)   # no kind: no grey line
         self.assertIn('<span class=pm-s draggable=true>1.2</span>', out)   # a point's number, as §1's S1
         self.assertIn("Budget `EUR`", out)
         detail = re.search(r'<li data-s="n05">.*?<div class=pm-detail hidden>(.*?)<button', out, re.S).group(1)
@@ -123,6 +123,14 @@ class Map(Case):
         self.assertIn('<div class=pm-q><span data-edit=ask data-p="n04" data-raw="Then how much can we spend?"', out)
         self.assertIn('<span class=pm-role data-edit=role data-raw="month" contenteditable=plaintext-only spellcheck=false>month</span>', out)
         self.assertIn('<span class=pm-t data-edit=words data-raw="May"', out)
+
+    def test_a_branchs_kind_is_the_grey_line_over_its_name(self):
+        self.md.write_text(SOURCE.replace("- When <!-- n04 -->", "- [plan] When <!-- n04 -->"), encoding="utf-8")
+        out = MM.fragment(self.md, "trip.mindmap.md")
+        self.assertIn('<span class=pm-id>plan</span><b data-edit=para data-raw="When"', out)
+        self.assertEqual(MM.act(self.dir, {"task": "trip.mindmap.md", "what": "para", "p": "n04", "was": "When",
+                                           "value": "When we go"})[0], 200)
+        self.assertEqual(self.text("n04"), "[plan] When we go")              # renaming keeps its kind
 
     def test_a_node_can_hold_nodes_at_any_depth_down_to_its_leaves(self):
         deep = SOURCE.replace("  - May <!-- n05 -->", "  - May <!-- n05 -->\n    - week 2 <!-- n07 -->\n      - Monday <!-- n08 -->\n        - 9am <!-- n09 -->")
@@ -291,6 +299,25 @@ class Builders(unittest.TestCase):
         MT.save(mm, topic / "m05-pics.mindmap.md")
         run("refresh", topic / "m05-pics.mindmap.md")
         self.assertEqual(MT.find(MT.load(topic / "m05-pics.mindmap.md"), lf.id)[0].note, ["my own detail"])
+
+    def test_a_written_map_keeps_its_own_branches_and_its_files_follow_the_disk(self):
+        topic = self.root / "studio" / "s06-notes"
+        topic.mkdir(parents=True)
+        (topic / "s06-notes.md").write_text("s06 · Notes\n==========\n\n**Topic:** what we note.\n\nFiles\n-----\n",
+                                            encoding="utf-8")
+        run("from-topic", topic)
+        md = topic / "m06-notes.mindmap.md"
+        mm = MT.load(md)
+        files = next(c for c in mm.root.children if c.id == "@files")
+        mm.root = MT.Node("root", "s06 · What we keep", [MT.Node("n01", "[question] Why note?"), files])
+        mm.meta["written"] = "261026"
+        MT.save(mm, md)
+        (topic / "extra.md").write_text("x")
+        run("refresh", md)
+        mm = MT.load(md)
+        self.assertEqual(mm.root.text, "s06 · What we keep")               # a person's root: never rewritten
+        self.assertEqual([c.id for c in mm.root.children], ["n01", "@files"])   # no builder branch comes back
+        self.assertIn("[md] [extra.md](extra.md)", [c.text for c in mm.root.children[1].children])
 
     def test_a_refresh_keeps_a_persons_node_and_words_and_updates_the_rest(self):
         block = work(self.root)

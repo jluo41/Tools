@@ -224,7 +224,8 @@ def refresh(old: MT.MindMap, new: MT.MindMap) -> dict:
     done = {"updated": 0, "added": 0, "dropped": 0}
 
     def merge(o: MT.Node, n: MT.Node):
-        if (o.built or o.id == "root") and not o.edited:   # asked once, before the words change
+        if o.hash and (o.built or o.id == "root") and not o.edited:   # asked once, before the words change; a node
+                                                                        # with no hash is a person's, never rewritten
             if (o.text, o.note) != (n.text, n.note):
                 o.text, o.note = n.text, list(n.note)          # words and detail as the builder writes them now
                 done["updated"] += 1
@@ -252,6 +253,9 @@ def refresh(old: MT.MindMap, new: MT.MindMap) -> dict:
             done["added"] += 1
         o.children = out
 
+    if old.meta.get("written"):                         # a map someone wrote: the builder keeps only the branches
+        keep = {c.id for c in old.root.children}        # it already has there (its Files), never adds its own back
+        new.root.children = [c for c in new.root.children if c.id in keep]
     merge(old.root, new.root)
     for k, v in new.meta.items():
         old.meta.setdefault(k, v)

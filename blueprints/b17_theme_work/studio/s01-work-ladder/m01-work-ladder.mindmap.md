@@ -1,34 +1,56 @@
 ---
 mindmap: 1
-title: s01 · work ladder · structured
+title: s01 · How work climbs the ladder · structured
 built: from-topic .
+written: 261026, from the topic's face
 ---
 
-# s01 · work ladder <!-- root #760a2f -->
+# s01 · How work climbs the ladder
 
-- Topic <!-- @topic #7e13bd -->
-  - every work row in one drawing, Block … <!-- @topic/0 #1d0014 -->
-    every work row in one drawing, Block down to Run (JL 261007).
-  - First the frame "work ladder · Q01": … <!-- @topic/1 #6df81b -->
-    First the frame "work ladder · Q01": this Block's proposed answer to Q01, a grid with one row per level (Block, Job, Task, Run), its folder on the left and one column per Space (Description | Idea Studio · Audience Report | Work Details | Runs · Delivery | the Run types panel); under it, where each of today's Task workbench views goes, and the open points in red.
-  - Then the Board, Job and Task levels, … <!-- @topic/2 #4d1c6c -->
-    Then the Board, Job and Task levels, each row with its folder, what it holds, its skills, and its screens, the proposal (teal, solid) above today's workbench (gray, dashed).
-- Source <!-- @source #6da13a -->
-  - the Q01 frame is this folder's own … <!-- @source/0 #64e471 -->
-    the Q01 frame is this folder's own (`build_s01_work_ladder.py`, the `GRID`, `MOVES` and `OPEN` tables).
-  - The rows below it are defined once … <!-- @source/1 #a1cb6f -->
-    The rows below it are defined once in `../../../b10_project_workbench/studio/s01-overall-tree-structure/` (`build_ladder_v4.py`, `level_views.py`); edit them there and this drawing follows on its next build.
-- Feeds <!-- @feeds #ffe8e9 -->
-  - `../../reports/` q01 (the ladder question) <!-- @feeds/0 #723053 -->
-- Files <!-- @files #6ce6c5 -->
+One drawing for every work row, Block down to Run: today's workbench against the proposed ladder (Q01).
+
+- [question] What Q01 asks <!-- n01 -->
+  → So what would one drawing have to show to answer it?
+  - [asks] What each level holds and shows on screen <!-- n02 -->
+    What do the task Block, a work Job, a work Task and a hard Run each hold and show on screen, and which of today's Scope, Task, Check and Delivery Views moves to which level? See [the Block face](../../board.md).
+  - [guess] Block keeps Questions, Job its Tasks, Task its Runs <!-- n03 -->
+    The hypothesis: the Block keeps its Questions (Audience Report) and Job series (Work Details groups); a Job's Work Details are its Tasks; a Task's Runs are its tickets; a Question's report reads them.
+  - [done when] Every level names its folder and six Spaces <!-- n04 -->
+    Answered when every level names its folder and its six Spaces' content, drawn in studio/.
+- [answer] The Q01 frame: one grid <!-- n05 -->
+  → Where do those rows come from, and who keeps them?
+  - [rows] One row per level: Block, Job, Task, Run <!-- n06 -->
+  - [columns] One column per Space <!-- n07 -->
+    Description | Idea Studio · Audience Report | Work Details | Runs · Delivery | the Run types panel, with each level's folder on the left.
+  - [moves] Where each of today's Task views goes <!-- n08 -->
+  - [open] Nine open points, drawn in red <!-- n09 -->
+- [levels] Board, Job and Task, row by row <!-- n10 -->
+  → Who owns those definitions?
+  - [each row] Its folder, what it holds, its skills, its screens <!-- n11 -->
+  - [proposed] Teal and solid, on top <!-- n12 -->
+  - [today] Grey and dashed, underneath <!-- n13 -->
+    The proposal sits above today's workbench on each row, so the change reads at a glance.
+- [source] Defined once, in b10 <!-- n14 -->
+  → Then what does it settle, and what is still open?
+  - [here] The Q01 frame is this folder's own <!-- n15 -->
+    [build_s01_work_ladder.py](build_s01_work_ladder.py): its `GRID`, `MOVES` and `OPEN` tables.
+  - [shared] The level rows come from b10's s01 <!-- n16 -->
+    `b10_project_workbench/studio/s01-overall-tree-structure/` (`build_ladder_v4.py`, `level_views.py`).
+  - [rule] Edit them there; this drawing follows <!-- n17 -->
+- [status] Feeds Q01, still proposed <!-- n18 -->
+  → Which open point decides the rest?
+  - [feeds] The ladder question's report <!-- n19 -->
+    [q01_work_ladder](../../reports/q01_work_ladder/q01_work_ladder.md)
+  - [decided] Nothing yet: proposed on 261007 <!-- n20 -->
+    Q01 stays open until JL settles it.
+- [open] The nine red points <!-- n21 -->
+  - [first] Does the work Job take the Block's six Spaces? <!-- n22 -->
+  - [then] b03's work Job row follows that answer <!-- n23 -->
+    If the work Job takes the Block's six Spaces, b03's work Job row follows; its owner, b03, changes it.
+  - [where] Listed under Limits in Q01's report <!-- n24 -->
+- [files] What the folder holds <!-- @files #6ce6c5 -->
   - [py] [build_s01_work_ladder.py](build_s01_work_ladder.py) <!-- @files/0 #c3da0c -->
   - [excalidraw] [s01-work-ladder.excalidraw](s01-work-ladder.excalidraw) <!-- @files/1 #7b5eab -->
   - [md] [s01-work-ladder.md](s01-work-ladder.md) <!-- @files/2 #f08117 -->
   - [png] [s01-work-ladder.png](s01-work-ladder.png) <!-- @files/3 #031882 -->
     ![s01-work-ladder.png](s01-work-ladder.png)
-- Decided so far <!-- @decided-so-far #f1f0e3 -->
-  - (none yet: Q01 is proposed, 261007, and … <!-- @decided-so-far/0 #d37c2b -->
-    (none yet: Q01 is proposed, 261007, and open until JL settles it)
-- Open <!-- @open #cf9b77 -->
-  - The nine red points of the Q01 … <!-- @open/0 #efa8ea -->
-    The nine red points of the Q01 frame, listed in `../../reports/q01_work_ladder/` under Limits. The first decides the rest of the drawing: if the work Job takes the Block's six Spaces, b03's work Job row follows (its owner, b03, changes it).
