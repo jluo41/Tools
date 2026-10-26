@@ -1,8 +1,8 @@
 ---
 name: haipipe-evidence
-description: "Find the evidence a claim needs and show it as cards: CITE (someone else's paper, from a discovery Run, external, blue) and VALUE (our own result, from a work Run, internal, violet). One card is one topic, a discovery or work Task or Job, holding many items; each item names the sentences it backs, the exact words it backs (anchor), and the Run it comes from. Reads the paper, quoted fact or value from the Run's result/, orders cards by the narrative, checks every address, and for each missing piece flags a proposal (a new Run, Task, Job or Studio topic, proposed by evidence, for a stated purpose) for a person to tick. Used by any page that needs support: a Section canvas, a Page's Evidence Space, a report, slides. Trigger: evidence, evidence card, CITE, VALUE, find the evidence, what backs this sentence, missing evidence, propose a run for evidence, /haipipe-evidence. Also a Page's evidence Runs (the old haipipe-draft-evidence, now ref/page-evidence.md): page evidence, evidence Run, land evidence items, embed the result, fold evidence, /haipipe-draft-evidence."
+description: "Find the evidence a claim needs and show it as cards: CITE (another paper, from a discovery Run) and VALUE (our own result, from a work Run). Each item names the sentences and exact words it backs and the Run it comes from; missing pieces become proposals (a new Run, Task or Job) for a person to tick. Also a Page's evidence Runs (ref/page-evidence.md). Its parts cite and work hold how to find each kind. Trigger: evidence, evidence card, CITE, VALUE, what backs this sentence, missing evidence, /haipipe-evidence, /haipipe-draft-evidence."
 metadata:
-  version: "0.8.0"
+  version: "0.8.1"
   last_updated: "2026-10-26"
 ---
 

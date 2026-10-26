@@ -14,7 +14,7 @@ Run owners keep their Tickets, Results, receipts and closure rules. The
 controller verifies and records a person-signed W handoff plus GI6 settlement.
 Design consumes its exact signed version as Insight input and owns its own Brief.
 
-Read [`ref/run-workflow.md`](ref/run-workflow.md) before planning, dispatch,
+Read [`ref/run-workflow.md`](run-workflow.md) before planning, dispatch,
 resume, or status; it defines concrete Spec templates, native Run inventory,
 storage, control records and completion. Read
 `../haipipe-insight/ref/question-groups.md` for register projections,
@@ -96,7 +96,7 @@ resource/version/target named in its receipt.
 
 A Question Group is a derived `partition × DIKW target` view of Queue cells;
 its state never allocates a Run or settles its members together. Load
-[`ref/partition-policy.md`](ref/partition-policy.md) for audience eligibility,
+[`ref/partition-policy.md`](partition-policy.md) for audience eligibility,
 COLUMN/cross/full-only routing, pooling, or late partition arrival. MT00 alone
 registers a partition; Question owns its asks and cell state. `cross` owns comparisons,
 has no raw D rows, and every partition-major W depends on the current verdict.
@@ -122,7 +122,7 @@ a target is ready; independent work may proceed concurrently under its owner.
 
 ### Task RF bridge
 
-For a Task Wisdom RF input, load [`ref/task-rf-bridge.md`](ref/task-rf-bridge.md)
+For a Task Wisdom RF input, load [`ref/task-rf-bridge.md`](task-rf-bridge.md)
 and check all five assertions. The exact accepted Task item owns its D/I/K/W
 chain; local Wisdom adds board applicability and counsel, then owes GI5 and
 Question-owned GI6. A bare R, below-Wisdom RF, stale Result, or incomplete chain
@@ -239,7 +239,7 @@ MT00 records GI0 and partition registration; Question registers record GI1,
 GI2-GI4 (the register facing the answer's level, since a run or a run result has no
 Folder log) and GI6; Wisdom records GI5. Include the runtime id,
 exact target, evidence/version, assertion, actor, outcome and next action.
-For GI5/GI6 and Design eligibility, use [`ref/handoff-record.md`](ref/handoff-record.md).
+For GI5/GI6 and Design eligibility, use [`ref/handoff-record.md`](handoff-record.md).
 Link any consumed native Run receipt; the Folder log cannot replace it.
 
 ## ⏱ Advancement is never scheduled
@@ -259,7 +259,7 @@ Run identity. Multiple cells may cite the same Run; count it once.
 
 ## Version changes and historical marks
 
-Read [`ref/migration.md`](ref/migration.md) when touching an older contract or
+Read [`ref/migration.md`](migration.md) when touching an older contract or
 stale record. Preserve old Results, signatures and settled marks. A changed
 current-use payload holds its dependent handoff until owners recheck it; never
 rewrite history to align a projection. Partial-final settlement leaves reciprocal

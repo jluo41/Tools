@@ -197,6 +197,8 @@ def tools_skills():
             if isinstance(aliases, str):
                 aliases = [aliases]
             problems = front_matter_problems(meta, err, name)
+            if meta.get("disable-model-invocation"):  # not in the listing, so its length costs nothing there
+                problems = [x for x in problems if not x.startswith("description ")]
             problems += ["broken link " + b for b in broken_links(folder)]
             rel = folder.relative_to(TOOLS)
             plugin = rel.parts[1] if len(rel.parts) > 1 else ""
@@ -342,6 +344,29 @@ def line_date(mm, pos):
 
 # ─── report ─────────────────────────────────────────────────────────────────
 
+def reachability(tools):
+    """Hidden skills a visible skill names by a resolving SKILL.md path; parts their door names."""
+    texts = {n: read_text(TOOLS / t["path"] / "SKILL.md") for n, t in tools.items()}
+    visible = {n for n, t in tools.items() if not t.get("hidden")}
+    out = {"hidden": 0, "hidden_ok": 0, "parts": 0, "parts_ok": 0, "unreachable": {}}
+    for n, t in tools.items():
+        if t.get("hidden"):
+            out["hidden"] += 1
+            target = (TOOLS / t["path"] / "SKILL.md").resolve()
+            ok = any((TOOLS / tools[v]["path"] / m).resolve() == target
+                     for v in visible for m in re.findall(r"[\w./-]*%s/SKILL\.md" % re.escape(n), texts[v]))
+            out["hidden_ok"] += ok
+            if not ok:
+                out["unreachable"][n] = "hidden, and no visible skill names its SKILL.md path"
+        for part in t["parts"]:
+            out["parts"] += 1
+            ok = re.search(r"_parts/%s\b|`%s`|\b%s\b" % ((re.escape(part),) * 3), texts[n]) is not None
+            out["parts_ok"] += ok
+            if not ok:
+                out["unreachable"][n] = "its door SKILL.md never names part %s" % part
+    return out
+
+
 def merge_candidates(tools):
     """Families: a skill X and helpers X-<y> in the same parent folder."""
     fams = defaultdict(list)
@@ -449,6 +474,12 @@ def build(args):
             "what": short_what(size.get("description", "")),
         })
 
+    reach = reachability(tools)
+    for r in rows:
+        why = reach["unreachable"].get(r["name"])
+        if why:
+            r["problems"] = " | ".join(filter(None, [r["problems"], "unreachable: " + why]))
+
     # what is loaded every session: everything visible in ~/.claude/skills plus plugins
     listed = [r for r in rows if "claude:" in r["installed"] or "plugin" in r["installed"]]
     total_listing = sum(r["listing_tokens"] for r in listed)
@@ -520,6 +551,8 @@ def build(args):
         "skill_calls": sum(s["calls"] for s in stats.values()),
         "commands": sum(s["commands"] for s in stats.values()),
         "problems": sum(1 for r in rows if r["problems"]),
+        "hidden": reach["hidden"], "hidden_reachable": reach["hidden_ok"],
+        "parts_named": reach["parts_ok"],
         "codex_links": codex["links"], "codex_dangling": codex["dangling"], "codex_targets": codex["targets"],
     }
     aliases = sorted(alias_of)
@@ -629,6 +662,8 @@ def write_md(path, rows, recs, summary, stats, aliases, args):
         ("Tools skills never used", "%d of %d" % (len(unused), len(tools_rows))),
         ("Skills with a problem", s["problems"]),
         ("Used in 2+ projects", sum(1 for r in tools_rows if r["projects"] >= 2)),
+        ("Hidden (listed: no), reachable from a door", "%d of %d" % (s.get("hidden_reachable", 0), s.get("hidden", 0))),
+        ("Parts named by their door", "%d of %d" % (s.get("parts_named", 0), s["tools_parts"])),
     ]))
     add("")
     add("**Key findings**")
@@ -791,7 +826,8 @@ def write_md(path, rows, recs, summary, stats, aliases, args):
     # 6. problems
     add("## 6. Problems")
     add("")
-    kinds = [("Broken links", lambda p: p.startswith("broken link")),
+    kinds = [("Unreachable", lambda p: p.startswith("unreachable")),
+             ("Broken links", lambda p: p.startswith("broken link")),
              ("Descriptions over 1,024 characters", lambda p: p.startswith("description")),
              ("Front matter", lambda p: p.startswith(("no ", "name ", "front matter"))),
              ("Install", lambda p: True)]

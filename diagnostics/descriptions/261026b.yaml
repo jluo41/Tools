@@ -1,0 +1,9 @@
+# Second pass (JL 261026, the full re-diagnosis): visible descriptions still over 1,024 characters.
+# remote-keyboard-typist is left as it is (in active use on the laptop).
+haipipe-evidence: >-
+  Find the evidence a claim needs and show it as cards: CITE (another paper, from a discovery Run)
+  and VALUE (our own result, from a work Run). Each item names the sentences and exact words it backs
+  and the Run it comes from; missing pieces become proposals (a new Run, Task or Job) for a person to
+  tick. Also a Page's evidence Runs (ref/page-evidence.md). Its parts cite and work hold how to find
+  each kind. Trigger: evidence, evidence card, CITE, VALUE, what backs this sentence, missing
+  evidence, /haipipe-evidence, /haipipe-draft-evidence.

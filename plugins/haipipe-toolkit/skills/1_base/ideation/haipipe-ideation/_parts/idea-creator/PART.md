@@ -165,7 +165,7 @@ Apply this fail-closed flow:
 
 This read-side gate covers only `query_pack.md`; fetched WebSearch/WebFetch
 content still follows the separate hygiene limits documented in
-[`injection-hygiene.md`](../shared-references/injection-hygiene.md).
+[`injection-hygiene.md`](../../../../../../../../references/aris/skills/shared-references/injection-hygiene.md).
 
 ### Phase 1: Landscape Survey (5-10 min)
 
@@ -199,9 +199,9 @@ surface more candidate ideas. This skill fans out *candidate generation*
 across analytic **lenses**, then funnels every candidate through the single
 Phase-4 cross-model jury. Fan-out widens the jury's input; it never makes the
 accept/reject decision. This follows
-[`shared-references/fan-out-pattern.md`](../shared-references/fan-out-pattern.md);
+[`shared-references/fan-out-pattern.md`](../../../../../../../../references/aris/skills/shared-references/fan-out-pattern.md);
 the verdict stays cross-model per
-[`shared-references/acceptance-gate.md`](../shared-references/acceptance-gate.md)
+[`shared-references/acceptance-gate.md`](../../../../../../../../references/aris/skills/shared-references/acceptance-gate.md)
 (idea novelty/quality is a Type-B verdict — same-family generation is fine,
 same-family *acquittal* is not).
 
@@ -231,7 +231,7 @@ domain-specific lens when the direction warrants.
 > the merged pool.
 
 **Per-shard output** (the generation-fan-out schema from
-[`fan-out-pattern.md`](../shared-references/fan-out-pattern.md) — `shard_id` +
+[`fan-out-pattern.md`](../../../../../../../../references/aris/skills/shared-references/fan-out-pattern.md) — `shard_id` +
 `candidates[]` + per-item `dedup_key`):
 ```json
 {"shard_id": "<lens id>", "candidates": [{"summary": "...", "hypothesis": "...",
@@ -333,10 +333,10 @@ Bundle contents:
 
 > **This phase does NOT judge idea quality, novelty, or impact.** Those are
 > Type-B verdicts reserved for the Phase-4 cross-model jury (see
-> [`shared-references/acceptance-gate.md`](../shared-references/acceptance-gate.md)).
+> [`shared-references/acceptance-gate.md`](../../../../../../../../references/aris/skills/shared-references/acceptance-gate.md)).
 > Eliminating ideas here on a same-family novelty or impact call would
 > pre-filter the jury's input with same-family quality judgment — exactly
-> what [`fan-out-pattern.md`](../shared-references/fan-out-pattern.md) forbids.
+> what [`fan-out-pattern.md`](../../../../../../../../references/aris/skills/shared-references/fan-out-pattern.md) forbids.
 > Phase 3 only (a) finishes the mechanical dedup from the fan-out merge and
 > (b) drops ideas that are **objectively** out of budget. Everything else
 > passes through **annotated, not eliminated** — the jury decides.
@@ -545,10 +545,10 @@ elif research-wiki/ exists AND [ -z "$WIKI_SCRIPT" ]:
 ## Output Protocols
 
 > Follow these shared protocols for all output files:
-> - **[Output Composition Protocol](../shared-references/output-composition.md)** — see composed-mode note below
-> - **[Output Versioning Protocol](../shared-references/output-versioning.md)** — write timestamped file first, then copy to fixed name
-> - **[Output Manifest Protocol](../shared-references/output-manifest.md)** — maintain `MANIFEST.md` only above the 15-artifact threshold (not "log every output")
-> - **[Output Language Protocol](../shared-references/output-language.md)** — respect the project's language setting
+> - **[Output Composition Protocol](../../../../../../../../references/aris/skills/shared-references/output-composition.md)** — see composed-mode note below
+> - **[Output Versioning Protocol](../../../../../../../../references/aris/skills/shared-references/output-versioning.md)** — write timestamped file first, then copy to fixed name
+> - **[Output Manifest Protocol](../../../../../../../../references/aris/skills/shared-references/output-manifest.md)** — maintain `MANIFEST.md` only above the 15-artifact threshold (not "log every output")
+> - **[Output Language Protocol](../../../../../../../../references/aris/skills/shared-references/output-language.md)** — respect the project's language setting
 
 > **Composed mode** — if invoked with `— composed: <canonical-report-path>` (e.g.
 > `/idea-discovery` passes `— composed: idea-stage/IDEA_REPORT.md`), that report is the
@@ -560,7 +560,7 @@ elif research-wiki/ exists AND [ -z "$WIKI_SCRIPT" ]:
 > path. **Default (no `— composed:` directive): standalone — write `IDEA_REPORT.md` and
 > any other documented files as normal.** Never infer composed mode from a report file
 > merely existing. Full rules:
-> [`shared-references/output-composition.md`](../shared-references/output-composition.md).
+> [`shared-references/output-composition.md`](../../../../../../../../references/aris/skills/shared-references/output-composition.md).
 
 ## Key Rules
 
@@ -574,7 +574,7 @@ elif research-wiki/ exists AND [ -z "$WIKI_SCRIPT" ]:
 - "Apply X to Y" is legitimate when Y can reveal a non-obvious interaction, failure mode, or finding — judge the revelation, not the template.
 - Include eliminated ideas in the report — they save future time by documenting dead ends.
 - **If the user's direction is broad (e.g., "NLP"), use Phase 1 to derive 2-3 concrete frames and generate across them — ask the user only when a missing constraint would materially change the pilot slate.** A good direction is 1-2 sentences specifying the problem, domain, and constraint — e.g., "factorized gap in discrete diffusion LMs" or "sample efficiency of offline RL with image observations". Without sufficient specificity, generated ideas will be too vague to run experiments on.
-- **Anti-hallucination for cited papers.** When the landscape survey or novelty justification cites specific papers, every cited paper must pass pre-search verification (`verify_papers.py`, canonical name resolved per [`shared-references/integration-contract.md`](../shared-references/integration-contract.md) §2; 3-layer arXiv / CrossRef / S2 fallback inside the helper itself). Policy D1 (primary + degraded-output fallback): if the helper is unresolved **or** its invocation fails, mark candidates `[UNVERIFIED]` and continue rather than dropping or guessing. Never fabricate arXiv IDs, DOIs, or titles from memory. Full protocol in [`shared-references/citation-discipline.md`](../shared-references/citation-discipline.md) § Pre-Search Verification Protocol.
+- **Anti-hallucination for cited papers.** When the landscape survey or novelty justification cites specific papers, every cited paper must pass pre-search verification (`verify_papers.py`, canonical name resolved per [`shared-references/integration-contract.md`](../../../../../../../../references/aris/skills/shared-references/integration-contract.md) §2; 3-layer arXiv / CrossRef / S2 fallback inside the helper itself). Policy D1 (primary + degraded-output fallback): if the helper is unresolved **or** its invocation fails, mark candidates `[UNVERIFIED]` and continue rather than dropping or guessing. Never fabricate arXiv IDs, DOIs, or titles from memory. Full protocol in [`shared-references/citation-discipline.md`](../../../../../../../../references/aris/skills/shared-references/citation-discipline.md) § Pre-Search Verification Protocol.
 
 ## Composing with Other Skills
 

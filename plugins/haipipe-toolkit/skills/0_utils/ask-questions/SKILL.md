@@ -16,14 +16,14 @@ associate its sections with questions. A Board's question order does not determi
 the reply's content, section order, or an extra layer of Question headings.
 
 For presentation in this workspace, read
-[response-format](../../../0_utils/response-format/SKILL.md). It owns the exact reply shape:
+[response-format](../response-format/SKILL.md). It owns the exact reply shape:
 scan points, a useful sketch when possible, explanation and any changed files,
 and each ordinary section's ONE question as its last line, the Related question
 (`**Related question:** [<Board> QNN "<short question>"](<question file>): <why>`, or
 `(proposed) <Board> "<short question>": <why>`). The final Summary and Next has none.
 Question matching follows drafting; the line makes that association visible without
 interrupting the normal discussion. What a board question is and how big it should be
-(a topic, not a decision) is [haipipe-report](../haipipe-report/SKILL.md).
+(a topic, not a decision) is [haipipe-report](../../1_base/project/haipipe-report/SKILL.md).
 
 ## Understand the question before asking
 
@@ -93,10 +93,10 @@ when that is where the record lives. Question attribution alone creates no folde
 allocates no stable ids, and changes no answer or Page state.
 
 For an explicit request to create or maintain question records, read
-[haipipe-report](../haipipe-report/SKILL.md) and its
-[Block Questions contract](../haipipe-report/ref/block-questions.md);
+[haipipe-report](../../1_base/project/haipipe-report/SKILL.md) and its
+[Block Questions contract](../../1_base/project/haipipe-report/ref/block-questions.md);
 for Report writing also read
-[haipipe-draft](../../draft/haipipe-draft/SKILL.md). Those owners govern question
+[haipipe-draft](../../1_base/draft/haipipe-draft/SKILL.md). Those owners govern question
 identity, work references and the Report's writing flow. Check the actual owner
 tooling against the requested destination before using a creation helper; a chat
 placement convention is not proof that older tooling supports that path.

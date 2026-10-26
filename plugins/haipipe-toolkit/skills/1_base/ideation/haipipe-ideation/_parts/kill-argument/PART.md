@@ -22,7 +22,7 @@ metadata:
 > attack changes only when the *paper* changes). Schedule the *external wait
 > that precedes it* — draft stable → then run this **once** before submission.
 > See
-> [`shared-references/external-cadence.md`](../shared-references/external-cadence.md).
+> [`shared-references/external-cadence.md`](../../../../../../../../references/aris/skills/shared-references/external-cadence.md).
 
 Stress-test the headline claims of a paper against the strongest possible rejection argument: **$ARGUMENTS**
 
@@ -155,7 +155,7 @@ Save the returned `threadId` for the trace; do NOT pass it to Thread 2.  Save th
 
 **Default OFF.** The deliverable of this skill *is* a verdict — the single
 strongest rejection paragraph — and
-[`shared-references/fan-out-pattern.md`](../shared-references/fan-out-pattern.md)
+[`shared-references/fan-out-pattern.md`](../../../../../../../../references/aris/skills/shared-references/fan-out-pattern.md)
 is explicit: **do not fan out the verdict; fan out only the evidence that
 feeds it.** The default single-commitment attack (Step 2) is deliberate —
 forcing one paragraph produces sharper feedback than a balanced list (see *Why

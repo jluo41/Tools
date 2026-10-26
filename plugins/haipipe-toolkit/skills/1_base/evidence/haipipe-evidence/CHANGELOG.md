@@ -1,5 +1,9 @@
 # haipipe-evidence · Changelog
 
+## [0.8.1] — 2026-10-26
+
+Shorter description (1075 -> 541 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026b.yaml). (describe 261026b)
+
 ## [0.8.0] — 2026-10-26
 
 Merged 2 helper skill(s) into `_parts/`: `haipipe-evidence-cite` -> `_parts/cite`, `haipipe-evidence-work` -> `_parts/work`. /haipipe-evidence reads `_parts/<name>/PART.md` instead of calling a separate skill; allowed-tools gained the parts' tools. Old commands map as `/haipipe-evidence-cite` -> `/haipipe-evidence cite`. (merge-parts 261026)
