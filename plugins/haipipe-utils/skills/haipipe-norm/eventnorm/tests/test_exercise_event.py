@@ -72,6 +72,18 @@ def t_words():
     return f"'{it['activity']}', 30 minutes, MET {next(iter(ev['output'].values()))['items'][0]['met']}"
 
 
+def t_zero_minutes():
+    """A logged workout whose duration is 0 has no minutes: no end, minutes and MET-minutes null, never 0 (t07 r02
+    found 4,707 such rows; s02-D14: a 0 is "not given")."""
+    row = {"ExerciseType": "1001", "EntrySourceID": "23", "ObservationDateTime": "12/26/2020 1:39:00 PM",
+           "TimezoneOffset": "-300", "ExerciseDuration": "0", "CaloriesBurned": "63"}
+    ev = event(raw={"type": "log", "rows": [row]})
+    assert ev["input"]["end"] is None and "minutes" not in (ev["input"]["total"] or {}), ev["input"]
+    (hour, b), = ev["output"].items()
+    assert b["total"]["minutes"] is None and b["total"]["met_minutes"] is None and b["total"]["calories"] == 63, b
+    return f"one hour, {hour}: minutes null, MET {b['total']['met']}, 63 kcal kept"
+
+
 def t_day_total():
     row = {"ExerciseType": "20903", "EntrySourceID": "20", "ObservationDateTime": "1/13/2022 5:59:00 AM",
            "TimezoneOffset": "-360", "ExerciseDuration": "24", "CaloriesBurned": "0"}
@@ -171,7 +183,7 @@ def t_every_workout():
 if __name__ == "__main__":
     print("eventnorm.exercise")
     for name, fn in (("each hour its own part", t_hours_add_up), ("words to an event", t_words),
-                     ("a day total is no event", t_day_total), ("what is refused", t_refusals),
+                     ("a day total is no event", t_day_total), ("a 0 duration is not given", t_zero_minutes), ("what is refused", t_refusals),
                      ("s02's examples", t_examples), ("a wearable file finds its type", t_wearable),
                      ("every workout of a stream", t_every_workout)):
         check(name, fn)

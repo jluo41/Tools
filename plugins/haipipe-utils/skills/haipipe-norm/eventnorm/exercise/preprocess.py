@@ -102,7 +102,7 @@ def logged(rows, asked: str) -> dict:
     row_kind = book["RowKind"] if book else "unread"
     kind = KIND.get(row_kind) or ("app_list" if book["Book"] == "welldoc_app" else "device_code")
     v = number(r.get("ExerciseDuration"))
-    minutes = None if v is None else int(v) if v == int(v) else v
+    minutes = None if not v else int(v) if v == int(v) else v   # a 0 is "not given" (s02-D14): no end, no 0 minutes
     start = clock(rows, "ObservationDateTime", offset="TimezoneOffset")
     end = plus(start, minutes) if start else None
     said = f"codebook ({book['Book']}): {code}" if book else f"no codebook row: {code}"
