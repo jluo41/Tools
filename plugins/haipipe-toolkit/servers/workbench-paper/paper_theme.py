@@ -1909,7 +1909,8 @@ def _draft_rows(d, board, root, rows):
 
 
 # ── Cover letter (JL 261007, s12): the letter as the editor reads it, one row per paragraph ───────────────
-ASSEMBLE = Path(__file__).resolve().parents[2] / "skills/2_theme/paper/haipipe-paper-assemble/scripts"
+from host_paths import skill_dir  # noqa: E402
+ASSEMBLE = skill_dir("haipipe-paper-assemble") / "scripts"      # a skill, or a part of haipipe-paper
 LETTER = (("¶1 · what we submit", "the version's face: title · article type · venue", ("submit", "what we", "manuscript")),
           ("¶2 · the one-minute story", "J1 · the one-minute story", ("story", "one-minute", "contribution", "finding")),
           ("¶3 · why this venue", "J2 · why this venue", ("venue", "fit", "journal", "why")),
@@ -2098,7 +2099,7 @@ def _jobs(d, board, root):
     return table(("Job", "kind", "Pages"), rows) if rows else _empty("No Job yet.")
 
 
-SECTION_SKILL = Path(__file__).resolve().parents[2] / "skills/2_theme/paper/haipipe-paper-draft"
+SECTION_SKILL = skill_dir("haipipe-paper-draft")
 READINESS = Path(__file__).resolve().parents[2] / "skills/2_theme/paper/haipipe-paper/ref/submission-readiness.md"
 CONTRACT = ("reader-question", "entry-state", "exit-state", "must-establish", "must-refuse", "transition-in",
             "transition-out", "story-row", "section_kind", "structure-source", "structure-division")

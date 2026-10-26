@@ -47,7 +47,26 @@ def skill_dir(name):
                     return child
                 below.append(child)
         level = below
-    return SKILLS / name
+    return part_dir(name) or SKILLS / name
+
+
+def part_dir(name):
+    """A skill that became a part of its door, `<door>/_parts/<part>/` (PART.md): found as `<door>-<part>` or as
+    `<part>` (haipipe-insight-check → haipipe-insight/_parts/check). None when no part has that name."""
+    for parts in sorted(SKILLS.rglob("_parts")):
+        if not parts.is_dir() or "node_modules" in parts.parts:
+            continue
+        door = parts.parent.name
+        for part in sorted(parts.iterdir()):
+            if part.is_dir() and name in (f"{door}-{part.name}", part.name):
+                return part
+    return None
+
+
+def skill_file(name):
+    """The page that says what a skill is: its SKILL.md, or a part's PART.md."""
+    folder = skill_dir(name)
+    return folder / "SKILL.md" if (folder / "SKILL.md").is_file() else folder / "PART.md"
 
 
 PAGE_ENGINE = skill_dir("haipipe-draft")            # cli/page.py and the src/ grammar every server reads

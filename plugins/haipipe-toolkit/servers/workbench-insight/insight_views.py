@@ -80,7 +80,8 @@ def _kind(label: str, prompt: str, *skills: str, rows=(), run: str = "") -> dict
 
 # the run cards are the one source of each button's Run, skill, agent, sign and prompt (b11 s21 step 2,
 # 261008): haipipe-insight-workflow/ref/run-cards.md, read through its own reader run_cards.py
-_CARDS_DIR = Path(__file__).resolve().parents[2] / "skills/2_theme/insight/haipipe-insight-workflow/scripts"
+from host_paths import skill_dir  # noqa: E402
+_CARDS_DIR = skill_dir("haipipe-insight-workflow") / "scripts"   # wherever it lives: a skill, or a part of its door
 _CARDS: dict = {}
 ALIAS = {"Write a report": ("Write the Data report", "Write the Information report", "Write the Knowledge report",
                             "Write the Wisdom report")}
