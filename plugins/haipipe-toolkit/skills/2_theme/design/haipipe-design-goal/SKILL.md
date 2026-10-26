@@ -12,15 +12,16 @@ description: >-
   board's design-goal.md (Aim · Venue · Rules · Resources · Leave out) keeps its
   contract in ref/legacy/. Trigger: design goal, goal list, add a design goal,
   shared rules, inputs version, freeze inputs, inputs fence, inputs manifest,
-  /haipipe-design-goal.
+  /haipipe-design goal.
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash
+disable-model-invocation: true
 metadata:
-  version: "0.4.1"
-  last_updated: "2026-10-09"
+  version: "0.4.2"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md
 ---
 
-# /haipipe-design-goal · what a design reads
+# /haipipe-design goal · what a design reads
 
 Version governance: this skill keeps its current version, `0.4.0`. Only explicit user approval may authorize a
 version change.

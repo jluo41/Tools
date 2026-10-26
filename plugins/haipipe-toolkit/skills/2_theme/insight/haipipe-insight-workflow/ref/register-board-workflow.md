@@ -5,7 +5,7 @@
 > workflow is the SKILL.md now: run cards, gates and routing between the Prototype and the insight Board.
 
 
-## (was) /haipipe-insight-workflow · execute Runs and record their dependencies
+## (was) /haipipe-insight workflow · execute Runs and record their dependencies
 
 Load `haipipe-insight`, `haipipe-draft` (its `ref/folder.md`), and `haipipe-run`. This controller
 owns the selected Run Spec graph, requested answer targets, GI0-GI6 assertion

@@ -10,12 +10,13 @@ description: >-
   links an accepted package to a Labeling Page before Contract. Use for an
   items Task's prompts, Data → Preparation, or a source that is not yet a
   pre-unitized, safely fenced corpus.
+disable-model-invocation: true
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-10-14"
+  version: "0.2.1"
+  last_updated: "2026-10-26"
 ---
 
-# /haipipe-labeling-preparation
+# /haipipe-labeling preparation
 
 ## The items Task (b15 s41-task-items-procedure)
 
@@ -26,7 +27,7 @@ hard Run in the Task's own `runs/`, run through its ticket, whose worker is the 
 forwarder `plan` writes).
 
 **Start from a path** (JL 261014: "I want to run this, and make it work"). Called with only a Job or Task folder,
-`/haipipe-labeling-preparation <Job or Task>` (or the labeling door, `/haipipe-labeling <Job>`), first open the UI and
+`/haipipe-labeling preparation <Job or Task>` (or the labeling door, `/haipipe-labeling <Job>`), first open the UI and
 read where the Job stands with the labeling door's start script:
 
 ```text

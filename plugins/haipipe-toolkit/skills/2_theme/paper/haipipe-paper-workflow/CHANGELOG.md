@@ -8,6 +8,8 @@ Links, commands and companions repointed at the helper skills merged into `haipi
 
 Commands to the excalidraw kinds now go through the door: `/excalidraw <kind>` (the `excalidraw-*` skills are hidden from the listing). (hide 261026)
 
+Also hidden from the skill listing (`disable-model-invocation: true`); `haipipe-paper` names it as a hidden helper and reads this SKILL.md by path. (hide 261026)
+
 ## 1.9.2 · 2026-10-11 · Redraw the paper map is the Board's
 
 - `ref/run-cards.md`: Redraw the paper map moves from Job › Idea Studio to Block › Idea Studio; a version keeps no Studio (b10 s09-D01), so the frame never showed the version's card. Its prompt draws one version's map as a Board topic, `studio/sNN-papermap-<version>/`. `workbench-paper/ref/workbench-table.md` matches; `table-workbench --check --cards` passes.

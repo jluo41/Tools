@@ -12,3 +12,8 @@
   designs.json schema (`ref/designs-schema.md`): b12 s12 decided "one owner for the one file another system reads".
 - `scripts/release.py` (+ test): a Job's kept, passed designs with frozen predictions into its `delivery/` and the
   Block's, never twice; `--freeze <YYMMDD>` freezes draft predictions first.
+
+
+## [0.4.1] — 2026-10-26
+
+Hidden from the skill listing (`disable-model-invocation: true`); reached through the `/haipipe-design` door, which reads this SKILL.md by path. Nothing moved; `/haipipe-design-delivery` still works when a person types it. (hide 261026)

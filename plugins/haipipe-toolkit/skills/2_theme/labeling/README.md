@@ -86,17 +86,17 @@ artifacts.
 | skill | folder under `skills/2_theme/labeling/` | responsibility |
 |---|---|---|
 | `/haipipe-labeling` | `haipipe-labeling/` | auto-route the job through the family |
-| `/haipipe-labeling-building` | `haipipe-labeling-building/` | the Building law: Contract, Round, Freeze; its step order (steps 1-13), allocation and receipts in `ref/step-order.md` |
-| `/haipipe-labeling-scanning` | `haipipe-labeling-scanning/` | the Scanning law: Test, Scan, Audit; its step order (steps 14-26), allocation and receipts in `ref/step-order.md` |
-| `/haipipe-labeling-workflow` | `haipipe-labeling-workflow/` | Run Specs, dependencies, gates, Routes, handoff and invalidation |
-| `/haipipe-labeling-preparation` | `1_data/haipipe-labeling-preparation/` | transcript units, group reservation and the source-owned Data → Preparation Runs |
+| `/haipipe-labeling building` | `haipipe-labeling-building/` | the Building law: Contract, Round, Freeze; its step order (steps 1-13), allocation and receipts in `ref/step-order.md` |
+| `/haipipe-labeling scanning` | `haipipe-labeling-scanning/` | the Scanning law: Test, Scan, Audit; its step order (steps 14-26), allocation and receipts in `ref/step-order.md` |
+| `/haipipe-labeling workflow` | `haipipe-labeling-workflow/` | Run Specs, dependencies, gates, Routes, handoff and invalidation |
+| `/haipipe-labeling preparation` | `1_data/haipipe-labeling-preparation/` | transcript units, group reservation and the source-owned Data → Preparation Runs |
 | `/haipipe-labeling-<view>` | `<N>_<space>/haipipe-labeling-<view>/` (11, grouped by Space) | one context Skill per workbench View; a Run Type also declares shared workflow, domain, and procedure Skills |
 | `/haipipe-page-for-labeling` | `page-types/haipipe-page-for-labeling/` | the Job Page type: one Page per corpus and target |
 | `/workbench-labeling` | `workbench-labeling/` | the 🏷 Labeling lane beside a Page: four Spaces, Runs panels and one write door |
 
 Retired names route through the umbrella: `/label-init` and `/label-round` go
-to `/haipipe-labeling-building`; `/label-evaluate` and `/label-complete` go to
-`/haipipe-labeling-scanning`; `/label-status` is `/haipipe-labeling status`.
+to `/haipipe-labeling building`; `/label-evaluate` and `/label-complete` go to
+`/haipipe-labeling scanning`; `/label-status` is `/haipipe-labeling status`.
 
 ## Theme contents
 

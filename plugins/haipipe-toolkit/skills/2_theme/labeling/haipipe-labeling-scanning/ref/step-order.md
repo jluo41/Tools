@@ -1,7 +1,7 @@
 <!-- Folded from the haipipe-labeling-scanning skill on 2026-10-07 (JL): the Scanning step order,
      its text kept, with its own name updated. Its law is ../SKILL.md. -->
 
-# /haipipe-labeling-scanning · the Scanning step order
+# /haipipe-labeling scanning · the Scanning step order
 
 Load `haipipe-labeling` (family), `haipipe-labeling-workflow` (the Run Spec
 graph and Routes), and `haipipe-labeling-scanning` (semantic authority and restrictions)

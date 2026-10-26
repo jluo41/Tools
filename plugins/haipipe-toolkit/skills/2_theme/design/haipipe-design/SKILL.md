@@ -15,8 +15,8 @@ description: >-
   set up a design Block, launch a design Job, open the design Tasks, design
   ladder, /haipipe-design.
 metadata:
-  version: "0.4.1"
-  last_updated: "2026-10-09"
+  version: "0.4.2"
+  last_updated: "2026-10-26"
   folder_owner: canonical
   folder_kind: design
   primary_face: board
@@ -28,6 +28,12 @@ metadata:
 ---
 
 # /haipipe-design · the design ladder's door
+
+> **Hidden helpers** (JL 261026: not in the skill listing, `disable-model-invocation: true`): when this door names one below, read its SKILL.md by path; the Skill tool cannot load it. A person can still type its `/name`.
+>
+> - `haipipe-design-brief` → `../haipipe-design-brief/SKILL.md`
+> - `haipipe-design-goal` → `../haipipe-design-goal/SKILL.md`
+> - `haipipe-design-delivery` → `../haipipe-design-delivery/SKILL.md`
 
 ## Version governance
 

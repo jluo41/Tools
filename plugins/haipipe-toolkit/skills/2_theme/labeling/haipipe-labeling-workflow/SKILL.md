@@ -6,14 +6,15 @@ description: >-
   compatibility capability/gate labels on domain records; they are not
   independent lifecycle units or owners. The graph connects the Building and
   Scanning Run Specs across the immutable Label Handoff. Use when resolving
-  the next eligible Run Spec, a held route, or /haipipe-labeling-workflow.
+  the next eligible Run Spec, a held route, or /haipipe-labeling workflow.
+disable-model-invocation: true
 metadata:
-  version: "0.12.1"
-  last_updated: "2026-09-29"
+  version: "0.12.2"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# /haipipe-labeling-workflow · the Labeling Run graph
+# /haipipe-labeling workflow · the Labeling Run graph
 
 Load `haipipe-labeling` first. **A Workflow is a list of Runs.** Its definition
 is the list of planned Run Specs plus their dependency/Route graph and

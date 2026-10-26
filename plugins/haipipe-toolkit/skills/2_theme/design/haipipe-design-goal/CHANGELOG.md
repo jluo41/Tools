@@ -24,8 +24,11 @@
 - One run type per Design Goal view, run by haipipe-designer-agent; the person signs
   the aim and the rules. Starts at the Design family version 0.4.0.
 
+## [0.4.2] — 2026-10-26
+
+Hidden from the skill listing (`disable-model-invocation: true`); reached through the `/haipipe-design` door, which reads this SKILL.md by path. Nothing moved; `/haipipe-design-goal` still works when a person types it. (hide 261026)
+
 ## 0.4.1 · 2026-10-09 · Theme folders are singular
 
 - Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
   `design/`, `labeling/`, `ideation/`; the older plural names still read.
-

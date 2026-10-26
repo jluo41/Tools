@@ -1,5 +1,9 @@
 # label-building · CHANGELOG
 
+## [0.9.2] — 2026-10-26
+
+Hidden from the skill listing (`disable-model-invocation: true`); reached through the `/haipipe-labeling` door, which reads this SKILL.md by path. Nothing moved; `/haipipe-labeling-building` still works when a person types it. (hide 261026)
+
 ## 0.10.0 · 2026-10-14 · lm_labeler, with open-model engines
 
 - `engine/label.py` gains `lm_labeler(job_root, item_ids, guideline, engine)` (b15 s42-D54): label, region,

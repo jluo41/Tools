@@ -13,7 +13,7 @@ These are about the METHODOLOGY being surprising, not about the skill docs being
 wrong (that's feedback). A lesson is a "don't touch the stove" note for future
 labeling projects.
 
-The key contract: BEFORE starting /haipipe-labeling-building or /haipipe-labeling-scanning, the
+The key contract: BEFORE starting /haipipe-labeling building or /haipipe-labeling scanning, the
 agent MUST scan the lesson/ folder for relevant lessons and flag any that apply.
 Lessons are guardrails, not just history.
 

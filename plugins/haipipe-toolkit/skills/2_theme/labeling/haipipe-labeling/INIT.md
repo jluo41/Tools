@@ -448,7 +448,7 @@ process is working.
   Trajectory shape       Meaning                     Action
   ────────────────       ───────                     ──────
   Monotonically up       Process is working           Keep going
-  Plateau                Guideline has converged      Ready for /haipipe-labeling-scanning test
+  Plateau                Guideline has converged      Ready for /haipipe-labeling scanning test
   Drop after a change    That change hurt             Revert or investigate
   Oscillating            Rules contradict each other  Step back, simplify
 ```
@@ -583,7 +583,7 @@ The Full Picture
   └─────────┘   └──────────┘   └──────────┘   └──────────────────────────┘
                                                         │
                                                         ↓
-                                                  ALL PASS → /haipipe-labeling-scanning scan
+                                                  ALL PASS → /haipipe-labeling scanning scan
                                                   ANY FAIL → back to PROCESS
 ```
 
@@ -597,4 +597,4 @@ Init is complete when ALL FOUR evaluations pass:
   E3: Guideline + LLM reproduces gold labels at or above human ceiling
   E4: Process converged efficiently, user confirms intent was captured
 
-Then: /haipipe-labeling-building round (for further refinement) or /haipipe-labeling-scanning scan (for full corpus).
+Then: /haipipe-labeling building round (for further refinement) or /haipipe-labeling scanning scan (for full corpus).

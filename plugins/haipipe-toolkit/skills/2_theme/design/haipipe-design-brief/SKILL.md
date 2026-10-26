@@ -7,10 +7,11 @@ description: >-
   authorizes. On the design ladder the Block's goal list (haipipe-design-goal,
   board.md ## Goals) replaced it; never write a Brief on a ladder Block.
   Trigger: design brief, application brief, folder-kind brief,
-  /haipipe-design-brief.
+  /haipipe-design brief.
+disable-model-invocation: true
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-09-28"
+  version: "0.4.1"
+  last_updated: "2026-10-26"
   folder_owner: canonical
   folder_kind: brief
   primary_face: page
@@ -21,7 +22,7 @@ metadata:
     shape: "Opportunity → Audience Set and Behavior → Outcome and Kill Criteria → Venue Scope → Promise → Insight Needs Raised → Frozen Signed-W Inputs → What to design"
 ---
 
-# /haipipe-design-brief · frame the Application (older boards only)
+# /haipipe-design brief · frame the Application (older boards only)
 
 > **Legacy (261007).** This skill serves an older board (`B00_DesignBoard-<name>/` with `0-BR-brief/`)
 > until it is carried over. On the design ladder (`haipipe-design/ref/design-ladder.md`) the Block's goal

@@ -12,8 +12,8 @@ description: >-
   a labeling Job folder, it opens the workbench on the step the Job is at and
   guides the person through it, one step at a time, from the items Task on.
 metadata:
-  version: "0.11.1"
-  last_updated: "2026-10-14"
+  version: "0.11.2"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -45,7 +45,7 @@ and guide me step by step"). A labeling Job is one dataset × one label; its Tas
 2. **Say where it stands**, in a few lines: the Job's Tasks with ▶ on the current one, the data it reads, the step
    now, any `note` as it is, and the tab now open by its full `open` link (never a bare `/_board/...` path).
 3. **Guide that one step**, then stop:
-   - `who: agent` on the items Task: do it now through `/haipipe-labeling-preparation` (its "The items Task"):
+   - `who: agent` on the items Task: do it now through `/haipipe-labeling preparation` (its "The items Task"):
      describe runs to the end; items and embed stop once their recipe or build is proposed. Then tell the person
      what to look at in the open tab, and what to press.
    - `who: person`: say exactly what to press in which tab (Sign the recipe, Agree the build), and that the next
@@ -140,22 +140,46 @@ their gate receipts win whenever a rendered view disagrees.
 
 ```text
 enter | status            resolve the job and derive both frontiers from disk
-building | build | teach  forward to /haipipe-labeling-building (law), which hands execution
-                          to /haipipe-labeling-building (order)
-scanning | scan           forward to /haipipe-labeling-scanning (law), which hands execution
-                          to /haipipe-labeling-scanning (order)
-workflow | run | drive    forward to /haipipe-labeling-workflow, which hands the
+building | build | teach  forward to /haipipe-labeling building (law), which hands execution
+                          to /haipipe-labeling building (order)
+scanning | scan           forward to /haipipe-labeling scanning (law), which hands execution
+                          to /haipipe-labeling scanning (order)
+workflow | run | drive    forward to /haipipe-labeling workflow, which hands the
                           runnable side to its ORDER machine
 one Run | one view        forward to that view's skill (/haipipe-labeling-<view>),
                           which holds the Run's own steps
-raw corpus | preparation forward to /haipipe-labeling-preparation before Contract
+raw corpus | preparation forward to /haipipe-labeling preparation before Contract
 feedback | digest         use the existing family feedback procedures
+```
+
+`/haipipe-labeling <kind>` (and "forward to" above) means: read that kind's SKILL.md and follow it
+with the remaining args. The kind skills are hidden from the skill listing
+(`disable-model-invocation: true`, JL 261026), so this door reads them by path; a person can still
+type `/haipipe-labeling-<kind>`.
+
+```text
+kind           read
+workflow       ../haipipe-labeling-workflow/SKILL.md      gates G0-G6, the ORDER machine
+building       ../haipipe-labeling-building/SKILL.md      the building law
+scanning       ../haipipe-labeling-scanning/SKILL.md      the scanning law
+preparation    ../1_data/haipipe-labeling-preparation/SKILL.md
+contract       ../1_data/haipipe-labeling-contract/SKILL.md
+embedding      ../1_data/haipipe-labeling-embedding/SKILL.md
+definition     ../2_labeling/haipipe-labeling-definition/SKILL.md
+guideline      ../2_labeling/haipipe-labeling-guideline/SKILL.md
+rounds         ../2_labeling/haipipe-labeling-rounds/SKILL.md
+audit          ../3_quality/haipipe-labeling-audit/SKILL.md
+evaluation     ../3_quality/haipipe-labeling-evaluation/SKILL.md
+test           ../3_quality/haipipe-labeling-test/SKILL.md
+final-labels   ../4_delivery/haipipe-labeling-final-labels/SKILL.md
+handoff        ../4_delivery/haipipe-labeling-handoff/SKILL.md
+scan           ../4_delivery/haipipe-labeling-scan/SKILL.md
 ```
 
 No-argument behavior:
 
 1. resolve the job;
-2. load `haipipe-labeling-workflow` (it defines gates G0-G6) and derive the
+2. read `../haipipe-labeling-workflow/SKILL.md` (it defines gates G0-G6) and derive the
    highest valid gate from canonical artifacts;
 3. dispatch the single next runnable action, allocating or resuming its exact
    Level-4 Run only when its Ticket contract is ready;
@@ -173,8 +197,8 @@ preceded this rename. When
 a person types one, announce the canonical route and continue there:
 
 ```text
-/label-init · /label-round      → /haipipe-labeling-building
-/label-evaluate · /label-complete → /haipipe-labeling-scanning
+/label-init · /label-round      → /haipipe-labeling building
+/label-evaluate · /label-complete → /haipipe-labeling scanning
 /label-status                   → /haipipe-labeling status
 ```
 

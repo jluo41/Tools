@@ -24,19 +24,19 @@ page's workbench (`servers/workbench-design/design.py`) reads them, and their on
 🧩 SKILL    haipipe-design-goal
 🤖 AGENT    haipipe-designer-agent
 ✍️ SIGNS    the goal
-💬 PROMPT   /haipipe-design-goal add a goal to {folder}/board.md ## Goals (id · aim · who · venue · n · its own rules · leave out), as run-add-goal-<goal>; show me the line before writing, and I sign it.
+💬 PROMPT   /haipipe-design goal add a goal to {folder}/board.md ## Goals (id · aim · who · venue · n · its own rules · leave out), as run-add-goal-<goal>; show me the line before writing, and I sign it.
 
 🔘 BUTTON   Set the shared rules · Block › Description · ^run-setup-rules · views goals
 🧩 SKILL    haipipe-design-goal
 🤖 AGENT    haipipe-designer-agent
 ✍️ SIGNS    the rules
-💬 PROMPT   /haipipe-design-goal set the rules every goal of {folder} keeps in design-goal.md, each checkable on the text alone, as run-setup-rules; show me the changes first.
+💬 PROMPT   /haipipe-design goal set the rules every goal of {folder} keeps in design-goal.md, each checkable on the text alone, as run-setup-rules; show me the changes first.
 
 🔘 BUTTON   Add an inputs version · Block › Description · ^run-add-inputs- · views inputs
 🧩 SKILL    haipipe-design-goal
 🤖 AGENT    haipipe-designer-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-design-goal freeze a new inputs version of {folder}: inputs/iN/ (the rules, theory, the insight handoff copied in) and its manifest.yaml with each file's sha256, as run-add-inputs-i<N>; say what is new against the last version.
+💬 PROMPT   /haipipe-design goal freeze a new inputs version of {folder}: inputs/iN/ (the rules, theory, the insight handoff copied in) and its manifest.yaml with each file's sha256, as run-add-inputs-i<N>; say what is new against the last version.
 
 🔘 BUTTON   Launch a Job · Block › Description · ^run-add-job- · views map
 🧩 SKILL    haipipe-design
@@ -68,7 +68,7 @@ page's workbench (`servers/workbench-design/design.py`) reads them, and their on
 🧩 SKILL    haipipe-design-delivery
 🤖 AGENT    haipipe-designer-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-design-delivery build the one-page summary of {folder} with scripts/summary.py (--example jNN:dNN to trace a chosen design) into delivery/summary.html · summary.pdf, check the PDF is one page, and say what it shows; as run-build-summary.
+💬 PROMPT   /haipipe-design delivery build the one-page summary of {folder} with scripts/summary.py (--example jNN:dNN to trace a chosen design) into delivery/summary.html · summary.pdf, check the PDF is one page, and say what it shows; as run-build-summary.
 
 🔘 BUTTON   Add the Exp's data · Block › Audience Report · ^run-add-observed- · views predicted-vs-observed
 🧩 SKILL    haipipe-design-method
@@ -96,7 +96,7 @@ page's workbench (`servers/workbench-design/design.py`) reads them, and their on
 🧩 SKILL    haipipe-design-goal
 🤖 AGENT    haipipe-designer-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-design-goal confirm {folder}'s face pins a signed goal of the Block's goal list and its n matches, as run-setup-goal-j<NN>; it writes nothing else (inputs/goal.md is run-setup-inputs').
+💬 PROMPT   /haipipe-design goal confirm {folder}'s face pins a signed goal of the Block's goal list and its n matches, as run-setup-goal-j<NN>; it writes nothing else (inputs/goal.md is run-setup-inputs').
 
 🔘 BUTTON   Set up the method · Job › Description · ^run-setup-method- · views method
 🧩 SKILL    haipipe-design-method
@@ -108,7 +108,7 @@ page's workbench (`servers/workbench-design/design.py`) reads them, and their on
 🧩 SKILL    haipipe-design-goal
 🤖 AGENT    haipipe-designer-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-design-goal build {folder}'s fence: inputs/ with links into the pinned inputs version, chosen by the method's step ①, and manifest.yaml with each file's source and sha256 (first 12 hex), plus inputs/goal.md from the goal list, once inputs/method.md is pinned, as run-setup-inputs-j<NN>.
+💬 PROMPT   /haipipe-design goal build {folder}'s fence: inputs/ with links into the pinned inputs version, chosen by the method's step ①, and manifest.yaml with each file's source and sha256 (first 12 hex), plus inputs/goal.md from the goal list, once inputs/method.md is pinned, as run-setup-inputs-j<NN>.
 
 🔘 BUTTON   Close the Job · Job › Description · ^run-close- · views goal
 🧩 SKILL    haipipe-design-workflow
@@ -163,7 +163,7 @@ in Audience Report › Predicted vs observed and Performance, Runs › Review wh
 🧩 SKILL    haipipe-design-delivery
 🤖 AGENT    haipipe-designer-agent
 ✍️ SIGNS    the predictions and the release, once
-💬 PROMPT   /haipipe-design-delivery review and approve {folder}: show me each kept design as it reads, its prediction (predicted · against · why) and its review; when I sign, freeze the predictions and release the designs in one session (release.py --freeze <YYMMDD>), recorded as run-freeze-predictions-j<NN> and run-release-j<NN>, whose card says who signed, when and how in one line (signed: <who> <YYMMDD> · one by one | all N at once).
+💬 PROMPT   /haipipe-design delivery review and approve {folder}: show me each kept design as it reads, its prediction (predicted · against · why) and its review; when I sign, freeze the predictions and release the designs in one session (release.py --freeze <YYMMDD>), recorded as run-freeze-predictions-j<NN> and run-release-j<NN>, whose card says who signed, when and how in one line (signed: <who> <YYMMDD> · one by one | all N at once).
 
 ## Task › Runs · a design Task's own buttons
 
@@ -233,13 +233,13 @@ The cards below are the older page's, unchanged: its header read as follows.
 🤖 AGENT    haipipe-designer-agent
 🧩 SKILL    haipipe-design-brief
 ✍️ SIGNS    the task list
-💬 PROMPT   /haipipe-design-brief add design tasks to {board}: one per subgroup (who receives it), with their job, the venue and how many designs, and open a Design Folder for each. Ask me for the subgroups first.
+💬 PROMPT   /haipipe-design brief add design tasks to {board}: one per subgroup (who receives it), with their job, the venue and how many designs, and open a Design Folder for each. Ask me for the subgroups first.
 
 🔘 BUTTON   Set shared rules · Tasks · - · views shared-rules
 🤖 AGENT    haipipe-designer-agent
 🧩 SKILL    haipipe-design-brief
 ✍️ SIGNS    the rules
-💬 PROMPT   /haipipe-design-brief {board}: list the rules every design task keeps, each checkable on the text alone, and show me the changes before writing.
+💬 PROMPT   /haipipe-design brief {board}: list the rules every design task keeps, each checkable on the text alone, and show me the changes before writing.
 
 
 ## Board · Theory of Design
@@ -257,25 +257,25 @@ The cards below are the older page's, unchanged: its header read as follows.
 🤖 AGENT    haipipe-designer-agent
 🧩 SKILL    haipipe-design-goal
 ✍️ SIGNS    the aim
-💬 PROMPT   /haipipe-design-goal aim for {page}: fill the Aim lines of the design-goal.md beside {board} (value wanted, their moment, for whom, measured by, baseline), each with its source; ask me what no file says.
+💬 PROMPT   /haipipe-design goal aim for {page}: fill the Aim lines of the design-goal.md beside {board} (value wanted, their moment, for whom, measured by, baseline), each with its source; ask me what no file says.
 
 🔘 BUTTON   Pin the venue · Goal · - · views venue
 🤖 AGENT    haipipe-designer-agent
 🧩 SKILL    haipipe-design-goal
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-design-goal venue for {page}: read the venue profile, then write only the Venue lines this board fixes or narrows in the design-goal.md beside {board}, each with its source.
+💬 PROMPT   /haipipe-design goal venue for {page}: read the venue profile, then write only the Venue lines this board fixes or narrows in the design-goal.md beside {board}, each with its source.
 
 🔘 BUTTON   Set the rules · Goal · - · views rules
 🤖 AGENT    haipipe-designer-agent
 🧩 SKILL    haipipe-design-goal
 ✍️ SIGNS    the rules
-💬 PROMPT   /haipipe-design-goal rules for {page}: list each rule every design must keep, checkable on the text alone, in the design-goal.md beside {board}; keep the register's acceptance lines in step and show me the changes first.
+💬 PROMPT   /haipipe-design goal rules for {page}: list each rule every design must keep, checkable on the text alone, in the design-goal.md beside {board}; keep the register's acceptance lines in step and show me the changes first.
 
 🔘 BUTTON   Gather resources · Goal · - · views resources
 🤖 AGENT    haipipe-designer-agent
 🧩 SKILL    haipipe-design-goal
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-design-goal resources for {page}: list what the designer may draw on (starting text, past designs and what became of them, theory, budget) in the design-goal.md beside {board}, each with its source.
+💬 PROMPT   /haipipe-design goal resources for {page}: list what the designer may draw on (starting text, past designs and what became of them, theory, budget) in the design-goal.md beside {board}, each with its source.
 
 🔘 BUTTON   Add a theory · Goal · - · views resources
 🤖 AGENT    haipipe-discovery-orchestrator-agent
@@ -287,7 +287,7 @@ The cards below are the older page's, unchanged: its header read as follows.
 🤖 AGENT    haipipe-designer-agent
 🧩 SKILL    haipipe-design-goal
 ✍️ SIGNS    the rules
-💬 PROMPT   /haipipe-design-goal leave out for {page}: list each thing that must never appear in the message, and why, in the design-goal.md beside {board}; show me the changes first.
+💬 PROMPT   /haipipe-design goal leave out for {page}: list each thing that must never appear in the message, and why, in the design-goal.md beside {board}; show me the changes first.
 
 
 ## Page · Design

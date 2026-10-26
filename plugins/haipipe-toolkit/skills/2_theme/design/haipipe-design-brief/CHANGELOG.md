@@ -2,6 +2,10 @@
 
 - 261007 · review fixes (version unchanged): Domain examples replaced by placeholders (no partition name); the agent card says older boards only; method-folders.md path fixed.
 
+## [0.4.1] — 2026-10-26
+
+Hidden from the skill listing (`disable-model-invocation: true`); reached through the `/haipipe-design` door, which reads this SKILL.md by path. Nothing moved; `/haipipe-design-brief` still works when a person types it. (hide 261026)
+
 ## 0.4.0 current · 2026-10-07 · Legacy: older boards only (JL 261007) (version unchanged)
 
 - On the design ladder the Block's goal list (`haipipe-design-goal`, `board.md ## Goals`) replaced the

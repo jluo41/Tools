@@ -76,13 +76,25 @@ def owner(path):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--door", required=True)
-    ap.add_argument("--prefix", required=True)
-    ap.add_argument("--dir", required=True)
+    ap.add_argument("--prefix", required=True, help="the shared name prefix, stripped to get the kind")
+    ap.add_argument("--dir", required=True, help="the family folder searched for the skills")
+    ap.add_argument("--names", default="", help="comma list of skill names to hide (default: every <prefix>* folder in --dir)")
+    ap.add_argument("--rewrite-hidden", action="store_true",
+                    help="also rewrite commands inside the hidden skills (siblings that call each other)")
     ap.add_argument("--marker", default="hide " + dt.date.today().strftime("%y%m%d"))
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
     base = REPO / args.dir
-    skills = sorted(d for d in base.iterdir() if d.name.startswith(args.prefix) and (d / "SKILL.md").exists())
+    if args.names:
+        wanted = {n.strip() if n.strip().startswith(args.prefix) else args.prefix + n.strip()
+                  for n in args.names.split(",") if n.strip()}  # a kind or a full name
+        skills = sorted({p.parent for p in base.rglob("SKILL.md")
+                         if p.parent.name in wanted and "/_" not in str(p)}, key=lambda d: d.name)
+        missing = wanted - {d.name for d in skills}
+        if missing:
+            sys.exit("not found under --dir: %s" % ", ".join(sorted(missing)))
+    else:
+        skills = sorted(d for d in base.iterdir() if d.name.startswith(args.prefix) and (d / "SKILL.md").exists())
     names = {d.name: d.name[len(args.prefix):] for d in skills}
     alt = "|".join(sorted(map(re.escape, names), key=len, reverse=True))
     slash = re.compile(r"(?<![\w.~/-])/(%s)(?![\w-])" % alt)
@@ -102,7 +114,8 @@ def main():
     for rel in repo_files():
         if not rel.endswith(".md") or rel.endswith("CHANGELOG.md"):
             continue
-        if any(rel.startswith(p) for p in PROTECT + SKIP) or any(rel.startswith(os.path.relpath(d, REPO) + "/") for d in skills):
+        inside = any(rel.startswith(os.path.relpath(d, REPO) + "/") for d in skills)
+        if any(rel.startswith(p) for p in PROTECT + SKIP) or (inside and not args.rewrite_hidden):
             continue
         p = REPO / rel
         text = p.read_text(encoding="utf-8")
@@ -121,8 +134,10 @@ def main():
             owners[str(o)] = o
     if not args.dry_run:
         for o in owners.values():
-            r = note_today(o, "Commands to the excalidraw kinds now go through the door: `/%s <kind>` "
-                              "(the `%s*` skills are hidden from the listing)." % (args.door, args.prefix), args.marker)
+            if any(str(o) == str(d) for d in skills):
+                continue  # a hidden skill already got its entry above
+            r = note_today(o, "Commands to the hidden `%s*` skills now go through the door: `/%s <kind>`."
+                           % (args.prefix, args.door), args.marker)
             print("  owner %-40s %s" % (os.path.relpath(o, REPO), r))
 
 

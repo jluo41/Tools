@@ -1,5 +1,9 @@
 # haipipe-insight-bind · version history
 
+## [0.2.2] — 2026-10-26
+
+Hidden from the skill listing (`disable-model-invocation: true`); reached through the `/haipipe-insight` door, which reads this SKILL.md by path. Nothing moved; `/haipipe-insight-bind` still works when a person types it. (hide 261026)
+
 ## 0.2.1 · 2026-10-09 · Theme folders are singular
 
 - Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,

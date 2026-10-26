@@ -3,14 +3,15 @@ name: haipipe-labeling-rounds
 description: >-
   The Labeling › Rounds view skill of the labeling theme: it
   runs one calibration round: card, draw, weak pre-labels, the human's judgments by chat, measure and close. Every Run in this view names this skill, and no other view uses it.
-  Use for starting a round, round card, round-prepare, labeling a round in chat, open_item, record_first, record_final, events.jsonl, resuming a round, measuring or closing a round, or /haipipe-labeling-rounds.
+  Use for starting a round, round card, round-prepare, labeling a round in chat, open_item, record_first, record_final, events.jsonl, resuming a round, measuring or closing a round, or /haipipe-labeling rounds.
+disable-model-invocation: true
 metadata:
-  version: "0.1.3"
-  last_updated: "2026-09-29"
+  version: "0.1.4"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# /haipipe-labeling-rounds · Labeling Space › Rounds
+# /haipipe-labeling rounds · Labeling Space › Rounds
 
 This skill owns the Runs of the labeling workbench's Labeling › Rounds
 view: every Run card there names it, and no other view uses it (JL 260929:

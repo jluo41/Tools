@@ -9,8 +9,8 @@ description: >-
   diagnosing or changing a labeling Task's screen, a Space or View, the write door or the Runs panel, or
   /workbench-task-labeling.
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-10-16"
+  version: "0.1.1"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md
 ---
 
@@ -173,7 +173,7 @@ the matrix does not render bounded target,
 actor/prerequisites, or a link to a matching Ticket.
 
 The supported first-use path for structured transcripts is: use
-`/haipipe-labeling-preparation` to attach the source owner to a Page, normalize the source, choose the unit,
+`/haipipe-labeling preparation` to attach the source owner to a Page, normalize the source, choose the unit,
 materialize and check it, reserve whole source groups, then link the accepted
 package to a real Page. Data → Preparation shows these source-owned Runs before
 the job exists, and offers a new Run prompt only for the next unfinished step

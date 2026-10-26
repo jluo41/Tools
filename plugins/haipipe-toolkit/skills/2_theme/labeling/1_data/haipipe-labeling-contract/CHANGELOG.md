@@ -1,5 +1,9 @@
 # subjective-label-contract · CHANGELOG
 
+## [0.1.2] — 2026-10-26
+
+Hidden from the skill listing (`disable-model-invocation: true`); reached through the `/haipipe-labeling` door, which reads this SKILL.md by path. Nothing moved; `/haipipe-labeling-contract` still works when a person types it. (hide 261026)
+
 ## 0.1.1 · 2026-09-29
 
 Clarify that Contract consumes prepared labeling units. Raw transcript

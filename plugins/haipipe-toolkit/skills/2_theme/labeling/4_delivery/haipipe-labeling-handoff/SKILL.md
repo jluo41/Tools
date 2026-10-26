@@ -3,14 +3,15 @@ name: haipipe-labeling-handoff
 description: >-
   The Delivery › Handoff view skill of the labeling theme: it
   freezes a stopped Building lineage into the signed Label Handoff, the only crossing to Scanning. Every Run in this view names this skill, and no other view uses it.
-  Use for handoff-freeze, Label Handoff, freeze the guideline, G*, D_cal*, or /haipipe-labeling-handoff.
+  Use for handoff-freeze, Label Handoff, freeze the guideline, G*, D_cal*, or /haipipe-labeling handoff.
+disable-model-invocation: true
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-09-29"
+  version: "0.1.1"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# /haipipe-labeling-handoff · Delivery Space › Handoff
+# /haipipe-labeling handoff · Delivery Space › Handoff
 
 This skill owns the Runs of the labeling workbench's Delivery › Handoff
 view: every Run card there names it, and no other view uses it (JL 260929:

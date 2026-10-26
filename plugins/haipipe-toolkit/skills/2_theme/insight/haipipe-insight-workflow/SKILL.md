@@ -11,14 +11,15 @@ description: >-
   Prototype, release, Board, Job or Task, to find who owns a button, to check the
   cards, or to run the older register boards' workflow until they are carried
   over. Trigger: what next, next Run, run card, gate, insight workflow, where
-  does this Job stand, who owns this button, /haipipe-insight-workflow.
+  does this Job stand, who owns this button, /haipipe-insight workflow.
+disable-model-invocation: true
 metadata:
-  version: "3.0.1"
-  last_updated: "2026-10-09"
+  version: "3.0.2"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# /haipipe-insight-workflow · the run cards, the gates, and what is next
+# /haipipe-insight workflow · the run cards, the gates, and what is next
 
 Load `haipipe-insight` (the ladder contract, `ref/insight-ladder.md`) and `haipipe-run` (the Run contract). This
 skill routes; it never does a Run's work. Each Run is done by the one skill its card names, by the agent its card

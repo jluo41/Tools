@@ -6,20 +6,21 @@ description: >-
   create, which decisions are human gates, which verbs exist, and what is
   forbidden. It begins from one signed handoff and ends at audited D*. The order of steps (which Run comes next, Run allocation, receipts) lives in its ref/step-order.md. Use for sealed evaluation,
   model qualification, production labeling, risk queues, corpus scanning, spot
-  checks, repair, final audit, which Scanning Run comes next, or /haipipe-labeling-scanning.
+  checks, repair, final audit, which Scanning Run comes next, or /haipipe-labeling scanning.
+disable-model-invocation: true
 metadata:
-  version: "0.8.0"
-  last_updated: "2026-10-07"
+  version: "0.8.1"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# /haipipe-labeling-scanning · the law of executing a frozen meaning
+# /haipipe-labeling scanning · the law of executing a frozen meaning
 
 `haipipe-labeling` is the family umbrella; `haipipe-labeling-workflow` defines
 the Run Spec graph and Routes; `haipipe-labeling-scanning` documents Scanning
 Run order and internal steps. P3-P5 are compatibility capability tags only.
 This
-door owns the LAW of the Scanning side, symmetric to `/haipipe-labeling-building`.
+door owns the LAW of the Scanning side, symmetric to `/haipipe-labeling building`.
 
 ## Boundary
 

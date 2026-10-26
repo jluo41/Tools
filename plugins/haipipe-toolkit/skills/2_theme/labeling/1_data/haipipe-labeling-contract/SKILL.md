@@ -3,14 +3,15 @@ name: haipipe-labeling-contract
 description: >-
   The Data › Contract view skill of the labeling theme: it
   sets up one labeling job: builds the fenced source, creates the P0 contract (corpus, fields, held-back test, G_00), and reads its status. Every Run in this view names this skill, and no other view uses it.
-  Use for setting up a labeling job, fence_source, job.py create or status, the held-back test at setup, P0 integrity, or /haipipe-labeling-contract.
+  Use for setting up a labeling job, fence_source, job.py create or status, the held-back test at setup, P0 integrity, or /haipipe-labeling contract.
+disable-model-invocation: true
 metadata:
-  version: "0.1.1"
-  last_updated: "2026-09-29"
+  version: "0.1.2"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# /haipipe-labeling-contract · Data Space › Contract
+# /haipipe-labeling contract · Data Space › Contract
 
 This skill owns the Runs of the labeling workbench's Data › Contract
 view: every Run card there names it, and no other view uses it (JL 260929:
@@ -35,7 +36,7 @@ A raw transcript is not yet its input: first choose the labeling unit and
 derive one row per unit with a target, prior context, and source lineage.
 Read [`CORPUS-PREPARATION.md`](../../CORPUS-PREPARATION.md) for the
 preparation boundary and multi-turn examples. Use
-`/haipipe-labeling-preparation` for source-owned Runs and the Data →
+`/haipipe-labeling preparation` for source-owned Runs and the Data →
 Preparation view before this Page-local Contract. `corpus-contract` freezes one
 accepted, labeling-ready snapshot; it does not stand for all the cleaning and
 unitization work that produced it.

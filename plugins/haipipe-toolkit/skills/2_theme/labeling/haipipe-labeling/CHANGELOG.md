@@ -3,6 +3,10 @@
 - The Task type once called keys is ground truth (📏): papers say ground truth or gold labels, not keys; its
   `task-type: raw` line is unchanged.
 
+## [0.11.2] — 2026-10-26
+
+Door for hidden helpers (15 stage skills): they leave the skill listing (`disable-model-invocation: true`) and this door reads their SKILL.md by path. (door 261026)
+
 ## 0.11.0 · 2026-10-14 · Start from a Job
 
 - `/haipipe-labeling <Job folder>` is the person's one start message: `scripts/start.py` reads the Job (its Tasks

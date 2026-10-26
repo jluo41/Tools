@@ -139,8 +139,11 @@ Recovered from the SKILL.md frontmatter summary on 260827, when the family retir
 - 0.2.1 (260827, cold-read audit): the mandate-first birth no longer borrows the page-state glyph `🔴` for register cells — needs land as open, unanswered cells, in the register's own vocabulary (haipipe-page-for-question).
 - 0.2.0 (JL 260824): the Reads Law now says a grant NAMES InsightBoard pages without breaching the principle layer's warrant monopoly, and covers a board that declares no reads: at all — `mode: record`, for pre-contract artifacts. 0.1.0: the door, two workbenches, one agent, three declarations.
 
+## [0.4.2] — 2026-10-26
+
+Door for hidden helpers (brief, goal, delivery): they leave the skill listing (`disable-model-invocation: true`) and this door reads their SKILL.md by path. (door 261026)
+
 ## 0.4.1 · 2026-10-09 · Theme folders are singular
 
 - Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
   `design/`, `labeling/`, `ideation/`; the older plural names still read.
-

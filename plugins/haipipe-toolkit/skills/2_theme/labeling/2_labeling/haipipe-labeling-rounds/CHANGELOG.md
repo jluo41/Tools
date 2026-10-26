@@ -1,5 +1,9 @@
 # subjective-label-rounds · CHANGELOG
 
+## [0.1.4] — 2026-10-26
+
+Hidden from the skill listing (`disable-model-invocation: true`); reached through the `/haipipe-labeling` door, which reads this SKILL.md by path. Nothing moved; `/haipipe-labeling-rounds` still works when a person types it. (hide 261026)
+
 ## 0.1.3 · 2026-09-29
 
 - Document `calibration.py finalize` for a fully judged batch whose final

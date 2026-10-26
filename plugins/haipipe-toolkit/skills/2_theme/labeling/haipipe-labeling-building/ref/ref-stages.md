@@ -150,8 +150,8 @@ supports the exact bounded claim materialized with `D*`.
 ## 11. Retired names
 
 ```text
-/label-init · /label-round          → /haipipe-labeling-building
-/label-evaluate · /label-complete   → /haipipe-labeling-scanning
+/label-init · /label-round          → /haipipe-labeling building
+/label-evaluate · /label-complete   → /haipipe-labeling scanning
 /label-status                       → /haipipe-labeling status
 subjective-labeling (draft name)    → haipipe-labeling-building
 subjective-scanning (draft name)    → haipipe-labeling-scanning

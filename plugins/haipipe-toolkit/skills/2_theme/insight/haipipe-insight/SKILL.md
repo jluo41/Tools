@@ -10,6 +10,11 @@ metadata:
 
 # /haipipe-insight · the Prototype and the insight Board
 
+> **Hidden helpers** (JL 261026: not in the skill listing, `disable-model-invocation: true`): when this door names one below, read its SKILL.md by path; the Skill tool cannot load it. A person can still type its `/name`.
+>
+> - `haipipe-insight-workflow` → `../haipipe-insight-workflow/SKILL.md`
+> - `haipipe-insight-bind` → `../haipipe-insight-bind/SKILL.md`
+
 Insight asks what a dataset can and cannot say, level by level (D what it holds · I rates and contrasts inside a
 cut · K what survives tests across cuts · W the counsel a person signs for Design), and keeps the questions apart
 from the data they run on. Read [`ref/insight-ladder.md`](ref/insight-ladder.md) before creating, naming, growing

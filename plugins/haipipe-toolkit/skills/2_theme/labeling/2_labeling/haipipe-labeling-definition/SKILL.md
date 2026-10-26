@@ -3,14 +3,15 @@ name: haipipe-labeling-definition
 description: >-
   The Labeling › Definition view skill of the labeling theme: it
   settles what each label means: outside evidence, the definition discussion with the identified human, and the G0 Confirm meaning gate. Every Run in this view names this skill, and no other view uses it.
-  Use for discussing the label meanings, definition-discussion, revising a label's wording, Confirm meaning, G0, meaning receipt, discovery search, or /haipipe-labeling-definition.
+  Use for discussing the label meanings, definition-discussion, revising a label's wording, Confirm meaning, G0, meaning receipt, discovery search, or /haipipe-labeling definition.
+disable-model-invocation: true
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-10-14"
+  version: "0.2.1"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# /haipipe-labeling-definition · Labeling Space › Definition
+# /haipipe-labeling definition · Labeling Space › Definition
 
 This skill owns the Runs of the labeling workbench's Labeling › Definition
 view: every Run card there names it, and no other view uses it (JL 260929:

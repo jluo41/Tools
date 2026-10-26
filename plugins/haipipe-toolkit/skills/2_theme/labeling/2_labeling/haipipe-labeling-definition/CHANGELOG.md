@@ -1,5 +1,9 @@
 # subjective-label-definition · CHANGELOG
 
+## [0.2.1] — 2026-10-26
+
+Hidden from the skill listing (`disable-model-invocation: true`); reached through the `/haipipe-labeling` door, which reads this SKILL.md by path. Nothing moved; `/haipipe-labeling-definition` still works when a person types it. (hide 261026)
+
 ## 0.2.0 · 2026-10-14
 
 - Region meanings change by a recorded revision: `job.py revise-regions` (`revise_region_meanings`), the same law

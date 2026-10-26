@@ -21,6 +21,8 @@
 
 Shorter description (527 -> 328 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)
 
+Door for hidden helpers (workflow): they leave the skill listing (`disable-model-invocation: true`) and this door reads their SKILL.md by path. (door 261026)
+
 ## 1.17.0 · 2026-10-23 · A paper's work folder, its j21 display Job and the display plan
 
 - JL 261023: "for the paper, they will also have a work folder, one work folder to provide the content

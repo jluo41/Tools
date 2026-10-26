@@ -10,13 +10,14 @@ description: >-
   hand released designs to the system that sends them. Ends at the release:
   sending and measuring belong downstream. Trigger: release designs, release a
   design Job, freeze design predictions, designs.json, design delivery, hand off
-  designs, /haipipe-design-delivery.
+  designs, /haipipe-design delivery.
+disable-model-invocation: true
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-10-07"
+  version: "0.4.1"
+  last_updated: "2026-10-26"
 ---
 
-# /haipipe-design-delivery · the release and designs.json
+# /haipipe-design delivery · the release and designs.json
 
 
 Delivery storage (JL 261010)

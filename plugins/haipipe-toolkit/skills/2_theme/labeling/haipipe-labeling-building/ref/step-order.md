@@ -1,7 +1,7 @@
 <!-- Folded from the haipipe-labeling-building skill on 2026-10-07 (JL): the Building step order,
      its text kept, with its own name updated. Its law is ../SKILL.md. -->
 
-# /haipipe-labeling-building · the Building step order
+# /haipipe-labeling building · the Building step order
 
 When a request says “two labels,” ask whether that means two class values for
 one construct (one job, with both values in its schema) or two separate

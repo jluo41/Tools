@@ -3,14 +3,15 @@ name: haipipe-labeling-scan
 description: >-
   The Delivery › Scan view skill of the labeling theme: it
   labels the whole corpus under the frozen handoff with the selected executor, routes risky items to human review, and reconciles one terminal label per item. Every Run in this view names this skill, and no other view uses it.
-  Use for production scan, scan-preflight, scan-shard, risk-route, human-review, reconcile, risk queue, labeling the corpus, or /haipipe-labeling-scan.
+  Use for production scan, scan-preflight, scan-shard, risk-route, human-review, reconcile, risk queue, labeling the corpus, or /haipipe-labeling scan.
+disable-model-invocation: true
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-09-29"
+  version: "0.1.1"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# /haipipe-labeling-scan · Delivery Space › Scan
+# /haipipe-labeling scan · Delivery Space › Scan
 
 This skill owns the Runs of the labeling workbench's Delivery › Scan
 view: every Run card there names it, and no other view uses it (JL 260929:

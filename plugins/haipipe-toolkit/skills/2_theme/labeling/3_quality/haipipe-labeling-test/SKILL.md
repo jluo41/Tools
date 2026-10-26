@@ -3,21 +3,22 @@ name: haipipe-labeling-test
 description: >-
   The Quality › Test view skill of the labeling theme: it
   owns the held-back test: re-drawing its frame when needed and locking the human's blind gold on it. Every Run in this view names this skill, and no other view uses it.
-  Use for held-back test, sealed test, test-reserve, test-gold-lock, T*, blind test labels, or /haipipe-labeling-test.
+  Use for held-back test, sealed test, test-reserve, test-gold-lock, T*, blind test labels, or /haipipe-labeling test.
+disable-model-invocation: true
 metadata:
-  version: "0.1.1"
-  last_updated: "2026-09-29"
+  version: "0.1.2"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# /haipipe-labeling-test · Quality Space › Test
+# /haipipe-labeling test · Quality Space › Test
 
 This skill owns the Runs of the labeling workbench's Quality › Test
 view: every Run Type here declares it as its context Skill. Load
-`haipipe-labeling` (the family door) and `haipipe-labeling-workflow` (the Run
-graph) first. For `test-reserve`, load `haipipe-labeling-building` and
-`haipipe-labeling-building`; for `test-gold-lock`, load `haipipe-labeling-scanning` and
-`haipipe-labeling-scanning`. The [Run Type–Skill table](../../haipipe-labeling-building/ref/ref-space-mapping.md#run-type-skills)
+`haipipe-labeling` (the family door) and read `../../haipipe-labeling-workflow/SKILL.md` (the Run
+graph) first. For `test-reserve`, read `../../haipipe-labeling-building/SKILL.md`; for
+`test-gold-lock`, read `../../haipipe-labeling-scanning/SKILL.md` (both hidden from the listing,
+reached by path). The [Run Type–Skill table](../../haipipe-labeling-building/ref/ref-space-mapping.md#run-type-skills)
 is the source for these bindings. The Building or Scanning workflow gives the
 Run's order.
 

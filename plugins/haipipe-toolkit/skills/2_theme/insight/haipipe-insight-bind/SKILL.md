@@ -8,15 +8,16 @@ description: >-
   The Insight workbench's "Bind the work" run. Never writes the page's prose
   and never settles a cell. Trigger: bind the work, bind needs, answers.yaml,
   which run answers this need, wire the page to its runs,
-  /haipipe-insight-bind.
+  /haipipe-insight bind.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+disable-model-invocation: true
 metadata:
-  version: "0.2.1"
-  last_updated: "2026-10-09"
+  version: "0.2.2"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md
 ---
 
-# /haipipe-insight-bind · each need to the narrowest file that answers it
+# /haipipe-insight bind · each need to the narrowest file that answers it
 
 The contract is `../haipipe-insight/ref/evidence-needs.md`; read § 2 and § 5
 first. Tickets and results follow `../haipipe-insight/ref/report.md`.

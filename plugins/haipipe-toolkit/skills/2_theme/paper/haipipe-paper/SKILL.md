@@ -9,6 +9,10 @@ metadata:
 
 # /haipipe-paper · compose a paper from evidence-bearing Pages
 
+> **Hidden helpers** (JL 261026: not in the skill listing, `disable-model-invocation: true`): when this door names one below, read its SKILL.md by path; the Skill tool cannot load it. A person can still type its `/name`.
+>
+> - `haipipe-paper-workflow` → `../haipipe-paper-workflow/SKILL.md`
+
 > ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; AGENTS.md rule 6). For a paper that is its `delivery/` folder and every Page's `delivery/<lane>/`: fix the Page or the build code, then rebuild.
 >
 > ⛔ **No sha256 or other content hashes** (hard rule, JL 260928; AGENTS.md rule 9). A version is its number and date; staleness is file time or `git diff`. Never write, check or pin a hash.

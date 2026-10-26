@@ -7,19 +7,20 @@ description: >-
   forbidden. It ends at a signed Label Handoff and never evaluates executors or
   scans the corpus. The order of steps (which Run comes next, Run allocation, receipts) lives in its ref/step-order.md. Use for
   new labeling jobs, calibration rounds, human annotation sessions, boundary
-  discovery, guideline revision, stopping decisions, freeze, which Building Run comes next, or /haipipe-labeling-building.
+  discovery, guideline revision, stopping decisions, freeze, which Building Run comes next, or /haipipe-labeling building.
+disable-model-invocation: true
 metadata:
-  version: "0.9.1"
-  last_updated: "2026-10-14"
+  version: "0.9.2"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# /haipipe-labeling-building · the law of building one meaning
+# /haipipe-labeling building · the law of building one meaning
 
 `haipipe-labeling` is the family umbrella; `haipipe-labeling-workflow` defines
 the Run Spec graph and Routes; `haipipe-labeling-building` documents Building
 Run order and internal steps. P0-P2 are compatibility capability tags only. This
-door owns the LAW of the Building side, symmetric to `/haipipe-labeling-scanning`. Nothing
+door owns the LAW of the Building side, symmetric to `/haipipe-labeling scanning`. Nothing
 here says in what order a step runs.
 
 ## Authority

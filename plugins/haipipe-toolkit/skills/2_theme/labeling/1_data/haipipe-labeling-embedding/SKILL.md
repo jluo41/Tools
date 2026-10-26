@@ -3,14 +3,15 @@ name: haipipe-labeling-embedding
 description: >-
   The Data › Embedding view skill of the labeling theme: it
   builds and reads the embedding map of the development items: one build per model and settings, started only by a person. Every Run in this view names this skill, and no other view uses it.
-  Use for building an embedding, choosing an embedding model, the map, groups, typical items, embedding_build.py, or /haipipe-labeling-embedding.
+  Use for building an embedding, choosing an embedding model, the map, groups, typical items, embedding_build.py, or /haipipe-labeling embedding.
+disable-model-invocation: true
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-09-29"
+  version: "0.1.1"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# /haipipe-labeling-embedding · Data Space › Embedding
+# /haipipe-labeling embedding · Data Space › Embedding
 
 This skill owns the Runs of the labeling workbench's Data › Embedding
 view: every Run card there names it, and no other view uses it (JL 260929:

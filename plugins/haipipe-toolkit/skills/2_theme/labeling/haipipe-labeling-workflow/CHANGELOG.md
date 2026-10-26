@@ -1,5 +1,9 @@
 # subjective-label-workflow · CHANGELOG
 
+## [0.12.2] — 2026-10-26
+
+Hidden from the skill listing (`disable-model-invocation: true`); reached through the `/haipipe-labeling` door, which reads this SKILL.md by path. Nothing moved; `/haipipe-labeling-workflow` still works when a person types it. (hide 261026)
+
 ## 0.12.1 · 2026-09-29
 
 - Require nonblank wording for every label before G0 and state the chronology
