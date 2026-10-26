@@ -12,8 +12,8 @@ human-decision authority in every case.
 | Stage folder | Original | Upstream | Commit | Licence | Second pass for |
 |---|---|---|---|---|---|
 | `../_parts/framing-research-questions/` | framing-research-questions | science-superpowers | `3150a27` | MIT | `haipipe-ideation generate`, question sharpening |
-| `../../1_generate/idea-creator/` | idea-creator | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `haipipe-ideation generate`, alternate lens |
-| `../../2_test/novelty-check/` | novelty-check | ARIS | `0472e53` | MIT | `haipipe-ideation novelty-check` |
+| `../_parts/idea-creator/` | idea-creator | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `haipipe-ideation generate`, alternate lens |
+| `../_parts/aris-novelty-check/` | novelty-check | ARIS | `0472e53` | MIT | `haipipe-ideation novelty-check` |
 | `../_parts/kill-argument/` | kill-argument | ARIS | `0472e53` | MIT | `haipipe-ideation pressure-test` |
 | `../_parts/paper-reviewer/` | paper-reviewer | nature-paper-skills | `44cff42` | MIT | `haipipe-ideation nature-paper-review` |
 

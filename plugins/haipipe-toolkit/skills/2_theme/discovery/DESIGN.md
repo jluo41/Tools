@@ -34,17 +34,17 @@ discovery/
 ├── haipipe-discovery-review/          2 · per-Subject reading and Result writing
 ├── haipipe-discovery-synthesize/      3 · cross-Result synthesis into the Task Page
 ├── workbench-discovery/               the Block's live view
-├── 2_review/
-│   ├── research-lit · comm-lit-review                                      ARIS · review craft
-│   └── academic-researcher                                                 nature-paper-skills
+│   └── _parts/                        vendored originals
+│       ├── research-lit · comm-lit-review                                  ARIS · review craft
+│       └── academic-researcher                                             nature-paper-skills
 └── agents/                            execution roles (agent definitions only)
 
 1_base/search/                         Search moved here to serve every theme
 ├── haipipe-search/                    skill haipipe-discovery-search · 1 · acquisition: identity, admission, Run allocation
-└── 1_search/                          vendored originals, callable
-    ├── arxiv · semantic-scholar · exa-search · openalex · gemini-search   ARIS @0472e53 · candidate channels
-    ├── alphaxiv · deepxiv                                                  ARIS · source reading
-    └── paper-analyzer                                                      nature-paper-skills @44cff42
+    └── _parts/                        vendored originals, read by haipipe-search
+        ├── arxiv · semantic-scholar · exa-search · openalex · gemini-search   ARIS @0472e53 · candidate channels
+        ├── alphaxiv · deepxiv                                                  ARIS · source reading
+        └── paper-analyzer                                                      nature-paper-skills @44cff42
 ~~~
 
 Ours run by default. An original runs only when the Search or Review skill

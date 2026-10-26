@@ -1,7 +1,7 @@
 ---
 name: haipipe-ideation
 description: "One door over ideation: generate evidence-grounded candidates, test novelty, feasibility, journal fit and Nature-level shape, then select idea-and-target pairs through a human gate and hand them to Paper P0. Use for research directions, idea generation, novelty checks, pressure tests and journal targeting; external sources are haipipe-discovery. Trigger: ideation, research idea, novelty check, journal fit, /haipipe-ideation."
-allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Bash(*), mcp__codex__codex
+allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Bash(*), mcp__codex__codex, WebSearch, WebFetch, Agent, mcp__codex__codex-reply, mcp__manual_review__review, mcp__manual_review__review_reply
 metadata:
   version: "0.8.0"
   last_updated: "2026-10-26"
@@ -71,13 +71,11 @@ replace the sole I3 human selection receipt.
 
 ## Numbered capability families
 
-The door is the one listed skill; every stage specialist we wrote, and every vendored
-original nothing else calls, is a part of it, read from `_parts/<name>/PART.md` (JL 261026:
-move more into parts). The numbered folders keep only the originals still called on their own,
-the numbers are the stage vocabulary (1 Generate, 2 Test, 3 Select), and Select
-has no external original, so there is no `3_select/` folder. `writing/` and
-`discovery/` follow the same law; `task/` is the exception, its numbers being
-permanent domain ids.
+The door is the one listed skill; every stage specialist we wrote and every vendored
+original is a part of it, read from `_parts/<name>/PART.md` (JL 261026: other people's
+skills are not called directly, they live in parts). The stage vocabulary stays 1 Generate,
+2 Test, 3 Select; the numbered folders are gone. `task/` keeps its numbers as permanent
+domain ids.
 
 ```text
 ideation/
@@ -92,9 +90,9 @@ ideation/
 │       ├── select/                       3 · portfolio + human gate + handoff
 │       ├── framing-research-questions/   original, science-superpowers · fuzzy interest → falsifiable question
 │       ├── kill-argument/                original, ARIS · two-thread adversarial attack and defense
-│       └── paper-reviewer/               original, nature-paper-skills · reviewer-side critical evaluation
-├── 1_generate/idea-creator/              original, still a skill · generate and rank ideas from a direction
-└── 2_test/novelty-check/                 original, still a skill · literature novelty sweep
+│       ├── paper-reviewer/               original, nature-paper-skills · reviewer-side critical evaluation
+│       ├── idea-creator/                 original, ARIS · generate and rank ideas from a direction
+│       └── aris-novelty-check/           original, ARIS · literature novelty sweep (ours is novelty-check)
 ```
 
 Read only the current stage's part (`_parts/<stage>/PART.md`). `haipipe-ideation test` loads its specialist for
@@ -109,7 +107,7 @@ may call `framing-research-questions` to sharpen a fuzzy interest into a
 falsifiable question (that question is the Idea Card's `question`, the Idea's
 name on the Paper Ideation Page and its Workbench card; `title` is only a
 handle) and `idea-creator` as an alternate generation lens;
-`haipipe-ideation novelty-check` compares against `novelty-check`;
+`haipipe-ideation novelty-check` compares against `aris-novelty-check`;
 `haipipe-ideation pressure-test` against `kill-argument`;
 `haipipe-ideation nature-paper-review` against `paper-reviewer`. An original's output is a
 proposal packet: the stage skill normalizes it, records it in the receipt, and

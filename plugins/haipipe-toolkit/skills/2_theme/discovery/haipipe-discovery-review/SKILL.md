@@ -13,11 +13,11 @@ metadata:
 Owns the `source-reading` route and the review leg of D1 `ACQUIRE`: inspect one
 admitted canonical Subject, identify what the source actually establishes, and
 return a bounded packet for the Page or `haipipe-discovery-synthesize`. This skill sits
-at the family root; the `2_review/` folder beside it holds vendored review originals
-only and is not a Block, Job, Task, Run, or synthesis level. Use `../haipipe-discovery/ref/bjtr-alignment.md`
+at the family root; the vendored review originals are parts of `haipipe-discovery`
+(`../haipipe-discovery/_parts/<name>/`), not a Block, Job, Task, Run, or synthesis level. Use `../haipipe-discovery/ref/bjtr-alignment.md`
 when an older numbered description is ambiguous.
 
-Source-level deep reading may use the read workers under `1_search/`, while
+Source-level deep reading may use the read parts of `haipipe-search`, while
 multi-source craft workers are dispatched by `haipipe-discovery-synthesize`.
 For external review procedures and the normalized review packet, read
 `../haipipe-discovery/ref/external-capability-registry.md`.

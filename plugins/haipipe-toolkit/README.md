@@ -82,8 +82,8 @@ Commands
 Discovery work is addressed as discoveries → bNN Block → jNN Job → tNN Task
 Page → rNN Run. Its Search, Review, and Synthesize skills sit at the family root and are
 capabilities, not additional levels: Search finds, Review inspects one
-source, and Synthesize combines accepted Results; `1_search/` and `2_review/`
-hold vendored originals only. The D1 and Page 00–04
+source, and Synthesize combines accepted Results; the vendored originals are parts
+(`haipipe-search/_parts/`, `haipipe-discovery/_parts/`). The D1 and Page 00–04
 workflows are separate axes. See
 `skills/2_theme/discovery/haipipe-discovery/ref/bjtr-alignment.md`.
 

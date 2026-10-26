@@ -23,8 +23,8 @@ DeepXiv is the **progressive-reading** literature source:
 
 | Skill | Best for |
 |------|----------|
-| `/arxiv` | Direct preprint search and PDF download |
-| `/semantic-scholar` | Published venue metadata, citation counts, DOI links |
+| `/haipipe-search arxiv` | Direct preprint search and PDF download |
+| `/haipipe-search semantic-scholar` | Published venue metadata, citation counts, DOI links |
 | `/haipipe-search deepxiv` | Layered reading: search → brief → head → section, plus trending and web search |
 
 Use DeepXiv when you want to avoid loading full papers too early.
@@ -221,7 +221,7 @@ Backfill missed ingests with
 ## Key Rules
 
 - Prefer the adapter script over raw `deepxiv` commands when available.
-- DeepXiv is optional. If unavailable, give the install command and suggest `/arxiv` or `/research-lit "topic" - sources: web`.
+- DeepXiv is optional. If unavailable, give the install command and suggest `/haipipe-search arxiv` or `/haipipe-discovery research-lit "topic" - sources: web`.
 - Use section-level reads to save tokens.
-- Treat DeepXiv as complementary to `/arxiv` and `/semantic-scholar`, not a replacement.
+- Treat DeepXiv as complementary to `/haipipe-search arxiv` and `/haipipe-search semantic-scholar`, not a replacement.
 - If the result overlaps with a published venue paper from Semantic Scholar, keep the richer venue metadata in the final summary.

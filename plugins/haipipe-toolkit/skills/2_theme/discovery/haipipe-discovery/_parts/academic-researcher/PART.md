@@ -1,9 +1,10 @@
 ---
 name: academic-researcher
+part-of: haipipe-discovery
 description: Use when conducting literature reviews, summarizing papers, comparing methodologies, identifying research gaps, or supporting scholarly writing across disciplines.
 metadata:
-  version: "0.1.1"
-  last_updated: "2026-09-22"
+  version: "0.1.2"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   haipipe:
     vendored_from: https://github.com/Boom5426/Nature-Paper-Skills@44cff42

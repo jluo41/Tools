@@ -4,6 +4,10 @@ academic-researcher — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [0.1.2] — 2026-10-26
+
+Became a part of `haipipe-discovery`: `haipipe-discovery/_parts/academic-researcher/PART.md` (was the skill `academic-researcher`); front matter, commands and links updated. (merge-parts 261026)
+
 ## 0.1.1 · 2026-09-22
 
 - Stamped as a vendored original: LICENSE copied from nature-paper-skills, `metadata.haipipe.vendored_from` = `https://github.com/Boom5426/Nature-Paper-Skills@44cff42`. The numbered folder now holds vendored originals only; the Search, Review and Synthesize skills we wrote sit at the family root.

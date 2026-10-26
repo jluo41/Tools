@@ -1,5 +1,6 @@
 ---
 name: comm-lit-review
+part-of: haipipe-discovery
 description: >-
   Communications-domain literature review with knowledge-base-first retrieval.
   Use when the task is about wireless, networking, satellite/NTN, Wi-Fi,
@@ -7,10 +8,9 @@ description: >-
   beamforming, or communication-system research and the user wants papers,
   related work, or a landscape. Searches Zotero, Obsidian and local folders
   first, then IEEE Xplore, ScienceDirect, ACM DL, and the web.
-allowed-tools: Bash(*), Read, Glob, Grep, WebSearch, WebFetch, Write, Agent, mcp__zotero__*, mcp__obsidian-vault__*
 metadata:
-  version: "0.1.2"
-  last_updated: "2026-10-09"
+  version: "0.1.3"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   haipipe:
     vendored_from: https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep@0472e53

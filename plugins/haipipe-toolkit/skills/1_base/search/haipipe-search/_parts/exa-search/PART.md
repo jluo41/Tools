@@ -23,8 +23,8 @@ Exa is the **broad web search** source with built-in content extraction:
 
 | Skill | Best for |
 |------|----------|
-| `/arxiv` | Direct preprint search and PDF download |
-| `/semantic-scholar` | Published venue papers (IEEE, ACM, Springer), citation counts |
+| `/haipipe-search arxiv` | Direct preprint search and PDF download |
+| `/haipipe-search semantic-scholar` | Published venue papers (IEEE, ACM, Springer), citation counts |
 | `/haipipe-search deepxiv` | Layered reading: search, brief, section map, section reads |
 | `/haipipe-search exa-search` | Broad web search: blogs, docs, news, companies, research papers — with content extraction |
 
@@ -178,4 +178,4 @@ handwrite `paper/<slug>.md`**. See
 - Default to `highlights` content mode for a good balance of speed and context
 - Use `category: "research paper"` when the user is clearly looking for academic content
 - Use `text` content mode when the user needs full page content
-- Combine with `/arxiv` or `/semantic-scholar` for comprehensive literature coverage
+- Combine with `/haipipe-search arxiv` or `/haipipe-search semantic-scholar` for comprehensive literature coverage

@@ -1,11 +1,12 @@
 ---
-name: novelty-check
+name: aris-novelty-check
+part-of: haipipe-ideation
 description: Verify research idea novelty against recent literature. Use when user says "查新", "novelty check", "有没有人做过", "check novelty", or wants to verify a research idea is novel before implementing.
 argument-hint: "[method-or-idea-description]"
-allowed-tools: WebSearch, WebFetch, Grep, Read, Glob, mcp__codex__codex
 metadata:
+  version: "0.1.0"
   version: "upstream-unversioned"
-  last_updated: "2026-09-22"
+  last_updated: "2026-10-26"
   # version history of the haipipe copy: ./CHANGELOG.md
   haipipe:
     vendored_from: https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep@0472e53

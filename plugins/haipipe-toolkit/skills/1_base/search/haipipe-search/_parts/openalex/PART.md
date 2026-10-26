@@ -1,15 +1,15 @@
 ---
 name: openalex
+part-of: haipipe-search
 description: >-
   Structured OpenAlex literature search for Discovery acquisition. Use when
   open citation data, affiliations, funding, open-access status, or broad
   cross-discipline metadata are useful alongside arXiv and Semantic Scholar.
   OpenAlex supplies metadata; Discovery Results remain the evidence authority.
-allowed-tools: Bash(*), Read, Grep, Glob, Skill
 metadata:
   argument_hint: "[search-query]"
-  version: "0.1.1"
-  last_updated: "2026-09-22"
+  version: "0.1.2"
+  last_updated: "2026-10-26"
   source: "ARIS skills/openalex @ 0472e53"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   haipipe:
@@ -23,7 +23,7 @@ metadata:
 This adapter brings the latest ARIS OpenAlex worker into HAI Pipe without
 importing its standalone output conventions. Load
 `../../haipipe-discovery-search/SKILL.md` for the durable Search route and
-`../../../../2_theme/discovery/haipipe-discovery/ref/paper-run-contract.md` for Result/Bib law.
+`../../../../../2_theme/discovery/haipipe-discovery/ref/paper-run-contract.md` for Result/Bib law.
 
 ## Role
 

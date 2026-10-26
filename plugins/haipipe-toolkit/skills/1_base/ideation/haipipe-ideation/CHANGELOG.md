@@ -8,6 +8,8 @@
 
 Merged 10 helper skill(s) into `_parts/`: `haipipe-ideation-generate` -> `_parts/generate`, `haipipe-ideation-test` -> `_parts/test`, `haipipe-ideation-select` -> `_parts/select`, `haipipe-idea-pressure-test` -> `_parts/pressure-test`, `haipipe-novelty-check` -> `_parts/novelty-check`, `haipipe-journal-fit` -> `_parts/journal-fit`, `haipipe-nature-paper-review` -> `_parts/nature-paper-review`, `framing-research-questions` -> `_parts/framing-research-questions`, `kill-argument` -> `_parts/kill-argument`, `paper-reviewer` -> `_parts/paper-reviewer`. /haipipe-ideation reads `_parts/<name>/PART.md` instead of calling a separate skill; allowed-tools gained the parts' tools. Old commands map as `/haipipe-ideation-generate` -> `/haipipe-ideation generate`. (merge-parts 261026)
 
+Third pass (same day): the ARIS originals idea-creator and novelty-check also became parts (`_parts/idea-creator`, `_parts/aris-novelty-check`, beside our own `novelty-check`); `1_generate/` and `2_test/` are gone.
+
 ## [0.7.5] — 2026-10-26
 
 Shorter description (640 -> 428 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)

@@ -1,11 +1,11 @@
 ---
 name: arxiv
+part-of: haipipe-search
 description: Search, download, and summarize academic papers from arXiv. Use when user says "search arxiv", "download paper", "fetch arxiv", "arxiv search", "get paper pdf", or wants to find and save papers from arXiv to the local paper library.
-allowed-tools: Bash(*), Read, Write
 metadata:
   argument_hint: "[query-or-arxiv-id]"
-  version: "0.1.3"
-  last_updated: "2026-10-09"
+  version: "0.1.4"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   haipipe:
     vendored_from: https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep@0472e53
@@ -24,10 +24,10 @@ Search topic or arXiv paper ID: $ARGUMENTS
 - **API** - inline Python against `http://export.arxiv.org/api/query` (search_query for keyword search, id_list for batch verification). No local script exists; do not hunt for one.
 
 > Overrides (append to arguments):
-> - `/arxiv "attention mechanism" - max: 20` - return up to 20 results
-> - `/arxiv "2301.07041" - download` - download a specific paper by ID
-> - `/arxiv "query" - dir: literature/` - save PDFs to a custom directory
-> - `/arxiv "query" - download: all` - download all result PDFs
+> - `/haipipe-search arxiv "attention mechanism" - max: 20` - return up to 20 results
+> - `/haipipe-search arxiv "2301.07041" - download` - download a specific paper by ID
+> - `/haipipe-search arxiv "query" - dir: literature/` - save PDFs to a custom directory
+> - `/haipipe-search arxiv "query" - download: all` - download all result PDFs
 
 ## Workflow
 
@@ -176,7 +176,7 @@ if [ -d research-wiki/ ]:
 The helper handles metadata fetch, slug, dedup, page creation, index
 rebuild, and log append in a single call — **do not handwrite
 `paper/<slug>.md`**. See
-[`integration-contract.md`](../../../../../../../references/aris/skills/shared-references/integration-contract.md)
+[`integration-contract.md`](../../../../../../../../references/aris/skills/shared-references/integration-contract.md)
 for the canonical-helper rule. Missed ingests can be backfilled later
 with `python3 tools/research_wiki.py sync research-wiki/ --arxiv-ids <id1>,<id2>,...`.
 
@@ -192,7 +192,7 @@ Summarize what was done:
 Suggest follow-up skills:
 
 ```text
-/research-lit "topic"     - multi-source review: Zotero + Obsidian + local PDFs + web
+/haipipe-discovery research-lit "topic"     - multi-source review: Zotero + Obsidian + local PDFs + web
 /haipipe-ideation "direction" - build a grounded direction from accepted evidence
 ```
 
@@ -204,4 +204,4 @@ Suggest follow-up skills:
 - Never overwrite an existing PDF at the same path - skip it and report "already exists"
 - Handle both arXiv ID formats: new (`2301.07041`) and old (`cs/0601001`)
 - PAPER_DIR is created automatically if it does not exist
-- If the arXiv API is unreachable, report the error clearly and suggest using `/research-lit` with `- sources: web` as a fallback
+- If the arXiv API is unreachable, report the error clearly and suggest using `/haipipe-discovery research-lit` with `- sources: web` as a fallback

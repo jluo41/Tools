@@ -1,7 +1,7 @@
 ---
 name: haipipe-discovery
 description: "External-evidence executor: one Discovery Page Folder per question, every paper or source analyzed by a numbered Run whose Result holds a card, facts, a receipt and one BibTeX entry. Use to add a paper, link or PDF, find and read literature, review a field, synthesize prior work, or build an evidence Bib. Trigger: discover, find paper, add paper, lit review, synthesize, 查文献, landscape, /haipipe-discovery."
-allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Bash(*), WebSearch, WebFetch, Agent, mcp__zotero__*, mcp__obsidian-vault__*, mcp__gemini-cli__*
 metadata:
   version: "0.23.2"
   last_updated: "2026-10-26"
@@ -112,17 +112,17 @@ discovery/
 ├── haipipe-discovery-review/          2 · per-Subject reading, Result writing
 ├── haipipe-discovery-synthesize/      3 · cross-Result synthesis
 ├── workbench-discovery/               the Block's live view
-├── 2_review/                          vendored originals: research-lit, comm-lit-review, academic-researcher
+│   └── _parts/                        vendored originals: research-lit, comm-lit-review, academic-researcher
 └── agents/                            execution roles
 
 1_base/search/                         Search is shared with other themes
 ├── haipipe-search/                    skill haipipe-discovery-search · 1 · acquisition, identity, Run allocation
-└── 1_search/                          vendored originals: ARIS channels and readers, paper-analyzer
+    └── _parts/                        vendored originals: ARIS channels and readers, paper-analyzer
 ~~~
 
 The external ARIS reference is pinned at `Tools/references/aris` and is pulled
-before each compatibility review. The eleven originals under `1_search/` and
-`2_review/` are vendored copies, each stamped with its upstream commit and
+before each compatibility review. The eleven originals, parts of `haipipe-search` and of
+this skill (`_parts/`), are vendored copies, each stamped with its upstream commit and
 LICENSE; `ref/external-skill-map.md` lists them beside the skills kept
 reference-only. Ours run by default, an original only when the Search or Review
 skill selects it. Additional reference procedures for provider routing, source

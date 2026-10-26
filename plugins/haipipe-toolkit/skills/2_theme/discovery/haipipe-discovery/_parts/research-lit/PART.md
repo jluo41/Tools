@@ -1,7 +1,7 @@
 ---
 name: research-lit
+part-of: haipipe-discovery
 description: Search and analyze research papers, find related work, summarize key ideas. Use when user says "find papers", "related work", "literature review", "what does this paper say", or needs to understand academic papers.
-allowed-tools: Bash(*), Read, Glob, Grep, WebSearch, WebFetch, Write, Agent, Skill, mcp__zotero__*, mcp__obsidian-vault__*, mcp__gemini-cli__*
 metadata:
   argument_hint: "[paper-topic-or-url]"
   version: "0.2.5"
@@ -20,7 +20,7 @@ Research topic: $ARGUMENTS
 ## Constants
 
 
-- **REVIEWER_BACKEND = `codex`** — Default: Codex MCP (xhigh). Override with `— reviewer: oracle-pro` for GPT-5.4 Pro via Oracle MCP. See [`reviewer-routing.md`](../../../../../../../references/aris/skills/shared-references/reviewer-routing.md).
+- **REVIEWER_BACKEND = `codex`** — Default: Codex MCP (xhigh). Override with `— reviewer: oracle-pro` for GPT-5.4 Pro via Oracle MCP. See [`reviewer-routing.md`](../../../../../../../../references/aris/skills/shared-references/reviewer-routing.md).
 - **PAPER_LIBRARY** — Local directory containing user's paper collection (PDFs). Check these paths in order:
   1. `paper/` in the current project directory
   2. `literature/` in the current project directory
@@ -30,20 +30,20 @@ Research topic: $ARGUMENTS
 - **ARXIV_MAX_DOWNLOAD = 5** — Maximum number of PDFs to download when `ARXIV_DOWNLOAD = true`.
 
 > 💡 Overrides:
-> - `/research-lit "topic" — paper library: ~/my_papers/` — custom local PDF path
-> - `/research-lit "topic" — sources: zotero, local` — only search Zotero + local PDFs
-> - `/research-lit "topic" — sources: zotero` — only search Zotero
-> - `/research-lit "topic" — sources: web` — only search the web (skip all local)
-> - `/research-lit "topic" — sources: web, semantic-scholar` — also search Semantic Scholar for published venue papers (IEEE, ACM, etc.)
-> - `/research-lit "topic" — sources: deepxiv` — only search via DeepXiv progressive retrieval
-> - `/research-lit "topic" — sources: all, deepxiv` — use default sources plus DeepXiv
-> - `/research-lit "topic" — sources: openalex` — OpenAlex metadata/citation graph only
-> - `/research-lit "topic" — sources: gemini` — Gemini alias/subproblem discovery only
-> - `/research-lit "topic" — sources: gemini-search` — alias for the Gemini Discovery adapter
-> - `/research-lit "topic" — sources: gemini, openalex, semantic-scholar` — broad recall plus structured verification
-> - `/research-lit "topic" — arxiv download: true` — download top relevant arXiv PDFs
-> - `/research-lit "topic" — arxiv download: true, max download: 10` — download up to 10 PDFs
-> - `/research-lit "topic" — venues: utd24-is` — restrict S2 to UTD24 IS journals (MISQ, ISR, MS); see `0_venue/utd24-is-venues.md`
+> - `/haipipe-discovery research-lit "topic" — paper library: ~/my_papers/` — custom local PDF path
+> - `/haipipe-discovery research-lit "topic" — sources: zotero, local` — only search Zotero + local PDFs
+> - `/haipipe-discovery research-lit "topic" — sources: zotero` — only search Zotero
+> - `/haipipe-discovery research-lit "topic" — sources: web` — only search the web (skip all local)
+> - `/haipipe-discovery research-lit "topic" — sources: web, semantic-scholar` — also search Semantic Scholar for published venue papers (IEEE, ACM, etc.)
+> - `/haipipe-discovery research-lit "topic" — sources: deepxiv` — only search via DeepXiv progressive retrieval
+> - `/haipipe-discovery research-lit "topic" — sources: all, deepxiv` — use default sources plus DeepXiv
+> - `/haipipe-discovery research-lit "topic" — sources: openalex` — OpenAlex metadata/citation graph only
+> - `/haipipe-discovery research-lit "topic" — sources: gemini` — Gemini alias/subproblem discovery only
+> - `/haipipe-discovery research-lit "topic" — sources: gemini-search` — alias for the Gemini Discovery adapter
+> - `/haipipe-discovery research-lit "topic" — sources: gemini, openalex, semantic-scholar` — broad recall plus structured verification
+> - `/haipipe-discovery research-lit "topic" — arxiv download: true` — download top relevant arXiv PDFs
+> - `/haipipe-discovery research-lit "topic" — arxiv download: true, max download: 10` — download up to 10 PDFs
+> - `/haipipe-discovery research-lit "topic" — venues: utd24-is` — restrict S2 to UTD24 IS journals (MISQ, ISR, MS); see `0_venue/utd24-is-venues.md`
 
 ## Data Sources
 
@@ -71,21 +71,21 @@ names are aliases, not separate sweeps):
 
 Examples:
 ```
-/research-lit "diffusion models"                                    → all (default, no S2)
-/research-lit "diffusion models" — sources: all                     → all (default, no S2)
-/research-lit "diffusion models" — sources: zotero                  → Zotero only
-/research-lit "diffusion models" — sources: zotero, web             → Zotero + web
-/research-lit "diffusion models" — sources: local                   → local PDFs only
-/research-lit "topic" — sources: obsidian, local, web               → skip Zotero
-/research-lit "topic" — sources: web, semantic-scholar              → web + S2 API (IEEE/ACM venue papers)
-/research-lit "topic" — sources: deepxiv                            → DeepXiv only
-/research-lit "topic" — sources: all, deepxiv                       → default sources + DeepXiv
-/research-lit "topic" — sources: all, semantic-scholar              → all + S2 API
-/research-lit "topic" — sources: exa                               → Exa only (broad web + content extraction)
-/research-lit "topic" — sources: all, exa                          → default sources + Exa web search
-/research-lit "topic" — sources: openalex                         → OpenAlex structured metadata/citation graph
-/research-lit "topic" — sources: gemini                           → Gemini broad discovery (verify before citing)
-/research-lit "topic" — sources: all, gemini, openalex              → default sources + both optional adapters
+/haipipe-discovery research-lit "diffusion models"                                    → all (default, no S2)
+/haipipe-discovery research-lit "diffusion models" — sources: all                     → all (default, no S2)
+/haipipe-discovery research-lit "diffusion models" — sources: zotero                  → Zotero only
+/haipipe-discovery research-lit "diffusion models" — sources: zotero, web             → Zotero + web
+/haipipe-discovery research-lit "diffusion models" — sources: local                   → local PDFs only
+/haipipe-discovery research-lit "topic" — sources: obsidian, local, web               → skip Zotero
+/haipipe-discovery research-lit "topic" — sources: web, semantic-scholar              → web + S2 API (IEEE/ACM venue papers)
+/haipipe-discovery research-lit "topic" — sources: deepxiv                            → DeepXiv only
+/haipipe-discovery research-lit "topic" — sources: all, deepxiv                       → default sources + DeepXiv
+/haipipe-discovery research-lit "topic" — sources: all, semantic-scholar              → all + S2 API
+/haipipe-discovery research-lit "topic" — sources: exa                               → Exa only (broad web + content extraction)
+/haipipe-discovery research-lit "topic" — sources: all, exa                          → default sources + Exa web search
+/haipipe-discovery research-lit "topic" — sources: openalex                         → OpenAlex structured metadata/citation graph
+/haipipe-discovery research-lit "topic" — sources: gemini                           → Gemini broad discovery (verify before citing)
+/haipipe-discovery research-lit "topic" — sources: all, gemini, openalex              → default sources + both optional adapters
 ```
 
 ### Source Table
@@ -294,7 +294,7 @@ biomedical):
 
 **OpenAlex search** (only when `openalex` is in sources):
 
-Use the HAI adapter at `../../../../1_base/search/1_search/openalex/SKILL.md`. Resolve the pinned
+Use the HAI adapter at `../../../../../1_base/search/haipipe-search/_parts/openalex/PART.md`. Resolve the pinned
 helper at `Tools/references/aris/tools/openalex_fetch.py` when the workspace
 root is current, or `references/aris/tools/openalex_fetch.py` when the Tools
 subrepository is current (or use a project-local helper). Run a bounded search
@@ -305,7 +305,7 @@ a paper enters the Discovery Result/Bib spine.
 
 **Gemini search** (only when `gemini` is in sources):
 
-Use the HAI adapter at `../../../../1_base/search/haipipe-search/_parts/gemini-search/PART.md`. Ask Gemini for
+Use the HAI adapter at `../../../../../1_base/search/haipipe-search/_parts/gemini-search/PART.md`. Ask Gemini for
 multiple query angles, aliases, neighboring subproblems, recent preprints,
 surveys, and venue variants. Normalize its title/author/year/venue/DOI/arXiv
 fields, then verify exact identity through arXiv, Semantic Scholar, OpenAlex,
@@ -390,7 +390,7 @@ separate post-closure maintenance task after the Discovery receipt is closed.
 
 When running standalone, skip entirely (no action, no error) if the directory
 is absent. Per
-[`integration-contract.md`](../../../../../../../references/aris/skills/shared-references/integration-contract.md),
+[`integration-contract.md`](../../../../../../../../references/aris/skills/shared-references/integration-contract.md),
 this step follows the canonical ingest contract — business logic lives
 in `tools/research_wiki.py`, not in this prose.
 

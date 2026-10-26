@@ -23,17 +23,17 @@ sit flat at the family root and are the only callers.
 
 | Stage folder | Original | Upstream | Commit | Licence | Local version |
 |---|---|---|---|---|---|
-| `../../../../1_base/search/1_search/arxiv/` | arxiv | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `0.1.2` |
-| `../../../../1_base/search/1_search/semantic-scholar/` | semantic-scholar | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `0.1.3` |
+| `../../../../1_base/search/haipipe-search/_parts/arxiv/` | arxiv | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `0.1.2` |
+| `../../../../1_base/search/haipipe-search/_parts/semantic-scholar/` | semantic-scholar | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `0.1.3` |
 | `../../../../1_base/search/haipipe-search/_parts/exa-search/` | exa-search | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `0.1.2` |
-| `../../../../1_base/search/1_search/openalex/` | openalex | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `0.1.1` |
+| `../../../../1_base/search/haipipe-search/_parts/openalex/` | openalex | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `0.1.1` |
 | `../../../../1_base/search/haipipe-search/_parts/gemini-search/` | gemini-search | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `0.1.1` |
 | `../../../../1_base/search/haipipe-search/_parts/alphaxiv/` | alphaxiv | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `0.1.2` |
 | `../../../../1_base/search/haipipe-search/_parts/deepxiv/` | deepxiv | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `0.1.2` |
 | `../../../../1_base/search/haipipe-search/_parts/paper-analyzer/` | paper-analyzer | nature-paper-skills | `44cff42` | MIT | `0.2.2` |
-| `../../2_review/research-lit/` | research-lit | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `0.2.3` |
-| `../../2_review/comm-lit-review/` | comm-lit-review | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `0.1.1` |
-| `../../2_review/academic-researcher/` | academic-researcher | nature-paper-skills | `44cff42` | MIT | `0.1.1` |
+| `../_parts/research-lit/` | research-lit | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `0.2.3` |
+| `../_parts/comm-lit-review/` | comm-lit-review | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `0.1.1` |
+| `../_parts/academic-researcher/` | academic-researcher | nature-paper-skills | `44cff42` | MIT | `0.1.1` |
 
 The ARIS copies were adapted earlier and synchronized against the pinned tip
 `0472e53` (2026-09-07/08); the submodule checkout itself sits at an older commit,
@@ -41,7 +41,7 @@ so the pin, not the checkout, is the provenance. Each copy differs from upstream
 by its adapted SKILL.md and an added CHANGELOG; nothing else was taken.
 
 The Science Superpowers prior-work lens is incorporated into
-`2_theme/discovery/2_review/research-lit` as an optional evidence-backed grounding
+`2_theme/discovery/haipipe-discovery/_parts/research-lit` as an optional evidence-backed grounding
 frame (methods, confounds, effect sizes, and relationship to prior work). Its
 human-gated question/framing workflow remains outside D1.
 

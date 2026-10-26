@@ -3,6 +3,10 @@ arxiv — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [0.1.4] — 2026-10-26
+
+Became a part of `haipipe-search`: `haipipe-search/_parts/arxiv/PART.md` (was the skill `arxiv`); front matter, commands and links updated. (merge-parts 261026)
+
 ## 0.1.3 · 2026-10-09 · Theme folders are singular
 
 - Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,

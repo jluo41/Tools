@@ -1,11 +1,12 @@
 ---
 name: idea-creator
+part-of: haipipe-ideation
 description: Generate and rank research ideas given a broad direction. Use when user says "找idea", "brainstorm ideas", "generate research ideas", "what can we work on", or wants to explore a research area for publishable directions.
 argument-hint: "[research-direction]"
-allowed-tools: Bash(*), Read, Write, Grep, Glob, WebSearch, WebFetch, Agent, Skill, mcp__codex__codex, mcp__codex__codex-reply, mcp__manual_review__review, mcp__manual_review__review_reply
 metadata:
+  version: "0.1.0"
   version: "upstream-unversioned"
-  last_updated: "2026-09-22"
+  last_updated: "2026-10-26"
   # version history of the haipipe copy: ./CHANGELOG.md
   haipipe:
     vendored_from: https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep@0472e53
@@ -19,7 +20,7 @@ Generate publishable research ideas for: $ARGUMENTS
 
 ## Overview
 
-Given a broad research direction from the user, systematically generate, validate, and rank concrete research ideas. Standalone, Phase 1's landscape survey is **inline** (WebSearch — it does not invoke `/research-lit`); Phases 4-5 invoke `/novelty-check`, `/run-experiment`, and `/monitor-experiment` for validation and pilots. For the full sub-skill pipeline (`/research-lit` → idea generation → `/novelty-check` → `/research-review`), run `/idea-discovery` (Workflow 1), which orchestrates this skill.
+Given a broad research direction from the user, systematically generate, validate, and rank concrete research ideas. Standalone, Phase 1's landscape survey is **inline** (WebSearch — it does not invoke `/haipipe-discovery research-lit`); Phases 4-5 invoke `/haipipe-ideation aris-novelty-check`, `/run-experiment`, and `/monitor-experiment` for validation and pilots. For the full sub-skill pipeline (`/haipipe-discovery research-lit` → idea generation → `/haipipe-ideation aris-novelty-check` → `/research-review`), run `/idea-discovery` (Workflow 1), which orchestrates this skill.
 
 ## Constants
 
@@ -31,7 +32,7 @@ Given a broad research direction from the user, systematically generate, validat
 - **REVIEWER_BACKEND = `codex`** — Default: Codex MCP (xhigh). Override with `— reviewer: oracle-pro` for Oracle MCP, or `— reviewer: manual` for Manual Review MCP. If manual-review MCP is unavailable, stop and print the install command; do not fall back to Codex. See `shared-references/reviewer-routing.md`.
 - **OUTPUT_DIR = `idea-stage/`** — All idea-stage outputs go here. Create the directory if it doesn't exist.
 
-> 💡 Override via argument, e.g., `/idea-creator "topic" — pilot budget: 4h per idea, 20h total`.
+> 💡 Override via argument, e.g., `/haipipe-ideation idea-creator "topic" — pilot budget: 4h per idea, 20h total`.
 
 ## Reviewer Calling Convention
 
@@ -350,7 +351,7 @@ Bundle contents:
 2. **Novelty signal — ANNOTATE, do not eliminate**: for each surviving idea,
    do 2-3 targeted searches and attach a `prior_work` note (what looks
    related, with links). This is *input for the jury*, not a filter. The
-   authoritative novelty verdict is Phase 4's `/novelty-check` (multi-source +
+   authoritative novelty verdict is Phase 4's `/haipipe-ideation aris-novelty-check` (multi-source +
    cross-model). Do **not** drop an idea here because it "might already be
    done."
 
@@ -411,7 +412,7 @@ per-idea novelty search:
    does not eliminate candidates on its own taste before or instead of this.
 
 2. **Novelty check — on the reviewer's top picks only.** Run the
-   `/novelty-check` workflow (multi-source search + cross-model verification)
+   `/haipipe-ideation aris-novelty-check` workflow (multi-source search + cross-model verification)
    on the ideas the triage ranked worth pursuing. This bounds the expensive
    multi-source search to the survivors instead of every candidate, while
    keeping the novelty verdict cross-model.
@@ -579,8 +580,8 @@ elif research-wiki/ exists AND [ -z "$WIKI_SCRIPT" ]:
 
 After this skill produces the ranked report:
 ```
-/idea-creator "direction"     → ranked ideas
-/novelty-check "top idea"     → deep novelty verification (already done in Phase 4, but user can re-run)
+/haipipe-ideation idea-creator "direction"     → ranked ideas
+/haipipe-ideation aris-novelty-check "top idea"     → deep novelty verification (already done in Phase 4, but user can re-run)
 /research-review "top idea"   → external critical feedback
 implement                     → write code
 /run-experiment               → deploy to GPU

@@ -1,11 +1,11 @@
 ---
 name: semantic-scholar
-description: Search published venue papers (IEEE, ACM, Springer, etc.) via Semantic Scholar API. Complements /arxiv (preprints) with citation counts, venue metadata, and TLDR. Use when user says "search semantic scholar", "find IEEE papers", "find journal papers", "venue papers", "citation search", or wants published literature beyond arXiv preprints.
-allowed-tools: Bash(*), Read, Write
+part-of: haipipe-search
+description: Search published venue papers (IEEE, ACM, Springer, etc.) via Semantic Scholar API. Complements /haipipe-search arxiv (preprints) with citation counts, venue metadata, and TLDR. Use when user says "search semantic scholar", "find IEEE papers", "find journal papers", "venue papers", "citation search", or wants published literature beyond arXiv preprints.
 metadata:
   argument_hint: "query-or-paper-id"
-  version: "0.1.4"
-  last_updated: "2026-10-09"
+  version: "0.1.5"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   haipipe:
     vendored_from: https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep@0472e53
@@ -19,12 +19,12 @@ Search topic or paper ID: $ARGUMENTS
 
 ## Role & Positioning
 
-This skill is the **published venue** counterpart to `/arxiv`:
+This skill is the **published venue** counterpart to `/haipipe-search arxiv`:
 
 | Skill | Source | Best for |
 |-------|--------|----------|
-| `/arxiv` | arXiv API | Latest preprints, cutting-edge unrefereed work |
-| `/semantic-scholar` | Semantic Scholar API | **Published** journal/conference papers (IEEE, ACM, Springer, etc.) with citation counts, venue info, TLDR |
+| `/haipipe-search arxiv` | arXiv API | Latest preprints, cutting-edge unrefereed work |
+| `/haipipe-search semantic-scholar` | Semantic Scholar API | **Published** journal/conference papers (IEEE, ACM, Springer, etc.) with citation counts, venue info, TLDR |
 
 **Do NOT duplicate arXiv's job.** If results contain an `externalIds.ArXiv` field, the paper is also on arXiv — note this but do not re-fetch from arXiv.
 
@@ -37,14 +37,14 @@ This skill is the **published venue** counterpart to `/arxiv`:
   - `--publication-types JournalArticle,Conference`
 
 > Overrides (append to arguments):
-> - `/semantic-scholar "topic" - max: 20` — return up to 20 results
-> - `/semantic-scholar "topic" - type: journal` — only journal articles
-> - `/semantic-scholar "topic" - type: conference` — only conference papers
-> - `/semantic-scholar "topic" - min-citations: 50` — only highly-cited papers
-> - `/semantic-scholar "topic" - year: 2022-` — papers from 2022 onward
-> - `/semantic-scholar "topic" - fields: all` — remove default field-of-study filter
-> - `/semantic-scholar "topic" - sort: citations` — bulk search sorted by citation count
-> - `/semantic-scholar "DOI:10.1109/..."` — fetch a single paper by DOI
+> - `/haipipe-search semantic-scholar "topic" - max: 20` — return up to 20 results
+> - `/haipipe-search semantic-scholar "topic" - type: journal` — only journal articles
+> - `/haipipe-search semantic-scholar "topic" - type: conference` — only conference papers
+> - `/haipipe-search semantic-scholar "topic" - min-citations: 50` — only highly-cited papers
+> - `/haipipe-search semantic-scholar "topic" - year: 2022-` — papers from 2022 onward
+> - `/haipipe-search semantic-scholar "topic" - fields: all` — remove default field-of-study filter
+> - `/haipipe-search semantic-scholar "topic" - sort: citations` — bulk search sorted by citation count
+> - `/haipipe-search semantic-scholar "DOI:10.1109/..."` — fetch a single paper by DOI
 
 ## Workflow
 
@@ -122,7 +122,7 @@ Where PAPER_ID can be:
 ### Step 4: De-duplicate Against arXiv
 
 For each result, check `externalIds.ArXiv`:
-- If present → paper is also on arXiv. Note this in output but do NOT re-fetch via `/arxiv`.
+- If present → paper is also on arXiv. Note this in output but do NOT re-fetch via `/haipipe-search arxiv`.
 - If absent → paper is **venue-only** (e.g. IEEE without preprint). This is the unique value of this skill.
 
 ### Step 5: Present Results
@@ -181,7 +181,7 @@ if [ -d research-wiki/ ]:
 
 The helper handles slug / dedup / page / index / log — **do not
 handwrite `paper/<slug>.md`**. See
-[`integration-contract.md`](../../../../../../../references/aris/skills/shared-references/integration-contract.md).
+[`integration-contract.md`](../../../../../../../../references/aris/skills/shared-references/integration-contract.md).
 Backfill with `/research-wiki sync --arxiv-ids <id1>,<id2>,...` for
 arXiv-available papers.
 
@@ -197,8 +197,8 @@ Summarize what was done:
 Suggest follow-up skills:
 
 ```text
-/arxiv "topic"           - search arXiv preprints (complements this search)
-/research-lit "topic"    - multi-source review: Zotero + local PDFs + arXiv + S2
+/haipipe-search arxiv "topic"           - search arXiv preprints (complements this search)
+/haipipe-discovery research-lit "topic"    - multi-source review: Zotero + local PDFs + arXiv + S2
 /haipipe-ideation "direction" - build a grounded direction from accepted evidence
 ```
 
@@ -211,4 +211,4 @@ Suggest follow-up skills:
 - **Rate limiting**: S2 API without key is heavily rate-limited (~1 req/s, strict cooldown). If HTTP 429 occurs, wait and retry. Recommend users set `SEMANTIC_SCHOLAR_API_KEY` env var for higher limits (free at https://www.semanticscholar.org/product/api#api-key-form).
 - **TLDR may be null**: Some publishers (notably IEEE) elide the TLDR field. Fall back to showing the first sentence of the abstract.
 - **openAccessPdf may be empty**: Many IEEE papers are closed access. Always provide the DOI link as fallback.
-- If the S2 API is unreachable, suggest using `/arxiv` or `/research-lit "topic" - sources: web` as fallback.
+- If the S2 API is unreachable, suggest using `/haipipe-search arxiv` or `/haipipe-discovery research-lit "topic" - sources: web` as fallback.

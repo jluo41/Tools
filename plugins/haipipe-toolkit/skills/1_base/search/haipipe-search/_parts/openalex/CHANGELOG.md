@@ -1,5 +1,9 @@
 # openalex — Changelog
 
+## [0.1.2] — 2026-10-26
+
+Became a part of `haipipe-search`: `haipipe-search/_parts/openalex/PART.md` (was the skill `openalex`); front matter, commands and links updated. (merge-parts 261026)
+
 ## 0.1.1 · 2026-09-22
 
 - Stamped as a vendored original: LICENSE copied from ARIS, `metadata.haipipe.vendored_from` = `https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep@0472e53`. The numbered folder now holds vendored originals only; the Search, Review and Synthesize skills we wrote sit at the family root.
@@ -10,4 +14,3 @@
   `0472e53`.
 - Kept OpenAlex as a structured discovery/cross-reference source; exact
   identity, per-paper Runs, Result Cards, and Bib authority stay in Discovery.
-

@@ -72,7 +72,21 @@ SPECS = {
                      TASK + "/5_fit/haipipe-task-for-fit/haipipe-task-gpu-training": "gpu-training"}},
         {"main": TASK + "/9_agent/haipipe-task-for-agent", "style": "path",
          "helpers": {TASK + "/9_agent/haipipe-task-llm-engine": "llm-engine"}},
-    ],    # 261026 (second pass): helpers no server, agent or test names, and that were never used;
+    ],    # 261026 (third pass, JL: "别人的代码 ... 直接把它放到 part 里面去"): every copied outside skill
+    # still listed becomes a part of the door that uses it; html-ppt stays (its own plugin, served).
+    "originals": [
+        {"main": BASE + "/ideation/haipipe-ideation", "style": "command",
+         "helpers": {BASE + "/ideation/1_generate/idea-creator": "idea-creator",
+                     BASE + "/ideation/2_test/novelty-check": "aris-novelty-check"},
+         "no_bare": ("idea-creator", "novelty-check")},
+        {"main": BASE + "/search/haipipe-search", "style": "command",
+         "helpers": {BASE + "/search/1_search/" + n: n for n in ("arxiv", "semantic-scholar", "openalex")},
+         "no_bare": ("arxiv", "semantic-scholar", "openalex")},
+        {"main": THEME + "/discovery/haipipe-discovery", "style": "command",
+         "helpers": {THEME + "/discovery/2_review/" + n: n for n in ("academic-researcher", "comm-lit-review", "research-lit")},
+         "no_bare": ("academic-researcher", "comm-lit-review", "research-lit")},
+    ],
+    # 261026 (second pass): helpers no server, agent or test names, and that were never used;
     # copied outside skills (generic names) get no bare-name rewriting.
     "base-more": [
         {"main": BASE + "/ideation/haipipe-ideation", "style": "command",

@@ -14,8 +14,8 @@ Owns D1 `ACQUIRE` search and canonical-identity craft for every Discovery type
 and contributes source-map craft during `03 CONTENT / WRITE`, plus one-off
 inline lookup. Per-Subject reading belongs to `2_review`; cross-Result article
 composition belongs to `haipipe-discovery-synthesize`.
-This skill sits at the family root; the `1_search/` folder beside it holds the
-vendored channel and reader originals only, not a Block, Job, Task, or Run. Use `../../../2_theme/discovery/haipipe-discovery/ref/bjtr-alignment.md` when an older
+This skill sits at the family root; the vendored channel and reader originals are its
+parts (`_parts/<name>/PART.md`), not a Block, Job, Task, or Run. Use `../../../2_theme/discovery/haipipe-discovery/ref/bjtr-alignment.md` when an older
 numbered description is ambiguous.
 LOAD haipipe-discovery first for the Topic workflow and read
 `../../../2_theme/discovery/haipipe-discovery/ref/page-types.md` for the Page promise and
@@ -30,16 +30,16 @@ find   arxiv              preprints + PDF when available
        semantic-scholar   published venues and citation graph
        Crossref/PubMed    DOI, journal, and biomedical metadata fallback
        medRxiv            clinical/biomedical preprints when relevant
-       exa-search         broad web/grey literature when EXA_API_KEY exists (part)
+       exa-search         broad web/grey literature when EXA_API_KEY exists
        openalex           structured cross-discipline metadata, OA, and citation graph
-       gemini-search      optional alias/subproblem expansion and broad recall (part)
-read   alphaxiv           fast paper summary (part)
-       deepxiv            progressive section reading (part)
-       paper-analyzer     deep structured analysis (part)
+       gemini-search      optional alias/subproblem expansion and broad recall
+read   alphaxiv           fast paper summary
+       deepxiv            progressive section reading
+       paper-analyzer     deep structured analysis
 ~~~
 
-A worker marked (part) is a part of this skill: read `_parts/<name>/PART.md` and follow it. The
-others (arxiv, semantic-scholar, openalex) are skills of their own under `1_search/`.
+Every named worker is a part of this skill: read `_parts/<name>/PART.md` and follow it.
+Crossref/PubMed and medRxiv are reached directly; they have no part.
 
 Use SEMANTIC_SCHOLAR_API_KEY, EXA_API_KEY, and OPENALEX_API_KEY only when
 present. For OpenAlex's polite pool, use OPENALEX_EMAIL; the helper has no

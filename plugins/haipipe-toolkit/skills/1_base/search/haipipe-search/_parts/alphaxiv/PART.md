@@ -25,12 +25,12 @@ This skill is the **quick single-paper reader** that returns LLM-optimized summa
 
 | Skill | Source | Best for |
 |-------|--------|----------|
-| `/arxiv` | arXiv API | Batch search, PDF download, metadata |
+| `/haipipe-search arxiv` | arXiv API | Batch search, PDF download, metadata |
 | `/haipipe-search deepxiv` | DeepXiv SDK | Progressive section-level reading |
-| `/semantic-scholar` | S2 API | Published venue metadata, citation counts |
+| `/haipipe-search semantic-scholar` | S2 API | Published venue metadata, citation counts |
 | **`/haipipe-search alphaxiv`** | **alphaxiv.org** | **Instant LLM-optimized summary of one paper, with LaTeX source fallback** |
 
-**Do NOT use this skill for** topic discovery, broad literature search, or multi-paper surveys — use `/research-lit` or `/arxiv` instead.
+**Do NOT use this skill for** topic discovery, broad literature search, or multi-paper surveys — use `/haipipe-discovery research-lit` or `/haipipe-search arxiv` instead.
 
 ## Constants
 
@@ -125,9 +125,9 @@ If the user only asks for one specific detail, answer it directly — skip the f
 #### Suggest Follow-Up Skills
 
 ```text
-/arxiv "PAPER_ID" - download          - download the PDF to local library
+/haipipe-search arxiv "PAPER_ID" - download          - download the PDF to local library
 /haipipe-search deepxiv "PAPER_ID" - section: Methods  - read a specific section progressively
-/research-lit "related topic"        - multi-source literature survey
+/haipipe-discovery research-lit "related topic"        - multi-source literature survey
 /haipipe-ideation "direction"        - turn accepted evidence into a direction
 ```
 
@@ -155,15 +155,15 @@ If wiki was not present at read time, the user can backfill via
 - **Overview first**: `overview` is the fastest path and must always be tried before deeper tiers. Only escalate when needed.
 - **Minimal reads**: At `src` tier, read only the files that answer the question. Full-tree reads waste tokens.
 - **Cross-platform**: When downloading and extracting the source archive, prefer cross-platform approaches (e.g., Python stdlib) over platform-specific commands to ensure Windows/WSL compatibility.
-- **No PDF parsing**: This skill reads structured markdown and LaTeX source, not raw PDFs. For PDF content, suggest `/arxiv` with download.
+- **No PDF parsing**: This skill reads structured markdown and LaTeX source, not raw PDFs. For PDF content, suggest `/haipipe-search arxiv` with download.
 - **Rate limiting**: arXiv source download may rate-limit. If HTTP 429 occurs, wait 5 seconds and retry once. If still blocked, report the error and suggest `/haipipe-search deepxiv` as alternative.
-- **Complementary, not competing**: This skill complements `/arxiv` (search + download) and `/haipipe-search deepxiv` (progressive reading). Do not re-implement their functionality.
+- **Complementary, not competing**: This skill complements `/haipipe-search arxiv` (search + download) and `/haipipe-search deepxiv` (progressive reading). Do not re-implement their functionality.
 
 ## Integration with Other Skills
 
-### As enrichment in `/research-lit`
+### As enrichment in `/haipipe-discovery research-lit`
 
-`/research-lit` can use this skill's Tier 1 (overview) as a fast enrichment step between search and deep analysis. After finding arXiv papers in Step 1, fetch AlphaXiv overviews to quickly assess relevance before committing to full-text reads:
+`/haipipe-discovery research-lit` can use this skill's Tier 1 (overview) as a fast enrichment step between search and deep analysis. After finding arXiv papers in Step 1, fetch AlphaXiv overviews to quickly assess relevance before committing to full-text reads:
 
 ```
 Step 1: Search → list of arXiv IDs
@@ -175,6 +175,6 @@ This saves significant tokens by filtering out marginally relevant papers before
 
 ### As follow-up from other skills
 
-After `/research-lit` or `/haipipe-ideation` surfaces a specific paper, users
+After `/haipipe-discovery research-lit` or `/haipipe-ideation` surfaces a specific paper, users
 can invoke `/haipipe-search alphaxiv PAPER_ID` for a fast deep-dive without re-running the
 full survey.

@@ -12,6 +12,8 @@ the plugin-level `CHANGELOG.md`. The type specialists keep their own
 
 Links, commands and companions repointed at the helper skills merged into `haipipe-ideation`, `haipipe-search`, `haipipe-evidence`, `inlab-human`, `haipipe-draft-review`, `haipipe-display` (now `_parts/<name>/PART.md`). (merge-parts 261026)
 
+Third pass (same day): the review originals research-lit, comm-lit-review and academic-researcher became parts of this skill (`_parts/<name>/PART.md`); `2_review/` is gone.
+
 ## [0.23.1] — 2026-10-26
 
 Shorter description (641 -> 408 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)
@@ -705,7 +707,7 @@ JL ruling 2026-07-12 ("加一个 ask folder，把它们放到一块儿"; pairs w
   `/research-pipeline`, `/patent-pipeline` (none exist). Orchestrator agent Step 0 no
   longer points at `fn/plan|build|execute|report.md` (never existed); the per-stage
   procedure is SKILL.md's Step-by-Step Protocol. Creator/reviewer citation verification
-  now goes through the `/arxiv` + `/semantic-scholar` skills instead of the missing
+  now goes through the `/haipipe-search arxiv` + `/haipipe-search semantic-scholar` skills instead of the missing
   `research-toolkit/*.py` paths.
 - **Deleted the stray dangling self-symlink** `haipipe-discovery/haipipe-discovery`.
 - **Backfilled the missing 2.1.0 / 2.2.0 entries below** (they existed only in SKILL.md
