@@ -26,7 +26,7 @@ class Node:
     id: str
     text: str
     children: list = field(default_factory=list)
-    note: list = field(default_factory=list)      # lines under the bullet, drawn small under the box
+    note: list = field(default_factory=list)      # lines under the bullet: its detail, opened by ▸ on the map
     hash: str = ""                                # a built node: the hash of the words its builder last wrote
 
     @property
@@ -36,8 +36,8 @@ class Node:
 
     @property
     def edited(self) -> bool:
-        """A built node whose words a person changed since its builder wrote them."""
-        return self.built and bool(self.hash) and self.hash != words_hash(self.text)
+        """A built node whose words or detail a person changed since its builder wrote them."""
+        return self.built and bool(self.hash) and self.hash != words_hash(self.text, self.note)
 
 
 @dataclass
@@ -47,8 +47,10 @@ class MindMap:
     tail: str = ""                                # from the first `## ` after the list: notes, kept as written
 
 
-def words_hash(text: str) -> str:
-    return hashlib.sha1(" ".join(str(text).split()).encode("utf-8")).hexdigest()[:6]
+def words_hash(text: str, note=()) -> str:
+    """The hash of a node's words and its detail, as its builder wrote them."""
+    body = " ".join(str(text).split()) + ("\n" + "\n".join(note) if note else "")
+    return hashlib.sha1(body.encode("utf-8")).hexdigest()[:6]
 
 
 def views(md: Path) -> dict:

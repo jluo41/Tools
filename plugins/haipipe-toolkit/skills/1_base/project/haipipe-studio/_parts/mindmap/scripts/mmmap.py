@@ -45,21 +45,42 @@ def _opens(raw: str, base: Path | None, url_of) -> str:
     return "".join(out)
 
 
+FULL_LINK = re.compile(r"(!?)\[([^\]]*)\]\(([^)\s]+)\)")
+
+
+def _resolve(md: str, base: Path | None, url_of) -> str:
+    """A detail's links and pictures pointed where the host opens them; one to a file not on disk keeps its words."""
+    def one(m):
+        bang, label, target = m.groups()
+        if re.match(r"^[a-z]+:", target) or not (base and url_of):
+            return m.group(0)
+        path = base / target
+        return f"{bang}[{label}]({url_of(path)})" if path.exists() else label
+    return FULL_LINK.sub(one, md)
+
+
 def _node(n: MT.Node, depth: int, editable: bool, base: Path | None = None, url_of=None) -> str:
+    """A card: a few words, the bubble that opens the file it names (🖼 or ↗), and ▸ that opens its detail (the lines
+    under its bullet, Markdown, with its links and pictures) below the words (JL 261026: "它既有可以点开的泡泡链接，
+    点开之后也可以看到 detail information")."""
     raw = MT.ID_MARK.sub("", n.text)
-    shown = MH.inline(LINK.sub(lambda m: m.group(1), raw))     # the card shows a link's words; its button opens it
+    shown = MH.inline(LINK.sub(lambda m: m.group(1), raw))     # the card shows a link's words; its bubble opens it
     words = (f'<span class=mm-t data-edit=text data-raw="{esc(raw)}" contenteditable=plaintext-only '
              f'spellcheck=false>{shown}</span>') if editable else f'<span class=mm-t>{shown}</span>'
-    note = " ".join(n.note)
-    tip = f' title="{esc(note)}"' if note else ""
-    mark = " mm-hasnote" if note else ""
+    note = "\n".join(n.note)
+    more = (f'<button type=button class=mm-more aria-expanded=false title="{"its detail" if note else "add a detail"}"'
+            f'{"" if note else " data-empty=1"}>▸</button>') if note or editable else ""
+    body = MH.blocks(_resolve(note, base, url_of)) if note else ""
+    pen = (f'<button type=button class=mm-pen data-raw="{esc(note)}" title="edit the detail">✎</button>'
+           if editable else "")
+    detail = f'<div class=mm-detail hidden>{body}{pen}</div>' if more else ""
     kids = "".join(_node(c, depth + 1, editable, base, url_of) for c in n.children)
     plus = (f'<div class=mm-add><button type=button class=mm-plus data-add=child>＋</button></div>'
             if editable else "")
     cls = "mm-node mm-root" if depth == 0 else f"mm-node mm-d{min(depth, 3)}"   # any depth; the deepest, a leaf
     drag = " draggable=true" if editable and depth else ""
-    return (f'<div class=mm-row data-id="{esc(n.id)}"><div class="{cls}{mark}"{tip}{drag}>{words}'
-            f'{_opens(raw, base, url_of)}</div><div class=mm-kids>{kids}{plus}</div></div>')
+    return (f'<div class=mm-row data-id="{esc(n.id)}"><div class="{cls}"{drag}>{words}{_opens(raw, base, url_of)}'
+            f'{more}{detail}</div><div class=mm-kids>{kids}{plus}</div></div>')
 
 
 def fragment(md: Path, rel: str = "", editable: bool = True, url_of=None) -> str:
@@ -93,7 +114,7 @@ def act(root: Path, p: dict, read_only: bool = False) -> tuple:
     if not (md.is_file() and md.name.endswith(MT.SUFFIX) and root in md.parents):
         return 400, {"ok": False, "err": "no such mind map"}
     what, value, was = str(p.get("what") or ""), norm(p.get("value")), norm(p.get("was"))
-    if any(c in value for c in "\n<>") or len(value) > 2000:
+    if any(c in value for c in "<>") or len(value) > 4000:
         return 400, {"ok": False, "err": "plain words only"}
     mm = MT.load(md)
     MT.ensure_ids(mm)
@@ -103,12 +124,19 @@ def act(root: Path, p: dict, read_only: bool = False) -> tuple:
         return gone
     if what in ("text", "drop") and norm(MT.ID_MARK.sub("", node.text)) != was:
         return gone
+    if what != "note" and "\n" in str(p.get("value") or ""):
+        return 400, {"ok": False, "err": "one line: a node's words; a detail takes lines"}
     out = {"ok": True}
     if what == "text":
         if not value:
             return 400, {"ok": False, "err": "empty: take the node out instead"}
         node.text = value
         out["html"] = MH.inline(value)
+    elif what == "note":                              # the detail: lines, Markdown; a line never starts a bullet
+        if norm(" ".join(node.note)) != was:
+            return gone
+        lines = [ln.rstrip() for ln in str(p.get("value") or "").replace("\r", "").split("\n") if ln.strip()]
+        node.note = [MT.BULLET.sub(lambda m: m.group(1) + "· " + m.group(2), ln) for ln in lines]
     elif what == "drop":
         if parent is None:
             return 400, {"ok": False, "err": "the root stays; change its words instead"}
@@ -164,9 +192,16 @@ CSS = """<style>
  border-radius:10px;padding:7px 12px;font-size:14px;line-height:1.4}
 .mm-root{padding:12px 16px;font-size:17px;font-weight:600;background:#fff3bf;color:#1e1e1e}
 .mm-d1{font-size:15px;font-weight:600}.mm-d2,.mm-d3{border-width:1px;border-color:var(--line,#ced4da);font-size:13.5px;white-space:nowrap;max-width:none}
-.mm-hasnote::after{content:"·";position:absolute;right:4px;top:0;color:var(--mut,#868e96)}
 .mm-node code{font-size:.92em}
 .mm-open{margin-left:7px;text-decoration:none;font-size:13px;opacity:.75}.mm-open:hover{opacity:1}
+.mm-more{border:0;background:none;padding:0 2px 0 6px;font:12px/1 system-ui,sans-serif;color:var(--mut,#868e96);cursor:pointer}
+.mm-more[aria-expanded=true]{transform:rotate(90deg)}.mm-more[data-empty]{opacity:0}.mm-node:hover .mm-more[data-empty]{opacity:.5}
+.mm-detail{margin:6px 0 2px;padding-top:6px;border-top:1px dashed var(--line,#ced4da);white-space:normal;
+ width:max-content;max-width:520px;font-size:12.5px;font-weight:400;line-height:1.5;color:var(--fg,#1e1e1e)}
+.mm-detail p{margin:0 0 4px}.mm-detail ul{margin:0 0 4px;padding-left:18px}.mm-detail img{display:block;max-width:420px;
+ max-height:300px;border:1px solid var(--line,#ced4da);border-radius:6px;margin:4px 0;background:#fff}
+.mm-pen{border:0;background:none;padding:0;font-size:12px;color:var(--mut,#868e96);cursor:pointer;opacity:.6}.mm-pen:hover{opacity:1}
+.mm-detail textarea{display:block;width:460px;min-height:90px;font:12.5px/1.5 ui-monospace,Menlo,monospace}
 .mm-edit{position:relative}.mm-msg{position:absolute;right:4px;top:0;font-size:12px;color:var(--mut,#868e96)}
 .mm [data-edit]{outline:none;border-radius:3px;cursor:text}.mm [data-edit]:hover{background:var(--wash,#f1f3f5)}
 .mm [data-edit]:focus{background:#fff3bf;color:#1e1e1e}.mm [data-edit].mm-bad{outline:1.5px dashed #e03131;outline-offset:2px}
@@ -192,6 +227,12 @@ WIRES = """<script>
   m.querySelectorAll('.mm-row').forEach(function(r){var n=r.querySelector(':scope>.mm-node');
    r.querySelectorAll(':scope>.mm-kids>.mm-row>.mm-node').forEach(function(c){d+=wire(n,c,o);});});
   svg.innerHTML=d;});}
+ /* ▸: a card's detail opens below its words; an empty one (on an editable map) opens straight into its editor */
+ window.mmOpen=window.mmOpen||new Set();
+ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.mm .mm-more');if(!b)return;e.preventDefault();e.stopPropagation();
+  var d=b.parentNode.querySelector(':scope>.mm-detail'),on=d.hidden,id=b.closest('.mm-row').dataset.id;d.hidden=!on;b.setAttribute('aria-expanded',String(on));
+  if(on)window.mmOpen.add(id);else window.mmOpen.delete(id);
+  if(on&&b.dataset.empty){var pen=d.querySelector('.mm-pen');if(pen)pen.click();}draw();});
  window.mmDraw=draw;window.addEventListener('resize',draw);window.addEventListener('load',draw);setTimeout(draw,60);
  document.addEventListener('toggle',function(){setTimeout(draw,0);},true);
  document.addEventListener('input',function(e){if(e.target.closest&&e.target.closest('.mm'))draw();});
@@ -209,7 +250,18 @@ EDIT = """<script>
  /* the map again from the server, after a node was added, taken out or moved */
  function refresh(h){fetch(location.href,{credentials:'same-origin'}).then(function(r){return r.text();}).then(function(t){
   var n=new DOMParser().parseFromString(t,'text/html').querySelector('.mm-edit[data-file="'+h.dataset.file+'"]');
-  if(n)h.innerHTML=n.innerHTML;if(window.mmDraw)window.mmDraw();});}
+  if(n)h.innerHTML=n.innerHTML;(window.mmOpen||new Set()).forEach(function(id){var r=h.querySelector('.mm-row[data-id="'+id+'"]>.mm-node');
+   if(r&&r.querySelector(':scope>.mm-detail')){r.querySelector(':scope>.mm-detail').hidden=false;r.querySelector(':scope>.mm-more').setAttribute('aria-expanded','true');}});
+  if(window.mmDraw)window.mmDraw();});}
+ /* ✎: the detail as its Markdown, in a box; leaving the box saves it */
+ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.mm-edit .mm-pen');if(!b)return;e.preventDefault();
+  var d=b.closest('.mm-detail'),t=document.createElement('textarea');t.value=b.dataset.raw;t.dataset.raw=b.dataset.raw;t.className='mm-notebox';
+  d.innerHTML='';d.appendChild(t);t.focus();if(window.mmDraw)window.mmDraw();});
+ document.addEventListener('focusout',function(e){var t=e.target.closest&&e.target.closest('.mm-edit .mm-notebox');if(!t)return;
+  var h=host(t),row=t.closest('.mm-row'),v=t.value.replace(/\s+$/,'');
+  if(v===t.dataset.raw){refresh(h);return;}
+  post(t,{what:'note',id:row.dataset.id,was:t.dataset.raw,value:v}).then(function(){refresh(h);})
+   .catch(function(err){if(err.reload)refresh(h);else bad(t,err.message);});});
  function post(el,body){var h=host(el);body.file=h.dataset.file;say(el,'…');
   return fetch('/_board/mindmap',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
    .then(function(r){return r.json();}).then(function(j){if(!j.ok){var e=new Error(j.err||'not saved');e.reload=!!j.reload;throw e;}

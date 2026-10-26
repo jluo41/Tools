@@ -11,15 +11,20 @@ import mmtree as MT
 
 
 def inline(s: str) -> str:
-    """Markdown inside a line: `code`, [links](url), **bold**, *italic*; everything else escaped."""
+    """Markdown inside a line: `code`, ![pictures](url), [links](url), **bold**, *italic*; everything else escaped."""
     keep = []
 
     def stash(h):
         keep.append(h)
         return f"\x00{len(keep) - 1}\x00"
     s = re.sub(r"`([^`]+)`", lambda m: stash(f"<code>{html.escape(m.group(1))}</code>"), str(s))
-    s = re.sub(r"\[([^\]]+)\]\(([^)\s]+)\)", lambda m: stash(
-        f'<a href="{html.escape(m.group(2), quote=True)}">{html.escape(m.group(1))}</a>'), s)
+    s = re.sub(r"!\[([^\]]*)\]\(([^)\s]+)\)", lambda m: stash(        # a picture shows as itself, opens full size
+        f'<a class=mm-pic data-pop="{html.escape(m.group(1), quote=True)}" href="{html.escape(m.group(2), quote=True)}" '
+        f'target=_blank rel=noopener><img src="{html.escape(m.group(2), quote=True)}" alt="{html.escape(m.group(1), quote=True)}" '
+        f'loading=lazy></a>'), s)
+    s = re.sub(r"\[([^\]]+)\]\(([^)\s]+)\)", lambda m: stash(        # a link opens in the workbench's pop-out
+        f'<a data-pop="{html.escape(m.group(1), quote=True)}" href="{html.escape(m.group(2), quote=True)}" target=_blank '
+        f'rel=noopener>{html.escape(m.group(1))}</a>'), s)
     s = html.escape(s, quote=False)
     s = re.sub(r"(\*\*|__)(.+?)\1", r"<strong>\2</strong>", s)
     s = re.sub(r"(?<![\w*])\*(?!\s)(.+?)(?<!\s)\*(?!\w)", r"<em>\1</em>", s)

@@ -104,7 +104,8 @@ class Map(Case):
         self.assertIn('class="mm-node mm-root', out)
         self.assertIn("<strong>plan</strong>", out)                       # Markdown shown as Markdown
         self.assertIn("<code>EUR</code>", out)
-        self.assertIn('title="the week after the deadline"', out)        # a note shows on hover, as §1's
+        detail = re.search(r'<div class=mm-row data-id="n04">.*?<div class=mm-detail hidden>(.*?)<button', out, re.S).group(1)
+        self.assertEqual(detail, "<p>the week after the deadline</p>")     # ▸ opens a card's detail
         rows = re.findall(r'<div class=mm-row data-id="([^"]+)">', out)
         self.assertEqual(rows, ["root", "n01", "n02", "n03", "n04", "n05", "n06"])
         self.assertIn("fetch('/_board/mindmap'", out)
@@ -129,6 +130,17 @@ class Map(Case):
         self.assertIn(">shot.png and gone.md - Budget <code>EUR</code></span>", out)          # the card shows the words
         page = MH.page(MT.load(self.md))
         self.assertIn('href="shot.png"', page)                         # the static page links the file beside it
+
+    def test_a_cards_detail_holds_its_links_and_shows_a_picture(self):
+        (self.dir / "shot.png").write_bytes(b"png")
+        self.md.write_text(SOURCE.replace("  the week after the deadline",
+                                          "  the week after the [plan](plan.md)\n  ![shot.png](shot.png)"), encoding="utf-8")
+        out = MM.fragment(self.md, "trip.mindmap.md", url_of=lambda f: "/open/" + f.name)
+        detail = re.search(r'<div class=mm-row data-id="n04">.*?<div class=mm-detail hidden>(.*?)<button', out, re.S).group(1)
+        self.assertIn("the week after the plan ", detail)                  # plan.md is not on disk: its words only
+        self.assertIn('<a class=mm-pic data-pop="shot.png" href="/open/shot.png"', detail)
+        self.assertIn('<img src="/open/shot.png" alt="shot.png" loading=lazy>', detail)
+        self.assertIn('class=mm-pen data-raw="the week after the [plan](plan.md)\n![shot.png](shot.png)"', out)
 
     def test_read_only_the_map_carries_no_editing(self):
         out = MM.draw(MT.load(self.md))
@@ -176,6 +188,14 @@ class Edit(Case):
         self.assertEqual(self.kids("n01"), ["n02", "n07", "n03"])
         code, _ = self.act(what="add", parent="n06", value="flights")      # ＋ on a leaf: its first child
         self.assertEqual(self.kids("n06"), ["n08"])
+
+    def test_a_detail_is_written_as_lines_under_its_bullet(self):
+        code, _ = self.act(what="note", id="n02", was="", value="old town, **3** days\n- a list line\n![map](map.png)")
+        self.assertEqual(code, 200)
+        self.assertEqual(MT.find(MT.load(self.md), "n02")[0].note, ["old town, **3** days", "· a list line", "![map](map.png)"])
+        self.assertEqual(self.kids("n02"), [])                              # a detail line never becomes a node
+        self.assertEqual(self.act(what="note", id="n04", was="something else", value="x")[0], 409)
+        self.assertEqual(self.act(what="text", id="n02", was="Lisbon", value="two\nlines")[0], 400)
 
     def test_an_emptied_node_is_taken_out_and_its_children_move_up(self):
         code, _ = self.act(what="drop", id="n04", was="When", value="")
@@ -246,6 +266,33 @@ class Builders(unittest.TestCase):
         self.assertEqual(job.children[1].children[0].text, "r01_x ✅")
         self.assertTrue((block / "studio" / "mind-map.mindmap.html").is_file())
 
+    def test_a_long_leaf_is_short_on_its_card_and_whole_in_its_detail(self):
+        topic = self.root / "studio" / "s05-pics"
+        topic.mkdir(parents=True)
+        (topic / "s05-pics.md").write_text("s05 · Pics\n==========\n\n**Topic:** every kind of element the work theme draws "
+                                           "today, side by side, so one look is picked.\n", encoding="utf-8")
+        (topic / "shot.png").write_bytes(b"png")
+        (topic / "Files.md").write_text("x")
+        (topic / "s05-pics.md").write_text((topic / "s05-pics.md").read_text() + "\nFiles\n-----\n\n", encoding="utf-8")
+        run("from-topic", topic)
+        mm = MT.load(topic / "m05-pics.mindmap.md")
+        lf = mm.root.children[0].children[0]
+        self.assertEqual(lf.text, "every kind of element the work theme …")
+        self.assertEqual(lf.note, ["every kind of element the work theme draws today, side by side, so one look is picked."])
+        shot = next(c for c in mm.root.children[1].children if "shot.png" in c.text)
+        self.assertEqual((shot.text, shot.note), ("[shot.png](shot.png)", ["![shot.png](shot.png)"]))
+        (topic / "s05-pics.md").write_text((topic / "s05-pics.md").read_text().replace("every kind", "each kind"))
+        run("refresh", topic / "m05-pics.mindmap.md")                       # the builder's words change twice:
+        (topic / "s05-pics.md").write_text((topic / "s05-pics.md").read_text().replace("each kind", "every sort"))
+        run("refresh", topic / "m05-pics.mindmap.md")                       #   both refreshes take them
+        mm = MT.load(topic / "m05-pics.mindmap.md")
+        lf = mm.root.children[0].children[0]
+        self.assertEqual(lf.text, "every sort of element the work theme …")
+        lf.note = ["my own detail"]                                         # a person's detail survives a refresh
+        MT.save(mm, topic / "m05-pics.mindmap.md")
+        run("refresh", topic / "m05-pics.mindmap.md")
+        self.assertEqual(MT.find(MT.load(topic / "m05-pics.mindmap.md"), lf.id)[0].note, ["my own detail"])
+
     def test_a_refresh_keeps_a_persons_node_and_words_and_updates_the_rest(self):
         block = work(self.root)
         run("from-work", block)
@@ -281,6 +328,7 @@ class Builders(unittest.TestCase):
         self.assertEqual(mm.meta["built"], "from-topic .")
         self.assertEqual([c.text for c in mm.root.children], ["Topic", "Feeds", "Files", "Open"])
         self.assertEqual([c.text for c in mm.root.children[0].children], ["what the firm charges", "Two kinds of fee"])
+        self.assertEqual(mm.root.children[0].children[0].note, [])          # short already: no detail
         self.assertEqual([c.text for c in mm.root.children[3].children], ["who pays the court fee"])
         self.assertEqual(mm.root.note, ["**Stage:** shaping"])
         files = [c.text for c in mm.root.children[2].children]

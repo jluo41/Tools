@@ -20,8 +20,23 @@ STATUS = {"done": "✅", "passed": "✅", "ok": "✅", "complete": "✅", "compl
           "error": "❌", "running": "🔶", "partial": "🔶", "blocked": "⛔"}
 
 
-def built(key: str, text: str, children=()) -> MT.Node:
-    return MT.Node("@" + key, text, list(children), hash=MT.words_hash(text))
+def built(key: str, text: str, children=(), note=()) -> MT.Node:
+    return MT.Node("@" + key, text, list(children), list(note), hash=MT.words_hash(text, list(note)))
+
+
+IMAGE = (".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp")
+
+
+def leaf(key: str, item: str) -> MT.Node:
+    """A leaf: a few words on the card, the whole sentence its detail (JL 261026: "把这个 leaf 写得比较 concise 一些，
+    点开之后就可以把它展开，有详细的介绍"). A file stays a link on the card, its button opens it; its detail shows a
+    picture as itself."""
+    f = re.fullmatch(r"\[([^\]]+)\]\(([^)\s]+)\)", item)
+    if f:
+        shown = f"![{f.group(1)}]({f.group(2)})" if f.group(2).lower().endswith(IMAGE) else ""
+        return built(key, item, note=[shown] if shown else [])
+    title, whole = short(item, 7), " ".join(item.split())
+    return built(key, title, note=[] if title == whole.rstrip(".;") else [whole])
 
 
 def _dirs(folder: Path, pat) -> list:
@@ -61,7 +76,10 @@ def from_work(path: Path) -> MT.MindMap:
         words = f"{t.name} · {_n(len(runs), 'run')}" + (f", {done} done" if done and done < len(runs) else
                                                         ", all done" if runs and done == len(runs) else "")
         kids = [built(f"{key}/{r.name}", f"{r.name} {STATUS.get(_status(r), '⬜')}") for r in runs] if leaves else []
-        return built(key, words, kids)
+        face = t / f"{t.name}.md"                          # its detail: the face's goal and close lines
+        text = face.read_text(encoding="utf-8", errors="ignore") if face.is_file() else ""
+        note = [f"**{k}:** {v.strip()}" for k, v in re.findall(r"(?m)^(goal|close):[ \t]*(\S.*)$", text)]
+        return built(key, words, kids, note)
 
     def job_node(j: Path, key: str, leaves: bool) -> MT.Node:
         tasks = _dirs(j, TASK)
@@ -175,10 +193,10 @@ def from_topic(topic: Path) -> MT.MindMap:
     kids = []
     for k, (head, items) in enumerate(branches):
         key = re.sub(r"[^a-z0-9]+", "-", head.lower()).strip("-") or f"b{k}"
-        leaves = [built(f"{key}/{j}", it if it.startswith("[") else short(it)) for j, it in enumerate(items)]
+        leaves = [leaf(f"{key}/{j}", it) for j, it in enumerate(items)]
         kids.append(built(key, head, leaves))
-    root = built(".", short(title, 14), kids)
-    root.id, root.note = "root", note
+    root = built(".", short(title, 14), kids, note)
+    root.id = "root"
     return MT.MindMap({"mindmap": "1", "title": f"{title} · structured", "built": "from-topic"}, root)
 
 
@@ -205,12 +223,11 @@ def refresh(old: MT.MindMap, new: MT.MindMap) -> dict:
     done = {"updated": 0, "added": 0, "dropped": 0}
 
     def merge(o: MT.Node, n: MT.Node):
-        if o.built or o.id == "root":
-            if (not o.hash or o.hash == MT.words_hash(o.text)) and o.text != n.text:
-                o.text = n.text
+        if (o.built or o.id == "root") and not o.edited:   # asked once, before the words change
+            if (o.text, o.note) != (n.text, n.note):
+                o.text, o.note = n.text, list(n.note)          # words and detail as the builder writes them now
                 done["updated"] += 1
-            if not o.hash or o.hash == MT.words_hash(o.text):
-                o.hash = n.hash
+            o.hash = n.hash                                    # so the next refresh still sees them as the builder's
         new_by = {c.id: c for c in n.children}
         out = []
         for c in o.children:

@@ -1,6 +1,20 @@
 mindmap (haipipe-studio part) · Changelog
 =========================================
 
+## [0.4.0] · 2026-10-26 · a short card, its detail behind ▸
+
+- JL 261026: "把这个 leaf 写得比较 concise 一些，点开之后就可以把它展开，有详细的介绍" and "它既有可以点开的泡泡链接，点开之后也
+  可以看到 detail information". A card keeps its bubble (🖼 or ↗, the file it names) and gains ▸, which opens its
+  detail (the lines under its bullet) below its words, as Markdown: links open in the pop-out, a picture shows as
+  itself. ✎ edits the detail (`act` what=note; a detail line never becomes a bullet); open details stay open when the
+  map reloads after an edit; ▸ works on the static page too.
+- from-topic: a leaf is at most seven words, its whole sentence the detail; a file is a link, a picture also shown in
+  its detail. from-work: a Task's detail is its face's `goal:` and `close:`.
+- A built node's hash covers its words and its detail. Fixed: a refresh that updated a node's words kept its old hash,
+  so the next refresh took the node for a person's edit and froze it; the hash now follows the update. b17's maps were
+  rebuilt clean.
+- Tests: 26.
+
 ## [0.3.1] · 2026-10-26 · a card opens its file; any depth
 
 - JL 261026: "点击这个卡的时候，我能不能点出来一些内容？比如能把图片点出来". A node whose words link a file shows a button

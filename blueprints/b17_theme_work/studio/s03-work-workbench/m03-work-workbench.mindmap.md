@@ -7,14 +7,18 @@ built: from-topic .
 # s03 · Work workbench, today <!-- root #e992c7 -->
 
 - Topic <!-- @topic #7e13bd -->
-  - the Work workbench as it is built today: its Spaces, Views and run types, … <!-- @topic/0 #1da34d -->
-  - It is the "before" that this Block's s01 ladder proposal replaces <!-- @topic/1 #c2f63c -->
-  - Moved here from `plugins/haipipe-toolkit/servers/workbench-work/studio/` (261007, JL: every workbench's studio belongs to its theme's design … <!-- @topic/2 #e9cd3f -->
+  - the Work workbench as it is built … <!-- @topic/0 #1d1ff1 -->
+    the Work workbench as it is built today: its Spaces, Views and run types, with each run's skill and agent.
+  - It is the "before" that this Block's … <!-- @topic/1 #cb568b -->
+    It is the "before" that this Block's s01 ladder proposal replaces.
+  - Moved here from `plugins/haipipe-toolkit/servers/workbench-work/studio/` (261007, JL: every … <!-- @topic/2 #14aeee -->
+    Moved here from `plugins/haipipe-toolkit/servers/workbench-work/studio/` (261007, JL: every workbench's studio belongs to its theme's design Block); the server keeps no studio of its own.
 - Served <!-- @served #4de0b1 -->
-  - the workbench's Guide › RoadMap Draw shows this drawing, view only <!-- @served/0 #60e166 -->
+  - the workbench's Guide › RoadMap Draw shows … <!-- @served/0 #0e0dcc -->
+    the workbench's Guide › RoadMap Draw shows this drawing, view only.
   - Its path is `TASK_DESIGN` in `plugins/haipipe-toolkit/servers/workbench/guide_families.py` <!-- @served/1 #3f720e -->
 - Files <!-- @files #6ce6c5 -->
-  - [plan-insight-style-261003.md](plan-insight-style-261003.md) <!-- @files/0 #171d60 -->
-  - [s03-work-workbench.md](s03-work-workbench.md) <!-- @files/1 #88c986 -->
-  - [task-workbench-design.excalidraw](task-workbench-design.excalidraw) <!-- @files/2 #09d4a3 -->
-  - [task-workbench-design.py](task-workbench-design.py) <!-- @files/3 #437561 -->
+  - [plan-insight-style-261003.md](plan-insight-style-261003.md) <!-- @files/0 #507ca5 -->
+  - [s03-work-workbench.md](s03-work-workbench.md) <!-- @files/1 #88b8ab -->
+  - [task-workbench-design.excalidraw](task-workbench-design.excalidraw) <!-- @files/2 #235290 -->
+  - [task-workbench-design.py](task-workbench-design.py) <!-- @files/3 #2ff9f6 -->
