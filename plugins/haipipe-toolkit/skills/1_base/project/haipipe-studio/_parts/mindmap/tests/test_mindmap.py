@@ -114,8 +114,8 @@ class Map(Case):
                          [("mm-b1", "n01"), ("mm-b2", "n04"), ("mm-b3", "n06")])
         self.assertIn('data-style=branches', out)
         self.assertEqual(re.findall(r'data-mm-style=(\w+)', out), ["branches", "filled", "ink"])
-        self.assertIn("' H'", out)                                       # straight wires: runs and a trunk, no curves
-        self.assertNotIn("' C'", out)
+        self.assertIn("' C'", out)                                       # curved wires, as the draft's §1 map
+        self.assertIn("Math.min(r.height/2,18)", out)                   # each end at the card's first line
         self.assertNotIn("excalidraw", out)
 
     def test_a_node_can_hold_nodes_at_any_depth_down_to_its_leaves(self):

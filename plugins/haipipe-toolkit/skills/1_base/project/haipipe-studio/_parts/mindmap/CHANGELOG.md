@@ -1,6 +1,12 @@
 mindmap (haipipe-studio part) · Changelog
 =========================================
 
+## [0.5.1] · 2026-10-26 · curved wires again, met at the card's words
+
+- JL 261026: "你这也太直了 … 做得跟那个 haipipe-draft paper 一样 … 还是那种曲线型的", and of the opened card's wire,
+  "它那个比较奇怪". Wires are §1's curves again (draft_steps.py PLAN_JS), in the branch's colour; each end meets its card
+  at the first line (at most 18 px down), so a card opened to its detail is joined at its words, not halfway down.
+
 ## [0.5.0] · 2026-10-26 · straight wires, a colour per branch, three styles
 
 - JL 261026: "为什么这个不是笔直的呀" and "这个颜色它们是非常一样的 … 能不能做一下 visualization 之类的，做一下不同风格的变化".

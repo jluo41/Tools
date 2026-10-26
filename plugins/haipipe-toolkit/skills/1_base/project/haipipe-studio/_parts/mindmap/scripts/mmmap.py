@@ -218,7 +218,7 @@ CSS = """<style>
 /* the §1 Structure map's look (draft_steps.py PLAN_CSS): a node is a card, its children a column to its right */
 .mm{position:relative;width:max-content;min-width:100%;box-sizing:border-box;padding:8px 4px}
 .mm-wires{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
-.mm-wires path{fill:none;stroke-width:1.6;stroke-linecap:square}
+.mm-wires path{fill:none;stroke-width:1.5;stroke-opacity:.75}
 /* siblings share one column (a row's box is `display:contents` in its parent's grid), so every child of a node starts
    at one x, as §1's paragraphs do; a node sits level with the middle of what hangs from it */
 .mm>.mm-row,.mm-kids{display:grid;grid-template-columns:max-content max-content;gap:6px 56px;align-items:center}
@@ -250,23 +250,22 @@ CSS = """<style>
  .mm-wires{display:none}.mm{width:auto}.mm-d2,.mm-d3{white-space:normal}}
 </style>"""
 
-# the wires drawn after layout, straight (JL 261026: "为什么这个不是笔直的呀"): from a node's right side a stub to one
-# trunk halfway to its children, the trunk up and down, then a straight run into each child, in its branch's colour
+# the wires drawn after layout, curved as the draft's §1 map draws them (draft_steps.py PLAN_JS; JL 261026: "还是那种曲线
+# 型的"): from a node's right side to each child's left side, each end at the card's first line, so a card opened to
+# its detail is still met at its words, not halfway down (JL 261026, of the opened card: "它那个比较奇怪"); each wire in
+# its branch's colour
 WIRES = """<script>
 (function(){if(window.__mmWires)return;window.__mmWires=1;
  function ink(el){var c=getComputedStyle(el).getPropertyValue('--br').trim();return c||getComputedStyle(el).getPropertyValue('--mut').trim()||'#868e96';}
+ function at(r,o){return r.top+Math.min(r.height/2,18)-o.top;}            /* the card's first line, opened or not */
+ function wire(a,b,o){var p=a.getBoundingClientRect(),q=b.getBoundingClientRect();
+  var x1=p.right-o.left,y1=at(p,o),x2=q.left-o.left-4,y2=at(q,o),m=(x1+x2)/2;
+  return '<path stroke="'+ink(b)+'" d="M'+x1+','+y1+' C'+m+','+y1+' '+m+','+y2+' '+x2+','+y2+'"/>';}
  function draw(){document.querySelectorAll('.mm').forEach(function(m){var svg=m.querySelector('.mm-wires');
   if(!m.offsetParent||getComputedStyle(svg).display==='none')return;var o=m.getBoundingClientRect(),d='';
   svg.setAttribute('width',o.width);svg.setAttribute('height',o.height);
-  m.querySelectorAll('.mm-row').forEach(function(r){var n=r.querySelector(':scope>.mm-node'),
-   kids=r.querySelectorAll(':scope>.mm-kids>.mm-row>.mm-node');if(!kids.length)return;
-   var p=n.getBoundingClientRect(),x1=Math.round(p.right-o.left),y1=Math.round(p.top+Math.min(p.height/2,18)-o.top),
-    lefts=[],ys=[y1];
-   kids.forEach(function(c){var q=c.getBoundingClientRect();lefts.push(q.left-o.left);});
-   var tx=Math.round((x1+Math.min.apply(null,lefts))/2),own=ink(n);
-   kids.forEach(function(c){var q=c.getBoundingClientRect(),y=Math.round(q.top+Math.min(q.height/2,18)-o.top);ys.push(y);
-    d+='<path stroke="'+ink(c)+'" d="M'+tx+','+y+' H'+Math.round(q.left-o.left)+'"/>';});
-   d+='<path stroke="'+own+'" d="M'+x1+','+y1+' H'+tx+' M'+tx+','+Math.min.apply(null,ys)+' V'+Math.max.apply(null,ys)+'"/>';});
+  m.querySelectorAll('.mm-row').forEach(function(r){var n=r.querySelector(':scope>.mm-node');
+   r.querySelectorAll(':scope>.mm-kids>.mm-row>.mm-node').forEach(function(c){d+=wire(n,c,o);});});
   svg.innerHTML=d;});}
  /* the style switch: Branches · Filled · Ink, remembered in this browser */
  var KEY='workbench.mindmap.style.v1';

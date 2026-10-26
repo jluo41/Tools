@@ -11,7 +11,7 @@ description: >-
   Use to make, show, edit or refresh a topic's mind map, or to map a work Block. Trigger: mind map, mindmap, mNN,
   structured side, Free | Structured, map the work, map this Block.
 metadata:
-  version: "0.5.0"
+  version: "0.5.1"
   last_updated: "2026-10-26"
 ---
 
@@ -32,8 +32,8 @@ sNN-<topic>.md (the face) ── from-topic ──▶ mNN-<topic>.mindmap.md ─
 The map
 -------
 
-1. **Look**: the root on the left in the key colour; each node a card; its children a column to its right; straight
-   wires (a stub, one trunk, a straight run into each child); Markdown in a node shows as Markdown.
+1. **Look**: the root on the left in the key colour; each node a card; its children a column to its right; curved
+   wires as the draft's §1 map draws them, each end at its card's first line (an opened card is met at its words); Markdown in a node shows as Markdown.
 2. **A colour per branch, three styles**: each first-level branch takes a hue of the dataviz reference palette in its
    fixed order (validated light and dark; a ninth branch on is grey), its wires and cards follow it. The switch above
    the map picks the look, remembered in the browser: **Branches** (cards edged, leaves barred in the colour),
