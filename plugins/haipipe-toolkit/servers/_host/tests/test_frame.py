@@ -1218,10 +1218,12 @@ class FrameTest(unittest.TestCase):
             self.assertIn('<button type=button data-side=structured aria-pressed="false"', row)
             free = re.search(r'<div class=st-pane data-side=free>(.*?)</div>', row, re.S).group(1)
             self.assertIn("flow.excalidraw", unquote(free))                # the free side: the topic's own drawing
-            # the structured side: the mind map drawn as the draft's §1 map, HTML, edited in place; no canvas
+            # the structured side: the mind map drawn by the code that draws a draft's §1 map (haipipe-mindmap), no canvas
             mind = row[row.index('<div class="st-pane st-map" data-side=structured hidden>'):]
-            self.assertIn('<div class=mm-edit data-file="Project/tasks/b01_topic/studio/s01-flow/m01-flow.mindmap.md" data-style=branches>', mind)
-            self.assertIn('<div class="mm-row" data-id="n02">', mind)
+            rel = "Project/tasks/b01_topic/studio/s01-flow/m01-flow.mindmap.md"
+            self.assertIn(f'<div class=pm-edit data-task="{rel}" data-file="{rel}" data-endpoint="/_board/mindmap">', mind)
+            self.assertIn('<div class=pm-para data-p="n01">', mind)
+            self.assertIn('<li data-s="n02">', mind)
             self.assertIn("<strong>raw</strong> rows", mind)
             self.assertNotIn("_excalidraw", mind.split("<script>")[0])
             # Edit opens the free canvas, so it shows on Free only, and only for a hand-drawn drawing
@@ -1235,9 +1237,9 @@ class FrameTest(unittest.TestCase):
             self.assertIn('data-side="structured"', row)
             self.assertIn('data-side=free aria-pressed="false" disabled', row)
             self.assertIn("No drawing", row)
-            # a change on the map is written into the file by the mind map part
-            code, res = frame.mindmap_module().act(root, {"file": "Project/tasks/b01_topic/studio/s01-flow/m01-flow.mindmap.md",
-                                                         "what": "add", "parent": "n01", "value": "clean rows"})
+            # a change on the map (the payload a draft's §1 map sends) is written into the file by haipipe-mindmap
+            code, res = frame.mindmap_module().act(root, {"task": rel, "what": "add", "p": "n01", "after": "n02",
+                                                         "value": "clean rows"})
             self.assertEqual(code, 200)
             self.assertIn("  - clean rows <!-- n03 -->", (topic / "m01-flow.mindmap.md").read_text())
 

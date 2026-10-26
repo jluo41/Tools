@@ -36,7 +36,7 @@ keep a person's marks, and the sessions. How a topic's drawing looks and reads i
 ├── sNN-<topic>.excalidraw    the drawing (a builder's, with the person's marks kept)
 ├── sNN-<topic>.png           its preview
 ├── build_sNN_<topic>.py      the builder, when a script draws it
-└── mNN-<topic>.mindmap.md    its structured side, the mind map: Markdown, drawn as the §1 map (_parts/mindmap)
+└── mNN-<topic>.mindmap.md    its structured side, the mind map: Markdown, drawn as the §1 map (haipipe-mindmap)
 <block>/runs/run-draw-<sNN>/  one pass per working session
 ```
 
@@ -58,11 +58,11 @@ studio/s01-work-ladder/
 ```
 
 1. **Made together**: `new_topic.py topic` writes the face, then the mind map from it.
-2. **Kept in step**: `_parts/mindmap/scripts/mindmap.py refresh <mNN>` rereads the face; words a person changed
+2. **Kept in step**: haipipe-mindmap's `scripts/mindmap.py refresh <mNN>` rereads the face; words a person changed
    and nodes a person added stay.
 3. **Edited in place**: a change on the card is one POST to `/_board/mindmap`, written into the `.mindmap.md`.
 4. **The rest**: the grammar, a Block's or a world's work map (`from-work`), the commands:
-   [`_parts/mindmap/PART.md`](_parts/mindmap/PART.md).
+   [`../haipipe-mindmap/SKILL.md`](../haipipe-mindmap/SKILL.md), the skill that also draws a draft's §1 map.
 
 
 Topic count per Block
@@ -448,6 +448,5 @@ haipipe-studio/
 ├── scripts/block_index.py     a Block's s00: its background, then its index as a map with each topic's and Job's progress
 ├── scripts/topic_map.py       a topic's frames from its face: trees, or boxes with their trees joined by named arrows
 ├── scripts/job_results.py     a Job's current results as a topic, read from its Runs on every build
-├── tests/test_haipipe_studio.py
-└── _parts/mindmap/            a topic's mind map, mNN: the §1 map, edited in place (PART.md)
+└── tests/test_haipipe_studio.py
 ```

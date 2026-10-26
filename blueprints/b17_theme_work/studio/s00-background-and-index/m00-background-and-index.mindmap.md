@@ -16,10 +16,10 @@ built: from-topic .
 - Feeds <!-- @feeds #ffe8e9 -->
   - none; it indexes the whole Block <!-- @feeds/0 #952c0b -->
 - Files <!-- @files #6ce6c5 -->
-  - [build_s00_background_and_index.py](build_s00_background_and_index.py) <!-- @files/0 #d562b5 -->
-  - [s00-background-and-index.excalidraw](s00-background-and-index.excalidraw) <!-- @files/1 #72b3a4 -->
-  - [s00-background-and-index.md](s00-background-and-index.md) <!-- @files/2 #94205e -->
-  - [s00-background-and-index.png](s00-background-and-index.png) <!-- @files/3 #4652a4 -->
+  - [py] [build_s00_background_and_index.py](build_s00_background_and_index.py) <!-- @files/0 #e05012 -->
+  - [excalidraw] [s00-background-and-index.excalidraw](s00-background-and-index.excalidraw) <!-- @files/1 #fb3adb -->
+  - [md] [s00-background-and-index.md](s00-background-and-index.md) <!-- @files/2 #e328ee -->
+  - [png] [s00-background-and-index.png](s00-background-and-index.png) <!-- @files/3 #20b395 -->
     ![s00-background-and-index.png](s00-background-and-index.png)
 - Background <!-- @background #64dd60 -->
   - One frame per entry, two at most, … <!-- @background/0 #03851d -->

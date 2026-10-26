@@ -34,7 +34,7 @@ Run     runs/<run>/     run.yaml           the ticket · config.yaml · result/ 
    Run. The audit reports it as debt; `update --apply` moves it (see `fn/update.md`).
 5. **Families**: a Block's `workbench:` field (default `task`) adds its family's extras below.
 6. **A world's studio/**: a world folder such as `work/` holds Blocks and may hold one `studio/` for
-   project-wide drawings (a mind map of the whole world, haipipe-studio's mind map part); the audit does not call it
+   project-wide drawings (a mind map of the whole world, haipipe-mindmap); the audit does not call it
    "not a Block". A Block's `studio/` keeps its mind map (`mind-map.*`) loose, as it keeps its question map.
 
 ## The table

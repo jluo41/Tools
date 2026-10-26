@@ -18,7 +18,7 @@ built: from-topic .
     the workbench's Guide › RoadMap Draw shows this drawing, view only.
   - Its path is `TASK_DESIGN` in `plugins/haipipe-toolkit/servers/workbench/guide_families.py` <!-- @served/1 #3f720e -->
 - Files <!-- @files #6ce6c5 -->
-  - [plan-insight-style-261003.md](plan-insight-style-261003.md) <!-- @files/0 #507ca5 -->
-  - [s03-work-workbench.md](s03-work-workbench.md) <!-- @files/1 #88b8ab -->
-  - [task-workbench-design.excalidraw](task-workbench-design.excalidraw) <!-- @files/2 #235290 -->
-  - [task-workbench-design.py](task-workbench-design.py) <!-- @files/3 #2ff9f6 -->
+  - [md] [plan-insight-style-261003.md](plan-insight-style-261003.md) <!-- @files/0 #ba7cda -->
+  - [md] [s03-work-workbench.md](s03-work-workbench.md) <!-- @files/1 #06194d -->
+  - [excalidraw] [task-workbench-design.excalidraw](task-workbench-design.excalidraw) <!-- @files/2 #71bc96 -->
+  - [py] [task-workbench-design.py](task-workbench-design.py) <!-- @files/3 #638d27 -->

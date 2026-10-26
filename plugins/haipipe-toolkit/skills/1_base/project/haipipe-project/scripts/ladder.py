@@ -350,7 +350,7 @@ DRAWING = set(TODAY.get("drawing", [".excalidraw", ".png", ".svg", ".py", ".md",
 
 
 def kept_loose(name: str) -> bool:
-    """A file a Block's studio/ keeps outside any topic: its question map, its mind map (`mind-map.*`, haipipe-studio's mind map part)."""
+    """A file a Block's studio/ keeps outside any topic: its question map, its mind map (`mind-map.*`, haipipe-mindmap)."""
     return name in TODAY.get("keep", []) or any(fnmatch.fnmatch(name, g) for g in TODAY.get("keep_glob", []))
 
 

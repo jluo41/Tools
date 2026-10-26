@@ -785,7 +785,7 @@ def _topic_row(topic: Path, drawings: list, root: Path, folder: Path, shared: Pa
         body = f'<p class="mut none">No drawing; it holds {_e(" · ".join(files)) or "nothing yet"}.</p>'
     sides = ""
     if mnn:                       # Free | Structured: one pane a side. Structured is the topic's mind map drawn as the
-        side = "free" if first else "structured"      # draft's §1 Structure map, HTML, edited in place (haipipe-studio _parts/mindmap);
+        side = "free" if first else "structured"      # draft's §1 Structure map, drawn by the one renderer §1 uses (haipipe-mindmap);
         editable = ["free"] if first and not scripts else []   # Edit opens the free canvas, and only a hand-drawn one
         tools = [t for t in tools if "draw-edit" not in t]
         tools.append('<span class=st-side role=group aria-label="Free or Structured">'
@@ -853,12 +853,12 @@ def structured_of(topic: Path) -> Path | None:
 
 
 def mindmap_module():
-    """haipipe-studio's mind map part (_parts/mindmap/scripts/mmmap.py): draws a .mindmap.md as the draft's §1 map
+    """haipipe-mindmap's mmmap.py: draws a .mindmap.md with the structure map a draft's §1 is drawn by (mapview.py)
     and writes its edits."""
     import importlib
     import sys
     from host_paths import skill_dir
-    scripts = str(skill_dir("haipipe-studio") / "_parts" / "mindmap" / "scripts")
+    scripts = str(skill_dir("haipipe-mindmap") / "scripts")
     if scripts not in sys.path:
         sys.path.insert(0, scripts)
     return importlib.import_module("mmmap")

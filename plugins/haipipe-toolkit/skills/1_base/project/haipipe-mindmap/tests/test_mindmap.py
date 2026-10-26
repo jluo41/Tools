@@ -1,5 +1,5 @@
-"""haipipe-mindmap: the grammar, the map drawn as the draft's §1 Structure map, each in-place edit written into the
-file, the builders, and the refresh that keeps a person's words."""
+"""haipipe-mindmap: the grammar, the map drawn by the same code as a draft's §1 Structure map, each edit (the
+payload §1's map sends) written into the file, the builders, and the refresh that keeps a person's words."""
 from __future__ import annotations
 
 import io
@@ -14,6 +14,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 import mindmap  # noqa: E402
 import mmbuild as MB  # noqa: E402
 import mmhtml as MH  # noqa: E402
+import mapview as MV  # noqa: E402
 import mmmap as MM  # noqa: E402
 import mmtree as MT  # noqa: E402
 
@@ -98,74 +99,62 @@ class Grammar(Case):
 
 
 class Map(Case):
-    def test_the_map_is_html_drawn_as_the_drafts_structure_map(self):
+    def test_the_map_is_the_drafts_structure_map_drawn_by_the_same_code(self):
         out = MM.fragment(self.md, "trip.mindmap.md")
-        self.assertIn('<div class=mm-edit data-file="trip.mindmap.md" data-style=branches>', out)
-        self.assertIn('class="mm-node mm-root', out)
-        self.assertIn("<strong>plan</strong>", out)                       # Markdown shown as Markdown
-        self.assertIn("<code>EUR</code>", out)
-        detail = re.search(r'<div class="mm-row mm-b2" data-id="n04">.*?<div class=mm-detail hidden>(.*?)<button', out, re.S).group(1)
-        self.assertEqual(detail, "<p>the week after the deadline</p>")     # ▸ opens a card's detail
-        rows = re.findall(r'<div class="mm-row[^"]*" data-id="([^"]+)">', out)
-        self.assertEqual(rows, ["root", "n01", "n02", "n03", "n04", "n05", "n06"])
-        self.assertIn("fetch('/_board/mindmap'", out)
-        # each first-level branch its own colour, in the palette's fixed order; three looks to switch between
-        self.assertEqual(re.findall(r'<div class="mm-row (mm-b\d)" data-id="(n0\d)">', out),
-                         [("mm-b1", "n01"), ("mm-b2", "n04"), ("mm-b3", "n06")])
-        self.assertIn('data-style=branches', out)
-        self.assertEqual(re.findall(r'data-mm-style=(\w+)', out), ["branches", "filled", "ink"])
-        self.assertIn("' C'", out)                                       # curved wires, as the draft's §1 map
-        self.assertIn("Math.min(r.height/2,18)", out)                   # each end at the card's first line
-        self.assertNotIn("excalidraw", out)
+        self.assertIn(MV.CSS, out)                                       # §1's own CSS and script, shared
+        self.assertIn(MV.JS, out)
+        self.assertIn('<div class=pm-edit data-task="trip.mindmap.md" data-file="trip.mindmap.md" '
+                      'data-endpoint="/_board/mindmap">', out)
+        self.assertIn('<div class="pm-node pm-root"><b>Trip plan</b>', out)
+        self.assertIn('<p data-edit=arc data-raw="Why we go: rest."', out)  # the root's note, as §1's arc
+        self.assertEqual(re.findall(r'<div class=pm-para data-p="([^"]+)">', out), ["n01", "n04", "n06"])
+        self.assertEqual(re.findall(r'<li data-s="([^"]+)">', out), ["n02", "n03", "n05"])
+        self.assertIn('<span class=pm-id>2</span><b data-edit=para data-raw="When"', out)
+        self.assertIn('<span class=pm-s draggable=true>1.2</span>', out)   # a point's number, as §1's S1
+        self.assertIn("Budget `EUR`", out)
+        detail = re.search(r'<li data-s="n05">.*?<div class=pm-detail hidden>(.*?)<button', out, re.S).group(1)
+        self.assertEqual(detail, "")                                    # no detail yet: ▸ opens an empty one to type
+
+    def test_a_branch_hands_a_question_to_the_next_and_a_point_shows_its_role(self):
+        self.md.write_text(SOURCE.replace("  the week after the deadline", "  → Then how much can we spend?\n"
+                                          "  the week after the deadline").replace("  - May", "  - [month] May"),
+                           encoding="utf-8")
+        out = MM.fragment(self.md, "trip.mindmap.md")
+        self.assertIn('<div class=pm-q><span data-edit=ask data-p="n04" data-raw="Then how much can we spend?"', out)
+        self.assertIn('<span class=pm-role data-edit=role data-raw="month" contenteditable=plaintext-only spellcheck=false>month</span>', out)
+        self.assertIn('<span class=pm-t data-edit=words data-raw="May"', out)
 
     def test_a_node_can_hold_nodes_at_any_depth_down_to_its_leaves(self):
         deep = SOURCE.replace("  - May <!-- n05 -->", "  - May <!-- n05 -->\n    - week 2 <!-- n07 -->\n      - Monday <!-- n08 -->\n        - 9am <!-- n09 -->")
         self.md.write_text(deep, encoding="utf-8")
         out = MM.fragment(self.md, "trip.mindmap.md")
-        self.assertIn('<div class="mm-row" data-id="n09"><div class="mm-node mm-d3"', out)   # five levels below the root
-        self.assertEqual([n.id for n, _p, d, _k in MT.walk(MT.load(self.md).root) if d == 5], ["n09"])
+        self.assertIn('<li data-s="n09"><span class=pm-s draggable=true>2.1.1.1.1</span>', out)   # five levels down
+        self.assertEqual(out.count("<ul class=pm-sub>"), 3)
 
-    def test_a_card_that_links_a_file_opens_it(self):
+    def test_a_point_that_names_a_file_has_a_chip_and_its_detail_shows_a_picture(self):
         (self.dir / "shot.png").write_bytes(b"png")
-        self.md.write_text(SOURCE.replace("- Budget `EUR`", "- [shot.png](shot.png) and [gone.md](gone.md) - Budget `EUR`"),
-                           encoding="utf-8")
+        self.md.write_text(SOURCE.replace("  - Porto <!-- n03 -->", "  - [shot.png](shot.png) and [gone.md](gone.md) <!-- n03 -->\n"
+                                          "    ![shot.png](shot.png)"), encoding="utf-8")
         out = MM.fragment(self.md, "trip.mindmap.md", url_of=lambda f: "/open/" + f.name)
-        self.assertIn('<a class=mm-open data-pop="shot.png" href="/open/shot.png"', out)    # a picture: 🖼, the pop-out
-        self.assertIn('title="open shot.png">🖼</a>', out)
-        self.assertNotIn("/open/gone.md", out)                                              # not on disk: no button
-        self.assertIn('data-raw="[shot.png](shot.png) and [gone.md](gone.md) - Budget `EUR`"', out)   # typed as written
-        self.assertIn(">shot.png and gone.md - Budget <code>EUR</code></span>", out)          # the card shows the words
-        page = MH.page(MT.load(self.md))
-        self.assertIn('href="shot.png"', page)                         # the static page links the file beside it
-
-    def test_a_cards_detail_holds_its_links_and_shows_a_picture(self):
-        (self.dir / "shot.png").write_bytes(b"png")
-        self.md.write_text(SOURCE.replace("  the week after the deadline",
-                                          "  the week after the [plan](plan.md)\n  ![shot.png](shot.png)"), encoding="utf-8")
-        out = MM.fragment(self.md, "trip.mindmap.md", url_of=lambda f: "/open/" + f.name)
-        detail = re.search(r'<div class="mm-row mm-b2" data-id="n04">.*?<div class=mm-detail hidden>(.*?)<button', out, re.S).group(1)
-        self.assertIn("the week after the plan ", detail)                  # plan.md is not on disk: its words only
-        self.assertIn('<a class=mm-pic data-pop="shot.png" href="/open/shot.png"', detail)
+        self.assertIn('<a class="pm-card pm-open" data-pop="shot.png" href="/open/shot.png"', out)
+        self.assertNotIn("/open/gone.md", out)                          # not on disk: no chip
+        self.assertIn(">shot.png and gone.md</span>", out)              # the line shows the words
+        detail = re.search(r'<li data-s="n03">.*?<div class=pm-detail hidden>(.*?)<button', out, re.S).group(1)
         self.assertIn('<img src="/open/shot.png" alt="shot.png" loading=lazy>', detail)
-        self.assertIn('class=mm-pen data-raw="the week after the [plan](plan.md)\n![shot.png](shot.png)"', out)
 
     def test_read_only_the_map_carries_no_editing(self):
-        out = MM.draw(MT.load(self.md))
+        out = MM.draw(MT.load(self.md), "", False)
         self.assertNotIn("contenteditable", out)
-        self.assertNotIn("/_board/mindmap", out)
-        self.assertIn('data-id="n05"', out)
-
-    def test_a_typed_bullet_gets_its_id_when_the_map_is_drawn(self):
-        self.md.write_text(SOURCE.replace("- Budget", "- Food\n- Budget"), encoding="utf-8")
-        MM.fragment(self.md, "trip.mindmap.md")
-        self.assertEqual(self.kids(), ["n01", "n04", "n07", "n06"])
+        self.assertNotIn("<li class=pm-add>", out)
+        self.assertNotIn("<div class=pm-addp>", out)
+        self.assertIn('<li data-s="n05">', out)
 
     def test_render_writes_the_static_page(self):
         rc, out = run("render", self.md)
         self.assertEqual(rc, 0, out)
         page = self.v["html"].read_text(encoding="utf-8")
         self.assertIn("<title>Trip · mind map</title>", page)
-        self.assertIn('class="mm-node mm-root', page)
+        self.assertIn('<div class="pm-node pm-root">', page)
         self.assertIn("Free notes, <strong>kept</strong> as written.", page)
         self.assertNotIn("contenteditable", page)
 
@@ -178,59 +167,62 @@ class Map(Case):
 
 
 class Edit(Case):
+    """Each edit is the payload a draft's §1 map sends; the mind map answers it into its file."""
     def act(self, **p):
-        return MM.act(self.dir, {"file": "trip.mindmap.md", **p})
+        return MM.act(self.dir, {"task": "trip.mindmap.md", "file": "trip.mindmap.md", **p})
 
-    def test_changed_words_are_written_into_the_file(self):
-        code, res = self.act(what="text", id="n02", was="Lisbon", value="Lisbon, **three** days")
-        self.assertEqual((code, res["ok"]), (200, True))
-        self.assertEqual(self.text("n02"), "Lisbon, **three** days")
-        self.assertEqual(res["html"], "Lisbon, <strong>three</strong> days")
+    def test_a_points_words_and_role_are_written_into_the_file(self):
+        code, res = self.act(what="words", s="n02", was="Lisbon", value="Lisbon, **three** days")
+        self.assertEqual((code, res["html"]), (200, "Lisbon, <strong>three</strong> days"))
+        self.assertEqual(self.act(what="role", s="n02", was="", value="city")[0], 200)
+        self.assertEqual(self.text("n02"), "[city] Lisbon, **three** days")
         self.assertIn("three", self.v["html"].read_text(encoding="utf-8"))      # the static page follows
 
-    def test_a_node_added_after_another_takes_the_next_id(self):
-        code, res = self.act(what="add", parent="n01", after="n02", value="Coimbra")
-        self.assertEqual(code, 200)
-        self.assertEqual(res["id"], "n07")
+    def test_a_branchs_name_its_question_and_the_roots_line(self):
+        self.assertEqual(self.act(what="para", p="n04", was="When", value="When we go")[0], 200)
+        self.assertEqual(self.act(what="ask", p="n04", was="", value="So what does it cost?")[0], 200)
+        self.assertEqual(self.act(what="arc", was="Why we go: rest.", value="Why: rest, and sea.")[0], 200)
+        mm = MT.load(self.md)
+        n04 = MT.find(mm, "n04")[0]
+        self.assertEqual((n04.text, n04.note), ("When we go", ["→ So what does it cost?", "the week after the deadline"]))
+        self.assertEqual(mm.root.note, ["Why: rest, and sea."])
+
+    def test_a_point_and_a_branch_added_where_they_go(self):
+        code, res = self.act(what="add", p="n01", after="n02", value="Coimbra", role="maybe")
+        self.assertEqual((code, res["s"]), (200, "n07"))
         self.assertEqual(self.kids("n01"), ["n02", "n07", "n03"])
-        code, _ = self.act(what="add", parent="n06", value="flights")      # ＋ on a leaf: its first child
-        self.assertEqual(self.kids("n06"), ["n08"])
+        self.assertEqual(self.text("n07"), "[maybe] Coimbra")
+        self.assertEqual(self.act(what="add", p="n06", after="", value="flights")[0], 200)   # the first under n06
+        self.assertEqual(self.act(what="addpara", after="n04", value="Who")[0], 200)
+        self.assertEqual(self.kids(), ["n01", "n04", "n09", "n06"])
+
+    def test_a_dropped_point_takes_its_lines_with_it_up_a_level(self):
+        self.md.write_text(SOURCE.replace("  - May <!-- n05 -->", "  - May <!-- n05 -->\n    - week 2 <!-- n07 -->"),
+                           encoding="utf-8")
+        self.assertEqual(self.act(what="drop", s="n05", was="May", value="")[0], 200)
+        self.assertEqual(self.kids("n04"), ["n07"])
+
+    def test_a_point_moved_into_another_branch_before_a_point(self):
+        self.assertEqual(self.act(what="move", s="n05", p="n01", before="n03")[0], 200)
+        self.assertEqual(self.kids("n01"), ["n02", "n05", "n03"])
+        self.assertEqual(self.act(what="move", s="n02", p="n04")[0], 200)       # onto a branch: last in it
+        self.assertEqual(self.kids("n04"), ["n02"])
 
     def test_a_detail_is_written_as_lines_under_its_bullet(self):
-        code, _ = self.act(what="note", id="n02", was="", value="old town, **3** days\n- a list line\n![map](map.png)")
+        code, _ = self.act(what="note", s="n02", was="", value="old town, **3** days\n- a list line\n![map](map.png)")
         self.assertEqual(code, 200)
         self.assertEqual(MT.find(MT.load(self.md), "n02")[0].note, ["old town, **3** days", "· a list line", "![map](map.png)"])
         self.assertEqual(self.kids("n02"), [])                              # a detail line never becomes a node
-        self.assertEqual(self.act(what="note", id="n04", was="something else", value="x")[0], 409)
-        self.assertEqual(self.act(what="text", id="n02", was="Lisbon", value="two\nlines")[0], 400)
-
-    def test_an_emptied_node_is_taken_out_and_its_children_move_up(self):
-        code, _ = self.act(what="drop", id="n04", was="When", value="")
-        self.assertEqual(code, 200)
-        self.assertEqual(self.kids(), ["n01", "n05", "n06"])
-
-    def test_a_node_dropped_onto_another_goes_before_it(self):
-        self.assertEqual(self.act(what="move", id="n06", before="n02")[0], 200)
-        self.assertEqual(self.kids("n01"), ["n06", "n02", "n03"])
-        self.assertEqual(self.act(what="move", id="n03", parent="n04")[0], 200)       # onto a ＋: last under it
-        self.assertEqual(self.kids("n04"), ["n05", "n03"])
-
-    def test_a_node_cannot_go_under_itself(self):
-        code, res = self.act(what="move", id="n01", parent="n02")
-        self.assertEqual(code, 400)
-        self.assertEqual(self.kids(), ["n01", "n04", "n06"])
 
     def test_words_changed_on_disk_since_the_page_showed_them_are_kept(self):
         self.md.write_text(SOURCE.replace("Lisbon", "Lisbon old town"), encoding="utf-8")
-        code, res = self.act(what="text", id="n02", was="Lisbon", value="Lisboa")
-        self.assertEqual(code, 409)
-        self.assertTrue(res["reload"])
+        self.assertEqual(self.act(what="words", s="n02", was="Lisbon", value="Lisboa")[0], 409)
         self.assertEqual(self.text("n02"), "Lisbon old town")
 
     def test_a_read_only_host_and_a_path_outside_are_refused(self):
-        self.assertEqual(MM.act(self.dir, {"file": "trip.mindmap.md", "what": "text"}, read_only=True)[0], 403)
-        self.assertEqual(MM.act(self.dir, {"file": "../x.mindmap.md", "what": "text"})[0], 400)
-        self.assertEqual(MM.act(self.dir, {"file": "trip.md", "what": "text"})[0], 400)
+        self.assertEqual(MM.act(self.dir, {"task": "trip.mindmap.md", "what": "words"}, read_only=True)[0], 403)
+        self.assertEqual(MM.act(self.dir, {"task": "../x.mindmap.md", "what": "words"})[0], 400)
+        self.assertEqual(MM.act(self.dir, {"task": "trip.md", "what": "words"})[0], 400)
 
     def test_check_passes_and_names_a_duplicate_id(self):
         self.assertEqual(run("check", self.md)[0], 0)
@@ -287,7 +279,7 @@ class Builders(unittest.TestCase):
         self.assertEqual(lf.text, "every kind of element the work theme …")
         self.assertEqual(lf.note, ["every kind of element the work theme draws today, side by side, so one look is picked."])
         shot = next(c for c in mm.root.children[1].children if "shot.png" in c.text)
-        self.assertEqual((shot.text, shot.note), ("[shot.png](shot.png)", ["![shot.png](shot.png)"]))
+        self.assertEqual((shot.text, shot.note), ("[png] [shot.png](shot.png)", ["![shot.png](shot.png)"]))
         (topic / "s05-pics.md").write_text((topic / "s05-pics.md").read_text().replace("every kind", "each kind"))
         run("refresh", topic / "m05-pics.mindmap.md")                       # the builder's words change twice:
         (topic / "s05-pics.md").write_text((topic / "s05-pics.md").read_text().replace("each kind", "every sort"))
@@ -339,7 +331,7 @@ class Builders(unittest.TestCase):
         self.assertEqual([c.text for c in mm.root.children[3].children], ["who pays the court fee"])
         self.assertEqual(mm.root.note, ["**Stage:** shaping"])
         files = [c.text for c in mm.root.children[2].children]
-        self.assertEqual(files, ["[s04-fees.md](s04-fees.md)"])          # a file is a link its card opens
+        self.assertEqual(files, ["[md] [s04-fees.md](s04-fees.md)"])          # a file is a link its card opens
         self.assertTrue((topic / "m04-fees.mindmap.html").is_file())
         self.assertFalse(list(topic.glob("*.excalidraw")))
 

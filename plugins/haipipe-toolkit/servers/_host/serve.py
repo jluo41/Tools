@@ -161,7 +161,10 @@ from live.chat import (prime_context, board_prime_context,              # noqa: 
 # `text/csv` makes some browsers offer a download instead; served as plain text
 # it always renders, and the bytes on the wire are identical either way.
 _INLINE_TEXT = {".csv": "text/plain", ".tsv": "text/plain", ".log": "text/plain",
-                ".do": "text/plain", ".yaml": "text/plain", ".yml": "text/plain"}
+                ".do": "text/plain", ".yaml": "text/plain", ".yml": "text/plain",
+                # code opened from a mind map card's ↗ (JL 261026: "为什么这个 py file 打不开了"): `text/x-python`
+                # makes Chrome download it; as plain text it shows in the pop-out
+                ".py": "text/plain", ".sh": "text/plain", ".r": "text/plain", ".sql": "text/plain", ".toml": "text/plain"}
 
 # Textual payloads that `mimetypes` does not label `text/*`, and so would be
 # served with no charset. See `guess_type` for the failure that made this list.

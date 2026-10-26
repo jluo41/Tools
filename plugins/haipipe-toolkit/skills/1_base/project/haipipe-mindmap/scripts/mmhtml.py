@@ -105,7 +105,7 @@ def _list(lines: list) -> str:
 
 
 CSS = """
-:root{--bg:#ffffff;--fg:#1e1e1e;--mut:#5c636a;--line:#ced4da;--code:#f1f3f5;--link:#1864ab;--card:#ffffff;--wash:#f1f3f5}
+:root{--bg:#ffffff;--fg:#1e1e1e;--mut:#5c636a;--line:#ced4da;--code:#f1f3f5;--link:#1864ab;--card:#ffffff;--wash:#f1f3f5;--acc:#1864ab}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16181b;--fg:#e9ecef;--mut:#a5abb1;
 --line:#3a3f45;--code:#23272b;--link:#74c0fc;--card:#1d1f22;--wash:#23272b}}
 :root[data-theme="dark"]{--bg:#16181b;--fg:#e9ecef;--mut:#a5abb1;--line:#3a3f45;--code:#23272b;--link:#74c0fc;
@@ -132,4 +132,4 @@ def page(mm: MT.MindMap) -> str:
             f'<meta name=viewport content="width=device-width, initial-scale=1">'
             f'<title>{html.escape(title)} · mind map</title><style>{CSS}</style></head><body><main>'
             f'<h1>{inline(title)}</h1>' + (f'<p class=meta>{inline(meta)}</p>' if meta else "") +
-            f'{note}<div class=map>{mmmap.draw(mm)}</div>{blocks(mm.tail) if mm.tail else ""}</main></body></html>\n')
+            f'{note}<div class=map>{mmmap.draw(mm, "", False)}</div>{blocks(mm.tail) if mm.tail else ""}</main></body></html>\n')

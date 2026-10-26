@@ -1,5 +1,20 @@
-mindmap (haipipe-studio part) · Changelog
-=========================================
+haipipe-mindmap · Changelog
+===========================
+
+## [0.6.0] · 2026-10-26 · one structure map, shared with the draft's §1; a skill again
+
+- JL 261026: "你把他们那个 map 也放到我们这个新的 skill 里面去 /haipipe-mindmap，这样的话他们就共享了，不用搞那么多代码了"
+  and "就不能够做出来一模一样的东西吗". The §1 Structure map's markup, CSS and script move from
+  `servers/workbench/workbench-task-draft/draft_steps.py` into `scripts/mapview.py`; `_plan_map` and the paper theme
+  draw through it (three real JAMA drafts render byte for byte as before, but for the one line that posts to the
+  map's endpoint), and so does every topic's mind map (`mmmap.draw`).
+- A mind map now looks and edits as §1: root card with its note as the arc, a card per first-level node, the question
+  between two (`→ <question>`), a plain line per point with its number and role pill, grey curves. `act` answers §1's
+  payload (words, role, para, ask, arc, add, addpara, drop, move; and note). Removed: the card-per-node layout, the
+  three styles and the branch colours.
+- The part `haipipe-studio/_parts/mindmap/` is the skill `haipipe-mindmap` again, so `/haipipe-mindmap` opens it.
+- Tests: 25 (the shared CSS and script, §1's markup, the question and role, five levels down, chips and pictures,
+  read only, each edit of §1's payload).
 
 ## [0.5.2] · 2026-10-26 · no side bars
 

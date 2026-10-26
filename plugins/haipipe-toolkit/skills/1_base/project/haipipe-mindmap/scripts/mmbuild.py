@@ -31,7 +31,7 @@ def leaf(key: str, item: str) -> MT.Node:
     """A leaf: a few words on the card, the whole sentence its detail (JL 261026: "把这个 leaf 写得比较 concise 一些，
     点开之后就可以把它展开，有详细的介绍"). A file stays a link on the card, its button opens it; its detail shows a
     picture as itself."""
-    f = re.fullmatch(r"\[([^\]]+)\]\(([^)\s]+)\)", item)
+    f = re.fullmatch(r"(?:\[[^\]]{1,24}\] )?\[([^\]]+)\]\(([^)\s]+)\)", item)
     if f:
         shown = f"![{f.group(1)}]({f.group(2)})" if f.group(2).lower().endswith(IMAGE) else ""
         return built(key, item, note=[shown] if shown else [])
@@ -185,7 +185,8 @@ def from_topic(topic: Path) -> MT.MindMap:
                 branches.append((m.group(1), leaves))
             continue
         if head.lower() == "files":                      # the topic's real files, read from disk
-            items = [(f"{p.name}/" if p.is_dir() else f"[{p.name}]({p.name})") for p in sorted(topic.iterdir())
+            items = [(f"{p.name}/" if p.is_dir() else f"[{(p.suffix[1:] or 'file')[:12]}] [{p.name}]({p.name})")   # its type, §1's role
+                     for p in sorted(topic.iterdir())
                      if not p.name.startswith((".", "_")) and not re.match(r"m\d{2}[-_]", p.name)   # not its own mNN
                      and p.name != "__pycache__"]                     # a file is a link: its card opens it
         items = [it for it in items if not it.startswith("(write here")]

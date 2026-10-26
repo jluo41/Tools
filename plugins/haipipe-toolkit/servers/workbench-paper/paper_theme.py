@@ -1027,7 +1027,8 @@ def _map(root_title, root_text, branches):
     its words and its evidence chips. Read-only, but it answers a click (JL 261023: "我点击这个 button 的时候，它就会 show
     more information"): a leaf opens its whole sentence under it, a branch opens its card below and scrolls to it. A
     branch is (id, title, [leaf html], hand-on) or (id, title, [leaf html], hand-on, the id of its card)."""
-    from live.draft_steps import PLAN_CSS, PLAN_JS
+    from live.draft_steps import _mapview          # §1's look, shared by haipipe-mindmap's mapview.py
+    PLAN_CSS, PLAN_JS = _mapview().CSS, _mapview().JS
     paras = []
     for k, b in enumerate(branches):
         bid, title, leaves, handon = b[:4]
@@ -1152,7 +1153,8 @@ def _tree_map(root_title, root_text, nodes):
     """A mind map of any depth (JL 261023, of the data flow: "You can make more layers of the mindmap tree"): a node
     with children is a box wired to them, a node without is a leaf; a line `title · note` puts its note grey beside it,
     `code · title · note` adds a code, and a leading ✅ 🔶 ⬜ 🙋 ❗ marks its state. A click opens a leaf's whole line."""
-    from live.draft_steps import PLAN_CSS
+    from live.draft_steps import _mapview          # §1's look, shared by haipipe-mindmap's mapview.py
+    PLAN_CSS = _mapview().CSS
 
     def split(text):
         parts = [x.strip() for x in text.split(" · ")]

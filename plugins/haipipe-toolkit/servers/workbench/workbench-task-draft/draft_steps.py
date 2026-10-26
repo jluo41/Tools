@@ -596,11 +596,23 @@ def _plan_tree(body: str) -> tuple:
     return parts, asks, paras
 
 
+def _mapview():
+    """haipipe-mindmap's mapview.py, the structure map this §1 shares with a Studio topic's mind map (JL 261026)."""
+    import sys
+    from host_paths import skill_dir
+    scripts = str(skill_dir("haipipe-mindmap") / "scripts")
+    if scripts not in sys.path:
+        sys.path.insert(0, scripts)
+    import mapview
+    return mapview
+
+
 def _plan_map(d: dict, ev: dict, section: str, task: str = "") -> str:
     """§1 drawn as a mind map (JL 261020: "merge them together, how do you think you can draw the mind map for the plan?
     ... To show what is this paper about?"): the Section and its arc in the middle; its parts (C1, C2, …) when it has
     more than one; its paragraphs, with the question each hands to the next on the arrow between them; each Bullet a
-    leaf with its role and its evidence cards. A Bullet's note shows on hover; a ⟦check⟧ in it shows in red."""
+    leaf with its role and its evidence cards. A Bullet's note shows on hover; a ⟦check⟧ in it shows in red. Drawn by
+    haipipe-mindmap's shared map (mapview.render), the one a Studio topic's mind map is drawn by too."""
     parts, asks, paras = _plan_tree(d["structure"][1])
     cards = {}
     for c in ev["cards"]:
@@ -610,196 +622,14 @@ def _plan_map(d: dict, ev: dict, section: str, task: str = "") -> str:
                 got = cards.setdefault("S" + str(k).lstrip("S"), {})
                 got[c["label"]] = INK["need"] if INK["need"] in (got.get(c["label"]), ink) else ink
 
-    def para_html(i, pid, job, bullets):
-        leaves = []
-        for s, role, words, note in bullets:
-            flag = re.search(r"⟦[^⟧]*⟧", note)
-            flag = f' <span class=pm-flag>{esc(flag.group(0))}</span>' if flag and flag.group(0) not in words else ""
-            chips = "".join(f' <span class=pm-card style="color:{ink};border-color:{ink}66">{esc(lab)}</span>'
-                            for lab, ink in cards.get(s, {}).items())
-            leaves.append(f'<li data-s="{esc(s)}"{(" title=" + chr(34) + esc(note) + chr(34)) if note else ""}>'
-                          f'<span class=pm-s draggable=true>{esc(s)}</span>{_editable("role", role, esc(role), "span class=pm-role")}'
-                          f'<span class=pm-w>{_editable("words", words, _inline(words, {}), "span class=pm-t")}'
-                          f'{flag}{chips}</span></li>')
-        # a point or a paragraph added where it goes (JL 261020: "How could I add the P here or add the S here?")
-        leaves.append('<li class=pm-add><button type=button class=pm-plus data-add=point>＋ point</button></li>')
-        ask = (f'<div class=pm-q>{_editable("ask", asks.get(pid, ""), esc(asks.get(pid, "")), "span", pid)}</div>'
-               if i < len(paras) - 1 else "")
-        return (f'<div class=pm-para data-p="{esc(pid)}"><div class="pm-node pm-pnode"><span class=pm-id>{esc(pid)}</span>'
-                f'{_editable("para", job, esc(job), "b")}</div><ul class=pm-leaves>{"".join(leaves)}</ul></div>{ask}'
-                f'<div class=pm-addp><button type=button class=pm-plus data-add=para data-after="{esc(pid)}">＋ paragraph'
-                '</button></div>')
+    def chips(s, words, note):                             # a ⟦check⟧ in the note in red, then the evidence cards
+        flag = re.search(r"⟦[^⟧]*⟧", note)
+        flag = f' <span class=pm-flag>{esc(flag.group(0))}</span>' if flag and flag.group(0) not in words else ""
+        return flag + "".join(f' <span class=pm-card style="color:{ink};border-color:{ink}66">{esc(lab)}</span>'
+                              for lab, ink in cards.get(s, {}).items())
 
-    one = len(parts) <= 1
-    name = f"{parts[0][0]} · {parts[0][1]}" if one and parts else section
-    arc = d["head"].get("arc") or ""
-    body = []
-    if one:
-        body = [para_html(i, *p) for i, p in enumerate(paras)]
-    else:
-        for cid, cname in parts:
-            mine = [(i, p) for i, p in enumerate(paras) if p[0].split(".")[0] == cid]
-            if mine:
-                body.append(f'<div class=pm-part><div class="pm-node pm-cnode"><span class=pm-id>{esc(cid)}</span>'
-                            f'<b>{esc(cname)}</b></div><div>{"".join(para_html(i, *p) for i, p in mine)}</div></div>')
-    # editable in place where it is read (JL 261020: "how could I operate and edit it?"): plan_act writes §1
-    return (PLAN_CSS + f'<div class=pm-edit data-task="{esc(task)}" data-file="{esc(d["file"].name)}">'
-            '<span class=pm-msg role=status></span><div class=pm><svg class=pm-wires aria-hidden=true></svg>'
-            f'<div class="pm-node pm-root"><b>{esc(name)}</b>' + (_editable("arc", arc, esc(arc), "p") if arc else "")
-            + f'</div><div>{"".join(body)}</div></div></div>' + PLAN_JS)
-
-
-def _editable(what: str, raw: str, shown: str, tag: str, p: str = "") -> str:
-    """One piece of the map a person types into: it shows `shown`, and while typed in, its words as written."""
-    name = tag.split()[0]
-    return (f'<{tag} data-edit={what}{(" data-p=" + chr(34) + esc(p) + chr(34)) if p else ""} '
-            f'data-raw="{esc(raw)}" contenteditable=plaintext-only spellcheck=false>{shown}</{name}>')
-
-
-PLAN_CSS = """<style>
-/* the map grows to its widest Point and its box scrolls sideways; a Point never wraps (JL 261021: "怎么让这个 structure
-   的宽度能够无限延伸 ... 我就是想让它一直不要有这个 break") */
-.pm{position:relative;display:grid;grid-template-columns:250px auto;gap:0 64px;align-items:center;padding:8px 4px;
- width:max-content;min-width:100%;box-sizing:border-box}
-.pm-wires{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
-.pm-wires path{fill:none;stroke:var(--mut);stroke-opacity:.45;stroke-width:1.4}
-.pm-node{position:relative;background:var(--card);border:1.5px solid var(--fg);border-radius:10px}
-.pm-root{padding:14px 16px;font-size:13px;line-height:1.5}.pm-root b{display:block;font-size:17px;margin-bottom:6px}
-.pm-root p{margin:0;color:var(--mut)}
-.pm-para{display:grid;grid-template-columns:230px auto;gap:0 56px;align-items:center;margin:4px 0}
-.pm-pnode,.pm-cnode{padding:9px 12px;font-size:14.5px;line-height:1.35}.pm-id{display:block;font-size:11.5px;color:var(--mut)}
-.pm-part{display:grid;grid-template-columns:180px auto;gap:0 48px;align-items:center;margin:8px 0}
-.pm-part .pm-para{grid-template-columns:210px auto;gap:0 48px}.pm-part .pm-q{width:210px}
-.pm-leaves{list-style:none;margin:0;padding:0}
-.pm-leaves li{position:relative;padding:3px 0;line-height:1.5;font-size:14px;white-space:nowrap}
-.pm-s{display:inline-block;min-width:30px;font-size:12px;color:var(--mut)}
-.pm-role{display:inline-block;min-width:86px;box-sizing:border-box;text-align:center;margin-right:7px;padding:0 6px;border:1px solid var(--line);border-radius:9px;font-size:11.5px;color:var(--mut)}
-.pm-card{display:inline-block;margin-left:2px;padding:0 5px;border:1px solid;border-radius:3px;font-size:11px;font-weight:600}
-.pm-flag{color:#e03131;font-weight:600}
-.pm-edit{position:relative}.pm-msg{position:absolute;right:4px;top:0;font-size:12px;color:var(--mut)}
-[data-edit]{outline:none;border-radius:3px;cursor:text}[data-edit]:hover{background:var(--wash)}
-[data-edit]:focus{background:#fff3bf;color:var(--fg)}.pm-role[data-edit]{border-radius:9px}.pm-role:empty{border-style:dashed}
-.pm-q [data-edit]::before{content:"↓ "}.pm-s{cursor:grab}.pm-leaves li.pm-drop{box-shadow:0 -2px 0 var(--acc)}
-.pm-pnode.pm-drop{border-color:var(--acc)}[data-edit].pm-bad{outline:1.5px dashed #e03131;outline-offset:2px}
-.pm-err{color:#e03131;font-size:12px;font-weight:600;font-style:normal}.pm-leaves li.pm-new .pm-s{visibility:hidden}
-.pm-q{width:230px;box-sizing:border-box;margin:2px 0;padding:2px 8px 2px 14px;font-size:12.5px;font-style:italic;color:var(--mut);line-height:1.4}
-.pm-q [data-edit]:empty::before{content:"↓ ＋ question";opacity:.7}
-.pm-plus{border:0;background:none;padding:1px 4px;font:12px/1.4 system-ui,sans-serif;color:var(--mut);opacity:.6;cursor:pointer}
-.pm-plus:hover{opacity:1;color:var(--acc)}.pm-leaves li.pm-add{padding:1px 0 0 30px}
-.pm-addp{width:230px;box-sizing:border-box;padding:0 0 2px 10px}.pm-part .pm-addp{width:210px}
-/* the ＋ marks stay hidden until the mouse is over their paragraph or their gap (JL 261020: "能不能让它默认隐身，等我鼠标
-   移过去的时候再显示出来"); they keep their room, so nothing moves; a touch screen, with no hover, always shows them */
-@media(hover:hover){.pm-leaves li.pm-add,.pm-addp,.pm-q [data-edit]:empty::before{opacity:0;transition:opacity .12s}
- .pm-para:hover li.pm-add,.pm-addp:hover,.pm-para:hover+.pm-addp,.pm-para:hover+.pm-q+.pm-addp,.pm-q:hover+.pm-addp,
- .pm-add:focus-within,.pm-addp:focus-within{opacity:1}
- .pm-para:hover+.pm-q [data-edit]:empty::before,.pm-q:hover [data-edit]:empty::before,.pm-q [data-edit]:empty:focus::before{opacity:.7}}
-.pm-pnode [data-edit]:empty{display:block;min-height:1.35em;border-bottom:1px dashed var(--line)}
-@media(max-width:1000px){.pm,.pm-para,.pm-part,.pm-part .pm-para{grid-template-columns:minmax(0,1fr);gap:8px}.pm-wires{display:none}
- .pm{width:auto}
- .pm-leaves{padding-left:14px;border-left:2px solid var(--line)}.pm-q,.pm-part .pm-q,.pm-addp,.pm-part .pm-addp{width:auto}}
-</style>"""
-# the branches drawn after layout, so a leaf that wraps still gets its wire: the Section to each part (or straight to
-# each paragraph), each part to its paragraphs, each paragraph to each of its Bullets
-PLAN_JS = """<script>
-(function(){if(window.__pmMap)return;window.__pmMap=1;
- function wire(a,b,o,leaf){var p=a.getBoundingClientRect(),q=b.getBoundingClientRect();
-  var x1=p.right-o.left,y1=p.top+p.height/2-o.top,x2=q.left-o.left-6,y2=(leaf?q.top+12:q.top+q.height/2)-o.top,m=(x1+x2)/2;
-  return '<path d="M'+x1+','+y1+' C'+m+','+y1+' '+m+','+y2+' '+x2+','+y2+'"/>';}
- function draw(){document.querySelectorAll('.pm').forEach(function(m){var svg=m.querySelector('.pm-wires');
-  if(!m.offsetParent||getComputedStyle(svg).display==='none')return;
-  var o=m.getBoundingClientRect(),root=m.querySelector('.pm-root'),d='';
-  svg.setAttribute('width',o.width);svg.setAttribute('height',o.height);
-  m.querySelectorAll('.pm-part').forEach(function(pt){d+=wire(root,pt.querySelector('.pm-cnode'),o);});
-  m.querySelectorAll('.pm-para').forEach(function(pa){var p=pa.querySelector('.pm-pnode'),pt=pa.closest('.pm-part');
-   d+=wire(pt?pt.querySelector('.pm-cnode'):root,p,o);
-   pa.querySelectorAll('.pm-leaves>li:not(.pm-add)').forEach(function(l){d+=wire(p,l,o,true);});});
-  svg.innerHTML=d;});}
- window.addEventListener('resize',draw);window.addEventListener('load',draw);setTimeout(draw,60);
- document.addEventListener('toggle',function(){setTimeout(draw,0);},true);
- window.pmDraw=draw;document.addEventListener('input',function(e){if(e.target.closest&&e.target.closest('.pm'))draw();});
-})();
-</script>""" + """<script>
-(function(){if(window.__pmEdit)return;window.__pmEdit=1;
- function host(el){return el.closest('.pm-edit');}
- function say(el,t,bad){var m=host(el).querySelector('.pm-msg');m.textContent=t||'';m.style.color=bad?'#c92a2a':'';
-  if(t&&!bad)setTimeout(function(){if(m.textContent===t)m.textContent='';},1800);}
- /* a refusal is said where the person typed, and the words they typed stay, outlined red (JL 261020: "why the
-    content is not saved here?") */
- function bad(el,msg){var x=el.parentNode.querySelector(':scope > .pm-err');if(!x){x=document.createElement('span');x.className='pm-err';el.after(x);}
-  x.textContent=' not saved: '+msg;el.classList.add('pm-bad');say(el,'not saved: '+msg,true);if(window.pmDraw)window.pmDraw();}
- function post(el,body){var h=host(el);body.task=h.dataset.task;body.file=h.dataset.file;say(el,'…');
-  return fetch('/_board/draft-plan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
-   .then(function(r){return r.json();}).then(function(j){if(j.file)h.dataset.file=j.file;
-    if(!j.ok){var e=new Error(j.err||'not saved');e.reload=/newer/.test(j.err||'');throw e;}
-    el.classList.remove('pm-bad');var x=el.parentNode&&el.parentNode.querySelector(':scope > .pm-err');if(x)x.remove();
-    say(el,'saved');return j;});}
- /* the map again from the server, after a point was added, taken out or moved */
- function refresh(h,then){fetch(location.href,{credentials:'same-origin'}).then(function(r){return r.text();}).then(function(t){
-  var n=new DOMParser().parseFromString(t,'text/html').querySelector('.pm-edit[data-task="'+h.dataset.task+'"]');
-  if(n){h.innerHTML=n.innerHTML;h.dataset.file=n.dataset.file;}if(window.pmDraw)window.pmDraw();if(then)then();});}
- /* a new point or paragraph refused because the draft changed under the page: the map reloads, and what was typed
-    comes back in the same paragraph, outlined red, so clicking away adds it to the newest draft */
- var AGAIN='the draft changed under this page; click away to add it again';
- function again(h,what,pid,txt,role){refresh(h,function(){var pa=h.querySelector('.pm-para[data-p="'+pid+'"]');
-  if(!pa){say(h.querySelector('.pm-msg')||h,'not saved: '+pid+' is gone in the newest draft',true);return;}
-  if(what==='para'){var row=pa.nextElementSibling;while(row&&!row.classList.contains('pm-addp'))row=row.nextElementSibling;
-   var b=row&&row.querySelector('[data-add=para]');if(!b)return;b.click();var e=h.querySelector('.pm-newp [data-edit]');e.textContent=txt;bad(e,AGAIN);return;}
-  var pts=pa.querySelectorAll('li[data-s]');newpoint(pa.querySelector('li.pm-add'),pts.length?pts[pts.length-1].dataset.s:'',pid);
-  var n=pa.querySelector('li.pm-new');n.querySelector('.pm-role').textContent=role||'';var w=n.querySelector('.pm-t');w.textContent=txt;bad(w,AGAIN);});}
- function words(el){return el.innerText.replace(/\\s+/g,' ').trim();}
- function newpoint(before,after,pid){var n=document.createElement('li');n.className='pm-new';n.dataset.after=after||'';n.dataset.p=pid;
-  n.innerHTML='<span class=pm-s>+</span><span class=pm-role data-edit=role data-raw="" contenteditable=plaintext-only></span>'+
-   '<span class=pm-w><span class=pm-t data-edit=words data-raw="" contenteditable=plaintext-only></span></span>';
-  before.parentNode.insertBefore(n,before);n.querySelector('.pm-t').focus();if(window.pmDraw)window.pmDraw();}
- /* ＋ point: a new point last in its paragraph; ＋ paragraph: a new paragraph after this one, named first */
- document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.pm-edit [data-add]');if(!b)return;e.preventDefault();
-  if(b.dataset.add==='point'){var ul=b.closest('.pm-leaves'),pts=ul.querySelectorAll('li[data-s]');
-   newpoint(b.closest('li'),pts.length?pts[pts.length-1].dataset.s:'',b.closest('.pm-para').dataset.p);return;}
-  var row=b.closest('.pm-addp'),n=document.createElement('div');n.className='pm-para pm-newp';n.dataset.after=b.dataset.after;
-  n.innerHTML='<div class="pm-node pm-pnode"><span class=pm-id>＋</span><b data-edit=newpara data-raw="" contenteditable=plaintext-only></b></div><ul class=pm-leaves></ul>';
-  row.after(n);n.querySelector('[data-edit]').focus();if(window.pmDraw)window.pmDraw();});
- document.addEventListener('focusin',function(e){var el=e.target.closest&&e.target.closest('.pm-edit [data-edit]');if(!el||el._html!=null)return;
-  el._html=el.innerHTML;if(!el.classList.contains('pm-bad'))el.textContent=el.dataset.raw;});
- document.addEventListener('keydown',function(e){var el=e.target.closest&&e.target.closest('.pm-edit [data-edit]');if(!el)return;
-  if(e.key==='Escape'){e.preventDefault();el.textContent=el.dataset.raw;el.blur();return;}
-  if(e.key!=='Enter')return;e.preventDefault();
-  /* Enter after a point: a new point below it, in the same paragraph */
-  var li=el.dataset.edit==='words'&&el.closest('li');
-  if(li&&words(el)){el.blur();newpoint(li.nextSibling,li.dataset.s||li.dataset.after||'',li.closest('.pm-para').dataset.p);}else el.blur();});
- document.addEventListener('focusout',function(e){var el=e.target.closest&&e.target.closest('.pm-edit [data-edit]');if(!el)return;
-  var h=host(el),li=el.closest('li'),v=words(el),was=el.dataset.raw,html=el._html;el._html=null;
-  if(el.dataset.edit==='newpara'){var np=el.closest('.pm-newp');if(!v){np.remove();if(window.pmDraw)window.pmDraw();return;}
-   post(el,{what:'addpara',after:np.dataset.after,value:v}).then(function(){refresh(h);})
-    .catch(function(err){if(err.reload)again(h,'para',np.dataset.after,v);else bad(el,err.message);});return;}
-  if(li&&li.classList.contains('pm-new')){
-   if(e.relatedTarget&&li.contains(e.relatedTarget))return;          /* from the role to the words of the new point */
-   var t=words(li.querySelector('.pm-t'));if(!t){li.remove();if(window.pmDraw)window.pmDraw();return;}
-   var role=words(li.querySelector('.pm-role'));
-   post(el,{what:'add',after:li.dataset.after,p:li.dataset.p,value:t,role:role})
-    .then(function(){refresh(h);}).catch(function(err){if(err.reload)again(h,'point',li.dataset.p,t,role);else bad(el,err.message);});return;}
-  if(v===was){el.innerHTML=html!=null?html:el.innerHTML;return;}
-  var body={what:el.dataset.edit,was:was,value:v};if(li)body.s=li.dataset.s;
-  if(el.dataset.p)body.p=el.dataset.p;else if(el.dataset.edit==='para')body.p=el.closest('.pm-para').dataset.p;
-  /* a point emptied is taken out */
-  if(el.dataset.edit==='words'&&!v)body.what='drop';
-  post(el,body).then(function(j){if(body.what==='drop'){refresh(h);return;}el.dataset.raw=v;el.innerHTML=j.html!=null?j.html:v;
-    if(window.pmDraw)window.pmDraw();})
-   .catch(function(err){bad(el,err.message);});});
- /* a point dragged by its S label: onto another point to go before it, onto a paragraph to go last in it */
- var drag=null;
- document.addEventListener('dragstart',function(e){var s=e.target.closest&&e.target.closest('.pm-edit .pm-s');if(!s)return;
-  drag=s.closest('li');e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',drag.dataset.s);});
- function spot(e){return drag&&e.target.closest&&(e.target.closest('.pm-leaves li[data-s]')||e.target.closest('.pm-pnode'));}
- document.addEventListener('dragover',function(e){var t=spot(e);document.querySelectorAll('.pm-drop').forEach(function(x){x.classList.remove('pm-drop');});
-  if(!t||t===drag||host(t)!==host(drag))return;e.preventDefault();t.classList.add('pm-drop');});
- document.addEventListener('drop',function(e){var t=spot(e);document.querySelectorAll('.pm-drop').forEach(function(x){x.classList.remove('pm-drop');});
-  if(!t||t===drag)return;e.preventDefault();var h=host(drag),body={what:'move',s:drag.dataset.s,p:t.closest('.pm-para').dataset.p};
-  if(t.tagName==='LI')body.before=t.dataset.s;drag=null;
-  post(t,body).then(function(){refresh(h);}).catch(function(err){say(t,'not saved: '+err.message,true);if(err.reload)refresh(h);});});
- document.addEventListener('dragend',function(){drag=null;});
-})();
-</script>"""
-
+    return _mapview().render(section, d["head"].get("arc") or "", parts, asks, paras, task=task, file=d["file"].name,
+                             inline=lambda words: _inline(words, {}), chips=chips)
 
 
 def _bullet_block(lines: list, s: str, lo: int, hi: int) -> tuple:

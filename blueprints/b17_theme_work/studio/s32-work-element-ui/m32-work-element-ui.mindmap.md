@@ -17,10 +17,10 @@ built: from-topic .
   - `reports/` q01_work_ladder (each level's elements) · q03_questions_and_runs … <!-- @feeds/0 #29d8ea -->
     `reports/` q01_work_ladder (each level's elements) · q03_questions_and_runs (a Run's display and link); b03 Q08 (one shared base, a theme each) and b03's s32 (its Theme elements frame reads the list below).
 - Files <!-- @files #6ce6c5 -->
-  - [build_s32_work_element_ui.py](build_s32_work_element_ui.py) <!-- @files/0 #9e9d24 -->
-  - [s32-work-element-ui.excalidraw](s32-work-element-ui.excalidraw) <!-- @files/1 #a6617a -->
-  - [s32-work-element-ui.md](s32-work-element-ui.md) <!-- @files/2 #987131 -->
-  - [s32-work-element-ui.png](s32-work-element-ui.png) <!-- @files/3 #7666ec -->
+  - [py] [build_s32_work_element_ui.py](build_s32_work_element_ui.py) <!-- @files/0 #354fe1 -->
+  - [excalidraw] [s32-work-element-ui.excalidraw](s32-work-element-ui.excalidraw) <!-- @files/1 #c2b064 -->
+  - [md] [s32-work-element-ui.md](s32-work-element-ui.md) <!-- @files/2 #e80d8a -->
+  - [png] [s32-work-element-ui.png](s32-work-element-ui.png) <!-- @files/3 #a177cd -->
     ![s32-work-element-ui.png](s32-work-element-ui.png)
   - shots/ <!-- @files/4 #4d5052 -->
 - What the gallery holds <!-- @what-the-gallery-holds #69fd53 -->
