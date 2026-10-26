@@ -675,10 +675,18 @@ def write_md(path, rows, recs, summary, stats, aliases, args):
         gone = sorted(set(bnames) - now_names)
         new = sorted(now_names - set(bnames))
         mains = [(r["name"], p) for r in tools_rows for p in r["parts"].split(";") if p]
+        # a part's CHANGELOG names the skill it was ("was the skill `X`", merge_parts.py)
+        was = {}
+        for r in tools_rows:
+            for part in filter(None, r["parts"].split(";")):
+                cl = TOOLS / r["path"] / "_parts" / part / "CHANGELOG.md"
+                for old in re.findall(r"was the skill `([^`]+)`", read_text(cl)):
+                    was[old] = r["name"]
         merged = {}
         for g in gone:
-            hit = max((m for m in mains if g.endswith("-" + m[1])), key=lambda m: len(m[1]), default=None)
-            merged.setdefault(hit[0] if hit else "(removed)", []).append(g)
+            hit = was.get(g) or next((m[0] for m in sorted(mains, key=lambda m: -len(m[1]))
+                                      if g == m[1] or g.endswith("-" + m[1])), None)
+            merged.setdefault(hit or "(moved or removed)", []).append(g)
         if gone:
             add("Left the skill list: %d. Each is now a part of its main skill, `<main>/_parts/<name>/PART.md`:" % len(gone))
             add("")
