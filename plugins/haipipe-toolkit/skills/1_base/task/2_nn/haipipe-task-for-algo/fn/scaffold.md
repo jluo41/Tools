@@ -2,7 +2,7 @@ fn-scaffold: Scaffold an algo-dev demo job
 ====================================================
 
 Purpose: verify a newly developed algorithm class (forward / loss / metric) runs end-to-end on a TINY config.
-NOT for full training — see `/haipipe-task-for-fit` for that.
+NOT for full training — see `/haipipe-task fit` for that.
 Hierarchy prefixes are bNN / jNN / tNN / rNN; domain belongs in the descriptive suffix.
 
 Output: `work/bNN_<block>/jNN_<job>/tNN_<task>/`.
@@ -73,7 +73,7 @@ Step 6 — Cross-skill link
 After scaffolding, suggest:
 - `/haipipe-nn algo` to author or refine the algorithm class itself
   (Layer 1: model, forward, loss, metric).
-- Once the demo passes → `/haipipe-task-for-fit` for the real run.
+- Once the demo passes → `/haipipe-task fit` for the real run.
 
 
 Step 7 — Report

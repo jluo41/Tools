@@ -18,7 +18,8 @@ Task Folder = `tNN_<task>/`; a Task may hold a draft. I reject a current plan, r
 Page that treats its parent Job as the Task Folder or creates a second Page
 Folder for the same Task.
 
-Load `haipipe-task` and the relevant type specialist. I inspect the creator's
+Load `haipipe-task`, then read the relevant type specialist's SKILL.md by the path in its type table
+(the type skills are hidden from the listing). I inspect the creator's
 files in a fresh context and return `pass`, `revise`, `blocked`, or `fail` with
 exact paths. I never mutate the Task, Run, or Result.
 

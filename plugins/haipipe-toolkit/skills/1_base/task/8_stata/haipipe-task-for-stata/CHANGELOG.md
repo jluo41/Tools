@@ -6,6 +6,10 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.4.1] — 2026-10-26
+
+Hidden from the skill listing (`disable-model-invocation: true`); reached through the `/haipipe-task` door, which reads this SKILL.md by path. Nothing moved; `/haipipe-task-for-stata` still works when a person types it. (hide 261026)
+
 ## [0.4.0] · 2026-10-21 · One folder per Run, and a Type contract
 
 - SKILL.md opens with `## Type contract` (haipipe-task ref/types.md): task-type

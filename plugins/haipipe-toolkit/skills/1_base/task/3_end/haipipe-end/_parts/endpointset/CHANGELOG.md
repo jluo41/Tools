@@ -6,6 +6,10 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.2.5] — 2026-10-26
+
+Commands to the hidden `haipipe-task-for-*` skills now go through the door: `/haipipe-task <kind>`. (hide 261026)
+
 ## [0.2.4] — 2026-10-25
 
 Became a part of `haipipe-end`: `haipipe-end/_parts/endpointset/PART.md` (was the skill `haipipe-end-endpointset`); front matter, commands and links updated. (merge-parts 261025)

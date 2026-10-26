@@ -1,5 +1,9 @@
 # CHANGELOG · haipipe-task-for-evidence
 
+## [0.6.1] — 2026-10-26
+
+Hidden from the skill listing (`disable-model-invocation: true`); reached through the `/haipipe-task` door, which reads this SKILL.md by path. Nothing moved; `/haipipe-task-for-evidence` still works when a person types it. (hide 261026)
+
 ## 0.6.0 · 2026-10-21 · One folder per Run, and a Type contract
 
 - `SKILL.md` opens with `## Type contract` (the keys of haipipe-task `ref/types.md`), current layout only.

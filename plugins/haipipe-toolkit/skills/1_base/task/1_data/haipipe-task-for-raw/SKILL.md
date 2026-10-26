@@ -1,7 +1,8 @@
 ---
 name: haipipe-task-for-raw
-description: "Raw-stage Task: extraction Jobs move cohort data from a database into RawStore as <cohort>-v<yymmdd> (Spark on the server for PHI), and a raw-understanding Block profiles each table and hands it to Source. Called by /haipipe-task when task-type=raw. Trigger: raw extraction, RawStore, cohort extract, /haipipe-task-for-raw."
+description: "Raw-stage Task: extraction Jobs move cohort data from a database into RawStore as <cohort>-v<yymmdd> (Spark on the server for PHI), and a raw-understanding Block profiles each table and hands it to Source. Called by /haipipe-task when task-type=raw. Trigger: raw extraction, RawStore, cohort extract, /haipipe-task raw."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+disable-model-invocation: true
 metadata:
   version: "0.6.2"
   last_updated: "2026-10-26"
@@ -60,15 +61,15 @@ Position in the series
 ----------------------
 
 ```
-/haipipe-task-for-raw         ◀── you are here (Stage 0 — raw extraction)
-/haipipe-task-for-data            data-pipeline (Stages 1-4)
-/haipipe-task-for-algo            algo-dev demo
-/haipipe-task-for-fit             model training
-/haipipe-task-for-eval            model evaluation
-/haipipe-task-for-display         paper figure / table
-/haipipe-task-for-individual      individual-centric query
-/haipipe-task-for-agent           LLM agent call
-/haipipe-task-for-endpoint        package + deploy (absorbed inference profiling)
+/haipipe-task raw         ◀── you are here (Stage 0 — raw extraction)
+/haipipe-task data            data-pipeline (Stages 1-4)
+/haipipe-task algo            algo-dev demo
+/haipipe-task fit             model training
+/haipipe-task eval            model evaluation
+/haipipe-task display         paper figure / table
+/haipipe-task individual      individual-centric query
+/haipipe-task agent           LLM agent call
+/haipipe-task endpoint        package + deploy (absorbed inference profiling)
 ```
 
 
@@ -346,8 +347,8 @@ Commands
 --------
 
 ```
-/haipipe-task-for-raw                                 ASK project / Block / Job / Task
-/haipipe-task-for-raw <project> <block>/<job> <task>  scaffold direct
+/haipipe-task raw                                 ASK project / Block / Job / Task
+/haipipe-task raw <project> <block>/<job> <task>  scaffold direct
 ```
 
 

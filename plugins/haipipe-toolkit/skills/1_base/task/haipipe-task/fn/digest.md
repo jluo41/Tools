@@ -50,7 +50,7 @@ No routing or merge logic is duplicated here. digest's only new job is turning a
    mirror the IPO shape" is caught by the guard / the Scope rule below and is
    NEVER keyword-routed to 2_nn just because it mentions a model. Route by the
    complaint's SUBJECT, not by a skill-name or path it MENTIONS: "add feedback to
-   /haipipe-task-for-fit that the figure must follow the predefined display
+   /haipipe-task fit that the figure must follow the predefined display
    plan" is about DISPLAY (the subject -> 7_display), not fit (a mis-named
    destination).
      a. within-batch:  collapse candidates that are the same topic this run.

@@ -7,9 +7,10 @@ description: >-
   this task does not own the final paper asset. Called by /haipipe-task when
   task-type=display.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+disable-model-invocation: true
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-10-21"
+  version: "0.4.1"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -140,4 +141,4 @@ ref/workflow-plan-sample.yaml     ← script-level phases for this type
 ```
 
 Schema source of truth:
-  project/haipipe-run/ref/plan-schema.md
+  ../../../project/haipipe-run/ref/plan-schema.md

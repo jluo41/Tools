@@ -121,19 +121,26 @@ reviewer are never the same agent.
 `task-type:` on the face picks the type skill; the table, the rules for choosing, the asked-or-silent
 contract and the `## Type contract` block every type skill carries are `ref/types.md`.
 
+The twelve type skills are hidden from the skill listing (`disable-model-invocation: true`,
+JL 261026): read the type's SKILL.md by the path below and follow it. A person can still type
+`/haipipe-task-for-<type>`; `/haipipe-task <type> …` reaches the same file through this door.
+
 ```text
-raw · description · data          haipipe-task-for-raw · -description · -data  (1_data/)
-algo                              haipipe-task-for-algo                        (2_nn/)
-endpoint                          haipipe-task-for-endpoint                    (3_end/)
-individual                        haipipe-task-for-individual                  (4_individual/)
-fit (+ GPU companions)            haipipe-task-for-fit                         (5_fit/)
-eval                              haipipe-task-for-eval                        (6_eval/)
-display                           haipipe-task-for-display                     (7_display/)
-stata-cms · -case · -data · -reg  haipipe-task-for-stata                       (8_stata/)
-agent (+ LLM engine)              haipipe-task-for-agent                       (9_agent/)
-evidence                          haipipe-task-for-evidence                    (10_evidence/)
-draft                             haipipe-draft (its own Runs in draft/)
-labeling · -building · -scanning  haipipe-labeling
+task-type                         read
+raw                               ../1_data/haipipe-task-for-raw/SKILL.md
+description                       ../1_data/haipipe-task-for-description/SKILL.md
+data                              ../1_data/haipipe-task-for-data/SKILL.md
+algo                              ../2_nn/haipipe-task-for-algo/SKILL.md
+endpoint                          ../3_end/haipipe-task-for-endpoint/SKILL.md
+individual                        ../4_individual/haipipe-task-for-individual/SKILL.md
+fit (+ GPU parts)                 ../5_fit/haipipe-task-for-fit/SKILL.md
+eval                              ../6_eval/haipipe-task-for-eval/SKILL.md
+display                           ../7_display/haipipe-task-for-display/SKILL.md
+stata-cms · -case · -data · -reg  ../8_stata/haipipe-task-for-stata/SKILL.md
+agent (+ LLM engine part)         ../9_agent/haipipe-task-for-agent/SKILL.md
+evidence                          ../10_evidence/haipipe-task-for-evidence/SKILL.md
+draft                             haipipe-draft (its own Runs in draft/; a listed skill)
+labeling · -building · -scanning  haipipe-labeling (a listed skill)
 ```
 
 GPU is how a fit Task executes, not a type: `haipipe-task-for-fit` owns `haipipe-task-for-fit/_parts/gpu` and

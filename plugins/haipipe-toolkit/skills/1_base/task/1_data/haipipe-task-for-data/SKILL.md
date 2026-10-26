@@ -2,9 +2,10 @@
 name: haipipe-task-for-data
 description: "Data-pipeline Job specialist: scaffolds and executes canonical BJTR Jobs whose Task Folders build or run Stage 1-4 Source/Record/Case/AIData work, including Source raw-name coverage and external-data contracts. Called by /haipipe-task when task-type=data."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+disable-model-invocation: true
 metadata:
-  version: "0.10.1"
-  last_updated: "2026-10-25"
+  version: "0.10.2"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -309,8 +310,8 @@ Commands
 --------
 
 ```
-/haipipe-task-for-data                                 ASK project / Block / Job / Task
-/haipipe-task-for-data <project> <block>/<job> <task>  scaffold direct
+/haipipe-task data                                 ASK project / Block / Job / Task
+/haipipe-task data <project> <block>/<job> <task>  scaffold direct
 ```
 
 
@@ -366,4 +367,4 @@ ref/workflow-plan-sample.yaml     ← script-level phases for this type
 ```
 
 Schema source of truth:
-  project/haipipe-run/ref/plan-schema.md
+  ../../../project/haipipe-run/ref/plan-schema.md

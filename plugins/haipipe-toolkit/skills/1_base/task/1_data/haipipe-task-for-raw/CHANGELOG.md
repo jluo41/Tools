@@ -9,6 +9,8 @@ Newest first.
 
 Shorter description (496 -> 323 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)
 
+Hidden from the skill listing (`disable-model-invocation: true`); reached through the `/haipipe-task` door, which reads this SKILL.md by path. Nothing moved; `/haipipe-task-for-raw` still works when a person types it. (hide 261026)
+
 ## [0.6.1] — 2026-10-25
 
 Links, commands and companions repointed at the helper skills merged into `haipipe-nn`, `haipipe-end`, `haipipe-data`, `haipipe-task-for-fit`, `haipipe-task-for-agent` (now `_parts/<name>/PART.md`). (merge-parts 261025)

@@ -1,6 +1,6 @@
 # Report a Stata Task
 
-Use `/haipipe-task-for-stata report <tNN-task-path>` after execution.
+Use `/haipipe-task stata report <tNN-task-path>` after execution.
 Read shared `haipipe-task/fn/stage-report.md` and the Workflow Report schema.
 
 For each actual rNN Ticket, inspect `$OUTPUT_ROOT/<task>/runs/<run>/result/` (reg: also each `runs/<run>/passes/pNN-<MMDD>/`; a Block not yet moved: `results/<run>/`):

@@ -74,7 +74,7 @@ Step 6 — Cross-skill link
 
 After scaffolding, suggest:
 - `/haipipe-end` for Stage-6 inference + scoring helpers, if needed.
-- `/haipipe-task-for-display` to build a figure/table from these eval results.
+- `/haipipe-task display` to build a figure/table from these eval results.
 
 
 Step 7 — Report
@@ -84,7 +84,7 @@ Step 7 — Report
 status:    ok
 summary:   Scaffolded evaluation Task tNN_<task> under the selected bNN Block / jNN Job.
 artifacts: [paths created]
-next:      run the eval, then /haipipe-task-for-display
+next:      run the eval, then /haipipe-task display
 ```
 
 

@@ -5,6 +5,10 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.3.1] — 2026-10-26
+
+Hidden from the skill listing (`disable-model-invocation: true`); reached through the `/haipipe-task` door, which reads this SKILL.md by path. Nothing moved; `/haipipe-task-for-fit` still works when a person types it. (hide 261026)
+
 ## [0.3.0] — 2026-10-25
 
 Merged 2 helper skill(s) into `_parts/`: `haipipe-task-gpu` -> `_parts/gpu`, `haipipe-task-gpu-training` -> `_parts/gpu-training`. /haipipe-task-for-fit reads `_parts/<name>/PART.md` instead of calling a separate skill; allowed-tools gained the parts' tools. Old commands map as `/haipipe-task-gpu` -> `haipipe-task-for-fit/_parts/gpu`. (merge-parts 261025)

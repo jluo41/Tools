@@ -3,9 +3,10 @@ name: haipipe-task-for-agent
 description: "agent Task specialist: scaffolds a tNN_<task>/ Task whose Runs call an LLM agent with prompts + tools -> $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/{transcript.json, summary.md}. Called by /haipipe-task when task-type=agent. Engine: its llm-engine part (_parts/llm-engine/PART.md: Claude/Codex/DeepSeek SDK calls, model routing, CallStore recovery). Trigger: agent task, llm engine, agent sdk, callstore."
 argument-hint: "[project_id] [bNN_<block>/jNN_<job>] [tNN_<task>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+disable-model-invocation: true
 metadata:
-  version: "0.3.0"
-  last_updated: "2026-10-25"
+  version: "0.3.1"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

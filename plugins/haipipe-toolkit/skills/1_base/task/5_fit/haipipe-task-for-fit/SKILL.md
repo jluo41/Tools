@@ -1,11 +1,12 @@
 ---
 name: haipipe-task-for-fit
-description: "model-fitting Task specialist: scaffolds jNN_<job>/tNN_<task>/ Task folders that fit/train a model (full hyperparam config, real GPU sweep, checkpoint to _WorkSpace/5-ModelInstanceStore/). NOT algorithm dev -- see /haipipe-task-for-algo. Called by /haipipe-task when task-type=fit. Cross-references /haipipe-nn tuner and /haipipe-nn instance. Its parts _parts/gpu and _parts/gpu-training own GPU queues (exclusive cards, preflight, OOM backoff, sequential handoff) and checkpoint resume. Trigger: fit task, train model, GPU sweep, GPU queue, checkpoint resume."
+description: "model-fitting Task specialist: scaffolds jNN_<job>/tNN_<task>/ Task folders that fit/train a model (full hyperparam config, real GPU sweep, checkpoint to _WorkSpace/5-ModelInstanceStore/). NOT algorithm dev -- see /haipipe-task algo. Called by /haipipe-task when task-type=fit. Cross-references /haipipe-nn tuner and /haipipe-nn instance. Its parts _parts/gpu and _parts/gpu-training own GPU queues (exclusive cards, preflight, OOM backoff, sequential handoff) and checkpoint resume. Trigger: fit task, train model, GPU sweep, GPU queue, checkpoint resume."
 argument-hint: "[project_id] [bNN_<block>/jNN_<job>] [tNN_<task>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+disable-model-invocation: true
 metadata:
-  version: "0.3.0"
-  last_updated: "2026-10-25"
+  version: "0.3.1"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -90,8 +91,8 @@ This skill scaffolds the example task that drives both.
 
   1. `/haipipe-nn algo`   — algorithm class exists.
   2. `/haipipe-nn tuner`  — author the sweep.
-  3. `/haipipe-task-for-fit` — scaffold the example task.
-  4. Run sweep → ModelInstance → `/haipipe-task-for-eval`.
+  3. `/haipipe-task fit` — scaffold the example task.
+  4. Run sweep → ModelInstance → `/haipipe-task eval`.
 
 
 Scaffold flow
@@ -143,7 +144,7 @@ ref/workflow-plan-sample.yaml     ← Run Spec example with internal domain step
 ```
 
 Schema source of truth:
-  project/haipipe-run/ref/plan-schema.md
+  ../../../project/haipipe-run/ref/plan-schema.md
 
 Resolve `RESULT_STORE`, then the Job store declaration, then the Job root as OUTPUT_ROOT.
 Use the same output-root contract as `haipipe-task`; no physical output is moved by scaffolding.

@@ -9,7 +9,7 @@ When to call
 ------------
 
 As Build command of the `/haipipe-task` lifecycle on a Stata job folder.
-Also callable standalone: `/haipipe-task-for-stata build <job-path>`
+Also callable standalone: `/haipipe-task stata build <job-path>`
 
 Prerequisite: `fn/plan-stata.md` has been run (plan.yaml exists).
 

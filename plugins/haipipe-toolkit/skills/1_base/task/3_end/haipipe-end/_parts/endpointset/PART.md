@@ -3,8 +3,8 @@ name: endpointset
 part-of: haipipe-end
 description: "Endpoint_Set artifact-as-whole specialist: target-agnostic operations on the deployable artifact -- package from Stage 5 to 6, local inference smoke test, structural review, and dashboard. Per-Fn-type design/review lives in haipipe-end specialists; deployment lives in haipipe-end-deploy specialists."
 metadata:
-  version: "0.2.4"
-  last_updated: "2026-10-25"
+  version: "0.2.5"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

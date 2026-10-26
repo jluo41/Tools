@@ -1,11 +1,12 @@
 ---
 name: haipipe-task-for-algo
-description: "algo-dev Task specialist: scaffolds jNN_<job>/tNN_<task>/ Task folders in an algo-dev Block that smoke-test a newly developed algorithm class end-to-end on a TINY config. NOT full training -- see /haipipe-task-for-fit. Called by /haipipe-task when task-type=algo. Cross-references /haipipe-nn algo."
+description: "algo-dev Task specialist: scaffolds jNN_<job>/tNN_<task>/ Task folders in an algo-dev Block that smoke-test a newly developed algorithm class end-to-end on a TINY config. NOT full training -- see /haipipe-task fit. Called by /haipipe-task when task-type=algo. Cross-references /haipipe-nn algo."
 argument-hint: "[project_id] [bNN_<block>/jNN_<job>] [tNN_<task>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+disable-model-invocation: true
 metadata:
-  version: "0.2.1"
-  last_updated: "2026-10-25"
+  version: "0.2.2"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -89,9 +90,9 @@ This skill scaffolds the smoke-test demo that exercises it.
 Typical flow:
 
   1. `/haipipe-nn algo` — author the algorithm class.
-  2. `/haipipe-task-for-algo` — scaffold the paired demo.
+  2. `/haipipe-task algo` — scaffold the paired demo.
   3. Run the demo. Iterate.
-  4. Once stable → `/haipipe-task-for-fit` for the real run.
+  4. Once stable → `/haipipe-task fit` for the real run.
 
 
 Scaffold flow
@@ -132,7 +133,7 @@ ref/workflow-plan-sample.yaml     ← Run Spec example with internal domain step
 ```
 
 Schema source of truth:
-  project/haipipe-run/ref/plan-schema.md
+  ../../../project/haipipe-run/ref/plan-schema.md
 
 Resolve `RESULT_STORE`, then the Job store declaration, then the Job root as OUTPUT_ROOT.
 Use the same output-root contract as `haipipe-task`; no physical output is moved by scaffolding.

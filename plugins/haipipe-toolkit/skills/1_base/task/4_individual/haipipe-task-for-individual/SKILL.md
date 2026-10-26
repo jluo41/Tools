@@ -3,9 +3,10 @@ name: haipipe-task-for-individual
 description: "individual-query Task specialist: scaffolds jNN_<job>/tNN_<task>/ Task folders in the individual Block that query/visualize ONE individual's data (CGM trace, meal timeline, treatment events) -> $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/{plot.pdf, table.csv}. Called by /haipipe-task when task-type=individual. Cross-references /haipipe-individual."
 argument-hint: "[project_id] [bNN_<block>/jNN_<job>] [tNN_<task>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+disable-model-invocation: true
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-10-21"
+  version: "0.2.1"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -109,7 +110,7 @@ ref/workflow-plan-sample.yaml     ← Run Spec example with internal domain step
 ```
 
 Schema source of truth:
-  project/haipipe-run/ref/plan-schema.md
+  ../../../project/haipipe-run/ref/plan-schema.md
 
 Resolve `RESULT_STORE`, then the Job store declaration, then the Job root as OUTPUT_ROOT.
 Use the same output-root contract as `haipipe-task`; no physical output is moved by scaffolding.

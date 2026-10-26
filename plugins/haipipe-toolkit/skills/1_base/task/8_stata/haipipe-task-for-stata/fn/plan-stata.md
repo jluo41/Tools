@@ -1,6 +1,6 @@
 # Plan a Stata Task
 
-Use `/haipipe-task-for-stata plan <tNN-task-path>`; Job scope enumerates direct Task children through `haipipe-task`.
+Use `/haipipe-task stata plan <tNN-task-path>`; Job scope enumerates direct Task children through `haipipe-task`.
 Read `ref/stata-dialect.md`, shared `haipipe-task/fn/stage-plan.md`, and `haipipe-run/ref/plan-schema.md`.
 
 1. Detect cms/case/data/reg from workers and explicit input, never from a prefix letter.

@@ -4,6 +4,10 @@ task agents — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match the skill frontmatter `version:`. Newest first.
 
 
+## 2026-10-26
+
+- creator and reviewer agents read the type specialist's SKILL.md by the path in haipipe-task's type table; the twelve type skills are hidden from the listing (hide-types 261026).
+
 ## [3.2.1] - 2026-09-28 - No content hashes (JL 260928)
 
 - AGENTS.md rule 9: the creator records input paths, not input hashes; the reviewer's sidecar is persisted with the reviewed input paths. Both agents 3.1.0 -> 3.2.1.

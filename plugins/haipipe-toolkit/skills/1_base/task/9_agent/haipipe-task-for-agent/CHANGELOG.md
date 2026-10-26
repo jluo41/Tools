@@ -6,6 +6,10 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.3.1] — 2026-10-26
+
+Hidden from the skill listing (`disable-model-invocation: true`); reached through the `/haipipe-task` door, which reads this SKILL.md by path. Nothing moved; `/haipipe-task-for-agent` still works when a person types it. (hide 261026)
+
 ## [0.3.0] — 2026-10-25
 
 Merged 1 helper skill(s) into `_parts/`: `haipipe-task-llm-engine` -> `_parts/llm-engine`. /haipipe-task-for-agent reads `_parts/<name>/PART.md` instead of calling a separate skill; allowed-tools gained the parts' tools. Old commands map as `/haipipe-task-llm-engine` -> `haipipe-task-for-agent/_parts/llm-engine`. (merge-parts 261025)

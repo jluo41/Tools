@@ -9,7 +9,7 @@ When to call
 ------------
 
 Automatically as part of the `/haipipe-task` lifecycle on any existing Stata job folder.
-Also callable standalone: `/haipipe-task-for-stata audit <job-path>`
+Also callable standalone: `/haipipe-task stata audit <job-path>`
 
 
 Procedure

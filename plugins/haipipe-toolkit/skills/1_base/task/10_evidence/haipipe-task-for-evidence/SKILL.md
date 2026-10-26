@@ -8,18 +8,19 @@ description: >-
   source yet. Called by /haipipe-task when task-type=evidence; its Results are
   selected by SURVEY and consumed by LAND. Trigger: page
   collection job, collect the values, serve the page's cards, values.yaml,
-  propose the missing task, task-type evidence, /haipipe-task-for-evidence. Also
+  propose the missing task, task-type evidence, /haipipe-task evidence. Also
   owns the one-subagent-per-Page reorganization job that moves a Discovery
   Page into one Content division per Run. Trigger: one division per run,
   reorganize the pages by run, each run one division.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+disable-model-invocation: true
 metadata:
-  version: "0.6.0"
-  last_updated: "2026-10-21"
+  version: "0.6.1"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# /haipipe-task-for-evidence · one job answers one page's numbers with code
+# /haipipe-task evidence · one job answers one page's numbers with code
 
 Load `haipipe-task` first (the hierarchy, the four lifecycle commands, and Run/Result law); this
 file owns the delta for `task-type: evidence`. The consumer side is a typed row in
@@ -186,7 +187,7 @@ in both directions.
 Plan     workflow/plan.yaml: input = the batch's questions + the upstream
          folders each should read; process = extract | compute | join;
          output = values.yaml rows + Result receipts. IPO schema:
-         project/haipipe-run/ref/plan-schema.md
+         ../../../project/haipipe-run/ref/plan-schema.md
 Build    scripts/collect_values.py + runs/r<NN>_<batch>/config.yaml: one entry per
          question (id, upstream path, extraction); the card
          runs/r<NN>_<batch>/run.yaml with role: evidence; CODE_REVIEW.md Gate 1

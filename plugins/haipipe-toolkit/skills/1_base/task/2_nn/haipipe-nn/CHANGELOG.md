@@ -10,6 +10,8 @@ Newest first.
 
 Shorter description (486 -> 311 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)
 
+Training requests route to `/haipipe-task fit` (haipipe-task-for-fit is hidden from the listing). (hide-types 261026)
+
 ## [0.2.0] — 2026-10-25
 
 Merged 4 helper skill(s) into `_parts/`: `haipipe-nn-algo` -> `_parts/algo`, `haipipe-nn-tuner` -> `_parts/tuner`, `haipipe-nn-instance` -> `_parts/instance`, `haipipe-nn-modelset` -> `_parts/modelset`. /haipipe-nn reads `_parts/<name>/PART.md` instead of calling a separate skill; allowed-tools gained the parts' tools. Old commands map as `/haipipe-nn-algo` -> `/haipipe-nn algo`. (merge-parts 261025)

@@ -1,5 +1,5 @@
 > Historical design snapshot. Current authority: `haipipe-task/SKILL.md`,
-> `project/haipipe-run/ref/plan-schema.md` (haipipe-workflow until 2026-10-21), and this family's README.
+> `../project/haipipe-run/ref/plan-schema.md` (haipipe-workflow until 2026-10-21), and this family's README.
 > Workflow units are Runs; P-B-E-R are commands. Insight and Design are independent families; Application is retired as their parent.
 
 task — Task-Type Specialist Series (DESIGN)
@@ -370,9 +370,9 @@ Path 1 — Via hub (lifecycle):   /haipipe-task <existing-path>
   hub detects type -> reads spoke's ref/ as reference -> runs 4-phase lifecycle
 
 Path 2 — Via hub (scaffold):    /haipipe-task job eval
-  hub resolves type -> Skill("haipipe-task-for-eval") -> spoke runs fn/scaffold.md
+  hub resolves type -> Skill("haipipe-task", args="eval") -> spoke runs fn/scaffold.md
 
-Path 3 — Direct call:           /haipipe-task-for-stata <args>
+Path 3 — Direct call:           /haipipe-task stata <args>
   spoke runs on its own -> reads ../haipipe-task/ref/ for shared conventions
   (run-sh-template.sh, task-folder.md, authoring-conventions.md, etc.)
 ```
@@ -530,7 +530,7 @@ Critical Distinction: algo-dev vs training
 Stata Sub-Family
 =================
 
-Any engine=Stata request is delegated to `/haipipe-task-for-stata`, a unified specialist that owns stage disambiguation and the shared engine contract. It handles all 4 stages internally:
+Any engine=Stata request is delegated to `/haipipe-task stata`, a unified specialist that owns stage disambiguation and the shared engine contract. It handles all 4 stages internally:
 
 ```
 haipipe-task-for-stata           unified (handles all 4 stages internally)

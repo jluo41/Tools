@@ -3,7 +3,7 @@ fn-scaffold: Scaffold a model-training job
 
 Train a real model with full hyperparameters; checkpoint to `_WorkSpace/5-ModelInstanceStore/`.
 Hierarchy prefixes are bNN / jNN / tNN / rNN; domain belongs in the descriptive suffix.
-For smoke-testing an algorithm, use `/haipipe-task-for-algo` instead.
+For smoke-testing an algorithm, use `/haipipe-task algo` instead.
 
 Output: `work/bNN_<block>/jNN_<job>/tNN_<task>/`.
 

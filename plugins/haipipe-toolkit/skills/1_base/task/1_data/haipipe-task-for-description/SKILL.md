@@ -2,6 +2,7 @@
 name: haipipe-task-for-description
 description: "Table-description Task: one Task per stored table writes its Table Card (what one row is, a column dictionary, value pictures, one synthetic person's rows, caveats, changes since the last version) for any parquet or raw table. Called by /haipipe-task when task-type=description. Trigger: describe a table, table card, data dictionary, column meanings, what is one row, synth_df."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+disable-model-invocation: true
 metadata:
   version: "0.5.2"
   last_updated: "2026-10-26"
@@ -246,10 +247,10 @@ Commands
 --------
 
 ```text
-/haipipe-task-for-description scaffold <job> <table>   Task folder, config, Ticket, worker copy
-/haipipe-task-for-description seed <dictionary>        fill the dictionary from the tables and seeds
-/haipipe-task-for-description run <task>               run the Ticket; read the card back
-/haipipe-task-for-description review <task>            check the card against the rules below
+/haipipe-task description scaffold <job> <table>   Task folder, config, Ticket, worker copy
+/haipipe-task description seed <dictionary>        fill the dictionary from the tables and seeds
+/haipipe-task description run <task>               run the Ticket; read the card back
+/haipipe-task description review <task>            check the card against the rules below
 ```
 
 **scaffold.** Copy `templates/describe_table.py` into `<job>/src/`. Make the

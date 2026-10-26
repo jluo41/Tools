@@ -22,7 +22,8 @@ metadata:
 Task Folder = `tNN_<task>/`; a Task may hold a draft. I write both faces at that one
 address; the parent `jNN_<job>/` is only the shared and generated container.
 
-Load `haipipe-task` and the selected type specialist before writing. The
+Load `haipipe-task`, then read the selected type specialist's SKILL.md by the path in its
+type table (the type skills are hidden from the listing) before writing. The
 orchestrator dispatches me; the reviewer evaluates what I produce. I own only
 the Task's declared files and the paired Run/Result receipt.
 

@@ -12,6 +12,8 @@ died before replying to kernel_info" (the kernel started in the SPACE root, wher
 
 Shorter description (977 -> 485 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)
 
+The type table now gives each hidden type skill's SKILL.md path; the twelve `haipipe-task-for-<type>` skills are hidden from the listing (`disable-model-invocation: true`) and read through this door. Folders, `## Type contract` blocks and routing are unchanged. (hide-types 261026)
+
 ## [2.0.2] — 2026-10-25
 
 Links, commands and companions repointed at the helper skills merged into `haipipe-nn`, `haipipe-end`, `haipipe-data`, `haipipe-task-for-fit`, `haipipe-task-for-agent` (now `_parts/<name>/PART.md`). (merge-parts 261025)

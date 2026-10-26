@@ -2,9 +2,10 @@
 name: haipipe-task-for-endpoint
 description: "Endpoint task specialist: scaffolds and executes one nested task that packages a trained ModelInstance_Set into a deployable Stage 6 Endpoint_Set via c_endpoint_nb.py. Called by /haipipe-task when task-type is endpoint; cross-references /haipipe-end for Fn authoring and deploy targets."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+disable-model-invocation: true
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-10-21"
+  version: "0.4.1"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -212,8 +213,8 @@ Cross-references
 -----------------
 
 - `/haipipe-end` — Fn authoring, endpointset verbs, deploy targets
-- `/haipipe-task-for-fit` — training (produces the ModelInstance_Set)
-- `/haipipe-task-for-data` — data pipeline (produces the AIDataSet)
+- `/haipipe-task fit` — training (produces the ModelInstance_Set)
+- `/haipipe-task data` — data pipeline (produces the AIDataSet)
 - `code/scripts/haistepnb/c_endpoint_nb.py` — the template
 - `code/scripts/haistepcli/endpoint.py` — the CLI entry point
 - `ref/notebook-templates.md` (in haipipe-task-for-data) — full ABC template guide

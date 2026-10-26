@@ -5,6 +5,10 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.2.1] — 2026-10-26
+
+Hidden from the skill listing (`disable-model-invocation: true`); reached through the `/haipipe-task` door, which reads this SKILL.md by path. Nothing moved; `/haipipe-task-for-eval` still works when a person types it. (hide 261026)
+
 ## [0.2.0] · 2026-10-21 · One folder per Run, and the Type contract
 
 - `## Type contract` is the first section of SKILL.md (haipipe-task ref/types.md): roles [make, check],
@@ -36,4 +40,3 @@ Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until J
 ## [1.0.0] — 2026-05-31
 
 - baseline metadata added.
-

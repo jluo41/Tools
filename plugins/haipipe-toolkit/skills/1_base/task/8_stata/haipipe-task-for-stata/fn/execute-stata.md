@@ -10,7 +10,7 @@ When to call
 ------------
 
 As Phase 3 (Execute) of the `/haipipe-task` lifecycle on a Stata job folder.
-Also callable standalone: `/haipipe-task-for-stata execute <job-path>`
+Also callable standalone: `/haipipe-task stata execute <job-path>`
 
 
 Two modes
