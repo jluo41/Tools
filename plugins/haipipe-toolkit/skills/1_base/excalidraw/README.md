@@ -15,11 +15,11 @@ excalidraw-job/        🪜 a Job as a staircase of Tasks and Runs, with each Ta
 excalidraw-task/       🪜 a Task as a staircase of Runs or videos, with each step's results
 excalidraw-slide/      🎞 a deck proposed on one canvas before it is built (s61-s69)
 excalidraw-ideation/   💡 a paper's ideas as steps down from its question
-haipipe-mindmap/       🧠 one .mindmap.md file, three views: a left-to-right canvas, its .png, a web page; synced both ways
 ```
 
-A Studio topic's structured side, `mNN-<topic>`, is a `haipipe-mindmap` file beside its free drawing; the
-workbench card switches between the two (Free · Structured).
+A Studio topic's structured side, its mind map `mNN-<topic>.mindmap.md`, is not a canvas: haipipe-studio's mind map
+part (`../project/haipipe-studio/_parts/mindmap/`) draws it as the draft's §1 Structure map, in HTML; the workbench
+card switches between the two sides (Free · Structured).
 
 Start at `excalidraw-studio/SKILL.md` before drawing any topic. Figures and tables for a document are
 haipipe-display's (`../display/`), not these.

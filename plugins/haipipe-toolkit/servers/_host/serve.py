@@ -653,6 +653,16 @@ class Handler(ShareMixin, AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteM
             from live.draft_steps import plan_act
             code, res = plan_act(self.root, p, read_only=getattr(self.server, "read_only", False))
             return self.reply(code, res)
+        if self.path == "/_board/mindmap":
+            # a person's change on a Studio topic's structured side (its mNN mind map, drawn as the draft's §1 map):
+            # a node's words, a node added, taken out or moved, written into its .mindmap.md (haipipe-studio)
+            from urllib.parse import urlparse
+            origin = self.headers.get("Origin") or ""
+            if origin and urlparse(origin).netloc != (self.headers.get("Host") or ""):
+                return self.reply(403, {"ok": False, "err": "cross-origin write refused"})
+            from live.frame import mindmap_module
+            code, res = mindmap_module().act(self.root, p, read_only=getattr(self.server, "read_only", False))
+            return self.reply(code, res)
         if self.path == "/_board/labeling/items":
             # an items Task's Sign or Agree on a planned Run's card (b15 s41-D10)
             code, res = self.labeling_items_act(p)

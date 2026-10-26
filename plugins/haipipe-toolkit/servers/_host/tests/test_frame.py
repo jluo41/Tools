@@ -1208,37 +1208,38 @@ class FrameTest(unittest.TestCase):
             root = project(tmp)
             block = root / "Project/tasks/b01_topic"
             topic = block / "studio" / "s01-flow"
-            (topic / "m01-flow.excalidraw").write_text("{}")             # sorts before flow.excalidraw
-            (topic / "m01-flow.mindmap.md").write_text("# Flow <!-- root -->\n")
-            page = frame.render(frame.VANILLA, root, block, studio=True)
-            row = re.search(r'<details class=topic id="topic-s01-flow".*?</details>', page, re.S).group(0)
+            (topic / "m01-flow.mindmap.md").write_text(
+                "---\nmindmap: 1\n---\n\n# Flow <!-- root -->\n\n- in <!-- n01 -->\n  - **raw** rows <!-- n02 -->\n")
+            row_of = lambda: re.search(r'<details class=topic id="topic-s01-flow".*?</details>',
+                                       frame.render(frame.VANILLA, root, block, studio=True), re.S).group(0)
+            row = row_of()
             self.assertIn('data-sides="free structured" data-side="free"', row)
             self.assertIn('<button type=button data-side=free aria-pressed="true"', row)
             self.assertIn('<button type=button data-side=structured aria-pressed="false"', row)
-            self.assertIn("m01-flow.mindmap.md is its source", row)
             free = re.search(r'<div class=st-pane data-side=free>(.*?)</div>', row, re.S).group(1)
-            structured = re.search(r'<div class=st-pane data-side=structured hidden>(.*?)</div>', row, re.S).group(1)
-            self.assertIn("flow.excalidraw", unquote(free))                # the main drawing is never the mNN
-            self.assertNotIn("m01-flow", unquote(free))
-            self.assertIn("m01-flow.excalidraw", unquote(structured))
-            # Edit: the hand-drawn free side and the structured side may be edited; the ↗ opens the side showing
-            self.assertIn('class=draw-edit data-sides="free structured">Edit', row)
-            link = re.search(r'<a class=side-link [^>]*>', row).group(0)
-            self.assertIn("flow.excalidraw", unquote(re.search(r' href="([^"]+)"', link).group(1)))
-            self.assertIn("m01-flow.excalidraw", unquote(re.search(r'data-href-structured="([^"]+)"', link).group(1)))
-            self.assertIn("localStorage.setItem(key,side)", page)            # the card remembers the choice
-            # a built free side is not edited by hand: Edit shows on the structured side only
+            self.assertIn("flow.excalidraw", unquote(free))                # the free side: the topic's own drawing
+            # the structured side: the mind map drawn as the draft's §1 map, HTML, edited in place; no canvas
+            mind = row[row.index('<div class="st-pane st-map" data-side=structured hidden>'):]
+            self.assertIn('<div class=mm-edit data-file="Project/tasks/b01_topic/studio/s01-flow/m01-flow.mindmap.md">', mind)
+            self.assertIn('<div class=mm-row data-id="n02">', mind)
+            self.assertIn("<strong>raw</strong> rows", mind)
+            self.assertNotIn("_excalidraw", mind.split("<script>")[0])
+            # Edit opens the free canvas, so it shows on Free only, and only for a hand-drawn drawing
+            self.assertIn('class=draw-edit data-sides="free">Edit', row)
+            self.assertIn("localStorage.setItem(key,side)", frame.render(frame.VANILLA, root, block, studio=True))
             (topic / "build_s01_flow.py").write_text("print(1)\n")
-            row = re.search(r'<details class=topic id="topic-s01-flow".*?</details>',
-                            frame.render(frame.VANILLA, root, block, studio=True), re.S).group(0)
-            self.assertIn('class=draw-edit data-sides="structured" hidden>Edit', row)
-            # a topic with only its structured side opens on it
+            self.assertNotIn("draw-edit", row_of())
+            # a topic with only its mind map opens on it; the map is never taken for the main drawing
             (topic / "flow.excalidraw").unlink()
-            row = re.search(r'<details class=topic id="topic-s01-flow".*?</details>',
-                            frame.render(frame.VANILLA, root, block, studio=True), re.S).group(0)
+            row = row_of()
             self.assertIn('data-side="structured"', row)
             self.assertIn('data-side=free aria-pressed="false" disabled', row)
-            self.assertNotIn('data-href-free', row)
+            self.assertIn("No drawing", row)
+            # a change on the map is written into the file by the mind map part
+            code, res = frame.mindmap_module().act(root, {"file": "Project/tasks/b01_topic/studio/s01-flow/m01-flow.mindmap.md",
+                                                         "what": "add", "parent": "n01", "value": "clean rows"})
+            self.assertEqual(code, 200)
+            self.assertIn("  - clean rows <!-- n03 -->", (topic / "m01-flow.mindmap.md").read_text())
 
     def test_studio_runs_lists_every_hard_run_with_its_status(self):
         """JL 261019: "list another one to show the Hard Run, for each task, and just show their status"."""

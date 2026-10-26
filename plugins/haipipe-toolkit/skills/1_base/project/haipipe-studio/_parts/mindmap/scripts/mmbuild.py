@@ -18,7 +18,6 @@ JOB, TASK = re.compile(r"^j\d{2,3}_"), re.compile(r"^t\d{2}_")
 TOPIC = re.compile(r"^s(\d{2})[-_](.+)$")
 STATUS = {"done": "✅", "passed": "✅", "ok": "✅", "complete": "✅", "completed": "✅", "failed": "❌", "fail": "❌",
           "error": "❌", "running": "🔶", "partial": "🔶", "blocked": "⛔"}
-CAP, ROWS, RUNS_SHOWN = 200, 18, 4    # principle 7: at most 200 words; principle 1: rows that fit one screen
 
 
 def built(key: str, text: str, children=()) -> MT.Node:
@@ -82,9 +81,6 @@ def from_work(path: Path) -> MT.MindMap:
                       [job_node(j, f"{b.name}/{j.name}", False) for j in _dirs(b, JOB)]) for b in blocks]
         root = built(".", f"{path.name} · {_n(len(blocks), 'block')}", kids)
     root.id = "root"
-    for n, p, d, _k in MT.walk(root):                  # a Task shows a few Runs; the rest fold into "+N more"
-        if d >= 1 and len(n.children) > RUNS_SHOWN and all(not c.children for c in n.children):
-            fold(n, len(n.children) - RUNS_SHOWN + 1)
     return MT.MindMap({"mindmap": "1", "title": f"{path.name} · the work", "built": "from-work"}, root)
 
 
@@ -93,8 +89,8 @@ LABEL = re.compile(r"^\*\*([A-Z][A-Za-z ]{1,24}):\*\*\s*(.*)$")
 TO_ROOT = ("Stage", "Tags", "Label")                  # short facts: under the root, not branches
 
 
-def short(s: str, words: int = 9) -> str:
-    """A leaf's words: the first sentence, at most `words` words (principle 7: a map reads from its boxes)."""
+def short(s: str, words: int = 14) -> str:
+    """A leaf's words: the first sentence, at most `words` words, so a node reads at a glance."""
     s = " ".join(str(s).split())
     s = re.split(r"(?<=[.;!?])\s+(?=[A-Z(`*])", s)[0].rstrip(".;")
     ws = s.split()
@@ -180,7 +176,7 @@ def from_topic(topic: Path) -> MT.MindMap:
         key = re.sub(r"[^a-z0-9]+", "-", head.lower()).strip("-") or f"b{k}"
         leaves = [built(f"{key}/{j}", short(it)) for j, it in enumerate(items)]
         kids.append(built(key, head, leaves))
-    root = built(".", short(title, 12), kids)
+    root = built(".", short(title, 14), kids)
     root.id, root.note = "root", note
     return MT.MindMap({"mindmap": "1", "title": f"{title} · structured", "built": "from-topic"}, root)
 
@@ -193,36 +189,8 @@ def mnn_name(topic: Path) -> str:
     return f"m{m.group(1)}-{m.group(2)}{MT.SUFFIX}"
 
 
-# ── keep a map within principle 7 ──────────────────────────────────────────────────────────────────────────
 def words(mm: MT.MindMap) -> int:
     return sum(len(MT.display(n.text).split()) for n, *_ in MT.walk(mm.root))
-
-
-def fold(n: MT.Node, k: int) -> None:
-    """The last k children of n (not its `+N more`) fold into its one `+N more` leaf."""
-    more = next((c for c in n.children if c.id.endswith("/+more")), None)
-    rest = [c for c in n.children if c is not more]
-    k = min(k, len(rest))
-    count = k + (int(re.match(r"\+(\d+)", more.text).group(1)) if more else 0)
-    base = n.id[1:] if n.id.startswith("@") else n.id
-    n.children = rest[:len(rest) - k] + [built(f"{base}/+more", f"+{count} more")]
-
-
-def rows(mm: MT.MindMap) -> int:
-    return sum(1 for n, *_ in MT.walk(mm.root) if not n.children)
-
-
-def fit(mm: MT.MindMap, cap: int = CAP, most_rows: int = ROWS) -> None:
-    """Fold the longest lists until the map, its title included, holds at most `cap` words (principle 7) and at most
-    `most_rows` leaves stand in its column (principle 1: one screen): leaves first, then branches."""
-    cap -= len(MT.display(mm.meta.get("title") or mm.root.text).split()) + 1      # the frame's title, its emoji
-    while words(mm) > cap or rows(mm) > most_rows:
-        real = lambda n: [c for c in n.children if not c.id.endswith("/+more")]
-        lists = [n for n, *_ in MT.walk(mm.root) if len(real(n)) >= 2 and all(not c.children for c in n.children)] \
-            or [n for n, *_ in MT.walk(mm.root) if len(real(n)) >= 2]
-        if not lists:
-            return
-        fold(max(lists, key=lambda n: len(n.children)), 2)
 
 
 # ── refresh: the builder's new tree over the file a person worked on ───────────────────────────────────────

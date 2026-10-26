@@ -1,5 +1,21 @@
-haipipe-mindmap · Changelog
-===========================
+mindmap (haipipe-studio part) · Changelog
+=========================================
+
+## [0.3.0] · 2026-10-26 · the mind map is the §1 map, not a canvas; a part of haipipe-studio
+
+- JL 261026: "the mindmap is not the excalidraw … I want that type of the mindmap" (the draft's §1 Structure map),
+  and "the mindmap will also be in the haipipe-studio, they are linked to each other". The skill haipipe-mindmap
+  becomes haipipe-studio's part `_parts/mindmap/`; a topic's two sides, its drawing (sNN) and its mind map (mNN), are
+  linked by number, and `new_topic.py topic` makes both.
+- `scripts/mmmap.py`: the map drawn as `draft_steps.py` `_plan_map` draws §1 (the root left in the key colour, each
+  node's children a column to its right, curved wires, a note on hover) and edited in place (type, Enter, ＋, empty,
+  drag); `act` writes each change into the `.mindmap.md` (POST `/_board/mindmap`, servers/_host/serve.py), refusing
+  words that changed on disk since the page showed them, and rebuilds the static page.
+- Removed: the Excalidraw canvas and its preview (`mmcanvas.py`, `render` to `.excalidraw` and `.png`), `sync` and its
+  conflicts (an edit now goes straight into the file), and the 200-word folding made for the canvas (every Run and
+  leaf is shown; a leaf keeps up to fourteen words). `render` writes the static page; `check` reads grammar and ids.
+- Tests: 21 (the map, read only and editable, each kind of edit, a stale edit refused, the builders, refresh).
+
 
 ## [0.2.0] · 2026-10-25 · editable both ways; built from disk
 

@@ -1,6 +1,6 @@
-"""The web page view of a mind map, `<stem>.mindmap.html`: the file's Markdown rendered, the tree as nested lists
-that fold, and the canvas's preview. One self-contained page, no script from the network; git ignores it
-(`*.mindmap.html`), since the file rebuilds it.
+"""The static page of a mind map, `<stem>.mindmap.html`: the map as the workbench card draws it (mmmap.py), read
+only, and the file's Markdown notes rendered. One self-contained page, no script from the network; git ignores it
+(`*.mindmap.html`), since the file rebuilds it on every change.
 """
 from __future__ import annotations
 
@@ -99,53 +99,32 @@ def _list(lines: list) -> str:
     return ul(items)
 
 
-def tree(n: MT.Node) -> str:
-    note = f'<p class=note>{inline(" ".join(n.note))}</p>' if n.note else ""
-    words = f'<span class=node id="node-{html.escape(n.id, quote=True)}">{inline(MT.ID_MARK.sub("", n.text))}</span>'
-    if not n.children:
-        return f"<li>{words}{note}</li>"
-    kids = "".join(tree(c) for c in n.children)
-    return f"<li><details open><summary>{words}</summary>{note}<ul>{kids}</ul></details></li>"
-
-
 CSS = """
-:root{--bg:#ffffff;--fg:#1e1e1e;--mut:#5c636a;--line:#ced4da;--key:#fff3bf;--keyfg:#1e1e1e;--code:#f1f3f5;--link:#1864ab}
+:root{--bg:#ffffff;--fg:#1e1e1e;--mut:#5c636a;--line:#ced4da;--code:#f1f3f5;--link:#1864ab;--card:#ffffff;--wash:#f1f3f5}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16181b;--fg:#e9ecef;--mut:#a5abb1;
---line:#3a3f45;--key:#4a4220;--keyfg:#fff3bf;--code:#23272b;--link:#74c0fc}}
-:root[data-theme="dark"]{--bg:#16181b;--fg:#e9ecef;--mut:#a5abb1;--line:#3a3f45;--key:#4a4220;--keyfg:#fff3bf;
---code:#23272b;--link:#74c0fc}
+--line:#3a3f45;--code:#23272b;--link:#74c0fc;--card:#1d1f22;--wash:#23272b}}
+:root[data-theme="dark"]{--bg:#16181b;--fg:#e9ecef;--mut:#a5abb1;--line:#3a3f45;--code:#23272b;--link:#74c0fc;
+--card:#1d1f22;--wash:#23272b}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 -apple-system,"Segoe UI",Nunito,sans-serif}
-main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
-h1{font-size:30px;margin:0 0 4px}.meta{color:var(--mut);font-size:13px;margin:0 0 18px}
+main{padding:28px 16px 64px}
+h1{font-size:28px;margin:0 0 4px}.meta{color:var(--mut);font-size:13px;margin:0 0 18px}
+.map{overflow-x:auto;margin:12px 0 24px}
 a{color:var(--link)}code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:.92em}
 pre{background:var(--code);padding:12px;border-radius:8px;overflow:auto}pre code{background:none;padding:0}
-.root{display:inline-block;background:var(--key);color:var(--keyfg);border:2px solid var(--fg);border-radius:10px;
-padding:6px 14px;font-weight:700;font-size:20px}
-ul.tree,ul.tree ul{list-style:none;margin:0;padding-left:22px;border-left:1px solid var(--line)}
-ul.tree{margin:10px 0 0 10px}
-ul.tree li{margin:4px 0;position:relative}
-ul.tree li::before{content:"";position:absolute;left:-22px;top:.8em;width:16px;border-top:1px solid var(--line)}
-summary{cursor:pointer}.node{display:inline-block;border:1px solid var(--line);border-radius:8px;padding:2px 10px}
-.note{color:var(--mut);font-size:14px;margin:2px 0 4px 4px}
-details.canvas{margin:26px 0;border-top:1px solid var(--line);padding-top:10px}
-details.canvas img{max-width:100%;height:auto;border:1px solid var(--line);border-radius:8px;background:#fff}
 table{border-collapse:collapse;margin:10px 0}th,td{border:1px solid var(--line);padding:4px 8px}
 blockquote{margin:8px 0;padding-left:12px;border-left:3px solid var(--line);color:var(--mut)}
 """
 
 
-def page(mm: MT.MindMap, png_name: str = "") -> str:
+def page(mm: MT.MindMap) -> str:
+    """The static page: the map read only (as the workbench card draws it), the root's note and the free notes."""
+    import mmmap
     title = MT.display(mm.meta.get("title") or mm.root.text)
     meta = " · ".join(f"{k}: {v}" for k, v in mm.meta.items() if k in ("built", "source", "updated"))
     note = blocks("\n".join(mm.root.note)) if mm.root.note else ""
-    kids = "".join(tree(c) for c in mm.root.children)
-    canvas = (f'<details class=canvas><summary>The canvas (preview of {html.escape(png_name)})</summary>'
-              f'<img src="{html.escape(png_name, quote=True)}" alt="the mind map drawn left to right"></details>'
-              if png_name else "")
     return (f'<!doctype html>\n<html lang=en><head><meta charset=utf-8>'
             f'<meta name=viewport content="width=device-width, initial-scale=1">'
             f'<title>{html.escape(title)} · mind map</title><style>{CSS}</style></head><body><main>'
             f'<h1>{inline(title)}</h1>' + (f'<p class=meta>{inline(meta)}</p>' if meta else "") +
-            f'<div class=root>{inline(mm.root.text)}</div>{note}<ul class=tree>{kids}</ul>'
-            f'{blocks(mm.tail) if mm.tail else ""}{canvas}</main></body></html>\n')
+            f'{note}<div class=map>{mmmap.draw(mm)}</div>{blocks(mm.tail) if mm.tail else ""}</main></body></html>\n')

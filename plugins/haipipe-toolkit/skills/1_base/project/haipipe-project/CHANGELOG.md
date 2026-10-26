@@ -8,7 +8,7 @@
   backslashes.
 - `ref/ladder.md` `world: may_hold: [studio]`: a world folder such as `work/` may hold one `studio/` for project-wide
   drawings; the audit no longer calls it "not a Block", and `update` steps over it. `today: keep_glob:
-  ['mind-map.*']`: a Block's `studio/` keeps its mind map loose (haipipe-mindmap from-work), as it keeps its question
+  ['mind-map.*']`: a Block's `studio/` keeps its mind map loose (haipipe-studio's mind map part, from-work), as it keeps its question
   map; `update --today --apply` never moves it. Tests: `tests/test_ladder_world.py`.
 
 ## 0.17.2 · 2026-10-21 · an empty Block owes no studio topic

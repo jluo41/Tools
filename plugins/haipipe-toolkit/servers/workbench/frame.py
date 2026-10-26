@@ -784,28 +784,31 @@ def _topic_row(topic: Path, drawings: list, root: Path, folder: Path, shared: Pa
         files = sorted(p.name for p in topic.iterdir() if p.is_file() and not p.name.startswith(".")) if topic.is_dir() else []
         body = f'<p class="mut none">No drawing; it holds {_e(" · ".join(files)) or "nothing yet"}.</p>'
     sides = ""
-    if mnn:                       # Free | Structured (haipipe-mindmap): one pane a side; Edit only where a person may
-        side = "free" if first else "structured"      # edit (Free: a hand-drawn drawing; Structured: always, its
-        editable = (["free"] if first and not scripts else []) + ["structured"]   # sync reads the canvas back)
+    if mnn:                       # Free | Structured: one pane a side. Structured is the topic's mind map drawn as the
+        side = "free" if first else "structured"      # draft's §1 Structure map, HTML, edited in place (haipipe-studio _parts/mindmap);
+        editable = ["free"] if first and not scripts else []   # Edit opens the free canvas, and only a hand-drawn one
         tools = [t for t in tools if "draw-edit" not in t]
-        md = mnn.with_name(mnn.stem + ".mindmap.md")
-        tip = (f"the mind map: {md.name} is its source; canvas edits come back with haipipe-mindmap sync"
-               if md.is_file() else "the mind map (haipipe-mindmap)")
         tools.append('<span class=st-side role=group aria-label="Free or Structured">'
                      f'<button type=button data-side=free aria-pressed="{str(side == "free").lower()}"'
                      f'{"" if first else " disabled"} title="the topic\'s own drawing">Free</button>'
                      f'<button type=button data-side=structured aria-pressed="{str(side == "structured").lower()}"'
-                     f' title="{_e(tip)}">Structured</button></span>')
-        tools.append(f'<button type=button class=draw-edit data-sides="{" ".join(editable)}"'
-                     f'{"" if side in editable else " hidden"}>Edit</button>')
+                     f' title="{_e(mnn.name)}: its mind map; click a node to type, ＋ adds one">Structured</button></span>')
+        if editable:
+            tools.append(f'<button type=button class=draw-edit data-sides="free"{"" if side == "free" else " hidden"}>Edit</button>')
+        page = mnn.with_name(mnn.name[: -len(".mindmap.md")] + ".mindmap.html")
         links = {"free": (_draw_url(first, root), f"{display_name} · the topic, full size") if first else None,
-                 "structured": (_draw_url(mnn, root), f"{display_name} · its structured side, full size")}
-        href, label = links[side]
-        full = (f'<a class=side-link data-pop="{_e(label)}" href="{_e(href)}" target=_blank rel=noopener'
-                + "".join(f' data-href-{k}="{_e(v[0])}" data-pop-{k}="{_e(v[1])}"' for k, v in links.items() if v)
-                + '>↗</a>')
+                 "structured": (_file_url(page, root), f"{display_name} · its mind map") if page.is_file() else None}
+        if links[side]:
+            href, label = links[side]
+            full = (f'<a class=side-link data-pop="{_e(label)}" href="{_e(href)}" target=_blank rel=noopener'
+                    + "".join(f' data-href-{k}="{_e(v[0])}" data-pop-{k}="{_e(v[1])}"' for k, v in links.items() if v)
+                    + '>↗</a>')
+        try:
+            mind = mindmap_module().fragment(mnn, _rel(mnn, root), editable=not READ_ONLY_MAPS)
+        except Exception as e:            # a file that does not parse says why, in the pane, instead of a blank card
+            mind = f'<p class="mut none">{_e(mnn.name)} could not be read: {_e(e)}</p>'
         body = (f'<div class=st-pane data-side=free{"" if side == "free" else " hidden"}>{body}</div>'
-                f'<div class=st-pane data-side=structured{"" if side == "structured" else " hidden"}>{frame_of(mnn)}</div>')
+                f'<div class="st-pane st-map" data-side=structured{"" if side == "structured" else " hidden"}>{mind}</div>')
         sides = f' data-sides="free structured" data-side="{side}"'
     tags = "".join(f'<span class=chip data-tag="{_e(tag)}">{_e(tag)}</span>' for tag in facts["tags"])
     badges = f'<span class=topic-tags>{tags}</span>' if tags else ""
@@ -830,21 +833,34 @@ def _topic_row(topic: Path, drawings: list, root: Path, folder: Path, shared: Pa
             f'{stage_badge}</summary>{body}</details>')       # the stage sits at the far right (JL 261010)
 
 
-STRUCTURED = re.compile(r"^m\d{2}[-_].*\.excalidraw$")   # a topic's structured side, mNN-<topic> (haipipe-mindmap)
+STRUCTURED = re.compile(r"^m\d{2}[-_]")          # a topic's structured side, mNN-<topic>.mindmap.md (haipipe-studio)
+READ_ONLY_MAPS = False                            # a read-only host draws the map without its editing script
 
 
 def is_structured(drawing: Path) -> bool:
-    """The canvas of a topic's structured side, `mNN-<topic>.excalidraw`: never the topic's main drawing."""
+    """A file of a topic's structured side (`mNN-<topic>.…`): never the topic's main drawing."""
     return bool(STRUCTURED.match(drawing.name)) and bool(re.match(r"s\d{2}[-_]", drawing.parent.name))
 
 
 def structured_of(topic: Path) -> Path | None:
-    """A topic's structured side: `mNN-<topic>.excalidraw` with the topic's own number, else any mNN in its folder."""
+    """A topic's structured side, its mind map `mNN-<topic>.mindmap.md` with the topic's own number, else any mNN."""
     if not topic.is_dir():
         return None
-    found = sorted(d for d in topic.glob("m[0-9][0-9]*.excalidraw") if is_structured(d))
+    found = sorted(d for d in topic.glob("m[0-9][0-9]*.mindmap.md") if is_structured(d))
     own = [d for d in found if d.name[1:3] == topic.name[1:3]]
     return (own or found or [None])[0]
+
+
+def mindmap_module():
+    """haipipe-studio's mind map part (_parts/mindmap/scripts/mmmap.py): draws a .mindmap.md as the draft's §1 map
+    and writes its edits."""
+    import importlib
+    import sys
+    from host_paths import skill_dir
+    scripts = str(skill_dir("haipipe-studio") / "_parts" / "mindmap" / "scripts")
+    if scripts not in sys.path:
+        sys.path.insert(0, scripts)
+    return importlib.import_module("mmmap")
 
 
 def topic_drawings(topic: Path) -> list:
@@ -3150,6 +3166,7 @@ header.page-title h1{font-size:26px;margin:22px 0 18px;line-height:1.25}header.p
 .topic .none{margin:10px 14px}.topic-pop{display:flex;gap:10px;align-items:baseline;font-size:13px}
 .chip{display:inline-block;padding:0 8px;margin-right:4px;border:1px solid var(--acc);border-radius:999px;color:var(--acc);font-size:12px;text-decoration:none}
 .st-bar{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:8px 14px}
+.st-map{overflow-x:auto;padding:10px 14px 16px;border-top:1px solid var(--line)}
 .st-side{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}.st-side button{font:500 12.5px -apple-system,sans-serif;border:0;padding:1px 9px;cursor:pointer;background:var(--bg);color:var(--mut)}.st-side button+button{border-left:1px solid var(--line)}.st-side button[aria-pressed=true]{background:var(--tab-wash,var(--line));color:var(--tab-on,var(--fg))}.st-side button:disabled{cursor:default;opacity:.45}.draw-edit[hidden],.side-link[hidden]{display:none}
 .draw-edit{font:500 12.5px -apple-system,sans-serif;border:1px solid var(--line);border-radius:6px;padding:1px 9px;cursor:pointer;background:var(--bg);color:var(--fg)}
 .studio-parts{margin:10px 14px 16px}.studio-parts>details.topic{margin:0 0 8px}.studio-transcripts{margin:16px 14px}.studio-transcripts>h3{font-size:17px;margin:0 0 12px}.studio-transcript-note,.studio-transcript-links{margin:12px 14px;font-size:14px;line-height:1.5}.studio-transcript-note{color:var(--mut)}
@@ -3566,8 +3583,9 @@ document.querySelectorAll('details.topic .draw-edit').forEach(function(b){b.addE
   ev.preventDefault();ev.stopPropagation();
   var d=b.closest('details'),f=d.querySelector(':scope > .st-pane:not([hidden]) > iframe')||d.querySelector('iframe'),on=b.textContent==='Edit';
   d.open=true;f.src=on?f.dataset.edit:f.dataset.src;b.textContent=on?'Finish editing':'Edit';});});
-// a topic with a structured side (mNN, haipipe-mindmap): Free | Structured, one pane a side; Edit shows only on a
-// side a person may edit; the ↗ opens the side showing; the card remembers the choice in this browser
+// a topic with a structured side (mNN, haipipe-studio's mind map): Free | Structured, one pane a side, the mind map drawn and
+// edited in place as the draft's §1 map; Edit (the free canvas) shows only on Free; the ↗ opens the side showing; the
+// card remembers the choice in this browser
 document.querySelectorAll('details.topic[data-sides]').forEach(function(d){
   var key='workbench.studio.side.v1:'+d.id,bar=d.querySelector(':scope > summary .st-side');
   function show(side,save){
@@ -3578,7 +3596,7 @@ document.querySelectorAll('details.topic[data-sides]').forEach(function(d){
     if(ed){ed.hidden=(ed.dataset.sides||'').split(' ').indexOf(side)<0;ed.textContent='Edit';}
     var a=d.querySelector(':scope > summary a.side-link'),h=a&&a.getAttribute('data-href-'+side);
     if(a){a.hidden=!h;if(h){a.href=h;a.dataset.pop=a.getAttribute('data-pop-'+side);}}
-    d.dataset.side=side;if(save){try{localStorage.setItem(key,side);}catch(e){}}load(d);}
+    d.dataset.side=side;if(save){try{localStorage.setItem(key,side);}catch(e){}}load(d);if(window.mmDraw)setTimeout(window.mmDraw,0);}
   var saved=null;try{saved=localStorage.getItem(key);}catch(e){}
   var ok=function(s){var b=bar.querySelector('[data-side="'+s+'"]');return b&&!b.disabled;};
   show(saved&&ok(saved)?saved:d.dataset.side,false);

@@ -64,7 +64,7 @@ node_modules/
 # machine, often several MB; never committed
 .*.seed.json
 
-# a mind map's web page (haipipe-mindmap): rebuilt from its .mindmap.md by `mindmap.py html`; only this suffix,
+# a mind map's static page (haipipe-studio's mind map part): rebuilt from its .mindmap.md on every change; only this suffix,
 # never a blanket *.html, since Tools tracks real .html files
 *.mindmap.html
 

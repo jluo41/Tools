@@ -16,8 +16,8 @@ description: >-
   together, /workbench-studio (the retired name of this screen).
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.14.6"
-  last_updated: "2026-10-25"
+  version: "0.14.7"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md
 ---
 
@@ -36,14 +36,33 @@ keep a person's marks, and the sessions. How a topic's drawing looks and reads i
 ├── sNN-<topic>.excalidraw    the drawing (a builder's, with the person's marks kept)
 ├── sNN-<topic>.png           its preview
 ├── build_sNN_<topic>.py      the builder, when a script draws it
-├── mNN-<topic>.mindmap.md    its structured side, a mind map: the source (haipipe-mindmap)
-└── mNN-<topic>.excalidraw    the mind map drawn left to right, with mNN-<topic>.png
+└── mNN-<topic>.mindmap.md    its structured side, the mind map: Markdown, drawn as the §1 map (_parts/mindmap)
 <block>/runs/run-draw-<sNN>/  one pass per working session
 ```
 
-Read `ref/topic-contract.md` before adding a topic or writing a builder. A topic has two sides: the free drawing
-(sNN) and, when it has one, the structured side (mNN, same number), made and synced by `/haipipe-mindmap
-from-topic`; the workbench card switches them (Free · Structured), and the mNN is never the topic's main drawing.
+Read `ref/topic-contract.md` before adding a topic or writing a builder.
+
+
+Two sides of a topic: its drawing and its mind map
+--------------------------------------------------
+
+Every sNN has two sides, linked by number (JL 261026): the free drawing, `sNN-<topic>.excalidraw`, and its mind map,
+`mNN-<topic>.mindmap.md`. The mind map is not a canvas: it is drawn the way a draft Task's §1 Structure map is
+(HTML, the root at the left, each node's children to its right), and a person edits it where they read it. The
+workbench card switches the two (Free · Structured).
+
+```text
+studio/s01-work-ladder/
+  s01-work-ladder.md           the face ─── from-topic ──▶ m01-work-ladder.mindmap.md   the mind map's source
+  s01-work-ladder.excalidraw   Free                        drawn as §1's map ◀── Structured: click, type, ＋, drag
+```
+
+1. **Made together**: `new_topic.py topic` writes the face, then the mind map from it.
+2. **Kept in step**: `_parts/mindmap/scripts/mindmap.py refresh <mNN>` rereads the face; words a person changed
+   and nodes a person added stay.
+3. **Edited in place**: a change on the card is one POST to `/_board/mindmap`, written into the `.mindmap.md`.
+4. **The rest**: the grammar, a Block's or a world's work map (`from-work`), the commands:
+   [`_parts/mindmap/PART.md`](_parts/mindmap/PART.md).
 
 
 Topic count per Block
@@ -424,10 +443,11 @@ haipipe-studio/
 ├── ref/history/               the retired workbench-studio changelog
 ├── scripts/canvas.py          the merge-safe writer
 ├── scripts/render_png.py      the offline PNG preview
-├── scripts/new_topic.py       topic · session
+├── scripts/new_topic.py       topic (its face, then its mind map) · session
 ├── scripts/block_inventory.py what a Block's Jobs and Tasks already do: kinds, splits, sub-questions
 ├── scripts/block_index.py     a Block's s00: its background, then its index as a map with each topic's and Job's progress
 ├── scripts/topic_map.py       a topic's frames from its face: trees, or boxes with their trees joined by named arrows
 ├── scripts/job_results.py     a Job's current results as a topic, read from its Runs on every build
-└── tests/test_haipipe_studio.py
+├── tests/test_haipipe_studio.py
+└── _parts/mindmap/            a topic's mind map, mNN: the §1 map, edited in place (PART.md)
 ```

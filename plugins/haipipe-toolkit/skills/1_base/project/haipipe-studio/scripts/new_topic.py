@@ -7,7 +7,7 @@
                               [--date MMDD]
 
 `topic` makes `studio/sNN-<topic>/` in the owning Block (also from a Job/Task input), with its face `sNN-<topic>.md` (Topic ·
-Feeds · Files · Decided · Open), numbered in its band: s01-s09 concepts · s11-s19 levels · s21-s29 runs and
+Feeds · Files · Decided · Open) and its mind map `mNN-<topic>.mindmap.md` (built from that face), numbered in its band: s01-s09 concepts · s11-s19 levels · s21-s29 runs and
 skills · s31-s39 Guide · s41-s49 Task procedures · s51-s59 server · s61-s69 slide drafts · s10-s19 related work, on a paper Board only (haipipe-paper-related). `--builder` adds `build_sNN_<topic>.py`, a builder on excalidraw-studio's draw.py that draws
 through canvas.write (a rebuild keeps the person's marks), and runs it once.
 
@@ -154,7 +154,18 @@ def new_topic(level: Path, slug: str, title: str, band: str = "concept", nn: int
         script.write_text(BUILDER.format(nn=f"{nn:02d}", title=title, slug=slug, script=script.name,
                                          to_draw=Path(to_draw).as_posix()), encoding="utf-8")
         subprocess.run([sys.executable, str(script)], check=True, capture_output=True)
+    mind_map(folder)
     return md
+
+
+def mind_map(topic: Path) -> Path:
+    """The topic's other side, its mind map `mNN-<topic>.mindmap.md`, built from the face just written (the mind map
+    part, _parts/mindmap): every sNN has both, its drawing and its map, linked by number (JL 261026)."""
+    scripts = HERE.parent / "_parts" / "mindmap" / "scripts"
+    sys.path.insert(0, str(scripts))
+    import mindmap
+    mindmap.build("from-topic", topic, None)
+    return topic / mindmap.MB.mnn_name(topic)
 
 
 def save_session(level: Path, snn: str, title: str, ask: str = "", summary: str = "", changed=None,

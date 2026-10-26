@@ -1,6 +1,0 @@
-interface:
-  display_name: "Mind Map"
-  short_description: "one .mindmap.md file drawn left to right on a canvas and shown as a web page, edited both ways"
-  default_prompt: "Use $haipipe-mindmap to make, draw, sync or refresh a mind map: a Studio topic's structured side (mNN), a work Block's map, or any .mindmap.md file."
-policy:
-  allow_implicit_invocation: true

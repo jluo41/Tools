@@ -2,7 +2,7 @@
 
 A mind map's one source is a Markdown file: a front matter, a `# <root>` line, a nested bullet list (one node a
 bullet, its id in a trailing `<!-- id -->` comment) and, from the next `## ` heading on, free notes kept as written.
-The canvas and the web page are views of it (mmcanvas.py, mmhtml.py).
+The map in the workbench and the static page are views of it (mmmap.py, mmhtml.py).
 """
 from __future__ import annotations
 
@@ -52,18 +52,17 @@ def words_hash(text: str) -> str:
 
 
 def views(md: Path) -> dict:
-    """The three views of one source: `<stem>.excalidraw`, `<stem>.png`, `<stem>.mindmap.html`."""
+    """The file and its static page, `<stem>.mindmap.html`."""
     md = Path(md)
     if not md.name.endswith(SUFFIX):
         raise GrammarError(f"{md.name}: a mind map's file ends in {SUFFIX}")
     stem = md.name[: -len(SUFFIX)]
-    return {"md": md, "canvas": md.with_name(stem + ".excalidraw"), "png": md.with_name(stem + ".png"),
-            "html": md.with_name(stem + ".mindmap.html"), "stem": stem}
+    return {"md": md, "html": md.with_name(stem + ".mindmap.html"), "stem": stem}
 
 
-# ── words shown on the canvas ──────────────────────────────────────────────────────────────────────────────
+# ── words without their marks ──────────────────────────────────────────────────────────────────────────────
 def display(text: str) -> str:
-    """A node's words as the canvas shows them: the Markdown marks taken off, spaces made single."""
+    """A node's words with the Markdown marks taken off, spaces made single (to compare and to count)."""
     s = re.sub(r"`([^`]*)`", r"\1", str(text))
     s = re.sub(r"!?\[([^\]]*)\]\([^)]*\)", r"\1", s)
     s = re.sub(r"(\*\*|__)(.+?)\1", r"\2", s)
@@ -158,7 +157,7 @@ def next_ids(taken: set):
 
 
 def ensure_ids(mm: MindMap, taken: set = frozenset()) -> int:
-    """A bullet a person typed without an id gets the next free nNN (never one the canvas still remembers).
+    """A bullet a person typed without an id gets the next free nNN (`taken`: ids also in use elsewhere).
     Returns how many were given. Two bullets with one id: the second gets a new one."""
     seen, gave = set(), 0
     fresh = next_ids({n.id for n, *_ in walk(mm.root)} | set(taken))
@@ -173,7 +172,7 @@ def ensure_ids(mm: MindMap, taken: set = frozenset()) -> int:
 
 
 def flat(mm: MindMap) -> dict:
-    """{id: {text (as shown), parent, order}}: the shape the canvas and the file are compared in."""
+    """{id: {text (without marks), parent, order}}: the tree flat, to compare two versions of it."""
     return {n.id: {"text": display(n.text), "parent": p.id if p else None, "order": k}
             for n, p, _d, k in walk(mm.root)}
 

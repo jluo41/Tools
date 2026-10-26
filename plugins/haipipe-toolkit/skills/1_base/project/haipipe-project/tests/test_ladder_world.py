@@ -32,7 +32,7 @@ class WorldTest(unittest.TestCase):
     def test_a_blocks_mind_map_is_kept_loose_and_never_moved(self):
         with tempfile.TemporaryDirectory() as tmp:
             b = world(Path(tmp)) / "b01_demo"
-            for name in ("mind-map.mindmap.md", "mind-map.excalidraw", "mind-map.png", "mind-map.mindmap.html"):
+            for name in ("mind-map.mindmap.md", "mind-map.mindmap.html"):
                 (b / "studio" / name).write_text("x", encoding="utf-8")
             (b / "studio" / "stray.tsv").write_text("a\tb\n", encoding="utf-8")
             msgs = [m for _s, m in ladder.today_findings(b)]

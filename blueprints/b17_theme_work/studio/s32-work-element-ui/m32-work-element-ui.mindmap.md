@@ -7,27 +7,67 @@ built: from-topic .
 # s32 · Work element UI <!-- root #c35327 -->
 
 - Topic <!-- @topic #7e13bd -->
-  - every kind of element the work theme draws today, … <!-- @topic/0 #ec0ce7 -->
-  - The versions are shot live from the frame (`/_board/workbench`) … <!-- @topic/1 #80695e -->
-  - Under each element, the planned screen; beside it, its … <!-- @topic/2 #16b977 -->
+  - every kind of element the work theme draws today, as it draws it, side … <!-- @topic/0 #ec0ce7 -->
+  - The versions are shot live from the frame (`/_board/workbench`) at a work Block, one … <!-- @topic/1 #80695e -->
+  - Under each element, the planned screen; beside it, its proposed look: b03's picks, a … <!-- @topic/2 #16b977 -->
 - Feeds <!-- @feeds #ffe8e9 -->
-  - `reports/` q01_work_ladder (each level's elements) · q03_questions_and_runs (a Run's … <!-- @feeds/0 #3df8bf -->
+  - `reports/` q01_work_ladder (each level's elements) · q03_questions_and_runs (a Run's display and link); b03 Q08 … <!-- @feeds/0 #3df8bf -->
 - Files <!-- @files #6ce6c5 -->
   - build_s32_work_element_ui.py <!-- @files/0 #73f614 -->
-  - +4 more <!-- @files/+more #3c25eb -->
+  - s32-work-element-ui.excalidraw <!-- @files/1 #f386a5 -->
+  - s32-work-element-ui.md <!-- @files/2 #6b37c7 -->
+  - s32-work-element-ui.png <!-- @files/3 #237716 -->
+  - shots/ <!-- @files/4 #4d5052 -->
 - What the gallery holds <!-- @what-the-gallery-holds #69fd53 -->
-  - Walked: the work Block b18 in Project-Algorithm-Design (five Questions … <!-- @what-the-gallery-holds/0 #e99175 -->
+  - Walked: the work Block b18 in Project-Algorithm-Design (five Questions with report Pages, three Jobs, … <!-- @what-the-gallery-holds/0 #e99175 -->
 - Decided <!-- @decided #55615a -->
-  - s32-D01 · b03's picks hold for the work theme … <!-- @decided/0 #5fee9c -->
-  - s32-D02 · Today's frame already draws the work theme's … <!-- @decided/1 #e935e9 -->
-  - +4 more <!-- @decided/+more #3c25eb -->
+  - s32-D01 · b03's picks hold for the work theme (261008, b03 s32-D01 · D02 … <!-- @decided/0 #5fee9c -->
+  - s32-D02 · Today's frame already draws the work theme's top tabs, view row, header, … <!-- @decided/1 #e935e9 -->
+  - s32-D03 · Old pages are flagged OLD in red, in a red dashed box … <!-- @decided/2 #1edc3c -->
+  - s32-D04 · Proposed: a Task opens as the Task tab, a hard Run (rNN_) … <!-- @decided/3 #9db7f9 -->
+  - s32-D05 · Proposed: the work theme's own elements are base tables and rows with … <!-- @decided/4 #4f94b5 -->
+  - s32-D06 · Done (261008, b03 in the base, from this list): a theme's own … <!-- @decided/5 #8698bc -->
 - Theme elements <!-- @theme-elements #bfa59f -->
-  - element · level · Space › view · base … <!-- @theme-elements/0 #3f3fee -->
-  - +26 more <!-- @theme-elements/+more #5e0b8e -->
+  - element · level · Space › view · base or its own and why … <!-- @theme-elements/0 #3f3fee -->
+  - top tabs · all levels · the level row and the six Spaces · … <!-- @theme-elements/1 #f32822 -->
+  - Job ▾ · Task ▾ select · Job, Task · the level row · … <!-- @theme-elements/2 #6cae77 -->
+  - view row · all levels · every Space with views · base · drawn <!-- @theme-elements/3 #7c8e1d -->
+  - view row · Task · Scope · Plan | Report · Draft | Code … <!-- @theme-elements/4 #dfce11 -->
+  - Question rows · Block · Audience Report, one row per Question · base (the … <!-- @theme-elements/5 #b23160 -->
+  - Question rows · Job · Audience Report, the Block's Questions this Job's Tasks feed … <!-- @theme-elements/6 #23ed93 -->
+  - Question rows · Task · Audience Report › Report, Question │ Work │ Report … <!-- @theme-elements/7 #b50a74 -->
+  - draft list · Task · Audience Report › Draft, the Task's draft/ · its … <!-- @theme-elements/8 #60be9e -->
+  - Space body · all levels · every Space · base · drawn · GAP: … <!-- @theme-elements/9 #8036e1 -->
+  - table · Block · Work Details, the Jobs · base · GAP: no Job … <!-- @theme-elements/10 #727912 -->
+  - table · Job · Work Details, the Tasks with Plan · Build · Run … <!-- @theme-elements/11 #8e0db7 -->
+  - table · Task · Work Details › Code · Notebooks (file · bytes) · … <!-- @theme-elements/12 #cf0df1 -->
+  - Plan · Task · Description › Plan, the face's Plan section · its own: … <!-- @theme-elements/13 #593918 -->
+  - Review · Task · Work Details › Review, CODE_REVIEW.md · its own: one link … <!-- @theme-elements/14 #65fce4 -->
+  - rows · all levels · Idea Studio, one topic per row · base (b03 … <!-- @theme-elements/15 #42d5a9 -->
+  - Job → Task → Run tree · Block · Work Details › Jobs ▾ … <!-- @theme-elements/16 #cd5c7c -->
+  - Disk · Runs panel · all levels · every Space · base · drawn <!-- @theme-elements/17 #eb22a2 -->
+  - Runs table · Block, Job · Runs, its own soft Runs and ☐ from … <!-- @theme-elements/18 #4879f5 -->
+  - Runs table · Task · Runs › All · run · build · report … <!-- @theme-elements/19 #9f9dcc -->
+  - Run pop-out · Run · a hard Run: card · ticket · config · … <!-- @theme-elements/20 #51d155 -->
+  - Delivery cards · Task · Delivery: Reports · Exports, no third row (b03 s13 … <!-- @theme-elements/21 #bbd694 -->
+  - Delivery · Block, Job · Delivery, optional: its own and from below · base … <!-- @theme-elements/22 #c4cfa5 -->
+  - Job face · Job · Description, jNN_<job>.md (goal · state · task_groups) · base … <!-- @theme-elements/23 #bdb7a3 -->
+  - tags · all levels · none (b03 s32-D09) · GAP: 1 kind drawn on … <!-- @theme-elements/24 #cc5b36 -->
+  - header · all levels · the title line · base · drawn <!-- @theme-elements/25 #5a1b58 -->
+  - one item's display · Task, Run · a Task is the Task tab; a … <!-- @theme-elements/26 #3fb1e0 -->
 - Buttons with no Run name <!-- @buttons-with-no-run-name #84dd2d -->
-  - Every Runs-panel button met on the work pages (and … <!-- @buttons-with-no-run-name/0 #ae39e2 -->
-  - Fixed in the base by b03 (261008, s32-D06), green … <!-- @buttons-with-no-run-name/1 #316e08 -->
+  - Every Runs-panel button met on the work pages (and on the planned screens) that … <!-- @buttons-with-no-run-name/0 #ae39e2 -->
+  - Fixed in the base by b03 (261008, s32-D06), green on the drawing: the work … <!-- @buttons-with-no-run-name/1 #316e08 -->
 - Open <!-- @open #cf9b77 -->
-  - Pick the work looks the b03 picks leave open … <!-- @open/0 #6d3ada -->
+  - Pick the work looks the b03 picks leave open (the Pick frame): Space body, … <!-- @open/0 #6d3ada -->
   - one item's display, the theme's own elements <!-- @open/1 #b728c8 -->
-  - +10 more <!-- @open/+more #5a539b -->
+  - The GAP lines above are the work theme's code (`servers/workbench-work/work_theme.py`) or the base's <!-- @open/2 #95a1b5 -->
+  - (`servers/workbench/frame.py`: the Page views, the Runs third row, "from below"); told to design-b03-project (261008) … <!-- @open/3 #0d3a72 -->
+  - A work Task's other Page views (Folder · Evidence · Value · Page Runs … <!-- @open/4 #033c82 -->
+  - in an iframe <!-- @open/5 #138f4c -->
+  - The Job ▾ and Task ▾ selects and the Block's Jobs table: group by … <!-- @open/6 #8718bc -->
+  - (`job_groups:`), never hard-coded (s01 Open 7) <!-- @open/7 #682728 -->
+  - A hard Run's display: the frame's pop-out (card · ticket · config · result/ … <!-- @open/8 #a8a2ff -->
+  - page; who builds it, the base (every theme's Runs table) or the work theme? <!-- @open/9 #210d0d -->
+  - The button names in "Buttons with no Run name" are proposals until b03 and … <!-- @open/10 #813651 -->
+  - (`haipipe-task`, `haipipe-run`) agree them <!-- @open/11 #3f78c3 -->

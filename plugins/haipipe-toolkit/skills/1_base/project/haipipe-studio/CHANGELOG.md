@@ -1,6 +1,16 @@
 haipipe-studio · Changelog
 ==========================
 
+## [0.14.7] · 2026-10-26 · every topic has two sides: its drawing and its mind map
+
+- The mind map is now this skill's part, `_parts/mindmap/` (was the skill haipipe-mindmap, JL 261026: "the mindmap will
+  also be in the haipipe-studio, they are linked to each other"), drawn as the draft's §1 Structure map in HTML and
+  edited in place, not on a canvas.
+- `scripts/new_topic.py topic` writes the face, then the topic's mind map `mNN-<topic>.mindmap.md` from it, so a new
+  topic has both sides. Test: `test_a_new_topic_has_both_sides_its_drawing_and_its_mind_map`.
+- SKILL.md § Two sides of a topic, and `ref/topic-contract.md`: the mNN files are the `.mindmap.md` and its static
+  `.mindmap.html`; the card's Structured side edits the map in place.
+
 ## [0.14.6] · 2026-10-25 · a topic's structured side; drawings read as UTF-8
 
 - `ref/topic-contract.md` and SKILL.md: the topic folder holds its structured side, `mNN-<topic>.mindmap.md` with
