@@ -145,7 +145,7 @@ def broken_links(folder):
                 continue
             if in_fence:
                 continue
-            for target in LINK_RE.findall(line):
+            for target in LINK_RE.findall(re.sub(r"`[^`]*`", "", line)):  # `[a](b)` in code is an example
                 if re.match(r"^[a-z][a-z0-9+.-]*:", target, re.I) or target.startswith(("#", "/", "<")):
                     continue
                 path = target.split("#", 1)[0]
@@ -257,13 +257,25 @@ def scan_install_dir(base, label):
     return out, note
 
 
+def disabled_plugins():
+    """`<plugin>@<marketplace>` keys set to false in ~/.claude/settings.json (only that key is read)."""
+    try:
+        enabled = json.loads((HOME / ".claude" / "settings.json").read_text()).get("enabledPlugins") or {}
+    except (OSError, ValueError):
+        return set()
+    return {k for k, v in enabled.items() if v is False}
+
+
 def plugin_skills():
     out = {}
     try:
         data = json.loads(PLUGINS_JSON.read_text())
     except (OSError, ValueError):
         return out
+    off = disabled_plugins()
     for key, installs in (data.get("plugins") or {}).items():
+        if key in off:
+            continue  # enabledPlugins says false: none of its skills is listed
         plugin = key.split("@")[0]
         for inst in installs:
             skills_dir = Path(inst.get("installPath", "")) / "skills"
@@ -397,6 +409,7 @@ def build(args):
     agents_same = AGENTS_SKILLS.is_symlink() and os.path.realpath(AGENTS_SKILLS) == os.path.realpath(CLAUDE_SKILLS)
     plugins = plugin_skills()
     codex = codex_links()
+    spaces = space_links()
     if args.no_usage:
         stats, nfiles = defaultdict(lambda: {"calls": 0, "commands": 0, "recent": 0, "last": "", "projects": set()}), 0
     else:
@@ -558,10 +571,35 @@ def build(args):
         "problems": sum(1 for r in rows if r["problems"]),
         "hidden": reach["hidden"], "hidden_reachable": reach["hidden_ok"],
         "parts_named": reach["parts_ok"],
+        "spaces": spaces,
         "codex_links": codex["links"], "codex_dangling": codex["dangling"], "codex_targets": codex["targets"],
     }
     aliases = sorted(alias_of)
     return rows, recs, summary, stats, aliases
+
+
+def space_links():
+    """Every SPACE linked to this checkout by ./install.sh --project: what each of its three skill folders
+    (.claude, .codex, .agents) lacks or holds dead, against ~/.claude/skills (the same set, linked globally)."""
+    expected = {e.name for e in CLAUDE_SKILLS.iterdir()
+                if e.is_symlink() and os.path.realpath(e).startswith(str(TOOLS / "plugins") + "/")}
+    out = []
+    for cand in sorted(set(HOME.glob("Desktop/*/.claude/skills")) | set(HOME.glob("Desktop/*/*/.claude/skills"))):
+        space = cand.parent.parent
+        if space == TOOLS or not cand.is_dir():
+            continue
+        if not any(e.is_symlink() and os.path.realpath(e).startswith(str(TOOLS / "plugins") + "/")
+                   for e in cand.iterdir()):
+            continue  # linked to another checkout, or not a SPACE of this one
+        row = {"space": str(space).replace(str(HOME), "~"), "missing": set(), "dangling": set()}
+        for sub in (".claude", ".codex", ".agents"):
+            d = space / sub / "skills"
+            names = {e.name for e in d.iterdir()} if d.is_dir() else set()
+            row["missing"] |= expected - names
+            row["dangling"] |= {e.name for e in d.iterdir() if e.is_symlink() and not os.path.exists(e)} if d.is_dir() else set()
+        row["missing"], row["dangling"] = sorted(row["missing"]), sorted(row["dangling"])
+        out.append(row)
+    return out
 
 
 def codex_links():
@@ -683,6 +721,13 @@ def write_md(path, rows, recs, summary, stats, aliases, args):
         "The heaviest area is %s: %s listing tokens (%d%%)." % (heavy_area, fmt(heavy_tok), 100 * heavy_tok // total_tok),
         "%d skills have a problem (broken links, long descriptions, front matter); see section 6." % s["problems"],
     ]
+    stale = [sp for sp in s.get("spaces", []) if sp["missing"] or sp["dangling"]]
+    if stale:
+        findings.append("%d of %d SPACEs are behind this checkout (missing or dead skill links); rerun "
+                        "`./install.sh --project <SPACE>`: %s." % (len(stale), len(s["spaces"]),
+                        ", ".join("`%s`" % sp["space"] for sp in stale)))
+    elif s.get("spaces"):
+        findings.append("All %d SPACEs linked to this checkout are up to date." % len(s["spaces"]))
     if s.get("codex_dangling"):
         findings.append("`~/.codex/skills`: %d of %d links dangle (they point at an old checkout)."
                         % (s["codex_dangling"], s["codex_links"]))
@@ -825,6 +870,13 @@ def write_md(path, rows, recs, summary, stats, aliases, args):
             (": " + ", ".join("%s (%d)" % (k.replace(str(HOME), "~"), v)
                               for k, v in sorted(s["codex_targets"].items(), key=lambda kv: -kv[1])[:3]))
             if s["codex_dangling"] else "")))
+    for sp in s.get("spaces", []):
+        gap = []
+        if sp["missing"]:
+            gap.append("%d not linked: %s" % (len(sp["missing"]), ", ".join(sp["missing"][:8])))
+        if sp["dangling"]:
+            gap.append("%d dangling: %s" % (len(sp["dangling"]), ", ".join(sp["dangling"][:8])))
+        inst.append(("SPACE `%s`" % sp["space"], "; ".join(gap) + " (rerun ./install.sh --project)" if gap else "up to date"))
     add(md_table(["Place", "What is there"], inst))
     add("")
 

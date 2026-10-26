@@ -1,8 +1,8 @@
 # Writing DNA Distiller
 
-[中文](README.md) | English
+[中文](https://github.com/larashero3-dotcom/writing-dna-skill/blob/ee3d97ee/README.md) | English
 
-[![Writing DNA Distiller: distill any author's writing style into reusable Writing DNA for AI agents](assets/writing-dna-hero-en.png)](https://moxt.ai/hub?view=skill&id=writing-dna-skill)
+[![Writing DNA Distiller: distill any author's writing style into reusable Writing DNA for AI agents](https://github.com/larashero3-dotcom/writing-dna-skill/blob/ee3d97ee/assets/writing-dna-hero-en.png?raw=true)](https://moxt.ai/hub?view=skill&id=writing-dna-skill)
 
 Skill name: `writing-dna-skill`
 

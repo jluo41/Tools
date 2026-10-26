@@ -10,3 +10,6 @@
 ## [0.1.0] — 2026-10-26
 
 Became a part of `haipipe-draft-review`: `haipipe-draft-review/_parts/writing-dna-skill/PART.md` (was the skill `writing-dna-skill`); front matter, commands and links updated. (merge-parts 261026)
+
+README.en.md: the Chinese README and the hero image were never copied here, so their two links now
+point at the upstream repository at the vendored commit `ee3d97ee`.

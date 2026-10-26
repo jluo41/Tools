@@ -3,6 +3,13 @@ haipipe-discovery-search — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [0.9.1] — 2026-10-26
+
+`name:` is now `haipipe-search`, the folder's name (it said `haipipe-discovery-search`, so the listing showed
+one skill under two names). The old name stays as a short name, `aliases: [haipipe-discovery-search]`: the
+installers link it to this same folder, so `/haipipe-discovery-search` and `Skill("haipipe-discovery-search")`
+in the discovery agents keep working.
+
 ## [0.9.0] — 2026-10-26
 
 Merged 5 helper skill(s) into `_parts/`: `alphaxiv` -> `_parts/alphaxiv`, `deepxiv` -> `_parts/deepxiv`, `exa-search` -> `_parts/exa-search`, `gemini-search` -> `_parts/gemini-search`, `paper-analyzer` -> `_parts/paper-analyzer`. /haipipe-search reads `_parts/<name>/PART.md` instead of calling a separate skill; allowed-tools gained the parts' tools. Old commands map as `/alphaxiv` -> `/haipipe-search alphaxiv`. (merge-parts 261026)

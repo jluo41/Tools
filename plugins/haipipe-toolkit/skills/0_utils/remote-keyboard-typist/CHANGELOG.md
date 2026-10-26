@@ -49,3 +49,8 @@
 - Step 6 lessons from the same evening: check which terminal gets the keys and
   name it (Control, Shift, p stacks); long commands checked before Enter; copy
   near-identical files by one replace line; start `-parallel` last.
+
+## 0.3.1 (2026-10-26)
+
+- Description cut from 1,159 to under 1,024 characters (the skill-spec limit); same
+  triggers, the click-batch fallback detail left to the body.

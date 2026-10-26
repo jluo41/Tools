@@ -1,9 +1,10 @@
 ---
-name: haipipe-discovery-search
+name: haipipe-search
 description: "Search-route specialist for source-map Discovery Pages: find candidates, resolve canonical paper/sources, and hand admitted Subjects to the D1 Run contract. Trigger: search sources, find papers, add paper run, source map, /haipipe-discovery-search."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Bash(*), WebFetch, mcp__gemini-cli__*
 metadata:
-  version: "0.9.0"
+  version: "0.9.1"
+  aliases: [haipipe-discovery-search]
   last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md
 ---
