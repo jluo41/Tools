@@ -103,17 +103,17 @@ shows them under four buttons in Work Details. The base frame adds its own (Add 
 
 🔘 BUTTON   Generate ideas · Block › Audience Report · ^run-generate-ideas · views ideation
 🏷 RUN      run-generate-ideas
-🧩 SKILL    haipipe-ideation-generate
+🧩 SKILL    haipipe-ideation generate
 🤖 AGENT    haipipe-ideation-agent (new)
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-ideation-generate {folder}: propose new candidate ideas for this paper into studio/s01-ideation/, each written as the question it asks, and register each as a Question with group: ideation.
+💬 PROMPT   /haipipe-ideation generate {folder}: propose new candidate ideas for this paper into studio/s01-ideation/, each written as the question it asks, and register each as a Question with group: ideation.
 
 🔘 BUTTON   Test idea · Block › Audience Report · ^run-test-idea- · views ideation
 🏷 RUN      run-test-idea-<idea>
-🧩 SKILL    haipipe-ideation-test
+🧩 SKILL    haipipe-ideation test
 🤖 AGENT    haipipe-ideation-agent (new)
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-ideation-test {folder} <target>: run the novelty and pressure tests on this idea and record the Result in its report.
+💬 PROMPT   /haipipe-ideation test {folder} <target>: run the novelty and pressure tests on this idea and record the Result in its report.
 
 🔘 BUTTON   Idea review · Block › Audience Report · ^run-paper-idea- · views ideation
 🏷 RUN      run-paper-idea-<slug>
@@ -124,10 +124,10 @@ shows them under four buttons in Work Details. The base frame adds its own (Add 
 
 🔘 BUTTON   Select idea · Block › Audience Report · ^run-select-idea- · views ideation
 🏷 RUN      run-select-idea-<idea>
-🧩 SKILL    haipipe-ideation-select
+🧩 SKILL    haipipe-ideation select
 🤖 AGENT    haipipe-ideation-agent (new)
 ✍️ SIGNS    the admitted idea (G0)
-💬 PROMPT   /haipipe-ideation-select {folder} <target>: put this idea and its venue to the person as the G0 choice; on yes, open its telling as studio/sNN-story-<telling>/.
+💬 PROMPT   /haipipe-ideation select {folder} <target>: put this idea and its venue to the person as the G0 choice; on yes, open its telling as studio/sNN-story-<telling>/.
 
 🔘 BUTTON   Story revise · Block › Audience Report · ^run-revise-story- · views narrative
 🏷 RUN      run-revise-story-<telling>
@@ -148,7 +148,7 @@ shows them under four buttons in Work Details. The base frame adds its own (Add 
 🧩 SKILL    haipipe-paper-story
 🤖 AGENT    haipipe-block-reviewer-agent
 ✍️ SIGNS    none
-💬 PROMPT   Read the telling of {folder} as an editor, a reviewer and a member of the public, each in a fresh context (haipipe-journal-fit, haipipe-nature-paper-review): does it attract them? Record each verdict as a narrative Question in board.md ## Questions (group: narrative) with its report.
+💬 PROMPT   Read the telling of {folder} as an editor, a reviewer and a member of the public, each in a fresh context (haipipe-ideation journal-fit, haipipe-ideation nature-paper-review): does it attract them? Record each verdict as a narrative Question in board.md ## Questions (group: narrative) with its report.
 
 🔘 BUTTON   Claim review · Block › Audience Report · ^run-paper-claim- · views logic-work
 🏷 RUN      run-paper-claim-<slug>

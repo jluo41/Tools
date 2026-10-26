@@ -1,10 +1,10 @@
 ---
 name: haipipe-discovery-search
 description: "Search-route specialist for source-map Discovery Pages: find candidates, resolve canonical paper/sources, and hand admitted Subjects to the D1 Run contract. Trigger: search sources, find papers, add paper run, source map, /haipipe-discovery-search."
-allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Bash(*), WebFetch, mcp__gemini-cli__*
 metadata:
-  version: "0.8.0"
-  last_updated: "2026-10-11"
+  version: "0.9.0"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md
 ---
 
@@ -30,13 +30,16 @@ find   arxiv              preprints + PDF when available
        semantic-scholar   published venues and citation graph
        Crossref/PubMed    DOI, journal, and biomedical metadata fallback
        medRxiv            clinical/biomedical preprints when relevant
-       exa-search         broad web/grey literature when EXA_API_KEY exists
+       exa-search         broad web/grey literature when EXA_API_KEY exists (part)
        openalex           structured cross-discipline metadata, OA, and citation graph
-       gemini-search      optional alias/subproblem expansion and broad recall
-read   alphaxiv           fast paper summary
-       deepxiv            progressive section reading
-       paper-analyzer     deep structured analysis
+       gemini-search      optional alias/subproblem expansion and broad recall (part)
+read   alphaxiv           fast paper summary (part)
+       deepxiv            progressive section reading (part)
+       paper-analyzer     deep structured analysis (part)
 ~~~
+
+A worker marked (part) is a part of this skill: read `_parts/<name>/PART.md` and follow it. The
+others (arxiv, semantic-scholar, openalex) are skills of their own under `1_search/`.
 
 Use SEMANTIC_SCHOLAR_API_KEY, EXA_API_KEY, and OPENALEX_API_KEY only when
 present. For OpenAlex's polite pool, use OPENALEX_EMAIL; the helper has no

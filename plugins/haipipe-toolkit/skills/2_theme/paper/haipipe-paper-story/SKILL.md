@@ -2,7 +2,7 @@
 name: haipipe-paper-story
 description: "Draft, review, revise or draw one paper's Story: its Seed, research questions (hypotheses, claims, the work that tests them), Discovery and Task Roadmaps, related papers and Section Narrative; on the ladder a studio topic (sNN-story-<desk>-<idea>/) with Board Questions. Use to plan a telling or check that it holds for an editor, a reviewer and the public. Trigger: story, research question, hypothesis, claim, RoadMap Draw, /haipipe-paper-story."
 metadata:
-  version: "0.24.1"
+  version: "0.24.2"
   last_updated: "2026-10-26"
   group-token: "sNN-story-<desk>-<idea-slug>"
   outline:

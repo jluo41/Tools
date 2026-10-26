@@ -1,6 +1,6 @@
 # feedback-form — response contract (v0.1)
 
-What `/inlab-human-review` collects, per case and per session, and the exact
+What `/inlab-human review` collects, per case and per session, and the exact
 `responses.jsonl` row shape. The skill asks these conversationally but records them
 **structurally** — chat prose is quotable color, the JSONL row is the data.
 

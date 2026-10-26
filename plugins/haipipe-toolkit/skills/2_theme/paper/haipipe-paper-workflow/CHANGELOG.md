@@ -2,6 +2,10 @@
 
 - `ref/run-cards.md`: both Add a related item cards (Block › Related, Block › Audience Report) say the folder's rules are `/haipipe-related`, a file goes as it came into its subfolder (meetings/ · papers/ · files/ · emails/), which is already its first group, and the group cell holds the research questions, comma-separated (b10 s04-D07, D08, D09).
 
+## [1.9.4] — 2026-10-26
+
+Links, commands and companions repointed at the helper skills merged into `haipipe-ideation`, `haipipe-search`, `haipipe-evidence`, `inlab-human`, `haipipe-draft-review`, `haipipe-display` (now `_parts/<name>/PART.md`). (merge-parts 261026)
+
 ## 1.9.2 · 2026-10-11 · Redraw the paper map is the Board's
 
 - `ref/run-cards.md`: Redraw the paper map moves from Job › Idea Studio to Block › Idea Studio; a version keeps no Studio (b10 s09-D01), so the frame never showed the version's card. Its prompt draws one version's map as a Board topic, `studio/sNN-papermap-<version>/`. `workbench-paper/ref/workbench-table.md` matches; `table-workbench --check --cards` passes.

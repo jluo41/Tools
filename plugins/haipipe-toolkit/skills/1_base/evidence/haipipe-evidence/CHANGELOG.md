@@ -1,5 +1,9 @@
 # haipipe-evidence · Changelog
 
+## [0.8.0] — 2026-10-26
+
+Merged 2 helper skill(s) into `_parts/`: `haipipe-evidence-cite` -> `_parts/cite`, `haipipe-evidence-work` -> `_parts/work`. /haipipe-evidence reads `_parts/<name>/PART.md` instead of calling a separate skill; allowed-tools gained the parts' tools. Old commands map as `/haipipe-evidence-cite` -> `/haipipe-evidence cite`. (merge-parts 261026)
+
 ## 0.7.0 · 2026-10-21 · `cards.py bib`: the page's .bib from its cited Runs
 
 - t01_introduction v0.5's LaTeX printed 8 of 10 citations as "?": its `draft/evidence/bibex/` held 2 entries kept by
@@ -44,8 +48,8 @@
 
 ## 0.4.0 · 2026-10-16 · CITE and WORK become their own skills (JL 261016)
 
-- `ref/cite.md` and `ref/work.md` move out as the sibling skills `haipipe-evidence-cite` and `haipipe-evidence-work`
-  (JL: "could we have the haipipe-evidence-work and haipipe-evidence-cite ... separate them now"). This skill stays
+- `ref/cite.md` and `ref/work.md` move out as the sibling skills `haipipe-evidence cite` and `haipipe-evidence work`
+  (JL: "could we have the haipipe-evidence work and haipipe-evidence cite ... separate them now"). This skill stays
   the door: card format, narrative order, proposals, `scripts/cards.py`, a Page's evidence Runs.
 
 ## 0.3.0 · 2026-10-16 · A Page's evidence Runs fold in (s41-D11)

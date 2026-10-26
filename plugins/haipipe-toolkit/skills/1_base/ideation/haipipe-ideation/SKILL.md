@@ -1,9 +1,9 @@
 ---
 name: haipipe-ideation
 description: "One door over ideation: generate evidence-grounded candidates, test novelty, feasibility, journal fit and Nature-level shape, then select idea-and-target pairs through a human gate and hand them to Paper P0. Use for research directions, idea generation, novelty checks, pressure tests and journal targeting; external sources are haipipe-discovery. Trigger: ideation, research idea, novelty check, journal fit, /haipipe-ideation."
-allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Bash(*), mcp__codex__codex
 metadata:
-  version: "0.7.5"
+  version: "0.8.0"
   last_updated: "2026-10-26"
   folder_owner: canonical
   primary_face: direction
@@ -71,8 +71,9 @@ replace the sole I3 human selection receipt.
 
 ## Numbered capability families
 
-Every skill we wrote sits flat at the family root. The numbered folders hold
-only vendored originals from `references/`, one folder per stage that has any:
+The door is the one listed skill; every stage specialist we wrote, and every vendored
+original nothing else calls, is a part of it, read from `_parts/<name>/PART.md` (JL 261026:
+move more into parts). The numbered folders keep only the originals still called on their own,
 the numbers are the stage vocabulary (1 Generate, 2 Test, 3 Select), and Select
 has no external original, so there is no `3_select/` folder. `writing/` and
 `discovery/` follow the same law; `task/` is the exception, its numbers being
@@ -80,38 +81,37 @@ permanent domain ids.
 
 ```text
 ideation/
-├── haipipe-ideation/                 public door + shared contracts
-├── haipipe-ideation-generate/        1 · evidence → diverse admitted cards
-├── haipipe-ideation-test/            2 · stage router + test matrix
-├── haipipe-novelty-check/            2 · claim × closest-work verification
-├── haipipe-idea-pressure-test/       2 · falsifiability + feasibility
-├── haipipe-journal-fit/              2 · broad screen + deep venue fit
-├── haipipe-nature-paper-review/      2 · Nature-family editorial overlay
-├── haipipe-ideation-select/          3 · portfolio + human gate + handoff
-├── 1_generate/                       vendored originals, callable
-│   ├── framing-research-questions/   science-superpowers · fuzzy interest → falsifiable question
-│   └── idea-creator/                 ARIS · generate and rank ideas from a direction
-└── 2_test/
-    ├── novelty-check/                ARIS · literature novelty sweep
-    ├── kill-argument/                ARIS · two-thread adversarial attack and defense
-    └── paper-reviewer/               nature-paper-skills · reviewer-side critical evaluation
+├── haipipe-ideation/                     public door + shared contracts
+│   └── _parts/
+│       ├── generate/                     1 · evidence → diverse admitted cards
+│       ├── test/                         2 · stage router + test matrix
+│       ├── novelty-check/                2 · claim × closest-work verification
+│       ├── pressure-test/                2 · falsifiability + feasibility
+│       ├── journal-fit/                  2 · broad screen + deep venue fit
+│       ├── nature-paper-review/          2 · Nature-family editorial overlay
+│       ├── select/                       3 · portfolio + human gate + handoff
+│       ├── framing-research-questions/   original, science-superpowers · fuzzy interest → falsifiable question
+│       ├── kill-argument/                original, ARIS · two-thread adversarial attack and defense
+│       └── paper-reviewer/               original, nature-paper-skills · reviewer-side critical evaluation
+├── 1_generate/idea-creator/              original, still a skill · generate and rank ideas from a direction
+└── 2_test/novelty-check/                 original, still a skill · literature novelty sweep
 ```
 
-Load only the current stage. `haipipe-ideation-test` loads its specialist for
+Read only the current stage's part (`_parts/<stage>/PART.md`). `haipipe-ideation test` loads its specialist for
 the requested axis; a generic test loads novelty, pressure, and journal fit,
 while Nature review is loaded only when the user names Nature or a
 Nature-family target remains live. Each specialist is directly invocable for
 a one-off task without forcing the durable owner-bound Workflow.
 
 Ours run by default. A vendored original runs only when the user names it or a
-stage skill selects it as an independent second pass: `haipipe-ideation-generate`
+stage skill selects it as an independent second pass: `haipipe-ideation generate`
 may call `framing-research-questions` to sharpen a fuzzy interest into a
 falsifiable question (that question is the Idea Card's `question`, the Idea's
 name on the Paper Ideation Page and its Workbench card; `title` is only a
 handle) and `idea-creator` as an alternate generation lens;
-`haipipe-novelty-check` compares against `novelty-check`;
-`haipipe-idea-pressure-test` against `kill-argument`;
-`haipipe-nature-paper-review` against `paper-reviewer`. An original's output is a
+`haipipe-ideation novelty-check` compares against `novelty-check`;
+`haipipe-ideation pressure-test` against `kill-argument`;
+`haipipe-ideation nature-paper-review` against `paper-reviewer`. An original's output is a
 proposal packet: the stage skill normalizes it, records it in the receipt, and
 keeps every authority listed in
 [references/external-skill-map.md](references/external-skill-map.md). The
@@ -150,11 +150,11 @@ Load the relevant owner before acting on that owner's artifact:
 
 Then load the current numbered capability owner:
 
-1. `haipipe-ideation-generate` for evidence-bounded candidate generation and
+1. `haipipe-ideation generate` for evidence-bounded candidate generation and
    admission.
-2. `haipipe-ideation-test` for the test matrix, plus only the requested
+2. `haipipe-ideation test` for the test matrix, plus only the requested
    novelty, pressure, journal, or Nature specialist.
-3. `haipipe-ideation-select` for comparison, the human decision receipt, and
+3. `haipipe-ideation select` for comparison, the human decision receipt, and
    Paper handoff.
 
 Discovery is the external-evidence executor: its live work is search, per-source

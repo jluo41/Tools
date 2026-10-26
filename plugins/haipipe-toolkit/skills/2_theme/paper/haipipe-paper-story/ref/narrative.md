@@ -38,8 +38,8 @@ public     why it matters, and what to take away                  Stakes · Pitc
 
 The review is a judging Run, `run-review-audience-<who>` (`haipipe-paper-workflow/ref/run-cards.md`, button
 "Review for an audience"), done in a fresh context by an agent that wrote nothing of the telling
-(`haipipe-block-reviewer-agent`). It reads the telling as that reader would, with `haipipe-journal-fit` for the
-editor and `haipipe-nature-paper-review` for the reviewer, and records each verdict as a narrative Question in
+(`haipipe-block-reviewer-agent`). It reads the telling as that reader would, with `haipipe-ideation journal-fit` for the
+editor and `haipipe-ideation nature-paper-review` for the reviewer, and records each verdict as a narrative Question in
 `board.md ## Questions` (`group: narrative`) with its report: the verdict first, then what the reader would stop
 at, then what to change. A row with no report says "No report yet: run Review for an audience".
 

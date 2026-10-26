@@ -17,8 +17,8 @@ ref/                        📜 THE CONSTITUTION · display-unit-output-contrac
                                + display-revise-loop.md; every shown display passes it
 html-ppt/                   🔧 vendored runtime (MIT, upstream github) · the board's
                                slide decks link its assets AT THIS PATH · do not move
-html-to-svg/ · icon-to-svg/ 🔧 converters
-figure-to-svg/              🔧 converter
+haipipe-display/_parts/html-to-svg/ · haipipe-display/_parts/icon-to-svg/ 🔧 converters
+haipipe-display/_parts/figure-to-svg/              🔧 converter
 _todo/                      🗃 parked, not deleted · retired 260816: the poster and
                                slides renderers, their paper-side doors, and the
                                content-plan spec that only they used

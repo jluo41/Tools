@@ -4,8 +4,8 @@ description: Search and analyze research papers, find related work, summarize ke
 allowed-tools: Bash(*), Read, Glob, Grep, WebSearch, WebFetch, Write, Agent, Skill, mcp__zotero__*, mcp__obsidian-vault__*, mcp__gemini-cli__*
 metadata:
   argument_hint: "[paper-topic-or-url]"
-  version: "0.2.4"
-  last_updated: "2026-10-09"
+  version: "0.2.5"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   haipipe:
     vendored_from: https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep@0472e53
@@ -305,7 +305,7 @@ a paper enters the Discovery Result/Bib spine.
 
 **Gemini search** (only when `gemini` is in sources):
 
-Use the HAI adapter at `../../../../1_base/search/1_search/gemini-search/SKILL.md`. Ask Gemini for
+Use the HAI adapter at `../../../../1_base/search/haipipe-search/_parts/gemini-search/PART.md`. Ask Gemini for
 multiple query angles, aliases, neighboring subproblems, recent preprints,
 surveys, and venue variants. Normalize its title/author/year/venue/DOI/arXiv
 fields, then verify exact identity through arXiv, Semantic Scholar, OpenAlex,

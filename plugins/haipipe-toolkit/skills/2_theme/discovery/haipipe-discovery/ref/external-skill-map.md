@@ -25,12 +25,12 @@ sit flat at the family root and are the only callers.
 |---|---|---|---|---|---|
 | `../../../../1_base/search/1_search/arxiv/` | arxiv | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `0.1.2` |
 | `../../../../1_base/search/1_search/semantic-scholar/` | semantic-scholar | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `0.1.3` |
-| `../../../../1_base/search/1_search/exa-search/` | exa-search | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `0.1.2` |
+| `../../../../1_base/search/haipipe-search/_parts/exa-search/` | exa-search | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `0.1.2` |
 | `../../../../1_base/search/1_search/openalex/` | openalex | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `0.1.1` |
-| `../../../../1_base/search/1_search/gemini-search/` | gemini-search | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `0.1.1` |
-| `../../../../1_base/search/1_search/alphaxiv/` | alphaxiv | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `0.1.2` |
-| `../../../../1_base/search/1_search/deepxiv/` | deepxiv | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `0.1.2` |
-| `../../../../1_base/search/1_search/paper-analyzer/` | paper-analyzer | nature-paper-skills | `44cff42` | MIT | `0.2.2` |
+| `../../../../1_base/search/haipipe-search/_parts/gemini-search/` | gemini-search | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `0.1.1` |
+| `../../../../1_base/search/haipipe-search/_parts/alphaxiv/` | alphaxiv | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `0.1.2` |
+| `../../../../1_base/search/haipipe-search/_parts/deepxiv/` | deepxiv | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `0.1.2` |
+| `../../../../1_base/search/haipipe-search/_parts/paper-analyzer/` | paper-analyzer | nature-paper-skills | `44cff42` | MIT | `0.2.2` |
 | `../../2_review/research-lit/` | research-lit | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `0.2.3` |
 | `../../2_review/comm-lit-review/` | comm-lit-review | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `0.1.1` |
 | `../../2_review/academic-researcher/` | academic-researcher | nature-paper-skills | `44cff42` | MIT | `0.1.1` |

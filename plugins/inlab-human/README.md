@@ -28,18 +28,18 @@ through the same `endpoint-predict` engine as the chat.
 ```
 /inlab-human            Tier-1 session driver (dispatch + status)
     │
-    ├── /inlab-human-bundle    for each sampled de-id case:
+    ├── /inlab-human bundle    for each sampled de-id case:
     │        endpoint-predict MCP tool  ──►  {score, shap}     (deterministic; LLM never
     │        narrator agent             ──►  clinical narrative      produces the number)
     │        freeze ALL of it ──► review_bundle.json
     │
-    ├── /inlab-human-review    THE READER SESSION (chat = UI)
+    ├── /inlab-human review    THE READER SESSION (chat = UI)
     │        case N: raw features only ──► clinician: blind risk + decision + confidence
     │        reveal score + SHAP + narrative ──► assisted re-estimate
     │        + rate the SCORE and the EXPLANATION **separately**
     │        append structured row ──► responses.jsonl
     │
-    └── /inlab-human-report    responses + gold ──► metrics.json + figures
+    └── /inlab-human report    responses + gold ──► metrics.json + figures
              (model accuracy on sample · blind→assisted influence · agreement · ratings)
 ```
 
@@ -55,9 +55,9 @@ Two design rules the skills enforce:
 | Path | What |
 |---|---|
 | `skills/inlab-human/` | Tier-1 orchestrator — `/inlab-human` |
-| `skills/inlab-human-bundle/` | sample cases → predict → narrate → freeze bundle |
-| `skills/inlab-human-review/` | the blind→assisted reading session |
-| `skills/inlab-human-report/` | metrics + pilot figures |
+| `skills/inlab-human/_parts/bundle/` | sample cases → predict → narrate → freeze bundle |
+| `skills/inlab-human/_parts/review/` | the blind→assisted reading session |
+| `skills/inlab-human/_parts/report/` | metrics + pilot figures |
 | `agents/inlab-narrator-agent.md` | narrative writer (consumes score+SHAP; never scores) |
 | `mcp-servers/endpoint-predict/` | the endpoint URL as an MCP tool: `predict(payload) → {score, shap}` |
 | `servers/haichat-inlab/` | the HAI-Chat In-Lab Console: FastAPI routers (patients · models · predict · cases · labeling · tasks · message · HaiChat WebSocket) + React SPA, embeddable as a per-thread iframe; imports the `endpoint-predict` engine, never reimplements it |

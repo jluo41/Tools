@@ -72,7 +72,7 @@ Plugin-level rollup. Per-layer detail lives in each layer's own `skills/<LAYER>/
   first field, Ideas (ranked) cell, Workbench card lead); fields are defined relative to it;
   the count is the number of distinct questions, not a batch quota; title-only cards are
   `unframed`. `haipipe-ideation` 0.7.0 adds the Idea Card's required `question` and the
-  `unframed-idea` check; `haipipe-ideation-generate` 0.2.0 writes the question first.
+  `unframed-idea` check; `haipipe-ideation generate` 0.2.0 writes the question first.
   Workbench Idea Cards lead with the question and fold the writing plan away (JL).
 
 ### workbench-paper: Research Questions carry their claims · 2026-09-22

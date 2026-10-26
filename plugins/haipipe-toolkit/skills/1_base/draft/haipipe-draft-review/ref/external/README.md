@@ -1,7 +1,7 @@
 # External writing skills · what we call, what we only read
 
 Two treatments, decided 2026-09-22. A skill we **call** is vendored as an adapted copy
-into a numbered folder (`1_style/`, `2_evaluate/`) beside `haipipe-draft-review/` and named in
+into `haipipe-draft-review/_parts/<name>/` (a part, read by path; numbered folders until 261026) and named in
 [`../writing-methods.yaml`](../writing-methods.yaml). A skill we only **read** stays
 in `references/` (its upstream checkout) and is digested here; whatever rule of
 it we wanted is already inside `../anti-slop-rules.json` or `../ai-tells.md`; each
@@ -12,9 +12,9 @@ no `SKILL.md` lives here, so the installers never see it.
 
 | Treatment | Skill | Upstream | Commit | Licence | Where it lives now |
 |---|---|---|---|---|---|
-| call · style | `writing-dna-skill` | larashero3-dotcom/writing-dna-skill | `ee3d97ee` | MIT | `../../1_style/writing-dna-skill/` |
-| call · evaluator | `academic-humanizer` | AIScientists-Dev/academic-humanizer 0.3.2 | `02281d83` | MIT | `../../2_evaluate/academic-humanizer/` |
-| call · evaluator | `humanizer` (blader) | blader/humanizer 3.0.0 | `9862685f` | MIT | `../../2_evaluate/humanizer/` |
+| call · style | `writing-dna-skill` | larashero3-dotcom/writing-dna-skill | `ee3d97ee` | MIT | `../../_parts/writing-dna-skill/` |
+| call · evaluator | `academic-humanizer` | AIScientists-Dev/academic-humanizer 0.3.2 | `02281d83` | MIT | `../../_parts/academic-humanizer/` |
+| call · evaluator | `humanizer` (blader) | blader/humanizer 3.0.0 | `9862685f` | MIT | `../../_parts/humanizer/` |
 | read · taken | `humanize` (soundshuman) | aashaexo/soundshuman | `a45cfbba` | MIT | rules + scanner design → `../anti-slop-rules.json`, `../../cli/anti_slop.py` |
 | read · taken | `humanizer` (Adam) | Aboudjem/humanizer-skill | `a58df065` | MIT | fact comparison → `../../cli/anti_slop.py`; guardrail lists → `../ai-tells.md` §3 |
 | read · taken | `stop-slop` | hardikpandya/stop-slop | `8da1f030` | MIT | structural vocabulary → `../anti-slop-rules.json` |

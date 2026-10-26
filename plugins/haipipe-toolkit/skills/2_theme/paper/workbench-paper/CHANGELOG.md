@@ -30,6 +30,10 @@
   label each. Opened, an idea and the setting are labelled lines; a research question keeps its three columns as
   plain text.
 
+## [0.40.1] — 2026-10-26
+
+Links, commands and companions repointed at the helper skills merged into `haipipe-ideation`, `haipipe-search`, `haipipe-evidence`, `inlab-human`, `haipipe-draft-review`, `haipipe-display` (now `_parts/<name>/PART.md`). (merge-parts 261026)
+
 ## 0.39.1 · 2026-10-19 · The Section's skill is haipipe-paper-draft
 
 - `paper_theme.py` reads a Section's reader contract from `haipipe-paper-draft` (was haipipe-paper-section,
@@ -318,7 +322,7 @@
 - Story › Roadmap is a tree when the Story has a §6 `Q` table: general question → its T and D rows (by
   their `Q` column) → their folders; a row with no Q comes last; a range address such as
   `b03.j02.t01–t03` names each task; selecting a Q filters the Runs panel to its runs.
-- New buttons with skills: Select idea (Ideation, haipipe-ideation-select), Page check (Sections,
+- New buttons with skills: Select idea (Ideation, haipipe-ideation select), Page check (Sections,
   haipipe-draft-check).
 
 ## 0.8.0 · 2026-09-28 · Question first; every run names its skill

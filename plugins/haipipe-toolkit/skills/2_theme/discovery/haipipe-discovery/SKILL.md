@@ -3,7 +3,7 @@ name: haipipe-discovery
 description: "External-evidence executor: one Discovery Page Folder per question, every paper or source analyzed by a numbered Run whose Result holds a card, facts, a receipt and one BibTeX entry. Use to add a paper, link or PDF, find and read literature, review a field, synthesize prior work, or build an evidence Bib. Trigger: discover, find paper, add paper, lit review, synthesize, 查文献, landscape, /haipipe-discovery."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.23.1"
+  version: "0.23.2"
   last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md
 ---

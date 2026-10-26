@@ -3,6 +3,10 @@ haipipe-discovery-search — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [0.9.0] — 2026-10-26
+
+Merged 5 helper skill(s) into `_parts/`: `alphaxiv` -> `_parts/alphaxiv`, `deepxiv` -> `_parts/deepxiv`, `exa-search` -> `_parts/exa-search`, `gemini-search` -> `_parts/gemini-search`, `paper-analyzer` -> `_parts/paper-analyzer`. /haipipe-search reads `_parts/<name>/PART.md` instead of calling a separate skill; allowed-tools gained the parts' tools. Old commands map as `/alphaxiv` -> `/haipipe-search alphaxiv`. (merge-parts 261026)
+
 ## 0.8.0 · 2026-10-11 · A top-venue pass reads the official lists
 
 - Channel law: the NeurIPS, ICML and ICLR accepted-paper JSON files, Crossref by exact proceedings

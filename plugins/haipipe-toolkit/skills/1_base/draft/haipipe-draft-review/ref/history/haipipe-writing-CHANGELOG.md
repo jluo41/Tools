@@ -19,8 +19,8 @@
 ## 0.22.0 · 2026-09-22
 
 - The external skills this worker calls are vendored beside it in numbered
-  folders: `1_style/writing-dna-skill` (@ee3d97ee), `2_evaluate/academic-humanizer`
-  (0.3.2 @02281d83), and the new general-register evaluator `2_evaluate/humanizer`
+  folders: `_parts/writing-dna-skill` (@ee3d97ee), `_parts/academic-humanizer`
+  (0.3.2 @02281d83), and the new general-register evaluator `_parts/humanizer`
   (blader 3.0.0 @9862685f, adapter `ref/methods/humanizer.md`). The catalog's
   `academic-humanizer` entry resolves to its copy instead of `path: null`; the
   `writing-dna` entry names its distiller.

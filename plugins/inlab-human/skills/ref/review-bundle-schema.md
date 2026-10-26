@@ -1,8 +1,8 @@
 # review_bundle.json — frozen-bundle contract (v0.1)
 
 One bundle = one reading session's worth of cases, fully materialized **before** any
-clinician sits down. Produced by `/inlab-human-bundle`; consumed read-only by
-`/inlab-human-review`. The reader never calls a live endpoint.
+clinician sits down. Produced by `/inlab-human bundle`; consumed read-only by
+`/inlab-human review`. The reader never calls a live endpoint.
 
 ## Top level
 
@@ -40,7 +40,7 @@ Three strictly separated blocks — the review skill's reveal discipline depends
 |---|---|---|
 | `presentation` | **blind pass** | raw chart data only — nothing model-derived |
 | `model_output` | **assisted pass** (after blind responses are captured) | score + SHAP + narrative |
-| `gold` | **never during a session** | only `/inlab-human-report` reads it |
+| `gold` | **never during a session** | only `/inlab-human report` reads it |
 
 ```jsonc
 {
@@ -78,7 +78,7 @@ Three strictly separated blocks — the review skill's reveal discipline depends
 }
 ```
 
-## Invariants (build-time checks in `/inlab-human-bundle`)
+## Invariants (build-time checks in `/inlab-human bundle`)
 
 1. Every case has all three blocks; `gold.outcome` ∈ {0,1}.
 2. `presentation` contains **no** model-derived field (no scores, bands, SHAP echoes).

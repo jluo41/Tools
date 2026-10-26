@@ -35,10 +35,10 @@ but not built yet.
 | block | Idea Studio | All | Redraw | haipipe-studio-agent (new) | haipipe-studio | none |
 | block | Idea Studio | All | Redraw the paper map | haipipe-studio-agent (new) | excalidraw-draft | none |
 | block | Audience Report | ideation · related-questions | Ask a Question | haipipe-draft-writing-agent | haipipe-report | none |
-| block | Audience Report | ideation | Generate ideas | haipipe-ideation-agent (new) | haipipe-ideation-generate | none |
-| block | Audience Report | ideation | Test idea | haipipe-ideation-agent (new) | haipipe-ideation-test | none |
+| block | Audience Report | ideation | Generate ideas | haipipe-ideation-agent (new) | haipipe-ideation generate | none |
+| block | Audience Report | ideation | Test idea | haipipe-ideation-agent (new) | haipipe-ideation test | none |
 | block | Audience Report | ideation | Idea review | haipipe-block-reviewer-agent | haipipe-paper-ideation | none |
-| block | Audience Report | ideation | Select idea | haipipe-ideation-agent (new) | haipipe-ideation-select | the admitted idea (G0) |
+| block | Audience Report | ideation | Select idea | haipipe-ideation-agent (new) | haipipe-ideation select | the admitted idea (G0) |
 | block | Audience Report | narrative | Story revise | haipipe-draft-writing-agent | haipipe-paper-story | the Story version |
 | block | Audience Report | narrative | Narrative review | haipipe-block-reviewer-agent | haipipe-paper-story | release of one Section (G3) |
 | block | Audience Report | narrative | Review for an audience | haipipe-block-reviewer-agent | haipipe-paper-story | none |

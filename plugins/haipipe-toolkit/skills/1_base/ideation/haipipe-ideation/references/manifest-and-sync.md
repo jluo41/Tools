@@ -142,7 +142,7 @@ portfolio_recommendation:
       recommendation: proceed | proceed-with-caution | defer | abandon | unresolved
       reason: "..."
 selection_authority:
-  owner: haipipe-ideation-select
+  owner: haipipe-ideation select
   status: none
   receipt: null
 sync_status: current | stale | blocked

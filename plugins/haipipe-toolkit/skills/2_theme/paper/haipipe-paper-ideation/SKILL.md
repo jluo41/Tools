@@ -2,7 +2,7 @@
 name: haipipe-paper-ideation
 description: "The Paper Page Type for one research direction and its research questions (each Idea named by its question): projects haipipe-ideation's sync packets and final selection into Direction, Landscape, Opportunity Map and Story routes, as the Board's studio/s01-ideation/ topic. Generation, novelty and selection stay with haipipe-ideation. Trigger: paper ideation, s01, research direction, opportunity map, /haipipe-paper-ideation."
 metadata:
-  version: "1.4.2"
+  version: "1.4.3"
   last_updated: "2026-10-26"
   group-token: "s01-ideation"
   outline:
@@ -157,7 +157,7 @@ The words in `s01-ideation-drawing.yaml` are a projection of this face, never a 
 | from here to G0 | Next Evidence Queue and Suggested Execution Order and G0 Readiness |
 | how it scores, where it goes (⑧) | the lead Idea's test receipts (novelty, pressure, journal fit, the Nature lens) and Journal / Venue Fit; each venue's rules only from a verified `haipipe-paper-venue` contract, else red |
 
-A novelty check (`novelty-check`, `haipipe-ideation-test`) lands in the face first: the Idea's Core Claims / Novelty
+A novelty check (`novelty-check`, `haipipe-ideation test`) lands in the face first: the Idea's Core Claims / Novelty
 Check (each claim, its closest work, what stays new, the verdict) and Reviewer's Likely Objection (each reviewer
 comment and what was done about it); the drawing then carries its two lines. Each claim's closest work is read from the Board's related-work map,
 `studio/s10-related-work-map/`, and its s11-s19 types (haipipe-paper-related) when the Board has them. The lead group is the person's or the machine's recommended attention order, not a selection: the drawing makes no
@@ -436,7 +436,7 @@ Core Claims / Novelty Check   what an answer would let the paper claim: one line
                               plus its exact search question,
                               closest verified work, remaining delta, limitation,
                               and novel/partial/preempted/inconclusive/unverified status
-                              📮 → /haipipe-novelty-check + Discovery Run/Result
+                              📮 → /haipipe-ideation novelty-check + Discovery Run/Result
 Counterevidence               the strongest evidence-bound alternative or rejection
 Pilot Result                  POSITIVE/NEGATIVE/WAIVED/PENDING/HOLD + the receipt
                               📮 → task-layer Run/Result, or an explicit waiver
@@ -444,7 +444,7 @@ Journal / Venue Fit           broad screen for every admitted idea; deep fit
                               for live finalists; candidate targets, article
                               type, desk risks, missing evidence, reroute,
                               current Venue contract, and machine recommendation
-                              📮 → /haipipe-journal-fit
+                              📮 → /haipipe-ideation journal-fit
 Risk                          what could sink it
 Reviewer's Likely Objection   the strongest counterargument
 Recommendation               the sync packet's machine-only recommendation
@@ -498,9 +498,9 @@ Discovery Landscape        ← accepted Discovery syntheses + evidence ids in sy
 Opportunity Map            ← Ideation interpretations + affected Idea ids in sync
 Research Question (name)   ← Idea Card `question` through sync · never authored here
 Ideas + test states         ← Idea Cards + Test Matrix through sync
-Core Claims lines          ← /haipipe-novelty-check + Discovery Run/Result
-Pilot Result               ← /haipipe-idea-pressure-test + Task Run/Result or waiver
-Journal / Venue Fit        ← /haipipe-journal-fit + Fit Card + Venue contract
+Core Claims lines          ← /haipipe-ideation novelty-check + Discovery Run/Result
+Pilot Result               ← /haipipe-ideation pressure-test + Task Run/Result or waiver
+Journal / Venue Fit        ← /haipipe-ideation journal-fit + Fit Card + Venue contract
 Verdict · target · went to ← final handoff + sole I3 selection receipt
 ```
 
@@ -565,7 +565,7 @@ the proper owners, fill Core Claims, build Venue Fit Cards, and write the one
 portfolio recommendation in the sync packet. It may not author the
 I3 person's identity, date, verdict, target/category, accepted risks, or Story
 authorization. Selection, deferral, abandonment, targeting, and commitment are
-human acts recorded once by `haipipe-ideation-select`.
+human acts recorded once by `haipipe-ideation select`.
 
 Gate G0 (Ideation → Story; historical Seed wording remains readable) is tested
 against each selected Idea's final handoff, its sole I3 selection receipt, and
@@ -580,7 +580,7 @@ later Page version adds, defers, or eliminates other candidates.
 
 If a later I2 revision changes an already-selected Idea, preserve the earlier
 I3 receipt and handoff as historical decisions. The new evidence routes that
-Idea back to `haipipe-ideation-select` for a fresh human decision; it never
+Idea back to `haipipe-ideation select` for a fresh human decision; it never
 automatically revokes, replaces, or rewrites the old selection.
 
 ## ✅ Closing checks

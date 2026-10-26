@@ -1,6 +1,6 @@
 ---
 name: haipipe-display
-description: "The one door for display work: routes by kind to its part (_parts/<kind>/PART.md): 📊 table, 📈 figure, 📐 diagram (editable SVG), 🎨 illustration (AI image), ✒️ tex (TikZ, algorithms, equations); every display then passes the blind-review revise loop (at least 8/10, at most 4 rounds). Trigger: 做表, 画图, 架构图, regression table, generate figures, paper plots, concept figure, display unit, revise the figures, /haipipe-display."
+description: "The one door for display work: routes by kind to its part (_parts/<kind>/PART.md): 📊 table, 📈 figure, 📐 diagram (editable SVG), 🎨 illustration (AI image), ✒️ tex (TikZ, algorithms, equations); every display then passes the blind-review revise loop (at least 8/10, at most 4 rounds). Trigger: 做表, 画图, 架构图, regression table, generate figures, paper plots, concept figure, display unit, revise the figures, figure to svg, icon to svg, html to svg, /haipipe-display."
 metadata:
   version: "0.5.1"
   last_updated: "2026-10-26"
@@ -23,9 +23,14 @@ numbers as a plot                📈 figure        _parts/figure/PART.md
 a concept as an editable SVG     📐 diagram       _parts/diagram/PART.md
 a concept as an AI illustration  🎨 illustration  _parts/illustration/PART.md
 a figure in the document's TeX   ✒️ tex           _parts/tex/PART.md
+an existing figure → editable SVG 🔁 convert      _parts/figure-to-svg/PART.md
+one icon or logo → SVG           🔁 convert      _parts/icon-to-svg/PART.md
+an HTML slide → SVG/PDF/PPTX     🔁 convert      _parts/html-to-svg/PART.md
   (or an algorithm block,                           hand-authored: the writer
    or a display equation)                           is a person, not a script
 ```
+
+🔁 convert starts from a file that already exists (replicate it); 📐 diagram draws a new concept.
 
 Data kinds (📊 📈) read ONLY the approved extract in the unit's `intake/`, never the raw data; what a caller owes that folder is `../ref/display-intake-contract.md`.
 Concept kinds (📐 ✒️ 🎨) do not calculate values. They may show a count, percentage, or estimate

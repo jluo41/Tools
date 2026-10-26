@@ -4,6 +4,10 @@
   journals only, so not vendored) and the awesome-journal-skills packs (observed patterns for haipipe-paper-venue,
   never desk rules), read for Paper-LoopExpLearning's venue frame (JL 261014).
 
+## [0.8.0] — 2026-10-26
+
+Merged 10 helper skill(s) into `_parts/`: `haipipe-ideation-generate` -> `_parts/generate`, `haipipe-ideation-test` -> `_parts/test`, `haipipe-ideation-select` -> `_parts/select`, `haipipe-idea-pressure-test` -> `_parts/pressure-test`, `haipipe-novelty-check` -> `_parts/novelty-check`, `haipipe-journal-fit` -> `_parts/journal-fit`, `haipipe-nature-paper-review` -> `_parts/nature-paper-review`, `framing-research-questions` -> `_parts/framing-research-questions`, `kill-argument` -> `_parts/kill-argument`, `paper-reviewer` -> `_parts/paper-reviewer`. /haipipe-ideation reads `_parts/<name>/PART.md` instead of calling a separate skill; allowed-tools gained the parts' tools. Old commands map as `/haipipe-ideation-generate` -> `/haipipe-ideation generate`. (merge-parts 261026)
+
 ## [0.7.5] — 2026-10-26
 
 Shorter description (640 -> 428 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)

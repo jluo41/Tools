@@ -3,7 +3,7 @@ name: haipipe-paper-evidence
 description: "A paper's evidence rules on top of haipipe-evidence and haipipe-display: citations only from verified CITE Results, one number per result in every Section, displays numbered and within the venue limit, each passing the display revise loop. Reads a whole version as one ledger and flags what disagrees (scripts/evidence_ledger.py). Use before a build or a send. Trigger: paper evidence, evidence ledger, numbers disagree, verify citations, paper displays, /haipipe-paper-evidence, /haipipe-paper-display."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.3.1"
+  version: "0.3.2"
   last_updated: "2026-10-26"
   aliases: [haipipe-paper-display]
   # version history: ./CHANGELOG.md
@@ -45,8 +45,8 @@ is the ledger below.
 | base skill | does, for any page | this skill adds, for a paper |
 |---|---|---|
 | `haipipe-evidence` | the card format, CITE and VALUE, `cards.py check · propose` | the citation and number rules; the version ledger |
-| `haipipe-evidence-cite` | a discovery Run's `.bib` and `facts.md` | verified before a Section closes; never `bank.bib` |
-| `haipipe-evidence-work` | a work Run's value at `file` + `key` | the same Run for the same value in every Section |
+| `haipipe-evidence cite` | a discovery Run's `.bib` and `facts.md` | verified before a Section closes; never `bank.bib` |
+| `haipipe-evidence work` | a work Run's value at `file` + `key` | the same Run for the same value in every Section |
 | `haipipe-display` | `Display<n>-<slug>/`, built on cards, the revise loop | numbered for the paper; within the venue's limit; the loop is a must, and the set is reviewed together |
 
 

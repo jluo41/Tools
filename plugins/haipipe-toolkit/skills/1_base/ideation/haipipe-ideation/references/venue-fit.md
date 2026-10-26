@@ -200,7 +200,7 @@ dimension may be excluded from the overall rule only when the reason and
 project constraint are recorded on the card.
 
 `nature_overlay` is populated only when a Nature-family target is actually
-under consideration. Its receipt comes from `haipipe-nature-paper-review` and
+under consideration. Its receipt comes from `haipipe-ideation nature-paper-review` and
 evaluates editorial shape; binding target/category rules still resolve through
 the candidate's current Venue contract. A generic Nature-brand intuition is
 not a completed overlay.

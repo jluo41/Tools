@@ -9,8 +9,8 @@ description: >-
   Trigger: Paper Workbench, paper workbench, paper theme, paper tab, version tab,
   Section tab, paper spaces, /workbench-paper.
 metadata:
-  version: "0.40.0"
-  last_updated: "2026-10-19"
+  version: "0.40.1"
+  last_updated: "2026-10-26"
 ---
 
 # /workbench-paper · the paper theme on the shared frame

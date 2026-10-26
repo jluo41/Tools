@@ -1,5 +1,9 @@
 # haipipe-paper-evidence · changelog
 
+## [0.3.2] — 2026-10-26
+
+Links, commands and companions repointed at the helper skills merged into `haipipe-ideation`, `haipipe-search`, `haipipe-evidence`, `inlab-human`, `haipipe-draft-review`, `haipipe-display` (now `_parts/<name>/PART.md`). (merge-parts 261026)
+
 ## [0.3.1] — 2026-10-26
 
 Shorter description (1754 -> 503 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)

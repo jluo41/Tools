@@ -2,9 +2,10 @@
 name: haipipe-draft-review
 description: "The judge of prose and of a built Page, never of its own text. Mode 1 reviews any text (plain English, rubric, anti-AI, humanizer evaluators, sentence-by-sentence logic) and returns located findings; Mode 2 is the Page check gate (CLOSE, CONTEXT, OUTLINE, EVIDENCE, CONTENT or HOLD). Trigger: review prose, too AI, humanize, plain English check, page check, quality gate, /haipipe-draft-review, /haipipe-writing, /haipipe-draft-check."
 metadata:
-  version: "0.3.2"
+  version: "0.4.0"
   last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
+allowed-tools: [Read, Write, Edit, Grep, Glob, AskUserQuestion]
 ---
 
 # /haipipe-draft-review · judge prose, never write it
@@ -81,11 +82,11 @@ paragraphs. Do not turn a local check into a whole-Page review.
    [ref/anti-slop-attribution.md](ref/anti-slop-attribution.md). A finding routes to the
    writer for a bounded revision; it is not an AI detector or an acceptance threshold.
 4. **Evaluators by register**: pick one per candidate, never both.
-   `2_evaluate/academic-humanizer/` for papers, theses, rebuttals and proposals;
-   `2_evaluate/humanizer/` for general register. Upstream both are rewriters; here
+   `_parts/academic-humanizer/` for papers, theses, rebuttals and proposals;
+   `_parts/humanizer/` for general register. Upstream both are rewriters; here
    they return findings only (adapters: [ref/methods/](ref/methods/)). Every other
    anti-AI skill is read, not called: [ref/external/README.md](ref/external/README.md).
-5. **Style input**: `1_style/writing-dna-skill/` distills an author corpus into a
+5. **Style input**: `_parts/writing-dna-skill/` distills an author corpus into a
    frozen Writing DNA. It is an input the writer applies and the reviewer checks
    against, never a fact source. Selection and trace:
    [ref/method-adapter-contract.md](ref/method-adapter-contract.md) and the catalog
@@ -138,8 +139,8 @@ haipipe-draft-review/
 │   └── history/              changelogs of haipipe-writing and haipipe-draft-check
 ├── cli/                      anti_slop.py · score.py · holes.py · agree.py (all read-only)
 ├── tests/                    test_anti_slop.py
-├── 1_style/writing-dna-skill/            vendored style input
-└── 2_evaluate/academic-humanizer/ · humanizer/   vendored evaluators
+├── _parts/writing-dna-skill/            vendored style input
+└── _parts/academic-humanizer/ · humanizer/   vendored evaluators
 ```
 
 ## 🚧 What this skill does NOT own

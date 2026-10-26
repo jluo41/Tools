@@ -6,6 +6,10 @@
   a heading when the heading before holds what it names; under a binding word cap a Fix names what it cuts, or the
   Venue row sums what the Fixes add; a sentence too long for one pass is shortened, never split (one sentence per S).
 
+## [0.4.0] — 2026-10-26
+
+Merged 3 helper skill(s) into `_parts/`: `writing-dna-skill` -> `_parts/writing-dna-skill`, `humanizer` -> `_parts/humanizer`, `academic-humanizer` -> `_parts/academic-humanizer`. /haipipe-draft-review reads `_parts/<name>/PART.md` instead of calling a separate skill; allowed-tools gained the parts' tools. Old commands map as `/writing-dna-skill` -> `/haipipe-draft-review writing-dna-skill`. (merge-parts 261026)
+
 ## [0.3.2] — 2026-10-26
 
 Shorter description (824 -> 434 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)
@@ -43,8 +47,8 @@ Shorter description (824 -> 434 characters): what it does, when to use it, its t
 - New skill. It takes everything that EVALUATES prose from `haipipe-writing` (0.22.4): `ref/plain-rules.md`,
   `ref/ai-tells.md`, the anti-slop adapter, rules and attribution, `cli/anti_slop.py`, `cli/score.py`, `cli/agree.py`,
   `cli/holes.py`, the rubric, the evaluation cycle, the method contract and catalog, `ref/methods/`, `ref/external/`,
-  `tests/test_anti_slop.py`, and the vendored `1_style/writing-dna-skill`, `2_evaluate/academic-humanizer`,
-  `2_evaluate/humanizer`.
+  `tests/test_anti_slop.py`, and the vendored `_parts/writing-dna-skill`, `_parts/academic-humanizer`,
+  `_parts/humanizer`.
 - Mode 2 is the Page check gate, moved whole from `haipipe-draft-check` (0.13.1) to `ref/page-check.md`.
 - It never edits text, and whoever wrote a text never reviews it (stated in SKILL.md).
 - It also reviews text that is not a Page (an email, one paragraph).

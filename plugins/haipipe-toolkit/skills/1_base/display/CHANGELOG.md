@@ -5,6 +5,10 @@ Family-level changes. Skill implementation history stays in each skill's own CHA
 
 ## 2026-10-26 · the five renderers become parts of the door (JL 261026)
 
+- Same day, second pass: the three converters figure-to-svg, html-to-svg and icon-to-svg (never used) also became
+  parts, `haipipe-display/_parts/<name>/PART.md`, listed in the door under its route table
+  (`diagnostics/merge_parts.py --spec base-more`). html-ppt stays a skill (used).
+
 - haipipe-display-table, -figure, -diagram, -illustration and -tex move to
   `haipipe-display/_parts/<kind>/PART.md` (`git mv`); the installers skip `_` folders, so only the door is listed
   (476 fewer listing tokens). The door's route table and `haipipe-display-unit-agent` read the part for the kind.

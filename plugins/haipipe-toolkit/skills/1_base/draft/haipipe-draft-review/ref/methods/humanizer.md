@@ -1,6 +1,6 @@
 # Humanizer (blader) · evaluation adapter
 
-Provider: the vendored `humanizer` skill at `../../2_evaluate/humanizer/`
+Provider: the vendored `humanizer` skill at `../../_parts/humanizer/`
 (blader/humanizer 3.0.0, MIT). Resolve entry and version via
 [the adapter contract](../method-adapter-contract.md). This adapter carries the
 HAI integration rules only; the skill's twenty-five patterns are its own.

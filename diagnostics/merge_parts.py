@@ -49,6 +49,7 @@ TEXT_SUFFIXES = {".md", ".txt", ".py", ".sh", ".ps1", ".yaml", ".yml", ".json", 
 TASK = "plugins/haipipe-toolkit/skills/1_base/task"
 DISPLAY = "plugins/haipipe-toolkit/skills/1_base/display"
 THEME = "plugins/haipipe-toolkit/skills/2_theme"
+BASE = "plugins/haipipe-toolkit/skills/1_base"
 
 SPECS = {
     # 261025: the task family's pipeline umbrellas and two fit/agent companions.
@@ -71,7 +72,40 @@ SPECS = {
                      TASK + "/5_fit/haipipe-task-for-fit/haipipe-task-gpu-training": "gpu-training"}},
         {"main": TASK + "/9_agent/haipipe-task-for-agent", "style": "path",
          "helpers": {TASK + "/9_agent/haipipe-task-llm-engine": "llm-engine"}},
-    ],    # 261026: the theme helpers no workbench server, test or run card names (the rest wait for
+    ],    # 261026 (second pass): helpers no server, agent or test names, and that were never used;
+    # copied outside skills (generic names) get no bare-name rewriting.
+    "base-more": [
+        {"main": BASE + "/ideation/haipipe-ideation", "style": "command",
+         "helpers": {BASE + "/ideation/haipipe-ideation-generate": "generate",
+                     BASE + "/ideation/haipipe-ideation-test": "test",
+                     BASE + "/ideation/haipipe-ideation-select": "select",
+                     BASE + "/ideation/haipipe-idea-pressure-test": "pressure-test",
+                     BASE + "/ideation/haipipe-novelty-check": "novelty-check",
+                     BASE + "/ideation/haipipe-journal-fit": "journal-fit",
+                     BASE + "/ideation/haipipe-nature-paper-review": "nature-paper-review",
+                     BASE + "/ideation/1_generate/framing-research-questions": "framing-research-questions",
+                     BASE + "/ideation/2_test/kill-argument": "kill-argument",
+                     BASE + "/ideation/2_test/paper-reviewer": "paper-reviewer"},
+         "no_bare": ("framing-research-questions", "kill-argument", "paper-reviewer")},
+        {"main": BASE + "/search/haipipe-search", "style": "command",
+         "helpers": {BASE + "/search/1_search/" + n: n for n in
+                     ("alphaxiv", "deepxiv", "exa-search", "gemini-search", "paper-analyzer")},
+         "no_bare": ("alphaxiv", "deepxiv", "exa-search", "gemini-search", "paper-analyzer")},
+        {"main": BASE + "/evidence/haipipe-evidence", "style": "command",
+         "helpers": {BASE + "/evidence/haipipe-evidence-cite": "cite",
+                     BASE + "/evidence/haipipe-evidence-work": "work"}},
+        {"main": "plugins/inlab-human/skills/inlab-human", "style": "command",
+         "helpers": {"plugins/inlab-human/skills/inlab-human-" + n: n for n in ("bundle", "console", "report", "review")}},
+        {"main": BASE + "/draft/haipipe-draft-review", "style": "command",
+         "helpers": {BASE + "/draft/haipipe-draft-review/1_style/writing-dna-skill": "writing-dna-skill",
+                     BASE + "/draft/haipipe-draft-review/2_evaluate/humanizer": "humanizer",
+                     BASE + "/draft/haipipe-draft-review/2_evaluate/academic-humanizer": "academic-humanizer"},
+         "no_bare": ("writing-dna-skill", "humanizer", "academic-humanizer")},
+        {"main": DISPLAY + "/haipipe-display", "style": "command",
+         "helpers": {DISPLAY + "/" + n: n for n in ("figure-to-svg", "html-to-svg", "icon-to-svg")},
+         "no_bare": ("figure-to-svg", "html-to-svg", "icon-to-svg")},
+    ],
+    # 261026: the theme helpers no workbench server, test or run card names (the rest wait for
     # the servers to find parts: host_paths.skill_dir skips "_" folders).
     "theme-free": [
         {"main": THEME + "/insight/haipipe-insight", "style": "command",
@@ -98,6 +132,7 @@ PROTECT = [
     "install.ps1", ".gitignore",
 ]
 
+CODE_SUFFIXES = {".py", ".js", ".ts", ".json", ".yaml", ".yml", ".toml", ".sh", ".ps1"}
 PATH_TOKEN = re.compile(r"(?<![\w.~/@+-])((?:\.{1,2}/|\.?[\w~][\w.~@+-]*/)(?:[\w.~@+-]+/)*[\w.~@+-]*)")
 DIRECT_PHRASES = [
     (re.compile(r";?\s*[Dd]irect invocation works[^.\"]*\."), "."),
@@ -115,7 +150,8 @@ class Family:
         for rel, part in spec["helpers"].items():
             d = (REPO / rel).resolve()
             self.helpers[d.name] = {"old": d, "part": part, "new": self.main / "_parts" / part,
-                                    "words": spec.get("words", {}).get(part, part)}
+                                    "words": spec.get("words", {}).get(part, part),
+                                    "bare": d.name not in spec.get("no_bare", ())}
 
     def bare(self, helper):
         h = self.helpers[helper]
@@ -244,8 +280,10 @@ class Rewriter:
             if token.startswith("./") and not rel.startswith("."):
                 rel = "./" + rel
             return rel + trail
-        if not names_in:
+        if not names_in or getattr(self, "_code", False):
             return token
+        if not all(self.helper_fam[n].helpers[n]["bare"] for n in names_in):
+            return token  # a generic name (blader/humanizer is a repository, not our folder)
         # textual fallback: a partial path (1_data/haipipe-data-source/SKILL.md, a tree label)
         out = []
         i = 0
@@ -267,6 +305,10 @@ class Rewriter:
         return "/".join(out) + trail
 
     def rewrite(self, text, old_file, new_file, self_name):
+        """Rewrite one file. Code and data files (CODE_SUFFIXES) get only paths that resolve
+        on disk: a name there may be an identifier (an owner: field, a folder built in code)."""
+        code = Path(new_file).suffix in CODE_SUFFIXES
+        self._code = code
         hold = []
 
         def stash(s):
@@ -279,6 +321,9 @@ class Rewriter:
             new = self.rewrite_path(tok, old_file, new_file)
             return stash(new) if new != tok or any(s in self.helper_fam for s in tok.split("/")) else tok
         text = PATH_TOKEN.sub(path_sub, text)
+
+        if code:
+            return re.sub(r"\x00(\d+)\x00", lambda m: hold[int(m.group(1))], text)
 
         # 2. Skill("helper", args="...")
         def call_sub(m):
@@ -317,7 +362,8 @@ class Rewriter:
 
         # 4. /helper commands, 5. bare names
         text = self.slash.sub(lambda m: stash(self.helper_fam[m.group(1)].slash(m.group(1))), text)
-        text = self.bare.sub(lambda m: stash(self.helper_fam[m.group(1)].bare(m.group(1))), text)
+        text = self.bare.sub(lambda m: stash(self.helper_fam[m.group(1)].bare(m.group(1)))
+                             if self.helper_fam[m.group(1)].helpers[m.group(1)]["bare"] else m.group(0), text)
 
         # 6. brace and placeholder forms: ../<main>-{a,b}/x, /<main>-<stage>, <main>-{a,b}
         for f in self.fams:

@@ -6,6 +6,10 @@
   `s04-paper-workflow` plans the Sections, displays and dates before a version exists and seeds its `## Narrative`.
 - §7's rows and every question stay on the story's face; the plan reads them, never copies them.
 
+## [0.24.2] — 2026-10-26
+
+Links, commands and companions repointed at the helper skills merged into `haipipe-ideation`, `haipipe-search`, `haipipe-evidence`, `inlab-human`, `haipipe-draft-review`, `haipipe-display` (now `_parts/<name>/PART.md`). (merge-parts 261026)
+
 ## [0.24.1] — 2026-10-26
 
 Shorter description (876 -> 447 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)

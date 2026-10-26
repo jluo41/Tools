@@ -4,6 +4,10 @@
   owned by the new `haipipe-paper-related` (JL 261019).
 - A telling may open before G0, which is then JL's mark on its face (JL 261019: "there are not s02, why????").
 
+## [1.4.3] — 2026-10-26
+
+Links, commands and companions repointed at the helper skills merged into `haipipe-ideation`, `haipipe-search`, `haipipe-evidence`, `inlab-human`, `haipipe-draft-review`, `haipipe-display` (now `_parts/<name>/PART.md`). (merge-parts 261026)
+
 ## [1.4.2] — 2026-10-26
 
 Shorter description (782 -> 427 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)
