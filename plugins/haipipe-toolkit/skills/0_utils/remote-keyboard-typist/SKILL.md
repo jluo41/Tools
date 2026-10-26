@@ -7,14 +7,16 @@ description: >-
   is only a typist: it cleans the text, guides the person to get the remote
   editor and keyboard ready, confirms that state itself with a probe, types the
   whole file in one pass, then reviews every line and fixes wrong ones. It never clicks the remote screen (one
-  focus click inside the editor excepted), never saves, never runs. Use when the person says "type this into <file> on the
-  server", "you cannot paste, type it", "operate the keyboard", or shares a
-  Chrome Remote Desktop tab with an open editor. Trigger: type on the server,
-  remote typing, on-screen keyboard, no paste, keyboard only, /remote-keyboard-typist.
+  focus click inside the editor excepted). By default it never saves and never runs; on the person's own word in
+  chat (OPERATE mode) it saves, runs a named Run's short command in the remote terminal, watches for its end line, and
+  reads aggregate result files off the screen into a local note. Use when the person says "type this into <file>
+  on the server", "you cannot paste, type it", "operate the keyboard", "run it on the server", "read the
+  results", or shares a Chrome Remote Desktop tab with an open editor. Trigger: type on the server, remote
+  typing, on-screen keyboard, no paste, keyboard only, run on the server, read the results, /remote-keyboard-typist.
 argument-hint: "<file path or pasted text>  [--target <file name open in the remote editor>]"
 allowed-tools: Bash, Read, Write, mcp__claude-in-chrome__tabs_context_mcp, mcp__claude-in-chrome__read_page, mcp__claude-in-chrome__javascript_tool, mcp__claude-in-chrome__computer, mcp__claude-in-chrome__browser_batch
 metadata:
-  version: "0.2.0"
+  version: "0.3.0"
   last_updated: "2026-10-25"
 ---
 
@@ -29,12 +31,34 @@ This skill makes the AI a typist and nothing else.
   THE AI DOES                          THE PERSON DOES
   clean the text, build the key plan   open the editor, the file, the keyboard
   check the prepared screen (probe)    unlock, reconnect, type any PIN
-  press keyboard keys, whole file      save, run, close dialogs
+  press keyboard keys, whole file      close dialogs, decide on errors
   check every line against the text    decide what to do with a mismatch it cannot fix
+  OPERATE only: save, run, read        say in chat which file to save, which Run to start
 ```
 
 **The one sentence that governs this skill:** the AI clicks only the on-screen
 keyboard's own buttons, and only after the probe in step 3 passed.
+
+Two modes. **TYPE** (the default) is steps 1 to 5: the AI types and never saves
+or runs. **OPERATE** starts only when the person says so in chat, and each word
+opens only its own step:
+
+```
+"save it"                       save the file just typed
+"run r36" (names the Run)       step 6 RUN, that Run only
+"read the r36 results"          step 7 READ only; never starts anything
+```
+
+A read request never covers step 6, even when the Run looks unfinished or
+missing: say so and wait for "run rNN". The word covers the named file or Run in
+this session, not the next one. Project rules still bind: a project that says
+"never start a Run unasked" is satisfied only by the person naming the Run.
+
+**Terminal work (steps 6 and 7) uses the same PREPARE and CONFIRM** with two
+changes: the target is the terminal, so C4 checks that the terminal panel is
+shown with an empty prompt; the probe runs at that prompt, and P2 Backspaces it
+away before the first command. PREPARE item 3 (editor settings) does not apply,
+and its last line becomes "I will only run what you named" or "I will only read".
 
 
 The five steps
@@ -46,6 +70,8 @@ The five steps
 3 CONFIRM (AI, read+probe) four checks + probe; fail ─▶ say which, wait; pass ─▶ go
 4 TYPE    (AI)             page script presses the whole file (70 ms/key), then review
 5 REPORT  (AI)             lines typed, lines fixed, "not saved, not run"
+6 RUN     (AI, OPERATE)    terminal: cls, one short command, Enter, watch for its end line
+7 READ    (AI, OPERATE)    list result files, print a compact view, zoom, note, check twice
 ```
 
 Step 1 and step 2 happen together: the AI sends the checklist and the cleaned
@@ -270,11 +296,16 @@ Never
    The `key` action sends Shift only as a flag, not as its own key event
    (tested 261025 on a local page: `shift+4` typed `4`), so the remote loses it.
 3. Never paste, never use "Compose text locally", never touch the clipboard.
-4. Never save, run, rename, or change the file's language mode.
+4. Never save or run outside OPERATE mode (the person named the file or Run in
+   chat); never rename a file or change its language mode.
 5. Never type a PIN, password or token, even when asked; the person types it.
 6. Never call the text "complete" before every line passed its check.
 7. Never change the text: no reformatting, no fixes, no newer version. If the
    text looks wrong, say so in the REPORT, and still type it as given.
+8. Never press Control+c in a terminal that is running something: it stops the
+   Run. Never close a window or answer a dialog; describe it and wait.
+9. Never open or print row-level data. READ shows only the aggregate files the
+   project lets leave the machine (see step 7).
 
 
 4b · FINAL CHECK (the whole file, keys only)
@@ -299,6 +330,24 @@ $e=$null; [void][Management.Automation.Language.Parser]::ParseFile("$PWD\<target
 Never compare by content hash.
 
 
+4c · SHORT RUNS ON A SHAKY LINE (261025, five files synced to the CMS server)
+-----------------------------------------------------------------------------
+
+The Remote Desktop link dropped twice during one 2,200-key run (2.7 minutes): keys after the drop were lost or
+scrambled (`spec("BYYEAR")` came out `ar("`outcome'YYEAR")`), and nothing could be trusted. What then worked:
+
+1. **Runs of at most ~450 keys** (about 30 s), each ending in Control, s; a drop costs one run, not the file.
+2. **Wait 2 s after any click** before the first key: the first key after a click was lost (`cls` arrived as
+   `ls`, Control+a arrived as `a`).
+3. **Give the editor room**: Control+j hides the terminal panel; click the empty area below the text, which
+   puts the cursor at the end of the file. Control+` brings the terminal back, focused.
+4. **Open each new file from the terminal** with `code "<path>"`; never click a narrow editor strip.
+5. **Prove every file by its length**: VS Code saves CRLF, so convert and measure in one helper, then compare
+   with the source's byte count:
+   `function lf($f) { [io.file]::writealltext($f, ((gc $f) -join "`n") + "`n"); (gi $f).length }`
+6. **Copy what already exists**: steps identical to a sibling folder were one `copy`, not typed.
+
+
 5 · REPORT
 ----------
 
@@ -306,9 +355,129 @@ Never compare by content hash.
 Typed <target>: <N>/<N> lines, <k> fixed on the way, not saved, not run.
 ```
 
+The person's own reply format wraps this line (it can be the bare answer on line
+1); the format never changes the facts in it.
+
+In OPERATE mode the line says what happened instead: `saved, length 1903 = source`,
+`ran <command> at <clock time>, ended "<end line>"`, or `read <file>: <k> numbers
+into <local note path>, checked twice`.
+
 Then list any line that needed a fix (line number, what went wrong), any
 CHECK INDENT decision, and anything in the text that looked wrong to you. If
 typing stopped, report where (see Stop rules) instead of a count.
+
+
+6 · RUN (OPERATE mode: the person named the Run)
+-------------------------------------------------
+
+Tested 261025: a by-year regression Run on the CMS server, started, watched and
+read this way, the person away.
+
+```
+1 say     repeat the exact command in the reply before typing it
+2 check   the code that will run equals the source (4c step 5, by length)
+3 focus   Control+` (terminal shown and focused), wait 2 s
+4 clear   cls, Enter: a clean screen makes the start and end lines easy to find
+5 type    one short command, Enter (crd_batches.py --js --enter)
+6 start   screenshot after about 30 s: the runner's first line, no red text
+7 end     look again near the expected end; read the runner's end line
+```
+
+- **Type the short launcher, never the long path.** A Run's ticket path can be
+  250 characters, every one a click; the project's own launcher takes an
+  address (for the CMS server, `.\run_bjtr.ps1 b21.j31.t01.r36`, 30 keys). The
+  project profile names its launchers and their end lines (for the CMS server,
+  remote-error's `ref/profile-cms-stata.md`, "Running on the server").
+- **Put the command in a file** and plan it like any text: `key_plan.py
+  cmd.txt`, then `crd_batches.py cmd.plan.json --tab 0 --js --enter`. `--enter`
+  adds the final Enter that runs it; a two-line file `cls` plus the command
+  clears and runs in one key list.
+- **Name long folders once** (steps 6 and 7). `$r = (resolve-path <run folder
+  pattern>).path`, then every later command says `"$r\result\..."`. The profile
+  gives the short pattern (CMS server: `w\b21*\j31*\t01*\runs\r27*` through
+  the `w` junction, which keeps paths under 260 characters). On Windows
+  PowerShell 5.1, `get-childitem <pattern with *> -recurse` can find nothing,
+  because the wildcard turns into a name filter: resolve the folder first,
+  then list it.
+- **Watching costs nothing on the remote**: a screenshot clicks nothing. A Run of
+  minutes: a few `computer wait` calls of up to 10 s, then look. A Run of hours:
+  say in the reply when to look, and look when the person comes back; never
+  take a screenshot every minute.
+- **The end line decides**, never a quiet screen. Read it in a zoom: a success
+  line (CMS: `finished!`, a report's `Done:`), a stop line (CMS: `STOPPED: ...
+  r(<rc>)`), or red error text. An error: zoom on it, copy its words into the
+  reply, and hand it to `/remote-error` with that text.
+- **A dialog or a second window** (a "has been interrupted" box, "not
+  responding", a new console): stop, describe it in one sentence, wait. Never
+  click it, never close it.
+- **Parallel Runs** open their own windows; each window's end line is read the
+  same way. Say which windows exist before looking at any.
+- **Know which terminal gets the keys** (261025: 457 keys went to a terminal
+  busy with another Run after the panel switched; a busy console holds them and
+  runs them when its prompt returns). Before typing, zoom on the terminal list
+  and the prompt. Name each terminal after the Run it runs, short (JL 261025:
+  never `claude`, never the full run name): `rNN_<trait>_<last part>`, for
+  example `r26_agre_yr1520`, `r37_cons_byyear`. Control, Shift, p (the latches
+  stack), `terminal rename`, Enter, Control, a, the name, Enter.
+- **One VS Code terminal per Run, no `-parallel`** (JL 261025): `-parallel`
+  makes the launcher call `start-process`, which opens a console outside VS
+  Code that covers the screen and takes the focus. Instead open a new terminal
+  (Control, Shift, `), name it, and run the ticket there without `-parallel`;
+  reads go to another terminal.
+- **A long command is typed without its Enter**, zoomed and checked whole, then
+  sent with Enter alone. A garbled line that runs can write in the wrong place.
+- **Copy, do not type, near-identical files**: one `foreach` line that reads a
+  sibling (`gc -raw`), chains `.replace(...)`, and writes with
+  `[io.file]::writealltext`. Prove the replace chain on the laptop first (it must
+  rebuild the repo files byte for byte), then compare lengths on the server.
+- **A launcher must exist on the remote** before it is typed: a "not
+  recognized" error means it was never copied there.
+
+
+7 · READ RESULTS (OPERATE mode, aggregates only, from the screen)
+------------------------------------------------------------------
+
+```
+0 ended   the Run's end line was seen (step 6), or its done marker exists
+1 list    get-childitem "$r\result" -recurse -file: names and sizes
+2 pick    the readable summary first (the run report), then one table
+3 shape   a one-line filter that prints only the rows and columns needed
+4 room    Control+j hides the terminal when reading in the editor
+5 zoom    read the zoom number by number; never from a full screenshot
+6 note    write each number into a local note the same turn, with file and row
+7 check   zoom a second time and compare with the note, every number
+```
+
+- **Only what may leave the machine.** Every screenshot travels to the AI, so a
+  screen read is an export before the project's export review. Read only what
+  that review would pass without a look: on the CMS server, model estimates
+  (`tables\*-models.csv`, `*-estimates.csv`: b, se, p, the model's n). Never a
+  data file, never a log, never a count small enough for the review to hold
+  back (CMS: 1 to 10, as in `describe\` tables). Anything else, the run report
+  included: ask first.
+- **Pick the rows from the question.** Read the header first
+  (`gc <file> -totalcount 1`), then filter to the model, spec and term the
+  question needs (for example the full-control spec and the trait term), and
+  say in the reply which rows were read.
+- **Make it fit one screen.** `cls` first. A wide table wraps into nonsense; print
+  only the needed columns, round them, and join each group on one line, for
+  example (tested 261025, a regression estimates file, 8 outcomes x 8 years):
+
+  ```
+  $e = ipcsv "$r\result\tables\<estimates>.csv"
+  $e | ? { $_.term -like '*year#*' } | group model_id | % { $_.name + ' ' + (($_.group | % { $_.term.substring(0,4) + ':' + [math]::round([double]$_.b,5) + '(' + [math]::round([double]$_.p,3) + ')' }) -join ' ') }
+  ```
+
+  The filter is typed like any command (1b: lowercase, single quotes, short
+  names). A long text file: open it with `code "<path>"`, Control+j, then
+  Control+Home and one zoom per Page Down.
+- **The note is a reading, not the record.** Head it "read from the server
+  screen, <date>, rounded as printed", keep it in the scratchpad, and say so
+  in the reply. Anything that goes into a paper, a table or a figure waits for
+  the project's own return path (for the CMS server: `collect_results.ps1`, the
+  reviewer, then `file_server_return.py`), which carries the full precision.
+- **Compare with the last reading.** If an earlier note of the same Run exists,
+  say which numbers changed; "same as before" is a finding too.
 
 
 Drivers

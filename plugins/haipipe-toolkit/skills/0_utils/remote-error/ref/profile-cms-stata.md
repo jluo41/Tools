@@ -160,6 +160,10 @@ no paste, no file upload     every character is typed by hand (since 261025: the
   (261025)                   CRD on-screen keyboard, /remote-keyboard-typist), so
                              server commands stay short: a Run by its address,
                              never its 200-character path
+gci <wild*>\x -r finds      Windows PowerShell 5.1 reads a wildcard path with -r as a
+  nothing (5.1)              NAME filter: `gci w\b21*\j31*\src -r` lists nothing and
+                             `... | unblock-file` silently does nothing. Resolve first:
+                             `gci (rvpa w\b21*\j31*\src) -r` (PowerShell 7 differs)
 a running .do is read by     Stata reads a do-file as it runs: a server patch to a
   position                   file a live Stata is still in keeps its byte length
                              (`capture noisily do` -> `nobreak cap noi do`)

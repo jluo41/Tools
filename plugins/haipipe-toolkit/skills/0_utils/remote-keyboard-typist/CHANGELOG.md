@@ -29,3 +29,23 @@
   `PROBE_KEYS` gained z, / and Space; allowed-tools lists the browser tools.
 - Fixes: a wrong line is replaced whole with keys only; one click into the
   editor to give it focus is allowed (JL).
+
+## 0.3.0 (2026-10-25)
+
+- OPERATE mode, only on the person's word in chat: step 6 RUN (cls, one short
+  launcher command, watch for the end line, dialogs and errors stop it) and step
+  7 READ RESULTS (aggregate files only, a one-line filter that fits one screen,
+  zoom, a local note checked twice; the note is a reading, the record comes
+  back by the project's return path). Tested on the CMS server, 261025.
+- Section 4c: runs of at most ~450 keys, each saved; 2 s after a click; length
+  check with `lf`.
+- `crd_batches.py --js --enter` ends the key list with Enter, for a command.
+- Never list: no Control+c in a running terminal, no row-level data on screen.
+- Revised after a fresh-subagent test: each word opens only its own step (a
+  read never starts a Run); PREPARE and CONFIRM for the terminal; `$r` and the
+  short `w` pattern shared by steps 6 and 7; read only what the export review
+  passes without a look; rows picked from the header; Never list renumbered,
+  4b before 4c.
+- Step 6 lessons from the same evening: check which terminal gets the keys and
+  name it (Control, Shift, p stacks); long commands checked before Enter; copy
+  near-identical files by one replace line; start `-parallel` last.

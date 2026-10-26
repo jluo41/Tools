@@ -13,6 +13,7 @@ The refs follow the CRD letter layout in screen order (verified 261025):
 Enter, Shift, zxcvbnm,./, Shift, then Space at first-ref + 56.
 
 --js: print one key list for scripts/crd_type.js (the fast path) instead.
+--enter: with --js, end the list with Enter (a terminal command that should run).
 
 --iso: the layout that has one extra key (also a backslash) between the left Shift and z
 (seen 261025 after a reconnect): z and every key after it move up by one, so
@@ -58,6 +59,7 @@ def main():
     ap.add_argument("--iso", action="store_true")
     ap.add_argument("--js", action="store_true", help="print one JSON key list for crd_type.js instead of click batches")
     ap.add_argument("--probe", action="store_true", help="with --js: print the probe key list Aa$\\({\"; z/ and its 11 Backspaces")
+    ap.add_argument("--enter", action="store_true", help="with --js: add a final Enter, so a terminal command runs")
     ap.add_argument("--lines")
     ap.add_argument("--max", type=int, default=300)
     a = ap.parse_args()
@@ -74,6 +76,8 @@ def main():
             if p["n"] > 1:
                 keys.append("Enter")
             keys += p["keys"]
+        if a.enter:
+            keys.append("Enter")
         print(f"# {len(keys)} keys")
         print(json.dumps(keys, separators=(",", ":")))
         return
