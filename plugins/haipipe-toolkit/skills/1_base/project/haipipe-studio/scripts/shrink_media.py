@@ -66,7 +66,7 @@ def shot(p, dry):
 
 
 def drawing(p, dry):
-    doc = json.loads(p.read_text())
+    doc = json.loads(p.read_text(encoding="utf-8"))
     saved = 0
     for f in doc.get("files", {}).values():
         url = f.get("dataURL", "")
@@ -82,7 +82,7 @@ def drawing(p, dry):
             f["dataURL"] = "data:image/jpeg;base64," + base64.b64encode(data).decode()
             saved += (len(raw) - len(data)) * 4 // 3
     if saved and not dry:
-        p.write_text(json.dumps(doc, ensure_ascii=False, indent=1))
+        p.write_text(json.dumps(doc, ensure_ascii=False, indent=1), encoding="utf-8")
     return saved
 
 

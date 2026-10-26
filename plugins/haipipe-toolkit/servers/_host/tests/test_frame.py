@@ -10,7 +10,7 @@ import tempfile
 import unittest
 import zipfile
 from html import unescape
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import parse_qs, unquote, urlparse
 from pathlib import Path
 
 from host_paths import bootstrap
@@ -196,7 +196,7 @@ class PageTaskTest(unittest.TestCase):
         # 5 · Revise · Delivery, each
         # Operation over Result read from the Task's files; Report has the same tabs, Results only, plus Table and
         # Questions; Description is the face alone; Runs and Delivery keep the Page's own views
-        from urllib.parse import parse_qs, urlparse
+        from urllib.parse import parse_qs, unquote, urlparse
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             board = root / "Project-X/paper/Paper-Demo"
@@ -1202,6 +1202,43 @@ class FrameTest(unittest.TestCase):
             self.assertRegex(page, r'<b>s02-bare</b>.*?<span class=topic-pop>.*?</span><span class="stage stage-none"')
             note.write_text(note.read_text().replace("shaping", "maybe"))     # an unknown word shows no stage
             self.assertIn('data-stage=""', frame.render(frame.VANILLA, root, block, studio=True))
+
+    def test_a_topic_with_a_structured_side_switches_free_and_structured(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = project(tmp)
+            block = root / "Project/tasks/b01_topic"
+            topic = block / "studio" / "s01-flow"
+            (topic / "m01-flow.excalidraw").write_text("{}")             # sorts before flow.excalidraw
+            (topic / "m01-flow.mindmap.md").write_text("# Flow <!-- root -->\n")
+            page = frame.render(frame.VANILLA, root, block, studio=True)
+            row = re.search(r'<details class=topic id="topic-s01-flow".*?</details>', page, re.S).group(0)
+            self.assertIn('data-sides="free structured" data-side="free"', row)
+            self.assertIn('<button type=button data-side=free aria-pressed="true"', row)
+            self.assertIn('<button type=button data-side=structured aria-pressed="false"', row)
+            self.assertIn("m01-flow.mindmap.md is its source", row)
+            free = re.search(r'<div class=st-pane data-side=free>(.*?)</div>', row, re.S).group(1)
+            structured = re.search(r'<div class=st-pane data-side=structured hidden>(.*?)</div>', row, re.S).group(1)
+            self.assertIn("flow.excalidraw", unquote(free))                # the main drawing is never the mNN
+            self.assertNotIn("m01-flow", unquote(free))
+            self.assertIn("m01-flow.excalidraw", unquote(structured))
+            # Edit: the hand-drawn free side and the structured side may be edited; the ↗ opens the side showing
+            self.assertIn('class=draw-edit data-sides="free structured">Edit', row)
+            link = re.search(r'<a class=side-link [^>]*>', row).group(0)
+            self.assertIn("flow.excalidraw", unquote(re.search(r' href="([^"]+)"', link).group(1)))
+            self.assertIn("m01-flow.excalidraw", unquote(re.search(r'data-href-structured="([^"]+)"', link).group(1)))
+            self.assertIn("localStorage.setItem(key,side)", page)            # the card remembers the choice
+            # a built free side is not edited by hand: Edit shows on the structured side only
+            (topic / "build_s01_flow.py").write_text("print(1)\n")
+            row = re.search(r'<details class=topic id="topic-s01-flow".*?</details>',
+                            frame.render(frame.VANILLA, root, block, studio=True), re.S).group(0)
+            self.assertIn('class=draw-edit data-sides="structured" hidden>Edit', row)
+            # a topic with only its structured side opens on it
+            (topic / "flow.excalidraw").unlink()
+            row = re.search(r'<details class=topic id="topic-s01-flow".*?</details>',
+                            frame.render(frame.VANILLA, root, block, studio=True), re.S).group(0)
+            self.assertIn('data-side="structured"', row)
+            self.assertIn('data-side=free aria-pressed="false" disabled', row)
+            self.assertNotIn('data-href-free', row)
 
     def test_studio_runs_lists_every_hard_run_with_its_status(self):
         """JL 261019: "list another one to show the Hard Run, for each task, and just show their status"."""

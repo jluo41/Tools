@@ -198,14 +198,14 @@ def step_root(project: Path, apply: bool) -> str:
                           f'mission: "{mission}"', ""])
         made.append("project.yaml")
         if apply:
-            (project / "project.yaml").write_text(text)
+            L.write_utf8(project / "project.yaml", text)
     if not (project / "README.md").is_file():
         worlds = [d.name for d in sorted(project.iterdir()) if d.is_dir() and d.name in AP.WORLD_DIRS]
         lines = [project.name, "=" * len(project.name), "", "open: the mission is not written yet.", "",
                  "Layout", "------", ""] + [f"    {w}/" for w in worlds] + [""]
         made.append("README.md")
         if apply:
-            (project / "README.md").write_text("\n".join(lines))
+            L.write_utf8(project / "README.md", "\n".join(lines))
     return ", ".join(made) or "nothing"
 
 
@@ -280,7 +280,7 @@ def convert_job(job: Path, apply: bool) -> int:
                 mv(repo, tk, task / "scripts" / tk.name, apply)
                 if apply and tk.suffix == ".sh":
                     h = task / "scripts" / tk.name
-                    h.write_text(V081_HEAD.sub(HELPER_HEAD, h.read_text(), count=1))
+                    L.write_utf8(h, V081_HEAD.sub(HELPER_HEAD, h.read_text(encoding="utf-8"), count=1))
                 continue
             dest = task / "runs" / tk.stem / tk.name
             mv(repo, tk, dest, apply)
@@ -288,17 +288,17 @@ def convert_job(job: Path, apply: bool) -> int:
             if res.is_dir() and not empty_tree(res):
                 mv(repo, res, dest.parent / "result", apply)
             if apply:
-                x = V081_HEAD.sub(TICKET_HEAD, dest.read_text(), count=1)
+                x = V081_HEAD.sub(TICKET_HEAD, dest.read_text(encoding="utf-8"), count=1)
                 x = x.replace('exec "$(dirname "$0")/_run.sh"', 'exec "$(dirname "$0")/../../scripts/_run.sh"')
                 x = x.replace('"$TASK_DIR/results/${RUN_NAME}"', '"$RESULT_DIR"')
                 x = x.replace('"$TASK_DIR/notebooks/', '"$TASK_DIR/../notebooks/').replace('"$TASK_DIR/notebooks"', '"$TASK_DIR/../notebooks"')
-                dest.write_text(x)
+                L.write_utf8(dest, x)
         face = task / f"{t}.md"
         if apply and not face.exists():
             task.mkdir(exist_ok=True)
-            face.write_text(f"# {t[:3]} · {t.split('_', 1)[1].replace('_', ' ')}\n\nstate: open\n\n"
-                            "Converted from the Job-centred layout: its worker and configs in `scripts/`, "
-                            "one folder per Run in `runs/`.\n")
+            L.write_utf8(face, f"# {t[:3]} · {t.split('_', 1)[1].replace('_', ' ')}\n\nstate: open\n\n"
+                                "Converted from the Job-centred layout: its worker and configs in `scripts/`, "
+                                "one folder per Run in `runs/`.\n")
     shared = job / "scripts"
     for left in sorted(shared.iterdir()) if shared.is_dir() else []:
         if left.name not in tasks:
@@ -333,7 +333,7 @@ def step_convert(project: Path, apply: bool) -> str:
             if V081 in text and "HAIPIPE_RUN_FOLDER" not in text:
                 headers += 1
                 if apply:
-                    t.write_text(V081_HEAD.sub(TICKET_HEAD.split("\n", 1)[1], text, count=1))
+                    L.write_utf8(t, V081_HEAD.sub(TICKET_HEAD.split("\n", 1)[1], text, count=1))
     return f"{jobs} Job(s) → {tasks} Task folder(s); {headers} v0.8.1 ticket header(s)"
 
 
@@ -341,10 +341,11 @@ def step_runs(project: Path, apply: bool) -> str:
     moved = cards = refs = 0
     for w in L.LADDER_WORLDS:
         for b in sorted((project / w).iterdir()) if (project / w).is_dir() else []:
-            if not b.is_dir() or b.name.startswith(("_", ".")):
+            if not b.is_dir() or b.name.startswith(("_", ".")) or b.name in L.T.get("world", {}).get("may_hold", []):
                 continue
             args = [sys.executable, str(HERE / "ladder.py"), "update", str(b)] + (["--apply"] if apply else [])
-            out = subprocess.run(args, capture_output=True, text=True)
+            out = subprocess.run(args, capture_output=True, text=True, encoding="utf-8", errors="replace",
+                                 env={**os.environ, "PYTHONIOENCODING": "utf-8"})   # a Windows console is not UTF-8
             if out.returncode:
                 raise RuntimeError(f"ladder update {b.name}: {out.stderr.strip()[-300:]}")
             m = re.search(r"(\d+) Run folder\(s\), (\d+) run\.yaml card\(s\), (\d+) reference", out.stdout)
@@ -365,20 +366,20 @@ def block_face(b: Path, apply: bool) -> bool:
     title = re.sub(r"^b\d+_", "", b.name).replace("_", " ")
     spine = "open"
     for ov in sorted((b / "studio").glob("*overview*.txt")) if (b / "studio").is_dir() else []:
-        m = re.search(r"(?ms)^Purpose\s*\n(.*?)(?:\n\s*\n|\Z)", ov.read_text(errors="replace"))
+        m = re.search(r"(?ms)^Purpose\s*\n(.*?)(?:\n\s*\n|\Z)", ov.read_text(encoding="utf-8", errors="replace"))
         if m:
             spine = " ".join(x.strip() for x in m.group(1).splitlines() if x.strip())
             break
     jobs = []
     for j in sorted(p for p in b.iterdir() if p.is_dir() and re.match(r"^j\d+_", p.name)):
         f = j / f"{j.name}.md"
-        t = next((l[2:].strip() for l in f.read_text().splitlines() if l.startswith("# ")), j.name) if f.is_file() else j.name
+        t = next((l[2:].strip() for l in f.read_text(encoding="utf-8").splitlines() if l.startswith("# ")), j.name) if f.is_file() else j.name
         jobs.append(f"- {j.name} · {re.sub(r'^j[0-9]+ · ', '', t)}")
     if apply:
-        md.write_text("\n".join([f"# {title}", "", "board-kind: task-block", f"spine: {spine}", "close: open", "",
-                                 "## Topic", "", spine if spine != "open" else
-                                 "open: why these Jobs belong to one Block is not written yet.", "", "## Jobs", ""]
-                                + jobs + [""]))
+        L.write_utf8(md, "\n".join([f"# {title}", "", "board-kind: task-block", f"spine: {spine}", "close: open", "",
+                                    "## Topic", "", spine if spine != "open" else
+                                    "open: why these Jobs belong to one Block is not written yet.", "", "## Jobs", ""]
+                                   + jobs + [""]))
     return True
 
 
@@ -421,7 +422,7 @@ def verify(project: Path, snapshot: Path | None) -> list[str]:
              f"tickets resolve {probes['resolves']} · gated {probes['gated']} · unexpected {probes['unexpected']}"]
     links = LC.check(project, root)
     if snapshot and snapshot.is_file():
-        before = set(json.loads(snapshot.read_text())["broken"])
+        before = set(json.loads(snapshot.read_text(encoding="utf-8"))["broken"])
         new = sorted(set(links["broken"]) - before)
         lines.append(f"links not resolving {len(links['broken'])} (before {len(before)}) · newly broken {len(new)}")
         lines += [f"  NEW  {k}" for k in new[:20]]
@@ -492,7 +493,7 @@ def cmd_apply(a) -> int:
         state.mkdir(parents=True, exist_ok=True)
         snap = state / "links-before.json"
         if not snap.exists():
-            snap.write_text(json.dumps(LC.check(p, L.space_root(p))))
+            L.write_utf8(snap, json.dumps(LC.check(p, L.space_root(p))))
         print(f"{p.relative_to(L.space_root(p))}   (snapshot {snap})")
         base = ladder_failed(p)
         for step in steps:

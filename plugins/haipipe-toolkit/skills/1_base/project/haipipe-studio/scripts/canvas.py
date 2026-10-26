@@ -117,7 +117,13 @@ def is_slide_draft(out):
 
 # A text element's width is where Excalidraw stops drawing it: a width guessed for English (0.55 of the size a
 # letter) cut Chinese lines in half (JL 261012, on b32 s00's "EB1A 递交": "this is not complete"). Measure instead.
-_MEASURE_FONT, _measure_fonts = "/System/Library/Fonts/Supplemental/Arial Unicode.ttf", {}
+import os  # noqa: E402
+_MEASURE_FONT = next((f for f in ("/System/Library/Fonts/Supplemental/Arial Unicode.ttf",      # Mac, then Windows
+                                  os.path.join(os.environ.get("WINDIR", "C:/Windows"), "Fonts", "arialuni.ttf"),
+                                  os.path.join(os.environ.get("WINDIR", "C:/Windows"), "Fonts", "arial.ttf"),
+                                  "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf") if os.path.exists(f)),
+                     "/System/Library/Fonts/Supplemental/Arial Unicode.ttf")
+_measure_fonts = {}
 _EMOJI = re.compile("[\U0001F000-\U0001FAFF\u2600-\u27BF\u2B00-\u2BFF\u2300-\u23FF]")
 _CJK = "\u2E80-\u9FFF\uAC00-\uD7AF\uF900-\uFAFF\uFF00-\uFFEF"
 
@@ -686,7 +692,7 @@ def legacy_seed(out, old):
                    if (Path(d) / f".{out.stem}.seed.json").exists()), None)
     if legacy is None or not old:
         return None
-    saved = json.loads(legacy.read_text())
+    saved = json.loads(legacy.read_text(encoding="utf-8"))
     ids = set(saved.get("current", saved))
     on_canvas = {e["id"] for e in old if e["id"].startswith("s-")}
     return saved if ids and len(ids & on_canvas) >= 0.5 * len(ids) else None
@@ -725,9 +731,9 @@ def write(out, els, source, redraw_frames=(), files=None, palette=None):
               "(a screen, or the reference), not a row of slides; merge them (JL 261012: \"如果有 background，大概三个 "
               "frame 就差不多了\")")
     assign_ids(els)
-    old_doc = json.loads(out.read_text()) if out.exists() else {}
+    old_doc = json.loads(out.read_text(encoding="utf-8")) if out.exists() else {}
     old = old_doc.get("elements", [])
-    saved = json.loads(snap_path.read_text()) if snap_path.exists() else legacy_seed(out, old)
+    saved = json.loads(snap_path.read_text(encoding="utf-8")) if snap_path.exists() else legacy_seed(out, old)
     if saved is None:
         snap, history = {e["id"]: _sig(e) for e in old if e["id"].startswith("s-")}, []
         if old and not snap:                        # a canvas no canvas.write ever wrote (b11, 261007)
@@ -790,10 +796,10 @@ def write(out, els, source, redraw_frames=(), files=None, palette=None):
     all_files = {k: v for k, v in {**old_doc.get("files", {}), **(files or {})}.items() if k in used}
     out.write_text(json.dumps({"type": "excalidraw", "version": 2, "source": source, "elements": fresh + kept,
                                "appState": {"viewBackgroundColor": "#ffffff", "gridSize": None}, "files": all_files},
-                              ensure_ascii=False, indent=1))
+                              ensure_ascii=False, indent=1), encoding="utf-8")
     history = ([snap] + history)[:8]       # recent builds: a stale copy matches one of them
     snap_path.write_text(json.dumps({"current": {e["id"]: _sig(e) for e in els}, "history": history},
-                                    ensure_ascii=False))
+                                    ensure_ascii=False), encoding="utf-8")
     mine = sum(not e["id"].startswith("s-") for e in kept)
     print(f"{out.name}: {len(fresh)} drawn, {mine} of yours kept, {len(kept) - mine} seed edits kept, "
           f"{len(deleted)} deletions respected")

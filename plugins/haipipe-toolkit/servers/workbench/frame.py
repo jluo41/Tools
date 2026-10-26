@@ -765,21 +765,48 @@ def _topic_row(topic: Path, drawings: list, root: Path, folder: Path, shared: Pa
     # anchors, grouping keys and paths. Faces without a Label keep the existing folder-name display.
     label = re.search(r"(?m)^\*\*Label:\*\*[^\S\n]*(\S[^\n]*)", md.read_text(encoding="utf-8", errors="ignore")) if md else None
     display_name = label.group(1).strip() if label else name
+    drawings = [d for d in drawings if not is_structured(d)]
     first = drawings[0] if drawings else None
+    mnn = structured_of(topic)
     full = pop(_draw_url(first, root), f"{display_name} · the topic, full size", "↗") if first else ""
     scripts = sorted(topic.glob("build_*.py")) if topic.is_dir() else []
     # an opened row is only its drawing (JL 261007); a hand-drawn one edits in place from the row. A topic's
     # other drawings get no link on its row (JL 261012, on s02's "studio-and-report ↗ studio-workbench-reference ↗":
     # "for the studio, remove the content in the block box here"): its face lists them
     tools = []
+    frame_of = lambda d: (f'<iframe class=st-frame title="{_e(d.stem)}" data-src="{_e(_draw_url(d, root))}" '
+                          f'data-edit="{_e(_draw_url(d, root, True))}" referrerpolicy=no-referrer></iframe>')
     if first and not scripts:
         tools.append('<button type=button class=draw-edit>Edit</button>')
     if first:
-        body = (f'<iframe class=st-frame title="{_e(first.stem)}" data-src="{_e(_draw_url(first, root))}" '
-                f'data-edit="{_e(_draw_url(first, root, True))}" referrerpolicy=no-referrer></iframe>')
+        body = frame_of(first)
     else:
         files = sorted(p.name for p in topic.iterdir() if p.is_file() and not p.name.startswith(".")) if topic.is_dir() else []
         body = f'<p class="mut none">No drawing; it holds {_e(" · ".join(files)) or "nothing yet"}.</p>'
+    sides = ""
+    if mnn:                       # Free | Structured (haipipe-mindmap): one pane a side; Edit only where a person may
+        side = "free" if first else "structured"      # edit (Free: a hand-drawn drawing; Structured: always, its
+        editable = (["free"] if first and not scripts else []) + ["structured"]   # sync reads the canvas back)
+        tools = [t for t in tools if "draw-edit" not in t]
+        md = mnn.with_name(mnn.stem + ".mindmap.md")
+        tip = (f"the mind map: {md.name} is its source; canvas edits come back with haipipe-mindmap sync"
+               if md.is_file() else "the mind map (haipipe-mindmap)")
+        tools.append('<span class=st-side role=group aria-label="Free or Structured">'
+                     f'<button type=button data-side=free aria-pressed="{str(side == "free").lower()}"'
+                     f'{"" if first else " disabled"} title="the topic\'s own drawing">Free</button>'
+                     f'<button type=button data-side=structured aria-pressed="{str(side == "structured").lower()}"'
+                     f' title="{_e(tip)}">Structured</button></span>')
+        tools.append(f'<button type=button class=draw-edit data-sides="{" ".join(editable)}"'
+                     f'{"" if side in editable else " hidden"}>Edit</button>')
+        links = {"free": (_draw_url(first, root), f"{display_name} · the topic, full size") if first else None,
+                 "structured": (_draw_url(mnn, root), f"{display_name} · its structured side, full size")}
+        href, label = links[side]
+        full = (f'<a class=side-link data-pop="{_e(label)}" href="{_e(href)}" target=_blank rel=noopener'
+                + "".join(f' data-href-{k}="{_e(v[0])}" data-pop-{k}="{_e(v[1])}"' for k, v in links.items() if v)
+                + '>↗</a>')
+        body = (f'<div class=st-pane data-side=free{"" if side == "free" else " hidden"}>{body}</div>'
+                f'<div class=st-pane data-side=structured{"" if side == "structured" else " hidden"}>{frame_of(mnn)}</div>')
+        sides = f' data-sides="free structured" data-side="{side}"'
     tags = "".join(f'<span class=chip data-tag="{_e(tag)}">{_e(tag)}</span>' for tag in facts["tags"])
     badges = f'<span class=topic-tags>{tags}</span>' if tags else ""
     stage = facts["stage"]
@@ -797,20 +824,43 @@ def _topic_row(topic: Path, drawings: list, root: Path, folder: Path, shared: Pa
     body += _studio_parts(topic, drawings, root, topic_id)
     body += _studio_transcripts(topic, root, topic_id)
     return (f'<details class=topic id="{_e(topic_id)}" data-studio-tags="{_e(json.dumps(facts["tags"]))}"'
-            f' data-stage="{_e(stage)}"{attrs}>'
+            f' data-stage="{_e(stage)}"{sides}{attrs}>'
             f'<summary>{focus}<b>{_e(display_name)}</b>{badges}'
             f'<span class=topic-pop>{" ".join(tools + ([full] if full else []))}</span>'
             f'{stage_badge}</summary>{body}</details>')       # the stage sits at the far right (JL 261010)
 
 
+STRUCTURED = re.compile(r"^m\d{2}[-_].*\.excalidraw$")   # a topic's structured side, mNN-<topic> (haipipe-mindmap)
+
+
+def is_structured(drawing: Path) -> bool:
+    """The canvas of a topic's structured side, `mNN-<topic>.excalidraw`: never the topic's main drawing."""
+    return bool(STRUCTURED.match(drawing.name)) and bool(re.match(r"s\d{2}[-_]", drawing.parent.name))
+
+
+def structured_of(topic: Path) -> Path | None:
+    """A topic's structured side: `mNN-<topic>.excalidraw` with the topic's own number, else any mNN in its folder."""
+    if not topic.is_dir():
+        return None
+    found = sorted(d for d in topic.glob("m[0-9][0-9]*.excalidraw") if is_structured(d))
+    own = [d for d in found if d.name[1:3] == topic.name[1:3]]
+    return (own or found or [None])[0]
+
+
+def topic_drawings(topic: Path) -> list:
+    """A topic folder's drawings, its own first, never its structured side (mNN, the mind map)."""
+    return sorted((f for f in topic.glob("*.excalidraw") if not is_structured(f)),
+                  key=lambda f, own=topic.name + ".excalidraw": (f.name != own, f.name))
+
+
 def _studio_topics(folder: Path) -> list:
-    """(topic, drawings) for each `studio/sNN-<topic>/`; a loose drawing is its own topic."""
+    """(topic, drawings) for each `studio/sNN-<topic>/`; a loose drawing is its own topic. A topic's mNN mind map
+    is not among its drawings: its row shows it on the Structured side (_topic_row)."""
     studio, out = folder / "studio", []
     if studio.is_dir():
         for p in sorted(studio.iterdir()):
             if p.is_dir() and not p.name.startswith(("_", ".")):
-                out.append((p, sorted(p.glob("*.excalidraw"), key=lambda f, own=p.name + ".excalidraw":
-                                      (f.name != own, f.name))))       # the topic's own drawing first
+                out.append((p, topic_drawings(p)))       # the topic's own drawing first
             elif p.suffix == ".excalidraw":
                 out.append((p, [p]))
     return out
@@ -3100,6 +3150,7 @@ header.page-title h1{font-size:26px;margin:22px 0 18px;line-height:1.25}header.p
 .topic .none{margin:10px 14px}.topic-pop{display:flex;gap:10px;align-items:baseline;font-size:13px}
 .chip{display:inline-block;padding:0 8px;margin-right:4px;border:1px solid var(--acc);border-radius:999px;color:var(--acc);font-size:12px;text-decoration:none}
 .st-bar{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:8px 14px}
+.st-side{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}.st-side button{font:500 12.5px -apple-system,sans-serif;border:0;padding:1px 9px;cursor:pointer;background:var(--bg);color:var(--mut)}.st-side button+button{border-left:1px solid var(--line)}.st-side button[aria-pressed=true]{background:var(--tab-wash,var(--line));color:var(--tab-on,var(--fg))}.st-side button:disabled{cursor:default;opacity:.45}.draw-edit[hidden],.side-link[hidden]{display:none}
 .draw-edit{font:500 12.5px -apple-system,sans-serif;border:1px solid var(--line);border-radius:6px;padding:1px 9px;cursor:pointer;background:var(--bg);color:var(--fg)}
 .studio-parts{margin:10px 14px 16px}.studio-parts>details.topic{margin:0 0 8px}.studio-transcripts{margin:16px 14px}.studio-transcripts>h3{font-size:17px;margin:0 0 12px}.studio-transcript-note,.studio-transcript-links{margin:12px 14px;font-size:14px;line-height:1.5}.studio-transcript-note{color:var(--mut)}
 .st-frame{display:block;width:100%;height:calc(100vh - 240px);min-height:520px;border:0;border-top:1px solid var(--line);background:#fff}
@@ -3161,7 +3212,7 @@ CSS += RUN_CSS                                  # the Runs cards, shared with SP
 # place; #topic-<name> in the address opens that row (the Audience Report links here).
 STUDIO_JS = """
 (function(){
-function load(d){var f=d.querySelector(':scope > iframe[data-src], :scope > .dv-pane:not([hidden]) > iframe[data-src]');if(d.open&&f&&!f.getAttribute('src'))f.src=f.dataset.src;}
+function load(d){var f=d.querySelector(':scope > iframe[data-src], :scope > .dv-pane:not([hidden]) > iframe[data-src], :scope > .st-pane:not([hidden]) > iframe[data-src]');if(d.open&&f&&!f.getAttribute('src'))f.src=f.dataset.src;}
 // a Delivery item's versions (JL 261014): a version button shows its pane and loads its preview
 document.addEventListener('click',function(ev){var b=ev.target.closest('.dv-vers [data-dv]');if(!b)return;
   var d=b.closest('details');d.querySelectorAll(':scope > .dv-vers [data-dv]').forEach(function(x){x.setAttribute('aria-pressed',String(x===b));});
@@ -3513,8 +3564,26 @@ document.querySelectorAll('.studio-folder').forEach(function(box){
       .catch(function(){b.disabled=false;b.textContent='Could not load; try again';});});});
 document.querySelectorAll('details.topic .draw-edit').forEach(function(b){b.addEventListener('click',function(ev){
   ev.preventDefault();ev.stopPropagation();
-  var d=b.closest('details'),f=d.querySelector('iframe'),on=b.textContent==='Edit';
+  var d=b.closest('details'),f=d.querySelector(':scope > .st-pane:not([hidden]) > iframe')||d.querySelector('iframe'),on=b.textContent==='Edit';
   d.open=true;f.src=on?f.dataset.edit:f.dataset.src;b.textContent=on?'Finish editing':'Edit';});});
+// a topic with a structured side (mNN, haipipe-mindmap): Free | Structured, one pane a side; Edit shows only on a
+// side a person may edit; the ↗ opens the side showing; the card remembers the choice in this browser
+document.querySelectorAll('details.topic[data-sides]').forEach(function(d){
+  var key='workbench.studio.side.v1:'+d.id,bar=d.querySelector(':scope > summary .st-side');
+  function show(side,save){
+    bar.querySelectorAll('[data-side]').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.side===side));});
+    d.querySelectorAll(':scope > .st-pane').forEach(function(p){p.hidden=p.dataset.side!==side;
+      var f=p.querySelector(':scope > iframe');if(f&&f.dataset.edit&&f.getAttribute('src')===f.dataset.edit)f.src=f.dataset.src;});
+    var ed=d.querySelector(':scope > summary .draw-edit');
+    if(ed){ed.hidden=(ed.dataset.sides||'').split(' ').indexOf(side)<0;ed.textContent='Edit';}
+    var a=d.querySelector(':scope > summary a.side-link'),h=a&&a.getAttribute('data-href-'+side);
+    if(a){a.hidden=!h;if(h){a.href=h;a.dataset.pop=a.getAttribute('data-pop-'+side);}}
+    d.dataset.side=side;if(save){try{localStorage.setItem(key,side);}catch(e){}}load(d);}
+  var saved=null;try{saved=localStorage.getItem(key);}catch(e){}
+  var ok=function(s){var b=bar.querySelector('[data-side="'+s+'"]');return b&&!b.disabled;};
+  show(saved&&ok(saved)?saved:d.dataset.side,false);
+  bar.addEventListener('click',function(ev){var b=ev.target.closest('[data-side]');if(!b||b.disabled)return;
+    ev.preventDefault();ev.stopPropagation();d.open=true;show(b.dataset.side,true);});});
 document.querySelectorAll('.rp-live').forEach(function(b){b.addEventListener('click',function(){
   var f=b.querySelector('iframe');if(f&&f.hasAttribute('inert')){f.removeAttribute('inert');b.classList.add('on');}});});
 var t=hashTarget();if(t&&t.tagName==='DETAILS'){for(var a=t;a;a=a.parentElement){if(a.tagName==='DETAILS'){a.open=true;load(a);}}t.scrollIntoView({block:'start'});}

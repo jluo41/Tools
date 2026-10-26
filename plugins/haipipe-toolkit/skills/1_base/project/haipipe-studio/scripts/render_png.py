@@ -11,6 +11,7 @@ import base64
 import io
 import json
 import math
+import os
 import re
 import shutil
 import subprocess
@@ -19,17 +20,23 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
+# Mac, then Linux, then Windows (a Windows laptop has none of the first two, 261024): the first that exists is used
+WIN = Path(os.environ.get("WINDIR", "C:/Windows")) / "Fonts"
 FONTS = ["/System/Library/Fonts/Supplemental/Arial Unicode.ttf", "/System/Library/Fonts/Helvetica.ttc",
-         "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"]
+         "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+         str(WIN / "arialuni.ttf"), str(WIN / "msyh.ttc"), str(WIN / "segoeui.ttf"), str(WIN / "arial.ttf")]
 
 
-MONO = ["/System/Library/Fonts/Menlo.ttc", "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"]
+MONO = ["/System/Library/Fonts/Menlo.ttc", "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf",
+        str(WIN / "CascadiaMono.ttf"), str(WIN / "consola.ttf")]
 
 
-HAND = ["/System/Library/Fonts/Supplemental/ChalkboardSE.ttc", "/System/Library/Fonts/Noteworthy.ttc"]
+HAND = ["/System/Library/Fonts/Supplemental/ChalkboardSE.ttc", "/System/Library/Fonts/Noteworthy.ttc",
+        str(WIN / "segoepr.ttf")]
 # emoji draw in colour, as Excalidraw shows them (JL 261012: "add the things like the emoji"): a bitmap font,
-# drawn once at its own size and scaled to the line
-EMOJI_FONT = "/System/Library/Fonts/Apple Color Emoji.ttc"
+# drawn once at its own size and scaled to the line; Windows' Segoe UI Emoji where Apple's is missing
+EMOJI_FONT = next((f for f in ("/System/Library/Fonts/Apple Color Emoji.ttc", str(WIN / "seguiemj.ttf"))
+                   if Path(f).exists()), "/System/Library/Fonts/Apple Color Emoji.ttc")
 _BASE = ("[\\U0001F000-\\U0001FAFF\\u2600-\\u27BF\\u2B05-\\u2B07\\u2B1B\\u2B1C\\u2B50\\u23E9-\\u23FA"
          "\\u231A\\u231B][\\uFE0F\\U0001F3FB-\\U0001F3FF]?")
 EMOJI = re.compile("((?:[0-9#*]\\uFE0F?\\u20E3)|(?:" + _BASE + "(?:\\u200D" + _BASE + ")*))")   # whole: 7️⃣, 👩‍⚕️
@@ -42,7 +49,11 @@ def emoji(seq, px):
     if key not in _emoji:
         if not Path(EMOJI_FONT).exists():
             return None
-        f = ImageFont.truetype(EMOJI_FONT, 160)
+        try:
+            f = ImageFont.truetype(EMOJI_FONT, 160)   # Apple's is a bitmap font drawn only at 160
+        except OSError:
+            _emoji[key] = None
+            return None
         pic = Image.new("RGBA", (200 * max(1, len(seq)), 200), (0, 0, 0, 0))
         ImageDraw.Draw(pic).text((0, 0), seq, font=f, embedded_color=True)
         box = pic.getbbox()
@@ -80,7 +91,7 @@ _cjk = {}
 def cjk_font(f):
     """A face of `f`'s size that has Chinese characters, or `f` itself when none is installed."""
     if f.size not in _cjk:
-        path = next((p for p in FONTS if Path(p).exists() and "Unicode" in p), None)
+        path = next((p for p in FONTS if Path(p).exists() and ("Unicode" in p or p.endswith("msyh.ttc"))), None)
         _cjk[f.size] = ImageFont.truetype(path, f.size) if path else f
     return _cjk[f.size]
 
@@ -101,7 +112,7 @@ def dashed(dr, p, q, col, w, dash=10):
 
 
 def render(src, dst, s=None):
-    data = json.loads(Path(src).read_text())
+    data = json.loads(Path(src).read_text(encoding="utf-8"))   # a drawing is UTF-8 (Windows reads cp1252 by default)
     els = [e for e in data["elements"] if not e.get("isDeleted")]
     x0 = min(e["x"] for e in els) - 30
     y0 = min(e["y"] for e in els) - 30

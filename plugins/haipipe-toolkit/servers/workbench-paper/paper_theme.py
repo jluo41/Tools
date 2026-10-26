@@ -29,7 +29,7 @@ from pathlib import Path
 from live import paper as P
 from live.discoveryboard import file_url as disc_file_url
 from live.frame import (Space, Theme, delivery_view, esc, face, link, pop, reader, rel, studio_cards,
-                        table, vanilla, work_tree)
+                        table, topic_drawings, vanilla, work_tree)
 from live.task_draft import draft_task_spaces
 
 
@@ -559,7 +559,7 @@ def _feed(block, root, topic_glob):
     out = []
     for t in sorted((block / "studio").glob(topic_glob)) if (block / "studio").is_dir() else []:
         face_md = t / f"{t.name}.md"
-        drawing = next(iter(sorted(t.glob("*.excalidraw"))), None)
+        drawing = next(iter(topic_drawings(t)), None)      # its own drawing first, never its mNN mind map
         url = ("/_excalidraw/?" + P.urlencode({"board": rel(drawing, root)})) if drawing else reader(face_md, root)
         out.append(f'<li>{pop(url, t.name + " · from the Idea Studio", t.name + " ↗")}</li>')
     return "".join(out)

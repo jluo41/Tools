@@ -16,8 +16,8 @@ description: >-
   together, /workbench-studio (the retired name of this screen).
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.14.5"
-  last_updated: "2026-10-20"
+  version: "0.14.6"
+  last_updated: "2026-10-25"
   # version history: ./CHANGELOG.md
 ---
 
@@ -35,11 +35,15 @@ keep a person's marks, and the sessions. How a topic's drawing looks and reads i
 ├── sNN-<topic>.md            Topic · Feeds · Files · Decided · Open
 ├── sNN-<topic>.excalidraw    the drawing (a builder's, with the person's marks kept)
 ├── sNN-<topic>.png           its preview
-└── build_sNN_<topic>.py      the builder, when a script draws it
+├── build_sNN_<topic>.py      the builder, when a script draws it
+├── mNN-<topic>.mindmap.md    its structured side, a mind map: the source (haipipe-mindmap)
+└── mNN-<topic>.excalidraw    the mind map drawn left to right, with mNN-<topic>.png
 <block>/runs/run-draw-<sNN>/  one pass per working session
 ```
 
-Read `ref/topic-contract.md` before adding a topic or writing a builder.
+Read `ref/topic-contract.md` before adding a topic or writing a builder. A topic has two sides: the free drawing
+(sNN) and, when it has one, the structured side (mNN, same number), made and synced by `/haipipe-mindmap
+from-topic`; the workbench card switches them (Free · Structured), and the mNN is never the topic's main drawing.
 
 
 Topic count per Block

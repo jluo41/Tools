@@ -1,3 +1,16 @@
+## 0.17.3 · 2026-10-25 · UTF-8 on Windows; a world's studio/ and a Block's mind map
+
+- `scripts/project.py` and `scripts/ladder.py`: faces, tickets, `project.yaml` and `run.yaml` are written as UTF-8
+  with LF line ends (`ladder.write_utf8`, explicit `encoding="utf-8"`, `newline="\n"`) and read as UTF-8; on a Windows
+  laptop the default code page corrupted `board.md` faces and duplicated `j01`. The `ladder update` a step runs is
+  read as UTF-8 too.
+- `ladder.py`: a `run.yaml`'s `scope:` and `moved_from:` are written with forward slashes (`as_posix()`), never
+  backslashes.
+- `ref/ladder.md` `world: may_hold: [studio]`: a world folder such as `work/` may hold one `studio/` for project-wide
+  drawings; the audit no longer calls it "not a Block", and `update` steps over it. `today: keep_glob:
+  ['mind-map.*']`: a Block's `studio/` keeps its mind map loose (haipipe-mindmap from-work), as it keeps its question
+  map; `update --today --apply` never moves it. Tests: `tests/test_ladder_world.py`.
+
 ## 0.17.2 · 2026-10-21 · an empty Block owes no studio topic
 
 - `scripts/ladder.py` `today_findings`: "studio/ has no sNN-<topic>/ topic" fires only once the Block has a Job; a

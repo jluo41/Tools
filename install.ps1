@@ -1,4 +1,4 @@
-# install.ps1 — Windows installer for jluo41-tools (PowerShell port of install.sh)
+# install.ps1 - Windows installer for jluo41-tools (PowerShell port of install.sh)
 #
 # Usage (from the Tools/ directory):
 #   .\install.ps1                       # marketplace + auto-detected project skills
@@ -19,7 +19,7 @@
 # one needs no Python.
 #
 # Why junctions: on Windows, native symbolic links require Administrator or
-# Developer Mode. Directory junctions do not — and every skill is a directory —
+# Developer Mode. Directory junctions do not - and every skill is a directory -
 # so junctions are the default. Junctions need ABSOLUTE targets, so links built
 # this way do not move with the repo (re-run the installer if you relocate it).
 #
@@ -277,7 +277,7 @@ function Install-Agents {
 # A link's target as an absolute path. Junctions store absolute targets; a
 # symlink made by install.sh (or by hand) may store a relative one, which
 # Test-Path would resolve against the current directory instead of the link's
-# own folder — turning a perfectly good link into a "dangling" one.
+# own folder - turning a perfectly good link into a "dangling" one.
 function Resolve-LinkTarget {
     param([string]$LinkPath, [string]$Target)
     if (-not $Target) { return $null }
@@ -296,7 +296,7 @@ function Resolve-LinkTarget {
 # not follow a symlink, and only the last component can be one: a skill folder
 # under Knowledge-SPACE/Tools (a symlink to ../Tools-SPACE) is a plain directory.
 # Without this, every link looks like drift when the installer runs through the
-# symlink — the expected path runs through Tools, the link's target through the
+# symlink - the expected path runs through Tools, the link's target through the
 # real folder, and the two strings never match.
 function Get-RealPath {
     param([string]$Path)
@@ -333,7 +333,7 @@ function New-SkillLink {
         $item = Get-Item -LiteralPath $LinkPath -Force
         $isReparse = ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0
         if ($isReparse) { $item.Delete() }
-        else { return "kept" }   # real file/dir — leave it alone
+        else { return "kept" }   # real file/dir - leave it alone
     }
 
     if ($Symlink) {
@@ -422,7 +422,7 @@ function Test-WorkspaceLinks {
     )) {
         Write-Host "  $($check.Label): $($check.Dir)"
         if (-not (Test-Path -LiteralPath $check.Dir)) {
-            Write-Host "    not installed — run the installer"
+            Write-Host "    not installed - run the installer"
             $problems++
             continue
         }

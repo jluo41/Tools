@@ -1,6 +1,16 @@
 haipipe-studio · Changelog
 ==========================
 
+## [0.14.6] · 2026-10-25 · a topic's structured side; drawings read as UTF-8
+
+- `ref/topic-contract.md` and SKILL.md: the topic folder holds its structured side, `mNN-<topic>.mindmap.md` with
+  its `.excalidraw`, `.png` and (git-ignored) `.mindmap.html`, made and synced by haipipe-mindmap; never the topic's
+  main drawing. The workbench card switches Free and Structured (servers/workbench/frame.py).
+- `scripts/render_png.py`: reads a drawing as UTF-8 (Windows read it in its code page), and falls back to Windows'
+  fonts (Arial Unicode or Microsoft YaHei, Segoe UI, Arial; Cascadia Mono or Consolas; Segoe UI Emoji) when the Mac
+  and Linux font paths are missing. `canvas.py` (its read, its write, the measuring font) and `shrink_media.py`
+  read and write UTF-8 too.
+
 ## [0.14.5] · 2026-10-21 · who does a Task is never a topic
 
 - `scripts/block_inventory.py`: `owner:`, `session:`, `codex-session:` and a face's own `goal:`, `close:` and

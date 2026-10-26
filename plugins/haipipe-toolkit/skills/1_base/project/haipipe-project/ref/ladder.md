@@ -33,10 +33,15 @@ Run     runs/<run>/     run.yaml           the ticket · config.yaml · result/ 
 4. **Old layout**: `runs/<run>.sh` beside `results/<run>/` is the layout before one folder per
    Run. The audit reports it as debt; `update --apply` moves it (see `fn/update.md`).
 5. **Families**: a Block's `workbench:` field (default `task`) adds its family's extras below.
+6. **A world's studio/**: a world folder such as `work/` holds Blocks and may hold one `studio/` for
+   project-wide drawings (a mind map of the whole world, haipipe-mindmap); the audit does not call it
+   "not a Block". A Block's `studio/` keeps its mind map (`mind-map.*`) loose, as it keeps its question map.
 
 ## The table
 
 ```yaml
+world:                                   # a world folder (work/, discovery/, ...) holds Blocks, and these
+  may_hold: [studio]                     # studio/: project-wide drawings, such as a mind map of the world (261024)
 levels:
   block:
     may_hold: [studio, reports, delivery, related, resources, src, runs, _old]   # related/: what came in (haipipe-delivery, JL 261011)
@@ -91,6 +96,7 @@ today:                                   # b10's rules since 261012: `audit --to
   block_only: [related, delivery]        # a Job's or a Task's moves to the Block (haipipe-delivery, haipipe-related)
   drawing: [.excalidraw, .png, .svg, .py, .md, .json]   # in studio/, these wait for a topic; other files move to the Block
   keep: [question-map.excalidraw, question-map.png]     # the workbench's question_map.py writes the Block's map here
+  keep_glob: ['mind-map.*']              # and haipipe-mindmap from-work its mind map: .mindmap.md, .excalidraw, .png (261024)
   s00: s00-background-and-index          # every Block's background and index has this one name (haipipe-studio); a number
                                          # an old index gave up when it became s00 is never reused (JL 261012)
   workflow:                              # a work Block (family task) since 261021 (LLMRec b01, b02): Goal first

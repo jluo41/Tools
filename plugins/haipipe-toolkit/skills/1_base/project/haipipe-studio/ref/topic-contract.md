@@ -26,6 +26,10 @@ drawing should look (a dense scratch, a plain design prototype, a report picture
 │   ├── sNN-<topic>.png             its preview (render_png.py)
 │   ├── .sNN-<topic>.seed.json      the builder's last drawing: what canvas.write compares with
 │   ├── build_sNN_<topic>.py        the builder, when a script draws it
+│   ├── mNN-<topic>.mindmap.md      its structured side: a mind map, the source (haipipe-mindmap)
+│   ├── mNN-<topic>.excalidraw      the mind map drawn left to right; sync reads its edits back
+│   ├── mNN-<topic>.png             its preview
+│   ├── mNN-<topic>.mindmap.html    the mind map as a web page (git ignores it: rebuilt from the file)
 │   └── history/                    older builders or drawings kept on a redesign
 ├── _build/                         the level's shared builder helpers and make.sh
 └── <loose>.excalidraw              a loose drawing: its own topic
@@ -39,6 +43,12 @@ drawing should look (a dense scratch, a plain design prototype, a report picture
 3. **Its drawings**: the first `.excalidraw` is the one the Idea Studio opens across the row;
    more are links beside it. A topic with a builder opens view only; one drawn by hand edits
    in place.
+4. **Its structured side, mNN**: `mNN-<topic>.mindmap.md` with the topic's own number (s01 → m01) is
+   a mind map of the topic (`/haipipe-mindmap from-topic <topic>`: its face's labelled lines and
+   sections as branches), drawn as `mNN-<topic>.excalidraw` and `.png`. It is never the topic's main
+   drawing: the card shows a `Free | Structured` switch, one pane a side, Edit only on a side a person
+   may edit (Free: a hand-drawn drawing; Structured: always, since `sync` reads the canvas back), the ↗
+   opening the side showing, and the choice remembered in the browser.
 
 ## Transcript originals inside a Task Studio
 

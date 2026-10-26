@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import fnmatch
 import os
 import re
 import shutil
@@ -72,6 +73,13 @@ class Node:
     def status(self) -> str:
         worst = max((ORDER[s] for s, _ in self.findings), default=0)
         return [k for k, v in ORDER.items() if v == worst][0]
+
+
+def write_utf8(path: Path, text: str) -> None:
+    """Faces, tickets, project.yaml and run.yaml are UTF-8 with LF line ends on every platform: on Windows the
+    default code page corrupted board.md's faces and duplicated j01 (JL 261024, a Windows laptop)."""
+    with open(path, "w", encoding="utf-8", newline="\n") as f:
+        f.write(text)
 
 
 def face_text(path: Path) -> str:
@@ -322,6 +330,8 @@ def audit_path(path: Path, root: Path, only: bool = False) -> list[Node]:
         for b in sorted(w.iterdir()):
             if not b.is_dir() or b.name.startswith(("_", ".")):
                 continue
+            if b.name in T.get("world", {}).get("may_hold", []):  # work/studio/: the world's own drawings (261024)
+                continue
             if NAMES["block"].match(b.name):
                 nodes.append(audit_block(b, root, only))
             elif family_of(b) != "task":              # a family's own Block (Prototype-, Insight-, Design-…)
@@ -337,6 +347,11 @@ def audit_path(path: Path, root: Path, only: bool = False) -> list[Node]:
 
 TODAY = T.get("today") or {}
 DRAWING = set(TODAY.get("drawing", [".excalidraw", ".png", ".svg", ".py", ".md", ".json"]))
+
+
+def kept_loose(name: str) -> bool:
+    """A file a Block's studio/ keeps outside any topic: its question map, its mind map (`mind-map.*`, haipipe-mindmap)."""
+    return name in TODAY.get("keep", []) or any(fnmatch.fnmatch(name, g) for g in TODAY.get("keep_glob", []))
 
 
 def today_findings(block: Path) -> list[tuple[str, str]]:
@@ -361,7 +376,7 @@ def today_findings(block: Path) -> list[tuple[str, str]]:
         if d.name[:3] in given_up:
             out.append(("debt", f"today: studio/{d.name}/ reuses {d.name[:3]}, the old index's number: renumber it"))
     for e in entries:
-        if e.name.startswith((".", "_")) or e in topics or e.name in TODAY.get("keep", []):
+        if e.name.startswith((".", "_")) or e in topics or kept_loose(e.name):
             continue
         where = ("moves to the Block" if e.is_file() and e.suffix not in DRAWING else
                  "gather it into a sNN-<topic>/" if e.is_file() else "name it sNN-<topic>/ or move it out")
@@ -472,7 +487,7 @@ def write_role(card: Path, role: str) -> None:
     lines = card.read_text(encoding="utf-8").splitlines(keepends=True)
     at = next((i + 1 for i, line in enumerate(lines) if line.startswith("kind:")), 1)
     lines.insert(at, f"role: {role}\n")
-    card.write_text("".join(lines), encoding="utf-8")
+    write_utf8(card, "".join(lines))
 
 
 def today_moves(block: Path) -> list[tuple[Path, Path, str]]:
@@ -483,7 +498,7 @@ def today_moves(block: Path) -> list[tuple[Path, Path, str]]:
         return []
     return [(f, block / f.name, "today: studio/ holds topics only") for f in sorted(studio.iterdir())
             if f.is_file() and f.suffix not in DRAWING and not f.name.startswith((".", "_"))
-            and f.name not in TODAY.get("keep", [])
+            and not kept_loose(f.name)
             and not (block / f.name).exists()]
 
 
@@ -545,11 +560,11 @@ def make_card(run_dir: Path, name: str, kind: str, ticket: str, root: Path, move
     rtype = r.get("run_type") or r.get("operation") or r.get("type")
     touched = []
     for t in sorted(run_dir.glob("passes/*/touched.yaml")) if run_dir.exists() else []:
-        touched += (yaml.safe_load(t.read_text()) or [])
+        touched += (yaml.safe_load(t.read_text(encoding="utf-8")) or [])
     card = {
         "run": name, "kind": kind,
         "type": ([rtype] if isinstance(rtype, str) else rtype) or None,
-        "scope": str(run_dir.parent.parent.relative_to(root)),
+        "scope": run_dir.parent.parent.relative_to(root).as_posix(),   # never a backslash (Windows, 261024)
         "target": r.get("target"), "ticket": ticket,
         "skill": r.get("skill"), "agent": r.get("agent"), "signs": r.get("signs"),
         "status": r.get("status"),
@@ -575,7 +590,7 @@ def mmdd_of(path: Path) -> str:
 
 def plan_runs(runs: Path, fam: str, root: Path) -> tuple[list, list[str]]:
     """Moves for one runs/ folder in the old layout, plus run.yaml for new-layout Runs without one."""
-    rel = lambda p: str(p.relative_to(root))
+    rel = lambda p: p.relative_to(root).as_posix()           # forward slashes on every platform, as scope:
     results = runs.parent / "results"
     steps, skipped = [], []
     groups: dict[str, list] = {}
@@ -724,7 +739,7 @@ def relink(root: Path, rules: list, apply: bool) -> tuple[int, int]:
                     changes += n
                     print(f"    relink  {f.relative_to(root)}  ({n})")
                     if apply:
-                        f.write_text(new, encoding="utf-8")
+                        write_utf8(f, new)
     return files, changes
 
 
@@ -773,7 +788,7 @@ def write_kind(card: Path, kind: str) -> None:
         lines = text.splitlines(keepends=True)
         lines.insert(1, f"kind: {kind}\n")
         text = "".join(lines)
-    card.write_text(text, encoding="utf-8")
+    write_utf8(card, text)
 
 
 def tidy_moves(path: Path) -> list[tuple[Path, Path, str]]:
@@ -840,13 +855,13 @@ def update(path: Path, root: Path, apply: bool, today: bool = False) -> int:
                 tk = dest / (ticket or "")
                 if op == "move" and kind == "hard" and tk.suffix == ".sh" and tk.is_file():
                     patched, found = patch_ticket(tk.read_text(encoding="utf-8"), dest.name)
-                    tk.write_text(patched, encoding="utf-8")
+                    write_utf8(tk, patched)
                     if not found:
                         unpatched.append(str(tk.relative_to(root)))
                 for name in passes or []:
                     (dest / "passes" / name).mkdir(parents=True, exist_ok=True)
                 card = make_card(dest, dest.name, kind, ticket, root, moved_from or None, passes)
-                (dest / "run.yaml").write_text(yaml.safe_dump(card, sort_keys=False, allow_unicode=True))
+                write_utf8(dest / "run.yaml", yaml.safe_dump(card, sort_keys=False, allow_unicode=True))
     tidy = tidy_moves(path)
     if today and block_of(path):
         tidy += today_moves(block_of(path))
