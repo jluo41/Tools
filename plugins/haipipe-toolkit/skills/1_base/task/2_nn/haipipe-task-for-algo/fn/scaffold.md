@@ -71,7 +71,7 @@ Step 6 — Cross-skill link
 --------------------------
 
 After scaffolding, suggest:
-- `/haipipe-nn-algo` to author or refine the algorithm class itself
+- `/haipipe-nn algo` to author or refine the algorithm class itself
   (Layer 1: model, forward, loss, metric).
 - Once the demo passes → `/haipipe-task-for-fit` for the real run.
 
@@ -83,7 +83,7 @@ Step 7 — Report
 status:    ok
 summary:   Scaffolded algo-dev demo for <algo_name> under the selected bNN Block / jNN Job.
 artifacts: [paths created]
-next:      /haipipe-nn-algo (refine algo)  OR  run the demo
+next:      /haipipe-nn algo (refine algo)  OR  run the demo
 ```
 
 

@@ -123,7 +123,7 @@ Step 6 — Report
 status:    ok | blocked | failed
 summary:   2-3 sentences on what was executed
 artifacts: [_WorkSpace paths written, $OUTPUT_ROOT/<task>/runs/<RUN>/result/runtime.yaml]
-next:      suggested next stage or /haipipe-data-{stage} review
+next:      suggested next stage or /haipipe-data {stage} review
 ```
 
 
@@ -132,4 +132,4 @@ Cross-references
 
 - CLI scripts: `code/scripts/haistepcli/{source,record,case,aidata}.py`
 - Notebook templates: `code/scripts/haistepnb/{a1,a2,a3,a4}_{stage}_nb.py`
-- Pipeline skills: `/haipipe-data-{source,record,case,aidata}`
+- Pipeline skills: `/haipipe-data {source,record,case,aidata}`

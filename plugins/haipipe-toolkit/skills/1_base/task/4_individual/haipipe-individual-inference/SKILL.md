@@ -9,8 +9,8 @@ description: >-
 argument-hint: "--individual <id_or_path> [--endpoint-url URL] [--json]"
 allowed-tools: Bash, Read
 metadata:
-  version: "0.1.2"
-  last_updated: "2026-07-04"
+  version: "0.1.3"
+  last_updated: "2026-10-25"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -61,7 +61,7 @@ Quickstart
 -----------
 
 Use an already deployed endpoint when one is available.
-For a new local server, follow `haipipe-end-deploy-local`: copy its reference
+For a new local server, follow `haipipe-end deploy local`: copy its reference
 `serve_local.py` into the canonical serving Task's `scripts/` before launch.
 Choose the platform of the packaged Src2InputFn/Input2SrcFn pair.
 
@@ -131,8 +131,8 @@ Reuses
 ------
 
 - Loads the individual layout produced by `haipipe-individual` (sibling skill).
-- Targets endpoints produced by `haipipe-end-endpointset` and served by
-  `haipipe-end-deploy-{local,databricks,sagemaker}`.
+- Targets endpoints produced by `haipipe-end endpointset` and served by
+  `haipipe-end deploy {local,databricks,sagemaker}`.
 - Used by agent projects (e.g. `agent-cgm`) as the patient-data loader and
   payload builder for their LangGraph nodes.
 

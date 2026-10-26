@@ -108,7 +108,7 @@ Each external asset has one contract (`asset.yaml`) and its own versions
 uses. SourceFn looks each asset up explicitly by key and `obs_dt` and assigns
 the fields by name. Training reads frozen versions only; live feature-store
 or API providers are reached only when serving. Model:
-`haipipe-data-external/ref/asset-model.md`.
+`haipipe-data/_parts/external/ref/asset-model.md`.
 
 ---
 

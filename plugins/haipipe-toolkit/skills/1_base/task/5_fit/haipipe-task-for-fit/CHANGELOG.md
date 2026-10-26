@@ -5,6 +5,10 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.3.0] — 2026-10-25
+
+Merged 2 helper skill(s) into `_parts/`: `haipipe-task-gpu` -> `_parts/gpu`, `haipipe-task-gpu-training` -> `_parts/gpu-training`. /haipipe-task-for-fit reads `_parts/<name>/PART.md` instead of calling a separate skill; allowed-tools gained the parts' tools. Old commands map as `/haipipe-task-gpu` -> `haipipe-task-for-fit/_parts/gpu`. (merge-parts 261025)
+
 ## [0.2.0] · 2026-10-21 · One folder per Run, and the Type contract
 
 - `## Type contract` is the first section of SKILL.md (haipipe-task ref/types.md): roles [trial, make, fix],
@@ -15,7 +19,7 @@ Newest first.
   ref/config-seed.yaml, ref/workflow-plan-sample.yaml with `target: work/...`).
 - The ticket sets `REQUIRED_RESULTS=("metrics.json" "model_path.txt")`; the frontmatter names
   `jNN_<job>/tNN_<task>/` Task folders, not `{NN}_<name>/` jobs.
-- The fit-owned companions follow the same layout: haipipe-task-gpu 0.3.0, haipipe-task-gpu-training 0.3.0
+- The fit-owned companions follow the same layout: haipipe-task-for-fit/_parts/gpu 0.3.0, haipipe-task-for-fit/_parts/gpu-training 0.3.0
   (they keep no CHANGELOG of their own).
 
 ## [0.1.5] · 2026-10-09 · Theme folders are singular

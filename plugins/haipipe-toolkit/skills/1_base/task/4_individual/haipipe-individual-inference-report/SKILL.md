@@ -9,8 +9,8 @@ description: >-
 argument-hint: "--individual <id> --persona <name_or_path> [--endpoint-url URL] [--model X]"
 allowed-tools: Bash, Read
 metadata:
-  version: "0.1.3"
-  last_updated: "2026-10-09"
+  version: "0.1.4"
+  last_updated: "2026-10-25"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -21,7 +21,7 @@ Per-individual prediction → interpretation → audience-tailored report.
 
 ```
   📥 individual data        🌐 endpoint prediction       🤖 LLM compose
-  (parquet)              (haipipe-end-deploy-local)   (claude_agent_sdk)
+  (parquet)              (haipipe-end deploy local)   (claude_agent_sdk)
        │                          │                          │
        └─ ctx ───┬───── forecast ─┴───── system_prompt ───────┘
                 │                       (persona)
@@ -68,7 +68,7 @@ Quickstart
 -----------
 
 Use an already deployed endpoint when one is available.
-For a new local server, follow `haipipe-end-deploy-local`: copy its reference
+For a new local server, follow `haipipe-end deploy local`: copy its reference
 `serve_local.py` into the canonical serving Task's `scripts/` before launch.
 Choose the platform of the packaged Src2InputFn/Input2SrcFn pair.
 
@@ -177,7 +177,7 @@ Reuses
 ------
 
 - `haipipe-individual-inference` for `load_patient_ctx`, `build_payload`, `client.call_predict`
-- `haipipe-end-deploy-local` for the prediction endpoint
+- `haipipe-end deploy local` for the prediction endpoint
 - `claude_agent_sdk` for the LLM call (subprocess of `claude` CLI)
 - Pattern reference: `Physician-SPACE/.../work/A3_cross_family_judge/run_sdk_judge.py`
 

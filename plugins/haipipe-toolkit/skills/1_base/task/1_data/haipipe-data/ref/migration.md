@@ -15,7 +15,7 @@ note and the next step for every item that is not up to date.
 =========================================
 
 From: DrFirst-SPACE. Skills: haipipe-task 1.4.2, haipipe-data 0.3.4,
--aidata 0.2.1, -case 0.3.3, haipipe-task-for-data 0.8.5. No code change.
+haipipe-data aidata 0.2.1, haipipe-data case 0.3.3, haipipe-task-for-data 0.8.5. No code change.
 Check: space-check item `aidata Block`.
 
 What changed
@@ -59,7 +59,7 @@ Steps
 =========================================================
 
 From: DrFirst-SPACE (OptTimeR1 Extended). Skills: haipipe-data 0.3.2,
--source 0.3.2, -record 0.3.1, -case 0.3.2, -external 0.3.1,
+haipipe-data source 0.3.2, haipipe-data record 0.3.1, haipipe-data case 0.3.2, haipipe-data external 0.3.1,
 haipipe-task-for-data 0.8.4. Code: haipipe-code `27b1525` on `code-drfirst`;
 its shared code is on `origin/main` since 2026-09-26.
 Check: space-check items `code: fn_dir`, `code: loaders`, `trap: fn_version
@@ -76,7 +76,7 @@ What changed
 2. **External serving bundle.** An endpoint ships only its release's external
    versions, trimmed to the fields training looked up and pre-keyed
    (`key_normalized: int64`), and loads them once per worker at warmup
-   (`haipipe-data-external/ref/asset-model.md` § Serving: the endpoint bundle).
+   (`haipipe-data/_parts/external/ref/asset-model.md` § Serving: the endpoint bundle).
 
 Does anything break?
 --------------------

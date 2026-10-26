@@ -1,10 +1,10 @@
 ---
 name: haipipe-end
-description: "Run any Stage 6 endpoint work: routes intent to the right specialist across Fn-type, artifact-verb, develop-target, and deploy-target axes. Use for designing inference Fns, packaging Endpoint_Sets, training a build, local inference tests, or deploying anywhere. Trigger: endpoint, deploy, develop, train, package, inference Fn, MetaFn, TrigFn, PostFn, Src2InputFn, Input2SrcFn, /haipipe-end."
-allowed-tools: Bash, Read, Grep, Glob, Skill
+description: "Run any Stage 6 endpoint work: routes intent to the right part across Fn-type, artifact-verb, develop-target, and deploy-target axes. Use for designing inference Fns, packaging and profiling Endpoint_Sets, payload roundtrip tests, training a build, or deploying to a local server (FastAPI/Flask/Docker), SageMaker, Databricks Model Serving or MLflow. Trigger: endpoint, deploy, develop, train, package, endpointset, inference Fn, MetaFn, TrigFn, PostFn, Src2InputFn, Input2SrcFn, serve locally, /haipipe-end."
+allowed-tools: Bash, Read, Grep, Glob, Skill, Write, Edit
 metadata:
-  version: "0.2.2"
-  last_updated: "2026-10-09"
+  version: "0.3.0"
+  last_updated: "2026-10-25"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -16,19 +16,19 @@ Routes across **four axes**:
 
 ```
 1. Fn-type axis        meta | trig | post | src2input | input2src
-                       -> per-Fn-type specialist (one skill per type)
+                       -> _parts/<fn-type>/PART.md (one part per type)
 
 2. Artifact axis       package | test | profile | dashboard | review (overall)
-                       -> haipipe-end-endpointset
+                       -> _parts/endpointset/PART.md
 
 3. Develop axis        develop <target>  where target is one of
                        sagemaker | databricks | local
-                       -> haipipe-end-develop-<target>
+                       -> _parts/develop-<target>/PART.md
                        PRODUCES the Endpoint_Set (build side)
 
 4. Deploy axis         deploy <target>  where target is one of
                        sagemaker | databricks | local | mlflow
-                       -> haipipe-end-deploy-<target>
+                       -> _parts/deploy-<target>/PART.md
                        SERVES the Endpoint_Set (serve side)
 ```
 
@@ -47,30 +47,32 @@ The develop and deploy axes share targets but operate on different lifecycle pha
 
 ---
 
-Specialists
------------
+Parts
+-----
+
+Each specialist is a part of this skill, read from `_parts/<name>/PART.md` (not a separate skill).
 
 ```
 PER-FN-TYPE (5)
-  haipipe-end-meta          MetaFn — model metadata lookup
-  haipipe-end-trig          TrigFn — trigger detection
-  haipipe-end-post          PostFn — response formatting
-  haipipe-end-src2input     Src2InputFn — record → wire payload
-  haipipe-end-input2src     Input2SrcFn — wire payload → record
+  _parts/meta/                MetaFn — model metadata lookup
+  _parts/trig/                TrigFn — trigger detection
+  _parts/post/                PostFn — response formatting
+  _parts/src2input/           Src2InputFn — record → wire payload
+  _parts/input2src/           Input2SrcFn — wire payload → record
 
 ARTIFACT-AS-WHOLE (1)
-  haipipe-end-endpointset   Endpoint_Set lifecycle: package, test, profile, review, dashboard
+  _parts/endpointset/         Endpoint_Set lifecycle: package, test, profile, review, dashboard
 
 PER-TARGET DEVELOP (3)        BUILDS the Endpoint_Set
-  haipipe-end-develop-sagemaker   AWS SageMaker Pipeline (wraps platforms/platform-sagemaker-training/)
-  haipipe-end-develop-databricks  Databricks Job  ⚠️ deferred (repo platforms/platform-databrick-training/ exists; wiring + Lesson-15 reconciliation pending)
-  haipipe-end-develop-local       local sequencer (delegates to /haipipe-nn modelset + endpointset package)
+  _parts/develop-sagemaker/   AWS SageMaker Pipeline (wraps platforms/platform-sagemaker-training/)
+  _parts/develop-databricks/  Databricks Job  ⚠️ deferred (repo platforms/platform-databrick-training/ exists; wiring + Lesson-15 reconciliation pending)
+  _parts/develop-local/       local sequencer (delegates to /haipipe-nn modelset + endpointset package)
 
 PER-TARGET DEPLOY (4)         SERVES the Endpoint_Set
-  haipipe-end-deploy-sagemaker    AWS SageMaker (wraps platforms/platform-sagemaker-inference/)
-  haipipe-end-deploy-databricks   Databricks Model Serving (wraps platforms/platform-databrick-inference/)
-  haipipe-end-deploy-local        local self-hosted (Flask / FastAPI / Docker)
-  haipipe-end-deploy-mlflow       MLflow registry + serve   ⚠️ deferred (no platform repo)
+  _parts/deploy-sagemaker/    AWS SageMaker (wraps platforms/platform-sagemaker-inference/)
+  _parts/deploy-databricks/   Databricks Model Serving (wraps platforms/platform-databrick-inference/)
+  _parts/deploy-local/        local self-hosted (Flask / FastAPI / Docker)
+  _parts/deploy-mlflow/       MLflow registry + serve   ⚠️ deferred (no platform repo)
 ```
 
 ---
@@ -173,14 +175,14 @@ Step 2:  Detect axis (priority order, first match wins):
            j) 'overview' / 'explain'                     -> INLINE (umbrella reads ref/0-overview.md)
            k) No args                                    -> CROSS-SCOPE DASHBOARD (parallel fan-out)
 
-Step 3:  Dispatch:
-           Fn-type axis    -> Skill("haipipe-end-<fn-type>",       args="<verb> <rest>")
-           Artifact axis   -> Skill("haipipe-end-endpointset",     args="<verb> <rest>")
-           Develop axis    -> Skill("haipipe-end-develop-<target>", args="<verb> <rest>")
-           Deploy axis     -> Skill("haipipe-end-deploy-<target>",  args="<verb> <rest>")
+Step 3:  Read the part and follow it with args "<verb> <rest>":
+           Fn-type axis    -> _parts/<fn-type>/PART.md
+           Artifact axis   -> _parts/endpointset/PART.md
+           Develop axis    -> _parts/develop-<target>/PART.md
+           Deploy axis     -> _parts/deploy-<target>/PART.md
 
-Step 4:  Capture the specialist's structured tail (status / summary /
-         artifacts / next), present to user. If status != ok, stop chaining.
+Step 4:  End with the part's structured tail (status / summary /
+         artifacts / next). If status != ok, stop chaining.
 ```
 
 Target-alone disambiguation (rule f)
@@ -202,20 +204,20 @@ This keeps the common path zero-friction while making the develop side discovera
 Cross-Scope Dashboard (no-arg case)
 ------------------------------------
 
-When invoked with no arguments, fan out in parallel and concatenate tails:
+When invoked with no arguments, run each part's `dashboard` in turn and concatenate tails:
 
 ```
-Skill("haipipe-end-endpointset",         args="dashboard")    # what's packaged
-Skill("haipipe-end-develop-sagemaker",   args="dashboard")    # SageMaker training pipelines + ModelPackages
-Skill("haipipe-end-develop-local",       args="dashboard")    # local develop registry
-Skill("haipipe-end-deploy-sagemaker",    args="dashboard")    # live on SageMaker
-Skill("haipipe-end-deploy-databricks",   args="dashboard")    # live on Databricks
-Skill("haipipe-end-deploy-local",        args="dashboard")    # running locally
+_parts/endpointset/PART.md         dashboard   # what's packaged
+_parts/develop-sagemaker/PART.md   dashboard   # SageMaker training pipelines + ModelPackages
+_parts/develop-local/PART.md       dashboard   # local develop registry
+_parts/deploy-sagemaker/PART.md    dashboard   # live on SageMaker
+_parts/deploy-databricks/PART.md   dashboard   # live on Databricks
+_parts/deploy-local/PART.md        dashboard   # running locally
 # develop-databricks and deploy-mlflow excluded while deferred
 ```
 
 The 5 per-Fn-type specialists are NOT included in the no-arg dashboard (they'd repeat the same artifact-level info).
-For per-Fn-type status use `/haipipe-end-endpointset review`.
+For per-Fn-type status use `/haipipe-end endpointset review`.
 
 ---
 
@@ -229,7 +231,7 @@ Inline Modes (umbrella handles itself, no dispatch)
      specialist's `ref/concepts.md` for context.
   3. Answer directly. Cite which ref docs informed the answer.
 
-These run inline — no `Skill()` call.
+These run inline: no part procedure runs.
 
 ---
 
@@ -298,7 +300,7 @@ FN-4   VERIFY WITH A ROUND-TRIP GATE, and prove the gate bites first.
        examples — served arm, argmax, and every per-arm score. Run it against the
        known-broken build BEFORE the fixed one; if it passes the broken build, the
        gate is what is broken. See haipipe-task GATE-1 and the reference impls in
-       `-src2input`'s roundtrip section.
+       `haipipe-end src2input`'s roundtrip section.
 
 FN-5   SERVING MUST REPRODUCE THE TRAINING SOURCE CONTRACT.
        Input2SrcFn uses the endpoint's pinned ExternalStore snapshot and emits
@@ -335,5 +337,5 @@ fn/fn-design.md             SHARED design procedure — read by all 5 per-Fn-typ
                             when handling `design`. Each child supplies its own concepts.md.
 ```
 
-These files are SHARED — children read them via `../haipipe-end/...`.
+These files are SHARED — parts read them via `../../...` from `_parts/<name>/`.
 Each child also has its own scope-specific `ref/concepts.md`.

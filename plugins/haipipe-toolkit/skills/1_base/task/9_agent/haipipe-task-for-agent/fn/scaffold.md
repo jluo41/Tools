@@ -81,7 +81,7 @@ for a smoke Run and `role: make` for a campaign Run.
 Step 6 — Cross-skill link
 --------------------------
 
-Engine: `/haipipe-task-llm-engine` (owns code/haiutils/llm_engine/, the LLM call runtime these tasks import).
+Engine: `../_parts/llm-engine/PART.md` (owns code/haiutils/llm_engine/, the LLM call runtime these tasks import).
 Adjacent: `/claude-api` for Claude SDK patterns (caching, tool-use loops, retries).
 
 

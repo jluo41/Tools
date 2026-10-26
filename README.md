@@ -25,6 +25,7 @@ This table covers the three package directories directly under `plugins/`. The H
 | `.claude-plugin/marketplace.json` | Claude Code marketplace catalog for this repository. |
 | `install.sh`, `install.ps1` | macOS/Linux and Windows installers for marketplace registration and skill links. |
 | `install-hooks.json` | Shared per-OS sound-hook configuration read by both installers. |
+| `diagnostics/` | Skill tooling: `skill_report.py` (sizes, installs, problems, use from transcripts, recommendations), `md_to_html.py` (sortable, filterable HTML) and `merge_parts.py` (fold helper skills into `<main>/_parts/<name>/PART.md`). Reports land in the gitignored `diagnostics/reports/`. |
 
 For HAI-Pipe workflows, see its [package guide](plugins/haipipe-toolkit/README.md)
 and [skill and server layout](blueprints/b01_haipipe-toolkit/j04_skill_folder/j04_skill_folder.md).
@@ -74,7 +75,9 @@ Both installers discover skills recursively under first-party package
 skill is linked flat under its folder name. Both skip any folder whose name starts
 with `_` (`_old/`, `_archive/`, `_todo/`, `_legacy/`, ...) and `node_modules/`, on
 macOS/Linux and Windows alike; retired skills parked there stay in the repository
-for reference.
+for reference. The same rule keeps a skill's parts private: a helper merged into
+its main skill lives at `<main>/_parts/<name>/PART.md`, is read by that skill, and
+is never listed on its own.
 
 ### macOS and Linux
 

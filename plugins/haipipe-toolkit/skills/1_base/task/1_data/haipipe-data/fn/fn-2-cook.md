@@ -19,7 +19,7 @@ Each pipeline stage has:
   - A registered set of Fn modules (SourceFns, RecordFns, CaseFns, etc.)
   - A CLI command (haistep-<stage>) that runs the stage end-to-end
   - A Python API for programmatic control
-  - A config template at ../../haipipe-data-<stage>/templates/config.yaml
+  - A config template at ../_parts/<stage>/templates/config.yaml
 
 Stages run sequentially.
 Each stage consumes the output of the previous stage:
@@ -82,10 +82,10 @@ Stage-Independent Steps
 **Step 3: Write or Find a Config YAML**
 
   Start from a template:
-    ../../haipipe-data-source/templates/config.yaml
-    ../../haipipe-data-record/templates/config.yaml
-    ../../haipipe-data-case/templates/config.yaml
-    ../../haipipe-data-aidata/templates/config.yaml
+    ../_parts/source/templates/config.yaml
+    ../_parts/record/templates/config.yaml
+    ../_parts/case/templates/config.yaml
+    ../_parts/aidata/templates/config.yaml
 
   Or copy an existing config from a sibling pipeline task's scripts/config/ and modify it.
   See Per-Stage Reference below for required config keys per stage.
@@ -177,7 +177,7 @@ _______________________________________________ STAGE 1-source _________________
 
 **Config template:**
 
-  ../../haipipe-data-source/templates/config.yaml
+  ../_parts/source/templates/config.yaml
 
 **Discover SourceFns:**
 
@@ -259,7 +259,7 @@ _______________________________________________ STAGE 2-record _________________
 
 **Config template:**
 
-  ../../haipipe-data-record/templates/config.yaml
+  ../_parts/record/templates/config.yaml
 
 **Discover HumanFns and RecordFns:**
 
@@ -337,7 +337,7 @@ _______________________________________________ STAGE 3-case ___________________
       - CaseFnName: '<CaseFnName>'      # feature op: WHAT to compute per case
         CaseFnList: ['<Fn1>', '<Fn2>']
         CaseFnArgs: { ... }
-    # authoritative shape: ../../haipipe-data-case/templates/config.yaml
+    # authoritative shape: ../_parts/case/templates/config.yaml
 
 **LTS Trigger extra config (CGM5MinLTS only):**
 
@@ -370,7 +370,7 @@ _______________________________________________ STAGE 3-case ___________________
 
 **Config template:**
 
-  ../../haipipe-data-case/templates/config.yaml
+  ../_parts/case/templates/config.yaml
 
 **Discover TriggerFns and CaseFns:**
 
@@ -481,7 +481,7 @@ _______________________________________________ STAGE 4-aidata _________________
 
 **Config template:**
 
-  ../../haipipe-data-aidata/templates/config.yaml
+  ../_parts/aidata/templates/config.yaml
 
 **Discover Input TfmFns and SplitFns:**
 
@@ -551,7 +551,7 @@ _______________________________________________ STAGE 4-aidata _________________
   python -m scripts.haistepcli.aidata --config <config>.yaml --use-cache
 
   Config must have `record_set_name` + `CaseArgs` (instead of `case_set_name`)
-  to trigger partition discovery. See haipipe-data-aidata SKILL.md for details.
+  to trigger partition discovery. See haipipe-data aidata SKILL.md for details.
   Streaming HF Dataset conversion — memory-efficient, no pandas concat.
 
 ---

@@ -25,7 +25,7 @@ LESSON.md deliberately left untouched (historical record).
 
 Two headline items:
 - **C1 (🔴)** — three refs teach type-based/freestyle config names while the shipped `run-sh-template.sh:36` hard-codes `CONFIG="configs/${RUN_NAME}.yaml"` and every real task on disk pairs config==run. Anyone following the freestyle docs produces a run that can't find its config.
-- **C2 (🔴)** — `haipipe-end-develop-databricks` is DEFERRED with reason "no platform repo exists"; `platforms/platform-databrick-training/` exists with a full repo (submit_job.py, setup_cluster.sh, notebooks/).
+- **C2 (🔴)** — `haipipe-end develop databricks` is DEFERRED with reason "no platform repo exists"; `platforms/platform-databrick-training/` exists with a full repo (submit_job.py, setup_cluster.sh, notebooks/).
 
 ---
 
@@ -83,7 +83,7 @@ Two headline items:
 - [x] **S3** 🟡 `[J]` fn-1-package:171 restates the layout (with external/) against SKILL's own "do not restate" rule. Fix: pointer to 0-overview.
 - [x] **S4** 🟡 `[M]` develop-sagemaker:229 `ProjA-Timing-01-OptTime` path; endpointset fn-3-profile:21 `ProjA-Click-01-ClickPred`. Fix: real/illustrative.
 - [x] **S5** 🟡 `[J]` develop-databricks planned job-ladder unreconciled with Lesson 15 (REACH forbids jobs). Fix: scope job path to jobs-capable hosts + name the inline-exec fallback.
-- [x] **S6** 🟢 `[M]` develop-sagemaker + develop-databricks concepts bare platform paths (→ E7 family); develop-local "future -develop-databricks"; endpointset "5 Fn-types" vs 6 subdirs. Fix: one-liners.
+- [x] **S6** 🟢 `[M]` develop-sagemaker + develop-databricks concepts bare platform paths (→ E7 family); develop-local "future haipipe-end develop databricks"; endpointset "5 Fn-types" vs 6 subdirs. Fix: one-liners.
 
 ### deploy-* (4 skills)
 
@@ -101,7 +101,7 @@ Two headline items:
 ## Part 3 — Coverage honesty
 
 - LESSON.md files audited only for supersession banners (L16 banner present ✅) — historical paths inside them deliberately not flagged.
-- `haipipe-end-meta/ref/examples/*.py` (3 builder scripts): existence verified, content not line-read.
+- `haipipe-end/_parts/meta/ref/examples/*.py` (3 builder scripts): existence verified, content not line-read.
 - `scan_status/` scripts: path-correct but B01/CLM-specific — noted, not changed.
 - Not audited: 2_nn, 4_individual…9_agent buckets; agents/; haipipe-workflow; inbound refs from other layers.
 - Auditor trust: 6/6 panels spot-checked ≥3 claims each on disk; zero false claims this round (one auditor's payload-order "hint mismatch" was the auditor correctly overriding my brief).

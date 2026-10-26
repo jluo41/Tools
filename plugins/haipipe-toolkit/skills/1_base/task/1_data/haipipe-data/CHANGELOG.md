@@ -5,6 +5,10 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.4.0] — 2026-10-25
+
+Merged 7 helper skill(s) into `_parts/`: `haipipe-data-raw` -> `_parts/raw`, `haipipe-data-source` -> `_parts/source`, `haipipe-data-record` -> `_parts/record`, `haipipe-data-case` -> `_parts/case`, `haipipe-data-aidata` -> `_parts/aidata`, `haipipe-data-external` -> `_parts/external`, `haipipe-data-remote` -> `_parts/remote`. /haipipe-data reads `_parts/<name>/PART.md` instead of calling a separate skill; allowed-tools gained the parts' tools. Old commands map as `/haipipe-data-raw` -> `/haipipe-data raw`. (merge-parts 261025)
+
 ## [0.3.6] · 2026-10-09 · Theme folders are singular
 
 - Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
@@ -30,7 +34,7 @@ Newest first.
 
 ## [0.3.1] — 2026-09-23
 
-- Routing: external-only verbs `freeze`, `release`, `parity`, `join`, `refresh` and external keywords (asset, release, feature store, vendor API, obs_dt) route to `haipipe-data-external`.
+- Routing: external-only verbs `freeze`, `release`, `parity`, `join`, `refresh` and external keywords (asset, release, feature store, vendor API, obs_dt) route to `haipipe-data external`.
 - Overview principle 7 and the ExternalStore tree follow the external asset model (per-asset contract and versions, releases, explicit SourceFn lookup, frozen versions in training); external specialist line lists freeze/release/parity.
 
 ## [0.3.0] — 2026-09-23
@@ -53,7 +57,7 @@ Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until J
 
 ## [1.2.0] — 2026-07-04
 
-- deep-audit fixes: Fn-type ownership corrected (HumanFn=Stage 2 with RecordFn, TriggerFn=Stage 3 with CaseFn — dispatcher had them one stage early, contradicting every fn/ doc and shipped template); haipipe-data-external + haipipe-data-remote WIRED into the dispatcher (specialists list, keyword map, aliases — both existed on disk unrouted); README file map rewritten (ref/1-4.md + templates/N-stage/ were fiction); fn-2-cook template paths -> specialist-local templates/config.yaml; fn-2-cook CaseArgs schema aligned to the shipped case template (case_set_version at CaseArgs level, operation blocks); 0-RawStore -> 0-RawDataStore; fan-out summary 5-line; 0-rawdata alias -> raw dashboard Panel 0.
+- deep-audit fixes: Fn-type ownership corrected (HumanFn=Stage 2 with RecordFn, TriggerFn=Stage 3 with CaseFn — dispatcher had them one stage early, contradicting every fn/ doc and shipped template); haipipe-data external + haipipe-data remote WIRED into the dispatcher (specialists list, keyword map, aliases — both existed on disk unrouted); README file map rewritten (ref/1-4.md + templates/N-stage/ were fiction); fn-2-cook template paths -> specialist-local templates/config.yaml; fn-2-cook CaseArgs schema aligned to the shipped case template (case_set_version at CaseArgs level, operation blocks); 0-RawStore -> 0-RawDataStore; fan-out summary 5-line; 0-rawdata alias -> raw dashboard Panel 0.
 - CONFIRMED by JL 2026-07-05, both arbitrations: Fn ownership (JL: "human fn should go to the Stage 2: Source to Record. it should be in the Record Stage.") and external/remote wiring (JL: "yes, please do for them."). Review thread archived here and removed from SKILL.md.
 
 ## [1.1.0] — 2026-06-11

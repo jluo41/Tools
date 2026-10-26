@@ -35,10 +35,10 @@ Folder tree variants
       ├── 1_data/
       │  (umbrella)
       │   ├── haipipe-data/SKILL.md
-      │   ├── haipipe-data-source/SKILL.md
-      │   ├── haipipe-data-record/SKILL.md
-      │   ├── haipipe-data-case/SKILL.md
-      │   └── haipipe-data-aidata/SKILL.md
+      │   ├── haipipe-data/_parts/source/PART.md
+      │   ├── haipipe-data/_parts/record/PART.md
+      │   ├── haipipe-data/_parts/case/PART.md
+      │   └── haipipe-data/_parts/aidata/PART.md
       │
       ├── 2_nn/
       │   └── haipipe-nn/SKILL.md

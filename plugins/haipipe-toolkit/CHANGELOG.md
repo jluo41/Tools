@@ -369,7 +369,7 @@ Per-layer detail: `skills/probe/haipipe-probe/CHANGELOG.md`, `skills/probe/agent
 ## [Unreleased] — 2026-07-03
 
 Discovery layer v2.5.0: type specialist skills haipipe-discovery-search /
--review / -idea created, one heading each bucket (mirrors haipipe-data-source
+-review / -idea created, one heading each bucket (mirrors haipipe-data source
 etc.); orchestrator Execute dispatches them; Review Output Contract moved into
 haipipe-discovery-review. Also the never-tables-for-papers rule applied across
 all worker output formats, layer docs made self-contained (no upper-layer
@@ -471,10 +471,10 @@ Feature: endpoint lifecycle overhaul — MIMIC-IV mortality deployed to Databric
 ### Endpoint skills (3_end/)
 - **LESSON.md**: 14 lessons from MIMIC endpoint build (L1–L14), journey summary, deployment platform comparison (SageMaker vs Databricks).
 - **haipipe-end/ref/0-overview.md**: three-layer builder architecture (template → project → production), deployment platform verb table (validate → upload → register → deploy → smoke test → stress test → promote), roundtrip invariant.
-- **haipipe-end-meta**: inputSchema follows Databricks `dataframe_records` format, 3 builder examples in `ref/examples/` (CGM, Weight, MIMIC).
-- **haipipe-end-src2input + input2src**: real-data roundtrip test REQUIRED for design/review.
-- **haipipe-end-endpointset**: step 5b reproducibility check, D-prefix exclusion (160MB→14MB), three-level roundtrip enforcement.
-- **haipipe-end-deploy-databricks**: platform repo link, verb-to-script mapping, MIMIC config example, gotchas (D-prefix, DATABRICKS_USER).
+- **haipipe-end meta**: inputSchema follows Databricks `dataframe_records` format, 3 builder examples in `ref/examples/` (CGM, Weight, MIMIC).
+- **haipipe-end src2input + input2src**: real-data roundtrip test REQUIRED for design/review.
+- **haipipe-end endpointset**: step 5b reproducibility check, D-prefix exclusion (160MB→14MB), three-level roundtrip enforcement.
+- **haipipe-end deploy databricks**: platform repo link, verb-to-script mapping, MIMIC config example, gotchas (D-prefix, DATABRICKS_USER).
 
 ### Task skills (task/)
 - **haipipe-task-for-endpoint**: renamed from haipipe-task-for-inference, C-series endpoint building scope.
@@ -483,7 +483,7 @@ Feature: endpoint lifecycle overhaul — MIMIC-IV mortality deployed to Databric
 - **haipipe-task/ref/task-lifecycle.workflow.js**: template-based task detection (data/fit/endpoint → don't modify .py).
 
 ### Data skills (1_data/)
-- **haipipe-data-source**: D-prefix tables are SourceFn-only, never enter examples or payloads.
+- **haipipe-data source**: D-prefix tables are SourceFn-only, never enter examples or payloads.
 
 ### Infrastructure
 - **haipipe-qa**: new QA walkthrough skill for systematic pipeline review.

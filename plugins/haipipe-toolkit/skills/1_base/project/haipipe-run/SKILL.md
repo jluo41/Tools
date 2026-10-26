@@ -17,8 +17,8 @@ description: >-
   runs, superseded Run, keep only meaningful Runs, prune_runs.py, workflow, run graph, run spec,
   plan.yaml, gate, route, IPO, /haipipe-run, /haipipe-workflow.
 metadata:
-  version: "0.36.0"
-  last_updated: "2026-10-21"
+  version: "0.36.1"
+  last_updated: "2026-10-25"
 ---
 
 # /haipipe-run · one commission, one identity, only meaningful Runs
@@ -291,7 +291,7 @@ is in `_WorkSpace/`. After the store check, 33 were marked to prune and 59 to ch
 tool keeping Runs because of same-named Runs in sibling Tasks, and losing a supersedes chain; both are fixed. A kept
 Run's Result stands on its own: its receipt names what it read, and those inputs need not stay. After pruning:
 - update the Task pages and Studio faces the tool lists;
-- remove the heavy folders it lists, on the machine that holds them (haipipe-data-remote; never `--sync`);
+- remove the heavy folders it lists, on the machine that holds them (haipipe-data remote; never `--sync`);
 - rebuild the drawings.
 
 A soft Run is a work record of its target (its passes) and is not pruned by this rule.

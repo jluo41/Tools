@@ -6,6 +6,10 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.3.0] — 2026-10-25
+
+Merged 13 helper skill(s) into `_parts/`: `haipipe-end-meta` -> `_parts/meta`, `haipipe-end-trig` -> `_parts/trig`, `haipipe-end-post` -> `_parts/post`, `haipipe-end-src2input` -> `_parts/src2input`, `haipipe-end-input2src` -> `_parts/input2src`, `haipipe-end-endpointset` -> `_parts/endpointset`, `haipipe-end-develop-local` -> `_parts/develop-local`, `haipipe-end-develop-sagemaker` -> `_parts/develop-sagemaker`, `haipipe-end-develop-databricks` -> `_parts/develop-databricks`, `haipipe-end-deploy-local` -> `_parts/deploy-local`, `haipipe-end-deploy-sagemaker` -> `_parts/deploy-sagemaker`, `haipipe-end-deploy-databricks` -> `_parts/deploy-databricks`, `haipipe-end-deploy-mlflow` -> `_parts/deploy-mlflow`. /haipipe-end reads `_parts/<name>/PART.md` instead of calling a separate skill; allowed-tools gained the parts' tools. Old commands map as `/haipipe-end-meta` -> `/haipipe-end meta`. (merge-parts 261025)
+
 ## [0.2.2] · 2026-10-09 · Theme folders are singular
 
 - Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,

@@ -4,8 +4,8 @@ description: "Freeze a review_bundle.json for an in-lab reading session: sample 
 argument-hint: "<endpoint_path> [--endpoint-url URL] [--bundle-id ID] [--out PATH]"
 allowed-tools: Bash, Read, Write, Grep, Glob, Agent
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-07-10"
+  version: "0.1.1"
+  last_updated: "2026-10-25"
 ---
 
 Skill: inlab-human-bundle
@@ -22,7 +22,7 @@ Procedure
 1. Locate the endpoint.
    - live URL given -> use it.  else: is a local server up? (predict_cli.py ping)
    - if not, offer to start one (the study project's serve_endpoint task, or
-     /haipipe-end-deploy-local) and wait for /ping healthy.
+     /haipipe-end deploy local) and wait for /ping healthy.
 
 2. Deterministic build (Bash):
      python3 scripts/build_bundle.py \

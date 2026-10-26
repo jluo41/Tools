@@ -1,11 +1,11 @@
 ---
 name: haipipe-task-for-algo
-description: "algo-dev Task specialist: scaffolds jNN_<job>/tNN_<task>/ Task folders in an algo-dev Block that smoke-test a newly developed algorithm class end-to-end on a TINY config. NOT full training -- see /haipipe-task-for-fit. Called by /haipipe-task when task-type=algo. Cross-references /haipipe-nn-algo."
+description: "algo-dev Task specialist: scaffolds jNN_<job>/tNN_<task>/ Task folders in an algo-dev Block that smoke-test a newly developed algorithm class end-to-end on a TINY config. NOT full training -- see /haipipe-task-for-fit. Called by /haipipe-task when task-type=algo. Cross-references /haipipe-nn algo."
 argument-hint: "[project_id] [bNN_<block>/jNN_<job>] [tNN_<task>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-10-21"
+  version: "0.2.1"
+  last_updated: "2026-10-25"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -35,7 +35,7 @@ ticket: runs/<run>/<run>.sh, from ../../haipipe-task/ref/run-sh-template.sh
 result: $OUTPUT_ROOT/<task>/runs/<run>/result/ with runtime.yaml and loss.json
 heavy: none
 roles: [trial]
-companions: [haipipe-nn-algo, haipipe-task-for-fit]
+companions: [haipipe-nn, haipipe-task-for-fit]
 plan_sample: ref/workflow-plan-sample.yaml
 ```
 
@@ -51,7 +51,7 @@ Config              minimal / 1-batch       full hyperparam grid
 Runtime             minutes                 hours-to-days
 Outputs             "didn't crash" + loss   checkpoint → _WorkSpace/5
 Audience            algo developer self     cross-run comparison
-Pipeline skill      /haipipe-nn-algo        /haipipe-nn-tuner+instance
+Pipeline skill      /haipipe-nn algo        /haipipe-nn tuner+instance
 ```
 
 
@@ -84,11 +84,11 @@ Heavy outputs: none (tiny / disposable).
 Cross-reference to pipeline skill
 ----------------------------------
 
-`/haipipe-nn-algo` owns the algorithm class itself (Layer 1: model, forward, loss, metric).
+`/haipipe-nn algo` owns the algorithm class itself (Layer 1: model, forward, loss, metric).
 This skill scaffolds the smoke-test demo that exercises it.
 Typical flow:
 
-  1. `/haipipe-nn-algo` — author the algorithm class.
+  1. `/haipipe-nn algo` — author the algorithm class.
   2. `/haipipe-task-for-algo` — scaffold the paired demo.
   3. Run the demo. Iterate.
   4. Once stable → `/haipipe-task-for-fit` for the real run.
@@ -116,7 +116,7 @@ Return contract
 status:    ok | blocked | failed
 summary:   2-3 sentences on what was scaffolded
 artifacts: [paths created]
-next:      suggested next command (run the demo / /haipipe-nn-algo refine)
+next:      suggested next command (run the demo / /haipipe-nn algo refine)
 ```
 
 

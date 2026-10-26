@@ -17,8 +17,8 @@ description: >-
   row, describe every column, synth_df, synthetic patient, synthetic rows.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.5.0"
-  last_updated: "2026-10-21"
+  version: "0.5.1"
+  last_updated: "2026-10-25"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -43,7 +43,7 @@ result: $OUTPUT_ROOT/<task>/runs/<run>/result/ with runtime.yaml, metrics.json, 
   columns.csv, grain.csv and gotchas.csv (figures/*.png beside them)
 heavy: none
 roles: [describe]
-companions: [haipipe-task-for-raw, haipipe-data-raw, haipipe-data-source, notebook-cell-python]
+companions: [haipipe-task-for-raw, haipipe-data, notebook-cell-python]
 plan_sample: none
 ```
 
@@ -347,10 +347,10 @@ Related
 - `haipipe-task-for-raw`: the raw Block (`b00`) these Tasks usually sit in,
   its audit Tasks, and its `t11_profile_<table>` metadata passes; its
   `r07_full_scan` writes the card for raw tables in any format.
-- `haipipe-data-raw understand`: the life story of one data point
+- `haipipe-data raw understand`: the life story of one data point
   (`datapoint-timeline.txt`); the card describes columns, the timeline
   describes when a value becomes visible.
-- `haipipe-data-source`: the ProcName contracts whose `columns:` meanings
+- `haipipe-data source`: the ProcName contracts whose `columns:` meanings
   seed the dictionary, and which the card's `feeds:` section points to.
 - `notebook-cell-python`: the `# %%` script-to-notebook convention the worker
   follows.

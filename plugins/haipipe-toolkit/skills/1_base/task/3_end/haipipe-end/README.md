@@ -56,10 +56,10 @@ File Map
     fn-design.md            Design: build new Fn files (all 5 types)
 
   Per-Fn-type contracts (specialist-owned):
-    ../haipipe-end-{meta,trig,post,src2input,input2src}/ref/concepts.md
+    _parts/{meta,trig,post,src2input,input2src}/ref/concepts.md
 
   Artifact verbs (endpointset-owned):
-    ../haipipe-end-endpointset/fn/{fn-0-dashboard,fn-1-package,fn-2-test,fn-3-profile,fn-review}.md
+    _parts/endpointset/fn/{fn-0-dashboard,fn-1-package,fn-2-test,fn-3-profile,fn-review}.md
 
 ---
 

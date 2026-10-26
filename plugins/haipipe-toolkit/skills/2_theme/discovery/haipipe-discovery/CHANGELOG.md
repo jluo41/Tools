@@ -627,7 +627,7 @@ JL ruling 2026-07-12 ("加一个 ask folder，把它们放到一块儿"; pairs w
 
 ### Added (JL: "I think we should have them")
 - **Type specialist skills**, one per bucket, mirroring the sibling-layer pattern
-  (haipipe-data-source etc.):
+  (haipipe-data source etc.):
   - `haipipe-discovery-search/` — owns the Search Execute (find + read ->
     sources.md + notes.md), dispatches the six 1_search workers.
   - `haipipe-discovery-review/` — owns the Review Execute (judge -> verdict.md,

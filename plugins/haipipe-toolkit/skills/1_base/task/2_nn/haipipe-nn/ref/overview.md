@@ -136,7 +136,7 @@ Step 1: Algorithm (Layer 1)
    [ ] Pure external library (XGBoost, sklearn, Nixtla): no file to create here
    [ ] Custom nn.Module (adds embeddings, fusion, etc.): create
        code/hainn/algo/<family>/algorithm_<name>.py
-       See ../../haipipe-nn-algo/ref/concepts.md for the algorithm_*.py pattern.
+       See ../_parts/algo/ref/concepts.md for the algorithm_*.py pattern.
 
 Step 2: Tuner (Layer 2)
    [ ] Create file: code/hainn/tuner/<family>/tuner_<name>.py

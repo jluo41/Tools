@@ -7,11 +7,11 @@ description: >-
   server-resident all-Spark for PHI). Raw understanding Block b00: one Job per
   dataset version that inventories, profiles each table, routes tables to
   ProcNames, and hands off to Source with a gated readiness. Called by
-  /haipipe-task when task-type=raw. Cross-references /haipipe-data-raw.
+  /haipipe-task when task-type=raw. Cross-references /haipipe-data raw.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.6.0"
-  last_updated: "2026-10-21"
+  version: "0.6.1"
+  last_updated: "2026-10-25"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -45,8 +45,7 @@ result: $OUTPUT_ROOT/<task>/runs/<run>/result/ with runtime.yaml and manifest.js
 heavy: _WorkSpace/0-RawDataStore/<raw_data_name>/ (Pattern 1), or the catalog volume
   <VOLUME_BASE>/0-RawDataStore/<raw_data_name>/ for PHI (Pattern 2)
 roles: [make, describe, check]
-companions: [haipipe-data-raw, haipipe-data-source, haipipe-data-external,
-  haipipe-task-for-description]
+companions: [haipipe-data, haipipe-task-for-description]
 plan_sample: none
 ```
 
@@ -58,7 +57,7 @@ Operational Database -- cohort extraction code --> 0-RawDataStore/<raw-data>/
 Vendor/API source ---- ingestion/build code -----> ExternalStore/@raw/ -> @{release}/
 ```
 
-Use this skill for the first line. Use `haipipe-data-external` for the second.
+Use this skill for the first line. Use `haipipe-data external` for the second.
 “Extract”, “landing”, and “ingestion” describe code/actions, not additional
 stores between the database and RawStore. One delivered extraction is a Raw
 Data version/snapshot; reserve “cohort” for the selected population.
@@ -163,7 +162,7 @@ b00_rawdata/
   Results (REACH PD2D `j51_reachpd2d_v260922_raw`, JL 260929). Where the raw rows sit on this
   machine (WellDoc Proj01 `b00`), the table notebook draws three real people instead, in the same
   one notebook, and git ignores it (`haipipe-task-for-description` rule 12, JL 260929).
-- `datapoint_timeline` and `source_handoff` are `haipipe-data-raw`'s
+- `datapoint_timeline` and `source_handoff` are `haipipe-data raw`'s
   `understand` and `hand-off` as Tasks. Readiness is computed from gates
   (every table routed once, every table profiled, no blocking question), never
   declared: `ready_for_sourcefn_review` or `blocked` with the failing gate.
@@ -346,8 +345,8 @@ Different cohorts may have different numbers of stages depending on complexity.
 Cross-reference to pipeline skill
 ----------------------------------
 
-`/haipipe-data-raw` owns the understanding of raw cohort data — the datapoint-timeline lifecycle documentation.
-After extraction, suggest `/haipipe-data-raw understand <cohort>` to document what was extracted, then `/haipipe-data-source` to wrap into Stage 1.
+`/haipipe-data raw` owns the understanding of raw cohort data — the datapoint-timeline lifecycle documentation.
+After extraction, suggest `/haipipe-data raw understand <cohort>` to document what was extracted, then `/haipipe-data source` to wrap into Stage 1.
 
 
 Commands
@@ -382,7 +381,7 @@ Return contract
 status:    ok | blocked | failed
 summary:   2-3 sentences on what was scaffolded
 artifacts: [paths created]
-next:      /haipipe-data-raw understand <cohort>  OR  run on Databricks
+next:      /haipipe-data raw understand <cohort>  OR  run on Databricks
 ```
 
 

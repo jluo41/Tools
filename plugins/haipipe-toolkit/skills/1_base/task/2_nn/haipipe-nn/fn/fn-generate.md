@@ -35,7 +35,7 @@ Before Writing Anything
    - tsforecast:  instance_tsforecast.py + tuner/tsforecast/neuralforecast/modeling_nixtla_nhits.py
    - tefm:        instance_tefm.py + tuner/tefm/te_clm/tuner_ts_clm.py
 3. Read ref/overview.md for the model registry format and YAML template
-4. Read each target layer's specialist reference: ../../haipipe-nn-<layer>/ref/concepts.md
+4. Read each target layer's specialist reference: ../_parts/<layer>/ref/concepts.md
 
 ---
 
@@ -50,7 +50,7 @@ Layer 1: Algorithm File (skip if external library)
 code/hainn/algo/<family>/<variant>/algorithm_<name>.py
 ```
 
-**WHAT to write (per ../../haipipe-nn-algo/ref/concepts.md):**
+**WHAT to write (per ../_parts/algo/ref/concepts.md):**
 
   - One or more nn.Module subclasses named <ComponentName>Algorithm
   - Only imports: torch, torch.nn, other algorithm_*.py files
@@ -58,7 +58,7 @@ code/hainn/algo/<family>/<variant>/algorithm_<name>.py
   - No training loops, no data loading, no hainn.* imports
   - Inheritance chain allowed (e.g., base -> +ToD -> +Events)
 
-**Reference:** ../../haipipe-nn-algo/ref/concepts.md "When You Write Custom Layer 1 Code" **Example to read first:**
+**Reference:** ../_parts/algo/ref/concepts.md "When You Write Custom Layer 1 Code" **Example to read first:**
   code/hainn/algo/tefm/te_clm/algorithm_ts_clm.py
   code/hainn/algo/tefm/te_clm/algorithm_ts_clm_tod.py
 
@@ -77,7 +77,7 @@ code/hainn/tuner/<family>/tuner_<name>.py             (mlpredictor -- no variant
 NOTE: mlpredictor Tuners live directly under tuner/mlpredictor/ with no variant subdirectory (e.g., code/hainn/tuner/mlpredictor/tuner_xgboost.py).
 Only tefm and similar families use a variant sublevel (e.g., tuner/tefm/te_clm/tuner_ts_clm.py).
 
-**WHAT to write (per ../../haipipe-nn-tuner/ref/concepts.md):**
+**WHAT to write (per ../_parts/tuner/ref/concepts.md):**
 
 Five abstract methods (ModelTuner contract):
   1. get_tfm_data(dataset)          -> domain-format data (e.g., sparse, nixtla df, tensor)
@@ -101,7 +101,7 @@ Key conventions to get right:
     version is MOVED into this file as a standalone module-level function
     (not a method). Do not prototype it directly in the Tuner.
 
-**Reference:** ../../haipipe-nn-tuner/ref/concepts.md -- read MUST DO + MUST NOT + standalone transform_fn **Example to read first:**
+**Reference:** ../_parts/tuner/ref/concepts.md -- read MUST DO + MUST NOT + standalone transform_fn **Example to read first:**
   code/hainn/tuner/mlpredictor/tuner_xgboost.py
   code/hainn/tuner/tsforecast/neuralforecast/modeling_nixtla_nhits.py  (if tsforecast)
 
@@ -120,7 +120,7 @@ Layer 3a: Instance File
 code/hainn/instance/<family>/instance_<name>.py
 ```
 
-**WHAT to write (per ../../haipipe-nn-instance/ref/concepts.md):**
+**WHAT to write (per ../_parts/instance/ref/concepts.md):**
 
 Five abstract methods (ModelInstance contract):
   1. init()                      -- builds self.model_base dict
@@ -143,7 +143,7 @@ infer() routing contract:
 
 Critical: _load_model_base must call self.init() BEFORE tuner.load_model()
 
-**Reference:** ../../haipipe-nn-instance/ref/concepts.md -- all sections **Example to read first:**
+**Reference:** ../_parts/instance/ref/concepts.md -- all sections **Example to read first:**
   code/hainn/instance/mlpredictor/instance_slearner.py
 
 
@@ -158,7 +158,7 @@ Layer 3b: Configuration File
 code/hainn/instance/<family>/configuration_<name>.py
 ```
 
-**WHAT to write (per ../../haipipe-nn-instance/ref/concepts.md "Config Class Contract"):**
+**WHAT to write (per ../_parts/instance/ref/concepts.md "Config Class Contract"):**
 
 Dataclass with 4 required Dict fields:
   - ModelArgs: Dict
@@ -177,7 +177,7 @@ from_aidata_set must build:
   modelinstance_set_name = f"{modelinstance_name}/{modelinstance_version}"
   (version already has @ prefix; do NOT add it again)
 
-**Reference:** ../../haipipe-nn-instance/ref/concepts.md "Config Class Contract" + from_aidata_set() section **Example to read first:**
+**Reference:** ../_parts/instance/ref/concepts.md "Config Class Contract" + from_aidata_set() section **Example to read first:**
   code/hainn/instance/mlpredictor/configuration_slearner.py
 
 ---
@@ -223,7 +223,7 @@ code/hainn/tuner/<family>/test-modeling-<name>/
 **WHAT each test script must contain:**
 
 All 4 scripts share the same 7-step structure.
-See ../../haipipe-nn-{tuner,instance,modelset}/ref/concepts.md for the exact step list, display rules, and key_metric requirements.
+See ../_parts/{tuner,instance,modelset}/ref/concepts.md for the exact step list, display rules, and key_metric requirements.
 
 Critical for test scripts:
   - ALWAYS use real AIData (load from _WorkSpace/4-AIDataStore/)
@@ -232,7 +232,7 @@ Critical for test scripts:
   - L1 uses "Forward pass" / "Gradient flow" (not "Fit" / "Infer")
   - L2-L4 use "Fit" / "Infer" labels
 
-**Reference:** ../../haipipe-nn-{tuner,instance,modelset}/ref/concepts.md -- each has a "Test Notebook: What Layer N Tests" section with the full 7-step structure
+**Reference:** ../_parts/{tuner,instance,modelset}/ref/concepts.md -- each has a "Test Notebook: What Layer N Tests" section with the full 7-step structure
 
 ---
 

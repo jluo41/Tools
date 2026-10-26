@@ -32,7 +32,7 @@ Stages
 ------
 
   0-raw       Raw cohort extract -> single-data-point lifecycle understanding
-              Specialist: haipipe-data-raw  |  Output: datapoint-timeline.txt
+              Specialist: haipipe-data raw  |  Output: datapoint-timeline.txt
               Store:      _WorkSpace/0-RawDataStore/
               Domain-agnostic: CGM streams, EHR encounters, claims lines,
               sensor sessions, messaging extracts, vendor drops, etc.
@@ -63,7 +63,7 @@ File Map
   README.md                 <- this file
   ref/0-overview.md         <- architecture map + cooking metaphor
   Per-stage references (specialist-owned):
-    ../haipipe-data-{source,record,case,aidata}/ref/concepts.md
+    _parts/{source,record,case,aidata}/ref/concepts.md
   fn/fn-0-dashboard.md      <- dashboard function
   fn/fn-1-load.md           <- load function (all stages)
   fn/fn-2-cook.md           <- cook function (all stages)
@@ -72,7 +72,7 @@ File Map
   fn/fn-explain.md          <- explain function (25-concept pool, ask-then-explain)
   fn/fn-review.md           <- review function (detect type, apply checklist, PASS/WARN/FAIL)
   Config templates (specialist-owned):
-    ../haipipe-data-{source,record,case,aidata}/templates/config.yaml
+    _parts/{source,record,case,aidata}/templates/config.yaml
 
 ---
 

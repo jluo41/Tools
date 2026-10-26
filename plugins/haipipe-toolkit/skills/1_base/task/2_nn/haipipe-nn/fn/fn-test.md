@@ -171,27 +171,27 @@ Fix L3 failures before running L4.
 Layer-Specific Notes
 =====================
 
-**L1 (Algorithm) test -- ../../haipipe-nn-algo/ref/concepts.md:**
+**L1 (Algorithm) test -- ../_parts/algo/ref/concepts.md:**
   - Step 4b is the most important: this is where transform_fn is DESIGNED
   - Once validated here, move the final transform_fn into tuner_<name>.py
   - Step 5 = "Forward pass" (not Fit)
   - Step 6 = "Gradient flow verify" -- check grad coverage + params changed
   - sample_output_row = {'loss': loss.item(), 'grad_params': n_updated}
 
-**L2 (Tuner) test -- ../../haipipe-nn-tuner/ref/concepts.md:**
+**L2 (Tuner) test -- ../_parts/tuner/ref/concepts.md:**
   - Tests the Tuner with real AIData, no Instance wrapper
   - Step 4 converts AIData to domain_format (nixtla, sparse, tensor, etc.)
   - Step 5 (Fit): call tuner.fit(dataset, TrainingArgs); capture train_loss
   - Step 6 (Infer): call tuner.infer(dataset, InferenceArgs); capture rmse
   - Step 7: call tuner.save_model(key, dir), tuner.load_model(key, dir)
 
-**L3 (Instance) test -- ../../haipipe-nn-instance/ref/concepts.md:**
+**L3 (Instance) test -- ../_parts/instance/ref/concepts.md:**
   - Tests the Instance orchestrator via instance.fit() and instance.infer()
   - Verify infer() returns pd.DataFrame (single) or dict of DataFrames (splits)
   - Verify _load_model_base calls init() first (check model_base is not empty)
   - Step 6 key_metric: a real numeric score (e.g., AUC, RMSE, accuracy)
 
-**L4 (ModelSet) test -- ../../haipipe-nn-modelset/ref/concepts.md:**
+**L4 (ModelSet) test -- ../_parts/modelset/ref/concepts.md:**
   - Tests the full packaging pipeline (ModelInstance_Pipeline + ModelInstance_Set)
   - 7a: run_versions list -- verify all runs execute in order
   - 7b: versioned save -- verify manifest.json written alongside model

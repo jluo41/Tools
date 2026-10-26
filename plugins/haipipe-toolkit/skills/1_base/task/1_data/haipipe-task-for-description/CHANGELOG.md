@@ -5,6 +5,10 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.5.1] — 2026-10-25
+
+Links, commands and companions repointed at the helper skills merged into `haipipe-nn`, `haipipe-end`, `haipipe-data`, `haipipe-task-for-fit`, `haipipe-task-for-agent` (now `_parts/<name>/PART.md`). (merge-parts 261025)
+
 ## [0.5.0] · 2026-10-21 · Type contract, one folder per Run
 
 - `## Type contract` block added as the first section (haipipe-task `ref/types.md`): description,

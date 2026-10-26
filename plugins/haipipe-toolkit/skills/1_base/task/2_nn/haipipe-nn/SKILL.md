@@ -1,11 +1,11 @@
 ---
 name: haipipe-nn
-description: "Run any Stage 5 NN pipeline work: parses intent (layer + function) and dispatches to the right specialist (algo/tuner/instance/modelset). Use for algorithms (mlpredictor/tsforecast/tefm/tediffusion/bandit), tuner sweeps, ModelInstance materialization, ModelSet pipelines, dashboards, reviews, generation, testing. Trigger: nn pipeline, model, algorithm, tuner, instance, modelset, /haipipe-nn."
+description: "Run any Stage 5 NN pipeline work: parses intent (layer + function) and reads the layer's part (algo/tuner/instance/modelset). Use for algorithm classes (mlpredictor/tsforecast/tefm/tediffusion/bandit: forward, loss, metric), tuner search spaces and sweeps, ModelInstance materialization, ModelSet pipelines and registries: dashboards, reviews, generation, testing. Trigger: nn pipeline, model, algorithm, tuner, hyperparameter, search space, instance, checkpoint, modelset, /haipipe-nn."
 argument-hint: "[layer] [function] [args...]"
-allowed-tools: Bash, Read, Grep, Glob, Skill
+allowed-tools: Bash, Read, Grep, Glob, Skill, Write, Edit
 metadata:
-  version: "0.1.1"
-  last_updated: "2026-07-04"
+  version: "0.2.0"
+  last_updated: "2026-10-25"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -13,7 +13,8 @@ Skill: haipipe-nn (orchestrator)
 =================================
 
 User-facing entry for Stage 5.
-Parses intent, dispatches to the right layer specialist via `Skill()`.
+Parses intent, then reads the layer's part, `_parts/<layer>/PART.md`, and follows it.
+The parts are files of this skill, not separate skills.
 
 ```
 /haipipe-nn                       -> cross-layer dashboard
@@ -27,14 +28,14 @@ Parses intent, dispatches to the right layer specialist via `Skill()`.
 
 ---
 
-Specialists
------------
+Parts
+-----
 
 ```
-haipipe-nn-algo       L1: Algorithm (model class, forward, loss, metric)
-haipipe-nn-tuner      L2: Tuner (hyperparameter sweep, search space)
-haipipe-nn-instance   L3: ModelInstance (materialized weights + config)
-haipipe-nn-modelset   L4: ModelSet / Pipeline (composition of instances)
+_parts/algo/PART.md       L1: Algorithm (model class, forward, loss, metric)
+_parts/tuner/PART.md      L2: Tuner (hyperparameter sweep, search space)
+_parts/instance/PART.md   L3: ModelInstance (materialized weights + config)
+_parts/modelset/PART.md   L4: ModelSet / Pipeline (composition of instances)
 ```
 
 ---
@@ -95,11 +96,11 @@ Step 3: Decide handling:
   - both resolved                          -> dispatch to specialist
   - function resolved, no layer            -> ASK which layer
 
-Step 4: Dispatch:
-    Skill("haipipe-nn-<layer>", args="<function> <remaining_args>")
+Step 4: Read `_parts/<layer>/PART.md` and follow it, with
+        args "<function> <remaining_args>".
 
-Step 5: Capture the specialist's structured tail (status / summary /
-        artifacts / next), present it.
+Step 5: End with the part's structured tail (status / summary /
+        artifacts / next).
 ```
 
 ---
@@ -107,13 +108,13 @@ Step 5: Capture the specialist's structured tail (status / summary /
 Cross-Layer Dashboard (no-arg case)
 ------------------------------------
 
-When invoked with no arguments, fan out to every specialist's dashboard in a single message (parallel) and concatenate:
+When invoked with no arguments, run the `dashboard` function of every part in turn and concatenate:
 
 ```
-Skill("haipipe-nn-algo",      args="dashboard")
-Skill("haipipe-nn-tuner",     args="dashboard")
-Skill("haipipe-nn-instance",  args="dashboard")
-Skill("haipipe-nn-modelset",  args="dashboard")
+_parts/algo/PART.md       dashboard
+_parts/tuner/PART.md      dashboard
+_parts/instance/PART.md   dashboard
+_parts/modelset/PART.md   dashboard
 ```
 
 Emit a 4-line summary (one per layer) plus an overall header.

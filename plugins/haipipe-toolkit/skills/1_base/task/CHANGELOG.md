@@ -4,6 +4,23 @@ task — Changelog
 Layer-scoped changelog for the task (WORK / execution) layer. Newest first.
 Rollup lives in the plugin-level `CHANGELOG.md`.
 
+2026-10-25 - Helper skills merged into parts (JL 261025)
+---------------------------------------------------------
+
+27 helper skills became parts of their main skill, `<main>/_parts/<name>/PART.md`
+(the installers skip `_` folders, so only the main skill is listed):
+`haipipe-nn` 0.2.0 (algo, tuner, instance, modelset), `haipipe-end` 0.3.0 (meta,
+trig, post, src2input, input2src, endpointset, develop-{local,sagemaker,databricks},
+deploy-{local,sagemaker,databricks,mlflow}), `haipipe-data` 0.4.0 (raw, source,
+record, case, aidata, external, remote), `haipipe-task-for-fit` 0.3.0 (gpu,
+gpu-training) and `haipipe-task-for-agent` 0.3.0 (llm-engine). Commands read
+`/haipipe-nn tuner review X`, `/haipipe-end deploy local`, `/haipipe-end
+endpointset review`, `/haipipe-data case design-chef`. Links, commands and
+`companions:` lists across the tree were repointed by
+`diagnostics/merge_parts.py --spec task-pipeline` (Tools root), which is kept for
+the paper, labeling and insight families. Folding the 12 `haipipe-task-for-<type>`
+skills into `haipipe-task` stays out of scope: 2.0.0 routes to them on purpose.
+
 2026-09-28 - No content hashes (JL 260928)
 ------------------------------------------
 
@@ -12,15 +29,15 @@ compared or pinned in a Task record. Run receipts (`haipipe-task` 1.5.0,
 `haipipe-task-for-raw` 0.5.4) record paths only, and a retry's changed-contract
 check uses file modification time. Display-input provenance
 (`haipipe-task-for-display` 0.3.4), external `version.yaml`
-(`haipipe-data-external` 0.3.3), endpoint `manifest.json`
-(`haipipe-end-endpointset` 0.2.2, `haipipe-task-for-endpoint` 0.3.1,
+(`haipipe-data external` 0.3.3), endpoint `manifest.json`
+(`haipipe-end endpointset` 0.2.2, `haipipe-task-for-endpoint` 0.3.1,
 `haipipe-end` 0.2.1), the per-individual `manifest.yaml`
 (`haipipe-individual` 0.1.2) and the report `meta.json` binding
 (`haipipe-individual-inference` 0.1.2, `-report` 0.1.2, `-judge` 0.1.3) drop
 their hash fields. Wording follows in `haipipe-page-task` 0.1.2,
 `haipipe-task-for-evidence` 0.4.1, `haipipe-task-for-stata` 0.3.1,
-`haipipe-workflow` 0.3.2, `haipipe-data-source` 0.3.3, `haipipe-data` 0.3.5,
-`haipipe-task-gpu-training` 0.2.1, `haipipe-task-llm-engine`, and the task
+`haipipe-workflow` 0.3.2, `haipipe-data source` 0.3.3, `haipipe-data` 0.3.5,
+`haipipe-task-for-fit/_parts/gpu-training` 0.2.1, `haipipe-task-for-agent/_parts/llm-engine`, and the task
 agents 3.2.1. Pipeline-internal hashes stay: duplicate-row counting, cache
 file names and pseudonymized keys.
 
@@ -30,14 +47,14 @@ file names and pseudonymized keys.
 `hierarchy.md`: an external-store Block (`b51`-`b59`) uses the same Job
 ranges: `j01`-`j48` one Job per asset (`t01_contract`, `t02_build_<Version>`
 or `t02_freeze_<SDate>`, `t03_validate`, `t04_parity`), `j49_external_releases`,
-and a legacy snapshot as `j51_snapshot_<tag>`. `haipipe-data-external` 0.3.0
-(new `ref/asset-model.md`; `freeze`, `release`, `parity`), `haipipe-data-source`
-0.3.1 and `haipipe-data-case` 0.3.1 (external fields enter only through an
+and a legacy snapshot as `j51_snapshot_<tag>`. `haipipe-data external` 0.3.0
+(new `ref/asset-model.md`; `freeze`, `release`, `parity`), `haipipe-data source`
+0.3.1 and `haipipe-data case` 0.3.1 (external fields enter only through an
 explicit SourceFn lookup), `haipipe-data` 0.3.1 (overview principle 7),
 `haipipe-task-for-data` 0.8.3 (Source Tasks use the asset model),
-`haipipe-end-endpointset` 0.2.1 (package only the release's versions) and
-`haipipe-end-input2src` 0.3.1 (same `enrich_<table>()` at serving, fallback,
-staleness, response logging), `haipipe-data-remote` 0.1.4 (per-asset sync).
+`haipipe-end endpointset` 0.2.1 (package only the release's versions) and
+`haipipe-end input2src` 0.3.1 (same `enrich_<table>()` at serving, fallback,
+staleness, response logging), `haipipe-data remote` 0.1.4 (per-asset sync).
 `haipipe-task-for-data` 0.8.3 also requires workers to read `RUN_CONFIG` and
 adds the checklist for adding a dataset by copying a Job.
 
@@ -71,7 +88,7 @@ extracted raw dataset (WellDoc raw-data shape, `haipipe-task-for-raw` § Raw
 understanding Block); extraction lives in its own Project. One Job per raw
 dataset version, `jNN` local to the Project and shared by `b00` and `b01`,
 never copied from the extraction Project. Raw datasets are named
-`<cohort>-v<yymmdd>` (`haipipe-data-raw` § Dataset naming).
+`<cohort>-v<yymmdd>` (`haipipe-data raw` § Dataset naming).
 
 2026-09-22 — Block numbers are stage ranges (JL)
 ------------------------------------------------
@@ -88,7 +105,7 @@ WellDoc-SPACE shape); `haipipe-task-for-raw` names raw `b00`.
 2026-09-21 — Make GPU execution companions fit-owned (JL)
 ------------------------------------------------------------
 
-Moved `haipipe-task-gpu` and `haipipe-task-gpu-training` under
+Moved `haipipe-task-for-fit/_parts/gpu` and `haipipe-task-for-fit/_parts/gpu-training` under
 `5_fit/haipipe-task-for-fit/`. Their public skill names stay unchanged, so
 invocation by name remains stable. GPU is an execution modifier of a Fit Task,
 not a separate Task domain. The generic companion now covers fit queue
@@ -98,8 +115,8 @@ specialists.
 2026-09-19 — Separate GPU-training lifecycle from LM-engine execution (JL)
 ----------------------------------------------------------------------------
 
-Added `haipipe-task-gpu-training` as the training-specific companion to
-`haipipe-task-for-fit`. Kept `haipipe-task-gpu` as the generic GPU supervisor
+Added `haipipe-task-for-fit/_parts/gpu-training` as the training-specific companion to
+`haipipe-task-for-fit`. Kept `haipipe-task-for-fit/_parts/gpu` as the generic GPU supervisor
 for allocation, teardown, queue receipts, and process safety. LM
 serving/engine/MTP benchmarks remain with their LLM/evaluation owner and the
 generic GPU skill.
@@ -107,7 +124,7 @@ generic GPU skill.
 2026-09-19 — GPU-bound execution gets a dedicated supervisor contract (JL)
 ----------------------------------------------------------------------------
 
-Added the cross-cutting `haipipe-task-gpu` specialist and routed GPU queue,
+Added the cross-cutting `haipipe-task-for-fit/_parts/gpu` specialist and routed GPU queue,
 training, OOM-retry, and sequential Run requests from `haipipe-task` to it.
 The contract requires per-Run receipts, exact GPU preflight, no killing of
 unowned processes, terminal-receipt handoff, finite fallback ladders, and an

@@ -6,6 +6,10 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.2.1] — 2026-10-25
+
+Links, commands and companions repointed at the helper skills merged into `haipipe-nn`, `haipipe-end`, `haipipe-data`, `haipipe-task-for-fit`, `haipipe-task-for-agent` (now `_parts/<name>/PART.md`). (merge-parts 261025)
+
 ## [0.2.0] · 2026-10-21 · Type contract, one folder per Run
 
 - `## Type contract` block added as the first section (haipipe-task `ref/types.md`): algo, role trial,
@@ -34,4 +38,3 @@ Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until J
 ## [1.0.0] — 2026-05-31
 
 - baseline metadata added.
-

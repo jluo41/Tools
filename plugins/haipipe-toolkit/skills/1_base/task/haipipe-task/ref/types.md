@@ -19,7 +19,7 @@ eval         haipipe-task-for-eval             score a pinned ModelInstance on a
 individual   haipipe-task-for-individual       one subject's data over a time window        .sh
 display      haipipe-task-for-display          a display-safe summary table for a Page      .sh
 endpoint     haipipe-task-for-endpoint         package a model set into an Endpoint_Set     .sh (papermill)
-agent        haipipe-task-for-agent            an LLM agent call or campaign                .sh (+ haipipe-task-llm-engine)
+agent        haipipe-task-for-agent            an LLM agent call or campaign                .sh (+ haipipe-task-for-agent/_parts/llm-engine)
 evidence     haipipe-task-for-evidence         the values one Board Page owes               .sh
 stata-cms · stata-case · stata-data · stata-reg
              haipipe-task-for-stata            one stage of the CMS Medicare Stata pipeline .ps1 (Windows server)
@@ -31,7 +31,7 @@ labeling · labeling-building · labeling-scanning
 ```
 
 1. **GPU** is not a type: it is how a fit Task executes. `haipipe-task-for-fit` owns the companions
-   `haipipe-task-gpu` (queue, preflight, receipts) and `haipipe-task-gpu-training` (checkpoint,
+   `haipipe-task-for-fit/_parts/gpu` (queue, preflight, receipts) and `haipipe-task-for-fit/_parts/gpu-training` (checkpoint,
    resume, OOM fallbacks).
 2. **A Block number never says the type** (`ref/pipeline-blocks.md` numbers stages, not types).
 3. **A draft Task** follows Plan ▶ Write ▶ Evidence ▶ Display ▶ Revise ▶ Delivery in its `draft/`,

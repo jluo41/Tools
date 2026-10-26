@@ -23,7 +23,7 @@ Step 2 — Collect metadata
   (e.g., `train_clm_num_modelsize`, `finetuning_event_reg_horizon24`).
 - `ModelInstanceClass`: model class under `code/hainn/`.
 - `modelinstance_name` + `modelinstance_version`: output name (`<name>/@v<NNNN>`).
-- Tuner: which hyperparam grid (see `/haipipe-nn-tuner`).
+- Tuner: which hyperparam grid (see `/haipipe-nn tuner`).
 - AIData name + version.
 - `_meta:` block.
 
@@ -59,7 +59,7 @@ Copy `ref/config-seed.yaml` to `runs/rNN_<run>/config.yaml` (`scripts/config/rNN
 Fill in:
 - `_meta:` block.
 - `ModelInstanceClass:`, `modelinstance_name`, `modelinstance_version`.
-- `model_tuner_name:` (from /haipipe-nn-tuner).
+- `model_tuner_name:` (from /haipipe-nn tuner).
 - `aidata_name` + `aidata_version`.
 - `ModelArgs / TrainingArgs / InferenceArgs / EvaluationArgs`.
 
@@ -77,8 +77,8 @@ Step 6 — Cross-skill link
 --------------------------
 
 After scaffolding, suggest:
-- `/haipipe-nn-tuner` to define the hyperparam grid if not present.
-- `/haipipe-nn-instance` to materialize a ModelInstance from a sweep result.
+- `/haipipe-nn tuner` to define the hyperparam grid if not present.
+- `/haipipe-nn instance` to materialize a ModelInstance from a sweep result.
 
 
 Step 7 — Report
@@ -88,7 +88,7 @@ Step 7 — Report
 status:    ok
 summary:   Scaffolded training Task tNN_<task> under the selected bNN Block / jNN Job.
 artifacts: [paths created]
-next:      /haipipe-nn-tuner (define sweep) OR run a variant
+next:      /haipipe-nn tuner (define sweep) OR run a variant
 ```
 
 

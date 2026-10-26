@@ -8,6 +8,10 @@ died before replying to kernel_info" (the kernel started in the SPACE root, wher
   "$(space_rel …)" -p config "$(space_rel "$CONFIG")")`, the form the older template had: the kernel always starts in
   the Task folder, wherever the ticket is launched, and the notebook holds only SPACE-relative paths.
 
+## [2.0.2] — 2026-10-25
+
+Links, commands and companions repointed at the helper skills merged into `haipipe-nn`, `haipipe-end`, `haipipe-data`, `haipipe-task-for-fit`, `haipipe-task-for-agent` (now `_parts/<name>/PART.md`). (merge-parts 261025)
+
 ## 2.0.0 · 2026-10-21 · two jobs: the Task level and the type door
 
 JL 261021: "I think it takes a role of the task in the block-job-task-run system, and also the task to all kinds of

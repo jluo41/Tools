@@ -109,22 +109,22 @@ task/                                 <- task-scope skills (THIS SECTION)
 |-- (haipipe-workflow/ moved to project/haipipe-run/ref/workflow.md, 2026-10-21)
 |
 |-- 1_data/                             📊 domain 1 — data
-|   |-- haipipe-data + sub-skills          run library
+|   |-- haipipe-data + _parts/             run library (7 parts)
 |   |-- haipipe-task-for-data/             task-author leg
 |   |-- haipipe-task-for-raw/              raw-extraction task-author leg
 |-- 2_nn/                               🧠 domain 2 — nn (algorithm design + smoke)
-|   |-- haipipe-nn + sub-skills            run library (shared with fit)
+|   |-- haipipe-nn + _parts/              run library (4 parts, shared with fit)
 |   |-- haipipe-task-for-algo/             task-author leg
 |-- 3_end/                              🚀 domain 3 — endpoint
-|   |-- haipipe-end + sub-skills           run library
+|   |-- haipipe-end + _parts/             run library (13 parts)
 |   |-- haipipe-task-for-endpoint/         task-author leg
 |-- 4_individual/                       🧍 domain 4 — individual
 |   |-- haipipe-individual + sub-skills    run library
 |   |-- haipipe-task-for-individual/       task-author leg
 |-- 5_fit/                              🏋️ domain 5 — fit (train); shares 2_nn's /haipipe-nn lib
-|   |-- haipipe-task-for-fit/               task-author leg + fit-owned GPU execution companions
-|   |   |-- haipipe-task-gpu/               shared fit queue, preflight, and receipt rules
-|   |   |-- haipipe-task-gpu-training/       checkpoint, resume, and training fallback rules
+|   |-- haipipe-task-for-fit/               task-author leg + fit-owned GPU execution parts
+|   |   |-- _parts/gpu/                      shared fit queue, preflight, and receipt rules
+|   |   |-- _parts/gpu-training/             checkpoint, resume, and training fallback rules
 |-- 6_eval/                             📈 domain 6 — eval / statistical analysis
 |   |-- haipipe-task-for-eval/              task-author leg
 |-- 7_display/                          🖼️ domain 7 — display (figures / tables)
@@ -133,7 +133,7 @@ task/                                 <- task-scope skills (THIS SECTION)
 |   |-- haipipe-task-for-stata/             task-author leg (unified)
 |-- 9_agent/                            🤖 domain 9 — agent (LLM-driven compute)
 |   |-- haipipe-task-for-agent/             task-author leg
-|   |-- haipipe-task-llm-engine/            LLM call engine (shared runner)
+|   |   |-- _parts/llm-engine/               LLM call engine (shared runner)
 ```
 
 (Domain ids are append-only; see "Target Architecture" for the rule. ids 1-4 are
@@ -522,7 +522,7 @@ Critical Distinction: algo-dev vs training
 | Config scale    | minimal (1-batch / tiny)      | full hyperparam grid             |
 | Runtime         | minutes                       | hours-to-days                    |
 | Outputs         | "didn't crash" + 1 loss val   | checkpoint -> _WorkSpace/5       |
-| Pipeline skill  | /haipipe-nn-algo              | /haipipe-nn-tuner + -instance    |
+| Pipeline skill  | /haipipe-nn algo              | /haipipe-nn tuner + instance     |
 +-----------------+-------------------------------+----------------------------------+
 ```
 
@@ -546,11 +546,11 @@ Cross-Skill References
 =======================
 
 ```
-task-data         <->  /haipipe-data (-source / -record / -case / -aidata)
-task-algo         <->  /haipipe-nn-algo (Layer 1)
-task-fit          <->  /haipipe-nn-tuner + /haipipe-nn-instance (Layer 2+3)
+task-data         <->  /haipipe-data (source / record / case / aidata parts)
+task-algo         <->  /haipipe-nn algo (Layer 1)
+task-fit          <->  /haipipe-nn tuner + /haipipe-nn instance (Layer 2+3)
 task-eval         <->  /haipipe-end (or future eval skill)
-task-inference    <->  /haipipe-end-endpointset (profile verb)
+task-inference    <->  /haipipe-end endpointset (profile verb)
 task-display      <->  (none — independent; pulls from results/<run>/)
 task-individual   <->  /haipipe-individual
 task-agent        <->  /claude-api (adjacent; overlap with application — see TODO.md)

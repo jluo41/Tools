@@ -85,10 +85,10 @@ Step 6 — Cross-skill link
 --------------------------
 
 After scaffolding, suggest one of:
-- `/haipipe-data-source`   (stage 1)
-- `/haipipe-data-record`   (stage 2)
-- `/haipipe-data-case`     (stage 3)
-- `/haipipe-data-aidata`   (stage 4)
+- `/haipipe-data source`   (stage 1)
+- `/haipipe-data record`   (stage 2)
+- `/haipipe-data case`     (stage 3)
+- `/haipipe-data aidata`   (stage 4)
 
 These specialists author the actual builder logic in the stage Block's topic Job Task, `b0N_<stage>store/j0N_<fnkind>_<topic>/tNN_<fnkind>_<FnName>/scripts/` (table: `haipipe-data/ref/0-overview.md` § Current Builder Structure).
 
@@ -100,7 +100,7 @@ Step 7 — Report
 status:    ok
 summary:   Scaffolded data-pipeline Task tNN_<task> under bNN_<block>/jNN_<job>; stage <S>.
 artifacts: [paths created]
-next:      /haipipe-data-{source|record|case|aidata}  OR run the builder
+next:      /haipipe-data {source|record|case|aidata}  OR run the builder
 ```
 
 

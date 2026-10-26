@@ -6,8 +6,8 @@ description: >-
   inline, or make a complex relationship easier to scan. Ordinary replies stay
   natural and concise; reply blocks are optional, never the default.
 metadata:
-  version: "0.5.1"
-  last_updated: "2026-10-02"
+  version: "0.5.2"
+  last_updated: "2026-10-25"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -266,10 +266,10 @@ plugins/haipipe-toolkit/skills/
     ├── 1_data/
     │  (umbrella)
     │   ├── haipipe-data/SKILL.md
-    │   ├── haipipe-data-source/SKILL.md
-    │   ├── haipipe-data-record/SKILL.md
-    │   ├── haipipe-data-case/SKILL.md
-    │   └── haipipe-data-aidata/SKILL.md
+    │   ├── haipipe-data/_parts/source/PART.md
+    │   ├── haipipe-data/_parts/record/PART.md
+    │   ├── haipipe-data/_parts/case/PART.md
+    │   └── haipipe-data/_parts/aidata/PART.md
     │
     ├── 2_nn/
     │   └── haipipe-nn/SKILL.md

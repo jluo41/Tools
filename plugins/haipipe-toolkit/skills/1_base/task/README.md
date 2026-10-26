@@ -61,8 +61,8 @@ The number is a permanent domain id, not a full pipeline order. New domains are
 appended and existing ids are not renumbered.
 
 GPU is an execution modifier of a Fit Task rather than a separate domain. The
-Fit family owns `haipipe-task-gpu` for queue/preflight/receipt mechanics and
-`haipipe-task-gpu-training` for checkpoint/resume and training-specific
+Fit family owns `haipipe-task-for-fit/_parts/gpu` for queue/preflight/receipt mechanics and
+`haipipe-task-for-fit/_parts/gpu-training` for checkpoint/resume and training-specific
 fallbacks. Evaluation, serving, and engine tasks keep their own GPU execution
 owners.
 

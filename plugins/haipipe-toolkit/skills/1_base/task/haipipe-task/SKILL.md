@@ -14,8 +14,8 @@ description: >-
   run-sh-template, runtime.yaml, heavy.yaml, check_task_tree, GPU queue, /haipipe-task.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "2.0.1"
-  last_updated: "2026-10-21"
+  version: "2.0.2"
+  last_updated: "2026-10-25"
   folder_owner: canonical
   folder_kind: task
   primary_face: task
@@ -147,8 +147,8 @@ draft                             haipipe-draft (its own Runs in draft/)
 labeling · -building · -scanning  haipipe-labeling
 ```
 
-GPU is how a fit Task executes, not a type: `haipipe-task-for-fit` owns `haipipe-task-gpu` and
-`haipipe-task-gpu-training` (preflight the exact GPUs, never kill an unowned process, one ticket after
+GPU is how a fit Task executes, not a type: `haipipe-task-for-fit` owns `haipipe-task-for-fit/_parts/gpu` and
+`haipipe-task-for-fit/_parts/gpu-training` (preflight the exact GPUs, never kill an unowned process, one ticket after
 the last receipt is terminal, finite OOM fallbacks, every queue step recorded). A staged pipeline
 Project numbers its Blocks by stage (`ref/pipeline-blocks.md`); the number never says the type.
 

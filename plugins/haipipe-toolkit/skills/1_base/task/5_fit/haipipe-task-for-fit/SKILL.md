@@ -1,11 +1,11 @@
 ---
 name: haipipe-task-for-fit
-description: "model-fitting Task specialist: scaffolds jNN_<job>/tNN_<task>/ Task folders that fit/train a model (full hyperparam config, real GPU sweep, checkpoint to _WorkSpace/5-ModelInstanceStore/). NOT algorithm dev -- see /haipipe-task-for-algo. Called by /haipipe-task when task-type=fit. Cross-references /haipipe-nn-tuner and /haipipe-nn-instance."
+description: "model-fitting Task specialist: scaffolds jNN_<job>/tNN_<task>/ Task folders that fit/train a model (full hyperparam config, real GPU sweep, checkpoint to _WorkSpace/5-ModelInstanceStore/). NOT algorithm dev -- see /haipipe-task-for-algo. Called by /haipipe-task when task-type=fit. Cross-references /haipipe-nn tuner and /haipipe-nn instance. Its parts _parts/gpu and _parts/gpu-training own GPU queues (exclusive cards, preflight, OOM backoff, sequential handoff) and checkpoint resume. Trigger: fit task, train model, GPU sweep, GPU queue, checkpoint resume."
 argument-hint: "[project_id] [bNN_<block>/jNN_<job>] [tNN_<task>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-10-21"
+  version: "0.3.0"
+  last_updated: "2026-10-25"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -26,19 +26,19 @@ skill: haipipe-task-for-fit
 does: Trains one model with its full hyperparameters (a real GPU sweep when declared) into a ModelInstance and scores it on the validation split.
 worker: scripts/<worker>.py (Python), calling the ModelInstance and tuner classes under code/hainn/
 config: runs/<run>/config.yaml (seeded from ref/config-seed.yaml), or scripts/config/<run>.yaml in a Block not yet moved
-ticket: runs/<run>/<run>.sh, from ../../haipipe-task/ref/run-sh-template.sh (REQUIRED_RESULTS metrics.json and model_path.txt); a GPU queue runs it through haipipe-task-gpu
+ticket: runs/<run>/<run>.sh, from ../../haipipe-task/ref/run-sh-template.sh (REQUIRED_RESULTS metrics.json and model_path.txt); a GPU queue runs it through `_parts/gpu/PART.md`
 result: $OUTPUT_ROOT/<task>/runs/<run>/result/, with runtime.yaml, model_path.txt and metrics.json before the receipt says complete
 heavy: _WorkSpace/5-ModelInstanceStore/<modelinstance_name>/@v<NNNN>/ (the checkpoints; the Result keeps the pointer model_path.txt)
 roles: [trial, make, fix]
-companions: [haipipe-task-gpu, haipipe-task-gpu-training, haipipe-nn-tuner, haipipe-nn-instance, haipipe-task-for-eval]
+companions: [haipipe-nn, haipipe-task-for-eval]
 plan_sample: ref/workflow-plan-sample.yaml
 ```
 
 ## GPU queue handoff
 
 When the fit job uses a real GPU, a multi-run sweep, or an OOM fallback, also
-read the fit-owned companions `haipipe-task-gpu/SKILL.md` and
-`haipipe-task-gpu-training/SKILL.md`. Keep training semantics, checkpoints,
+read this skill's parts `_parts/gpu/PART.md` and
+`_parts/gpu-training/PART.md`. Keep training semantics, checkpoints,
 and metrics here; let the generic GPU companion own exclusive-card preflight,
 sequential Ticket handoff, teardown, and queue receipts, while the training
 companion owns checkpoint integrity, safe resume, preemption, effective-batch
@@ -85,11 +85,11 @@ Heavy outputs land in: `_WorkSpace/5-ModelInstanceStore/`.
 Cross-reference to pipeline skill
 ----------------------------------
 
-`/haipipe-nn-tuner` defines the hyperparameter search space; `/haipipe-nn-instance` materializes a ModelInstance from a tuner sweep.
+`/haipipe-nn tuner` defines the hyperparameter search space; `/haipipe-nn instance` materializes a ModelInstance from a tuner sweep.
 This skill scaffolds the example task that drives both.
 
-  1. `/haipipe-nn-algo`   — algorithm class exists.
-  2. `/haipipe-nn-tuner`  — author the sweep.
+  1. `/haipipe-nn algo`   — algorithm class exists.
+  2. `/haipipe-nn tuner`  — author the sweep.
   3. `/haipipe-task-for-fit` — scaffold the example task.
   4. Run sweep → ModelInstance → `/haipipe-task-for-eval`.
 
@@ -116,7 +116,7 @@ Return contract
 status:    ok | blocked | failed
 summary:   2-3 sentences on what was scaffolded
 artifacts: [paths created]
-next:      suggested next command (/haipipe-nn-tuner or run.sh)
+next:      suggested next command (/haipipe-nn tuner or run.sh)
 ```
 
 

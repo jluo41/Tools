@@ -3,8 +3,8 @@ name: haipipe-task-for-data
 description: "Data-pipeline Job specialist: scaffolds and executes canonical BJTR Jobs whose Task Folders build or run Stage 1-4 Source/Record/Case/AIData work, including Source raw-name coverage and external-data contracts. Called by /haipipe-task when task-type=data."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.10.0"
-  last_updated: "2026-10-21"
+  version: "0.10.1"
+  last_updated: "2026-10-25"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -37,8 +37,7 @@ result: $OUTPUT_ROOT/<task>/runs/<run>/result/ with runtime.yaml, manifest.json 
   (a Record cook Run adds records.json)
 heavy: the stage store _WorkSpace/{1..4}-*Store/ (SourceSet, RecordSet, CaseSet, AIDataSet)
 roles: [make, check, trial]
-companions: [haipipe-data, haipipe-data-source, haipipe-data-record, haipipe-data-case,
-  haipipe-data-aidata, haipipe-data-external]
+companions: [haipipe-data]
 plan_sample: ref/workflow-plan-sample.yaml
 ```
 
@@ -272,7 +271,7 @@ b01_sourcestore/
   `safer/selftest/pd2d_inline_contract.py`.
 
 Source Tasks attach external data through the asset model
-(`haipipe-data-external/ref/asset-model.md`): an explicit `lookup` per asset
+(`haipipe-data/_parts/external/ref/asset-model.md`): an explicit `lookup` per asset
 with `obs_dt`, versions pinned by a release, and a shared `enrich_<table>()`.
 Their contract records dtype, ordering, missing behavior, and the release and
 asset versions (`external-dependency.json`). Record/Case tasks consume those
@@ -291,10 +290,10 @@ Cross-references
 
 Pipeline code (Fn authoring, review, inspection):
 - `/haipipe-data` — orchestrator for all stages
-- `/haipipe-data-source` — Stage 1 SourceFn
-- `/haipipe-data-record` — Stage 2 HumanFn/RecordFn
-- `/haipipe-data-case` — Stage 3 TriggerFn/CaseFn
-- `/haipipe-data-aidata` — Stage 4 TfmFn/SplitFn
+- `/haipipe-data source` — Stage 1 SourceFn
+- `/haipipe-data record` — Stage 2 HumanFn/RecordFn
+- `/haipipe-data case` — Stage 3 TriggerFn/CaseFn
+- `/haipipe-data aidata` — Stage 4 TfmFn/SplitFn
 
 CLI scripts (direct execution):
 - `code/scripts/haistepcli/source.py` — Stage 1

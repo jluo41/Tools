@@ -6,6 +6,10 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.2.0] — 2026-10-25
+
+Merged 4 helper skill(s) into `_parts/`: `haipipe-nn-algo` -> `_parts/algo`, `haipipe-nn-tuner` -> `_parts/tuner`, `haipipe-nn-instance` -> `_parts/instance`, `haipipe-nn-modelset` -> `_parts/modelset`. /haipipe-nn reads `_parts/<name>/PART.md` instead of calling a separate skill; allowed-tools gained the parts' tools. Old commands map as `/haipipe-nn-algo` -> `/haipipe-nn algo`. (merge-parts 261025)
+
 ## [0.1.1] — 2026-07-24
 
 Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 1.1.0; older entries below keep their original numbers).

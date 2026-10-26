@@ -6,6 +6,10 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.3.0] — 2026-10-25
+
+Merged 1 helper skill(s) into `_parts/`: `haipipe-task-llm-engine` -> `_parts/llm-engine`. /haipipe-task-for-agent reads `_parts/<name>/PART.md` instead of calling a separate skill; allowed-tools gained the parts' tools. Old commands map as `/haipipe-task-llm-engine` -> `haipipe-task-for-agent/_parts/llm-engine`. (merge-parts 261025)
+
 ## [0.2.0] · 2026-10-21 · One folder per Run, and a Type contract
 
 - `SKILL.md` opens with `## Type contract` (the keys of haipipe-task `ref/types.md`), current layout only.
@@ -25,11 +29,11 @@ Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until J
 
 ## [1.3.0] — 2026-07-04
 
-- fn/scaffold Step 6 no longer denies the engine (/haipipe-task-llm-engine named); CHANGELOG reordered newest-first.
+- fn/scaffold Step 6 no longer denies the engine (haipipe-task-for-agent/_parts/llm-engine named); CHANGELOG reordered newest-first.
 
 ## [1.2.0] — 2026-07-04
 
-- review sweep: plan-sample schema header + reviewer name + relative hub paths + letter F as default; body now names /haipipe-task-llm-engine as the domain's LLM call engine.
+- review sweep: plan-sample schema header + reviewer name + relative hub paths + letter F as default; body now names haipipe-task-for-agent/_parts/llm-engine as the domain's LLM call engine.
 
 ## [1.1.0] — 2026-06-09
 
@@ -37,4 +41,3 @@ Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until J
 ## [1.0.0] — 2026-05-31
 
 - baseline metadata added.
-

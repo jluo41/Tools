@@ -5,6 +5,10 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.10.1] — 2026-10-25
+
+Links, commands and companions repointed at the helper skills merged into `haipipe-nn`, `haipipe-end`, `haipipe-data`, `haipipe-task-for-fit`, `haipipe-task-for-agent` (now `_parts/<name>/PART.md`). (merge-parts 261025)
+
 ## [0.10.0] · 2026-10-21 · Type contract, one folder per Run
 
 - `## Type contract` block added as the first section (haipipe-task `ref/types.md`): data, roles make,
@@ -33,7 +37,7 @@ Newest first.
 
 ## [0.8.3] — 2026-09-23
 
-- Source Tasks attach external data through `haipipe-data-external/ref/asset-model.md` (explicit lookup, `obs_dt`, release, shared `enrich_<table>()`); assets are built in the auxiliary `b51` Block.
+- Source Tasks attach external data through `haipipe-data/_parts/external/ref/asset-model.md` (explicit lookup, `obs_dt`, release, shared `enrich_<table>()`); assets are built in the auxiliary `b51` Block.
 - Config binding: workers read `RUN_CONFIG` from the Ticket; materialize Tickets check the output names the config's cohort (a DrFirst worker ignored it and reran its default). Checklist for adding a dataset by copying a Job (same-stem pages, fresh `CODE_REVIEW.md`, retarget defaults).
 
 ## [0.8.2] — 2026-09-23

@@ -111,8 +111,8 @@ Step 6 — Cross-skill link
 After scaffolding, suggest:
 - Upload notebook to Databricks and run (for stage1; ⚡ P2: run the group
   orchestrator or the project's `run_<project>.py` driver)
-- `/haipipe-data-raw understand <cohort>` (to document the data)
-- `/haipipe-data-source` (to wrap into Stage 1 SourceFn later)
+- `/haipipe-data raw understand <cohort>` (to document the data)
+- `/haipipe-data source` (to wrap into Stage 1 SourceFn later)
 
 
 Step 7 — Report
@@ -122,7 +122,7 @@ Step 7 — Report
 status:    ok
 summary:   Scaffolded raw extraction Task tNN_<task> under bNN_<block>/jNN_<job>.
 artifacts: [paths created]
-next:      Upload notebook to Databricks  OR  /haipipe-data-raw understand <cohort>
+next:      Upload notebook to Databricks  OR  /haipipe-data raw understand <cohort>
 ```
 
 

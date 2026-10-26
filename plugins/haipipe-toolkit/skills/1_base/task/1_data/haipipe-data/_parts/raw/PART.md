@@ -1,0 +1,142 @@
+---
+name: raw
+part-of: haipipe-data
+description: "Stage 0' (raw cohort) specialist: builds a business-readable picture of how one data point in a raw cohort extract is generated, BEFORE it enters Stage 1 (Source). Trigger: raw, rawstore, 0-rawstore, raw cohort, data point generation, datapoint timeline, lifecycle, fog of war, /haipipe-data raw."
+argument-hint: "[function] [args...]"
+metadata:
+  version: "0.2.1"
+  last_updated: "2026-10-25"
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
+---
+
+Skill: haipipe-data raw
+=======================
+
+Stage 0' (raw cohort) specialist.
+Owns the raw-extract folders under `_WorkSpace/0-RawDataStore/<cohort>-v<yymmdd>/` and the practice of writing a single-data-point lifecycle diagram BEFORE the cohort is wrapped into SourceFn (Stage 1).
+
+Domain-agnostic: a "raw cohort" can be a CGM stream, an EHR encounter table, a claims/billing line, a sensor session log, a messaging / engagement extract, or any vendor delivery.
+The 5-zone timeline shape applies equally to all.
+
+  Function axis:  dashboard | load | understand | review | hand-off
+
+Distinct from `haipipe-data external` (sideways pantry of dimension lookups, e.g. NPI / NDC / zip3 in US-healthcare contexts, station / device-model lookups in IoT contexts) — raw is the cohort-specific event extract that becomes the spine of Stages 1+.
+
+---
+
+Commands
+--------
+
+```
+/haipipe-data raw                              -> dashboard: list cohorts under 0-RawDataStore/
+/haipipe-data raw dashboard                    -> same
+/haipipe-data raw load <cohort>                -> read parquet schema + every descriptive
+                                                  .txt in the cohort folder; emit a 1-page
+                                                  orientation summary
+/haipipe-data raw understand <cohort>          -> ITERATIVE discussion to draft
+                                                  datapoint-timeline.txt for one data point
+                                                  (see ref/concepts.md for procedure)
+/haipipe-data raw review <cohort>              -> audit cohort/datapoint-timeline.txt:
+                                                  required sections, parquet-claim alignment,
+                                                  eligibility / fog / drift caveats
+/haipipe-data raw hand-off <cohort>            -> derive a SourceFn-ready checklist from
+                                                  the timeline (columns to wrap, derived
+                                                  fields to compute, eligibility flags
+                                                  to keep separate, upstream asks)
+```
+
+---
+
+Dispatch Table
+--------------
+
+```
+Invocation     This skill's ref / templates              Umbrella's fn doc
+-------------- ----------------------------------------- ------------------------------------
+dashboard      ref/concepts.md                           ../../fn/fn-0-dashboard.md
+load           ref/concepts.md                           ../../fn/fn-1-load.md
+understand     ref/concepts.md +
+               templates/datapoint-timeline.txt          (handled inline — see Protocol)
+review         ref/concepts.md                           ../../fn/fn-review.md
+hand-off       ref/concepts.md +
+               ../source/ref/concepts.md    (handled inline — see Protocol)
+(no fn arg)    ref/concepts.md                           (ref-only mode)
+```
+
+`hand-off` reads Stage-1 Source's ref because the timeline directly drives the SourceFn schema downstream.
+
+---
+
+Step-by-Step Protocol
+----------------------
+
+```
+Step 0: Read ../../ref/0-overview.md for cross-stage context. Mandatory.
+Step 1: Parse args after /haipipe-data raw. First positional = function,
+        remaining = cohort name + optional flags.
+Step 2: Read this skill's ref/concepts.md for the 5-zone timeline shape +
+        understand/review/hand-off procedures.
+Step 3: Read additional refs / templates per the dispatch table.
+Step 4: Execute, scoped to _WorkSpace/0-RawDataStore/<cohort>-v<yymmdd>/.
+Step 5: Emit the structured tail (status / summary / artifacts / next).
+```
+
+For `understand` specifically: do NOT write the datapoint-timeline.txt up front.
+The procedure is *iterative dialogue* — see ref/concepts.md "The understand Procedure" for the conversation pattern (restate user's framing → confirm/challenge → draft → validate against parquet → write only after alignment).
+
+For `hand-off`: the output is a checklist, not a code change.
+Stage 1 (SourceFn) work is owned by `haipipe-data source` — this skill stops at "here's what SourceFn must do for this cohort."
+
+---
+
+Stage Scope
+------------
+
+VOLUME-RESIDENT COHORTS (PHI): some raw cohorts never exist under the local `_WorkSpace/` — PHI raw data lives ONLY on a Databricks catalog volume (`<VOLUME_BASE>/0-RawDataStore/<cohort-slug>/`, e.g. REACH's `reach-adhd`).
+For those cohorts, `dashboard`/`load` must look at the volume path (run on the Databricks side, or work from schema docs) — a missing local folder does NOT mean the cohort doesn't exist.
+Only aggregated/derived summaries may come local.
+See `../../../haipipe-task-for-raw/SKILL.md` "Pattern 2".
+
+Dataset naming
+--------------
+
+A raw dataset is `<cohort>-v<yymmdd>`, e.g. `reach-pd2d-v260922`: the day its
+extraction was launched, typed once as `raw_data_name` in the extraction Job's
+`src/config-defaults.yaml` before it runs. Its folder is
+`0-RawDataStore/<dataset>/`, and every downstream store inherits the name
+(`1-SourceStore/<dataset>/@<SourceFn>/` …). A new extraction is a new dataset;
+no extraction writes into another version's folder. In Task folders the name
+drops its hyphens: `jNN_reachpd2d_v260922_raw`.
+
+A finished version is frozen (`_FROZEN.yaml`) and never rewritten. To know a
+new one is due, rerun the table census and diff its per-table `n_rows`: see
+`haipipe-task-for-raw` § Dataset versions: name, freeze, refresh.
+
+Owns:
+  - `_WorkSpace/0-RawDataStore/<cohort>-v<yymmdd>/` folders (and their
+    volume-resident equivalents for PHI cohorts, as above)
+  - The discipline of writing a single-data-point lifecycle diagram
+  - The hand-off contract from Stage 0' → Stage 1
+
+Does NOT own:
+  - Stage 1 SourceFn implementation        — see haipipe-data source
+  - Reference / dimension lookups           — see haipipe-data external
+  - Push / pull of raw extracts to remote   — see haipipe-data remote
+
+Hand-off contract (Stage 0' → Stage 1):
+  Every concept in datapoint-timeline.txt that is marked "derive" or
+  "ask upstream" MUST be addressed by SourceFn — either by computing
+  the column or by carrying a TODO referencing the upstream ask.
+  Eligibility flags (system / cohort gating) MUST stay separate from
+  operational outcome flags (individual behaviour, device dropout,
+  engagement drop-off, etc.).
+
+Reference cohorts (worked examples):
+  Any raw extract works — CGM streams, EHR encounter tables, claims
+  lines, sensor session logs, messaging / engagement extracts, vendor
+  drops. The 5 zones (pre-T₀ background, in-data events, fog of war,
+  late-visible signals, cross-cutting events) apply uniformly.
+
+  Cohorts under `_WorkSpace/0-RawDataStore/` that already have a
+  `datapoint-timeline.txt` can serve as starting templates regardless
+  of their domain.

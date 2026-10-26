@@ -1,10 +1,10 @@
 ---
 name: haipipe-data
-description: "Run any Stage 1-4 data pipeline work: parses intent (stage + function) and dispatches to the right specialist (source/record/case/aidata, plus raw/external/remote). Use for SourceFn/RecordFn/CaseFn/TfmFn/SplitFn builds, runs, dashboards, reviews, or any data-pipeline question. Trigger: data pipeline, source, record, case, aidata, fn build, cook, /haipipe-data."
-allowed-tools: Bash, Read, Grep, Glob, Skill
+description: "Run any Stage 1-4 data pipeline work: parses intent (stage + function) and reads the right part (source/record/case/aidata, plus raw/external/remote). Use for SourceFn/HumanFn/RecordFn/TriggerFn/CaseFn/TfmFn/SplitFn builds, cooks, dashboards, reviews, raw cohort timelines, external assets (freeze, release, parity, join), remote store sync (pull/push), or any data-pipeline question. Trigger: data pipeline, source, record, case, aidata, raw cohort, external asset, remote sync, fn build, cook, /haipipe-data."
+allowed-tools: Bash, Read, Grep, Glob, Skill, Write, Edit
 metadata:
-  version: "0.3.6"
-  last_updated: "2026-10-09"
+  version: "0.4.0"
+  last_updated: "2026-10-25"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -12,7 +12,8 @@ Skill: haipipe-data (orchestrator)
 ===================================
 
 User-facing entry for Stages 1-4.
-Parses intent, dispatches to the right specialist via `Skill()`.
+Parses intent, then reads the stage's part, `_parts/<stage>/PART.md`, and follows it.
+The parts are files of this skill, not separate skills.
 The user types one of:
 
 ```
@@ -28,17 +29,19 @@ The user types one of:
 
 ---
 
-Specialists
------------
+Parts
+-----
+
+Each specialist is a part of this skill, read from `_parts/<name>/PART.md` (not a separate skill).
 
 ```
-haipipe-data-raw        Stage 0' (raw cohort): single-data-point timeline, 0-RawDataStore
-haipipe-data-source     Stage 1: SourceFn, 1-SourceStore
-haipipe-data-record     Stage 2: HumanFn, RecordFn, 2-RecStore
-haipipe-data-case       Stage 3: TriggerFn, CaseFn, 3-CaseStore
-haipipe-data-aidata     Stage 4: TfmFn, SplitFn, 4-AIDataStore
-haipipe-data-external   External assets (ZIP/NPI/NDC/NCPDP/engagement, feature store, APIs): contract, build/freeze/release/parity, lookup preview, ExternalStore
-haipipe-data-remote     Remote storage sync (rclone/GDrive): status/pull/push, all stores
+_parts/raw/        Stage 0' (raw cohort): single-data-point timeline, 0-RawDataStore
+_parts/source/     Stage 1: SourceFn, 1-SourceStore
+_parts/record/     Stage 2: HumanFn, RecordFn, 2-RecStore
+_parts/case/       Stage 3: TriggerFn, CaseFn, 3-CaseStore
+_parts/aidata/     Stage 4: TfmFn, SplitFn, 4-AIDataStore
+_parts/external/   External assets (ZIP/NPI/NDC/NCPDP/engagement, feature store, APIs): contract, build/freeze/release/parity, lookup preview, ExternalStore
+_parts/remote/     Remote storage sync (rclone/GDrive): status/pull/push, all stores
 ```
 
 ---
@@ -194,10 +197,10 @@ Step 3: Decide handling:
   - function resolved, no stage               -> ASK which stage (don't guess),
                                                  except external-only verbs -> external
 
-Step 4: Dispatch:
-    Skill("haipipe-data-<stage>", args="<function> <remaining_args>")
+Step 4: Read `_parts/<stage>/PART.md` and follow it, with
+        args "<function> <remaining_args>".
 
-Step 5: Capture the specialist's structured tail (status / summary /
+Step 5: End with the part's structured tail (status / summary /
         artifacts / next), present it to the user.
 ```
 
@@ -206,7 +209,7 @@ Step 5: Capture the specialist's structured tail (status / summary /
 Cross-Stage Dashboard (no-arg case)
 ------------------------------------
 
-When invoked with no arguments, first print the SPACE status line, then fan out to every specialist's dashboard in a single message (parallel) and concatenate their summary tails:
+When invoked with no arguments, first print the SPACE status line, then run every stage part's `dashboard` in turn and concatenate their summary tails:
 
 ```bash
 python3 <this skill's dir>/cli/space_check.py --brief    # one line, local, read-only
@@ -217,11 +220,11 @@ next-command pointer is `/haipipe-data space-check`.
 
 
 ```
-Skill("haipipe-data-raw",     args="dashboard")
-Skill("haipipe-data-source",  args="dashboard")
-Skill("haipipe-data-record",  args="dashboard")
-Skill("haipipe-data-case",    args="dashboard")
-Skill("haipipe-data-aidata",  args="dashboard")
+_parts/raw/PART.md      dashboard
+_parts/source/PART.md   dashboard
+_parts/record/PART.md   dashboard
+_parts/case/PART.md     dashboard
+_parts/aidata/PART.md   dashboard
 ```
 
 Then emit a 5-line summary (one per stage) plus an overall header that points the user at their next likely command.

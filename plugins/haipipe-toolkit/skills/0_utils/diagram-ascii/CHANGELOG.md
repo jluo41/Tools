@@ -3,6 +3,10 @@
 - Points to `/response-format`'s per-section sketch: these shapes laid out one step per line, up to 10 lines and
   72 columns, emoji on the nodes, no separator lines, after a section's scan list and before its prose.
 
+## [0.5.2] — 2026-10-25
+
+Links, commands and companions repointed at the helper skills merged into `haipipe-nn`, `haipipe-end`, `haipipe-data`, `haipipe-task-for-fit`, `haipipe-task-for-agent` (now `_parts/<name>/PART.md`). (merge-parts 261025)
+
 ## 0.5.0 — 2026-09-20
 
 - Make emoji optional and prioritize readable, accessible labels.

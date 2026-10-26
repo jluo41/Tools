@@ -78,7 +78,7 @@ b61 to b69   labeling     one Block per labeling schema (subjective-label);
   digits by adding 50 (WellDoc Proj01: WellDoc `j51`-`j57`, AI-READI `j72`,
   external `j91`-`j96`).
 - A raw dataset is named `<cohort>-v<yymmdd>`, the day its extraction was
-  launched (`haipipe-data-raw` § Dataset naming); the Job drops the hyphens.
+  launched (`haipipe-data raw` § Dataset naming); the Job drops the hyphens.
 - A range above the data stages starts at `x1`: `b11` is the first model
   Block, `b12` the next question, `b31` the first endpoint Block, as `b51`
   already is in WellDoc and DrFirst. `b10` is the one exception: it is the
@@ -148,4 +148,4 @@ b61 to b69   labeling     one Block per labeling schema (subjective-label);
   `b01/j49_procdf_coverage` spans every dataset. The audit of an older
   whole-store snapshot lives read-only in
   `work/_legacy/b51_release_<tag>_<yymmdd>/`. Layout and rules:
-  `haipipe-data-external/ref/asset-model.md` § Build Block.
+  `haipipe-data/_parts/external/ref/asset-model.md` § Build Block.

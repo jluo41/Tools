@@ -302,8 +302,8 @@ Synthetic tests pass trivially — they don't catch:
    predictions against training `prediction_results.json`. Warns on
    mismatch so the issue is always visible.
 
-3. **Skill docs** (`haipipe-end-src2input/SKILL.md`,
-   `haipipe-end-input2src/SKILL.md`): Roundtrip test with real data is
+3. **Skill docs** (`haipipe-end/_parts/src2input/PART.md`,
+   `haipipe-end/_parts/input2src/PART.md`): Roundtrip test with real data is
    REQUIRED in the design and review protocol. Also documented in
    `haipipe-end/ref/0-overview.md` as a first-class invariant.
 

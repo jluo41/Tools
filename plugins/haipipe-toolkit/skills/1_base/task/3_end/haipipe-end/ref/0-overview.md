@@ -5,7 +5,7 @@ Stage 6 of the haipipe data pipeline.
 Transforms a trained ModelInstance_Set into a self-contained, production-ready Endpoint_Set that can run inference from a raw JSON payload.
 
 **Scope:** Architecture, inference pipeline, directory layout, YAML config, payload/response schemas, SPACE keys.
-Per-Fn-type contracts live with the specialists: `../../haipipe-end-{meta,trig,post,src2input,input2src}/ref/concepts.md`.
+Per-Fn-type contracts live with the specialists: `../_parts/{meta,trig,post,src2input,input2src}/ref/concepts.md`.
 
 ---
 
