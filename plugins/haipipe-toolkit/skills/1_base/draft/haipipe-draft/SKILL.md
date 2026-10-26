@@ -18,8 +18,8 @@ description: >-
   /haipipe-draft, /haipipe-page. The plan (page
   context, structure Run, scratch) is haipipe-draft-logic.
 metadata:
-  version: "0.137.1"
-  last_updated: "2026-10-20"
+  version: "0.137.2"
+  last_updated: "2026-10-26"
   aliases: [haipipe-page]
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---

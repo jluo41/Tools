@@ -1,8 +1,12 @@
-haipipe-display-diagram — Changelog
+haipipe-display diagram — Changelog
 =========================================
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+
+## [0.2.1] — 2026-10-26
+
+Became a part of `haipipe-display`: `haipipe-display/_parts/diagram/PART.md` (was the skill `haipipe-display-diagram`); front matter, commands and links updated. (merge-parts 261026)
 
 ## [0.2.0] — 2026-07-27 — Display Intake
 
@@ -11,7 +15,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 ## [0.1.3] — 2026-07-24 · moved to display/
 
-Moved to `display/` and renamed `haipipe-paper-display-diagram → haipipe-display-diagram` — generic JSON-spec → SVG renderer.
+Moved to `display/` and renamed `haipipe-paper-display-diagram → haipipe-display diagram` — generic JSON-spec → SVG renderer.
 
 ## [0.1.3] — 2026-07-24
 
@@ -19,7 +23,7 @@ Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until J
 
 ## [1.3.0] — 2026-06-22
 
-- joined the display family as haipipe-display-diagram (was haipipe-paper-figure-spec); the deterministic-vector renderer for architecture/pipeline figures.
+- joined the display family as haipipe-display diagram (was haipipe-paper-figure-spec); the deterministic-vector renderer for architecture/pipeline figures.
 
 ## [1.2.0] — 2026-06-22
 

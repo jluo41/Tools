@@ -4,6 +4,10 @@
   evidence gate showed `done` in the version's Work (Paper-AgreeableOpioid-Jama: 20 held lanes read done). The new
   `src/page_export.py::mark_card` records the outcome after the build: `done`, or `failed` when a gate held the lane.
 
+## [0.137.2] — 2026-10-26
+
+Links, commands and companions repointed at the helper skills merged into `haipipe-display` (now `_parts/<name>/PART.md`). (merge-parts 261026)
+
 ## 0.137.0 · 2026-10-21 · renumber, bump, and adopt that lays out a new Page
 
 - JL 261021: "for this one, how did we update the skills and workbench accordingly so we can easily work with other

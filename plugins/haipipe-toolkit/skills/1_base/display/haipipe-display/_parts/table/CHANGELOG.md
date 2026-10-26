@@ -1,7 +1,11 @@
-haipipe-display-table — Changelog
+haipipe-display table — Changelog
 =======================================
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
+
+## [0.2.3] — 2026-10-26
+
+Became a part of `haipipe-display`: `haipipe-display/_parts/table/PART.md` (was the skill `haipipe-display-table`); front matter, commands and links updated. (merge-parts 261026)
 
 ## [0.2.2] - 2026-09-28 - No content hashes (JL 260928)
 
@@ -19,7 +23,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 ## [0.1.0] — 2026-07-24 · moved to display/
 
-Moved to `display/` and renamed `haipipe-paper-display-table → haipipe-display-table` — generic CSV/JSON → LaTeX table renderer.
+Moved to `display/` and renamed `haipipe-paper-display-table → haipipe-display table` — generic CSV/JSON → LaTeX table renderer.
 
 ## [0.1.0] — 2026-07-24
 
@@ -27,4 +31,4 @@ Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until J
 
 ## [1.0.0] — 2026-06-22
 
-- created as the dedicated table renderer of the display family; takes over table duty from haipipe-display-figure (which is now plots-only).
+- created as the dedicated table renderer of the display family; takes over table duty from haipipe-display figure (which is now plots-only).

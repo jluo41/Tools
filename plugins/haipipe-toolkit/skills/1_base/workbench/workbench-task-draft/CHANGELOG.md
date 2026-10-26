@@ -9,6 +9,10 @@
   the examples and note each paragraph's or heading's move and length, write to that pattern, name each departure; with
   none, find and read 3 to 4 first (haipipe-draft-writing 0.26.0 `ref/writing.md` § 0).
 
+## [0.104.16] — 2026-10-26
+
+Links, commands and companions repointed at the helper skills merged into `haipipe-display` (now `_parts/<name>/PART.md`). (merge-parts 261026)
+
 ## 0.104.14 · 2026-10-21 · 5 · Revise: your comments on a sentence, answered by each pass; the text reads as prose
 
 - JL 261021: "我选中一个句子，在 draft 那段的时候，可以让我加个注释（比如点个加号就能加注释），然后也放到 Revise 的那一栏

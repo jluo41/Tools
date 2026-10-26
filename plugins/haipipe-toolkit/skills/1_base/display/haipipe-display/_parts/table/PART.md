@@ -1,11 +1,11 @@
 ---
-name: haipipe-display-table
-description: "Render a publication-quality LaTeX table from an aggregated data file (CSV/JSON) for a paper display unit. Use when user says \"做表\", \"生成表格\", \"regression table\", \"coefficient table\", \"descriptive table\", \"comparison table\", or needs a typeset booktabs table from results. The data renderer for tables, parallel to haipipe-display-figure (plots). Reads aggregated outputs only; never recomputes from raw data."
+name: table
+part-of: haipipe-display
+description: "Render a publication-quality LaTeX table from an aggregated data file (CSV/JSON) for a paper display unit. Use when user says \"做表\", \"生成表格\", \"regression table\", \"coefficient table\", \"descriptive table\", \"comparison table\", or needs a typeset booktabs table from results. The data renderer for tables, parallel to haipipe-display figure (plots). Reads aggregated outputs only; never recomputes from raw data."
 argument-hint: "[table-spec-or-data-path]"
-allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, mcp__codex__codex, mcp__codex__codex-reply
 metadata:
-  version: "0.2.2"
-  last_updated: "2026-07-27"
+  version: "0.2.3"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -15,7 +15,7 @@ Render the LaTeX table(s) for a paper based on: **$ARGUMENTS**
 
 This is the **data-table renderer** of the display family.
 Its sibling
-`haipipe-display-figure` renders data *plots*; this skill renders data
+`haipipe-display figure` renders data *plots*; this skill renders data
 *tables*.
 Both read an aggregated data file and emit a reproducible asset; neither
 recomputes from raw evidence (that is a `haipipe-task-for-display` task).
@@ -23,7 +23,7 @@ recomputes from raw evidence (that is a `haipipe-task-for-display` task).
 ## Output: write into a display unit
 
 The table goes into the caller-supplied unit directory per the shared contract:
-`../ref/display-unit-output-contract.md`. For a Page DISPLAY Result, the caller
+`../../../ref/display-unit-output-contract.md`. For a Page DISPLAY Result, the caller
 supplies `<page>/results/<re-run>/payload/<unit>/`; a View or other caller
 supplies its own unit path.
 THIS renderer's row: asset -> `assets/table-body.tex` (the `tabular`/`threeparttable`
@@ -48,11 +48,11 @@ Legacy units that contain only `source/` remain legacy and are not silently migr
 | **Comparison / feature tables** | ✅ Yes | Method × property matrices, prior-work comparison, capability grids |
 | **Ablation tables** | ✅ Yes | Variant × metric grids with best-row bolding |
 | **Multi-panel tables** | ✅ Yes | Panel A / Panel B stacked under one float with shared header |
-| **Plots (line/bar/scatter/heatmap)** | ❌ No | Use `haipipe-display-figure` |
+| **Plots (line/bar/scatter/heatmap)** | ❌ No | Use `haipipe-display figure` |
 | **Computing the numbers** | ❌ No | The aggregated CSV/JSON must already exist (from a task/probe) |
 
 **Boundary with the figure renderer:** if the asset is a chart, use
-`haipipe-display-figure`.
+`haipipe-display figure`.
 If it is a typeset table, use this skill.
 Tables
 were previously a side-feature of the figure renderer; they now live here so the
@@ -258,7 +258,7 @@ mcp__codex__codex:
 
 The display unit layout (asset -> `assets/table-body.tex` wrapped by `float.tex`,
 approved values -> `intake/inputs/`, rebuild recipe -> `recipe/gen_table*.py`) is the shared contract:
-`../ref/display-unit-output-contract.md`.
+`../../../ref/display-unit-output-contract.md`.
 
 ## Relation to the Display Stage and Tasks
 
@@ -272,7 +272,7 @@ task that runs against secure data and exports a movable aggregated CSV.
 This
 skill turns that CSV into the publication table.
 Same split as
-`haipipe-display-figure`: the task owns the data, the renderer owns the
+`haipipe-display figure`: the task owns the data, the renderer owns the
 typesetting.
 
 ## Specialist Return Contract

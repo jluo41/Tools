@@ -227,7 +227,7 @@ def main():
         (display / "assets" / "plot.pdf").write_bytes(b"pdf")
         (display / "preview.pdf").write_bytes(b"pdf")
         (display / "README.md").write_text(
-            "claim the headline display\nrenderer: haipipe-display-figure\n"
+            "claim the headline display\nrenderer: haipipe-display figure\n"
             "intake: frozen · intake/manifest.yaml\n"
             "serves: C1.P1.B2\naccepted: ✅\n",
             encoding="utf-8",

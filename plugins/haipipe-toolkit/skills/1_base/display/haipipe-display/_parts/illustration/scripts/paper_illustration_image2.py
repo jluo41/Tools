@@ -111,7 +111,7 @@ def build_float_tex(rel_asset: str, caption: str, label: str, placement: str) ->
     """float.tex for a display unit: references the asset under assets/."""
     return "\n".join(
         [
-            "% Rendered by haipipe-display-illustration; rebuild recipe recorded beside this unit.",
+            "% Rendered by haipipe-display illustration; rebuild recipe recorded beside this unit.",
             f"\\begin{{figure}}[{placement}]",
             r"\centering",
             f"\\includegraphics[width=\\textwidth]{{{rel_asset}}}",

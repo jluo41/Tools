@@ -1,8 +1,8 @@
 # Display-Unit Output Contract
 
-Owner: the `display/` family. All five renderer skills (`haipipe-display-table`,
-`haipipe-display-figure`, `haipipe-display-diagram`, `haipipe-display-illustration`,
-and `haipipe-display-tex`) write into a **unit directory** the caller supplies,
+Owner: the `display/` family. All five renderer parts of `haipipe-display` (`table`,
+`figure`, `diagram`, `illustration`,
+and `tex`, each `haipipe-display/_parts/<kind>/PART.md`) write into a **unit directory** the caller supplies,
 not into a flat `figures/` directory. The caller supplies a verified `intake/` and, when a
 wrapper is wanted, the approved caption/label/placement fields. The renderer fills `recipe/` and
 `assets/`; it may serialize `float.tex` only from those explicit caller-owned fields, compiles
@@ -78,11 +78,11 @@ New units use the layout above.
 
 | Renderer | `assets/` | `recipe/` |
 |---|---|---|
-| `-display-table` | `table-body.tex` | `gen_*.py`, reading `intake/inputs/source_data.csv` |
-| `-display-figure` | `figure.pdf` (or `figure.png` when raster output is explicitly selected) | `gen_*.py` (+ `paper_plot_style.py`) |
-| `-display-diagram` | `figure.svg` (+ `figure.pdf`) | the FigureSpec `*.json` |
-| `-display-illustration` | `figure.png` | `prompt.md` (final prompt + bridge job + score) + `review_log.json` |
-| `haipipe-display-tex` | `figure.pdf` (standalone preview/fallback) | hand-authored `<slug>.tex` + `asset.tex` |
+| `_parts/table` | `table-body.tex` | `gen_*.py`, reading `intake/inputs/source_data.csv` |
+| `_parts/figure` | `figure.pdf` (or `figure.png` when raster output is explicitly selected) | `gen_*.py` (+ `paper_plot_style.py`) |
+| `_parts/diagram` | `figure.svg` (+ `figure.pdf`) | the FigureSpec `*.json` |
+| `_parts/illustration` | `figure.png` | `prompt.md` (final prompt + bridge job + score) + `review_log.json` |
+| `_parts/tex` | `figure.pdf` (standalone preview/fallback) | hand-authored `<slug>.tex` + `asset.tex` |
 | PowerPoint-native manual figure | `figure.pdf` (or `figure.svg`) | editable `<slug>.pptx` + `export.md` (source → exported asset) |
 
 For table, plot, diagram, and illustration units, `float.tex` references the approved asset.
@@ -200,11 +200,11 @@ unchanged caller-owned caption, label, and placement. Do not overwrite `float.te
 
 | Display kind | Renderer |
 |---|---|
-| data plot (line/bar/scatter/heatmap/box) | `haipipe-display-figure` |
-| typeset LaTeX table (booktabs) | `haipipe-display-table` |
-| deterministic editable vector diagram (architecture/workflow/pipeline/topology) | `haipipe-display-diagram` |
-| AI concept illustration | `haipipe-display-illustration` |
-| TeX-native unit sharing the paper's fonts and math — tikz, an `algorithm2e` block, or a display equation | `haipipe-display-tex` (hand-authored: the writer is a person, not a script) |
+| data plot (line/bar/scatter/heatmap/box) | `haipipe-display figure` |
+| typeset LaTeX table (booktabs) | `haipipe-display table` |
+| deterministic editable vector diagram (architecture/workflow/pipeline/topology) | `haipipe-display diagram` |
+| AI concept illustration | `haipipe-display illustration` |
+| TeX-native unit sharing the paper's fonts and math — tikz, an `algorithm2e` block, or a display equation | `haipipe-display tex` (hand-authored: the writer is a person, not a script) |
 
 `haipipe-display` is the DOOR over this table: a caller who knows the kind may call a renderer
 directly, and a caller who does not says what they want to the door.

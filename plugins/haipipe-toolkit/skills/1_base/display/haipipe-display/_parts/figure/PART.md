@@ -1,10 +1,10 @@
 ---
-name: haipipe-display-figure
-description: "Generate publication-quality data plots from experiment results (line/bar/scatter/heatmap/box). Use when user says \"画图\", \"作图\", \"generate figures\", \"paper plots\", or needs data-driven plots for a paper. The plot renderer of the display family; tables are rendered by haipipe-display-table."
-allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, mcp__codex__codex, mcp__codex__codex-reply
+name: figure
+part-of: haipipe-display
+description: "Generate publication-quality data plots from experiment results (line/bar/scatter/heatmap/box). Use when user says \"画图\", \"作图\", \"generate figures\", \"paper plots\", or needs data-driven plots for a paper. The plot renderer of the display family; tables are rendered by haipipe-display table."
 metadata:
-  version: "0.2.3"
-  last_updated: "2026-09-04"
+  version: "0.2.4"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -14,12 +14,12 @@ Generate the data plots for a paper based on: **$ARGUMENTS**
 
 > **Boundary:** this skill renders **plots only**. For any other display kind
 > (tables, diagrams, AI concept art), see the sibling-routing table in
-> `../ref/display-unit-output-contract.md`.
+> `../../../ref/display-unit-output-contract.md`.
 
 ## Output: write into a display unit
 
 The plot goes directly into the caller-supplied unit directory per the shared
-contract: `../ref/display-unit-output-contract.md`. For a Page DISPLAY Result,
+contract: `../../../ref/display-unit-output-contract.md`. For a Page DISPLAY Result,
 the caller supplies `<page>/results/<re-run>/payload/<unit>/`; a View or other
 caller supplies its own unit path. This renderer never chooses or creates a
 parallel destination.
@@ -40,15 +40,15 @@ Legacy `source/` units remain valid only through the compatibility path in the s
 | Category | Can auto-generate? | Examples |
 |----------|-------------------|----------|
 | **Data-driven plots** | ✅ Yes | Line plots (training curves), bar charts (method comparison), scatter plots, heatmaps, box/violin plots |
-| **Comparison tables** | ➡️ Use `haipipe-display-table` | LaTeX tables (prior bounds, method features, ablation) now live in the dedicated table renderer |
+| **Comparison tables** | ➡️ Use `haipipe-display table` | LaTeX tables (prior bounds, method features, ablation) now live in the dedicated table renderer |
 | **Multi-panel figures** | ✅ Yes | Subfigure grids combining multiple plots (e.g., 3×3 dataset × method) |
-| **Architecture/pipeline diagrams** | ➡️ Route to `haipipe-display-diagram` | Model architecture, data flow diagrams, system overviews, and deterministic box-and-arrow schematics |
+| **Architecture/pipeline diagrams** | ➡️ Route to `haipipe-display diagram` | Model architecture, data flow diagrams, system overviews, and deterministic box-and-arrow schematics |
 | **Generated image grids** | ❌ No — manual | Grids of generated samples (e.g., GAN/diffusion outputs). These come from running your model, not from this skill |
 | **Photographs / screenshots** | ❌ No — manual | Real-world images, UI screenshots, qualitative examples |
 
 **In practice:** For a typical paper, this skill handles data plots. Tables go to
-`haipipe-display-table`; architecture diagrams go to `haipipe-display-diagram`; qualitative concept
-art goes to `haipipe-display-illustration`. Each result stays in the caller-supplied display unit.
+`haipipe-display table`; architecture diagrams go to `haipipe-display diagram`; qualitative concept
+art goes to `haipipe-display illustration`. Each result stays in the caller-supplied display unit.
 This renderer never writes to a flat `figures/` directory.
 
 ## Constants
@@ -151,7 +151,7 @@ Use this decision tree for data-driven figures (inspired by Imbad0202/academic-r
 | Matrix / grid values | Heatmap | 0.48\textwidth |
 | Distribution comparison | Box/violin plot | 0.48\textwidth |
 | Multi-dataset results | Multi-panel (subfigure) | 0.95\textwidth |
-| Prior work comparison / coefficients | (table) → use `haipipe-display-table` | — |
+| Prior work comparison / coefficients | (table) → use `haipipe-display table` | — |
 
 ### Step 4: Generate the Unit's Figure
 
@@ -193,12 +193,12 @@ for bar, val in zip(bars, data['value']):
 save_fig(fig, 'figure')  # -> assets/figure.pdf
 ```
 
-**Comparison / coefficient tables** (LaTeX): out of scope — use `haipipe-display-table`, which owns booktabs rules, significance stars, SE rows, panels, and table notes.
+**Comparison / coefficient tables** (LaTeX): out of scope — use `haipipe-display table`, which owns booktabs rules, significance stars, SE rows, panels, and table notes.
 Do not emit `.tex` tables from this skill.
 
 **Architecture/pipeline diagrams** are outside this skill's scope.
-Route deterministic diagrams to `haipipe-display-diagram`; route qualitative concept art to
-`haipipe-display-illustration`. Both use the same caller-supplied display unit.
+Route deterministic diagrams to `haipipe-display diagram`; route qualitative concept art to
+`haipipe-display illustration`. Both use the same caller-supplied display unit.
 
 ### Step 5: Run the Active Recipe or a Named Candidate Recipe
 
@@ -289,7 +289,7 @@ Before finishing, verify each figure (from pedrohcgs/claude-code-my-workflow):
 
 The display unit layout (approved values -> `intake/inputs/`, asset -> `assets/figure.pdf`,
 rebuild recipe -> `recipe/gen_figNN_*.py` + `recipe/paper_plot_style.py`) is the shared contract:
-`../ref/display-unit-output-contract.md`.
+`../../../ref/display-unit-output-contract.md`.
 
 ## Figure Type Reference
 
@@ -301,5 +301,5 @@ rebuild recipe -> `recipe/gen_figNN_*.py` + `recipe/paper_plot_style.py`) is the
 | Scatter plot | Correlation analysis | 0.48\textwidth |
 | Heatmap | Attention, confusion matrix | 0.48\textwidth |
 | Box/violin | Distribution comparison | 0.48\textwidth |
-| Architecture | ➡️ Use `haipipe-display-diagram` | — |
+| Architecture | ➡️ Use `haipipe-display diagram` | — |
 | Multi-panel | Combined results (subfigures) | 0.95\textwidth |

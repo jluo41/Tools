@@ -1,11 +1,11 @@
 ---
-name: haipipe-display-diagram
+name: diagram
+part-of: haipipe-display
 description: "Generate deterministic publication-quality architecture, workflow, and pipeline diagrams from structured JSON (FigureSpec) into editable SVG. Use when user says \"架构图\", \"workflow 图\", \"pipeline 图\", \"确定性矢量图\", \"figure spec\", \"draw architecture\", or needs precise, editable, publication-ready vector diagrams. Preferred over AI illustration for formal architecture/workflow figures."
 argument-hint: "[description-of-diagram]"
-allowed-tools: Bash(*), Read, Write, Edit
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-07-27"
+  version: "0.2.1"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -16,7 +16,7 @@ Generate publication-quality **architecture diagrams**, **workflow pipelines**, 
 ## Output: write into a display unit
 
 The diagram goes into the caller-supplied unit directory per the shared contract:
-`../ref/display-unit-output-contract.md`. For a Page DISPLAY Result, the caller
+`../../../ref/display-unit-output-contract.md`. For a Page DISPLAY Result, the caller
 supplies `<page>/results/<re-run>/payload/<unit>/`; a View or other caller
 supplies its own unit path.
 THIS renderer's row: asset -> `assets/figure.svg` (plus `assets/figure.pdf` if you
@@ -33,7 +33,7 @@ Legacy `source/` units remain valid only through the compatibility path in the s
 
 ## When to Use This Skill
 
-**Use `haipipe-display-diagram`** for:
+**Use `haipipe-display diagram`** for:
 - System architecture diagrams (layered, hub-and-spoke, multi-plane)
 - Workflow / pipeline figures
 - Audit cascade / flow-control diagrams
@@ -42,8 +42,8 @@ Legacy `source/` units remain valid only through the compatibility path in the s
 - Figures where determinism matters (same spec → same SVG)
 
 **Do NOT use for:**
-- Data plots (bar/line/scatter) — use `/haipipe-display-figure`
-- Natural/qualitative illustrations — use `/haipipe-display-illustration`
+- Data plots (bar/line/scatter) — use `/haipipe-display figure`
+- Natural/qualitative illustrations — use `/haipipe-display illustration`
 - Quick state-machine / flowchart — use `/mermaid-diagram` (lighter syntax)
 
 ## Core Properties
@@ -262,13 +262,13 @@ Three-stage horizontal cascade with inputs feeding in from top, outputs exiting 
 ## Output Contract
 
 Write into the display unit per the shared contract
-(`../ref/display-unit-output-contract.md`): Intake context -> FigureSpec in `recipe/` ->
+(`../../../ref/display-unit-output-contract.md`): Intake context -> FigureSpec in `recipe/` ->
 editable SVG in `assets/figure.svg` -> optional PDF in `assets/figure.pdf`.
 
 ## Integration with Other Skills
 
 Sibling display renderers and when to use each: see the sibling-routing table in the
-contract (`../ref/display-unit-output-contract.md`).
+contract (`../../../ref/display-unit-output-contract.md`).
 `/mermaid-diagram` is a lighter alternative for simple flowcharts. ARIS
 `/paper-writing` routes FigureSpec illustration requests to this skill; the
 numbered authoring instructions here remain Steps inside the renderer Run.

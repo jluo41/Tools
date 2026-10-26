@@ -3,6 +3,14 @@ display — Changelog
 
 Family-level changes. Skill implementation history stays in each skill's own CHANGELOG.
 
+## 2026-10-26 · the five renderers become parts of the door (JL 261026)
+
+- haipipe-display-table, -figure, -diagram, -illustration and -tex move to
+  `haipipe-display/_parts/<kind>/PART.md` (`git mv`); the installers skip `_` folders, so only the door is listed
+  (476 fewer listing tokens). The door's route table and `haipipe-display-unit-agent` read the part for the kind.
+  Done by `diagnostics/merge_parts.py --spec display` (Tools root); each touched skill got one CHANGELOG entry and
+  one version bump (door 0.5.0).
+
 ## 2026-10-16 · the Excalidraw skills move out (JL 261016)
 
 - excalidraw-studio, -report, -section, -read, -revise, -workflow, -job, -task, -slide and -ideation move to
@@ -22,8 +30,8 @@ working drawing, like `excalidraw-report` and `excalidraw-draft`, not a display 
 AGENTS.md rule 9: a display intake records where its snapshot came from and
 when it was frozen (`snapshot.materialized_at`), never a `sha256`; a local
 canonical artifact newer than the snapshot means the snapshot is stale.
-`haipipe-display` 0.3.6 (shared `ref/`), `haipipe-display-table` 0.2.2,
-`haipipe-display-figure` 0.2.3 and `haipipe-display-unit-agent` 0.1.1 follow.
+`haipipe-display` 0.3.6 (shared `ref/`), `haipipe-display table` 0.2.2,
+`haipipe-display figure` 0.2.3 and `haipipe-display-unit-agent` 0.1.1 follow.
 `figure-to-svg` finds a byte-identical prior source with `cmp -s`, not MD5.
 
 ## 2026-09-20 · Figure review evidence and tolerances
@@ -35,13 +43,13 @@ differences; missing context returns `not-verifiable`.
 
 ## 2026-08-16 · The ✒️ tex kind gets its skill
 
-JL: "should we have a new skill for the tikz? or make -diagram include tikz?"
-Ruled: its own skill, `haipipe-display-tex`, named after the MECHANISM — so one
+JL: "should we have a new skill for the tikz? or make haipipe-display diagram include tikz?"
+Ruled: its own skill, `haipipe-display tex`, named after the MECHANISM — so one
 skill covers a TikZ figure, an `algorithm2e` block, and a display equation,
 which share a writer (a person), a recipe (a hand-authored `.tex`), and a
 binding (`float.tex` `\input`s it).
 
-Kept out of `-diagram` deliberately: that skill compiles a JSON FigureSpec
+Kept out of `haipipe-display diagram` deliberately: that skill compiles a JSON FigureSpec
 through 1095 lines of SVG machinery, while this kind has no script at all, and
 FigureSpec has no vocabulary for named tikz styles, TeX macros, or math. The
 craft written down came from QPf5's two hand-authored units: the two-compile law
@@ -61,7 +69,7 @@ reversed and the real reduction happened by retirement instead.
 
 - `haipipe-display` stays, now a PURE ROUTER: one name to say when you do not
   know which renderer you want, skippable when you do.
-- `haipipe-display-table` and `haipipe-display-figure` return as full skills.
+- `haipipe-display table` and `haipipe-display figure` return as full skills.
 - RETIRED to `_todo/`, per the toolkit's park-don't-delete convention:
   `haipipe-display-poster`, `haipipe-display-slides`, their paper-side selection
   doors `paper-poster` and `paper-slides`, and `ref/content-plan-spec.md`, which

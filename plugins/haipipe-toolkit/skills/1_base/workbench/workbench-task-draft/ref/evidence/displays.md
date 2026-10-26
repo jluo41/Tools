@@ -41,18 +41,18 @@ skill, and the renderer owns `recipe/` end to end.
 ```text
 driven by   kind             renderer                          recipe holds
 ──────────────────────────────────────────────────────────────────────────────
-data        📊 table         haipipe-display-table             the build script
-data        📈 figure        haipipe-display-figure            the python + receipts
-concept     📐 diagram       haipipe-display-diagram           the FigureSpec JSON → SVG
-concept     ✒️ tex           haipipe-display-tex               the .tex source
-concept     🎨 illustration  haipipe-display-illustration      the prompt + review log
+data        📊 table         haipipe-display table             the build script
+data        📈 figure        haipipe-display figure            the python + receipts
+concept     📐 diagram       haipipe-display diagram           the FigureSpec JSON → SVG
+concept     ✒️ tex           haipipe-display tex               the .tex source
+concept     🎨 illustration  haipipe-display illustration      the prompt + review log
 ```
 
 The ✒️ row is named after the MECHANISM, not after one package (JL 260816): tikz, an
 `algorithm2e` block, and a display equation are one kind, because they share the writer (a
 person), the recipe (a hand-authored `.tex` that `float.tex` inputs), and now one skill.
 Three names for one mechanism would be the drift.
-`haipipe-display-tex` holds that kind's craft, including the rule that such a unit still owes
+`haipipe-display tex` holds that kind's craft, including the rule that such a unit still owes
 `assets/figure.pdf`, since a consumer's master rarely carries the author's preamble.
 
 `haipipe-display` is the DOOR over that table (JL 260816): say what you want shown and it picks the renderer, or name the renderer directly when the kind is already clear.

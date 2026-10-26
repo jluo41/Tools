@@ -8,6 +8,9 @@ description: >-
   diagram into an editable svg, or vectorize a multi-item figure. Also home of
   the workbench's lesson / feedback / digest verbs.
 
+metadata:
+  version: "0.1.0"
+  last_updated: "2026-10-26"
 ---
 
 # figure-to-svg

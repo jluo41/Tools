@@ -1,9 +1,10 @@
 ---
 name: haipipe-display
-description: "THE one door for display work: say what you want shown and this routes it to the right renderer by KIND, then the renderer writes a display unit per ref/display-unit-output-contract.md. Five renderers: 📊 haipipe-display-table · 📈 haipipe-display-figure · 📐 haipipe-display-diagram · 🎨 haipipe-display-illustration · ✒️ haipipe-display-tex (hand-authored TikZ, algorithm blocks, display equations). Every display a reader sees then MUST pass the revise loop (ref/display-revise-loop.md): one question per display, one colour scheme, a blind review by a fresh agent saved as review/rNN.md, revise, review again until overall >= 8/10 with no dimension under 7, at most 4 rounds. Use when user says 做表, 生成表格, regression table, 画图, 作图, generate figures, paper plots, 架构图, concept figure, make a display, render a unit, display unit, which renderer, display review, display loop, revise the figures, blind review of displays, journal-ready figures, /haipipe-display, /haipipe-paper-display."
+description: "THE one door for display work: say what you want shown and this routes it to the right renderer by KIND, then the renderer writes a display unit per ref/display-unit-output-contract.md. Five renderers, each a part read from _parts/<kind>/PART.md: 📊 table · 📈 figure · 📐 diagram (editable SVG) · 🎨 illustration (AI image) · ✒️ tex (hand-authored TikZ, algorithm blocks, display equations). Every display a reader sees then MUST pass the revise loop (ref/display-revise-loop.md): one question per display, one colour scheme, a blind review by a fresh agent saved as review/rNN.md, revise, review again until overall >= 8/10 with no dimension under 7, at most 4 rounds. Use when user says 做表, 生成表格, regression table, 画图, 作图, generate figures, paper plots, 架构图, concept figure, make a display, render a unit, display unit, which renderer, display review, display loop, revise the figures, blind review of displays, journal-ready figures, /haipipe-display, /haipipe-paper-display."
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-10-22"
+  version: "0.5.0"
+  last_updated: "2026-10-26"
+allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, mcp__codex__codex, mcp__codex__codex-reply, WebSearch, mcp__codex-image2__generate, mcp__codex-image2__generate_start, mcp__codex-image2__generate_status
 ---
 
 # /haipipe-display · one door, five renderers, one unit contract
@@ -15,13 +16,13 @@ The unit contract decides what the folder looks like, and it wins any disagreeme
 ## 🧭 Route by kind
 
 ```
-the ask                          kind             renderer
+the ask                          kind             renderer (read this part)
 ──────────────────────────────────────────────────────────────────────────
-numbers as a typeset table       📊 table         haipipe-display-table
-numbers as a plot                📈 figure        haipipe-display-figure
-a concept as an editable SVG     📐 diagram       haipipe-display-diagram
-a concept as an AI illustration  🎨 illustration  haipipe-display-illustration
-a figure in the document's TeX   ✒️ tex           haipipe-display-tex
+numbers as a typeset table       📊 table         _parts/table/PART.md
+numbers as a plot                📈 figure        _parts/figure/PART.md
+a concept as an editable SVG     📐 diagram       _parts/diagram/PART.md
+a concept as an AI illustration  🎨 illustration  _parts/illustration/PART.md
+a figure in the document's TeX   ✒️ tex           _parts/tex/PART.md
   (or an algorithm block,                           hand-authored: the writer
    or a display equation)                           is a person, not a script
 ```

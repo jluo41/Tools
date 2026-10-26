@@ -1,5 +1,6 @@
 ---
-name: haipipe-display-tex
+name: tex
+part-of: haipipe-display
 description: >-
   Author a TeX-NATIVE display unit by hand: a TikZ figure, an algorithm2e
   block, or a display equation, written as one .tex in the unit's recipe/ so
@@ -8,17 +9,17 @@ description: >-
   Use when user says tikz, TikZ 图, 用 LaTeX 画图, algorithm block, 算法框, 公式 float.
 argument-hint: "[what to draw, and the unit directory]"
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-08-16"
+  version: "0.1.1"
+  last_updated: "2026-10-26"
 ---
 
-# /haipipe-display-tex · the display the document itself draws
+# /haipipe-display tex · the display the document itself draws
 
 The other renderers run a script and hand you a picture.
 This kind has no script: a PERSON writes TeX, and the document's own engine draws it.
 That is the whole reason to choose it, and the whole reason it needs rules.
 
-Everything about the unit folder is `../ref/display-unit-output-contract.md`; this file owns only the TeX-native delta.
+Everything about the unit folder is `../../../ref/display-unit-output-contract.md`; this file owns only the TeX-native delta.
 
 ## ✒️ One kind, three shapes
 
@@ -122,10 +123,8 @@ The trade is honest: TeX-native buys typographic unity and the full TeX language
 
 ## 📂 Files
 
-- `../ref/display-unit-output-contract.md`
+- `../../../ref/display-unit-output-contract.md`
   The unit folder every kind writes into; it wins any disagreement with this file.
-- `../haipipe-display/SKILL.md`
+- `../../SKILL.md`
   The door that routes here.
-- Historical specimens: `../../diagrams/BoardSkillBoard-260722/QPf-page-folder/QPf5-display/display/`
-  contains `Display1-pipeline-tikz` and `Display2-small-paper-tikz`. They are examples only; new
-  output goes to the unit directory supplied by the caller.
+- New output goes to the unit directory supplied by the caller.

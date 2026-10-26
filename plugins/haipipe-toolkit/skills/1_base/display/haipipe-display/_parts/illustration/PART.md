@@ -1,11 +1,11 @@
 ---
-name: haipipe-display-illustration
+name: illustration
+part-of: haipipe-display
 description: "AI-illustration renderer of the display family: generate publication-quality academic concept figures (architecture/method/pipeline/taxonomy) through a local Codex app-server bridge that uses Codex native image generation. Use when user says \"画架构图\", \"method illustration\", \"concept figure\", \"AI 配图\", or needs an AI-rendered concept figure."
 argument-hint: "[description-or-method-file]"
-allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, WebSearch, mcp__codex-image2__generate, mcp__codex-image2__generate_start, mcp__codex-image2__generate_status, mcp__codex__codex, mcp__codex__codex-reply
 metadata:
-  version: "0.2.2"
-  last_updated: "2026-08-05"
+  version: "0.2.3"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -17,7 +17,7 @@ and a **local Codex app-server MCP bridge** as the raster renderer.
 ## Output: write into a display unit
 
 The caller supplies the unit path per the shared contract:
-`../ref/display-unit-output-contract.md`. For a Page DISPLAY Result, this is
+`../../../ref/display-unit-output-contract.md`. For a Page DISPLAY Result, this is
 `<page>/results/<re-run>/payload/<unit>/`; View and other callers supply their own
 path. The bridge renders scratch candidates under `<work-root>/figures/ai_generated/`;
 only a caller-approved candidate is finalized into the supplied unit. This
@@ -49,7 +49,7 @@ dose-response, subgroup, etc.) must be rendered from real data by a task
 An
 AI raster of a data figure is unverifiable and unfit for a data-driven venue.
 For deterministic vector schematics (e.g. a study-flow / CONSORT diagram), prefer
-`haipipe-display-diagram` (JSON -> SVG, no external service) or a
+`haipipe-display diagram` (JSON -> SVG, no external service) or a
 task-rendered matplotlib schematic; reach for image2 only when you want a richer
 conceptual illustration than a vector spec can express, typically for a
 conference/ML venue.
@@ -138,7 +138,7 @@ Aim for the balance point: neither overly conservative nor flashy.
 | **Method illustrations** | Excellent | Conceptual diagrams, algorithm flowcharts |
 | **Conceptual figures** | Good | Comparison diagrams, taxonomy trees |
 
-**Not for:** photo-realistic scenes, or any display better served by a sibling renderer — see the sibling-routing table in `../ref/display-unit-output-contract.md`.
+**Not for:** photo-realistic scenes, or any display better served by a sibling renderer — see the sibling-routing table in `../../../ref/display-unit-output-contract.md`.
 
 ## Procedure: MUST EXECUTE ALL STEPS
 
@@ -283,7 +283,7 @@ explicitly approves that candidate.
 ## Step 7: Promote after caller approval, then verify
 
 After the caller explicitly approves promotion, finalize INTO THE DISPLAY UNIT
-at the caller-supplied path (see `../ref/display-unit-output-contract.md`). Pass
+at the caller-supplied path (see `../../../ref/display-unit-output-contract.md`). Pass
 `--display-unit <unit-dir>` so the helper writes
 `assets/figure.png` + `float.tex` (only from the caller-approved caption + label + placement, never
 invented or changed) + `recipe/review_log.json`,
@@ -343,4 +343,4 @@ output remains outside Page, View, and Paper acceptance.
 
 The display unit layout (asset -> `assets/figure.png`, rebuild spec -> `recipe/prompt.md`
 + `recipe/review_log.json` + `recipe/verify.json`) is the shared contract:
-`../ref/display-unit-output-contract.md`.
+`../../../ref/display-unit-output-contract.md`.

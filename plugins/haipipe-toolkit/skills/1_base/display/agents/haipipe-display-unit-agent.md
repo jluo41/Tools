@@ -70,11 +70,11 @@ printed cell against the card's `proof/`.
 Load `haipipe-display`, the one door, and let the `kind` route it:
 
 ```text
-📊 table  → haipipe-display-table        assets/table-body.tex
-📈 figure → haipipe-display-figure       assets/figure.pdf
-📐 diagram→ haipipe-display-diagram      recipe/spec.json → assets/figure.svg + .pdf
-✒️ tex    → haipipe-display-tex          recipe/*.tex
-🎨 illust → haipipe-display-illustration assets/figure.png
+📊 table  → _parts/table         assets/table-body.tex
+📈 figure → _parts/figure        assets/figure.pdf
+📐 diagram → _parts/diagram       recipe/spec.json → assets/figure.svg + .pdf
+✒️ tex    → _parts/tex           recipe/*.tex
+🎨 illust → _parts/illustration  assets/figure.png
 ```
 
 Then `float.tex` (caption and label, caller-owned), `preview.tex`, and compile

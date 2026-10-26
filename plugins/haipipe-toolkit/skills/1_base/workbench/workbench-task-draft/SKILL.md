@@ -14,8 +14,8 @@ description: >-
   file, record shape, evidence bundle, delivery tab, folder tab, stale
   workbench, workbench-page, /workbench-page, /workbench-task-draft.
 metadata:
-  version: "0.104.15"
-  last_updated: "2026-10-20"
+  version: "0.104.16"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

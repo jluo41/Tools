@@ -201,6 +201,7 @@ def tools_skills():
                 "name": name, "path": str(rel), "plugin": plugin, "parts": parts,
                 "aliases": [str(a) for a in aliases],
                 "version": str(((meta.get("metadata") or {}) if isinstance(meta.get("metadata"), dict) else {}).get("version", "")),
+                "description": desc,
                 "listing": measure(listing), "skill": measure(text), "folder": folder_size(folder),
                 "problems": problems,
             }
@@ -348,6 +349,7 @@ def build(args):
     agents, agents_note = scan_install_dir(AGENTS_SKILLS, "~/.agents/skills")
     agents_same = AGENTS_SKILLS.is_symlink() and os.path.realpath(AGENTS_SKILLS) == os.path.realpath(CLAUDE_SKILLS)
     plugins = plugin_skills()
+    codex = codex_links()
     if args.no_usage:
         stats, nfiles = defaultdict(lambda: {"calls": 0, "commands": 0, "recent": 0, "last": ""}), 0
     else:
@@ -403,7 +405,8 @@ def build(args):
                 text = read_text(src / "SKILL.md")
                 meta, _ = parse_front_matter(split_front_matter(text)[0])
                 size = {"listing": measure("%s: %s" % (meta.get("name") or name, meta.get("description") or "")),
-                        "skill": measure(text), "folder": folder_size(src)}
+                        "skill": measure(text), "folder": folder_size(src),
+                        "description": str(meta.get("description") or "")}
         origin = "tools" if t else ((c or a or p)["kind"])
         rows.append({
             "name": name, "origin": origin, "path": t["path"] if t else (c or a or p)["target"],
@@ -422,6 +425,8 @@ def build(args):
             "uses": u["calls"] + u["commands"], "skill_calls": u["calls"], "commands": u["commands"],
             "uses_recent": u["recent"], "last_used": u["last"] or "-",
             "problems": " | ".join(problems),
+            "area": area_of(t["path"] if t else "", origin, name),
+            "what": short_what(size.get("description", "")),
         })
 
     # what is loaded every session: everything visible in ~/.claude/skills plus plugins
@@ -495,9 +500,71 @@ def build(args):
         "skill_calls": sum(s["calls"] for s in stats.values()),
         "commands": sum(s["commands"] for s in stats.values()),
         "problems": sum(1 for r in rows if r["problems"]),
+        "codex_links": codex["links"], "codex_dangling": codex["dangling"], "codex_targets": codex["targets"],
     }
     aliases = sorted(alias_of)
     return rows, recs, summary, stats, aliases
+
+
+def codex_links():
+    """~/.codex/skills: how many links, how many dangle, where the dangling ones point."""
+    base = HOME / ".codex" / "skills"
+    out = {"links": 0, "dangling": 0, "targets": {}}
+    if not base.is_dir():
+        return out
+    for e in base.iterdir():
+        if e.is_symlink():
+            out["links"] += 1
+            if not os.path.exists(os.path.realpath(e)):
+                out["dangling"] += 1
+                root = os.readlink(e).split("/skills/")[0] if "/skills/" in os.readlink(e) else os.path.dirname(os.readlink(e))
+                out["targets"][root] = out["targets"].get(root, 0) + 1
+    return out
+
+
+AREA_ORDER = ["Utilities", "Base", "Theme", "Package", "Plugin", "From claude.ai", "Copied in", "Other"]
+
+
+def area_of(path, origin, name):
+    """A reader's group: Utilities, Base · <family>, Theme · <theme>, Package · <plugin>, ..."""
+    parts = Path(path).parts if path else ()
+    if parts and len(parts) > 3 and parts[1] == "haipipe-toolkit":
+        layer = parts[3]
+        if layer == "0_utils":
+            return "Utilities"
+        if layer == "1_base" and len(parts) > 4:
+            return "Base · " + parts[4]
+        if layer == "2_theme" and len(parts) > 4:
+            return "Theme · " + parts[4]
+        return "Other"
+    if parts and len(parts) > 1:
+        return "Package · " + parts[1]
+    if origin == "synced":
+        return "From claude.ai (synced)"
+    if origin == "plugin":
+        return "Plugin · " + name.split(":")[0]
+    if origin == "copy":
+        return "Copied in (not from Tools)"
+    return "Other"
+
+
+def area_key(area):
+    head = area.split(" ")[0]
+    return (next((i for i, a in enumerate(AREA_ORDER) if area.startswith(a)), len(AREA_ORDER)), area)
+
+
+def short_what(desc, width=110):
+    """The first sentence of a description, without its Trigger list."""
+    d = re.sub(r"\s+", " ", str(desc or "")).strip()
+    d = re.split(r"\s*Trigger[s]?:", d)[0].strip()
+    m = re.search(r"^(.+?[.!?])(\s|$)", d)
+    d = m.group(1) if m else d
+    return d if len(d) <= width else d[:width - 1].rstrip() + "…"
+
+
+def bar(value, total, width=24):
+    n = int(round(width * value / total)) if total else 0
+    return "█" * n + "·" * (width - n)
 
 
 def md_table(headers, rows):
@@ -508,64 +575,205 @@ def md_table(headers, rows):
 
 
 def write_md(path, rows, recs, summary, stats, aliases, args):
+    """The report, grouped by topic: at a glance, what is there, use, cost, installs, problems, advice."""
     s = summary
+    tools_rows = [r for r in rows if r["origin"] == "tools"]
+    areas = {}
+    for r in rows:
+        areas.setdefault(r["area"], []).append(r)
+    order = sorted(areas, key=area_key)
+    tools_areas = [a for a in order if any(r["origin"] == "tools" for r in areas[a])]
+    total_tok = sum(r["listing_tokens"] for r in tools_rows) or 1
+    unused = [r for r in tools_rows if r["uses"] == 0]
+    probs = [(r["name"], p) for r in rows for p in r["problems"].split(" | ") if p]
     L = []
-    L.append("# Skill report %s" % s["generated"])
-    L.append("")
-    L.append("Tools: `%s`. Tokens are characters / 4. Uses count Skill tool calls and typed `/name` "
-             "commands in %d transcripts (`~/.claude/projects/*/*.jsonl`%s); recent = last %d days."
-             % (TOOLS, s["transcripts"], "" if args.no_subagents else " and their `subagents/*.jsonl`",
-                args.recent_days))
-    L.append("")
-    L.append("## Summary")
-    L.append("")
-    L.append(md_table(["Measure", "Value"], [
-        ("Tools skills (installable SKILL.md)", s["tools_skills"]),
-        ("Parts inside Tools skills (_parts/*/PART.md)", s["tools_parts"]),
-        ("Entries in ~/.claude/skills", "%d top-level; %d skills (%d links, %d copies, %d synced, %d dangling)"
-         % (s["claude_top"], s["claude_entries"], s["claude_links"], s["claude_copies"], s["claude_synced"], s["claude_dangling"])),
-        ("Entries in ~/.agents/skills", "%d %s" % (s["agents_entries"], ("(" + s["agents_note"] + ")") if s["agents_note"] else "")),
-        ("Plugin skills", s["plugin_skills"]),
-        ("Listing tokens, everything installed", fmt(s["listing_tokens_total"])),
-        ("Listing tokens, Tools skills", fmt(s["listing_tokens_tools"])),
-        ("SKILL.md tokens, Tools skills", fmt(s["skill_tokens_tools"])),
-        ("Folder tokens, Tools skills", fmt(s["folder_tokens_tools"])),
-        ("Skill tool calls / commands counted", "%s / %s" % (fmt(s["skill_calls"]), fmt(s["commands"]))),
+    add = L.append
+
+    add("# Skill report · %s" % s["generated"])
+    add("")
+    add("What is installed, what it costs every session, what is used, and what to do next. "
+        "Tokens are characters / 4. Uses = Skill tool calls + typed `/name` commands in %s transcripts%s; "
+        "recent = last %d days."
+        % (fmt(s["transcripts"]), "" if args.no_subagents else " (sessions and their subagents)", args.recent_days))
+    add("")
+
+    # 1. at a glance
+    add("## 1. At a glance")
+    add("")
+    add(md_table(["", "Now"], [
+        ("Skills in Tools", s["tools_skills"]),
+        ("Parts inside them (`_parts/*/PART.md`, not listed)", s["tools_parts"]),
+        ("Areas (utilities, base families, themes, packages)", len(tools_areas)),
+        ("Entries in `~/.claude/skills`", "%d (%d dangling)" % (s["claude_top"], s["claude_dangling"])),
+        ("Listing tokens every session (all installed)", fmt(s["listing_tokens_total"])),
+        ("Tools skills never used", "%d of %d" % (len(unused), len(tools_rows))),
         ("Skills with a problem", s["problems"]),
     ]))
-    L.append("")
-    L.append("## Recommendations")
-    L.append("")
-    for i, (title, detail) in enumerate(recs, 1):
-        L.append("> **%d. %s**" % (i, title))
-        for line in detail.splitlines():
-            L.append(">")
-            L.append("> " + line)
-        L.append("")
-    L.append("## Skills")
-    L.append("")
-    L.append(md_table(
-        ["Skill", "Origin", "Installed", "Version", "Parts", "List tok", "SKILL lines", "SKILL tok",
-         "Folder files", "Folder lines", "Folder tok", "Uses", "Recent", "Last used", "Path"],
-        [(r["name"], r["origin"], r["installed"], r["version"], r["parts"].replace(";", ", "), r["listing_tokens"],
-          r["skill_lines"], r["skill_tokens"], r["folder_files"], r["folder_lines"], r["folder_tokens"],
-          r["uses"], r["uses_recent"], r["last_used"], r["path"].replace(str(HOME), "~"))
-         for r in sorted(rows, key=lambda r: (r["origin"] != "tools", r["name"]))]))
-    L.append("")
-    L.append("## Problems")
-    L.append("")
-    probs = [(r["name"], p) for r in rows for p in r["problems"].split(" | ") if p]
-    L.append(md_table(["Skill", "Problem"], probs) if probs else "None.")
-    L.append("")
-    L.append("## Uses not matched to a skill")
-    L.append("")
-    L.append("Built-in commands and names no installed skill carries (old names, plugin commands).")
-    L.append("")
+    add("")
+    add("**Key findings**")
+    add("")
+    top = sorted(tools_rows, key=lambda r: -r["uses"])[:3]
+    heavy_area = max(tools_areas, key=lambda a: sum(r["listing_tokens"] for r in areas[a] if r["origin"] == "tools"))
+    heavy_tok = sum(r["listing_tokens"] for r in areas[heavy_area] if r["origin"] == "tools")
+    findings = [
+        "Most used: %s." % ", ".join("`%s` (%d)" % (r["name"], r["uses"]) for r in top),
+        "%d of %d Tools skills were never used; they cost %s listing tokens every session."
+        % (len(unused), len(tools_rows), fmt(sum(r["listing_tokens"] for r in unused))),
+        "The heaviest area is %s: %s listing tokens (%d%%)." % (heavy_area, fmt(heavy_tok), 100 * heavy_tok // total_tok),
+        "%d skills have a problem (broken links, long descriptions, front matter); see section 6." % s["problems"],
+    ]
+    if s.get("codex_dangling"):
+        findings.append("`~/.codex/skills`: %d of %d links dangle (they point at an old checkout)."
+                        % (s["codex_dangling"], s["codex_links"]))
+    for i, f in enumerate(findings, 1):
+        add("%d. %s" % (i, f))
+    add("")
+    add("**Where the listing tokens go** (Tools skills, by area)")
+    add("")
+    add("```text")
+    width = max(len(a) for a in tools_areas)
+    peak = max(sum(r["listing_tokens"] for r in areas[a] if r["origin"] == "tools") for a in tools_areas)
+    for a in sorted(tools_areas, key=lambda a: -sum(r["listing_tokens"] for r in areas[a] if r["origin"] == "tools")):
+        t = sum(r["listing_tokens"] for r in areas[a] if r["origin"] == "tools")
+        n = sum(1 for r in areas[a] if r["origin"] == "tools")
+        add("%-*s %s %6s  %2d%%  %3d skills" % (width, a, bar(t, peak), fmt(t), 100 * t // total_tok, n))
+    add("```")
+    add("")
+
+    # 2. what is there
+    add("## 2. What is there, by area")
+    add("")
+    add("One row per area, then each area opens to its skills with a one-line summary of what each does.")
+    add("")
+    add(md_table(["Area", "Skills", "Parts", "Listing tok", "Uses", "Never used", "Last used"], [
+        (a, len(areas[a]), sum(len(r["parts"].split(";")) for r in areas[a] if r["parts"]),
+         fmt(sum(r["listing_tokens"] for r in areas[a])), sum(r["uses"] for r in areas[a]),
+         sum(1 for r in areas[a] if r["uses"] == 0),
+         max((r["last_used"] for r in areas[a] if r["last_used"] != "-"), default="-")) for a in order]))
+    add("")
+    for a in order:
+        rs = sorted(areas[a], key=lambda r: (-r["uses"], r["name"]))
+        add("<details>")
+        add("<summary><strong>%s</strong> · %d skills · %s uses · %s listing tokens</summary>"
+            % (a, len(rs), sum(r["uses"] for r in rs), fmt(sum(r["listing_tokens"] for r in rs))))
+        add("")
+        add(md_table(["Skill", "What it does", "Uses", "Last used", "List tok", "SKILL lines", "Parts"],
+                     [(r["name"], r["what"], r["uses"], r["last_used"], r["listing_tokens"], r["skill_lines"],
+                       r["parts"].replace(";", ", ")) for r in rs]))
+        add("")
+        add("</details>")
+        add("")
+
+    # 3. use
+    add("## 3. How they are used")
+    add("")
+    add("**Most used** (all time)")
+    add("")
+    used = sorted((r for r in rows if r["uses"]), key=lambda r: -r["uses"])[:20]
+    add(md_table(["Skill", "Area", "Uses", "Recent", "Last used"],
+                 [(r["name"], r["area"], r["uses"], r["uses_recent"], r["last_used"]) for r in used]))
+    add("")
+    add("**Never used**, by area: %d Tools skills" % len(unused))
+    add("")
+    add(md_table(["Area", "Never used", "Skills"], [
+        (a, len(n), ", ".join(r["name"] for r in sorted(n, key=lambda r: r["name"])))
+        for a in tools_areas for n in [[r for r in areas[a] if r["origin"] == "tools" and r["uses"] == 0]] if n]))
+    add("")
     known = {r["name"] for r in rows} | set(aliases)
-    other = sorted(((n, s["calls"] + s["commands"], s["last"]) for n, s in stats.items() if n not in known),
-                   key=lambda x: -x[1])[:40]
-    L.append(md_table(["Name", "Uses", "Last used"], other) if other else "None.")
-    L.append("")
+    other = sorted(((n, x["calls"] + x["commands"], x["last"]) for n, x in stats.items() if n not in known),
+                   key=lambda x: -x[1])[:20]
+    if other:
+        add("**Names typed that no skill carries** (built-in commands, retired or old names)")
+        add("")
+        add(md_table(["Name", "Uses", "Last used"], other))
+        add("")
+
+    # 4. cost
+    add("## 4. What they cost")
+    add("")
+    add("The listing (name + description) is loaded in every session; SKILL.md only when the skill runs.")
+    add("")
+    add("**Longest descriptions** (listing tokens)")
+    add("")
+    add(md_table(["Skill", "Area", "List tok", "Uses"],
+                 [(r["name"], r["area"], r["listing_tokens"], r["uses"])
+                  for r in sorted(tools_rows, key=lambda r: -r["listing_tokens"])[:15]]))
+    add("")
+    add("**Largest folders** (all text files)")
+    add("")
+    add(md_table(["Skill", "Area", "Files", "Lines", "Tokens"],
+                 [(r["name"], r["area"], r["folder_files"], fmt(r["folder_lines"]), fmt(r["folder_tokens"]))
+                  for r in sorted(tools_rows, key=lambda r: -r["folder_tokens"])[:10]]))
+    add("")
+
+    # 5. installs
+    add("## 5. Where they are installed")
+    add("")
+    plug = {}
+    for r in rows:
+        if r["origin"] == "plugin":
+            plug[r["area"]] = plug.get(r["area"], 0) + 1
+    inst = [
+        ("`~/.claude/skills`", "%d entries: %d links into Tools, %d copied folders, %d synced from claude.ai, %d dangling"
+         % (s["claude_top"], s["claude_links"], s["claude_copies"], s["claude_synced"], s["claude_dangling"])),
+        ("`~/.agents/skills`", "%d entries%s" % (s["agents_entries"], (" (" + s["agents_note"] + ")") if s["agents_note"] else "")),
+        ("Plugins", ", ".join("%s (%d)" % (k.replace("Plugin · ", ""), v) for k, v in sorted(plug.items())) or "none"),
+    ]
+    if s.get("codex_links"):
+        inst.append(("`~/.codex/skills`", "%d links, %d dangling%s" % (
+            s["codex_links"], s["codex_dangling"],
+            (": " + ", ".join("%s (%d)" % (k.replace(str(HOME), "~"), v)
+                              for k, v in sorted(s["codex_targets"].items(), key=lambda kv: -kv[1])[:3]))
+            if s["codex_dangling"] else "")))
+    add(md_table(["Place", "What is there"], inst))
+    add("")
+
+    # 6. problems
+    add("## 6. Problems")
+    add("")
+    kinds = [("Broken links", lambda p: p.startswith("broken link")),
+             ("Descriptions over 1,024 characters", lambda p: p.startswith("description")),
+             ("Front matter", lambda p: p.startswith(("no ", "name ", "front matter"))),
+             ("Install", lambda p: True)]
+    seen = set()
+    if not probs:
+        add("None.")
+    for title, test in kinds:
+        group = [(n, p) for n, p in probs if (n, p) not in seen and test(p)]
+        if not group:
+            continue
+        seen.update(group)
+        add("**%s** (%d)" % (title, len(group)))
+        add("")
+        add(md_table(["Skill", "Problem"], [(n, p.replace("broken link ", "")) for n, p in group]))
+        add("")
+
+    # 7. recommendations
+    add("## 7. Recommendations")
+    add("")
+    for i, (title, detail) in enumerate(recs, 1):
+        add("> **%d. %s**" % (i, title))
+        for line in detail.splitlines():
+            add(">")
+            add("> " + line)
+        add("")
+
+    # appendix
+    add("## Appendix: every skill, every number")
+    add("")
+    add("<details>")
+    add("<summary>Open the full table (%d rows)</summary>" % len(rows))
+    add("")
+    add(md_table(
+        ["Skill", "Area", "Origin", "Installed", "Version", "Parts", "List tok", "SKILL lines", "SKILL tok",
+         "Folder files", "Folder lines", "Folder tok", "Uses", "Recent", "Last used", "Path"],
+        [(r["name"], r["area"], r["origin"], r["installed"], r["version"], r["parts"].replace(";", ", "),
+          r["listing_tokens"], r["skill_lines"], r["skill_tokens"], r["folder_files"], r["folder_lines"],
+          r["folder_tokens"], r["uses"], r["uses_recent"], r["last_used"], r["path"].replace(str(HOME), "~"))
+         for r in sorted(rows, key=lambda r: (area_key(r["area"]), r["name"]))]))
+    add("")
+    add("</details>")
+    add("")
     path.write_text("\n".join(L), encoding="utf-8")
 
 

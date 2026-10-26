@@ -47,12 +47,30 @@ border-radius:4px}.sr blockquote p{margin:4px 0}
 .sr .filter{width:100%;max-width:360px;box-sizing:border-box;padding:6px 9px;margin-top:6px;
 border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg);font:inherit}
 .sr .count{color:var(--muted);font-size:12px;margin-left:8px}
+.sr .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin:10px 0 18px}
+.sr .card{border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--head)}
+.sr .card .v{font-size:22px;font-weight:650;line-height:1.2}.sr .card .k{color:var(--muted);font-size:12.5px;margin-top:2px}
+.sr .tw.narrow{display:inline-block;max-width:100%}.sr .tw.narrow table{width:auto}
+.sr .toc{position:sticky;top:0;z-index:2;display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center;
+padding:8px 0;margin-bottom:8px;background:var(--bg);border-bottom:1px solid var(--line);font-size:13px}
+.sr .toc a{text-decoration:none}.sr .toc .sp{flex:1}
+.sr .toc button{font:inherit;font-size:12px;padding:3px 9px;border:1px solid var(--line);border-radius:5px;
+background:var(--head);color:var(--fg);cursor:pointer}
+.sr details{border:1px solid var(--line);border-radius:6px;margin:8px 0;padding:4px 12px}
+.sr details[open]{padding-bottom:10px}.sr summary{cursor:pointer;padding:6px 0}
+.sr h2{scroll-margin-top:48px}.sr ol li{margin:3px 0}
 """
 
 SCRIPT = """
 (function(){
+  document.querySelectorAll('.sr .toc button').forEach(function(b){
+    b.addEventListener('click',function(){var on=b.getAttribute('data-open')==='1';
+      document.querySelectorAll('.sr details').forEach(function(d){d.open=on;});});
+  });
   document.querySelectorAll('.sr table').forEach(function(t){
     var wrap=t.parentNode, box=document.createElement('input'), count=document.createElement('span');
+    var body0=t.tBodies[0];
+    if(wrap.getAttribute('data-small')){sortable(t);return;}
     box.className='filter'; box.placeholder='Filter rows'; count.className='count';
     wrap.parentNode.insertBefore(box,wrap); wrap.parentNode.insertBefore(count,wrap);
     var body=t.tBodies[0], rows=Array.prototype.slice.call(body.rows);
@@ -60,6 +78,10 @@ SCRIPT = """
       rows.forEach(function(r){var on=!q||r.textContent.toLowerCase().indexOf(q)>-1;r.style.display=on?'':'none';n+=on;});
       count.textContent=n+' of '+rows.length+' rows';}
     box.addEventListener('input',show); show();
+    sortable(t);
+  });
+  function sortable(t){
+    var body=t.tBodies[0], rows=Array.prototype.slice.call(body.rows);
     Array.prototype.forEach.call(t.tHead.rows[0].cells,function(th,i){
       th.addEventListener('click',function(){
         var dir=th.getAttribute('data-dir')==='asc'?'desc':'asc';
@@ -72,7 +94,7 @@ SCRIPT = """
         rows.forEach(function(r){body.appendChild(r);});
       });
     });
-  });
+  }
 })();
 """
 
@@ -99,7 +121,13 @@ def split_row(line):
 def table(lines):
     head = split_row(lines[0])
     body = [split_row(l) for l in lines[2:]]
-    out = ['<div class="tw"><table><thead><tr>']
+    if head and head[0] == "" and len(head) == 2:  # a key-figures table: draw it as cards
+        return '<div class="cards">%s</div>' % "".join(
+            '<div class="card"><div class="v">%s</div><div class="k">%s</div></div>' % (inline(r[1]), inline(r[0]))
+            for r in body if len(r) > 1)
+    cls = ' class="narrow"' if len(head) <= 2 else ""
+    small = ' data-small="1"' if len(body) < 12 else ""
+    out = ['<div class="tw"%s%s><table><thead><tr>' % (cls, small)]
     out += ["<th>%s</th>" % inline(h) for h in head]
     out.append("</tr></thead><tbody>")
     for row in body:
@@ -124,10 +152,15 @@ def convert(md):
             out.append("<pre><code>%s</code></pre>" % html.escape("\n".join(lines[i + 1:j])))
             i = j + 1
             continue
+        if re.match(r"^\s*</?(details|summary)\b", line):  # collapsible groups pass through
+            out.append(line)
+            i += 1
+            continue
         m = re.match(r"^(#{1,6})\s+(.*)", line)
         if m:
             n = len(m.group(1))
-            out.append("<h%d>%s</h%d>" % (n, inline(m.group(2)), n))
+            anchor = re.sub(r"[^a-z0-9]+", "-", m.group(2).lower()).strip("-")
+            out.append('<h%d id="%s">%s</h%d>' % (n, anchor, inline(m.group(2)), n))
             i += 1
             continue
         if line.startswith("|") and i + 1 < len(lines) and re.match(r"^\|[\s:|-]+\|?$", lines[i + 1]):
@@ -165,7 +198,7 @@ def convert(md):
             i += 1
             continue
         j, para = i, []
-        while j < len(lines) and lines[j].strip() and not re.match(r"^(#|\||>|```|\s*([-*]|\d+\.)\s)", lines[j]):
+        while j < len(lines) and lines[j].strip() and not re.match(r"^(#|\||>|```|\s*([-*]|\d+\.)\s|\s*</?(details|summary))", lines[j]):
             para.append(lines[j].strip())
             j += 1
         out.append("<p>%s</p>" % inline(" ".join(para)))
@@ -183,7 +216,11 @@ def main():
     md = src.read_text(encoding="utf-8")
     title_m = re.search(r"^#\s+(.*)", md, re.M)
     title = title_m.group(1) if title_m else src.stem
-    body = '<div class="sr">%s</div>' % convert(md)
+    toc = "".join('<a href="#%s">%s</a>' % (re.sub(r"[^a-z0-9]+", "-", h.lower()).strip("-"), html.escape(h))
+                  for h in re.findall(r"^##\s+(.*)", md, re.M))
+    nav = ('<nav class="toc">%s<span class="sp"></span><button type="button" data-open="1">Open all</button>'
+           '<button type="button" data-open="0">Close all</button></nav>' % toc)
+    body = '<div class="sr">%s%s</div>' % (nav, convert(md))
     if args.fragment:
         page = "<title>%s</title>\n<style>%s</style>\n%s\n<script>%s</script>\n" % (html.escape(title), STYLE, body, SCRIPT)
         out = Path(args.out) if args.out else src.with_suffix(".fragment.html")

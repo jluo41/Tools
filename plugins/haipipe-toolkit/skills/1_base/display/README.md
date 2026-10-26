@@ -6,11 +6,11 @@ A display is one UNIT: a folder holding the approved inputs, the recipe that dra
 ```
 haipipe-display/            🚪 THE DOOR · say what you want, it routes by kind
                                (a caller who knows the kind may skip it)
-haipipe-display-table/      📊 renderer · aggregated CSV/JSON → booktabs LaTeX
-haipipe-display-figure/     📈 renderer · results → plot (line/bar/scatter/heatmap)
-haipipe-display-diagram/    📐 renderer · FigureSpec JSON → editable SVG
-haipipe-display-illustration/ 🎨 renderer · AI concept figure via the codex bridge
-haipipe-display-tex/        ✒️ renderer · hand-authored TeX: TikZ, algorithm
+haipipe-display/_parts/table/      📊 renderer · aggregated CSV/JSON → booktabs LaTeX
+haipipe-display/_parts/figure/     📈 renderer · results → plot (line/bar/scatter/heatmap)
+haipipe-display/_parts/diagram/    📐 renderer · FigureSpec JSON → editable SVG
+haipipe-display/_parts/illustration/ 🎨 renderer · AI concept figure via the codex bridge
+haipipe-display/_parts/tex/        ✒️ renderer · hand-authored TeX: TikZ, algorithm
                                blocks, display equations · the writer is a person
 ref/                        📜 THE CONSTITUTION · display-unit-output-contract.md
                                + display-intake-contract.md; every renderer obeys them

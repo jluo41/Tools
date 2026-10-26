@@ -19,7 +19,7 @@ import importlib.util, os, sys
 from pathlib import Path
 
 # The bridge lives at <haipipe-toolkit>/mcp-servers/codex-image2/server.py. This skill has moved
-# between workbench layouts more than once (own workbench, nested under haipipe-display-diagram, now a
+# between workbench layouts more than once (own workbench, nested under haipipe-display diagram, now a
 # sibling skill inside haipipe-toolkit), so resolve by SEARCHING upward instead of counting
 # parents: walk the ancestors and take the first hit, either inside an ancestor itself or inside
 # an ancestor's haipipe-toolkit/ child. Override with CODEX_IMAGE2_SERVER when it lives elsewhere.
