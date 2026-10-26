@@ -57,7 +57,8 @@ studio/s01-work-ladder/
   s01-work-ladder.excalidraw   Free                        drawn as §1's map ◀── Structured: click, type, ＋, drag
 ```
 
-1. **Made together**: `new_topic.py topic` writes the face, then the mind map from it.
+1. **Made together**: `new_topic.py topic` writes the face, then starts the mind map: its root, its Files and a note
+   that it is not written yet.
 2. **Kept in step**: haipipe-mindmap's `scripts/mindmap.py refresh <mNN>` rereads the face; words a person changed
    and nodes a person added stay.
 3. **Edited in place**: a change on the card is one POST to `/_board/mindmap`, written into the `.mindmap.md`.

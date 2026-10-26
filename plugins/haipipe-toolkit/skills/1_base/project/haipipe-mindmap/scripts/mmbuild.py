@@ -105,6 +105,7 @@ def from_work(path: Path) -> MT.MindMap:
 # ── from-topic ─────────────────────────────────────────────────────────────────────────────────────────────
 LABEL = re.compile(r"^\*\*([A-Z][A-Za-z ]{1,24}):\*\*\s*(.*)$")
 TO_ROOT = ("Stage", "Tags", "Label")                  # short facts: under the root, not branches
+DECISION = re.compile(r"^[a-z]\d{2}-[A-Z]\d{2}\s+·")    # a decision line, `s05-D01 · …`
 
 
 def short(s: str, words: int = 14) -> str:
@@ -156,6 +157,9 @@ def _sections(lines: list) -> tuple:
             cur.append(MT.BULLET.match(ln).group(2))
         elif not ln.strip():
             flush()
+        elif DECISION.match(ln):                         # `s05-D01 · …` lines: one item each, not one paragraph
+            flush()
+            para.append(ln.strip())
         else:
             para.append(ln.strip())
         i += 1

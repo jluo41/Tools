@@ -319,6 +319,35 @@ class Builders(unittest.TestCase):
         self.assertEqual([c.id for c in mm.root.children], ["n01", "@files"])   # no builder branch comes back
         self.assertIn("[md] [extra.md](extra.md)", [c.text for c in mm.root.children[1].children])
 
+    def test_check_warns_when_the_page_or_the_drawing_changed_after_the_map(self):
+        import os
+        topic = self.root / "studio" / "s07-old"
+        topic.mkdir(parents=True)
+        (topic / "s07-old.md").write_text("s07 · Old\n=========\n\n**Topic:** a thing.\n", encoding="utf-8")
+        (topic / "s07-old.excalidraw").write_text("{}", encoding="utf-8")
+        run("from-topic", topic)
+        md = topic / "m07-old.mindmap.md"
+        rc, out = run("check", md)
+        self.assertEqual(rc, 0)
+        self.assertNotIn("changed after this map", out)
+        later = md.stat().st_mtime + 60
+        os.utime(topic / "s07-old.excalidraw", (later, later))
+        rc, out = run("check", md)
+        self.assertEqual(rc, 0)                                              # a warning; a person decides
+        self.assertIn("s07-old.excalidraw changed after this map", out)
+
+    def test_a_new_topics_map_is_honest_about_being_unwritten(self):
+        topic = self.root / "studio" / "s08-new"
+        topic.mkdir(parents=True)
+        (topic / "s08-new.md").write_text("s08 · New\n=========\n\n**Topic:** <one line>\n\nFiles\n-----\n",
+                                          encoding="utf-8")
+        with redirect_stdout(io.StringIO()):
+            md = mindmap.skeleton(topic)
+        mm = MT.load(md)
+        self.assertEqual([c.id for c in mm.root.children], ["@files"])        # no branch made from a template
+        self.assertTrue(mm.root.note[0].startswith("Not written yet"))
+        self.assertIn("[md] [s08-new.md](s08-new.md)", [c.text for c in mm.root.children[0].children])
+
     def test_a_refresh_keeps_a_persons_node_and_words_and_updates_the_rest(self):
         block = work(self.root)
         run("from-work", block)
@@ -361,6 +390,17 @@ class Builders(unittest.TestCase):
         self.assertEqual(files, ["[md] [s04-fees.md](s04-fees.md)"])          # a file is a link its card opens
         self.assertTrue((topic / "m04-fees.mindmap.html").is_file())
         self.assertFalse(list(topic.glob("*.excalidraw")))
+
+    def test_from_topic_keeps_decision_lines_apart(self):
+        topic = self.root / "studio" / "s05-ccda"
+        topic.mkdir(parents=True)
+        (topic / "s05-ccda.md").write_text(
+            "s05 · CCDA\n==========\n\nDecided\n-------\n\n"
+            "s05-D01 · A new job for the request (JL)\ns05-D02 · Step 2 is CCDA's query\n", encoding="utf-8")
+        rc, out = run("from-topic", topic)
+        self.assertEqual(rc, 0, out)
+        decided = MT.load(topic / "m05-ccda.mindmap.md").root.children[0]
+        self.assertEqual(len(decided.children), 2)                          # one leaf per decision, not one paragraph
 
 
 if __name__ == "__main__":

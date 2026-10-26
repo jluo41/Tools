@@ -11,7 +11,7 @@ description: >-
   refresh a mind map, or to change how §1 and the mind maps draw. Trigger: mind map, mindmap, mNN, structured side,
   Free | Structured, structure map, §1 map, map the work, /haipipe-mindmap.
 metadata:
-  version: "0.6.1"
+  version: "0.6.2"
   last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md
 ---
@@ -55,7 +55,11 @@ The map
    over its name), the question it hands to the next (`→ …`), each point one short complete sentence with its role,
    the long text and links in its detail. A written map says `written:` in its header; a refresh then keeps its
    branches and its root as written and lets only the Files branch follow the disk. b17's five maps are written so.
-5. **Where it shows**: a draft Task's 1 · Plan (§1 Structure); a topic card's Structured side, read from the file on
+5. **A new topic's map starts honest**: `new_topic.py` writes only the root, the Files branch and a note "Not written
+   yet"; it is written later from the page and the drawing, never left looking finished from a template.
+6. **Stale is flagged**: `check` warns when the topic's page or drawing changed after its map; a person decides
+   whether the map needs writing again.
+7. **Where it shows**: a draft Task's 1 · Plan (§1 Structure); a topic card's Structured side, read from the file on
    every open; the static page `<stem>.mindmap.html` (read only, git-ignored).
 
 

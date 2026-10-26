@@ -159,13 +159,12 @@ def new_topic(level: Path, slug: str, title: str, band: str = "concept", nn: int
 
 
 def mind_map(topic: Path) -> Path:
-    """The topic's other side, its mind map `mNN-<topic>.mindmap.md`, built from the face just written (the mind map
+    """The topic's other side, its mind map `mNN-<topic>.mindmap.md`, started beside the face just written (the mind map
     skill, haipipe-mindmap): every sNN has both, its drawing and its map, linked by number (JL 261026)."""
     scripts = HERE.parents[1] / "haipipe-mindmap" / "scripts"
     sys.path.insert(0, str(scripts))
     import mindmap
-    mindmap.build("from-topic", topic, None)
-    return topic / mindmap.MB.mnn_name(topic)
+    return mindmap.skeleton(topic)                    # its root and Files; written later, from the page and drawing
 
 
 def save_session(level: Path, snn: str, title: str, ask: str = "", summary: str = "", changed=None,

@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -74,6 +75,35 @@ def refresh(md: Path) -> int:
     return build(kind, (md.parent / (where or ".")).resolve(), md)
 
 
+def stale(md: Path, mm: MT.MindMap) -> list:
+    """A topic's map older than what it is made from: the topic's page or its drawing changed after the map was last
+    written, so the map may say something they no longer do. A warning, not a failure: a person decides."""
+    md = Path(md)
+    kind, _, where = (mm.meta.get("built") or "").partition(" ")
+    if kind != "from-topic":
+        return []
+    topic = (md.parent / (where or ".")).resolve()
+    sources = [topic / f"{topic.name}.md"] + [d for d in topic.glob("*.excalidraw") if not re.match(r"m\d{2}[-_]", d.name)]
+    newer = [f for f in sources if f.is_file() and f.stat().st_mtime > md.stat().st_mtime + 1]
+    return [f"{f.name} changed after this map: update the map (ask in the Studio chat, or `refresh`)" for f in newer]
+
+
+def skeleton(topic: Path) -> Path:
+    """A new topic's map, honest about being unwritten: its root and its Files only, and a note saying so. A map
+    built from a fresh face's template reads as finished and empty; this one asks to be written."""
+    topic = Path(topic).resolve()
+    out = topic / MB.mnn_name(topic)
+    if out.exists():
+        return out
+    mm = MB.from_topic(topic)
+    mm.root.children = [c for c in mm.root.children if c.id == "@files"]
+    mm.root.note = ["Not written yet: ask in the Studio chat to write this map from the topic's page and drawing."]
+    mm.meta["built"] = "from-topic ."
+    MT.save(mm, out)
+    render(out, mm)
+    return out
+
+
 def check(paths) -> int:
     files = []
     for p in map(Path, paths):
@@ -93,8 +123,10 @@ def check(paths) -> int:
             dup = sorted({i for i in ids if i and ids.count(i) > 1})
             if dup:
                 problems.append(f"an id used twice: {', '.join(dup)}")
+        notes = stale(md, mm) if mm else []
         bad += bool(problems)
-        print(f"{'✗' if problems else '✓'} {md}" + "".join(f"\n    ✗ {p}" for p in problems))
+        print(f"{'✗' if problems else '✓'} {md}" + "".join(f"\n    ✗ {p}" for p in problems)
+              + "".join(f"\n    · {n}" for n in notes))
     return 1 if bad else 0
 
 

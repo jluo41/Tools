@@ -1,6 +1,24 @@
 haipipe-mindmap · Changelog
 ===========================
 
+## [0.6.2] · 2026-10-26 · a decision line is its own leaf
+
+- from-topic: a face's `Decided` lines written one under another (`s05-D01 · …`, no list marker) were read as one
+  paragraph and became one leaf; each such line is now its own leaf (`mmbuild.DECISION`). Found on the Samsung
+  cowork maps (b12 s05, seven decisions in one node).
+- Tests: 28.
+
+## [0.6.2] · 2026-10-26 · maps written from their drawings; stale flagged; honest new maps
+
+- b17's m02, m03 and m32 rewritten from their drawings, frame by frame, as m01 was (m00's drawing holds what its
+  page holds); each ends with what changed since 261007, checked on disk.
+- `check` warns (does not fail) when a topic's page or drawing changed after its map.
+- `new_topic.py` (haipipe-studio) starts a topic's map with only its root, its Files and a note "Not written yet"
+  (`mindmap.skeleton`), not a skeleton built from the face's template.
+- A test in the servers (`servers/_host/tests/test_structure_map.py`) draws a draft's §1 through the shared renderer
+  and edits it, so moving or breaking haipipe-mindmap fails there first.
+- Tests: 30.
+
 ## [0.6.1] · 2026-10-26 · written maps: a kind per branch, a question between, a role per point
 
 - The grey line over a branch's name is its kind (`[question] …`), or nothing; no bare number. b17's five maps are

@@ -2,7 +2,7 @@
 mindmap: 1
 title: s32 · Every element the work theme draws · structured
 built: from-topic .
-written: 261026, from the topic's face
+written: 261026, from the page and the drawing s32-work-element-ui.excalidraw (its Pick and element frames)
 ---
 
 # s32 · Every element the work theme draws
@@ -16,13 +16,29 @@ Each element side by side, as drawn today, so the work theme takes the one look 
   - [feeds] Q01's levels and Q03's Run display <!-- n03 -->
     [q01_work_ladder](../../reports/q01_work_ladder/q01_work_ladder.md) · [q03_questions_and_runs](../../reports/q03_questions_and_runs/q03_questions_and_runs.md)
 - [evidence] Shot live, page by page <!-- n04 -->
-  → What did comparing them settle?
+  → So which look does each element keep?
   - [walked] A work Block, one Job, one Task <!-- n05 -->
     b18 in Project-Algorithm-Design (five Questions, three Jobs), its Job j02 and Task j02 › t01; and b00 › j51 › t01, which also holds draft/ and workflow/.
   - [old] The old pages, flagged OLD in red <!-- n06 -->
     The old work Block page (`/_board/work-board`), one Run's page on it, and a Task's Page workbench (`/_board/draft`).
   - [count] 96 versions of 11 elements <!-- n07 -->
     42 on old pages, plus 9 proposed shots and 10 planned screens. The shots: [shots/](shots/).
+- [pick] One look per element: five kept, six open <!-- n31 -->
+  → Element by element, which are base and which are the theme's own?
+  - [kept] Top tabs: D · E, from the base <!-- n32 -->
+  - [kept] View row: E, from the base <!-- n33 -->
+  - [kept] Question rows: the Insight row <!-- n34 -->
+  - [kept] Disk inside the Runs panel <!-- n35 -->
+  - [kept] Tags: none <!-- n36 -->
+  - [open] Space body, tables, rows and cards: to pick <!-- n37 -->
+  - [open] Header, one item's display, theme elements: to pick <!-- n38 -->
+    The Pick frame asks for the letter to keep for each; the eleven element frames show every version, each beside its proposed look.
+- [elements] The eleven elements, base or the theme's own <!-- n39 -->
+  → What did comparing them settle?
+  - [base] Most are base, in the work theme's words <!-- n40 -->
+  - [own] Its own: the Task's Plan, Review and draft list <!-- n41 -->
+  - [gaps] Red where today's frame does not draw them yet <!-- n42 -->
+    Job ▾ · Task ▾ grouped by series; a Job's Question rows (a filter); the Page views in a work Task's row; a Job face; Runs from below; Delivery cards.
 - [decided] Six decisions so far <!-- n08 -->
   → Element by element, what is still a gap?
   - [D01] b03's picks hold for the work theme <!-- n09 -->
