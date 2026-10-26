@@ -6,14 +6,13 @@ description: >-
   version; one run card per button of each level's Spaces. Use
   when asking where a paper is, how its research plan connects to execution,
   whether work may be released, or what may be compiled next. Trigger: paper
-  journey, paper-runs, workflow, Run routing, gate, /haipipe-paper workflow.
-disable-model-invocation: true
+  journey, paper-runs, workflow, Run routing, gate, /haipipe-paper-workflow.
 metadata:
   version: "1.9.4"
   last_updated: "2026-10-26"
 ---
 
-# /haipipe-paper workflow · govern Paper Runs, test gates, and route next work
+# /haipipe-paper-workflow · govern Paper Runs, test gates, and route next work
 
 For a paper-journey question, enter through `haipipe-paper`; this file is the
 cross-paper authority. It says which artifact owns each decision and when the

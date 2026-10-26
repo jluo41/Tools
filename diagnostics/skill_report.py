@@ -358,6 +358,11 @@ def reachability(tools):
             out["hidden_ok"] += ok
             if not ok:
                 out["unreachable"][n] = "hidden, and no visible skill names its SKILL.md path"
+            # a hidden skill must not sit in a visible skill's "Load X, Y" order (the Skill tool can't load it)
+            loader = next((v for v in visible if re.search(r"(?i)\bload\b[^.\n]{0,240}(?<![\w-])%s(?![\w-])" % re.escape(n),
+                                                          texts[v])), None)
+            if loader:
+                out["unreachable"][n] = "hidden, but %s says to load it" % loader
         for part in t["parts"]:
             out["parts"] += 1
             ok = re.search(r"_parts/%s\b|`%s`|\b%s\b" % ((re.escape(part),) * 3), texts[n]) is not None
