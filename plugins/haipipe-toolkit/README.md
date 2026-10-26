@@ -131,7 +131,7 @@ skills/
 ├── board/             🧭 Board + Page and Run contracts + producer/reviewer/orchestrator
 ├── diagrams/          🗺 working design Boards; kept outside delivery skills
 ├── project/           📦 container setup
-├── 0_utils/           🧰 utilities and connector skills, including whoop-connect
+├── 0_utils/           🧰 utilities and connector skills (personal-data connectors are in haipipe-utils)
 └── run/               🎟 the neutral Level-4 Run/Result contract
 ```
 

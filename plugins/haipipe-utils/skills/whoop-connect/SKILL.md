@@ -2,8 +2,8 @@
 name: whoop-connect
 description: "Guide the user through a Whoop connection and token verification. This skill does not configure or promise a daily sync. Use when the user says connect my whoop, link whoop, set up whoop, or /whoop-connect."
 metadata:
-  version: "0.2.1"
-  last_updated: "2026-09-20"
+  version: "0.2.2"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

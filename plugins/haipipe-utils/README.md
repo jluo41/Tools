@@ -67,6 +67,8 @@ LAYOUT
         describe-exercise/      same shape, exnorm/
         describe-medication/    same shape, mednorm/
         describe-insulin/       same shape, insnorm/; its input is medication's DrugKey
+        meal-cam-logger/        personal-data connector: a camera logs meals (not a normalizer)
+        whoop-connect/          personal-data connector: Whoop wearable data (not a normalizer)
     servers/            the API face: one host, one port, every noun behind its prefix
         _host/serve.py          python servers/_host/serve.py --store <ExternalStore>   -> http://127.0.0.1:8070
         api-<noun>/             server.py · tests/test_server.py · examples/          mounted at /<noun>

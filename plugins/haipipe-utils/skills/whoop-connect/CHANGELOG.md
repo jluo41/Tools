@@ -4,6 +4,10 @@ whoop-connect — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [0.2.2] — 2026-10-26
+
+Moved from haipipe-toolkit `skills/0_utils/` into the haipipe-utils package, beside meal-cam-logger (JL 261026: keep it; the personal-data connectors live together). Still a listed skill; nothing inside changed.
+
 ## [0.2.1] — 2026-09-20
 
 - Check the external checkout, scripts, interpreter, credential loader, and callback before setup.

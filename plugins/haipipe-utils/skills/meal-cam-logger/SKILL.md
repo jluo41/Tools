@@ -2,8 +2,8 @@
 name: meal-cam-logger
 description: "Log a meal session from a webcam or IP camera using local bite detection and Anthropic food identification. Use when the user says start meal cam, log my meal, watch me eat, 记录我吃的, or /meal-cam-logger."
 metadata:
-  version: "0.3.0"
-  last_updated: "2026-09-20"
+  version: "0.3.1"
+  last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
