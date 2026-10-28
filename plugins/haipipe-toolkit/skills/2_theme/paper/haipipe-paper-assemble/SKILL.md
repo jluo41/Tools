@@ -2,8 +2,8 @@
 name: haipipe-paper-assemble
 description: "Builds the whole manuscript deterministically from the Sections' LaTeX and accepted bindings, regenerating delivery/ (DOCX, PDF, supplement, source manifest); never reads a generated Word file back. Use to assemble, build Word, export the paper, regenerate submission files, or check whether a document is stale. Trigger: assemble, build Word, export the paper, /haipipe-paper-assemble."
 metadata:
-  version: "0.12.1"
-  last_updated: "2026-10-26"
+  version: "0.12.2"
+  last_updated: "2026-10-28"
   summary: "Paper-level source-driven document assembly; page-level Word export remains a separate workbench."
 ---
 
@@ -222,6 +222,23 @@ whichever page comes first; a bib key that two pages define differently is a
 document warning (first page's entry kept); a missing `latexmk` or Word engine is
 reported as `rc 127` in the manifest, never a traceback; the master carries the
 status word only, never counts or build times.
+
+## 🔝 Word: every display at the top of a page (0.12.2, JL 261028)
+
+JL 261028: "when doing the word, keep the displays to the top." The Word lane places each table and figure the way
+the LaTeX `[t]` float does, and a paper does not switch this off.
+
+1. **Top, always**: `display_float = "top"` is the default and the rule; do not set `"inline"` in a paper's
+   `paper-build.toml`. Inline placement put a figure mid-page with its legend running into the next paragraph.
+2. **At the page after its citing paragraph**: with Microsoft Word on the Mac, `save_docx` lets Word lay the text
+   out and puts each display at the top of the page after the one its citing paragraph ends on.
+3. **Never inside a sentence**: when that page ends inside a paragraph, the paragraph is split only at a sentence
+   end (`boundary_target`); if the page ends in its first sentence, the display goes in front of the whole paragraph.
+   The second part carries on without a first-line indent.
+4. **A gap under the legend**: the display's last paragraph gets 18 pt after it, with the style's contextual
+   spacing turned off (`no_contextual_spacing`), so the legend never reads as body text.
+5. **Check the render**: after a build, render Word's own PDF (`word/<name>.pdf`) page by page and look at every
+   display page before saying the file is ready (haipipe-delivery).
 
 ## 📊 Tables must arrive in Word (0.7.1)
 

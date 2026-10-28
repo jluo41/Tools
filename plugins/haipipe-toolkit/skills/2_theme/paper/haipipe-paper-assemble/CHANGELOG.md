@@ -1,3 +1,16 @@
+## 0.12.2 · 2026-10-28 · Word displays at the top, never inside a sentence (Paper-LLMRecPhy-Jama)
+
+- Rule (JL 261028: "when doing the word, keep the displays to the top"): `display_float = "top"` is the Word lane's
+  rule, not only its default; SKILL.md § Word: every display at the top of a page.
+- `boundary_target`: a held display splits the paragraph that crosses the page end only at a sentence end; when the
+  page ends in the paragraph's first sentence, the display goes in front of the paragraph (it had cut a sentence in two, between a
+  number and its confidence interval).
+- A display's last paragraph gets 18 pt after, and `no_contextual_spacing` turns off the Normal style's contextual
+  spacing on it, which made Word drop the space (Figure 1's legend ran into the Results text).
+- `word_count`: a word is a run between spaces holding a letter or digit, as Word counts; the old pattern split
+  a range such as "1.5%-2.5%" into 4 words (the title page overcounted by about 190 words).
+- JAMA title page: "1 table", never "1 tables".
+
 ## 0.12.0 · 2026-10-23 · displays where the reader meets them (Paper-AgreeableOpioid-Jama)
 
 - `[latex] float_page` (new, default `"top"`): a display alone on its page starts at the top of the page; LaTeX

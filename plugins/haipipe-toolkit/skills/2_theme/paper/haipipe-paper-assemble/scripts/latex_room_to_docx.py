@@ -25,6 +25,7 @@ from docx.enum.table import WD_CELL_VERTICAL_ALIGNMENT, WD_TABLE_ALIGNMENT
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
+from docx.text.paragraph import Paragraph
 from docx.shared import Inches, Pt, RGBColor
 
 
@@ -1403,6 +1404,21 @@ def add_figure(doc: Document, display: Display, title: str = "", *, compact: boo
         add_rich_text(doc, display.note, MATH_STORE, size=9 if compact else 10, line_spacing=1.0)
 
 
+def no_contextual_spacing(p) -> None:
+    """Turn off "don't add space between paragraphs of the same style" on one paragraph, so its own space before and
+    after print (the Normal style sets it, and Word then ignored a legend's space after, JL 261028)."""
+    pPr = p.get_or_add_pPr()
+    for old in pPr.findall(qn("w:contextualSpacing")):
+        pPr.remove(old)
+    el = OxmlElement("w:contextualSpacing"); el.set(qn("w:val"), "0")
+    later = {qn(f"w:{n}") for n in ("mirrorIndents", "suppressOverlap", "jc", "textDirection", "textAlignment",
+                                     "textboxTightWrap", "outlineLvl", "divId", "cnfStyle", "rPr", "sectPr", "pPrChange")}
+    for i, child in enumerate(pPr):   # schema order: after spacing and ind, before jc
+        if child.tag in later:
+            pPr.insert(i, el); return
+    pPr.append(el)
+
+
 def body_children(doc: Document) -> list:
     """The body's block elements, without the closing section properties."""
     return [el for el in doc.element.body if el.tag != qn("w:sectPr")]
@@ -1563,6 +1579,15 @@ def add_events(doc: Document, events: Iterable[Event], *, include_displays: bool
                     add_figure(doc, display, title, compact=compact, max_height=6.4 if own_page else None)
                 if float_top and not own_page:
                     float_display_to_top(doc, start)
+                elif not own_page:
+                    # inline: a clear gap above and below, so the legend never reads as the next body paragraph
+                    # (JL 261028: Figure 1's legend ran straight into the Results text)
+                    pars = [el for el in body_children(doc)[start:] if el.tag == qn("w:p")]
+                    if pars:
+                        Paragraph(pars[0], doc._body).paragraph_format.space_before = Pt(12)
+                        Paragraph(pars[-1], doc._body).paragraph_format.space_after = Pt(18)
+                        for el in (pars[0], pars[-1]):   # the style's contextual spacing drops space between Normal paragraphs
+                            no_contextual_spacing(el)
                 break_next = own_page
         if new_page:
             break_before(doc, start)
@@ -1780,9 +1805,16 @@ def boundary_target(anchor, before: str | None):
             pos = squashed.find(seg)
             if pos >= 0:
                 end = index[pos + len(seg) - 1] + 1
-                if end >= len(element_text(el).rstrip()):
+                full = element_text(el)
+                if end >= len(full.rstrip()):
                     return el.getnext()
-                return split_paragraph(el, end)
+                # split only where a sentence ends, never inside one (JL 261028: a display cut a sentence in two);
+                # the page then ends on a full stop and the display opens the next page, as LaTeX does. When the
+                # page ends inside the paragraph's first sentence, the display goes in front of the paragraph.
+                stops = [m.end() for m in re.finditer(r"[.?!][)\]\"”’]*\s+", full) if m.end() <= end]
+                if not stops:
+                    return el
+                return split_paragraph(el, stops[-1])
     return None
 
 
@@ -1830,6 +1862,10 @@ def save_docx(doc: Document, path: Path) -> None:
             else:
                 add_figure(doc, display, h["title"], compact=h["compact"], max_height=6.4 if h["full_page"] else None)
             moved = body_children(doc)[start:]
+            pars = [el for el in moved if el.tag == qn("w:p")]
+            if pars:   # a clear gap under the legend, so it never reads as the body text that follows (JL 261028)
+                Paragraph(pars[-1], doc._body).paragraph_format.space_after = Pt(18)
+                no_contextual_spacing(pars[-1])
             if target is not None and target.tag != qn("w:sectPr"):
                 for el in moved:
                     target.addprevious(el)
@@ -2070,7 +2106,9 @@ def add_jama_title_page(doc: Document, title: str, author: str, main_words: int,
     if date:
         add_text(doc, date, align=WD_ALIGN_PARAGRAPH.CENTER)
     add_text(doc, f"Word count: {main_words}", align=WD_ALIGN_PARAGRAPH.CENTER)
-    add_text(doc, f"Main displays: {table_count} tables; {figure_count} figures", align=WD_ALIGN_PARAGRAPH.CENTER)
+    plural = lambda n, word: f"{n} {word}" + ("" if n == 1 else "s")   # "1 table", never "1 tables" (JL 261028)
+    add_text(doc, f"Main displays: {plural(table_count, 'table')}; {plural(figure_count, 'figure')}",
+             align=WD_ALIGN_PARAGRAPH.CENTER)
     if evidence.get("pending_markers"):
         add_text(doc, "Evidence placeholders remain; this build is not submission-ready.",
                  align=WD_ALIGN_PARAGRAPH.CENTER)
@@ -2233,8 +2271,9 @@ def word_count(events: Iterable[Event]) -> int:
             break
         if event.kind in {"text", "list"}:
             values = event.value if event.kind == "list" else [event.value]
-            words.extend(re.findall(r"\b[\w%]+(?:[–-][\w%]+)?\b",
-                                    MATH_TOKEN.sub(" ", " ".join(str(v) for v in values))))
+            # a word is what Word counts: a run between spaces holding a letter or digit, so "1.5%-2.5%" is 1
+            # word, not 4 (JL 261028: the title page said 3,179 for a 2,970-word text)
+            words.extend(w for w in MATH_TOKEN.sub(" ", " ".join(str(v) for v in values)).split() if re.search(r"\w", w))
     return len(words)
 
 
