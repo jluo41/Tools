@@ -9,8 +9,8 @@ description: >-
   diagnosing or changing a labeling Task's screen, a Space or View, the write door or the Runs panel, or
   /workbench-task-labeling.
 metadata:
-  version: "0.1.1"
-  last_updated: "2026-10-26"
+  version: "0.2.0"
+  last_updated: "2026-11-01"
   # version history: ./CHANGELOG.md
 ---
 
@@ -70,6 +70,9 @@ by the Task face's `task-type:` line, never by its number:
 🏗 building  task-type: labeling-building   four Stages, a tab each in Work and Report: 1 · Contract · 2 · Initial
                                            Labeling Definition · 3 · Rounds · 4 · Handoff (b15 s42); Work: the
                                            Stage (its Input, each 👁 reading budget, the prompt), then Result cards
+🧭 meaning   task-type: labeling-meaning    Frame · Report · Preferences · Update (b15 s58): the only Task that
+                                           asks the person; labeling_steps.py
+🛠 expression task-type: labeling-expression Rewrite · Run · Evaluate · Release under a signed meaning; labeling_steps.py
 🔍 scanning  task-type: labeling-scanning   Work: Test · Evaluation · Scan · Audit; reads the Handoff
 📊 score     task-type: eval                final labels against the ground truth and the raters' spread
 (today)     task-type: labeling            one Page that is building and scanning at once
@@ -87,6 +90,40 @@ POST /_board/labeling/notes  {folder: <Task>, data: <data URL>}   an image paste
 
 Every step runs through `haipipe-labeling-preparation` (its "The items Task"); the frame's shared script copies a
 prompt with its notes and keeps unsent notes in the browser.
+
+### 🧭 meaning and 🛠 expression: the steps page (b15 s58, stage 2)
+
+`servers/workbench-labeling/labeling_steps.py` draws both on the base focus page (`labeling_focus.task_shell`): the
+steps are the view-button-list, and each view is ⚙️ Process (the step's flow In → who works → Out, its prompt box,
+your sign or the interaction waiting on you) then 📊 Results, each numbered from 1, then the next step; Report shows
+the Results only. Work opens where the person is needed (a waiting form → Preferences; an unsigned guideline →
+Update). Everything is read from the Task's own files, in `engine/meaning_versions.py`'s layout; the prompts run
+`/haipipe-labeling-interaction` (meaning) and `/haipipe-labeling-expression` (expression).
+
+```text
+meaning  Frame        the frame record: the agreed question, what you confirmed
+         Report       1 the guideline mind map (versions; a Q tag = this report's card on that rule) · 2 the
+                      interaction report per loop · 3 typical · 4 hard · 5 random cases (the draw Run's draws.json)
+         Preferences  the waiting form, embedded; its prompt copies the notes and the form's answers in one send
+         Update       ✍️ Approve mNN · 1 the mind map (a Q tag = the card that set the rule) · 2 what your answers
+                      changed · 3 reference labels lNN · 4 where it goes · 5 meaning history
+expression  Rewrite · Run · Evaluate · Release, under "🔒 approved meaning mNN"; without a signed meaning it waits
+```
+
+Two more narrow doors, for these two Task types only:
+
+```text
+GET  /_board/labeling/form/<Task>/runs/<rNN_collect_…>/<same>.html   a meaning Task's form (or the applied.md beside
+                                                                    it): a static GET never reads a labeling folder,
+                                                                    and the path stays the file's, so the form's
+                                                                    copied form: line names its Run
+POST /_board/labeling/approve  {task, version: mNN, by}             your sign: meaning/mNN.approved.yaml, once, only
+                                                                    on a written mNN (meaning_versions.approve)
+```
+
+`frame._file_url` sends a labeling collect form to the first route, so the Interactions inbox opens it too.
+`tests/labeling_example.py` builds a placeholder Job that runs both loops with the real tools; Tools keeps its
+output at `blueprints/Project-Ladder/labeling/b01_labeling_example` for a review on public data.
 
 Job › Work shows each Task's type and state and a dashed card for each type still to make (items,
 building, scanning; score once the Job has ground truth). The Task ▾ dropdown groups Tasks by type. A building

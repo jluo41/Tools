@@ -36,6 +36,22 @@ Sections that carry them).
 ```
 
 
+#### Display B
+
+```text
+ characteristic   │ <group 1> │ <group 2>
+ age, mean (SD)   │           │
+ women, n (%)     │           │
+```
+
+#### Display C
+
+```text
+ <estimate>
+   │   ●───      ●───      0 ─ ─ ─ ─
+   └──────────────────     <placebo period> vs <policy period>
+```
+
 Files
 -----
 

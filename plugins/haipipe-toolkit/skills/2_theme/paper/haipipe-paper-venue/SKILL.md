@@ -2,7 +2,7 @@
 name: haipipe-paper-venue
 description: "One submission target (journal, funder, patent office): binding desk rules kept apart from observed patterns, with provenance; writes the Board's venues/<venue>/ (call.md, author kit) that each version reads. Use to research, add, refresh, compare or check a venue. Trigger: venue, journal rules, call for papers, author kit, /haipipe-paper-venue."
 metadata:
-  version: "0.11.2"
+  version: "0.12.0"
   last_updated: "2026-11-01"
   page_ruling: none
   outline:
@@ -28,6 +28,11 @@ cards write them, both `Block › Description`: **Add a venue** (`run-add-venue-
 into a new `venues/<venue>/`, and **Check the rules** (`run-check-venue-<venue>`, also on a version's Description ›
 Venue rules) rereads it, writes what changed under "Changed since last read", and lists every rule the paper or
 version breaks. A version's face names its one venue; its build and its Requirement read that venue's `call.md`.
+Its `## Displays` table (`| rule | value | source |`: main limit, supplement limit, main labels, supplement labels,
+width, resolution, format, font, table style, caption) is what the paper's display plan follows (JL 261101: "the
+display like that should also follow the venue"): haipipe-paper-plan's `display_plan.py check` reads it, and
+haipipe-paper-evidence's ledger takes its main limit. Each row carries its source, like every rule here. An older
+`call.md` without the section gets it added by hand from `ref/call-template.md`, or by the next Check the rules.
 
 The shared Venue Page below (`QBv<n>-<slug>`, the bank) stays the library: what a desk rewards and refuses, for
 every paper. A Board's `call.md` names the bank Page it follows (`bank:`) and copies none of its prose. Whether the

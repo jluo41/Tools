@@ -53,3 +53,6 @@
  .ls-br::before{left:-16px;top:14px;width:16px}.ls-bn{width:auto;align-self:flex-start}
  .ls-lvs{margin:6px 0 0 10px;padding-left:16px}.ls-lf::before{left:-16px;width:16px}
  .ls-chain{flex-direction:column}.ls-by{width:100%}}
+/* inside a folding section (focus_draft's .fd-body), a table keeps its own layout */
+.ls-view .fd-body .ls-table{display:table}
+@media(max-width:600px){.ls-view .fd-body .ls-table td,.ls-view .fd-body .ls-table th{min-width:0;padding:5px 4px}}

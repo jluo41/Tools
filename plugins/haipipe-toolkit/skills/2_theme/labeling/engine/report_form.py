@@ -143,11 +143,13 @@ def to_collection(report: dict, *, title: str, for_: str, intro: str = "") -> st
 
 
 def _paste(answer_text: str) -> str:
-    """The copied text: the whole of a paste, or the part of a saved answer file that keeps it word for word."""
+    """The copied text: the whole of a paste, or the part of a saved answer file that keeps it word for word, up to
+    the fence that closes it (else the last note would take the fence as one more line)."""
     lines = answer_text.splitlines()
     for k, line in enumerate(lines):
         if line.strip().startswith(collect.HEADS):
-            return "\n".join(lines[k:])
+            end = next((j for j in range(k + 1, len(lines)) if lines[j].strip() == "```"), len(lines))
+            return "\n".join(lines[k:end])
     return answer_text
 
 

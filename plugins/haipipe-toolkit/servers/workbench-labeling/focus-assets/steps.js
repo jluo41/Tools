@@ -11,6 +11,11 @@
         const s = d.createElement('style'); s.id = 'ls-embed';
         s.textContent = '.send,details.box{display:none!important}';
         d.head.append(s);
+        d.querySelectorAll('p').forEach(p => {             // its own Copy is hidden here: say where the answers go
+          if (p.textContent.includes('Copy feedback')) {
+            p.innerHTML = p.innerHTML.replace(/then Copy feedback and paste it to me/, 'then press Copy prompt below this form');
+          }
+        });
       }
       f.style.height = (d.documentElement.scrollHeight + 4) + 'px';
     } catch (_) {}

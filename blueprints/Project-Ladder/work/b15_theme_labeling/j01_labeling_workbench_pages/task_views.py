@@ -252,7 +252,7 @@ PROMPT = {
         "Use /haipipe-labeling on t02_dices350_ground_truth_profile: copy the experts' gold and the",
         "raters' votes, and fence them so that only the score Task reads them."], NOTES),
     "C1": ("Frame · your rough idea", [
-        "Use /haipipe-labeling on t03_dices350_response_safety_meaning, step Frame: read the items",
+        "Use /haipipe-labeling-interaction on t03_dices350_response_safety_meaning, step Frame: read the items",
         "(t01_dices350_items) and the old labels' sources, surface the assumptions in my idea below,",
         "then ask me the three frame questions through /haipipe-labeling-interaction."],
         (("Goal", "flag unsafe AI replies, and how unsafe they are", True),
@@ -266,25 +266,25 @@ PROMPT = {
         "answers to report-03 with my notes below, then start Update."],
         (("your notes", "optional: context for the decision record"),)),
     "C4": ("Update · apply my answers", [
-        "Use /haipipe-labeling on t03_dices350_response_safety_meaning, step Update: read r06's",
+        "Use /haipipe-labeling-interaction on t03_dices350_response_safety_meaning, step Update: read r06's",
         "answer_collection.md; write meaning m03 and labels l03, each rule naming its card; recheck",
         "affected items; anything unclear becomes a card for Loop 4, never a guess. Then wait for my sign."], NOTES),
     # one prompt runs a whole round (JL 261101, r01_collect_task_work_views Q7 A): Rewrite's; Run's and Evaluate's
     # stay, for a rerun of that step alone
     "D1": ("Rewrite · the whole round e02", [
-        "Use /haipipe-labeling on t04_dices350_response_safety_expression, round e02: rewrite the wording",
-        "under meaning m02 from Train errors only, run the executors, evaluate, and stop at round report e02.",
-        "Change no rule and ask me nothing: rule or label questions go to the round report."], NOTES),
+        "Use /haipipe-labeling-expression on t04_dices350_response_safety_expression, round e02: rewrite the",
+        "wording under meaning m02 from Train errors only, run the executors, evaluate, and stop at",
+        "round report e02. Change no rule and ask me nothing: rule or label questions go to the round report."], NOTES),
     "D2": ("Run · rerun the executors", [
-        "To rerun this step alone (Rewrite's prompt runs the whole round): use /haipipe-labeling on",
+        "To rerun this step alone (Rewrite's prompt runs the whole round): use /haipipe-labeling-expression on",
         "t04_dices350_response_safety_expression, step Run: label Train and Test with m02 + e02 on",
         "Qwen 3.5 4B, 8B and Qwen 3.8 27B; keep the reference labels hidden."], NOTES),
     "D3": ("Evaluate · rerun round report e02", [
-        "To rerun this step alone (Rewrite's prompt runs the whole round): use /haipipe-labeling on",
+        "To rerun this step alone (Rewrite's prompt runs the whole round): use /haipipe-labeling-expression on",
         "t04_dices350_response_safety_expression, step Evaluate: score by set and model, sort errors",
         "into the four kinds, and write round report e02 with its route."], NOTES),
     "D4": ("Release · check readiness", [
-        "Use /haipipe-labeling on t04_dices350_response_safety_expression, step Release: freeze",
+        "Use /haipipe-labeling-expression on t04_dices350_response_safety_expression, step Release: freeze",
         "m03 · e03 · l03 · x02, check the floors, non-regression and cost, and report pass or fail."], NOTES),
     "E1": ("Batches · label at scale", [
         "Use /haipipe-labeling on t05_dices350_response_safety_scanning, step Batches: label the corpus",

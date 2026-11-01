@@ -4485,6 +4485,33 @@ class LabelingMixin:
         origin = self.headers.get("Origin") or ""
         return not origin or urlparse(origin).netloc == (self.headers.get("Host") or "")
 
+    def labeling_form_view(self, head_only=False):
+        """A meaning Task's interaction form, and the applied.md beside it (b15 s58, stage 2): a static GET never reads a
+        labeling folder (host_registry.static_path_allowed), so the Run's own form opens here and nothing else does. The
+        URL keeps the file's path, so the form's copied `form:` line still names its Run (collect.py save checks it)."""
+        from urllib.parse import unquote
+        rel = unquote(self.path.split("?", 1)[0][len("/_board/labeling/form/"):])
+        parts = rel.split("/")
+        if (not rel or rel.startswith("/") or "\\" in rel or "\x00" in rel or any(x in {"", ".", ".."} for x in parts)
+                or len(parts) < 4 or parts[-3] != "runs" or not re.fullmatch(r"r\d\d_collect_[a-z0-9_]+", parts[-2])
+                or parts[-1] not in (parts[-2] + ".html", "applied.md")):
+            return self.send_error(404, "not found")
+        task, _ = self._steps_task_target("/".join(parts[:-3]))
+        from live import labeling_steps as S
+        if task is None or S.kind(task) != "meaning":
+            return self.send_error(404, "not found")
+        path = task / "runs" / parts[-2] / parts[-1]
+        if not (task / "runs" / parts[-2]).is_dir() or (not path.is_file() and parts[-1] != "applied.md"):
+            return self.send_error(404, "not found")
+        body = path.read_bytes() if path.is_file() else b""      # no applied.md yet: no flags, said as an empty file
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8" if path.suffix == ".html" else "text/plain; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("Cache-Control", "no-store")
+        self.end_headers()
+        if not head_only:
+            self.wfile.write(body)
+
     def labeling_sample_view(self, head_only=False):
         """Draw again: random raw rows or items, read live; nothing written (s41-D12)."""
         q = parse_qs(urlparse(self.path).query)
@@ -4529,6 +4556,41 @@ class LabelingMixin:
             return 409, {"ok": False, "err": str(e)}
         return 200, {"ok": True, "signs": signs}
 
+    def _steps_task_target(self, task_q):
+        """A SPACE-relative meaning or expression Task folder inside the served root, or (None, why)."""
+        if (not isinstance(task_q, str) or not task_q or task_q.startswith("/") or "\\" in task_q
+                or "\x00" in task_q or any(part in {"", ".", ".."} for part in task_q.strip("/").split("/"))):
+            return None, "unsafe Task path"
+        root = self.root.resolve()
+        task = (root / task_q.strip("/")).resolve()
+        try:
+            task.relative_to(root)
+        except ValueError:
+            return None, "Task is outside the served root"
+        if not (task / f"{task.name}.md").is_file():
+            return None, "not a Task folder"
+        from live import labeling_steps as S
+        if not S.kind(task):
+            return None, "not a meaning or expression Task"
+        return task, None
+
+    def labeling_approve(self, p):
+        """Your sign on a meaning Task's guideline mNN (b15 s58-D15, Q6): meaning/mNN.approved.yaml, written by the
+        engine's meaning_versions.approve; the expression Task runs only on a signed meaning."""
+        if not self._same_origin():
+            return 403, {"ok": False, "err": "cross-origin write refused"}
+        task, err = self._steps_task_target(p.get("task"))
+        if task is None:
+            return 400, {"ok": False, "err": err}
+        from live import labeling_steps as S
+        if S.kind(task) != "meaning":
+            return 400, {"ok": False, "err": "not a meaning Task"}
+        try:
+            signed = S.MV.approve(task, str(p.get("version") or ""), str(p.get("by") or ""))
+        except ValueError as err:
+            return 409, {"ok": False, "err": str(err)}
+        return 200, {"ok": True, "signed": signed}
+
     def labeling_notes(self, p):
         """A pasted image, kept in the Task's notes/ so the prompt can carry its path (s41-D14)."""
         import base64
@@ -4536,8 +4598,10 @@ class LabelingMixin:
         if not self._same_origin():
             return 403, {"ok": False, "err": "cross-origin write refused"}
         task, err = self._items_task_target(p.get("folder"))
-        if task is None:
-            return 400, {"ok": False, "err": err}
+        if task is None:                                # a meaning or expression Task's prompt takes an image too (s58)
+            task, err2 = self._steps_task_target(p.get("folder"))
+            if task is None:
+                return 400, {"ok": False, "err": err if err2 == "not a meaning or expression Task" else err2}
         m = re.fullmatch(r"data:([\w/+.-]+);base64,(.+)", str(p.get("data") or ""), re.S)
         if not m or m.group(1) not in self.NOTE_TYPES:
             return 400, {"ok": False, "err": "a pasted note is a png, jpeg, gif or webp image"}

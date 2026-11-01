@@ -3,7 +3,7 @@ name: haipipe-paper-evidence
 description: "A paper's evidence rules on top of haipipe-evidence and haipipe-display: citations only from verified CITE Results, one number per result in every Section, displays numbered and within the venue limit, each passing the display revise loop. Reads a whole version as one ledger and flags what disagrees (scripts/evidence_ledger.py); each display version's preview.pdf is the display, then how it was made (method.md). Use before a build or a send. Trigger: paper evidence, evidence ledger, numbers disagree, verify citations, paper displays, display preview, display method, /haipipe-paper-evidence, /haipipe-paper-display."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.6.1"
+  version: "0.6.2"
   last_updated: "2026-11-01"
   aliases: [haipipe-paper-display]
   # version history: ./CHANGELOG.md
@@ -143,6 +143,8 @@ name: Office visits by 28-day period        what it shows, in a few words
 type: figure                                figure or table; else read from the newest float.tex
 ```
 
+The pool's Tasks are seeded from the display plan (haipipe-paper-plan `s06-paper-displays`, `display_plan.py seed`),
+which also gives each its paper number: the tab's first line reads `Display A → Figure 1`.
 The list shows the label, then "📈 Figure · <name>" or "📊 Table · <name>" (board_results._display_line); a face with
 no `name:` gives the title after "Display X," in its first line, else the folder's words.
 
@@ -167,7 +169,7 @@ The version ledger
 ```bash
 L=Tools/plugins/haipipe-toolkit/skills/2_theme/paper/haipipe-paper-evidence/scripts/evidence_ledger.py
 .venv/bin/python -B $L <paper>/jNN_writing_v<MMDD>_<desk>/                    every Section of one version, side by side
-.venv/bin/python -B $L <paper>/jNN_writing_v<MMDD>_<desk>/ --max-displays 7   with the venue's limit on main-text displays
+.venv/bin/python -B $L <paper>/jNN_writing_v<MMDD>_<desk>/ [--max-displays 7]   the venue's limit on main-text displays (default: its call.md ## Displays main limit)
 .venv/bin/python -B $L <paper>/jNN_writing_v<MMDD>_<desk>/ --json             for a builder or a workbench
 ```
 

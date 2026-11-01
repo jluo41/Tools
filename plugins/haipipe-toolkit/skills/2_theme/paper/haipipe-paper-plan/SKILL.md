@@ -1,9 +1,9 @@
 ---
 name: haipipe-paper-plan
-description: "A paper Board's plan, the two studio topics after its story: s03 data flow (how the data becomes each answer: Runs, evidence rows, claims) and s04 paper flow (Sections in reader order with their questions, displays, evidence, words, and the dated steps to the send). Checks that every question lands in a Section and every display has a Run. Trigger: paper plan, data flow, paper flow, s03, s04, word budget, timeline to the send, /haipipe-paper-plan."
+description: "A paper Board's plan, the studio topics after its story: s03 data flow (how the data becomes each answer: Runs, evidence rows, claims), s04 paper flow (Sections in reader order with their questions, evidence, words, and the dated steps to the send) and s06 paper displays (each display: name, type, what it shows, main or supplement, the Run that makes it, checked against the venue's display rules). Checks that every question lands in a Section and every display has a Run and follows the venue. Trigger: paper plan, data flow, paper flow, display plan, plan the displays, venue display rules, s03, s04, s06, word budget, timeline to the send, /haipipe-paper-plan."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.1.2"
+  version: "0.2.0"
   last_updated: "2026-11-01"
   group-token: "s03-paper-dataflow"
   # version history: ./CHANGELOG.md
@@ -23,6 +23,7 @@ s02-story-<desk>-…    what does this paper ask, and why?   its questions      
 s03-paper-dataflow    where does each answer come from?    data → Runs → RQ      this skill
 s04-paper-workflow    how is the paper made from them?     RQ → Section → send   this skill
 s05-paper-checklist   is the paper ready to send?          ticks from disk       haipipe-paper (checklist.md, paper_check.py --write)
+s06-paper-displays    what does the reader see?            RQ → display → Run    this skill (checked against the venue)
 s10-related-work-…    which papers are closest to ours?    20 to 25 papers       haipipe-paper-related
 ```
 
@@ -43,7 +44,8 @@ The plan reads the story; it never copies it. A fact is written once:
 | the venue list | s02 face §9 | s04 `**Budget:**` names the target's desk |
 | where the data comes from, how it is matched and tabled | s03 `<topic>-drawing.yaml` | s03 foundation cards |
 | the Sections, their words, displays and evidence | s04 Sections table | s04 drawing, the first version's `## Narrative` |
-| each display and the Run that makes it | s04 Displays table | s04 drawing, s03's "in the paper" column |
+| each display, its type, where it goes and the Run that makes it | s06 Displays table | s06 drawing, s04's displays, s03's "in the paper" column, the j01 pool |
+| the venue's display rules | `venues/<venue>/call.md` `## Displays` (haipipe-paper-venue) | s06 check, the evidence ledger's limit |
 | the dates to the send | s04 Timeline table | s04 drawing |
 
 A number on a card is read from the Result that holds it on every build, never typed: `count:` on a foundation card,
@@ -124,6 +126,49 @@ the send. The face carries two lines and three tables:
    and the version owns the Section rows from then on; s04 keeps the Displays and the Timeline current.
 
 
+s06-paper-displays
+------------------
+
+Found by its slug, `sNN-paper-displays`: s06 by default, the next free number on a Board whose s06 is taken.
+A row's `made by` may name the version it uses (`j01.t03.r02`); the check then reads that Run's `result/`, else the
+newest.
+A row's Display cell is a pool letter (`Display A`, numbered for the paper by row order) or the printed label itself
+(`Table B1`, for a venue that letters its appendix tables, MISQ), which is kept as it is. A pool face answers to its
+`display-plan:` line, a `label:` that reads "Display X", or its `number:` (a paper whose `label:` is the LaTeX label,
+`tab:results`, keeps it).
+
+The display plan (JL 261101: "in the /haipipe-paper-plan, we should also have the plan for the displays"; "the display
+like that should also follow the venue, the venue we are using"): every display the paper will show, planned once,
+before it is drawn, and checked against the venue's display rules. The face carries one table and a sketch per display:
+
+```text
+**Venue:** <the venues/<venue>/ folder the plan follows>
+
+| Display | name | type | shows | answers | section | where | made by | state |
+|---|---|---|---|---|---|---|---|---|
+| Display A | <what it shows, in a few words> | figure | <its layout: panels, axes, colour> | RQ1 | Results | main | <the Run> | ⬜ not started |
+
+#### Display A        a ```text sketch of its layout, under its own heading
+```
+
+1. **A letter, never a number.** A row is `Display A`, `Display B` … in the pool; its paper number is counted on every
+   build from the row order (main figures Figure 1, 2 …; main tables Table 1 …; supplement rows the venue's
+   `supplement labels`, eFigure 1 at JAMA). Reorder the rows to renumber the paper.
+2. **One row, one pool Task.** First relabel any pool Task the plan already means (`label: Display A` on its face,
+   so a drawn figure keeps its Runs); then `display_plan.py seed <Board> --apply` writes each missing
+   `j01_evidence_display/tNN_display-<letter>-<slug>/` face (`label:`, `name:`, `type:`, `answers:`, `made by:`), the
+   next tNN in one letter sequence: the pool has no main or supplement split, the plan's `where` decides; each
+   Run of that Task is a version of the display (haipipe-paper-evidence), its `preview.pdf` the display as the paper
+   prints it.
+3. **The venue check** (`display_plan.py check <Board>`, exit 1 on a ❗ only; ⚠️ and ⬜ are to look at): main and
+   supplement counts within the limits; a Run for every row (an address, `j01.t01.r01` in the Board or
+   `b03.j03.t02.r05` in the Project's work/, must be on disk; words such as "a new figure Run after T5" read as not
+   made yet); a sketch for every row; each drawn display's caption words, its figure's format, and its width in pixels
+   against the venue's width × resolution; a pool Task the plan does not name; the rules the venue has not recorded.
+   The same lines are drawn in ③ and shown in the workbench's Paper flow › Displays and the checklist's P9.
+4. **s04 keeps only the names.** Its Sections table's `displays` cell names the rows (`Display A, Display C`); its old
+   Displays table is read only on a Board with no s06.
+
 Steps
 -----
 
@@ -132,12 +177,17 @@ N=Tools/plugins/haipipe-toolkit/skills/1_base/project/haipipe-studio/scripts/new
 W=Tools/plugins/haipipe-toolkit/skills/1_base/excalidraw/excalidraw-workflow/scripts
 python $N topic <Board> --nn 03 --slug paper-dataflow --title "Paper dataflow: how the data becomes each answer"
 python $N topic <Board> --nn 04 --slug paper-workflow --title "Paper workflow: how the answers become the paper"
-#   replace both faces new_topic.py writes with ref/faces.md's, and add `Plan` to _studio_groups.txt
+python $N topic <Board> --nn 06 --slug paper-displays --title "Paper displays: what the reader sees, by the venue's rules"
+#   replace the faces new_topic.py writes with ref/faces.md's (and add `Plan` to _studio_groups.txt if the Board has one)
 python $W/workflow_drawing.py make <Board>/s03-paper-dataflow     # builder + a drawing yaml to fill
 python $W/paperflow_drawing.py make <Board>/s04-paper-workflow    # builder
+python $W/displayplan_drawing.py make <Board>/s06-paper-displays  # builder (delete new_topic's starter drawing first)
 #   fill s03's yaml and s04's tables (templates: ref/faces.md), then draw both
 python <Board>/s03-paper-dataflow/build_s03_paper_dataflow.py    # each builder writes its .png too
 python <Board>/s04-paper-workflow/build_s04_paper_workflow.py
+python <Board>/s06-paper-displays/build_s06_paper_displays.py
+P=Tools/plugins/haipipe-toolkit/skills/2_theme/paper/haipipe-paper-plan/scripts
+python $P/display_plan.py check <Board>          # the venue check; then seed the pool: display_plan.py seed <Board> --apply
 python Tools/plugins/haipipe-toolkit/skills/1_base/excalidraw/excalidraw-studio/scripts/check.py <x>.excalidraw
 ```
 
@@ -150,6 +200,7 @@ from the picture alone (these four are the reviewer's questions for a plan topic
 2. s04: in what order does the reader meet the questions, and where is each one answered?
 3. s04: which displays carry the answers, and which Run makes each?
 4. s04: what must happen, by whom and by when, before the paper is sent?
+5. s06: what does each display show, where does it go, and does it follow the venue's rules?
 
 
 Boundary

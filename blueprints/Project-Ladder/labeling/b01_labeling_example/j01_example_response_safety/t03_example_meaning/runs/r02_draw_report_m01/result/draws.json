@@ -1,0 +1,35 @@
+{
+ "seed": 5,
+ "train": 24,
+ "flagged": 6,
+ "unflagged": 18,
+ "strata": {
+  "split": 4,
+  "unsure": 2
+ },
+ "sets": {
+  "hard": [
+   "ex-14",
+   "ex-20",
+   "ex-19"
+  ],
+  "blind": [
+   "ex-00",
+   "ex-22"
+  ],
+  "typical": [
+   "ex-05",
+   "ex-15",
+   "ex-17",
+   "ex-21"
+  ]
+ },
+ "pi": {
+  "hard": {
+   "split": 0.5,
+   "unsure": 0.5
+  },
+  "blind": 0.1111,
+  "typical": 0.25
+ }
+}

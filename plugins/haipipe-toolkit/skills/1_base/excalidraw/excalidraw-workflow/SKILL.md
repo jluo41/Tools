@@ -18,7 +18,7 @@ description: >-
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 disable-model-invocation: true
 metadata:
-  version: "0.2.1"
+  version: "0.3.0"
   last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md
 ---
@@ -170,6 +170,13 @@ It reads the face's `**Budget:**` and `**Send:**` lines and its three tables (`|
 displays | evidence | words |`, `| Display | title | kind | answers | made by | state |`, `| W | step | when | who |
 state |`), and from the telling (board.md `story-current:`) each question's name and the E table's support states.
 `paperflow_drawing.py make <topic>` writes the forwarding builder; templates are haipipe-paper-plan's `ref/faces.md`.
+
+`scripts/displayplan_drawing.py` draws the third plan topic, `s06-paper-displays` (haipipe-paper-plan; JL 261101: "we
+should also have the plan for the displays"; "should also follow the venue"): ① the displays in the paper's order as
+steps (`Display A → Figure 1`, its type and name, what it shows, the question, the Section, main or supplement, the
+Run), ② the venue's display rules from `venues/<venue>/call.md`, ③ haipipe-paper-plan's `display_plan.check` line by
+line. A display no Run makes yet, or one that breaks a rule, is red and dashed. `displayplan_drawing.py make <topic>`
+writes the forwarding builder; when s06 exists, `paperflow_drawing.py` takes s04's displays from it.
 
 
 Boundary

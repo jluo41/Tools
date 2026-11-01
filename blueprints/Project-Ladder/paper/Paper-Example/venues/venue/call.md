@@ -4,7 +4,7 @@
 |---|---|---|---|
 | words | up to 3000 | the manuscript text only | <placeholder> |
 
-### Displays
+## Displays
 
 | rule | value | source |
 |---|---|---|

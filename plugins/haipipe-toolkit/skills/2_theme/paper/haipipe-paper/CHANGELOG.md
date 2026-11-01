@@ -1,3 +1,9 @@
+## 1.21.0 · 2026-11-01 · checklist P9, the display plan
+
+- JL 261101: the display plan (haipipe-paper-plan `s06-paper-displays`) joins the plan. `checklist.md` and
+  `paper_check.py` add P9 "The display plan": ✅ when s06 exists and `display_plan.py check` finds nothing against
+  the venue's display rules, ⏳ with the first rule broken.
+
 ## 1.20.1 · 2026-11-01 · b16 review 261101: update, paper_check and the docs fixed
 
 - b16 review 261101: `paper_ladder.py update` fixed. It sweeps the build inputs in `delivery/<job>/`, renames the

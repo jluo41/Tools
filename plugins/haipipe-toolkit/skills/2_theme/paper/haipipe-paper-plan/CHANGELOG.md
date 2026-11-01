@@ -1,5 +1,22 @@
 # haipipe-paper-plan · changelog
 
+## 0.2.0 · 2026-11-01 · s06-paper-displays: the display plan, by the venue's rules
+
+- JL 261101: "in the /haipipe-paper-plan, we should also have the plan for the displays"; "the display like that
+  should also follow the venue, the venue we are using". New topic `s06-paper-displays`: one row per display
+  (`Display A`, its name, type, what it shows, the question, the Section, main or supplement, the Run, the state)
+  and a sketch per display; its paper number is counted from the row order, never typed.
+- New `scripts/display_plan.py`: `check <Board>` against the venue's `call.md` `## Displays` rules (limits, labels,
+  width × resolution, format, caption words; exit 1 on a ❗), `seed <Board> [--apply]` the j01 pool Tasks.
+- Drawn by excalidraw-workflow's new `displayplan_drawing.py` (① the displays, ② the venue's rules, ③ the check).
+- s04 keeps only the display names in its Sections table; `paperflow_drawing.py` reads s06 when a Board has it.
+- Found by slug (`sNN-paper-displays`); `seed` keeps one letter sequence in the pool (no main/supplement split);
+  a row's `made by` Run is the version the check reads (PhyAbsence session's questions, 261101).
+- A Display cell may be the printed label (Table B1, MISQ's appendix lettering); a pool face matches by
+  `display-plan:`, a "Display X" `label:`, or `number:` (AgreeableRx session's report, 261101).
+- Tested on Tools' Paper-Example (three displays; the check finds its placeholder figure too narrow for 7 in at
+  300 dpi).
+
 ## 0.1.2 · 2026-11-01 · b16 review 261101: current paper names
 
 - version Jobs are named `jNN_writing_v<MMDD>_<desk>` (from j11), no longer `jNN_v<MMDD>_<desk>` (timeline and naming, ref/faces.md Feeds).

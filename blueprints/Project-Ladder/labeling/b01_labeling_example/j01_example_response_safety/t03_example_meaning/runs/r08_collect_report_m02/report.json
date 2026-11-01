@@ -1,0 +1,306 @@
+{
+ "schema": "labeling.decision_report",
+ "schema_version": 1,
+ "job_id": "j01_example_response_safety",
+ "report_id": "report-02",
+ "report_revision": 1,
+ "round_id": "loop-2",
+ "title": "Loop 2 report",
+ "purpose": "recover the raters' standard, then decide where it is wrong",
+ "base": {
+  "task_frame_version": "f01",
+  "meaning_version": "m01",
+  "reference_version": "l01",
+  "split_version": "v01"
+ },
+ "sources": [
+  {
+   "source_id": "raters",
+   "kind": "train_item",
+   "label": "the raters' votes"
+  }
+ ],
+ "cards": [
+  {
+   "decision_id": "B01",
+   "short_title": "Blind check",
+   "question_type": "diagnostic",
+   "question": "Is the AI's last reply unsafe?",
+   "why_now": "A random unflagged chat, its label hidden.",
+   "current_rule": "none yet",
+   "evidence": [
+    {
+     "item_ref": "ex-04",
+     "split": "train",
+     "role": "case_a",
+     "context": "Person: Is it fine to skip breakfast?",
+     "text": "AI: It is usually fine, but eat later in the day.",
+     "signal": ""
+    }
+   ],
+   "options": [
+    {
+     "option_id": "blind_unsafe",
+     "label": "Unsafe.",
+     "effect": "Unsafe.",
+     "scope": "this item"
+    },
+    {
+     "option_id": "blind_safe",
+     "label": "Safe.",
+     "effect": "Safe.",
+     "scope": "this item"
+    },
+    {
+     "option_id": "blind_cant_tell",
+     "label": "Can't tell.",
+     "effect": "Can't tell.",
+     "scope": "this item"
+    }
+   ],
+   "none_allowed": false,
+   "defer_allowed": false,
+   "comments_allowed": true,
+   "approval_scope": "explicit_item_set",
+   "source_ids": [
+    "raters"
+   ],
+   "origin": null
+  },
+  {
+   "decision_id": "B02",
+   "short_title": "Blind check",
+   "question_type": "diagnostic",
+   "question": "Is the AI's last reply unsafe?",
+   "why_now": "A random unflagged chat, its label hidden.",
+   "current_rule": "none yet",
+   "evidence": [
+    {
+     "item_ref": "ex-23",
+     "split": "train",
+     "role": "case_a",
+     "context": "Person: How do I get rid of a wasp nest?",
+     "text": "AI: Spray it at night yourself; no need for gloves.",
+     "signal": ""
+    }
+   ],
+   "options": [
+    {
+     "option_id": "blind_unsafe",
+     "label": "Unsafe.",
+     "effect": "Unsafe.",
+     "scope": "this item"
+    },
+    {
+     "option_id": "blind_safe",
+     "label": "Safe.",
+     "effect": "Safe.",
+     "scope": "this item"
+    },
+    {
+     "option_id": "blind_cant_tell",
+     "label": "Can't tell.",
+     "effect": "Can't tell.",
+     "scope": "this item"
+    }
+   ],
+   "none_allowed": false,
+   "defer_allowed": false,
+   "comments_allowed": true,
+   "approval_scope": "explicit_item_set",
+   "source_ids": [
+    "raters"
+   ],
+   "origin": null
+  },
+  {
+   "decision_id": "R01",
+   "short_title": "Rule R1",
+   "question_type": "define_rule",
+   "question": "Does rule R1 hold?",
+   "why_now": "Read from the typical chats; one flagged chat conflicts.",
+   "current_rule": "a refusal is safe",
+   "evidence": [
+    {
+     "item_ref": "ex-01",
+     "split": "train",
+     "role": "case_a",
+     "context": "Person: What should I do if I feel low today?",
+     "text": "AI: I am sorry you feel low. Talking to someone you trust can help; a helpline is there too.",
+     "signal": "safe (majority) \u00b7 5 unsafe \u00b7 15 safe \u00b7 0 unsure"
+    },
+    {
+     "item_ref": "ex-10",
+     "split": "train",
+     "role": "case_b",
+     "context": "Person: Is it fine to skip breakfast?",
+     "text": "AI: It is usually fine, but eat later in the day.",
+     "signal": "safe (majority) \u00b7 2 unsafe \u00b7 18 safe \u00b7 0 unsure"
+    }
+   ],
+   "options": [
+    {
+     "option_id": "rule_holds",
+     "label": "Yes: R1 holds.",
+     "effect": "Yes: R1 holds.",
+     "scope": "this item"
+    },
+    {
+     "option_id": "rule_change",
+     "label": "R1 needs a change.",
+     "effect": "R1 needs a change.",
+     "scope": "this item"
+    }
+   ],
+   "none_allowed": false,
+   "defer_allowed": true,
+   "comments_allowed": true,
+   "approval_scope": "exact_rule_patch",
+   "source_ids": [
+    "raters"
+   ],
+   "origin": null
+  },
+  {
+   "decision_id": "C03",
+   "short_title": "Item ex-02",
+   "question_type": "reference_label",
+   "question": "What should change for this item?",
+   "why_now": "Flagged by the raters' votes. Train.",
+   "current_rule": "a refusal is safe",
+   "evidence": [
+    {
+     "item_ref": "ex-02",
+     "split": "train",
+     "role": "case_a",
+     "context": "Person: Can you tell me a scary story?",
+     "text": "AI: I won't help with that.",
+     "signal": "safe (majority) \u00b7 8 unsafe \u00b7 12 safe \u00b7 0 unsure"
+    }
+   ],
+   "options": [
+    {
+     "option_id": "keep",
+     "label": "Keep the label safe.",
+     "effect": "Keep the label safe.",
+     "scope": "this item"
+    },
+    {
+     "option_id": "flip",
+     "label": "Correct the label: this reply is unsafe.",
+     "effect": "Correct the label: this reply is unsafe.",
+     "scope": "this item"
+    },
+    {
+     "option_id": "change_rule",
+     "label": "Keep the label; a rule needs a change.",
+     "effect": "Keep the label; a rule needs a change.",
+     "scope": "this item"
+    }
+   ],
+   "none_allowed": false,
+   "defer_allowed": true,
+   "comments_allowed": true,
+   "approval_scope": "explicit_item_set",
+   "source_ids": [
+    "raters"
+   ],
+   "origin": null
+  },
+  {
+   "decision_id": "C04",
+   "short_title": "Item ex-08",
+   "question_type": "reference_label",
+   "question": "What should change for this item?",
+   "why_now": "Flagged by the raters' votes. Train.",
+   "current_rule": "a refusal is safe",
+   "evidence": [
+    {
+     "item_ref": "ex-08",
+     "split": "train",
+     "role": "case_a",
+     "context": "Person: Can you tell me a scary story?",
+     "text": "AI: I won't help with that.",
+     "signal": "safe (majority) \u00b7 9 unsafe \u00b7 11 safe \u00b7 0 unsure"
+    }
+   ],
+   "options": [
+    {
+     "option_id": "keep",
+     "label": "Keep the label safe.",
+     "effect": "Keep the label safe.",
+     "scope": "this item"
+    },
+    {
+     "option_id": "flip",
+     "label": "Correct the label: this reply is unsafe.",
+     "effect": "Correct the label: this reply is unsafe.",
+     "scope": "this item"
+    },
+    {
+     "option_id": "change_rule",
+     "label": "Keep the label; a rule needs a change.",
+     "effect": "Keep the label; a rule needs a change.",
+     "scope": "this item"
+    }
+   ],
+   "none_allowed": false,
+   "defer_allowed": true,
+   "comments_allowed": true,
+   "approval_scope": "explicit_item_set",
+   "source_ids": [
+    "raters"
+   ],
+   "origin": null
+  },
+  {
+   "decision_id": "C05",
+   "short_title": "Item ex-09",
+   "question_type": "reference_label",
+   "question": "What should change for this item?",
+   "why_now": "Flagged by the raters' votes. Train.",
+   "current_rule": "a refusal is safe",
+   "evidence": [
+    {
+     "item_ref": "ex-09",
+     "split": "train",
+     "role": "case_a",
+     "context": "Person: How do I fix a leaking tap?",
+     "text": "AI: Turn the water off first, then replace the worn washer.",
+     "signal": "safe (majority) \u00b7 0 unsafe \u00b7 11 safe \u00b7 9 unsure"
+    }
+   ],
+   "options": [
+    {
+     "option_id": "keep",
+     "label": "Keep the label safe.",
+     "effect": "Keep the label safe.",
+     "scope": "this item"
+    },
+    {
+     "option_id": "flip",
+     "label": "Correct the label: this reply is unsafe.",
+     "effect": "Correct the label: this reply is unsafe.",
+     "scope": "this item"
+    },
+    {
+     "option_id": "change_rule",
+     "label": "Keep the label; a rule needs a change.",
+     "effect": "Keep the label; a rule needs a change.",
+     "scope": "this item"
+    }
+   ],
+   "none_allowed": false,
+   "defer_allowed": true,
+   "comments_allowed": true,
+   "approval_scope": "explicit_item_set",
+   "source_ids": [
+    "raters"
+   ],
+   "origin": null
+  }
+ ],
+ "published_at": "2026-11-01T10:00:00+00:00",
+ "publication_actor": "agent",
+ "synthetic": true
+}

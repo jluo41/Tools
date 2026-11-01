@@ -1,0 +1,16 @@
+run: r04_collect_report_m01
+kind: hard
+type: collect
+scope: blueprints/Project-Ladder/labeling/b01_labeling_example/j01_example_response_safety/t03_example_meaning
+target: b01.j01.t03-s01:labeling_example.example_response_safety.example_meaning @
+  example_guideline
+ticket: r04_collect_report_m01.html
+skill: haipipe-interaction
+agent: Example Person
+signs: null
+status: done
+passes:
+- p01-1101
+writes:
+- result/answer_collection.md
+feeds: []

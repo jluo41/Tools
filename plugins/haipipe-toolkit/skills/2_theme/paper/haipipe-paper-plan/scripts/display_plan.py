@@ -3,13 +3,14 @@
 follow the venue, the venue we are using").
 
     python display_plan.py check <Board>            every display against the venue's rules; exit 1 on a ❗
+                                                    (⚠️ worth a look and ⬜ not yet do not fail)
     python display_plan.py seed  <Board>            the j01 pool Tasks the plan names and the pool lacks (dry run)
     python display_plan.py seed  <Board> --apply    write them: tNN_display-<letter>-<slug>/tNN_….md
 
 What it reads, each fact from its one owner:
 
-    s06-paper-displays/s06-paper-displays.md   | Display | name | type | shows | answers | section | where | made by | state |
-    venues/<venue>/call.md  ### Displays       | rule | value | source |   (rules: main limit, supplement limit,
+    sNN-paper-displays/sNN-paper-displays.md   | Display | name | type | shows | answers | section | where | made by | state |
+    venues/<venue>/call.md  ## Displays          | rule | value | source |   (rules: main limit, supplement limit,
                                                main labels, supplement labels, width, resolution, format, font,
                                                table style, caption)
     j01_evidence_display/tNN_*/tNN_*.md        label: Display A · name: … · type: figure|table
@@ -29,6 +30,8 @@ from pathlib import Path
 RULES = ("main limit", "supplement limit", "main labels", "supplement labels", "width", "resolution", "format", "font",
          "table style", "caption")
 TYPES = {"figure": "📈 Figure", "table": "📊 Table"}
+# a Display cell that is already a printed label keeps it: Figure 2, Table B1, eTable 3, Supplementary Figure S1
+PRINTED = re.compile(r"^(?:e|Supplementary\s+|Appendix\s+)?(?:Figure|Table|Fig\.)\s*[A-Z]?\d+[a-z]?$", re.I)
 
 
 def table(lines: list[str], first: str) -> list[dict]:
@@ -96,21 +99,32 @@ def rows(board: Path) -> list[dict]:
     for r in table(face.read_text(encoding="utf-8").splitlines(), "Display"):
         kind = "table" if "table" in r.get("type", "").lower() else "figure"
         where = "supplement" if re.match(r"\s*(supp|appendix|online|e\b)", r.get("where", ""), re.I) else "main"
+        cell = r.get("display", "").strip()
+        if PRINTED.match(cell):                   # already the printed label (MISQ's Table B1, lettered by appendix)
+            out.append({**r, "type": kind, "where": where, "as": cell})
+            continue
         base = labels(R, where)[0 if kind == "figure" else 1]
         seen[base] = seen.get(base, 0) + 1
         out.append({**r, "type": kind, "where": where, "as": f"{base} {seen[base]}"})
     return out
 
 
+def keys(text: str) -> list[str]:
+    """What a pool face answers to, in order: `display-plan:`, a `label:` that reads "Display X", `number:` (the
+    printed label, Table 3), then any `label:` (a paper whose label: is its LaTeX label, tab:results, keeps it)."""
+    lab = field(text, "label")
+    got = [field(text, "display-plan"), lab if re.match(r"(?i)display\s+\w+$", lab) else "", field(text, "number"), lab]
+    return list(dict.fromkeys(k for k in got if k))
+
+
 def pool(board: Path) -> dict:
-    """{label: Task folder} of the Board's j01 display pool."""
+    """{key: Task folder} of the Board's j01 display pool, each Task under every key its face answers to."""
     job = next((j for j in sorted(board.glob("j[0-9]*_*")) if re.search(r"evidence_display|_displays", j.name)), None)
     out = {}
     for t in sorted(job.glob("t[0-9]*_*")) if job else []:
         f = t / f"{t.name}.md"
-        lab = field(f.read_text(encoding="utf-8", errors="ignore"), "label") if f.is_file() else ""
-        if lab:
-            out[lab] = t
+        for k in keys(f.read_text(encoding="utf-8", errors="ignore")) if f.is_file() else []:
+            out.setdefault(k, t)
     return out
 
 
@@ -144,6 +158,30 @@ def number(text: str) -> float | None:
     return max(float(x) for x in m) if m else None
 
 
+def sketch(text: str, label: str) -> str:
+    """The ```text sketch under `#### <label>` on the plan's face, or ''."""
+    m = re.search(rf"(?ms)^####\s*{re.escape(label)}\s*\n+```text\n(.*?)```", text) if label else None
+    return m.group(1).rstrip() if m else ""
+
+
+def run_of(board: Path, cell: str) -> tuple[str, Path | None]:
+    """A `made by` cell's Run address and its folder: `j01.t01.r01` inside the Board, `b03.j03.t02.r05` in the
+    Project's work/; ('', None) when the cell names no address (a Run still to make, in words)."""
+    m = re.search(r"\b(?:(b\d+)\.)?(j\d+)\.(t\d+)(?:\.(r\d+))?\b", cell or "")
+    if not m:
+        return "", None
+    b, j, t, r = m.groups()
+    bases = [board] if not b else [p / "work" for p in board.parents if (p / "work").is_dir()][:1]
+    for base in bases:
+        hits = sorted(base.glob(f"{b}_*/{j}_*/{t}_*" if b else f"{j}_*/{t}_*"))
+        if hits:
+            if not r:
+                return m.group(0), hits[0]
+            run = sorted([*hits[0].glob(f"runs/{r}_*"), *hits[0].glob(f"runs/{r}")])
+            return m.group(0), run[0] if run else None
+    return m.group(0), None
+
+
 def check(board: Path) -> list[tuple[str, str]]:
     """(mark, line): ✅ holds, ❗ breaks a venue rule or the plan, ⚠️ worth a look, ⬜ not checked yet."""
     out, R, P, have = [], rules(board), rows(board), pool(board)
@@ -162,10 +200,20 @@ def check(board: Path) -> list[tuple[str, str]]:
     caption_cap = number(R.get("caption", ("", ""))[0])
     width_in, dpi = number(R.get("width", ("", ""))[0]), number(R.get("resolution", ("", ""))[0])
     formats = [f.lower() for f in re.findall(r"[A-Za-z]{2,5}", R.get("format", ("", ""))[0])]
+    text = plan_face(board).read_text(encoding="utf-8", errors="ignore")
     for r in P:
         name = f"{r.get('display', '?')} ({r['as']})"
-        if not re.search(r"\w", re.sub(r"[—–-]", "", r.get("made by", ""))):
+        made = r.get("made by", "")
+        if not re.search(r"\w", re.sub(r"[—–-]", "", made)):
             out.append(("❗", f"{name}: no Run named to make it (made by)"))
+        else:
+            addr, found = run_of(board, made)
+            if addr and found is None:
+                out.append(("❗", f"{name}: made by {addr}, which is not on disk"))
+            elif not addr:
+                out.append(("⬜", f"{name}: its Run is not made yet ({made.strip('<>')})"))
+        if not sketch(text, r.get("display", "")):
+            out.append(("⬜", f"{name}: no sketch yet (#### {r.get('display', '')} under ### Sketches)"))
         task = have.get(r.get("display", ""))
         if task is None:
             out.append(("⬜", f"{name}: not in the pool yet (display_plan.py seed)"))
@@ -173,7 +221,9 @@ def check(board: Path) -> list[tuple[str, str]]:
         face = (task / f"{task.name}.md").read_text(encoding="utf-8", errors="ignore")
         if field(face, "type") and field(face, "type").lower() != r["type"]:
             out.append(("⚠️", f"{name}: the plan says {r['type']}, its face says {field(face, 'type')}"))
-        ft = newest(task, "float.tex")
+        _, run = run_of(board, made)
+        ft = (run / "result" / "float.tex") if run is not None and (run / "result" / "float.tex").is_file() \
+            else newest(task, "float.tex")        # the version the row names, else the newest
         if ft is None:
             out.append(("⬜", f"{name}: not drawn yet"))
             continue
@@ -189,7 +239,10 @@ def check(board: Path) -> list[tuple[str, str]]:
             out.append(("✅" if size[0] >= need else "❗",
                         f"{name}: {size[0]} px wide; the venue's {width_in:g} in at {dpi:g} dpi needs {need}"))
     planned = {r.get("display", "") for r in P}
-    out += [("⚠️", f"{lab}: in the pool but not in the plan") for lab in have if lab not in planned]
+    hit = {t for k, t in have.items() if k in planned}
+    loose = list(dict.fromkeys(t for t in have.values() if t not in hit))
+    out += [("⚠️", f"{t.name}: in the pool but not in the plan; name it in a plan row (its label: or number:, or add "
+                   f"display-plan: Display <letter> to its face) or drop it") for t in loose]
     told = {k for k in RULES if k in R}
     if R and told != set(RULES):
         out.append(("⬜", "venue rules not recorded: " + ", ".join(k for k in RULES if k not in told)))
@@ -202,14 +255,17 @@ def seed(board: Path, apply: bool = False) -> list[Path]:
     if job is None:
         raise SystemExit("no display Job (jNN_evidence_display): make it first (paper_ladder.py evidence)")
     have, made = pool(board), []
-    nn = max([int(t.name[1:3]) for t in job.glob("t[0-9][0-9]_*") if t.name[1:3].isdigit() and int(t.name[1:3]) < 50] or [0])
+    used = [int(t.name[1:3]) for t in job.glob("t[0-9][0-9]_*") if t.name[1:3].isdigit()]
+    nn = max(used or [0])                         # one letter sequence (JL 261101: "display A, B, C, D, and within it,
+                                                  # we can see different versions"); main or supplement is the plan's call
+    small = {"a", "an", "the", "of", "in", "on", "by", "and", "or", "for", "to", "who", "is", "are", "with", "at"}
     for r in rows(board):
         lab = r.get("display", "")
         if not lab or lab in have:
             continue
         nn += 1
         letter = re.sub(r"(?i)^display\s*", "", lab).lower() or str(nn)
-        slug = "-".join(re.findall(r"[a-z0-9]+", r.get("name", "").lower())[:3]) or r["type"]
+        slug = "-".join([w for w in re.findall(r"[a-z0-9]+", r.get("name", "").lower()) if w not in small][:3]) or r["type"]
         name = f"t{nn:02d}_display-{letter}-{slug}"
         face = job / name / f"{name}.md"
         made.append(face)

@@ -168,3 +168,53 @@ Open
 
 1. <the first open point>
 ````
+
+
+## s06-paper-displays
+
+`s06-paper-displays/s06-paper-displays.md` (the venue's rules sit in `venues/<venue>/call.md`, `## Displays`):
+
+````markdown
+s06 · Paper displays: what the reader sees, by the venue's rules
+================================================================
+
+**Tags:** `Plan`
+
+**Stage:** shaping
+
+**Venue:** <venue folder>
+
+**Topic:** <n> displays carry the answers to <the questions>: <what the main ones show, in one sentence>. Each is
+planned here once, made by a Run in `j01_evidence_display`, and checked against the venue's display rules.
+
+**Feeds:** `j01_evidence_display` (one pool Task per row, `display_plan.py seed`) and `s04-paper-workflow`.
+
+
+### Displays
+
+| Display | name | type | shows | answers | section | where | made by | state |
+|---|---|---|---|---|---|---|---|---|
+| Display A | <what it shows, in a few words> | figure | <its layout> | RQ1 | Results | main | <the Run> | ⬜ not started |
+| Display B | <…> | table | <one row per …, one column per …> | RQ1 | Methods | main | <the Run> | ⬜ not started |
+
+
+### Sketches
+
+#### Display A
+
+```text
+<a few lines: the panels, the axes, what the colour means>
+```
+
+
+Decided
+-------
+
+(none yet: s06-D01 · <a decision about the displays> (<who> <date>))
+
+
+Open
+----
+
+1. <the first open point>
+````

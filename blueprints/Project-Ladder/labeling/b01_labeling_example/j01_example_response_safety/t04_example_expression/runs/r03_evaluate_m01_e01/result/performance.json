@@ -1,0 +1,1 @@
+[{"model": "small model A", "train": "0.71", "test": "0.67", "coverage": "1.00"}, {"model": "small model B", "train": "0.79", "test": "0.67", "coverage": "1.00"}]

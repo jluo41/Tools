@@ -1,3 +1,7 @@
+## 0.12.0 · 2026-11-01
+
+- The two loops (b15 s58, stage 2; JL 261101: "Please make them work"): a Job's building as two Tasks, 🧭 meaning (`labeling-meaning`) and 🛠 expression (`labeling-expression`); routing to the new kinds `interaction` (Frame, Report, Preferences, Update) and `expression` (a round, Release).
+
 ## 0.11.1 · 2026-10-14 · keys is now ground truth
 
 - The Task type once called keys is ground truth (📏): papers say ground truth or gold labels, not keys; its

@@ -1,3 +1,10 @@
+## 0.12.0 · 2026-11-01 · the venue's display rules
+
+- JL 261101: "the display like that should also follow the venue, the venue we are using". `call.md` gains a
+  `## Displays` table, `| rule | value | source |` (main and supplement limits, labels, width, resolution, format,
+  font, table style, caption); the `displays` row leaves `## Limits`, so the limit is written once.
+  haipipe-paper-plan's display plan and haipipe-paper-evidence's ledger read it.
+
 ## 0.11.2 · 2026-11-01 · b16 review 261101: current paper names
 
 - Studio topics are `sNN-…` beside the Jobs, no longer under `studio/` (the story's venue list).

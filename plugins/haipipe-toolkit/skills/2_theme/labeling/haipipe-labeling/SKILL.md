@@ -12,8 +12,8 @@ description: >-
   a labeling Job folder, it opens the workbench on the step the Job is at and
   guides the person through it, one step at a time, from the items Task on.
 metadata:
-  version: "0.11.2"
-  last_updated: "2026-10-26"
+  version: "0.12.0"
+  last_updated: "2026-11-01"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -37,6 +37,10 @@ current directory. Set `PYTHON_BIN` to that workspace's Python interpreter
 The person's one start message (JL 261014: "from /haipipe-labeling <path to job> and it will open the UI for me,
 and guide me step by step"). A labeling Job is one dataset × one label; its Tasks are typed by their faces'
 `task-type:` lines (items · ground truth · building · scanning · score), and the work goes items → building → scanning.
+A Job that runs the two loops (b15 s58, since 261101) types its building as two Tasks, 🧭 meaning
+(`labeling-meaning`: Frame, then loops of Report → Preferences → Update; the only Task that asks the person) and 🛠
+expression (`labeling-expression`: rounds of Rewrite → Run → Evaluate under a signed meaning), and goes items →
+meaning ⇄ expression → scanning. Each of their steps is a prompt the workbench page copies; route it below.
 
 1. **Open and read.** Run `"$PYTHON_BIN" "$TOOLS_ROOT/plugins/haipipe-toolkit/skills/2_theme/labeling/haipipe-labeling/scripts/start.py" <Job>`.
    It reads the Job from disk (writes nothing), opens the workbench on the tab of the step the Job is at
@@ -149,6 +153,10 @@ workflow | run | drive    forward to /haipipe-labeling workflow, which hands the
 one Run | one view        forward to that view's skill (/haipipe-labeling-<view>),
                           which holds the Run's own steps
 raw corpus | preparation forward to /haipipe-labeling preparation before Contract
+meaning | frame | report  forward to /haipipe-labeling interaction: a meaning Task's Frame, a loop's
+| answers | update        Report, Preferences (save the answers) and Update
+expression | round       forward to /haipipe-labeling expression: a round under a signed meaning
+| rewrite | release       (Rewrite → Run → Evaluate), and Release
 feedback | digest         use the existing family feedback procedures
 ```
 
@@ -168,6 +176,8 @@ embedding      ../1_data/haipipe-labeling-embedding/SKILL.md
 definition     ../2_labeling/haipipe-labeling-definition/SKILL.md
 guideline      ../2_labeling/haipipe-labeling-guideline/SKILL.md
 rounds         ../2_labeling/haipipe-labeling-rounds/SKILL.md
+interaction    ../2_labeling/haipipe-labeling-interaction/SKILL.md   the 🧭 meaning Task, step by step
+expression     ../2_labeling/haipipe-labeling-expression/SKILL.md    the 🛠 expression Task, round by round
 audit          ../3_quality/haipipe-labeling-audit/SKILL.md
 evaluation     ../3_quality/haipipe-labeling-evaluation/SKILL.md
 test           ../3_quality/haipipe-labeling-test/SKILL.md

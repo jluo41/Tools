@@ -2,7 +2,7 @@
 name: haipipe-paper
 description: "The one door for a paper on the ladder: a paper Board, one version Job per send, one Task per Section, Abstract or letter; routes to the Story, Ideation, Venue, Section, comments and assembly owners. Use for paper setup (paper_ladder.py), bringing an older paper folder onto the latest layout (paper_ladder.py audit, update), where a paper stands (checklist.md, paper_check.py, its sNN-paper-checklist topic), the delivery and its requirements, drafting, or reviews. Trigger: paper, paper Board, version, send, update the paper folder, paper checklist, delivery requirements, /haipipe-paper."
 metadata:
-  version: "1.20.1"
+  version: "1.21.0"
   last_updated: "2026-11-01"
   summary: "Paper owns the journey and composition; the shared Page owns each Paper Page's lifecycle and release."
 ---
@@ -154,7 +154,7 @@ Page containers, status reads and gate records do not allocate Runs.
 | Ideation | the idea pool as `s01-ideation/` and Questions (group ideation); `haipipe-paper-ideation` |
 | Related work | the closest work: `s10-related-work-map/` maps it beside ours, `s11`-`s19` read one type each; `haipipe-paper-related` |
 | Story | each telling as `sNN-story-<desk>-<idea>/` in the Board folder, its research questions as Board Questions with reports, the Narrative; `haipipe-paper-story` |
-| Plan | after the story: `s03-paper-dataflow/` (how the data becomes each answer) and `s04-paper-workflow/` (the Sections, displays and dates to the send); `haipipe-paper-plan` |
+| Plan | after the story: `s03-paper-dataflow/` (how the data becomes each answer), `s04-paper-workflow/` (the Sections and dates to the send) and `s06-paper-displays/` (each display and its Run, checked against the venue's display rules); `haipipe-paper-plan` |
 | Venue | shared evidence-backed desk contract; `haipipe-paper-venue` |
 | Section (draft) | one Section, the Abstract or a letter, a draft Task: its plan and sentences in `draft/`; `haipipe-paper-draft` (was haipipe-paper-section) |
 | Evidence | what backs each Section (`evidence/`, `display/`) and one ledger per version: citations, one number per result, displays; `haipipe-paper-evidence` |

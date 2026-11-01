@@ -2,7 +2,8 @@
 plan for the displays"; "the display like that should also follow the venue").
 
     ① The displays, in the paper's order       each a step: Display A → Figure 1, its type and name, what it
-                                               shows, the question and Section, main or supplement, the Run
+                                               shows, the question and Section, main or supplement, the Run;
+                                               its layout sketch beside it
     ② The venue's display rules                 from venues/<venue>/call.md's Displays table
     ③ Does the plan follow them?                haipipe-paper-plan's display_plan.check, one line each
 
@@ -38,8 +39,8 @@ def state_mark(cell: str) -> str:
     return c[:1] if c[:1] in "✅⏳⬜🙋" else next((v for k, v in MARK.items() if c.lower().startswith(k)), "⬜")
 
 
-def displays_frame(d: Drawing, P: list, bad: set) -> dict:
-    W, BW, SH = 1900, 1500, 60
+def displays_frame(d: Drawing, P: list, bad: set, text: str = "") -> dict:
+    W, BW, SH = 2500, 1300, 60
     title = "The displays, in the paper's order"
     f = d.frame(f"{CIRCLED[0]} {title}", W)
     d.text(40, 22, title, 44)
@@ -58,7 +59,12 @@ def displays_frame(d: Drawing, P: list, bad: set) -> dict:
         low = (f"answers {r.get('answers', '—')} · {r.get('section', '—')} · {r['where']} · "
                f"made by {plain(r.get('made by', '')) or 'no Run yet'}")
         lines = [(top, 26, RED if red else INK)] + ([(mid, 22, INK)] if mid else []) + [(low, 20, GREY)]
-        h = box(d, 40 + i * SH, y, BW, lines, sw=1.5, dashed=st == "⬜" or red)
+        x0 = 40 + i * SH
+        h = box(d, x0, y, BW, lines, sw=1.5, dashed=st == "⬜" or red)
+        sk = dp.sketch(text, r.get("display", ""))
+        if sk:                                           # the layout sketch, as written on the face
+            d.text(x0 + BW + 30, y, sk, 18, GREY, code=True)
+            h = max(h, Drawing.height(sk, 600, 18) + 10)
         y += h + 16
     return finish(d, f, y)
 
@@ -99,7 +105,7 @@ def draw(topic: Path, out: Path | None = None) -> Path:
     call = dp.venue_call(board)
     bad = {r.get("display", "") for r in P for m, t in lines if m == "❗" and t.startswith(r.get("display", "") + " ")}
     d = Drawing()
-    disp = displays_frame(d, P, bad)
+    disp = displays_frame(d, P, bad, dp.plan_face(board).read_text(encoding="utf-8"))
     rul = rules_frame(d, R, call.parent.name if call else "")
     chk = check_frame(d, lines)
     move(d.els, disp, 0, 0)

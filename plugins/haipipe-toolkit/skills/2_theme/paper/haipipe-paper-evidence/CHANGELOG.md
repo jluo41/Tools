@@ -1,5 +1,11 @@
 # haipipe-paper-evidence · changelog
 
+## 0.6.2 · 2026-11-01 · the venue's display limit, the display plan's numbers
+
+- `evidence_ledger.py` takes the venue's main display limit from `venues/<venue>/call.md` `## Displays` when no
+  `--max-displays` is given (JL 261101: "the display ... should also follow the venue").
+- The pool is seeded from haipipe-paper-plan's `s06-paper-displays`; the Evidence tab reads `Display A → Figure 1`.
+
 ## 0.6.1 · 2026-11-01 · page 1 as the paper prints it; each display's name and type
 
 - New `scripts/preview_display.py <unit>`: page 1 of a display's `preview.pdf` uses the paper's own built head

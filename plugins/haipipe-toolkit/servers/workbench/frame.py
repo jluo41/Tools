@@ -979,7 +979,13 @@ def _file_url(path: Path, root: Path) -> str:
         return _reader(path, root)
     if path.suffix.lower() in (".docx", ".eml", ".pptx"):
         return ROUTE + "?" + urlencode({"view": path.suffix.lower()[1:], "path": _rel(path, root)})
-    return "/" + quote(_rel(path, root))
+    rel = _rel(path, root)
+    if (path.suffix == ".html" and path.stem == path.parent.name and re.match(r"^r\d\d_collect_", path.stem)
+            and "labeling" in (part.casefold() for part in Path(rel).parts)):
+        # a labeling folder is never a static file (host_registry.static_path_allowed): a meaning Task's interaction
+        # form opens through its own route, the path kept so the form's copied form: line names its Run (b15 s58)
+        return "/_board/labeling/form/" + quote(rel)
+    return "/" + quote(rel)
 
 
 PREVIEW_FRAME = {".md", ".docx", ".eml", ".pptx", ".pdf", ".html", ".htm", ".txt", ".csv"}

@@ -140,6 +140,16 @@ def test_round_trip_through_collect_save(tmp_path):
     assert by["syn-01"]["blind"] == "safe" and by["syn-02"]["status"] == "custom" and by["syn-03"]["status"] == "deferred"
 
 
+def test_the_last_note_stops_at_the_answer_files_closing_fence():
+    """A saved answer file keeps the paste in a fence; the last question's note must not take the fence."""
+    report = audit_report()
+    text = ("# Loop 1 report\n\n## The pasted text\n\n```text\nhaipipe-interaction answers · r04 · Loop 1 report · x\n"
+            "Q1 · Blind check: B · Safe.\nQ2 · Item syn-02: A · Keep the label safe.\nQ3 · Item syn-03: A · Keep the label safe.\n"
+            "Q4 · Rule R1: B · R1 needs a change.\n   note: narrow it to refusals\n```\n")
+    answers = rf.answers_from(report, text)
+    assert answers["R01"]["comment"] == "narrow it to refusals"
+
+
 def test_a_note_where_comments_are_off_is_refused_not_dropped():
     report = audit_report()
     report["cards"][0]["comments_allowed"] = False

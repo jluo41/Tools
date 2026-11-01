@@ -379,7 +379,8 @@ def evidence_view(board: Path, root: Path, md, items=()) -> str:
         tasks = sorted((x for x in job.glob("t[0-9]*_*") if x.is_dir()), key=_num)
         tiles, panels = [], []
         dp = display_plan() if kind == "Displays" else None
-        paper_as = {r.get("display", ""): f"{r.get('display', '')} → {r['as']}" for r in (dp.rows(board) if dp else [])}
+        paper_as = {r.get("display", ""): (r["as"] if r["as"] == r.get("display") else f"{r.get('display', '')} → {r['as']}")
+                    for r in (dp.rows(board) if dp else [])}
         for t in tasks:                          # each item to read: its list on the left, the thing itself on the right
             label, status, body = evidence_body(t, root)
             words = re.sub(r"^t\d+_", "", t.name).replace("-", " ")
@@ -389,7 +390,9 @@ def evidence_view(board: Path, root: Path, md, items=()) -> str:
             line = "waiting" if line.startswith("waits") else line
             if kind == "Displays":               # JL 261101: "for each display, we might also want to have the name and type"
                 line = _display_line(t, words)
-                head = paper_as.get(head, head)    # Display A → Figure 1, from the display plan
+                face = t / f"{t.name}.md"         # Display A → Figure 1, from the display plan, by any key the face answers to
+                ks = dp.keys(face.read_text(encoding="utf-8", errors="ignore")) if dp and face.is_file() else []
+                head = next((paper_as[k] for k in ks if k in paper_as), head)
             tiles.append(((("Appendix · " if kind == "Displays" and _num(t) >= 50 else "") + head), line or status, ""))
             panels.append(body)
         book = board / "delivery" / job.name / f"{job.name}-all-displays.pdf"   # build_displays_pdf.py writes it

@@ -17,9 +17,27 @@ bank: <the shared Venue Page this follows, venue/bank/1-QBv-desks/QBv<n>-<slug>/
 | what | limit | counts |
 |---|---|---|
 | words | <main text limit> | <what is counted: abstract, references, tables?> |
-| displays | <figures and tables> | |
 | references | <limit or none> | |
 | abstract | <words, structure> | |
+
+## Displays
+
+How the venue wants its figures and tables (JL 261101: "the display ... should also follow the venue"). The paper's
+display plan (haipipe-paper-plan `s06-paper-displays`) is checked against these rows by `display_plan.py check`; a
+row left out is not checked, and the check names it.
+
+| rule | value | source |
+|---|---|---|
+| main limit | <n (figures and tables together), or "n figures, m tables"> | <link or quoted line> |
+| supplement limit | <n, or no limit> | |
+| main labels | <Figure n, Table n> | |
+| supplement labels | <eFigure n, eTable n · Supplementary Figure n …> | |
+| width | <the widest a figure prints: 7 in (two columns)> | |
+| resolution | <300 dpi> | |
+| format | <PNG, PDF, TIFF, EPS> | |
+| font | <8 pt or larger> | |
+| table style | <no vertical rules; units in the column heads> | |
+| caption | <at most n words> | |
 
 ## Format
 

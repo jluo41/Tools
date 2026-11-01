@@ -94,7 +94,7 @@ TYPES = (
     ("meaning", "🧭", "what the label means, loop by loop: Frame → Report → Preferences → Update; the only Task that "
      "asks you", ("labeling-meaning",), "haipipe-labeling-interaction"),
     ("expression", "🛠", "the wording the models follow under one approved meaning: Rewrite → Run → Evaluate → "
-     "Release", ("labeling-expression",), "haipipe-labeling-building"),
+     "Release", ("labeling-expression",), "haipipe-labeling-expression"),
     ("building", "🏗", "Contract → Rounds → G0 → Freeze → the signed Label Handoff", ("labeling-building", "labeling"),
      "haipipe-labeling-building"),
     ("scanning", "🔍", "the Handoff carried out: Test → Scan → Audit → final labels", ("labeling-scanning", "labeling"),

@@ -49,7 +49,7 @@ MV = _engine()
 
 STEPS = {
     "meaning": (("frame", "Frame", "what we judge, agreed before any rule"),
-                ("report", "Report", "the rules now, then this loop's report and the cases it asks about"),
+                ("prepare", "Report", "the rules now, then this loop's report and the cases it asks about"),
                 ("preferences", "Preferences", "this loop's interaction report: your answers"),
                 ("update", "Update", "the rules your answers made, what changed, and where the loop goes")),
     "expression": (("rewrite", "Rewrite", "the wording, rewritten under a fixed meaning"),
@@ -57,7 +57,7 @@ STEPS = {
                    ("evaluate", "Evaluate", "how the models did, and where the round report sends it"),
                    ("release", "Release", "whether the frozen version is ready")),
 }
-NEXT = {"frame": ("report", "🔍 Report"), "report": ("preferences", "🙋 Preferences"), "preferences": ("update", "🔁 Update"),
+NEXT = {"frame": ("prepare", "🔍 Report"), "prepare": ("preferences", "🙋 Preferences"), "preferences": ("update", "🔁 Update"),
         "rewrite": ("run", "▶️ Run"), "run": ("evaluate", "📊 Evaluate"), "evaluate": ("release", "🔒 Release")}
 OWN = ("report", "work")                     # the sections this page draws; the rest are the base page's
 
@@ -152,14 +152,18 @@ def _prompt(task: Path, root: Path, key: str, step: str, asks: str, template: st
 
 # ── 🧭 meaning ───────────────────────────────────────────────────────────────────────────────────────────────────
 def _map_html(m: dict, mark: dict | None = None) -> str:
-    """One guideline version as a tree (s58 C2, C4): the question, its values, each value's rules; a rule's tag is the
-    card that set it (its note's "from rNN QN"), or in Report the card of this loop's report that asks about it."""
+    """One guideline version as a tree (s58 C2, C4): the question, its values, each value's rules. A rule's tag means
+    one thing per view: in Report (`mark` given) the card of this loop's report that asks about it; in Update the card
+    that set it (its note's "from rNN QN")."""
     branches = []
     for b in m["branches"]:
         leaves = []
         for r in b["rules"]:
-            tag = (mark or {}).get(r["text"].strip().lower()) or r["tag"]
-            pill = f'<span class=ls-q title="{esc(r.get("cite") or r["note"])}">{esc(tag)}</span>' if tag else ""
+            if mark is not None:
+                tag, why = mark.get(r["text"].strip().lower(), ("", ""))
+            else:
+                tag, why = r["tag"], r.get("cite") or r["note"]
+            pill = f'<span class=ls-q title="{esc(why)}">{esc(tag)}</span>' if tag else ""
             leaves.append(f'<div class=ls-lf title="{esc(r["note"])}"><span>{esc(r["text"])}</span>{pill}</div>')
         branches.append(f'<div class=ls-br><div class=ls-bn>{esc(b["name"])}</div><div class=ls-lvs>'
                         + ("".join(leaves) or '<div class=ls-lf><span class=mut>no rule yet</span></div>') + "</div></div>")
@@ -168,6 +172,7 @@ def _map_html(m: dict, mark: dict | None = None) -> str:
 
 
 def _maps(task: Path, root: Path, on: str = "", mark: dict | None = None) -> str:
+    """`mark`: Report's {rule words: (QN, why)} for the open version; None in Update (each rule's own card)."""
     """Every guideline version, one button each, the newest (or `on`) open: its tree, then its sign."""
     vs = MV.versions(task)
     if not vs:
@@ -180,7 +185,7 @@ def _maps(task: Path, root: Path, on: str = "", mark: dict | None = None) -> str
         signed = MV.approval(task, v)
         foot = (f"approved by {signed['by']} · {signed['at']}" if signed else "not approved yet")
         panels.append(f'<div class="pb-panel ls-mp" data-pbpanel="lsmm{v}"{"" if v == on else " hidden"}>'
-                      + _map_html(MV.read_map(path), mark if v == on else None)
+                      + _map_html(MV.read_map(path), (mark if v == on else {}) if mark is not None else None)
                       + f'<p class=ls-foot>{esc(v)} · {esc(foot)} {_open(path, root, "Open the mind map")}</p></div>')
     return (f'<div class="pb-tabset ls-maps"><div class=ls-vrow><span>version</span>{buttons}</div>'
             + "".join(panels) + "</div>")
@@ -252,6 +257,7 @@ def _cases(task: Path, root: Path, lp: dict | None) -> tuple[str, str, str]:
                 continue
             sig[row.get("item_id")] = row
     cards = MV.cards_by_item(MV.report_json(lp["runs"]))
+    now = _labels_now(task)
 
     def table(key: str, why_default: str, hide: bool) -> str:
         ids = sets.get(key) or []
@@ -261,22 +267,39 @@ def _cases(task: Path, root: Path, lp: dict | None) -> tuple[str, str, str]:
         for i in ids[:SHOW]:
             s = sig.get(i, {})
             why = ", ".join(s.get("flags") or []) or why_default
-            label = "hidden until you judge it" if hide else (s.get("label") or s.get("majority") or "no majority")
+            label = "hidden until you judge it" if hide else (now.get(i) or s.get("label") or s.get("majority") or "no majority")
             rows.append((esc(i), esc(why), esc(label), esc(cards.get(i, ""))))
-        more = (f"{len(ids) - SHOW} more in draws.json {_open(path, root)}" if len(ids) > SHOW else "")
+        more = esc(f"{len(ids) - SHOW} more in {lp['draw'].name}'s draws.json") if len(ids) > SHOW else ""
         return _table(("item", "why drawn", "current label", "card"), rows, more)
 
     return table("typical", "typical", False), table("hard", "flagged", False), table("blind", "random, unflagged", True)
 
 
+def _labels_now(task: Path) -> dict:
+    """{item: label} from the newest Update's labels.jsonl (lNN), so a case shows what the last loop decided."""
+    for run in reversed(MV.runs(task)):
+        path = run / "result" / "labels.jsonl"
+        if MV.role(run) == "update" and path.is_file():
+            out = {}
+            for raw in path.read_text(encoding="utf-8").splitlines():
+                try:
+                    row = json.loads(raw)
+                except ValueError:
+                    continue
+                if row.get("item_id"):
+                    out[row["item_id"]] = row.get("label") or "no majority"
+            return out
+    return {}
+
+
 def _mark(lp: dict | None) -> dict:
-    """{rule words: QN} for the rules this loop's report asks about: a card whose current_rule quotes a rule."""
+    """{rule words: (QN, why)} for the rules this loop's report asks about: a card whose current_rule quotes a rule."""
     report = MV.report_json(lp["runs"]) if lp else None
     out = {}
     for i, card in enumerate((report or {}).get("cards") or [], 1):
         rule = re.sub(r"^R\d+:\s*", "", str(card.get("current_rule") or "")).strip().rstrip(".").lower()
         if rule and rule not in ("none yet", "none"):
-            out.setdefault(rule, f"Q{i}")
+            out.setdefault(rule, (f"Q{i}", f"asked in report-{lp['n']:02d}, Q{i}"))
     return out
 
 
@@ -315,7 +338,7 @@ def m_report(task: Path, root: Path, loops: list) -> tuple[str, str]:
         ("Human sources + reports", "ideas · notes · decisions", "earlier round reports · cases"),
         ("🤖 Alignment Agent", "/haipipe-labeling-interaction", collect.name if collect else f"rNN_collect_report_m{n:02d}"),
         (f"Interaction report-{n:02d}", "cards with evidence", "for you to decide")))
-    process += _prompt(task, root, "report", "Report", f"Loop {n}'s interaction report", (
+    process += _prompt(task, root, "prepare", "Report", f"Loop {n}'s interaction report", (
         f"Use /haipipe-labeling-interaction on {task.name}, Loop {n}: prepare interaction report-{n:02d} from my sources, "
         "earlier decisions and any round report, its cases grouped typical, hard and random. Flags are hypotheses: no "
         "rule or label changes until I answer."))
@@ -548,7 +571,7 @@ def x_view(task: Path, root: Path, key: str) -> tuple[str, str, str]:
             head = next((ln.strip("# ").strip() for ln in report.read_text(encoding="utf-8").splitlines()
                          if ln.strip() and not ln.startswith("#")), report.name)
             meaning = next((t for t in sorted(task.parent.iterdir()) if t.is_dir() and kind(t) == "meaning"), None)
-            href = _view_url(meaning, root, "report") if meaning else ""
+            href = _view_url(meaning, root, "prepare") if meaning else ""
             results += _section(f"📋 Round report {now}", _todo([(head, report.name, "sent to meaning", "Open in meaning", href, False)])
                                 + f'<p class=ls-foot>{_open(report, root, "Open the round report")}</p>')
         errors = _json(out / "errors.json") if out else None
@@ -600,7 +623,7 @@ def default_view(task: Path) -> str:
         return "update"
     if loops and loops[-1]["map"] and not loops[-1]["approved"]:
         return "update"
-    return "report"
+    return "prepare"
 
 
 def view_html(task: Path, root: Path, section: str, key: str) -> str:
@@ -611,7 +634,7 @@ def view_html(task: Path, root: Path, section: str, key: str) -> str:
         loops = MV.loops(task)
         at = {"preferences": _form_loop(loops), "update": _update_loop(loops)}.get(key)
         lead = "" if key == "frame" else _meaning_turns(loops, at["n"] if at else _current(loops), "report next")
-        process, results = {"frame": lambda: m_frame(task, root), "report": lambda: m_report(task, root, loops),
+        process, results = {"frame": lambda: m_frame(task, root), "prepare": lambda: m_report(task, root, loops),
                             "preferences": lambda: m_preferences(task, root, loops),
                             "update": lambda: m_update(task, root, loops)}[key]()
     else:
@@ -621,7 +644,7 @@ def view_html(task: Path, root: Path, section: str, key: str) -> str:
         nxt, words = NEXT[key]
         body += f'<p class=ls-next><a href="{esc(_view_url(task, root, nxt))}">next: {esc(words)} →</a></p>'
     return (f'<p class="view-caption">{esc(caption[:1].upper() + caption[1:])}.</p>'
-            f'<div class="ls-view fd-body">{body}</div>')
+            f'<div class=ls-view>{body}</div>')
 
 
 def page(theme, root, folder, section: str = "", group: str = ""):
@@ -630,14 +653,15 @@ def page(theme, root, folder, section: str = "", group: str = ""):
     from live import labeling_focus as LF
     root, folder = Path(root).resolve(), Path(folder).resolve()
     views = {k: name for k, name, _ in STEPS[kind(folder)]}
-    if section in views:                                       # a step named as a section: that step, in Work
-        section, group = "work", section
     keys = [k for k, _, _ in LF.base_rail(folder, root)]
+    if section in views and section not in keys:               # a step named as a section: that step, in Work
+        section, group = "work", section
     if section in keys and section not in OWN:
         return F.render(theme, root, folder, section, group)
     section = section if section in OWN else "work"
     view = group if group in views else default_view(folder)
+    from live import focus_draft as FD                         # the same section bars, folding by their heading
     css = "<style>" + (ASSETS / "steps.css").read_text(encoding="utf-8") + "</style>"
     js = "<script>" + (ASSETS / "steps.js").read_text(encoding="utf-8") + "</script>"
     return LF.task_shell(root, folder, section, views, view, view_html(folder, root, section, view),
-                         PB_CSS + GROUP_CSS + css, PB_JS + js)
+                         PB_CSS + GROUP_CSS + FD.CSS + css, PB_JS + FD.JS + js)

@@ -1,3 +1,8 @@
+## 0.3.0 · 2026-11-01 · the display plan drawn
+
+- New `scripts/displayplan_drawing.py` for haipipe-paper-plan's `s06-paper-displays`: the displays, the venue's
+  display rules, the check (JL 261101). `paperflow_drawing.py` reads its displays from s06 when a Board has one.
+
 ## 0.2.0 · 2026-10-19 · The paper flow, and the map read from a drawn telling
 
 - New `scripts/paperflow_drawing.py` for a paper's `s04-paper-workflow` (haipipe-paper-plan; JL 261019: "please think

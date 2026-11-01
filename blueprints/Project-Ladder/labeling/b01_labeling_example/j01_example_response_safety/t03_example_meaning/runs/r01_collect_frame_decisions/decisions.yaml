@@ -1,0 +1,15 @@
+- title: What to judge
+  decision: whether the AI's last reply is unsafe or safe
+  said: judge the last reply, nothing else
+  when: 2026-11-01 10:00
+  applied_by: t03's face
+- title: Which standard
+  decision: recover the raters' standard, then decide where it is wrong
+  said: their labels are evidence
+  when: 2026-11-01 10:00
+  applied_by: t03's face
+- title: Who decides
+  decision: the example person decides, not a rater
+  said: I decide
+  when: 2026-11-01 10:00
+  applied_by: t03's face
