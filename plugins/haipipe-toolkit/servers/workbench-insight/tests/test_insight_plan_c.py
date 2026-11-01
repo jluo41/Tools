@@ -35,7 +35,8 @@ JOB = {"Description": (["Prototype", "Dataset"], ["Open the release ↗"]),
        "Audience Report": (["Full", "part-a", "part-b", "Cross"], ["Write the Data report", "Write the Information report",
                                                                "Write the Knowledge report", "Write the Wisdom report",
                                                                "Check a report"]),
-       "Work Details": (["All", "hard", "soft"], ["Run the Job", "Run a partition", "Check alignment"]),
+       # the Job's Work is its steps (b11 s12, 261022); a closed Job opens on its last, 6 · Close
+       "Work Details": (["1 · Launch", "2 · Run", "3 · Write", "4 · Check", "5 · Compare", "6 · Close"], ["Close the Job"]),
        "Runs": (["All", "hard", "soft", "launch", "power", "compare", "propose", "close"],
                 ["Run the Job", "Measure the power", "Run a partition", "Compare with the Job before",
                  "Propose questions", "Close the Job"]),
@@ -105,7 +106,7 @@ class PlanCTest(unittest.TestCase):
         for space in ("Audience Report", "Work Details", "Runs"):      # no band beside the tab (s12, 261007)
             self.assertNotIn("AP2 × F2", spaces("Job", self.job, self.root, "")[space].html, space)
         self.assertIn("refused", frame.render(THEME, self.root, self.board / "j02_prototype-p1_data-demov2", "Description", "Dataset"))
-        tree = frame.render(THEME, self.root, self.job, "Work Details", "")
+        tree = frame.render(THEME, self.root, self.job, "Work Details", "All")     # the tree's older view: 2 · Run
         self.assertIn("t03_K01_question-c", tree)
         self.assertIn("r04_cross", tree)
 
@@ -136,6 +137,63 @@ class PlanCTest(unittest.TestCase):
                 page = frame.render(THEME, self.root, folder, space, "")
                 for old in OLD_CLASSES:
                     self.assertNotIn(old, page)
+
+
+class JobWorkStepsTest(unittest.TestCase):
+    """JL 261022: "how to make it that when the user want, they can open this work panel and work on it". A Job's Work
+    is its steps, 1 · Launch to 6 · Close, a tab each: its work panel (Input, what is running, the step's card prompt
+    with the person's notes) folded until opened, over its Result; each tab's buttons are the run cards of that step."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+        self.board = F.make(self.root) / F.BOARD
+        self.closed = self.board / "j03_prototype-p2_data-demov2"
+        self.open = self.board / "j04_prototype-p2_data-demov3"
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def work(self, folder, sub=""):
+        data = json.loads(frame.frame_json(THEME, self.root, folder, sub))
+        return {s["name"]: s for s in data["spaces"]}["Work Details"]
+
+    def test_a_closed_job_has_every_step_done(self):
+        page = frame.render(THEME, self.root, self.closed, "Work Details", "")
+        self.assertIn("6 · Close", page)
+        self.assertNotIn("→ next", page)
+        self.assertIn("✓ done", page)
+
+    def test_an_open_job_opens_on_the_step_that_comes_next(self):
+        self.assertEqual(self.work(self.open)["open"], "1 · Launch")
+        page = frame.render(THEME, self.root, self.open, "Work Details", "")
+        self.assertIn("→ next", page)
+        self.assertIn("Running now", page)                    # run-launch-j04 is open
+        self.assertIn("run-launch-j04", page)
+
+    def test_the_work_panel_is_folded_until_opened(self):
+        page = frame.render(THEME, self.root, self.open, "Work Details", "2 · Run")
+        self.assertIn('<details class="topic work-task items-step"><summary>', page)
+        self.assertIn("Copy prompt", page)
+        self.assertIn("user feedback:", page)                 # your notes go out with the prompt
+        self.assertIn('Run this in the Claude session &quot;', page)
+        self.assertIn(self.open.name, page)
+        self.assertNotIn(f"{self.open.name.replace('_', '-')}-{self.open.name.replace('_', '-')}", page)
+
+    def test_each_step_lists_its_own_cards(self):
+        want = {"1 · Launch": ["Run the Job", "Measure the power"], "2 · Run": ["Run a partition", "Pool or split"],
+                "3 · Write": ["Write the Data report", "Write the Information report", "Write the Knowledge report",
+                              "Write the Wisdom report", "Write the overall report"],
+                "4 · Check": ["Check alignment", "Check a report"],
+                "5 · Compare": ["Compare with the Job before", "Propose questions"], "6 · Close": ["Close the Job"]}
+        for step, runs in want.items():
+            with self.subTest(step=step):
+                self.assertEqual(self.work(self.open, step)["run_doing"], runs)
+
+    def test_a_page_waits_on_its_runs_before_it_is_written(self):
+        page = frame.render(THEME, self.root, self.open, "Work Details", "3 · Write")
+        self.assertIn("Waiting on 2 · Run", page)
+        self.assertIn("Write the Wisdom report", page)        # W cites the answers below: ready to write
 
 
 class OverallReportTest(unittest.TestCase):

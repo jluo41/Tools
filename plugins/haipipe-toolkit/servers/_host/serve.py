@@ -715,6 +715,20 @@ class Handler(ShareMixin, AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteM
             from live.frame import mindmap_module
             code, res = mindmap_module().act(self.root, p, read_only=getattr(self.server, "read_only", False))
             return self.reply(code, res)
+        if self.path in ("/_board/insight-act", "/_board/design-ladder-act"):
+            # a person's own action on an insight or design screen (b11 s12, b12 s12; JL 261023: "design the work in a
+            # way that we human can operate this system as well"): a CHECK, a Job's close, a release approved. A sign
+            # comes only from a page of this host, never from a request with no page behind it.
+            from urllib.parse import urlparse
+            origin = self.headers.get("Origin") or ""
+            if not origin or urlparse(origin).netloc != (self.headers.get("Host") or ""):
+                return self.reply(403, {"ok": False, "err": "a person's action comes from this workbench's page"})
+            if self.path == "/_board/insight-act":
+                from live.insight_act import act
+            else:
+                from live.design_ladder_act import act
+            code, res = act(self.root, p, read_only=getattr(self.server, "read_only", False))
+            return self.reply(code, res)
         if self.path == "/_board/labeling/items":
             # an items Task's Sign or Agree on a planned Run's card (b15 s41-D10)
             code, res = self.labeling_items_act(p)

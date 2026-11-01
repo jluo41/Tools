@@ -1,5 +1,6 @@
 # haipipe-design-unit · version history
 
+- 261022 · `check_unit.py` reads a method's own query answers (version unchanged): a `from` of `query q<NN>` (or `query q02 · q05`) passes when every id is an answer in the Job's run-reason-t00 `result/queries/` whose receipt names a dictionary with a manifest file's sha (M05 m3, haipipe-design-method); `tests/test_fence_sources.py`.
 - 261012 · rank writes every prediction in percentage points (`+x pp [lo; hi]` against the control), never a relative `%`, bare points or no unit (JL 261012: the Block Summary read j01 `+5%` beside j04 `+3.6`); `references/rank.md`.
 - 261007 · review fixes (version unchanged): Description lists revise as soft and gains a Trigger line; the draft and verdict reach the Task only by haipipe-design-workflow's project_draft.py; revise passes hold design.md · elements.yaml · feedback.md and draft k = 1 + the passes; T2 when the method's ④ lists it, T3 moved to t99's rank; a step may carry its own from; the strict fence rule; every idea has a name; a verify sets by: different from the generator's; a fix needing a new input is a hold, never a revise; the older-boards example uses placeholders.
 

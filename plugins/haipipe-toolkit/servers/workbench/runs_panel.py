@@ -541,7 +541,9 @@ PANEL_JS = r"""
   var b=ev.target.closest('button[data-post]');if(!b)return;ev.preventDefault();
   var body={};try{body=JSON.parse(b.dataset.body||'{}');}catch(e){}
   var row=b.parentNode;(b.dataset.fields||'').split(' ').filter(Boolean).forEach(function(n){
-   var i=row.querySelector('[name="'+n+'"]');if(i){body[n]=i.value;store('sign:'+n,i.value);}});
+   /* a tick box says whether it is ticked (a person's "I read it"), and is never remembered */
+   var i=row.querySelector('[name="'+n+'"]');if(i){if(i.type==='checkbox'){body[n]=i.checked;return;}
+    body[n]=i.value;store('sign:'+n,i.value);}});
   b.disabled=true;
   fetch(b.dataset.post,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
    .then(function(x){return x.json();}).then(function(j){if(j.ok){location.reload();return;}

@@ -36,6 +36,16 @@ def section(md: Path, heading: str) -> str:
     return m.group(1).strip() if m else ""
 
 
+FENCE = re.compile(r"(?s)```[a-z]*\n(.*?)\n?```")
+
+
+def words_of(text: str) -> str:
+    """A design's words from its face's ## Design: the fenced block when there is one (a note around it, such as a
+    character count, is not the message), else the section as written."""
+    m = FENCE.search(text or "")
+    return m.group(1).strip() if m else (text or "").strip()
+
+
 def set_state(md: Path, state: str) -> None:
     text = md.read_text(encoding="utf-8")
     md.write_text(re.sub(r"(?m)^state:\s*\S+", f"state: {state}", text, count=1), encoding="utf-8")
@@ -106,7 +116,7 @@ def release(job: Path, freeze: str = "", dry: bool = False) -> list:
                      "--freeze YYMMDD)")
         m = DESIGN.match(t.name)
         face = t / f"{t.name}.md"
-        words = section(face, "Design")
+        words = words_of(section(face, "Design"))
         if not words or PLACEHOLDER.fullmatch(words):
             sys.exit(f"{t.name}: its face's ## Design still holds no design ({words[:40]!r}); project the passed draft "
                      "into it first (haipipe-design-workflow/scripts/project_draft.py draft)")

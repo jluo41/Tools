@@ -28,6 +28,7 @@ MOVES = [("(none: a Job was a DIKW level)", "the Job tab j03_p2_<d>v2: one Proto
          ("Scope, at one data version", "Description: Prototype (release p2) · Dataset (<d>v2); the pair's line opens Prototype"),
          ("Insight › <partition>", "Audience Report: Question │ Work │ Report under D · I · K · W; every cell opens a pop-out"),
          ("(none)", "Work Details: the Job › Task › Run tree; the partitions are the hard Runs"),
+         ("Work Details: the Job › Task › Run tree", "Work: its steps 1 · Launch … 6 · Close, a folded work panel each (261022)"),
          ("Prototype › Data … Wisdom", "the D · I · K · W headings of that table (a level groups questions)"),
          ("(none)", "Audience Report: Partition (Full · A · B · Cross) × Period (Current · vs previous)"),
          ("Task › Propose a change (s13)", "the Job proposes: run-propose-j03, after the compare, to the Prototype's proposals/"),
@@ -74,38 +75,118 @@ def job_dataset(cx, cy, cw):
     text(cx, y + 16, "the cuts are the release's; the counts this data version's; power is checked here, before any outcome", 14, GRAY)
 
 
-def work(cx, cy, cw):
-    """The Job › Task › Run tree (JL 261007: "maybe show the J-T-R structure?"): a row per Task under its DIKW
-    level, each opening to its Runs, hard per partition, then soft; a Run's ↗ opens its pop-out."""
-    cols = [0, 420, 520, 700, 800]
-    for h, c in zip(["j03_p2_<d>v2 › Task › Run", "kind", "status", "passes", "last"], cols):
-        text(cx + c + 10, cy, h, 14, GRAY)
-    y = cy + 26
+STEPS = ["1 · Launch", "2 · Run", "3 · Write", "4 · Check", "5 · Compare", "6 · Close"]
+WORK_TABS = lambda on: [(st, st == on) for st in STEPS]
+# the Job's Work is its steps (JL 261022: "how to make it that when the user want, they can open this work panel and
+# work on it"): a tab per step, its work panel folded until opened, its result under it, as the draft and labeling
+# Tasks' steps are; the Job → Task → Run tree (261007) is 2 · Run's last card
+
+
+def _fold_row(cx, y, cw, title, chip, opened=False, h=44):
+    """A folding row: ▸ or ▾, its title, its chip on the right; returns its bottom."""
+    base("rectangle", cx, y, cw, h, INK, 1, rough=0)
+    text(cx + 14, y + 11, ("▾ " if opened else "▸ ") + title, 18, INK)
+    text(cx + cw - 16 - len(chip) * 9, y + 12, chip, 16, INK)
+    return y + h
+
+
+def _grid(cx, y, cw, heads, rows, cols):
+    for h_, c in zip(heads, cols):
+        text(cx + c + 10, y, h_, 14, GRAY)
+    y += 26
     U.path([(cx, y), (cx + cw, y)], arrow=False, color=GRAY)
-    TASKS = {"D": [("t01_D01_<q>", "4 Runs", "✅")], "I": [("t03_I01_<q>", "4 Runs", "✅"), ("t06_I04_<q>", "3 Runs · new", "◐")],
-             "K": [("t04_K01_<q>", None, "✅"), ("t05_K02_<q>", "3 Runs · B refused", "◐")],
-             "W": [("t08_W01_<q>", "cites K01 · I01", "✅")]}
-    RUNS_K01 = [("r01_full/", "hard", "● ok", "p01", "<MMDD>"), ("r02_<partition A>/", "hard", "● ok", "p01", "<MMDD>"),
-                ("r03_<partition B>/", "hard", "● ok", "p02", "<MMDD>"), ("r04_cross/", "hard", "POOL", "p01", "<MMDD>"),
-                ("run-write-t04/", "soft", "closed", "p02", "<MMDD>"), ("run-check-t04/", "soft", "✅", "p01", "<MMDD>")]
-    for lv in U.LEVELS:
-        text(cx, y + 8, f"{lv} · {U.LEVEL[lv][0]}", 15, INK)
+    for row in rows:
+        for k, (cell, c) in enumerate(zip(row, cols)):
+            text(cx + c + 10, y + 7, cell, 15, RED if str(cell).startswith("?") else INK, MONO if k == 0 else U.SANS)
         y += 32
-        U.path([(cx, y), (cx + cw, y)], arrow=False, color=INK)
-        for task, note, st in TASKS[lv]:
-            opened = note is None
-            text(cx + 14, y + 8, ("▾ " if opened else "▸ ") + task + " ↗", 14, INK, MONO)
-            text(cx + cols[2] + 10, y + 8, st, 14, INK)
-            if note:
-                text(cx + cols[1] + 10, y + 8, note, 13, RED if "refused" in note else GRAY)
-            y += 32
-            if opened:
-                for name, kind, status, passes, last in RUNS_K01:
-                    for c, cell in zip(cols, ["      " + name + " ↗", kind, status, passes, last]):
-                        text(cx + c + 10, y + 6, cell, 13, INK if c else INK, MONO if c == 0 else U.SANS)
-                    y += 28
-            U.path([(cx, y), (cx + cw, y)], arrow=False, color=GRAY)
-    text(cx, y + 14, "a Task's ↗ opens its tab (s13); a Run's ↗ opens the Run pop-out; the partitions are the hard Runs", 14, GRAY)
+        U.path([(cx, y), (cx + cw, y)], arrow=False, color=GRAY)
+    return y
+
+
+def _open_tab(cx, cy, on):
+    """Underline the open step's tab (a black drawing cannot tell it by colour); the tabs sit as screen() lays them."""
+    px = cx
+    for st in STEPS:
+        w = len(st) * 10 + 34
+        if st == on:
+            for d in (0, 3, 6):
+                U.path([(px, cy - 16 + d), (px + w, cy - 16 + d)], arrow=False, color=INK)
+        px += w + 12
+
+
+def work_closed(cx, cy, cw):
+    """Reading: 2 · Run, opened from a bare link (the step that comes next); its work panel folded, its result below."""
+    _open_tab(cx, cy, "2 · Run")
+    text(cx, cy + 8, "Operation", 16, GRAY)
+    y = _fold_row(cx, cy + 34, cw, "🧮 2 · Run", "→ next")
+    text(cx, y + 10, "✎ 261022  the work panel (Input · Running now · the prompt with your notes · the sign) folds until you open its bar",
+         14, GREEN)
+    text(cx, y + 50, "Result", 16, GRAY)
+    y = _fold_row(cx, y + 76, cw, "D · Data", "1 of 1 ✓") + 10
+    y = _fold_row(cx, y, cw, "I · Information", "1 of 2", opened=True) + 12
+    y = _grid(cx + 20, y, cw - 40, ["Task", "Full", "<A>", "<B>", "Cross"],
+              [("t03_I01_<q> ↗", "✅", "✅", "✅", "POOL"), ("t06_I04_<q> ↗", "· not run", "·", "·", "·")],
+              [0, 330, 470, 610, 750]) + 14
+    y = _fold_row(cx, y, cw, "K · Knowledge", "1 of 2") + 10
+    y = _fold_row(cx, y, cw, "Every Run, by Task", "the Job → Task → Run tree") + 22
+    text(cx, y, "a bare link opens the step that comes next; All and hard open 2 · Run, soft opens 4 · Check", 15, GRAY)
+
+
+def work_open(cx, cy, cw):
+    """Working: the same Job later, 4 · Check with its work panel opened: what it has, what runs now, the prompt
+    with your notes."""
+    label_y = cy - 228                                    # the screens' names above them (level_drawing)
+    U.path([(cx - 1644 + 170, label_y + 14), (cx - 44, label_y + 14)], color=INK)
+    text(cx - 1644 + 430, label_y - 24, "the same Job, later: open a step's bar to work on it", 20, INK)
+    _open_tab(cx, cy, "4 · Check")
+    text(cx, cy + 8, "Operation", 16, GRAY)
+    y = _fold_row(cx, cy + 34, cw, "🔍 4 · Check", "→ next", opened=True)
+    ix = cx + 20
+    text(ix, y + 12, "Input", 15, GRAY)
+    y = _grid(ix, y + 38, cw - 40, ["", ""],
+              [("Pages checked", "3 of 6 written"), ("Alignment Runs", "3 of 6"),
+               ("Still to check", "t05_K02_<q> · t06_I04_<q> · t08_W01_<q>")], [0, 230]) + 12
+    base("rectangle", ix, y, cw - 40, 38, INK, 1, rough=0)
+    text(ix + 12, y + 9, "⏳ Running now · run-check-alignment-t05 · open since <time>", 16, INK)
+    y += 54
+    text(ix, y, "Prompt · alignment", 15, INK)
+    base("rectangle", ix + cw - 40 - 150, y - 6, 150, 32, INK, 1.5, rough=0)
+    text(ix + cw - 40 - 136, y, "Copy prompt", 16, INK)
+    y += 34
+    base("rectangle", ix, y, cw - 40, 92, GRAY, 1, rough=0)
+    for k, line in enumerate(["Run with haipipe-insight-reviewer-agent. /haipipe-insight-check check each answered",
+                              "cut of a question in <Board>/j03_p2_<d>v2 against its question and plan, as",
+                              "run-check-alignment-t<NN>. Still to check: t05_K02_<q>, t06_I04_<q>, t08_W01_<q>."]):
+        text(ix + 12, y + 10 + k * 26, line, 14, INK, MONO)
+    y += 92
+    base("rectangle", ix, y, cw - 40, 64, INK, 1, rough=0)
+    text(ix + 12, y + 8, "user feedback:", 14, GRAY, MONO)
+    text(ix + 12, y + 32, "<your notes: a row, a sentence to change>", 15, INK)
+    y += 64
+    text(ix + 12, y + 8, 'Run this in the Claude session "<Board>: j03-prototype-p2-data-<d>v2"; start it if it is not running.', 13, GRAY, MONO)
+    text(ix + 12, y + 32, "? work in place: a chat docked under the open step, or copy only (today)", 15, RED)
+    y += 62
+    y = _fold_row(ix, y, cw - 40, "Prompt · CHECK", "Copy prompt", h=40) + 14
+    text(cx, y, "✎ 261022  Copy prompt copies the prompt, your notes and the session line; you paste them into any Claude session",
+         14, GREEN)
+    text(cx, y + 34, "Result", 16, GRAY)
+    y = _fold_row(cx, y + 60, cw, "D · Data", "1 of 1 ✓") + 10
+    y = _fold_row(cx, y, cw, "I · Information", "1 of 2") + 10
+    y = _fold_row(cx, y, cw, "K · Knowledge", "1 of 2", opened=True) + 12
+    y = _grid(cx + 20, y, cw - 40, ["Task", "CHECK", "alignment", "its check Run"],
+              [("t04_K01_<q> ↗", "✅ <date> · a person", "run-check-alignment-t04 ✅", "run-check-t04 ✅"),
+               ("t05_K02_<q> ↗", "▾ not yet · check it", "run-check-alignment-t05 · open", "—")], [0, 280, 520, 820])
+    # a person's own CHECK, folded in the page's row (261023): tick, then ✅ Pass or ↩ Return with the reason
+    fx = cx + 300
+    base("rectangle", fx, y + 6, cw - 320, 44, INK, 1, rough=0)
+    px = fx + 12
+    for word, w in (("☐ I read the page and its Runs' results", 330), ("why, if it goes back", 220),
+                    ("✅ Pass", 90), ("↩ Return", 110)):
+        base("rectangle", px, y + 13, w, 30, INK if "Pass" in word or "Return" in word else GRAY, 1, rough=0)
+        text(px + 8, y + 19, word, 15, INK if "why" not in word else GRAY)
+        px += w + 10
+    text(cx, y + 64, "✎ 261023  🙋 a person checks a page here: tick, then ✅ Pass, or ↩ Return with the reason "
+                     "(the page's check: line, a pass of run-check-tNN, by: a person)", 14, GREEN)
 
 
 PERIOD = lambda on: [[("Partition:", 0)] + [(lab, k == 1) for k, (lab, _) in enumerate(U.PARTS)],
@@ -226,11 +307,18 @@ SCREENS = [
       (JOB + "runs/run-propose-j03/", "soft: files new or changed questions"),
       ("work/bNN_<topic>_prototype/proposals/<slug>.md", "kind · DIKW level · from j03 · why"),
       ("insights/bNN_<topic>/reports/", "the same across all Jobs (s11)")]),
-    ("Work Details", [("All", 1), ("hard", 0), ("soft", 0)], ["Run a partition", "Check alignment", "Run the Job"], "", work,
-     [(JOB, "the Job"), ("├── tNN_<L><NN>_<q>/", "a Task row, under its DIKW level"),
-      ("│   └── runs/rNN_<partition>/", "a hard Run: one per partition, + rNN_cross"),
-      ("│       ├── run.yaml · passes/", "its status · passes · last"), ("│       └── result/", "what its pop-out previews"),
-      ("└── tNN_…/runs/run-<type>-<target>/", "soft: write · check")]),
+    ("Work Details", WORK_TABS("2 · Run"), ["rNN_<partition>", "run-pool-t<NN>"],
+     "r02_<partition A>  ok", work_closed,
+     [(JOB + "tNN_<L><NN>_<q>/runs/rNN_<partition>/run.yaml", "2 · Run: a cell's mark, its status"),
+      (JOB + "tNN_<L><NN>_<q>/tNN_….md", "answer-status: 3 · Write · check: 4 · Check"),
+      (JOB + "runs/run-<type>-<jNN>/", "the Job's own: launch · power · compare · close"),
+      ("haipipe-insight-workflow/ref/run-cards.md", "each tab's buttons: Job › Work Details · views <step>")]),
+    ("Work Details", WORK_TABS("4 · Check"), ["run-check-alignment-t<NN>", "run-check-t<NN>"],
+     "run-check-alignment-t05  open", work_open,
+     [(JOB + "tNN_…/runs/run-check-alignment-tNN/", "alignment: the reviewer's Run"),
+      (JOB + "tNN_…/runs/run-check-tNN/", "the page's CHECK, by another agent"),
+      (JOB + "tNN_…/tNN_….md", "check: ✅ <date>  (the verdict line)"),
+      (JOB + "j03_p2_<d>v2.md", "session: the Job's Claude session (optional)")]),
     ("Idea Studio", None, ["Add a topic"], "", studio, [(JOB + "studio/", "optional")]),
     ("Runs", [("All", 1), ("hard", 0), ("soft", 0), ("launch", 0), ("power", 0), ("compare", 0), ("propose", 0), ("close", 0)],
      ["Run the Job", "Run a partition", "Compare with j02", "Propose questions", "Close the Job"], "", runs,
@@ -276,10 +364,24 @@ QUESTIONS = [
     "? a new question answered on data already seen: exploratory until the next data version confirms it",
     "? the next Job (p3 × the same data): rerun the unchanged questions, or link their earlier Runs by hash",
     "? one name for proposing at the Board and the Job: run-propose-<target>, both with Propose questions",
+    "? the Task's Work as steps too (s13): Plan · Run cuts · Pool · Write · Check",
+    "? work in place: a chat docked under the open step, or copy to a session only (today)",
 ]
 
 
-ASIDES = {"Idea Studio": ("typical topics, j0N_…/sNN-<topic>/", [
+ASIDES = {"Work Details": ("one Job through its six steps (built 261022)", [
+    ("what it is", "read each step's result; open its bar to work on it · workbench-insight 1.2.0"),
+    ("1 · Launch", "reads the release's thresholds.yaml → run-launch, run-power: n and power per cut"),
+    ("2 · Run", "each Task's run.sh (question and script from the release) → result/, run.yaml; rNN_cross → run-pool"),
+    ("3 · Write", "the Runs' result/report.md → the page and its answer-status, D → I → K → W, then X (Executive)"),
+    ("4 · Check", "alignment: against the question and plan; CHECK: every number back to result/ → the check: line"),
+    ("5 · Compare", "both Jobs' results and pages → reports/vs-<prev>.md; the gaps → the Prototype's proposals/"),
+    ("6 · Close", "every page checked, the comparison written → 🙋 Sign the close on the screen, or the prompt"),
+    ("✎ 261023", "🙋 by hand: CHECK a page (4 · Check) and sign the close (6 · Close), POST /_board/insight-act"),
+    ("its chip", "from those files: ✓ done · → next (the first not done) · later · optional · sign (the close)"),
+    ("words", "a cut: a partition of the rows (Full, <A>, <B>) · Cross: one test across the cuts, POOL or SPLIT"),
+    ("? the Task", "the Task's Work as steps too (s13): Plan · Run cuts · Pool · Write · Check")]),
+          "Idea Studio": ("typical topics, j0N_…/sNN-<topic>/", [
     ("s01-<what moved>", "this pair against the Job before: what changed, and why"),
     ("s02-<a surprise>", "an answer that did not hold: drawn, then a proposal"),
     ("? s03-<partition story>", "why a cut pooled or split here")]),

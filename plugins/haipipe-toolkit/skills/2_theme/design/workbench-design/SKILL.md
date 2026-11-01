@@ -5,17 +5,18 @@ description: >-
   each Task open on the frame's tabs Guide · Block · Job ▾ · Task ▾, each with the
   six Spaces (Description · Idea Studio · Audience Report | Work Details | Runs ·
   Delivery) as b12's s11 · s12 · s13 draw them, and a Runs panel whose buttons are
-  the design run cards by level and Space. Read-only display: it shows the
-  ladder's files and copies prompts; it never sets up a Block, launches a Job or
-  writes anything (that is haipipe-design and the owning design skills). The
+  the design run cards by level and Space. It shows the ladder's files and
+  copies prompts; it never sets up a Block or launches a Job (haipipe-design and
+  the owning design skills do), and the one thing it writes is a person's own
+  Review and approve of a Job's release (POST /_board/design-ladder-act). The
   shared Guide explains the family (Guide › Method: the design methods; Guide ›
   Related Paper). An older Design Folder board keeps its own page. Use to see or
   explain what a design screen shows and which file each view reads. Trigger:
   design workbench, design tab, design Block tab, design Job tab, design Task tab,
   design spaces on screen, theory of design, /workbench-design.
 metadata:
-  version: "0.15.1"
-  last_updated: "2026-10-11"
+  version: "0.17.0"
+  last_updated: "2026-10-23"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -46,6 +47,12 @@ Every view that names a Job shows its folder name as it is, `jNN_<goal name>_<me
 (JL 261011: "I don't want we just have jNN here, not readable"). Never the bare `jNN`: it says nothing on its own.
 The ids (`G01`, `M01 m2`, `i1`) stay on the face as pins and may follow the name as plain detail. An older id-form
 folder (`j03_g01-review-new-rx_m04-actionable-insights`) shows the same way, by its folder name.
+
+Two Jobs can share their words: one method's two versions on one goal (`j05_review-new-rx_raw-data-agent` pins M05 m2
+and is held, `j06_…` pins M05 m3), or one method on two inputs versions. Both stay, since a changed method or inputs
+is a new Job (`haipipe-design/ref/design-ladder.md` rule 1). The Job ▾ menu then adds, after the folder name as it
+is, the pins that tell them apart and `held`: `j05_review-new-rx_raw-data-agent · m2 · held`,
+`j06_review-new-rx_raw-data-agent · m3` (`design_theme._job_option`; JL 261023: "why we have two here?").
 
 ## What a reader with five minutes sees (JL 261012)
 
@@ -93,7 +100,7 @@ Each view reads the files named beside it; nothing is stored twice and nothing i
 |---|---|---|---|
 | Description | Task | Design · Evaluation | Task |
 | Audience Report | Topics · Ideas | Tests · Drafts · Performance | Ranking · Coverage |
-| Work Details | Chains | Elements (`elements.yaml`; the Rationale folded in) | Kept · Dropped |
+| Work Details | its steps: 1 · See input · 2 · Reason · 3 · Fence check | 1 · Generate · 2 · Verify · 3 · Revise · 4 · Predict | 1 · Rank · 2 · Keep · 3 · Release (🙋 Review and approve) |
 | Runs | All · hard · soft | All · hard · soft | All · hard · soft |
 | Idea Studio | its topics | its topics | its topics |
 | Delivery | `ideas.yaml` to the design Tasks | released with the Job | the kept, to the Job |
@@ -110,11 +117,21 @@ The cards are the authority. Until `design_views.py` reads them (as the paper th
 `_run_cards(level, space, view)`), it types each Space's buttons in code, and those typed buttons may still differ
 from the cards in their Run names, owners and prompts; where they differ, follow the card.
 
-## Read-only
+## Read-only, but one sign
 
-The theme writes nothing. A button copies a prompt; the Run it starts is written by the skill its card names
-(`haipipe-design`, `-goal`, `-method`, `-unit`, `-workflow`, `-delivery`). A view that finds no file says which Run
-writes it ("No ranking yet: t99's run-rank-t99").
+A button copies a prompt; the Run it starts is written by the skill its card names (`haipipe-design`, `-goal`,
+`-method`, `-unit`, `-workflow`, `-delivery`). A view that finds no file says which Run writes it ("No ranking yet:
+t99's run-rank-t99").
+
+One thing a person does on the screen itself (JL 261023: "design the work in a way that we human can operate this
+system as well"): **🙋 Review and approve**, at the top of a Job's Delivery. It lists each kept design as it reads with
+its prediction, as `haipipe-design-delivery`'s own `release.py` would release it today (its dry run); the person
+ticks "I read each kept design as it reads, its prediction and why" and approves once. `POST
+/_board/design-ladder-act` (`servers/workbench-design/design_ladder_act.py`) then runs `release.py` with today's date
+(it checks every design before it writes anything) and adds a pass to `run-freeze-predictions-jNN` and
+`run-release-jNN`, each card `by: a person` and `signed: ✅ <YYMMDD> · a person, in the workbench`; the Summary shows
+it as "approved ✅ <YYMMDD>", no name. A Job that is not ready says why (a held Job, its hold), and a released one
+says who signed and when. The route answers only a page of this host and never a read-only host.
 
 ## The Guide
 

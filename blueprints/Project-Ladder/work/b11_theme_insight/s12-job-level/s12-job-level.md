@@ -72,10 +72,31 @@ Proposed (261007)
 4. Idea Studio's typical topics, to the right of its frame: s01-<what moved>, s02-<a surprise>.
 5. Delivery (?): only the latest Job's Wisdom counsel goes to the Board's handoff.
 
+Decided
+-------
+
+s12-D01 · The Job's Work is its steps, 1 · Launch · 2 · Run · 3 · Write · 4 · Check · 5 · Compare · 6 · Close, a
+tab each, in the order a Job runs. A tab is Operation over Result, as the draft and labeling Tasks' steps are: its
+work panel (Input, Running now, the step's run-card prompt with your notes and the Job's session line, the close's
+sign) folds until you open it, its Result by DIKW level under it. Chips are read from the files; a bare link opens
+the step that comes next; the Job → Task → Run tree is 2 · Run's last card. Built: workbench-insight 1.2.0, and the
+Job › Work Details run cards by step, haipipe-insight-workflow 3.1.0 (JL 261022: "how to make it that when the
+user want, they can open this work panel and work on it").
+
+s12-D02 · A person works the Job on the screen too, beside the agent's prompt (JL 261023: "design the work in a way that
+we human can operate this system as well", then "go ahead and do it"): in 4 · Check, a page's row folds a CHECK (tick
+"I read the page and its Runs' results", then ✅ Pass, or ↩ Return with the reason; a returned page goes back to
+3 · Write), and 6 · Close has 🙋 Sign the close once every step before it is done. One route, `POST
+/_board/insight-act`, re-checks each gate and writes what the agent's Run would, `by: a person`, no name. Built:
+workbench-insight 1.3.0; browser check `servers/_host/checks/person_actions_browser.mjs`.
+
+
 Open
 ----
 
-1. Agree its **For:** line and **Delivery type:** (ui), proposed by the agent 261030?
+1. The Task's Work as steps too (s13): Plan · Run cuts · Pool · Write · Check.
+2. Work in place: a chat docked under the open step, or copy to a session only (today: copy).
+3. Agree its **For:** line and **Delivery type:** (ui), proposed by the agent 261030?
 
 Changes are marked on the drawing in green (✎ <yymmdd>), and listed on its title frame.
 

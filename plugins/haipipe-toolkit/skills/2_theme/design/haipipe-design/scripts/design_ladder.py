@@ -195,17 +195,19 @@ def task(job_dir: Path, which: str, slug: str, made: list) -> Path:
         sys.exit(f"a Task sits in a Job folder jNN_<goal name>_<method name>: {job_dir.name}")
     if which == "t00":
         path, kind, step = job_dir / "t00_reason-ideas", "t00", "②"
-        _write(path / f"{path.name}.md", _front([("state", "open"), ("step", step)], "# t00 · reason ideas\n"), made)
+        _write(path / f"{path.name}.md", _front([("state", "open"), ("step", step), ("task-type", "design-reason")],
+                                                "# t00 · reason ideas\n"), made)
     elif which == "t99":
         path, kind, step = job_dir / "t99_review-whole", "t99", "⑤"
-        _write(path / f"{path.name}.md", _front([("state", "open"), ("step", step)], "# t99 · review whole\n"), made)
+        _write(path / f"{path.name}.md", _front([("state", "open"), ("step", step), ("task-type", "design-whole")],
+                                                "# t99 · review whole\n"), made)
     else:
         m = re.match(r"^d(\d\d)$", which)
         if not m or not re.match(r"^[a-z0-9-]+$", slug or ""):
             sys.exit("a design Task is: task <job> d<NN> <slug> (the short name born with its idea in t00)")
         path, kind = job_dir / f"t{m.group(1)}_d{m.group(1)}_{slug}", "design"
         _write(path / f"{path.name}.md", _front(
-            [("state", "draft"), ("name", slug), ("idea", f"I{m.group(1)}"), ("rank", "")],
+            [("state", "draft"), ("name", slug), ("idea", f"I{m.group(1)}"), ("rank", ""), ("task-type", "design-item")],
             f"# d{m.group(1)} · {slug}\n\n## Design\n\n<the design, word for word>\n\n## Evaluation\n\n"
             "<the verify verdict: T0 · T1 · T2>\n"), made)
         _write(path / "elements.yaml", "# one entry per element of the design\n- element: <opening>\n"

@@ -271,7 +271,8 @@ def _task_session(folder: Path, root: Path) -> str:
     `Paper-Example-B: j01-jamaim-full-t01-introduction` (JL 261020: "Paper-Example-B: j01jamaim-full-t01-intro")."""
     c = chain(folder, root)
     slug = lambda f: re.sub(r"_v\d{4}(?=_|$)", "", f.name).replace("_", "-")
-    name = "-".join(([slug(c["Job"])] if c.get("Job") else []) + [slug(folder)])
+    # a Job's own work panel (insight's Job steps, 261022) names the Job once, never `<job>-<job>`
+    name = "-".join(([slug(c["Job"])] if c.get("Job") and c["Job"] != folder else []) + [slug(folder)])
     return f'{c["Block"].name}: {name}' if c.get("Block") else name
 
 

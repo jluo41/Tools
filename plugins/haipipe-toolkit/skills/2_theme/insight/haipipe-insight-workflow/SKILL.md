@@ -14,7 +14,7 @@ description: >-
   does this Job stand, who owns this button, /haipipe-insight workflow.
 disable-model-invocation: true
 metadata:
-  version: "3.0.2"
+  version: "3.1.0"
   last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---

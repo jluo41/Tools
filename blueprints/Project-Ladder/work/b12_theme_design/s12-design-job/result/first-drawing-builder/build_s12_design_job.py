@@ -27,7 +27,8 @@ MOVES = [("a Design Folder (one goal, in a method folder)", "the Job tab j03_<go
          ("Design Space: one card per design", "Work Details: t00 ideas · t01 – t15 one design each · t99 review whole"),
          ("(none)", "Audience Report: Reason ideas · Design display · Review whole · Performance"),
          ("Generate: one run record", "each design Task's own run-generate-dNN, from its idea"),
-         ("Delivery Space", "Delivery: the kept designs, word for word; a person releases")]
+         ("Delivery Space", "Delivery: the kept designs, word for word; a person releases"),
+         ("a person's sign, in chat", "Delivery › 🙋 Review and approve: one tick, one sign, on the screen (261023)")]
 
 DESC = lambda on: [(lab, on == k) for k, lab in enumerate(["Goal", "Method", "Inputs"])]
 JOB = "j03_<goal>_<design-method>/"
@@ -462,8 +463,27 @@ JSON = """{
 }"""
 
 
+def approve_panel(cx, cy, cw):
+    """🙋 Review and approve at the top of the Job's Delivery (261023; JL: "design the work in a way that we human can
+    operate this system as well"): the kept designs as release.py would release them today, one tick, one sign."""
+    text(cx, cy, "🙋 Review and approve", 20, INK)
+    y = U.table(cx, cy + 34, cw, ["design", "as it reads", "predicted"], [0, 230, 860],
+                [("d04 reason-then-ask", "<opening>. <the reason>. <the ask>: {LINK}", "+x [lo, hi]"),
+                 ("d01 reason-first", "<opening>. <the reason>. <the ask>: {LINK}", "+x [lo, hi]"),
+                 ("…", "the 10 kept designs, as release.py would release them today", "")], mono=(0,), h=36)
+    base("rectangle", cx, y + 12, 470, 32, GRAY, 1, rough=0)
+    text(cx + 10, y + 18, "☐ I read each kept design as it reads, its prediction and why", 15, INK)
+    base("rectangle", cx + 484, y + 12, 200, 32, INK, 1.5, rough=0)
+    text(cx + 498, y + 18, "Approve the release", 15, INK)
+    text(cx + 700, y + 18, "one sign: freezes the 10 predictions, releases them", 14, GRAY)
+    y = U.note(cx, y + 58, "261023  🙋 a person approves here: release.py with today's date; run-freeze-predictions and "
+                           "run-release say by: a person · not ready: its reason · released: who signed, when")
+    return y + 18
+
+
 def delivery_md(cx, cy, cw):
     """designs.md, as a person reads it: a table, top to bottom, the kept designs in rank order, each as it reads."""
+    cy = approve_panel(cx, cy, cw)
     cy = U.note(cx, cy, "261007  two files, one source: designs.json (machines) · designs.md (people), both from run-release-j03")
     cy = U.note(cx, cy, "261007  designs.md reads top to bottom: one row per design, in rank order (was side by side)")
     cy = U.note(cx, cy, "261007  an SMS is just its text: one plain row per design (was a phone per row)")
@@ -668,6 +688,8 @@ QUESTIONS = [  # under the screen each is about: "✎" = decided (green, with it
     ("Delivery", "designs.md", "✎ decided (s11): the Block's delivery/ is one designs.json · designs.md across every Job, "
                                "written by each run-release-jNN, plus screens/"),
     ("Delivery", "designs.md", "? to create in the code pass: haipipe-design-delivery (the release, the schema, the screens)"),
+    ("Delivery", "designs.md", "✎ 261023 decided: a person approves on the screen as well as through the agent (Copy prompt); "
+                               "one route, POST /_board/design-ladder-act, the release itself release.py's"),
     ("Runs", "Conduct & Review", "✎ 261007 decided: every Run is run-<type>-<target>, hard ones too (JL: unify the name to be "
                                  "run-xxx-xxx); was rNN_<type>_<target>"),
     ("Runs", "Setup", "✎ decided: re-running run-setup-goal or run-setup-method reopens run-setup-inputs, since step ① reads both; "

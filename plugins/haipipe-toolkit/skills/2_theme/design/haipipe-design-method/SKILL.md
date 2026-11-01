@@ -64,11 +64,11 @@ The registry
 ```text
 methods/
 ├── README.md
-├── M01-goal-only/            method.md (name · type · family · card · versions · current) · m1.md
-├── M02-overall-performance/  m1.md
-├── M03-detailed-evidence/    m1.md
-├── M04-actionable-insights/  m1.md · m2.md
-└── M05-raw-data-agent/       m1.md
+├── M01-goal-only/            method.md (name · type · family · card · versions · current) · m1.md · m2.md
+├── M02-overall-performance/  m1.md · m2.md
+├── M03-detailed-evidence/    m1.md · m2.md
+├── M04-actionable-insights/  m1.md · m2.md · m3.md
+└── M05-raw-data-agent/       m1.md · m2.md · m3.md · aggregate_query.py (m3's one door to a raw extract)
 ```
 
 A version file is what `run-setup-method-j<NN>` copies into the Job's `inputs/method.md`, word for word:

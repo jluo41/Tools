@@ -1,3 +1,31 @@
+## 1.3.0 · 2026-10-23 · A person CHECKs a page and signs a Job's close on the screen
+
+- JL 261023: "you can design the work in a way that we human can operate this system as well", then "go ahead and do
+  it". New `servers/workbench-insight/insight_act.py` behind `POST /_board/insight-act` (serve.py: only from a page of
+  this host): `check` (✅ Pass, or ↩ Return with a reason, on the page's check: line, a pass of run-check-tNN by a
+  person) and `close` (state: closed, signed: ✅ <YYMMDD>, a pass of run-close-jNN), each gated as the screen shows.
+- 4 · Check: each unchecked page's row folds a "check it" form; 6 · Close: 🙋 Sign the close, off with what it waits on.
+  A returned page (check: ↩ …) is not written: 3 · Write lists it under "Returned by CHECK" and asks for a rewrite.
+- `_card_kind` adds "I sign <what>" once (the Close card's prompt said it twice).
+- Tests: `tests/test_insight_act.py` (6); browser: `servers/_host/checks/person_actions_browser.mjs` (20 checks).
+
+## 1.2.0 · 2026-10-22 · A Job's Work is its steps, each a work panel over its result (b11 s12)
+
+- JL 261022, pointing at Job › Work's `All · hard · soft`: "how to make it that when the user want, they can open this
+  work panel and work on it". The Job's Work is 1 · Launch · 2 · Run · 3 · Write · 4 · Check · 5 · Compare · 6 · Close
+  (`insight_views._work_view`, `_work_facts`, `_work_states`): each tab's Operation (Input, Running now, the step's card
+  prompt with your notes and the Job's session line, the close's sign) folded until opened, over its Result by DIKW level.
+  The draft Task's `_step_box`, `_prompt_box`, `_part` and `_kv` draw it (imported, as the paper Board does). A bare link
+  opens the step that comes next; `All`, `hard`, `soft` open 2 · Run, which keeps the old tree as its last card.
+- Each tab's buttons are the new Job › Work Details cards (haipipe-insight-workflow 3.1.0); `ref/workbench-table.md`
+  regenerated (71 rows). Job › Dataset's cut table is `_cut_table`, shared with 1 · Launch (no data rows there).
+- Tests: `JobWorkStepsTest` (5). Clicked in a real browser (`servers/workbench-insight/checks/job_work_browser.mjs`,
+  headless Chrome over its debugging port): every tab opens from its own tab link, the panel opens on a click, a typed
+  note goes out with Copy prompt and survives a reload, the Runs panel holds each step's cards, a run mark's pop-out
+  shows its run page, the older views land, no console error; 51 checks on the test fixture, 80 with a real Board's Job
+  (`CHECK_REAL`, `CHECK_REAL_JOB`; there every link on the six tabs answered, 307). A prompt names six Tasks at most;
+  the step's Input lists the rest.
+
 ## 1.1.0 · 2026-10-11 · Job menu and Map in words
 
 - JL 261011 on the Job ▾ menu ("THIS IS VERY HARD TO UNDERSTAND"); picked "one line each". `insight_theme.option`:

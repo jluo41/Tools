@@ -234,7 +234,7 @@ def workflow_map(d: Drawing, face: dict) -> dict:
             d.line([(ax, ab + 4), (bx, bt - 4)], sw=1.5)
     for r, i, word in face.get("marks") or []:                  # where each novelty happens: beside its box, off the arrow
         x, y, w, h = placed[r][i]
-        d.text(x - 8 - d.measure(word, 30), y + 18 if i == 0 else y - 34, word, 30)
+        d.text(x - 8 - d.measure(word, 30), y - 34, word, 30)        # above-left: off the arrows
     for prev, nxt in zip(placed, placed[1:]):                    # each row to the next: from the left foot, across, down
         ax, ay, aw, ah = prev[-1]
         bx, by, bw, bh = nxt[0]
@@ -631,7 +631,7 @@ def main():
                 e["x"], e["y"] = e["x"] + mx, e["y"] + my
 
     GAP = 260
-    d.para(placed[0]["x"] - 820, placed[0]["y"] + 20, "Act 1 · the four steps", 760, 56)
+    d.para(placed[0]["x"] - 820, placed[0]["y"] + 20, "Act 1 · the four Stages", 760, 56)
     above, x_start, lead = placed[0], placed[0]["x"] + 520, placed[0]
     for n, (tab, fs) in enumerate(rows):                        # a tab's moments are peers: a row, left to right
         top = above["y"] + above["height"] + GAP

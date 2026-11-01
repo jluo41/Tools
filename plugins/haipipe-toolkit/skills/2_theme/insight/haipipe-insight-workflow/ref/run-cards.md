@@ -207,25 +207,94 @@ base frame adds its own (Add a topic); a "… ↗" link opens a file and makes n
 ✍️ SIGNS    none
 💬 PROMPT   /haipipe-insight-question file each new or changed question, and each gap {folder} could not answer, as one proposals/<slug>.md in the Prototype (kind · level · from: this Job · why), as run-propose-j<NN>; it writes nothing else.
 
-## Job › Work Details · the Job → Task → Run tree
+## Job › Work Details · the Job's steps: 1 · Launch · 2 · Run · 3 · Write · 4 · Check · 5 · Compare · 6 · Close
 
-🔘 BUTTON   Run the Job · Job › Work Details · ^run-launch-j\d+$
+Each step is a tab of the Job's Work (b11 s12, 261022): its work panel (the step's input, the first card's prompt with
+the person's notes, what is running, what a person signs) over its result. `views` names the step a card belongs to.
+
+🔘 BUTTON   Run the Job · Job › Work Details · ^run-launch-j\d+$ · views launch
 🧩 SKILL    haipipe-insight
 🤖 AGENT    haipipe-task-orchestrator-agent
 ✍️ SIGNS    none
 💬 PROMPT   /haipipe-insight run the Job {folder}: check power per cut first (run-power-j<NN>), then every Task's tickets runs/rNN_<partition>/run.sh, as run-launch-j<NN>; report each Run ok, refused (with its reason) or failed.
 
-🔘 BUTTON   Run a partition · Job › Work Details · ^r\d\d_
+🔘 BUTTON   Measure the power · Job › Work Details · ^run-power-j\d+$ · views launch
+🧩 SKILL    haipipe-insight
+🤖 AGENT    haipipe-insight-agent
+✍️ SIGNS    none
+💬 PROMPT   /haipipe-insight measure n and power per cut of {folder} before any outcome is read, against the release's thresholds.yaml, as run-power-j<NN>; a cut that cannot answer is refused with its minimum detectable effect.
+
+🔘 BUTTON   Run a partition · Job › Work Details · ^r\d\d_ · views run
 🧩 SKILL    haipipe-insight
 🤖 AGENT    haipipe-task-orchestrator-agent
 ✍️ SIGNS    none
 💬 PROMPT   /haipipe-insight run one question of {folder} on one cut: runs/rNN_<partition>/run.sh (ref/run_job.py reads the question and script from the release, writes only result/ and run.yaml); a refusal is an answer.
 
-🔘 BUTTON   Check alignment · Job › Work Details · ^run-check-alignment-t\d+$
+🔘 BUTTON   Pool or split · Job › Work Details · ^run-pool-t\d+$ · views run
+🧩 SKILL    haipipe-insight-knowledge
+🤖 AGENT    haipipe-insight-agent
+✍️ SIGNS    none
+💬 PROMPT   /haipipe-insight-knowledge read a question's Cross Run in {folder} (rNN_cross) under the release's thresholds and write its verdict, POOL, SPLIT or UNDETERMINED, as run-pool-t<NN>; one test of the difference, never two partitions' significance compared.
+
+🔘 BUTTON   Write the Data report · Job › Work Details · ^run-write-t\d+$ · views write
+🧩 SKILL    haipipe-insight-data
+🤖 AGENT    haipipe-insight-agent
+✍️ SIGNS    none
+💬 PROMPT   /haipipe-insight-data write the page of each data question in {folder} not written yet, from its Runs' generated reports, a part per cut, saying no more than the Data level allows, as run-write-t<NN>; another agent checks it.
+
+🔘 BUTTON   Write the Information report · Job › Work Details · ^run-write-t\d+$ · views write
+🧩 SKILL    haipipe-insight-information
+🤖 AGENT    haipipe-insight-agent
+✍️ SIGNS    none
+💬 PROMPT   /haipipe-insight-information write the page of each information question in {folder} not written yet, from its Runs' generated reports, a part per cut, saying no more than the Information level allows, as run-write-t<NN>; another agent checks it.
+
+🔘 BUTTON   Write the Knowledge report · Job › Work Details · ^run-write-t\d+$ · views write
+🧩 SKILL    haipipe-insight-knowledge
+🤖 AGENT    haipipe-insight-agent
+✍️ SIGNS    none
+💬 PROMPT   /haipipe-insight-knowledge write the page of each knowledge question in {folder} not written yet, from its Runs' generated reports, a part per cut, saying no more than the Knowledge level allows, as run-write-t<NN>; another agent checks it.
+
+🔘 BUTTON   Write the Wisdom report · Job › Work Details · ^run-write-t\d+$ · views write
+🧩 SKILL    haipipe-insight-wisdom
+🤖 AGENT    haipipe-insight-agent
+✍️ SIGNS    none
+💬 PROMPT   /haipipe-insight-wisdom write the page of each wisdom question in {folder} not written yet, from the checked answers below it, saying no more than the Wisdom level allows, as run-write-t<NN>; a person signs the counsel, and another agent checks it.
+
+🔘 BUTTON   Write the overall report · Job › Work Details · ^run-overall-j\d+$ · views write
+🧩 SKILL    haipipe-insight
+🤖 AGENT    haipipe-insight-agent
+✍️ SIGNS    none
+💬 PROMPT   /haipipe-insight write the Overall Report of {folder}: each Executive question's page (tNN_X<NN>_<slug>.md: a one-line answer, how sure, numbered points each citing the Task it rests on as (K01 · t30), and in its face one figure under figures: whose title says the outcome and whose table is a cited Run's result table) from the answers below it and nothing else, then draw the figures and print it with ref/overall_report.py, as run-overall-j<NN>; another agent checks each page.
+
+🔘 BUTTON   Check alignment · Job › Work Details · ^run-check-alignment-t\d+$ · views check
 🧩 SKILL    haipipe-insight-check
 🤖 AGENT    haipipe-insight-reviewer-agent
 ✍️ SIGNS    none
 💬 PROMPT   /haipipe-insight-check check each answered cut of a question in {folder} against its question and plan, in a fresh context, as run-check-alignment-t<NN>; write only the checker's output.
+
+🔘 BUTTON   Check a report · Job › Work Details · ^run-check-t\d+$ · views check
+🧩 SKILL    haipipe-report
+🤖 AGENT    haipipe-draft-check-agent
+✍️ SIGNS    none
+💬 PROMPT   /haipipe-report check each written page in {folder} not checked yet, in a fresh context, as run-check-t<NN>: every number traces to its Run's result/, every need is cited, and nothing claims more than its level allows; write the verdict on the page's check: line.
+
+🔘 BUTTON   Compare with the Job before · Job › Work Details · ^run-compare-j\d+$ · views compare
+🧩 SKILL    haipipe-insight-knowledge
+🤖 AGENT    haipipe-insight-agent
+✍️ SIGNS    none
+💬 PROMPT   /haipipe-insight-knowledge compare {folder} with the Job before it into reports/vs-<prev>.md, one row per question (held · changed · new finding · new question · dropped · not comparable) and why (which clock moved); a kept question's tables must match by sha256 when only the code moved; as run-compare-j<prev>.
+
+🔘 BUTTON   Propose questions · Job › Work Details · ^run-propose-j\d+$ · views compare
+🧩 SKILL    haipipe-insight-question
+🤖 AGENT    haipipe-insight-agent
+✍️ SIGNS    none
+💬 PROMPT   /haipipe-insight-question file each new or changed question, and each gap {folder} could not answer, as one proposals/<slug>.md in the Prototype (kind · level · from: this Job · why), as run-propose-j<NN>; it writes nothing else.
+
+🔘 BUTTON   Close the Job · Job › Work Details · ^run-close-j\d+$ · views close
+🧩 SKILL    haipipe-insight-check
+🤖 AGENT    haipipe-insight-agent
+✍️ SIGNS    the close
+💬 PROMPT   /haipipe-insight-check close {folder} once every page is checked and its comparison written, as run-close-j<NN>; show me what it froze, and I sign the close.
 
 ## Job › Runs · All · hard · soft · launch · power · compare · propose · close
 

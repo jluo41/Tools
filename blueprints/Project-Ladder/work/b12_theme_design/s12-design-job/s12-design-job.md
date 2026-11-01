@@ -80,6 +80,17 @@ a looping method's second round is `run-reason-t00-r2` · `run-rank-t99-r2` (new
    Predicted vs observed view reads its own rows (with s11).
 
 
+Decided (261023)
+----------------
+
+s12-D01 · A person reviews and approves a Job's release on the screen, at the top of its Delivery (JL 261023: "design
+the work in a way that we human can operate this system as well", then "go ahead and do it"): the kept designs as
+release.py would release them today, one tick ("I read each kept design as it reads, its prediction and why"), one
+sign. `POST /_board/design-ladder-act` runs release.py with today's date and passes run-freeze-predictions-jNN and
+run-release-jNN, `by: a person`, no name; not ready says release.py's reason (a held Job: its hold). Built:
+workbench-design 0.16.0; browser check `servers/_host/checks/person_actions_browser.mjs`.
+
+
 Code change, waiting on decision ⑤ (registered methods)
 --------------------------------------------------------
 

@@ -279,8 +279,27 @@ RUN_NAMES = {"Add a goal × method": "run-add-job-j<NN>", "Set shared rules": "r
 STEP_GROUPS = {"t00": ("Task · t00 · reason ideas", "② Reason ideas"), "t99": ("Task · t99 · review whole", "⑤ Review whole")}
 
 
+def _job_option(folder: Path):
+    """A ladder Job in the Job ▾ dropdown: its folder name as it is, and, when another Job of the Block shares its
+    words (one method's two versions, or one method on two inputs versions), the pins that tell them apart, then
+    `held` (JL 261023, on j05 and j06_review-new-rx_raw-data-agent: "why we have two here?"). None: the name alone."""
+    words = folder.name.split("_", 1)[-1]
+    twins = [p for p in folder.parent.iterdir() if p.is_dir() and re.match(r"^j\d+_", p.name)
+             and p.name.split("_", 1)[-1] == words and DR.is_job(p)]
+    if len(twins) < 2:
+        return None
+    pins = lambda p: (DR.method_pin(DR.front(DR.face(p)).get("method"))[1], str(DR.front(DR.face(p)).get("inputs") or ""))
+    mine, every = pins(folder), [pins(p) for p in twins]
+    shown = [v for k, v in enumerate(mine) if v and len({x[k] for x in every}) > 1]
+    held = ["held"] if str(DR.front(DR.face(folder)).get("state", "")) == "held" else []
+    return (" · ".join([folder.name] + shown + held), "") if shown or held else None
+
+
 def option(folder: Path):
-    """(label, group) for a ladder Task in the Task ▾ dropdown, or None (the folder's name)."""
+    """(label, group) for a ladder Job in the Job ▾ dropdown or a ladder Task in the Task ▾ dropdown, or None (the
+    folder's name)."""
+    if re.match(r"^j\d+_", folder.name) and DR.is_job(folder):
+        return _job_option(folder)
     if not re.match(r"^t\d+_", folder.name) or not DR.is_job(folder.parent):
         return None
     kind = DR.kind_of(folder)

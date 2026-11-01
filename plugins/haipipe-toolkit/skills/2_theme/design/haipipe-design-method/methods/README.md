@@ -11,7 +11,7 @@ M01     Goal only             By goal       Goal Only  m1 · m2
 M02     Overall performance   By precedent  Internal   m1 · m2
 M03     Detailed evidence     By insight    Internal   m1 · m2
 M04     Actionable insights   By insight    Internal   m1 · m2 · m3
-M05     Raw-data agent        By insight    Internal   m1 · m2
+M05     Raw-data agent        By insight    Internal   m1 · m2 · m3
 ```
 
 Generic only: a version names parts of step ① and kinds of source, never an application, project, vendor or
@@ -22,4 +22,4 @@ How many ideas ② makes is the version's ② choice; when it names no count, �
 is stated once, in `haipipe-design-unit/references/reason.md`. ④ always runs T0 and T1; T2 only when the version's ④
 lists it. T3 runs inside t99's rank Run when the version's ⑤ asks for it.
 
-The input ladder (261008): M01 m2 · M02 m2 · M03 m2 · M04 m3 share ② to ⑤ and each sees what the one before sees plus one more layer of the same insight (`sees:` narrows a part to a `kind:` of the inputs version, e.g. `Information · whose [information]`; haipipe-design-goal `make_inputs.py`), so the designs differ by the input alone. M05 m2 is the benchmark beside it: the goal and the raw data's tools.
+The input ladder (261008): M01 m2 · M02 m2 · M03 m2 · M04 m3 share ② to ⑤ and each sees what the one before sees plus one more layer of the same insight (`sees:` narrows a part to a `kind:` of the inputs version, e.g. `Information · whose [information]`; haipipe-design-goal `make_inputs.py`), so the designs differ by the input alone. M05 is the benchmark beside it: the goal and the raw data's tools. m2 named no tool and was held, since no agent may read row-level data; m3 (261022) names `aggregate_query.py`, the one door to the extract: grouped counts and rates only, a group under 11 hidden, at most 30 queries, each answer kept with its receipt in run-reason-t00's `result/queries/` and cited as `from: query q<NN>`.

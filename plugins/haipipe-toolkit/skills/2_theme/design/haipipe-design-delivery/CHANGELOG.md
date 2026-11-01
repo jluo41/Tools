@@ -1,5 +1,7 @@
 # haipipe-design-delivery · version history
 
+- 261023 · (version unchanged) new `scripts/messages.py` writes a Block's message lists into `delivery/`: `messages-version-1.md` (# · method · name · content · length) and `messages-version-2.md` (# · name · content · length, in name order); with `--control-file` and `--control-heading` the text sent today is message 0, the control, and a message keeps one number in both files, in a random order fixed by `--seed` (or `--order name`), each with a length check (room left for the filled-in placeholder); every Job's kept or released designs, regenerated after a release or a swap. `release.py` `words_of`: a fenced block in a face's ## Design is the message, a note around it (a character count) is never released. `tests/test_messages.py`.
+
 - 261013 · (JL 261012, from the 10-08 demo: an executive summary as a one-page PDF, and a drive-home example) (version unchanged): new `scripts/summary.py` writes the Block's `delivery/summary.html` and `summary.pdf` (goal, the answered questions' Openings, one row per Job, who approved, one design traced, next); `tests/test_summary.py`.
 
 - 261012 · (JL 261012, from the 10-08 Loop demo to leadership; b12 related/) (version unchanged): `release.py` carries `job_name`, `against` and `why` into designs.json;

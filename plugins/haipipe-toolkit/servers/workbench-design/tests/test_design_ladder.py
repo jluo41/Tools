@@ -60,14 +60,14 @@ JOB_VIEWS = {("Description", "Method"): ["run-setup-method-j03"], ("Description"
              ("Runs", "Conduct & review"): ["run-generate-dNN", "run-verify-dNN-v1", "run-revise-dNN"],
              ("Runs", "Review whole"): ["run-rank-t99", "run-release-j03"]}
 T00 = {"Description": (["Task"], ["run-reason-t00"]), "Idea Studio": ([], ["run-draw-<sNN>"]),
-       "Audience Report": (["Topics", "Ideas"], ["run-reason-t00"]), "Work Details": (["Chains"], ["run-reason-t00"]),
+       "Audience Report": (["Topics", "Ideas"], ["run-reason-t00"]), "Work Details": (["1 · See input", "2 · Reason", "3 · Fence check"], ["run-open-designs-j03"]),
        "Runs": (["All", "hard", "soft"], ["run-reason-t00"]), "Delivery": ([], [])}
 DESIGN = {"Description": (["Design", "Evaluation"], []), "Idea Studio": ([], ["run-draw-<sNN>"]),
           "Audience Report": (["Tests", "Drafts", "Performance"], ["run-verify-d04"]),
-          "Work Details": (["Elements"], ["run-revise-d04"]),
+          "Work Details": (["1 · Generate", "2 · Verify", "3 · Revise", "4 · Predict"], []),   # all done: 4 · Predict
           "Runs": (["All", "hard", "soft"], ["run-generate-d04", "run-verify-d04", "run-revise-d04"]), "Delivery": ([], [])}
 T99 = {"Description": (["Task"], ["run-rank-t99"]), "Idea Studio": ([], ["run-draw-<sNN>"]),
-       "Audience Report": (["Ranking", "Coverage"], ["run-rank-t99"]), "Work Details": (["Kept · Dropped"], ["run-rank-t99"]),
+       "Audience Report": (["Ranking", "Coverage"], ["run-rank-t99"]), "Work Details": (["1 · Rank", "2 · Keep", "3 · Release"], []),   # ranked, none kept on its faces: 2 · Keep
        "Runs": (["All", "hard", "soft"], ["run-rank-t99"]), "Delivery": ([], [])}
 
 
@@ -92,6 +92,37 @@ class DesignLadderTest(unittest.TestCase):
 
     def frame_of(self, folder, sub=""):
         return {s["name"]: s for s in json.loads(frame.frame_json(THEME, self.root, folder, sub))["spaces"]}
+
+    def test_jobs_that_share_their_words_show_the_pins_that_differ(self):
+        """JL 261023, on j05 and j06_review-new-rx_raw-data-agent: "why we have two here?". Jobs of one method on one goal
+        share their words; the Job ▾ menu adds the pins that tell them apart, and `held`, after the folder name as is."""
+        page = frame.render(THEME, self.root, self.job, "Description", "")
+        labels = dict(re.findall(r'<option value="[^"]*" title="(j\d+_[^"]+)"[^>]*>([^<]+)</option>', page))
+        self.assertEqual(labels["j01_g01_m04"], "j01_g01_m04 · m1 · i1")
+        self.assertEqual(labels["j02_g01_m04"], "j02_g01_m04 · m1 · i2")
+        self.assertEqual(labels["j03_g01_m04"], "j03_g01_m04 · m2 · i2")
+        self.assertEqual(labels["j04_g01_m01"], "j04_g01_m01")          # alone in its words: the name as it is
+        face = self.block / "j01_g01_m04" / "j01_g01_m04.md"            # a held Job says so
+        face.write_text(face.read_text().replace("state: closed", "state: held"))
+        page = frame.render(THEME, self.root, self.job, "Description", "")
+        self.assertIn(">j01_g01_m04 · m1 · i1 · held</option>", page)
+
+    def test_each_task_type_is_its_steps(self):
+        """b12 s41 · s42 · s43 (261023): a design Task's Work is its type's steps, Operation over Result; a bare link
+        opens the step that comes next, a Task with every step done its last; the Work views before steps still open."""
+        from live import task_design as TD
+        self.assertEqual([TD.type_of(t) for t in (self.t00, self.design, self.t99)],
+                         ["design-reason", "design-item", "design-whole"])
+        verify = self.job / "t08_d08_sender-first"                         # a design still at ③: verify comes next
+        page = frame.render(THEME, self.root, verify, "Work Details", "")
+        self.assertIn("2 · Verify", page)
+        w = {s["name"]: s for s in json.loads(frame.frame_json(THEME, self.root, verify, ""))["spaces"]}["Work Details"]
+        self.assertEqual(w["open"], "2 · Verify")
+        self.assertEqual(w["run_types"], ["run-verify-d08"])
+        old = {s["name"]: s for s in json.loads(frame.frame_json(THEME, self.root, self.t00, "Chains"))["spaces"]}["Work Details"]
+        self.assertEqual(old["open"], "2 · Reason")
+        release = frame.render(THEME, self.root, self.t99, "Work Details", "3 · Release")
+        self.assertIn("🙋 Review and approve", release)
 
     def test_every_level_is_the_design_theme_on_the_ladder(self):
         self.assertTrue(R.is_ladder(self.block))

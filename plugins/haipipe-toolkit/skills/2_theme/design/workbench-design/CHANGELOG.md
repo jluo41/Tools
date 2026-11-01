@@ -1,3 +1,32 @@
+## 0.17.0 · 2026-10-23 · Three Task types, each a Work of steps
+
+- JL 261023: "for the design, for each of the task, we can have different types of the task Workbench UI, just like the
+  Draft Task and different Tasks in the Labeling". New `servers/workbench-design/workbench-task-design/task_design.py`:
+  `design-reason` (t00), `design-item` (tNN), `design-whole` (t99), each Work a row of steps, Operation (folded: input,
+  running now, the run card's prompt with notes) over Result (the theme's own views); chips from the files, a bare
+  link opens the next step; t99's 3 · Release carries 🙋 Review and approve. A face without `task-type:` is typed by its
+  folder; `haipipe-design/scripts/design_ladder.py` now writes the line. Old views (Chains, Elements, Kept · Dropped) open
+  their step. Test: `test_each_task_type_is_its_steps`.
+
+## 0.16.0 · 2026-10-23 · A person reviews and approves a release on the screen
+
+- JL 261023: "you can design the work in a way that we human can operate this system as well", then "go ahead and do
+  it". A Job's Delivery opens with 🙋 Review and approve: the kept designs as they read with their predictions (from
+  release.py's dry run), one tick and one sign. New `servers/workbench-design/design_ladder_act.py` behind `POST
+  /_board/design-ladder-act` runs release.py with today's date and passes `run-freeze-predictions-jNN` and
+  `run-release-jNN` (by: a person, signed: ✅ <YYMMDD> · a person, in the workbench). Not ready: release.py's reason, or
+  a held Job's hold; released: the card's signed line.
+- The Summary's approver: a sign that starts ✅ reads "approved ✅ <YYMMDD>", no name (`_approved`).
+- Tests: `tests/test_design_act.py` (3); browser: `servers/_host/checks/person_actions_browser.mjs`.
+
+## 0.15.2 · 2026-10-23 · Jobs that share their words show what tells them apart
+
+- JL 261023, on the Job ▾ menu's two `…_review-new-rx_raw-data-agent` entries: "why we have two here? should we just
+  keep one of them?". They are two Jobs by rule 1 (M05 m2, held for reading row-level data; M05 m3, through aggregate
+  queries), so both stay. `design_theme._job_option`: when Jobs of a Block share their words, the menu adds the pins
+  that differ (method version, inputs) and `held` after the folder name: `j05_… · m2 · held`, `j06_… · m3`. A Job
+  alone in its words keeps its name as it is. Test: `test_jobs_that_share_their_words_show_the_pins_that_differ`.
+
 - 261007 · review fixes (version unchanged): Description: read-only display only (setup and launch are haipipe-design's); the cards are the authority until design_views.py reads them; ref/design-board.md and ref/space-mapping.md carry an "older board page only" banner (they stay in place because other skills link them); placeholder examples replace the domain ones.
 
 ## 0.15.1 · 2026-10-12 · Summary first, Rounds, the prediction's basis, one review (version unchanged)

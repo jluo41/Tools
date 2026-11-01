@@ -1,9 +1,15 @@
 # haipipe-insight-workflow · version history
 
 
-## [3.0.2] — 2026-10-26
+## [3.1.0] — 2026-10-26
 
 Hidden from the skill listing (`disable-model-invocation: true`); reached through the `/haipipe-insight` door, which reads this SKILL.md by path. Nothing moved; `/haipipe-insight-workflow` still works when a person types it. (hide 261026)
+
+- `ref/run-cards.md`: Job › Work Details is the Job's steps, 1 · Launch to 6 · Close (workbench-insight 1.2.0); its 14
+  cards name their step in `views` (launch · run · write · check · compare · close): Run the Job and Measure the power;
+  Run a partition and Pool or split; the four level Write cards and Write the overall report; Check alignment and Check
+  a report; Compare with the Job before and Propose questions; Close the Job (the close signed). The Write cards ask for
+  each page not written yet; Check a report writes its verdict on the page's `check:` line. 71 cards, 0 problems.
 
 ## 3.0.1 · 2026-10-09 · Theme folders are singular
 

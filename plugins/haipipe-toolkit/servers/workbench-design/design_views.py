@@ -732,6 +732,8 @@ def _approved(j: dict) -> tuple:
         return "", ""
     card = r["card"]
     full = str(card.get("signed") or "")
+    if full.startswith("✅"):                  # a person's sign carries no name: ✅ <YYMMDD> · a person (261023)
+        return "approved " + full.split("·")[0].strip(), full
     who = full.split()[0] if full else (re.search(r"signed by (\S+)", str(card.get("by", ""))) or [None, ""])[1]
     when = str(card.get("finished_at", ""))[5:10]
     return (f"approved by {who}" + (f" {when}" if when else "") if who else "approved"), full or str(card.get("by", ""))
@@ -1019,7 +1021,8 @@ def job_spaces(jdir: Path, root: Path, sub: str, href) -> dict:
                               disk=_disk("Job", "WD " + w_open, jdir)),
         "Runs": Space(html=_job_runs(j, root, r_open), subspaces=rv, open=r_open, run_types=r_runs, page=True,
                       disk=_disk("Job", r_open if r_open == "Setup" else "Runs " + r_open, jdir)),
-        "Delivery": Space(html=delivery_view(jdir, root, themes()["design"]) + _job_delivery(j, root, v_open),
+        "Delivery": Space(html=_approve_panel(j, jdir, root) + delivery_view(jdir, root, themes()["design"])
+                          + _job_delivery(j, root, v_open),
                           subspaces=dv, open=v_open, run_types=(approve,), page=True,
                           disk=_disk("Job", v_open, jdir)),
     }
@@ -1278,6 +1281,33 @@ def _job_runs(j: dict, root: Path, view: str) -> str:
                   for r, pre in rs])
 
 
+def _approve_panel(j: dict, jdir: Path, root: Path) -> str:
+    """🙋 Review and approve, by a person on the screen (JL 261023: "design the work in a way that we human can operate
+    this system as well"): each kept design as it reads with its prediction and why, as release.py's own dry run would
+    release it today, then one tick and one sign (POST /_board/design-ladder-act, design_ladder_act.py). A refusal says
+    why, in release.py's words; a released Job says who signed and when, from its run-release card."""
+    import json
+    from live.design_ladder_act import ready
+    done = next((r for r in j["runs"] if r["type"] == "release" and r["status"] == "closed"), None)
+    designs, why = ready(jdir)
+    head = '<h3 style="margin:0 0 6px">🙋 Review and approve</h3>'
+    if done and not designs:
+        return (head + f'<p><span class="st st-ok">✓ released</span> {esc(str(done["card"].get("signed") or ""))}</p>')
+    if not designs:
+        if str(j.get("state")) == "held" and j.get("hold"):      # a held Job says why it is held, not what is missing
+            first = re.split(r"(?<=\.)\s", re.sub(r"^held:\s*", "", str(j["hold"]).strip(), flags=re.I), maxsplit=1)[0]
+            why = "held: " + first.rstrip(".")
+        return head + f'<p><button type=button class=work-act disabled>Approve the release</button> <span class=mut>not ready: {esc(why)}</span></p>'
+    venue = R.venue_of(jdir)
+    rows = [(_id(d["design"], d.get("name", "")), as_read(d["words"], venue, small=True), _pred(d, "cell")) for d in designs]
+    body = esc(json.dumps({"action": "approve", "job": rel(jdir, root)}))
+    return (head + table(("design", "as it reads", "predicted"), rows)
+            + f'<p class=sign-row><label><input type=checkbox name=attest> I read each kept design as it reads, its '
+              f'prediction and why</label> <button type=button class=work-act data-post="/_board/design-ladder-act" '
+              f'data-body="{body}" data-fields="attest">Approve the release</button> <span class=mut>one sign: '
+              f'freezes the {len(designs)} predictions and releases the designs</span></p>')
+
+
 def _job_delivery(j: dict, root: Path, view: str) -> str:
     path = j["delivery"] / view
     if not path.is_file():
@@ -1310,8 +1340,8 @@ def task_spaces(tdir: Path, root: Path, sub: str, href) -> dict:
                 "Audience Report": Space(html=(_reason_ideas(j, {}, root, href) if a_open == "Topics" else _t00_ideas(j, href)),
                                          subspaces=ar, open=a_open, run_types=(r,) if a_open == "Topics" else (opend,), page=True,
                                          disk=_disk("t00", a_open, tdir)),
-                "Work Details": Space(html=_t00_chains(j), subspaces=("Chains",), open="Chains", run_types=(r,), page=True,
-                                      disk=_disk("t00", "Chains", tdir)),
+                # the Task's Work is its type's steps, Operation over Result (b12 s41 · s42 · s43, 261023)
+                "Work Details": _work(tdir, root, sub, href),
                 "Idea Studio": Space(run_types=(draw,), page=True),
                 "Runs": Space(html=_task_runs_table(rs, sub), subspaces=("All", "hard", "soft"),
                               open=sub if sub in ("hard", "soft") else "All", run_types=(r,), page=True,
@@ -1327,8 +1357,8 @@ def task_spaces(tdir: Path, root: Path, sub: str, href) -> dict:
                                      disk=_disk("t99", "Task", tdir)),
                 "Audience Report": Space(html=(_review_whole(j, {}, root, href) if a_open == "Ranking" else _coverage(j)),
                                          subspaces=ar, open=a_open, run_types=(r,), page=True, disk=_disk("t99", a_open, tdir)),
-                "Work Details": Space(html=_kept(j, href), subspaces=("Kept · Dropped",), open="Kept · Dropped",
-                                      run_types=(r,), page=True, disk=_disk("t99", "Kept · Dropped", tdir)),
+                # the Task's Work is its type's steps, Operation over Result (b12 s41 · s42 · s43, 261023)
+                "Work Details": _work(tdir, root, sub, href),
                 "Idea Studio": Space(run_types=(draw,), page=True),
                 "Runs": Space(html=_task_runs_table(rs, sub), subspaces=("All", "hard", "soft"),
                               open=sub if sub in ("hard", "soft") else "All", run_types=(r,), page=True,
@@ -1356,13 +1386,18 @@ def task_spaces(tdir: Path, root: Path, sub: str, href) -> dict:
                                      subspaces=ar, open=a_open,
                                      run_types={"Tests": (ver,), "Drafts": (gen, rev), "Performance": (frz,)}[a_open], page=True,
                                      disk=_disk("design", a_open, tdir)),
-            "Work Details": Space(html=_elements(d), subspaces=("Elements",), open="Elements", run_types=(rev,), page=True,
-                                  disk=_disk("design", "Elements", tdir)),
+            # the Task's Work is its type's steps, Operation over Result (b12 s41 · s42 · s43, 261023)
+            "Work Details": _work(tdir, root, sub, href),
             "Idea Studio": Space(run_types=(draw,), page=True),
             "Runs": Space(html=_task_runs_table(rs, sub), subspaces=("All", "hard", "soft"),
                           open=sub if sub in ("hard", "soft") else "All", run_types=(gen, ver, rev), page=True,
                           disk=_disk("design", "Runs", tdir)),
             "Delivery": Space(html=_task_delivery(d, j), page=True, disk=_disk("design", "Delivery", tdir), note="Released with the Job's run-release (a person).")}
+
+
+def _work(tdir: Path, root: Path, sub: str, href) -> Space:
+    from live.task_design import work_space
+    return work_space(tdir, root, sub, href)
 
 
 def _t00_task(j: dict, root: Path) -> str:

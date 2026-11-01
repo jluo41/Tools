@@ -551,6 +551,29 @@ def in_fence(source, names):
     return False
 
 
+def query_answers(job):
+    """The answers a method's own tool gave inside the Job's run-reason-t00 (M05 m3: `from: query q<NN>`): each
+    result/queries/q<NN>.yaml whose receipt names a dictionary with the sha of a file in the Job's manifest."""
+    man = _ydoc(job / "inputs" / "manifest.yaml") if (job / "inputs" / "manifest.yaml").is_file() else None
+    shas = {str(f.get("sha256")) for f in (man or {}).get("files") or [] if isinstance(f, dict)}
+    out = set()
+    for q in (job / "t00_reason-ideas" / "runs" / "run-reason-t00" / "result" / "queries").glob("q[0-9]*.yaml"):
+        doc = _ydoc(q)
+        receipt = doc.get("receipt") if isinstance(doc, dict) else None
+        if isinstance(receipt, dict) and str(receipt.get("dictionary_sha")) in shas and receipt.get("extract_sha"):
+            out.add(q.stem)
+    return out
+
+
+def cites_answers(source, answers):
+    """`query q02` or `query q02 · q05`: every id names an answer of query_answers."""
+    text = str(source or "").strip()
+    if not re.match(r"(?i)^query\b", text):
+        return False
+    ids = re.findall(r"\bq\d+\b", text)
+    return bool(ids) and all(i in answers for i in ids)
+
+
 def _csv_rows(path):
     import csv
     try:
@@ -589,6 +612,7 @@ def ladder_check(run_dir):
     task = run_dir.parent.parent
     job = task.parent
     names = fence_files(job)
+    answers = query_answers(job)
     if not names:
         issues.append(f"{job.name}: no fence (inputs/manifest.yaml lists no file)")
     result = run_dir / "result"
@@ -597,9 +621,9 @@ def ladder_check(run_dir):
 
     def froms(entries, what):
         for e in entries:
-            if isinstance(e, dict) and not in_fence(e.get("from"), names):
+            if isinstance(e, dict) and not in_fence(e.get("from"), names) and not cites_answers(e.get("from"), answers):
                 issues.append(f"{run_dir.name}: {what} {e.get('id') or e.get('element') or '?'} cites "
-                              f"{e.get('from')!r}, not a fence file nor 'own knowledge'")
+                              f"{e.get('from')!r}, not a fence file, a query answer of t00 nor 'own knowledge'")
 
     if rtype == "reason":
         chains, ideas = _ydoc(result / "chains.yaml"), _ydoc(result / "ideas.yaml")
