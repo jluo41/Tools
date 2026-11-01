@@ -1,7 +1,7 @@
 s52 · Board UI: Work
 ====================
 
-**Tags:** `Board UI`
+**Tags:** `Block UI`
 
 **Stage:** explore
 

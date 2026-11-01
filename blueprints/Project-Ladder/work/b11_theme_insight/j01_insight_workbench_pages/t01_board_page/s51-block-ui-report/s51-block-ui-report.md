@@ -1,7 +1,7 @@
 s51 · Board UI: Report
 ======================
 
-**Tags:** `Board UI`
+**Tags:** `Block UI`
 
 **Stage:** explore
 

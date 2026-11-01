@@ -1,6 +1,8 @@
 s12 · Job level
 ===============
 
+**Tags:** `Job UI`
+
 **Stage:** explore
 
 **For:** a deck, and one insight Job's tab, its Spaces as full screens with what is on disk, for the people who build the workbench

@@ -1,6 +1,8 @@
 s02 · Insight workbench, today
 ==============================
 
+**Tags:** `All pages`
+
 **Stage:** explore
 
 **For:** a deck, and a map of the Insight workbench as built today, its Spaces, Views and run types, for the people who build the workbench

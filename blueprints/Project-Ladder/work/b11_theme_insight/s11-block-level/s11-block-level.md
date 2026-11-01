@@ -1,6 +1,8 @@
 s11 · Block level
 =================
 
+**Tags:** `Block UI`
+
 **Stage:** explore
 
 **For:** a deck, and the insight Board's tab, its six Spaces as full screens with what is on disk, for the people who build the workbench

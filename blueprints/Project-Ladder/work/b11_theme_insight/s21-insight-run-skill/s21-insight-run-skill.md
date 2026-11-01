@@ -1,6 +1,8 @@
 s21 · insight Run and skill
 ===========================
 
+**Tags:** `Skill`
+
 **Stage:** explore
 
 **For:** a deck, and every insight Run type, the skill behind it, and the plan to update those skills, for the people who write the toolkit skills

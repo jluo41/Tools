@@ -1,6 +1,8 @@
 s04 · Insight structure
 =======================
 
+**Tags:** `Skill`
+
 **Stage:** explore
 
 **For:** a deck, and the shape of an Insight Project: Prototype versions, data versions, two clocks, for the people who write the toolkit skills

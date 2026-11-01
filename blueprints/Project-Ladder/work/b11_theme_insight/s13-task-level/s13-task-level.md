@@ -1,6 +1,8 @@
 s13 · Task level
 ================
 
+**Tags:** `Task UI`
+
 **Stage:** explore
 
 **For:** a deck, and one insight question's Task tab, its Spaces as full screens with what is on disk, for the people who build the workbench

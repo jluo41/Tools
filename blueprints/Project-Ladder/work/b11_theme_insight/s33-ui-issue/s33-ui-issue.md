@@ -1,6 +1,8 @@
 s33 · Insight UI issues
 =======================
 
+**Tags:** `All pages`
+
 **Stage:** explore
 
 **For:** a deck, and the Insight workbench's UI problems, ranked worst first with who fixes each, for the people who build the workbench

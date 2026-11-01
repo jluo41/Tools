@@ -1,6 +1,8 @@
 s01 · Insight ladder
 ====================
 
+**Tags:** `Skill`
+
 **Stage:** explore
 
 **For:** a deck, and the proposed insight screens at Block, Job and Task beside today's, for the people who build the workbench

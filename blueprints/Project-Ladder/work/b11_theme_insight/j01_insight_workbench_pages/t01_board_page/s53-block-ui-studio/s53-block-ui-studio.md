@@ -1,7 +1,7 @@
 s53 · Board UI: Studio
 ======================
 
-**Tags:** `Board UI`
+**Tags:** `Block UI`
 
 **Stage:** explore
 

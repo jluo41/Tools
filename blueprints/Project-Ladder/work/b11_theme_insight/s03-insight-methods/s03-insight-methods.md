@@ -1,6 +1,8 @@
 s03 · Insight methods
 =====================
 
+**Tags:** `Skill`
+
 **Stage:** explore
 
 **For:** a deck, and the insight methods and how much of each the code runs today, for the people who write the toolkit skills

@@ -1,6 +1,8 @@
 s61 · Insight slides
 ====================
 
+**Tags:** `All pages`
+
 **Stage:** explore
 
 **For:** a deck, and the slides that argue for the insight theme on the ladder, for people new to the toolkit

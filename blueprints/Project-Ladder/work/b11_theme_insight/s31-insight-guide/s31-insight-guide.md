@@ -1,6 +1,8 @@
 s31 · Insight Guide
 ===================
 
+**Tags:** `All pages`
+
 **Stage:** explore
 
 **For:** a deck, and the insight workbench's Guide tab, cut by level, for the people who build the workbench
