@@ -338,3 +338,17 @@ def explore_blocks(board: Path) -> dict:
                 if job and (folder / job).is_dir():
                     jobs.add(job)
     return found
+
+
+def display_plan():
+    """haipipe-paper-plan's display_plan module (the s06 display plan and the venue's display rules), or None."""
+    import importlib.util
+    try:
+        from host_paths import skill_dir
+        f = skill_dir("haipipe-paper-plan") / "scripts" / "display_plan.py"
+        spec = importlib.util.spec_from_file_location("display_plan", f)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod
+    except Exception:
+        return None

@@ -10,7 +10,7 @@ from live import draft_steps as ds
 from live.frame import esc
 from live.ui_parts import _bar, _cap, _card_tabs, _clean, _kv, _open_btn, _plain, _section, _side_tabs, _when
 from live.focus_draft import paragraphs
-from live.board_read import _after_table, _face, _field, _first_para, _folder_line, _label_rows, _lead_sentence, _mark, _num, _open_link, _page_url, _rq_lists, _section_state, _state_words, _table, _task_url, _undated, _version_url, explore_tree, face_sections, is_version
+from live.board_read import display_plan, _after_table, _face, _field, _first_para, _folder_line, _label_rows, _lead_sentence, _mark, _num, _open_link, _page_url, _rq_lists, _section_state, _state_words, _table, _task_url, _undated, _version_url, explore_tree, face_sections, is_version
 from live.board_interactions import ix_answered, ix_item
 from live.board_evidence import EVIDENCE_KINDS, evidence_body
 
@@ -295,7 +295,12 @@ def paperflow_view(board: Path, topic: Path, root: Path, md, items=()) -> str:
                                          [_kv((("Its job", esc(_plain(r.get("job", "")))), ("Displays", esc(_plain(r.get("displays", "")).strip("—–- ") or "none")),
                                                ("Evidence", esc(_plain(r.get("evidence", "")))), ("Words", esc(_plain(r.get("words", ""))))))
                                           for r in secs]))
-    if shows:
+    dp = display_plan()
+    plan = dp.rows(board) if dp else []
+    if plan:                                     # the display plan (s06) and the venue's rules (JL 261101)
+        n += 1
+        out += _bar(n, "Displays", _display_plan(board, root, dp, plan))
+    elif shows:
         n += 1
         out += _bar(n, "Displays", _card_tabs("pd", [(_plain(r.get("display", "")), _mark(r.get("state", "")) + " " + _plain(r.get("state", "")), "")
                                                  for r in shows],
@@ -373,6 +378,8 @@ def evidence_view(board: Path, root: Path, md, items=()) -> str:
             continue
         tasks = sorted((x for x in job.glob("t[0-9]*_*") if x.is_dir()), key=_num)
         tiles, panels = [], []
+        dp = display_plan() if kind == "Displays" else None
+        paper_as = {r.get("display", ""): f"{r.get('display', '')} → {r['as']}" for r in (dp.rows(board) if dp else [])}
         for t in tasks:                          # each item to read: its list on the left, the thing itself on the right
             label, status, body = evidence_body(t, root)
             words = re.sub(r"^t\d+_", "", t.name).replace("-", " ")
@@ -382,6 +389,7 @@ def evidence_view(board: Path, root: Path, md, items=()) -> str:
             line = "waiting" if line.startswith("waits") else line
             if kind == "Displays":               # JL 261101: "for each display, we might also want to have the name and type"
                 line = _display_line(t, words)
+                head = paper_as.get(head, head)    # Display A → Figure 1, from the display plan
             tiles.append(((("Appendix · " if kind == "Displays" and _num(t) >= 50 else "") + head), line or status, ""))
             panels.append(body)
         book = board / "delivery" / job.name / f"{job.name}-all-displays.pdf"   # build_displays_pdf.py writes it
@@ -394,6 +402,30 @@ def evidence_view(board: Path, root: Path, md, items=()) -> str:
 
 
 DISPLAY_TYPES = (("figure", "📈 Figure"), ("table", "📊 Table"))
+
+
+def _display_plan(board: Path, root: Path, dp, plan: list) -> str:
+    """Paper flow's Displays, from the display plan (haipipe-paper-plan s06; JL 261101: "we should also have the plan for
+    the displays"; "the display ... should also follow the venue"): the venue check first, then each display as a side
+    tab (Display A → Figure 1, its type and name), its panel what it shows, where it goes, its Run and its sketch."""
+    face = dp.plan_face(board)
+    text = face.read_text(encoding="utf-8", errors="ignore")
+    checks = dp.check(board)
+    call = dp.venue_call(board)
+    bad = [t for m, t in checks if m == "❗"]
+    head = (f'<p class=pb-state>{"❗ " + str(len(bad)) + " against the venue" if bad else "✅ within the venue's rules"}'
+            + (f' · {esc(call.parent.name)}' if call else '') + '</p>'
+            + '<ul class=pb-checks>' + "".join(f'<li>{esc(m)} {esc(t)}</li>' for m, t in checks) + '</ul>'
+            + f'<div class=pb-verbs>{_open_btn("Open the display plan", _page_url(face, root), face.name)}'
+            + (_open_btn("Open the venue rules", _page_url(call, root), "call.md") if call else "") + '</div>')
+    sketch = lambda lab: (re.search(rf"(?ms)^####\s*{re.escape(lab)}\s*\n+```text\n(.*?)```", text) or [None, ""])[1]
+    tiles = [(f"{r.get('display', '')} → {r['as']}", f"{dp.TYPES[r['type']]} · {_plain(r.get('name', ''))}") for r in plan]
+    panels = [_kv((("Shows", esc(_plain(r.get("shows", "")))), ("Answers", esc(_plain(r.get("answers", "")))),
+                   ("Section", esc(_plain(r.get("section", "")))), ("Where", esc(r["where"])),
+                   ("Made by", esc(_plain(r.get("made by", "")))), ("State", esc(_plain(r.get("state", ""))))))
+              + (f'<pre class=pb-sketch>{esc(sketch(r.get("display", "")))}</pre>' if sketch(r.get("display", "")) else "")
+              for r in plan]
+    return head + _side_tabs("dpl", tiles, panels)
 
 
 def _display_line(task: Path, slug: str) -> str:

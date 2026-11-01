@@ -86,7 +86,8 @@ def cook_zh(name: Optional[str]) -> Optional[str]:
 
 def dish_parts(food: str) -> List[str]:
     """'Minced pork with cauliflower and carrot' -> ['Minced pork', 'cauliflower', 'carrot']; [] for one food."""
-    parts = [p for p in SPLIT.split(AMOUNT.sub("", str(food))) if p.strip()]
+    bare = re.sub(r"\s*\([^)]*\)", "", AMOUNT.sub("", str(food)))      # "(with Peel)", "(150g)" describe one food
+    parts = [p for p in SPLIT.split(bare) if p.strip()]
     return parts if len(parts) > 1 else []
 
 

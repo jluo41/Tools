@@ -41,6 +41,7 @@ Missing evidence Jobs (V1) are made by update too (`paper_ladder.py evidence`).
 | P6 | The data flow | the data-flow topic (`sNN-paper-dataflow/`) exists |
 | P7 | The paper flow | the paper-flow topic (`sNN-paper-workflow/`) exists |
 | P8 | The related work | the related-work topic (`sNN-related-work-…/`) exists |
+| P9 | The display plan | `s06-paper-displays/` plans every display, and `display_plan.py check` finds none against the venue's display rules |
 
 ## ② Explore · the Blocks that support the paper
 

@@ -355,12 +355,21 @@ def building_page(theme, root, folder, section="", group=""):
         section, group = OLD_BUILD[section][0], OLD_BUILD[section][1] or group
     elif section in views:                             # a view named as a section: that view, in Work
         section, group = "work", section
-    rail = base_rail(folder, root)
-    keys = [key for key, _, _ in rail]
+    keys = [key for key, _, _ in base_rail(folder, root)]
     if section in keys and section not in OWN_SECTIONS:
         return F.render(theme, root, folder, section, group)
     section = section if section in OWN_SECTIONS else "work"
     view = group if group in views else ("decide" if DR.waiting_report(folder) else "frame")
+    return task_shell(root, folder, section, views, view, building_view(folder, root, section, view),
+                      "<style>" + (ASSETS / "decision_report.css").read_text(encoding="utf-8") + "</style>",
+                      "<script>" + (ASSETS / "decision_report.js").read_text(encoding="utf-8") + "</script>")
+
+
+def task_shell(root, folder, section, views: dict, view: str, body: str, head_extra: str = "", tail_extra: str = ""):
+    """A labeling Task's focus page around one view (building, meaning, expression): the base page's path, title with
+    its section, the views of that section, the Aim, both rails; `head_extra` and `tail_extra` are the view's own
+    stylesheet and script."""
+    rail = base_rail(folder, root)
     bar = ('<nav class="section-views" aria-label="Views">' + "".join(
         f'<a href="{frame.esc(F.page_url(folder, root, section, key))}"' + (' aria-current="page"' if key == view else '')
         + f'>{frame.esc(name)}</a>' for key, name in views.items()) + '</nav>')
@@ -384,12 +393,11 @@ def building_page(theme, root, folder, section="", group=""):
     right = "".join(F.rail_link(F.page_url(folder, root, key), name, key == section, "", words)
                     for key, name, words in rail)
     page = F.page_shell(folder, root, crumbs, frame.esc(folder.name), section.title(), dict((k, w) for k, _, w in rail)[section],
-                        bar, goal_html, building_view(folder, root, section, view), source, left, right,
-                        [(key, name) for key, name, _ in rail], section)
+                        bar, goal_html, body, source, left, right, [(key, name) for key, name, _ in rail], section)
     head, tail = page.rsplit("</head>", 1)
-    page = head + "<style>" + (ASSETS / "decision_report.css").read_text(encoding="utf-8") + "</style></head>" + tail
+    page = head + head_extra + "</head>" + tail
     head, tail = page.rsplit("</body>", 1)
-    return head + "<script>" + (ASSETS / "decision_report.js").read_text(encoding="utf-8") + "</script></body>" + tail
+    return head + tail_extra + "</body>" + tail
 
 
 def render(theme, root, folder, section="", group=""):
@@ -398,6 +406,9 @@ def render(theme, root, folder, section="", group=""):
         raise ValueError("Folder outside root")
     if frame.level_of(folder) not in {"Job", "Task"}:
         return F.render(theme, root, folder, section, group)
+    from live import labeling_steps as S                 # a 🧭 meaning or 🛠 expression Task: its steps (b15 s58)
+    if S.kind(folder):
+        return S.page(theme, root, folder, section, group)
     if is_building(folder):
         return building_page(theme, root, folder, section, group)
     data = F.read_face(folder, root)

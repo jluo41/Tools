@@ -89,6 +89,8 @@ button.pb-tile{cursor:pointer;display:flex;flex-direction:column;justify-content
 .pb-list{display:flex;flex-direction:column;gap:4px;position:sticky;top:12px}.pb-item{display:block;text-align:left;border:1px solid transparent;
  border-radius:7px;padding:6px 10px;background:none;font:inherit;color:var(--ink);cursor:pointer}.pb-item b{display:block;font-size:13.5px;
  font-weight:600}.pb-item span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;font-size:12px;color:var(--muted);overflow:hidden}
+.pb-checks{list-style:none;margin:4px 0 8px;padding:0;font-size:13.5px;line-height:1.6}.pb-sketch{margin:8px 0 0;padding:8px 10px;border-radius:6px;
+ background:var(--wash);font:12.5px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre;overflow-x:auto}
 .pb-item:hover{border-color:var(--line)}.pb-item.on{border-color:var(--accent);background:var(--pb-soft)}.pb-item.on b{color:var(--accent)}
 .pb-read .pb-panel{margin:0;min-height:120px}.pb-text h4{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;
  letter-spacing:.04em;margin:14px 0 4px}.pb-text h4:first-child{margin-top:2px}.pb-text p{font-size:15px;line-height:1.65;margin:0 0 6px}

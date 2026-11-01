@@ -98,12 +98,32 @@ def read(topic: Path) -> dict:
     if not secs:
         raise SystemExit(f"{face.name}: no '| S | section | answers | job | displays | evidence | words |' table")
     return {"title": title, "budget": joined(lines, "**Budget:**"), "send": joined(lines, "**Send:**"),
-            "S": secs, "displays": table(lines, "Display"), "W": table(lines, "W"), "story": telling(topic)}
+            "S": secs, "displays": planned(topic) or table(lines, "Display"), "W": table(lines, "W"), "story": telling(topic)}
+
+
+def planned(topic: Path) -> list[dict]:
+    """The displays from the Board's display plan (s06-paper-displays, JL 261101), in s04's row shape: `display` the
+    paper number (Figure 1), `title` its name, `kind` its type; [] when the Board has no plan (an older Board keeps
+    its Displays table on s04)."""
+    board = board_of(Path(topic).resolve())
+    if board is None:
+        return []
+    sys.path.insert(0, str(SKILLS / "2_theme/paper/haipipe-paper-plan/scripts"))
+    import display_plan as dp
+    return [{**r, "display": f"{r['as']} ({r.get('display', '')})", "title": r.get("name", ""), "kind": r["type"]}
+            for r in dp.rows(board)]
 
 
 def displays_by_question(board: Path) -> dict[int, str]:
     """For the building map (workflow_drawing.py): RQ number -> 'Figure 1 · Figure 2', from the Board's
-    s04-paper-workflow face, so the displays are named once."""
+    s04-paper-workflow face, so the displays are named once; the display plan (s06-paper-displays) wins when there is one."""
+    rows = planned(Path(board) / "board.md")
+    if rows:
+        got: dict[int, list[str]] = {}
+        for r in rows:
+            for rq in ids(r.get("answers", ""), "RQ"):
+                got.setdefault(int(rq[2:]), []).append(r["as"])
+        return {k: " · ".join(v) for k, v in got.items()}
     for face in [*sorted(Path(board).glob("s??-paper-workflow/s??-paper-workflow.md")),
                  *sorted(Path(board).glob("studio/s??-paper-workflow/s??-paper-workflow.md"))]:
         lines = face.read_text(encoding="utf-8").splitlines()

@@ -72,7 +72,9 @@ def event(raw: dict = None, input: dict = None) -> dict:
         asks = [ask_of(it) for it in given["items"] or []]
         meal = "; ".join(asks)
     inp.update(given)
-    if inp.get("items"):                                         # a dish line becomes one item per food (JL 261029)
+    # A dish line becomes one item per food (JL 261029), in words only: an app row is one product the person picked
+    # ("Light & Fit Greek Yogurt", "Beef Chuck (Clod Steak, Lean Only, ...)"), so it is never split (261101).
+    if inp.get("items") and (raw or {}).get("type") != "app_log":
         from foodnorm.items import split_dishes
         inp["items"], asks, n = split_dishes(inp["items"], asks or [ask_of(it) for it in inp["items"]])
         if n:

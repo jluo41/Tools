@@ -1,0 +1,643 @@
+"""A 🧭 meaning or 🛠 expression Task's focus page (b15 j01 t03 s58, stage 2; JL 261101: "how will you update the
+skills ... and update the workbench here ... Please make them work").
+
+The Task's steps are the view-button-list; each view is ⚙️ Process (the step's flow In → who works → Out, its prompt
+box, your sign or the interaction that waits on you) then 📊 Results (what the step made), each numbered from 1, then
+the next step. Report shows the Results only. Everything is read from the Task's own folders, in the layout
+haipipe-labeling-interaction (meaning) and haipipe-labeling-expression (expression) write; the meaning layout is
+engine/meaning_versions.py's, so the page and the skill read the same files:
+
+    meaning     Frame · Report · Preferences · Update     Loop NN makes guideline mNN (a mind map) and labels lNN;
+                                                           its Runs end in _mNN; only this Task asks you
+    expression  Rewrite · Run · Evaluate · Release         round eNN under one approved meaning; its Runs end in
+                                                           _mNN_eNN; it never asks you
+
+Nothing here writes. The one write a page makes is your sign on a guideline (POST /_board/labeling/approve, labeling.py),
+and the Preferences prompt, which copies the embedded form's answers with your notes (focus-assets/steps.js).
+"""
+from __future__ import annotations
+
+import importlib.util
+import json
+import re
+from pathlib import Path
+
+from live import focus_page as F, frame, labeling_theme as T
+from live.ui_parts import GROUP_CSS, PB_CSS, PB_JS, PROCESS, RESULTS, _band, _kv, _numbered, _pill, _section, _todo, prompt_box
+
+ASSETS = Path(__file__).parent / "focus-assets"
+APPROVE = "/_board/labeling/approve"
+SHOW = 12                                    # rows a case table shows; the rest are named in one line
+
+
+def _engine():
+    """haipipe-labeling's engine/meaning_versions.py, found from this file; None when the skill is absent."""
+    for base in Path(__file__).resolve().parents:
+        path = base / "skills" / "2_theme" / "labeling" / "engine" / "meaning_versions.py"
+        if path.is_file():
+            spec = importlib.util.spec_from_file_location("labeling_meaning_versions", path)
+            mod = importlib.util.module_from_spec(spec)
+            try:
+                spec.loader.exec_module(mod)
+            except Exception:
+                return None
+            return mod
+    return None
+
+
+MV = _engine()
+
+STEPS = {
+    "meaning": (("frame", "Frame", "what we judge, agreed before any rule"),
+                ("report", "Report", "the rules now, then this loop's report and the cases it asks about"),
+                ("preferences", "Preferences", "this loop's interaction report: your answers"),
+                ("update", "Update", "the rules your answers made, what changed, and where the loop goes")),
+    "expression": (("rewrite", "Rewrite", "the wording, rewritten under a fixed meaning"),
+                   ("run", "Run", "the models labeling Train and Test"),
+                   ("evaluate", "Evaluate", "how the models did, and where the round report sends it"),
+                   ("release", "Release", "whether the frozen version is ready")),
+}
+NEXT = {"frame": ("report", "🔍 Report"), "report": ("preferences", "🙋 Preferences"), "preferences": ("update", "🔁 Update"),
+        "rewrite": ("run", "▶️ Run"), "run": ("evaluate", "📊 Evaluate"), "evaluate": ("release", "🔒 Release")}
+OWN = ("report", "work")                     # the sections this page draws; the rest are the base page's
+
+
+def kind(folder) -> str:
+    """meaning or expression, for a Task this page draws; "" for every other folder."""
+    folder = Path(folder)
+    if MV is None or frame.level_of(folder) != "Task":
+        return ""
+    types = T.types_of(folder)
+    return types[0] if types in (("meaning",), ("expression",)) else ""
+
+
+# ── small parts ──────────────────────────────────────────────────────────────────────────────────────────────────
+def esc(x) -> str:
+    return frame.esc(str(x))
+
+
+def _session(task: Path) -> str:
+    """The Claude session a step's prompt runs in: the Task face's `session:`, else its Job's, else the Task's name."""
+    for face in (task / f"{task.name}.md", task.parent / f"{task.parent.name}.md"):
+        if face.is_file():
+            m = re.search(r"(?m)^session:\s*`?([\w.-]+)`?", face.read_text(encoding="utf-8", errors="ignore")[:4000])
+            if m:
+                return m.group(1)
+    return task.name
+
+
+def _flow(inn: tuple, who: tuple, out: tuple) -> str:
+    """The step slide's flow: In → who works → Out, each a box with its lines (s58 views, the deck's pages 8 to 15)."""
+    boxes = []
+    for word, (head, *lines) in (("In", inn), ("Who works", who), ("Out", out)):
+        boxes.append(f'<div class=ls-box><small>{word}</small><b>{esc(head)}</b>'
+                     + "".join(f"<span>{esc(x)}</span>" for x in lines if x) + "</div>")
+    return '<div class=ls-flow>' + '<span class=ls-arrow aria-hidden=true>→</span>'.join(boxes) + "</div>"
+
+
+def _turns(label: str, turns: list) -> str:
+    """The loop's iterations as a strip: [(name, word, now)]."""
+    cells = '<span class=ls-arrow aria-hidden=true>→</span>'.join(
+        f'<span class="ls-turn{" now" if now else ""}"><b>{esc(n)}</b><small>{esc(w)}</small></span>' for n, w, now in turns)
+    return f'<div class=ls-turns><span class=ls-tl>{esc(label)}</span>{cells}</div>' if turns else ""
+
+
+def _bar(words: str, verbs: str = "", mode: str = "you") -> str:
+    """Your part, one line: the interaction that waits on you or your sign (orange); done, or waiting on a condition
+    (grey)."""
+    return f'<div class="ls-bar {mode}"><span>{esc(words)}</span>{verbs}</div>'
+
+
+def _empty(words: str) -> str:
+    return f'<p class=ls-empty>{esc(words)}</p>'
+
+
+def _table(head: tuple, rows: list, more: str = "") -> str:
+    """A small table; cells are HTML already escaped."""
+    return ('<div class=ls-tw><table class=ls-table><thead><tr>' + "".join(f"<th>{esc(h)}</th>" for h in head)
+            + "</tr></thead><tbody>" + "".join("<tr>" + "".join(f"<td>{c}</td>" for c in r) + "</tr>" for r in rows)
+            + "</tbody></table></div>" + (f'<p class=ls-foot>{more}</p>' if more else ""))
+
+
+def _open(path: Path, root: Path, label: str = "Open") -> str:
+    return (f'<a class=fd-btn data-pop="{esc(path.name)}" href="{esc(frame._file_url(path, root))}">{esc(label)}</a>'
+            if path.is_file() and F.inside(path, root) else "")
+
+
+def _view_url(task: Path, root: Path, key: str, section: str = "work") -> str:
+    return F.page_url(task, root, section, key)
+
+
+def _when(path: Path) -> str:
+    import datetime
+    return datetime.datetime.fromtimestamp(path.stat().st_mtime).strftime("%Y-%m-%d %H:%M") if path.exists() else ""
+
+
+def _chain(steps: list) -> str:
+    """A sequence as boxes with arrows, each with its role word above: [(role, words)]."""
+    return ('<div class=ls-chain>' + '<span class=ls-arrow aria-hidden=true>→</span>'.join(
+        f'<div class=ls-box><small>{esc(r)}</small><span>{esc(w)}</span></div>' for r, w in steps) + "</div>")
+
+
+def _tiles(tiles: list) -> str:
+    return '<div class=pb-tiles>' + "".join(f'<div class=pb-tile><b>{esc(h)}</b><span>{esc(w)}</span></div>'
+                                            for h, w in tiles) + "</div>"
+
+
+def _prompt(task: Path, root: Path, key: str, step: str, asks: str, template: str, fields=None, cls: str = "") -> str:
+    box = prompt_box(template, fields, _session(task), step=step, asks=asks, key=f"notes:{frame.rel(task, root)}#{key}",
+                     upload=(frame.rel(task, root), "/_board/labeling/notes"))
+    return f'<div class="{cls}">{box}</div>' if cls else box
+
+
+# ── 🧭 meaning ───────────────────────────────────────────────────────────────────────────────────────────────────
+def _map_html(m: dict, mark: dict | None = None) -> str:
+    """One guideline version as a tree (s58 C2, C4): the question, its values, each value's rules; a rule's tag is the
+    card that set it (its note's "from rNN QN"), or in Report the card of this loop's report that asks about it."""
+    branches = []
+    for b in m["branches"]:
+        leaves = []
+        for r in b["rules"]:
+            tag = (mark or {}).get(r["text"].strip().lower()) or r["tag"]
+            pill = f'<span class=ls-q title="{esc(r.get("cite") or r["note"])}">{esc(tag)}</span>' if tag else ""
+            leaves.append(f'<div class=ls-lf title="{esc(r["note"])}"><span>{esc(r["text"])}</span>{pill}</div>')
+        branches.append(f'<div class=ls-br><div class=ls-bn>{esc(b["name"])}</div><div class=ls-lvs>'
+                        + ("".join(leaves) or '<div class=ls-lf><span class=mut>no rule yet</span></div>') + "</div></div>")
+    return (f'<div class=ls-map><div class=ls-root>{esc(m["root"] or "the question")}</div>'
+            f'<div class=ls-brs>{"".join(branches)}</div></div>')
+
+
+def _maps(task: Path, root: Path, on: str = "", mark: dict | None = None) -> str:
+    """Every guideline version, one button each, the newest (or `on`) open: its tree, then its sign."""
+    vs = MV.versions(task)
+    if not vs:
+        return ""
+    on = on if on in dict(vs) else vs[-1][0]
+    buttons = "".join(f'<button type=button class="ls-v{" on" if v == on else ""}" data-pbtab="lsmm{v}">{esc(v)}</button>'
+                      for v, _ in vs)
+    panels = []
+    for v, path in vs:
+        signed = MV.approval(task, v)
+        foot = (f"approved by {signed['by']} · {signed['at']}" if signed else "not approved yet")
+        panels.append(f'<div class="pb-panel ls-mp" data-pbpanel="lsmm{v}"{"" if v == on else " hidden"}>'
+                      + _map_html(MV.read_map(path), mark if v == on else None)
+                      + f'<p class=ls-foot>{esc(v)} · {esc(foot)} {_open(path, root, "Open the mind map")}</p></div>')
+    return (f'<div class="pb-tabset ls-maps"><div class=ls-vrow><span>version</span>{buttons}</div>'
+            + "".join(panels) + "</div>")
+
+
+def _meaning_turns(loops: list, now_n: int, now_word: str = "") -> str:
+    turns = [(f"Loop {lp['n']}", lp["state"], lp["n"] == now_n) for lp in loops]
+    if now_n and all(lp["n"] != now_n for lp in loops):
+        turns.append((f"Loop {now_n}", now_word or "next", True))
+    return _turns("🧭 meaning loops", turns)
+
+
+def _current(loops: list) -> int:
+    """The loop Report works on: the newest loop with no guideline yet, else the next one."""
+    if loops and not loops[-1]["map"]:
+        return loops[-1]["n"]
+    return (loops[-1]["n"] + 1) if loops else 1
+
+
+def _form_loop(loops: list) -> dict | None:
+    """The loop Preferences shows: the form that waits for you, else the newest form."""
+    forms = [lp for lp in loops if lp.get("collect") is not None]
+    waiting = [lp for lp in forms if MV.state(lp["collect"]) == "waiting"]
+    return (waiting or forms or [None])[-1]
+
+
+def _update_loop(loops: list) -> dict | None:
+    """The loop Update shows: the newest loop whose form is answered or whose guideline is written."""
+    done = [lp for lp in loops if lp["map"] or (lp.get("collect") is not None and MV.state(lp["collect"]) == "done")]
+    return done[-1] if done else None
+
+
+def _report_rows(task: Path, root: Path, loops: list) -> str:
+    rows = []
+    for lp in reversed(loops):
+        run = lp.get("collect")
+        if run is None:
+            continue
+        form, st = run / f"{run.name}.html", MV.state(run)
+        qs, flags = MV.questions(run), MV.applied(run)
+        sub = f"{run.name} · {len(qs)} question{'s' if len(qs) != 1 else ''}" + (
+            f" · {sum(1 for s, _ in flags.values() if s == 'applied')} applied" if flags else "")
+        word = {"waiting": "waiting for you", "done": "answered"}.get(st, "form not built yet")
+        verb = ("Answer" if st == "waiting" else "Open") if form.is_file() else ""
+        rows.append((f"Loop {lp['n']} · report-{lp['n']:02d}", sub, word, verb,
+                     frame._file_url(form, root) if form.is_file() else "", True))
+    return _todo(rows) if rows else ""
+
+
+def _cases(task: Path, root: Path, lp: dict | None) -> tuple[str, str, str]:
+    """This loop's typical, hard and random cases (use case 2: the draw Run's draws.json and signals.jsonl), each a
+    table: item, why it was drawn, its current label, the card that shows it."""
+    if lp is None or lp.get("draw") is None:
+        return "", "", ""
+    out = lp["draw"] / "result"
+    path = out / "draws.json"
+    if not path.is_file():
+        return "", "", ""
+    try:
+        sets = json.loads(path.read_text(encoding="utf-8")).get("sets") or {}
+    except ValueError:
+        return "", "", ""
+    sig = {}
+    if (out / "signals.jsonl").is_file():
+        for raw in (out / "signals.jsonl").read_text(encoding="utf-8").splitlines():
+            try:
+                row = json.loads(raw)
+            except ValueError:
+                continue
+            sig[row.get("item_id")] = row
+    cards = MV.cards_by_item(MV.report_json(lp["runs"]))
+
+    def table(key: str, why_default: str, hide: bool) -> str:
+        ids = sets.get(key) or []
+        if not ids:
+            return ""
+        rows = []
+        for i in ids[:SHOW]:
+            s = sig.get(i, {})
+            why = ", ".join(s.get("flags") or []) or why_default
+            label = "hidden until you judge it" if hide else (s.get("label") or s.get("majority") or "no majority")
+            rows.append((esc(i), esc(why), esc(label), esc(cards.get(i, ""))))
+        more = (f"{len(ids) - SHOW} more in draws.json {_open(path, root)}" if len(ids) > SHOW else "")
+        return _table(("item", "why drawn", "current label", "card"), rows, more)
+
+    return table("typical", "typical", False), table("hard", "flagged", False), table("blind", "random, unflagged", True)
+
+
+def _mark(lp: dict | None) -> dict:
+    """{rule words: QN} for the rules this loop's report asks about: a card whose current_rule quotes a rule."""
+    report = MV.report_json(lp["runs"]) if lp else None
+    out = {}
+    for i, card in enumerate((report or {}).get("cards") or [], 1):
+        rule = re.sub(r"^R\d+:\s*", "", str(card.get("current_rule") or "")).strip().rstrip(".").lower()
+        if rule and rule not in ("none yet", "none"):
+            out.setdefault(rule, f"Q{i}")
+    return out
+
+
+def m_frame(task: Path, root: Path) -> tuple[str, str]:
+    rec = MV.frame_record(task)
+    process = _section("🎯 Frame the labeling task", _flow(
+        ("Rough idea + prepared items", "goals · use cases · constraints", "items, context, old labels"),
+        ("🤖 Agent", "inspect items; surface assumptions", rec["run"].name if rec else "a frame Run, rNN_collect_frame"),
+        ("Initial task agreement", "purpose · target population", "provisional labels")))
+    process += _prompt(task, root, "frame", "Frame", "your rough idea", (
+        f"Use /haipipe-labeling-interaction on {task.name}, step Frame: read the items and the old labels' sources this "
+        "Job names, surface the assumptions in my idea below, then ask me the three frame questions (what to judge, "
+        "which standard, who decides) as a frame form; record my answers as the frame."),
+        (("Goal", "what the labels are for"), ("Use cases", "where they will be used"), ("Constraints", "data, time, who decides")))
+    if not rec or not rec["decisions"]:
+        word = "waiting for you" if rec and rec["state"] == "waiting" else "not framed yet"
+        results = _section("📜 Initial task agreement", _empty(f"Nothing to show yet ({word}): this view will show what "
+                                                               "we judge, agreed before any rule."))
+        if rec and rec["state"] == "waiting":
+            form = rec["run"] / f"{rec['run'].name}.html"
+            process += _bar(f"🙋 Interaction · the frame questions wait for your answers", _open(form, root, "Answer"))
+        return process, results
+    first = rec["decisions"][0]
+    results = _section("📜 Initial task agreement",
+                       f'<p class=pb-big>{esc(first["decision"])}</p><p class=pb-state>agreed as frame f01 · '
+                       f'{esc(rec["when"] or _when(rec["run"]))} · {esc(rec["run"].name)}</p>')
+    results += _section("❓ What you confirmed", _kv([(d["title"], esc(d["decision"])) for d in rec["decisions"]]))
+    return process, results
+
+
+def m_report(task: Path, root: Path, loops: list) -> tuple[str, str]:
+    n = _current(loops)
+    lp = next((x for x in loops if x["n"] == n), None)
+    collect = lp.get("collect") if lp else None
+    process = _section(f"🔍 Prepare interaction report-{n:02d}", _flow(
+        ("Human sources + reports", "ideas · notes · decisions", "earlier round reports · cases"),
+        ("🤖 Alignment Agent", "/haipipe-labeling-interaction", collect.name if collect else f"rNN_collect_report_m{n:02d}"),
+        (f"Interaction report-{n:02d}", "cards with evidence", "for you to decide")))
+    process += _prompt(task, root, "report", "Report", f"Loop {n}'s interaction report", (
+        f"Use /haipipe-labeling-interaction on {task.name}, Loop {n}: prepare interaction report-{n:02d} from my sources, "
+        "earlier decisions and any round report, its cases grouped typical, hard and random. Flags are hypotheses: no "
+        "rule or label changes until I answer."))
+    maps = _maps(task, root, mark=_mark(lp))
+    results = _section("🧠 Guideline rules, as a mind map", maps or _empty(
+        "No guideline yet: Loop 1's Update writes m01, the rules as a mind map."))
+    results += _section("🙋 Interaction report", _report_rows(task, root, loops) or _empty(
+        f"No report yet: Loop {n}'s report shows here once its form is built."))
+    typical, hard, blind = _cases(task, root, lp)
+    results += _section("📌 Typical cases", typical or _empty("No cases drawn yet for this loop."))
+    results += _section("⚠️ Hard cases", hard or _empty("No flagged cases drawn yet for this loop."))
+    results += _section("🎲 Random cases", blind or _empty("No random cases drawn yet for this loop."))
+    return process, results
+
+
+def m_preferences(task: Path, root: Path, loops: list) -> tuple[str, str]:
+    lp = _form_loop(loops)
+    if lp is None:
+        n = _current(loops)
+        process = _section("🙋 Collect preferences", _flow(
+            (f"Interaction report-{n:02d}", "earlier decisions", "evidence beside each card"),
+            ("🙋 You", "confirm · clarify · revise · defer", f"rNN_collect_report_m{n:02d}"),
+            ("Decision record", "preference · reason", "scope · version")))
+        process += _bar(f"No report waits for you: Report prepares Loop {n}'s.", "", "wait")
+        return process, _section("🗒 Cards", _empty("Nothing to show yet: this view will show the report's cards and "
+                                                     "your answers."))
+    n, run = lp["n"], lp["collect"]
+    st, form = MV.state(run), run / f"{run.name}.html"
+    process = _section("🙋 Collect preferences", _flow(
+        (f"Interaction report-{n:02d}", "earlier decisions", "evidence beside each card"),
+        ("🙋 You", "confirm · clarify · revise · defer", run.name),
+        ("Decision record", "preference · reason", "scope · version")))
+    if st == "waiting" and form.is_file():
+        process += _bar(f"🙋 Interaction · Loop {n} · report-{n:02d} waits for your answers: pick below, then Copy prompt")
+        process += (f'<iframe class=ls-form id=ls-form src="{esc(frame._file_url(form, root))}" title="report-{n:02d}" '
+                    'data-ls-form></iframe>')
+        process += _prompt(task, root, "preferences", "Preferences", "send my answers", (
+            f"Use /haipipe-labeling-interaction on {task.name}, Loop {n}: save my answers to report-{n:02d} ({run.name}: "
+            "the block at the end, from its 'haipipe-interaction answers' line) with my notes, then start Update."),
+            (("your notes", "optional: context for the decision record"),), cls="ls-send")
+    elif st == "done":
+        saved = run / "result" / "answer_collection.md"
+        process += _bar(f"✅ Loop {n} · report-{n:02d} answered {_when(saved)}", _open(form, root, "See answers"), "done")
+    else:
+        process += _bar(f"Loop {n} · report-{n:02d}'s form is not built yet: Report builds it.", "", "wait")
+    picks = {a["q"]: a for a in MV.answers(run / "result" / "answer_collection.md")}
+    flags = MV.applied(run)
+    rows = []
+    for q, title in MV.questions(run):
+        a, flag = picks.get(q), flags.get(q)
+        said = ""
+        if a:
+            said = (f"{a['pick']} · {a['text']}" if a["pick"] and a["pick"] != "own" else a["text"] or "no option picked")
+            said += f" · note: {a['note']}" if a["note"] else ""
+        word = flag[0] if flag else ("answered" if a else "waiting for you" if st == "waiting" else "not answered")
+        rows.append((f"{q} · {title}", said, word, "", "", False))
+    results = _section(f"🗒 Loop {n}'s cards", _todo(rows) if rows else _empty("The form has no questions yet."))
+    if st == "done":
+        saved = run / "result" / "answer_collection.md"
+        results += _section("📦 Decision record", _kv([("saved", esc(_when(saved))), ("answers", _open(saved, root)),
+                                                       ("applied", esc(f"{sum(1 for s, _ in flags.values() if s == 'applied')} of {len(rows)}"))]))
+    return process, results
+
+
+def _label_changes(task: Path, lp: dict) -> list:
+    """Reference label changes lNN: the Update Run's result/changes.md (or gold/versions/lNN/changes.md), one row per
+    `- ` line or table row."""
+    paths = ([lp["update"] / "result" / "changes.md"] if lp.get("update") is not None else [])
+    paths.append(task / "gold" / "versions" / f"l{lp['n']:02d}" / "changes.md")
+    for path in paths:
+        if path.is_file():
+            rows = []
+            for raw in path.read_text(encoding="utf-8", errors="ignore").splitlines():
+                ln = raw.strip()
+                if ln.startswith("- "):
+                    rows.append(ln[2:])
+                elif ln.startswith("|") and not re.match(r"^\|[\s:|-]+\|$", ln) and "item" not in ln.lower()[:12]:
+                    rows.append(" · ".join(c.strip() for c in ln.strip("|").split("|") if c.strip()))
+            return [(path, r) for r in rows]
+    return []
+
+
+def m_update(task: Path, root: Path, loops: list) -> tuple[str, str]:
+    lp = _update_loop(loops)
+    n = lp["n"] if lp else _current(loops)
+    v, run = f"m{n:02d}", (lp or {}).get("collect")
+    upd = (lp or {}).get("update")
+    process = _section("🔁 Integrate feedback and check alignment", _flow(
+        ("Your answers", f"{run.name}'s answer_collection.md" if run else "the answered form", "+ earlier decisions and rules"),
+        ("🤖 Alignment Agent", "reconcile; apply approved changes", upd.name if upd else f"rNN_update_{v}"),
+        (f"Guideline {v}", "rules as a mind map", f"+ reference labels l{n:02d}")))
+    process += _prompt(task, root, "update", "Update", "apply my answers", (
+        f"Use /haipipe-labeling-interaction on {task.name}, step Update, Loop {n}: read "
+        f"{run.name if run else 'the form'}'s answer_collection.md; write meaning {v} and labels l{n:02d}, each rule "
+        f"naming its card; recheck affected items; anything unclear becomes a card for Loop {n + 1}, never a guess. "
+        "Then wait for my sign."))
+    made = bool(lp and lp["map"])
+    signed = MV.approval(task, v) if made else None
+    if signed:
+        process += _bar(f"✅ {v} approved by {signed['by']} · {signed['at']}: expression may run on it", "", "done")
+    elif made:
+        process += _bar(f"✍️ Your sign: approve {v} and l{n:02d}; expression starts only after it",
+                        f'<input class=ls-by name=by maxlength=80 placeholder="your name" aria-label="Your name">'
+                        f'<button type=button class=fd-btn data-approve="{esc(v)}" data-task="{esc(frame.rel(task, root))}">'
+                        f'Approve {esc(v)}</button><span class=ls-msg role=status></span>')
+    else:
+        process += _bar(f"✍️ Your sign: approve {v} once Update has written it", f'<button type=button class=fd-btn disabled>'
+                        f'Approve {esc(v)}</button>', "wait")
+    if not lp:
+        return process, _section("🧠 Guideline rules, as a mind map", _empty(
+            "Nothing to show yet: Update runs after you answer a report."))
+    results = _section("🧠 Guideline rules, as a mind map", _maps(task, root, on=v) or _empty(
+        f"{v} is not written yet: the Update prompt above writes it."))
+    flags = MV.applied(run) if run else {}
+    titles = dict(MV.questions(run)) if run else {}
+    rows = [(f"{q} · {titles.get(q, '')}".strip(" ·"), what, st, "", "", False) for q, (st, what) in flags.items()]
+    results += _section("📜 What your answers changed", _todo(rows) if rows else _empty(
+        "No answer applied yet: Update flags each answer it applies."))
+    changes = _label_changes(task, lp)
+    label_rows = [(words, "", "needs review" if not signed else "approved", "", "", False) for _, words in changes[:SHOW]]
+    more = f"{len(changes) - SHOW} more {_open(changes[0][0], root)}" if len(changes) > SHOW else ""
+    results += _section(f"✅ Reference labels l{n:02d}", (_todo(label_rows) + (f'<p class=ls-foot>{more}</p>' if more else ""))
+                        if label_rows else _empty("No reference label changed yet."))
+    deferred = [q for q, (st, _) in flags.items() if st == "in progress"]
+    results += _section("🧭 Where it goes", _tiles([
+        ("approved" if signed else "ready", (f"{v} + l{n:02d} → 🛠 expression" if signed else
+                                             f"after your sign: {v} + l{n:02d} → 🛠 expression")),
+        ("open", f"{len(deferred)} card{'s' if len(deferred) != 1 else ''} → Loop {n + 1}'s report" if deferred
+         else f"nothing open; Loop {n + 1} starts from new cases")]))
+    hist = []
+    rec = MV.frame_record(task)
+    if rec:
+        hist.append(("frame", f"f01 ← {rec['run'].name}"))
+    for x in loops:
+        if x["map"]:
+            src = x.get("collect")
+            hist.append((f"Loop {x['n']}", f"{x['version']} ← {src.name if src is not None else 'its answers'}"))
+    if hist:
+        results += _section("🧾 Meaning history", _chain(hist))
+    return process, results
+
+
+# ── 🛠 expression ────────────────────────────────────────────────────────────────────────────────────────────────
+XROLE = (("_rewrite_", "rewrite"), ("_run_", "run"), ("_evaluate_", "evaluate"), ("_release", "release"))
+
+
+def _xruns(task: Path) -> dict:
+    """{role: [Runs]} for an expression Task: rewrite, run, evaluate, release."""
+    out = {r: [] for _, r in XROLE}
+    for run in MV.runs(task):
+        role = next((r for key, r in XROLE if key in run.name), "")
+        if role:
+            out[role].append(run)
+    return out
+
+
+def _round(run: Path | None) -> str:
+    m = re.search(r"_e(\d\d)$", run.name) if run is not None else None
+    return f"e{m.group(1)}" if m else ""
+
+
+def _json(path: Path):
+    try:
+        return json.loads(path.read_text(encoding="utf-8")) if path.is_file() else None
+    except ValueError:
+        return None
+
+
+def _meaning_strip(task: Path, root: Path) -> tuple[str, str]:
+    """(the strip, the approved version or "") from the Job's meaning Task: expression runs only on a signed meaning."""
+    got = MV.approved_meaning(task.parent)
+    if got:
+        mt, v, signed = got
+        return (f'<div class=ls-strip>🔒 approved meaning {esc(v)} · fixed during rewriting · signed by '
+                f'{esc(signed["by"])} {esc(signed["at"])}</div>', v)
+    meaning = next((t for t in sorted(task.parent.iterdir()) if t.is_dir() and kind(t) == "meaning"), None)
+    link = (f'<a class=fd-btn href="{esc(_view_url(meaning, root, "update"))}">Open meaning\'s Update</a>' if meaning else "")
+    return _bar("⏳ No approved meaning yet: expression waits for your sign in 🧭 meaning's Update", link, "wait"), ""
+
+
+def x_view(task: Path, root: Path, key: str) -> tuple[str, str, str]:
+    """(lead, process, results) for one expression step."""
+    xr = _xruns(task)
+    strip, v = _meaning_strip(task, root)
+    rounds = sorted({_round(r) for r in xr["rewrite"] if _round(r)})
+    now = rounds[-1] if rounds else "e01"
+    turns = _turns(f"🛠 rounds under {v or 'the approved meaning'}",
+                   [(e, "now" if e == now else "done", e == now) for e in rounds] or [("e01", "next", True)])
+    last = {r: (runs[-1] if runs else None) for r, runs in xr.items()}
+    if key == "rewrite":
+        process = _section("✏️ Rewrite expression", _flow(
+            (f"Approved rules {v or 'mNN'}", "Train error analysis only", ""),
+            ("🤖 Execution & Audit Agent", "wording · order · examples", last["rewrite"].name if last["rewrite"] else f"rNN_rewrite_{v or 'mNN'}_{now}"),
+            (f"Expression {now}", "", "")))
+        process += _prompt(task, root, "rewrite", "Rewrite", f"the whole round {now}", (
+            f"Use /haipipe-labeling-expression on {task.name}, round {now}: rewrite the wording under meaning "
+            f"{v or '<the approved mNN>'} from Train errors only, run the executors, evaluate, and stop at round report "
+            f"{now}. Change no rule and ask me nothing: rule or label questions go to the round report."))
+        changes = last["rewrite"] / "result" / "changes.md" if last["rewrite"] else None
+        body = (F.markdown(changes.read_text(encoding="utf-8"), task, root) if changes and changes.is_file() else "")
+        return strip + turns, process, _section("✏️ What the wording changed", body or _empty(
+            "Nothing to show yet: this view will show what the round's rewrite changed."))
+    if key == "run":
+        process = _section("▶️ Run label executors", _flow(
+            (f"{v or 'mNN'} + expression {now}", "Train + Test items", ""),
+            ("🤖 Label executors", "the models this Job names", last["run"].name if last["run"] else "rNN_run_…"),
+            ("Labels on Train and Test", "", "")))
+        process += _prompt(task, root, "run", "Run", "rerun the executors", (
+            f"To rerun this step alone (Rewrite's prompt runs the whole round): use /haipipe-labeling-expression on "
+            f"{task.name}, step Run, round {now}: label Train and Test with {v or 'the approved meaning'} + {now} on the "
+            "Job's executors; keep the reference labels hidden."))
+        data = _json(last["run"] / "result" / "runs.json") if last["run"] else None
+        rows = [(esc(r.get("model", "")), esc(r.get("train", "")), esc(r.get("test", "")), _pill(str(r.get("state", ""))))
+                for r in (data or []) if isinstance(r, dict)]
+        return strip + turns, process, _section("▶️ Executor runs", _table(("model", "Train", "Test", "state"), rows)
+                                                if rows else _empty("Nothing to show yet: this view will show each model's run."))
+    if key == "evaluate":
+        process = _section("📊 Evaluate and analyze errors", _flow(
+            ("Labels + reference labels", "hidden from the executors", ""),
+            ("🤖 Execution & Audit Agent", "score by set; sort errors", last["evaluate"].name if last["evaluate"] else "rNN_evaluate_…"),
+            (f"Round report {now}", "errors by kind", "and where the round goes")))
+        process += _prompt(task, root, "evaluate", "Evaluate", f"rerun round report {now}", (
+            f"To rerun this step alone (Rewrite's prompt runs the whole round): use /haipipe-labeling-expression on "
+            f"{task.name}, step Evaluate, round {now}: score by set and model, sort errors into the four kinds, and "
+            f"write round report {now} with its route."))
+        out = last["evaluate"] / "result" if last["evaluate"] else None
+        report = out / "round_report.md" if out else None
+        results = ""
+        if report and report.is_file():
+            head = next((ln.strip("# ").strip() for ln in report.read_text(encoding="utf-8").splitlines()
+                         if ln.strip() and not ln.startswith("#")), report.name)
+            meaning = next((t for t in sorted(task.parent.iterdir()) if t.is_dir() and kind(t) == "meaning"), None)
+            href = _view_url(meaning, root, "report") if meaning else ""
+            results += _section(f"📋 Round report {now}", _todo([(head, report.name, "sent to meaning", "Open in meaning", href, False)])
+                                + f'<p class=ls-foot>{_open(report, root, "Open the round report")}</p>')
+        errors = _json(out / "errors.json") if out else None
+        if isinstance(errors, dict) and errors:
+            results += _section("🔍 Errors, by kind", _tiles([(k, str(val if not isinstance(val, dict) else val.get("count", "")))
+                                                              for k, val in errors.items()]))
+        perf = _json(out / "performance.json") if out else None
+        rows = [(esc(r.get("model", "")), esc(r.get("train", "")), esc(r.get("test", "")), esc(r.get("coverage", "")))
+                for r in (perf or []) if isinstance(r, dict)]
+        if rows:
+            results += _section("📊 Labeling performance", _table(("model", "Train quality", "Test quality", "coverage"), rows))
+        return strip + turns, process, results or _section(f"📋 Round report {now}", _empty(
+            "Nothing to show yet: this view will show the round report, its errors by kind and each model's quality."))
+    # release
+    process = _section("🔒 Freeze a version and check release readiness", _flow(
+        ("Frozen package", f"rules {v or 'mNN'} · expression {now}", "+ labels + model settings"),
+        ("🤖 Agent + evaluation tools", "review staging evidence", "and acceptance criteria"),
+        ("Pass or fail", "pass: release a qualified version", "fail: back to expression or meaning")))
+    process += _prompt(task, root, "release", "Release", "check readiness", (
+        f"Use /haipipe-labeling-expression on {task.name}, step Release: freeze {v or 'the approved meaning'} · {now} · "
+        "its reference labels · the model settings, check the floors, non-regression and cost, and report pass or fail."))
+    crit = _json(last["release"] / "result" / "criteria.json") if last["release"] else None
+    rows = [(str(c.get("name", "")), "", str(c.get("state", "not yet")), "", "", False) for c in (crit or []) if isinstance(c, dict)]
+    rows = rows or [("Quality + coverage floors", "", "not yet", "", "", False), ("Strong-model non-regression", "", "not yet", "", "", False),
+                    ("Cost per accepted item", "", "not yet", "", "", False)]
+    met = all(r[2] in ("met", "passed", "pass", "done") for r in rows)
+    process += _bar("✍️ Your sign: the release, once every criterion below is met",
+                    '<button type=button class=fd-btn disabled>Sign release</button>', "you" if met else "wait")
+    results = _section("✅ Release criteria", _todo(rows))
+    results += _section("🧾 Fresh data for claims", '<p class=ls-line>claims about unseen items need data beyond the '
+                                                    'audited staging set</p>')
+    return strip + turns, process, results
+
+
+# ── the page ─────────────────────────────────────────────────────────────────────────────────────────────────────
+def default_view(task: Path) -> str:
+    """Where Work opens: the step that needs you or comes next."""
+    if kind(task) == "expression":
+        xr = _xruns(task)
+        return next((k for k in ("rewrite", "run", "evaluate", "release") if not xr[k]), "evaluate")
+    loops = MV.loops(task)
+    if any(lp.get("collect") is not None and MV.state(lp["collect"]) == "waiting" for lp in loops):
+        return "preferences"
+    rec = MV.frame_record(task)
+    if not rec or not rec["decisions"]:
+        return "frame"
+    if loops and (not loops[-1]["map"] and loops[-1].get("collect") is not None
+                  and MV.state(loops[-1]["collect"]) == "done"):
+        return "update"
+    if loops and loops[-1]["map"] and not loops[-1]["approved"]:
+        return "update"
+    return "report"
+
+
+def view_html(task: Path, root: Path, section: str, key: str) -> str:
+    """One step: its strip, ⚙️ Process, 📊 Results, the next step (Report: the Results only)."""
+    steps = {k: (name, cap) for k, name, cap in STEPS[kind(task)]}
+    name, caption = steps[key]
+    if kind(task) == "meaning":
+        loops = MV.loops(task)
+        at = {"preferences": _form_loop(loops), "update": _update_loop(loops)}.get(key)
+        lead = "" if key == "frame" else _meaning_turns(loops, at["n"] if at else _current(loops), "report next")
+        process, results = {"frame": lambda: m_frame(task, root), "report": lambda: m_report(task, root, loops),
+                            "preferences": lambda: m_preferences(task, root, loops),
+                            "update": lambda: m_update(task, root, loops)}[key]()
+    else:
+        lead, process, results = x_view(task, root, key)
+    body = lead + ("" if section == "report" else _band(PROCESS, _numbered(process))) + _band(RESULTS, _numbered(results))
+    if section != "report" and key in NEXT:
+        nxt, words = NEXT[key]
+        body += f'<p class=ls-next><a href="{esc(_view_url(task, root, nxt))}">next: {esc(words)} →</a></p>'
+    return (f'<p class="view-caption">{esc(caption[:1].upper() + caption[1:])}.</p>'
+            f'<div class="ls-view fd-body">{body}</div>')
+
+
+def page(theme, root, folder, section: str = "", group: str = ""):
+    """The Task's focus page: the base page's shell and rails (labeling_focus.task_shell); Report and Work hold the
+    steps."""
+    from live import labeling_focus as LF
+    root, folder = Path(root).resolve(), Path(folder).resolve()
+    views = {k: name for k, name, _ in STEPS[kind(folder)]}
+    if section in views:                                       # a step named as a section: that step, in Work
+        section, group = "work", section
+    keys = [k for k, _, _ in LF.base_rail(folder, root)]
+    if section in keys and section not in OWN:
+        return F.render(theme, root, folder, section, group)
+    section = section if section in OWN else "work"
+    view = group if group in views else default_view(folder)
+    css = "<style>" + (ASSETS / "steps.css").read_text(encoding="utf-8") + "</style>"
+    js = "<script>" + (ASSETS / "steps.js").read_text(encoding="utf-8") + "</script>"
+    return LF.task_shell(root, folder, section, views, view, view_html(folder, root, section, view),
+                         PB_CSS + GROUP_CSS + css, PB_JS + js)

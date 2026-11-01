@@ -407,15 +407,30 @@ def show(L: dict) -> str:
     return "\n".join(out)
 
 
+def venue_limit(job: Path) -> int | None:
+    """The venue's main-text display limit, from the Board's venues/<venue>/call.md Displays table (haipipe-paper-plan
+    display_plan.py), when --max-displays is not given."""
+    import importlib.util
+    f = Path(__file__).resolve().parents[2] / "haipipe-paper-plan" / "scripts" / "display_plan.py"
+    board = next((p for p in Path(job).resolve().parents if (p / "board.md").is_file()), None)
+    if board is None or not f.is_file():
+        return None
+    spec = importlib.util.spec_from_file_location("display_plan", f)
+    dp = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(dp)
+    n = dp.number(dp.rules(board).get("main limit", ("", ""))[0])
+    return int(n) if n is not None else None
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("job", type=Path, help="the version Job folder, jNN_writing_v<MMDD>_<desk>/")
-    ap.add_argument("--max-displays", type=int, help="the venue's limit on main-text displays")
+    ap.add_argument("--max-displays", type=int, help="the venue's limit on main-text displays (default: the venue's call.md Displays table, main limit)")
     ap.add_argument("--json", action="store_true")
     a = ap.parse_args(argv)
     if not a.job.is_dir() or not tasks(a.job):
         raise SystemExit(f"{a.job}: no tNN_ Tasks; give a version Job folder, jNN_writing_v<MMDD>_<desk>/")
-    L = ledger(a.job, a.max_displays)
+    L = ledger(a.job, a.max_displays if a.max_displays is not None else venue_limit(a.job))
     print(json.dumps({k: v for k, v in L.items()}, indent=1, default=str) if a.json else show(L))
     return 1 if L["bad"] else 0
 

@@ -18,6 +18,18 @@ import re
 import sys
 from pathlib import Path
 
+
+def display_plan():
+    """haipipe-paper-plan's display_plan module, or None when it is not beside this skill."""
+    import importlib.util
+    f = Path(__file__).resolve().parents[2] / "haipipe-paper-plan" / "scripts" / "display_plan.py"
+    if not f.is_file():
+        return None
+    spec = importlib.util.spec_from_file_location("display_plan", f)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
 SKIP = ("_archive", "delivery", "history", "passes")
 
 
@@ -87,6 +99,13 @@ def check(board: Path) -> list:
                          ("P8", "The related work", r"s\d+-related-work")):
         t = topic(board, pat)
         add("plan", i, what, "✅" if t else "⬜", t.name if t else "no topic")
+    dp = display_plan()                       # P9 (JL 261101): each display planned, and within the venue's display rules
+    t = topic(board, r"s\d+-paper-displays")
+    lines = dp.check(board) if dp and t else []
+    bad = [x for m, x in lines if m == "❗"]
+    add("plan", "P9", "The display plan", ("⏳" if bad else "✅") if t else "⬜",
+        (f"{t.name}: {len(dp.rows(board))} displays, " + (f"{len(bad)} against the venue: {bad[0]}" if bad
+         else "within the venue's display rules")) if t else "no s06-paper-displays topic")
 
     # ② explore
     refs = {"work": set(), "discovery": set()}

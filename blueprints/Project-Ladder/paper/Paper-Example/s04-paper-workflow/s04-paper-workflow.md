@@ -15,15 +15,12 @@ s04 · Paper flow
 | section | job | answers | displays | evidence | words |
 |---|---|---|---|---|---|
 | Summary | <what it must do> | RQ1, RQ2 | — | E1 | 250 |
-| Methods | <what it must do> | RQ1 | Figure 1 | E1 | 900 |
-| Results | <what it must do> | RQ1, RQ2 | Table 1 | E2, E3 | 1200 |
+| Methods | <what it must do> | RQ1 | Display B | E1 | 900 |
+| Results | <what it must do> | RQ1, RQ2 | Display A, Display C | E2, E3 | 1200 |
 
 ### Displays
 
-| display | title | kind | answers | made by | state |
-|---|---|---|---|---|---|
-| Figure 1 | <its title> | figure | RQ1 | <the Run that draws it> | ✅ done |
-| Table 1 | <its title> | table | RQ2 | <the Run that draws it> | ⬜ not started |
+Planned in `s06-paper-displays` (each display, its Run, the venue's rules).
 
 ### Timeline
 

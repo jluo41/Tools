@@ -149,6 +149,16 @@ def _plan_steps(board: Path, root: Path) -> list:
                       f"Use /haipipe-run. Read the Task Roadmap (§7, the T table) of {rel(smd)}. For each row not done, check that "
                       "its Run ticket exists and is ready, and build what is missing. Never start a Run: I press Run. Tell me what "
                       "to press, in order."))
+        plan = next(iter(sorted(board.glob("s??-paper-displays"))), None)
+        pface = plan / f"{plan.name}.md" if plan is not None else None
+        steps.append(("🖼️ Plan the displays", "each display, its Run, and the venue's display rules", "haipipe-paper-plan",
+                      _page_url(pface, root) if pface and pface.is_file() else _page_url(smd, root),
+                      (f"Use /haipipe-paper-plan. Open {rel(pface)} and run display_plan.py check on the Board. "
+                       if pface and pface.is_file() else
+                       f"Use /haipipe-paper-plan. Make s06-paper-displays for this Board from the questions of {rel(smd)}. ")
+                      + "For each research question, check which display carries its answer, what it shows, where it goes "
+                        "(main or supplement) and the Run that makes it, against the venue's display rules (venues/<venue>/"
+                        f"call.md, its Displays table). {ask}"))
         steps.append(("🔎 Plan the reading", "the Discovery Roadmap: what each question must read", "haipipe-discovery",
                       _page_url(smd, root),
                       f"Use /haipipe-discovery. Read the Discovery Roadmap (§6, the D table) of {rel(smd)}. For each row with no "
