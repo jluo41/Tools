@@ -148,7 +148,7 @@ def _evidence(folder: Path) -> dict:
     for card, label in cards:
         src, kind = card.get("source", ""), card.get("kind", "")
         try:
-            title = card.get("title") or (CARDS.title_of(CARDS.resolve(project, kind, src)) if project and src else src)
+            title = card.get("title") or (CARDS.title_of(CARDS.resolve(project, kind, src, folder)) if project and src else src)
         except Exception:
             title = src
         items = []
@@ -156,7 +156,7 @@ def _evidence(folder: Path) -> dict:
             state, value = ("need", "") if it.get("need") else ("have", "")
             if it.get("run") and project:
                 try:
-                    res = CARDS.resolve(project, kind, f"{src}.{it['run']}")
+                    res = CARDS.resolve(project, kind, f"{src}.{it['run']}", folder)
                     it = {**it, "result": res}
                     if kind == "cite":
                         value = " · ".join(CARDS.paper(res))

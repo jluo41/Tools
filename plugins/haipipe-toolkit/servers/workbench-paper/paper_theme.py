@@ -1175,15 +1175,15 @@ def _tree_map(root_title, root_text, nodes):
             badge = (f' <span style="display:inline-block;margin:0 4px;padding:0 8px;border-radius:10px;background:{ink};'
                      f'color:#fff;font:700 12px/1.6 system-ui,sans-serif">{n} / {m} {folds.group(3)}</span>')
             note = (note[:folds.start()] + note[folds.end():]).strip(" ;,:")
-        return _leaf(code, "", (f"{mark} " if mark else "") + f"{P.inline(_clip(title, 48))}" + badge + (f' <span class=mut style="font-size:12px">{P.inline(_clip(note, 70))}</span>' if note else ""),
-                     note=text)
+        return _leaf(code, "", (f"{mark} " if mark else "") + _tree_title(title, 48) + badge + (f' <span class=mut style="font-size:12px">{P.inline(_clip(note, 70))}</span>' if note else ""),
+                     note=_TREE_LINK.sub(r"\1", text.split(" · ")[0]) + text[len(text.split(" · ")[0]):])
 
     def row(text, kids):
         code, title, note = split(text)
         boxes = "".join(row(t, k) for t, k in kids if k)
         leaves = "".join(leaf(t) for t, k in kids if not k)
         return (f'<div class=tr-row><div class="pm-node tr-box"{(" title=" + chr(34) + esc(note) + chr(34)) if note else ""}>'
-                + (f'<span class=pm-id>{esc(code)}</span>' if code else "") + f'<b>{P.inline(title)}</b>'
+                + (f'<span class=pm-id>{esc(code)}</span>' if code else "") + f'<b>{_tree_title(title, 200)}</b>'
                 + (f'<span class=tr-note>{P.inline(_clip(note, 60))}</span>' if note else "")
                 + f'</div><div class=tr-kids>{boxes}' + (f'<ul class=pm-leaves>{leaves}</ul>' if leaves else "") + '</div></div>')
 
@@ -1216,11 +1216,26 @@ TREE_JS = """<script>(function(){if(window.__trMap)return;window.__trMap=1;
  window.trDraw=draw;})();</script>"""
 
 
+TREE_ROUTE = "/_board/workbench"   # live.frame.ROUTE: a folder's workbench page
+_TREE_LINK = re.compile(r"^\[([^\]]+)\]\(([^)\s]+)\)$")
+
+
+def _tree_title(title, n):
+    """A tree node's title, clipped to n characters; a title written `[words](url)` is a link on its clipped words."""
+    m = _TREE_LINK.match(title.strip())
+    if not m:
+        return P.inline(_clip(title, n))
+    return f'<a href="{esc(m.group(2))}" target="_top">{P.inline(_clip(m.group(1), n))}</a>'
+
+
 def _expand_csv(nodes, root):
     """A tree line `@csv <path from the SPACE root> · <column>=<value> · <label column> · <value column>` becomes one leaf
     per matching row, `label · value`, read now, so a count in the tree is never typed (JL 261023: "我们 fold00 到 fold09
-    到底跑了几个了，你也要说明一下")."""
+    到底跑了几个了，你也要说明一下"). An optional fifth part names a column holding a folder from the SPACE root; a row
+    that has one gets its label as a link, `[label](<that folder's workbench page>)`, which the tree opens (JL 261101,
+    the PaperFlow tree: "update the link for it")."""
     import csv as _csv
+    from urllib.parse import urlencode
     out = []
     for text, kids in nodes:
         if not text.startswith("@csv "):
@@ -1234,7 +1249,10 @@ def _expand_csv(nodes, root):
         key, _, want = parts[1].partition("=")
         for r in _csv.DictReader(path.open(encoding="utf-8")):
             if r.get(key.strip()) == want.strip():
-                out.append((f"{r.get(parts[2], '')} · {r.get(parts[3], '')}", []))
+                label, to = r.get(parts[2], ""), (r.get(parts[4], "") if len(parts) > 4 else "").strip()
+                if to:
+                    label = f"[{label}]({TREE_ROUTE}?{urlencode({'path': to})})"
+                out.append((f"{label} · {r.get(parts[3], '')}", []))
     return out
 
 

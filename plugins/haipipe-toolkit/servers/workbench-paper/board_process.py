@@ -96,14 +96,14 @@ def _steps(board: Path, key: str, topic, text: str, root: Path, md):
                         else "done" if re.search(r"checked|drawn|filled|done", st)
                         else "waiting" if st.startswith("wait") else _cap(status or "not started")[:28])
                 name = f"{kind} · {head}"
-                if kind == "Displays":           # its plan name, as RESULTS shows it: Display A → Figure 1 · 📈 Figure · <name>
+                if kind == "Displays":           # its plan name, as RESULTS shows it: Figure 1 (Display A) · 📈 Figure · <name>
                     from live.board_results import _display_line, display_plan
                     dp = display_plan()
                     plan = {r.get("display", ""): r for r in (dp.rows(board) if dp else [])}
                     face = t / f"{t.name}.md"
                     ks = dp.keys(face.read_text(encoding="utf-8", errors="ignore")) if dp and face.is_file() else []
                     r = next((plan[k] for k in ks if k in plan), None)
-                    lab = (r["as"] if r["as"] == r.get("display") else f"{r.get('display', '')} → {r['as']}") if r else head
+                    lab = dp.title(r) if r else head
                     name = f"{lab} · {_display_line(t, words)}"
                 rows.append((name, "" if pill in ("done", "waiting") else "", pill,
                              "Open", _task_url(t, root), False))

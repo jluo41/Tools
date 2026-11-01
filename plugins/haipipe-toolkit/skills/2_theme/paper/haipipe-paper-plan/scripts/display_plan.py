@@ -80,6 +80,12 @@ def rules(board: Path) -> dict:
             for r in table(call.read_text(encoding="utf-8").splitlines(), "rule") if r.get("value")}
 
 
+def title(r: dict) -> str:
+    """A planned display's title: its paper label, then its pool letter, "Table 1 (Display A)" (agreed 261101 with
+    JL: "you can do it like Table 1 (Display XX)"); a row that is already its printed label (Table B1) is just that."""
+    return r["as"] if r["as"] == r.get("display") else f"{r['as']} ({r.get('display', '')})"
+
+
 def labels(R: dict, where: str) -> tuple[str, str]:
     """('Figure', 'Table') for the main paper; the venue's supplement labels, else 'Supplementary Figure' …"""
     default = ("Figure", "Table") if where == "main" else ("Supplementary Figure", "Supplementary Table")
@@ -202,7 +208,7 @@ def check(board: Path) -> list[tuple[str, str]]:
     formats = [f.lower() for f in re.findall(r"[A-Za-z]{2,5}", R.get("format", ("", ""))[0])]
     text = plan_face(board).read_text(encoding="utf-8", errors="ignore")
     for r in P:
-        name = f"{r.get('display', '?')} ({r['as']})"
+        name = title(r)
         made = r.get("made by", "")
         if not re.search(r"\w", re.sub(r"[—–-]", "", made)):
             out.append(("❗", f"{name}: no Run named to make it (made by)"))
@@ -290,7 +296,7 @@ def main(argv: list[str]) -> int:
         return 0
     lines = check(board)
     for r in rows(board):
-        print(f"  {r.get('display', ''):10} → {r['as']:24} {TYPES[r['type']]} · {r.get('name', '')}")
+        print(f"  {title(r):28} {TYPES[r['type']]} · {r.get('name', '')}")
     print("\n".join(f"{m} {t}" for m, t in lines))
     return 1 if any(m == "❗" for m, _ in lines) else 0
 

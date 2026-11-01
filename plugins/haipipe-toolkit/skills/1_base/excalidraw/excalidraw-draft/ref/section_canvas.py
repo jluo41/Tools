@@ -288,7 +288,7 @@ def build(face, out=None, builder=None):
         title = c.get('title')
         if not title and project:
             try:
-                title = ev_cards.title_of(ev_cards.resolve(project, c['kind'], c['source']))
+                title = ev_cards.title_of(ev_cards.resolve(project, c['kind'], c['source'], base / spec['evidence']))
             except ValueError:
                 title = None
         lines = []
@@ -298,7 +298,7 @@ def build(face, out=None, builder=None):
             state = 'needed' if it.get('need') else f"{c.get('source', '')}.{it.get('run', '')}".strip('.')
             if c['kind'] == 'value' and it.get('run') and it.get('key') and project:
                 try:                         # the number itself, read from the Run's output (as the Evidence tab shows it)
-                    value = ev_cards.work_value(ev_cards.resolve(project, 'value', f"{c['source']}.{it['run']}"),
+                    value = ev_cards.work_value(ev_cards.resolve(project, 'value', f"{c['source']}.{it['run']}", base / spec['evidence']),
                                                 it['file'], it['key'])
                     state += f" = {value:.4g}" if isinstance(value, float) else f" = {value}"
                 except (ValueError, KeyError, IndexError, FileNotFoundError):

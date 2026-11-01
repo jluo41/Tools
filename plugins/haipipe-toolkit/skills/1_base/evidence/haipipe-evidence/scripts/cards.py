@@ -51,23 +51,40 @@ def project_root(path):
     raise ValueError(f'{path}: no project.yaml above it.')
 
 
-def resolve(project, kind, address):
+def board_of(near):
+    """The paper Board (the folder holding board.md) at or above `near`, else None."""
+    for p in [Path(near).resolve(), *Path(near).resolve().parents] if near else []:
+        if (p / 'board.md').is_file():
+            return p
+    return None
+
+
+def resolve(project, kind, address, near=None):
     """bNN.jNN[.tNN[.rNN]] in the kind's world → its folder; a full Run address → that Run's result/ folder.
 
+    jNN.tNN[.rNN] is a Task of the paper Board's own evidence Job (j01_evidence_display, j02_evidence_value; 261031),
+    found in the Board that holds `near` (the cards file or its Task), since every paper Board has its own j01.
     A Run is found as tNN_*/runs/rNN_*/result (Discovery, standalone Task) or jNN_*/results/tNN_*/rNN_* (a Task
     whose Results sit in its Job)."""
     parts = address.split('.')
     if not 2 <= len(parts) <= 4 or not all(re.fullmatch(r'[bjtr]\d+', p) for p in parts):
-        raise ValueError(f'{address}: an address is bNN.jNN, bNN.jNN.tNN or bNN.jNN.tNN.rNN.')
-    world = Path(project) / THEME[kind]
-    pattern = '/'.join(f'{p}_*' for p in parts[:3])
+        raise ValueError(f'{address}: an address is bNN.jNN, bNN.jNN.tNN, bNN.jNN.tNN.rNN or a paper Board\'s jNN.tNN[.rNN].')
+    take = 3
+    if parts[0].startswith('j'):
+        world = board_of(near)
+        if world is None:
+            raise ValueError(f'{address}: a jNN.tNN address names a paper Board\'s evidence Task; no board.md above {near}.')
+        take = 2
+    else:
+        world = Path(project) / THEME[kind]
+    pattern = '/'.join(f'{p}_*' for p in parts[:take])
     found = list(world.glob(pattern))
     if len(found) != 1:
         raise ValueError(f'{address}: {len(found)} folders match in {world.name}/, need one.')
-    if len(parts) < 4:
+    if len(parts) <= take:
         return found[0]
     task = found[0]
-    runs = list(task.glob(f'runs/{parts[3]}_*/result')) + list(task.parent.glob(f'results/{task.name}/{parts[3]}_*'))
+    runs = list(task.glob(f'runs/{parts[take]}_*/result')) + list(task.parent.glob(f'results/{task.name}/{parts[take]}_*'))
     if len(runs) != 1:
         raise ValueError(f'{address}: {len(runs)} Run results found, need one.')
     return runs[0]
@@ -185,7 +202,7 @@ def order(cards):
     return out
 
 
-def check(cards, project, sentences=None):
+def check(cards, project, sentences=None, near=None):
     """Every problem with a card list, one line each: unknown kind, an address or fact that does not resolve, an item
     with neither `run` nor `need`, an anchor whose words are not in its sentences."""
     problems = []
@@ -196,7 +213,7 @@ def check(cards, project, sentences=None):
         src = card.get('source')
         try:
             if src:
-                resolve(project, card['kind'], src)
+                resolve(project, card['kind'], src, near)
         except ValueError as e:
             problems.append(f'{label}: {e}')
             continue
@@ -204,7 +221,7 @@ def check(cards, project, sentences=None):
             where = f"{label} · S{','.join(map(str, it['for']))}"
             try:
                 if it.get('run'):
-                    res = resolve(project, card['kind'], f"{src}.{it['run']}")
+                    res = resolve(project, card['kind'], f"{src}.{it['run']}", near)
                     if card['kind'] == 'cite':
                         paper(res)
                         if it.get('fact'):
@@ -339,7 +356,7 @@ def main():
             kept = write_proposals(out, items)
             print(f'wrote {out.name}: {len(items)} proposals, {kept} already ticked')
         return
-    problems = check(cards, project_root(src), sentences)
+    problems = check(cards, project_root(src), sentences, near=src)
     for card, label in order(cards):
         print(f"{label:8} {card.get('source') or '(needs)':16} {len(card['items'])} items")
     print('\n'.join(problems) if problems else 'every address, fact and value resolves')

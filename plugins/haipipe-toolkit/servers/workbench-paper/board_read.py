@@ -33,7 +33,7 @@ SKIP_PARTS = {"files", "log", "opening", "writing style", "the drawing's words",
 
 
 def _field(text: str, name: str) -> str:
-    m = re.search(rf"(?mi)^\**{name}:?\**:?\s*(.+?)\s*$", text)
+    m = re.search(rf"(?mi)^\**{name}(?![\w-]):?\**:?\s*(.+?)\s*$", text)     # `venue` never matches `venue-page`
     return m.group(1).strip().strip("`") if m else ""
 
 

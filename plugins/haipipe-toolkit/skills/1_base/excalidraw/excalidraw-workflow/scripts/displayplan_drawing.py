@@ -1,7 +1,7 @@
 """A paper's display plan as one drawing (s06-paper-displays, haipipe-paper-plan; JL 261101: "we should also have the
 plan for the displays"; "the display like that should also follow the venue").
 
-    ① The displays, in the paper's order       each a step: Display A → Figure 1, its type and name, what it
+    ① The displays, in the paper's order       each a step: Figure 1 (Display A), its type and name, what it
                                                shows, the question and Section, main or supplement, the Run;
                                                its layout sketch beside it
     ② The venue's display rules                 from venues/<venue>/call.md's Displays table
@@ -54,7 +54,7 @@ def displays_frame(d: Drawing, P: list, bad: set, text: str = "") -> dict:
     for i, r in enumerate(P):
         st = state_mark(r.get("state", ""))
         red = r.get("display", "") in bad
-        top = f"{st} {r.get('display', '')} → {r['as']} · {dp.TYPES[r['type']]} · {plain(r.get('name', ''))}"
+        top = f"{st} {dp.title(r)} · {dp.TYPES[r['type']]} · {plain(r.get('name', ''))}"
         mid = plain(r.get("shows", ""))
         low = (f"answers {r.get('answers', '—')} · {r.get('section', '—')} · {r['where']} · "
                f"made by {plain(r.get('made by', '')) or 'no Run yet'}")
@@ -103,7 +103,7 @@ def draw(topic: Path, out: Path | None = None) -> Path:
         raise SystemExit(f"{topic}: no board.md above it")
     P, R, lines = dp.rows(board), dp.rules(board), dp.check(board)
     call = dp.venue_call(board)
-    bad = {r.get("display", "") for r in P for m, t in lines if m == "❗" and t.startswith(r.get("display", "") + " ")}
+    bad = {r.get("display", "") for r in P for m, t in lines if m == "❗" and t.startswith(dp.title(r) + ":")}
     d = Drawing()
     disp = displays_frame(d, P, bad, dp.plan_face(board).read_text(encoding="utf-8"))
     rul = rules_frame(d, R, call.parent.name if call else "")

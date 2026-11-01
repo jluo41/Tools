@@ -144,7 +144,7 @@ type: figure                                figure or table; else read from the 
 ```
 
 The pool's Tasks are seeded from the display plan (haipipe-paper-plan `s06-paper-displays`, `display_plan.py seed`),
-which also gives each its paper number: the tab's first line reads `Display A → Figure 1`.
+which also gives each its paper number: the tab's first line reads `Figure 1 (Display A)`.
 The list shows the label, then "📈 Figure · <name>" or "📊 Table · <name>" (board_results._display_line); a face with
 no `name:` gives the title after "Display X," in its first line, else the folder's words.
 

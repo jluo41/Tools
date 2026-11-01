@@ -595,3 +595,22 @@ class DeliveryGroupsTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TreeCsvLinkTest(unittest.TestCase):
+    """JL 261101, the PaperFlow tree: "update the link for it": an `@csv` line's fifth part names a path column; a row
+    with a path gets its label as a link to that folder's workbench page, a row without stays plain text."""
+
+    def test_csv_path_column_links_the_label(self):
+        import paper_theme as T
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "status.csv").write_text("key,name,of_all,path\nd,Figure 1: Model or data,✅ 1 of 1 runs,ex/Paper-X/j01_evidence_display/t01_figure1\n"
+                                             "d,Extended Data Table 1: Models,⬜ not drawn,\n", encoding="utf-8")
+            tree = T._expand_csv([("@csv status.csv · key=d · name · of_all · path", [])], root)
+            self.assertEqual(tree[0][0], "[Figure 1: Model or data](/_board/workbench?path=ex%2FPaper-X%2Fj01_evidence_display%2Ft01_figure1)"
+                                         " · ✅ 1 of 1 runs")
+            self.assertEqual(tree[1][0], "Extended Data Table 1: Models · ⬜ not drawn")
+            html = T._tree_map("root", "", [("Displays", tree)])
+            self.assertIn('<a href="/_board/workbench?path=ex%2FPaper-X%2Fj01_evidence_display%2Ft01_figure1" target="_top">Figure 1: Model or data</a>', html)
+            self.assertNotIn("[Extended Data Table 1", html)

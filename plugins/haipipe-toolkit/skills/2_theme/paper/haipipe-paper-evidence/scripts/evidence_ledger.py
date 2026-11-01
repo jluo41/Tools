@@ -79,7 +79,7 @@ def read_cards(task: Path, project: Path | None) -> tuple[list[dict], list[str]]
     if not f.is_file():
         return [], []
     cards = ev.load(f)
-    problems = ev.check(cards, project) if project else ["no project.yaml above the version: addresses not checked"]
+    problems = ev.check(cards, project, near=task) if project else ["no project.yaml above the version: addresses not checked"]
     rows = []
     for card in cards:
         for it in card.get("items") or []:
@@ -88,7 +88,7 @@ def read_cards(task: Path, project: Path | None) -> tuple[list[dict], list[str]]
                    "key": it.get("key", ""), "need": it.get("need", ""), "value": it.get("value")}
             if row["kind"] == "VALUE" and row["run"] and row["key"] and project:
                 try:
-                    res = ev.resolve(project, "value", f"{row['source']}.{row['run']}")
+                    res = ev.resolve(project, "value", f"{row['source']}.{row['run']}", task)
                     row["value"] = ev.work_value(res, row["file"], row["key"])
                 except (ValueError, KeyError, IndexError, FileNotFoundError):
                     pass                                         # cards.check has named it

@@ -20,7 +20,13 @@ transition-out: <what the next Section picks up>
 
 ## Content
 
-<the Section's prose, adopted from its Draft>
+#### C1.P1 · Background · S1 to S3
+
+<A policy> changed how <a group> receives <a service> \citep{example2024policy}. Earlier work measured its effect on <an outcome> in one setting \citep{example2021one,example2022two}. It is not known whether the effect differs by <a characteristic>.
+
+#### C1.P2 · This study · S4 to S5
+
+We compare <an outcome> before and after <the policy>, by <group>. Placeholder text of Tools' Paper-Example; no real study.
 
 ## Aims
 

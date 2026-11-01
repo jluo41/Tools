@@ -173,7 +173,7 @@ state |`), and from the telling (board.md `story-current:`) each question's name
 
 `scripts/displayplan_drawing.py` draws the third plan topic, `s06-paper-displays` (haipipe-paper-plan; JL 261101: "we
 should also have the plan for the displays"; "should also follow the venue"): ① the displays in the paper's order as
-steps (`Display A → Figure 1`, its type and name, what it shows, the question, the Section, main or supplement, the
+steps (`Figure 1 (Display A)`, its type and name, what it shows, the question, the Section, main or supplement, the
 Run), ② the venue's display rules from `venues/<venue>/call.md`, ③ haipipe-paper-plan's `display_plan.check` line by
 line. A display no Run makes yet, or one that breaks a rule, is red and dashed. `displayplan_drawing.py make <topic>`
 writes the forwarding builder; when s06 exists, `paperflow_drawing.py` takes s04's displays from it.

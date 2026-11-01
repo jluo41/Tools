@@ -13,6 +13,9 @@
 - Every side-tab list on a paper Board (Writing's Sections, Displays, Evidence) and its open panel are the same
   height, each with its own scroll bar, capped at 72% of the window (JL 261101: "make it to be of the same length
   and there is a scroll bar"); board_views.SIDE_CSS, this theme's own.
+- Writing's Section text reads one sentence per numbered line, each paragraph under its name, a \\citep{…} shown
+  as its keys in grey (JL 261101: "the content here is not readable? could you still make each sentence to be a
+  line"); split by the draft workbench's outline_revise.split_sentences.
 - The Report is each view's own sections only, 1, 2, 3: no PROCESS or RESULTS band (JL 261101: "for the Results and
   Process, they will just be in the Work, why report have that?"; b16 s32-D27). Work keeps both bands, PROCESS first.
 

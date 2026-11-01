@@ -377,7 +377,7 @@ def evidence_view(board: Path, root: Path, md, items=()) -> str:
 def displays_view(board: Path, root: Path, md, items=()) -> str:
     """G · Displays (JL 261101, its own view between Evidence and Writing): 1 · the plan, each display against the
     venue's display rules (haipipe-paper-plan's display plan, when the Board has one); 2 · the displays, one side tab
-    per pool Task (Display A → Figure 1, its type and name), its panel the newest preview.pdf, the display as the paper
+    per pool Task (Figure 1 (Display A), its type and name), its panel the newest preview.pdf, the display as the paper
     prints it, then how it was made; and all of them as one PDF (build_displays_pdf.py)."""
     out, n = "", 0
     dp = display_plan()
@@ -401,8 +401,7 @@ def _evidence_kinds(board: Path, root: Path, kinds: tuple, n: int = 0) -> tuple[
         tasks = sorted((x for x in job.glob("t[0-9]*_*") if x.is_dir()), key=_num)
         tiles, panels = [], []
         dp = display_plan() if kind == "Displays" else None
-        paper_as = {r.get("display", ""): (r["as"] if r["as"] == r.get("display") else f"{r.get('display', '')} → {r['as']}")
-                    for r in (dp.rows(board) if dp else [])}
+        paper_as = {r.get("display", ""): dp.title(r) for r in (dp.rows(board) if dp else [])}
         plan_of = {r.get("display", ""): r for r in (dp.rows(board) if dp else [])}
         groups = []                              # (group, plan order) per tile, for the Displays' Main / Appendix lists
         for t in tasks:                          # each item to read: its list on the left, the thing itself on the right
@@ -414,7 +413,7 @@ def _evidence_kinds(board: Path, root: Path, kinds: tuple, n: int = 0) -> tuple[
             line = "waiting" if line.startswith("waits") else line
             if kind == "Displays":               # JL 261101: "for each display, we might also want to have the name and type"
                 line = _display_line(t, words)
-                face = t / f"{t.name}.md"         # Display A → Figure 1, from the display plan, by any key the face answers to
+                face = t / f"{t.name}.md"         # Figure 1 (Display A), from the display plan, by any key the face answers to
                 ks = dp.keys(face.read_text(encoding="utf-8", errors="ignore")) if dp and face.is_file() else []
                 head = next((paper_as[k] for k in ks if k in paper_as), head)
                 r = next((plan_of[k] for k in ks if k in plan_of), None)
@@ -445,7 +444,7 @@ def _evidence_kinds(board: Path, root: Path, kinds: tuple, n: int = 0) -> tuple[
 
 def _supplement_word(labels: list) -> str:
     """What the venue calls the displays outside the main text: Supplement (eFigure, Supplementary Table), else Appendix."""
-    return "Supplement" if any(re.search(r"→ (?:e(?:Figure|Table)|Supplementary)", x) for x in labels) else "Appendix"
+    return "Supplement" if any(re.match(r"(?:e(?:Figure|Table)|Supplementary)", x) for x in labels) else "Appendix"
 
 
 def _grouped_tabs(eid: str, items: list) -> str:
@@ -477,7 +476,7 @@ DISPLAY_TYPES = (("figure", "📈 Figure"), ("table", "📊 Table"))
 def _display_plan(board: Path, root: Path, dp, plan: list) -> str:
     """G · Displays' plan, from the display plan (haipipe-paper-plan; JL 261101: "we should also have the plan for the
     displays"; "the display ... should also follow the venue"): the venue check first, then each display as a side tab
-    (Display A → Figure 1, its type and name), its panel what it shows, where it goes, its Run and its sketch."""
+    (Figure 1 (Display A), its type and name), its panel what it shows, where it goes, its Run and its sketch."""
     face = dp.plan_face(board)
     text = face.read_text(encoding="utf-8", errors="ignore")
     checks = dp.check(board)
@@ -488,7 +487,7 @@ def _display_plan(board: Path, root: Path, dp, plan: list) -> str:
             + '<ul class=pb-checks>' + "".join(f'<li>{esc(m)} {esc(t)}</li>' for m, t in checks) + '</ul>'
             + f'<div class=pb-verbs>{_open_btn("Open the display plan", _page_url(face, root), face.name)}'
             + (_open_btn("Open the venue rules", _page_url(call, root), "call.md") if call else "") + '</div>')
-    labs = [f"{r.get('display', '')} → {r['as']}" if r["as"] != r.get("display") else r["as"] for r in plan]
+    labs = [dp.title(r) for r in plan]
     sup = _supplement_word(labs)
     items = [("Main" if r["where"] == "main" else sup, (lab, f"{dp.TYPES[r['type']]} · {_plain(r.get('name', ''))}"), None)
              for r, lab in zip(plan, labs)]
@@ -529,10 +528,26 @@ def _display_line(task: Path, slug: str) -> str:
 
 
 def _section_read(task: Path) -> str:
-    """A Section's text to read: its paragraphs in order, each under its name (the version page's reader)."""
+    """A Section's text to read: its paragraphs in order, each under its name, each sentence on its own numbered line
+    (JL 261101: "the content here is not readable? could you still make each sentence to be a line"), split by the draft
+    workbench's own splitter (outline_revise.split_sentences); a citation command reads as its keys in grey."""
     paras = [(name or pid, t) for pid, name, t in paragraphs(task) if t]
-    return ('<div class=pb-text>' + "".join(f'<h4>{esc(h)}</h4><p>{esc(t)}</p>' for h, t in paras) + '</div>') if paras \
-        else '<p class=mut>No text yet: 2 · Write writes it.</p>'
+    if not paras:
+        return '<p class=mut>No text yet: 2 · Write writes it.</p>'
+    try:
+        from live.outline_revise import split_sentences
+    except ImportError:
+        split_sentences = lambda t: [t]
+    cite = lambda h: re.sub(r"\\cite[pt]?\{([^}]*)\}", lambda m: f'<span class=pb-cite>[{m.group(1).replace(",", ", ")}]</span>', h)
+    body = "".join(f'<h4>{esc(h)}</h4><ol class=pb-sents>'
+                   + "".join(f'<li>{cite(esc(x))}</li>' for x in split_sentences(t)) + '</ol>' for h, t in paras)
+    return WRITING_CSS + f'<div class=pb-text>{body}</div>'
+
+
+# the Section's sentences, one per line with a small number, citations in grey (this theme's own look)
+WRITING_CSS = ("<style>.pb-sents{margin:2px 0 10px;padding-left:2.1em;line-height:1.5}"
+               ".pb-sents li{margin:0 0 3px;padding-left:2px}.pb-sents li::marker{color:var(--muted);font-size:11.5px}"
+               ".pb-cite{color:var(--muted);font-size:.88em}</style>")
 
 
 def _paper_files(vdir: Path, root: Path, eid: str = "pp") -> str:
