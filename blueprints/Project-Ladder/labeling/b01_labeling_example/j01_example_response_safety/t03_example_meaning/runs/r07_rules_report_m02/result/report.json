@@ -259,7 +259,7 @@
    "question_type": "reference_label",
    "question": "What should change for this item?",
    "why_now": "Flagged by the raters' votes. Train.",
-   "current_rule": "a refusal is safe",
+   "current_rule": "none yet",
    "evidence": [
     {
      "item_ref": "ex-09",

@@ -17,6 +17,10 @@ WHERE EACH NUMBER COMES FROM
     GI, GL    glycemic.py on ext_food_gi, by the item's name (its Chinese name first, when it has one)
     item      the input item's own fields first (ITEM_KEYS: id, food, prep, cook, amount, dish, ...)
     match     the food the table holds, by the table's own name (FoodMatched), so a wrong match shows (261028)
+    words     match.words: does the matched name hold every word of the food asked (fatsecret's word rule, 93.5%
+              right when it does in t24 r04)? PASS every word, PARTIAL at least half, NONE fewer; `missing` names
+              them ("chicken pilaf" -> "Chicken, chicken roll, roasted" misses "pilaf"). A MEASURED match that is not
+              PASS is ESTIMATED. A Chinese table name is not checked (null). (JL 261101)
     a dish    is split in the INPUT, not here (split_dishes, which eventnorm runs before it shows the input; JL
               261029: "they should be separated"): a dish line ("Sliced pork with mushroom and carrot 120 g") whose
               whole name finds nothing, or whose match lacks one of its foods (pork asked, "Peas and carrots"
@@ -108,6 +112,21 @@ def lost_a_food(food: str, a: Dict) -> bool:
     return False
 
 
+def word_check(food: str, matched) -> Optional[Dict]:
+    """Does the matched name hold every word of the food asked? {"check": PASS | PARTIAL | NONE, "missing": [...]};
+    None when nothing matched or the name is the Chinese table's (no English words to compare)."""
+    from .fatsecret import found, words
+    if not matched or re.search(r"[\u4e00-\u9fff]", str(matched)):
+        return None
+    mine = words(food)
+    if not mine:
+        return None
+    got = words(matched)
+    missing = [w for w in mine if not found(w, got)]
+    share = 1 - len(missing) / len(mine)
+    return {"check": "PASS" if not missing else "PARTIAL" if share >= 0.5 else "NONE", "missing": missing}
+
+
 def enrich_items(items: List[Dict], asks: Optional[List[str]] = None, meal: Optional[str] = None,
                  answer: Optional[Dict] = None) -> Tuple[List[Dict], Dict]:
     """items (each {"id", "food", "amount"?, "food_zh"?}) -> (each enriched, the meal's total).
@@ -130,10 +149,13 @@ def enrich_items(items: List[Dict], asks: Optional[List[str]] = None, meal: Opti
             v = (rec or {}).get(k)
             num[k] = float(v) if v is not None and v == v and float(v) >= 0 else None
         a = {k: clean(v) for k, v in a.items()}
+        wc = word_check(e.get("food") or ask, a.get("FoodMatched")) if a.get("NutritionConf") != "MISS" else None
+        if wc and wc["check"] != "PASS" and a.get("NutritionConf") == "MEASURED":
+            a["NutritionConf"] = "ESTIMATED"
         basis = a.get("NutritionBasis")
         n = (rec or {}).get("n")
         e.update({"match": {"food": a.get("FoodMatched"), "source": a.get("NutritionSource"),
-                            "conf": a.get("NutritionConf"),
+                            "conf": a.get("NutritionConf"), "words": wc,
                             "times_logged": int(n) if n is not None and n == n else None},
                   "serving": {"basis": basis, "unit": {"per_serving": clean((rec or {}).get("serving_type")),
                                                        "per_meal": amount, "per_100g": "100 g"}.get(basis),

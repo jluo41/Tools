@@ -546,7 +546,7 @@ class Map:
                     dirs = t.task_folders(row.get("folders", ""))
                     done = any(r for *_, r in dirs)
                     if row.get("state"):             # a drawn telling's short table says it: a new Run in a Task
-                        done = row["state"].strip().lower().startswith("done")   # that ran before is not done
+                        done = re.sub(r"^\W+", "", row["state"]).lower().startswith("done")   # that ran before is not done; "✅ done" counts
                     where = (", ".join(f"{j} {n}" for j, n, _ in dirs[:2]) if dirs else "no task folder yet")
                     if re.search(r"\.r\d\d", row.get("where", "")):   # the T row names its Runs: show them
                         where = row["where"]

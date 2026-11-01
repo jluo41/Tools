@@ -127,7 +127,7 @@ Answer: D. Where the note below says otherwise, the note wins.
 
 ```text
 haipipe-interaction answers · r04_collect_report_m01 · Loop 1 report · 2026-11-01 10:00
-built: 2026-11-01 11:37:37.657173
+built: 2026-11-01 15:11:13.776624
 Q1 · Blind check: B · Safe.
 Q2 · Blind check: A · Unsafe.
 Q3 · Rule R1: A · Yes: R1 holds.

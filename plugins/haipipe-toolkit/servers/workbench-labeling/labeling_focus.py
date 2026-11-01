@@ -305,7 +305,8 @@ def base_rail(folder, root) -> list:
     if F.timeline_events(folder, root):
         rail.append(("timeline", "Timeline"))
     rail.append(("files", "Files"))
-    words = {"report": "read the results and check the progress", "work": "its Runs",
+    from live import labeling_steps as S                 # a meaning or expression Task's Work holds its steps (s58-D02)
+    words = {"report": "read the results and check the progress", "work": "its steps" if S.kind(folder) else "its Runs",
              "studio": "drawings, mind maps, slides",
              "interactions": ("🙋 waits on you" if any(r["state"] == "waiting" for r in inbox)
                               else "nothing waits on you" if inbox else "nothing asked yet"),
@@ -365,14 +366,20 @@ def building_page(theme, root, folder, section="", group=""):
                       "<script>" + (ASSETS / "decision_report.js").read_text(encoding="utf-8") + "</script>")
 
 
-def task_shell(root, folder, section, views: dict, view: str, body: str, head_extra: str = "", tail_extra: str = ""):
+def task_shell(root, folder, section, views: dict, view: str, body: str, head_extra: str = "", tail_extra: str = "",
+               words: dict | None = None):
     """A labeling Task's focus page around one view (building, meaning, expression): the base page's path, title with
     its section, the views of that section, the Aim, both rails; `head_extra` and `tail_extra` are the view's own
-    stylesheet and script."""
+    stylesheet and script; `words` puts each view's state word on its button ({key: (word, ok | you | run)}).
+    """
     rail = base_rail(folder, root)
+    cls = {"ok": " fd-ok", "you": " fd-you"}
     bar = ('<nav class="section-views" aria-label="Views">' + "".join(
         f'<a href="{frame.esc(F.page_url(folder, root, section, key))}"' + (' aria-current="page"' if key == view else '')
-        + f'>{frame.esc(name)}</a>' for key, name in views.items()) + '</nav>')
+        + f'>{frame.esc(name)}'
+        + (f'<span class="vw{cls.get((words or {})[key][1], "")}">{frame.esc((words or {})[key][0])}</span>'
+           if (words or {}).get(key, ("", ""))[0] else "")
+        + '</a>' for key, name in views.items()) + '</nav>')
     data = F.read_face(folder, root)
     goal = data["goal"].split("\n")[0] if data["goal"] else ""
     goal_html = (f'<div class="focus-goal"><span class="goal-word">{F.GOAL_WORD["Task"]}</span>'

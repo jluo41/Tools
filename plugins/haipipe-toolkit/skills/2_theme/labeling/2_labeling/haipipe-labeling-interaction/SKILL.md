@@ -10,7 +10,7 @@ description: >-
   report-NN, save my answers, Update, approve mNN, audit the existing labels, use case 2,
   /haipipe-labeling-interaction.
 metadata:
-  version: "0.2.0"
+  version: "0.2.1"
   last_updated: "2026-11-01"
   # version history: ./CHANGELOG.md
 ---
@@ -20,7 +20,9 @@ metadata:
 Only the 🧭 meaning Task asks the person (b15 s58-D03; JL 261101: "we hope that the interaction is only available in
 the meaning loop task"). Its page (Work: Frame · Report · Preferences · Update) copies one prompt per step into the
 Task's chat session; each prompt below names its step, and this skill does exactly that step, then replies with the
-page's link and nothing else (the form is the conversation).
+page's link and nothing else (the form is the conversation). The link is the Task's own, from
+`skills/1_base/workbench/workbench/cli/wb.py <Task> --no-open` plus `&section=work&group=<step>` (frame, prepare,
+preferences, update). The prompt's last line names the chat it belongs in; you are that chat, so it asks nothing.
 
 ```text
 Frame ─▶ Loop 1: Report ─▶ 🙋 Preferences ─▶ Update ─▶ ✍️ your sign m01 ─▶ 🛠 expression
@@ -65,7 +67,8 @@ stands. Scripts: engine `E = skills/2_theme/labeling/engine/`; `collect.py` is
 3. Write `report.json` (meaning_contracts' report): blind cards first, then rule cards, then the hard items;
    `E/label_audit.py`'s `evidence_row` for each excerpt; options never preselected. A rule card's `current_rule` quotes
    its mind-map rule word for word, so the page tags that rule with the card. Any expression round report since the
-   last loop (its `round_report.md`) becomes cards too: a wrong label is an item card, a rule gap a rule card.
+   last loop (its `round_report.md`) becomes cards too: a wrong label is an item card, a rule gap a rule card. So
+   does every card an earlier loop deferred (its flag reads `in progress`): ask it again with what it waited for.
 4. The form: `collect.py new <Task> report_mNN --title "Loop N report" --for "<sNN address>"`, then
    `E/report_form.py form report.json <the Run> --title … --for … --intro "<≤30 words>"`; keep `report.json` beside
    the form; `collect.py check <Run>` and `collect.py build <Run>`.
@@ -76,21 +79,27 @@ stands. Scripts: engine `E = skills/2_theme/labeling/engine/`; `collect.py` is
 The page embeds the form; its Copy prompt carries the prompt, the person's notes, the session line, then the form's
 answer block (from its `haipipe-interaction answers` line to the end).
 
-1. `collect.py save <the Run> <that block>`; the form reopens read only. A refusal (an older form, a wrong Run) is
-   said as it is; never edit the paste to pass.
-2. The notes go into Update's decisions; then do 4 · Update at once.
+1. Write the block to a file, from its `haipipe-interaction answers` line to its last answer or note line, nothing
+   after it; then `collect.py save <the Run> <that file>`. The form reopens read only. A refusal (an older form, a
+   wrong Run) is said as it is; never edit the paste to pass.
+2. Then do 4 · Update at once, passing the prompt's notes with `--notes`.
 
 ## 4 · Update: "step Update, Loop N"
 
 1. Labels: `E/meaning_update.py labels --report <report.json> --form <the collect Run> --previous <labels>
-   --version lNN --out runs/rNN_update_mNN/result`, where `<labels>` is the last Update's `labels.jsonl` (Loop 1: the
-   existing labels, l00). It writes `labels.jsonl`, `changes.md` (each changed label, then the rule answers the
-   guideline must take) and `decision_record.json`.
+   --version lNN --out runs/rNN_update_mNN/result --notes "<the prompt's notes>"`, where `<labels>` is the last
+   Update's `labels.jsonl` (Loop 1: the existing labels, l00). It writes `labels.jsonl` (an item this report does not
+   show keeps its earlier record whole), `changes.md` (your notes, each changed label, the items kept waiting, then the
+   rule answers the guideline must take), `decision_record.json`, and the Update Run's `run.yaml` and receipt.
 2. Guideline: write `meaning/mNN.mindmap.md` from m(N-1) (Loop 1: the frame's question as the root, the label values
-   as branches). Apply each rule answer in `changes.md`; a changed or new rule's note reads `from rNN QN: <what>`; a
-   deferred card's rule stays, its note `open: rNN QN deferred to Loop N+1`. Check it with /haipipe-mindmap.
-3. Flags: `collect.py applied <the collect Run> QN --by "<what changed, real names>"` for each applied answer;
-   `--state "in progress" --by "Loop N+1's report: …"` for a deferred one.
+   as branches). Apply each rule answer in `changes.md` in the person's own words. A rule's note starts with the card
+   that set it, `from rNN QN: <what>` (the page tags the rule with the first `rNN QN` in its note), and any `open:` line
+   comes after. A rule answer and a deferred item card on the same rule: the rule takes the answer, and the item stays
+   open under the changed rule. Never add a rule the answers did not give: an unclear one is Loop N+1's card. Check
+   the file: `skills/1_base/project/haipipe-mindmap/scripts/mindmap.py check meaning/mNN.mindmap.md`.
+3. Flags: `collect.py applied <the collect Run> QN --by "<what changed, real names>"` for each answer that changed a
+   label or a rule; `--state "in progress" --by "Loop N+1's report: …"` for a deferred one. A keep or a blind check
+   changes nothing and needs no flag. An earlier loop's deferred card that this loop asked again gets its new flag.
 4. Never sign. The person signs on the page (Update: Approve mNN), which writes `meaning/mNN.approved.yaml` through
    `meaning_versions.approve`; expression runs only on a signed mNN. Reply: the Task's Work › Update link.
 

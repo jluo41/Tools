@@ -7,17 +7,15 @@
     try {
       const d = f.contentDocument;
       if (!d || !d.body) return;
-      if (!d.getElementById('ls-embed')) {
+      if (!d.getElementById('ls-embed')) {               // the page names the report and sends it: the form shows its cards only
         const s = d.createElement('style'); s.id = 'ls-embed';
-        s.textContent = '.send,details.box{display:none!important}';
+        s.textContent = '.send,details.box,.label,.lead,h1{display:none!important}'
+          + 'pre.sketch{white-space:pre-wrap;overflow-wrap:anywhere}';
         d.head.append(s);
-        d.querySelectorAll('p').forEach(p => {             // its own Copy is hidden here: say where the answers go
-          if (p.textContent.includes('Copy feedback')) {
-            p.innerHTML = p.innerHTML.replace(/then Copy feedback and paste it to me/, 'then press Copy prompt below this form');
-          }
-        });
       }
-      f.style.height = (d.documentElement.scrollHeight + 4) + 'px';
+      const full = d.documentElement.scrollHeight + 4;   // on a wide screen the form scrolls inside a frame, so Copy
+      const phone = window.matchMedia('(max-width:600px)').matches;   // prompt stays near it (review C3 r01)
+      f.style.height = (phone ? full : Math.min(full, Math.round(window.innerHeight * 0.72))) + 'px';
     } catch (_) {}
   }
   document.querySelectorAll('iframe[data-ls-form]').forEach(f => {

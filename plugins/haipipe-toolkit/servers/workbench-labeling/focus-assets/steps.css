@@ -11,7 +11,7 @@
 .ls-tl{margin-right:4px}
 .ls-turn{border:1px solid var(--line);border-radius:7px;padding:3px 10px;background:var(--paper)}
 .ls-turn b{display:block;font-size:13px;font-weight:500;color:var(--ink)}.ls-turn small{font-size:11px}
-.ls-turn.now{border-color:var(--pb-you-line);background:var(--pb-you-bg)}
+.ls-turn.now{border-color:var(--accent);background:var(--soft)}.ls-turn.you{border-color:var(--pb-you-line);background:var(--pb-you-bg)}
 .ls-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;border:1px solid var(--pb-you-line);background:var(--pb-you-bg);
  border-radius:8px;padding:8px 12px;margin:0 0 12px;font-size:14px}
 .ls-bar>span:first-child{flex:1;min-width:0}
@@ -22,14 +22,15 @@
 .ls-empty{color:var(--muted);font-size:13.5px;margin:2px 0 8px}
 .ls-tw{overflow-x:auto;margin:2px 0 6px}
 .ls-table{border-collapse:collapse;width:100%;font-size:13px}
-.ls-table th{text-align:left;font-weight:500;color:var(--accent);border-bottom:1px solid var(--line);padding:5px 8px}
+.ls-table th{text-align:left;font-weight:500;color:var(--accent);border-bottom:1px solid var(--line);padding:5px 8px;white-space:nowrap}
+.ls-table .nw{white-space:nowrap}
 .ls-table td{border-bottom:1px solid var(--line);padding:5px 8px;vertical-align:top}
 .ls-foot{font-size:12px;color:var(--muted);margin:6px 0 8px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .ls-chain{display:flex;flex-wrap:wrap;align-items:stretch;gap:8px;margin:4px 0 8px}.ls-chain .ls-box{flex:1 1 140px}
 .ls-maps{margin:2px 0 6px}
 .ls-vrow{display:flex;align-items:center;gap:8px;margin:0 0 10px;font-size:12px;color:var(--muted)}
 .ls-v{border:1px solid var(--line);border-radius:7px;padding:3px 12px;background:var(--paper);font:inherit;font-size:13px;color:var(--ink);cursor:pointer}
-.ls-v.on{border-color:var(--pb-you-line);background:var(--pb-you-bg)}
+.ls-v.on{border-color:var(--accent);background:var(--soft);color:var(--accent)}
 .ls-mp.pb-panel{border:0;padding:0;margin:0}
 .ls-map{display:flex;align-items:center;margin:4px 0}
 .ls-root{flex:none;max-width:210px;border:1px solid var(--line);border-radius:8px;padding:8px 12px;background:var(--paper);font-size:13.5px}
@@ -42,8 +43,8 @@
  background:var(--paper);font-size:13.5px;min-width:0}
 .ls-lf::before{content:"";position:absolute;left:-20px;top:50%;width:20px;border-top:1px solid var(--line)}
 .ls-lf>span:first-child{flex:1;min-width:0;overflow-wrap:anywhere}
-.ls-q{flex:none;border:1px solid var(--pb-you-line);color:var(--pb-you);background:var(--pb-you-bg);border-radius:6px;padding:0 7px;font-size:12px}
-.ls-form{display:block;width:100%;height:520px;border:1px solid var(--line);border-radius:8px;margin:0 0 12px;background:#fff}
+.ls-q{flex:none;border:1px solid var(--accent);color:var(--accent);background:var(--soft);border-radius:6px;padding:0 7px;font-size:12px;white-space:nowrap}
+.ls-form{display:block;width:100%;height:520px;border:0;margin:0 0 4px;background:transparent}
 .ls-next{text-align:right;margin:18px 0 0;font-size:13.5px}
 .ls-line{margin:2px 0 8px}
 @media(max-width:600px){
@@ -56,3 +57,17 @@
 /* inside a folding section (focus_draft's .fd-body), a table keeps its own layout */
 .ls-view .fd-body .ls-table{display:table}
 @media(max-width:600px){.ls-view .fd-body .ls-table td,.ls-view .fd-body .ls-table th{min-width:0;padding:5px 4px}}
+/* review r01 of C1, C2, C3 and D3 (stage 2): the round report first and large; counts large, four in a row; a rerun
+   prompt as one row; the view buttons wrap and the title keeps its phone size (focus.css's phone h1 rule sits before
+   its base rule, so it never applies: overridden here for these pages only) */
+.ls-verbs{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:2px 0 8px}
+.pb-tiles.ls-tiles4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.pb-tile .ls-num{display:block;-webkit-line-clamp:unset;font-size:24px;font-weight:600;line-height:1.2;color:var(--ink)}
+.ls-rerun{padding:6px 12px}.ls-rerun .pb-ph{margin:0}
+@media(max-width:600px){.section-views{flex-wrap:wrap}.focus-page h1{font-size:21px}
+ .pb-tiles.ls-tiles4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* review C4 r01: the sign large when done; a turn and a tile open where they point; a history box one line on a phone */
+.ls-bar.big{font-size:17px;padding:12px 16px}.ls-bar.done.big{border-color:var(--pb-ok);background:var(--pb-ok-bg);color:var(--ink)}
+a.ls-turn{text-decoration:none;color:inherit}a.ls-turn:hover{border-color:var(--accent)}
+.pb-tile .fd-btn{align-self:flex-start;margin-top:8px}
+@media(max-width:600px){.ls-chain .ls-box{flex:none}}

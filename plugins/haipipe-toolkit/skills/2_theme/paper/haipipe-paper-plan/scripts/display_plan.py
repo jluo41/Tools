@@ -222,8 +222,10 @@ def check(board: Path) -> list[tuple[str, str]]:
         if field(face, "type") and field(face, "type").lower() != r["type"]:
             out.append(("⚠️", f"{name}: the plan says {r['type']}, its face says {field(face, 'type')}"))
         _, run = run_of(board, made)
-        ft = (run / "result" / "float.tex") if run is not None and (run / "result" / "float.tex").is_file() \
-            else newest(task, "float.tex")        # the version the row names, else the newest
+        stem = (re.match(r"\S+\s*·\s*(\S+)", field(face, "printed") or "") or [None, ""])[1]   # a Run that draws several
+        name_ft = f"{stem}-float.tex" if stem else "float.tex"                                      # tables names each by its stem
+        ft = (run / "result" / name_ft) if run is not None and (run / "result" / name_ft).is_file() \
+            else newest(task, name_ft)            # the version the row names, else the newest
         if ft is None:
             out.append(("⬜", f"{name}: not drawn yet"))
             continue

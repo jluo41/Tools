@@ -100,7 +100,18 @@ def evidence_body(task: Path, root: Path):
     # made (haipipe-display scripts/build_preview.py; JL 261101: "I want to make this to be things like the pdf")
     previews = sorted(task.glob("runs/*/result/preview.pdf")) + sorted(task.glob("display/*/preview.pdf"))
     preview = previews[-1] if previews else None
-    shown = None if preview else _evidence_file(task, text)
+    # the face's `printed: <run> [· <stem>]` names the version the paper prints; it wins over the newest alternative
+    # (JL 261101: Figure 1 showed its r02 alternative, Table 1 an unprinted table1-patients)
+    printed = re.match(r"(\S+)(?:\s*·\s*(\S+))?", _field(text, "printed") or "")
+    if printed:
+        res = task / "runs" / printed.group(1) / "result"
+        pre = f"{printed.group(2)}-" if printed.group(2) else ""
+        pick = next((f for f in (res / f"{pre}preview.pdf", res / f"{pre}preview.png") if f.is_file()), None)
+        if pick is not None and pick.suffix == ".pdf":
+            preview = pick
+        elif pick is not None:
+            preview, forced = None, pick
+    shown = None if preview else (locals().get("forced") or _evidence_file(task, text))
     if preview is not None:
         body += (f'<div class=pb-ptop><span class=pb-state>{esc(preview.parent.parent.name)} · the display, then how it was made</span>'
                  f'<a class=fd-btn data-pop="{esc(label or task.name)} · preview" href="{esc(url(preview))}">⤢ Pop out</a></div>'

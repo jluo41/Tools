@@ -1,4 +1,4 @@
-"""A paper Board's RESULTS band: the seven views A Idea to G Writing in the shape settled in b16 s32 (numbered bars,
+"""A paper Board's RESULTS band: the eight views A Idea to H Writing in the shape settled in b16 s32 (numbered bars,
 the main point large, card tabs, side tabs, the flow map, folder trees), the same on Report and Work."""
 from __future__ import annotations
 
@@ -297,9 +297,10 @@ def paperflow_view(board: Path, topic: Path, root: Path, md, items=()) -> str:
                                           for r in secs]))
     dp = display_plan()
     plan = dp.rows(board) if dp else []
-    if plan:                                     # the display plan (s06) and the venue's rules (JL 261101)
+    if plan:                                     # the display plan lives in G · Displays (JL 261101); here one line
         n += 1
-        out += _bar(n, "Displays", _display_plan(board, root, dp, plan))
+        out += _bar(n, "Displays", f'<p class=pb-state>{len(plan)} displays planned, '
+                    f'{sum(1 for r in plan if r["where"] == "main")} in the paper: see the Displays view.</p>')
     elif shows:
         n += 1
         out += _bar(n, "Displays", _card_tabs("pd", [(_plain(r.get("display", "")), _mark(r.get("state", "")) + " " + _plain(r.get("state", "")), "")
@@ -367,12 +368,33 @@ def explore_view(board: Path, root: Path, md, items=()) -> str:
 
 
 def evidence_view(board: Path, root: Path, md, items=()) -> str:
-    """F · Evidence: 1 values, 2 citations, 3 displays (JL 261101: "first put the values, and then citations, and at the
-    bottom, we have the displays"), each a card tab per Task whose panel shows the thing itself; the displays also as
-    one PDF (`<job>/delivery/<job>-all-displays.pdf`, written by haipipe-paper-evidence's build_displays_pdf.py)."""
-    jobs = [d for d in sorted(board.glob("j[0-9]*_*")) if d.is_dir() and not is_version(d)]
+    """F · Evidence: 1 values, 2 citations, each a side tab per Task whose panel shows the thing itself. The displays
+    are a view of their own, G · Displays, after this one (JL 261101: "put the display outside of the Evidence, and put
+    it after the Evidence and before the Writing, to highlight it")."""
+    return _evidence_kinds(board, root, ("Values", "Citations"))[0] or '<p class=mut>No values or citations Job yet.</p>'
+
+
+def displays_view(board: Path, root: Path, md, items=()) -> str:
+    """G · Displays (JL 261101, its own view between Evidence and Writing): 1 · the plan, each display against the
+    venue's display rules (haipipe-paper-plan's display plan, when the Board has one); 2 · the displays, one side tab
+    per pool Task (Display A → Figure 1, its type and name), its panel the newest preview.pdf, the display as the paper
+    prints it, then how it was made; and all of them as one PDF (build_displays_pdf.py)."""
     out, n = "", 0
-    for kind, pat in sorted(EVIDENCE_KINDS, key=lambda k: ("Values", "Citations", "Displays").index(k[0])):
+    dp = display_plan()
+    plan = dp.rows(board) if dp else []
+    if plan:
+        n += 1
+        out += _bar(n, "Plan", _display_plan(board, root, dp, plan))
+    body, _ = _evidence_kinds(board, root, ("Displays",), n)
+    return (out + body) or '<p class=mut>No display Job or display plan yet.</p>'
+
+
+def _evidence_kinds(board: Path, root: Path, kinds: tuple, n: int = 0) -> tuple[str, int]:
+    """The numbered sections of these evidence kinds (Values, Citations, Displays), in that order, each a side tab per
+    Task; the displays also as one PDF (`delivery/<job>/<job>-all-displays.pdf`)."""
+    jobs = [d for d in sorted(board.glob("j[0-9]*_*")) if d.is_dir() and not is_version(d)]
+    out = ""
+    for kind, pat in sorted((k for k in EVIDENCE_KINDS if k[0] in kinds), key=lambda k: ("Values", "Citations", "Displays").index(k[0])):
         job = next((j for j in jobs if re.search(pat, j.name, re.I)), None)
         if job is None:
             continue
@@ -381,6 +403,8 @@ def evidence_view(board: Path, root: Path, md, items=()) -> str:
         dp = display_plan() if kind == "Displays" else None
         paper_as = {r.get("display", ""): (r["as"] if r["as"] == r.get("display") else f"{r.get('display', '')} → {r['as']}")
                     for r in (dp.rows(board) if dp else [])}
+        plan_of = {r.get("display", ""): r for r in (dp.rows(board) if dp else [])}
+        groups = []                              # (group, plan order) per tile, for the Displays' Main / Appendix lists
         for t in tasks:                          # each item to read: its list on the left, the thing itself on the right
             label, status, body = evidence_body(t, root)
             words = re.sub(r"^t\d+_", "", t.name).replace("-", " ")
@@ -393,42 +417,94 @@ def evidence_view(board: Path, root: Path, md, items=()) -> str:
                 face = t / f"{t.name}.md"         # Display A → Figure 1, from the display plan, by any key the face answers to
                 ks = dp.keys(face.read_text(encoding="utf-8", errors="ignore")) if dp and face.is_file() else []
                 head = next((paper_as[k] for k in ks if k in paper_as), head)
-            tiles.append(((("Appendix · " if kind == "Displays" and _num(t) >= 50 else "") + head), line or status, ""))
+                r = next((plan_of[k] for k in ks if k in plan_of), None)
+                order = list(plan_of).index(r.get("display", "")) if r is not None else 999
+                if r is not None:                # the plan says where it goes
+                    group = r["where"]
+                elif plan_of:                    # a plan that does not name it
+                    group = "unplanned"
+                else:                            # no plan: t51 and on, or an eTable / Appendix label, is outside the main text
+                    group = "supplement" if _num(t) >= 50 or re.match(r"(?i)(e(?=fig|tab)|appendix|supp)", label or "") else "main"
+                groups.append((group, order))
+            tiles.append((head, line or status, ""))
             panels.append(body)
         book = board / "delivery" / job.name / f"{job.name}-all-displays.pdf"   # build_displays_pdf.py writes it
         whole = (_open_btn("Open all displays as one PDF", "/" + quote(ds._rel(book, root)), book.name)
                  + f'<span class=pb-state>built {_when(book)}</span>') if kind == "Displays" and book.is_file() else ""
         n += 1
-        out += _bar(n, kind, f'<div class=pb-verbs>{whole}{_open_btn(f"Open {job.name}", _task_url(job, root))}</div>'
-                    + (_side_tabs("ev" + kind[0], [(h, w) for h, w, _ in tiles], panels) if tiles else '<p class=mut>No Tasks yet.</p>'))
-    return out or '<p class=mut>No evidence Job yet.</p>'
+        if kind == "Displays" and tiles:         # grouped, Main then Appendix (JL 261101: "groups them in different groups,
+            sup = _supplement_word(list(paper_as.values()))   # like the main"), each card thinner
+            name = {"main": "Main", "supplement": sup, "unplanned": "Not in the plan"}
+            keyed = sorted(zip(groups, tiles, panels), key=lambda x: (("main", "supplement", "unplanned").index(x[0][0]), x[0][1]))
+            tabs = _grouped_tabs("evD", [(name[g], (h, w), b) for (g, _), (h, w, _), b in keyed])
+        else:
+            tabs = _side_tabs("ev" + kind[0], [(h, w) for h, w, _ in tiles], panels) if tiles else '<p class=mut>No Tasks yet.</p>'
+        out += _bar(n, kind, f'<div class=pb-verbs>{whole}{_open_btn(f"Open {job.name}", _task_url(job, root))}</div>' + tabs)
+    return out, n
+
+
+def _supplement_word(labels: list) -> str:
+    """What the venue calls the displays outside the main text: Supplement (eFigure, Supplementary Table), else Appendix."""
+    return "Supplement" if any(re.search(r"→ (?:e(?:Figure|Table)|Supplementary)", x) for x in labels) else "Appendix"
+
+
+def _grouped_tabs(eid: str, items: list) -> str:
+    """Side tabs in groups (Main, Appendix): the shared side-tab markup (ui_parts._side_tabs, so its clicks work), a
+    small group name above each group's cards, each card thinner (this theme's own style, DISPLAY_CSS)."""
+    rows, panels, last = "", "", None
+    for k, (group, (h, w), body) in enumerate(items):
+        if group != last:
+            rows += f'<div class=pb-lgroup>{esc(group)}</div>'
+            last = group
+        rows += (f'<button type=button class="pb-item{" on" if k == 0 else ""}" data-pbtab="{eid}{k}"><b>{esc(h)}</b>'
+                 f'<span title="{esc(w)}">{esc(w)}</span></button>')
+        panels += f'<div class=pb-panel data-pbpanel="{eid}{k}"{"" if k == 0 else " hidden"}>{body}</div>'
+    return (DISPLAY_CSS + f'<div class="pb-tabset pb-side pb-thin"><div class=pb-list>{rows}</div>'
+            f'<div class=pb-read>{panels}</div></div>')
+
+
+# the Displays' side lists: thinner cards, a group name above each group (this theme's own look; ui_parts stays shared)
+DISPLAY_CSS = ("<style>.pb-thin .pb-item{padding:3px 9px;margin:0 0 1px}.pb-thin .pb-item b{font-size:13px;line-height:1.3}"
+               ".pb-thin .pb-item span{font-size:11.5px;line-height:1.3}"
+               ".pb-lgroup{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);"
+               "margin:10px 0 3px 2px}.pb-lgroup:first-child{margin-top:0}"
+               "@media(max-width:600px){.pb-lgroup{flex-basis:100%;margin:6px 0 2px}}</style>")
 
 
 DISPLAY_TYPES = (("figure", "📈 Figure"), ("table", "📊 Table"))
 
 
 def _display_plan(board: Path, root: Path, dp, plan: list) -> str:
-    """Paper flow's Displays, from the display plan (haipipe-paper-plan s06; JL 261101: "we should also have the plan for
-    the displays"; "the display ... should also follow the venue"): the venue check first, then each display as a side
-    tab (Display A → Figure 1, its type and name), its panel what it shows, where it goes, its Run and its sketch."""
+    """G · Displays' plan, from the display plan (haipipe-paper-plan; JL 261101: "we should also have the plan for the
+    displays"; "the display ... should also follow the venue"): the venue check first, then each display as a side tab
+    (Display A → Figure 1, its type and name), its panel what it shows, where it goes, its Run and its sketch."""
     face = dp.plan_face(board)
     text = face.read_text(encoding="utf-8", errors="ignore")
     checks = dp.check(board)
     call = dp.venue_call(board)
     bad = [t for m, t in checks if m == "❗"]
-    head = (f'<p class=pb-state>{"❗ " + str(len(bad)) + " against the venue" if bad else "✅ within the venue's rules"}'
+    head = (f'<p class=pb-state>{"❗ " + str(len(bad)) + " against the venue" if bad else "✅ within the venue" + chr(39) + "s rules"}'
             + (f' · {esc(call.parent.name)}' if call else '') + '</p>'
             + '<ul class=pb-checks>' + "".join(f'<li>{esc(m)} {esc(t)}</li>' for m, t in checks) + '</ul>'
             + f'<div class=pb-verbs>{_open_btn("Open the display plan", _page_url(face, root), face.name)}'
             + (_open_btn("Open the venue rules", _page_url(call, root), "call.md") if call else "") + '</div>')
-    sketch = lambda lab: (re.search(rf"(?ms)^####\s*{re.escape(lab)}\s*\n+```text\n(.*?)```", text) or [None, ""])[1]
-    tiles = [(f"{r.get('display', '')} → {r['as']}", f"{dp.TYPES[r['type']]} · {_plain(r.get('name', ''))}") for r in plan]
+    labs = [f"{r.get('display', '')} → {r['as']}" if r["as"] != r.get("display") else r["as"] for r in plan]
+    sup = _supplement_word(labs)
+    items = [("Main" if r["where"] == "main" else sup, (lab, f"{dp.TYPES[r['type']]} · {_plain(r.get('name', ''))}"), None)
+             for r, lab in zip(plan, labs)]
     panels = [_kv((("Shows", esc(_plain(r.get("shows", "")))), ("Answers", esc(_plain(r.get("answers", "")))),
                    ("Section", esc(_plain(r.get("section", "")))), ("Where", esc(r["where"])),
                    ("Made by", esc(_plain(r.get("made by", "")))), ("State", esc(_plain(r.get("state", ""))))))
-              + (f'<pre class=pb-sketch>{esc(sketch(r.get("display", "")))}</pre>' if sketch(r.get("display", "")) else "")
+              + (f'<pre class=pb-sketch>{esc(dp.sketch(text, r.get("display", "")))}</pre>' if dp.sketch(text, r.get("display", "")) else "")
               for r in plan]
-    return head + _side_tabs("dpl", tiles, panels)
+    keyed = sorted(zip(items, panels), key=lambda x: x[0][0] != "Main")          # Main first, the plan's order kept
+    return PLAN_CSS + head + _grouped_tabs("dpl", [(g, t, b) for (g, t, _), b in keyed])
+
+
+# the plan's check list and sketches, this theme's own look (shared ui_parts stays its owners')
+PLAN_CSS = ("<style>.pb-checks{list-style:none;margin:4px 0 8px;padding:0;font-size:13.5px;line-height:1.6}"
+            ".pb-sketch{margin:8px 0 0;padding:8px 10px;border-radius:6px;background:var(--wash);"
+            "font:12.5px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre;overflow-x:auto}</style>")
 
 
 def _display_line(task: Path, slug: str) -> str:
@@ -498,7 +574,7 @@ def _paper_files(vdir: Path, root: Path, eid: str = "pp") -> str:
 
 
 def writing_view(board: Path, root: Path, md, items=()) -> str:
-    """G · Writing: a numbered section per version; its Sections as card tabs (each panel its step words), then the
+    """H · Writing: a numbered section per version; its Sections as card tabs (each panel its step words), then the
     assembled paper."""
     out, n = "", 0
     for job in sorted(d for d in board.glob("j[0-9]*_*") if d.is_dir() and is_version(d)):

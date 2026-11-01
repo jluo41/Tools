@@ -1,3 +1,21 @@
+## 0.42.0 · 2026-11-01 · Displays, its own view after Evidence
+
+- JL 261101: "put the display outside of the Evidence, and put it after the Evidence and before the Writing, to
+  highlight it" (b16 s32-D26). Eight views now, A to H: G · Displays holds 1 · the display plan against the venue's
+  rules (haipipe-paper-plan) and 2 · each display, its preview.pdf, all as one PDF; F · Evidence keeps the values and
+  citations; Writing is H. Paper flow's Displays is one line pointing to it.
+- Its PROCESS: 🖼️ Where each display stands (each row "Display A → Figure 1 · 📈 Figure · <name>"); its skills
+  haipipe-paper-plan, haipipe-display, haipipe-paper-evidence.
+- Fixed: a face whose status says "not drawn" read as done.
+- Displays' two lists (1 · Plan, 2 · Displays) are grouped, Main then Appendix (Supplement when the venue says
+  eFigure or Supplementary), with "Not in the plan" last, and each card is thinner (JL 261101: "make it thinner, and
+  groups them in different groups, like the main"); the style is this theme's own (DISPLAY_CSS), not ui_parts.
+- Every side-tab list on a paper Board (Writing's Sections, Displays, Evidence) and its open panel are the same
+  height, each with its own scroll bar, capped at 72% of the window (JL 261101: "make it to be of the same length
+  and there is a scroll bar"); board_views.SIDE_CSS, this theme's own.
+- The Report is each view's own sections only, 1, 2, 3: no PROCESS or RESULTS band (JL 261101: "for the Results and
+  Process, they will just be in the Work, why report have that?"; b16 s32-D27). Work keeps both bands, PROCESS first.
+
 ## 0.41.1 · 2026-11-01 · b16 review 261101: the focus link, the design refs, code fixes
 
 - Docs: the link section gives the focus page link,

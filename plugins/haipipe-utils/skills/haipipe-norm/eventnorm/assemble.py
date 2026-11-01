@@ -41,12 +41,36 @@ def assemble(inp: dict, asks=None, meal=None, weight=None) -> dict:
     from the tables when there are items, else the input's own; an event with no start is one entry, "no time"."""
     from foodnorm.items import enrich_items
     items, total = enrich_items(inp["items"], asks, meal) if inp.get("items") else (None, None)
-    total = {**total, "source": "tables"} if total else {**inp["total"], "source": "input"} if inp.get("total") else None
+    total = {**total, "source": "tables", "check": total_check(inp.get("total"), total)} if total else \
+        {**inp["total"], "source": "input"} if inp.get("total") else None
     ev = {k: inp.get(k) for k in INPUT_KEYS if k not in ("total", "items", "timeline", "source")}
     ev.update(total=total, items=items, timeline=inp.get("timeline"), source=inp.get("source") or LOGGED)
     line = inp.get("timeline") or []
     weight = weight or ("carbs" if line and all(pt.get("carbs") not in (None, "") for pt in line) else None)
     return by_hour(ev, weight) or {"no time": {"share": 1.0, **ev}}
+
+
+def total_check(logged, tables) -> dict:
+    """The meal's logged total beside the tables' (JL 261101, on CGMacros' dinner whose row logs 80 kcal and 0 g fat
+    for a plate the tables put at 414 kcal: the row was the aloe vera drink, s01-D31). Calories when both have them,
+    else carbs; they agree within a factor of 2. The logged numbers are never changed: a far-apart pair only says so.
+    None when there is no logged total to set beside."""
+    num = lambda v: float(str(v).split()[0]) if v not in (None, "") else None
+    for k in ("calories", "carbs"):
+        a = num(((logged or {}).get("macros") or {}).get(k))
+        b = num(((tables or {}).get("macros") or {}).get(k))
+        if a is not None and b is not None:
+            break
+    else:
+        return None
+    agree = a > 0 and 0.5 <= b / a <= 2
+    note = "close" if agree else f"far apart ({b / a:.1f} times)" if a > 0 else "the log says 0"
+    if not agree and (tables.get("coverage") or 0) < 1:
+        note += "; not every item was found"
+    elif not agree:
+        note += "; the log may be another food, or the amounts are off"
+    unit = "kcal" if k == "calories" else "g"
+    return {"by": k, "logged": f"{a:g} {unit}", "tables": f"{b:g} {unit}", "agree": agree, "note": note}
 
 
 def source_of(src) -> dict:

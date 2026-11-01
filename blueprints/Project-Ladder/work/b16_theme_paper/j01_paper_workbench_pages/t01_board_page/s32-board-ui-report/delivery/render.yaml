@@ -1,8 +1,8 @@
 # Where s32's delivery goes (haipipe-studio scripts/render_delivery.py). The deck stays in deck/.
-# ui/board-report/ holds the agreed screens, A to G, one file per settled letter (paper_ui_cells.py writes them);
+# ui/board-report/ holds the agreed screens, A to H, one file per settled letter (paper_ui_cells.py writes them);
 # skill/board-report-views.md is the views' manual. One ui delivery, two targets (s32-D11).
 pieces:
-  - code: "board-report: the paper Board's Report views, A to G"
+  - code: "board-report: the paper Board's Report views, A to H"
     by: j01_paper_workbench_pages/t01_board_page
   - from: skill/board-report-views.md
     to: plugins/haipipe-toolkit/skills/2_theme/paper/workbench-paper/SKILL.md

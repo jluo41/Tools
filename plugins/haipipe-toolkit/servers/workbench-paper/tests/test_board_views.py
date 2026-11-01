@@ -85,13 +85,16 @@ class BoardViewsTest(unittest.TestCase):
             for nums in seq:
                 self.assertEqual(nums, list(range(1, len(nums) + 1)), key)
 
-    def test_report_reads_results_first_and_work_process_first(self):
-        self.assertEqual([n for n, _ in bars(self.report["dataflow"]) if n], ["Results", "Process"])
+    def test_report_is_its_sections_and_work_process_first(self):
+        # JL 261101: "for the Results and Process, they will just be in the Work"; the Report: 1, 2, 3 (s32-D27)
+        self.assertEqual([n for n, _ in bars(self.report["dataflow"]) if n], [])
+        self.assertNotIn("Process</h3>", self.report["dataflow"])
         self.assertEqual([n for n, _ in bars(self.work["work-dataflow"]) if n], ["Process", "Results"])
 
     def test_work_results_are_report_results(self):
         for key in self.report:
-            self.assertEqual(results(self.report[key]), results(self.work["work-" + key]), key)
+            page = re.split(r"<hr class=pb-rule>|<script>", self.report[key], maxsplit=1)[0]
+            self.assertIn(results(self.work["work-" + key]).strip()[:400], page, key)
 
     def test_data_flow_process_is_its_plan_and_runs(self):
         work = self.work["work-dataflow"]

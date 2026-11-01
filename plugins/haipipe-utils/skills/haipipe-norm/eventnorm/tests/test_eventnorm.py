@@ -110,6 +110,22 @@ def t_detected():
     return "a meal a rule found: its start and its source, no items, no total"
 
 
+def t_checks():
+    """The two checks of 261101: a logged total far from the tables' says so; a match missing a word says which."""
+    from eventnorm.assemble import total_check
+    from foodnorm.items import word_check
+    far = total_check({"macros": {"calories": "80 kcal"}}, {"macros": {"calories": "414 kcal"}, "coverage": 1.0})
+    assert far["agree"] is False and far["by"] == "calories" and "5.2 times" in far["note"], far
+    near = total_check({"macros": {"carbs": "32.45 g"}}, {"macros": {"carbs": "33.38 g"}, "coverage": 1.0})
+    assert near["agree"] is True and near["by"] == "carbs", near
+    assert total_check(None, {"macros": {"carbs": "1 g"}}) is None
+    w = word_check("chicken pilaf", "Chicken, chicken roll, roasted")
+    assert w == {"check": "PARTIAL", "missing": ["pilaf"]}, w
+    assert word_check("Hass Avocado", "Hass Avocado")["check"] == "PASS"
+    assert word_check("pork", "猪肉") is None and word_check("pork", None) is None
+    return "80 vs 414 kcal far apart; 'chicken pilaf' misses 'pilaf'"
+
+
 def run_eight():
     from paths import space_root                                # skills/haipipe-norm/paths.py
     try:
@@ -139,6 +155,7 @@ if __name__ == "__main__":
     check("bad requests", t_errors)
     check("typed text and no time", t_typed)
     check("a detected meal", t_detected)
+    check("the total check and the word check", t_checks)
     run_eight()
     print(f"{len(PASS)} passed, {len(FAIL)} failed")
     sys.exit(1 if FAIL else 0)

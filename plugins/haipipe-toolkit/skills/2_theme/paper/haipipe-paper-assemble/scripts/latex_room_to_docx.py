@@ -2443,6 +2443,12 @@ def render_submission_pdfs() -> dict[str, object]:
     for docx_path, pdf_path in ((MAIN_PATH, MAIN_PDF_PATH), (SUPP_PATH, SUPP_PDF_PATH)):
         if not docx_path.exists():   # 0.12.3: a paper with no supplement
             continue
+        # 0.12.4 (JL 261101): a PDF the LaTeX build wrote after master.tex is LaTeX's reading copy; once LibreOffice was
+        # installed this render overwrote it with the Word file's pages (Paper-AgreeableOpioid-Jama: 43 LaTeX pages
+        # became 20 Word pages). It renders only a PDF LaTeX did not make.
+        if pdf_path.exists() and MASTER.exists() and pdf_path.stat().st_mtime >= MASTER.stat().st_mtime:
+            report.setdefault("kept_latex", []).append(str(pdf_path.relative_to(ROOT)))  # type: ignore[union-attr]
+            continue
         pdf_path.parent.mkdir(parents=True, exist_ok=True)
         try:
             subprocess.run(

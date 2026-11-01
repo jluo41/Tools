@@ -19,7 +19,7 @@ from live.board_evidence import EVIDENCE_KINDS, evidence_body
 # should be 1, 2, ... 1, 2, 3"; "the results should be consistent to the report"): RESULTS is the Report view itself,
 # the same on Report and Work; PROCESS is how this layer is being made: 1 Interactions (Report: what was decided;
 # Work: what waits on you), 2 its open points or where each item stands, 3 the skills that do it (Work; JL 261101:
-# "show what is the skills related to each UI"). Report reads RESULTS first, Work PROCESS first ─────────────────────
+# "show what is the skills related to each UI"). PROCESS is Work's only (s32-D27) ─────────────────────
 VIEW_SKILLS = {
     "idea": (("haipipe-paper-ideation", "picks the direction and the target, through your gate"),
              ("haipipe-ideation", "finds candidate ideas and tests their novelty and fit")),
@@ -33,9 +33,11 @@ VIEW_SKILLS = {
                   ("haipipe-paper", "routes the paper's work to the skill that owns it")),
     "explore": (("haipipe-work", "the work Blocks, Jobs, Tasks and Runs"),
                 ("haipipe-discovery", "the discovery Blocks: each paper read by a Run")),
-    "evidence": (("haipipe-paper-evidence", "checks the values, citations and displays as one ledger"),
-                 ("haipipe-evidence", "lands each Evidence Item from its Results"),
-                 ("haipipe-display", "draws each table and figure, then its review loop")),
+    "evidence": (("haipipe-paper-evidence", "checks the values and citations as one ledger"),
+                 ("haipipe-evidence", "lands each Evidence Item from its Results")),
+    "displays": (("haipipe-paper-plan", "plans each display against the venue's rules (the display plan)"),
+                 ("haipipe-display", "draws each table and figure, then its review loop"),
+                 ("haipipe-paper-evidence", "each version's preview.pdf, as the paper prints it")),
     "draft": (("haipipe-paper-draft", "drafts one Section through its steps"),
               ("haipipe-draft-writing", "writes and revises the prose"),
               ("haipipe-paper-assemble", "builds the whole paper: the PDF and the Word files")),
@@ -79,20 +81,33 @@ def _steps(board: Path, key: str, topic, text: str, root: Path, md):
         rows = [(f'{_plain(r.get("when", ""))} · {_plain(r.get("step", ""))}', _plain(r.get("who", "")), _state_of(r.get("state", "")), "", "", False)
                 for r in steps if not _plain(r.get("state", "")).startswith("✅")]
         return ("Next steps to the send", rows) if rows else ("", [])
-    if key == "evidence":                      # each item, in RESULTS' order, its state
+    if key in ("evidence", "displays"):        # each item, in RESULTS' order, its state
         jobs = [d for d in sorted(board.glob("j[0-9]*_*")) if d.is_dir() and not is_version(d)]
         rows = []
-        for kind, pat in sorted(EVIDENCE_KINDS, key=lambda k: ("Values", "Citations", "Displays").index(k[0])):
+        mine = ("Displays",) if key == "displays" else ("Values", "Citations")
+        for kind, pat in sorted((k for k in EVIDENCE_KINDS if k[0] in mine), key=lambda k: ("Values", "Citations", "Displays").index(k[0])):
             job = next((j for j in jobs if re.search(pat, j.name, re.I)), None)
             for t in (sorted((x for x in job.glob("t[0-9]*_*") if x.is_dir()), key=_num) if job else []):
                 label, status, _ = evidence_body(t, root)
                 words = re.sub(r"^(?:e?figure|e?table|values|cite)\d*\s*", "", re.sub(r"^t\d+_", "", t.name).replace("-", " "), flags=re.I)
                 head = label if label and label.lower() not in ("values", "citations") else _cap(words)
                 st = (status or "").lower()
-                pill = "done" if re.search(r"checked|drawn|filled|done", st) else "waiting" if st.startswith("wait") else _cap(status or "not started")[:28]
-                rows.append((f"{kind} · {head}", "" if pill in ("done", "waiting") else "", pill,
+                pill = ("not started" if re.search(r"\b(?:not|un)[\s-]*(?:yet\s+)?(?:checked|drawn|filled|done)", st)   # "not drawn" is not done
+                        else "done" if re.search(r"checked|drawn|filled|done", st)
+                        else "waiting" if st.startswith("wait") else _cap(status or "not started")[:28])
+                name = f"{kind} · {head}"
+                if kind == "Displays":           # its plan name, as RESULTS shows it: Display A → Figure 1 · 📈 Figure · <name>
+                    from live.board_results import _display_line, display_plan
+                    dp = display_plan()
+                    plan = {r.get("display", ""): r for r in (dp.rows(board) if dp else [])}
+                    face = t / f"{t.name}.md"
+                    ks = dp.keys(face.read_text(encoding="utf-8", errors="ignore")) if dp and face.is_file() else []
+                    r = next((plan[k] for k in ks if k in plan), None)
+                    lab = (r["as"] if r["as"] == r.get("display") else f"{r.get('display', '')} → {r['as']}") if r else head
+                    name = f"{lab} · {_display_line(t, words)}"
+                rows.append((name, "" if pill in ("done", "waiting") else "", pill,
                              "Open", _task_url(t, root), False))
-        return ("Where each stands", rows) if rows else ("", [])
+        return ("Where each display stands" if key == "displays" else "Where each stands", rows) if rows else ("", [])
     if key == "draft":                         # each Section's next step, a verb that opens it
         rows = []
         for job in sorted(d for d in board.glob("j[0-9]*_*") if d.is_dir() and is_version(d)):
@@ -202,7 +217,7 @@ def process_html(board: Path, key: str, root: Path, md, items, work: bool, item_
     head, rows = _steps(board, key, topic, text, root, md)
     if rows:
         n += 1
-        emoji = {"dataflow": "⚙️", "paperflow": "🗓️", "evidence": "📋", "draft": "🪜"}.get(key, "🚧")
+        emoji = {"dataflow": "⚙️", "paperflow": "🗓️", "evidence": "📋", "displays": "🖼️", "draft": "🪜"}.get(key, "🚧")
         out += _section(f"{n} · {emoji} {head}", _todo(rows))
     if work and key in VIEW_SKILLS and key != "dataflow":   # who does it (Data flow names a skill on each plan step)
         n += 1

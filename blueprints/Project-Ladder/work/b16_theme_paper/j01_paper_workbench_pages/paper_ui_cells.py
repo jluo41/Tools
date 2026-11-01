@@ -23,7 +23,7 @@ import five_parts  # noqa: E402
 _ds = (TOOLS / "plugins/haipipe-toolkit/servers/workbench/workbench-task-draft/draft_steps.py").read_text(encoding="utf-8")
 STEPS = [s for s in re.search(r"^STEPS = \((.*?)\)$", _ds, re.M).group(1).replace('"', "").split(", ") if s[:1].isdigit()]
 VERB = {"report": "Report", "work": "Work", "studio": "Studio"}          # no verb after the section word (b10-s33-D06)
-LIST = ("Idea", "Story", "Data flow", "Paper flow", "Support blocks", "Evidence", "Writing")   # the Board's views (s32-D12)
+LIST = ("Idea", "Story", "Data flow", "Paper flow", "Support blocks", "Evidence", "Displays", "Writing")   # the Board's views (s32-D12, D26)
 PAGE = {"board": ("Paper-Example", "…/paper/Paper-Example"),
         "version": ("j11_writing_v1130_venue", "…/Paper-Example/j11_writing_v1130_venue"),
         "section": ("t00_summary", "…/j11_writing_v1130_venue/t00_summary")}
@@ -77,7 +77,7 @@ def secbar(eid, x, y, w, title, words):
             + text(eid + "_t", x + 12, y + 7, "▾ " + title, 13, TITLE) + text(eid + "_w", x + 12, y + 38, words, 11, BODY))
 
 
-LETTERS = "ABCDEFGH"                     # one letter per view, the same on Report and Work; the seven views use A to G (s32-D12)
+LETTERS = "ABCDEFGH"                     # one letter per view, the same on Report and Work; the eight views use A to H (s32-D12, D26)
 
 
 def slug(view):
@@ -159,9 +159,20 @@ REPORT_SECTIONS = (
                                                         ("2.", "<Section sentence · the number>"), ("", "source: <Run · file>")))),  # read right
                   ("sec", "2 · 📚 Citations", ("sidetabs", (("<topic A>", "<N checked>"), ("<topic B>", "<…>"), ("Methods", "<…>")),
                                                            (("<paper key>", "<its Sections> · ✅ checked"), ("<paper key>", "<its Sections> · ✅ checked")))),
-                  ("sec", "3 · 🖼️ Displays", ("sidetabs", (("Figure 1", "<policy map>"), ("Table 1", "<cohort>"), ("eTable 1", "<states>")),
-                                                          (("", "Open all displays as one PDF"), ("", "<the figure or table itself>"),
-                                                           ("Answers", "<RQ1>"), ("Made by", "<the Run>")))))),   # (JL 261101)
+                  )),
+    # G · Displays, its own view after Evidence (JL 261101: "put the display outside of the Evidence, and put it after
+    # the Evidence and before the Writing, to highlight it"): the plan against the venue, then each display
+    ("Displays", (("sec", "1 · 📐 Plan", ("sidetabs", (("Display A → Figure 1", "📈 Figure · <what it shows>"),
+                                                     ("Display B → Table 1", "📊 Table · <who is in it>"),
+                                                     ("Display C → eFigure 1", "📈 Figure · <a check>")),
+                                                    (("", "✅ 2 of at most 5 main displays · ❗ Display A: too narrow for 7 in at 300 dpi"),
+                                                     ("Shows", "<its layout>"), ("Answers", "<RQ1> · Results · main"),
+                                                     ("Made by", "<the Run>"), ("", "<its sketch>")))),
+                  ("sec", "2 · 🖼️ Displays", ("sidetabs", (("Display A → Figure 1", "📈 Figure · <what it shows>"),
+                                                          ("Display B → Table 1", "📊 Table · <who is in it>"),
+                                                          ("Display C → eFigure 1", "📈 Figure · <a check>")),
+                                                         (("", "Open all displays as one PDF"),
+                                                          ("", "<preview.pdf: page 1 as the paper prints it, then how it was made>")))))),
     ("Writing", (("sec", "1 · ✍️ j11_writing_v1130_venue", ("sidetabs", (("Summary", "Plan: waits for your sign"),
                                                                        ("Methods", "Write: next"), ("Results", "Evidence: asked")),
                                                         (("BACKGROUND", "<the Section's text, to read>"), ("METHODS", "<its paragraph>"),
@@ -184,8 +195,9 @@ SKILLS = {"Idea": (("/haipipe-paper-ideation", "picks the direction"), ("/haipip
                         ("/haipipe-task", "the Runs and their Results")),
           "Paper flow": (("/haipipe-paper-plan", "Sections, displays, dated steps"), ("/haipipe-paper", "routes the paper's work")),
           "Support blocks": (("/haipipe-work", "work Blocks, Jobs, Tasks"), ("/haipipe-discovery", "discovery Blocks, papers")),
-          "Evidence": (("/haipipe-paper-evidence", "checks values, citations, displays"), ("/haipipe-evidence", "lands each item"),
-                       ("/haipipe-display", "draws each table and figure")),
+          "Evidence": (("/haipipe-paper-evidence", "checks values and citations"), ("/haipipe-evidence", "lands each item")),
+          "Displays": (("/haipipe-paper-plan", "plans each display against the venue"), ("/haipipe-display", "draws each table and figure"),
+                       ("/haipipe-paper-evidence", "each version's preview.pdf")),
           "Writing": (("/haipipe-paper-draft", "one Section, step by step"), ("/haipipe-draft-writing", "writes the prose"),
                       ("/haipipe-paper-assemble", "builds the PDF and Word"))}
 Q = (("Q1 · <a question>", "Needs your judgment", "Answer"), ("Q2 · <a question>", "Needs your judgment", "Answer"))
@@ -196,7 +208,9 @@ TODO_STEPS = {          # each view's things to do, step by step, one row each: 
     "Paper flow": ("2 · 🗓️ Next steps to the send", (("<date> · <step> · <who>", "waiting for you", ""),
                                                         ("<date> · <step> · <who>", "running", ""), ("<date> · <step> · <who>", "not started", ""))),
     "Evidence": ("2 · 📋 Where each stands", (("Values · Sample", "waiting", "Open"),
-                                                             ("Citations · <topic A>", "done", "Open"), ("Displays · Figure 1", "done", "Open"))),
+                                                             ("Citations · <topic A>", "done", "Open"))),
+    "Displays": ("2 · 🖼️ Where each display stands", (("Display A → Figure 1", "done", "Open"),
+                                                      ("Display B → Table 1", "not started", "Open"))),
     "Writing": ("2 · 🪜 Sections to finish", (("Summary · next: Plan", "waiting for you", "Open Plan"),
                                                        ("Methods · next: Evidence", "running", "Open Evidence"), ("Results · next: Write", "not started", "Open Write"))),
     "Support blocks": None}
@@ -213,6 +227,7 @@ def _bands(view, secs, work):
             ("🗂️ Design the dataset", "use /haipipe-paper-plan", "Open · Copy prompt"),
             ("📈 Design the regressions", "use /haipipe-task", "Open · Copy prompt"),
             ("⚙️ Make them run", "use /haipipe-run", "Open · Copy prompt"),
+            ("🖼️ Plan the displays", "use /haipipe-paper-plan", "Open · Copy prompt"),
             ("🔎 Plan the reading", "use /haipipe-discovery", "Open · Copy prompt")))))
     two = TODO_STEPS.get(view, ("2 · 🚧 Open", (("<an open point>", "open", ""),)))
     if two:
@@ -221,18 +236,20 @@ def _bands(view, secs, work):
         process.append(("sec", f"{len(process) + 1} · 🧰 Skills that do it", ("rows", SKILLS[view])))
     P = (("band", "⚙️ Process", ""),) + tuple(process)
     R = (("band", "📊 Results", ""),) + results
-    return (P + R if work else R + P) + (helpers if len(helpers) > 1 else ())
+    # the Report is its own sections only, 1, 2, 3; Process and Results are Work's (JL 261101; s32-D27)
+    return (P + R if work else results) + (helpers if len(helpers) > 1 else ())
 
 
 REPORT_ONLY = REPORT_SECTIONS
 WORK_SECTIONS = tuple((v, _bands(v, secs, True)) for v, secs in REPORT_ONLY)
 REPORT_SECTIONS = tuple((v, _bands(v, secs, False)) for v, secs in REPORT_ONLY)
-LAYERS = "① plan: A to D   ·   ② explore: E   ·   ③ evidence: F   ·   ④ writing: G"
+LAYERS = "① plan: A to D   ·   ② explore: E   ·   ③ evidence: F, G   ·   ④ writing: H"
 
 
 CAPTION = {"Idea": "the direction chosen, and the others", "Story": "what the paper says, and where it is sent",
            "Data flow": "how the data becomes each answer", "Paper flow": "Sections in reader order, to the send",
-           "Support blocks": "the work and discovery Blocks behind it", "Evidence": "each display, value and citation",
+           "Support blocks": "the work and discovery Blocks behind it", "Evidence": "each value and citation",
+           "Displays": "each display, against the venue's rules",
            "Writing": "each send, its Sections and their steps"}
 CRUMB = {"board": "Physician-SPACE › Project-Example › paper › Paper-Example", "version": "… › Paper-Example › j11_writing_v1130_venue",
          "section": "… › j11_writing_v1130_venue › t00_summary"}

@@ -131,3 +131,27 @@ def test_update_turns_saved_answers_into_labels_and_changes(tmp_path):
     labels = {r["item_id"]: r for r in la._read_jsonl(tmp_path / "result" / "labels.jsonl")}
     assert labels["syn-01"]["blind"] == "safe" and labels["syn-02"]["label"] == "unsafe"
     assert json.loads((tmp_path / "result" / "decision_record.json").read_text())["C01"]["option_id"] == "flip"
+
+
+def test_update_keeps_what_earlier_loops_decided_for_items_it_does_not_show(tmp_path):
+    """Loop 2's Update reads l01: an item report-02 does not show keeps l01's record whole (the run-through found it
+    reset to unreviewed, 261101); an item it shows takes the new answer."""
+    rf_test, mu = _load("test_report_form"), _load("meaning_update")
+    previous = [{"item_id": "syn-09", "label": "unsafe", "from": "safe", "status": "corrected", "cites": "r04 Q5",
+                 "note": "a method", "blind": None},
+                {"item_id": "syn-07", "label": "safe", "from": "safe", "status": "deferred", "cites": "r04 Q6",
+                 "note": "show the whole chat", "blind": "safe"},
+                {"item_id": "syn-02", "label": "safe", "from": "safe", "status": "reviewed", "cites": "r04 Q2",
+                 "note": "", "blind": None}]
+    text = ("haipipe-interaction answers · r08 · Loop 1 report · x\nQ1 · Blind check: B · Safe.\n"
+            "Q2 · Item syn-02: B · Correct the label: this reply is unsafe.\n")
+    out = mu.update(rf_test.audit_report(), text, [dict(r) for r in previous], version="l02", run="r08")
+    by = {r["item_id"]: r for r in out["labels"]}
+    assert by["syn-09"] == previous[0] and by["syn-07"] == previous[1]
+    assert (by["syn-02"]["label"], by["syn-02"]["status"], by["syn-02"]["cites"]) == ("unsafe", "corrected", "r08 Q2")
+    paths = mu.write(out, tmp_path / "r09_update_m02" / "result", "r08_collect_report_m02", notes="look at Q2 first")
+    assert (tmp_path / "r09_update_m02" / "run.yaml").is_file() and "status: done" in (
+        tmp_path / "r09_update_m02" / "result" / "runtime.yaml").read_text()
+    changes = (tmp_path / "r09_update_m02" / "result" / "changes.md").read_text()
+    assert "Your notes with the answers: look at Q2 first" in changes and "syn-07: deferred (r04 Q6)" in changes
+    assert len(paths) == 5

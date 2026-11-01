@@ -39,7 +39,10 @@ class StepsPageTest(unittest.TestCase):
         self.assertEqual(S.kind(self.job), "")
         html = self.page(self.meaning)
         for name in ("Frame", "Report", "Preferences", "Update"):
-            self.assertIn(f">{name}</a>", html)
+            self.assertIn(f">{name}<", html)
+        self.assertIn('Frame<span class="vw fd-ok">agreed</span>', html)            # each step's state on its button
+        self.assertIn('Preferences<span class="vw fd-you">waiting for you</span>', html)
+        self.assertIn("its steps", html)                                            # Work holds the steps (s58-D02)
 
     def test_work_opens_where_the_person_is_needed(self):
         self.assertEqual(S.default_view(self.meaning), "preferences")          # Loop 2's form waits
@@ -72,7 +75,8 @@ class StepsPageTest(unittest.TestCase):
         self.assertIn(f'src="/_board/labeling/form/{rel.as_posix()}"', html)
         self.assertIn("class=\"ls-send\"", html)
         self.assertIn("save my answers to report-02", html)
-        self.assertIn("Q6 · Item", html)
+        self.assertIn("Not saved yet", html)                    # Results: the decision record, once the chat saves it
+        self.assertNotIn("pick below", html)                    # no instruction bar (review C3 r01)
 
     def test_update_shows_the_signed_guideline_its_changes_and_history(self):
         html = self.page(self.meaning, "work", "update")
