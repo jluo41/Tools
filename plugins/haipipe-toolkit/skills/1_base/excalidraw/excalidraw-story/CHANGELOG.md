@@ -1,5 +1,10 @@
 # excalidraw-story · changelog
 
+## [0.2.2] — 2026-10-31
+
+Inside a Studio topic's five-part drawing this skill draws only the Design part; the five parts are
+excalidraw-studio's (JL 261031, b35 r01 Q1: A; b35-s01-D16).
+
 ## [0.2.1] — 2026-10-26
 
 Hidden from the skill listing (`disable-model-invocation: true`); reached through the `/excalidraw` door, which reads this SKILL.md by path. Nothing moved; `/excalidraw-story` still works when a person types it. (hide 261026)
@@ -90,4 +95,4 @@ Hidden from the skill listing (`disable-model-invocation: true`); reached throug
   row's mark read its state's first word ("not done" is ⬜, not ✅), and kept a wrapped heading from ending a list.
 - Act 4 · Where the story could go: §9's venues as stairs, from the target to the fallbacks; a venue with no
   desk record is red and dashed (JL 261019: "我们要不要把这个 venue 直接塞到这个 story 里面去？ ... 也要想想它适合什么样的 journal，然后搞出来一个 journal list or conference list").
-- First user: Project-LLMRec-Physician's `studio/s02-story-misq-agent-physician-visibility/` (now on its MIS Quarterly Board), four questions, 2 partly answered.
+- First user: Project-LLMRec-Physician's `s02-story-misq-agent-physician-visibility/` (now on its MIS Quarterly Board), four questions, 2 partly answered.

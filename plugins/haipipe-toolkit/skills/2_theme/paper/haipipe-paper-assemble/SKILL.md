@@ -2,8 +2,8 @@
 name: haipipe-paper-assemble
 description: "Builds the whole manuscript deterministically from the Sections' LaTeX and accepted bindings, regenerating delivery/ (DOCX, PDF, supplement, source manifest); never reads a generated Word file back. Use to assemble, build Word, export the paper, regenerate submission files, or check whether a document is stale. Trigger: assemble, build Word, export the paper, /haipipe-paper-assemble."
 metadata:
-  version: "0.12.2"
-  last_updated: "2026-10-28"
+  version: "0.12.4"
+  last_updated: "2026-11-01"
   summary: "Paper-level source-driven document assembly; page-level Word export remains a separate workbench."
 ---
 
@@ -47,13 +47,13 @@ release, send or submission approval.
 
 The layers have different jobs:
 
-Layout: the ladder (the Story as `studio/` topics and `reports/` Questions, `jNN_v<MMDD>_<desk>/` per version) is current; the layout below is still read. Both are in `haipipe-paper/ref/paper-ladder.md`.
+Layout: the ladder (the Story as `sNN-…` topics beside the Jobs and `reports/` Questions, `jNN_writing_v<MMDD>_<desk>/` per version) is current; the layout below is still read. Both are in `haipipe-paper/ref/paper-ladder.md`.
 
 ```text
 Paper-<Slug>/
-  j01_v<MMDD>_<desk>/<version>.md       Narrative and compile order
-  j01_v<MMDD>_<desk>/t0N_<title>/       Page source, Draft, Runs, Results
-  delivery/j01_v<MMDD>_<desk>/
+  j11_writing_v<MMDD>_<desk>/<version>.md   Narrative and compile order
+  j11_writing_v<MMDD>_<desk>/t0N_<title>/   Page source, Draft, Runs, Results
+  delivery/j11_writing_v<MMDD>_<desk>/
     paper-build.toml · build.py         maintained build inputs
     latex/ · word/                     generated complete manuscript
     t0N_<title>/latex/<page>.tex         generated Page body fragment
@@ -176,7 +176,7 @@ requires Python 3.11+ for `tomllib`; run it with the workspace venv.
 
 ## 🔢 Three behaviors every build must have (260908)
 
-Found paper-locally by Paper-MISQ-Board, now in the engine with a tooth each in
+Found paper-locally by Paper-Example-Misq, now in the engine with a tooth each in
 `tests/test_build_delivery.py`:
 
 ```text
@@ -253,7 +253,7 @@ counts their real `<w:tbl>` elements against the table displays it meant to
 emit and against the master's table floats, records
 `build.checks.tables_rendered` in the manifest, and exits non-zero on any
 mismatch: a table that reaches the PDF and not the Word file is a loud failure,
-never a caption with nothing under it (found by Paper-MISQ-Board, 260908: 3 of 4
+never a caption with nothing under it (found by Paper-Example-Misq, 260908: 3 of 4
 main tables and 7 of 12 appendix tables were lost). `tests/test_latex_room_to_docx.py`
 drives the real engine over a room with those exact column specs.
 
@@ -362,7 +362,7 @@ omitted only when the selected profile supplies a declared default:
 
 ```toml
 [paper]
-id = "Paper-AgreeablePrescription"
+id = "Paper-Example-Misq"
 desk = "misq2026"
 source_format = "latex-room"
 venue_profile = "misq"
@@ -372,9 +372,9 @@ venue_profile = "misq"
 # `haipipe:compile-order` block fixes the reading order. Each page contributes its body fragment
 # <Block>/delivery/<page-source-path>/latex/<page>.tex, its delivery/latex/selected-bibliography/<page>.bib, and the float.tex +
 # asset of every display unit its fragment \ref's. (An older Board names its Ba-/Bb- groups and its Story Page.)
-main = "../../j01_v<MMDD>_<desk>"
-appendix = "../../j01_v<MMDD>_<desk>"
-order = "../../j01_v<MMDD>_<desk>/j01_v<MMDD>_<desk>.md"   # the version face's compile-order block
+main = "../../j11_writing_v<MMDD>_<desk>"
+appendix = "../../j11_writing_v<MMDD>_<desk>"
+order = "../../j11_writing_v<MMDD>_<desk>/j11_writing_v<MMDD>_<desk>.md"   # the version face's compile-order block
 
 [source]
 # the GENERATED room; the builder writes it, nobody edits it
@@ -392,10 +392,10 @@ lock = "latex/evidence-lock.json"
 mode = "draft"
 
 [outputs]
-main_docx = "word/Paper-AgreeablePrescription-draft.docx"
-supplement_docx = "word/Paper-AgreeablePrescription-supplement-draft.docx"
-main_pdf = "latex/Paper-AgreeablePrescription-draft.pdf"
-supplement_pdf = "latex/Paper-AgreeablePrescription-supplement-draft.pdf"
+main_docx = "word/Paper-Example-Misq-draft.docx"
+supplement_docx = "word/Paper-Example-Misq-supplement-draft.docx"
+main_pdf = "latex/Paper-Example-Misq-draft.pdf"
+supplement_pdf = "latex/Paper-Example-Misq-supplement-draft.pdf"
 section_snapshots = "word/draft-sections"
 assets = "latex/submission-assets"
 manifest = "build-manifest.json"

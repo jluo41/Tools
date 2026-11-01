@@ -414,7 +414,8 @@ def render_run(board: Path, root: Path, task: str, partition: str) -> str:
     from .paper import _RESULT_PAGE, _csv_view, _md_view
     board, root = Path(board).resolve(), Path(root).resolve()
     qf = (board / task).resolve()
-    if not qf.is_relative_to(board) or not (qf / "runs" / f"{partition}.sh").is_file():
+    if (not qf.is_relative_to(board) or "/" in partition or ".." in partition
+            or not (qf / "runs" / f"{partition}.sh").is_file()):
         raise FileNotFoundError(f"{task} · {partition}")
     res, rep = qf / "results" / partition, qf / "reports" / partition
     raw = lambda f: "/" + quote(f.resolve().relative_to(root).as_posix(), safe="/")
@@ -431,7 +432,8 @@ def render_run(board: Path, root: Path, task: str, partition: str) -> str:
             for f in docs))
     body.append(f'<details><summary><b>Receipt</b></summary><pre>{_e(receipt.read_text()[:4000])}</pre></details>'
                 if receipt.is_file() else '<p class=mut>Not run yet: no receipt.</p>')
-    files = sorted(f for f in res.rglob("*") if f.is_file()
+    from host_registry import static_path_allowed  # sealed labels, *.private.*, dot folders stay hidden (review 261031)
+    files = sorted(f for f in res.rglob("*") if f.is_file() and static_path_allowed(root, f)
                    and not (docs and f.parent == res and f.name.startswith("fig_"))) if res.is_dir() else []
     tabs = [f for f in files if f.suffix.lower() in (".csv", ".tsv")]
     for f in tabs:
@@ -456,6 +458,9 @@ def render_file(board: Path, root: Path, rel: str) -> tuple[int, str]:
         return 404, "<p>No such file.</p>"
     if not any(path == a or path.is_relative_to(a) for a in _allowed(board)) or \
             any(p.startswith(".") for p in path.relative_to(root).parts):
+        return 404, "<p>This file is not part of the board.</p>"
+    from host_registry import static_path_allowed  # sealed labels, *.private.*, dot folders stay hidden (review 261031)
+    if not path.is_dir() and not static_path_allowed(root, path):
         return 404, "<p>This file is not part of the board.</p>"
     if path.is_dir():
         items = "".join(f'<li><a href="{_e(file_url(board, f, root))}">{_e(f.name)}{"/" if f.is_dir() else ""}</a></li>'

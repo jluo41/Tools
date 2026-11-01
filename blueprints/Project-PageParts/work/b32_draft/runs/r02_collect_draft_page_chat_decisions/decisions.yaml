@@ -1,0 +1,15 @@
+- title: Box the heading
+  decision: Each section's box is its heading bar only; the content follows below, unboxed (s42-D09).
+  said: could we put the box just in the section? and the content below it we should be outside of the box. (relayed by Opioid-PDMP-DID)
+  when: 2026-10-31 17:04
+  applied_by: 'workbench-task-draft/focus_draft.py: CSS .fd-h, ASK_STEPS, work_views, .fd-body .pm-edit'
+- title: Fewer prompts
+  decision: Ask the agent stays only on Plan, Write and Revise; 4 · Display hides when the text calls no Table or Figure (s42-D10).
+  said: I don't think we need this. (relayed by Opioid-PDMP-DID, on 4 · Display's Ask the agent and its empty box)
+  when: 2026-10-31 17:04
+  applied_by: 'workbench-task-draft/focus_draft.py: CSS .fd-h, ASK_STEPS, work_views, .fd-body .pm-edit'
+- title: Map embedded
+  decision: The plan mind map stays inside its own bounded frame in its section and scrolls there (s42-D11).
+  said: why the mindmap here is not embeded? as before. (relayed by Opioid-PDMP-DID)
+  when: 2026-10-31 17:04
+  applied_by: 'workbench-task-draft/focus_draft.py: CSS .fd-h, ASK_STEPS, work_views, .fd-body .pm-edit'

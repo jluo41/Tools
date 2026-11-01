@@ -1,0 +1,53 @@
+- title: Paper parts
+  decision: 'The Board''s Report shows the paper''s own parts, one view each: Idea, Story, Venue, Data flow, Paper flow (s32-D04).'
+  said: for the report, I think we should have the things like the idea, the story, the venue, and the data flow, and the paper flow, etc.
+  when: 2026-10-31 17:04
+  applied_by: focus_draft.board_report_views, _topic_view (The mind map, Interactions sections); focus_page HOOK paper_board_report
+- title: Venue with related
+  decision: Venue holds the desk rules, the ladder of journals and the venue's related work; Status, Findings and Questions go (s32-D05).
+  said: I think venue and related work should be together, right? and we don't need to have the status, findings or questions, no need to use them anymore. (relayed by the Paper-Example session)
+  when: 2026-10-31 17:04
+  applied_by: focus_draft.board_report_views, _topic_view (The mind map, Interactions sections); focus_page HOOK paper_board_report
+- title: Sections not views
+  decision: The mind map and Interactions are sections inside each part's view, not views of their own (s32-D06).
+  said: I think the interaction and MindMap should be something like the sections under the view, do you get it?
+  when: 2026-10-31 17:04
+  applied_by: focus_draft.board_report_views, _topic_view (The mind map, Interactions sections); focus_page HOOK paper_board_report
+- title: Flag waiting
+  decision: The Interaction button shows 🙋 and an orange edge when a question waits for the person; plain when nothing waits. Changes r04 Q3 (no colour).
+  said: if there are some questions i need to answer, cuold you flag them as well.
+  when: 2026-10-31 17:09
+  applied_by: 'focus_page.interaction_button: 🙋 and orange edge when a row''s items wait'
+- title: Explore view
+  decision: 'The Board gains an Explore view between Paper flow and Evidence: the work Blocks (internal) and discovery Blocks (external) this paper draws on, each with the Jobs it uses.'
+  said: And also, I think one paper's studio should be "explore blocks" this will be one of the view as well, which indicate what are the work blocks and what are the citation blocks will be used to support
+    this work, do you get what I mean here?
+  when: 2026-10-31 20:45
+  applied_by: focus_draft.explore_blocks, explore_html (Report and Work); paper_ui_cells board_report, board_work, secbar; s32 and s33 redrawn; s32-D07
+- title: Redraw s32
+  decision: 's32''s sketch shows the live Board: the eight views, sections as heading bars, the mind map and Interactions as sections, no verb after Report.'
+  said: how will you go ahead to update the s32 as well? this should be updaetd.
+  when: 2026-10-31 20:45
+  applied_by: focus_draft.explore_blocks, explore_html (Report and Work); paper_ui_cells board_report, board_work, secbar; s32 and s33 redrawn; s32-D07
+- title: Views A to H
+  decision: The eight views are lettered A to H and settled one round each; the letter names the screen, its decision and its delivery file
+  said: we might want to update them one by one, right? How do you think about it? I think you should have the A, B, C, D. etc
+  when: 2026-10-31 22:33
+  applied_by: s32-D09 to D11, s33-D02; focus_draft.ANSWER_FIRST; paper_ui_cells.py letters; s32 delivery/render.yaml
+- title: A answer first
+  decision: A · Idea opens on 1 · Direction, then waiting forms, then the drawing and mind map, then the rest
+  said: let's think about this first, do you think we should put the Direction to the top? / yes, please update them accordingly
+  when: 2026-10-31 22:33
+  applied_by: s32-D09 to D11, s33-D02; focus_draft.ANSWER_FIRST; paper_ui_cells.py letters; s32 delivery/render.yaml
+- title: Skill and workbench
+  decision: s32's delivery has ui/board-report/ (built into servers/workbench-paper/) and skill/board-report-views.md (rendered into workbench-paper/SKILL.md)
+  said: this should be reconsidered as well, like we should have the skill folder and workbench folder as well.
+  when: 2026-10-31 22:33
+  applied_by: s32-D09 to D11, s33-D02; focus_draft.ANSWER_FIRST; paper_ui_cells.py letters; s32 delivery/render.yaml
+- title: Flow map, whole track
+  decision: C · Data flow's Flow map runs past the questions to the Runs and the paper end, reading all six columns of the data-flow topic's drawing yaml (data, linking, tables, analysis, hypothesis to
+    claim, in the paper); it changes s32-D17
+  said: 'finish all of them and continue, and make the draft as complete as possible (relayed by the Paper-Example session: JL''s reply to its plan, whose open point asked whether the Report''s map should run on
+    to the Runs and the paper)'
+  when: 2026-11-01 01:59
+  applied_by: ''

@@ -30,7 +30,7 @@ def demo(tmp_path) -> tuple[Path, Path]:
           "  report: reports/q01_ready/q01_ready.md\n```\n\n## Related resources\n\n```yaml\nresources:\n"
           "- title: The form\n  url: https://example.test/form\n  questions: [Q01]\n```\n")
     write(block / "reports/q01_ready/q01_ready.md", "# Is it ready?\nanswers: Q01\nanswer-status: answered\n")
-    write(block / "studio/s01-flow/s01-flow.excalidraw", "{}")
+    write(block / "s01-flow/s01-flow.excalidraw", "{}")
     write(block / "j00_people/j00_people.md", "# People\njob-kind: cowork-job\nstate: 📇 REFERENCE\n\nPERSON_001 · owner\n")
     job = block / "j01_request"
     write(job / "j01_request.md", job_page("Request to OFFICE_A", "🟡 ACTIVE", "PERSON_002", "2026-10-01", "send v2"))

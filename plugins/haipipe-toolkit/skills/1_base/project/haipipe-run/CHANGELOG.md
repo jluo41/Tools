@@ -1,3 +1,31 @@
+## 0.36.5 · 2026-10-31 · prune_runs.py never deletes what git cannot give back
+
+From a code review of haipipe-toolkit (an independent agent reproduced each case on temp copies).
+- A failed retry replaces nothing: `Run.stands` (ran, and not open or failed) now gates both the "replaced by" verdict
+  and the `status: superseded` mark. Before, a failed r02 with `supersedes: r01` had r01 pruned as replaced and r02 as
+  never ran: one `--apply` emptied `runs/`.
+- `--apply` runs `git status` on each Run (`unsaved()`): an uncommitted edit is refused (commit it, or `--to-old`),
+  and files git does not hold are refused unless `--untracked-ok`. Before, `in_git()` passed when any one file was
+  committed, and `rmtree` took an unsaved ticket edit and an unread `result/RUN-REPORT.md`.
+- Tests: test_a_failed_retry_replaces_nothing and test_apply_never_deletes_an_unsaved_edit_or_a_file_git_does_not_hold;
+  both fail on 0.36.4 (26 pass).
+
+## 0.36.4 · 2026-10-31 · a person's answers are a collection Run
+
+- A collection Run is a new hard Run type (JL 261031: "so it will be a run of collection"; "it will just be the rNN
+  under that page"). It is `rNN_collect_<slug>/` under the page whose work the answers change, with `type: collect`
+  and the person as `agent:`. Its questions are `question_collection.md`, its ticket is the form rendered from
+  them, and its Result is `result/answer_collection.md`. Its owner is haipipe-interaction (named haipipe-collect until later that day).
+- It is hard by this contract's own test: its output lands only in its own `result/`, a judgment.
+- It is the one hard Run allowed outside a work Task.
+- SKILL.md (the Hard and soft table's Where row, and the person's-decision sentence), `ref/run-catalog.md` and
+  `ref/run-types-by-space.md` name it. The first one is b17's
+  `j03_work_workbench_pages/t01_block_page/runs/r01_collect_report_and_delivery`.
+
+## 0.36.3 · 2026-10-29 · a Studio round is not a Run
+
+- Idea Studio makes no Run (JL 261029, b17 s04 p02): a round is `sNN-<topic>/passes/pNN-<MMDD>/`; the `run-draw-<sNN>` button and table rows are gone from SKILL.md and `ref/run-types-by-space.md`.
+
 ## 0.36.0 · 2026-10-21 · the Workflow is haipipe-run's
 
 - The haipipe-workflow skill is merged in: `ref/workflow.md` (its body and the unique part of its concepts),

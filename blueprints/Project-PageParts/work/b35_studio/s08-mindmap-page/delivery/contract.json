@@ -1,0 +1,36 @@
+{
+  "id": "s08",
+  "folder": "s08-mindmap-page",
+  "title": "Mind Map Page",
+  "kind": "Page",
+  "purpose": "Explore an argument and edit its structure where you read it.",
+  "audience": "People thinking with a structured map",
+  "product": "An interactive map page with node editing, drawing previews, and configuration export.",
+  "steps": [
+    [
+      "Explore",
+      "Move from the workflow to sections and leaves."
+    ],
+    [
+      "Edit",
+      "Rename a node, add a child, or remove a leaf."
+    ],
+    [
+      "Draw",
+      "Open the drawing attached to a leaf."
+    ],
+    [
+      "Keep",
+      "Save in this browser or export the map configuration."
+    ]
+  ],
+  "checks": [
+    "Rename and add-child operations appear immediately.",
+    "Saved edits survive a reload in the same browser.",
+    "Exported configuration can be imported back.",
+    "Drawing links open real previews."
+  ],
+  "example": "A delivery design workflow with linked Studio and Gallery drawings.",
+  "open": "Should editing a map create a new review round automatically?",
+  "source": "plugins/haipipe-toolkit/skills/1_base/project/haipipe-mindmap/scripts/mapview.py"
+}

@@ -1,0 +1,38 @@
+{
+ "topic": "s12-job-level",
+ "style": "sketch-notes",
+ "source": "s12-job-level.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Job level",
+   "points": [
+    "one Job's tab, drawn for j03_p2_<d>v2: one Prototype version × one data version (s00), its six…",
+    "It follows s00: a Job pins one Prototype version and one data version",
+    "a DIKW level groups the questions inside a Job"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and one insight Job's tab, its Spaces as full screens with what is on disk, for the people who build the workbench",
+    "a ui"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "Still open",
+   "points": [],
+   "leaning": "",
+   "ask": "Agree its For: line and Delivery type: (ui), proposed by the agent 261030?",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

@@ -1,0 +1,14 @@
+run: r01_collect_draft_task_page
+kind: hard
+type: collect
+scope: blueprints/Project-PageParts/work/b32_draft
+target: b32-s42:draft @ draft_task_focus_page
+ticket: r01_collect_draft_task_page.html
+skill: haipipe-interaction
+agent: JL
+signs: null
+status: waiting
+passes: []
+writes:
+- result/answer_collection.md
+feeds: []

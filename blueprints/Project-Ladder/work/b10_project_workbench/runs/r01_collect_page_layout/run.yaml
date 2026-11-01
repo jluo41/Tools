@@ -1,0 +1,16 @@
+run: r01_collect_page_layout
+kind: hard
+type: collect
+scope: blueprints/Project-Ladder/work/b10_project_workbench
+target: b10-s33:project_workbench @ one_page_shape
+ticket: r01_collect_page_layout.html
+skill: haipipe-interaction
+agent: JL
+signs: null
+status: done
+passes:
+- p01-1031
+writes:
+- result/answer_collection.md
+feeds:
+- blueprints/Project-Ladder/work/b10_project_workbench

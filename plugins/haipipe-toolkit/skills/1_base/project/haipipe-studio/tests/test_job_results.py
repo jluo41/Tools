@@ -43,11 +43,11 @@ class JobResultsTest(unittest.TestCase):
         out = self.make()
         topic = out.parent
         self.assertEqual(topic.name, "s21-j11-sft-results")
-        self.assertEqual(topic.parents[1], self.block.resolve())                        # the Block's studio, not the Job's
+        self.assertEqual(topic.parent, self.block.resolve())                            # beside the Block's Jobs, not in the Job
         for name in ("s21-j11-sft-results.md", "s21-j11-sft-results.excalidraw", "s21-j11-sft-results.png",
                      "build_s21_j11_sft_results.py"):
             self.assertTrue((topic / name).is_file(), name)
-        self.assertIn("Results", (self.block / "studio" / "_groups.txt").read_text())
+        self.assertIn("Results", (self.block / "_studio_groups.txt").read_text())
 
     def test_values_pair_before_and_after_and_skip_config_and_delta(self):
         rows = job_results.job_rows(self.block, self.job, {})

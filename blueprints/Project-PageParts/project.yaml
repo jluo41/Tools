@@ -1,0 +1,6 @@
+schema: haipipe-project/v1
+id: Project-PageParts
+profile: research
+git_mode: workspace
+state: active
+mission: "Decide how any page is made, from its drawings, draft and evidence to its figures and tables, so every paper and report page is built the same way."

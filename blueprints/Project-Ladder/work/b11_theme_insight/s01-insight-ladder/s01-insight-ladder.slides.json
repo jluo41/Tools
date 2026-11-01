@@ -1,0 +1,38 @@
+{
+ "topic": "s01-insight-ladder",
+ "style": "sketch-notes",
+ "source": "s01-insight-ladder.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Insight ladder",
+   "points": [
+    "plan A and plan B in the workbench UI: the insight rows of b03's s11-block-variants (Blocks),…",
+    "Frames: Decide (the ladder and the open points ① to ⑦ with my answers)",
+    "Board level A (DIKW on the board), B (DIKW in the Jobs) and the older register board, in the same…"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and the proposed insight screens at Block, Job and Task beside today's, for the people who build the workbench",
+    "a ui"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "Still open",
+   "points": [],
+   "leaning": "",
+   "ask": "Agree its For: line and Delivery type: (ui), proposed by the agent 261030?",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

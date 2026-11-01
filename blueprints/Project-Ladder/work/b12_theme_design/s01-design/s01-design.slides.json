@@ -1,0 +1,38 @@
+{
+ "topic": "s01-design",
+ "style": "sketch-notes",
+ "source": "s01-design.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Design",
+   "points": [
+    "the design ladder at a glance",
+    "drawn first in b03, moved here when this Block was made (261007)",
+    "One frame, design ladder: each level, its folder and where it shows"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and the design ladder at a glance, each level with its folder and screen, for the people who write the toolkit skills",
+    "a skill"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "Still open",
+   "points": [],
+   "leaning": "",
+   "ask": "Agree its For: line and Delivery type: (skill), proposed by the agent 261030?",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

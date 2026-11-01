@@ -1,0 +1,15 @@
+run: r01_collect_theme_alignment
+kind: hard
+type: collect
+scope: blueprints/Project-Ladder/work/b17_theme_work
+target: b17-s01:theme_work @ work_ladder
+ticket: r01_collect_theme_alignment.html
+skill: haipipe-interaction
+agent: JL
+signs: null
+status: done
+passes:
+- p01-1031
+writes:
+- result/answer_collection.md
+feeds: []

@@ -30,7 +30,7 @@ class WbShareTest(unittest.TestCase):
             code, out = self.run_share(str(block), "Someone@JH.edu", "--share-root", str(root))
             self.assertEqual(code, 0)
             self.assertIn("shared blueprints/b10_demo with someone@jhu.edu (view)", out)
-            self.assertIn("https://block.example/_board/workbench?path=blueprints/b10_demo&studio=1", out)
+            self.assertIn("https://block.example/_board/workbench?path=blueprints/b10_demo&layout=focus", out)
             self.run_share(str(block), "someone@jhu.edu", "--level", "edit", "--share-root", str(root))
             cfg = W.S.ShareConfig.load(root)
             self.assertEqual(cfg.grants, [("someone@jhu.edu", "blueprints/b10_demo", 3)])      # one line, new level
@@ -87,7 +87,7 @@ class WbShareTest(unittest.TestCase):
                 code, out = self.run_share(str(job))                                    # a folder below it
                 self.assertIn("🔗 blueprints/b10_demo/j01_x", out)
                 self.assertIn("a.person@jhu.edu", out)
-                self.assertIn("path=blueprints/b10_demo/j01_x&studio=1", out)
+                self.assertIn("path=blueprints/b10_demo/j01_x&layout=focus", out)
             finally:
                 os.chdir(here)
 

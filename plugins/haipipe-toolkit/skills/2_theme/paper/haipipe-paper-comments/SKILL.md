@@ -2,8 +2,8 @@
 name: haipipe-paper-comments
 description: "Takes in what people say about a paper (reviews, an editor's letter, coauthor notes, a meeting): splits it into points, groups them into Review Items, routes each to its owner, records replies, and proposes Board questions worth answering. Use to triage comments or answer a review. Was haipipe-paper-round. Trigger: comments, review report, respond to reviewers, /haipipe-paper-comments."
 metadata:
-  version: "1.3.1"
-  last_updated: "2026-10-26"
+  version: "1.3.2"
+  last_updated: "2026-11-01"
   group-token: "CM"
   legacy-group-token: "RD"
   outline:
@@ -141,7 +141,7 @@ instead of holding a copy. An older batch's own `meeting/` folder is still read.
 ### 🪪 Naming law
 
 ```text
-j02_v<MMDD>_<desk>/reports/q01_review-1020/      a review batch, in the version that answers it
+j12_writing_v<MMDD>_<desk>/reports/q01_review-1020/   a review batch, in the version that answers it
 reports/q07_meeting-1022/                         a meeting about the telling, at the Board
 Bc-<desk>-Round/CM03-<desk>-review-<YYYYMMDD>/   older shelves (legacy, read as is), RD<NN>-… too
 ```

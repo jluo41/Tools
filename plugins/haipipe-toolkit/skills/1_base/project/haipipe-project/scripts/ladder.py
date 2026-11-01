@@ -5,7 +5,8 @@
     ladder.py update <path> [--apply] [--today]            dry run unless --apply
 
 --today adds b10's rules since 261012 (the table's `today:` key): studio topics, the Questions register,
-reports/ for each Block Question, related/ and delivery/ at the Block only (b10 s10); and, at a work Block, the
+reports/ for each Block Question, related/ at the Block only (b10 s10; studio/ and delivery/ live at every level
+since JL 261028, with one sNN numbering per Block); and, at a work Block, the
 workflow rules since 261021: the face's workbench-layout line, each Job's ## Deliverables and emoji, each work
 Task's goal and close, each Run card's role (update --today --apply writes it), no stand-in receipt.
 
@@ -43,6 +44,7 @@ def load_table() -> dict:
 
 
 T = load_table()
+STUDIO_ITEM = re.compile(r"^s\d{2}[-_]")             # an sNN-<topic>/ folder, beside a level's Jobs or Tasks
 NAMES = {k: re.compile(v) for k, v in T["names"].items()}
 ABS = re.compile(T["checks"]["absolute_path"])
 HEAVY = T["checks"]["heavy_mb"] * 1024 * 1024
@@ -137,8 +139,8 @@ def ladder_dirs(path: Path, level: str, fam: str, child: str | None, node: Node)
             continue
         if child and NAMES[child].match(d.name):
             kids.append(d)
-        elif d.name in allowed:
-            continue
+        elif d.name in allowed or (level in ("block", "job", "task") and STUDIO_ITEM.match(d.name)):
+            continue                                    # an sNN beside the Jobs or Tasks (haipipe-studio, JL 261030)
         elif d.name in rules.get("debt", {}):
             node.add("debt", rules["debt"][d.name])
         else:
@@ -229,7 +231,11 @@ def audit_run(d: Path, fam: str, work_task: bool, where: str, root: Path) -> Nod
     # A soft Run's ticket is its ask, `.md`; a Page's Delivery Run (`run-delivery-<lane>`) is one fixed
     # command, so its ticket is that command, `.sh` (haipipe-draft 0.125, JL 261009).
     soft = (".md", ".sh") if name.startswith("run-delivery-") else (".md",)
-    tickets = [d / f"{name}{e}" for e in ((".sh", ".cmd", ".ps1", ".yaml", ".yml") if kind == "hard" else soft)]
+    # A collection Run's ticket is the form a person answers, rendered from its question_collection.md
+    # (haipipe-interaction, JL 261031); it is the one hard Run allowed under any page.
+    collect = kind == "hard" and bool(NAMES["collect"].match(name))
+    hard = (".html",) if collect else (".sh", ".cmd", ".ps1", ".yaml", ".yml")
+    tickets = [d / f"{name}{e}" for e in (hard if kind == "hard" else soft)]
     ticket = next((t for t in tickets if t.is_file()), None)
     if kind and not ticket:
         node.add("failed", f"no ticket ({tickets[0].name})")
@@ -244,12 +250,14 @@ def audit_run(d: Path, fam: str, work_task: bool, where: str, root: Path) -> Nod
         node.add("debt", "no run.yaml (update writes it)")
     if kind == "soft" and (d / "result").exists():
         node.add("failed", "a soft Run has no result/: it writes into its scope")
-    if kind == "hard" and not work_task:
+    if kind == "hard" and not work_task and not collect:
         node.add("failed", f"a hard Run sits in a {'Page Task' if where == 'task' else where.capitalize()}")
     if kind == "hard" and str(card.get("status", "")) in {"done", "complete", "completed", "success"} \
             and not (d / "result").is_dir():
         node.add("failed", "marked done with no result/")
     keep = set(T["levels"]["run"]["may_hold"]) | {t.name for t in tickets}
+    if collect and (d / "question_collection.md").is_file():   # the previews and pictures its questions link by bare
+        keep |= set(re.findall(r"\]\(([^)\s/]+)\)", face_text(d / "question_collection.md")))   # name sit beside it
     for p in sorted(d.iterdir()):
         if not p.name.startswith(".") and p.name not in keep:
             node.add("debt", f"{p.name} is not in the ladder for a Run")
@@ -360,23 +368,25 @@ def today_findings(block: Path) -> list[tuple[str, str]]:
     topic = re.compile(TODAY.get("topic", r"^s\d{2}[-_]"))
     studio = block / "studio"
     entries = sorted(studio.iterdir()) if studio.is_dir() else []
-    topics = [d for d in entries if d.is_dir() and topic.match(d.name)]
+    # its topics: sNN beside its Jobs (haipipe-studio 0.21.0, JL 261030), or an older studio/'s
+    topics = [d for d in sorted(block.iterdir()) if d.is_dir() and STUDIO_ITEM.match(d.name)] + \
+             [d for d in entries if d.is_dir() and topic.match(d.name)]
+    at = lambda d: d.relative_to(block).as_posix()                       # noqa: E731   where it is now
     has_jobs = any(d.is_dir() and NAMES["job"].match(d.name) for d in block.iterdir())
     if not topics and has_jobs:                                # a Block with no Job yet has nothing to draw (261021)
-        out.append(("debt", "today: studio/ has no sNN-<topic>/ topic"))
-    s00 = TODAY.get("s00", "s00-overview")                   # one name, every Block (haipipe-studio; JL 261012, 261026)
-    if topics and not (studio / s00).is_dir():
-        out.append(("debt", f"today: studio/ has no {s00}/: draw it with haipipe-studio block_index.py --draw"))
+        out.append(("debt", "today: no sNN-<topic>/ studio topic beside its Jobs"))
+    s00 = "s00-overview"                                     # retired 261029: Report › MindMap shows the Block
     for d in topics:
-        if d.name in TODAY.get("s00_was", []):
-            out.append(("debt", f"today: studio/{d.name}/ is s00's old name: update --today --apply renames it {s00}/"))
-        elif d.name != s00 and (d.name.startswith("s00") or d.name.endswith("background-index")):
-            out.append(("debt", f"today: studio/{d.name}/ is a background index: its one name is {s00}/"))
-    given_up = {h.name[:3] for h in (studio / s00 / "history").glob("pre-s00-*/topic/s[0-9][0-9]-*")
-                if h.name[:3] != "s00"} if (studio / s00 / "history").is_dir() else set()
+        if d.name.startswith("s00") or d.name.endswith("background-index"):
+            out.append(("debt", f"today: {at(d)}/ is a retired s00 (JL 261029: the Report MindMap shows the "
+                                "Block): delete it, with runs/run-draw-s00/; git keeps both"))
+        elif d.parent == studio:
+            out.append(("debt", f"today: {at(d)}/ is in studio/: move it beside its Jobs ({d.name}/)"))
+    old = next((h for h in (block / s00 / "history", studio / s00 / "history") if h.is_dir()), None)
+    given_up = {h.name[:3] for h in old.glob("pre-s00-*/topic/s[0-9][0-9]-*") if h.name[:3] != "s00"} if old else set()
     for d in topics:
         if d.name[:3] in given_up:
-            out.append(("debt", f"today: studio/{d.name}/ reuses {d.name[:3]}, the old index's number: renumber it"))
+            out.append(("debt", f"today: {at(d)}/ reuses {d.name[:3]}, the old index's number: renumber it"))
     for e in entries:
         if e.name.startswith((".", "_")) or e in topics or kept_loose(e.name):
             continue
@@ -402,8 +412,19 @@ def today_findings(block: Path) -> list[tuple[str, str]]:
         for name in TODAY.get("block_only", []):
             if (lvl / name).is_dir():
                 out.append(("debt", f"today: {rel_}/{name}/ belongs at the Block"))
-        if (lvl / "studio").is_dir() and any(topic.match(d.name) for d in (lvl / "studio").iterdir() if d.is_dir()):
-            out.append(("debt", f"today: {rel_}/studio/ holds topics: they belong in the Block's studio/"))
+    numbers: dict[str, list[str]] = {}               # one sNN numbering per Block, across its Jobs and Tasks
+    for lvl in [block] + jobs + tasks:                # each level's sNN beside its Jobs or Tasks, then its studio/'s
+        for holder in (lvl, lvl / "studio"):
+            for d in sorted(holder.iterdir()) if holder.is_dir() else []:
+                m = re.match(r"^(s\d{2})[-_]", d.name)
+                if d.is_dir() and m:
+                    numbers.setdefault(m.group(1), []).append(d.relative_to(block).as_posix())
+        if lvl != block and (lvl / "studio").is_dir():
+            out += [("debt", f"today: {at(d)}/ is in studio/: move it up, into {at(lvl)}/ itself")
+                    for d in sorted((lvl / "studio").iterdir()) if d.is_dir() and STUDIO_ITEM.match(d.name)]
+    for nn, where in sorted(numbers.items()):
+        if len(where) > 1:
+            out.append(("debt", f"today: {nn} is used twice in this Block: {', '.join(where)}"))
     if family_of(block) == "task":
         out += workflow_findings(block, text, jobs, tasks)
     return out
@@ -504,50 +525,7 @@ def today_moves(block: Path) -> list[tuple[Path, Path, str]]:
             and not (block / f.name).exists()]
 
 
-def s00_renames(block: Path) -> list[tuple[Path, Path]]:
-    """(old, new) when a Block's s00 still has a name it gave up (`today: s00_was:`), and the new one is free."""
-    new = block / "studio" / TODAY.get("s00", "s00-overview")
-    return [(block / "studio" / old, new) for old in TODAY.get("s00_was", [])
-            if (block / "studio" / old).is_dir() and not new.exists()][:1]
-
-
 TEXT_EXT = {".md", ".py", ".json", ".excalidraw", ".yaml", ".yml", ".toml", ".txt", ".html", ".sh", ".csv", ".tsv"}
-
-
-def rename_s00(old: Path, new: Path, block: Path, root: Path, apply: bool) -> int:
-    """The Block's s00 renamed whole: its folder, each file and builder named after it, and every mention inside the
-    Block (its faces, topics, Runs and their passes; history too, a rename is a full sweep). Returns the files changed."""
-    pairs = [(old.name, new.name), (old.name.replace("-", "_"), new.name.replace("-", "_"))]
-    print(f"    mv {old.relative_to(root)} → {new.relative_to(root)}   (s00's one name)")
-    files = [f for f in old.rglob("*") if f.is_file() and any(a in f.name for a, _ in pairs)]
-    for f in files:
-        name = f.name
-        for a, b in pairs:
-            name = name.replace(a, b)
-        print(f"       {f.relative_to(old)} → {name}")
-    if apply:
-        for f in files:
-            name = f.name
-            for a, b in pairs:
-                name = name.replace(a, b)
-            f.rename(f.with_name(name))
-        shutil.move(str(old), str(new))
-    n = 0
-    for f in block.rglob("*"):
-        if not f.is_file() or f.suffix.lower() not in TEXT_EXT or f.stat().st_size > 50_000_000:
-            continue
-        try:
-            text = f.read_text(encoding="utf-8")
-        except (OSError, UnicodeDecodeError):
-            continue
-        if any(a in text for a, _ in pairs):
-            n += 1
-            if apply:
-                for a, b in pairs:
-                    text = text.replace(a, b)
-                write_utf8(f, text)
-    print(f"       {n} file(s) in the Block name it: repointed")
-    return n
 
 
 def add_today(nodes: list[Node]) -> None:
@@ -799,7 +777,8 @@ def runs_folders(path: Path) -> list[Path]:
     out = [path / "runs"] if (path / "runs").is_dir() else []
     for dirpath, dirnames, _ in os.walk(path):
         dirnames[:] = [d for d in dirnames if not d.startswith((".", "_")) and d not in
-                       {"results", "notebooks", "draft", "src", "sbatch", "scripts", "studio"}]
+                       {"results", "notebooks", "draft", "src", "sbatch", "scripts", "studio"}
+                       and not STUDIO_ITEM.match(d)]                # an sNN topic beside the Jobs is no Run holder
         if "runs" in dirnames:
             out.append(Path(dirpath) / "runs")
             dirnames.remove("runs")
@@ -920,11 +899,6 @@ def update(path: Path, root: Path, apply: bool, today: bool = False) -> int:
         print(f"    kind  {kind:<9} {card.parent.relative_to(root)}")
         if apply:
             write_kind(card, kind)
-    renames = s00_renames(block_of(path)) if today and block_of(path) else []
-    if renames:
-        print("\ns00 (its one name):")
-    for old, new in renames:
-        rename_s00(old, new, block_of(path), root, apply)
     roles = role_writes(block_of(path)) if today and block_of(path) else []
     if roles:
         print("\nroles (one line each card lacks, haipipe-run run_roles.py):")

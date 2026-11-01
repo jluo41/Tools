@@ -75,8 +75,8 @@ def stream_hours(bout, line: list, item: dict, met, rows_met: bool, have: list, 
         part = {"minutes": whole(m), **({"met_minutes": mm} if rows_met else {}),
                 **{n: (int(round(float(g[n].sum()))) if n == "steps" else round(float(g[n].sum()), 1))
                    for n in ("steps", "calories") if n in have}}
-        beat = {} if "hr" not in have else {"hr_mean": int(round(float(g["hr"].mean()))),
-                                            "hr_max": int(round(float(g["hr"].max())))}
+        beat = {} if "hr" not in have or g["hr"].isna().all() else {   # an hour with no beat sampled has none
+            "hr_mean": int(round(float(g["hr"].mean()))), "hr_max": int(round(float(g["hr"].max())))}
         hours[f"{h:%Y-%m-%d %H}:00{zone}"] = {
             "start": fmt(g["t"].iloc[0]), "end": fmt(g["t"].iloc[-1] + pd.Timedelta(minutes=float(g["dur"].iloc[-1]))),
             "total": {**exercise_total(whole(m), mt, mm, part), **({"steps": part["steps"]} if "steps" in part else {}),

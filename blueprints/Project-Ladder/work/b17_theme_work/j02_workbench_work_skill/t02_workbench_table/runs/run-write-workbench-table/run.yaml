@@ -1,0 +1,15 @@
+run: run-write-workbench-table
+kind: soft
+role: make
+type: write
+scope: null
+target: workbench-table
+ticket: run-write-workbench-table.md
+skill: table-workbench
+agent: claude
+signs: null
+status: planned
+passes: []
+writes:
+- plugins/haipipe-toolkit/skills/2_theme/work/workbench-work/ref/workbench-table.md
+feeds: []

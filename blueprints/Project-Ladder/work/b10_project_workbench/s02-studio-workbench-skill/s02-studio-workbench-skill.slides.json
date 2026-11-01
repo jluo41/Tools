@@ -1,0 +1,55 @@
+{
+ "topic": "s02-studio-workbench-skill",
+ "style": "sketch-notes",
+ "source": "s02-studio-workbench-skill.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Studio: its workbench and its skill",
+   "points": [
+    "the Studio seen from both sides: its workbench (the Studio view that Block, Job and Task open, in…",
+    "Also: what Tools/plugins/haipipe-toolkit/servers/workbench holds today, how every other workbench…",
+    "The current model keeps sNN topics only at Block level, constructs Jobs from those topics, and…"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and the haipipe-studio skill and the Studio view it drives, for the people who write the toolkit skills",
+    "a skill"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "What is decided",
+   "points": [
+    "Three large discussion frames lead the shared workbench drawing",
+    "The eight existing reference frames keep their names and positions",
+    "sNN identifies a topic only at the Block level",
+    "Jobs are constructed from an agreed topic plan and linked back to that Block"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "04",
+   "idea": "Still open",
+   "points": [
+    "Where is the durable source-topic link stored on a Job face, and how does the topic list",
+    "When constructing a Job, how are goal, close and Task slots taken from the agreed plan?",
+    "How do topic and frame links survive a topic or frame being renamed, split or merged?"
+   ],
+   "leaning": "",
+   "ask": "How do existing Job and Task Studios move into the Block without losing names, marks,",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

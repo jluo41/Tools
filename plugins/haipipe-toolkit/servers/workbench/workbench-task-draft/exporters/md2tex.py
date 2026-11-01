@@ -65,10 +65,10 @@ LEVEL = ("section", "subsection", "subsubsection")
 
 
 def strip_number(title):
-    """`2.1 Physician Prescribing` -> `Physician Prescribing`.
+    """`2.1 Study Setting` -> `Study Setting`.
 
     LaTeX numbers its own sections; carrying the number in the title too gives
-    "2.1 2.1 Physician Prescribing" in the compiled PDF. A board division
+    "2.1 2.1 Study Setting" in the compiled PDF. A board division
     writes `1 · The contract`, so the separator dot goes with the number:
     leaving it produced `\\section{· The contract}` (JL 260815, on QPf6).
     """
@@ -488,7 +488,10 @@ def main():
                 continue
         if prior:
             had = keys_of(open(prior, encoding="utf-8").read())
-            lost = sorted(had - keys_of(body))
+            # TOADD is the placeholder for an owed citation, not a work: replacing
+            # it with a checked key is the change this guard must let through
+            # (261031: two checked keys replaced it in a Lancet appendix).
+            lost = sorted(had - keys_of(body) - {"TOADD"})
             if lost:
                 report.append("REFUSED %s: %d citation key(s) would disappear from this "
                               "section's bibliography (%s). Sync is one-way."

@@ -1,0 +1,13 @@
+run: run-send-move-list
+kind: soft
+type: send
+scope: null
+target: move-list
+ticket: run-send-move-list.md
+skill: haipipe-studio
+agent: claude
+signs: null
+status: queued
+passes: []
+writes: []
+feeds: []

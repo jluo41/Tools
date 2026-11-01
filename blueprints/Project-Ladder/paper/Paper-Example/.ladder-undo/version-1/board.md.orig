@@ -1,0 +1,20 @@
+# Paper-Example: does <a policy> change <an outcome>?
+
+board-kind: paper-board
+dialect: paper
+paper-root: .
+story-current: none yet
+spine: <the question the paper answers, in one sentence>
+close: <what makes this paper done: sent, answered, accepted>
+
+## Topic
+
+<what the paper argues and for whom>
+
+## Pages
+
+## Questions
+
+```yaml
+questions: []
+```

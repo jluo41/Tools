@@ -14,7 +14,7 @@
   `ref/discovery-papers.md` → `servers/workbench-discovery/related/papers.md`; their links fixed.
 - The `discovery` entry and `DISCOVERY_DESIGN` leave `servers/workbench/guide_families.py`; the
   same entry is `servers/workbench-discovery/guide/guide.yaml` (RoadMap Draw: the b14 design Block's
-  `studio/s02-discovery-workbench/`). `ref/workbench-table.md` stays here; its `Tools ›` is the server folder.
+  `s02-discovery-workbench/`). `ref/workbench-table.md` stays here; its `Tools ›` is the server folder.
 
 ## 0.2.0 · 2026-10-07 · Renamed from haipipe-workbench-discovery (JL 261007)
 

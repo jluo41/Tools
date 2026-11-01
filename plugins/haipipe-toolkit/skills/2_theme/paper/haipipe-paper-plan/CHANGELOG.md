@@ -1,5 +1,11 @@
 # haipipe-paper-plan · changelog
 
+## 0.1.2 · 2026-11-01 · b16 review 261101: current paper names
+
+- version Jobs are named `jNN_writing_v<MMDD>_<desk>` (from j11), no longer `jNN_v<MMDD>_<desk>` (timeline and naming, ref/faces.md Feeds).
+- `_studio_groups.txt` replaces `studio/_groups.txt` in the steps.
+- The topic table adds s05 paper checklist (haipipe-paper, `paper_check.py --write`) and s10 related work (haipipe-paper-related).
+
 ## [0.1.1] — 2026-10-26
 
 Shorter description (1154 -> 451 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)
@@ -14,7 +20,7 @@ Shorter description (1154 -> 451 characters): what it does, when to use it, its 
 - `s04-paper-workflow`: three tables (Sections, Displays, Timeline) and two lines (`**Budget:**`, `**Send:**`), drawn by
   excalidraw-workflow's new `paperflow_drawing.py`; a figures topic folds into it.
 - One owner per fact: the questions, E rows, T rows and venues stay on the s02 face; the plan reads them.
-- `ref/faces.md`: both faces as templates. First Board: Physician-SPACE Project-LLMRec-Physician `Paper-LLMRecPhy-Jama`.
+- `ref/faces.md`: both faces as templates. First Board: Physician-SPACE Project-Example-B `Paper-Example-B`.
 - A fresh-agent test on a made-up paper (food apps against a map search) found 16 gaps; fixed here and in
   excalidraw-workflow 0.2.0: the paper door routes to this skill, `where` names a T row's folders, `numbers:` puts a
   Run's answer on its card, words "(outside the count)", a budget with no desk record is an own estimate, a person's

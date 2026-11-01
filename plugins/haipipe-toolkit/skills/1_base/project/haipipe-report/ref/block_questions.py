@@ -3,7 +3,7 @@
 registered, a registered Question's group: line, or a related resource.
 
 This authors a register and Page frame, never an answer, accepted Content or Run. A frame may
-list Evidence links (files inside the Block, e.g. a Task Result or a studio/ drawing); they are
+list Evidence links (files inside the Block, e.g. a Task Result or a Block sNN's drawing); they are
 pointers for the writer, not an answer.
 """
 from pathlib import Path
@@ -38,19 +38,26 @@ BLANK = {"type": "excalidraw", "version": 2, "source": "haipipe-report", "elemen
          "appState": {"viewBackgroundColor": "#ffffff"}, "files": {}}
 
 
-def drawing_files(folder, names):
-    """`--drawing <name>`: reports/<id>_topic/studio/<name>.excalidraw, the report's own drawing
-    (a drawing that belongs to one report lives in its folder; the Block's studio/ keeps only the
-    drawings several Questions or Jobs share). Returns label|path evidence items, Block-relative."""
+def drawing_topic(board, stem, names, title, make=False):
+    """`--drawing <name>`: the report's one drawing is a Block Studio topic, `sNN-<name>/` beside the Jobs, whose face
+    **Feeds:** this report (JL 261031, b35 r02: no studio/ folder anywhere; the old reports/<id>/studio/ drawings
+    became Block sNN the same way). haipipe-studio's new_topic() numbers it, keeps the Block at its topic limit and
+    gives it its quick drawing; without `make` it only checks, before board.md is touched. Returns label|path evidence
+    items, Block-relative."""
     if len(names) > 1:
         raise ValueError("One Question has one drawing (JL 261005): pass --drawing once and draw further "
                          "views as frames inside it")
-    out = []
-    for name in names:
-        if not re.fullmatch(r"[a-z0-9][a-z0-9_-]{0,79}", name):
-            raise ValueError("Drawing name must use lowercase letters, digits, - and _")
-        out.append((name, folder / "studio" / f"{name}.excalidraw"))
-    return out
+    if not names:
+        return []
+    if not re.fullmatch(r"[a-z0-9][a-z0-9_-]{0,79}", names[0]):
+        raise ValueError("Drawing name must use lowercase letters, digits, - and _")
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "haipipe-studio" / "scripts"))
+    import new_topic                                                    # noqa: E402  (haipipe-studio)
+    face = new_topic.new_topic(board, names[0].replace("_", "-"), title, feeds=[stem], dry_run=not make)
+    drawing = face.parent / f"{face.parent.name}.excalidraw"
+    if make and not drawing.is_file():                                 # its quick drawing, else a blank one
+        drawing.write_text(json.dumps(BLANK, indent=1), encoding="utf-8")
+    return [(names[0], drawing)]
 
 
 def evidence_links(board, folder, raw):
@@ -99,7 +106,7 @@ def update(args):
         entry["report"] = new_page.relative_to(board).as_posix()
         updated = replace_register(original, "Questions", "questions", questions)
         page_title = title
-        drawings = drawing_files(folder, args.drawing)
+        drawings = drawing_topic(board, stem, args.drawing, page_title)   # checked here, made below
         evidence_links(board, folder, args.evidence)  # check given evidence before anything is written
         page_text = None                              # framed below, once the drawings exist
     elif args.command == "add-question":
@@ -134,7 +141,7 @@ def update(args):
         questions.append(entry)
         updated = replace_register(original, "Questions", "questions", questions)
         page_title = args.title or args.question
-        drawings = drawing_files(folder, args.drawing)
+        drawings = drawing_topic(board, stem, args.drawing, page_title)   # checked here, made below
         evidence_links(board, folder, args.evidence)  # check given evidence before anything is written
         page_text = None                              # framed below, once the drawings exist
     else:
@@ -157,9 +164,7 @@ def update(args):
         raise ValueError("board.md changed; reread it before retrying")
     if new_page:
         new_page.parent.mkdir(parents=True, exist_ok=False)
-        for _, path in drawings:
-            path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text(json.dumps(BLANK, indent=1), encoding="utf-8")
+        drawings = drawing_topic(board, new_page.parent.name, args.drawing, page_title, make=True)
         evidence = list(args.evidence) + [f"{label.replace('_', ' ').capitalize()}|{path.relative_to(board).as_posix()}"
                                           for label, path in drawings]
         entry = next(q for q in questions if q.get("id") == args.id)
@@ -237,7 +242,7 @@ def main():
     question.add_argument("--group", help="its groups on the Report's bar, comma-separated (b10 s05-D05)")
     question.add_argument("--evidence", action="append", default=[], help="label|path inside the Block")
     question.add_argument("--drawing", action="append", default=[],
-                          help="the report's one drawing, made blank in its own studio/ (reports/<id>_topic/studio/<name>.excalidraw); once per Question")
+                          help="the report's one drawing: a Block sNN-<name>/ whose face feeds this report (haipipe-studio new_topic); once per Question")
     report = commands.add_parser("add-report", help="a report Page for a Question already registered")
     report.add_argument("block", type=Path)
     report.add_argument("--id", required=True)
@@ -245,7 +250,7 @@ def main():
     report.add_argument("--title", help="default: the Question's title, else its question")
     report.add_argument("--evidence", action="append", default=[], help="label|path inside the Block")
     report.add_argument("--drawing", action="append", default=[],
-                        help="the report's one drawing, made blank in its own studio/ (reports/<id>_topic/studio/<name>.excalidraw); once per Question")
+                        help="the report's one drawing: a Block sNN-<name>/ whose face feeds this report (haipipe-studio new_topic); once per Question")
     grouped = commands.add_parser("set-group", help="a registered Question's group: line, nothing else")
     grouped.add_argument("block", type=Path)
     grouped.add_argument("--id", required=True)

@@ -19,8 +19,8 @@ haipipe-paper
 ```
 
 On the ladder a Page is a Task: each Section (`t0N_`, `t2N_`), the Abstract
-(`t00_abstract`) and each letter (`t3N_`) is a Page Task in its version
-(`jNN_v<MMDD>_<desk>/`). The Board and the version are not Pages; their faces
+(`t00_abstract`) and each letter (`t3N_`) is a Page Task in its version, a
+writing Job (`j11_writing_v<MMDD>_<desk>/`, then j12; an older `jNN_v<MMDD>_<desk>/` still reads). The Board and the version are not Pages; their faces
 carry the paper's Questions and Narrative, and their Runs are the paper's own
 (`runs/run-<type>-<target>/`, b16 Q05).
 

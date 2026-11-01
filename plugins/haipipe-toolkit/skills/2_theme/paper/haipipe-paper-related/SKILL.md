@@ -3,8 +3,8 @@ name: haipipe-paper-related
 description: "A paper Board's closest related work: the 20 to 25 nearest papers, sorted into 3 or 4 types, mapped beside our paper (studio s10, related_map.py) and read closely in s11 to s19, so the paper can say what each leaves open and what it adds. Not the literature (haipipe-discovery) or the related/ folder (haipipe-related). Trigger: related work, closest papers, related-work map, s10, positioning, /haipipe-paper-related."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Agent, WebSearch, WebFetch
 metadata:
-  version: "0.1.1"
-  last_updated: "2026-10-26"
+  version: "0.1.2"
+  last_updated: "2026-11-01"
   group-token: "s10-related-work-map"
   # version history: ./CHANGELOG.md
 ---
@@ -17,13 +17,13 @@ types, reads each closely, and draws where our paper sits among them. Its output
 ```text
 haipipe-discovery        discovery/ Paper Runs     wide: every paper we may cite, "what is known"
 haipipe-related          related/related.md        storage: what came in, kept once as it came
-haipipe-paper-ideation   studio/s01-ideation/      the ideas, and their novelty check (G0)
-haipipe-paper-related    studio/s10-s19            narrow: the closest work, "who did nearly this"
+haipipe-paper-ideation   s01-ideation/      the ideas, and their novelty check (G0)
+haipipe-paper-related    s10-s19            narrow: the closest work, "who did nearly this"
 ```
 
 Asked by JL 261019: "for the related work we can do things like s10-related-work, and after that, we have s11
 s12, etc"; "it is different from the literature"; "we can use haipipe-paper-related, to find the most related
-papers". The pattern is Paper-LLMRecPhy-Jama's s10 to s15, built 2026-10-13.
+papers". The pattern is Paper-Example-B's s10 to s15, built 2026-10-13.
 
 
 Related is not literature
@@ -48,7 +48,7 @@ The band: s10 to s19
 --------------------
 
 ```text
-studio/
+Paper-<Slug>/                             the Board: topics sit beside its Jobs
 ├── s01-ideation/                         haipipe-paper-ideation: the ideas
 ├── s10-related-work-map/                 ① every closest paper on one map, ours as the key point
 ├── s11-related-work-<type>/              one type of closest work, each paper read in full
@@ -64,11 +64,10 @@ studio/
 
 On a paper Board this band takes the place haipipe-studio gives "levels" (s11-s19) on a work Block; a paper Board
 draws no level topics. The drawings follow excalidraw-studio's rules (one main frame, stairs, white space; JL
-261013). JL 261019, on LLMRec's seven: "we might have too many related works ... merge them into three to four,
-we just want to keep the most relevant, and the studies close to us". So the types tell one story (LLMRec: LLMs
-already name doctors · recommenders rank for fit only · other fields split entry from order · AI answers differ
-from Google), about eight papers at most each; a paper that serves one idea or one measure stays a row, cited
-where it is used, and its reading moves to `studio/_archive/` with the topic it left.
+261013). JL 261019, on Paper-Example-B's seven: "we might have too many related works ... merge them into three to four,
+we just want to keep the most relevant, and the studies close to us". So the types tell one story (Paper-Example-B: <type 1>
+· <type 2> · <type 3> · <type 4>), about eight papers at most each; a paper that serves one idea or one measure stays a row, cited
+where it is used, and its reading moves to `_archive/` with the topic it left.
 
 
 The rows: related/related.md
@@ -122,7 +121,7 @@ The workflow
    then et al.), venue, year, link; from its DOI's record at doi.org, cleaned; `--offline` leaves the authors ❓).
    It writes their `feeds`. Then write the face's `key`, `what` and `why`, and check each `says` and `ref`.
    `--background` makes a type of `Shared background: <type>` rows instead: background read in full, never on the
-   map (LLMRec's s14, s16, s17). A paper whose short name starts two rows is named by its whole item.
+   map (Paper-Example-B's s14, s16, s17). A paper whose short name starts two rows is named by its whole item.
 4. **Read** each paper with `/excalidraw read` into the type topic's `reads/pNN-<paper>/reading.yaml`: its logic,
    its key passages quoted and highlighted, and how each links to our paper (supports, threatens, we borrow).
    A reading needs a top-level `key:` (its one point), or excalidraw-studio's check fails ①. The PDF's extracted
@@ -139,18 +138,17 @@ The workflow
    for the Section, one item per type. Citations go through the Section's `draft/evidence/bibex/` (never
    `bank.bib`).
 
-`map`, `group` and `band` redraw the Board's s00 index (haipipe-studio `block_index.py`), a generated drawing that
-is never edited by hand. A `board.md` that lists the Studio topics in its own words is updated by hand.
+A Board has no s00 index any more (retired 261029; the Report MindMap shows it). A `board.md` that lists the Studio topics in its own words is updated by hand.
 
 ```bash
 R=Tools/plugins/haipipe-toolkit/skills/2_theme/paper/haipipe-paper-related/scripts/related_topics.py
-python $R map   paper/Paper-<Slug>                      # studio/s10-related-work-map/, drawn once
+python $R map   paper/Paper-<Slug>                      # s10-related-work-map/, drawn once
 python $R group paper/Paper-<Slug> --type 'chatbots that name real doctors' --slug chatbots-naming-doctors
                                                         # next free s11-s19; its rows' feeds and references
 python $R check paper/Paper-<Slug>                      # every Closest row placed on s10 and in one s1N
 python $R feeds paper/Paper-<Slug>                      # every row's s10-s19 feeds, from the topics
 python $R band  paper/Paper-<Slug> [--apply]            # an older Board's topics into s10-s19
-python paper/Paper-<Slug>/studio/s10-related-work-map/build_s10_related_work_map.py      # redraw
+python paper/Paper-<Slug>/s10-related-work-map/build_s10_related_work_map.py      # redraw
 ```
 
 

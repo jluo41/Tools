@@ -1,0 +1,55 @@
+{
+ "topic": "s52-host-and-share",
+ "style": "sketch-notes",
+ "source": "s52-host-and-share.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Host and share with the team",
+   "points": [
+    "how a Block is shared with colleagues: who may open it, how they prove who they are (their JHU…",
+    "s51 is how the server runs",
+    "s52 is who can reach it"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and the hosting and sign-in setup that lets colleagues open a Block, for the people who build the workbench",
+    "a code"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "What is decided",
+   "points": [
+    "Proposed: share one Block at a time, read-only, to people named on an allow list, who sign in",
+    "Proposed: one",
+    "Proposed: sign-in is OpenID Connect between Cloudflare",
+    "Found (261012"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "04",
+   "idea": "Still open",
+   "points": [
+    "Study data or PHI in a shared Block: who approves, and must it be hosted inside JHU (⑤ B)?",
+    "Colleagues outside JHU: a JHU guest account, or no?",
+    "How long to keep the log of who opened what?"
+   ],
+   "leaning": "",
+   "ask": "Which Block is shared first, and with whom?",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

@@ -1,0 +1,37 @@
+{
+ "topic": "s31-paper-guide",
+ "style": "sketch-notes",
+ "source": "s31-paper-guide.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "paper Guide",
+   "points": [
+    "the paper workbench's Guide tab, cut by level, in the style of b03's s31-guide (four Views,…",
+    "One frame per level: the four Views opened from that level's tab, its section open and the other…"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and the paper workbench's Guide tab, cut by level, for the people who build the workbench",
+    "a ui"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "Still open",
+   "points": [],
+   "leaning": "",
+   "ask": "Agree its For: line and Delivery type: (ui), proposed by the agent 261030?",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

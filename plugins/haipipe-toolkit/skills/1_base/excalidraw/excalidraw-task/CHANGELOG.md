@@ -1,6 +1,11 @@
 excalidraw-task · Changelog
 ===========================
 
+## [0.6.3] — 2026-10-31
+
+Inside a Studio topic's five-part drawing this skill draws only the Design part; the five parts are
+excalidraw-studio's (JL 261031, b35 r01 Q1: A; b35-s01-D16).
+
 ## [0.6.2] — 2026-10-26
 
 Hidden from the skill listing (`disable-model-invocation: true`); reached through the `/excalidraw` door, which reads this SKILL.md by path. Nothing moved; `/excalidraw-task` still works when a person types it. (hide 261026)

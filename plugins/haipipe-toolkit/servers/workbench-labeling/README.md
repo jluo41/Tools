@@ -13,7 +13,7 @@ servers/
         ├── task_labeling.py   the frame's Spaces for a labeling Task, by its type
         ├── labeling.py        LabelingMixin: labeling-board, labeling, and the one write door
         └── assets/js/10-drawer/60-workbench-labeling.js   the drawer row a Board page shows
-    (its design studio, labeling-workbench-ui.py and its drawing, lives in Tools/blueprints/b15_theme_labeling/studio/s02-labeling-workbench/)
+    (its design studio, labeling-workbench-ui.py and its drawing, lives in Tools/blueprints/Project-Ladder/work/b15_theme_labeling/s02-labeling-workbench/)
 ```
 
 ## Two ways to serve it
@@ -64,7 +64,7 @@ Each Space's Runs panel is the shared one, `haipipe-toolkit/servers/workbench/ru
 (`panel_markup`, `PANEL_CSS`, `PANEL_JS`, `SPLIT_CSS`), with Labeling's own gated Run
 cards passed in. Both follow the rules every workbench shares
 (`haipipe-toolkit/servers/README.md` "Adding a workbench"); how they were met is
-recorded in `Tools/blueprints/b15_theme_labeling/studio/s02-labeling-workbench/labeling-shared-rules.md`.
+recorded in `Tools/blueprints/Project-Ladder/work/b15_theme_labeling/s02-labeling-workbench/labeling-shared-rules.md`.
 The engine under `../../skills/2_theme/labeling/engine/` imports nothing from the servers. So:
 
 - **runtime**: independent. The labeling host (`serve.py --only labeling`) is its own process
@@ -80,3 +80,28 @@ The shared host refuses direct static requests for JSONL data, source-owned
 accepted receipts through checked server-side routes instead. Keep any other
 private raw formats outside the served `<root>` until a specific route protects
 them.
+
+## Focus pages
+
+`/_board/workbench?path=<Job-or-Task>&layout=focus` now presents labeling's
+real content one section at a time. `labeling_focus.py` owns this adapter;
+`focus-assets/` owns its styling and small interactions. The shared frame only
+dispatches labeling focus requests here. Other themes retain their presenter.
+
+- Job: Goal and a next-action link, Tasks, Reports, label schema, Outputs,
+  Studio-All, Timeline and Folders.
+- Items Task: Goal, Runs, Data, Items, Embedding, Reports and Outputs. Content
+  comes from `task_labeling.py`; sampling, recipe signatures and notes use the
+  existing endpoints. Prompts copy instructions; they do not start work.
+- Labeling Task: the existing Contract, Definition, Rounds, Guideline,
+  qualification and delivery views. A same-origin embedded view preserves the
+  existing engine identity, attestation, hold checks and write door. Its
+  `focus=1` parameter changes presentation only.
+- Reports link to the owning Task's saved Run results. Missing results remain
+  visibly absent. A next action is recomputed from the preparation engine with
+  `settle_runs=False` or the labeling view model, never from browser progress.
+
+Content disclosures become stable sections in this layout. Job/Task folders,
+Run tickets, receipt authority and computational workers are unchanged. This
+UI does not implement missing guideline-learning, executor-optimization or
+large-scale labeling workers. A page load starts no Run and signs nothing.

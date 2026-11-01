@@ -1,28 +1,36 @@
 ---
 name: haipipe-delivery
-description: "Owns a Block's one delivery/ folder: where every level's built output goes, the Delivery view, moving old outputs in, and the rule that only a person marks a delivery sent; also a Page's Delivery Runs (build the PDF, Word file or web page, ref/page-delivery.md). Trigger: delivery, delivery/, where does the pdf go, build the docx, rebuild delivery, sent, pull from OneDrive, /haipipe-delivery, /haipipe-draft-delivery."
+description: "Owns the Block's delivery/ folder (a Job's or Task's output sits under its address there; a page shows its own plus its children's): where built output goes, the Delivery view, moving old outputs in, and the rule that only a person marks a delivery sent; also a Page's Delivery Runs (build the PDF, Word file or web page, ref/page-delivery.md). Trigger: delivery, delivery/, where does the pdf go, build the docx, rebuild delivery, sent, pull from OneDrive, /haipipe-delivery, /haipipe-draft-delivery."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.5.2"
-  last_updated: "2026-10-26"
+  version: "0.7.1"
+  last_updated: "2026-11-01"
   # version history: ./CHANGELOG.md
 ---
 
 # /haipipe-delivery · what a Block hands over
 
-A Block thinks in its Studio, answers in its Reports and hands over through its Delivery
-(JL 261010: "它们可以产生 delivery，但 delivery 需要放到 block level"). Studio and Delivery
-exist once per Block and every level opens them; a Report belongs to each level.
+A level thinks in its Studio, answers in its Reports and hands over through its Delivery. The Block
+owns the one `delivery/`: a Job's or Task's output goes to `<Block>/delivery/<its address>/`
+(`delivery_dir`, b01/j01/t01 to b01/delivery/j01/t01), so an item sits under the level that made it,
+and a page shows its own plus everything below it (a Block's Delivery lists its Jobs' and Tasks' too,
+each marked where it lives; JL 261028: "we want to have them in the job level and task level as well").
+The Studio is one sNN numbering per Block too (b35 s01-D05, JL 261029): its topics sit beside the Jobs,
+each naming the rung it hangs from (`**At:** j01`); see haipipe-studio (0.28.1).
+As before 261028 (JL 261010), delivery lives once per Block; a Block's existing `delivery/` stays where it is.
+What lands here is the clean version only, and only after rounds in a Studio topic (b35 s01-D11, JL 261029: "肯定是
+在我们 studio 腻歪几轮之后，才能够到 delivery"): a Task's result goes round with the person, and the agreed version is
+copied out under its next version number; a topic's own `result/` stays messy and never ships as it is.
 
 ```text
-haipipe-studio    studio/sNN-<topic>/    think       one per Block, opened from every level
+haipipe-studio    sNN-<topic>/    think       one sNN numbering per Block, beside the Jobs (**At:** a rung)
 haipipe-report    reports/qNN_<topic>/   answer      every level its own
-haipipe-delivery  delivery/              hand over   one per Block, opened from every level
+haipipe-delivery  delivery/              hand over   the Block's, each level under its address; a page rolls up
 ```
 
-Decided in b10 (Tools/blueprints/b10_project_workbench): s02-D14 (storage), s09-D02 (a Report at
+Decided in b10 (Tools/blueprints/Project-Ladder/work/b10_project_workbench): s02-D14 (storage), s09-D02 (a Report at
 every level), s09-D05 (Delivery is Block-level, like the Studio). Its design topic is
-`studio/s03-delivery-workbench-skill/` (s03-D01 to D04).
+`s03-delivery-workbench-skill/` (s03-D01 to D04).
 
 
 The folder
@@ -169,7 +177,7 @@ Boundary
 | `haipipe-design-delivery` | releasing a design Job: `designs.json`, `designs.md`, `screens/` |
 | `haipipe-cowork` | an email or reply drafted and kept at `delivery/jNN_<job>/<date>-<what>/` |
 | `haipipe-labeling-handoff` | the labeling handoff package |
-| `haipipe-studio` | `studio/`, Delivery's twin: one per Block |
+| `haipipe-studio` | the `sNN-<topic>/` topics, Delivery's twin: one numbering per Block, beside the Jobs |
 | `haipipe-related` | `related/`, the other twin: what came in, one row each in `related.md` |
 | `haipipe-report` | `reports/`, at every level |
 
@@ -182,6 +190,7 @@ haipipe-delivery/
 ├── SKILL.md
 ├── CHANGELOG.md
 ├── ref/page-delivery.md
+├── ref/gallery.md            the delivery gallery: every kind of delivery, the newest real one each (b35-s04)
 ├── scripts/word_round.py      a round: versions, render, push, read back
 ├── ref/history/haipipe-draft-delivery-CHANGELOG.md
 └── agents/openai.yaml

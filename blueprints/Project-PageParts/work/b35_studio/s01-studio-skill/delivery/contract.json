@@ -1,0 +1,40 @@
+{
+  "id": "s01",
+  "folder": "s01-studio-skill",
+  "title": "Studio Skill",
+  "kind": "Skill",
+  "purpose": "Turn one open idea into one useful delivery.",
+  "audience": "Agents and people starting a Studio",
+  "product": "An executable Studio guide with a creation checklist and worked example.",
+  "steps": [
+    [
+      "Name the delivery",
+      "Name one product, its reader, and where it will be used."
+    ],
+    [
+      "Place the Studio",
+      "Use the lowest Block, Job or Task that needs its delivery. Keep sNN beside the work."
+    ],
+    [
+      "Explore alternatives",
+      "Keep the main Draw, open choices, and a structured mind map. Preserve previous sketches."
+    ],
+    [
+      "Connect the work",
+      "Link the Jobs and Tasks that make the delivery. Keep working results with their owner."
+    ],
+    [
+      "Review and hand over",
+      "Review the product with a person. Build the clean version, its deck, and its destination mapping."
+    ]
+  ],
+  "checks": [
+    "The For line names one product and one reader.",
+    "The main Draw shows alternatives and a delivery destination.",
+    "Working results and delivery files have separate homes.",
+    "Acceptance is recorded by a person, never inferred from a build."
+  ],
+  "example": "A reusable Studio that defines one interactive mind map page.",
+  "open": "Should creating a Studio require a delivery destination immediately?",
+  "source": "plugins/haipipe-toolkit/skills/1_base/project/haipipe-studio/SKILL.md"
+}

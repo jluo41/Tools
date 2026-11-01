@@ -1,0 +1,48 @@
+{
+ "topic": "s13-case-builder",
+ "style": "sketch-notes",
+ "source": "s13-case-builder.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "The case builder",
+   "points": [
+    "The Case view on each synthetic data type, and how a case is meant to be built (TriggerFn · Key ·…",
+    "Today any record row with text is a case: on a timeline that is every reading (261009, g01)"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and how the console should build a case from a trigger, a key and a case function, for the people who build the…",
+    "a code"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "What is decided",
+   "points": [
+    "The Case view reads the dataset's cooked case set (3-CaseStore) when one is mounted (Q02, g02…",
+    "Without one, a row is a case only if it holds prose"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "04",
+   "idea": "Still open",
+   "points": [],
+   "leaning": "",
+   "ask": "Agree its For: line and Delivery type: (code), proposed by the agent 261030?",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

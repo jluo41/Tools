@@ -15,6 +15,15 @@ WHERE EACH NUMBER COMES FROM
               (observed.EXTRA_KEYS: the answer does not carry them yet); a negative is the vendor's "not given",
               so empty, and a food matched in the USDA tables has them empty
     GI, GL    glycemic.py on ext_food_gi, by the item's name (its Chinese name first, when it has one)
+    item      the input item's own fields first (ITEM_KEYS: id, food, prep, cook, amount, dish, ...)
+    match     the food the table holds, by the table's own name (FoodMatched), so a wrong match shows (261028)
+    a dish    is split in the INPUT, not here (split_dishes, which eventnorm runs before it shows the input; JL
+              261029: "they should be separated"): a dish line ("Sliced pork with mushroom and carrot 120 g") whose
+              whole name finds nothing, or whose match lacks one of its foods (pork asked, "Peas and carrots"
+              found), becomes one input item per food: i1 pork, i2 mushroom, i3 carrot. Split on with, and, a
+              comma, & or +; each item names its food ("pork"), how it was cut or cooked ("sliced", `prep`; the
+              dish's Chinese name gives `cook`: 炒 stir-fried, 炖 stewed, ...), its amount (a stated amount shared
+              evenly, marked a guess) and the line it came from (`dish`). Here every item is one answer.
     total     the six: the items' sum, over the items that have the number, or `answer` when the caller already
               holds the meal's answer (the photo API's); coverage is the share of items counted, conf the weakest
               of them. (Until 261022 the six came from normalize() of the whole meal as one string, which adds up
@@ -24,6 +33,7 @@ WHERE EACH NUMBER COMES FROM
 Numbers are written as text with their unit ("28 g", "150 kcal"), rounded to two places, null when absent: the
 event JSON's form (eventnorm/schema.py).
 """
+import re
 from typing import Dict, List, Optional, Tuple
 
 FOOD_GROUPS = [("macros", [("calories", "Calories", "kcal"), ("carbs", "Carbs", "g"), ("protein", "Protein", "g"),
@@ -33,6 +43,9 @@ FOOD_GROUPS = [("macros", [("calories", "Calories", "kcal"), ("carbs", "Carbs", 
                               ("poly", "PolyUnSaturatedFat", "g"), ("trans", "TransFat", "g"),
                               ("cholesterol", "Cholesterol", "mg")]),
                ("minerals", [("sodium", "Sodium", "mg"), ("potassium", "Potassium", "mg")])]   # FatSecret's 14
+# What an output item repeats from its input item, first, so each item says which food it is (JL 261029: "for each
+# item, where is the item name???").
+ITEM_KEYS = ("id", "food", "food_zh", "prep", "cook", "amount", "amount_from", "dish", "dish_zh")
 SIX = ("Calories", "Carbs", "Protein", "Fat", "Fiber", "Sugar")    # the ones normalize() returns today
 
 
@@ -44,6 +57,54 @@ def val(v, unit: str):
 def clean(v):
     """A word or number from an answer as JSON: NaN (a MISS's empty basis) is null, never a bare NaN token."""
     return None if isinstance(v, float) and v != v else v
+
+
+SPLIT = re.compile(r"\s*(?:,|&|\+|\bwith\b|\band\b)\s*", re.I)
+AMOUNT = re.compile(r"\s*([0-9]*\.?[0-9]+)\s*(g|ml)\s*$", re.I)
+
+
+# How a food was cut or cooked, as a log writes it before the food: "Sliced pork", "steamed rice".
+PREP = ("stir-fried", "stir fried", "deep-fried", "pan-fried", "fried", "steamed", "boiled", "braised", "stewed",
+        "roasted", "grilled", "baked", "scrambled", "poached", "smoked", "sliced", "minced", "shredded", "diced",
+        "chopped", "mashed", "ground", "raw", "cooked")
+PREP_RE = re.compile(r"^\s*((?:(?:" + "|".join(re.escape(w) for w in PREP) + r")\s+)+)(.+)$", re.I)
+# How a dish was cooked, from its Chinese name (the first word found, longest first).
+COOK_ZH = (("红烧", "red-braised"), ("凉拌", "dressed cold"), ("清蒸", "steamed"), ("炒", "stir-fried"), ("炖", "stewed"),
+           ("蒸", "steamed"), ("煮", "boiled"), ("烤", "roasted"), ("炸", "deep-fried"), ("煎", "pan-fried"),
+           ("焖", "braised"), ("卤", "braised in soy"), ("拌", "dressed"))
+
+
+def prep_of(part: str) -> Tuple[str, Optional[str]]:
+    """'Sliced pork' -> ('pork', 'sliced'); 'carrot' -> ('carrot', None)."""
+    m = PREP_RE.match(part)
+    return (m.group(2).strip(), " ".join(m.group(1).lower().split())) if m else (part.strip(), None)
+
+
+def cook_zh(name: Optional[str]) -> Optional[str]:
+    return next((en for zh, en in COOK_ZH if zh in str(name or "")), None)
+
+
+def dish_parts(food: str) -> List[str]:
+    """'Minced pork with cauliflower and carrot' -> ['Minced pork', 'cauliflower', 'carrot']; [] for one food."""
+    parts = [p for p in SPLIT.split(AMOUNT.sub("", str(food))) if p.strip()]
+    return parts if len(parts) > 1 else []
+
+
+def lost_a_food(food: str, a: Dict) -> bool:
+    """A dish to ask part by part: its whole name found nothing, or the match lacks one of its foods (the last word
+    of each part: 'pork' of 'Sliced pork', 'mushroom'), as "Pork, potatoes, and vegetables ...; gravy" lacks the
+    mushroom of 'Sliced pork with mushroom and carrot'."""
+    parts = dish_parts(food)
+    if not parts:
+        return False
+    if a.get("NutritionConf") == "MISS":
+        return True
+    got = str(a.get("FoodMatched") or "").lower()
+    for p in parts:
+        w = (re.findall(r"[a-z]+", p.lower()) or [""])[-1]
+        if (w[:-1] if w.endswith("s") and len(w) > 3 else w) not in got:
+            return True
+    return False
 
 
 def enrich_items(items: List[Dict], asks: Optional[List[str]] = None, meal: Optional[str] = None,
@@ -59,8 +120,9 @@ def enrich_items(items: List[Dict], asks: Optional[List[str]] = None, meal: Opti
     asks = list(asks) if asks is not None else [it["food"] for it in items]
     alone = normalize(asks) if asks else []
     m = gm.matcher()
-    out, nums = [], []
-    for it, ask, a in zip(items, asks, alone):
+
+    def entry(e, ask, a, amount=None, food_zh=None):
+        """One answer -> its match, serving, the 14 in four groups and GI/GL, added to e; and its numbers."""
         rec = ob.load().get(ob.norm_key(ask)) if a.get("NutritionSource") == "bank_observed" else None
         num = {k: a.get(k) for k in SIX}
         for k in ob.EXTRA_KEYS:
@@ -69,15 +131,20 @@ def enrich_items(items: List[Dict], asks: Optional[List[str]] = None, meal: Opti
         a = {k: clean(v) for k, v in a.items()}
         basis = a.get("NutritionBasis")
         n = (rec or {}).get("n")
-        e = {"id": it["id"],
-             "match": {"food": a.get("FoodNameResolved"), "source": a.get("NutritionSource"),
-                       "conf": a.get("NutritionConf"), "times_logged": int(n) if n is not None and n == n else None},
-             "serving": {"basis": basis, "unit": {"per_serving": clean((rec or {}).get("serving_type")),
-                                                  "per_meal": it.get("amount"), "per_100g": "100 g"}.get(basis),
-                         "grams": None}}
+        e.update({"match": {"food": a.get("FoodMatched"), "source": a.get("NutritionSource"),
+                            "conf": a.get("NutritionConf"),
+                            "times_logged": int(n) if n is not None and n == n else None},
+                  "serving": {"basis": basis, "unit": {"per_serving": clean((rec or {}).get("serving_type")),
+                                                       "per_meal": amount, "per_100g": "100 g"}.get(basis),
+                              "grams": None}})
         e.update({g: {name: val(num.get(col), u) for name, col, u in fields} for g, fields in FOOD_GROUPS})
-        gly = gm.glycemic(m, ask, num.get("Carbs"), num.get("Fiber"), it.get("food_zh"))
+        gly = gm.glycemic(m, ask, num.get("Carbs"), num.get("Fiber"), food_zh)
         e["glycemic"] = {"gi": gly["gi"], "gl": gly["gl"], "from": gly["from"]}
+        return e, num
+
+    out, nums = [], []
+    for it, ask, a in zip(items, asks, alone):
+        e, num = entry({k: it[k] for k in ITEM_KEYS if k in it}, ask, a, it.get("amount"), it.get("food_zh"))
         out.append(e)
         nums.append(num)
     tot = answer if answer is not None else summed(nums, [it["match"]["conf"] for it in out],
@@ -94,6 +161,47 @@ def enrich_items(items: List[Dict], asks: Optional[List[str]] = None, meal: Opti
     total.update({k: clean((tot or {}).get(c)) for k, c in
                   (("conf", "NutritionConf"), ("basis", "NutritionBasis"), ("coverage", "NutritionCoverage"))})
     return out, total
+
+
+def split_dishes(items: List[Dict], asks: List[str]) -> Tuple[List[Dict], List[str], int]:
+    """The input's items with each dish line split into one item per food -> (items, the text each is asked with,
+    how many lines were split). A line splits when its whole name finds nothing or its match lacks one of its foods,
+    and at least one of its foods is found alone; "Mac and cheese" (found whole) stays one item. Ids run i1, i2, ...
+    again; each split item keeps the line it came from in `dish` and its Chinese line in `dish_zh`."""
+    from . import normalize
+    ks = [k for k, it in enumerate(items) if dish_parts(it["food"])]
+    whole = dict(zip(ks, normalize([asks[k] for k in ks]))) if ks else {}
+    parts = {}
+    for k in ks:
+        if lost_a_food(items[k]["food"], whole[k]):
+            g = AMOUNT.search(asks[k])
+            share = f"{float(g.group(1)) / len(dish_parts(items[k]['food'])):.4g} {g.group(2)}" if g else None
+            parts[k] = [(p, share, f"{p} {share}" if share else p) for p in dish_parts(items[k]["food"])]
+    flat = [x[2] for k in parts for x in parts[k]]
+    got = iter(normalize(flat) if flat else [])
+    ans = {k: [next(got) for _ in parts[k]] for k in parts}               # all read first: any() would stop early
+    found = {k: any(a.get("NutritionConf") != "MISS" for a in ans[k]) for k in parts}
+    new, new_asks, n = [], [], 0
+    for k, (it, ask) in enumerate(zip(items, asks)):
+        if not found.get(k):
+            new.append({**it, "id": f"i{len(new) + 1}"})
+            new_asks.append(ask)
+            continue
+        n += 1
+        amount = it.get("amount")
+        line = f"{it['food']} {amount}" if amount else it["food"]
+        for p, share, pask in parts[k]:
+            food, prep = prep_of(p)
+            e = {"id": f"i{len(new) + 1}", "food": food, "prep": prep, "cook": cook_zh(it.get("food_zh")),
+                 "amount": share if share else None,
+                 "amount_from": f"an even share of {amount}, a guess" if share else
+                                f"part of {amount}" if amount else None,
+                 "dish": line}
+            if it.get("food_zh"):
+                e["dish_zh"] = it["food_zh"]
+            new.append(e)
+            new_asks.append(pask)
+    return new, new_asks, n
 
 
 CONF_ORDER = ("MEASURED", "ESTIMATED")                      # weakest last; anything else (a MISS) counts as none

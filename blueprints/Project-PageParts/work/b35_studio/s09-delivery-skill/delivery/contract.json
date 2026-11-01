@@ -1,0 +1,40 @@
+{
+  "id": "s09",
+  "folder": "s09-delivery-skill",
+  "title": "Delivery Skill",
+  "kind": "Skill",
+  "purpose": "Turn reviewed working material into a versioned, usable delivery.",
+  "audience": "Agents building and handing over reviewed outcomes",
+  "product": "A delivery guide with destination rules, version rules, and a handover checklist.",
+  "steps": [
+    [
+      "Identify the owner",
+      "Name the Studio or work level that owns the product."
+    ],
+    [
+      "Select the clean version",
+      "Choose the reviewed material. Keep experiments in result."
+    ],
+    [
+      "Build from source",
+      "Generate the product, its preview and explanation deck. Never hand-edit generated output."
+    ],
+    [
+      "Place at destination",
+      "Map each piece to its intended use; render text or use the owning code builder."
+    ],
+    [
+      "Check and hand over",
+      "Open the real product, verify links and versions, and let a person mark acceptance or sending."
+    ]
+  ],
+  "checks": [
+    "Every delivery names a source and destination.",
+    "An existing sent version is preserved.",
+    "The generated output opens and works.",
+    "A successful build is not recorded as a human acceptance."
+  ],
+  "example": "A Gallery specification builds a webpage, its example configuration, main Draw and deck.",
+  "open": "How should a page show the difference between built, accepted, and sent?",
+  "source": "plugins/haipipe-toolkit/skills/1_base/project/haipipe-delivery/SKILL.md"
+}

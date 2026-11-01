@@ -3,7 +3,7 @@ Checks for eventnorm. The hours and the errors need nothing; the eight meals nee
 
     python skills/haipipe-norm/eventnorm/tests/test_eventnorm.py
 
-THE EIGHT. b51 s01 ③'s meals (studio/s01-food-api/assets/food-events-all.json, written by its drawing builder, where
+THE EIGHT. b51 s01 ③'s meals (s01-food-api/assets/food-events-all.json, written by its drawing builder, where
 this logic ran first) are sent raw, and the input and output must come back as that file holds them, byte for byte,
 but for the differences named in KNOWN, each with its reason. The file is read in place, never copied here: its rows
 are a cohort's. With no such file on this host, the eight are skipped and say so.
@@ -19,7 +19,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parents[1]))                       # skills/haipipe-norm, so `eventnorm` imports
 from eventnorm import event, hour_shares, by_hour             # noqa: E402
 
-S01 = "examples-1-data/Proj01-CGM-RawData/work/b51_externalstore/studio/s01-food-api/assets/food-events-all.json"
+S01 = "examples-1-data/Proj01-CGM-RawData/work/b51_externalstore/s01-food-api/assets/food-events-all.json"
 KNOWN = {}  # (the meal's example, the field) -> why the API differs from s01's file. Empty since s01 runs eventnorm
 #            itself (261021): the photo's Sugar, once the one entry, is now live in s01's file too
 PASS, FAIL = [], []

@@ -303,7 +303,17 @@ def author_date_style() -> bool:
     return str(PROFILE_CONFIG.get("citation_style", "numeric")).lower() in {"author-date", "authoryear", "apalike"}
 
 
+def corporate_author(author_field: str) -> str:
+    """A group author braced whole in the bib ({{American Diabetes Association}}) is one name, never split into initials."""
+    raw = (author_field or "").strip()
+    if raw.startswith("{") and raw.endswith("}") and " and " not in raw:
+        return latex_to_text(raw).strip()
+    return ""
+
+
 def surname_of(author_field: str) -> str:
+    if corporate_author(author_field):
+        return corporate_author(author_field)
     first = re.split(r"\s+and\s+", latex_to_text(author_field or "").strip())[0].strip()
     if not first:
         return ""
@@ -993,7 +1003,7 @@ def add_math_paragraph(doc: Document, latex: str, *, size: float = 12) -> None:
 
 # \textbf / \textit / \emph survive latex_to_text as these marker characters (neither word
 # characters nor whitespace), so add_rich_text prints them bold or italic (0.8.4, JL 260928
-# appendix screenshot: "Agreeableness specification" lost its bold; 11 \textit were plain).
+# appendix screenshot: "<Trait> specification" lost its bold; 11 \textit were plain).
 EMPHASIS_MARKS = {"textbf": ("\x02", "\x03"), "textit": ("\x04", "\x05"), "emph": ("\x04", "\x05")}
 EMPHASIS_SWITCH = {"\x02": ("bold", True), "\x03": ("bold", False), "\x04": ("italic", True), "\x05": ("italic", False),
                    "\x0e": ("superscript", True), "\x0f": ("superscript", False)}   # \x0e \x0f: an AMA citation
@@ -1839,7 +1849,7 @@ def save_docx(doc: Document, path: Path) -> None:
                 anchor, mode = last.getnext(), "S"     # after the display placed just before
                 while anchor is not None and not (anchor.tag == qn("w:p") and len(element_text(anchor).strip()) >= 25):
                     anchor = anchor.getnext()
-            target = None
+            target, measured = None, False
             if anchor is not None:
                 text = element_text(anchor).strip()
                 snippet = text[:50] if mode == "S" else text[-60:]
@@ -1853,6 +1863,7 @@ def save_docx(doc: Document, path: Path) -> None:
                 before = word_page_boundaries(Path(path), [f"{mode}|{max(k, 1)}|{snippet}"])[0]
                 target = boundary_target(anchor, before)
                 placed += target is not None
+                measured = target is not None
                 if target is None:                   # Word could not say: right after the citing paragraph
                     target = anchor.getnext()
             start = len(body_children(doc))
@@ -1873,7 +1884,10 @@ def save_docx(doc: Document, path: Path) -> None:
                 # figure, the text goes on below it
                 if h["full_page"] and display.kind != "table":
                     set_page_break_before(target)
-            set_page_break_before(moved[0])
+            # a display placed at a page Word measured starts that page; one placed by the fallback (Word could not
+            # find its citing paragraph) stays right after it with no break, so it never strands a page of two lines
+            if measured or h["full_page"]:
+                set_page_break_before(moved[0])
             last = moved[-1]
     finally:
         if not was_running and word_running():
@@ -2056,14 +2070,26 @@ def jama_parts(raw_master: str) -> tuple[str, str, str, str, str, str]:
     abstract_match = re.search(r"\\section\*\{Abstract\}(.*?)\\section\s*\{Introduction\}", body, re.S)
     bib_match = re.search(r"\\bibliography\s*\{", body)
     appendix_match = re.search(r"\\appendix\b", body)
-    if abstract_match is None or bib_match is None or appendix_match is None:
-        raise RuntimeError("JAMA IM source is missing Key Points, Abstract, bibliography, or appendix boundary")
+    # 0.12.3: a Research Letter has no Key Points and no Abstract; the text then starts at its Introduction
+    if bib_match is None or appendix_match is None:
+        raise RuntimeError("JAMA IM source is missing its bibliography or appendix boundary")
+    if abstract_match is None and re.search(r"\\section\*\{Abstract\}", body):
+        raise RuntimeError("JAMA IM source has an Abstract heading but no Introduction after it")
     key_points = key_match.group(1) if key_match else ""
-    abstract = abstract_match.group(1)
+    abstract = abstract_match.group(1) if abstract_match else ""
     intro = re.search(r"\\section\s*\{Introduction\}", body)
     if intro is None:
         raise RuntimeError("JAMA IM source is missing Introduction")
     main_text = body[intro.start():bib_match.start()]
+    # A desk whose opening is not headed Abstract (Lancet: Summary, then the Research in context panel) keeps every
+    # numbered section after its heading: the abstract ends at the first \section, and the main text starts there.
+    head = str(PROFILE_CONFIG.get("abstract_heading", "Abstract"))
+    head_match = None if abstract_match else re.search(r"\\section\*\{" + re.escape(head) + r"\}", body)
+    if head_match:
+        nxt = re.search(r"\\section\s*\{", body[head_match.end():])
+        if nxt is not None and head_match.end() + nxt.start() <= intro.start():
+            start = head_match.end() + nxt.start()
+            abstract, main_text = body[head_match.end():start], body[start:bib_match.start()]
     supplement_text = body[appendix_match.end():]
     return title, author, key_points, abstract, main_text, supplement_text
 
@@ -2121,6 +2147,8 @@ def initials(author: str) -> str:
 
 
 def format_authors(author_field: str) -> str:
+    if corporate_author(author_field):
+        return corporate_author(author_field)
     clean = latex_to_text(author_field)
     if not clean:
         return ""
@@ -2154,6 +2182,7 @@ def bbl_references() -> dict[str, str]:
             for key, body in re.findall(r"\\bibitem(?:\[[^\]]*\])?\{([^}]+)\}(.*?)(?=\\bibitem|\\end\{thebibliography\})",
                                         bbl.read_text(encoding="utf-8", errors="replace"), re.S):
                 body = re.sub(r"\\url\{([^}]*)\}", r"\1", body.replace("\\newblock", " "))
+                body = re.sub(r"\\penalty-?\d+\s*", "", body)   # 0.12.3: unsrtnat's "175\\penalty0 (2)" printed "1750 (2)"
                 body = body.replace('{\\"\\i}', "ï").replace("\\i", "i")
                 text = re.sub(r"\s+", " ", latex_to_text(body)).strip()
                 if text:
@@ -2190,6 +2219,8 @@ def format_reference(key: str) -> str:
 
 def apa_authors(author_field: str) -> str:
     """Barnett, M. L., Olenski, A. R., & Jena, A. B."""
+    if corporate_author(author_field):
+        return corporate_author(author_field)
     people = [a.strip().rstrip(".") for a in re.split(r"\s+and\s+", latex_to_text(author_field or "").strip())
               if a.strip() and a.strip().lower() != "others"]
     out = []
@@ -2264,11 +2295,21 @@ BACK_MATTER_HEADINGS = {"back matter", "article information", "acknowledgments",
 
 def word_count(events: Iterable[Event]) -> int:
     """Main-text words: everything before the back matter (0.12.0, JL 261023: the JAMA title page counted the Article
-    Information, 3,071 words where the text has about 2,600; journals count the text alone)."""
+    Information, 3,071 words where the text has about 2,600; journals count the text alone). A profile may start the
+    count at a heading (word_count_from: the Lancet counts from the Introduction, not its Research in context panel)
+    and add back-matter headings (back_matter_headings); without them the count is as before (261101, b16 review)."""
+    stop = BACK_MATTER_HEADINGS | {str(h).strip().lower() for h in PROFILE_CONFIG.get("back_matter_headings", [])}
+    start = str(PROFILE_CONFIG.get("word_count_from", "")).strip().lower()
+    counting = not start
     words = []
     for event in events:
-        if event.kind == "heading" and str(event.value).strip().lower() in BACK_MATTER_HEADINGS:
+        name = str(event.value).strip().lower() if event.kind == "heading" else ""
+        if name and name in stop:
             break
+        if name and name == start:
+            counting = True
+        if not counting:
+            continue
         if event.kind in {"text", "list"}:
             values = event.value if event.kind == "list" else [event.value]
             # a word is what Word counts: a run between spaces holding a letter or digit, so "1.5%-2.5%" is 1
@@ -2400,6 +2441,8 @@ def render_submission_pdfs() -> dict[str, object]:
     if not soffice:
         return report
     for docx_path, pdf_path in ((MAIN_PATH, MAIN_PDF_PATH), (SUPP_PATH, SUPP_PDF_PATH)):
+        if not docx_path.exists():   # 0.12.3: a paper with no supplement
+            continue
         pdf_path.parent.mkdir(parents=True, exist_ok=True)
         try:
             subprocess.run(
@@ -2494,8 +2537,9 @@ def build_jama_internal_medicine(raw_master: str, evidence: dict[str, object]) -
         labelled_blocks(main_doc, str(PROFILE_CONFIG.get("key_points_heading", "KEY POINTS")), key_points)
     if key_points and bool(PROFILE_CONFIG.get("abstract_new_page", False)):   # the Abstract starts a page (JL 261023)
         main_doc.add_page_break()
-    labelled_blocks(main_doc, str(PROFILE_CONFIG.get("abstract_heading", "ABSTRACT")), abstract)
-    if bool(PROFILE_CONFIG.get("abstract_own_page", False)):   # the text starts on a new page after the keywords (JL 261023)
+    if abstract:
+        labelled_blocks(main_doc, str(PROFILE_CONFIG.get("abstract_heading", "ABSTRACT")), abstract)
+    if abstract and bool(PROFILE_CONFIG.get("abstract_own_page", False)):   # the text starts on a new page after the keywords (JL 261023)
         main_doc.add_page_break()
     include = bool(PROFILE_CONFIG.get("include_main_displays", False))
     at_end = bool(PROFILE_CONFIG.get("main_displays_at_end", False))   # JAMA: tables, then figures, after the references
@@ -2508,6 +2552,14 @@ def build_jama_internal_medicine(raw_master: str, evidence: dict[str, object]) -
                 main_doc.add_page_break()
                 adder(main_doc, display, f"{prefix}{number}")
     save_docx(main_doc, MAIN_PATH)
+
+    if not supplement_events:   # 0.12.3: no supplement (a Research Letter): none written, a stale one removed
+        for stale in (SUPP_PATH, SUPP_PDF_PATH):
+            if stale.exists():
+                stale.unlink()
+        pdf_report = render_submission_pdfs()
+        write_common_receipts(main_events, main_displays, supplement_events, title, evidence, pdf_report)
+        return MAIN_PATH, SUPP_PATH
 
     supp_doc = Document()
     configure_document(supp_doc, body_size=11, line_spacing=1.5)
@@ -2654,7 +2706,7 @@ def build() -> tuple[Path, Path]:
 
     pdf_report = render_submission_pdfs()
     write_common_receipts(main_events, main_displays, supplement_events, running_title, evidence, pdf_report)
-    # 0.7.1 tooth (Paper-MISQ-Board, JL 260908): every table float the master prints must
+    # 0.7.1 tooth (Paper-Example-Misq, JL 260908): every table float the master prints must
     # arrive in a Word file as a real <w:tbl>. Counted AFTER the files are written, so
     # the evidence is on disk; a mismatch is loud (non-zero exit), never a silent gap.
     supp_tables = sum(1 for e in supplement_events if e.kind == "display" and isinstance(e.value, Display) and e.value.kind == "table")

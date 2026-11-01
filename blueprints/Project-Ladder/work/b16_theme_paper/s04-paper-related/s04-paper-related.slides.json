@@ -1,0 +1,42 @@
+{
+ "topic": "s04-paper-related",
+ "style": "sketch-notes",
+ "source": "s04-paper-related.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Paper Related: venues and related papers",
+   "points": [
+    "what a paper Board sits beside",
+    "The Board keeps the related work and stays venue-free (s01-D01, D02)",
+    "each version Job is attached to one venue (s01-D03)"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and how a paper Board keeps its related papers and each version its venue, for the people who write the toolkit skills",
+    "a skill"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "Still open",
+   "points": [
+    "Related papers by research question (s01-D05, today in Block › Report): keep there, or move to…",
+    "Who writes related/: haipipe-discovery's Runs, haipipe-paper-venue, or a person by hand?",
+    "An email that carries comments (a decision letter, a coauthor's notes): saved once in…"
+   ],
+   "leaning": "",
+   "ask": "Venues: rows of kind venue in related/related.md, or their own venues/ folder?",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

@@ -1,0 +1,41 @@
+{
+ "topic": "s21-run-skill",
+ "style": "sketch-notes",
+ "source": "s21-run-skill.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Run and skill",
+   "points": [
+    "every design Run and the skills behind them, and the plan to make the skills carry the new ladder",
+    "Drawn in b16's s21-paper-run-skill shape: lines-only tables, black, red for what is open, green…"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and every design Run, the skill behind it, and the plan to update those skills, for the people who write the toolkit…",
+    "a skill"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "Still open",
+   "points": [
+    "The design family is pinned at 0.4.0 and only a person may change it: 0.5.0 for this rewrite?",
+    "s12 and s13 still spell the hard Runs rNN_<type>_<target>: rename them in their builders",
+    "Plan the test (run-plan-test-<app>): a design Run, or outside the theme with the Exp?"
+   ],
+   "leaning": "",
+   "ask": "Decided 261007: the method registry is haipipe-design-method/methods/",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

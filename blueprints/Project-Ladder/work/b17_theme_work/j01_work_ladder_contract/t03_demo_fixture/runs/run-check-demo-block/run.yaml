@@ -1,0 +1,13 @@
+run: run-check-demo-block
+kind: soft
+type: check
+scope: null
+target: demo-block
+ticket: run-check-demo-block.md
+skill: haipipe-work
+agent: claude
+signs: null
+status: queued
+passes: []
+writes: []
+feeds: []

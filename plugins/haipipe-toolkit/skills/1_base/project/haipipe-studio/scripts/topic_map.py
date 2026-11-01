@@ -16,7 +16,7 @@ The face holds one fenced yaml block that starts `frames:`; three frames at most
       arrows:                                           named arrows between them; "?" first: red and dashed
       - {from: a, to: b, label: feeds, dashed: false}
 
-block_index.py draws every Block's s00 with these same frames. A builder that needs a frame no yaml can say (a
+A builder that needs a frame no yaml can say (a
 screen in its colours) passes it to draw_topic(folder, extra=...).
 """
 from __future__ import annotations

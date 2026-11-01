@@ -6,7 +6,7 @@ description: >-
   placed as stairs down and to the right: the setting in its real numbers, one card per lead idea (why it matters,
   if we find → it would mean, where it stands now), and the path from here to G0. Words in the topic's
   <topic>-drawing.yaml; the topic's builder forwards to scripts/ideation_drawing.py. haipipe-paper-ideation calls it
-  for studio/s01-ideation/ whenever it is installed. Use to draw or redraw an ideation, to see a paper's ideas at a
+  for s01-ideation/ whenever it is installed. Use to draw or redraw an ideation, to see a paper's ideas at a
   glance, or to give a new paper's s01 the same shape. Trigger: draw the ideation, ideation drawing, s01-ideation
   drawing, ideas as steps, idea cards, path to G0, /excalidraw-ideation.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
@@ -155,9 +155,9 @@ the picture alone:
 Worked examples
 ---------------
 
-- Physician-SPACE `examples-3-nlp/Project-LLMRec-Physician/paper/Paper-LLMRecPhy-Jama/studio/s01-ideation/`: the origin,
+- Physician-SPACE `examples-3-nlp/Project-LLMRec-Physician/paper/Paper-LLMRecPhy-Jama/s01-ideation/`: the origin,
   sixteen ideas in four groups, its state read from the face's table (`state: columns`).
-- DrFirst-SPACE `examples-4-learning/Project-ExpLearn-SMSDesign/paper/Paper-LoopExpLearning/studio/s01-ideation/`:
+- DrFirst-SPACE `examples-4-learning/Project-ExpLearn-SMSDesign/paper/Paper-LoopExpLearning/s01-ideation/`:
   thirteen ideas, the loop's four parts as the lead group, the state in each idea's yaml.
 
 

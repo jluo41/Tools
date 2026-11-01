@@ -1,5 +1,9 @@
 # haipipe-display · Changelog
 
+## [0.6.0] — 2026-10-29
+
+New part `_parts/slide/` (🖼 slide): each slide one picture by image generation, in one style named per deck (`"style"` in `.slides.json`). 19 styles in `styles/`: 17 copied from baoyu-skills (MIT), `ian-handdrawn` adapted from Ian Handdrawn PPT, `glossy-cartoon` (the b15 v12 look). `scripts/slide_prompt.py` builds the prompt: `base-prompt.md` + the style + the slide's content. Studio decks default to `sketch-notes` (JL 261029: "sketch note looks great").
+
 ## [0.5.1] — 2026-10-26
 
 Shorter description (975 -> 421 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)

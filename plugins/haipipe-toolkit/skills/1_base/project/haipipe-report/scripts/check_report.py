@@ -33,6 +33,7 @@ from pathlib import Path
 STATES = ("open", "partial", "answered")
 SKIP = {"studio", "reports", "runs", "delivery", "draft", "displays", "notebooks", "results", "scripts",
         "src", "sbatch", "tests", "workflow", "resources", "_old", "_build"}
+STUDIO_ITEM = re.compile(r"^s\d{2}[-_]")             # an sNN-<topic>/ beside the Jobs or Tasks (JL 261030): not a child
 
 
 def face(folder: Path) -> Path | None:
@@ -78,10 +79,10 @@ def answered_ids(value: str) -> list[str]:
 
 def children(folder: Path) -> list[Path]:
     """The Jobs (of a Block) or Tasks (of a Job): direct folders with a face of their own name. A theme's
-    own names (a paper's version groups, its Sections) count the same as jNN_ / tNN_."""
+    own names (a paper's version groups, its Sections) count the same as jNN_ / tNN_; a Studio topic does not."""
     if not folder.is_dir():
         return []
-    return [p for p in sorted(folder.iterdir()) if p.is_dir() and p.name not in SKIP
+    return [p for p in sorted(folder.iterdir()) if p.is_dir() and p.name not in SKIP and not STUDIO_ITEM.match(p.name)
             and not p.name.startswith((".", "_")) and (p / (p.name + ".md")).is_file()]
 
 

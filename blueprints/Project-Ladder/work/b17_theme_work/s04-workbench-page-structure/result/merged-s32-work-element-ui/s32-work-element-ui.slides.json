@@ -1,0 +1,28 @@
+{
+ "topic": "s32-work-element-ui",
+ "style": "sketch-notes",
+ "source": "s32-work-element-ui.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "One look for every list?",
+   "image": "slides/idea-01-one-look-for-lists.png",
+   "content": "Headline (top-left, large): \"Every list, one row per item?\"\nThree option cards across the middle, joined by a wavy line:\n Card A, label \"A grid\": four small cards in a two by two grid with a zigzag eye path; caption \"the eye zigzags\"\n Card B, label \"One per row\", circled with a thick orange marker loop and a small hand-written tag \"leaning\": four long rows stacked, each with a small picture on the left; caption \"the eye goes down\"\n Card C, label \"A table\": a ruled table with many thin cells; caption \"dense, hard to scan\"\nBottom-right mustard sticky note with a big question mark: \"Still open: does a Run get a row too?\"\nFocal point: card B.",
+   "notes": "Options: Cards in a grid; One full-width row per item; A table. Leaning: the second (JL 261029: \"never NxN, make it each row one item\"). Still open: Does a Run keep the same row, or only open as a pop-out?"
+  },
+  {
+   "id": "02",
+   "idea": "What does every row show?",
+   "image": "slides/idea-02-what-a-row-shows.png",
+   "content": "Headline (top-left, large): \"Four things on every row\"\nOne big hand-drawn row card across the middle, with four parts from left to right, each with a small label above:\n \"name\": a name tag\n \"what for\": a short line on a note\n \"where it stands\": a small progress bar with a tick\n \"picture\": a tiny framed sketch\nBelow the row, three small grey buttons drawn faintly with a question mark beside them\nBottom-right mustard sticky note with a big question mark: \"Still open: buttons on the row?\"\nFocal point: the row card.",
+   "notes": "Options: Its name with its address; One line of what it is for; Where it stands, in words; Its picture. Leaning: all four, nothing else. Still open: Do the buttons sit on the row, or on its own page?"
+  },
+  {
+   "id": "03",
+   "idea": "How does a Run open?",
+   "image": "slides/idea-03-how-a-run-opens.png",
+   "content": "Headline (top-left, large): \"A Run opens over its Task?\"\nThree option cards across the middle, joined by a wavy line:\n Card A, label \"Own page\": an arrow leaving one page for another page; caption \"you leave the Task\"\n Card B, label \"A pop-out\", circled with a thick orange marker loop and a small hand-written tag \"leaning\": a small window floating over a page; caption \"the Task stays behind it\"\n Card C, label \"In place\": one row stretched open downward; caption \"the row grows\"\nBottom-right mustard sticky note with a big question mark: \"Still open: big results in a pop-out?\"\nFocal point: card B.",
+   "notes": "Options: Its own page (the old Run page); A pop-out over its Task; It opens in place, inside the row. Leaning: the second (s32-D04 proposal). Still open: Can a pop-out hold a big result, with tables and figures?"
+  }
+ ]
+}

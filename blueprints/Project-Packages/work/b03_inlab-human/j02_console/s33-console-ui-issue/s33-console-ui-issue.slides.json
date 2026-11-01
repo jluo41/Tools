@@ -1,0 +1,49 @@
+{
+ "topic": "s33-console-ui-issue",
+ "style": "sketch-notes",
+ "source": "s33-console-ui-issue.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "The console UI issues",
+   "points": [
+    "A review of the console as served on its synthetic fixtures: 66 screens (two scopes × three data…"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and the console's UI problems on its synthetic fixtures, ranked worst first, for the people who build the console",
+    "a ui"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "What is decided",
+   "points": [
+    "g02 (261009) fixed issues 1-5, 7, 8, 10-12 and decided 6 (Q05)"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "04",
+   "idea": "Still open",
+   "points": [
+    "One look for the console and the workbench (Q04)",
+    "Agree its For: line and Delivery type: (ui), proposed by the agent 261030?"
+   ],
+   "leaning": "",
+   "ask": "Issue 9: no view links out",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

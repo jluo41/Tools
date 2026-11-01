@@ -1,0 +1,41 @@
+{
+ "topic": "s03-excalidraw-slide",
+ "style": "sketch-notes",
+ "source": "s03-excalidraw-slide.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "excalidraw-slide: a deck proposed before it is built",
+   "points": [
+    "what the skill excalidraw-slide makes and how, told on one real slide job: j51, a five-minute…",
+    "Its ask came from a meeting on 2026-10-05 (j51 s01 what they want)",
+    "its layout was marked and agreed on one canvas (j51 s61 demo layout)"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and the excalidraw-slide skill, told on one real slide job, for the people who write the toolkit skills",
+    "a skill"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "Still open",
+   "points": [
+    "Settled 261012 (s03-D04): j51 is named in SKILL.md as the slide job to copy",
+    "Settled 261012 (s03-D04): a slide draft's own sizes are written in SKILL.md, and check.py names it"
+   ],
+   "leaning": "",
+   "ask": "Settled 261012 (s03-D04): the ask is the skill's step 0",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

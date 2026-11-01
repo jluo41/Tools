@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Workbench UI Draft v5</title>
+<!-- s04 design draft v5 (261028). The old workbench's look (its colours, buttons, borders), a new structure:
+     left = siblings and the current page's children as one small tree, right = the same entries on every
+     page, under the title = this page's own views, middle = the content. A mock, not workbench output;
+     b17 values read from disk on 2026-10-28, the second page uses placeholders. -->
+<style>
+:root{--bg:#fff;--fg:#1c1c1c;--mut:#6f6f6b;--line:#e3e3e6;--acc:#3e5c84;--acc-soft:#e6edf5;--tab-line:#ced4da;--tab-on:#1864ab;--tab-wash:#e7f5ff;--wash:#f6f6f7;--red:#e03131;--key:#fff3bf}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161719;--fg:#e6e6e6;--mut:#9a9a9a;--line:#2c2e33;--acc:#91caff;--acc-soft:#253749;--tab-line:#414852;--tab-on:#91caff;--tab-wash:#1c2c3c;--wash:#191c21;--key:#4a4422;--red:#ff8787}}
+*{box-sizing:border-box}
+body{margin:0;padding:16px;background:var(--bg);color:var(--fg);font:15px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+.draft-head{max-width:1500px;margin:0 auto 14px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:baseline}
+.draft-head h1{font-size:18px;margin:0}.draft-head span{color:var(--mut);font-size:13px}
+.board{max-width:1500px;margin:0 auto 34px;display:grid;grid-template-columns:200px minmax(0,1fr) 170px 250px;gap:18px;align-items:start}
+@media(max-width:1250px){.board{grid-template-columns:1fr}}
+.rail{border:1px solid var(--line);border-radius:10px;padding:10px 8px;font-size:14px;position:relative}
+.rail h4{margin:2px 8px 8px;font-size:12px;font-weight:500;color:var(--mut)}
+.rail a{display:block;padding:4px 10px;border-radius:6px;color:var(--fg);text-decoration:none;overflow-wrap:anywhere}
+.rail a:hover{background:var(--wash)}
+.rail a.on{background:var(--tab-wash);color:var(--tab-on);font-weight:500}
+.rail a.child{padding-left:28px;font-size:13px}
+.rail a.dim,.rail .dim{color:var(--mut)}
+.rail small{color:var(--mut);font-size:12px}
+.rail hr{border:0;border-top:1px solid var(--line);margin:8px 6px}
+.rail .note{font-size:12px;color:var(--mut);padding:2px 10px}
+.page{border:1px solid var(--line);border-radius:12px;padding:18px 22px 22px;position:relative;min-width:0}
+.crumb{font-size:14px;color:var(--mut)}.crumb a{color:var(--tab-on);text-decoration:none}
+.title{font-size:28px;font-weight:700;margin:6px 0 6px;overflow-wrap:anywhere}
+.intro{font-size:14px;margin:0 0 4px;max-width:900px}
+.status{display:inline-block;background:var(--key);border-radius:6px;padding:2px 10px;font-size:13px;margin:4px 8px 0 0}
+.waiting{color:var(--red);font-size:13px;font-weight:500}
+.views{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 14px}
+.views a{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border:1px solid var(--tab-line);border-radius:6px;background:var(--bg);color:var(--fg);text-decoration:none;font-size:15px}
+.views a.on{background:var(--tab-wash);border-color:var(--tab-on);color:var(--tab-on)}
+.views a.add{border-style:dashed;color:var(--mut)}
+.views small{color:var(--mut)}
+.topic{display:grid;grid-template-columns:minmax(0,1fr) 150px auto;gap:14px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin-bottom:10px}
+.topic .name{font-weight:700;font-size:16px;overflow-wrap:anywhere}
+.topic .line{font-size:13px;color:var(--mut);margin-top:2px}
+.topic .tag{display:inline-block;border:1px solid var(--line);border-radius:999px;font-size:12px;padding:0 8px;margin-left:6px;font-weight:400;color:var(--mut)}
+.topic img{width:150px;height:84px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:6px}
+.topic .noimg{width:150px;height:84px;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--mut);background:var(--wash);border-radius:6px}
+.seg{display:inline-flex;border:1px solid var(--tab-line);border-radius:6px;overflow:hidden;font-size:13px;white-space:nowrap}
+.seg span{padding:3px 10px}.seg span.on{background:var(--tab-wash);color:var(--tab-on)}
+.ctl{display:flex;gap:10px;align-items:center;color:var(--acc)}
+.addtopic{color:var(--mut);font-size:14px;margin-top:6px}
+.n{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;border-radius:50%;background:var(--red);color:#fff;font-size:12px;font-weight:600;padding:0 5px}
+.pin{position:absolute}
+.notes{font-size:13px}
+.notes h3{font-size:15px;margin:0 0 8px}
+.notes ol{list-style:none;padding:0;margin:0}
+.notes li{border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-bottom:8px}
+.notes li b{display:block;font-size:14px;margin-bottom:2px}
+.notes .was{color:var(--mut);font-size:12px;margin-top:3px}
+.notes .open{border-color:var(--red)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:14px}
+.two div{padding:10px 14px;border-bottom:1px solid var(--line)}.two div:nth-child(odd){border-right:1px solid var(--line)}
+.two .h{background:var(--wash);font-size:12px;color:var(--mut)}
+.act{display:inline-block;border:1px solid var(--tab-line);border-radius:6px;padding:1px 8px;font-size:12px;margin-left:6px;color:var(--acc)}
+.label{max-width:1500px;margin:0 auto 8px;font-size:15px;font-weight:600}
+</style>
+</head>
+<body>
+
+<div class="draft-head"><h1>Workbench UI draft v5</h1>
+<span>Old look, new structure. Red numbers match the notes on the right. b17 is real; page B uses placeholders.</span></div>
+
+<div class="label">Page A · Block b17_theme_work, Studio</div>
+<div class="board">
+
+  <nav class="rail">
+    <span class="n pin" style="top:-10px;left:-10px">1</span>
+    <h4>Left · siblings, and my children</h4>
+    <a href="#">b01_haipipe-toolkit</a>
+    <a href="#">b02_haipipe-utils</a>
+    <a href="#">b03_inlab-human</a>
+    <a href="#">b10_project_workbench</a>
+    <a href="#">b11_theme_insight</a>
+    <a href="#">b12_theme_design</a>
+    <a href="#">b13_theme_cowork</a>
+    <a href="#">b14_theme_discovery</a>
+    <a href="#">b15_theme_labeling</a>
+    <a href="#">b16_theme_paper</a>
+    <a href="#" class="on">b17_theme_work</a>
+    <span class="note">no Jobs yet</span>
+    <a href="#">b31_excalidraw</a>
+    <a href="#">b32_draft</a>
+    <a href="#">b33_evidence</a>
+    <a href="#">b34_display</a>
+    <hr><span class="note">Shown open here. On the page: dashes, names on hover.</span>
+  </nav>
+
+  <main class="page">
+    <span class="n pin" style="top:16px;left:-10px">2</span>
+    <div class="crumb"><a href="#">Tools</a> / <a href="#">blueprints</a> / b17_theme_work</div>
+    <div class="title">b17_theme_work</div>
+    <p class="intro">Design questions about the work Theme as one ladder: what a task Block, a work Job, a work Task and a hard Run each hold and show.</p>
+    <span class="status">4 Questions: 🟡 1 draft (Q01) · 🔴 3 open (Q02, Q03, Q04)</span>
+    <span class="waiting">Waiting: Q01 report is a draft, read it</span>
+
+    <span class="n pin" style="top:212px;left:-10px">3</span>
+    <div class="views">
+      <a href="#" class="on">All <small>6</small></a>
+      <a href="#">🎯 Current <small>0</small></a>
+      <a href="#">🟣 Interface <small>1</small></a>
+      <a href="#">💠 Navigation <small>1</small></a>
+      <a href="#">Untagged <small>5</small></a>
+      <a href="#" class="add">+ Group</a>
+    </div>
+
+    <span class="n pin" style="top:278px;left:-10px">4</span>
+    <div class="topic">
+      <div><div class="name">s00-overview</div><div class="line">What this Block stands on, for a reader new to it, and an index of its studio topics.</div></div>
+      <img src="../../s00-overview/s00-overview.png" alt="s00-overview drawing">
+      <div class="ctl"><span class="seg"><span class="on">Free</span><span>Structured</span></span>↗</div>
+    </div>
+    <div class="topic">
+      <div><div class="name">s01-work-ladder</div><div class="line">Every work row in one drawing, Block down to Run.</div></div>
+      <img src="../../s01-work-ladder/s01-work-ladder.png" alt="s01-work-ladder drawing">
+      <div class="ctl"><span class="seg"><span class="on">Free</span><span>Structured</span></span>↗</div>
+    </div>
+    <div class="topic">
+      <div><div class="name">s02-work-skills</div><div class="line">Which of today's skills/1_base/task skills make the work theme.</div></div>
+      <img src="../../s02-work-skills/s02-work-skills.png" alt="s02-work-skills drawing">
+      <div class="ctl"><span class="seg"><span class="on">Free</span><span>Structured</span></span>↗</div>
+    </div>
+    <div class="topic">
+      <div><div class="name">s03-work-workbench</div><div class="line">The Work workbench as it is built today: its Spaces, Views and run types.</div></div>
+      <div class="noimg">no preview image</div>
+      <div class="ctl"><span class="seg"><span class="on">Free</span><span>Structured</span></span>↗</div>
+    </div>
+    <div class="topic">
+      <div><div class="name">s04-workbench-page-structure<span class="tag">Interface</span><span class="tag">Navigation</span></div>
+        <div class="line">How a work page gives its reader location, purpose, progress and results without scattering related information.</div></div>
+      <img src="../s04-workbench-page-structure.png" alt="s04 drawing">
+      <div class="ctl"><span class="seg"><span class="on">Free</span><span>Structured</span></span>↗</div>
+    </div>
+    <div class="topic">
+      <div><div class="name">s32-work-element-ui</div><div class="line">Every kind of element the work theme draws today, as it draws it, side by side.</div></div>
+      <img src="../../s32-work-element-ui/s32-work-element-ui.png" alt="s32 drawing">
+      <div class="ctl"><span class="seg"><span class="on">Free</span><span>Structured</span></span>↗</div>
+    </div>
+    <div class="addtopic">+ Add topic → studio/s33-&lt;topic&gt;/</div>
+  </main>
+
+  <nav class="rail">
+    <span class="n pin" style="top:-10px;left:-10px">5</span>
+    <h4>Right · the same on every page</h4>
+    <a href="#">Overview</a>
+    <a href="#">Work</a>
+    <a href="#" class="on">Studio</a>
+    <a href="#" class="dim">Runs <small>0</small></a>
+    <a href="#" class="dim">Delivery <small>0</small></a>
+    <a href="#">Timeline</a>
+    <a href="#">Folder</a>
+    <hr>
+    <a href="#">Guide</a>
+    <hr><span class="note">Grey = empty: kept in place, so every page has the same order.</span>
+  </nav>
+
+  <aside class="notes">
+    <h3>What changed from the old page</h3>
+    <ol>
+      <li><b><span class="n">1</span> Left: one small tree</b>Sibling Blocks, and under the current one its children (Jobs). b17 has none, so it says so.
+        <div class="was">old: no way to the siblings</div></li>
+      <li><b><span class="n">2</span> Top: where and what</b>Path, the folder name, one sentence of purpose, the status, what waits for you.
+        <div class="was">old: Guide · Studio | Block · Job · Task | Delivery tabs and "Workbench · Studio · b17 · Theme: work"</div></li>
+      <li><b><span class="n">3</span> Under the title: this page's own views</b>Studio's groups. They change with the page: a Draft Task shows Plan · Write · Evidence (page B).
+        <div class="was">old: the same chips, but inside a box under a how-to paragraph</div></li>
+      <li><b><span class="n">4</span> Middle: rows show their content</b>Same card look and Free | Structured | ↗; each row adds its Topic sentence and its drawing.
+        <div class="was">old: ▸ to open a row; name only</div></li>
+      <li><b><span class="n">5</span> Right: fixed entries</b>Overview · Work · Studio · Runs · Delivery · Timeline · Folder · Guide, same order on every page.
+        <div class="was">old: a "Disk · Runs" side tab; Related, Delivery, Runs as boxes at the bottom</div></li>
+      <li class="open"><b>Open</b>Empty entries: grey in place (this draft) or hidden? The how-to paragraph moves into Guide.</li>
+    </ol>
+  </aside>
+</div>
+
+<div class="label">Page B · the same rules on a Draft Task, Work (placeholders)</div>
+<div class="board">
+  <nav class="rail">
+    <h4>Left · siblings, and my children</h4>
+    <a href="#">t01_&lt;task&gt;</a>
+    <a href="#" class="on">t02_&lt;draft-task&gt;</a>
+    <a href="#" class="child">r01_&lt;run&gt;</a>
+    <a href="#" class="child">r02_&lt;run&gt;</a>
+    <a href="#">t03_&lt;task&gt;</a>
+  </nav>
+  <main class="page">
+    <div class="crumb"><a href="#">&lt;Project&gt;</a> / <a href="#">paper</a> / <a href="#">bNN_&lt;block&gt;</a> / <a href="#">jNN_&lt;job&gt;</a> / t02_&lt;draft-task&gt;</div>
+    <div class="title">t02_&lt;draft-task&gt;</div>
+    <p class="intro">&lt;the goal: line of the Task face&gt;</p>
+    <span class="status">🔶 drafted, review open</span>
+    <div class="views">
+      <a href="#">Plan</a><a href="#">Write</a><a href="#" class="on">Evidence</a><a href="#">Display</a><a href="#">Revise</a>
+    </div>
+    <div class="two">
+      <div class="h">sentence</div><div class="h">its evidence</div>
+      <div>&lt;sentence 1 of the draft&gt;</div><div>&lt;the Run result that supports it&gt; <span class="act">Check</span></div>
+      <div>&lt;sentence 2 of the draft&gt;</div><div class="dim" style="color:var(--red)">no evidence yet <span class="act">Find</span></div>
+    </div>
+  </main>
+  <nav class="rail">
+    <h4>Right · the same on every page</h4>
+    <a href="#">Overview</a><a href="#" class="on">Work</a><a href="#">Studio</a><a href="#">Runs <small>2</small></a>
+    <a href="#">Delivery</a><a href="#">Timeline</a><a href="#">Folder</a><hr><a href="#">Guide</a>
+  </nav>
+  <aside class="notes">
+    <ol>
+      <li><b>Same frame, other content</b>Left: sibling Tasks, the current one opened to its Runs. Under the title: the Task's own steps. Right: unchanged.</li>
+      <li><b>Actions sit by their content</b>Check, Find: small buttons on the row they act on, not in a menu.</li>
+    </ol>
+  </aside>
+</div>
+
+</body>
+</html>

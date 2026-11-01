@@ -1,0 +1,38 @@
+{
+ "topic": "s13-design-task",
+ "style": "sketch-notes",
+ "source": "s13-design-task.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Design Task",
+   "points": [
+    "The Task tab, drawn for the three kinds of Task in j03_<goal>_<design-method>, drawn the way b11…",
+    "Each step of the method is a Task (s12, decided JL 261007), so a Job holds t00_reason-ideas/ (②,…",
+    "One tab and the same six Spaces serve all three"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and the Task tab for the three kinds of design Task, for the people who build the workbench",
+    "a ui"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "Still open",
+   "points": [],
+   "leaning": "",
+   "ask": "Agree its For: line and Delivery type: (ui), proposed by the agent 261030?",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Studio scroll</title>
+<style>
+:root{--bg:#f6f5f1;--card:#fffefb;--fg:#1b2433;--mut:#5d6675;--faint:#d5d2ca;--line:#e6e3db;--acc:#2f6feb;--acc-bg:#e8effd}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141518;--card:#1c1e22;--fg:#e8e6e1;--mut:#9aa3b2;--faint:#3a3e46;--line:#30333a;--acc:#6b9bff;--acc-bg:#1f2b45}}
+*{box-sizing:border-box}
+html{scroll-padding-top:52px}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 -apple-system,"Segoe UI",system-ui,sans-serif}
+a{color:var(--acc);text-decoration:none}
+/* top: where we are */
+.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:10px 16px;font-size:15px;color:var(--mut);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.top b{color:var(--fg)}.top .sep{color:var(--faint)}
+.views{margin-left:auto;display:flex;gap:4px}
+.views a{padding:3px 12px;border-radius:8px;font-size:14px;color:var(--fg);border:1px solid transparent}
+.views a.on{background:var(--fg);color:var(--bg)}
+.views a:not(.on):hover{border-color:var(--line)}
+.mock{font-size:12px;color:#a15c07;margin-left:8px}
+/* three columns */
+.shell{display:grid;grid-template-columns:170px minmax(0,1fr) 160px;gap:14px;padding:12px 12px 60px}
+@media (max-width:1000px){.shell{grid-template-columns:minmax(0,1fr)}.left,.right{display:none}}
+.left,.right{position:sticky;top:60px;align-self:start;max-height:calc(100vh - 76px);overflow:auto;padding:4px}
+.left h4,.right h4{margin:0 0 8px;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--mut)}
+/* left: the same layer, named */
+.sib a{display:flex;align-items:center;gap:8px;padding:3px 8px;border-radius:7px;color:var(--mut);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sib a i{flex:0 0 auto;width:12px;height:3px;border-radius:2px;background:var(--faint)}
+.sib a:hover{color:var(--fg)}
+.sib a.on{color:var(--fg);font-weight:600;background:var(--acc-bg)}.sib a.on i{background:var(--fg);width:18px}
+/* right: one line per topic; the dark one is in view */
+.mm a{display:flex;align-items:center;gap:10px;height:24px;color:var(--mut);font-size:13px;white-space:nowrap;cursor:pointer}
+.mm a i{flex:0 0 auto;width:16px;height:3px;border-radius:2px;background:var(--faint);transition:width .15s,background .15s}
+.mm a span{overflow:hidden;text-overflow:ellipsis}
+.mm a:hover{color:var(--fg)}
+.mm a.on{color:var(--fg);font-weight:600}.mm a.on i{width:28px;background:var(--fg)}
+/* middle: the topics, one after another */
+h1{font-size:28px;margin:0 0 4px}
+.lead{color:var(--mut);margin:0 0 14px}
+.groups{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 22px}
+.groups button{font:inherit;font-size:13px;padding:4px 12px;border-radius:99px;border:1px solid var(--line);background:var(--card);color:var(--fg);cursor:pointer}
+.groups button.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.groups button i{font-style:normal;opacity:.6;margin-left:5px}
+.topic{background:var(--card);border:1px solid var(--line);border-radius:14px;margin:0 0 18px;overflow:hidden;display:flex;flex-direction:column}
+.th{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 12px;padding:14px 20px 4px}
+.th h2{margin:0;font-size:20px;overflow-wrap:anywhere}
+.stage{font-size:13px;color:var(--mut);display:inline-flex;align-items:center;gap:6px}
+.stage i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.tags{font-size:12px;color:var(--mut)}
+.opens{margin-left:auto;display:flex;gap:6px}
+.opens button{font:inherit;font-size:13px;font-weight:600;padding:5px 12px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--acc);cursor:pointer}
+.opens button:hover{background:var(--acc-bg)}
+.tt{margin:0;padding:0 20px 10px;color:var(--mut);font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pic{display:flex;flex:1;background:#fff;border-top:1px solid var(--line);cursor:zoom-in;min-height:0}
+.pic img{display:block;width:100%;height:auto}
+.pic.none{align-items:center;justify-content:center;color:var(--mut);background:var(--acc-bg);cursor:pointer}
+dialog{width:min(1500px,95vw);height:92vh;padding:0;border:none;border-radius:14px;box-shadow:0 24px 80px rgba(0,0,0,.35);background:var(--card);color:var(--fg)}
+dialog::backdrop{background:rgba(20,24,32,.45)}
+.dh{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);font-weight:600}
+.dh a{margin-left:auto;font-weight:500;font-size:14px}.dh button{font-size:22px;border:none;background:none;color:var(--mut);cursor:pointer}
+dialog iframe{width:100%;height:calc(100% - 50px);border:0;background:#fff}
+</style></head><body>
+<nav class="top"><span>Tools</span><span class="sep">›</span><span>blueprints</span><span class="sep">›</span><b>b10_project_workbench</b>
+  <span class="views"><a href="one-page.html?layout=A#block">Page</a><a class="on">Studio</a><a>Delivery</a></span><span class="mock">mock · s33</span></nav>
+<div class="shell">
+  <nav class="left"><h4>Blocks in blueprints</h4><div class="sib" id="sib"></div></nav>
+  <main>
+    <div class="groups" id="groups"></div>
+    <div id="list"></div>
+  </main>
+  <nav class="right"><h4>Topics</h4><div class="mm" id="mm"></div></nav>
+</div>
+<dialog id="pop"><div class="dh"><span id="ptitle"></span><a id="ptab" target="_blank" rel="noopener">Open in its own tab ↗</a><button onclick="pop.close()" aria-label="Close">×</button></div><iframe id="pframe" title="pop-out"></iframe></dialog>
+<script>
+const CARDS=[{"name": "s00-overview", "topic": "what this Block stands on, for a reader new to it, and an index of its studio topics (sNN), Jobs (jNN) and Questions (qNN) with how far each has come. The background is the yaml below, written by a person; the index is read from disk on every build .", "tags": ["Structure"], "stage": "closed", "png": "http://100.121.165.84:5623/blueprints/Project-Ladder/work/b10_project_workbench/studio/s00-overview/s00-overview.png", "draw": "http://100.121.165.84:5623/_excalidraw/?board=blueprints/Project-Ladder/work/b10_project_workbench/studio/s00-overview/s00-overview.excalidraw", "map": ""}, {"name": "s01-overall-tree-structure", "topic": "one tree from Space down to Run (Space → Project → Theme → Block → Job → Task → Run), each level with its specials, its variants, its skills and where it shows in the workbench. Studio topic = creation: drawn and argued here, settled in a report Question. …", "tags": ["Structure"], "stage": "closed", "png": "http://100.121.165.84:5623/blueprints/Project-Ladder/work/b10_project_workbench/studio/s01-overall-tree-structure/s01-overall-tree-structure.png", "draw": "http://100.121.165.84:5623/_excalidraw/?board=blueprints/Project-Ladder/work/b10_project_workbench/studio/s01-overall-tree-structure/s01-overall-tree-structure.excalidraw", "map": ""}, {"name": "s02-studio-workbench-skill", "topic": "the Studio seen from both sides: its workbench (the Studio view that Block, Job and Task open, in the shared frame `servers/workbench`) and its skill (`haipipe-studio`), and how a Studio topic relates to a Report (from s04). Also: what …", "tags": ["UI", "Structure"], "stage": "shaping", "png": "http://100.121.165.84:5623/blueprints/Project-Ladder/work/b10_project_workbench/studio/s02-studio-workbench-skill/s02-studio-workbench-skill.png", "draw": "http://100.121.165.84:5623/_excalidraw/?board=blueprints/Project-Ladder/work/b10_project_workbench/studio/s02-studio-workbench-skill/s02-studio-workbench-skill.excalidraw", "map": ""}, {"name": "s03-delivery-workbench-skill", "topic": "the Delivery seen from both sides: its workbench (the Delivery view at the right end of the top row, Studio | Block · Job · Task | Delivery, opened from every level) and its skill (`/haipipe-delivery`). Jobs and Tasks make outputs; only the Block keeps them, …", "tags": ["Structure", "UI"], "stage": "shaping", "png": "http://100.121.165.84:5623/blueprints/Project-Ladder/work/b10_project_workbench/studio/s03-delivery-workbench-skill/s03-delivery-workbench-skill.png", "draw": "http://100.121.165.84:5623/_excalidraw/?board=blueprints/Project-Ladder/work/b10_project_workbench/studio/s03-delivery-workbench-skill/s03-delivery-workbench-skill.excalidraw", "map": ""}, {"name": "s04-related-workbench-skill", "topic": "the Related seen from both sides: its workbench (the Studio's second folding part, under the topic cards, since 261011; was Description › Related) and its skill (`/haipipe-related`, made 261011, s04-D09). What comes in from outside (a meeting, a paper, a file …", "tags": ["Structure", "UI"], "stage": "shaping", "png": "http://100.121.165.84:5623/blueprints/Project-Ladder/work/b10_project_workbench/studio/s04-related-workbench-skill/s04-related-workbench-skill.png", "draw": "http://100.121.165.84:5623/_excalidraw/?board=blueprints/Project-Ladder/work/b10_project_workbench/studio/s04-related-workbench-skill/s04-related-workbench-skill.excalidraw", "map": ""}, {"name": "s05-report-workbench-skill", "topic": "the Report seen from both sides: what a report is and how a level answers its Questions, its workbench (the Report Space on Block, Job and Task: one card per Question, opened as Logic │ Report with the work inside the Report, b10 s32-D23) and its skill …", "tags": ["Structure", "Report", "UI"], "stage": "shaping", "png": "http://100.121.165.84:5623/blueprints/Project-Ladder/work/b10_project_workbench/studio/s05-report-workbench-skill/s05-report-workbench-skill.png", "draw": "http://100.121.165.84:5623/_excalidraw/?board=blueprints/Project-Ladder/work/b10_project_workbench/studio/s05-report-workbench-skill/s05-report-workbench-skill.excalidraw", "map": ""}, {"name": "s06-run-workbench-skill", "topic": "the Run seen from both sides: what a Run is and what it does, its workbench (the Runs panel beside every Space, the Runs Space on every level) and its skill (`/haipipe-run`). It started from JL 261007 (\"how do we manage the runs here ... the soft run, the …", "tags": ["Structure", "Run and Skill"], "stage": "shaping", "png": "http://100.121.165.84:5623/blueprints/Project-Ladder/work/b10_project_workbench/studio/s06-run-workbench-skill/s06-run-workbench-skill.png", "draw": "http://100.121.165.84:5623/_excalidraw/?board=blueprints/Project-Ladder/work/b10_project_workbench/studio/s06-run-workbench-skill/s06-run-workbench-skill.excalidraw", "map": ""}, {"name": "s08-studio-timeline", "topic": "the Studio's fourth folding part, Timeline, under the topic cards, Related and Delivery (s03-D09): what moved in this Block's Studio and when, drawn as a real timeline, one axis down the page with a dot per day, at three levels of detail. Started from JL …", "tags": ["UI", "Structure"], "stage": "closed", "png": "http://100.121.165.84:5623/blueprints/Project-Ladder/work/b10_project_workbench/studio/s08-studio-timeline/s08-studio-timeline.png", "draw": "http://100.121.165.84:5623/_excalidraw/?board=blueprints/Project-Ladder/work/b10_project_workbench/studio/s08-studio-timeline/s08-studio-timeline.excalidraw", "map": ""}, {"name": "s09-block-folder", "topic": "the Studio's fifth folding part, Folder, under the topic cards, Related, Delivery and Timeline: the Block's own folder as a tree, so a person sees what each folder of the Block holds without leaving the workbench. Asked by JL 261012: \"我想创建一个 s09。这个 s09 我们是要创建 …", "tags": ["UI", "Structure"], "stage": "closed", "png": "http://100.121.165.84:5623/blueprints/Project-Ladder/work/b10_project_workbench/studio/s09-block-folder/s09-block-folder.png", "draw": "http://100.121.165.84:5623/_excalidraw/?board=blueprints/Project-Ladder/work/b10_project_workbench/studio/s09-block-folder/s09-block-folder.excalidraw", "map": ""}, {"name": "s10-haipipe-project", "topic": "what the haipipe-project skill is and does. It owns a Project's root (README.md, project.yaml, which Theme folders exist and which skill owns each) and checks the shape of every level below it (Block → Job → Task → Run → pass). Its update door, `/wb update …", "tags": ["Structure", "Run and Skill"], "stage": "explore", "png": "http://100.121.165.84:5623/blueprints/Project-Ladder/work/b10_project_workbench/studio/s10-haipipe-project/s10-haipipe-project.png", "draw": "http://100.121.165.84:5623/_excalidraw/?board=blueprints/Project-Ladder/work/b10_project_workbench/studio/s10-haipipe-project/s10-haipipe-project.excalidraw", "map": ""}, {"name": "s31-guide", "topic": "the Guide tab of the frame: the family's docs, the same in every Block. Its four Views (Description · Method · RoadMap Draw · Related Paper), the files each reads in `servers/workbench-<theme>/`, how those files relate, and each family's status. Drawn in the …", "tags": ["Guide"], "stage": "shaping", "png": "http://100.121.165.84:5623/blueprints/Project-Ladder/work/b10_project_workbench/studio/s31-guide/s31-guide.png", "draw": "http://100.121.165.84:5623/_excalidraw/?board=blueprints/Project-Ladder/work/b10_project_workbench/studio/s31-guide/s31-guide.excalidraw", "map": ""}, {"name": "s32-element-ui", "topic": "every kind of element a workbench draws, as each workbench draws it today, side by side, so one look per element can be picked and the base draws it for every theme . It answers JL's \"the current UI is very bad, not as good as the previous ones\": the previous …", "tags": ["UI"], "stage": "shaping", "png": "http://100.121.165.84:5623/blueprints/Project-Ladder/work/b10_project_workbench/studio/s32-element-ui/s32-element-ui.png", "draw": "http://100.121.165.84:5623/_excalidraw/?board=blueprints/Project-Ladder/work/b10_project_workbench/studio/s32-element-ui/s32-element-ui.excalidraw", "map": ""}, {"name": "s33-one-page-shape", "topic": "one page shape for every level of the work workbench: answer line, a table of rows, the next step, details folded last. A Block's rows are its Jobs, a Job's its Tasks, a Task's its Runs; clicking a row zooms in. Why now : on b19 the Report and Work tabs …", "tags": ["UI"], "stage": "explore", "png": "", "draw": "", "map": "http://100.121.165.84:5623/blueprints/Project-Ladder/work/b10_project_workbench/studio/s33-one-page-shape/s33-one-page-shape.mindmap.html"}, {"name": "s51-server-runtime", "topic": "how the workbench server runs today: how it starts, which folders make it up, how one request finds its page, how the base frame draws a folder, which routes each workbench answers, and where SPACE Home's links land. It is the first server topic: s01-s13 …", "tags": ["Server"], "stage": "closed", "png": "http://100.121.165.84:5623/blueprints/Project-Ladder/work/b10_project_workbench/studio/s51-server-runtime/s51-server-runtime.png", "draw": "http://100.121.165.84:5623/_excalidraw/?board=blueprints/Project-Ladder/work/b10_project_workbench/studio/s51-server-runtime/s51-server-runtime.excalidraw", "map": ""}, {"name": "s52-host-and-share", "topic": "how a Block is shared with colleagues: who may open it, how they prove who they are (their JHU JHED sign-in), what they see and never see, and where it is hosted. s51 is how the server runs; s52 is who can reach it. New on 261012 .", "tags": ["Server"], "stage": "closed", "png": "http://100.121.165.84:5623/blueprints/Project-Ladder/work/b10_project_workbench/studio/s52-host-and-share/s52-host-and-share.png", "draw": "http://100.121.165.84:5623/_excalidraw/?board=blueprints/Project-Ladder/work/b10_project_workbench/studio/s52-host-and-share/s52-host-and-share.excalidraw", "map": ""}], BLOCKS=["b01_haipipe-toolkit", "b02_haipipe-utils", "b03_inlab-human", "b10_project_workbench", "b11_theme_insight", "b12_theme_design", "b13_theme_cowork", "b14_theme_discovery", "b15_theme_labeling", "b16_theme_paper", "b17_theme_work", "b31_excalidraw", "b32_draft", "b33_evidence", "b34_display"], HERE="b10_project_workbench";
+const STAGE={explore:"#9aa3b2",shaping:"#e0a33a",agreed:"#2f6feb",closed:"#16794a"};
+const $=id=>document.getElementById(id), pop=$("pop");
+function open_(t,u){$("ptitle").textContent=t;$("pframe").src=u;$("ptab").href=u;pop.showModal()}
+pop.addEventListener("close",()=>$("pframe").src="about:blank");
+pop.addEventListener("click",e=>{if(e.target===pop)pop.close()});
+$("sib").innerHTML=BLOCKS.map(b=>`<a class="${b===HERE?'on':''}" title="${b}"><i></i>${b}</a>`).join("");
+let picked="All", seen=null;
+function render(){
+  const groups={};CARDS.forEach(c=>c.tags.forEach(t=>groups[t]=(groups[t]||0)+1));
+  $("groups").innerHTML=["All",...Object.keys(groups)].map(g=>`<button class="${g===picked?'on':''}" data-g="${g}">${g}<i>${g==="All"?CARDS.length:groups[g]}</i></button>`).join("");
+  $("groups").querySelectorAll("button").forEach(b=>b.onclick=()=>{picked=b.dataset.g;render();window.scrollTo({top:0})});
+  const shown=CARDS.filter(c=>picked==="All"||c.tags.includes(picked));
+  $("list").innerHTML=shown.map(c=>{const i=CARDS.indexOf(c);
+    const pic=c.png?`<a class="pic" data-i="${i}" data-k="draw"><img loading="lazy" src="${c.png}" alt="${c.name} drawing"></a>`
+               :`<a class="pic none" data-i="${i}" data-k="${c.map?'map':'draw'}">${c.map?'No drawing yet · open its mind map':'No drawing yet'}</a>`;
+    return `<section class="topic" id="${c.name}"><div class="th"><h2>${c.name}</h2>
+      <span class="stage"><i style="background:${STAGE[c.stage]||'#ccc'}"></i>${c.stage||'no stage'}</span><span class="tags">${c.tags.join(' · ')}</span>
+      <span class="opens">${c.draw?`<button data-i="${i}" data-k="draw">Drawing</button>`:''}${c.map?`<button data-i="${i}" data-k="map">Mind map</button>`:''}</span></div>
+      <p class="tt">${c.topic}</p>${pic}</section>`}).join("");
+  $("list").querySelectorAll("[data-k]").forEach(el=>el.onclick=()=>{const c=CARDS[+el.dataset.i],k=el.dataset.k;open_(c.name+(k==="map"?" · mind map":" · drawing"),k==="map"?c.map:c.draw)});
+  $("mm").innerHTML=shown.map(c=>`<a data-id="${c.name}" title="${c.name}"><i></i><span>${c.name}</span></a>`).join("");
+  $("mm").querySelectorAll("a").forEach(a=>a.onclick=()=>document.getElementById(a.dataset.id).scrollIntoView({behavior:"smooth"}));
+  if(seen)seen.disconnect();
+  seen=new IntersectionObserver(es=>{const v=es.filter(e=>e.isIntersecting).sort((a,b)=>a.boundingClientRect.top-b.boundingClientRect.top);
+    if(v.length)$("mm").querySelectorAll("a").forEach(a=>a.classList.toggle("on",a.dataset.id===v[0].target.id))},{rootMargin:"-60px 0px -55% 0px"});
+  document.querySelectorAll("section.topic").forEach(s=>seen.observe(s));
+  const f=$("mm").querySelector("a");if(f)f.classList.add("on");
+}
+render();
+</script></body></html>

@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Report and Work Views</title>
+<!-- s04 design draft v11 (261031): Studio is settled; this draft moves the old screen (frame.py: six Spaces, each
+     with a theme's own views) into the new page's Report and Work, where the view buttons under the title are the
+     whole design (JL 261031: "how to immigrate the previous version to the report and work, where the
+     view-button-list is the most important ones"). Old view names are read from servers/ (frame.py SPACES, each
+     theme's Space(subspaces=...)); new ones from servers/workbench/focus_page.py. A mock, not workbench output. -->
+<style>
+:root{--bg:#fff;--fg:#1c1c1c;--mut:#6f6f6b;--faint:#9aa0a6;--line:#e3e3e6;--on:#1864ab;--wash:#e7f5ff;--soft:#f6f6f7;--prop:#b35c00;--ok:#2b8a3e;--red:#c92a2a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161719;--fg:#e8e8e6;--mut:#a0a09c;--faint:#7c828a;--line:#2c2e33;--on:#91caff;--wash:#253749;--soft:#1d1f22;--prop:#e4bd62;--ok:#8ce99a;--red:#ff8787}}
+:root[data-theme="dark"]{--bg:#161719;--fg:#e8e8e6;--mut:#a0a09c;--faint:#7c828a;--line:#2c2e33;--on:#91caff;--wash:#253749;--soft:#1d1f22;--prop:#e4bd62;--ok:#8ce99a;--red:#ff8787}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+a{color:inherit;text-decoration:none}
+.wrap{display:grid;grid-template-columns:minmax(0,1040px) 290px;gap:32px;max-width:1400px;margin:0 auto;padding:26px 16px 60px}
+@media(max-width:1100px){.wrap{grid-template-columns:1fr}.notes{position:static!important}}
+.screen-label{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--red);margin:0 0 6px;font-weight:600}
+h1.page{font-size:26px;margin:0 0 6px}
+.lead{color:var(--mut);margin:0 0 22px;max-width:820px}
+.flow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 0 26px;font-size:14px}
+.flow span{border:1px solid var(--line);border-radius:8px;padding:4px 10px}
+.flow span.new{border-color:var(--on);background:var(--wash);color:var(--on)}
+.flow b{color:var(--faint);font-weight:400}
+.level{margin:0 0 30px}
+.level h2{font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin:0 0 10px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:760px){.pair{grid-template-columns:1fr}}
+.screen{border:1px solid var(--line);border-radius:12px;padding:16px 18px 14px;position:relative;min-width:0}
+.crumb{font-size:12px;color:var(--mut);overflow-wrap:anywhere}
+.screen h3{font-size:20px;margin:6px 0 10px;font-weight:600;overflow-wrap:anywhere}
+.screen h3 i{font-style:normal;color:var(--mut);font-weight:500;margin-left:10px}
+.views{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}
+.views a{border:1px solid var(--line);border-radius:8px;padding:4px 12px;font-size:13.5px}
+.views a.on{border-color:var(--on);background:var(--wash);color:var(--on)}
+.views a.theme{border-style:dashed;border-color:var(--prop);color:var(--prop)}
+.rows{list-style:none;padding:0;margin:0}
+.rows li{display:grid;grid-template-columns:92px minmax(0,1fr);gap:10px;padding:7px 0;border-top:1px solid var(--line);font-size:13.5px}
+.rows li b{font-weight:600}
+.rows li .from{display:block;color:var(--faint);font-size:12px;margin-top:2px}
+.rows li .from em{font-style:normal;color:var(--mut)}
+.rail{position:absolute;right:-1px;top:56px;display:flex;flex-direction:column;gap:7px}
+.rail i{display:block;width:12px;height:2px;background:var(--line)}
+.rail i.on{background:var(--prop);height:3px}
+table{border-collapse:collapse;width:100%;font-size:13.5px;margin:8px 0 6px}
+th,td{text-align:left;vertical-align:top;padding:7px 8px;border-top:1px solid var(--line)}
+th{font-size:12px;color:var(--mut);font-weight:600;letter-spacing:.03em}
+td .t{border:1px dashed var(--prop);color:var(--prop);border-radius:7px;padding:0 7px;white-space:nowrap;display:inline-block;margin:1px 2px 1px 0}
+td .gone{color:var(--faint)}
+.tablebox{overflow-x:auto}
+.notes{position:sticky;top:20px;align-self:start;font-size:13.5px}
+.notes h4{margin:0 0 10px;color:var(--red);font-size:13px;letter-spacing:.05em;text-transform:uppercase}
+.notes ol{margin:0;padding-left:20px}
+.notes li{margin:0 0 10px}
+.notes li::marker{color:var(--red);font-weight:700}
+.notes .open{color:var(--red)}
+.mark{color:var(--red);font-weight:700;font-size:12px;vertical-align:super;margin-left:2px}
+h2.sec{font-size:18px;margin:34px 0 4px}
+p.small{font-size:13px;color:var(--mut);margin:0 0 6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<main>
+<p class="screen-label">s04 · ui-draft-v11 · proposal</p>
+<h1 class="page">Report and Work: the view buttons</h1>
+<p class="lead">Studio is settled. This draft moves the old screen into the new page: every view the old six Spaces held lands
+as a view button under the title of Report or Work, or moves to its own section on the right rail. Each button below says
+what it shows and, in grey, which old view it takes over.</p>
+
+<div class="flow">
+<span>Description</span><span>Idea Studio</span><span>Audience Report</span><span>Work Details</span><span>Runs</span><span>Delivery</span><span>Guide</span>
+<b>▶</b>
+<span class="new">Report</span><span class="new">Work</span><span>Studio ✅</span><span>Delivery</span><span>Related</span><span>Timeline</span><span>Files</span>
+</div>
+
+<!-- ── Block ─────────────────────────────────────────────────────────────── -->
+<section class="level">
+<h2>Block · board.md</h2>
+<div class="pair">
+<div class="screen">
+<div class="rail"><i class="on"></i><i></i><i></i><i></i><i></i></div>
+<div class="crumb">Tools-SPACE / blueprints / Project-Ladder / work / b17_theme_work</div>
+<h3>b17_theme_work<i>Report</i></h3>
+<div class="views"><a class="on">MindMap</a><a>Status</a><a>Findings</a><a>Answers</a><a>Questions</a></div>
+<ul class="rows">
+<li><b>MindMap</b><span>each sNN, the Job that makes its delivery, its Tasks; the Questions each answers<span class="from">from <em>Description › Face</em> and the old overview map</span></span></li>
+<li><b>Status</b><span>one word for each sNN, Job and Task: done, running, waiting for you<span class="from">from <em>Work Details</em> counts; cowork's <em>open · waiting · done</em> filters</span></span></li>
+<li><b>Findings</b><span>each answer's first sentence, the proposals waiting for you first<span class="from">from <em>Audience Report › Report</em> rows</span></span></li>
+<li><b>Answers</b><span>one answer per Question, in full, with its evidence<span class="from">from the report pages, <em>reports/qNN_*</em></span></span></li>
+<li><b>Questions</b><span>what it plans to learn: hypothesis, acceptance<span class="from">from <em>Audience Report › Questions</em></span></span></li>
+</ul>
+</div>
+<div class="screen">
+<div class="rail"><i></i><i class="on"></i><i></i><i></i><i></i></div>
+<div class="crumb">Tools-SPACE / blueprints / Project-Ladder / work / b17_theme_work</div>
+<h3>b17_theme_work<i>Work</i></h3>
+<div class="views"><a class="on">Progress</a><a>Runs</a><span class="mark">1</span><a>Results</a></div>
+<ul class="rows">
+<li><b>Progress</b><span>one row per Job: goal ▸ status ▸ output<span class="from">from <em>Work Details</em>, the Jobs and Tasks tree</span></span></li>
+<li><b>Runs</b><span>every Run under the Block, newest first, its status as a word<span class="from">from the <em>Runs</em> Space (All, by type) and the Runs panel</span></span></li>
+<li><b>Results</b><span>what the Runs made: figures, tables, files, each with its Run<span class="from">from <em>Deliverables</em>; the work theme's <em>Results</em></span></span></li>
+</ul>
+</div>
+</div>
+</section>
+
+<!-- ── Job ───────────────────────────────────────────────────────────────── -->
+<section class="level">
+<h2>Job · jNN_&lt;job&gt;.md</h2>
+<div class="pair">
+<div class="screen">
+<div class="rail"><i class="on"></i><i></i><i></i><i></i></div>
+<div class="crumb">… / b17_theme_work / j03_work_workbench_pages</div>
+<h3>j03_work_workbench_pages<i>Report</i></h3>
+<div class="views"><a class="on">MindMap</a><a>Status</a><a>Findings</a></div>
+<ul class="rows">
+<li><b>MindMap</b><span>its Tasks, their Runs, the sNN it builds<span class="from">from <em>Description › Job</em></span></span></li>
+<li><b>Status</b><span>one word per Task and Run<span class="from">from <em>Work Details</em> counts</span></span></li>
+<li><b>Findings</b><span>what its Tasks found, first sentence each<span class="from">from <em>Audience Report</em>; paper's <em>Questions</em> per version</span></span></li>
+</ul>
+</div>
+<div class="screen">
+<div class="rail"><i></i><i class="on"></i><i></i><i></i></div>
+<div class="crumb">… / b17_theme_work / j03_work_workbench_pages</div>
+<h3>j03_work_workbench_pages<i>Work</i></h3>
+<div class="views"><a class="on">Progress</a><a>Runs</a><a>Results</a></div>
+<ul class="rows">
+<li><b>Progress</b><span>one row per Task: goal ▸ status ▸ output<span class="from">from <em>Work Details</em>; paper's <em>All · Main · Appendix · Letters</em> become row groups</span></span></li>
+<li><b>Runs</b><span>its Tasks' Runs<span class="from">from the <em>Runs</em> Space</span></span></li>
+<li><b>Results</b><span>its Tasks' outputs<span class="from">from <em>Deliverables</em></span></span></li>
+</ul>
+</div>
+</div>
+</section>
+
+<!-- ── Task ──────────────────────────────────────────────────────────────── -->
+<section class="level">
+<h2>Task · tNN_&lt;task&gt;.md</h2>
+<div class="pair">
+<div class="screen">
+<div class="rail"><i class="on"></i><i></i><i></i></div>
+<div class="crumb">… / j03_work_workbench_pages / t01_block_page</div>
+<h3>t01_block_page<i>Report</i></h3>
+<div class="views"><a class="on">Findings</a><a>Status</a></div>
+<ul class="rows">
+<li><b>Findings</b><span>its report: what it found, from its Runs<span class="from">from <em>Audience Report</em> (a Task's report is its face); work's <em>Draft · Report</em></span></span></li>
+<li><b>Status</b><span>its Runs, one word each, and its close line<span class="from">from the Task's state line</span></span></li>
+</ul>
+</div>
+<div class="screen">
+<div class="rail"><i></i><i class="on"></i><i></i></div>
+<div class="crumb">… / j03_work_workbench_pages / t01_block_page</div>
+<h3>t01_block_page<i>Work</i></h3>
+<div class="views"><a class="on">Plan</a><span class="mark">2</span><a>Runs</a><a>Results</a></div>
+<ul class="rows">
+<li><b>Plan</b><span>goal, close, how: what this Task will do<span class="from">from <em>Description › Scope · Plan</em></span></span></li>
+<li><b>Runs</b><span>its Runs, each with its ticket and receipt<span class="from">from the <em>Runs</em> Space, <em>All · hard · soft</em></span></span></li>
+<li><b>Results</b><span>each Run's result/: figures, tables, files<span class="from">from <em>Work Details › Folders</em></span></span></li>
+</ul>
+</div>
+</div>
+<p class="small">A draft Task (a paper Section) keeps the Work views it has today: Plan · Write · Evidence · Display · Revise; its old <em>Studio</em> and <em>Delivery</em> steps are the sections on the rail.</p>
+</section>
+
+<!-- ── Themes ────────────────────────────────────────────────────────────── -->
+<h2 class="sec">What each theme adds <span class="mark">3</span></h2>
+<p class="small">A theme adds a dashed button inside Report or Work, never a Space of its own. Grey: where the rest of its old views go.</p>
+<div class="tablebox">
+<table>
+<tr><th>theme</th><th>adds to Report</th><th>adds to Work</th><th>its other old views go to</th></tr>
+<tr><td>paper · Block</td><td><span class="t">Narrative</span></td><td>Progress named <span class="t">Versions</span></td><td class="gone">Ideation, Story, DataFlow, PaperFlow → Studio topics · High-level logic → MindMap · Related Questions → Questions · Related Papers → Related</td></tr>
+<tr><td>paper · version Job</td><td><span class="t">Drafts</span> <span class="t">Comments</span> <span class="t">Cover letter</span></td><td>Progress grouped Main · Appendix · Letters</td><td class="gone">Draft-Main and Draft-Appendix → one Drafts view</td></tr>
+<tr><td>discovery</td><td><span class="t">Synthesis</span></td><td><span class="t">Papers</span> <span class="t">Citations</span></td><td class="gone">Reports, BibTeX → Delivery · Resources → Related · Blocked → a status word</td></tr>
+<tr><td>insight</td><td><span class="t">Partitions</span></td><td>Progress grouped D · I · K · W</td><td class="gone">Handoff → Delivery</td></tr>
+<tr><td>design</td><td><span class="t">Evaluation</span></td><td><span class="t">Designs</span> (kept · dropped)</td><td class="gone">Goal list, Theory, Rules → Studio · passed, verify, revise → status words</td></tr>
+<tr><td>cowork</td><td>none</td><td><span class="t">Waiting on</span></td><td class="gone">People, emails, meetings → Related · Timeline → Timeline · Checklist → Progress</td></tr>
+<tr><td>work · Task</td><td><span class="t">Review</span></td><td><span class="t">Code</span> <span class="t">Notebooks</span></td><td class="gone">Goal · Plan · Execution · Results (workflow layout) → purpose line, Plan, Runs, Results</td></tr>
+<tr><td>labeling</td><td colspan="3" class="gone">keeps its own page today (labeling_focus.py): Data · Items · Embedding · Contract · Rounds · Handoff; mapped in a later draft</td></tr>
+</table>
+</div>
+
+<h2 class="sec">Not a view any more</h2>
+<table>
+<tr><th>old</th><th>now</th></tr>
+<tr><td>Description › Face</td><td>“Open this page’s Markdown” at the foot of every page</td></tr>
+<tr><td>Runs panel, on the right of every Space</td><td>Work › Runs</td></tr>
+<tr><td>All, open, waiting, done, hard, soft, passed, verify, revise</td><td>a status word on each row; never a button <span class="mark">4</span></td></tr>
+<tr><td>Delivery's Files, Reports, BibTeX, Handoff</td><td>the Delivery section</td></tr>
+<tr><td>Guide</td><td class="open">no place yet <span class="mark">5</span></td></tr>
+</table>
+</main>
+
+<aside class="notes">
+<h4>Notes</h4>
+<ol>
+<li><b>Runs moves into Work.</b> The old Runs Space and the Runs panel become one Work view, so a Run is found where the work is.</li>
+<li><b>A Task's Work opens on Plan.</b> Its old Description (Scope, Plan) is what it will do, so it belongs to Work.</li>
+<li><b>Same names everywhere.</b> Report: MindMap · Status · Findings · Answers · Questions. Work: Progress · Runs · Results. A level shows only the views that have something; a theme adds at most two.</li>
+<li><b>A filter is never a view.</b> Old buttons that only filtered rows become the word on each row.</li>
+<li class="open"><b>Guide, proposed:</b> a small “?” beside the title opens it as a pop-out; it is no section and no view.</li>
+</ol>
+</aside>
+</div>
+</body>
+</html>

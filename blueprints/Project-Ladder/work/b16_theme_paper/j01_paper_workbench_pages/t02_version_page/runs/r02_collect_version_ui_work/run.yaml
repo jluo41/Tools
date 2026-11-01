@@ -1,0 +1,15 @@
+run: r02_collect_version_ui_work
+kind: hard
+type: collect
+scope: blueprints/Project-Ladder/work/b16_theme_paper/j01_paper_workbench_pages/t02_version_page
+target: b16.j01.t02-s36:theme_paper.paper_workbench_pages.version_page @ version_ui_work
+ticket: r02_collect_version_ui_work.html
+skill: haipipe-interaction
+agent: JL
+signs: null
+status: done
+passes:
+- p01-1031
+writes:
+- result/answer_collection.md
+feeds: []

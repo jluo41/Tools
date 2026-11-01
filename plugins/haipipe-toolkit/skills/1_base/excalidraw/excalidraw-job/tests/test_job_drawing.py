@@ -98,7 +98,7 @@ def test_a_task_topic_is_no_longer_pointed_to(tmp_path):
     """The Job carries each Task's results itself, so it no longer points to a Task topic (JL 261014: "we don't need
     the links here ... we will retire the sNN tNN")."""
     job = block(tmp_path)
-    other = job.parent / "studio/s24-j01-t01-entropy-kl"
+    other = job.parent / "s24-j01-t01-entropy-kl"
     other.mkdir(parents=True)
     (other / f"{other.name}.md").write_text("s24 · t01\n\n```yaml\ntask:\n  name: j01_losses/t01_entropy_kl\n```\n")
     out = job_drawing.make(job)
@@ -108,7 +108,7 @@ def test_a_task_topic_is_no_longer_pointed_to(tmp_path):
 
 def test_adopt_keeps_the_results_words(tmp_path):
     job = block(tmp_path)
-    topic = job.parent / "studio/s21-j01-losses-results"
+    topic = job.parent / "s21-j01-losses-results"
     topic.mkdir()
     (topic / f"{topic.name}.md").write_text(
         "s21 · j01 · Losses: current results\n====================================\n\n**Topic:** old\n\n"

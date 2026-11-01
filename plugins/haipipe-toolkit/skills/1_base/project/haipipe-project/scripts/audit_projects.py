@@ -32,8 +32,9 @@ WORLD_DIRS = {
 }
 OLD_WORLD_DIRS = {"tasks": "work", "discoveries": "discovery", "papers": "paper", "insights": "insight",
                   "designs": "design", "labelings": "labeling", "ideations": "ideation"}
-# Not a Theme: the Project's inbox, quick notes from any session, each naming its next Block (b10 s10-D10)
-ROOT_DIRS = {"note"}
+# Not a Theme: the Project's inbox, quick notes from any session, each naming its next Block (b10 s10-D10);
+# the Project's own studio/ and delivery/, as every level has them (JL 261028: "the Project as well")
+ROOT_DIRS = {"note", "studio", "delivery"}
 CODE_DIRS = {"src", "tests", "scripts", "configs", "docs", "platforms"}
 # cowork/bNN_<topic>/ Blocks: a fixed top, the rest in Jobs (JL 261004; haipipe-cowork 0.2.0)
 # Studio soft Runs live at Block scope; the one delivery/ of a Block holds every Job's built output
@@ -43,6 +44,8 @@ COWORK_BLOCK_DIRS = {"studio", "reports", "runs", "delivery", "related", "_old"}
 COWORK_JOB_DIRS = {"design", "materials", "emails", "meetings", "_old"}
 COWORK_BLOCK = re.compile(r"b\d{2}_[a-z0-9]+(?:_[a-z0-9]+)*")
 COWORK_JOB = re.compile(r"j\d{2}_[a-z0-9]+(?:_[a-z0-9]+)*")
+# an sNN-<topic>/ Studio topic sits beside its level's Jobs or Tasks, no longer in studio/ (haipipe-studio, JL 261030)
+STUDIO_ITEM = re.compile(r"s\d{2}[-_]")
 
 
 @dataclass
@@ -122,8 +125,8 @@ def observed_git_mode(project: Path) -> str:
 
 def cowork_topic_findings(cowork: Path) -> list[str]:
     """Each cowork/bNN_<topic>/ Block: board.md (board-kind: cowork-block), only studio/, reports/,
-    runs/ (Studio sessions), _old/ and jNN_<job>/ Jobs at its top, and each Job a jNN_<job>.md page (job-kind: cowork-job)
-    with only the Job folder names inside. An old N-<Topic>/ folder is a finding (haipipe-cowork)."""
+    runs/ (Studio sessions), _old/, sNN-<topic>/ Studio topics and jNN_<job>/ Jobs at its top, and each Job a
+    jNN_<job>.md page (job-kind: cowork-job) with only the Job folder names (and its own sNN topics) inside. An old N-<Topic>/ folder is a finding (haipipe-cowork)."""
     found: list[str] = []
     if not cowork.is_dir():
         return found
@@ -143,7 +146,8 @@ def cowork_topic_findings(cowork: Path) -> list[str]:
             if (topic / name).is_file():
                 found.append(f"cowork/{topic.name}/{name}: {hint}")
         for sub in sorted(topic.iterdir()):
-            if not sub.is_dir() or sub.name.startswith(".") or sub.name in COWORK_BLOCK_DIRS:
+            if not sub.is_dir() or sub.name.startswith(".") or sub.name in COWORK_BLOCK_DIRS \
+                    or STUDIO_ITEM.match(sub.name):
                 continue
             if not COWORK_JOB.fullmatch(sub.name):
                 found.append(f"cowork/{topic.name}/{sub.name}/ is not a Block folder; move it into a Job")
@@ -155,11 +159,21 @@ def cowork_topic_findings(cowork: Path) -> list[str]:
             elif not re.search(r"(?m)^job-kind:[ \t]*cowork-job[ \t]*$", ptext):
                 found.append(f"cowork/{topic.name}/{sub.name}/{sub.name}.md does not declare job-kind: cowork-job")
             for inner in sorted(sub.iterdir()):
-                if inner.is_dir() and not inner.name.startswith(".") and inner.name not in COWORK_JOB_DIRS:
+                if inner.is_dir() and not inner.name.startswith(".") and inner.name not in COWORK_JOB_DIRS \
+                        and not STUDIO_ITEM.match(inner.name):
                     found.append(f"cowork/{topic.name}/{sub.name}/{inner.name}/ is not a Job folder name")
         if not (topic / "j00_people").is_dir():
             found.append(f"cowork/{topic.name}/ has no j00_people/ (who to ask)")
     return found
+
+
+def studio_topic_debts(project: Path) -> list[str]:
+    """An sNN topic still in an older studio/ (the Project's, or a cowork Block's or Job's): move it beside its Jobs."""
+    levels = [project, *sorted((project / "cowork").glob("b[0-9][0-9]_*/")),
+              *sorted((project / "cowork").glob("b[0-9][0-9]_*/j[0-9][0-9]_*/"))]
+    return [f"{d.relative_to(project).as_posix()}/: a Studio topic in studio/; move it beside its Jobs"
+            for level in levels if (level / "studio").is_dir()
+            for d in sorted((level / "studio").iterdir()) if d.is_dir() and STUDIO_ITEM.match(d.name)]
 
 
 def audit(project: Path) -> Result:
@@ -168,8 +182,9 @@ def audit(project: Path) -> Result:
     manifest_path = project / "project.yaml"
     manifest = Manifest(values={}, migration={"legacy_paths": []})
 
-    if not (project / "README.md").is_file():
-        errors.append("missing README.md")
+    old_page = not (project / "project.md").is_file() and (project / "README.md").is_file()
+    if not (project / "project.md").is_file() and not old_page:   # the Project's page (JL 261028)
+        errors.append("missing project.md")
     if not manifest_path.is_file():
         errors.append("missing project.yaml")
     else:
@@ -213,8 +228,8 @@ def audit(project: Path) -> Result:
     root_dirs = {
         entry.name
         for entry in project.iterdir()
-        if entry.is_dir() and not entry.name.startswith(".")
-    }
+        if entry.is_dir() and not entry.name.startswith(".") and not STUDIO_ITEM.match(entry.name)
+    }                                                   # an sNN-<topic>/ is the Project's own Studio topic
 
     pending = sorted(root_dirs & set(OLD_WORLD_DIRS))   # rename pending: <old>/ → <new>/ (s01-D29)
     root_dirs -= set(OLD_WORLD_DIRS)
@@ -236,6 +251,9 @@ def audit(project: Path) -> Result:
         errors.append("existing legacy paths require migration.status")
     debts.extend(f"declared {i.as_posix()}" for i in nested if (project / i).exists())
     debts.extend(f"{name} → {OLD_WORLD_DIRS[name]} (rename pending)" for name in pending)
+    debts.extend(studio_topic_debts(project))
+    if old_page:                                         # README.md stays (the repo's front door); the page is missing
+        debts.append("project.md not written yet (README.md stays as the repo's front door)")
     if migration_status in {"needed", "planned"} and not (declared_legacy or nested):
         errors.append("migration.status requires legacy_paths")
 
@@ -265,7 +283,8 @@ def project_paths(args: argparse.Namespace) -> Iterable[Path]:
 
 
 def cell(result: Result) -> str:
-    details = [*result.errors, *[(f"legacy: {item}/" if "rename pending" not in item else item) for item in result.debts]]
+    details = [*result.errors, *[(f"legacy: {item}/" if "rename pending" not in item and "not written yet" not in item
+                                  else item) for item in result.debts]]
     return "; ".join(details) if details else "—"
 
 

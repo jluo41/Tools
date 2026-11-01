@@ -6,6 +6,7 @@
     mindmap.py from-topic <studio/sNN-topic> [--out F]         the topic's mind map, sNN-<topic>.mindmap.md
     mindmap.py refresh    <x.mindmap.md>                       rebuild from disk; a person's nodes and words kept
     mindmap.py render     <x.mindmap.md>                       the static page <x>.mindmap.html from the file
+    mindmap.py sketch     <x.mindmap.md>                       a small drawing per branch, map/<kind>.excalidraw
     mindmap.py check      <x.mindmap.md | folder> ...          grammar and ids
 
 The workbench draws the map live from the file on every open (a Studio topic's Structured side) and writes each
@@ -49,8 +50,8 @@ def build(kind: str, src: Path, out: Path | None) -> int:
         new = MB.from_topic(src)
         out = out or src / MB.mnn_name(src)
     else:
-        new = MB.from_work(src)
-        out = out or src / "studio" / f"mind-map{MT.SUFFIX}"
+        out = Path(out or src / f"mind-map{MT.SUFFIX}").resolve()      # beside the face: no studio/ (JL 261031, b35 r02)
+        new = MB.from_work(src, link_from=out.parent)    # its result links read from where the file sits
     out = Path(out).resolve()
     out.parent.mkdir(parents=True, exist_ok=True)
     new.meta["built"] = f"{kind} {Path(os.path.relpath(src, out.parent)).as_posix()}"
@@ -58,6 +59,8 @@ def build(kind: str, src: Path, out: Path | None) -> int:
         mm = _load(out)
         done = MB.refresh(mm, new)
         mm.meta["built"] = new.meta["built"]
+        if not mm.meta.get("written"):                 # a built map takes its face's new title; a written one keeps its own
+            mm.meta["title"] = new.meta["title"]
         print(f"{out.name}: refreshed: {done['updated']} words updated, {done['added']} added, "
               f"{done['dropped']} gone from disk; a person's nodes and words kept")
     else:
@@ -140,7 +143,7 @@ def main(argv=None) -> int:
         s = sub.add_parser(name)
         s.add_argument("path")
         s.add_argument("--out")
-    for name in ("refresh", "render"):
+    for name in ("refresh", "render", "sketch"):
         sub.add_parser(name).add_argument("file")
     sub.add_parser("check").add_argument("paths", nargs="+")
     a = ap.parse_args(argv)
@@ -161,6 +164,11 @@ def main(argv=None) -> int:
         return refresh(Path(a.file))
     if a.cmd == "render":
         render(Path(a.file))
+        return 0
+    if a.cmd == "sketch":                            # one small drawing per branch, never over a person's
+        import mmsketch
+        for path in mmsketch.sketch(Path(a.file)):
+            print(path)
         return 0
     return check(a.paths)
 

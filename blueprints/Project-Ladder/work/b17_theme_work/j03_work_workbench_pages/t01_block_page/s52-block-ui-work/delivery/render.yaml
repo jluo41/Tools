@@ -1,0 +1,9 @@
+# Where s52's delivery goes (haipipe-studio scripts/render_delivery.py). The deck stays in deck/.
+# ui/block-work/ holds the agreed screens, A to A, one file per settled letter (work_ui_cells.py writes
+# them); skill/block-work-views.md is the views' manual. One ui delivery, two targets, as b16's s32-D11.
+pieces:
+  - code: "block-work: the work Block's Work views, A Progress"
+    by: j03_work_workbench_pages/t01_block_page/runs/run-design-block-page
+  - from: skill/block-work-views.md
+    to: plugins/haipipe-toolkit/skills/2_theme/work/workbench-work/SKILL.md
+    block: block-work-views

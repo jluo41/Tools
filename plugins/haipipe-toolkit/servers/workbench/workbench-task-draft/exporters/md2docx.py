@@ -73,7 +73,7 @@ def col_widths(rows, ncol, total=BODY_TW, pad=216):
 
     A column may wrap between words: Table 4's middle column is a sentence of
     definition and is supposed to. A column may never break INSIDE a word, which
-    is what "Agreeable / ness" and "1,204,6 / 07" were (JL 2026-07-28). So the
+    is what "Accountabil / ity" and "1,234,5 / 67" were (JL 2026-07-28). So the
     floor is satisfied first and only the slack is shared out toward want.
     Word breaks after a hyphen and a slash, so those end a token here too."""
     want, floor = [1] * ncol, [1] * ncol
@@ -148,7 +148,9 @@ ABSTRACT_DIVISIONS = ("Key Points",)
 ABSTRACT_LABELS = ("Question", "Findings", "Meaning", "Importance", "Objective", "Objectives",
                    "Design, Setting, and Participants", "Exposure", "Exposures", "Intervention",
                    "Interventions", "Main Outcomes and Measures", "Main Outcome and Measures",
-                   "Results", "Conclusions and Relevance", "Trial Registration")
+                   "Results", "Conclusions and Relevance", "Trial Registration",
+                   # the Lancet journals' structured Summary (five paragraphs, the last one Funding)
+                   "Background", "Methods", "Interpretation", "Funding")
 
 
 def is_abstract_page(raw_page):
@@ -157,8 +159,11 @@ def is_abstract_page(raw_page):
 
 
 def abstract_label(title):
-    """`2.1 · Question` or `Question` -> `Question`; None when it is not a label."""
+    """`2.1 · Question`, `Question`, or the layout `page.py adopt` writes, `C1.P1 · Question · S1 to S2`
+    -> `Question`; None when it is not a label."""
     name = re.sub(r"^\d+(?:\.\d+)*\s*(?:·\s*)?", "", title).strip()
+    name = re.sub(r"^C\d+\.P\d+\s*·\s*", "", name)
+    name = re.sub(r"\s*·\s*S\d+[a-z]*(?:\s+to\s+S\d+[a-z]*)?\s*$", "", name).strip()
     return next((x for x in ABSTRACT_LABELS if x.lower() == name.lower()), None)
 
 NUMTOK = re.compile(r"[+-]?\d[\d,]*(?:\.\d+)?%?")
@@ -1118,7 +1123,7 @@ class Docx:
                 # declared and never applied, so Word rendered cells at the
                 # document's 12pt while `col_widths` and docx2pdf both sized
                 # them at 10pt: every column was ~20% too narrow for its own
-                # content and "Agreeableness" broke as "Agreeable / ness"
+                # content and "Accountability" broke as "Accountabil / ity"
                 # (JL 2026-07-28). It also carries the single spacing, which
                 # cells otherwise inherit as the document's double.
                 ppr = ('<w:pPr><w:pStyle w:val="TableText"/>'

@@ -15,7 +15,7 @@ a revise plan        ┘
 
 ## Start one
 
-1. **A topic**: one Studio topic per Section, `studio/sNN-<what>/` (haipipe-studio `new_topic.py topic`). A new
+1. **A topic**: one Studio topic per Section, `sNN-<what>/` (haipipe-studio `new_topic.py topic`). A new
    round stays in the same topic; the last round's drawing moves to `history/round-<n>-<yymmdd>/` (s41-D23).
 2. **The face**: a `canvas:` yaml block; only `draft_folder` is needed, the rest is added as it exists:
 

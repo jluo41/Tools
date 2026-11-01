@@ -30,6 +30,12 @@ excalidraw-studio · Changelog
 - `Drawing.words_per_mpx`, the frame's own badge, counts with `fill_words` too, so the badge and check.py ⑥ agree (b01
   s23's badge read ❌ 74 of 88 while ⑥ passed, 261019).
 
+## [0.3.12] — 2026-10-31
+
+This skill owns the five-part sNN drawing (Idea, Now, Design, Process, Delivery; five_parts.py);
+excalidraw-job, -task and -story draw only its Design part (JL 261031, b35 r01 Q1: A). Process shows each Run's
+status, agent and skill (b35 r01 Q3: A).
+
 ## [0.3.11] — 2026-10-26
 
 Hidden from the skill listing (`disable-model-invocation: true`); reached through the `/excalidraw` door, which reads this SKILL.md by path. Nothing moved; `/excalidraw-studio` still works when a person types it. (hide 261026)

@@ -73,6 +73,23 @@ class WorkflowTest(unittest.TestCase):
                 ladder.update(b, Path(tmp), apply=True)
             self.assertEqual((run / "run.yaml").read_text(), "run: r03_figures_by_rank\nkind: hard\nrole: figures\n")
 
+    def test_a_collection_run_keeps_the_previews_its_questions_link(self):
+        # haipipe-interaction keeps each option's preview beside the form (JL 261031: "show that what is the expected
+        # UI / html looks like"); a file the questions do not link is still debt
+        with tempfile.TemporaryDirectory() as tmp:
+            b = block(Path(tmp), done=True)
+            run = b / "j01_tables/t01_answers/runs/r02_collect_layout"
+            run.mkdir(parents=True)
+            (run / "r02_collect_layout.html").write_text("<!doctype html>")
+            (run / "run.yaml").write_text("run: r02_collect_layout\nkind: hard\ntype: collect\nstatus: waiting\n")
+            (run / "question_collection.md").write_text(
+                "# Layout\n\n## Q1 · Views\n\n**Where?**\n\n- [x] A · Under.\n  [preview](option-q1-a.html)\n"
+                "- [ ] B · Above.\n  ![B](option-q1-b.png)\n- [ ] C · Elsewhere.\n  [preview](../other.html)\n")
+            for name in ("option-q1-a.html", "option-q1-b.png", "notes.txt"):
+                (run / name).write_text("x")
+            found = [m for _, m in ladder.audit_run(run, "work", True, "task", Path(tmp)).findings]
+            self.assertEqual(found, ["notes.txt is not in the ladder for a Run"])
+
     def test_a_block_of_another_family_keeps_its_own_workbench(self):
         with tempfile.TemporaryDirectory() as tmp:
             b = block(Path(tmp), done=False)

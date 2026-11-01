@@ -1,0 +1,49 @@
+{
+ "topic": "s04-workbench-page-structure",
+ "style": "sketch-notes",
+ "source": "s04-workbench-page-structure.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "What is a Block, really?",
+   "image": "slides/idea-01-what-is-a-block.png",
+   "notes": "Options: A) A topic: one subject in a Theme folder (haipipe-block today); B) A stage: one step of a pipeline, b00 raw to b31 endpoint (pipeline-blocks.md); C) A promise to one reader: one delivery, and the Questions it must answer for that reader. Leaning: the third; the first two are ways the work was cut. Still open: Does a data stage have a reader? Maybe the next Block is its reader.",
+   "content": "Headline (top-left, large): \"A Block is a promise to one reader?\"\nThree option cards across the middle, joined by a wavy line:\n Card A, label \"A topic\": a folder with a tag; caption \"one subject in a folder\"\n Card B, label \"A stage\": three boxes joined by arrows, lettered \"raw\", \"records\", \"cases\"; caption \"one step of a pipeline\"\n Card C, label \"A promise\", circled with a thick orange marker loop and a small hand-written tag \"leaning\": a person receiving a parcel that holds question marks; caption \"one delivery, the questions it must answer\"\nBottom-right mustard sticky note with a big question mark: \"Still open: does a data stage have a reader?\"\nFocal point: card C."
+  },
+  {
+   "id": "02",
+   "idea": "What are a Block's parts?",
+   "image": "slides/idea-02-block-parts.png",
+   "notes": "Options: A) Questions are the parts: Status counts answers (what the page did); B) Jobs are the parts; Questions are the contract that Jobs answer (answers: Q01); C) Fold Questions into Jobs: one Job, one question as its goal. Leaning: the second. Still open: What about a Job that serves every Question, like j01's shared tables?",
+   "content": "Headline (top-left, large): \"Jobs are the parts, Questions the contract?\"\nThree option cards across the middle, joined by a wavy line:\n Card A, label \"Questions\": a checklist with three ticked lines; caption \"the parts are the questions\"\n Card B, label \"Jobs + Questions\", circled with a thick orange marker loop and a small hand-written tag \"leaning\": two gears, each tied by a dotted thread to a question-mark card; caption \"Jobs do the work, each answers a Question\"\n Card C, label \"One each\": one gear glued to one question card; caption \"one Job, one question\"\nBottom-right mustard sticky note with a big question mark: \"Still open: a Job that serves every Question?\"\nFocal point: card B."
+  },
+  {
+   "id": "03",
+   "idea": "What is a Studio?",
+   "image": "slides/idea-03-what-is-a-studio.png",
+   "notes": "Options: A) The plan stage, before Work; B) A separate place to think, beside Report and Work; C) The discussion itself: rounds (sessions, meetings) that loop through Work and Report and come back. Leaning: the third. Still open: Does every session need a home topic, named at its start?",
+   "content": "Headline (top-left, large): \"A Studio is the conversation itself?\"\nThree option cards across the middle, joined by a wavy line:\n Card A, label \"A plan\": a folded map with a pin; caption \"the step before Work\"\n Card B, label \"A room\": an open door; caption \"a place beside Report and Work\"\n Card C, label \"The talk\", circled with a thick orange marker loop and a small hand-written tag \"leaning\": three speech bubbles in a circle with a looping arrow; caption \"rounds that loop through Work and Report\"\nBottom-right mustard sticky note with a big question mark: \"Still open: does every session need a home topic?\"\nFocal point: card C."
+  },
+  {
+   "id": "04",
+   "idea": "How does a round leave the Studio?",
+   "image": "slides/idea-04-round-exits.png",
+   "notes": "Options: A) To Work: a decision starts a Job, a Task or a Run; B) To Report: a decision answers a Question; C) Back to the Studio: what is still open becomes the next round. Still open: Should a Run card point back to the round that started it (from: s04 p02)?",
+   "content": "Headline (top-left, large): \"Every round leaves the Studio three ways\"\nCentre-left: a cloud-shaped doodle labelled \"Studio round\", with a small speech bubble and a pencil inside. Three sketchy arrows go out of it:\n arrow 1 (sage green) to a hammer and gears, label \"Work\", small handwriting \"a decision starts a Job\"\n arrow 2 (light blue) to an open notebook with a tick, label \"Report\", small handwriting \"a decision answers a Question\"\n arrow 3 (soft orange) curls back into the cloud, label \"Next round\", small handwriting \"what is still open\"\nBottom-right mustard sticky note with a big question mark: \"Still open: should a Run point back to its round?\"\nFocal point: the cloud."
+  },
+  {
+   "id": "05",
+   "idea": "If you keep only one screen of a Block",
+   "image": "slides/idea-05-one-screen.png",
+   "notes": "Options: A) The Mindmap: how it is built; B) The Findings: what it found, in its answers' own words; C) A Block card: For, Takes in, Done when, How far, Next move; then one row per Question. Leaning: the Block card (ui-draft-v7). Still open: Is \"Next move\" enough to answer \"what do I do now\"?",
+   "content": "Headline (top-left, large): \"Keep one screen: the Block card?\"\nThree option cards across the middle, joined by a wavy line:\n Card A, label \"Mind map\": a small branching tree of circles; caption \"how it is built\"\n Card B, label \"Findings\": an open notebook with quote marks; caption \"what it found\"\n Card C, label \"Block card\", circled with a thick orange marker loop and a small hand-written tag \"leaning\": a card with five short ruled lines and a small arrow at the bottom marked \"next move\"; caption \"one card, then a row per Question\"\nBottom-right mustard sticky note with a big question mark: \"Still open: is the next move enough?\"\nFocal point: card C."
+  },
+  {
+   "id": "06",
+   "idea": "How big may a Studio grow?",
+   "image": "slides/idea-06-studio-size.png",
+   "notes": "Options: A) No limit: every thought gets a topic; B) A cap per level: Block 10, Job 3, Task 2; C) One topic per open question; closed topics fold away. Still open: Is a cap a rule, or only a warning?",
+   "content": "Headline (top-left, large): \"How big may a Studio grow?\"\nThree option cards across the middle, joined by a wavy line, all the same weight (no favourite yet):\n Card A, label \"No limit\": an overflowing pile of sticky notes; caption \"every thought gets a topic\"\n Card B, label \"A cap\": three jars marked \"10\", \"3\", \"2\"; caption \"Block, Job, Task\"\n Card C, label \"One per question\": a short row of open cards and a small drawer holding folded ones; caption \"closed topics fold away\"\nBottom-right mustard sticky note with a big question mark: \"Still open: is a cap a rule or a warning?\"\nFocal point: the headline, then the three cards evenly."
+  }
+ ]
+}

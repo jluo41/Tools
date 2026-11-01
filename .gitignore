@@ -67,15 +67,18 @@ node_modules/
 # a mind map's static page (haipipe-studio's mind map part): rebuilt from its .mindmap.md on every change; only this suffix,
 # never a blanket *.html, since Tools tracks real .html files
 *.mindmap.html
+# a Studio topic's slides (haipipe-studio topic_slides.py): rebuilt from its face and rounds after every round
+*.slides.html
+*.slides.pptx
 
 # ── A Block's outside material stays on this machine ───────────────────────
 # related/ keeps what came in from outside (haipipe-related). A meeting
 # transcript names colleagues and internal plans, a sent file or email is
 # someone else's, and this repo is public: related.md links them, git never
 # holds them. Papers are open-licensed and stay tracked.
-blueprints/*/related/meetings/
-blueprints/*/related/emails/
-blueprints/*/related/files/
+blueprints/**/related/meetings/
+blueprints/**/related/emails/
+blueprints/**/related/files/
 
 # local server settings and the share door's access table (emails): never committed (b10 s52, 261012)
 /.server_config/

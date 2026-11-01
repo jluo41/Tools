@@ -22,7 +22,8 @@ def ask_of(item: dict) -> str:
     """How an item made elsewhere is asked: its food, and its amount when that is grams or ml (as Shanghai's lines
     are asked); a serving word adds nothing the observed table can read."""
     a = str(item.get("amount") or "").strip()
-    return f"{item['food']} {a}" if GRAMS.match(a) else str(item["food"])
+    food = f"{item['prep']} {item['food']}" if item.get("prep") else str(item["food"])
+    return f"{food} {a}" if GRAMS.match(a) else food
 
 
 def items_of(items) -> list:
@@ -71,6 +72,11 @@ def event(raw: dict = None, input: dict = None) -> dict:
         asks = [ask_of(it) for it in given["items"] or []]
         meal = "; ".join(asks)
     inp.update(given)
+    if inp.get("items"):                                         # a dish line becomes one item per food (JL 261029)
+        from foodnorm.items import split_dishes
+        inp["items"], asks, n = split_dishes(inp["items"], asks or [ask_of(it) for it in inp["items"]])
+        if n:
+            pre["step"] += f"; {n} dish line{'s' * (n > 1)} split, so {len(inp['items'])} items, one per food"
     inp["source"] = source_of(inp.get("source"))
     out = {"raw": {**{k: v for k, v in raw.items() if k != "rows"},
                    "rows": [{k: v for k, v in r.items() if k not in RAW_DROP} for r in raw["rows"]]} if raw else None,

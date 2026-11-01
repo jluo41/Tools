@@ -1,0 +1,6 @@
+schema: haipipe-project/v1
+id: Project-Packages
+profile: research
+git_mode: workspace
+state: active
+mission: "Plan the three code packages Tools ships (haipipe-toolkit, haipipe-utils, inlab-human): what each one is for and what to build next."

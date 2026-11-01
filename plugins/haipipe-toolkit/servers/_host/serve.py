@@ -298,9 +298,45 @@ class Handler(ShareMixin, AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteM
             self.send_header("Pragma", "no-cache")
         SimpleHTTPRequestHandler.end_headers(self)
 
+    def redirect_moved_block(self):
+        """An old address of a Block that moved into a Project (JL 261028: Tools' blueprints/bNN_* now live at
+        blueprints/Project-<X>/work/bNN_*): send it to the new place, so old links and bookmarks still open.
+        Only when the old path is gone and exactly one `<folder>/*/work/bNN_*` matches it."""
+        import re as _re
+        parts = urllib.parse.urlsplit(self.path)
+        root = Path(self.root)
+
+        def moved(rel):
+            rel = rel.strip("/")
+            m = _re.match(r"^(.*?)(?:^|/)(b\d{2}_[^/]+)(/.*)?$", rel)
+            if not m or (root / rel).exists():
+                return None
+            head, block, tail = m.group(1), m.group(2), m.group(3) or ""
+            base = root / head if head else root
+            hits = [h for h in base.glob(f"*/work/{block}") if h.is_dir()]
+            return (hits[0].relative_to(root).as_posix() + tail) if len(hits) == 1 else None
+
+        new_path = moved(urllib.parse.unquote(parts.path)) if not parts.path.startswith("/_") else None
+        query, changed = [], False
+        for k, v in urllib.parse.parse_qsl(parts.query, keep_blank_values=True):
+            if k == "path" and (n := moved(v)):
+                v, changed = n, True
+            query.append((k, v))
+        if not new_path and not changed:
+            return False
+        target = urllib.parse.urlunsplit(("", "", "/" + urllib.parse.quote(new_path) if new_path else parts.path,
+                                          urllib.parse.urlencode(query, safe="/"), parts.fragment))
+        self.send_response(301)
+        self.send_header("Location", target)
+        self.send_header("Content-Length", "0")
+        self.end_headers()
+        return True
+
     def do_GET(self):
         self.path = new_route_name(self.path)
         if not self.require_request_auth():
+            return
+        if self.redirect_moved_block():
             return
         if self.reject_disabled_terminal():
             return
@@ -432,6 +468,8 @@ class Handler(ShareMixin, AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteM
         self.path = new_route_name(self.path, "HEAD")
         if not self.require_request_auth():
             return
+        if self.redirect_moved_block():
+            return
         if self.reject_disabled_terminal():
             return
         if self.reject_outside_only():
@@ -501,6 +539,12 @@ class Handler(ShareMixin, AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteM
             return
         if self.reject_outside_only():
             return
+        # every POST from another site is refused, before any route reads its body (toolkit review 261031: a
+        # text/plain form on any web page reached excalidraw-save, chat, structure, cowork, design and insight
+        # writes; a browser always sends Origin on a cross-site POST, and "null" from a sandbox or file page)
+        origin = self.headers.get("Origin")
+        if origin is not None and urllib.parse.urlparse(origin).netloc != (self.headers.get("Host") or ""):
+            return self.reply(403, {"ok": False, "err": "cross-origin write refused"})
         if self.path.startswith("/_term/"):
             if self._term_route():
                 return

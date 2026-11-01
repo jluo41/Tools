@@ -1,0 +1,9 @@
+# Where s57's delivery goes (haipipe-studio scripts/render_delivery.py). The deck stays in deck/.
+# ui/task-report/ holds the agreed screens, A to D, one file per settled letter (work_ui_cells.py writes
+# them); skill/task-report-views.md is the views' manual. One ui delivery, two targets, as b16's s32-D11.
+pieces:
+  - code: "task-report: the work Task's Report views, A MindMap · B Plan · C Build · D Read"
+    by: j03_work_workbench_pages/t03_task_page/runs/run-design-task-page
+  - from: skill/task-report-views.md
+    to: plugins/haipipe-toolkit/skills/2_theme/work/workbench-work/SKILL.md
+    block: task-report-views

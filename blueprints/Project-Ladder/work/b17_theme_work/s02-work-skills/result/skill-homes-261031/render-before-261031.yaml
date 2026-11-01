@@ -1,0 +1,7 @@
+# Where s02's delivery goes (haipipe-studio scripts/render_delivery.py). The deck stays in deck/; skill/skill-homes.md
+# becomes a text piece (from, to, block) once j02 t01 writes it. The file moves are b04's.
+pieces:
+  - code: "skill-homes-table: haipipe-work SKILL.md's Skills of the work theme table"
+    by: j02_work_skill_homes/t01_skill_homes_table/runs/run-write-skill-homes-table
+  - code: "move-list: the skill folders b04 moves"
+    by: j02_work_skill_homes/t02_move_list_b04/runs/run-send-move-list

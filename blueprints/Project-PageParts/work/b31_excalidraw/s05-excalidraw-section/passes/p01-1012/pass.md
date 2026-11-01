@@ -1,0 +1,18 @@
+# The topic on excalidraw-draft
+
+## Ask
+
+asked 261012: we should have the s02, 03, 04, 05 for them as well
+
+## Summary
+
+Made b31 s05: four frames in two acts (mind map, workflow, folders, the one real paper map) on excalidraw-draft, facts read from the skill.
+
+## Changed
+
+- `s05-excalidraw-section/s05-excalidraw-section.md`
+- `s05-excalidraw-section/build_s05_excalidraw_section.py`
+- `s05-excalidraw-section/s05-excalidraw-section.excalidraw`
+- `s05-excalidraw-section/s05-excalidraw-section.png`
+- `s05-excalidraw-section/examples/paper-sections-sample.excalidraw`
+- `s05-excalidraw-section/examples/paper-sections-sample.png`

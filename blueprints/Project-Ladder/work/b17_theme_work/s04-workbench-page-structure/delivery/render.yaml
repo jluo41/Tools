@@ -1,0 +1,17 @@
+# Where s04's delivery goes (haipipe-studio scripts/render_delivery.py). The deck stays in deck/; ui/ holds the agreed
+# screen drafts of the six parts every work page shares, the same at Block, Job and Task (s04-D05, D06). j03's
+# t04_shared_parts writes them, one folder each; design_b02_workbench builds them into servers/workbench/focus_page.py
+# (page_shell and render). Each level's Report, Work and Studio are the nine cells' (s51 to s59), in their own delivery/.
+pieces:
+  - code: "frame: path, title-&-section, view buttons, goal-line, rails, pop-out"
+    by: j03_work_workbench_pages/t04_shared_parts/runs/run-design-shared-parts
+  - code: "interactions: the inbox, every form at this page or below"
+    by: j03_work_workbench_pages/t04_shared_parts/runs/run-design-shared-parts
+  - code: "delivery: what this page hands over: files, versions, sent marks"
+    by: j03_work_workbench_pages/t04_shared_parts/runs/run-design-shared-parts
+  - code: "related: what came in: meetings, papers, emails"
+    by: j03_work_workbench_pages/t04_shared_parts/runs/run-design-shared-parts
+  - code: "timeline: what happened when: decisions, passes, Runs"
+    by: j03_work_workbench_pages/t04_shared_parts/runs/run-design-shared-parts
+  - code: "files: the folder itself; a file opens in the pop-out"
+    by: j03_work_workbench_pages/t04_shared_parts/runs/run-design-shared-parts

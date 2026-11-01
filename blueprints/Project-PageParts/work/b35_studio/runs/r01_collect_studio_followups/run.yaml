@@ -1,0 +1,15 @@
+run: r01_collect_studio_followups
+kind: hard
+type: collect
+scope: blueprints/Project-PageParts/work/b35_studio
+target: b35-s01:studio @ studio_skill
+ticket: r01_collect_studio_followups.html
+skill: haipipe-interaction
+agent: null
+signs: null
+status: done
+passes:
+- p01-1031
+writes:
+- result/answer_collection.md
+feeds: []

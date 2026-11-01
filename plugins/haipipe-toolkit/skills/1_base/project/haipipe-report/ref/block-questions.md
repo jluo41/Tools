@@ -12,12 +12,11 @@ resources. `haipipe-report` owns this register (moved from `haipipe-task`,
 ```text
 work/bNN_<block>/
 ├── board.md                         Question and resource registers
-├── studio/*.excalidraw              drawings the whole Block shares (the question map)
+├── sNN-<name>/                      Block Studio topics; a report's drawing, its face Feeds: the report
 ├── reports/
 │   └── q01_<topic>/
 │       ├── q01_<topic>.md            ordinary same-stem Page: Opening → Content
 │       ├── page.toml                explicit registration with the native Page reader
-│       ├── studio/                  this report's own drawings; scripts in studio/_build/
 │       ├── draft/                   created by the normal Page writing flow
 │       └── runs/, results/          only the Page's own Runs, when needed
 └── jNN_<job>/tNN_<task>/             executable work and its native Results
@@ -27,13 +26,12 @@ One Question, one drawing (JL 261005: "for each question we should just have one
 excalidraw"). A report has exactly one `.excalidraw`, linked once from its `### Evidence`:
 more views are frames inside it, and a screenshot or figure the report cites is an image
 inside it too ("some png can be put into the excalidraw as well"), never a second link
-(`excalidraw-report` rules 6, 9 and 11). It lives in the report's folder (JL 261004), as
-`reports/qNN_<topic>/studio/<name>.excalidraw` or, drawn by a Block builder, as
-`reports/qNN_<topic>/qNN_<topic>.excalidraw` beside the Page; its build script, when a script
-draws it, sits in that `studio/_build/` or the Block's. The Block's `studio/` keeps only the
-drawings the whole Block shares: the question map, the road map, and any drawing several
-Questions or Jobs use. `--drawing <name>` (once) makes the blank drawing in the report's
-`studio/` and lists it under `### Evidence`. The workbenches show the first drawing a report
+(`excalidraw-report` rules 6, 9 and 11). It is a Block Studio topic, `sNN-<name>/` beside the
+Jobs, whose face **Feeds:** the report (JL 261031, b35 r02: no `studio/` folder anywhere; the
+old `reports/qNN_<topic>/studio/` drawings became Block sNN the same way), or, drawn by a Block
+builder, `reports/qNN_<topic>/qNN_<topic>.excalidraw` beside the Page. `--drawing <name>` (once)
+makes the topic through haipipe-studio's `new_topic.py`, which numbers it, keeps the Block at
+its nine topics and gives it its quick drawing, and lists that drawing under `### Evidence`. The workbenches show the first drawing a report
 links (else its own, unlinked); a second drawing or a linked picture is a finding in Check.
 
 A CoWork Block (`cowork/bNN_<topic>/board.md`, `board-kind: cowork-block`, owned by
@@ -138,7 +136,7 @@ python <skill>/ref/block_questions.py add-resource <block> \
 `report:` line; `--evidence 'label|path'` (repeatable, a file inside the Block) lists that
 file under the frame's `### Evidence`, percent-encoded, so a linked `.excalidraw` shows in
 the Workbench's Report column. `--drawing <name>` (once: one Question, one drawing) makes the
-report's blank drawing at `reports/<id>_topic/studio/<name>.excalidraw` and lists it the same way. Evidence links are pointers, not an answer: the
+report's drawing as the Block topic `sNN-<name>/sNN-<name>.excalidraw` and lists it the same way. Evidence links are pointers, not an answer: the
 frame keeps `answer-status: open` and writes no `results-read:`, so Check shows "Evidence
 review time is not recorded" until someone reads the evidence.
 

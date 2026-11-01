@@ -1,0 +1,62 @@
+/* The preview's content, scoped under .pv: the frame (crumb, title, rails) is the workbench's own, focus.css,
+   through focus_page.static_page (JL 261030: "for the studio, I think we should also have the left and right rails
+   as well. please make the things to be consistent") */
+.pv{--blue:#1864ab;line-height:1.55}
+.pv a{color:var(--blue);text-decoration:none}
+.pv a:hover{text-decoration:underline}
+.pv button,.pv input,.pv select{font:inherit}
+.pv button,.pv .button{display:inline-block;padding:8px 13px;border:1px solid var(--line);border-radius:7px;background:#fff;color:var(--blue);cursor:pointer;text-align:center}
+.pv button:hover,.pv .button:hover{background:#edf5fc;text-decoration:none}
+.pv button:focus-visible,.pv a:focus-visible,.pv input:focus-visible{outline:3px solid #74c0fc;outline-offset:3px}
+.pv .primary{background:var(--blue);color:white}
+.pv h2{font-size:23px;margin:0 0 12px}
+.pv h3{margin:0 0 8px;font-size:18px}
+.pv p{margin:8px 0}
+.pv .tag{font-size:12px;color:#6b5012;background:#fff8e1;padding:4px 8px;border-radius:5px;white-space:nowrap}
+.pv .toolbar{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:22px}
+.pv .toolbar input{min-width:160px;flex:1;border:1px solid var(--line);border-radius:7px;padding:10px}
+.pv .toolbar select{padding:10px;border:1px solid var(--line);border-radius:7px;background:white}
+.pv .muted{color:var(--muted);font-size:14px}
+.pv .row{display:grid;grid-template-columns:240px minmax(0,1fr);gap:24px;padding:24px 0;border-top:1px solid var(--line)}
+.pv .preview{background:#f8f9fa;border:1px solid var(--line);border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;min-height:140px}
+.pv .preview img{display:block;width:100%;height:auto;max-height:190px;object-fit:contain}
+.pv .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}
+.pv .detail{padding:22px;border:1px solid var(--line);border-radius:10px;margin-bottom:22px;background:white}
+.pv .guide-layout{display:grid;grid-template-columns:240px minmax(0,1fr);gap:24px}
+.pv .steps{display:flex;flex-direction:column;gap:9px}
+.pv .steps button{text-align:left;padding:13px;color:#495057}
+.pv .steps button[aria-pressed=true]{background:#e7f1fb;border-color:#a5c8e8;color:var(--blue)}
+.pv .step-number{font-size:13px;color:var(--muted);display:block;margin-bottom:8px}
+.pv .big{font-size:27px;line-height:1.35}
+.pv .check{display:flex;align-items:flex-start;gap:9px;padding:10px 0;border-bottom:1px solid #f1f3f5}
+.pv .check input{margin-top:6px}
+.pv .notice{border-left:3px solid #c9a227;padding:9px 14px;background:#fffcf4;color:#655a3e;font-size:14px;margin:20px 0}
+.pv .empty{padding:35px;border:1px dashed var(--line);text-align:center}
+.pv .map-layout{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(260px,1fr);gap:24px}
+.pv .map{padding:20px 10px;min-height:420px;overflow:auto}
+.pv .branch{margin-left:20px;padding-left:20px;border-left:2px solid #cbd9e7}
+.pv .node{display:block;text-align:left;margin:10px 0;color:#212529;max-width:100%;overflow-wrap:anywhere}
+.pv .node.selected{background:#e7f1fb;border-color:var(--blue)}
+.pv label{display:block;margin:10px 0}
+.pv input[type=text],.pv textarea{max-width:100%;padding:9px;border:1px solid var(--line);border-radius:6px}
+#node-label{width:100%}
+.pv .draw-image{width:100%;border:1px solid var(--line);background:#fff;border-radius:8px}
+.pv .slide{min-height:480px;padding:45px;border:1px solid var(--line);border-radius:12px;display:none;background:#fff}
+.pv .slide.active{display:block}
+.pv .slide h2{font-size:35px}
+.pv .slide img{width:100%;max-height:500px;object-fit:contain}
+#viewer{width:min(1200px,94vw);max-height:92vh;border:1px solid var(--line);border-radius:12px;padding:22px}
+#viewer::backdrop{background:#15223188}
+#viewer img{display:block;width:100%;max-height:70vh;object-fit:contain}
+.dialog-head{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:15px}
+.pv footer{margin-top:28px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+.pv .contract-list dt{font-weight:600;margin-top:15px}
+.pv .contract-list dd{margin:3px 0 15px}
+.pv code,.pv pre{font-family:ui-monospace,monospace}
+.pv pre{padding:15px;background:#f6f8fa;white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px}
+.pv img{max-width:100%}
+@media(max-width:850px){.pv .row{grid-template-columns:170px minmax(0,1fr);gap:18px}.pv .guide-layout,.pv .map-layout{grid-template-columns:1fr}.pv .steps{flex-direction:row;overflow:auto}.pv .steps button{min-width:150px}.pv .slide{padding:24px}}
+@media(max-width:520px){.pv .row{grid-template-columns:1fr;gap:15px}.pv .preview{min-height:110px}.pv .preview img{max-height:190px}.pv .toolbar>*{max-width:100%}.pv .big{font-size:23px}.pv .map{padding:5px}.pv .branch{margin-left:10px;padding-left:10px}.pv .slide h2{font-size:26px}}
+.pv button:disabled{opacity:.45;cursor:not-allowed;background:#f6f7f8;color:#687078}
+.pv button:disabled:hover{background:#f6f7f8}
+@media(max-width:520px){.pv .row>.preview{order:2}.pv .row>div{order:1}}

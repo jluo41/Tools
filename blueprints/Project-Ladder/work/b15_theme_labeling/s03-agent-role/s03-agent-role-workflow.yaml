@@ -1,0 +1,141 @@
+title: 'The complete workflow: turn human judgment into an inspectable labeled corpus'
+subtitle: 'Two starting points, one evolving standard. The agent turns cases into questions, decisions into rules, and rules into auditable labels.'
+status: 'PROPOSED METHOD · Steps describe intended behavior, not verified implementation or measured gains.'
+zones:
+  inputs: ['📥 Two entry points', 'Start with a conception, or inspect labels already made.']
+  meaning: ['A · Discover and agree on the meaning', 'Human authority: rules, exceptions and unresolved judgments.']
+  expression: ['B · Improve execution without changing meaning', 'Agent proposes wording; independent models execute the same guideline.']
+  scale: ['C · Qualify, label and audit', 'Freeze the candidate before independent evaluation.']
+  delivery: ['12 · Deliver inspectable artifacts', 'An accepted subset is a valid outcome.']
+  records: ['🗃️ Shared records maintained by the harness', 'Harness = the software that stores versions and coordinates tools. Every numbered step reads or updates these records.']
+  evaluation: ['📏 How we evaluate the system', 'Research plan, not results. Compare methods at matched quality and with independent review.']
+cards:
+  entry_a:
+    title: '💭 Use case 1 · Start from an idea'
+    lines: ['Human: a rough conception and a goal.', 'Corpus: many unlabeled items.', 'No written guideline or labels required.']
+  entry_b:
+    title: '🗂️ Use case 2 · Inspect existing labels'
+    lines: ['Items + previous labels + optional old guideline.', 'The inspector need not be the original annotator.', 'Previous labels are evidence, not automatic ground truth.']
+  intake:
+    title: '01 · Define scope and prepare the corpus'
+    lines: ['Agree on purpose, label unit and allowed context.', 'Keep stable item IDs and original labels.', 'Separate development cases from held-out evaluation cases.', 'Choose build, audit, or build + audit mode.']
+  explore:
+    title: '02 · Agent explores informative cases'
+    lines: ['Retrieve typical cases, boundaries and counterexamples.', 'Search for patterns in existing labels when available.', 'Consider missing context and different annotator standards.', 'Output: candidate rules + evidence groups.']
+  question:
+    title: '03 · Agent packages a consequential question'
+    lines: ['Bring one candidate rule, supporting cases and conflicts.', 'Recall the relevant earlier decisions.', 'Ask about a distinction that affects many items.', 'Output: a focused judgment request.']
+  judge:
+    title: '04 · Human judges a rule or a contrast'
+    lines: ['Approve, revise, explain an exception, or defer.', 'Judge a group rather than label every item.', 'Use occasional item checks to test the stated rule.', 'Output: decision + rationale + scope.']
+  conflict:
+    title: '🔎 When judgments appear to conflict'
+    lines: ['First check whether the agent recorded them correctly.', 'Compare cases and the context that may differ.', 'Distinguish missing conditions, changed preference and uncertainty.', 'Ask a focused follow-up; never force agreement.']
+  example:
+    title: '💬 Example of a question packet'
+    lines: ['Task: identify a dismissive response.', 'A: “You are worrying over nothing.”', 'B: “I understand the concern; here is why I disagree.”', 'Ask: is disagreement enough, or does belittling matter?', 'One answer changes the rule for a family of cases.']
+  meaning_update:
+    title: '05 · Agent records the approved meaning'
+    lines: ['Information: definitions, task scope and context.', 'Rules: conditions, labels, exceptions and priority.', 'Link every change to its human decision.', 'Identify affected old labels; recheck rather than silently overwrite.', 'Update examples and the unresolved queue.']
+  rewrite:
+    title: '06 · Agent rewrites the guideline'
+    lines: ['Improve wording, order, decision steps and examples.', 'Hold approved information and rules fixed.', 'Check for omitted conditions or altered exceptions.', 'Output: a candidate expression of the same meaning.']
+  execute:
+    title: '07 · Test independent executor models'
+    lines: ['Send the same candidate guideline and permitted inputs.', 'Use fresh contexts without hidden facilitator conversation.', 'Keep every model’s weights fixed.', 'Output: predictions, abstentions, rule references and cost.']
+  compare:
+    title: '08 · Compare and diagnose on development cases'
+    lines: ['Compare predictions with human-adjudicated judgments.', 'Inspect error types, coverage, abstentions and cost.', 'Improve the weakest executor while preserving stronger quality.', 'Agreement alone does not establish correctness.']
+  preservation:
+    title: '🧭 Check that meaning was preserved'
+    lines: ['Compare the candidate against approved rules and exceptions.', 'Replay human-adjudicated development examples.', 'Passing finite examples is evidence, not a proof of equivalence.', 'A semantic change must return to step 04.']
+  models:
+    title: '🤖 Model comparison panel'
+    lines: ['Small / inexpensive candidate', 'Mid-range candidate', 'Strong reference candidate', 'For each: quality · coverage · abstention · cost', 'Model choices and quality thresholds remain to be set.']
+  diagnose:
+    title: '↩ Route the failure to the right loop'
+    lines: ['Unclear expression → rewrite at step 06.', 'Missing or conflicting rule → human judgment at step 04.', 'Capability limit → try a qualified executor or abstain.', 'A smaller gap is useful only if quality stays high.']
+  qualify:
+    title: '09 · Freeze and independently qualify'
+    lines: ['Freeze the guideline, executor and acceptance thresholds.', 'Evaluate once on held-out cases excluded from development.', 'Check quality and coverage against the acceptance policy.', 'If revised afterward, use a fresh reserved test for the new candidate.']
+  batch:
+    title: '10 · Label the selected corpus in batches'
+    lines: ['Choose the lowest-cost executor that meets requirements.', 'Apply the frozen guideline to permitted inputs.', 'Retain rule references and uncertainty per item.', 'Output: proposed labels, never silently human-approved labels.']
+  gates:
+    title: '🚦 Acceptance and stopping policy'
+    lines: ['Quality floor for the weakest required executor.', 'Allowed degradation for stronger executors.', 'Coverage, abstention and cost requirements.', 'Human review budget and unresolved-case policy.', 'If no model qualifies: revise, change executor, or stop.']
+  audit:
+    title: '11 · Audit, review and accept'
+    lines: ['Check representative samples and rule-linked conflicts.', 'Separate confirmed errors from open questions.', 'Human accepts a subset or a batch under the stated audit policy.', 'Unexpected boundaries reopen the meaning loop.', 'Keep unreviewed, reviewed and unresolved labels distinct.']
+  out_guide:
+    title: '📝 Versioned structured guideline'
+    lines: ['Information + rules + approved expression.', 'Examples, exceptions, approval status and source decisions.']
+  out_labels:
+    title: '🏷️ Accepted labeled data'
+    lines: ['Item IDs, labels, rule and guideline versions.', 'Direct human review vs model output accepted through audit.']
+  out_report:
+    title: '📋 Quality report and issue groups'
+    lines: ['Supporting cases, conflicts and alternative explanations.', 'Audit-only work may stop here with provisional rule hypotheses.']
+  out_open:
+    title: '❓ Unresolved cases and handoff'
+    lines: ['Unknown is not a negative label.', 'Outstanding decisions, scope limits and next review triggers.']
+  record_corpus:
+    title: '📚 Corpus and partitions'
+    lines: ['Original items and labels', 'Development / held-out IDs', 'Permitted context and coverage']
+  record_rules:
+    title: '📝 Guideline versions'
+    lines: ['Information and rules', 'Expression and examples', 'Draft / approved / superseded']
+  record_decisions:
+    title: '🧑 Decision history'
+    lines: ['Question and evidence', 'Human answer and rationale', 'Affected rules and item IDs']
+  record_runs:
+    title: '⚙️ Execution records'
+    lines: ['Model and prompt versions', 'Predictions, costs, abstentions', 'Review and acceptance status']
+  record_issues:
+    title: '🔎 Issue queue'
+    lines: ['Rule-linked evidence groups', 'Proposed / confirmed / unresolved', 'Resolution and next action']
+  eval_effort:
+    title: '1 · Human effort and experience'
+    lines: ['Time and judgment burden at comparable quality.', 'Compare with item-by-item labeling and manual guideline writing.']
+  eval_semantics:
+    title: '2 · Meaning and audit usefulness'
+    lines: ['Does the guideline reflect intended judgments?', 'Independent review of flagged groups, corrections and missed issues.']
+  eval_models:
+    title: '3 · Transfer and execution cost'
+    lines: ['Quality, coverage and cost by executor.', 'Weakest quality, strongest degradation and gap.', 'Use held-out models when feasible.']
+  eval_protocol:
+    title: '4 · Separate development from evidence'
+    lines: ['Freeze before evaluation; reserve unseen cases.', 'Real users test interaction claims.', 'Planted errors and old labels are limited references.']
+labels:
+  input_a: 'idea + items'
+  input_b: 'items + old labels'
+  prepare: 'prepared cases'
+  explore: 'cases'
+  ask: 'ask'
+  approve: 'approve / revise'
+  conflict: 'apparent conflict'
+  followup: 'clarify with evidence'
+  example: 'example'
+  meaning: 'approved meaning'
+  wording: 'draft'
+  predictions: 'results'
+  checks: 'meaning checks'
+  model_panel: 'compare each model'
+  diagnosis: 'diagnose failure'
+  candidate: 'candidate ready'
+  qualified: 'qualified'
+  policy: 'predefined gates'
+  audit: 'proposed labels'
+  accept: 'review + accept'
+  next_cases: 'Meaning loop · new rules and affected labels lead to more cases'
+  wording_loop: 'Expression loop · rewrite and retest on development cases'
+  semantic_return: 'Meaning changed or ambiguous? Return to human judgment at 04'
+  audit_return: 'New boundary or contradiction → package the next question at 03'
+  release: 'versioned handoff'
+  audit_only: 'Audit-only exit: provisional rules + issue groups; no human approval claimed'
+legend:
+  main: 'Solid blue: main handoff'
+  feedback: 'Dashed purple: revision / return'
+  evidence: 'Dotted gray: supporting detail'
+  human: 'Green: human judgment / acceptance'
+footer: 'One human judgment can guide many items. This is the proposed workflow; reduced effort, model parity and cost savings still require evaluation.'

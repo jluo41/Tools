@@ -1,0 +1,220 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Q5 A</title><style>:root{color-scheme:light dark;--bg:light-dark(#fff,#161719);--paper:light-dark(#fff,#1b1c1f);--ink:light-dark(#1c1c1c,#e8e8e6);--muted:light-dark(#6f6f6b,#a0a09c);--line:light-dark(#e3e3e6,#2c2e33);--accent:light-dark(#1864ab,#91caff);--soft:light-dark(#e7f5ff,#253749);--wash:light-dark(#f6f6f7,#1d1f22)}
+*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}a{color:inherit;text-decoration:none}a:hover{text-decoration:underline}button,input{font:inherit;color:inherit}button{cursor:pointer;background:transparent;border:0;border-radius:5px;padding:7px 10px}button:hover{background:var(--soft)}:focus-visible{outline:2px solid var(--accent);outline-offset:3px}.focus-page{max-width:960px;margin:auto;padding:25px 64px 45px;position:relative}h1{font-size:24px;font-weight:500;line-height:1.35;overflow-wrap:anywhere;margin:14px 0 22px}h2{font-size:13px;font-weight:400;color:var(--muted);margin:0 0 16px}h3{font-size:16px;font-weight:500;margin:0}.focus-crumb{font-size:12px;color:var(--muted);overflow-wrap:anywhere}.focus-content>p:first-child{margin-top:0}.focus-content p{margin:10px 0}.focus-content ul,.focus-content ol{padding-left:24px}.focus-content li{margin:7px 0}.focus-content img{max-width:100%}.focus-content pre{overflow:auto}.focus-content table{border-collapse:collapse;display:block;overflow:auto}.focus-content td,.focus-content th{padding:6px;border-bottom:1px solid var(--line)}.mut,footer{font-size:12px;color:var(--muted)}footer{margin-top:24px}.completion{font-size:13px;margin-top:18px;color:var(--muted)}.completion h3{font-size:13px;font-weight:500}.focus-child{display:block;padding:13px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}.focus-child small{display:block;font-size:12px;color:var(--muted);margin-top:4px}.focus-topic{padding:16px;border:1px solid var(--line);border-radius:8px;background:var(--paper);margin-bottom:12px;overflow-wrap:anywhere}.focus-actions{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:12px;font-size:12px;color:var(--muted)}
+/* Names replace the marks in the same navigation rail. */
+.focus-rail{position:fixed;top:145px;width:42px;max-height:calc(100vh - 170px);overflow:hidden;z-index:4;padding:8px 0;transition:width .16s ease,background .16s ease}
+.focus-rail.left{left:max(3px,calc((100vw - 960px)/2 + 3px))}
+.focus-rail.right{right:max(3px,calc((100vw - 960px)/2 + 3px))}
+.focus-rail a{position:relative;display:flex;align-items:center;height:28px;padding:0 12px;font-size:12px;line-height:20px;text-decoration:none;border-radius:4px}
+.focus-rail i{position:absolute;left:17px;display:block;width:7px;height:1px;background:var(--line);transition:opacity .12s ease}
+.focus-rail a[aria-current] i{left:12px;width:17px;height:2px;background:var(--accent)}
+.rail-name{opacity:0;visibility:hidden;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;transition:opacity .12s ease}
+.focus-rail.is-open{width:min(320px,calc(100vw - 52px));background:var(--paper);overflow:auto;border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 30px light-dark(#17251d22,#0008);padding:8px}
+.focus-rail.right.is-open{width:min(220px,calc(100vw - 52px))}
+.focus-rail.is-open i{opacity:0}
+.focus-rail.is-open .rail-name{opacity:1;visibility:visible}
+.focus-rail.is-open a[aria-current],.focus-rail.is-open a:hover{background:var(--soft);color:var(--accent)}
+@media(prefers-reduced-motion:reduce){.focus-rail,.focus-rail i,.rail-name{transition:none}}
+@media(pointer:coarse){.focus-rail a{height:44px}}
+.date-range{display:flex;flex-wrap:wrap;gap:16px}.date-range label{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:12px;color:var(--muted)}input[type=date]{background:var(--paper);border:1px solid var(--line);border-radius:5px;padding:6px}.focus-timeline{list-style:none;padding:0!important}.focus-timeline li{display:grid;grid-template-columns:100px 1fr;gap:18px;border-left:1px solid var(--line);padding:8px 0 8px 16px;margin:0;position:relative}.focus-timeline li:before{content:"";width:5px;height:5px;border-radius:50%;background:var(--accent);position:absolute;top:20px;left:-3px}.focus-timeline time{font-size:12px;color:var(--muted);padding-top:4px}.focus-timeline p{margin:0}.focus-folders{list-style:none;padding-left:18px!important;font:13px/1.7 ui-monospace,Menlo,monospace;overflow-wrap:anywhere}.focus-folders .focus-folders{border-left:1px solid var(--line)}.focus-folders li{margin:4px 0}
+dialog{background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:6px 10px 8px;width:96vw;max-width:96vw;height:94vh;max-height:94vh}dialog[open]{display:flex;flex-direction:column}dialog::backdrop{background:light-dark(#17251d75,#000a)}dialog header{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:4px;font-size:14px}dialog iframe{display:block;border:0;width:100%;flex:1;min-height:0;background:var(--paper)}
+@media(max-width:600px){.focus-page{padding:20px 48px 32px}h1{font-size:21px}.focus-timeline li{grid-template-columns:1fr;gap:3px}.date-range input{font-size:16px;min-width:0;max-width:100%}}
+@media(pointer:coarse){button,.focus-actions a{min-height:44px}}
+.question-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;margin-top:26px}
+.question-card{border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:18px 20px;scroll-margin-top:24px;display:flex;flex-direction:column}
+.question-id{display:block;font-size:11px;letter-spacing:.06em;color:var(--muted);margin-bottom:7px}
+.question-card h3{font-size:17px;line-height:1.4}.question-card>p{font-size:13px;color:var(--muted);margin:8px 0 16px;line-height:1.65}
+.question-card>.focus-actions{margin-top:auto;padding-top:12px;color:var(--accent)}
+.question-grid.detailed{grid-template-columns:1fr;margin-top:0}.question-detail{font-size:13px;border-top:1px solid var(--line);padding:6px 0}.question-detail h4{font-size:12px;font-weight:500;margin:12px 0 3px}.question-detail small{display:block;color:var(--muted)}
+.report-extract{padding:0 0 26px;margin-bottom:26px;border-bottom:1px solid var(--line)}.report-extract h3{font-size:20px}.report-extract>.mut{font-size:11px}.report-extract .focus-actions{color:var(--accent)}
+@media(max-width:700px){.question-grid{grid-template-columns:1fr}.question-card{padding:16px}}
+/* The intro: where this page stands against its close: line. */
+.intro-waiting{color:light-dark(#c92a2a,#ff8787);font-weight:500}
+/* One full-width row per child or topic; its output or drawing shown in place. */
+.status-row{padding:14px 0;border-bottom:1px solid var(--line)}
+.studio-row{display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:18px;align-items:start}
+.studio-row{scroll-margin-top:24px}.studio-row:target{outline:2px solid var(--accent);outline-offset:4px;border-radius:8px;background:var(--soft)}
+.row-name{font:500 15px ui-monospace,Menlo,monospace;overflow-wrap:anywhere}
+.focus-content .row-line{font-size:13px;margin:4px 0}.focus-content .row-meta{font-size:12px;color:var(--muted);margin:2px 0}
+.row-thumb img{display:block;width:220px;height:124px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:6px}
+.row-thumb.none{display:flex;width:220px;height:124px;align-items:center;justify-content:center;font-size:12px;color:var(--muted);background:var(--soft);border-radius:6px}
+.row-output{margin:12px 0 0}.row-output img{display:block;max-width:100%;max-height:420px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:6px}
+.focus-content .row-output figcaption p{margin:4px 0;font-size:13px}
+.focus-sub{margin:26px 0 8px}
+@media(max-width:700px){.studio-row{grid-template-columns:1fr}.row-thumb img,.row-thumb.none{width:100%}}
+
+/* Overview–Report reuses the existing white/blue workbench and map viewer. */
+body:has(.overview-report-page){--bg:#fff;--paper:#fff;--ink:#24282e;--muted:#68717c;--line:#dce0e6;--accent:#0866cf;--soft:#e9f3ff;color-scheme:light}
+.overview-tabs{display:flex;gap:8px;margin:0 0 20px}
+.overview-tabs a{border:1px solid var(--line);border-radius:5px;padding:5px 12px;font-size:13px;text-decoration:none}
+.overview-tabs a[aria-current]{background:var(--soft);border-color:#88baff;color:var(--accent)}
+.ui-page{width:100%;height:760px;max-height:80vh;border:1px solid var(--line);border-radius:8px;background:var(--bg,#fff)}
+.overview-map{width:100%;height:620px;max-height:76vh;border:1px solid var(--line);border-radius:8px;background:#fff}
+.report-answer-status{font-size:13px;font-weight:500}
+.overview-report-page .report-extract{scroll-margin-top:20px}
+.tl-kind{display:inline-block;min-width:52px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}.tl-where{font-size:12px;color:var(--muted)}
+.focus-goal{color:var(--muted);margin:-6px 0 18px}.focus-goal p{margin:0}h2 .verb{font-weight:400;color:var(--muted);font-size:.8em}.section-views{display:flex;gap:14px;margin:-4px 0 16px;font-size:13px}.section-views a{color:var(--muted);text-decoration:none;padding-bottom:2px}.section-views a[aria-current]{color:inherit;border-bottom:2px solid var(--accent)}.row-verbs{margin:6px 0 0;display:flex;gap:8px}.row-verb{font-size:12px;border:1px solid var(--line);border-radius:5px;padding:2px 9px;text-decoration:none;color:inherit}.row-verb:hover{border-color:var(--accent)}.focus-rail a.child .rail-name{padding-left:14px}.focus-rail a.child i{width:8px}
+.section-line{display:none}@media(max-width:600px){.focus-rail{display:none}.section-line{display:block;font-size:13px;margin:0 0 14px}.section-line a{color:var(--muted);text-decoration:none}.section-line a[aria-current]{color:inherit;font-weight:600}.focus-content,.focus-content *{overflow-wrap:anywhere;max-width:100%}.overview-map{width:100%}}
+.kid-group{margin:0 0 28px}.kid-head{display:flex;align-items:baseline;gap:8px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}.kid-head a{color:inherit}.kid-count{font-weight:400;letter-spacing:0}.kid-row{display:grid;grid-template-columns:1fr 132px;gap:20px;align-items:center;padding:14px 16px;margin:0 -16px;border-radius:10px;text-decoration:none;color:inherit}.kid-row+.kid-row{border-top:1px solid var(--line)}.kid-row:hover{background:var(--paper);text-decoration:none}.kid-row:hover .kid-name{color:var(--accent)}.kid-text a{color:inherit;text-decoration:none}.kid-text .row-verbs{margin-top:8px}.kid-text{display:flex;flex-direction:column;gap:3px;min-width:0}.kid-name{font-size:16px;font-weight:600;letter-spacing:-.01em}.kid-line{font-size:14px;color:var(--ink);opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.kid-facts{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px}.kid-facts span{font-size:12px;color:var(--muted);background:var(--soft);border-radius:999px;padding:1px 9px}.kid-pic{width:132px;height:82px;object-fit:cover;object-position:top left;border:1px solid var(--line);border-radius:8px;background:var(--paper)}.kid-pic.none{display:block;border-style:dashed;opacity:.5}@media(max-width:600px){.kid-row{grid-template-columns:1fr}.kid-pic{display:none}.kid-line{white-space:normal}}
+/* the classic workbench's look on the new structure (JL 261029: "follow the css like this") */
+h1{font-size:26px;font-weight:700;line-height:1.25;letter-spacing:-.01em}.focus-goal{color:var(--ink);font-size:15px}h2{font-size:17px;font-weight:700;margin:22px 0 10px}h2 .verb{font-size:13px;font-weight:400;color:var(--muted)}.section-views{gap:8px;margin:0 0 14px}.section-views a{border:1px solid var(--line);border-radius:8px;padding:5px 14px;font-size:14px;color:var(--ink);text-decoration:none;background:var(--paper)}.section-views a:hover{border-color:var(--accent)}.section-views a[aria-current]{border-color:var(--accent);background:var(--soft);color:var(--accent);border-bottom-width:1px}.focus-content{border:1px solid var(--line);border-radius:12px;padding:18px 20px;background:var(--paper)}.kid-head{font-size:13px;text-transform:none;letter-spacing:0;color:var(--ink);font-weight:700;margin:4px 0 10px}.kid-row{margin:0 0 10px;border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:var(--paper)}.kid-row+.kid-row{border-top:1px solid var(--line)}.kid-row:hover{border-color:var(--accent);background:var(--paper)}.kid-name{font-size:16px;font-weight:700}.kid-line{opacity:1;color:var(--ink)}.kid-facts span{background:var(--wash);border:1px solid var(--line)}.status-row,.studio-row{border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:0 0 10px}.row-verb{border-radius:8px;padding:3px 12px;font-size:13px}.row-verb:hover{border-color:var(--accent);color:var(--accent)}
+h2{color:var(--ink)}.row-name{font-family:inherit;font-weight:700;font-size:16px}.row-thumb.none{background:var(--wash);color:var(--muted)}
+/* a section is one card: its name and what is in it as the card's own header (JL 261029) */
+.focus-card{border:1px solid var(--line);border-radius:12px;background:var(--paper);margin-top:18px}.card-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line)}.card-head h2{margin:0;font-size:18px;font-weight:700}.card-sub{margin:2px 0 0;font-size:13px;color:var(--muted)}.card-head .section-views{margin:0}.focus-card .focus-content{border:0;border-radius:0;background:none;padding:18px 20px}
+.tl-summary{border:1px solid var(--line);border-radius:10px;background:var(--wash);padding:12px 16px;margin:0 0 14px}.tl-summary p{margin:0}.tl-summary .mut{font-size:13px;color:var(--muted);margin-top:4px}.tl-day{border:1px solid var(--line);border-radius:10px;margin:0 0 10px;padding:10px 16px}.tl-day header{display:grid;grid-template-columns:96px 1fr auto;gap:12px;align-items:baseline}.tl-day time{font-size:13px;font-weight:700}.tl-lead{font-weight:600;font-size:14px}.tl-n{font-size:12px;color:var(--muted)}.tl-day ul{list-style:none;margin:6px 0 0 108px;padding:0}.tl-day li{font-size:13px;padding:2px 0;color:var(--ink)}.tl-kind{display:inline-block;min-width:96px;font-size:11px;color:var(--muted);text-transform:none}@media(max-width:600px){.tl-day header{grid-template-columns:1fr}.tl-day ul{margin-left:0}}
+.rail-name small{display:block;font-size:11px;line-height:15px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.focus-rail.is-open a{height:auto;min-height:28px;padding:5px 12px}.focus-rail.right.is-open{width:min(280px,calc(100vw - 52px))}
+.focus-rail a.grand .rail-name{padding-left:28px}
+/* JL 261029: no box inside a box; the section names always visible at the top; rails only where they fit */
+.focus-card{border:0;border-radius:0;background:none;margin-top:10px}.card-head{padding:10px 0 12px;border-bottom:1px solid var(--line)}.focus-card .focus-content{padding:16px 0 0}
+.section-line{display:flex;flex-wrap:wrap;gap:4px;margin:14px 0 0;font-size:14px}.section-line a{color:var(--muted);text-decoration:none;padding:5px 12px;border-radius:8px;border:1px solid transparent}.section-line a:hover{color:var(--ink);border-color:var(--line)}.section-line a[aria-current]{color:var(--accent);background:var(--soft);font-weight:600}
+/* JL 261030: rails stay down to 601 px; the 64 px page padding holds a 42 px rail */
+@media(max-width:600px){.section-line{display:flex}.focus-rail{display:none}}
+/* JL 261029: the rail picks the section; the row under its name picks the view */
+.section-line{display:none}@media(max-width:600px){.section-line{display:flex}}.focus-card>.section-views{margin:14px 0 0}.glance{font-size:15px;font-weight:600;margin:4px 0}.glance-list{list-style:none;padding:0;margin:6px 0}.glance-list li{padding:6px 0;border-bottom:1px solid var(--line);font-size:14px}.glance-list li b{margin-right:6px}.glance-list time{display:inline-block;min-width:96px;font-size:13px;color:var(--muted)}.focus-content .focus-sub{margin:22px 0 6px;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}.focus-content .focus-sub:first-child{margin-top:0}
+/* JL 261029 sketch: the section beside the title, its views right under it, then the goal */
+h1{display:flex;align-items:baseline;flex-wrap:wrap;gap:18px}.h1-section{font-size:22px;font-weight:600;color:var(--muted)}h1+.section-line,h1+.section-views,h1+.card-sub{margin-top:2px}.focus-page>.section-views{margin:4px 0 16px}.focus-page>.card-sub{margin:0 0 14px;font-size:13px;color:var(--muted)}.focus-goal{margin:0 0 18px;padding-bottom:14px;border-bottom:1px solid var(--line)}.focus-card{margin-top:0}
+.focus-map{overflow:auto;border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--paper)}
+/* the mind map renderer (haipipe-mindmap mapview) names the classic tokens: give it them, keep it in the column */
+:root{--fg:var(--ink);--mut:var(--muted);--card:var(--paper);--acc:var(--accent)}.focus-map{width:auto;margin:0;overflow-x:auto;padding:14px 10px}@media(min-width:1001px){.focus-map .pm{grid-template-columns:190px auto;gap:0 40px}.focus-map .pm-para{grid-template-columns:200px auto;gap:0 36px}}.focus-map .pm-root b{font-size:15px}.focus-map .pm-pnode{font-size:13.5px}.focus-map .pm-leaves li{font-size:13px}
+.focus-map .pm-role:empty{display:none}.focus-map .pm-s{min-width:26px}
+@media(min-width:1001px){.focus-map .pm-leaves li{white-space:normal;max-width:470px}}
+@media(min-width:1001px){.focus-map .pm{grid-template-columns:150px auto;gap:0 28px}.focus-map .pm-para{grid-template-columns:150px auto;gap:0 28px}.focus-map .pm-leaves{max-width:430px}.focus-map .pm-leaves li{max-width:430px}}
+/* the map slides sideways, one line per item (JL 261029: "为什么这个 mindmap 不可以左右平滑")  */
+.focus-map .pm-leaves,.focus-map .pm-leaves li{max-width:none!important;white-space:nowrap!important}.focus-map{overflow-x:auto;scroll-behavior:smooth;cursor:grab;overscroll-behavior-x:contain}.focus-map.panning{cursor:grabbing;scroll-behavior:auto;user-select:none}
+.pm-fold{border:0;background:none;color:var(--muted);font-size:12px;width:18px;padding:0;cursor:pointer;margin-left:-20px}.pm-fold:hover{color:var(--accent)}
+.map-bar{display:flex;gap:8px;margin:0 0 8px}.map-bar button{border:1px solid var(--line);background:var(--paper);border-radius:8px;padding:4px 12px;font-size:13px;cursor:pointer;color:var(--ink)}.map-bar button:hover{border-color:var(--accent)}
+.map-wrap{position:relative}.map-bar{position:absolute;top:8px;left:8px;display:flex;gap:4px;margin:0;z-index:2}.map-bar button{width:26px;height:26px;padding:0;font-size:15px;line-height:24px;border:1px solid var(--line);border-radius:6px;background:var(--paper);color:var(--muted);opacity:.75}.map-bar button:hover{opacity:1;color:var(--accent);border-color:var(--accent)}.map-wrap .focus-map{padding-top:40px}
+/* no point numbers in the Report map; the fold control is a small count chip at the end of a Block line (JL 261029) */
+.focus-map .pm-s{display:none}.focus-map .pm-fold{margin:0 0 0 10px;width:auto;padding:0 8px;height:20px;line-height:18px;font-size:11.5px;border:1px solid var(--line);border-radius:999px;background:var(--wash);color:var(--muted)}.focus-map .pm-fold:hover{border-color:var(--accent);color:var(--accent)}
+.focus-map .pm-more[data-empty]{display:none}
+/* a Block line leads with its name as a label pill (JL 261029: "把这个 B 什么什么名字变成 label") */
+.focus-map .pm-leaves>li>.pm-role{min-width:0;padding:0 8px;border-color:transparent;background:var(--tab-wash,#e7f5ff);color:var(--tab-on,#1864ab);font-weight:600;font-size:12px}
+/* the line under the title says what kind of line it is (JL 261029) */
+.goal-word{display:block;margin:0 0 2px;font-size:11.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}.focus-goal p{margin:0}
+/* Status: one row per Block, a bar of what it must find out, its words beside it */
+.stat-list li{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.stat-list li a{min-width:210px}.stat-bar{display:inline-flex;width:140px;height:8px;border-radius:4px;overflow:hidden;background:var(--wash)}.stat-bar i{display:block;height:100%}.stat-bar .answered{background:var(--ok,#24733d)}.stat-bar .draft{background:#f2c94c}.stat-bar .open{background:#e8590c}
+/* the view buttons stay right under the title (JL 261029: "你要把那个 view button 放在上面"); each view says what it shows */
+.focus-content>.view-caption{margin:0 0 14px;font-size:13.5px;color:var(--muted)}.focus-content>.view-caption+.map-wrap,.focus-content>.view-caption+.focus-map{margin-top:0}
+/* Summary: what was found, the question small over its answer (JL 261029) */
+.found-list{list-style:none;padding:0;margin:4px 0 8px}.found-list li{padding:9px 0;border-bottom:1px solid var(--line)}.found-q{font-size:12.5px;color:var(--muted)}.found-q a{color:var(--muted);font-weight:600}.found-a{font-size:14.5px;color:var(--ink);margin-top:2px}
+.found-stage{margin-left:6px;padding:0 7px;border-radius:9px;font-size:11px;border:1px solid var(--line)}.found-stage.agreed{color:var(--ok,#24733d);border-color:currentColor}.found-stage.proposed{color:#b35c00;border-color:currentColor}
+.focus-map .pm-root b{overflow-wrap:anywhere}
+/* a Studio topic's life on its row: explore → shaping → agreed → closed, its rounds, the last one (JL 261029) */
+.studio-row .row-address{color:var(--muted);font-weight:500}.studio-row .row-name{overflow-wrap:anywhere}
+.row-wait{margin-left:10px;color:#b45309;font-weight:500}.row-wait:before{content:"· ";color:var(--muted)}
+.studio-row .row-title{margin:0}.row-stage{margin-left:10px;font-size:12px;padding:1px 8px;border:1px solid var(--line);border-radius:9px;color:var(--muted);font-weight:400;vertical-align:2px}.row-verb.main{border-color:var(--accent);color:var(--accent)}
+/* a Studio topic's own page (JL 261029: "studio should have a page as well") */
+.h1-addr{color:var(--muted);font-weight:500}h1 .h1-addr+*{margin-left:0}
+.topic-goal .topic-meta{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:8px 0 0;font-size:13px;color:var(--muted)}.row-type{margin-left:6px;font-size:12px;padding:1px 8px;border:1px solid var(--accent);border-radius:9px;color:var(--accent);font-weight:400;vertical-align:2px}.topic-goal .row-stage{margin-left:0}.topic-goal .row-type{margin-left:0}.topic-goal .row-verbs{margin:10px 0 0}
+.topic-ideas{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:22px}@media(max-width:900px){.topic-ideas{grid-template-columns:1fr}}
+.topic-pic img{display:block;width:100%;border:1px solid var(--line);border-radius:10px;background:#fff}
+.idea-nav{margin:8px 0;font-size:13px;color:var(--muted)}.idea-nav a{color:var(--accent);text-decoration:none}
+.idea-thumbs{display:flex;gap:8px;overflow-x:auto;padding:2px 0}.idea-thumbs a{flex:none}.idea-thumbs img{display:block;width:112px;aspect-ratio:16/9;object-fit:cover;border:2px solid var(--line);border-radius:6px}.idea-thumbs a[aria-current] img{border-color:var(--accent)}
+.idea-side .idea-q{font-size:17px;font-weight:700;margin:0 0 10px}.idea-side p{font-size:14px;margin:0 0 10px}.idea-side .idea-ask{color:#b45309}
+.topic-list{list-style:none;margin:0;padding:0}.topic-list li{display:grid;grid-template-columns:48px minmax(0,1fr);gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}.topic-list li:last-child{border-bottom:0}.topic-list .n{font-weight:700;color:#2b8a3e}.topic-list p{margin:0}.topic-list small{display:block;margin-top:3px;font-size:12.5px;color:var(--muted)}
+.topic-links{font-size:13.5px;margin:12px 0 0}.topic-links p{display:inline;margin:0}
+.focus-map.topic-map .pm-leaves,.focus-map.topic-map .pm-leaves li{white-space:normal!important;max-width:none!important}.focus-map.topic-map{cursor:auto;overflow-x:hidden}.focus-map.topic-map .pm{width:auto;min-width:0}@media(min-width:1001px){.focus-map.topic-map .pm{grid-template-columns:150px minmax(0,1fr)}.focus-map.topic-map .pm-para{grid-template-columns:150px minmax(0,1fr)}}
+.idea-side .idea-sec{margin:0 0 4px;font-size:11.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.status-now li.sub{padding-left:24px}
+
+/* an sNN's delivery: each piece and each file opens in place to read (JL 261030) */
+.deliv-piece{display:block}.deliv-piece>summary,.deliv-file>summary{cursor:pointer;list-style:none}.deliv-piece>summary::-webkit-details-marker,.deliv-file>summary::-webkit-details-marker{display:none}.deliv-piece>summary .row-name::after,.deliv-file>summary::after{content:"  ▸ read";font-size:12px;font-weight:400;color:var(--accent)}.deliv-piece[open]>summary .row-name::after,.deliv-file[open]>summary::after{content:"  ▾ close"}.deliv-file{border-bottom:1px solid var(--line);padding:8px 0;font-size:14px}.deliv-body{border-top:1px solid var(--line);margin-top:10px;padding-top:8px;max-height:60vh;overflow:auto;font-size:14px}.deliv-body pre{white-space:pre-wrap;font-size:12px;margin:0}.deliv-body img{max-width:100%}
+/* interactions (haipipe-interaction; JL 261031): the Interactions view's rows, and the one badge Work, the map and Studio share */
+.inbox-row{border-top:1px solid var(--line);padding:12px 0}
+.inbox-row:first-child{border-top:0;padding-top:2px}
+.inbox-head{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.inbox-kind{font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.inbox-state{margin-left:auto;font-size:12.5px;font-weight:600;white-space:nowrap}
+.inbox-state.waiting{color:light-dark(#b35c00,#e4bd62)}
+.inbox-state.answered{color:light-dark(#2b8a3e,#8ce99a)}
+.inbox-where{font-size:12.5px;color:var(--muted);margin:2px 0 4px}
+.inbox-asks{margin:4px 0;padding-left:20px;font-size:13.5px}
+.inbox-asks li{margin:2px 0}
+.inbox-waits{font-size:12.5px;color:var(--muted);margin:2px 0 6px}
+.inbox-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:baseline;font-size:13px}
+.ix-badge{display:inline-block;font-size:12.5px;font-weight:600;border-radius:7px;padding:1px 9px;text-decoration:none;white-space:nowrap;margin-left:8px}
+.inbox-actions .ix-badge{margin-left:0}
+.ix-badge.wait{background:light-dark(#fff4e6,#3a2a12);color:light-dark(#b35c00,#e4bd62);border:1px solid light-dark(#ffd8a8,#7a5520)}
+.ix-badge.done{background:light-dark(#ebfbee,#16301d);color:light-dark(#2b8a3e,#8ce99a);border:1px solid light-dark(#b2f2bb,#2f6b3c)}
+.ix-applied{font-size:12px;color:var(--muted);white-space:nowrap;margin-left:6px}
+
+/* the box is the heading bar only; the content follows below it, unboxed (JL 261031: "could we put the box just in the
+   section? and the content below it we should be outside of the box") */
+.fd-sec{margin:0 0 12px}
+.fd-h{font-size:15px;font-weight:600;margin:0;display:flex;align-items:center;gap:8px;border:1px solid var(--line);
+ border-radius:8px;background:var(--paper);padding:8px 14px}.fd-h::before{flex:none}
+.fd-h>.topic-pop,.fd-h>.fd-verb{margin-left:auto;font-size:12.5px;font-weight:400}
+.fd-h .topic-pop a{border:1px solid var(--line);border-radius:6px;padding:2px 10px;text-decoration:none}
+.fd-body{margin:10px 0 18px;padding:0 2px;overflow-x:auto}.fd-body[hidden]{display:none}
+.fd-body .pm-edit{max-height:85vh;overflow:auto;border:1px solid var(--line);border-radius:6px;padding:8px}   /* the map's own frame */
+/* one frame level: what sits inside a section's box draws no second box (haipipe-ui review 261031) */
+.fd-sec .fd-sec>.fd-h{border:0;padding:4px 0;background:none}.fd-body .space-empty{border:0;padding:0;background:none}
+.fd-body pre,.fd-body .raw-source{border:0;background:var(--wash)}
+@media(max-width:700px){.rv-split.wr-split{grid-template-columns:minmax(0,1fr)}}
+.focus-content:has(>.fd-sec,>section>.fd-sec){border:0;padding-left:0;padding-right:0;background:none}
+.fd-h[data-fold]{cursor:pointer;user-select:none}.fd-h[data-fold]::before{content:"▾";display:inline-block;width:16px;
+ color:var(--muted);font-size:12px}.fd-h[aria-expanded="false"]::before{content:"▸"}.fd-h[data-fold]:hover{color:var(--accent)}
+.fd-ask{display:flex;align-items:center;gap:12px;padding:9px 14px;border:1px solid var(--line);border-left:3px solid #b35c00;
+ border-radius:6px;margin:0 0 12px;font-size:14px}.fd-ask span{flex:1}
+.fd-run{margin:0 0 6px}.fd-run textarea{width:100%;min-height:36px;resize:vertical;border:1px solid var(--line);border-radius:5px;
+ background:var(--wash);padding:6px 10px;font:13px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink)}
+.fd-run .fd-bar{display:flex;gap:8px;align-items:center;margin-top:4px}.fd-run .fd-bar small{color:var(--muted);font-size:12px}
+.fd-btn{font-size:12px;border:1px solid var(--line);border-radius:5px;padding:3px 10px;background:var(--paper);color:var(--ink);
+ cursor:pointer;white-space:nowrap;text-decoration:none}.fd-btn:hover{border-color:var(--accent);text-decoration:none}
+.fd-row{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+.fd-row .n{min-width:170px;font-weight:500;overflow-wrap:anywhere}.fd-row .d{flex:1;color:var(--muted);font-size:13px}
+.fd-row .w{font-size:12px;white-space:nowrap}
+.fd-you{color:#b35c00;font-weight:600}.fd-ok{color:#2b8a3e}
+.section-views a .vw{font-size:11px;margin-left:5px;color:var(--muted)}.section-views a .vw.fd-you{color:#b35c00}
+.section-views a .vw.fd-ok{color:#2b8a3e}
+.fd-text h3{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:18px 0 4px}
+.fd-text p{font-size:16px;line-height:1.7;margin:0 0 10px}
+@media(max-width:600px){.fd-row{flex-wrap:wrap}.fd-row .n{min-width:0}}
+
+/* preview only: the page without its fixed rails; the right rail drawn as one line under the path */
+.focus-page.pv{max-width:860px;padding:14px 22px 26px}.pv h1{margin:6px 0 10px}
+.rail-line{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:8px 0 0;font-size:12.5px}
+.rail-line .rl-word{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-right:2px}
+.rail-line span.rl{padding:1px 9px;border:1px solid var(--line);border-radius:5px;color:var(--muted)}
+.rail-line span.rl.on{color:var(--accent);border-color:var(--accent);background:var(--soft)}
+.rail-line span.rl.gone{text-decoration:line-through;border-style:dashed;opacity:.6}
+.pv .section-views{flex-wrap:wrap}.pv .focus-card{margin-top:4px}.pv .focus-card .focus-content{padding:6px 0 0}
+.pv .focus-content>.view-caption{margin:0 0 10px}
+/* the real Studio row, compact, at every width (the form's frame is narrower than focus.css's 700 px break) */
+.focus-page.pv .studio-row{grid-template-columns:minmax(0,1fr) 128px;gap:12px;padding:9px 12px;margin:0 0 7px}
+.focus-page.pv .row-thumb img,.focus-page.pv .row-thumb.none{width:128px;height:72px}
+.focus-page.pv .row-name{font-size:14px}.focus-page.pv .row-address{font-size:12px}
+.focus-page.pv .row-verbs{margin:4px 0 0;flex-wrap:wrap;gap:6px}.focus-page.pv .row-verb{font-size:11.5px;padding:1px 8px}
+.focus-page.pv .focus-content .row-line{font-size:12px;margin:2px 0}
+.row-piece{margin-left:6px;font-size:12px;padding:1px 8px;border:1px dashed var(--muted);border-radius:9px;color:var(--muted);
+ font-weight:400;vertical-align:2px}
+.pv .fd-body{margin:8px 0 12px}.pv .fd-sec{margin:0 0 8px}
+.empty-line{margin:2px 0 12px;font-size:13.5px;color:var(--muted)}
+.made-line{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px;margin:2px 0 4px;font-size:13.5px}
+.made-line .row-name{font-size:14px}.made-line .row-verb{font-size:11.5px;padding:1px 8px}
+.new-topic{display:flex;gap:8px;align-items:center;margin:8px 0 0;flex-wrap:wrap}
+.new-topic input{flex:1;min-width:150px;border:1px solid var(--line);border-radius:5px;padding:4px 8px;font-size:13px;
+ background:var(--paper);color:var(--ink)}
+.new-topic small{color:var(--muted);font-size:12px}
+.screens{display:grid;grid-template-columns:1fr;gap:12px;align-items:start;margin-top:6px}
+.screen{border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--paper);min-width:0}
+.screen-title{font-size:14px;font-weight:700;margin:0 0 6px}.screen-title span{font-weight:400;color:var(--muted);margin-left:6px;font-size:12.5px}
+.pv .screen .section-views{gap:5px;margin:0 0 6px}.pv .screen .section-views a{font-size:11px;padding:1px 8px}
+.focus-page.pv .screen .studio-row{grid-template-columns:minmax(0,1fr) 64px;gap:8px;padding:6px 8px;margin:0 0 6px}
+.focus-page.pv .screen .row-thumb img{width:64px;height:36px}
+.focus-page.pv .screen .row-name{font-size:11.5px}.focus-page.pv .screen .row-address{font-size:10px}
+.focus-page.pv .screen .row-stage,.focus-page.pv .screen .row-type,.pv .screen .row-piece{font-size:9.5px;padding:0 5px;margin-left:4px}
+.focus-page.pv .screen .row-verbs{gap:4px;margin-top:3px}.focus-page.pv .screen .row-verb{font-size:9.5px;padding:0 5px}
+.focus-page.pv .screen .focus-content .row-line,.focus-page.pv .screen .row-line{font-size:10.5px;margin:2px 0}
+.pv .screen .fd-h{font-size:12px;padding:4px 10px}.pv .screen .fd-body{margin:5px 0 7px}
+.pv .screen .fd-run textarea{min-height:24px;font-size:10.5px;padding:3px 8px}.pv .screen .fd-btn{font-size:10px;padding:2px 7px}
+.pv .screen .fd-run .fd-bar{flex-wrap:wrap;gap:5px}
+.run-row{display:flex;gap:8px;align-items:baseline;padding:5px 0;border-bottom:1px solid var(--line);font-size:11.5px}
+.run-row b{font-weight:600;overflow-wrap:anywhere}.run-row .w{margin-left:auto;white-space:nowrap;color:var(--muted)}
+.run-row.waits{border-left:3px solid #b35c00;padding-left:7px}.run-row.waits .w{color:#b35c00;font-weight:600}
+.pop{border:1px solid var(--line);border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,.12);background:var(--paper);padding:8px 10px}
+.pop-head{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);border-bottom:1px solid var(--line);
+ padding:0 0 5px;margin:0 0 6px}
+.pop p{margin:3px 0;font-size:11.5px}.pop .mut{font-size:11px}
+.tree{font:10.5px/1.6 ui-monospace,Menlo,monospace;margin:0;white-space:pre-wrap}
+.none-box{border:1px dashed var(--line);border-radius:10px;padding:26px 12px;text-align:center;color:var(--muted);font-size:12.5px}
+</style></head><body><main class="focus-page pv"><div class="focus-crumb">Tools-SPACE / blueprints / Project-Ladder / work / b17_theme_work / j03_work_workbench_pages / t03_task_page</div><section class="focus-card"><div class="focus-content"><div class="screens"><section class="screen"><div class="screen-title">t03_task_page<span>Studio</span></div><nav class="section-views studio-groups" aria-label="Views"><a href="#">All pages</a><a href="#" aria-current="page">Task UI</a></nav><div class="focus-content"><section class="fd-sec"><h3 class="fd-h" data-fold="1" aria-expanded="true">Its topics</h3><div class="fd-body"><article class="status-row studio-row" id="s59-task-ui-studio"><div><p class="row-title"><span class="row-address">b17.j03.t03-s59:theme_work.work_workbench_pages.task_page @ </span><a class="row-name" href="#">task_ui_studio</a><span class="row-stage">explore</span><span class="row-type">ui</span></p><p class="row-line"><a href="#">A Task&#x27;s Studio: its own topics;</a></p><p class="row-verbs"><a class="row-verb" href="#">Draw</a><a class="row-verb" href="#">Mind map</a><a class="row-verb diff" href="#">Work</a><a class="row-verb" href="#">Delivery</a><a class="row-verb" style="border-color:light-dark(#ffa94d,#b35c00);color:light-dark(#b35c00,#ffc078)" href="#">🙋 Interaction</a></p></div><a class="row-thumb" href="#"><img src="../../s59-task-ui-studio/s59-task-ui-studio.png" alt="s59-task-ui-studio"></a></article></div></section></div></section><div class="pop diff"><div class="pop-head"><span>s59-task-ui-studio · work</span><span>Close</span></div><div class="run-row"><b>run-design-task-page</b><span class="w">queued</span></div><p>soft · design · target: task-page</p><p class="mut">writes s57 · s58 · s59 delivery/ui/</p></div></div></div></section></main></body></html>

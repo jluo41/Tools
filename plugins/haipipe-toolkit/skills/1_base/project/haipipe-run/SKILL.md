@@ -2,8 +2,8 @@
 name: haipipe-run
 description: "Defines, allocates, resumes, counts and audits Runs: Run or Step, hard or soft, the run.yaml card, ticket and receipt identity, reuse or new work, pruning superseded Runs (prune_runs.py), which skill owns each workbench button, and Workflows (a plan.yaml graph of Run Specs with routes and gates, ref/workflow.md). Trigger: Run contract, run.yaml, pass, runtime receipt, prune runs, run types by Space, workflow, run spec, /haipipe-run, /haipipe-workflow."
 metadata:
-  version: "0.36.2"
-  last_updated: "2026-10-26"
+  version: "0.36.5"
+  last_updated: "2026-10-31"
 ---
 
 # /haipipe-run · one commission, one identity, only meaningful Runs
@@ -29,7 +29,7 @@ A Run is **hard** or **soft**, decided by where its output lands (JL 261006).
 | Ticket | `rNN_<slug>.sh`, or a runner's `.yaml` | `run-<type>-<target>.md` (a Page's Delivery Run keeps its one command, `.sh`) |
 | Output | only its own `result/` (generated) | its scope's items: `draft/`, `studio/`, `reports/`, `delivery/` |
 | Counts as | evidence | work, not evidence |
-| Where | a work Task only | a Block, a Job or a Task; a Page Task has soft Runs only |
+| Where | a work Task only; a collection Run under any page | a Block, a Job or a Task; a Page Task has soft Runs only |
 | New pass | a retry or rerun of the same ticket and inputs | one more round on the same target |
 | New Run | new inputs, data, goal, target or close rule | a new target |
 
@@ -39,8 +39,14 @@ Results only (select, round, format, plot, quote) and computes no new facts: its
 display, value and citation Runs are soft, and their code stays in the Page with
 its display (`displays/<fig>/recipe/ · assets/`). A new number needs a hard Run
 in a work Task. A Task is known by its name (`tNN_<task>/` with its face
-`tNN_<task>.md`), not by what its `runs/` holds. A person's decision (signing a
-design goal, a design Job's release) is soft.
+`tNN_<task>.md`), not by what its `runs/` holds. A person's decision that writes
+into its scope (signing a design goal, a design Job's release) is soft. A person's
+answers to a few questions are a hard **collection Run** (JL 261031: "so it will be
+a run of collection"; "it will just be the rNN under that page"):
+`rNN_collect_<slug>/` under the page whose work they change, `type: collect`, its
+person as `agent:`, its questions in `question_collection.md`, its ticket the form
+rendered from them, its Result `result/answer_collection.md`, a judgment. Its owner
+is haipipe-interaction (renamed from haipipe-collect).
 
 ## The Run folder
 
@@ -87,12 +93,12 @@ A list does not impose serial execution or allocate future identities.
 
 Every Run button of the workbench frame names its owning skill (a `skills:` field on its
 run type; b03 s21, 261007), and the button's Run is a soft Run named for its target. The
-panel shows that name as the button (`run-draw-<sNN>`, `run-face-b03`), what it does in small
+panel shows that name as the button (`run-face-b03`, `run-add-j02`), what it does in small
 under it; buttons that make one Run are one button (JL 261007):
 
 ```text
 Description      Update the description   haipipe-block · haipipe-job · haipipe-task   run-face-<level>
-Idea Studio      add · redraw · save       haipipe-studio                               run-draw-<sNN> (one button)
+Idea Studio      add · redraw · save       haipipe-studio                               no Run: a round is the topic's passes/pNN-<MMDD>/
 Audience Report  Ask                       haipipe-report                             run-ask-<qNN>
                  Write · Drawing · Check   haipipe-report                               run-report|figures|check-<qNN>
 Work Details     Add a Job · Add a Task    haipipe-block · haipipe-job                  run-add-<jNN|tNN>
@@ -246,6 +252,11 @@ dry run right before `--apply`: it is a snapshot.
 - **Git:** it refuses a Run git does not hold, at its path or at its `moved_from:` path. Commit first, or check by
   hand and pass `--untracked-ok`, or pass `--to-old`: the Run and its configs move to
   `work/_old/<bNN>_pruned_<YYMMDD>/<jNN>_<task>_runs/`, so nothing is lost (LLMRec b01 j51, 261021).
+- **Unsaved files:** it also refuses a Run with an uncommitted edit (commit it, or `--to-old`), and one holding
+  files git does not hold, such as an unread `result/RUN-REPORT.md`, unless `--untracked-ok` (261031 review: one
+  committed `run.yaml` let `--apply` delete an unsaved ticket edit and its `result/`).
+- **Replaced:** a Run replaces what its `supersedes:` names only once it ran and did not fail; a failed retry
+  replaces nothing (261031 review: a failed r02 that named a done r01 had both deleted, and the only result).
 - **Chain:** it marks `status: superseded` on any Run a deleted Run had replaced, so a chain such as r02 → r03 →
   r04 is not lost when r03 goes.
 - **Names:** `--only` takes `<task>/<run>` (a Task folder name or its `tNN`); a bare name that two Tasks hold is

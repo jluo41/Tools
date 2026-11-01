@@ -200,15 +200,15 @@ def delivery_lane_dir(page_dir, lane):
 def studio_lane_dirs(page_dir, lane):
     """Existing Studio lane directories, canonical first and deduped.
 
-    New Page-owned Chat and Draw material lives below ``studio/``. The old
-    sibling lane remains a readable migration input (and may be a symlink to
-    the canonical directory), but a writer must never select it for new work.
+    Page-owned Chat and Draw material lives in its lane beside the page face
+    (``<page>/chat``, ``<page>/draw``): studio/ folders are gone (JL 261031, b35 r02 Q2 C). An old ``studio/<lane>``
+    stays readable until it is moved, but a writer never selects it.
     """
     if lane not in STUDIO_LANES:
         raise ValueError("not a studio lane: %s" % lane)
     page_dir = Path(page_dir)
     out, seen = [], set()
-    for candidate in (page_dir / "studio" / lane, page_dir / lane):
+    for candidate in (page_dir / lane, page_dir / "studio" / lane):
         if not candidate.is_dir():
             continue
         key = candidate.resolve()
@@ -220,10 +220,10 @@ def studio_lane_dirs(page_dir, lane):
 
 
 def studio_lane_dir(page_dir, lane):
-    """The canonical destination for one Page-owned Studio lane."""
+    """The canonical destination for one Page-owned Studio lane: beside the page face, never under studio/ (studio/ folders are gone (JL 261031, b35 r02 Q2 C))."""
     if lane not in STUDIO_LANES:
         raise ValueError("not a studio lane: %s" % lane)
-    return Path(page_dir) / "studio" / lane
+    return Path(page_dir) / lane
 
 
 def scene_text(scene) -> str:

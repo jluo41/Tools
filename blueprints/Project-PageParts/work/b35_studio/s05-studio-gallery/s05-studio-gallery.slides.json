@@ -1,0 +1,53 @@
+{
+ "topic": "s05-studio-gallery",
+ "style": "sketch-notes",
+ "source": "s05-studio-gallery.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "The studio gallery: every kind of sNN, a real one each",
+   "points": [
+    "one real sNN of each kind, to copy from",
+    "638 sNN sit in 6 SPACEs (scan of 261030), and a new one starts from nothing",
+    "Earlier JL called s01's scenarios \"more like the galleries,"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and a gallery page in the haipipe-studio skill (ref/gallery.md, counted by scripts/gallery_scan.py): one real sNN per…",
+    "a skill"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "What is decided",
+   "points": [
+    "The studio gallery is its own sNN, beside the delivery gallery (s04)",
+    "The counts are read from disk by gallery_scan.py on every rebuild, never typed",
+    "The gallery's examples are the newest of each kind from the scan, never one of the two galleries,…"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "04",
+   "idea": "Still open",
+   "points": [
+    "Should a gallery card show the example's drawing, or only its name and delivery?",
+    "Most sNN still sit in a studio/ folder: does the gallery move them, or only show where they are?"
+   ],
+   "leaning": "",
+   "ask": "Are these the kinds, and is each kind on its right level?",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

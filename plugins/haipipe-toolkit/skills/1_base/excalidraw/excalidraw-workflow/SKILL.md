@@ -141,7 +141,7 @@ picture as a reader, with these questions, answered from the picture alone:
 Worked example
 --------------
 
-DrFirst-SPACE `examples-4-learning/Project-ExpLearn-SMSDesign/paper/Paper-TestToLearn-MS2026/studio/s04-paper-workflow/`:
+DrFirst-SPACE `examples-4-learning/Project-ExpLearn-SMSDesign/paper/Paper-TestToLearn-MS2026/s04-paper-workflow/`:
 the Management Science redesign, 2 questions and 4 sub-questions, the input ladder's Stage 2.5 designs counted from the
 Design Board, and the 20 Review Items of `j02_v1007_mansci/reports/q01_editor-decision-0916/` (19 on cards; scope is
 fixed in the writing).

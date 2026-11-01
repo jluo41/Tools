@@ -6,13 +6,13 @@ description: >-
   next, a plain line per point (its number, its role pill, its words), thin grey curves, edited where it is read. A
   topic's mind map, `sNN-<topic>.mindmap.md` beside its free drawing (same name, its kind in the ending), is one Markdown file drawn with it:
   built from the topic's face (`from-topic`) when the topic is made, refreshed from it after, a person's nodes and
-  words kept; a Block's or a world's work too (`from-work`: Block → Job → Task → Run with run counts). On top of §1
+  words kept; a Block's or a world's work too (`from-work`: Block → Job → Task → Run, each by its goal or its result). On top of §1
   a mind map adds ▸ details, lines under a point, and a chip per file a point names. Use to make, show, edit or
   refresh a mind map, or to change how §1 and the mind maps draw. Trigger: mind map, mindmap, structured side,
   Free | Structured, structure map, §1 map, map the work, /haipipe-mindmap.
 metadata:
-  version: "0.7.0"
-  last_updated: "2026-10-26"
+  version: "0.9.3"
+  last_updated: "2026-10-31"
   # version history: ./CHANGELOG.md
 ---
 
@@ -24,7 +24,7 @@ they look and edit alike (JL 261026: "你把他们那个 map 也放到我们这�
 ```text
 draft/<stem>-draft-vN.md  ## 1 · Structure ──▶ draft_steps.py _plan_map ─┐
                                                                          ├─▶ mapview.render ─▶ the map (§1's look)
-studio/sNN-<topic>/sNN-<topic>.mindmap.md ──▶ mmmap.draw ────────────────┘        │ each edit, one payload
+sNN-<topic>/sNN-<topic>.mindmap.md ──▶ mmmap.draw ────────────────┘        │ each edit, one payload
        ▲ from-topic (the face)                                                   ▼
        └──────────── /_board/mindmap (mmmap.act) ◀── a mind map · a draft ──▶ /_board/draft-plan (plan_act)
 ```
@@ -50,6 +50,12 @@ The map
 3. **A mind map's extras**: ▸ opens a point's detail below it (its other note lines, Markdown: a link opens in the
    pop-out, a picture shows as itself), ✎ edits it; the lines under a point, and theirs, indented to any depth; a chip
    per file a point names (🖼 a picture, ↗ else), as §1's evidence chips. A draft's map draws without them.
+   A map starts with "The total workflow"; a first-level branch is a section, and each leaf under it has one drawing
+   holding its slides (b35-s03-D01, JL 261029: "一个 leaf 就一个 draw 然后里面可以有几个 slides"): a slide names its
+   `leaf:` in the topic's `.slides.json`, the drawing is `map/<leaf id>-<words>.excalidraw`, and the leaf's line
+   carries one ✎ link ("✎ N slides", or "✎ draw" with none) opened in the page's pop-out to draw on.
+   `mindmap.py sketch <x.mindmap.md>` seeds each leaf's drawing (its words on top, its slides in a row under them)
+   and never rewrites one that exists (`scripts/mmsketch.py`). A topic's map wraps to its card's width.
 4. **Written, not only built**: `from-topic` gives a skeleton; a map reads as §1 when
    it is written: each branch a step of the topic's argument with its kind (`[question] What Q01 asks`, the grey line
    over its name), the question it hands to the next (`→ …`), each point one short complete sentence with its role,
@@ -69,7 +75,7 @@ Commands
 ```text
 python scripts/mindmap.py new        <x.mindmap.md> [--title T]     a root and nothing under it yet
 python scripts/mindmap.py from-topic <studio/sNN-topic> [--out F]   the topic's mind map, sNN-<topic>.mindmap.md
-python scripts/mindmap.py from-work  <work/ | Block | Job> [--out F] Block → Job → Task → Run, run counts
+python scripts/mindmap.py from-work  <work/ | Block | Job> [--out F] Block → Job → Task → Run, goals and results
 python scripts/mindmap.py refresh    <x.mindmap.md>                  rebuild from disk; a person's words kept
 python scripts/mindmap.py render     <x.mindmap.md>                  the static page
 python scripts/mindmap.py check      <x.mindmap.md | folder> ...     grammar and ids
@@ -85,10 +91,14 @@ Builders and refresh
    (Files, Decided, Open …) become branches; each sentence or item a leaf of at most seven words, the whole sentence
    its detail; the Files branch lists the folder's real files, each a link (its bubble opens it) and a picture shown
    in its detail; `**Stage:**`, `**Tags:**` and `**Label:**` go in the root's detail.
-2. **from-work**: the root is the folder (a world, a Block, a Job); a Job reads `jNN_<job> · N tasks · M runs`, a
-   Task `tNN_<task> · M runs, K done`, a Run its folder name and its state (✅ done, ❌ failed, 🔶 running, ⛔
-   blocked, ⬜ open) from `run.yaml`; every Run shown; a Task's detail is its face's `goal:` and `close:`. A world stops at Tasks. Written to `<folder>/studio/
-   mind-map.mindmap.md`, which a Block's or a world's `studio/` keeps loose (haipipe-project `ref/ladder.md`).
+2. **from-work**: drawn like every other mind map (JL 261030: "this should be the same version as other versions";
+   "we can read the results quickly from the mindmap"): the root card is the folder, its goal or spine under it (a
+   Job: `done when:` its close line); a card per Job (a world: per Block) with its kind over its words, `jNN · <its
+   goal>`; under it a numbered point per Task, its state as the pill (done, partly done, not run, failed) and `tNN ·
+   <its goal>` as the words, its Runs (✅ ❌ ⏳ ⛔ ⬜ and what each found) in its ▸ details. A Job alone: a card per
+   Task, a point per Run with what it found (its newest pass's `## Summary`, else its `result/RUN-REPORT.md`, else its
+   `target:`). A goal is the face's `goal:` line, else the first sentence under its title. No counts. Written to `<folder>/mind-map.mindmap.md`,
+   beside the folder's face: there is no `studio/` folder any more (JL 261031, haipipe-studio b35 r02).
 3. **Refresh**: a built node whose words a person did not change takes the new words; a node or words a person added
    stay; a built node gone from disk goes, unless a person changed it or hung something under it. A built node's
    `<!-- @key #hash -->` mark is how it knows.

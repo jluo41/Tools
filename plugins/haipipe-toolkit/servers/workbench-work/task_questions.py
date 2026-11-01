@@ -259,14 +259,15 @@ TOPIC = re.compile(r"^s\d{2}-[a-z0-9-]+$")
 
 
 def studio_topics(level, root, group, source_url):
-    """A level's studio topics, the haipipe-studio layout: studio/sNN-<topic>/sNN-<topic>.excalidraw, its
-    face's first line as the title, its preview, and the sessions saved as passes of runs/run-draw-<sNN>/
-    (each pass.md's title, newest first). A topic's builder keeps a person's marks, so it stays editable."""
-    studio = level / "studio"
-    out = []
-    if not (inside(studio, root) and studio.is_dir()):
-        return out
-    for folder in sorted(d for d in studio.iterdir() if d.is_dir() and TOPIC.match(d.name)):
+    """A level's studio topics, the haipipe-studio layout: sNN-<topic>/sNN-<topic>.excalidraw beside its Jobs or
+    Tasks (JL 261030), then any in an older studio/, its face's first line as the title, its preview, and the
+    sessions saved as passes of runs/run-draw-<sNN>/ (each pass.md's title, newest first). A topic's builder keeps
+    a person's marks, so it stays editable."""
+    out, folders = [], []
+    for base in (level, level / "studio"):
+        if inside(base, root) and base.is_dir():
+            folders += sorted(d for d in base.iterdir() if d.is_dir() and TOPIC.match(d.name))
+    for folder in folders:
         drawing = folder / f"{folder.name}.excalidraw"
         if not (inside(drawing, root) and drawing.is_file()):
             continue
@@ -277,8 +278,9 @@ def studio_topics(level, root, group, source_url):
                           if line.strip()), "")
             title = first.lstrip("# ").strip() or title
         sessions = []
-        for pass_md in sorted((level / "runs" / f"run-draw-{folder.name[:3]}" / "passes").glob("p*/pass.md"),
-                              reverse=True):
+        for pass_md in sorted([*(folder / "passes").glob("p*/pass.md"),      # its rounds, inside it (261029)
+                               *(level / "runs" / f"run-draw-{folder.name[:3]}" / "passes").glob("p*/pass.md")],
+                              key=lambda x: x.parent.name, reverse=True):
             head = next((line[2:].strip() for line in pass_md.read_text(encoding="utf-8", errors="replace")
                          .splitlines() if line.startswith("# ")), pass_md.parent.name)
             sessions.append({"pass": pass_md.parent.name, "title": head,
@@ -357,7 +359,7 @@ def extend_snapshot(board, root, snap, only, source_url, page_url):
                 drawings.append({"title": path.stem.replace("_", " ").replace("-", " ").capitalize(),
                                  "path": path.relative_to(root).as_posix(), **generated(path, board)})
         drawings.sort(key=lambda d: not d.get("source"))       # a generated drawing (the question map) first
-    # the studio topics, the Block's own and then each Job's (a Job keeps its studio beside its face)
+    # the studio topics, the Block's own and then each Job's (each sNN sits beside the level's Jobs or Tasks)
     drawings += studio_topics(board, root, "", source_url)
     for job in sorted(j for j in board.glob("j[0-9][0-9]_*") if j.is_dir()):
         drawings += studio_topics(job, root, job.name, source_url)

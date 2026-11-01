@@ -1,0 +1,6 @@
+run: r01_collect_example_choices
+kind: hard
+type: collect
+skill: haipipe-interaction
+agent: JL
+status: waiting

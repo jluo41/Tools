@@ -3,13 +3,15 @@
 `/haipipe-paper sessions [paper]` gives every Section its own named Claude Code
 session and its own named Codex thread, paired, so each Section is written,
 checked and messaged in its own context on either provider. Run it once the
-Story's §8 Section Narrative has fixed the Section structure; before that there
-is nothing stable to own.
+Section Narrative (the `## Narrative` of the newest writing Job's face,
+`jNN_writing_v<MMDD>_<desk>.md`) has fixed the Section structure; before that
+there is nothing stable to own. (Before the ladder this was the Story's §8.)
 
 ## When
 
-1. The Story page carries its `haipipe:compile-order` block (§8 is settled).
-2. Every Section Page folder exists under `B?-<desk>-Main/` and `B?-<desk>-Appendix/`.
+1. The newest writing Job's face carries its `haipipe:compile-order` block (its `## Narrative` is settled).
+2. Every Section Task folder exists in that Job: `t0N_` (Main) and `t2N_` (Appendix). An older Board's
+   `B?-<desk>-Main/` and `B?-<desk>-Appendix/` pages still read.
 3. Rerun after a Section Page is added; live sessions are kept, existing pairs are bound.
 
 ## Units: what one session owns
@@ -59,13 +61,13 @@ CLI cannot name it. An app-server thread is listed under its name.
 
 ## Naming
 
-`<Short>` names the paper in two or three words (`AgreeableRx`), distinct from
+`<Short>` names the paper in two or three words (`ExampleMisq`), distinct from
 every other paper's prefix in the workspace; the unit names the Section. The
 first `--apply` records it in `board.md` as `session-prefix:`, later runs read it
 from there, and a different `--prefix` is refused so one paper never ends up
 with two naming schemes. Together they pass the stranger test in the `/resume` picker, in
 `claude agents`, and in the Codex app: `<Short>-t01_introduction`,
-`AgreeableRx-Appendix-Codex`. The page header lines `session:` and
+`ExampleMisq-Appendix-Codex`. The page header lines `session:` and
 `codex-session:` are the binding; the Paper Workbench's Narrative view reads
 them and shows each Section's Claude session and Codex thread.
 
@@ -99,5 +101,5 @@ exact lines; the owner applies it inside its own folder.
 ## Not in scope
 
 The command creates no Page, Run, Result or receipt and never decides which
-Section exists: §8 does. Pairing is identity-only (`sync` stays off); reading a
+Section exists: the writing Job face's `## Narrative` does. Pairing is identity-only (`sync` stays off); reading a
 peer's history is the call-peer skill's `READ_EXISTING_PEER`.

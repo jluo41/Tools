@@ -447,7 +447,7 @@ def block_spaces(block: Path, root: Path, sub: str, href) -> dict:
         "Description": Space(html=d_html, subspaces=desc, open=d_open, run_types=d_runs, page=True,
                              disk=_disk("Block", d_open, block)),
         "Idea Studio": Space(run_types=(_bk(b, root, "run-draw-<sNN>", "draw", "Draw a studio topic of {folder}: "
-                                            "studio/sNN-<topic>/ and its builder (run-draw-<sNN>)."),), page=True),
+                                            "sNN-<topic>/ beside its Jobs and its builder (run-draw-<sNN>)."),), page=True),
         "Audience Report": Space(html=a_html, subspaces=ar, open=a_open, run_types=a_runs, page=True,
                                  disk=_disk("Block", a_open, block), note="" if a_runs else "No run writes this view: it reads the Jobs' receipts and scores."),
         "Work Details": Space(html=_jobs(b, root, href, w_open), subspaces=("All",) + goals, open=w_open,
@@ -1011,8 +1011,8 @@ def job_spaces(jdir: Path, root: Path, sub: str, href) -> dict:
     return {
         "Description": Space(html=d_html, subspaces=desc, open=d_open, run_types=d_runs, page=True,
                              disk=_disk("Job", d_open, jdir)),
-        "Idea Studio": Space(run_types=(k(f"run-draw-s01", "draw", "Draw a studio topic of {folder}: studio/sNN-<topic>/ "
-                                          "and its builder (run-draw-<sNN>)."),), page=True),
+        "Idea Studio": Space(run_types=(k(f"run-draw-s01", "draw", "Draw a studio topic of {folder}: sNN-<topic>/ beside "
+                                          "its Tasks and its builder (run-draw-<sNN>)."),), page=True),
         "Audience Report": Space(html=a_html, subspaces=ar, open=a_open, run_types=a_runs, page=True,
                                  disk=_disk("Job", a_open, jdir)),
         "Work Details": Space(html=w_html, subspaces=wd, open=w_open, run_types=w_runs, page=True,
@@ -1296,7 +1296,7 @@ def task_spaces(tdir: Path, root: Path, sub: str, href) -> dict:
     kind = R.kind_of(tdir)
     rs = R.runs(tdir)
     rows = lambda *t: _rows(rs, root, *t)
-    draw = _kind("run-draw-s01", "Draw a studio topic about this Task: {folder}/studio/sNN-<topic>/ (run-draw-<sNN>).",
+    draw = _kind("run-draw-s01", "Draw a studio topic about this Task: {folder}/sNN-<topic>/ (run-draw-<sNN>).",
                  "haipipe-studio")
     if kind == "t00":
         r = _kind("run-reason-t00", "Reason ideas for the Job (② run-reason-t00): inputs/ only, topic by topic, to N + 5 "

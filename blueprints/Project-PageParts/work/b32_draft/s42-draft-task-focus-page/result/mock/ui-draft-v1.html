@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Draft Task Focus</title>
+<style>
+/* tokens copied from servers/workbench/focus-assets/focus.css :root; structure only changes, never the look */
+:root{--bg:#fff;--paper:#fff;--ink:#1c1c1c;--muted:#6f6f6b;--line:#e3e3e6;--accent:#1864ab;--soft:#e7f5ff;--wash:#f6f6f7;
+--warn:#b35c00;--ok:#2b8a3e;--red:#c92a2a;--cite:#1971c2;--value:#7048e8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161719;--paper:#1b1c1f;--ink:#e8e8e6;--muted:#a0a09c;
+--line:#2c2e33;--accent:#91caff;--soft:#253749;--wash:#1d1f22;--warn:#e4bd62;--ok:#8ce99a;--red:#ff8787;--cite:#74c0fc;--value:#b197fc}}
+:root[data-theme="dark"]{--bg:#161719;--paper:#1b1c1f;--ink:#e8e8e6;--muted:#a0a09c;--line:#2c2e33;--accent:#91caff;--soft:#253749;
+--wash:#1d1f22;--warn:#e4bd62;--ok:#8ce99a;--red:#ff8787;--cite:#74c0fc;--value:#b197fc}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+code{font:12.5px ui-monospace,Menlo,monospace}
+.wrap{display:grid;grid-template-columns:minmax(0,1120px) 360px;gap:28px;padding:24px 16px 60px;max-width:1540px;margin:auto}
+@media(max-width:1180px){.wrap{grid-template-columns:1fr}.notes{position:static!important}}
+.screen-label{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--red);margin:34px 0 10px;font-weight:600}
+.screen-label:first-child{margin-top:0}
+/* the browser window: rails in the margins, the 960 px focus page in the middle */
+.win{border:1px solid var(--line);border-radius:10px;background:var(--bg);position:relative;
+display:grid;grid-template-columns:140px minmax(0,1fr) 170px;gap:0}
+.rail{padding:150px 10px 20px;font-size:12px}
+.rail a{display:flex;align-items:center;gap:8px;height:28px;padding:0 8px;border-radius:4px;color:var(--muted);text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rail a i{display:inline-block;width:7px;height:1px;background:var(--line);flex:none}
+.rail a.child{padding-left:20px}
+.rail a[aria-current]{color:var(--accent);background:var(--soft)}
+.rail a[aria-current] i{width:14px;height:2px;background:var(--accent)}
+.rail a small{display:block;font-size:11px;color:var(--muted);line-height:1.2}
+.secline{display:none;font-size:13px;color:var(--muted);margin:0 0 12px}.secline b{color:var(--ink)}
+.rail a.two{height:auto;padding:4px 8px;align-items:flex-start}
+.rail a.two i{margin-top:9px}
+.rail a.new{outline:2px dashed var(--red);outline-offset:1px}
+.page{padding:25px 24px 40px;min-width:0}
+.crumb{font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+h1{font-size:24px;font-weight:500;margin:14px 0 14px}
+h1 .sec{font-size:22px;font-weight:600;color:var(--muted);margin-left:10px}
+.views{display:flex;flex-wrap:wrap;gap:6px 16px;margin:0 0 14px;font-size:13px}
+.views a{color:var(--muted);text-decoration:none;padding-bottom:2px}
+.views a[aria-current]{color:var(--ink);border-bottom:2px solid var(--accent)}
+.views a .w{font-size:11px;margin-left:5px;color:var(--muted)}
+.views a .w.you{color:var(--warn);font-weight:600}
+.views a .w.ok{color:var(--ok)}
+.aim{margin:0 0 18px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.aim b{font-size:12px;font-weight:600;color:var(--muted);margin-right:8px;text-transform:uppercase;letter-spacing:.05em}
+.caption{font-size:13px;color:var(--muted);margin:0 0 14px}
+/* rows, one item per row, verbs on the row */
+.ask{display:flex;align-items:center;gap:12px;padding:10px 14px;border:1px solid var(--line);border-left:3px solid var(--warn);border-radius:6px;margin:0 0 12px}
+.ask .t{flex:1}
+.ask .t small{display:block;font-size:12px;color:var(--muted)}
+.btn{font-size:12px;border:1px solid var(--line);border-radius:5px;padding:3px 10px;background:var(--paper);color:var(--ink);white-space:nowrap;text-decoration:none;display:inline-block}
+.btn.go{background:var(--accent);border-color:var(--accent);color:#fff}
+.verbs{display:flex;gap:8px;align-items:flex-start;margin:0 0 22px}
+.verbs textarea{flex:1;min-height:34px;height:34px;resize:vertical;border:1px solid var(--line);border-radius:5px;background:var(--wash);
+padding:6px 10px;font:13px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink)}
+h3.part{font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:22px 0 8px}
+.para{border-top:1px solid var(--line);padding:10px 0 6px}
+.para .ph{display:flex;align-items:baseline;gap:10px}
+.para .ph b{font-weight:600}
+.para .ph .id{font:11px ui-monospace,Menlo,monospace;color:var(--muted);width:44px;flex:none}
+.pt{display:flex;gap:10px;font-size:14px;line-height:1.55;padding:2px 0}
+.pt .id{font:11px ui-monospace,Menlo,monospace;color:var(--muted);width:44px;flex:none;text-align:right;padding-right:10px;line-height:21px}
+.scr{margin:6px 0 4px 54px;font-size:13px;color:var(--muted);border:1px dashed var(--line);border-radius:5px;padding:5px 9px;background:var(--wash)}
+.scr b{font-weight:600;color:var(--ink);margin-right:6px}
+.row{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--line)}
+.row .n{width:170px;flex:none;font-weight:500}
+.row .d{flex:1;color:var(--muted);font-size:13.5px}
+.row .st{font-size:12px;width:96px;flex:none}
+.st.you{color:var(--warn);font-weight:600}.st.ok{color:var(--ok)}.st.later{color:var(--muted)}
+.row .pic{width:110px;height:64px;flex:none;border:1px solid var(--line);border-radius:4px;background:
+linear-gradient(135deg,var(--wash) 25%,transparent 25%) 0 0/12px 12px,var(--paper)}
+/* 5 · Revise: text left, cards right, no box around either */
+.split{display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:22px}
+.txt p{margin:0 0 4px;font-size:16px;line-height:1.65;display:flex;gap:10px}
+.txt p .id{font:11px ui-monospace,Menlo,monospace;color:var(--muted);width:28px;flex:none;line-height:26px;text-align:right}
+.txt p.lit{background:var(--soft)}
+.card{border:1px solid var(--line);border-radius:6px;padding:7px 10px;font-size:13px;margin:0 0 8px;background:var(--paper)}
+.card .k{font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.card .k.edit{color:var(--warn)}.card .k.logic{color:var(--muted)}.card .k.cite{color:var(--cite)}.card .k.you{color:var(--accent)}
+.card .old{text-decoration:line-through;color:var(--muted)}
+.card .acts{display:flex;gap:6px;margin-top:6px}
+.chips{display:flex;gap:6px;margin:0 0 12px}
+.chips span{font-size:12px;border:1px solid var(--line);border-radius:12px;padding:1px 10px}
+.chips span.on{border-color:var(--accent);color:var(--accent);background:var(--soft)}
+/* notes */
+.notes{position:sticky;top:20px;align-self:start;font-size:13.5px}
+.notes h2{font-size:14px;margin:0 0 8px;color:var(--red)}
+.notes ol{margin:0 0 18px;padding-left:22px}
+.notes li{margin:0 0 10px;color:var(--red)}
+.notes li span{color:var(--ink)}
+.notes li small{display:block;color:var(--muted);font-style:italic;margin-top:2px}
+.pin{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:var(--red);color:#fff;
+font-size:11px;font-weight:700;vertical-align:middle;margin:0 4px;flex:none}
+table.map{border-collapse:collapse;width:100%;font-size:13px;margin:6px 0}
+table.map th,table.map td{border:1px solid var(--line);padding:5px 8px;text-align:left;vertical-align:top}
+table.map th{background:var(--wash);font-weight:600}
+@media(max-width:700px){.win{grid-template-columns:1fr}.rail{display:none}.secline{display:block}.split{grid-template-columns:1fr}.row .n{width:120px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div>
+
+<p class="screen-label">Screen A · Work › 1 · Plan (the step that waits for you; a bare link opens here)</p>
+<div class="win">
+  <nav class="rail" aria-label="Pages">
+    <a aria-current="page"><i></i>t00_summary</a>
+    <a><i></i>t01_introduction</a>
+    <a><i></i>t02_methods</a>
+    <a><i></i>t03_results</a>
+    <a><i></i>t04_discussion</a>
+  </nav>
+  <div class="page">
+    <div class="crumb">Physician-SPACE / examples-2-cms / Project-Example / paper / Paper-Example / j01_v1130_venue / t00_summary</div>
+    <h1>t00_summary<span class="sec">Work</span></h1>
+    <nav class="secline">Report · <b>Work</b> · Studio · Delivery · Timeline · Files</nav>
+    <nav class="views" aria-label="Views"><span class="pin">2</span>
+      <a aria-current="page">1 · Plan<span class="w you">sign</span></a>
+      <a>2 · Write<span class="w ok">done</span></a>
+      <a>3 · Evidence<span class="w">next</span></a>
+      <a>4 · Display<span class="w">none called</span></a>
+      <a>5 · Revise<span class="w">next</span></a>
+      <a>Runs</a>
+    </nav>
+    <div class="aim"><span class="pin">3</span><b>Aim</b>Placeholder: what the reader learns from this Section, in 250 words.</div>
+    <p class="caption">The plan: its paragraphs and their points, before the sentences.</p>
+
+    <div class="ask"><span class="pin">4</span>
+      <div class="t">Waiting for you: read the plan below, then sign it.</div>
+      <a class="btn go">Sign</a>
+    </div>
+    <div class="verbs"><span class="pin">5</span>
+      <textarea placeholder="your notes for the next plan"></textarea>
+      <a class="btn">Revise the plan</a>
+    </div>
+
+    <h3 class="part">Plan <span class="pin">6</span></h3>
+    <div class="para"><div class="ph"><span class="id">C1.P1</span><b>Background</b></div>
+      <div class="pt"><span class="id">S1</span>Placeholder point: the problem in one line</div>
+      <div class="pt"><span class="id">S2</span>Placeholder point: what we set out to learn</div>
+      <div class="scr"><b>Scratch</b>…</div>
+    </div>
+    <div class="para"><div class="ph"><span class="id">C1.P2</span><b>Methods</b></div>
+      <div class="pt"><span class="id">S3</span>Placeholder point: design, data and period</div>
+      <div class="pt"><span class="id">S4</span>Placeholder point: the measure</div>
+      <div class="pt"><span class="id">S5</span>Placeholder point: the outcomes</div>
+      <div class="scr"><b>Scratch</b>…</div>
+    </div>
+    <div class="para"><div class="ph"><span class="id">C1.P3</span><b>Findings</b></div>
+      <div class="pt"><span class="id">S6</span>Placeholder point: the cohort</div>
+      <div class="pt"><span class="id">S7</span>Placeholder point: the main result</div>
+      <div class="scr"><b>Scratch</b>…</div>
+    </div>
+
+    <h3 class="part">Read before you sign <span class="pin">7</span></h3>
+    <div class="row"><span class="n">Requirement</span><span class="d">the venue's rules for this Section</span><a class="btn">Open</a></div>
+    <div class="row"><span class="n">Context</span><span class="d">what the plan was built from</span><a class="btn">Open</a></div>
+    <div class="row"><span class="n">Examples</span><span class="d">published papers' same Section, read first</span><a class="btn">Open</a></div>
+    <div class="row"><span class="n">Contract</span><span class="d">what the Story asks this Section to establish</span><a class="btn">Open</a></div>
+    <div class="row"><span class="n">Rubric</span><span class="d">how the Section will be judged</span><a class="btn">Open</a></div>
+
+    <h3 class="part">Runs of this step <span class="pin">8</span></h3>
+    <div class="row"><span class="n"><code>run-structure-plan</code></span><span class="d">revise the plan</span><span class="st later">none yet</span><a class="btn">New Run</a></div>
+  </div>
+  <nav class="rail" aria-label="Page sections"><span class="pin" style="margin:0 0 6px 8px">1</span>
+    <a class="two"><i></i><span>Report<small>check</small></span></a>
+    <a class="two" aria-current="page"><i></i><span>Work<small>do</small></span></a>
+    <a class="two new"><i></i><span>Studio<small>think</small></span></a>
+    <a class="two new"><i></i><span>Delivery<small>hand over</small></span></a>
+    <a class="two"><i></i><span>Timeline<small>look back</small></span></a>
+    <a class="two"><i></i><span>Files<small>browse</small></span></a>
+  </nav>
+</div>
+
+<p class="screen-label">Screen B · Work › 5 · Revise (same shape, the rich Section)</p>
+<div class="win">
+  <nav class="rail"></nav>
+  <div class="page" style="padding-top:20px">
+    <h1 style="margin-top:0">t00_abstract<span class="sec">Work</span></h1>
+    <nav class="views"><a>1 · Plan<span class="w ok">done</span></a><a>2 · Write<span class="w ok">done</span></a>
+      <a>3 · Evidence<span class="w ok">done</span></a><a>4 · Display<span class="w">none called</span></a>
+      <a aria-current="page">5 · Revise<span class="w you">pass 2</span></a><a>Runs</a></nav>
+    <div class="aim"><b>Aim</b>Placeholder: the problem, design, result and contribution, in one paragraph.</div>
+    <p class="caption">The text beside its review cards: accept or reject each change.</p>
+    <div class="ask"><span class="pin">9</span><div class="t">Waiting for you: 3 changes to accept or reject.</div><a class="btn">Accept all</a></div>
+    <div class="verbs"><textarea placeholder="your notes for the next pass"></textarea><a class="btn">Revise again</a><a class="btn">Apply accepted</a></div>
+    <div class="chips"><span class="pin">10</span><span class="on">Edits</span><span class="on">Comments</span><span>Logic</span><span>Evidence</span></div>
+    <div class="split">
+      <div class="txt">
+        <p><span class="id">S1</span>Placeholder sentence one, stating the problem the study takes up.</p>
+        <p class="lit"><span class="id">S2</span>Placeholder sentence two, naming the gap that the work fills.</p>
+        <p><span class="id">S3</span>Placeholder sentence three, describing the design and the data.</p>
+        <p><span class="id">S4</span>Placeholder sentence four, giving the main result in plain words.</p>
+        <p><span class="id">S5</span>Placeholder sentence five, drawing the boundary of the claim.</p>
+      </div>
+      <div>
+        <div class="card" style="margin-top:28px"><div class="k edit">Edit · S2</div><span class="old">names the gap</span> → says which gap
+          <div class="acts"><a class="btn">Accept</a><a class="btn">Reject</a><a class="btn">Edit</a></div></div>
+        <div class="card"><div class="k you">Comment · you · S4</div>Is this the main result or the secondary one?</div>
+        <div class="card"><div class="k cite">Evidence · S4</div>VALUE 2.1 · main estimate</div>
+      </div>
+    </div>
+    <h3 class="part">Runs of this step</h3>
+    <div class="row"><span class="n"><code>run-revise-c1-p1</code></span><span class="d">pass 2, on draft v2.2</span><span class="st ok">done</span><a class="btn">Open</a></div>
+    <div class="row"><span class="n"><code>run-section-c2</code></span><span class="d">a whole-Section pass</span><span class="st ok">done</span><a class="btn">Open</a></div>
+  </div>
+  <nav class="rail"></nav>
+</div>
+
+<p class="screen-label">Screen C · Studio (a right-rail section)</p>
+<div class="win">
+  <nav class="rail"></nav>
+  <div class="page" style="padding-top:20px">
+    <h1 style="margin-top:0">t00_abstract<span class="sec">Studio</span></h1>
+    <nav class="views"><span class="pin">11</span><a aria-current="page">This Section</a><a>Paper</a></nav>
+    <div class="aim"><b>Aim</b>Placeholder: the problem, design, result and contribution, in one paragraph.</div>
+    <div class="verbs"><textarea placeholder="what to talk through and sketch"></textarea><a class="btn">Talk and sketch</a></div>
+    <div class="row"><span class="pic"></span><span class="n"><code>s20</code> t00-abstract</span><span class="d">how the abstract argues, as a canvas</span><span class="st">agreed</span><a class="btn">Draw</a><a class="btn">Mind map</a></div>
+    <div class="row"><span class="pic"></span><span class="n"><code>s02</code> story</span><span class="d">the paper's questions and claims</span><span class="st">agreed</span><a class="btn">Draw</a><a class="btn">Mind map</a></div>
+    <div class="row"><span class="pic"></span><span class="n"><code>s04</code> paper-flow</span><span class="d">Sections in reader order</span><span class="st">shaping</span><a class="btn">Draw</a><a class="btn">Mind map</a></div>
+  </div>
+  <nav class="rail"></nav>
+</div>
+
+<p class="screen-label">Screen D · Delivery (a right-rail section)</p>
+<div class="win">
+  <nav class="rail"></nav>
+  <div class="page" style="padding-top:20px">
+    <h1 style="margin-top:0">t00_summary<span class="sec">Delivery</span></h1>
+    <div class="aim"><b>Aim</b>Placeholder: what the reader learns from this Section, in 250 words.</div>
+    <div class="ask"><span class="pin">12</span><div class="t">Waiting for you: check the built files, then mark it sent.</div><a class="btn">Check</a><a class="btn go">Mark sent</a></div>
+    <h3 class="part">Built from draft v0.1 <span class="pin">13</span></h3>
+    <div class="row"><span class="pic"></span><span class="n">Web</span><span class="d"><code>index.html</code></span><span class="st ok">current</span><a class="btn">Open</a></div>
+    <div class="row"><span class="pic"></span><span class="n">LaTeX</span><span class="d"><code>t00_summary.pdf</code> · <code>.tex</code></span><span class="st ok">current</span><a class="btn">Open</a></div>
+    <div class="row"><span class="pic"></span><span class="n">Word</span><span class="d"><code>t00_summary.docx</code></span><span class="st ok">current</span><a class="btn">Open</a></div>
+    <div class="verbs" style="margin-top:14px"><a class="btn">Build again</a><a class="btn">Render pages</a><a class="btn">Read back</a></div>
+  </div>
+  <nav class="rail"></nav>
+</div>
+
+<p class="screen-label">The seven steps, old page → new page</p>
+<table class="map">
+<tr><th>old tab (Work Details)</th><th>new place</th><th>what you do there</th></tr>
+<tr><td>Studio</td><td>right-rail › Studio</td><td>Talk and sketch; the Section's topics, then the paper's</td></tr>
+<tr><td>1 · Plan</td><td>Work › 1 · Plan</td><td>Sign; Revise the plan; Scratch under each paragraph</td></tr>
+<tr><td>2 · Write</td><td>Work › 2 · Write</td><td>type your sentences in place; Write the draft</td></tr>
+<tr><td>3 · Evidence</td><td>Work › 3 · Evidence</td><td>text left, evidence right; tick each ask; Find evidence</td></tr>
+<tr><td>4 · Display</td><td>Work › 4 · Display</td><td>each Table or Figure a row; Accept; Build</td></tr>
+<tr><td>5 · Revise</td><td>Work › 5 · Revise</td><td>Accept, Reject, Edit each card; comment; Revise again</td></tr>
+<tr><td>Delivery</td><td>right-rail › Delivery</td><td>Check; Mark sent; Build again; Read back</td></tr>
+<tr><td>Disk · Runs panel</td><td>each step's foot + Work › Runs</td><td>New Run; Open a Run</td></tr>
+<tr><td>Report › Findings (iframe)</td><td>Report › Text</td><td>read the adopted text, paragraph by paragraph</td></tr>
+</table>
+</div>
+
+<aside class="notes">
+<h2>What changed, rule by rule</h2>
+<ol>
+<li><span><b>Studio and Delivery leave the view-button-list for the right-rail.</b> They are sections (think, hand over), not views of Work. Studio reads the topics that name this Task plus the paper's own; Delivery reads the Board's <code>delivery/&lt;job&gt;/&lt;task&gt;/</code>.</span><small>Rule 2, one place one job; JL: "the studio should be in the right rail right?"</small></li>
+<li><span><b>Work's view-button-list is the five steps and Runs.</b> Each carries its state as a word: sign, done, next, none called.</span><small>Rule 5, every mark has a word; the old chips become words.</small></li>
+<li><span><b>goal-line (Aim) under the view-button-list</b>, read from the face's <code>reader-question:</code>, the same in every view.</span><small>Rule 1; the view-button-list stays right under the title-&amp;-section (JL 261029).</small></li>
+<li><span><b>What waits for you is one row with its verb.</b> Sign writes only the <code>approved:</code> line; until now you typed ✅ by hand. 🙋 New action, your call.</span><small>Five-second test, question 4: what can I do.</small></li>
+<li><span><b>The prompt becomes a verb.</b> Your notes in one line, then "Revise the plan" copies the prompt with them. The long prompt text stays off the page.</span><small>No hints; JL 260927 "as concise as possible".</small></li>
+<li><span><b>The plan is drawn natively</b>: paragraph, points, and its Scratch note right under it. No iframe, no fold, no card in a card.</span><small>Rule 4, content first; JL: "so this is like something embeded here?"</small></li>
+<li><span><b>The old folded cards become one line each</b> with Open, which opens a popup over the page.</span><small>Rule 4: "list it or remove it"; a large view opens in a popup.</small></li>
+<li><span><b>Runs sit at the foot of their step</b>; Work › Runs lists all of them. The right side now belongs to the right-rail.</span><small>Replaces the squeezed vertical "Disk · Runs" tab.</small></li>
+<li><span><b>Every step has the same shape</b>: waiting row, verbs, the result, its Runs.</span><small>One pattern to learn, seven times.</small></li>
+<li><span><b>Revise keeps its text-left, cards-right reading</b>, now with no box around the text and four switches above.</span><small>JL 261021 rulings on Revise kept as they are.</small></li>
+<li><span><b>Studio's groups: This Section, Paper.</b> One row per topic, picture left, at most three verbs.</span><small>JL 261029: one item per row, no "All".</small></li>
+<li><span><b>Delivery: only you mark it sent.</b> Check, then Mark sent writes the row in the Board's <code>delivery.md</code>.</span><small>haipipe-delivery: only a person marks a delivery sent.</small></li>
+<li><span><b>Each built file is a row</b> with its state word and Open (the preview in the popup, never inline).</span><small>The four old boxes (build, render, send, read back) become verbs.</small></li>
+<li><span><b>right-rail lines say each section's verb</b> (check, do, think, hand over); on a phone the right-rail shows as one line above the view-button-list.</span><small>Rule 3; haipipe-ui Page parts 4.</small></li>
+</ol>
+<h2>Report</h2>
+<ol start="15">
+<li><span><b>Report › MindMap · Text · Status.</b> Text is the adopted text, natively; MindMap keeps the Text, Steps, Delivered branches.</span><small>JL: "I should see the outcome as well."</small></li>
+</ol>
+</aside>
+</div>
+</body>
+</html>

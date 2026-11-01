@@ -1,0 +1,23 @@
+{
+ "topic": "s03-topic-lifecycle",
+ "style": "sketch-notes",
+ "source": "s03-topic-lifecycle.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Who says a topic is agreed?",
+   "image": "slides/idea-01-who-says-agreed.png",
+   "content": "Headline (top-left, large): \"Who says a topic is agreed?\"\nThree option cards across the middle, joined by a wavy line:\n Card A \"Only JL\": one person holding a big rubber stamp\n Card B \"The person it is for\", circled in orange with a small tag \"leaning\": a person holding a card with a name line on it\n Card C \"Anyone, recorded\": three people beside an open notebook\nBottom-right sticky note with a big question mark: \"Still open: an Owner line on the face?\"\nFocal point: card B.",
+   "notes": "Leaning: the second (proposal 261029): the face names that person, the pass records the word. Still open: Does a topic need an Owner line on its face?",
+   "leaf": "n07"
+  },
+  {
+   "id": "02",
+   "idea": "What does a closed topic leave behind?",
+   "image": "slides/idea-02-closed-topic.png",
+   "content": "Headline (top-left, large): \"What does a closed topic leave behind?\"\nThree option cards across the middle, joined by a wavy line:\n Card A \"Kept, folded\", circled in orange with a small tag \"leaning\": a folder folded shut with a grey ribbon\n Card B \"Moved to _closed/\": a folder sliding into a box labelled \"_closed\"\n Card C \"Deleted\": a folder in a bin, two small arrows out of it to labels \"Report\" and \"delivery/\"\nBottom-right sticky note: \"Links from other topics still land\"\nFocal point: card A.",
+   "notes": "Leaning: kept, folded (proposal 261029): Links from other topics still land, its Decided lines stay citable. Still open: Is a closed topic ever deleted?",
+   "leaf": "n12"
+  }
+ ]
+}

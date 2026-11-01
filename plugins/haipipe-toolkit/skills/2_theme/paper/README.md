@@ -80,8 +80,8 @@ paper/                              by the level each serves
 │                                   (scripts/paper_ladder.py), the one-time carry-over (scripts/carry_over/)
 ├── haipipe-paper-workflow/         all: the run cards by <Level> › <Space>, gates G0-G2 (Board) and G3-G5 (version)
 ├── workbench-paper/                all: the paper theme on the shared frame; ref/workbench-table.md
-├── haipipe-paper-ideation/         Board: studio/s01-ideation/ and the ideation Questions
-├── haipipe-paper-related/          Board: studio/s10-s19, the closest work: one map, one topic per type
+├── haipipe-paper-ideation/         Board: s01-ideation/ and the ideation Questions
+├── haipipe-paper-related/          Board: s10-s19, the closest work: one map, one topic per type
 ├── haipipe-paper-story/            Board: each telling as a studio topic, its Questions, the Narrative
 ├── haipipe-paper-venue/            Board: venues/<venue>/ and the shared Venue Pages (QBv bank)
 ├── haipipe-paper-comments/         version: comments reports, Review Items (scripts/review_items.py)

@@ -16,7 +16,7 @@ python3 <haipipe-project>/scripts/project.py audit <project>|--all [--root <SPAC
 One read-only pass over a Project: the root audit below, the ladder audit (§ Any level), a Job-centred
 v0.8.1 layout or ticket header, and the Tools gate with its contract-drift check (the decided Theme
 names in haipipe-draft `src/themes.py` against this audit's worlds). Each finding names the step of
-`update` that fixes it (`root`, `themes`, `convert`, `runs`, `faces`) or `person` when only a person
+`update` that fixes it (`root`, `themes`, `convert`, `runs`, `studio`, `faces`) or `person` when only a person
 can decide (fn/update.md § A Project · the steps). A Project with no finding prints `clean`.
 
 ## The root alone

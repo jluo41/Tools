@@ -2990,11 +2990,13 @@ def page_roadmap_html(page_src, root):
                 '<iframe class=page-roadmap-frame title="%s" referrerpolicy=no-referrer data-src="%s"></iframe>'
                 % (url, _e(label), url))
 
-    logic = folder / "studio" / ("%s-roadmap.excalidraw" % stem)
+    beside = lambda name: folder / name if (folder / name).is_file() or not (folder / "studio" / name).is_file() \
+        else folder / "studio" / name                     # beside the face; an old studio/ copy still reads (JL 261031)
+    logic = beside("%s-roadmap.excalidraw" % stem)
     logic_body = frame(logic, True, "Logic") if logic.is_file() and rel(logic) else (
         '<div class=space-empty>No logic drawing yet. Draw the logic in the Runs panel copies the '
         'prompt that draws this Section&#39;s logic tree.</div>')
-    smap = folder / "studio" / ("%s-sections.excalidraw" % stem)
+    smap = beside("%s-sections.excalidraw" % stem)
     if smap.is_file() and rel(smap):
         plan = latest_outline(plan_dir(folder), stem)
         items = folder / "draft" / ("%s-evidence-items.md" % stem)

@@ -1,0 +1,16 @@
+run: run-write-skill-md
+kind: soft
+role: make
+type: write
+scope: null
+target: skill-md
+ticket: run-write-skill-md.md
+skill: haipipe-studio
+agent: claude
+signs: null
+status: planned
+passes: []
+writes:
+- plugins/haipipe-toolkit/skills/2_theme/work/workbench-work/SKILL.md
+- plugins/haipipe-toolkit/skills/2_theme/work/workbench-work/CHANGELOG.md
+feeds: []

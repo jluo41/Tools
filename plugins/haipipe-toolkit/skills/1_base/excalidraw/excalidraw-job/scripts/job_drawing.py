@@ -46,6 +46,7 @@ except ImportError:                                           # the drawing stil
     yaml = None
 
 GAP = 130
+TOPIC = re.compile(r"^s\d{2}[-_]")             # an sNN-<topic>/ folder, beside a level's Jobs or Tasks (JL 261030)
 MOST_RUNS, MOST_TASKS, MOST_PICTURES, MOST_ROWS = 8, 14, 4, 14
 
 # Chart colour (JL 261019: "do not use this black and white anymore"): the dataviz skill's reference palette, light
@@ -54,6 +55,17 @@ MOST_RUNS, MOST_TASKS, MOST_PICTURES, MOST_ROWS = 8, 14, 4, 14
 PALETTE = {"blue": "#2a78d6", "orange": "#eb6834", "aqua": "#1baf7a", "yellow": "#eda100", "magenta": "#e87ba4",
            "green": "#008300", "violet": "#6250d6", "red": "#e34948", "grey": "#c3c2b7"}
 BLUE_LIGHT = "#86b6ef"                       # blue step 250: a "before" bar beside its blue "after"
+
+
+def topic_dirs(level: Path) -> list[Path]:
+    """The level's sNN topics: beside its Jobs or Tasks (JL 261030), then any in an older studio/."""
+    return [p for holder in (level, level / "studio") if holder.is_dir() for p in sorted(holder.iterdir())
+            if p.is_dir() and TOPIC.match(p.name)]
+
+
+def topic_owner(topic: Path) -> Path:
+    """The Block, Job or Task an sNN belongs to: the folder it sits in, or the one above an older studio/."""
+    return topic.parent.parent if topic.parent.name == "studio" else topic.parent
 
 
 def bar_colors(spec: dict, labels: list[str], names: dict | None = None) -> list[str]:
@@ -261,12 +273,12 @@ def formulas(lab: dict) -> list[str]:
 
 
 def pictures(job: Path) -> list[Path]:
-    """The pictures in the Job's own folders and Results (not a studio/ or a hidden or _ folder)."""
+    """The pictures in the Job's own folders and Results (not a studio/, an sNN topic, or a hidden or _ folder)."""
     out = []
     for p in sorted(job.rglob("*")):
         parts = p.relative_to(job).parts[:-1]
         if p.suffix.lower() in PICTURES and p.is_file() and \
-                not any(q.startswith((".", "_")) or q in ("studio", "history") for q in parts):
+                not any(q.startswith((".", "_")) or q in ("studio", "history") or TOPIC.match(q) for q in parts):
             out.append(p)
     return out
 
@@ -365,7 +377,7 @@ def states(runs: list[dict]) -> str:
 def task_topics(block: Path) -> dict:
     """Which topic draws each Task: a face's `task:` yaml names it, `<jNN_job>/<tNN_task>` (excalidraw-task's)."""
     out = {}
-    for face in sorted((block / "studio").glob("s*/*.md")):
+    for face in [f for d in topic_dirs(block) for f in sorted(d.glob("*.md"))]:
         m = re.search(r"```yaml\s*\n(task:.*?)```", jr.read(face), re.S)
         if m and yaml:
             try:
@@ -567,7 +579,7 @@ def detail_frame(d: Drawing, info: dict, tasks: list[dict], topics: dict, cfg: d
         found = w.get("found") or finding(t, cfg)
         body.append(f"Found: {found}" if found else "❓ no finding written")
         if here:
-            body.append(f"→ details: its own topic, studio/{here}/; the Task page, "
+            body.append(f"→ details: its own topic, {here}/; the Task page, "
                         f"{t['row']['task'].parent.name}/{t['name']}/{t['name']}.md")
         boxes.append((f"🧩 {t['name']}", body, INK))
     task_rows = [boxes[k:k + 2] for k in range(0, len(boxes), 2)]
@@ -1467,9 +1479,10 @@ def draw(topic: Path) -> Path:
     topic = topic.resolve()
     face = topic / f"{topic.name}.md"
     cfg = face_cfg(face)
-    job = topic.parents[1] / str(cfg.get("name") or "")
+    owner = topic_owner(topic)                        # the Block, or the Job beside whose Tasks it sits (JL 261030)
+    job = owner if owner.name == cfg.get("name") else owner / str(cfg.get("name") or "")
     if not cfg.get("name") or not job.is_dir():
-        raise SystemExit(f"{face}: its job: yaml names no Job of {topic.parents[1].name} (job.name)")
+        raise SystemExit(f"{face}: its job: yaml names no Job of {owner.name} (job.name)")
     out, rows = draw_job(job, topic / f"{topic.name}.excalidraw", cfg,
                          f"excalidraw-job scripts/job_drawing.py {topic.name}")
     text = jr.read(face)
@@ -1518,15 +1531,18 @@ def make(job: Path, nn: int | None = None, dry: bool = False) -> Path:
     job = job.resolve()
     block = job.parent
     if job.name in jr.covered(block):                         # one topic per Job: a results or a whole-Job topic
-        have = [f.parent.name for f in (block / "studio").glob("s*/*.md")
+        have = [f.parent.name for d in [*topic_dirs(block), *topic_dirs(job)] for f in sorted(d.glob("*.md"))
                 if job.name in (jr.results_yaml(f).get("jobs") or []) or face_cfg(f).get("name") == job.name]
         raise SystemExit(f"{job.name} already has a topic: {', '.join(have)}; redraw it (draw), or adopt a results topic")
-    taken = jr.used(block)
+    taken = set(jr.used(block)) | {int(d.name[1:3]) for d in [*block.glob("j[0-9]*_*/s[0-9][0-9][-_]*"),
+                                   *block.glob("j[0-9]*_*/t[0-9]*_*/s[0-9][0-9][-_]*"),
+                                   *block.glob("j[0-9]*_*/**/studio/s[0-9][0-9]*")]
+                                   if d.is_dir()}               # one sNN numbering across the Block (JL 261028)
     nn = nn or next((n for n in range(jr.BAND[0], jr.BAND[1] + 1) if n not in taken), None)
     if nn is None or nn in taken:
         raise SystemExit(f"{block.name}: no free number in s{jr.BAND[0]}-s{jr.BAND[1]}; name one with --nn")
     slug = re.sub(r"[^a-z0-9]+", "-", job.name.lower()).strip("-")[:48].rstrip("-")
-    topic = block / "studio" / f"s{nn:02d}-{slug}"
+    topic = block / f"s{nn:02d}-{slug}"                              # beside the Block's Jobs (JL 261030)
     if dry:
         print(f"would make {topic.relative_to(block)}  ← {job.name}")
         return topic
@@ -1538,6 +1554,7 @@ def make(job: Path, nn: int | None = None, dry: bool = False) -> Path:
     feeds = sorted(set(re.findall(r"q\d\d_[A-Za-z0-9_]+", answers)) |
                    {q.name for q in (block / "reports").glob("q[0-9][0-9]_*") if q.is_dir() and q.name[1:3] in ids})
     face = [title, "=" * len(title), "", "**Tags:** `Jobs`", "", "**Stage:** explore", "",
+            f"**At:** {job.name.split('_')[0]}", "",
             f"**Topic:** The Job `{job.name}` as one drawing: why it exists, what goes in and comes out, what it "
             "concluded, and its tables, formulas and pictures, read from its face, its Task pages and its Runs on "
             "every build (excalidraw-job).", "",
@@ -1545,13 +1562,13 @@ def make(job: Path, nn: int | None = None, dry: bool = False) -> Path:
             "", f"**Job:** [{job.name}]({jr.rel(jr.face_of(job) or job, topic)})", "", "",
             "Words", "-----", "", WORDS, "", *job_yaml(job.name), "", BEGIN, END, "", "",
             "Files", "-----", "", *files_block(topic, builder), "", "", "Decided", "-------", "",
-            f"s{nn:02d}-D01 · One Block topic draws the whole Job: why, in and out, what it concluded, its tables and "
+            f"s{nn:02d}-D01 · One topic beside the Jobs draws the whole Job: why, in and out, what it concluded, its tables and "
             "pictures (asked 261012)", "", "", "Open", "----", "",
             "1. Write the Job's aim and its reading in the yaml above.", "",
             "(write here, or mark the drawing in red)", ""]
     (topic / f"{topic.name}.md").write_text("\n".join(face), encoding="utf-8")
     (topic / builder).write_text(builder_text(topic, title, builder), encoding="utf-8")
-    groups = block / "studio" / "_groups.txt"
+    groups = block / "studio" / "_groups.txt" if (block / "studio").is_dir() else block / "_studio_groups.txt"
     lines = jr.read(groups).splitlines() if groups.is_file() else [
         "# Studio groups of this Block, in button order. The workbench writes this file when a group is",
         "# made, moved or deleted; a group's topics are the ones whose **Tags:** line names it."]
@@ -1982,7 +1999,7 @@ def draw_group(topic: Path) -> Path:
     """Redraw a family topic: job_results' overview (one row per Job, its numbers from disk), then one ③ frame per
     Job, three to a row; refresh the face's Runs ledger and the preview. The Jobs come from the face's results: yaml."""
     topic = topic.resolve()
-    block = topic.parents[1]
+    block = topic_owner(topic)
     face = topic / f"{topic.name}.md"
     res = jr.results_yaml(face)
     jobs = [block / str(n) for n in (res.get("jobs") or []) if (block / str(n)).is_dir()]

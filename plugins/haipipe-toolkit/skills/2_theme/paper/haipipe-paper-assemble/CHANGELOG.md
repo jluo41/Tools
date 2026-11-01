@@ -1,4 +1,36 @@
-## 0.12.2 · 2026-10-28 · Word displays at the top, never inside a sentence (Paper-LLMRecPhy-Jama)
+## 0.12.4 · 2026-11-01 · b16 review 261101: current paper names; a Lancet Public Health profile
+
+- Version Jobs are named `jNN_writing_v<MMDD>_<desk>` (from j11), no longer `jNN_v<MMDD>_<desk>` (layout tree,
+  `paper-build.toml` example, build_delivery.py comments).
+- New `profiles/lancet-public-health.toml` (Paper-Example session): Lancet labels, numeric citations, natbib
+  `super,sort&compress`, bibstyle `vancouver`; its Word lane reuses the jama-internal-medicine layout.
+- build_delivery.py: a `\citep` or `\citealp` written before punctuation moves after it only when the profile sets
+  `cite_after_punctuation` (Lancet: `.,;:`); it never moves `\citet`, and it carries a `~` tie and adjacent citations
+  along. JAMA profiles have no such key, so their builds are unchanged.
+- build_delivery.py `load_profile`: a `[profile.latex]` table is merged key by key instead of replaced.
+- latex_room_to_docx.py `word_count`: a profile may set `word_count_from` (Lancet: `Introduction`, so the Research in
+  context panel is not counted) and `back_matter_headings` (Lancet: Contributors, Declaration of interests, Data
+  sharing, Acknowledgments, Funding); without them the count is as before.
+- cover_letter.py finds the letter Task in the version folder that `paper-build.toml` `[pages] main` names, then
+  looks as before (Paper-Example session).
+- Assemble tests: 101 pass.
+- Metadata version set from the CHANGELOG (0.12.3) before this bump.
+- lancet-public-health.toml prints the main displays (tables, then figures, after the references): a Lancet first
+  submission is one manuscript with its tables and panels. JAMA's profile keeps include_main_displays = false.
+
+## 0.12.3 · 2026-10-29 · a JAMA IM Research Letter, and AMA references (Paper-Example-JamaIM)
+
+- Word, JAMA IM layout: Key Points and the Abstract are optional, so a Research Letter (no abstract, no key points)
+  builds; the text then starts at its Introduction. A source with an Abstract heading and no Introduction after it
+  still fails.
+- Word: a paper with no supplement writes none (a stale one is removed); the PDF render skips a Word file not written.
+- Word references: `\penalty0` from the .bbl is dropped; unsrtnat's "175\penalty0 (2)" printed "1750 (2)".
+- `styles/jama-ama.bst`, AMA style for JAMA Network journals, from TeX Live's vancouver.bst: sentence-case titles,
+  full page ranges (237-244), the DOI last with no period, the first 3 authors then et al when more than 6, and no
+  date for a misc entry with no year (a statute). A paper selects it with `[profile.latex] bibstyle = "jama-ama"`;
+  `build_delivery.py` copies a style shipped in `styles/` into the LaTeX room before compiling.
+
+## 0.12.2 · 2026-10-28 · Word displays at the top, never inside a sentence (Paper-Example-B)
 
 - Rule (JL 261028: "when doing the word, keep the displays to the top"): `display_float = "top"` is the Word lane's
   rule, not only its default; SKILL.md § Word: every display at the top of a page.
@@ -11,7 +43,7 @@
   a range such as "1.5%-2.5%" into 4 words (the title page overcounted by about 190 words).
 - JAMA title page: "1 table", never "1 tables".
 
-## 0.12.0 · 2026-10-23 · displays where the reader meets them (Paper-AgreeableOpioid-Jama)
+## 0.12.0 · 2026-10-23 · displays where the reader meets them (Paper-Example-Jama)
 
 - `[latex] float_page` (new, default `"top"`): a display alone on its page starts at the top of the page; LaTeX
   centred it before (JL 261023: "make this as the default"). `"center"` keeps the old placement; test
@@ -50,7 +82,7 @@
 - The JAMA Word title page prints the `[paper] authors` byline (names, then affiliations, marks as superscripts;
   `add_byline()`) and "Word count: N" instead of "Main-text source word count".
 - `is_abstract()` knows a ladder Task named `tNN_abstract`, so `abstract_page` breaks the page after the keywords
-  (the Introduction of Paper-AgreeableOpioid-Jama ran on after them in the PDF).
+  (the Introduction of Paper-Example-Jama ran on after them in the PDF).
 - Word placement finds the citing paragraph's own match (the Abstract repeats Results phrases, and the first match
   put Table 2 a page late) and waits for Word to quit, so the next file's preview does not find it still closing.
 - `word_count()` stops at the back matter (Back matter, Article Information, Acknowledgments): the JAMA title page
@@ -70,7 +102,7 @@ Shorter description (532 -> 386 characters): what it does, when to use it, its t
 
 - `tests/test_delivery_gates.py`: 19 tests of the compile order, outline approval and G4 (a filename or another
   revision is not approval, a quoted approval is not current, a renderable Section does not close G4). They lived
-  in `Paper-AgreeablePrescriptionDiscretion/tests/`, where a Block keeps no `tests/` (haipipe-project ladder); they
+  in `Paper-Example-Misq/tests/`, where a Block keeps no `tests/` (haipipe-project ladder); they
   now load the engine on a made-up paper. 95 tests pass with the SPACE venv (`run.sh` finds no venv from the
   Tools-SPACE checkout and falls back to Python 3.9, which lacks `tomllib`).
 
@@ -175,7 +207,7 @@ Shorter description (532 -> 386 characters): what it does, when to use it, its t
   LaTeX: the master loads `fvextra` and makes `verbatim` single-spaced, `\small`, framed, and wrapping at spaces.
   Test: `test_verbatim_prompt_is_a_framed_box_line_by_line`.
 - Word prose and table notes print `\textbf` bold and `\textit`/`\emph` italic (`mark_emphasis()`); they were plain, so
-  "Agreeableness specification" lost its bold and every table's italic "Note." was upright. Test:
+  "<Trait> specification" lost its bold and every table's italic "Note." was upright. Test:
   `test_bold_and_italic_reach_word_prose`.
 - Blind copy has no acknowledgments: every build printed "[Acknowledgments, funding and disclosures are written at
   submission; this build is a draft.]", process text in the deliverable, and on a blind MISQ copy the section itself
@@ -204,7 +236,7 @@ Shorter description (532 -> 386 characters): what it does, when to use it, its t
 - A fragment's page-relative `\input{…}` / `\includegraphics{…}` that is not a display unit is rewritten
   to resolve from the master's folder (`from_master`), with a warning when it reads a retired `_archive`
   lane. Before, it was copied into `sections/` unchanged and latexmk stopped at `File ../../… not found`
-  (Paper-AgreeableRxDiscretion session, 260928). Test: `test_page_relative_inputs_resolve_from_the_master`.
+  (Paper-Example-Misq session, 260928). Test: `test_page_relative_inputs_resolve_from_the_master`.
 - `merge_bib` writes every `&` for LaTeX (`latex_safe_entry`): `&amp;` copied from a web page, a doubled
   `\\&`, or a bare `&` becomes `\&`; inside url/doi `&amp;` becomes `&`; one warning names the key and
   Page. `Sinnenberg_2017` (`MDM Policy &amp; Practice`) had stopped BibTeX. Test:
@@ -227,7 +259,7 @@ Shorter description (532 -> 386 characters): what it does, when to use it, its t
   Test: `test_per_appendix_numbering_restarts_under_each_letter`.
 - A DISPLAY `result.yaml` written in JSON form (valid YAML) is now read like the YAML form (`_result_text`).
   Before, the line readers missed it: the unit was never placed, the fragment kept its page-relative
-  `\input{../../results/...}`, and latexmk stopped (AgreeableRx §5, 260928). Test: `test_json_form_display_result_is_found`,
+  `\input{../../results/...}`, and latexmk stopped (Paper-Example-Misq §5, 260928). Test: `test_json_form_display_result_is_found`,
   failing before the fix.
 
 ## 0.8.1 · 2026-09-27
@@ -245,7 +277,7 @@ Shorter description (532 -> 386 characters): what it does, when to use it, its t
 - **The WORD lane followed the venue for the first time.** The LaTeX lane has always taken `bibstyle` from the profile, while `latex_room_to_docx.py` emitted numbered Vancouver citations (`[1,2]` and a numbered reference list) for EVERY profile, so a MISQ submission was going out with medical-journal citations. Caught by diffing the generated .docx against the co-author's `MISQ-Official-Format.docx`, which is APA author-date throughout (JL 260908: "is the word fit the misq template as well?").
 - New `citation_style = "author-date"`: in-text `(Barnett et al., 2017; Hoppe et al., 2017)`, one/two/three-plus author forms, and an alphabetical unnumbered reference list in APA (`Barnett, M. L., Olenski, A. R., & Jena, A. B. (2017). Title. Journal, 376, 663-673. https://doi.org/...`). Default stays `numeric`, so JAMA and the medical profiles are untouched. Our first two entries now match the official file character for character.
 - New `appendices = "main"`: Appendix A-E sit inside the one manuscript after the references, which is what MISQ does; the separate ONLINE-ONLY supplement file is the medical convention. When appendices go in main the supplement is not written and a stale one is deleted, so it cannot be submitted by mistake.
-- Appendix level-1 headings carry their letter and keep their case (`Appendix A. Agreeableness Task-Specific Prompt`), the way LaTeX's `\appendix` letters them; Word had printed the bare title in caps. All five now match the official file word for word.
+- Appendix level-1 headings carry their letter and keep their case (`Appendix A. <Trait> Task-Specific Prompt`), the way LaTeX's `\appendix` letters them; Word had printed the bare title in caps. All five now match the official file word for word.
 - `title_page_fields = ["title"]` for MISQ: the manuscript is a BLIND copy, so authors, affiliations and the corresponding author leave the file entirely and live in ScholarOne's metadata.
 - Verified side by side against the official-format file: font, size, spacing, margins, line numbers, 16 tables, 2 figures, 38 Heading2s, 5 appendices, 0 numeric citations, 0 front-matter placeholder blocks all identical; in-text author-date 109 vs 111, the 2 extra being the co-author's own inline notes.
 
@@ -253,18 +285,18 @@ Shorter description (532 -> 386 characters): what it does, when to use it, its t
 - **The venue PACK reaches the build.** `haipipe-paper-venue`'s store already held a measured MISQ pack (`venue/playbook-utd-is/MISQ/`, abstract 120-160 words and never past ~185, 4-7 sentences of unstructured prose, 40-50 pages, hero display = the research-model figure, measured 2026-07-08 from published MISQ Research Articles) while `profiles/misq.toml` was written from general knowledge and nothing read the pack (JL 260908: "Don't we have it in the haipipe-paper-venue???"). The profile now carries those numbers with their source path, and `venue_findings()` checks them: the paper's 168-word 10-sentence abstract had passed every gate.
 - **`profiles/misq.toml` said `layout = "generic"`, and "generic" in `latex_room_to_docx.py` WAS the medical-journal title page.** The MISQ .docx shipped `Running title:` with no value under a profile declaring `running_head = false`, an `Article type` line, a main-text word count, a display count, an empty `ARTICLE HIGHLIGHTS` heading, and `TABLES` / `FIGURE LEGENDS` sections after the references. Two of those are build counts inside a deliverable, which JL ruled out on 260908.
 - New profile keys, all defaulting to the previous behaviour so no other venue changes: `title_page_fields` (ordered, validated field names), `author_placeholder`, `displays_position` (`inline` places displays where the prose cites them, with `main_table_prefix` / `main_figure_prefix`), `highlights_heading`, `tables_heading`, `figures_heading`. An empty section heading is never written.
-- **The Abstract page's `### Title` is the title's authority**; `paper-build.toml [paper] title` is the fallback. Both carried one and they drifted, so the PDF and .docx printed "Physician Personality and Opioid Prescribing" while the page said "Physician Agreeableness and Opioid Prescribing". A mismatch is a finding.
+- **The Abstract page's `### Title` is the title's authority**; `paper-build.toml [paper] title` is the fallback. Both carried one and they drifted, so the PDF and .docx printed "<the old title>" while the page said "<the new title>". A mismatch is a finding.
 - The abstract word count cuts the keyword line from the RAW tex first: stripping `\textbf{Keywords:}` leaves the 18 bare keyword words, which counted a 168-word abstract as 186.
 - Both new teeth live INSIDE `display_register()`, not in `build()`, because a tooth the caller has to remember is a tooth the test harness runs without. 28 teeth, all green.
-- Verified against this desk's own MISQ submission (`Bc-MISQ-Round/RD01/feedback/MISQ-PhyTrait-Opioid-Main-v0728.docx`): Times New Roman, 12 pt, `w:line=480 auto` (double), `pgMar 1440` twips (1 in) on all four sides, tables interleaved with the prose. The generated .docx now matches all five.
+- Verified against this desk's own MISQ submission (`Bc-MISQ-Round/RD01/feedback/MISQ-Example-Main-v0728.docx`): Times New Roman, 12 pt, `w:line=480 auto` (double), `pgMar 1440` twips (1 in) on all four sides, tables interleaved with the prose. The generated .docx now matches all five.
 
 # CHANGELOG · haipipe-paper-assemble
 
 ## 0.7.7 · 260908
-- Register tooth for ONE WORK under TWO bib keys. `merge_bib`'s existing tooth only sees a key COLLISION; two pages that spell the same article differently collide on nothing, both reach `\bibitem`, and apalike prints it as `2018a` + `2018b` with two entries in the reference list. Found live in Paper-AgreeablePrescriptionDiscretion: §1 cited `Buchmueller_2018`, §2 cited `buchmueller2018pdmp`, same DOI `10.1257/pol.20160094`, and 0 findings were reported. Identity = the DOI when the entry carries one, else first author's surname + 28 letters of the title, so `{M}edicare` brace-protection and title casing do not hide it. Both keys cited = a finding; the spare staged but uncited = a warning, because nothing prints twice yet. New `bib_entries()` (brace-balanced) + `duplicate_bib_works()`; `display_register` now collects cited keys while it walks `master.tex`. 26 teeth, both proved by expect-fail.
+- Register tooth for ONE WORK under TWO bib keys. `merge_bib`'s existing tooth only sees a key COLLISION; two pages that spell the same article differently collide on nothing, both reach `\bibitem`, and apalike prints it as `2018a` + `2018b` with two entries in the reference list. Found live in Paper-Example-Misq: §1 cited `Buchmueller_2018`, §2 cited `buchmueller2018pdmp`, same DOI `10.1257/pol.20160094`, and 0 findings were reported. Identity = the DOI when the entry carries one, else first author's surname + 28 letters of the title, so `{M}edicare` brace-protection and title casing do not hide it. Both keys cited = a finding; the spare staged but uncited = a warning, because nothing prints twice yet. New `bib_entries()` (brace-balanced) + `duplicate_bib_works()`; `display_register` now collects cited keys while it walks `master.tex`. 26 teeth, both proved by expect-fail.
 
 ## 0.7.6 · 260908
-- Register prints what LaTeX numbers: every unstarred `\section{` per placed fragment is counted in `\input` order (a stub counts one); a page printing more than one is a finding (`inner divisions should be \subsection`), found by Paper-JAMA-Board when md2tex's `###` mapped to `\section` and shifted every later number. 24 teeth.
+- Register prints what LaTeX numbers: every unstarred `\section{` per placed fragment is counted in `\input` order (a stub counts one); a page printing more than one is a finding (`inner divisions should be \subsection`), found by Paper-Example-Jama when md2tex's `###` mapped to `\section` and shifted every later number. 24 teeth.
 
 ## 0.7.5 · 260908
 - Third naming pass (JL 260908 "okay, good, this might be much better"): the Section PAGE id carries the index (`S-<desk>-Main-<N>-<Title>`, `S-<desk>-Appendix-<L>-<Title>`, unnumbered pages keep title only) and the UNIT drops every prefix (`Display<n>-<slug>`); delivery mirrors the page (`displays/<page-id>/<unit>/`). Every engine key is `<page-id>/<unit>`: `copy_unit`, `place_fragment` rewrites, `EMBEDDED_UNITS`/`PLACED_FLOATS`, `label_to_unit`, page-scoped `declared_number`, register rows and findings. New `page_index()` / `is_abstract()`; the JAMA heading kind strips the index; printed section numbers now count unstarred `\section{` in \input order (an unnumbered page prints none). Register teeth: folder index ≠ H1, numbered H1 without index, index on unnumbered H1, prefixed unit, unit without README. Tests and the docx room fixture follow the grammar.
@@ -273,7 +305,7 @@ Shorter description (532 -> 386 characters): what it does, when to use it, its t
 - Display unit folder grammar is `Sec<N>-Display<n>-<slug>` / `App<L>-Display<n>-<slug>` (JL 260908: "it is too long, how about we just use the section index", after 0.7.3's `<PageID>-Display<N>-<slug>`). The register derives the expected prefix from the owning page's H1 via `page_heading()` and flags: legacy names (`S-Display-*`, `<PageID>-Display-*`), a right-shaped name whose Sec/App does not match its page, a page with units but no §/Appendix in its H1. Cost written into the law: a moved compile order renames the units under that page.
 
 ## 0.7.3 · 260908
-- Display unit folder grammar `<PageID>-Display<N>-<slug>` is a register tooth (JL 260908 "unify them", relayed by Paper-JAMA-Board): every unit folder on disk is scanned, a `S-Display-*` or other non-conforming name is a `legacy unit name` finding, a unit without README.md is a finding. New "🗂 Display unit folders" section.
+- Display unit folder grammar `<PageID>-Display<N>-<slug>` is a register tooth (JL 260908 "unify them", relayed by Paper-Example-Jama): every unit folder on disk is scanned, a `S-Display-*` or other non-conforming name is a `legacy unit name` finding, a unit without README.md is a finding. New "🗂 Display unit folders" section.
 
 ## 0.7.2 · 260908
 
@@ -287,7 +319,7 @@ Shorter description (532 -> 386 characters): what it does, when to use it, its t
 
 ## 0.7.1 · 260908
 
-- **Word tables arrive** (Paper-MISQ-Board: 3 of 4 main tables and 7 of 12 appendix tables reached Word as a caption with nothing under it, or not at all). `parse_table_rows` in `scripts/latex_room_to_docx.py` is brace-aware: the column spec is read as a balanced group (`p{3cm}`, `@{}`, `>{…}`, `*{6}{X}`, `tabularx`/`tabular*` width argument, `longtable`, `array`), rows split on `\\` only at depth 0 (`\shortstack` stays one cell), `\multicolumn{n}` pads `n-1` cells. The old regex `\{[^{}]*\}` returned no rows for any nested-brace spec.
+- **Word tables arrive** (Paper-Example-Misq: 3 of 4 main tables and 7 of 12 appendix tables reached Word as a caption with nothing under it, or not at all). `parse_table_rows` in `scripts/latex_room_to_docx.py` is brace-aware: the column spec is read as a balanced group (`p{3cm}`, `@{}`, `>{…}`, `*{6}{X}`, `tabularx`/`tabular*` width argument, `longtable`, `array`), rows split on `\\` only at depth 0 (`\shortstack` stays one cell), `\multicolumn{n}` pads `n-1` cells. The old regex `\{[^{}]*\}` returned no rows for any nested-brace spec.
 - Supplement displays are numbered (`Table S1.`, `Figure S1.`; profile keys `supplement_table_prefix` / `supplement_figure_prefix`) instead of printing an unnumbered caption.
 - New tooth `build.checks.tables_rendered`: `<w:tbl>` count per `.docx` vs the table displays emitted vs the master's table floats; a mismatch exits non-zero after the files are written. `tests/test_latex_room_to_docx.py` drives the real engine over a room with the failing column specs (3 tests, incl. the expect-fail on the old regex).
 
@@ -295,7 +327,7 @@ Shorter description (532 -> 386 characters): what it does, when to use it, its t
 
 JL: "you go ahead to think how to make it as clean as enough." One pass over the whole engine.
 
-- **Venue profiles reach LaTeX.** `profiles/<name>.toml` now carries a `[latex]` table read by `write_master()` (spacing · bibstyle · displays inline|end via endfloat · appendix_newpage · title_page inline|separate · abstract_page · running_head); `[profile]` in paper-build.toml overrides single keys. New `profiles/misq.toml` (double-spaced, blind title page, abstract page, lettered appendices on new pages), asked for by Paper-MISQ-Board after JL: "did you use the MISQ template?". A paper with no profile builds as before.
+- **Venue profiles reach LaTeX.** `profiles/<name>.toml` now carries a `[latex]` table read by `write_master()` (spacing · bibstyle · displays inline|end via endfloat · appendix_newpage · title_page inline|separate · abstract_page · running_head); `[profile]` in paper-build.toml overrides single keys. New `profiles/misq.toml` (double-spaced, blind title page, abstract page, lettered appendices on new pages), asked for by Paper-Example-Misq after JL: "did you use the MISQ template?". A paper with no profile builds as before.
 - **A display prints once in the whole document.** `prescan_embedded()` + `EMBEDDED_UNITS`/`PLACED_FLOATS`: a page that `\ref`s a float another page embeds never re-inputs it, whichever page comes first (tooth parametrised over both orders).
 - **The reader's document is clean for every profile.** The header carries the status word only; a not-ready page prints its own numbered heading plus one neutral line, `_stub()`; reasons, counts and build time live in build-manifest.json and the register.
 - **Bib key collisions warn.** Same key, different entry on two pages → document `warnings` (first page's entry kept) in the manifest and on the console.
@@ -304,7 +336,7 @@ JL: "you go ahead to think how to make it as clean as enough." One pass over the
 
 ## 0.6.2 · 260908
 
-- Readiness rule (JL 260908, second defect found by Paper-MISQ-Board): a display unit gates a page only when the page CITES it (unit name in the fragment or `.md`, or a `\ref` to one of its `float.tex` labels) AND the unit is LIVE (no `state: 🟣`, not retired/folded under `## Placement`). Uncited or folded units are reported under the page's new `warnings` and never block. Before: every folder under `display/` demanded a preview.pdf, so a folded `S-Display-3a-funnel` blocked a fully written §4.
+- Readiness rule (JL 260908, second defect found by Paper-Example-Misq): a display unit gates a page only when the page CITES it (unit name in the fragment or `.md`, or a `\ref` to one of its `float.tex` labels) AND the unit is LIVE (no `state: 🟣`, not retired/folded under `## Placement`). Uncited or folded units are reported under the page's new `warnings` and never block. Before: every folder under `display/` demanded a preview.pdf, so a folded `S-Display-3a-funnel` blocked a fully written §4.
 - `warnings` per page in the manifest and on the console: also `fragment may be stale` when the page `.md` is newer than its `delivery/latex/<page>.tex` (a warning, not a blocker; mtimes lie after clone or rename sweeps).
 - Four teeth added: uncited-no-preview does not gate; folded-no-preview does not gate; cited live no-preview still gates; stale fragment warns and stays ready.
 
@@ -312,7 +344,7 @@ JL: "you go ahead to think how to make it as clean as enough." One pass over the
 
 Paper-level opt-ins in `scripts/build_delivery.py`, driven by `paper-build.toml`; a paper that declares none of them builds exactly as 0.6.0.
 
-- `[evidence] draft_includes_unready = true`: a DRAFT prints every page that has a body fragment, prefixed `[DRAFT PAGE · reason]`, instead of a titled stub. Readiness accounting, the SUBMISSION-CANDIDATE rule, and the display register are unchanged. First user: Paper-AgreeableOpioid-Jama, whose 11 pages are all v0.x but hold a complete draft.
+- `[evidence] draft_includes_unready = true`: a DRAFT prints every page that has a body fragment, prefixed `[DRAFT PAGE · reason]`, instead of a titled stub. Readiness accounting, the SUBMISSION-CANDIDATE rule, and the display register are unchanged. First user: Paper-Example-Jama, whose 11 pages are all v0.x but hold a complete draft.
 - `[source] preamble = "preamble.tex"`: a paper-owned preamble beside `paper-build.toml` is inlined into the generated master after the engine's own packages, so a page fragment's `longtable`, `seqsplit`, `needspace`, `tikz`, column types, or unicode maps no longer break the whole-paper compile. The engine also always provides `\displayroot` (`displays/`) and loads `xcolor`.
 - `venue_profile = "jama-internal-medicine"` now shapes the master the JAMA Word renderer parses: a title-page `center` block instead of `\maketitle`, a `\section{Introduction|Methods|Results|Discussion}` boundary before any main fragment that lacks it, and the Abstract page's own `\section*{Key Points}` / `\section*{Abstract}` kept rather than rewritten into an `abstract` environment.
 - Display units in the flat layout (`figure.pdf`, `table-body*.tex`, `float.tex` at the unit root) are copied and retargeted like `assets/` units; a fragment's `\input` of `display/<unit>/float` or `…/table-body` resolves either way.
@@ -323,13 +355,13 @@ JAMA supplement numbering (same day): under `venue_profile = "jama-internal-medi
 
 Clean deliverables (same day, JL: "the delivered pdf or word must be clean"): the in-body `[DRAFT PAGE · reason]` tag that `draft_includes_unready` printed is gone for every profile; a page's not-ready reasons live only in `build-manifest.json` and the display register. Under the JAMA profile the running header carries the status word alone (`DRAFT` / `SUBMISSION-CANDIDATE`), without page counts or build time; other profiles keep the 0.6.0 header. Suite 10/10.
 
-Verified on both papers: Paper-AgreeableOpioid-Jama 25-page PDF + main and supplement DOCX (latexmk 0, docx 0); Paper-AgreeablePrescriptionDiscretion unchanged at 23 pages, 5/14 ready, `\maketitle` and `abstract` environment intact.
+Verified on both papers: Paper-Example-Jama 25-page PDF + main and supplement DOCX (latexmk 0, docx 0); Paper-Example-Misq unchanged at 23 pages, 5/14 ready, `\maketitle` and `abstract` environment intact.
 
 ## 0.6.0 · 260908
 
 - One engine `scripts/build_delivery.py` (was paper-local `delivery/build.py`
   in every paper); papers install the thin wrapper `ref/build.py.wrapper` as
-  `delivery/build.py`. Three behaviors found by Paper-MISQ-Board in one paper
+  `delivery/build.py`. Three behaviors found by Paper-Example-Misq in one paper
   copy now ship for all: A display printed once (`DEDUPE_EMBEDDED_FLOATS`),
   B a not-ready page keeps its number via `page_heading()`, C the display
   register `delivery/display-register.md` + manifest `displays` block counting

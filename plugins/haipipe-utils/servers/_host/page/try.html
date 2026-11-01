@@ -10,101 +10,323 @@
      the event: what arrives (raw), the input JSON the preprocess step makes of it, and the output by local hour; its
      gallery is real meals of every kind of raw (GET /try/<noun>/events), each run live beside the answer frozen when the
      gallery was built. A lane without one sends its box to /normalize/batch and shows its input gallery
-     (GET /try/<noun>/gallery). Add ?run=all to run every card on load, or ?q=<lines> to send the box on load. -->
+     (GET /try/<noun>/gallery). Add ?run=all to run every card on load, or ?q=<lines> to send the box on load.
+     Redesigned 261027 (JL: "能不能把 UI 变得更好一些，变成得奖级别的 UI"): a header with the API's state, the flow as
+     steps, a composer card, the answer's headline numbers, a badge per match, gallery cards that open on a click.
+     Every element id the script reads is kept, so each lane works as before. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root { --bg:#ffffff; --fg:#1e1e1e; --mut:#6b7280; --line:#e5e7eb; --card:#fafafa; --key:#fff3bf; --ok:#15803d; --bad:#b91c1c; --code:#f4f4f5; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#16181d; --fg:#e7e7ea; --mut:#9aa0aa; --line:#2c2f36; --card:#1d2026; --key:#4a4220; --ok:#4ade80; --bad:#f87171; --code:#22252c; } }
-:root[data-theme="dark"] { --bg:#16181d; --fg:#e7e7ea; --mut:#9aa0aa; --line:#2c2f36; --card:#1d2026; --key:#4a4220; --ok:#4ade80; --bad:#f87171; --code:#22252c; }
-* { box-sizing: border-box; }
+:root {
+  --bg:#f6f5f2; --surface:#ffffff; --sunk:#f1efeb; --ink:#14161a; --mut:#6b6f76; --faint:#9a9ea5; --line:#e6e3dd;
+  --accent:#2f9e44; --accent-ink:#ffffff; --accent-soft:#e7f5ea;
+  --ok:#2b8a3e; --ok-soft:#e6f4ea; --warn:#b26a00; --warn-soft:#fff3db; --bad:#c92a2a; --bad-soft:#fdeaea;
+  --code-bg:#fbfaf8; --shadow:0 1px 2px rgba(20,22,26,.04), 0 8px 24px rgba(20,22,26,.06);
+  --radius:16px; --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg:#101113; --surface:#17191c; --sunk:#1d2024; --ink:#ececee; --mut:#a1a5ad; --faint:#70747c; --line:#2a2d32;
+  --accent-soft:#16301d; --ok:#69db7c; --ok-soft:#173022; --warn:#ffc078; --warn-soft:#3a2a12; --bad:#ff8787; --bad-soft:#3a1a1a;
+  --code-bg:#14161a; --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35); } }
+:root[data-theme="dark"] {
+  --bg:#101113; --surface:#17191c; --sunk:#1d2024; --ink:#ececee; --mut:#a1a5ad; --faint:#70747c; --line:#2a2d32;
+  --accent-soft:#16301d; --ok:#69db7c; --ok-soft:#173022; --warn:#ffc078; --warn-soft:#3a2a12; --bad:#ff8787; --bad-soft:#3a1a1a;
+  --code-bg:#14161a; --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35); }
+* { box-sizing:border-box; }
 [hidden] { display:none !important; }
-body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.5 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; }
-main { max-width:1280px; margin:0 auto; padding:24px 16px 64px; }
-h1 { font-size:24px; margin:0 0 4px; } h2 { font-size:18px; margin:32px 0 8px; } h3 { font-size:15px; margin:0 0 4px; }
-.mut { color:var(--mut); } .small { font-size:13px; }
-textarea { width:100%; min-height:130px; padding:10px; font:14px/1.45 ui-monospace, Menlo, monospace; color:var(--fg); background:var(--code); border:1px solid var(--line); border-radius:8px; }
-input[type=datetime-local] { font:inherit; font-size:14px; padding:4px 8px; border:1px solid var(--line); border-radius:8px; background:var(--code); color:var(--fg); }
-button, .btn { font:inherit; font-size:14px; padding:6px 14px; border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--fg); cursor:pointer; }
-button.go { background:var(--key); font-weight:600; }
-button:disabled { opacity:.5; cursor:default; }
-.row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin:8px 0; }
-.two { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-.three { display:grid; grid-template-columns:1fr 1fr 1.25fr; gap:12px; }
-@media (max-width: 860px) { .two, .three { grid-template-columns:1fr; } }
-.three > div, .two > div { min-width:0; }
-pre { margin:0; padding:10px; background:var(--code); border:1px solid var(--line); border-radius:8px; font:12.5px/1.45 ui-monospace, Menlo, monospace; white-space:pre; overflow:auto; max-height:460px; }
-table { border-collapse:collapse; width:100%; font-size:13px; }
-th, td { text-align:left; padding:5px 8px; border-bottom:1px solid var(--line); vertical-align:top; }
-th { color:var(--mut); font-weight:600; }
-tr.total td { font-weight:600; background:var(--key); }
-tr.check td { font-size:12.5px; }
-.cards { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-.cards.wide { grid-template-columns:1fr; }
-@media (max-width: 860px) { .cards { grid-template-columns:1fr; } }
-.card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:12px; display:flex; flex-direction:column; gap:8px; min-width:0; }
-.tag { display:inline-block; font-size:12px; padding:1px 8px; border-radius:999px; border:1px solid var(--line); color:var(--mut); }
+html { -webkit-text-size-adjust:100%; }
+body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.55 Inter, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing:antialiased; }
+a { color:var(--accent); text-decoration:none; } a:hover { text-decoration:underline; }
+code { font-family:var(--mono); font-size:.88em; background:var(--sunk); padding:1px 6px; border-radius:6px; }
+main { max-width:1640px; margin:0 auto; padding:28px 16px 96px; }
+h1 { font-size:30px; line-height:1.15; letter-spacing:-.02em; margin:0; font-weight:800; }
+h2 { font-size:20px; letter-spacing:-.01em; margin:0; font-weight:700; }
+h3 { font-size:14px; margin:0; font-weight:600; }
+.mut { color:var(--mut); } .small { font-size:13px; } .faint { color:var(--faint); }
 .ok { color:var(--ok); font-weight:600; } .bad { color:var(--bad); font-weight:600; }
-.note { background:var(--key); border-radius:8px; padding:8px 10px; font-size:13px; }
-.flow { font:13px/1.5 ui-monospace, Menlo, monospace; color:var(--mut); }
+
+/* the header */
+.hero { display:flex; gap:20px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; margin-bottom:22px; }
+.brand { display:flex; gap:16px; align-items:center; min-width:0; }
+.logo { width:56px; height:56px; flex:none; border-radius:16px; display:grid; place-items:center; font-size:30px;
+  background:var(--accent-soft); box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--accent) 25%, transparent); }
+.eyebrow { font-size:12px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); margin-bottom:4px; }
+.pill { display:inline-flex; align-items:center; gap:8px; padding:7px 12px; border-radius:999px; background:var(--surface);
+  border:1px solid var(--line); font-size:13px; box-shadow:var(--shadow); max-width:100%; flex-wrap:wrap; }
+.dot { width:8px; height:8px; border-radius:50%; background:var(--faint); flex:none; }
+.dot.on { background:var(--ok); box-shadow:0 0 0 4px var(--ok-soft); }
+.dot.off { background:var(--bad); box-shadow:0 0 0 4px var(--bad-soft); }
+
+/* one interface for every event type: a tab per lane (JL 261027: "把剩下其他几个 Event 都整合到一个大界面里面") */
+.lanes { position:sticky; top:0; z-index:5; background:color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
+.lanes-in { max-width:1640px; margin:0 auto; padding:10px 16px; display:flex; gap:6px; align-items:center; overflow-x:auto; }
+.lanes .home { font-weight:800; font-size:14px; margin-right:10px; white-space:nowrap; color:var(--ink); }
+.lane-tab { display:inline-flex; align-items:center; gap:6px; padding:7px 14px; border-radius:999px; font-size:14px; font-weight:600;
+  color:var(--mut); white-space:nowrap; border:1px solid transparent; }
+.lane-tab:hover { background:var(--surface); border-color:var(--line); text-decoration:none; color:var(--ink); }
+.lane-tab.on { background:var(--ink); color:var(--bg); }
+.lane-tab.off { opacity:.45; pointer-events:none; }
+.lane-tab small { font-weight:500; font-size:11px; }
+
+/* the flow, as steps */
+.flow { display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:0 0 26px; padding:0; list-style:none; }
+.flow li { display:flex; align-items:center; gap:6px; font-size:13px; font-weight:500; color:var(--mut); }
+.flow .st { padding:6px 12px; border-radius:999px; background:var(--surface); border:1px solid var(--line); color:var(--ink); }
+.flow .st b { display:inline-grid; place-items:center; width:18px; height:18px; border-radius:50%; margin-right:6px; font-size:11px;
+  background:var(--accent); color:var(--accent-ink); }
+.flow .arrow { color:var(--faint); }
+
+/* panels */
+.panel { background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:22px; }
+.panel + .panel, .section { margin-top:22px; }
+.section-head { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin:36px 0 14px; }
+.section-head p { margin:4px 0 0; }
+.compose-grid { display:grid; grid-template-columns:minmax(0,1fr) 300px; gap:22px; }
+@media (max-width: 960px) { .compose-grid { grid-template-columns:1fr; } }
+.hint { margin:6px 0 14px; color:var(--mut); font-size:14px; }
+textarea { width:100%; min-height:168px; padding:14px 16px; font:14px/1.6 var(--mono); color:var(--ink); background:var(--code-bg);
+  border:1px solid var(--line); border-radius:12px; resize:vertical; outline:none; transition:border-color .15s, box-shadow .15s; }
+textarea:focus { border-color:var(--accent); box-shadow:0 0 0 4px var(--accent-soft); }
+.toolbar { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:14px; }
+.field { display:inline-flex; align-items:center; gap:8px; font-size:13px; color:var(--mut); }
+input[type=datetime-local] { font:inherit; font-size:14px; padding:8px 10px; border:1px solid var(--line); border-radius:10px;
+  background:var(--surface); color:var(--ink); }
+button, .btn { font:inherit; font-size:14px; font-weight:600; padding:9px 16px; border-radius:10px; border:1px solid var(--line);
+  background:var(--surface); color:var(--ink); cursor:pointer; transition:transform .05s, background .15s, border-color .15s; }
+button:hover { border-color:var(--faint); }
+button:active { transform:translateY(1px); }
+button.go { background:var(--accent); border-color:var(--accent); color:var(--accent-ink); padding:9px 22px; }
+button.go:hover { filter:brightness(1.06); }
+button.ghost { background:transparent; }
+button:disabled { opacity:.5; cursor:default; }
+.side { display:flex; flex-direction:column; gap:12px; }
+.side h3 { font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--mut); }
+.drop { border:1.5px dashed var(--line); border-radius:12px; padding:14px; display:flex; flex-direction:column; gap:10px; background:var(--sunk); }
+.drop input[type=file] { font-size:12.5px; color:var(--mut); max-width:100%; }
+.drop .small { line-height:1.45; }
+#status { font-size:14px; }
+
+/* the answer */
+.result-head { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
+.tiles { display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:12px; margin-bottom:18px; }
+.tile { background:var(--sunk); border-radius:14px; padding:14px 16px; min-width:0; }
+.tile .k { font-size:12px; color:var(--mut); font-weight:500; }
+.tile .v { font-size:26px; font-weight:700; letter-spacing:-.02em; margin-top:2px; font-variant-numeric:tabular-nums; }
+.tile .v small { font-size:13px; font-weight:500; color:var(--mut); margin-left:3px; }
+.tile.hl { background:var(--accent-soft); }
+.note { background:var(--sunk); border-radius:10px; padding:10px 14px; font-size:13px; color:var(--mut); margin:0 0 16px; }
+.note b { color:var(--ink); font-weight:600; }
+.stages { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:14px; }
+.stages.two { grid-template-columns:repeat(2, minmax(0,1fr)); }
+@media (max-width: 960px) { .stages, .stages.two { grid-template-columns:1fr; } }
+.stage { border:1px solid var(--line); border-radius:12px; overflow:hidden; background:var(--code-bg); min-width:0; display:flex; flex-direction:column; }
+.stage-h { display:flex; align-items:center; gap:8px; padding:9px 12px; border-bottom:1px solid var(--line); background:var(--surface);
+  font-size:13px; font-weight:600; }
+.stage-h .n { display:inline-grid; place-items:center; width:20px; height:20px; border-radius:6px; font-size:11px; background:var(--sunk); color:var(--mut); }
+.stage-h .sp { flex:1; }
+.stage-h button { padding:3px 10px; font-size:12px; font-weight:500; border-radius:8px; }
+pre { margin:0; padding:12px 14px; font:12.5px/1.6 var(--mono); white-space:pre; overflow:auto; max-height:440px; color:var(--ink); background:transparent; }
+.tbl-wrap { overflow:auto; border:1px solid var(--line); border-radius:12px; margin-top:16px; }
+table { border-collapse:collapse; width:100%; font-size:13.5px; }
+th, td { text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); vertical-align:top; white-space:nowrap; }
+th { color:var(--mut); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.04em; background:var(--sunk); position:sticky; top:0; }
+tr:last-child td { border-bottom:none; }
+td.num { font-variant-numeric:tabular-nums; }
+tr.total td { font-weight:700; background:var(--accent-soft); }
+tr.check td { font-size:12.5px; color:var(--mut); white-space:normal; }
+.badge { display:inline-block; font-size:11px; font-weight:700; letter-spacing:.04em; padding:2px 8px; border-radius:999px; }
+.b-MEASURED { background:var(--ok-soft); color:var(--ok); }
+.b-ESTIMATED { background:var(--warn-soft); color:var(--warn); }
+.b-MISS { background:var(--bad-soft); color:var(--bad); }
+.b-other { background:var(--sunk); color:var(--mut); }
+
+/* JSON tokens */
+.j-k { color:#1c4fa0; } .j-s { color:#2b7a3b; } .j-d { color:#c2410c; } .j-b { color:#9c36b5; } .j-n { color:var(--faint); font-style:italic; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .j-k { color:#8ab4f8; } :root:not([data-theme="light"]) .j-s { color:#8ce99a; }
+  :root:not([data-theme="light"]) .j-d { color:#ffa94d; } :root:not([data-theme="light"]) .j-b { color:#e599f7; } }
+:root[data-theme="dark"] .j-k { color:#8ab4f8; } :root[data-theme="dark"] .j-s { color:#8ce99a; }
+:root[data-theme="dark"] .j-d { color:#ffa94d; } :root[data-theme="dark"] .j-b { color:#e599f7; }
+/* raw, input, output side by side, an arrow between, so a line can be read across (JL 261029: "左中右"); on a narrow
+   screen they stack top to bottom, as JL 261027 had them */
+.stages { grid-template-columns:repeat(3, minmax(0,1fr)) !important; gap:30px; }
+.stages.two { grid-template-columns:repeat(2, minmax(0,1fr)) !important; }
+.stages > .stage + .stage { position:relative; overflow:visible; }
+.stages > .stage + .stage::before { content:"→"; position:absolute; left:-23px; top:9px; font-size:16px; line-height:20px; color:var(--accent); font-weight:700; }
+.stages > .stage > pre { flex:1; }
+@media (max-width: 1180px) {
+  .stages, .stages.two { grid-template-columns:1fr !important; gap:26px; }
+  .stages > .stage + .stage::before { content:"↓"; left:22px; top:-24px; }
+}
+.stages > .stage { overflow:visible; }
+.stages > .stage > pre { border-radius:0 0 12px 12px; }
+.stages > .stage > .stage-h { border-radius:12px 12px 0 0; }
+
+/* JSON that folds: ▾ open, ▸ shut, the shut block shown as { … n } */
+.jo { cursor:pointer; position:relative; }
+.jo:hover { background:color-mix(in srgb, var(--accent) 8%, transparent); }
+.jc { position:relative; display:inline-block; width:0; }
+.jc::before { content:"▾"; position:absolute; left:-12px; top:-1px; font-size:11px; color:var(--faint); }
+.jf.shut > .jo .jc::before { content:"▸"; color:var(--accent); }
+.jf.shut > .jb { display:none; }
+.jf.shut > .jo::after { content:" … " attr(data-n) " "; color:var(--accent); font-style:italic; }
+.stage-h .fa { padding:3px 8px; font-size:11.5px; font-weight:500; border-radius:8px; color:var(--mut); }
+
+/* long values wrap, each continued line under its own key (JL 261029: "Json 可以 wrap 起来吗"); Unwrap keeps one a line */
+.stages pre:not(.nowrap) { white-space:pre-wrap; overflow-x:hidden; }
+.stages pre:not(.nowrap) .ln { display:inline-block; width:100%; box-sizing:border-box; vertical-align:top;
+  padding-left:calc(var(--i) * 1ch + 2ch); text-indent:-2ch; overflow-wrap:anywhere; }
+.stages pre:not(.nowrap) .ln .ind { display:none; }
+
+/* python */
+.code-grid { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:14px; }
+@media (max-width: 960px) { .code-grid { grid-template-columns:1fr; } }
+.code-grid .stage { background:#0f1115; border-color:#0f1115; }
+.code-grid .stage-h { background:#171a20; border-color:#232731; color:#e6e6e6; }
+.code-grid .stage-h code { background:#232731; color:#cdd3de; }
+.code-grid pre { color:#d6dbe4; }
+.code-grid .stage-h button { background:#232731; border-color:#2e3340; color:#e6e6e6; }
+.code-foot { padding:8px 12px; font-size:12px; color:#8b93a1; border-top:1px solid #232731; }
+.code-foot code { background:#232731; color:#cdd3de; }
+
+/* the gallery */
+.cards { display:grid; grid-template-columns:repeat(auto-fill, minmax(380px, 1fr)); gap:16px; }
+.cards.wide { grid-template-columns:repeat(auto-fill, minmax(380px, 1fr)); }
+@media (max-width: 520px) { .cards, .cards.wide { grid-template-columns:1fr; } }
+.card { background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px;
+  display:flex; flex-direction:column; gap:12px; min-width:0; transition:border-color .15s; }
+.card:hover { border-color:color-mix(in srgb, var(--accent) 35%, var(--line)); }
+.card.open { grid-column:1 / -1; }
+.card-top { display:flex; gap:10px; align-items:flex-start; justify-content:space-between; }
+.card h3 { font-size:15.5px; line-height:1.35; }
+.tag { display:inline-block; font:500 11.5px/1.6 var(--mono); padding:1px 8px; border-radius:6px; background:var(--accent-soft); color:var(--accent); white-space:nowrap; }
+.card .step { font-size:13px; color:var(--mut); line-height:1.45; }
+.mini { display:flex; gap:8px; flex-wrap:wrap; }
+.mini span { font-size:12.5px; padding:4px 10px; border-radius:8px; background:var(--sunk); font-variant-numeric:tabular-nums; }
+.mini b { font-weight:700; }
+.card-actions { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:auto; }
+.card-actions .res { font-size:13px; flex-basis:100%; }
+.card .stages pre { max-height:360px; }
+.empty { padding:40px; text-align:center; color:var(--mut); }
+/* an event lane's gallery: a short list by kind of raw, and one example open (JL 261027: "一下子都列出来了 ... overwhelming") */
+.gal { display:grid; grid-template-columns:260px minmax(0,1fr); gap:18px; align-items:start; }
+@media (max-width: 960px) { .gal { grid-template-columns:1fr; } .gal-list { position:static !important; max-height:none !important; } }
+.gal-list { position:sticky; top:64px; max-height:calc(100vh - 84px); overflow:auto; background:var(--surface); border:1px solid var(--line);
+  border-radius:var(--radius); box-shadow:var(--shadow); padding:8px; }
+.gal-group + .gal-group { margin-top:6px; border-top:1px solid var(--line); padding-top:6px; }
+.gal-group h4 { display:flex; align-items:center; gap:8px; margin:0; padding:8px 10px 6px; font-size:11px; font-weight:700;
+  letter-spacing:.06em; text-transform:uppercase; color:var(--mut); }
+.gal-group h4 .cnt { margin-left:auto; font-weight:600; color:var(--faint); }
+.gal-item { display:block; width:100%; text-align:left; padding:9px 12px; border-radius:10px; border:1px solid transparent;
+  background:transparent; font-weight:500; cursor:pointer; }
+.gal-item:hover { background:var(--sunk); border-color:transparent; }
+.gal-item.on { background:var(--accent-soft); border-color:color-mix(in srgb, var(--accent) 30%, transparent); }
+.gal-item .t { display:block; font-size:13.5px; font-weight:600; line-height:1.35; color:var(--ink); }
+.gal-item .m { display:block; font-size:12px; color:var(--mut); margin-top:2px; font-variant-numeric:tabular-nums; }
+.gal-res { display:block; font-size:11.5px; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.gal-res:empty { display:none; }
+.gal-detail { background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:22px;
+  display:flex; flex-direction:column; gap:14px; min-width:0; }
+.gal-detail .top { display:flex; align-items:flex-start; gap:12px; }
+.gal-detail .top h3 { font-size:19px; line-height:1.3; letter-spacing:-.01em; flex:1; }
+.gal-detail .pager { display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--mut); white-space:nowrap; }
+.gal-detail .pager button { padding:4px 10px; font-size:13px; }
+.gal-detail .step { font-size:14px; color:var(--mut); }
+.gal-detail details { font-size:13px; color:var(--mut); }
+.gal-detail details summary { cursor:pointer; color:var(--ink); font-weight:600; font-size:12.5px; }
+.gal-detail details p { margin:6px 0 0; line-height:1.5; }
+
 </style>
 </head>
 <body>
+<nav class="lanes"><div class="lanes-in" id="lanes"><span class="home">haipipe · try</span></div></nav>
 <main>
-  <h1 id="title">Try the API</h1>
-  <p class="mut small" id="health">checking the API…</p>
-  <p class="flow" id="flow" hidden>raw ─▶ preprocess ─▶ input JSON ─▶ describe-food, each item ─▶ output by local hour</p>
-
-  <h2 id="tryHead">✍️ Try it</h2>
-  <p class="small mut" id="hint">One input per line; each line is sent as it is, in one call.</p>
-  <textarea id="box" spellcheck="false"></textarea>
-  <div class="row">
-    <span id="whenArea" hidden class="small"><span id="whenWord">eaten at</span> <input type="datetime-local" id="when"></span>
-    <button class="go" id="send">Send</button>
-    <span id="status" class="small"></span>
-  </div>
-  <div class="row" id="photoArea" hidden>
-    <span class="small">or a photo:</span>
-    <input type="file" id="photo" accept="image/*">
-    <button id="sendPhoto">Send the photo</button>
-    <span class="small mut" id="photoHint">the photo route names the foods first (Claude vision), then answers them</span>
-  </div>
-  <div class="row" id="fileArea" hidden>
-    <span class="small">or a wearable's file:</span>
-    <input type="file" id="wfile" accept=".csv,.json,.txt">
-    <button id="sendFile">Send the file</button>
-    <span class="small mut">a CSV or JSON of a wearable's samples (a CGMacros, MetaboNet, D1NAMO or GOTOV file):
-      its columns say which stream it is, and that stream's rule finds the longest workout</span>
-  </div>
-
-  <div id="result" hidden>
-    <p class="note small" id="step" hidden></p>
-    <div class="two" id="plain">
-      <div><h3>📨 Input JSON sent</h3><pre id="sent"></pre></div>
-      <div><h3>📦 Output JSON back</h3><pre id="back"></pre></div>
+  <header class="hero">
+    <div class="brand">
+      <div class="logo" id="logo">🔎</div>
+      <div>
+        <div class="eyebrow" id="eyebrow">haipipe · event API</div>
+        <h1 id="title">Try the API</h1>
+      </div>
     </div>
-    <div class="three" id="evpanes" hidden>
-      <div><h3>📄 raw, as it arrives</h3><pre id="evraw"></pre></div>
-      <div><h3>📨 input JSON</h3><pre id="evin"></pre></div>
-      <div><h3>📦 output, by local hour</h3><pre id="evout"></pre></div>
-    </div>
-    <h3 style="margin-top:12px" id="readHead">Each answer, read</h3>
-    <div style="overflow:auto"><table id="answers"></table></div>
-  </div>
+    <div class="pill"><span class="dot" id="dot"></span><span id="health">checking the API…</span></div>
+  </header>
+  <ol class="flow" id="flow" hidden></ol>
 
-  <div id="pyArea" hidden>
-    <h2>🐍 Call it from Python</h2>
-    <p class="small mut" id="pyHint">The request the page sends, as Python: import the API in this SPACE, or post it to the API host. It follows the box: send a meal, or run a card, and it changes.</p>
-    <div class="two">
-      <div><h3>in this SPACE · <code id="pyImport">from eventnorm import event</code></h3><pre id="pyLocal"></pre>
-        <div class="row"><button data-copy="pyLocal">Copy</button><span class="small mut">after <code>source env.sh</code>, which puts eventnorm on the path</span></div></div>
-      <div><h3>over HTTP · <code id="pyDoor">POST /food/event</code></h3><pre id="pyHttp"></pre>
-        <div class="row"><button data-copy="pyHttp">Copy</button><span class="small mut" id="pyHost"></span></div></div>
+  <section class="panel">
+    <div class="compose-grid">
+      <div>
+        <h2 id="tryHead">✍️ Try it</h2>
+        <p class="hint" id="hint">One input per line; each line is sent as it is, in one call.</p>
+        <textarea id="box" spellcheck="false"></textarea>
+        <div class="toolbar">
+          <span id="whenArea" hidden class="field"><span id="whenWord">eaten at</span> <input type="datetime-local" id="when"></span>
+          <button class="go" id="send">Send ⏎</button>
+          <span id="status"></span>
+        </div>
+      </div>
+      <aside class="side">
+        <h3>Other ways in</h3>
+        <div class="drop" id="photoArea" hidden>
+          <strong class="small">📷 A meal photo</strong>
+          <input type="file" id="photo" accept="image/*">
+          <button id="sendPhoto">Send the photo</button>
+          <span class="small mut" id="photoHint">the photo route names the foods first (Claude vision), then answers them</span>
+        </div>
+        <div class="drop" id="fileArea" hidden>
+          <strong class="small">⌚ A wearable's file</strong>
+          <input type="file" id="wfile" accept=".csv,.json,.txt">
+          <button id="sendFile">Send the file</button>
+          <span class="small mut">a CSV or JSON of a wearable's samples (a CGMacros, MetaboNet, D1NAMO or GOTOV file):
+            its columns say which stream it is, and that stream's rule finds the longest workout</span>
+        </div>
+        <div class="drop">
+          <strong class="small">🖼 A real example</strong>
+          <span class="small mut">Pick a card in the gallery below and press <b>Put it in the box</b>.</span>
+        </div>
+      </aside>
     </div>
-  </div>
+  </section>
 
-  <h2 id="galleryHead">🖼 Gallery: every kind of input, from real rows</h2>
-  <p class="small" id="gfolder" hidden></p>
-  <div class="row"><button class="go" id="runAll">Run every card live</button><span id="summary" class="small"></span></div>
-  <div class="cards" id="cards"></div>
+  <section class="panel" id="result" hidden>
+    <div class="result-head"><h2>📦 The answer</h2><span class="small mut" id="resultWhen"></span></div>
+    <div class="tiles" id="tiles" hidden></div>
+    <p class="note" id="step" hidden></p>
+    <div class="stages two" id="plain">
+      <div class="stage"><div class="stage-h"><span class="n">1</span>📨 Input JSON sent<span class="sp"></span><span class="folds"></span><button data-copy="sent">Copy</button></div><pre id="sent"></pre></div>
+      <div class="stage"><div class="stage-h"><span class="n">2</span>📦 Output JSON back<span class="sp"></span><span class="folds"></span><button data-copy="back">Copy</button></div><pre id="back"></pre></div>
+    </div>
+    <div class="stages" id="evpanes" hidden>
+      <div class="stage"><div class="stage-h"><span class="n">1</span>📄 Raw, as it arrives<span class="sp"></span><span class="folds"></span><button data-copy="evraw">Copy</button></div><pre id="evraw"></pre></div>
+      <div class="stage"><div class="stage-h"><span class="n">2</span>📨 Input JSON<span class="sp"></span><span class="folds"></span><button data-copy="evin">Copy</button></div><pre id="evin"></pre></div>
+      <div class="stage"><div class="stage-h"><span class="n">3</span>📦 Output, by local hour<span class="sp"></span><span class="folds"></span><button data-copy="evout">Copy</button></div><pre id="evout"></pre></div>
+    </div>
+    <h3 style="margin-top:22px" id="readHead">Each answer, read</h3>
+    <div class="tbl-wrap"><table id="answers"></table></div>
+  </section>
+
+  <section id="pyArea" hidden>
+    <div class="section-head"><div><h2>🐍 Call it from Python</h2>
+      <p class="small mut" id="pyHint">The request the page sends, as Python: import the API in this SPACE, or post it to the API host. It follows the box: send a meal, or run a card, and it changes.</p></div></div>
+    <div class="code-grid">
+      <div class="stage"><div class="stage-h">In this SPACE · <code id="pyImport">from eventnorm import event</code><span class="sp"></span><button data-copy="pyLocal">Copy</button></div>
+        <pre id="pyLocal"></pre><div class="code-foot">after <code>source env.sh</code>, which puts eventnorm on the path</div></div>
+      <div class="stage"><div class="stage-h">Over HTTP · <code id="pyDoor">POST /food/event</code><span class="sp"></span><button data-copy="pyHttp">Copy</button></div>
+        <pre id="pyHttp"></pre><div class="code-foot" id="pyHost"></div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <div><h2 id="galleryHead">🖼 Gallery: every kind of input, from real rows</h2>
+        <p class="small mut">Each example is one real record, grouped by its kind of raw. Pick one to see its raw, input and output; try it live to check it still answers the same.</p></div>
+      <div class="toolbar" style="margin:0"><span id="summary" class="small"></span><button class="go" id="runAll">Run every example live</button></div>
+    </div>
+    <p class="small" id="gfolder" hidden></p>
+    <div class="cards" id="cards"></div>
+  </section>
 </main>
 
 <script>
@@ -114,7 +336,8 @@ tr.check td { font-size:12.5px; }
   const parts = location.pathname.replace(/\/+$/, '').split('/');
   const noun = parts.pop(); parts.pop();
   const base = parts.join('/');
-  const EMOJI = { food: '🍎', exercise: '🏃', medication: '💊', insulin: '💉' };
+  const EMOJI = { food: '🍎', exercise: '🏃', medication: '💊', insulin: '💉', step: '👣', sleep: '😴', still: '🪑' };
+  const ACCENT = { food: '#2f9e44', exercise: '#1c7ed6', medication: '#7048e8', insulin: '#e8590c', step: '#0c8599', sleep: '#5f3dc4', still: '#868e96' };
   // How a gallery card's input becomes a request, and how a typed box becomes one: per lane. `event` names the lane's
   // event door; such a lane sends its box and its cards there.
   const LANES = {
@@ -133,6 +356,21 @@ tr.check td { font-size:12.5px; }
       examples: 'brisk walking 30 min',
       read: 'exercise',
       file: true,                                                  // a wearable's file, sent as raw type "wearable"
+      tiles: output => {                                           // its hours added up (exerciseSum), and how sure
+        const s = exerciseSum(output);
+        if (!s) return null;
+        return [{ k: 'Minutes', v: s.min, u: 'min', hl: true }, { k: 'MET-minutes', v: s.mm, u: 'MET-min' },
+                { k: 'MET', v: s.met, u: '' }, { k: 'Calories', v: s.kcal, u: 'kcal' },
+                { k: 'Heart rate', v: s.hr == null ? null : Math.round(s.hr), u: s.hr == null ? '' : `bpm · peak ${s.hrMax}` },
+                { k: 'How sure', conf: s.conf, note: [s.activity, s.code, s.intensity].filter(Boolean).join(' · ') }]
+          .filter(t => 'conf' in t || t.v != null);              // a number the workout does not give shows no tile
+      },
+      mini: c => {                                                 // "Walking · 30 min · MET 3.8 · 152 kcal"
+        const s = exerciseSum(c.output);
+        if (!s) return 'no event';
+        return [s.heading || s.activity, s.min != null && `${r1(s.min)} min`, s.met != null && `MET ${r1(s.met)}`,
+                s.kcal != null && `${r1(s.kcal)} kcal`].filter(Boolean).join(' · ');
+      },
       texts: {
         title: 'a workout in, its exercise event out',
         flow: 'raw ─▶ preprocess ─▶ input JSON ─▶ describe-exercise, the item ─▶ output by local hour, each hour its own part',
@@ -148,12 +386,363 @@ tr.check td { font-size:12.5px; }
         empty: 'Type a workout in the box first.',
       },
     },
+    medication: {                                                  // b51 s03, s13 (JL 261027: follow food's page)
+      event: 'event',
+      py: 'from eventnorm.medication import event',
+      readOut: ['for hour, h in ev["output"].items():', '    print(hour, [(i["ingredient"], i["dose"], i["conf"]) for i in h["items"]])'],
+      examples: 'metformin 500 mg, empagliflozin 10 mg',
+      read: 'medication',
+      // The headline: how many drugs, the dose (or a basal's rate), insulin or not, and how sure: the least sure item,
+      // MISS when describe-medication named no product (s13's red problems 1, 2, 3).
+      sum: output => {
+        const hs = Object.values(output || {});
+        if (!hs.length) return null;
+        const seen = {}, items = [];
+        hs.forEach(h => (h.items || []).forEach(i => { if (!seen[i.id]) { seen[i.id] = 1; items.push(i); } }));
+        const rank = ['GOOD', 'OK', 'ALIAS', 'MISS'];
+        const worst = items.reduce((w, i) => rank.indexOf(i.conf) > rank.indexOf(w) ? i.conf : w, items.length ? 'GOOD' : null);
+        return { items, hours: hs.length, total: hs[0].total || {}, conf: worst,
+                 named: items.filter(i => i.conf && i.conf !== 'MISS').length, insulin: items.filter(i => i.insulin).length };
+      },
+      tiles: output => {
+        const s = LANES.medication.sum(output);
+        if (!s) return null;
+        const one = s.items.length === 1 ? s.items[0] : null;
+        const dose = s.total.rate != null ? { k: 'Rate', v: s.total.rate, u: s.total.unit || '' }
+          : one ? { k: 'Dose', v: one.dose, u: one.unit || '' } : { k: 'Doses', v: s.items.length, u: '' };
+        return [{ k: 'Drugs', v: s.items.length, u: '', hl: true }, dose,
+                { k: 'Insulin', v: s.insulin ? 'yes' : 'no', u: '' }, { k: 'Hours', v: s.hours, u: '' },
+                { k: 'How sure', conf: s.conf, note: `${s.named} of ${s.items.length} named` }]
+          .filter(t => 'conf' in t || t.v != null);
+      },
+      mini: c => {                                                 // "metformin 500 mg, Empagliflozin 10 mg · OK"
+        const s = LANES.medication.sum(c.output);
+        if (!s) return 'no dose';
+        const asked = Object.fromEntries(((c.input || {}).items || []).map(i => [i.id, i.drug]));
+        const name = i => { const n = i.ingredient || asked[i.id] || '?'; return n.length > 32 ? n.slice(0, 31) + '…' : n; };
+        const amount = i => s.total.rate != null ? ` ${s.total.rate} ${s.total.unit || ''}`.trimEnd() : i.dose != null ? ` ${i.dose}${i.unit ? ' ' + i.unit : ''}` : '';
+        return s.items.map(i => name(i) + amount(i)).join(', ') + ` · ${s.conf}`;
+      },
+      texts: {
+        title: 'a dose in, its medication event out',
+        flow: 'raw ─▶ preprocess ─▶ input JSON ─▶ describe-medication, each drug ─▶ output by local hour, a dose a moment',
+        try: '✍️ Try a dose',
+        hint: 'Type a drug and its dose ("metformin 500 mg"; several, comma separated), and when it was taken. Or paste a '
+          + 'raw JSON <code>{"type", "rows"}</code> (a WellDoc row <code>app_id</code>, a Shanghai cell <code>text</code> or '
+          + '<code>pump</code>, an OhioT1DM event <code>class_word</code>) or an input JSON <code>{"items", ...}</code>.',
+        when: 'taken at',
+        gallery: '🖼 Gallery: real doses, every kind of raw, its input and its output',
+        what: 'the dose',
+        py: 'The request the page sends, as Python: import the API in this SPACE, or post it to the API host. '
+          + 'It follows the box: send a dose, and it changes.',
+        empty: 'Type a drug and its dose in the box first.',
+      },
+    },
+    insulin: {                                                     // b51 s04, s14 (JL 261027: build its own page as food's)
+      event: 'event',
+      py: 'from eventnorm.insulin import event',
+      readOut: ['for hour, h in ev["output"].items():', '    print(hour, h["share"], h.get("units"))'],
+      examples: 'Lyumjev 4 IU',
+      read: 'insulin',
+      // The event's headline: its units, the first insulin's curve (or a rate's), its hours, how sure.
+      sum: output => {
+        const hs = Object.values(output || {});
+        if (!hs.length) return null;
+        const t = hs[0].total || {}, it = (hs[0].items || [])[0] || {};
+        return { units: t.units, rate: t.rate, dur: t.duration_min, hours: hs.length, it, note: hs[0].note };
+      },
+      tiles: output => {
+        const s = LANES.insulin.sum(output);
+        if (!s) return null;
+        const it = s.it, sure = { k: 'How sure', conf: it.conf, note: [it.insulin, it.source].filter(Boolean).join(' · ') };
+        const list = s.rate != null
+          ? [{ k: 'Units', v: s.units, u: 'units', hl: true }, { k: 'Rate', v: s.rate, u: 'units an hour' },
+             { k: 'Held until', v: it.held_until ? it.held_until.slice(11, 16) : null, u: '' },
+             { k: 'Hours', v: s.hours, u: 'hours' }, { k: 'Class', v: it.class }, sure]
+          : [{ k: 'Units', v: s.units, u: 'units', hl: true }, { k: 'Class', v: it.class },
+             { k: 'Onset', v: it.onset_min, u: 'min' }, { k: 'Peak', v: it.peak_min, u: 'min' },
+             { k: 'Acts for', v: s.dur != null ? s.dur / 60 : null, u: 'hours' }, sure];
+        return list.filter(t => 'conf' in t || t.v != null);
+      },
+      mini: c => {                                                 // "insulin lispro-aabc · 2 units · 5 hours · OK"
+        const s = LANES.insulin.sum(c.output);
+        if (!s) return 'no insulin in it';
+        return [s.it.insulin || s.it.drug, s.rate != null ? `${s.rate} units an hour` : null,
+                s.units != null ? `${r1(s.units)} units` : 'units unknown', `${s.hours} hour${s.hours === 1 ? '' : 's'}`,
+                s.it.conf].filter(Boolean).join(' · ');
+      },
+      texts: {
+        title: 'a dose in, its insulin event out',
+        flow: 'raw ─▶ preprocess, as medication\'s ─▶ input JSON ─▶ describe-medication, then describe-insulin, each drug ─▶ output by local hour: a dose by its curve, a rate by its minutes',
+        try: '✍️ Try an insulin dose',
+        hint: 'Type an insulin and its units ("Lyumjev 4 IU"), and when it was taken. Or paste a raw JSON '
+          + '<code>{"type", "rows"}</code> (a WellDoc row <code>app_id</code>, a Shanghai cell <code>text</code> or '
+          + '<code>pump</code>, an OhioT1DM event <code>class_word</code>) or an input JSON <code>{"items", ...}</code>; '
+          + 'a pump rate is shared by its minutes only when its <code>"end"</code> is given.',
+        when: 'taken at',
+        gallery: '🖼 Gallery: real insulin doses and pump rates, every kind of raw, its input and its output',
+        what: 'the dose',
+        readHead: 'The dose, read, hour by hour',
+        py: 'The request the page sends, as Python: import the API in this SPACE, or post it to the API host. '
+          + 'It follows the box: send a dose, and it changes.',
+        empty: 'Type an insulin and its units in the box first.',
+      },
+    },
+    step: {                                                        // b51 s05, s15 (JL 261027: one page for every event)
+      event: 'event',
+      py: 'from eventnorm.step import event',
+      readOut: ['for hour, h in ev["output"].items():', '    print(hour, h["share"], h.get("in_hour") or h["total"])'],
+      examples: '128 steps, 28 min',
+      read: 'step',
+      // The headline: steps, minutes, steps a minute; a stream's moving minutes; how sure. A logged row's count is the
+      // device's own, but over more than one hour its split assumes an even pace; a whole day keeps its hours unknown.
+      tiles: output => {
+        const hs = Object.entries(output || {});
+        if (!hs.length) return null;
+        let steps = 0, mins = 0, moving = null;
+        for (const [, h] of hs) {
+          const p = h.in_hour || h.total || {};
+          steps += num(p.steps) || 0; mins += num(p.minutes) || 0;
+          if ((h.total || {}).moving_minutes != null) moving = (moving || 0) + num(h.total.moving_minutes);
+        }
+        const day = hs.length === 1 && hs[0][0].length === 10, logged = hs.some(([, h]) => h.in_hour);
+        const sure = day ? { conf: 'MEASURED', note: 'a whole day: its hours unknown' }
+          : !logged ? { conf: 'MEASURED', note: 'each hour from its own samples' }
+          : hs.length > 1 ? { conf: 'ESTIMATED', note: `shared over ${hs.length} hours at an even pace` }
+          : { conf: 'MEASURED', note: 'inside one hour' };
+        return [{ k: 'Steps', v: steps, u: 'steps', hl: true }, { k: 'Minutes', v: mins, u: 'min' },
+                { k: 'Steps a minute', v: mins ? steps / mins : null, u: 'per min' },
+                ...(moving != null ? [{ k: 'Moving minutes', v: moving, u: 'min' }] : []),
+                { k: 'How sure', ...sure }];
+      },
+      // The line under an example in the gallery list: its steps, its minutes, its hours (and a stream's walks).
+      mini: c => {
+        const t = LANES.step.tiles(c.output) || [], v = k => (t.find(x => x.k === k) || {}).v;
+        const n = Object.keys(c.output || {}).length, w = (c.walks || []).length;
+        return [`${r1(v('Steps'))} steps`, `${r1(v('Minutes'))} min`, `${n} hour${n === 1 ? '' : 's'}`,
+                ...(w ? [`${w} walk${w === 1 ? '' : 's'}`] : [])].join(' · ');
+      },
+      // "128 steps, 28 min" and the time it began: an input JSON, its end that many minutes on (no raw: a count has no words)
+      fromText: text => {
+        const steps = text.match(/([\d,]+)\s*steps?/i), mins = text.match(/([\d.]+)\s*min/i);
+        if (!steps || !mins) throw new Error('Write the steps and the minutes, "128 steps, 28 min", or paste a raw or an input JSON.');
+        const v = $('when').value;
+        if (!v) throw new Error('Set when the steps began.');
+        const s = new Date(v), e = new Date(s.getTime() + parseFloat(mins[1]) * 60000);
+        const at = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())} ${zoneOf(d)}`;
+        return { input: { start: at(s), end: at(e), total: { steps: parseInt(steps[1].replace(/,/g, ''), 10) } } };
+      },
+      texts: {
+        title: 'a step count in, its step event out',
+        flow: 'raw ─▶ preprocess: times, kind, device ─▶ input JSON ─▶ each hour its own share, to the second ─▶ output by local hour',
+        try: '✍️ Try a step count',
+        hint: 'Type the steps and their minutes ("128 steps, 28 min"), and when they began. Or paste a raw JSON '
+          + '<code>{"type", "rows"}</code> (<code>log</code>: one WellDoc StepEntry row; <code>steps_stream</code>: a wearable\'s '
+          + '<code>date</code> and <code>steps</code>, its walks found by exercise\'s rule) or an input JSON '
+          + '<code>{"start", "end", "total": {"steps"}}</code>.',
+        when: 'began at',
+        gallery: '🖼 Gallery: real step rows, every kind of raw, its input and its output',
+        what: 'the count',
+        readHead: 'The count, read, hour by hour',
+        py: 'The request the page sends, as Python: import the API in this SPACE, or post it to the API host. '
+          + 'It follows the box: send a count, and it changes.',
+        empty: 'Type the steps and their minutes in the box first.',
+      },
+    },
+    sleep: {                                                       // b51 s06, s16 (JL 261027: build its page as food's)
+      event: 'event',
+      py: 'from eventnorm.sleep import event',
+      readOut: ['for hour, h in ev["output"].items():', '    print(hour, h)'],
+      examples: 'in bed 02:00 to 06:00, asleep 02:30 to 05:30',   // JL 261027: asleep 02:30 to 05:30 counts in 02, 03, 04, 05
+      read: 'sleep',
+      // The headline: hours asleep, in bed, the share of bed asleep, minutes awake in bed, how sure. Asleep is the
+      // device's own pieces joined; a night with no pieces is in bed, asleep not told.
+      tiles: output => {
+        const hs = Object.values(output || {});
+        if (!hs.length) return null;
+        const add = k => hs.some(h => h[k] != null) ? hs.reduce((a, h) => a + (num(h[k]) || 0), 0) : null;
+        const bed = add('in_bed_min'), slept = add('asleep_min'), awake = add('awake_in_bed_min'), unknown = add('unknown_min');
+        const sure = slept != null ? { conf: 'MEASURED', note: 'asleep given minute by minute' }
+          : { conf: 'MISS', note: 'no pieces: asleep not told' };
+        return [{ k: 'Asleep', v: slept != null ? slept / 60 : null, u: 'h', hl: true }, { k: 'In bed', v: bed / 60, u: 'h' },
+                { k: 'Asleep of in bed', v: slept != null && bed ? 100 * slept / bed : null, u: '%' },
+                { k: 'Awake in bed', v: awake, u: 'min' }, { k: 'Hours touched', v: hs.length, u: '' },
+                ...(unknown != null ? [{ k: 'Unknown', v: unknown, u: 'min' }] : []),
+                { k: 'How sure', ...sure }];
+      },
+      // The line under an example in the gallery list: hours asleep or in bed, its stretches, its hours.
+      mini: c => {
+        const t = LANES.sleep.tiles(c.output) || [], v = k => (t.find(x => x.k === k) || {}).v;
+        const n = Object.keys(c.output || {}).length, s = ((c.input || {}).timeline || []).length;
+        return [v('Asleep') != null ? `${r1(v('Asleep'))} h asleep` : 'asleep unknown', `${r1(v('In bed'))} h in bed`,
+                ...(s ? [`${s} stretch${s === 1 ? '' : 'es'}`] : []), `${n} hour${n === 1 ? '' : 's'}`].join(' · ');
+      },
+      // "in bed 02:00 to 06:00, asleep 02:30 to 05:30": the first "from to" is in bed, the rest the stretches asleep,
+      // on the night the box's date names; an input JSON (no raw: words are not a device's rows)
+      fromText: text => {
+        const pairs = [...text.matchAll(/(\d{1,2}):(\d{2})\s*(?:to|-|–)\s*(\d{1,2}):(\d{2})/g)];
+        if (!pairs.length) throw new Error('Write when they were in bed, "in bed 02:00 to 06:00, asleep 02:30 to 05:30", or paste a raw or an input JSON.');
+        const v = $('when').value;
+        if (!v) throw new Error('Set the night they went to bed.');
+        const d0 = new Date(v), day = `${d0.getFullYear()}-${pad(d0.getMonth() + 1)}-${pad(d0.getDate())}`;
+        const hm = (h, m) => `${pad(parseInt(h, 10))}:${m}`;
+        const [p0, ...rest] = pairs, s = new Date(`${day}T${hm(p0[1], p0[2])}`), e = new Date(`${day}T${hm(p0[3], p0[4])}`);
+        if (e <= s) e.setDate(e.getDate() + 1);                    // across midnight
+        const at = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())} ${zoneOf(d)}`;
+        return { input: { start: at(s), end: at(e),
+                          timeline: rest.length ? rest.map(p => ({ from: hm(p[1], p[2]), to: hm(p[3], p[4]), state: 'asleep' })) : null } };
+      },
+      texts: {
+        title: 'a night in, its sleep event out',
+        flow: 'raw ─▶ preprocess: the whole row in bed, its pieces asleep ─▶ input JSON ─▶ the timeline cut at each hour ─▶ output by local hour, in minutes',
+        try: '✍️ Try a night',
+        hint: 'Type when they were in bed and when asleep ("in bed 02:00 to 06:00, asleep 02:30 to 05:30"; more stretches '
+          + 'after a comma), and the night they went to bed. Or paste a raw JSON <code>{"type": "log", "rows", "pieces"}</code> '
+          + '(WellDoc SleepEntry rows: the longest is the night, shorter rows inside it are asleep, Apple\'s way) or an input '
+          + 'JSON <code>{"start", "end", "timeline": [{"from", "to", "state"}]}</code>.',
+        when: 'went to bed on',
+        gallery: '🖼 Gallery: real nights, every kind of raw, its input and its output',
+        what: 'the night',
+        readHead: 'The night, read, hour by hour',
+        py: 'The request the page sends, as Python: import the API in this SPACE, or post it to the API host. '
+          + 'It follows the box: send a night, and it changes.',
+        empty: 'Type when they were in bed in the box first.',
+      },
+    },
+    still: {                                                       // b51 s07, s17 (JL 261027: build its page as food's)
+      event: 'event',
+      py: 'from eventnorm.still import event',
+      readOut: ['for hour, h in ev["output"].items():', '    print(hour, h["still_min"], h["moving_min"], h["asleep_min"], h["unknown_min"])'],
+      examples: '10:00 to 10:40 worn, 0 steps; 10:40 to 10:50 worn, 80 steps; 10:50 to 11:00 off',
+      read: 'still',
+      // The headline: minutes still, moving, asleep, unknown, and how sure. A still minute the step file leaves out is
+      // read as 0 steps (s17 Open 1); no heart rate and no sleep tells nothing.
+      tiles: output => {
+        const hs = Object.values(output || {});
+        if (!hs.length) return null;
+        const add = k => hs.reduce((a, h) => a + (num(h[k]) || 0), 0);
+        const all = add('minutes'), unknown = add('unknown_min'), noRow = add('still_no_step_row');
+        const sure = unknown === all ? { conf: 'MISS', note: 'no heart rate, no sleep: nothing told' }
+          : noRow ? { conf: 'ESTIMATED', note: `${noRow} still minutes had no step row: read as 0 steps` }
+          : { conf: 'MEASURED', note: 'each still minute worn, its steps counted' };
+        return [{ k: 'Still', v: add('still_min'), u: 'min', hl: true }, { k: 'Moving', v: add('moving_min'), u: 'min' },
+                { k: 'Asleep', v: add('asleep_min'), u: 'min' }, { k: 'Unknown', v: unknown, u: 'min' },
+                { k: 'Hours', v: hs.length, u: '' }, { k: 'How sure', ...sure }];
+      },
+      // The line under an example in the gallery list: its minutes four ways, its hours.
+      mini: c => {
+        const t = LANES.still.tiles(c.output) || [], v = k => (t.find(x => x.k === k) || {}).v;
+        const n = Object.keys(c.output || {}).length;
+        return [`${r1(v('Still'))} min still`, `${r1(v('Moving'))} moving`, `${r1(v('Asleep'))} asleep`,
+                `${r1(v('Unknown'))} unknown`, `${n} hour${n === 1 ? '' : 's'}`].join(' · ');
+      },
+      // "10:00 to 10:40 worn, 0 steps; 10:40 to 10:50 worn, 80 steps; 10:50 to 11:00 off": a stretch a part, on the
+      // box's date; worn or bpm N, N steps over the stretch, asleep, restless or awake in bed, off. A raw of minute rows.
+      fromText: text => {
+        const parts = text.split(/[;\n]/).map(s => s.trim()).filter(Boolean), rows = [];
+        for (const p of parts) {
+          const m = p.match(/(\d{1,2}):(\d{2})\s*(?:to|-|–)\s*(\d{1,2}):(\d{2})(.*)/);
+          if (!m) throw new Error(`"${p}": write a stretch as "10:00 to 10:40 worn, 0 steps", or paste a raw or an input JSON.`);
+          const row = { from: `${pad(parseInt(m[1], 10))}:${m[2]}`, to: `${pad(parseInt(m[3], 10))}:${m[4]}` }, w = m[5].toLowerCase();
+          const steps = w.match(/([\d,]+)\s*steps?/), bpm = w.match(/(\d+)\s*bpm|bpm\s*(\d+)/);
+          if (steps) row.steps = parseInt(steps[1].replace(/,/g, ''), 10);
+          if (bpm) row.bpm = parseInt(bpm[1] || bpm[2], 10);
+          else if (/\bworn\b/.test(w)) row.worn = true;
+          const lvl = /restless/.test(w) ? 'restless' : /awake/.test(w) ? 'awake' : /asleep/.test(w) ? 'asleep' : null;
+          if (lvl) row.sleep = lvl;
+          rows.push(row);
+        }
+        const v = $('when').value;
+        if (!v) throw new Error('Set the day these minutes are on.');
+        return { raw: { type: 'minutes', day: v.slice(0, 10), rows } };
+      },
+      texts: {
+        title: 'minutes in, each hour four ways out',
+        flow: 'raw ─▶ preprocess: each minute its steps, a heart rate (worn), its sleep level ─▶ input JSON, the minutes as stretches ─▶ each minute one way: asleep, moving, still, unknown ─▶ output by local hour',
+        try: '✍️ Try some minutes',
+        hint: 'Type stretches of minutes, a semicolon between them ("10:00 to 10:40 worn, 0 steps; 10:50 to 11:00 off"): '
+          + '<code>worn</code> or <code>bpm 72</code>, <code>80 steps</code> over the stretch, <code>asleep</code>, '
+          + '<code>restless</code> or <code>awake</code> in bed, <code>off</code>. Or paste a raw JSON <code>{"type", "rows"}</code> '
+          + '(<code>minutes</code>: rows <code>{"from", "to", "steps", "bpm", "sleep"}</code>; <code>mcphases</code>: mcPhases\' '
+          + 'steps.csv, heart_rate.csv and sleep.csv rows, each with its <code>file</code>) or an input JSON '
+          + '<code>{"timeline": [{"from", "to", "steps", "worn", "level"}]}</code>. Still is worn, awake and 0 steps (the rule '
+          + 'is 0 steps until j07 decides it); no heart rate is unknown, never still.',
+        when: 'on',
+        gallery: '🖼 Gallery: real hours, every kind of raw, its input and its output',
+        what: 'the minutes',
+        readHead: 'The minutes, read, hour by hour',
+        py: 'The request the page sends, as Python: import the API in this SPACE, or post it to the API host. '
+          + 'It follows the box: send some minutes, and it changes.',
+        empty: 'Type some minutes in the box first.',
+      },
+    },
   };
   const lane = LANES[noun];
   const EVENT = !!(lane && lane.event);
+  const FOOD = EVENT && !lane.read;                                // food's own reading: tiles, badges, the items check
   const $ = id => document.getElementById(id);
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const pretty = v => JSON.stringify(v, null, 2);
+  // JSON colored by token (JL 261027: "syntax highlight the json here, make it more readable"): keys, strings, numbers,
+  // true and false, null. Text outside a token is escaped as it is, so the layout (one field a line) never changes.
+  const JTOK = /("(?:\\.|[^"\\])*")(\s*:)?|\b(true|false)\b|\b(null)\b|(-?\b\d+(?:\.\d+)?(?:[eE][+-]?\d+)?\b)/g;
+  function hl(text) {
+    let out = '', at = 0, m;
+    JTOK.lastIndex = 0;
+    while ((m = JTOK.exec(text))) {
+      out += esc(text.slice(at, m.index));
+      if (m[1]) out += m[2] ? `<span class="j-k">${esc(m[1])}</span>${esc(m[2])}` : `<span class="j-s">${esc(m[1])}</span>`;
+      else if (m[3]) out += `<span class="j-b">${m[3]}</span>`;
+      else if (m[4]) out += '<span class="j-n">null</span>';
+      else out += `<span class="j-d">${m[5]}</span>`;
+      at = JTOK.lastIndex;
+    }
+    return out + esc(text.slice(at));
+  }
+  // JSON that folds (JL 261029: "Collapse 可以打开 可以合上"): a line that opens a { or [ gets a ▾ before it; a click
+  // closes it to `{ … 3 }` and opens it again. The hidden lines stay in the page, so Copy still copies them all.
+  function fold(text) {
+    let html = '';
+    const lines = String(text).split('\n'), stack = [];
+    lines.forEach((ln, i) => {
+      const ind = ln.match(/^\s*/)[0], rest = ln.slice(ind.length), end = i < lines.length - 1 ? '\n' : '';
+      if (/^[\]}]/.test(rest) && stack.length) {
+        const f = stack.pop();
+        html = html.replace(`data-n="@${f.id}"`, `data-n="${f.n}"`);
+        html += `${ind}</span>${hl(rest)}</span>${end}`;
+        return;
+      }
+      if (stack.length && ind.length === stack[stack.length - 1].ind + 2) stack[stack.length - 1].n++;
+      if (/[\[{]$/.test(rest)) {
+        const id = i;
+        stack.push({ id, ind: ind.length, n: 0 });
+        html += `<span class="jf"><span class="jo" data-n="@${id}">${ind}<span class="jc"></span>${hl(rest)}</span><span class="jb">\n`;
+        return;
+      }
+      html += `<span class="ln" style="--i:${ind.length}"><span class="ind">${ind}</span>${hl(rest)}</span>${end}`;
+    });
+    while (stack.length) { stack.pop(); html += '</span></span>'; }  // a cut text (the raw's "…") leaves a block open
+    return html;
+  }
+  const FOLDS = '<button class="fa" data-act="wrap" title="Long values wrap; click to keep each on one line">Unwrap</button>'
+    + '<button class="fa" data-act="close" title="Fold every block">Fold all</button>'
+    + '<button class="fa" data-act="open" title="Open every block">Open all</button>';
+  document.addEventListener('click', e => {
+    const fa = e.target.closest('.fa');
+    if (fa) {
+      const pre = fa.closest('.stage').querySelector('pre');
+      if (fa.dataset.act === 'wrap') { fa.textContent = pre.classList.toggle('nowrap') ? 'Wrap' : 'Unwrap'; return; }
+      // fold from the third level down: the hour and its fields stay in view, each field's block shut
+      pre.querySelectorAll('.jf').forEach(f => {
+        let depth = 0;
+        for (let p = f.parentElement; p && p !== pre; p = p.parentElement) depth += p.classList.contains('jf');
+        f.classList.toggle('shut', fa.dataset.act === 'close' && depth >= 2);
+      });
+      return;
+    }
+    const jo = e.target.closest('.jo');
+    if (jo && !window.getSelection().toString()) jo.parentElement.classList.toggle('shut');
+  });
   // JSON broken between fields only, one field to a line; a value is never wrapped or cut (it scrolls).
   const fieldLines = v => (v && typeof v === 'object' && !Array.isArray(v))
     ? '{\n' + Object.entries(v).map(([k, x]) => `  ${JSON.stringify(k)}: ${JSON.stringify(x)}`).join(',\n') + '\n}'
@@ -161,15 +750,35 @@ tr.check td { font-size:12.5px; }
   // An event's raw: broken between fields only, a row's cells one a line, as they came (never wrapped or cut).
   const rawLines = r => r ? pretty(r) : 'null';
 
+  document.querySelectorAll('.folds').forEach(x => { x.outerHTML = FOLDS; });
   document.title = `Try describe-${noun}`;
-  $('title').textContent = EVENT ? `${EMOJI[noun] || '🔎'} describe-${noun} · ${(lane.texts || {}).title || 'a meal in, its food event out'}`
-    : `${EMOJI[noun] || '🔎'} describe-${noun} · try it`;
+  if (ACCENT[noun]) document.documentElement.style.setProperty('--accent', ACCENT[noun]);
+  $('logo').textContent = EMOJI[noun] || '🔎';
+  $('eyebrow').textContent = `describe-${noun} · ${EVENT ? 'event API' : 'normalize API'}`;
+  $('title').textContent = EVENT ? ((lane.texts || {}).title || 'a meal in, its food event out').replace(/^./, c => c.toUpperCase())
+    : `describe-${noun} · try it`;
+
+  // ---- one interface: a tab for every event type; a lane this host does not serve is shown, greyed
+  const ORDER = [['food', 'Food'], ['exercise', 'Exercise'], ['medication', 'Medication'], ['insulin', 'Insulin'],
+                 ['step', 'Steps'], ['sleep', 'Sleep'], ['still', 'Still']];
+  function drawLanes(served) {
+    const known = ORDER.map(([k]) => k), extra = served.filter(k => !known.includes(k)).map(k => [k, k]);
+    $('lanes').insertAdjacentHTML('beforeend', [...ORDER, ...extra].map(([k, label]) => {
+      const on = served.includes(k);
+      return `<a class="lane-tab${k === noun ? ' on' : ''}${on ? '' : ' off'}" href="${base}/try/${k}${location.search}">`
+        + `<span>${EMOJI[k] || '•'}</span>${esc(label)}${on ? '' : ' <small>not served here</small>'}</a>`;
+    }).join(''));
+  }
+  fetch(`${base}/`).then(r => r.json()).then(j => drawLanes(Object.keys(j.lanes || {})))
+    .catch(() => drawLanes([noun]));
 
   fetch(`${base}/${noun}/healthz`).then(r => r.json()).then(h => {
-    const bank = String(h.bank || '').split('ExternalStore/').pop();
-    $('health').innerHTML = `describe-${noun} ${esc(h.version || '')} · ${h.status === 'ok' ? '<span class="ok">ok</span>' : '<span class="bad">' + esc(h.status) + '</span>'}`
-      + (bank ? ` · bank ${esc(bank)}` : '') + ` · <a href="${base}/${noun}/docs">every route</a>`;
-  }).catch(() => { $('health').innerHTML = '<span class="bad">the API does not answer</span>'; });
+    const bank = String(h.bank || '').split('ExternalStore/').pop().split('/')[0];
+    const up = h.status === 'ok' || (h.status == null && h.ok !== false);   // insulin's healthz says ok: true, no status
+    $('dot').className = 'dot ' + (up ? 'on' : 'off');
+    $('health').innerHTML = `${up ? 'Live' : esc(h.status)}${h.version ? ` · v${esc(h.version)}` : ''}`
+      + (bank ? ` · <span class="mut">${esc(bank)}</span>` : '') + ` · <a href="${base}/${noun}/docs">every route ↗</a>`;
+  }).catch(() => { $('dot').className = 'dot off'; $('health').innerHTML = '<span class="bad">the API does not answer</span>'; });
 
   // ---- the request as Python (JL 261022: "怎么用 Python 来读取它 ... from ... import ... 然后我就可以直接 call 它")
   const py = (v, ind = '') => {
@@ -215,9 +824,12 @@ tr.check td { font-size:12.5px; }
     $('pyHost').textContent = base === '' ? `${apiHost}: this host` : `${apiHost}: on the machine that runs the API`;
     $('pyArea').hidden = false;
   }
-  document.querySelectorAll('[data-copy]').forEach(b => b.onclick = () => {
-    navigator.clipboard.writeText($(b.dataset.copy).textContent).then(() => { b.textContent = 'Copied'; setTimeout(() => { b.textContent = 'Copy'; }, 1200); });
-  });
+  function copyButtons(root) {
+    root.querySelectorAll('[data-copy]').forEach(b => b.onclick = () => {
+      navigator.clipboard.writeText($(b.dataset.copy).textContent).then(() => { b.textContent = 'Copied ✓'; setTimeout(() => { b.textContent = 'Copy'; }, 1200); });
+    });
+  }
+  copyButtons(document);
 
   // ---- local time, as the event JSON writes it: "2026-10-21 08:05 -04:00"
   const pad = n => String(n).padStart(2, '0');
@@ -229,6 +841,13 @@ tr.check td { font-size:12.5px; }
   }
   { const d = new Date(); $('when').value = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`; }
 
+  // The flow as numbered steps: the lane's own words, split on its arrows.
+  function drawFlow(text) {
+    const steps = text.split('─▶').map(s => s.trim()).filter(Boolean);
+    $('flow').innerHTML = steps.map((s, i) => `<li><span class="st"><b>${i + 1}</b>${esc(s)}</span>${i < steps.length - 1 ? '<span class="arrow">→</span>' : ''}</li>`).join('');
+    $('flow').hidden = false;
+  }
+
   if (!lane) {
     $('hint').textContent = `This lane's page is not wired yet: its gallery shows its frozen answers only.`;
     $('box').disabled = true; $('send').disabled = true; $('runAll').disabled = true;
@@ -238,21 +857,24 @@ tr.check td { font-size:12.5px; }
     if (lane.file) $('fileArea').hidden = false;
   }
   if (EVENT) {
-    $('flow').hidden = false; $('whenArea').hidden = false;
+    $('whenArea').hidden = false;
     $('tryHead').textContent = '✍️ Try a meal';
     $('hint').innerHTML = 'Type the foods, one a line, an amount in g or ml at its end, and when it was eaten. '
       + 'Or paste a raw JSON <code>{"type", "rows"}</code> or an input JSON <code>{"items", ...}</code>, or put a gallery card in the box.';
     $('photoHint').textContent = 'the photo API names its foods (Claude vision); they become the input\'s items';
     $('galleryHead').textContent = '🖼 Gallery: real meals, every kind of raw, its input and its output';
+    let flow = 'raw ─▶ preprocess ─▶ input JSON ─▶ describe-food, each item ─▶ output by local hour';
     const tx = lane.texts;                                         // a lane's own words (exercise); food keeps the above
     if (tx) {
-      $('flow').textContent = tx.flow; $('tryHead').textContent = tx.try; $('hint').innerHTML = tx.hint;
+      flow = tx.flow; $('tryHead').textContent = tx.try; $('hint').innerHTML = tx.hint;
       $('whenWord').textContent = tx.when; $('galleryHead').textContent = tx.gallery;
       if (tx.py) $('pyHint').textContent = tx.py;
     }
+    drawFlow(flow);
     $('cards').classList.add('wide');
     try { pyShow(boxBody()); } catch (e) { /* an empty box: no Python yet */ }
   }
+  $('box').addEventListener('keydown', e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); $('send').click(); } });
 
   async function call(body, door) {
     const r = await fetch(`${base}/${noun}/${door || 'normalize/batch'}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
@@ -262,13 +884,13 @@ tr.check td { font-size:12.5px; }
   }
 
   function show(sent, back, inputs) {
-    $('result').hidden = false; $('plain').hidden = false; $('evpanes').hidden = true; $('step').hidden = true;
-    $('sent').textContent = typeof sent === 'string' ? sent : pretty(sent);
-    $('back').textContent = pretty(back);
+    $('result').hidden = false; $('plain').hidden = false; $('evpanes').hidden = true; $('step').hidden = true; $('tiles').hidden = true;
+    $('sent').innerHTML = fold(typeof sent === 'string' ? sent : pretty(sent));
+    $('back').innerHTML = fold(pretty(back));
     const rows = back.results || (back.result ? [back.result] : []);
     const cols = lane.columns;
     $('answers').innerHTML = '<tr><th>input</th>' + cols.map(c => `<th>${esc(c)}</th>`).join('') + '</tr>'
-      + rows.map((r, i) => '<tr><td>' + esc(inputs[i] ?? '') + '</td>' + cols.map(c => `<td>${r && r[c] != null ? esc(r[c]) : '—'}</td>`).join('') + '</tr>').join('');
+      + rows.map((r, i) => '<tr><td>' + esc(inputs[i] ?? '') + '</td>' + cols.map(c => `<td>${r && r[c] != null ? (c === 'NutritionConf' ? badge(r[c]) : esc(r[c])) : '—'}</td>`).join('') + '</tr>').join('');
   }
 
   // ---- the event: what the box holds becomes a request; its answer becomes three panes and a table
@@ -280,15 +902,20 @@ tr.check td { font-size:12.5px; }
       try { j = JSON.parse(text); } catch (e) { throw new Error('The box starts with { but is not JSON: ' + e.message); }
       if (j.raw || j.input) return j;
       if (j.type && j.rows) return { raw: j };
-      if (j.items) return { input: j };
+      if (j.items || (j.start && j.end)) return { input: j };
       throw new Error('A JSON in the box must be a raw {"type", "rows"}, an input {"items", ...}, or {"raw", "input"}.');
     }
+    if (lane && lane.fromText) return lane.fromText(text);       // a lane that reads its own words (step: a count)
     const row = { text };
     const t = stamp(); if (t) row.time = t;
     return { raw: { type: 'text', rows: [row] } };
   }
 
   const words = v => v == null ? '—' : esc(v);
+  // A "how sure" word, colored by what it means across lanes: sure (green), a guess (orange), nothing found (red).
+  const SURE = { MEASURED: 'MEASURED', DEVICE: 'MEASURED', ALIAS: 'MEASURED', GOOD: 'MEASURED', OK: 'MEASURED',   // GOOD, OK, ALIAS name the drug (describe-medication)
+                 ESTIMATED: 'ESTIMATED', WEAK: 'ESTIMATED', MISS: 'MISS' };
+  const badge = v => v == null ? '—' : `<span class="badge ${SURE[v] ? 'b-' + SURE[v] : 'b-other'}">${esc(v)}</span>`;
   // An exercise event, read hour by hour (s02-D23): each hour its own part, then the hours added up to the event.
   function exerciseTable(ev) {
     if (!ev.output) return `<tr><td>no event: ${esc(ev.step || '')}</td></tr>`;
@@ -309,22 +936,144 @@ tr.check td { font-size:12.5px; }
     return html + `<tr class="total"><td colspan="6">the event: its hours added up</td><td>${r(sum.min)}</td><td>—</td>`
       + `<td>${r(sum.mm)}</td><td>${r(sum.kcal)}</td><td></td></tr>`;
   }
+  // An exercise event's headline numbers: its hours added up; the MET and heart rate by minutes; the first item's match.
+  function exerciseSum(output) {
+    const hs = Object.values(output || {});
+    if (!hs.length) return null;
+    const t = h => h.total || {}, add = k => hs.some(h => t(h)[k] != null) ? hs.reduce((a, h) => a + (num(t(h)[k]) || 0), 0) : null;
+    const min = add('minutes'), mm = add('met_minutes');
+    const metMin = hs.reduce((a, h) => a + (t(h).met != null ? num(t(h).minutes) || 0 : 0), 0);
+    const beat = hs.filter(h => t(h).hr_mean != null), beatMin = beat.reduce((a, h) => a + (num(t(h).minutes) || 0), 0);
+    const it = (hs[0].items || [])[0] || {};
+    return { min, mm, kcal: add('calories'), met: mm != null && metMin ? mm / metMin : null,
+             hr: !beat.length ? null : beatMin ? beat.reduce((a, h) => a + num(t(h).hr_mean) * (num(t(h).minutes) || 0), 0) / beatMin
+               : beat.reduce((a, h) => a + num(t(h).hr_mean), 0) / beat.length,
+             hrMax: beat.length ? Math.max(...beat.map(h => num(t(h).hr_max))) : null,
+             conf: it.conf || null, activity: it.activity, heading: it.heading, code: it.code, intensity: it.intensity };
+  }
+  // A step event (s15): a logged count shared by hour to the second, a whole day kept as its day, a stream's hours
+  // from its own samples; a stream's walks after, each one for POST /exercise/event.
+  function stepTable(ev) {
+    if (!ev.output) return `<tr><td>no event: ${esc(ev.step || '')}</td></tr>`;
+    let html = '<tr><th>hour</th><th>share</th><th>from</th><th>to</th><th>minutes</th><th>steps</th><th>moving minutes</th></tr>';
+    const sum = { min: 0, steps: 0 };
+    for (const [hour, h] of Object.entries(ev.output)) {
+      const p = h.in_hour || h.total || {};                        // a logged row's own part of this hour, or a stream's hour
+      let from = (h.start || '').slice(11, 16), to = (h.end || '').slice(11, 16);
+      if (h.in_hour && hour.length > 10) {                         // a logged row carries the count's times: cut them to this hour
+        const hh = parseInt(hour.slice(11, 13), 10);
+        if (h.start.slice(0, 13) < hour.slice(0, 13)) from = `${pad(hh)}:00`;
+        if (h.end.slice(0, 13) > hour.slice(0, 13)) to = `${pad((hh + 1) % 24)}:00`;
+      }
+      html += `<tr><td>${esc(hour)}</td><td class="num">${words(h.share)}</td><td>${words(from || null)}</td>`
+        + `<td>${words(to || null)}</td><td class="num">${words(p.minutes)}</td><td class="num">${words(p.steps)}</td>`
+        + `<td class="num">${words((h.total || {}).moving_minutes)}</td></tr>`;
+      sum.min += num(p.minutes) || 0; sum.steps += num(p.steps) || 0;
+    }
+    const r = v => Math.round(v * 10) / 10;
+    html += `<tr class="total"><td colspan="4">the event: its hours added up</td><td class="num">${r(sum.min)}</td><td class="num">${r(sum.steps)}</td><td></td></tr>`;
+    for (const w of ev.walks || []) {
+      html += `<tr class="check"><td colspan="4">🏃 a walk, ${esc(w.start.slice(11, 16))} to ${esc(w.end.slice(11, 16))}: for ${esc(w.to)}</td>`
+        + `<td class="num">${w.minutes}</td><td class="num">${w.steps}</td><td class="num">${w.spm} a minute</td></tr>`;
+    }
+    return html;
+  }
+  // A medication event (s13): each drug in its hour, as asked and as describe-medication names it.
+  function medicationTable(ev) {
+    if (!ev.output) return `<tr><td>no event: ${esc(ev.step || '')}</td></tr>`;
+    const asked = {};
+    (ev.input && ev.input.items || []).forEach(it => { asked[it.id] = it.drug; });
+    let html = '<tr><th>hour</th><th>share</th><th>drug, as asked</th><th>ingredient</th><th>form · route</th><th>NDC</th>'
+      + '<th>dose</th><th>delivery</th><th>insulin</th><th>conf</th></tr>';
+    for (const [hour, h] of Object.entries(ev.output)) {
+      for (const it of h.items || []) {
+        html += `<tr><td>${esc(hour)}</td><td>${h.share}</td><td>${words(asked[it.id])}</td><td>${words(it.ingredient)}</td>`
+          + `<td>${words([it.form, it.route].filter(Boolean).join(' · ') || null)}</td><td>${words(it.ndc)}</td>`
+          + `<td>${words(it.dose == null ? null : `${it.dose}${it.unit ? ' ' + it.unit : ''}`)}</td><td>${words(it.delivery)}</td>`
+          + `<td>${it.insulin == null ? '—' : (it.insulin ? 'yes: s14' : 'no')}</td><td>${words(it.conf)}</td></tr>`;
+      }
+    }
+    return html;
+  }
+  // An insulin event (s14): each hour its share of the dose's action (or of a rate's minutes), its units, the curve's
+  // points in it; then the event's insulin, as describe-insulin names it.
+  function insulinTable(ev) {
+    if (!ev.output) return `<tr><td>no event: ${esc(ev.step || '')}</td></tr>`;
+    let html = '<tr><th>hour</th><th>share</th><th>units</th><th>the curve in this hour (action)</th></tr>';
+    let sum = 0, known = true;
+    for (const [hour, h] of Object.entries(ev.output)) {
+      const pts = (h.timeline || []).map(p => `${p.at.slice(11, 16)} ${p.action}`).join(' · ');
+      html += `<tr><td>${esc(hour)}</td><td class="num">${h.share}</td><td class="num">${words(h.units)}</td>`
+        + `<td>${pts ? esc(pts) : h.note ? esc(h.note) : '—'}</td></tr>`;
+      if (h.units == null) known = false; else sum += num(h.units);
+    }
+    const first = Object.values(ev.output)[0] || {};
+    html += `<tr class="total"><td>the event: its hours added up</td><td class="num">1</td><td class="num">${known ? r1(sum) : '—'}</td>`
+      + `<td>${esc(first.start || '')}${first.end ? ` to ${esc(first.end)}` : ''}</td></tr>`;
+    for (const it of first.items || []) {
+      const curve = it.duration_min != null ? `onset ${it.onset_min} · peak ${it.peak_min ?? '—'} · ends ${it.duration_min} min`
+        : it.rate != null ? `${it.rate} units an hour${it.held_until ? ` until ${it.held_until.slice(11, 16)}` : ', no end'}` : 'no curve';
+      html += `<tr class="check"><td colspan="2">💉 ${esc(it.drug || '')}</td><td colspan="2">${words(it.insulin)} · ${words(it.class)} · `
+        + `${esc(curve)} · ${words(it.delivery)} · ${badge(it.conf)}</td></tr>`;
+    }
+    return html;
+  }
+  // A sleep event (s16): each hour its own minutes in bed, asleep and awake in bed (or unknown), then the night's
+  // stretches asleep; the gaps between them are awake in bed.
+  function sleepTable(ev) {
+    if (!ev.output) return `<tr><td>no event: ${esc(ev.step || '')}</td></tr>`;
+    let html = '<tr><th>hour</th><th>in bed</th><th>asleep</th><th>awake in bed</th><th>unknown</th></tr>';
+    const sum = { bed: 0, slept: null, awake: null, unknown: null }, add = (k, v) => { if (v != null) sum[k] = (sum[k] || 0) + num(v); };
+    for (const [hour, h] of Object.entries(ev.output)) {
+      html += `<tr><td>${esc(hour)}</td><td class="num">${words(h.in_bed_min)}</td><td class="num">${words(h.asleep_min)}</td>`
+        + `<td class="num">${words(h.awake_in_bed_min)}</td><td class="num">${words(h.unknown_min)}</td></tr>`;
+      sum.bed += num(h.in_bed_min) || 0; add('slept', h.asleep_min); add('awake', h.awake_in_bed_min); add('unknown', h.unknown_min);
+    }
+    html += `<tr class="total"><td>the night: its hours added up, minutes</td><td class="num">${r1(sum.bed)}</td><td class="num">${r1(sum.slept)}</td>`
+      + `<td class="num">${r1(sum.awake)}</td><td class="num">${r1(sum.unknown)}</td></tr>`;
+    for (const p of (ev.input || {}).timeline || []) {
+      html += `<tr class="check"><td colspan="5">😴 ${esc(p.state)}, ${esc(p.from)} to ${esc(p.to)}</td></tr>`;
+    }
+    return html;
+  }
+  // A still event (s17): each hour its minutes four ways, adding to its minutes, and why the unknown ones are unknown.
+  function stillTable(ev) {
+    if (!ev.output) return `<tr><td>no event: ${esc(ev.step || '')}</td></tr>`;
+    let html = '<tr><th>hour</th><th>minutes</th><th>still</th><th>moving</th><th>asleep</th><th>unknown</th>'
+      + '<th>why unknown</th><th>still, no step row</th></tr>';
+    const ks = ['minutes', 'still_min', 'moving_min', 'asleep_min', 'unknown_min', 'still_no_step_row'], sum = {};
+    for (const [hour, h] of Object.entries(ev.output)) {
+      const why = Object.entries(h.unknown_why || {}).filter(([, n]) => n).map(([k, n]) => `${n} ${k.replace(/_/g, ' ')}`).join(', ');
+      html += `<tr><td>${esc(hour)}</td>` + ks.slice(0, 5).map(k => `<td class="num">${words(h[k])}</td>`).join('')
+        + `<td>${why ? esc(why) : '—'}</td><td class="num">${words(h.still_no_step_row)}</td></tr>`;
+      ks.forEach(k => { sum[k] = (sum[k] || 0) + (num(h[k]) || 0); });
+    }
+    html += `<tr class="total"><td>the event: its hours added up</td>` + ks.slice(0, 5).map(k => `<td class="num">${r1(sum[k])}</td>`).join('')
+      + `<td></td><td class="num">${r1(sum.still_no_step_row)}</td></tr>`;
+    if (ev.rule) html += `<tr class="check"><td colspan="8">📏 the rule: still is at most ${esc(ev.rule.still_max_steps)} steps a minute · ${esc(ev.rule.note || '')}</td></tr>`;
+    return html;
+  }
   function readTable(ev) {
     if (lane.read === 'exercise') return exerciseTable(ev);
+    if (lane.read === 'medication') return medicationTable(ev);
+    if (lane.read === 'insulin') return insulinTable(ev);
+    if (lane.read === 'step') return stepTable(ev);
+    if (lane.read === 'sleep') return sleepTable(ev);
+    if (lane.read === 'still') return stillTable(ev);
     const name = {};
     (ev.input && ev.input.items || []).forEach(it => { name[it.id] = it.food + (it.amount ? ` · ${it.amount}` : ''); });
     let html = '<tr><th>hour</th><th>share</th><th>item</th><th>matched</th><th>conf</th><th>serving</th><th>carbs</th><th>calories</th><th>GI</th><th>GL</th></tr>';
     for (const [hour, h] of Object.entries(ev.output || {})) {
       for (const it of h.items || []) {
         const m = it.match || {}, s = it.serving || {}, g = it.glycemic || {};
-        html += `<tr><td>${esc(hour)}</td><td>${h.share}</td><td>${esc(name[it.id] || it.id)}</td><td>${words(m.food)}</td>`
-          + `<td>${words(m.conf)}</td><td>${words([s.basis, s.unit].filter(Boolean).join(' · ') || null)}</td>`
-          + `<td>${words((it.macros || {}).carbs)}</td><td>${words((it.macros || {}).calories)}</td><td>${words(g.gi)}</td><td>${words(g.gl)}</td></tr>`;
+        html += `<tr><td>${esc(hour)}</td><td class="num">${h.share}</td><td>${esc(name[it.id] || it.id)}</td><td>${words(m.food)}</td>`
+          + `<td>${badge(m.conf)}</td><td>${words([s.basis, s.unit].filter(Boolean).join(' · ') || null)}</td>`
+          + `<td class="num">${words((it.macros || {}).carbs)}</td><td class="num">${words((it.macros || {}).calories)}</td><td class="num">${words(g.gi)}</td><td class="num">${words(g.gl)}</td></tr>`;
       }
       const t = h.total || {};
-      html += `<tr class="total"><td>${esc(hour)}</td><td>${h.share}</td><td colspan="4">the meal's total, from ${esc(t.source || '—')}`
-        + (h.meal_type ? ` · ${esc(h.meal_type)}` : '') + `</td><td>${words((t.macros || {}).carbs)}</td><td>${words((t.macros || {}).calories)}</td>`
-        + `<td>—</td><td>${words((t.glycemic || {}).gl)}</td></tr>`;
+      html += `<tr class="total"><td>${esc(hour)}</td><td class="num">${h.share}</td><td colspan="4">the meal's total, from ${esc(t.source || '—')}`
+        + (h.meal_type ? ` · ${esc(h.meal_type)}` : '') + `</td><td class="num">${words((t.macros || {}).carbs)}</td><td class="num">${words((t.macros || {}).calories)}</td>`
+        + `<td>—</td><td class="num">${words((t.glycemic || {}).gl)}</td></tr>`;
       if ((h.items || []).length) html += checkRow(h);
     }
     return html;
@@ -343,20 +1092,53 @@ tr.check td { font-size:12.5px; }
       : `<span class="bad">❗ the total covers ${t.coverage == null ? 'part' : Math.round(t.coverage * 100) + '%'} of the items`
         + (t.basis ? ` (${esc(t.basis)})` : '') + '</span>: describe-food answers a meal from one table only, never adding '
         + 'one table\'s serving to another\'s grams; each item above is answered alone';
-    return `<tr class="check"><td></td><td></td><td colspan="4">the items, added · ${why}</td><td>${fmt(carbs, 'g')}</td><td>${fmt(kcal, 'kcal')}</td><td></td><td></td></tr>`;
+    return `<tr class="check"><td></td><td></td><td colspan="4">the items, added · ${why}</td><td class="num">${fmt(carbs, 'g')}</td><td class="num">${fmt(kcal, 'kcal')}</td><td></td><td></td></tr>`;
+  }
+
+  // A food event's headline numbers: its hours added up, and how sure.
+  function foodSum(output) {
+    const hs = Object.values(output || {});
+    if (!hs.length) return null;
+    const add = (g, k) => { const v = hs.map(h => num(((h.total || {})[g] || {})[k])); return v.some(x => x == null) ? null : v.reduce((a, b) => a + b, 0); };
+    const t0 = hs[0].total || {};
+    const items = hs.reduce((n, h) => Math.max(n, (h.items || []).length), 0);
+    return { carbs: add('macros', 'carbs'), kcal: add('macros', 'calories'), protein: add('macros', 'protein'),
+             fat: add('macros', 'fat'), fiber: add('carb_parts', 'fiber'), gl: add('glycemic', 'gl'),
+             conf: t0.conf, cov: t0.coverage, source: t0.source, items, hours: hs.length };
+  }
+  const r1 = v => v == null ? '—' : (Math.round(v * 10) / 10).toLocaleString();
+  // Headline tiles. A lane gives its own as lane.tiles(output) -> [{k, v, u, hl}] (a number: label, value, unit, the
+  // highlighted one) or [{k, conf, note}] (a "how sure" badge); food's are below. A lane without tiles shows none.
+  function foodTileList(output) {
+    const s = foodSum(output);
+    if (!s) return null;
+    return [{ k: 'Carbs', v: s.carbs, u: 'g', hl: true }, { k: 'Calories', v: s.kcal, u: 'kcal' }, { k: 'Protein', v: s.protein, u: 'g' },
+            { k: 'Fat', v: s.fat, u: 'g' }, { k: 'Fiber', v: s.fiber, u: 'g' }, { k: 'Glycemic load', v: s.gl, u: '' },
+            { k: 'How sure', conf: s.conf || (s.source === 'input' ? 'GIVEN' : null),
+              note: s.cov != null ? Math.round(s.cov * 100) + '% of items' : (s.source || '') }];
+  }
+  function drawTiles(output) {
+    const list = lane.tiles ? lane.tiles(output) : FOOD ? foodTileList(output) : null;
+    if (!list || !list.length) { $('tiles').hidden = true; return; }
+    $('tiles').innerHTML = list.map(t => 'conf' in t
+      ? `<div class="tile"><div class="k">${esc(t.k)}</div><div class="v" style="font-size:16px;margin-top:8px">${badge(t.conf)}<small>${esc(t.note || '')}</small></div></div>`
+      : `<div class="tile${t.hl ? ' hl' : ''}"><div class="k">${esc(t.k)}</div><div class="v">${typeof t.v === 'number' ? r1(t.v) : esc(t.v ?? '—')}${t.u ? `<small>${esc(t.u)}</small>` : ''}</div></div>`).join('');
+    $('tiles').hidden = false;
   }
 
   function showEvent(ev) {
     $('result').hidden = false; $('plain').hidden = true; $('evpanes').hidden = false;
-    $('step').hidden = false; $('step').textContent = `the preprocess step: ${ev.step}`;
+    $('step').hidden = false; $('step').innerHTML = `<b>The preprocess step</b> · ${esc(ev.step)}`;
     const rows = (ev.raw || {}).rows || [], keep = 20;            // a file's thousands of rows: its first ones, then a count
-    $('evraw').textContent = rows.length > 2 * keep
+    $('evraw').innerHTML = fold(rows.length > 2 * keep
       ? rawLines({ ...ev.raw, rows: [...rows.slice(0, keep), `… ${(rows.length - keep).toLocaleString()} more rows, not shown`] })
-      : rawLines(ev.raw);
-    $('evin').textContent = pretty(ev.input);
-    $('evout').textContent = pretty(ev.output);
-    $('readHead').textContent = 'Each item, read, hour by hour';
+      : rawLines(ev.raw));
+    $('evin').innerHTML = fold(pretty(ev.input));
+    $('evout').innerHTML = fold(pretty(ev.output));
+    $('readHead').textContent = (lane.texts || {}).readHead || 'Each item, read, hour by hour';
     $('answers').innerHTML = readTable(ev);
+    drawTiles(ev.output);
+    $('resultWhen').textContent = `answered ${new Date().toLocaleTimeString()}`;
   }
 
   async function sendEvent(body, what, up) {
@@ -365,8 +1147,9 @@ tr.check td { font-size:12.5px; }
     try {
       const ev = await call(body, lane.event);
       showEvent(ev);
-      const n = ((ev.input || {}).items || []).length, h = Object.keys(ev.output || {}).length;
-      $('status').innerHTML = ev.output ? `<span class="ok">✅ ${what}: ${n} item${n === 1 ? '' : 's'}, ${h} hour${h === 1 ? '' : 's'}, below</span>`
+      const its = (ev.input || {}).items, n = (its || []).length, h = Object.keys(ev.output || {}).length;
+      const counted = its ? `${n} item${n === 1 ? '' : 's'}, ` : '';   // a count has no items (step)
+      $('status').innerHTML = ev.output ? `<span class="ok">✅ ${what}: ${counted}${h} hour${h === 1 ? '' : 's'}, below</span>`
         : `<span class="mut">${what}: no event · ${esc(ev.step || '')}</span>`;   // a day total, a stream with no workout
       $('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
     } catch (e) { $('status').innerHTML = `<span class="bad">${esc(e.message)}</span>`; }
@@ -516,36 +1299,113 @@ tr.check td { font-size:12.5px; }
   // A card's note says what its step line does not: the part after the step, when it starts with it.
   const noteOf = c => !c.note ? '' : c.step && c.note.startsWith(c.step) ? c.note.slice(c.step.length).replace(/^[;:,]\s*/, '') : c.note;
 
+  // How many items: the input's lines, and the output's foods when a dish line became several (JL 261029).
+  function itemCount(c) {
+    const its = ((c.input || {}).items || []).length;
+    const fo = Object.values(c.output || {}).reduce((n, h) => Math.max(n, ((h || {}).items || []).length), 0);
+    return fo && fo !== its ? [`${its} line${its === 1 ? '' : 's'}`, `${fo} foods`] : [`${its} item${its === 1 ? '' : 's'}`];
+  }
+  // A card's few numbers, read from its frozen answer, so a card says what it holds before it is opened.
+  function cardMini(c) {
+    const hs = Object.values(c.output || {});
+    const bits = [itemCount(c).map(t => t.replace(/^(\d+)/, '<b>$1</b>')).join(' → ').replace(/^/, '<span>') + '</span>', `<span><b>${hs.length}</b> hour${hs.length === 1 ? '' : 's'}</span>`];
+    if (FOOD && !lane.tiles) {
+      const s = foodSum(c.output);
+      if (s && s.carbs != null) bits.push(`<span><b>${r1(s.carbs)}</b> g carbs</span>`);
+      if (s && s.kcal != null) bits.push(`<span><b>${r1(s.kcal)}</b> kcal</span>`);
+      if (s && s.conf) bits.push(badge(s.conf));
+    } else if (lane.tiles) {                                       // a lane's tiles, as small chips: its first three and its badge
+      const list = lane.tiles(c.output) || [];
+      list.filter(t => !('conf' in t) && t.v != null).slice(0, 3)
+        .forEach(t => bits.push(`<span><b>${typeof t.v === 'number' ? r1(t.v) : esc(t.v)}</b> ${esc(t.u || t.k)}</span>`));
+      list.filter(t => 'conf' in t && t.conf).slice(0, 1).forEach(t => bits.push(badge(t.conf)));
+    }
+    return `<div class="mini">${bits.join('')}</div>`;
+  }
+
   function eventCard(c, i) {
     return `
-      <div class="card">
-        <div><h3>${esc(c.title)}</h3><span class="tag">${esc(c.kind)}</span> <span class="small mut">${esc(c.step || '')}</span></div>
-        ${noteOf(c) ? `<div class="small mut">${esc(noteOf(c))}</div>` : ''}
-        <div class="three">
-          <div><div class="small mut">📄 raw, as it arrives</div><pre>${esc(rawLines(c.raw))}</pre></div>
-          <div><div class="small mut">📨 input JSON</div><pre>${esc(pretty(c.input))}</pre></div>
-          <div><div class="small mut">📦 output, by local hour (frozen)</div><pre>${esc(pretty(c.output))}</pre></div>
+      <div class="card" id="card-${i}">
+        <div class="card-top"><h3>${esc(c.title)}</h3><span class="tag">${esc(c.kind)}</span></div>
+        <div class="step">${esc(c.step || '')}${noteOf(c) ? ` <span class="faint">· ${esc(noteOf(c))}</span>` : ''}</div>
+        ${cardMini(c)}
+        <div class="stages" id="panes-${i}" hidden>
+          <div class="stage"><div class="stage-h"><span class="n">1</span>📄 Raw, as it arrives<span class="sp"></span>${FOLDS}</div><pre>${fold(rawLines(c.raw))}</pre></div>
+          <div class="stage"><div class="stage-h"><span class="n">2</span>📨 Input JSON<span class="sp"></span>${FOLDS}</div><pre>${fold(pretty(c.input))}</pre></div>
+          <div class="stage"><div class="stage-h"><span class="n">3</span>📦 Output (frozen)<span class="sp"></span>${FOLDS}</div><pre>${fold(pretty(c.output))}</pre></div>
         </div>
-        <div class="row"><button data-run="${i}">Try it live</button><button data-put="${i}">Put it in the box</button><span id="res-${i}" class="small"></span></div>
+        <div class="card-actions"><button class="ghost" data-open="${i}">Open ▾</button><button data-run="${i}">Try it live</button><button data-put="${i}">Put it in the box</button><span id="res-${i}" class="res"></span></div>
       </div>`;
+  }
+
+  // The list: the examples grouped by kind of raw, each a title and its few numbers; a live run's result shows under it.
+  function miniText(c) {
+    if (lane.mini) return lane.mini(c);                            // a lane's own line: lane.mini(card) -> text
+    const hs = Object.values(c.output || {}), bits = [itemCount(c).join(' → ')];
+    if (FOOD) { const s = foodSum(c.output); if (s && s.carbs != null) bits.push(`${r1(s.carbs)} g carbs`); }
+    else bits.push(`${hs.length} hour${hs.length === 1 ? '' : 's'}`);
+    return bits.join(' · ');
+  }
+  function galleryList() {
+    const groups = [];
+    cards.forEach((c, i) => {
+      let g = groups.find(x => x.kind === c.kind);
+      if (!g) groups.push(g = { kind: c.kind, rows: [] });
+      g.rows.push(i);
+    });
+    return groups.map(g => `<div class="gal-group"><h4><span class="tag">${esc(g.kind)}</span><span class="cnt">${g.rows.length}</span></h4>`
+      + g.rows.map(i => `<button class="gal-item" data-pick="${i}"><span class="t">${esc(cards[i].title)}</span>`
+        + `<span class="m">${esc(miniText(cards[i]))}</span><span class="gal-res" id="res-${i}"></span></button>`).join('')
+      + '</div>').join('');
+  }
+  // The one open example: what it is, its numbers, its raw, input and output, and what to do with it.
+  let picked = 0;
+  function pick(i) {
+    picked = i;
+    const c = cards[i];
+    document.querySelectorAll('.gal-item').forEach(b => b.classList.toggle('on', +b.dataset.pick === i));
+    $('galDetail').innerHTML = `
+      <div class="top"><h3>${esc(c.title)}</h3><span class="tag">${esc(c.kind)}</span>
+        <span class="pager"><button class="ghost" data-step="-1" aria-label="previous example">‹</button>${i + 1} / ${cards.length}<button class="ghost" data-step="1" aria-label="next example">›</button></span></div>
+      <div class="step">${esc(c.step || '')}</div>
+      ${noteOf(c) ? `<details><summary>Why it reads this way</summary><p>${esc(noteOf(c))}</p></details>` : ''}
+      ${cardMini(c)}
+      <div class="stages">
+        <div class="stage"><div class="stage-h"><span class="n">1</span>📄 Raw, as it arrives<span class="sp"></span>${FOLDS}</div><pre>${fold(rawLines(c.raw))}</pre></div>
+        <div class="stage"><div class="stage-h"><span class="n">2</span>📨 Input JSON<span class="sp"></span>${FOLDS}</div><pre>${fold(pretty(c.input))}</pre></div>
+        <div class="stage"><div class="stage-h"><span class="n">3</span>📦 Output (frozen)<span class="sp"></span>${FOLDS}</div><pre>${fold(pretty(c.output))}</pre></div>
+      </div>
+      <div class="card-actions"><button class="go" id="dRun">Try it live</button><button id="dPut">Put it in the box</button><span id="dRes" class="res">${$(`res-${i}`).innerHTML}</span></div>`;
+    $('dRun').onclick = async () => { $('dRes').innerHTML = '<span class="mut">asking…</span>'; await runCard(i); if (picked === i) $('dRes').innerHTML = $(`res-${i}`).innerHTML; };
+    $('dPut').onclick = () => { $('box').value = pretty(c.send); pyShow(c.send); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+    $('galDetail').querySelectorAll('[data-step]').forEach(b => b.onclick = () => pick((i + +b.dataset.step + cards.length) % cards.length));
   }
 
   function plainCard(c, i) {
     return `
       <div class="card">
-        <div><h3>${esc(c.title)}</h3><span class="tag">${esc(c.kind)}</span> <span class="small mut">${esc(c.board || '')}</span></div>
-        ${c.specimen ? `<div class="small mut">${esc(c.specimen)}</div>` : ''}
-        <div><div class="small mut">input, as it arrives</div><pre>${esc(fieldLines(c.input))}</pre></div>
-        <div><div class="small mut">frozen answer</div><div style="overflow:auto">${frozenTable(c.frozen)}</div></div>
-        <div class="row"><button data-run="${i}" ${lane ? '' : 'disabled'}>Try it live</button><button data-put="${i}" ${lane ? '' : 'disabled'}>Put it in the box</button><span id="res-${i}" class="small"></span></div>
+        <div class="card-top"><h3>${esc(c.title)}</h3><span class="tag">${esc(c.kind)}</span></div>
+        <div class="step">${esc(c.board || '')}${c.specimen ? ` <span class="faint">· ${esc(c.specimen)}</span>` : ''}</div>
+        <div class="stage"><div class="stage-h">input, as it arrives</div><pre>${hl(fieldLines(c.input))}</pre></div>
+        <div class="tbl-wrap" style="margin-top:0">${frozenTable(c.frozen)}</div>
+        <div class="card-actions"><button data-run="${i}" ${lane ? '' : 'disabled'}>Try it live</button><button data-put="${i}" ${lane ? '' : 'disabled'}>Put it in the box</button><span id="res-${i}" class="res"></span></div>
       </div>`;
   }
 
   fetch(`${base}/try/${noun}/${EVENT ? 'events' : 'gallery'}`).then(r => r.json()).then(g => {
     cards = g.cards || [];
     if (!cards.length) { $('gfolder').hidden = false; $('gfolder').innerHTML = '<span class="bad">No gallery was found for this lane.</span>'; }
-    $('cards').innerHTML = cards.map(EVENT ? eventCard : plainCard).join('');
+    if (EVENT && cards.length) {
+      $('cards').className = 'gal';
+      $('cards').innerHTML = `<nav class="gal-list" aria-label="examples">${galleryList()}</nav><div class="gal-detail" id="galDetail"></div>`;
+      document.querySelectorAll('[data-pick]').forEach(b => b.onclick = () => pick(+b.dataset.pick));
+      pick(0);
+    } else $('cards').innerHTML = cards.map(EVENT ? eventCard : plainCard).join('');
     document.querySelectorAll('[data-run]').forEach(b => b.onclick = () => runCard(+b.dataset.run));
+    document.querySelectorAll('[data-open]').forEach(b => b.onclick = () => {
+      const i = +b.dataset.open, panes = $(`panes-${i}`), open = panes.hidden;
+      panes.hidden = !open; $(`card-${i}`).classList.toggle('open', open); b.textContent = open ? 'Close ▴' : 'Open ▾';
+    });
     document.querySelectorAll('[data-put]').forEach(b => b.onclick = () => {
       const c = cards[+b.dataset.put];
       if (EVENT) { $('box').value = pretty(c.send); pyShow(c.send); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }

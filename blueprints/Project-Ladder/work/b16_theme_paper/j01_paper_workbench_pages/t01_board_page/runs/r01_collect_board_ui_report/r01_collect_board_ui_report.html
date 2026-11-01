@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="haipipe-built" content="2026-10-31 15:44:20.043484">
+<title>Board Report UI</title>
+<!-- GENERATED FILE by haipipe-interaction scripts/collect.py from this Run's question_collection.md: change the questions there
+     and build again, never this page. -->
+<style>
+:root{--bg:#fff;--fg:#1c1c1c;--mut:#6f6f6b;--faint:#9aa0a6;--line:#e3e3e6;--on:#1864ab;--wash:#e7f5ff;--soft:#f6f6f7;--prop:#b35c00;--ok:#2b8a3e;--red:#c92a2a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161719;--fg:#e8e8e6;--mut:#a0a09c;--faint:#7c828a;--line:#2c2e33;--on:#91caff;--wash:#253749;--soft:#1d1f22;--prop:#e4bd62;--ok:#8ce99a;--red:#ff8787}}
+:root[data-theme="dark"]{--bg:#161719;--fg:#e8e8e6;--mut:#a0a09c;--faint:#7c828a;--line:#2c2e33;--on:#91caff;--wash:#253749;--soft:#1d1f22;--prop:#e4bd62;--ok:#8ce99a;--red:#ff8787}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:14.5px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+a{color:var(--on)}
+code{font:12.5px ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--soft);border-radius:4px;padding:0 4px}
+.wrap{max-width:760px;margin:0 auto;padding:20px 16px 24px}
+.wrap:has(.previews){max-width:1180px}
+.previews{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin:8px 0}
+.pv{margin:0;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.pv figcaption{display:flex;justify-content:space-between;padding:4px 10px;font-size:12.5px;border-bottom:1px solid var(--line)}
+.pv-frame{position:relative;height:300px;overflow:hidden;cursor:pointer;background:#fff}
+.pv-frame iframe{width:200%;height:200%;border:0;transform:scale(.5);transform-origin:0 0;pointer-events:none}
+.pv-frame img{width:100%;display:block}
+.pv-hit{position:absolute;inset:0}
+.pv.on{border-color:var(--on);box-shadow:0 0 0 2px var(--wash)}
+.label{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--red);margin:0 0 4px;font-weight:600;overflow-wrap:anywhere}
+h1{font-size:22px;margin:0 0 4px}
+.lead{color:var(--mut);margin:0 0 16px}
+.card{border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin:0 0 12px}
+.card h2{font-size:16px;margin:0 0 4px;display:flex;gap:8px;align-items:baseline}
+.card h2 .qid{color:var(--on)}
+.card h2 .state{margin-left:auto;font-size:12px;color:var(--prop);font-weight:600}
+.why{margin:0 0 8px;color:var(--mut)}
+pre.sketch{background:var(--soft);border-radius:8px;padding:8px 10px;overflow-x:auto;font:12px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;margin:0 0 8px}
+img.pic{max-width:100%;max-height:220px;border:1px solid var(--line);border-radius:8px;margin:0 0 8px}
+fieldset{border:0;margin:0;padding:0}
+.ask{font-weight:600;padding:0;margin:0 0 6px}
+.opt{display:flex;gap:8px;align-items:baseline;padding:5px 10px;border:1px solid var(--line);border-radius:8px;margin:0 0 4px;cursor:pointer}
+.opt:has(input:checked){border-color:var(--on);background:var(--wash)}
+.opt .rec{font-size:11px;color:var(--ok);border:1px solid var(--ok);border-radius:6px;padding:0 5px;margin-left:8px;white-space:nowrap}
+.because{font-size:13px;color:var(--mut);margin:4px 0 6px}
+textarea{width:100%;font:inherit;font-size:13.5px;padding:5px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);resize:vertical}
+textarea.note{min-height:32px;field-sizing:content}
+#out{min-height:120px;font:12px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--soft)}
+.send{position:sticky;bottom:0;background:var(--bg);border-top:1px solid var(--line);padding:8px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center}
+button{font:inherit;font-size:14px;border:1px solid var(--on);background:var(--on);color:var(--bg);border-radius:8px;padding:6px 16px;cursor:pointer}
+button.quiet{background:transparent;color:var(--on)}
+#copied{font-size:13px;color:var(--ok)}
+details.box{margin:4px 0 0;color:var(--mut);font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<p class="label">Questions for you · r01_collect_board_ui_report · b16.j01.t01-s32:theme_paper.paper_workbench_pages.board_page @ board_ui_report</p>
+<h1>Board Report UI</h1>
+<p class="lead">Two choices for s32; my pick is ticked. My pick is selected; change any, then Copy feedback and paste it to me.
+The questions as Markdown: <a href="question_collection.md">question_collection.md</a>.</p>
+<section class="card" id="Q1"><h2><span class="qid">Q1</span>Opening view<span class="state" id="state-Q1"></span></h2><p class="why">A Board opens on Report; which view a reader sees first decides what they check first.</p><fieldset><legend class="ask">Which view does the Board's Report open on?</legend><label class="opt"><input type="radio" name="Q1" value="A" checked><span><b>A</b> Findings: each question and its answer.<span class="rec">my pick</span></span></label><label class="opt"><input type="radio" name="Q1" value="B"><span><b>B</b> MindMap: questions and versions as a map.</span></label></fieldset><div class="previews"><figure class="pv" data-q="Q1" data-key="A"><figcaption><b>A</b><a href="option-a.html" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="var r=document.querySelector('input[name=\'Q1\'][value=\'A\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><iframe src="option-a.html" loading="lazy" title="option A" tabindex="-1"></iframe><span class="pv-hit"></span></div></figure><figure class="pv" data-q="Q1" data-key="B"><figcaption><b>B</b><a href="option-b.html" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="var r=document.querySelector('input[name=\'Q1\'][value=\'B\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><iframe src="option-b.html" loading="lazy" title="option B" tabindex="-1"></iframe><span class="pv-hit"></span></div></figure></div><p class="because">Why A: Answers first; the map is one click away.</p><textarea class="note" id="note-Q1" rows="1" placeholder="Note (optional)"></textarea></section><section class="card" id="Q2"><h2><span class="qid">Q2</span>View buttons<span class="state" id="state-Q2"></span></h2><p class="why">The view-button-list as drawn: MindMap · Findings · Status · Questions.</p><fieldset><legend class="ask">Are these the right views here?</legend><label class="opt"><input type="radio" name="Q2" value="A" checked><span><b>A</b> Yes, as drawn.<span class="rec">my pick</span></span></label><label class="opt"><input type="radio" name="Q2" value="B"><span><b>B</b> No; my note says what changes.</span></label></fieldset><div class="previews"><figure class="pv" data-q="Q2" data-key="A"><figcaption><b>A</b><a href="option-a.html" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="var r=document.querySelector('input[name=\'Q2\'][value=\'A\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><iframe src="option-a.html" loading="lazy" title="option A" tabindex="-1"></iframe><span class="pv-hit"></span></div></figure></div><p class="because">Why A: Each view answers one question; none repeats.</p><textarea class="note" id="note-Q2" rows="1" placeholder="Note (optional)"></textarea></section>
+<details class="box"><summary>The text Copy feedback sends</summary><textarea id="out" readonly></textarea></details>
+</div>
+<div class="send"><button type="button" data-copy>Copy feedback</button><button type="button" class="quiet" id="reset">Back to my picks</button><span id="copied"></span></div>
+<script type="application/json" id="form-data">{"run": "r01_collect_board_ui_report", "title": "Board Report UI", "built": "2026-10-31 15:44:20.043484", "questions": [{"id": "Q1", "title": "Opening view", "pick": "A", "options": [{"key": "A", "text": "Findings: each question and its answer."}, {"key": "B", "text": "MindMap: questions and versions as a map."}]}, {"id": "Q2", "title": "View buttons", "pick": "A", "options": [{"key": "A", "text": "Yes, as drawn."}, {"key": "B", "text": "No; my note says what changes."}]}]}</script>
+<script>
+(function(){
+  var FORM = JSON.parse(document.getElementById('form-data').textContent);
+  var KEY = 'haipipe-interaction:' + location.pathname, OLD = 'haipipe-collect:' + location.pathname;   // OLD: answers kept before the rename
+  function load(){ try { return JSON.parse(localStorage.getItem(KEY) || localStorage.getItem(OLD) || '{}'); } catch (e) { return {}; } }
+  function save(s){ try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {} }
+  function picked(q){ var c = document.querySelector('input[name="' + q.id + '"]:checked'); return c ? c.value : ''; }
+  function note(q){ return document.getElementById('note-' + q.id).value; }
+  function option(q, key){ for (var i = 0; i < q.options.length; i++) { if (q.options[i].key === key) return q.options[i]; } return null; }
+  function stamp(){
+    var d = new Date(); function p(n){ return (n < 10 ? '0' : '') + n; }
+    return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+  }
+  function text(){
+    var out = ['haipipe-interaction answers · ' + FORM.run + ' · ' + FORM.title + ' · ' + stamp(),
+               'form: ' + decodeURIComponent(location.pathname)];
+    if (FORM.built) out.push('built: ' + FORM.built);          // which build of the form these picks were made on
+    FORM.questions.forEach(function(q){
+      var key = picked(q), o = option(q, key), line = q.id + ' · ' + q.title + ': ';
+      line += o ? key + ' · ' + o.text : '(no option picked)';
+      if (o && q.pick && key !== q.pick) line += ' (changed from ' + q.pick + ')';
+      out.push(line);
+      var n = note(q).trim();
+      if (n) out.push('   note: ' + n.split('\n').join('\n         '));
+    });
+    return out.join('\n') + '\n';
+  }
+  function refresh(){
+    var s = {};
+    FORM.questions.forEach(function(q){
+      var o = option(q, picked(q)); s[q.id] = {pick: picked(q), text: o ? o.text : '', note: note(q)};
+      var words = [];
+      if (q.pick && s[q.id].pick && s[q.id].pick !== q.pick) words.push('changed');
+      if (s[q.id].note.trim()) words.push('note');
+      document.getElementById('state-' + q.id).textContent = words.join(' · ');
+    });
+    save(s);
+    document.getElementById('out').value = text();
+    document.getElementById('copied').textContent = '';
+  }
+  function restore(){
+    var s = load();
+    FORM.questions.forEach(function(q){
+      var a = s[q.id]; if (!a) return;
+      var key = a.text ? (q.options.filter(function(o){ return o.text === a.text; })[0] || {}).key : a.pick;   // by its text
+      var r = key && document.querySelector('input[name="' + q.id + '"][value="' + key + '"]');
+      if (r) r.checked = true;
+      if (a.note) document.getElementById('note-' + q.id).value = a.note;
+    });
+  }
+  function done(ok){ document.getElementById('copied').textContent = ok ? 'Copied: paste it into the chat' : 'Open the text below, select it and copy'; }
+  function copy(){
+    var box = document.getElementById('out'); box.value = text();
+    function fallback(){ box.closest('details').open = true; box.focus(); box.select(); var ok = false; try { ok = document.execCommand('copy'); } catch (e) {} done(ok); }
+    if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(box.value).then(function(){ done(true); }, fallback); }
+    else { fallback(); }
+  }
+  function reset(){
+    try { localStorage.removeItem(KEY); localStorage.removeItem(OLD); } catch (e) {}
+    FORM.questions.forEach(function(q){
+      document.querySelectorAll('input[name="' + q.id + '"]').forEach(function(r){ r.checked = r.value === q.pick; });
+      document.getElementById('note-' + q.id).value = '';
+    });
+    refresh();
+  }
+  restore(); refresh();
+  document.addEventListener('change', refresh);
+  /* the chosen option's preview is outlined, as its radio is */
+  function lightPreviews(){document.querySelectorAll('.pv').forEach(function(f){
+    var r=document.querySelector('input[name="'+f.dataset.q+'"][value="'+f.dataset.key+'"]');f.classList.toggle('on',!!(r&&r.checked));});}
+  document.addEventListener('change', lightPreviews); lightPreviews();
+  document.addEventListener('input', function(e){ if (e.target.classList.contains('note')) refresh(); });
+  document.querySelectorAll('[data-copy]').forEach(function(b){ b.addEventListener('click', copy); });
+  document.getElementById('reset').addEventListener('click', reset);
+})();
+</script>
+</body>
+</html>

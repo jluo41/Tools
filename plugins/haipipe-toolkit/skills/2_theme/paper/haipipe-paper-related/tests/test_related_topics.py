@@ -53,14 +53,14 @@ class Scaffold(unittest.TestCase):
             quiet(rt.make_map, b)
             quiet(rt.make_group, b, "chatbot audits", "chatbot-audits", offline=True)
             quiet(rt.make_group, b, "doctor recommenders", "doctor-recommenders", offline=True)
-            names = sorted(p.name for p in (b / "studio").iterdir() if p.is_dir())
+            names = sorted(p.name for p in b.iterdir() if p.is_dir() and p.name.startswith("s"))
             self.assertEqual(names, ["s10-related-work-map", "s11-related-work-chatbot-audits",
                                      "s12-related-work-doctor-recommenders"])
-            face = (b / "studio/s11-related-work-chatbot-audits/s11-related-work-chatbot-audits.md").read_text()
+            face = (b / "s11-related-work-chatbot-audits/s11-related-work-chatbot-audits.md").read_text()
             self.assertIn("item: Ada et al. 2026", face)
             self.assertNotIn("Bo 2025", face)                      # another type's paper stays in its own topic
-            self.assertIn("Related work", (b / "studio/_groups.txt").read_text())
-            self.assertTrue((b / "studio/s10-related-work-map/build_s10_related_work_map.py").is_file())
+            self.assertIn("Related work", (b / "_studio_groups.txt").read_text())
+            self.assertTrue((b / "s10-related-work-map/build_s10_related_work_map.py").is_file())
 
     def test_check_names_what_is_missing_then_passes(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -73,7 +73,7 @@ class Scaffold(unittest.TestCase):
             self.assertIn("in no s11-s19 topic", out)
             quiet(rt.make_group, b, "chatbot audits", "chatbot-audits", offline=True)
             quiet(rt.make_group, b, "doctor recommenders", "doctor-recommenders", offline=True)
-            face = b / "studio/s10-related-work-map/s10-related-work-map.md"
+            face = b / "s10-related-work-map/s10-related-work-map.md"
             face.write_text(face.read_text().replace(
                 "  placements: {}", '  placements:\n    "Ada et al. 2026": {at: TR, label: a}\n'
                                     '    "Bo 2025": {at: BL, label: b}'))
@@ -102,7 +102,7 @@ class Table(unittest.TestCase):
             rows = {r["item"].split(" · ")[0]: r for r in rt.rm.related_rows(b)}
             self.assertEqual(rows["Ada et al. 2026"]["feeds"], "s10, s11")
             self.assertEqual(rows["Bo 2025"]["feeds"], "s10")          # another type's row is left alone
-            face = (b / "studio/s11-related-work-chatbot-audits/s11-related-work-chatbot-audits.md").read_text()
+            face = (b / "s11-related-work-chatbot-audits/s11-related-work-chatbot-audits.md").read_text()
             self.assertIn("      title: Chatbots name doctors", face)
             self.assertIn("      authors: ❓ the authors from the DOI record", face)
             with self.assertRaises(SystemExit):
@@ -120,7 +120,7 @@ class Band(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             b = board(Path(tmp))
             rt.draw_once = lambda builder: "drawn"
-            topic(b, "s01-ideation", "See s05 and studio/s06-related-work-a/ (https://x.org/s05). Read in s06-s10.\n",
+            topic(b, "s01-ideation", "See s05 and s06-related-work-a/ (https://x.org/s05). Read in s06-s10.\n",
                   tag="Ideation")
             m = topic(b, "s05-related-work-map", "```yaml\nmap:\n  title: x\n```\n\ns05-D01 · one map. s10 reads B.\n")
             (m / ".s05-related-work-map.seed.json").write_text("{}")
@@ -135,7 +135,7 @@ class Band(unittest.TestCase):
             self.assertEqual(sorted(p.name for p in studio.iterdir() if p.is_dir()),
                              ["s01-ideation", "s10-related-work-map", "s11-related-work-a", "s12-related-work-b"])
             ideation = (studio / "s01-ideation/s01-ideation.md").read_text()
-            self.assertIn("See s10 and studio/s11-related-work-a/ (https://x.org/s05). Read in s11-s12.", ideation)
+            self.assertIn("See s10 and s11-related-work-a/ (https://x.org/s05). Read in s11-s12.", ideation)
             mp = (studio / "s10-related-work-map/s10-related-work-map.md").read_text()
             self.assertIn("renamed-from: s05-related-work-map", mp.splitlines()[2])
             self.assertIn("s10-D01 · one map. s12 reads B.", mp)

@@ -423,12 +423,12 @@ def split_plan(board: Path, source_path: Path):
             else:
                 selected, local = [], []
                 origin = {"x": 0, "y": 0}
-            # A folded page's scene lands in its own studio/draw/ lane; a flat
+            # A folded page's scene lands in its own draw/ lane (no studio/, JL 261031); a flat
             # page's stays beside the group scene. The manifest's `source` is
             # relative to the group draw dir either way, so verify/compose/
             # sync resolve both forms through the same join.
             page_name = f"{page['id']}.excalidraw"
-            page_draw = (board / page["dir"] / "studio" / "draw"
+            page_draw = (board / page["dir"] / "draw"
                          if page.get("dir") else draw_dir)
             page_path = page_draw / page_name
             page_extension = {
@@ -531,7 +531,7 @@ def sync_plan(board: Path):
         additions = []
         for page in missing:
             page_name = f"{page['id']}.excalidraw"
-            page_draw = (board / page["dir"] / "studio" / "draw"
+            page_draw = (board / page["dir"] / "draw"
                          if page.get("dir") else group_path.parent)
             page_path = page_draw / page_name
             if page_path.exists():

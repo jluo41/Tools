@@ -1,0 +1,42 @@
+{
+ "topic": "s01-display-inventory",
+ "style": "sketch-notes",
+ "source": "s01-display-inventory.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Displays as they are: 260 units against six wants",
+   "points": [
+    "What a display is today, measured on disk on 261016, so JL can decide what display should be",
+    "A display unit is one folder holding one figure or table (Display<N>-<slug>/, or any folder whose…",
+    "We walked WellDoc-SPACE, DrFirst-SPACE, Physician-SPACE, REACH-SPACE and Knowledge-SPACE (not…"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and an inventory of every display unit on disk measured against six wants, for whoever decides what a display should…",
+    "a data"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "Still open",
+   "points": [
+    "What counts as a display's data source: a manifest origin, a README source: line, or only…",
+    "Do the 170 carried assets with no recipe (old PDFs and table-body.tex from submitted papers) have…",
+    "Acceptance: no live display has a ✅"
+   ],
+   "leaning": "",
+   "ask": "Should the 3 homes collapse to one? 96 delivery copies are fine as copies",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

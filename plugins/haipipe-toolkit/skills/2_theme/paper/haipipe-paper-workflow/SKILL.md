@@ -8,8 +8,8 @@ description: >-
   whether work may be released, or what may be compiled next. Trigger: paper
   journey, paper-runs, workflow, Run routing, gate, /haipipe-paper-workflow.
 metadata:
-  version: "1.9.4"
-  last_updated: "2026-10-26"
+  version: "1.9.5"
+  last_updated: "2026-11-01"
 ---
 
 # /haipipe-paper-workflow · govern Paper Runs, test gates, and route next work
@@ -68,7 +68,7 @@ controller steps and compatibility labels do not add Run identities.
 
 | Artifact | Owns | Does not own |
 |---|---|---|
-| Ideation (`studio/s01-ideation/` + Questions) | candidate projections, comparisons, venue-fit projection, projection of the final I3 handoff, and its reciprocal route to one Story | owning the I3 decision, minting another selection, evidence execution, binding desk rules, or manuscript prose |
+| Ideation (`s01-ideation/` + Questions) | candidate projections, comparisons, venue-fit projection, projection of the final I3 handoff, and its reciprocal route to one Story | owning the I3 decision, minting another selection, evidence execution, binding desk rules, or manuscript prose |
 | Venue (`venues/<venue>/`) | one target/category's typed and versioned external-desk contract | choosing the target or ranking Ideas |
 | Story (a telling's studio topic, its Board Questions and reports) | seed, research questions, Discovery and Task Roadmaps, the selected telling | executing Runs, replacing work records, or storing manuscript Section prose |
 | version face (`## Narrative`, `## Questions`) | one send's Section Narrative and compile order, its standing questions | changing the telling's research meaning |
@@ -175,12 +175,12 @@ only the named human receipt can release or close it.
 
 ## 🗃 File-system projection
 
-Layout: the ladder (the Story as `studio/` topics and `reports/` Questions, `jNN_v<MMDD>_<desk>/` per version) is current; the layout below is still read. Both are in `haipipe-paper/ref/paper-ladder.md`.
+Layout: the ladder (the Story as `sNN-…` topics beside the Jobs and `reports/` Questions, `jNN_writing_v<MMDD>_<desk>/` per version) is current; the layout below is still read. Both are in `haipipe-paper/ref/paper-ladder.md`.
 
 ```text
-Paper-<Slug>/                           Board: board.md · studio/ · related/ · reports/ · runs/ · venues/
-├── delivery/jNN_<version>/             the Board's: each version's generated Compile projection
-└── jNN_v<MMDD>_<desk>/                 a version: its face (## Narrative · ## Questions), reports/ · runs/
+Paper-<Slug>/                           Board: board.md · sNN-… topics · related/ · reports/ · runs/ · venues/
+├── delivery/<Job>/                      the Board's: each version's generated Compile projection
+└── jNN_writing_v<MMDD>_<desk>/         a version (j11 first): its face (## Narrative · ## Questions), reports/ · runs/
     ├── t00_abstract/ · t0N_<title>/    Section Tasks (Main), t2N_<title>/ (Appendix)
     ├── t3N_<title>/                    letters: t31_cover-letter · t32_response
     └── reports/qNN_<kind>-<MMDD>/      a comments report

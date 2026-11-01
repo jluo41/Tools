@@ -114,10 +114,17 @@ def dashed(dr, p, q, col, w, dash=10):
 def render(src, dst, s=None):
     data = json.loads(Path(src).read_text(encoding="utf-8"))   # a drawing is UTF-8 (Windows reads cp1252 by default)
     els = [e for e in data["elements"] if not e.get("isDeleted")]
-    x0 = min(e["x"] for e in els) - 30
-    y0 = min(e["y"] for e in els) - 30
-    W = max(e["x"] + e["width"] for e in els) - x0 + 30
-    H = max(e["y"] + e["height"] for e in els) - y0 + 30
+
+    def box(e):                        # a line's x, y is its first point, and it may run left or up from there
+        if e.get("points"):
+            xs, ys = [e["x"] + p[0] for p in e["points"]], [e["y"] + p[1] for p in e["points"]]
+            return min(xs), min(ys), max(xs), max(ys)
+        return e["x"], e["y"], e["x"] + e["width"], e["y"] + e["height"]
+    boxes = [box(e) for e in els]
+    x0 = min(b[0] for b in boxes) - 30
+    y0 = min(b[1] for b in boxes) - 30
+    W = max(b[2] for b in boxes) - x0 + 30
+    H = max(b[3] for b in boxes) - y0 + 30
     s = s or min(0.6, 6000 / W)        # a wide multi-frame drawing is scaled to stay under 6000 px
     im = Image.new("RGB", (int(W * s), int(H * s)), "white")
     dr = ImageDraw.Draw(im)

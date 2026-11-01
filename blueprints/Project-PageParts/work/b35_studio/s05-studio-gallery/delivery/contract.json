@@ -1,0 +1,36 @@
+{
+  "id": "s05",
+  "folder": "s05-studio-gallery",
+  "title": "Studio Gallery",
+  "kind": "Gallery",
+  "purpose": "Choose how to organize a Studio by studying real examples.",
+  "audience": "People and agents starting a similar design",
+  "product": "A searchable Studio gallery with main Draws, scope, and delivery links.",
+  "steps": [
+    [
+      "Choose a goal",
+      "Browse Skill and Page design examples."
+    ],
+    [
+      "See why it exists",
+      "Read the purpose and delivery contract."
+    ],
+    [
+      "Explore the design",
+      "Open its main Draw and unresolved choice."
+    ],
+    [
+      "Follow the delivery",
+      "Open the associated product and reusable configuration."
+    ]
+  ],
+  "checks": [
+    "Every example names a real source Studio.",
+    "Draw and delivery links resolve.",
+    "The purpose and intended reader are visible.",
+    "The gallery does not use itself as an example."
+  ],
+  "example": "Study Studio Skill, Studio Page, Mind Map Skill, Mind Map Page and Delivery Skill.",
+  "open": "Should discovery start with a delivery type or a work scenario?",
+  "source": "plugins/haipipe-toolkit/skills/1_base/project/haipipe-studio/ref/gallery.md"
+}

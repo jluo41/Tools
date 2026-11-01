@@ -11,7 +11,7 @@ Block's related/ (what came in), folds inside the Studio, under its topic cards 
 JL 261011: "put the related as the second collapse part in the box of the studio items"); the Block's
 delivery/ (what went out) folds under Related, every result previewed (JL 261014).
 The frame owns the levels, shared Guide, Studio (with Related) and Delivery, the work Spaces, their order and
-dividers, the third row, the Runs panel and the look (Tools/blueprints/b10_project_workbench, Q08 and studio/s02-studio-workbench-skill). A theme
+dividers, the third row, the Runs panel and the look (Tools/blueprints/Project-Ladder/work/b10_project_workbench, Q08 and s02-studio-workbench-skill). A theme
 gives only what each Space holds at each level: `servers/workbench-<theme>/<theme>_theme.py`
 exports `THEME`, a `Theme`. A Space a theme leaves out shows the vanilla default, read from the
 standard folders (the face `.md`, `studio/`, `reports/`, the child `jNN_` / `tNN_` folders,
@@ -229,8 +229,8 @@ def is_project(folder: Path) -> bool:
 
 def theme_of(folder: Path, root: Path) -> str:
     """The theme a folder belongs to: the Theme folder its Block sits in (tasks/ or work/ -> work),
-    counted only inside a Project, so a design Block of the Tools repo (Tools/blueprints/bNN_*) reads
-    as vanilla rather than as the design theme."""
+    counted only inside a Project; the Tools repo's Blocks sit in Projects too since 261028
+    (Tools/blueprints/Project-<name>/work/bNN_*), so they read as the work theme."""
     block = chain(folder, root).get("Block", folder)
     if not is_project(theme_folder(block).parent):
         return "vanilla"
@@ -385,7 +385,7 @@ def vanilla(level: str, folder: Path, root: Path, sub: str = "", theme: "Theme |
     out["Related"] = related_view(folder, root, sub) if level == "Block" else Space()
     out["Idea Studio"] = Space(studio_cards(folder, root), run_types=(
         run_type("run-draw-<sNN>", "add a topic · redraw it · save this session, each a pass",
-                 "/haipipe-studio a topic of {folder}: new topic → studio/sNN-<topic>/ and runs/run-draw-<sNN>/; "
+                 "/haipipe-studio a topic of {folder}: new topic → sNN-<topic>/ and runs/run-draw-<sNN>/; "
                  "redraw or this session → a pass of run-draw-<sNN>.", "haipipe-studio",
                  rows=studio_sessions(folder, root)),))
 
@@ -473,7 +473,7 @@ def vanilla_disk(level: str, face_name: str) -> dict:
         "Idea Studio": (("studio/s*/", "one row per topic"),
                         ("studio/s*/s*.md", "a row's details: decided · open · feeds"),
                         ("studio/s*/*.excalidraw", "the live drawing an open row shows"),
-                        ("runs/run-draw-*/passes/", "a topic's sessions, one pass each")),
+                        ("studio/s*/passes/", "a topic's rounds: a session or a meeting each")),
         "Audience Report": ((face_name, "## Questions: one row per Question, its group"),
                             ("reports/q*/q*.md", "Report: the title and its answer line"),
                             ("reports/q*/q*.excalidraw", "Report: its drawing, live (click to pan and zoom)"),
@@ -560,10 +560,16 @@ DISK_CSS = """
 STAGES = ("explore", "shaping", "agreed", "closed")   # in order; the badge fills one step per stage
 
 
+# An sNN's main delivery type, the one thing besides its deck that it hands over (haipipe-studio, one delivery,
+# JL 261030: "for each delivery, we should also say what is the type, give the main delivery type"): its face's
+# **Delivery type:** line. A deck is never the type: every sNN ends in one.
+DELIVERY_TYPES = ("skill", "ui", "code", "draft", "display", "data")
+
+
 def _note_facts(md: Path | None) -> dict:
     """What a topic's notes file says: its **Topic:** line, stage, decisions, open points, feeds."""
     if not md:
-        return {"topic": "", "decided": 0, "open": 0, "feeds": [], "tags": [], "stage": ""}
+        return {"topic": "", "decided": 0, "open": 0, "feeds": [], "tags": [], "stage": "", "at": "", "dtype": ""}
     text = md.read_text(encoding="utf-8", errors="ignore")
     m = re.search(r"\*\*Topic:\*\*\s*(.+?)(?:\n\s*\n|\Z)", text, re.S)
     topic = re.sub(r"\s+", " ", m.group(1)).strip() if m else ""
@@ -572,7 +578,11 @@ def _note_facts(md: Path | None) -> dict:
     tags = _split_tags(",".join(re.findall(r"(?mi)^\*\*(?:Tags|Type):\*\*[^\S\n]*([^\n]*)", text)))
     stage = re.search(r"(?mi)^\*\*Stage:\*\*[^\S\n]*`?([A-Za-z]+)", text)
     stage = stage.group(1).lower() if stage and stage.group(1).lower() in STAGES else ""
-    return {"topic": topic, "tags": tags, "stage": stage,
+    at = re.search(r"(?mi)^\*\*At:\*\*[^\S\n]*`?([bjt]\d+(?:\.[jt]\d+)*)", text)   # the rung it hangs from (b35 s01-D05)
+    at = at.group(1).lower() if at else ""
+    dtype = re.search(r"(?mi)^\*\*Delivery type:\*\*[^\S\n]*`?([A-Za-z]+)", text)   # the one main thing it hands over
+    dtype = dtype.group(1).lower() if dtype and dtype.group(1).lower() in DELIVERY_TYPES else ""
+    return {"topic": topic, "tags": tags, "stage": stage, "at": "" if re.fullmatch(r"b\d+", at) else at, "dtype": dtype,
             "decided": len(re.findall(r"(?m)^s\d+-D\d+\b", text)),
             "open": len(re.findall(r"(?m)^\d+\.\s", opened.group(1))) if opened else 0,
             # a report's folder name, q08_workbench_base, or its bare id, Q08 (b10 s05 Open 8: s32 wrote `Q08 (...)`)
@@ -623,15 +633,16 @@ def _feed_chip(name: str, folder: Path, root: Path) -> str:
 
 
 def _sessions(topic: Path, folder: Path) -> list:
-    """A topic's sessions: the passes of its soft Run `runs/run-draw-<sNN>/passes/pNN-<MMDD>/`
-    (b10 s02-D27), then the older `chat/` summaries until they move into passes."""
+    """A topic's rounds, newest first: its own `passes/pNN-<MMDD>/` (JL 261029: a Studio is the discussion and its
+    rounds live with it), then an older `runs/run-draw-<sNN>/passes/` beside it, then older `chat/` summaries."""
     out = []
     m = re.match(r"(s\d+)", topic.name)
-    passes = folder / "runs" / f"run-draw-{m.group(1)}" / "passes" if m else None
-    if passes and passes.is_dir():
-        for p in sorted((p for p in passes.iterdir() if p.is_dir()), reverse=True):
-            md = next(iter(sorted(p.glob("*.md"))), None)
-            out.append({"name": p.name, "title": _title(md) if md else p.name, "path": md or p})
+    for passes in ([topic / "passes"] if topic.is_dir() else []) + \
+            ([folder / "runs" / f"run-draw-{m.group(1)}" / "passes"] if m else []):
+        if passes.is_dir():
+            for p in sorted((p for p in passes.iterdir() if p.is_dir()), reverse=True):
+                md = next(iter(sorted(p.glob("*.md"))), None)
+                out.append({"name": p.name, "title": _title(md) if md else p.name, "path": md or p})
     if topic.is_dir() and (topic / "chat").is_dir():
         for md in sorted((topic / "chat").glob("*.md"), reverse=True):
             out.append({"name": md.stem, "title": _title(md), "path": md})
@@ -676,7 +687,7 @@ def _studio_transcripts(topic: Path, root: Path, topic_id: str) -> str:
         try:
             path = (index.parent / str(item.get("file") or "")).resolve()
             path.relative_to(root.resolve())
-            path.relative_to(topic.parent.parent.resolve())                 # inside this topic's Block
+            path.relative_to(topic_owner(topic).resolve())                 # inside this topic's Block
             page = max(1, int(item.get("page") or 1))
             end = max(page, int(item.get("end_page") or page))
         except (OSError, RuntimeError, ValueError, TypeError):
@@ -702,7 +713,7 @@ def _studio_transcripts(topic: Path, root: Path, topic_id: str) -> str:
             try:
                 original = (index.parent / str(item["original_pdf"])).resolve()
                 original.relative_to(root.resolve())
-                original.relative_to(topic.parent.parent.resolve())
+                original.relative_to(topic_owner(topic).resolve())
                 original_page = max(1, int(item.get("original_page") or 1))
                 if original.suffix.lower() == ".pdf" and original.is_file():
                     original_url = _file_url(original, root) + f"#page={original_page}&zoom=page-width"
@@ -867,16 +878,38 @@ def mindmap_module():
     return importlib.import_module("mmmap")
 
 
+def render_module():
+    """haipipe-studio's render_delivery.py: where each piece of an sNN's delivery/ goes, and whether it is there."""
+    import importlib
+    import sys
+    from host_paths import skill_dir
+    scripts = str(skill_dir("haipipe-studio") / "scripts")
+    if scripts not in sys.path:
+        sys.path.insert(0, scripts)
+    return importlib.import_module("render_delivery")
+
+
 def topic_drawings(topic: Path) -> list:
     """A topic folder's drawings, its own first, never an older structured side (mNN)."""
     return sorted((f for f in topic.glob("*.excalidraw") if not is_structured(f)),
                   key=lambda f, own=topic.name + ".excalidraw": (f.name != own, f.name))
 
 
+STUDIO_ITEM = re.compile(r"^s\d+-")
+
+
+def topic_owner(topic: Path) -> Path:
+    """The Block, Job or Task an sNN belongs to: the folder it sits in, or the one above an older studio/."""
+    return topic.parent.parent if topic.parent.name == "studio" else topic.parent
+
+
 def _studio_topics(folder: Path) -> list:
-    """(topic, drawings) for each `studio/sNN-<topic>/`; a loose drawing is its own topic. A topic's mind map
-    is not among its drawings: its row shows it on the Structured side (_topic_row)."""
+    """(topic, drawings) for each sNN of this level: `sNN-<topic>/` beside its Jobs or Tasks (JL 261030: "we just
+    have sNN, along side with jNN, to make it visible directly"), then any in an older `studio/` (a loose drawing
+    there is its own topic). A topic's mind map is not among its drawings: its row shows it on the Structured side."""
     studio, out = folder / "studio", []
+    if folder.is_dir():
+        out += [(p, topic_drawings(p)) for p in sorted(folder.iterdir()) if p.is_dir() and STUDIO_ITEM.match(p.name)]
     if studio.is_dir():
         for p in sorted(studio.iterdir()):
             if p.is_dir() and not p.name.startswith(("_", ".")):
@@ -2256,8 +2289,79 @@ def _topic_rows(folder: Path, root: Path, words: tuple) -> str:
     return "".join(_topic_row(t, d, root, folder) for t, d in _studio_topics(folder) if any(w in t.name for w in words))
 
 
+def _rungs(folder: Path) -> list:
+    """The ladder names from the Block down to this folder, ['b17', 'j01', 't03']; [] above a Block."""
+    out = []
+    while re.fullmatch(r"[bjt]\d+", folder.name.split("_")[0]):
+        out.insert(0, folder.name.split("_")[0])
+        if out[0].startswith("b"):
+            return out
+        folder = folder.parent
+    return []
+
+
+def topic_address(topic: Path, at: str = "") -> str:
+    """A Studio topic's address, b17.j01-s07: its Block, the rung it hangs from (the face's **At:**, else the
+    folder whose studio/ holds it), then its number (b35 s01-D06). Always shown after the folder name (s01-D03)."""
+    num = re.match(r"s\d+", topic.name)
+    ladder = _rungs(topic_owner(topic))
+    if not num or not ladder:
+        return ""
+    rungs = [ladder[0]] + at.split(".") if at else ladder
+    return ".".join(rungs) + "-" + num.group(0)
+
+
+def _short(name: str, words: int = 3) -> str:
+    """A folder's name without its number, cut to its first words: 'b02_B_case_visits_for_cohort' -> 'B_case_visits'."""
+    rest = re.sub(r"^[bjtsr]\d+[_-]?", "", name)
+    rest = "_".join(re.split(r"[_.-]+", rest)[:words]) if words else re.sub(r"[.-]+", "_", rest)
+    return rest or name                          # '-' and '.' become '_': they separate rungs in a label
+
+
+def topic_label(topic: Path, at: str = "") -> tuple[str, str]:
+    """How people read a topic (JL 261029: "let's do b17-s04:theme_work @ workbench_page_structure"): the address, a
+    colon, each rung's short name joined by dots, then ' @ ' and the topic: b17.j01.t03-s09:theme_work.tables.cut @
+    which_cut_first; returns ('b17.j01.t03-s09:theme_work.tables.cut @ ', 'which_cut_first'), ('', name) outside a Block."""
+    address, ladder = topic_address(topic, at), _rungs(topic_owner(topic))
+    if not address:
+        return "", topic.name
+    here = topic_owner(topic)
+    for _ in ladder[1:]:
+        here = here.parent
+    names = [_short(here.name)]
+    for rung in (at.split(".") if at else ladder[1:]):
+        found = sorted(p for p in here.glob(f"{rung}[_-]*") if p.is_dir())
+        if not found:
+            break
+        here = found[0]
+        names.append(_short(here.name))
+    return f"{address}:" + ".".join(names) + " @ ", _short(topic.name, 0)
+
+
+def _hung_here(folder: Path, root: Path, seen: set) -> list:
+    """The Block's topics whose face says **At:** this Job or Task, or a Task below it (b35 s01-D05: one studio/
+    per Block, each topic names its rung)."""
+    rungs = _rungs(folder)
+    block = folder
+    for _ in rungs[1:]:
+        block = block.parent
+    if len(rungs) < 2:
+        return []
+    here, out = ".".join(rungs[1:]), []
+    for topic, drawings in _studio_topics(block):
+        at = _note_facts(_notes(topic)).get("at", "") if topic.is_dir() else ""
+        actual = topic.resolve()
+        if not (at == here or at.startswith(here + ".")) or actual in seen or root not in actual.parents:
+            continue
+        seen.add(actual)
+        out.append((block, topic, [d for d in drawings if root in d.resolve().parents]))
+    return out
+
+
 def studio_inventory(folder: Path, root: Path) -> list:
-    """One Block list, including existing Job/Task topics until their files are moved.
+    """The level's own topics, then its children's: a Block adds its Jobs' and Tasks', a Job its Tasks'
+    (JL 261028; older Job and Task studio/ folders stay readable), then the Block's topics hung at this rung by
+    their face's **At:** (b35 s01-D05: one studio/ per Block).
 
     Keep each topic's source for its feeds and sessions. Never enter an archive or a link
     outside this Block/root, and count a linked topic only once.
@@ -2271,6 +2375,8 @@ def studio_inventory(folder: Path, root: Path) -> list:
         sources += jobs + children(folder, "Job")
         for job in jobs:
             sources += children(job, "Job")
+    elif level_of(folder) == "Job":
+        sources += children(folder, "Job")
     out, seen = [], set()
     for source in sources:
         resolved = source.resolve()
@@ -2283,6 +2389,8 @@ def studio_inventory(folder: Path, root: Path) -> list:
             seen.add(actual)
             drawings = [d for d in drawings if root in d.resolve().parents and folder in d.resolve().parents]
             out.append((source, topic, drawings))
+        if source == folder:
+            out += _hung_here(folder, root, seen)              # the Block's topics at this rung, after its own
     return out
 
 
@@ -2352,9 +2460,17 @@ GROUP_SHELVES = {"studio": ("topic", "Studio"), "related": ("item", "Related"), 
                  "delivery": ("result", "Delivery")}
 
 
+def group_file(owner: Path, shelf: str = "studio") -> Path:
+    """Where a bar's group order lives: <shelf>/_groups.txt; with no studio/ folder (sNN beside the Jobs, JL 261030)
+    the Studio's order is the level's own _studio_groups.txt."""
+    if shelf == "studio" and not (owner / "studio").is_dir():
+        return owner / "_studio_groups.txt"
+    return owner / shelf / GROUP_FILE
+
+
 def studio_group_order(owner: Path, shelf: str = "studio") -> list:
-    """The group names in <shelf>/_groups.txt (studio/ or related/), in order; [] when the file is missing."""
-    f = owner / shelf / GROUP_FILE
+    """The group names in the level's group file (group_file), in order; [] when the file is missing."""
+    f = group_file(owner, shelf)
     if not f.is_file():
         return []
     names, seen = [], set()
@@ -2371,8 +2487,9 @@ def _write_group_order(owner: Path, names: list, shelf: str = "studio") -> None:
             "related": "items are the related/related.md rows whose group cell names it",
             "reports": "Questions are the register rows whose group: line names it",
             "delivery": "results are the delivery/result_groups.md rows whose group cell names it"}[shelf]
-    (owner / shelf).mkdir(exist_ok=True)
-    (owner / shelf / GROUP_FILE).write_text(
+    f = group_file(owner, shelf)
+    f.parent.mkdir(exist_ok=True)
+    f.write_text(
         f"# {shelf.title()} groups of this level, in button order. The workbench writes this file when a group is\n"
         f"# made, moved or deleted; a group's {what}.\n"
         + "".join(n + "\n" for n in names), encoding="utf-8")

@@ -118,17 +118,17 @@ class WorkbenchSurfaceTest(unittest.TestCase):
         self.assertEqual(out, page_home / "draft" / "skill")
         self.assertTrue(out.is_dir())
 
-    def test_studio_writer_is_nested_while_flat_lane_remains_readable(self):
+    def test_studio_writer_is_beside_the_face_while_old_nested_lane_remains_readable(self):
+        # studio/ folders are gone (JL 261031, b35 r02 Q2 C): the lane sits beside the page face
         page_home = self.root / "S-Test"
         flat = page_home / "chat"
         flat.mkdir(parents=True)
-        self.assertEqual(studio_lane_dir(page_home, "chat"),
-                         page_home / "studio" / "chat")
+        self.assertEqual(studio_lane_dir(page_home, "chat"), page_home / "chat")
         self.assertEqual(studio_lane_dirs(page_home, "chat"), [flat])
 
         nested = page_home / "studio" / "chat"
         nested.mkdir(parents=True)
-        self.assertEqual(studio_lane_dirs(page_home, "chat"), [nested, flat])
+        self.assertEqual(studio_lane_dirs(page_home, "chat"), [flat, nested])
 
     def test_export_target_creates_canonical_studio_lane(self):
         page_home = self.root / "S-Test"
@@ -146,7 +146,7 @@ class WorkbenchSurfaceTest(unittest.TestCase):
         source, out, _board, err = Fake()._export_target({}, "chat")
         self.assertIsNone(err)
         self.assertEqual(source, page)
-        self.assertEqual(out, page_home / "studio" / "chat")
+        self.assertEqual(out, page_home / "chat")
         self.assertTrue(out.is_dir())
 
     def test_delivery_surface_links_only_nested_current_paths(self):

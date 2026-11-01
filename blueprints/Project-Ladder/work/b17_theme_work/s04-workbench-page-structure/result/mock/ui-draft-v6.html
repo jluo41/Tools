@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Workbench UI Draft v6</title>
+<!-- s04 design draft v6 (261028): the b17 Studio page as a clean app page. The old workbench's colours
+     (blue #1864ab on white, light grey lines), a calmer frame: a sidebar tree on the left, the page in the
+     middle, a short fixed menu on the right. A mock, not workbench output; b17 values read from disk. -->
+<style>
+:root{--bg:#ffffff;--side:#f8f9fa;--fg:#1c1c1c;--mut:#6f7378;--faint:#9aa0a6;--line:#e3e3e6;--soft:#f1f3f5;--on:#1864ab;--wash:#e7f5ff;--key:#fff8db;--keyline:#f5d76e;--red:#c92a2a;--redwash:#fff5f5;--shadow:0 1px 2px rgba(16,24,40,.05),0 1px 3px rgba(16,24,40,.06)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161719;--side:#1b1d21;--fg:#e8e8e8;--mut:#a3a8ae;--faint:#7c828a;--line:#2c2f35;--soft:#22252a;--on:#74b4f0;--wash:#1b2b3c;--key:#3a3420;--keyline:#6b5a1e;--red:#ff8787;--redwash:#2e1d1d;--shadow:none}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.app{display:grid;grid-template-columns:248px minmax(0,1fr) 200px;min-height:100vh}
+@media(max-width:1100px){.app{grid-template-columns:220px minmax(0,1fr)}.menu{display:none}}
+@media(max-width:760px){.app{grid-template-columns:1fr}.tree{display:none}}
+
+/* left: siblings, and the current page's children */
+.tree{background:var(--side);border-right:1px solid var(--line);padding:22px 12px;position:sticky;top:0;height:100vh;overflow:auto}
+.tree .head{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);padding:0 10px 10px}
+.tree a{display:block;padding:5px 10px;border-radius:7px;font-size:13.5px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tree a:hover{background:var(--soft);color:var(--fg)}
+.tree a.on{background:var(--wash);color:var(--on);font-weight:600}
+.tree .kids{margin:2px 0 6px 18px;padding-left:10px;border-left:1px solid var(--line);font-size:12.5px;color:var(--faint);padding-top:3px;padding-bottom:3px}
+
+/* middle: the page */
+.page{padding:30px 48px 60px;max-width:1040px;width:100%;justify-self:center}
+.crumb{font-size:13px;color:var(--mut)}.crumb a{color:var(--on)}.crumb span{margin:0 6px;color:var(--faint)}
+h1{font-size:30px;line-height:1.2;font-weight:700;letter-spacing:-.01em;margin:10px 0 8px}
+.purpose{font-size:15.5px;color:var(--mut);max-width:780px;margin:0 0 16px}
+.facts{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:26px}
+.pill{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--keyline);background:var(--key);border-radius:999px;padding:4px 12px;font-size:13px}
+.pill.plain{border-color:var(--line);background:var(--bg);color:var(--mut)}
+.wait{display:inline-flex;align-items:center;gap:8px;background:var(--redwash);color:var(--red);border-radius:999px;padding:4px 12px;font-size:13px;font-weight:500}
+.wait:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--red)}
+
+.views{display:flex;flex-wrap:wrap;gap:8px;padding-bottom:18px;margin-bottom:22px;border-bottom:1px solid var(--line)}
+.views a{display:inline-flex;align-items:center;gap:7px;padding:6px 14px;border:1px solid var(--line);border-radius:8px;font-size:14px;background:var(--bg);box-shadow:var(--shadow)}
+.views a:hover{border-color:#ced4da}
+.views a.on{background:var(--wash);border-color:var(--on);color:var(--on);font-weight:600}
+.views a b{font-weight:500;font-size:12px;color:var(--faint)}
+.views a.on b{color:var(--on)}
+.views a.add{border-style:dashed;box-shadow:none;color:var(--faint)}
+
+.card{display:grid;grid-template-columns:200px minmax(0,1fr);gap:20px;padding:16px;border:1px solid var(--line);border-radius:12px;margin-bottom:14px;background:var(--bg);box-shadow:var(--shadow);transition:border-color .15s,box-shadow .15s}
+.card:hover{border-color:#ced4da;box-shadow:0 4px 12px rgba(16,24,40,.08)}
+.thumb{width:200px;height:120px;border-radius:8px;border:1px solid var(--line);background:#fff;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.thumb img{width:100%;height:100%;object-fit:contain}
+.thumb.none{background:var(--soft);color:var(--faint);font-size:12px}
+.card .top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.card .name{font-weight:650;font-size:16px;overflow-wrap:anywhere}
+.card p{margin:6px 0 10px;color:var(--mut);font-size:14px}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:12px;border-radius:999px;padding:1px 9px;background:var(--soft);color:var(--mut)}
+.tag.stage{background:var(--wash);color:var(--on)}
+.ctl{display:flex;align-items:center;gap:10px;flex:none}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;font-size:12.5px}
+.seg span{padding:3px 10px;color:var(--mut)}.seg span.on{background:var(--wash);color:var(--on)}
+.open{width:28px;height:28px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;color:var(--on)}
+.open:hover{background:var(--soft)}
+@media(max-width:760px){.page{padding:22px 16px}.card{grid-template-columns:1fr}.thumb{width:100%}}
+.addtopic{display:block;text-align:center;padding:12px;border:1px dashed var(--line);border-radius:12px;color:var(--faint);font-size:14px}
+
+/* right: the same short menu on every page */
+.menu{padding:30px 16px;position:sticky;top:0;height:100vh}
+.menu a{display:flex;justify-content:space-between;align-items:center;padding:6px 12px;border-radius:7px;font-size:14px;color:var(--mut)}
+.menu a:hover{background:var(--soft);color:var(--fg)}
+.menu a.on{color:var(--on);font-weight:600;background:var(--wash)}
+.menu a.on:before{content:"";position:absolute;margin-left:-14px;width:3px;height:18px;border-radius:2px;background:var(--on)}
+.menu a.empty{color:var(--faint)}
+.menu a small{font-size:12px;color:var(--faint)}
+.menu .sep{height:1px;background:var(--line);margin:10px 12px}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <nav class="tree" aria-label="Blocks">
+    <div class="head">blueprints</div>
+    <a href="#">b01_haipipe-toolkit</a>
+    <a href="#">b02_haipipe-utils</a>
+    <a href="#">b03_inlab-human</a>
+    <a href="#">b10_project_workbench</a>
+    <a href="#">b11_theme_insight</a>
+    <a href="#">b12_theme_design</a>
+    <a href="#">b13_theme_cowork</a>
+    <a href="#">b14_theme_discovery</a>
+    <a href="#">b15_theme_labeling</a>
+    <a href="#">b16_theme_paper</a>
+    <a href="#" class="on">b17_theme_work</a>
+    <div class="kids">no Jobs yet</div>
+    <a href="#">b31_excalidraw</a>
+    <a href="#">b32_draft</a>
+    <a href="#">b33_evidence</a>
+    <a href="#">b34_display</a>
+  </nav>
+
+  <main class="page">
+    <div class="crumb"><a href="#">Tools</a><span>/</span><a href="#">blueprints</a><span>/</span>b17_theme_work</div>
+    <h1>b17_theme_work</h1>
+    <p class="purpose">Design questions about the work Theme as one ladder: what a task Block, a work Job, a work Task and a hard Run each hold and show.</p>
+    <div class="facts">
+      <span class="pill">4 Questions · 🟡 1 draft · 🔴 3 open</span>
+      <span class="wait">Q01 report is a draft: read it</span>
+      <span class="pill plain">changed 2026-10-26</span>
+    </div>
+
+    <div class="views" aria-label="Studio groups">
+      <a href="#" class="on">All <b>6</b></a>
+      <a href="#">🎯 Current <b>0</b></a>
+      <a href="#">🟣 Interface <b>1</b></a>
+      <a href="#">💠 Navigation <b>1</b></a>
+      <a href="#">Untagged <b>5</b></a>
+      <a href="#" class="add">+ Group</a>
+    </div>
+
+    <article class="card">
+      <div class="thumb"><img src="../../s00-overview/s00-overview.png" alt="s00-overview drawing"></div>
+      <div><div class="top"><div class="name">s00-overview</div>
+        <div class="ctl"><span class="seg"><span class="on">Free</span><span>Structured</span></span><a class="open" href="#" aria-label="Open">↗</a></div></div>
+        <p>What this Block stands on, for a reader new to it, and an index of its studio topics.</p>
+        <div class="tags"><span class="tag stage">shaping</span></div></div>
+    </article>
+    <article class="card">
+      <div class="thumb"><img src="../../s01-work-ladder/s01-work-ladder.png" alt="s01-work-ladder drawing"></div>
+      <div><div class="top"><div class="name">s01-work-ladder</div>
+        <div class="ctl"><span class="seg"><span class="on">Free</span><span>Structured</span></span><a class="open" href="#" aria-label="Open">↗</a></div></div>
+        <p>Every work row in one drawing, Block down to Run.</p></div>
+    </article>
+    <article class="card">
+      <div class="thumb"><img src="../../s02-work-skills/s02-work-skills.png" alt="s02-work-skills drawing"></div>
+      <div><div class="top"><div class="name">s02-work-skills</div>
+        <div class="ctl"><span class="seg"><span class="on">Free</span><span>Structured</span></span><a class="open" href="#" aria-label="Open">↗</a></div></div>
+        <p>Which of today's skills/1_base/task skills make the work theme.</p></div>
+    </article>
+    <article class="card">
+      <div class="thumb none">no preview yet</div>
+      <div><div class="top"><div class="name">s03-work-workbench</div>
+        <div class="ctl"><span class="seg"><span class="on">Free</span><span>Structured</span></span><a class="open" href="#" aria-label="Open">↗</a></div></div>
+        <p>The Work workbench as it is built today: its Spaces, Views and run types.</p></div>
+    </article>
+    <article class="card">
+      <div class="thumb"><img src="../s04-workbench-page-structure.png" alt="s04 drawing"></div>
+      <div><div class="top"><div class="name">s04-workbench-page-structure</div>
+        <div class="ctl"><span class="seg"><span class="on">Free</span><span>Structured</span></span><a class="open" href="#" aria-label="Open">↗</a></div></div>
+        <p>How a work page gives its reader location, purpose, progress and results without scattering related information.</p>
+        <div class="tags"><span class="tag stage">explore</span><span class="tag">Interface</span><span class="tag">Navigation</span></div></div>
+    </article>
+    <article class="card">
+      <div class="thumb"><img src="../../s32-work-element-ui/s32-work-element-ui.png" alt="s32 drawing"></div>
+      <div><div class="top"><div class="name">s32-work-element-ui</div>
+        <div class="ctl"><span class="seg"><span class="on">Free</span><span>Structured</span></span><a class="open" href="#" aria-label="Open">↗</a></div></div>
+        <p>Every kind of element the work theme draws today, as it draws it, side by side.</p></div>
+    </article>
+    <a class="addtopic" href="#">+ Add topic</a>
+  </main>
+
+  <nav class="menu" aria-label="Page menu">
+    <a href="#">Overview</a>
+    <a href="#">Work</a>
+    <a href="#" class="on">Studio <small>6</small></a>
+    <a href="#" class="empty">Runs <small>0</small></a>
+    <a href="#" class="empty">Delivery <small>0</small></a>
+    <a href="#">Timeline</a>
+    <a href="#">Folder</a>
+    <div class="sep"></div>
+    <a href="#">Guide</a>
+  </nav>
+
+</div>
+</body>
+</html>

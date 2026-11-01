@@ -1,0 +1,37 @@
+{
+ "topic": "s01-base-overview",
+ "style": "sketch-notes",
+ "source": "s01-base-overview.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "b02 s01 · Base overview",
+   "points": [
+    "the base layer at a glance: each family in skills/1_base with its door, its sub-folders and…",
+    "the concerns the inventory raises (red) and the four Questions, each with the drawing that…"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and a one-page map of the base skill layer, its families, agents, tests and concerns, for the people who write the…",
+    "a display"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "Still open",
+   "points": [],
+   "leaning": "",
+   "ask": "Agree its For: line and Delivery type: (display), proposed by the agent 261030?",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

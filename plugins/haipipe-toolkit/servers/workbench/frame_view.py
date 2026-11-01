@@ -164,6 +164,20 @@ class FrameMixin:
             body = work_progress.render_run(folder, root, get("run"))
             return self.guide_send(body or "<h1>Run unavailable</h1>", 200 if body else 404,
                                    head_only=head_only)
+        if get("view") == "focus-map":
+            from live import focus_page
+            body = focus_page.mindmap_document((root / raw).resolve(), root)
+            return self.guide_send(body or "<h1>Mind map unavailable</h1>", 200 if body else 404,
+                                   head_only=head_only)
+        if get("view") == "focus-part":                  # a row's or an sNN's mind map, Work or delivery, popped out
+            from live import focus_page
+            body = focus_page.part_document(folder, root, get("part"))
+            return self.guide_send(body or "<h1>Unavailable</h1>", 200 if body else 404, head_only=head_only)
+        if get("view") == "focus-delivery":              # an sNN's delivery, popped out over its card (JL 261030)
+            from live import focus_page
+            body = focus_page.delivery_document(folder, root)
+            return self.guide_send(body or "<h1>Delivery unavailable</h1>", 200 if body else 404,
+                                   head_only=head_only)
         if get("view") == "work-about":                  # a Job's overview or a Task's report, popped out (workbench-work)
             from live import work_progress
             level = frame.level_of(folder)
@@ -181,6 +195,21 @@ class FrameMixin:
         themes = frame.themes()
         name = get("theme") or frame.theme_of(folder, root)
         theme = themes.get(name, frame.VANILLA)
+        if get("layout") == "focus":
+            from live import focus_page
+            if focus_page.is_topic(folder):          # an sNN has no page of its own: its card in its level's Studio
+                self.send_response(302)              # (JL 261031)
+                self.send_header("Location", focus_page.topic_home(folder, root.resolve()))
+                self.send_header("Content-Length", "0")
+                self.end_headers()
+                return None
+            if theme.name == "labeling":
+                from live import labeling_focus
+                presenter = labeling_focus
+            else:
+                presenter = focus_page
+            return self.guide_send(presenter.render(theme, root, folder, get("section"), get("group")), code,
+                                   head_only=head_only)
         if get("format") == "json":
             return self.guide_send(frame.frame_json(theme, root, folder, get("sub")), code,
                                    "application/json; charset=utf-8", head_only=head_only)

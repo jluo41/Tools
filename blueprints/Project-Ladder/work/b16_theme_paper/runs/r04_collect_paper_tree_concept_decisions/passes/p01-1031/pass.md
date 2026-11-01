@@ -1,0 +1,3 @@
+# p01-1031 · decided in the chat
+
+recorded: 2026-10-31 18:02; result/answer_collection.md holds the decisions and the person's words.

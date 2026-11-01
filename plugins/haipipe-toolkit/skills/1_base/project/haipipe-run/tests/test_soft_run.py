@@ -46,14 +46,14 @@ class SoftRunTest(unittest.TestCase):
 
     def test_passes_count_up_and_update_the_card(self):
         run = soft_run.new(self.block, "draw", "s02")
-        p1 = soft_run.add_pass(run, "First session", ask="<ask>", changed=["studio/s02-x/s02-x.md"], date="1007")
+        p1 = soft_run.add_pass(run, "First session", ask="<ask>", changed=["s02-x/s02-x.md"], date="1007")
         p2 = soft_run.add_pass(run, "Second session", date="1008")
         self.assertEqual((p1.name, p2.name), ("p01-1007", "p02-1008"))
         self.assertTrue((p1 / "pass.md").read_text().startswith("# First session"))
         card = yaml.safe_load((run / "run.yaml").read_text())
         self.assertEqual(card["passes"], ["p01-1007", "p02-1008"])
         self.assertEqual(card["status"], "done")
-        self.assertEqual(card["writes"], ["studio/s02-x/s02-x.md"])
+        self.assertEqual(card["writes"], ["s02-x/s02-x.md"])
 
     def test_a_hyphenated_type_and_signs(self):
         run = soft_run.new(self.block, "add-venue", "v01", signs=["agreed", "checked"])

@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Block index</title>
+<style>
+:root{--bg:#f6f5f1;--card:#fffefb;--fg:#1b2433;--mut:#5d6675;--faint:#d5d2ca;--line:#e6e3db;--acc:#2f6feb;--acc-bg:#e8effd;--ok:#16794a;--part:#c98a1c;--open:#9aa3b2;--bad:#b42318}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141518;--card:#1c1e22;--fg:#e8e6e1;--mut:#9aa3b2;--faint:#3a3e46;--line:#30333a;--acc:#6b9bff;--acc-bg:#1f2b45;--ok:#4ade80;--part:#f5b84a;--open:#6b7280;--bad:#f87171}}
+*{box-sizing:border-box}html{scroll-padding-top:56px}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 -apple-system,"Segoe UI",system-ui,sans-serif}
+a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
+.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:10px 16px;font-size:15px;color:var(--mut);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.top b{color:var(--fg)}.top .sep{color:var(--faint)}
+.switch{margin-left:auto;font-size:13px;color:#a15c07;display:flex;gap:6px;align-items:center}
+.switch a{padding:2px 10px;border-radius:7px;border:1px solid var(--line);color:var(--fg)}.switch a.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.shell{display:grid;grid-template-columns:190px minmax(0,1fr) 150px;gap:22px;padding:16px 16px 100px;max-width:1500px;margin:0 auto}
+@media (max-width:1000px){.shell{grid-template-columns:minmax(0,1fr)}.left,.right{display:none}}
+.left,.right{position:sticky;top:58px;align-self:start;max-height:calc(100vh - 74px);overflow:auto;padding:4px}
+.left h4,.right h4{margin:0 0 8px;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--mut)}
+.sib a{display:flex;align-items:center;gap:8px;padding:3px 8px;border-radius:7px;color:var(--mut);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sib a i{flex:0 0 auto;width:12px;height:3px;border-radius:2px;background:var(--faint)}
+.sib a.on{color:var(--fg);font-weight:600;background:var(--acc-bg)}.sib a.on i{background:var(--fg);width:18px}
+.mm a{display:flex;align-items:center;gap:10px;height:26px;color:var(--mut);font-size:13px;white-space:nowrap;cursor:pointer}
+.mm a i{flex:0 0 auto;width:16px;height:3px;border-radius:2px;background:var(--faint)}
+.mm a.on{color:var(--fg);font-weight:600}.mm a.on i{width:28px;background:var(--fg)}
+.mm a b{font-weight:400;color:var(--mut);margin-left:auto}
+h1{margin:0;font-size:30px;line-height:1.2;overflow-wrap:anywhere}
+.chip{font-size:13px;font-weight:600;padding:2px 10px;border-radius:99px;background:var(--card);border:1px solid var(--line);vertical-align:middle;margin-left:10px}
+.goal{font-size:18px;margin:10px 0 4px;max-width:980px}
+.close{color:var(--mut);font-size:14px;margin:0 0 4px;max-width:980px}.close b{color:var(--fg);font-weight:600}
+section.sec{margin-top:34px}
+section.sec>h2{display:flex;align-items:baseline;gap:10px;font-size:22px;margin:0 0 4px}
+section.sec>h2 small{font-size:14px;font-weight:500;color:var(--mut)}
+.why{color:var(--mut);font-size:14px;margin:0 0 12px}
+.empty{color:var(--mut);font-size:15px;border:1px dashed var(--line);border-radius:12px;padding:12px 16px}
+.list{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.row{display:grid;grid-template-columns:150px 26px minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 16px;border-top:1px solid var(--line)}
+.row:first-child{border-top:none}.row:hover{background:var(--acc-bg)}
+.row .id{font-family:ui-monospace,Menlo,monospace;font-size:13px;color:var(--mut);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .t{font-size:16px}.row .t small{display:block;color:var(--mut);font-size:13px}
+.st{font-size:13px;font-weight:600;white-space:nowrap}.st.answered{color:var(--ok)}.st.partial{color:var(--part)}.st.open{color:var(--open)}
+.dot{width:12px;height:12px;border-radius:50%;justify-self:center}
+.tally{display:flex;align-items:center;gap:12px;font-size:14px;color:var(--mut);margin:0 0 10px}
+.bar{width:240px;height:9px;border-radius:5px;background:var(--line);display:flex;overflow:hidden}.bar i{height:100%}
+.jrow{grid-template-columns:minmax(0,320px) 120px minmax(0,1fr)}
+.res{font-weight:600}
+.strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.tp{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:block;color:var(--fg)}
+.tp:hover{text-decoration:none;box-shadow:0 6px 18px rgba(20,30,50,.10)}
+.tp img{display:block;width:100%;height:110px;object-fit:cover;object-position:top left;background:#fff;border-bottom:1px solid var(--line)}
+.tp span{display:block;padding:7px 10px;font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tp .noimg{height:110px;display:flex;align-items:center;justify-content:center;color:var(--mut);font-size:13px;background:var(--acc-bg)}
+.io{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media (max-width:800px){.io{grid-template-columns:1fr}}
+.io .list{padding:14px 16px}.io h3{margin:0 0 6px;font-size:16px}.io p{margin:0;color:var(--mut);font-size:14px}
+</style></head><body>
+<nav class="top" id="crumb"></nav>
+<div class="shell">
+  <nav class="left"><h4 id="layer"></h4><div class="sib" id="sib"></div></nav>
+  <main>
+    <h1 id="name"></h1>
+    <p class="goal" id="goal"></p>
+    <p class="close" id="close"></p>
+    <section class="sec" id="questions" data-name="Questions"><h2>Questions <small id="qcount"></small></h2><p class="why">What this Block asks, and what it has answered so far.</p><div id="qbody"></div></section>
+    <section class="sec" id="work" data-name="Work"><h2>Work <small id="wcount"></small></h2><p class="why">Jobs, each with its Tasks and Runs; a row opens the Job's page.</p><div id="wbody"></div></section>
+    <section class="sec" id="studio" data-name="Studio"><h2>Studio <small id="scount"></small></h2><p class="why">The thinking, one drawing per topic; a picture opens the Studio at that topic.</p><div id="sbody"></div></section>
+    <section class="sec" id="inout" data-name="In and out"><h2>In and out</h2><p class="why">What came in, and what went out.</p><div class="io" id="iobody"></div></section>
+  </main>
+  <nav class="right"><h4>On this page</h4><div class="mm" id="mm"></div></nav>
+</div>
+<script>
+const D={"b10": {"crumb": ["Tools", "blueprints", "b10_project_workbench"], "layer": "Blocks in blueprints", "siblings": ["b01_haipipe-toolkit", "b02_haipipe-utils", "b03_inlab-human", "b10_project_workbench", "b11_theme_insight", "b12_theme_design", "b13_theme_cowork", "b14_theme_discovery", "b15_theme_labeling", "b16_theme_paper", "b17_theme_work", "b31_excalidraw", "b32_draft", "b33_evidence", "b34_display"], "name": "b10_project_workbench", "state": "🔴 open", "goal": "Design questions about how a Project is built from its root down to one Run: the Themes, the Block → Job → Task → Run levels, the Questions, and the workbench that shows them.", "close": "Each recorded question has a report Page with an answer status, and every answered question names the change that settled it.", "questions": [{"id": "q01_bjtr_boundary", "title": "What are the boundaries of B, J, T and R?", "status": "open"}, {"id": "q02_bjtr_across_themes", "title": "How does B-J-T-R run through each Theme?", "status": "open"}, {"id": "q03_block_questions", "title": "How do Questions live at the Block level?", "status": "open"}, {"id": "q04_cross_theme_content", "title": "How is content shared across Themes?", "status": "open"}, {"id": "q05_skill_per_level", "title": "Which skill owns each level?", "status": "partial"}, {"id": "q06_project_checker", "title": "What should the project checker test?", "status": "open"}, {"id": "q07_workbench_mapping", "title": "How does the workbench map onto the ladder?", "status": "open"}, {"id": "q08_workbench_base", "title": "How is a workbench managed: one shared base, a theme each?", "status": "open"}, {"id": "q09_studio_report_on_screen", "title": "How do Studio drawings and Reports show and save in a workbench?", "status": "open"}, {"id": "q10_guide_method", "title": "How should a workbench's Guide explain its method?", "status": "partial"}, {"id": "q11_logic_drawing", "title": "How should a Page's logic and structure be drawn?", "status": "answered"}, {"id": "q12_space_hosting", "title": "How do we host the SPACE so others can open it?", "status": "open"}], "jobs": [], "topics": [{"name": "s00-overview", "png": "http://100.121.165.84:5623/blueprints/Project-Ladder/work/b10_project_workbench/studio/s00-overview/s00-overview.png", "stage": "closed"}, {"name": "s01-overall-tree-structure", "png": "http://100.121.165.84:5623/blueprints/Project-Ladder/work/b10_project_workbench/studio/s01-overall-tree-structure/s01-overall-tree-structure.png", "stage": "closed"}, {"name": "s02-studio-workbench-skill", "png": "http://100.121.165.84:5623/blueprints/Project-Ladder/work/b10_project_workbench/studio/s02-studio-workbench-skill/s02-studio-workbench-skill.png", "stage": "shaping"}, {"name": "s03-delivery-workbench-skill", "png": "http://100.121.165.84:5623/blueprints/Project-Ladder/work/b10_project_workbench/studio/s03-delivery-workbench-skill/s03-delivery-workbench-skill.png", "stage": "shaping"}, {"name": "s04-related-workbench-skill", "png": "http://100.121.165.84:5623/blueprints/Project-Ladder/work/b10_project_workbench/studio/s04-related-workbench-skill/s04-related-workbench-skill.png", "stage": "shaping"}, {"name": "s05-report-workbench-skill", "png": "http://100.121.165.84:5623/blueprints/Project-Ladder/work/b10_project_workbench/studio/s05-report-workbench-skill/s05-report-workbench-skill.png", "stage": "shaping"}, {"name": "s06-run-workbench-skill", "png": "http://100.121.165.84:5623/blueprints/Project-Ladder/work/b10_project_workbench/studio/s06-run-workbench-skill/s06-run-workbench-skill.png", "stage": "shaping"}, {"name": "s08-studio-timeline", "png": "http://100.121.165.84:5623/blueprints/Project-Ladder/work/b10_project_workbench/studio/s08-studio-timeline/s08-studio-timeline.png", "stage": "closed"}, {"name": "s09-block-folder", "png": "http://100.121.165.84:5623/blueprints/Project-Ladder/work/b10_project_workbench/studio/s09-block-folder/s09-block-folder.png", "stage": "closed"}, {"name": "s10-haipipe-project", "png": "http://100.121.165.84:5623/blueprints/Project-Ladder/work/b10_project_workbench/studio/s10-haipipe-project/s10-haipipe-project.png", "stage": "explore"}, {"name": "s31-guide", "png": "http://100.121.165.84:5623/blueprints/Project-Ladder/work/b10_project_workbench/studio/s31-guide/s31-guide.png", "stage": "shaping"}, {"name": "s32-element-ui", "png": "http://100.121.165.84:5623/blueprints/Project-Ladder/work/b10_project_workbench/studio/s32-element-ui/s32-element-ui.png", "stage": "shaping"}, {"name": "s33-one-page-shape", "png": "", "stage": "explore"}, {"name": "s51-server-runtime", "png": "http://100.121.165.84:5623/blueprints/Project-Ladder/work/b10_project_workbench/studio/s51-server-runtime/s51-server-runtime.png", "stage": "closed"}, {"name": "s52-host-and-share", "png": "http://100.121.165.84:5623/blueprints/Project-Ladder/work/b10_project_workbench/studio/s52-host-and-share/s52-host-and-share.png", "stage": "closed"}], "related": [["meetings/", "3 items: meeting notes"]], "delivery": []}, "b19": {"crumb": ["Knowledge-SPACE", "Proj12-LM-Serve", "b19_qwen38_flashnext"], "layer": "Blocks in Proj12-LM-Serve", "siblings": ["b01_plan", "b11_qwen3_0_6b", "b13_qwen35_08b", "b14_qwen35_2b", "b15_qwen35_4b", "b16_qwen35_9b", "b17_qwen38_9b_distill", "b18_qwen38_27b", "b19_qwen38_flashnext", "b21_diffusiongemma_26b_a4b"], "name": "b19_qwen38_flashnext", "state": "🔴 open", "goal": "How Qwen3.8 Flash-Next (125B total, 6B active) serves on one RTX 4090: one Job per engine, one Task per artifact, one Run per setting × workload.", "close": "Every engine Job has, for each artifact it serves, the standard set checked or a recorded stop with its reason.", "questions": [], "jobs": [{"name": "j05_qwen38_flashnext_strata", "tasks": 1, "ok": 7, "bad": 2, "result": "GSM8K 94.9% at 196 tok/s · labels 4,760 reviews/h, 95.8% same as Swift"}], "topics": [{"name": "s00-background-and-index", "png": "img/s00.jpg", "stage": ""}, {"name": "s25-j05-qwen38-flashnext-strata-results", "png": "img/s25.jpg", "stage": ""}], "related": [], "delivery": []}};
+const $=id=>document.getElementById(id);
+const COLOR={answered:"var(--ok)",partial:"var(--part)",open:"var(--open)"};
+function render(){
+  const key=(location.hash.slice(1)||"b10"), B=D[key]||D.b10;
+  $("crumb").innerHTML=B.crumb.map((c,i)=>i===B.crumb.length-1?`<b>${c}</b>`:`<span>${c}</span>`).join('<span class="sep">›</span>')
+    +`<span class="switch">mock · s33 · example <a href="#b10" class="${key==='b10'?'on':''}">b10 thinking</a><a href="#b19" class="${key==='b19'?'on':''}">b19 work</a></span>`;
+  $("layer").textContent=B.layer;
+  $("sib").innerHTML=B.siblings.map(s=>`<a class="${s===B.name?'on':''}" title="${s}"><i></i>${s}</a>`).join("");
+  $("name").innerHTML=B.name.replace(/_/g,'_<wbr>')+`<span class="chip">${B.state}</span>`;
+  $("goal").textContent=B.goal; $("close").innerHTML=`<b>Done when:</b> ${B.close}`;
+  // Questions
+  const n={answered:0,partial:0,open:0};B.questions.forEach(q=>n[q.status]=(n[q.status]||0)+1);
+  $("qcount").textContent=B.questions.length?`${n.answered} answered · ${n.partial} partial · ${n.open} open`:"none yet";
+  $("qbody").innerHTML=B.questions.length?
+    `<div class="tally"><span class="bar">${["answered","partial","open"].map(s=>`<i style="width:${n[s]/B.questions.length*100}%;background:${COLOR[s]}"></i>`).join("")}</span></div>`
+    +`<div class="list">`+B.questions.map(q=>`<div class="row"><span class="id">${q.id}</span><span class="dot" style="background:${COLOR[q.status]}"></span><span class="t">${q.title}</span><span class="st ${q.status}">${q.status}</span></div>`).join("")+`</div>`
+    :`<div class="empty">No Questions yet. A Question names what this Block must find out; add one when the work raises it.</div>`;
+  // Work
+  $("wcount").textContent=B.jobs.length?`${B.jobs.length} Job${B.jobs.length>1?'s':''}`:"none yet";
+  $("wbody").innerHTML=B.jobs.length?`<div class="list">`+B.jobs.map(j=>`<div class="row jrow"><a href="one-page.html?layout=A#job">${j.name.replace(/_/g,'_<wbr>')}</a><span>${j.tasks} Task · ${j.ok} ✅ ${j.bad} ❌</span><span class="res">${j.result}</span></div>`).join("")+`</div>`
+    :`<div class="empty">No Jobs: this Block is thinking and design only, no Runs.</div>`;
+  // Studio
+  $("scount").textContent=`${B.topics.length} topic${B.topics.length>1?'s':''}`;
+  $("sbody").innerHTML=`<div class="strip">`+B.topics.map(t=>`<a class="tp" href="${key==='b10'?'studio-scroll.html#'+t.name:'#'}">${t.png?`<img loading="lazy" src="${t.png}" alt="${t.name}">`:`<div class="noimg">mind map only</div>`}<span>${t.name}</span></a>`).join("")+`</div>`;
+  // In and out
+  $("iobody").innerHTML=`<div class="list"><h3>Related · came in</h3><p>${B.related.length?B.related.map(r=>`<b>${r[0]}</b> ${r[1]}`).join("<br>"):"Nothing yet."}</p></div>`
+    +`<div class="list"><h3>Delivery · went out</h3><p>${B.delivery.length?B.delivery.join("<br>"):"Nothing yet."}</p></div>`;
+  // right: the four sections, with their counts
+  const counts={questions:B.questions.length,work:B.jobs.length,studio:B.topics.length,inout:B.related.length+B.delivery.length};
+  $("mm").innerHTML=[...document.querySelectorAll("section.sec")].map(s=>`<a data-id="${s.id}"><i></i>${s.dataset.name}<b>${counts[s.id]}</b></a>`).join("");
+  $("mm").querySelectorAll("a").forEach(a=>a.onclick=()=>document.getElementById(a.dataset.id).scrollIntoView({behavior:"smooth"}));
+  $("mm").querySelector("a").classList.add("on"); window.scrollTo(0,0);
+}
+const seen=new IntersectionObserver(es=>{const v=es.filter(e=>e.isIntersecting).sort((a,b)=>a.boundingClientRect.top-b.boundingClientRect.top);
+  if(v.length)$("mm").querySelectorAll("a").forEach(a=>a.classList.toggle("on",a.dataset.id===v[0].target.id))},{rootMargin:"-60px 0px -55% 0px"});
+document.querySelectorAll("section.sec").forEach(s=>seen.observe(s));
+window.addEventListener("hashchange",render);render();
+</script></body></html>

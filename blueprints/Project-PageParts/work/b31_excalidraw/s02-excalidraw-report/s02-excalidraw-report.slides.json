@@ -1,0 +1,38 @@
+{
+ "topic": "s02-excalidraw-report",
+ "style": "sketch-notes",
+ "source": "s02-excalidraw-report.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "excalidraw-report: a report drawing and a scratch",
+   "points": [
+    "what the skill excalidraw-report draws and how: its two modes (a scratch, a whiteboard packed…",
+    "and a report drawing, a report's answer and its evidence in named frames), the rules each mode…",
+    "It sits beside s01 (excalidraw-studio, how every Studio drawing reads) and s03 to s05 (the other…"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and the excalidraw-report skill: a scratch and a report drawing, for the people who write the toolkit skills",
+    "a skill"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "Still open",
+   "points": [],
+   "leaning": "",
+   "ask": "Agree its For: line and Delivery type: (skill), proposed by the agent 261030?",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

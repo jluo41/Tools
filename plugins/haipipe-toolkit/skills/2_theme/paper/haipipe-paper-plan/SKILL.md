@@ -3,25 +3,27 @@ name: haipipe-paper-plan
 description: "A paper Board's plan, the two studio topics after its story: s03 data flow (how the data becomes each answer: Runs, evidence rows, claims) and s04 paper flow (Sections in reader order with their questions, displays, evidence, words, and the dated steps to the send). Checks that every question lands in a Section and every display has a Run. Trigger: paper plan, data flow, paper flow, s03, s04, word budget, timeline to the send, /haipipe-paper-plan."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.1.1"
-  last_updated: "2026-10-26"
+  version: "0.1.2"
+  last_updated: "2026-11-01"
   group-token: "s03-paper-dataflow"
   # version history: ./CHANGELOG.md
 ---
 
 # /haipipe-paper-plan · how the data becomes each answer, and how the answers become the paper
 
-Asked 261019 on Physician-SPACE's Project-LLMRec-Physician: "你觉得我们需要一个 plan 吗？haipipe-paper-plan / plan for
+Asked 261019 on Physician-SPACE's Project-Example-B: "你觉得我们需要一个 plan 吗？haipipe-paper-plan / plan for
 the data flow and plan for the paper flow"; "should make the s03-paper-dataflow-plan and s04-paper-workflow-plan";
 "please think about to make the s03 to be the paper-dataflow, and s04 to be the s04-paper-workflow".
 
-A paper's first four Studio topics each answer one question, in this order:
+A paper's Studio topics sit in the Board folder beside its Jobs; each answers one question, in this order:
 
 ```text
 s01-ideation          which study is worth doing?          many ideas → one     haipipe-paper-ideation
 s02-story-<desk>-…    what does this paper ask, and why?   its questions         haipipe-paper-story
 s03-paper-dataflow    where does each answer come from?    data → Runs → RQ      this skill
 s04-paper-workflow    how is the paper made from them?     RQ → Section → send   this skill
+s05-paper-checklist   is the paper ready to send?          ticks from disk       haipipe-paper (checklist.md, paper_check.py --write)
+s10-related-work-…    which papers are closest to ours?    20 to 25 papers       haipipe-paper-related
 ```
 
 s03 and s04 both start from the story's research questions and go opposite ways: s03 back to the data, s04 forward
@@ -112,12 +114,12 @@ the send. The face carries two lines and three tables:
 3. **Displays**: `Figure 1`, `Table 1`, `eFigure 1`; `made by` names the figure Run inside its Job that makes it
    (`b03.j03.t02.r05`, or `a new figure Run after T5`); `state` is done, partly or not started. The count stays within the desk's cap.
 4. **Timeline**: from today to the send, one row per step: G0, the Runs the questions wait on, the version
-   (`j01_v<MMDD>_<desk>`), the drafted Sections, the displays, the check, the send. `when` is a date or a week
+   (`j11_writing_v<MMDD>_<desk>`), the drafted Sections, the displays, the check, the send. `when` is a date or a week
    (dates from the clock, never invented); a person's step names who and the verb (`JL marks`, `JL presses Run`, `a
    person reads 200 names`, `JL sends`: marks, presses, reads, signs, sends, agrees, approves, decides, starts),
    which the drawing marks 🙋 until the step is done; a step a person and an agent share names the person's verb.
    Today comes from the clock; a later date is a proposal counted from it. The version is named by its planned send
-   date and the story topic's desk part (`j01_v<send MMDD>_<desk>`, the desk from `s02-story-<desk>-…`).
+   date and the story topic's desk part (`jNN_writing_v<send MMDD>_<desk>`, the first one `j11`; the desk from `s02-story-<desk>-…`).
 5. **When the first version is made**, its `## Narrative` is seeded from the Sections table (haipipe-paper-story §8)
    and the version owns the Section rows from then on; s04 keeps the Displays and the Timeline current.
 
@@ -130,12 +132,12 @@ N=Tools/plugins/haipipe-toolkit/skills/1_base/project/haipipe-studio/scripts/new
 W=Tools/plugins/haipipe-toolkit/skills/1_base/excalidraw/excalidraw-workflow/scripts
 python $N topic <Board> --nn 03 --slug paper-dataflow --title "Paper dataflow: how the data becomes each answer"
 python $N topic <Board> --nn 04 --slug paper-workflow --title "Paper workflow: how the answers become the paper"
-#   replace both faces new_topic.py writes with ref/faces.md's, and add `Plan` to studio/_groups.txt
-python $W/workflow_drawing.py make <Board>/studio/s03-paper-dataflow     # builder + a drawing yaml to fill
-python $W/paperflow_drawing.py make <Board>/studio/s04-paper-workflow    # builder
+#   replace both faces new_topic.py writes with ref/faces.md's, and add `Plan` to _studio_groups.txt
+python $W/workflow_drawing.py make <Board>/s03-paper-dataflow     # builder + a drawing yaml to fill
+python $W/paperflow_drawing.py make <Board>/s04-paper-workflow    # builder
 #   fill s03's yaml and s04's tables (templates: ref/faces.md), then draw both
-python <Board>/studio/s03-paper-dataflow/build_s03_paper_dataflow.py    # each builder writes its .png too
-python <Board>/studio/s04-paper-workflow/build_s04_paper_workflow.py
+python <Board>/s03-paper-dataflow/build_s03_paper_dataflow.py    # each builder writes its .png too
+python <Board>/s04-paper-workflow/build_s04_paper_workflow.py
 python Tools/plugins/haipipe-toolkit/skills/1_base/excalidraw/excalidraw-studio/scripts/check.py <x>.excalidraw
 ```
 
@@ -166,6 +168,6 @@ Once a version exists, its Sections and `## Narrative` are the version's (`haipi
 Worked example
 --------------
 
-Physician-SPACE `examples-3-nlp/Project-LLMRec-Physician/paper/Paper-LLMRecPhy-Jama/`, the JAMA Network Open Original
+Physician-SPACE `examples-<world>/Project-Example-B/paper/Paper-Example-B/`, the JAMA Network Open Original
 Investigation: s02 asks three questions, s03 reads its data flow from `work/b03_jama_agent_vs_search_engine/` (its
 pipeline Run `runs/run-pipeline-fold00/`), s04 plans a 3,000-word article with five displays.

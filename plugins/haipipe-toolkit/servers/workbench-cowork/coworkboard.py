@@ -2,7 +2,7 @@
 
 Reads the Block's board.md (header lines, Questions, Related resources), its Jobs
 (jNN_<job>/: the job page header, Timeline.md, CHECKLIST.md, emails/, meetings/, design/,
-materials/) and its studio/ and reports/ on every open, and stores nothing. Questions and report Pages reuse the Task Workbench's reader
+materials/), its sNN topics, studio/ and reports/ on every open, and stores nothing. Questions and report Pages reuse the Task Workbench's reader
 (live.task_questions); the page reuses its look and script (cowork_views.py).
 """
 from __future__ import annotations
@@ -248,18 +248,25 @@ def onedrive(raw: str, root: Path) -> list[dict]:
     return out
 
 
+_TOPIC = re.compile(r"^s\d{2}[-_]")
+
+
 def drawings(board: Path, root: Path) -> list[dict]:
     out = []
     studio = board / "studio"
+    # a topic's drawing sits in its sNN-<topic>/ beside the Jobs (JL 261030), listed first
+    found = sorted(p for p in board.glob("*/*.excalidraw") if _TOPIC.match(p.parent.name))
     if inside(studio, board) and studio.is_dir():
-        # a drawing sits in studio/ or in one numbered item folder, studio/s01_<topic>/ (JL 261008);
+        # or loose in studio/, or in an older numbered item folder, studio/s01_<topic>/ (JL 261008);
         # _build/, _old/ and hidden folders hold scripts and replaced work, never a listed drawing
-        found = list(studio.glob("*.excalidraw")) + [
-            p for p in studio.glob("*/*.excalidraw") if not p.parent.name.startswith(("_", "."))]
-        for path in sorted(found):
-            if inside(path, studio) and path.is_file() and _source_url(path, root):
-                out.append({"title": path.stem.replace("_", " ").replace("-", " ").capitalize(),
-                             "path": path.relative_to(root).as_posix(), **generated(path, board)})
+        beside = {p.relative_to(board).as_posix() for p in found}      # a topic already beside is not listed twice
+        found += sorted(list(studio.glob("*.excalidraw")) + [
+            p for p in studio.glob("*/*.excalidraw") if not p.parent.name.startswith(("_", "."))
+            and p.relative_to(studio).as_posix() not in beside])
+    for path in found:
+        if inside(path, board) and path.is_file() and _source_url(path, root):
+            out.append({"title": path.stem.replace("_", " ").replace("-", " ").capitalize(),
+                        "path": path.relative_to(root).as_posix(), **generated(path, board)})
     return out
 
 

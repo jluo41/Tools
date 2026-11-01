@@ -203,7 +203,7 @@ from `live.frame`: `Space`, `Theme`, `face`, `chain`, `children`, `runs_of`, `es
 
 `_host/tests/test_frame.py`.
 
-Studio and Report follow b03's `studio/s02-studio-workbench-skill` (s02-D04, D06):
+Studio and Report follow b03's `s02-studio-workbench-skill` (s02-D04, D06):
 
 - **Studio** (`studio_cards`): one closed row per topic with its name, tags,
   Current control and drawing links. A click opens its live drawing in place, loaded
@@ -280,12 +280,12 @@ design, insight) reads from its `guide/guide.yaml`; `guide_families.py` keeps no
 its own, only the loader and the fallback for a family that has none yet. A theme
 may keep its methods canvas in its design Block instead of `guide/` (design keeps it in its b12
 studio, and `guide.yaml`'s `method_drawing` names it there). The b03 script
-`studio/s31-guide/method-canvas.py` reads both layouts: it titles `<server>/guide/method.md`
+`s31-guide/method-canvas.py` reads both layouts: it titles `<server>/guide/method.md`
 from the server folder's name and finds the Workbench Table from `guide.yaml`'s `table:`.
 
 ## The card Guide: by level, as cards (levels.yaml, 261007)
 
-The design is b03's `studio/s31-guide` (s31-D05 to D09). A family whose `guide/guide.yaml` declares
+The design is b03's `s31-guide` (s31-D05 to D09). A family whose `guide/guide.yaml` declares
 `levels:` is drawn as the card Guide; the others keep the Guide described above until they move
 (the conformance test's `GAPS` lists them, rule `levels`). The work family moved first.
 
@@ -327,7 +327,7 @@ Guide › <View>
 - **Family key.** The work family is `work`; `guide_families.ALIASES` keeps `task` answering. A
   frame folder with no face file still opens its family's Guide, its cards read from the folder.
 - **Tests.** `_host/tests/test_guide_levels.py`; the status of every family is frame 6 of
-  `Tools/blueprints/b10_project_workbench/studio/s31-guide/s31-guide.excalidraw`, read off the code.
+  `Tools/blueprints/Project-Ladder/work/b10_project_workbench/s31-guide/s31-guide.excalidraw`, read off the code.
 
 ## Studio
 
@@ -353,9 +353,9 @@ A new workbench family fills its Guide by the checklist in `../README.md` § Add
 Guide has four Views: **Description** (what the Workbench does), **Method**
 (its steps, as text), **RoadMap Draw** (one drawing of its skills, method,
 Workbench and folders) and **Related Paper**. Guide's UI design artifacts (once this folder's `studio/`) live in
-the b10 Workbench Block (`Tools/blueprints/b10_project_workbench/`), not here: `studio/s31-guide/` (the Guide tab, one screen per View, each
+the b10 Workbench Block (`Tools/blueprints/Project-Ladder/work/b10_project_workbench/`), not here: `s31-guide/` (the Guide tab, one screen per View, each
 family's status; `method-canvas.py`; the 261002 design in its `history/`). The base's RoadMap Draw is
-`studio/s02-studio-workbench-skill/` (the frame). The Studio runtime stays.
+`s02-studio-workbench-skill/` (the frame). The Studio runtime stays.
 
 The design follows the existing Paper and Insight studios: white surfaces,
 light gray panels, blue selected tabs, and named Spaces and Views. The View
@@ -563,14 +563,14 @@ another Workbench family supplies diagrams based on its own contracts.
 
 | Guide View | Drawing explains | Editable scene |
 |---|---|---|
-| Skill set | Skill map: named skills, responsibilities, native owners and labeled relationships. | [Excalidraw](../../../../blueprints/b10_project_workbench/studio/s31-guide/history/guide-views/parts/guide-skill-set.excalidraw) |
-| Methods | Method flow: question, reasoning, missing evidence, optional Work, interpretation, answer and remaining issues. | [Excalidraw](../../../../blueprints/b10_project_workbench/studio/s31-guide/history/guide-views/parts/guide-methods.excalidraw) |
-| Workbench | UI map: the Guide and each family's working Space / View structure. | [Excalidraw](../../../../blueprints/b10_project_workbench/studio/s31-guide/history/guide-views/parts/guide-workbench.excalidraw) |
-| Folder map | Linked graph: Space / View → native owner → folder / file, with repository and external paths marked. | [Excalidraw](../../../../blueprints/b10_project_workbench/studio/s31-guide/history/guide-views/parts/guide-folder-map.excalidraw) |
-| RoadMap Draw | Expand each of the four explanatory drawing rows to read its embedded canvas or open it full screen. | [View design](../../../../blueprints/b10_project_workbench/studio/s31-guide/history/guide-views/parts/guide-roadmap-draw.excalidraw) |
+| Skill set | Skill map: named skills, responsibilities, native owners and labeled relationships. | [Excalidraw](../../../../blueprints/Project-Ladder/work/b10_project_workbench/s31-guide/history/guide-views/parts/guide-skill-set.excalidraw) |
+| Methods | Method flow: question, reasoning, missing evidence, optional Work, interpretation, answer and remaining issues. | [Excalidraw](../../../../blueprints/Project-Ladder/work/b10_project_workbench/s31-guide/history/guide-views/parts/guide-methods.excalidraw) |
+| Workbench | UI map: the Guide and each family's working Space / View structure. | [Excalidraw](../../../../blueprints/Project-Ladder/work/b10_project_workbench/s31-guide/history/guide-views/parts/guide-workbench.excalidraw) |
+| Folder map | Linked graph: Space / View → native owner → folder / file, with repository and external paths marked. | [Excalidraw](../../../../blueprints/Project-Ladder/work/b10_project_workbench/s31-guide/history/guide-views/parts/guide-folder-map.excalidraw) |
+| RoadMap Draw | Expand each of the four explanatory drawing rows to read its embedded canvas or open it full screen. | [View design](../../../../blueprints/Project-Ladder/work/b10_project_workbench/s31-guide/history/guide-views/parts/guide-roadmap-draw.excalidraw) |
 
-- [All five Guide Views, as they appear in Guide](../../../../blueprints/b10_project_workbench/studio/s31-guide/history/guide-views/s02-guide-views.excalidraw)
-- [Drawing generator](../../../../blueprints/b10_project_workbench/studio/s31-guide/history/guide-views/build_s02_guide_views.py)
+- [All five Guide Views, as they appear in Guide](../../../../blueprints/Project-Ladder/work/b10_project_workbench/s31-guide/history/guide-views/s02-guide-views.excalidraw)
+- [Drawing generator](../../../../blueprints/Project-Ladder/work/b10_project_workbench/s31-guide/history/guide-views/build_s02_guide_views.py)
 
 Diagram nodes are grouped for editing. RoadMap Draw embeds the four existing diagram files in
 their own rows. It explains the
@@ -597,7 +597,7 @@ stores are named as conventions; Guide does not follow them outside the root.
 
 ## Predefined drawing types
 
-[drawing-catalog.json](../../../../blueprints/b10_project_workbench/studio/s31-guide/history/guide-views/drawing-catalog.json) defines the drawing types. Each
+[drawing-catalog.json](../../../../blueprints/Project-Ladder/work/b10_project_workbench/s31-guide/history/guide-views/drawing-catalog.json) defines the drawing types. Each
 entry fixes a reader question, required elements, expected source owners and
 placement. Diagram types are shared across Workbench families; their concrete
 names, relationships, sources and states come from the selected family or
@@ -639,15 +639,15 @@ by their generators; preserve separately edited scenes before regenerating.
 
 ## Current artifacts · Guide v4
 
-- [Editable Excalidraw scene](../../../../blueprints/b10_project_workbench/studio/s31-guide/history/guide-design/s04-guide-design.excalidraw)
-- [Generator](../../../../blueprints/b10_project_workbench/studio/s31-guide/history/guide-design/build_s04_guide_design.py)
+- [Editable Excalidraw scene](../../../../blueprints/Project-Ladder/work/b10_project_workbench/s31-guide/history/guide-design/s04-guide-design.excalidraw)
+- [Generator](../../../../blueprints/Project-Ladder/work/b10_project_workbench/s31-guide/history/guide-design/build_s04_guide_design.py)
 
 The generator owns these generated artifacts. Keep independently edited
 Excalidraw copies under another filename before regenerating.
 
 ```sh
-python3 blueprints/b10_project_workbench/studio/s31-guide/history/guide-design/build_s04_guide_design.py
-python3 blueprints/b10_project_workbench/studio/s31-guide/history/guide-views/build_s02_guide_views.py
+python3 blueprints/Project-Ladder/work/b10_project_workbench/s31-guide/history/guide-design/build_s04_guide_design.py
+python3 blueprints/Project-Ladder/work/b10_project_workbench/s31-guide/history/guide-views/build_s02_guide_views.py
 ```
 
 `studio/` keeps only the Excalidraw scenes and their generators. Each generator
@@ -662,21 +662,21 @@ Excalidraw font IDs as the existing Paper and Insight drawings.
 These remain for comparison. Their sharing boundaries do not describe the
 current proposal:
 
-- [v3 scene](../../../../blueprints/b10_project_workbench/studio/s31-guide/history/guide-design/workbench-shared-guide-v3.excalidraw): horizontal Views;
+- [v3 scene](../../../../blueprints/Project-Ladder/work/b10_project_workbench/s31-guide/history/guide-design/workbench-shared-guide-v3.excalidraw): horizontal Views;
   explanatory and instance Views were both in Guide.
-- [v2 scene](../../../../blueprints/b10_project_workbench/studio/s31-guide/history/guide-design/workbench-shared-guide-v2.excalidraw): the earlier grouped
+- [v2 scene](../../../../blueprints/Project-Ladder/work/b10_project_workbench/s31-guide/history/guide-design/workbench-shared-guide-v2.excalidraw): the earlier grouped
   sidebar, with both kinds of Views in Guide.
-- [Original scene](../../../../blueprints/b10_project_workbench/studio/s31-guide/history/guide-design/workbench-shared-design.excalidraw): the initial
+- [Original scene](../../../../blueprints/Project-Ladder/work/b10_project_workbench/s31-guide/history/guide-design/workbench-shared-design.excalidraw): the initial
   proposal before the Guide boundary was settled.
 
 ## References
 
-- [Workbench design principle](../../../../blueprints/b10_project_workbench/board.md)
+- [Workbench design principle](../../../../blueprints/Project-Ladder/work/b10_project_workbench/board.md)
 - [Paper Workbench implementation](../workbench-paper/paper.py)
 - [Paper workflow contract](../../skills/2_theme/paper/haipipe-paper-workflow/SKILL.md)
 - [Paper Story contract](../../skills/2_theme/paper/haipipe-paper-story/SKILL.md)
 - [Paper Workbench contract](../../skills/2_theme/paper/workbench-paper/SKILL.md)
-- [Paper design studio](../../../../blueprints/b16_theme_paper/studio/s01-paper-tree/s01-paper-tree.excalidraw)
+- [Paper design studio](../../../../blueprints/Project-Ladder/work/b16_theme_paper/s01-paper-tree-concept/s01-paper-tree-concept.excalidraw)
 - [Insight Workbench implementation](../workbench-insight/insightboard.py)
-- [Insight design studio](../../../../blueprints/b11_theme_insight/studio/s02-insight-workbench/insight-workbench-design.excalidraw)
+- [Insight design studio](../../../../blueprints/Project-Ladder/work/b11_theme_insight/s02-insight-workbench/insight-workbench-design.excalidraw)
 - [Studio contract](../../skills/1_base/project/haipipe-studio/ref/screen.md)

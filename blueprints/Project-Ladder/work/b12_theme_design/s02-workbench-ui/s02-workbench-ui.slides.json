@@ -1,0 +1,37 @@
+{
+ "topic": "s02-workbench-ui",
+ "style": "sketch-notes",
+ "source": "s02-workbench-ui.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Workbench UI",
+   "points": [
+    "the design workbench's own drawing: the skills, the method, the workbench (board level, then page…",
+    "It is what Guide › RoadMap Draw shows for the design family"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and the design workbench at board and page level, each Space with its Runs panel, for the people who build the…",
+    "a ui"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "Still open",
+   "points": [],
+   "leaning": "",
+   "ask": "Agree its For: line and Delivery type: (ui), proposed by the agent 261030?",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

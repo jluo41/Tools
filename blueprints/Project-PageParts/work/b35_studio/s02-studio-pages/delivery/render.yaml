@@ -1,0 +1,11 @@
+# Where s02's delivery goes (haipipe-studio scripts/render_delivery.py). The deck stays in deck/; ui/ holds the agreed
+# screen drafts, which j02 builds into the workbench.
+pieces:
+  - code: "studio-in-a-page: Report › Status, sNN beside the Jobs"
+    by: j02_studio_pages/t01_build_studio_pages/runs/run-build-studio-in-a-page
+  - code: "snn-page: an sNN beside the Jobs opens its own page"
+    by: j02_studio_pages/t01_build_studio_pages/runs/run-build-snn-page
+  - code: "card-picture: the Studio card shows the drawing"
+    by: j02_studio_pages/t01_build_studio_pages/runs/run-build-card-picture
+  - code: "popout-size: the pop-out fills the window"
+    by: j02_studio_pages/t01_build_studio_pages/runs/run-build-popout-size

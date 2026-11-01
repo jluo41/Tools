@@ -20,10 +20,10 @@ Rules:
 6. **A button is named by its Run** (JL 261007: "for all the soft run, the name of them will be
    run-xxxx-xxx"): the Runs panel shows `run-<type>-<target>` as the button's name, what it does
    in small under it. A target the open folder fixes is filled in (`run-face-b03`,
-   `run-build-t02`); one still to choose stays a placeholder (`run-draw-<sNN>`, `run-ask-<qNN>`).
-   Buttons that make the same Run are one button: Idea Studio's add, redraw and save-a-session
-   are all `run-draw-<sNN>`, a new topic a new Run, the rest its passes. Its cards are its Runs,
-   one per topic, each with its passes (and older `chat/` sessions until they move into passes).
+   `run-build-t02`); one still to choose stays a placeholder (`run-ask-<qNN>`). Buttons that make
+   the same Run are one button. Idea Studio makes no Run (JL 261029, b17 s04 p02): a Studio round,
+   a session or a meeting, is a pass kept inside its topic, `sNN-<topic>/passes/pNN-<MMDD>/`;
+   the old `run-draw-<sNN>` Runs move there (Tools done 261029; other SPACEs one Project at a time).
    A hard Run keeps its own name (`rNN_<slug>`). The panel code: `frame.run_type(name, doing, ...)`.
 
 ## Block · Job · Task
@@ -35,7 +35,7 @@ The button's name is the Run column; "what it does" is the small line under it.
 | Description | Update the description | `haipipe-block` | `run-face-<bNN>` | Block |
 | Description | Update the description | `haipipe-job` | `run-face-<jNN>` | Job |
 | Description | Update the description | `haipipe-task` | `run-face-<tNN>` | Task · Page Task |
-| Idea Studio | add a topic · redraw it · save this session, each a pass | `haipipe-studio` | `run-draw-<sNN>` (one button) | every level |
+| Idea Studio | add a topic · redraw it · save this session or meeting | `haipipe-studio` | none: a round is `passes/pNN-<MMDD>/` in the topic | one `studio/` per Block |
 | Audience Report | Ask a Question | `haipipe-report` | `run-ask-<qNN>` | every level (a Page Task: Ask a question) |
 | Audience Report | Write the report | `haipipe-report` | `run-report-<qNN>` | every level |
 | Audience Report | Rebuild report drawing | `haipipe-report` | `run-figures-<qNN>` | Block · Job · Task |
@@ -44,6 +44,7 @@ The button's name is the Run column; "what it does" is the small line under it.
 | Work Details | Add a Task | `haipipe-job` | `run-add-<tNN>` | Job |
 | Work Details | Build the Task | `haipipe-task` | `run-build-<tNN>` | Task |
 | Runs | Run | `haipipe-run` | `run-<type>-<target>` or `rNN_<slug>` | every level (hard Runs in a work Task only) |
+| Runs | Ask the person: a few questions as a form | `haipipe-interaction` | `rNN_collect_<slug>` | every level (hard, the one hard Run outside a Task) |
 | Delivery | Build the delivery | `haipipe-block` | `run-delivery-<target>` | Block |
 | Delivery | Build the delivery | `haipipe-job` | `run-delivery-<target>` | Job |
 | Delivery | Build the delivery | `haipipe-task` | `run-delivery-<target>` | Task |
@@ -55,7 +56,7 @@ its own buttons, and Report's tabs carry none.
 
 | Space | What it does (the card) | Skill | Run (the button's name) | Opens in |
 |---|---|---|---|---|
-| Work Details | Talk and sketch | `haipipe-studio` | `run-draw-<sNN>` | Studio |
+| Work Details | Talk and sketch | `haipipe-studio` | none: a Studio round | Studio |
 | Work Details | Structure revise | `haipipe-draft-logic` | `run-structure-<slug>` | 1 · Plan |
 | Work Details | Scratch | `haipipe-draft-logic` | `run-scratch-<target>` | 2 · Write |
 | Work Details | Auto write | `haipipe-draft-writing` | `run-section-<slug>` | 2 · Write |

@@ -1,0 +1,42 @@
+{
+ "topic": "s61-insight-slides",
+ "style": "sketch-notes",
+ "source": "s61-insight-slides.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Insight slides",
+   "points": [
+    "a deck that argues for the insight theme on the ladder, the insight side of b12's s61-design-…",
+    "b12's \"is much better\")",
+    "The deck's logic is drawn first"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and the slides that argue for the insight theme on the ladder, for people new to the toolkit",
+    "a display"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "Still open",
+   "points": [
+    "Slide 12's example is illustrative",
+    "Slide 19 dates itself (2026-10-07): rebuild the deck before each showing",
+    "One slide kit for both decks: slide_kit.py lives in b12's s61"
+   ],
+   "leaning": "",
+   "ask": "Who is it for: the people who run insight Boards, or a wider room? It decides the depth",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

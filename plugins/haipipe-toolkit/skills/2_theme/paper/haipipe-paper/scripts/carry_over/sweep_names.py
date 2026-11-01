@@ -10,7 +10,7 @@ written, so a receipt still resolves through their records. JL's full-sweep rule
 hand-written ones to say the new names too. This script reads the three records the others wrote
 (.paper-moves.yaml, .paper-topics-N.yaml, .paper-tasks.yaml) and replaces, longest first:
 
-    A1-Story/StoryA-<desk>-<idea>/StoryA-…  -> studio/sNN-story-<desk>-<idea>/sNN-story-…   (topics record)
+    A1-Story/StoryA-<desk>-<idea>/StoryA-…  -> sNN-story-<desk>-<idea>/sNN-story-…          (topics record)
     Ba-<desk>-Main/ · Bb-<desk>-Appendix/   -> jNN_v<MMDD>_<desk>/                          (moves + tasks records)
     S-<desk>-Main-<N>-<Title>               -> t0N_<title>                                  (tasks record)
 
@@ -35,6 +35,7 @@ SKIP = {"delivery", "board", "results", "passes", "payload", "_archive", ".git",
 PREDECESSOR = re.compile(r"0-paperboard|/_old/|MedJournal")
 RECORD = ".paper-sweep.yaml"
 KEEP = ".paper-sweep"
+TOPIC = re.compile(r"^s\d{2}[-_]")
 
 
 def load(path):
@@ -45,21 +46,22 @@ def token_map(board):
     """old -> new, from the three carry-over records; the version rename is folded into the group renames."""
     tasks = load(board / ".paper-tasks.yaml").get("tokens", {}) or {}
     out = dict(tasks)
-    topics = {}
+    topics, homes = {}, {}
     for rec in sorted(board.glob(".paper-topics-*.yaml")):
         for mv in load(rec).get("moves", []) or []:
             o, n = Path(mv["old"]), Path(mv["new"])
-            if o.parent == n.parent and o.suffix == "" and o.name != n.name:   # a topic folder renamed
-                topics[o.name] = n.name
+            # a topic folder renamed: in studio/ (an older record) or up beside the Jobs (JL 261030)
+            if o.suffix == "" and o.name != n.name and (o.parent == n.parent or TOPIC.match(n.name)):
+                topics[o.name], homes[o.name] = n.name, n.as_posix()
     out.update(topics)
     for old, new in (load(board / ".paper-moves.yaml").get("renames", {}) or {}).items():
         if new != "studio":                                   # a desk group: every child moved with it
             out[old] = tasks.get(new, new)
             continue
-        # the Story group: only its moved children went to studio/; a child archived before the move
+        # the Story group: only its moved children went on to their topics; a child archived before the move
         # (Story01-seed, Story04-narrative-…) is named by where it sits now, under the Board's _archive/
         for child in topics:
-            out[f"{old}/{child}"] = f"studio/{topics[child]}"
+            out[f"{old}/{child}"] = homes[child]
         for kept in sorted(board.glob("_archive/*/Story*")):
             out.setdefault(f"{old}/{kept.name}", kept.relative_to(board).as_posix())
     return {o: n for o, n in out.items() if o and n and o != n}

@@ -377,6 +377,9 @@ class FolderStatMixin:
         # a category counts as present when its folder exists OR any of its
         # flat pre-sweep lanes does.
         have_cat = {c for c in ("delivery", "studio") if c in known}
+        # an sNN topic beside the Page's own folders is its studio (JL 261030)
+        if any(n[:1] == "s" and n[1:3].isdigit() and n[3:4] in ("-", "_") for n in known):
+            have_cat.add("studio")
         have_cat |= {c for n, c in CATEGORY.items() if n in known}
         # The plan folder is draft/ since 0.118; an older Page still shows outline/.
         gaps = [] if {"draft", "outline"} & known else ["draft"]

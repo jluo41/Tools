@@ -83,12 +83,15 @@ _BARE_NUM_RE = re.compile(r"^\s*[\d.]+\s*$")
 # bare `unit` and leave the denominator behind.
 _DOSE_UNIT_RE = r"unit\s*/\s*mL|units\s*/\s*mL|IU\s*/\s*mL|U\s*/\s*mL|IU|mg|g|ml|mL|u"
 _NUMBER_RE = r"[\d]+(?:\.[\d]+)?"
-_DRUG_DOSE_RE = re.compile(
-    rf"([A-Za-z][A-Za-z\- ]*[A-Za-z])\s+({_NUMBER_RE})\s*({_DOSE_UNIT_RE})\b",
-    re.I)
-# 'insulin degludec, 12 IU' / 'Novolin R, 5 IU'
-_DRUG_COMMA_RE = re.compile(
-    rf"^(.+?),\s*({_NUMBER_RE})\s*({_DOSE_UNIT_RE})\b", re.I)
+# A Shanghai string (or typed words) names each drug, then its dose:
+# 'metformin 0.5 g, acarbose 50 mg', 'insulin degludec, 12 IU', 'Humulin 70/30, 8 IU'.
+# A dose ends its drug. A combination pill's two-part dose ('Janumet 50/1000 mg',
+# 'sitagliptin/metformin 50 mg / 500 mg') is no one number. A ratio with no unit
+# after it ('70/30') stays in the name.
+_DOSE_AT_RE = re.compile(
+    rf"(?<![\w/.])(?:(?P<two>{_NUMBER_RE}\s*(?:(?:{_DOSE_UNIT_RE})\s*)?/\s*{_NUMBER_RE}\s*(?:{_DOSE_UNIT_RE}))"
+    rf"|(?P<dose>{_NUMBER_RE})\s*(?P<unit>{_DOSE_UNIT_RE}))\b", re.I)
+_SEP_RE = re.compile(r"[,;，；、]")
 
 # A catalogue/free-text medication can put its strength in the item itself,
 # outside the Shanghai JSON payload path. This is intentionally anchored at the
@@ -123,6 +126,41 @@ def _num(x):
     except (TypeError, ValueError):
         return None
     return None if f != f else f
+
+
+def split_doses(s: str) -> List[tuple]:
+    """A string naming one drug or several, each before its dose ->
+    [(name, dose, unit)] in order; [] when it states no dose.
+
+    Never drops a drug. Words between two separators with no dose of their
+    own are a drug with no dose ('Janumet, metformin 500 mg'); so are words
+    after the last dose when a separator sets them apart. A two-part dose
+    keeps its drug and gives it no dose. Words after the last dose with no
+    separator ('after dinner') are not a drug, nor are words between a dose
+    and the next separator ('500 mg twice, ...')."""
+    comps, at = [], 0
+    for m in _DOSE_AT_RE.finditer(s):
+        parts = _SEP_RE.split(s[at:m.start()])
+        if at and len(parts) > 1:                  # words the last dose's own
+            parts = parts[1:]
+        pieces = [p.strip() for p in parts if p.strip()]
+        comps += [(p, None, None) for p in pieces[:-1]]
+        name = pieces[-1] if pieces else m.group(0).strip()
+        if m.group("two"):
+            comps.append((name, None, None))
+        else:
+            v, u = to_mg(_num(m.group("dose")), canon_unit(m.group("unit")))
+            comps.append((name, v, u) if pieces else (name, None, None))
+        at = m.end()
+    rest = s[at:]
+    if comps and _SEP_RE.search(rest):
+        comps += [(p.strip(), None, None) for p in _SEP_RE.split(rest)[1:] if p.strip()]
+    return comps
+
+
+def two_part_doses(s: str) -> List[str]:
+    """The two-part doses a string states ('50/1000 mg'), each read as no dose."""
+    return [m.group("two") for m in _DOSE_AT_RE.finditer(str(s or "")) if m.group("two")]
 
 
 def parse(raw, dose=None, payload=None) -> Item:
@@ -164,18 +202,11 @@ def parse(raw, dose=None, payload=None) -> Item:
             return Item(NAMED if drug_from_cat else CLASS_ONLY,
                         drug_from_cat or "insulin", _num(s), cat_unit,
                         original, [])
-        m = _DRUG_COMMA_RE.match(s)
-        if m:
-            v, u = to_mg(_num(m.group(2)), canon_unit(m.group(3)))
-            return Item(NAMED, m.group(1).strip(), v, u, original, [])
-        found = _DRUG_DOSE_RE.findall(s)
-        if found:
-            comps = []
-            for name, val, unit in found:
-                v, u = to_mg(_num(val), canon_unit(unit))
-                comps.append((name.strip(), v, u))
+        comps = split_doses(s)
+        if comps:
             first = comps[0]
-            return Item(NAMED, first[0], first[1], first[2], original, comps)
+            return Item(NAMED, first[0], first[1], first[2], original,
+                        comps if len(comps) > 1 else [])
         if s and s.lower() not in PLACEHOLDER_TEXT:
             return Item(NAMED, s, d, cat_unit, original, [])
         return Item(PLACEHOLDER, None, d, None, original, [])

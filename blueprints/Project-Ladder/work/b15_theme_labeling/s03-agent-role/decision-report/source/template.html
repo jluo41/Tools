@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Meaning Loop · Decision report</title>
+<style>
+:root{color-scheme:light;--ink:#182b48;--muted:#586779;--teal:#087f83;--orange:#c76a21;--purple:#6f52ae;--line:#dce4e9;--paper:#fff;--soft:#f4f7f8}
+*{box-sizing:border-box}body{margin:0;background:var(--soft);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input,textarea{font:inherit}button,a,input,label,summary{touch-action:manipulation}button{cursor:pointer}a{color:var(--teal)}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid #8668c5;outline-offset:3px}
+.topbar{position:sticky;top:0;z-index:5;background:#fffffff5;border-bottom:1px solid var(--line);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;gap:16px}.brand{display:flex;align-items:center;gap:10px;font-weight:750}.mark{background:#fff0df;border-radius:12px;padding:7px 10px}.topmeta{font-size:13px;color:var(--muted)}.shell{max-width:1370px;margin:auto;display:grid;grid-template-columns:245px minmax(0,1fr);gap:36px;padding:34px 32px 120px}.sidebar{position:sticky;top:96px;align-self:start}.eyebrow{text-transform:uppercase;letter-spacing:.1em;font-size:12px;font-weight:750;color:var(--teal)}h1{font-size:38px;line-height:1.16;letter-spacing:-1.2px;margin:12px 0}h2{font-size:23px;line-height:1.3;margin:8px 0 12px}h3{font-size:16px;margin:0 0 8px}p{margin:0 0 12px}.sub{color:var(--muted);max-width:760px}.round{font-size:23px;font-weight:750;margin:6px 0 20px}.nav{display:grid;gap:7px;margin:22px 0}.nav a{display:flex;align-items:center;gap:10px;text-decoration:none;padding:10px 12px;color:var(--ink);border-radius:10px;font-size:14px}.nav a:hover{background:#e8eff0}.nav .dot{width:25px;height:25px;border:1px solid #b7c7d1;border-radius:50%;display:grid;place-items:center;font-size:12px;flex:none}.nav a[data-status="answered"] .dot{background:var(--teal);color:white;border-color:var(--teal)}.nav a[data-status="deferred"] .dot{background:#fff1da;color:#895119;border-color:#dec8a9}.progress{height:7px;background:#e1e8eb;border-radius:5px;overflow:hidden;margin:10px 0}.progress span{display:block;height:100%;background:var(--teal);transition:width .2s}.small{font-size:13px;color:var(--muted)}.sidebar-note{border-top:1px solid var(--line);padding-top:18px;margin-top:22px}.hero{margin-bottom:24px}.demo{display:inline-block;background:#ece7f7;color:#634395;border-radius:5px;padding:4px 8px;font-size:12px;font-weight:650;margin-bottom:12px}
+.intake{background:#eaf4f2;border-radius:16px;padding:22px 24px;margin:22px 0 28px}.intake blockquote{margin:7px 0 12px;font-size:18px}.intake details{margin-top:12px}.intake textarea{margin-top:10px;background:#fff}.card{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:28px;margin:0 0 24px;scroll-margin-top:100px}.cardhead{display:flex;justify-content:space-between;gap:12px;align-items:center}.id{font-size:12px;color:var(--teal);font-weight:750;letter-spacing:.06em}.state{font-size:12px;color:var(--muted);background:var(--soft);padding:4px 8px;border-radius:7px}.why{color:var(--muted);font-size:14px}.examples{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0}.example{border-left:3px solid #baace0;background:#f7f5fb;padding:14px 16px;border-radius:0 10px 10px 0}.example .ref{font-size:11px;letter-spacing:.04em;color:#6a5791;font-weight:750}.context{color:var(--muted);font-size:13px;margin:7px 0}.reply{font-size:15px;margin-bottom:10px}.signal{font-size:12px;color:#695480}.options{display:grid;gap:9px;margin-top:18px}.choice{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-radius:11px;padding:14px;cursor:pointer}.choice:hover{background:#f6f9f9}.choice:has(input:checked){background:#edf7f5;border-color:var(--teal)}.choice input{width:18px;height:18px;margin:3px 0 0;accent-color:var(--teal);flex:none}.choice strong{font-weight:600}.letter{color:var(--teal);margin-right:8px;font-size:13px}.effect{display:block;font-size:13px;color:var(--muted);margin-top:5px}.effect[hidden]{display:none}.alternate{background:#fafbfc}.comment-label{display:block;font-size:13px;font-weight:650;margin-top:18px}textarea{display:block;width:100%;min-height:76px;padding:12px;border:1px solid #c7d2d9;border-radius:9px;resize:vertical;color:var(--ink);background:#fff}textarea::placeholder{color:#75818d}.error{color:#aa2735;font-size:13px;margin-top:5px}.error:empty{display:none}.details{margin-top:17px;font-size:13px;color:var(--muted)}summary{cursor:pointer;color:var(--teal);font-weight:600}.details dl{display:grid;grid-template-columns:100px 1fr;gap:8px;margin-bottom:0}.details dt{font-weight:650}.details dd{margin:0}.source{margin:12px 0;padding-left:12px;border-left:2px solid var(--line)}.source p{margin:4px 0}.scope{border-top:1px solid #e7edef;padding-top:14px;margin-top:16px;color:var(--muted);font-size:12px}
+.footer{position:fixed;bottom:0;left:0;right:0;z-index:6;background:#fff;border-top:1px solid var(--line);padding:16px 32px}.foot-inner{max-width:1306px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:16px}.actions{display:flex;gap:10px;flex-wrap:wrap}button{border:1px solid #c7d2d9;border-radius:9px;padding:10px 17px;color:var(--ink);background:white;font-weight:600;font-size:14px}button:hover{background:#f0f5f5}.primary{background:var(--teal);border-color:var(--teal);color:#fff}.primary:hover{background:#06666a}.status{font-size:13px;color:var(--muted)}dialog{border:1px solid var(--line);border-radius:18px;padding:28px;max-width:780px;width:calc(100% - 32px);max-height:85vh;color:var(--ink)}dialog::backdrop{background:#182b4870}.review-list{margin:20px 0;max-height:40vh;overflow:auto;padding-right:8px}.review-row{padding:12px 0;border-top:1px solid var(--line)}.review-row p{margin:3px 0;font-size:14px}.review-row small{color:var(--muted)}.dialog-actions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap}.success{background:#e7f5ed;color:#256443;padding:16px;border-radius:10px;margin-top:18px}.success[hidden]{display:none}.endnote{font-size:13px;color:var(--muted);padding:0 8px}button:disabled{cursor:default;opacity:.5}
+@media(max-width:900px){.shell{grid-template-columns:190px minmax(0,1fr);gap:20px;padding:26px 20px 140px}.topbar,.footer{padding:14px 20px}h1{font-size:31px}.card{padding:22px}.examples{grid-template-columns:1fr}}
+@media(max-width:650px){.topmeta{display:none}.shell{display:block;padding:20px 14px 160px}.sidebar{position:static}.sidebar .round,.sidebar-note,.sidebar .eyebrow{display:none}.nav{display:flex;overflow:auto;margin:12px 0 24px;gap:3px}.nav a{padding:7px;flex:none}.nav .navtext{display:none}.topbar{padding:12px 16px}.hero h1{font-size:29px}.card{padding:18px}.foot-inner{align-items:flex-start;flex-direction:column;gap:10px}.footer{padding:12px 14px}.actions{width:100%}.actions button{flex:1}.details dl{grid-template-columns:1fr}.intake{padding:18px}.cardhead{align-items:flex-start}dialog{padding:20px}.dialog-actions button{flex:1}.status{font-size:12px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<!-- GENERATED FILE. Edit source/template.html and source/report-v1.json, then run build.py. -->
+<header class="topbar"><div class="brand"><span class="mark" aria-hidden="true">🤖</span> Meaning Loop <span class="topmeta">/ Decision report</span></div><div class="topmeta" id="version"></div></header>
+<div class="shell">
+<aside class="sidebar" aria-label="Decision navigation">
+<div class="eyebrow">Human review</div><div class="round" id="round"></div>
+<div id="progressText" class="small" aria-live="polite"></div>
+<div class="progress" role="progressbar" aria-label="Decisions addressed" aria-valuemin="0" aria-valuemax="6" aria-valuenow="0"><span id="progressBar"></span></div>
+<nav class="nav" id="nav"></nav>
+<div class="sidebar-note small"><strong>One choice can guide many items.</strong><p style="margin-top:8px">You decide the standard. The agent checks how it applies.</p><p>Only learning examples enter this report.</p></div>
+</aside>
+<main>
+<section class="hero"><span class="demo">INTERACTIVE PROTOTYPE · SYNTHETIC EXAMPLES</span><div class="eyebrow" id="task"></div><h1 id="title"></h1><p class="sub">Review a few meaningful choices, not a long list of individual labels. Choose a rule, write your own, or ask for more evidence.</p></section>
+<section class="intake" aria-label="Starting idea"><h3>Your starting idea</h3><blockquote id="idea"></blockquote><div class="small">Illustrative brief, not a quote from your actual sources.</div><details><summary>Add an idea, source note, or preference for the next round</summary><label for="context" class="comment-label">Additional context</label><textarea id="context" placeholder="What should the agent keep in mind? You can include a source reference."></textarea><div class="small">Included with your feedback; it will need agent review.</div></details></section>
+<div id="cards"></div>
+<p class="endnote">These are candidate rules. Confirming a preference does not approve every related label. The next agent step is to reconcile decisions, show guideline changes, and recheck affected learning items.</p>
+<div id="receipt" class="success" role="status" hidden></div>
+</main>
+</div>
+<footer class="footer"><div class="foot-inner"><div><strong id="footerCount"></strong><div class="status" id="saveStatus" role="status">Your choices stay in this browser. Submit exports a feedback file.</div></div><div class="actions"><button id="save" type="button">Save draft</button><button id="review" type="button" class="primary">Review & submit</button></div></div></footer>
+<dialog id="reviewDialog" aria-labelledby="reviewTitle"><h2 id="reviewTitle">Confirm your feedback</h2><p class="sub">Review your choices before exporting. Unanswered and deferred decisions stay open.</p><div id="reviewList" class="review-list"></div><p class="small">This prototype downloads a JSON feedback file. It does not send data to an agent or change the guideline automatically.</p><div class="dialog-actions"><button id="back" type="button">Keep editing</button><button id="submit" type="button" class="primary">Confirm & export feedback</button></div></dialog>
+<script id="reportData" type="application/json">__REPORT_DATA__</script>
+<script>
+'use strict';
+const report=JSON.parse(document.getElementById('reportData').textContent);
+const storageKey='meaning-decision-report:'+report.report_id+':'+report.guideline_version;
+const $=id=>document.getElementById(id);
+const esc=value=>String(value==null?'':value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let state={answers:{},context:'',revision:0,lastSubmission:null};
+let restoreMessage='';
+try {
+ const stored=JSON.parse(localStorage.getItem(storageKey)||'null');
+ if(stored&&stored.report_id===report.report_id&&stored.guideline_version===report.guideline_version){
+   state.context=typeof stored.context==='string'?stored.context:'';
+   state.revision=Number.isInteger(stored.revision)?stored.revision:0;
+   state.lastSubmission=stored.lastSubmission||null;
+   for(const d of report.decisions){
+     const a=stored.answers&&stored.answers[d.id];
+     if(a&&[...d.options.map(o=>o.id),'none','defer',''].includes(a.choice)){
+       state.answers[d.id]={choice:a.choice,comment:typeof a.comment==='string'?a.comment:''};
+     }
+   }
+   restoreMessage='Draft restored from this browser.';
+ }
+}catch(e){restoreMessage='Browser storage unavailable. Export your feedback before closing.';}
+for(const d of report.decisions)state.answers[d.id] ||= {choice:'',comment:''};
+function choiceName(d,a){
+ if(a.choice==='none')return 'None of these — my own proposal';
+ if(a.choice==='defer')return 'Defer — I need more evidence';
+ return d.options.find(o=>o.id===a.choice)?.label||'Unanswered';
+}
+function render(){
+ $('version').textContent=report.guideline_version+' · Learning evidence only';
+ $('round').textContent='Round '+report.round;
+ $('task').textContent=report.task;
+ $('title').textContent=report.title;
+ $('idea').textContent=report.starting_idea;
+ $('context').value=state.context;
+ document.querySelector('.progress').setAttribute('aria-valuemax',report.decisions.length);
+ $('nav').innerHTML=report.decisions.map((d,i)=>'<a href="#'+esc(d.id)+'" id="nav-'+esc(d.id)+'"><span class="dot">'+(i+1)+'</span><span class="navtext">'+esc(d.short_title)+'</span></a>').join('');
+ $('cards').innerHTML=report.decisions.map((d,i)=>{
+ const a=state.answers[d.id];
+ const choices=d.options.concat([
+ {id:'none',label:'None of these — I have a different rule',effect:'Describe your preference below. The agent will translate it into a proposal and check for conflicts.'},
+ {id:'defer',label:'Defer — I need more examples or context',effect:'Keep this decision open. Add what would help you decide.'}
+ ]);
+ return '<article class="card" id="'+esc(d.id)+'" aria-labelledby="title-'+esc(d.id)+'">'+
+ '<div class="cardhead"><span class="id">DECISION '+String(i+1).padStart(2,'0')+' · '+esc(d.kind)+'</span><span class="state" id="state-'+esc(d.id)+'">Not answered</span></div>'+
+ '<h2 id="title-'+esc(d.id)+'">'+esc(d.title)+'</h2><p class="why">'+esc(d.why)+'</p>'+
+ (d.examples.length?'<div class="examples">'+d.examples.map(e=>'<div class="example"><div class="ref">'+esc(e.id)+' · LEARNING EXAMPLE</div><p class="context">'+esc(e.context)+'</p><p class="reply">“'+esc(e.reply)+'”</p><div class="signal">'+esc(e.signal)+'</div></div>').join('')+'</div>':'')+
+ '<div class="options" role="radiogroup" aria-labelledby="title-'+esc(d.id)+'">'+choices.map(o=>'<label class="choice '+(['none','defer'].includes(o.id)?'alternate':'')+'"><input type="radio" name="'+esc(d.id)+'" value="'+esc(o.id)+'" '+(a.choice===o.id?'checked':'')+'><span><strong><span class="letter">'+esc(o.id==='none'?'✎':o.id==='defer'?'…':o.id)+'</span>'+esc(o.label)+'</strong><span class="effect" '+(a.choice===o.id?'':'hidden')+'>'+esc(o.effect)+'</span></span></label>').join('')+'</div>'+
+ '<label class="comment-label" for="comment-'+esc(d.id)+'">Your reasoning or alternative <span class="small">(optional unless you choose “None”)</span></label><textarea id="comment-'+esc(d.id)+'" data-comment="'+esc(d.id)+'" aria-describedby="error-'+esc(d.id)+'" placeholder="What matters to you here? What would change your answer?">'+esc(a.comment)+'</textarea><div id="error-'+esc(d.id)+'" class="error"></div>'+
+ '<details class="details"><summary>Current rule, evidence sources & expected change</summary><dl><dt>Current rule</dt><dd>'+esc(d.current_rule)+'</dd><dt>Rule reference</dt><dd>'+esc(d.rule_id)+' · '+esc(report.guideline_version)+'</dd><dt>Affected scope</dt><dd>'+esc(d.scope)+'</dd></dl>'+
+ d.source_ids.map(id=>{const s=report.sources.find(s=>s.id===id);return '<div class="source"><strong>'+esc(s.id)+' · '+esc(s.kind)+'</strong><p>'+esc(s.text)+'</p><small>'+esc(s.provenance)+'</small></div>';}).join('')+'</details>'+
+ '<div class="scope">Applies to: '+esc(d.scope)+'</div></article>';
+ }).join('');
+ updateProgress();
+ if(restoreMessage)$('saveStatus').textContent=restoreMessage;
+}
+function updateProgress(){
+ let answered=0,deferred=0;
+ for(const d of report.decisions){
+   const a=state.answers[d.id],chosen=!!a.choice;
+   if(a.choice==='defer')deferred++;else if(chosen)answered++;
+   const label=a.choice==='none'?'Custom proposal':a.choice==='defer'?'Deferred':chosen?'Choice drafted':'Not answered';
+   $('state-'+d.id).textContent=label;
+   $('nav-'+d.id).dataset.status=a.choice==='defer'?'deferred':chosen?'answered':'pending';
+ }
+ const total=report.decisions.length,done=answered+deferred,pending=total-done;
+ $('progressText').textContent=done+' of '+total+' addressed';
+ $('footerCount').textContent=answered+' choices · '+deferred+' deferred · '+pending+' unanswered';
+ $('progressBar').style.width=done/total*100+'%';
+ document.querySelector('.progress').setAttribute('aria-valuenow',done);
+}
+function saveDraft(manual=false){
+ try{
+   localStorage.setItem(storageKey,JSON.stringify({...state,report_id:report.report_id,guideline_version:report.guideline_version,saved_at:new Date().toISOString()}));
+   $('saveStatus').textContent=(manual?'Draft saved':'Autosaved')+' in this browser · '+new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+   return true;
+ }catch(e){$('saveStatus').textContent='Could not save in this browser. Use Submit to export a file.';return false;}
+}
+function changed(){
+ state.revision++;
+ $('receipt').hidden=true;
+ updateProgress();
+ saveDraft();
+}
+$('cards').addEventListener('change',e=>{
+ if(e.target.type!=='radio')return;
+ const id=e.target.name;
+ state.answers[id].choice=e.target.value;
+ $(id).querySelectorAll('.choice').forEach(c=>c.querySelector('.effect').hidden=!c.querySelector('input').checked);
+ $('error-'+id).textContent='';
+ $('comment-'+id).removeAttribute('aria-invalid');
+ changed();
+});
+$('cards').addEventListener('input',e=>{
+ const id=e.target.dataset.comment;if(!id)return;
+ state.answers[id].comment=e.target.value;
+ if(e.target.value.trim()){$('error-'+id).textContent='';e.target.removeAttribute('aria-invalid');}
+ changed();
+});
+$('context').addEventListener('input',e=>{state.context=e.target.value;changed();});
+$('save').addEventListener('click',()=>saveDraft(true));
+function validate(){
+ let first=null;
+ for(const d of report.decisions){
+  const a=state.answers[d.id],bad=a.choice==='none'&&!a.comment.trim();
+  $('error-'+d.id).textContent=bad?'Please describe your alternative, or choose Defer.':'';
+  $('comment-'+d.id).setAttribute('aria-invalid',String(bad));
+  if(bad&&!first)first=$('comment-'+d.id);
+ }
+ if(first){first.focus();first.scrollIntoView({block:'center'});return false;}
+ if(!Object.values(state.answers).some(a=>a.choice||a.comment.trim())&&!state.context.trim()){
+   $('saveStatus').textContent='Choose an option or add feedback before submitting.';
+   $('D01').scrollIntoView({block:'start'});return false;
+ }
+ return true;
+}
+$('review').addEventListener('click',()=>{
+ if(!validate())return;
+ $('reviewList').innerHTML=report.decisions.map(d=>{
+ const a=state.answers[d.id],effect=d.options.find(o=>o.id===a.choice)?.effect;
+ return '<div class="review-row"><small>'+esc(d.id)+' · '+esc(d.rule_id)+'</small><p><strong>'+esc(choiceName(d,a))+'</strong></p>'+(effect?'<p>'+esc(effect)+'</p>':'')+(a.comment?'<p>Your note: '+esc(a.comment)+'</p>':'')+'</div>';
+ }).join('')+(state.context?'<div class="review-row"><strong>Additional context</strong><p>'+esc(state.context)+'</p></div>':'');
+ $('reviewDialog').showModal();
+});
+$('back').addEventListener('click',()=>$('reviewDialog').close());
+function makeFeedback(){
+ const now=new Date().toISOString();
+ return {
+  schema_version:1,report_id:report.report_id,round:report.round,base_guideline_version:report.guideline_version,
+  submission_id:report.report_id+'-revision-'+state.revision+'-'+now,
+  submitted_at:now,revision:state.revision,delivery:'local_file_export',synthetic_demo:report.demo,
+  status:'human_feedback_awaiting_agent_integration',additional_context:state.context,
+  sources:report.sources,
+  decisions:report.decisions.map(d=>{
+   const a=state.answers[d.id],o=d.options.find(o=>o.id===a.choice);
+   return {decision_id:d.id,rule_id:d.rule_id,question:d.title,current_rule:d.current_rule,
+    selected_option:a.choice||null,selected_text:choiceName(d,a),proposed_rule:o?.effect||null,
+    human_comment:a.comment,
+    status:a.choice==='defer'?'deferred':a.choice==='none'?'custom_proposal':a.choice?'confirmed_preference':'unanswered',
+    approval_scope:'rule_preference_only',source_ids:d.source_ids,learning_item_ids:d.examples.map(e=>e.id),affected_scope:d.scope};
+  }),
+  next_actions:['Check cross-decision consistency','Draft a guideline change for review','Re-label affected learning items','Request clarification for custom or conflicting proposals'],
+  item_labels_approved:false
+ };
+}
+$('submit').addEventListener('click',()=>{
+ if(!validate()){$('reviewDialog').close();return;}
+ const payload=makeFeedback();
+ const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+ const url=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download=report.report_id+'-feedback-r'+state.revision+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+ state.lastSubmission={submitted_at:payload.submitted_at,revision:state.revision,submission_id:payload.submission_id};
+ saveDraft();
+ $('reviewDialog').close();
+ $('receipt').textContent='Feedback export requested. Give the downloaded JSON file to the agent for the next round. Your guideline and reference labels have not been changed.';
+ $('receipt').hidden=false;
+ $('receipt').scrollIntoView({block:'center'});
+ $('saveStatus').textContent='Feedback prepared locally. Nothing was sent to a server.';
+});
+render();
+</script>
+</body>
+</html>

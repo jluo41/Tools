@@ -1,0 +1,35 @@
+# The Lancet Public Health manuscript presentation rules (Article).
+# This file contains venue behaviour only.  Paper prose, values, citations,
+# and display choices remain in the desk room and its evidence lock.
+# The Word lane reuses the medical manuscript layout written for JAMA Internal
+# Medicine (directly formatted headings, numbered references); the labels below
+# are the Lancet's own.
+layout = "jama-internal-medicine"
+venue_label = "The Lancet Public Health"
+font = "Times New Roman"
+line_numbers = true
+line_number_distance = 360
+restart_line_numbers_each_page = false
+heading_style = "normal"
+headings_keep_with_next = false
+draft_label = "DRAFT: NOT SUBMISSION READY"
+key_points_heading = "Research in context"
+abstract_heading = "Summary"
+references_heading = "References"
+supplement_title = "Supplementary appendix"
+# A first submission is one manuscript with its tables and panels (the journal's author information), so the main
+# file prints them, tables then figures, after the references; the appendix stays in its own supplement file.
+include_main_displays = true
+main_displays_at_end = true
+# Vancouver numbering, superscript, in the order cited (the journal's author guide).
+citation_style = "numeric"
+# The number follows these marks: "2019.¹⁴" (build_delivery.py moves a \citep written before one; JAMA has no key).
+cite_after_punctuation = ".,;:"
+# "the word count is for the manuscript text only": from the Introduction, not the Research in context panel, to the
+# back matter, which here also opens with these headings.
+word_count_from = "Introduction"
+back_matter_headings = ["Contributors", "Declaration of interests", "Data sharing", "Acknowledgments", "Funding"]
+
+[latex]
+natbib = "super,sort&compress"
+bibstyle = "vancouver"

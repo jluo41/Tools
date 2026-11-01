@@ -1,0 +1,14 @@
+run: run-apply-element-picks
+kind: soft
+type: apply
+scope: null
+target: element-picks
+ticket: run-apply-element-picks.md
+skill: haipipe-ui
+agent: claude
+signs: null
+status: queued
+passes: []
+writes:
+- blueprints/Project-Ladder/work/b17_theme_work/s04-workbench-page-structure/delivery/ui/
+feeds: []

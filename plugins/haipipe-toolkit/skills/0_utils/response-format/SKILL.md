@@ -1,11 +1,11 @@
 ---
 name: response-format
-description: "Spec for the assistant's chat reply format in this workspace: the answer on line 1, then sections of numbered one-line scan points, a small ASCII sketch and plain prose; the last section is Summary and Next. A reference spec; it does not self-activate. Trigger: response format, reply format, outline format, section headers, 回复格式."
+description: "Spec for the assistant's chat reply format in this workspace: the answer on line 1, then sections of numbered one-line scan points, a small ASCII sketch and plain prose; each section closes with a See line linking its place in the workbench (Report, Work, Studio, Interactions, Delivery); the last section is Summary and Next. A reference spec; it does not self-activate. Trigger: response format, reply format, outline format, section headers, 回复格式."
 argument-hint: "(reference spec — usually not invoked directly)"
 allowed-tools: Bash, Read
 metadata:
-  version: "0.23.1"
-  last_updated: "2026-10-26"
+  version: "0.25.0"
+  last_updated: "2026-11-01"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -31,9 +31,9 @@ Scope
   guidance and document template, including their heading syntax. This chat
   skill neither forbids Markdown `##` nor requires ASCII underline headings
   in authored files.
-- Studio associations describe where the discussion belongs: the owning Block
-  and its sNN topic. Saving a topic, Question or Report is separate work through
-  its owning skill; an association line does not create or change those files.
+- See lines point to where a section's material is shown: a workbench page and
+  its rail section. A See line creates nothing; saving a topic, Question or Report
+  is separate work through its owning skill.
 
 
 The format
@@ -45,13 +45,13 @@ that line. Never build up to it.
 
 **Everything after line 1 is sectioned.** Form the sections from the user's
 current input and the relevant session context, in a natural discussion order.
-Then associate each ordinary section with the Studio topic it advances. Its content
+Then find, for each ordinary section, the workbench place that shows it. Its content
 starts with a NUMBERED list of one-line points, followed by a concise ASCII sketch
 when there is a useful relationship to draw, then plain prose for whatever needs
-explaining. Changed files follow the explanation. The closing **Studio**
-line names the owning Block, its sNN topic and what this section adds. There is no
-Related question line (JL 261011: "no more question ... use the Studio only").
-Summary and Next has no Studio line.
+explaining. Changed files follow the explanation. The closing **See** line links
+the workbench page and rail section (Report, Work, Studio, Interactions, Delivery,
+and the rest) where the reader finds this section's material. There is no Related
+question line (JL 261011). Summary and Next has no See line.
 The list is what the reader scans, the sketch is what the reader sees, and the
 prose is ordinary paragraphs, with no keys and no repeated titles. Never interleave
 these content layers.
@@ -72,91 +72,65 @@ covers what the points could not hold, and it is often not needed at all.
 
 (changed file lines, if any)
 
-**Studio:** [<Block> sNN-<topic>](<workbench Studio topic URL>): <what this section adds>
+**See:** [<page> › <Rail section>](<workbench link>): <what the reader finds there>
 ```
 
 
-Studio associations
--------------------
+Where to see it: the See line (2026-11-01)
+------------------------------------------
 
-Determine the reply's content and section order from the user's input first;
-match the sections to Studio topics afterwards. The topic list helps locate the
-work; it does not replace the user's discussion with a board outline.
-
-**The Studio line is the default** (2026-10-10). Close an ordinary section with one
-Studio association: the owning Block, an existing sNN topic and one short line
-saying what the section contributes. Several sections may share the same topic.
-Use the topic being worked on, even when the section changes a skill or code
-rather than a drawing. A topic owns the discussion; its drawing is one of its files.
+JL 261101: "for each section in the response, how to point to the report ui". Every
+ordinary section ends with one **See:** line: a link to the workbench page and rail
+section where the reader finds that section's material, and a few words on what is
+there. It replaces the Studio line (261010 to 261031); a Studio topic is now one of
+the places a See line can point.
 
 ```
-**Studio:** [<Block> sNN-<topic>](<workbench Studio topic URL>): <why>
-**Studio:** (proposed) <Block> "<topic title>": <why>
+**See:** [<page name> › <Rail section>](<link>): <what the reader finds there>
+**See:** [<page name> › Studio › sNN-<topic>](<link>): <what the reader finds there>
 ```
 
-1. **Block**: the Block owning this work, named explicitly, such as `b01_haipipe-toolkit`.
-2. **Topic**: the existing `sNN-<topic>` folder, with its real name and number.
-3. **Why**: what this section settles, changes, checks or leaves open for that topic.
-4. **One topic**: choose the closest one; do not attach a list of loosely related topics.
-5. **Existing first**: reuse the topic already being discussed before proposing another.
-
-**Look in both places** (JL 261011: "also refer to the blocks in the Tools/blueprint
-as well"). The topics live in two kinds of Block, and every match checks both:
-
-1. **Project Blocks**: the Blocks of the Project the user named, under its SPACE.
-2. **Tools blueprint Blocks**: `Tools/blueprints/bNN_<name>/studio/`, such as `b10_project_workbench`.
-3. **Tool work goes to blueprints**: a skill, server, workbench or theme change belongs there.
-4. **Project content stays home**: a board's own data, questions and results stay in its Project.
-
-A section about serving or showing a project board (a server restart, a workbench
-page) is tool work, so its topic is a blueprint one such as `b10_project_workbench
-s51-server-runtime`, or the theme's Block such as `b11_theme_insight`. List the
-candidates with `ls Tools/blueprints/b*/studio/`. A blueprint Block is served by the
-host whose root is `Tools/`, and its link path is relative to that root
-(`blueprints%2Fb10_project_workbench`).
-
-A Job or Task may select the work context, but the Studio association names its
-owning Block. Existing topics still stored under a Job or Task can appear in the
-Block's shared Studio. Link that actual topic, retaining its source-qualified
-anchor; do not claim the files have already moved to the Block's `studio/`.
-
-**The link** opens the shared Workbench's Studio with the topic expanded in place:
+Pick the rail section by what the section is about. The rail is the right-hand list
+of every focus page (`focus_page.py`, `rail.append`):
 
 ```
-<host>/_board/workbench?path=<block folder>&studio=1&studio_group=all#topic-sNN-<topic>
+the section is about             rail          the link ends with
+a decision waiting on the user   Interactions  &layout=focus&section=interactions
+a finding, an answered question  Report        &layout=focus&section=report
+Runs, Tasks, what was executed   Work          &layout=focus&section=work
+a topic's thinking or drawing    Studio        &layout=focus&section=studio&group=<group>#sNN-<topic>
+a built PDF, Word or web copy    Delivery      &layout=focus&section=delivery
+papers, notes, emails from out   Related       &layout=focus&section=related
+what changed when                Timeline      &layout=focus&section=timeline
+the folder itself                Files         &layout=focus&section=files
 ```
 
-1. **Path**: the Block folder relative to the served SPACE root; URL-encode the query value.
-2. **Anchor**: use the topic row's actual id, as `frame.studio_anchor` produces it.
-   A Block topic uses `topic-sNN-<topic>`; an existing Job topic may use
-   `topic-jNN_<job>--sNN-<topic>`. This keeps repeated sNN numbers distinct.
-3. **All**: `studio_group=all` makes the link work even when the topic is outside Current.
-4. **Host**: use the host already serving that SPACE and its configured public origin.
-   Never start a host just to make an association link.
-5. **Fallback**: when no host is available, link the topic's existing notes or drawing
-   file. Do not guess a URL, a path or an anchor.
+1. **Page**: the deepest page that owns the material (Project, Block, Job or Task), by name;
+   material kept elsewhere (another Project, the CMS server) points to the page here that waits on it.
+2. **Link**: `<host>/_board/workbench?path=<folder>` plus the ending above; URL-encode the path.
+3. **Studio topic**: copy the card's own link: `section=studio&group=<its group>#sNN-<topic>`.
+4. **One place**: one See line per section, the closest place, never a list of places.
+5. **Loaded first**: open the link on the host before replying; never guess a path or group.
+6. **Paper pages**: a paper Board's Job or Task is named by its folder (`j11_writing_v1130_lanpub`).
 
-Example for the shared-Studio topic in its independent Workbench Block:
+**Host.** Use the host already serving that SPACE, at its configured public origin
+(`.server_config/settings.env`: `DOMAIN`, `PORT`), never `localhost`. When none answers,
+`wb.py --no-open <path>` starts it and prints the page link. A Tools blueprint Block
+lives on the host rooted at `Tools/`, its path relative to that root.
+
+**Look in both places** (JL 261011). Tool work (a skill, server, workbench or theme)
+points to its page under `Tools/blueprints/bNN_<name>/`; a board's own data, questions
+and results point to their page in the Project.
 
 ```
-**Studio:** [b10_project_workbench s02-studio-workbench-skill](<host>/_board/workbench?path=blueprints%2Fb10_project_workbench&studio=1&studio_group=all#topic-s02-studio-workbench-skill): settles how Studio is shared across levels.
+**See:** [Paper-PersonalityPDMPMandate › Interactions](<host>/_board/workbench?path=examples-2-cms%2FProject-Personality-OpioidRx%2Fpaper%2FPaper-PersonalityPDMPMandate&layout=focus&section=interactions): the 16 questions, my picks ticked.
+**See:** [Paper-PersonalityPDMPMandate › Studio › s02-story-personality-pdmp-mandate](<host>/_board/workbench?path=examples-2-cms%2FProject-Personality-OpioidRx%2Fpaper%2FPaper-PersonalityPDMPMandate&layout=focus&section=studio&group=Story#s02-story-personality-pdmp-mandate): the Story and its log.
 ```
 
-**No matching topic**: if the owning Block is known, write an unlinked `(proposed)`
-Studio title. Never invent an sNN, a folder or a link. The reply itself creates
-nothing; creating a topic requires the user's authorization and `haipipe-studio`.
-When the section has no known Block or Studio work, omit the association instead
-of inventing one. A trivial answer line needs no association.
-
-**No Related question line** (JL 261011: "Related question: ... <--- no more
-question. I think we are using /response-format and use the Studio only"). A section
-closes on its Studio line alone; the Studio topic records the outcome, not a Question
-report.
-
-The final **Summary and Next** has no Studio line.
-It summarizes the whole reply and may mention topic or Q ids naturally in its
-points or prose.
-
+**No page yet**: write the folder path in backticks, unlinked, and say so; never
+invent a page, a group or an anchor. A See line creates nothing. A trivial answer
+line needs none, and the final **Summary and Next** has none: it may name pages in
+its prose.
 
 Inside one section: scan, see, then explain
 -------------------------------------------
@@ -167,8 +141,8 @@ of what the points are about (see "The sketch"). Then plain prose for whatever
 needs more context. A
 reader who stops after the numbers already has the point; a reader who stops after
 the sketch has seen it. A section whose work changed files adds a fourth layer:
-its file lines (see "Files live in their section"). Last comes the Studio
-line: the Block and sNN this section advances, and why.
+its file lines (see "Files live in their section"). Last comes the See line:
+where in the workbench the reader finds this section's material.
 
 ```
 scan point   N. **Short title**: one takeaway. ONE line, <= 14 words
@@ -177,7 +151,7 @@ sketch       a ```text block: draws the thing, one step per line, emoji on its
 prose        plain paragraphs after the whole list. no keys, no titles.
              as detailed as the point deserves. skip it when it adds nothing
 file lines   - `name` (where): change in <= 8 words. only if the section changed files
-studio       **Studio:** [<Block> sNN-<topic>](<Studio topic URL>): <why>. default, last
+see          **See:** [<page> › <Rail section>](<link>): <what is there>. last
 ```
 
 1. **Numbers, not dashes**: the scan layer is `1.` `2.` `3.`, never `-`.
@@ -216,14 +190,14 @@ Rules, all countable
 --------------------
 
 ```
-heading -> scan -> sketch -> explain -> files -> studio     ordinary ORDER
-summary: heading -> scan -> sketch -> explain               no studio line
-studio match follows drafting   user's input drives content and section order
-one Studio topic per section    default Studio line: Block, sNN, contribution
-Studio link opens the topic     /_board/workbench?path=<Block>&studio=1&studio_group=all#<actual topic id>
-no Related question line        the Studio line alone closes a section (JL 261011)
-Studio = the discussion topic   its drawing is a file; Job and Task reuse the Block Studio
-proposed topic has no sNN        no invented folder or link; creation needs user authorization
+heading -> scan -> sketch -> explain -> files -> see        ordinary ORDER
+summary: heading -> scan -> sketch -> explain               no See line
+place follows drafting          user's input drives content and section order
+one See line per section        page › rail section, linked, what is there
+See link = the focus page       /_board/workbench?path=<folder>&layout=focus&section=<rail>
+rail by content                 decision Interactions · finding Report · Runs Work · topic Studio · file Delivery
+link loaded before replying     never a guessed path, group or anchor
+no Related question line        the See line alone closes a section (JL 261011)
 1. 2. 3. not -                   numbered scan layer; dashes mean inventory
 1 authored line per scan point   short phrase; viewport wrapping is outside the writer's control
 <= 14 words per scan point       title included. count them
@@ -237,9 +211,9 @@ one step per line                readable first; several short lines beat one lo
 emoji nodes, no separators       a blank line around it; no rules, no borders
 ## N. sections                   numbered 1, 2, 3 ...; the summary is the last
 heading = number, emoji, words  no question in it, no dot padding, no trailing marks
-why <= 20 words, one line        the section's contribution, not the question again
+what-is-there <= 12 words       what the reader finds there, not the section again
 a sketch draws, never restates   the list redrawn in boxes is not a sketch
-body prose follows scan          the Studio line closes the section
+body prose follows scan          the See line closes the section
 a file line says what changed    `name` (where): change, <= 8 words, one line
 ```
 
@@ -268,7 +242,7 @@ Sections
   things stand now and what comes next, most important first; its prose holds the
   detail. It is the section a reader who skipped everything else reads, so it
   carries the real state and the real next step, never a list of files. A question
-  for the user belongs here too, as the next step it blocks. It has no Studio
+  for the user belongs here too, as the next step it blocks. It has no See
   line.
 - **Honest headlines** — the headline names what is under it. Never pad to hit a count.
 
@@ -279,7 +253,7 @@ A reader takes in the first line and the pictures first. Keep a sketch between
 the scan list and the prose whenever it helps draw the section's content. It is
 an ASCII drawing, in the shapes of `/diagram-ascii`, laid out to be read: one step
 per line, a short note beside each, several lines when that reads better than one
-long line. The Studio line supplements this diagram; it does not replace it.
+long line. The See line points to the page; it does not replace this sketch.
 
 ```text
 📥 raw row          FoodName, ExternalSourceID, FoodID
@@ -357,6 +331,12 @@ Carried over, unchanged
 - **Say the real name** — real file paths, real field names, real function names.
   No nicknames, no invented vocabulary, and never pass a subagent's coined word
   through without translating it first.
+- **Never a bare index** (JL 261029: "never just give the bNNjNN index, it is very hard to know
+  about it"). Write the address, a colon, then the names in the same shape: each rung's short name
+  (its folder name without the number, first three words) joined by dots, ` @ ` before a Studio
+  topic, any `-` or `.` inside a name turned into `_`; no space after the colon:
+  `b17-s04:theme_work @ workbench_page_structure`, `b17.j01.t03-s09:theme_work.tables.cut @ which_cut_first`,
+  `b11.j21.t01.r04:CD_visit_pain.D_reg_VisitLBP.agre.bigfive_ols` (b35 s01-D06, D07).
 - **No em-dashes.** Use a colon, a semicolon, a comma, parentheses, or a new sentence.
 
 Files live in their section (2026-09-26)
@@ -366,7 +346,7 @@ A list of bare paths at the end of a reply answers "which files" and nothing els
 So a changed file is written down next to the work that changed it, as short as it
 can be while still saying what changed.
 
-1. **In the section**: changed files follow the explanation, before the association lines.
+1. **In the section**: changed files follow the explanation, before the See line.
 2. **Name, where, change**: ``- `name` (where): change``, the change in 8 words or fewer.
 3. **👀 means read it**: add `Check:` and what to confirm, 8 words or fewer.
 4. **Outputs too**: a notebook or result goes under the section that made it.
@@ -431,7 +411,7 @@ A skill runs only when it is invoked or explicitly loaded by another active
 instruction. To make this format always-on, an active global instruction must
 load it; this checkout currently has no root `CLAUDE.md` pointer.
 
-**Studio:** (proposed) b01_haipipe-toolkit "Skill instructions and reply format": gives the verdict and when the format applies.
+**See:** [b10_project_workbench › Report](<host>/_board/workbench?path=blueprints%2FProject-Ladder%2Fwork%2Fb10_project_workbench&layout=focus&section=report): when a skill applies, as answered there.
 
 ## 2. 🛠️ What I Changed
 
@@ -447,22 +427,20 @@ no readings. It now skips them, and the rebuild picked that up.
 - 👀 `builder_x.py` (`build_cases`): skip days with zero readings. Check: skip before window cut
 - `fn_case/x.py`: regenerated from the builder
 
-**Studio:** (proposed) <Project> b02_record "Record-to-case rules": settles how empty days are handled.
+**See:** [b02_record › Work](<host>/_board/workbench?path=<Project>%2Fwork%2Fb02_record&layout=focus&section=work): the rebuild Run and its CaseSet.
 
 ## 3. 📋 Summary and Next
 1. **Now**: empty days no longer make cases; the CaseSet is rebuilt
 2. **Next**: pick the model, Bedrock (BAA-covered) or a local in-VPC model
-3. **Topic**: the proposed Studio topic remains unnumbered until creation is approved
+3. **Where**: the model pick waits in b02_record's Interactions
 
   ✅ builder fixed
   ✅ CaseSet rebuilt
   🙋 model pick        Bedrock or a local in-VPC model
-  ⬜ proposed topic    "Record-to-case rules", no folder created
   ⬜ training Run      starts from this CaseSet
 
 The rebuild wrote `_WorkSpace/3-CaseStore/x/@v0002/`, which git ignores. Once the
-model is picked, the training Run can start from this CaseSet. The proposed Studio
-topic names where this discussion belongs; it has no sNN or folder yet.
+model is picked, the training Run can start from this CaseSet.
 ```
 
 ## 📎 "Show me" means in the reply (2026-09-04)

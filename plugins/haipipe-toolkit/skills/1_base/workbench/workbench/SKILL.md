@@ -1,9 +1,9 @@
 ---
 name: workbench
-description: "Open a workbench (/wb): no input opens the SPACE Home, a Project path that Project, a Block, Job or Task path its theme's frame; plain words find the place first (cli/wb.py checks the link on the running server). Also the WORKBENCH contract (STORAGE, SURFACE, WRITER, BOUNDARY; ref/roster.md). Trigger: wb, open the workbench, open a project, open a block, workbench link, workbench roster, /wb, /workbench."
+description: "Open a workbench (/wb): no input opens the SPACE Home, a Project, Theme, Block, Job or Task path its focus page; plain words find the place first (cli/wb.py checks the link on the running server). Also the WORKBENCH contract (STORAGE, SURFACE, WRITER, BOUNDARY; ref/roster.md). Trigger: wb, open the workbench, open a project, open a block, workbench link, workbench roster, /wb, /workbench."
 metadata:
-  version: "1.29.3"
-  last_updated: "2026-10-26"
+  version: "1.30.0"
+  last_updated: "2026-10-30"
   aliases: [wb]
 ---
 
@@ -17,9 +17,10 @@ the skill OPENS a workbench; every section after this one is the contract the op
 
 ```text
 /wb                        SPACE Home, every Project     /
-/wb <Project>              that Project only             /?project=<Project>
-/wb <Project>/cowork       that Project, one kind        /?project=<Project>&kind=cowork
-/wb <Block | Job | Task>   its Studio, in its theme      /_board/workbench?path=<folder>&studio=1
+/wb <Project>              its focus page                /_board/workbench?path=<Project>&layout=focus
+/wb <Project>/cowork       that Theme's focus page       /_board/workbench?path=<Project>/cowork&layout=focus
+/wb <Block | Job | Task>   its focus page                /_board/workbench?path=<folder>&layout=focus
+/wb <path> --classic       the old screens               /?project=… or /_board/workbench?path=…&studio=1
 /wb <words>                find the place, then open it as above
 /wb update <Block>         bring it to today's rules      cli/wb_update.py (b10 s10), below
 /wb share <folder> <email> share it on its SPACE's door   cli/wb_share.py (b10 s52); --people <list>
@@ -59,8 +60,9 @@ existed still says Not found.
    loads the link, and restarts a server that drops the request (a server started before another
    session renamed something in Tools holds old paths). Then it opens the browser and prints the link,
    the folder, its level and the skill for its theme. `--no-open` only prints; `--no-restart` never restarts.
-   A Block, Job or Task opens on its Studio (`studio=1`), the Block's shared studio topics;
-   `--no-studio` opens the level view instead (JL 261011).
+   A Project, Theme folder, Block, Job or Task opens on its focus page (`layout=focus`: Report · Work ·
+   Studio, the page picks its opening section; JL 261030: "Why not using the UI that we discussed
+   previously?"); `--classic` opens the old screens (Project Home view, the frame on its Studio).
 3. **Words**: it ranks every Project, Theme folder, Block, Job and Task by folder name, title and
    `spine:`/`goal:`/`status:` lines, using the server's own lists (`home.discover_boards`,
    `frame.children`, `frame.theme_of`), so a found place and the screen agree. Level words
@@ -89,7 +91,7 @@ A new Block starts on `haipipe-block`'s `new_board.py`, which writes today's fac
 4 apply      --apply: the safe moves and missing Run roles, then runs/run-update-<bNN>/ with a pass holding proposals.md
 5 topics     haipipe-studio block_inventory.py          topics the Block's own Jobs and Tasks stand on
 6 Questions  the same reading                          Block and Job Questions where the Jobs' answers differ
-7 open       the Block's Studio link
+7 open       the Block's focus page link
 ```
 
 What a person and the agent do around those seven script steps:

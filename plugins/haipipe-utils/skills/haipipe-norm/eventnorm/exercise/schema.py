@@ -19,6 +19,7 @@ RAW_TYPES = {
     "other": "a logged row the vendor names only Other: kept for its total when it has minutes (s02-D18)",
     "log": "a logged row of any of the three: the code book says which",
     "text": "words typed or said: an activity and its minutes, 'brisk walking 30 min'",
+    "label": "a person's rows of a study's workout word (MetaboNet: date, workout_label, workout_duration): logged",
     "met_stream": "a wearable's MET every minute (CGMacros: Timestamp, METs, HR, Calories (Activity))",
     "steps_stream": "a wearable's steps on a clock (MetaboNet: date, steps; OhioT1DM 2018: ts, basis_steps)",
     "named_stream": "a wearable that names each stretch (AI-READI's Garmin: activity_name, base_movement_quantity)",

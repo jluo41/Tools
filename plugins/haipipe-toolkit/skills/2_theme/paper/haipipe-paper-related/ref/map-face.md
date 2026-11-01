@@ -1,8 +1,8 @@
 # The s10 map face: its yaml blocks
 
-`scripts/related_map.py` draws `studio/s10-related-work-map/` from five yaml blocks in the face. Only `map:` is
+`scripts/related_map.py` draws `s10-related-work-map/` from five yaml blocks in the face. Only `map:` is
 needed; each other block adds one small frame once there is something to say. Worked example:
-Paper-LLMRecPhy-Jama's `studio/s10-related-work-map/` (27 papers, five types, 2026-10-13).
+Paper-Example-B's `s10-related-work-map/` (27 papers, five types, 2026-10-13).
 
 ```text
 map       ① main     every closest paper in four quadrants, ours as the key point
@@ -38,7 +38,7 @@ map:
 
 1. **Axes**: pick the two that make our gap visible, not a generic field map.
 2. **Counts**: the key may use `{closest}` `{placed}` `{TL}` `{TR}` `{BL}` `{BR}` `{left}` `{right}`, counted on
-   every build; LLMRec's older `{builds}` (= left) and `{audits}` (= right) still work.
+   every build; Paper-Example-B's older `{builds}` (= left) and `{audits}` (= right) still work.
 3. **Red**: a Closest row with no placement is drawn red, "not placed yet".
 4. **Labels**: a number or a few words read from the paper's Result or full read, never invented.
 

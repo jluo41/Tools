@@ -6,8 +6,8 @@ s04 to be the s04-paper-workflow"). s03-paper-dataflow is the building map (work
 each answer. This draws s04-paper-workflow: how the answers become the paper. Drawn the way excalidraw-story draws s02
 (one big main frame, small frames that explain it, as stairs; JL 261013), and read from the faces on every build.
 
-    python paperflow_drawing.py draw <studio/s04-paper-workflow>     redraw one (what the topic's builder calls)
-    python paperflow_drawing.py make <studio/s04-paper-workflow>     its forwarding builder
+    python paperflow_drawing.py draw <s04-paper-workflow>     redraw one (what the topic's builder calls)
+    python paperflow_drawing.py make <s04-paper-workflow>     its forwarding builder
 
     ① 📝 the paper as it reads (main): the budget, then each Section a step lower and further right,
        its research question, its words and its displays (red and dashed when its evidence is missing)
@@ -72,7 +72,8 @@ def telling(topic: Path) -> dict:
     if not board:
         return {"qs": [], "E": {}, "g0": ""}
     m = re.search(r"(?m)^story-current:\s*(\S+)", (board / "board.md").read_text(encoding="utf-8"))
-    face = board / "studio" / m[1] / f"{m[1]}.md" if m else None
+    face = next((f for f in (board / m[1] / f"{m[1]}.md", board / "studio" / m[1] / f"{m[1]}.md") if f.is_file()),
+                None) if m else None                   # beside the Sections (JL 261030), or an older studio/
     if not face or not face.is_file():
         return {"qs": [], "E": {}, "g0": ""}
     lines = face.read_text(encoding="utf-8").splitlines()
@@ -103,7 +104,8 @@ def read(topic: Path) -> dict:
 def displays_by_question(board: Path) -> dict[int, str]:
     """For the building map (workflow_drawing.py): RQ number -> 'Figure 1 · Figure 2', from the Board's
     s04-paper-workflow face, so the displays are named once."""
-    for face in sorted(Path(board).glob("studio/s??-paper-workflow/s??-paper-workflow.md")):
+    for face in [*sorted(Path(board).glob("s??-paper-workflow/s??-paper-workflow.md")),
+                 *sorted(Path(board).glob("studio/s??-paper-workflow/s??-paper-workflow.md"))]:
         lines = face.read_text(encoding="utf-8").splitlines()
         out: dict[int, list[str]] = {}
         for r in table(lines, "Display"):

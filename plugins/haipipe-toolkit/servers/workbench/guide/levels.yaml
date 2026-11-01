@@ -1,4 +1,4 @@
-# The card Guide's default words (b03 studio/s31-guide, s31-D05 to D08): what each level is, and
+# The card Guide's default words (b03 s31-guide, s31-D05 to D08): what each level is, and
 # what each of its six Spaces is and reads, in the words of the vanilla frame (frame.py vanilla()).
 # Loaded by servers/workbench/guide_families.py. A theme's guide/guide.yaml `levels:` overrides
 # only the words that differ, in this same shape. A Space card's `sub` and `runs` are never written
@@ -11,7 +11,7 @@ Block:
       reads: board.md
     Idea Studio:
       is: one row per studio topic; a click opens its drawing in place
-      reads: studio/sNN-<topic>/
+      reads: sNN-<topic>/
     Audience Report:
       is: one row per Question, Question │ Work │ Report
       reads: board.md ## Questions · reports/qNN_<topic>/
@@ -32,7 +32,7 @@ Job:
       reads: <job>.md
     Idea Studio:
       is: one row per studio topic; a click opens its drawing in place
-      reads: studio/sNN-<topic>/
+      reads: sNN-<topic>/
     Audience Report:
       is: one row per Question, Question │ Work │ Report
       reads: <job>.md ## Questions · reports/qNN_<topic>/
@@ -53,7 +53,7 @@ Task:
       reads: <task>.md
     Idea Studio:
       is: one row per studio topic; a click opens its drawing in place
-      reads: studio/sNN-<topic>/
+      reads: sNN-<topic>/
     Audience Report:
       is: its Questions, or its own face as its report
       reads: <task>.md · reports/qNN_<topic>/

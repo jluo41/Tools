@@ -1,0 +1,12 @@
+run: r02_simulate_task_workflow
+kind: soft
+type: simulate
+scope: blueprints/Project-Ladder/work/b15_theme_labeling/j01_labeling_workbench_pages/t03_task_page
+target: b15.j01.t03-s58:theme_labeling.labeling_workbench_pages.task_page @ task_ui_work
+skill: haipipe-interaction
+agent: Claude
+status: done
+why: "JL 261101: \"how easy they will be used, could you simulate to use it as well? To make sure the whole work flow follow with what we desinged\""
+writes:
+- result/flow-simulation.md
+- result/demo/

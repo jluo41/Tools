@@ -1,0 +1,51 @@
+{
+ "topic": "s10-haipipe-project",
+ "style": "sketch-notes",
+ "source": "s10-haipipe-project.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "haipipe-project: a Project's root, its update door, and the skill behind each button",
+   "points": [
+    "what the haipipe-project skill is and does",
+    "It owns a Project's root (README.md, project.yaml, which Theme folders exist and which skill owns…",
+    "Its update door, /wb update <Block>, brings any Block, old or new and of any theme, up to today's…"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and the haipipe-project skill, its update door and the skill behind each button, for the people who write the toolkit…",
+    "a skill"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "What is decided",
+   "points": [
+    "Decided (JL 261016: \"in the project level, we will have the note folder, that the other AI…",
+    "Decided: s10 and s21 merge into s10-haipipe-project, a topic about the haipipe-project",
+    "Proposed: one door, /wb update <path> (the workbench skill's cli/wb.py), seven steps, each",
+    "Proposed (JL 261012: \"this should be vary depeneding what are the theme of that block\""
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "04",
+   "idea": "Still open",
+   "points": [],
+   "leaning": "",
+   "ask": "Agree its For: line and Delivery type: (skill), proposed by the agent 261030?",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

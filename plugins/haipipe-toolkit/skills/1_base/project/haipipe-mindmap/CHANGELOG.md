@@ -1,6 +1,56 @@
 haipipe-mindmap · Changelog
 ===========================
 
+## [0.9.3] — 2026-10-31
+
+- `from-work` writes `<folder>/mind-map.mindmap.md` beside the folder's face, no longer in `<folder>/studio/`:
+  studio/ folders are gone (JL 261031, haipipe-studio b35 r02: "We will not have the studio anymore").
+
+## [0.9.2] — 2026-10-31
+
+A link opens only on the web or a path (a code review of haipipe-toolkit, 261031). `mmhtml.safe_href()` keeps a web
+address, a root or relative path and an anchor; any other scheme (`javascript:`, `data:`, `file:`) or a `//host` link
+renders as its words, as `page_reader._md_href` already did. `mmhtml.inline` uses it for links and pictures, and
+`mmmap._opens` gives such a link no chip. Before, `[a](javascript:…)` in a question, a topic's For: line or a
+`.mindmap.md` node became a pop-out link on the origin that also serves the terminal. Test:
+test_a_link_opens_only_on_the_web_or_a_path (32 pass).
+
+## [0.9.1] — 2026-10-31
+
+A map is always a tree. The narrow-screen rule (`@media(max-width:1000px)` in `scripts/mapview.py`) that stacked the
+branches into a list, dropped the wires and stretched each empty slot into a grey bar is gone; a narrow screen keeps
+the tree and slides sideways (JL 261031: "do not have this version, I want to have the mindmap tree for all the time").
+A node with no detail no longer draws an empty grey box (`.pm-detail:empty`).
+
+## [0.9.0] — 2026-10-30
+
+`from-work` is written to be read and drawn like every other mind map (JL 261030: "we can read the results quickly
+from the mindmap"; "this should be the same version as other versions"): a card per Job, a numbered point per Task
+with its state as the pill and its goal as the words, its Runs and what each found in its ▸ details (a Job alone: a
+card per Task, a point per Run); counts are gone and running is ⏳, never 🔶. A read-only map shows no "+ question"
+hint. The workbench's Work pop-out draws this map, bare, as an sNN's Mind map pop-out.
+
+
+## [0.8.1] — 2026-10-30
+
+A leaf's sketch writes Excalidraw's code font, Comic Shanns (`fontFamily: 8`), as the Studio drawings do (JL 261030).
+
+
+## [0.8.0] · 2026-10-29 · one drawing per leaf, holding its slides
+
+- A map starts with "The total workflow"; a first-level branch is a section, and each leaf under it has one drawing,
+  `map/<leaf id>-<words>.excalidraw`, holding the slides that name it (`"leaf": "n29"` in `.slides.json`); the
+  leaf's line carries a ✎ link ("✎ N slides" or "✎ draw") that opens it in the page's pop-out (JL 261029, after a
+  section-level try: "一个 leaf 就一个 draw 然后里面可以有几个 slides"; b35-s03-D01). Sections have no drawing.
+- `mindmap.py sketch <x.mindmap.md>` seeds each leaf's drawing with its words and its slides as pictures
+  (`scripts/mmsketch.py`); it never rewrites a drawing that exists.
+- The topic page's map wraps to the card ("the mind map is too wide").
+
+## [0.7.1] · 2026-10-29 · a role pill holds a Block's name
+
+- `[role] words` takes up to 64 characters in the pill (was 24), so a workbench map can lead each Block line with its
+  full folder name as its label (JL 261029: "把这个 B 什么什么名字变成 label").
+
 ## [0.7.0] · 2026-10-26 · a mind map takes its topic's name
 
 - `s01-work-ladder` → `s01-work-ladder.mindmap.md` (was `m01-work-ladder.mindmap.md`): one topic, one name, its kind in

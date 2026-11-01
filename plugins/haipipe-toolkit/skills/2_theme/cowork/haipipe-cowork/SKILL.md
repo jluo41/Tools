@@ -135,7 +135,7 @@ a Question's `work:` names files inside the Block) and `## Related resources`.
    `since` in the job page header and add the date to the Job's `Timeline.md`.
 4. **No participant data, no keys.** Git keeps history. Office files, recordings and
    anything over 5 MB stay local through `cowork/.gitignore`.
-5. **Drawings are generated.** A studio topic follows `haipipe-studio`: `studio/sNN-<topic>/` holds
+5. **Drawings are generated.** A studio topic follows `haipipe-studio`: `sNN-<topic>/` holds
    its face `.md`, its builder `build_sNN_<topic>.py` beside the drawing, and the preview;
    `studio/_build/` keeps only shared helpers and `make.sh`. A drawing is never edited by hand.
 6. **Paths are Block-relative** inside a Block (`j02_hopkins_rit4630/emails/...`) and

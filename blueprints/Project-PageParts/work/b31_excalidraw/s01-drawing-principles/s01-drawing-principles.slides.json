@@ -1,0 +1,55 @@
+{
+ "topic": "s01-drawing-principles",
+ "style": "sketch-notes",
+ "source": "s01-drawing-principles.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Drawing principles: how a Studio drawing reads",
+   "points": [
+    "how a Studio topic's drawing should read: how big a frame is, what goes inside it, how the frames…",
+    "The skills hold the rules they enforce (haipipe-studio \"The look\", canvas.py",
+    "excalidraw-report)"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and the rules for how a Studio drawing reads: frame size, contents, layout, shapes, for the people who write the…",
+    "a skill"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "What is decided",
+   "points": [
+    "Decided: the four principles above",
+    "Decided (JL 261012: \"I just mean for the s00 to have the tree, why you make all the others to be…",
+    "Decided (JL 261012, on b10 s05, then s07: \"if we want to show the indicator, we can use the red…",
+    "Proposed (261012): s01's own drawing is four screen-sized frames read left to right, a mind map, a"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "04",
+   "idea": "Still open",
+   "points": [
+    "Settled 261012 (s01-D21): the rules live in excalidraw-studio (its principles, nine since…",
+    "Settled 261012 (s01-D21): no check in canvas.write",
+    "Settled 261012 (s01-D21): b31's board no longer excludes the look of a drawing"
+   ],
+   "leaning": "",
+   "ask": "Settled 261012 (s01-D21): \"as large as possible\" is up to the screen limit (2800 x 1600)",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

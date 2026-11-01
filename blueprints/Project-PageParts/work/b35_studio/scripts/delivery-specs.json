@@ -1,0 +1,270 @@
+{
+  "version": 1,
+  "status": "review prototype",
+  "studios": [
+    {
+      "id": "s01",
+      "folder": "s01-studio-skill",
+      "title": "Studio Skill",
+      "kind": "Skill",
+      "purpose": "Turn one open idea into one useful delivery.",
+      "audience": "Agents and people starting a Studio",
+      "product": "An executable Studio guide with a creation checklist and worked example.",
+      "steps": [
+        [
+          "Name the delivery",
+          "Name one product, its reader, and where it will be used."
+        ],
+        [
+          "Place the Studio",
+          "Use the lowest Block, Job or Task that needs its delivery. Keep sNN beside the work."
+        ],
+        [
+          "Explore alternatives",
+          "Keep the main Draw, open choices, and a structured mind map. Preserve previous sketches."
+        ],
+        [
+          "Connect the work",
+          "Link the Jobs and Tasks that make the delivery. Keep working results with their owner."
+        ],
+        [
+          "Review and hand over",
+          "Review the product with a person. Build the clean version, its deck, and its destination mapping."
+        ]
+      ],
+      "checks": [
+        "The For line names one product and one reader.",
+        "The main Draw shows alternatives and a delivery destination.",
+        "Working results and delivery files have separate homes.",
+        "Acceptance is recorded by a person, never inferred from a build."
+      ],
+      "example": "A reusable Studio that defines one interactive mind map page.",
+      "open": "Should creating a Studio require a delivery destination immediately?",
+      "source": "plugins/haipipe-toolkit/skills/1_base/project/haipipe-studio/SKILL.md"
+    },
+    {
+      "id": "s02",
+      "folder": "s02-studio-pages",
+      "title": "Studio Page",
+      "kind": "Page",
+      "purpose": "Find a Studio, explore its design, and open its delivery.",
+      "audience": "People working within a Block, Job or Task",
+      "product": "A Studio browser with a dedicated detail page and large Draw viewer.",
+      "steps": [
+        [
+          "Find",
+          "Browse one Studio per row."
+        ],
+        [
+          "Explore",
+          "Open the Draw and the product it proposes."
+        ],
+        [
+          "Review",
+          "Read its delivery contract and open questions."
+        ],
+        [
+          "Continue",
+          "Open the source Studio in the workbench."
+        ]
+      ],
+      "checks": [
+        "Every row identifies its Studio and intended delivery.",
+        "Draw and delivery open from the same row.",
+        "The detail page keeps the reader oriented.",
+        "Narrow screens retain readable actions."
+      ],
+      "example": "This Block presents its seven Studios, with direct delivery and Draw links.",
+      "open": "Should a Studio detail open on its Draw or its delivery preview?",
+      "source": "plugins/haipipe-toolkit/servers/workbench/focus_page.py"
+    },
+    {
+      "id": "s03",
+      "folder": "s03-mindmap-leaf-drawing",
+      "title": "Mind Map Skill",
+      "kind": "Skill",
+      "purpose": "Keep a readable argument connected to its drawings and slides.",
+      "audience": "Agents authoring and maintaining shared structure maps",
+      "product": "A mind map authoring guide with node rules, safe update rules, and a worked map.",
+      "steps": [
+        [
+          "Set the root",
+          "Name the total workflow and the question it answers."
+        ],
+        [
+          "Build sections",
+          "Give each first-level branch a meaningful section and connect the argument."
+        ],
+        [
+          "Write leaves",
+          "Give each leaf one clear point and a stable identity."
+        ],
+        [
+          "Attach drawings",
+          "One leaf owns one drawing; that drawing can hold several slides."
+        ],
+        [
+          "Update safely",
+          "Preserve human edits, maintain node identity, and check linked files."
+        ]
+      ],
+      "checks": [
+        "The root explains the total workflow.",
+        "Each branch has a distinct role in the argument.",
+        "Every linked drawing resolves to a real file.",
+        "Refreshing a map preserves human additions."
+      ],
+      "example": "Choose a delivery \u2192 explore its form \u2192 review a working preview.",
+      "open": "Does an empty leaf need a drawing immediately or when someone opens it?",
+      "source": "plugins/haipipe-toolkit/skills/1_base/project/haipipe-mindmap/SKILL.md"
+    },
+    {
+      "id": "s04",
+      "folder": "s04-delivery-gallery",
+      "title": "Delivery Gallery",
+      "kind": "Gallery",
+      "purpose": "Choose a delivery by looking at a real example.",
+      "audience": "People and agents deciding what to hand over",
+      "product": "A searchable gallery page generated from curated example configuration.",
+      "steps": [
+        [
+          "Choose a kind",
+          "Filter by Skill, Page or Drawing."
+        ],
+        [
+          "Inspect a result",
+          "See the real preview, intended reader, and files."
+        ],
+        [
+          "Open the product",
+          "Open the usable example or its original material."
+        ],
+        [
+          "Reuse its structure",
+          "Export the example configuration and adapt it."
+        ]
+      ],
+      "checks": [
+        "Each example points to existing material.",
+        "Search and filters produce readable results and an empty state.",
+        "The preview identifies a prototype honestly.",
+        "The source configuration rebuilds the same page."
+      ],
+      "example": "Compare a Studio guide, an interactive map, and an editable main Draw.",
+      "open": "Should file formats be filters or attributes of a single delivery?",
+      "source": "plugins/haipipe-toolkit/skills/1_base/project/haipipe-delivery/ref/gallery.md"
+    },
+    {
+      "id": "s05",
+      "folder": "s05-studio-gallery",
+      "title": "Studio Gallery",
+      "kind": "Gallery",
+      "purpose": "Choose how to organize a Studio by studying real examples.",
+      "audience": "People and agents starting a similar design",
+      "product": "A searchable Studio gallery with main Draws, scope, and delivery links.",
+      "steps": [
+        [
+          "Choose a goal",
+          "Browse Skill and Page design examples."
+        ],
+        [
+          "See why it exists",
+          "Read the purpose and delivery contract."
+        ],
+        [
+          "Explore the design",
+          "Open its main Draw and unresolved choice."
+        ],
+        [
+          "Follow the delivery",
+          "Open the associated product and reusable configuration."
+        ]
+      ],
+      "checks": [
+        "Every example names a real source Studio.",
+        "Draw and delivery links resolve.",
+        "The purpose and intended reader are visible.",
+        "The gallery does not use itself as an example."
+      ],
+      "example": "Study Studio Skill, Studio Page, Mind Map Skill, Mind Map Page and Delivery Skill.",
+      "open": "Should discovery start with a delivery type or a work scenario?",
+      "source": "plugins/haipipe-toolkit/skills/1_base/project/haipipe-studio/ref/gallery.md"
+    },
+    {
+      "id": "s08",
+      "folder": "s08-mindmap-page",
+      "title": "Mind Map Page",
+      "kind": "Page",
+      "purpose": "Explore an argument and edit its structure where you read it.",
+      "audience": "People thinking with a structured map",
+      "product": "An interactive map page with node editing, drawing previews, and configuration export.",
+      "steps": [
+        [
+          "Explore",
+          "Move from the workflow to sections and leaves."
+        ],
+        [
+          "Edit",
+          "Rename a node, add a child, or remove a leaf."
+        ],
+        [
+          "Draw",
+          "Open the drawing attached to a leaf."
+        ],
+        [
+          "Keep",
+          "Save in this browser or export the map configuration."
+        ]
+      ],
+      "checks": [
+        "Rename and add-child operations appear immediately.",
+        "Saved edits survive a reload in the same browser.",
+        "Exported configuration can be imported back.",
+        "Drawing links open real previews."
+      ],
+      "example": "A delivery design workflow with linked Studio and Gallery drawings.",
+      "open": "Should editing a map create a new review round automatically?",
+      "source": "plugins/haipipe-toolkit/skills/1_base/project/haipipe-mindmap/scripts/mapview.py"
+    },
+    {
+      "id": "s09",
+      "folder": "s09-delivery-skill",
+      "title": "Delivery Skill",
+      "kind": "Skill",
+      "purpose": "Turn reviewed working material into a versioned, usable delivery.",
+      "audience": "Agents building and handing over reviewed outcomes",
+      "product": "A delivery guide with destination rules, version rules, and a handover checklist.",
+      "steps": [
+        [
+          "Identify the owner",
+          "Name the Studio or work level that owns the product."
+        ],
+        [
+          "Select the clean version",
+          "Choose the reviewed material. Keep experiments in result."
+        ],
+        [
+          "Build from source",
+          "Generate the product, its preview and explanation deck. Never hand-edit generated output."
+        ],
+        [
+          "Place at destination",
+          "Map each piece to its intended use; render text or use the owning code builder."
+        ],
+        [
+          "Check and hand over",
+          "Open the real product, verify links and versions, and let a person mark acceptance or sending."
+        ]
+      ],
+      "checks": [
+        "Every delivery names a source and destination.",
+        "An existing sent version is preserved.",
+        "The generated output opens and works.",
+        "A successful build is not recorded as a human acceptance."
+      ],
+      "example": "A Gallery specification builds a webpage, its example configuration, main Draw and deck.",
+      "open": "How should a page show the difference between built, accepted, and sent?",
+      "source": "plugins/haipipe-toolkit/skills/1_base/project/haipipe-delivery/SKILL.md"
+    }
+  ]
+}

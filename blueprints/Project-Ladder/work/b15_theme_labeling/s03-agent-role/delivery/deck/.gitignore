@@ -1,0 +1,11 @@
+# Generated artwork and outputs stay local; authored manifests/builders remain trackable.
+/assets/
+/deliverables/
+/generation-prompts*.md
+/.build/candidate.pptx*
+/.build/previews/
+/.build/import-check.txt
+/.build/validation.json
+/.build/node_modules
+/build/
+/source/node_modules

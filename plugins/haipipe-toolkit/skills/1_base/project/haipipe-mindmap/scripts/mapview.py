@@ -112,9 +112,9 @@ CSS = """<style>
  .pm-add:focus-within,.pm-addp:focus-within{opacity:1}
  .pm-para:hover+.pm-q [data-edit]:empty::before,.pm-q:hover [data-edit]:empty::before,.pm-q [data-edit]:empty:focus::before{opacity:.7}}
 .pm-pnode [data-edit]:empty{display:block;min-height:1.35em;border-bottom:1px dashed var(--line)}
-@media(max-width:1000px){.pm,.pm-para,.pm-part,.pm-part .pm-para{grid-template-columns:minmax(0,1fr);gap:8px}.pm-wires{display:none}
- .pm{width:auto}
- .pm-leaves{padding-left:14px;border-left:2px solid var(--line)}.pm-q,.pm-part .pm-q,.pm-addp,.pm-part .pm-addp{width:auto}}
+.pm-detail:empty{display:none}   /* a node with no detail draws no empty grey box */
+/* a narrow screen keeps the tree and slides sideways; it never stacks into a list (JL 261031: "do not have this
+   version, I want to have the mindmap tree for all the time") */
 </style>"""
 # the branches drawn after layout, so a leaf that wraps still gets its wire: the Section to each part (or straight to
 # each paragraph), each part to its paragraphs, each paragraph to each of its Bullets

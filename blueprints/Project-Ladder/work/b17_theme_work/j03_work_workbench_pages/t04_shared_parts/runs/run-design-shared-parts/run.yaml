@@ -1,0 +1,20 @@
+run: run-design-shared-parts
+kind: soft
+role: make
+type: design
+scope: null
+target: shared-parts
+ticket: run-design-shared-parts.md
+skill: haipipe-ui
+agent: claude
+signs: null
+status: queued
+passes: []
+writes:
+- blueprints/Project-Ladder/work/b17_theme_work/s04-workbench-page-structure/delivery/ui/frame/
+- blueprints/Project-Ladder/work/b17_theme_work/s04-workbench-page-structure/delivery/ui/interactions/
+- blueprints/Project-Ladder/work/b17_theme_work/s04-workbench-page-structure/delivery/ui/delivery/
+- blueprints/Project-Ladder/work/b17_theme_work/s04-workbench-page-structure/delivery/ui/related/
+- blueprints/Project-Ladder/work/b17_theme_work/s04-workbench-page-structure/delivery/ui/timeline/
+- blueprints/Project-Ladder/work/b17_theme_work/s04-workbench-page-structure/delivery/ui/files/
+feeds: []

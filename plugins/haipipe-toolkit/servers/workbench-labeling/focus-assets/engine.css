@@ -1,0 +1,8 @@
+/* Embedded live view: the parent owns the page and section navigation. */
+:root{--bg:light-dark(#f8f8f5,#191e1b);--fg:light-dark(#29372e,#e5eee7);--card:light-dark(#fffffc,#242b26);--line:light-dark(#dce3da,#3e4b42);--soft:light-dark(#eaf0e8,#2d3c31);--acc:light-dark(#39634b,#afd4b9);color-scheme:light dark}
+body{padding:0;background:var(--bg)}body>.pagetitle,body>.wb-links,body>nav.spaces,body>.wb-band,.panel .views,.runs-fold{display:none!important}
+.split{display:block!important}.split>.space-main{border:0;padding:0}.split>.runs-panel{position:static!important;max-height:none!important;width:100%;margin-top:24px;display:block!important}
+.runs-panel.folded .runs-body{display:grid!important}.runs-panel.folded .runs-bar{writing-mode:horizontal-tb!important;display:flex!important;padding:10px!important}.runs-panel .runs-body{max-height:none!important;overflow:visible!important}
+section[data-static-content]{display:block;margin:18px 0}section[data-static-content]>[role=heading]{font-weight:500;margin-bottom:8px}section[data-static-content].run-prompt-box{border:0}
+.run-prompt{white-space:pre-wrap;overflow-wrap:anywhere}.space-main .pane{overflow-wrap:anywhere}.space-main table{max-width:100%}
+@media(max-width:600px){.split>.runs-panel .runs-body{grid-template-columns:1fr!important}.embform input,.embform select{max-width:100%}}

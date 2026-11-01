@@ -1424,9 +1424,10 @@ def draw(topic: Path) -> Path:
     topic = topic.resolve()
     face = topic / f"{topic.name}.md"
     cfg = face_cfg(face)
-    folder = topic.parents[1] / str(cfg.get("name", ""))
+    block = jd.topic_owner(topic)                     # the Block it sits beside the Jobs of, or an older studio/'s
+    folder = block / str(cfg.get("name", ""))
     if not task_page(folder).is_file():
-        raise SystemExit(f"{face}: task.name names no Task page under {topic.parents[1].name}")
+        raise SystemExit(f"{face}: task.name names no Task page under {block.name}")
     out, runs = draw_task(folder, topic / f"{topic.name}.excalidraw", cfg,
                           f"excalidraw-task scripts/task_drawing.py {topic.name}")
     text = jr.read(face)
@@ -1439,7 +1440,7 @@ def draw(topic: Path) -> Path:
 def drawn_tasks(block: Path) -> dict[str, Path]:
     """{`jNN_job/tNN_task`: topic} for the Block's topics whose face names a Task."""
     out = {}
-    for face in (block / "studio").glob("s*/s*.md"):
+    for face in [f for d in jd.topic_dirs(block) for f in sorted(d.glob("s*.md"))]:
         name = face_cfg(face).get("name")
         if name:
             out[str(name)] = face.parent
@@ -1448,8 +1449,7 @@ def drawn_tasks(block: Path) -> dict[str, Path]:
 
 def free_numbers(block: Path, n: int, start: int | None) -> list[int]:
     """`n` free topic numbers: from `start` if given, else the runs band (s21-s29), then the concepts (s01-s09)."""
-    used = {int(m.group(1)) for p in (block / "studio").iterdir() if p.is_dir()
-            for m in [re.match(r"^s(\d+)[-_]", p.name)] if m} if (block / "studio").is_dir() else set()
+    used = jr.used(block)                                       # beside its Jobs, or in an older studio/
     pool = range(start, start + 100) if start else [*BAND_RUN, *BAND_CONCEPT]
     out = [nn for nn in pool if nn not in used][:n]
     if len(out) < n:
@@ -1510,7 +1510,7 @@ def new_face(nn: int, topic: Path, folder: Path, task: dict, tag: str) -> str:
         "fewer), `points` (3 to 5, in the video's order, 10 words or fewer each), `hook` (16 words or fewer), "
         "`check` (1 to 3, 8 words or fewer each), `role` (the arrow into its frame, 5 words or fewer).",
         "5. **open**: open points, drawn red under the idea.", "",
-        "```yaml", "task:", f"  name: {folder.relative_to(topic.parents[1]).as_posix()}", "  order: []",
+        "```yaml", "task:", f"  name: {folder.relative_to(jd.topic_owner(topic)).as_posix()}", "  order: []",
         "  reading: ''", "  idea: {}", "  videos: {}", "  open: []", "```", "",
         BEGIN, END, "", "",
         "Files", "-----", "",
@@ -1551,7 +1551,7 @@ def job_tag(block: Path, job: Path) -> str:
 
 
 def make(target: Path, nn: int | None = None, dry: bool = False) -> list[Path]:
-    """One topic per Task (a Job folder: each of its Tasks), in the Block's studio; refuses a Task already drawn."""
+    """One topic per Task (a Job folder: each of its Tasks), beside the Block's Jobs; refuses a Task already drawn."""
     target = target.resolve()
     tasks = tasks_of(target)
     if not tasks:
@@ -1565,7 +1565,7 @@ def make(target: Path, nn: int | None = None, dry: bool = False) -> list[Path]:
     out = []
     for t, k in zip(tasks, free_numbers(block, len(tasks), nn)):
         task = parse(task_page(t))
-        topic = block / "studio" / f"s{k:02d}-{t.name.replace('_', '-')}"
+        topic = block / f"s{k:02d}-{t.name.replace('_', '-')}"
         if dry:
             print(f"would make {topic.relative_to(block)}  ← {t.relative_to(block)}")
             out.append(topic)
@@ -1576,7 +1576,7 @@ def make(target: Path, nn: int | None = None, dry: bool = False) -> list[Path]:
         builder = topic / f"build_s{k:02d}_{t.name}.py"
         builder.write_text(builder_text(topic, f"s{k:02d} · {t.name[:3]} · {task['title']}", builder.name),
                            encoding="utf-8")
-        groups = block / "studio" / "_groups.txt"
+        groups = block / "studio" / "_groups.txt" if (block / "studio").is_dir() else block / "_studio_groups.txt"
         lines = jr.read(groups).splitlines() if groups.is_file() else [
             "# Studio groups of this Block, in button order. The workbench writes this file when a group is",
             "# made, moved or deleted; a group's topics are the ones whose **Tags:** line names it."]

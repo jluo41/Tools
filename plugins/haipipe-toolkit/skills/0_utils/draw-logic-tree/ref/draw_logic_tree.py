@@ -652,20 +652,26 @@ def main(argv=None):
                     help="take the logic from the existing RoadMap drawing (the person's edits kept) instead of --logic")
     ap.add_argument("--cards", action="store_true",
                     help="redraw only the Evidence column of the existing RoadMap; everything else stays as drawn")
-    ap.add_argument("--out", type=Path, help="write here instead of studio/<stem>-roadmap.excalidraw (a preview)")
+    ap.add_argument("--out", type=Path, help="write here instead of <stem>-roadmap.excalidraw beside the page (a preview)")
     ap.add_argument("--force", action="store_true",
                     help="replace an existing RoadMap; it is the Section's logic and may hold the person's edits")
     args = ap.parse_args(argv)
     page_md = args.page.resolve()
+
+    def roadmap_path(md):
+        """Beside the page face; studio/ folders are gone (JL 261031). An old studio/ copy is still read until moved."""
+        here = md.parent / ("%s-roadmap.excalidraw" % md.stem)
+        old = md.parent / "studio" / here.name
+        return old if old.is_file() and not here.is_file() else here
     if args.check_scene:
-        scene_path = page_md.parent / "studio" / ("%s-roadmap.excalidraw" % page_md.stem)
+        scene_path = roadmap_path(page_md)
         if not scene_path.is_file():
             raise SystemExit("%s: no RoadMap yet" % scene_path.name)
         found = check_scene(page_md, scene_path)
         print("\n".join("  " + f for f in found) or "  no findings")
         print("check: %s" % ("FAIL" if found else "PASS"))
         raise SystemExit(1 if found else 0)
-    current = page_md.parent / "studio" / ("%s-roadmap.excalidraw" % page_md.stem)
+    current = roadmap_path(page_md)
     if args.cards:
         if not current.is_file():
             raise SystemExit("%s: no RoadMap yet" % current.name)

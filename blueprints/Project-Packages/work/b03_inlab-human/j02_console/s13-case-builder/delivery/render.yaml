@@ -1,0 +1,3 @@
+# Where s13's delivery goes (haipipe-studio scripts/render_delivery.py). The deck stays in deck/.
+# No piece yet: add one once the delivery is agreed: a text piece (from, to, block), a code piece (code, by) or a Theme piece (from, rendered_by).
+pieces: []

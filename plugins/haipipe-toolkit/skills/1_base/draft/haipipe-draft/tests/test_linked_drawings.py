@@ -81,9 +81,9 @@ class LinkedDrawingTest(unittest.TestCase):
 
             draw.split(board, board / "board.excalidraw", apply=True)
 
-            scene = folded.parent / "studio" / "draw" / "QA1.excalidraw"
+            scene = folded.parent / "draw" / "QA1.excalidraw"
             self.assertTrue(scene.is_file())
-            self.assertFalse((folded.parent / "draw" / "QA1.excalidraw").exists())
+            self.assertFalse((folded.parent / "studio").exists())     # no studio/ folder (JL 261031)
             group = draw.read_scene(
                 board / "QA-first" / "draw" / "group.excalidraw"
             )
@@ -92,7 +92,7 @@ class LinkedDrawingTest(unittest.TestCase):
                 if item["page"] == "QA1"
             )
             self.assertEqual(source_rel,
-                             "../QA1-one/studio/draw/QA1.excalidraw")
+                             "../QA1-one/draw/QA1.excalidraw")
 
     def test_split_is_non_destructive_and_round_trips(self):
         import tempfile
@@ -192,7 +192,7 @@ class LinkedDrawingTest(unittest.TestCase):
             existing_before = (board / "QA-first" / "draw" / "QA1.excalidraw").read_bytes()
             self.assertEqual(draw.sync(board, apply=True), 0)
             page = draw.read_scene(
-                board / "QA-first" / "QA4-new" / "studio" / "draw"
+                board / "QA-first" / "QA4-new" / "draw"
                 / "QA4.excalidraw"
             )
             group = draw.read_scene(board / "QA-first" / "draw" / "group.excalidraw")

@@ -1,0 +1,145 @@
+{
+ "topic": "s03-agent-role",
+ "style": "glossy-cartoon",
+ "source": "delivery/deck: the Subjective Labeling deck, version 12, made in Codex (source/deck-content-v12.json); each slide is its rendered page in delivery/deck/build/v12/",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "The conventional labeling workflow",
+   "image": "delivery/deck/build/v12/slide-1.png",
+   "notes": "The conventional workflow places two burdens on the human: making a partly tacit conception explicit as a guideline, and repeatedly applying it to varied items. The warning callouts name possible failure modes, not a claim that every conventional dataset is unreliable. This slide motivates the proposed method rather than reporting a comparative experiment."
+  },
+  {
+   "id": "02",
+   "idea": "Use case 1: a human with an idea",
+   "image": "delivery/deck/build/v12/slide-2.png",
+   "notes": "The core unit of human work is a consequential judgment about a rule, group, contrast, exception, or conflict. The agent retrieves cases from the corpus and brings a focused question to the human. It records the answer, updates the rule and identifies affected labels. Information and rules evolve with examples rather than being completed before any labeling occurs. The human retains authority over meaning. An accepted output may be a small reviewed subset or a larger batch accepted under a stated audit policy. Unknown or deferred cases remain visible. High-level judgments can coexist with occasional item checks. Both use cases share the same scaling path. After human approval of the standard, test the same guideline across fixed executor models, refine wording without changing approved meaning, qualify an executor, and apply it to the large unlabeled corpus. Audit batches and route uncertain or conflicting cases back for review. The larger labeled corpus is not assumed to have every item manually reviewed. The three visual rows distinguish dialogue, paired accepted outputs, and execution at scale. The dialogue produces both a structured, adaptive guideline and human-approved, guideline-consistent labeled data. This accepted data may be a small reviewed subset. The two outputs remain aligned as human decisions refine the standard. Adaptive means approved meaning can evolve through human review of new evidence; executor-driven wording changes must preserve approved meaning. Both outputs support executor testing; development examples must remain separate from held-out evaluation cases. The model-expanded corpus is accepted under the stated review or audit policy. In the proposed Workbench interface, the dialogue is primarily a sequence of decision reports with rule-level choices and comments. Chat is supplemental. Both channels feed the same versioned decision record."
+  },
+  {
+   "id": "03",
+   "idea": "Use case 2: an existing labeled corpus",
+   "image": "delivery/deck/build/v12/slide-3.png",
+   "notes": "Existing labels are evidence of prior decisions, not unquestioned ground truth. The agent infers candidate rules and constructs issue groups containing supporting items, conflicting cases, contextual differences, alternative explanations and resolution status. A flag does not establish an error. A reviewer can clarify, correct or defer, and need not be the original annotator. An audit without a reviewer may deliver provisional rules and issue groups without certifying an approved standard. Once meaning is accepted, keep the approved semantics fixed while testing wording across independent executor models. Qualification uses unseen cases before large-scale batches and auditing. This scaling stage also follows use case 1. Uniform performance across all models is a research goal, not an established result. The LEFT labeled corpus is starting evidence, not the target collection. Existing labels may reveal patterns but are not automatically gold labels. The human reviewer confirms, revises or defers candidate rules and issue groups. The RIGHT large unlabeled corpus is a distinct target for expansion and supplies new boundary cases. The shared downstream path is structured guideline, cross-model executor testing, and large-scale labeling with audit. Meaning changes require human approval; wording refinement preserves that meaning. The three visual rows distinguish dialogue, paired accepted outputs, and execution at scale. The dialogue produces both a structured, adaptive guideline and human-approved, guideline-consistent labeled data. This accepted data may be a small reviewed subset. The two outputs remain aligned as human decisions refine the standard. Adaptive means approved meaning can evolve through human review of new evidence; executor-driven wording changes must preserve approved meaning. Both outputs support executor testing; development examples must remain separate from held-out evaluation cases. The model-expanded corpus is accepted under the stated review or audit policy. In the proposed Workbench interface, the dialogue is primarily a sequence of decision reports with rule-level choices and comments. Chat is supplemental. Both channels feed the same versioned decision record."
+  },
+  {
+   "id": "04",
+   "idea": "Evaluation 1: human effort and labeling quality",
+   "image": "delivery/deck/build/v12/slide-4.png",
+   "notes": "Proposed human study. Compare manual item-level labeling, a human-authored guideline applied by a fixed executor, and agent-mediated guideline formation and labeling. Randomize and counterbalance method order using comparable but separate task sets to reduce carryover. Keep corpus access, task context and downstream executor settings comparable where applicable. Analyze build-from-idea tasks and audit-existing-label tasks separately. Measure total active human time, number and type of judgments, corrections, review effort and subjective workload. Use blinded review of held-out items against task-appropriate adjudicated judgments; for subjective tasks, preserve the intended person's standard and report unresolved disagreement. Select the primary quality metric for the label type before testing. Predefine the acceptable quality difference, and compare effort at comparable quality or under a common budget. In audit tasks, estimate confirmed-issue precision and reviewer effort using independent review. Evaluate natural conflicts separately from deliberately planted label changes. Sampling unflagged cases can help estimate missed issues. Old labels and synthetic perturbations are limited references. Pilot data should guide sample size and power; none is specified yet. No experiment has been run."
+  },
+  {
+   "id": "05",
+   "idea": "Evaluation 2: guideline portability and scale",
+   "image": "delivery/deck/build/v12/slide-5.png",
+   "notes": "Proposed portability experiment. Hold approved information and rules fixed while comparing initial wording, refinement against a single executor, and refinement against multiple executors. Give refinement methods comparable development data and tuning budgets, and use the same facilitator capability where feasible. Recheck semantic fidelity against the approved standard. Keep development cases, calibration decisions and final evaluation cases separate. Freeze candidate wording and acceptance thresholds before the final test. Test the same guideline in fresh model contexts with fixed weights and allowed inputs only, excluding hidden facilitator conversations. Evaluate inexpensive small, intermediate and strong models, plus previously unseen executor models when feasible. Report quality with uncertainty by model and class, coverage, abstention, cost per accepted item, and human review cost. Select a quality metric suited to the task, such as macro-F1 for appropriate categorical labels, rather than assuming accuracy alone. A useful result raises the weakest required model's quality, limits deterioration of strong models within a predefined tolerance, and lowers total accepted-item cost while meeting coverage requirements. A reduced cross-model gap alone can reflect all models becoming worse. Report guideline-development cost separately and its amortization over corpus volume. If the guideline is revised after test inspection, reserve fresh evaluation cases for the new candidate. Benefits remain hypotheses."
+  },
+  {
+   "id": "06",
+   "idea": "An end-to-end agent system",
+   "image": "delivery/deck/build/v12/slide-6.png",
+   "notes": "The backward report arrow enters the entire Meaning Loop Agent, the Alignment Agent of v11. Step 2 investigates related cases, existing preferences and original context; Step 3 collects preferences again through focused decision cards; Step 4 reconciles decisions and updates compatible rules and reference labels. Those outputs return to Step 5 for renewed execution. A separate route proceeds to Step 6 when criteria are met. Production is Step 7. Expression-only changes use Train evidence and preserve approved meaning. Agent investigation can continue asynchronously while human decisions are pending."
+  },
+  {
+   "id": "07",
+   "idea": "Step 0: transform the corpus into items",
+   "image": "delivery/deck/build/v12/slide-7.png",
+   "notes": "Itemization preserves targets, context, source lineage and original annotations. Related source groups stay together when assigning the Train/expression-development and Test/staging-check roles. Both partitions may be labeled, scored and audited. These roles control access to the current expression refiner rather than asserting that the full system has never seen Test. An independent generalization dataset, when needed, must remain outside all development and adjudication feedback."
+  },
+  {
+   "id": "08",
+   "idea": "Step 1: frame the labeling task",
+   "image": "delivery/deck/build/v12/slide-8.png",
+   "notes": "The Alignment Loop is the human-facing process for eliciting the standard and reconciling rules with labels. Task framing still follows itemization. Existing labels are evidence, not automatic ground truth."
+  },
+  {
+   "id": "09",
+   "idea": "Step 2: prepare a decision report",
+   "image": "delivery/deck/build/v12/slide-9.png",
+   "notes": "Decision reports draw on human sources, corpus exploration and audit issues from both staging partitions. They include current rule and reference-label versions, original context, executor disagreement, alternative explanations, proposed actions and affected scope. Suspected errors must be distinguished from confirmed corrections. Reports do not silently revise rules or labels."
+  },
+  {
+   "id": "10",
+   "idea": "Step 3: collect and refine preferences in Workbench",
+   "image": "delivery/deck/build/v12/slide-10.png",
+   "notes": "This is repeated preference elicitation informed by new execution evidence. The report first goes to the Meaning Loop Agent. It investigates and prepares alternatives before presenting new questions, rather than sending a raw error list straight to the human. Questions target newly exposed boundaries, exceptions and apparent conflicts, using contrasting cases and affected scope. A person may confirm, clarify, revise, defer or supply a custom answer. Options in this mockup are illustrative and unselected. Submitted preferences are reconciled with earlier decisions. Unanswered cards remain pending; no response is not approval. Preserve decision reason, scope and version."
+  },
+  {
+   "id": "11",
+   "idea": "Step 4: integrate feedback and check alignment",
+   "image": "delivery/deck/build/v12/slide-11.png",
+   "notes": "Accepted rule and item-label changes have separate approval scopes. Apply approved decisions to a new version, retain originals, trace affected items across both partitions and review consequences. Human-reviewed, propagated, audit-accepted and unresolved statuses remain distinct. References must be compatible with the rule version used for scoring. Do not silently rewrite old runs or inflate improvement by changing the reference standard without disclosure."
+  },
+  {
+   "id": "12",
+   "idea": "Step 5: execute, evaluate and analyze errors",
+   "image": "delivery/deck/build/v12/slide-12.png",
+   "notes": "Run fixed-weight executors, evaluate labeling performance by set and model, then analyze errors. Train evidence feeds expression rewriting under fixed approved rules. Suspected reference-label errors and unresolved semantic questions are hypotheses sent in a round report to the whole Meaning Loop Agent. Do not treat this as a direct human-review handoff. That agent investigates, collects preferences again, reconciles decisions, updates approved rules and labels, then returns to Step 5. Every round has a report and a stop or continuation reason. Model limits and missing context may require deferral or executor changes instead of rule changes."
+  },
+  {
+   "id": "13",
+   "idea": "Between Steps 5 and 6: the round report reopens the Meaning Loop",
+   "image": "delivery/deck/build/v12/slide-13.png",
+   "notes": "Inserted transition between Step 5 and Step 6. Every execution round produces a report containing versions, performance by model and partition, error hypotheses, evidence, unresolved questions and recommended next actions. Expression-only issues can continue within Step 5. Rule, preference and reference-label questions reopen the entire Meaning Loop Agent. Step 2 investigates first; Step 3 collects preferences again; Step 4 reconciles and versions approved changes. Recheck affected items, then rerun Step 5 using compatible guideline and reference labels. Do not release a changed standard merely because an earlier version passed. Only a version meeting declared criteria proceeds to Step 6. Stable slide ID12a preserves earlier slide references; this is physical page13. Annotation Alignment and Meaning Loop refer to the same human-facing agent responsibility."
+  },
+  {
+   "id": "14",
+   "idea": "Step 6: freeze a version and check release readiness",
+   "image": "delivery/deck/build/v12/slide-14.png",
+   "notes": "Release readiness is an operational decision based on version compatibility, reviewed issue dispositions, quality/coverage criteria, executor suitability, cost and audit policy. Freeze the chosen rule/expression/reference/runtime package. A failed gate returns to the responsible loop or holds release. The staging Test has been audited and may influence human-approved changes; its score is not automatically an unbiased generalization estimate. A separate fresh independent confirmation supports claims about unseen cases. No actual model run or qualification is represented."
+  },
+  {
+   "id": "15",
+   "idea": "Step 7: label at scale and audit the result",
+   "image": "delivery/deck/build/v12/slide-15.png",
+   "notes": "The Agent system executes the end-to-end delivery phase: batches target items, calls qualified executors with the frozen guideline, tracks versions, routes risk cases, reconciles missing or duplicate outputs and conducts audit. Human reviews unresolved meaning and risky cases as needed; direct human review and batch acceptance have different provenance. Include random audit samples among apparently easy or agreeing cases as well as risk-stratified checks. Estimate population error with an appropriate sampling design. Repeat production batches and audits while the frozen standard and acceptance policy hold. Output includes exact guideline version, accepted labels with provenance, unresolved items and quality report. A new meaning defect reopens Steps 2-4 through the human and leads to a new version, affected-label review and requalification. Clear execution failures route to expression or executor selection; never silently overwrite a frozen policy."
+  },
+  {
+   "id": "16",
+   "idea": "A decision card inside Workbench",
+   "image": "delivery/deck/build/v12/slide-16.png",
+   "notes": "This enlarged decision card is an illustrative form design using synthetic supportiveness examples from the local prototype. It is not real collected user evidence, a prescribed correct labeling rule or an interactive PowerPoint control. The purpose is to show how high-level preferences can be collected through low-friction structured choices. A card presents a clear question, contrastive learning evidence, alternative rules, the current rule, traceable sources, expected effects and affected scope. Users may select an alternative, supply a custom rule, defer, and add comments. All options start unselected. Workbench should render and persist structured agent-generated report content rather than requiring a newly implemented webpage every round. Submission records the person's preference and scope; the Meaning Agent then checks cross-decision consistency and integrates the decision. A rule decision is not automatic item-level approval for propagated labels. Diagnostic decisions can define easy versus hard cases, uncertainty reasons and review actions. Form interaction may be asynchronous; chat supplements the same record."
+  },
+  {
+   "id": "17",
+   "idea": "A home for decisions, evidence and progress",
+   "image": "delivery/deck/build/v12/slide-17.png",
+   "notes": "The inbox combines rule questions, suspected label errors and uncertainty requests. Alignment Agent owns human-facing decision cards; Execution & Audit Agent prepares evidence and expression experiments. Synthetic cases and placeholders represent a proposed interface, not deployed functionality."
+  },
+  {
+   "id": "18",
+   "idea": "One question, with the evidence beside it",
+   "image": "delivery/deck/build/v12/slide-18.png",
+   "notes": "A rule-level form uses learning evidence and traceable human sources. All options start unselected. Rejection, custom proposal, deferral and unanswered are distinct stored states. Custom rules require text; conditional comments may require a clarified interpretation. Saving a draft is not approval. Explicitly submitting an exact displayed rule patch can approve only that shown scope; an abstract preference such as the displayed A/B/C choices needs integration into exact meaning before executable rule release when interpretation remains. Partial answers can be submitted. Nothing on this static mockup changes actual user preferences."
+  },
+  {
+   "id": "19",
+   "idea": "The user can see what changed",
+   "image": "delivery/deck/build/v12/slide-19.png",
+   "notes": "This screen makes scope and lineage visible after submission. A preference-only choice is recorded as a decision; the agent proposes executable wording and seeks clarification when necessary. An exact patch already approved on its report does not need a redundant confirmation. Here the wording is a proposal, not a released guideline. Affected labels remain a review queue and are not automatically human-approved. Diagnostics such as hard and uncertain are separate from task labels and require approved criteria. Atomic releases bind rules, compatible references and unresolved exclusions. All shown cases are synthetic."
+  },
+  {
+   "id": "20",
+   "idea": "Execution and audit in Workbench",
+   "image": "delivery/deck/build/v12/slide-20.png",
+   "notes": "The staging interface separates per-set labeling performance from error analysis and human adjudication. Both Train and Test can be run and audited. Only Train case-level evidence is passed to the expression refiner. Rule or label issues from either set go to Alignment. No raw Test evidence enters the expression refiner context, logs, memory or few-shot examples. Because the wider system can act on Test issues, staging Test does not remain globally unseen in future versions. All metrics are unrun placeholders. No performance or implementation claim is made."
+  },
+  {
+   "id": "21",
+   "idea": "Large-scale labeling stays inspectable",
+   "image": "delivery/deck/build/v12/slide-21.png",
+   "notes": "Large-scale labeling follows explicit release criteria, tracks frozen versions and preserves accepted-under-audit versus individually reviewed provenance. Risk-based review is complemented by random audit. Rule and reference-label problems reopen Alignment; clear execution problems return to expression or executor review. The static screen starts no actual batch."
+  },
+  {
+   "id": "22",
+   "idea": "Train and Test inside the staging loop",
+   "image": "delivery/deck/build/v12/slide-22.png",
+   "notes": "Train-only expression refiner and whole-dataset auditor remain separate. Reports from either staging partition go to the entire Meaning Loop Agent, which investigates related cases, collects preferences again and updates rules and labels before another execution. Rule approval does not automatically approve every propagated label. Once Test cases influence revisions, later versions have development exposure to that set. Fresh independent data is required for generalization claims. Separate fixed-reference expression gains from label corrections and semantic changes."
+  },
+  {
+   "id": "23",
+   "idea": "An audit issue becomes a human decision",
+   "image": "delivery/deck/build/v12/slide-23.png",
+   "notes": "This synthetic Test item illustrates a suspected reference-label mismatch under a current rule. Executor disagreement is a trigger for investigation, not an authoritative correction. The reviewer should inspect original context and annotation provenance, retain the option to keep the label or defer, and explicitly distinguish label-only correction from rule change. An approved rule change triggers affected-item review; approving a rule does not approve all propagated labels. The report tracks the rule/expression/reference version and origin partition. Human review can use this staging Test case, but doing so is development exposure for subsequent claims."
+  }
+ ]
+}

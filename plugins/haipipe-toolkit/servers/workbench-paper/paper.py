@@ -165,13 +165,28 @@ STORY_STEM = re.compile(r"^Story(?:[A-Z]|(?!00)\d{2})(?:\b|-)")
 
 
 # ── the Story on b03's shape (b16 Q04, JL 261007): no Story Page; studio topics and Questions ──────────
-# Ideation is studio/sNN-ideation/; each telling is studio/sNN-story-<telling>/ (its face keeps identity,
+# Ideation is sNN-ideation/; each telling is sNN-story-<telling>/, beside the Jobs (its face keeps identity,
 # pitch, stakes and its roadmaps); each research question is a Board Question with reports/qNN_<question>/;
 # the Section Narrative and its compile order are the version face's ## Narrative. A Board in this shape is
 # read as a Story assembled from those homes, so every view reads it as it reads a Story Page.
 TELLING = re.compile(r"^s\d{2}-story-")
 IDEATION_TOPIC = re.compile(r"^s\d{2}-ideation$")
 _QBLOCK = re.compile(r"(?ms)^(####\s+[\d.]+\s*·\s*Question\b.*?)(?=^#{1,3} |\Z)")
+
+
+def board_topics(board, pattern="s[0-9][0-9]-*"):
+    """The Board's sNN topic folders matching a glob: beside its Jobs first (JL 261030), then any in an older
+    studio/; one per name."""
+    board, out = Path(board), []
+    for home in (board, board / "studio"):
+        out += [p for p in sorted(home.glob(pattern)) if home.is_dir() and p.is_dir()
+                and p.name not in {x.name for x in out}]
+    return out
+
+
+def _topic_home(board, topic):
+    """The folder a topic sits in, relative to the Board: "" beside the Jobs, or "studio"."""
+    return "" if topic.parent == Path(board) else topic.parent.relative_to(board).as_posix()
 
 
 def _topic_face(topic):
@@ -216,7 +231,7 @@ def assembled_stories(board, version=None):
     `### 3 · Research Questions` from the reports it feeds, then `### 8 · Section Narrative` from the
     version that tells it (`version`, else the newest whose face `tells:` names it)."""
     out = []
-    for topic in sorted((board / "studio").glob("s[0-9][0-9]-story-*")) if (board / "studio").is_dir() else []:
+    for topic in board_topics(board, "s[0-9][0-9]-story-*"):
         face = _topic_face(topic)
         if not topic.is_dir() or face is None:
             continue
@@ -237,17 +252,17 @@ def assembled_stories(board, version=None):
                 (("\n### 8 · Section Narrative\n\n" + narrative + "\n") if narrative else "")
         m = re.search(r"(?ms)^## Content[^\n]*\n.*?(?=^## |\Z)", text)
         text = (text[:m.end()].rstrip("\n") + "\n" + extra + "\n" + text[m.end():]) if m else text + "\n## Content\n" + extra
-        out.append({"group": {"label": "Story", "folder": "studio", "stems": []}, "stem": topic.name,
+        out.append({"group": {"label": "Story", "folder": _topic_home(board, topic), "stems": []}, "stem": topic.name,
                     "rel": face.relative_to(board), "text": text})
     return out
 
 
 def ideation_topic(board):
-    """The Ideation topic (studio/sNN-ideation/) read as the Ideation Page, or None."""
-    for topic in sorted((board / "studio").glob("s[0-9][0-9]-ideation")) if (board / "studio").is_dir() else []:
+    """The Ideation topic (sNN-ideation/, beside the Jobs or in an older studio/) read as the Ideation Page, or None."""
+    for topic in board_topics(board, "s[0-9][0-9]-ideation"):
         face = _topic_face(topic)
         if face is not None:
-            return {"group": {"label": "Story", "folder": "studio", "stems": []}, "stem": topic.name,
+            return {"group": {"label": "Story", "folder": _topic_home(board, topic), "stems": []}, "stem": topic.name,
                     "rel": face.relative_to(board), "text": read(face)}
     return None
 
@@ -324,7 +339,7 @@ def paper_reports(d):
     return out
 
 
-VERSION_DIR = re.compile(r"^j(\d{2})_v(\d+)_(.+)$")     # a version Job on the ladder: j01_v<MMDD>_<desk>/
+VERSION_DIR = re.compile(r"^j(\d{2})_(?:writing_)?v(\d+)_(.+)$")     # a version Job on the ladder: j01_v<MMDD>_<desk>/
 # A version's Tasks by series (JL 261007, "no more S-xxx"): t00-t19 Main (t00 the Abstract), t20-t29 Appendix
 # (A = t21), t30-t39 letters and comment batches. The older S-<desk>-<Main|Appendix>-… and RD<NN>-/CM<NN>- stems
 # stay readable.
@@ -592,7 +607,7 @@ def ideation(d):
 _ADDR_RE = re.compile(r"\bb(\d{2})(?:[.\s_-]?j(\d{2}))?(?:[.\s_-]?t(\d{2}))?(?:[.\s_-]?r(\d{2}))?\b")
 
 
-_TASK_HOMES = ("work", "tasks", "task")  # the work Theme; LLMRec says tasks/, OpioidRx says task/
+_TASK_HOMES = ("work", "tasks", "task")  # the work Theme; one Project says tasks/, another task/
 _SKIP_DIRS = {"src", "sbatch", "results", "runs", "scripts", "notebooks", "workflow",
               "QA", "board", "diagram", "config", "configs", "tests", "_tools"}
 _TICKET_EXT = {".sh", ".ps1", ".cmd"}          # .cmd: a desktop where only cmd.exe runs (REACH SAFER)
@@ -2536,7 +2551,7 @@ def _not_ready_ids(rd):
 
 # ---------------------------------------------------------------- render
 # The Page workbench's grammar (JL 260927; the drawing is
-# Tools/blueprints/b16_theme_paper/_archive/20261010/studio/s02-paper-workbench/paper-workbench-design.excalidraw): four Spaces,
+# Tools/blueprints/Project-Ladder/work/b16_theme_paper/_archive/20261010/s02-paper-workbench/paper-workbench-design.excalidraw): four Spaces,
 # each with its tabs and views, the content on the left and its own Runs panel on
 # the right. Nothing on screen explains itself: no source lines, counts or hints.
 SPACES = (("ideation", "Ideation"), ("story", "Story"),               # plain names, as every
@@ -3606,6 +3621,8 @@ def render_run_result(root, task_rel, run=""):
         raise FileNotFoundError(task_rel)
     raw = lambda f: "/" + quote(f.resolve().relative_to(root).as_posix(), safe="/")
     where, files = run_files(tdir, run)
+    from host_registry import static_path_allowed       # sealed labels, *.private.*, dot folders stay hidden (review 261031)
+    files = [f for f in files if static_path_allowed(root, f)]
     more = max(len(files) - _MAX_FILES, 0)
     files = files[:_MAX_FILES]
     res = tdir / "runs" / run / "result" if run and (tdir / "runs" / run / "result").is_dir() else tdir / "results"

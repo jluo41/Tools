@@ -1,5 +1,26 @@
 # haipipe-paper-evidence · changelog
 
+## 0.5.1 · 2026-11-01 · b16 review 261101: current paper names
+
+- version Jobs are named `jNN_writing_v<MMDD>_<desk>` (from j11), no longer `jNN_v<MMDD>_<desk>` (ledger commands, ladder sketch, evidence_ledger.py help and docstring).
+- evidence_ledger.py: a display drawn by a Run in the paper Board's own `j01_evidence_display` Job (`paper/Paper-<x>/j01_evidence_display/tNN_/runs/<run>/result`, s01-D13) is a proper source; work/ Runs still count, and a display with no Run is still flagged. Paper-Example-C j11: 10 ❗ to 5 (the five left are reviews not run yet).
+- evidence_ledger.py: the display Job check accepts `j01_evidence_display` and still accepts the older `j21_paper_displays`; its warning names both.
+- CHANGELOG 0.5.0: the all-displays PDF is `<Board>/delivery/<job>/<job>-all-displays.pdf`.
+- Metadata last_updated set from the 0.5.0 entry (2026-11-01) before this bump.
+
+## 0.5.0 · 2026-11-01 · All displays as one PDF
+
+- JL 261101: "I also want a link for the display, so we can view all the displays as one pdf file". New
+  `scripts/build_displays_pdf.py <display Job>` writes `<Board>/delivery/<job>/<job>-all-displays.pdf` (xelatex, one page per
+  display, "Not drawn yet" where none is); the workbench's Evidence view, now Values, Citations, then Displays, links it.
+
+## 0.4.0 · 2026-10-31 · The display Job moves to the paper Board; three evidence Jobs
+
+- JL 261031: one paper Block links many discovery Blocks (external) and work Blocks (internal), deposits them into its evidence
+  Jobs, and writes them into papers. The display Job is `j01_evidence_display` in the paper Board (was the work Block's
+  `j21_paper_displays`), beside `j02_evidence_value` and `j03_evidence_cite`; a display Run draws from returned,
+  aggregated Results only. The sketch, rule 3 and the colour scheme's path say so.
+
 ## [0.3.2] — 2026-10-26
 
 Links, commands and companions repointed at the helper skills merged into `haipipe-ideation`, `haipipe-search`, `haipipe-evidence`, `inlab-human`, `haipipe-draft-review`, `haipipe-display` (now `_parts/<name>/PART.md`). (merge-parts 261026)
@@ -53,7 +74,7 @@ Shorter description (1754 -> 503 characters): what it does, when to use it, its 
   citation key with two entries, too many displays, a display shown twice, and cards that do not resolve; only the
   Sections in the version's compile order count. Changes no file of the paper; exit 1 on a ❗. 8 tests on a made-up
   version.
-- Tested by a fresh agent on Paper-AgreeablePrescriptionDiscretion `j01_v0929_misq` (asked only to check the numbers
+- Tested by a fresh agent on Paper-Example-Misq `j01_v0929_misq` (asked only to check the numbers
   before a send; it found haipipe-paper, then this skill). Its review made the ledger read the compile order, compare
   estimates in one unit, and check citation keys, and took a worked answer out of this SKILL.md so it no longer leads
   the reader. The ledger now finds what it found in the files it reads: Metformin's two estimates (3.75e-05 against

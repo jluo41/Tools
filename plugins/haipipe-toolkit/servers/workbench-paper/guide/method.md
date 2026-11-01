@@ -10,7 +10,7 @@ venue, delivers it and answers its rounds; a Section is a Page, written by the P
 is the frame's Space the step is done in, and the run that starts it in that Space's Runs panel.
 Guide › Method shows each level's steps as cards. A version is a Job, `jNN_v<N>_<desk>/` (today a
 paper's `Ba-` · `Bb-` · `Bc-<desk>-…` groups read as one). The Story is the Board's own: its thinking
-is studio topics (`studio/s01-ideation/`, `studio/sNN-story-…/`) and its research questions are the
+is studio topics (`s01-ideation/`, `studio/sNN-story-…/`) and its research questions are the
 Board's Questions, each with a report in `reports/` (b16 Q04).
 
 **Block · the paper: its question, its Story, its evidence**

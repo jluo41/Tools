@@ -10,7 +10,8 @@ its own skill since 261013, out of excalidraw-read, whose page-cutting helpers i
 The plan is a yaml block in a studio topic's face (spec: ref/revise-spec.md): `file` (the .docx, beside the
 face or in the Block's related/files/ or related/materials/), optional `pdf` (default: the .docx's name with .pdf, saved from
 Word so the pages look as the author sees them), optional `stop_at` (the words that end the last section) and
-`people` ({name: role}), and `edits`, each {id, part, title, after?, find, new?, image?, why, evidence?}. A section is
+`people` ({name: role}), and `edits`, each {id, part, title, after?, find, new?, image?, why, evidence?,
+paragraphs?: [{at, topic, does}], a green note and a Word comment per new paragraph}. A section is
 the title block or one Heading 1 of the .docx, or one of the plan's `sections` (a form without Heading 1); `part` names it ("1".."9", "title", "R" for References, "F" for
 Overview Figure, or the heading's text). The build stops when a find is not in its section of the PDF.
 Needs poppler (pdftotext, pdftoppm), Pillow, PyYAML and python-docx; writes through haipipe-studio's canvas.write.
@@ -31,6 +32,7 @@ import read_paper as rp  # noqa: E402  (its drawing helpers, and haipipe-studio'
 import canvas  # noqa: E402
 
 DPI = 200                      # the cut pictures
+PAGE_W = 1400                  # their width once embedded: 1.4 x the column, so page text stays sharp (JL 261026)
 X0, PIC2, GAP2, NOTE2 = 80, 1000, 110, 360     # the section frame: the file today | updated draft | notes
 LABEL = 24                                     # the change numbers in the margins
 NCOL, CGAP = 3, 16                             # notes in three columns, so each stays level with its words
@@ -730,13 +732,13 @@ def cmd_draw(a):
             label = "" if s_frames else f"{NAME.get(sid, head)} · "   # a section frame names it in its title
             rp.text(X0, y, f"{label}today, {lwhere}", 22)
             py = y + 36
-            lbot = rp.picture(X0, py, lout, PIC2)
+            lbot = rp.picture(X0, py, lout, PIC2, max_width=PAGE_W)
             ls = PIC2 / lw
             where = {}                                   # change id -> (top, bottom) of its first sentence
             if upd:
                 highlight(uout, [(ub, t) for _, _, _, ub, t in rows if ub])
                 rp.text(X1, y, f"updated, {uwhere}", 22, GREEN)
-                ubot = rp.picture(X1, py, uout, PIC2)
+                ubot = rp.picture(X1, py, uout, PIC2, max_width=PAGE_W)
                 us = PIC2 / uw
             else:
                 paras = len({u[3].rsplit(".", 1)[0] for u in sents.get(sid, [])})
@@ -758,6 +760,28 @@ def cmd_draw(a):
                     utop, ubtm = where[str(e["id"])]
                     unums.append((utop + 13, str(e["id"]), GREEN))
                     mid = (utop + ubtm) / 2
+                # first, one green note per new paragraph of the change, beside its first line (JL 261026: "explain what each
+                # new paragraph does, in a comment on the right")
+                for k, pp in enumerate((e.get("paragraphs") or []) if upd else []):
+                    pws = find_in(usec, pp["at"], None, f"change {e['id']} paragraph {k + 1}")[1]
+                    pb = line_boxes(pws, upx)
+                    pmid = py + (pb[0][1] + pb[0][3]) / 2 * us
+                    unums.append((pmid, f"{e['id']}.{k + 1}", GREEN))
+                    if stairs:
+                        col, pny, pnx = 0, max(stair_y, pmid - 24), stair_x(stair_k)
+                        stair_k += 1
+                    else:
+                        col = min(range(ncol), key=lambda c: (max(bottoms[c], pmid - 24), c))
+                        pny, pnx = max(bottoms[col], pmid - 24), nx2 + col * (note_w + CGAP)
+                    py2 = note(pnx + 12, pny + 10, f"{e['id']}.{k + 1} · paragraph {k + 1}: {pp['topic']}",
+                               note_w - 24, n_title, GREEN) + 4
+                    py2 = note(pnx + 12, py2, pp["does"], note_w - 24, n_body) + 4
+                    rp.base("rectangle", pnx, pny, note_w, py2 - pny + 6, GREEN, rough=0)
+                    if stairs:
+                        elbow(X1 + cw + 6, pmid, pnx - 6, pny + 20, X1 + cw + 14 + (stair_k % n_steps) * 12, GREEN)
+                    elif col == 0:
+                        rp.arrow(X1 + cw + 6, pmid, pnx - 6, pny + 16, GREEN)
+                    bottoms[col] = stair_y = py2 + 18
                 # the column where the note sits highest, nearest its words; a tie goes to the left
                 if stairs:
                     col = 0

@@ -26,6 +26,7 @@ TEXT_EXTENSIONS = {".md", ".markdown", ".txt", ".html", ".htm", ".css", ".js",
 MAX_SOURCE_BYTES = 2 * 1024 * 1024
 PRIVATE_LANES = {"delivery", "studio", "workflow", "runs", "labeling", "scripts", "src", "tests",
                  "results", "__pycache__", "node_modules", "server-state"}
+STUDIO_TOPIC = re.compile(r"^s\d{2}[-_]")  # an sNN-<topic>/ beside the Jobs or Tasks: private as studio/ (JL 261030)
 PRIVATE_FILES = {"env.sh", "server.json", "server.toml", "server.yaml", "server.yml",
                  "credentials.json", "credentials.toml", "secrets.json",
                  "secrets.toml", "auth.json", "token.json", "tokens.json"}
@@ -97,7 +98,7 @@ def load_page(target):
 def render_confined(folder, relative):
     path = confined(folder, relative)
     parts = path.relative_to(Path(folder).resolve()).parts
-    if parts[0].lower() in PRIVATE_LANES or any(p.lower() in PRIVATE_FILES for p in parts):
+    if parts[0].lower() in PRIVATE_LANES or STUDIO_TOPIC.match(parts[0]) or any(p.lower() in PRIVATE_FILES for p in parts):
         raise ValueError("Private Page lane cannot be rendered or downloaded")
     return path
 
@@ -131,7 +132,7 @@ def references(path):
 def is_private(root, path):
     """True when a path inside the Folder sits in a lane a reader never downloads."""
     parts = Path(path).resolve().relative_to(Path(root).resolve()).parts
-    return bool(parts) and (parts[0].lower() in PRIVATE_LANES
+    return bool(parts) and (parts[0].lower() in PRIVATE_LANES or bool(STUDIO_TOPIC.match(parts[0]))
                             or any(p.lower() in PRIVATE_FILES for p in parts))
 
 
@@ -223,7 +224,8 @@ def source_files(context):
     candidates = [context.source]
     for path in sorted(context.folder.rglob("*")):
         relative = path.relative_to(context.folder)
-        if path == context.source or relative.parts[0] in {"delivery", "workflow", "runs", "results", "studio", "labeling"}:
+        if path == context.source or relative.parts[0] in {"delivery", "workflow", "runs", "results", "studio", "labeling"} \
+                or STUDIO_TOPIC.match(relative.parts[0]):
             continue
         try:
             render_confined(context.folder, relative)

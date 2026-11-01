@@ -1,0 +1,55 @@
+{
+ "topic": "s41-task-display-procedure",
+ "style": "sketch-notes",
+ "source": "s41-task-display-procedure.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Display procedure: from a sentence that needs a figure to a figure you accepted",
+   "points": [
+    "every step of making one display (a figure or a table) for one page of a draft Task, drawn the…",
+    "A display is one unit folder, <task>/display/Display<n>-<slug>/, built on evidence cards,…",
+    "The worked example is the Task 2.1 Overview Figure (SHIFT, b21), cited by the sentence \"The work…"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and every step of making one display, from a sentence that needs it to an accepted figure, for the people who write…",
+    "a skill"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "What is decided",
+   "points": [
+    "A display gets one procedure topic, drawn the way b32 s41 draws the draft Task (JL 261016: \"for…",
+    "The worked example is the Task 2.1 Overview Figure, shown as not yet a unit, in red",
+    "A display step has no tab of its own: it sits in 3 · Evidence (today's Evidence-Display tab folds…",
+    "Open 1 settled: the Display step is its own tab, 4 · Display, after 3 · Evidence"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "04",
+   "idea": "Still open",
+   "points": [
+    "A check of a figure's numbers against the cards: who writes it (haipipe-evidence's cards.py, or…",
+    "The unit contract keeps accepted: in the Page",
+    "The sentence is C3.P6 · B7 · S7 but the figure is Section C8: which canvas shows its Display card"
+   ],
+   "leaning": "",
+   "ask": "Which of the 260 units move to <task>/display/, which are only read",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

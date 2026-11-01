@@ -1,0 +1,105 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>Paper UI Report</title><style>
+/* tokens copied from servers/workbench/focus-assets/focus.css :root; structure only changes, never the look */
+:root{--bg:#fff;--paper:#fff;--ink:#1c1c1c;--muted:#6f6f6b;--line:#e3e3e6;--accent:#1864ab;--soft:#e7f5ff;--wash:#f6f6f7;
+--warn:#b35c00;--ok:#2b8a3e;--red:#c92a2a;--cite:#1971c2;--value:#7048e8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161719;--paper:#1b1c1f;--ink:#e8e8e6;--muted:#a0a09c;
+--line:#2c2e33;--accent:#91caff;--soft:#253749;--wash:#1d1f22;--warn:#e4bd62;--ok:#8ce99a;--red:#ff8787;--cite:#74c0fc;--value:#b197fc}}
+:root[data-theme="dark"]{--bg:#161719;--paper:#1b1c1f;--ink:#e8e8e6;--muted:#a0a09c;--line:#2c2e33;--accent:#91caff;--soft:#253749;
+--wash:#1d1f22;--warn:#e4bd62;--ok:#8ce99a;--red:#ff8787;--cite:#74c0fc;--value:#b197fc}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+code{font:12.5px ui-monospace,Menlo,monospace}
+.wrap{display:grid;grid-template-columns:minmax(0,1120px) 360px;gap:28px;padding:24px 16px 60px;max-width:1540px;margin:auto}
+@media(max-width:1180px){.wrap{grid-template-columns:1fr}.notes{position:static!important}}
+.screen-label{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--red);margin:34px 0 10px;font-weight:600}
+.screen-label:first-child{margin-top:0}
+/* the browser window: rails in the margins, the 960 px focus page in the middle */
+.win{border:1px solid var(--line);border-radius:10px;background:var(--bg);position:relative;
+display:grid;grid-template-columns:140px minmax(0,1fr) 170px;gap:0}
+.rail{padding:150px 10px 20px;font-size:12px}
+.rail a{display:flex;align-items:center;gap:8px;height:28px;padding:0 8px;border-radius:4px;color:var(--muted);text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rail a i{display:inline-block;width:7px;height:1px;background:var(--line);flex:none}
+.rail a.child{padding-left:20px}
+.rail a[aria-current]{color:var(--accent);background:var(--soft)}
+.rail a[aria-current] i{width:14px;height:2px;background:var(--accent)}
+.rail a small{display:block;font-size:11px;color:var(--muted);line-height:1.2}
+.secline{display:none;font-size:13px;color:var(--muted);margin:0 0 12px}.secline b{color:var(--ink)}
+.rail a.two{height:auto;padding:4px 8px;align-items:flex-start}
+.rail a.two i{margin-top:9px}
+.rail a.new{outline:2px dashed var(--red);outline-offset:1px}
+.page{padding:25px 24px 40px;min-width:0}
+.crumb{font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+h1{font-size:24px;font-weight:500;margin:14px 0 14px}
+h1 .sec{font-size:22px;font-weight:600;color:var(--muted);margin-left:10px}
+.views{display:flex;flex-wrap:wrap;gap:6px 16px;margin:0 0 14px;font-size:13px}
+.views a{color:var(--muted);text-decoration:none;padding-bottom:2px}
+.views a[aria-current]{color:var(--ink);border-bottom:2px solid var(--accent)}
+.views a .w{font-size:11px;margin-left:5px;color:var(--muted)}
+.views a .w.you{color:var(--warn);font-weight:600}
+.views a .w.ok{color:var(--ok)}
+.aim{margin:0 0 18px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.aim b{font-size:12px;font-weight:600;color:var(--muted);margin-right:8px;text-transform:uppercase;letter-spacing:.05em}
+.caption{font-size:13px;color:var(--muted);margin:0 0 14px}
+/* rows, one item per row, verbs on the row */
+.ask{display:flex;align-items:center;gap:12px;padding:10px 14px;border:1px solid var(--line);border-left:3px solid var(--warn);border-radius:6px;margin:0 0 12px}
+.ask .t{flex:1}
+.ask .t small{display:block;font-size:12px;color:var(--muted)}
+.btn{font-size:12px;border:1px solid var(--line);border-radius:5px;padding:3px 10px;background:var(--paper);color:var(--ink);white-space:nowrap;text-decoration:none;display:inline-block}
+.btn.go{background:var(--accent);border-color:var(--accent);color:#fff}
+.verbs{display:flex;gap:8px;align-items:flex-start;margin:0 0 22px}
+.verbs textarea{flex:1;min-height:34px;height:34px;resize:vertical;border:1px solid var(--line);border-radius:5px;background:var(--wash);
+padding:6px 10px;font:13px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink)}
+h3.part{font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:22px 0 8px}
+.para{border-top:1px solid var(--line);padding:10px 0 6px}
+.para .ph{display:flex;align-items:baseline;gap:10px}
+.para .ph b{font-weight:600}
+.para .ph .id{font:11px ui-monospace,Menlo,monospace;color:var(--muted);width:44px;flex:none}
+.pt{display:flex;gap:10px;font-size:14px;line-height:1.55;padding:2px 0}
+.pt .id{font:11px ui-monospace,Menlo,monospace;color:var(--muted);width:44px;flex:none;text-align:right;padding-right:10px;line-height:21px}
+.scr{margin:6px 0 4px 54px;font-size:13px;color:var(--muted);border:1px dashed var(--line);border-radius:5px;padding:5px 9px;background:var(--wash)}
+.scr b{font-weight:600;color:var(--ink);margin-right:6px}
+.row{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--line)}
+.row .n{width:170px;flex:none;font-weight:500}
+.row .d{flex:1;color:var(--muted);font-size:13.5px}
+.row .st{font-size:12px;width:96px;flex:none}
+.st.you{color:var(--warn);font-weight:600}.st.ok{color:var(--ok)}.st.later{color:var(--muted)}
+.row .pic{width:110px;height:64px;flex:none;border:1px solid var(--line);border-radius:4px;background:
+linear-gradient(135deg,var(--wash) 25%,transparent 25%) 0 0/12px 12px,var(--paper)}
+/* 5 · Revise: text left, cards right, no box around either */
+.split{display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:22px}
+.txt p{margin:0 0 4px;font-size:16px;line-height:1.65;display:flex;gap:10px}
+.txt p .id{font:11px ui-monospace,Menlo,monospace;color:var(--muted);width:28px;flex:none;line-height:26px;text-align:right}
+.txt p.lit{background:var(--soft)}
+.card{border:1px solid var(--line);border-radius:6px;padding:7px 10px;font-size:13px;margin:0 0 8px;background:var(--paper)}
+.card .k{font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.card .k.edit{color:var(--warn)}.card .k.logic{color:var(--muted)}.card .k.cite{color:var(--cite)}.card .k.you{color:var(--accent)}
+.card .old{text-decoration:line-through;color:var(--muted)}
+.card .acts{display:flex;gap:6px;margin-top:6px}
+.chips{display:flex;gap:6px;margin:0 0 12px}
+.chips span{font-size:12px;border:1px solid var(--line);border-radius:12px;padding:1px 10px}
+.chips span.on{border-color:var(--accent);color:var(--accent);background:var(--soft)}
+/* notes */
+.notes{position:sticky;top:20px;align-self:start;font-size:13.5px}
+.notes h2{font-size:14px;margin:0 0 8px;color:var(--red)}
+.notes ol{margin:0 0 18px;padding-left:22px}
+.notes li{margin:0 0 10px;color:var(--red)}
+.notes li span{color:var(--ink)}
+.notes li small{display:block;color:var(--muted);font-style:italic;margin-top:2px}
+.pin{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:var(--red);color:#fff;
+font-size:11px;font-weight:700;vertical-align:middle;margin:0 4px;flex:none}
+table.map{border-collapse:collapse;width:100%;font-size:13px;margin:6px 0}
+table.map th,table.map td{border:1px solid var(--line);padding:5px 8px;text-align:left;vertical-align:top}
+table.map th{background:var(--wash);font-weight:600}
+@media(max-width:700px){.win{grid-template-columns:1fr}.rail{display:none}.secline{display:block}.split{grid-template-columns:1fr}.row .n{width:120px}}
+
+.vw{font-size:11px;margin-left:5px;color:var(--muted)}.vw.you{color:var(--warn);font-weight:600}.vw.ok{color:var(--ok)}
+.verb{font-size:15px;font-weight:400;color:var(--muted)}
+.fh{font-size:15px;font-weight:600;margin:18px 0 8px;padding-top:12px;border-top:1px solid var(--line)}.fh::before{content:"▾ ";color:var(--muted);font-size:12px}
+.steps{display:flex;gap:6px;flex-wrap:wrap}.steps a{font-size:12px;border:1px solid var(--line);border-radius:5px;padding:1px 8px;color:var(--ink);text-decoration:none}
+.qs{font-size:11px;font-weight:600;border-radius:9px;padding:1px 8px;background:var(--soft);color:var(--accent);margin-right:8px}
+.tree{font:12.5px/1.7 ui-monospace,Menlo,monospace;white-space:pre;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:12px 16px;overflow:auto}
+</style></head><body><div class='wrap'><div><p class='caption' style='margin:0 0 6px'>b16 s32 · how Report looks at the paper's three levels. Placeholder text; the paper is unpublished.</p><p class="screen-label">Board › Report: what the paper must find out, and how far it has got</p><div class="win"><nav class="rail"><a aria-current=page><i></i>Paper-Example</a><a><i></i>j01_v1130_venue</a><a><i></i>j02_v0301_venue</a></nav><div class="page"><div class="crumb">Physician-SPACE / examples-2-cms / Project-Example / paper / Paper-Example</div><h1>Paper-Example<span class="sec">Report<span class="verb"> · check</span></span></h1><nav class="views"><a>MindMap</a><a aria-current=page>Findings</a><a>Status</a><a>Questions</a></nav><div class="aim"><b>Purpose</b>Placeholder: what this paper finds and for whom, in one line.</div><p class="caption">What it has found: each question's answer, its first sentence.</p><span class="pin">1</span><div class="row"><span class="n"><span class="qs">agreed</span>Q1 · Placeholder question one</span><span class="d">Placeholder: the answer's first sentence.</span><a class="btn">Open</a></div><div class="row"><span class="n"><span class="qs">draft</span>Q2 · Placeholder question two</span><span class="d">Placeholder: the answer's first sentence.</span><a class="btn">Open</a></div><div class="row"><span class="n"><span class="qs">open</span>Q3 · Placeholder question three</span><span class="d">no answer yet</span><a class="btn">Open</a></div></div><nav class="rail"><a class="two" aria-current=page><i></i><span>Report<small>check</small></span></a><a class="two"><i></i><span>Work<small>do</small></span></a><a class="two"><i></i><span>Studio<small>think</small></span></a><a class="two"><i></i><span>Delivery<small>hand over</small></span></a><a class="two"><i></i><span>Files<small>browse</small></span></a></nav></div><p class="screen-label">Version › Report: the manuscript, whole</p><div class="win"><nav class="rail"><a aria-current=page><i></i>j01_v1130_venue</a><a><i></i>t00_summary</a><a><i></i>t01_introduction</a><a><i></i>t02_methods</a><a><i></i>t03_results</a><a><i></i>t04_discussion</a></nav><div class="page"><div class="crumb">Physician-SPACE / … / paper / Paper-Example / j01_v1130_venue</div><h1>j01_v1130_venue<span class="sec">Report<span class="verb"> · check</span></span></h1><nav class="views"><a>MindMap</a><a>Text</a><a aria-current=page>Status</a></nav><div class="aim"><b>Goal</b>Placeholder: the first send of the paper to one venue.</div><p class="caption">Where each Section stands, and which one waits for you.</p><span class="pin">2</span><div class="row"><span class="n">t00_summary</span><span class="d">1 · Plan waits for your sign</span><span class="st you">sign</span><a class="btn">Go</a></div><div class="row"><span class="n">t01_introduction</span><span class="d">5 · Revise: cards wait for you</span><span class="st you">pass 2</span><a class="btn">Go</a></div><div class="row"><span class="n">t02_methods</span><span class="d">3 · Evidence comes next</span><span class="st ">next</span><a class="btn">Go</a></div><div class="row"><span class="n">t03_results</span><span class="d">built, waits for your send</span><span class="st you">send</span><a class="btn">Go</a></div><div class="row"><span class="n">t04_discussion</span><span class="d">2 · Write comes next</span><span class="st ">next</span><a class="btn">Go</a></div></div><nav class="rail"><a class="two" aria-current=page><i></i><span>Report<small>check</small></span></a><a class="two"><i></i><span>Work<small>do</small></span></a><a class="two"><i></i><span>Studio<small>think</small></span></a><a class="two"><i></i><span>Delivery<small>hand over</small></span></a><a class="two"><i></i><span>Files<small>browse</small></span></a></nav></div><p class="screen-label">Section › Report: the text at sentence level</p><div class="win"><nav class="rail"><a aria-current=page><i></i>t00_summary</a><a><i></i>t01_introduction</a><a><i></i>t02_methods</a></nav><div class="page"><div class="crumb">Physician-SPACE / … / Paper-Example / j01_v1130_venue / t00_summary</div><h1>t00_summary<span class="sec">Report<span class="verb"> · check</span></span></h1><nav class="views"><a>MindMap</a><a aria-current=page>Text</a><a>Status</a></nav><div class="aim"><b>Aim</b>Placeholder: what the reader learns from this Section, in 250 words.</div><p class="caption">Each sentence beside its evidence, its changes and the review's notes.</p><span class="pin">3</span><div class="split"><div class="txt"><p><span class="id">S1</span>Placeholder sentence one, the problem.</p><p class="lit"><span class="id">S2</span>Placeholder sentence two, what we set out to learn.</p><p><span class="id">S3</span>Placeholder sentence three, design and data.</p><p><span class="id">S4</span>Placeholder sentence four, the result.</p></div><div><div class="card" style="margin-top:22px"><div class="k edit">Edit · S2</div><span class="old">set out to learn</span> → asked</div><div class="card"><div class="k cite">Evidence · S4</div>VALUE 1.1 · the main estimate</div><div class="card"><div class="k logic">Open · S3</div>? to find · the period</div></div></div></div><nav class="rail"><a class="two" aria-current=page><i></i><span>Report<small>check</small></span></a><a class="two"><i></i><span>Work<small>do</small></span></a><a class="two"><i></i><span>Studio<small>think</small></span></a><a class="two"><i></i><span>Delivery<small>hand over</small></span></a><a class="two"><i></i><span>Files<small>browse</small></span></a></nav></div><p class="screen-label">The MindMap at each level is its content</p><div class="tree">Board     Paper-Example ─ To find out ─ Q1 · Q2 · Q3        ─ Versions ─ j01 · j02
+Version   j01_v1130_venue ─ t00_summary ─ C1.P1 Background · C1.P2 Methods …
+                          ─ t01_introduction ─ C1.P1 …
+Section   t00_summary ─ C1.P1 Background ─ S1 point ▸ sentence
+                                         ─ S2 point ▸ sentence</div></div><aside class='notes'><h2>What this section is, rule by rule</h2><ol><li><span><b>Report checks.</b> It shows what the paper says and how far it has got; it never asks you to act, except Open and Go.</span><small>haipipe-ui: Report · check</small></li><li><span><b>Board: Findings first.</b> One row per question: its stage word, its answer's first sentence, Open to its report.</span><small>A Board opens on Report (haipipe-ui).</small></li><li><span><b>Version: Status lists Sections.</b> Each Section's waiting step as a word; Go opens that step in the Section's Work.</span><small>Which Section waits on me, at a glance.</small></li><li><span><b>Section: Text at sentence level.</b> Sentences left; their evidence, changes and open points right, read only.</span><small>JL 261031: "sentence level, and the tracking, and the evidence"</small></li><li><span><b>MindMap is content.</b> Board: questions and versions; version: Sections and their paragraphs; Section: paragraphs, points, sentences.</span><small>JL 261031: "the mindmap here should be the paper content"</small></li><li><span><b>No Review view.</b> The review report judges a pass, so it stays in Work › 5 · Revise.</span><small>JL 261031: "the revise should be in the Work Section"</small></li></ol></aside></div></body></html>

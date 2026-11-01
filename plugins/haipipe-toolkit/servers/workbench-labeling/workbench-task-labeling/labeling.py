@@ -708,6 +708,26 @@ def _embedding_module():
     return module
 
 
+@lru_cache(maxsize=1)
+def _meaning_store_module():
+    """Load the decision-report store (``meaning_store``: published reports, drafts, submissions), the record behind a
+    building Task's Decide view (b15 j01 s58 C2; s03 implementation-plan CONTRACTS.md version 2, sections 5 and 6)."""
+    job_module = _canonical_job_module()
+    if job_module is None:
+        return None
+    candidate = Path(job_module.__file__).with_name("meaning_store.py")
+    if not candidate.is_file():
+        return None
+    spec = importlib.util.spec_from_file_location(
+        "haipipe_subjective_label_meaning_store_for_board", candidate
+    )
+    if spec is None or spec.loader is None:
+        return None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def _stored(value, anchor: Path) -> Path:
     """A path a preparation record keeps, back to a real one: new records keep it relative to the
     SPACE root (AGENTS.md rule 7); an old absolute record reads as is."""
@@ -4381,7 +4401,11 @@ class LabelingMixin:
         if not generated_page_url(path_q, file_q, page_q, got[1]):
             return self.reply(400, {"ok": False,
                                     "err": "missing or mismatched generated Page URL"})
-        body = render(got[0], path_q, file_q, page_q, got[1]).encode("utf-8")
+        document = render(got[0], path_q, file_q, page_q, got[1])
+        if (q.get("focus") or [""])[0] == "1":
+            from live.labeling_focus import focused_engine_document
+            document = focused_engine_document(document)
+        body = document.encode("utf-8")
         self.send_response(200)
         self.send_header("Content-Type", "text/html; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
@@ -4452,7 +4476,7 @@ class LabelingMixin:
             return None, "Task is outside the served root"
         if not (task / f"{task.name}.md").is_file():
             return None, "not a Task folder"
-        from live import labeling_theme as T
+        from live import task_labeling as T
         if T.types_of(task) != ("items",) or T.IT is None:
             return None, "not an items Task, or the preparation engine is absent"
         return task, None
@@ -4474,7 +4498,7 @@ class LabelingMixin:
             seed = int((q.get("seed") or ["7"])[0])
         except ValueError:
             return self.reply(400, {"ok": False, "err": "seed is a whole number"})
-        from live import labeling_theme as T
+        from live import task_labeling as T
         body = T.sample_html(task, self.root.resolve(), kind, seed).encode("utf-8")
         self.send_response(200)
         self.send_header("Content-Type", "text/html; charset=utf-8")
@@ -4498,7 +4522,7 @@ class LabelingMixin:
             return 400, {"ok": False, "err": "a Run is named rNN_<name>"}
         if not str(p.get("by") or "").strip():
             return 400, {"ok": False, "err": "type your name to sign"}
-        from live import labeling_theme as T
+        from live import task_labeling as T
         try:
             signs = T.IT.sign(task, run, str(p["by"]))
         except SystemExit as e:
@@ -4533,6 +4557,86 @@ class LabelingMixin:
         out.write_bytes(raw)
         return 200, {"ok": True, "path": out.relative_to(self.root.resolve()).as_posix()}
 
+    # ── a building Task's decision report (b15 j01 s58 C2; s03 CONTRACTS.md v2): save a draft, submit the answers ──
+    DECISION_ACTIONS = ("decision_draft_save", "decision_feedback_submit")
+    DECISION_MAX = 256 * 1024            # one report's answers; the host's own request limits still apply first
+
+    def _building_task_target(self, task_q):
+        """A SPACE-relative building Task folder (`task-type: labeling-building`) inside the served root, or (None, why)."""
+        if (not isinstance(task_q, str) or not task_q or task_q.startswith("/") or "\\" in task_q
+                or "\x00" in task_q or any(part in {"", ".", ".."} for part in task_q.strip("/").split("/"))):
+            return None, "unsafe Task path"
+        root = self.root.resolve()
+        task = (root / task_q.strip("/")).resolve()
+        try:
+            task.relative_to(root)
+        except ValueError:
+            return None, "Task is outside the served root"
+        if not (task / f"{task.name}.md").is_file():
+            return None, "not a Task folder"
+        from live import labeling_theme as LT
+        if LT.types_of(task) != ("building",):
+            return None, "not a building Task"
+        return task, None
+
+    def labeling_decision_act(self, p):
+        """Save a draft, or submit the answers, to a report published in the building Task's lane (<task>/labeling/).
+
+        A submission is received, never applied: integrating it into the rules is the Meaning Loop's later, separate
+        step (CONTRACTS.md v2, section 6). ``human_id`` is the caller's word, recorded as local attestation; it is not
+        verified identity, and no shared respondent may use this door until an assigned-job permission exists.
+        """
+        if not self._same_origin():
+            return 403, {"ok": False, "err": "cross-origin write refused"}
+        if getattr(getattr(self, "server", None), "read_only", False):
+            return 403, {"ok": False, "err": "this workbench is read-only"}
+        task, err = self._building_task_target(p.get("path"))
+        if task is None:
+            return 400, {"ok": False, "err": err}
+        if p.get("attest") is not True:
+            return 400, {"ok": False, "err": "decision answers need an explicit caller attestation"}
+        actor = re.sub(r"[^A-Za-z0-9_-]+", "-", str(p.get("human_id") or "").strip()).strip("-")[:64]
+        if not actor:
+            return 400, {"ok": False, "err": "type your name to save or submit"}
+        answers = p.get("answers")
+        if not isinstance(answers, dict):
+            return 400, {"ok": False, "err": "answers is an object keyed by decision"}
+        if len(json.dumps(answers)) > self.DECISION_MAX:
+            return 413, {"ok": False, "err": "these answers are too long to save at once"}
+        try:
+            revision = int(p.get("report_revision"))
+        except (TypeError, ValueError):
+            return 400, {"ok": False, "err": "report_revision is a whole number"}
+        store = _meaning_store_module()
+        if store is None:
+            return 500, {"ok": False, "err": "the decision store is not available"}
+        lane, report_id = task / "labeling", str(p.get("report_id") or "")
+        try:
+            if p.get("action") == "decision_draft_save":
+                try:
+                    expected = int(p.get("expected_draft_revision") or 0)
+                except (TypeError, ValueError):
+                    return 400, {"ok": False, "err": "expected_draft_revision is a whole number"}
+                draft = store.save_draft(lane, report_id, revision, actor, answers, expected, str(p.get("comments") or ""))
+                return 200, {"ok": True, "draft": {"draft_revision": draft.get("draft_revision"),
+                                                   "last_saved_at": draft.get("last_saved_at")}}
+            if p.get("confirmed") is not True:
+                return 400, {"ok": False, "err": "tick 'I confirm these are my answers' to submit"}
+            request_id = str(p.get("request_id") or "")
+            if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]{7,63}", request_id):
+                return 400, {"ok": False, "err": "a submission needs a request id"}
+            receipt = store.submit_feedback(lane, report_id, revision, actor, request_id, answers, True,
+                                            "local_attestation")
+            return 200, {"ok": True, "receipt": receipt}
+        except store.StaleRevision as e:
+            return 409, {"ok": False, "err": str(e) or "the report changed, or another tab saved first"}
+        except store.DuplicateRequest as e:
+            return 409, {"ok": False, "err": str(e) or "this request id was already used for other answers"}
+        except store.ValidationError as e:
+            return 422, {"ok": False, "err": str(e)}
+        except store.MeaningError as e:
+            return 404, {"ok": False, "err": str(e)}
+
     def labeling_act(self, p):
         """The only write door: every action re-checks authority in the engine.
 
@@ -4541,6 +4645,8 @@ class LabelingMixin:
         deployments that need identity assurance must add an authenticated
         principal provider before treating this receipt as verified.
         """
+        if p.get("action") in self.DECISION_ACTIONS:     # a building Task's decision report, not a labeling Page
+            return self.labeling_decision_act(p)
         origin = self.headers.get("Origin") or ""
         host = self.headers.get("Host") or ""
         standalone = p.get("mode") == "page"

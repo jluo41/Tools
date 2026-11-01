@@ -1,0 +1,12 @@
+run: r02_update_m03
+kind: hard
+type: update
+skill: haipipe-labeling
+agent: Claude (simulated Alignment Agent)
+status: done
+reads:
+- runs/r01_collect_report_m03/result/answer_collection.md
+- meaning/m02 (the approved version before this loop; not in the demo)
+writes:
+- meaning/m03.mindmap.md
+- gold/versions/l03/changes.md

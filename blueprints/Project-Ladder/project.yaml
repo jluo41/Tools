@@ -1,0 +1,6 @@
+schema: haipipe-project/v1
+id: Project-Ladder
+profile: research
+git_mode: workspace
+state: active
+mission: "Decide how every research Project is organized and how its workbench shows it, one Theme at a time, so the skills and the workbench follow one agreed plan."

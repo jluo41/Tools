@@ -1,0 +1,49 @@
+{
+ "topic": "s21-revise-mode-workflow",
+ "style": "sketch-notes",
+ "source": "s21-revise-mode-workflow.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Revise mode: how a co-author's file becomes a side-by-side drawing",
+   "points": [
+    "how b31_prep_ai's s04 (Nes Mathioudakis's SHIFT Task 3.1 file and our updated draft, side by…"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and the steps from a co-author's Word file to a side-by-side drawing, for the people who write the toolkit skills",
+    "a skill"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "What is decided",
+   "points": [
+    "This topic records excalidraw-draft as b31_prep_ai's s04 used it on 2026-10-11: the",
+    "The workflow drawn is sentence mode (excalidraw-read 0.3.1): seed a haipipe-draft draft, write…",
+    "Delivery is built from the draft (excalidraw-read 0.4.0, now excalidraw-draft",
+    "Stage → agreed: the topic records revise mode as b31's s04"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "04",
+   "idea": "Still open",
+   "points": [],
+   "leaning": "",
+   "ask": "Agree its For: line and Delivery type: (skill), proposed by the agent 261030?",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

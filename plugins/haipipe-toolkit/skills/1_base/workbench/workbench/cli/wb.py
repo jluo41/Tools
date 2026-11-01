@@ -9,7 +9,7 @@
 
     --find        list the ranked places only; open nothing
     --no-open     check the link and print it, but do not open the browser
-    --no-studio   open a Block, Job or Task on its own level view, not on its Studio
+    --classic     open the old screens: a Project's Home view, a Block, Job or Task's frame on its Studio
     --json        print one JSON object instead of text
     --root DIR    the SPACE root (default: the nearest folder above holding env.sh or .server_config)
     --no-restart  never restart a server that fails to answer
@@ -19,8 +19,8 @@ The link is checked on this SPACE's running server before it is printed: the run
 and one that fails to answer (connection drop, 5xx) is restarted with its own flags and asked again.
 The search reuses the server's own lists (home.discover_boards for Blocks, frame.children and
 frame.level_of for Jobs and Tasks, frame.theme_of for the theme), so a found place and the screen
-always agree. A Block, Job or Task opens on its Studio (`studio=1`, JL 261011), the Block's
-shared studio topics; `--no-studio` opens the level view instead. Words that name a level (block, job, task, project) or a theme (paper, cowork,
+always agree. A Project, Theme folder, Block, Job or Task opens on its focus page (`layout=focus`,
+JL 261030: "Why not using the UI that we discussed previously?"); `--classic` opens the old screens. Words that name a level (block, job, task, project) or a theme (paper, cowork,
 discovery, insight, design, labeling) narrow the search instead of being matched.
 """
 from __future__ import annotations
@@ -104,20 +104,31 @@ def project_above(folder: Path, root: Path) -> Path | None:
     return None
 
 
-def target(folder: Path, root: Path, studio: bool = True) -> dict:
-    """What a folder opens: Home, a Project's Home view, or the frame over a Block, Job or Task
-    (on its Studio unless studio is False)."""
+def focus_url(place: Path, root: Path) -> str:
+    """The focus page (layout=focus, JL 261028-30): Report · Work · Studio at every level; the page picks its
+    own opening section."""
+    return "/_board/workbench?" + urlencode({"path": rel(place, root), "layout": "focus"}, safe="/")
+
+
+def target(folder: Path, root: Path, classic: bool = False) -> dict:
+    """What a folder opens: Home, or the focus page of a Project, Theme folder, Block, Job or Task.
+    classic opens the old screens: a Project's Home view, or the frame over a Block, Job or Task on its Studio."""
     if folder.is_file():
         folder = folder.parent
     if folder == root:
         return {"level": "SPACE", "path": "", "url": "/", "theme": "", "skill": "workbench"}
+    from live import focus_page
+    if focus_page.is_topic(folder):                     # an sNN has no page: its card in its level's Studio (JL 261031)
+        theme = frame.theme_of(frame.topic_owner(folder), root)
+        return {"level": "Topic", "path": rel(folder, root), "url": focus_page.topic_home(folder, root.resolve()),
+                "theme": theme, "skill": "haipipe-studio"}
     found = leveled(folder, root)
     if found:
         place, level = found
         theme = frame.theme_of(place, root)
         return {"level": level, "path": rel(place, root),
-                "url": "/_board/workbench?" + urlencode({"path": rel(place, root), **({"studio": "1"} if studio else {})},
-                                                        safe="/"),
+                "url": "/_board/workbench?" + urlencode({"path": rel(place, root), "studio": "1"}, safe="/")
+                if classic else focus_url(place, root),
                 "theme": theme, "skill": theme_skill(theme)}
     project = project_above(folder, root)
     if project:
@@ -128,8 +139,9 @@ def target(folder: Path, root: Path, studio: bool = True) -> dict:
             kind = THEME_KIND.get(folder.name)
             if kind:
                 query["kind"] = kind
-        return {"level": level, "path": rel(folder if level == "Theme" else project, root),
-                "url": "/?" + urlencode(query, safe="/,"), "theme": theme,
+        place = folder if level == "Theme" else project
+        return {"level": level, "path": rel(place, root),
+                "url": "/?" + urlencode(query, safe="/,") if classic else focus_url(place, root), "theme": theme,
                 "skill": theme_skill(theme) if theme else "workbench"}
     return {"level": "SPACE", "path": "", "url": "/", "theme": "", "skill": "workbench"}
 
@@ -484,7 +496,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--no-open", action="store_true")
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--no-restart", action="store_true")
-    ap.add_argument("--no-studio", action="store_true")
+    ap.add_argument("--classic", action="store_true")
     a = ap.parse_args(argv)
 
     root = Path(a.root).resolve() if a.root else space_root(Path.cwd().resolve())
@@ -512,7 +524,7 @@ def main(argv: list[str] | None = None) -> int:
             if result["clear"]:
                 folder = root / ranked[0].path
     if folder is not None and not a.find:
-        result.update(checked_link(target(folder, root, not a.no_studio), root, not a.no_restart))
+        result.update(checked_link(target(folder, root, a.classic), root, not a.no_restart))
         if result["status"] == 200 and not a.no_open:
             webbrowser.open(result["link"])
 

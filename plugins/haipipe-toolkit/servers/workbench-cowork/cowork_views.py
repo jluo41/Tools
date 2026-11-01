@@ -18,7 +18,7 @@ LEADS = {
     "block": ("Block", "The state, spine, close condition and status, from board.md."),
     "people": ("People", "Who to ask for help in this Block: its j00_people Job, as written."),
     "resources": ("Resources", "Outside links the Questions use, each Job's design notes and materials, then OneDrive."),
-    "studio": ("RoadMap Draw", "The Block's drawings in studio/. Each opens on its own; a generated one is view only."),
+    "studio": ("RoadMap Draw", "The Block's drawings: its sNN topics beside the Jobs, then studio/. Each opens on its own; a generated one is view only."),
     "jobs": ("Jobs", "Each line of work: who has the next move, since when, the next step, and its files."),
     "questions": ("Questions", "Each Question is one topic: the question, the Block files it uses, and its report."),
     "emails": ("Emails", "Every thread and draft in emails/, newest first. Only the person sends."),
@@ -149,7 +149,7 @@ def drawing_html(drawing):
 
 def studio_html(snap):
     drawings = ''.join(drawing_html(d) for d in snap["drawings"])
-    empty = '<p class="note" id="tw-no-drawings">No drawings in studio/ yet.</p>'
+    empty = '<p class="note" id="tw-no-drawings">No drawings yet.</p>'
     return (f'<div id="tw-drawings">{drawings or empty}</div><form id="tw-add-drawing"><label>Drawing name<input name="name" '
             'required placeholder="Drawing 1" maxlength="80" pattern="[A-Za-z0-9_ -]+"></label><button type="submit">'
             '+ Add drawing</button><p role="status"></p></form>'

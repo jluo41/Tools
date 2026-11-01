@@ -113,7 +113,7 @@ class CarryOverTest(unittest.TestCase):
 
     def test_the_version_tells_the_story_its_build_reads(self) -> None:
         face = (self.board / "j01_v1_desk/j01_v1_desk.md").read_text()
-        self.assertIn("tells: studio/s02-story-desk-idea", face)
+        self.assertIn("tells: s02-story-desk-idea", face)
         self.assertIn("## Narrative", face)
         self.assertIn("- S-DESK-Main-1-Introduction", face)              # the compile order came with it
         self.assertIn("story-current: s02-story-desk-idea", (self.board / "board.md").read_text())
@@ -121,14 +121,14 @@ class CarryOverTest(unittest.TestCase):
     def test_questions_keep_their_numbers_and_question_logic_stays(self) -> None:
         reports = sorted(p.name for p in (self.board / "reports").iterdir())
         self.assertEqual(reports, ["q00_the_tasks", "q03_different_prediction_horizon"])
-        story = (self.board / "studio/s02-story-desk-idea/s02-story-desk-idea.md").read_text()
+        story = (self.board / "s02-story-desk-idea/s02-story-desk-idea.md").read_text()
         self.assertIn("#### 3.7 · Question logic", story)
         self.assertIn("the rest lean on it", story)
         self.assertNotIn("#### 3.3 · Question 3", story)
         self.assertNotIn("### 8 · Section Narrative", story)               # §8 left only because a version took it
 
     def test_the_storys_records_follow_its_new_name(self) -> None:
-        records = self.board / "studio/s02-story-desk-idea/draft/records"
+        records = self.board / "s02-story-desk-idea/draft/records"
         self.assertEqual([p.name for p in records.iterdir()], ["s02-story-desk-idea-context.md"])
 
     def test_the_sections_story_row_follows_its_row(self) -> None:
@@ -163,7 +163,7 @@ class ReportAlreadyWrittenTest(unittest.TestCase):
         text = (self.board / "reports/q01_horizon/q01_horizon.md").read_text()
         self.assertIn("answers: Q01\n", text)
         self.assertIn("The answer so far", text)                                # its words stay
-        self.assertIn("../../studio/s02-story-desk-idea/s02-story-desk-idea.md", text)
+        self.assertIn("../../s02-story-desk-idea/s02-story-desk-idea.md", text)
         board = (self.board / "board.md").read_text()
         self.assertIn("report: reports/q01_horizon/q01_horizon.md", board)
 

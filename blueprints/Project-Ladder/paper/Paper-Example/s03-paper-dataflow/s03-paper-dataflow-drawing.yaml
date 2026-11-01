@@ -1,0 +1,18 @@
+# The words of the placeholder data-flow map (Tools' Paper-Example; no real paper).
+title: "Paper-Example: from <the data> to its answers"
+columns:
+  D: ["THE DATA", "what every question reads"]
+  S: ["THE LINKING", "how the records are matched"]
+  T: ["THE TABLES", "one row per <unit>"]
+foundation:
+  D:
+  - {key: src1, map: "<data source 1>", title: "<data source 1>", lines: ["<what it holds>"]}
+  - {key: src2, map: "<data source 2>", title: "<data source 2>", lines: ["<what it holds>"]}
+  S:
+  - {key: link1, map: "<a link>", title: "<a link>", lines: ["<how it matches>"]}
+  T:
+  - {key: table, map: "<the main table>", title: "<the main table>", lines: ["<one row per unit>"]}
+links:
+- {from: src1, to: link1}
+- {from: src2, to: link1}
+- {from: link1, to: table}

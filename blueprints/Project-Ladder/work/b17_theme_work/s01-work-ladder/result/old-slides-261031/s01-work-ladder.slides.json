@@ -1,0 +1,28 @@
+{
+ "topic": "s01-work-ladder",
+ "style": "sketch-notes",
+ "source": "s01-work-ladder.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Four rungs, one page shape?",
+   "image": "slides/idea-01-rungs-one-shape.png",
+   "content": "Headline (top-left, large): \"Every rung, the same five doors?\"\nThree option cards across the middle, joined by a wavy line:\n Card A, label \"Six Spaces\": a ladder with six small tabs on each rung; caption \"the 10-07 plan\"\n Card B, label \"Five sections\", circled with a thick orange marker loop and a small hand-written tag \"leaning\": a ladder whose four rungs each carry the same five small doors; caption \"Report, Work, Studio, Delivery, Related\"\n Card C, label \"Each its own\": a ladder whose rungs are all different shapes; caption \"a page per level\"\nBottom-right mustard sticky note with a big question mark: \"Still open: does a Run get its own page?\"\nFocal point: card B.",
+   "notes": "Options: Six Spaces at every level: Description, Idea Studio, Audience Report, Work Details, Runs, Delivery (Q01, 261007); The same five sections at every level: Report, Work, Studio, Delivery, Related (today's page); Each level its own page, built for what it holds. Leaning: the second. Still open: Does a Run get its own page, or only a pop-out over its Task?"
+  },
+  {
+   "id": "02",
+   "idea": "What sits on each rung?",
+   "image": "slides/idea-02-what-sits-on-each-rung.png",
+   "content": "Headline (top-left, large): \"Four rungs, each holds less\"\nA tall hand-drawn ladder in the centre with four rungs, top to bottom, each rung with a short label and a small doodle beside it:\n rung 1 \"Block\": a box of folders\n rung 2 \"Job\": a gear with a few tool icons\n rung 3 \"Task\": a script page with a play button\n rung 4 \"Run\": a small receipt with a tick\nTo the left of the ladder, a soft orange curly arrow going down, labelled \"smaller, more concrete\"\nBottom-right mustard sticky note with a big question mark: \"Still open: does a Job keep its own code?\"\nFocal point: the ladder.",
+   "notes": "Options: Block: its Jobs, studio/, related/, delivery/; Job: its Tasks, and shared code src/; Task: scripts/ and runs/; Run: run.yaml, its ticket, result/, passes/. Still open: Does a Job keep code of its own, or only its Tasks?"
+  },
+  {
+   "id": "03",
+   "idea": "Where does an answer live?",
+   "image": "slides/idea-03-where-answers-live.png",
+   "content": "Headline (top-left, large): \"The answer sits on its Job?\"\nThree option cards across the middle, joined by a wavy line:\n Card A, label \"A report\": a separate notebook beside a ladder; caption \"reports/ beside the work\"\n Card B, label \"On the Job\", circled with a thick orange marker loop and a small hand-written tag \"leaning\": a rung of a ladder with a speech bubble holding a tick; caption \"the Job answers its question\"\n Card C, label \"In the Run\": a small receipt with numbers; caption \"the raw result\"\nBottom-right mustard sticky note with a big question mark: \"Still open: a Job that serves every question?\"\nFocal point: card B.",
+   "notes": "Options: In reports/qNN, beside the work (today); On the Job's face, the Job whose goal is the question; In the Run's result/, as raw output. Leaning: the second (proposed 261029, not settled). Still open: What about a Job that serves every question, like shared tables?"
+  }
+ ]
+}

@@ -1,0 +1,9 @@
+# Where s02's delivery goes (haipipe-studio scripts/render_delivery.py). The deck stays in deck/. The two pieces are
+# workbench-work's own files, rewritten in place by j02's Runs (code pieces: built by a Run, never copied), each piece's
+# name the same word as its Run's target. Until 261031 its pieces were haipipe-work's skill-homes table and b04's move
+# list (result/skill-homes-261031/render-before-261031.yaml).
+pieces:
+  - code: "skill-md: workbench-work/SKILL.md, the three work pages, each with Report, Work and Studio"
+    by: j02_workbench_work_skill/t01_skill_md/runs/run-write-skill-md
+  - code: "workbench-table: workbench-work/ref/workbench-table.md, each page's sections, views and Run types"
+    by: j02_workbench_work_skill/t02_workbench_table/runs/run-write-workbench-table

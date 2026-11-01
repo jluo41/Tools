@@ -29,7 +29,6 @@ that does the work, `(new)` where it is still to be split out of `haipipe-task`.
 | board | Scope | Questions | Ask a Question | haipipe-task-block-agent (new) | haipipe-report | the question | Block › board.md (Questions) · reports/qNN_<topic>/ |
 | board | Scope | Questions | Review the questions | haipipe-task-reviewer-agent | haipipe-report | a change | none |
 | board | Scope | Resources | Add a resource | haipipe-task-block-agent (new) | haipipe-report | none | Block › board.md (Related resources) |
-| board | Scope | RoadMap Draw | Draw the question map | haipipe-task-block-agent (new) | workbench-work | none | Block › studio/question-map.excalidraw |
 | board | Scope | RoadMap Draw | Draw | haipipe-task-block-agent (new) | haipipe-studio | none | Block › studio/<name>.excalidraw |
 | board | Task | each group | Plan a Task | haipipe-task-creator-agent | haipipe-task-plan (new) | none | Block › jNN_<job>/tNN_<task>/workflow/plan.yaml · board.md (Questions › work) |
 | board | Task | each group | Review the plan | haipipe-task-reviewer-agent | haipipe-task-review (new) | none | none |
@@ -50,8 +49,8 @@ Notes
 - **Scope.** Block reads the spine and close condition in `board.md`. A Question is
   one main topic; its Logic (question, hypothesis, acceptance) is the person's to
   sign. "Review the questions" proposes keep, split or merge; a person signs a change.
-- **Scope.** RoadMap Draw holds the Block's drawings: first the question map, written only
-  by `servers/workbench-work/question_map.py` from the register, then freeform ones.
+- **Scope.** RoadMap Draw holds the Block's freeform drawings; the question map is retired
+  (JL 261031), since the Report's MindMap draws each Question with its answer.
 - **Task.** One View per register `group:` (one, Questions, when there is none), each a
   table with a row per Question (Logic │ Task Work │ Report), as Insight's partition Views. A Task's
   code is reviewed by a different agent before its Ticket runs; a Run's Result is

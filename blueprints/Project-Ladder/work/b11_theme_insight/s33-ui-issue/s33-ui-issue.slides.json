@@ -1,0 +1,42 @@
+{
+ "topic": "s33-ui-issue",
+ "style": "sketch-notes",
+ "source": "s33-ui-issue.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Insight UI issues",
+   "points": [
+    "a review of the Insight workbench as it is served on 261008: the Board insights/Insight-SMSR2v1,…",
+    "Every Space and every third-row view was opened, shot with headless Chrome (1500 × 1400) and…",
+    "Each screen is judged against what JL asked for (clean, no nested boxes, no filler repeated on…"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and the Insight workbench's UI problems, ranked worst first with who fixes each, for the people who build the…",
+    "a ui"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "Still open",
+   "points": [
+    "Cross and Findings: hide the partition row, or keep it greyed?",
+    "Retired questions: still Tasks in a Job, or only in the release?",
+    "The Guide tab was not reviewed (a script mounts it"
+   ],
+   "leaning": "",
+   "ask": "One owner for the Disk box: the theme per Space, or the frame reading a theme's file list?",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

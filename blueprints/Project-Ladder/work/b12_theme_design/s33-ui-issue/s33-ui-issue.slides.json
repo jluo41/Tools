@@ -1,0 +1,53 @@
+{
+ "topic": "s33-ui-issue",
+ "style": "sketch-notes",
+ "source": "s33-ui-issue.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "UI issues",
+   "points": [
+    "every problem a review of 261008 found in the design workbench as served, ranked worst first,…",
+    "The review opened the live design Block (examples-5-design/Project-Application-…",
+    "It is the list the level owners work down"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and the design workbench's UI problems, ranked worst first with who fixes each, for the people who build the workbench",
+    "a ui"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "What is decided",
+   "points": [
+    "The list lives in issues.yaml, one row per problem",
+    "Screenshots are not copied into Tools: they show the live Block's messages"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "04",
+   "idea": "Still open",
+   "points": [
+    "Reshoot after the next round of fixes and mark what closed (fixed: <YYMMDD>)",
+    "The board was being changed while it was reviewed (Jobs renamed, j03 ranked): recheck the counts…",
+    "Agree its For: line and Delivery type: (ui), proposed by the agent 261030?"
+   ],
+   "leaning": "",
+   "ask": "Who takes the four b03 problems first: the file reader (any .md read-only in the pop-out) unblocks",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

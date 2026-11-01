@@ -1,6 +1,6 @@
 """The builders: a mind map read from disk, and the refresh that keeps what a person added.
 
-    from_work(path)    a world, a Block or a Job: Block → Job → Task → Run, each with its run counts
+    from_work(path)    a world, a Block or a Job: Block → Job → Task → Run, each by its goal or what it found
     from_topic(topic)  a Studio topic's structured side (its mind map): its face's labelled lines and sections as branches
 
 A built node's id starts with @ and names where it came from (`@j01_x/t02_y`); its `#hash` is the hash of the words
@@ -8,6 +8,7 @@ its builder wrote, so a refresh can tell words a person changed (kept) from word
 """
 from __future__ import annotations
 
+import os
 import re
 from pathlib import Path
 
@@ -17,7 +18,7 @@ BLOCK = re.compile(r"^(b\d{2}_|Paper-)")
 JOB, TASK = re.compile(r"^j\d{2,3}_"), re.compile(r"^t\d{2}_")
 TOPIC = re.compile(r"^s(\d{2})[-_](.+)$")
 STATUS = {"done": "✅", "passed": "✅", "ok": "✅", "complete": "✅", "completed": "✅", "failed": "❌", "fail": "❌",
-          "error": "❌", "running": "🔶", "partial": "🔶", "blocked": "⛔"}
+          "error": "❌", "running": "⏳", "partial": "⏳", "blocked": "⛔"}   # ⏳ running, never 🔶 (JL 261029)
 
 
 def built(key: str, text: str, children=(), note=()) -> MT.Node:
@@ -60,44 +61,142 @@ def _n(k: int, word: str) -> str:
 
 
 # ── from-work ──────────────────────────────────────────────────────────────────────────────────────────────
-def from_work(path: Path) -> MT.MindMap:
-    """A world (work/), a Block or a Job, down to its Runs (a world stops at Tasks, its Runs counted)."""
+def _face_line(folder: Path, key: str) -> str:
+    """Its face's `goal:` (or `close:`) line; a goal falls back to the first sentence under the title, as a Stata Task's
+    face writes it (`**PatientAbsence**, stage C: patients of ...`)."""
+    face = folder / f"{folder.name}.md"
+    text = face.read_text(encoding="utf-8", errors="ignore") if face.is_file() else ""
+    m = re.search(rf"(?m)^{key}:[ \t]*(\S.*)$", text)
+    if m:
+        return m.group(1).strip()
+    if key != "goal":
+        return ""
+    for ln in text.splitlines()[1:]:
+        ln = ln.strip()
+        if ln.startswith("#") and ln[1:2] in ("#", " ") and not text.startswith(ln):
+            break
+        if ln and not ln.startswith(("#", "|", "```", "<!--", "-", ">")) and not re.match(r"^[A-Za-z_-]+:\s", ln):
+            return re.sub(r"[*`]", "", re.split(r"(?<=[.;])\s", ln)[0]).strip()
+    return ""
+
+
+def _result(run: Path) -> str:
+    """One line of what a Run found or made: its newest pass's Summary, else its result/RUN-REPORT.md, else its target."""
+    passes = sorted((run / "passes").glob("p*/pass.md")) if (run / "passes").is_dir() else []
+    for pass_md in reversed(passes):
+        m = re.search(r"(?ms)^## Summary\s*\n+\s*(\S[^\n]*)", pass_md.read_text(encoding="utf-8", errors="ignore"))
+        if m:
+            return m.group(1).strip()
+    report = run / "result" / "RUN-REPORT.md"
+    if report.is_file():
+        for ln in report.read_text(encoding="utf-8", errors="ignore").splitlines():
+            ln = ln.strip().lstrip("#").strip()
+            if ln and not ln.startswith(("|", "```", "<!--", "---")):
+                return ln
+    card = run / "run.yaml"
+    m = re.search(r"(?m)^target:[ \t]*['\"]?([^'\"\n]+)", card.read_text(encoding="utf-8", errors="ignore")) if card.is_file() else None
+    return m.group(1).strip() if m and m.group(1).strip() not in ("null", "~") else ""
+
+
+def fit(s: str, chars: int) -> str:
+    """At most `chars` characters, cut at a word: long file names make a short sentence wide."""
+    if len(s) <= chars:
+        return s
+    return s[:chars].rsplit(" ", 1)[0].rstrip(" ,;:…") + " …"
+
+
+def _id(folder: Path) -> str:
+    """j02, t01, r10: the short id a name starts with, so a node reads its goal instead of its folder name."""
+    head = folder.name.split("_")[0]
+    return head if re.fullmatch(r"[bjtr]\d+", head) else folder.name
+
+
+STATE = {"✅": "done", "❌": "failed", "⏳": "running", "⛔": "blocked", "⬜": "not run"}   # a pill says it in a word
+
+
+def _state(run: Path) -> str:
+    return STATE[STATUS.get(_status(run), "⬜")]
+
+
+def _task_state(states: list) -> str:
+    if not states or all(s == "not run" for s in states):
+        return "not run"
+    if "failed" in states:
+        return "failed"
+    return "done" if all(s == "done" for s in states) else "partly done"
+
+
+def _result_file(run: Path) -> Path | None:
+    """Where a Run's result is read whole: its newest pass, else its RUN-REPORT.md, else its own page."""
+    passes = sorted((run / "passes").glob("p*/pass.md")) if (run / "passes").is_dir() else []
+    for f in [*reversed(passes), run / "result" / "RUN-REPORT.md", run / f"{run.name}.md"]:
+        if f.is_file():
+            return f
+    return None
+
+
+def from_work(path: Path, link_from: Path | None = None) -> MT.MindMap:
+    """A world (work/), a Block or a Job, down to its Runs, drawn like every other mind map (JL 261030: "I think this
+    should be the same version as other versions"; "we can read the results quickly from the mindmap"): the root card
+    the folder with its goal under it; a card per Job (a Block, or a world's Block), its kind or state over its words;
+    under it a numbered point per Task (a Job's: per Run) with its state as the pill and its goal (a Run's: what it
+    found: its pass's Summary, else its RUN-REPORT.md, else its target) as the words; a Task's Runs in its ▸ details.
+    No counts (labels carry no counts); each node's folder name in its details."""
     path = Path(path).resolve()
-    if JOB.match(path.name):
-        kind = "job"
-    elif BLOCK.match(path.name):
-        kind = "block"
-    else:
-        kind = "world"
+    kind = "job" if JOB.match(path.name) else "block" if BLOCK.match(path.name) else "world"
+    here = Path(link_from).resolve() if link_from else path      # a result's link, from where the map is read
 
-    def task_node(t: Path, key: str, leaves: bool) -> MT.Node:
+    def link(words: str, f: Path | None) -> str:
+        """The words as a link to the file, so its chip opens it in the pop-out (JL 261030: "could the results to be
+        popout")."""
+        return f"[{words}]({Path(os.path.relpath(f, here)).as_posix()})" if f else words
+
+    def said(folder: Path, words: int = 9) -> str:
+        goal = _face_line(folder, "goal")
+        return f"{_id(folder)} · {fit(short(goal, words), 56)}" if goal else folder.name
+
+    def found(r: Path) -> str:
+        return re.sub(r"[;,]?\s*(?:done|closed)?\s*\d{6}\.?$", "", _result(r)).strip()
+
+    def run_point(r: Path, key: str) -> MT.Node:
+        what = found(r)
+        name = re.sub(r"^run-", "", r.name)
+        return built(key, f"[{_state(r)}] {name}: " + link(fit(short(what, 10), 64) if what else "its result", _result_file(r)), [],
+                     [f"**Run:** `{r.name}`"] + ([f"**Result:** {what}"] if what else []))
+
+    def task_point(t: Path, key: str) -> MT.Node:
         runs = _runs(t)
-        done = sum(_status(r) in ("done", "passed", "ok", "complete", "completed") for r in runs)
-        words = f"{t.name} · {_n(len(runs), 'run')}" + (f", {done} done" if done and done < len(runs) else
-                                                        ", all done" if runs and done == len(runs) else "")
-        kids = [built(f"{key}/{r.name}", f"{r.name} {STATUS.get(_status(r), '⬜')}") for r in runs] if leaves else []
-        face = t / f"{t.name}.md"                          # its detail: the face's goal and close lines
-        text = face.read_text(encoding="utf-8", errors="ignore") if face.is_file() else ""
-        note = [f"**{k}:** {v.strip()}" for k, v in re.findall(r"(?m)^(goal|close):[ \t]*(\S.*)$", text)]
-        return built(key, words, kids, note)
+        note = [f"**Task:** `{t.name}`"] + [f"**{k}:** {v}" for k, v in (("goal", _face_line(t, "goal")), ("close", _face_line(t, "close"))) if v]
+        note += [f"{STATUS.get(_status(r), '⬜')} " + link(r.name, _result_file(r)) + (f": {found(r)}" if found(r) else "")
+                 for r in runs]                          # a "- " line would be read back as a node
+        return built(key, f"[{_task_state([_state(r) for r in runs])}] {said(t)}", [], note)
 
-    def job_node(j: Path, key: str, leaves: bool) -> MT.Node:
-        tasks = _dirs(j, TASK)
-        kids = [task_node(t, f"{key}/{t.name}", leaves) for t in tasks]
-        runs = sum(len(_runs(t)) for t in tasks)
-        return built(key, f"{j.name} · {_n(len(tasks), 'task')} · {_n(runs, 'run')}", kids)
+    def job_card(j: Path, key: str, points) -> MT.Node:
+        note = [f"**Job:** `{j.name}`"] + ([f"**close:** {_face_line(j, 'close')}"] if _face_line(j, "close") else [])
+        return built(key, f"[job] {said(j)}", points, note)
 
-    if kind == "job":
-        tasks = _dirs(path, TASK)
-        root = built(".", f"{path.name} · {_n(len(tasks), 'task')}", [task_node(t, t.name, True) for t in tasks])
-    elif kind == "block":
-        jobs = _dirs(path, JOB)
-        root = built(".", f"{path.name} · {_n(len(jobs), 'job')}", [job_node(j, j.name, True) for j in jobs])
-    else:
-        blocks = _dirs(path, BLOCK)
-        kids = [built(b.name, f"{b.name} · {_n(len(_dirs(b, JOB)), 'job')}",
-                      [job_node(j, f"{b.name}/{j.name}", False) for j in _dirs(b, JOB)]) for b in blocks]
-        root = built(".", f"{path.name} · {_n(len(blocks), 'block')}", kids)
+    def arc(folder: Path) -> list:
+        board = folder / "board.md"
+        text = board.read_text(encoding="utf-8", errors="ignore") if board.is_file() else ""
+        m = re.search(r"(?m)^spine:[ \t]*(\S.*)$", text)
+        goal = m.group(1) if m else _face_line(folder, "goal") or _face_line(folder, "close")
+        return [fit(goal, 220)] if goal else []
+
+    if kind == "job":                                   # a Job: a card per Task, a point per Run
+        cards = [built(t.name, f"[{_task_state([_state(r) for r in _runs(t)])}] {said(t)}",
+                       [run_point(r, f"{t.name}/{r.name}") for r in _runs(t)],
+                       [f"**Task:** `{t.name}`"] + ([f"**close:** {_face_line(t, 'close')}"] if _face_line(t, "close") else []))
+                 for t in _dirs(path, TASK)]
+        close = _face_line(path, "close")                # its title is its goal; under it, when it is done
+        root = built(".", said(path, 12), cards, [f"done when: {fit(close, 200)}"] if close else [])
+    elif kind == "block":                               # a Block: a card per Job, a point per Task
+        root = built(".", path.name, [job_card(j, j.name, [task_point(t, f"{j.name}/{t.name}") for t in _dirs(j, TASK)])
+                                      for j in _dirs(path, JOB)], arc(path))
+    else:                                               # a world: a card per Block, a point per Job
+        cards = [built(b.name, f"[block] {b.name}", [built(f"{b.name}/{j.name}", f"[job] {said(j)}", [],
+                                                           [f"**Job:** `{j.name}`"]) for j in _dirs(b, JOB)], arc(b))
+                 for b in _dirs(path, BLOCK)]
+        root = built(".", path.name, cards)
     root.id = "root"
     return MT.MindMap({"mindmap": "1", "title": f"{path.name} · the work", "built": "from-work"}, root)
 

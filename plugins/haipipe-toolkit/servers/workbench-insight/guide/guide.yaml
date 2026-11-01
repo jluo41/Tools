@@ -124,7 +124,7 @@ explain:
   - only
   roadmap-draw:
   - /_excalidraw/
-  - board: Tools/blueprints/b11_theme_insight/studio/s02-insight-workbench/insight-workbench-design.excalidraw
+  - board: Tools/blueprints/Project-Ladder/work/b11_theme_insight/s02-insight-workbench/insight-workbench-design.excalidraw
   - Workbench design
   - first
   related-paper:
@@ -147,7 +147,7 @@ levels:
         reads: board.md · meta/ · the release
       Idea Studio:
         is: the Board's drawings, one topic after another
-        reads: studio/sNN-<topic>/
+        reads: sNN-<topic>/
       Audience Report:
         is: 'the Block''s own questions over the Jobs: Coverage · Tracks · Consistency · Findings'
         reads: reports/qNN_<topic>/

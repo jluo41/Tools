@@ -2,8 +2,8 @@
 name: haipipe-paper-story
 description: "Draft, review, revise or draw one paper's Story: its Seed, research questions (hypotheses, claims, the work that tests them), Discovery and Task Roadmaps, related papers and Section Narrative; on the ladder a studio topic (sNN-story-<desk>-<idea>/) with Board Questions. Use to plan a telling or check that it holds for an editor, a reviewer and the public. Trigger: story, research question, hypothesis, claim, RoadMap Draw, /haipipe-paper-story."
 metadata:
-  version: "0.24.2"
-  last_updated: "2026-10-26"
+  version: "0.24.3"
+  last_updated: "2026-11-01"
   group-token: "sNN-story-<desk>-<idea-slug>"
   outline:
     mode: fixed
@@ -29,11 +29,11 @@ the folders that show them, and this skill writes each one there:
 
 | Story part | lives in | shows in |
 |---|---|---|
-| §1 Identity · §2 Pitch · §4 Stakes | the telling's studio topic face, `studio/sNN-story-<desk>-<idea>/sNN-story-<desk>-<idea>.md` | Block › Description › Scope · Audience Report › Narrative |
+| §1 Identity · §2 Pitch · §4 Stakes | the telling's studio topic face, `sNN-story-<desk>-<idea>/sNN-story-<desk>-<idea>.md` beside the Jobs | Block › Description › Scope · Audience Report › Narrative |
 | the telling's drawings | the same topic, one `build_*.py` per drawing | Block › Idea Studio |
 | §3, one research question each | `board.md ## Questions` (`group:` the telling) + `reports/qNN_<question>/` | Block › Audience Report › High-level logic + Low-level work |
 | §5 · §6 · §7 | the topic face, and each report's Work as the work lands | the Question's Work column |
-| §8 + compile order | each version face's `## Narrative`; before a version, `studio/s04-paper-workflow/`'s Sections table (haipipe-paper-plan) | the version's Draft-Main · the build |
+| §8 + compile order | each version face's `## Narrative`; before a version, `s04-paper-workflow/`'s Sections table (haipipe-paper-plan) | the version's Draft-Main · the build |
 | related papers | `related/related.md` | Studio › Related (folded under the topics; was Block › Description › Related) |
 
 The topic face keeps the studio marks every topic has (haipipe-studio `ref/topic-contract.md`: `**Tags:**`,
@@ -57,9 +57,9 @@ Story<Letter>-<desk>-<idea-slug>
   idea-slug   what the idea IS, two or three plain words: phytrait-discretion
 
 StoryA-misq-phytrait-discretion     ✅ the MISQ telling of physician trait × discretion
-StoryA-jama-phytrait-highdose       ✅ the JAMA telling, its own idea slug
+StoryA-jama-<idea-slug>             ✅ the JAMA telling, its own idea slug
 Story-A                             ⛔ a bare letter says nothing (JL: "why this is just A? really silly")
-Story01-agreeable-opioid            ⛔ numbers were rejected 260907
+Story01-<idea-slug>                 ⛔ numbers were rejected 260907
 ```
 
 The folder, the page `.md`, every `draft/` stem and every `story-row:` path
@@ -136,7 +136,7 @@ Use these eight divisions in order. The coverage bullets below describe the
 content to include, not a fixed list of subsection names. Name instance
 subsections for this paper's actual subjects, inquiries, analytical blocks,
 and manuscript units. For example, a Discovery subsection can be “Prior work
-on review-derived traits and prescribing”; its prose explains that inquiry's
+on review-derived signals and <outcome>”; its prose explains that inquiry's
 question, scope, synthesis, and significance for this paper.
 
 **Names (JL 260930).** A Story part is written `§N` or by its name (§7, the Task
@@ -213,7 +213,7 @@ parentheses after it. The `Name` stays the short label.
 one, we want to make it quick and most short"; "we don't need to list all of them"). The ladder keeps one paper per
 Board, so a quick, short paper gets its own `paper/Paper-<Slug>/` with its own telling. It lists only the few
 questions already answered on disk, and it never takes the long paper's headline; each face names the other as its
-companion. First: Project-LLMRec-Physician's `Paper-LLMRecPhy-Jama` (a JAMA Network Open Original Investigation, three
+companion. First: Project-Example-B's `Paper-Example-B` (a JAMA Network Open Original Investigation, three
 questions, the project's original research; first planned as a letter) and its MIS Quarterly companion (four
 questions) on a Board of its own.
 
@@ -503,7 +503,7 @@ traceability, not Story content.
 
 A telling drawn by excalidraw-story keeps a short table instead, one row per Run it waits on: `| T | work |
 where | state | starts |`, where `state` is done, ticket next or not started, and `starts` says who presses Run, or
-`<person> starts` when the Run costs new model calls (drawn red). The rows stay here; `studio/s03-paper-dataflow/`
+`<person> starts` when the Run costs new model calls (drawn red). The rows stay here; `s03-paper-dataflow/`
 (haipipe-paper-plan) draws how the data flows through them to each question, without copying them.
 
 After §7 the telling's face keeps **§9 · Venues**, its venue list from the target down to the fallbacks: one row per
@@ -549,7 +549,7 @@ titles. A claim has a stable id, precise proposition, E-row support, rhetorical
 role, and limit. Planned claims remain conditional where support is missing.
 One claim may appear in several Sections for different reader purposes.
 
-**Before a version exists**, the Section rows are planned on `studio/s04-paper-workflow/` (haipipe-paper-plan): one
+**Before a version exists**, the Section rows are planned on `s04-paper-workflow/` (haipipe-paper-plan): one
 row per Section with the questions it answers, its job, displays, evidence and words, then the displays with the Run
 that makes each and the dated steps to the send. The first version's `## Narrative` is seeded from that table.
 
@@ -597,7 +597,7 @@ gap rather than fill it with operational detail or aspirational prose.
 ## 🖼 Drawings of the Story · the Idea Studio
 
 A telling's drawings are studio topics, shown in Block › Idea Studio. Each drawing is written by its own script
-in its topic, `studio/sNN-<topic>/build_*.py` → `studio/sNN-<topic>/<name>.excalidraw`. The script reads the
+in its topic, `sNN-<topic>/build_*.py` → `sNN-<topic>/<name>.excalidraw`. The script reads the
 telling when it runs (its Questions and their reports, the §6 and §7 tables, the version's Narrative) and reads
 numbers from the files that hold them, so the drawing follows the Story instead of copying it. **draw** mode
 reruns each `build_*.py` and looks at the result in the Idea Studio (the `Redraw` card,
@@ -612,7 +612,7 @@ questions it answers, and read in order the questions are its narrative. `excali
 question as a step titled by its narrative question, beside it the answer so far, its claim and the E rows and T
 rows behind it (✅ answered, 🔶 partly, ⬜ nothing yet, red and dashed), the pitch, what we will not claim, and the
 Runs still to make. Run `story_drawing.py make <topic>` once for the forwarding builder, then the builder after
-every change to the face. First users: Project-LLMRec-Physician's two Boards, `Paper-LLMRecPhy-Jama`
+every change to the face. First users: Project-Example-B's two Boards, `Paper-Example-B`
 (`s02-story-jamaim-agent-google-unseen-physicians`) and its MIS Quarterly companion (`s02-story-misq-agent-physician-visibility`).
 
 **The plan comes next, two topics owned by `haipipe-paper-plan`** (JL 261019: "plan for the data flow and plan for

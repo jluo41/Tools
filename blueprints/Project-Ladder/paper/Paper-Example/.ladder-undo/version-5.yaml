@@ -1,0 +1,11 @@
+run: '2026-11-01'
+what: task j11_writing_v1130_desk/t03_results (Main)
+tool: haipipe-paper/scripts/paper_ladder.py
+moves: []
+rewritten:
+- board.md
+- j11_writing_v1130_desk/j11_writing_v1130_desk.md
+created:
+- j11_writing_v1130_desk/t03_results/t03_results.md
+kept: .ladder-undo/version-5
+roll_back_first: any record newer than this one

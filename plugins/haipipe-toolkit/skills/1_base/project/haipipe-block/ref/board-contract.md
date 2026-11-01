@@ -9,7 +9,7 @@ Block. The Block's shape (its name, which folders it may hold) is `haipipe-proje
 ```text
 <Project>/<theme folder>/bNN_<topic>/      work/ · discovery/ · cowork/ · paper/ · insight/ · design/ · labeling/
 ├── board.md                               the face (this contract)
-├── studio/sNN-<topic>/                    Idea Studio: topics shared by the whole Block (haipipe-studio)
+├── sNN-<topic>/                    Idea Studio: topics shared by the whole Block (haipipe-studio)
 ├── reports/qNN_<topic>/                   Audience Report: one folder per Question (haipipe-report)
 ├── runs/run-<type>-<target>/              soft Runs only at a Block (haipipe-run)
 ├── delivery/                              what the Block hands on
@@ -61,7 +61,7 @@ A theme's own Block template sits over this one and keeps these fields: the work
 | Space | shows (vanilla) | reads | its buttons → skill |
 |---|---|---|---|
 | Description | the face: title, header fields | `board.md` | Update the description → **haipipe-block** |
-| Idea Studio | one row per studio topic | `studio/sNN-<topic>/` | `run-draw-<sNN>` (add · redraw · save a session) → haipipe-studio |
+| Idea Studio | one row per studio topic | `sNN-<topic>/` | `run-draw-<sNN>` (add · redraw · save a session) → haipipe-studio |
 | Audience Report | Question │ Work │ Report rows | `## Questions`, `reports/`, Jobs' and Tasks' `answers:` | Ask a Question · Write · Rebuild drawing · Check → haipipe-report |
 | Work Details | its Jobs: name · title · Tasks | `jNN_<job>/` (or the theme's Job names) | Add a Job → **haipipe-block** (scaffold by haipipe-job) |
 | Runs | the Block's soft Runs | `runs/*/run.yaml` | Run → haipipe-run |

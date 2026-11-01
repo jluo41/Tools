@@ -76,7 +76,7 @@ def _rows(value):
     return value
 
 
-# ── the card Guide (b03 studio/s31-guide, s31-D05 to D08) ──────────────────────────────────────
+# ── the card Guide (b03 s31-guide, s31-D05 to D08) ─────────────────────────────────────────────
 # A family whose guide.yaml declares `levels:` is drawn as the card Guide: each View in three folding
 # sections, Block · Job · Task, each a stack of cards. The base's words are servers/workbench/guide/
 # levels.yaml; `levels:` overrides only the words that differ; `roadmap:` lists drawings per level.

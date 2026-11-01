@@ -70,7 +70,7 @@ Each view reads the files named beside it; nothing is stored twice and nothing i
 | Space | Views | Reads |
 |---|---|---|
 | Description | Map · Goals · Methods · Inputs | `board.md ## Goals`; the Jobs' pins (the Map: goals down × methods across, each cell its chain of Jobs); the method registry (read only); `inputs/iN/manifest.yaml` |
-| Idea Studio | the Block's topics | `studio/sNN-<topic>/` |
+| Idea Studio | the Block's topics | `sNN-<topic>/` |
 | Audience Report | Summary · Rounds · Questions · Predicted vs observed · Method scorecard · Cost | Summary (first, JL 261012): the goal, the answered questions' Openings, one row per Job (method, state and who approved, top design, prediction with its why on hover), the next step, `close:`, the one-page PDF; no design cards; Rounds: one round per `inputs/iN/manifest.yaml`, its Jobs, releases and Exp results; `board.md ## Questions` and `reports/`; `observed/eNN_<exp>/arms.csv` and `run-score-eNN` `scores.csv`; the scores summed per method version; each Job's Run cards (`usage:`, times, rounds) |
 | Work Details | All · one per goal | one card per Job: goal · method version · inputs · state; open, a preview of its Tasks |
 | Runs | All · Set up · Launch a Job · Report | the Block's `runs/run-<type>-<target>/run.yaml` |
@@ -120,7 +120,7 @@ writes it ("No ranking yet: t99's run-rank-t99").
 
 The shared Guide's design family is `servers/workbench-design/guide/guide.yaml`: Guide › Method (`guide/method.md`
 and its method cards, the 13 kinds of design method), Guide › Related Paper (`related/papers.md`), and the family's
-skills. The drawings stay in the blueprint Block `Tools/blueprints/b12_theme_design/studio/` (s02 the workbench, s03 the
+skills. The drawings stay in the blueprint Block `Tools/blueprints/Project-Ladder/work/b12_theme_design/studio/` (s02 the workbench, s03 the
 methods and the design unit, s11 · s12 · s13 the levels, s21 Runs and skills).
 
 ## Older board page

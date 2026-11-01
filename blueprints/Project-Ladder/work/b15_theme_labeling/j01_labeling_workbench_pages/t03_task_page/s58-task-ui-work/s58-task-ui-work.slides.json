@@ -1,0 +1,78 @@
+{
+ "topic": "s58-task-ui-work",
+ "source": "each view's screen (labeling_ui_cells.py, task_views.py) beside the s03 deck's slides it is drawn from (version 12, build/v12/slide-N.png); written by j01's slide_beside_screen.py",
+ "slides": [
+  {
+   "id": "00",
+   "idea": "s58-task-ui-work: every view, drawn",
+   "image": "s58-task-ui-work.png",
+   "notes": "The topic's own drawing first (its card keeps this picture); then each meaning, expression and scanning view beside the slides it is drawn from."
+  },
+  {
+   "id": "C1",
+   "idea": "C1 · 🧭 meaning · Frame, beside slide 8",
+   "image": "delivery/deck/C1-frame.png",
+   "notes": "Drawn from slide 8 (Step 1: frame the labeling task).\nRough idea → Frame the labeling task\nPrepared corpus items → Frame the labeling task\nAgent: inspect items; surface assumptions → Frame the labeling task\nCalls tools → Frame the labeling task\nHuman confirms (3 questions) → What you confirmed\nInitial task agreement → Initial task agreement\nNext: explore cases in the Alignment Loop → next"
+  },
+  {
+   "id": "C2",
+   "idea": "C2 · 🧭 meaning · Report, beside slide 9",
+   "image": "delivery/deck/C2-report.png",
+   "notes": "Drawn from slide 9 (Step 2: prepare a decision report), close-ups 17.\nHuman sources → Prepare interaction report-03\nCorpus + audit reports → Prepare interaction report-03\nAlignment Agent: search · compare · group → Prepare interaction report-03\nTypical cases → Typical cases\nHard cases → Hard cases\nRandom checks → Random cases\nDecision report: its 4 parts → Interaction report\nGenerate this round → Interaction report\nFlags are hypotheses → prompt\nNext: review in Workbench → next"
+  },
+  {
+   "id": "C3",
+   "idea": "C3 · 🧭 meaning · Preferences, beside slide 10",
+   "image": "delivery/deck/C3-preferences.png",
+   "notes": "Drawn from slide 10 (Step 3: collect and refine preferences in Workbench), close-ups 15, 16.\nAudit issues + earlier decisions → Collect preferences\nMeaning Loop Agent prepares each round → Collect preferences\nWorkbench: new preference round → Decision card\nCards 1 to 3 → Loop 3's cards\nHuman: confirm · clarify · revise · defer → Collect preferences\nOptional chat → prompt\nDecision record → Collect preferences\nReconcile with earlier decisions → prompt"
+  },
+  {
+   "id": "C4",
+   "idea": "C4 · 🧭 meaning · Update, beside slide 11",
+   "image": "delivery/deck/C4-update.png",
+   "notes": "Drawn from slide 11 (Step 4: integrate feedback and check alignment), close-ups 18.\nSubmitted feedback → Integrate feedback and check alignment\nEarlier decisions → Integrate feedback and check alignment\nAlignment Agent: reconcile, apply → Integrate feedback and check alignment\nStructured adaptive guideline → Structured adaptive guideline\nApproved reference labels → Approved reference labels\nRecheck affected items across both sets → Approved reference labels\nOpen or conflicting → next report → Where it goes\nReady for Execution & Audit → Where it goes\nClarify with the human → prompt"
+  },
+  {
+   "id": "D1",
+   "idea": "D1 · 🛠 expression · Rewrite, beside slide 12",
+   "image": "delivery/deck/D1-rewrite.png",
+   "notes": "Drawn from slide 12 (Step 5: execute, evaluate and analyze errors).\nApproved rules stay fixed during rewriting → strip\nRewrite expression: wording · order · examples → Rewrite expression\nTrain error analysis only → Rewrite expression"
+  },
+  {
+   "id": "D2",
+   "idea": "D2 · 🛠 expression · Run, beside slide 12",
+   "image": "delivery/deck/D2-run.png",
+   "notes": "Drawn from slide 12 (Step 5: execute, evaluate and analyze errors), close-ups 21.\nRun label executors on Train + Test → Run label executors\nReference labels hidden from executors → strip"
+  },
+  {
+   "id": "D3",
+   "idea": "D3 · 🛠 expression · Evaluate, beside slide 12",
+   "image": "delivery/deck/D3-evaluate.png",
+   "notes": "Drawn from slide 12 (Step 5: execute, evaluate and analyze errors), close-ups 12a, 19.\nEvaluate labeling performance by set → Labeling performance\nAnalyze errors → Errors, by kind\nExpression issue · wrong label · rule gap · executor limit → Errors, by kind\nRound report → Meaning Loop Agent → Round report e02\nModel disagreement is a flag → Errors, by kind"
+  },
+  {
+   "id": "D4",
+   "idea": "D4 · 🛠 expression · Release, beside slide 13",
+   "image": "delivery/deck/D4-release.png",
+   "notes": "Drawn from slide 13 (Step 6: freeze a version and check release readiness).\nFrozen package → Freeze a version and check release readiness\nAgent + evaluation tools → Freeze a version and check release readiness\nQuality + coverage floors · non-regression · cost → Release criteria\nHuman review + reference labels → ask\nPass / Fail → Freeze a version and check release readiness\nFresh data for generalization claims → Fresh data for claims"
+  },
+  {
+   "id": "E1",
+   "idea": "E1 · 🔍 scanning · Batches, beside slide 14",
+   "image": "delivery/deck/E1-batches.png",
+   "notes": "Drawn from slide 14 (Step 7: label at scale and audit the result), close-ups 20.\nLarge unlabeled corpus → Label at scale\nAgent + qualified executor → Label at scale\nOutputs linked: guideline version · labels + provenance + quality report → Outputs, linked"
+  },
+  {
+   "id": "E2",
+   "idea": "E2 · 🔍 scanning · Audit, beside slide 14",
+   "image": "delivery/deck/E2-audit.png",
+   "notes": "Drawn from slide 14 (Step 7: label at scale and audit the result), close-ups 22.\nReview + audit: risk cases + random samples → Review and audit\nNew meaning issue → Steps 2 to 4 → New meaning issue?"
+  },
+  {
+   "id": "E3",
+   "idea": "E3 · 🔍 scanning · Final labels, beside slide 14",
+   "image": "delivery/deck/E3-final-labels.png",
+   "notes": "Drawn from slide 14 (Step 7: label at scale and audit the result).\nAccepted labeled data → Deliver the accepted data\nAcceptance is not hand review of every item → What ships with them"
+  }
+ ]
+}

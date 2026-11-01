@@ -1,0 +1,36 @@
+{
+ "topic": "s02-skill-layers",
+ "style": "sketch-notes",
+ "source": "s02-skill-layers.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "b04 s02 · Skill layers",
+   "points": [
+    "what each layer (0_utils, 1_base, 2_theme) holds, each workbench skill beside its server, and…"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and what each skill layer holds and each workbench skill beside its server, for the people who write the toolkit…",
+    "a skill"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "Still open",
+   "points": [],
+   "leaning": "",
+   "ask": "Agree its For: line and Delivery type: (skill), proposed by the agent 261030?",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

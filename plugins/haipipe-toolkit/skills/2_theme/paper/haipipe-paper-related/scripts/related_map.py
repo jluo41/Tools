@@ -1,6 +1,6 @@
 """s10 · the related-work map of a paper Board: one main frame and small frames that explain it, as stairs.
 
-    python related_map.py draw <studio/s10-related-work-map>      what the topic's forwarding builder calls
+    python related_map.py draw <s10-related-work-map>      what the topic's forwarding builder calls
 
 Every word comes from the topic face's yaml blocks; the closest papers are read on every build from the Board's
 `related/related.md`, every row whose `bears on` cell (older tables: `group`) has a name starting "Closest:". A
@@ -13,7 +13,7 @@ Closest row the face does not place is drawn red on the map, so a paper added to
     lessons   ④ what the papers teach our methods (optional)
     papers    ⑤ on: one frame per type of paper, each paper a step: how it helps us, its method in short (optional)
 
-Generalized from Paper-LLMRecPhy-Jama's s05 builder (JL 261013: one big main frame, small frames, a staircase, white
+Generalized from Paper-Example-B's s05 builder (JL 261013: one big main frame, small frames, a staircase, white
 space); haipipe-paper-related 0.1.0 (JL 261019: "for the related work we can do things like s10-related-work").
 How it looks: /excalidraw-studio (draw.py); a rebuild keeps a person's marks (haipipe-studio canvas.write).
 """
@@ -342,7 +342,8 @@ def draw(topic: Path, changes=()) -> Path:
     frame, small frames, a staircase, white space; never a filled board). `changes`: (YYMMDD, what changed), each a
     green note on ①."""
     topic = Path(topic).resolve()
-    face, board = topic / f"{topic.name}.md", topic.parents[1]
+    # the Board: the topic's parent when it sits beside the Jobs (haipipe-studio 0.26, no studio/), else an older studio/ topic's grandparent
+    face, board = topic / f"{topic.name}.md", (topic.parent if (topic.parent / "board.md").is_file() else topic.parents[1])
     out = topic / f"{topic.name}.excalidraw"
     builder = next((p.name for p in sorted(topic.glob("build_*.py"))), "related_map.py")
     d = Drawing()

@@ -1,0 +1,51 @@
+{
+ "topic": "s08-studio-timeline",
+ "style": "sketch-notes",
+ "source": "s08-studio-timeline.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Timeline: what moved when, down one axis",
+   "points": [
+    "the Studio's fourth folding part, Timeline, under the topic cards, Related and Delivery…",
+    "Started from JL 261011 (\"for the layout of the studio, I think we can also add another section of…",
+    "Like the timeline with a axis down\", \"it should also be up to done [down]\", \"we can show…"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and the Studio's Timeline part, one axis down the page with a dot per day, for the people who build the workbench",
+    "a ui"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "What is decided",
+   "points": [
+    "A topic of its own for the Studio's Timeline, s08-studio-timeline, beside s02 Studio and s04",
+    "A real timeline: one axis down the page, the oldest day at the top and the newest at the bottom,",
+    "Three levels of detail, Days (the default) · Topics · Everything",
+    "Read, never written: dated decisions, run-draw passes and green change notes, filtered by the"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "04",
+   "idea": "Still open",
+   "points": [],
+   "leaning": "",
+   "ask": "Agree its For: line and Delivery type: (ui), proposed by the agent 261030?",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

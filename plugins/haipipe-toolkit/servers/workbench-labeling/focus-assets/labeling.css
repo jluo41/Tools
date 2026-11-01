@@ -1,0 +1,39 @@
+.labeling-focus{--wash:var(--soft);--tab-wash:var(--soft);--mut:var(--muted);--acc:var(--accent);--fg:var(--ink);max-width:1120px}
+.labeling-focus .lf-next{border-left:3px solid var(--accent);padding:8px 0 10px 20px;margin:24px 0}
+.labeling-focus .lf-primary{display:inline-block;padding:8px 15px;border-radius:5px;background:var(--accent);color:var(--bg);margin-top:8px}
+.labeling-focus .lf-link{color:var(--accent)}.lf-row{padding:20px 0;border-bottom:1px solid var(--line)}
+.labeling-focus [data-static-content]{display:block;margin:22px 0;border:0;border-radius:0;background:transparent}
+.labeling-focus [role=heading]{font-weight:500;font-size:16px;margin-bottom:10px}
+.labeling-focus .work-body{max-height:none!important;overflow:visible!important;padding:0}
+.labeling-focus .run-prompt{padding:12px;white-space:pre-wrap;overflow-wrap:anywhere;background:var(--soft);font-size:13px}
+.labeling-focus textarea,.labeling-focus input,.labeling-focus select{font:inherit;max-width:100%;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:8px}
+.labeling-focus button,.labeling-focus .chip{display:inline-block;border:1px solid var(--line);padding:6px 12px;border-radius:5px;background:var(--paper);font:inherit;color:var(--ink)}
+.labeling-focus .st{font-size:13px;margin-left:10px;color:var(--accent)}.labeling-focus code{overflow-wrap:anywhere}
+.labeling-focus .focus-content pre{white-space:pre-wrap;overflow-wrap:anywhere}.labeling-focus .focus-content table{max-width:100%}
+.lf-engine{display:block;width:100%;height:700px;border:0;background:var(--bg)}
+.lf-pagination{display:flex;align-items:center;gap:16px;margin:12px 0}.lf-pagination button:disabled{opacity:.4;cursor:default}
+.labeling-focus .focus-rail.left{left:max(3px,calc((100vw - 1120px)/2 + 3px))}.labeling-focus .focus-rail.right{right:max(3px,calc((100vw - 1120px)/2 + 3px))}
+@media(max-width:600px){.labeling-focus{padding:20px 46px}.labeling-focus textarea,.labeling-focus input{font-size:16px}.labeling-focus .focus-content table{font-size:13px}}
+
+.lf-report-nav{margin:0 0 24px;font-size:14px}.lf-report-nav a[aria-current]{color:var(--accent);border-bottom:2px solid var(--accent)}
+
+/* Visible section labels keep navigation discoverable without opening a rail. */
+.lf-children{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 26px;padding-bottom:18px;border-bottom:1px solid var(--line)}
+.lf-children a{display:inline-flex;align-items:center;padding:6px 12px;border:1px solid var(--line);border-radius:6px;font-size:13px;background:var(--paper);color:var(--muted);text-decoration:none}
+.lf-children a:hover{background:var(--soft);color:var(--ink)}
+.lf-children a[aria-current]{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.lf-badges{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 14px}
+.lf-badge{font-size:12px;font-weight:500;border-radius:4px;padding:3px 8px;background:var(--soft);color:var(--accent)}
+.lf-note{margin:18px 0;padding:12px 15px;background:var(--soft);border-radius:5px}
+.lf-note-label{font-size:12px;font-weight:500;color:var(--accent)}.labeling-focus .lf-note p{margin:5px 0 0}
+@media(pointer:coarse){.lf-children a{min-height:44px}}
+
+.labeling-focus .lf-compose{padding:20px!important;background:var(--soft)!important;border-radius:7px!important}
+.lf-compose form{display:grid;gap:16px}.labeling-focus .lf-compose label{display:grid;gap:7px;padding:0!important;background:transparent!important;font-size:14px}
+.labeling-focus .lf-compose input,.labeling-focus .lf-compose textarea{width:100%;background:var(--paper)!important;border:1px solid var(--line)!important;border-radius:5px!important;font:inherit!important;padding:10px!important}
+.labeling-focus .lf-compose h3{margin-bottom:18px}.labeling-focus .lf-compose .run-prompt{margin:0!important;padding:12px;background:var(--paper);border-radius:5px;max-height:none}
+.labeling-focus .lf-compose .lf-compose-help{font-size:13px;color:var(--muted);margin:0}
+.labeling-focus .lf-compose button[type=submit]{justify-self:start;background:var(--accent);color:var(--bg);border:0;padding:9px 15px}
+.labeling-focus .lf-compose [role=status]:empty{display:none}.labeling-focus .lf-compose [role=status]{margin:0}
+
+.lf-children-label{align-self:center;font-size:12px;color:var(--muted);padding-right:6px}

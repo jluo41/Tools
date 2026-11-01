@@ -1,0 +1,51 @@
+{
+ "topic": "s31-guide",
+ "style": "sketch-notes",
+ "source": "s31-guide.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Guide",
+   "points": [
+    "the Guide tab of the frame: the family's docs, the same in every Block",
+    "Its four Views (Description · Method · RoadMap Draw · Related Paper), the files each reads in…",
+    "Drawn in the style of ../s02-studio-workbench-skill (moved here from b02's s02 when b02 merged…"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and the Guide tab with its four Views and the files each reads, for the people who build the workbench",
+    "a ui"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "What is decided",
+   "points": [
+    "Proposed (261007): the Guide is the frame's first tab, the family's docs, the same in",
+    "Done (261007): each theme keeps its Guide in servers/workbench-<theme>/guide/ and",
+    "Proposed (261007): Description shows the six Spaces by level in the theme's words,",
+    "Proposed (261007): a Method step's \"where in the workbench\" names one of the six Spaces"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "04",
+   "idea": "Still open",
+   "points": [],
+   "leaning": "",
+   "ask": "Agree its For: line and Delivery type: (ui), proposed by the agent 261030?",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

@@ -199,7 +199,10 @@ def build_cover_letter(cfg: dict, profile: dict, root: Path, here: Path, out: di
         return {"ready": False, "checks": [], "missing": ["[outputs] cover_letter_pdf / cover_letter_docx"]}
 
     rd = str(cl.get("round", ""))
-    page = letter_task(Path(here).parent) or (round_page(root, rd, Path(here).parent) if rd else None)
+    # on the ladder the build lives in delivery/<version>/ beside the version folder, which [pages] main names
+    version = (Path(here) / str(cfg.get("pages", {}).get("main", ".."))).resolve()
+    page = (letter_task(version) or letter_task(Path(here).parent)
+            or (round_page(root, rd, Path(here).parent) if rd else None))
     paragraphs, where, source = letter_source(page) if page else ([], "missing", None)
     pages = pdf_pages(main_pdf)
     facts = {"title": title, "journal": cl.get("journal", profile.get("venue_label", "")),

@@ -86,7 +86,7 @@ folders:
 # then one Job per version
 - - Story topics (ladder)
   - Paper ideation and Story owners
-  - studio/s01-ideation/ + studio/sNN-story-<desk>-<idea>/ · reports/qNN_<question>/
+  - s01-ideation/ + studio/sNN-story-<desk>-<idea>/ · reports/qNN_<question>/
   - studio/s[0-9][0-9]-*
 - - Version Job (ladder)
   - Section Page, comments and Assemble owners
@@ -105,10 +105,10 @@ explain:
   - only
   roadmap-draw:
   - /_excalidraw/
-  - board: Tools/blueprints/b16_theme_paper/studio/s05-board-job-task-boundary/s05-board-job-task-boundary.excalidraw
+  - board: Tools/blueprints/Project-Ladder/work/b16_theme_paper/s05-board-job-task-boundary/s05-board-job-task-boundary.excalidraw
   - Workbench design
   - first
-# The card Guide (b03 studio/s31-guide, s31-D05 to D08): the base's words are
+# The card Guide (b03 s31-guide, s31-D05 to D08): the base's words are
 # servers/workbench/guide/levels.yaml; here only the words a paper says differently (b16 Q01, s11-s13).
 levels:
   Block:
@@ -122,7 +122,7 @@ levels:
         reads: studio/
       Audience Report:
         is: the candidate ideas, the Story's spine, and each research question with its work and report
-        reads: board.md ## Questions · reports/qNN_<question>/ · studio/s01-ideation/ · studio/sNN-story-…/ (today A1-Story/)
+        reads: board.md ## Questions · reports/qNN_<question>/ · s01-ideation/ · studio/sNN-story-…/ (today A1-Story/)
       Work Details:
         is: the version Jobs, each with its Section Tasks
         reads: jNN_v<MMDD>_<desk>/
@@ -141,15 +141,15 @@ roadmap:
   Block:
   - title: the paper ladder and level boundaries
     shows: Board, Job and Task roles, shared Spaces, and the decided Story and Ideation homes
-    board: Tools/blueprints/b16_theme_paper/studio/s05-board-job-task-boundary/s05-board-job-task-boundary.excalidraw
+    board: Tools/blueprints/Project-Ladder/work/b16_theme_paper/s05-board-job-task-boundary/s05-board-job-task-boundary.excalidraw
   - title: the Board's screens
     shows: the paper Board's tab, one frame per Space, and Guide › Method from it
-    board: Tools/blueprints/b16_theme_paper/studio/s11-paper-block/s11-paper-block.excalidraw
+    board: Tools/blueprints/Project-Ladder/work/b16_theme_paper/s11-paper-block/s11-paper-block.excalidraw
   Job:
   - title: a version's screens
     shows: a version's tab, one frame per Space (proposed)
-    board: Tools/blueprints/b16_theme_paper/studio/s12-paper-job/s12-paper-job.excalidraw
+    board: Tools/blueprints/Project-Ladder/work/b16_theme_paper/s12-paper-job/s12-paper-job.excalidraw
   Task:
   - title: a Section's screens
     shows: a Section's tab, a Page Task with what the paper adds
-    board: Tools/blueprints/b16_theme_paper/studio/s13-paper-task/s13-paper-task.excalidraw
+    board: Tools/blueprints/Project-Ladder/work/b16_theme_paper/s13-paper-task/s13-paper-task.excalidraw

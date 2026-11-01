@@ -183,7 +183,7 @@ def reference_frame(d: Drawing, p: dict) -> dict:
 def draw(topic: Path) -> Path:
     """Redraw one topic of related papers from its face and its readings; returns the drawing."""
     topic = topic.resolve()
-    block = topic.parents[1]
+    block = topic.parent.parent if topic.parent.name == "studio" else topic.parent
     cfg = face_cfg(topic)
     if not cfg.get("papers"):
         raise SystemExit(f"{topic.name}: its face has no related: yaml with papers")

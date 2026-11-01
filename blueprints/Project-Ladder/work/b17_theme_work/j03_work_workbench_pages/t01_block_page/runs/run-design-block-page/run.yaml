@@ -1,0 +1,16 @@
+run: run-design-block-page
+kind: soft
+type: design
+scope: null
+target: block-page
+ticket: run-design-block-page.md
+skill: haipipe-ui
+agent: claude
+signs: null
+status: queued
+passes: []
+writes:
+- blueprints/Project-Ladder/work/b17_theme_work/j03_work_workbench_pages/t01_block_page/s51-block-ui-report/delivery/ui/
+- blueprints/Project-Ladder/work/b17_theme_work/j03_work_workbench_pages/t01_block_page/s52-block-ui-work/delivery/ui/
+- blueprints/Project-Ladder/work/b17_theme_work/j03_work_workbench_pages/t01_block_page/s53-block-ui-studio/delivery/ui/
+feeds: []

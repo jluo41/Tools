@@ -5,7 +5,7 @@ Copy, then replace every `<…>`. Placeholders only; the worked example is named
 
 ## s03-paper-dataflow
 
-`studio/s03-paper-dataflow/s03-paper-dataflow.md`:
+`s03-paper-dataflow/s03-paper-dataflow.md`:
 
 ````markdown
 s03 · Paper dataflow: how the data becomes each answer
@@ -93,7 +93,7 @@ notes: []
 
 ## s04-paper-workflow
 
-`studio/s04-paper-workflow/s04-paper-workflow.md`:
+`s04-paper-workflow/s04-paper-workflow.md`:
 
 ````markdown
 s04 · Paper workflow: <a <words>-word <kind> in <n> sections, <n> displays, sent by <date>>
@@ -108,7 +108,7 @@ words and displays; each display and the Run that makes it; the steps to the sen
 are read from the story, never copied here. When the first version is made, its `## Narrative` is seeded from the
 Sections table.
 
-**Feeds:** the first version's `## Narrative` (`j01_v<MMDD>_<desk>`), and `s03-paper-dataflow`'s "in the paper" column.
+**Feeds:** the first version's `## Narrative` (`j11_writing_v<MMDD>_<desk>`), and `s03-paper-dataflow`'s "in the paper" column.
 
 **Budget:** <desk, article type>: <words> words of text, <abstract>, up to <n> tables or figures (desk record <QBv…>,
 or "own estimate: no desk record").

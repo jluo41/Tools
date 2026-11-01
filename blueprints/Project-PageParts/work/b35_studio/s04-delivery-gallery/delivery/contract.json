@@ -1,0 +1,36 @@
+{
+  "id": "s04",
+  "folder": "s04-delivery-gallery",
+  "title": "Delivery Gallery",
+  "kind": "Gallery",
+  "purpose": "Choose a delivery by looking at a real example.",
+  "audience": "People and agents deciding what to hand over",
+  "product": "A searchable gallery page generated from curated example configuration.",
+  "steps": [
+    [
+      "Choose a kind",
+      "Filter by Skill, Page or Drawing."
+    ],
+    [
+      "Inspect a result",
+      "See the real preview, intended reader, and files."
+    ],
+    [
+      "Open the product",
+      "Open the usable example or its original material."
+    ],
+    [
+      "Reuse its structure",
+      "Export the example configuration and adapt it."
+    ]
+  ],
+  "checks": [
+    "Each example points to existing material.",
+    "Search and filters produce readable results and an empty state.",
+    "The preview identifies a prototype honestly.",
+    "The source configuration rebuilds the same page."
+  ],
+  "example": "Compare a Studio guide, an interactive map, and an editable main Draw.",
+  "open": "Should file formats be filters or attributes of a single delivery?",
+  "source": "plugins/haipipe-toolkit/skills/1_base/project/haipipe-delivery/ref/gallery.md"
+}

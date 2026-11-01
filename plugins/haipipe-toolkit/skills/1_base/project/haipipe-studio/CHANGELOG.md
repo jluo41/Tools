@@ -1,9 +1,167 @@
 haipipe-studio · Changelog
 ==========================
 
+
+## [0.28.1] — 2026-10-31
+
+`studio_move.py` rewrites a link only when its path, read from the file's folder or one above it, leads to a topic
+that moves; a held topic, another Block's `studio/` and a template's `studio/sNN-<topic>` stay as written. It no
+longer walks result/, results/, passes/, _runs/, delivery/, _old/, _legacy/ or notebooks/ (ladder.py's NO_RELINK).
+Found by Ladder-b17's review (the old `LEFT` rule turned `../b02_b/studio/s03-gamma` into a path that does not
+exist and rewrote a Result, a closed pass and an archive). New `tests/test_studio_move.py`; it fails on the old script.
+No studio/ folder is left in the live SPACEs (JL 261031, b35 r02); the script stays for an old branch or copy.
+
+## [0.28.0] — 2026-10-31
+
+A topic has no page of its own (JL 261031: "first we will remove the single page for the studio"; "when we click
+this, we will be point to" the card in `section=studio`; b35-s02-D05). The workbench's `focus_page.py` drops
+`topic_page` and its sections (Slide, Mind map, Open, Decided, Rounds, Result, Files); `topic_home` gives an sNN's
+card in its level's Studio under its group, and the left rail, the card's anchor (`id`) and a `:target` outline in
+`focus.css` land the reader on it; `frame_view.py` sends an old sNN link on (302). A card's name and line open the
+face, its picture the slide, in the pop-out. `static_page` keeps the workbench frame for a builder's delivery pages,
+its path ending at the card. New section "Where a topic opens".
+
+## [0.27.0] — 2026-10-31
+
+Every sNN beside its Jobs (JL 261031: "please update all the /studio folders to put them under the block folder"):
+new `scripts/studio_move.py <path> [--apply]` moves each `<level>/studio/<sNN>-<topic>/` to `<level>/sNN-<topic>/`
+(an `sNN_<topic>` takes the hyphen). It rewrites `sNN-<topic>` in every text file of the paths given, makes a
+moved file's relative climb past studio/ one level shorter (checked: each lands on the same folder), and makes a
+moved builder's `Path(__file__)` climb (`HERE.parents[5]`, `.parent.parent`) one level shorter. Generated files are
+never rewritten; their generators rerun. A studio/ left holding only `_groups.txt` goes, its order kept in
+`<level>/_studio_groups.txt`; one that still holds loose items (a mind map, a question map, draw/) stays.
+`job_results.py` makes a results topic beside the Jobs and counts both places. `studio_update.py audit` now names
+the move (kind `move`) instead of waiting for it. The slides step of 0.26 (`.ideas.md`, `.slides.json`,
+`topic_slides.py`, a scratch card per slide until a picture is asked for) is recorded here too.
+
+
+## [0.26.0] — 2026-10-30
+
+`/haipipe-studio update` (JL 261030: "should we have something like /haipipe-studio update"; "please go ahead to
+update the whole studios here, and also for their draw"): new `scripts/studio_update.py`. `audit <path>` lists, per
+sNN, what today's rules say it misses; `update <path>` prints the plan; `--apply` does the mechanical steps (a Stage
+line, `delivery/` with `deck/` and a `render.yaml`, its mind map, its drawing in five parts with the old drawing kept
+whole as the Design part, copied to `result/first-drawing.excalidraw`, and a builder that drew it moved to
+`result/first-drawing-builder/`). The For line and the Delivery type are an agent's proposal (`brief`, `name`,
+`name-batch`), with an Open point asking a person to agree them. The move out of `studio/` is listed but never made
+until every Theme's screen reads an sNN beside its Jobs. `five_parts.card()` renders the card from only the elements
+in a fixed 1350 x 820 region of the canvas, so a wide Design neither shifts nor shrinks it. Found in the run across
+six SPACEs: `uv run` now passes `--no-project` (a SPACE's own `pyproject.toml` broke the render); a drawing counts as
+five-part only once this script marks it, set last, so a draw cut short is drawn again; and only a script that draws
+the sNN's own drawing is parked (a deck's, a table's or another drawing's builder stays).
+
+
+## [0.25.0] — 2026-10-30
+
+Each sNN names its main delivery type (JL 261030: "for each delivery, we should also say what is the type, give the
+main delivery type"; "we should also add this to the skill, that what type of delivery we want to render"): a
+`**Delivery type:**` line under `**For:**`, one word of skill · ui · code · draft · display · data, never deck (every
+sNN has one). The one-delivery section, rendered from b35-s01, says what each type's `delivery/` holds and how
+`render.yaml` hands it over. `new_topic.py` writes the line; the workbench shows the type as a pill beside the stage on
+the sNN's card and its page (`frame.DELIVERY_TYPES`); `gallery_scan.py` reads it (`type_of`, a new "Each delivery type"
+table) and no longer calls a delivery "deck" when it holds anything besides `deck/`. b35's s01 to s05 name theirs.
+
+
+## [0.24.0] — 2026-10-30
+
+Two galleries (JL 261030: "we might also have a sNN for the gallery of the deliveries, and gallery of the studios, as
+the new sNN"): b35-s04 the delivery gallery and b35-s05 the studio gallery. New `scripts/gallery_scan.py` finds every
+sNN and every `delivery/` in the SPACEs on the machine, by folder and file names only (never a file's content, never
+`_WorkSpace/`; a SPACE inside a SPACE is a copy and is skipped), and sorts them by level, Theme and kind; both
+drawings read it on every rebuild. `--write <sNN> studio|delivery` writes each gallery's
+`delivery/skill/gallery.md`, the newest real one of each kind; s05's renders into the new `ref/gallery.md`. Only a
+Tools sNN shows its face's words there, since Tools is public; another SPACE's shows its path.
+
+## [0.23.0] — 2026-10-30
+
+One Studio, every Theme (JL 261030: "how could the haipipe-studio skill will be adopted to different theme?"): the
+Studio's shape is the same everywhere; a Theme plugs in by its kinds of delivery, where the render writes, and which
+skill renders. The table renders from b35-s01's `delivery/skill/themes.md`. `render_delivery.py` knows a third piece,
+`rendered_by: <Theme skill>`, which it reports and leaves to that skill.
+
+## [0.22.0] — 2026-10-30
+
+An sNN hands over through its own `delivery/` (JL 261030: "studio/sNN/delivery, this is the delivery, and then we do
+the render, to render the delivery out, to that area, like the haipipe-studio"): the agreed version (its deck, which
+stays, and the thing), and `delivery/render.yaml` naming where each piece goes. New `scripts/render_delivery.py`
+checks or writes each text piece between `<!-- render <address> <block> -->` markers; a code piece names the Task that
+builds it. `new_topic.py` makes `delivery/deck/` for every new sNN. This skill's own opening, "where it sits", the count
+per level and "one topic, one idea, one delivery" are now rendered from b35-s01's `delivery/skill/`.
+
+## [0.21.0] — 2026-10-30
+
+No `studio/` folder (JL 261030: "we don't have the studio/sNN, we just have sNN, along side with jNN, to make it
+visible directly"): an `sNN-<topic>/` sits beside the Jobs or Tasks of the level that uses its delivery, one numbering
+per Block, at most 9 at a Block, 5 at a Job, 3 at a Task ("we might have many sNN, but we need to control the
+numbers"). `new_topic.py` writes there, drops the `**At:**` line, and refuses one past the limit (`--over-limit`);
+`frame.py` finds sNN beside Jobs (`topic_owner`, `_studio_groups.txt`), an older `studio/` still reads. b35 moved first.
+
+## [0.20.0] — 2026-10-30
+
+Studio: from idea to delivery; one topic, one idea, one delivery (JL 261030: "one studio, one idea and one
+delivery"). A delivery is a deck, always, and the thing the deck is about: skills or code, a figure, a draft, a data
+table, a server package ("slide (a must) and the associated skills, code, or figures, draft"); the thing gives the
+topic its type (SKILL.md lists them). A new face names its delivery first, a `**For:**` line (`new_topic.py`). A
+Block's `board.md` lists its topics' deliveries under `## Deliveries`. b35 got `s01-studio-skill/`, first by
+JL's word, and its six topics moved down one number (s01-s06 became s02-s07); the `b35 sNN-Dnn` citations in skills
+and code moved with them. Drawings use Excalidraw's code font, Comic Shanns (`fontFamily: 8`, `quick_draw.FONT`; JL 261030:
+"could you use this font type?").
+
+
+## [0.19.0] — 2026-10-29
+
+Every topic gets a quick drawing by default, `sNN-<topic>.excalidraw` beside its face (`scripts/quick_draw.py`, called by
+`new_topic.py topic`), opened from the topic's label in its Block's map (JL 261029: "where is the pop out excalidraw for
+it?"; "could you add them as the default?"; "this should be in the label"). It is a drawing, never the face's lines as
+text (JL, of a first version that listed them: "this is fucking report, not the draw"): the method of
+coleam00/excalidraw-diagram-skill (`references/workflow-diagrams/`), its idea as one pattern (cycle, timeline, tree,
+fan-in), free text unless a shape carries meaning, colour as meaning, rendered and looked at before it is shown. A new
+topic starts with its life line, its stage marked; `quick_draw.py`'s kit (box, oval, diamond, arrow, line, dot, ask)
+draws the idea. b35's six topics each have theirs. A topic made with `--builder` keeps its builder's drawing.
+
+## [0.18.1] — 2026-10-29
+
+A topic has its own `result/` for working output, messy is fine (b35 s01-D10); a Task Run's output stays in the Run and the topic shows it.
+
+## [0.18.0] — 2026-10-29
+
+One `studio/` per Block (b35 s01-D05): a topic's face names its rung, `**At:**`; `new_topic.py topic <Job|Task>` writes the topic into the Block's `studio/` with that line (the 261028 "a Task keeps its own Studio" is replaced). Address `bNN.jNN-sNN` (s01-D02), always after the folder name (s01-D03); the workbench row shows it, and a Job or Task page lists the Block topics at it (`frame.topic_address`, `frame._hung_here`).
+
+## [0.17.0] — 2026-10-29
+
+Idea slides take a named style, `"style"` in `sNN-<topic>.slides.json`; a Studio's is `sketch-notes` (JL 261029: "sketch note looks great"). Each slide records its `content`; haipipe-display `_parts/slide/scripts/slide_prompt.py` builds the prompt from the style and the content. The b15 glossy look is now the style `glossy-cartoon`, no longer the Studio default.
+
+## [0.16.0] · 2026-10-29 · no s00; rounds live in the topic
+
+- First principle (JL 261029): a Studio is never a report; what it shows is open ideas, options, pictures. Rule 6:
+  everything a topic shows (drawing, mind map, slide) must pull a reader in within seconds; `ref/reader-review.md`
+  starts with the attract test.
+
+- A topic is the discussion (JL 261029); each working session or meeting is one round, `passes/pNN-<MMDD>/pass.md`
+  inside the topic (Notes, Decided, Started, Read, Changed), written by `new_topic.py session [--kind meeting]`.
+  `runs/run-draw-<sNN>/` is gone: Tools' 38 such Runs moved their 217 passes into their topics.
+- A topic's life is its Stage, explore → shaping → agreed → closed; the workbench row shows it with the rounds.
+- Slides (JL 261029: "这 studio 可能先做一个 slide"; "真正的 PPT slide"): `scripts/topic_slides.py` writes
+  `sNN-<topic>.slides.html` and `.slides.pptx`: one illustrated picture per open idea (`sNN-<topic>.ideas.md`,
+  image generation in the b15 deck's style, kept in `slides/`, recorded in `sNN-<topic>.slides.json`); never a
+  slide that lists what was done. The Studio row gets a Slides button.
+
+- s00-overview is retired (JL 261029: "以后像这种东西可能就不大有用了 我就直接把它删掉吧 ... 我们这个 mini map
+  这不算 overview 吗？"): the workbench's Report › MindMap draws the Block from disk. `scripts/block_index.py`,
+  `ref/background-index.md` and their tests are deleted; Tools' 15 `s00-overview/` folders and 2 `run-draw-s00/`
+  Runs are deleted (git keeps them).
+
+## [0.15.0] · 2026-10-28 · A topic lives at its own level
+
+- JL 261028: Studio lives at every level. `new_topic.py topic <Job or Task>` makes the topic in that level's
+  `studio/` (it used to climb to the Block); the number is free across the whole Block (`block_topics`), so a number
+  names one topic. `session` finds the topic where it lives and writes `runs/run-draw-<sNN>/` beside it.
+- `job_results.covered()` counts a Job's own topic. Tests: a child keeps its own topic; one numbering per Block.
+- LLMRec b03: s21-s26 moved into their Jobs (`jNN_*/studio/`) and redrawn there.
+
 ## [0.14.10] · 2026-10-26 · s00 is s00-overview
 
-- `block_index.py` draws `studio/s00-overview/` (its builder `build_s00_overview.py`); SKILL.md,
+- `block_index.py` draws `s00-overview/` (its builder `build_s00_overview.py`); SKILL.md,
   `ref/background-index.md` and the tests say so. Was s00-background-and-index; haipipe-project's audit renames an
   older one.
 
@@ -316,7 +474,7 @@ studio/_groups.txt order with the bar's emoji (frame.group_emoji), its other tag
 cut into fours are gone.
 
 `frame_limit` counts only a topic's own drawing, `sNN-<topic>.excalidraw`; a reference drawing beside it, whose
-frames reports may cite, is not counted. `canvas.UI_KIND` (b10 s05-D16, from the RunSkill session): a box marked
+frames reports may cite, is not counted. `canvas.UI_KIND` (b10 s01-D16, from the RunSkill session): a box marked
 customData ui_kind "fixed" or "suggested" in a ui_frame takes the workbench's group-button colours, gray and amber.
 b10 s02 and s51 redrawn as three map frames; all 82 s00s redrawn; tests 22.
 
@@ -344,7 +502,7 @@ reference), each a folder tree, never a row of slide-like frames (JL 261012: "�
 frame 里的内容又太少，它本身又不是一个 tree 结构 ... 我个人更 prefer 那种 tree 结构，就像 folder tree 那样"). `canvas.tree()`
 draws one ("? " leaves red, "✎ " green); `canvas.write` warns over `MAX_FRAMES` (`frame_limit`: s32, s61-s69,
 reports, Guides and `reads_down` pieces not counted) and on a frame under `SPARSE_MIN` words per million px
-(`sparse`, which skips a frame with no words or over FRAME_MAX). Every Block gets `studio/s00-overview/`
+(`sparse`, which skips a frame with no words or over FRAME_MAX). Every Block gets `s00-overview/`
 (JL 261012: "for every block, we also want to have the s00-overview"): `scripts/block_index.py <block>
 --draw` (or `--all <root>`) draws the face's background trees, then the index read from disk (each topic's stage,
 decisions, passes and first open point; each Job's Tasks and their states; Questions, related, delivery); a
@@ -526,7 +684,7 @@ refusing creation. Existing topics and legacy session reads stay intact.
 ## [0.1.0] · 2026-10-07 · New: the Idea Studio at any level (b03 s21)
 
 - New skill (JL 261007: "what skill we should have for the studio and for the report").
-- `ref/topic-contract.md`: `studio/sNN-<topic>/` at any level, its face (Topic · Feeds · Files ·
+- `ref/topic-contract.md`: `sNN-<topic>/` at any level, its face (Topic · Feeds · Files ·
   Decided · Open, the marks the Idea Studio reads), the numbering (s0x concepts · s1x levels ·
   s2x runs and skills · s3x Guide · s5x server), builders that keep a person's marks, previews,
   sessions as passes of `run-draw-<sNN>`, the buttons.

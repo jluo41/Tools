@@ -1,0 +1,54 @@
+{
+ "topic": "s33-one-page-shape",
+ "style": "sketch-notes",
+ "source": "s33-one-page-shape.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "One page shape: Block, Job, Task",
+   "points": [
+    "one page shape for every level of the work workbench: answer line, a table of rows, the next…",
+    "A Block's rows are its Jobs, a Job's its Tasks, a Task's its Runs",
+    "clicking a row zooms in"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and one page shape for Block, Job and Task: answer, rows, next step, details, for the people who build the workbench",
+    "a ui"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "What is decided",
+   "points": [
+    "Names are the folder names only, in the breadcrumb, titles and rows",
+    "Layout A, accepted: top is where we are (the breadcrumb, folder names)",
+    "Markdown is the source, HTML is rendered on each request and never saved"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "04",
+   "idea": "Still open",
+   "points": [
+    "The 4-count test on the mock: clicks to first number 0 · menu rows 1 · duplicate tabs 0 · Runs…",
+    "Then: the Block page saved as slide/, and the old Description, Report and Work tabs merged into it",
+    "Agree its For: line and Delivery type: (ui), proposed by the agent 261030?"
+   ],
+   "leaning": "",
+   "ask": "Does the one page shape read right at all three levels (JL to look at mock/one-page.html)?",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

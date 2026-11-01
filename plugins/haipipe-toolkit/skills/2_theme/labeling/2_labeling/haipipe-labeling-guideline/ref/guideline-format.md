@@ -4,7 +4,7 @@ The guideline format
 What a guideline version `G_t` holds, and in what shape (JL 261014: "another issue we haven't made sure is the
 guideline format, what should be the guideline format"). It is the format every Run in this view writes and every
 reader reads; the files are the engine's `POLICY_COMPONENTS` in `labeling/policy/versions/G_<t>/`. Design record:
-`Tools/blueprints/b15_theme_labeling/studio/s42-task-building-procedure/` (the building procedure).
+`Tools/blueprints/Project-Ladder/work/b15_theme_labeling/s42-task-building-procedure/` (the building procedure).
 
 
 Two readers, one source

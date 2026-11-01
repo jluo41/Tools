@@ -1,0 +1,15 @@
+run: r01_collect_job_report_views
+kind: hard
+type: collect
+scope: blueprints/Project-PageParts/work/b35_studio/j02_studio_pages/t03_job_page
+target: b35.j02.t03-s14
+ticket: r01_collect_job_report_views.html
+skill: haipipe-interaction
+agent: JL
+signs: null
+status: waiting
+passes: []
+writes:
+- result/answer_collection.md
+feeds:
+- blueprints/Project-PageParts/work/b35_studio/j02_studio_pages/t01_build_studio_pages

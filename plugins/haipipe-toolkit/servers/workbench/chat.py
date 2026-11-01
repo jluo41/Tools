@@ -298,7 +298,7 @@ def drawing_owner_context(target, root):
         page_id = page_id_of(target.stem)
         if target.parent.name == target.stem:
             canonical = studio_lane_dir(target.parent, "draw") / f"{page_id}.excalidraw"
-            legacy = target.parent / "draw" / f"{page_id}.excalidraw"
+            legacy = target.parent / "studio" / "draw" / f"{page_id}.excalidraw"   # retired (JL 261031)
             if not canonical.is_file() and legacy.is_file():
                 def rel(path):
                     try:
@@ -309,7 +309,7 @@ def drawing_owner_context(target, root):
                     f"  · Legacy Page drawing (READ ONLY) -> {rel(legacy)}",
                     f"  · Canonical edit target -> {rel(canonical)}",
                     "Before editing, migrate the exact legacy scene to the canonical "
-                    "studio/draw path; never write the flat folded-Page source.",
+                    "draw/ path beside the face; never write the old studio/draw source.",
                 ]
             draw_dirs = [canonical.parent]
         else:

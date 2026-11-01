@@ -123,7 +123,7 @@ class MigrateTest(unittest.TestCase):
         rep = M.check(self.project)
         self.assertEqual([(f.step, f.where, f.what) for f in rep.findings], [])
         p = self.project
-        for name in ("work", "discovery", "project.yaml", "README.md"):
+        for name in ("work", "discovery", "project.yaml", "project.md"):         # JL 261028: the page is project.md
             self.assertTrue((p / name).exists(), name)
         self.assertFalse((p / "tasks").exists())
         run = p / "work/b01_demo/j01_demo/t01_demo/runs/r01_a"

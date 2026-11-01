@@ -1,0 +1,15 @@
+run: run-build-card-picture
+kind: soft
+type: build
+scope: null
+target: card-picture
+ticket: run-build-card-picture.md
+skill: haipipe-studio
+agent: claude
+signs: null
+status: done
+passes:
+- p01-1030
+writes:
+- blueprints/Project-PageParts/work/b35_studio/s01-studio-skill/build_s01_studio_skill.py
+feeds: []

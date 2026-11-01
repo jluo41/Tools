@@ -1,0 +1,42 @@
+{
+ "topic": "s04-insight-structure",
+ "style": "sketch-notes",
+ "source": "s04-insight-structure.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Insight structure",
+   "points": [
+    "the thinking behind the insight ladder: what an Insight Project looks like",
+    "the Prototype as its own work Block whose Jobs are Prototype versions",
+    "the insight Board whose Jobs pin one Prototype version and one data version"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and the shape of an Insight Project: Prototype versions, data versions, two clocks, for the people who write the…",
+    "a skill"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "Still open",
+   "points": [
+    "Signed releases: cut per level, per batch of proposals, or on demand?",
+    "One clock per Job?",
+    "Versions: accumulate (compare, never pool) or batches (may pool)?"
+   ],
+   "leaning": "",
+   "ask": "One Prototype Block per insight Board, or may several Boards share one?",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

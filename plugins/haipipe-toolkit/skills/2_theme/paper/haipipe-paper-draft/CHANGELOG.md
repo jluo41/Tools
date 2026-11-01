@@ -1,3 +1,8 @@
+## 0.14.2 · 2026-11-01 · b16 review 261101: current paper names
+
+- version Jobs are named `jNN_writing_v<MMDD>_<desk>` (from j11), no longer `jNN_v<MMDD>_<desk>` (Runtime home tree).
+- Studio topics are `sNN-…` beside the Jobs, no longer under `studio/` (the reading of the sent Section).
+
 ## 0.14.0 · 2026-10-22 · Examples first
 
 - JL 261022: "你应该先找 example，看看别人是怎么写 abstract 的，然后再看怎么写". New § 📚 Examples first: a Section, the

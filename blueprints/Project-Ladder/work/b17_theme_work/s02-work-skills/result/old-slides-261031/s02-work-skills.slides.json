@@ -1,0 +1,28 @@
+{
+ "topic": "s02-work-skills",
+ "style": "sketch-notes",
+ "source": "s02-work-skills.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Which skills move into work?",
+   "image": "slides/idea-01-which-skills-move.png",
+   "content": "Headline (top-left, large): \"Only work's own skills move?\"\nThree option cards across the middle, joined by a wavy line:\n Card A, label \"Move all\": a whole shelf of books carried into a new room; caption \"every task skill\"\n Card B, label \"Only its own\", circled with a thick orange marker loop and a small hand-written tag \"leaning\": a few books carried to a new room while a shared shelf stays behind; caption \"shared ones stay in base\"\n Card C, label \"Move none\": a shelf with new labels stuck on; caption \"rename only\"\nBottom-right mustard sticky note with a big question mark: \"Still open: where do shared helpers go?\"\nFocal point: card B.",
+   "notes": "Options: Move all of 1_base/task into 2_theme/work; Move only what work alone uses; shared skills stay in base; Move nothing; rename folders only. Leaning: the second (Q04 proposal). Still open: agents/ and haipipe-page-task are called by other themes too; where do they go?"
+  },
+  {
+   "id": "02",
+   "idea": "Does haipipe-task move into work?",
+   "image": "slides/idea-02-does-haipipe-task-move.png",
+   "content": "Headline (top-left, large): \"The Task contract stays shared?\"\nThree option cards across the middle, joined by a wavy line:\n Card A, label \"Stays in base\", circled with a thick orange marker loop and a small hand-written tag \"leaning\": one central toolbox with four arrows reaching it from four small houses; caption \"every theme calls it\"\n Card B, label \"Moves to work\": the toolbox inside one house, the other houses reaching across; caption \"others call across\"\n Card C, label \"Splits\": the toolbox cut in two, one half staying, one half moving; caption \"contract stays, kinds move\"\nBottom-right mustard sticky note with a big question mark: \"Still open: is a big rename worth it?\"\nFocal point: card A.",
+   "notes": "Options: It stays in base: insight, discovery and paper call it; It moves into work; other themes call across; It splits: the contract stays, the kinds of Task move. Leaning: the first; haipipe-work is already the theme's door. Still open: Renaming haipipe-task would touch about 830 files; is it worth it?"
+  },
+  {
+   "id": "03",
+   "idea": "Where do the data pipelines go?",
+   "image": "slides/idea-03-where-pipelines-go.png",
+   "content": "Headline (top-left, large): \"Where do the pipelines live?\"\nThree option cards across the middle, joined by a wavy line, all the same weight (no favourite yet):\n Card A, label \"Stay in base\": a long pipe running under several houses; caption \"shared by all\"\n Card B, label \"Own theme\": the pipe inside its own small house; caption \"a pipeline theme\"\n Card C, label \"Join work\": the pipe running into one workshop; caption \"part of work\"\nBottom-right mustard sticky note with a big question mark: \"Still open: split 1_data into two?\"\nFocal point: the headline, then the three cards evenly.",
+   "notes": "Options: They stay in base; They become their own theme; They join work. Still open: Each numbered folder (1_data, 2_nn, 3_end, 4_individual) holds a work kind and a pipeline; split them?"
+  }
+ ]
+}

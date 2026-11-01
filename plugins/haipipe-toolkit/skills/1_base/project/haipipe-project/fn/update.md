@@ -120,6 +120,10 @@ convert  auto   a Job-centred v0.8.1 Job (scripts/<tNN>/, runs/<tNN>/) into Task
                 ticket header inside a Task rewritten to find its Task from its own path
 runs     auto   per Block: one folder per Run, run.yaml cards, moved tickets patched, references
                 relinked, retired folders tidied (scripts/ladder.py update, § Any level)
+studio   auto   each sNN still in a studio/ moves up beside its Jobs or Tasks (JL 261031): links,
+                relative climbs and builders' parents[N] rewritten, then its generated drawings and
+                mind map pages rerun; a studio/ left with only _groups.txt goes (haipipe-studio
+                scripts/studio_move.py; loose items such as _build/, chat/, draw/ keep their studio/)
 faces    auto   a missing Task, Job or Block face from disk (haipipe-job new_job.py face; a Discovery
                 Block through board_sync.py; a task Block's spine from its studio overview "Purpose")
 verify          root audit, ladder audit, ticket probe (scripts/probe_tickets.py), link check against

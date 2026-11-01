@@ -579,7 +579,7 @@ def board_spaces(block: Path, root: Path, sub: str, href) -> dict:
                                  note="The latest Job's report: it is written and checked in that Job." if a_part == OVERALL else ""),
         "Idea Studio": Space(run_types=(_kind("Draw the question map", "Draw the question map of {folder} into studio/ (run-map-questions) "
                                               "(generated from the question files; view only)."),
-                                        _kind("Add a topic", "Add or redraw a studio topic of {folder} (run-draw-<sNN>): studio/sNN-<topic>/, a pass per session."))),
+                                        _kind("Add a topic", "Add or redraw a studio topic of {folder} (run-draw-<sNN>): sNN-<topic>/, a pass per session."))),
         "Work Details": Space(html=_jobs(b, root, href, w_open), subspaces=("All",) + rels, open=w_open,
                               run_types=(_kind("Add a Job", "Add a Job to {folder} (run-add-<jNN>).",
                                                rows=_rows(b["runs"], root, "add")),
@@ -1032,7 +1032,7 @@ def job_spaces(jdir: Path, root: Path, sub: str, href) -> dict:
                                               rows=_rows(j["runs"], root, "compare")),) if prev else ())
                       + (propose, _kind("Close the Job", "Close the Job {folder} after its checks and the comparison (run-close): frozen.",
                                rows=_rows(j["runs"], root, "close")),)),
-        "Idea Studio": Space(run_types=(_kind("Add a topic", "Add or redraw a studio topic of {folder} (run-draw-<sNN>): studio/sNN-<topic>/, a pass per session."),)),
+        "Idea Studio": Space(run_types=(_kind("Add a topic", "Add or redraw a studio topic of {folder} (run-draw-<sNN>): sNN-<topic>/, a pass per session."),)),
         # page=True: the frame takes this Space's runs and third row as set, even none (frame.lays_out_page)
         "Delivery": Space(html=delivery_view(jdir, root, themes()["insight"]) + _job_delivery(j, b, root),
                           run_types=(), page=True,
@@ -1205,7 +1205,7 @@ def task_spaces(tdir: Path, root: Path, sub: str, href) -> dict:
         "Description": Space(html=head + (_question(q, root) if d_open == "Question" else _records(t, root)),
                              subspaces=d_views, open=d_open, run_types=(), page=True,
                              note="Read only: a change to the question is made in the Prototype."),
-        "Idea Studio": Space(run_types=(_kind("Add a topic", "Add or redraw a studio topic of {folder} (run-draw-<sNN>): studio/sNN-<topic>/, a pass per session."),)),
+        "Idea Studio": Space(run_types=(_kind("Add a topic", "Add or redraw a studio topic of {folder} (run-draw-<sNN>): sNN-<topic>/, a pass per session."),)),
         "Audience Report": Space(html=head + (_task_table(t, q, root) if a_open == "Table" else _task_reading(t, q, root)),
                                  subspaces=a_views, open=a_open, page=True,
                                  run_types=(_kind(f"Write the {level} report", "Write the page of {folder}: a part per partition."),
@@ -1304,6 +1304,9 @@ def render_run_page(rundir: Path, root: Path) -> str:
     from live.paper import _RESULT_PAGE, _csv_view, _md_view
     from urllib.parse import quote
     rundir, root = Path(rundir).resolve(), Path(root).resolve()
+    from host_registry import static_path_allowed  # sealed labels, *.private.*, dot folders stay hidden (review 261031)
+    if not static_path_allowed(root, rundir):
+        return '<p class="mut">This Run is not shown here.</p>'
     res = rundir / "result"
     raw = lambda f: "/" + quote(f.resolve().relative_to(root).as_posix(), safe="/")
     card = P._yaml(rundir / "run.yaml")
@@ -1318,13 +1321,13 @@ def render_run_page(rundir: Path, root: Path) -> str:
     report = res / "report.md"
     if report.is_file():
         body.append('<h2>Report</h2><div class=doc>'
-                    + _md_view(report.read_text(encoding="utf-8"), base=raw(report).rsplit("/", 1)[0] + "/") + "</div>")
+                    + _md_view(report.read_text(encoding="utf-8", errors="replace"), base=raw(report).rsplit("/", 1)[0] + "/") + "</div>")
     else:
         body.append('<p class=mut>Not run yet: no report.</p>')
     receipt = res / "runtime.yaml"
     if receipt.is_file():
-        body.append(f'<details><summary><b>Receipt</b></summary><pre>{esc(receipt.read_text()[:4000])}</pre></details>')
-    files = sorted(f for f in res.rglob("*") if f.is_file()) if res.is_dir() else []
+        body.append(f'<details><summary><b>Receipt</b></summary><pre>{esc(receipt.read_text(encoding="utf-8", errors="replace")[:4000])}</pre></details>')
+    files = sorted(f for f in res.rglob("*") if f.is_file() and static_path_allowed(root, f)) if res.is_dir() else []
     tabs = [f for f in files if f.suffix.lower() in (".csv", ".tsv")]
     if tabs:
         body.append(f'<details><summary><b>Tables · {len(tabs)}</b></summary>'

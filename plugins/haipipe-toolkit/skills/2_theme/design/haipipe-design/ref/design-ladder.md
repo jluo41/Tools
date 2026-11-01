@@ -1,7 +1,7 @@
 Design ladder: the design theme's Block · Job · Task · Run
 ==========================================================
 
-(JL 261007, designed in Tools/blueprints/b12_theme_design: s00 the thinking, s11 Block, s12 Job, s13 Task, s21 Runs
+(JL 261007, designed in Tools/blueprints/Project-Ladder/work/b12_theme_design: s00 the thinking, s11 Block, s12 Job, s13 Task, s21 Runs
 and skills.) A design sits on the shared ladder: one Block per application and channel, one Job per goal done by one
 registered method version on one inputs version, one Task per step of that method (t00 reason ideas, one Task per
 design, t99 review whole), and the Runs that make and check them. Each level has the six Spaces of the base
@@ -25,7 +25,7 @@ design/Design-<name>/                      Block: one application, one channel
 ├── design-goal.md                          the shared rules every goal keeps: rules: r<k> · signed: (haipipe-design-goal)
 ├── inputs/iN/                              one inputs version: rules · theory · handoff copies, manifest.yaml (frozen)
 ├── observed/eNN_<exp>/                     what one Exp returned: arms.csv · source.md · manifest.yaml (frozen)
-├── studio/sNN-<topic>/                     Idea Studio: drawings, one topic each
+├── sNN-<topic>/                     Idea Studio: drawings, one topic each
 ├── reports/qNN_<topic>/                    Audience Report: the Block's questions
 ├── runs/run-<type>-<target>/               every Block Run is soft: run.yaml · passes/
 ├── delivery/                               designs.json · designs.md · screens/<jNN>-<dNN>.<ext>: every Job's release

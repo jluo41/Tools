@@ -7,11 +7,12 @@ person does in the step (its Input, read from disk; the Sign it waits for; the p
 and is copied with them), Result is what the step made, one folded card per topic. Report shows the Results only.
 Every open reads the files again, so the canvas and the tabs never drift apart (s41-D28): the newest draft
 (`draft/<stem>-draft-v<N>.md`: its header, §1 Structure, §2 Scratch, §3 Draft), `draft/records/`, `draft/previous/`,
-`evidence/cards.yaml` and `proposals.md` (haipipe-evidence), the Block's `studio/` topics that name this Task
-(s41-D24), and the Block's `delivery/<jNN>/<tNN>/` (s41-D04). Nothing here writes.
+`evidence/cards.yaml` and `proposals.md` (haipipe-evidence), the Block's Studio topics (`sNN-<topic>/`) that name
+this Task (s41-D24), and the Block's `delivery/<jNN>/<tNN>/` (s41-D04). Nothing here writes.
 """
 from __future__ import annotations
 
+import contextvars
 import datetime
 import difflib
 import importlib.util
@@ -23,6 +24,8 @@ from src.common import delivery_dir, delivery_read_lane_dir
 from live.frame import ROUTE, _draw_url, _notes, _reader, _rel, _table, _topic_row, chain, esc, face, pop, studio_inventory, theme_of
 
 # 4 · Display after 3 · Evidence (JL 261020: "Or we want to have a new display view after the 3 - Evidence? ... Please do it")
+# set while the focus page draws a step (focus_draft.py): each Result card is then a section, never a fold
+FLAT = contextvars.ContextVar("draft_steps_flat", default=False)
 STEPS = ("Studio", "1 · Plan", "2 · Write", "3 · Evidence", "4 · Display", "5 · Revise", "Delivery")
 SKILLS = Path(__file__).resolve().parents[3] / "skills"
 RUBRIC = SKILLS / "1_base/draft/haipipe-draft-review/ref/evaluation-rubric.md"
@@ -241,7 +244,10 @@ def _kv(rows) -> str:
 
 
 def _fold(title: str, body: str, open_: bool = False) -> str:
-    """A Result card: its title, folded until opened."""
+    """A Result card: its title, folded until opened. On the focus page (FLAT set, focus_draft.py) the same card is a
+    section under its heading, open, with no box (b32 s42, JL 261031: "under each view, we will have the sections")."""
+    if FLAT.get():
+        return f'<section class=fd-sec><h3 class=fd-h>{esc(title)}</h3>{body}</section>'
     return (f'<details class="topic work-task"{" open" if open_ else ""}><summary><span class=related-head>'
             f'<b>{esc(title)}</b></span></summary><div class=work-body style="max-height:85vh;overflow-y:auto">'
             f'{body}</div></details>')
@@ -262,7 +268,7 @@ def _code(path: Path | None, root: Path) -> str:
 
 def _task_session(folder: Path, root: Path) -> str:
     """A Task's own session name, read from its folders: `<Board>: <job>-<task>`, the Job's date stamp left out, e.g.
-    `Paper-LLMRecPhy-Jama: j01-jamaim-full-t01-introduction` (JL 261020: "Paper-LLMRecPhy-Jama: j01jamaim-full-t01-intro")."""
+    `Paper-Example-B: j01-jamaim-full-t01-introduction` (JL 261020: "Paper-Example-B: j01jamaim-full-t01-intro")."""
     c = chain(folder, root)
     slug = lambda f: re.sub(r"_v\d{4}(?=_|$)", "", f.name).replace("_", "-")
     name = "-".join(([slug(c["Job"])] if c.get("Job") else []) + [slug(folder)])
@@ -279,27 +285,14 @@ def _session(folder: Path, root: Path) -> str:
 
 
 def _prompt_box(prompt: str, folder: Path, root: Path, key: str, title: str = "Prompt") -> str:
-    """The prompt, yours to add to (b15 s41-D14): what you type under it is copied with it as `user feedback:`; it
-    stays in this browser until you copy it. Last come the lines that send it to the Task's session (`session:` on
-    its face or its Job's), so pasted into any session it still runs where this Task's work lives (JL 261020: "every
-    time I copy it, and I paste it to any session, it will trigger that session to work")."""
+    """The step's prompt in the one Prompt box every theme shares (servers/workbench/ui_parts.prompt_box; JL 261101,
+    b15 s58 C1): the prompt, one "your notes" row copied with it (kept in this browser, the same key as before), and
+    the line that sends it to the Task's session (`session:` on its face), so pasted into any session it still runs
+    where this Task's work lives (JL 261020)."""
+    from live.ui_parts import prompt_box               # here, not at the top: ui_parts reads nothing of draft_steps
     k = f"{_rel(folder, root)}#{key}"
-    who = _session(folder, root)
-    # where it runs, said once: a session knows how to reach or start another (JL 261020: "没有必要说那么详细 ...
-    # 你就直接说我要靠这个 call session 去干什么"), so the Task's own session gets it the first time too
-    tail = f'Run this in the Claude session "{who}"; start it if it is not running.' if who else ""
-    return (f'<details class=run-prompt-box open><summary>{esc(title)} '
-            f'<button type=button class="run-copy work-act" data-copy="{esc(prompt)}"'
-            + (f' data-tail="{esc(tail)}"' if tail else "") + '>Copy prompt</button></summary>'
-            f'<pre class=run-prompt style="margin-bottom:0;border-bottom-left-radius:0;border-bottom-right-radius:0">'
-            f'{esc(prompt)}</pre>'
-            '<label style="display:block;margin:0;padding:4px 10px 0;background:var(--wash)">'
-            '<code>user feedback:</code></label>'
-            f'<textarea class=run-notes rows=3 data-key="notes:{esc(k)}" placeholder="notes, a row, a sentence to change" '
-            'style="width:100%;box-sizing:border-box;margin:0;border:1px solid var(--line);border-top:0;'
-            'background:var(--wash);font:13px/1.45 ui-monospace,Menlo,monospace;padding:6px 10px"></textarea>'
-            + (f'<pre class=run-prompt style="margin:0;border-top:0;border-top-left-radius:0;border-top-right-radius:0;'
-               f'color:var(--mut);white-space:pre-wrap">{esc(tail)}</pre>' if tail else "") + '</details>')
+    step = re.sub(r"^(?:Prompt|Copy prompt)\b[:· ]*", "", title).strip()
+    return prompt_box(prompt, None, _session(folder, root), step=step or key, key=f"notes:{k}")
 
 
 def _editor(folder: Path, root: Path, title: str, view: str = "revise", open_: bool = True) -> str:
@@ -1410,7 +1403,7 @@ def _evidence_step(f: dict, folder: Path, root: Path, st: str) -> tuple:
 # will it be the DISPLAY X? Or we want to have a new display view after the 3 - Evidence? ... Please do it"; b34 s41
 # Open 1). DISPLAY <n> is the unit's own number, as CITE <n> and VALUE <n> are the cards'.
 DISPLAY_INK = "#e8590c"
-CALLS = re.compile(r"\b(?:e?(?:Table|Figure)\s+\d+[A-Za-z]?|Overview Figure)\b")
+CALLS = re.compile(r"\b(?:e?(?:Table|Figure)\s+\d+[A-Za-z]?|Overview Figure)\b", re.I)   # a venue's own case: Lancet writes "table 1" (JL 261031)
 REFS = re.compile(r"\\(?:ref|cref|Cref|autoref)\{([^}]+)\}")
 
 
@@ -1460,7 +1453,7 @@ def _calls(d: dict | None) -> dict:
     out = {}
     for _, body in (d or {}).get("text", []):
         for m in re.finditer(r"(?m)^- B\d+ · (S\d+[a-z]?) · (.*)$", body):
-            for name in CALLS.findall(m.group(2)) + REFS.findall(m.group(2)):
+            for name in [n[0].upper() + n[1:] if n[:1] in "tfo" else n for n in CALLS.findall(m.group(2))] + REFS.findall(m.group(2)):
                 out.setdefault(name, []).append(m.group(1)) if m.group(1) not in out.get(name, []) else None
     return out
 

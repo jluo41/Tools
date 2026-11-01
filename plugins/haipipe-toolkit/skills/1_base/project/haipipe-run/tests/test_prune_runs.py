@@ -1,6 +1,7 @@
 """haipipe-run: keep only meaningful Runs (JL 261019). prune_runs.py marks a replaced or never-run hard Run for
 pruning only when nothing in use reads it, and --apply deletes exactly those, with their configs."""
 import io
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -172,6 +173,41 @@ class PruneRunsCasesTest(unittest.TestCase):
             prune_runs.main([str(self.t1.parent), "--apply", "--untracked-ok", "--only", "t02/r02_old"])
         self.assertFalse((self.t2 / "runs" / "r02_old").exists())
         self.assertTrue((self.t1 / "runs" / "r02_old").is_dir())
+
+    def test_a_failed_retry_replaces_nothing(self):
+        # 261031 review: r09 failed with no result and said supersedes: r08; --apply deleted both, the only result too
+        run(self.t1, "r08_good", status="done")
+        run(self.t1, "r09_retry", result=False, status="failed", config="supersedes: r08_good\n")
+        v = self.verdicts()
+        self.assertEqual((v["t01/r08_good"], v["t01/r09_retry"]), ("keep", "prune"))
+        with redirect_stdout(io.StringIO()):
+            prune_runs.main([str(self.t1), "--apply", "--untracked-ok"])
+        self.assertTrue((self.t1 / "runs" / "r08_good" / "result" / "metrics.json").is_file())
+        self.assertNotIn("superseded", (self.t1 / "runs" / "r08_good" / "run.yaml").read_text())
+        self.assertFalse((self.t1 / "runs" / "r09_retry").exists())
+
+    def test_apply_never_deletes_an_unsaved_edit_or_a_file_git_does_not_hold(self):
+        # 261031 review: in_git passed on a committed run.yaml, and rmtree took an unsaved ticket edit and result/
+        def git(*args):
+            subprocess.run(["git", "-C", str(self.root), *args], capture_output=True, text=True, check=True)
+        git("init", "-q")
+        git("add", "-A")
+        git("-c", "user.email=t@example.com", "-c", "user.name=t", "-c", "commit.gpgsign=false", "commit", "-qm", "runs")
+        old = self.t1 / "runs" / "r02_old"
+        (old / "r02_old.sh").write_text("#!/usr/bin/env bash\necho edited\n")
+        with redirect_stdout(io.StringIO()) as out:
+            prune_runs.main([str(self.t1), "--apply", "--untracked-ok"])
+        self.assertIn("uncommitted edit", out.getvalue())
+        self.assertIn("edited", (old / "r02_old.sh").read_text())
+        git("checkout", "--", ".")
+        (old / "result" / "RUN-REPORT.md").write_text("read me\n")
+        with redirect_stdout(io.StringIO()) as out:
+            prune_runs.main([str(self.t1), "--apply"])
+        self.assertIn("git does not hold", out.getvalue())
+        self.assertTrue((old / "result" / "RUN-REPORT.md").is_file())
+        with redirect_stdout(io.StringIO()):
+            prune_runs.main([str(self.t1), "--apply", "--untracked-ok"])
+        self.assertFalse(old.exists())
 
     def test_apply_refuses_what_git_does_not_hold(self):
         with redirect_stdout(io.StringIO()) as out:

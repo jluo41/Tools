@@ -1,0 +1,48 @@
+{
+ "topic": "s32-console-element-ui",
+ "style": "sketch-notes",
+ "source": "s32-console-element-ui.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "The console's element UI",
+   "points": [
+    "Every kind of element the console draws (25), shot on the synthetic fixtures with its computed…"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and every element the console draws beside the toolkit's version, so one look is picked, for the people who build the…",
+    "a ui"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "What is decided",
+   "points": [
+    "The Internal chart and the placeholder card left the gallery: their views are hidden (Q05, g02…"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "04",
+   "idea": "Still open",
+   "points": [
+    "Agree its For: line and Delivery type: (ui), proposed by the agent 261030?"
+   ],
+   "leaning": "",
+   "ask": "One look for the console and the workbench, or keep the console's Databricks/Mattermost themes…",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

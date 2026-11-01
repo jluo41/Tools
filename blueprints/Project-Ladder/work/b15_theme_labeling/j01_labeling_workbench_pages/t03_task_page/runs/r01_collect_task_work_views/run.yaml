@@ -1,0 +1,14 @@
+run: r01_collect_task_work_views
+kind: hard
+type: collect
+scope: blueprints/Project-Ladder/work/b15_theme_labeling/j01_labeling_workbench_pages/t03_task_page
+target: b15.j01.t03-s58:theme_labeling.labeling_workbench_pages.task_page @ task_ui_work
+ticket: r01_collect_task_work_views.html
+skill: haipipe-interaction
+agent: JL
+signs: null
+status: waiting
+passes: []
+writes:
+- result/answer_collection.md
+feeds: []

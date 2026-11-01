@@ -1,0 +1,19 @@
+# Where s01's delivery goes (haipipe-studio scripts/render_delivery.py). The deck stays in deck/.
+pieces:
+  - from: skill/first-principle.md
+    to: plugins/haipipe-toolkit/skills/1_base/project/haipipe-studio/SKILL.md
+    block: first-principle
+  - from: skill/where-it-sits.md
+    to: plugins/haipipe-toolkit/skills/1_base/project/haipipe-studio/SKILL.md
+    block: where-it-sits
+  - from: skill/how-many.md
+    to: plugins/haipipe-toolkit/skills/1_base/project/haipipe-studio/SKILL.md
+    block: how-many
+  - from: skill/one-delivery.md
+    to: plugins/haipipe-toolkit/skills/1_base/project/haipipe-studio/SKILL.md
+    block: one-delivery
+  - from: skill/themes.md
+    to: plugins/haipipe-toolkit/skills/1_base/project/haipipe-studio/SKILL.md
+    block: themes
+  - code: "new_topic.py writes the For: line and keeps the limits"
+    by: j01_studio_delivery_type/t02_new_topic_for_line

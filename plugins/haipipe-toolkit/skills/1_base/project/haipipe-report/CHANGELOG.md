@@ -1,6 +1,15 @@
 haipipe-report · Changelog
 ==========================
 
+## [0.3.2] — 2026-10-31
+
+A report's drawing is a Block sNN (JL 261031, b35 r02: every `studio/` folder is gone, and the old
+`reports/<id>/studio/` drawings became Block sNN whose face feeds their report). `ref/block_questions.py --drawing
+<name>` now makes `sNN-<name>/` beside the Jobs through haipipe-studio's `new_topic()`, with **Feeds:** naming the
+report and its quick drawing linked under `### Evidence`. A dry run checks it before `board.md` is touched, so a full
+Block (nine topics) refuses the Question. Before, it wrote `reports/<id>_topic/studio/<name>.excalidraw` and would
+have made `studio/` again. Test: tests/test_block_questions.py (17 pass); both cases fail on 0.3.1.
+
 ## [0.3.1] — 2026-10-26
 
 Shorter description (1270 -> 452 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)

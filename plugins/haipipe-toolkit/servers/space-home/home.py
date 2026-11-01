@@ -1288,6 +1288,21 @@ class HomeMixin:
         # `?kind=task[,paper]` and `?project=<Project>` render the filtered view, so a shared
         # link reproduces it
         query = parse_qs(urlsplit(self.path).query)
+        target = Path(self.root) / (query.get("project") or [""])[0]
+        if set(query) <= {"section", "group", "project"} and target.resolve().is_dir() \
+                and Path(self.root).resolve() in [target.resolve(), *target.resolve().parents]:
+            # the SPACE's page, or `?project=<Project>`'s page, like every level's (haipipe-ui, JL 261029)
+            from live import focus_page, frame as _frame
+            body = focus_page.render(_frame.VANILLA, Path(self.root), target,
+                                     (query.get("section") or [""])[0], (query.get("group") or [""])[0]).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Length", str(len(body)))
+            self.send_header("Cache-Control", "no-store, must-revalidate")
+            self.end_headers()
+            if self.command != "HEAD":
+                self.wfile.write(body)
+            return
         kind = ",".join(query.get("kind", []))
         project = (query.get("project") or [""])[0]
         body = render_home(

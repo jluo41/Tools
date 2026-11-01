@@ -19,6 +19,11 @@
 - Servers never bake an origin into a page, a redirect, or a printed link. `DOMAIN` is a variable: the same origin-relative link body (`/b/<board>/<page>`, `/w/<board>/<page>/<tab>`) is reached through `http://127.0.0.1:<port>`, a Tailscale IP, or a configured public origin.
 - A plugin's `servers/` may depend on the shared host in `plugins/haipipe-toolkit/servers/_host`, but the dependency is declared in that plugin's `servers/README.md`, and the shared host must start when the other plugin is absent.
 
+## Page words
+
+- A label names a thing; it carries no count or other number that changes as work moves ("What a topic is", never "What a topic is · 3 topics"; "Runs", never "Runs · 12"). The reader sees how many by looking; a count is written only where the count is itself the answer, such as "2 questions waiting on you".
+- A Studio topic's drawing is a drawing: the idea drawn as a pattern (cycle, timeline, tree, fan-in), never the face's lines listed as text. The method is `references/workflow-diagrams/excalidraw-diagram-skill`; the kit is `haipipe-studio/scripts/quick_draw.py`.
+
 ## Keep repository metadata aligned
 
 - The top-level package inventory is the set of direct child directories in `plugins/`. When adding or retiring a package, keep its plugin manifest, `.claude-plugin/marketplace.json`, and the README package table aligned. Every marketplace `source` must resolve to an existing package directory.

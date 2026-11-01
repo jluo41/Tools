@@ -28,9 +28,9 @@ This table covers the three package directories directly under `plugins/`. The H
 | `diagnostics/` | Skill tooling: `skill_report.py` (sizes, installs, problems, use from transcripts, recommendations), `md_to_html.py` (sortable, filterable HTML) and `merge_parts.py` (fold helper skills into `<main>/_parts/<name>/PART.md`). Reports land in the gitignored `diagnostics/reports/`. |
 
 For HAI-Pipe workflows, see its [package guide](plugins/haipipe-toolkit/README.md)
-and [skill and server layout](blueprints/b01_haipipe-toolkit/j04_skill_folder/j04_skill_folder.md).
+and [skill and server layout](blueprints/Project-Packages/work/b01_haipipe-toolkit/j04_skill_folder/j04_skill_folder.md).
 For the shared Workbench, Run Type, and Skill relationship, see
-[the shared project workbench blueprint](blueprints/b10_project_workbench/board.md).
+[the shared project workbench blueprint](blueprints/Project-Ladder/work/b10_project_workbench/board.md).
 
 ## Blueprints
 
@@ -41,17 +41,17 @@ board.md records its questions and links its reports, studio topics and Runs.
 
 | Block | Area |
 |---|---|
-| [b01_haipipe-toolkit](blueprints/b01_haipipe-toolkit/board.md) | Shared toolkit foundations |
-| [b02_haipipe-utils](blueprints/b02_haipipe-utils/board.md) | Utilities |
-| [b03_inlab-human](blueprints/b03_inlab-human/board.md) | Human studies |
-| [b10_project_workbench](blueprints/b10_project_workbench/board.md) | Shared project ladder and Workbench |
-| [b11_theme_insight](blueprints/b11_theme_insight/board.md) | Insight Theme |
-| [b12_theme_design](blueprints/b12_theme_design/board.md) | Design Theme |
-| [b13_theme_cowork](blueprints/b13_theme_cowork/board.md) | Cowork Theme |
-| [b14_theme_discovery](blueprints/b14_theme_discovery/board.md) | Discovery Theme |
-| [b15_theme_labeling](blueprints/b15_theme_labeling/board.md) | Labeling Theme |
-| [b16_theme_paper](blueprints/b16_theme_paper/board.md) | Paper Theme |
-| [b17_theme_work](blueprints/b17_theme_work/board.md) | Work Theme |
+| [b01_haipipe-toolkit](blueprints/Project-Packages/work/b01_haipipe-toolkit/board.md) | Shared toolkit foundations |
+| [b02_haipipe-utils](blueprints/Project-Packages/work/b02_haipipe-utils/board.md) | Utilities |
+| [b03_inlab-human](blueprints/Project-Packages/work/b03_inlab-human/board.md) | Human studies |
+| [b10_project_workbench](blueprints/Project-Ladder/work/b10_project_workbench/board.md) | Shared project ladder and Workbench |
+| [b11_theme_insight](blueprints/Project-Ladder/work/b11_theme_insight/board.md) | Insight Theme |
+| [b12_theme_design](blueprints/Project-Ladder/work/b12_theme_design/board.md) | Design Theme |
+| [b13_theme_cowork](blueprints/Project-Ladder/work/b13_theme_cowork/board.md) | Cowork Theme |
+| [b14_theme_discovery](blueprints/Project-Ladder/work/b14_theme_discovery/board.md) | Discovery Theme |
+| [b15_theme_labeling](blueprints/Project-Ladder/work/b15_theme_labeling/board.md) | Labeling Theme |
+| [b16_theme_paper](blueprints/Project-Ladder/work/b16_theme_paper/board.md) | Paper Theme |
+| [b17_theme_work](blueprints/Project-Ladder/work/b17_theme_work/board.md) | Work Theme |
 
 ## Installation
 

@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MindMap Always Shown</title>
+<!-- s04 design draft v14 (261031): JL 261031 "could we try to show the mindmap all the time?". The page's mind map
+     stops being a Report view and stays beside every section, as one tree: each sNN, the Job that makes its
+     delivery, its Tasks. Content is b17's own (faces and Run cards, read 261031). A mock, not workbench output. -->
+<style>
+:root{--bg:#fff;--fg:#1c1c1c;--mut:#6f6f6b;--faint:#9aa0a6;--line:#e3e3e6;--on:#1864ab;--wash:#e7f5ff;--soft:#f6f6f7;--prop:#b35c00;--ok:#2b8a3e;--red:#c92a2a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161719;--fg:#e8e8e6;--mut:#a0a09c;--faint:#7c828a;--line:#2c2e33;--on:#91caff;--wash:#253749;--soft:#1d1f22;--prop:#e4bd62;--ok:#8ce99a;--red:#ff8787}}
+:root[data-theme="dark"]{--bg:#161719;--fg:#e8e8e6;--mut:#a0a09c;--faint:#7c828a;--line:#2c2e33;--on:#91caff;--wash:#253749;--soft:#1d1f22;--prop:#e4bd62;--ok:#8ce99a;--red:#ff8787}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+a{color:inherit;text-decoration:none}
+.wrap{display:grid;grid-template-columns:minmax(0,1040px) 270px;gap:30px;max-width:1380px;margin:0 auto;padding:26px 16px 60px}
+@media(max-width:1100px){.wrap{grid-template-columns:1fr}.notes{position:static!important}}
+.screen-label{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--red);margin:0 0 6px;font-weight:600}
+h1.page{font-size:26px;margin:0 0 6px}
+.lead{color:var(--mut);margin:0 0 20px;max-width:820px}
+.level{margin:0 0 28px}
+.level h2{font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin:0 0 10px}
+.screen{border:1px solid var(--line);border-radius:12px;padding:14px 18px 14px;position:relative;min-width:0}
+.crumb{font-size:12px;color:var(--mut);overflow-wrap:anywhere}
+.screen h3{font-size:19px;margin:4px 0 6px;font-weight:600}
+.screen h3 i{font-style:normal;color:var(--mut);font-weight:500;margin-left:10px}
+.views{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 6px;align-items:center}
+.views a{border:1px solid var(--line);border-radius:8px;padding:3px 11px;font-size:13.5px}
+.views a.on{border-color:var(--on);background:var(--wash);color:var(--on)}
+.views a.gone{color:var(--faint);text-decoration:line-through;border-style:dashed}
+.purpose{color:var(--mut);font-size:13.5px;margin:0 0 12px}
+.rail{position:absolute;right:-1px;top:52px;display:flex;flex-direction:column;gap:7px}
+.rail i{display:block;width:12px;height:2px;background:var(--line)}
+.rail i.on{background:var(--prop);height:3px}
+.body{display:grid;grid-template-columns:250px minmax(0,1fr);gap:18px;align-items:start}
+@media(max-width:760px){.body{grid-template-columns:1fr}}
+.map{position:sticky;top:12px;border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:13px;background:var(--bg)}
+.map h4{margin:0 0 6px;font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--mut)}
+.map ul{list-style:none;margin:0;padding:0 0 0 12px;border-left:1px solid var(--line)}
+.map > ul{padding-left:0;border-left:0}
+.map li{margin:2px 0}
+.map .n{display:inline-block;padding:0 6px;border-radius:6px}
+.map .here{background:var(--wash);color:var(--on);font-weight:600}
+.map .s{color:var(--on)}
+.map .t{color:var(--mut)}
+.map .q{font-size:11px;border:1px solid var(--line);border-radius:5px;padding:0 4px;margin-left:4px;color:var(--mut)}
+.map .w{color:var(--prop);font-weight:600}
+.content{border:1px solid var(--line);border-radius:10px;padding:10px 14px;min-width:0}
+.row{display:grid;grid-template-columns:120px minmax(0,1fr);gap:10px;padding:7px 0;border-top:1px solid var(--line);font-size:13.5px}
+.row:first-child{border-top:0}
+.row .sub{display:block;color:var(--mut);font-size:12.5px}
+.st{font-size:12.5px;font-weight:600}.st.w{color:var(--prop)}.st.q{color:var(--mut)}
+.notes{position:sticky;top:20px;align-self:start;font-size:13.5px}
+.notes h4{margin:0 0 10px;color:var(--red);font-size:13px;letter-spacing:.05em;text-transform:uppercase}
+.notes ol{margin:0;padding-left:20px}
+.notes li{margin:0 0 10px}
+.notes li::marker{color:var(--red);font-weight:700}
+.mark{color:var(--red);font-weight:700;font-size:12px;vertical-align:super;margin-left:2px}
+p.small{font-size:13px;color:var(--mut);margin:6px 0 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+<main>
+<p class="screen-label">s04 · ui-draft-v14 · proposal</p>
+<h1 class="page">The MindMap, always on the page</h1>
+<p class="lead">The map stops being a Report view. It stays beside every section as one tree: each sNN, the Job that makes its
+delivery, and that Job's Tasks. You always see where you are and what waits on you.</p>
+
+<!-- ── A: Report ─────────────────────────────────────────────────────────── -->
+<section class="level">
+<h2>A · Block · b17_theme_work · Report</h2>
+<div class="screen">
+<div class="rail"><i class="on"></i><i></i><i></i><i></i></div>
+<div class="crumb">Tools-SPACE / blueprints / Project-Ladder / work / b17_theme_work</div>
+<h3>b17_theme_work<i>Report</i></h3>
+<div class="views"><a class="gone">MindMap</a><span class="mark">1</span><a class="on">All</a><a>s01 Work ladder</a><a>s02 Skill homes</a><a>s04 Work pages</a></div>
+<p class="purpose">Design questions about the work Theme as one ladder.</p>
+<div class="body">
+<nav class="map"><h4>Map<span class="mark">2</span></h4>
+<ul>
+<li><span class="n here">b17_theme_work</span><span class="mark">3</span>
+<ul>
+<li><a class="n s">s01 · Work ladder</a> <span class="t">skill</span>
+  <ul><li><a class="n">j01 · work ladder contract</a><span class="q">Q01</span><span class="q">Q02</span><span class="q">Q03</span>
+    <ul><li><a class="n t">t01 · skill section</a> ⬜</li><li><a class="n t">t02 · scaffold</a> ⬜</li><li><a class="n t">t03 · demo fixture</a> ⬜</li></ul></li></ul></li>
+<li><a class="n s">s02 · Work skills</a> <span class="t">skill</span>
+  <ul><li><a class="n">j02 · work skill homes</a><span class="q">Q04</span>
+    <ul><li><a class="n t">t01 · skill homes table</a> ⬜</li><li><a class="n t">t02 · move list b04</a> ⬜</li></ul></li></ul></li>
+<li><a class="n s">s04 · Work pages</a> <span class="t">ui</span>
+  <ul><li><a class="n">j03 · work workbench pages</a><span class="q">Q01</span><span class="q">Q02</span><span class="q">Q03</span>
+    <ul><li><a class="n t">t01 · block page</a> <span class="w">🙋 r01</span><span class="mark">4</span></li><li><a class="n t">t02 · job task pages</a> ⬜</li><li><a class="n t">t03 · element picks</a> ⬜</li></ul></li></ul></li>
+</ul></li>
+</ul>
+</nav>
+<div class="content">
+<div class="row"><span class="st q">⬜ planned</span><span><b>s01 · Work ladder</b> <span class="sub">haipipe-work SKILL.md › The work ladder, as it will read · made by j01</span></span></div>
+<div class="row"><span class="st q">⬜ planned</span><span><b>s02 · Skill homes</b> <span class="sub">haipipe-work's skill-homes table · made by j02</span></span></div>
+<div class="row"><span class="st w">🙋 r01 waits</span><span><b>s04 · Work pages</b> <span class="sub">the work Block, Job and Task pages · made by j03, after your r01 answers</span></span></div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ── B: Work ───────────────────────────────────────────────────────────── -->
+<section class="level">
+<h2>B · Block · b17_theme_work · Work: the same map stays</h2>
+<div class="screen">
+<div class="rail"><i></i><i class="on"></i><i></i><i></i></div>
+<div class="crumb">Tools-SPACE / blueprints / Project-Ladder / work / b17_theme_work</div>
+<h3>b17_theme_work<i>Work</i></h3>
+<div class="views"><a class="on">Progress</a><a>Runs</a><a>Results</a></div>
+<p class="purpose">Design questions about the work Theme as one ladder.</p>
+<div class="body">
+<nav class="map"><h4>Map</h4>
+<ul><li><span class="n here">b17_theme_work</span>
+<ul>
+<li><a class="n s">s01 · Work ladder</a><ul><li><a class="n">j01</a> <span class="t">t01 t02 t03</span></li></ul></li>
+<li><a class="n s">s02 · Work skills</a><ul><li><a class="n">j02</a> <span class="t">t01 t02</span></li></ul></li>
+<li><a class="n s">s04 · Work pages</a><ul><li><a class="n">j03</a> <span class="t">t01 <span class="w">🙋</span> t02 t03</span></li></ul></li>
+</ul></li></ul>
+<p class="small" style="margin-top:6px">folded: a click on a Job opens its Tasks<span class="mark">5</span></p>
+</nav>
+<div class="content">
+<div class="row"><span class="st w">🙋 waiting on you</span><span><b>r01_collect_report_and_delivery</b> <span class="sub">j03 · t01 · Report and Delivery, six choices · Answer</span></span></div>
+<div class="row"><span class="st q">⬜ not run yet</span><span><b>j01_work_ladder_contract</b> <span class="sub">haipipe-work's ladder section and the work scaffold</span></span></div>
+<div class="row"><span class="st q">⬜ not run yet</span><span><b>j02_work_skill_homes</b> <span class="sub">haipipe-work's skill-homes table, and the move list for b04</span></span></div>
+<div class="row"><span class="st w">🙋 waiting on you</span><span><b>j03_work_workbench_pages</b> <span class="sub">the work Block, Job and Task pages</span></span></div>
+</div>
+</div>
+</div>
+<p class="small">On a phone the map folds above the content as one "Map" line; a tap opens it.</p>
+</section>
+</main>
+
+<aside class="notes">
+<h4>Notes</h4>
+<ol>
+<li>The MindMap is no longer a view button: it is always on the page, beside every section.</li>
+<li>One tree, the ladder's own: each sNN, the Job that makes its delivery, that Job's Tasks. The Questions are small tags on the Jobs that answer them, not a separate layer.</li>
+<li>The page you are on is marked; every node opens its page.</li>
+<li>What waits on you shows in the tree itself: 🙋 r01 on j03 · t01.</li>
+<li>It keeps its open and folded branches as you change section, so it reads the same everywhere.</li>
+</ol>
+</aside>
+</div>
+</body>
+</html>

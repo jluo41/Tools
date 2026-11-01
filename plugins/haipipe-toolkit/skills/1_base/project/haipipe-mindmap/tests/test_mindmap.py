@@ -16,6 +16,7 @@ import mmbuild as MB  # noqa: E402
 import mmhtml as MH  # noqa: E402
 import mapview as MV  # noqa: E402
 import mmmap as MM  # noqa: E402
+import mmbuild  # noqa: E402
 import mmtree as MT  # noqa: E402
 
 SOURCE = """---
@@ -258,20 +259,34 @@ class Builders(unittest.TestCase):
     def tearDown(self):
         self.tmp.cleanup()
 
-    def test_from_work_draws_block_job_task_run_with_run_counts(self):
+    def test_from_work_draws_block_job_task_run_marked_without_counts(self):   # labels carry no counts (JL 261030)
         block = work(self.root)
         rc, out = run("from-work", block)
         self.assertEqual(rc, 0, out)
-        md = block / "studio" / "mind-map.mindmap.md"
+        md = block / "mind-map.mindmap.md"
         mm = MT.load(md)
-        self.assertEqual(mm.meta["built"], "from-work ..")
-        self.assertEqual(mm.root.text, "b01_demo · 1 job")
+        self.assertEqual(mm.meta["built"], "from-work .")
+        self.assertEqual(mm.root.text, "b01_demo")
         job = mm.root.children[0]
-        self.assertEqual(job.text, "j01_build · 2 tasks · 8 runs")
-        self.assertEqual([t.text for t in job.children], ["t01_load · 2 runs, all done", "t02_fit · 6 runs, all done"])
-        self.assertEqual(len(job.children[1].children), 6)                    # every Run, none folded
-        self.assertEqual(job.children[1].children[0].text, "r01_x ✅")
-        self.assertTrue((block / "studio" / "mind-map.mindmap.html").is_file())
+        self.assertEqual(job.text, "[job] j01_build")                         # a card; no goal on its face: its name
+        self.assertEqual([t.text for t in job.children], ["[done] t01_load", "[done] t02_fit"])   # pills, as every map
+        runs = [ln for ln in job.children[1].note if ln.startswith("✅ ")]
+        self.assertEqual(len(runs), 6)                                        # every Run, in the Task's details
+        self.assertEqual(runs[0], "✅ r01_x")                                  # no result file: its name, no link
+        self.assertEqual(job.children[1].children, [])
+        self.assertTrue((block / "mind-map.mindmap.html").is_file())
+
+    def test_a_runs_result_is_a_link_its_chip_opens(self):          # JL 261030: "could the results to be popout"
+        block = work(self.root)
+        job = block / "j01_build"
+        run_dir = job / "t01_load" / "runs" / "r01_a"
+        (run_dir / "passes" / "p01-1030").mkdir(parents=True)
+        (run_dir / "passes" / "p01-1030" / "pass.md").write_text("# load\n\n## Summary\n\nthe raw files read, 12 rows\n")
+        mm = mmbuild.from_work(job)
+        point = mm.root.children[0].children[0]
+        self.assertEqual(point.text, "[done] r01_a: [the raw files read, 12 rows](t01_load/runs/r01_a/passes/p01-1030/pass.md)")
+        mm = mmbuild.from_work(job, link_from=job / "s01-map")   # a saved map links from where it sits (a topic folder)
+        self.assertIn("(../t01_load/runs/r01_a/passes/p01-1030/pass.md)", mm.root.children[0].children[0].text)
 
     def test_a_long_leaf_is_short_on_its_card_and_whole_in_its_detail(self):
         topic = self.root / "studio" / "s05-pics"
@@ -351,11 +366,11 @@ class Builders(unittest.TestCase):
     def test_a_refresh_keeps_a_persons_node_and_words_and_updates_the_rest(self):
         block = work(self.root)
         run("from-work", block)
-        md = block / "studio" / "mind-map.mindmap.md"
+        md = block / "mind-map.mindmap.md"
         text = md.read_text(encoding="utf-8")
-        text = text.replace("t01_load · 2 runs, all done", "t01_load: the raw files")
+        text = text.replace("[done] t01_load", "t01_load: the raw files")
         text = text.replace("<!-- @j01_build/t02_fit ", "<!-- @j01_build/t02_fit ").replace(
-            "\n  - t02_fit", "\n    - ask the lab about r03\n  - t02_fit", 1)
+            "\n  - [done] t02_fit", "\n    - ask the lab about r03\n  - [done] t02_fit", 1)
         md.write_text(text, encoding="utf-8")
         (block / "j01_build" / "t01_load" / "runs" / "r03_c").mkdir()
         (block / "j01_build" / "t03_report").mkdir()
@@ -363,11 +378,11 @@ class Builders(unittest.TestCase):
         self.assertEqual(rc, 0, out)
         mm = MT.load(md)
         job = mm.root.children[0]
-        self.assertEqual(job.text, "j01_build · 3 tasks · 9 runs")            # unedited: updated
+        self.assertEqual(job.children[-1].text, "[not run] t03_report")       # new: added, no Run yet
         self.assertEqual(job.children[0].text, "t01_load: the raw files")     # a person's words: kept
         self.assertIn("ask the lab about r03", [c.text for c in job.children[0].children])
-        self.assertIn("r03_c ⬜", [c.text for c in job.children[0].children])
-        self.assertEqual(job.children[-1].text, "t03_report · 0 runs")
+        self.assertEqual(len(job.children[0].children), 1)                  # only the person's line under it
+        self.assertEqual(job.children[1].text, "[done] t02_fit")             # unedited: kept as drawn
 
     def test_from_topic_writes_the_structured_side_mnn(self):
         topic = self.root / "studio" / "s04-fees"
@@ -390,6 +405,17 @@ class Builders(unittest.TestCase):
         self.assertEqual(files, ["[md] [s04-fees.md](s04-fees.md)"])          # a file is a link its card opens
         self.assertTrue((topic / "s04-fees.mindmap.html").is_file())
         self.assertFalse(list(topic.glob("*.excalidraw")))
+
+    def test_a_link_opens_only_on_the_web_or_a_path(self):
+        # 261031 review: a javascript: or data: link became a pop-out chip on the origin that serves the terminal
+        words = "[a](javascript:alert(1)) [b](https://doi.org/x) [c](notes.md) ![d](data:image/png;base64,AA) [e](//evil.x)"
+        out = MH.inline(words)
+        for bad in ("javascript:", "data:", "//evil.x"):
+            self.assertNotIn(bad, out)
+        self.assertIn('href="https://doi.org/x"', out)
+        self.assertIn('href="notes.md"', out)
+        self.assertEqual(MM._opens("[a](JavaScript:alert(1)) [d](data:text/html,x)", None, None), "")
+        self.assertIn('href="https://doi.org/x"', MM._opens("[b](https://doi.org/x)", None, None))
 
     def test_from_topic_keeps_decision_lines_apart(self):
         topic = self.root / "studio" / "s05-ccda"

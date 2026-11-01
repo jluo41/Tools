@@ -1,0 +1,15 @@
+run: r01_collect_job_report_views
+kind: hard
+type: collect
+scope: blueprints/Project-Ladder/work/b17_theme_work/j03_work_workbench_pages/t02_job_page
+target: b17.j03.t02-s54:theme_work.work_workbench_pages.job_page @ job_ui_report
+ticket: r01_collect_job_report_views.html
+skill: haipipe-interaction
+agent: JL
+signs: null
+status: waiting
+passes: []
+writes:
+- result/answer_collection.md
+feeds:
+- blueprints/Project-Ladder/work/b17_theme_work/j03_work_workbench_pages/t02_job_page/runs/run-design-job-page

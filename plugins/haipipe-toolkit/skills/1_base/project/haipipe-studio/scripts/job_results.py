@@ -5,7 +5,7 @@ the sNN to show what are the current results").
     python job_results.py <block> --jobs j11_x,j12_y --slug <s> --title '<t>'   one topic for a group of Jobs
     python job_results.py --draw <topic folder>                 redraw one topic (what its builder calls)
 
-The topic is the Block's (`studio/sNN-<jNN>-<job>-results/`, numbered in the runs band s21-s29): Block, Job and Task
+The topic is the Block's (`sNN-<jNN>-<job>-results/`, numbered in the runs band s21-s29): Block, Job and Task
 views share it, and a Job keeps no studio/ of its own. A Block with more Jobs than the band holds groups them, one
 topic per group of Jobs that share their Tasks, one frame per Job inside it.
 
@@ -529,7 +529,7 @@ def new_face(nn: int, slug: str, title: str, jobs: list[Path], topic: Path) -> s
 
 
 def builder_text(topic: Path, nn: int, title: str, script: str) -> str:
-    """The topic's builder: a few lines that call this generator through the SPACE's Tools link, as s00's does."""
+    """The topic's builder: a few lines that call this generator through the SPACE's Tools link."""
     space = next((p for p in (topic, *topic.parents) if (p / "env.sh").is_file() and (p / "Tools").exists()), None)
     scripts = space / "Tools/plugins/haipipe-toolkit/skills/1_base/project/haipipe-studio/scripts" if space else HERE
     return (f'"""s{nn:02d} · {title}: drawn by haipipe-studio\'s job_results.py from the Runs on disk and this '
@@ -721,7 +721,7 @@ def overview_frame(d: Drawing, title: str, jobs: list[Path], all_rows: dict, cfg
 def draw(topic: Path) -> Path:
     """Redraw one results topic from its face and the Runs on disk; refresh the face's ledger and the preview."""
     topic = topic.resolve()
-    block = topic.parents[1]
+    block = topic.parent.parent if topic.parent.name == "studio" else topic.parent
     face = topic / f"{topic.name}.md"
     cfg = results_yaml(face)
     names = [str(j) for j in (cfg.get("jobs") or [])] or list((cfg.get("reading") or {}).keys())
@@ -764,7 +764,8 @@ def covered(block: Path) -> set[str]:
     """The Jobs a topic of this Block already draws: a results topic's `results: jobs`, or a whole-Job topic's
     `job: name` (excalidraw-job's job_drawing.py adopts a results topic into one)."""
     out = set()
-    for face in (block / "studio").glob("s*/*.md"):
+    for face in [*block.glob("s[0-9]*/s*.md"), *(block / "studio").glob("s*/*.md"),   # a Job's own too
+                 *block.glob("j[0-9]*_*/s[0-9]*/s*.md"), *block.glob("j[0-9]*_*/studio/s*/*.md")]:
         cfg = results_yaml(face)
         out |= {str(j) for j in (cfg.get("jobs") or [])}
         m = re.search(r"```yaml\s*\n(job:.*?)```", read(face), re.S)
@@ -779,8 +780,9 @@ def covered(block: Path) -> set[str]:
 
 
 def used(block: Path) -> set[int]:
-    return {int(m.group(1)) for p in (block / "studio").iterdir() if p.is_dir()
-            for m in [re.match(r"^s(\d+)[-_]", p.name)] if m} if (block / "studio").is_dir() else set()
+    """The numbers the Block's own topics take: beside its Jobs, or in an older studio/."""
+    return {int(m.group(1)) for holder in (block, block / "studio") if holder.is_dir() for p in holder.iterdir()
+            if p.is_dir() for m in [re.match(r"^s(\d+)[-_]", p.name)] if m}
 
 
 def make(block: Path, jobs: list[Path], slug: str, title: str, nn: int | None = None, dry: bool = False) -> Path:
@@ -788,7 +790,7 @@ def make(block: Path, jobs: list[Path], slug: str, title: str, nn: int | None = 
     nn = nn or next((n for n in range(BAND[0], BAND[1] + 1) if n not in taken), None)
     if nn is None or nn in taken:
         raise SystemExit(f"{block.name}: no free number in s{BAND[0]}-s{BAND[1]}; group the Jobs (--jobs) instead")
-    topic = block / "studio" / f"s{nn:02d}-{slug}"
+    topic = block / f"s{nn:02d}-{slug}"                  # beside its Jobs (JL 261030)
     if dry:
         print(f"would make {topic.relative_to(block)}  ← {', '.join(j.name for j in jobs)}")
         return topic
@@ -798,7 +800,7 @@ def make(block: Path, jobs: list[Path], slug: str, title: str, nn: int | None = 
         "results:\n", "results:\n  jobs: [" + ", ".join(j.name for j in jobs) + "]\n", 1), encoding="utf-8")
     builder = topic / f"build_s{nn:02d}_{slug.replace('-', '_')}.py"
     builder.write_text(builder_text(topic, nn, title, builder.name), encoding="utf-8")
-    groups = block / "studio" / "_groups.txt"
+    groups = block / "studio" / "_groups.txt" if (block / "studio").is_dir() else block / "_studio_groups.txt"
     lines = read(groups).splitlines() if groups.is_file() else [
         "# Studio groups of this Block, in button order. The workbench writes this file when a group is",
         "# made, moved or deleted; a group's topics are the ones whose **Tags:** line names it."]

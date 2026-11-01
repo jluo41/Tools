@@ -807,13 +807,15 @@ def arrow(x0, y0, x1, y1, color=INK, dashed=False):
              startArrowhead=None, endArrowhead="arrow")
 
 
-def picture(x, y, path, width, as_is=False):
-    """An image `width` wide; `as_is` embeds a JPEG this script already sized and compressed (a shown page)."""
+def picture(x, y, path, width, as_is=False, max_width=None):
+    """An image `width` wide; `as_is` embeds a JPEG this script already sized and compressed (a shown page).
+    The image is shrunk to 1600 px on its longest side, or with `max_width` to that width only: a tall cut of
+    several pages keeps its text sharp (b01_irb s04, JL 261026: "the dpi need to increase a bit")."""
     im = Image.open(path).convert("RGB")
     if as_is:
         raw = Path(path).read_bytes()
     else:
-        k = min(1.0, 1600 / max(im.size))
+        k = min(1.0, (max_width / im.width) if max_width else 1600 / max(im.size))
         if k < 1:
             im = im.resize((round(im.width * k), round(im.height * k)))
         buf = io.BytesIO()

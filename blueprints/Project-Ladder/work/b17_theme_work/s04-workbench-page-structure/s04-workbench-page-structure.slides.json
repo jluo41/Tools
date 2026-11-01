@@ -1,0 +1,43 @@
+{
+ "topic": "s04-workbench-page-structure",
+ "style": "sketch-notes",
+ "source": "s04-workbench-page-structure.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Which Interactions page?",
+   "points": [
+    "A · a questionnaire grouped by the page that asked, one copy bar",
+    "B · two lanes, waits on you and answered; pick an option by its picture",
+    "C · a checklist: one form open at a time, keep or leave, then copy"
+   ],
+   "leaning": "C, with each option's picture inline: one form at a time, and nothing is agreed by accident",
+   "ask": "the form r02_collect_interactions_page waits for your answer",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "An empty section: stay on the rail?",
+   "points": [
+    "Stay: the rail reads the same on every page, one line says it is empty",
+    "Leave: a section with nothing in it does not show",
+    "As today: Interactions, Delivery and Files stay; Studio, Related and Timeline leave"
+   ],
+   "leaning": "stay, so the rail reads the same at Block, Job and Task",
+   "ask": "the Job and Task Studio forms ask it for Studio; one rule for every section?",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "Delivery on the rail, beside the Report",
+   "points": [
+    "Both: the rail keeps files, versions and sent marks; the Report shows the look and one word",
+    "Only the Report: Delivery leaves the rail",
+    "Only the rail: the Report keeps its MindMap"
+   ],
+   "leaning": "both, as two views that never repeat a row",
+   "ask": "does the rail's Delivery list each sNN's delivery too, or only this folder's own?",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

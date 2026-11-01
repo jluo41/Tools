@@ -20,7 +20,7 @@ Seven steps, each done by the skill that owns that part; a dry run writes nothin
 
 Nothing proposed in steps 5 and 6 is made here (s10-D03): the agent words each line per
 haipipe-studio ref/infer-topics.md and haipipe-report ref/infer-reports.md, a person ticks
-proposals.md, and only the ticked lines become studio/sNN-*/ folders (new_topic.py) and
+proposals.md, and only the ticked lines become sNN-*/ folders beside the Jobs (new_topic.py) and
 register rows (haipipe-report).
 """
 from __future__ import annotations
@@ -83,11 +83,13 @@ def plan(block: Path, root: Path) -> dict:
 def topic_proposals(block: Path, s: dict) -> list[dict]:
     """A topic per recurring Task kind (largest first), then one per field that splits the Tasks."""
     studio = block / "studio"
-    taken = {int(m.group(1)) for d in studio.iterdir() for m in [re.match(r"^s(\d{2})[-_]", d.name)] if m} \
-        if studio.is_dir() else set()
-    faces = [f for d in studio.iterdir() if d.is_dir() and re.match(r"^s\d{2}[-_]", d.name) and not d.name.startswith("s00")
-             for f in [d / f"{d.name}.md"] if f.is_file()] if studio.is_dir() else []
-    have = " ".join([d.name for d in studio.iterdir()] if studio.is_dir() else []) + " " + \
+    loose = sorted(studio.iterdir()) if studio.is_dir() else []          # an older studio/: its topics and loose files
+    topics = [d for d in [*sorted(block.iterdir()), *loose]              # sNN beside the Jobs first (JL 261030)
+              if d.is_dir() and re.match(r"^s\d{2}[-_]", d.name)]
+    taken = {int(d.name[1:3]) for d in topics} | \
+        {int(m.group(1)) for d in loose for m in [re.match(r"^s(\d{2})[-_]", d.name)] if m}
+    faces = [f for d in topics if not d.name.startswith("s00") for f in [d / f"{d.name}.md"] if f.is_file()]
+    have = " ".join(dict.fromkeys(d.name for d in [*topics, *loose])) + " " + \
         " ".join(f.read_text(encoding="utf-8", errors="ignore") for f in faces).lower()   # names and faces
     free = iter(n for n in BAND if n not in taken)
     out = []
@@ -144,7 +146,8 @@ def proposals_md(block: Path, r: dict) -> str:
         asks = f" · asks: {' · '.join(t['asks'][:5])}" if t["asks"] else ""
         lines.append(f"- [ ] {t['snn']}-{t['slug']} · {t['title']} · group {t['group']} · {t['from']}{asks}")
     order = list(dict.fromkeys(t["group"] for t in r["topics"]))
-    lines += ["", "## Group order (studio/_groups.txt; the Report's bar follows it)", "",
+    groups = "studio/_groups.txt" if (block / "studio").is_dir() else "_studio_groups.txt"
+    lines += ["", f"## Group order ({groups}; the Report's bar follows it)", "",
               "- [ ] " + " · ".join(order) if order else "- none"]
     lines += ["", "## Block Questions (haipipe-report)", ""]
     for q in r["questions"]["block"]:
@@ -165,7 +168,7 @@ def write_pass(block: Path, r: dict) -> Path:
         soft_run.new(block, "update", short(block), skill="workbench", agent="",
                      ask=f"/wb update {block.name}: bring it to today's rules, propose its topics and Questions",
                      close="a person ticked proposals.md and the ticked lines are made",
-                     writes=["studio/", "reports/", "board.md"])
+                     writes=["sNN-<topic>/", "reports/", "board.md"])
     moved = [m.split(" → ")[0] for m in r["plan"]["moves"]]
     folder = soft_run.add_pass(run, f"/wb update {block.name}", ask="bring the Block to today's rules (b10 s10)",
                                summary=f"{len(moved)} move(s); {len(r['topics'])} topic(s), "
@@ -205,7 +208,7 @@ def update(block: Path, root: Path, apply: bool) -> dict:
         with contextlib.redirect_stdout(out):
             ladder.update(block, root, apply=True, today=True)
         r["pass"] = wb.rel(write_pass(block, r), root)
-    place = wb.target(block, root, studio=True)
+    place = wb.target(block, root)
     found = wb.servers(root)
     r["link"] = (found[0].public if found else "") + place["url"]
     r["theme"] = place["theme"]

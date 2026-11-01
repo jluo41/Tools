@@ -16,12 +16,18 @@ description: >-
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 disable-model-invocation: true
 metadata:
-  version: "0.2.1"
+  version: "0.2.2"
   last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md
 ---
 
 # /excalidraw-story · the story as its questions, each with what supports it
+
+> **Inside a Studio topic it draws only the Design part (JL 261031, b35 r01 Q1: A; b35-s01-D16).** An sNN's
+> drawing has five parts, Idea, Now, Design, Process, Delivery, and their shape is excalidraw-studio's
+> (`haipipe-studio/scripts/five_parts.py`). When a paper's story is drawn for an sNN, this skill's staircase is that
+> topic's Design sketch, built by its `design()`; the other four parts are read from disk by five_parts.
+> Drawn on its own, outside an sNN, it is still a whole drawing.
 
 JL 261019, on Paper-LLMRecPhy-Jama: "In the story studio s02-story, I think we might need to list the research questions,
 and how could we support them"; "should we have a things named /excalidraw-story?"; "This is more like the story, do

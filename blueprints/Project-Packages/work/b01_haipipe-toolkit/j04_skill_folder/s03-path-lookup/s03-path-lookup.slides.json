@@ -1,0 +1,36 @@
+{
+ "topic": "s03-path-lookup",
+ "style": "sketch-notes",
+ "source": "s03-path-lookup.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "b04 s03 · Path lookup",
+   "points": [
+    "how code finds a skill since q02 (by name, not by depth), and what the next move would still have…"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and how code finds a skill by name, not by folder depth, for the people who write the toolkit skills",
+    "a code"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "Still open",
+   "points": [],
+   "leaning": "",
+   "ask": "Agree its For: line and Delivery type: (code), proposed by the agent 261030?",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

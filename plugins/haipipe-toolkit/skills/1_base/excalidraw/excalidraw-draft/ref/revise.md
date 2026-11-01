@@ -89,13 +89,13 @@ Steps
 Worked examples
 ---------------
 
-- `examples-0-cowork/Project-SHIFT-Study/cowork/b31_prep_ai/studio/s04-task31-updated-draft/`: Nes
+- `examples-0-cowork/Project-SHIFT-Study/cowork/b31_prep_ai/s04-task31-updated-draft/`: Nes
   Mathioudakis's Task 3.1 file, a co-author's draft (b32 s04 and b21 s04 are the same shape).
-- `examples-0-cowork/Project-Samsung/cowork/b01_irb/studio/s03-for-cir2-changes/`: the study protocol (eForm A)
+- `examples-0-cowork/Project-Samsung/cowork/b01_irb/s03-for-cir2-changes/`: the study protocol (eForm A)
   for CIR 2, a Change in Research; its own filed file, `sections` for the form's headings, the tracked file
   first written from the plan, `deliver` into `delivery/j04_cir2_epic_data/`.
 
-Design topic: `Tools/blueprints/b31_excalidraw/studio/s21-revise-mode-workflow/` (b31 s21).
+Design topic: `Tools/blueprints/Project-PageParts/work/b31_excalidraw/s21-revise-mode-workflow/` (b31 s21).
 
 
 Boundary

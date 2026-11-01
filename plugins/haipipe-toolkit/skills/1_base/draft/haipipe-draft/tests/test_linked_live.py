@@ -62,8 +62,8 @@ class LinkedLiveTest(unittest.TestCase):
             page.parent.mkdir(parents=True)
             page.write_text("# Page\n", encoding="utf-8")
             live = Live(root)
-            canonical = page.parent / "studio" / "draw" / "G1.excalidraw"
-            legacy = page.parent / "draw" / "G1.excalidraw"
+            canonical = page.parent / "draw" / "G1.excalidraw"
+            legacy = page.parent / "studio" / "draw" / "G1.excalidraw"
 
             scene = live.mint_page_scene(canonical)
 
@@ -80,13 +80,13 @@ class LinkedLiveTest(unittest.TestCase):
             board.mkdir(parents=True)
             (board / "board.md").write_text("# Paper-X\n", encoding="utf-8")
             live = Live(root)
-            scene = live.mint_board_scene(board / "studio" / "StoryA-x.excalidraw")
+            scene = live.mint_board_scene(board / "StoryA-x.excalidraw")
             self.assertEqual(scene["elements"], [])
             self.assertNotIn("haipipe", scene)                   # plain, not a linked Page source
-            self.assertEqual(read_scene(board / "studio" / "StoryA-x.excalidraw")["elements"], [])
-            self.assertIsNone(live.mint_board_scene(root / "papers" / "studio" / "a.excalidraw"))   # no board.md
+            self.assertEqual(read_scene(board / "StoryA-x.excalidraw")["elements"], [])
+            self.assertIsNone(live.mint_board_scene(root / "papers" / "a.excalidraw"))   # no board.md
             self.assertIsNone(live.mint_board_scene(board / "other" / "a.excalidraw"))
-            self.assertFalse((root / "papers" / "studio").exists())
+            self.assertFalse((root / "papers" / "a.excalidraw").exists())
 
     def test_chat_receives_the_same_group_and_page_owner_addresses(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -108,12 +108,12 @@ class LinkedLiveTest(unittest.TestCase):
             page = root / "G-one" / "G1-page" / "G1-page.md"
             page.parent.mkdir(parents=True)
             page.write_text("# Page\n", encoding="utf-8")
-            legacy = page.parent / "draw" / "G1.excalidraw"
+            legacy = page.parent / "studio" / "draw" / "G1.excalidraw"
             write_scene(legacy, {
                 "type": "excalidraw", "version": 2, "elements": [],
                 "appState": {}, "files": {},
             })
-            (page.parent / "studio" / "draw").mkdir(parents=True)
+            (page.parent / "draw").mkdir(parents=True)
 
             context = "\n".join(drawing_owner_context(page, root))
 
@@ -121,13 +121,13 @@ class LinkedLiveTest(unittest.TestCase):
             self.assertIn("READ ONLY", context)
             self.assertIn("studio/draw", context)
 
-            canonical = page.parent / "studio" / "draw" / "G1.excalidraw"
+            canonical = page.parent / "draw" / "G1.excalidraw"
             write_scene(canonical, {
                 "type": "excalidraw", "version": 2, "elements": [],
                 "appState": {}, "files": {},
             })
             context = "\n".join(drawing_owner_context(page, root))
-            self.assertIn("G-one/G1-page/studio/draw/G1.excalidraw", context)
+            self.assertIn("G-one/G1-page/draw/G1.excalidraw", context)
             self.assertNotIn("Legacy Page drawing", context)
 
     def test_canonical_open_migrates_legacy_scene_without_changing_it(self):
@@ -136,7 +136,7 @@ class LinkedLiveTest(unittest.TestCase):
             page = root / "G-one" / "G1-page" / "G1-page.md"
             page.parent.mkdir(parents=True)
             page.write_text("# Page\n", encoding="utf-8")
-            legacy = page.parent / "draw" / "G1.excalidraw"
+            legacy = page.parent / "studio" / "draw" / "G1.excalidraw"
             source = {
                 "type": "excalidraw", "version": 2,
                 "elements": [{"id": "kept", "type": "text", "text": "mine"}],
@@ -146,7 +146,7 @@ class LinkedLiveTest(unittest.TestCase):
             }
             write_scene(legacy, source)
             before = legacy.read_bytes()
-            canonical = page.parent / "studio" / "draw" / "G1.excalidraw"
+            canonical = page.parent / "draw" / "G1.excalidraw"
 
             migrated = Live(root).mint_page_scene(canonical)
 
@@ -181,7 +181,7 @@ class LinkedLiveTest(unittest.TestCase):
             page = root / "G-one" / "G1-page" / "G1-page.md"
             page.parent.mkdir(parents=True)
             page.write_text("# Page\n", encoding="utf-8")
-            legacy = page.parent / "draw" / "G1.excalidraw"
+            legacy = page.parent / "studio" / "draw" / "G1.excalidraw"
             source = {
                 "type": "excalidraw", "version": 2, "elements": [],
                 "appState": {}, "files": {},

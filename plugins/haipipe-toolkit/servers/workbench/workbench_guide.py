@@ -470,7 +470,7 @@ def guide_runs(profile, view):
     return f'<style>{css}</style>{panel}<script>{PANEL_JS}</script>'
 
 
-# ── the card Guide (b03 studio/s31-guide, s31-D05 to D08) ───────────────────────────────────────
+# ── the card Guide (b03 s31-guide, s31-D05 to D08) ──────────────────────────────────────────────
 # A family whose guide.yaml declares `levels:` shows every View as a lead line, then three folding
 # sections, Block · Job · Task (a heading, never a box), each a stack of cards, one card shape per
 # View and the same in every theme. The View's earlier body stays below, in a closed "All levels"
@@ -818,7 +818,7 @@ def method_page_html(family, profile, editable=True):
                   "d.querySelectorAll('iframe.st-frame[data-src]').forEach(go)},true)})()</script>")
     else:
         canvas = (f'<div class=empty>No methods drawing yet: draw it from the method file with '
-                  f'<code>blueprints/b10_project_workbench/studio/s31-guide/method-canvas.py</code>.</div>')
+                  f'<code>blueprints/Project-Ladder/work/b10_project_workbench/s31-guide/method-canvas.py</code>.</div>')
     height = ("<script>(function(){function post(){parent.postMessage({kind:'haipipe-explain-height',"
               "height:document.documentElement.scrollHeight},location.origin)}"
               "if(window.ResizeObserver)new ResizeObserver(post).observe(document.body);"

@@ -45,23 +45,35 @@ class StudioTest(unittest.TestCase):
         self.assertIn("# s01 · Fees", text)
         self.assertTrue((md.parent / "s01-fees.mindmap.html").is_file())
 
-    def test_the_topic_count_is_guidance_and_child_inputs_use_the_block(self):
-        messages = io.StringIO()
-        with contextlib.redirect_stderr(messages):
-            for nn in range(1, 11):
-                new_topic.new_topic(self.block, f"topic-{nn}", f"Topic {nn}", nn=nn)
-        self.assertEqual(messages.getvalue(), "")
+    def test_an_sNN_sits_beside_its_level_and_the_count_is_limited(self):
+        # JL 261030: "we just have sNN, along side with jNN, to make it visible directly"; "we might have many sNN,
+        # but we need to control the numbers"
+        for nn in range(1, 10):
+            new_topic.new_topic(self.block, f"topic-{nn}", f"Topic {nn}", nn=nn)
+        self.assertTrue((self.block / "s01-topic-1/s01-topic-1.md").is_file())   # beside the Jobs, no studio/
+        self.assertTrue((self.block / "s01-topic-1/delivery/deck").is_dir())     # its agreed version goes here
+        self.assertFalse((self.block / "studio").exists())
+        with self.assertRaises(ValueError) as said:                       # a Block holds at most 9
+            new_topic.new_topic(self.block, "ten", "Ten", nn=10)
+        self.assertIn("at most 9", str(said.exception))
+        with contextlib.redirect_stdout(io.StringIO()):
+            new_topic.new_topic(self.block, "ten", "Ten", nn=10, over_limit=True)
         job = self.block / "j01_work"
         task = job / "t01_item"
         task.mkdir(parents=True)
-        with contextlib.redirect_stderr(messages):
-            md = new_topic.new_topic(task, "server", "Server", nn=51)
-        self.assertEqual(md.parent.parent, self.block / "studio")
-        self.assertFalse((task / "studio").exists())
-        self.assertTrue(md.is_file())
-        self.assertEqual(len(new_topic.topics(self.block)), 11)
-        self.assertIn("11 studio topics", messages.getvalue())
-        self.assertIn("at most 10", messages.getvalue())
+        md = new_topic.new_topic(task, "server", "Server", nn=51)         # in the Task's own folder
+        self.assertEqual(md.parent, task / "s51-server")
+        self.assertNotIn("**At:**", md.read_text())                      # where it sits says its level
+        self.assertIn(51, new_topic.block_topics(job))
+        with self.assertRaises(ValueError):                              # one sNN numbering across the Block
+            new_topic.new_topic(job, "again", "Again", nn=51)
+        nxt = new_topic.new_topic(job, "next", "Next", band="level")     # the next free number, Block-wide
+        self.assertEqual(nxt.parent, job / "s11-next")
+        for nn in (12, 13, 14, 15):
+            new_topic.new_topic(job, f"more-{nn}", "More", nn=nn)
+        with self.assertRaises(ValueError) as said:                      # a Job holds at most 5
+            new_topic.new_topic(job, "six", "Six", nn=16)
+        self.assertIn("a Job holds at most 5", str(said.exception))
 
     def test_child_sessions_find_shared_topics_and_preserve_legacy_local_topics(self):
         new_topic.new_topic(self.block, "shared", "Shared")
@@ -69,12 +81,12 @@ class StudioTest(unittest.TestCase):
         task = job / "t01_item"
         task.mkdir(parents=True)
         shared = new_topic.save_session(task, "s01", "Shared session", date="1010")
-        self.assertTrue(shared.is_relative_to(self.block / "runs/run-draw-s01"))
-        local = job / "studio/s01-local"
+        self.assertTrue(shared.is_relative_to(self.block / "s01-shared/passes"))
+        local = job / "s01-local"
         local.mkdir(parents=True)
         (local / "s01-local.md").write_text("s01 local\n====\n")
         legacy = new_topic.save_session(job, "s01", "Legacy session", date="1010")
-        self.assertTrue(legacy.is_relative_to(job / "runs/run-draw-s01"))
+        self.assertTrue(legacy.is_relative_to(local / "passes"))
         self.assertTrue((shared / "pass.md").is_file() and (legacy / "pass.md").is_file())
 
     def test_a_slide_draft_numbers_in_s6x(self):
@@ -213,21 +225,19 @@ class StudioTest(unittest.TestCase):
         self.assertEqual(out.returncode, 0, out.stderr)
         self.assertGreater(png.stat().st_size, 1000)
 
-    def test_a_session_is_a_pass_of_run_draw(self):
+    def test_a_round_lives_in_its_topic(self):
         new_topic.new_topic(self.block, "first", "First")
-        p1 = new_topic.save_session(self.block, "s01", "First session", ask="<ask>", date="1007")
-        p2 = new_topic.save_session(self.block, "s01", "Second session", date="1008")
-        run = self.block / "runs" / "run-draw-s01"
+        p1 = new_topic.save_session(self.block, "s01", "First session", ask="<ask>", date="1007",
+                                    decided=["Overview is Report"], started=["j02"])
+        p2 = new_topic.save_session(self.block, "s01", "A meeting", date="1008", kind="meeting", read=["related/m.md"])
         self.assertEqual((p1.name, p2.name), ("p01-1007", "p02-1008"))
-        card = yaml.safe_load((run / "run.yaml").read_text())
-        self.assertEqual((card["skill"], card["passes"]), ("haipipe-studio", ["p01-1007", "p02-1008"]))
-        ticket = (run / "run-draw-s01.md").read_text()
-        self.assertIn(f"close: {new_topic.DRAW_CLOSE}", ticket)      # a real close rule, not the placeholder
-        self.assertNotIn("<what settles it>", ticket)
-        new_topic.new_topic(self.block, "fed", "Fed", feeds=["q02_two"])
-        new_topic.save_session(self.block, "s02", "One", date="1008")
-        fed = yaml.safe_load((self.block / "runs" / "run-draw-s02" / "run.yaml").read_text())
-        self.assertEqual(fed["feeds"], ["reports/q02_two"])
+        self.assertEqual(p1.parent, self.block / "s01-first/passes")
+        text = (p1 / "pass.md").read_text()
+        self.assertIn("kind: session", text)
+        self.assertIn("## Decided\n\n- Overview is Report", text)
+        self.assertIn("## Started\n\n- j02", text)
+        self.assertIn("kind: meeting", (p2 / "pass.md").read_text())
+        self.assertFalse((self.block / "runs").exists())                  # no run-draw Run any more
         with self.assertRaises(ValueError):
             new_topic.save_session(self.block, "s07", "No such topic")
 
@@ -313,180 +323,6 @@ class StudioTest(unittest.TestCase):
         self.assertEqual(by["st"]["strokeColor"], canvas.STATUS_UI["partial"])
         self.assertEqual((by["card"]["strokeColor"], by["card"]["backgroundColor"]), (canvas.INK, "transparent"))
         self.assertEqual(canvas.off_palette(els), [])                                    # a screen is not off the palette
-
-    def test_s00_is_three_frames_each_a_tree_and_other_topics_are_free(self):
-        """JL 261012: "如果有 background，大概三个 frame 就差不多了 ... 就像 folder tree 那样", for s00 only: "I just mean for
-        the s00 to have the tree, why you make all the others to be the tree as well"."""
-        studio = self.block / "studio"
-        s00 = studio / "s00-overview" / "s00-overview.excalidraw"
-        self.assertEqual(canvas.frame_limit(s00), canvas.MAX_FRAMES)
-        for free in (studio / "s05-x" / "s05-x.excalidraw", studio / "s32-element-ui" / "s32-element-ui.excalidraw",
-                     studio / "s61-deck" / "s61-deck.excalidraw", self.block / "reports" / "q01_x" / "q01_x.excalidraw"):
-            self.assertIsNone(canvas.frame_limit(free))
-        nodes = [{"studio/": ["s01 · one", {"s02 · two": ["? still open", "✎ 261012 changed"]}]}, "j01 · a Job"]
-        els, height = canvas.tree(0, 0, nodes, 1200, "f")
-        texts = {e["text"]: e for e in els if e["type"] == "text"}
-        self.assertEqual(texts["? still open"]["strokeColor"], canvas.RED)
-        self.assertEqual(texts["✎ 261012 changed"]["strokeColor"], canvas.GREEN)
-        self.assertTrue(any(e["type"] == "line" for e in els) and height > 0)
-        frame = lambda i, **kw: dict({"id": f"f{i}", "type": "frame", "name": f"step {i}", "x": i * 3000, "y": 0,
-                                      "width": 2560, "height": 1440}, **kw)
-        word = lambda i, n: {"id": f"w{i}", "type": "text", "x": i * 3000, "y": 0, "width": 10, "height": 10,
-                             "frameId": f"f{i}", "fontSize": 20, "strokeColor": canvas.INK, "text": " ".join(["w"] * n)}
-        slides = [frame(i) for i in range(4)] + [word(i, 30) for i in range(4)]
-        self.assertEqual(len(canvas.sparse(slides)), 4)                                  # 30 words a screen: a slide
-        self.assertEqual(canvas.sparse([frame(0), word(0, 600)]), [])                     # a full screen is not
-        self.assertEqual(canvas.sparse([frame(9)]), [])                                   # no words: not judged
-        topic = studio / "s05-x" / "s05-x.excalidraw"                                    # any other topic: free
-        topic.parent.mkdir(parents=True)
-        buf = io.StringIO()
-        with contextlib.redirect_stdout(buf):
-            canvas.write(topic, [dict(e) for e in slides], "build_s05_x.py")
-        self.assertNotIn("over 3", buf.getvalue())
-        self.assertNotIn("reads like a slide", buf.getvalue())
-        s00.parent.mkdir(parents=True)                                                    # s00: checked
-        buf = io.StringIO()
-        with contextlib.redirect_stdout(buf):
-            canvas.write(s00, [dict(e) for e in slides], "block_index.py")
-        self.assertIn("4 frames, over 3", buf.getvalue())
-        self.assertIn("reads like a slide", buf.getvalue())
-
-    def test_every_block_gets_its_background_and_index(self):
-        """JL 261012: "for every block, we also want to have the s00-overview to show the background
-        information, and what are the sNN and jNN and what are the progress of them"."""
-        import block_index
-        b = self.block
-        (b / "board.md").write_text("# b01 · Topic\n\nspine: why this Block exists.\nclose: when every Question is "
-                                    "answered.\n\nThis Block asks one thing. It holds two Jobs of work.\n")
-        for rel, text in {"studio/s01-a/s01-a.md": "s01 · A\n=======\n\n**Stage:** shaping\n\n**Topic:** the first "
-                                                   "topic.\n\n**Feeds:** q01_one\n\ns01-D01 · decided (261012)\n\n\n"
-                                                   "Open\n----\n\n1. Who signs?\n",
-                          "j01_work/j01_work.md": "# j01 · Work\n\nstate: ACTIVE\n",
-                          "j01_work/t01_first/t01_first.md": "# t01 · First\n\nstate: ✅ DONE\n",
-                          "j01_work/t02_second/t02_second.md": "# t02 · Second\n\nstate: 🟡 PLANNED\n",
-                          "reports/q01_one/q01_one.md": "# Q01 · Does it hold?\n\nanswer-status: partial\n"}.items():
-            (b / rel).parent.mkdir(parents=True, exist_ok=True)
-            (b / rel).write_text(text)
-        (b / "j01_work" / "t01_first" / "runs" / "r01_x").mkdir(parents=True)
-        tree = block_index.index_tree(block_index.read_block(b))
-        flat = json.dumps(tree, ensure_ascii=False)
-        for said in ("🔶 s01 · A", "the first topic.", "→ Q01", "🧱 j01 · Work",
-                     "📋 2 Tasks: ✅ 1 done · ⬜ 1 open · 1 Runs", "🔶 q01_one · partial · Does it hold?"):
-            self.assertIn(said, flat)
-        self.assertEqual(block_index.state_word("🟢 RUNNING"), "active")
-        self.assertEqual(block_index.state_word("🟡 PLANNED"), "open")
-        self.assertEqual(block_index.state_word("🟡 PARTIAL · r03 done"), "partly")
-        with contextlib.redirect_stdout(io.StringIO()):
-            out = block_index.draw(b)
-        face = b / "studio" / block_index.S00 / f"{block_index.S00}.md"
-        self.assertTrue(face.is_file() and out.is_file() and out.with_suffix(".png").is_file())
-        self.assertIn("❓ Seeded from the Block", face.read_text())
-        frames = lambda: [e["name"] for e in json.loads(out.read_text())["elements"] if e["type"] == "frame"]
-        self.assertEqual(frames(), ["s00 · b01_topic · the index"])                      # a thin background folds in
-        drawn = json.loads(out.read_text())["elements"]
-        said = " | ".join(e.get("text", "") for e in drawn if e["type"] == "text").replace("\n", " ")
-        for words in ("thinks in", "works in", "🧠 Studio | where we think", "🧱 Jobs | where we work", "🔶 s01 · A",
-                      "📝 Q01 · Does it hold?", "🧱 j01 · Work", "Tasks 1/2 done", "why it exists | why this Block exists.",
-                      "❓ no close: line yet"):
-            self.assertIn(words, said)                       # a mind map: Block → Studio / Jobs → each → what it leads to
-        self.assertGreaterEqual(sum(e["type"] == "arrow" for e in drawn), 5)
-        self.assertIn("🔶 s01 · A | the first topic.", said)                    # each topic says what it is for
-        size = {e["text"]: e["fontSize"] for e in drawn if e["type"] == "text"}
-        self.assertGreater(size["Topic"], size["🧠 Studio"])                             # the Block, then a branch,
-        self.assertGreater(size["🧠 Studio"], size["🔶 s01 · A"])                        # then an item,
-        self.assertGreater(size["🔶 s01 · A"], size["the first topic."])                 # then its detail (JL 261012)
-        self.assertNotIn("open", said.split("🔶 s01 · A")[1].split("|")[1])             # no "N open" (JL 261012)
-        self.assertFalse(any(e.get("link") for e in drawn))                              # no links (JL 261012)
-        index = next(e for e in drawn if e["type"] == "frame" and e["name"].endswith("the index"))
-        rows = [e for e in drawn if e["type"] == "rectangle" and e.get("frameId") == index["id"]
-                and e["x"] > block_index.X_ITEM - 5]
-        self.assertEqual(len({round(e["x"]) for e in rows}), 1)                          # one column: a row each
-        self.assertNotRegex(said, r"\d+ (explore|shaping|agreed|closed)\b")              # no counts: they go stale
-        rich = {"background": [{"title": "Why", "tree": [{f"Part {k}": [" ".join(["word"] * 30)] * 3} for k in range(8)]},
-                               {"title": "How", "tree": ["one leaf", "two leaf"]}]}
-        face.write_text(re.sub(r"```yaml\n.*?```", "```yaml\n" + yaml.safe_dump(rich) + "```", face.read_text(),
-                               flags=re.S))
-        with contextlib.redirect_stdout(io.StringIO()):
-            block_index.draw(b)
-        # background first; a background too small for a screen's third merges into the index, under its title
-        # (excalidraw-studio: "a thin frame is merged, not padded"), with its heading and tree (JL 261012)
-        self.assertEqual(frames(), ["s00 · Why", "s00 · b01_topic · the index"])
-        drawn = json.loads(out.read_text())["elements"]
-        index = next(e for e in drawn if e["type"] == "frame" and e["name"].endswith("the index"))
-        inside = {e["text"]: e for e in drawn if e["type"] == "text" and e.get("frameId") == index["id"]}
-        self.assertIn("How", inside)
-        self.assertTrue(any("one leaf" in k for k in inside))
-        self.assertLess(inside["How"]["y"], inside["Topic"]["y"])                       # above the mind map
-        self.assertEqual(sum(e.get("backgroundColor") == block_index.KEY for e in drawn
-                             if e.get("frameId") == index["id"]), 1)                     # one key point: the Block
-        self.assertEqual(block_index.blocks(Path(self.tmp.name)), [b])
-
-    def test_s00_draws_proposed_topics_and_jobs_until_made(self):
-        """JL 261012: "s00 should also work in a way for the proposing the sNN and jNN as well"; "we also need to propose
-        the new studio and new jobs in a new frame": one row each, the gap ─▶ the topic ─▶ the Job ─▶ what it delivers."""
-        import block_index
-        b = self.block
-        (b / "studio" / "s01-a").mkdir(parents=True)
-        (b / "studio" / "s01-a" / "s01-a.md").write_text("s01 · A\n=======\n\n**Stage:** shaping\n\n**Topic:** a.\n")
-        face = b / "studio" / block_index.S00 / f"{block_index.S00}.md"
-        face.parent.mkdir(parents=True)
-        face.write_text("s00 · Background and index\n\n```yaml\nstudio_plan:\n  steps:\n  - title: Plan\n"
-                        "    ids: [s01, s02]\n```\n\n```yaml\n" + yaml.safe_dump({"studio_proposals": [
-                            {"id": "s02", "title": "Moved", "status": "proposed", "question": "What moves?",
-                             "output": "a list", "why": "Q01 nobody feeds"}]}) + "```\n\n```yaml\n" +
-                        yaml.safe_dump({"job_proposals": [
-                            {"id": "j01", "slug": "move", "title": "Move them", "status": "proposed",
-                             "topics": ["s02", "s01"], "finish": "every builder moved", "why": "nothing moves them"},
-                            {"id": "j02", "slug": "keep", "title": "Keep it", "status": "proposed", "topics": ["s01"],
-                             "finish": "kept", "why": "s01 Open 1"}]}) + "```\n")
-        with contextlib.redirect_stdout(io.StringIO()):
-            out = block_index.draw(b)
-        drawn = json.loads(out.read_text())["elements"]
-        frames = {e["id"]: e["name"] for e in drawn if e["type"] == "frame"}
-        self.assertEqual(list(frames.values())[-1], "s00 · 💡 b01_topic · what we propose next")   # ④, after the index
-        fid = lambda end: next((e["id"] for e in drawn if e["type"] == "frame" and e["name"].endswith(end)), None)
-        text = lambda end: " | ".join(e["text"] for e in drawn if e["type"] == "text" and e.get("frameId") == fid(end)
-                                      ).replace("\n", " ")
-        ask = text("what we propose next")
-        for words in ("❓ the gap it closes", "🧠 the topic", "🧱 the Job", "🏁 what it delivers",   # the columns
-                      "❓ s02: Q01 nobody feeds", "❓ j01: nothing moves them",                   # row 1: both gaps,
-                      "⬜ s02 · Moved [proposed]", "What moves?", "→ a list",                       # the topic,
-                      "⬜ j01_move · Move them [proposed]", "rests on: s02 · s01", "🏁 every builder moved",  # its Job
-                      "❓ s01 Open 1", "🔶 s01 · A", "⬜ j02_keep · Keep it [proposed]", "🏁 kept"):  # row 2: a made one
-            self.assertIn(words, ask)
-        self.assertLess(ask.index("Q01 nobody feeds"), ask.index("s02 · Moved"))                  # read left to right
-        self.assertLess(ask.index("s02 · Moved"), ask.index("j01_move"))
-        boxes = [e for e in drawn if e["type"] == "rectangle" and e.get("frameId") == fid("what we propose next")
-                 and e.get("backgroundColor") != "#fff3bf"]                      # the key point is not a cell
-        # excalidraw-studio's principles where they fit s00 (JL 261012): each frame's key point on the slight colour,
-        # and the frames as acts, named at the left, a named arrow for each step
-        for f in (e for e in drawn if e["type"] == "frame"):
-            self.assertEqual(sum(e.get("backgroundColor") == "#fff3bf" for e in drawn if e.get("frameId") == f["id"]),
-                             1, f["name"])
-        free = [e for e in drawn if not e.get("frameId")]
-        self.assertTrue(any(e["type"] == "text" and e["text"].startswith("Act 2 ·") for e in free))
-        self.assertTrue(any(e["type"] == "text" and e["text"] == "still needs" for e in free))
-        self.assertEqual(sum(e["strokeColor"] == canvas.RED and e["strokeStyle"] == "dashed" for e in boxes), 3)
-        self.assertEqual(sum(e["strokeColor"] == canvas.INK and e["strokeStyle"] == "solid" for e in boxes), 1)
-        self.assertEqual(sum(e["type"] == "arrow" and e.get("frameId") == fid("what we propose next") for e in drawn), 6)
-        index = text("the index")
-        self.assertNotIn("Move them", index)                                           # the index: what is on disk,
-        self.assertIn("❓ proposed, not made yet: j01_move · j02_keep", index)          # and one line naming the rest
-        (b / "j01_move").mkdir()
-        (b / "j01_move" / "j01_move.md").write_text("# j01 · Move them\n\nstate: ACTIVE\n")
-        with contextlib.redirect_stdout(io.StringIO()):
-            block_index.draw(b)
-        drawn = json.loads(out.read_text())["elements"]
-        self.assertIn("🧱 j01 · Move them", text("the index"))                          # made: a Job row now
-        self.assertNotIn("j01_move", text("what we propose next"))
-        self.assertIn("⬜ s02 · Moved [proposed]", text("what we propose next"))
-        (b / "studio" / "s02-moved").mkdir()
-        (b / "j02_keep").mkdir()
-        (b / "j02_keep" / "j02_keep.md").write_text("# j02 · Keep it\n\nstate: ACTIVE\n")
-        with contextlib.redirect_stdout(io.StringIO()):
-            block_index.draw(b)
-        drawn = json.loads(out.read_text())["elements"]
-        self.assertIsNone(fid("what we propose next"))                                  # all made: no ④
 
     def test_a_topic_draws_from_its_face_as_boxes_and_arrows(self):
         """JL 261012: "so we can have both tree and box, and -->"; "add the things like the emoji"."""
@@ -577,3 +413,111 @@ class StairsTest(unittest.TestCase):
         r = next(e for e in els if e["id"] == "r")
         self.assertEqual((r["x"], r["y"]), (500, 0))                  # moved with f0 by (-500, -500)
         self.assertEqual(els[2]["y"], 620)                            # f1 below r's bottom (600) + gap, not f0's
+
+
+class RenderDeliveryTest(unittest.TestCase):
+    """An sNN's delivery/ renders out to where it is used (JL 261030)."""
+
+    def test_a_text_piece_renders_between_its_markers_and_only_there(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("render_delivery", Path(new_topic.__file__).with_name("render_delivery.py"))
+        rd = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(rd)
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            target = root / "skill" / "SKILL.md"
+            target.parent.mkdir()
+            target.write_text("# head\n<!-- render b07-s01 rule: generated -->\nold\n<!-- /render b07-s01 rule -->\ntail\n")
+            topic = root / "work" / "b07_x" / "s01-rule"
+            (topic / "delivery" / "skill").mkdir(parents=True)
+            (topic / "delivery" / "skill" / "rule.md").write_text("new text\n")
+            (topic / "delivery" / "render.yaml").write_text(
+                "pieces:\n  - from: skill/rule.md\n    to: skill/SKILL.md\n    block: rule\n  - code: 'x'\n    by: j01\n"
+                "  - from: paper/s03.md\n    rendered_by: haipipe-paper-assemble\n")
+            self.assertEqual([s for _, s, _ in rd.render(topic)], ["differs", "code", "theme"])
+            self.assertEqual([s for _, s, _ in rd.render(topic, apply=True)], ["rendered", "code", "theme"])
+            self.assertEqual(target.read_text(), "# head\n<!-- render b07-s01 rule: generated -->\nnew text\n<!-- /render b07-s01 rule -->\ntail\n")
+            self.assertEqual([s for _, s, _ in rd.render(topic)], ["same", "code", "theme"])   # a Theme's skill renders it
+
+
+
+class StudioUpdateTest(unittest.TestCase):
+    def test_audit_names_the_misses_and_name_writes_for_type_and_an_open_point(self):
+        import studio_update as su
+        with tempfile.TemporaryDirectory() as tmp:
+            topic = Path(tmp) / "Project-X" / "work" / "b01_x" / "studio" / "s01-a"
+            topic.mkdir(parents=True)
+            (topic / "s01-a.md").write_text("s01 · a\n=====\n\n**Topic:** one thing.\n\n\nOpen\n----\n\n1. first\n")
+            keys = {k for _, k, _ in su.checks(topic, su.level_counts([topic]))}
+            self.assertEqual(keys, {"place", "stage", "for", "type", "delivery", "render", "mindmap", "draw", "slides"})
+            su.add_stage(topic)
+            su.add_delivery(topic)
+            su.name(topic, "a deck, and one table, for its reader", "data")
+            text = (topic / "s01-a.md").read_text()
+            self.assertIn("**Stage:** explore", text)
+            self.assertLess(text.index("**For:**"), text.index("**Delivery type:** data"))
+            self.assertIn("2. Agree its **For:** line and **Delivery type:** (data)", text)
+            self.assertTrue((topic / "delivery" / "render.yaml").is_file())
+            keys = {k for _, k, _ in su.checks(topic, su.level_counts([topic]))}
+            # a data topic also owes its data drawn step by step (excalidraw-studio § A data topic, JL 261031)
+            self.assertEqual(keys, {"place", "mindmap", "draw", "slides", "data-built"})     # never deck as a type
+            with self.assertRaises(SystemExit):
+                su.name(topic, "", "deck")
+
+
+class GalleryScanTest(unittest.TestCase):
+    def test_a_delivery_is_sorted_by_its_files_and_an_sNN_by_its_level_and_theme(self):
+        import gallery_scan
+        with tempfile.TemporaryDirectory() as tmp:
+            proj = Path(tmp) / "Project-X"
+            word = proj / "paper" / "Paper-Y" / "delivery"
+            (word / "word").mkdir(parents=True)
+            (word / "word" / "paper.docx").write_text("x")
+            (word / "paper.pdf").write_text("x")
+            deck = proj / "work" / "b01_x" / "s01-a" / "delivery"
+            (deck / "deck").mkdir(parents=True)
+            (deck / "deck" / "a.pptx").write_text("x")
+            empty = proj / "work" / "b01_x" / "j01_y" / "s02-b" / "delivery"
+            (empty / "deck").mkdir(parents=True)
+            (empty / "render.yaml").write_text("pieces: []\n")
+            self.assertEqual([gallery_scan.kind_of(d) for d in (word, deck, empty)], ["Word + PDF", "deck", "empty"])
+            self.assertEqual([gallery_scan.level_of(d.parent.parent) for d in (deck, empty)], ["Block", "Job"])
+            self.assertEqual(gallery_scan.level_of(deck.parent), "sNN")
+            self.assertEqual([gallery_scan.theme_of(d) for d in (word, deck)], ["paper", "work"])
+            self.assertEqual(gallery_scan.theme_of(Path(tmp) / "Proj01-CGM" / "discovery" / "b01_x" / "s01-a"), "discovery")
+
+    def test_a_delivery_is_its_main_thing_not_its_deck_and_an_sNN_names_its_type(self):
+        import gallery_scan
+        with tempfile.TemporaryDirectory() as tmp:
+            snn = Path(tmp) / "Project-X" / "work" / "b01_x" / "s01-a"
+            for sub in ("deck", "skill"):
+                (snn / "delivery" / sub).mkdir(parents=True)
+                (snn / "delivery" / sub / "x.md").write_text("x")
+            self.assertEqual(gallery_scan.kind_of(snn / "delivery"), "skill")       # the deck is never the kind
+            (snn / "s01-a.md").write_text("s01 · a\n=====\n\n**For:** a deck, and a skill\n\n**Delivery type:** skill\n")
+            self.assertEqual(gallery_scan.type_of(snn), "skill")
+            (snn / "s01-a.md").write_text("s01 · a\n=====\n\n**Delivery type:** deck\n")
+            self.assertEqual(gallery_scan.type_of(snn), "")                        # deck is not a type
+            self.assertEqual(gallery_scan.type_of(snn.parent), "")                 # only an sNN has one
+
+    def test_a_gallery_shows_the_newest_of_each_kind_and_only_a_tools_sNN_shows_its_words(self):
+        import gallery_scan
+        with tempfile.TemporaryDirectory() as tmp:
+            rows = []
+            for k, (space, name, for_line) in enumerate((("Tools", "s01-old", "a deck, and an old skill"),
+                                                          ("Tools", "s02-new", "a deck, and a new skill"),
+                                                          ("Physician", "s03-private", "a deck, and private words"))):
+                d = Path(tmp) / f"{space}-SPACE" / "Project-X" / "work" / "b01_x" / name
+                d.mkdir(parents=True)
+                (d / f"{name}.md").write_text(f"{name} · title\n=====\n\n**For:** {for_line}\n")
+                rows.append({"space": space, "path": d, "level": "Block", "theme": "work", "beside": True, "mtime": k})
+            saved = dict(gallery_scan._cache)
+            gallery_scan._cache.update(s=[(r["space"], r["path"]) for r in rows], d=[])
+            try:
+                md = gallery_scan.studio_md()
+            finally:
+                gallery_scan._cache.clear()
+                gallery_scan._cache.update(saved)
+            self.assertIn("a deck, and a new skill", md)          # the newest Tools one with a For: line
+            self.assertNotIn("private words", md)                # another SPACE never shows its face's words
+            self.assertIn("| Block | 3 |", md)

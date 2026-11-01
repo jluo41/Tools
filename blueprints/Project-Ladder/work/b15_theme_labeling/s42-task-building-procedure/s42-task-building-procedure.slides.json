@@ -1,0 +1,55 @@
+{
+ "topic": "s42-task-building-procedure",
+ "style": "sketch-notes",
+ "source": "s42-task-building-procedure.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Task building procedure: from talking with the corpus to a signed Handoff",
+   "points": [
+    "every step of the 🏗 building Task (task-type: labeling-building, s13), drawn the way s41 drew the…",
+    "Building takes the items Task's items and ends at a signed Label Handoff that the 🔍 scanning Task…",
+    "The person gets to know the corpus by talking with it before the meaning is fixed"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and the building Task step by step, from talking with the corpus to a signed Handoff, for the people who write the…",
+    "a skill"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "What is decided",
+   "points": [
+    "Talking with the corpus is part of building, before its meaning is signed, not a Task type of its…",
+    "The law's order (ref/step-order.md",
+    "Explore's notes are never labels and never gold: P0 makes no label, and gold comes only from a…",
+    "The values are the engine's high · low · none (ordinal, how unsafe the reply is)"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "04",
+   "idea": "Still open",
+   "points": [
+    "The review lives in the chat (D05, D12): does the workbench also need a way to rule there, for a…",
+    "The novelty claims ✨1-✨3 are not yet checked against related work (LLM-assisted annotation,…",
+    "The building law and engine still say the person makes every judgment (Law, human gates \"item\")"
+   ],
+   "leaning": "",
+   "ask": "~~Should the items Task log which items a person opened~~: the corpus tools log every item shown…",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

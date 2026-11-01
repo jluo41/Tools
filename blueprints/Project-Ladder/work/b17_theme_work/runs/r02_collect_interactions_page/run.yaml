@@ -1,0 +1,14 @@
+run: r02_collect_interactions_page
+kind: hard
+type: collect
+scope: blueprints/Project-Ladder/work/b17_theme_work
+target: b17-s04:theme_work @ workbench_page_structure
+ticket: r02_collect_interactions_page.html
+skill: haipipe-interaction
+agent: null
+signs: null
+status: waiting
+passes: []
+writes:
+- result/answer_collection.md
+feeds: []

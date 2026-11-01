@@ -5,6 +5,9 @@ The exercise preprocess step: raw, as it arrives, to the input JSON (b51 s12's e
                    (ext_exercise_codebook, pinned by EventNormV7); a day total is set aside (s02-D19), an Other kept
                    for its total when it has minutes (s02-D18), a session asked as the book's words
     words          text: "brisk walking 30 min" and when it began
+    a study's label  label: a person's rows of a study's workout word (MetaboNet: date, workout_label,
+                   workout_duration), pieces of one workout back to back joined; each workout is logged, its MET the
+                   Compendium's for the word
     a stream       met_stream, steps_stream, named_stream, strap_stream, motion_stream, lab_stream: a wearable's
                    samples; its rule finds the workout (a MET of 3, 100 steps a minute, the device's word checked
                    against its steps, for 10 minutes; s02-D22, D25), else it stays a stream
@@ -127,27 +130,113 @@ MINUTES = re.compile(r"(?:\bfor\s+|\babout\s+)?(\d+(?:\.\d+)?)\s*(minutes?|mins?
 HOURS = re.compile(r"(?:\bfor\s+|\babout\s+)?(\d+(?:\.\d+)?)\s*(hours?|hrs?|h|小时)\b", re.I)
 
 
-def text(rows, asked: str) -> dict:
+# What parts typed words into activities done one after another (JL 261028: "brisk walking 20 min then swimming 30
+# min" is two workouts, not one): "then", "followed by", "after that", 然后, a comma or a semicolon; a plain "and" only
+# when each side has its own minutes ("walked 20 min and swam 30 min", but "walking and jogging 30 min" is one).
+THEN = re.compile(r"\s*(?:,?\s*\b(?:and then|then|followed by|after that|afterwards)\b|[;,+]|[，；、]|然后|之后)\s*", re.I)
+AND = re.compile(r"\s+(?:and|&)\s+|和|跟", re.I)
+
+
+def amount(words: str):
+    """The minutes in some words (the first "30 min" or "1 hour") and the words left once they are taken out."""
+    for pat, k in ((MINUTES, 1), (HOURS, 60)):
+        m = pat.search(words)
+        if m:
+            return whole(float(m.group(1)) * k), words[:m.start()] + words[m.end():]
+    return None, words
+
+
+def pieces(words: str) -> list:
+    """Typed words as (activity, minutes), one a workout, in the order they were done. A piece with no words of its own
+    ("brisk walking, 30 min") belongs to the one before it."""
+    def amounts(w):
+        return sum(len(p.findall(w)) for p in (MINUTES, HOURS))
+    parts = []
+    for p in (x for x in THEN.split(words) if x and x.strip()):
+        parts += [q for q in AND.split(p) if q.strip()] if amounts(p) > 1 else [p]
+    made = []
+    for p in parts:
+        minutes, rest = amount(p)
+        activity = re.sub(r"\s+", " ", rest).strip(" ,;:.，；、")
+        if not activity and made and made[-1][1] is None:
+            made[-1] = (made[-1][0], minutes)
+        elif activity or minutes:
+            made.append((activity, minutes))
+    return made
+
+
+def text(rows, asked: str, every_workout: bool = False):
     """Words typed or said: the activity and its minutes ("brisk walking 30 min", "swim 1 hour"), and when it began
-    (the row's time). The words left once the minutes are taken out are the activity."""
+    (the row's time). Activities done one after another ("brisk walking 20 min then swimming 30 min") are as many
+    workouts, back to back from that time, one activity each (s02-D06): with `every_workout` each one, else the
+    longest, as a study's labels."""
     r = rows.iloc[0].to_dict()
     words = str(r.get("text") or "").strip()
     if not words:
         raise ValueError('raw.type "text": its row needs "text", the activity and its minutes')
-    minutes = None
-    for pat, k in ((MINUTES, 1), (HOURS, 60)):
-        m = pat.search(words)
-        if m:
-            minutes = whole(float(m.group(1)) * k)
-            words = (words[:m.start()] + words[m.end():])
-            break
-    activity = re.sub(r"\s+", " ", re.sub(r"[,;:.]+\s*$", "", words)).strip(" ,;:.")
+    found = pieces(words) or [("", None)]
     start = str(r.get("time")).strip() if r.get("time") else None
-    end = plus(start, minutes) if start and minutes else None
-    return {"input": {"start": start, "end": end, "total": {"minutes": minutes} if minutes else None,
-                      "items": [{"id": "i1", "activity": activity, "met": None}] if activity else None,
-                      "timeline": None},
-            "kind": "text", "minutes": minutes, "step": f"the words → '{activity}'" + (f", {minutes} minutes" if minutes else ", no minutes")}
+    made = []
+    for activity, minutes in found:
+        end = plus(start, minutes) if start and minutes else None
+        made.append({"input": {"start": start, "end": end, "total": {"minutes": minutes} if minutes else None,
+                               "items": [{"id": "i1", "activity": activity, "met": None}] if activity else None,
+                               "timeline": None},
+                     "kind": "text", "minutes": minutes,
+                     "step": f"the words → '{activity}'" + (f", {minutes} minutes" if minutes else ", no minutes")})
+        start = end                                             # the next one begins where this one ends
+    if len(made) == 1:
+        return made if every_workout else made[0]
+    if every_workout:
+        return [dict(w, step=f"workout {k + 1} of {len(made)}: {w['step']}") for k, w in enumerate(made)]
+    k = max(range(len(made)), key=lambda k: (made[k]["minutes"] or 0, -k))   # the longest, the first on a tie
+    return dict(made[k], step=f"{len(made)} activities, one after another; the longest kept (events() gives each): "
+                              + made[k]["step"])
+
+
+LABEL = {"time": "date", "word": "workout_label", "minutes": "workout_duration"}
+
+
+def labels(rows, every_workout: bool = False):
+    """A person's workout labels (MetaboNet's harmonized table): each row a word at a time, with its minutes when the
+    study gives them, else one tick of the table's clock (BrisT1D logs a word every 5 minutes, T1D-UOM a 15-minute
+    piece). A piece that starts where the last of the same word ended is the same workout. Returns the longest
+    workout, or with `every_workout` every one in time order; each is logged, like a WellDoc row."""
+    import pandas as pd
+    miss = [c for c in (LABEL["time"], LABEL["word"]) if c not in rows.columns]
+    if miss:
+        raise ValueError(f'raw.type "label": its rows need {LABEL["time"]} and {LABEL["word"]}; missing {miss}')
+    s = pd.DataFrame({"t": pd.to_datetime(rows[LABEL["time"]], errors="coerce"),
+                      "word": rows[LABEL["word"]].fillna("").astype(str).str.strip(),
+                      "given": pd.to_numeric(rows.get(LABEL["minutes"]), errors="coerce") if LABEL["minutes"] in rows
+                      else float("nan")})
+    s = s.dropna(subset=["t"])
+    s = s[s["word"] != ""].sort_values("t").reset_index(drop=True)
+    if s.empty:
+        none = {"input": None, "kind": "label", "step": "no row has a word and a time: no workout"}
+        return [none] if every_workout else none
+    gap = s["t"].diff().dt.total_seconds() / 60
+    tick = float(gap[gap > 0].median()) if (gap > 0).any() else 5.0
+    tick = min(max(1.0, round(tick)), 15.0)                     # the table's clock: 5 minutes in MetaboNet
+    s["dur"] = s["given"].where(s["given"] > 0, float("nan"))   # a 0 is "not given" (s02-D14)
+    s["dur"] = s["dur"].fillna(s["given"].isna().map({True: tick, False: float("nan")}))
+    ends = s["t"] + pd.to_timedelta(s["dur"].fillna(0), unit="min")
+    cut = (s["word"] != s["word"].shift()) | (s["t"] - ends.shift() > pd.Timedelta(minutes=0.5)) | s["dur"].isna()
+    made = []
+    for _, g in s.groupby(cut.astype(int).cumsum()):
+        start = g["t"].iloc[0].strftime("%Y-%m-%d %H:%M")
+        minutes = whole(float(g["dur"].sum())) if g["dur"].notna().all() else None
+        said = f"the study's label '{g['word'].iloc[0]}'" + (
+            f", {len(g)} pieces back to back joined" if len(g) > 1 else "") + (
+            f", {minutes} minute{'s' if minutes != 1 else ''}" if minutes else ", no minutes (a 0 is not given)")
+        made.append({"input": {"start": start, "end": plus(start, minutes) if minutes else None,
+                               "total": {"minutes": minutes} if minutes else None,
+                               "items": [{"id": "i1", "activity": str(g["word"].iloc[0]), "met": None}],
+                               "timeline": None},
+                     "kind": "label", "minutes": minutes, "step": said})
+    if every_workout:
+        return [dict(w, step=f"workout {k + 1} of {len(made)}: {w['step']}") for k, w in enumerate(made)]
+    return made[max(range(len(made)), key=lambda k: (made[k]["minutes"] or 0, -k))]   # the longest, the first on a tie
 
 
 def samples(rows, kind: str):
@@ -312,7 +401,9 @@ def preprocess(raw: dict, every_workout: bool = False):
     if kind in LOGGED:
         return one(logged(rows, kind))
     if kind == "text":
-        return one(text(rows, kind))
+        return text(rows, kind, every_workout)
+    if kind == "label":
+        return labels(rows, every_workout)
     if kind == "wearable":                                      # an uploaded file: its columns say which stream it is
         found = kind_of(rows)
         said = f"a wearable file of {len(rows):,} rows, read as {found} by its columns: "

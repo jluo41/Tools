@@ -154,6 +154,20 @@ class LabelingThemeTest(unittest.TestCase):
         self.assertEqual(T.types_of(task(job, "t04_demo_scanning", "labeling-scanning")), ("scanning",))
         self.assertEqual(T.types_of(job), ())
 
+    def test_the_two_loops_are_their_own_types(self):
+        """b15 s13-D12 (261101): building split into meaning and expression, one Task each."""
+        job = self.task.parent
+        meaning = task(job, "t05_demo_meaning", "labeling-meaning")
+        expression = task(job, "t06_demo_expression", "labeling-expression")
+        self.assertEqual(T.types_of(meaning), ("meaning",))
+        self.assertEqual(T.types_of(expression), ("expression",))
+        self.assertEqual(T._needed({"items", "meaning"}), ("expression", "scanning"))
+        self.assertEqual(T._needed({"items", "building", "scanning"}), ())
+        page = frame.render(self.theme, self.root, meaning, "Description", "")
+        self.assertIn("the only Task that asks you", page)
+        page = frame.render(self.theme, self.root, expression, "Description", "")
+        self.assertIn("it never asks you", page)
+
     def test_the_task_dropdown_groups_tasks_by_type(self):
         self.assertEqual(T.option(items_task(self.task.parent)), ("Task · t02 · items", "📦 Items"))
         self.assertEqual(T.option(self.task), ("Task · t01 · building + scanning", "🏗 Building + 🔍 Scanning"))

@@ -1,0 +1,55 @@
+{
+ "topic": "s32-paper-ui",
+ "style": "sketch-notes",
+ "source": "s32-paper-ui.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Paper UI: its elements and its issues",
+   "points": [
+    "every kind of element the paper theme draws today, as it draws it, side by side, so the paper…",
+    "so we can unify them\")",
+    "The versions are shot live from the frame (/_board/workbench) at the paper's Block, Job and Task…"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and every element the paper theme draws today and its UI problems, for the people who build the workbench",
+    "a ui"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "What is decided",
+   "points": [
+    "b03's picks hold for the paper (261008, b03 s32-D01 · D02 · D05 · D08 · D09): top tabs in the D ·…",
+    "Today's frame already draws the paper's top tabs, view row, header and Disk · Runs panel in the",
+    "Old pages are flagged OLD in red, in a red dashed box (b03 s32-D03): the old paper Board page (its",
+    "Done (261008, b03's ruling"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "04",
+   "idea": "Still open",
+   "points": [
+    "Pick the looks b03 leaves open (the Pick frame): one item's display, once the links point at the…",
+    "Related's paper cards have no drawing yet (the discovery read's draw step, s11)",
+    "(was s33 open 1) The Board's Main · Appendix · Delivery: the newest version only, or each version…"
+   ],
+   "leaning": "",
+   "ask": "Build s32-D05 in servers/workbench-paper/paper_theme.py (the paper's own code, not the base): the",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

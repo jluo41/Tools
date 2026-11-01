@@ -1,9 +1,9 @@
 ---
 name: haipipe-paper
-description: "The one door for a paper on the ladder: a paper Board, one version Job per send, one Task per Section, Abstract or letter; routes to the Story, Ideation, Venue, Section, comments and assembly owners. Use for paper setup (paper_ladder.py), status, drafting, or reviews. Trigger: paper, paper Board, version, send, /haipipe-paper."
+description: "The one door for a paper on the ladder: a paper Board, one version Job per send, one Task per Section, Abstract or letter; routes to the Story, Ideation, Venue, Section, comments and assembly owners. Use for paper setup (paper_ladder.py), bringing an older paper folder onto the latest layout (paper_ladder.py audit, update), where a paper stands (checklist.md, paper_check.py, its sNN-paper-checklist topic), the delivery and its requirements, drafting, or reviews. Trigger: paper, paper Board, version, send, update the paper folder, paper checklist, delivery requirements, /haipipe-paper."
 metadata:
-  version: "1.17.2"
-  last_updated: "2026-10-26"
+  version: "1.20.1"
+  last_updated: "2026-11-01"
   summary: "Paper owns the journey and composition; the shared Page owns each Paper Page's lifecycle and release."
 ---
 
@@ -17,9 +17,64 @@ metadata:
 `haipipe-paper` is the Paper-family router. It does not implement the Page
 workflow and it does not replace the specialist Page Type contracts.
 
+## 🧭 Four layers: plan, explore, evidence, writing (JL 261031; b16-s01-paper-tree-concept)
+
+**One paper Block links many discovery Blocks (external information) and work Blocks (internal information), deposits them into its evidence Jobs, and writes them into papers in its writing Jobs** (JL 261031).
+
+```text
+plan       the paper Board          the idea, the story, the venue, data flow, paper flow, related work (its sNN topics)
+explore    internal: work Blocks    datasets and regressions on raw data
+           external: discovery      papers and sources, each read by a Run
+evidence   j02_evidence_value       the printed numbers, one Task per group   ← internal Results
+           j03_evidence_cite        the citations, one Task per claim group   ← external, verified CITE Results
+           j01_evidence_display     figures and tables (t01-t19 main, t51-t59 appendix), drawn from internal Results
+writing    j11_writing_v<MMDD>_<desk>, j12_writing_…   one Job per send: its Sections quote the evidence
+```
+
+The evidence is independent of the writing and of the venue (JL 261031: "evdience might identipatnet to the paper
+writing and the venue"), so its Jobs sit beside the writing Jobs, never inside one: a resend reuses them as they are;
+a venue's style is applied when the paper is built. An evidence Task reads returned, aggregated Results only, never
+raw data, so the paper folder stays safe to share; computing stays in work. `paper_ladder.py evidence <board>` makes
+the three evidence Jobs; `version` and `next` number the writing Jobs from j11. An older `jNN_v<MMDD>_<desk>` version
+still reads.
+
+## ✅ Where a paper stands: `checklist.md`
+
+JL 261031: "here we should also try to add the checklist.md, so everytime, the haipipe-paper we can have the things like check the progress"; JL 261101: "what is the final checklist we should have? what is the delivery, and what is the delivery requirements"; "make the checklist to be a sNN as well". [`checklist.md`](checklist.md) lists what a paper needs, from its question to the send: ⓪ Layout L1-L5, ① Plan P1-P8, ② Explore E1-E3, ③ Evidence V1-V5, ④ Writing W1-W5, ⑤ Delivery D1-D9. `scripts/paper_check.py <Paper-Board>` ticks every line a file can prove (✅ done, ⏳ under way, ⬜ not yet, 🙋 waits on a person). Run it whenever someone asks where a paper stands, and answer from its lines.
+
+```text
+paper_check.py <Board>            print the checklist; change nothing
+paper_check.py <Board> --write    also tick it into sNN-paper-checklist/ below its GENERATED line
+```
+
+**The checklist is a topic.** Each paper Board keeps it as `sNN-paper-checklist/` (s05 when free, the concept band): the face's head (Decided, Open) is the person's; below its GENERATED line is `paper_check.py --write`'s, rerun, never edited.
+
+**The delivery and its requirements (⑤).** One send hands over the manuscript (PDF and Word), the supplement when the venue takes one, the cover letter, the venue's own files (its author kit) and the receipt, `delivery/<writing Job>/build-manifest.json`. Each D line names where its rule lives and never copies it: haipipe-paper-assemble's Required outputs (D1-D3), `venues/<venue>/call.md` (D4: words, desk rules, the venue's own build profile), AGENTS.md § Papers (D5: no process text), haipipe-paper-evidence (D6), `ref/submission-readiness.md` (D7 the build's blockers, D8 the human reading pass), haipipe-delivery (D9: only a person writes `sent` in `delivery/delivery.md`).
+
+## 🔄 Bring an older paper folder up to date: `audit` and `update`
+
+JL 261101: "the /haipipe-paper need to have the update, so you can update the existing paper folder to the latest version". `paper_ladder.py audit <Board>` prints the ⓪ Layout lines; `paper_ladder.py update <Board> [--date MMDD]` prints, as a dry run, the steps that fix each failing line; `--apply` does them, in order, and stops at the first that fails:
+
+```text
+L1 old Pages (A1-Story/, B*-/)     carry_over/migrate_paper.py, topics_paper.py, then sweep_names.py
+L2 undated versions, S-… Sections  carry_over/rename_tasks.py --date MMDD
+L3 jNN_v<MMDD>_<desk>/             renamed jNN_writing_v<MMDD>_<desk>/ (from j11; a number of 11 or more kept), its face,
+                                   its delivery/<job>/ folder and build inputs too, the whole name swept
+V1 missing evidence Jobs           paper_ladder.py evidence
+L4 no checklist topic              sNN-paper-checklist/ (haipipe-studio new_topic.py --over-limit), then paper_check.py --write
+L5 faces the views read            🙋 not mechanical: haipipe-paper-story (T, D tables), haipipe-paper-plan (-drawing.yaml)
+```
+
+Every carry-over step keeps its own rollback; nothing is committed. Update also removes an empty leftover `A1-Story/`
+or `studio/` folder. Each step's title names the step, never a count.
+
+**Undo, newest first.** `paper_ladder.py rollback <Board>` undoes the evidence Jobs step; then `paper_ladder.py update
+<Board> --rollback` undoes the renames and sweeps, from the record `.ladder-undo/update-N/`. To undo the checklist
+topic, delete its `sNN-paper-checklist/` folder. Run update in the paper's own session (one session per Project), dry run first, and show the person the dry run before `--apply`. A subagent, or any session that does not own the paper, stops at the dry run and reports it.
+
 ## 🪜 The ladder: Board · version · Task · Run
 
-A paper is one Board; each send to a venue is a version Job; each Section, the
+A paper is one Board; each send to a venue is a writing Job (a version); each Section, the
 Abstract and each letter is a Page Task in that version; every Run is
 `run-<type>-<target>` (b16 Q01, Q04, Q05). The contract is
 [`ref/paper-ladder.md`](ref/paper-ladder.md); `scripts/paper_ladder.py` makes
@@ -28,8 +83,9 @@ Route a request by the level it names:
 
 | Level | Folder | Its owners |
 |---|---|---|
-| Board | `Paper-<Slug>/`: face, `studio/`, `reports/`, `runs/`, `venues/`, `related/` | Story and Ideation (studio topics and Board Questions), Venue, Related through Discovery |
-| version | `jNN_v<MMDD>_<desk>/`: face with `## Narrative` and `## Questions`, its Tasks; output in Block `delivery/jNN_<version>/` | the Section release (G3), comments reports, assembly and send (G4, G5) |
+| Board | `Paper-<Slug>/`: face, its topics `sNN-<topic>/` beside the Jobs (no `studio/` folder), `reports/`, `runs/`, `venues/`, `related/`, `delivery/` | Story and Ideation (studio topics and Board Questions), Venue, Related through Discovery |
+| evidence | `j01_evidence_display/`, `j02_evidence_value/`, `j03_evidence_cite/`: one Task per display, value group or claim group | haipipe-paper-evidence (rules), haipipe-display (drawing) |
+| version (writing) | `j11_writing_v<MMDD>_<desk>/` (older `jNN_v<MMDD>_<desk>/`): face with `## Narrative` and `## Questions`, its Tasks; output in Block `delivery/<version>/` | the Section release (G3), comments reports, assembly and send (G4, G5) |
 | Task | `t00_abstract` · `t0N_` Main · `t2N_` Appendix · `t3N_` letters | `haipipe-paper-draft` over haipipe-draft's seven steps (below) |
 | Run | `runs/run-<type>-<target>/` (its `run.yaml`, ticket and `passes/`, as `haipipe-run` has it); a Section's are the Page engine's | the run cards, `haipipe-paper-workflow/ref/run-cards.md` |
 
@@ -68,8 +124,9 @@ lifecycle, Page Run namespace, Evidence Workspace, or Page release protocol.
 
 ### A Section, step by step (b32 s41, on screen 2026-10-20)
 
-A Section Task is a draft Task (`task-type: draft`), worked in haipipe-draft's seven steps, the seven tabs of its
-Work. The paper adds its own owner to four of them:
+A Section Task is a draft Task (`task-type: draft`), worked in haipipe-draft's seven steps. Its Work shows the five
+middle steps as views (1 Plan to 5 Revise; Display only when the Section calls or makes a display); Studio and
+Delivery are the top row's. The paper adds its own owner to four of the steps:
 
 | Step (tab) | In a paper | Owner |
 |---|---|---|
@@ -81,8 +138,9 @@ Work. The paper adds its own owner to four of them:
 | 🔁 5 · Revise | Revise cards, then comments' Review Items routed to the Section | haipipe-draft-writing · haipipe-paper-comments |
 | 📤 Delivery | the Section's lanes in `delivery/jNN_<version>/<tNN>/`; ◆ ready for the build | haipipe-delivery · haipipe-paper-assemble |
 
-The version's Work shows each Section as a card with its seven chips (`✍ sign`, `✓ done`, `🔶 asked`, `🔁 pass k`,
-`→ next`), a click each into that Section's tab; `✎ Write` opens the step that waits.
+The version's Work shows each Section as one row with its five step words (Plan, Write, Evidence, Display, Revise;
+`focus_draft.WORK`), each saying its state (done, next, sign, asked, send, optional, pass k, later) and opening that
+step (`paper_version.section_row`).
 
 ## Paper Workflow and content owners
 
@@ -93,10 +151,10 @@ Page containers, status reads and gate records do not allocate Runs.
 
 | Owner | Paper responsibility |
 |---|---|
-| Ideation | the idea pool as `studio/s01-ideation/` and Questions (group ideation); `haipipe-paper-ideation` |
-| Related work | the closest work: `studio/s10-related-work-map/` maps it beside ours, `s11`-`s19` read one type each; `haipipe-paper-related` |
-| Story | each telling as `studio/sNN-story-<telling>/`, its research questions as Board Questions with reports, the Narrative; `haipipe-paper-story` |
-| Plan | after the story: `studio/s03-paper-dataflow/` (how the data becomes each answer) and `studio/s04-paper-workflow/` (the Sections, displays and dates to the send); `haipipe-paper-plan` |
+| Ideation | the idea pool as `s01-ideation/` and Questions (group ideation); `haipipe-paper-ideation` |
+| Related work | the closest work: `s10-related-work-map/` maps it beside ours, `s11`-`s19` read one type each; `haipipe-paper-related` |
+| Story | each telling as `sNN-story-<desk>-<idea>/` in the Board folder, its research questions as Board Questions with reports, the Narrative; `haipipe-paper-story` |
+| Plan | after the story: `s03-paper-dataflow/` (how the data becomes each answer) and `s04-paper-workflow/` (the Sections, displays and dates to the send); `haipipe-paper-plan` |
 | Venue | shared evidence-backed desk contract; `haipipe-paper-venue` |
 | Section (draft) | one Section, the Abstract or a letter, a draft Task: its plan and sentences in `draft/`; `haipipe-paper-draft` (was haipipe-paper-section) |
 | Evidence | what backs each Section (`evidence/`, `display/`) and one ledger per version: citations, one number per result, displays; `haipipe-paper-evidence` |
@@ -104,7 +162,7 @@ Page containers, status reads and gate records do not allocate Runs.
 
 Use native receipts to report the current owner, accepted Result/version,
 pending dependency and next human decision. Retargeting keeps Story identity,
-binds the selected Venue and changes only the candidate telling in §8. Read the
+binds the selected Venue and changes only the new writing Job's `## Narrative`. Read the
 exact PageType contract for its content rules; this router does not restate it.
 
 `/haipipe-paper status` is a read-only rollup, not a Page Type or lifecycle.
@@ -125,13 +183,12 @@ but never becomes a wording or evidence source.
 For visual displays, load `haipipe-display`; its concept-first gate owns
 composition references, editable reconstruction and candidate promotion.
 
-**A paper is a pair: the paper Board writes, its work Block computes** (JL 261022: "for /haipipe-paper, we should
-have a paper block and a work block to provide the displays and E-work, right?"). `paper/Paper-X/` holds the words;
-one work folder, a work Block `work/bNN_.../`, holds the Runs that make every number and every picture (JL 261023:
-"for the paper, they will also have a work folder, one work folder to provide the content for the paper folder"):
-the question Jobs its VALUE cards read, and its display Job `j21_paper_displays` (named for its venue when a
-Project has several, `j21_<venue>_displays`, e.g. `j21_jama_im_displays`; one Task per display, each picture or table
-body drawn by a Run's `result/`). The display Job opens with a **display plan** the authors agree before anything is
+**The paper Board holds the evidence; work and discovery Blocks create it** (JL 261022: "for /haipipe-paper, we should
+have a paper block and a work block to provide the displays and E-work, right?"; JL 261031, the four layers above).
+Work Blocks `work/bNN_.../` hold the Runs that make every number and every underlying table on raw data; the paper
+Board's evidence Jobs deposit them: `j01_evidence_display` (one Task per display, each picture or table drawn by its
+own Run from returned, aggregated Results), `j02_evidence_value`, `j03_evidence_cite`. Until 261031 the display Job sat
+in the work Block (`j21_paper_displays`, `j21_<venue>_displays`); an older Project keeps it there until it is moved. The display Job opens with a **display plan** the authors agree before anything is
 drawn (JL 261023: "this should be a plan, proposed to the author to think about how to draw them"): one row per
 display with its number, title, the one question it answers, its layout (rows, columns or axes), its source Runs
 and its open choices, written from the team's own record (meeting notes, slides) in the Job face. The Sections write
@@ -163,6 +220,8 @@ Resolve the paper root and target Page before changing anything.
 | assemble the paper | `haipipe-paper-assemble` from the Section Pages' own `delivery/latex/` outputs and accepted bindings |
 | respond to reviewers | `haipipe-paper-comments`: a comments report in the version that answers it, its Review Items routed to the Sections |
 | start a paper, a version, a Section or a Run | `scripts/paper_ladder.py` (`board`, `version`, `next`, `task`, `run`) |
+| bring an older paper folder onto the latest layout | `scripts/paper_ladder.py audit`, `update [--date MMDD] [--apply]` |
+| where a paper stands, and its delivery | `checklist.md`, `scripts/paper_check.py <Board> [--write]`, the Board's `sNN-paper-checklist/` |
 
 ### Paper verbs
 
@@ -176,8 +235,8 @@ Resolve the paper root and target Page before changing anything.
 /haipipe-paper venue <target> [controller-label]
 /haipipe-paper section <section-id> [controller-label]
 /haipipe-paper sessions [paper]        a named Claude session + Codex thread per
-                                       Section (one for the Appendix), once §8
-                                       fixes the Sections
+                                       Section (one for the Appendix), once the
+                                       writing Job's ## Narrative fixes them
 /haipipe-paper comments <new|id>
 /haipipe-paper assemble [paper]        runs anytime · a build made while gate G4
                                        fails is watermarked DRAFT in its receipt
@@ -211,20 +270,15 @@ screen's own rules are in `workbench-paper`.
 | Level › Space › view | What it shows | Owner skill |
 |---|---|---|
 | Studio › Related (folded under the topics, the Board's) | `related/related.md`, one row per item, grouped by its subfolder (meetings · papers · files · emails) and then its `group` cell, opening on its file; by question in Report › Related Papers | `haipipe-related` · `haipipe-paper` · `haipipe-discovery` |
-| Studio (top row, the Board's) | the `studio/` topics, one drawing each, with Tags and Stage | the base frame (`haipipe-studio`) |
+| Studio (top row, the Board's) | the Board's `sNN-<topic>/` folders, one drawing each, with Tags and Stage | the base frame (`haipipe-studio`) |
 | Delivery (top row, the Board's) | `delivery/jNN_<version>/`, one per version; from a version, its part | `haipipe-paper-assemble` · `haipipe-delivery` |
-| Board › Description › Scope · Venue · Resources | the face; `venues/<venue>/`; resources | `haipipe-paper` · `haipipe-paper-venue` |
-| Board › Audience Report › Ideation | the ideation Questions and their `studio/s01-ideation/` work | `haipipe-paper-ideation` |
-| Board › Audience Report › Narrative | what the story says, how it is drawn, how it is told, whether it attracts an editor, a reviewer, the public | `haipipe-paper-story` |
-| Board › Audience Report › High-level logic + Low-level work | each research question: Question │ Work │ Report | `haipipe-paper-story`; the work in `haipipe-task`, `haipipe-discovery` |
-| Board › Audience Report › Related Questions | the reviewer, coauthor, editor and reader questions | `haipipe-report` |
-| Board › Work Details › Idea · Story · DataFlow · PaperFlow | each step's Studio topic (s01, s02, s03, s04) as Operation over Result, with its prompt | `haipipe-paper-ideation` · `haipipe-paper-story` · `haipipe-paper-plan` |
-| Board › Work Details › Jobs | the versions (and grants, slides) | `haipipe-paper` (`paper_ladder.py`) |
-| version › Description › Version · Venue rules | the version face; the venue's call | `haipipe-paper` · `haipipe-paper-venue` |
-| version › Audience Report › Questions · Draft-Main · Draft-Appendix | the standing J1–J5 and the version's Questions; each Section as Question │ Work │ Report, the rendered draft beside its drawing | `haipipe-report` · `haipipe-paper-story` (Narrative review, G3 release) |
-| version › Audience Report › Comments · Cover letter | the Review Items of its comments reports; the letter, paragraph by paragraph | `haipipe-paper-comments` · `haipipe-paper-assemble` |
-| version › Work Details › All · Main · Appendix · Letters | each Section's card: its six step chips, a click each into that tab; its Runs | `haipipe-paper-draft` over `haipipe-draft`'s seven steps |
-| Section › Work · Studio · 1 Plan · 2 Write · 3 Evidence · 4 Display · 5 Revise · Delivery | each step, Operation (Input, Sign, Prompt) over Result; the SUB-* rows in 1 Plan | `haipipe-draft` (the seven steps) · `haipipe-paper-draft` · `haipipe-paper-evidence` |
+| Board › Report · Work (focus page, `layout=focus`) | seven views, A Idea · B Story (the venues inside, `venues/<venue>/call.md`) · C Data flow · D Paper flow · E Support blocks · F Evidence · G Writing; Report reads RESULTS first, Work PROCESS first | `haipipe-paper-ideation` · `haipipe-paper-story` · `haipipe-paper-venue` · `haipipe-paper-plan` · `haipipe-paper-evidence` · `haipipe-paper` (`paper_ladder.py`) |
+| Board › Description › Scope · Venue · Resources (frame layout only; on the focus page the venues sit in B Story) | the face; `venues/<venue>/`; resources | `haipipe-paper` · `haipipe-paper-venue` |
+| Board › Audience Report › Ideation · Narrative · High-level logic + Low-level work · Related Questions · Related Papers (frame layout) | the ideation Questions; the story; each research question as Question │ Work │ Report; the reviewer and reader questions; the related papers by question | `haipipe-paper-ideation` · `haipipe-paper-story` · `haipipe-report` |
+| version › Description › Version · Venue rules (frame layout) | the version face; the venue's call | `haipipe-paper` · `haipipe-paper-venue` |
+| version › Work › Draft-Main · Draft-Appendix · Display-Main · Display-Appendix · Values · Citations | each Section a row with its five step words, each opening that step; the evidence Jobs' Tasks | `haipipe-paper-draft` over `haipipe-draft`'s steps · `haipipe-paper-evidence` |
+| version › Audience Report › Questions · Draft-Main · Draft-Appendix · Comments · Cover letter (frame layout) | the standing J1-J5 and the version's Questions; each Section as Question │ Work │ Report; the Review Items of its comments reports; the letter, paragraph by paragraph | `haipipe-paper-comments` · `haipipe-paper-assemble` |
+| Section › Work › 1 Plan · 2 Write · 3 Evidence · 4 Display · 5 Revise | each step, Operation (Input, Sign, Prompt) over Result; the SUB-* rows in 1 Plan; Display only when the Section has one | `haipipe-draft` (the seven steps) · `haipipe-paper-draft` · `haipipe-paper-evidence` |
 | Section › Report · Description · Delivery | the steps' Results, Table, Questions, Comments; the reader contract; ◆ ready for the build | `haipipe-paper-draft` · `haipipe-paper-comments` |
 | any level › Runs | that level's own Runs, by run type | the run cards (`haipipe-paper-workflow`) |
 
@@ -246,14 +300,15 @@ approval.
 Read [`ref/paper-ladder.md`](ref/paper-ladder.md) for the folder layout,
 group and Section naming, compile-order markers, Task boundary, delivery law
 and migration rules. The Paper router only resolves the structure owner; it does
-not maintain a second naming or migration contract. In short: a version is `jNN_v<MMDD>_<desk>/` and its
+not maintain a second naming or migration contract. In short: the evidence Jobs are `j01_evidence_display/`, `j02_evidence_value/`, `j03_evidence_cite/`; a version is a
+writing Job `j11_writing_v<MMDD>_<desk>/` (older: `jNN_v<MMDD>_<desk>/`) and its
 Tasks are named by series, `t00_abstract` · `t0N_` Main · `t2N_` Appendix · `t3N_` letters; a comments
 batch is a report of type comments, `reports/qNN_<kind>-<MMDD>/` (`scripts/carry_over/rename_tasks.py` renames an older
 version once).
 
 ## 🧑‍💻 Section sessions
 
-Once the Story's §8 compile order fixes the Sections, `/haipipe-paper sessions`
+Once the compile order in the writing Job face's `## Narrative` fixes the Sections, `/haipipe-paper sessions`
 gives each Main Section Page, and the Appendix group as one unit, a named Claude
 session and a named Codex thread (`<Short>-<unit>`, `<Short>-<unit>-Codex`),
 pairs them, records both ids in the page header (`session:`, `codex-session:`),
@@ -308,7 +363,7 @@ Page, compatibility alias, or fallback source.
 ## ✅ Completion checks
 
 Before reporting Paper work complete, identify the active Page owner, Run Spec,
-Story §8 row, accepted evidence/display Results, current Page CHECK versions,
+the Section's row in its writing Job face's `## Narrative`, accepted evidence/display Results, current Page CHECK versions,
 assembly manifest and G4 status. Keep DRAFT, blocked, deferred and human-owned
 decisions explicit. A discussion or planning handoff does not create a Run,
 release a Section or close G4. Use the owning Page, Workflow, Assembly, Venue

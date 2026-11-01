@@ -8,6 +8,8 @@ the Studio screen is `../project/haipipe-studio/ref/screen.md`.
 ```
 workbench/             🔌 the /wb door and the WORKBENCH contract: open a place by path or words, ref/roster.md (the folder roster)
 workbench-task-draft/  📃 the Page Task's screen (code: servers/workbench/workbench-task-draft/): Draft, Evidence, Delivery, Run Space, Folder; its ref/ material contracts
+haipipe-ui/            👁 the rules every page passes (five-second test, one verb per section) and the blind page review
+haipipe-interaction/   📝 request and record the input a page's work needs: question forms, answers pasted back; one Interaction button on the workbench rows (scripts/collect.py)
 ```
 
 Start at `workbench/SKILL.md` (`/wb`). The Page agents (`haipipe-draft-*-agent`) live in `../draft/haipipe-draft/agents/`.

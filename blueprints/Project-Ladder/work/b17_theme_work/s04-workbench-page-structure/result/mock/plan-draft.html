@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Page Plan Draft</title>
+<!-- s04 design sketch (261028): the b17 Block page in the new layout, with the plan numbered in red.
+     A mock, not workbench output: values were read from b17 on disk on 2026-10-28. -->
+<style>
+:root{--bg:#f8f8f5;--paper:#fffffc;--ink:#29372e;--muted:#657267;--line:#dce3da;--accent:#39634b;--soft:#eaf0e8;--key:#fff3bf;--red:#c92a2a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#191e1b;--paper:#242b26;--ink:#e5eee7;--muted:#a8b8ad;--line:#3e4b42;--accent:#afd4b9;--soft:#2d3c31;--key:#4a4422;--red:#ff8787}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+a{color:inherit}
+.wrap{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:32px;max-width:1380px;margin:auto;padding:24px 16px}
+@media(max-width:1000px){.wrap{grid-template-columns:1fr}}
+.page{position:relative;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:26px 72px 40px}
+.crumb{font:12px ui-monospace,Menlo,monospace;color:var(--muted)}
+.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+h1{font:500 26px ui-monospace,Menlo,monospace;margin:10px 0 14px;overflow-wrap:anywhere}
+.intro{display:grid;grid-template-columns:100px 1fr;gap:6px 16px;font-size:14px;margin-bottom:26px}
+.intro dt{color:var(--muted)}.intro dd{margin:0}
+.intro .status{background:var(--key);border-radius:6px;padding:4px 10px}
+.intro .you{color:var(--red);font-weight:500}
+h2{font-size:20px;font-weight:500;margin:0 0 14px;padding-top:18px;border-top:1px solid var(--line)}
+.row{display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:18px;padding:14px 0;border-bottom:1px solid var(--line);text-decoration:none}
+.row:hover{background:var(--soft)}
+.row .name{font:500 15px ui-monospace,Menlo,monospace;overflow-wrap:anywhere}
+.row .line{font-size:13px;margin:4px 0}
+.row .meta{font-size:12px;color:var(--muted)}
+.row img,.row .none{width:220px;height:124px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:6px}
+.row .none{display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--muted);background:var(--soft)}
+@media(max-width:700px){.page{padding:20px 40px}.row{grid-template-columns:1fr}.row img,.row .none{width:100%}}
+.rail{position:absolute;top:150px;width:40px}
+.rail.left{left:8px}.rail.right{right:8px}
+.rail a{display:flex;align-items:center;height:26px;text-decoration:none;font-size:12px;white-space:nowrap}
+.rail i{display:block;width:12px;height:2px;background:var(--line);margin:0 auto}
+.rail a[aria-current] i{width:22px;background:var(--accent)}
+.rail span{display:none}
+.rail:hover{width:230px;background:var(--paper);box-shadow:0 2px 10px #0002;border-radius:6px;z-index:2}
+.rail.right:hover{right:8px}
+.rail:hover i{display:none}.rail:hover span{display:block;padding:0 10px}
+.rail:hover a[aria-current]{color:var(--accent);font-weight:500}
+.n{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--red);color:#fff;font-size:12px;font-weight:600;margin-right:6px;vertical-align:1px}
+.page .n{position:absolute;left:-10px}
+.plan h3{font-size:18px;margin:0 0 10px}
+.plan ol{list-style:none;padding:0;margin:0}
+.plan li{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:13px}
+.plan li b{display:block;font-size:14px}
+.plan .old{color:var(--muted);font-size:12px}
+.plan .next{border-color:var(--red)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<main class="page">
+  <nav class="rail left" aria-label="Sibling Blocks">
+    <a href="#"><i></i><span>b10_project_workbench</span></a>
+    <a href="#"><i></i><span>b11_theme_insight</span></a>
+    <a href="#"><i></i><span>b12_theme_design</span></a>
+    <a href="#"><i></i><span>b13_theme_cowork</span></a>
+    <a href="#"><i></i><span>b14_theme_discovery</span></a>
+    <a href="#"><i></i><span>b15_theme_labeling</span></a>
+    <a href="#"><i></i><span>b16_theme_paper</span></a>
+    <a href="#" aria-current="page"><i></i><span>b17_theme_work</span></a>
+  </nav>
+  <nav class="rail right" aria-label="Page sections">
+    <a href="#"><i></i><span>Goal &amp; status</span></a>
+    <a href="#" aria-current="true"><i></i><span>Studio-All</span></a>
+    <a href="#"><i></i><span>Studio-Interface</span></a>
+    <a href="#"><i></i><span>Studio-Navigation</span></a>
+    <a href="#"><i></i><span>Questions</span></a>
+    <a href="#"><i></i><span>Timeline</span></a>
+    <a href="#"><i></i><span>Folder</span></a>
+    <a href="#"><i></i><span>Guide</span></a>
+  </nav>
+
+  <span class="n" style="top:122px;left:auto;right:-10px">4</span>
+  <span class="n" style="top:28px">1</span>
+  <div class="crumb"><a href="#">Tools</a> / <a href="#">blueprints</a> / b17_theme_work</div>
+  <h1>b17_theme_work</h1>
+
+  <span class="n" style="top:96px">2</span>
+  <dl class="intro">
+    <dt>Purpose</dt>
+    <dd>Design questions about the work Theme as one ladder: what a task Block, a work Job, a work Task and a hard Run each hold and show, how Plan, Build, Execute and Report map onto the six Spaces, and how a Question's report reads its Tasks' Runs.</dd>
+    <dt>Done when</dt>
+    <dd>Each recorded question has a report Page with an answer status, and every answered question names the skill, workbench or builder change that settled it.</dd>
+    <dt>Status</dt>
+    <dd><span class="status">4 Questions: 🟡 1 draft (Q01) · 🔴 3 open (Q02, Q03, Q04)</span></dd>
+    <dt>Waiting</dt>
+    <dd class="you">Q01 · How does work climb the ladder? Its report is a draft: read it.</dd>
+    <dt>Changed</dt>
+    <dd>2026-10-26</dd>
+  </dl>
+
+  <span class="n" style="top:398px">3</span>
+  <h2>Studio-All</h2>
+
+  <a class="row" href="../../s00-overview/">
+    <div><div class="name">s00-overview</div>
+      <div class="line">What this Block stands on, for a reader new to it, and an index of its studio topics, Jobs and Questions.</div>
+      <div class="meta">Stage: shaping</div></div>
+    <img src="../../s00-overview/s00-overview.png" alt="s00-overview drawing">
+  </a>
+  <a class="row" href="../../s01-work-ladder/">
+    <div><div class="name">s01-work-ladder</div>
+      <div class="line">Every work row in one drawing, Block down to Run.</div>
+      <div class="meta">Stage: not recorded</div></div>
+    <img src="../../s01-work-ladder/s01-work-ladder.png" alt="s01-work-ladder drawing">
+  </a>
+  <a class="row" href="../../s02-work-skills/">
+    <div><div class="name">s02-work-skills</div>
+      <div class="line">Which of today's skills/1_base/task skills make the work theme.</div>
+      <div class="meta">Stage: not recorded</div></div>
+    <img src="../../s02-work-skills/s02-work-skills.png" alt="s02-work-skills drawing">
+  </a>
+  <a class="row" href="../../s03-work-workbench/">
+    <div><div class="name">s03-work-workbench</div>
+      <div class="line">The Work workbench as it is built today: its Spaces, Views and run types.</div>
+      <div class="meta">Stage: not recorded</div></div>
+    <div class="none">no preview image</div>
+  </a>
+  <a class="row" href="../../s04-workbench-page-structure/">
+    <div><div class="name">s04-workbench-page-structure</div>
+      <div class="line">How a work page gives its reader location, purpose, progress and results without scattering related information.</div>
+      <div class="meta">Stage: explore · Interface · Navigation</div></div>
+    <img src="../s04-workbench-page-structure.png" alt="s04-workbench-page-structure drawing">
+  </a>
+  <a class="row" href="../../s32-work-element-ui/">
+    <div><div class="name">s32-work-element-ui</div>
+      <div class="line">Every kind of element the work theme draws today, as it draws it, side by side.</div>
+      <div class="meta">Stage: not recorded</div></div>
+    <img src="../../s32-work-element-ui/s32-work-element-ui.png" alt="s32-work-element-ui drawing">
+  </a>
+</main>
+
+<aside class="plan">
+  <h3>The plan, by number on the page</h3>
+  <ol>
+    <li><b><span class="n">1</span>Path on top</b>The Guide · Studio | Block · Job · Task | Delivery tab row goes away. Each part of the path links up.
+      <div class="old">today: three kinds of tabs in one row</div></li>
+    <li class="next"><b><span class="n">2</span>Intro: where it stands</b>Purpose (spine:), Done when (close:), Status counted against close:, the one thing waiting for you, last change from git.
+      <div class="old">today: "Workbench · Studio · b17 · Theme: work"</div></li>
+    <li><b><span class="n">3</span>One section, rows shown directly</b>Each topic row shows its name, its Topic line, its Stage in words and its drawing. Click the row to open it.
+      <div class="old">today: ▸ to open, Free | Structured | ↗ | ■□□□ on every row</div></li>
+    <li><b><span class="n">4</span>Rails: hover the dashes</b>Left: the sibling Blocks. Right: this page's sections; the group chips become Studio-Interface and Studio-Navigation. Guide is the last section.
+      <div class="old">today: group chips, a "Disk · Runs" side tab, no way to siblings</div></li>
+    <li><b><span class="n">5</span>Empty sections hidden</b>Related, Delivery and Runs appear only when they hold something.
+      <div class="old">today: "Related 0 items", "Delivery 0 results"</div></li>
+    <li><b>Then</b>Build 1 to 5 in servers/workbench/focus_page.py, check b17 and b03 in the browser, and switch the default only after JL agrees.</li>
+  </ol>
+</aside>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,40 @@
+{
+  "id": "s03",
+  "folder": "s03-mindmap-leaf-drawing",
+  "title": "Mind Map Skill",
+  "kind": "Skill",
+  "purpose": "Keep a readable argument connected to its drawings and slides.",
+  "audience": "Agents authoring and maintaining shared structure maps",
+  "product": "A mind map authoring guide with node rules, safe update rules, and a worked map.",
+  "steps": [
+    [
+      "Set the root",
+      "Name the total workflow and the question it answers."
+    ],
+    [
+      "Build sections",
+      "Give each first-level branch a meaningful section and connect the argument."
+    ],
+    [
+      "Write leaves",
+      "Give each leaf one clear point and a stable identity."
+    ],
+    [
+      "Attach drawings",
+      "One leaf owns one drawing; that drawing can hold several slides."
+    ],
+    [
+      "Update safely",
+      "Preserve human edits, maintain node identity, and check linked files."
+    ]
+  ],
+  "checks": [
+    "The root explains the total workflow.",
+    "Each branch has a distinct role in the argument.",
+    "Every linked drawing resolves to a real file.",
+    "Refreshing a map preserves human additions."
+  ],
+  "example": "Choose a delivery \u2192 explore its form \u2192 review a working preview.",
+  "open": "Does an empty leaf need a drawing immediately or when someone opens it?",
+  "source": "plugins/haipipe-toolkit/skills/1_base/project/haipipe-mindmap/SKILL.md"
+}

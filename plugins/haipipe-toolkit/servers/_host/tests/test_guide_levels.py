@@ -1,4 +1,4 @@
-"""The card Guide (b03 studio/s31-guide, s31-D05 to D08), the work family first: every View in three
+"""The card Guide (b03 s31-guide, s31-D05 to D08), the work family first: every View in three
 folding sections, Block · Job · Task, each a stack of cards; a Space card's sub and runs read live from
 the frame; the section of the level the Guide was opened from starts open; the old family key answers."""
 from __future__ import annotations

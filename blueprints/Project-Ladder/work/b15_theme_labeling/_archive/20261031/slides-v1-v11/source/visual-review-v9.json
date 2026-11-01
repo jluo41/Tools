@@ -1,0 +1,16 @@
+{
+  "inspectedSlides": [16, 17, 18, 19, 20],
+  "status": "passed",
+  "scope": "Generated originals and all five exported 1600 x 900 slide previews inspected individually",
+  "checks": [
+    "Readable titles, controls, source cases and status labels without clipping",
+    "All six decision choices are unselected and rejection, custom and defer remain distinct",
+    "Proposed wording and affected item review remain separate from released approvals",
+    "No fabricated model metrics; planned expression steps use numbered badges",
+    "Expression issues route through Meaning; batch start is disabled pending qualification"
+  ],
+  "limitations": [
+    "Static raster mockups, not interactive controls",
+    "Responsive layout and real save/submit behavior still require implementation tests"
+  ]
+}

@@ -1,5 +1,5 @@
 """Build a Question's report drawing from studio frames (haipipe-report; moved here from
-excalidraw-report/ref/ on 261007; designed in b03 studio/s02-studio-workbench-skill).
+excalidraw-report/ref/ on 261007; designed in b03 s02-studio-workbench-skill).
 
 A report drawing is generated, never drawn by hand. The report's own .md lists its figures,
 each one named frame of a studio drawing. This script copies each frame, with what the person
@@ -18,12 +18,13 @@ The figure list, in `qNN_<topic>.md`, a yaml block under a `## Figures` heading:
 
     ```yaml
     figures:
-    - from: ../../studio/s01-overall-tree-structure/s01-overall-tree-structure.excalidraw
+    - from: ../../s01-overall-tree-structure/s01-overall-tree-structure.excalidraw
       frame: "1 · The ladder"
       caption: the levels a Question lives in
     ```
 
-`from` is relative to the report folder; `frame` is the frame's exact name in that drawing.
+`from` is relative to the report folder (a topic sits beside the Block's Jobs; one listed in an older
+`studio/` is found where it moved); `frame` is the frame's exact name in that drawing.
 
 The drawing is generated output, written whole on every build: nobody edits it, so there is
 nothing to merge. Its ids are stable (a figure's elements keep their source ids, prefixed by the
@@ -121,6 +122,18 @@ def place(members: list[dict], fr: dict, x0: float, y0: float, s: float, frame_i
                 e[end] = dict(e[end], elementId=ids[e[end]["elementId"]]) if e[end].get("elementId") in ids else None
 
 
+def topic_source(folder: Path, given: str) -> tuple[Path, str]:
+    """A figure's drawing and its link, at the path the list gives; a topic that left an older studio/ to sit beside
+    its Jobs (JL 261030) is found there, and the link names where it is now."""
+    parts = Path(given).parts
+    if not (folder / given).exists() and "studio" in parts[:-1]:
+        k = parts.index("studio")
+        moved = Path(*parts[:k], *parts[k + 1:])
+        if re.match(r"^s\d{2}[-_]", parts[k + 1]) and (folder / moved).exists():
+            return (folder / moved).resolve(), moved.as_posix()
+    return (folder / given).resolve(), Path(given).as_posix()
+
+
 def build(folder: Path, width: float) -> Path:
     folder = folder.resolve()
     title, head, figures = read_report(folder)
@@ -137,11 +150,10 @@ def build(folder: Path, width: float) -> Path:
     hf["height"] = PAD + 80 + len(lines) * 34 + PAD
     y = hf["height"] + GAP
     for n, f in enumerate(figures, 1):
-        source = (folder / f["from"]).resolve()
+        source, rel = topic_source(folder, f["from"])
         fr, members = frame_members(source, f["frame"])
         s = min(1.0, (width - 2 * PAD) / fr["width"])
         fig = _el("frame", 0, y, width, 0, name=f"Fig {n} · {f['frame']}")
-        rel = Path(f["from"]).as_posix()
         els += [fig, _text(PAD, y + PAD, f"Fig {n} · {f.get('caption') or f['frame']}", 34, fig["id"]),
                 _text(PAD, y + PAD + 56, f"from {Path(rel).stem} › {f['frame']} · built {today}", 22,
                       fig["id"], GRAY, link=rel)]

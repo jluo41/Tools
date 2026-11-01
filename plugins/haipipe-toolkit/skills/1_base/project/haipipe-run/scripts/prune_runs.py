@@ -21,7 +21,9 @@ Verdicts. A hard Run (`runs/rNN_<slug>/`) is keep, prune or check.
 
 --apply deletes each pruned Run's folder, its config and its orphan companion configs (`scripts/config/*_rNN.*` that
 nothing else names). It marks `status: superseded` on any Run a deleted Run had replaced, so the chain is not lost.
-It refuses a Run git does not hold, at its path or at its `moved_from:` path, unless --untracked-ok. `--only` takes
+It refuses a Run git does not hold, at its path or at its `moved_from:` path, unless --untracked-ok; it also refuses
+a Run with an uncommitted edit, and one holding files git does not hold unless --untracked-ok (261031 review). A Run
+replaces what its `supersedes:` names only once it ran and did not fail. `--only` takes
 `<task>/<run>` (a Task folder name or its `tNN`) or a bare name that only one Task holds. Heavy output under
 `_WorkSpace/` is listed, never deleted here. --to-old moves each pruned Run and its configs to
 `work/_old/<bNN>_pruned_<YYMMDD>/<jNN>_<task>_runs/{runs,config}/` instead of deleting them (JL 261021: a Run git does
@@ -42,10 +44,12 @@ import yaml
 
 HARD = re.compile(r"^r\d+_[A-Za-z0-9_.-]+$")
 OPEN = {"planned", "proposed", "queued", "running", "waiting", "held", "blocked"}
+FAILED = {"failed", "error", "aborted", "cancelled"}        # ended without its result: it replaces nothing
 TEXT = {".py", ".sh", ".ps1", ".do", ".yaml", ".yml", ".json", ".toml", ".md", ".R", ".r", ".ipynb"}
 SKIP_DIRS = {".git", "__pycache__", "_old", "_archive", "node_modules", ".venv", "board"}
 CODE = {".py", ".sh", ".ps1", ".do", ".R", ".r", ".ipynb"}
 SUPERSEDES = re.compile(r"^\s*-?\s*supersedes:\s*(.+?)\s*(#.*)?$")
+TOPIC = re.compile(r"^s\d{2}[-_]")             # a Studio topic sNN-<topic>/: beside its Jobs (JL 261030), or in studio/
 OUT_KEY = re.compile(r"(^|_)(output|outputs|out|store|result_dir|heavy_dir|output_root|output_dir|output_jsonl)($|_)")
 TASK_NO = re.compile(r"\b[tT](\d{2})\b")
 MAX_BYTES = 5_000_000
@@ -120,6 +124,12 @@ class Run:
                 if path.is_file() or (path.is_dir() and any(path.iterdir())):
                     self.ran = True
                     break
+
+    @property
+    def stands(self) -> bool:
+        """It ran and did not fail or stop: only such a Run replaces what its `supersedes:` names (261031 review: a
+        failed retry naming a done Run had both deleted, and the only result with them)."""
+        return self.ran and self.status not in OPEN | FAILED
 
     @property
     def replaced(self) -> bool:
@@ -203,8 +213,8 @@ def references(run: Run, files: list[tuple[Path, str]], skip: list[Run]) -> tupl
         if run.name not in text and not cited:
             continue
         # its own Task page and its own Block's Studio faces list it; a Page elsewhere (a paper's story) reads it
-        listing = path == run.task / f"{run.task.name}.md" or (
-            "studio" in path.parts and path.suffix == ".md" and block in path.parents)
+        listing = path == run.task / f"{run.task.name}.md" or (path.suffix == ".md" and block in path.parents and (
+            "studio" in path.parts or any(TOPIC.match(q) for q in path.relative_to(block).parts[:-1])))
         best = None
         for i, line in enumerate(text.splitlines(), 1):
             if SUPERSEDES.match(line):
@@ -241,7 +251,7 @@ def verdicts(scope: Path):
     for r in runs:
         by_task.setdefault(r.task, {})[r.name] = r
     for r in runs:
-        for old in r.supersedes():
+        for old in r.supersedes() if r.stands else []:
             if old in by_task[r.task]:
                 by_task[r.task][old].replaced_by.append(r.name)
     reason: dict[Path, str] = {}
@@ -279,6 +289,23 @@ def verdicts(scope: Path):
             state = r.status or ("ran" if r.ran else "no result")
             out[r.folder] = ("keep", [f"in use ({state})"], [])
     return runs, out, files
+
+
+def unsaved(run: Run) -> tuple[list[str], list[str]]:
+    """What deleting the Run would lose that git cannot give back: its tracked files' uncommitted edits, and the files
+    git does not hold (ignored ones, such as caches, are not counted). Nothing outside a repository."""
+    try:
+        top = Path(subprocess.run(["git", "-C", str(run.folder), "rev-parse", "--show-toplevel"], text=True,
+                                  capture_output=True, check=True).stdout.strip()).resolve()
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return [], []
+    try:
+        rel = run.folder.resolve().relative_to(top)
+    except ValueError:                                 # a link out of its repository: never deleted blind
+        return [f"{run.folder.name} resolves outside {top.name}"], []
+    lines = subprocess.run(["git", "-C", str(top), "status", "--porcelain", "--untracked-files=all", "--", str(rel)],
+                           text=True, capture_output=True).stdout.splitlines()
+    return [ln[3:] for ln in lines if ln.strip() and ln[:2] != "??"], [ln[3:] for ln in lines if ln[:2] == "??"]
 
 
 def in_git(run: Run) -> bool:
@@ -400,12 +427,22 @@ def main(argv=None) -> int:
     if a.apply:
         gone = {r.folder for r in doomed}
         for r in doomed:
-            if not a.untracked_ok and not a.to_old and not in_git(r):
+            if a.to_old:
+                continue                                       # moved into _old/, not deleted: nothing is lost
+            if not a.untracked_ok and not in_git(r):
                 print(f"refused {r.folder.relative_to(root)}: git holds no copy (commit first, or --untracked-ok)")
+                gone.discard(r.folder)
+                continue
+            edits, loose = unsaved(r)          # in_git passes when one file is committed; the rest may not be (261031)
+            if edits or (loose and not a.untracked_ok):
+                what = (f"{len(edits)} uncommitted edit(s), such as {edits[0]} (commit them, or --to-old)" if edits
+                        else f"{len(loose)} file(s) git does not hold, such as {loose[0]} (--to-old keeps them, "
+                             "--untracked-ok deletes them)")
+                print(f"refused {r.folder.relative_to(root)}: {what}")
                 gone.discard(r.folder)
         for r in [r for r in doomed if r.folder in gone]:
             extra = companions(r, files)
-            for old in r.supersedes():
+            for old in r.supersedes() if r.stands else []:       # a failed Run replaced nothing: mark nothing
                 for o in runs:
                     if o.task == r.task and o.name == old and o.folder not in gone and o.status != "superseded":
                         mark_superseded(o)

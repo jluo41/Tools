@@ -16,16 +16,16 @@ file we were sent, an email, a repo or a dataset. It is Delivery's twin on the o
 
 ```text
 haipipe-related   related/               came in     one per Block, read by every level
-haipipe-studio    studio/sNN-<topic>/    think       one per Block, opened from every level
+haipipe-studio    sNN-<topic>/    think       one per Block, opened from every level
 haipipe-report    reports/qNN_<topic>/   answer      every level its own
 haipipe-delivery  delivery/              went out    one per Block, opened from every level
 ```
 
 On a paper Board, `haipipe-paper-related` marks the closest papers in this table (`bears on` = `Closest: <type>`,
-`key` ★) and reads them in `studio/s10-related-work-map/` and s11-s19; this skill still owns the table and the files.
+`key` ★) and reads them in `s10-related-work-map/` and s11-s19; this skill still owns the table and the files.
 
-Decided in b10 (Tools/blueprints/b10_project_workbench): s01-D27 and s01-D34 (the folder and its
-table), s04-D01 to s04-D09. Its design topic is `studio/s04-related-workbench-skill/`.
+Decided in b10 (Tools/blueprints/Project-Ladder/work/b10_project_workbench): s01-D27 and s01-D34 (the folder and its
+table), s04-D01 to s04-D09. Its design topic is `s04-related-workbench-skill/`.
 
 
 The folder

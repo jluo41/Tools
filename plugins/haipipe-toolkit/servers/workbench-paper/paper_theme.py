@@ -1,6 +1,6 @@
 """The paper theme on the base frame (servers/workbench/frame.py): only what differs from vanilla.
 
-A paper Board climbs the ladder as Tools/blueprints/b16_theme_paper proposes (Q01, s11-paper-block): the
+A paper Board climbs the ladder as Tools/blueprints/Project-Ladder/work/b16_theme_paper proposes (Q01, s11-paper-block): the
 Board is one paper; its versions are Jobs and its Sections are Page Tasks once those folders exist. Today
 a paper Board holds A1-Story/ (Ideation and Story Pages) and Ba-/Bb- Section groups, so this theme fills
 the Block tab only, from today's folders, with paper.py's own content (JL: carry over what exists) drawn in
@@ -557,7 +557,7 @@ def _brow(tag, title, status, feeds, work, report):
 def _feed(block, root, topic_glob):
     """The Idea Studio topics matching a glob, as the base's "from the Idea Studio" list items."""
     out = []
-    for t in sorted((block / "studio").glob(topic_glob)) if (block / "studio").is_dir() else []:
+    for t in P.board_topics(block, topic_glob):
         face_md = t / f"{t.name}.md"
         drawing = next(iter(topic_drawings(t)), None)      # its own drawing first, never its mNN mind map
         url = ("/_excalidraw/?" + P.urlencode({"board": rel(drawing, root)})) if drawing else reader(face_md, root)
@@ -700,25 +700,25 @@ BOARD_STEPS = ("Idea", "Story", "DataFlow", "PaperFlow", "Jobs")
 OLD_BOARD_SUBS = {"Main": "Jobs", "Appendix": "Jobs", "Evidence": "Jobs"}     # the old Work Details tabs still open
 # step → (emoji, the Studio group whose topics it reads, a word the topic's name must hold, its prompt)
 BOARD_STEP = {
-    "Idea": ("💡", "Ideation", "", "/haipipe-paper ideate {b}: read studio/{t} and the related work (s10 to s14) and my "
+    "Idea": ("💡", "Ideation", "", "/haipipe-paper ideate {b}: read {t} and the related work (s10 to s14) and my "
              "notes; add or test ideas, each with its question, its novelty against the closest work and a verdict; "
              "then redraw the topic."),
     "Story": ("📖", "Story", "", "/haipipe-paper story {b}: read the ideas that went to a story and my notes; tell the paper "
-              "in studio/{t} (the tension, what we do, the answer so far, who cares) and its research questions, one "
+              "in {t} (the tension, what we do, the answer so far, who cares) and its research questions, one "
               "Board Question each; then redraw the topic."),
     "DataFlow": ("🔀", "Plan", "dataflow", "/haipipe-paper-plan {b} dataflow: read the Story's research questions and the "
-                 "Runs on disk; draw in studio/{t} how the data becomes each answer (inputs, the Runs, what each feeds), "
+                 "Runs on disk; draw in {t} how the data becomes each answer (inputs, the Runs, what each feeds), "
                  "with what is still to run; then redraw."),
     "PaperFlow": ("🗺", "Plan", "workflow", "/haipipe-paper-plan {b} paperflow: read the Story, the DataFlow and my notes; "
-                  "draw in studio/{t} how the answers become the paper (the Sections, the displays and the Run behind "
+                  "draw in {t} how the answers become the paper (the Sections, the displays and the Run behind "
                   "each, the dates to the send); then redraw."),
 }
 
 
 def _board_topics(block, group, word=""):
-    """The Board's studio topics of one group (their **Tags:** line), whose name holds `word`, in name order."""
+    """The Board's sNN topics of one group (their **Tags:** line), whose name holds `word`: beside the Jobs, then studio/."""
     out = []
-    for topic in sorted((block / "studio").glob("s[0-9][0-9]-*/")):
+    for topic in P.board_topics(block):
         md = topic / f"{topic.name}.md"
         text = md.read_text(encoding="utf-8", errors="replace") if md.is_file() else ""
         tags = re.search(r"(?m)^\*\*Tags:\*\*\s*(.*)$", text)
@@ -916,7 +916,7 @@ def _idea_cards(d):
         return ""
     page = P.ideation_topic(d["board"])
     text = page["text"] if page else ""
-    words = _drawing_words({"path": str(d["board"] / "studio" / page["stem"] / f'{page["stem"]}-drawing.yaml')} if page else None)
+    words = _drawing_words({"path": str(d["board"] / Path(page["rel"]).parent / f'{page["stem"]}-drawing.yaml')} if page else None)
     asked = re.search(r"(?ms)^## Opening\s*\n+(.*?)\n", text)
     index = words.get("index") or {}
     out = []
@@ -1404,7 +1404,7 @@ def _board_step(name, topics, state, block, root, d=None):
         stage = re.search(r"(?m)^\*\*Stage:\*\*\s*(.*)$", text)
         rows += [("What", esc(_topic_what(text)) or "—"), ("Stage", esc(stage.group(1).strip()) if stage else "—"),
                  ("Decided · Open", f'{len(_topic_lists(text, "Decided"))} · {len(_topic_lists(text, "Open"))}')]
-    ask = prompt.format(b=rel(block, root), t=first)
+    ask = prompt.format(b=rel(block, root), t=topics[0][0].relative_to(block).as_posix() if topics else first)
     op = _step_box(f"{emoji} {name}", state, "<h4>Input</h4>" + _kv(rows) + _prompt_box(ask, block, root, f"board-{name.lower()}"))
     # Idea: the ideas themselves, a card each; Story: its parts as sections; to read and review, the drawing folded under
     cards = (_idea_cards(d) if name == "Idea" and d else
@@ -1702,7 +1702,7 @@ def _delivery(d, sub, opts=("delivery/", "LaTeX", "Word", "Cover letter", "Round
 VERSION_AR = ("Questions", "Draft-Main", "Draft-Appendix", "Comments", "Cover letter")
 VERSION_WD = ("All", "Main", "Appendix", "Letters")
 # the five standing questions of a send (s12, the Job session): the question, what answers it
-STANDING = (("J1", "What is the one-minute story?", "the telling's face, studio/sNN-story-… · this version's Abstract and Introduction"),
+STANDING = (("J1", "What is the one-minute story?", "the telling's face, sNN-story-… beside the Jobs · this version's Abstract and Introduction"),
             ("J2", "Why this venue?", "venues/<venue>/call.md · the venue's playbook"),
             ("J3", "Which writing principles does it follow?", "the playbook's style · By reader expectations"),
             ("J4", "Is it ready to send?", "every Section's CHECK · Delivery › Checks (G4)"),
@@ -2252,7 +2252,7 @@ def _section_globs(d, base, part):
              f"the {part} Sections, a Page each") for h in homes]
 
 
-VERSION_RE = re.compile(r"^j\d{2}_v")
+VERSION_RE = re.compile(r"^j\d{2}_(?:writing_)?v")   # j11_writing_v<MMDD>_<desk> since 261031
 
 
 def _disk_block(d, block, out):
@@ -2272,16 +2272,17 @@ def _disk_block(d, block, out):
                          + [(f"related/{x}/", what) for x, what in (("meetings", "a meeting's notes"),
                                                                      ("papers", "open-licensed PDFs"),
                                                                      ("files", "what we were sent"))] + tell,
-        ("Idea Studio", ""): [("studio/", "one row per topic"), ("studio/s*/", "the topics")],
+        ("Idea Studio", ""): [("s[0-9][0-9]-*/", "the topics, beside the Jobs, one row each"),
+                              ("studio/", "older topics and loose drawings")],
         ("Audience Report", "Ideation"): idea + reg,
         ("Audience Report", "Narrative"): tell + reg,
         ("Audience Report", "High-level logic + Low-level work"): reg + tell + rep_,
         ("Audience Report", "Related Questions"): reg + rep_,
         ("Audience Report", "Related Papers"): [("related/related.md", "the related items, by question")] + tell + reg,
         ("Work Details", "Jobs"): [("j[0-9][0-9]_*/", "one version each")],
-        **{("Work Details", n): [(f"studio/{t.name}/", "its drawing and face") for t, _x in
+        **{("Work Details", n): [(f"{t.relative_to(block).as_posix()}/", "its drawing and face") for t, _x in
                                  _board_topics(block, BOARD_STEP[n][1], BOARD_STEP[n][2])]
-           or [("studio/", "no topic yet")] for n in BOARD_STEP},
+           or [("sNN-*/", "no topic yet")] for n in BOARD_STEP},
         ("Runs", ""): [("runs/", "the Board's Runs")],
         ("Delivery", ""): [(f"{ddir}/paper-build.toml", "the build: order · venue · names"),
                            (f"{ddir}/build-manifest.json", "the checks"),

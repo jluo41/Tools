@@ -89,7 +89,7 @@ shows them under four buttons in Work Details. The base frame adds its own (Add 
 🧩 SKILL    excalidraw-draft
 🤖 AGENT    haipipe-studio-agent (new)
 ✍️ SIGNS    none
-💬 PROMPT   /excalidraw draft {folder}: redraw one version's map as a Board studio topic (studio/sNN-papermap-<version>/; a version keeps no Studio of its own, b10 s09-D01): its Sections by their one-line job and each Bullet's Evidence Items, from the Draft plans.
+💬 PROMPT   /excalidraw draft {folder}: redraw one version's map as a Board studio topic (sNN-papermap-<version>/ beside the Jobs; a version keeps no Studio of its own, b10 s09-D01): its Sections by their one-line job and each Bullet's Evidence Items, from the Draft plans.
 
 
 ## Block › Audience Report · Ideation, Narrative, the research questions, Related Questions, Related Papers
@@ -106,7 +106,7 @@ shows them under four buttons in Work Details. The base frame adds its own (Add 
 🧩 SKILL    haipipe-ideation generate
 🤖 AGENT    haipipe-ideation-agent (new)
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-ideation generate {folder}: propose new candidate ideas for this paper into studio/s01-ideation/, each written as the question it asks, and register each as a Question with group: ideation.
+💬 PROMPT   /haipipe-ideation generate {folder}: propose new candidate ideas for this paper into s01-ideation/, each written as the question it asks, and register each as a Question with group: ideation.
 
 🔘 BUTTON   Test idea · Block › Audience Report · ^run-test-idea- · views ideation
 🏷 RUN      run-test-idea-<idea>
@@ -127,7 +127,7 @@ shows them under four buttons in Work Details. The base frame adds its own (Add 
 🧩 SKILL    haipipe-ideation select
 🤖 AGENT    haipipe-ideation-agent (new)
 ✍️ SIGNS    the admitted idea (G0)
-💬 PROMPT   /haipipe-ideation select {folder} <target>: put this idea and its venue to the person as the G0 choice; on yes, open its telling as studio/sNN-story-<telling>/.
+💬 PROMPT   /haipipe-ideation select {folder} <target>: put this idea and its venue to the person as the G0 choice; on yes, open its telling as sNN-story-<telling>/ beside the Jobs.
 
 🔘 BUTTON   Story revise · Block › Audience Report · ^run-revise-story- · views narrative
 🏷 RUN      run-revise-story-<telling>

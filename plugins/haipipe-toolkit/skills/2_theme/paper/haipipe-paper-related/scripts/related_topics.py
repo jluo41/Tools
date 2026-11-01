@@ -1,7 +1,7 @@
 """A paper Board's related-work topics, in the s10-s19 band (haipipe-paper-related; JL 261019: "for the related work
 we can do things like s10-related-work, and after that, we have s11 s12, etc").
 
-    python related_topics.py map   <board>                              studio/s10-related-work-map/, the map
+    python related_topics.py map   <board>                              s10-related-work-map/ beside the Jobs, the map
     python related_topics.py group <board> --type '<type>' --slug <s>  the next free s11-s19, one type of closest work
                                    [--title '<title>'] [--offline]      (its rows' feeds and references filled)
                                    [--background]                       a read type of Shared background rows
@@ -43,13 +43,13 @@ ABBR = ("U.S", "U.K", "e.g", "i.e", "et al", "vs", "Dr", "No", "Fig", "approx", 
 
 # ── the Board's topics ─────────────────────────────────────────────────────────────────────────────────────
 def topics(board: Path) -> dict[int, Path]:
-    """{NN: folder} of the Board's studio topics."""
-    studio = board / "studio"
+    """{NN: folder} of the Board's sNN topics: beside its Jobs first (JL 261030), then any in an older studio/."""
     out = {}
-    for p in sorted(studio.iterdir()) if studio.is_dir() else []:
-        m = NAME.match(p.name)
-        if p.is_dir() and m:
-            out[int(m.group(1))] = p
+    for home in (board, board / "studio"):
+        for p in sorted(home.iterdir()) if home.is_dir() else []:
+            m = NAME.match(p.name)
+            if p.is_dir() and m:
+                out.setdefault(int(m.group(1)), p)
     return out
 
 
@@ -72,8 +72,9 @@ def related_topics(board: Path) -> dict[int, Path]:
 
 
 def add_group(board: Path) -> None:
-    """The `Related work` button on the Studio's bar (studio/_groups.txt keeps the order)."""
-    groups = board / "studio" / "_groups.txt"
+    """The `Related work` button on the Studio's bar: studio/_groups.txt keeps the order, or with no studio/ (the
+    topics beside the Jobs) the level's _studio_groups.txt, where the workbench's frame.group_file reads it."""
+    groups = board / "studio" / "_groups.txt" if (board / "studio").is_dir() else board / "_studio_groups.txt"
     text = groups.read_text(encoding="utf-8") if groups.is_file() else (
         "# Studio groups of this level, in button order. The workbench writes this file when a group is\n"
         "# made, moved or deleted; a group's topics are the ones whose **Tags:** line names it.\n")
@@ -210,9 +211,9 @@ def ref_of(row: dict, offline: bool = False) -> dict:
 
 
 def redraw_index(board: Path) -> str:
-    """The Board's s00 index is drawn by haipipe-studio's block_index.py from every topic's face: redraw it."""
-    s00 = next(iter(sorted((board / "studio").glob("s00-*/build_*.py"))), None)
-    return f"s00 index {draw_once(s00)}" if s00 else "⬜ no s00 index on this Board"
+    """An old Board's s00 index, redrawn while it still has one (s00 retired 261029: the Report MindMap shows it)."""
+    s00 = next((p for home in (board, board / "studio") for p in sorted(home.glob("s00-*/build_*.py"))), None)
+    return f"s00 index {draw_once(s00)}" if s00 else "no s00 index (retired)"
 
 
 # ── scaffolds ──────────────────────────────────────────────────────────────────────────────────────────────
@@ -395,7 +396,7 @@ def make_map(board: Path, title: str = "Related work: where our paper sits among
     have = topics(board)
     if MAP_NN in have:
         raise SystemExit(f"s10 is taken: {have[MAP_NN].name} (an older Board: `band` moves its topics first)")
-    folder = board / "studio" / "s10-related-work-map"
+    folder = board / "s10-related-work-map"
     folder.mkdir(parents=True)
     face(folder).write_text(map_face(title), encoding="utf-8")
     script = folder / "build_s10_related_work_map.py"
@@ -423,7 +424,7 @@ def make_group(board: Path, kind: str, slug: str, title: str = "", offline: bool
     tag = "Shared background" if background else "Closest"
     rows = [r for r in rm.related_rows(board) if f"{tag}: {kind}" in rm.bears(r)]
     title = title or kind[:1].upper() + kind[1:]
-    folder = board / "studio" / f"s{nn}-related-work-{slug}"
+    folder = board / f"s{nn}-related-work-{slug}"
     folder.mkdir(parents=True)
     face(folder).write_text(group_face(nn, title, kind, rows, offline, tag, rm.related_rows(board)).replace(f"s{nn}-<slug>", folder.name)
                             .replace(f"build_s{nn}_<slug>.py", f"build_s{nn}_related_work_{slug.replace('-', '_')}.py"),

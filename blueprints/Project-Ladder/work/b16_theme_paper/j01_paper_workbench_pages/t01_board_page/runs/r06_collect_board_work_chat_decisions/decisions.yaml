@@ -1,0 +1,5 @@
+- title: Shared view list
+  decision: The Board's Work shares its Report's view list, each view the part's work, Draft holding the versions (s33-D01).
+  said: and here the work and report should share the same view list, how do you think about it? (relayed by the Paper-Example session)
+  when: 2026-10-31 17:04
+  applied_by: focus_draft.board_work_views; focus_page HOOK paper_board_work

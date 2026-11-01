@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Collection Run in Work</title>
+<!-- s04 design draft v13 (261031): JL 261031 "so it will be a run of collection" and "it will just be the rNN under
+     that page". A form is a hard collection Run, rNN_collect_<slug>, whose actor is the person; Work shows it like
+     any Run, and a waiting one comes first. The pop-out loads the real r01 form. A mock, not workbench output. -->
+<style>
+:root{--bg:#fff;--fg:#1c1c1c;--mut:#6f6f6b;--faint:#9aa0a6;--line:#e3e3e6;--on:#1864ab;--wash:#e7f5ff;--soft:#f6f6f7;--prop:#b35c00;--ok:#2b8a3e;--red:#c92a2a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161719;--fg:#e8e8e6;--mut:#a0a09c;--faint:#7c828a;--line:#2c2e33;--on:#91caff;--wash:#253749;--soft:#1d1f22;--prop:#e4bd62;--ok:#8ce99a;--red:#ff8787}}
+:root[data-theme="dark"]{--bg:#161719;--fg:#e8e8e6;--mut:#a0a09c;--faint:#7c828a;--line:#2c2e33;--on:#91caff;--wash:#253749;--soft:#1d1f22;--prop:#e4bd62;--ok:#8ce99a;--red:#ff8787}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+a{color:inherit;text-decoration:none}
+code{font:12.5px ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--soft);border-radius:4px;padding:0 4px}
+.wrap{display:grid;grid-template-columns:minmax(0,1000px) 280px;gap:32px;max-width:1360px;margin:0 auto;padding:26px 16px 60px}
+@media(max-width:1100px){.wrap{grid-template-columns:1fr}.notes{position:static!important}}
+.screen-label{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--red);margin:0 0 6px;font-weight:600}
+h1.page{font-size:26px;margin:0 0 6px}
+.lead{color:var(--mut);margin:0 0 18px;max-width:800px}
+.flow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 24px;font-size:14px}
+.flow span{border:1px solid var(--line);border-radius:8px;padding:3px 10px}
+.flow span.gone{color:var(--faint);text-decoration:line-through}
+.flow b{color:var(--faint);font-weight:400}
+.level{margin:0 0 28px}
+.level h2{font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin:0 0 10px}
+.screen{border:1px solid var(--line);border-radius:12px;padding:14px 18px 12px;position:relative;min-width:0}
+.crumb{font-size:12px;color:var(--mut);overflow-wrap:anywhere}
+.screen h3{font-size:19px;margin:4px 0 8px;font-weight:600;overflow-wrap:anywhere}
+.screen h3 i{font-style:normal;color:var(--mut);font-weight:500;margin-left:10px}
+.views{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px;align-items:center}
+.views a{border:1px solid var(--line);border-radius:8px;padding:3px 11px;font-size:13.5px}
+.views a.on{border-color:var(--on);background:var(--wash);color:var(--on)}
+.rail{position:absolute;right:-1px;top:52px;display:flex;flex-direction:column;gap:7px}
+.rail i{display:block;width:12px;height:2px;background:var(--line)}
+.rail i.on{background:var(--prop);height:3px}
+.wait{border:1px solid var(--prop);border-radius:10px;padding:8px 12px;margin:0 0 10px;background:color-mix(in srgb,var(--prop) 7%,var(--bg))}
+.wait h4{margin:0 0 4px;font-size:13px;color:var(--prop)}
+.row{display:grid;grid-template-columns:150px minmax(0,1fr) auto;gap:12px;align-items:start;padding:8px 0;border-top:1px solid var(--line);font-size:14px}
+.wait .row{border-top:0;padding:2px 0}
+@media(max-width:700px){.row{grid-template-columns:1fr}}
+.st{font-size:13px;font-weight:600}.st.w{color:var(--prop)}.st.q{color:var(--mut)}.st.d{color:var(--ok)}
+.sub{display:block;color:var(--mut);font-size:13px}
+.tag{display:inline-block;font-size:11.5px;border:1px solid var(--line);border-radius:6px;padding:0 6px;margin-left:6px;color:var(--mut)}
+.tag.c{border-color:var(--prop);color:var(--prop)}
+.verb{display:inline-block;border:1px solid var(--line);border-radius:8px;padding:2px 12px;font-size:13.5px;white-space:nowrap}
+.verb.main{border-color:var(--on);background:var(--on);color:var(--bg)}
+.popwrap{background:var(--soft);padding:18px}
+.pop{border:1px solid var(--line);border-radius:10px;background:var(--bg);padding:6px 10px 8px;box-shadow:0 8px 30px rgba(0,0,0,.12)}
+.pop header{display:flex;justify-content:space-between;align-items:center;font-size:14px;margin:0 0 4px}
+.pop iframe{display:block;border:0;width:100%;height:600px;background:var(--bg)}
+pre.tree{background:var(--soft);border-radius:8px;padding:10px 12px;overflow-x:auto;font:12.5px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;margin:0}
+.notes{position:sticky;top:20px;align-self:start;font-size:13.5px}
+.notes h4{margin:0 0 10px;color:var(--red);font-size:13px;letter-spacing:.05em;text-transform:uppercase}
+.notes ol{margin:0;padding-left:20px}
+.notes li{margin:0 0 10px}
+.notes li::marker{color:var(--red);font-weight:700}
+.mark{color:var(--red);font-weight:700;font-size:12px;vertical-align:super;margin-left:2px}
+p.small{font-size:13px;color:var(--mut);margin:6px 0 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+<main>
+<p class="screen-label">s04 · ui-draft-v13 · proposal</p>
+<h1 class="page">Work: the collection Run comes first</h1>
+<p class="lead">A form is a hard Run whose actor is you: <code>r01_collect_report_and_delivery</code>, under the Task whose work the
+answers change. Work shows it like any Run; while it waits on you, it is the first row of Work, here and on every page above.</p>
+
+<div class="flow"><span>Progress</span><span>Runs</span><span>Results</span><span class="gone">Feedback</span>
+<b>▶</b><span>Progress</span><span>Runs</span><span>Results</span><b>(no new view: it is a Run)</b></div>
+
+<!-- ── A: the Run on disk ────────────────────────────────────────────────── -->
+<section class="level">
+<h2>A · On disk: an rNN under the page<span class="mark">1</span></h2>
+<pre class="tree">j03_work_workbench_pages/t01_block_page/runs/
+├── r01_collect_report_and_delivery/        hard · type collect · agent JL · status waiting
+│   ├── run.yaml   question_collection.md (the six questions, Markdown)
+│   ├── r01_collect_report_and_delivery.html   the form, rendered from the Markdown
+│   └── result/answer_collection.md          the same Markdown with your picks, once you paste them
+└── run-design-block-page/                  soft · reads r01's answers (feeds:)</pre>
+</section>
+
+<!-- ── B: Task page ──────────────────────────────────────────────────────── -->
+<section class="level">
+<h2>B · Task · t01_block_page · Work › Progress</h2>
+<div class="screen">
+<div class="rail"><i></i><i class="on"></i><i></i></div>
+<div class="crumb">… / b17_theme_work / j03_work_workbench_pages / t01_block_page</div>
+<h3>t01 · Design the work Block page<i>Work</i></h3>
+<div class="views"><a class="on">Progress</a><a>Runs</a><a>Results</a></div>
+<div class="row"><span class="st w">🙋 waiting on you</span><span><b>r01_collect_report_and_delivery</b><span class="tag c">collect</span>
+<span class="sub">Report and Delivery: six choices · read by run-design-block-page and t02</span></span>
+<span><a class="verb main" href="../../../j03_work_workbench_pages/t01_block_page/runs/r01_collect_report_and_delivery/r01_collect_report_and_delivery.html" target="_blank" rel="noopener">Answer</a><span class="mark">2</span></span></div>
+<div class="row"><span class="st q">⬜ queued</span><span><b>run-design-block-page</b><span class="tag">design</span>
+<span class="sub">waits for r01's answers, then draws the Block page</span></span><span></span></div>
+</div>
+</section>
+
+<!-- ── C: Block page ─────────────────────────────────────────────────────── -->
+<section class="level">
+<h2>C · Block · b17_theme_work · Work › Progress</h2>
+<div class="screen">
+<div class="rail"><i></i><i class="on"></i><i></i><i></i></div>
+<div class="crumb">Tools-SPACE / blueprints / Project-Ladder / work / b17_theme_work</div>
+<h3>b17_theme_work<i>Work</i></h3>
+<div class="views"><a class="on">Progress</a><a>Runs</a><a>Results</a></div>
+<div class="wait"><h4>🙋 Waiting on you<span class="mark">3</span></h4>
+<div class="row"><span class="sub">j03 · t01</span><span><b>r01_collect_report_and_delivery</b> <span class="sub">Report and Delivery: six choices</span></span>
+<span><a class="verb main" href="../../../j03_work_workbench_pages/t01_block_page/runs/r01_collect_report_and_delivery/r01_collect_report_and_delivery.html" target="_blank" rel="noopener">Answer</a></span></div>
+</div>
+<div class="row"><span class="st q">⬜ not run yet</span><span><b>j01_work_ladder_contract</b><span class="sub">haipipe-work's ladder section and the work scaffold</span></span><span></span></div>
+<div class="row"><span class="st q">⬜ not run yet</span><span><b>j02_work_skill_homes</b><span class="sub">haipipe-work's skill-homes table, and the move list for b04</span></span><span></span></div>
+<div class="row"><span class="st w">🙋 waiting on you</span><span><b>j03_work_workbench_pages</b><span class="sub">the work Block, Job and Task pages</span></span><span></span></div>
+</div>
+<p class="small">The strip shows only while a collection Run under the page waits; with none, Progress starts at the Jobs.</p>
+</section>
+
+<!-- ── D: Runs view ──────────────────────────────────────────────────────── -->
+<section class="level">
+<h2>D · Block · Work › Runs: one row like any Run<span class="mark">4</span></h2>
+<div class="screen">
+<div class="views"><a>Progress</a><a class="on">Runs</a><a>Results</a></div>
+<div class="row"><span class="st w">🙋 waiting on you</span><span><b>r01_collect_report_and_delivery</b><span class="tag c">collect</span><span class="sub">j03 · t01</span></span><span></span></div>
+<div class="row"><span class="st q">⬜ queued</span><span><b>run-design-block-page</b><span class="tag">design</span><span class="sub">j03 · t01</span></span><span></span></div>
+<div class="row"><span class="st q">⬜ queued</span><span><b>run-write-ladder-section</b><span class="tag">write</span><span class="sub">j01 · t01</span></span><span></span></div>
+</div>
+</section>
+
+<!-- ── E: the pop-out ────────────────────────────────────────────────────── -->
+<section class="level">
+<h2>E · Answer: the compact form over the page<span class="mark">5</span></h2>
+<div class="screen popwrap">
+<div class="pop">
+<header><b>r01_collect_report_and_delivery</b><span>✕</span></header>
+<iframe src="../../../j03_work_workbench_pages/t01_block_page/runs/r01_collect_report_and_delivery/r01_collect_report_and_delivery.html" title="r01 · Report and Delivery" loading="lazy"></iframe>
+</div>
+</div>
+<p class="small">The real r01 form, rendered from its <code>question_collection.md</code>. After you paste the copied text,
+<code>collect.py save</code> writes <code>result/answer_collection.md</code> and the card turns done.</p>
+</section>
+</main>
+
+<aside class="notes">
+<h4>Notes</h4>
+<ol>
+<li>A collection Run is an rNN under the page whose work it decides: hard, type collect, its agent is you.</li>
+<li>Its row says what reads its answers (feeds:); Answer opens the form.</li>
+<li>While it waits, a "Waiting on you" strip opens Work's Progress, on its page and every page above.</li>
+<li>In Runs it is one row like any other; its tag says collect. v12's Feedback view goes.</li>
+<li>The form is compact: one-line why, short options, my pick and why, a one-line note.</li>
+</ol>
+</aside>
+</div>
+</body>
+</html>

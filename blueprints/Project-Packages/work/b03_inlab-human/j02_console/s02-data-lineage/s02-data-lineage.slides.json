@@ -1,0 +1,46 @@
+{
+ "topic": "s02-data-lineage",
+ "style": "sketch-notes",
+ "source": "s02-data-lineage.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "The data lineage",
+   "points": [
+    "The four DATA views as one dataset at four stages (Raw · Source · Record · Case), each with its…"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and the console's four data views as one dataset at four stages, and the wiring choice, for the people who build the…",
+    "a code"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "What is decided",
+   "points": [
+    "Read the record store in place"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "04",
+   "idea": "Still open",
+   "points": [],
+   "leaning": "",
+   "ask": "Agree its For: line and Delivery type: (code), proposed by the agent 261030?",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

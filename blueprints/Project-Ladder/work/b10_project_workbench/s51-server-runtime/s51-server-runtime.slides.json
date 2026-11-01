@@ -1,0 +1,42 @@
+{
+ "topic": "s51-server-runtime",
+ "style": "sketch-notes",
+ "source": "s51-server-runtime.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Server runtime",
+   "points": [
+    "how the workbench server runs today: how it starts, which folders make it up, how one request…",
+    "It is the first server topic: s01-s13 design the ladder and the screens",
+    "s51 on are the served side of that design"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and how the workbench server starts, finds a page and answers its routes, for the people who build the workbench",
+    "a code"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "Still open",
+   "points": [
+    "Every theme is on the frame (261007)",
+    "A theme that fails to import falls back to vanilla without a word: say so on the page?",
+    "No reload on a code change, and old processes keep serving old code: a restart command, or a"
+   ],
+   "leaning": "",
+   "ask": "Decided: /w/<block> opens the frame now, before the theme files",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

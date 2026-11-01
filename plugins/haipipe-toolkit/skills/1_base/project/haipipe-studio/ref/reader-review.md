@@ -15,6 +15,22 @@ draw ─▶ check.py ✅ ─▶ 1 read it as a reader ─▶ 2 reviewer, fresh c
 ```
 
 
+## First: the attract test (JL 261029)
+
+"Studio 里面所有东西 无论是 draw mindmap 还是 slide 都有一个要求：打开之后必须能够足够吸引人去 explore 能够很快地
+attract 人的 attention 如果做不到的话 这个 studio 做得就不好". Before the questions below, look at the opened drawing,
+mind map or slide for five seconds and answer three, from the picture alone:
+
+1. **Where does the eye land first?** There is one focal point (a picture, a big question, a highlighted option). None
+   means it fails.
+2. **What makes me want to look further?** An open question, a contrast between options, a "what if". A list of facts
+   gives no reason to explore: it fails.
+3. **Could I tell a colleague what it is about after five seconds?** In one sentence, without reading small text.
+
+Any no is a fail, whatever the questions below find: redraw it as a picture with a focal point first (the b15 deck in
+`blueprints/Project-Ladder/work/b15_theme_labeling/s03-agent-role/delivery/deck/` is the model for slides), then read it again.
+
+
 ## The questions, by kind of topic
 
 Answer each from the rendered picture alone (the preview png, or each frame rendered on its own), never from what

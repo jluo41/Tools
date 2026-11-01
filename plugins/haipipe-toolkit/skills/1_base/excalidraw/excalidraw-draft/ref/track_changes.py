@@ -17,7 +17,10 @@ An edit is a dict (s04's yaml):
   image     "figure" (or a path): the find's table cell, else its paragraph, gives way to that picture.
   split     instead of find: a phrase that should start a new paragraph. Its paragraph is cut before it, and
             the new paragraph mark is a tracked insertion (rejecting it joins the two again). A phrase already
-            at a paragraph's start changes nothing.
+            at a paragraph's start changes nothing. With `gap: true` an empty tracked paragraph goes between the two,
+            for forms that space paragraphs with empty ones.
+  paragraphs [{at, topic, does}]: a comment on each new paragraph's first words, saying what it does.
+  table     {title, header, rows, widths?, size?}: a new table, tracked, after the change's last paragraph.
   evidence  {need, ask, who, anchor, found?}, or a list of them: one Word comment each, "Evidence needed: ...",
             on its anchor words, looked for first in the changed paragraphs, then in the whole file.
 A placeholder in brackets ("[Your text here]") hands its place to plain text: its grey and italic are dropped.
@@ -111,6 +114,8 @@ def split_change(old, new):
         a -= 1
     while b > 0 and (inside(old, len(old) - b) or inside(new, len(new) - b)):
         b -= 1
+    if "\n" in new[a:len(new) - b]:                  # new paragraphs end the change: nothing kept after them
+        b = 0
     return old[:a], old[a:len(old) - b], new[a:len(new) - b], old[len(old) - b:]
 
 
@@ -291,6 +296,55 @@ class Tracker:
         return p
 
 
+    def table_after(self, doc, after_p, spec):
+        """A tracked new table after paragraph after_p: an empty paragraph, the title, then the table (style
+        Table Grid, smaller type, header row bold); every run, paragraph mark and row is a tracked insertion."""
+        gap = self.new_paragraph(after_p, None, "", True)
+        title = self.new_paragraph(gap, None, spec["title"], True)
+        rpr = OxmlElement("w:rPr")
+        rpr.append(OxmlElement("w:b"))
+        title.find(W("w:ins")).find(W("w:r")).insert(0, rpr)
+        header, rows = spec["header"], spec["rows"]
+        t = doc.add_table(rows=1 + len(rows), cols=len(header))
+        t.style = doc.styles["Table Grid"]
+        widths = spec.get("widths")
+        for i, row in enumerate([header] + rows):
+            for j, cell_text in enumerate(row):
+                cell = t.rows[i].cells[j]
+                if widths:
+                    cell.width = Inches(widths[j])
+                run = cell.paragraphs[0].add_run(str(cell_text))
+                run.font.size = docx.shared.Pt(spec.get("size", 9))
+                run.bold = i == 0
+        if widths:                                  # the grid too, which LibreOffice and Word lay out by
+            t.autofit = False
+            for j, w in enumerate(widths):
+                t.columns[j].width = Inches(w)
+        tbl = t._tbl
+        for tr in tbl.iter(W("w:tr")):
+            trpr = tr.find(W("w:trPr"))
+            if trpr is None:
+                trpr = OxmlElement("w:trPr")
+                tr.insert(0, trpr)
+            trpr.append(self.mark("w:ins"))
+        for q in tbl.iter(W("w:p")):
+            ppr = q.find(W("w:pPr"))
+            if ppr is None:
+                ppr = OxmlElement("w:pPr")
+                q.insert(0, ppr)
+            prpr = ppr.find(W("w:rPr"))
+            if prpr is None:
+                prpr = OxmlElement("w:rPr")
+                ppr.append(prpr)
+            prpr.insert(0, self.mark("w:ins"))
+            for r in [r for r in q if r.tag == W("w:r")]:
+                ins = self.mark("w:ins")
+                r.addprevious(ins)
+                ins.append(r)
+        title.addnext(tbl)
+        return [gap, title] + list(tbl.iter(W("w:p")))
+
+
 def write_tracked(template, edits, out, author="JL", figure=None, image_width=6.2):
     """Write `out`: the template with every edit as a tracked change and every evidence item as a comment."""
     template, out = Path(template), Path(out)
@@ -305,6 +359,8 @@ def write_tracked(template, edits, out, author="JL", figure=None, image_width=6.
             n, i, _ = locate(paras, {"id": edit["id"], "find": edit["split"]})
             p = paras[n]
             touched[edit["id"]] = [p] + ([tr.split(p, i)] if para_text(p)[:i].strip() else [])
+            if edit.get("gap") and len(touched[edit["id"]]) > 1:    # an empty paragraph between, as the form spaces
+                touched[edit["id"]].append(tr.new_paragraph(p, None, "", True))
             continue
         n, i, j = locate(paras, edit)
         p = paras[n]
@@ -351,6 +407,8 @@ def write_tracked(template, edits, out, author="JL", figure=None, image_width=6.
             for line in lines[1:]:
                 last = tr.new_paragraph(last, like, line, plain)
                 here.append(last)
+        if edit.get("table"):                               # a new table after the change's last paragraph
+            here += tr.table_after(doc, here[-1], edit["table"])
         touched[edit["id"]] = here
 
     n_comments = 0
@@ -374,6 +432,15 @@ def write_tracked(template, edits, out, author="JL", figure=None, image_width=6.
             text = (f"Found: {found}. " if found else "") + f"Evidence needed: {ev['need']}." \
                 + (f" {ask[:1].upper() + ask[1:]}" if ask else "") + (f" (ask: {who})" if who else "")
             doc.add_comment(runs, text, author=author, initials=author[:2])
+            n_comments += 1
+        for k, pp in enumerate(edit.get("paragraphs") or []):     # what each new paragraph does
+            q = next((q for q in touched[edit["id"]] if para_text(q).find(pp["at"]) >= 0), None)
+            if q is None:
+                raise SystemExit(f"edit {edit['id']}: paragraph {k + 1} {pp['at']!r} not found")
+            i = para_text(q).find(pp["at"])
+            runs = [Run(r, Paragraph(q, doc.part)) for r in tr.runs_between(q, i, i + len(pp["at"]))]
+            doc.add_comment(runs, f"Paragraph {k + 1}, {pp['topic']}: {pp['does']}", author=author,
+                            initials=author[:2])
             n_comments += 1
 
     out.parent.mkdir(parents=True, exist_ok=True)

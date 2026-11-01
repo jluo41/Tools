@@ -1,0 +1,16 @@
+run: run-build-studio-in-a-page
+kind: soft
+type: build
+scope: null
+target: studio-in-a-page
+ticket: run-build-studio-in-a-page.md
+skill: haipipe-studio
+agent: claude
+signs: null
+status: done
+passes:
+- p01-1030
+writes:
+- servers/workbench/focus_page.py
+- servers/workbench/frame.py
+feeds: []

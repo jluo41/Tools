@@ -1,0 +1,55 @@
+{
+ "topic": "s01-paper-tree-concept",
+ "style": "sketch-notes",
+ "source": "s01-paper-tree-concept.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Paper tree: the Board, Job and Task boundary",
+   "points": [
+    "the boundaries between a paper Board, its version Jobs and their Section Tasks: what each level…",
+    "The second line, proposed, is one Section: what only this Section needs is the Task's, what spans…",
+    "The ladder said only that each level's studio/ and reports/ hold \"its own\""
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and the boundary between a paper Board, its version Jobs and their Section Tasks, for the people who write the…",
+    "a skill"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "What is decided",
+   "points": [
+    "The Board is venue-free and close to the work: the basic research questions, their reports, the…",
+    "The related work lives on the Board",
+    "A Job is attached to one venue",
+    "This topic covers all three levels: the Board, Job and Task boundary"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "04",
+   "idea": "Still open",
+   "points": [
+    "Each level asks its own kind of question, proposed as frame 2: the Board asks what is true (a…",
+    "venues/<venue>/ into the Job (jNN_…/venue/call.md, frozen with each send): s11 (Block ›…",
+    "A telling's name drops the desk: sNN-story-<desk>-<idea> → sNN-story-<idea> (haipipe-paper-story,…"
+   ],
+   "leaning": "",
+   "ask": "The two lines, proposed: the venue (Board | Job: send the paper elsewhere",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

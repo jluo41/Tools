@@ -22,7 +22,7 @@ dispatch. Cardinality is 0..N selected targets, not one Run per Page or click.
 
 | Spec template | Run Type / owner | Target and inputs | Actor / action | Entry → exit | Routes and internal Steps |
 |---|---|---|---|---|---|
-| `idea.<idea>` | `paper.judgment.idea` / Paper Ideation (studio/s01-ideation/) | one admitted Idea; exact Ideation card and test Results | hybrid / discuss one idea | card exists → bounded judgment recorded | unresolved source → support; accepted discussion → CLOSE; feedback → SELF/NEW_VERSION |
+| `idea.<idea>` | `paper.judgment.idea` / Paper Ideation (s01-ideation/) | one admitted Idea; exact Ideation card and test Results | hybrid / discuss one idea | card exists → bounded judgment recorded | unresolved source → support; accepted discussion → CLOSE; feedback → SELF/NEW_VERSION |
 | `claim.<story>.<claim>` | `paper.judgment.claim` / Story | one claim and its evidence/limits | hybrid / judge claim support | frozen claim + available evidence → judgment and open limits recorded | missing evidence → support; settled → CLOSE; revision → SELF/NEW_VERSION |
 | `task.<story>.<row>` | `paper.judgment.task` / Story | one Task Roadmap row and candidate study plan | hybrid / review one row | row exists → bounded task judgment | research needed → support after G1; settled → CLOSE |
 | `narrative.<story>.<section>` | `paper.judgment.narrative` / Story | one Section Narrative row, current Venue contract, claim/evidence pointers | hybrid / review Section telling | row exists → reviewed narrative with risks | G3 release → selected structure/write; otherwise HOLD or CLOSE as proposal |

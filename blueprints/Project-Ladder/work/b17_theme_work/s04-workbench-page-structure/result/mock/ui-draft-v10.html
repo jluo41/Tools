@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Topic Page Draft v10</title>
+<!-- s04 design draft v10 (261029): a Studio topic gets its own page, like a Block, Job or Task page (JL: "studio
+     should have a page as well"). Today a topic's name opens its face as plain Markdown: no pictures, the Decided list
+     one paragraph. The real topic b35-s01:studio @ studio_skill, its real slides and its real D01-D08 and open
+     questions. A mock, not workbench output. -->
+<style>
+:root{--bg:#fff;--fg:#1c1c1c;--mut:#6f6f6b;--faint:#9aa0a6;--line:#e3e3e6;--on:#1864ab;--wash:#e7f5ff;--soft:#f6f6f7;--prop:#b35c00;--ok:#2b8a3e;--red:#c92a2a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161719;--fg:#e8e8e6;--mut:#a0a09c;--faint:#7c828a;--line:#2c2e33;--on:#91caff;--wash:#253749;--soft:#1d1f22;--prop:#e4bd62;--ok:#8ce99a;--red:#ff8787}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+a{color:inherit;text-decoration:none}
+.wrap{display:grid;grid-template-columns:minmax(0,1000px) 300px;gap:36px;max-width:1380px;margin:0 auto;padding:26px 24px 60px}
+@media(max-width:1100px){.wrap{grid-template-columns:1fr}.notes{position:static!important}}
+.screen-label{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--red);margin:0 0 10px;font-weight:600}
+.crumb{font-size:13px;color:var(--mut)}.crumb a{color:var(--on)}
+h1{font-size:24px;margin:8px 0 4px;line-height:1.3;overflow-wrap:anywhere}
+h1 .addr{color:var(--mut);font-weight:500}
+.facts{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:13px;color:var(--mut);margin:0 0 12px}
+.pill{border:1px solid var(--line);border-radius:10px;padding:0 9px}
+.pill.stage{border-color:var(--prop);color:var(--prop);font-weight:600}
+.topicline{font-size:15px;margin:0 0 14px;max-width:760px}
+.views{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px}
+.views a{border:1px solid var(--line);border-radius:8px;padding:5px 14px;font-size:14px}
+.views a.on{border-color:var(--on);background:var(--wash);color:var(--on)}
+.views a b{font-weight:600;color:var(--prop)}
+.views .sep{width:1px;background:var(--line);margin:0 4px}
+.views a.act{margin-left:auto;color:var(--faint);border-style:dashed}
+/* Ideas view */
+.topic{display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:22px}
+@media(max-width:900px){.topic{grid-template-columns:1fr}}
+.stage-pic{border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.stage-pic img{width:100%;display:block}
+.nav{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--mut);padding:8px 2px}
+.nav a{color:var(--on)}
+.thumbs{display:flex;gap:8px;overflow-x:auto;padding:4px 0}
+.thumbs img{width:118px;aspect-ratio:16/9;object-fit:cover;border:2px solid var(--line);border-radius:6px;flex:none}
+.thumbs img.on{border-color:var(--on)}
+.side h4{margin:0 0 6px;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut)}
+.side p{font-size:14px;margin:0 0 14px}
+.side .ask{color:var(--prop)}
+.reply{width:100%;min-height:70px;border:1px solid var(--line);border-radius:8px;padding:8px;font:14px/1.4 inherit;color:var(--fg);background:var(--bg);resize:vertical}
+/* other views */
+hr.cut{border:0;border-top:2px dashed var(--line);margin:40px 0 26px}
+.list{margin:0;padding:0;list-style:none;max-width:820px}
+.list li{display:grid;grid-template-columns:44px minmax(0,1fr);gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:15px}
+.list li .n{font-weight:700;color:var(--ok)}
+.list.open li .n{color:var(--prop)}
+.list li small{display:block;color:var(--faint);font-size:12.5px;margin-top:2px}
+.empty{color:var(--faint);font-size:14px;border:1px dashed var(--line);border-radius:10px;padding:14px;max-width:820px}
+.links{display:flex;gap:8px;flex-wrap:wrap;font-size:13px;margin:6px 0 0}
+.links span{border:1px solid var(--line);border-radius:8px;padding:2px 10px;color:var(--mut)}
+/* notes */
+.notes{position:sticky;top:20px;align-self:start;font-size:13.5px}
+.notes h2{font-size:14px;margin:0 0 8px;color:var(--red)}
+.notes ol{margin:0;padding-left:20px}.notes li{margin:0 0 10px;color:var(--red)}.notes li span{color:var(--fg)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<main>
+  <p class="screen-label">Screen 1 · one topic's page, Ideas view (opens here)</p>
+  <div class="crumb">Tools-SPACE / blueprints / Project-Ladder / work / <a href="#">b17_theme_work</a> / <a href="#">Studio</a></div>
+  <h1><span class="addr">b35-s01:theme_work @ </span>what_is_a_studio</h1>
+  <div class="facts"><span class="pill stage">shaping</span><span>At b17</span><span>group Interface</span><span>0 rounds</span></div>
+  <p class="topicline">What a Studio is, what it holds, how it lives and ends, and how it sits beside <code>related/</code> and <code>delivery/</code>.</p>
+  <nav class="views">
+    <a class="on" href="#">Ideas 6</a><a href="#open">Open <b>4</b></a><a href="#decided">Decided 8</a><a href="#rounds">Rounds 0</a><a href="#result">Result</a>
+    <span class="sep"></span><a href="#">Mind map</a><a href="#">Draw</a>
+    <a class="act" href="#" title="only when agreed">Send to delivery</a>
+  </nav>
+  <div class="topic">
+    <div>
+      <div class="stage-pic"><img src="../../../../../b35_studio/s01-studio-skill/slides/idea-01-define-a-studio.png" alt="What is a Studio: a folder, a room, or the talk?"></div>
+      <div class="nav"><span>← idea 1 of 6 →</span><span><a href="#">PowerPoint file</a></span></div>
+      <div class="thumbs">
+        <img class="on" src="../../../../../b35_studio/s01-studio-skill/slides/idea-01-define-a-studio.png" alt="">
+        <img src="../../../../../b35_studio/s01-studio-skill/slides/idea-02-what-a-topic-holds.png" alt="">
+        <img src="../../../../../b35_studio/s01-studio-skill/slides/idea-03-inside-studio.png" alt="">
+        <img src="../../../../../b35_studio/s01-studio-skill/slides/idea-04-the-folders.png" alt="">
+        <img src="../../../../../b35_studio/s01-studio-skill/slides/idea-05-life.png" alt="">
+        <img src="../../../../../b35_studio/s01-studio-skill/slides/idea-06-beside-related-delivery.png" alt="">
+      </div>
+    </div>
+    <aside class="side">
+      <h4>This idea</h4>
+      <p>How do we define a Studio? Leaning C: the talk, rounds on one open question.</p>
+      <h4>Still open</h4>
+      <p class="ask">Is a Studio one topic, or all of a Block's topics?</p>
+      <h4>Your answer</h4>
+      <textarea class="reply" placeholder="write here; it becomes the next round"></textarea>
+    </aside>
+  </div>
+
+  <hr class="cut" id="open">
+  <p class="screen-label">Screen 2 · Open view: what a person owes</p>
+  <ol class="list open">
+    <li><span class="n">?1</span><span>Is "a Studio" one topic (<code>sNN-&lt;topic&gt;/</code>) or all of a Block's topics (<code>studio/</code>)?</span></li>
+    <li><span class="n">?2</span><span>Which parts of a topic does a reader see first, and does the Decided list still belong?</span></li>
+    <li><span class="n">?3</span><span>Who says a topic is agreed, and is a closed topic kept or deleted?</span></li>
+    <li><span class="n">?4</span><span>Is a Studio deck shown at a meeting a delivery?</span></li>
+  </ol>
+
+  <hr class="cut" id="decided">
+  <p class="screen-label">Screen 3 · Decided view: one line each, the quote under it</p>
+  <ol class="list">
+    <li><span class="n">D01</span><span>One <code>studio/</code> per Block; each topic says its rung in <code>**At:**</code>.<small>"sNN should be bNN sNN, or tNN sNN"</small></span></li>
+    <li><span class="n">D02</span><span>A topic's address is <code>bNN.jNN-sNN</code>.<small>"it should be b17.j01-s07"</small></span></li>
+    <li><span class="n">D03</span><span>Never an address alone: <code>b17-s04:theme_work @ workbench_page_structure</code>.<small>"let's do b17-s04:theme_work @ workbench_page_structure"</small></span></li>
+    <li><span class="n">D04</span><span>The main things are bNN, jNN, tNN, sNN; an open topic is a decision owed.<small>"more sNN, means for that item, more human to intervene"</small></span></li>
+    <li><span class="n">D05</span><span>A topic is a place to go round with a person on one thing until it is good.<small>"我们要看这个图弄得好不好 然后就要不停地改"</small></span></li>
+    <li><span class="n">D06</span><span>A topic has its own <code>result/</code>; messy is fine.<small>"studio 应该也要有 results"</small></span></li>
+    <li><span class="n">D07</span><span><code>delivery/</code> gets only the clean version, after Studio rounds.<small>"肯定是在我们 studio 腻歪几轮之后，才能够到 delivery"</small></span></li>
+    <li><span class="n">D08</span><span>Topics connect by shared groups and a <code>**Links:**</code> line, shown both ways.<small>"I still want them to be connected"</small></span></li>
+  </ol>
+
+  <hr class="cut" id="rounds">
+  <p class="screen-label">Screen 4 · Rounds and Result views, empty for s05 today</p>
+  <div class="empty">No rounds yet. A round is saved when a talk on this topic ends (<code>passes/p01-1029/pass.md</code>).</div>
+  <div class="links"><span>Links: none yet</span><span>Linked from: none yet</span></div>
+  <p id="result" class="empty" style="margin-top:12px">No <code>result/</code> yet. Working output (mock pages, trial pictures) lands here; s04's has 26 files.</p>
+</main>
+
+<aside class="notes">
+  <h2>What changed (v10)</h2>
+  <ol>
+    <li><span><b>A topic has a page.</b> Its name opens this page, the same look as a Block, Job or Task page, never the raw Markdown.</span></li>
+    <li><span><b>Head says who it is.</b> The full label <code>b35-s01:studio @ studio_skill</code>, stage, At, group, rounds.</span></li>
+    <li><span><b>Opens on Ideas.</b> The slide large, the six thumbnails, and beside it this idea's open question and a box to answer.</span></li>
+    <li><span><b>Open count is orange.</b> "Open 4" is what you owe; it is the same count the Work rows show.</span></li>
+    <li><span><b>Decided is one line each</b>, your quote small under it, never one long paragraph.</span></li>
+    <li><span><b>Rounds and Result</b> are views; empty ones say what will land there.</span></li>
+    <li><span><b>Send to delivery</b> stays grey until the stage is agreed (D07).</span></li>
+    <li><span><b>Links both ways</b> (D08) sit under Rounds until there are any.</span></li>
+  </ol>
+</aside>
+</div>
+</body>
+</html>

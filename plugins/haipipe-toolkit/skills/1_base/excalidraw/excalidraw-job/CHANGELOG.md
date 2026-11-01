@@ -1,6 +1,20 @@
 excalidraw-job · Changelog
 ==========================
 
+## [0.10.2] — 2026-10-31
+
+Inside a Studio topic's five-part drawing this skill draws only the Design part; the five parts are
+excalidraw-studio's (JL 261031, b35 r01 Q1: A; b35-s01-D16).
+
+## [0.10.1] — 2026-10-29
+
+A Job's drawing topic is made in its Block's `studio/` with `**At:** jNN` (b35 s01-D05: one `studio/` per Block), no longer in the Job's own `studio/`.
+
+## [0.10.0] — 2026-10-28
+
+`job_drawing.py`: `make <Job>` writes the topic in the Job's own `studio/` (JL 261028), numbered free across the Block;
+`draw` finds the Job when the topic sits inside it.
+
 ## [0.9.6] — 2026-10-26
 
 Hidden from the skill listing (`disable-model-invocation: true`); reached through the `/excalidraw` door, which reads this SKILL.md by path. Nothing moved; `/excalidraw-job` still works when a person types it. (hide 261026)

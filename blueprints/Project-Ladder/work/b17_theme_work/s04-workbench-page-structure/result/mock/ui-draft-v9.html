@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Studio Page Draft v9</title>
+<!-- s04 design draft v9 (261029): one topic per row, never a grid (JL: "NEVER NXN, MAKE IT EACH ROW ONE ITEM"). From v8: the Studio section under its first principle (haipipe-studio: a Studio is never a
+     report; everything opened must pull a reader in). Screen 1: the Studio gallery of a Block. Screen 2: one topic
+     opened. The old workbench look; b17's real topics and s04's real slides; the other topics' idea slides are
+     placeholders where the attract test failed. A mock, not workbench output. -->
+<style>
+:root{--bg:#fff;--fg:#1c1c1c;--mut:#6f6f6b;--faint:#9aa0a6;--line:#e3e3e6;--on:#1864ab;--wash:#e7f5ff;--soft:#f6f6f7;--prop:#b35c00;--red:#c92a2a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161719;--fg:#e8e8e6;--mut:#a0a09c;--faint:#7c828a;--line:#2c2e33;--on:#91caff;--wash:#253749;--soft:#1d1f22;--prop:#e4bd62;--red:#ff8787}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+a{color:inherit;text-decoration:none}
+.wrap{display:grid;grid-template-columns:minmax(0,1000px) 300px;gap:36px;max-width:1380px;margin:0 auto;padding:26px 24px 60px}
+@media(max-width:1100px){.wrap{grid-template-columns:1fr}.notes{position:static!important}}
+.screen-label{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--red);margin:0 0 10px;font-weight:600}
+.crumb{font-size:13px;color:var(--mut)}
+h1{display:flex;align-items:baseline;gap:18px;font-size:26px;margin:8px 0 12px}h1 span{font-size:22px;font-weight:600;color:var(--mut)}
+.views{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px}
+.views a{border:1px solid var(--line);border-radius:8px;padding:5px 14px;font-size:14px}
+.views a.on{border-color:var(--on);background:var(--wash);color:var(--on)}
+.views .sep{width:1px;background:var(--line);margin:0 4px}
+.lead{font-size:14px;color:var(--mut);margin:0 0 18px}
+/* screen 1: the gallery, picture first */
+.gallery{display:flex;flex-direction:column;gap:14px}
+.card{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--bg);display:grid;grid-template-columns:420px minmax(0,1fr);grid-template-rows:auto 1fr}
+.card>.pic{grid-column:1;grid-row:1}.card>.strip{grid-column:1;grid-row:2;padding-bottom:10px}.card>.body{grid-column:2;grid-row:1/3;padding:16px 18px;border-left:1px solid var(--line)}
+@media(max-width:760px){.card{grid-template-columns:1fr}.card>.body{grid-column:1;grid-row:auto;border-left:0}}
+.card:hover{border-color:var(--on)}
+.pic{display:block;aspect-ratio:16/9;background:var(--soft);position:relative}
+.pic img{width:100%;height:100%;object-fit:cover;display:block}
+.strip{display:flex;gap:6px;align-items:center;padding:8px 14px 0}
+.strip img{width:72px;aspect-ratio:16/9;border:1px solid var(--line);border-radius:4px;object-fit:cover}.strip span{font-size:12px;color:var(--faint)}
+.pic.empty{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;color:var(--faint);font-size:13px}
+.pic.empty b{color:var(--red);font-weight:600}
+.body{padding:12px 14px 14px}
+.q{font-size:19px;font-weight:700;line-height:1.3}
+.sub{font-size:12.5px;color:var(--faint);margin-top:2px}
+.life{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin:8px 0 0;font-size:11.5px}
+.life span{padding:0 7px;border:1px solid var(--line);border-radius:9px;color:var(--mut)}.life i{color:var(--faint);font-style:normal}
+.life span.on{border-color:var(--on);background:var(--wash);color:var(--on);font-weight:600}
+.verbs{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.verbs a{font-size:12.5px;border:1px solid var(--line);border-radius:7px;padding:2px 10px}
+.verbs a.main{border-color:var(--on);color:var(--on)}
+.ideas{margin:12px 0 0;padding:0;list-style:none;font-size:14px}.ideas li{padding:3px 0;color:var(--fg)}.ideas li::before{content:"? ";color:var(--prop);font-weight:700}.ideas .more{color:var(--faint);font-size:12.5px}.ideas .more::before{content:""}
+.settled{margin:22px 0 0;padding:10px 14px;border:1px dashed var(--line);border-radius:10px;font-size:13.5px;color:var(--mut)}
+/* screen 2: one topic opened */
+hr.cut{border:0;border-top:2px dashed var(--line);margin:46px 0 30px}
+.topic{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:22px}
+@media(max-width:900px){.topic{grid-template-columns:1fr}}
+.stage-pic{border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.stage-pic img{width:100%;display:block}
+.nav{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--mut);padding:8px 2px}
+.thumbs{display:flex;gap:8px;overflow-x:auto;padding:4px 0}
+.thumbs img{width:120px;aspect-ratio:16/9;object-fit:cover;border:2px solid var(--line);border-radius:6px}
+.thumbs img.on{border-color:var(--on)}
+.side h4{margin:0 0 6px;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut)}
+.side ol{margin:0 0 16px;padding-left:18px;font-size:14px}.side li{margin:0 0 6px}.side li.on{font-weight:700;color:var(--on)}
+.side .ask{color:var(--prop)}
+.rounds{font-size:13px;color:var(--mut);border-top:1px solid var(--line);padding-top:10px}
+.rounds a{color:var(--on)}
+.tabs2{display:flex;gap:6px;margin:0 0 12px}
+.tabs2 a{font-size:13px;border:1px solid var(--line);border-radius:7px;padding:3px 12px}.tabs2 a.on{border-color:var(--on);background:var(--wash);color:var(--on)}
+/* notes */
+.notes{position:sticky;top:20px;align-self:start;font-size:13.5px}
+.notes h2{font-size:14px;margin:0 0 8px;color:var(--red)}
+.notes ol{margin:0;padding-left:20px}.notes li{margin:0 0 10px;color:var(--red)}.notes li span{color:var(--fg)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<main>
+  <p class="screen-label">Screen 1 · the Studio of a Block</p>
+  <div class="crumb">Tools-SPACE / blueprints / Project-Ladder / work / b17_theme_work</div>
+  <h1>b17_theme_work <span>Studio</span></h1>
+  <nav class="views"><a class="on" href="#">All</a><a href="#">Block</a><span class="sep"></span><a href="#">Interface</a><a href="#">Navigation</a></nav>
+  <p class="lead">What we are still thinking about. Open a topic to explore its ideas.</p>
+
+  <div class="gallery">
+    <article class="card">
+      <a class="pic" href="#s04"><img src="../../slides/idea-01-what-is-a-block.png" alt=""></a>
+      <div class="strip"><img src="../../slides/idea-02-block-parts.png" alt=""><img src="../../slides/idea-03-what-is-a-studio.png" alt=""><img src="../../slides/idea-04-round-exits.png" alt=""><span>+2</span></div>
+      <div class="body">
+        <div class="q">What should one page of a Block show?</div>
+        <div class="sub">s04-workbench-page-structure · 6 open ideas</div>
+        <div class="life"><span>explore</span><i>→</i><span class="on">shaping</span><i>→</i><span>agreed</span><i>→</i><span>closed</span></div>
+        <div class="verbs"><a class="main" href="#s04">Explore ideas</a><a href="#">Draw</a><a href="#">Mind map</a></div>
+        <ul class="ideas"><li>What is a Block, really?</li><li>What are a Block's parts?</li><li>What is a Studio?</li><li class="more">and 3 more open ideas</li></ul>
+      </div>
+    </article>
+
+    <article class="card">
+      <a class="pic empty" href="#"><b>No idea slide yet</b>its drawing failed the attract test</a>
+      <div class="body">
+        <div class="q">Which skills belong to the work theme?</div>
+        <div class="sub">s02-work-skills · 5 open concerns</div>
+        <div class="life"><span class="on">explore</span><i>→</i><span>shaping</span><i>→</i><span>agreed</span><i>→</i><span>closed</span></div>
+        <div class="verbs"><a class="main" href="#">Make idea slides</a><a href="#">Draw</a><a href="#">Mind map</a></div>
+      </div>
+    </article>
+
+    <article class="card">
+      <a class="pic empty" href="#"><b>No idea slide yet</b>its drawing failed the attract test</a>
+      <div class="body">
+        <div class="q">How does work climb the ladder?</div>
+        <div class="sub">s01-work-ladder · Block, Job, Task, Run</div>
+        <div class="life"><span class="on">explore</span><i>→</i><span>shaping</span><i>→</i><span>agreed</span><i>→</i><span>closed</span></div>
+        <div class="verbs"><a class="main" href="#">Make idea slides</a><a href="#">Draw</a><a href="#">Mind map</a></div>
+      </div>
+    </article>
+
+    <article class="card">
+      <a class="pic empty" href="#"><b>No idea slide yet</b>its drawing failed the attract test</a>
+      <div class="body">
+        <div class="q">Which look does each element take?</div>
+        <div class="sub">s32-work-element-ui · 6 elements still open</div>
+        <div class="life"><span class="on">explore</span><i>→</i><span>shaping</span><i>→</i><span>agreed</span><i>→</i><span>closed</span></div>
+        <div class="verbs"><a class="main" href="#">Make idea slides</a><a href="#">Draw</a><a href="#">Mind map</a></div>
+      </div>
+    </article>
+  </div>
+  <div class="settled">Settled · 1 topic folded away: s03-work-workbench (what today's workbench is). Its answer lives in Report.</div>
+
+  <hr class="cut" id="s04">
+
+  <p class="screen-label">Screen 2 · one topic opened (Explore ideas)</p>
+  <div class="crumb">… / b17_theme_work / Studio / s04-workbench-page-structure</div>
+  <h1>What should one page of a Block show? <span>Studio</span></h1>
+  <nav class="tabs2"><a class="on" href="#">Ideas</a><a href="#">Drawing</a><a href="#">Mind map</a><a href="#">Rounds · 2</a></nav>
+  <div class="topic">
+    <div>
+      <div class="stage-pic"><img src="../../slides/idea-01-what-is-a-block.png" alt="What is a Block, really?"></div>
+      <div class="nav"><span>← idea 1 of 6 →</span><span><a href="#">PowerPoint file</a> · <a href="#">notes</a></span></div>
+      <div class="thumbs">
+        <img class="on" src="../../slides/idea-01-what-is-a-block.png" alt=""><img src="../../slides/idea-02-block-parts.png" alt="">
+        <img src="../../slides/idea-03-what-is-a-studio.png" alt=""><img src="../../slides/idea-04-round-exits.png" alt="">
+        <img src="../../slides/idea-05-one-screen.png" alt=""><img src="../../slides/idea-06-studio-size.png" alt="">
+      </div>
+    </div>
+    <aside class="side">
+      <h4>Open ideas</h4>
+      <ol>
+        <li class="on">What is a Block, really?</li><li>What are a Block's parts?</li><li>What is a Studio?</li>
+        <li>Where does a round go?</li><li>Keep only one screen of a Block</li><li>How big may a Studio grow?</li>
+      </ol>
+      <h4>This idea</h4>
+      <p style="font-size:14px;margin:0 0 6px">Leaning C: a promise to one reader.</p>
+      <p class="ask" style="font-size:14px;margin:0 0 16px">Still open: does a data stage have a reader?</p>
+      <div class="rounds">2 rounds, last 10-29 · <a href="#">open the rounds</a></div>
+    </aside>
+  </div>
+</main>
+
+<aside class="notes">
+  <h2>What changed (v9)</h2>
+  <ol>
+    <li><span><b>One topic per row.</b> Never a grid: each row is one topic, its lead idea slide on the left, its question and buttons on the right. The eye goes down one column.</span></li>
+    <li><span><b>Picture first.</b> The row starts with the lead idea slide, the next ideas as small thumbnails under it. No text-only rows.</span></li>
+    <li><span><b>Its open ideas fill the row.</b> Beside the picture, the first three open questions, so the row says what is still undecided.</span></li>
+    <li><span><b>The card asks a question.</b> Its title is the topic's open question ("What should one page of a Block show?"); the folder name is small under it.</span></li>
+    <li><span><b>No bookkeeping on the card.</b> No Decided, Started or counts of rounds: just the stage line and how many ideas are open.</span></li>
+    <li><span><b>A failed topic says so.</b> "No idea slide yet: its drawing failed the attract test", and its main button is <b>Make idea slides</b>.</span></li>
+    <li><span><b>Settled topics fold away</b> into one line at the bottom; their answers live in Report.</span></li>
+    <li><span><b>Explore ideas</b> opens the topic: the slide large, ← → through its ideas, thumbnails under it, the open-ideas list beside it. Drawing, Mind map and Rounds are tabs, Rounds last.</span></li>
+    <li><span><b>Views</b> gain a level filter (All · Block · each Job) beside the hand-made groups.</span></li>
+  </ol>
+</aside>
+</div>
+</body>
+</html>

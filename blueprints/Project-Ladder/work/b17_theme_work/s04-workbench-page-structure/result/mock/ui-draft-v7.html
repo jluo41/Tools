@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Block Page Draft v7</title>
+<!-- s04 design draft v7 (261029): the one Block screen. JL: "假如说一个人只能留一个界面的话 ... 理解整个 block 在干什么".
+     The focus page as it is now (path, name + section, views, purpose), with Report's first view rebuilt around one
+     row per Question. b17's own values, read from disk; its Jobs j01-j04 are proposed (b17 has none yet). A mock. -->
+<style>
+:root{--bg:#fff;--fg:#1c1c1c;--mut:#6f6f6b;--faint:#9aa0a6;--line:#e3e3e6;--on:#1864ab;--wash:#e7f5ff;--soft:#f6f6f7;--ok:#24733d;--prop:#b35c00;--red:#c92a2a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161719;--fg:#e8e8e6;--mut:#a0a09c;--faint:#7c828a;--line:#2c2e33;--on:#91caff;--wash:#253749;--soft:#1d1f22;--ok:#8bd49a;--prop:#e4bd62;--red:#ff8787}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+a{color:inherit;text-decoration:none}
+.wrap{display:grid;grid-template-columns:minmax(0,960px) 300px;gap:36px;max-width:1340px;margin:0 auto;padding:26px 24px 60px}
+@media(max-width:1100px){.wrap{grid-template-columns:1fr}.notes{position:static!important}}
+.crumb{font-size:13px;color:var(--mut)}
+h1{display:flex;align-items:baseline;gap:18px;font-size:26px;margin:8px 0 12px}h1 span{font-size:22px;font-weight:600;color:var(--mut)}
+.views{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
+.views a{border:1px solid var(--line);border-radius:8px;padding:5px 14px;font-size:14px}
+.views a.on{border-color:var(--on);background:var(--wash);color:var(--on)}
+.word{font-size:11.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--mut)}
+.purpose{margin:0 0 16px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.purpose p{margin:2px 0 0}
+.caption{font-size:13.5px;color:var(--mut);margin:0 0 12px}
+/* 1: the Block in five lines */
+.facts{display:grid;grid-template-columns:120px 1fr;gap:6px 16px;margin:0 0 22px;font-size:14.5px}
+.facts dt{color:var(--mut)}.facts dd{margin:0}
+.next{color:var(--red);font-weight:500}
+.new{font-size:11px;color:var(--red);border:1px dashed var(--red);border-radius:6px;padding:0 5px;margin-left:6px}
+/* 2: one row per Question */
+h3{font-size:13px;color:var(--mut);text-transform:uppercase;letter-spacing:.05em;margin:22px 0 8px}
+.qrow{border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:0 0 10px;display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:8px 22px}
+.qrow .q{font-weight:650}
+.qrow .q b{color:var(--mut);font-weight:600;margin-right:6px}
+.ans{font-size:14px;margin-top:4px}
+.stage{font-size:11px;border:1px solid currentColor;border-radius:9px;padding:0 7px;margin-right:6px}
+.stage.proposed{color:var(--prop)}.stage.none{color:var(--faint)}.stage.agreed{color:var(--ok)}
+.side{font-size:13px;color:var(--mut)}
+.side div{margin:2px 0}
+.side .k{display:inline-block;width:64px;color:var(--faint)}
+.chip{display:inline-block;border-radius:9px;padding:0 8px;margin:1px 2px;font-size:12px;background:var(--wash);color:var(--on)}
+.chip.grey{background:var(--soft);color:var(--mut)}
+.bar{display:inline-flex;width:110px;height:7px;border-radius:4px;overflow:hidden;background:var(--soft);vertical-align:middle;margin-right:8px}
+.bar i{display:block;background:var(--ok)}
+.loose{font-size:13.5px;color:var(--mut);margin:4px 0}
+/* notes */
+.notes{position:sticky;top:20px;align-self:start;font-size:13.5px}
+.notes h2{font-size:14px;margin:0 0 8px;color:var(--red)}
+.notes ol{margin:0;padding-left:20px}.notes li{margin:0 0 10px;color:var(--red)}
+.notes li span{color:var(--fg)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<main>
+  <div class="crumb">Tools-SPACE / blueprints / Project-Ladder / work / b17_theme_work</div>
+  <h1>b17_theme_work <span>Report</span></h1>
+  <nav class="views"><a class="on" href="#">Block</a><a href="#">MindMap</a><a href="#">Answers</a><a href="#">Questions</a></nav>
+  <div class="purpose"><span class="word">Purpose</span>
+    <p>Decide what a work Block, Job, Task and Run each hold and show, so the work skills and the workbench follow one plan.</p></div>
+  <p class="caption">The whole Block on one screen: who it is for, how far it is, and what each Question has.</p>
+
+  <dl class="facts">
+    <dt>For</dt><dd>skill authors of <b>haipipe-task</b> and <b>workbench-work</b> <span class="new">reader:</span></dd>
+    <dt>Takes in</dt><dd><b>b10_project_workbench</b>: the ladder every Theme shares <span class="new">takes-in:</span></dd>
+    <dt>Done when</dt><dd>every Question has an answer, and each answer names the skill or workbench change that settled it</dd>
+    <dt>How far</dt><dd><span class="bar"><i style="width:0%"></i></span>0 of 4 answered · 2 proposed · 2 no answer yet</dd>
+    <dt>Next move</dt><dd class="next">You: agree or change the 2 proposals (Q01, Q04)</dd>
+  </dl>
+
+  <h3>What it must find out · 4</h3>
+
+  <div class="qrow">
+    <div><div class="q"><b>Q01</b>How does work climb the ladder?</div>
+      <div class="ans"><span class="stage proposed">proposed</span>The work Theme climbs the shared ladder unchanged.</div></div>
+    <div class="side"><div><span class="k">Job</span><span class="chip">j01_work_ladder</span> not started</div>
+      <div><span class="k">Drawings</span><span class="chip grey">s01-work-ladder</span><span class="chip grey">s03-work-workbench</span></div>
+      <div><span class="k">Sent</span>nothing yet</div></div>
+  </div>
+
+  <div class="qrow">
+    <div><div class="q"><b>Q02</b>Where do Plan, Build, Execute and Report show?</div>
+      <div class="ans"><span class="stage none">no answer yet</span></div></div>
+    <div class="side"><div><span class="k">Job</span><span class="chip">j02_plan_build_execute_report</span> not started</div>
+      <div><span class="k">Drawings</span><span class="chip grey">s03-work-workbench</span></div>
+      <div><span class="k">Sent</span>nothing yet</div></div>
+  </div>
+
+  <div class="qrow">
+    <div><div class="q"><b>Q03</b>How does a Question read its Runs?</div>
+      <div class="ans"><span class="stage none">no answer yet</span></div></div>
+    <div class="side"><div><span class="k">Job</span><span class="chip">j03_questions_and_runs</span> not started</div>
+      <div><span class="k">Drawings</span><span class="chip grey">s03-work-workbench</span></div>
+      <div><span class="k">Sent</span>nothing yet</div></div>
+  </div>
+
+  <div class="qrow">
+    <div><div class="q"><b>Q04</b>Which skills make the work theme?</div>
+      <div class="ans"><span class="stage proposed">proposed</span>The work theme takes the skills only work uses, and base keeps what several themes call.</div></div>
+    <div class="side"><div><span class="k">Job</span><span class="chip">j04_work_skills</span> not started</div>
+      <div><span class="k">Drawings</span><span class="chip grey">s02-work-skills</span></div>
+      <div><span class="k">Sent</span>nothing yet</div></div>
+  </div>
+
+  <h3>Not tied to one Question</h3>
+  <p class="loose">Jobs for all Questions: none · Drawings: <span class="chip grey">s00-overview</span><span class="chip grey">s04-workbench-page-structure</span><span class="chip grey">s32-work-element-ui</span></p>
+</main>
+
+<aside class="notes">
+  <h2>What changed (v7)</h2>
+  <ol>
+    <li><span><b>One screen, one Block.</b> Report opens on a view named Block: who it is for, how far, what each Question has.</span></li>
+    <li><span><b>For and Takes in</b> are two new face fields, <code>reader:</code> and <code>takes-in:</code>. Today 0 of 294 Blocks write them; they live only in prose.</span></li>
+    <li><span><b>Next move</b> names who acts now, from the answers' stage (a proposal waits for you).</span></li>
+    <li><span><b>One row per Question:</b> its answer's first sentence, the Job that answers it (<code>answers: Q01</code>), the drawings that feed it (<code>**Feeds:**</code>), and what was sent.</span></li>
+    <li><span><b>Jobs j01 to j04 are proposed:</b> b17 has no Jobs today; each Question becomes one Job.</span></li>
+    <li><span><b>A Block with no Questions</b> (a data stage, about 69 of 288) shows the same rows with its deliverables as the rows: "RecordStore built", "CaseSets built".</span></li>
+  </ol>
+</aside>
+</div>
+</body>
+</html>

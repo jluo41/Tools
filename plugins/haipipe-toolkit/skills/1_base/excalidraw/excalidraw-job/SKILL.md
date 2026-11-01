@@ -12,12 +12,18 @@ description: >-
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 disable-model-invocation: true
 metadata:
-  version: "0.9.6"
-  last_updated: "2026-10-26"
+  version: "0.10.2"
+  last_updated: "2026-10-28"
   # version history: ./CHANGELOG.md
 ---
 
 # /excalidraw-job · a Job as one drawing, a staircase
+
+> **Inside a Studio topic it draws only the Design part (JL 261031, b35 r01 Q1: A; b35-s01-D16).** An sNN's
+> drawing has five parts, Idea, Now, Design, Process, Delivery, and their shape is excalidraw-studio's
+> (`haipipe-studio/scripts/five_parts.py`). When a Job is drawn for an sNN, this skill's staircase is that
+> topic's Design sketch, built by its `design()`; the other four parts are read from disk by five_parts.
+> Drawn on its own, outside an sNN, it is still a whole drawing.
 
 > **Every Task and every Run is explicit (JL 261019).** Each Task is its own step, and each Run is its own card with
 > its folder name (`r02_q4km_throughput_fullctx_calib`) and its state (`complete`, `queued`, `no result yet`),
@@ -264,7 +270,7 @@ Commands
 
 ```bash
 J=Tools/plugins/haipipe-toolkit/skills/1_base/excalidraw/excalidraw-job/scripts/job_drawing.py
-python $J make <job folder> [--nn NN] [--dry-run]   # the Block's topic studio/sNN-<jNN>-<job>/ (s21-s29), drawn
+python $J make <job folder> [--nn NN] [--dry-run]   # the Block's topic sNN-<jNN>-<job>/ (s21-s29), drawn
 python $J draw <topic folder>                       # redraw one (what the topic's builder calls)
 python $J adopt <topic folder> [--aim '…']          # a one-Job results topic, now drawn as the whole Job
 python $J preview <job folder> <out.excalidraw> [--face <face.md>]   # draw a Job anywhere; its Block is not
@@ -350,4 +356,4 @@ excalidraw-job/
 
 The first Jobs drawn: Knowledge-Base's Proj10-LLM-Baseline `discovery/b01_ml_foundations` s21 to s23 (adopted
 261012); the staircase's first, Physician-SPACE LLMRec `work/b04_analysis_physician_visibility` s27 (b03 j03, 261013). Its own
-Studio topic is Tools' `blueprints/b31_excalidraw/studio/s06-excalidraw-job/`.
+Studio topic is Tools' `blueprints/Project-PageParts/work/b31_excalidraw/s06-excalidraw-job/`.

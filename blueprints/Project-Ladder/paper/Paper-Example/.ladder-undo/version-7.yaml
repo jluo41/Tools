@@ -1,0 +1,12 @@
+run: '2026-11-01'
+what: evidence j01_evidence_display, j02_evidence_value, j03_evidence_cite
+tool: haipipe-paper/scripts/paper_ladder.py
+moves: []
+rewritten:
+- board.md
+created:
+- j01_evidence_display/j01_evidence_display.md
+- j02_evidence_value/j02_evidence_value.md
+- j03_evidence_cite/j03_evidence_cite.md
+kept: .ladder-undo/version-7
+roll_back_first: any record newer than this one

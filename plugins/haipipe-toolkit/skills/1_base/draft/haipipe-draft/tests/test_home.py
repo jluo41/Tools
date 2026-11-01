@@ -545,8 +545,9 @@ class SpaceViewTest(unittest.TestCase):
             request.serve_home()
             body = request.wfile.getvalue().decode("utf-8")
             self.assertEqual(request.code, 200)
-            self.assertIn("Other Task", body)
-            self.assertNotIn('>b01 · Task One</a>\n  <span class="home-folder">', body)
+            self.assertIn("<h1>Project-B<span", body)       # ?project= opens that Project's page (haipipe-ui, 261029)
+            self.assertIn("b01_other", body)                 # its Blocks, by their real folder names
+            self.assertNotIn("Task One", body)               # never another Project's
 
     def test_projects_start_open_only_when_the_view_is_small(self):
         with tempfile.TemporaryDirectory() as tmp:

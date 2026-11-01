@@ -80,7 +80,8 @@ def telling_face(board):
     text = (board / "board.md").read_text(encoding="utf-8")
     m = re.search(r"(?m)^story-current:\s*(\S+)", text)
     if m:
-        for p in (board / "studio" / m[1] / f"{m[1]}.md", board / "A1-Story" / m[1] / f"{m[1]}.md"):
+        for p in (board / m[1] / f"{m[1]}.md", board / "studio" / m[1] / f"{m[1]}.md",   # beside, or an older studio/
+                  board / "A1-Story" / m[1] / f"{m[1]}.md"):
             if p.is_file():
                 return p
     old = sorted(board.glob("A1-Story/Story*/Story*.md"))

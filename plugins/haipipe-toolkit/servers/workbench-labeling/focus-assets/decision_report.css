@@ -1,0 +1,128 @@
+/* A building Task's views (labeling_focus.py, decision_report_view.py; b15 j01 t03 s58 C2): numbered heading bars that
+   fold; the Decide view's inbox (slide 17: a row per card, its question large, its state in a pill, Open) and its
+   decision card (slide 16). Scoped to .dec-view, in the workbench's own colours, fonts and boxes (focus.css tokens;
+   haipipe-ui: a redesign moves structure, never the look); no illustrations. */
+.dec-view{--dec-wait:light-dark(#b35c00,#e4bd62);--dec-wait-wash:light-dark(#fff4e6,#3a2a12);--dec-wait-line:light-dark(#ffd8a8,#7a5520);
+ --dec-ok:light-dark(#2b8a3e,#8ce99a);--dec-ok-wash:light-dark(#ebfbee,#16301d);--dec-ok-line:light-dark(#b2f2bb,#2f6b3c);
+ --dec-err:light-dark(#c92a2a,#ff8787)}
+.dec-view .dec-group{display:flex;align-items:center;gap:12px;margin:8px 0 12px;font-size:17px;font-weight:600;color:var(--ink)}
+.dec-view .dec-group::after{content:"";flex:1;border-top:1px solid var(--line)}
+.dec-view .dec-sec+.dec-group{margin-top:22px}
+.focus-content .dec-view .dec-strip{margin:0 0 14px;font-size:13px;color:var(--muted)}
+
+/* each section: the box is its heading bar only; it folds by the bar, open by default (as the draft page's sections) */
+.dec-view .dec-sec{margin:0 0 12px}
+.dec-view .dec-h{list-style:none;cursor:pointer;user-select:none;display:flex;align-items:center;gap:8px;font-size:15px;
+ font-weight:600;border:1px solid var(--line);border-radius:8px;background:var(--paper);padding:8px 14px}
+.dec-view .dec-h::-webkit-details-marker{display:none}
+.dec-view .dec-h::before{content:"▾";display:inline-block;width:16px;flex:none;color:var(--muted);font-size:12px}
+.dec-view .dec-sec:not([open])>.dec-h::before{content:"▸"}
+.dec-view .dec-h:hover{color:var(--accent)}
+.dec-view .dec-body{margin:10px 0 18px;padding:0 2px}
+
+/* the main point, large, its state word under it; plain lines smaller */
+.focus-content .dec-view .dec-big{font-size:20px;line-height:1.45;font-weight:600;margin:4px 0 2px;color:var(--ink)}
+.focus-content .dec-view .dec-state{font-size:13px;margin:0 0 12px;color:var(--muted)}
+.dec-view .dec-state.wait{color:var(--dec-wait)}.dec-view .dec-state.ok{color:var(--dec-ok)}
+.focus-content .dec-view .dec-line{font-size:14px;margin:4px 0 8px;color:var(--muted)}
+.dec-view .dec-kv{display:grid;grid-template-columns:140px minmax(0,1fr);gap:6px 14px;margin:0;font-size:14px;line-height:1.5;min-width:0}
+.dec-view .dec-kv dt{color:var(--muted)}
+.dec-view .dec-kv dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.dec-view .dec-btn{display:inline-block;font-size:13.5px;line-height:1.5;border:1px solid var(--line);border-radius:8px;padding:5px 16px;
+ background:var(--paper);color:var(--ink);text-decoration:none;cursor:pointer;white-space:nowrap}
+.dec-view .dec-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--paper);text-decoration:none}
+.dec-view .dec-btn.main{border-color:var(--accent);color:var(--accent)}
+.dec-view .dec-btn.primary{border-color:var(--accent);background:var(--accent);color:var(--bg);font-weight:600}
+.dec-view .dec-btn.primary:hover{color:var(--bg);background:var(--accent);filter:brightness(1.08)}
+.dec-view .dec-btn:disabled,.dec-view .dec-btn:disabled:hover{opacity:.5;cursor:default;filter:none}
+
+/* the inbox: one full-width row per card, its question large, its state in a pill, Open on the row (slide 17) */
+.dec-view .dec-inbox{display:grid;gap:10px;margin:8px 0 10px}
+.dec-view .dec-row{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"q open" "pill open";
+ align-items:center;gap:6px 18px;border:1px solid var(--line);border-radius:10px;padding:12px 16px;background:var(--paper)}
+.dec-view .dec-row.on{border-color:var(--accent);background:var(--soft)}
+.focus-content .dec-view .dec-rq{grid-area:q;margin:0;font-size:17px;font-weight:600;line-height:1.4;color:var(--ink);overflow-wrap:anywhere}
+.dec-view .dec-row>.dec-pill{grid-area:pill;justify-self:start}
+.dec-view .dec-row>[data-open]{grid-area:open}
+.dec-view .dec-pill{display:inline-block;font-size:12.5px;font-weight:600;line-height:1.5;border-radius:999px;padding:1px 10px;
+ border:1px solid var(--line);background:var(--wash);color:var(--muted);white-space:nowrap;text-transform:none;letter-spacing:0}
+.dec-view .dec-pill.wait{border-color:var(--dec-wait-line);background:var(--dec-wait-wash);color:var(--dec-wait)}
+.dec-view .dec-pill.ok{border-color:var(--dec-ok-line);background:var(--dec-ok-wash);color:var(--dec-ok)}
+.dec-view .dec-pill.draft{border-color:var(--accent);background:var(--soft);color:var(--accent)}
+.focus-content .dec-view .dec-quiet{margin:0 0 14px;padding:9px 14px;border-radius:8px;background:var(--wash);color:var(--muted);font-size:13.5px}
+
+/* the open card (slide 16): its question, Case A beside Case B, the answers, its foot; then Save draft, Submit feedback */
+.dec-view .dec-cardbox{border:1px solid var(--accent);border-radius:10px;padding:14px 18px;background:var(--paper)}
+.focus-content .dec-view .dec-chead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 4px;
+ font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.focus-content .dec-view .dec-cq{font-size:21px;font-weight:700;line-height:1.3;margin:0 0 6px;color:var(--ink);overflow-wrap:anywhere}
+.focus-content .dec-view .dec-why{font-size:14px;color:var(--muted);margin:0 0 10px}
+.dec-view .dec-cases{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin:10px 0 12px}
+.dec-view .dec-cases.one{grid-template-columns:minmax(0,1fr);margin-top:0}
+.dec-view .dec-case{margin:0;border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--wash);min-width:0}
+.dec-view .dec-case figcaption{font-size:13px;font-weight:700;color:var(--accent);margin:0 0 4px}
+.dec-view .dec-case figcaption small{font-weight:400;color:var(--muted);margin-left:8px}
+.focus-content .dec-view .dec-ctx{font-size:12.5px;color:var(--muted);margin:0 0 4px;white-space:pre-wrap;overflow-wrap:anywhere}
+.focus-content .dec-view .dec-text{font-size:14.5px;margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.focus-content .dec-view .dec-signal{font-size:12px;color:var(--muted);margin:6px 0 0}
+.dec-view .dec-options{position:relative;border:0;margin:0;padding:0;display:grid;gap:7px;min-width:0}
+.dec-view .dec-hidden{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.dec-view .dec-choice{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:8px 12px;
+ cursor:pointer;background:var(--wash)}
+.dec-view .dec-choice:hover{border-color:var(--accent)}
+.dec-view .dec-choice:has(input:checked){border-color:var(--accent);background:var(--soft)}
+.dec-view .dec-choice input{margin:4px 0 0;flex:none;accent-color:var(--accent)}
+.dec-view .dec-letter{flex:none;width:14px;font-weight:700;color:var(--accent);font-size:14px;line-height:1.55}
+.dec-view .dec-choice b{display:block;font-size:14.5px;font-weight:500;line-height:1.55}
+.dec-view .dec-effect{display:block;font-size:12.5px;color:var(--muted);margin-top:2px}
+.dec-view textarea,.dec-view input[type=text]{display:block;width:100%;font:inherit;font-size:14px;color:var(--ink);background:var(--paper);
+ border:1px solid var(--line);border-radius:6px;padding:7px 10px}
+.dec-view textarea{min-height:52px;resize:vertical}
+.dec-view .dec-own{margin:-2px 0 2px}
+.dec-view textarea:focus,.dec-view input[type=text]:focus{border-color:var(--accent);outline:none}
+.dec-view .dec-field{display:block;margin:10px 0 0;font-size:13px;color:var(--muted)}
+.dec-view .dec-field>span{display:block;margin:0 0 4px}
+.focus-content .dec-view .dec-foot{display:flex;flex-wrap:wrap;gap:4px 18px;margin:12px 0 0;padding-top:8px;border-top:1px dashed var(--line);
+ font-size:12.5px;color:var(--muted)}
+.dec-view .dec-foot b{font-weight:600;margin-right:5px}
+.dec-view .dec-answer{margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
+.dec-view .dec-comment{color:var(--muted);font-size:12.5px}
+.dec-view .dec-actions{display:grid;gap:10px;margin:14px 0 0;padding:12px 0 0;border-top:1px solid var(--line)}
+.dec-view .dec-name{margin:0}.dec-view .dec-name input{max-width:280px}
+.dec-view .dec-confirm{display:flex;gap:8px;align-items:center;font-size:14px;cursor:pointer}
+.dec-view .dec-confirm input{accent-color:var(--accent);width:16px;height:16px}
+.dec-view .dec-buttons{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.focus-content .dec-view .dec-status{margin:0;font-size:13.5px;min-height:1.5em}
+.dec-view .dec-status.ok{color:var(--dec-ok)}.dec-view .dec-status.err{color:var(--dec-err)}
+.dec-view .dec-status .dec-btn{margin-left:10px}
+
+/* the earlier reports: a chain of boxes, each its state over it */
+.dec-view .dec-chain{display:flex;align-items:flex-end;flex-wrap:wrap;gap:8px 4px;margin:4px 0 8px}
+.dec-view .dec-step{display:flex;flex-direction:column;gap:3px;flex:0 1 240px;min-width:160px}
+.dec-view .dec-role{font-size:11.5px;color:var(--muted)}
+.dec-view .dec-box{border:1px solid var(--line);border-radius:8px;padding:8px 12px;background:var(--paper);font-size:13.5px;overflow-wrap:anywhere}
+.dec-view .dec-arrow{color:var(--muted);font-size:18px;padding:0 6px 8px}
+
+/* the step after this one, and a Task's Runs */
+.focus-content .dec-view .dec-next{text-align:right;margin:18px 0 0;font-size:14px}
+.dec-view .dec-next a{color:var(--accent)}
+.dec-view .dec-run{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+.dec-view .dec-run .n{font-weight:600;min-width:200px;overflow-wrap:anywhere}
+.dec-view .dec-run .d{flex:1;color:var(--muted);font-size:13px}
+.dec-view .dec-run .w{font-size:13px;white-space:nowrap}
+
+@media(max-width:600px){
+ .dec-view .dec-row{grid-template-areas:"q q" "pill open";padding:10px 12px}
+ .focus-content .dec-view .dec-rq{font-size:16px}
+ .dec-view .dec-cardbox{padding:12px}
+ .focus-content .dec-view .dec-cq{font-size:19px}
+ .dec-view .dec-kv{grid-template-columns:1fr;gap:0}.dec-view .dec-kv dt{margin-top:8px;font-size:12.5px}
+ .dec-view .dec-cases{grid-template-columns:minmax(0,1fr)}
+ .dec-view .dec-chain{flex-direction:column;align-items:stretch}.dec-view .dec-step{flex:none;min-width:0}
+ .dec-view .dec-arrow{transform:rotate(90deg);align-self:flex-start;padding:2px 16px}
+ .dec-view .dec-run{flex-wrap:wrap}.dec-view .dec-run .n{min-width:0;flex-basis:100%}
+ .dec-view .dec-name input{max-width:none}
+ .dec-view .dec-buttons .dec-btn{flex:1}
+}
+@media(pointer:coarse){.dec-view .dec-btn{min-height:44px}}
+@media(prefers-reduced-motion:reduce){.dec-view *{scroll-behavior:auto!important}}

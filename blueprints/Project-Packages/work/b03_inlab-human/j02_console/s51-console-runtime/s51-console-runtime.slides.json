@@ -1,0 +1,48 @@
+{
+ "topic": "s51-console-runtime",
+ "style": "sketch-notes",
+ "source": "s51-console-runtime.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "The console runtime",
+   "points": [
+    "How the console runs: standalone, embedded in a HAI-Chat thread, and on the fixtures",
+    "every INLAB_ setting and who reads it",
+    "and the image's contents checked against what main.py imports (four routers missing) (261009, g01)"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and how the console runs, its settings, and the routers its image is missing, for the people who build the console",
+    "a code"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "What is decided",
+   "points": [
+    "The image copies every module (COPY .py) and personas/"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "04",
+   "idea": "Still open",
+   "points": [],
+   "leaning": "",
+   "ask": "Agree its For: line and Delivery type: (code), proposed by the agent 261030?",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

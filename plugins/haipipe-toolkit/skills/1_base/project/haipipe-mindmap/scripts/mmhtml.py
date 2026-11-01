@@ -10,6 +10,16 @@ import re
 import mmtree as MT
 
 
+def safe_href(url: str) -> str:
+    """A link's target as the workbench may open it: a web address, a root or relative path, an anchor. Any other scheme
+    (javascript:, data:, file:) or a //host link gives "" (as page_reader._md_href): a link opens in the pop-out, on
+    the origin that also serves the terminal (261031 review)."""
+    url = url.strip()
+    if re.match(r"(?:https?://|#|/(?!/))", url, re.I):
+        return url
+    return "" if re.match(r"[A-Za-z][A-Za-z0-9+.-]*:", url) or url.startswith("//") else url
+
+
 def inline(s: str) -> str:
     """Markdown inside a line: `code`, ![pictures](url), [links](url), **bold**, *italic*; everything else escaped."""
     keep = []
@@ -19,12 +29,12 @@ def inline(s: str) -> str:
         return f"\x00{len(keep) - 1}\x00"
     s = re.sub(r"`([^`]+)`", lambda m: stash(f"<code>{html.escape(m.group(1))}</code>"), str(s))
     s = re.sub(r"!\[([^\]]*)\]\(([^)\s]+)\)", lambda m: stash(        # a picture shows as itself, opens full size
-        f'<a class=mm-pic data-pop="{html.escape(m.group(1), quote=True)}" href="{html.escape(m.group(2), quote=True)}" '
-        f'target=_blank rel=noopener><img src="{html.escape(m.group(2), quote=True)}" alt="{html.escape(m.group(1), quote=True)}" '
-        f'loading=lazy></a>'), s)
+        f'<a class=mm-pic data-pop="{html.escape(m.group(1), quote=True)}" href="{html.escape(safe_href(m.group(2)), quote=True)}" '
+        f'target=_blank rel=noopener><img src="{html.escape(safe_href(m.group(2)), quote=True)}" alt="{html.escape(m.group(1), quote=True)}" '
+        f'loading=lazy></a>' if safe_href(m.group(2)) else html.escape(m.group(1))), s)   # another scheme: its words only
     s = re.sub(r"\[([^\]]+)\]\(([^)\s]+)\)", lambda m: stash(        # a link opens in the workbench's pop-out
-        f'<a data-pop="{html.escape(m.group(1), quote=True)}" href="{html.escape(m.group(2), quote=True)}" target=_blank '
-        f'rel=noopener>{html.escape(m.group(1))}</a>'), s)
+        f'<a data-pop="{html.escape(m.group(1), quote=True)}" href="{html.escape(safe_href(m.group(2)), quote=True)}" target=_blank '
+        f'rel=noopener>{html.escape(m.group(1))}</a>' if safe_href(m.group(2)) else html.escape(m.group(1))), s)
     s = html.escape(s, quote=False)
     s = re.sub(r"(\*\*|__)(.+?)\1", r"<strong>\2</strong>", s)
     s = re.sub(r"(?<![\w*])\*(?!\s)(.+?)(?<!\s)\*(?!\w)", r"<em>\1</em>", s)

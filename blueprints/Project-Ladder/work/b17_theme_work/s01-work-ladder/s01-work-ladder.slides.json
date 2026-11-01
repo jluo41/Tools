@@ -1,0 +1,43 @@
+{
+ "topic": "s01-work-ladder",
+ "style": "sketch-notes",
+ "source": "s01-work-ladder.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Drop the work scaffold?",
+   "points": [
+    "Drop it: the base skills already make every rung, and the SKILL.md routes to them",
+    "Keep a thin one that calls them in order: an sNN with its Job, Tasks and soft Runs",
+    "Keep the first plan: a work scaffold of its own (j01's t02, now in _old/)"
+   ],
+   "leaning": "drop it; new_board.py, new_job.py, soft_run.py, new_topic.py and collect.py already write each rung",
+   "ask": "Does a work Block need anything the base scaffolds cannot make?",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "Older Blocks that keep Questions?",
+   "points": [
+    "The door keeps one route: their Questions go to haipipe-report until the Block moves",
+    "The door drops the route: their Questions stay, with no work owner",
+    "Move every work Block now, its Questions folded into its topics"
+   ],
+   "leaning": "keep one route; a Block moves only when JL asks (24 of 43 still keep Questions)",
+   "ask": "Which Block, if any, moves first?",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "How much of each rung in the SKILL.md?",
+   "points": [
+    "One line per rung, naming its owner's contract",
+    "Each rung's whole folder tree, written out",
+    "A ref/work-ladder.md with the trees; the SKILL.md keeps the lines"
+   ],
+   "leaning": "one line per rung, so each rule keeps one copy and nothing drifts",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

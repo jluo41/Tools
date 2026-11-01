@@ -2,7 +2,7 @@
 name: workbench-work
 description: "Open and read a work-theme Block Workbench: Scope (Block, Questions, Resources, RoadMap Draw), Task (a row per Question: Logic, Task Work, Report), Check and Delivery, with the Runs panel and Guide; a workflow-layout Block shows Goal · Plan · Execution · Results. It only shows: execution is haipipe-task, reports are haipipe-draft. Trigger: work workbench, work Block view, open the Block's reports, /workbench-work."
 metadata:
-  version: "0.8.3"
+  version: "0.8.4"
   last_updated: "2026-10-26"
 ---
 
@@ -18,7 +18,7 @@ its four Views (Description, Method, RoadMap Draw, Related Paper) come from
 page: `guide/methods.excalidraw` first, then `guide/method.md` as fold
 cards with its Run and Report method cards (`guide/methods/`); Related Paper is
 `related/papers.md`, all in `servers/workbench-work/`; RoadMap Draw opens the generated
-`Tools/blueprints/b17_theme_work/studio/s03-work-workbench/task-workbench-design.excalidraw`.
+`Tools/blueprints/Project-Ladder/work/b17_theme_work/s04-workbench-page-structure/result/merged-s03-work-workbench/task-workbench-design.excalidraw`.
 
 ## The workflow layout, and updating an older Block
 
@@ -62,7 +62,7 @@ available. Preserve the existing host's authentication settings.
 | Scope › Block | The spine, close condition, Jobs and board.md, as label and value rows | `board.md` |
 | Scope › Questions | The Question register: id, group, topic, question, linked Tasks | `board.md` Questions |
 | Scope › Resources | Workspace data: each `_WorkSpace` folder a Job declares (`raw_store` + `cohort`, or a `_WorkSpace/` path, in `src/config-defaults.yaml`) and the Block's ProjectResult folder, its files by kind (data named and sized only; documents, figures, drawings and scripts pop out); then the Related resources and the add form | Job defaults; `board.md` Related resources |
-| Scope › RoadMap Draw | The question map first (generated, view only), then freeform drawings, then the studio topics (the Block's, then each Job's under its name) with their sessions and previews, each a folding row | Block `studio/*.excalidraw`, `studio/sNN-<topic>/`, `jNN_*/studio/sNN-<topic>/`, `runs/run-draw-<sNN>/passes/` |
+| Scope › RoadMap Draw | The question map first (generated, view only), then freeform drawings, then the studio topics (the Block's, then each Job's under its name) with their sessions and previews, each a folding row | Block `studio/*.excalidraw`, `sNN-<topic>/`, `jNN_*/sNN-<topic>/`, `runs/run-draw-<sNN>/passes/` |
 | Task › each group | One table per register `group:` (one, Questions, when there is none): a row per Question, **Logic │ Task Work │ Report** | `board.md` Questions; native Tasks; report Pages |
 | Check › Runs | Every Run and its receipt status | Native Ticket/Result reader |
 | Check › Tasks | Each Task Folder's run counts and audit findings | Native Task reader |
@@ -109,11 +109,9 @@ entry; it does not download a paper or execute a Discovery workflow.
 
 ## RoadMap Draw
 
-The first row is the question map, `studio/question-map.excalidraw`, written only by
-`servers/workbench-work/question_map.py <block>` from the register: one frame per
-group, a row per Question (Question → its Tasks with their Jobs → its report). It shows
-view only and says when `board.md` is newer than it (rerun the script). The rows after it
-are freeform: ideation, possible workflows, paths or other useful sketches, with no
+The question map is retired (JL 261031, b35 r02 Q2: "Just delete them"): the Report's
+MindMap draws each Question with its answer, and `question_map.py` writes nothing now.
+The rows are freeform: ideation, possible workflows, paths or other useful sketches, with no
 required type or metadata. **Add drawing** opens a new native Block scene. Expanding a row
 loads its viewer; **Edit drawing** takes the native editor's pen. The existing Excalidraw
 lock permits one editing surface at a time. Full-screen opens the same file and obeys that

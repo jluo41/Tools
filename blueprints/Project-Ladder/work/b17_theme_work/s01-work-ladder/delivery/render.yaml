@@ -1,0 +1,8 @@
+# Where s01's delivery goes (haipipe-studio scripts/render_delivery.py). The deck stays in deck/. The one piece is the
+# real file it hands over, plugins/haipipe-toolkit/skills/2_theme/work/haipipe-work/SKILL.md, rewritten whole by j01
+# t01's Run (a code piece: no render markers), checked by t03's fresh agent. build_s01_work_ladder.py reads this list
+# for "what s01 hands over". Until 261031 it held three pieces: ladder-section (t01), work-scaffold (t02, now in
+# j01's _old/) and demo-block (t03).
+pieces:
+  - code: "haipipe-work/SKILL.md: the five rungs, which get a page, where each request goes"
+    by: j01_work_ladder_contract/t01_skill_section/runs/run-write-ladder-section

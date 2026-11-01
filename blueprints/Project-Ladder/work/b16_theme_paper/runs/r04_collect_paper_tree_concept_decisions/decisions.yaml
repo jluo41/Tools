@@ -1,0 +1,44 @@
+- title: Four layers
+  decision: 'A paper has four layers: command (the paper Board''s topics), creation (work: datasets and regressions on raw data), evidence (values, citations, displays chosen for this paper from work''s
+    returned Results), writing (the version Jobs).'
+  said: '我们这个协议 paper 有好几层 ... 指挥层 ... 创造层 ... 证据层 ... 写作层 (then, on my proposal: okay, I agree)'
+  when: 2026-10-31 18:02
+  applied_by: 'workbench: focus_draft.evidence_html, the Evidence view (Report and Work), Draft without evidence; folders: j21_displays and j22_citations still to merge into one evidence Job (Opioid-PDMP-DID)'
+- title: One evidence Job
+  decision: The evidence layer is one Job in the paper Board beside the versions, holding Values (t61-t69), Citations (t71-t79) and Displays (t01-t19 main, t51-t59 appendix); never in work, never inside
+    each version. The Board's views gain Evidence before Draft; Draft holds the versions only.
+  said: okay, I agree, how do you want to design them? ... so you might want to pull them back now? is that correct?
+  when: 2026-10-31 18:02
+  applied_by: 'workbench: focus_draft.evidence_html, the Evidence view (Report and Work), Draft without evidence; folders: j21_displays and j22_citations still to merge into one evidence Job (Opioid-PDMP-DID)'
+- title: Three evidence Jobs
+  decision: 'The evidence layer is three Jobs beside the versions, one per kind: j21_evidence_display, j22_evidence_value, j23_evidence_cite; evidence is independent of the writing and of the venue. Replaces
+    the one evidence Job of r04.'
+  said: for the evidence, could we sepearte them? like job-evidence-cite, job-evidence-value, job-evidence-display, do you get what I mean? evdience might identipatnet to the paper writing and the venue,
+    right?
+  when: 2026-10-31 18:04
+  applied_by: 'workbench: focus_draft.evidence_html, one Evidence section per Job (reads a combined j21_evidence by band until split); folders: Opioid-PDMP-DID splits j21_evidence'
+- title: Job numbers
+  decision: 'A paper Board''s Jobs are numbered by layer: evidence j01_evidence_display, j02_evidence_value, j03_evidence_cite; writing j11_writing_<version> (j11_writing_v1130_lanpub, then j12_writing_…),
+    and so on.'
+  said: you can call them j01_evidnece_xxx j02_evidnece_xxx j03—evidence_xxx j11_writing_xxx, so on and so far.
+  when: 2026-10-31 18:05
+  applied_by: ''
+- title: Layer names
+  decision: 'A paper has four layers: plan (the Board''s topics, the idea first), explore (internal: work Blocks; external: discovery Blocks), evidence (value from the internal side, cite from the external
+    side, displays), writing; s01 shows how they feed each other.'
+  said: 我觉得这里的话 你应该也加上我们的 idea 对吧？ plan layer · explore layer -- Internal explore layer (work) external explore layer (discovery) · evidence layer (value --- internal, cite -- external; displays) · writing
+    layer · I think you should show this relationship as well.
+  when: 2026-10-31 20:43
+  applied_by: 's01-paper-tree-concept: face (Topic, s01-D12 to D15, renamed-from), build_s01_paper_tree_concept.py (five parts, the four layers in Design); 33 references swept; haipipe-paper SKILL layer
+    names'
+- title: Concept name
+  decision: s01-paper-tree is renamed s01-paper-tree-concept.
+  said: call the paper_tree to be paper_tree_concept, how do you think about this.
+  when: 2026-10-31 20:43
+  applied_by: 's01-paper-tree-concept: face (Topic, s01-D12 to D15, renamed-from), build_s01_paper_tree_concept.py (five parts, the four layers in Design); 33 references swept; haipipe-paper SKILL layer
+    names'
+- title: Progress checklist
+  decision: 's01 hands over a checklist too: haipipe-paper/checklist.md (plan, explore, evidence, writing) and paper_check.py, which ticks it from a Board''s files.'
+  said: here we should also try to add the checklist.md, so everytime, the haipipe-paper we can have the things like check the progress, right> do you know what we want.
+  when: 2026-10-31 21:16
+  applied_by: 'haipipe-paper 1.19.0: checklist.md, scripts/paper_check.py, test; s01-D18; s01 drawing''s delivery lists both'

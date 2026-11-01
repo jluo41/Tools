@@ -70,7 +70,9 @@ GALLERY = {"food": "_FoodInfo/0-inputs", "exercise": "_ExerciseInfo/0-inputs",
 # A lane with an event door (food: POST /food/event) shows real events instead: each a raw as it arrives, the input
 # JSON and the output by local hour, frozen when the gallery was built (b51 j01 t99 r07 writes it from s01 ③'s meals).
 EVENTS = {"food": "_FoodInfo/7-events/events.json",
-          "exercise": "_ExerciseInfo/7-events/events.json"}   # b51 j02 t99 r04 writes it from s02 ③ and ④
+          "exercise": "_ExerciseInfo/7-events/events.json",   # b51 j02 t99 r04 writes it from s02 ③ and ④
+          "medication": "_MedInfo/7-events/events.json",      # b51 j03 t99 r03 writes it from ext_medication_event
+          "insulin": "_InsInfo/7-events/events.json"}         # b51 j04 t99 r04 writes it from ext_insulin_event
 
 
 def eventnorm_root() -> Optional[Path]:
@@ -170,11 +172,11 @@ def lanes() -> List[str]:
 def load(noun: str):
     """Import one lane's server.py under the module name api_<noun>, with its
     skill dir on sys.path so `<noun>norm` resolves. Returns the module: its
-    `app` is the FastAPI app, its `healthz` the function the host aggregates."""
+    `app` is the FastAPI app, its `healthz` the function the host aggregates.
+    A lane with no describe-<noun> skill (step: a count has no words to look up, b51 s15-D03) imports eventnorm
+    only, so it loads without one."""
     skill = skill_dir(noun)
-    if not skill.is_dir():
-        raise FileNotFoundError(f"lane api-{noun} has no skill at {skill}")
-    if str(skill) not in sys.path:
+    if skill.is_dir() and str(skill) not in sys.path:
         sys.path.insert(0, str(skill))
     path = lane_dir(noun) / "server.py"
     spec = importlib.util.spec_from_file_location(f"api_{noun}", path)

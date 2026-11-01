@@ -1,3 +1,12 @@
+## 0.8.4 · 2026-10-31 · the question map is retired
+
+- `servers/workbench-work/question_map.py` writes nothing now: `main()` prints why and exits 1 (JL 261031, b35 r02 Q2:
+  "Just delete them"; the coordinator deleted the nine `studio/question-map.excalidraw` it wrote, with every
+  `studio/` folder). It wrote only that map, and the Report's MindMap draws each Question with its answer and Jobs,
+  so it gets no new home; a run would have made `studio/` again. Nothing imports it: the old board flags a generated
+  drawing by its own `source` field (`task_questions.py:248-255`). README, SKILL.md and ref/workbench-table.md no
+  longer send anyone to it.
+
 ## 0.8.2 · 2026-10-22 · a planned Task's deliverables stay in the Goal tree
 
 - `work_progress.task_nodes`: an item whose Task folder is not made yet sits under its Job, never dropped. Before,
@@ -31,8 +40,8 @@ Shorter description (780 -> 417 characters): what it does, when to use it, its t
 
 ## 0.7.3 · 2026-10-09 · RoadMap Draw lists the studio topics and their sessions
 
-- RoadMap Draw also reads the haipipe-studio topic folders: the Block's `studio/sNN-<topic>/` and each Job's
-  `jNN_*/studio/sNN-<topic>/` under the Job's name, each row titled from its face, with its saved sessions
+- RoadMap Draw also reads the haipipe-studio topic folders: the Block's `sNN-<topic>/` and each Job's
+  `jNN_*/sNN-<topic>/` under the Job's name, each row titled from its face, with its saved sessions
   (`runs/run-draw-<sNN>/passes/`, newest first) and its preview picture, so a Block keeping its drawings in topic
   folders no longer reads "No drawings yet". Topics stay editable (their builders keep a person's marks).
 

@@ -21,6 +21,7 @@ haipipe-project `update` moves them.
 | Profile | Kind | New name | Was |
 |---|---|---|---|
 | Task execution | hard | `rNN_<slug>` | unchanged |
+| Collection (a person's answers, haipipe-interaction) | hard | `rNN_collect_<slug>`, under any page | new (261031) |
 | Discovery | hard | `rNN_<author><year>_<subject>` | unchanged |
 | Page interactive writing | soft | `run-structure-` · `run-scratch-` · `run-section-` · `run-paragraph-` · `run-revise-<target>` | `run-<kind>-<slug>` |
 | Delegated paragraph | soft | `run-paragraph-cNN-pNN` | `rNN_page-writing_cNN-pNN` |

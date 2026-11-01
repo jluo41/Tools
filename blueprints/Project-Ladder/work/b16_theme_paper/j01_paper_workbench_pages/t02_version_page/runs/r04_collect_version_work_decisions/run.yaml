@@ -1,0 +1,16 @@
+run: r04_collect_version_work_decisions
+kind: hard
+type: collect
+scope: blueprints/Project-Ladder/work/b16_theme_paper/j01_paper_workbench_pages/t02_version_page
+target: b16.j01.t02-s36:theme_paper.paper_workbench_pages.version_page @ version_ui_work
+ticket: null
+skill: haipipe-interaction
+agent: null
+signs: null
+status: done
+passes:
+- p01-1101
+writes:
+- result/answer_collection.md
+feeds: []
+source: chat

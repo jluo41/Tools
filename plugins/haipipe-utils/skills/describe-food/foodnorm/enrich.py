@@ -262,6 +262,7 @@ def enrich_food_to_nutrition(
     # Shanghai has 3,130 distinct meal strings but only ~2,000 distinct
     # components, and the common ones (rice, egg) recur in thousands of meals.
     comp_cache = {}
+    matched = {}            # (component, tier) -> the food the table holds, as the table names it (261028)
 
     NUTRIENT_KEYS = ("Calories", "Carbs", "Protein", "Fat", "Fiber", "Sugar")
     _BANK_KEY = {"Calories": "calories", "Carbs": "carbs", "Protein": "protein",
@@ -320,6 +321,8 @@ def enrich_food_to_nutrition(
         if not use_observed:
             return None
         obs = observed_lookup(name)
+        if obs:
+            matched[(name, T_OBS)] = obs.get("name_raw") or name
         return obs["values"] if obs else None
 
     def resolve_t2(name):
@@ -355,6 +358,8 @@ def enrich_food_to_nutrition(
                           else (None if k in NO_ZERO_FILL else 0.0))
                       for k in NUTRIENT_KEYS}
 
+        if per100 is not None:
+            matched[(name, T_USDA)] = top["description"]
         out = (per100, quality)
         if cache_results:
             comp_cache[name] = out
@@ -394,6 +399,9 @@ def enrich_food_to_nutrition(
                 vals = sorted(float(c[_BANK_KEY[k]]) for c in trusted if c.get(_BANK_KEY[k]) is not None)
                 n = len(vals)
                 per100[k] = (vals[n // 2] if n % 2 else (vals[n // 2 - 1] + vals[n // 2]) / 2) if n else None
+        if per100 is not None:
+            matched[(name, T_BRAND)] = (trusted[0]["description"] if len(trusted) == 1
+                                        else f"{trusted[0]['description']} (median of {len(trusted)} products)")
         brand_cache[name] = per100
         return per100
 
@@ -434,7 +442,7 @@ def enrich_food_to_nutrition(
             for c in food_components:
                 t0 = resolve_t0(c.name)
                 if t0 is not None:
-                    resolved.append((c.amount_g, t0, T_OBS))
+                    resolved.append((c.amount_g, t0, T_OBS, matched[(c.name, T_OBS)]))
                 # T2 is still worth having when the log stated grams, because
                 # only T2 can be scaled to them.
                 if t0 is None or c.amount_g is not None:
@@ -444,9 +452,9 @@ def enrich_food_to_nutrition(
                     zh, zh_amt = (zh_of[id(c)], c.amount_g) if id(c) in zh_of else _zh_self(c.name)
                     zh_amt = c.amount_g if c.amount_g is not None else zh_amt
                     if t2 is not None:
-                        resolved.append((c.amount_g, t2, T_USDA))
+                        resolved.append((c.amount_g, t2, T_USDA, matched.get((c.name, T_USDA))))
                     elif zh is not None and cn_index.get(zh) is not None:
-                        resolved.append((zh_amt, cn_index[zh], T_CN))
+                        resolved.append((zh_amt, cn_index[zh], T_CN, zh))
                     elif t0 is None and n_total == 1:
                         # A one-food meal only. In a meal of several foods a branded
                         # per-100 g figure pulls the whole meal off T0's servings:
@@ -458,7 +466,7 @@ def enrich_food_to_nutrition(
                         # rows (b51 j01 t19 r04_welldoc_full_ab).
                         tb = resolve_tb(c.name)
                         if tb is not None:
-                            resolved.append((c.amount_g, tb, T_BRAND))
+                            resolved.append((c.amount_g, tb, T_BRAND, matched.get((c.name, T_BRAND))))
 
             if n_total == 0 or not resolved:
                 nutrition = {k: None for k in NUTRIENT_KEYS}
@@ -492,9 +500,12 @@ def enrich_food_to_nutrition(
                 # one bank covers alone.
                 PER100 = "per_100g_family"
                 by_tier = {}
-                for amt, vals, tier in resolved:
-                    by_tier.setdefault(PER100 if tier in PER_100G else tier, []).append((amt, vals))
-                sources = [SOURCE[t] for t in sorted({t for _, _, t in resolved if t in PER_100G}, key=TIER_RANK.get)]
+                names = {}
+                for amt, vals, tier, food in resolved:
+                    t = PER100 if tier in PER_100G else tier
+                    by_tier.setdefault(t, []).append((amt, vals))
+                    names.setdefault(t, []).append(food or "?")
+                sources = [SOURCE[t] for t in sorted({t for _, _, t, _ in resolved if t in PER_100G}, key=TIER_RANK.get)]
 
                 def _pick(t):
                     grams = all(a is not None for a, _ in by_tier[t])
@@ -540,6 +551,9 @@ def enrich_food_to_nutrition(
                 # which made one column answer two things: where the numbers
                 # came from, and how much of the meal they cover. Rule 5.
                 nutrition["NutritionCoverage"] = round(n_resolved / n_total, 3)
+                # The food the numbers are for, as the table names it: "Peas and carrots, frozen, cooked",
+                # never the asked text echoed back, so a wrong match shows (JL 261028).
+                nutrition["FoodMatched"] = "; ".join(names[tier])
 
         except Exception as e:
             if on_error == "raise":
@@ -555,7 +569,7 @@ def enrich_food_to_nutrition(
         meal_cache[meal] = nutrition
 
     for col in list(NUTRIENT_KEYS) + ["NutritionSource", "NutritionConf",
-                                      "NutritionBasis", "NutritionCoverage"]:
+                                      "NutritionBasis", "NutritionCoverage", "FoodMatched"]:
         df[col] = work.map(lambda m: meal_cache.get(m, {}).get(col) if pd.notna(m) else None)
 
     # Tag the provenance into NutritionSource too. A downstream that reads only

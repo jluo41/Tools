@@ -1,0 +1,42 @@
+{
+ "topic": "s03-paper-delivery",
+ "style": "sketch-notes",
+ "source": "s03-paper-delivery.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Paper Delivery: the built paper, per version",
+   "points": [
+    "the paper Board's one delivery/ (b10 s09-D05, s01-D32): each version's built paper sits under…",
+    "haipipe-paper-assemble builds the paper from the Sections' outputs",
+    "haipipe-delivery owns the folder and the rule that only a person marks a send done"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and where each paper version's built files go in the Board's delivery folder, for the people who write the toolkit…",
+    "a skill"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "Still open",
+   "points": [
+    "The cover letter and a rebuttal letter: a Section Task's output, or the version's own?",
+    "A sent version: which files freeze, and where does the send's decision live? (was s33 open 3)",
+    "The supplement: its own lane, or inside latex/?"
+   ],
+   "leaning": "",
+   "ask": "The Board's Delivery: each version side by side, or the newest first? (was s33 open 1)",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

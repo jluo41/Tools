@@ -1,0 +1,15 @@
+run: r04_collect_board_report_views
+kind: hard
+type: collect
+scope: blueprints/Project-Ladder/work/b16_theme_paper/j01_paper_workbench_pages/t01_board_page
+target: b16.j01.t01-s32:theme_paper.paper_workbench_pages.board_page @ board_ui_report
+ticket: r04_collect_board_report_views.html
+skill: haipipe-interaction
+agent: JL
+signs: null
+status: done
+passes:
+- p01-1031
+writes:
+- result/answer_collection.md
+feeds: []

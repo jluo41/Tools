@@ -143,7 +143,14 @@ def draw(block: Path) -> dict:
             "appState": {"viewBackgroundColor": "#ffffff", "gridSize": None}, "files": {}}
 
 
+RETIRED = ('question_map.py is retired (JL 261031, b35 r02 Q2: "Just delete them"): the nine '
+           'studio/question-map.excalidraw it wrote are gone with every studio/ folder, and the Report\'s MindMap '
+           'draws each Question with its answer. It writes nothing now.')
+
+
 def main(argv: list[str]) -> int:
+    print(RETIRED)                    # never writes: a run would make studio/ again (b35 r02)
+    return 1
     if len(argv) != 2:
         print(__doc__.strip().splitlines()[0])
         return 2

@@ -1,0 +1,51 @@
+{
+ "topic": "s01-overall-tree-structure",
+ "style": "sketch-notes",
+ "source": "s01-overall-tree-structure.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Overall tree structure",
+   "points": [
+    "one tree from Space down to Run (Space → Project → Theme → Block → Job → Task → Run), each level…",
+    "Studio topic = creation: drawn and argued here, settled in a report Question",
+    "Since 261010 the ladder follows frame 2: the Block alone holds studio/ and delivery/, every level…"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and the ladder from Space down to Run, each level with its folder, skills and screen, for the people who write the…",
+    "a skill"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "What is decided",
+   "points": [
+    "A Block has two branches: reports/ (Questions, for the audience) and its Jobs (the work)",
+    "studio/ holds topics, one folder each (sNN-<topic>/): a drawing, its builder, chat/,",
+    "A report reports/qNN_<topic>/ = qNN_<topic>.md (a light Page: Answer · Evidence ·",
+    "Drawings live only in studio/ topics and in reports/qNN_/"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "04",
+   "idea": "Still open",
+   "points": [],
+   "leaning": "",
+   "ask": "Agree its For: line and Delivery type: (skill), proposed by the agent 261030?",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

@@ -1,0 +1,38 @@
+{
+ "topic": "s13-paper-task",
+ "style": "sketch-notes",
+ "source": "s13-paper-task.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Task level",
+   "points": [
+    "a paper Section's tab",
+    "A Section is a Page Task, so its six Spaces are the base's Page Task views…",
+    "◆ marks the few things the paper theme adds: the Section's row in the version's Narrative, its…"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and a paper Section's tab and the few things the paper theme adds to it, for the people who build the workbench",
+    "a ui"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "Still open",
+   "points": [],
+   "leaning": "",
+   "ask": "Agree its For: line and Delivery type: (ui), proposed by the agent 261030?",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

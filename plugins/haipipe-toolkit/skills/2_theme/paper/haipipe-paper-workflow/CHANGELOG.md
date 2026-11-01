@@ -1,3 +1,8 @@
+## 1.9.5 · 2026-11-01 · b16 review 261101: current paper names
+
+- version Jobs are named `jNN_writing_v<MMDD>_<desk>` (from j11), no longer `jNN_v<MMDD>_<desk>`; Studio topics are `sNN-…` beside the Jobs, no longer under `studio/` (file-system projection, run-cards.md).
+- The Board's delivery is `delivery/<Job>/`.
+
 ## 1.9.3 · 2026-10-11 · Add a related item names /haipipe-related
 
 - `ref/run-cards.md`: both Add a related item cards (Block › Related, Block › Audience Report) say the folder's rules are `/haipipe-related`, a file goes as it came into its subfolder (meetings/ · papers/ · files/ · emails/), which is already its first group, and the group cell holds the research questions, comma-separated (b10 s04-D07, D08, D09).

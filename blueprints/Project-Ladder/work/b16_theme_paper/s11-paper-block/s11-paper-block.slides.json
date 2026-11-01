@@ -1,0 +1,37 @@
+{
+ "topic": "s11-paper-block",
+ "style": "sketch-notes",
+ "source": "s11-paper-block.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Block level",
+   "points": [
+    "the paper Board's tab on the shared frame (Guide · Block · Job · Task): its six Spaces as full…",
+    "It draws Q01's proposal for the Board (../s01-paper-tree-concept/)"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and the paper Board's tab, its six Spaces as full screens with what is on disk, for the people who build the workbench",
+    "a ui"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "Still open",
+   "points": [],
+   "leaning": "",
+   "ask": "Agree its For: line and Delivery type: (ui), proposed by the agent 261030?",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

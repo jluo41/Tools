@@ -1,0 +1,55 @@
+{
+ "topic": "s03-delivery-workbench-skill",
+ "style": "sketch-notes",
+ "source": "s03-delivery-workbench-skill.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Delivery: its workbench and its skill",
+   "points": [
+    "the Delivery seen from both sides: its workbench (the Delivery view at the right end of the top…",
+    "Jobs and Tasks make outputs",
+    "only the Block keeps them, in its one delivery/"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and the haipipe-delivery skill and the Delivery view it drives, for the people who write the toolkit skills",
+    "a skill"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "What is decided",
+   "points": [
+    "Delivery has one physical owner, the Block: Jobs and Tasks keep no delivery/ of their own",
+    "The path is the link: each subfolder leads back to its source, delivery/jNN_<job>/ to the",
+    "One skill owns the rule: /haipipe-delivery, beside haipipe-studio and haipipe-report",
+    "Delivery sits at the right end of the top row and opens like Studio: only it selected, the"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "04",
+   "idea": "Still open",
+   "points": [
+    "A Report's own build (delivery/reports/qNN_<topic>/): a row in delivery.md too?",
+    "Settled 261012 by b10 s32-D18 (JL: \"for the delivery, we should also have the group tags as well,…",
+    "Built 261011 (b16 session): the Block's own Delivery ends with \"By source\" (part · from · files),"
+   ],
+   "leaning": "",
+   "ask": "Settled 261011 by s03-D05 (named by source, one row per send)",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

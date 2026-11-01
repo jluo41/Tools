@@ -1,9 +1,9 @@
 ---
 name: haipipe-display
-description: "The one door for display work: routes by kind to its part (_parts/<kind>/PART.md): 📊 table, 📈 figure, 📐 diagram (editable SVG), 🎨 illustration (AI image), ✒️ tex (TikZ, algorithms, equations); every display then passes the blind-review revise loop (at least 8/10, at most 4 rounds). Trigger: 做表, 画图, 架构图, regression table, generate figures, paper plots, concept figure, display unit, revise the figures, figure to svg, icon to svg, html to svg, /haipipe-display."
+description: "The one door for display work: routes by kind to its part (_parts/<kind>/PART.md): 📊 table, 📈 figure, 📐 diagram (editable SVG), 🎨 illustration (AI image), 🖼 slide (slide pictures in a named style), ✒️ tex (TikZ, algorithms, equations); every display then passes the blind-review revise loop (at least 8/10, at most 4 rounds). Trigger: 做表, 画图, 架构图, regression table, generate figures, paper plots, concept figure, display unit, revise the figures, figure to svg, icon to svg, html to svg, /haipipe-display."
 metadata:
-  version: "0.5.1"
-  last_updated: "2026-10-26"
+  version: "0.6.0"
+  last_updated: "2026-10-29"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, mcp__codex__codex, mcp__codex__codex-reply, WebSearch, mcp__codex-image2__generate, mcp__codex-image2__generate_start, mcp__codex-image2__generate_status
 ---
 
@@ -22,6 +22,7 @@ numbers as a typeset table       📊 table         _parts/table/PART.md
 numbers as a plot                📈 figure        _parts/figure/PART.md
 a concept as an editable SVG     📐 diagram       _parts/diagram/PART.md
 a concept as an AI illustration  🎨 illustration  _parts/illustration/PART.md
+slides as pictures, one style    🖼 slide         _parts/slide/PART.md
 a figure in the document's TeX   ✒️ tex           _parts/tex/PART.md
 an existing figure → editable SVG 🔁 convert      _parts/figure-to-svg/PART.md
 one icon or logo → SVG           🔁 convert      _parts/icon-to-svg/PART.md

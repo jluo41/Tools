@@ -1,0 +1,23 @@
+{
+ "topic": "s07-topic-links",
+ "style": "sketch-notes",
+ "source": "s07-topic-links.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Where does a Project's group list live?",
+   "image": "slides/idea-01-group-list.png",
+   "content": "Headline (top-left, large): \"Where does a Project's group list live?\"\nThree option cards across the middle, joined by a wavy line:\n Card A \"Each Block's _groups.txt\": three folders, each with its own small list\n Card B \"One list per Project\", circled in orange with a small tag \"leaning\": one list at the top, lines down to three folders\n Card C \"Tags only\": three cards, each with small tag labels\nBottom-right sticky note: \"Still open: does each Block keep its own file?\"\nFocal point: card B.",
+   "notes": "Leaning: the second (s07-D01: one shared list per Project). Still open: Does each Block keep its own file as a subset?",
+   "leaf": "n06"
+  },
+  {
+   "id": "02",
+   "idea": "How does one topic point to another?",
+   "image": "slides/idea-02-links-both-ways.png",
+   "content": "Headline (top-left, large): \"How does one topic point to another?\"\nTwo large topic cards side by side: left \"b35-s03\", right \"b35-s02\".\nA solid hand-drawn arrow from left to right labelled \"Links\"; a dashed arrow from right back to left labelled \"Linked from\".\nAbove both cards, one ribbon spanning them labelled \"group: Interface\".\nBottom-right sticky note: \"Still open: full label or address?\"\nFocal point: the two arrows.",
+   "notes": "Leaning: agreed (s07-D01). Still open: Full label or address only on the Links line?",
+   "leaf": "n03"
+  }
+ ]
+}

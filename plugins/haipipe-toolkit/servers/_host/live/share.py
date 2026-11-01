@@ -10,7 +10,7 @@ cookie. What they may open is the SPACE's access table, `.server_config/access.y
     grants:                                       # what: a Block, Job or Task folder, or a whole Project
       - {who: group:shift, what: examples-0-cowork/Project-SHIFT-Study, level: view}
       - {who: c@jhu.edu, what: examples-0-cowork/Project-SHIFT-Study/cowork/b21_event_cgm, level: view}
-      - {who: anyone@jhu, what: Tools-SPACE/blueprints/b10_project_workbench, level: view}   # any JHU email
+      - {who: anyone@jhu, what: Tools-SPACE/blueprints/Project-Ladder/work/b10_project_workbench, level: view}   # any JHU email
     extra_domains: []                             # beyond jhu.edu, jh.edu, jhmi.edu and their subdomains
     mail_from: noreply@cdhai.com
 
@@ -466,7 +466,7 @@ class ShareMixin:
 
     def share_old_link(self) -> str | None:
         """A link from when one door served the whole Desktop names its SPACE first (`path=Tools-SPACE/blueprints/
-        b10_...`); on that SPACE's own door the page is `path=blueprints/b10_...` (261012: one door per SPACE).
+        Project-Ladder/work/b10_...`); on that SPACE's own door the page is `path=blueprints/Project-Ladder/work/b10_...` (261012: one door per SPACE).
         The same address without the SPACE's name, or None when nothing names it."""
         parts = urlsplit(self.path)
         lead, root, moved, query = self.share.root.name + "/", self.share.root, False, []

@@ -44,7 +44,7 @@ j51 (`j51_insight_design_demo`, DrFirst-SPACE, under
 `examples-4-learning/Project-ExpLearn-SMSDesign/paper/Paper-TestToLearn-MS2026/`) is a five-minute demo of
 looped experimental learning for leadership and product. It went from a 36-minute meeting on 2026-10-05
 to a 14-slide deck shown on 2026-10-08, and its `slides.py` passes `slide_kit.py check` clean. b31
-s03-excalidraw-slide (`Tools/blueprints/b31_excalidraw/studio/`) draws the whole job: its map, its deck,
+s03-excalidraw-slide (`Tools/blueprints/Project-PageParts/work/b31_excalidraw/studio/`) draws the whole job: its map, its deck,
 its two drawings, and what this skill took from it.
 
 ```text

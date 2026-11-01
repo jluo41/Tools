@@ -1,0 +1,39 @@
+{
+ "topic": "s01-studio-skill",
+ "style": "sketch-notes",
+ "source": "s01-studio-skill.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "What does the deck come with?",
+   "image": "slides/idea-01-what-does-the-deck-come-with.png",
+   "content": "Headline (top-left, large): \"What does the deck come with?\"\nThree option cards across the middle:\n Card A \"Five kinds: a draft, figures, code and skills, a data table, a server package\"\n Card B \"Fewer: a data table and a server package are code too\"\n Card C \"More: a labeled dataset and a model endpoint, not seen in a `delivery/` yet\"\nBottom-right sticky note with a big question mark: \"Still open: Is a labeled dataset its own kind?\"",
+   "notes": "Leaning: the five as found (survey 261030 of every `delivery/` folder in Physician-SPACE), each with its Studio type. Still open: Is a labeled dataset its own kind?",
+   "leaf": "n07"
+  },
+  {
+   "id": "02",
+   "idea": "A topic's deck: its own, or also a Block deck?",
+   "image": "slides/idea-02-a-topic-s-deck-its-own-or-al.png",
+   "content": "Headline (top-left, large): \"An sNN's deck: its own, or also a Block deck?\"\nThree option cards across the middle:\n Card A \"Each sNN's own slides are its deck\"\n Card B \"Also one Block deck, gathered in an s61 topic, as b11 and b12\"\n Card C \"Only the Block deck\"\nBottom-right sticky note with a big question mark: \"Still open: Who is b35's whole deck for?\"",
+   "notes": "Leaning: each topic's own deck, and an s61 Block deck when a reader needs the whole (proposal 261030). Still open: Who is b35's whole deck for?",
+   "leaf": "n15"
+  },
+  {
+   "id": "03",
+   "idea": "Where is a delivery that is not a file recorded?",
+   "image": "slides/idea-03-where-is-a-delivery-that-is.png",
+   "content": "Headline (top-left, large): \"Where is a delivery that is not a file recorded?\"\nThree option cards across the middle:\n Card A \"A row in `delivery.md` naming where it went: a commit, a store path, a server script\"\n Card B \"A copy in `delivery/`\"\n Card C \"Nothing: git and the store are the record\"\nBottom-right sticky note with a big question mark: \"Still open: Who writes the row for a commit?\"",
+   "notes": "Leaning: a row that names where it went (proposal 261030): a topic's `For:` then has something to point at. Still open: Who writes the row for a commit?",
+   "leaf": "n19"
+  },
+  {
+   "id": "04",
+   "idea": "Must `For:` be filled before a topic leaves explore?",
+   "image": "slides/idea-04-must-for-be-filled-before-a.png",
+   "content": "Headline (top-left, large): \"Must `For:` be filled before an sNN leaves explore?\"\nThree option cards across the middle:\n Card A \"Yes: no shaping without a named delivery\"\n Card B \"No: it can be named at agreed\"\n Card C \"`?` is fine until shaping, then it must be filled\"\nBottom-right sticky note with a big question mark: \"Still open: Who checks it: the page, or a person?\"",
+   "notes": "Leaning: the third (proposal 261030): an idea may start without one, but shaping aims at something. Still open: Who checks it: the page, or a person?",
+   "leaf": "n23"
+  }
+ ]
+}

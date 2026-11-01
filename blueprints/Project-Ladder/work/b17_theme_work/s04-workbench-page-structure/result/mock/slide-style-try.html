@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Slide Style Try</title>
+<!-- s04 slide style try (261029): the same idea drawn three ways, to pick the Studio slide style. -->
+<style>
+:root{--fg:#1c1c1c;--mut:#6f6f6b;--line:#e4e2dc;--red:#c92a2a;--on:#1864ab;--bg:#fff}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--fg:#eee;--mut:#aaa;--line:#333;--bg:#161616}}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:26px 16px 60px}
+h1{font-size:24px;margin:0 0 6px}.lead{color:var(--mut);margin:0 0 22px}
+.row{display:grid;grid-template-columns:minmax(0,640px) minmax(0,1fr);gap:22px;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:0 0 16px}
+@media(max-width:800px){.row{grid-template-columns:1fr}}
+.row img{width:100%;display:block}
+.row .t{padding:16px 18px 16px 0}.row h2{font-size:18px;margin:0 0 4px}.src{font-size:12.5px;color:var(--mut);margin:0 0 10px}
+.t ol{margin:0;padding-left:20px}.t li{margin:0 0 6px}.bad{color:var(--red)}.good{color:#2b8a3e}
+.pick{border-color:var(--on);border-width:2px}
+</style></head>
+<body><div class="wrap">
+<h1>Which style for Studio slides?</h1>
+<p class="lead">The same idea, "What is a Block, really?", drawn three ways. One topic per row.</p>
+
+<div class="row pick"><img src="../../slides/style-try/sketch-notes-01.png" alt="">
+<div class="t"><h2>baoyu sketch-notes ✓ pick</h2><div class="src">references/baoyu-skills · skills/baoyu-slide-deck · styles/sketch-notes.md</div>
+<ol><li class="good">Pulls you in: big marker title, bright cards, the leaning circled.</li>
+<li class="good">Looks unfinished on purpose: still open, think with me.</li>
+<li class="good">Every word spelled right.</li></ol></div></div>
+
+<div class="row"><img src="../../slides/style-try/sketch-notes-04.png" alt="">
+<div class="t"><h2>baoyu sketch-notes, a flow idea</h2><div class="src">s04 idea 4: How does a round leave the Studio?</div>
+<ol><li class="good">A loop reads in two seconds.</li><li>The "Next round" arrow starts at Report, not the round: fine, it matches the flow.</li></ol></div></div>
+
+<div class="row"><img src="../../slides/style-try/ian-handdrawn-01.png" alt="">
+<div class="t"><h2>Ian Handdrawn PPT</h2><div class="src">references/ian-handdrawn-ppt · visual-dna-v6.md (made for Chinese text)</div>
+<ol><li class="good">Calm and refined, like a printed book illustration.</li>
+<li class="bad">Too quiet for the attract test: grey ink, small title, much white.</li>
+<li class="bad">Small words broke: the boxes read "scop" and "ase", not "records" and "cases".</li></ol></div></div>
+
+<div class="row"><img src="../../slides/style-try/glossy-cartoon-01.png" alt="">
+<div class="t"><h2>Today: glossy cartoon</h2><div class="src">slides/idea-01-what-is-a-block.png (b15 look)</div>
+<ol><li class="good">Very eye-catching.</li><li class="bad">Looks finished and sold, like a report.</li></ol></div></div>
+</div></body></html>

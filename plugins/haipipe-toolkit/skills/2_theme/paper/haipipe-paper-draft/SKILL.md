@@ -2,8 +2,8 @@
 name: haipipe-paper-draft
 description: "The paper's draft Task: one Section, the Abstract or a letter of one version (task-type: draft), the paper's rules on top of haipipe-draft; executes one row of the version's ## Narrative and keeps its Requirement (venue rules, rubric, SUB-* rows). Evidence and displays follow haipipe-paper-evidence; the whole manuscript is haipipe-paper-assemble. Use to add, outline, draft, revise, check or retarget one Section. Also opens as /haipipe-paper-section."
 metadata:
-  version: "0.14.1"
-  last_updated: "2026-10-26"
+  version: "0.14.2"
+  last_updated: "2026-11-01"
   aliases: [haipipe-paper-section]
   folder_owner: canonical
   legacy_page_type: section
@@ -102,7 +102,7 @@ of the paper reading path without deleting their authority.
 
 ```text
 Paper-<Slug>/
-└── j01_v<MMDD>_<desk>/      one version: one send to one venue, named for the day it is sent (0.10.0)
+└── jNN_writing_v<MMDD>_<desk>/   one version (j11 first): one send to one venue, named for the day it is sent (0.10.0)
     ├── t00_abstract/        the Abstract
     ├── t0N_<title>/         a Main Section, in reading order (t01-t19) · N = the H1's §N
     ├── t2N_<title>/         an Appendix Section, A = t21 (t20-t29) · its letter = the H1's Appendix L
@@ -116,7 +116,7 @@ Each Section Task holds its face, the Page workflow's `draft/`, `runs/` and `res
 `studio/` and no `delivery/` (b10 s09-D01, s03-D06; JL 261011: "for the section, we will do not have the
 related studio and delivery"): its drawings (the logic by hand, the Section map, the reading of the Section as
 last sent) are Board topics,
-`studio/sNN-<topic>/`, and its built output is the Board's `delivery/jNN_<version>/tNN_<section>/`.
+`sNN-<topic>/`, and its built output is the Board's `delivery/jNN_<version>/tNN_<section>/`.
 
 A Section is a Task of its version, named by series (JL 261007: "no more S-xxx"): the number band says the
 part (Main, Appendix, letters), the title is lowercase-kebab and says the page job, and the version folder
@@ -335,9 +335,9 @@ without knowing the planning vocabulary.
   peer subsections. Preserve defined construct names and the venue's casing;
   do not shorten a title by changing the construct or making a stronger claim.
 - Distinguish a reader-facing title from a paragraph job. `Resolve the rivalry`
-  describes the writer's task; `Patient-Request Pressure and Physician
-  Accommodation` names the subject. `Boundary tests and integrated model`
-  is too generic when the actual subject is prescribing across clinical contexts.
+  describes the writer's task; `Wait Times and Patient
+  Satisfaction` names the subject. `Boundary tests and integrated model`
+  is too generic when the actual subject is how an effect varies across clinical contexts.
   These examples illustrate the distinction, not a required outline or phrase list.
 - Check title-to-body fit: the title covers the whole subsection, distinguishes
   it from its neighbors, and promises no unmeasured mediation, demonstrated
@@ -384,7 +384,7 @@ the section, and make each section (main section) to be a sNN tNN from the new j
 discuss").
 
 ```text
-sent PDF (j01 delivery) ─▶ studio/sNN-tNN-<section>/reading.yaml ─▶ the drawing: how much changes ·
+sent PDF (its delivery) ─▶ sNN-tNN-<section>/reading.yaml ─▶ the drawing: how much changes ·
                            section · parts · key · a verdict          your call · one frame a subsection
                            and next per passage                       (pages left, short notes right)
                                       │
@@ -393,7 +393,7 @@ face "How much changes" (every paragraph) ─▶ CONTEXT cites it ─▶ SHAPE: 
                                                                   MOVE sent on, CUT never back
 ```
 
-1. **One Board topic per Main Section**, `studio/sNN-tNN-<section>/`, tagged with the sent version
+1. **One Board topic per Main Section**, `sNN-tNN-<section>/` beside the Jobs, tagged with the sent version
    (`draft-v<MMDD>`) and the Task stem; its **Feeds:** names the new Task and the comments report.
 2. **Its `reading.yaml`** (excalidraw-read 0.7.0) reads the sent PDF: `section:` with `name`, `pages`, `from`,
    `until`, `parts` (the subsection headings) and `key` (the count line); each passage's `comment` begins with

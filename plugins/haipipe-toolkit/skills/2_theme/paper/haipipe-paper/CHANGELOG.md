@@ -1,3 +1,58 @@
+## 1.20.1 · 2026-11-01 · b16 review 261101: update, paper_check and the docs fixed
+
+- b16 review 261101: `paper_ladder.py update` fixed. It sweeps the build inputs in `delivery/<job>/`, renames the
+  Job's face with its folder, sweeps a whole name only, never a longer name that starts with it, keeps a number of 11 or more, makes
+  the checklist topic with `--over-limit`, writes an undo record (`.ladder-undo/update-N/`) that `update --rollback`
+  reads, and removes an empty leftover `A1-Story/` or `studio/`.
+- `paper_check.py` fixed: fields need `name:`; `--write` never stacks headings; D4 needs a readable word limit and a
+  build; P3 and P5 say when `story-current:` or `venue:` is missing; W2 and W3 read the newest writing Job by draft
+  number; a status that says "not …" or "un…" never counts as done.
+- Tests updated (`task-type: draft`; snapshots skip `.ladder-undo`): 23 pass in `paper/tests/`.
+- Docs: SKILL.md and `ref/paper-ladder.md` show the topics in the Board folder beside the Jobs (no `studio/`), the
+  evidence Jobs, the checklist topic and the writing Jobs from j11; `ref/page-integration.md` names the writing Job;
+  the Board's views are seven, A Idea to G Writing, with the venues inside B Story; a Section shows five step words
+  (`focus_draft.WORK`), not six or seven chips; the Section Narrative is the writing Job face's `## Narrative`, not
+  "Story §8" (SKILL.md, `ref/section-sessions.md`). The update section adds the undo order (`rollback`, then
+  `update --rollback`), how to remove the checklist topic, the removed empty leftovers, and that a step title names
+  the step, never a count.
+
+## 1.20.0 · 2026-11-01 · The final checklist, its sNN topic; audit and update
+
+- JL 261101: "what is the final checklist we should have? what is the delivery, and what is the delivery
+  requirements"; "make the checklist to be a sNN as well". `checklist.md` v2: ⓪ Layout L1-L5 before the four layers,
+  V5 (numbers agree, evidence_ledger.py), and ⑤ Delivery D1-D9 (the package of the newest send and where each rule
+  lives: assemble's Required outputs, the venue's call.md, AGENTS.md § Papers, submission-readiness.md,
+  haipipe-delivery). W6 Sent moved to D9. `paper_check.py --write` ticks it into the Board's `sNN-paper-checklist/`
+  topic below its GENERATED line.
+- JL 261101: "the /haipipe-paper need to have the update". `paper_ladder.py audit <Board>` and `update <Board>
+  [--date MMDD] [--apply]`: a dry run by default; runs, in order, the carry-over scripts (migrate_paper, topics_paper,
+  rename_tasks, sweep_names), renames `jNN_v<MMDD>_<desk>` to `jNN_writing_v<MMDD>_<desk>`, makes the evidence Jobs
+  and the checklist topic, then ticks it. Tried on copies of three Boards (one current, one old-named writing Job,
+  one A1-Story layout). Tests: `tests/test_paper_check.py` (layout, delivery, --write, update's dry run).
+- A fresh-subagent test (read-only, Paper-Example-D) loaded the skill and ran check, audit and
+  the dry run; its findings are fixed: L2 and L3 say when no writing Job exists, L3 also reads board.md's old Job
+  name, the dry run names s05 and lists the checklist step; a session that does not own the paper stops at the dry run.
+- Known, not from this change: `tests/test_paper_ladder.py` has 3 failing tests with the 1.19.0 script too.
+
+## 1.19.0 · 2026-10-31 · checklist.md and paper_check.py
+
+- JL 261031: "here we should also try to add the checklist.md, so everytime, the haipipe-paper we can have the
+  things like check the progress". New `checklist.md` (plan P1-P8, explore E1-E3, evidence V1-V4, writing W1-W6) and
+  `scripts/paper_check.py <Paper-Board>`, which ticks each line from the Board's own files and writes nothing. Test:
+  `tests/test_paper_check.py`.
+
+## 1.18.0 · 2026-10-31 · Four layers; evidence Jobs; writing Jobs from j11
+
+- JL 261031: "one paper block can link to many disocvery block (as the external info) and work block (as the
+  internal info), and then deposit them into the evidnece jobs, and the writing them to papers." SKILL.md opens the
+  ladder with the four layers: command (the Board's topics), creation (work and discovery Blocks), evidence, writing.
+- The evidence is three Jobs of the paper Board, beside the versions (JL: "evdience might identipatnet to the paper
+  writing and the venue"): `j01_evidence_display`, `j02_evidence_value`, `j03_evidence_cite`; the display Job moved
+  from the work Block to the paper Board. `paper_ladder.py evidence <board>` makes them.
+- A version is a writing Job, `j11_writing_v<MMDD>_<desk>` (JL: "j11_writing_xxx"); `version` and `next` number from
+  j11; the older `jNN_v<MMDD>_<desk>` still reads (`VERSION`, and the workbench's `paper.VERSION_DIR`,
+  `paper_theme.VERSION_RE`). Test: `test_evidence_jobs_come_first_and_writing_jobs_from_j11`.
+
 ## 1.17.1 · 2026-10-23 · Carry-over reuses a report already written; a carved Section's words move into its Draft
 
 - New `scripts/carry_over/import_fragments.py` (dry run, apply, verify, retire, rollback), found carrying
@@ -40,7 +95,7 @@ Door for hidden helpers (workflow): they leave the skill listing (`disable-model
 
 ## 1.15.2 · 2026-10-21 · Carry-over for a hyphenated desk, and the name sweep
 
-- `scripts/carry_over/rename_tasks.py` renamed no Section of Paper-AgreeableOpioid-Jama: its patterns took the desk as
+- `scripts/carry_over/rename_tasks.py` renamed no Section of Paper-Example-Jama: its patterns took the desk as
   one token, and `S-JAMA-IM-Main-1-Introduction` holds a hyphen in its desk. The desk token now allows hyphens
   (`S-JAMA-IM-…` → `t01_introduction`), and the MISQ and npjDM names still map as before.
 - New `scripts/carry_over/sweep_names.py` (dry run, apply, rollback): after the three carry-over scripts, it reads their
@@ -64,7 +119,7 @@ Door for hidden helpers (workflow): they leave the skill listing (`disable-model
 - The workbench table: the version's Work shows each Section's six step chips, a click each into that tab; a Section's
   Work is the six step tabs (the SUB-* rows in 1 · Plan); Report, Description and Delivery keep the rest.
 - A Section's Scratch is typed in 1 · Plan, and 2 · Write drafts `## 3 · Draft` from §1 and its Scratch; the person types
-  in the boxes of 1 · Plan, 2 · Write and 4 · Revise (JL 261020, built in the Paper-LLMRecPhy-Jama session).
+  in the boxes of 1 · Plan, 2 · Write and 4 · Revise (JL 261020, built in the Paper-Example-B session).
 
 ## 1.14.0 · 2026-10-19 · The plan after the story: haipipe-paper-plan
 
@@ -80,7 +135,7 @@ Door for hidden helpers (workflow): they leave the skill listing (`disable-model
 
 ## 1.12.5 · 2026-10-19 · Related work is its own owner, haipipe-paper-related
 
-- The owner table and `ref/paper-ladder.md` name `haipipe-paper-related`: `studio/s10-related-work-map/` and
+- The owner table and `ref/paper-ladder.md` name `haipipe-paper-related`: `s10-related-work-map/` and
   s11-s19, one topic per type of closest work (JL 261019: "it is different from the literature").
 
 ## 1.12.4 · 2026-10-15 · New Sections say task-type: draft (b32_draft s03-D04)
@@ -92,7 +147,7 @@ Door for hidden helpers (workflow): they leave the skill listing (`disable-model
 
 - `rename_tasks.py`: unnumbered Main Pages (back matter, `S-npjDM-Main-DataAvailability`) become `t0N_` after the last Section, in compile-order order; Rounds named `RD01-positioning-2026-05-14` become `reports/qNN_positioning-0514`; CamelCase titles split (`t21_dataset-statistics`). Tested on a copy of Paper-FairGlucose-preprint: 75 renames, three PDFs unchanged.
 
-## 1.12.2 · 2026-10-13 · Carry-over scripts, run on Paper-AgreeablePrescriptionDiscretion
+## 1.12.2 · 2026-10-13 · Carry-over scripts, run on Paper-Example-Misq
 
 - Second Board moved with `scripts/carry_over/` (Physician-SPACE, the MISQ paper, version `j01_v0929_misq`); two faults fixed at the source:
 - `migrate_paper.py` and `rename_tasks.py` `move()`: tracked files another session deleted without committing made `git mv` fail with "bad source" on the whole folder; the deletion of those files is staged first (`drop_deleted`), so uncommitted work no longer blocks a move, as the docstring promises. `topics_paper.py` uses the same helper.
@@ -137,7 +192,7 @@ Door for hidden helpers (workflow): they leave the skill listing (`disable-model
 
 ## 1.10.0 · 2026-10-07 · The Story as studio topics and Questions (b16 Q04)
 
-- JL 261007: "the stories will be merged into the studio sNN and report qNN, all the questions will be grouped as different topics"; "story and ideation can be called, in that view". On the ladder a paper Board is b03's shape. Ideation is `studio/s01-ideation/`. Each telling is `studio/sNN-story-<desk>-<idea>/` (identity, pitch, stakes, the roadmaps; `feeds:` its Questions). Each research question is a Board Question (`board.md ## Questions`, `group:` its telling) with `reports/qNN_<question>/`. The current telling's Section Narrative and compile order are its version face's `## Narrative`, which the build reads. `ref/paper-structure.md` draws it; the docs that drew `j00_story/` point there.
+- JL 261007: "the stories will be merged into the studio sNN and report qNN, all the questions will be grouped as different topics"; "story and ideation can be called, in that view". On the ladder a paper Board is b03's shape. Ideation is `s01-ideation/`. Each telling is `studio/sNN-story-<desk>-<idea>/` (identity, pitch, stakes, the roadmaps; `feeds:` its Questions). Each research question is a Board Question (`board.md ## Questions`, `group:` its telling) with `reports/qNN_<question>/`. The current telling's Section Narrative and compile order are its version face's `## Narrative`, which the build reads. `ref/paper-structure.md` draws it; the docs that drew `j00_story/` point there.
 - New `scripts/topics_paper.py <board> --dry-run | --apply | --rollback`: Story and Ideation Pages into topics and reports, keeping the words. The question blocks become reports, and §8 moves to the version. It also moves board.md's Story group and story-current, the build's order, the links, and a loose drawing with its builder into a topic. The old texts are kept in `.paper-topics-N/` for an exact rollback.
 - New `scripts/version_paper.py <board> spaces | new | comments | rollback` (with `--dry-run`):
   - `spaces` gives a version `studio/`, `reports/` and `runs/`.
@@ -268,7 +323,7 @@ Door for hidden helpers (workflow): they leave the skill listing (`disable-model
   whole from their `<page>.tex` fragments and never hand-edited.
 - Round folders hold `sent/` · `feedback/` · `released/`.
 - Phase figure, Seed/Roadmap/Narrative one-liners, routing row, assembly
-  figure and completion checks follow. `Paper-AgreeablePrescription` is the
+  figure and completion checks follow. `Paper-Example-Misq` is the
   first repo on this layout; every earlier layout is grandfathered.
 
 ## 0.7.1 · 260904

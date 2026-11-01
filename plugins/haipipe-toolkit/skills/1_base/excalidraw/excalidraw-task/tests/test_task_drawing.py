@@ -111,7 +111,7 @@ class TaskDrawingTest(unittest.TestCase):
         outs = self.quiet(td.make, self.job, 1)
         self.assertEqual([o.parent.name for o in outs], ["s01-t01-sampling", "s02-t02-more"])
         topic = outs[0].parent
-        self.assertEqual(topic.parents[1], self.block.resolve())              # the Block's studio, not the Job's
+        self.assertEqual(topic.parent, self.block.resolve())                  # beside the Block's Jobs, not in the Job
         self.assertIn("name: j01_decoding/t01_sampling", (topic / f"{topic.name}.md").read_text())
         els, frames = self.frames(outs[0])
         names = [f["name"] for f in frames]

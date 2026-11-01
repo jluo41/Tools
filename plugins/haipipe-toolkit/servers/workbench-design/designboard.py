@@ -493,14 +493,17 @@ THEORY = METHODS
 # The methods studio (JL 261002: "add a new studio … put it in the excalidraw to explain
 # these methods"): one Excalidraw drawing of the loop, the families and the ten cards,
 # opened in the self-hosted canvas and saved back to this file.
-# The design theme's drawings live in its Block's studio, each in its topic (JL 261007), like any Block's.
-B12 = Path(__file__).resolve().parents[4] / "blueprints" / 'b12_theme_design' / "studio"
-STUDIO = B12 / "s03-design-methods" / "parts" / "design-methods.excalidraw"
+# The design theme's drawings live in its Block's topics (JL 261007), like any Block's: each sNN beside its Jobs
+# (JL 261030), else in the Block's older studio/.
+B12 = Path(__file__).resolve().parents[4] / "blueprints" / "Project-Ladder" / "work" / "b12_theme_design"
+B12_METHODS = next((p for p in (B12 / "s03-design-methods", B12 / "studio" / "s03-design-methods") if p.is_dir()),
+                   B12 / "s03-design-methods")
+STUDIO = B12_METHODS / "parts" / "design-methods.excalidraw"
 # The design unit (JL 261004: "each column to be the step … lines across different elements to be
 # a method"): See input → Conduct process → Check output, each step's parts with their options above,
 # and one row per method below, its choice in every part.
-# Written by Tools/blueprints/b12_theme_design/studio/s03-design-methods/design_unit_drawing.py.
-UNIT = B12 / "s03-design-methods" / "parts" / "design-unit-methods.excalidraw"
+# Written by Tools/blueprints/Project-Ladder/work/b12_theme_design/s03-design-methods/design_unit_drawing.py.
+UNIT = B12_METHODS / "parts" / "design-unit-methods.excalidraw"
 
 
 def _pipe_rows(lines: list[str]) -> tuple[list[str], list[list[str]]]:
@@ -591,7 +594,7 @@ def studio_html(root: Path, drawing: Path = STUDIO, note: str = "") -> str:
     the Paper workbench's RoadMap Draw shows a Story's drawing. It loads only when shown."""
     rel = _href(root, drawing) if Path(drawing).is_file() else ""
     if not rel:
-        return '<div class=empty>No methods drawing yet: the design workbench keeps it as <code>b12_theme_design/studio/s03-design-methods/parts/design-methods.excalidraw</code>.</div>'
+        return '<div class=empty>No methods drawing yet: the design workbench keeps it as <code>b12_theme_design/s03-design-methods/parts/design-methods.excalidraw</code>.</div>'
     url = "/_excalidraw/?board=" + quote(rel.lstrip("/"), safe="/") + "&edit=1"
     note = note or ('The four kinds of reasoning, three inputs, Design and the Exp, the Revise and Learning loops, '
                     'three families, the cards and the tests.')

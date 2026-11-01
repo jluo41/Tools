@@ -2,7 +2,7 @@
 name: haipipe-project
 description: >-
   Create, inspect, audit, or safely update project containers under examples/ or a sibling domain world such as examples-3-nlp/.
-  Owns the Project boundary, README.md, project.yaml, project profile and Git
+  Owns the Project boundary, project.md, project.yaml, project profile and Git
   mode, and the optional top-level worlds work/, discovery/, cowork/,
   paper/, insight/, design/, labeling/, ideation/, and external/, plus platforms/ for code repos. Use for new projects, repository
   topology, project structure reviews, compliance previews, and root-level migrations:
@@ -12,8 +12,8 @@ description: >-
   owned by their domain skills.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.17.4"
-  last_updated: "2026-10-25"
+  version: "0.20.2"
+  last_updated: "2026-10-31"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -27,11 +27,17 @@ Task, Discovery, Paper, Application, Page, or Run.
 
 ```text
 examples/ProjNN-<domain>-<purpose>/
-├── README.md       required human entry
+├── project.md      required: the Project's page in the workbench (goal, Themes, state)
+├── README.md       optional: the repository's front door on GitHub (what it is, how to set it up)
 ├── project.yaml    required machine contract
 ├── note/           optional/lazy · the inbox: any session's quick note or
 │                   thought, each naming its next Block and sNN (ref § note/)
-├── work/          optional/lazy · computational evidence bank
+├── sNN-<topic>/    optional/lazy · the Project's own thinking (a roadmap across
+│                   its Themes), beside its Themes; its page also shows every Block's topics
+├── delivery/       optional/lazy · what the Project as a whole hands over;
+│                   its page also shows every Block's deliveries
+├── work/          optional/lazy · computational evidence bank; its page, when
+│                   written, is work/work.md (any Theme: <theme>/<theme>.md)
 ├── discovery/    optional/lazy · external-evidence bank
 ├── cowork/         optional/lazy · coordination text: tickets, people, emails,
 │                   meetings, design notes; one CoWork Block per topic,
@@ -66,7 +72,7 @@ Read `ref/project-structure.md` before creating, auditing, or updating a Project
 
 ```text
 /haipipe-project new <id> [--profile <profile>] [--git-mode workspace]
-    Create README.md + project.yaml. Create no empty worlds. Read fn/project.md.
+    Create project.md + project.yaml. Create no empty worlds. Read fn/project.md.
 
 /haipipe-project repo <id> --org <owner> [--profile <profile>]
     Create or adopt a repo-backed Project and record git_mode: submodule.
@@ -75,13 +81,13 @@ Read `ref/project-structure.md` before creating, auditing, or updating a Project
 
 /haipipe-project audit [<project>|--all|<Block|Job|Task|Run>] [--deep]
     Read-only. A Project: every finding and the update step that fixes it (root, singular
-    Theme folders, Job-centred layout, one folder per Run, faces), what a person decides,
+    Theme folders, Job-centred layout, one folder per Run, sNN out of studio/, faces), what a person decides,
     and the Tools gate. A Block, Job, Task or Run: its shape against the ladder, down to
     each Run. Read fn/audit.md.
 
 /haipipe-project update [<project>|--all|<Block|Job|Task>] [--apply]
     A dry run unless --apply. A Project: every step audit found work for, in order (root,
-    themes, convert, runs, faces); --apply runs them, re-audits after each, verifies tickets
+    themes, convert, runs, studio, faces); --apply runs them, re-audits after each, verifies tickets
     and links, and never commits. Below it: the move to one folder per Run and the missing
     run.yaml cards. Read fn/update.md.
 
@@ -146,7 +152,8 @@ migration debt, like `applications/`; no routine update moves its Boards.
 
 ## Safe update law
 
-- Add a missing `project.yaml` or `README.md` when the user asks to update.
+- Add a missing `project.yaml` or `project.md` when the user asks to update; an existing `README.md`
+  is left as it is (JL 261028: both, for different purposes).
 - Reconcile facts that are observable on disk; do not invent ownership or state.
 - Treat `applications/`, root `results/`, old pipeline roots, and misplaced
   submodules as migration debt until their owner and destination are resolved.
@@ -163,7 +170,18 @@ provides deterministic root checks.
 
 Below the root this skill checks **shape only**, at every level: Block → Job → Task →
 Run → pass. `ref/ladder.md` is the one table (each level's face, the folders it may hold,
-its children, hard and soft Run names, family extras), read by `scripts/ladder.py`. The
+its children, hard and soft Run names, family extras), read by `scripts/ladder.py`.
+
+**Delivery at every level (JL 261028), the Studio once per Block (JL 261029, b35 s01-D05).** A
+Project, Block, Job and Task may each hold its own `delivery/`, and a page shows its own plus
+everything below it. A Studio topic is an `sNN-<topic>/` folder beside the Jobs (or a Job's Tasks), never in a
+`studio/` folder (JL 261031: "put them under the block folder"); each topic's face names the rung it hangs from
+(`**At:** b17`, `j01`, `j01.t03`), and a Job or Task page shows the topics at it. A topic's
+address is `bNN.jNN-sNN` (s01-D02), written with its names, `b17.j01-s07:theme_work.tables @ one_table`. A Theme folder holds none: it only groups. One `sNN` numbering per
+Block, so a number names one topic. `audit` lists an sNN still in a `studio/` (step `studio`), and `update --apply`
+moves it up through haipipe-studio's `studio_move.py`, links and builders included; a `studio/` that still holds
+loose items (`_build/`, `chat/`, `draw/`, a question map) stays. `related/` stays at the
+Block. The
 child-world owner still owns **content** (a Page's sections, a ticket's body, a Run's
 close rule); route those requests to it. What a Run is, hard or soft, with its passes and
 `run.yaml`: haipipe-run.

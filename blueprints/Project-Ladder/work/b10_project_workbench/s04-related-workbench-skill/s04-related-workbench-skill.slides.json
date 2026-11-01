@@ -1,0 +1,55 @@
+{
+ "topic": "s04-related-workbench-skill",
+ "style": "sketch-notes",
+ "source": "s04-related-workbench-skill.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Related: its workbench and its skill",
+   "points": [
+    "the Related seen from both sides: its workbench (the Studio's second folding part, under the…",
+    "was Description › Related) and its skill (/haipipe-related, made 261011, s04-D09)",
+    "What comes in from outside (a meeting, a paper, a file we were sent, an email, a repo or dataset)…"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and the haipipe-related skill and the Related part of the Studio, for the people who write the toolkit skills",
+    "a skill"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "What is decided",
+   "points": [
+    "A Block keeps one related/, shared by its Jobs and Tasks, for what came in from outside:",
+    "What lands in related/ is read only: it is not edited again",
+    "Related and the reports: a row's feeds names the reports (qNN) and topics (sNN) it",
+    "The paper theme's Audience Report › Related Papers shows the paper rows only: meeting and"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "04",
+   "idea": "Still open",
+   "points": [
+    "Settled 261011 by s04-D09: /haipipe-related, its own skill in skills/1_base/project/",
+    "A Job's own inputs (a site visit's notes): its Job folder, or the Block's related/ with",
+    "The Project root's external/ (pinned upstream code and data, s01-D06): rows here that point to it,"
+   ],
+   "leaning": "",
+   "ask": "Settled 261011 by s04-D05: Related folds inside the Studio, under the topic cards",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

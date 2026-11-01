@@ -1,0 +1,23 @@
+{
+ "topic": "s02-slide-rules",
+ "style": "sketch-notes",
+ "source": "s02-slide-rules.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "What makes a Studio slide readable?",
+   "image": "slides/idea-01-readable.png",
+   "content": "Headline (top-left, large): \"What makes a Studio slide readable?\"\nThree rule cards in a row across the middle, each with a small drawing:\n Card 1 \"One idea, a plain question\": a small slide with one big question mark\n Card 2 \"Name who acts, label each arrow\": two boxes \"Human\" and \"Agent\", an arrow each way labelled \"asks\" and \"draws\"\n Card 3 \"One slide for a whole life\": one wide slide holding a small loop of four dots\nBottom-right sticky note: \"Still open: one style per Project or per deck?\"\nFocal point: card 2.",
+   "notes": "Leaning: agreed (b34 s02-D01 to b34 s02-D03). Still open: One style per Project, or per deck?",
+   "leaf": "n07"
+  },
+  {
+   "id": "02",
+   "idea": "Is a deck shown at a meeting a delivery?",
+   "image": "slides/idea-02-meeting-deck.png",
+   "content": "Headline (top-left, large): \"Is a deck shown at a meeting a delivery?\"\nThree option cards across the middle, joined by a wavy line:\n Card A \"Yes, into delivery/\": a small deck dropping into a parcel box labelled \"delivery/\"\n Card B \"No, a round in the topic\", circled in orange with a small tag \"leaning\": a meeting table with a notebook labelled \"pass\"\n Card C \"Only the agreed version\": a deck with a green tick, then an arrow into the box\nBottom-right sticky note: \"Still open: a deck sent by email?\"\nFocal point: card B.",
+   "notes": "Leaning: the second (proposal 261029): a meeting is a round; `delivery/` gets only the agreed version (b35-s01-D11). Still open: Does a deck sent by email count differently?",
+   "leaf": "n12"
+  }
+ ]
+}

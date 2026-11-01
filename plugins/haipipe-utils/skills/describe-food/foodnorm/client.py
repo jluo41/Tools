@@ -54,7 +54,7 @@ def _normalize_local(foods: Sequence[str], **kw) -> List[Dict]:
     df = pd.DataFrame({"FoodName": list(foods)})
     out = enrich_food_to_nutrition(df, food_col="FoodName", **kw)
     cols = list(NUTRIENTS) + list(PROVENANCE)
-    for extra in ("NameSource", "NameConf", "FoodNameResolved"):
+    for extra in ("NameSource", "NameConf", "FoodNameResolved", "FoodMatched"):
         if extra in out.columns:
             cols.append(extra)
     return out[cols].to_dict("records")

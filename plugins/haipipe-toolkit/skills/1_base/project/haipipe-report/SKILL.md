@@ -3,7 +3,7 @@ name: haipipe-report
 description: "Owns a Block's Questions and their reports at any level: what a Question is and where it lives (reports/qNN_<topic>/), shaping and reviewing asks, linking work to it (answers:), its walk open → partial → answered, and the report Page (Opening · Answer · Evidence · Limits · Next) with its figures and check. Trigger: report, answer a question, answers:, board question, qNN, propose a question, review the questions, /haipipe-report, /haipipe-question."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.3.1"
+  version: "0.3.2"
   last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md
 ---
@@ -49,15 +49,14 @@ Every board kind uses the same shape: a Task Block (`work/bNN_<block>/`), a Pape
 ```text
 <board>/
 ├── board.md                    the question register (Questions, Related resources)
-├── studio/                     drawings the whole Block shares (the question map)
+├── s01-<name>/                 a Block Studio topic; a report's drawing, its face Feeds: the report
 └── reports/
     └── q01_<topic>/
         ├── q01_<topic>.md      the report Page: Opening, then Answer · Evidence · Limits · Next
-        ├── page.toml           registers the Page with the Page reader
-        └── studio/             this report's own drawings
+        └── page.toml           registers the Page with the Page reader
 ```
 
-1. **One drawing**: a report has exactly one `.excalidraw`, linked once from its `### Evidence`; more views are frames inside it (`excalidraw-report` rules 6, 9, 11). `--drawing <name>` makes the blank one.
+1. **One drawing**: a report has exactly one `.excalidraw`, linked once from its `### Evidence`; more views are frames inside it (`excalidraw-report` rules 6, 9, 11). `--drawing <name>` makes it as a Block sNN that feeds the report.
 2. **A topic, not a decision**: a Question is a topic many sections, sessions and Runs feed, that grows into its report (JL 261003). A narrow decision is something its report records.
 3. **The report test**: could it fill a report's Answer, Evidence, Limits and Next?
 4. **The reuse test**: would the next few sections or Runs on this work feed it too?
@@ -95,7 +94,8 @@ python $B add-report <block> --id Q-food-1 --slug input_forms \
 ```
 
 `--evidence 'label|path'` (repeatable) lists a file inside the Block under `### Evidence`;
-`--drawing <name>` (once) makes the report's one drawing in `reports/<id>_topic/studio/`.
+`--drawing <name>` (once) makes the report's one drawing as a Block Studio topic, `sNN-<name>/` beside the
+Jobs, whose face **Feeds:** the report (haipipe-studio `new_topic.py`; no `studio/` folder, JL 261031 b35 r02).
 It is a pointer for the writer, not an answer: `answer-status` stays `open`, no
 `results-read:` is written. A Paper board has no register block: its questions are the
 Story's `RQ<n>`, and a report names them in `answers:`; make its folder and frame by hand.

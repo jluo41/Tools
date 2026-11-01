@@ -22,7 +22,7 @@ Read `haipipe-studio/ref/reader-review.md` first: the questions for each kind of
 
 ## Input
 
-The topic folder, `<block>/studio/sNN-<topic>/`; optionally frames already rendered one per file.
+The topic folder, `<block>/sNN-<topic>/`; optionally frames already rendered one per file.
 
 ## Steps
 

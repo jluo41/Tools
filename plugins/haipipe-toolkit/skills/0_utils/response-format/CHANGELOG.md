@@ -1,6 +1,17 @@
 response-format — Changelog
 ===========================
 
+**[0.25.0] · 2026-11-01 · The See line: point each section to its place in the workbench**
+
+JL 261101: "for each section in the response, how to point to the report ui". Each ordinary
+section now closes with one **See:** line, `[<page> › <Rail section>](<link>): <what is there>`,
+linking the focus page (`/_board/workbench?path=<folder>&layout=focus&section=<rail>`) and the
+rail section that shows its material: Interactions for a decision, Report for a finding, Work
+for Runs, Studio for a topic (`section=studio&group=<group>#sNN-<topic>`), Delivery for a built
+file, and Related, Timeline, Files. It replaces the Studio line; a topic is one of its places.
+The link is loaded on the host before the reply. Summary and Next still has none.
+A fresh-agent test (261101) passed; it added two rules: material kept elsewhere points to the page here that waits on it, and a paper Board's Job or Task is named by its folder.
+
 **[0.23.0] · 2026-10-11 · Look in the Tools blueprint Blocks too**
 
 JL 261011: "Please also refer to the blocks in the Tools/blueprint as well, when we do
@@ -36,6 +47,10 @@ anchor, following the promotion of the former b01/j03 area.
   and unnumbered; the format never creates a topic or Question folder.
 - Updated the reply template, rule list and examples; retained the other reply rules.
 
+## [0.24.0] — 2026-10-29
+
+Never a bare index: a Block, Job, Task, Run or Studio topic is named with its address, `name (address)` or `address: name` (JL 261029; b35 s01-D07). The Studio line shows `sNN-<topic> (bNN.jNN-sNN)`.
+
 ## [0.23.1] — 2026-10-26
 
 Shorter description (792 -> 331 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)
@@ -54,7 +69,7 @@ Shorter description (792 -> 331 characters): what it does, when to use it, its t
 
 - A Job's question links the shared workbench on the Job's Audience Report
   (`/_board/workbench?path=<job folder>&space=Audience+Report#question-QNN`): the toolkit's
-  blueprint Blocks became Jobs of `Tools/blueprints/b01_haipipe-toolkit/` (one Block per
+  blueprint Blocks became Jobs of `Tools/blueprints/Project-Packages/work/b01_haipipe-toolkit/` (one Block per
   package, JL 261009), and a Job has no `board.md`.
 
 ## [0.18.1] — 2026-10-06

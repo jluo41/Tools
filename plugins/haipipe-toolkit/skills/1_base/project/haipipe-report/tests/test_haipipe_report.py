@@ -182,13 +182,13 @@ def drawing(frames):
 class BuildReportDrawingTest(unittest.TestCase):
     def setUp(self):
         self.b = Block()
-        self.b.write("studio/s01-topic/s01-topic.excalidraw", json.dumps(drawing(["1 · First", "2 · Second"])))
+        self.b.write("s01-topic/s01-topic.excalidraw", json.dumps(drawing(["1 · First", "2 · Second"])))
         self.page = self.b.write("reports/q01_first/q01_first.md", report("Q01", "partial") + textwrap.dedent("""
             ## Figures
 
             ```yaml
             figures:
-            - from: ../../studio/s01-topic/s01-topic.excalidraw
+            - from: ../../s01-topic/s01-topic.excalidraw
               frame: "2 · Second"
               caption: the second frame
             ```

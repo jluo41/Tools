@@ -8,6 +8,8 @@ Task, a Run, as the design theme's design_ladder.py makes its own (b16 Q05).
     python paper_ladder.py spaces  <board> <version>                                      give a version reports/ runs/
     python paper_ladder.py task    <version folder> tNN_<title>                           a Section, the Abstract or a letter
     python paper_ladder.py run     <Board or version folder> <type> <target>              a soft Run: runs/run-<type>-<target>/
+    python paper_ladder.py audit   <board>                                                is the folder on the latest layout?
+    python paper_ladder.py update  <board> [--date MMDD] [--apply]                        bring it there (a dry run without --apply)
     python paper_ladder.py rollback <board>                                               undo the newest version, next, spaces
                                                                                           or task (also version_paper.py's records)
     (add --dry-run to version, next, spaces, task or run: print what it would do; change nothing)
@@ -57,7 +59,13 @@ _spec = importlib.util.spec_from_file_location("soft_run", HERE.parents[3] / "1_
 SOFT = importlib.util.module_from_spec(_spec)        # the shared soft-Run writer (haipipe-run)
 _spec.loader.exec_module(SOFT)
 
-VERSION = re.compile(r"^j(\d{2})_v([^_]+)_(.+)$")
+VERSION = re.compile(r"^j(\d{2})_(?:writing_)?v([^_]+)_(.+)$")   # j11_writing_v<MMDD>_<desk>; older jNN_v<MMDD>_<desk> still read
+# a paper Board's evidence Jobs come first, one per kind, beside the writing Jobs (JL 261031: "you can call them
+# j01_evidnece_xxx j02_evidnece_xxx j03—evidence_xxx j11_writing_xxx")
+EVIDENCE_JOBS = (("j01_evidence_display", "displays: one Task per figure or table, t01-t19 main, t51-t59 appendix"),
+                 ("j02_evidence_value", "values: one Task per group of printed numbers, each read from a returned Result"),
+                 ("j03_evidence_cite", "citations: one Task per claim group, each from verified CITE Results"))
+WRITING_FROM = 11                                      # writing Jobs are j11, j12, ...
 SECTION = re.compile(r"^t[0-2]\d_")
 TASK = re.compile(r"^t(\d)(\d)_([a-z0-9][a-z0-9-]*)$")
 RUN = re.compile(r"^[a-z][a-z0-9]*(-[a-z0-9]+)*$")
@@ -212,9 +220,10 @@ def version(run, desk, mmdd, venue):
     if not re.fullmatch(r"\d{4}", mmdd) or not re.fullmatch(r"[a-z0-9-]+", desk):
         sys.exit("stop: --date is MMDD and --desk is lowercase (mansci, jama-im)")
     used = [int(VERSION.match(p.name).group(1)) for p in b.iterdir() if p.is_dir() and VERSION.match(p.name)]
-    to = f"j{max(used, default=0) + 1:02d}_v{mmdd}_{desk}"
+    n = max([WRITING_FROM - 1] + [u for u in used if u >= WRITING_FROM]) + 1
+    to = f"j{n:02d}_writing_v{mmdd}_{desk}"
     run.create[f"{to}/{to}.md"] = (
-        f"# {to} · version {max(used, default=0) + 1} of the paper\n\nsend: {to}\ndesk: {desk}\n"
+        f"# {to} · version {n - WRITING_FROM + 1} of the paper\n\nsend: {to}\ndesk: {desk}\n"
         f"venue: {venue or '<venue>'}\nstate: drafting\ntells: studio/sNN-story-<telling>\nfrom: none (the first send)\n"
         f"goal: <the paper this send puts before {venue or '<venue>'}>\nclose: <sent, and every comment it drew answered>\n\n"
         "## Tasks\n\n## Narrative\n\nHow this version tells the story, in reading order: one row per Section (its job, the claims "
@@ -222,6 +231,24 @@ def version(run, desk, mmdd, venue):
         "## Questions\n\n```yaml\nquestions: []\n```\n")
     run.set("board.md", pages_add(run.text("board.md"), to, [], f"Version {to}: {venue or '<venue>'}."))
     return to
+
+
+# ── evidence ──────────────────────────────────────────────────────────────────────────────────────
+def evidence(run):
+    """The Board's three evidence Jobs, the ones not made yet: j01_evidence_display, j02_evidence_value,
+    j03_evidence_cite (JL 261031). Each deposits what its discovery and work Blocks returned, for every writing Job."""
+    made = []
+    for name, holds in EVIDENCE_JOBS:
+        if (run.board / name).is_dir() or any(r.startswith(f"{name}/") for r in run.create):
+            continue
+        run.create[f"{name}/{name}.md"] = (
+            f"# {name} · the paper's evidence: {holds.split(':')[0]}\n\nlayer: evidence\nstate: open\n"
+            f"goal: {holds}\nclose: every one the writing Jobs quote is drawn or checked, and accepted\n"
+            "reads: the returned Results of the work Blocks (internal) and the discovery Blocks (external); never raw data\n\n"
+            "## Tasks\n")
+        run.set("board.md", pages_add(run.text("board.md"), name, [], f"Evidence {name.split('_')[-1]}: {holds.split(':')[0]}."))
+        made.append(name)
+    return made
 
 
 # ── next ──────────────────────────────────────────────────────────────────────────────────────────
@@ -233,7 +260,7 @@ def next_version(run, frm, mmdd):
     used = sorted(int(VERSION.match(p.name).group(1)) for p in b.iterdir() if p.is_dir() and VERSION.match(p.name))
     empty = next((p.name for p in b.iterdir() if p.is_dir() and VERSION.match(p.name) and p.name.endswith(f"_v{mmdd}_{m.group(3)}")
                   and not any(x for x in p.iterdir() if x.name not in (".DS_Store",))), None)
-    to = empty or f"j{used[-1] + 1:02d}_v{mmdd}_{m.group(3)}"
+    to = empty or f"j{max(used[-1], WRITING_FROM - 1) + 1:02d}_writing_v{mmdd}_{m.group(3)}"
     if (b / to).exists() and not empty:
         sys.exit(f"stop: {to} exists and is not empty")
     stems = []                                 # each Section's own writing
@@ -395,7 +422,7 @@ def rollback(board):
                 break
             d.rmdir()
     shutil.rmtree(keep)
-    path.rename(board / f"{path.stem}.rolled-back-{date.today().isoformat()}.yaml")
+    path.rename(path.with_name(f"{path.stem}.rolled-back-{date.today().isoformat()}.yaml"))   # kept beside the others in .ladder-undo/
     print(f"rolled back {rec['what']}: {len(rec.get('moves') or [])} moves, {len(rec.get('rewritten') or [])} rewrites, "
           f"{len(rec.get('created') or [])} created")
 
@@ -405,6 +432,217 @@ def find_board(folder: Path) -> Path:
         if (d / "board.md").is_file():
             return d
     sys.exit(f"stop: no board.md at or above {folder}")
+
+
+# ── audit and update: bring an older paper folder onto the latest layout (JL 261101: "the /haipipe-paper need to have
+# the update"; "make the checklist to be a sNN as well"). audit prints paper_check.py's ⓪ Layout lines; update runs,
+# in order, the step that fixes each failing line, each a script with its own dry run and rollback ─────────────────
+CARRY = Path(__file__).resolve().parent / "carry_over"
+NEW_TOPIC = Path(__file__).resolve().parents[4] / "1_base" / "project" / "haipipe-studio" / "scripts" / "new_topic.py"
+HAND_WRITTEN = (".md", ".yaml", ".yml", ".toml", ".sh", ".py", ".txt", ".ps1")
+SEALED = ("delivery", "board", "results", "passes", "payload", "_archive", ".git", ".ladder-undo")
+CHECKLIST_FACE = """s{nn} · Paper checklist
+{bar}
+
+**Tags:** `Plan`
+
+**Stage:** shaping
+
+**For:** the person who sends this paper: where it stands, from its question to the send, in one page
+
+**Delivery type:** draft
+
+**Covers:** haipipe-paper's checklist.md, ticked from this Board's own files: ⓪ Layout, ① Plan, ② Explore,
+③ Evidence, ④ Writing, ⑤ Delivery (the package of the newest send and its requirements)
+
+**Excluded:** the deep submission gate (haipipe-paper ref/submission-readiness.md, its 21 SUB-* points), which D7
+reads; each line's fix, which is its owning skill's
+
+**Topic:** One line per thing the paper needs, each ✅ done, ⏳ under way, ⬜ not yet or 🙋 waiting on a person, with
+what the check saw. `paper_check.py <Board> --write` ticks it below the GENERATED line; what is above stays as written.
+
+**Feeds:** `reports/` (none: it reads every layer)
+
+
+Files
+-----
+
+```text
+s{nn}-paper-checklist/
+├── s{nn}-paper-checklist.md        this face; the checklist below its GENERATED line
+└── s{nn}-paper-checklist.excalidraw   its quick drawing
+```
+
+
+Decided
+-------
+
+(none yet: a decision is one line, s{nn}-D01 · <what was decided> (<who> <date>))
+
+
+Open
+----
+
+(write here)
+"""
+
+
+def _layout(board: Path) -> list:
+    import paper_check
+    name = paper_check.field(paper_check.read(board / "board.md"), "story-current")
+    story = board / name if name and (board / name).is_dir() else paper_check.topic(board, r"s\d+-story")
+    return paper_check.layout(board, story)
+
+
+def audit(board: Path) -> list:
+    rows = _layout(board)
+    for _, i, what, m, seen in rows:
+        print(f"  {m} {i} {what:<28} {seen}")
+    return rows
+
+
+BUILD_INPUTS = ("paper-build.toml", "build.py", "preamble.tex")    # hand-written, though they sit in delivery/<job>/
+
+
+def _sweep(board: Path, old: str, new: str, dry: bool, keep: Path | None = None) -> list:
+    """Every hand-written file under the Board that says `old` as a whole name (not `old-letter`), said as `new`; sealed
+    output is left as is, except a version's build inputs in delivery/<job>/, which name its folder. `keep` gets each
+    file's old text first, for the rollback."""
+    word = re.compile(rf"(?<![A-Za-z0-9_-]){re.escape(old)}(?![A-Za-z0-9_-])")
+    hits = []
+    for f in board.rglob("*"):
+        rel = f.relative_to(board)
+        build_input = len(rel.parts) == 3 and rel.parts[0] == "delivery" and rel.name in BUILD_INPUTS
+        if not f.is_file() or f.suffix not in HAND_WRITTEN + (".tex",) or (
+                any(p in SEALED for p in rel.parts[:-1]) and not build_input) or (f.suffix == ".tex" and not build_input):
+            continue
+        text = f.read_text(encoding="utf-8", errors="ignore")
+        if word.search(text):
+            hits.append(rel.as_posix())
+            if not dry:
+                if keep is not None:
+                    (keep / rel).parent.mkdir(parents=True, exist_ok=True)
+                    (keep / rel).write_text(text, encoding="utf-8")
+                f.write_text(word.sub(new, text), encoding="utf-8")
+    return hits
+
+
+def _moved(rel: str, moves: list) -> str:
+    """Where a path that was `rel` before the moves is after them."""
+    for frm, to in moves:
+        if rel == frm or rel.startswith(frm + "/"):
+            rel = to + rel[len(frm):]
+    return rel
+
+
+def rollback_update(board: Path) -> None:
+    """Undo the newest update's renames and sweeps from its record, .ladder-undo/update-N/ (the carry-over steps and
+    the evidence Jobs have their own rollbacks)."""
+    import yaml
+    recs = sorted((board / ".ladder-undo").glob("update-*/record.yaml"), key=lambda p: int(p.parent.name.split("-")[1]))
+    if not recs:
+        sys.exit("stop: no update record to roll back")
+    rec_dir = recs[-1].parent
+    rec = yaml.safe_load(recs[-1].read_text(encoding="utf-8"))
+    moves = rec.get("moves", [])
+    for rel in rec.get("swept", []):                 # each file's old text, where its folder now is
+        (board / _moved(rel, moves)).write_text((rec_dir / "files" / rel).read_text(encoding="utf-8"), encoding="utf-8")
+    for frm, to in reversed(moves):                  # then every move, newest first
+        (board / to).rename(board / frm)
+    rec_dir.rename(rec_dir.with_name(rec_dir.name + "-rolled-back"))
+    print(f"rolled back {rec_dir.name}: {len(moves)} moves, {len(rec.get('swept', []))} files")
+
+
+def update(board: Path, date: str, dry: bool) -> list:
+    """The steps that bring the Board onto the latest layout, in order; each runs only when its line fails."""
+    import subprocess
+    py = sys.executable
+    flag = "--dry-run" if dry else "--apply"
+    did = []
+
+    def step(name, argv):
+        print(f"\n▶ {name}: {' '.join(Path(a).name if a.endswith('.py') else a for a in argv)}")
+        r = subprocess.run([py, *argv], capture_output=True, text=True)
+        print((r.stdout + r.stderr).strip()[-1500:])
+        if r.returncode:
+            sys.exit(f"stop: {name} failed; nothing after it ran")
+        did.append(name)
+
+    rows = {i: (m, seen) for _, i, _, m, seen in _layout(board)}
+    if rows["L1"][0] != "✅":                       # old Pages: A1-Story/, Ba-/Bb-/Bc- folders
+        old = [d for d in [board / "A1-Story", *board.glob("B[abc]-*"), board / "studio"] if d.is_dir()]
+        empty = [d for d in old if not any(d.iterdir())]
+        for d in empty:                              # an empty leftover: nothing to move, so it only goes
+            print(f"\n▶ remove the empty leftover {d.name}/")
+            if not dry:
+                d.rmdir()
+            did.append(f"removed empty {d.name}/")
+        if any(d not in empty and d.name != "studio" for d in old):
+            step("move the Pages onto the ladder", [str(CARRY / "migrate_paper.py"), str(board), flag])
+        if any(d not in empty for d in old):
+            step("Story and Ideation into topics", [str(CARRY / "topics_paper.py"), str(board), flag])
+    if rows["L2"][0] != "✅":                       # undated versions, S-… Sections
+        if not date:
+            sys.exit("stop: L2 needs the send date of the version: update --date MMDD")
+        step("date the versions, name the Sections", [str(CARRY / "rename_tasks.py"), str(board), "--date", date, flag])
+    if did and not dry:
+        step("sweep the old names", [str(CARRY / "sweep_names.py"), str(board), "--apply"])
+    plain = sorted(j for j in board.glob("j[0-9]*_*") if j.is_dir() and re.fullmatch(r"j\d+_v\d{4}_[A-Za-z0-9-]+", j.name))
+    taken = {int(re.match(r"j(\d+)", j.name).group(1)) for j in board.glob("j[0-9]*_*")}
+    record = None
+    if plain and not dry:                          # one record per update: its renames, each swept file's old text
+        undo = board / ".ladder-undo"
+        n_rec = 1 + max([int(p.name.split("-")[1]) for p in undo.glob("update-*") if p.name.split("-")[1].isdigit()] or [0])
+        record = {"dir": undo / f"update-{n_rec}", "moves": [], "swept": []}
+    for j in plain:                                # L3: jNN_v<MMDD>_<desk> -> jNN_writing_v<MMDD>_<desk>, writing from j11
+        own = int(re.match(r"j(\d+)", j.name).group(1))
+        taken.discard(own)
+        nn = own if own >= 11 and own not in taken else next(n for n in range(11, 100) if n not in taken)
+        taken.add(nn)
+        new = f"j{nn}_writing_" + j.name.split("_", 1)[1]
+        hits = _sweep(board, j.name, new, dry=True)
+        print(f"\n▶ name the writing Job: {j.name} -> {new} ({len(hits)} files say its name, build inputs included)")
+        if not dry:
+            record["swept"] += _sweep(board, j.name, new, dry=False, keep=record["dir"] / "files")
+            for rel in (j.name, f"delivery/{j.name}"):            # the folders, then the files named for the Job in them
+                if (board / rel).exists():
+                    to = rel.replace(j.name, new)
+                    (board / rel).rename(board / to)
+                    record["moves"].append([rel, to])
+                    for f in sorted((board / to).iterdir()):
+                        if j.name in f.name:
+                            g = f.with_name(f.name.replace(j.name, new))
+                            f.rename(g)
+                            record["moves"].append([f.relative_to(board).as_posix(), g.relative_to(board).as_posix()])
+        did.append(f"writing Job {new}")
+    if record is not None:
+        import yaml
+        record["dir"].mkdir(parents=True, exist_ok=True)
+        (record["dir"] / "record.yaml").write_text(yaml.safe_dump({k: v for k, v in record.items() if k != "dir"},
+                                                                  allow_unicode=True), encoding="utf-8")
+        print(f"  undo: paper_ladder.py update {board.name} --rollback  (record {record['dir'].name})")
+    jobs = {n for n, _ in EVIDENCE_JOBS}
+    if not all((board / n).is_dir() for n in jobs):  # V1: the evidence Jobs
+        step("the evidence Jobs", [str(Path(__file__).resolve()), "evidence", str(board)] + (["--dry-run"] if dry else []))
+    if rows["L4"][0] != "✅":                       # L4: the checklist topic, then its first ticks
+        nn = next((n for n in range(5, 10) if not list(board.glob(f"s{n:02d}-*"))), None)
+        if dry:
+            name = f"s{nn:02d}-paper-checklist" if nn else "sNN-paper-checklist (the next free number)"
+            print(f"\n▶ the checklist topic: would make {name}/ and tick it")
+            did.append(f"the checklist topic {name}")
+        else:
+            argv = [str(NEW_TOPIC), "topic", str(board), "--slug", "paper-checklist", "--title", "Paper checklist", "--band", "concept",
+                    "--over-limit"]                 # every paper Board has one, however many topics it holds
+            step("the checklist topic", argv + (["--nn", str(nn)] if nn else []))
+            t = next(iter(sorted(board.glob("s[0-9]*-paper-checklist"))))
+            num = t.name[1:3]
+            (t / f"{t.name}.md").write_text(CHECKLIST_FACE.format(nn=num, bar="=" * len(f"s{num} · Paper checklist")), encoding="utf-8")
+    if not dry:
+        step("tick the checklist", [str(Path(__file__).resolve().parent / "paper_check.py"), str(board), "--write"])
+    print("\n" + ("would do: " if dry else "did: ") + (", ".join(did) or "nothing: the folder is on the latest layout"))
+    if dry:
+        print("(a dry run: add --apply to do it; each step keeps its own rollback)")
+    return did
 
 
 def main(argv=None):
@@ -432,9 +670,18 @@ def main(argv=None):
     r.add_argument("folder", type=Path)
     r.add_argument("type")
     r.add_argument("target")
+    ev = sub.add_parser("evidence")
+    ev.add_argument("board", type=Path)
     rb = sub.add_parser("rollback")
     rb.add_argument("board", type=Path)
-    for p in (bo, v, n, s, t, r):
+    au = sub.add_parser("audit")
+    au.add_argument("board", type=Path)
+    up = sub.add_parser("update")
+    up.add_argument("board", type=Path)
+    up.add_argument("--date", default="", help="MMDD, the send date, when a version is still undated")
+    up.add_argument("--apply", action="store_true", help="do it (without it, a dry run)")
+    up.add_argument("--rollback", action="store_true", help="undo the newest update's renames and sweeps")
+    for p in (bo, v, n, s, t, r, ev):
         p.add_argument("--dry-run", action="store_true")
     a = ap.parse_args(argv)
     if a.cmd == "board":
@@ -442,6 +689,14 @@ def main(argv=None):
         for p in made:
             print(("would make " if a.dry_run else "made ") + str(p))
         return made
+    if a.cmd in ("audit", "update"):
+        b = a.board.resolve()
+        if not (b / "board.md").is_file():
+            sys.exit(f"stop: {b.name} has no board.md")
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        if a.cmd == "update" and a.rollback:
+            return rollback_update(b)
+        return audit(b) if a.cmd == "audit" else update(b, a.date, not a.apply)
     if a.cmd == "run":
         p = soft_run(a.folder.resolve(), a.type, a.target, a.dry_run)
         print(("would make " if a.dry_run else "made ") + str(p))
@@ -452,7 +707,9 @@ def main(argv=None):
     if a.cmd == "rollback":
         return rollback(root)
     run = Run(root)
-    if a.cmd == "version":
+    if a.cmd == "evidence":
+        what = "evidence " + (", ".join(evidence(run)) or "nothing new")
+    elif a.cmd == "version":
         what = f"version {version(run, a.desk, a.date, a.venue)}"
     elif a.cmd == "next":
         what = f"next {next_version(run, a.frm, a.date)} from {a.frm}"

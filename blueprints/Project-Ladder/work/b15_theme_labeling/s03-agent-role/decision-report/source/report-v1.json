@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "report_id": "supportiveness-demo-round-01-v1",
+  "round": "01",
+  "guideline_version": "G0-demo",
+  "title": "What does a supportive response mean to you?",
+  "task": "Recognizing support in online replies",
+  "demo": true,
+  "starting_idea": "I want to identify replies that make someone feel supported, even when people express support differently.",
+  "sources": [
+    {"id": "S01", "kind": "Starting idea", "text": "I want to identify replies that make someone feel supported, even when people express support differently.", "provenance": "Synthetic human brief for this prototype; not a recorded user quote."},
+    {"id": "S02", "kind": "Candidate guideline", "text": "G0-demo: label a reply as supportive when it offers meaningful support. Boundaries, exceptions, and review actions are not yet defined.", "provenance": "Authored demo baseline; not an approved guideline."},
+    {"id": "S03", "kind": "Learning examples", "text": "L01–L10 are invented contrastive examples. They illustrate rule-level decisions rather than individual gold-label requests.", "provenance": "Synthetic learning-only examples; no retrieval or model experiment has run."}
+  ],
+  "decisions": [
+    {
+      "id": "D01", "rule_id": "R01", "kind": "Define a boundary", "short_title": "Practical help", "title": "Can practical help count without emotional reassurance?",
+      "why": "The current phrase ‘meaningful support’ leaves practical advice open to interpretation.",
+      "current_rule": "No distinction between emotional reassurance and practical assistance.",
+      "scope": "Replies that offer relevant practical help without explicitly validating feelings.",
+      "source_ids": ["S01", "S02", "S03"],
+      "examples": [
+        {"id": "L01", "split": "learning", "context": "I feel overwhelmed by tomorrow’s interview.", "reply": "Try one practice interview tonight. I can help you rehearse.", "signal": "Practical help; no explicit reassurance"},
+        {"id": "L02", "split": "learning", "context": "I feel overwhelmed by tomorrow’s interview.", "reply": "That sounds stressful. It makes sense to feel nervous.", "signal": "Reassurance; no practical advice"}
+      ],
+      "options": [
+        {"id": "A", "label": "Either kind of support can count", "effect": "Recognize relevant practical assistance or emotional reassurance; neither is individually required."},
+        {"id": "B", "label": "Emotional reassurance is required", "effect": "Practical help alone does not satisfy the supportive label."},
+        {"id": "C", "label": "Keep the two kinds as separate labels", "effect": "Propose separate emotional-support and practical-support labels; the label schema will need review."}
+      ]
+    },
+    {
+      "id": "D02", "rule_id": "R02", "kind": "Set an exception", "short_title": "Dismissive tone", "title": "What if useful advice also dismisses the person’s feelings?",
+      "why": "A rule about helpful content may conflict with your preference about how people are treated.",
+      "current_rule": "No precedence rule for useful advice paired with dismissive language.",
+      "scope": "Replies combining practical help with dismissive or belittling wording.",
+      "source_ids": ["S01", "S02", "S03"],
+      "examples": [
+        {"id": "L03", "split": "learning", "context": "I am anxious about asking for more time.", "reply": "Stop being dramatic. Just email them for an extension.", "signal": "Useful suggestion + dismissal"},
+        {"id": "L04", "split": "learning", "context": "I am anxious about asking for more time.", "reply": "You could email them for an extension, if that would help.", "signal": "Useful suggestion without dismissal"}
+      ],
+      "options": [
+        {"id": "A", "label": "Dismissal overrides helpful content", "effect": "Label the combination as not supportive; explain the dismissal exception in the guideline."},
+        {"id": "B", "label": "Use a mixed-support label", "effect": "Preserve both aspects through a proposed mixed label, subject to schema review."},
+        {"id": "C", "label": "Relevant help can still count", "effect": "Helpful content may satisfy support; record dismissive tone as a separate diagnostic."}
+      ]
+    },
+    {
+      "id": "D03", "rule_id": "R03", "kind": "Handle uncertainty", "short_title": "Missing context", "title": "Should an unclear reply receive a label or wait for context?",
+      "why": "Uncertainty caused by missing evidence should not silently become a negative label.",
+      "current_rule": "No specified action when the available item cannot support a reliable interpretation.",
+      "scope": "Items whose interpretation depends on unavailable surrounding conversation.",
+      "source_ids": ["S02", "S03"],
+      "examples": [
+        {"id": "L05", "split": "learning", "context": "Earlier conversation is unavailable.", "reply": "Sure. Whatever you need.", "signal": "Sincere or sarcastic? Context missing"},
+        {"id": "L06", "split": "learning", "context": "Can you stay with me while I call?", "reply": "Sure. Whatever you need. I will stay right here.", "signal": "Additional context clarifies intent"}
+      ],
+      "options": [
+        {"id": "A", "label": "Defer the task label and request context", "effect": "Use insufficient-evidence status; missing evidence is not a not-supportive label."},
+        {"id": "B", "label": "Apply a literal-reading convention", "effect": "Define a literal-reading policy explicitly and still record missing context."},
+        {"id": "C", "label": "Make a provisional label and flag review", "effect": "Keep the prediction separate from accepted labels until the uncertainty is resolved."}
+      ]
+    },
+    {
+      "id": "D04", "rule_id": "R04", "kind": "Define difficulty", "short_title": "Easy or hard", "title": "What should a ‘hard case’ tag actually mean?",
+      "why": "A long reply can be easy to label; a short reply can contain a difficult boundary.",
+      "current_rule": "Difficulty has no operational definition yet.",
+      "scope": "Diagnostic tags accompanying the task label; these tags are not correctness claims.",
+      "source_ids": ["S02", "S03"],
+      "examples": [
+        {"id": "L07", "split": "learning", "context": "Someone describes a difficult week.", "reply": "That sounds exhausting. I can listen, help with dinner, or give you space. You can choose what helps most.", "signal": "Longer wording; consistent support cues"},
+        {"id": "L08", "split": "learning", "context": "Someone describes a difficult week.", "reply": "At least you have a job.", "signal": "Short wording; contested support boundary"}
+      ],
+      "options": [
+        {"id": "A", "label": "Difficulty means competing plausible interpretations", "effect": "Mark hard when more than one interpretation remains plausible under the current rules."},
+        {"id": "B", "label": "Difficulty means substantial review effort", "effect": "Track reviewer effort separately from uncertainty and correctness."},
+        {"id": "C", "label": "Record ambiguity and effort separately", "effect": "Use two diagnostic fields, with separate criteria and an unknown state."}
+      ]
+    },
+    {
+      "id": "D05", "rule_id": "R05", "kind": "Resolve a boundary", "short_title": "Disagreement", "title": "Can a reply disagree and still be supportive?",
+      "why": "Agreement with a viewpoint and support for a person may be different dimensions.",
+      "current_rule": "No rule distinguishes disagreement from dismissal.",
+      "scope": "Replies that challenge a position while responding to the person’s needs.",
+      "source_ids": ["S01", "S02", "S03"],
+      "examples": [
+        {"id": "L09", "split": "learning", "context": "I think I should cut off my friend over one missed call.", "reply": "I understand why you are hurt. I would talk with them first, and I can help you think through what to say.", "signal": "Disagreement + acknowledgment + help"},
+        {"id": "L10", "split": "learning", "context": "I think I should cut off my friend over one missed call.", "reply": "That is ridiculous. You are always overreacting.", "signal": "Disagreement + personal dismissal"}
+      ],
+      "options": [
+        {"id": "A", "label": "Support does not require agreement", "effect": "Evaluate acknowledgment and help independently of agreement with the person’s position."},
+        {"id": "B", "label": "Disagreement requires explicit acknowledgment", "effect": "When a reply disagrees, require acknowledgment of the person’s feelings or perspective."},
+        {"id": "C", "label": "Track agreement separately", "effect": "Add an agreement dimension without using it as a substitute for support."}
+      ]
+    },
+    {
+      "id": "D06", "rule_id": "R06", "kind": "Set review policy", "short_title": "Using new rules", "title": "After you confirm a rule, how should affected labels be handled?",
+      "why": "Approving a rule does not mean you individually reviewed every label produced with it.",
+      "current_rule": "No explicit acceptance policy for labels inferred from newly approved rules.",
+      "scope": "Affected learning items and later large-scale predictions; item provenance must remain visible.",
+      "source_ids": ["S02"],
+      "examples": [],
+      "options": [
+        {"id": "A", "label": "Review affected items individually", "effect": "Re-label affected items, then request individual review before accepting them."},
+        {"id": "B", "label": "Use a separately specified batch-audit policy", "effect": "Draft audit sampling, tolerances and acceptance gates for approval; labels remain provisional until those gates are defined and passed."},
+        {"id": "C", "label": "Keep them provisional for now", "effect": "Use new predictions for further exploration without promoting them to approved reference labels."}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+run: run-add-for-line
+kind: soft
+type: add
+scope: null
+target: for-line
+ticket: run-add-for-line.md
+skill: haipipe-studio
+agent: claude
+signs: null
+status: done
+passes:
+- p01-1030
+writes:
+- plugins/haipipe-toolkit/skills/1_base/project/haipipe-studio/scripts/new_topic.py
+feeds: []

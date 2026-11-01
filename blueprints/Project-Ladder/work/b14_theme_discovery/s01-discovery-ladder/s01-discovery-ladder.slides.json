@@ -1,0 +1,40 @@
+{
+ "topic": "s01-discovery-ladder",
+ "style": "sketch-notes",
+ "source": "s01-discovery-ladder.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "discovery ladder",
+   "points": [
+    "every discovery row in one drawing, Block down to Run: an overview frame that answers Q01 (the…"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and the discovery ladder from Block to Run, each level with its folder and screens, for the people who write the…",
+    "a skill"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "Still open",
+   "points": [
+    "A synthesis across a Job's Tasks: a Task of its own, or the Block's report?",
+    "A Paper Run's receipt: result/runtime.yaml (today) or passes/pNN-<MMDD>/runtime.yaml (s01-D15)?",
+    "Screened candidates: draft/records/search/ (today results/search/, which merges into runs/)?"
+   ],
+   "leaning": "",
+   "ask": "A Job face jNN_<inquiry>.md (today the job: block is copied into each Task's discovery.yaml)",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

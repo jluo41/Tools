@@ -1,0 +1,23 @@
+Create an annotated structural rearrangement of the ATTACHED EXISTING UI. Preserve its visual design precisely: plain WHITE background, BLACK sans-serif text, subtle cool gray thin borders, modest rounded rectangles, compact native web buttons, light BLUE selected fill with BLUE outlines. Preserve original typography and compact spacing. NO sage green, NO cream background, NO large editorial type, NO colored status dots, NO new brand aesthetic. This is a structural wire revision of the SAME app, not a visual redesign. Original UI reference is authoritative for CSS appearance.
+
+One proposed desktop screen, landscape, high resolution, with RED annotations in an outer margin connected by thin red arrows. Headline outside app "Same visual style · proposed structure". No before/after.
+
+Rearrange only existing elements:
+TOP: small gray breadcrumb "Tools / Blueprints / b17"; existing bold title style and wording "Workbench · Studio · b17 · Theme: work" with its original compass symbol. Below it compact neutral section label "Studio / All". Do NOT invent introductory product copy. Remove old mixed navigation strip from top and redistribute its entries per below.
+
+LEFT: narrow collapsed rail of small gray horizontal strokes on far left. Beside it show a compact WHITE bordered hover popup named "Other Blocks" with neutral rows "Previous Block", selected light BLUE row "b17 · Theme: work", "Next Block"; small gray caption "Illustrative sibling names". Popup visible here ONLY to explain hover state, not a permanent sidebar. No colored dot markers.
+
+RIGHT: narrow rail of small gray horizontal strokes on far right; show ONE compact WHITE bordered hover popup with original button styling, heading "This Block". List "Studio / All" selected light BLUE, then indented "Current", "Interface", "Navigation", "Untagged", thin divider, "Related", "Delivery", "Runs", "Timeline", "Folder", thin divider, "Guide", then small original-style "+ Group" button. No duplicates elsewhere. Do not add Overview, Reports or Jobs sections. Label outside popup "Hover state shown".
+
+CENTER: use original full-width rounded bordered topic rows, preserving the exact topic ids/names and original control styling. Rows: "s00-overview", "s01-work-ladder", "s02-work-skills", "s03-work-workbench", "s04-workbench-page-structure", "s32-work-element-ui". Each row has original "Free | Structured" segmented buttons on right, selected Free in light BLUE, and ↗. Preserve words Free and Structured, DO NOT rename to Canvas or Mind map. s03 also has original "Edit" button. s04 has original small gray outlined Interface and Navigation tags. Do not add descriptions, new statuses or slides. No collapse triangles: each topic is a visible row, and s04 selected content is displayed directly beneath its header, inside same rounded box: a small black-and-white scratch with existing blue selected buttons, red arrows, and three regions labeled Top / Left / Right. This scratch is a preview, not an endlessly recursive screenshot. Other topics compact. After topic rows show original "+ Add topic". Main content is single-column, not cards in a grid. Preserve overall density of the old screenshot.
+
+Bottom Related / Delivery / Runs / Timeline / Folder accordion rows have moved to the RIGHT popup. Do not draw those empty boxes in the center. Remove long help paragraph from center; move its instructions to Guide. Block / Job / Task navigation is represented by top location path when those levels exist, not empty disabled dropdowns.
+
+Around outside screen, RED numbered annotations, small clear text:
+"1 Same styling; location stays at the top"
+"2 Left: switch sibling Blocks"
+"3 Right: existing sections and Studio groups"
+"4 Keep original topic rows and controls"
+"5 Show selected content directly"
+"6 Move empty panels out of the main area"
+Use thin red rectangular marks and arrows at exact relevant elements. Keep annotations out of content. Main UI should look unmistakably like the attached old interface, with no changes in color theme, typography system, icon style or button design. Proposed arrangement, not implemented CSS.

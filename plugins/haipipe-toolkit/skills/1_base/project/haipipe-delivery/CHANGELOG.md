@@ -1,7 +1,33 @@
 haipipe-delivery · Changelog
 ============================
 
-**[0.5.1] · 2026-10-23 · A SharePoint copy is still its version (Paper-AgreeableOpioid-Jama, Round1-v1023)**
+## 0.7.1 · 2026-11-01 · b16 review 261101: current paper names
+
+- The opening says the Block owns the one `delivery/`, a level's output under `<Block>/delivery/<its address>/`, as the code (`delivery_dir`) does; so does the description.
+- Studio wording: one sNN numbering per Block, topics beside the Jobs (haipipe-studio 0.28.1), no `studio/` folder.
+- Metadata last_updated follows the 0.7.0 entry before this bump.
+
+## [0.7.0] — 2026-10-30
+
+New `ref/gallery.md`, the delivery gallery (JL 261030: "we might also have a sNN for the gallery of the deliveries"):
+every kind of `delivery/` on the machine (Word + PDF, LaTeX + PDF, web page, deck, skill, ...), how many, whose, and the
+newest real one each. Rendered from b35-s04's `delivery/skill/gallery.md`, which haipipe-studio `gallery_scan.py` writes.
+
+## [0.6.2] — 2026-10-29
+
+Only the clean, agreed version lands in `delivery/`, after rounds in a Studio topic (b35 s01-D11).
+
+## [0.6.1] — 2026-10-29
+
+The Studio is one per Block again (b35 s01-D05); only `delivery/` stays at every level.
+
+## [0.6.0] · 2026-10-28 · Delivery at every level
+
+- JL 261028: a Project, Block, Job and Task may each hold its own `delivery/`; a page shows its own plus its children's
+  (the workbench focus page's Delivery section). SKILL.md's opening and description say so; a Block's existing
+  `delivery/` stays where it is. haipipe-project 0.18.0 drops `delivery` from its Block-only list.
+
+**[0.5.1] · 2026-10-23 · A SharePoint copy is still its version (Paper-Example-Jama, Round1-v1023)**
 
 `scripts/word_round.py`: `held()` also matches a copy whose document, comments and footnotes equal a version's
 (`same_words()`), since SharePoint adds its own properties to every .docx it stores and `push` then took its own

@@ -21,7 +21,7 @@ esc = lambda s: html.escape(str(s), quote=True)
 norm = lambda s: " ".join(str(s or "").split())
 LINK = re.compile(r"\[([^\]]+)\]\(([^)\s]+)\)")
 FULL_LINK = re.compile(r"(!?)\[([^\]]*)\]\(([^)\s]+)\)")
-ROLE = re.compile(r"^\[([^\]]{1,24})\]\s+(?!\()")      # `[role] words`; `[name](link)` is a link, not a role
+ROLE = re.compile(r"^\[([^\]]{1,64})\]\s+(?!\()")      # `[role] words`; `[name](link)` is a link, not a role
 IMAGE = (".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp")
 ENDPOINT = "/_board/mindmap"
 
@@ -43,16 +43,33 @@ def _opens(raw: str, base: Path | None, url_of) -> str:
     to a file not on disk gets none."""
     out = []
     for label, target in LINK.findall(raw):
-        if re.match(r"^[a-z]+:", target):
-            url = target
+        if re.match(r"^[A-Za-z][A-Za-z0-9+.-]*:|//", target):
+            url = MH.safe_href(target)                         # a web address; javascript: or data: gets no chip
         else:
             path = (base / target) if base else None
             url = (url_of(path) if path.exists() else None) if (url_of and path is not None) else target
         if url:
-            kind = "🖼" if target.lower().endswith(IMAGE) else "↗"
+            kind = "🖼" if target.lower().endswith(IMAGE) else "✎ draw" if target.endswith(".excalidraw") else "↗"
             out.append(f' <a class="pm-card pm-open" data-pop="{esc(label)}" href="{esc(url)}" target=_blank '
                        f'rel=noopener title="open {esc(label)}">{kind}</a>')
     return "".join(out)
+
+
+def _leafdraw(nid: str, base: Path | None, url_of, counts: dict, words: str = "") -> str:
+    """A leaf's one drawing (mmsketch), with its slides in it: a link on its line, opened in the page's pop-out to draw
+    on (JL 261029: "一个 leaf 就一个 draw 然后里面可以有几个 slides")."""
+    if not (base and url_of):
+        return ""
+    import mmsketch
+    drawing = mmsketch.drawing_of(base / "x", nid)
+    url = url_of(drawing) if drawing else ""
+    if not url:
+        return ""
+    n = counts.get(nid, 0)
+    label = f"✎ {n} slide{'s' * (n != 1)}" if n else "✎ draw"
+    title = re.sub(r"\s+", " ", LINK.sub(lambda m: m.group(1), words)).strip()[:80] or label[2:]
+    return (f' <a class="pm-card pm-open pm-sketch" data-pop="{esc(title)}" href="{esc(url)}" '
+            f'title="open its drawing">{esc(label)}</a>')
 
 
 def _resolve(md: str, base: Path | None, url_of) -> str:
@@ -105,18 +122,25 @@ def draw(mm: MT.MindMap, rel: str = "", editable: bool = True, base: Path | None
             items.append(f'<li data-s="{esc(c.id)}"><span class=pm-s draggable=true>{esc(labels[c.id])}</span>'
                          f'{MV.editable("role", role, esc(role), "span class=pm-role")}<span class=pm-w>'
                          f'{MV.editable("words", words, _inline(words), "span class=pm-t")}{_opens(words, base, url_of)}'
+                         f'{_leafdraw(c.id, base, url_of, counts, words)}'
                          f'{btn}</span>{detail}{sub(c.id)}</li>')
         return f'<ul class=pm-sub>{"".join(items)}</ul>'
 
+    import mmsketch
+    counts = {}
+    for _, leaf, _pic in (mmsketch.slides_of(base / "x") if base else []):
+        counts[leaf] = counts.get(leaf, 0) + 1
     arc = MT.display(" ".join(split_note(mm.root)[1]))
     out = MV.render(MT.display(mm.root.text), arc, [], asks, paras, task=rel, file=rel, inline=_inline,
-                    chips=lambda s, words, note: _opens(words, base, url_of), plabel=lambda x: labels.get(x, x),
+                    chips=lambda s, words, note: _opens(words, base, url_of) + _leafdraw(s, base, url_of, counts, words),
+                    plabel=lambda x: labels.get(x, x),
                     pnode=lambda pid: _opens(nodes[pid].text, base, url_of), more=more, sub=sub,
                     endpoint=ENDPOINT, extras=True)
     if not editable:                                   # the static page: read, nothing to type into
         out = out.replace(" contenteditable=plaintext-only", "")
         out = re.sub(r"<li class=pm-add>.*?</li>|<div class=pm-addp>.*?</div>|<button type=button class=pm-pen[^>]*>✎</button>",
                      "", out)
+        out += "<style>.pm-q [data-edit]:empty::before{content:none}</style>"   # no "+ question" where nothing can be typed
     return out
 
 

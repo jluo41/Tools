@@ -1,0 +1,16 @@
+run: r03_collect_studio_ui_levels
+kind: hard
+type: collect
+scope: blueprints/Project-Ladder/work/b16_theme_paper
+target: b16-s02:theme_paper @ paper_studio
+ticket: null
+skill: haipipe-interaction
+agent: null
+signs: null
+status: done
+passes:
+- p01-1031
+writes:
+- result/answer_collection.md
+feeds: []
+source: chat

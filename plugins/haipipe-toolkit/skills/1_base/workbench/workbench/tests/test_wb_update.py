@@ -52,7 +52,7 @@ class WbUpdateTest(unittest.TestCase):
 
     def test_today_rules_see_what_the_shape_audit_passes(self):
         found = [m for _, m in U.ladder.today_findings(self.block)]
-        self.assertIn("today: studio/ has no sNN-<topic>/ topic", found)
+        self.assertIn("today: no sNN-<topic>/ studio topic beside its Jobs", found)
         self.assertIn("today: board.md has no ## Questions register", found)
         self.assertTrue(any("drops.tsv is not a topic: moves to the Block" in m for m in found))
         self.assertTrue(any("old.excalidraw is not a topic: gather it" in m for m in found))

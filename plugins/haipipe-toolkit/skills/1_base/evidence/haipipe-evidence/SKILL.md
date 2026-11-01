@@ -55,7 +55,7 @@ tNN_<task>/
 
 A canvas or a report only reads `evidence/cards.yaml`; it never keeps its own copy. A Studio face holding `evidence:`
 in its yaml still works (`--key`) for a page made before the folder existed. First moved: b21's C2 cards, now in
-`studio/s04-task21-updated-draft/evidence/`.
+`s04-task21-updated-draft/evidence/`.
 
 ## 🧾 The card format
 

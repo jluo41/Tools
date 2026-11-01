@@ -105,7 +105,7 @@ class PaperThemeTest(unittest.TestCase):
         (story / "s02-story-demo.excalidraw").write_text("{}", encoding="utf-8")
         work = spaces("Block", self.board, self.root, "Story")["Work Details"]
         self.assertEqual((work.open, work.subspaces), ("Story", ("Idea", "Story", "DataFlow", "PaperFlow", "Jobs")))
-        for needle in ("Operation", "Result", "📖 Story", "/haipipe-paper story", "studio/s02-story-demo",
+        for needle in ("Operation", "Result", "📖 Story", "/haipipe-paper story", "s02-story-demo",
                        "one telling of the paper.", "s02-story-demo.excalidraw", "🙋 Open · 1", "Which venue first?",
                        "✅ Decided · 1", "🔶 asked"):
             self.assertIn(needle, work.html)
@@ -490,9 +490,9 @@ class LayoutsTest(unittest.TestCase):
                         "### J01 · j01_v0101_desk\nt01_introduction.md\n\n## Questions\n\n```yaml\nquestions:\n"
                         "- id: Q01\n  title: <does a placeholder change an outcome?>\n  group: demo\n"
                         "  report: reports/q01_placeholder/q01_placeholder.md\n```\n",
-            "studio/s01-ideation/s01-ideation.md": "# s01-ideation\n\nfeeds: Q01\n\n## Content\n\n### 2 · Ideas (ranked)\n\n"
+            "s01-ideation/s01-ideation.md": "# s01-ideation\n\nfeeds: Q01\n\n## Content\n\n### 2 · Ideas (ranked)\n\n"
                         "| id | idea | why | test | verdict |\n|---|---|---|---|---|\n| i1 | <an idea> | <why> | <test> | ✅ admitted |\n",
-            "studio/s02-story-demo/s02-story-demo.md": "# s02-story-demo\n\nfeeds: Q01\n\n## Content\n\n"
+            "s02-story-demo/s02-story-demo.md": "# s02-story-demo\n\nfeeds: Q01\n\n## Content\n\n"
                         "### 1 · Identity\n\n<who it is for>\n\n### 2 · Pitch\n\n<one sentence>\n\n### 4 · Stakes\n\n<why>\n",
             "reports/q01_placeholder/q01_placeholder.md": "# <does a placeholder change an outcome?>\nanswers: Q01\n"
                         "answer-status: open\n\n## Content\n\n### 1 · The question\n\n#### 3.1 · Question 1 · RQ1\n\n"

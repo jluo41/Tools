@@ -1,0 +1,23 @@
+{
+ "topic": "s02-studio-pages",
+ "style": "sketch-notes",
+ "source": "s02-studio-pages.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "What is a topic for on each rung?",
+   "image": "slides/idea-01-each-rung.png",
+   "content": "Headline (top-left, large): \"What is a topic for on each rung?\"\nA tall hand-drawn ladder on the left with three rungs labelled, top to bottom, \"Block\", \"Job\", \"Task\".\nBeside each rung, a small card joined to it by a short wavy line:\n Block card \"a design question\": a compass\n Job card \"how its Tasks fit\": three puzzle pieces fitting together\n Task card \"one figure to agree\": a small bar chart with a green tick\nBottom-right sticky note with a big question mark: \"Still open: does a Job page list its Tasks' topics?\"\nFocal point: the ladder with its three cards.",
+   "notes": "Leaning: the three above (proposal 261029). Still open: Does a Job page also list its Tasks' topics?",
+   "leaf": "n07"
+  },
+  {
+   "id": "02",
+   "idea": "What does a reader see first on a topic page?",
+   "image": "slides/idea-02-see-first.png",
+   "content": "Headline (top-left, large): \"What does a reader see first on a topic page?\"\nIn the middle, a hand-drawn browser page. Across its top, three tabs: \"Ideas\", \"Mind map\", \"Open\".\nThe \"Ideas\" tab is circled in orange with a small tag \"leaning\"; the page body under it shows one large slide picture with a question mark.\nBottom-right sticky note: \"Still open: does Decided move to Report?\"\nFocal point: the Ideas tab.",
+   "notes": "Leaning: Ideas first, as the page does today. Still open: Does the face's Decided list stay, or move to Report?",
+   "leaf": "n12"
+  }
+ ]
+}

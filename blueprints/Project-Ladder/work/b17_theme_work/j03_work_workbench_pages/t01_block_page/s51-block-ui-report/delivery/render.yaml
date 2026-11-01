@@ -1,0 +1,9 @@
+# Where s51's delivery goes (haipipe-studio scripts/render_delivery.py). The deck stays in deck/.
+# ui/block-report/ holds the agreed screens, A to C, one file per settled letter (work_ui_cells.py writes
+# them); skill/block-report-views.md is the views' manual. One ui delivery, two targets, as b16's s32-D11.
+pieces:
+  - code: "block-report: the work Block's Report views, A MindMap · B Data · C Display"
+    by: j03_work_workbench_pages/t01_block_page/runs/run-design-block-page
+  - from: skill/block-report-views.md
+    to: plugins/haipipe-toolkit/skills/2_theme/work/workbench-work/SKILL.md
+    block: block-report-views

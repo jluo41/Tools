@@ -22,7 +22,8 @@ LEADS = {
     "related-paper": ("Resources", "The _WorkSpace folders the Jobs read, then the papers and links the "
                                    "Questions use."),
     "studio": ("RoadMap Draw", "The question map, drawn from the register by its script, then any drawing in "
-                               "studio/. Each drawing opens on its own, and several can stay open."),
+                               "studio/ and each sNN topic beside the Jobs. Each drawing opens on its own, and "
+                               "several can stay open."),
     "runs": ("Runs", "Every Run and its receipt status; a running receipt is not a heartbeat."),
     "tasks": ("Tasks", "Each Task Folder's Runs and what its audit found."),
     "progress": ("Reports", "Each report's answer status, evidence warnings and next action."),

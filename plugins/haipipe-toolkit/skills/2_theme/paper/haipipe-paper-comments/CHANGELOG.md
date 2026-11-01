@@ -1,3 +1,7 @@
+## 1.3.2 · 2026-11-01 · b16 review 261101: current paper names
+
+- version Jobs are named `jNN_writing_v<MMDD>_<desk>` (from j11), no longer `jNN_v<MMDD>_<desk>` (naming law example: `j12_writing_v<MMDD>_<desk>/reports/q01_review-1020/`).
+
 ## 1.3.0 · 2026-10-14 · Review Items say what they hit and what fixes them
 
 - Two optional Review Items cells, `hits` and `fixed by`, name the part of the sent study a concern attacks and the
@@ -29,12 +33,12 @@ Shorter description (586 -> 388 characters): what it does, when to use it, its t
 - The skill is `haipipe-paper-comments` (was `haipipe-paper-round`; JL 261007: "we do not need to keep the round anymore … change it to the comments"). New Pages declare `page-type: comments` and take the token `CM<NN>`; existing `RD<NN>` Pages and `page-type: round` are read as review batches, unchanged. Entries below keep the old name.
 - One batch takes any source: review · editor · coauthor · meeting · advisor · internal. A batch about a send sits on the desk's shelf (its `B<x>-<desk>-Round/` name kept until the ladder move); a batch about the Story sits in the Board's `comments/`.
 - Points keep ids by source (`R<n>.<k>` · `E` · `A` · `M` · `V`); Review Items (0.10.0) are role 3; Proposed Questions are role 8: a point any reader would raise again becomes a proposed Board question in Related Questions, adopted by a person.
-- Designed in Tools/designs/b16_theme_paper/studio/s22-paper-comments/.
+- Designed in Tools/designs/b16_theme_paper/s22-paper-comments/.
 
 ## 0.10.0 · 2026-10-07 · Review Items
 
 - A Round Page keeps a `## Review Items` table beside its concern table: `item | cites | lands on | work | reply | state` (JL 261007: "ok, good to go"). An item, `Review-<slug>`, is one concern answered once; it cites the concern ids it answers (`R1.1 · R1.3 · E1.2`), and each concern names its item in a new `review item` field. States are the concern states. The paper workbench reads the table: a version's Comments view, each Section's Reviews view.
-- Proposed next, not applied: the skill becomes `haipipe-paper-comments` (any source: review, meeting, coauthor, advisor), drafted in Tools/designs/b16_theme_paper/studio/s22-paper-comments/.
+- Proposed next, not applied: the skill becomes `haipipe-paper-comments` (any source: review, meeting, coauthor, advisor), drafted in Tools/designs/b16_theme_paper/s22-paper-comments/.
 
 ## 0.9.0 · 2026-09-30 · The concern table
 
@@ -46,7 +50,7 @@ Shorter description (586 -> 388 characters): what it does, when to use it, its t
 - Paths that describe the current Page layout say `draft/`: the plan `draft/<stem>-draft-v<G>.<S>[.<E>].md`, records `draft/records/`, `draft/previous/`, `draft/skill/`, the Evidence Markdown `draft/<stem>-evidence-items.md`, `draft/evidence/bibex/` and `draft/evidence/materials/` (JL 260929: "it should be draft"). Mentions of legacy Pages, retired `outline/evidence/` lanes and the migration keep `outline/`, as do the OUTLINE stage, the Outline table and the `outline:` grammar key.
 
 ## 0.8.0 · 2026-09-29 · A submission Round carries the cover letter
-- A submission Round's Content holds a `### Cover letter` division (words approved like any page); run-delivery-coverletter in haipipe-paper-assemble 0.9.0 builds it and `send` freezes it with the manuscript. First used by Paper-AgreeablePrescriptionDiscretion `RD02-MISQ-submission-20260929`.
+- A submission Round's Content holds a `### Cover letter` division (words approved like any page); run-delivery-coverletter in haipipe-paper-assemble 0.9.0 builds it and `send` freezes it with the manuscript. First used by Paper-Example-Misq `RD02-MISQ-submission-20260929`.
 
 ## 0.7.4 · 2026-09-28 · No content hashes (JL 260928)
 

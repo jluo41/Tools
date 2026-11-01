@@ -1,0 +1,14 @@
+run: run-write-skill-homes-table
+kind: soft
+type: write
+scope: null
+target: skill-homes-table
+ticket: run-write-skill-homes-table.md
+skill: haipipe-studio
+agent: claude
+signs: null
+status: queued
+passes: []
+writes:
+- plugins/haipipe-toolkit/skills/2_theme/work/haipipe-work/SKILL.md
+feeds: []

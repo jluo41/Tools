@@ -14,6 +14,8 @@ The steps, in the order update --apply runs them (each is skipped when audit fin
     convert  a Job-centred v0.8.1 Job (scripts/<tNN>/, runs/<tNN>/) into Task folders, and the v0.8.1
              ticket header inside a Task folder rewritten to find its Task from its own path
     runs     one folder per Run, per Block (ladder.py update: move, card, ticket patch, relink, tidy)
+    studio   each sNN still in a studio/ moves beside its Jobs or Tasks (haipipe-studio studio_move.py: links,
+             builders' climbs, then its generated drawings and mind map pages rerun; JL 261031)
     faces    a missing Block, Job or Task face, written from disk (goal, close, state left open)
     verify   root and ladder audits, the ticket probe, and the link check against the snapshot taken first
 
@@ -42,18 +44,19 @@ import link_check as LC  # noqa: E402
 import probe_tickets as PT  # noqa: E402
 import rename_themes as RT  # noqa: E402
 
-STEPS = ["tools", "root", "themes", "convert", "runs", "faces"]
+STEPS = ["tools", "root", "themes", "convert", "runs", "studio", "faces"]
 SKILLS = HERE.parents[3]                    # …/skills (1_base/project/haipipe-project/scripts → skills)
 TEMPLATE = SKILLS / "1_base/task/haipipe-task/ref/run-sh-template.sh"
 THEMES_PY = SKILLS / "1_base/draft/haipipe-draft/src/themes.py"
 NEW_JOB = SKILLS / "1_base/project/haipipe-job/scripts/new_job.py"
+STUDIO_MOVE = SKILLS / "1_base/project/haipipe-studio/scripts/studio_move.py"
 BOARD_SYNC = SKILLS / "2_theme/discovery/haipipe-discovery/scripts/board_sync.py"
 V081 = "Canonical haipipe-task v0.8.1 execution context"
 
 
 @dataclass
 class Finding:
-    step: str            # tools · root · themes · convert · runs · faces · person · debt (declared)
+    step: str            # tools · root · themes · convert · runs · studio · faces · person · debt (declared)
     where: str
     what: str
 
@@ -113,6 +116,8 @@ def check(project: Path) -> Report:
     for d in res.debts:
         if "rename pending" in d:
             rep.findings.append(Finding("themes", project.name, d))
+        elif "a Studio topic in studio/" in d:
+            continue                                          # the studio step below lists every one
         elif d.startswith("declared "):                       # a path inside a world, declared with a reason
             rep.findings.append(Finding("debt", d[len("declared "):], "declared in project.yaml migration"))
         else:
@@ -136,6 +141,9 @@ def check(project: Path) -> Report:
             if V081 in text and "HAIPIPE_RUN_FOLDER" not in text:
                 rep.findings.append(Finding("convert", str(t.relative_to(project)),
                                             "v0.8.1 ticket header: it would read its Task name as 'runs'"))
+    for old, new in studio_moves(project):                       # every level's studio/, the Project's too
+        rep.findings.append(Finding("studio", str(old.relative_to(project)),
+                                    f"an sNN in studio/: moves up to {new.relative_to(project)}/"))
     nodes = L.audit_path(project, root)
     for n in L.walk(nodes):
         where = str(n.path.relative_to(project)) if project in n.path.parents or n.path == project else n.path.name
@@ -159,9 +167,20 @@ def check(project: Path) -> Report:
     return rep
 
 
+def studio_moves(project: Path) -> list[tuple[Path, Path]]:
+    """(studio/sNN-<topic>, where it goes) for each sNN still in a studio/ (haipipe-studio studio_move.plan)."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("studio_move", STUDIO_MOVE)
+    sm = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(sm)
+    return sm.plan([project])
+
+
 def classify(msg: str, sev: str) -> str:
     if re.search(r"no face", msg):
         return "faces"
+    if re.search(r"is in studio/: move it", msg):
+        return "studio"
     if re.search(r"old layout|Run\(s\) in the old layout|no run\.yaml|diagram/ is retired|holds no notebooks|"
                  r"holds no results|workflow/ at a Job|dated soft", msg):
         return "runs"
@@ -187,7 +206,7 @@ def print_report(rep: Report, root: Path) -> None:
 def step_root(project: Path, apply: bool) -> str:
     made = []
     if not (project / "project.yaml").is_file():
-        readme = project / "README.md"
+        readme = project / "project.md" if (project / "project.md").is_file() else project / "README.md"
         mission = "open"
         if readme.is_file():
             para = [l.strip() for l in readme.read_text(encoding="utf-8", errors="replace").splitlines()
@@ -199,13 +218,17 @@ def step_root(project: Path, apply: bool) -> str:
         made.append("project.yaml")
         if apply:
             L.write_utf8(project / "project.yaml", text)
-    if not (project / "README.md").is_file():
+    if not (project / "project.md").is_file():            # the Project's page (JL 261028); README.md is left as it is
         worlds = [d.name for d in sorted(project.iterdir()) if d.is_dir() and d.name in AP.WORLD_DIRS]
-        lines = [project.name, "=" * len(project.name), "", "open: the mission is not written yet.", "",
-                 "Layout", "------", ""] + [f"    {w}/" for w in worlds] + [""]
-        made.append("README.md")
+        found = re.search(r'(?m)^mission:\s*"?(.+?)"?\s*$', (project / "project.yaml").read_text(encoding="utf-8")) \
+            if (project / "project.yaml").is_file() else None
+        mission = found.group(1) if found and found.group(1) != "open" else "open: the mission is not written yet."
+        lines = [project.name, "=" * len(project.name), "", f"goal: {mission}", "",
+                 "This is the Project's page in the workbench; README.md, when there is one, is the repository's",
+                 "front door (what it is, how to set it up).", "", "## Themes", ""] + [f"- `{w}/`" for w in worlds] + [""]
+        made.append("project.md")
         if apply:
-            L.write_utf8(project / "README.md", "\n".join(lines))
+            L.write_utf8(project / "project.md", "\n".join(lines))
     return ", ".join(made) or "nothing"
 
 
@@ -401,7 +424,19 @@ def step_faces(project: Path, apply: bool) -> str:
     return ", ".join(f"{v} {k} face(s)" for k, v in counts.items())
 
 
-STEP_FN = {"root": step_root, "themes": step_themes, "convert": step_convert, "runs": step_runs, "faces": step_faces}
+def step_studio(project: Path, apply: bool) -> str:
+    """Every sNN in a studio/ of this Project to beside its Jobs or Tasks, through haipipe-studio's studio_move.py."""
+    args = [sys.executable, str(STUDIO_MOVE), str(project)] + (["--apply"] if apply else [])
+    out = subprocess.run(args, capture_output=True, text=True, encoding="utf-8", errors="replace",
+                         env={**os.environ, "PYTHONIOENCODING": "utf-8"})
+    if out.returncode and apply:
+        raise RuntimeError(f"studio_move: {(out.stderr or out.stdout).strip()[-300:]}")
+    lines = [x for x in out.stdout.splitlines() if not x.startswith("  ")]
+    return " · ".join(lines) or "nothing to move"
+
+
+STEP_FN = {"root": step_root, "themes": step_themes, "convert": step_convert, "runs": step_runs,
+           "studio": step_studio, "faces": step_faces}
 
 
 # ── verify ────────────────────────────────────────────────────────────────────

@@ -1,0 +1,63 @@
+{
+ "topic": "s02-what-is-a-studio",
+ "style": "sketch-notes",
+ "source": "s02-what-is-a-studio.ideas.md",
+ "slides": [
+  {
+   "id": "07",
+   "idea": "How does a Studio topic live, from a chat to closed?",
+   "image": "slides/idea-07-workflow-ladder.png",
+   "content": "The figure drawn from JL's ladder sketch (261029): the work ladder with rungs Block b17, Job j01, Task t03; a chat on a rung makes the folder b17.j01.t03-s09; it holds Items, MindMap, Slides, passes (previous chats); next chat: one more pass; then agreed, delivery/ v2, closed.",
+   "notes": "A chat on any rung makes the topic; it holds Items, MindMap, Slides, passes; each chat is a pass; then agreed, delivery/, closed.",
+   "leaf": "n29"
+  },
+  {
+   "id": "05",
+   "idea": "How does a Studio topic live, from the first question to delivery?",
+   "image": "slides/idea-05-life.png",
+   "content": "A labelled flow diagram: every box names an actor or an output, every arrow says what moves.\nTitle (top, centred, large): \"The life of a Studio topic\"\nSubtitle under it: \"The Agent goes round with the Human on one thing until it is good\"\nTop row, three actors:\n left, a person thinking with a small question mark, box \"HUMAN\", under it \"An open question; says agreed\"\n centre, a friendly robot holding a slide, box \"AGENT\", under it \"Draws options, keeps the record\"\n right, a stack of charts and tables, box \"THE WORK\", under it \"Task results, Runs, related/\"\nArrows between HUMAN and AGENT: an upper arrow pointing to HUMAN labelled \"Idea slides + options\"; a lower arrow pointing to AGENT labelled \"Choices + red marks\"\nArrows between AGENT and THE WORK: an upper arrow pointing to AGENT labelled \"Results + figures\"; a lower arrow pointing to THE WORK labelled \"Read results, ask for a Run\"\nUnder the AGENT, an orange bracket labelled \"Each round adds to two linked outputs\" over two boxes joined by a two-way arrow labelled \"Align\":\n left box \"DECIDED\", under it \"One line each, with the Human's words\"\n right box \"RESULT/\", under it \"Drafts and trial pictures, messy is fine\"\nBottom row: a box \"AGREED VERSION\", under it \"The Human says it is good\", then a purple arrow labelled \"Clean copy, v2\" to a box \"DELIVERY/\", under it \"Handed over; the topic closes\"\nA blue arrow from AGREED VERSION back up to the AGENT, labelled \"Not yet: another round\"\nFooter, small: \"Each round is saved as passes/pNN-MMDD\"",
+   "notes": "Human, Agent and the work; each round adds to Decided and result/; the agreed version is copied clean to delivery/ and the topic closes. Still open: who says agreed; is a closed topic kept or deleted?",
+   "leaf": "n31"
+  },
+  {
+   "id": "01",
+   "idea": "How do we define a Studio?",
+   "image": "slides/idea-01-define-a-studio.png",
+   "content": "Headline (top-left, large): \"What is a Studio: a folder, a room, or the talk?\"\nThree option cards across the middle, joined by a wavy line:\n Card A, label \"A folder\": an open folder holding small drawings; caption \"studio/ in a Block\"\n Card B, label \"A room\": an open door to a small desk; caption \"a place beside Report and Work\"\n Card C, label \"The talk\", circled with a thick orange marker loop and a small hand-written tag \"leaning\": two speech bubbles going round a question mark in a loop; caption \"rounds on one open question\"\nBottom-right mustard sticky note with a big question mark: \"Still open: one topic, or all of them?\"\nFocal point: card C.",
+   "notes": "Options: a folder; a room; the discussion itself (leaning). Still open: is a Studio one topic or all of a Block's topics?",
+   "leaf": "n02"
+  },
+  {
+   "id": "02",
+   "idea": "What does a Studio topic hold?",
+   "image": "slides/idea-02-what-a-topic-holds.png",
+   "content": "Headline (top-left, large): \"One topic, five ways to look at it\"\nA hand-drawn open box in the centre labelled \"s05\", with five things rising out of it, the first one largest:\n a stack of slide cards labelled \"Ideas\" (largest, circled with a thick orange marker loop, small tag \"first\")\n a sketch canvas with a pencil labelled \"Drawing\"\n a small tree of circles labelled \"Mind map\"\n a calendar page with two dots labelled \"Rounds\"\n a small name card labelled \"Face\"\nBottom-right mustard sticky note with a big question mark: \"Still open: is a Decided list just bookkeeping?\"\nFocal point: Ideas.",
+   "notes": "Ideas, Drawing, Mind map, Rounds, Face. Leaning: Ideas first. Still open: is the face's Decided list bookkeeping?",
+   "leaf": "n07"
+  },
+  {
+   "id": "03",
+   "idea": "What is inside a studio/ folder?",
+   "image": "slides/idea-03-inside-studio.png",
+   "content": "Headline (top-left, large): \"What is inside studio/?\"\nLeft: a big hand-drawn open folder labelled \"studio/\" with five small topic folders sticking out, their tabs reading \"s01\", \"s02\", \"s04\", \"s05\", \"s32\".\nRight: one topic folder opened wide, labelled \"sNN-topic/\", with six things laid out in two rows, each a small doodle with a short label:\n a name card \"face\"\n a lightbulb on a note \"ideas\"\n a stack of picture cards \"slides/\"\n a sketch canvas with a pencil \"drawing\"\n a small tree of circles \"mind map\"\n a calendar page \"passes/\"\nBelow them, a small grey tray with a gear doodle, labelled \"made by scripts: previews, decks\"\nBottom-right mustard sticky note with a big question mark: \"Still open: are mock/ and assets/ allowed?\"\nFocal point: the opened topic folder.",
+   "notes": "A Block's studio/ holds one folder per topic (sNN-<topic>/), plus _build/ (shared builder helpers) and loose drawings. A topic holds: face .md, .ideas.md, slides/, .slides.json, .excalidraw, .mindmap.md, passes/pNN-MMDD/pass.md, and when a script draws it build_sNN_<topic>.py with .sNN-<topic>.seed.json, plus history/. Made by scripts, git-ignored or rebuilt: .png, .mindmap.html, .slides.html, .slides.pptx. Still open: b17-s04 also holds mock/, assets/ and extra drawings the contract does not name.",
+   "leaf": "n24"
+  },
+  {
+   "id": "04",
+   "idea": "What are the folders?",
+   "image": "slides/idea-04-the-folders.png",
+   "content": "Headline (top-left, large): \"One Block, four doors\"\nFour hand-drawn doors in a row, each a different colour, each with a short label above and a tiny doodle inside:\n door 1, sage green, label \"related/\": an envelope coming in; caption \"came in\"\n door 2, soft orange, larger than the rest, label \"studio/\": a speech bubble and a pencil; caption \"think\"\n door 3, light blue, label \"reports/\": a notebook with a tick; caption \"answer\"\n door 4, mustard, label \"delivery/\": a parcel going out; caption \"went out\"\nBottom-right mustard sticky note with a big question mark: \"Still open: does a Job keep its own studio/?\"\nFocal point: the studio/ door.",
+   "notes": "related/ came in, studio/ think, reports/ answer, delivery/ went out. Still open: does a Job or Task keep its own studio/ (haipipe-delivery disagrees with itself)?",
+   "leaf": "n12"
+  },
+  {
+   "id": "06",
+   "idea": "How does a Studio sit beside related/ and delivery/?",
+   "image": "slides/idea-06-beside-related-delivery.png",
+   "content": "Headline (top-left, large): \"The Studio thinks between in and out?\"\nThree option cards across the middle, joined by a wavy line:\n Card A, label \"A straight line\": three boxes \"related\", \"studio\", \"delivery\" joined by arrows; caption \"in, think, out\"\n Card B, label \"Through Work\", circled with a thick orange marker loop and a small hand-written tag \"leaning\": a speech bubble with arrows to a hammer and to a notebook, then to a parcel; caption \"an agreed idea leaves through Work or Report\"\n Card C, label \"Deck as delivery\": a slide card handed across a meeting table; caption \"the deck itself goes out\"\nBottom-right mustard sticky note with a big question mark: \"Still open: is a meeting deck a delivery?\"\nFocal point: card B.",
+   "notes": "Options: a line; through Work and Report (leaning); the deck as a delivery. Still open: is a deck shown at a meeting a delivery?",
+   "leaf": "n19"
+  }
+ ]
+}

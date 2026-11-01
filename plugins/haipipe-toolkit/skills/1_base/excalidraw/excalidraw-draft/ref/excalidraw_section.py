@@ -199,12 +199,12 @@ def main(argv=None):
         depth = args.depth or "paragraph"
         groups = [node("group", [nice(g)], [section_node(p, depth) for p in pages]) for g, pages in paper_groups(board)]
         root = node("paper", _short(re.sub(r"(?<=[a-z])(?=[A-Z])", " ", board.name.replace("Paper-", "")), cols(W, 15), 3), groups)
-        out = board / "studio" / "paper-sections.excalidraw"
+        out = board / "paper-sections.excalidraw"          # beside the Board's face; no studio/ (JL 261031)
     else:
         page = args.page.resolve()
         depth = args.depth or "evidence"
         root = section_node(page, depth)
-        out = page.parent / "studio" / ("%s-sections.excalidraw" % page.stem)
+        out = page.parent / ("%s-sections.excalidraw" % page.stem)   # beside the page face; no studio/ (JL 261031)
     scene = layout(root, depth)
     kinds = {}
     for e in scene["elements"]:

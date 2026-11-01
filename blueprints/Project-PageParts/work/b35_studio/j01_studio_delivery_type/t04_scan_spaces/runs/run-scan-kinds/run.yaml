@@ -1,0 +1,15 @@
+run: run-scan-kinds
+kind: soft
+type: scan
+scope: null
+target: kinds
+ticket: run-scan-kinds.md
+skill: haipipe-studio
+agent: claude
+signs: null
+status: done
+passes:
+- p01-1030
+writes:
+- blueprints/Project-PageParts/work/b35_studio/s01-studio-skill
+feeds: []

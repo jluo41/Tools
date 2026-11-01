@@ -21,7 +21,7 @@ SKILLS = SERVERS.parent / "skills"
 GUIDE_RULES = ("description", "table", "papers", "design", "levels")
 # Families that predate a rule, and the rules they still miss (JL 261003: "make sure other
 # new workbench UI will do the same thing"). Remove a rule here when its family meets it.
-# "levels": the card Guide (b03 studio/s31-guide, s31-D05 to D08), a guide.yaml with levels: and
+# "levels": the card Guide (b03 s31-guide, s31-D05 to D08), a guide.yaml with levels: and
 # roadmap:; the work family moved first (261007), the others follow one at a time.
 GAPS = {family: {"levels"} for family in ("shared", "page", "cowork", "design", "discovery", "insight",
                                           "labeling")}          # paper has its levels (261007)

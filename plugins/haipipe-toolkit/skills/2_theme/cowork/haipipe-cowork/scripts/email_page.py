@@ -10,7 +10,8 @@ The draft is written by hand and is the one place its words live:
     ---
     the body: paragraphs split by a blank line; "1. " numbered items and "- " bullets; a line that is
     not an item continues the one above it; an item indented under another is nested one level; the
-    last paragraph is the sign-off and keeps its lines
+    last paragraph is the sign-off and keeps its lines; [words](https://...) is a link and **words**
+    are bold
 
 Each box copies as rich text and plain text, so Outlook keeps the paragraphs, the numbers and the
 bullets. Numbers and bullets are written as text, not <ol>/<ul>, so a plain paste keeps them too
@@ -62,8 +63,23 @@ def parts(draft):
     return title, head, [tuple(b) for b in blocks]
 
 
+LINK = re.compile(r"\[([^\]]+)\]\((https?://[^)\s]+)\)")
+BOLD = re.compile(r"\*\*(.+?)\*\*")
+
+
+def inline(text):
+    """Escaped text with [words](url) as a link and **words** in bold, so a long address reads as its name."""
+    out, at = [], 0
+    for m in LINK.finditer(text):
+        out.append(BOLD.sub(r"<strong>\1</strong>", html.escape(text[at:m.start()])))
+        out.append(f'<a href="{html.escape(m.group(2), quote=True)}">{html.escape(m.group(1))}</a>')
+        at = m.end()
+    out.append(BOLD.sub(r"<strong>\1</strong>", html.escape(text[at:])))
+    return "".join(out)
+
+
 def body_html(blocks):
-    e = html.escape
+    e = inline
     out = []
     for b in blocks:
         if b[0] == "p":

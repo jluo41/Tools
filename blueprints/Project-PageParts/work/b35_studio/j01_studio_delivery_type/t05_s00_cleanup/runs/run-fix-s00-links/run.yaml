@@ -1,0 +1,14 @@
+run: run-fix-s00-links
+kind: soft
+type: fix
+scope: null
+target: s00-links
+ticket: run-fix-s00-links.md
+skill: haipipe-studio
+agent: claude
+signs: null
+status: planned
+passes: []
+writes:
+- 42 board and README faces in other SPACEs
+feeds: []

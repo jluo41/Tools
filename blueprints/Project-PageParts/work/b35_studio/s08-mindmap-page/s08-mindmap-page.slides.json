@@ -1,0 +1,49 @@
+{
+ "topic": "s08-mindmap-page",
+ "style": "sketch-notes",
+ "source": "s08-mindmap-page.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Mind Map Page",
+   "points": [
+    "Explore an argument and edit its structure where you read it",
+    "Its reader is people thinking with a structured map"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and An interactive map page with node editing, drawing previews, and configuration export",
+    "a ui"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "What is decided",
+   "points": [
+    "Create a reviewable delivery and a main Draw (requested 2026-10-30)"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "04",
+   "idea": "Still open",
+   "points": [
+    "Agree its For: line and Delivery type: (ui), proposed by the agent 261030?"
+   ],
+   "leaning": "",
+   "ask": "Should editing a map create a new review round automatically?",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

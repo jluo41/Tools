@@ -27,6 +27,6 @@ INPUT_KEYS = ("start", "end", "logged_at", "meal_type", "total", "items", "timel
 SOURCE_KINDS = {"logged": "a person logged it: an app row, words, a photo, a meal's own numbers",
                 "detected": "a rule found it in a stream; it names the rule and what it saw"}
 LOGGED = {"kind": "logged"}
-ITEM_KEYS = ("id", "food", "amount", "food_zh")
+ITEM_KEYS = ("id", "food", "prep", "cook", "amount", "amount_from", "food_zh", "dish", "dish_zh")
 RAW_DROP = {"PatientID", "id", "Unnamed: 0",           # whose row it is: never read, never written back;
             "ObservationCreatedBy"}                   # the app account that typed the row (s01-D42)

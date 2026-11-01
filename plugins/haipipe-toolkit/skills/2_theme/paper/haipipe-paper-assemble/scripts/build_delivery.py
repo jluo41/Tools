@@ -87,7 +87,7 @@ def validate_build_config(config, delivery):
     inputs = [(delivery / config["pages"][key]).resolve()
               for key in ("main", "appendix", "order") if config["pages"].get(key)]
     # 0.10.0 (b16 g03): on the ladder a version Job holds its Sections and its own delivery/, so a
-    # [pages] group may be the folder that holds delivery/ ("..": j01_v1_<desk>/). A page is found there
+    # [pages] group may be the folder that holds delivery/ ("..": jNN_writing_v<MMDD>_<desk>/). A page is found there
     # by its id (S-…), never delivery/ itself, so the generated room cannot overwrite it.
     holder = delivery_source(delivery)
     inputs = [x for x in inputs if x != holder]
@@ -161,10 +161,10 @@ if not CONFIG_PATH.exists():
     sys.exit(f"paper-build.toml not found: {CONFIG_PATH} (set HAIPIPE_PAPER_BUILD_CONFIG or run through delivery/build.py)")
 HERE = CONFIG_PATH.parent                              # <paper>/delivery/
 # the paper: delivery/'s folder, or on the ladder (0.10.0, b16 g03) the Board above the version Job that
-# holds it (Paper-<Slug>/j01_v1_<desk>/delivery/); VERSION is the folder holding delivery/ either way
+# holds it (Paper-<Slug>/jNN_writing_v<MMDD>_<desk>/delivery/); VERSION is the folder holding delivery/ either way
 VERSION = delivery_source(HERE)
 ROOT = delivery_owner(VERSION)
-# where Section Pages sit: today's B<x>-<desk>-<part>/ groups, or the version Job itself
+# where Section Pages sit: an older Board's B<x>-<desk>-<part>/ groups, or the version Job itself
 PAGE_HOMES = ("B*",) if VERSION == ROOT else ("B*", VERSION.relative_to(ROOT).as_posix())
 CFG = tomllib.loads(CONFIG_PATH.read_text(encoding="utf-8"))
 validate_build_config(CFG, HERE)
@@ -234,7 +234,7 @@ DISP = LATEX / CFG["source"]["displays"]
 BIB = LATEX / CFG["source"]["bibliography"]
 MASTER = LATEX / CFG["source"]["master"]
 OUT = CFG["outputs"]
-# 0.6.1 · paper-level switches, all opt-in through paper-build.toml (JL 260908, Paper-AgreeableOpioid-Jama):
+# 0.6.1 · paper-level switches, all opt-in through paper-build.toml (JL 260908, Paper-Example-Jama):
 #   [evidence] draft_includes_unready = true   a DRAFT prints every page that has a body fragment; the page's
 #                                              not-ready reasons stay in build-manifest.json and the display
 #                                              register, never inside the reader's PDF/DOCX (JL 260908)
@@ -281,10 +281,19 @@ def load_profile(name: str) -> dict:
         if not path.exists(): sys.exit(f"venue profile not found: {path}")
         prof = tomllib.loads(path.read_text(encoding="utf-8"))
     inline = CFG.get("profile", {})
-    if isinstance(inline, dict): prof.update(inline)
+    if isinstance(inline, dict):
+        for key, value in inline.items():           # a table ([profile.latex]) merges key by key, so a paper that sets
+            if isinstance(value, dict) and isinstance(prof.get(key), dict):   # one LaTeX key keeps the profile's others
+                prof[key] = {**prof[key], **value}
+            else:
+                prof[key] = value
     return prof
 PROFILE = load_profile(VENUE_PROFILE)
+# the LaTeX lane follows the profile's layout, as the Word lane does: a profile that reuses the JAMA manuscript
+# layout under another venue's name (lancet-public-health) gets its title-page block and section boundaries (261101)
+JAMA = JAMA or str(PROFILE.get("layout", "")).lower() == "jama-internal-medicine"
 _L = PROFILE.get("latex", {}) if isinstance(PROFILE.get("latex"), dict) else {}
+CITE_AFTER = str(PROFILE.get("cite_after_punctuation", ""))   # the marks a citation number follows; "" moves nothing
 LATEX_SPACING = str(_L.get("spacing", "onehalf"))            # single · onehalf · double
 LATEX_BIBSTYLE = str(_L.get("bibstyle", "apalike"))
 LATEX_NATBIB = str(_L.get("natbib", "authoryear,round"))   # JAMA (AMA): "super,sort&compress" with bibstyle unsrtnat
@@ -416,7 +425,7 @@ def _result_field(text: str, key: str) -> str:
 def _result_text(text: str) -> str:
     """0.8.2: a result.yaml written in JSON form (valid YAML) is read like the YAML form.
     The field readers below match `key: value` lines, so a JSON Result was invisible:
-    its unit was never placed and its page-relative \\input broke the master (AgreeableRx 260928)."""
+    its unit was never placed and its page-relative \\input broke the master (Paper-Example-Misq 260928)."""
     s = text.lstrip()
     if not s.startswith("{"):
         return text
@@ -582,7 +591,7 @@ def inspect(pid: str, group: Path):
         reasons.append(f"outline not approved (latest {plan.name} has no unambiguous approval)")
     if not frag.exists(): reasons.append("no body fragment delivery/latex/<page>.tex")
     if not any(p.exists() for p in pdfs): reasons.append("no page PDF")
-    # 0.6.2 (JL 260908, Paper-MISQ-Board): a display unit gates the page only if
+    # 0.6.2 (JL 260908, Paper-Example-Misq): a display unit gates the page only if
     # the page CITES it and the unit is LIVE. An uncited folder, or a unit folded
     # into another (state 🟣) or retired, is dead weight, not a gate; before this
     # rule S-Display-3a-funnel (folded, cited by nothing) blocked a fully written
@@ -860,6 +869,13 @@ def place_fragment(p, dest_dir: Path, labels, unresolved):
         moved = from_master(p, m.group(2), _GRAPHIC_EXT)
         return rf"\includegraphics{m.group(1) or ''}{{{moved}}}" if moved else m.group(0)
     t = re.sub(r"\\includegraphics(\[[^\]]*\])?\{([^}]+)\}", fix_graphic, t)
+    # A venue that prints the number after the punctuation ("2019.¹⁴", the Lancet) names the marks in its profile,
+    # cite_after_punctuation; a \citep or \citealp (never \citet, which carries the author's name) written before
+    # one moves after it, with its tie and any \citep right beside it. Only that profile: AMA and JAMA keep the
+    # number before a colon or semicolon, so a JAMA build never changes here (261101, b16 review).
+    if CITE_AFTER:
+        cite = r"\\cite(?:p|alp)\*?(?:\[[^\]]*\]){0,2}\{[^}]+\}"
+        t = re.sub(rf"[ \t~]*((?:{cite})(?:[ \t~]*{cite})*)([{re.escape(CITE_AFTER)}])", r"\2\1", t)
     # JL 260915: an Abstract page that already opens its own abstract environment is kept as written,
     # so a block the desk prints right after the abstract (Diabetes Care's Article Highlights) can share the page
     if is_abstract(p) and not JAMA and "\\begin{abstract}" not in t:
@@ -1226,7 +1242,7 @@ def _stub(p) -> str:
 # ── the page's own heading ───────────────────────────────────────────────────
 # Every Section Page's H1 declares the number and title the paper intends:
 #   "# S-MISQ-Main-Empirical-Strategy · §4 Empirical Strategy and Data"
-#   "# S-MISQ-Appendix-Prompts · Appendix A · Agreeableness Prompt Specification"
+#   "# S-MISQ-Appendix-Prompts · Appendix A · <Trait> Prompt Specification"
 # Nothing read it, so a NOT-READY page printed "[NOT READY] <page-id>" as an
 # UNNUMBERED heading and every section after it slid one number down: Results
 # printed as §4 while its own page says §5.
@@ -1364,9 +1380,9 @@ def declared_title(pages):
     """The title the ABSTRACT PAGE declares under `### Title`, if it declares one.
 
     paper-build.toml also carries `[paper] title`, so the title had two sources of
-    truth and they drifted: the PDF and the .docx printed "Physician Personality
-    and Opioid Prescribing" while the page said "Physician Agreeableness and
-    Opioid Prescribing" (JL 260908).
+    truth and they drifted: the PDF and the .docx printed "<the old
+    title>" while the page said "<the new
+    title>" (JL 260908).
     """
     for p in pages:
         if not is_abstract(p):
@@ -1589,6 +1605,10 @@ def build():
     documents = [(MASTER, "main_pdf")] + [
         (LATEX / f"{name}.tex", key) for name, key in (("supplement", "supplement_pdf"), ("combined", "combined_pdf"))
         if (LATEX / f"{name}.tex").exists() and OUT.get(key)]
+    # 0.12.3 · a bibliography style shipped with this skill (styles/<bibstyle>.bst, e.g. jama-ama) is copied in
+    shipped_bst = ENGINE_DIR.parent / "styles" / f"{LATEX_BIBSTYLE}.bst"
+    if shipped_bst.is_file():
+        shutil.copy2(shipped_bst, LATEX / shipped_bst.name)
     rc, printed = None, {}
     for tex, key in documents:
         r = _run(["latexmk", "-pdf" if LATEX_ENGINE == "pdflatex" else "-xelatex", "-interaction=nonstopmode",
@@ -1783,7 +1803,7 @@ def lock_path() -> Path:
 
 @contextmanager
 def delivery_lock(wait: float = 600):
-    """One build at a time per delivery/ (Paper-AgreeableRxDiscretion 260928: two builds ran
+    """One build at a time per delivery/ (Paper-Example-Misq 260928: two builds ran
     in one delivery/ and one regenerated latex/ under the other, which then failed with 79
     undefined citations). An OS lock, released when the process ends even on a crash, on a
     file in the system temp folder named by this delivery/ path, so the paper repo gets no

@@ -1,0 +1,23 @@
+{
+ "topic": "s03-mindmap-leaf-drawing",
+ "style": "sketch-notes",
+ "source": "s03-mindmap-leaf-drawing.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Each leaf opens one drawing with its slides",
+   "image": "slides/idea-01-leaf-drawing.png",
+   "content": "Headline (top-left, large): \"Each leaf opens one drawing with its slides\"\nLeft half: a small hand-drawn mind map: a root card, two section cards to its right (the first labelled \"The total workflow\", the second \"Section 2\"), short lines for leaves under each.\nOne leaf is circled in orange, labelled \"leaf\"; a thick hand-drawn arrow runs from it to the right half.\nRight half: a large sketchpad page labelled \"one drawing\", holding two small slide rectangles labelled \"slide 1\" and \"slide 2\", with a red pen mark on slide 2.\nBottom-right sticky note: \"Still open: can one slide sit on two leaves?\"\nFocal point: the arrow from the leaf to the drawing.",
+   "notes": "Leaning: agreed (s03-D01). Still open: Can one slide sit on two leaves?",
+   "leaf": "n04"
+  },
+  {
+   "id": "02",
+   "idea": "Does every leaf need its own drawing?",
+   "image": "slides/idea-02-every-leaf.png",
+   "content": "Headline (top-left, large): \"Does every leaf need its own drawing?\"\nThree option cards across the middle, joined by a wavy line:\n Card A \"Every leaf\": a tall stack of empty sketchpads with the number \"25\" on it\n Card B \"Only leaves with a slide\": one sketchpad with a slide inside\n Card C \"On first click\", circled in orange with a small tag \"leaning\": a hand clicking a pencil button labelled \"draw\", a new sketchpad appearing\nBottom-right sticky note: \"Still open: does a red mark start a new pass?\"\nFocal point: card C.",
+   "notes": "Leaning: the third (proposal 261029): no empty drawings on disk. Still open: Does a red mark on a drawing start a new pass?",
+   "leaf": "n08"
+  }
+ ]
+}

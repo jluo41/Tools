@@ -1,0 +1,9 @@
+# Where s59's delivery goes (haipipe-studio scripts/render_delivery.py). The deck stays in deck/.
+# ui/task-studio/ holds the agreed screens, A to A, one file per settled letter (work_ui_cells.py writes
+# them); skill/task-studio-views.md is the views' manual. One ui delivery, two targets, as b16's s32-D11.
+pieces:
+  - code: "task-studio: the work Task's Studio views, A Display"
+    by: j03_work_workbench_pages/t03_task_page/runs/run-design-task-page
+  - from: skill/task-studio-views.md
+    to: plugins/haipipe-toolkit/skills/2_theme/work/workbench-work/SKILL.md
+    block: task-studio-views

@@ -96,7 +96,7 @@ explain:
   - only
   roadmap-draw:
   - /_excalidraw/
-  - board: Tools/blueprints/b17_theme_work/studio/s03-work-workbench/task-workbench-design.excalidraw
+  - board: Tools/blueprints/Project-Ladder/work/b17_theme_work/s04-workbench-page-structure/result/merged-s03-work-workbench/task-workbench-design.excalidraw
   - Workbench design
   - first
 boundary: 'One Block owns this workbench: Scope, Task, Check and Delivery Spaces, each with the shared Runs
@@ -104,7 +104,7 @@ boundary: 'One Block owns this workbench: Scope, Task, Check and Delivery Spaces
   │ Report. Reports and working drawings live in sibling reports/ and studio/ folders. Status lives in the
   Runs panel and Check, never in the table. Native Tasks and Runs retain their execution semantics; the panel
   copies prompts and starts nothing.'
-# The card Guide (b03 studio/s31-guide, s31-D05 to D08): the base's words are
+# The card Guide (b03 s31-guide, s31-D05 to D08): the base's words are
 # servers/workbench/guide/levels.yaml; here only the words a work folder says differently.
 levels:
   Block:
@@ -125,12 +125,12 @@ roadmap:
   Block:
   - title: the work ladder
     shows: a work Project, from its Theme down to one Run
-    board: Tools/blueprints/b17_theme_work/studio/s01-work-ladder/s01-work-ladder.excalidraw
+    board: Tools/blueprints/Project-Ladder/work/b17_theme_work/s01-work-ladder/s01-work-ladder.excalidraw
   - title: the work workbench before the frame
     shows: the old Task Workbench page, the old page the band links
-    board: Tools/blueprints/b17_theme_work/studio/s03-work-workbench/task-workbench-design.excalidraw
+    board: Tools/blueprints/Project-Ladder/work/b17_theme_work/s04-workbench-page-structure/result/merged-s03-work-workbench/task-workbench-design.excalidraw
   Job: []
   Task:
   - title: what a Run is
     shows: a Run, what it leaves (hard or soft), its passes, and the Runs Space
-    board: Tools/blueprints/b10_project_workbench/studio/s06-run-workbench-skill/s06-run-workbench-skill.excalidraw
+    board: Tools/blueprints/Project-Ladder/work/b10_project_workbench/s06-run-workbench-skill/s06-run-workbench-skill.excalidraw

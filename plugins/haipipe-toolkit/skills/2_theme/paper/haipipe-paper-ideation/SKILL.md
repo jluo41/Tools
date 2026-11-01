@@ -1,9 +1,9 @@
 ---
 name: haipipe-paper-ideation
-description: "The Paper Page Type for one research direction and its research questions (each Idea named by its question): projects haipipe-ideation's sync packets and final selection into Direction, Landscape, Opportunity Map and Story routes, as the Board's studio/s01-ideation/ topic. Generation, novelty and selection stay with haipipe-ideation. Trigger: paper ideation, s01, research direction, opportunity map, /haipipe-paper-ideation."
+description: "The Paper Page Type for one research direction and its research questions (each Idea named by its question): projects haipipe-ideation's sync packets and final selection into Direction, Landscape, Opportunity Map and Story routes, as the Board's s01-ideation/ topic. Generation, novelty and selection stay with haipipe-ideation. Trigger: paper ideation, s01, research direction, opportunity map, /haipipe-paper-ideation."
 metadata:
-  version: "1.4.3"
-  last_updated: "2026-10-26"
+  version: "1.4.4"
+  last_updated: "2026-11-01"
   group-token: "s01-ideation"
   outline:
     mode: grammar
@@ -124,7 +124,7 @@ silently renumbers Page-global paragraph identities; the stable key is
 ## 🪜 On the ladder (b16 Q04, JL 261007)
 
 The Ideation is not a Page on the ladder (`haipipe-paper/ref/paper-ladder.md`): it is the Board's first studio
-topic, `studio/s01-ideation/`, whose face carries the studio marks of haipipe-studio's topic contract
+topic, `s01-ideation/`, whose face carries the studio marks of haipipe-studio's topic contract
 (`**Tags:**`, `**Stage:**` explore · shaping · agreed · closed, moved only by a person) and the divisions below
 (Direction, Discovery Landscape, Opportunity Map, Ideas ranked, one division per admitted Idea, Eliminated, Next
 Evidence Queue, Execution order). Studio is the Board's alone (b10 s09-D01): a version or Section opens it.
@@ -132,19 +132,19 @@ Each admitted Idea is also a Board Question, `board.md ## Questions` with `group
 `reports/qNN_<idea>/` holding its tests; the Block's Audience Report › Ideation shows them as Question │ Work │
 Report. Its buttons (Generate ideas, Test idea, Idea review, Select idea, Ask a Question) are the
 `Block › Audience Report` run cards; the G0 choice is Select idea. A telling may open before the G0 choice, which is then JL's mark on its face (JL 261019: "there are not s02, why????"). A selected idea's telling opens as
-`studio/sNN-story-<desk>-<idea>/` (haipipe-paper-story). The sections below say "Page" for this topic face; an
+`sNN-story-<desk>-<idea>/` beside the Jobs (haipipe-paper-story). The sections below say "Page" for this topic face; an
 older Board's `A1-Story/Story00-ideation/` Page is still read, and `carry_over/topics_paper.py` moves it.
 
 ## 🖼️ The drawing: excalidraw-ideation, when installed (JL 261014)
 
-`studio/s01-ideation/` is drawn by `excalidraw-ideation` whenever that skill is installed (JL 261014:
+`s01-ideation/` is drawn by `excalidraw-ideation` whenever that skill is installed (JL 261014:
 "haipipe-paper-ideation will call it to draw when it is available"). After every change to the ideas (a sync, a
 test, a pilot, the G0 choice), refresh the drawing's words and redraw:
 
 ```bash
 I=Tools/plugins/haipipe-toolkit/skills/1_base/excalidraw/excalidraw-ideation/scripts/ideation_drawing.py
-python $I make studio/s01-ideation       # once: the forwarding builder and s01-ideation-drawing.yaml
-python studio/s01-ideation/build_s01_ideation.py
+python $I make s01-ideation       # once: the forwarding builder and s01-ideation-drawing.yaml
+python s01-ideation/build_s01_ideation.py
 ```
 
 The words in `s01-ideation-drawing.yaml` are a projection of this face, never a second record:
@@ -160,7 +160,7 @@ The words in `s01-ideation-drawing.yaml` are a projection of this face, never a 
 A novelty check (`novelty-check`, `haipipe-ideation test`) lands in the face first: the Idea's Core Claims / Novelty
 Check (each claim, its closest work, what stays new, the verdict) and Reviewer's Likely Objection (each reviewer
 comment and what was done about it); the drawing then carries its two lines. Each claim's closest work is read from the Board's related-work map,
-`studio/s10-related-work-map/`, and its s11-s19 types (haipipe-paper-related) when the Board has them. The lead group is the person's or the machine's recommended attention order, not a selection: the drawing makes no
+`s10-related-work-map/`, and its s11-s19 types (haipipe-paper-related) when the Board has them. The lead group is the person's or the machine's recommended attention order, not a selection: the drawing makes no
 choice the face does not hold. When `excalidraw-ideation` is not installed, the face stands alone and nothing else
 changes.
 
@@ -171,19 +171,18 @@ candidate ideas raised under it. It is the story group's PAGE ZERO (0.4.0) —
 no separate group; it sits in the same group as the Stories its selected ideas
 become, before them:
 
-Layout: the ladder (the Story as `studio/` topics and `reports/` Questions, `jNN_v<MMDD>_<desk>/` per version) is current; the layout below is still read. Both are in `haipipe-paper/ref/paper-ladder.md`.
+Layout: the ladder (the Story as `sNN-…` topics beside the Jobs and `reports/` Questions, `jNN_writing_v<MMDD>_<desk>/` per version) is current; the layout below is still read. Both are in `haipipe-paper/ref/paper-ladder.md`.
 
 ```text
-Paper-<Slug>/
-└── studio/
-    ├── s01-ideation/                  THIS TOPIC · one direction, its ideas, ranked (older: A1-Story/Story00-ideation/)
-    └── s02-story-<desk>-<idea-slug>/  what the first selected idea became: one telling, a prospective
+Paper-<Slug>/                      the Board: its topics sit beside its Jobs
+├── s01-ideation/                      THIS TOPIC · one direction, its ideas, ranked (older: A1-Story/Story00-ideation/)
+└── s02-story-<desk>-<idea-slug>/      what the first selected idea became: one telling, a prospective
                                        blueprint (haipipe-paper-story); a second surviving idea is its own topic
 ```
 
 **The repo precedes the Story** (0.2.0): minting a paper's Ideation Page is
 what creates `Paper-<Slug>/` — as a git submodule immediately, per the
-scaffold rule — with only `board.md` and `studio/s01-ideation/` inside (`paper_ladder.py board`; older: `A1-Story/Story00-ideation/`).
+scaffold rule — with only `board.md` and `s01-ideation/` inside (`paper_ladder.py board`; older: `A1-Story/Story00-ideation/`).
 The direction's name may seed the repo slug; a direction that dies leaves the
 repo standing as its own record. **A board holds exactly ONE ideation page**
 (the journey fixes the story group's roles, one each): a direction that
@@ -366,8 +365,8 @@ blank:
 ```text
 id  idea (the research question)                                     novelty      pilot      venue fit      verdict     target       went to
 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-i01 Does a physician's agreeableness, read from patient reviews,     partial      ✅ Result   strong · vfit  ✅ PROCEED  JAMA · Art.  StoryA-<desk>-<idea-slug>
-    predict prescribing beyond the star rating?
+i01 Does a physician's <trait>, read from patient reviews,           partial      ✅ Result   strong · vfit  ✅ PROCEED  JAMA · Art.  StoryA-<desk>-<idea-slug>
+    predict <outcome> beyond the star rating?
 i02 How many fabricated physician names does an NPI registry check   ⬜ unchecked —          ⬜ pending     ⬜ open     —            —
     remove, and how many real ones does it lose?
 i03 ⬜ unframed · card has a title and a claim, no question           ⬜ unchecked —          ⬜ pending     ⬜ open     —            —

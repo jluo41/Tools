@@ -11,7 +11,7 @@ further right, a "T1 Results" box beside each, outside the frame):
 - "你的 results 应该是图和表格呀 … 如果你有 Python 画的图，也一起扔过来".
 - "主次分明 … 一个很大的 frame，然后有一些小的 frame 是解释这些大的 frame 的"; "不能把东西写太满 … 你可以是棋盘，但
   棋盘上不能落满所有的子"; "你不能每一个都是朝左对齐".
-Its model is Tools' blueprints/b10_project_workbench s01 ladder (build_ladder_v4.py): each layer a step down and right.
+Its model is Tools' blueprints/Project-Ladder/work/b10_project_workbench s01 ladder (build_ladder_v4.py): each layer a step down and right.
 
     ① 🪜 the staircase (the main frame, large, room between the steps)
        🎯 the reading
@@ -1267,7 +1267,8 @@ def ladder_frame(d: Drawing, info: dict, tasks: list[dict], cfg: dict, topics: d
         found = jd.finding(t, cfg)
         asked = ((cfg.get("tasks") or {}).get(t["name"]) or {}).get("asked") or t.get("question") or ""
         own = (topics or {}).get(f"{t['row']['task'].parent.name}/{t['name']}")
-        topic = assets.parent.parent / own if own and assets else None          # a Task topic, while one is kept
+        topic = next((q for q in jd.topic_dirs(t["row"]["task"].parents[1]) if q.name == own), None) \
+            if own and assets else None                                         # a Task topic, while one is kept
         pages = run_pages(topic, t)                                             # its Runs' results/ first
         thumb = (t["id"], None, None, pages) if pages else None                 # no links: the results are here
         ask_most = 12 if tight else 24                                  # a big Job: fewer words a step, and no Did

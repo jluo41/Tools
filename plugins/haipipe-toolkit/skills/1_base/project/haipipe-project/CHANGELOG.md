@@ -1,3 +1,67 @@
+## [0.20.2] — 2026-10-31
+
+A collection Run keeps the previews its questions link (haipipe-interaction 0.6.8; JL 261031, on b17 r01: "show that
+what is the expected UI / html looks like"). `audit_run` adds, for a `rNN_collect_<slug>` Run, every file its
+`question_collection.md` links by bare name (`[preview](option-q1-a.html)`, `![B](option-q1-b.png)`) to what the Run
+may hold; any other file is still debt. Before, each preview was "not in the ladder for a Run": b17 r01, b16 r04 and
+b10 r01 now audit clean. Test: test_a_collection_run_keeps_the_previews_its_questions_link (19 pass).
+
+## [0.20.1] — 2026-10-31
+
+- The audit knows the collection Run (haipipe-interaction, then named haipipe-collect; haipipe-run 0.36.4; JL 261031: "it will just be the rNN under
+  that page"): `rNN_collect_<slug>` is hard, its ticket is the form `rNN_collect_<slug>.html`, its
+  `question_collection.md` is in the ladder for a Run, and it may sit under any page, the one hard Run outside a
+  work Task. The rules are in `ref/ladder.md` (`names: collect`, `levels: run: may_hold`); `scripts/ladder.py` reads them.
+
+## [0.20.0] — 2026-10-31
+
+- JL 261031: "this should be update to the /haipipe-project to make it to audit and then update the structure". A new
+  `studio` step: `audit` lists each sNN still in a `studio/` (any level, the Project's too) with where it goes;
+  `update` dry-runs the move and `update --apply` runs it through haipipe-studio's `scripts/studio_move.py` (links,
+  relative climbs and builders' `parents[N]` rewritten, then the generated drawings and mind map pages rerun), after
+  `runs` and before `faces`. A Studio topic is `sNN-<topic>/` beside the Jobs or Tasks; a `studio/` that still holds
+  loose items (`_build/`, `chat/`, `draw/`, a question map) stays. All six SPACEs were moved the same day (674 sNN);
+  their audit now finds none.
+
+## 0.19.1 · 2026-10-28 · project.md and README.md, two jobs
+
+- JL 261028: "we can also have the README.md but they can serve for different purpose". `project.md` is the page in
+  the workbench (goal, Themes, state); `README.md`, optional, is the repository's front door on GitHub. `update
+  --apply` writes a `project.md` (goal from `project.yaml` `mission:`, its Themes) and never renames or touches
+  `README.md`; `audit` lists a missing `project.md` as debt while a `README.md` exists.
+
+## [0.19.3] — 2026-10-29
+
+The Studio is once per Block again (b35 s01-D05): topics hang from a rung by `**At:**`, addressed `bNN.jNN-sNN`; only `delivery/` stays at every level.
+
+## [0.19.2] · 2026-10-29 · s00 retired
+
+- `audit --today` no longer asks for `s00-overview/`; any `s00-*` or `*background-index` topic is debt to
+  delete, with its `runs/run-draw-s00/` (JL 261029: the Report MindMap shows the Block). The s00 rename step is gone.
+
+
+## 0.19.0 · 2026-10-28 · A Project's page is project.md
+
+- JL 261028: "please have the project.md". A Project's page is `project.md` beside `project.yaml`. `audit` errors on
+  a Project with neither, and lists an older `README.md` as debt; `update --apply` renames it with `git mv`, so one
+  page stays and its history follows. `new` writes `project.md`.
+
+## 0.18.1 · 2026-10-28 · One page per folder: the Project and the Theme too
+
+- JL 261028: a Project's page is its `README.md` (no `project.md`); a Theme may have an optional page,
+  `<theme>/<theme>.md` (`work/work.md`). `ref/ladder.md` lists both levels and the face rule; SKILL.md's root tree says so.
+  The workbench focus page shows a Project's Themes and a Theme's Blocks, and rolls up their Studio and Delivery.
+
+## 0.18.0 · 2026-10-28 · Studio and Delivery at every level
+
+- JL 261028: "we want to have them in the job level and task level as well", and the Project too. A Project, Block,
+  Job and Task may each hold its own `studio/` and `delivery/`; a page shows its own plus everything below it.
+- `ref/ladder.md` `today: block_only: [related]` (was `[related, delivery]`): a Job's or a Task's `delivery/` is no
+  longer debt. `scripts/ladder.py` drops the "a Job's or Task's studio/ holds topics: they belong in the Block" debt
+  and adds one: an `sNN` used twice in one Block (Block, Jobs and Tasks share one numbering).
+- `scripts/audit_projects.py` `ROOT_DIRS`: a Project root may hold `studio/` and `delivery/`.
+- SKILL.md: the root tree and the ladder note say so.
+
 ## 0.17.4 · 2026-10-26 · s00's one name is s00-overview
 
 - `ref/ladder.md` `today: s00: s00-overview` (was s00-background-and-index, JL 261026: "maybe just call it
@@ -66,7 +130,7 @@
 ## 0.15.1 · 2026-10-12 · s00 has one name, and an old index's number is never reused
 
 - `audit --today` now checks a Block's background index (JL 261012: "s00 has a constant name"): a Block with
-  topics and no `studio/s00-overview/` owes one; any other `s00-*` or `sNN-…background-index/` is debt
+  topics and no `s00-overview/` owes one; any other `s00-*` or `sNN-…background-index/` is debt
   ("its one name is s00-overview"); and a topic that takes the number an old index gave up when it
   became s00 (read from `s00-overview/history/pre-s00-*/topic/`) is debt. The name is the `today:`
   table's new `s00:` key. On Project-EB1A it found b21's `s01-charge-timeline` reusing s01; all 92 s00 topics in

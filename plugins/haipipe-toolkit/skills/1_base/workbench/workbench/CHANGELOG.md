@@ -1,3 +1,12 @@
+## 1.30.0 · 2026-10-30 · /wb opens the focus page
+
+- JL 261030: "is this the latest UI? Why not using the UI that we discussed previously?" `cli/wb.py` `target()`
+  sent a Block, Job or Task to the old frame (`studio=1`) and a Project to the Home view (`/?project=`), so `/wb`
+  never showed the focus page built 261028-30. Every Project, Theme folder, Block, Job and Task now opens on
+  `layout=focus`, which picks its own opening section; `--classic` opens the old screens; `--no-studio` is gone.
+- `cli/wb_share.py` `link()` and `cli/wb_update.py` step 7: a shared link and the update's closing link open the focus page too;
+  `tests/test_wb_share.py` updated.
+
 ## 1.29.2 · 2026-10-22 · The Examples prompt asks for the target journal only
 
 - `servers/workbench/workbench-task-draft/draft_steps.py` `_examples_card`: the prompt a Section's 1 · Plan copies when it
@@ -304,7 +313,7 @@ Shorter description (808 -> 407 characters): what it does, when to use it, its t
   decided, sessions and notes; Everything, each item. The page script keeps the level in localStorage
   (`workbench.timeline.level.v1`), recounts each day when the group bar hides topics, and a chip opens
   its topic like a name does.
-- Its topic: Tools/blueprints/b10_project_workbench/studio/s08-studio-timeline/ (s08-D01 to D04), whose
+- Its topic: Tools/blueprints/Project-Ladder/work/b10_project_workbench/s08-studio-timeline/ (s08-D01 to D04), whose
   builder draws the UI from `frame.timeline_events`.
 - Test: `test_studio_timeline_reads_dated_decisions_sessions_and_change_notes`, updated for the axis.
 

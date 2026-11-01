@@ -52,7 +52,7 @@ def share_root(arg: str | None, here: Path) -> Path:
 def link(root: Path, rel: str) -> str:
     cfg = S.ShareConfig.load(root)
     base = cfg.public_url or "https://<the share host>"
-    return f"{base.rstrip('/')}/_board/workbench?" + urlencode({"path": rel, "studio": "1"}, safe="/")
+    return f"{base.rstrip('/')}/_board/workbench?" + urlencode({"path": rel, "layout": "focus"}, safe="/")
 
 
 def who_has(root: Path, rel: str) -> int:

@@ -1,6 +1,6 @@
 """The cowork theme on the base frame (servers/workbench/frame.py): only what differs from vanilla.
 
-A cowork topic climbs Block → Job → Run (Tools/blueprints/b13_theme_cowork, Q01, proposed 261007). An
+A cowork topic climbs Block → Job → Run (Tools/blueprints/Project-Ladder/work/b13_theme_cowork, Q01, proposed 261007). An
 email, a meeting or a checklist step is a row of its Job, not a Task; a Task (`tNN_<doc>/`) is only a
 document written with others in rounds, and it opens as the base's Page Task, so the Task level is
 left vanilla and its tab is greyed until a Job has one.
@@ -14,7 +14,7 @@ left vanilla and its tab is greyed until a Job has one.
            | Work Details: Timeline · Checklist · Emails · Meetings | Delivery: its messages out, each with
            its attachments (delivery/<date>-<what>/)
 
-Idea Studio and Runs read as vanilla (studio/ topics; runs/ grouped by type); the theme adds its
+Idea Studio and Runs read as vanilla (sNN topics beside the Jobs; runs/ grouped by type); the theme adds its
 run types. It reads the Block through coworkboard.py and writes nothing; no run sends a message.
 """
 from src.common import delivery_dir
@@ -42,7 +42,7 @@ BLOCK_RUNS = {"Description": (_run("Update the Block status", "update the Block 
                                   {"label": "Check a report", "prompt": "/haipipe-draft-review check {folder}/reports/"}),
               "Work Details": (_run("Open a job", "open a job in"), _run("Update a job", "update a job in")),
               "Runs": (_run("Update the Block status", "update the Block status of"),
-                       {"label": "Draw", "prompt": "/haipipe-studio draw a topic in {folder}/studio/"}),
+                       {"label": "Draw", "prompt": "/haipipe-studio draw a topic in {folder}/ (sNN-<topic>/, beside its Jobs)"}),
               "Delivery": ({"label": "Check a report", "prompt": "/haipipe-draft-review check {folder}/reports/"},)}
 JOB_RUNS = {"Description": (_run("Update the Job", "update the job"), _run("Add a file", "add a file to")),
             "Audience Report": ({"label": "Ask a Question", "prompt": "/haipipe-report ask {folder}"},),

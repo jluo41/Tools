@@ -8,7 +8,7 @@ eleventh. This is a recommended maximum, not a refusal or an instruction to
 delete or renumber existing topics. Older local topics and their sessions stay
 readable until explicitly moved.
 
-# The topic contract · Block-owned studio/sNN-<topic>/
+# The topic contract · Block-owned sNN-<topic>/
 
 Read before adding, redrawing or saving a studio topic, or writing a builder. The Block
 owns the shared `studio/` folder shown from Block, Job and Task: one topic per folder,
@@ -28,10 +28,11 @@ drawing should look (a dense scratch, a plain design prototype, a report picture
 │   ├── build_sNN_<topic>.py        the builder, when a script draws it
 │   ├── sNN-<topic>.mindmap.md      its structured side, the mind map: the source (haipipe-mindmap)
 │   ├── sNN-<topic>.mindmap.html    the mind map as a static page (git ignores it: rebuilt on every change)
-│   └── history/                    older builders or drawings kept on a redesign
+│   ├── history/                    older builders or drawings kept on a redesign
+│   ├── passes/pNN-<MMDD>/          one round each: a working session or a meeting
+│   └── result/                     its own working output, messy is fine (b35 s01-D10); never a copy of a Run's
 ├── _build/                         the level's shared builder helpers and make.sh
 └── <loose>.excalidraw              a loose drawing: its own topic
-<block>/runs/run-draw-<sNN>/        the topic's soft Run: one pass per working session
 ```
 
 1. **One topic, one folder**: a topic is a question being thought through, not a picture.
@@ -94,7 +95,7 @@ and note what was edited; typesetting alone is not source verification.
 ## Numbering
 
 ```text
-s00       background        the Block's background and index, one per Block, drawn by block_index.py
+s00       none              retired 261029: Report › MindMap shows the Block; numbers start at s01
 s01-s09   concepts          what the level is, its trees and words
 s11-s19   levels            Block · Job · Task, one topic each
 s21-s29   runs and skills   the Runs, the buttons and the skills that own them
@@ -300,25 +301,20 @@ canvas.write(out, els, "build_sNN_<topic>.py", redraw_frames=())
 
 `new_topic.py topic … --builder` writes a builder of this shape and runs it once.
 
-## Sessions
+## Rounds
 
-A working session on a topic (a chat that redrew it, a person's round of marks answered) is
-one pass of the topic's soft Run, `runs/run-draw-<sNN>/` (`haipipe-run`): the Run is made on
-the first session, and each session adds `passes/pNN-<MMDD>/pass.md` (its title, its ask, a
-summary, what it changed). The Idea Studio lists them in the Runs
-panel under `run-draw-<sNN>`. Older `chat/` summaries in a topic folder stay readable. A Job/Task input uses
-the Block when the topic is not local; an existing local topic keeps its local
-Run and passes. Use the Block explicitly for new shared-topic sessions.
+A round on a topic is one working session (a chat that redrew it, a person's marks answered) or one meeting about it
+(JL 261029). It is kept inside the topic, `passes/pNN-<MMDD>/pass.md`: its title, `kind: session|meeting`, Notes,
+Decided, Started (what it sent to Work), Read (what it used from `related/`) and Changed. `new_topic.py session` writes
+it. Older rounds in `runs/run-draw-<sNN>/passes/` and older `chat/` summaries stay readable until moved in.
 
 ## The buttons
 
-One button, `run-draw-<sNN>` (the frame names a button by its Run); its cards are the topics' Runs.
-
-| What it does | Run | how |
+| What it does | where | how |
 |---|---|---|
-| add a topic | `run-draw-<sNN>`, new | `new_topic.py topic <level> --slug … --title … --band …` |
-| redraw a topic | a pass of `run-draw-<sNN>` | rerun its `build_*.py` (or draw by hand), then the preview |
-| save this session | a pass of `run-draw-<sNN>` | `new_topic.py session <block> sNN --title …` |
+| add a topic | `sNN-<topic>/` | `new_topic.py topic <level> --slug … --title … --band …` |
+| redraw a topic | the topic's drawing | rerun its `build_*.py` (or draw by hand), then the preview |
+| save this session or meeting | a round, `passes/pNN-<MMDD>/` | `new_topic.py session <level> sNN --title … [--kind meeting]` |
 
 ## The scripts
 

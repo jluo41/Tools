@@ -1,0 +1,50 @@
+{
+ "topic": "s21-run-bar",
+ "style": "sketch-notes",
+ "source": "s21-run-bar.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "The run bar",
+   "points": [
+    "The run bar's five steps (▶ Run · Interpret · Message · Judge · Feedback) with who does each and…",
+    "both stub runs",
+    "and every HaiChat tool with the ConsoleAction it dispatches and its gate, read from…"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and the console's run bar, its five steps and the chat tools behind it, for the people who build the console",
+    "a ui"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "What is decided",
+   "points": [
+    "A call the gate refuses is shown as ⛔ refused in the drawer, with the gate's reason (g02 261009)"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "04",
+   "idea": "Still open",
+   "points": [
+    "Agree its For: line and Delivery type: (ui), proposed by the agent 261030?"
+   ],
+   "leaning": "",
+   "ask": "Could this action list become an MCP that drives the toolkit's workbench (j04 Q02, b01 j05_chat…",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

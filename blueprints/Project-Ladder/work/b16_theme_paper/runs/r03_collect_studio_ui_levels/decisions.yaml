@@ -1,0 +1,5 @@
+- title: UI by level
+  decision: The Studio's UI group splits into three, Block UI (s32-s34), Job UI (s35-s37) and Task UI (s38-s40), in _studio_groups.txt and each face's Tags.
+  said: coudl we make the UI in three levels as well, the block, job, and task level.
+  when: 2026-10-31 17:35
+  applied_by: b16 _studio_groups.txt; Tags of s32-s40

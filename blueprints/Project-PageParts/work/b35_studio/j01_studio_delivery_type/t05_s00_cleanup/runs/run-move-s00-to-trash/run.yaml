@@ -1,0 +1,18 @@
+run: run-move-s00-to-trash
+kind: soft
+type: move
+scope: null
+target: s00-to-trash
+ticket: run-move-s00-to-trash.md
+skill: haipipe-studio
+agent: claude
+signs: null
+status: done
+passes:
+- p01-1030
+writes:
+- WellDoc
+- Knowledge
+- Physician
+- REACH studio folders
+feeds: []

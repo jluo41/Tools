@@ -1,0 +1,10 @@
+- title: Keep the version views' content
+  decision: The version's Work keeps its views (Draft-Main, Draft-Appendix, Display-Main, Display-Appendix, Values, Citations) and their rows as today; only regrouped
+  said: keep the content as much as possible but use the new subsections layout
+  when: 2026-11-01 09:26
+  applied_by: ''
+- title: Track changes as interactions
+  decision: Decisions about this page are recorded under t02, and Process 1 shows the version's own forms and decisions
+  said: we need to add the Interaction things as well, so we can track our changes along the way
+  when: 2026-11-01 09:26
+  applied_by: ''

@@ -1,0 +1,55 @@
+{
+ "topic": "s02-draft-folder-merge",
+ "style": "sketch-notes",
+ "source": "s02-draft-folder-merge.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "One draft folder: page and writing",
+   "points": [
+    "we might want to merge them into one, 1_base/draft\"",
+    "s01 renamed the skill (haipipe-page became haipipe-draft), but its folder stayed 1_base/page/,…",
+    "This topic draws how the draft's Runs call the writer, who else calls it without a draft, and the…"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and one draft skill folder that merges page and writing, for the people who write the toolkit skills",
+    "a skill"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "What is decided",
+   "points": [
+    "The Block is b32_draft (was b51_base_draft), in the b3x row beside b31_excalidraw",
+    "1_base/page/ is now 1_base/draft/, and 1_base/writing/ is now 1_base/draft/writing/",
+    "Every path in Tools was rewritten (147 files, ../ links recomputed per file)",
+    "The 1_base/writing link is removed: no file in Tools or the six SPACEs and no skill link"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "04",
+   "idea": "Still open",
+   "points": [
+    "workflow-runs/ keeps its name",
+    "39 FairGlucose tickets from an older layout (runs/delivery-run/run_delivery_.sh) still name",
+    "Not from this move: Physician run notes, two run_delivery.py scripts and an old board.js name"
+   ],
+   "leaning": "",
+   "ask": "The workbench skills (workbench, workbench-page, workbench-studio) are the shared screen",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

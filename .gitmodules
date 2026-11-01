@@ -239,3 +239,9 @@
 	path = references/presentation-agent
 	url = https://github.com/CommerceClarity/presentation-agent.git
 	update = none
+[submodule "references/baoyu-skills"]
+	path = references/baoyu-skills
+	url = https://github.com/JimLiu/baoyu-skills.git
+[submodule "references/ian-handdrawn-ppt"]
+	path = references/ian-handdrawn-ppt
+	url = https://github.com/helloianneo/ian-handdrawn-ppt.git

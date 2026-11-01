@@ -1,0 +1,38 @@
+{
+ "topic": "s03-design-methods",
+ "style": "sketch-notes",
+ "source": "s03-design-methods.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Design methods",
+   "points": [
+    "the design method, drawn: the methods drawing at the top of Guide › Method (requirements,…",
+    "thirteen method cards), and the design unit (one unit in five steps: see input, propose ideas,…",
+    "one row per method)"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and the design method cards and the five-step design unit, for the people who write the toolkit skills",
+    "a skill"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "Still open",
+   "points": [],
+   "leaning": "",
+   "ask": "Agree its For: line and Delivery type: (skill), proposed by the agent 261030?",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

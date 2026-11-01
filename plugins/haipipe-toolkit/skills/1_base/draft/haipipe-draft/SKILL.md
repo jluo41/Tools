@@ -46,7 +46,7 @@ does. Only a person signs, ticks, accepts or sends.
 
 | Step (tab) | Its prompt | Owner it loads | Writes | Waits for you |
 |---|---|---|---|---|
-| 🎨 Studio | `/haipipe-studio <block> <sNN>` | haipipe-studio | the Block's `studio/sNN-<topic>/`; what you settle goes into §1 (s41-D25) | optional |
+| 🎨 Studio | `/haipipe-studio <block> <sNN>` | haipipe-studio | the Block's `sNN-<topic>/`; what you settle goes into §1 (s41-D25) | optional |
 | 📐 1 · Plan | `/haipipe-draft <task> structure` | haipipe-draft-logic `ref/context.md`, `ref/structure.md`, `ref/scratch.md` | `draft/records/<stem>-context.md`; `## 1 · Structure`; you type `## 2 · Scratch` here, a note per paragraph (JL 261020: "I think we should move the scratch here") | ✍ Sign: you type ✅ on `approved:` |
 | ✍️ 2 · Write | `/haipipe-draft <task> write` | haipipe-draft-writing `ref/writing.md` | `## 3 · Draft` from §1 and its Scratch (one sentence per Bullet, ⟦pending⟧ where a value waits), keeping the sentences you typed, in a new `-draft-v<N>.md`; the old one to `previous/` | none: a first draft, no rules yet (s41-D26) |
 | 🔎 3 · Evidence | `/haipipe-evidence <task>` | haipipe-evidence `cards.py` | `evidence/cards.yaml`, `evidence/proposals.md`; cards are CITE and VALUE, one topic (a Task) each, items CITE 1.2 | ☐ you tick each ask |

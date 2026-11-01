@@ -1,0 +1,49 @@
+{
+ "topic": "s09-delivery-skill",
+ "style": "sketch-notes",
+ "source": "s09-delivery-skill.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Delivery Skill",
+   "points": [
+    "Turn reviewed working material into a versioned, usable delivery",
+    "Its reader is agents building and handing over reviewed outcomes"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and A delivery guide with destination rules, version rules, and a handover checklist",
+    "a skill"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "What is decided",
+   "points": [
+    "Create a reviewable delivery and a main Draw (requested 2026-10-30)"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "04",
+   "idea": "Still open",
+   "points": [
+    "Agree its For: line and Delivery type: (skill), proposed by the agent 261030?"
+   ],
+   "leaning": "",
+   "ask": "How should a page show the difference between built, accepted, and sent?",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

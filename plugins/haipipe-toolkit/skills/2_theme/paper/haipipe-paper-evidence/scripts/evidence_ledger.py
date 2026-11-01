@@ -2,7 +2,7 @@
 
     python evidence_ledger.py <version Job folder> [--max-displays N] [--json]
 
-A version is a Job, `jNN_v<MMDD>_<desk>/`; its Sections, the Abstract and its letters are its Tasks, `tNN_<name>/`, each a
+A version is a Job, `jNN_writing_v<MMDD>_<desk>/`; its Sections, the Abstract and its letters are its Tasks, `tNN_<name>/`, each a
 draft Task (haipipe-paper-draft). A Task's evidence is read in either of its two shapes:
 
     evidence/cards.yaml                    haipipe-evidence cards (CITE from discovery Runs, VALUE from work Runs), 261016 on; VALUE was WORK until 261020
@@ -18,14 +18,16 @@ A base skill sees one Task at a time; this reads the whole version, so it can sa
     ❗ too many displays              main-text displays over the venue's limit (--max-displays)
     ❗ a card does not resolve        haipipe-evidence's cards.check, per Section
     ⚠️ one label, the same estimates  two Results holding the same estimates (one copies the other)
-    ❗ display drawn inside the paper  a main-text display whose intake/manifest.yaml names no work Run's result/,
-                                      one outside the version's `work-block:`, or one that is not on disk
+    ❗ display drawn inside the paper  a main-text display whose intake/manifest.yaml names no Run's result/ (a work
+                                      Run, or a Run in the paper Board's j01_evidence_display Job), one outside the
+                                      version's `work-block:` or Board, or one that is not on disk
     ❗ display has no question        a main-text display whose README names no question:
     ❗ display review not passed      a main-text display whose latest review/rNN.md fails the pass rule
                                       (overall >= 8, no dimension under 7), or that has no round yet
     ⚠️ one display twice              the same display name in two Sections
     ⚠️ the same three, on an appendix an appendix display drawn inside the paper, with no question:, or no passing review
-    ⚠️ display outside the display Job a work Run that is not in the work Block's j21_paper_displays Job
+    ⚠️ display outside the display Job a Run that is not in the Board's j01_evidence_display Job (older: a work
+                                      Block's j21_paper_displays Job)
     ⬜ open                           citations not yet verified, values not yet landed, needs not yet filled
 
 Only the Sections in the version face's `haipipe:compile-order` block are numbered, counted and compared. Numbers
@@ -55,6 +57,9 @@ TASK = re.compile(r"^t(\d+)_")
 ROUND = re.compile(r"^r(\d+)\.md$")
 DIMENSIONS = ("question", "readability", "honesty", "journal-ready")
 WORK_RUN = re.compile(r"(?:^|[/\s'\"`])(work/(b\d+_[\w.-]+)/(j\d+_[\w.-]+)/(t\d+_[\w.-]+)/runs/([\w.-]+)/result)(?=[/\s'\"`]|$)", re.M)
+# s01-D13 (261031): a display's Run may sit in the paper Board's own display Job
+PAPER_RUN = re.compile(r"(?:^|[/\s'\"`])(paper/(Paper-[\w.-]+)/(j01_evidence_display)/(t\d+_[\w.-]+)/runs/([\w.-]+)/result)(?=[/\s'\"`]|$)", re.M)
+DISPLAY_JOBS = ("j01_evidence_display",)     # the display Job today; an older work Block's j21_paper_displays still counts
 PASS_OVERALL, PASS_EACH = 8.0, 7.0          # haipipe-display ref/display-revise-loop.md, the pass rule
 
 
@@ -204,19 +209,26 @@ def work_block(job: Path) -> str:
     return ""
 
 
-def unit_source(unit: Path, project: Path | None, block: str) -> dict:
-    """The work Run that draws a paper display: the first `work/bNN_/jNN_/tNN_/runs/<run>/result` its
-    intake/manifest.yaml names. `problem` says why the display counts as drawn inside the paper ('' when it does not)."""
+def unit_source(unit: Path, project: Path | None, block: str, board: str = "") -> dict:
+    """The Run that draws a paper display: the first `work/bNN_/jNN_/tNN_/runs/<run>/result`, or
+    `paper/Paper-<x>/j01_evidence_display/tNN_/runs/<run>/result` (s01-D13), its intake/manifest.yaml names.
+    `problem` says why the display counts as drawn inside the paper ('' when it does not)."""
     manifest = unit / "intake" / "manifest.yaml"
     text = manifest.read_text(encoding="utf-8", errors="replace") if manifest.is_file() else ""
-    m = WORK_RUN.search(text)
-    if not m:
-        why = "its intake/manifest.yaml names no work Run result/" if text else "it has no intake/manifest.yaml"
+    found = [m for m in (WORK_RUN.search(text), PAPER_RUN.search(text)) if m]
+    if not found:
+        why = "its intake/manifest.yaml names no Run result/" if text else "it has no intake/manifest.yaml"
         return {"run": "", "job": "", "problem": why}
+    m = min(found, key=lambda x: x.start())
     path, blk, job = m.group(1), m.group(2), m.group(3)
     out = {"run": path, "job": job, "problem": ""}
     want = block[block.rfind("work/"):] if "work/" in block else block       # a longer path ends in work/bNN_
-    if block and f"work/{blk}" != want:
+    if m.re is PAPER_RUN:
+        if board and blk != board:
+            out["problem"] = f"it reads paper/{blk}, not this Board {board}"
+        elif project is not None and not (project / path).is_dir():
+            out["problem"] = f"{path} is not on disk"
+    elif block and f"work/{blk}" != want:
         out["problem"] = f"it reads work/{blk}, the version's work-block: is {block}"
     elif project is not None and not (project / path).is_dir():
         out["problem"] = f"{path} is not on disk"
@@ -360,11 +372,12 @@ def ledger(job: Path, max_displays: int | None = None) -> dict:
         if not unit.is_dir():
             continue
         r = reviews[f"{t}/{d}"] = unit_review(unit)
-        r["source"] = unit_source(unit, project, block)
+        r["source"] = unit_source(unit, project, block, job.parent.name)
         main_text = part_of(t) in ("abstract", "main")
         src = r["source"]
-        if src["job"] and not src["job"].endswith("_displays"):
-            warn.append(f"display outside the display Job: {t}/{d} is drawn by {src['run']}, not in a j21_paper_displays Job")
+        if src["job"] and src["job"] not in DISPLAY_JOBS and not src["job"].endswith("_displays"):
+            warn.append(f"display outside the display Job: {t}/{d} is drawn by {src['run']}, "
+                        "not in the Board's j01_evidence_display Job (older: j21_paper_displays)")
         problems = ([f"display drawn inside the paper: {t}/{d} ({src['problem']})"] if src["problem"] else []) + \
                    ([] if r["question"] else [f"display has no question: {t}/{d} (its README names none)"]) + \
                    ([] if r["passed"] else [f"display review not passed: {t}/{d} ({r['why']})"])
@@ -396,12 +409,12 @@ def show(L: dict) -> str:
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    ap.add_argument("job", type=Path, help="the version Job folder, jNN_v<MMDD>_<desk>/")
+    ap.add_argument("job", type=Path, help="the version Job folder, jNN_writing_v<MMDD>_<desk>/")
     ap.add_argument("--max-displays", type=int, help="the venue's limit on main-text displays")
     ap.add_argument("--json", action="store_true")
     a = ap.parse_args(argv)
     if not a.job.is_dir() or not tasks(a.job):
-        raise SystemExit(f"{a.job}: no tNN_ Tasks; give a version Job folder, jNN_v<MMDD>_<desk>/")
+        raise SystemExit(f"{a.job}: no tNN_ Tasks; give a version Job folder, jNN_writing_v<MMDD>_<desk>/")
     L = ledger(a.job, a.max_displays)
     print(json.dumps({k: v for k, v in L.items()}, indent=1, default=str) if a.json else show(L))
     return 1 if L["bad"] else 0

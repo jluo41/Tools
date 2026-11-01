@@ -50,7 +50,7 @@ def check(root):
     for block in rows(root):
         jobs = [p for p in sorted(block.iterdir()) if p.is_dir() and p.name.startswith("j")]
         if (block/"README.md").is_file():
-            bad("S20", block.name, "Block root README is forbidden; use board.md or a studio/ topic")
+            bad("S20", block.name, "Block root README is forbidden; use board.md or an sNN topic beside its Jobs")
         # S18 every Block is one Task Block Board.
         head = block / "board.md"
         if not head.is_file():
@@ -315,18 +315,16 @@ def check(root):
                 # a decision list with no exchange under it, or scrolls an exchange
                 # nobody ever drew a conclusion from. Storage law and writer belong
                 # to haipipe-studio; this row only refuses the half-write.
-                chat_lane = t/"studio"/"chat"
+                chat_lane = t/"chat"                     # beside the face; studio/ folders are gone (JL 261031)
                 if chat_lane.is_dir():
                     for kept in sorted(k for k in chat_lane.iterdir() if k.is_dir()):
                         for owed in ("digest.md", "transcript.md"):
                             if not (kept/owed).is_file():
-                                bad("S4", f"{t.name}/studio/chat/{kept.name}",
+                                bad("S4", f"{t.name}/chat/{kept.name}",
                                     f"kept session has no {owed}: a keep is both projections or neither")
-                if (t/"studio").is_dir():
-                    for stray in sorted(p for p in (t/"studio").iterdir()
-                                        if p.name not in ("chat", "draw")):
-                        bad("S4", f"{t.name}/studio/{stray.name}",
-                            "studio/ holds only chat/ and draw/ (haipipe-studio)")
+                if (t/"studio").is_dir():                # no studio/ folder at all any more (JL 261031, b35 r02 Q2 C)
+                    bad("S4", f"{t.name}/studio", "studio/ folders are gone: an sNN topic sits in the Task folder, "
+                                                  "chat/ and draw/ beside the face")
 
                 if (t/"configs").is_dir():
                     bad("S14", t.name, "plural config lane at Task root; config lives in scripts/config/")

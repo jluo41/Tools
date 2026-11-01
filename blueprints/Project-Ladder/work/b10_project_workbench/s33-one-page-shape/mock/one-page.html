@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>One page shape</title>
+<style>
+:root{--bg:#f6f5f1;--card:#fffefb;--fg:#1b2433;--mut:#5d6675;--faint:#d5d2ca;--line:#e3e0d8;--acc:#2f6feb;--acc-bg:#e8effd;--ok:#16794a;--bad:#b42318;--warn:#a15c07}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141518;--card:#1c1e22;--fg:#e8e6e1;--mut:#9aa3b2;--faint:#3a3e46;--line:#30333a;--acc:#6b9bff;--acc-bg:#1f2b45;--ok:#4ade80;--bad:#f87171;--warn:#f5b84a}}
+*{box-sizing:border-box}
+html{scroll-padding-top:64px}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 -apple-system,"Segoe UI",system-ui,sans-serif}
+a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
+/* top: where we are */
+.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:10px 16px;font-size:15px;color:var(--mut);display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.top a{font-weight:600}.top b{color:var(--fg)}
+.top .sep{color:var(--faint)}
+.layouts{margin-left:auto;display:flex;gap:4px;align-items:center;font-size:13px;color:var(--warn)}
+.layouts button{font-size:13px;padding:3px 10px;margin:0;border-radius:7px;background:transparent;color:var(--fg);border:1px solid var(--line)}
+.layouts button.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+/* crumb dropdown (layout C): each step lists its siblings */
+.crumb{position:relative}
+.crumb .dd{display:none;position:absolute;top:100%;left:0;margin-top:6px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px;min-width:260px;box-shadow:0 8px 24px rgba(0,0,0,.12)}
+.crumb .dd a{display:block;padding:4px 8px;border-radius:6px;font-weight:400;color:var(--fg);white-space:nowrap}
+.crumb .dd a.on{background:var(--acc-bg);font-weight:600}
+.crumb .caret{font-size:11px;color:var(--mut);margin-left:2px;cursor:pointer}
+body.C .crumb:hover .dd{display:block}
+body:not(.C) .crumb .caret{display:none}
+/* three columns: left · page · sections */
+.shell{display:grid;grid-template-columns:230px minmax(0,1fr) 150px;gap:24px;max-width:1460px;margin:0 auto;padding:18px 16px 80px}
+body.C .shell{grid-template-columns:minmax(0,1fr) 150px}
+body.C .left{display:none}
+@media (max-width:1000px){.shell,body.C .shell{grid-template-columns:minmax(0,1fr)}.left,.right{display:none}}
+.left,.right{position:sticky;top:64px;align-self:start;max-height:calc(100vh - 80px);overflow:auto;padding:6px 4px}
+.left h4,.right h4{margin:0 0 8px;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--mut)}
+/* A: siblings as named lines */
+.sib a{display:flex;align-items:center;gap:8px;padding:3px 6px;border-radius:6px;color:var(--mut);font-size:13px}
+.sib a i{flex:0 0 auto;width:14px;height:3px;border-radius:2px;background:var(--faint)}
+.sib a span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sib a.on{color:var(--fg);font-weight:600;background:var(--acc-bg)}.sib a.on i{background:var(--fg);width:20px}
+/* B: a tree, like a file explorer */
+.tree a{display:block;padding:3px 6px;border-radius:6px;color:var(--mut);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tree a.on{color:var(--fg);font-weight:600;background:var(--acc-bg)}
+.tree .d1{padding-left:20px}.tree .d2{padding-left:34px}
+/* right: this page's sections, the line minimap from JL's picture; names show on hover */
+.mm a{display:flex;align-items:center;gap:10px;height:22px;color:var(--mut);font-size:13px;white-space:nowrap}
+.mm a i{flex:0 0 auto;width:18px;height:3px;border-radius:2px;background:var(--faint);transition:width .15s,background .15s}
+.mm a span{opacity:0;transition:opacity .15s}
+.mm a.on i{width:28px;background:var(--fg)}.mm a.on span{opacity:1;color:var(--fg);font-weight:600}
+.right:hover .mm a span{opacity:1}
+.right h4{opacity:0}.right:hover h4{opacity:1}
+/* the page */
+.head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px}
+.head h1{margin:0;font-size:28px;line-height:1.2;overflow-wrap:anywhere}
+.chip{font-size:13px;font-weight:600;padding:2px 10px;border-radius:99px;background:var(--card);border:1px solid var(--line)}
+.goal{color:var(--mut);margin:6px 0 14px;max-width:900px}
+.answer{background:var(--acc-bg);border:2px solid var(--acc);border-radius:14px;padding:16px 20px;font-size:21px;line-height:1.4;font-weight:600}
+.answer small{display:block;font-size:13px;font-weight:500;color:var(--mut);margin-top:6px}
+.prog{display:flex;align-items:center;gap:10px;margin:14px 0 4px;font-size:14px;color:var(--mut)}
+.bar{flex:0 0 260px;height:10px;border-radius:6px;background:var(--line);overflow:hidden;display:flex}
+.bar i{display:block;height:100%}
+.grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:18px}
+@media (max-width:1200px){.grid{grid-template-columns:1fr}}
+section.sec{margin-top:24px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;min-width:0}
+.card h2,section.sec>h2{font-size:15px;text-transform:uppercase;letter-spacing:1px;color:var(--mut);margin:2px 0 10px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--mut);text-align:left;padding:4px 8px;border-bottom:1px solid var(--line)}
+td{padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+tr.row{cursor:pointer}tr.row:hover td{background:var(--acc-bg)}
+tr.dim td{color:var(--mut)}
+td.res{font-weight:600}td.res .sub{display:block;font-weight:400;font-size:13px;color:var(--mut)}
+.st{white-space:nowrap}.ok{color:var(--ok)}.bad{color:var(--bad)}
+.tablewrap{overflow-x:auto}
+.chart .lab{display:flex;justify-content:space-between;font-size:13px;color:var(--mut);margin-top:8px}
+.chart .track{height:16px;background:var(--line);border-radius:4px;overflow:hidden}
+.chart .fill{height:100%;background:var(--acc)}.chart .fill.top{background:var(--ok)}
+.next p{margin:0 0 10px;font-size:17px}.who{font-size:13px;color:var(--mut)}
+button{font:inherit;font-size:14px;font-weight:600;padding:7px 14px;border-radius:9px;border:1px solid var(--acc);background:var(--acc);color:#fff;cursor:pointer;margin:4px 6px 0 0}
+button.ghost{background:transparent;color:var(--acc)}
+.thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.thumb{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;cursor:pointer}
+.thumb img{display:block;width:100%;height:170px;object-fit:cover;object-position:top left;background:#fff}
+.thumb p{margin:0;padding:8px 12px;font-size:14px;font-weight:600;overflow-wrap:anywhere}
+.empty{color:var(--mut);font-size:14px;border:1px dashed var(--line);border-radius:12px;padding:14px 18px}
+.tl{list-style:none;margin:0;padding:0 0 0 14px;border-left:2px solid var(--line)}
+.tl li{position:relative;padding:4px 0 10px 12px;font-size:15px}
+.tl li::before{content:"";position:absolute;left:-21px;top:11px;width:10px;height:10px;border-radius:50%;background:var(--acc)}
+.tl b{font-variant-numeric:tabular-nums;margin-right:8px}
+.ftree{font:14px/1.7 ui-monospace,Menlo,monospace;margin:0;white-space:pre;overflow-x:auto}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:9px 16px;border-radius:10px;font-size:14px;display:none;z-index:9}
+</style>
+</head>
+<body class="A">
+<nav class="top"><span id="crumb"></span>
+  <span class="layouts">mock · s33 · layout <button data-l="A">A siblings</button><button data-l="B">B tree</button><button data-l="C">C crumb menus</button></span></nav>
+<div class="shell">
+  <nav class="left" id="left" aria-label="Same layer"></nav>
+  <main>
+    <div class="head"><h1 id="title"></h1><span class="chip" id="state"></span></div>
+    <p class="goal" id="goal"></p>
+    <section class="sec" id="answer" data-name="Answer" style="margin-top:0"><div class="answer" id="answerbox"></div>
+      <div class="prog"><span id="progtext"></span><span class="bar" id="bar"></span></div></section>
+    <div class="grid">
+      <section class="sec card" id="rows" data-name="Rows"><h2 id="rowshead"></h2><div class="tablewrap"><table id="rowtable"></table></div></section>
+      <div>
+        <section class="sec card chart" id="chart" data-name="Chart"><h2>Decode speed, tok/s (median)</h2><div id="chartbody"></div></section>
+        <section class="sec card next" id="next" data-name="Next"><h2>Next</h2><p id="nexttext"></p><div class="who" id="who"></div><div id="actions"></div></section>
+      </div>
+    </div>
+    <section class="sec" id="studio" data-name="Studio"><h2>Studio · thinking</h2><div class="thumbs" id="studiobody"></div></section>
+    <section class="sec" id="related" data-name="Related"><h2>Related · what came in</h2><div class="empty">related/ is empty: no meetings, papers or files yet.</div></section>
+    <section class="sec" id="delivery" data-name="Delivery"><h2>Delivery · what went out</h2><div class="empty">delivery/ is empty. The Block's slide (slide/slide.html) would show here as a picture.</div></section>
+    <section class="sec" id="timeline" data-name="Timeline"><h2>Timeline</h2><ul class="tl" id="tlbody"></ul></section>
+    <section class="sec" id="folder" data-name="Folder"><h2>Folder</h2><div class="card"><pre class="ftree" id="treebody"></pre></div></section>
+  </main>
+  <nav class="right" aria-label="On this page"><h4>On this page</h4><div class="mm" id="sections"></div></nav>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+// Mock data, copied by hand from Proj12-LM-Serve b19 on 2026-10-27 (board.md, j05 face, t12 face, each Run's result/metrics.json).
+const RUNS = [
+  {id:"r01_q20_speed_ctx_ladder_current", what:"speed, context ladder", st:"bad", res:"failed: exit code 6", sub:"replaced by r03"},
+  {id:"r02_q20_speed_4k_v0126_reference", what:"speed 4K, v0126 reference", st:"ok", res:"165.0 tok/s decode", sub:"prefill 3,216 tok/s"},
+  {id:"r03_q20_speed_ctx_ladder_current_retry", what:"speed ladder, retry", st:"bad", res:"failed: KeyError 'label'", sub:"replaced by r04"},
+  {id:"r04_q20_speed_ctx_ladder_current_retry2", what:"speed ladder, retry 2", st:"ok", res:"159.2 tok/s decode", sub:"context up to 262K"},
+  {id:"r05_q20_speed_4k_current_matched", what:"speed 4K, current source", st:"ok", res:"176.7 tok/s decode", sub:"prefill 3,223 tok/s"},
+  {id:"r06_q20_quality_smoke_replies", what:"smoke replies", st:"ok", res:"8 of 8 passed", sub:""},
+  {id:"r07_q20_quality_gsm8k_full", what:"GSM8K full", st:"ok", res:"94.9% (1,252 / 1,319)", sub:"196.3 tok/s decode"},
+  {id:"r08_q20_agent_131k", what:"agent at 131K context", st:"ok", res:"complete", sub:"Proj15 harness tests"},
+  {id:"r09_q20_label1k_g02_cstar", what:"label 1k reviews", st:"ok", res:"4,760 reviews/h · 95.8% same as Swift", sub:"1,000 in 756 s, 0 errors"}
+];
+const SPEED = [["r07 GSM8K",196.3],["r05 4K current",176.7],["r02 4K reference",165.0],["r04 ladder",159.2]];
+const ANSWER = "Strata serves the 125B Q2_0 model on one RTX 4090: GSM8K 94.9% at 196 tok/s, and labels 4,760 reviews/h, 95.8% same as Swift.";
+const NEXT = "Proposed 261016: no new Runs unless Strata ships a new version; then close the Block.";
+const TOPICS = [["s00-background-and-index","img/s00.jpg"],["s25-j05-qwen38-flashnext-strata-results","img/s25.jpg"]];
+const TIMELINE = [["261016","j05 reading drafted from the receipts; proposed: no new Runs"],["261023","r08_q20_agent_131k: agent tests at 131K context (Proj15)"],["261024","r09_q20_label1k_g02_cstar: 1,000 reviews labeled in 756 s"]];
+const TREE = "b19_qwen38_flashnext/\n├── board.md\n├── history/\n├── j05_qwen38_flashnext_strata/\n│   └── t12_qwen38_flashnext_q20/   9 Runs\n├── runs/\n├── src/\n└── studio/                       2 topics";
+const P = "Proj12-LM-Serve";
+const BLOCKS = ["b01_plan","b11_qwen3_0_6b","b13_qwen35_08b","b14_qwen35_2b","b15_qwen35_4b","b16_qwen35_9b","b17_qwen38_9b_distill","b18_qwen38_27b","b19_qwen38_flashnext","b21_diffusiongemma_26b_a4b"];
+const PROJECTS = ["Proj10-LLM-Baseline","Proj11-JEV-Baseline","Proj12-LM-Serve","Proj13-JEV-Serve","Proj14-LM-API","Proj15-Local-Harness","Proj16-Team-Workspace"];
+const B="b19_qwen38_flashnext", J="j05_qwen38_flashnext_strata", T="t12_qwen38_flashnext_q20";
+const LEVELS = {
+  block:{layer:"Blocks in "+P, siblings:BLOCKS, here:B, title:B, state:"🔴 open",
+    goal:"How Qwen3.8 Flash-Next (125B total, 6B active) serves on one RTX 4090: one Job per engine, one Task per artifact, one Run per setting × workload.",
+    from:"from "+J+", Runs r07 and r09", rowshead:"Jobs · 1", head:["Job","engine","Runs","result"],
+    rows:[{go:"job", cells:[J,"Strata","7 ✅ 2 ❌","94.9% GSM8K · 196 tok/s"]}], actions:[["Agree: close the Block",""],["Ask the agent","ghost"]]},
+  job:{layer:"Jobs in "+B, siblings:[J], here:J, title:J, state:"7 of 9 Runs ✅",
+    goal:"Measure Qwen3.8 Flash-Next (125B MoE, 6B active) as a Q2_0 GGUF on one RTX 4090 through Strata.",
+    from:"from "+T+", Runs r05, r07 and r09", rowshead:"Tasks · 1", head:["Task","artifact","Runs","result"],
+    rows:[{go:"task", cells:[T,"ISTA-DASLab Q2_0 GGUF","7 ✅ 2 ❌","94.9% GSM8K · 176.7 tok/s at 4K"]}], actions:[["Agree: no new Runs",""],["Ask the agent","ghost"]]},
+  task:{layer:"Tasks in "+J, siblings:[T], here:T, title:T, state:"7 of 9 Runs ✅",
+    goal:"Speed across context lengths, 1-stream decode speed, smoke replies, GSM8K full score, labeling throughput.",
+    from:"from Runs r07 and r09", rowshead:"Runs · 9", head:["Run","what","","result"], rows:"runs", actions:[["Agree: no new Runs",""],["Open the Task folder","ghost"]]}
+};
+// each step of the path: its name, where it goes, and its siblings (for layout C's menus)
+const STEPS = {block:[["Knowledge-SPACE",null,[]],[P,null,PROJECTS],[B,"block",BLOCKS]],
+  job:[["Knowledge-SPACE",null,[]],[P,null,PROJECTS],[B,"block",BLOCKS],[J,"job",[J]]],
+  task:[["Knowledge-SPACE",null,[]],[P,null,PROJECTS],[B,"block",BLOCKS],[J,"job",[J]],[T,"task",[T]]]};
+const $ = id => document.getElementById(id);
+const wb = t => t.replace(/_/g,'_<wbr>');
+function toast(t){const e=$("toast");e.textContent="Mock: "+t;e.style.display="block";clearTimeout(e._t);e._t=setTimeout(()=>e.style.display="none",2600)}
+function go(name,lv){ if([B,J,T].includes(name)) location.hash=lv; else toast("would open "+name); return false }
+function level(){return (location.hash.slice(1)||"block")}
+function render(){
+  const key=level(), L=LEVELS[key]||LEVELS.block, steps=STEPS[key];
+  // top: where we are; in layout C each step also opens a menu of its siblings
+  $("crumb").innerHTML=steps.map((s,i)=>{
+    const last=i===steps.length-1, label=last?`<b>${s[0]}</b>`:(s[1]?`<a href="#${s[1]}">${s[0]}</a>`:s[0]);
+    const dd=s[2].length?`<span class="caret">▾</span><span class="dd">${s[2].map(x=>`<a href="#" class="${x===s[0]?'on':''}" onclick="return go('${x}','${s[1]||''}')">${x}</a>`).join("")}</span>`:"";
+    return `<span class="crumb">${label}${dd}</span>`}).join('<span class="sep">›</span>');
+  // left: A = the same layer; B = the whole Block as a tree
+  if(document.body.classList.contains("B")){
+    $("left").innerHTML=`<h4>${P}</h4><div class="tree">`+BLOCKS.map(b=>b!==B?`<a href="#" onclick="return go('${b}')">▸ ${b}</a>`
+      :`<a href="#block" class="${key==='block'?'on':''}">▾ ${b}</a><a href="#job" class="d1 ${key==='job'?'on':''}">▾ ${J}</a><a href="#task" class="d2 ${key==='task'?'on':''}">${T}</a>`).join("")+"</div>";
+  } else {
+    $("left").innerHTML=`<h4>${L.layer}</h4><div class="sib">`+L.siblings.map(s=>`<a href="#" class="${s===L.here?'on':''}" title="${s}" onclick="return go('${s}','${key}')"><i></i><span>${s}</span></a>`).join("")+"</div>";
+  }
+  $("title").innerHTML=wb(L.title);$("state").textContent=L.state;$("goal").textContent=L.goal;
+  $("answerbox").innerHTML=ANSWER+`<small>${L.from}</small>`;
+  const ok=RUNS.filter(r=>r.st==="ok").length, bad=RUNS.length-ok;
+  $("progtext").textContent=`${ok} of ${RUNS.length} Runs complete · ${bad} failed, both replaced`;
+  $("bar").innerHTML=`<i style="width:${ok/RUNS.length*100}%;background:var(--ok)"></i><i style="width:${bad/RUNS.length*100}%;background:var(--bad)"></i>`;
+  $("rowshead").textContent=L.rowshead;
+  let html="<tr>"+L.head.map(h=>`<th>${h}</th>`).join("")+"</tr>";
+  if(L.rows==="runs") html+=RUNS.map(r=>`<tr class="${r.st==='bad'?'dim':''}"><td><b>${wb(r.id)}</b></td><td>${r.what}</td><td class="st ${r.st}">${r.st==='ok'?'✅':'❌'}</td><td class="res">${r.res}${r.sub?`<span class="sub">${r.sub}</span>`:''}</td></tr>`).join("");
+  else html+=L.rows.map(r=>`<tr class="row" onclick="location.hash='${r.go}'">`+r.cells.map((c,i)=>`<td class="${i===3?'res':''}">${i===0?`<a href="#${r.go}">${wb(c)}</a>`:c}</td>`).join("")+"</tr>").join("");
+  $("rowtable").innerHTML=html;
+  const max=Math.max(...SPEED.map(s=>s[1]));
+  $("chartbody").innerHTML=SPEED.map((s,i)=>`<div class="lab"><span>${s[0]}</span><b>${s[1]}</b></div><div class="track"><div class="fill ${i===0?'top':''}" style="width:${s[1]/max*100}%"></div></div>`).join("");
+  $("nexttext").textContent=NEXT;$("who").textContent="waiting for: JL's check";
+  $("actions").innerHTML=L.actions.map(a=>`<button class="${a[1]}" onclick="toast('${a[0]} → would send a request to the agent and leave a receipt')">${a[0]}</button>`).join("");
+  $("studiobody").innerHTML=TOPICS.map(t=>`<div class="thumb" onclick="toast('would open ${t[0]}')"><img src="${t[1]}" alt="${t[0]} drawing"><p>${wb(t[0])}</p></div>`).join("");
+  $("tlbody").innerHTML=TIMELINE.map(t=>`<li><b>${t[0]}</b>${t[1]}</li>`).join("");
+  $("treebody").textContent=TREE;
+  // right: this page's sections, as JL's line minimap
+  const secs=[...document.querySelectorAll("section.sec")];
+  $("sections").innerHTML=secs.map(s=>`<a href="#" data-id="${s.id}"><i></i><span>${s.dataset.name}</span></a>`).join("");
+  $("sections").querySelectorAll("a").forEach(a=>a.onclick=e=>{e.preventDefault();document.getElementById(a.dataset.id).scrollIntoView({behavior:"smooth"})});
+  mark(secs[0].id);
+  document.querySelectorAll(".layouts button").forEach(b=>b.classList.toggle("on",document.body.classList.contains(b.dataset.l)));
+}
+function mark(id){document.querySelectorAll("#sections a").forEach(a=>a.classList.toggle("on",a.dataset.id===id))}
+const seen=new IntersectionObserver(es=>{const v=es.filter(e=>e.isIntersecting).sort((a,b)=>a.boundingClientRect.top-b.boundingClientRect.top);if(v.length)mark(v[0].target.id)},{rootMargin:"-70px 0px -60% 0px"});
+document.querySelectorAll("section.sec").forEach(s=>seen.observe(s));
+document.querySelectorAll(".layouts button").forEach(b=>b.onclick=()=>{document.body.className=b.dataset.l;render()});
+const q=new URLSearchParams(location.search).get("layout"); if(q&&/^[ABC]$/.test(q)) document.body.className=q;
+window.addEventListener("hashchange",()=>{render();window.scrollTo(0,0)});render();
+</script>
+</body>
+</html>

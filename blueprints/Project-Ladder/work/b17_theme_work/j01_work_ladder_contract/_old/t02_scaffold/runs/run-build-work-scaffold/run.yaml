@@ -1,0 +1,14 @@
+run: run-build-work-scaffold
+kind: soft
+type: build
+scope: null
+target: work-scaffold
+ticket: run-build-work-scaffold.md
+skill: haipipe-work
+agent: claude
+signs: null
+status: queued
+passes: []
+writes:
+- plugins/haipipe-toolkit/skills/2_theme/work/haipipe-work/scripts/
+feeds: []

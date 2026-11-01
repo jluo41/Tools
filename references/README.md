@@ -12,7 +12,7 @@ These entries are tracked as Git submodules so their upstream history stays sepa
 - Patent, genealogy, and source-tracing skills: `paper-to-patent-*`, `research-genealogy`, `literature-source-tracing`.
 - Figure, visualization, and methodology skills: `scipilot-figure-skill`, `intelligrapher`, `happy-figure-skill`, `science-superpowers`, `superpower-socialscience-skills`.
 - Math skills: `mathmodel-skill`, `claude-code-math-skills`.
-- Deck and slide skills: `presentation-agent` (a transcript-to-deck agent with an HTML deck kit; no upstream license, read only).
+- Deck and slide skills: `presentation-agent` (a transcript-to-deck agent with an HTML deck kit; no upstream license, read only); `baoyu-skills` (MIT; `skills/baoyu-slide-deck`: content into slide pictures by image generation, 17 style presets, merged to PPTX and PDF; haipipe-studio's idea slides follow its base prompt and `sketch-notes` style); `ian-handdrawn-ppt` (MIT, attribution to Ian kept: refined ink-and-pastel teaching-note pages, made for Chinese text; tried 261029, too quiet for a Studio slide).
 - Agent governance and writing-style skills: `writing-dna-skill`, `sepia`, `stop-that-shit`, `stop-slop`, `stop-slop-zh`, `llm-wiki-skill`.
 - Anti-AI writing comparison shelf: [`anti-ai-writing-skills.md`](anti-ai-writing-skills.md); it records the ten screenshot items and the exact `SKILL.md` path for each source.
 - HAI integration: `haipipe-draft-review/ref/anti-slop-adapter.md` and its

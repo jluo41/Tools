@@ -1,0 +1,55 @@
+{
+ "topic": "s02-paper-studio",
+ "style": "sketch-notes",
+ "source": "s02-paper-studio.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Paper Studio: Story and Ideation as topics",
+   "points": [
+    "how a paper is thought through before it is written, in its Board's one Studio (b10 s09-D01",
+    "s01-D06..D08: Story and Ideation are studio topics, their research questions are Board Questions…",
+    "The drawing is one frame (261011, JL: \"the draw is too thin"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and Story and Ideation as Studio topics of a paper Board, for the people who write the toolkit skills",
+    "a skill"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "What is decided",
+   "points": [
+    "Each part of a paper answers one question at one grain (JL 261019: \"What is the differneces…",
+    "Related work is its own owner and band: haipipe-paper-related, s10 the map, s11-s19 one topic per…",
+    "The story is the list of research questions it answers",
+    "Two papers from one study are two Boards, each with its own story: a quick, short paper lists…"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "04",
+   "idea": "Still open",
+   "points": [
+    "Who writes a paper Board's studio/_groups.txt: the paper scaffold (paper_ladder.py) or a person",
+    "The numbers inside a paper Board, proposed 261019 (s10-s19 decided, s02-D02",
+    "The other three story topics (MISQ AgreeablePrescription, FairGlucose, TestToLearn) still write…"
+   ],
+   "leaning": "",
+   "ask": "The group names, proposed: Ideation · Story · Plan · Figures · Review · Talk",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

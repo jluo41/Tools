@@ -1,0 +1,9 @@
+# Where s56's delivery goes (haipipe-studio scripts/render_delivery.py). The deck stays in deck/.
+# ui/job-studio/ holds the agreed screens, A to A, one file per settled letter (work_ui_cells.py writes
+# them); skill/job-studio-views.md is the views' manual. One ui delivery, two targets, as b16's s32-D11.
+pieces:
+  - code: "job-studio: the work Job's Studio views, A Display"
+    by: j03_work_workbench_pages/t02_job_page/runs/run-design-job-page
+  - from: skill/job-studio-views.md
+    to: plugins/haipipe-toolkit/skills/2_theme/work/workbench-work/SKILL.md
+    block: job-studio-views

@@ -1,0 +1,42 @@
+{
+ "topic": "s04-design-structure",
+ "style": "sketch-notes",
+ "source": "s04-design-structure.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Design structure",
+   "points": [
+    "the thinking behind the design ladder, drawn as the design side of…",
+    "the methods as their own work Block whose Jobs are method versions",
+    "the design Board whose Jobs pin a goal, one method version and one inputs version"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and what a design method is and how the design ladder holds methods, for the people who write the toolkit skills",
+    "a skill"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "Still open",
+   "points": [
+    "One methods Block per design Board, or one per Project shared across apps?",
+    "Does the Guide's card grow from three parts to the unit's five?",
+    "When to cut a method version: on a bench gain, per batch of proposals, or on demand?"
+   ],
+   "leaning": "",
+   "ask": "Methods in their own work Block, or frozen inside each design Job (method.md, as today)?",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

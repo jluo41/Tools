@@ -1,3 +1,28 @@
+## 0.41.1 · 2026-11-01 · b16 review 261101: the focus link, the design refs, code fixes
+
+- Docs: the link section gives the focus page link,
+  `/_board/workbench?path=<Board>&layout=focus&section=report|work&group=<key>|work-<key>` (keys idea, story,
+  dataflow, paperflow, explore, evidence, draft), which Report and Work use; the Levels table has a Report · Work
+  row for it. The design refs add b16 j01's s32 (the Board's Report, agreed), s33 (the Board's Work), s34, and s35 to
+  s40 (version and Section pages), under `blueprints/Project-Ladder/work/b16_theme_paper/j01_paper_workbench_pages/`;
+  the b16 topics sit in the Block folder (no `studio/`). A version is named `jNN_writing_v<MMDD>_<desk>`. The Skills
+  band is skipped on Data flow, whose plan rows name a skill each (a note after the rendered block).
+- Code: the paper captions are kept in `board_read.PAPER_CAPTIONS` and merged in `focus_page.paper_look`, so they
+  no longer overwrite the draft Task's; double-quoted links read; Support blocks show whenever the Board names a work
+  or discovery folder in any form; a done Section no longer opens on Plan; the state colours read in dark mode; a
+  tab click acts only on its own tabset; paper hook errors are logged; PROCESS titles carry no counts.
+
+## 0.41.0 · 2026-11-01 · The Board's Report and Work: seven views, two bands, their own modules
+
+- The views' manual (rendered from b16 s32 delivery/skill/board-report-views.md) now reads: seven views A to G (Venue
+  inside Story, s32-D12), each in two bands numbered from 1, RESULTS and PROCESS (s32-D22, s33-D03); PROCESS step by
+  step with state pills (s33-D06); Data flow as the plan center, each step Open, its skill and Copy prompt (s33-D07).
+- The code moved out of workbench-task-draft/focus_draft.py (2,380 lines; JL 261101: "try to split them") into
+  servers/workbench-paper/: board_views.py (the bands), board_results.py, board_process.py, board_read.py,
+  board_evidence.py, board_interactions.py, paper_version.py, and the shared servers/workbench/ui_parts.py; dead code
+  went. 39 of 53 pages came out byte-identical; the 14 Board views gained only the tail a cut return line had lost
+  (the drawing helper, the tab clicks, the folds and Copy prompt). Tests: tests/test_board_views.py.
+
 ## 0.40.0 · 2026-10-20 · The Board's Work is its steps, then its Jobs
 
 - Block › Work Details is Idea · Story · DataFlow · PaperFlow · Jobs (JL 261020: "Like in the work, we might also have
@@ -73,7 +98,7 @@ Links, commands and companions repointed at the helper skills merged into `haipi
 
 ## 0.34.0 · 2026-10-09 · Block › Audience Report › Related Papers
 
-- JL 261009: "we might add a Related Paper after the related Questions". A new view after Related Questions shows the related papers under the research question each bears on (Q00 … Q06), the whole-paper ones first and the closest first inside each, with no venue order (Tools/blueprints/b16_theme_paper s05: the Board is venue-free, its related work grouped by question). It reads `related/related.md` when the Board has one (already grouped by question), else the current telling's related-papers table (`RQ3` → Q03), through the same cards as Description › Related, so a card's PDF opens inside it. `paper.py` `related_by_question_html()`; `paper_theme.py` `AUDIENCE`, `_report()`, its Disk rows.
+- JL 261009: "we might add a Related Paper after the related Questions". A new view after Related Questions shows the related papers under the research question each bears on (Q00 … Q06), the whole-paper ones first and the closest first inside each, with no venue order (Tools/blueprints/Project-Ladder/work/b16_theme_paper s05: the Board is venue-free, its related work grouped by question). It reads `related/related.md` when the Board has one (already grouped by question), else the current telling's related-papers table (`RQ3` → Q03), through the same cards as Description › Related, so a card's PDF opens inside it. `paper.py` `related_by_question_html()`; `paper_theme.py` `AUDIENCE`, `_report()`, its Disk rows.
 
 ## 0.33.2 · 2026-10-09 · A related paper's PDF shows when its card opens
 
@@ -81,7 +106,7 @@ Links, commands and companions repointed at the helper skills merged into `haipi
 
 ## 0.33.1 · 2026-10-09 · Ideas with IDEA-NN ids; Theme folders are singular
 
-- `servers/workbench-paper/paper.py` `ideation()`: the ranked Ideas table is read when its ids are `i01` or `IDEA-01`; ScalingGlucose's `studio/s01-ideation` writes `IDEA-NN`, so Block › Audience Report › Ideation said "No idea yet" over five ideas.
+- `servers/workbench-paper/paper.py` `ideation()`: the ranked Ideas table is read when its ids are `i01` or `IDEA-01`; ScalingGlucose's `s01-ideation` writes `IDEA-NN`, so Block › Audience Report › Ideation said "No idea yet" over five ideas.
 - Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
   `design/`, `labeling/`, `ideation/`; the older plural names still read.
 
@@ -374,7 +399,7 @@ Links, commands and companions repointed at the helper skills merged into `haipi
 - Rosters and Stories in other shapes now read: a `### Label · folder · what it holds` heading, or one
   with no folder (the page is found by its own folder name), and §8 rows written as records
   (`**S-<id> (N) · job**` + `- **Field**: value` lines) beside the table form. A desk name may carry
-  a hyphen (`S-JAMA-IM-Main-1-Introduction`). Paper-AgreeableOpioid-Jama showed no Story before.
+  a hyphen (`S-JAMA-IM-Main-1-Introduction`). Paper-Example-Jama showed no Story before.
 
 ## 0.6.0 · 2026-09-22
 

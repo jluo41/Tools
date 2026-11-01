@@ -51,8 +51,9 @@ ImageRead = namedtuple("ImageRead", "food_name portion_g conf engine raw")
 # Model default. Haiku is cheaper and was wrong on the first CGMacros photo we
 # checked (beaten eggs in a bowl, read as 'sausage; oil'), which is the corpus's
 # characteristic difficulty rather than an unlucky draw: many frames are
-# mid-preparation, not a plated meal. Override with FOODNORM_IMAGE_MODEL.
-DEFAULT_MODEL = os.environ.get("FOODNORM_IMAGE_MODEL", "claude-sonnet-5")
+# mid-preparation, not a plated meal. The newest Opus since 261027 (JL: "最好是
+# 运用最新的 ... 5.5"). Override with FOODNORM_IMAGE_MODEL.
+DEFAULT_MODEL = os.environ.get("FOODNORM_IMAGE_MODEL", "claude-opus-5-5")
 
 # Meals per CLI call. The Claude Code system prompt is billed per CALL, not per
 # image, so batching is the only real cost lever: one meal per call measured
@@ -147,7 +148,7 @@ def claude_engine(
         meals: one entry per meal, each a sequence of ABSOLUTE image paths.
                Path joining is the caller's, because where a cohort keeps its
                photos is a property of that cohort and not of this stage.
-        model: model id; defaults to FOODNORM_IMAGE_MODEL or sonnet.
+        model: model id; defaults to FOODNORM_IMAGE_MODEL or Opus 5.5.
         batch: meals per CLI call; defaults to FOODNORM_IMAGE_BATCH.
 
     Returns one entry per input meal, None where the read failed. Never raises:

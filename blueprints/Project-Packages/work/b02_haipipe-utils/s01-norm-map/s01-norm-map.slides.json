@@ -1,0 +1,41 @@
+{
+ "topic": "s01-norm-map",
+ "style": "sketch-notes",
+ "source": "s01-norm-map.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "The normalizer map",
+   "points": [
+    "How plugins/haipipe-utils fits together, left to right: the contract (haipipe-norm), each member…",
+    "describe-medication's DrugKey feeds describe-insulin",
+    "A bank this SPACE's ExternalStore does not hold is red, which today is every bank (261009)"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and a map of the normalizer plugin: its contract, members, banks and API lane, for the people who maintain it",
+    "a display"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "Still open",
+   "points": [
+    "Each member still has 'its own resolver' for banks",
+    "Agree its For: line and Delivery type: (display), proposed by the agent 261030?"
+   ],
+   "leaning": "",
+   "ask": "Every bank is absent from DrFirst-SPACE: where does each live (j07_banks)?",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

@@ -1,0 +1,36 @@
+{
+  "id": "s02",
+  "folder": "s02-studio-pages",
+  "title": "Studio Page",
+  "kind": "Page",
+  "purpose": "Find a Studio, explore its design, and open its delivery.",
+  "audience": "People working within a Block, Job or Task",
+  "product": "A Studio browser with a dedicated detail page and large Draw viewer.",
+  "steps": [
+    [
+      "Find",
+      "Browse one Studio per row."
+    ],
+    [
+      "Explore",
+      "Open the Draw and the product it proposes."
+    ],
+    [
+      "Review",
+      "Read its delivery contract and open questions."
+    ],
+    [
+      "Continue",
+      "Open the source Studio in the workbench."
+    ]
+  ],
+  "checks": [
+    "Every row identifies its Studio and intended delivery.",
+    "Draw and delivery open from the same row.",
+    "The detail page keeps the reader oriented.",
+    "Narrow screens retain readable actions."
+  ],
+  "example": "This Block presents its seven Studios, with direct delivery and Draw links.",
+  "open": "Should a Studio detail open on its Draw or its delivery preview?",
+  "source": "plugins/haipipe-toolkit/servers/workbench/focus_page.py"
+}

@@ -15,7 +15,7 @@ description: >-
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 disable-model-invocation: true
 metadata:
-  version: "0.3.11"
+  version: "0.3.12"
   last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md
 ---
@@ -24,7 +24,7 @@ metadata:
 
 A Studio topic's drawing is where a person and an agent think about one topic together. It has to read as
 one story, zoomed out, and hold enough to work on, zoomed in. The principles were agreed on a drawing of
-their own, `Tools/blueprints/b31_excalidraw/studio/s01-drawing-principles/` (b31 s01), after a day when one
+their own, `Tools/blueprints/Project-PageParts/work/b31_excalidraw/s01-drawing-principles/` (b31 s01), after a day when one
 shape meant for a single drawing (s00's index) was copied to every topic and had to be undone; the model to
 copy is b10 s52-host-and-share.
 
@@ -122,7 +122,6 @@ Shapes that keep their own rules
 |---|---|---|
 | a Studio topic, sNN | the principles | this skill |
 | a screen inside a topic | the workbench's own colours, `canvas.ui_frame` | haipipe-studio `canvas.py` |
-| s00, a Block's background and index | its tree, boxes, emoji; its Studio plan; proposed sNN and jNN; its words, since an index names every topic and Job (`check.py` names it for ⑥ and ⑦, does not judge) | haipipe-studio `block_index.py` |
 | a report's drawing, a scratch | excalidraw-report | excalidraw-report |
 | a slide draft, s61 to s69 | three frames left to right, slides at half size; its own sizes, words and colours (`check.py` names it, does not judge) | excalidraw-slide |
 | a paper read onto a canvas, and a topic drawn from its readings | excalidraw-read; each logic frame keeps a key point (`check.py` names its words for ⑥ and ⑦, does not judge) | excalidraw-read |
@@ -131,6 +130,55 @@ Shapes that keep their own rules
 | a paper's Sections as a map | excalidraw-draft | excalidraw-draft |
 | a Job as one drawing: why, in and out, what it concluded, its tables | four frames in two acts | excalidraw-job |
 | a paper's ideation, s01: every idea as steps from the question | one main frame; small frames as stairs: the setting, a card per lead idea, the path to G0 | excalidraw-ideation |
+| a data topic's first Design sketch (`**Delivery type:** data`) | the data built step by step: a small table per step, arrows naming what each step does (below) | this skill |
+
+
+A data topic: the data, built step by step
+------------------------------------------
+
+A topic whose delivery is a dataset opens its Design with the data itself, never a list of file or level names
+(JL 261031: "what I want is the design, the idea!!!! not the list of names!!!! the workflow, how the data is
+constructed, what is the physical data"; "yes, this is what we need").
+
+1. **One small table per step**: its real column names and two or three made-up rows (ids like B1, D1, S1; never a
+   row from the data). `five_parts.data_table(eid, x, y, title, cols, widths, rows, color, fill, note)`.
+2. **An arrow per step, saying what it does**: "no billing for 4-52 weeks = an absence", "count by window, ÷ days
+   alive x 28". `five_parts.data_step(eid, points, words, color)`.
+3. **Follow one example through**: the same patient and physician from the raw rows to the estimate, so a reader
+   sees how one raw line becomes a row of each file.
+4. **Streams that join**: when two sources build the unit (a physician side and a patient side), draw them side by
+   side and join them where the unit is made.
+5. **Every cut of the unit**: each file the unit feeds sits side by side (pair x window, pair x 28 days, pair x
+   year); a planned one in grey.
+6. **End at what the next one reads**: the estimate or table that leaves the store; for a middle step (a control
+   rule, a cohort), the file the next step reads and the log lines that count it.
+7. **Then the rest**: the design choices, the build by sections, the open choices follow as later sketches.
+
+**This skill owns the five parts** (JL 261031, b35 r01 Q1: A, "excalidraw-studio owns it; the kind skills draw only
+the Design part"; b35-s01-D16). Every sNN drawing is Idea · Now · Design · Process · Delivery, laid out by
+`haipipe-studio/scripts/five_parts.py`; the shape, the parts and what each reads are decided here. A kind skill
+(excalidraw-job, -task, -story) draws only the Design part: its sketch goes in the topic's `design()`. Process lists
+the topic's Job, each Task and each Run with its status, agent and skill from its run.yaml (b35 r01 Q3: A).
+
+How to build it (found by a fresh agent's test, 261031):
+
+- **Start by copying an example builder**: `new_topic.py --builder` still starts an old `draw.py` builder, so copy
+  the example's `build_sNN_<topic>.py` (its header, `SPEC`, `design()`) and put each sketch in its own
+  `sketch_<what>.py` beside it, a function `(x, y) -> (els, y_bottom)`. Import five_parts by its absolute path, as the
+  example does (`STUDIO = Path(".../haipipe-studio")`).
+- **Its look is five_parts', not the principles'**: inside a five-part Design the coloured fills, the 12-15 px table
+  text and `quick_draw.write` are right; ①-⑨ and `check.py` judge framed drawings and say "0 frames, nothing to
+  judge" here. Judge it by rendering it and reading it as a newcomer.
+- **No marks kept**: `five_parts.build` rewrites the drawing; a person's edits go into the builder, never the canvas.
+- **Unique ids**: every table and step needs its own eid; `data_step` adds `<eid>_t` for its words, `data_table`
+  adds `<eid>_h`, `_hd`, `_bd`, `_cJ`, `_vJ`, `_rI_J`. A clash stops `build` with an assertion naming the id.
+- **The old drawing**: when the topic's owner says the kept first drawing goes, delete `result/first-drawing*` and
+  `result/first-drawing-builder/`; they are git-ignored, so read them first and keep any fact the new sketch needs.
+
+Examples: Physician-SPACE b63.j01-s01 `sketch_construction.py` (claim lines → physician x day → absence → stack;
+patient x physician x day → pair → Events → Pairs, PairPeriods, PairYears → the estimate) and b63.j01-s02
+`sketch_controls.py` (a middle step: engaged physicians and absences → cells → pool → draws → check → controls →
+the study physicians).
 
 
 The helpers: scripts/draw.py
@@ -189,7 +237,7 @@ Boundary
 | Owner | Owns |
 |---|---|
 | `excalidraw-studio` | how a Studio topic's drawing looks and reads: the principles, the look, the patterns, `draw.py` |
-| `haipipe-studio` | the topic: folder, face, numbering, builders' place, sessions, `canvas.write` and its checks, `render_png.py`, s00 (`block_index.py`); it loads this skill before drawing, and `new_topic.py --builder` starts a builder on `draw.py` |
+| `haipipe-studio` | the topic: folder, face, numbering, builders' place, sessions, `canvas.write` and its checks, `render_png.py`; it loads this skill before drawing, and `new_topic.py --builder` starts a builder on `draw.py` |
 | `excalidraw-report` · `-slide` · `-read` · `-section` · `-job` | their own drawings (b31 s02 to s06) |
 
 

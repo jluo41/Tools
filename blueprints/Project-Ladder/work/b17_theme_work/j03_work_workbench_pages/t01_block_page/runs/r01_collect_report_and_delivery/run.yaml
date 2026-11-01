@@ -1,0 +1,17 @@
+run: r01_collect_report_and_delivery
+kind: hard
+type: collect
+scope: blueprints/Project-Ladder/work/b17_theme_work/j03_work_workbench_pages/t01_block_page
+target: b17-s04:theme_work @ workbench_page_structure
+ticket: r01_collect_report_and_delivery.html
+skill: haipipe-interaction
+agent: JL
+signs: null
+status: done
+passes:
+- p01-1031
+writes:
+- result/answer_collection.md
+feeds:
+- blueprints/Project-Ladder/work/b17_theme_work/j03_work_workbench_pages/t01_block_page/runs/run-design-block-page
+- blueprints/Project-Ladder/work/b17_theme_work/j03_work_workbench_pages/t02_job_page/runs/run-design-job-page

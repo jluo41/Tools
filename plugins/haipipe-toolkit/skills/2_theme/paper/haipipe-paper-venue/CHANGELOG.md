@@ -1,3 +1,7 @@
+## 0.11.2 · 2026-11-01 · b16 review 261101: current paper names
+
+- Studio topics are `sNN-…` beside the Jobs, no longer under `studio/` (the story's venue list).
+
 ## 0.11.0 · 2026-10-19 · The story keeps its venue list; the rules stay here
 
 - A telling lists where it could go in its face's `### 9 · Venues` (venue, kind, why it fits, the questions it leads

@@ -12,12 +12,18 @@ description: >-
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 disable-model-invocation: true
 metadata:
-  version: "0.6.2"
+  version: "0.6.3"
   last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md
 ---
 
 # /excalidraw-task · a Task as one drawing
+
+> **Inside a Studio topic it draws only the Design part (JL 261031, b35 r01 Q1: A; b35-s01-D16).** An sNN's
+> drawing has five parts, Idea, Now, Design, Process, Delivery, and their shape is excalidraw-studio's
+> (`haipipe-studio/scripts/five_parts.py`). When a Task is drawn for an sNN, this skill's staircase is that
+> topic's Design sketch, built by its `design()`; the other four parts are read from disk by five_parts.
+> Drawn on its own, outside an sNN, it is still a whole drawing.
 
 Asked 261012, on Proj10's `discovery/b51_llm_serve`, after a Job's results topic listed only its Runs' states: "I
 cannot still read the content of it. … should we have each task to be a sNN and each from to describe what is the
@@ -173,7 +179,7 @@ Commands
 
 ```bash
 T=Tools/plugins/haipipe-toolkit/skills/1_base/excalidraw/excalidraw-task/scripts/task_drawing.py
-python $T make <task folder | job folder> [--nn NN] [--dry-run]   # one topic per Task, studio/sNN-<tNN>-<task>/
+python $T make <task folder | job folder> [--nn NN] [--dry-run]   # one topic per Task, sNN-<tNN>-<task>/
 python $T draw <topic folder>                                     # redraw one (what its builder calls)
 python $T preview <task folder> <out.excalidraw>                  # draw a Task anywhere; its Block is not touched
 python Tools/plugins/haipipe-toolkit/skills/1_base/excalidraw/excalidraw-studio/scripts/check.py <topic>.excalidraw

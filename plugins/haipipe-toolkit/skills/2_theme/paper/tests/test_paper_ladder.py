@@ -30,8 +30,8 @@ def quiet(fn, *args):
 
 def snapshot(folder: Path) -> dict:
     return {p.relative_to(folder).as_posix(): p.read_bytes() for p in folder.rglob("*")
-            if p.is_file() and not p.name.startswith(".paper-version")
-            and not any(x.startswith(".paper-version") for x in p.relative_to(folder).parts)}
+            if p.is_file() and not p.name.startswith(".paper-version")       # the undo records: .ladder-undo/ now,
+            and not any(x.startswith((".paper-version", ".ladder-undo")) for x in p.relative_to(folder).parts)}   # .paper-version before
 
 
 class PaperLadderTest(unittest.TestCase):
@@ -49,11 +49,23 @@ class PaperLadderTest(unittest.TestCase):
             self.assertIn(field, face)
         self.assertEqual([p.name for p in self.board.iterdir()], ["board.md"])   # no folder ahead of its content
 
+    def test_evidence_jobs_come_first_and_writing_jobs_from_j11(self) -> None:
+        # one paper Block links many discovery Blocks (external) and work Blocks (internal), deposits them into its
+        # evidence Jobs, and writes them into papers (JL 261031)
+        quiet(L.main, ["evidence", str(self.board)])
+        names = sorted(p.name for p in self.board.iterdir() if p.is_dir() and p.name.startswith("j"))
+        self.assertEqual(names, ["j01_evidence_display", "j02_evidence_value", "j03_evidence_cite"])
+        self.assertIn("layer: evidence", (self.board / "j02_evidence_value" / "j02_evidence_value.md").read_text())
+        quiet(L.main, ["version", str(self.board), "--desk", "desk", "--date", "0101"])
+        self.assertTrue((self.board / "j11_writing_v0101_desk").is_dir())     # not j04: writing Jobs start at j11
+        quiet(L.main, ["evidence", str(self.board)])                          # again: nothing new
+        self.assertEqual(len([p for p in self.board.iterdir() if p.is_dir() and p.name.startswith("j")]), 4)
+
     def test_version_task_and_run(self) -> None:
         quiet(L.main, ["version", str(self.board), "--desk", "desk", "--date", "0101"])
-        v = self.board / "j01_v0101_desk"
-        self.assertEqual([p.name for p in v.iterdir()], ["j01_v0101_desk.md"])
-        face = (v / "j01_v0101_desk.md").read_text()
+        v = self.board / "j11_writing_v0101_desk"
+        self.assertEqual([p.name for p in v.iterdir()], ["j11_writing_v0101_desk.md"])
+        face = (v / "j11_writing_v0101_desk.md").read_text()
         for field in ("goal:", "close:", "## Tasks"):
             self.assertIn(field, face)
         self.assertIn("## Narrative", face)
@@ -62,14 +74,14 @@ class PaperLadderTest(unittest.TestCase):
             quiet(L.main, ["task", str(v), stem])
             sec = (v / stem / f"{stem}.md").read_text()
             self.assertIn("page-type: section", sec)
-            self.assertIn(f"story-row: j01_v0101_desk ## Narrative / {stem}", sec)
-            self.assertIn("task-kind: page", sec)
+            self.assertIn(f"story-row: j11_writing_v0101_desk ## Narrative / {stem}", sec)
+            self.assertIn("task-type: draft", sec)          # the current field (haipipe-task); task-kind: page was the older one
         self.assertIn("section_kind: letter", (v / "t31_cover-letter" / "t31_cover-letter.md").read_text())
-        tasks = (v / "j01_v0101_desk.md").read_text().split("## Tasks", 1)[1].split("## ", 1)[0]
+        tasks = (v / "j11_writing_v0101_desk.md").read_text().split("## Tasks", 1)[1].split("## ", 1)[0]
         self.assertIn("1. t00_abstract · Abstract", tasks)
         self.assertIn("4. t31_cover-letter · Cover-letter".replace("Cover-letter", "Cover letter"), tasks)
         pages = (self.board / "board.md").read_text()
-        self.assertIn("### J01 · j01_v0101_desk", pages)
+        self.assertIn("### J11 · j11_writing_v0101_desk", pages)
         self.assertIn("t21_methods-detail.md", pages)
         quiet(L.main, ["run", str(self.board), "add", "j02"])           # Open a version makes the base run-add-<jNN>
         run = self.board / "runs" / "run-add-j02"                      # the shared writer's folder (haipipe-run)
@@ -86,13 +98,13 @@ class PaperLadderTest(unittest.TestCase):
             quiet(L.main, ["run", str(v / "t01_introduction"), "revise", "x"])
         with self.assertRaises(SystemExit):              # a Task is tNN_<lowercase-kebab>
             quiet(L.main, ["task", str(v), "S-Desk-Main-1-Intro"])
-        quiet(L.main, ["spaces", str(self.board), "j01_v0101_desk"])    # a version's own: reports/ and runs/
+        quiet(L.main, ["spaces", str(self.board), "j11_writing_v0101_desk"])    # a version's own: reports/ and runs/
         self.assertTrue((v / "reports" / "README.md").is_file())
         self.assertFalse((v / "studio").exists())        # Studio, Related, Delivery are the Board's (b10 s01, s09-D05)
 
     def test_next_comments_and_rollback(self) -> None:
         quiet(L.main, ["version", str(self.board), "--desk", "desk", "--date", "0101"])
-        v = self.board / "j01_v0101_desk"
+        v = self.board / "j11_writing_v0101_desk"
         quiet(L.main, ["task", str(v), "t01_introduction"])
         (v / "t01_introduction" / "draft").mkdir()
         (v / "t01_introduction" / "draft" / "t01_introduction-draft-v0.1.md").write_text("words\n")
@@ -105,19 +117,19 @@ class PaperLadderTest(unittest.TestCase):
         (v / "t01_introduction" / "studio" / "s01-map").mkdir(parents=True)   # an older Section's own topic
         (v / "t01_introduction" / "studio" / "s01-map" / "s01-map.md").write_text("# s01 · map\n")
         before = snapshot(self.board)
-        quiet(L.main, ["next", str(self.board), "--from", "j01_v0101_desk", "--date", "0202"])
-        n = self.board / "j02_v0202_desk"
+        quiet(L.main, ["next", str(self.board), "--from", "j11_writing_v0101_desk", "--date", "0202"])
+        n = self.board / "j12_writing_v0202_desk"
         self.assertTrue((n / "t01_introduction" / "draft" / "t01_introduction-draft-v0.1.md").is_file())
         self.assertFalse((n / "t01_introduction" / "runs").exists())   # receipts are not copied
         self.assertFalse((n / "t01_introduction" / "studio").exists()) # Studio is the Board's (b10 s09-D01)
-        self.assertIn("from: j01_v0101_desk", (n / "j02_v0202_desk.md").read_text())
-        quiet(R.main, [str(self.board), "add", "j01_v0101_desk/RD01-editor-0916", "--to", "j02_v0202_desk"])
+        self.assertIn("from: j11_writing_v0101_desk", (n / "j12_writing_v0202_desk.md").read_text())
+        quiet(R.main, [str(self.board), "add", "j11_writing_v0101_desk/RD01-editor-0916", "--to", "j12_writing_v0202_desk"])
         rep = n / "reports" / "q01_editor-0916" / "q01_editor-0916.md"
         self.assertTrue(rep.is_file())
         self.assertIn("page-type: comments", rep.read_text())
-        self.assertIn("group: comments", (n / "j02_v0202_desk.md").read_text())
-        self.assertIn("responds-to: reports/q01_editor-0916/q01_editor-0916.md", (n / "j02_v0202_desk.md").read_text())
-        self.assertNotIn("\nanswers:", (n / "j02_v0202_desk.md").read_text())      # answers: is for Question ids
+        self.assertIn("group: comments", (n / "j12_writing_v0202_desk.md").read_text())
+        self.assertIn("responds-to: reports/q01_editor-0916/q01_editor-0916.md", (n / "j12_writing_v0202_desk.md").read_text())
+        self.assertNotIn("\nanswers:", (n / "j12_writing_v0202_desk.md").read_text())      # answers: is for Question ids
         self.assertIn("answers: Q01", rep.read_text())                               # the report names its Question
         self.assertIn("answer-status: open", rep.read_text())
         quiet(R.main, [str(self.board), "rollback"])     # the add, then the next: the Board as it was
@@ -126,24 +138,24 @@ class PaperLadderTest(unittest.TestCase):
 
     def test_route_and_reply_a_review_item(self) -> None:
         quiet(L.main, ["version", str(self.board), "--desk", "desk", "--date", "0101"])
-        rep = self.board / "j01_v0101_desk" / "reports" / "q01_editor-0916"
+        rep = self.board / "j11_writing_v0101_desk" / "reports" / "q01_editor-0916"
         rep.mkdir(parents=True)
         face = rep / "q01_editor-0916.md"
         face.write_text("# q01_editor-0916 · Editor decision\n\npage-type: comments\n\n## Review Items\n\n"
                         "| item | cites | lands on | work | reply | state |\n|---|---|---|---|---|---|\n"
                         "| Review-causal-claim | R1.1 · E1.2 |  |  |  | open |\n| Review-sample | R2.1 |  |  |  | open |\n")
         before = snapshot(self.board)
-        quiet(R.main, [str(self.board), "route", "j01_v0101_desk/reports/q01_editor-0916", "Review-causal-claim",
+        quiet(R.main, [str(self.board), "route", "j11_writing_v0101_desk/reports/q01_editor-0916", "Review-causal-claim",
                        "--to", "t04_results ¶2 · C2"])
         text = face.read_text()
         self.assertIn("| Review-causal-claim | R1.1 · E1.2 | t04_results ¶2 · C2 | run-revise-causal-claim |  | routed |",
                       text)
         self.assertIn("| Review-sample | R2.1 |  |  |  | open |", text)          # the other row is untouched
-        quiet(R.main, [str(self.board), "reply", "j01_v0101_desk/reports/q01_editor-0916", "Review-causal-claim",
+        quiet(R.main, [str(self.board), "reply", "j11_writing_v0101_desk/reports/q01_editor-0916", "Review-causal-claim",
                        "--reply", "P3"])
         self.assertIn("| run-revise-causal-claim | P3 | answered |", face.read_text())
         with self.assertRaises(SystemExit):              # an item that is not there
-            quiet(R.main, [str(self.board), "reply", "j01_v0101_desk/reports/q01_editor-0916", "Review-x",
+            quiet(R.main, [str(self.board), "reply", "j11_writing_v0101_desk/reports/q01_editor-0916", "Review-x",
                            "--reply", "P1"])
         quiet(R.main, [str(self.board), "rollback"])
         quiet(R.main, [str(self.board), "rollback"])

@@ -88,10 +88,10 @@ class TranscriptMarkdown(unittest.TestCase):
             result = ChatMixin.keep_sessions(Fake(), page, {})
 
             self.assertTrue(result["ok"])
-            kept = page_home / "studio" / "chat" / "260815-1402"
+            kept = page_home / "chat" / "260815-1402"
             self.assertTrue((kept / "digest.md").is_file())
             self.assertTrue((kept / "transcript.md").is_file())
-            self.assertFalse((page_home / "chat").exists())
+            self.assertFalse((page_home / "studio").exists())        # no studio/ folder (JL 261031)
 
 
 if __name__ == "__main__":

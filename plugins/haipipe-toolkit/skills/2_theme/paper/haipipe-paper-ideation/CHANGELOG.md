@@ -1,6 +1,10 @@
+## 1.4.4 · 2026-11-01 · b16 review 261101: current paper names
+
+- version Jobs are named `jNN_writing_v<MMDD>_<desk>` (from j11), no longer `jNN_v<MMDD>_<desk>`; Studio topics are `sNN-…` beside the Jobs, no longer under `studio/` (the layout tree shows s01 and s02 beside the Jobs).
+
 ## 1.4.1 · 2026-10-19 · Closest work comes from s10
 
-- A novelty check reads each claim's closest work from `studio/s10-related-work-map/` and its s11-s19 types,
+- A novelty check reads each claim's closest work from `s10-related-work-map/` and its s11-s19 types,
   owned by the new `haipipe-paper-related` (JL 261019).
 - A telling may open before G0, which is then JL's mark on its face (JL 261019: "there are not s02, why????").
 
@@ -14,20 +18,20 @@ Shorter description (782 -> 427 characters): what it does, when to use it, its t
 
 ## 1.4.0 · 2026-10-14 · The ideation is drawn by excalidraw-ideation, when installed
 
-- `studio/s01-ideation/` is drawn by the new `excalidraw-ideation` skill whenever it is installed (JL 261014:
+- `s01-ideation/` is drawn by the new `excalidraw-ideation` skill whenever it is installed (JL 261014:
   "haipipe-paper-ideation will call it to draw when it is available"): one main frame of every idea as steps, small
-  frames for the setting, one card per lead idea and the path to G0, in Paper-LLMRecPhy-Jama's shape (JL 261013). Its
+  frames for the setting, one card per lead idea and the path to G0, in Paper-Example-B's shape (JL 261013). Its
   words, `s01-ideation-drawing.yaml`, are a projection of the face's divisions; the table in "The drawing" maps them.
 - The drawing's optional ⑧ shows how the lead Idea scores and where it goes: the I2 test verdicts and the venue
   ladder, a venue's rules only from a verified venue contract (JL 261014).
 
 ## 1.3.0 · 2026-10-11 · The ideation topic carries Tags and Stage
 
-- `studio/s01-ideation/`'s face keeps haipipe-studio's topic marks, `**Tags:**` and `**Stage:**` (b10 s09-D03), beside its divisions; Studio is the Board's alone (b10 s09-D01).
+- `s01-ideation/`'s face keeps haipipe-studio's topic marks, `**Tags:**` and `**Stage:**` (b10 s09-D03), beside its divisions; Studio is the Board's alone (b10 s09-D01).
 
 ## 1.2.0 · 2026-10-07 · The Ideation as a studio topic and Questions (b16 Q04, Q05)
 
-- On the ladder the Ideation is the Board's studio topic `studio/s01-ideation/` (its face carries the same divisions) and each admitted Idea is a Board Question with `group: ideation` and its report; the Block's Audience Report › Ideation shows them. Its buttons are the `Block › Audience Report` run cards; G0 is Select idea. An older `A1-Story/Story00-ideation/` Page is still read.
+- On the ladder the Ideation is the Board's studio topic `s01-ideation/` (its face carries the same divisions) and each admitted Idea is a Board Question with `group: ideation` and its report; the Block's Audience Report › Ideation shows them. Its buttons are the `Block › Audience Report` run cards; G0 is Select idea. An older `A1-Story/Story00-ideation/` Page is still read.
 
 ## 1.1.3 · 2026-09-30 · Story parts are §N
 

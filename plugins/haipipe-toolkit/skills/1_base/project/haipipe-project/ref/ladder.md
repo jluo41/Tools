@@ -13,6 +13,8 @@ ticket's body to haipipe-task, a Run's kinds and passes to haipipe-run.
 
 ```text
 level   name            face               may hold                                     children
+Project Project-<name>/ project.md         studio/ delivery/ note/ and its Themes        <theme>/
+Theme   <theme>/        <theme>.md         (optional; its Blocks)                        bNN_<topic>/
 Block   bNN_<topic>/    board.md           studio/ reports/ delivery/ related/          jNN_<job>/
                                            resources/ src/
 Job     jNN_<job>/      jNN_<job>.md       studio/ reports/ delivery/ src/ sbatch/      tNN_<task>/
@@ -22,14 +24,21 @@ Task    tNN_<task>/     tNN_<task>.md      studio/ reports/ delivery/ scripts/ d
 Run     runs/<run>/     run.yaml           the ticket · config.yaml · result/ · passes/  pNN-<MMDD>/
 ```
 
-1. **Face**: a Block's face is `board.md` (the rename to `bNN_<topic>.md` is still an open
+1. **Face**: one page per folder (JL 261028). A Project's page is its `project.md` (JL 261028); a
+   `README.md` beside it has another job, the repository's front door on GitHub (what it is, how to set it up);
+   a Theme's is the optional `<theme>/<theme>.md`, such as `work/work.md`, written when there is something to say
+   (what its Blocks are for, the order to read them). Any folder of Blocks is a Theme by what it holds, so Tools'
+   `blueprints/` (b01, b10, b17, …) is one too, with `blueprints/blueprints.md` as its page; a Block's face is `board.md` (the rename to `bNN_<topic>.md` is still an open
    design question, so both pass); a Job's and a Task's face is its own name plus `.md`.
 2. **Task kind**: a Task face may say `task-kind: page`; a Page Task holds soft Runs only.
    Without the field a Task is a work Task.
 3. **Hard and soft**: a hard Run (`rNN_<slug>`, ticket `.sh`, `.cmd` where only cmd.exe runs, or a runner `.yaml`) writes only
    its own `result/` and lives in a work Task. A soft Run (`run-<type>-<target>`, ticket `.md`; a Page's Delivery Run `run-delivery-<lane>` keeps its one command, `.sh`)
    writes into its scope's items, has no `result/`, and may sit at Block, Job or Task. Its name
-   carries no date; the date is in its passes. haipipe-run owns the definitions.
+   carries no date; the date is in its passes. A collection Run (`rNN_collect_<slug>`, haipipe-interaction, JL
+   261031) is the one hard Run allowed under any page: its questions are `question_collection.md`, its ticket
+   is the form `rNN_collect_<slug>.html` rendered from them. The previews and pictures its questions link by bare name
+   (`[preview](option-q1-a.html)`) sit beside them. haipipe-run owns the definitions.
 4. **Old layout**: `runs/<run>.sh` beside `results/<run>/` is the layout before one folder per
    Run. The audit reports it as debt; `update --apply` moves it (see `fn/update.md`).
 5. **Families**: a Block's `workbench:` field (default `task`) adds its family's extras below.
@@ -65,13 +74,15 @@ levels:
       results: "old layout: results/<run>/ moves into runs/<run>/result/"
       diagram: "diagram/ is retired: drawings go in studio/"
   run:
-    may_hold: [result, passes, run.yaml, config.yaml, config.do]   # config.do: a Stata Run (haipipe-task-for-stata)
+    may_hold: [result, passes, run.yaml, config.yaml, config.do,   # config.do: a Stata Run (haipipe-task-for-stata)
+               question_collection.md, applied.md]                 # a collection Run's questions and what applied them (haipipe-interaction)
 
 names:
   block: '^(b\d{2}_[A-Za-z0-9][A-Za-z0-9_-]*|Paper-[A-Za-z0-9][A-Za-z0-9-]*)$'   # a paper Board: Paper-<Slug>/
   job:   '^j\d{2,3}_[A-Za-z0-9][A-Za-z0-9_-]*$'                                    # kebab tails (paper, design)
   task:  '^t\d{2}_[A-Za-z0-9][A-Za-z0-9_-]*$'
   hard:  '^r\d{2,3}_[A-Za-z0-9][A-Za-z0-9_.-]*$'
+  collect: '^r\d{2,3}_collect_[a-z0-9]+(_[a-z0-9]+)*$'                            # a person's answers, under any page
   soft:  '^run-[a-z]+-[A-Za-z0-9][A-Za-z0-9_.-]*$'
   soft_dated: '^run-[a-z]+-\d{4}-'
 
@@ -90,16 +101,14 @@ families:
     hard: '^rl\d{2}_[a-z0-9_-]+$'        # rlNN_<operation>_<target>, owned by subjective-label
 
 today:                                   # b10's rules since 261012: `audit --today`, and /wb update step 2 (b10 s10)
-  topic: '^s\d{2}[-_][A-Za-z0-9]'        # studio/ holds sNN-<topic>/ folders; _groups.txt, _build/ and dot names kept
+  topic: '^s\d{2}[-_][A-Za-z0-9]'        # sNN-<topic>/ sits beside the Jobs or Tasks (JL 261030); studio/ keeps _groups.txt, _build/, dot names
   register: '(?m)^## Questions[ \t]*$'   # the Block face's Questions register (haipipe-report)
   report: '^q\d{2}_'                     # reports/qNN_<topic>/, one per registered Block Question
-  block_only: [related, delivery]        # a Job's or a Task's moves to the Block (haipipe-delivery, haipipe-related)
+  block_only: [related]                  # a Job's or a Task's moves to the Block (haipipe-related); studio/ and delivery/
+                                         # live at every level and roll up to the page above (JL 261028)
   drawing: [.excalidraw, .png, .svg, .py, .md, .json]   # in studio/, these wait for a topic; other files move to the Block
   keep: [question-map.excalidraw, question-map.png]     # the workbench's question_map.py writes the Block's map here
   keep_glob: ['mind-map.*']              # and its mind map, from-work: .mindmap.md and .mindmap.html (haipipe-studio, 261024)
-  s00: s00-overview                      # every Block's overview (its background and index) has this one name (haipipe-studio,
-                                         # JL 261026); a number an old index gave up when it became s00 is never reused (261012)
-  s00_was: [s00-background-and-index]    # its old names: update --today --apply renames the folder, its files and the Block's links
   workflow:                              # a work Block (family task) since 261021 (LLMRec b01, b02): Goal first
     layout: '(?m)^workbench-layout:[ \t]*workflow[ \t]*$'   # the Block face opts in (workbench-work)
     job_fields: [emoji]                  # a Job face's own emoji on its Goal line (haipipe-job)
@@ -140,14 +149,13 @@ Delivery existed (b00_rawdata: 1 Block, 14 Jobs, 310 Tasks, all ok). `audit --to
 both and plans the fix.
 
 ```text
-debt   studio/ has no sNN-<topic>/ topic                    proposed by /wb update step 5
+debt   the level has no sNN-<topic>/ topic                  proposed by /wb update step 5
        studio/<data file> is not a topic: moves to the Block   moved by update --today --apply
-       studio/ has no s00-overview/                            draw it: haipipe-studio block_index.py <block> --draw
-       studio/s00-background-and-index/ (its old name)          renamed by update --today --apply, files and links too
-       studio/s00-<other>/ or sNN-…background-index/            renumber it: s00 is only s00-overview
-       studio/sNN-<topic>/ reuses the number of an old index      renumber it to the next free sNN
+       studio/s00-<any>/ or sNN-…background-index/              retired 261029 (Report › MindMap): delete it and run-draw-s00
+       studio/<sNN>-<topic>/: move it beside its Jobs             haipipe-studio studio_move.py --apply (261031)
+       sNN-<topic>/ reuses the number of an old index             renumber it to the next free sNN
        studio/<drawing, builder or note>: gather into a topic   the topic step 5 names
-       a Job's or Task's studio/: its topics go to the Block   the owner moves them (renumbered)
+       a Job's or Task's studio/sNN: move it into the Job or Task   studio_move.py, beside its Tasks or Runs
        the face has no ## Questions register                proposed by /wb update step 6
        a registered Block Question has no reports/qNN_*/      haipipe-report makes it
        a Job's or Task's related/ or delivery/               haipipe-delivery moves it to the Block

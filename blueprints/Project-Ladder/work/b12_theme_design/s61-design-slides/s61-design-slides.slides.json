@@ -1,0 +1,42 @@
+{
+ "topic": "s61-design-slides",
+ "style": "sketch-notes",
+ "source": "s61-design-slides.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Design slides",
+   "points": [
+    "a high-level deck that explains the design theme on the ladder, the design side of b11's s61",
+    "The deck's logic is drawn first",
+    "the slides follow it"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What it hands over",
+   "points": [
+    "a deck, and the slides that explain the design theme on the ladder, for people new to the toolkit",
+    "a display"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "Still open",
+   "points": [
+    "One form for both decks: b11's s61 plans an HTML deck and a PDF",
+    "Slide 11 dates itself (2026-10-07): rebuild the deck before each showing",
+    "A slide showing one design as the reader sees it, once a real Job exists"
+   ],
+   "leaning": "",
+   "ask": "Who is it for: the people who run design Boards, or a wider room? It decides the depth",
+   "notes": "a scratch: its words from the sNN's ideas file; its picture comes when asked"
+  }
+ ]
+}

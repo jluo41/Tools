@@ -1,22 +1,23 @@
 #!/usr/bin/env python3
-"""topics_paper.py · a paper Board's Story and Ideation into studio topics and Questions (b16 Q04).
+"""topics_paper.py · a paper Board's Story and Ideation into sNN topics and Questions (b16 Q04).
 
     python topics_paper.py <board> --dry-run     print every move, rewrite and new file; change nothing
     python topics_paper.py <board> --apply       do them; keep every changed file's old text for rollback
     python topics_paper.py <board> --rollback    undo the newest run of this script
 
-A paper Board takes b03's shape (haipipe-paper/ref/paper-ladder.md): its thinking is studio topics, its
+A paper Board takes b03's shape (haipipe-paper/ref/paper-ladder.md): its thinking is sNN topics, its
 answers are Questions with reports, and each version tells the story in its own face. The Story and Ideation
 Pages stop being Pages; their words move, nearly word for word:
 
-    Story00-<direction>/                -> studio/s01-ideation/              the face keeps the whole page
-    Story<L>-<desk>-<idea>/             -> studio/sNN-story-<desk>-<idea>/   the face keeps every division but:
+    Story00-<direction>/                -> s01-ideation/                     the face keeps the whole page
+    Story<L>-<desk>-<idea>/             -> sNN-story-<desk>-<idea>/          the face keeps every division but:
       §3's "#### N · Question" blocks   -> reports/qNN_<name>/ (one each) + a row in board.md ## Questions
       §8 Section Narrative (the current telling only) -> its version's face, ## Narrative (the build reads it)
-    a loose studio drawing + its make_*.py -> studio/sNN-<name>/
+    a loose studio drawing + its make_*.py -> sNN-<name>/
+Each topic sits beside the Board's Jobs (JL 261030), not in studio/.
 Then: board.md (story-current, ## Pages loses the Story group, ## Questions gains the rows); each version
 paper-build.toml's [pages] order -> the version face; relative links in non-generated .md that point at a
-moved file. A builder that finds the Board by counting parents gets one more level.
+moved file. A builder that finds the Board by counting parents keeps its count: sNN-<name>/ is as deep as studio/.
 
 Every changed file's old text is kept in <board>/.paper-topics-N/<path>.orig with the run's record
 (.paper-topics-N.yaml), so --rollback restores it exactly. Tracked paths move with `git mv`, untracked with a
@@ -96,21 +97,22 @@ def plan(board):
         tellings = [s for _, s in pages if not IDEATION.match(s)]
         built = [s for s in (order_story(t) for t in sorted(board.glob(TOMLS))) if s in tellings]
         current = built[0] if built else tellings[0] if len(tellings) == 1 else ""
-    taken = {int(m.group(1)) for p in (board / "studio").glob("s[0-9][0-9]-*") for m in [re.match(r"s(\d{2})", p.name)]}
+    taken = {int(m.group(1)) for home in (board, board / "studio") for p in home.glob("s[0-9][0-9][-_]*")
+             for m in [re.match(r"s(\d{2})", p.name)]}       # beside the Jobs and in an older studio/
     n, topics = 0, {}
     for rel, stem in sorted(pages, key=lambda x: (not IDEATION.match(x[1]), x[1])):
         n += 1
         while n in taken:
             n += 1
         name = "ideation" if IDEATION.match(stem) else "story-" + stem.split("-", 1)[1] if "-" in stem else "story"
-        topics[rel] = f"studio/s{n:02d}-{name}"
+        topics[rel] = f"s{n:02d}-{name}"
     loose = []
     for drawing in sorted((board / "studio").glob("*.excalidraw")):
         n += 1
         while n in taken:
             n += 1
         builder = next((b for b in sorted((board / "studio").glob("make_*.py")) if drawing.name in read(b)), None)
-        loose.append((drawing, builder, f"studio/s{n:02d}-{snake(drawing.stem).replace('_', '-')}"))
+        loose.append((drawing, builder, f"s{n:02d}-{snake(drawing.stem).replace('_', '-')}"))
     moves = []
     for rel, new in topics.items():
         stem = Path(rel).name
@@ -259,7 +261,7 @@ def rewrites(board, P, Q):
         if span and any(q[5] == topic for q in Q):     # the question blocks leave; the division keeps its words
             body = QBLOCK.sub("", text[span[0]:span[1]]).rstrip() + "\n\n"
             body += "Each question is a Board Question with its report: " + ", ".join(
-                f"{q[0]} [{q[2]}](../../reports/{rpath(q)}/{rpath(q)}.md)" for q in Q if q[5] == topic) + ".\n\n"
+                f"{q[0]} [{q[2]}]({'../' * len(Path(topic).parts)}reports/{rpath(q)}/{rpath(q)}.md)" for q in Q if q[5] == topic) + ".\n\n"
             text = text[:span[0]] + body + text[span[1]:]
         if stem == P["current"] and versions_telling(board, stem):   # §8 leaves only when a version takes it
             span = division(text, 8)
@@ -349,14 +351,7 @@ def rewrites(board, P, Q):
         nt = fix_links(t, rel, new, board, mapping)
         if nt != t:
             change[new] = (rel, nt)
-
-    # a builder that finds the Board by counting parents: one level deeper now
-    for drawing, builder, topic in P["loose"]:
-        if builder is not None:
-            t = read(builder)
-            nt = re.sub(r"HERE\.parents\[(\d+)\]", lambda m: f"HERE.parents[{int(m.group(1)) + 1}]", t)
-            if nt != t:
-                change[f"{topic}/{builder.name}"] = (f"studio/{builder.name}", nt)
+    # a builder that finds the Board by counting parents keeps its count: sNN-<name>/ is as deep as studio/
     return change, create
 
 
