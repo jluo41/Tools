@@ -929,21 +929,28 @@ def _as_signed(key: str, task: Path, root: Path) -> str:
     return ""
 
 
+PROMPT_HEAD = {"raw": ("Data", "describe the raw file"), "make": ("Items", "make the items"),
+               "embed": ("Embedding", "embed the items"), "again": ("Items", "make the items again")}
+
+
+def _session(task: Path) -> str:
+    """The chat session a Task's prompts run in: the Task face's `session:`, else its Job's, else the Task's name."""
+    for md in (face(task), face(task.parent)):
+        text = md.read_text(encoding="utf-8", errors="ignore")[:3000] if md else ""
+        m = re.search(r"(?m)^session:\s*(\S.*?)\s*$", text)
+        if m:
+            return m.group(1)
+    return task.name
+
+
 def _prompt_box(prompt: str, task: Path, root: Path, key: str, open_: bool = True) -> str:
-    """The prompt, yours to add to (s41-D14): what you type under it is its `user feedback:` line, copied with it
-    (JL 261014: "It will be our part of the prompt"); a pasted image is kept in the Task's notes/, its path written in."""
-    k = f"{rel(task, root)}#{key}"
-    return (f'<details class=run-prompt-box{" open" if open_ else ""}><summary>Prompt '
-            f'<button type=button class="run-copy work-act" data-copy="{esc(prompt)}">Copy prompt</button></summary>'
-            f'<pre class=run-prompt style="margin-bottom:0;border-bottom-left-radius:0;border-bottom-right-radius:0">'
-            f'{esc(prompt)}</pre>'
-            '<label style="display:block;margin:0;padding:4px 10px 0;background:var(--wash)">'
-            '<code>user feedback:</code></label>'
-            f'<textarea class=run-notes rows=3 data-key="notes:{esc(k)}" data-folder="{esc(rel(task, root))}" '
-            'data-upload="/_board/labeling/notes" '
-            'placeholder="notes, a row, an image" '
-            'style="width:100%;box-sizing:border-box;margin:0;border:1px solid var(--line);border-top:0;'
-            'background:var(--wash);font:13px/1.45 ui-monospace,Menlo,monospace;padding:6px 10px"></textarea></details>')
+    """The step's prompt in the Prompt box every theme shares (servers/workbench/ui_parts.prompt_box; JL 261101, b15
+    s58 C1): the prompt, one notes row copied with it (kept in this browser; a pasted image kept in the Task's notes/,
+    s41-D14), and the line that sends it to the Task's session. `open_` is kept for the callers: a done step folds."""
+    from live.ui_parts import prompt_box
+    step, asks = PROMPT_HEAD.get(key, (key.title(), ""))
+    return prompt_box(prompt, (("your notes", "notes, a row, an image"),), _session(task), step=step, asks=asks,
+                      key=f"notes:{rel(task, root)}#{key}", upload=(rel(task, root), "/_board/labeling/notes"))
 
 
 CHIPS = {"done": '<span class="st st-ok">✓ done</span>', "next": '<span class="st st-warn">→ next</span>',

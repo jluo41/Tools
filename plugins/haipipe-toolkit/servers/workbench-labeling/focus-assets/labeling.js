@@ -4,12 +4,12 @@
   function unifyPrompts() {
     root.querySelectorAll('.items-step').forEach(step => {
       const row = step.querySelector('.sign-row');
-      const box = step.querySelector('.run-prompt-box');
+      const box = step.querySelector('.pb-prompt');
       const sign = row?.querySelector('button[data-post]');
       const name = row?.querySelector('input[name="by"]');
-      const copy = box?.querySelector('.run-copy');
-      const notes = box?.querySelector('textarea.run-notes');
-      const preview = box?.querySelector('.run-prompt');
+      const copy = box?.querySelector('.pb-copy');
+      const notes = box?.querySelector('textarea[data-field]');
+      const preview = box?.querySelector('.pb-pt');
       if (!sign || !name || !copy || !notes || !preview || box.dataset.unified) return;
       box.dataset.unified = 'true'; box.classList.add('lf-compose');
       const endpoint = sign.dataset.post, payload = JSON.parse(sign.dataset.body);
@@ -31,7 +31,9 @@
       let saved = false, busy = false, confirmedRequest = '';
       function requestText() {
         const person = name.value.trim().replace(/\s+/g,' ');
-        return base + '\nhuman name: ' + (person || '[your name]') + (notes.value.trim() ? '\nuser feedback: ' + notes.value.trim() : '');
+        return base + '\nhuman name: ' + (person || '[your name]')
+          + (notes.value.trim() ? '\n' + (notes.dataset.field || 'your notes') + ': ' + notes.value.trim() : '')
+          + (copy.dataset.tail ? '\n' + copy.dataset.tail : '');
       }
       function updatePreview() { if (!saved) preview.textContent = requestText(); }
       name.addEventListener('input', updatePreview); notes.addEventListener('input', updatePreview); updatePreview();

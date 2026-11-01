@@ -170,8 +170,10 @@ JS = """<script>(function(){
   var text=b.dataset.copy||'';if(notes&&notes.value.trim())text+='\\nuser feedback: '+notes.value.trim();
   if(b.dataset.tail)text+='\\n'+b.dataset.tail;
   var was=b.textContent,done=function(){b.textContent='Copied';setTimeout(function(){b.textContent=was;},1400);};
-  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(text).then(done,done);else done();
+  cp(text,done);
  });
+ /* http has no navigator.clipboard: copy through a hidden textarea then (b16 review 261101: "Copied" copied nothing) */
+ function cp(text,done){if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(done,function(){old(text);done();});}else{old(text);done();}}function old(text){var t=document.createElement('textarea');t.value=text;t.setAttribute('readonly','');t.style.position='fixed';t.style.top='-1000px';document.body.appendChild(t);t.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(t);}
 })();</script>"""
 
 

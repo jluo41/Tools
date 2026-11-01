@@ -214,7 +214,7 @@ class PageTaskTest(unittest.TestCase):
             self.assertIn("Operation", work.html)
             self.assertIn("Result", work.html)
             self.assertIn("/haipipe-draft ", work.html)                          # the prompt, with its notes box
-            self.assertIn("user feedback:", work.html)
+            self.assertIn('data-field="your notes"', work.html)
             self.assertIn("Why now?", work.html)                                # Input, read from the face
             self.assertIn("at most 900 words", work.html)                       # the Requirement, a card of 1 · Plan
             self.assertIn("Rubric", work.html)

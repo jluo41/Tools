@@ -36,3 +36,12 @@ Tools is public.
 1. t01_board_page · The insight Board page
 2. t02_job_page · An insight Job page
 3. t03_task_page · An insight Task page
+
+## Round 2 notes
+
+- Every Prompt box is the shared part `servers/workbench/ui_parts.py` `prompt_box` (Theme_Labeling, 261101): head
+  "✍️ Prompt · <step> · <asks>" with Copy prompt, the grey prompt text, the person's fields, and the line "Run this
+  in the Claude session <session>". The drawings draw the same four parts (b15's `labeling_ui_cells.py` `k_prompt`),
+  so the Studio cells' "Ask the agent · Copy prompt" rows become that box.
+- The round 1 reviews' fixes (each cell's `review/cell-s1-r01.md`): your signs first on Work, the same grid on Work,
+  the answer in the large slot, the Task's cut × step grid, numbered heading bars with the bottom helpers.

@@ -1587,8 +1587,10 @@ document.addEventListener('click', function (ev) {
     return post('bibex-entry', {bibtex: document.getElementById('newbib').value});
   if (!b.dataset || !b.dataset.k) return;
   if (b.className === 'cpy') {
-    navigator.clipboard.writeText('\\\\citep{' + b.dataset.k + '}')
-      .then(function () { b.textContent = '📋 copied'; });
+    var cite = '\\\\citep{' + b.dataset.k + '}', ok = function () { b.textContent = '📋 copied'; };
+    if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(cite).then(ok); return; }
+    var t = document.createElement('textarea'); t.value = cite; t.style.position = 'fixed'; t.style.top = '-1000px';
+    document.body.appendChild(t); t.select(); try { document.execCommand('copy'); ok(); } catch (e) {} t.remove();  // http: no clipboard API
     return;
   }
   if (b.className === 'ver')   return post('bibex-verify', {key: b.dataset.k});

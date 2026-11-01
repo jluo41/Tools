@@ -96,7 +96,15 @@ def evidence_body(task: Path, root: Path):
     label, status = _field(text, "label"), _field(text, "status")
     url = lambda f: "/" + quote(ds._rel(f, root))
     body = ""
-    shown = _evidence_file(task, text)
+    # a display's newest version shows as its preview.pdf, both pages: the display with its caption, then how it was
+    # made (haipipe-display scripts/build_preview.py; JL 261101: "I want to make this to be things like the pdf")
+    previews = sorted(task.glob("runs/*/result/preview.pdf")) + sorted(task.glob("display/*/preview.pdf"))
+    preview = previews[-1] if previews else None
+    shown = None if preview else _evidence_file(task, text)
+    if preview is not None:
+        body += (f'<div class=pb-ptop><span class=pb-state>{esc(preview.parent.parent.name)} · the display, then how it was made</span>'
+                 f'<a class=fd-btn data-pop="{esc(label or task.name)} · preview" href="{esc(url(preview))}">⤢ Pop out</a></div>'
+                 f'<iframe class=pb-pdf src="{esc(url(preview))}#view=FitH" loading=lazy title="{esc(label or task.name)}"></iframe>')
     if shown is not None:
         if shown.suffix == ".tex":               # a LaTeX table, shown as a table
             body += latex_table_html(shown.read_text(encoding="utf-8", errors="ignore"))
@@ -120,7 +128,7 @@ def evidence_body(task: Path, root: Path):
     facts = [(k, _field(text, k)) for k in EV_FACTS if _field(text, k)]
     body += "".join(f'<div class=fd-row><span class=n>{esc(k)}</span><span class=d>{esc(v)}</span></div>' for k, v in facts)
     body += f'<p><a class=fd-btn href="{esc(_task_url(task, root))}">Open {esc(task.name)} ↗</a></p>'
-    if shown is None and not values:
+    if shown is None and preview is None and not values:
         body = '<p class=mut>Not drawn yet.</p>' + body
     return label, status, body
 

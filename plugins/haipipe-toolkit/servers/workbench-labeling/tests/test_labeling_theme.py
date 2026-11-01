@@ -224,13 +224,14 @@ class LabelingThemeTest(unittest.TestCase):
                 with self.subTest(sub=sub, words=w):
                     self.assertIn(w, page)
             with self.subTest(sub=sub, copy=True):         # Items has two prompts: the step's and its revise
-                self.assertEqual(page.count('class="run-copy work-act" data-copy="'), 2 if sub == "2 · Items" else 1)
-                self.assertIn("<textarea class=run-notes", page)   # every prompt takes the person's notes (s41-D14)
+                self.assertEqual(page.count('class="fd-btn pb-copy" data-copy="'), 2 if sub == "2 · Items" else 1)
+                self.assertIn('data-upload="/_board/labeling/notes"', page)   # every prompt takes notes and an image (s41-D14)
         page = frame.render(self.theme, self.root, items, "Work Details", "2 · Items")
         self.assertIn('<details class="topic work-task items-step"><summary>', page)     # a done step folds (D15)
         page = frame.render(self.theme, self.root, items, "Work Details", "3 · Embedding")
         self.assertIn('<details class="topic work-task items-step" open>', page)          # the step to do now
-        self.assertIn("<details class=run-prompt-box open>", page)
+        self.assertIn("<div class=pb-prompt>", page)                                      # the shared box (JL 261101)
+        self.assertIn("Run this in the Claude session &quot;", page)
 
     def test_step_one_shows_the_raw_table_card_with_a_made_up_row(self):
         items = items_task(self.task.parent)

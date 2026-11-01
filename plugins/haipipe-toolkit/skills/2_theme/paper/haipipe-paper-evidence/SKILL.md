@@ -1,9 +1,9 @@
 ---
 name: haipipe-paper-evidence
-description: "A paper's evidence rules on top of haipipe-evidence and haipipe-display: citations only from verified CITE Results, one number per result in every Section, displays numbered and within the venue limit, each passing the display revise loop. Reads a whole version as one ledger and flags what disagrees (scripts/evidence_ledger.py). Use before a build or a send. Trigger: paper evidence, evidence ledger, numbers disagree, verify citations, paper displays, /haipipe-paper-evidence, /haipipe-paper-display."
+description: "A paper's evidence rules on top of haipipe-evidence and haipipe-display: citations only from verified CITE Results, one number per result in every Section, displays numbered and within the venue limit, each passing the display revise loop. Reads a whole version as one ledger and flags what disagrees (scripts/evidence_ledger.py); each display version's preview.pdf is the display, then how it was made (method.md). Use before a build or a send. Trigger: paper evidence, evidence ledger, numbers disagree, verify citations, paper displays, display preview, display method, /haipipe-paper-evidence, /haipipe-paper-display."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.5.1"
+  version: "0.6.1"
   last_updated: "2026-11-01"
   aliases: [haipipe-paper-display]
   # version history: ./CHANGELOG.md
@@ -64,7 +64,8 @@ The rules
 2. **One result, one number.** A number in prose comes from a VALUE card (`file` + `key` in a Run's `result/`), best
    through the research question's report (`reports/qNN_<question>/`). The same result reads from the same Run, and
    shows the same number, in the Abstract, the Results, the Discussion and the letters.
-   The work Block serves them from one Job, `jNN_paper_work_evidence`, beside `jNN_paper_displays`: one Task per
+   The paper Board serves them from its value Job, `j02_evidence_value`, beside `j01_evidence_display` (both moved
+   onto the Board 261031; earlier `jNN_paper_work_evidence` and `jNN_paper_displays` in the work Block): one Task per
    Section, a value map `scripts/values.yaml` (each number's source Run, file and key), and a Run that writes
    `values.json`; the Section's VALUE cards read it by id (JL 261023). A setting stated in words stays on its card.
 3. **Displays are the paper's.** Each `Display<n>-<slug>/` is built on cards (haipipe-display). The paper numbers them
@@ -109,6 +110,41 @@ The rules
 5. **Every consequential sentence is one of three**: backed by a card (an older Page: a typed Evidence Item and
    its accepted local Result), framed as interpretation and bounded by its evidence, or a visible open need that
    keeps the Section from closing. haipipe-paper-draft writes the sentence; this skill checks which of the three it is.
+
+
+Each display version: one preview.pdf
+------------------------------------
+
+Every Run of a display Task (a version of that display) leaves, in its `result/`, the unit's `float.tex` and
+`preview.pdf`: page 1 the display with its caption, pages 2 on how it was made, from `method.md` (haipipe-display's
+`scripts/build_preview.py`; JL 261101). The workbench's Report › Evidence › Displays shows the newest version's
+`preview.pdf`, both pages, with ⤢ Pop out.
+
+Page 1 is the display as the paper prints it (JL 261101: "the full pdf preview, just like the one we will see in the
+paper pdf"). Build it with (from the SPACE root, where `Tools/` is the Tools checkout; elsewhere use the full path):
+
+```bash
+.venv/bin/python Tools/plugins/haipipe-toolkit/skills/2_theme/paper/haipipe-paper-evidence/scripts/preview_display.py <unit> [--method-from <source preview.pdf>]
+```
+
+```text
+head 1   the unit's own writing Job, built      <Board>/delivery/<that job>/latex/master.tex
+head 2   else the newest built writing Job      <Board>/delivery/jNN_writing_v<MMDD>_<desk>/latex/master.tex
+head 3   else the paper's default look          (and a note: build the paper, then rerun)
+```
+
+Each display Task's face names it for the Evidence list (JL 261101: "for each display, we might also want to have the
+name and type"). The face is `j01_evidence_display/tNN_<slug>/tNN_<slug>.md`; under its `# title`, one `key: value`
+line each (plain lines, no front matter):
+
+```text
+label: Display A                            the tab's first line (board_evidence.evidence_body)
+name: Office visits by 28-day period        what it shows, in a few words
+type: figure                                figure or table; else read from the newest float.tex
+```
+
+The list shows the label, then "📈 Figure · <name>" or "📊 Table · <name>" (board_results._display_line); a face with
+no `name:` gives the title after "Display X," in its first line, else the folder's words.
 
 
 All displays as one PDF

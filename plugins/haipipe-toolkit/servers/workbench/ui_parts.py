@@ -88,7 +88,7 @@ button.pb-tile{cursor:pointer;display:flex;flex-direction:column;justify-content
 .pb-side{display:grid;grid-template-columns:170px minmax(0,1fr);gap:14px;align-items:start;margin:4px 0 8px}
 .pb-list{display:flex;flex-direction:column;gap:4px;position:sticky;top:12px}.pb-item{display:block;text-align:left;border:1px solid transparent;
  border-radius:7px;padding:6px 10px;background:none;font:inherit;color:var(--ink);cursor:pointer}.pb-item b{display:block;font-size:13.5px;
- font-weight:600}.pb-item span{display:block;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ font-weight:600}.pb-item span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;font-size:12px;color:var(--muted);overflow:hidden}
 .pb-item:hover{border-color:var(--line)}.pb-item.on{border-color:var(--accent);background:var(--pb-soft)}.pb-item.on b{color:var(--accent)}
 .pb-read .pb-panel{margin:0;min-height:120px}.pb-text h4{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;
  letter-spacing:.04em;margin:14px 0 4px}.pb-text h4:first-child{margin-top:2px}.pb-text p{font-size:15px;line-height:1.65;margin:0 0 6px}
@@ -190,7 +190,7 @@ def _side_tabs(eid: str, items: list, panels: list) -> str:
     on the left, one line each (its name, its state), the open one's content on the right to read; the first open.
     For content that is read (a Section's text, a display, a value list), where card tabs would push it down."""
     rows = "".join(f'<button type=button class="pb-item{" on" if k == 0 else ""}" data-pbtab="{eid}{k}"><b>{esc(h)}</b>'
-                   f'<span>{esc(w)}</span></button>' for k, (h, w) in enumerate(items))
+                   f'<span title="{esc(w)}">{esc(w)}</span></button>' for k, (h, w) in enumerate(items))
     return (f'<div class="pb-tabset pb-side"><div class=pb-list>{rows}</div><div class=pb-read>'
             + "".join(f'<div class=pb-panel data-pbpanel="{eid}{k}"{"" if k == 0 else " hidden"}>{p}</div>' for k, p in enumerate(panels))
             + '</div></div>')
@@ -290,25 +290,37 @@ PROMPT_JS = """<script>(function(){if(window.pbPrompt)return;window.pbPrompt=1;
   box.querySelectorAll('[data-field]').forEach(function(t){if(t.value.trim())text+='\\n'+t.dataset.field+': '+t.value.trim();});
   if(b.dataset.tail)text+='\\n'+b.dataset.tail;
   var was=b.textContent,done=function(){b.textContent='Copied';setTimeout(function(){b.textContent=was;},1400);};
-  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(text).then(done,done);else done();});
+  cp(text,done);});
+ /* a row that takes an image (upload): the host keeps a pasted image and the row names where (b15 s41-D14) */
+ document.addEventListener('paste',function(ev){var t=ev.target.closest&&ev.target.closest('.pb-prompt textarea[data-upload]');if(!t)return;
+  var items=(ev.clipboardData&&ev.clipboardData.items)||[];
+  for(var i=0;i<items.length;i++){if(items[i].type.indexOf('image/')!==0)continue;ev.preventDefault();var r=new FileReader();
+   r.onload=function(){fetch(t.dataset.upload,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({folder:t.dataset.folder,data:r.result})}).then(function(x){return x.json();}).then(function(j){
+    t.value=(t.value?t.value.replace(/\\s*$/,'\\n'):'')+(j.ok?('🖼 an image, kept at '+j.path):('✗ the image was not kept: '+j.err))+'\\n';
+    if(t.dataset.key)put(t.dataset.key,t.value);});};r.readAsDataURL(items[i].getAsFile());return;}});
+ /* the pages are served over http, where navigator.clipboard is missing: copy through a hidden textarea then */
+ function cp(text,done){if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(done,function(){old(text);done();});}else{old(text);done();}}function old(text){var t=document.createElement('textarea');t.value=text;t.setAttribute('readonly','');t.style.position='fixed';t.style.top='-1000px';document.body.appendChild(t);t.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(t);}
 })();</script>"""
 NOTES = (("your notes", "notes, a row, a sentence to change"),)
 
 
 def prompt_box(template: str, fields=None, session: str = "", step: str = "", asks: str = "", key: str = "",
-               verbs: str = "", sent: dict | None = None) -> str:
+               verbs: str = "", sent: dict | None = None, upload: tuple | None = None) -> str:
     """The shared Prompt box. `fields`: [(label, placeholder)], the rows only the person fills (default: one "your
     notes" row; () for none); `session`: the Claude session it runs in; `step`, `asks`: its head; `key`: where the
     fields are kept in this browser; `verbs`: more buttons on the head (Open); `sent`: {label: value} once the step
-    has run, shown read only in place of the empty fields."""
+    has run, shown read only in place of the empty fields; `upload`: (folder, url) lets the first row take a pasted
+    image, which the host keeps in that folder and names in the row (labeling's notes, b15 s41-D14)."""
     fields = NOTES if fields is None else fields
     tail = f'Run this in the Claude session "{session}"; start it if it is not running.' if session else ""
     head = " · ".join(x for x in ("✍️ Prompt", step, asks) if x)
     rows = "".join(
         f'<label class=pb-fr><span>{esc(lab)}</span><textarea rows=1 data-field="{esc(lab)}" '
         + (f'data-key="{esc(key)}#{esc(lab)}" ' if key and not sent else "")
+        + (f'data-folder="{esc(upload[0])}" data-upload="{esc(upload[1])}" ' if upload and not sent and n == 0 else "")
         + ('readonly ' if sent else "") + f'placeholder="{esc(ph)}">{esc((sent or {}).get(lab, ""))}</textarea></label>'
-        for lab, ph in fields)
+        for n, (lab, ph) in enumerate(fields))
     return ("<!--pb-prompt-->" + PROMPT_CSS + f'<div class=pb-prompt><div class=pb-ph><span>{esc(head)}</span>{verbs}'
             f'<button type=button class="fd-btn pb-copy" data-copy="{esc(template)}"' + (f' data-tail="{esc(tail)}"' if tail else "")
             + f'>Copy prompt</button></div><pre class=pb-pt>{esc(template)}</pre>{rows}'

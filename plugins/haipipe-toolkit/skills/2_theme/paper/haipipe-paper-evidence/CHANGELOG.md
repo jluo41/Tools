@@ -1,5 +1,20 @@
 # haipipe-paper-evidence · changelog
 
+## 0.6.1 · 2026-11-01 · page 1 as the paper prints it; each display's name and type
+
+- New `scripts/preview_display.py <unit>`: page 1 of a display's `preview.pdf` uses the paper's own built head
+  (the unit's writing Job, else the newest built one, else the paper's default look), through haipipe-display's
+  `build_preview.py --preamble-from`.
+- A display face's `name:` and `type:` lines show in Report › Evidence › Displays as "📈 Figure · <name>"; a face
+  without `name:` gives the title after "Display X," in its first line, else the folder's words.
+
+## 0.6.0 · 2026-11-01 · each display version: one preview.pdf
+
+- JL 261101: a display version's `preview.pdf` is page 1 the display with its caption, pages 2 on how it was made
+  (`method.md`: Data, Sample, Method, Outcomes, Made by, Numbers), built by haipipe-display's `scripts/build_preview.py`.
+  The workbench's Evidence view shows it, both pages, instead of the bare picture.
+- Rule 2 names the Board's `j02_evidence_value` beside `j01_evidence_display` (the work Block's old Job names as history).
+
 ## 0.5.1 · 2026-11-01 · b16 review 261101: current paper names
 
 - version Jobs are named `jNN_writing_v<MMDD>_<desk>` (from j11), no longer `jNN_v<MMDD>_<desk>` (ledger commands, ladder sketch, evidence_ledger.py help and docstring).

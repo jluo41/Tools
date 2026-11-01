@@ -2,8 +2,8 @@
 name: haipipe-display
 description: "The one door for display work: routes by kind to its part (_parts/<kind>/PART.md): 📊 table, 📈 figure, 📐 diagram (editable SVG), 🎨 illustration (AI image), 🖼 slide (slide pictures in a named style), ✒️ tex (TikZ, algorithms, equations); every display then passes the blind-review revise loop (at least 8/10, at most 4 rounds). Trigger: 做表, 画图, 架构图, regression table, generate figures, paper plots, concept figure, display unit, revise the figures, figure to svg, icon to svg, html to svg, /haipipe-display."
 metadata:
-  version: "0.6.0"
-  last_updated: "2026-10-29"
+  version: "0.7.1"
+  last_updated: "2026-11-01"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, mcp__codex__codex, mcp__codex__codex-reply, WebSearch, mcp__codex-image2__generate, mcp__codex-image2__generate_start, mcp__codex-image2__generate_status
 ---
 
@@ -62,7 +62,8 @@ after r04 with no pass ─▶ stop; hand the person the open problems
    (symbols, bars, colours, scales, abbreviations); the finding goes in the text, not the caption.
 2. **Blind review**: spawn a FRESH agent (Agent tool, a new general-purpose agent, never yourself,
    never the round before's reviewer) with the reviewer brief from the ref, pasted verbatim. Give it
-   a review packet holding only each unit's `preview.pdf` and `assets/figure.png`.
+   a review packet holding only each unit's `preview.pdf` page 1 (the display and its caption) and
+   `assets/figure.png`; the method pages stay out, so the reviewer judges the display as a reader sees it.
 3. **Record** its text verbatim as `<unit>/review/rNN.md` and set the README `review:` line.
 4. **Revise** from the review, re-render, recompile `preview.pdf`, and go to step 2 with a new
    reviewer.
@@ -116,6 +117,42 @@ unless the user explicitly asks to delete or replace them. This gate does not
 apply to ordinary data tables or plots, which follow the approved-intake and
 FigureSpec routes.
 
+## 📄 preview.pdf: the display, then how it was made
+
+JL 261101: "I want to make the preview the first page to be the display and content, could you make the second page
+and beyond to be things like the methods, to explain how this display is generated". Every unit's `preview.pdf` has:
+
+```text
+page 1      the display as a reader sees it: float.tex (the figure or table, its caption, its label)
+page 2 on   "How this display was made", from method.md beside float.tex:
+            ## Data · ## Sample · ## Method · ## Outcomes · ## Made by (the Runs, by path) · ## Numbers
+            (read from Result files, or screen readings still to return)
+```
+
+```bash
+python <this skill>/scripts/build_preview.py <unit folder>     # writes preview.tex, compiles preview.pdf
+python <this skill>/scripts/build_preview.py <unit> --method-from <source version>/result/preview.pdf
+                                                   # a paper's framed unit (Figure 1): its own float, then the
+                                                   # source version's method pages, written once with that version
+python <this skill>/scripts/build_preview.py <unit> --look paper                # the paper's default page
+python <this skill>/scripts/build_preview.py <unit> --preamble-from <delivery/<job>/latex/master.tex>
+                                                   # page 1 exactly as that built paper prints it
+```
+
+**Page 1 looks like the paper's page** (JL 261101: "the full pdf preview, just like the one we will see in the paper
+pdf"). `--preamble-from` takes a built paper's `master.tex` head (its class, fonts, caption style, `preamble.tex`,
+header and page number) and drops only its title lines and `endfloat`, so the display stays on page 1. `--look paper`
+is the paper's default head (12pt, letter, 1in, Times, 1.5 spacing, the page number below) for a paper not built yet.
+A paper's display goes through haipipe-paper-evidence's `scripts/preview_display.py`, which picks the head for you.
+
+Who writes what: the display's maker (the Run's own script, or the agent that draws it) writes `method.md` once per
+version, beside that version's `float.tex`; its first `# title` line is a file title and does not print. The caption
+that prints is `float.tex`'s; a caption on a Task face is a note for the list and must say the same.
+The builder keeps the unit's own preamble (an existing `preview.tex`'s lines before `\begin{document}`), so it works
+for every kind. A unit with no `method.md` gets a page 2 that says so: the gap shows. `preview.tex` is the builder's
+output; never edit it by hand, write `method.md` or `float.tex` and rerun it. Each version of a display (each Run of
+its Task) gets its own `preview.pdf`; the workbench's Evidence view shows the newest one, both pages.
+
 ## 🚪 Where the unit lands
 
 **In a draft Task: `<task>/display/Display<n>-<slug>/`**, beside `draft/` and `evidence/` (JL 261016). A display is
@@ -123,8 +160,9 @@ built on evidence: its README names `built_on:` cards of `<task>/evidence/cards.
 it shows come from those cards' Runs, read with haipipe-evidence's `scripts/cards.py`, so a figure and the sentence
 citing it cannot disagree.
 
-**In a paper, the unit frames a work Run's picture** (JL 261022). The picture or table body is drawn by a Run of
-the paper's work Block (its `jNN_paper_displays` Job, one Task per display) into that Run's `result/`; the paper's
+**In a paper, the unit frames a display Run's picture** (JL 261022; the display Job moved onto the paper Board as
+`j01_evidence_display` on 261031). The picture or table body is drawn by a Run of the Board's `j01_evidence_display`
+(one Task per display, each Run a version) into that Run's `result/`; the paper's
 `Display<n>-<slug>/` names the question, caption, legend, number, size and `review/rNN.md`, its `intake/manifest.yaml`
 points at the Run's `result/`, and its `recipe/` copies the picture in and draws nothing. A picture fix from the
 revise loop goes to the work Run's script. The rules are haipipe-paper-evidence's rule 3.

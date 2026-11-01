@@ -97,7 +97,7 @@ class BoardViewsTest(unittest.TestCase):
         work = self.work["work-dataflow"]
         self.assertIn("· 🧭 Plan<", work)
         self.assertIn("use /haipipe-paper-plan", work)
-        self.assertIn('class="fd-btn fd-copy"', work)
+        self.assertIn('class="fd-btn pb-copy"', work)                 # the shared Prompt box (ui_parts.prompt_box)
         self.assertIn("⚙️ Runs to do<", work)               # a title names the step, never a count
         self.assertNotIn(" of 2 open", work)
         self.assertIn("pb-pill you", work)              # T0 waits for you: an orange pill

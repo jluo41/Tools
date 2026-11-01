@@ -291,8 +291,13 @@ def _prompt_box(prompt: str, folder: Path, root: Path, key: str, title: str = "P
     where this Task's work lives (JL 261020)."""
     from live.ui_parts import prompt_box               # here, not at the top: ui_parts reads nothing of draft_steps
     k = f"{_rel(folder, root)}#{key}"
-    step = re.sub(r"^(?:Prompt|Copy prompt)\b[:· ]*", "", title).strip()
-    return prompt_box(prompt, None, _session(folder, root), step=step or key, key=f"notes:{k}")
+    step, asks = PROMPT_HEAD.get(key, (re.sub(r"^(?:Prompt|Copy prompt)\b[:· ]*", "", title).strip() or key, ""))
+    return prompt_box(prompt, None, _session(folder, root), step=step, asks=asks, key=f"notes:{k}")
+
+
+PROMPT_HEAD = {"plan": ("Plan", "shape the structure"), "write": ("Write", "draft or rewrite the text"),
+               "evidence": ("Evidence", "find each item's evidence"), "display": ("Display", "make the displays"),
+               "revise": ("Revise", "one revise pass"), "studio": ("Studio", "talk and sketch")}
 
 
 def _editor(folder: Path, root: Path, title: str, view: str = "revise", open_: bool = True) -> str:

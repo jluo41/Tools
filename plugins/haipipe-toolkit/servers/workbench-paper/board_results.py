@@ -380,6 +380,8 @@ def evidence_view(board: Path, root: Path, md, items=()) -> str:
             head = label if label and label.lower() not in ("values", "citations") else _cap(words)
             line = words if head == label else re.sub(r"^\d+\s+", "", status or "")
             line = "waiting" if line.startswith("waits") else line
+            if kind == "Displays":               # JL 261101: "for each display, we might also want to have the name and type"
+                line = _display_line(t, words)
             tiles.append(((("Appendix · " if kind == "Displays" and _num(t) >= 50 else "") + head), line or status, ""))
             panels.append(body)
         book = board / "delivery" / job.name / f"{job.name}-all-displays.pdf"   # build_displays_pdf.py writes it
@@ -389,6 +391,30 @@ def evidence_view(board: Path, root: Path, md, items=()) -> str:
         out += _bar(n, kind, f'<div class=pb-verbs>{whole}{_open_btn(f"Open {job.name}", _task_url(job, root))}</div>'
                     + (_side_tabs("ev" + kind[0], [(h, w) for h, w, _ in tiles], panels) if tiles else '<p class=mut>No Tasks yet.</p>'))
     return out or '<p class=mut>No evidence Job yet.</p>'
+
+
+DISPLAY_TYPES = (("figure", "📈 Figure"), ("table", "📊 Table"))
+
+
+def _display_line(task: Path, slug: str) -> str:
+    """A Display tab's second line: its type, then its name. The name is the face's `name:` line, else the title after
+    "<label>," in its first line, else the folder's words; the type is the face's `type:` (or `kind:`) line, else what
+    its newest float.tex begins (a figure or a table environment)."""
+    face = task / f"{task.name}.md"
+    text = face.read_text(encoding="utf-8", errors="ignore") if face.is_file() else ""
+    field = lambda k: (re.search(rf"^{k}:\s*(.+?)\s*$", text, re.M) or [None, ""])[1]
+    name = field("name")
+    if not name:
+        m = re.match(r"#\s*[^,\n]*?\b(?:Display|e?Figure|e?Table)\s+\w+\s*[,:·]\s*(.+)", text.strip())
+        name = m.group(1).strip() if m else _cap(slug)
+    kind = (field("type") or field("kind")).lower()
+    if not kind:
+        floats = sorted([*task.glob("runs/*/result/float.tex"), *task.glob("display/*/float.tex")],
+                        key=lambda f: f.stat().st_mtime)
+        body = floats[-1].read_text(encoding="utf-8", errors="ignore") if floats else ""
+        kind = next((k for k in ("table", "figure") if f"\\begin{{{k}" in body), "")
+    word = next((w for k, w in DISPLAY_TYPES if k in kind), kind.capitalize())
+    return f"{word} · {name}" if word else name
 
 
 def _section_read(task: Path) -> str:

@@ -1,5 +1,25 @@
 # haipipe-display · Changelog
 
+## [0.7.1] — 2026-11-01
+
+Page 1 of `preview.pdf` looks like the paper's page (JL 261101: "the full pdf preview, just like the one we will see in
+the paper pdf"). `build_preview.py --preamble-from <master.tex>` uses a built paper's head (class, fonts, caption
+style, `preamble.tex`, header, page number), dropping its title lines and `endfloat`; `--look paper` is the paper's
+default head before a build. Tested on Tools' Paper-Example (default look: Times, letter, page number) and on a
+fixture `master.tex` (its bold "Figure 1." caption label and DRAFT header carry through, endfloat dropped).
+
+## [0.7.0] — 2026-11-01
+
+`preview.pdf` is the display, then how it was made (JL 261101): page 1 the unit's `float.tex` (the figure or table with
+its caption), pages 2 on "How this display was made" from `method.md` (Data, Sample, Method, Outcomes, Made by,
+Numbers). New `scripts/build_preview.py <unit>` writes `preview.tex` (keeping the unit's own preamble) and compiles it;
+a unit with no `method.md` gets a page that says so. Tested on Tools' placeholder Board (Paper-Example j01 t01 r01):
+two pages. The paper workbench's Evidence view now shows each display's newest `preview.pdf`, both pages.
+`--method-from <source preview.pdf>`: a paper's framed unit (its Figure 1) reuses the source version's method pages
+(`\includepdf[pages=2-]`), so a method is written once, with the version that drew it.
+A fresh-subagent test built a two-page preview from the skill alone; its findings fixed: the review packet takes
+page 1 only; the display Job is the Board's `j01_evidence_display`; who writes `method.md`; `float.tex`'s caption prints.
+
 ## [0.6.0] — 2026-10-29
 
 New part `_parts/slide/` (🖼 slide): each slide one picture by image generation, in one style named per deck (`"style"` in `.slides.json`). 19 styles in `styles/`: 17 copied from baoyu-skills (MIT), `ian-handdrawn` adapted from Ian Handdrawn PPT, `glossy-cartoon` (the b15 v12 look). `scripts/slide_prompt.py` builds the prompt: `base-prompt.md` + the style + the slide's content. Studio decks default to `sketch-notes` (JL 261029: "sketch note looks great").
