@@ -1,10 +1,10 @@
 ---
 name: haipipe-norm
-description: "The contract every describe-* normalizer obeys: free text in a cohort's own dialect, resolved against a reference bank, into numbers that carry their own provenance. Owns the five rules and the door signature; ships no code. Load before building or changing a normalizer. Trigger: normalizer contract, new normalizer, describe-food, describe-exercise, normalize door, provenance columns, basis column, haipipe-utils."
+description: "The contract every describe-* normalizer obeys: free text in a cohort's own dialect, resolved against a reference bank, into numbers that carry their own provenance. Owns the five rules, the door signature and the event JSON checklist (raw, input, output); ships no code. Load before building or changing a normalizer. Trigger: normalizer contract, new normalizer, event JSON, raw input output, event checklist, describe-food, describe-exercise, normalize door, provenance columns, basis column, haipipe-utils."
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-08-22"
-  members: "describe-food (0.4.0) · describe-exercise (0.1.0) · describe-medication (0.1.0) · describe-insulin (0.1.0)"
+  version: "0.5.0"
+  last_updated: "2026-11-02"
+  members: "describe-food (0.8.0) · describe-exercise (0.5.1) · describe-medication (0.1.2) · describe-insulin (0.1.2)"
 ---
 
 Skill: haipipe-norm
@@ -239,7 +239,95 @@ symlink pointing back. Code in git, data in the store, one copy of each.
              test sends b51 s01 ③'s eight real meals, read in place, and wants
              them back byte for byte but for one named difference. A member
              still answers only its items: time and the meal's own numbers
-             pass by it.
+             pass by it. What the JSON must hold: THE EVENT JSON, below.
+
+
+THE EVENT JSON: RAW, INPUT, OUTPUT
+--------------------------------------------------------------------------------
+
+Every event door (eventnorm: POST /food/event, /exercise/event, /medication/event,
+/insulin/event) answers one JSON of three parts. Each rule below came from a real
+row someone questioned in b51's API topics (s01 food, s02 exercise, s03
+medication, s04 insulin; the s01-Dnn numbers are decisions in s01-food-api.md).
+Check a new event type, or a change to one, against this list. A noun's own rules
+(food's items, nutrients, GI and checks) are in its member's SKILL.md.
+
+    raw     what arrived, as it arrived            never cleaned, never added to
+    input   what the preprocess step makes of it   one shape, whatever the source
+    output  the input, enriched from the tables    keyed by local hour
+
+**The whole**
+
+    [ ] E1  Three parts and nothing else: {"raw", "input", "output"}. A field that
+            is a column of the raw row stays in raw (s01-D20). A saved example may
+            add "example" and "note" around them.
+    [ ] E2  Nothing named is no output, never a guessed one: input.items is null;
+            a raw that names no event at all has input and output null and a
+            "note" saying why.
+
+**Raw**
+
+    [ ] R1  {"type", "file"?, "rows": [{column: text}]}: every column of every row,
+            as text, in the source's order (s01-D36).
+    [ ] R2  Only the columns saying whose row it is are dropped (schema.py
+            RAW_DROP: PatientID, id, ObservationCreatedBy).
+    [ ] R3  raw.type is one of the type's RAW_TYPES, and it alone picks the
+            preprocess step.
+
+**Input**
+
+    [ ] I1  Its keys are the type's INPUT_KEYS, in that order, coarse to fine:
+            the times, the kind (meal_type), total, items, timeline, source.
+    [ ] I2  Times are local with their offset, "2021-04-14 07:17 -04:00"; bare
+            only when the raw names no zone. start is when it happened, logged_at
+            when it was typed (s01-D36); end is null unless the raw gives one.
+    [ ] I3  Every number says its unit: in its text ("32.45 g", food), in its key
+            ("minutes", exercise) or in a "unit" field beside it (medication).
+    [ ] I4  total is the event's own numbers as the raw states them, kept even
+            when there are no items (s01-D23). A number the raw does not give is
+            LEFT OUT, never 0 and never null (s01-D28); an app's 0 or sentinel that
+            means "not given" counts as not given (s01-D45; medication SENTINELS).
+    [ ] I5  items: one thing each, ids i1..iN; null when nothing is named. A
+            placeholder ('Just Carbs', "data not available") makes no item (rule
+            2; s01-D48).
+    [ ] I6  timeline is null unless the raw logs points (a bite, a minute, a
+            delivery); one name for every type (s01-D24).
+    [ ] I7  source comes last: {"kind": "logged"}, or {"kind": "detected", "rule",
+            ...} for an event a rule found in a stream, which has no items and no
+            total and must never read as a logged one (s01-D47).
+
+**Output**
+
+    [ ] O1  Keyed by local hour, "2021-04-14 07:00 -04:00"; each hour holds the
+            input's keys in the input's order.
+    [ ] O2  A moment (a meal, a dose) has a "share" first, the shares sum to 1,
+            and with no end the start's hour holds it all. A stretch (exercise)
+            gives each hour its own numbers instead (s02-D23); a dose that acts
+            for hours is spread by its curve (insulin).
+    [ ] O3  Each output item repeats its input item's fields, in the same order,
+            then what the tables add, so every item names itself (s01-D50).
+    [ ] O4  Only a trusted match gives numbers (rule 3). In the output a null says
+            "the tables have none"; in the input a missing field says "the raw
+            gave none". The two are never mixed.
+    [ ] O5  The logged numbers are never overwritten. Where the input has a total,
+            the output sets its own beside it and says whether they agree
+            (food: total.check, s01-D51).
+
+**Where each type stands** (2026-11-02, read from each topic's saved examples
+and a live call; 23 examples):
+
+    rule                        food   exercise   medication   insulin
+    E1-R3 parts, raw            ✅     ✅          ✅            ✅
+    I1 keys in order            ✅     ✅          ✅            ✅
+    I2 logged_at                ✅     ❗ none      ✅            ✅
+    I3, I4 units, left out      ✅     ✅          ✅            ✅
+    I7 source last              ✅     ❗ none      ✅            ❗ before timeline
+    O1, O2 by hour              ✅     ✅          ✅            ✅
+    O3 item repeats its input   ✅     ✅          ❗ drug words  🔶 drug, not dose
+    O5 checks the log           ✅     ⬜          ⬜            ⬜
+
+Exercise kept its own schema when "source" came in (s01-D47). s03's saved
+medication example predates "source"; the live door gives it.
 
 
 THE EVENT RELEASE: WHERE A MEMBER'S TABLES COME FROM

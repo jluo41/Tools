@@ -1,3 +1,10 @@
+## 0.104.17 · 2026-11-02 · 2 · Write: the editor scrolls beside the text
+
+- JL 261102: "here we should have the scroll bar as well". In 2 · Write's split, the text and "Write it yourself" stand
+  in the same height (72% of the window), each with its own scroll bar; the editor frame no longer grows with its page.
+  `draft_steps.py` WRITE_JS's style, `.wr-split` only (Revise's split is unchanged). Checked in Chrome: both 1027 px,
+  both scroll.
+
 ## 0.104.15 · 2026-10-21 · 2 · Write is done only when § 3 holds a sentence
 
 - `draft_steps.py::states` counted `## 3 · Draft` as written when it held only the `### C1.P1` headings an empty draft

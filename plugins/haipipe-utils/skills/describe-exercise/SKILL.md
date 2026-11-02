@@ -2,8 +2,8 @@
 name: describe-exercise
 description: "Normalize a logged activity (any cohort's dialect, free text or vendor code) to a PA Compendium MET and, when minutes and body mass are known, an estimated kcal. Use when an Exercise ProcName's ExerciseType column needs energy or intensity, when a SourceFn must enrich exercise data, or when a cohort's activity codes must be typed before analysis. Trigger: describe exercise, exercise to MET, activity to calories, resolve ExerciseType, compendium, exnorm, 运动归一化."
 metadata:
-  version: "0.5.0"
-  last_updated: "2026-08-22"
+  version: "0.5.1"
+  last_updated: "2026-11-02"
   measured: "98.0% of the resolvable set (41,931 of 42,799); 30.7% of all 136,555 rows, because 64.8% are daily device roll-ups that must not resolve. Held-out MET error, by-patient fence: MAE 1.71 r 0.520 with the device tier (1.89 / 0.440 without). By-time fence, 24,390 rows, cumulative steps: population 1.70/0.387, device 1.50/0.506, person 1.34/0.608, person_activity 1.30/0.622"
   parked: "103 Validic 9002 rows, the last vendor code with no book; Google_Fit gained one 260822"
 ---
@@ -227,6 +227,23 @@ population default and nothing more.
 without any book at all, and CGMacros carries 657,789 rows of device-estimated
 MET at one-minute cadence. Both are independent of the naming route and would
 cross-check it.
+
+
+THE EVENT JSON
+--------------------------------------------------------------------------------
+
+What an event door's JSON must hold (raw as it came, input normalized, output by
+local hour) is one checklist for every type: haipipe-norm's THE EVENT JSON, with
+its table of where each type stands. Exercise's own (eventnorm/exercise/schema.py, b51 s02):
+
+    item      {"id", "activity", "met"}: the words, and the MET a device gives
+    total     minutes, calories, distance_m, a stream's MET-minutes and steps; the
+              unit is the key's name, and a 0 or an empty cell is left out
+    by hour   a stretch: each hour its own minutes, MET-minutes and kcal, no share
+    timeline  null for a logged workout; a stream fills it, a point a sample
+
+Open against the checklist (2026-11-02): no logged_at and no source (I2, I7);
+exercise kept its own schema when food added them (s01-D47).
 
 
 LAYOUT

@@ -48,8 +48,9 @@ FOOD_GROUPS = [("macros", [("calories", "Calories", "kcal"), ("carbs", "Carbs", 
                               ("cholesterol", "Cholesterol", "mg")]),
                ("minerals", [("sodium", "Sodium", "mg"), ("potassium", "Potassium", "mg")])]   # FatSecret's 14
 # What an output item repeats from its input item, first, so each item says which food it is (JL 261029: "for each
-# item, where is the item name???").
-ITEM_KEYS = ("id", "food", "food_zh", "prep", "cook", "amount", "amount_from", "dish", "dish_zh")
+# item, where is the item name???"), in the input item's own order (eventnorm schema.py ITEM_KEYS), so an item reads
+# the same in the input and in the output (261102).
+ITEM_KEYS = ("id", "food", "prep", "cook", "amount", "amount_from", "food_zh", "dish", "dish_zh")
 SIX = ("Calories", "Carbs", "Protein", "Fat", "Fiber", "Sugar")    # the ones normalize() returns today
 
 

@@ -1092,6 +1092,12 @@ WRITE_JS = """<style>
 .wr-msg{position:fixed;right:24px;bottom:20px;z-index:20;padding:6px 12px;border:1px solid var(--line);border-radius:6px;
  background:var(--card);color:var(--fg);font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,.12);max-width:420px}
 .wr-msg:empty{display:none}.wr-msg.bad{color:#c92a2a;border-color:#c92a2a}.wr-split .rv-left.wr-old{opacity:.55}
+/* the text and "Write it yourself" side by side, each in the same height with its own scroll bar (JL 261102: "here we
+   should have the scroll bar as well"): the editor frame stops growing with its page and scrolls inside */
+.wr-split{align-items:stretch}.wr-split>.rv-left{max-height:72vh;overflow-y:auto;padding-right:6px}
+.wr-split>.rv-right{display:flex;flex-direction:column;max-height:72vh;min-height:0}
+.wr-split>.rv-right>iframe.space-frame{flex:1 1 auto;height:auto!important;min-height:40vh;overflow:auto}
+@media(max-width:700px){.wr-split>.rv-left,.wr-split>.rv-right{max-height:none}.wr-split>.rv-right>iframe.space-frame{height:70vh!important}}
 </style><script>
 (function(){if(window.__wrSplit)return;window.__wrSplit=1;
  function say(sp,t,bad,ms){var m=sp.parentNode.querySelector('.wr-msg');if(!m)return;m.textContent=t||'';m.classList.toggle('bad',!!bad);

@@ -2,8 +2,8 @@
 name: describe-medication
 description: "Normalize a logged medication (any cohort's dialect: a WellDoc MedicationID, an OhioT1DM drug class, a Shanghai free-text string) to an FDA-identified drug with a dose that states its own unit. Use when a Medication ProcName needs a drug name, an NDC, a pharmacologic class, or a dose scale, or when a SourceFn must enrich medication data. Trigger: describe medication, medication to drug name, resolve MedicationID, NDC, RxNorm, dose unit, mednorm, 药物归一化."
 metadata:
-  version: "0.1.1"
-  last_updated: "2026-08-22"
+  version: "0.1.2"
+  last_updated: "2026-11-02"
   measured: "82.8% of 397,204 administrations get an FDA ingredient; 82.7% get a dose unit; 62.2% typed as insulin"
   chain: "emits DrugKey, which describe-insulin consumes"
 ---
@@ -164,6 +164,24 @@ key.
 **Dose is per-administration only.** `MedRegimen` carries prescribed daily
 totals, insulin-to-carb ratios and correction factors, and this skill does not
 read them. `DoseBasis` already has `per_day` reserved.
+
+
+THE EVENT JSON
+--------------------------------------------------------------------------------
+
+What an event door's JSON must hold (raw as it came, input normalized, output by
+local hour) is one checklist for every type: haipipe-norm's THE EVENT JSON, with
+its table of where each type stands. Medication's own (eventnorm/medication/schema.py, b51 s03, s13):
+
+    item      {"id", "drug", "ndc", "dose", "unit", "delivery"}: the drug's words
+              as the raw names it, its NDC when the catalog gives one
+    total     {"doses", "dose", "unit"}, or "rate" for a pump's basal; a SENTINEL
+              dose (-1, 255, 999) is left out
+    by hour   a dose is a moment: its start's hour holds it all (share 1)
+
+Open against the checklist (2026-11-02): the output item drops "drug", the words
+asked, so a wrong match cannot be read off the item (O3). s03's saved example
+predates "source"; the live door gives it.
 
 
 LAYOUT

@@ -2,8 +2,8 @@
 name: describe-insulin
 description: "Turn an insulin product name into pharmacokinetic parameters: class, onset, peak, duration. Consumes describe-medication's DrugKey, and also serves cohorts that name only an insulin CLASS (OhioT1DM) or a product the FDA Directory does not list (Shanghai). Use when insulin-on-board or insulin action timing is needed, or when insulin rows must be classified rapid/short/intermediate/long/ultra-long/premix. Trigger: describe insulin, insulin PK, onset peak duration, IOB, insulin on board, DIA, basal bolus, insnorm, 胰岛素药代."
 metadata:
-  version: "0.1.1"
-  last_updated: "2026-08-22"
+  version: "0.1.2"
+  last_updated: "2026-11-02"
   measured: "263,417 of 263,491 insulin rows get an action curve or a stated reason not to; on MEPS the molecule is right 93.6% of the time it answers; against 1,831 prescriber-recorded DIAs the table runs 0.5 h short on rapid analogues"
   chain: "consumes describe-medication's DrugKey"
 ---
@@ -193,6 +193,21 @@ to check this table against.
 not change the dose in IU -- but glargine U-300 has a genuinely flatter and
 longer profile than U-100, and only an explicit 'Toujeo' in the name reaches
 that row today.
+
+
+THE EVENT JSON
+--------------------------------------------------------------------------------
+
+What an event door's JSON must hold (raw as it came, input normalized, output by
+local hour) is one checklist for every type: haipipe-norm's THE EVENT JSON, with
+its table of where each type stands. Insulin's own (eventnorm/insulin, b51 s04, s14): the raw and the input are
+medication's; each drug goes through describe-medication, then this skill; a
+dose is spread over the hours it acts by its curve, a rate over the minutes it
+runs, so an hour holds "units" beside its share.
+
+Open against the checklist (2026-11-02): each hour writes "source" before
+"timeline", not last (I7); the output item keeps "drug" but gives "units" in
+place of the asked "dose" (O3).
 
 
 LAYOUT

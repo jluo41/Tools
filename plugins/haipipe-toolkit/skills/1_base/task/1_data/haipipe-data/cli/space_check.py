@@ -134,7 +134,7 @@ def check(root):
     # 6. one dataset Job (j5N, same number in b01-b03) uses ONE fn_version
     by_job = {}
     for p, v in cfgs.items():
-        m = re.search(r'/b0[123]_[^/]+/(j5\d)_', p)
+        m = re.search(r'/b0[123]_[^/]+/(j[5-9]\d)_', p)     # dataset Jobs are j51-j99
         if m:
             by_job.setdefault((re.split(r'/(?:work|tasks)/', p)[0], m.group(1)), set()).add(v)
     for (proj, job), vs in sorted(by_job.items()):
@@ -144,6 +144,29 @@ def check(root):
                           'give every b01-b03 Run of this dataset one fn_version:'))
         else:
             items.append(('OK', f'dataset {name}', f'fn_version {next(iter(vs))}', '-'))
+
+    # 6b. builders: a version build only works through a builder that writes via fn_dir()
+    #     (ref/0-overview.md § Fn Versions); one that joins CODE_FN itself always writes the flat folder.
+    hard_re = re.compile(r"os\.path\.join\(\s*SPACE\[['\"]CODE_FN['\"]\]")
+    builders = sorted(set(glob.glob(os.path.join(code, 'scripts', 'haibuilder', '*', '*.py'))
+                          + [f for t in task_roots(root)
+                             for f in glob.glob(os.path.join(t, 'b0[123]_*', 'j*', 't*', 'scripts', '*build*.py'))]))
+    hard = [f for f in builders if hard_re.search(read(f) or '') and 'fn_dir(' not in (read(f) or '')]
+    if not builders:
+        items.append(('N/A', 'builders: fn_dir', 'no builders found', '-'))
+    elif not hard:
+        items.append(('OK', 'builders: fn_dir', f'all {len(builders)} builders write through fn_dir', '-'))
+    else:
+        items.append(('INFO', 'builders: fn_dir', f'{len(hard)} of {len(builders)} builders write the flat folder only',
+                      'before a version build, switch each one it runs to fn_dir() (ref/0-overview.md § Fn Versions)'))
+    hard_rel = {os.path.relpath(f, root) for f in hard}
+    for p, v in sorted(cfgs.items()):
+        named = set(re.findall(r'(?m)^\s*(?:-|builder:)\s*(\S+\.py)\s*$', read(p) or ''))
+        bad = sorted(named & hard_rel)
+        if bad:
+            items.append(('RISK', 'build -> version', f'{os.path.relpath(p, root)} builds {v} with {len(bad)} builder(s) '
+                          f'that ignore it: ' + ', '.join(os.path.basename(b) for b in bad),
+                          'switch them to fn_dir(); until then they write the flat folder'))
 
     # 7. external serving bundle support (only matters if the SPACE uses external_base)
     asset = read(os.path.join(code, 'haipipe', 'external_base', 'asset.py'))

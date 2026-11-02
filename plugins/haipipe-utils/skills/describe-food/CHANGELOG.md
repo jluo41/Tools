@@ -2,8 +2,19 @@ CHANGELOG — describe-food
 ================================================================================
 
 
-unreleased — 2026-11-01
+0.8.0 — 2026-11-02
 --------------------------------------------------------------------------------
+
+SKILL.md gains THE FOOD EVENT, the checklist of what a food event's input and
+output must hold (F1 to F11, from b51 s01-D20 to D51); the rules every event type
+shares went to haipipe-norm's THE EVENT JSON. Checking s01's 8 meals against it
+found one break, now fixed: an output item listed food_zh second while its input
+item lists it after amount_from. items.py ITEM_KEYS now uses the input's order
+(eventnorm schema.py ITEM_KEYS); no value changed, only the order, and s01's
+assets/food-events-all.json was answered again.
+
+From 2026-11-01:
+
 
 The plain form (usda_db.word_check, constants.PLAIN_FORM_WEIGHT 0.5, PLAIN_WORDS): a
 word a USDA candidate adds beyond the asked name costs 0.5, unless it only says the

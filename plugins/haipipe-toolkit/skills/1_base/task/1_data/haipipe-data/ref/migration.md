@@ -11,6 +11,62 @@ note and the next step for every item that is not up to date.
 
 ---
 
+2026-11-02 · WellDoc moves a dataset onto a version: builders, workers, known differences
+=========================================================================================
+
+From: WellDoc SPACE (Proj01, dataset Job j54 WellDoc2025ALS onto `vWearable261101`).
+Skills: haipipe-data 0.4.2. Code: `code/haiutils/haistep/run_fn_builders.py`,
+`cook_version.py`, `compare_stores.py` (new, on `code-welldoc`).
+Check: space-check items `builders: fn_dir` (new), `build -> version` (new),
+`dataset <project> j5N` (now any j51-j99).
+
+What changed
+------------
+
+1. **Builders must write through `fn_dir()`.** Most builders joined
+   `SPACE['CODE_FN']` themselves (WellDoc: 94 of 126), so a `fn_version:` in
+   their Run config changed nothing and they kept writing the flat folder.
+   design-chef MUST DO 9 now says so, and space-check lists them.
+2. **Three shared workers** for the version Runs: `run_fn_builders.py` (build
+   a stage's Fns into the version folder and check each one landed),
+   `cook_version.py` (run the stage's own cook scripts, compare with the flat
+   store, check the manifests), `compare_stores.py` (the comparison).
+3. **A version cook declares its differences first.** `CookArgs.known_differences`
+   names the files and columns the version's new shape changes, each with its
+   `why`; any other difference fails the Run. Compare with a flat store made by
+   the SAME code: a store cooked months ago by older Fns mixes code changes
+   into the comparison (WellDoc: the Dec 2025 CaseSets predate the DEMEvent
+   trigfix), so cook a flat control today first (WellDoc b03j54t01 r17).
+
+Does anything break?
+--------------------
+
+No. Without `fn_version:`, every changed builder writes the flat folder as before.
+
+Steps
+-----
+
+1. Pull the skills and reinstall (as in the 2026-09-24 note).
+2. Run `/haipipe-data space-check`. `builders: fn_dir` lists the builders
+   that write the flat folder only. Before a version build, switch each one
+   the build runs: after `setup_workspace()` add
+   ```python
+   from haipipe.base import fn_dir, fn_version_from_config
+   FN_VERSION = fn_version_from_config()
+   if FN_VERSION:
+       SPACE['FN_VERSION'] = FN_VERSION
+   ```
+   and replace `os.path.join(SPACE['CODE_FN'], <SUBDIR>)` with `fn_dir(SPACE, <SUBDIR>)`.
+3. Per stage, add a build Run (`BuildArgs.builders`, `BuildArgs.expect`) and a
+   cook Run (`CookArgs.steps`, `compare`, `known_differences`) whose configs say
+   `fn_version: <version>`; the worker in the Task's `scripts/` is three lines
+   that call the shared one (WellDoc b02j54t01 `scripts/build_fn_version.py`,
+   `scripts/cook_version.py`). Save the version's store beside the flat one
+   (a new `record_set_version`), never over it.
+4. Run space-check again: `haifn: <version>` and `dataset <project> j5N` are OK.
+
+---
+
 2026-09-25 · AIData Block is b10, not b04
 =========================================
 

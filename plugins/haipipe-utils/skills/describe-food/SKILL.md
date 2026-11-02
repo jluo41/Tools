@@ -1,9 +1,9 @@
 ---
 name: describe-food
-description: "Normalize free-text food descriptions (any cohort's dialect) to USDA nutrition. Use when a Diet ProcName's FoodName column needs Calories/Carbs/Protein/Fat/Fiber/Sugar, when a SourceFn must enrich diet data, or when the FoodNorm lexicon needs rebuilding. Trigger: describe food, food to nutrition, resolve diet to USDA, fill nutrition columns, foodnorm, 食物营养归一化."
+description: "Normalize free-text food descriptions (any cohort's dialect) to USDA nutrition. Use when a Diet ProcName's FoodName column needs Calories/Carbs/Protein/Fat/Fiber/Sugar, when a SourceFn must enrich diet data, or when the FoodNorm lexicon needs rebuilding. Trigger: describe food, food to nutrition, food event, food item rules, resolve diet to USDA, fill nutrition columns, foodnorm, 食物营养归一化."
 metadata:
-  version: "0.7.0"
-  last_updated: "2026-10-02"
+  version: "0.8.0"
+  last_updated: "2026-11-02"
   changelog: CHANGELOG.md
   measured: "69.1% of 71,673 Diet rows MEASURED, 5.7% ESTIMATED, 25.2% MISS. ESTIMATED carries median 2.0 g carb error, p90 15.0 g, 10% over 15 g."
 ---
@@ -253,6 +253,70 @@ Lexicon (what SourceFn should JOIN against, rather than re-resolving):
 
 Resolution is slow and its alias table needs human review, so it is done once and
 versioned in ExternalStore -- the same way NDC/NPI reference data works.
+
+
+THE FOOD EVENT: WHAT ITS INPUT AND OUTPUT MUST HOLD
+--------------------------------------------------------------------------------
+
+POST /food/event (haipipe-norm eventnorm) calls this skill's foodnorm/items.py on
+a meal's items. The event's shared rules (three parts, times, totals left out,
+source, by hour) are haipipe-norm's THE EVENT JSON; these are food's own, from
+b51 s01-food-api.md (s01-Dnn). All 8 of s01's saved meals pass every line
+(2026-11-02).
+
+**Input**
+
+    [ ] F1  An item is ONE food. A typed dish line whose whole name finds
+            nothing, or whose match lacks one of its foods, is split in the input,
+            one item per food: "Sliced pork with mushroom and carrot 120 g" is i1
+            pork, i2 mushroom, i3 carrot. An app row is never split: it is one
+            product the patient picked. Text in brackets describes one food and
+            never splits it (s01-D50; items.py split_dishes).
+    [ ] F2  An item's fields, in this order, only those the raw gives: id, food,
+            prep, cook, amount, amount_from, food_zh, dish, dish_zh (eventnorm
+            schema.py ITEM_KEYS). A split part's amount is an even share of the
+            line's grams, and amount_from says it is a guess.
+    [ ] F3  meal_type comes from the source's own map (WellDoc ActivityTypeID 1
+            breakfast, 3 lunch, 5 dinner, 12 snack; s01-D25).
+    [ ] F4  A carb count ('Just Carbs') is the whole meal's carbs and nothing else:
+            {"carbs": "111 g"}, never with a food row's calories (s01-D28, D33).
+            The app's 0 for fiber, sugar, added sugars, the fat parts, cholesterol
+            and potassium counts only when every row gives it above 0 (s01-D45).
+
+**Output**
+
+    [ ] F5  Each item: its input fields (F2), then match, serving, macros,
+            carb_parts, fat_parts, minerals, glycemic.
+    [ ] F6  match = {food, source, conf, words, times_logged}. food is the
+            table's own name (FoodMatched), never the asked words, so a wrong match
+            shows. words = {check: PASS | PARTIAL | NONE, missing: [...]}: does
+            that name hold every word asked. A MEASURED match that is not PASS
+            reads ESTIMATED (s01-D50, D51).
+    [ ] F7  serving = {basis: per_serving | per_100g, unit, grams}: what the
+            numbers are for. Never scaled to an amount the log did not state
+            (haipipe-norm rule 4).
+    [ ] F8  FatSecret's 14 nutrients, always in four groups with every name
+            present: macros (calories, carbs, protein, fat), carb_parts (fiber,
+            sugar, added_sugars), fat_parts (saturated, mono, poly, trans,
+            cholesterol), minerals (sodium, potassium). One the tables lack is
+            null. A MISS keeps the four groups, every number null.
+    [ ] F9  glycemic = {gi, gl, from}: GI from ext_food_gi by the item's name (its
+            Chinese name first), GL for the carbs the item holds; under 5 g of
+            available carbs is GL 0.
+    [ ] F10 total is the items' sum (s01-D46): each nutrient over the matched
+            items, null when any of them lacks it, never a sum too small; conf
+            the weakest, basis theirs or "mixed", coverage the share counted,
+            source "tables". With no items it is the input's total, source
+            "input".
+    [ ] F11 total.check = {by, logged, tables, agree, note}: the logged total
+            beside the tables', by calories, else carbs; agree within a factor
+            of 2, else "far apart (5.2 times)" and why it may be. The logged
+            numbers are never changed (s01-D51).
+
+How to check: eventnorm's tests/test_eventnorm.py sends s01's 8 meals and wants
+them back; s01's assets/food-events-all.json is rewritten by
+result/first-drawing-builder/refresh_food_events.py. How good the answers are is
+b51 j01 t13 (match and carbs against the food each WellDoc patient picked).
 
 
 HOW RETRIEVAL WORKS

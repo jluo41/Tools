@@ -769,6 +769,12 @@ Universal MUST DO (All Stages)
 6. Verify generated file exists in `code/haifn/` after running builder
 7. Register the new Fn in the appropriate config YAML
 8. Test end-to-end with the matching `haistep-*` command after generation
+9. Write the output through `fn_dir()`, never `os.path.join(SPACE['CODE_FN'], ...)`: read
+   `fn_version_from_config()` right after `setup_workspace()`, so the same builder writes the flat folder
+   (no `fn_version:`) or `fn_<stage>/<fn_version>/` (a version build Run). A file the builder only READS
+   (a base Fn it extends) stays a flat-folder path. Pattern: `ref/0-overview.md` § Fn Versions.
+   Copying an older builder copies its flat join too (WellDoc 261102: 94 of 126 builders had it), so check
+   this line in every copy. `/haipipe-data space-check` lists the builders that still have it
 
 ---
 

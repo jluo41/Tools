@@ -5,6 +5,10 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.4.2] — 2026-11-02
+
+- Fn versions in practice (WellDoc j54 onto `vWearable261101`, JL 261102): design-chef MUST DO 9, a builder writes through `fn_dir()` (a copied builder copies its flat `CODE_FN` join); `space-check` items `builders: fn_dir` (builders that write the flat folder only) and `build -> version` (a version build Run naming such a builder), and the dataset-Job item now covers j51-j99 (was j5N only); `ref/0-overview.md` § Fn Versions names the shared workers (`run_fn_builders.py`, `cook_version.py`, `compare_stores.py`), `known_differences` written before a cook, and a same-code flat control; `ref/migration.md` note 2026-11-02.
+
 ## [0.4.1] — 2026-10-26
 
 Shorter description (510 -> 398 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)

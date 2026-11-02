@@ -1547,8 +1547,8 @@ def interaction_item(r: dict, folder: Path, root: Path, in_pop: bool = False) ->
         button = ""
     applies = ("Applying it belongs to " + ", ".join(Path(str(f)).name for f in r["feeds"]) + "."
                if r["state"] == "answered" and r["feeds"] else "")   # applied is the owning Task's record, not ours
-    return (f'<article class="inbox-row"><div class="inbox-head"><b>{frame.esc(r["title"])}</b>'
-            f'<span class="inbox-state">{frame.esc(state)}{(" · " + frame.esc(day)) if day else ""}</span></div>'
+    return (f'<article class="inbox-row {frame.esc(r["state"])}"><div class="inbox-head"><b>{frame.esc(r["title"])}</b>'
+            f'<span class="inbox-state {frame.esc(r["state"])}">{frame.esc(state)}{(" · " + frame.esc(day)) if day else ""}</span></div>'
             f'<p class="inbox-where">{where} · <code>{frame.esc(r["run"])}</code></p>'
             + (f'<ol class="inbox-asks">{asks}</ol>' if asks else '')
             + (f'<p class="inbox-waits">{frame.esc(applies)}</p>' if applies else '')

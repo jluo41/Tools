@@ -38,12 +38,13 @@ STATE_WORD = {"done": "done", "next": "next", "sign": "sign", "asked": "asked", 
 WAITS = ("sign", "asked", "send", "pass")              # a word the person acts on, shown in the warn colour
 
 
-# what a step waits for, said once in its first row; the verb the person uses is on the row
-ASKS = {"1 · Plan": {"sign": "Waits for your sign: ✅ on <code>approved:</code> in the draft."},
-        "3 · Evidence": {"asked": "Waiting for you: tick each ask, and settle each open point."},
-        "4 · Display": {"sign": "Waiting for you: write <code>accepted:</code> in each display's README."},
-        "5 · Revise": {"pass": "Waiting for you: accept or reject each card."},
-        "Delivery": {"send": "Waiting for you: check the built files, then mark the send in <code>delivery.md</code>."}}
+# what a step waits for, as the Interactions rows read (JL 261102: "make it the same style as the interactions"):
+# its name, then what it waits for, then the button
+ASKS = {"1 · Plan": {"sign": ("The plan", "waits for your sign: ✅ on <code>approved:</code> in the draft")},
+        "3 · Evidence": {"asked": ("Evidence asks", "waits for you: tick each ask, and settle each open point")},
+        "4 · Display": {"sign": ("Displays", "waits for you: write <code>accepted:</code> in each display's README")},
+        "5 · Revise": {"pass": ("Revise cards", "waits for you: accept or reject each card")},
+        "Delivery": {"send": ("Built files", "waits for you: check them, then mark the send in <code>delivery.md</code>")}}
 
 
 # the button on each prompt: the step's own verb, so the row says what the copy is for
@@ -120,7 +121,8 @@ CSS = """<style>
 .fd-h[data-fold]{cursor:pointer;user-select:none}.fd-h[data-fold]::before{content:"▾";display:inline-block;width:16px;
  color:var(--muted);font-size:12px}.fd-h[aria-expanded="false"]::before{content:"▸"}.fd-h[data-fold]:hover{color:var(--accent)}
 .fd-ask{display:flex;align-items:center;gap:12px;padding:9px 14px;border:1px solid var(--line);border-left:3px solid #b35c00;
- border-radius:6px;margin:0 0 12px;font-size:14px}.fd-ask span{flex:1}
+ border-radius:6px;margin:0 0 12px;font-size:14px}.fd-ask .n{min-width:170px;font-weight:500;overflow-wrap:anywhere}
+.fd-ask .d{flex:1;color:var(--muted);font-size:13px}
 .fd-run{margin:0 0 6px}.fd-run textarea{width:100%;min-height:36px;resize:vertical;border:1px solid var(--line);border-radius:5px;
  background:var(--wash);padding:6px 10px;font:13px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink)}
 .fd-run .fd-bar{display:flex;gap:8px;align-items:center;margin-top:4px}.fd-run .fd-bar small{color:var(--muted);font-size:12px}
@@ -258,13 +260,14 @@ def _run_rows(prompts: list) -> str:
 
 def _ask(step: str, state: str, draft: Path | None = None, root: Path | None = None) -> str:
     """What the step waits for, one row, with Open: the draft, where the person signs."""
-    text = ASKS.get(step, {}).get(state)
-    if not text:
+    ask = ASKS.get(step, {}).get(state)
+    if not ask:
         return ""
+    name, what = ask
     from live.frame import reader
     open_ = (f'<a class=fd-btn data-pop="{esc(draft.name)}" href="{esc(reader(draft, root))}">Open the draft</a>'
              if draft and root and draft.is_file() else "")
-    return f'<div class=fd-ask role=status><span>{text}</span>{open_}</div>'
+    return f'<div class=fd-ask role=status><span class=n>{name}</span><span class=d>{what}</span>{open_}</div>'
 
 
 def _runs(folder: Path, root: Path, step: str) -> str:

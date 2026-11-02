@@ -258,7 +258,8 @@ code/haifn/fn_case/<fn_version>/case_casefn/<CaseFnName>.py
 ```
 
 Name it `v<Label><yymmdd>`. The first one is `vDfExt260923` (DrFirst
-OptTimeR1 Extended).
+OptTimeR1 Extended); the second is `vWearable261101` (WellDoc, Proj01: the Ext
+SourceFn with the event norm, `Event` and `EventValue`).
 
 Selection. A Run config says `fn_version: vDfExt260923` at its top level.
 A haistep cook Run (`haistep-source`, `-record`, `-case`) gets it from the
@@ -295,6 +296,24 @@ Rules.
   `fn_version:`, and its version Run (`r02_build_<fn_version>`) has one.
 - A new version starts as a copy of the builders, never a hand-edit of
   generated Fns.
+- Shared workers for the version Runs (`code/haiutils/haistep/`):
+  `run_fn_builders.py` runs a stage's builders with the Run's config as
+  `$RUN_CONFIG` and checks each expected Fn landed in the version folder;
+  `cook_version.py` runs the stage's usual cook scripts, then compares the new
+  store with the flat one (`compare_stores.py`) and checks every manifest
+  records the version. Config keys: `BuildArgs.builders`, `BuildArgs.expect`;
+  `CookArgs.steps`, `CookArgs.compare`, `CookArgs.known_differences`.
+- A version cook proves the move. Every table of the new store equals the
+  flat store's, except the files and columns `known_differences` names, each
+  with its `why`, written BEFORE the cook. A difference found after a failed
+  cook goes into a NEW Run's config; the failed Run stays as the record of what
+  it found (the Ticket refuses a retry whose config changed). Datetime columns
+  are compared at one unit: pandas 2 saved `ns`, pandas 3 saves `us`.
+- A new version's builders are the topic Tasks' copies
+  (`b02 jNN_recordfn_*/tNN_*/scripts/`, `b03 j01_triggerfn_*`, `j02_casefn_*`)
+  where a Block keeps them; `code/scripts/haibuilder/` may hold older copies.
+  A version copy of a Fn can differ from the flat file when the flat file is
+  older than its builder (WellDoc `CGM5MinLTS`, 261102).
 - An endpoint Input2SrcFn that reuses a versioned SourceFn loads it from
   `fn_source/<fn_version>/` by name and records the version it expects.
 
