@@ -306,6 +306,16 @@ def author_date_style() -> bool:
 def corporate_author(author_field: str) -> str:
     """A group author braced whole in the bib ({{American Diabetes Association}}) is one name, never split into initials."""
     raw = (author_field or "").strip()
+    # The bib field {{Centers for Disease Control and Prevention}} reaches here as one braced group (parse_bib drops
+    # the outer pair): a group that closes only at the last character is one name, "and" included (261101).
+    if raw.startswith("{") and raw.endswith("}"):
+        depth = 0
+        for i, ch in enumerate(raw):
+            depth += (ch == "{") - (ch == "}")
+            if depth == 0 and i < len(raw) - 1:
+                break        # {A} and {B}: the first group closes early, two names
+        else:
+            return latex_to_text(raw).strip()
     if raw.startswith("{") and raw.endswith("}") and " and " not in raw:
         return latex_to_text(raw).strip()
     return ""
@@ -323,9 +333,14 @@ def surname_of(author_field: str) -> str:
 def author_date_label(key: str) -> str:
     """(Barnett et al., 2017) · (Buchmueller and Carey, 2018) · (Soto, 2017)"""
     fields = BIB.get(key, {})
-    people = [a for a in re.split(r"\s+and\s+", latex_to_text(fields.get("author", "")).strip())
-              if a and a.lower() != "others"]
-    names = [surname_of(a) for a in people]
+    # A group author braced whole ({{Centers for Disease Control and Prevention}}) is read on the RAW field: once
+    # latex_to_text drops the braces, "and" splits it into two people and the last word becomes the surname, which
+    # printed "(Control and Prevention, 2024)" and "(Services, 2025)" in the MISQ Word file (261101).
+    corporate = corporate_author(fields.get("author", ""))
+    people = [corporate] if corporate else [
+        a for a in re.split(r"\s+and\s+", latex_to_text(fields.get("author", "")).strip())
+        if a and a.lower() != "others"]
+    names = [a if corporate else surname_of(a) for a in people]
     year = latex_to_text(fields.get("year", "")).strip() or "n.d."
     if not names:
         return year
@@ -1828,6 +1843,13 @@ def boundary_target(anchor, before: str | None):
     return None
 
 
+def is_heading1(p_el) -> bool:
+    """A paragraph set in the Heading 1 style: a main Section or an Appendix opens here."""
+    pPr = p_el.find(qn("w:pPr"))
+    style = pPr.find(qn("w:pStyle")) if pPr is not None else None
+    return style is not None and style.get(qn("w:val")) in {"Heading1", "Heading 1"}
+
+
 def _body_index(el) -> int:
     body = el.getparent()
     return list(body).index(el) if body is not None else -1
@@ -1866,6 +1888,15 @@ def save_docx(doc: Document, path: Path) -> None:
                 measured = target is not None
                 if target is None:                   # Word could not say: right after the citing paragraph
                     target = anchor.getnext()
+                # a display never crosses into the next Section or Appendix: if a Heading 1 lies between its citing
+                # paragraph and the measured page, it goes in front of that heading, as LaTeX's \clearpage flushes
+                # floats before the next appendix (261101: Table B1 printed under Appendix C, Table C2 under D)
+                el = anchor.getnext()
+                while el is not None and el is not target and el.tag != qn("w:sectPr"):
+                    if el.tag == qn("w:p") and is_heading1(el):
+                        target = el
+                        break
+                    el = el.getnext()
             start = len(body_children(doc))
             display = h["display"]
             if display.kind == "table":

@@ -148,6 +148,20 @@ WORD_CHECK = os.environ.get("FOODNORM_WORD_CHECK", "on").strip().lower() not in 
 OWN_WORDS_WEIGHT = 4.0      # x the share of the query's own words found in the candidate
 NUMBER_WEIGHT = 2.0         # + per number the two share (1% milkfat, 85% lean); - once when they share none
 ALCOHOL_PENALTY = 3.0       # an alcoholic drink the query never asked for ("Whiskey and ginger ale")
+# The plain form (2026-11-01; JL 261101 "how could you update them accordingly?", after b51 t13 r03 found "White Rice"
+# matched "Rice, white, cooked, glutinous" and "Coffee" matched "Coffee, Cuban"): a word the candidate adds that the
+# query never asked for costs PLAIN_FORM_WEIGHT, unless it only says the plain state or kind of the food (PLAIN_WORDS:
+# cooked, raw, brewed, enriched, long-grain ...). Without it every one-word variant ties with the plain entry and the
+# first retrieved wins. On the 600 most logged WellDoc names (the food each patient picked in FatSecret, the observed
+# table held out): the 300 most logged went from 78.7% to 87.9% of logs within 5 g carbs per 100 g, fat within 3 g
+# from 74.6% to 78.7%; the next 300, never looked at while choosing the words, did not move (75.8% to 75.0%, fat 70.7%
+# to 71.2%). 0.5 is the smallest weight with the gain. FOODNORM_PLAIN_FORM=0 turns it off.
+PLAIN_FORM_WEIGHT = float(os.environ.get("FOODNORM_PLAIN_FORM", "0.5"))
+PLAIN_WORDS = {
+    "cooked", "boiled", "steamed", "baked", "roasted", "grilled", "broiled", "poached", "raw", "uncooked", "fresh",
+    "brewed", "regular", "plain", "nfs", "ns", "enriched", "unenriched", "grain", "long", "whole", "prepared",
+    "drained", "solids", "without", "added", "fat", "salt", "type", "made",
+}
 # Words that name no food: function words, serving words, and marketing words ("Classic Style Pretzel Thins"
 # matched a gravy on "classic" and "style").
 NAME_FILLER = {

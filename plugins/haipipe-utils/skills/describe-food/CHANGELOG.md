@@ -2,6 +2,27 @@ CHANGELOG — describe-food
 ================================================================================
 
 
+unreleased — 2026-11-01
+--------------------------------------------------------------------------------
+
+The plain form (usda_db.word_check, constants.PLAIN_FORM_WEIGHT 0.5, PLAIN_WORDS): a
+word a USDA candidate adds beyond the asked name costs 0.5, unless it only says the
+plain state or kind (cooked, raw, brewed, regular, enriched, long-grain ...). Before,
+a one-word variant tied with the plain entry and the first retrieved won: "White
+Rice" was glutinous rice, "Coffee" Cuban coffee, "Cheddar Cheese" a cheese spread,
+"Real Mayonnaise" light mayonnaise. The normalize() answers change for such names.
+Graded in b51 j01 t13 r04 against the food each WellDoc patient picked, the observed
+table held out: 87.9% of logs within 5 g carbs per 100 g (78.7% in r03); the next
+300 names, not looked at while choosing the words, did not move.
+FOODNORM_PLAIN_FORM=0 turns it off.
+
+foodnorm/items.py: an item is one food (split_dishes: a typed dish line becomes one
+input item per food; an app row never splits), each output item repeats its input
+fields (food, prep, cook, amount, dish ...) before match, match.food is the table's
+own name (FoodMatched), and match.words (word_check) says whether that name holds
+every word asked.
+
+
 unreleased — 2026-10-21
 --------------------------------------------------------------------------------
 

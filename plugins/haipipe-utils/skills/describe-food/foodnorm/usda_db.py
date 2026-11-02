@@ -227,6 +227,8 @@ def word_check(query: str, description: str) -> float:
        the two were the same food.
     3. Alcohol: a drink the query never asked for ("Ginger Ale" -> "Whiskey and ginger ale", "Coffee with
        Cream" -> a 34-proof liqueur).
+    4. Plain form: each word the candidate adds beyond the query and constants.PLAIN_WORDS costs
+       PLAIN_FORM_WEIGHT, so "White Rice" is plain rice, not "Rice, white, cooked, glutinous" (b51 t13 r03, 261101).
 
     Graded on b51 t20's answer key (1,194 FatSecret codes; chosen on one half, checked on the other).
     """
@@ -244,6 +246,11 @@ def word_check(query: str, description: str) -> float:
         extra += _C.NUMBER_WEIGHT * hit - (_C.NUMBER_WEIGHT if (d_num and not hit) else 0.0)
     if (set(d_tok) & _C.ALCOHOL_WORDS) and not (set(q_tok) & _C.ALCOHOL_WORDS):
         extra -= _C.ALCOHOL_PENALTY
+    if _C.PLAIN_FORM_WEIGHT:
+        q_set = _stem(q_tok)
+        added = {t for t in d_tok if t not in _C.NAME_FILLER and t not in _C.PLAIN_WORDS and t not in STOPWORDS
+                 and not (_stem([t]) & q_set)}
+        extra -= _C.PLAIN_FORM_WEIGHT * len(added)
     return extra
 
 
