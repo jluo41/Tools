@@ -34,6 +34,7 @@
     e.preventDefault(); opener = link; closeRails();
     dialog.querySelector('[data-viewer-title]').textContent = link.dataset.pop;
     dialog.querySelector('iframe').src = link.href;
+    dialog.querySelector('[data-viewer-go]').href = link.href;   // the pop-out's way to switch to the page
     dialog.showModal();
   });
   dialog.querySelector('[data-close]').addEventListener('click', () => dialog.close());

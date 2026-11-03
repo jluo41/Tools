@@ -10,7 +10,8 @@ excalidraw-studio's (JL 261031, b35 r01 Q1; b35-s01-D16).
 
 spec: title, sub; why = {question, notes: [3 sticky lines], quote}; what = {head, icon, name, type, parts:
 [(icon, name, why, done)], deck_why}; job (a Job folder or None); started (a note, optional); target (where the
-render writes, a few words); missing (delivery rows not written yet: [(name, what)]).
+render writes, a few words); missing (delivery rows not written yet: [(name, what)]); tasks (optional: the
+Job's Task folders Process shows, when the Job holds more than this sNN uses).
 design(): the sNN's own sketches, drawn at local size from x 690, y 280; it returns the elements.
 """
 import importlib.util
@@ -395,7 +396,10 @@ def process(topic, spec):
     blk = job.parent.name
     els += text("job_t", 2298, 350, job.name, 22, PU) + text("job_n", 2298, 384, f"Job: make {topic.name.split('-')[0]}'s delivery \u00b7 {blk.split('_')[0]}/{job.name}/", 16, INK)
     tasks = []
-    for t in sorted(job.glob("t[0-9]*_*")):
+    keep = spec.get("tasks")                               # only the Tasks this sNN uses, when its Job holds others too
+    for t in sorted(job.glob("t[0-9]*_*")):                # (JL 261102, a 68-Task Job: "this is too much, and not readable")
+        if keep and t.name not in keep:
+            continue
         face = (t / f"{t.name}.md").read_text()
         runs = []                                          # each Run: its status, agent and skill from its card (JL 261031,
         for c in sorted(t.glob("runs/*/run.yaml")):        # b35 r01 Q3: "Yes, we should do it")

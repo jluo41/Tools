@@ -2,7 +2,7 @@
 name: haipipe-draft
 description: "The draft behind every Page: create, edit, build and serve a self-contained Page Folder from a file, without a Board; owns the Page Face contract, which Run Spec holds authority, and a draft Task's seven steps (Studio, Plan, Write, Evidence, Display, Revise, Delivery). Planning is haipipe-draft-logic. Trigger: draft, draft folder, file to page, create a page, Page Face, Run Spec, draft steps, /haipipe-draft, /haipipe-page."
 metadata:
-  version: "0.137.3"
+  version: "0.138.0"
   last_updated: "2026-10-26"
   aliases: [haipipe-page]
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -99,6 +99,11 @@ grep -n "⟦" <page-folder>/draft/<stem>-draft-v<N>.md     # 0. a ⟦check⟧ or
   never a version or date.
 - Rendering the pages as images, sending, and reading a returned copy back are later, optional steps of
   `haipipe-delivery` (`render`, `pull`), after the files above exist.
+
+A face may name the build that prints it: `delivery-builder: <script>` (relative to the face). Then `page.py export`
+runs that script for the LaTeX and Word lanes instead of printing the Page as a Section, and checks that it left
+`latex/<stem>.pdf` and `word/<stem>.docx`; the web lane is built as usual. A paper's cover letter uses it, so its
+Delivery is the letter as uploaded (JL 261102: "this is not the version to submit to the submiision website").
 
 `page.py renumber <page-folder>` renumbers the sentences S1, S2, … in reading order in every file that names one (the
 Draft, `evidence/cards.yaml`, the Revise cards, rules and comments; a person's own notes stay as written) after a
@@ -343,7 +348,8 @@ a second approval loop.
 ## ✅ Page configuration and completion checklist
 
 For CREATE, a Page configuration/completion audit, or a whole-Page completion
-claim, read `ref/page-checklist.md`. Assess the reader-facing Opening and
+claim, read `ref/page-checklist.md`. For a draft Task, its § 6 lists the file each of the seven steps leaves, and
+`page.py health` warns on every missing one (`steps`; JL 261102). Assess the reader-facing Opening and
 Content explicitly, then assess any backstage Outline, target, contract, and
 Evidence records separately. Report configuration, content, review and hosting
 separately: a created Folder, successful build, or default wrapper is not a
@@ -1214,6 +1220,8 @@ thread      D07            board-wide, cited from any page
 Every id inside a fenced figure renders as a link.
 
 ## ✅ Closing checks
+
+**The final gate (JL 261102: "I think /haipipe-draft should do this final checklist before saying it is finished").** Before any reply says a draft Task is finished, done, complete or ready, run `page.py health --final <task>` and paste its rows. It is `health` with nothing left to wait: Content that differs from the current draft, a stale export and a missing step file fail instead of warning, and its `printed` check reads the built `latex/<stem>.pdf` back (pdftotext) and fails if any § 3 sentence is not in it. Only a person's own step (the sign) stays a warning, named so it is not forgotten and never ticked by the agent. A FAIL means the reply says what is still open, never "finished".
 
 - Before any claim that a Page Folder is current or complete, run
   `cli/page.py health <page-folder>` (several folders in one call are fine).

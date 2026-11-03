@@ -1653,6 +1653,8 @@ def build():
         cover = mod.build_cover_letter(CFG, PROFILE, ROOT, HERE, OUT,
                                        title=declared_title(main) or CFG["paper"].get("title", CFG["paper"]["id"]),
                                        main_pdf=main_pdf, tables=register["tables"], figures=register["figures"], run=_run)
+    if cover is not None:
+        cover["task_delivery"] = letter_task_delivery(cover)
     manifest_path = HERE / OUT["manifest"]
     try:
         manifest = json.loads(manifest_path.read_text(encoding="utf-8")) if manifest_path.exists() else {}
@@ -1690,6 +1692,11 @@ def build():
         manifest["cover_letter"] = cover
     else:
         manifest.pop("cover_letter", None)
+    portal = portal_packet(status, main_pdf, cover)
+    if portal is not None:
+        manifest["portal"] = portal
+    else:
+        manifest.pop("portal", None)
     manifest["readiness"] = {
         "ready": len(ready),
         "total": len(pages),
@@ -1719,11 +1726,144 @@ def build():
         print(f"cover letter: {'✅' if cover['outputs']['pdf'] else '❌'} {cover['outputs']['pdf'] or 'latexmk rc=' + str(cover['latexmk_rc'])}"
               f" · {'ready' if cover['ready'] else 'not ready'} · words from {cover['from']}")
         for t in todo: print(f"  ✉ {t}")
+    if portal is not None:
+        n_ok = sum(u["state"] == "ready" for u in portal["uploads"])
+        print(f"portal: {portal['folder']}/ · {n_ok} of {len(portal['uploads'])} uploads ready · {portal['folder']}/portal.md")
+        for u in portal["uploads"]:
+            if u["state"] != "ready": print(f"  📮 {u['slot']}: {u['state']} · {u['detail']}")
     for p in pages:
         if not p["ready"]: print(f"  ⬜ {p['id']}: {'; '.join(p['reasons'])}")
     for p in pages:
         for w in p.get("warnings", []): print(f"  ⚠ {p['id']}: {w}")
     for w in BUILD_WARNINGS: print(f"  ⚠ document: {w}")
+
+
+# ── 0.13.1 (JL 261102): the letter Task's own Delivery is the letter as sent ─────────────────────────
+# "this is not the version to submit to the submiision website direclty"; "should looks like this" (the lane's PDF,
+# with date, addressee and signature). When [coverletter] task names the letter Task, the lane's PDF and Word file
+# are also its Delivery: delivery/<its Job>/<task>/latex/<stem>.pdf, word/<stem>.docx and word/<stem>.pdf (Word's own
+# print). The Task's face says `delivery-builder:` so `page.py export` runs this build for those two lanes instead of
+# printing the letter as a Section.
+
+def letter_task_delivery(cover: dict) -> dict | None:
+    """Copy the built letter into the letter Task's latex/ and word/ lanes; {lane: path} or None."""
+    cl = CFG.get("coverletter") or {}
+    if not cl.get("task") or not (cover.get("outputs") or {}).get("pdf"):
+        return None
+    task = (HERE / str(cl["task"])).resolve()
+    if not (task / f"{task.name}.md").is_file() or not task.is_relative_to(ROOT):
+        return None
+    dest = delivery_dir(task)
+    pdf = HERE / cover["outputs"]["pdf"]
+    docx = HERE / cover["outputs"]["docx"] if cover["outputs"].get("docx") else None
+    out = {}
+    for lane in ("latex", "word"):
+        d = dest / lane
+        if d.exists():
+            shutil.rmtree(d)                 # generated: the Section-style print it replaces goes
+        d.mkdir(parents=True)
+    shutil.copy2(pdf, dest / "latex" / f"{task.name}.pdf")
+    out["latex"] = str((dest / "latex" / f"{task.name}.pdf").relative_to(ROOT))
+    if docx and docx.is_file():
+        target = dest / "word" / f"{task.name}.docx"
+        shutil.copy2(docx, target)
+        twin = target.with_suffix(".pdf")
+        ok = word_pdf(target, twin)
+        if not ok and DOCX2PDF.exists():
+            r = _run([sys.executable, str(DOCX2PDF), str(target), "-o", str(twin)], cwd=HERE,
+                     capture_output=True, text=True, timeout=300)
+            ok = getattr(r, "returncode", 1) == 0 and twin.is_file()
+        out["word"] = str(target.relative_to(ROOT)) + ("" if ok else " (no PDF print)")
+    return out
+
+
+# ── 0.13.0 (JL 261102): the portal packet, what a person uploads to the venue's portal as it is ────
+# "here we might want to say the final delivery content that are ready to submit directly in the portal".
+# paper-build.toml names each upload slot the portal asks for and the file that fills it:
+#
+#   [portal]
+#   folder = "portal"                       # under delivery/<writing Job>/; GENERATED, emptied every build
+#   [[portal.upload]]
+#   slot = "Manuscript"                     # the portal's own word for the slot
+#   from = "latex/FairGlucose-npjDM.pdf"    # relative to this delivery folder; a glob takes its newest match,
+#                                           # or every match with all = true (one figure per file)
+#   as = "FairGlucose-manuscript.pdf"       # optional: the name in the packet (default: the file's own)
+#   draft = true                            # optional: the file carries the build's DRAFT state
+#   matches = "latex"                       # optional, for a ZIP made by hand (npj-zip.sh): stale when a file in
+#                                           # it differs from the same path under this folder
+#   note = "..."                            # optional: one line beside the slot
+#   checks = "cover_letter"                 # optional: not ready while the cover letter lane's checks fail
+#
+# The build copies every file it finds into the folder and writes portal.md there: one row per slot with
+# its file and its state (ready · draft · stale · missing). Uploading means dragging that folder's files
+# into the slots portal.md names; nothing in it is edited by hand.
+
+PORTAL_STATES = {"ready": "✅ ready", "draft": "🔶 built, not approved", "stale": "❗ stale", "missing": "⬜ missing"}
+
+
+def _zip_differs(zpath: Path, base: Path) -> list:
+    """The members of a ZIP whose bytes differ from the same path under base (members base lacks are skipped)."""
+    import zipfile
+    try:
+        with zipfile.ZipFile(zpath) as z:
+            return [n for n in z.namelist() if not n.endswith("/") and (base / n).is_file()
+                    and z.read(n) != (base / n).read_bytes()]
+    except (OSError, zipfile.BadZipFile):
+        return [zpath.name]
+
+
+def portal_packet(status: str, main_pdf: Path, cover: dict | None = None):
+    """Copy each [[portal.upload]] file into delivery/<job>/<folder>/ and write portal.md; the manifest report, or
+    None when paper-build.toml has no [portal]."""
+    import glob as _glob
+    cfg = CFG.get("portal")
+    if not isinstance(cfg, dict):
+        return None
+    folder = str(cfg.get("folder", "portal"))
+    dest = (HERE / folder).resolve()
+    if dest == HERE or not dest.is_relative_to(HERE) or dest.name in {"latex", "word"}:
+        raise ValueError(f"[portal] folder must be its own folder inside {HERE.name}/: {folder}")
+    if dest.exists():
+        shutil.rmtree(dest)
+    dest.mkdir(parents=True)
+    uploads = []
+    for i, up in enumerate(cfg.get("upload") or [], 1):
+        slot, src = str(up.get("slot", f"Upload {i}")), str(up.get("from", ""))
+        hits = sorted((Path(h) for h in _glob.glob(str(HERE / src))), key=lambda h: h.stat().st_mtime) if src else []
+        hits = [h for h in hits if h.is_file()]
+        files = hits if up.get("all") else hits[-1:]
+        row = {"slot": slot, "from": src, "files": [], "note": str(up.get("note", ""))}
+        if not files:
+            row.update(state="missing", detail=f"nothing at {src}")
+        else:
+            names = [str(up["as"])] if up.get("as") and len(files) == 1 else [f.name for f in files]
+            for f, name in zip(files, names):
+                shutil.copy2(f, dest / name)
+                row["files"].append(name)
+            differ = _zip_differs(files[-1], HERE / str(up["matches"])) if up.get("matches") else []
+            if differ:
+                row.update(state="stale", detail=f"{len(differ)} file(s) differ from {up['matches']}/ "
+                                                 f"({', '.join(differ[:3])}); make it again")
+            elif up.get("checks") == "cover_letter" and cover is not None and not cover.get("ready"):
+                failed = [c["check"] for c in cover.get("checks", []) if not c["ok"]]
+                row.update(state="draft", detail="the letter's own checks fail: " + ", ".join(failed or ["build"]))
+            elif up.get("draft") and status != "READY":
+                row.update(state="draft", detail="built; DRAFT until the authors approve this build (G4)")
+            else:
+                row.update(state="ready", detail="")
+        uploads.append(row)
+    lines = ["# The portal packet", "", f"GENERATED by {ENGINE_TAG} from paper-build.toml [portal], {datetime.now():%Y-%m-%d %H:%M}.",
+             "Rebuild with build.py; never edit this file or the files beside it.", "",
+             "Each row is one upload slot in the venue's portal, and the file in this folder that fills it.", "",
+             "| # | slot | file | state | note |", "|---|---|---|---|---|"]
+    for i, u in enumerate(uploads, 1):
+        shown = ", ".join(u["files"][:3]) + (f" and {len(u['files']) - 3} more" if len(u["files"]) > 3 else "")
+        note = "; ".join(x for x in (u["detail"], u["note"]) if x)
+        lines.append(f"| {i} | {u['slot']} | {shown or '—'} | {PORTAL_STATES[u['state']]} | {note} |")
+    n_ok = sum(u["state"] == "ready" for u in uploads)
+    lines += ["", f"{n_ok} of {len(uploads)} slots ready. Only a person writes `sent` in delivery/delivery.md (haipipe-delivery)."]
+    (dest / "portal.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return {"folder": folder, "uploads": uploads, "ready": n_ok, "total": len(uploads)}
 
 def freeze(kind: str, rd: str):
     """Cut one immutable Round snapshot from the current generated delivery.

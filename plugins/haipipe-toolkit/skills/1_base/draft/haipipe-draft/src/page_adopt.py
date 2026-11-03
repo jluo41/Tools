@@ -171,8 +171,10 @@ def _trailing_blanks(lines: list) -> tuple[list, list]:
     return lines[:n], lines[n:]
 
 
-def adopt(target, *, plan: Path | None = None) -> dict:
-    """Compute the adopted Page. Returns {page, plan, refused, text, changes, dropped, notes}."""
+def adopt(target, *, plan: Path | None = None, relayout: bool = False) -> dict:
+    """Compute the adopted Page. Returns {page, plan, refused, text, changes, dropped, notes}. With `relayout` the
+    Content is laid out again from the Draft first, for a Draft whose paragraphs changed (JL 261102: Content was
+    once typed by hand when adopt refused, and the Page printed an older version than its plan)."""
     page = _page_md(Path(target))
     folder, stem = page.parent, page.stem
     plan = Path(plan) if plan else latest_outline(plan_dir(folder), stem)
@@ -192,7 +194,18 @@ def adopt(target, *, plan: Path | None = None) -> dict:
     if span is None:
         report["refused"].append("the Page has no `## Content` section")
         return report
-    if not any(REALIZES.search(line) for line in lines[span[0]:span[1]]):
+    if relayout:
+        old = lines[span[0]:span[1]]
+        skeleton = _skeleton(text, plan_text)
+        if skeleton:
+            kept = [l for l in old if l.lstrip().startswith(">")]
+            lines = lines[:span[0]] + skeleton + lines[span[1]:]
+            span = (span[0], span[0] + len(skeleton))
+            report["changes"].append("laid out the Content again from the Draft (--relayout: its paragraphs changed)")
+            if kept:
+                report["notes"].append("%d `>` line(s) of the old Content were not carried; the evidence lines are "
+                                       "rewritten from the Draft" % len(kept))
+    elif not any(REALIZES.search(line) for line in lines[span[0]:span[1]]):
         # a Page whose Content holds no tagged sentence yet (a new Section's placeholder) gets its paragraph blocks
         # laid out from the Draft, one `####` block per paragraph, which the exporters print as a paragraph break and
         # never as a heading; the steps below then fill and check it as for any Page (t01_introduction, 261021)
@@ -359,9 +372,9 @@ def content_line(text: str, plan_name: str, now: datetime.datetime | None = None
     return "\n".join(lines)
 
 
-def run(target, *, plan: Path | None = None, dry_run: bool = False) -> dict:
+def run(target, *, plan: Path | None = None, dry_run: bool = False, relayout: bool = False) -> dict:
     """Adopt and, unless `dry_run`, write the Page. Adds a unified `diff`."""
-    report = adopt(target, plan=plan)
+    report = adopt(target, plan=plan, relayout=relayout)
     if report["refused"]:
         return report
     if report["changes"]:
@@ -379,8 +392,10 @@ def run(target, *, plan: Path | None = None, dry_run: bool = False) -> dict:
 def render(report: dict) -> str:
     name = Path(report["page"]).stem
     if report["refused"]:
+        hint = (["   → the Draft's paragraphs changed: `page.py adopt --relayout` lays the Content out again from it; "
+                 "never type Content by hand"] if any("paragraph" in r for r in report["refused"]) else [])
         return "\n".join(["❌ %s · refused, nothing written (plan %s)" % (name, report["plan"])]
-                         + ["   - %s" % r for r in report["refused"]])
+                         + ["   - %s" % r for r in report["refused"]] + hint)
     changes = report["changes"]
     head = ("✅ %s · already equals its Draft (%s)" % (name, report["plan"]) if not changes else
             "%s %s · %d change(s) from %s" % ("✏️" if report["written"] else "🔎", name, len(changes), report["plan"]))
@@ -391,3 +406,28 @@ def render(report: dict) -> str:
     if changes and not report["written"]:
         out.append(report["diff"].rstrip("\n"))
     return "\n".join(out)
+
+
+def content_gap(target) -> dict | None:
+    """Is the Page's Content behind its current Draft? {printed, current} when it is, else None (JL 261102: the
+    Delivery tab printed draft v0.1 while the plan beside it was v0.3, and nothing on the screen said so). `printed`
+    is the face's `content:` line, the record adopt writes; `current` the newest Draft. Read by page.py health and by
+    the workbench's Delivery views."""
+    try:
+        page = _page_md(Path(target))
+    except Exception:
+        return None
+    plan = latest_outline(plan_dir(page.parent), page.stem)
+    if plan is None or not plan.is_file():
+        return None
+    m = re.search(r"-(draft|outline)-v([0-9][0-9.]*)\.md$", plan.name)
+    current = "%s v%s" % (m.group(1), m.group(2)) if m else plan.name
+    text = page.read_text(encoding="utf-8")
+    head = text.split("\n## ", 1)[0]
+    stamp = re.search(r"(?m)^content:\s*((?:draft|outline) v[0-9.]+)", head)
+    report = adopt(page, plan=plan)
+    behind = bool(report["refused"] or report["changes"])
+    if not behind:
+        return None
+    return {"printed": stamp.group(1) if stamp else "an older text", "current": current,
+            "why": "its paragraphs changed (adopt --relayout)" if report["refused"] else "sentences changed (adopt)"}

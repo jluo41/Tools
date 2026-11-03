@@ -1,3 +1,14 @@
+## 1.22.0 · 2026-11-02 · the portal packet, D8
+
+- JL 261102: "here we might want to say the final delivery content that are ready to submit directly in the portal".
+  haipipe-paper-assemble 0.13.0 builds `delivery/<writing Job>/portal/` from paper-build.toml `[portal]`: the files
+  uploaded as they are, and `portal.md`, one row per upload slot with its state (ready, built but not approved, stale,
+  missing). `checklist.md` and `paper_check.py` add D8 "The portal packet"; Read and approved moves to D9, Sent to D10.
+- The cover letter is a letter Task, built by the cover letter lane; `[coverletter] task` names it.
+- The submission Job `j21_submission_v<MMDD>_<desk>` (JL 261102): the cover letter, a read-only walk of the venue's
+  portal, and the portal fill page (`portal-fill.html`), shown as the Writing view's tab "The submission portal".
+  The paper workbench no longer reads a submission Job as a writing version.
+
 ## 1.21.0 · 2026-11-01 · checklist P9, the display plan
 
 - JL 261101: the display plan (haipipe-paper-plan `s06-paper-displays`) joins the plan. `checklist.md` and

@@ -317,11 +317,11 @@ class FocusPageTest(unittest.TestCase):
         self.write_task('j01_compare', 't03_third', '🟠 WAITING FOR A PERSON · pick a cut')
         page = focus_page.render(frame.Theme(name='work'), self.root, self.block, 'report', 'standing')   # Report opens on MindMap (JL 261031)
         self.assertIn('Jobs and Tasks', page)   # JL 261030: "the studio and jobs/tasks status"
-        self.assertIn('<b>j01_compare</b></a>  <span class="mut">· 🟡 2 results in, unread · 🟠 1 waiting for a person</span>', page)
-        self.assertIn('<li class="sub">🟠 <a href=', page)
-        self.assertIn('<b>t03_third</b></a>  <span class="mut">· waiting for a person</span>', page)
+        self.assertIn('<ul class=fold-tree>', page)                         # one folding tree (JL 261102)
+        self.assertIn('data-pop="j01_compare">j01_compare</a><span class=st>', page)   # the Job folds, its tally beside it
+        self.assertIn('data-pop="t03_third">t03_third</a><span class=st>🟠 WAITING FOR A PERSON</span>', page)
         work = focus_page.render(frame.Theme(name='work'), self.root, self.block, 'work')   # the Jobs live in Work
-        self.assertIn('class="row-name"', work)
+        self.assertIn('<ul class=fold-tree>', work)
         self.assertIn('Compare two methods.', work)
         self.assertNotIn('Jobs and Tasks', work)                         # the status shows once, in Report
 
@@ -335,7 +335,8 @@ class FocusPageTest(unittest.TestCase):
         self.assertIn('Does it differ by region?', page)
         self.assertIn('It differs little.', page)
         self.assertIn('🔶 DRAWN, REVIEW OPEN', page)
-        self.assertNotIn('<details', page)
+        self.assertIn('<ul class=fold-tree>', page)          # its Tasks fold, the output inside (JL 261102)
+        self.assertIn('<li class=fold-out><figure class="row-output">', page)
 
     def test_block_with_answers_opens_on_findings(self):
         report_dir = self.block / 'reports' / 'q01_compare'

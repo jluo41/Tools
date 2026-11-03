@@ -2,7 +2,7 @@
 name: haipipe-paper-assemble
 description: "Builds the whole manuscript deterministically from the Sections' LaTeX and accepted bindings, regenerating delivery/ (DOCX, PDF, supplement, source manifest); never reads a generated Word file back. Use to assemble, build Word, export the paper, regenerate submission files, or check whether a document is stale. Trigger: assemble, build Word, export the paper, /haipipe-paper-assemble."
 metadata:
-  version: "0.12.4"
+  version: "0.13.0"
   last_updated: "2026-11-01"
   summary: "Paper-level source-driven document assembly; page-level Word export remains a separate workbench."
 ---
@@ -344,6 +344,9 @@ OUTPUT  delivery/cover-letter/ PDF (generated LaTeX) and DOCX · [outputs] cover
 CHECKS  every number printed in the manuscript · required mentions (profile cover_letter_must_mention
         + [coverletter] must_mention) · no causal verb · no process text · manuscript within the
         profile's page_cap · author block complete · one or two pages
+TASK    with [coverletter] task, the same PDF and Word file (and Word's own PDF print) are also the letter Task's
+        Delivery: delivery/<its Job>/<task>/latex/<stem>.pdf and word/<stem>.docx (0.13.1; manifest
+        cover_letter.task_delivery); the Task's face says delivery-builder: so page.py export runs this build
 SEND    build.py send qNN (a comments report of the version) or send RD<NN> (an older Round) freezes the
         letter with the manuscript into its sent/
 ```
@@ -353,6 +356,30 @@ never drift from the manuscript. `scripts/cover_letter.py` holds the lane; `buil
 records it under `cover_letter` (source, ready, checks). `send` skips an output switched off with an
 empty value and, when the profile's `appendices = "main"`, the supplement a manuscript-with-appendices
 never produces.
+
+## 📮 The portal packet · what is uploaded as it is (0.13.0)
+
+JL 261102: "here we might want to say the final delivery content that are ready to submit directly in the
+portal". A send ends in a venue's portal, slot by slot (manuscript, supplement, one file per figure, cover letter,
+source, forms). paper-build.toml `[portal]` names each slot and the built file that fills it; the build copies those
+files into `delivery/<writing Job>/portal/` and writes `portal/portal.md`, one row per slot with its state. A person
+uploads the folder's files into the slots the table names, and nothing else.
+
+```text
+[portal]              folder = "portal" (GENERATED, emptied every build)
+[[portal.upload]]     slot · from (a path or glob under delivery/<job>/; all = true takes every match)
+                      · as (its name in the packet) · draft = true (the build's G4 state applies)
+                      · matches = "latex" (a ZIP made by hand: stale when a file in it differs from latex/)
+                      · note (one line beside the slot)
+states                ✅ ready · 🔶 built, not approved (draft = true while the build is DRAFT)
+                      · ❗ stale · ⬜ missing (a slot the venue asks for that has no file yet)
+receipt               build-manifest.json "portal": folder, uploads (slot, files, state, detail), ready, total
+```
+
+List every slot the venue asks for, also the ones with no file yet, so a missing form shows as ⬜ instead of being
+forgotten. The slots come from `venues/<venue>/call.md` or the version's submission report (its `checklist.md`).
+The packet never decides the send: `sent` is still a person's line in `delivery/delivery.md` (haipipe-delivery),
+and the Writing view of the paper workbench shows the packet under the assembled paper.
 
 ## ⚙️ Configuration
 

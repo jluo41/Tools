@@ -110,6 +110,15 @@ class BoardViewsTest(unittest.TestCase):
         self.assertLess(css.index(".pb-side{display:grid"), css.index(".pb-side{grid-template-columns:1fr}"))
         self.assertLess(css.index(".pb-flow{position:relative"), css.index(".pb-flow{grid-template-columns:1fr}"))
 
+class JobNameFormsTest(unittest.TestCase):
+    """Support blocks reads a Job however the pages write it (JL 261102: it missed every b51 Job)."""
+
+    def test_dot_space_and_range(self):
+        from live import board_read as R
+        self.assertEqual(R.DOT_REF.findall("b51.j04.t02 and b51 j07 t02 and b01 j11"),
+                         [("51", "04", "02"), ("51", "07", "02"), ("01", "11", "")])
+        self.assertEqual(R.RANGE_REF.findall("b01 j11 to j14; b01 j20-j23"), [("01", "11", "14"), ("01", "20", "23")])
+
 
 if __name__ == "__main__":
     unittest.main()

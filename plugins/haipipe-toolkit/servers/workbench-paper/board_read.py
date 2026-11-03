@@ -187,7 +187,10 @@ def _mark(state: str) -> str:
     return next((m for w, m in STATE_MARK if w in state.lower()), "⬜")
 
 
-DOT_REF = re.compile(r"\bb(\d{2})\.j(\d{2})(?:\.t(\d{2}))?\b")
+# `b51.j04.t02` or, as the pages write it, `b51 j04 t02` (JL 261102: Support blocks missed every b51 Job)
+DOT_REF = re.compile(r"\bb(\d{2})[. ]j(\d{2})(?:[. ]t(\d{2}))?\b")
+# a run of Jobs: `b01 j11 to j14`, `b01 j20-j23`
+RANGE_REF = re.compile(r"\bb(\d{2})[. ]j(\d{2})\s*(?:to|-|–)\s*j(\d{2})\b")
 
 
 PROJ_REF = re.compile(r"\b(Project-[A-Za-z0-9_-]+)(?:/|\s+)(?:(work|discovery)/)?(b\d{2})(?:_[A-Za-z0-9_-]+)?"
@@ -231,6 +234,9 @@ def explore_tree(board: Path) -> dict:
             add(own, kind, block[:3], job[:3] if job else "")
         for bn, jn, tn in DOT_REF.findall(text):
             add(own, "work", f"b{bn}", f"j{jn}", f"t{tn}" if tn else "")
+        for bn, ja, jb in RANGE_REF.findall(text):
+            for jn in range(int(ja) + 1, int(jb) + 1):                # the first is DOT_REF's already
+                add(own, "work", f"b{bn}", f"j{jn:02d}")
     return tree
 
 
@@ -306,8 +312,9 @@ def _task_url(task: Path, root: Path, group: str = "") -> str:
 
 
 def is_version(job: Path) -> bool:
-    """A paper Board's Job is a version unless it is the display Job (j21_displays, s01-D11) or the citation Job."""
-    return not re.search(r"display|citation|cite|evidence|value", job.name, re.I)
+    """A paper Board's Job is a version unless it is the display Job (j21_displays, s01-D11), the citation Job, or the
+    submission Job of a send (jNN_submission_<version>: its letters and the portal; JL 261102)."""
+    return not re.search(r"display|citation|cite|evidence|value|submission", job.name, re.I)
 
 
 def display_job(version: Path) -> Path | None:

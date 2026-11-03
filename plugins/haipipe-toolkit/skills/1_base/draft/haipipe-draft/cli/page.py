@@ -150,6 +150,8 @@ def main(argv=None):
     )
     health.add_argument("pages", type=Path, nargs="+", help="Page Folders or Page Face .md files")
     health.add_argument("--json", action="store_true")
+    health.add_argument("--final", action="store_true",
+                        help="the gate before saying a draft Task is finished: pending WARNs fail, and every Draft sentence must be in the printed PDF")
     adopt = commands.add_parser(
         "adopt",
         help="Write the current Draft's sentences into the Page's Content, in Draft order; "
@@ -158,6 +160,8 @@ def main(argv=None):
     adopt.add_argument("pages", type=Path, nargs="+", help="Page Folders or Page Face .md files")
     adopt.add_argument("--plan", type=Path, help="Draft Markdown to adopt (default: the current one)")
     adopt.add_argument("--dry-run", action="store_true", help="Print the diff; write nothing")
+    adopt.add_argument("--relayout", action="store_true",
+                       help="lay the Content out again from the Draft first, when its paragraphs changed")
     renumber = commands.add_parser(
         "renumber", help="Renumber the Draft's sentences S1, S2, ... in reading order, in every file that names one")
     renumber.add_argument("pages", type=Path, nargs="+", help="Page Folders or Page Face .md files")
@@ -297,7 +301,7 @@ def main(argv=None):
             return
         elif args.command == "health":
             from src.folder_health import FAIL, folder_health, render
-            reports = [folder_health(page) for page in args.pages]
+            reports = [folder_health(page, final=args.final) for page in args.pages]
             if args.json:
                 print(json.dumps(reports, indent=2, ensure_ascii=False))
             else:
@@ -307,7 +311,7 @@ def main(argv=None):
             return
         elif args.command == "adopt":
             from src.page_adopt import render, run
-            reports = [run(page, plan=args.plan, dry_run=args.dry_run) for page in args.pages]
+            reports = [run(page, plan=args.plan, dry_run=args.dry_run, relayout=args.relayout) for page in args.pages]
             print("\n\n".join(render(report) for report in reports))
             if any(report["refused"] for report in reports):
                 sys.exit(1)
@@ -349,6 +353,25 @@ def main(argv=None):
                 if "web" in lanes:
                     results["web"] = {"ok": True, "out": str(build_page(context, None))}
                 rest = [lane for lane in lanes if lane != "web"]
+                # JL 261102 ("this is not the version to submit"): a face whose `delivery-builder:` names a build
+                # script has its LaTeX and Word lanes made by that build (a letter as sent, not a Section print)
+                import re as _re
+                face_head = context.source.read_text(encoding="utf-8").split("\n## ", 1)[0]
+                builder = _re.search(r"(?m)^delivery-builder:\s*(\S+)", face_head)
+                if rest and builder:
+                    import subprocess
+                    script = (context.source.parent / builder.group(1)).resolve()
+                    py = repo_root(context.folder) / ".venv" / "bin" / "python"
+                    run = subprocess.run([str(py if py.is_file() else sys.executable), str(script)],
+                                         capture_output=True, text=True)
+                    from src.common import delivery_read_lane_dir
+                    for lane in rest:
+                        f = delivery_read_lane_dir(context.folder, lane) / (
+                            f"{context.source.stem}.pdf" if lane == "latex" else f"{context.source.stem}.docx")
+                        results[lane] = ({"ok": True, "out": str(f)} if run.returncode == 0 and f.is_file() else
+                                         {"ok": False, "err": f"{builder.group(1)} exit {run.returncode}; "
+                                          + (run.stderr or run.stdout)[-300:].strip()})
+                    rest = []
                 if rest:
                     results.update(export(context.folder, rest, author=args.author, root=args.root))
                 failed = failed or not all(r["ok"] for r in results.values())

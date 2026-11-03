@@ -2,8 +2,8 @@
 name: haipipe-draft-writing
 description: "The writer of a Page: drafts and revises prose from the plan (outline to prose, plain English rewrite), edits a sentence by its address, runs the WRITE step (adopt agreed text, integrate evidence, build, pre-check), auto revise rounds, and the Revise Run (before and after, change ledger). Never reviews its own text (haipipe-draft-review does). Trigger: draft prose, revise this paragraph, edit this sentence, WRITE, auto revise, track changes, /haipipe-draft-writing, /haipipe-sentence, /haipipe-draft-revise."
 metadata:
-  version: "0.26.1"
-  last_updated: "2026-10-26"
+  version: "0.27.0"
+  last_updated: "2026-11-02"
   # version history: ./CHANGELOG.md
 ---
 
@@ -44,6 +44,18 @@ Independence: whoever writes never reviews. The judge is `../haipipe-draft-revie
 ## ✍️ Writing prose
 
 **Examples first**: before a Section is written or rewritten whole, read how 3 to 4 published papers of the venue write the same Section (a Studio topic `sNN-<task>-<venue>-examples`, made by /excalidraw read when missing), and write to their pattern, naming each departure (`ref/writing.md` § 0, JL 261022). Then realize an approved plan and evidence slice as sentences, weave paragraphs, and revise existing prose by the surgical-revision rule. Read `ref/writing.md` first (its rules section is what every sentence is written by); it points to the rest of `ref/`. The plan, the evidence and the venue belong to the host workflow; a Page's human gate belongs to a person.
+
+**Structure and Draft move together (JL 261102: "when you update the draft, you should also udpate teh structure as
+well")**. A Draft Markdown's `## 1 · Structure` is the plan of its `## 3 · Draft`, so every edit to the sentences
+makes the same change to the plan in that edit: a sentence added or cut adds or cuts its Bullet (`- B<k> · S<n> ·
+[Role] what it does`, with its `Evidence:` line), a sentence moved moves its Bullet, a paragraph added, split, merged
+or renamed changes its `### C<n>.P<m> · <title> · S<a> to S<b>` heading in sections 1, 2 and 3 and its entry in the
+Structure Overview, and the S numbers and spans are renumbered to match. A new structure is a new draft version
+(`draft-v<G>.<S+1>`, the older one moved to `draft/previous/`), never a section 3 rewritten under the old plan; its
+Evidence Items and the face's `evidence-allowlist:` follow their sentences. `page.py health <Task>` checks it
+(`structure`: `plan_layout.structure_draft_mismatches`, the paragraphs, titles, sentences and Overview spans of
+sections 1 and 3) and fails until both agree. Before the reply calls the Page finished, `page.py health --final`
+also reads the built PDF back against section 3 (haipipe-draft § ✅ Closing checks).
 
 ## 🔤 The sentence
 

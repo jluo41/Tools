@@ -126,7 +126,14 @@ def evidence_body(task: Path, root: Path):
             body += (f'<iframe src="{esc(url(shown))}" loading=lazy title="{esc(label)}" style="width:100%;height:460px;'
                      f'border:1px solid var(--line);border-radius:6px;background:#fff"></iframe>')
         body += f'<p class=mut>{esc(shown.name)} · <a data-pop="{esc(task.name)}" href="{esc(url(shown))}">Open ↗</a></p>'
-    values = re.search(r"(?ms)^## Values\s*\n(.*?)(?=^## |\Z)", text)
+        # a work Run with several pictures (an Others candidate, JL 261102): show the rest too, so all can be compared
+        res = next((p for p in shown.parents if p.name == "result"), None)
+        more = [f for f in sorted(res.rglob("*.png")) if f != shown] if res is not None and not any(task.glob("runs/*/result")) else []
+        for f in more:
+            body += (f'<a data-pop="{esc(task.name)}" href="{esc(url(f))}"><img src="{esc(url(f))}" alt="{esc(f.name)}" loading=lazy '
+                     f'style="display:block;max-width:100%;max-height:440px;margin-top:10px;border:1px solid var(--line);border-radius:6px"></a>'
+                     f'<p class=mut>{esc(f.name)}</p>')
+    values =re.search(r"(?ms)^## Values\s*\n(.*?)(?=^## |\Z)", text)
     if values:                                   # a value Task: each printed number and where it comes from
         items = re.findall(r"(?m)^- (.+)\n(?:\s+(.+)\n?)?", values.group(1))
         body += "<ol>" + "".join(f'<li>{esc(a)}' + (f'<br><span class=mut>{esc(b)}</span>' if b else '') + '</li>' for a, b in items) + "</ol>"

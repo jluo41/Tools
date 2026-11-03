@@ -165,7 +165,9 @@ before it is drawn, and checked against the venue's display rules. The face carr
    `b03.j03.t02.r05` in the Project's work/, must be on disk; words such as "a new figure Run after T5" read as not
    made yet); a sketch for every row; each drawn display's caption words, its figure's format, and its width in pixels
    against the venue's width × resolution; a pool Task the plan does not name; the rules the venue has not recorded.
-   The same lines are drawn in ③ and shown in the workbench's Paper flow › Displays and the checklist's P9.
+   The same lines are drawn in the s06 drawing and ticked in the checklist's P9. The workbench's Report › Displays
+   › 1 · Plan shows the s06 drawing only, no check lines (JL 261102: "we might want to have this to be a excalidraw
+   only. No need to put others"); 3 · Examples shows the `sNN-paper-display-examples` drawing the same way.
 4. **s04 keeps only the names.** Its Sections table's `displays` cell names the rows (`Display A, Display C`); its old
    Displays table is read only on a Board with no s06.
 

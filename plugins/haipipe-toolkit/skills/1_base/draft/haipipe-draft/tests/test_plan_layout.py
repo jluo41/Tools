@@ -685,3 +685,51 @@ def test_an_old_receipt_hash_no_longer_seals_a_ticket(tmp_path: Path):
     assert "outline/" not in ticket.read_text(encoding="utf-8")
     assert receipt.read_text(encoding="utf-8") == "ticket_sha256: " + "a" * 64 + "\n"  # results/ keeps its words
     assert check_page_folder(page)["verdict"] == "latest"
+
+
+def test_structure_and_draft_move_together():
+    """JL 261102: "when you update the draft, you should also udpate teh structure as well"."""
+    from src.plan_layout import structure_draft_mismatches
+    good = """# p · draft v0.1
+approved: ⬜
+
+## 1 · Structure · Bullet Point Table
+
+### Structure Overview
+
+- C1 · Letter
+- C1.P1 · The finding
+  → S1 to S2
+- C1.P2 · Declarations
+  → S3 to S3
+
+### C1.P1 · The finding · S1 to S2
+- B1 · S1 · [Hook] the usual check
+- B2 · S2 · [Gap] what it hid
+
+### C1.P2 · Declarations · S3 to S3
+- B1 · S3 · [Ethics] the IRB
+
+## 2 · Scratch · What to write here
+
+## 3 · Draft · Reading and Revise
+
+### C1.P1 · The finding · S1 to S2
+- B1 · S1 · One.
+- B2 · S2 · Two.
+
+### C1.P2 · Declarations · S3 to S3
+- B1 · S3 · Three.
+"""
+    assert structure_draft_mismatches(good) == []
+    added = good.replace("- B1 · S3 · Three.\n", "- B1 · S3 · Three.\n- B2 · S4 · Four.\n")
+    assert any("C1.P2 sentences differ" in m for m in structure_draft_mismatches(added))
+    renamed = good.replace("### C1.P1 · The finding · S1 to S2\n- B1 · S1 · One.", "### C1.P1 · The result · S1 to S2\n- B1 · S1 · One.")
+    assert any("titled" in m for m in structure_draft_mismatches(renamed))
+    extra = good + "\n### C1.P3 · Thanks · S4 to S4\n- B1 · S4 · Thanks.\n"
+    assert any("C1.P3 is in the Draft but not in the Structure" in m for m in structure_draft_mismatches(extra))
+    stale_span = good.replace("  → S1 to S2", "  → S1 to S3")
+    assert any("spans S1 to S3" in m for m in structure_draft_mismatches(stale_span))
+    assert structure_draft_mismatches(good.split("## 3 · Draft")[0]) == []      # nothing drafted yet: nothing to check
+    one_line = good.replace("- C1.P1 · The finding\n  → S1 to S2", "- C1.P1 · The finding · S1 to S2")
+    assert structure_draft_mismatches(one_line) == []

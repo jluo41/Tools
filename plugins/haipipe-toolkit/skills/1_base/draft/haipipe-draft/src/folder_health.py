@@ -137,6 +137,14 @@ def check_bullets(plan: Path, text: str, out: list):
     return blocks
 
 
+def check_structure(plan: Path, text: str, out: list):
+    """Section 1 (Structure) and section 3 (Draft) describe the same paragraphs and sentences (JL 261102: "when you
+    update the draft, you should also udpate teh structure as well"); a Draft edited without its Structure fails."""
+    from .plan_layout import structure_draft_mismatches
+    for issue in structure_draft_mismatches(text):
+        out.append(Finding(FAIL, "structure", issue + "; update both in the same edit", plan.name))
+
+
 def _page_sentences(page_text: str) -> dict:
     """Map each `realizes:` address to its Page text.
 
@@ -261,7 +269,78 @@ def check_threads(folder: Path, stem: str, out: list):
             out.append(Finding(INFO, "threads", f"{len(ids)} open thread(s): {', '.join(ids)}"))
 
 
-def folder_health(target: Path) -> dict:
+def check_steps(folder: Path, page: Path, plan: Path | None, out: list):
+    """A draft Task's seven steps, each by the file it leaves (ref/page-checklist.md § 6; JL 261102: "what is the
+    checklist for the /haipipe-draft and /haipipe-paper-draft, why dont you make them to be complete?"). One WARN per
+    step whose file is missing, so a Task is never called complete with a step skipped; Studio and Display are
+    optional and only counted. Applies only to a face that says `task-type: draft`."""
+    head = _header(page.read_text(encoding="utf-8"))
+    if not re.search(r"(?m)^task-type:\s*draft\b", head):
+        return
+    stem, d = page.stem, plan_dir(folder)
+    rec = lambda kind: (d / RECORDS / f"{stem}-{kind}.md").is_file() or (d / f"{stem}-{kind}.md").is_file()
+    plan_text = plan.read_text(encoding="utf-8") if plan else ""
+    approved = bool(re.search(r"(?m)^approved:\s*✅", plan_text))
+    has_items = (d / f"{stem}-evidence-items.md").is_file() or (folder / "evidence" / "cards.yaml").is_file()
+    built = [lane for lane in ("web", "latex", "word") if delivery_read_lane_dir(folder, lane).is_dir()]
+    steps = [
+        ("1 · Plan", rec("context"), f"no draft/records/{stem}-context.md (cli/context-record.py {page.name})"),
+        ("1 · Plan", rec("requirement"), f"no draft/records/{stem}-requirement.md (its W rules)"),
+        ("1 · Plan", bool(plan_text), "no draft/<stem>-draft-v<N>.md"),
+        ("1 · Plan", approved, "plan not signed: `approved:` does not start with ✅ (a person signs)"),
+        ("2 · Write", bool(re.search(r"(?m)^## \d+ · Draft\b", plan_text)), "no `## 3 · Draft` sentences"),
+        ("3 · Evidence", has_items, f"no draft/{stem}-evidence-items.md or evidence/cards.yaml"),
+        ("5 · Revise", rec("revise"), f"no draft/records/{stem}-revise.md (a Revise pass)"),
+        ("Delivery", len(built) == 3, f"delivery lanes built: {', '.join(built) or 'none'} of web, latex, word (page.py export)"),
+    ]
+    missing = [(step, why) for step, ok, why in steps if not ok]
+    for step, why in missing:
+        out.append(Finding(WARN, "steps", f"{step}: {why}"))
+    if not missing:
+        out.append(Finding(INFO, "steps", "every step has its file (Studio and Display optional); a person still signs, accepts and sends"))
+
+
+PERSON_STEPS = ("plan not signed",)   # a person's step stays a WARN even at the final gate
+
+
+def check_printed(folder: Path, page: Path, blocks: list, out: list):
+    """The final gate's last look (JL 261102: "the final draft is not consistent with the sturcutre"): every sentence
+    of the current Draft is in the built LaTeX PDF, read back with pdftotext, so a reader gets what the plan says."""
+    import subprocess
+    pdf = delivery_read_lane_dir(folder, "latex") / f"{page.stem}.pdf"
+    if not pdf.is_file():
+        out.append(Finding(FAIL, "printed", f"no delivery latex/{pdf.name} to read back (page.py export)"))
+        return
+    try:
+        text = subprocess.run(["pdftotext", str(pdf), "-"], capture_output=True, text=True, timeout=120).stdout
+    except (OSError, subprocess.TimeoutExpired):
+        out.append(Finding(WARN, "printed", "pdftotext is not available; the printed text was not read back"))
+        return
+    norm = lambda t: re.sub(r"\s+", " ", re.sub(r"<!--.*?-->|\\[a-zA-Z]+\*?|[{}$~\\]", " ", t)).translate(
+        str.maketrans({"’": "'", "‘": "'", "“": '"', "”": '"', "-": None, "–": None, "—": None})).strip()
+    printed = norm(text)
+    drafts = [(b["address"], norm(b["draft"])) for b in blocks if b.get("draft")]
+    gone = [a for a, d in drafts if d and len(d) > 12 and d[:40] not in printed]
+    if gone:
+        out.append(Finding(FAIL, "printed", f"{len(gone)} of {len(drafts)} Draft sentences are not in the printed "
+                           f"{pdf.name}: {', '.join(gone[:6])}; adopt, then export"))
+    else:
+        out.append(Finding(OK, "printed", f"all {len(drafts)} Draft sentences are in the printed {pdf.name}"))
+
+
+def finalize(report: dict) -> dict:
+    """The final gate: what may wait while writing is under way may not wait at "finished". A WARN becomes a FAIL,
+    except a person's own step (the sign), which stays a WARN so it is named and never ticked by the agent."""
+    for f in report["findings"]:
+        if f["level"] == WARN and not any(k in f["message"] for k in PERSON_STEPS):
+            f["level"] = FAIL
+    report["verdict"] = FAIL if any(f["level"] == FAIL for f in report["findings"]) else (
+        WARN if any(f["level"] == WARN for f in report["findings"]) else OK)
+    report["final"] = True
+    return report
+
+
+def folder_health(target: Path, final: bool = False) -> dict:
     page = _page_md(target)
     folder, stem = page.parent, page.stem
     out: list = []
@@ -270,14 +349,24 @@ def folder_health(target: Path) -> dict:
         plan_text = plan.read_text(encoding="utf-8")
         check_header(plan, plan_text, out)
         blocks = check_bullets(plan, plan_text, out)
+        check_structure(plan, plan_text, out)
         check_sync(page.read_text(encoding="utf-8"), blocks, plan_text, out)
         check_evidence(folder, stem, plan_text, out)
     check_delivery(folder, page, out)
+    check_steps(folder, page, plan, out)
+    from .page_adopt import content_gap
+    gap = content_gap(page)
+    if gap:
+        out.append(Finding(WARN, "content", f"Content prints {gap['printed']}; the current draft is {gap['current']}: "
+                           f"{gap['why']}, then page.py export"))
+    if final and plan is not None:
+        check_printed(folder, page, blocks, out)
     check_threads(folder, stem, out)
     verdict = FAIL if any(f.level == FAIL for f in out) else (
         WARN if any(f.level == WARN for f in out) else OK)
-    return {"page": stem, "plan": plan.name if plan else None, "verdict": verdict,
-            "findings": [asdict(f) for f in out]}
+    report = {"page": stem, "plan": plan.name if plan else None, "verdict": verdict,
+              "findings": [asdict(f) for f in out]}
+    return finalize(report) if final else report
 
 
 def render(report: dict) -> str:

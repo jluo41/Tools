@@ -287,10 +287,19 @@ def delivery(board: Path, job, call) -> list:
     blockers = man.get("submission_readiness", {}).get("blockers") or []
     add("D7", "The build is ready", "✅" if status and status != "DRAFT" else ("⏳" if man else "⬜"),
         (f"DRAFT: {len(blockers)} blockers (ref/submission-readiness.md)" if status == "DRAFT" else status) if man else "not built")
-    add("D8", "Read and approved", "🙋", "a person reads the built paper and approves this exact build (G4)")
+    portal = man.get("portal") or {}                  # 0.13.0 engine: the files uploaded to the portal as they are
+    ups = portal.get("uploads") or []
+    off = [u["slot"] for u in ups if u.get("state") in ("missing", "stale")]
+    unapproved = [u["slot"] for u in ups if u.get("state") == "draft"]
+    add("D8", "The portal packet", ("✅" if not off and not unapproved else "⏳") if ups else "⬜",
+        (f"{portal.get('ready', 0)} of {len(ups)} slots ready in {portal.get('folder', 'portal')}/portal.md"
+         + (f"; missing or stale: {', '.join(off[:3])}" if off else "")
+         + (f"; {len(unapproved)} built, not approved" if unapproved else "")) if ups
+        else "no [portal] in paper-build.toml (haipipe-paper-assemble § The portal packet)")
+    add("D9", "Read and approved", "🙋", "a person reads the built paper and approves this exact build (G4)")
     sent = [ln for ln in read(board / "delivery" / "delivery.md").splitlines()
             if job is not None and job.name in ln and re.search(r"\|\s*sent\s*\|", ln)]
-    add("D9", "Sent", "✅" if sent else "🙋", sent[-1].strip("| ").split("|")[0].strip() + " sent" if sent
+    add("D10", "Sent", "✅" if sent else "🙋", sent[-1].strip("| ").split("|")[0].strip() + " sent" if sent
         else "only a person marks it sent (delivery/delivery.md)")
     return out
 

@@ -30,7 +30,7 @@ def _when(p: Path) -> str:
 BOARD_CSS = """<style>.pb-topic{font-size:15px;margin:0 0 8px}.pb-verbs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
 .pb-part{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:26px 0 10px}
 .pb-draw{display:block;max-height:520px;overflow:auto}
-.pb-map{max-height:85vh;overflow:auto;border:1px solid var(--line);border-radius:6px;padding:8px}.pb-draw img{display:block;max-width:100%}</style>"""
+.pb-map{max-height:85vh;overflow:auto;border:1px solid var(--line);border-radius:6px;padding:8px}.pb-canvas{width:calc(100vw - 48px);margin-left:calc(50% - 50vw + 24px)}.pb-canvas .pb-map{max-height:88vh}.pb-draw img{display:block;max-width:100%}</style>"""
 
 
 # ── the Board Report's views in the shape settled in b16 s32 (JL 261031): every section a numbered heading bar with
@@ -83,6 +83,7 @@ button.pb-tile{cursor:pointer;display:flex;flex-direction:column;justify-content
  width:12px;border-top:1px solid var(--line)}.pb-ftree a,.pb-ftree span{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
  font-size:13px;color:var(--accent);text-decoration:none}.pb-ftree span{color:var(--muted)}.pb-ftree a:hover{text-decoration:underline}
 .pb-frow{display:flex;gap:12px;align-items:baseline;min-width:0}.pb-frow a{flex:none}
+.pb-ftree summary{list-style:none;cursor:pointer}.pb-ftree summary::-webkit-details-marker{display:none}.pb-ftree summary::before{content:"▸";flex:none;width:10px;margin-right:-6px;color:var(--muted);font-size:10px}.pb-ftree details[open]>summary::before{content:"▾"}.pb-leaf::before{content:"";flex:none;width:10px;margin-right:-6px}
 .pb-ftree small{flex:1;min-width:0;color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pb-ftree li{padding:2px 0}.pb-ftree a.pb-main{font-weight:700}.pb-mainw{flex:none;font-style:normal;font-size:11.5px;color:var(--pb-ok);border:1px solid var(--pb-ok);border-radius:10px;padding:0 7px}.pb-ftree+.pb-ftree{margin-top:14px}
 .pb-side{display:grid;grid-template-columns:170px minmax(0,1fr);gap:14px;align-items:start;margin:4px 0 8px}

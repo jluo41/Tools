@@ -541,3 +541,89 @@ def set_overview(text: str, entries: list[str]) -> str:
         block[len(_trim(block)):] = ([""] if _trim(block) else []) + entries + [""]
     body[span[0]:span[1]] = block
     return _assemble(header, sections, order, tail)
+
+
+# ── Structure and Draft move together (JL 261102) ─────────────────────────────────────────────────
+# "when you update the draft, you should also udpate teh structure as well": section 1 is the plan of section 3,
+# so a sentence added, cut, moved or a paragraph renamed in one is made in the other in the same edit. This is the
+# mechanical half of that rule; folder_health.check_structure reports what it finds, page.py health shows it.
+
+SPAN = re.compile(r"S(\d+)[a-z]?\s*(?:-|–|to)\s*S(\d+)")
+
+
+def _section_map(body: list[str]) -> list[tuple[str, str, list[str]]]:
+    """[(address, title, [the S tag or B number of each Bullet, in order])] for one section's paragraphs."""
+    _intro, blocks = _paragraphs(body)
+    out = []
+    for heading, address, lines in blocks:
+        tags = []
+        for dash, _cont in _bullets(lines):
+            m = BULLET.match(dash)
+            tag = (m.group("tag") or "").strip(" ·")
+            tags.append(tag or f"B{m.group('number')}")
+        out.append((address, _title(heading), tags))
+    return out
+
+
+def structure_draft_mismatches(text: str) -> list[str]:
+    """Where section 1 (Structure) and section 3 (Draft) of a three-section Draft Markdown disagree: the paragraphs,
+    their titles, the sentences in each, and the Structure Overview's paragraph list and spans. [] when they agree,
+    or when the file is not sectioned or has no Draft yet."""
+    if not is_sectioned(text):
+        return []
+    _h, sections, _o, _t = _sections(text)
+    if "structure" not in sections or "draft" not in sections:
+        return []
+    plan, draft = _section_map(sections["structure"][1]), _section_map(sections["draft"][1])
+    if not any(tags for *_x, tags in draft):
+        return []                                    # no sentences drafted yet: nothing to keep in step
+    out = []
+    pa, da = [a for a, *_x in plan], [a for a, *_x in draft]
+    for a in pa:
+        if a not in da:
+            out.append(f"{a} is in the Structure but not in the Draft")
+    for a in da:
+        if a not in pa:
+            out.append(f"{a} is in the Draft but not in the Structure")
+    if not out and pa != da:
+        out.append(f"paragraph order differs: Structure {', '.join(pa)} · Draft {', '.join(da)}")
+    dmap = {a: (t, tags) for a, t, tags in draft}
+    for a, title, tags in plan:
+        if a not in dmap:
+            continue
+        dtitle, dtags = dmap[a]
+        if title != dtitle:
+            out.append(f"{a} is titled \"{title}\" in the Structure and \"{dtitle}\" in the Draft")
+        if tags != dtags:
+            out.append(f"{a} sentences differ: Structure {' '.join(tags) or 'none'} · Draft {' '.join(dtags) or 'none'}")
+    body = sections["structure"][1]
+    span = _overview_span(body)
+    if span:
+        lines = body[span[0]:span[1]]
+        listed, i = {}, 0
+        while i < len(lines):
+            m = re.match(r"^- (C\d+\.P\d+) · (.+?)\s*$", lines[i])
+            if m:
+                title, arrow = m.group(2), ""
+                inline = re.match(r"^(.*?)\s*·\s*(S\d+[a-z]?\s*(?:-|–|to)\s*S\d+[a-z]?)\s*$", title)
+                if inline:                           # the one-line form: `- C1.P1 · <title> · S1 to S2`
+                    title, arrow = inline.group(1), inline.group(2)
+                elif i + 1 < len(lines) and lines[i + 1].strip().startswith("→"):
+                    arrow = lines[i + 1].strip()
+                s = SPAN.search(arrow)
+                listed[m.group(1)] = (title, (int(s.group(1)), int(s.group(2))) if s else None)
+            i += 1
+        for a, title, tags in plan:
+            if a not in listed:
+                out.append(f"{a} is missing from the Structure Overview")
+                continue
+            otitle, ospan = listed[a]
+            if otitle != title:
+                out.append(f"{a} is titled \"{otitle}\" in the Structure Overview and \"{title}\" below it")
+            nums = [int(t[1:]) for t in tags if re.fullmatch(r"S\d+", t)]
+            if ospan and nums and ospan != (min(nums), max(nums)):
+                out.append(f"{a} spans S{ospan[0]} to S{ospan[1]} in the Structure Overview but holds S{min(nums)} to S{max(nums)}")
+        for a in listed:
+            if a not in pa:
+                out.append(f"{a} is in the Structure Overview but has no paragraph")
+    return out

@@ -106,6 +106,36 @@ Opening, Content, and planning sources. Removing membership must not remove
 the Page's content. Board integration is **N/A: standalone requested** when no
 Board was requested; it is not a prerequisite for Page completion.
 
+## 6. A draft Task: what each step leaves on disk
+
+JL 261102: "what is the checklist for the /haipipe-draft and /haipipe-paper-draft, why dont you make them to be
+complete?" A Task whose face says `task-type: draft` is complete for a step only when that step's file exists;
+`page.py health` reports a missing one as a WARN row in its `steps` check (`src/folder_health.check_steps`), so a
+skipped step shows before anyone calls the Task done. A step a person owns (a sign, an accept, a send) is listed so it
+is not forgotten; the agent never ticks it.
+
+| Step | Done when this exists | Made by | Who |
+|---|---|---|---|
+| 🎨 Studio | optional: the Board topic that names the Task | haipipe-studio | either |
+| 📐 1 · Plan | `draft/records/<stem>-context.md` | `cli/context-record.py <stem>.md` | agent |
+| 📐 1 · Plan | `draft/records/<stem>-requirement.md`, its `W<n>` rules (and generated `V<n>` when the venue has a division) | `cli/requirement.py`, then the W block by hand | agent |
+| 📐 1 · Plan | `draft/<stem>-draft-v<N>.md` with `## 1 · Structure` (Overview, one Bullet per sentence, its role and `Evidence:`) and `## 2 · Scratch` | haipipe-draft-logic | agent |
+| 📐 1 · Plan | `approved: ✅ …` on that draft | a person | person |
+| ✍️ 2 · Write | `## 3 · Draft`, one sentence per Bullet, in step with § 1 (`structure` check) | haipipe-draft-writing | agent |
+| 🔎 3 · Evidence | `draft/<stem>-evidence-items.md` (older) or `evidence/cards.yaml`: one item per number, citation or display a sentence uses | haipipe-evidence | agent; a person ticks Decide |
+| 🖼 4 · Display | optional: `display/Display<n>-<slug>/` for each table or figure the text calls | haipipe-display | agent; a person writes `accepted:` |
+| 🔁 5 · Revise | `draft/records/<stem>-revise.md`, a pass with its review report and cards | haipipe-draft-writing `ref/revise.md` | agent; a person decides each card |
+| 📤 Delivery | `delivery/<job>/<task>/web/`, `latex/`, `word/` from the adopted Content | `page.py adopt`, then `page.py export` | agent, on the person's ok |
+| 📤 Delivery | `sent` in `delivery/delivery.md` | a person | person |
+
+The last row is the final gate: `page.py health --final <task>` (see SKILL.md § ✅ Closing checks). It fails on
+anything above that is still missing or out of date, and reads the printed PDF back against § 3, so a Task is
+never called finished while its delivery prints an older text.
+
+Content is adopted (`page.py adopt`) only after the plan is signed; before that, Delivery shows the Content as it
+stands and says so. A theme adds its own rows on top of these (the paper's are in haipipe-paper-draft § ✅ A
+complete paper draft Task).
+
 ## 5. Return the result without creating another authority
 
 Use **pass**, **missing**, **deferred**, **untested**, or **N/A (reason)** for

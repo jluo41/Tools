@@ -501,6 +501,73 @@ def kid_group(name: str, href: str, rows: list) -> str:
             f'<span class="kid-count">{len(rows)}</span></h3>' + "".join(rows) + '</section>')
 
 
+RUN_MARK = {"complete": "✅", "done": "✅", "failed": "❌", "blocked": "🔶", "running": "⏳", "planned": "⬜"}
+FOLD_CSS = """<style>
+.fold-tree,.fold-tree ul{list-style:none;margin:0;padding:0}.fold-tree ul{margin-left:9px;padding-left:16px;border-left:1px solid var(--line,#ddd)}
+.fold-tree li{position:relative;padding:2px 0}.fold-tree ul>li::before{content:"";position:absolute;left:-16px;top:13px;width:12px;border-top:1px solid var(--line,#ddd)}
+.fold-tree summary{list-style:none;cursor:pointer}.fold-tree summary::-webkit-details-marker{display:none}
+.fold-tree summary::before{content:"▸";flex:none;width:10px;color:var(--muted,#888);font-size:10px}.fold-tree details[open]>summary::before{content:"▾"}
+.fold-row{display:flex;gap:10px;align-items:baseline;min-width:0}.fold-row.leaf{padding-left:10px}
+.fold-row a{flex:none;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;text-decoration:none}.fold-row a:hover{text-decoration:underline}
+.fold-tree .fold-out{padding:4px 0 6px 10px}.fold-tree .fold-out::before{display:none}.fold-row .st{flex:none;font-size:12px;color:var(--muted,#888)}
+.fold-row small{flex:1;min-width:0;color:var(--muted,#888);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:640px){.fold-row{flex-wrap:wrap;gap:2px 8px}.fold-row small{flex-basis:100%;white-space:normal}}
+</style>"""
+
+
+def fold_tree(folder: Path, root: Path, level: str, outputs: bool = True) -> str:
+    """A Block's Jobs, or a Job's Tasks, as one folding tree down to each Task's Runs (JL 261102: "could we make it
+    looks like this to be collapsable"; "we also want to see what are the runs under each task"). Each line: its
+    name (opens in the pop-out, JL: "I don't want to switch but to have the pop out window first"), its state, its
+    goal or, for a Run, its receipt's headline. Everything starts folded."""
+    def line(href, name, label, state, note, kids="", extra=""):
+        row = (f'<a href="{frame.esc(href)}" data-pop="{frame.esc(label)}">{frame.esc(name)}</a>'
+               + (f'<span class=st>{frame.esc(state)}</span>' if state else "") + extra
+               + (f'<small title="{frame.esc(note)}">{frame.esc(note)}</small>' if note else ""))
+        if not kids:
+            return f'<li><div class="fold-row leaf">{row}</div></li>'
+        return f'<li><details><summary class=fold-row>{row}</summary><ul>{kids}</ul></details></li>'
+
+    def runs(task: Path) -> str:
+        out = ""
+        for r in sorted(d for d in (task / "runs").glob("*") if d.is_dir() and not d.name.startswith((".", "_"))):
+            rt, card = r / "result" / "runtime.yaml", r / "run.yaml"
+            text = rt.read_text(encoding="utf-8", errors="ignore") if rt.is_file() else ""
+            st = _yaml_status(text) or _yaml_status(card.read_text(encoding="utf-8", errors="ignore") if card.is_file() else "")
+            head = (re.search(r'(?m)^headline:\s*"?(.*?)"?\s*$', text) or [None, ""])[1]
+            out += line(page_url(r, root), r.name, f"{task.name} · {r.name}", RUN_MARK.get(st, "⬜"), head)
+        return out
+
+    def marks(child: Path) -> str:
+        """What waits on a person here (never a count) and the interaction button, as the cards had them."""
+        wait = '<span class="row-wait">🙋 open points wait on you</span>' if open_topics(child, root) else ""
+        return wait + interaction_button(interactions(child, root), child, root)
+
+    def task_line(t: Path) -> str:
+        d = read_face(t, root)
+        out = output_of(t, root) if outputs else ""   # the Task's output, in place, first inside its fold
+        kids = (f'<li class=fold-out>{out}</li>' if out else "") + runs(t)
+        return line(page_url(t, root), t.name, t.name, state_label(d["state"]) or "", d["goal"].split("\n")[0], kids, marks(t))
+
+    items = ""
+    for child in frame.children(folder, level):
+        if not inside(child, root):
+            continue
+        d = read_face(child, root)
+        if level == "Block":
+            ts = [t for t in frame.children(child, "Job") if inside(t, root)]
+            tally = task_tally([s for s in (state_label(read_face(t, root)["state"]) for t in ts) if s])
+            items += line(page_url(child, root), child.name, child.name, tally, d["goal"].split("\n")[0],
+                          "".join(task_line(t) for t in ts), marks(child))
+        else:
+            items += task_line(child)
+    return FOLD_CSS + f'<ul class=fold-tree>{items}</ul>' if items else ""
+
+
+def _yaml_status(text: str) -> str:
+    return (re.search(r"(?m)^status:\s*(\S+)", text or "") or [None, ""])[1]
+
+
 def status_html(folder: Path, root: Path, level: str, questions: list) -> str:
     """Goal & status: one full-width row per child (Jobs, Tasks or Runs) with its goal, its status and, for
     a Task or a Run, its output in place; then the Questions."""
@@ -525,24 +592,7 @@ def status_html(folder: Path, root: Path, level: str, questions: list) -> str:
             rows.append(f'<article class="status-row ix-row"><span class="row-name">{frame.esc(r["title"])}</span>'
                         + (f'<p class="row-line">{about[3:]}</p>' if about else '')
                         + f'<p class="row-meta">{frame.esc(r["run"])}{interaction_button([r], r["path"], root)}</p></article>')
-        for child in frame.children(folder, level):
-            if not inside(child, root):
-                continue
-            data = read_face(child, root)
-            if level == "Block":
-                labels = [state_label(read_face(t, root)["state"]) for t in tasks_below(child, "Job", root)]
-                status, output = task_tally([s for s in labels if s]) or "no state recorded", ""
-            else:
-                status, output = state_label(data["state"]) or "no state recorded", output_of(child, root)
-            goal = data["goal"].split("\n")[0]
-            waiting = open_topics(child, root)                # decisions owed by a person, beside the machine's status
-            wait = ('<span class="row-wait">🙋 open points wait on you</span>'   # never a count (JL 261031)
-                    if waiting else '')
-            # the work an interaction holds up carries its badge, the same record the Interactions view lists (JL 261031)
-            asks = interaction_button(interactions(child, root), child, root)   # the same button as the Studio's (JL 261031)
-            rows.append(f'<article class="status-row"><a class="row-name" href="{frame.esc(page_url(child, root))}">'
-                        f'{frame.esc(child.name)}</a>' + (f'<p class="row-line">{frame.esc(goal)}</p>' if goal else '')
-                        + f'<p class="row-meta">{frame.esc(status)}{wait}{asks}</p>{output}</article>')
+        rows.append(fold_tree(folder, root, level))       # its Jobs, Tasks and Runs as one folding tree (JL 261102)
     elif level == "Task":
         records = {r["path"]: r for r in interactions(folder, root)}
         for run in frame.runs_of(folder):
@@ -1379,23 +1429,10 @@ def status_now_html(folder: Path, root: Path, level: str, topics: list) -> str:
             parts.append(f'<h3 class="focus-sub">Runs</h3><ul class="glance-list">' + "".join(
                 f'<li><b>{frame.esc(r["run"])}</b> <span class="mut">· {frame.esc(r["status"])}</span></li>' for r in runs)
                 + '</ul>')
-    else:
-        jobs = kids(folder) if level == "Block" else [folder]
-        rows = []
-        for job in jobs:
-            tasks = kids(job)
-            labels = [state_label(read_face(t, root)["state"]) for t in tasks]
-            if level == "Block":
-                rows.append(li("", job.name, page_url(job, root), face_title(job / f"{job.name}.md"),
-                               task_tally(labels) if tasks else "no Tasks yet"))
-            for t, label in zip(tasks, labels):
-                words = state_words(label)
-                row = li(words.split(" ")[0], t.name, page_url(t, root), face_title(t / f"{t.name}.md"),
-                         words.split(" ", 1)[1] if " " in words else "")
-                rows.append(row.replace("<li>", '<li class="sub">', 1) if level == "Block" else row)
-        if rows:
-            head = "Jobs and Tasks" if level == "Block" else "Tasks"
-            parts.append(f'<h3 class="focus-sub">{head}</h3><ul class="glance-list status-now">{"".join(rows)}</ul>')
+    else:                                            # the same folding tree as Work's Progress, without the outputs
+        tree = fold_tree(folder, root, level, outputs=False)   # (JL 261102: "why this is not changed?")
+        if tree:
+            parts.append(f'<h3 class="focus-sub">{"Jobs and Tasks" if level == "Block" else "Tasks"}</h3>{tree}')
     return "".join(parts)
 
 
@@ -2005,6 +2042,6 @@ def document(title, body):
     return ('<!doctype html><html lang="en"><head><meta charset="utf-8">'
             '<meta name="viewport" content="width=device-width,initial-scale=1">'
             f'<title>{frame.esc(title)}</title><style>{(assets / "focus.css").read_text()}</style></head><body>'
-            + body + '<dialog id="focus-viewer"><header><span data-viewer-title></span><button type="button" data-close>Close</button></header>'
+            + body + '<dialog id="focus-viewer"><header><span data-viewer-title></span><span class=viewer-verbs><a data-viewer-go target=_top>Go to this page →</a><button type="button" data-close>Close</button></span></header>'
             '<iframe title="Content preview"></iframe></dialog>'
             f'<script>{(assets / "focus.js").read_text()}</script></body></html>')

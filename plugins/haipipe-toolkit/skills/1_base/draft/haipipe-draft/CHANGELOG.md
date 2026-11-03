@@ -1,3 +1,18 @@
+## 0.138.0 · 2026-11-02 · Structure in step with Draft; every step has its file; the final gate
+
+- JL 261102: "I think /haipipe-draft should do this final checklist before saying it is finished". `page.py health
+  --final`: pending WARNs fail (Content behind the draft, a stale export, a missing step), the new `printed` check
+  reads the built PDF back against § 3, and only the person's sign stays a WARN. § ✅ Closing checks makes it the
+  gate before any reply says finished. The cover letter t01 had printed v0.1 while § 1 and § 3 were v0.3.
+
+- JL 261102: "when you update the draft, you should also udpate teh structure as well". `page.py health` gains a
+  `structure` check (`plan_layout.structure_draft_mismatches`): § 1 and § 3 hold the same paragraphs, titles and
+  sentences, and the Structure Overview's spans match. 76 current drafts in the WellDoc SPACE pass it.
+- JL 261102: "what is the checklist for the /haipipe-draft and /haipipe-paper-draft, why dont you make them to be
+  complete?". `ref/page-checklist.md` § 6 lists the file each of a draft Task's seven steps leaves; `page.py health`
+  gains a `steps` check (`folder_health.check_steps`) that warns on each one missing (context and requirement
+  records, a signed plan, § 3, evidence items, a Revise pass, the three delivery lanes).
+
 ## 0.137.1 · 2026-10-21 · A held delivery lane reads failed, not done
 
 - `page.py export` wrote each lane's Run card `status: done` before the lane ran, so a LaTeX or Word lane held by an

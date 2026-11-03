@@ -240,82 +240,39 @@ def dataflow_map(board: Path, topic: Path) -> str:
     return f'<div class=pb-flow data-links="{esc(json.dumps(links))}">{out}<svg class=pb-wires aria-hidden=true></svg></div>'
 
 
+def _canvas(topic: Path, root: Path) -> str:
+    """The topic's mind map as the canvas to work on, edited in place where it is read (JL 261102: "I think we should
+    have the mindmap canvas to work on"): the same map and endpoint as the topic card's Structured side."""
+    from live import frame
+    mind = topic / f"{topic.name}.mindmap.md"
+    if not mind.is_file():
+        return (f'<p class=pb-state>No mind map yet: <code>mindmap.py from-topic {esc(topic.name)}</code> '
+                f'(haipipe-mindmap) makes {esc(mind.name)}.</p>')
+    try:
+        return '<div class=pb-map>' + frame.mindmap_module().fragment(
+            mind, ds._rel(mind, root), editable=not frame.READ_ONLY_MAPS,
+            url_of=lambda q: "/" + quote(ds._rel(q, root))) + '</div>'
+    except Exception as e:                          # a map that fails to read says so, never a blank view
+        return f'<p class=pb-state>The mind map did not read: {esc(str(e))}</p>'
+
+
+def _canvas_view(topic: Path, root: Path, items) -> str:
+    """C · Data flow and D · Paper flow: the mind map as the canvas, the window's full width (the view's own line
+    above says what it is for), then the drawing (b16 s32; JL 261102: "the data flow and paper flow are not what we want"). The cards they had (the flow
+    map from -drawing.yaml, Questions to Runs, Send, Sections, Displays, Timeline) left; the Questions and the
+    displays have their own views, B · Story and G · Displays."""
+    return (f'<div class=pb-canvas>{_bar(1, "The mind map", _canvas(topic, root))}</div>'
+            + _helpers(topic, root, items, mind=False))
+
+
 def dataflow_view(board: Path, topic: Path, root: Path, md, items=()) -> str:
-    """C · Data flow: 1 the flow in one sentence, then its map (dataflow_map), which is the view's mind map, so no
-    mind-map helper; 2 each Board Question as a card tab, its
-    answer and the work it waits on; 3 what it waits on."""
-    text, parts = _face(topic)
-    out, n = "", 0
-    n += 1
-    out += _bar(n, "Flow", f'<p class=pb-big>{esc(_field(text, "Topic"))}</p>'      # the topic's stage word said nothing (D r02)
-                + dataflow_map(board, topic))
-    qs = sorted(d for d in (board / "reports").glob("q[0-9]*_*") if d.is_dir())
-    tiles, panels = [], []
-    for q in qs:
-        f = q / f"{q.name}.md"
-        if not f.is_file():
-            continue
-        qt = f.read_text(encoding="utf-8", errors="ignore")
-        title = next((ln[2:].strip() for ln in qt.splitlines() if ln.startswith("# ")), q.name)
-        qp = {re.sub(r"^\d+\s*·\s*", "", a).strip().lower(): b for a, b in face_sections(qt)}
-        body = qp.get("the question", "")
-        bullet = lambda name: _plain((re.search(rf"(?m)^\s*-\s*\*\*{name}\*\*:?\s*(.+)$", body) or [None, ""])[1])
-        first_under = lambda head: _plain(re.sub(r"^\*\*[^*]+\*\*\s*·\s*", "", (re.search(
-            rf"\*\*{head}\*\*\s*\n\s*-\s*(.+)", body) or [None, ""])[1]))
-        state = bullet("Answer state")
-        tiles.append((q.name.split("_", 1)[0].upper(), f"{title} · {state}" if state else title, ""))
-        panels.append(_kv((("Question", esc(bullet("Question"))), ("Hypothesis", esc(first_under("Hypotheses"))),
-                           ("Claim if it holds", esc(first_under("Potential claims"))), ("Now", esc(re.split(r"(?<=[.;])\s", bullet("Now"), 1)[0])),
-                           ("Answer so far", esc(_first_para(qp.get("answer", ""))) or "not answered yet"),
-                           ("Report", _open_btn(f"Open: {title}", _page_url(f, root), title)))))
-    if tiles:
-        n += 1
-        out += _bar(n, "Questions to Runs", _card_tabs("qr", tiles, panels))
-    return out + _helpers(topic, root, items, mind=False)       # the Flow IS the mind map (JL 261101); its open points: Process
+    """C · Data flow: how the data become each answer, worked on as the topic's mind map."""
+    return _canvas_view(topic, root, items)
 
 
 def paperflow_view(board: Path, topic: Path, root: Path, md, items=()) -> str:
-    """D · Paper flow: 1 the send in one sentence; 2 the Sections and 3 the displays as card tabs; 4 the timeline as
-    dated steps, each with its state."""
-    text, parts = _face(topic)
-    out, n = "", 0
-    send = re.sub(r"\s*\(.*?\)\.?$", "", _field(text, "Send"))
-    venue = _field((board / "board.md").read_text(encoding="utf-8", errors="ignore"), "venue") if (board / "board.md").is_file() else ""
-    lead = f"Send {send}" + (f" to {venue}" if venue else "") if send else _field(text, "Topic")
-    shows = _table(parts.get("displays", ""))
-    done = sum(1 for r in shows if _mark(r.get("state", "")) == "✅")
-    n += 1
-    out += _bar(n, "Send", f'<p class=pb-big>{esc(lead)}</p>'
-                + (f'<p class=pb-state>{done} of {len(shows)} displays done</p>' if shows else ''))
-    secs = _table(parts.get("sections", ""))
-    if secs:
-        n += 1
-        out += _bar(n, "Sections", _card_tabs("ps", [(_plain(r.get("section", "")), "answers " + _plain(r.get("answers", "")), "")
-                                                 for r in secs],
-                                         [_kv((("Its job", esc(_plain(r.get("job", "")))), ("Displays", esc(_plain(r.get("displays", "")).strip("—–- ") or "none")),
-                                               ("Evidence", esc(_plain(r.get("evidence", "")))), ("Words", esc(_plain(r.get("words", ""))))))
-                                          for r in secs]))
-    dp = display_plan()
-    plan = dp.rows(board) if dp else []
-    if plan:                                     # the display plan lives in G · Displays (JL 261101); here one line
-        n += 1
-        out += _bar(n, "Displays", f'<p class=pb-state>{len(plan)} displays planned, '
-                    f'{sum(1 for r in plan if r["where"] == "main")} in the paper: see the Displays view.</p>')
-    elif shows:
-        n += 1
-        out += _bar(n, "Displays", _card_tabs("pd", [(_plain(r.get("display", "")), _mark(r.get("state", "")) + " " + _plain(r.get("state", "")), "")
-                                                 for r in shows],
-                                         [_kv((("Title", esc(_plain(r.get("title", "")))), ("Kind", esc(_plain(r.get("kind", "")))),
-                                               ("Answers", esc(_plain(r.get("answers", "")))), ("Made by", esc(_plain(r.get("made by", ""))))))
-                                          for r in shows]))
-    steps = sorted(_table(parts.get("timeline", "")), key=lambda r: _plain(r.get("when", "")))
-    if steps:
-        n += 1
-        out += _bar(n, "Timeline", '<div class=pb-steps>' + "".join(
-            f'<div class=pb-srow><span class=pb-when>{esc(_plain(r.get("when", "")))}</span><span class=pb-what>{esc(_plain(r.get("step", "")))}'
-            f'<small>{esc(_plain(r.get("who", "")))}</small></span><span class=pb-st>{_mark(r.get("state", ""))} {esc(_plain(r.get("state", "")))}</span></div>'
-            for r in steps) + '</div>')
-    return out + _helpers(topic, root, items, mind=True)
+    """D · Paper flow: the Sections in reader order and the steps to the send, worked on as the topic's mind map."""
+    return _canvas_view(topic, root, items)
 
 
 def explore_view(board: Path, root: Path, md, items=()) -> str:
@@ -336,28 +293,55 @@ def explore_view(board: Path, root: Path, md, items=()) -> str:
         z = next((i for i in range(1, min(map(len, ws)) - a) if len({w[-i] for w in ws}) > 1), 1) - 1
         return [_cap(" ".join(w[a:len(w) - z]).strip(" ,.;*`()")) for w in ws]
 
-    def node(d: Path, kids: str = "", line: str = None) -> str:
+    def node(d: Path, kids: str = "", line: str = None, open_: bool = False) -> str:
+        """One folder's line. A folder with children folds (JL 261102: "I want it can be collapsed"): its row is the
+        fold's summary, ▸ shut, ▾ open; its name opens the folder in the pop-out, not a new page ("when we click it,
+        I don't want to switch but to have the pop out window first"); the pop-out keeps "Open in its own tab"."""
         line = _folder_line(d) if line is None else line
         if re.match(r"t\d", d.name) and line and line == _folder_line(d.parent):
             line = ""
         name = esc(d.name).replace("_", "_<wbr>")                # a phone breaks a long name only after "_"
         big = d == main
-        return (f'<li><div class=pb-frow><a href="{esc(url(d))}" title="{esc(line)}"{" class=pb-main" if big else ""}>{name}/</a>'
-                + ('<em class=pb-mainw>main analysis</em>' if big else "")
-                + (f'<small>{esc(line)}</small>' if line else "") + '</div>' + (f'<ul>{kids}</ul>' if kids else "") + '</li>')
+        row = (f'<a href="{esc(url(d))}" data-pop="{esc(d.name)}" title="{esc(line)}"{" class=pb-main" if big else ""}>{name}/</a>'
+               + ('<em class=pb-mainw>main analysis</em>' if big else "")
+               + (f'<small>{esc(line)}</small>' if line else ""))
+        if not kids:
+            return f'<li><div class="pb-frow pb-leaf">{row}</div></li>'
+        return (f'<li><details{" open" if open_ else ""}><summary class=pb-frow>{row}</summary>'
+                f'<ul>{kids}</ul></details></li>')
 
-    def tasks(ts) -> str:
-        ts = sorted(ts)
-        return "".join(node(t, line=ln) for t, ln in zip(ts, apart([_folder_line(t) for t in ts])))
+    MARK = {"complete": "✅", "done": "✅", "failed": "❌", "blocked": "🔶", "running": "⏳"}
+
+    def runs(task: Path) -> str:
+        """A Task's Runs, one leaf each (JL 261102: "we also want to see what are the runs under each task"): its
+        receipt's mark (⬜ no receipt yet) and its headline; the name opens the Run in the pop-out."""
+        out = ""
+        for r in sorted(d for d in (task / "runs").glob("r[0-9]*") if d.is_dir()):
+            rt = r / "result" / "runtime.yaml"
+            text = rt.read_text(encoding="utf-8", errors="ignore") if rt.is_file() else ""
+            st = (re.search(r"(?m)^status:\s*(\S+)", text) or [None, ""])[1]
+            head = (re.search(r'(?m)^headline:\s*"?(.*?)"?\s*$', text) or [None, ""])[1]
+            out += (f'<li><div class="pb-frow pb-leaf pb-run"><a href="{esc(url(r))}" data-pop="{esc(task.name)} · {esc(r.name)}" '
+                    f'title="{esc(head)}">{MARK.get(st, "⬜")} {esc(r.name)}</a>' + (f'<small>{esc(head)}</small>' if head else "")
+                    + '</div></li>')
+        return out
+
+    def tasks(job: Path, ts) -> str:
+        """Every Task of a Job (JL 261102: a Job the pages name without its Tasks showed no fold), each folding to
+        its Runs; the Tasks the pages name come first only by their number, like the rest."""
+        ts = sorted(set(ts) | {t for t in job.glob("t[0-9]*_*") if t.is_dir()})
+        return "".join(node(t, runs(t), line=ln) for t, ln in zip(ts, apart([_folder_line(t) for t in ts])))
     out = ""
     for n, (kind, name, none) in enumerate((("work", "Work", "No work folder named yet."),
                                             ("discovery", "Discovery", "No discovery folder named yet: the venue's papers sit in the related-work map.")), 1):
         trees = ""
         for proj, blocks in sorted(tree.get(kind, {}).items(), key=lambda x: (x[0] != board.parents[1], x[0].name)):
-            inner = "".join(node(b, "".join(node(j, tasks(ts)) for j, ts in sorted(jobs.items())))
-                            for b, jobs in sorted(blocks.items()))
-            trees += (f'<ul class=pb-ftree><li><div class=pb-frow><a href="{esc(url(proj))}">{esc(proj.name)}/</a></div>'
-                      f'<ul><li><span>{kind}/</span><ul>{inner}</ul></li></ul></li></ul>')
+            inner = "".join(node(b, "".join(node(j, tasks(j, ts)) for j, ts in sorted(jobs.items())), open_=True)
+                            for b, jobs in sorted(blocks.items()))   # Blocks open, Jobs shut: the tree starts short
+            trees += (f'<ul class=pb-ftree><li><details open><summary class=pb-frow><a href="{esc(url(proj))}" '
+                      f'data-pop="{esc(proj.name)}">{esc(proj.name)}/</a></summary>'
+                      f'<ul><li><details open><summary class=pb-frow><span>{kind}/</span></summary><ul>{inner}</ul></details></li></ul>'
+                      f'</details></li></ul>')
         venues = "/_board/workbench?" + "&".join(f"{a}={quote(b)}" for a, b in (("path", ds._rel(board, root)), ("layout", "focus"),
                                                                                  ("section", "report"), ("group", "story")))
         empty = f'<p class=mut>{esc(none)}</p>' if kind == "work" else (     # E r04 fix 2: the venue's papers, one click away
@@ -378,15 +362,43 @@ def displays_view(board: Path, root: Path, md, items=()) -> str:
     """G · Displays (JL 261101, its own view between Evidence and Writing): 1 · the plan, each display against the
     venue's display rules (haipipe-paper-plan's display plan, when the Board has one); 2 · the displays, one side tab
     per pool Task (Figure 1 (Display A), its type and name), its panel the newest preview.pdf, the display as the paper
-    prints it, then how it was made; and all of them as one PDF (build_displays_pdf.py)."""
+    prints it, then how it was made; and all of them as one PDF (build_displays_pdf.py). The plan is the s06
+    display-plan topic's drawing only; its venue check lines live in that drawing and in display_plan.py check."""
     out, n = "", 0
-    dp = display_plan()
-    plan = dp.rows(board) if dp else []
-    if plan:
+    plan = _topic_canvas(board, root, "paper-displays")   # JL 261102: "we might want to have this to be a excalidraw
+    if plan:                                              # only. No need to put others" (the venue check stays in s06)
         n += 1
-        out += _bar(n, "Plan", _display_plan(board, root, dp, plan))
-    body, _ = _evidence_kinds(board, root, ("Displays",), n)
+        out += _bar(n, "Plan", plan)
+    body, n = _evidence_kinds(board, root, ("Displays",), n)
+    ex = _display_examples(board, root)
+    if ex:                                       # JL 261102: "after the display, could you add a new section named
+        n += 1                                   # 3. Examples ... understand for their display for each paper"
+        body += _bar(n, "Examples", ex)
     return (out + body) or '<p class=mut>No display Job or display plan yet.</p>'
+
+
+def _topic_canvas(board: Path, root: Path, slug: str) -> str:
+    """A Board topic `sNN-<slug>` shown as its drawing only: the picture, opening the Excalidraw editor, and a Draw
+    button; nothing else (JL 261102). Empty when the topic or its picture is missing."""
+    from live import frame
+    topic = next((t for t in sorted(board.glob(f"s[0-9]*-{slug}")) if t.is_dir()), None)
+    if topic is None:
+        return ""
+    png, drw = topic / f"{topic.name}.png", topic / f"{topic.name}.excalidraw"
+    if not png.is_file():
+        return ""
+    href = frame._draw_url(drw, root) if drw.is_file() else "/" + quote(ds._rel(png, root))
+    return (f'<div class=pb-verbs>{_open_btn("Draw", href, topic.name)}</div>'
+            f'<a data-pop="{esc(topic.name)}" href="{esc(href)}"><img src="/{esc(quote(ds._rel(png, root)))}" '
+            f'alt="{esc(topic.name)}" loading=lazy style="display:block;max-width:100%;border:1px solid var(--line);'
+            'border-radius:6px"></a>')
+
+
+def _display_examples(board: Path, root: Path) -> str:
+    """3 · Examples: the displays of the target venue's papers on one canvas, to compare with ours (JL 261102: "what I
+    want is just one excalidraw and put all other papers's displays only ... no more text here"): the Board's
+    `sNN-paper-display-examples` drawing only."""
+    return _topic_canvas(board, root, "paper-display-examples")
 
 
 def _evidence_kinds(board: Path, root: Path, kinds: tuple, n: int = 0) -> tuple[str, int]:
@@ -433,7 +445,7 @@ def _evidence_kinds(board: Path, root: Path, kinds: tuple, n: int = 0) -> tuple[
         n += 1
         if kind == "Displays" and tiles:         # grouped, Main then Appendix (JL 261101: "groups them in different groups,
             sup = _supplement_word(list(paper_as.values()))   # like the main"), each card thinner
-            name = {"main": "Main", "supplement": sup, "unplanned": "Not in the plan"}
+            name = {"main": "Main", "supplement": sup, "unplanned": "Others"}   # JL 261102: candidates not in the plan, "a new section here as Others"
             keyed = sorted(zip(groups, tiles, panels), key=lambda x: (("main", "supplement", "unplanned").index(x[0][0]), x[0][1]))
             tabs = _grouped_tabs("evD", [(name[g], (h, w), b) for (g, _), (h, w, _), b in keyed])
         else:
@@ -556,15 +568,28 @@ def _paper_files(vdir: Path, root: Path, eid: str = "pp") -> str:
     supplement, then earlier rounds), the open one shown on the right as its PDF, with its Open buttons."""
     import json
     try:
-        out = json.loads((vdir / "build-manifest.json").read_text(encoding="utf-8")).get("outputs", {})
+        man = json.loads((vdir / "build-manifest.json").read_text(encoding="utf-8"))
     except Exception:
         return ""
+    out = man.get("outputs") or {}
     f = lambda r: vdir / r if r and (vdir / r).is_file() else None
     sup_pdf = f(out.get("supplement_docx_pdf"))
     sup_docx = f(out.get("supplement_docx_pdf", "")[:-4] + ".docx") if out.get("supplement_docx_pdf") else None
+    letter = (man.get("cover_letter") or {}).get("outputs") or {}
+    # JL 261102: "we should say the results here as well": every document the build makes, the letter too
     pieces = [("The paper", "as LaTeX builds it", f(out.get("pdf")), None),
               ("The paper · Word", "as Word prints it", f(out.get("docx_pdf")), f(out.get("docx"))),
-              ("The supplement · Word", "as Word prints it", sup_pdf, sup_docx)]
+              ("The supplement", "as LaTeX builds it", f(out.get("supplement")), None),
+              ("The supplement · Word", "as Word prints it", sup_pdf, sup_docx),
+              ("The combined copy", "paper and supplement in one PDF", f(out.get("combined")), None),
+              ("The cover letter", "as the build writes it", f(letter.get("pdf")), f(letter.get("docx")))]
+    # JL 261102: "add the new tab for the submission portal": the send's submission Job (jNN_submission_…, its face
+    # `for: <this version>`) writes delivery/<that Job>/portal-fill.html, every portal field with its value to paste
+    for sj in sorted(vdir.parent.parent.glob("j[0-9]*_submission_*")):
+        face = sj / f"{sj.name}.md"
+        if face.is_file() and re.search(rf"(?m)^for:\s*{re.escape(vdir.name)}\s*$", face.read_text(encoding="utf-8", errors="ignore")):
+            fill = vdir.parent / sj.name / "portal-fill.html"
+            pieces.append(("The submission portal", "each field to paste, from the paper", fill if fill.is_file() else None, None))
     shown = {p.name for _, _, a, b in pieces for p in (a, b) if p}
     word = vdir / "word"
     older = sorted((x for x in word.glob("*.docx") if x.name not in shown and "supplement" not in x.name),
@@ -580,12 +605,45 @@ def _paper_files(vdir: Path, root: Path, eid: str = "pp") -> str:
         items.append((name, how))
         made = f'<span class=pb-state>{"draft" if "-draft" in newest.stem else "built"} {_when(newest)}</span>'
         view = (f'<div class=pb-ptop>{made}{_open_btn("⤢ Pop out", href(pdf), f"{name} · {pdf.name}")}</div>'   # a large view pops out
-                f'<iframe class=pb-pdf src="{esc(href(pdf))}#view=FitH" title="{esc(name)}"></iframe>') if pdf \
+                f'<iframe class=pb-pdf src="{esc(href(pdf))}{"" if pdf.suffix == ".html" else "#view=FitH"}" title="{esc(name)}"></iframe>') if pdf \
             else f'<p class=mut>{esc(how)}: no PDF beside it to show here.</p>'
-        verbs = ((_open_btn("Open the PDF", href(pdf), pdf.name) if pdf else "")
+        verbs = ((_open_btn("Open the page" if pdf.suffix == ".html" else "Open the PDF", href(pdf), pdf.name) if pdf else "")
                  + (_open_btn("Open the Word file", href(doc), doc.name) if doc else ""))
         panels.append(view + f'<div class=pb-verbs>{verbs}</div>')
     return _side_tabs(eid, items, panels)
+
+
+PORTAL_WORDS = {"ready": "✅ ready", "draft": "🔶 built, not approved", "stale": "❗ stale", "missing": "⬜ missing"}
+
+
+def _portal(vdir: Path, root: Path) -> str:
+    """What goes into the venue's portal as it is (JL 261102: "the final delivery content that are ready to submit
+    directly in the portal"): the build's portal packet, delivery/<job>/portal/, one row per upload slot with its
+    file and its state, each file opening in the pop-out (haipipe-paper-assemble § The portal packet)."""
+    import json
+    try:
+        portal = json.loads((vdir / "build-manifest.json").read_text(encoding="utf-8")).get("portal") or {}
+    except Exception:
+        return ""
+    ups = portal.get("uploads") or []
+    if not ups:
+        return ""
+    folder = vdir / str(portal.get("folder", "portal"))
+    href = lambda x: "/" + quote(ds._rel(x, root))
+    rows = []
+    for i, u in enumerate(ups, 1):
+        files = [folder / n for n in u.get("files") or [] if (folder / n).is_file()]
+        links = " ".join(_open_btn(x.name, href(x), x.name) for x in files) or '<span class=mut>no file yet</span>'
+        note = "; ".join(x for x in (u.get("detail", ""), u.get("note", "")) if x)
+        rows.append(f'<tr><td>{i}</td><td>{esc(u.get("slot", ""))}</td><td>{links}</td>'
+                    f'<td>{esc(PORTAL_WORDS.get(u.get("state"), u.get("state", "")))}</td><td class=mut>{esc(note)}</td></tr>')
+    table = folder / "portal.md"
+    head = (f'<p class=pb-state>{portal.get("ready", 0)} of {len(ups)} slots ready · upload these files as they are, '
+            f'each into its slot · {_open_btn("Open portal.md", href(table), table.name) if table.is_file() else ""}</p>')
+    return (head + '<table class=pb-portal><tr><th>#</th><th>slot</th><th>file</th><th>state</th><th>note</th></tr>'
+            + "".join(rows) + '</table>'
+            + '<style>.pb-portal{border-collapse:collapse;width:100%;font-size:13px}.pb-portal td,.pb-portal th'
+              '{border-top:1px solid var(--line);padding:5px 6px;text-align:left;vertical-align:top}</style>')
 
 
 def writing_view(board: Path, root: Path, md, items=()) -> str:
@@ -605,6 +663,10 @@ def writing_view(board: Path, root: Path, md, items=()) -> str:
         if paper:
             n += 1
             out += _section(f"{n} · 📄 The assembled paper", paper)
+        portal = _portal(board / "delivery" / job.name, root)
+        if portal:
+            n += 1
+            out += _section(f"{n} · 📮 Ready for the portal", portal)
     return out or '<p class=mut>No version yet.</p>'
 
 

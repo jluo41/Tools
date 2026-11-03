@@ -1,3 +1,17 @@
+## 0.16.0 · 2026-11-02 · A complete paper draft Task
+
+- JL 261102: "what is the checklist for the /haipipe-draft and /haipipe-paper-draft, why dont you make them to be
+  complete?". New § ✅ A complete paper draft Task: the paper's rows (contract block, Requirement, examples, evidence
+  for every number, its own delivery, into the paper build or the letter lane, health) on top of haipipe-draft's
+  per-step list.
+
+## 0.15.0 · 2026-11-02 · Structure and Draft move together
+
+- JL 261102: "when you update the draft, you should also udpate teh structure as well". § 🧱 Content outline now says
+  every edit to section 3 (Draft) makes the same change to section 1 (Structure) and the Structure Overview, and a
+  new structure is a new draft version. `page.py health` gains the `structure` check (haipipe-draft
+  `plan_layout.structure_draft_mismatches`); 76 current drafts in the SPACE pass it, and it caught none wrongly.
+
 ## 0.14.2 · 2026-11-01 · b16 review 261101: current paper names
 
 - version Jobs are named `jNN_writing_v<MMDD>_<desk>` (from j11), no longer `jNN_v<MMDD>_<desk>` (Runtime home tree).

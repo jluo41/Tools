@@ -26,7 +26,7 @@ def test_a_new_board_shows_each_layer_and_what_waits():
         assert got["P1"][0] == "✅" and got["P3"][0] == "✅" and got["P4"][0] == "🙋"
         assert got["E1"] == ("✅", "b11_x_did") and got["E2"][0] == "⬜"
         assert got["V1"][0] == "✅" and got["W1"][0] == "✅"
-        assert got["W2"][0] == "🙋" and got["W3"][0] == "⬜" and got["D9"][0] == "🙋"
+        assert got["W2"][0] == "🙋" and got["W3"][0] == "⬜" and got["D10"][0] == "🙋"
 
 
 def test_layout_and_delivery_lines_and_the_checklist_topic():
@@ -48,7 +48,8 @@ def test_layout_and_delivery_lines_and_the_checklist_topic():
         assert got["L3"][0] == "⬜" and "j01_v1130_venue" in got["L3"][1]
         assert got["L4"][0] == "⬜"
         assert got["D1"][0] == "⏳" and got["D4"][0] == "⏳" and "3400 words, limit 3000" in got["D4"][1]
-        assert got["D7"][0] == "⏳" and got["D8"][0] == "🙋"
+        assert got["D7"][0] == "⏳" and got["D9"][0] == "🙋"
+        assert got["D8"][0] == "⬜"                                             # no [portal]: no packet
         assert paper_check.write(board, paper_check.check(board)) is None          # no topic yet: nothing written
         t = board / "s05-paper-checklist"
         t.mkdir()

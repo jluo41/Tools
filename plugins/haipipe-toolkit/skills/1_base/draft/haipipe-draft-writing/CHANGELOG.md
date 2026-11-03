@@ -1,3 +1,9 @@
+## 0.27.0 · 2026-11-02 · Structure and Draft move together
+
+- JL 261102: "when you update the draft, you should also udpate teh structure as well". § Writing prose: an edit to
+  section 3 makes the same change to section 1 and the Structure Overview in that edit; a new structure is a new
+  draft version. Checked by `page.py health` (`structure`).
+
 ## 0.26.0 · 2026-10-22 · Examples first
 
 - JL 261022: "我突然忘了第一件事：你应该先找 example，看看别人是怎么写 abstract 的，然后再看怎么写。所以在 write 的时候，你应该

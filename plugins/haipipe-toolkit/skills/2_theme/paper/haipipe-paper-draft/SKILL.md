@@ -2,8 +2,8 @@
 name: haipipe-paper-draft
 description: "The paper's draft Task: one Section, the Abstract or a letter of one version (task-type: draft), the paper's rules on top of haipipe-draft; executes one row of the version's ## Narrative and keeps its Requirement (venue rules, rubric, SUB-* rows). Evidence and displays follow haipipe-paper-evidence; the whole manuscript is haipipe-paper-assemble. Use to add, outline, draft, revise, check or retarget one Section. Also opens as /haipipe-paper-section."
 metadata:
-  version: "0.14.2"
-  last_updated: "2026-11-01"
+  version: "0.16.0"
+  last_updated: "2026-11-02"
   aliases: [haipipe-paper-section]
   folder_owner: canonical
   legacy_page_type: section
@@ -324,6 +324,17 @@ comparison owed`); one `Cut:` bullet names what leaves the section and where it
 goes; a Note is one line and never the drafted sentence, which lives on the
 page. The approved specimen is quoted in `workbench-task-draft` §✂️.
 
+**Structure and Draft move together (JL 261102: "when you update the draft, you should also udpate teh structure as
+well")**. A Draft Markdown's `## 1 · Structure` is the plan of its `## 3 · Draft`, so every edit to the sentences
+makes the same change to the plan in that edit: a sentence added or cut adds or cuts its Bullet (`- B<k> · S<n> ·
+[Role] what it does`, with its `Evidence:` line), a sentence moved moves its Bullet, a paragraph added, split, merged
+or renamed changes its `### C<n>.P<m> · <title> · S<a> to S<b>` heading in sections 1, 2 and 3 and its entry in the
+Structure Overview, and the S numbers and spans are renumbered to match. A new structure is a new draft version
+(`draft-v<G>.<S+1>`, the older one moved to `draft/previous/`), never a section 3 rewritten under the old plan; its
+Evidence Items and the face's `evidence-allowlist:` follow their sentences. `page.py health <Task>` checks it
+(`structure`: `plan_layout.structure_draft_mismatches`, the paragraphs, titles, sentences and Overview spans of
+sections 1 and 3) and fails until both agree.
+
 ## 🏷 Reader-facing subsection titles
 
 During SHAPE and CONTENT revision, name each subsection for the substantive
@@ -408,6 +419,22 @@ face "How much changes" (every paragraph) ─▶ CONTEXT cites it ─▶ SHAPE: 
 
 Worked example: Paper-TestToLearn-MS2026, s10 to s16, the sent `j01_v0429_mansci` read for `j02_v1007_mansci`:
 107 rows, 13 KEEP · 47 REWRITE · 26 CUT · 21 MOVE.
+
+## ✅ A complete paper draft Task
+
+The base list is `haipipe-draft` `ref/page-checklist.md` § 6 (one file per step, checked by `page.py health`'s
+`steps` row). A paper Section, Abstract or letter also needs these before it is called complete (JL 261102: "why dont
+you make them to be complete?"):
+
+| What | Done when | Where |
+|---|---|---|
+| The contract block | every field of § 📥 Required contract block is on the face, none left as `<…>` | the face |
+| The Requirement | `W<n>` rules for the Section's own writing; the venue's `V<n>` when its desk has a division, else the reason in `structure-division:` | `draft/records/<stem>-requirement.md` |
+| Examples | `examples:` names the topic of 3 to 4 published papers, or says why none exist (a cover letter: journals publish none) | the face |
+| Evidence for every number | each number, citation and display a sentence uses has an item, and each `Evidence:` line in § 1 names it | `draft/<stem>-evidence-items.md` |
+| Its own delivery | web, LaTeX and Word built under `delivery/<job>/<task>/` (`page.py export`); a letter's face says `delivery-builder: <the paper's build.py>`, so its LaTeX and Word lanes are the letter as uploaded (date, addressee, signature), never a Section print | the Delivery tab |
+| Into the paper | a Section: its LaTeX fragment in the version's paper build; a letter: the cover letter lane (`[coverletter] task`) builds it and the portal packet carries it | `delivery/<writing Job>/` |
+| The final gate | `page.py health --final` shows no FAIL (the printed PDF holds every § 3 sentence); its only WARN rows are the person's steps | the reply, before the word "finished" |
 
 ## ✅ Closing checks
 

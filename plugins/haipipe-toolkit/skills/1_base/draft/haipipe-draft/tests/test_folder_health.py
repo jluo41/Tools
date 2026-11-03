@@ -155,3 +155,28 @@ def test_display_equation_after_a_blank_line_stays_with_its_bullet(tmp_path):
                                    "- B2 · S2 · The second sentence is also on the Page.\n\n  $$\n  y = x\n  $$")
     face = FACE.replace("<!-- realizes: C1.P1.B2 -->", "<!-- realizes: C1.P1.B2 -->\n\n$$\ny = x\n$$")
     assert levels(folder_health(make(tmp_path, plan=plan, face=face)), "sync") == [OK]
+
+
+def test_draft_task_steps_warn_until_each_has_its_file(tmp_path):
+    """JL 261102: a draft Task's seven steps, each by the file it leaves; a face without task-type: draft is skipped."""
+    plain = folder_health(make(tmp_path / "a"))
+    assert levels(plain, "steps") == []                       # not a draft Task: no steps check
+    face = "# Sample-Page\ntask-type: draft\n\n" + FACE.split("\n", 1)[1]
+    report = folder_health(make(tmp_path / "b", face=face))
+    msgs = [f["message"] for f in report["findings"] if f["check"] == "steps"]
+    assert any("context.md" in m for m in msgs) and any("revise.md" in m for m in msgs)
+    assert any("not signed" in m for m in msgs) and any("delivery lanes built: none" in m for m in msgs)
+    assert set(levels(report, "steps")) == {WARN}
+
+
+def test_final_gate_fails_what_may_wait_while_writing(tmp_path):
+    """JL 261102: "I think /haipipe-draft should do this final checklist before saying it is finished"."""
+    face = "# Sample-Page\ntask-type: draft\n\n" + FACE.split("\n", 1)[1]
+    folder = make(tmp_path, face=face)
+    loose = folder_health(folder)
+    final = folder_health(folder, final=True)
+    assert loose["verdict"] == WARN and final["verdict"] == FAIL
+    by = {(f["check"], f["level"]) for f in final["findings"]}
+    assert ("printed", FAIL) in by                         # no built PDF to read back
+    signs = [f for f in final["findings"] if "not signed" in f["message"]]
+    assert signs and all(f["level"] == WARN for f in signs)   # the person's step is named, never failed

@@ -75,7 +75,10 @@ Missing evidence Jobs (V1) are made by update too (`paper_ladder.py evidence`).
 
 The delivery is what one send hands over: the manuscript (PDF and Word), the supplement when the venue takes one,
 the cover letter, the venue's own files (its author kit: title page, declarations, data sharing, code link), and the
-receipt, `delivery/<writing Job>/build-manifest.json`, the one record of what was built and from what. Each line
+receipt, `delivery/<writing Job>/build-manifest.json`, the one record of what was built and from what. What is
+uploaded is the portal packet, `delivery/<writing Job>/portal/` (JL 261102: "the final delivery content that are
+ready to submit directly in the portal"): the build copies each file the portal takes there, one row per upload slot
+in its `portal.md`, with the slot's state. Each line
 names where its rule lives; the checklist never copies a rule.
 
 | id | what | done when | the rule lives in |
@@ -87,5 +90,6 @@ names where its rule lives; the checklist never copies a rule.
 | D5 | Clean text | no `⟦…⟧` placeholder in the built Sections | AGENTS.md § Papers: deliverables carry no process text |
 | D6 | Citations verified | no `\citep{TOADD}`, no draft citation, every key resolves | haipipe-paper-evidence |
 | D7 | The build is ready | the manifest's status is not `DRAFT` (its blockers listed) | `ref/submission-readiness.md` (G4, the 21 SUB-* points) |
-| D8 | Read and approved | 🙋 a person reads the built paper and approves this exact build | `ref/submission-readiness.md` § Human reading pass |
-| D9 | Sent | `delivery/delivery.md` has a `sent` row for the writing Job; only a person writes it | haipipe-delivery |
+| D8 | The portal packet | `delivery/<writing Job>/portal/portal.md` lists every slot the portal asks for, each ✅ ready (none missing, stale or built but not approved) | haipipe-paper-assemble § The portal packet |
+| D9 | Read and approved | 🙋 a person reads the built paper and approves this exact build | `ref/submission-readiness.md` § Human reading pass |
+| D10 | Sent | `delivery/delivery.md` has a `sent` row for the writing Job; only a person writes it | haipipe-delivery |

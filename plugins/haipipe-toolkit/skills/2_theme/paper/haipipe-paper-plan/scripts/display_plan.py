@@ -77,7 +77,8 @@ def rules(board: Path) -> dict:
     if call is None:
         return {}
     return {r.get("rule", "").lower(): (r.get("value", ""), r.get("source", ""))
-            for r in table(call.read_text(encoding="utf-8").splitlines(), "rule") if r.get("value")}
+            for r in table(call.read_text(encoding="utf-8").splitlines(), "rule")
+            if r.get("value") and r["value"].strip().upper() != "UNKNOWN"}     # UNKNOWN is not recorded (JL 261102)
 
 
 def title(r: dict) -> str:

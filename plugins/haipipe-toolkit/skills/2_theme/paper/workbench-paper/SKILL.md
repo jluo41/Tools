@@ -93,7 +93,7 @@ part: no ideation topic, no Idea view; no evidence Job, no Evidence view.
 plan      A Idea · B Story · C Data flow · D Paper flow    one Studio topic each (B holds the venues, venues/<venue>/call.md)
 explore   E Support blocks                                 the work and discovery Blocks its pages name, as folder trees
 evidence  F Evidence                                       j02 values · j03 citations, as side tabs
-          G Displays                                       1 · the display plan against the venue, 2 · j01's displays, each its preview.pdf
+          G Displays                                       1 · the s06 plan drawing only, 2 · j01's displays, each its preview.pdf, 3 · the s07 examples drawing only
 writing   H Writing                                        each jNN_writing_v<MMDD>_<desk>: its Sections, the assembled paper
 ```
 

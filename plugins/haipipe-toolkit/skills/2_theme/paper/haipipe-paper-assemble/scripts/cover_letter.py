@@ -201,7 +201,9 @@ def build_cover_letter(cfg: dict, profile: dict, root: Path, here: Path, out: di
     rd = str(cl.get("round", ""))
     # on the ladder the build lives in delivery/<version>/ beside the version folder, which [pages] main names
     version = (Path(here) / str(cfg.get("pages", {}).get("main", ".."))).resolve()
-    page = (letter_task(version) or letter_task(Path(here).parent)
+    named = (Path(here) / str(cl["task"])).resolve() if cl.get("task") else None   # 0.13.0: a letter Task in another
+    named = named / f"{named.name}.md" if named and (named / f"{named.name}.md").is_file() else None   # Job (the submission Job)
+    page = (named or letter_task(version) or letter_task(Path(here).parent)
             or (round_page(root, rd, Path(here).parent) if rd else None))
     paragraphs, where, source = letter_source(page) if page else ([], "missing", None)
     pages = pdf_pages(main_pdf)

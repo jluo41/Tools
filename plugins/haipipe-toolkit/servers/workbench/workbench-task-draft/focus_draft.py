@@ -508,9 +508,20 @@ def section_delivery_views(folder: Path, root: Path) -> dict:
     """A Section's Delivery view-button-list: PDF · Word · Web · Files, each lane previewed in the page."""
     name = face(folder).stem if face(folder) else folder.name
     lane = lambda key: ds.delivery_read_lane_dir(folder, key)
-    return {"pdf": ("PDF", lambda: preview(lane("latex") / f"{name}.pdf", root)),
-            "word": ("Word", lambda: preview(lane("word") / f"{name}.pdf", root, lane("word") / f"{name}.docx")),
-            "web": ("Web", lambda: preview(lane("web") / "index.html", root)),
+
+    def gap() -> str:
+        """JL 261102: the PDF printed draft v0.1 while the plan beside it was v0.3, and the page did not say so."""
+        try:
+            from src.page_adopt import content_gap
+            g = content_gap(folder)
+        except Exception:
+            return ""
+        return (f'<div class=fd-ask role=status><span>⚠️ This prints {esc(g["printed"])}; the current draft is '
+                f'{esc(g["current"])}. It is behind: {esc(g["why"])}, then export, before reading it as final.'
+                '</span></div>') if g else ""
+    return {"pdf": ("PDF", lambda: CSS + gap() + preview(lane("latex") / f"{name}.pdf", root)),
+            "word": ("Word", lambda: CSS + gap() + preview(lane("word") / f"{name}.pdf", root, lane("word") / f"{name}.docx")),
+            "web": ("Web", lambda: CSS + gap() + preview(lane("web") / "index.html", root)),
             "files": ("Built files", lambda: delivery_html(folder, root))}
 
 
