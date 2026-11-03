@@ -1,6 +1,8 @@
 s32 · Design element UI
 =======================
 
+**Tags:** `Guide`
+
 **Stage:** explore
 
 **For:** a deck, and a gallery of every element the design theme draws, so the UI can be unified, for the people who build the workbench

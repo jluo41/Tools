@@ -34,7 +34,7 @@ s57-task-ui-report/
 Decided
 -------
 
-(none yet: a decision is one line, s57-D01 · <what was decided> (<who> <date>))
+s57-D01 · A Report view is its numbered sections only, the helpers last; the ⚙️ Process and 📊 Results bands and "🙋 Waits on you" live only in Work (JL 261101, on b11: "for the report UI, we will not see the section [Results] and [Process] ... the Process and Results will only be available in the Work Section"; as b16 s32-D27).
 
 
 Open

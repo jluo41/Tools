@@ -38,7 +38,7 @@ W, CW, X0 = 780, 640, 70               # a screen, its content column, where it 
 CRUMB = {"block": f"WellDoc-SPACE › examples-5-design › ProjI-Insight-1-Wearable › design › {BLOCK}",
          "job": f"WellDoc-SPACE › examples-5-design › ProjI-Insight-1-Wearable › design › {BLOCK} › {JOB}",
          "task": f"WellDoc-SPACE › examples-5-design › ProjI-Insight-1-Wearable › design › {BLOCK} › {JOB} › {{name}}"}
-GOAL = {"block": "Purpose: checklists for the weeks before a clinic visit, one Job per goal × method",
+GOAL = {"block": "Purpose: checklists for the weeks before a clinic visit, one Job per goal × method × inputs version",
         "job": "Goal: prepare-before-visit, by the goal-only method, on inputs version i1",
         "t00_reason-ideas": "Aim: ideas from the fenced inputs or own knowledge, each step traced to its source",
         "t01_d01_keep-devices-on": "Aim: one design, drafted, verified and revised until it passes",
@@ -92,10 +92,17 @@ def rails(eid, x, y, level, name, section):
 
 
 def topic_row(eid, x, y, w, addr, words, stage):
+    """A topic card: its drawing (a large thumbnail, the main mark), its name and line, its verbs; the stage in its own
+    column on the right."""
     els = [_el("rectangle", eid, x, y, w, 64, ROOM, "#ffffff", roundness={"type": 3})]
-    els += [_el("rectangle", eid + "_p", x + 10, y + 10, 70, 44, ROOM, "#f1f3f5")]
-    els += text(eid + "_a", x + 92, y + 8, addr, 13, TITLE) + text(eid + "_w", x + 92, y + 28, words, 11, BODY)
-    return els + text(eid + "_s", x + w - 110, y + 8, stage, 12, GR) + text(eid + "_v", x + 92, y + 44, "Slides · Draw · Mind map", 11, INK)
+    els += [_el("rectangle", eid + "_p", x + 8, y + 6, 120, 52, ROOM, "#f1f3f5")]
+    els += [_el("rectangle", eid + "_p1", x + 18, y + 14, 34, 20, "#868e96", "#ffffff"),        # the drawing, small:
+            _el("ellipse", eid + "_p2", x + 78, y + 16, 36, 20, "#868e96", "#ffffff")]         # two shapes and a line
+    els += line(eid + "_p3", [(x + 52, y + 24), (x + 78, y + 26)], "#868e96", 1)
+    els += text(eid + "_p4", x + 18, y + 40, "drawing", 10, BODY)
+    els += text(eid + "_a", x + 140, y + 8, addr, 13, TITLE) + text(eid + "_w", x + 140, y + 28, words, 11, BODY)
+    els += [_el("rectangle", eid + "_sb", x + w - 140, y + 6, 1, 52, "#e9ecef", "#e9ecef")]     # the stage's own column
+    return els + text(eid + "_s", x + w - 128, y + 24, "stage · " + stage, 12, GR) + text(eid + "_v", x + 140, y + 44, "Open slides · Draw · Open mind map", 11, INK)
 
 
 def secbar(eid, x, y, w, title, words, verbs=()):
@@ -125,14 +132,16 @@ def is_topic(sec):
 BLUE = "#1864ab"
 
 
-def _btns(eid, x, y, verbs):
-    """Verb buttons, right-aligned so they end at x."""
+def _btns(eid, x, y, verbs, minw=0):
+    """Verb buttons, right-aligned so they end at x; `minw` gives a column of them one width."""
     els, cx = [], x
     for k, v in enumerate(reversed(verbs)):
-        bw = 16 + 7.5 * len(v)
+        off, v = v.startswith("~"), v.lstrip("~")          # "~Add": a verb that waits, drawn grey
+        bw = max(16 + 7.5 * len(v), minw)
         cx -= bw
-        els += [_el("rectangle", f"{eid}{k}", cx, y, bw, 24, BLUE, "#ffffff", roundness={"type": 3})]
-        els += text(f"{eid}{k}_t", cx + 8, y + 5, v, 11, BLUE)
+        ink = "#adb5bd" if off else BLUE
+        els += [_el("rectangle", f"{eid}{k}", cx, y, bw, 24, ink, "#f8f9fa" if off else "#ffffff", roundness={"type": 3})]
+        els += text(f"{eid}{k}_t", cx + 8, y + 5, v, 11, ink)
         cx -= 8
     return els
 
@@ -145,7 +154,8 @@ def k_big(eid, x, y, w, words, state):
 def k_kv(eid, x, y, w, rows, verbs):
     els = _btns(eid + "_b", x + w, y, verbs)
     for k, (key, val) in enumerate(rows):
-        els += text(f"{eid}{k}k", x + 4, y + 4 + 22 * k, key, 12, BODY) + text(f"{eid}{k}v", x + 110, y + 4 + 22 * k, val, 12, INK)
+        kw = max(110, 7 * max(len(str(r[0])) for r in rows) + 16)     # the value starts after the longest key
+        els += text(f"{eid}{k}k", x + 4, y + 4 + 22 * k, key, 12, BODY) + text(f"{eid}{k}v", x + kw, y + 4 + 22 * k, val, 12, INK)
     return els
 
 
@@ -160,18 +170,32 @@ def k_tiles(eid, x, y, w, items):
 
 
 def k_table(eid, x, y, w, head_, rows, verbs):
+    """A table: each column as wide as its longest line; a cell may hold two lines; a row's own verb is an extra cell
+    past the heads ("Open", "~Add" grey), drawn on the row; `verbs` sit under the table."""
     cols = list(head_)
     while len(cols) > 1 and cols[-1] == "" and all(len(r) < len(head_) or r[len(cols) - 1] == "" for r in rows):
         cols.pop()                                   # trailing empty columns go; a first empty header stays
-    cw = (w - 10) / len(cols)
-    els = [_el("rectangle", eid, x, y, w, 22 * (len(rows) + 1) + 4, ROOM, "#ffffff", roundness={"type": 3})]
+    n = len(cols)
+    has_verb = any(len(r) > n and r[n] for r in rows)
+    room = w - 16 - (90 if has_verb else 0)
+    need = [max([len(str(cols[j]))] + [max(len(t) for t in str(r[j]).split("\n")) for r in rows if j < len(r)]) + 3
+            for j in range(n)]
+    xs = [x + 8]
+    for k_ in need[:-1]:
+        xs.append(xs[-1] + room * k_ / sum(need))
+    hs = [max(22 * max(str(c).count("\n") + 1 for c in r[:n]), 30 if has_verb else 0) for r in rows]
+    els = [_el("rectangle", eid, x, y, w, 22 + sum(hs) + 4, ROOM, "#ffffff", roundness={"type": 3})]
     for j, c in enumerate(cols):
-        els += text(f"{eid}h{j}", x + 8 + j * cw, y + 5, c, 11, TITLE)
+        els += text(f"{eid}h{j}", xs[j], y + 5, c, 11, TITLE)
+    ry = y + 24
     for i, r in enumerate(rows):
-        els += line(f"{eid}l{i}", [(x, y + 24 + 22 * i), (x + w, y + 24 + 22 * i)], "#e9ecef", 1)
-        for j, c in enumerate(r[:len(cols)]):
-            els += text(f"{eid}r{i}{j}", x + 8 + j * cw, y + 29 + 22 * i, c, 11, INK)
-    return els + _btns(eid + "_b", x + w, y + 22 * (len(rows) + 1) + 12, verbs)
+        els += line(f"{eid}l{i}", [(x, ry), (x + w, ry)], "#e9ecef", 1)
+        for j, c in enumerate(r[:n]):
+            els += text(f"{eid}r{i}{j}", xs[j], ry + 5, c, 11, INK)
+        if len(r) > n and r[n]:
+            els += _btns(f"{eid}v{i}", x + w - 8, ry + (hs[i] - 24) / 2, (r[n],), minw=72)
+        ry += hs[i]
+    return els + _btns(eid + "_b", x + w, ry + 10, verbs)
 
 
 def k_bars(eid, x, y, w, caption, bars):
@@ -217,7 +241,7 @@ def k_tabs(eid, x, y, w, items, detail, verbs=()):
     return els + _btns(eid + "_v", x + w - 10, py + 6, verbs)
 
 
-def k_line(eid, x, y, w, words):
+def k_line(eid, x, y, w, words, verbs=()):          # verbs: drawn on the section's bar (view_sec)
     return text(eid, x + 4, y, words, 12, INK)
 
 
@@ -235,7 +259,7 @@ PILL = {"Needs your judgment": (OR, "#fff4e6"), "Needs review": (OR, "#fff4e6"),
 
 def pill(eid, x, y, words):
     stroke, fill = PILL.get(words, (ROOM, "#f8f9fa"))
-    w = 18 + 7 * len(words)
+    w = max(18 + 7 * len(words), 150)                 # one width, so a column of pills lines up
     return [_el("rectangle", eid, x, y, w, 22, stroke, fill, roundness={"type": 3})] + text(eid + "_t", x + 9, y + 4, words, 11, INK)
 
 
@@ -250,9 +274,11 @@ def k_rows(eid, x, y, w, rows, foot=""):
     els = []
     for k, (words, state, verb) in enumerate(rows):
         ry = y + 50 * k
-        els += [_el("rectangle", f"{eid}{k}", x, ry, w, 42, ROOM, "#ffffff", roundness={"type": 3})]
-        els += text(f"{eid}{k}_w", x + 14, ry + 11, words, 15, INK)
-        els += pill(f"{eid}{k}_p", x + w - 250, ry + 10, state) if state else []
+        els += line(f"{eid}{k}", [(x, ry + 44), (x + w, ry + 44)], "#e9ecef", 1)
+        two = "\n" in words
+        els += text(f"{eid}{k}_w", x + 14, ry + (5 if two else 11 if len(words) < 44 else 13), words,
+                    12 if two or len(words) >= 44 else 15, INK)
+        els += pill(f"{eid}{k}_p", x + w - 300, ry + 10, state) if state else []
         els += _btns(f"{eid}{k}_b", x + w - 12, ry + 9, (verb,)) if verb else []
     return els + (text(eid + "_f", x + 14, y + 50 * len(rows) + 2, foot, 12, BODY) if foot else [])
 
@@ -401,7 +427,9 @@ def k_dcard(eid, x, y, w, kind, title, items, sources, review):
 
 
 KIND = {"big": (k_big, lambda a: 50 if a[1] else 30), "kv": (k_kv, lambda a: 22 * len(a[0]) + 8),
-        "tiles": (k_tiles, lambda a: 62), "table": (k_table, lambda a: 22 * (len(a[1]) + 1) + (44 if a[2] else 12)),
+        "tiles": (k_tiles, lambda a: 62), "table": (k_table, lambda a: 22 + sum(max(22 * max(str(c).count("\n") + 1 for c in r[:len(a[0])]),
+                                                    30 if any(len(q) > len(a[0]) and q[len(a[0])] for q in a[1]) else 0)
+                                                for r in a[1]) + (44 if a[2] else 12)),
         "bars": (k_bars, lambda a: 26 + 20 * len(a[1])), "chain": (k_chain, lambda a: 62 + (34 if len(a) > 1 and a[1] else 0)),
         "tabs": (k_tabs, lambda a: 66 + 22 * len(a[1])), "line": (k_line, lambda a: 24),
         "picture": (k_picture, lambda a: 92),
@@ -424,6 +452,8 @@ def view_sec_h(sec):
         return 30
     if sec[0] == "group":
         return 40
+    if sec[1] == "line" and not sec[2]:              # a bar alone (its content follows as rows): no empty band
+        return 38
     return (40 if sec[0] else 0) + KIND[sec[1]][1](sec[2:]) + 10
 
 
@@ -436,7 +466,11 @@ def view_sec(eid, x, y, w, sec):
     els = []
     if sec[0]:
         els += [_el("rectangle", eid, x, y, w, 30, ROOM, "#ffffff", roundness={"type": 3})]
-        els += text(eid + "_t", x + 12, y + 7, "▾ " + sec[0], 13, TITLE)
+        els += text(eid + "_t", x + 12, y + 7, sec[0], 13, TITLE)
+        if sec[1] == "line" and len(sec) > 3:        # the bar's own verb, on its right (rule 3)
+            els += _btns(eid + "_v", x + w - 10, y + 3, sec[3])
+        if sec[1] == "line" and not sec[2]:
+            return els
         y += 40
     return els + KIND[sec[1]][0](eid + "_c", x, y, w, *sec[2:])
 
@@ -491,44 +525,103 @@ def tall(secs):
 # Block = one application, one channel; its views follow what a design Block holds: its bottom line, the signed goals,
 # one row per Job (goal × method × inputs), the rounds (one per inputs version, with what an Exp returned) and the
 # methods' scores. Report and Work share letters (b16 s32-D09). JL 261012: the Report opens on Summary.
+# Round 2 (JL 261101: "follow the examples here", b16 j01; b11's passed shape): a Report view is its numbered sections
+# only, the main point first and large, the helpers last after a dashed rule (JL 261101, b16 s32-D27); a Work view is
+# ⚙️ Process (🙋 your signs first, then the view's steps, each row a state word and at most one verb) over 📊 Results,
+# the Report's own sections. Names, not ids: a Job by its folder name, a goal and a method by their words.
+RES, PROC = ("group", "📊 Results"), ("group", "⚙️ Process")
+HELP = ("", "line", "┄┄┄  🖼️ The drawing  ·  🧠 The mind map")
+J1, J2, J3, J4 = ("j01_prepare-before-visit_goal-only", "j02_prepare-before-visit_actionable-insights",
+                  "j03_questions-before-visit_goal-only", "j04_questions-before-visit_actionable-insights")
+# One story across the views (round 1 reviews): both goals signed; j01 released, j02 ranked and waiting for your review,
+# j03 drafted and waiting for its ranking, j04 drafting and verifying; three designs kept a Job; one inputs version.
+INBOX = ("1 · 🙋 Waits on you", "rows", [(f"Review and approve\n{J2}", "waiting for you", "Review")])
+NO_INBOX = ("", "line", "🙋 Nothing waits on you here")
 BLOCK_REPORT = (
-    ("Summary", (("1 · 🎯 The bottom line", "big", "4 Jobs ranked, 3 designs kept in each; none released yet", "waiting for you"),
-                 ("2 · 📋 One row per Job", "rows", [("j01_prepare-before-visit_goal-only", "not approved", "Open"), ("j02_prepare-before-visit_actionable-insights", "not approved", "Open"), ("j03_questions-before-visit_goal-only", "not approved", "Open"), ("j04_questions-before-visit_actionable-insights", "not approved", "Open")]),
-                 ("", "ask", "✍️ Next: review and approve each Job's kept designs, then build the summary", "Review", "gate"))),
-    ("Goals", (("G01 prepare-before-visit", "aim · who · venue · n 3 · its own rules · signed ✅"),
-               ("G02 questions-before-visit", "aim · who · venue · n 3 · its own rules · signed ✅"),
-               ("The shared rules", "design-goal.md: each rule checkable on the text alone"))),
-    ("Jobs", (("The map", "goals down × methods across; each cell its chain of Jobs"),
-              ("j01_prepare-before-visit_goal-only", "inputs i1 · 8 designs · 3 kept"),
-              ("j02_prepare-before-visit_actionable-insights", "inputs i1 · 8 designs · 3 kept · sees the insight"),
-              ("j03_questions-before-visit_goal-only", "inputs i1 · 8 designs · 3 kept"),
-              ("j04_questions-before-visit_actionable-insights", "inputs i1 · 8 designs · 3 kept · sees the insight"))),
-    ("Rounds", (("i1 · preview", "inputs version 1: its Jobs and their releases"),
-                ("Exp results", "observed/eNN: per-arm totals, scored against the frozen predictions"),
-                ("i2", "the next inputs version: a signed handoff, the Jobs that move to it"))),
-    ("Methods", (("Predicted vs observed", "each released design's prediction beside its Exp arm"),
-                 ("Method scorecard", "the scores summed per method version"),
-                 ("Cost", "each Job's Runs: time, tokens, rounds"))),
+    ("Summary", (RES, ("", "big", "One Job released, one waits for your review", ""),
+                 ("1 · 📊 Where each Job stands", "table", ("Job", "where it is · next"),
+                  [(J1, "released <date> · nothing next", "Open"), (J2, "ranked · your review", "Open"),
+                   (J3, "drafted · to rank", "Open"), (J4, "drafting · to verify", "Open")], ()),
+                 ("2 · ➡️ Next", "line", f"after your review, {J3} is ranked and {J4} verified"),
+                 PROC, HELP)),
+    ("Goals", (RES, ("", "big", "Two goals, both signed", ""),
+               ("1 · 🎯 The goals", "table", ("goal", "for whom", "designs kept", "signed"),
+                [("prepare-before-visit", "<who>", "3 released, 3 waiting", "✅ <date>", "Open"),
+                 ("questions-before-visit", "<who>", "none yet", "✅ <date>", "Open")], ()),
+               ("2 · 📏 The shared rules", "line", "", ("Open design-goal.md",)),
+               ("", "table", ("rule, checked on the design's text alone",),
+                [("<rule 1: what every design must say>",), ("<rule 2: what no design may say>",),
+                 ("<rule 3: how long a design may be>",)], ()),
+               PROC, HELP)),
+    ("Jobs", (RES, ("", "big", "Two goals × two methods: one Job each", ""),
+              ("1 · 🗺 Goals × methods", "table", ("goal", "goal only", "actionable insights"),
+               [("prepare-before-visit", f"{J1} ↗", f"{J2} ↗"), ("questions-before-visit", f"{J3} ↗", f"{J4} ↗")], ()),
+              ("2 · 🧭 What moves across the grid", "table", ("from → to", "what changes"),
+               [("goal only → actionable insights", "the method also sees the insight handoff"),
+                ("prepare-before-visit → questions-before-visit", "the goal changes; the method stays")], ()),
+              PROC, HELP)),
+    ("Rounds", (RES, ("", "big", "Round 1 is running; no experiment result yet", ""),
+                ("1 · 🔁 Round 1", "line", "", ("Open round 1",)),
+                ("", "chain", [("inputs", "inputs/i1"), ("Jobs", "four Jobs"), ("kept", "3 released, 3 waiting"),
+                               ("experiment", "not run yet")], ""),
+                ("2 · 📋 What each Job kept", "table", ("Job", "kept"),
+                 [(J1, "3 designs, released"), (J2, "3 designs, waiting for your review"), (J3, "none yet: to rank"),
+                  (J4, "none yet: drafting")], ()),
+                PROC, HELP)),
+    ("Methods", (RES, ("", "big", "No method scored yet: scores come after the experiment", ""),
+                 ("1 · 🧩 The methods", "table", ("method", "version", "ran on", "scored"),
+                  [("goal only", "m2", "both goals", "not yet"), ("actionable insights", "m1", "both goals", "not yet")], ()),
+                 ("2 · ⏱ What each Job cost, by method", "table", ("method", "Job", "time", "tokens"),
+                  [("goal only", J1, "<minutes>", "<tokens>"), ("", J3, "<minutes>", "<tokens>"),
+                   ("actionable insights", J2, "<minutes>", "<tokens>"), ("", J4, "<minutes>", "<tokens>")], ()),
+                 ("3 · 🔮 Predicted, the released designs", "table", ("method", "design", "predicted"),
+                  [("goal only", "d01 keep-devices-on", "<effect> [<range>]"), ("", "d02 note-unusual-moments", "<effect> [<range>]"),
+                   ("", "d04 log-daily-times", "<effect> [<range>]")], ()),
+                 PROC, HELP)),
 )
-BLOCK_WORK = (
-    ("Summary", (("1 · ✍️ Review and approve", "rows", [("j01_prepare-before-visit_goal-only", "waiting for you", "Review"), ("j02_prepare-before-visit_actionable-insights", "waiting for you", "Review"), ("j03_questions-before-visit_goal-only", "waiting for you", "Review"), ("j04_questions-before-visit_actionable-insights", "waiting for you", "Review")],
-                  "each: read the 3 kept designs, then one sign freezes the predictions and releases"),
-                 ("2 · 📄 Build the summary", "kv", [("Writes", "delivery/summary.pdf, one page"),
-                                                   ("From", "only what the Runs wrote, no new claim")], ("Copy prompt",)))),
-    ("Goals", (("+ Add a goal", "a new line in board.md ## Goals; you sign it", ("Copy prompt",)),
-               ("Set the shared rules", "design-goal.md; you sign the rules", ("Copy prompt",)))),
-    ("Jobs", (("j01_prepare-before-visit_goal-only", "ideas ✅ · 8 designs ✅ · ranked ✅ 3 kept · released ⬜"),
-              ("+ Launch a Job", "a signed goal × a method version × an inputs version", ("Copy prompt",)),
-              ("One clock moves", "each new Job moves the method or the inputs, never both"))),
-    ("Rounds", (("+ Add an inputs version", "inputs/iN/: rules, theory, the insight handoff, frozen", ("Copy prompt",)),
-                ("+ Add the Exp's data", "observed/eNN: per-arm totals only, never rows", ("Copy prompt",)))),
-    ("Methods", (("Score the predictions", "each Exp arm against its frozen prediction", ("Copy prompt",)),
-                 ("Propose a method change", "from the scores; the registry cuts the next version", ("Copy prompt",)))),
+
+
+def _results(report, view):
+    """A Work view's 📊 Results: its Report view's own sections, the same content read only (b16 s32-D09)."""
+    secs = dict(report)[view]
+    return tuple(x for x in secs[secs.index(RES) + 1:secs.index(PROC)])
+
+
+def _sections_only(secs):
+    """A Report view: its numbered sections only, then the helpers (no bands, no "waits on you")."""
+    return tuple(x for x in secs[secs.index(RES) + 1:secs.index(PROC)]) + (HELP,)
+
+
+BLOCK_WORK = (       # your signs first; then the view's steps, flush rows, each a state word and one verb (grey: it waits)
+    ("Summary", (PROC, INBOX, RES) + _results(BLOCK_REPORT, "Summary") + (HELP,)),
+    ("Goals", (PROC, NO_INBOX, ("1 · 🎯 Goals and rules", "rows", [("Add a goal", "", "Add"),
+                                                                  ("Edit the shared rules", "", "Edit")]),
+               RES) + _results(BLOCK_REPORT, "Goals") + (HELP,)),
+    ("Jobs", (PROC, INBOX, ("2 · 🧭 The agents' next steps", "table", ("Job", "next"),
+                            [(J3, "rank its drafts", "Rank"), (J4, "verify its drafts", "Verify")], ()),
+              ("3 · ➕ A new Job", "rows", [("goal ▾  ·  method ▾  ·  inputs ▾", "", "Launch")]),
+              RES) + _results(BLOCK_REPORT, "Jobs") + (HELP,)),
+    ("Rounds", (PROC, NO_INBOX, ("1 · 🔁 The next round", "rows", [("Add the experiment's results", "waits on the experiment", "~Add"),
+                                                                  ("Add the next inputs version", "waits on the results", "~Add")]),
+                RES) + _results(BLOCK_REPORT, "Rounds") + (HELP,)),
+    ("Methods", (PROC, NO_INBOX, ("1 · 📏 Score and learn", "rows", [("Score the predictions", "waits on the experiment", "~Score"),
+                                                                    ("Propose a method change", "waits on the scores", "~Propose")]),
+                 RES) + _results(BLOCK_REPORT, "Methods") + (HELP,)),
 )
-BLOCK_STUDIO = (                     # the groups of the Block's topics, in button order (placeholders)
-    ("Goals", (("s01-<goal>-who-and-when", "who the goal is for, and when it applies", "explore"),)),
-    ("Methods", (("s02-<method>-chains", "how a method's reasoning reaches its ideas", "shaping"),)),
-    ("Rounds", (("s03-round-i1-to-i2", "what changed between two inputs versions", "explore"),)),
+BLOCK_REPORT = tuple((v, _sections_only(secs)) for v, secs in BLOCK_REPORT)
+STUDIO_HELP = ("", "line", "┄┄┄  🤖 Ask the agent  ·  Copy prompt")
+BLOCK_STUDIO = (     # the groups by Tag, each a heading bar with its verb, its topics with where they live; the helper last
+    ("Goals", (("1 · 🎯 Who each goal is for", "line", "", ("New topic",)),
+               ("s01-<goal>-who-and-when", "the people a goal serves, and the weeks it covers", "explore"), STUDIO_HELP)),
+    ("Methods", (("1 · 🔗 How a method reasons", "line", "", ("New topic",)),
+                 ("s02-<method>-chains", "each reasoning step and the input it stands on", "shaping"), STUDIO_HELP)),
+    ("Rounds", (("1 · 🔁 What a round changed", "line", "", ("New topic",)),
+                ("s03-round-1-to-2", "the inputs the second round adds, and why", "explore"), STUDIO_HELP)),
+    ("Jobs", ((f"1 · 📁 {J1}", "line", "", ("New topic",)),          # one section per Job, its New topic scoped to it
+              ("s04-<job>-ideas-map", "how this Job's ideas spread over the goal", "explore"),
+              (f"2 · 📁 {J2}", "line", "", ("New topic",)),
+              ("s05-<job>-what-the-insight-added", "the ideas only the insight handoff made possible", "explore"),
+              STUDIO_HELP)),
 )
 # Job = one goal × one method version × one inputs version → N designs; its views follow the method's steps:
 # the pins (①), the ideas (②), the designs (③ ④), the ranking (⑤), then the release.
@@ -605,12 +698,15 @@ def type_rows(section):
 
 
 CAPTION = {
-    ("block", "report"): {"Summary": "where this Block stands, from what its Runs wrote", "Goals": "the signed goals and the shared rules",
-                          "Jobs": "each goal × method × inputs, and the map", "Rounds": "one round per inputs version",
-                          "Methods": "how each method's predictions held up"},
-    ("block", "work"): {"Summary": "what waits on you", "Goals": "add or sign a goal, set the rules",
-                        "Jobs": "each Job's next move; launch a new one", "Rounds": "a new inputs version, an Exp's data",
-                        "Methods": "score an Exp, propose a method change"},
+    ("block", "report"): {"Summary": "where this Block stands, from what its Runs wrote", "Goals": "the goals and the shared rules",
+                          "Jobs": "each goal × method, and what moves across the grid", "Rounds": "one round per inputs version",
+                          "Methods": "how each method's predictions held up, and what they cost"},
+    ("block", "work"): {"Summary": "what waits on you, and where each Job stands", "Goals": "the goals and rules you can change",
+                        "Jobs": "the agents' next steps, and a new Job", "Rounds": "what the next round waits on",
+                        "Methods": "scoring and learning, once the experiment returns"},
+    ("block", "studio"): {"Goals": "who each goal is for, and when it applies", "Methods": "how a method reaches its ideas",
+                          "Rounds": "what one round changed for the next",
+                          "Jobs": "the topics a single Job drew"},
     ("job", "report"): {"Setup": "the three pins: goal, method, inputs", "Ideas": "what t00 reasoned, from the fence only",
                         "Designs": "each design as it reads, and its verdict", "Ranking": "t99's ranking and coverage",
                         "Release": "what was released, and its frozen predictions"},

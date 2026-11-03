@@ -23,11 +23,13 @@ placeholders on purpose (the repository is public; the real designs are private)
 ## Settled decisions you must not undo (say so instead of proposing it)
 
 - JL 261012: the Block's Report opens on Summary, one row per Job, no design cards there; Next in plain words.
-- JL 261011: a Job is always named by its full folder name, never a bare jNN.
-- JL 261031: each section is a numbered boxed heading bar "▾ N · emoji name"; the main point is section 1, large;
-  helpers (interactions, drawing, mind map) only at the bottom; rails pale until hovered.
-- JL 261101: a view's sections sit in two groups, ⚙️ Process then 📊 Results, each numbered from 1; Report shows
-  Results only. There is no "Runs" view: each step shows its own Runs.
+- JL 261011: a Job is always named by its full folder name, never a bare jNN; a goal and a method by their words.
+- JL 261031: each section is a numbered boxed heading bar "N · emoji name" (no fold arrow); the main point first and
+  large; helpers (the drawing, the mind map, Ask the agent) only at the bottom after a dashed rule; rails pale lines
+  with no words, hidden until hovered (do not ask for rail words).
+- JL 261101: a Report view is its numbered sections only: no ⚙️ Process or 📊 Results band, no "waits on you"
+  section. A Work view is two bands, ⚙️ Process (🙋 Waits on you first, then the view's steps) then 📊 Results (the
+  Report's own sections, read only), each numbered from 1. There is no "Runs" view: each step shows its own Runs.
 - Report and Work of one page share view letters and names.
 - JL 261101: a design is shown with b12 s32's design card: three columns, Design (as its reader sees it) ·
   Process ③ (each element's source) · Review ④ (tests, expected outcome, ⑤ rank).
@@ -68,5 +70,5 @@ proposals (most valuable first, at most 5)
 
 Also check consistency: between Report and Work of the same page (same letters, Report = results, Work = next
 moves), between levels (Block row → Job page → Task page tell one story), and with the earlier design element
-gallery (proposed look of one design: /Users/jluo41/Desktop/Tools-SPACE/blueprints/Project-Ladder/work/b12_theme_design/s32-design-element-ui/shots/proposed__design.png
+gallery (proposed look of one design: `b12_theme_design/s32-design-element-ui/shots/proposed__design.png`
 and its review table proposed__review.png).

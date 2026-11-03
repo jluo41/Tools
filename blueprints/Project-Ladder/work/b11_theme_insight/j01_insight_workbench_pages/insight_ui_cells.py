@@ -22,6 +22,7 @@ sys.path.insert(0, str(TOOLS / "plugins/haipipe-toolkit/skills/1_base/project/ha
 from five_parts import *  # noqa: E402,F401,F403  (the helpers and build())
 from five_parts import _el  # noqa: E402
 from canvas import change_note  # noqa: E402
+from quick_draw import box  # noqa: E402
 import five_parts  # noqa: E402
 
 VERB = {"report": "Report", "work": "Work", "studio": "Studio"}
@@ -37,9 +38,9 @@ CRUMB = {"block": f"<SPACE> › examples-5-design › ProjI-<topic> › insight 
 GOAL = {"block": "Purpose: what this dataset can and cannot say, one Job per analysis plan × data freeze",
         "job": "Goal: analysis plan AP2 on data freeze F2, every question answered at its level",
         TASK: "Aim: answer K01 at the Knowledge level, from its cuts, checked by another agent"}
-LEFT = {"block": (BOARD, "  j01_p1_<d>v1", "  j03_p2_<d>v2"),
+LEFT = {"block": (BOARD, "  j01_p1_<d>v1", "  j02_p1_<d>v2", "  j03_p2_<d>v2"),
         "job": (JOB, "  t01_D01_extract-and-clock", "  t05_I01_glucose-control", "  t10_K01_control-and-timing",
-                "  t15_W01_first-focus", "j01_p1_<d>v1"),
+                "  t15_W01_first-focus", "j02_p1_<d>v2"),
         "task": ("t01_D01_extract-and-clock", "t05_I01_glucose-control", TASK, "t14_K05_awake-asleep-pooling",
                  "t15_W01_first-focus")}
 RIGHT = ("Report", "Work", "Studio", "Interactions", "Delivery", "Timeline", "Files")
@@ -85,7 +86,7 @@ def topic_row(eid, x, y, w, addr, words, stage):
     els = [_el("rectangle", eid, x, y, w, 64, ROOM, "#ffffff", roundness={"type": 3})]
     els += [_el("rectangle", eid + "_p", x + 10, y + 10, 70, 44, ROOM, "#f1f3f5")]
     els += text(eid + "_a", x + 92, y + 8, addr, 13, TITLE) + text(eid + "_w", x + 92, y + 28, words, 11, BODY)
-    return els + text(eid + "_s", x + w - 110, y + 8, stage, 12, GR) + text(eid + "_v", x + 92, y + 44, "Slides · Draw · Mind map", 11, INK)
+    return els + text(eid + "_s", x + w - 110, y + 8, stage, 12, GR) + text(eid + "_v", x + 92, y + 44, "Open slides · Draw · Open mind map", 11, INK)
 
 
 def secbar(eid, x, y, w, title, words, verbs=()):
@@ -242,7 +243,8 @@ def k_rows(eid, x, y, w, rows, foot=""):
         ry = y + 50 * k
         els += [_el("rectangle", f"{eid}{k}", x, ry, w, 42, ROOM, "#ffffff", roundness={"type": 3})]
         els += text(f"{eid}{k}_w", x + 14, ry + 11, words, 15, INK)
-        els += pill(f"{eid}{k}_p", x + w - 250, ry + 10, state) if state else []
+        right = x + w - 12 - ((16 + 7.5 * len(verb) + 12) if verb else 0)     # the pill ends left of its button
+        els += pill(f"{eid}{k}_p", right - (18 + 7 * len(state)), ry + 10, state) if state else []
         els += _btns(f"{eid}{k}_b", x + w - 12, ry + 9, (verb,)) if verb else []
     return els + (text(eid + "_f", x + 14, y + 50 * len(rows) + 2, foot, 12, BODY) if foot else [])
 
@@ -402,7 +404,7 @@ def view_sec(eid, x, y, w, sec):
     els = []
     if sec[0]:
         els += [_el("rectangle", eid, x, y, w, 30, ROOM, "#ffffff", roundness={"type": 3})]
-        els += text(eid + "_t", x + 12, y + 7, "▾ " + sec[0], 13, TITLE)
+        els += text(eid + "_t", x + 12, y + 7, sec[0], 13, TITLE)     # no fold arrow (s51 r02, rule 4)
         y += 40
     return els + KIND[sec[1]][0](eid + "_c", x, y, w, *sec[2:])
 
@@ -458,134 +460,206 @@ def tall(secs):
 # one axis. Board = question × Job, Job = question × cut, Task = cut × step. Report opens on the answer; Work opens on
 # what waits on the person (set the cuts, sign a plan, close a Job, sign the handoff, triage proposals); no Task asks.
 # Report and Work share letters (b16 s32-D09). No value from a real Board is drawn: answers are "one plain line".
-BLOCK_REPORT = (
-    ("Answers", (("", "big", "j03_p2_<d>v2 · AP2 × F2: the newest Job", "preview: its plan is not signed yet"),
-                 ("1 · At a glance", "table", ("question", "answer", "how sure"),
-                  [("X01 overall control", "one plain line", "moderate"), ("K01 control-and-timing", "one plain line", "moderate"),
-                   ("W01 first-focus", "one plain line", "not signed")], ("Open the Overall Report",)))),
-    ("Tracks", (("1 · Each question across Jobs", "table", ("question", "j01 · AP1 × F1", "j03 · AP2 × F2", "why"),
-                 [("D01 extract-and-clock", "✅", "held", ""), ("I01 glucose-control", "✅", "changed", "data"),
-                  ("K01 control-and-timing", "✅", "changed", "code + data"), ("I06 event-locked-glucose", "—", "new question", "code")], ()),
-                ("Readings", "Coverage and Consistency: which question × cut × Job has an answer", ("Open",)))),
-    ("Jobs", (("1 · Plan × freeze", "table", ("", "F1 · first window", "F2 · whole record"),
-               [("AP1 · first ladder", "j01 · closed", ""), ("AP2 · adds events", "", "j03 · preview")], ()),
-              ("❗ Two clocks moved", "j01 → j03 changed code and data: a changed answer has two causes"))),
-    ("Data", (("1 · Data freezes", "table", ("freeze", "label", "frozen"),
-               [("F1 · v1", "the first window", "261011"), ("F2 · v2", "the whole record", "261011")], ()),
-              ("Cuts", "Full · awake · asleep, and Cross across them; set in the plan, signed"))),
-    ("Handoff", (("", "big", "No handoff signed yet", "waits on W01, W02 and your sign"),
-                 ("Design reads it", "only a signed handoff, by its pair: AP × F"))),
+# Round 2 (JL 261101: "follow the examples here", b16 j01): every view the sibling shape, ⚙️ Process and 📊 Results as two
+# bands (Report: Results first; Work: Process first, its Results the Report's), numbered bars with one emoji each, the
+# helpers at the bottom after a dashed rule; each cell's round 1 fixes (review/cell-s1-r01.md) taken. The example is legal:
+# each Job moves one clock (j01 AP1 × F1, j02 AP1 × F2 moved data, j03 AP2 × F2 moved code; insight-ladder rule 1).
+RES, PROC = ("group", "📊 Results"), ("group", "⚙️ Process")
+HELP = ("", "line", "┄┄┄  🖼️ The drawing  ·  🧠 The mind map")
+NONE_YOU = ("1 · 🙋 Nothing waits on you", "line", "agent work only here")
+INBOX = ("1 · 🙋 Waits on you", "rows", (("Sign the plan AP2  ·  in the Prototype", "waiting for you", "Open in Prototype"),
+                                        ("Triage the open proposals  ·  in the Prototype", "waiting for you", "Open in Prototype")))
+JOBS3 = ("question", "j01 · AP1 × F1", "j02 · AP1 × F2", "j03 · AP2 × F2 (preview)")
+BLOCK_REPORT = (     # round 3 (JL 261102: "migrate the old UI first", "the matrix", "group them by topics", "a canvas"): as served
+    ("Answers", (RES, ("", "big", "What this dataset says, Job by Job", "j03 is a preview: its plan is not signed"),
+                 ("1 · 🧷 Analysis plans × data freezes", "table", ("plan \\ freeze", "data freeze 1", "data freeze 2", "data freeze 3"),
+                  [("analysis plan 1", "j01 · closed", "j02 · closed", "+ Add a Job"),
+                   ("analysis plan 2", "—", "j03 · open", "+ Add a Job")], ("Open a Job",)),
+                 ("2 · 📄 The Overall Report", "tiles", (("What we ran", "one plain line"), ("Best", "one plain line"),
+                                                        ("Who differs", "one plain line"), ("Limits", "one plain line"))),
+                 ("3 · 🔎 What each question found", "kv", [("▸ Executive", "4 questions · one line each"),
+                                                           ("▸ Data", "6 questions"), ("▸ Information", "14 questions"),
+                                                           ("▸ Knowledge", "12 questions"), ("▸ Wisdom", "2 questions")], ()),
+                 PROC, NONE_YOU, HELP)),
+    ("Questions", (RES, ("1 · 🕸 How the questions build on each other", "picture",
+                         "the question canvas: cards in DIKW bands, a line\nper citation; hover lights the chain, click pins", ()),
+                   ("2 · ❓ The questions, plan by plan", "kv", [("▸ Executive", "4 questions · 1 new"), ("▸ Data", "6 questions"),
+                                                               ("▸ Information", "14 questions · 2 new"), ("▸ Knowledge", "12 questions"),
+                                                               ("▸ Wisdom", "2 questions"), ("▸ proposals/", "3 open")], ()),
+                   ("3 · 🧭 The Board's own questions", "line", "a second D · I · K · W over the Jobs' answers"),
+                   PROC, NONE_YOU, HELP)),
+    ("Jobs", (RES, ("1 · 🧷 Each Job", "kv", [("j01 · closed", "analysis plan 1 × data freeze 1 · 40 of 40 pages"),
+                                             ("j02 · closed", "analysis plan 1 × data freeze 2 · 40 of 40 pages"),
+                                             ("j03 · open", "analysis plan 2 × data freeze 2 · 31 of 44 pages")], ()),
+              ("2 · 📂 j03 · its Tasks", "kv", [("▸ Executive", "2 of 4 pages written"), ("▸ Information", "10 of 14 · 14 with Runs"),
+                                                ("▸ Knowledge", "9 of 12 · 12 with Runs")], ()),
+              ("3 · ⏱ What each Job moved", "kv", [("j02", "the data: data freeze 1 → 2"), ("j03", "the code: analysis plan 1 → 2")], ()),
+              PROC, NONE_YOU, HELP)),
+    ("Data", (RES, ("1 · 🗄 Data freezes", "kv", [("data freeze 1", "the first window · frozen <date> · <n> rows · j01"),
+                                                 ("data freeze 2", "the whole record · frozen <date> · <n> rows · j02, j03"),
+                                                 ("data freeze 3", "new rows · frozen <date> · no Job yet")], ()),
+              ("", "kv", [("▸ summary", "dates, counts per day"), ("▸ columns", "by group, the data dictionary"),
+                          ("▸ a few rows", "closed: identifying columns left out")], ()),
+              ("2 · ✂️ Cuts", "table", ("cut", "rows"), [("full", "every row"), ("awake", "daytime rows"), ("asleep", "night rows"),
+                                                        ("cross", "awake against asleep")], ()),
+              PROC, NONE_YOU, HELP)),
+    ("Handoff", (RES, ("", "big", "No handoff yet", ""),
+                 ("1 · 🤝 The handoff draft", "kv", [("pair", "analysis plan 2 × data freeze 2"),
+                                                    ("counsel", "0 of 2 Wisdom answers written"), ("draft", "not written")], ()),
+                 PROC, NONE_YOU, HELP)),
 )
-BLOCK_WORK = (
-    ("Answers", (("🙋 Waits on you", "nothing: the answers are agent work"),
-                 ("Write the Overall Report", "for j03, once every level is answered", ("Run",)))),
-    ("Tracks", (("🙋 Triage proposals", "4 open: take into the next plan, or decline", ("Triage",)),
-                ("Propose from j03", "run-propose-j03: changed answers become proposals", ("Run",)))),
-    ("Jobs", (("🙋 Sign AP2", "in the Prototype; until then j03 is a preview", ("Sign",)),
-              ("🙋 Close j03", "once every page is checked", ("Close",)),
-              ("+ Add a Job", "one plan × one freeze; move one clock at a time", ("Add",)))),
-    ("Data", (("+ Add a data freeze", "a dated, frozen copy; needs no new plan", ("Add",)),
-              ("Propose a cut", "the Board proposes a cut; the next plan sets it", ("Propose",)))),
-    ("Handoff", (("🙋 Sign the handoff", "the counsel and its pair, once drafted", ("Sign",)),
-                 ("Draft the handoff", "run-draft-handoff, from the Wisdom counsel", ("Run",)))),
+
+
+def _results(report, view):
+    """A Work view's 📊 Results: its Report view's own sections, the same content read only (b16 s32-D09)."""
+    secs = dict(report)[view]
+    return tuple(x for x in secs[secs.index(RES) + 1:secs.index(PROC)])
+
+
+BLOCK_WORK = (       # your inbox first on every view (s52-D01); agent work under it, by when it can be done; a verb, never "Run"
+    ("Answers", (PROC, INBOX, ("2 · ✍️ The Overall Report", "rows", (("Write the Overall Report for j03", "waits on j03's Knowledge", ""),)),
+                 RES) + _results(BLOCK_REPORT, "Answers")[:2] + (HELP,)),   # the matrix only (JL 261102)
+    ("Questions", (PROC, INBOX, ("2 · ❓ A new question", "rows", (("Propose a question from j03", "ready", "Propose"),)),
+                   RES) + _results(BLOCK_REPORT, "Questions") + (HELP,)),
+    ("Jobs", (PROC, INBOX, ("2 · ✍️ The newest Job", "rows", (("Write j03's pages", "to write", "Open j03"),)),
+              ("3 · ➕ A new Job", "rows", (("Add a Job", "ready", "Add"),)),
+              RES, ("1 · 🧷 Each Job, its steps", "table", ("Job", "Runs", "pages", "checks", "close"),
+                    [("j01 · AP1 × F1", "✅ done", "✅ done", "✅ done", "✅ closed"), ("j02 · AP1 × F2", "✅ done", "✅ done", "✅ done", "✅ closed"),
+                     ("j03 · AP2 × F2", "✅ done", "⏳ to write", "⬜ to check", "waits on checks")], ()), HELP)),
+    ("Data", (PROC, INBOX, ("2 · 🗄 Freezes and cuts", "rows", (("Add a data freeze", "ready", "Add"),
+                                                              ("Propose a cut to the next plan", "ready", "Propose"))),
+              RES) + _results(BLOCK_REPORT, "Data") + (HELP,)),
+    ("Handoff", (PROC, INBOX, ("2 · 🤝 The handoff", "rows", (("Draft the handoff", "waits on the Wisdom answers", ""),)),
+                 RES) + _results(BLOCK_REPORT, "Handoff") + (HELP,)),
 )
-BLOCK_STUDIO = (                     # the Board's topics, by group, in button order
-    ("Map", (("s01-question-map", "the questions as a map, generated", "explore"),)),
-    ("Readings", (("s02-<what-moved>", "why an answer changed between Jobs", "explore"),
-                  ("s03-<pattern-seen>", "a pattern seen across cuts", "explore"))),
-    ("Cuts", (("s04-<cut-ideas>", "cuts worth proposing next", "explore"),)),
-    ("Handoff", (("s05-<handoff-story>", "what Design should take from this", "shaping"),)),
+ASK = lambda what: ("1 · 🤖 Ask the agent", "ask", f"talk and sketch about {what}", "Copy prompt", "none")
+STUDIO_HELP = ("", "line", "┄┄┄  🤖 Copy prompt")
+BLOCK_STUDIO = (     # groups by Tag, renamed so no word repeats a view; every Job's topics too, with where they live;
+                     # the helpers last, after the dashed rule (s53 r02)
+    ("Map", (("1 · 🗺 The question map", "line", ""), ("s01-question-map · Board", "D, I, K, W questions joined by what each rests on", "explore"), STUDIO_HELP)),
+    ("Why it moved", (("1 · 🔀 Why answers changed", "line", ""), ("s02-<what-moved> · j03", "an answer changed when the code moved", "explore"),
+                      ("s03-<pattern-seen> · Board", "awake and asleep answers differ", "explore"), STUDIO_HELP)),
+    ("Cut ideas", (("1 · ✂️ Cuts to propose", "line", ""), ("s04-<cut-ideas> · Board", "a weekday and weekend cut", "explore"), STUDIO_HELP)),
+    ("Story for Design", (("1 · 📦 What Design should take", "line", ""), ("s05-<handoff-story> · Board", "the three points Design should keep", "shaping"), STUDIO_HELP)),
 )
-# Job = one analysis plan × one data freeze; its main view is the question × cut grid, rows grouped by DIKW level.
 GRID = ("question", "Full", "awake", "asleep", "Cross")
-JOB_REPORT = (
-    ("Overall", (("", "big", "Overall Report · AP2 × F2", "the plain answers, level X"),
-                 ("1 · At a glance", "table", ("question", "answer", "rests on"),
-                  [("X01 overall control", "one plain line", "K01 · t10, K04 · t13"),
-                   ("X02 when it leaves range", "one plain line", "K01 · t10")], ("Open",)))),
-    ("Grid", (("1 · Questions × cuts", "table", GRID,
-               [("D · Data", "", "", "", ""), ("D01 extract-and-clock", "✅", "", "", ""),
-                ("I · Information", "", "", "", ""), ("I01 glucose-control", "✅", "✅", "✅", ""),
-                ("K · Knowledge", "", "", "", ""), ("K01 control-and-timing", "✅", "", "", ""),
-                ("K05 awake-asleep-pooling", "", "", "", "pool"), ("W · Wisdom", "", "", "", ""),
-                ("W01 first-focus", "⏳ page", "", "", "")], ()),)),
-    ("vs previous", (("", "big", "against j01: code and data moved", "❗ a changed answer has two causes"),
-                     ("1 · Per question", "table", ("question", "status", "why"),
-                      [("D01 extract-and-clock", "held", ""), ("I01 glucose-control", "changed", "data"),
-                       ("K01 control-and-timing", "changed", "code + data"), ("I06 event-locked-glucose", "new question", "code")], ()))),
-    ("The pair", (("1 · This Job", "kv", [("plan", "AP2 · adds events and visit prep (p2)"),
-                                          ("freeze", "F2 · the whole record (v2)"),
-                                          ("state", "preview: AP2 not signed"), ("moved", "code and data, from j01")], ()),)),
+JOB_REPORT = (       # three letters: The pair's facts sit in A's big line and its table (s54 fix 1)
+    ("Overall", (RES, ("", "big", "Overall Report · AP2 × F2", "a preview: AP2 not signed · moved: code, from j02"),
+                 ("1 · 📄 At a glance", "table", ("question", "answer", "rests on"),
+                  [("X01 overall control", "one plain line", "K01 · t10, K04 · t13"), ("X02 when it leaves range", "one plain line", "K01 · t10")],
+                  ("Open",)),
+                 ("2 · 🧷 This Job", "kv", [("plan", "AP2 · adds events (p2)"), ("freeze", "F2 · the whole record"),
+                                           ("Job before", "j02 · AP1 × F2")], ()),
+                 PROC, NONE_YOU, HELP)),
+    ("Grid", (RES, ("", "big", "Answered at every cut it asks, but W01", ""),
+              ("1 · 🔲 Questions × cuts", "table", GRID,
+                    [("D · Data", "", "", "", ""), ("D01 extract-and-clock", "✅ one line", "not asked", "not asked", "not asked"),
+                     ("I · Information", "", "", "", ""), ("I01 glucose-control", "✅ one line", "✅ one line", "✅ one line", "not asked"),
+                     ("K · Knowledge", "", "", "", ""), ("K01 control-and-timing", "✅ one line", "not asked", "not asked", "not asked"),
+                     ("K05 awake-asleep", "not asked", "", "", "pooled"), ("W · Wisdom", "", "", "", ""),
+                     ("W01 first-focus", "page to write", "not asked", "not asked", "not asked")], ()),
+              PROC, NONE_YOU, HELP)),
+    ("vs previous", (RES, ("", "big", "against j02: only the code moved", "so a changed answer has one cause"),
+                     ("1 · 🔁 Per question", "table", ("question", "j02", "j03", "status"),
+                      [("D01 extract-and-clock", "one line", "one line", "held"), ("K01 control-and-timing", "one line", "one line", "changed: code"),
+                       ("I06 event-locked", "—", "one line", "new question")], ()),
+                     PROC, NONE_YOU, HELP)),
 )
-JOB_WORK = (
-    ("Overall", (("🙋 Waits on you", "nothing: X pages are agent work"),
-                 ("Write the Overall Report", "X01, X02, once Knowledge is answered", ("Run",)))),
-    ("Grid", (("Hard Runs", "one Run per question × cut", ("Launch",)),
-              ("Pages to write", "12 ⏳ by the insight agent", ("Run all",)),
-              ("Pages to check", "3 by another agent", ("Run all",)))),
-    ("vs previous", (("Compare", "run-compare-j01 writes reports/vs-j01.md", ("Run",)),
-                     ("Propose", "run-propose-j03: changed answers become proposals", ("Run",)))),
-    ("The pair", (("🙋 Close the Job", "run-close-j03, once every page is checked", ("Close",)),
-                  ("🙋 Sign AP2", "in the Prototype; until then this Job is a preview", ("Open",)))),
+SIGNS = ("1 · 🙋 Waits on you", "rows", (("Sign the plan AP2  ·  in the Prototype", "waiting for you", "Sign in the Prototype"),
+                                         ("Close the Job", "waits on the checks", "")))
+JOB_WORK = (         # as built live (servers/workbench-insight/insight_focus.py): your signs first on every view
+    ("Overall", (PROC, SIGNS, ("2 · ✍️ The Overall Report", "rows", (("Write the Overall Report", "waits on the Knowledge pages", ""),)),
+                 RES) + _results(JOB_REPORT, "Overall") + (HELP,)),
+    ("Grid", (PROC, SIGNS, ("2 · 🧮 Next in each cell", "rows", (("Write the pages", "to write", "Copy prompt"),
+                                                                 ("Check the pages", "to check", "Copy prompt"))),
+              RES, ("1 · 🔲 Questions × cuts", "table", GRID,     # one grid: the Report's, each cell its next verb
+                    [("D01 extract-and-clock", "✅ ok", "not asked", "not asked", ""), ("I01 glucose-control", "✅ ok", "✅ ok", "launch", ""),
+                     ("K01 control-and-timing", "write", "not asked", "not asked", ""), ("W01 first-focus", "waits on runs", "", "", "")], ()),
+              HELP)),
+    ("vs previous", (PROC, SIGNS, ("2 · 🔁 Compare, then propose", "rows", (("Compare with j02", "waits on the checks", ""),
+                                                                          ("Propose questions", "after the comparison", ""))),
+                     RES) + _results(JOB_REPORT, "vs previous") + (HELP,)),
 )
-JOB_STUDIO = (                       # its own topics, then the Board's (as b16 s37)
-    ("This Job", (("Ask the agent", "Copy prompt: talk and sketch about this Job"),
-                  ("s02-<what-moved>", "why an answer changed from j01", "explore"))),
-    ("Board", (("s01-question-map", "the questions as a map, generated", "explore"),
-               ("s05-<handoff-story>", "what Design should take from this", "shaping"))),
+JOB_STUDIO = (       # groups by Tag (as b15, b16); each row says where it lives; heading bar first; helpers last
+    ("Why it moved", (("1 · 🔀 Why answers changed", "line", ""),
+                      ("s02-<what-moved> · <job>", "an answer changed when the code moved", "explore"),
+                      ("s03-<pattern-seen> · Board", "awake and asleep answers differ", "explore"), STUDIO_HELP)),
+    ("Story for Design", (("1 · 📦 What Design should take", "line", ""),
+                          ("s05-<handoff-story> · Board", "the three points Design should keep", "shaping"),
+                          ("", "line", "no topic of this Job here yet  ·  Start one"), STUDIO_HELP)),
 )
-# Task = one question in one Job; its main view is cut × step. Every step is agent work: no Task asks the person.
-TASK_REPORT = (
-    ("Answer", (("", "big", "K01 · is glucose well controlled, and when does it leave range?", "answered · check ✅"),
-                ("Answer", "one plain line, from the face's answer:"),
-                ("How sure", "one line, from the face's how-sure:"),
-                ("May say", "Knowledge: only what survives tests across cuts"))),
-    ("By cut", (("1 · One Run per cut", "table", ("cut", "Run", "power", "result"),
-                 [("Full", "r01_full", "ok", "table · figure"), ("awake", "—", "", "not asked"),
-                  ("asleep", "—", "", "not asked"), ("Cross", "—", "", "not asked")], ()),
-                ("Each result", "its table and figure, read only", ("Open",)))),
-    ("Across Jobs", (("1 · This question in each Job", "table", ("Job", "answer", "status"),
-                      [("j01 · AP1 × F1", "one plain line", "first"), ("j03 · AP2 × F2", "one plain line", "changed")], ()),)),
-    ("Plan", (("1 · Needs", "kv", [("need", "K01.E6: the hour curve read as windows of the day"),
-                                    ("steps", "🧮 compute · 📎 reuse · ⚓ answer"), ("agreed", "✅ by another agent")], ()),)),
+TASK_REPORT = (      # one shape for D, I, K, W: only "May say" changes by level (s57 fix 5)
+    ("Answer", (RES, ("1 · ⚓ The answer", "big", "one plain line: the answer", "answered · checked"),
+                ("2 · 🎯 How sure", "kv", [("how sure", "moderate: one cut, checked"), ("rests on", "the full run's table and figure")], ()),
+                PROC, ("1 · 🙋 Nothing waits on you", "line", "a Task never asks you; you sign at the Job"), HELP)),
+    ("By cut", (RES, ("1 · 🔲 Cut × step", "table", ("cut", "Run", "power", "page", "check"),
+                      [("full", "✅ full run", "enough rows", "✅ written", "✅ checked"), ("awake", "not asked", "", "", ""),
+                       ("asleep", "not asked", "", "", ""), ("cross", "not asked", "", "", "")], ()),
+                ("2 · 📈 The Full result", "picture", "its figure and table, read only", ("Open",)),
+                PROC, ("1 · 🙋 Nothing waits on you", "line", "agent work only"), HELP)),
+    ("Across Jobs", (RES, ("1 · 🔁 This question in each Job", "table", ("Job", "answer", "status"),
+                           [("j01 · AP1 × F1", "one line", "first"), ("j02 · AP1 × F2", "one line", "held"),
+                            ("j03 · AP2 × F2", "one line", "changed: code")], ()),
+                     PROC, ("1 · 🙋 Nothing waits on you", "line", "agent work only"), HELP)),
+    ("Plan", (RES, ("1 · 📋 Needs", "kv", [("need", "K01.E6: the hour curve as windows of the day"),
+                                          ("may say", "Knowledge: only what survives the cuts"),
+                                          ("steps", "🧮 compute · 📎 reuse · ⚓ answer"), ("agreed", "✅ <date>, by another agent")], ()),
+              PROC, ("1 · 🙋 Nothing waits on you", "line", "agent work only"), HELP)),
 )
-TASK_WORK = (
-    ("Answer", (("1 · The chain", "chain", [("agent", "plan"), ("agent 2", "agree"), ("Runs", "cuts"),
-                                            ("agent", "page"), ("agent 2", "check")], ""),
-                ("Write the page", "run-write-t10 · haipipe-insight-knowledge", ("Run",)),
-                ("Check the page", "run-check-t10 · another agent", ("Run",)),
-                ("No sign here", "a Task never asks you; you sign at the Job"))),
-    ("By cut", (("r01_full", "✅ ok", ("Rerun",)),
-                ("Propose a cut", "awake or asleep: a proposal to the next plan", ("Propose",)))),
-    ("Across Jobs", (("Track this question", "run-track-K01: one question across Jobs", ("Run",)),)),
-    ("Plan", (("Plan the evidence", "its needs and work specs, before any run", ("Plan",)),
-              ("Agree the plan", "another agent writes agreed:", ("Agree",)))),
+TASK_WORK = (        # the whole chain visible, one verb live on the next step; no 🙋: a Task never asks
+    ("Answer", (PROC, ("1 · 🔗 Next: the alignment check", "chain", [("writer", "plan ✅"), ("checker", "agree ✅"), ("Runs", "cuts ✅"),
+                                                                ("writer", "page ✅"), ("checker", "check ✅"), ("checker", "alignment ⏳")],
+                       "Run the alignment check"),
+                RES) + _results(TASK_REPORT, "Answer") + (HELP,)),
+    ("By cut", (PROC, ("1 · 🔲 Next on the full cut", "rows", (("Run the alignment check", "next", ""),)),
+                ("2 · ✂️ A new cut", "rows", (("Propose a cut to the next plan", "ready", "Propose"),)),
+                RES) + _results(TASK_REPORT, "By cut") + (HELP,)),
+    ("Across Jobs", (PROC, ("1 · 🔁 Track", "rows", (("Track this question across Jobs", "ready", "Track"),)),
+                     RES) + _results(TASK_REPORT, "Across Jobs") + (HELP,)),
+    ("Plan", (PROC, ("1 · 📋 The plan", "rows", (("Plan the evidence", "done <date>", ""), ("Agree the plan · another agent", "done <date>", ""))),
+              RES) + _results(TASK_REPORT, "Plan") + (HELP,)),
 )
-TASK_STUDIO = (                      # always on the right-rail (as b16 s40)
-    ("This Task", (("Ask the agent", "Copy prompt: talk and sketch about this question"),
-                   ("No topic yet", "no Studio topic names this Task"))),
-    ("Job", (("s02-<what-moved>", "why an answer changed from j01", "explore"),
-             ("s01-question-map", "the questions as a map, generated", "explore"))),
+TASK_STUDIO = (      # one view: this Task's first, then the Job's under a dashed rule (s59 fix 5); helpers last
+    ("This Task", (("1 · 🗺 The question map, K01 outlined", "picture", "s01-question-map · Board", ("Open",)),
+                   ("2 · 💡 This question's topics", "line", "none yet  ·  Start a topic"),
+                   ("3 · 🔀 From the Job", "line", ""),
+                   ("s02-<what-moved> · <job>", "why an answer changed from j02", "explore"), STUDIO_HELP)),
 )
+
+
+# A Report is its numbered sections only (JL 261101: "for the report UI, we will not see the section [Results] and
+# [Process] ... the Process and Results will only be available in the Work Section"; as b16 s32-D27): the bands and the
+# "Nothing waits on you" section leave every Report view; the helpers stay last. Work keeps both bands.
+def _sections_only(secs):
+    return tuple(x for x in secs[secs.index(RES) + 1:secs.index(PROC)]) + (HELP,)
+
+
+BLOCK_REPORT = tuple((v, _sections_only(secs)) for v, secs in BLOCK_REPORT)
+JOB_REPORT = tuple((v, _sections_only(secs)) for v, secs in JOB_REPORT)
+TASK_REPORT = tuple((v, _sections_only(secs)) for v, secs in TASK_REPORT)
 RULE = ["one grid per level: question × Job · question × cut · cut × step (JL 261101)",
         "a grid cell: ✅ answered · ⏳ page to write · — not asked · pool / split on Cross",
         "rows are grouped D · I · K · W, so the DIKW levels need no tabs"]
 
 CAPTION = {
-    ("block", "report"): {"Answers": "the newest Job's answers, at a glance", "Tracks": "each question across the Jobs",
+    ("block", "report"): {"Answers": "each question across the Jobs, the newest closed first", "Questions": "the Board's own questions",
                           "Jobs": "each analysis plan × data freeze", "Data": "the data freezes and the cuts",
                           "Handoff": "the signed counsel Design reads"},
-    ("block", "work"): {"Answers": "the Overall Report to write", "Tracks": "proposals to triage",
-                        "Jobs": "plans to sign, Jobs to close or add", "Data": "a new freeze, a proposed cut",
-                        "Handoff": "the handoff to draft and sign"},
-    ("job", "report"): {"Overall": "the plain answers, level X", "Grid": "every question × cut",
-                        "vs previous": "held or changed against j01", "The pair": "the plan and the freeze this Job runs"},
-    ("job", "work"): {"Overall": "the X pages to write", "Grid": "Runs to launch, pages to write and check",
-                      "vs previous": "compare, then propose", "The pair": "close the Job, sign its plan"},
-    ("task", "report"): {"Answer": "the answer and how sure", "By cut": "one Run per cut",
-                         "Across Jobs": "the same question in other Jobs", "Plan": "what the answer needs"},
-    ("task", "work"): {"Answer": "the chain, and its next step", "By cut": "rerun a cut, propose one",
+    ("block", "work"): {"Answers": "your signs, then the Overall Report to write", "Questions": "your signs, then a question to propose",
+                        "Jobs": "your signs, then each Job's steps", "Data": "your signs, then a freeze or a cut",
+                        "Handoff": "your signs, then the handoff to draft"},
+    ("block", "studio"): {"Map": "the questions as a map", "Why it moved": "why answers changed between Jobs",
+                          "Cut ideas": "cuts worth proposing to the next plan", "Story for Design": "what Design should take"},
+    ("job", "report"): {"Overall": "the plain answers, level X, and the pair this Job runs", "Grid": "every question × cut",
+                        "vs previous": "each answer against the Job before"},
+    ("job", "work"): {"Overall": "your signs, then the X pages to write", "Grid": "your signs, then what each cell needs next",
+                      "vs previous": "your signs, then compare and propose"},
+    ("job", "studio"): {"Why it moved": "why answers changed, this Job's and the Board's", "Story for Design": "what Design should take"},
+    ("task", "report"): {"Answer": "the answer and how sure", "By cut": "one Run per cut, and its result",
+                         "Across Jobs": "the same question in each Job", "Plan": "what the answer needs"},
+    ("task", "work"): {"Answer": "the chain, its next step live", "By cut": "each cut's next step",
                        "Across Jobs": "track the question", "Plan": "plan and agree its needs"},
+    ("task", "studio"): {"This Task": "this question's topics, then the Job's"},
 }
 
 
@@ -594,33 +668,33 @@ def view_rows(level, items, section=""):
     name = PAGE[level][0]
     views = tuple(v for v, _ in items)
     cap = CAPTION.get((level, section), {})
-    flat = [(LETTERS[k], f"{LETTERS[k]} · {v}", name, views, k, secs, v, cap.get(v, f"the topics of the {v} group"))
+    flat = [(LETTERS[k], f"{LETTERS[k]} · {v}", name, views, k, secs, v, cap.get(v, f"the {v} topics"))
             for k, (v, secs) in enumerate(items)]
     return [flat[i:i + 3] for i in range(0, len(flat), 3)]
 
 
 VIEWS = {   # (level, section): (the line above the screens, the rows, the open question, green notes)
-    ("block", "report"): ("one dataset: answers first, then each question across Jobs, the Jobs, the data, the handoff",
-                          view_rows("block", BLOCK_REPORT, "report"), "? Answers first,\nor Tracks first", None),
+    ("block", "report"): ("one dataset: the plan × freeze matrix first, the questions as a canvas, then the Jobs, the data, the handoff",
+                          view_rows("block", BLOCK_REPORT, "report"), "? open on the newest closed\nJob, or the newest", None),
     ("block", "work"): ("the same letters as Report; 🙋 rows are yours, the rest is agent work",
-                        view_rows("block", BLOCK_WORK, "work"), "? Sign AP2 here,\nor only in the Prototype", None),
+                        view_rows("block", BLOCK_WORK, "work"), "? the inbox on every view,\nor only on A", None),
     ("block", "studio"): ("the Board's topics by group, in button order; a topic's groups are its Tags",
-                          view_rows("block", BLOCK_STUDIO, "studio"), "? Board topics only,\nor every Job's too", None),
+                          view_rows("block", BLOCK_STUDIO, "studio"), "? every Job's topics here\n(proposed: yes, with where)", None),
     ("job", "report"): ("one plan × one freeze: the Overall Report, then the question × cut grid",
-                        view_rows("job", JOB_REPORT, "report"), "? Overall first,\nor the Grid first", None),
+                        view_rows("job", JOB_REPORT, "report"), "? three letters: The pair\nfolded into A (proposed)", None),
     ("job", "work"): ("the same letters; 🙋 rows are yours, the rest is agent work",
-                      view_rows("job", JOB_WORK, "work"), "? Run all,\nor one button per row", None),
+                      view_rows("job", JOB_WORK, "work"), "? built live: review\nit at 1440 and 390", None),
     ("job", "studio"): ("this Job's own topics, then the Board's",
-                        view_rows("job", JOB_STUDIO, "studio"), "? a Job's own topics,\nor only the Board's", None),
+                        view_rows("job", JOB_STUDIO, "studio"), "? groups by Tag,\nevery row says where", None),
     ("task", "report"): ("one question in one Job: the answer, each cut, other Jobs, the plan; read only",
-                         view_rows("task", TASK_REPORT, "report"), "? one shape for D, I, K, W,\nor own sections per level", None),
+                         view_rows("task", TASK_REPORT, "report"), "? one shape for D, I, K, W\n(proposed: only May say changes)", None),
     ("task", "work"): ("the same letters; every step is agent work, so nothing here asks you",
-                       view_rows("task", TASK_WORK, "work"), "? the whole chain,\nor only the next step", None),
+                       view_rows("task", TASK_WORK, "work"), "? the whole chain,\none verb live (proposed)", None),
     ("task", "studio"): ("always on the right-rail, even before a topic names the Task",
-                         view_rows("task", TASK_STUDIO, "studio"), "? start a topic from here\nwith one click", None),
+                         view_rows("task", TASK_STUDIO, "studio"), "? one view: the Task's,\nthen the Job's (proposed)", None),
 }
 PIECE = {   # the why notes: what the live focus page shows today (curled 261101 from the insight host)
-    ("block", "report"): ("the Board's Report: answers first, then tracks",
+    ("block", "report"): ("the Board's Report: the matrix, then the questions as a canvas",
                           ["Report shows only\nMindMap and Status", "no answer is shown\non the Board",
                            "the answers live on the\nold insight-board page"]),
     ("block", "work"): ("the Board's Work: your signs first",
@@ -678,6 +752,226 @@ def write_agreed(topic, nn, level, section):
                        + "\n", encoding="utf-8")
 
 
+# ── s51 round 3 (JL 261102: "how to make the questions to be a canvas, to show their relationships?"; "please redraw
+# it"): the Design opens on the question canvas, big, one question pinned; the five screens follow in one row. The
+# questions are placeholders in the example's words; a line is one citation in a question's evidence plan (from: K01.E2).
+QC_BANDS = (("EXECUTIVE", ("X01\noverall", "X02\nbest-time", "X03\nwho-differs", "X04\nlimits")),
+            ("WISDOM", ("W01\nfirst-focus", "W02\nnext-focus")),
+            ("KNOWLEDGE", ("K01\ncontrol-and-timing", "K02\nawake-asleep", "K03\nmeal-response", "K04\nevent-effect",
+                           "K05\npooling")),
+            ("INFORMATION", ("I01\nglucose-control", "I02\ntime-in-range", "I03\nhour-curve", "I05\nmeals", "I06\nevent-locked")),
+            ("DATA", ("D01\nextract-and-clock", "D02\ngaps", "D03\nmeal-log", "D04\ndevices")))
+QC_CITES = {"X01": ("D01", "I01", "K01"), "X02": ("K01", "I03"), "X03": ("K02", "K05"), "X04": ("D02", "K05"),
+            "W01": ("K01", "K03"), "W02": ("K04", "K02"), "K01": ("I01", "I03"), "K02": ("I02", "I03"),
+            "K03": ("I05", "D03"), "K04": ("I06",), "K05": ("K02", "I02"), "I01": ("D01",), "I02": ("D01", "D02"),
+            "I03": ("D01",), "I05": ("D03",), "I06": ("D03", "D04")}
+QC_PIN = "K01"
+
+
+def _down(q, seen=None):
+    seen = set() if seen is None else seen
+    for c in QC_CITES.get(q, ()):
+        if c not in seen:
+            seen.add(c)
+            _down(c, seen)
+    return seen
+
+
+def _up(q):
+    out, todo = set(), [q]
+    while todo:
+        k = todo.pop()
+        for a, cs in QC_CITES.items():
+            if k in cs and a not in out:
+                out.add(a)
+                todo.append(a)
+    return out
+
+
+MX_PLANS = ("analysis plan 1\nfirst ladder", "analysis plan 2\nadds events")
+MX_FREEZES = ("data freeze 1\nfirst window", "data freeze 2\nwhole record", "data freeze 3\nnew rows")
+MX_JOBS = {(0, 0): ("j01", "closed", 40, 40, "XDIKW"), (0, 1): ("j02", "closed", 40, 40, "XDIKW"),
+           (1, 1): ("j03", "open · a preview", 31, 44, "DIK")}       # (id, state, pages written, pages, levels done)
+
+
+def matrix_sketch(x, y):
+    """A · Answers opens on the matrix (JL 261102, drawn by hand on s51: p1, p2 down; v1, v2, v3 across; "more active,
+    and vivid"): one cell a Job, alive: its pages as a bar, its levels X D I K W as a strip, the newest marked; arrows
+    between Jobs say which clock moved; the next Job is the empty cell, outlined. -> (els, bottom)."""
+    RW, CWD, CHT, HH = 300, 440, 170, 100
+    els = text("mxH", x, y, "A · Answers opens on the matrix: analysis plans down, data freezes across", 34, TITLE)
+    els += text("mxS", x, y + 52, "one cell is one Job, alive: how far it got, which levels are answered, which clock it moved", 20, BODY)
+    els += [change_note(x + 1600, y + 6, "the plan × freeze matrix first, as drawn by hand on s51; each cell alive", "261102", None)]
+    top, left = y + 130, x + RW
+    for k, words in enumerate(MX_FREEZES):
+        els += text(f"mxF{k}", left + k * CWD + 24, top + 20, words, 22, TITLE)
+    for r, words in enumerate(MX_PLANS):
+        els += text(f"mxP{r}", x + 10, top + HH + r * CHT + 50, words, 22, TITLE)
+    els += line("mxAx", [(left - 10, top + HH - 8), (left + 3 * CWD + 10, top + HH - 8)], INK, 4)
+    els += line("mxAy", [(left - 10, top + HH - 8), (left - 10, top + HH + 2 * CHT + 10)], INK, 4)
+    cell = {}
+    for r in range(2):
+        for k in range(3):
+            cx, cy, w, h = left + k * CWD + 12, top + HH + r * CHT + 10, CWD - 40, CHT - 30
+            cell[(r, k)] = (cx, cy, w, h)
+            job = MX_JOBS.get((r, k))
+            if not job:
+                nxt = (r, k) == (1, 2)
+                els += box(f"mxC{r}{k}", cx, cy, w, h, "+ Add a Job\nanalysis plan 2 × data freeze 3" if nxt else
+                           ("+ Add a Job" if k == 2 else "not run"), "plain", 18, dashed=True)
+                els[-2]["backgroundColor"], els[-2]["strokeWidth"] = "#ffffff", 3 if nxt else 1
+                continue
+            jid, state, done, of, lv = job
+            els += box(f"mxC{r}{k}", cx, cy, w, h, "", "plain")
+            els[-1]["strokeWidth"] = 4 if state.startswith("open") else 2
+            els += text(f"mxC{r}{k}_j", cx + 20, cy + 14, f"{jid} · {state}", 22, TITLE)
+            bw = w - 40                                                    # pages written, as a bar
+            els += box(f"mxC{r}{k}_bar", cx + 20, cy + 56, bw, 16, "", "plain")
+            els[-1]["backgroundColor"] = "#ffffff"
+            els += box(f"mxC{r}{k}_fill", cx + 20, cy + 56, bw * done / of, 16, "", "plain")
+            els[-1]["backgroundColor"], els[-1]["fillStyle"] = "#1e3a5f", "solid"
+            els += text(f"mxC{r}{k}_n", cx + 20, cy + 78, f"{done} of {of} pages written", 16, BODY)
+            for i, L in enumerate("XDIKW"):                                # the levels strip
+                els += box(f"mxC{r}{k}_l{L}", cx + 20 + i * 44, cy + 104, 38, 26, L, "plain", 15)
+                if L in lv:
+                    els[-2]["backgroundColor"], els[-2]["fillStyle"], els[-1]["strokeColor"] = "#1e3a5f", "solid", "#ffffff"
+                else:
+                    els[-2]["backgroundColor"] = "#ffffff"
+            if state.startswith("open"):
+                els += sticky("mxNew", cx + w - 40, cy + h - 6, 150, 44, "newest", 18, 0.06)
+    (ax, ay, aw, ah), (bx, by, bw_, bh) = cell[(0, 0)], cell[(0, 1)]
+    els += arrow("mxM1", [(ax + aw + 4, ay + 40), (bx - 4, by + 40)], INK, "moved the data", width=3, at=(ax + aw - 50, ay - 50))
+    (cx_, cy_, cw_, ch_) = cell[(1, 1)]
+    els += arrow("mxM2", [(bx + bw_ / 2, by + bh + 4), (cx_ + cw_ / 2, cy_ - 4)], INK, "moved the code", width=3,
+                 at=(bx + bw_ / 2 + 16, by + bh + 2))
+    (nx, ny, nw, nh) = cell[(1, 2)]
+    els += arrow("mxNext", [(cx_ + cw_ + 4, cy_ + ch_ / 2), (nx - 4, ny + nh / 2)], INK, "next", width=3, dashed=True,
+                 at=(cx_ + cw_ + 2, cy_ + ch_ / 2 - 30))
+    end = top + HH + 2 * CHT + 20
+    els += arrow("mxData", [(left + 20, end + 30), (left + 3 * CWD - 40, end + 30)], INK, "a new data freeze: the data clock",
+                 width=3, at=(left + 3 * CWD / 2 - 180, end + 44))
+    els += arrow("mxCode", [(left + 3 * CWD + 40, top + HH + 10), (left + 3 * CWD + 40, top + HH + 2 * CHT - 10)], INK,
+                 "a new plan:\nthe code clock", width=3, at=(left + 3 * CWD + 60, top + HH + CHT - 30))
+    notes = ("click a cell: that Job's Overall Report", "hover a level: its questions, written or not")
+    for k, words in enumerate(notes):
+        els += sticky(f"mxN{k}", left + 3 * CWD + 380, top + 120 + k * 120, 380, 80, words, 17, (-0.02, 0.02)[k])
+    els += text("mxUnder", x, end + 100, "under it, on the same view: 📄 the Overall Report of the newest Job, then 🔎 what each question found", 20, BODY)
+    return els, end + 170
+
+
+# ── s51 round 3 (JL 261102: "how to make the questions to be a canvas, to show their relationships?"; "should we start
+# from the Executive, and the Data, and then I, K, W"): Executive on top, then the evidence left to right, D → I → K → W.
+# The questions are placeholders in the example's words; a line is one citation in a question's evidence plan.
+QC_X = ("X01\noverall", "X02\nbest-time", "X03\nwho-differs", "X04\nlimits")
+QC_COLS = (("DATA", ("D01\nextract-and-clock", "D02\ngaps", "D03\nmeal-log", "D04\ndevices")),
+           ("INFORMATION", ("I01\nglucose-control", "I03\nhour-curve", "I02\ntime-in-range", "I05\nmeals", "I06\nevent-locked")),
+           ("KNOWLEDGE", ("K01\ncontrol-and-timing", "K02\nawake-asleep", "K05\npooling", "K03\nmeal-response", "K04\nevent-effect")),
+           ("WISDOM", ("W01\nfirst-focus", "W02\nnext-focus")))
+QC_CITES = {"X01": ("D01", "I01", "K01"), "X02": ("K01", "I03"), "X03": ("K02", "K05"), "X04": ("D02", "K05"),
+            "W01": ("K01", "K03"), "W02": ("K04", "K02"), "K01": ("I01", "I03"), "K02": ("I02", "I03"),
+            "K03": ("I05", "D03"), "K04": ("I06",), "K05": ("K02", "I02"), "I01": ("D01",), "I02": ("D01", "D02"),
+            "I03": ("D01",), "I05": ("D03",), "I06": ("D03", "D04")}
+QC_PIN = "K01"
+
+
+def _down(q, seen=None):
+    seen = set() if seen is None else seen
+    for c in QC_CITES.get(q, ()):
+        if c not in seen:
+            seen.add(c)
+            _down(c, seen)
+    return seen
+
+
+def _up(q):
+    out, todo = set(), [q]
+    while todo:
+        k = todo.pop()
+        for a, cs in QC_CITES.items():
+            if k in cs and a not in out:
+                out.add(a)
+                todo.append(a)
+    return out
+
+
+def canvas_sketch(x, y):
+    """The question canvas as the page draws it, K01 pinned: Executive as a row on top; under it a column per level,
+    Data → Information → Knowledge → Wisdom, so the evidence builds left to right. What K01 rests on in solid lines,
+    what uses it dashed, every other card faded; its panel on the right; how to use it in notes. -> (els, bottom)."""
+    CWD, CHT, GY, COLW, GAP = 250, 64, 18, 290, 110
+    down, up = _down(QC_PIN), _up(QC_PIN)
+    lit = lambda q: q == QC_PIN or q in down or q in up
+    els = text("qcH", x, y, "B · Questions opens on a canvas: Executive first, then the evidence, Data → Wisdom", 34, TITLE)
+    els += text("qcS", x, y + 52, "one card a question; one line a citation in its evidence plan; it builds left to right", 20, BODY)
+    els += [change_note(x + 1700, y + 6, "Executive on top, then D → I → K → W left to right (JL)", "261102", None)]
+    bar_y = y + 100
+    els += box("qcFind", x, bar_y, 300, 44, "find  K01, timing …", "plain", 16)
+    els += text("qcOnly", x + 330, bar_y + 10, "☐ Only linked     ▢ page written   ▢ drafted   ▢ not yet", 16, BODY)
+    pos = {}
+    width = 4 * COLW + 3 * GAP
+    xt = bar_y + 80                                                      # the Executive row
+    els += box("qcBX", x, xt, width, CHT + 70, "", "plain")
+    els[-1]["backgroundColor"], els[-1]["fillStyle"], els[-1]["strokeWidth"] = "#e7f0fb", "solid", 2
+    els += text("qcBXt", x + 20, xt + 14, "EXECUTIVE · what a leader reads first", 18, TITLE)
+
+    def card(q, words, cx, cy):
+        pos[q] = (cx, cy)
+        out = box(f"qcC{q}", cx, cy, CWD, CHT, words, "plain", 17)
+        out[0]["strokeWidth"] = 5 if q == QC_PIN else 3 if lit(q) else 1
+        if not lit(q):
+            out[0]["strokeColor"], out[0]["backgroundColor"], out[1]["strokeColor"] = "#ced4da", "#ffffff", "#adb5bd"
+        return out
+    step = (width - 40) / len(QC_X)
+    for k, words in enumerate(QC_X):
+        els += card(words.split("\n")[0], words, x + 20 + k * step, xt + 48)
+    ct = xt + CHT + 110
+    bottom = ct
+    for c, (name, cards) in enumerate(QC_COLS):
+        cx = x + c * (COLW + GAP)
+        h = 60 + len(cards) * (CHT + GY)
+        els += box(f"qcB{c}", cx, ct, COLW, h, "", "plain")
+        els[-1]["backgroundColor"], els[-1]["fillStyle"], els[-1]["strokeWidth"] = "#f1f3f5", "solid", 1
+        els += text(f"qcBt{c}", cx + 18, ct + 16, f"{name} · {len(cards)}", 18, BODY)
+        for i, words in enumerate(cards):
+            els += card(words.split("\n")[0], words, cx + 20, ct + 50 + i * (CHT + GY))
+        if c < 3:
+            els += arrow(f"qcFlow{c}", [(cx + COLW + 18, ct + 24), (cx + COLW + GAP - 18, ct + 24)], INK, width=4)
+        bottom = max(bottom, ct + h)
+    for a, cs in QC_CITES.items():
+        for c in cs:
+            (ax, ay), (bx, by) = pos[a], pos[c]
+            if a[0] == "X":
+                p0, p1 = (ax + CWD / 2, ay + CHT), (bx + CWD / 2, by)
+            elif a[0] == c[0]:
+                p0, p1 = (ax + CWD, ay + CHT / 2), (bx + CWD, by + CHT / 2)
+            else:
+                p0, p1 = (bx + CWD, by + CHT / 2), (ax, ay + CHT / 2)        # from the evidence to what it builds
+            pts = [p0, (p0[0] + 40, (p0[1] + p1[1]) / 2), p1] if a[0] == c[0] else [p0, p1]
+            if a == QC_PIN or (a in down and c in down):
+                els += arrow(f"qcE{a}{c}", pts, INK, width=3)
+            elif (c == QC_PIN or c in up) and a in up:
+                els += arrow(f"qcE{a}{c}", pts, INK, width=3, dashed=True)
+            else:
+                els += line(f"qcE{a}{c}", pts, "#dee2e6", 1)
+    px, py = x + width + 80, bar_y + 80                                   # the pinned question's panel
+    els += box("qcP", px, py, 560, 330, "", "plain")
+    els[-1]["strokeWidth"] = 2
+    els += text("qcPt", px + 24, py + 20, "K01 · control-and-timing", 24, TITLE)
+    els += text("qcPq", px + 24, py + 62, "does control depend on the hour of the day?", 18, INK)
+    els += text("qcPs", px + 24, py + 96, "page: written  ·  open its Task ↗", 16, BODY)
+    els += text("qcPr", px + 24, py + 140, "Rests on  (to its left)", 18, TITLE)
+    els += text("qcPc1", px + 24, py + 172, "( I01 )  ( I03 )  ( D01 )", 18, INK)
+    els += text("qcPu", px + 24, py + 220, "Used by  (to its right, and above)", 18, TITLE)
+    els += text("qcPc2", px + 24, py + 252, "( W01 )  ( X01 )  ( X02 )", 18, INK)
+    notes = ("hover a card: solid lines, what it rests on,\nall the way down; dashed, what uses it",
+             "click pins it; click a chip to walk\nto that question",
+             "a link ending #q=K01 opens it pinned",
+             "every other card fades; the questions with\nno line hide under Only linked")
+    for k, words in enumerate(notes):
+        els += sticky(f"qcN{k}", px + 280, py + 420 + k * 120, 520, 92, words, 17, (-0.02, 0.015, -0.01, 0.02)[k])
+    return els, max(bottom, py + 420 + 4 * 120) + 40
+
+
 def build(topic: Path):
     topic = Path(topic).resolve()
     m = re.match(r"s(\d+)-(block|job|task)-ui-(report|work|studio)$", topic.name)
@@ -706,11 +1000,20 @@ def build(topic: Path):
         els = text("skA", 690, 280, f"{first} to {last} · {piece}, every view the same screen", 18, TITLE)
         els += text("lay", 690, 340, lay, 16, BODY)
         y = 380
+        rows_ = rows
+        if (level, section) == ("block", "report"):   # round 3: the canvas first, big; then A to E in one row
+            mx, y = matrix_sketch(690, y)
+            els += mx
+            qc, y = canvas_sketch(690, y + 60)
+            els += qc
+            els += text("rowH", 690, y + 30, "A to E · every view of the Board's Report, as served 261102", 26, TITLE)
+            y += 90
+            rows_ = [[sc for row in rows for sc in row]]
         if level == "job" and section != "studio":    # the rule first: one grid per level
             for k, ln in enumerate(RULE):
                 els += text(f"rule{k}", 690, y + 30 * k, ln, 18 if k == 0 else 16, OR if k == 0 else INK)
             y += 30 * len(RULE) + 40
-        for r, row in enumerate(rows):
+        for r, row in enumerate(rows_):
             for k, (key, label, name, buttons, on, secs, _, caption) in enumerate(row):
                 sx = 690 + k * (W + 40)
                 els += text(f"sc{r}_{k}_L", sx, y, label, 22, TITLE)
@@ -721,7 +1024,7 @@ def build(topic: Path):
             y += h + 80
         return els + sticky("askD", 1180, y + 20, 320, 76, ask, 15, -0.03, RED, RE)
 
-    cols = max(len(row) for row in rows)
+    cols = len(screens_of(level, section)) if (level, section) == ("block", "report") else max(len(row) for row in rows)
     return five_parts.build(topic, spec, design, shift=(W + 40) * cols + 80)
 
 

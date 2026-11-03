@@ -15,8 +15,8 @@ description: >-
   design workbench, design tab, design Block tab, design Job tab, design Task tab,
   design spaces on screen, theory of design, /workbench-design.
 metadata:
-  version: "0.17.0"
-  last_updated: "2026-10-23"
+  version: "0.18.0"
+  last_updated: "2026-11-01"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -67,6 +67,28 @@ left out); it names methods by name, with ids such as `M04 m3 · inputs i1` only
 every part"); each released Job says who approved it and when, from its `run-release-j<NN>` card's `signed:` line, the
 full line on hover; its Next line is plain words, never a Run name; and it links the one-page PDF that
 haipipe-design-delivery's `summary.py` builds into `delivery/summary.pdf` (JL 261013).
+
+## On the focus page: the j01 letters (b12 j01, 261101)
+
+The focus page (`layout=focus`, what `/wb` opens) draws a design Block, Job and Task in b12 j01's letters, with the
+parts every theme's page shares (`servers/workbench/ui_parts.py`): Report is a view's 📊 Results only; Work is ⚙️ Process
+(🙋 what waits on you first, then the view's steps, each row ending in a state word, its Run's prompt one Copy away)
+over the same Results. `servers/workbench-design/design_focus.py` draws them; `focus_page.py` asks it through one hook,
+`design_views`, as it asks the paper and insight themes'.
+
+```text
+Block (s51, s52)  Summary · Goals · Jobs · Rounds · Methods
+Job   (s54, s55)  Setup · Ideas · Designs · Ranking · Release
+Task  (s57, s58)  by type, one view per step:
+                  💡 t00 reason ideas   Inputs · Chains · Ideas · Fence check
+                  ✏️ one design         Draft · Verify · Revise · State
+                  🏆 t99 review whole   Rank · Coverage · Kept
+```
+
+🙋 at the Block: an unsigned goal, and each Job whose release is ready ("Review" opens its Release view). At the Job:
+Review and approve (the panel on Release, POST /_board/design-ladder-act), then the close. A Task never asks you: its
+Process is In → who works → Out, the step's state and its prompt. The Results are the six-Space page's own views
+(`design_views`), so the two pages agree. Tests: `tests/test_design_focus.py`.
 
 ## The six Spaces, level by level
 

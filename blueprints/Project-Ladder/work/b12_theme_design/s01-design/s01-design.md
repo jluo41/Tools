@@ -1,6 +1,8 @@
 s01 · Design
 ============
 
+**Tags:** `Structure`
+
 **Stage:** explore
 
 **For:** a deck, and the design ladder at a glance, each level with its folder and screen, for the people who write the toolkit skills

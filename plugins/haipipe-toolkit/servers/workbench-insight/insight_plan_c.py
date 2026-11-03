@@ -243,11 +243,13 @@ def prototype(block: Path) -> dict:
 # ── the words a person reads (JL 261011): an analysis plan AP<N> is the release pN, a data freeze F<M> the data
 # version vM; folders and files keep pN and vM, which every script and ticket reads ──────────────────────
 def plan_code(release: str) -> str:
-    return re.sub(r"^p(\d+)$", r"AP\1", str(release or ""))
+    """Spelled out on screen (JL 261102: "why still AP1 x F1?"): `analysis plan 1`; folders keep pN."""
+    return re.sub(r"^p(\d+)$", r"analysis plan \1", str(release or ""))
 
 
 def freeze_code(version: str) -> str:
-    return re.sub(r"^v(\d+)$", r"F\1", str(version or ""))
+    """Spelled out on screen (JL 261102): `data freeze 1`; folders and ids keep vM."""
+    return re.sub(r"^v(\d+)$", r"data freeze \1", str(version or ""))
 
 
 def freeze_words(v: dict) -> str:

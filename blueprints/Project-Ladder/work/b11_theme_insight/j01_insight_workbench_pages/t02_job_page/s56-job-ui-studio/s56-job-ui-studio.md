@@ -9,7 +9,7 @@ s56 · Job UI: Studio
 
 **Delivery type:** ui
 
-**Covers:** this Job's own topics, then the Board's: A This Job · B Board.
+**Covers:** this Job's topics and the Board's, by Tag, each row saying where it lives: A Why it moved · B Story for Design; the helpers at the bottom.
 
 **Excluded:** the other eight cells of the 3 × 3 (s51, s52, s53, s54, s55, s57, s58, s59); the old five-Space Insight page (s02); every Theme's shared frame (b10).
 
@@ -40,7 +40,8 @@ s56-D01 · One grid per level (Board question × Job, Job question × cut, Task 
 Open
 ----
 
-1. ? A Job's own topics, or only the Board's
-2. Which letter to settle first.
+1. ? Groups by Tag, as b15 and b16 (proposed).
+2. 🙋 Passed stage 1, waiting on your look: A Why it moved 8.6 (review/A-s1-r02.md), B Story for Design 8.3 (B-s1-r02.md).
+3. ❗ Walk 261102 (the live page, every view opened and clicked; 30 views measured): not built: no Studio on the Job's right-rail; ?section=studio shows Work. Waits on s53's answers.
 
 (write here, or mark the drawing in red)

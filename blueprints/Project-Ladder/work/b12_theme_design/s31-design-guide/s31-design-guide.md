@@ -1,6 +1,8 @@
 s31 · design Guide
 ==================
 
+**Tags:** `Guide`
+
 **Stage:** explore
 
 **For:** a deck, and the design workbench's Guide tab, cut by level, for the people who build the workbench

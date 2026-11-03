@@ -1,0 +1,36 @@
+# The words of s06's workflow sketch, written once; sketch_workflow.py draws them as areas, one area per act.
+# A step is a short name; an arrow one to three words (excalidraw-studio ⑦). Full names, never short ids
+# (excalidraw-studio, the look, rule 5: JL 261102). The rules behind each step are haipipe-design ref/design-ladder.md,
+# haipipe-design-workflow, haipipe-design-goal, haipipe-design-method and haipipe-design-delivery; the slides
+# (slides/build_slides.py) explain them one at a time.
+acts:
+  - name: 'A · set up'
+    steps: ['write the goal', 'you: sign the goal', 'you: sign the rules', 'freeze an inputs version']
+    you: ['you: sign the goal', 'you: sign the rules']
+    arrows: ['aim, who, how many', 'the goal list', 'every goal keeps']
+    note: 'the Block, once; a method version comes from the skill'
+  - name: 'B · launch'
+    steps: ['launch a Job', 'pin goal, method, inputs', 'reason the ideas', 'check the fence']
+    arrows: ['all three', 'the fence only', 'each source']
+    note: 'pass: one Task per idea'
+  - name: 'C · design'
+    steps: ['write a design', 'check it (another agent)', 'passed']
+    arrows: ['a draft', 'it passes']
+    back: '↩ failed: write the next draft'
+    note: 'every design at once'
+  - name: 'D · release'
+    steps: ['rank all (another agent)', 'keep the best, predict', 'you: review + approve', 'you: close the Job']
+    you: ['you: review + approve', 'you: close the Job']
+    arrows: ['the ranking', 'effect + why', 'all released']
+    note: 'one sign freezes and releases'
+  - name: 'E · learn'
+    steps: ['add the experiment', 'score it (another agent)', 'questions + summary', 'you: sign a method change']
+    you: ['you: sign a method change']
+    arrows: ['per arm', 'the scorecard', 'a reason']
+    note: '→ next round: a new inputs version'
+drops: ['a signed goal', 'one Task per idea', 'passed designs', 'released designs']
+clocks: 'a new goal, inputs version or method version → a new Job, one at a time · a released Job is never edited · a Job that cannot run is held, with its reason'
+open:
+  - '? a method version is written in the Tools registry, outside any Job or Run (s05)'
+  - '? benching a new method version against the last one: the skill names it, no Run does'
+  - '? the next Run is worked out only on the page (each Job''s next move); no script prints it'

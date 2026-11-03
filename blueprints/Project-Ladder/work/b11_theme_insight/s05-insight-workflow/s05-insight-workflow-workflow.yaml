@@ -1,0 +1,38 @@
+# The words of s05's workflow sketch, written once; sketch_workflow.py draws them as areas, one area per act.
+# A step is a short name; an arrow one to three words (excalidraw-studio ⑦). The rules behind each step are
+# haipipe-insight ref/insight-ladder.md; the slides (slides/build_slides.py) explain them one at a time.
+# Full names on the drawing (JL 261102): analysis plan (AP1, AP2 …), data freeze (F1, F2 …).
+acts:
+  - name: 'A · questions'
+    steps: ["proposals: gaps,\nweak answers", "triage: one batch", "ask each question\nD · I · K · W · X", "second agent reviews\nthe questions"]
+    arrows: ['batch', 'chosen', 'review']
+    note: 'keep · split · merge · move'
+  - name: 'B · analysis plan'
+    steps: ["evidence plan\nper question", "script per question", "agent agrees", "you: set cuts +\nsign the analysis plan"]
+    you: ["you: set cuts +\nsign the analysis plan"]
+    arrows: ['needs', 'code', 'agreed']
+    note: 'frozen once signed: AP1, AP2 …'
+  - name: 'C · run'
+    steps: ["add Job:\nanalysis plan × data freeze", "power per cut", "one Run per cut", "pool or split"]
+    arrows: ['tickets', 'enough rows', 'Cross']
+    note: 'a refusal is an answer'
+  - name: 'D · answer'
+    steps: ["write each question's page\nD → I → K → W → X", "second agent checks"]
+    arrows: ['pages']
+    back: '↩ returned: rewrite'
+  - name: 'E · close'
+    steps: ["compare with\nthe Job before", "propose", "you: close Job"]
+    you: ['you: close Job']
+    arrows: ['changes', '']
+    note: 'proposals → the next questions'
+  - name: 'F · hand off'
+    steps: ['read across Jobs', 'Wisdom counsel', 'you: sign handoff']
+    you: ['you: sign handoff']
+    arrows: ['', 'draft']
+    note: 'Design reads it, by its pair'
+drops: ['questions', 'signed plan', 'results', 'checked', 'closed Jobs']
+clocks: 'new data freeze → a new Job (the data clock) · new analysis plan → a new Job (the code clock)'
+open:
+  - '? where is a question planned on a Board or Job screen?'
+  - '? the Board''s own questions have no Work row'
+  - '? a handoff before any Wisdom answer'

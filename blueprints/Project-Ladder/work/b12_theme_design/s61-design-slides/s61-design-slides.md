@@ -1,6 +1,8 @@
 s61 · Design slides
 ===================
 
+**Tags:** `Guide`
+
 **Stage:** explore
 
 **For:** a deck, and the slides that explain the design theme on the ladder, for people new to the toolkit

@@ -33,6 +33,15 @@ replaces is s11 · s12 · s13 (the six-Space frame) and s33 (its problems). Name
 b12's `board.md`; no design text is drawn: the Block's designs are tailored to one demonstration participant and stay
 local, and Tools is public.
 
+## Built (261101)
+
+The six cells' Report and Work views run live on the focus page: `servers/workbench-design/design_focus.py`, asked by
+`focus_page.py`'s hook `design_views` (JL 261101: "update the UI as well to make things to work"). Checked on this
+SPACE's SMS design Board (`examples-5-design/Project-Application-SMSDesign/design/Design-SMSR2-Stage25-CarryOver-261008`),
+where the Block's Summary opens on the one release waiting for a sign. Each letter is still at stage 1 of the design
+loop: next, a live review per letter (`review/<L>-s2-rNN.md`, to 8 or more), then its agreed screen in `delivery/ui/`.
+The Studio cells (s53, s56, s59) stay the base's Studio.
+
 ## Tasks
 
 <!-- in order; new_job.py task adds each -->

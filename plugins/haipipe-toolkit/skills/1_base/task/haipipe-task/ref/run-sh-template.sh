@@ -58,12 +58,19 @@ TASKS_DIR="$(cd "$BLOCK_FOLDER/.." && pwd)"
 
 case "$TASK_SEG" in t[0-9][0-9]_*) : ;; *) fail_shape "Task Folder must be named tNN_<noun>_<qualifier>" ;; esac
 case "$JOB_SEG" in j[0-9][0-9]_*) : ;; *) fail_shape "Job must be named jNN_<noun>_<qualifier>" ;; esac
-case "$BLOCK_SEG" in b[0-9][0-9]_*) : ;; *) fail_shape "Block must be named bNN_<noun>_<qualifier>" ;; esac
-# The Theme folder: work/ or labeling/ (the older tasks/ and labelings/ still run; s01-D29).
-case "$(basename "$TASKS_DIR")" in work|tasks|labeling|labelings) : ;; *) fail_shape "Block must be a direct child of work/ or labeling/" ;; esac
+# A paper Board (paper/Paper-<Slug>/) stands in for the Block when the Job is one of its evidence Jobs
+# (jNN_evidence_<kind>/; haipipe-paper, 261031): its display Runs draw from work's returned Results.
+case "$BLOCK_SEG" in
+  b[0-9][0-9]_*) : ;;
+  Paper-*) case "$JOB_SEG" in j[0-9][0-9]_evidence_*) : ;; *) fail_shape "A paper Board runs only its evidence Jobs (jNN_evidence_<kind>)" ;; esac ;;
+  *) fail_shape "Block must be named bNN_<noun>_<qualifier>" ;;
+esac
+# The Theme folder: work/ or labeling/ (the older tasks/ and labelings/ still run; s01-D29), or paper/ for a paper Board.
+case "$(basename "$TASKS_DIR")" in work|tasks|labeling|labelings|paper) : ;; *) fail_shape "Block must be a direct child of work/, labeling/ or paper/" ;; esac
 # A labeling Run mirrors its address below labelings/ under either Theme name, so it never shares a
-# folder with a work Run and its store address survives the rename (rename_themes.py); a work Run mirrors none.
-WORLD_SEG=""; case "$(basename "$TASKS_DIR")" in work|tasks) : ;; *) WORLD_SEG="labelings/" ;; esac
+# folder with a work Run and its store address survives the rename (rename_themes.py); a work Run mirrors none;
+# a paper evidence Run mirrors below paper/.
+WORLD_SEG=""; case "$(basename "$TASKS_DIR")" in work|tasks) : ;; paper) WORLD_SEG="paper/" ;; *) WORLD_SEG="labelings/" ;; esac
 [ -f "$TASK_FOLDER/$TASK_SEG.md" ] || fail_shape "Task Folder requires same-stem Page $TASK_SEG.md"
 
 RUN_NAME="$(basename "$TICKET" .sh)"
@@ -104,7 +111,7 @@ STORE="${RESULT_STORE:-$(sed -n 's/^store:[[:space:]]*//p' "$JOB_FOLDER/src/conf
 if [ -n "$STORE" ]; then
   case "$STORE" in /*) : ;; *) STORE="$REPO_ROOT/$STORE" ;; esac
   JOB_REL="${JOB_FOLDER#"$TASKS_DIR"/}"
-  [ "$JOB_REL" != "$JOB_FOLDER" ] || fail_shape "Job path cannot be mirrored below work/ or labeling/"
+  [ "$JOB_REL" != "$JOB_FOLDER" ] || fail_shape "Job path cannot be mirrored below work/, labeling/ or paper/"
   JOB_REL="$WORLD_SEG$JOB_REL"
   OUTPUT_ROOT="$STORE/$JOB_REL"
 else

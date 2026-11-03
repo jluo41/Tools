@@ -1,0 +1,73 @@
+{
+ "topic": "s05-insight-workflow",
+ "style": "excalidraw",
+ "source": "slides/build_slides.py: each slide one Excalidraw drawing, rendered to its PNG",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "What can one dataset say?",
+   "image": "slides/idea-01-one-dataset.png",
+   "source": "slides/idea-01-one-dataset.excalidraw"
+  },
+  {
+   "id": "02",
+   "idea": "Two clocks, one Job per pair",
+   "image": "slides/idea-02-two-clocks.png",
+   "source": "slides/idea-02-two-clocks.excalidraw"
+  },
+  {
+   "id": "03",
+   "idea": "A · Make the plan before any outcome",
+   "image": "slides/idea-03-make-the-plan.png",
+   "source": "slides/idea-03-make-the-plan.excalidraw"
+  },
+  {
+   "id": "04",
+   "idea": "B · One Run per question × cut",
+   "image": "slides/idea-04-run-per-cut.png",
+   "source": "slides/idea-04-run-per-cut.excalidraw"
+  },
+  {
+   "id": "05",
+   "idea": "Pool or split?",
+   "image": "slides/idea-05-pool-or-split.png",
+   "source": "slides/idea-05-pool-or-split.excalidraw"
+  },
+  {
+   "id": "06",
+   "idea": "C · Answer up the levels",
+   "image": "slides/idea-06-up-the-levels.png",
+   "source": "slides/idea-06-up-the-levels.excalidraw"
+  },
+  {
+   "id": "07",
+   "idea": "A second agent checks every page",
+   "image": "slides/idea-07-second-agent.png",
+   "source": "slides/idea-07-second-agent.excalidraw"
+  },
+  {
+   "id": "08",
+   "idea": "D · What changed since the Job before?",
+   "image": "slides/idea-08-what-changed.png",
+   "source": "slides/idea-08-what-changed.excalidraw"
+  },
+  {
+   "id": "09",
+   "idea": "E · From answers to a signed handoff",
+   "image": "slides/idea-09-handoff.png",
+   "source": "slides/idea-09-handoff.excalidraw"
+  },
+  {
+   "id": "10",
+   "idea": "Who does what",
+   "image": "slides/idea-10-who-does-what.png",
+   "source": "slides/idea-10-who-does-what.excalidraw"
+  },
+  {
+   "id": "11",
+   "idea": "Still open",
+   "image": "slides/idea-11-still-open.png",
+   "source": "slides/idea-11-still-open.excalidraw"
+  }
+ ]
+}

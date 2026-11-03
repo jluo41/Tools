@@ -9,7 +9,7 @@ s54 · Job UI: Report
 
 **Delivery type:** ui
 
-**Covers:** the Overall Report, then the question × cut grid: A Overall · B Grid · C vs previous · D The pair.
+**Covers:** the Overall Report, then the question × cut grid: A Overall (The pair's facts inside) · B Grid · C vs previous; each view its numbered sections only.
 
 **Excluded:** the other eight cells of the 3 × 3 (s51, s52, s53, s55, s56, s57, s58, s59); the old five-Space Insight page (s02); every Theme's shared frame (b10).
 
@@ -36,11 +36,17 @@ Decided
 
 s54-D01 · One grid per level (Board question × Job, Job question × cut, Task cut × step); Report opens on the answer; Work opens on what waits on the person; no Task asks the person (JL 261101: "go ahead", on the proposal in chat).
 
+s54-D02 · A Report view is its numbered sections only: no ⚙️ Process and 📊 Results bands and no "Nothing waits on you"; those are Work's (JL 261101: "the Process and Results will only be availabe in the Work Section"; as b16 s32-D27). The helpers stay last.
+
 
 Open
 ----
 
-1. ? Overall first, or the Grid first
-2. Which letter to settle first.
+1. ? Three letters, The pair folded into A (proposed, built live).
+2. 🙋 Passed stage 1, waiting on your look: A Overall 8.1 (review/A-s1-r02.md), B Grid 8.3 (B-s1-r03.md), C vs previous 8.1 (C-s1-r02.md).
+3. ❗ Walk 261102 (the live page, every view opened and clicked; 30 views measured): A Overall is about 10,700 px: the whole report stacked. Plan: the pair on one line, then the six Executive figures as side tabs, one open. Asked: Q1.
+4. ❗ B Grid lists 55 rows by folder name with '✅ ok' written in each cell. Plan: question words, one dot per cell (filled ok, red refused, hollow not run), folded by DIKW level, Executive open. Asked: Q2.
+5. ⚠️ C vs previous on the first Job is a 20-word page. Plan: hide its button until a second Job exists. Asked: Q3.
+6. ❗ MindMap is about 8,600 px, every Run listed. Plan: Tasks by level with their Runs counted; a Run one click away. Asked: Q4.
 
 (write here, or mark the drawing in red)

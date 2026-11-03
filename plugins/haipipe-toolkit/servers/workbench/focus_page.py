@@ -1234,6 +1234,52 @@ def paper_version_work(folder: Path, root: Path) -> dict:
     except Exception:
         traceback.print_exc()   # in the server log, not hidden (b16 review 261101)
         return {}
+def insight_job_work(folder: Path, root: Path) -> dict:
+    """An insight Job's Work: Overall · Grid · vs previous · The pair, each ⚙️ Process then 📊 Results, your signs first
+    (insight_focus.job_work_views; b11 j01 s55, JL 261101); {} for any other page."""
+    if page_level(folder) != "Job":
+        return {}
+    try:
+        from live import insight_focus
+        return insight_focus.job_work_views(folder, root, interactions(folder, root), lambda r: interaction_item(r, folder, root))
+    except Exception:
+        traceback.print_exc()   # in the server log, not hidden
+        return {}
+def insight_board_report(folder: Path, root: Path) -> dict:
+    """An insight Board's Report: Answers · Questions · Jobs · Data · Handoff, numbered sections only
+    (insight_focus.board_report_views; b11 j01 s51, JL 261101); {} for any other page."""
+    if page_level(folder) != "Block":
+        return {}
+    try:
+        from live import insight_focus
+        return insight_focus.board_report_views(folder, root)
+    except Exception:
+        traceback.print_exc()   # in the server log, not hidden
+        return {}
+def insight_views_for(folder: Path, root: Path, section: str) -> dict:
+    """An insight Board's Work, a Job's Report, a Task's Report or Work, in the b11 j01 letters (insight_focus; s52,
+    s54, s57, s58, JL 261102); {} for any other page."""
+    try:
+        from live import insight_focus as IF
+        level = page_level(folder)
+        if level == "Block" and section == "work":
+            return IF.board_work_views(folder, root, interactions(folder, root), lambda r: interaction_item(r, folder, root))
+        if level == "Job" and section == "report":
+            return IF.job_report_views(folder, root)
+        if level == "Task":
+            return IF.task_views(folder, root, section)
+    except Exception:
+        traceback.print_exc()   # in the server log, not hidden
+    return {}
+def design_views(folder: Path, root: Path, section: str) -> dict:
+    """A design Block's, Job's or Task's Report or Work in the j01 letters (design_focus.views; b12 j01 s51 to s58,
+    JL 261101); {} for any other page."""
+    try:
+        from live import design_focus
+        return design_focus.views(folder, root, section)
+    except Exception:
+        traceback.print_exc()   # in the server log, not hidden
+        return {}
 # ── end HOOK ─────────────────────────────────────────────────────────────────────────────────────────────────────
 
 
@@ -1851,6 +1897,14 @@ def render(theme, root: Path, folder: Path, section="", group="") -> str:
     for key, name in UI_VIEWS:                                 # a theme Block's real pages, level by level
         if data["ui"][key]:
             overview["ui-" + key] = (name, ui_view(data["ui"][key], name, root))
+    if theme.name == "design" and level in ("Block", "Job", "Task") and not draft:   # HOOK: the design letters (b12 j01)
+        overview = design_views(folder, root, "report") or overview
+    if theme.name == "insight" and level == "Block" and not draft:   # HOOK: an insight Board's letters (b11 s51), MindMap last
+        letters = insight_board_report(folder, root)
+        overview = {**letters, **{k: v for k, v in overview.items() if k == "mindmap"}} if letters else overview
+    if theme.name == "insight" and level in ("Job", "Task") and not draft:   # HOOK: insight Job and Task letters (s54, s57)
+        letters = insight_views_for(folder, root, "report")
+        overview = {**letters, **{k: v for k, v in overview.items() if k == "mindmap"}} if letters else overview
     if paper and level == "Block":                             # HOOK: a paper Board's own parts, then its MindMap; no
         overview = paper_board_report(folder, root) or {k: v for k, v in overview.items() if k == "mindmap"}  # no Status, Findings, Questions (JL 261031: "no need to use
                                                                  # them anymore"); the mind map is a section of each part
@@ -1871,6 +1925,12 @@ def render(theme, root: Path, folder: Path, section="", group="") -> str:
         work = paper_version_work(folder, root) or work
     if paper and level == "Block":                       # HOOK: a paper Board's Work shares its Report's list
         work = paper_board_work(folder, root, work["progress"][1]) or work
+    if theme.name == "design" and level in ("Block", "Job", "Task") and not draft:   # HOOK: the design letters (b12 j01)
+        work = design_views(folder, root, "work") or work
+    if theme.name == "insight" and level in ("Block", "Task") and not draft:   # HOOK: insight Board and Task Work (s52, s58)
+        work = insight_views_for(folder, root, "work") or work
+    if theme.name == "insight" and level == "Job" and not draft:   # HOOK: an insight Job's Work, by letter (b11 s55)
+        work = insight_job_work(folder, root) or work
 
     paper_out = "" if draft else paper_delivery(folder, root)   # HOOK: a paper version's or Board's whole paper
     delivery = draft["delivery"] if draft else (paper_out if paper_out and level == "Block" else paper_out + delivery_html(folder, root))
@@ -1930,12 +1990,13 @@ def render(theme, root: Path, folder: Path, section="", group="") -> str:
     if section in views or section in ("report", "work", "interactions") or (section == "delivery" and dviews):
         view = group if group in views else draft["open"] if section == "work" and draft \
             else "text" if section == "report" and draft \
-            else next(iter(views)) if paper and level == "Block" \
+            else next(iter(views)) if (paper and level == "Block") or (theme.name == "insight" and level in ("Block", "Job", "Task")) \
             else next((k for k in ("mindmap", "findings", "standing") if k in views), next(iter(views)))   # HOOK: a paper Board opens on its first part
         selected = next(r for r in rail if r[0] == section)
         label, body = views[view]
         body = body() if callable(body) else body           # MindMap, Blocks, Status: built only when opened
-        caption = (look.get("captions") or {}).get(view) or VIEW_WORDS.get(view, "")
+        caption = (look.get("captions") or {}).get(view) or ("" if theme.name == "insight" and level in ("Block", "Job", "Task")
+                                                             and view != "mindmap" else VIEW_WORDS.get(view, ""))   # its letters carry their own
         body = (f'<p class="view-caption">{frame.esc(caption)}</p>' if caption else "") + body
         words = draft.get("words", {}) if section == "work" else {}   # a draft step's state word on its button
         bar = ('<nav class="section-views" aria-label="Views">' + "".join(
@@ -1991,6 +2052,11 @@ def render(theme, root: Path, folder: Path, section="", group="") -> str:
     if folder != root:                                   # the path ends where you are (JL 261029)
         crumbs.append(f'<span aria-current="page">{frame.esc(folder.name)}</span>')
     goal = data["goal"].split("\n")[0] if data["goal"] else draft.get("aim", "")
+    try:                                    # a theme may spell a goal id in words (design: G01 → its aim; look rule 5)
+        from live import design_focus as _DF
+        goal = _DF.goal_line(folder, goal) or goal
+    except Exception:  # noqa: BLE001 -- a theme's words never break the base page
+        pass
     source = frame.pop(frame.reader(data["face"], root), "Source Markdown", "Open this page's Markdown") if data["face"] and inside(data["face"], root) else ""
     goal_html = (f'<div class="focus-goal"><span class="goal-word">{GOAL_WORD.get(page_level(folder), "Goal")}</span>'
                  f'{markdown(goal, folder, root)}</div>' if goal else '')

@@ -214,7 +214,7 @@ class DesignLadderTest(unittest.TestCase):
         self.assertNotIn("Which method suits G01?", summary)                # an open question is not a bottom line
         self.assertIn('title="M04 m2 · inputs i2"', summary)                # method ids only on hover
         j03 = next(j for j in R.board(self.block)["jobs"] if j["id"] == "j03")
-        self.assertEqual(V._approved(j03), ("approved by <person> 10-07", "<person> 261007 · one by one"))  # who, when, how
+        self.assertEqual(V._approved(j03), ("approved ✅ 261007", "✅ 261007 · one by one"))  # when and how, never who
         self.assertNotIn("run-add-observed", summary)                       # no Run names in the plain Next line
         rounds = page(self.block, "Audience Report", "Rounds")
         self.assertIn("Round 1 · i1", rounds)

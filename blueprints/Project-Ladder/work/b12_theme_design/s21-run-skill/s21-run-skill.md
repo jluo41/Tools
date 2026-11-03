@@ -1,6 +1,8 @@
 s21 · Run and skill
 ===================
 
+**Tags:** `Run and Skill`
+
 **Stage:** explore
 
 **For:** a deck, and every design Run, the skill behind it, and the plan to update those skills, for the people who write the toolkit skills

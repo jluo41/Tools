@@ -40,7 +40,14 @@ Decided
 Open
 ----
 
-1. ? Launch a Job in Jobs, or on the Map too
-2. Which letter to settle first.
+1. Stage 1 of the design loop, four rounds of blind review (261101), each letter's last review:
+   - A · Summary: 8.3, pass (review/A-s1-r04.md)
+   - B · Goals: 8.1, pass (review/B-s1-r03.md)
+   - C · Jobs: 7.9, not yet (review/C-s1-r04.md)
+   - D · Rounds: 8.3, pass (review/D-s1-r03.md)
+   - E · Methods: 8.1, pass (review/E-s1-r03.md)
+   The passed letters wait for JL to look once before they are built.
+2. ? Launch a Job in Jobs, or on the Map too
+3. Which letter to settle first.
 
 (write here, or mark the drawing in red)

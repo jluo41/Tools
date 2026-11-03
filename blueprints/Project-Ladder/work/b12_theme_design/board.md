@@ -45,6 +45,8 @@ b12_theme_design/
 ├── s02-workbench-ui/       the workbench's drawing (Guide › RoadMap Draw)
 ├── s03-design-methods/     the methods drawing and the design unit (Guide › Method)
 ├── s04-design-structure/   the thinking: what a design method is, how it evolves (a scratch)
+├── s05-design-method-ladder/ where a method version is made and tried: the method Block, its five Tasks (Q06)
+├── s06-design-workflow/     the whole workflow as one map, five acts A-E, and its deck (vivid slides)
 ├── s11-design-block/       the Block level on the six-Space frame (the "before" of s51 to s53)
 ├── s12-design-job/         the Job level on the six-Space frame (the "before" of s54 to s56)
 ├── s13-design-task/        the Task level on the six-Space frame (the "before" of s57 to s59)
@@ -144,6 +146,22 @@ questions:
     the Method scorecard reads it.
   work: []
   report: reports/q05_method_predictions/q05_method_predictions.md
+- id: Q06
+  title: Where is a design method made and tried?
+  question: Where on the ladder is a design method version written, tested and compared
+    before a design Job pins it, and how do the Board's results come back as its next
+    version?
+  hypothesis: 'A method Block beside the design Board (as insight''s Prototype): one
+    Job per method version with five Tasks (write the recipe, build its checks, bench
+    it on fixed goals and inputs, compare it with another agent, release it with a
+    person''s sign); a Board Job pins a released version by path and hash; Board results
+    and Exp scores file proposals into the method Block''s backlog. The generic method
+    stays in the Tools skill; an app''s version moves to the Project.'
+  acceptance: Answered when s05-design-method-ladder is agreed, the method Block is
+    scaffolded by haipipe-design, and one real version (M05 m3) is carried onto it with
+    its five Tasks and shown in the Block's Methods view.
+  work: []
+  report: reports/q06_design_method_ladder/q06_design_method_ladder.md
 ```
 
 ## Blueprint home

@@ -1,6 +1,8 @@
 s33 · UI issues
 ===============
 
+**Tags:** `Guide`
+
 **Stage:** explore
 
 **For:** a deck, and the design workbench's UI problems, ranked worst first with who fixes each, for the people who build the workbench

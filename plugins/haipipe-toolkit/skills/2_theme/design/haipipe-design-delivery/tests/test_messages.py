@@ -84,6 +84,23 @@ class MessagesTest(unittest.TestCase):
         orders = {tuple(by(M.number(rows(), "random", s))) for s in range(1, 12)}
         self.assertGreater(len(orders), 1)                                  # the seed changes the order
 
+    def test_carried_messages_follow_the_designs_and_never_renumber_them(self):
+        carry = Path(self.tmp.name) / "carried.md"
+        carry.write_text("# Carried\n\nnote\n\n## winnerA\n\n```\nOld winner A {LINK}\n```\n\nevidence line\n\n"
+                         "## winnerB\n\nOld winner B {LINK}\n", encoding="utf-8")
+        before = {r["name"]: r["n"] for r in M.number(M.messages(self.block, "{LINK}"))}
+        with redirect_stdout(io.StringIO()):
+            outs = M.main([str(self.block), "--carry-file", str(carry)])
+        v1, v2 = (p.read_text(encoding="utf-8") for p in outs)
+        for name, k in before.items():                          # the new designs keep their numbers
+            self.assertRegex(v2, rf"\| {k} \| {name} \|")
+        k = len(before)
+        self.assertIn(f"| {k + 1} | winnerA | Old winner A {{LINK}} |", v2)
+        self.assertIn(f"| {k + 2} | winnerB | Old winner B {{LINK}} |", v2)
+        self.assertIn(f"2 carried over word for word from earlier experiments (#{k + 1} to #{k + 2})", v2)
+        self.assertIn("carried over: an earlier experiment's winner | winnerA", v1)
+        self.assertNotIn("evidence line", v2)
+
     def test_no_control_without_its_heading(self):
         with self.assertRaises(SystemExit), redirect_stdout(io.StringIO()):
             M.main([str(self.block), "--control-file", str(Path(self.tmp.name) / "task.md")])

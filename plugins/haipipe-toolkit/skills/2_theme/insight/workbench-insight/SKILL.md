@@ -14,8 +14,8 @@ description: >-
   insight tab, insight Board tab, insight Job tab, insight Task tab, insight
   spaces on screen, /workbench-insight.
 metadata:
-  version: "1.3.0"
-  last_updated: "2026-10-23"
+  version: "1.4.0"
+  last_updated: "2026-11-01"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -94,6 +94,57 @@ not done is next (the close reads sign) and a bare link opens it; the old tree's
 2 · Run, whose last card is that tree. A page whose question has not run waits on 2 · Run. Each tab's buttons are the
 Job › Work Details run cards whose `views` name its step. The screen still writes nothing.
 In a real browser: `servers/workbench-insight/checks/job_work_browser.mjs` (its head says how to run it).
+
+A Job on the focus page: Work by letter (b11 j01 s55, 261101)
+-------------------------------------------------------------
+
+The focus page (`layout=focus`, what `/wb` opens) shows an insight Job's Work in the Report's three letters, the same parts
+the paper's version Work and the labeling Task's steps use (`servers/workbench/ui_parts.py`): each view ⚙️ Process
+then 📊 Results, numbered sections, to-do rows that end in a state word, Copy prompt on a row, the one Prompt box for a
+single next act. `servers/workbench-insight/insight_focus.py` draws them; `focus_page.py` asks it through one hook
+(`insight_job_work`), as it asks the paper theme's.
+
+```text
+A Overall       Process  🙋 your signs · Write the Overall Report (its state: done, ready, waits on <questions>) ·
+                         what the close freezes, once the close is yours to sign
+                Results  the Overall Report · this Job: plan, freeze, state, what moved, the Job before
+B Grid          Process  🙋 your signs · Launch all · Write all · Check all (Copy prompt each) · the grid, each
+                         cell its next verb: launch on a planned Run, write on a page ready, check it on a written page
+                Results  the question × cut grid, rows by DIKW level, marks only (Report B)
+C vs previous   Process  🙋 your signs · "<n> changed answers to turn into proposals" · Compare, then Propose
+                Results  the comparison against the Job before
+```
+
+Three letters, not four (s54 round 2): The pair's facts sit under the Overall Report.
+
+🙋 your signs, first on every view, in their order: sign the plan (in the Prototype, `signed: ✅` on its release;
+until then the Job is a preview), then close the Job (greyed with what it waits on; once every step is done, Sign the
+close posts to `/_board/insight-act`). The steps' facts and states stay `insight_views` (`_work_facts`,
+`_work_states`), so the focus page and the six-Space page agree. Tests: `tests/test_insight_focus.py`.
+
+
+Every level on the focus page (b11 j01 s51 to s58, 261102)
+-----------------------------------------------------------
+
+The rest of the 3 × 3 is live in the same file, each view as its cell in b11 j01 (`insight_ui_cells.py`). A Report view
+is its numbered sections only, no ⚙️ Process or 📊 Results band (s51-D02); a Work view is ⚙️ Process then 📊 Results,
+its Results the Report view's own sections. Each opens on its first letter; MindMap stays last in Report.
+
+```text
+Board  Report  A Answers (question × Job) · B Questions (each, its DIKW level, where answered; the Board's own) ·
+               C Jobs (analysis plan × data freeze, what each Job moved) · D Data (freezes, cuts) · E Handoff
+       Work    the same letters; Process: 🙋 sign the newest plan, triage the proposals, then the letter's acts
+               (write the Overall Report · propose questions · open the newest Job, add a Job · add a freeze, propose
+               a cut · write the counsel, draft the handoff), each with its run card's Copy prompt
+Job    Report  Overall · Grid (marks only) · vs previous          (Work: above)
+Task   Report  Answer (the answer, how sure, what it rests on) · By cut (cut × step, the full result) ·
+               Across Jobs · Plan (needs, may say, agreed)
+       Work    the same letters; Process: the chain plan → agree → Runs → page → check → alignment, one verb live on
+               the next link · the next act per cut, propose a cut · track across Jobs · the plan's steps. No 🙋
+```
+
+Hooks in `focus_page.py`: `insight_board_report` and `insight_views_for` (Board Work, Job Report, Task Report and Work),
+beside `insight_job_work`. Tests: `tests/test_insight_focus.py` (`InsightLettersTest`).
 
 The Runs panel
 --------------

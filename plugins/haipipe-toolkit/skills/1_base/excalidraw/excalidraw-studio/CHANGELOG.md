@@ -1,6 +1,12 @@
 excalidraw-studio · Changelog
 =============================
 
+**[unreleased] · 2026-11-02 · full names, never short ids**
+
+- The look gains rule 5 (JL 261102: "do not use the short name like G or m, let's try to give the full name, we need
+  to make others to follow this"): a drawing names a thing in words (`goal × method version × inputs version`, never
+  `G × m × i`); an id shows only as a folder or file's literal name, in Cascadia, beside its words. First user: b12 s06.
+
 **0.3.10 · 2026-10-19 · check.py names the shapes that keep their own rules**
 
 - `check.py` now does what the shapes table says (JL 261019: "please go ahead and do it"): a paper read onto a canvas

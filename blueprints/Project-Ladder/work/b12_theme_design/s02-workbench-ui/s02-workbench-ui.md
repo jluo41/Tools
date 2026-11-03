@@ -1,6 +1,8 @@
 s02 · Workbench UI
 ==================
 
+**Tags:** `Structure`
+
 **Stage:** explore
 
 **For:** a deck, and the design workbench at board and page level, each Space with its Runs panel, for the people who build the workbench

@@ -45,3 +45,10 @@ Tools is public.
   so the Studio cells' "Ask the agent · Copy prompt" rows become that box.
 - The round 1 reviews' fixes (each cell's `review/cell-s1-r01.md`): your signs first on Work, the same grid on Work,
   the answer in the large slot, the Task's cut × step grid, numbered heading bars with the bottom helpers.
+- Round 2 drawn (261101, JL: "follow the examples here", b16 j01): `insight_ui_cells.py` gives every view the sibling
+  shape (📊 Results and ⚙️ Process bands, Report Results first, Work Process first; numbered bars with one emoji; the
+  helpers after a dashed rule) and takes each cell's round 1 fixes. The example is legal: j01 AP1 × F1, j02 AP1 × F2
+  (moved the data), j03 AP2 × F2 (moved the code). The Board's A is the questions × Jobs grid, B its Questions; the
+  Job has three letters (The pair inside A); the Task one shape for every level, its Work the whole chain with one verb
+  live, its Studio one view. Each cell's proposals are its Open lines, for JL to rule.
+- s11 · s12 · s13 moved to the Studio's Levels group (as b16): the UI groups hold only these nine cells.

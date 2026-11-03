@@ -16,7 +16,7 @@ written there (block-contract.md § The question file, § The script); only wher
 its proposals to its signature, is [release.md](release.md).
 
 
-**The words a person reads (JL 261011).** A release is called an **analysis plan**, `AP<N>` (release `pN`): the questions and their code, frozen once signed. A data version is called a **data freeze**, `F<M>` (data version `vM`), with a few words in its `label:`. Screens, faces and docs say `AP1 · first ladder × F1 · first 5 days`; the Job ▾ menu says `j01 · first ladder × first 5 days`. Folder names, YAML ids and Run names keep `pN` and `vM`, which every script and ticket reads.
+**The words a person reads (JL 261011).** A release is called an **analysis plan**, `AP<N>` (release `pN`): the questions and their code, frozen once signed. A data version is called a **data freeze**, `F<M>` (data version `vM`), with a few words in its `label:`. Screens spell them out (JL 261102: "why still AP1 x F1?"): `analysis plan 1 · first ladder × data freeze 1 · first 5 days`; AP1 and F1 stay the short ids in faces and docs; the Job ▾ menu says `j01 · first ladder × first 5 days`. Folder names, YAML ids and Run names keep `pN` and `vM`, which every script and ticket reads.
 
 The two trees
 -------------

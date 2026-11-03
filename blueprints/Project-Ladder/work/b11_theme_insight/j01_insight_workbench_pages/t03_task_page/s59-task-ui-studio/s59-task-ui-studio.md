@@ -9,7 +9,7 @@ s59 · Task UI: Studio
 
 **Delivery type:** ui
 
-**Covers:** the Task's Studio on the right-rail: A This Task · B Job.
+**Covers:** the Task's Studio on the right-rail, one view: A This Task (Ask the agent, Start a topic, the question map), then the Job's topics under a dashed rule.
 
 **Excluded:** the other eight cells of the 3 × 3 (s51, s52, s53, s54, s55, s56, s57, s58); the old five-Space Insight page (s02); every Theme's shared frame (b10).
 
@@ -40,7 +40,8 @@ s59-D01 · One grid per level (Board question × Job, Job question × cut, Task 
 Open
 ----
 
-1. ? Start a topic from here with one click
-2. Which letter to settle first.
+1. ? One view, the Task's then the Job's (proposed).
+2. 🙋 Passed stage 1, waiting on your look: A This Task 8.1 (review/A-s1-r02.md).
+3. ❗ Walk 261102 (the live page, every view opened and clicked; 30 views measured): not built: no Studio on the Task's right-rail; ?section=studio shows Work. Waits on s53's answers.
 
 (write here, or mark the drawing in red)

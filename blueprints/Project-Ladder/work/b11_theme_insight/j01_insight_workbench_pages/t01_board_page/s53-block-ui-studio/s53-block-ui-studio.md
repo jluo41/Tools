@@ -9,7 +9,7 @@ s53 · Board UI: Studio
 
 **Delivery type:** ui
 
-**Covers:** the Board's Studio topics by group: A Map · B Readings · C Cuts · D Handoff.
+**Covers:** the Board's Studio topics by Tag, every Job's too with where it lives: A Map · B Why it moved (cut ideas inside) · C Story for Design.
 
 **Excluded:** the other eight cells of the 3 × 3 (s51, s52, s54, s55, s56, s57, s58, s59); the old five-Space Insight page (s02); every Theme's shared frame (b10).
 
@@ -40,7 +40,9 @@ s53-D01 · One grid per level (Board question × Job, Job question × cut, Task 
 Open
 ----
 
-1. ? Board topics only, or every Job's too
-2. Which letter to settle first.
+1. ? Every Job's topics on the Board's Studio (proposed: yes, each row saying where).
+2. 🙋 Passed stage 1, waiting on your look: A Map 8.6 (review/A-s1-r04.md), B Why it moved 8.4 (B-s1-r04.md), C Cut ideas 8.6 (C-s1-r04.md), D Story for Design 8.4 (D-s1-r04.md).
+3. Every reviewer's next fix: a wider picture on each topic row (now the smallest thing on it).
+4. ❗ Walk 261102 (the live page, every view opened and clicked; 30 views measured): not built: the insight focus page offers no Studio on the right-rail at Board, Job or Task, and ?section=studio falls back to Report or Work. Plan: build the Board's Studio after the Report and Work letters settle. Asked: Studio form Q1, Q2.
 
 (write here, or mark the drawing in red)

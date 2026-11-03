@@ -34,14 +34,21 @@ s51-block-ui-report/
 Decided
 -------
 
-(none yet: a decision is one line, s51-D01 · <what was decided> (<who> <date>))
+s51-D01 · A Report view is its numbered sections only, the helpers last; the ⚙️ Process and 📊 Results bands and "🙋 Waits on you" live only in Work (JL 261101, on b11: "for the report UI, we will not see the section [Results] and [Process] ... the Process and Results will only be available in the Work Section"; as b16 s32-D27).
 
 
 Open
 ----
 
-1. A · Summary passed stage 1 of the design loop at round 2 (mean 8.6; review/A-s1-r01.md 8.0, review/A-s1-r02.md 8.6); waits for JL to look once before it is built.
-2. ? Summary first, or Jobs first
-3. Which letter to settle next.
+1. Stage 1 of the design loop, four rounds of blind review (261101), each letter's last review:
+   - A · Summary: 8.6, pass (review/A-s1-r05.md)
+   - B · Goals: 8.4, pass (review/B-s1-r03.md)
+   - C · Jobs: 8.1, pass (review/C-s1-r03.md)
+   - D · Rounds: 8.1, pass (review/D-s1-r03.md)
+   - E · Methods: 8.0, pass (review/E-s1-r03.md)
+   The passed letters wait for JL to look once before they are built.
+2. A · Summary passed stage 1 of the design loop at round 2 (mean 8.6; review/A-s1-r01.md 8.0, review/A-s1-r02.md 8.6); waits for JL to look once before it is built.
+3. ? Summary first, or Jobs first
+4. Which letter to settle next.
 
 (write here, or mark the drawing in red)

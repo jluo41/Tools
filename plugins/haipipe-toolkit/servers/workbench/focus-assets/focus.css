@@ -137,3 +137,6 @@ h1{display:flex;align-items:baseline;flex-wrap:wrap;gap:18px}.h1-section{font-si
 .ix-badge.wait{background:light-dark(#fff4e6,#3a2a12);color:light-dark(#b35c00,#e4bd62);border:1px solid light-dark(#ffd8a8,#7a5520)}
 .ix-badge.done{background:light-dark(#ebfbee,#16301d);color:light-dark(#2b8a3e,#8ce99a);border:1px solid light-dark(#b2f2bb,#2f6b3c)}
 .ix-applied{font-size:12px;color:var(--muted);white-space:nowrap;margin-left:6px}
+
+/* phone: the view-button-list wraps instead of widening the page (b11 insight walk 261102; every theme, not only labeling and draft) */
+@media(max-width:600px){.section-views{flex-wrap:wrap}.focus-crumb{overflow-wrap:anywhere}}

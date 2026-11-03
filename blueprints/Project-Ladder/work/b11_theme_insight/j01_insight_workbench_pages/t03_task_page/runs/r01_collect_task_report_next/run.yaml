@@ -1,0 +1,14 @@
+run: r01_collect_task_report_next
+kind: hard
+type: collect
+scope: Tools/blueprints/Project-Ladder/work/b11_theme_insight/j01_insight_workbench_pages/t03_task_page
+target: b11.j01.t03-s57:theme_insight.insight_workbench_pages.task_page @ task_ui_report
+ticket: r01_collect_task_report_next.html
+skill: haipipe-interaction
+agent: null
+signs: null
+status: waiting
+passes: []
+writes:
+- result/answer_collection.md
+feeds: []

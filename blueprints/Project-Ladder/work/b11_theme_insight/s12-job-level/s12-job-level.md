@@ -1,7 +1,7 @@
 s12 · Job level
 ===============
 
-**Tags:** `Job UI`
+**Tags:** `Levels`
 
 **Stage:** explore
 

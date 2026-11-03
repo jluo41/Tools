@@ -69,6 +69,7 @@ b11_theme_insight/
 ├── s02-insight-workbench/       today's old five-Space Insight page (the Guide's RoadMap Draw serves it)
 ├── s03-insight-methods/         the methods: the cards, their code; and the Guide's methods drawing
 ├── s04-insight-structure/       the thinking: Prototype versions × data versions, the two clocks
+├── s05-insight-workflow/        the whole workflow as one map: 16 steps in five zones, the loops, who signs
 ├── s11-block-level/             the Block tab, six Spaces (before j01's s51 to s53)
 ├── s12-job-level/               a Job tab, six Spaces (before s54 to s56)
 ├── s13-task-level/              a Task tab, six Spaces (before s57 to s59)

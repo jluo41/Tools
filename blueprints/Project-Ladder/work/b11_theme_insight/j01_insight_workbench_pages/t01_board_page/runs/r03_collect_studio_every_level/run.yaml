@@ -1,0 +1,14 @@
+run: r03_collect_studio_every_level
+kind: hard
+type: collect
+scope: Tools/blueprints/Project-Ladder/work/b11_theme_insight/j01_insight_workbench_pages/t01_board_page
+target: b11.j01.t01-s53:theme_insight.insight_workbench_pages.board_page @ block_ui_studio
+ticket: r03_collect_studio_every_level.html
+skill: haipipe-interaction
+agent: null
+signs: null
+status: waiting
+passes: []
+writes:
+- result/answer_collection.md
+feeds: []

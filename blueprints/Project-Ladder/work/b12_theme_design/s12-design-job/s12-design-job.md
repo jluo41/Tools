@@ -1,6 +1,8 @@
 s12 · Design Job
 ================
 
+**Tags:** `Levels`
+
 **Stage:** explore
 
 **For:** a deck, and one design Job's tab, its Spaces as full screens with what is on disk, for the people who build the workbench

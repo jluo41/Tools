@@ -113,6 +113,11 @@ The look
 3. **Names no one**: a principle says when it was asked ("asked 261012"), a check says "a person"; who asked
    lives in the face's Decided lines, never on the drawing; never a person's own photo.
 4. **Marks**: a mark on a screen or a picture is a red box and a red → note, never a colour the screen lacks.
+5. **Full names, never short ids** (asked 261102: "do not use the short name like G or m, let's try to give the full
+   name"): a box, an arrow or a headline names a thing in words, `goal × method version × inputs version`, never
+   `G × m × i`; `the second draft`, never `v2`; `the rules check`, never `T0`. An id appears only as the literal
+   name of a folder or file, in Cascadia, beside its words (`Reason ideas · t00_reason-ideas/`). A placeholder is a
+   word in angle brackets (`<the aim>`), never a letter.
 
 
 Shapes that keep their own rules

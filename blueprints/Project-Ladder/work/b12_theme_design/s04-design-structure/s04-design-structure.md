@@ -1,6 +1,8 @@
 s04 · Design structure
 ======================
 
+**Tags:** `Structure`
+
 **Stage:** explore
 
 **For:** a deck, and what a design method is and how the design ladder holds methods, for the people who write the toolkit skills

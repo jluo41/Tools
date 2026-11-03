@@ -513,14 +513,14 @@ def _sweep(board: Path, old: str, new: str, dry: bool, keep: Path | None = None)
     for f in board.rglob("*"):
         rel = f.relative_to(board)
         build_input = len(rel.parts) == 3 and rel.parts[0] == "delivery" and rel.name in BUILD_INPUTS
-        if not f.is_file() or f.suffix not in HAND_WRITTEN + (".tex",) or (
+        if not f.is_file() or (f.suffix not in HAND_WRITTEN + (".tex",) and f.name != ".gitignore") or (
                 any(p in SEALED for p in rel.parts[:-1]) and not build_input) or (f.suffix == ".tex" and not build_input):
             continue
         text = f.read_text(encoding="utf-8", errors="ignore")
         if word.search(text):
             hits.append(rel.as_posix())
             if not dry:
-                if keep is not None:
+                if keep is not None and not (keep / rel).exists():     # swept twice: its first text is the original
                     (keep / rel).parent.mkdir(parents=True, exist_ok=True)
                     (keep / rel).write_text(text, encoding="utf-8")
                 f.write_text(word.sub(new, text), encoding="utf-8")
@@ -545,9 +545,14 @@ def rollback_update(board: Path) -> None:
     rec_dir = recs[-1].parent
     rec = yaml.safe_load(recs[-1].read_text(encoding="utf-8"))
     moves = rec.get("moves", [])
-    for rel in rec.get("swept", []):                 # each file's old text, where its folder now is
-        (board / _moved(rel, moves)).write_text((rec_dir / "files" / rel).read_text(encoding="utf-8"), encoding="utf-8")
-    for frm, to in reversed(moves):                  # then every move, newest first
+    done = set()
+    for rel in rec.get("swept", []):                 # each file's old text, where its folder now is; the oldest wins
+        at = _moved(rel, moves)
+        if at not in done:
+            done.add(at)
+            (board / at).write_text((rec_dir / "files" / rel).read_text(encoding="utf-8"), encoding="utf-8")
+    for frm, to in reversed(moves):                  # then every move, newest first (an emptied studio/ comes back)
+        (board / frm).parent.mkdir(parents=True, exist_ok=True)
         (board / to).rename(board / frm)
     rec_dir.rename(rec_dir.with_name(rec_dir.name + "-rolled-back"))
     print(f"rolled back {rec_dir.name}: {len(moves)} moves, {len(rec.get('swept', []))} files")
@@ -569,14 +574,46 @@ def update(board: Path, date: str, dry: bool) -> list:
         did.append(name)
 
     rows = {i: (m, seen) for _, i, _, m, seen in _layout(board)}
+    studio = board / "studio"
+    lift = sorted(d for d in studio.glob("s[0-9][0-9]-*") if d.is_dir()) if rows["L1"][0] != "✅" and studio.is_dir() else []
+    stubs = [f for f in studio.glob("*.excalidraw") if f.with_suffix("").is_dir()                  # an older copy beside
+             and (f.with_suffix("") / f.name).is_file() and f.stat().st_size < f.with_suffix("").joinpath(f.name).stat().st_size]  # its topic's
+    plain = sorted(j for j in board.glob("j[0-9]*_*") if j.is_dir() and re.fullmatch(r"j\d+_v\d{4}_[A-Za-z0-9-]+", j.name))
+    record = None
+    if (lift or plain) and not dry:                # one record per update: its moves, each swept file's old text
+        undo = board / ".ladder-undo"
+        n_rec = 1 + max([int(p.name.split("-")[1]) for p in undo.glob("update-*") if p.name.split("-")[1].isdigit()] or [0])
+        record = {"dir": undo / f"update-{n_rec}", "moves": [], "swept": []}
+    if lift:                                       # topics already made, only still in studio/: beside the Jobs
+        clash = [d.name for d in lift if (board / d.name).exists()]
+        if clash:
+            sys.exit(f"stop: {', '.join(clash)} already sits beside the Jobs; rename one before the lift")
+        for d in lift:
+            hits = _sweep(board, f"studio/{d.name}", d.name, dry=True)
+            print(f"\n▶ lift the topic out of studio/: studio/{d.name} -> {d.name} ({len(hits)} files say its path)")
+            if not dry:
+                record["swept"] += _sweep(board, f"studio/{d.name}", d.name, dry=False, keep=record["dir"] / "files")
+                d.rename(board / d.name)
+                record["moves"].append([f"studio/{d.name}", d.name])
+        for f in stubs:                            # kept in the record, so the rollback brings it back
+            print(f"\n▶ set aside the older copy studio/{f.name} (its topic holds the drawing)")
+            if not dry:
+                to = record["dir"].relative_to(board) / "studio" / f.name
+                (board / to).parent.mkdir(parents=True, exist_ok=True)
+                f.rename(board / to)
+                record["moves"].append([f"studio/{f.name}", to.as_posix()])
+        did.append("lift the topics out of studio/")
+    carried = len(did)
     if rows["L1"][0] != "✅":                       # old Pages: A1-Story/, Ba-/Bb-/Bc- folders
-        old = [d for d in [board / "A1-Story", *board.glob("B[abc]-*"), board / "studio"] if d.is_dir()]
-        empty = [d for d in old if not any(d.iterdir())]
+        old = [d for d in [board / "A1-Story", *board.glob("B[abc]-*"), studio] if d.is_dir()]
+        gone = set(lift) | set(stubs)
+        empty = [d for d in old if not any(x not in gone for x in d.iterdir())]
         for d in empty:                              # an empty leftover: nothing to move, so it only goes
             print(f"\n▶ remove the empty leftover {d.name}/")
             if not dry:
                 d.rmdir()
             did.append(f"removed empty {d.name}/")
+        carried = len(did)
         if any(d not in empty and d.name != "studio" for d in old):
             step("move the Pages onto the ladder", [str(CARRY / "migrate_paper.py"), str(board), flag])
         if any(d not in empty for d in old):
@@ -585,15 +622,9 @@ def update(board: Path, date: str, dry: bool) -> list:
         if not date:
             sys.exit("stop: L2 needs the send date of the version: update --date MMDD")
         step("date the versions, name the Sections", [str(CARRY / "rename_tasks.py"), str(board), "--date", date, flag])
-    if did and not dry:
+    if len(did) > carried and not dry:             # a carry-over step ran (the lift says its own paths)
         step("sweep the old names", [str(CARRY / "sweep_names.py"), str(board), "--apply"])
-    plain = sorted(j for j in board.glob("j[0-9]*_*") if j.is_dir() and re.fullmatch(r"j\d+_v\d{4}_[A-Za-z0-9-]+", j.name))
     taken = {int(re.match(r"j(\d+)", j.name).group(1)) for j in board.glob("j[0-9]*_*")}
-    record = None
-    if plain and not dry:                          # one record per update: its renames, each swept file's old text
-        undo = board / ".ladder-undo"
-        n_rec = 1 + max([int(p.name.split("-")[1]) for p in undo.glob("update-*") if p.name.split("-")[1].isdigit()] or [0])
-        record = {"dir": undo / f"update-{n_rec}", "moves": [], "swept": []}
     for j in plain:                                # L3: jNN_v<MMDD>_<desk> -> jNN_writing_v<MMDD>_<desk>, writing from j11
         own = int(re.match(r"j(\d+)", j.name).group(1))
         taken.discard(own)

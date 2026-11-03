@@ -1,0 +1,97 @@
+{
+ "topic": "s06-design-workflow",
+ "style": "excalidraw",
+ "source": "slides/build_slides.py: each slide one Excalidraw drawing, rendered to its PNG",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "What does a design Job make?",
+   "image": "slides/idea-01-what-a-job-makes.png",
+   "source": "slides/idea-01-what-a-job-makes.excalidraw"
+  },
+  {
+   "id": "02",
+   "idea": "The goal comes first",
+   "image": "slides/idea-02-the-goal.png",
+   "source": "slides/idea-02-the-goal.excalidraw"
+  },
+  {
+   "id": "03",
+   "idea": "One change at a time",
+   "image": "slides/idea-03-one-change.png",
+   "source": "slides/idea-03-one-change.excalidraw"
+  },
+  {
+   "id": "04",
+   "idea": "A · Set up the Block, once",
+   "image": "slides/idea-04-set-up-block.png",
+   "source": "slides/idea-04-set-up-block.excalidraw"
+  },
+  {
+   "id": "05",
+   "idea": "B · Launch a Job behind a fence",
+   "image": "slides/idea-05-fence.png",
+   "source": "slides/idea-05-fence.excalidraw"
+  },
+  {
+   "id": "06",
+   "idea": "Every idea gets its Task",
+   "image": "slides/idea-06-idea-per-task.png",
+   "source": "slides/idea-06-idea-per-task.excalidraw"
+  },
+  {
+   "id": "07",
+   "idea": "C · Draft, check, redraft",
+   "image": "slides/idea-07-draft-check-redraft.png",
+   "source": "slides/idea-07-draft-check-redraft.excalidraw"
+  },
+  {
+   "id": "08",
+   "idea": "A design's state walk",
+   "image": "slides/idea-08-state-walk.png",
+   "source": "slides/idea-08-state-walk.excalidraw"
+  },
+  {
+   "id": "09",
+   "idea": "Out of the fence is not a redraft",
+   "image": "slides/idea-09-out-of-fence.png",
+   "source": "slides/idea-09-out-of-fence.excalidraw"
+  },
+  {
+   "id": "10",
+   "idea": "D · Rank, keep the best, predict",
+   "image": "slides/idea-10-rank-keep.png",
+   "source": "slides/idea-10-rank-keep.excalidraw"
+  },
+  {
+   "id": "11",
+   "idea": "Review and approve, then close",
+   "image": "slides/idea-11-release.png",
+   "source": "slides/idea-11-release.excalidraw"
+  },
+  {
+   "id": "12",
+   "idea": "The Map: where Jobs are compared",
+   "image": "slides/idea-12-map.png",
+   "source": "slides/idea-12-map.excalidraw"
+  },
+  {
+   "id": "13",
+   "idea": "E · Learn: the experiment starts the next round",
+   "image": "slides/idea-13-learn.png",
+   "source": "slides/idea-13-learn.excalidraw"
+  },
+  {
+   "id": "14",
+   "idea": "Who does what",
+   "image": "slides/idea-14-who-does-what.png",
+   "source": "slides/idea-14-who-does-what.excalidraw"
+  },
+  {
+   "id": "15",
+   "idea": "Still open",
+   "image": "slides/idea-15-still-open.png",
+   "source": "slides/idea-15-still-open.excalidraw"
+  }
+ ]
+}

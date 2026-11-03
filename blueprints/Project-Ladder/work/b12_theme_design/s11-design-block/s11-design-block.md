@@ -1,6 +1,8 @@
 s11 · Design Block
 ==================
 
+**Tags:** `Levels`
+
 **Stage:** explore
 
 **For:** a deck, and the design Board's tab, its Spaces as full screens with what is on disk, for the people who build the workbench

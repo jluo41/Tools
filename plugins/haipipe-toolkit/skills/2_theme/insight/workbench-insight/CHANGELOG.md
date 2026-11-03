@@ -1,3 +1,23 @@
+## 1.5.0 · 2026-11-02 · Every insight level on the focus page, as its b11 cell (s51, s52, s54, s57, s58)
+
+- JL 261102: "update it to the versions you expected in s51, s52, s54, s55, s57 and s58". `insight_focus.py` adds the
+  Board's Report and Work (Answers · Questions · Jobs · Data · Handoff), the Job's Report (Overall · Grid · vs previous)
+  and the Task's Report and Work (Answer · By cut · Across Jobs · Plan). Reports are numbered sections only; Work is
+  Process then Results. `focus_page.py`: hooks `insight_board_report`, `insight_views_for`; an insight page opens on its
+  first letter and its letters carry their own caption.
+- Tests: `InsightLettersTest` (4).
+
+## 1.4.0 · 2026-11-01 · An insight Job's Work on the focus page, by letter (b11 j01 s55)
+
+- JL 261101: "start with s55", "follow the ones in the workbench-paper and workbench-labeling". New
+  `servers/workbench-insight/insight_focus.py`: A Overall · B Grid · C vs previous (The pair's facts under A, s54 round 2), each ⚙️ Process then
+  📊 Results with the shared ui_parts (bands, numbered bars, state pills, Prompt box); `focus_page.py` asks it through
+  one hook, `insight_job_work`, beside the paper theme's.
+- The s55 round 1 fixes: your signs first on every view, sign the plan before the close, the close greyed with what it
+  waits on; Work B is the Report's grid with each cell's next verb and Launch all · Write all · Check all (both, the
+  open "Run all, or one button per row"); every row ends in a state word; a Run's id behind the step's name.
+- Tests: `tests/test_insight_focus.py` (6).
+
 ## 1.3.0 · 2026-10-23 · A person CHECKs a page and signs a Job's close on the screen
 
 - JL 261023: "you can design the work in a way that we human can operate this system as well", then "go ahead and do

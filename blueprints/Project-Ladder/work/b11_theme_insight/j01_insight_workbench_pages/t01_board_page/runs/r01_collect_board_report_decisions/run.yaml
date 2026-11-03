@@ -1,0 +1,16 @@
+run: r01_collect_board_report_decisions
+kind: hard
+type: collect
+scope: Tools/blueprints/Project-Ladder/work/b11_theme_insight/j01_insight_workbench_pages/t01_board_page
+target: b11.j01.t01-s51:theme_insight.insight_workbench_pages.board_page @ block_ui_report
+ticket: null
+skill: haipipe-interaction
+agent: null
+signs: null
+status: done
+passes:
+- p01-1102
+writes:
+- result/answer_collection.md
+feeds: []
+source: chat

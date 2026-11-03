@@ -1,6 +1,8 @@
 s03 · Design methods
 ====================
 
+**Tags:** `Structure`
+
 **Stage:** explore
 
 **For:** a deck, and the design method cards and the five-step design unit, for the people who write the toolkit skills

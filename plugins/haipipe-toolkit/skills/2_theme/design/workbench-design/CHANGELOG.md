@@ -1,3 +1,13 @@
+## 0.18.0 · 2026-11-01 · The design pages on the focus page, in the j01 letters (b12 j01)
+
+- JL 261101: "I think you need to update the UI as well to make things to work". New
+  `servers/workbench-design/design_focus.py`: the Block (Summary · Goals · Jobs · Rounds · Methods), a Job (Setup · Ideas ·
+  Designs · Ranking · Release) and each Task type's steps, Report the Results only, Work ⚙️ Process over 📊 Results, with
+  the shared ui_parts as the paper, labeling and insight pages; `focus_page.py` asks it through one hook, `design_views`.
+  Before, a design page on the focus page was the base's (Work: "no state recorded"; a Task: nothing).
+- Your signs first: a goal to sign, a Job's release ready for Review and approve, the close; a Task never asks you.
+- Tests: `tests/test_design_focus.py` (5).
+
 ## 0.17.0 · 2026-10-23 · Three Task types, each a Work of steps
 
 - JL 261023: "for the design, for each of the task, we can have different types of the task Workbench UI, just like the

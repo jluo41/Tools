@@ -1,6 +1,25 @@
 haipipe-ui · Changelog
 ======================
 
+## [0.4.0] - 2026-11-02
+
+- Walk (JL 261102: "call it in the chrome and you click it and you review it yourself"): `/haipipe-ui walk <url>`
+  drives the person's Chrome (claude-in-chrome tools) through every view, every hover, pin, tab and pop-out, phone
+  width and the console, with one note a step and a GIF; the builder walks and fixes, a fresh reviewer still scores.
+- Four stage-2 rubrics, scored from the walk (JL 261102: "modern layout, and do not make it too word, hard to read,
+  and do not miss the information"): 9 Works, 10 Modern, 11 Plain (a word budget), 12 Complete (every field the
+  view's data holds is reachable).
+- The paper UI is the bar: each walk opens paper's matching view and says where the page falls short of it.
+- Blind review: a fix applied in an earlier round reaches the next reviewer as settled, with the round that asked for
+  it, since reviewers reverse each other (b11 design walk: open the first fold, then a wall of text).
+- With the insight session (JL 261102): reader tasks open every walk (3 to 5 goals a view; clicks, dead ends, tasks
+  not done), Works scores from them; section rule 8, Report shows, Work asks; rule 4 allows a fold whose closed row
+  keeps a mark row and a tally, the main group open; rule 5 allows dots, strips and bars beside a word tally, each
+  mark titled, never a meaning held in a hover title alone.
+- From the first design walk: a maximized window ignores resize (shoot 390 px with shoot.py); console tracking
+  starts at the first read, so read, reload, read. Headless --window-size=390 is not a 390 px viewport (from the
+  insight walk): emulate the device metrics over the DevTools port.
+
 ## [0.3.0] - 2026-11-01
 
 - Review on Tools' placeholder Board (blueprints/Project-Ladder/paper/Paper-Example, Tools server 5623), never a real paper; a real-paper bug is diagnosed by a new session in that paper's SPACE (JL 261101).

@@ -734,12 +734,16 @@ def _approved(j: dict) -> tuple:
     full = str(card.get("signed") or "")
     if full.startswith("✅"):                  # a person's sign carries no name: ✅ <YYMMDD> · a person (261023)
         return "approved " + full.split("·")[0].strip(), full
-    who = full.split()[0] if full else (re.search(r"signed by (\S+)", str(card.get("by", ""))) or [None, ""])[1]
-    when = str(card.get("finished_at", ""))[5:10]
-    return (f"approved by {who}" + (f" {when}" if when else "") if who else "approved"), full or str(card.get("by", ""))
+    # an older card names the signer ("<who> 261012 · in chat …", or "signed by <who>" in by:); a page never shows a
+    # name (a sign is ✅ <YYMMDD>, b12 j01; no personal marks on a board), so only its date is shown, and the hover
+    # keeps the card's words after the name
+    day = re.search(r"\b(\d{6})\b", full) or re.search(r"(\d{2})-(\d{2})-(\d{2})", str(card.get("finished_at", ""))[2:10])
+    day = (day.group(1) if day.lastindex == 1 else "".join(day.groups())) if day else ""
+    rest = full.split("·", 1)[1].strip() if "·" in full else ""
+    return ("approved ✅ " + day if day else "approved"), ("✅ " + day + (" · " + rest if rest else "")).strip()
 
 
-def _summary(b: dict, root: Path, href) -> str:
+def _summary(b: dict, root: Path, href, jobs_table: bool = True) -> str:
     """The Block on one page, for a reader with five minutes (JL 261012, from the 10-08 demo: "the first page should be
     overview and summary"): the goal, what the Block questions answer so far (the bottom line), one row per Job (its
     method, state and who approved it, top design and prediction, the reason on hover), what the experiment returned,
@@ -757,7 +761,8 @@ def _summary(b: dict, root: Path, href) -> str:
         status, page = _q_status(q, b), _report_page(q, b)
         if status in ("partial", "answered") and page:
             answers.append(f'<p>{_MARK.get(status, "")} <b>{pop(reader(page, root), q.get("title", ""), q.get("title", "") + " ↗")}</b> '
-                           f'<span class=mut>({esc(_WORD.get(status, status).lower())})</span> {esc(_opening(page))}</p>')
+                           f'<span class=mut>({esc(_WORD.get(status, status).lower())})</span>'
+                           + (f' {esc(_opening(page))}' if jobs_table else "") + '</p>')
     ranked = [j for j in jobs if j["ranking"]]
     kept = sum(d["state"] in ("kept", "released") for j in jobs for d in j["designs"])
     released = sum(d["state"] == "released" for j in jobs for d in j["designs"])
@@ -794,13 +799,15 @@ def _summary(b: dict, root: Path, href) -> str:
                      _pred(d["prediction"], "cell") if d else "—"))
     hits = sum(s.get("direction") == "✓" for s in scores)
     inr = sum(s.get("in_range") == "✓" for s in scores)
-    return (goals + "".join(answers) + f'<p>{esc(counts)}</p><p><b>Next:</b> {nxt}.</p>'
-            + table(("Job", "method", "designs", "state", "top design", "predicted"), rows)
+    # on the focus page the goal × method matrix above already shows the goal and each Job's row (JL 261102: shown once)
+    return ((goals if jobs_table else "") + "".join(answers)
+            + (f'<p>{esc(counts)}</p><p><b>Next:</b> {nxt}.</p>' if jobs_table else "")
+            + (table(("Job", "method", "designs", "state", "top design", "predicted"), rows) if jobs_table else "")
             + (f'<p>Experiment results: {len(scores)} designs tested · direction right {hits} of {len(scores)} · in range '
                f'{inr} of {len(scores)} <span class=mut>(Predicted vs observed)</span></p>' if scores else "")
-            + (f'<p class=mut>Done when: {esc(b["close"])}</p>' if b["close"] else "")
+            + (f'<p class=mut>Done when: {esc(b["close"])}</p>' if b["close"] and jobs_table else "")
             + (f'<p>{pop("/" + rel(pdf, root), "summary.pdf", "One-page PDF ↗")} <span class=mut>for readers outside the '
-               f'workbench (haipipe-design-delivery summary.py)</span></p>' if (pdf := b["path"] / "delivery" / "summary.pdf").is_file()
+               f'workbench (haipipe-design-delivery summary.py)</span></p>' if jobs_table and (pdf := b["path"] / "delivery" / "summary.pdf").is_file()
                else ""))
 
 
@@ -1153,11 +1160,10 @@ def _reason_ideas(j: dict, b: dict, root: Path, href) -> str:
         chain = (_id(t.get("from", "")) + " → "
                  + " → ".join(f'{esc(s.get("says", ""))} <span class=mut>so</span> {esc(s.get("so", ""))}' for s in steps)
                  + " → " + " · ".join(_id(i, words.get(str(i), "")) for i in t.get("ideas", [])))
-        out.append(_fold(f'{t.get("id", "")} · {t.get("title", "")}',
-                         f'from {esc(t.get("from", ""))} · {len(steps)} steps · → {len(t.get("ideas", []))} ideas',
+        out.append(_fold(f'{t.get("title", "") or t.get("id", "")}',
+                         f'&nbsp;· {len(steps)} steps → {len(t.get("ideas", []))} idea{"" if len(t.get("ideas", [])) == 1 else "s"} · from {esc(str(t.get("from", "")).split(" · ")[0])}',
                          f"<p>{chain}</p>", opened=not out))
-    return (f'<p class=mut>inputs/ → reasoning, topic by topic → {len(j["ideas"])} ideas, frozen before any design is made '
-            f'(t00 › chains.yaml).</p>' + ("".join(out) or '<p class=mut>t00 has not reasoned yet.</p>'))
+    return ("".join(out) or '<p class=mut>Nothing reasoned yet.</p>')
 
 
 def _display(j: dict, b: dict, root: Path, href) -> str:

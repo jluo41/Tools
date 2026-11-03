@@ -5,12 +5,16 @@ description: >-
   test, five rules, one verb per section: Report check, Work do, Studio think, Delivery hand over, Related take in),
   the page shape at every level (Project, Theme, Block, Job, Task), how a page design is drawn (one view, one
   screen, lettered A, B, C, settled one at a time), and the design loop: a fresh reviewer scores the drawing, then
-  the live page, on eight rubrics, and the design is revised round after round until every rubric passes. Use to design or change a page, to check a page before calling a UI change done, or to compare a
-  before and after. Owns how a page looks and acts; /workbench owns what data it reads. Trigger: review the UI,
-  ui rules, is this page clear, five-second test, page design, redesign this page, design loop, ui rubrics, /haipipe-ui.
+  the live page, on twelve rubrics, and the design is revised round after round until every rubric passes. The live
+  page is walked in Chrome as a person uses it (every view clicked, every canvas card hovered and pinned, every
+  pop-out opened, phone width, console errors) and measured against the paper UI as the bar: modern, plain, nothing
+  missing. Use to design or change a page, to check a page before calling a UI change done, to walk a page in
+  Chrome, or to compare a before and after. Owns how a page looks and acts; /workbench owns what data it reads. Trigger: review the UI,
+  ui rules, is this page clear, five-second test, page design, redesign this page, design loop, ui rubrics, walk the
+  page in chrome, click through the ui, /haipipe-ui.
 metadata:
-  version: "0.3.0"
-  last_updated: "2026-11-01"
+  version: "0.4.0"
+  last_updated: "2026-11-02"
   # version history: ./CHANGELOG.md
 ---
 
@@ -22,6 +26,7 @@ and Related". This skill is that rule, and a review that checks a live page agai
 
 ```text
 /haipipe-ui                  the rules below: read before designing or changing any page
+/haipipe-ui walk <url>       drive Chrome through the page as a person does; fix what breaks (Walk, below)
 /haipipe-ui review <url>     a fresh reviewer screenshots the page and scores it (Review, below)
 /haipipe-ui loop <topic> <L>  the Design loop on one letter: drawing, then live page, until the rubrics pass
 /haipipe-ui compare <a> <b>  the same review on a before and an after, side by side
@@ -90,13 +95,17 @@ A page that needs a sentence of instructions to pass has failed it.
 3. **Every section has a verb** (the Sections table below): it decides what the section holds. On screen the
    title-&-section shows only the name, on paper pages too (JL 261031, b10-s33-D06: "no verb, like every page"),
    and its right-rail item says in a few words what it holds ("its Jobs", "what happened when"), never a count.
-4. **Content first.** No instruction paragraphs (they go in Guide). No fold arrows: what a section holds shows
-   directly, one item per line (JL 261028: "要么你就把它列出来 要么就把它去掉"). A large view (a drawing, a mind
+4. **Content first.** No instruction paragraphs (they go in Guide). What a section holds shows directly, one item
+   per line (JL 261028: "要么你就把它列出来 要么就把它去掉"). A fold may close a group of items (JL 261102: "group
+   them by topics and then we can open and close them"), but its closed row still says something: a mark row and a
+   tally (a dot per item, "21 of 24 answered"), and the most important group opens by default. A large view (a drawing, a mind
    map, slides) opens in a popup over the page and closes back to the same place. One exception: a view's
    sections (a heading each) fold by their heading, open by default, the reader's choice kept in the browser (JL
    261031: "for the view page's subsection, could they be like collapse as well"); nothing opens folded.
 5. **Every mark has a word.** No unlabeled dot, pill, bar or icon: a state is a word ("explore", "agreed",
-   "waiting for you"). An action is a verb button on its row (`Draw`, `Mind map`, `Slides`, `Open`), at most three.
+   "waiting for you"). A row of dots, a strip or a progress bar is allowed when a tally in words sits beside it
+   and each mark has a hover title (JL 261102 liked the matrix cells' pages bar and X D I K W strip); a meaning held
+   only in a hover title fails, since a reader and a screenshot never see it. An action is a verb button on its row (`Draw`, `Mind map`, `Slides`, `Open`), at most three.
    Names are the real folder and file names.
 
 
@@ -138,6 +147,9 @@ Files      browse      the folder itself, its tree                  Folder (one 
    http(s) link to the SPACE's server on the Tailscale origin, or a path from this SPACE's root). Pick a full example,
    one with Tasks, Runs and Results, never the first folder on disk; a level the theme does not have gets no button.
 7. **Where we stand** (done when, status, waiting) shows once, at the top of Report's Standing, never in Work too.
+8. **Report shows, Work asks** (JL 261102: "the questions should be in the Work, for the report, we just show the
+   report"). A Report view may be explored (hover, pin, compare, folds, a share link) but holds no Ask box, Copy
+   prompt, propose or sign control; those live in the same letter's Work view, over the same picture.
 
 
 ## The page at each level
@@ -235,6 +247,10 @@ after r04 with no pass ─▶ stop; hand JL the open rubrics and the three fixes
    pasted verbatim, and only the picture(s), the letter's address, and the settled decisions it must not undo (the
    face's `sNN-DNN` lines and JL's own request for this round). A fix that would undo one is not applied: it goes
    to JL as a question (b16 s32 B r01 asked to split Venue out of Story again, the merge JL had just asked for).
+   Reviewers disagree from round to round (a round asked to open the first fold; the next marked that open fold a
+   wall of text), so a fix applied in an earlier round goes to the next reviewer as settled too, named with the
+   round that asked for it; a reviewer who would undo it raises it as a question, and a rubric that dips only because
+   of such a reversal is not a regression.
 4. **Record.** The review text goes verbatim to `<topic>/review/<L>-s<stage>-rNN.md` (for example
    `review/B-s1-r02.md`). When a round passes, the letter's decision line in the face (`sNN-DNN`) names that file.
 5. **Revise** the three fixes the review names, re-render, and go round with a new reviewer.
@@ -259,7 +275,19 @@ rubric       asks                                                               
              phone @media rules after the base rules they change
 8 Salience   the view's main point first and largest; content shown (a picture,     JL 261031
              tiles, a chain), not only headings; the rest smaller, below
+9 Works      the reader tasks done in few clicks, no dead end; every click, hover,  JL 261102, Walk
+             pin, tab and pop-out does what its word says; no console error; a
+             broken step or a task it could not do caps it at 4
+10 Modern    reads like the paper UI: cards and air, one clear hierarchy, pictures   JL 261102, the bar
+             and chains over tables of text, nothing cramped or wrapped badly
+11 Plain     a word budget: one line under a heading, no paragraph over two lines,   JL 261102
+             no grey sentence; detail waits behind a hover, a pin or a click
+12 Complete  every field the view's data holds is reachable, shown or one click     JL 261102
+             away; a redesign that drops one fails, however clean it looks
 ```
+
+Rubrics 9 to 12 are stage 2 only (n/a on a drawing), scored from the walk (JL 261102: "make it modern layout, and
+do not make it too word, hard to read, and do not miss the information").
 
 Salience (JL 261031: "it should highlight the main point ... the layout should be great, to show the content
 saliently, currently it is very boring"): a view whose sections hold only a heading and a gray line fails it,
@@ -299,6 +327,53 @@ shared pieces (`_card_tabs`, `_side_tabs`, `_band`, `_pill`, `_todo`, `_plan_htm
 `focus_draft.py` is the draft Task page only. b16 s32's seven views A to G are drawn and built this way.
 
 
+## Walk (Chrome: the page as a person uses it)
+
+A screenshot never clicks, hovers or opens anything, so a still-shot review passed a canvas whose hover lit up the
+wrong links (JL 261102: "call it in the chrome and you click it and you review it yourself"). Before any stage-2
+score, the builder walks the live page in the person's Chrome through the claude-in-chrome tools (load them in one
+ToolSearch: `tabs_context_mcp`, `tabs_create_mcp`, `navigate`, `computer`, `read_page`, `find`,
+`read_console_messages`, `resize_window`, `gif_creator`), in a new tab of its own.
+
+```text
+open ─▶ every view button ─▶ every interactive thing ─▶ 390 px ─▶ console ─▶ the paper bar ─▶ notes + GIF
+```
+
+1. **Reader tasks first.** Before clicking, write 3 to 5 tasks a person has on each view, as goals, not clicks
+   ("find what K15 rests on", "which Job moved the method", "what will Stage 2.5 send"). Do each from the page alone
+   and record the clicks it took, any dead end, and any task it could not do. Works is scored from these tasks; the
+   steps below then catch what the tasks did not touch.
+2. **Every view.** Click each button of the view-button-list and each right-rail section; screenshot each, the
+   whole view (scroll it), not the first screen only.
+3. **Every interactive thing**, one at a time, saying what should happen before checking that it did: hover a
+   canvas card (what lights up, and is it right), click to pin and walk its chips, open a card tab, a side tab and a
+   pop-out and close it again, a `#…` share link, a fold, a search box, a Copy prompt (it copies, it posts nothing).
+   Never press a button that writes (a sign, Review and approve, a release) unless the person asked: name it and skip.
+4. **Phone.** Resize to 390 px wide: rails hidden, section-line shown, nothing cut off or scrolling sideways. A
+   maximized or full-screen window ignores `resize_window` (the first design walk, 261102): check the screenshot's
+   width, and if it did not change, shoot the phone view with `scripts/shoot.py --width 390` instead. Headless
+   Chrome's `--window-size=390,…` is not a 390 px viewport either (Chrome keeps a minimum window width, then crops,
+   so every view looks cut off on the right): the true check is the DevTools protocol,
+   `Emulation.setDeviceMetricsOverride(width=390, mobile=true)` then `Page.captureScreenshot`, over Chrome's
+   `--remote-debugging-port` (the same port also walks clicks with `Runtime.evaluate` when the extension drops).
+5. **Console.** Read the console once at the start (tracking begins at the first read), reload, then read errors
+   only; any error is a broken step.
+6. **The paper bar.** Open the paper UI's matching view (the paper Board's view of the same job: its Story or
+   Writing card tabs for a list of things compared, its Data flow plan rows for steps) and say, per view, where the
+   page falls short of it, in words: "denser than paper's Story card tabs", "no picture where paper shows one".
+7. **Notes.** One line per step: `✅ | ❌ | ⚠️ <what was done> → <what happened>`; a GIF of the walk
+   (`gif_creator`, frames before and after each action, named `<page>-walk.gif`). Fix every ❌ and re-walk before
+   any review; a ⚠️ (works, but confusing) goes to the review.
+8. **Builder walks, a fresh reviewer scores.** The walk proves it works; it is not a score (the builder knows what
+   each mark means). The Review below then scores the page, from its own Chrome walk when it has the tools, else
+   from the walk's screenshots, notes and GIF.
+9. **Tools is public.** A walk of a real project's page stays in the session; what is saved into Tools (a review
+   file, a GIF) comes from a Tools placeholder page only (Review, below), or quotes no real names, texts or numbers.
+
+When Chrome does not answer (no extension, a tab error twice), stop and say so; never fall back to calling a still
+screenshot a walk.
+
+
 ## Review (one round of the loop)
 
 Run after every UI change, before calling it done (AGENTS: "wire green is not UI green"). The reviewer must be a
@@ -313,7 +388,8 @@ public, and a review quotes what it sees, so a stage-2 review screenshots the pl
 Its faces hold `<…>` placeholders only. A bug seen only on a real paper is diagnosed by a new session in that paper's
 own SPACE, which reports back the Tools file and line; the reviewer never opens the real paper.
 
-1. Screenshot the live page at 1440 px wide (and once at 390 px for a phone):
+1. Walk the page (Walk, above), or read the builder's walk notes and GIF; then screenshot it at 1440 px wide (and once
+   at 390 px for a phone):
 
    ```bash
    uv run --with playwright python <this skill>/scripts/shoot.py <url> <out.png> --width 1440
@@ -328,14 +404,20 @@ own SPACE, which reports back the Tools file and line; the reviewer never opens 
 4. Score each rubric of the Design loop out of 10, with the exact thing on screen behind any score below 10; a
    question not answerable from the picture costs Glance 3 points, a partly answerable one 1. Give the mean.
 5. Name the three fixes that would raise the lowest rubrics most, each as "move/remove/rename <thing> to <place>".
+6. For Complete, list the view's data (the fields its reader function reads) and mark each shown, one click away,
+   or missing.
 
-Return format, under 250 words:
+Return format, under 300 words:
 
 ```text
 page     <url>, or <topic> · <L> · stage 1
 answers  what: … · where: … · here: … · do: …
 rules    1 ✅|❌ … · 2 … · 3 … · 4 … · 5 …
-rubrics  Glance N · Place N · Lean N · Words N · One job N · Same look N · Phone N|n/a · Salience N
+tasks    each reader task: done in N clicks | dead end at <what> | could not
+walk     N steps · N ✅ · N ❌ · N ⚠️ (the ❌ and ⚠️ named)
+bar      where it falls short of the paper UI, in words
+rubrics  Glance N · Place N · Lean N · Words N · One job N · Same look N · Phone N|n/a · Salience N ·
+         Works N|n/a · Modern N|n/a · Plain N|n/a · Complete N|n/a
 score    mean N/10 · pass|not yet
 fixes    1. … 2. … 3. …
 ```
@@ -343,4 +425,5 @@ fixes    1. … 2. … 3. …
 
 ## Files
 
-`scripts/shoot.py` takes the screenshot (the installed Google Chrome, headless, through Playwright). `CHANGELOG.md` records changes.
+`scripts/shoot.py` takes the screenshot (the installed Google Chrome, headless, through Playwright); the walk uses
+the person's Chrome through the claude-in-chrome tools, no script. `CHANGELOG.md` records changes.

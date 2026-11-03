@@ -645,10 +645,12 @@ def _map(b: dict, root: Path, href) -> str:
             for x in hard:
                 count[x.get("status") or "planned"] = count.get(x.get("status") or "planned", 0) + 1
             runs = ", ".join(f"{n} {s}" for s, n in sorted(count.items(), key=lambda kv: -kv[1]))
-            pages = sum(bool(t["face"].get("answer")) for t in j["tasks"])
+            st = [str(t["face"].get("answer-status") or "").lower() for t in j["tasks"]]
+            pages = f'{sum(x in WRITTEN for x in st)}'
+            drafted = f' · {st.count("drafted")} drafted' if "drafted" in st else ""
             checked = sum(bool(t["face"].get("check")) for t in j["tasks"])
             cells.append(f'<td>{_job_link(href, j, short=True)} · {_st(j["state"])}<br><span class=mut>{len(hard)} runs: '
-                         f'{esc(runs) or "none"}<br>{pages} of {len(j["tasks"])} pages written · {checked} checked</span></td>')
+                         f'{esc(runs) or "none"}<br>{esc(pages)} of {len(j["tasks"])} pages written{esc(drafted)} · {checked} checked</span></td>')
         body.append("<tr>" + "".join(cells) + "</tr>")
     return (f'<table class=wf-table style="width:auto"><tr><th>analysis plan \\ data freeze</th>{head}</tr>'
             f'{"".join(body)}</table>')
@@ -662,13 +664,22 @@ def _prototype(b: dict, root: Path, href) -> str:
     for j in b["jobs"]:
         jobs_on.setdefault(j["release"], []).append(j["name"])
     for k, r in enumerate(proto["releases"]):
-        rows = []
-        for lv, name, _ in LEVELS:
-            for q in (q for q in r["questions"].values() if q["id"][:1] == lv):
-                rows.append((f'<b>{esc(q["id"])}</b>', esc(name), _open(q["file"], root, q["id"], q["question"] or "<question>"),
-                             esc(q["change"] or "—"), _st(q["signed"] or "—")))
-        meta = f'{r["face"].get("state", "")} · {r["face"].get("signed", "")} · Jobs: {", ".join(jobs_on.get(r["name"], [])) or "none yet"}'
-        out.append(_fold(f'release {r.get("label") or r["name"]}', meta, table(("#", "DIKW level", "question", "in this release", "signed"), rows),
+        groups = []                     # one closed fold per DIKW level (JL 261102: "group them by topics ... open and close")
+        for lv, name, says in LEVELS:
+            qs = [q for q in r["questions"].values() if q["id"][:1] == lv]
+            if not qs:
+                continue
+            rows = [(f'<b>{esc(q["id"])}</b>', _open(q["file"], root, q["id"], q["question"] or "<question>"),
+                     esc(q["change"] or "—"), _st(q["signed"] or "—")) for q in qs]
+            new = sum((q["change"] or "") == "new" for q in qs)
+            signed = sum(bool(q["signed"]) and q["signed"] != "—" for q in qs)
+            meta = f'{len(qs)} questions' + (f' · {new} new' if new else "") + (f' · {signed} signed' if signed else "")
+            groups.append(f'<details class=topic><summary><b>{esc(name)} questions</b> <span class=topic-meta>{esc(meta)}</span>'
+                          f'<span class=lv-link>{esc(says)}</span></summary>'
+                          f'<div style="padding:4px 14px 10px">{table(("#", "question", "in this release", "signed"), rows)}</div></details>')
+        meta = " · ".join(x for x in (str(r["face"].get("state") or ""), str(r["face"].get("signed") or "not signed yet"),
+                                      f'{len(jobs_on.get(r["name"], []))} Job(s)') if x)
+        out.append(_fold(f'release {r.get("label") or r["name"]}', meta, f'<div class=dikw>{"".join(groups)}</div>',
                          opened=k == len(proto["releases"]) - 1))
     props = [(_open(p["file"], root, p["title"]), esc(p.get("kind", "")), esc(p.get("from", "")), _st(p.get("state", "")))
              for p in proto["proposals"]]
@@ -788,7 +799,7 @@ def _sample(v: dict, data, hide: tuple = ()) -> str:
             f'First {esc(why)}; dates to the day. Left out, as identifying or free text: '
             f'{esc(", ".join(s["hidden"])) or "none"}.</p>' + grid(first)
             + (_fold(f"the other {len(rest)} columns", "" if picked else "the same in these rows, or empty", grid(rest)) if rest else ""))
-    return _fold("a few rows", f'{len(s["columns"])} columns shown', body, True)
+    return _fold("a few rows", f'{len(s["columns"])} columns shown', body)
 
 
 def _partitions(b: dict, root: Path, href) -> str:
@@ -915,12 +926,15 @@ def _findings(b: dict, root: Path, part: str, href) -> str:
             + _by_level(rows, _qwr_head("Work · the Board's soft run", "Report · what it says"), "No Block question yet."))
 
 
+WRITTEN = ("written", "answered", "checked")     # a page is written once any of these (the matrix counts the same)
+
+
 def _answered(j: dict) -> str:
     out = []
     for lv, _, _ in LEVELS:
         ts = [t for t in j["tasks"] if t["qid"][:1] == lv]
         if ts:
-            done = sum(t["face"].get("answer-status") == "answered" for t in ts)
+            done = sum(str(t["face"].get("answer-status") or "").lower() in WRITTEN for t in ts)
             out.append(f"{lv} {done}/{len(ts)}")
     return " · ".join(out)
 
@@ -932,13 +946,30 @@ def _jobs(b: dict, root: Path, href, only: str) -> str:
             continue
         rows.append((_job_link(href, j), esc(f'{_rlabel(b, j["release"])} × {_vlabel(b, j["data"])}'),
                      esc(j["moved"] or "—"), esc(_answered(j)), _st(j["state"])))
-    out = [table(("Job", "pins", "the clock that moved", "answered by DIKW level", "state"), rows)]
+    out = [table(("Job", "pins", "the clock that moved", "pages written, by DIKW level", "state"), rows)]
     for j in (j for j in b["jobs"] if j["state"] != "closed" and (only == "All" or j["release"] == only)):
-        quick = []
-        for t in j["tasks"]:
-            quick.append((f'<a href="{esc(href("", "", t["path"]))}">{esc(t["name"])}</a>',
-                          " · ".join(f'{esc(r.get("partition"))} {_st(r.get("status"))}' for r in t["hard"]) or "<span class=mut>—</span>"))
-        out.append(_fold(f'{j["name"]} · its Tasks\' quick results', "open", table(("Task", "each partition"), quick), opened=True))
+        groups = []                     # a closed fold per DIKW level, one short line per Task (JL 261102: "very hard to use")
+        for lv, name, _ in LEVELS:
+            ts = [t for t in j["tasks"] if t["qid"][:1] == lv]
+            if not ts:
+                continue
+            quick, ran_all = [], 0
+            wrote = sum(str(t["face"].get("answer-status") or "").lower() in WRITTEN for t in ts)
+            for t in ts:
+                tally = {}
+                for r in t["hard"]:
+                    tally[str(r.get("status") or "—")] = tally.get(str(r.get("status") or "—"), 0) + 1
+                cuts = ", ".join(str(r.get("partition")) for r in t["hard"])
+                said = (" · ".join(f"{n} {st}" for st, n in tally.items()) + f' <span class=mut title="{esc(cuts)}">'
+                        f'({len(t["hard"])} cut{"s" if len(t["hard"]) != 1 else ""})</span>') if t["hard"] else "<span class=mut>not run</span>"
+                ran_all += bool(t["hard"])
+                words = t["name"].split("_", 2)[-1].replace("-", " ")
+                quick.append((f'<b>{esc(t["qid"])}</b>', f'<a href="{esc(href("", "", t["path"]))}">{esc(words)}</a>',
+                              said, _st(t["face"].get("answer-status") or "—")))
+            groups.append(f'<details class=topic><summary><b>{esc(name)} questions</b> '
+                          f'<span class=topic-meta>{wrote} of {len(ts)} pages written · {ran_all} with Runs</span></summary>'
+                          f'<div style="padding:4px 14px 10px">{table(("#", "question", "runs", "page"), quick)}</div></details>')
+        out.append(_fold(f'{j["name"]} · its Tasks', f'{len(j["tasks"])} Tasks', f'<div class=dikw>{"".join(groups)}</div>', opened=True))
     return "".join(out)
 
 

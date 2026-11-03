@@ -9,7 +9,7 @@ s58 · Task UI: Work
 
 **Delivery type:** ui
 
-**Covers:** the agents' chain, no sign: A Answer (plan, agree, cuts, page, check) · B By cut · C Across Jobs · D Plan.
+**Covers:** the agents' chain, the whole chain visible and one verb live, no sign: A Answer (plan, agree, cuts, page, check, alignment) · B By cut · C Across Jobs · D Plan.
 
 **Excluded:** the other eight cells of the 3 × 3 (s51, s52, s53, s54, s55, s56, s57, s59); the old five-Space Insight page (s02); every Theme's shared frame (b10).
 
@@ -40,7 +40,8 @@ s58-D01 · One grid per level (Board question × Job, Job question × cut, Task 
 Open
 ----
 
-1. ? The whole chain, or only the next step
-2. Which letter to settle first.
+1. ? The whole chain, one verb live on the next step (proposed).
+2. 🙋 Passed stage 1, waiting on your look: A Answer 8.3 (review/A-s1-r03.md), B By cut 8.1 (B-s1-r03.md), C Across Jobs 8.1 (review/C-s1-r02.md), D Plan 8.4 (D-s1-r02.md).
+3. ✅ Walk 261102 (the live page, every view opened and clicked; 30 views measured): the chain (plan → agree → Runs → page → check → alignment) works and its one live verb copies its prompt. ⚠️ A's Results repeat the Answer view; small, kept until s57 Q1 settles.
 
 (write here, or mark the drawing in red)

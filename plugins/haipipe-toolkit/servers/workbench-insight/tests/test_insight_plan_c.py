@@ -102,9 +102,9 @@ class PlanCTest(unittest.TestCase):
 
     def test_the_job_tab_reads_its_pair_and_its_tree(self):
         desc = frame.render(THEME, self.root, self.job, "Description", "Dataset")
-        self.assertIn("AP2 × F2", frame.render(THEME, self.root, self.job, "Description", "Prototype"))
+        self.assertIn("analysis plan 2 × data freeze 2", frame.render(THEME, self.root, self.job, "Description", "Prototype"))
         for space in ("Audience Report", "Work Details", "Runs"):      # no band beside the tab (s12, 261007)
-            self.assertNotIn("AP2 × F2", spaces("Job", self.job, self.root, "")[space].html, space)
+            self.assertNotIn("analysis plan 2 × data freeze 2", spaces("Job", self.job, self.root, "")[space].html, space)
         self.assertIn("refused", frame.render(THEME, self.root, self.board / "j02_prototype-p1_data-demov2", "Description", "Dataset"))
         tree = frame.render(THEME, self.root, self.job, "Work Details", "All")     # the tree's older view: 2 · Run
         self.assertIn("t03_K01_question-c", tree)
