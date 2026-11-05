@@ -16,7 +16,7 @@ note and the next step for every item that is not up to date.
 
 From: WellDoc SPACE (Proj01, dataset Job j54 WellDoc2025ALS onto `vWearable261101`).
 Skills: haipipe-data 0.4.2. Code: `code/haiutils/haistep/run_fn_builders.py`,
-`cook_version.py`, `compare_stores.py` (new, on `code-welldoc`).
+`cook_version.py`, `compare_stores.py` (new, on `origin/main` since 2026-11-04, `9a6aca9`).
 Check: space-check items `builders: fn_dir` (new), `build -> version` (new),
 `dataset <project> j5N` (now any j51-j99).
 
