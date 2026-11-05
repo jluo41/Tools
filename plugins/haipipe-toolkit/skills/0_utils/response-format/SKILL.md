@@ -4,8 +4,8 @@ description: "Spec for the assistant's chat reply format in this workspace: the 
 argument-hint: "(reference spec — usually not invoked directly)"
 allowed-tools: Bash, Read
 metadata:
-  version: "0.25.0"
-  last_updated: "2026-11-01"
+  version: "0.26.0"
+  last_updated: "2026-11-04"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -337,6 +337,12 @@ Carried over, unchanged
   topic, any `-` or `.` inside a name turned into `_`; no space after the colon:
   `b17-s04:theme_work @ workbench_page_structure`, `b17.j01.t03-s09:theme_work.tables.cut @ which_cut_first`,
   `b11.j21.t01.r04:CD_visit_pain.D_reg_VisitLBP.agre.bigfive_ols` (b35 s01-D06, D07).
+- **Never a bare `rNN`, `jNN`, `tNN` or `sNN`** (JL 261104: "when you say rNN, etc, please also add the name as
+  well"). The rule above holds for a short mention too, in points, sketches, tables and prose, on every mention,
+  not only the first, and even when the Job or Task is already named: write the folder's whole name,
+  `r15_cgm5mindfcase_fairglucose_vwearable261101`, never `r15`; `j55_welldoc2025cvs_source`, never `j55`. A list of
+  several Runs lists each name, never `r02, r03`. If the name would overflow a sketch line, use two lines. A shorthand
+  of your own for a step (`Lambda pull`) is spelled out too: say the command and what it does.
 - **No em-dashes.** Use a colon, a semicolon, a comma, parentheses, or a new sentence.
 
 Files live in their section (2026-09-26)

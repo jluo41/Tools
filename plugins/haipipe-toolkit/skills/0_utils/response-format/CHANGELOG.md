@@ -1,6 +1,12 @@
 response-format — Changelog
 ===========================
 
+**[0.26.0] · 2026-11-04 · Never a bare rNN, jNN, tNN or sNN**
+
+JL 261104: "when you say rNN, etc, please also add the name as well". "Never a bare index" now says it covers
+short mentions on every mention, in points, sketches, tables and prose: the folder's whole name, never `r15`.
+A shorthand of the reply's own for a step is spelled out as well.
+
 **[0.25.0] · 2026-11-01 · The See line: point each section to its place in the workbench**
 
 JL 261101: "for each section in the response, how to point to the report ui". Each ordinary
