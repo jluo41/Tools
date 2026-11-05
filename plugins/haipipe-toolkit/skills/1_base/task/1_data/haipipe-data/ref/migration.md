@@ -62,7 +62,10 @@ Steps
    `fn_version: <version>`; the worker in the Task's `scripts/` is three lines
    that call the shared one (WellDoc b02j54t01 `scripts/build_fn_version.py`,
    `scripts/cook_version.py`). Save the version's store beside the flat one
-   (a new `record_set_version`), never over it.
+   (a new `record_set_version`), never over it. A known difference may also say
+   `rows: <exact extra rows>` (or `rows: true`) and `columns: all`, and a `compare` pair
+   may carry its own `known_differences` (WellDoc b02j55t01 r03, b03j55t01 r17: a flat
+   store cooked before a RecordFn changed).
 4. Run space-check again: `haifn: <version>` and `dataset <project> j5N` are OK.
 
 ---
