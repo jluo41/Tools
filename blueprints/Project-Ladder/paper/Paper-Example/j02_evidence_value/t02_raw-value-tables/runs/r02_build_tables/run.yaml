@@ -1,0 +1,16 @@
+run: r02_build_tables
+kind: hard
+role: make
+type: value
+scope: blueprints/Project-Ladder/paper/Paper-Example/j02_evidence_value/t02_raw-value-tables
+ticket: r02_build_tables.sh
+worker: haipipe-paper-evidence scripts/build_tables.py
+says: arrange the copied rows into the Values tabs
+host: this machine
+time: a few seconds
+started_by: 'JL 261104: the Values tabs as the paper Board standard'
+reads:
+- scripts/tables.yaml
+- scripts/methods.yaml
+writes:
+- result/tables.json

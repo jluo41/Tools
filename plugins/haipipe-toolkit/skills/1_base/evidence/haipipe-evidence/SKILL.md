@@ -2,8 +2,8 @@
 name: haipipe-evidence
 description: "Find the evidence a claim needs and show it as cards: CITE (another paper, from a discovery Run) and VALUE (our own result, from a work Run). Each item names the sentences and exact words it backs and the Run it comes from; missing pieces become proposals (a new Run, Task or Job) for a person to tick. Also a Page's evidence Runs (ref/page-evidence.md). Its parts cite and work hold how to find each kind. Trigger: evidence, evidence card, CITE, VALUE, what backs this sentence, missing evidence, /haipipe-evidence, /haipipe-draft-evidence."
 metadata:
-  version: "0.8.1"
-  last_updated: "2026-10-26"
+  version: "0.9.0"
+  last_updated: "2026-11-03"
 ---
 
 # /haipipe-evidence · what backs each sentence, and what to make when nothing does
@@ -84,6 +84,35 @@ evidence:
 2. **`for`** names the sentences; **`anchor`** the exact words, boxed in the text by the page's builder.
 3. **`fact`** quotes lines of a discovery Run's `facts.md`; **`file` + `key`** read a work Run's own output.
 4. **`need`** marks what is missing; **`propose`** says what to make for it, and so which topic's card it is in.
+5. **`value: <id>`** (0.9.0) binds a VALUE item to one value of a catalog by its id instead of `file` + `key`; a
+   `value:` that is not an id (`RQ1-t01-002`) stays what it was, a value stated in words. A display's item says
+   `display: <name>` and `printed: [...]` instead of `for` and `anchor`.
+
+### A bound item's status, and the catalog (0.9.0)
+
+JL 261103: one value check for every page, not one per paper. A **catalog** is a Run's `result/values.yaml`,
+`values: {<key>: {id, value, shown, what, scale?, p?, pending?, checks}}` (a paper writes one per value Task,
+haipipe-paper-evidence `values_ledger.py`; any work Run may). `item_status` gives a bound item its status:
+
+```text
+owed       the item is a need               missing    its anchor's words left the sentence
+no anchor  no words to check                differs    the words are there, the number is not the value's
+match      the number is the value          pending    the value waits for a Run (the note says what it would be)
+```
+
+A number matches at its printed precision with exact half-up rounding (`0.125` is 0.1245), against the value or the
+value times its `scale`; `< .001` is a bound. `check` reports a `differs` as a problem when given the sentences.
+
+**Lineage** (`lineage`): a work Run's `values.csv` keeps a `source` column naming what each row was read from: a key
+of its Block's `src/inputs.yaml` `runs:` (address, path from work/, label), `typed:"<file>"` (a typed stand-in, a
+screen read, labelled by its `typed:` entry), or a `bNN.jNN.tNN.rNN` address. A catalog value's `checks:` are the
+Run that computed it, then these.
+
+**Binding proposals**: `propose --catalog <run>/result/values.yaml --source <task address> --sentences s.json` finds
+each catalog value printed in the page's sentences (guards: a P value only after "P ="; a whole number under 10
+never; a one-significant-digit number never) and adds a `bind VALUE <id> to S<n> "<words>"` line to proposals.md,
+on the same path as the needs below. A person ticks it once; `--adopt` writes the ticked lines as items, and a
+written item is never proposed again.
 
 ## 🔧 The script
 
@@ -92,6 +121,8 @@ evidence:
 ```text
 python cards.py check   <task>/evidence/cards.yaml [--sentences s.json]   every address, fact, value, anchor
 python cards.py propose <task>/evidence/cards.yaml [--page <name>] [--write]   writes evidence/proposals.md
+python cards.py propose <task>/evidence/cards.yaml --catalog <run>/result/values.yaml --source <task address>
+                        --sentences s.json [--write] [--adopt]              binding proposals; --adopt writes the ticked
 python cards.py bib     <task>/evidence/cards.yaml --draft <draft.md> [--write]   writes draft/evidence/bibex/<task>.bib
 python from_items.py <task>… [--write]   an older Page's draft/<stem>-evidence-items.md → cards.yaml + proposals.md
 ```
@@ -133,3 +164,5 @@ unchanged, and Pages made before then keep working. The producer is `haipipe-dra
 2. **haipipe-task-for-evidence**: a work Task that computes values for a page; its Runs become VALUE items.
 3. **Section canvases** (b21 s05 first): CITE and VALUE cards along the bottom, anchors boxed in the text.
 4. **Reports and slides**: any claim that needs a backing card.
+5. **A paper's value Job** (haipipe-paper-evidence `values_ledger.py`, 0.7.0): its catalogs, bindings and check are
+   this format and these functions, with the paper's rules on top (ids `<RQ>-<tNN>-<nnn>`, displays, reverse lists).

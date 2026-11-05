@@ -1,0 +1,5 @@
+run: r04_rewrite_m02_e02
+kind: soft
+type: rewrite
+status: done
+note: stand-in executors, no model called

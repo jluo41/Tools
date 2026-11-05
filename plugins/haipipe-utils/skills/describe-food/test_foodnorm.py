@@ -171,6 +171,23 @@ def run_l2_golden():
     return fails
 
 
+def run_amounts():
+    """A stated amount multiplies only by the table's own measure; anything else says it was not applied."""
+    from foodnorm.items import amount_times
+    cases = [("3 cups", "per_serving", "cup, cooked", 3), ("1 cup; cooked", "per_serving", "cup, cooked", 1),
+             ("1 1/2 cups", "per_serving", "cup", 1.5), ("2 tablespoons", "per_serving", "tbsp", 2),
+             ("2 boxes", "per_serving", "box", 2), ("2 glasses", "per_serving", "glass", 2),
+             ("2 eggs", "per_serving", "cup", None), ("2 cup, raw", "per_serving", "cup, cooked", None),
+             ("2 slice (1 oz)", "per_serving", "slice (2 oz)", None), ("150 g", "per_serving", "g", None),
+             ("2 cups", "per_100g", "100 g", None), ("3", "per_serving", "cup", None)]
+    fails = [f"amount {a!r} on {u!r}: {amount_times(a, b, u)[0]} not {want}" for a, b, u, want in cases
+             if amount_times(a, b, u)[0] != want or (want is None and not amount_times(a, b, u)[1])]
+    if amount_times("200 g", "per_meal", "200 g") != (None, None):
+        fails.append("grams on per_meal are the basis's own, no note")
+    print(f"amounts: {len(cases) + 1 - len(fails)} of {len(cases) + 1}")
+    return fails
+
+
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--bench", action="store_true",
@@ -182,7 +199,7 @@ if __name__ == "__main__":
               "  examples/Proj01-CGM-RawData/tasks/_legacy/v0-task-groups/AY1_foodrec_v1/00_benchmark/\n"
               "and grades the API rather than the retriever. Running L1 + L2 only.\n")
 
-    fails = run_l1_contract() + run_l2_golden()
+    fails = run_l1_contract() + run_l2_golden() + run_amounts()
 
     print("\n" + "=" * 78)
     if fails:

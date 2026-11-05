@@ -4576,17 +4576,19 @@ class LabelingMixin:
 
     def labeling_approve(self, p):
         """Your sign on a meaning Task's guideline mNN (b15 s58-D15, Q6): meaning/mNN.approved.yaml, written by the
-        engine's meaning_versions.approve; the expression Task runs only on a signed meaning."""
+        engine's meaning_versions.approve; the expression Task runs only on a signed meaning. On an expression Task the
+        version is a round eNN: your sign on its release (meaning_versions.sign_release)."""
         if not self._same_origin():
             return 403, {"ok": False, "err": "cross-origin write refused"}
         task, err = self._steps_task_target(p.get("task"))
         if task is None:
             return 400, {"ok": False, "err": err}
         from live import labeling_steps as S
-        if S.kind(task) != "meaning":
-            return 400, {"ok": False, "err": "not a meaning Task"}
+        if S.kind(task) not in ("meaning", "expression"):
+            return 400, {"ok": False, "err": "not a meaning or expression Task"}
+        sign = S.MV.approve if S.kind(task) == "meaning" else S.MV.sign_release
         try:
-            signed = S.MV.approve(task, str(p.get("version") or ""), str(p.get("by") or ""))
+            signed = sign(task, str(p.get("version") or ""), str(p.get("by") or ""))
         except ValueError as err:
             return 409, {"ok": False, "err": str(err)}
         return 200, {"ok": True, "signed": signed}

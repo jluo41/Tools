@@ -1,0 +1,5 @@
+run: r09_update_m02
+kind: soft
+type: update
+status: done
+reads: r08_collect_report_m02/result/answer_collection.md

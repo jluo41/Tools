@@ -80,7 +80,7 @@ def _two_loop_next(ts):
             for r in sorted((t / "runs").iterdir()) if r.is_dir() and re.match(r"^r\d+_", r.name)]
     for t, r, state in runs:
         if state == "waiting" and "_collect_" in r.name:
-            return t, "runs", f"Answer {r.name} in the Block's Interactions; one paste saves it.", ""
+            return t, "runs", f"Answer {r.name} on its Preferences step, then press Copy prompt.", ""
     answered = any("_collect_report_" in r.name and state == "done" for _, r, state in runs)
     for t, r, state in runs:
         if state == "planned" and ("score" not in T.types_of(t) or answered):
@@ -88,6 +88,25 @@ def _two_loop_next(ts):
     meaning = next((t for t in ts if "meaning" in T.types_of(t)), None)
     if meaning and not answered:
         return meaning, "goal", "Paste the meaning Task's Report prompt into its chat session.", ""
+    return _signs_next(meaning, next((t for t in ts if "expression" in T.types_of(t)), None))
+
+
+def _signs_next(meaning, expression):
+    """Past the forms and tickets, what waits is a sign, a round, or nothing (the walkthrough, 261104: a finished Job's
+    page said "Prepare an items Task")."""
+    from live import labeling_steps as S
+    if meaning:
+        loops = [lp for lp in S.MV.loops(meaning) if lp.get("map")]
+        if loops and not loops[-1].get("approved"):
+            return meaning, "runs", f"Sign m{loops[-1]['n']:02d} on the meaning Task's Update step.", ""
+    if expression:
+        runs = sorted((expression / "runs").glob("r*_release_e*")) if (expression / "runs").is_dir() else []
+        if runs and S.MV.state(runs[-1]) == "done":
+            round_id = runs[-1].name.rsplit("_", 1)[1]
+            if S.MV.release_sign(runs[-1]):
+                return expression, "runs", f"Done: {round_id} is released. Its final labels are on the Release step.", ""
+            return expression, "runs", f"Sign release {round_id} on the expression Task's Release step.", ""
+        return expression, "runs", "Paste the expression Task's Rewrite prompt into its chat session.", ""
     return None
 
 
@@ -400,7 +419,7 @@ def task_shell(root, folder, section, views: dict, view: str, body: str, head_ex
     right = "".join(F.rail_link(F.page_url(folder, root, key), name, key == section, "", words)
                     for key, name, words in rail)
     page = F.page_shell(folder, root, crumbs, frame.esc(folder.name), section.title(), dict((k, w) for k, _, w in rail)[section],
-                        bar, goal_html, body, source, left, right, [(key, name) for key, name, _ in rail], section)
+                        bar, goal_html, body, source, left, right, [(key, name, "") for key, name, _ in rail], section)
     head, tail = page.rsplit("</head>", 1)
     page = head + head_extra + "</head>" + tail
     head, tail = page.rsplit("</body>", 1)

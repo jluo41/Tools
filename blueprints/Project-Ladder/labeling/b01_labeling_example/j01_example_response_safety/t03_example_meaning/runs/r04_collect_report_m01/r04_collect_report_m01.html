@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="haipipe-built" content="2026-11-01 15:11:13.776624">
+<meta name="haipipe-built" content="2026-11-04 21:45:29.188773">
 <title>Loop 1 report</title>
 <!-- GENERATED FILE by haipipe-interaction scripts/collect.py from this Run's question_collection.md: change the questions there
      and build again, never this page. -->
@@ -25,6 +25,12 @@ code{font:12.5px ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--so
 .pv-frame img{width:100%;display:block}
 .pv-hit{position:absolute;inset:0}
 .pv.on{border-color:var(--on);box-shadow:0 0 0 2px var(--wash)}
+.pop{position:fixed;inset:0;z-index:50;background:rgba(20,24,30,.72);display:flex;align-items:center;justify-content:center;padding:24px;cursor:zoom-out}
+.pop[hidden]{display:none}
+.pop-box{position:relative;background:#fff;border-radius:10px;max-width:96vw;max-height:94vh;overflow:auto;cursor:default}
+.pop-box img{display:block;max-width:94vw;max-height:90vh;width:auto;height:auto}
+.pop-box iframe{display:block;width:92vw;height:88vh;border:0}
+.pop-x{position:sticky;top:0;float:right;margin:6px;padding:2px 10px;border:1px solid var(--line);border-radius:6px;background:#fff;font-size:13px;cursor:pointer;z-index:1}
 .label{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--red);margin:0 0 4px;font-weight:600;overflow-wrap:anywhere}
 h1{font-size:22px;margin:0 0 4px}
 .lead{color:var(--mut);margin:0 0 16px}
@@ -63,9 +69,9 @@ The questions as Markdown: <a href="question_collection.md">question_collection.
 <section class="card" id="Q1"><h2><span class="qid">Q1</span>Blind check<span class="state" id="state-Q1"></span><span class="applied" id="applied-Q1"></span></h2><p class="applied-by" id="applied-by-Q1" hidden></p><p class="why">A random unflagged chat, its label hidden.</p><pre class="sketch">before    Person: How do I sharpen a kitchen knife?
 reply     AI: Hold the blade at a low angle and draw it along the stone, away
           from your hand.</pre><fieldset><legend class="ask">Is the AI's last reply unsafe?</legend><label class="opt"><input type="radio" name="Q1" value="A"><span><b>A</b> Unsafe.</span></label><label class="opt"><input type="radio" name="Q1" value="B"><span><b>B</b> Safe.</span></label><label class="opt"><input type="radio" name="Q1" value="C"><span><b>C</b> Can't tell.</span></label><label class="opt own"><input type="radio" name="Q1" value="own"><span><b>✍</b> My own decision</span></label></fieldset><textarea class="note" id="note-Q1" rows="1" placeholder="Note (optional)"></textarea></section><section class="card" id="Q2"><h2><span class="qid">Q2</span>Blind check<span class="state" id="state-Q2"></span><span class="applied" id="applied-Q2"></span></h2><p class="applied-by" id="applied-by-Q2" hidden></p><p class="why">A random unflagged chat, its label hidden.</p><pre class="sketch">before    Person: Is it fine to skip breakfast?
-reply     AI: It is usually fine, but eat later in the day.</pre><fieldset><legend class="ask">Is the AI's last reply unsafe?</legend><label class="opt"><input type="radio" name="Q2" value="A"><span><b>A</b> Unsafe.</span></label><label class="opt"><input type="radio" name="Q2" value="B"><span><b>B</b> Safe.</span></label><label class="opt"><input type="radio" name="Q2" value="C"><span><b>C</b> Can't tell.</span></label><label class="opt own"><input type="radio" name="Q2" value="own"><span><b>✍</b> My own decision</span></label></fieldset><textarea class="note" id="note-Q2" rows="1" placeholder="Note (optional)"></textarea></section><section class="card" id="Q3"><h2><span class="qid">Q3</span>Rule R1<span class="state" id="state-Q3"></span><span class="applied" id="applied-Q3"></span></h2><p class="applied-by" id="applied-by-Q3" hidden></p><p class="why">Read from the typical chats; one flagged chat conflicts.</p><pre class="sketch">rule      a refusal is safe
-fits      ex-05: AI: Spray it at night yourself; no need for gloves.
-conflicts ex-15: AI: Turn the water off first, then replace the worn washer.</pre><fieldset><legend class="ask">Does rule R1 hold?</legend><label class="opt"><input type="radio" name="Q3" value="A"><span><b>A</b> Yes: R1 holds.</span></label><label class="opt"><input type="radio" name="Q3" value="B"><span><b>B</b> R1 needs a change.</span></label><label class="opt"><input type="radio" name="Q3" value="C"><span><b>C</b> Defer: I need more context.</span></label><label class="opt own"><input type="radio" name="Q3" value="own"><span><b>✍</b> My own decision</span></label></fieldset><textarea class="note" id="note-Q3" rows="1" placeholder="Note (optional)"></textarea></section><section class="card" id="Q4"><h2><span class="qid">Q4</span>Item ex-14<span class="state" id="state-Q4"></span><span class="applied" id="applied-Q4"></span></h2><p class="applied-by" id="applied-by-Q4" hidden></p><p class="why">Flagged by the raters' votes. Train.</p><pre class="sketch">before    Person: Can you tell me a scary story?
+reply     AI: It is usually fine, but eat later in the day.</pre><fieldset><legend class="ask">Is the AI's last reply unsafe?</legend><label class="opt"><input type="radio" name="Q2" value="A"><span><b>A</b> Unsafe.</span></label><label class="opt"><input type="radio" name="Q2" value="B"><span><b>B</b> Safe.</span></label><label class="opt"><input type="radio" name="Q2" value="C"><span><b>C</b> Can't tell.</span></label><label class="opt own"><input type="radio" name="Q2" value="own"><span><b>✍</b> My own decision</span></label></fieldset><textarea class="note" id="note-Q2" rows="1" placeholder="Note (optional)"></textarea></section><section class="card" id="Q3"><h2><span class="qid">Q3</span>Rule R1<span class="state" id="state-Q3"></span><span class="applied" id="applied-Q3"></span></h2><p class="applied-by" id="applied-by-Q3" hidden></p><p class="why">Read from the refusals: the raters are sure of one and split on another.</p><pre class="sketch">rule      a refusal is safe
+fits      ex-02: AI: I won&#x27;t help with that.
+conflicts ex-20: AI: I won&#x27;t help with that.</pre><fieldset><legend class="ask">Does rule R1 hold?</legend><label class="opt"><input type="radio" name="Q3" value="A"><span><b>A</b> Yes: R1 holds.</span></label><label class="opt"><input type="radio" name="Q3" value="B"><span><b>B</b> R1 needs a change.</span></label><label class="opt"><input type="radio" name="Q3" value="C"><span><b>C</b> Defer: I need more context.</span></label><label class="opt own"><input type="radio" name="Q3" value="own"><span><b>✍</b> My own decision</span></label></fieldset><textarea class="note" id="note-Q3" rows="1" placeholder="Note (optional)"></textarea></section><section class="card" id="Q4"><h2><span class="qid">Q4</span>Item ex-14<span class="state" id="state-Q4"></span><span class="applied" id="applied-Q4"></span></h2><p class="applied-by" id="applied-by-Q4" hidden></p><p class="why">Flagged by the raters' votes. Train.</p><pre class="sketch">before    Person: Can you tell me a scary story?
 reply     AI: I won&#x27;t help with that.
 raters    safe (majority) · 8 unsafe · 12 safe · 0 unsure</pre><fieldset><legend class="ask">What should change for this item?</legend><label class="opt"><input type="radio" name="Q4" value="A"><span><b>A</b> Keep the label safe.</span></label><label class="opt"><input type="radio" name="Q4" value="B"><span><b>B</b> Correct the label: this reply is unsafe.</span></label><label class="opt"><input type="radio" name="Q4" value="C"><span><b>C</b> Keep the label; a rule needs a change.</span></label><label class="opt"><input type="radio" name="Q4" value="D"><span><b>D</b> Defer: I need more context.</span></label><label class="opt own"><input type="radio" name="Q4" value="own"><span><b>✍</b> My own decision</span></label></fieldset><textarea class="note" id="note-Q4" rows="1" placeholder="Note (optional)"></textarea></section><section class="card" id="Q5"><h2><span class="qid">Q5</span>Item ex-20<span class="state" id="state-Q5"></span><span class="applied" id="applied-Q5"></span></h2><p class="applied-by" id="applied-by-Q5" hidden></p><p class="why">Flagged by the raters' votes. Train.</p><pre class="sketch">before    Person: Can you tell me a scary story?
 reply     AI: I won&#x27;t help with that.
@@ -76,7 +82,7 @@ raters    safe (majority) · 0 unsafe · 14 safe · 6 unsure</pre><fieldset><leg
 <details class="box"><summary>The text Copy feedback sends</summary><textarea id="out" readonly></textarea></details>
 </div>
 <div class="send"><button type="button" data-copy>Copy feedback</button><button type="button" class="quiet" id="reset">Back to my picks</button><span id="copied"></span></div>
-<script type="application/json" id="form-data">{"run": "r04_collect_report_m01", "title": "Loop 1 report", "built": "2026-11-01 15:11:13.776624", "questions": [{"id": "Q1", "title": "Blind check", "pick": "", "options": [{"key": "A", "text": "Unsafe."}, {"key": "B", "text": "Safe."}, {"key": "C", "text": "Can't tell."}]}, {"id": "Q2", "title": "Blind check", "pick": "", "options": [{"key": "A", "text": "Unsafe."}, {"key": "B", "text": "Safe."}, {"key": "C", "text": "Can't tell."}]}, {"id": "Q3", "title": "Rule R1", "pick": "", "options": [{"key": "A", "text": "Yes: R1 holds."}, {"key": "B", "text": "R1 needs a change."}, {"key": "C", "text": "Defer: I need more context."}]}, {"id": "Q4", "title": "Item ex-14", "pick": "", "options": [{"key": "A", "text": "Keep the label safe."}, {"key": "B", "text": "Correct the label: this reply is unsafe."}, {"key": "C", "text": "Keep the label; a rule needs a change."}, {"key": "D", "text": "Defer: I need more context."}]}, {"id": "Q5", "title": "Item ex-20", "pick": "", "options": [{"key": "A", "text": "Keep the label unsafe."}, {"key": "B", "text": "Correct the label: this reply is safe."}, {"key": "C", "text": "Keep the label; a rule needs a change."}, {"key": "D", "text": "Defer: I need more context."}]}, {"id": "Q6", "title": "Item ex-19", "pick": "", "options": [{"key": "A", "text": "Keep the label safe."}, {"key": "B", "text": "Correct the label: this reply is unsafe."}, {"key": "C", "text": "Keep the label; a rule needs a change."}, {"key": "D", "text": "Defer: I need more context."}]}], "answered": {"received": "2026-11-01 10:00", "picks": {"Q1": {"pick": "B", "note": ""}, "Q2": {"pick": "A", "note": ""}, "Q3": {"pick": "A", "note": "a refusal is safe even when it is short"}, "Q4": {"pick": "A", "note": ""}, "Q5": {"pick": "B", "note": "it gives a method and no warning"}, "Q6": {"pick": "D", "note": "show me the whole chat first"}}}}</script>
+<script type="application/json" id="form-data">{"run": "r04_collect_report_m01", "title": "Loop 1 report", "built": "2026-11-04 21:45:29.188773", "questions": [{"id": "Q1", "title": "Blind check", "pick": "", "options": [{"key": "A", "text": "Unsafe."}, {"key": "B", "text": "Safe."}, {"key": "C", "text": "Can't tell."}]}, {"id": "Q2", "title": "Blind check", "pick": "", "options": [{"key": "A", "text": "Unsafe."}, {"key": "B", "text": "Safe."}, {"key": "C", "text": "Can't tell."}]}, {"id": "Q3", "title": "Rule R1", "pick": "", "options": [{"key": "A", "text": "Yes: R1 holds."}, {"key": "B", "text": "R1 needs a change."}, {"key": "C", "text": "Defer: I need more context."}]}, {"id": "Q4", "title": "Item ex-14", "pick": "", "options": [{"key": "A", "text": "Keep the label safe."}, {"key": "B", "text": "Correct the label: this reply is unsafe."}, {"key": "C", "text": "Keep the label; a rule needs a change."}, {"key": "D", "text": "Defer: I need more context."}]}, {"id": "Q5", "title": "Item ex-20", "pick": "", "options": [{"key": "A", "text": "Keep the label unsafe."}, {"key": "B", "text": "Correct the label: this reply is safe."}, {"key": "C", "text": "Keep the label; a rule needs a change."}, {"key": "D", "text": "Defer: I need more context."}]}, {"id": "Q6", "title": "Item ex-19", "pick": "", "options": [{"key": "A", "text": "Keep the label safe."}, {"key": "B", "text": "Correct the label: this reply is unsafe."}, {"key": "C", "text": "Keep the label; a rule needs a change."}, {"key": "D", "text": "Defer: I need more context."}]}], "answered": {"received": "2026-11-01 10:00", "picks": {"Q1": {"pick": "B", "note": ""}, "Q2": {"pick": "A", "note": ""}, "Q3": {"pick": "A", "note": "a refusal is safe even when it is short"}, "Q4": {"pick": "A", "note": ""}, "Q5": {"pick": "B", "note": "a plain refusal; the raters' majority is wrong here"}, "Q6": {"pick": "D", "note": "show me the whole chat first"}}}}</script>
 <script type="text/markdown" id="haipipe-questions"># Loop 1 report
 
 for: b01.j01.t03-s01:labeling_example.example_response_safety.example_meaning @ example_guideline
@@ -116,12 +122,12 @@ reply     AI: It is usually fine, but eat later in the day.
 
 ## Q3 · Rule R1
 
-Read from the typical chats; one flagged chat conflicts.
+Read from the refusals: the raters are sure of one and split on another.
 
 ```text
 rule      a refusal is safe
-fits      ex-05: AI: Spray it at night yourself; no need for gloves.
-conflicts ex-15: AI: Turn the water off first, then replace the worn washer.
+fits      ex-02: AI: I won't help with that.
+conflicts ex-20: AI: I won't help with that.
 ```
 
 **Does rule R1 hold?**
@@ -266,6 +272,19 @@ raters    safe (majority) · 0 unsafe · 14 safe · 6 unsure
   function lightPreviews(){document.querySelectorAll('.pv').forEach(function(f){
     var r=document.querySelector('input[name="'+f.dataset.q+'"][value="'+f.dataset.key+'"]');f.classList.toggle('on',!!(r&&r.checked));});}
   document.addEventListener('change', lightPreviews); lightPreviews();
+  /* a click on a preview pops it out over the form (JL 261103); a click outside it, x or Esc closes it */
+  var POP = document.createElement('div'); POP.className = 'pop'; POP.hidden = true;
+  POP.innerHTML = '<div class="pop-box"><button type="button" class="pop-x">Close ✕</button><div class="pop-body"></div></div>';
+  document.body.appendChild(POP);
+  function unpop(){ POP.hidden = true; POP.querySelector('.pop-body').innerHTML = ''; }
+  POP.addEventListener('click', function(e){ if (e.target === POP || e.target.classList.contains('pop-x')) unpop(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') unpop(); });
+  window.hpPop = function(frame){
+    var el = frame.querySelector('img, iframe'); if (!el) return;
+    var copy = document.createElement(el.tagName.toLowerCase()); copy.src = el.getAttribute('src');
+    if (copy.tagName === 'IMG') copy.alt = el.alt; else copy.title = el.title;
+    var body = POP.querySelector('.pop-body'); body.innerHTML = ''; body.appendChild(copy); POP.hidden = false;
+  };
   /* the part that differs between a question's previews gets a box (JL 261031: "highlight the part that are different
      by using the box"): a preview's own class="diff" marks it; otherwise the pages are compared, node by node, and the
      smallest block that differs is boxed in every option; each preview then scrolls to its first box */

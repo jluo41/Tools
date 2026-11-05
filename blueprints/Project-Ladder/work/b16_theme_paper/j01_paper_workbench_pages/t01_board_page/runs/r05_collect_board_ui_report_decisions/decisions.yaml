@@ -47,7 +47,27 @@
 - title: Flow map, whole track
   decision: C · Data flow's Flow map runs past the questions to the Runs and the paper end, reading all six columns of the data-flow topic's drawing yaml (data, linking, tables, analysis, hypothesis to
     claim, in the paper); it changes s32-D17
-  said: 'finish all of them and continue, and make the draft as complete as possible (relayed by the Paper-Example session: JL''s reply to its plan, whose open point asked whether the Report''s map should run on
-    to the Runs and the paper)'
+  said: 'finish all of them and continue, and make the draft as complete as possible (relayed by the Paper-Example session: JL''s reply to its plan, whose open point asked whether the Report''s map should
+    run on to the Runs and the paper)'
   when: 2026-11-01 01:59
   applied_by: ''
+- title: Idea plus Story and Plan
+  decision: Idea and Story are one view; Data flow and Paper flow are one view, Plan
+  said: I am think to add Idea + Story to be in one view, and Data flow and Paper flow to be one view of Plan, How do you think about this? Plase go ahead and update it accordingly.
+  when: 2026-11-04 13:38
+  applied_by: board_read.BOARD_VIEWS, board_results.idea_story_view and plan_view, board_process.process_html; workbench-paper 0.45.0
+- title: Story Interaction
+  decision: A section named Interaction on Idea + Story, questions as left tabs, each question on the right
+  said: 'could you have the section named Interaction, and we have the questions to be listed like this as well: ... left to be the tab, and right to be the questions. (relayed by CMS-Server-AI-Code)'
+  when: 2026-11-04 23:08
+  applied_by: workbench-paper 0.46.0, board_results.py interaction_section, idea_story_view
+- title: Studio tabs
+  decision: One Studio section with Idea Studio and Story Studio as left tabs
+  said: I think for the studio, we can have both Idea Studio and Story studio and also hve the left tab right content, Please update it again.
+  when: 2026-11-04 23:08
+  applied_by: workbench-paper 0.46.0, board_results.py interaction_section, idea_story_view
+- title: Interaction everywhere
+  decision: 🙋 Interaction is the last section of every view at every level, and the one look of the rail and the pop-out
+  said: could you try to make this section at the bottom for each of the view? not matter for the block, or job or task; make this to be the standard items for any of them; the workbecnh UI code
+  when: 2026-11-04 23:41
+  applied_by: servers/workbench/interaction_section.py, focus_page.py

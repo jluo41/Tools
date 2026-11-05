@@ -1,6 +1,26 @@
 haipipe-mindmap · Changelog
 ===========================
 
+## [0.9.6] — 2026-11-04
+
+- "The Block map" template in SKILL.md: groups before lists, one screen when closed, short names, never a second kind of
+  drawing. `parts_mindmap` puts a Block's Jobs under the bands of its `bands:` line (b01: 1284 px to 289 px; JL 261104).
+  Test: `test_block_bands_group_jobs_in_the_same_map`.
+
+## [0.9.5] — 2026-11-04
+
+- Every map starts closed, not only a Block's: `draw` and `render` fold by default (`fold=False` turns it off), lines
+  under a point fold too, an editable map folds by its ▸ so typing still works, and the count on a closed card is gone
+  (it disagreed with Status). What was opened no longer survives a page load, so every visit starts closed (JL 261104:
+  "默认的话，大家都是合着的").
+
+## [0.9.4] — 2026-11-04
+
+- A map can fold (`draw(..., fold=True)`, `mapview.FOLD`): its cards start closed, a click opens what hangs under one, a
+  count marks a closed card, Open all and Close all sit above it, and what was opened is kept in the browser. Only a
+  Block's map on the workbench uses it (JL 261104, on b01_clm_foundation_model: "the collapse and open it"); a draft's
+  §1 and Studio topics draw as before, except that a hidden point no longer gets a curve.
+
 ## [0.9.3] — 2026-10-31
 
 - `from-work` writes `<folder>/mind-map.mindmap.md` beside the folder's face, no longer in `<folder>/studio/`:

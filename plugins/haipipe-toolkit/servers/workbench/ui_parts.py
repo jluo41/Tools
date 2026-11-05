@@ -172,24 +172,10 @@ def _cap(text: str) -> str:
     return text[:1].upper() + text[1:]
 
 
-def _card_tabs(eid: str, tiles: list, panels: list, chain: bool = False) -> str:
-    """Card tabs (JL 261031: "we will use the cards-tab"): cards that act as a view-button-list, the first open, one
-    open at a time, its panel below; `chain` draws them as a card-tab chain, an arrow before each card after the first."""
-    btns = []
-    for k, (head, line, role, *cls) in enumerate(tiles):
-        b = (f'<button type=button class="pb-tile{" on" if k == 0 else ""}{cls[0] if cls else ""}" data-pbtab="{eid}{k}"><b>{esc(head)}</b>'
-             f'<span>{esc(line)}</span></button>')
-        step = f'<div class=pb-step><span class=pb-role>{esc(role)}</span>{b}</div>'
-        btns.append((f'<div class=pb-hop>{"<span class=pb-arrow>→</span>" if k else ""}{step}</div>') if chain else b)
-    row = (f'<div class=pb-chain>{"".join(btns)}</div>' if chain else f'<div class=pb-tiles>{"".join(btns)}</div>')
-    return (f'<div class=pb-tabset>{row}' + "".join(f'<div class=pb-panel data-pbpanel="{eid}{k}"{"" if k == 0 else " hidden"}>{p}</div>'
-                                                   for k, p in enumerate(panels)) + '</div>')
-
-
 def _side_tabs(eid: str, items: list, panels: list) -> str:
     """Side tabs (JL 261101: "in the left there is a panel, and we can read the content quickly"): the items as a list
     on the left, one line each (its name, its state), the open one's content on the right to read; the first open.
-    For content that is read (a Section's text, a display, a value list), where card tabs would push it down."""
+    The one kind of tabs in a view (JL 261104: "please change all type of these into this style"); card tabs are gone."""
     rows = "".join(f'<button type=button class="pb-item{" on" if k == 0 else ""}" data-pbtab="{eid}{k}"><b>{esc(h)}</b>'
                    f'<span title="{esc(w)}">{esc(w)}</span></button>' for k, (h, w) in enumerate(items))
     return (f'<div class="pb-tabset pb-side"><div class=pb-list>{rows}</div><div class=pb-read>'

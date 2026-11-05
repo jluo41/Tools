@@ -1,8 +1,52 @@
 haipipe-interaction · Changelog
 ===============================
 
+0.10.0 · 2026-11-05 · what you should know
+
+- JL 261105: "it should include both ask question and keep what you should know". New `collect.py know`: a notes Run,
+  one per topic, state "to know", waiting on nothing; `applied` flags a note settled. Workbench: `focus_page.interactions`
+  gives the state and `interaction_item` a Read button; the empty section's words name both kinds.
+
+0.9.2 · 2026-11-04 · one look
+
+- JL 261104: "make this to be the standard items for any of them". The rail and the pop-out draw the same section as a view's bottom; a Run with no built form keeps its plain row.
+
+0.9.1 · 2026-11-04 · a question's why reads in full black
+
+- JL 261104: "the font color is not that readable". `.lead`, `.why`, `.because` and the sketch now use the page's text colour; a waiting form takes it at its next build.
+
+0.9.0 · 2026-11-04 · every view ends in Interaction
+
+- JL 261104: "could you try to make this section at the bottom for each of the view? not matter for the block, or job or task". The form and its record are unchanged; the paper Displays row gave way to it.
+
+0.8.7 · 2026-11-04 · a Story's questions have a place
+
+- A paper Board's Idea + Story ends in 🙋 Interaction (workbench-paper 0.46.0); the form and its record are unchanged.
+
+0.8.6 · 2026-11-03 · a paper's display questions have a place
+
+- JL 261103: "please update ... the /haipipe-interaction as well". A question about a paper's displays (which
+  version, which layout, keep or drop) is a collection Run in `j01_evidence_display/runs/` or the display Task's
+  `runs/`; the paper workbench shows it in G · Displays, 4 · Interaction, and haipipe-paper's checklist line V8 waits
+  on it. SKILL.md's Where it shows lists the entry.
+
+0.8.5 · 2026-11-03 · the combined page stops growing
+
+- JL 261103: "why this box of Q1 is increasing along the way?". `bundle`'s page resized each form every 1.5 s to its
+  document's scrollHeight + 8 px; a document is never shorter than its frame, so every form grew 8 px a round, forever.
+  It now measures the content's own bottom (fixed pop-outs left out) and changes the height only when it differs by
+  more than 2 px. Checked in Chrome on b16's answer_all.html: 8 forms, the same heights 6 s apart, each ending at its
+  last line.
 
 
+
+
+## [0.8.4] — 2026-11-03
+
+A preview pops out when clicked (JL 261103 on the ScalingGlucose display form: "could you make the options here to be
+pop out when I click them?"): the click still picks the option, and the preview opens over the form at full width;
+Close, a click outside it or Esc shuts it. Open ↗ still opens it alone in a new tab. `preview_html`, the `.pop` style,
+`hpPop` in the form's script.
 
 ## [0.8.3] — 2026-11-01
 

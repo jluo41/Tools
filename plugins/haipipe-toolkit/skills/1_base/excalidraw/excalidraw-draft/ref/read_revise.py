@@ -397,7 +397,7 @@ def read_draft(path, docx):
             para, cur = m.group(1), None
             PARA_BRIEF[para] = m.group(2) or ""
             continue
-        m = re.match(r"^- B(\d+) · S(\d+) · (.*\S)\s*$", line)
+        m = re.match(r"^- B(\d+)[a-z]* · S(\d+) · (.*\S)\s*$", line)
         if m and sid is not None:
             cur = [int(m.group(2)), [], m.group(3), f"{para}.B{m.group(1)}"]
             out[sid].append(cur)
@@ -1024,7 +1024,7 @@ def cmd_edits(a):
             m = re.match(r"^### (C\d+\.P\d+)", line)
             if m:
                 para = m.group(1)
-            m = re.match(r"^(- B(\d+) · S\d+ · )(.*\S)\s*$", line)
+            m = re.match(r"^(- B(\d+)[a-z]* · S\d+ · )(.*\S)\s*$", line)
             if section == "Draft" and m and (f"{para}.B{m.group(2)}", m.group(3)) in built:
                 lines[k] = m.group(1) + built[(f"{para}.B{m.group(2)}", m.group(3))]
                 hit += 1

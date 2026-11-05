@@ -1,0 +1,51 @@
+# Proposed edits to j11_writing_v1130_desk/t01_introduction/evidence/cards.yaml (CITE only), written by cite_tasks.py run. Not applied.
+section: t01_introduction
+edits:
+- op: need
+  key: example2024policy
+  sentences:
+  - C1.P1.1
+  card:
+    kind: cite
+    source: b01.j01.t01
+  item:
+    need: a discovery Run for example2024policy (doi 10.0000/example.2024.001)
+    for:
+    - C1.P1.1
+    cite: example2024policy
+    propose:
+      level: run
+      in: b01.j01.t01
+  why: no discovery Run holds this source
+- op: need
+  key: example2021one
+  sentences:
+  - C1.P1.2
+  card:
+    kind: cite
+    source: b01.j01.t01
+  item:
+    need: 'a discovery Run for example2021one (no DOI: a web or book source)'
+    for:
+    - C1.P1.2
+    cite: example2021one
+    propose:
+      level: run
+      in: b01.j01.t01
+  why: no discovery Run holds this source
+- op: need
+  key: example2022two
+  sentences:
+  - C1.P1.2
+  card:
+    kind: cite
+    source: b01.j01.t01
+  item:
+    need: 'a discovery Run for example2022two (no DOI: a web or book source)'
+    for:
+    - C1.P1.2
+    cite: example2022two
+    propose:
+      level: run
+      in: b01.j01.t01
+  why: no discovery Run holds this source

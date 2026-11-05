@@ -1,0 +1,1 @@
+[{"model": "stand-in A (reads the rules)", "train": "1.00", "test": "0.57", "coverage": "1.00"}, {"model": "stand-in B (fears refusals)", "train": "0.57", "test": "1.00", "coverage": "1.00"}]

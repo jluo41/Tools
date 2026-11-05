@@ -11,4 +11,7 @@ Q6 · applied · 2026-10-31 20:45 · focus_draft.explore_blocks, explore_html (R
 Q7 · applied · 2026-10-31 22:33 · s32-D09 to D11, s33-D02; focus_draft.ANSWER_FIRST; paper_ui_cells.py letters; s32 delivery/render.yaml
 Q8 · applied · 2026-10-31 22:33 · s32-D09 to D11, s33-D02; focus_draft.ANSWER_FIRST; paper_ui_cells.py letters; s32 delivery/render.yaml
 Q9 · applied · 2026-10-31 22:33 · s32-D09 to D11, s33-D02; focus_draft.ANSWER_FIRST; paper_ui_cells.py letters; s32 delivery/render.yaml
-Q10 · in progress · 2026-11-01 01:59 · sent to session Theme_Paper (owner of s32 and its Board Report code) on 2026-11-01; the paper Board's data-flow yaml already carries all six columns
+Q11 · applied · 2026-11-04 13:38 · board_read.BOARD_VIEWS, board_results.idea_story_view and plan_view, board_process.process_html; workbench-paper 0.45.0
+Q12 · applied · 2026-11-04 23:08 · workbench-paper 0.46.0, board_results.py interaction_section, idea_story_view
+Q13 · applied · 2026-11-04 23:08 · workbench-paper 0.46.0, board_results.py interaction_section, idea_story_view
+Q14 · applied · 2026-11-04 23:41 · servers/workbench/interaction_section.py, focus_page.py

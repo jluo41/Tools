@@ -43,8 +43,8 @@ SPEC = ("what", "pass", "cut", "unit", "measure", "by", "uncertainty", "rivals",
 JOINED = re.compile(r",? (?:and|or) (?:what|which|how|does|do|is|are|why|when|whether|who)\b", re.I)
 TESTS = ("rate_precision", "two_proportion", "script")
 AGREED = re.compile(r"^(⬜|✅ \d{6})$")
-REALIZES = re.compile(r"<!-- realizes: (C\d+\.P\d+\.B\d+) -->")
-ITEM = re.compile(r"^### (E\d+-[A-Z]+-[\w-]+) · (C\d+\.P\d+\.B\d+)", re.M)
+REALIZES = re.compile(r"<!-- realizes: (C\d+\.P\d+\.B\d+[a-z]*) -->")
+ITEM = re.compile(r"^### (E\d+-[A-Z]+-[\w-]+) · (C\d+\.P\d+\.B\d+[a-z]*)", re.M)
 
 
 # ── the questions ────────────────────────────────────────────────────────────
@@ -257,7 +257,7 @@ def page_cites(qfolder):
             if ph:
                 para, bullet = ph.group(1), None
                 continue
-            b = re.match(r"^- (?:\[[ xX]\]\s*)?B(\d+)\s*·", line)
+            b = re.match(r"^- (?:\[[ xX]\]\s*)?B(\d+)[a-z]*\s*·", line)
             if b and para:
                 bullet = f"{para}.B{b.group(1)}"
                 continue

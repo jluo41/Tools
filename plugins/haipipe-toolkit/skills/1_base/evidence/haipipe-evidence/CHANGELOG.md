@@ -1,5 +1,16 @@
 # haipipe-evidence · Changelog
 
+## 0.9.0 · 2026-11-03 · VALUE items bound by id, their status, lineage, binding proposals
+
+- JL 261103 (asked how to update both haipipe-paper-evidence and haipipe-evidence): the generic layers of the paper
+  value ledger live here. A VALUE item may say `value: <id>` (an id of a catalog, a Run's `result/values.yaml`) instead
+  of `file` + `key`, and a display's item `display:` + `printed:`.
+- `cards.py`: `item_status` (match, differs, missing, no anchor, owed, pending; exact half-up rounding at the printed
+  precision); `check` reports a differs; `lineage` reads a value's `checks:` from the work Run's values.csv `source`
+  column and its Block's `src/inputs.yaml` (typed stand-ins marked); `find_value`, `bind_proposals`, `adopt_bindings`
+  and `propose --catalog ... [--adopt]`: binding proposals on the existing proposals.md path, ticked once.
+- `tests/test_value_bindings.py`: statuses, lineage, propose, tick, adopt, check.
+
 ## [0.8.1] — 2026-10-26
 
 Shorter description (1075 -> 541 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026b.yaml). (describe 261026b)

@@ -21,6 +21,7 @@ import tomllib
 from typing import Iterable
 
 from docx import Document
+from docx.enum.style import WD_STYLE_TYPE
 from docx.enum.table import WD_CELL_VERTICAL_ALIGNMENT, WD_TABLE_ALIGNMENT
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml import OxmlElement
@@ -410,10 +411,48 @@ TEX_SYMBOL = re.compile(r"\\(" + "|".join(sorted(TEX_SYMBOLS, key=len, reverse=T
 
 
 PENDING_MARK = "\x12"   # \pending{x}: a value still to come, kept as a mark so add_table shades its cell (0.12.0)
+INDENT_MARK = "\x13"    # one per em of a cell's leading \hspace*, so add_table indents the cell (0.14.4)
+
+# Layout codes carry numbers, not words. The generic stripper in latex_to_text takes only the command's name, so their
+# arguments printed: "=2em=11emLinear", "1em2-part model", "1.9in Primary" (pp-LBP-JAMA 261103).
+LAYOUT_ASSIGNMENT = re.compile(
+    r"\\(?:hangindent|hangafter|leftskip|rightskip|parindent|parskip|hsize|baselineskip)\b"
+    r"\s*=?\s*-?[\d.]*\s*(?:em|ex|in|pt|cm|mm|bp)?")
+LAYOUT_COMMAND = re.compile(
+    r"\\(?:[hv]space\*?\s*\{[^{}]*\}|renewcommand\s*\{[^{}]*\}\s*\{[^{}]*\}|setlength\s*\{[^{}]*\}\s*\{[^{}]*\}|addtolength\s*\{[^{}]*\}\s*\{[^{}]*\}"
+    r"|rule(?:\[[^\]]*\])?\s*\{[^{}]*\}\s*\{[^{}]*\})")
+MINIPAGE = re.compile(r"\\begin\{minipage\}(?:\[[^\]]*\])*(?:\{[^{}]*\})?|\\end\{minipage\}")
+TRUE_MINUS = re.compile(r"(?<![\w.,/)%\u2013\u2014\u2212-])-(?=\.?\d)")
+
+
+def strip_layout(value: str) -> str:
+    """Drop the layout commands whose arguments are measurements; \\parbox keeps its text and loses its width."""
+    value = re.sub(r"\\parbox\s*(?:\[[^\]]*\])*", r"\\parbox", value)
+    value = unwrap_command(value, "parbox", 2, 1)
+    value = MINIPAGE.sub("", value)
+    value = LAYOUT_ASSIGNMENT.sub("", value)
+    return LAYOUT_COMMAND.sub("", value)
+
+
+def true_minus(value: str) -> str:
+    """A hyphen that opens a number is a minus sign ("-2.5", "(-3.1 to -0.5)"); "2016-2019" and "ICD-10" keep theirs."""
+    return TRUE_MINUS.sub("\u2212", value)
+
+
+def unwrap_sqrt(value: str) -> str:
+    """\\sqrt{x} as text, for the places that cannot hold an equation (a caption, a table cell)."""
+    pattern = re.compile(r"\\sqrt\s*(?:\[[^\]]*\])?\s*(?=\{)")
+    while (match := pattern.search(value)) is not None:
+        group = parse_group_at(value, match.end())
+        if group is None:
+            return value
+        value = value[:match.start()] + "\u221a(" + group[0] + ")" + value[group[1]:]
+    return value
 
 
 def latex_to_text(value: str) -> str:
-    value = value or ""
+    value = strip_layout(value or "")
+    value = unwrap_sqrt(value)
     value = re.sub(r"\\pending\{([^{}]*)\}", lambda m: PENDING_MARK + m.group(1) + PENDING_MARK, value)
     value = re.sub(r"\\providecommand\{\\pending\}(\[\d\])?\{[^\n]*\}", "", value)
     value = re.sub(r"\\cite(?:p|t)?(?:\[[^\]]*\])?\{([^}]+)\}", citation_text, value)
@@ -596,7 +635,11 @@ def _expand_cell(cell: str) -> list[str]:
         g = parse_group_at(cell, m2.end())
         if not g: break
         cell = cell[:m2.start()] + g[0].replace("\\\\", " ") + cell[g[1]:]
-    text = latex_to_text(cell).strip()
+    cell = LAYOUT_ASSIGNMENT.sub("", cell)
+    indent = re.match(r"\s*\\hspace\*?\s*\{\s*([\d.]+)\s*em\s*\}", cell)
+    text = true_minus(latex_to_text(mark_superscript(cell)).strip())
+    if indent and text:
+        text = INDENT_MARK * max(1, round(float(indent.group(1)))) + text
     return [text] + [""] * (span - 1)
 
 
@@ -700,6 +743,11 @@ def count_header_rows(block: str) -> int:
     return max(1, len(head_rows))
 
 
+def display_note(value: str) -> str:
+    """A note under a display: its $...$ stay equations (the \\sqrt printed nothing once flattened), its minus signs true."""
+    return true_minus(latex_to_text(mark_emphasis(protect_math(value, MATH_STORE))).strip())
+
+
 def parse_display(block: str) -> Display:
     is_figure = bool(re.search(r"\\includegraphics(?:\[[^]]*\])?\{", block))
     caption = extract_command(block, "caption") or extract_command(block, "caption*")
@@ -707,7 +755,7 @@ def parse_display(block: str) -> Display:
     heading = latex_to_text(parse_group_at(caption, bold.end())[0]) if bold else ""
     label = extract_command(block, "label")
     notes = re.findall(r"\\begin\{flushleft\}(.*?)\\end\{flushleft\}", block, re.S)
-    note = " ".join(latex_to_text(mark_emphasis(n)).strip() for n in notes if latex_to_text(n).strip())
+    note = " ".join(display_note(n) for n in notes if latex_to_text(n).strip())
     if is_figure:
         image_match = re.search(r"\\includegraphics(?:\[[^]]*\])?\{([^}]+)\}", block)
         image_ref = image_match.group(1) if image_match else ""
@@ -732,7 +780,7 @@ def parse_display(block: str) -> Display:
             body = parse_group_at(block, width[1]) if width else None
             if body:
                 notes.append(re.sub(r"\\(?:footnotesize|small|scriptsize|raggedright)\b", "", body[0]))
-    note = " ".join(latex_to_text(mark_emphasis(n)).strip() for n in notes if latex_to_text(n).strip())
+    note = " ".join(display_note(n) for n in notes if latex_to_text(n).strip())
     return Display(kind="table", block=block, caption=latex_to_text(caption), label=label,
                    rows=parse_table_rows(block), note=note, spans=parse_table_spans(block),
                    header_rows=count_header_rows(block), heading=heading)
@@ -869,6 +917,51 @@ def set_font(run, name: str = FONT, size: float = 12, bold: bool | None = None, 
         run.font.color.rgb = RGBColor.from_string(color)
 
 
+def word_template_path() -> Path | None:
+    """0.16.0 (JL 261104: "we should have the MISQ official word template, why don't we use that one?"): the venue's own
+    .docx, named by [profile] word_template, relative to paper-build.toml. The manuscript is written inside that file."""
+    name = PROFILE_CONFIG.get("word_template")
+    if not name:
+        return None
+    path = (Path(CONFIG_ENV or "paper-build.toml").resolve().parent / str(name)).resolve()
+    if not path.is_file():
+        raise FileNotFoundError(f"[profile] word_template not found: {path}")
+    return path
+
+
+def new_main_document() -> Document:
+    """The venue's template with its sample text taken out: its styles, numbering, page setup and footer stay as they
+    are. With no template, a blank document set up from the profile, as before."""
+    path = word_template_path()
+    if path is None:
+        doc = Document()
+        configure_document(doc)
+        return doc
+    doc = Document(str(path))
+    body = doc.element.body
+    for element in list(body):
+        if element.tag != qn("w:sectPr"):
+            body.remove(element)
+    props = doc.core_properties   # a blind copy carries no name, and none of the template's own
+    props.author = props.last_modified_by = props.title = props.subject = props.comments = props.keywords = ""
+    # what the template does not define, and the tables, figures and lists need
+    names = {style.name for style in doc.styles}
+    if "Caption" not in names:
+        caption = doc.styles.add_style("Caption", WD_STYLE_TYPE.PARAGRAPH, builtin=True)
+        caption.base_style = doc.styles["Normal"]
+        caption.font.size = Pt(10)
+        caption.font.bold = bool(PROFILE_CONFIG.get("caption_plain", False))
+        caption.paragraph_format.line_spacing = 1.0
+        caption.paragraph_format.space_before = Pt(4)
+        caption.paragraph_format.space_after = Pt(6)
+    if "List Bullet" not in names:
+        bullet = doc.styles.add_style("List Bullet", WD_STYLE_TYPE.PARAGRAPH, builtin=True)
+        bullet.base_style = doc.styles["Normal"]
+        bullet.paragraph_format.left_indent = Inches(0.25)
+        bullet.paragraph_format.first_line_indent = Inches(-0.15)
+    return doc
+
+
 def configure_document(doc: Document, *, body_size: float = 12, line_spacing: float = 2.0) -> None:
     section = doc.sections[0]
     section.top_margin = Inches(1)
@@ -944,9 +1037,13 @@ def _mathml_to_omml(node) -> str:
     """A small MathML → OMML writer for the constructs latex2mathml emits for paper equations."""
     tag = node.tag.split("}")[-1]
     kids = list(node)
-    inner = lambda n: "".join(_mathml_to_omml(k) for k in n) if len(n) else _mathml_to_omml_leaf(n)
+    inner = lambda n: _mathml_children(list(n)) if len(n) else _mathml_to_omml_leaf(n)
     if tag in ("math", "mrow", "mstyle", "semantics", "mpadded", "mphantom"):
-        return "".join(_mathml_to_omml(k) for k in kids)
+        return _mathml_children(kids)
+    if tag == "msqrt":      # had no case, so the root was dropped and only its contents printed (pp-LBP-JAMA 261103)
+        return f'<m:rad><m:radPr><m:degHide m:val="1"/></m:radPr><m:deg/><m:e>{_mathml_children(kids)}</m:e></m:rad>'
+    if tag == "mroot" and len(kids) == 2:
+        return f"<m:rad><m:deg>{inner(kids[1])}</m:deg><m:e>{inner(kids[0])}</m:e></m:rad>"
     if tag in ("mi", "mn", "mo", "mtext", "ms"):
         return _mathml_to_omml_leaf(node)
     if tag == "mspace":
@@ -965,8 +1062,28 @@ def _mathml_to_omml(node) -> str:
     return "".join(_mathml_to_omml(k) for k in kids) or _mathml_to_omml_leaf(node)
 
 
-def _mathml_to_omml_leaf(node) -> str:
-    text = (node.text or "")
+def _mathml_children(kids: list) -> str:
+    """Sibling nodes in order, with a row of letters joined into one word: latex2mathml gives each letter of
+    \\mathrm{score} its own <mi>, and one run per letter printed "s c o r e" (pp-LBP-JAMA 261103)."""
+    out: list[str] = []
+    i = 0
+    while i < len(kids):
+        kid = kids[i]
+        if kid.tag.split("}")[-1] == "mi" and not len(kid):
+            variant, text, i = kid.get("mathvariant", ""), kid.text or "", i + 1
+            while i < len(kids) and kids[i].tag.split("}")[-1] == "mi" and not len(kids[i]) \
+                    and kids[i].get("mathvariant", "") == variant:
+                text += kids[i].text or ""
+                i += 1
+            out.append(_mathml_to_omml_leaf(kid, text))
+        else:
+            out.append(_mathml_to_omml(kid))
+            i += 1
+    return "".join(out)
+
+
+def _mathml_to_omml_leaf(node, text: str | None = None) -> str:
+    text = (node.text or "") if text is None else text
     if not text:
         return ""
     variant = node.get("mathvariant", "")
@@ -978,6 +1095,10 @@ def _mathml_to_omml_leaf(node) -> str:
 
 def latex_to_omml(latex: str):
     """An <m:oMath> element for one LaTeX math string, or None when it cannot be converted."""
+    # A two-line equation prints as one Word equation, which Word wraps itself (JL 261104: "aligned" printed as words).
+    latex = re.sub(r"\\(?:begin|end)\{(?:aligned|split|gathered)\}", " ", latex)
+    latex = latex.replace("\\\\", " ").replace("&", " ").replace("{}", " ")
+    latex = re.sub(r"\\[Bb]igg?l?\(", "(", latex); latex = re.sub(r"\\[Bb]igg?r?\)", ")", latex)
     try:
         from latex2mathml.converter import convert
         from lxml import etree
@@ -1021,11 +1142,37 @@ def add_math_paragraph(doc: Document, latex: str, *, size: float = 12) -> None:
 # appendix screenshot: "<Trait> specification" lost its bold; 11 \textit were plain).
 EMPHASIS_MARKS = {"textbf": ("\x02", "\x03"), "textit": ("\x04", "\x05"), "emph": ("\x04", "\x05")}
 EMPHASIS_SWITCH = {"\x02": ("bold", True), "\x03": ("bold", False), "\x04": ("italic", True), "\x05": ("italic", False),
-                   "\x0e": ("superscript", True), "\x0f": ("superscript", False)}   # \x0e \x0f: an AMA citation
-RICH_PART = re.compile(r"(@@MATH\d+@@|[\x02-\x05\x0e\x0f])")
+                   "\x0e": ("superscript", True), "\x0f": ("superscript", False),   # \x0e \x0f: an AMA citation
+                   "\x10": ("superscript", True), "\x11": ("superscript", False)}   # \x10 \x11: \textsuperscript (a note's a, b)
+RICH_PART = re.compile(r"(@@MATH\d+@@|[\x02-\x05\x0e-\x11])")
+
+
+def mark_superscript(value: str) -> str:
+    """\\textsuperscript{a} kept as marks, so Word raises it (pp-LBP-JAMA 261103: "15 yearsa", "aThe cut chosen"). Its
+    own pair: an AMA citation's marks also pull the citation against the word before it, which a note's "a" must not."""
+    pattern = re.compile(r"\\textsuperscript\s*(?=\{)")
+    while (match := pattern.search(value)) is not None:
+        group = parse_group_at(value, match.end())
+        if group is None:
+            return value
+        value = value[:match.start()] + "\x10" + group[0] + "\x11" + value[group[1]:]
+    return value
+
+
+def add_marked_runs(paragraph, value: str, *, size: float, bold: bool | None = None) -> None:
+    """A table cell's text: its \\textsuperscript parts raised, the rest plain."""
+    for part in re.split(r"(\x10[^\x11]*\x11)", value):
+        if not part:
+            continue
+        raised = part.startswith("\x10")
+        run = paragraph.add_run(part.strip("\x10\x11") if raised else part)
+        set_font(run, size=size, bold=bold)
+        if raised:
+            run.font.superscript = True
 
 
 def mark_emphasis(value: str) -> str:
+    value = mark_superscript(value)
     pattern = re.compile(r"\\(textbf|textit|emph)\s*(?=\{)")
     while (match := pattern.search(value)) is not None:
         group = parse_group_at(value, match.end())
@@ -1075,10 +1222,10 @@ def add_text(doc: Document, text: str, *, size: float = 12, bold: bool = False, 
              line_spacing: float = 2.0, before: float = 0, after: float = 0) -> None:
     if not text:
         return
-    if "\x0e" in text and not bold:   # a superscript citation: the rich writer sets it
+    if ("\x0e" in text or "\x10" in text) and not bold:   # a superscript: the rich writer sets it
         add_rich_text(doc, text, MATH_STORE, size=size, line_spacing=line_spacing, before=before, after=after)
         return
-    text = text.replace("\x0e", "").replace("\x0f", "")
+    text = re.sub(r"[\x0e-\x11]", "", text)
     paragraph = doc.add_paragraph(style=style)
     paragraph.alignment = align
     paragraph.paragraph_format.line_spacing = line_spacing
@@ -1089,19 +1236,25 @@ def add_text(doc: Document, text: str, *, size: float = 12, bold: bool = False, 
     set_font(run, size=size, bold=bold, color="C00000" if action else None)
 
 
-def add_heading(doc: Document, text: str, level: int = 1, *, upper: bool = True) -> None:
+def add_heading(doc: Document, text: str, level: int = 1, *, upper: bool = True, unnumbered: bool = False) -> None:
     if not text:
         return
     heading_style = str(PROFILE_CONFIG.get("heading_style", "heading")).lower()
     style = "Normal" if heading_style == "normal" else f"Heading {min(level, 3)}"
+    template = word_template_path() is not None
+    # a template's Heading styles draw their own numbers; what is not numbered there takes its Subtitle (MISQ: Abstract, REFERENCES, APPENDIX)
+    if template and unnumbered and level == 1:
+        style = "Subtitle"
     paragraph = doc.add_paragraph(style=style)
+    if template and unnumbered and level > 1:
+        paragraph._p.get_or_add_pPr().get_or_add_numPr().get_or_add_numId().val = 0
     if str(PROFILE_CONFIG.get("heading_align", "left")).lower() == "center":   # MISQ centres its headings
         paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
     paragraph.paragraph_format.keep_with_next = bool(PROFILE_CONFIG.get("headings_keep_with_next", True))
     paragraph.paragraph_format.line_spacing = 2.0
     # An explicit before-space keeps LibreOffice's DOCX renderer from visually
     # joining an immediately preceding body paragraph and its next heading.
-    paragraph.paragraph_format.space_before = Pt(6)
+    paragraph.paragraph_format.space_before = Pt(0 if template else 6)
     paragraph.paragraph_format.space_after = Pt(0)
     run = paragraph.add_run(text.upper() if (level == 1 and upper) else text)
     set_font(run, size=12, bold=True)
@@ -1110,7 +1263,7 @@ def add_heading(doc: Document, text: str, level: int = 1, *, upper: bool = True)
 def add_bullet(doc: Document, text: str) -> None:
     paragraph = doc.add_paragraph(style="List Bullet")
     paragraph.paragraph_format.line_spacing = 2.0
-    run = paragraph.add_run(text)
+    run = paragraph.add_run(f"• {text}" if word_template_path() is not None else text)   # a template's bullet style holds no list
     set_font(run, size=12)
 
 
@@ -1244,8 +1397,10 @@ def add_table(doc: Document, display: Display, title: str = "", *, compact: bool
             paragraph.paragraph_format.keep_with_next = keep_together and row_index < len(rows) - 1
             pending = PENDING_MARK in value
             value = value.replace(PENDING_MARK, "")
-            run = paragraph.add_run(value)
-            set_font(run, size=cell_size, bold=(row_index < heads))
+            if value.startswith(INDENT_MARK):   # a nested row: "Part 1" under "2-part model"
+                paragraph.paragraph_format.left_indent = Pt(cell_size * value.count(INDENT_MARK))
+                value = value.replace(INDENT_MARK, "")
+            add_marked_runs(paragraph, value, size=cell_size, bold=(row_index < heads))
             if pending:   # a value still to come prints on yellow, as \pending does in the PDF (JL 261023)
                 set_cell_shading(cell, "FFFF00")
             if row_index < heads and header_fill:   # profile key; "" = no fill (MISQ)
@@ -1533,8 +1688,20 @@ def display_is_full_page(display: Display) -> bool:
     return 6.1 * h / max(w, 1) > float(PROFILE_CONFIG.get("display_float_max_inches", 5.5))
 
 
+HEADING_COUNTS = [0, 0, 0]   # 0.16.0: the running 1, 1.1, 1.1.1 of profile heading_numbers
+
+
+def next_heading_number(level: int, first: str = "") -> str:
+    """The number a venue's template prints before a heading: 1, 2.1, 2.1.1, or A.1 inside an appendix."""
+    index = min(level, 3) - 1
+    HEADING_COUNTS[index] += 1
+    HEADING_COUNTS[index + 1:] = [0] * (2 - index)
+    return ".".join([first or str(HEADING_COUNTS[0])] + [str(n) for n in HEADING_COUNTS[1:index + 1]])
+
+
 def add_events(doc: Document, events: Iterable[Event], *, include_displays: bool = True, compact: bool = False,
-               number_displays: bool = False, main_numbering: bool = False, appendix_letters: bool = False) -> None:
+               number_displays: bool = False, main_numbering: bool = False, appendix_letters: bool = False,
+               heading_upper: bool = True, number_headings: bool = False) -> None:
     """0.7.1: ``number_displays`` gives every table/figure in this stream a running
     title ("Table S1.", "Figure S1."; prefixes from the profile), so a supplement
     table no longer prints its caption with no number."""
@@ -1564,7 +1731,19 @@ def add_events(doc: Document, events: Iterable[Event], *, include_displays: bool
                     prefixes = {"table": f"{PROFILE_CONFIG.get('main_table_prefix', 'Table ')}{chr(ord('A') + letter)}",
                                 "figure": f"{PROFILE_CONFIG.get('main_figure_prefix', 'Figure ')}{chr(ord('A') + letter)}"}
                 letter += 1
-            add_heading(doc, title, event.level, upper=not (appendix_letters and event.level == 1))
+                HEADING_COUNTS[:] = [0, 0, 0]
+                upper = bool(PROFILE_CONFIG.get("appendix_heading_upper", False))
+                unnumbered = True
+            else:
+                upper = heading_upper
+                template = word_template_path() is not None
+                unnumbered = template and (appendix_letters or not number_headings)
+                # 0.16.0: the number printed before a heading. A template's Heading styles draw the main text's numbers; an appendix's A.1 is typed
+                if number_headings and ((template and appendix_letters) or (not template and bool(PROFILE_CONFIG.get("heading_numbers", False)))):
+                    title = f"{next_heading_number(event.level, chr(ord('A') + letter - 1) if appendix_letters and letter else '')} {title}"
+            add_heading(doc, title, event.level, upper=upper, unnumbered=unnumbered)
+            if appendix_letters and event.level == 1 and letter == 1 and bool(PROFILE_CONFIG.get("appendix_new_page", False)):
+                doc.paragraphs[-1].paragraph_format.page_break_before = True
         elif event.kind == "text":
             add_rich_text(doc, str(event.value), MATH_STORE, size=11 if compact else 12)
         elif event.kind == "math":
@@ -1629,6 +1808,8 @@ HELD: dict[int, list[dict]] = {}
 
 
 def word_can_measure() -> bool:
+    if os.environ.get("HAIPIPE_WORD_DRAFT") == "1":   # build.py --word-draft (JL 261104): floats, no measuring; Word sets
+        return False                                  # each display at the top of the page its citing text reaches
     return (sys.platform == "darwin" and MSWORD_APP.exists() and os.environ.get("HAIPIPE_WORD_PREVIEW") != "html"
             and "PYTEST_CURRENT_TEST" not in os.environ)
 
@@ -1656,6 +1837,19 @@ def _applescript_string(text: str) -> str:
 
 def word_running() -> bool:
     return subprocess.run(["pgrep", "-x", "Microsoft Word"], capture_output=True).returncode == 0
+
+
+WORD_STUCK = "Word did not answer"     # build_delivery.py finds this line in the step's output and warns
+
+
+def word_answers(wait: int = 30) -> bool:
+    """A quick question only a working Word can answer. A stuck Word (b16.j02-s22, 261104: its main thread on a lock, 0%
+    CPU) let every display wait out AppleScript's 120 seconds and still fall back, about 28 minutes a paper, in silence."""
+    script = f'with timeout of {wait} seconds\ntell application "Microsoft Word" to get name of documents\nend timeout'
+    try:
+        return subprocess.run(["osascript", "-e", script], capture_output=True, timeout=wait + 10).returncode == 0
+    except (OSError, subprocess.TimeoutExpired):
+        return False
 
 
 def word_page_boundaries(path: Path, anchors: list[str]) -> list[str | None]:
@@ -1847,7 +2041,7 @@ def is_heading1(p_el) -> bool:
     """A paragraph set in the Heading 1 style: a main Section or an Appendix opens here."""
     pPr = p_el.find(qn("w:pPr"))
     style = pPr.find(qn("w:pStyle")) if pPr is not None else None
-    return style is not None and style.get(qn("w:val")) in {"Heading1", "Heading 1"}
+    return style is not None and style.get(qn("w:val")) in {"Heading1", "Heading 1", "Subtitle"}   # Subtitle: a template's REFERENCES, APPENDIX
 
 
 def _body_index(el) -> int:
@@ -1863,7 +2057,18 @@ def save_docx(doc: Document, path: Path) -> None:
     held = HELD.pop(id(doc), [])
     if not held:
         return
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from word_lock import word_turn
+    with word_turn() as turn:      # builds take turns in Word, for the whole document (b16.j02-s22)
+        place_held(doc, path, held, turn)
+
+
+def place_held(doc: Document, path: Path, held: list, turn: bool) -> None:
     was_running, placed, last = word_running(), 0, None
+    answers = turn and word_answers()
+    if not answers:
+        print(f"{WORD_STUCK} in 30 seconds: {Path(path).name}'s {len(held)} display(s) go right after their citing "
+              "paragraphs, not at page tops. Restart Word and build again.", file=sys.stderr)
     try:
         for h in held:
             anchor, mode = h["anchor"], "E"
@@ -1882,7 +2087,7 @@ def save_docx(doc: Document, path: Path) -> None:
                     if el is anchor:
                         break
                 doc.save(path)
-                before = word_page_boundaries(Path(path), [f"{mode}|{max(k, 1)}|{snippet}"])[0]
+                before = word_page_boundaries(Path(path), [f"{mode}|{max(k, 1)}|{snippet}"])[0] if answers else None
                 target = boundary_target(anchor, before)
                 placed += target is not None
                 measured = target is not None
@@ -1922,7 +2127,11 @@ def save_docx(doc: Document, path: Path) -> None:
             last = moved[-1]
     finally:
         if not was_running and word_running():
-            subprocess.run(["osascript", "-e", 'tell application "Microsoft Word" to quit saving no'], capture_output=True)
+            try:   # never with a document open: a person may have opened one during the build
+                subprocess.run(["osascript", "-e", 'tell application "Microsoft Word" to if (count of documents) is 0 then quit saving no'],
+                               capture_output=True, timeout=30)
+            except subprocess.TimeoutExpired:
+                pass
             for _ in range(40):   # wait until Word has gone, or the preview step takes it for the user's own Word
                 if not word_running():
                     break
@@ -1935,11 +2144,17 @@ def add_supplement_contents(doc: Document, events: list[Event]) -> None:
     """The first-page list of a JAMA supplement: each section heading, then each table and figure by its caption."""
     add_text(doc, "This supplemental material has been provided by the authors to give readers additional information "
                   "about their work.", size=11, line_spacing=1.5, before=12)
+    prefixes = {"table": str(PROFILE_CONFIG.get("supplement_table_prefix", "Table S")),
+                "figure": str(PROFILE_CONFIG.get("supplement_figure_prefix", "Figure S"))}
+    counters = {"table": 0, "figure": 0}
     for event in events:
         if event.kind == "heading" and event.level <= 2:
             add_text(doc, str(event.value), size=11, line_spacing=1.15)
-        elif event.kind == "display" and isinstance(event.value, Display) and event.value.caption:
-            add_text(doc, "    " + event.value.caption, size=10, line_spacing=1.15)
+        elif event.kind == "display" and isinstance(event.value, Display):
+            counters[event.value.kind] += 1     # the same count add_events prints, so the list names the same labels
+            label = f"{prefixes[event.value.kind]}{counters[event.value.kind]}."
+            # the title, not the legend under it: a whole caption made a list of paragraphs
+            add_text(doc, f"    {label} {event.value.heading or event.value.caption}".rstrip(), size=10, line_spacing=1.15)
 
 
 def restyle_runs(doc: Document, font: str, body_size: float) -> None:
@@ -1968,7 +2183,8 @@ def restyle_runs(doc: Document, font: str, body_size: float) -> None:
 
 
 def add_abstract(doc: Document, block: str) -> None:
-    add_heading(doc, str(PROFILE_CONFIG.get("abstract_heading", "ABSTRACT")), 1)
+    add_heading(doc, str(PROFILE_CONFIG.get("abstract_heading", "ABSTRACT")), 1,
+                upper=bool(PROFILE_CONFIG.get("abstract_heading_upper", True)), unnumbered=True)
     labels = list(re.finditer(r"\\noindent\s*\\textbf\s*\{([^{}]+)\}", block))
     if not labels:
         add_text(doc, latex_to_text(block))
@@ -2012,8 +2228,11 @@ def add_title_page(doc: Document, title: str, running_title: str, word_count: in
     unchanged.
     """
     known = {
-        "title":       lambda: (add_text(doc, title, size=16, bold=True, align=WD_ALIGN_PARAGRAPH.CENTER,
-                                         style="Title", line_spacing=1.0, before=48, after=36)
+        "title":       lambda: ((add_text(doc, title, size=doc.styles["Title"].font.size.pt, bold=True,
+                                          align=WD_ALIGN_PARAGRAPH.CENTER, style="Title", line_spacing=2.0, before=0, after=0)
+                             if word_template_path() is not None else
+                             add_text(doc, title, size=16, bold=True, align=WD_ALIGN_PARAGRAPH.CENTER,
+                                      style="Title", line_spacing=1.0, before=48, after=36))
                             if _front_matter_on_one_page() else
                             add_text(doc, title, size=16, bold=True, align=WD_ALIGN_PARAGRAPH.CENTER)),
         "running":     lambda: add_text(doc, f"Running title: {running_title}", align=WD_ALIGN_PARAGRAPH.CENTER),
@@ -2291,17 +2510,20 @@ def format_reference_apa(key: str) -> str:
 def add_references(doc: Document) -> None:
     if not CITATION_NUMBERS:
         return
-    add_heading(doc, str(PROFILE_CONFIG.get("references_heading", "REFERENCES")), 1)
+    add_heading(doc, str(PROFILE_CONFIG.get("references_heading", "REFERENCES")), 1, unnumbered=True)
+    if bool(PROFILE_CONFIG.get("references_new_page", False)):
+        doc.paragraphs[-1].paragraph_format.page_break_before = True
     if author_date_style():
         # alphabetical by first author, no numbers: the order a reader looks a name up in
         for key in sorted(CITATION_NUMBERS, key=lambda k: (surname_of(BIB[k].get("author", "")).lower(),
                                                            latex_to_text(BIB[k].get("year", "")))):
-            paragraph = doc.add_paragraph(style="Normal")
+            template = word_template_path() is not None
+            paragraph = doc.add_paragraph(style="No Spacing" if template else "Normal")
             paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
             paragraph.paragraph_format.line_spacing = 1.0
             paragraph.paragraph_format.left_indent = Inches(0.5)
             paragraph.paragraph_format.first_line_indent = Inches(-0.5)
-            set_font(paragraph.add_run(format_reference_apa(key)), size=11)
+            set_font(paragraph.add_run(format_reference_apa(key)), size=12 if template else 11)
         return
     for number, key in enumerate(CITATION_NUMBERS, start=1):
         paragraph = doc.add_paragraph(style="Normal")
@@ -2460,6 +2682,21 @@ def source_manifest() -> dict[str, object]:
     }
 
 
+def carried_over(manifest: dict[str, object]) -> dict[str, object]:
+    """This step's receipt on top of the last build's manifest, never in place of it. Replacing it emptied the Writing
+    view for the rest of every build (Paper-PhyAbsence 261104, JL: "not available anymore"): the named `outputs`, the
+    cover letter and the portal were gone until build_delivery.py wrote them again at its end."""
+    try:
+        last = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return manifest
+    if not isinstance(last, dict):
+        return manifest
+    if isinstance(last.get("outputs"), dict):       # the build's own named files stay until it names them again
+        manifest["outputs"] = last["outputs"]
+    return {**last, **manifest}
+
+
 def render_submission_pdfs() -> dict[str, object]:
     """Render configured DOCX deliverables to PDFs when LibreOffice is available."""
     soffice = shutil.which("soffice")
@@ -2551,7 +2788,7 @@ def write_common_receipts(main_events: list[Event], main_displays: list[Display]
         },
     }
     manifest["render"] = pdf_report
-    MANIFEST_PATH.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    MANIFEST_PATH.write_text(json.dumps(carried_over(manifest), indent=2) + "\n", encoding="utf-8")
 
 
 def build_jama_internal_medicine(raw_master: str, evidence: dict[str, object]) -> tuple[Path, Path]:
@@ -2606,7 +2843,10 @@ def build_jama_internal_medicine(raw_master: str, evidence: dict[str, object]) -
     if PROFILE_CONFIG.get("supplement_contents", False):   # JAMA: every element and its title on the first page
         add_supplement_contents(supp_doc, supplement_events)
     supp_doc.add_page_break()
-    add_events(supp_doc, supplement_events, include_displays=True, compact=True)
+    # numbered as the LaTeX lane numbers them, in source order: eTable 1, eFigure 1 (the profile's prefixes). Without
+    # number_displays a caption printed with no label (pp-LBP-JAMA 261103)
+    add_events(supp_doc, supplement_events, include_displays=True, compact=True, number_displays=True,
+               heading_upper=bool(PROFILE_CONFIG.get("supplement_heading_upper", True)))
     if PROFILE_CONFIG.get("supplement_font"):
         restyle_runs(supp_doc, str(PROFILE_CONFIG["supplement_font"]), float(PROFILE_CONFIG.get("supplement_body_size", 10)))
     save_docx(supp_doc, SUPP_PATH)
@@ -2679,8 +2919,7 @@ def build() -> tuple[Path, Path]:
     MAIN_PATH.parent.mkdir(parents=True, exist_ok=True)
     SUPP_PATH.parent.mkdir(parents=True, exist_ok=True)
 
-    main_doc = Document()
-    configure_document(main_doc)
+    main_doc = new_main_document()
     add_title_page(main_doc, title, running_title, word_count(main_events), len(main_tables), len(main_figures), author)
     add_abstract(main_doc, abstract)
     # abstract_own_page (profile): the abstract and keywords end their page and the text starts on a new one (JL 261023)
@@ -2695,7 +2934,7 @@ def build() -> tuple[Path, Path]:
             add_bullet(main_doc, highlight)
     inline_displays = str(PROFILE_CONFIG.get("displays_position", "end")).lower() == "inline"
     add_events(main_doc, main_events, include_displays=inline_displays,
-               number_displays=inline_displays, main_numbering=True)
+               number_displays=inline_displays, main_numbering=True, number_headings=True)
     add_events(main_doc, back_events, include_displays=False)
     add_references(main_doc)
     # Displays after the references is the MEDICAL convention. A venue whose
@@ -2721,7 +2960,7 @@ def build() -> tuple[Path, Path]:
     appendices_in_main = str(PROFILE_CONFIG.get("appendices", "supplement")).lower() == "main"
     if appendices_in_main:
         add_events(main_doc, supplement_events, include_displays=True, number_displays=True,
-                   appendix_letters=True)
+                   appendix_letters=True, number_headings=True)
     save_docx(main_doc, MAIN_PATH)
     if appendices_in_main:
         for stale in (SUPP_PATH, SUPP_PDF_PATH):

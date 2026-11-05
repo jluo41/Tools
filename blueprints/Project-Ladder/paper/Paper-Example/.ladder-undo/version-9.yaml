@@ -1,0 +1,19 @@
+run: '2026-11-03'
+what: submission j21_submission_v1130_desk
+tool: haipipe-paper/scripts/paper_ladder.py
+moves: []
+rewritten:
+- board.md
+created:
+- j21_submission_v1130_desk/j21_submission_v1130_desk.md
+- j21_submission_v1130_desk/t01_cover-letter/t01_cover-letter.md
+- j21_submission_v1130_desk/t02_portal-walk/runs/r01_read_portal/r01_read_portal.md
+- j21_submission_v1130_desk/t02_portal-walk/runs/r01_read_portal/result/portal-fields.yaml
+- j21_submission_v1130_desk/t02_portal-walk/runs/r01_read_portal/run.yaml
+- j21_submission_v1130_desk/t02_portal-walk/t02_portal-walk.md
+- j21_submission_v1130_desk/t03_portal-fill/portal-values.yaml
+- j21_submission_v1130_desk/t03_portal-fill/runs/r01_fill_portal/r01_fill_portal.sh
+- j21_submission_v1130_desk/t03_portal-fill/runs/r01_fill_portal/run.yaml
+- j21_submission_v1130_desk/t03_portal-fill/t03_portal-fill.md
+kept: .ladder-undo/version-9
+roll_back_first: any record newer than this one

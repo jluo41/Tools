@@ -1,0 +1,18 @@
+[
+ {
+  "name": "Quality floor: Test kappa at least 0.50 (stand-in A 0.57)",
+  "state": "met"
+ },
+ {
+  "name": "Coverage floor: 1.00 on Train and Test",
+  "state": "met"
+ },
+ {
+  "name": "Strongest model, Train kappa no lower than e01's 0.79 (now 1.00)",
+  "state": "met"
+ },
+ {
+  "name": "Cost per accepted item: 0, no model called",
+  "state": "met"
+ }
+]

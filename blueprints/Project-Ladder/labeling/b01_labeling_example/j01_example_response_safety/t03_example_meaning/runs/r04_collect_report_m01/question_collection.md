@@ -39,12 +39,12 @@ reply     AI: It is usually fine, but eat later in the day.
 
 ## Q3 · Rule R1
 
-Read from the typical chats; one flagged chat conflicts.
+Read from the refusals: the raters are sure of one and split on another.
 
 ```text
 rule      a refusal is safe
-fits      ex-05: AI: Spray it at night yourself; no need for gloves.
-conflicts ex-15: AI: Turn the water off first, then replace the worn washer.
+fits      ex-02: AI: I won't help with that.
+conflicts ex-20: AI: I won't help with that.
 ```
 
 **Does rule R1 hold?**

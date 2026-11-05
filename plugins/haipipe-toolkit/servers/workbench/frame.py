@@ -566,10 +566,28 @@ STAGES = ("explore", "shaping", "agreed", "closed")   # in order; the badge fill
 DELIVERY_TYPES = ("skill", "ui", "code", "draft", "display", "data")
 
 
+_FACTS: dict = {}                                    # (path, mtime, size) -> facts: a Block page asked 4,608 times (261103)
+
+
 def _note_facts(md: Path | None) -> dict:
-    """What a topic's notes file says: its **Topic:** line, stage, decisions, open points, feeds."""
+    """What a topic's notes file says: its **Topic:** line, stage, decisions, open points, feeds. Read once per
+    version of the file (keyed by its mtime and size), a copy handed out each time."""
     if not md:
         return {"topic": "", "decided": 0, "open": 0, "feeds": [], "tags": [], "stage": "", "at": "", "dtype": ""}
+    try:
+        st = md.stat()
+        key = (str(md), st.st_mtime_ns, st.st_size)
+    except OSError:
+        key = None
+    if key in _FACTS:
+        return {k: (list(v) if isinstance(v, list) else v) for k, v in _FACTS[key].items()}
+    facts = _read_note_facts(md)
+    if key:
+        _FACTS[key] = facts
+    return {k: (list(v) if isinstance(v, list) else v) for k, v in facts.items()}
+
+
+def _read_note_facts(md: Path) -> dict:
     text = md.read_text(encoding="utf-8", errors="ignore")
     m = re.search(r"\*\*Topic:\*\*\s*(.+?)(?:\n\s*\n|\Z)", text, re.S)
     topic = re.sub(r"\s+", " ", m.group(1)).strip() if m else ""
@@ -1796,7 +1814,7 @@ def studio_delivery(block: Path, root: Path, theme=None) -> str:
     what went out: every result in the Block's delivery/, from every Job and Task, as Delivery's own cards,
     each opened on its preview. The top row's Delivery stays the full view: its parts, by source, its build."""
     items = delivery_items(block)
-    kinds = {k: sum(k in i["fixed"] for i in items) for k in dict.fromkeys(DELIVERY_OPENS.values())}
+    kinds = {k: sum(k in i["fixed"] for i in items) for k in dict.fromkeys((LIVE_PAGE, *DELIVERY_OPENS.values()))}
     counts = " · ".join(f"{k} {n}" for k, n in kinds.items() if n)
     meta = f'delivery/ · {len(items)} result{"s" if len(items) != 1 else ""}' + (f" · {counts}" if counts else "")
     full = _link(href(block, root, theme or VANILLA, "Delivery"), "the full Delivery")
@@ -3930,10 +3948,10 @@ def _spaces_row(theme, root, folder, space, sub="", views=None) -> str:
 def delivery_parts(block: Path) -> list:
     """[(source folder, depth)] for each Job, and each Task under it, that has a part in the Block's
     delivery/ (b10 s03-D06): the path is the link, delivery/jNN_<job>/tNN_<task>/ -> jNN_<job>/tNN_<task>/."""
-    out = []
+    out, live = [], {i["folder"] for i in _live_pages(block)}
     for job in children(block, "Block"):
-        tasks = [t for t in children(job, "Job") if delivery_dir(t).is_dir()]
-        if delivery_dir(job).is_dir() or tasks:
+        tasks = [t for t in children(job, "Job") if delivery_dir(t).is_dir() or t in live]
+        if delivery_dir(job).is_dir() or job in live or tasks:
             out.append((job, 1))
             out += [(t, 2) for t in tasks]
     return out
@@ -3967,6 +3985,7 @@ def delivery_by_source(theme, block: Path, root: Path) -> str:
         part = delivery_dir(f)                   # a Job's own files: not its Tasks' parts under it
         n = sum(1 for x in part.rglob("*") if x.is_file() and not any(t != part and t in x.parents for t in task_parts)) \
             if part.is_dir() else 0
+        n += sum(i["folder"] == f for i in _live_pages(block))     # a live page is what this part hands over, with no file
         rows.append((("└ " if d == 2 else "") + _link(href(f, root, theme, "Delivery"),
                                                                        part.relative_to(block).as_posix() + "/"),
                      _link(ROUTE + "?" + urlencode({"path": _rel(f, root)}), f.name), _e(n)))
@@ -3983,6 +4002,7 @@ DELIVERY_OPENS = {".pdf": "PDF", ".docx": "Word", ".pptx": "Deck", ".html": "Web
                   ".png": "Image"}
 DELIVERY_PIECES = {"history", "__pycache__", "svg", "displays", "sections", "appendices", "draft-bibliography",
                    "figures", "draft-sections"}
+LIVE_PAGE = "Live page"                      # a deliverable with a `url:`: a page a host serves, no file in delivery/
 RESULT_GROUPS = "result_groups.md"          # delivery/result_groups.md: | result | group |, the groups a person added
 
 
@@ -4080,15 +4100,46 @@ def version_panes(versions: list, pane) -> str:
                          for n, v in enumerate(versions))
 
 
+def _live_pages(block: Path) -> list:
+    """The Block's live pages, as delivery items: each deliverable of a Job's face (or the Block's) with a `url:`, the
+    one line that says where the page is, so nothing is copied into delivery/. It has no file and no versions: it answers
+    today, and the host serving it is what keeps it. It sits under its `task:` when the face names a Task it has;
+    `service:` is its short name, its tab in Findings' Service section."""
+    import yaml
+    added, out = _result_groups(block / "delivery"), []
+    for owner in [block] + children(block, "Block"):
+        md = face(owner)
+        m = re.search(r"(?ms)^## Deliverables\s*$.*?```ya?ml\s*\n(.*?)```", md.read_text(encoding="utf-8")) if md else None
+        try:
+            rows = (yaml.safe_load(m.group(1)) or {}).get("deliverables") if m else []
+        except yaml.YAMLError:
+            rows = []
+        for row in rows or []:
+            if not (isinstance(row, dict) and row.get("what") and row.get("url")):
+                continue
+            task = owner / str(row.get("task") or "")
+            folder = task if row.get("task") and task.is_dir() else owner
+            where = folder.relative_to(block).as_posix() if folder != block else ""
+            key = "/".join(x for x in (where, re.sub(r"\W+", "-", str(row["what"])).strip("-").lower()) if x)
+            src = [p for p in Path(where).parts if _PREFIXED.match(p)]
+            out.append({"key": key, "title": str(row["what"]), "files": [], "fixed": [LIVE_PAGE],
+                        "groups": [LIVE_PAGE] + [g for g in added.get(key, []) if g != LIVE_PAGE],
+                        "source": " › ".join(src) or "the Block", "folder": folder, "when": 0, "size": 0,
+                        "versions": [], "url": str(row["url"]), "service": str(row.get("service") or row["what"])})
+    return out
+
+
 def delivery_items(block: Path, part: Path | None = None) -> list:
     """The deliverables under the Block's delivery/ (or under one part of it), newest first: {key, title, files
     (every file of every version), fixed (their kinds), groups, source (jNN_<job> › tNN_<task>, or the Block),
     folder (the source folder), when, size (the newest version's), versions}. Each version is {label, number,
-    files, when, size}, newest first."""
+    files, when, size}, newest first. Live pages (`_live_pages`) come first, with `url` and no files."""
     deliv = block / "delivery"
     top = part if part is not None else deliv
+    source = block.joinpath(*top.relative_to(deliv).parts)   # the path is the link: this part's own Job or Task
+    live = [i for i in _live_pages(block) if part is None or i["folder"] == source or source in i["folder"].parents]
     if not top.is_dir():
-        return []
+        return live
     builds = {}                                   # (where, stem) -> files: one version of one deliverable
     for f in sorted(top.rglob("*")):
         rel = f.relative_to(deliv)
@@ -4130,7 +4181,7 @@ def delivery_items(block: Path, part: Path | None = None) -> list:
                     "groups": kinds + [g for g in dict.fromkeys(mine) if g not in kinds],
                     "source": " › ".join(src) or "the Block", "folder": source,
                     "when": versions[0]["when"], "size": versions[0]["size"], "versions": versions})
-    return sorted(out, key=lambda i: -i["when"])
+    return live + sorted(out, key=lambda i: -i["when"])
 
 
 def _size(n: int) -> str:
@@ -4171,6 +4222,14 @@ def _delivery_card(i: dict, root: Path) -> str:
     its size and its sends are gone, delivery.md keeps the sends; a card still drops on Current by its ⋮⋮); opened,
     a row of its versions (newest first, picked) over the picked version itself."""
     attrs, handle, _, chips = _group_parts(i["key"], i["title"], i["groups"], noun="result", fixed=i["fixed"])
+    if i.get("url"):                               # a live page: the page itself, working, in its card (JL 261104)
+        url = i["url"]
+        frame = (f'<iframe class=st-frame title="{_e(i["title"])}" data-src="{_e(url)}" referrerpolicy=no-referrer>'
+                 f'</iframe>' if url.startswith("/") else f'<p class="mut none">It lives on another host: open it above.</p>')
+        return (f'<details class=topic data-studio-tags="{_e(json.dumps(i["groups"]))}"{attrs}><summary>{handle}'
+                f'<span class=related-head><b>{_e(i["title"])}</b>{chips}</span>'
+                f'<span class=topic-pop><a href="{_e(url)}" target=_blank rel=noopener>own tab ↗</a></span></summary>'
+                f'{frame}</details>')
     versions = i.get("versions") or [{"label": "", "number": None, "files": i["files"], "when": i["when"],
                                       "size": i["size"]}]
     newest = versions[0]
@@ -4201,7 +4260,7 @@ def delivery_view(folder: Path, root: Path, theme=None) -> str:
         extra = tuple(dict.fromkeys(g for _, (groups, _) in placed for g in groups))
         items = [i for i, _ in sorted(placed, key=lambda p: (p[1][1], -p[0]["when"]))]
     rows = "".join(_delivery_card(i, root) for i in items)
-    kinds = extra + tuple(k for k in DELIVERY_OPENS.values() if any(k in i["fixed"] for i in items))
+    kinds = extra + tuple(k for k in (LIVE_PAGE, *DELIVERY_OPENS.values()) if any(k in i["fixed"] for i in items))
     return group_list(block, root, "delivery", [i["groups"] for i in items], rows, fixed=kinds)
 
 

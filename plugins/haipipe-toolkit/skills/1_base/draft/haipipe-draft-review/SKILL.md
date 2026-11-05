@@ -2,8 +2,8 @@
 name: haipipe-draft-review
 description: "The judge of prose and of a built Page, never of its own text. Mode 1 reviews any text (plain English, rubric, anti-AI, humanizer evaluators, sentence-by-sentence logic) and returns located findings; Mode 2 is the Page check gate (CLOSE, CONTEXT, OUTLINE, EVIDENCE, CONTENT or HOLD). Trigger: review prose, too AI, humanize, plain English check, page check, quality gate, /haipipe-draft-review, /haipipe-writing, /haipipe-draft-check."
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-10-26"
+  version: "0.5.0"
+  last_updated: "2026-11-04"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 allowed-tools: [Read, Write, Edit, Grep, Glob, AskUserQuestion]
 ---
@@ -112,6 +112,7 @@ may not be its checker; only `verdict: pass` may route to CLOSE.
 ```text
 cli/anti_slop.py audit FILE   what exact AI-tell spans need a second look?
 cli/score.py       FILE       how many house words, and where? (floor, not proof)
+cli/paragraphs.py  FILE...    how many sentences in each paragraph? (4 to 6, JL 261104)
 cli/holes.py       FILE       does every placeholder in ONE file have a real owner?
 cli/agree.py       DIR...     do two statements of one fact agree (version, cited path)?
 tests/test_anti_slop.py       rule and scanner regression tests
@@ -137,7 +138,7 @@ haipipe-draft-review/
 │   ├── methods/              the two evaluator adapters
 │   ├── external/README.md    the anti-AI writing shelf: what we call, what we only read
 │   └── history/              changelogs of haipipe-writing and haipipe-draft-check
-├── cli/                      anti_slop.py · score.py · holes.py · agree.py (all read-only)
+├── cli/                      anti_slop.py · score.py · holes.py · agree.py · paragraphs.py (all read-only)
 ├── tests/                    test_anti_slop.py
 ├── _parts/writing-dna-skill/            vendored style input
 └── _parts/academic-humanizer/ · humanizer/   vendored evaluators

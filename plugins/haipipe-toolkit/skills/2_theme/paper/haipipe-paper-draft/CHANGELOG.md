@@ -1,3 +1,20 @@
+## 0.18.3 · 2026-11-04 · no transition set off by commas; Introduction hypotheses in words
+
+- JL 261104: "don't use things like ' , however ,', Try to make a sentence to be smooth". Rule `parenthetical-transition` in anti_slop.
+
+## 0.18.1 · 2026-11-04 · what a ready Examples card is
+
+- JL 261104: "why the draw is not emebeded, and you didn't use /haipipe-studio"; "we just want to have the screenshot intdouction to check". § Examples first gains the five steps: a Studio topic, one screenshot per paper, `section_screens.py`, the drawing embedded on the card, the face's `examples:`.
+
+## 0.18.0 · 2026-11-04 · Examples are a must, checked before "finished"
+
+- JL 261104: "This is a must to do when you call the task for the /haipipe-paper-draft"; "update the checklist and must to do before saying such a task session is finished". § Examples first says: the first thing a session does, how others write and not what they found, the same article type. `page.py health` WARNs and `--final` FAILs without them.
+
+## 0.17.0 · 2026-11-04 · a cover letter's words
+
+- JL 261104 (through pp-LBP-JAMA): § A cover letter's words: one idea per sentence, why this journal's editor and readers
+  care, a related paper named by DOI and not uploaded by default, no "validated" unless the paper says so.
+
 ## 0.16.0 · 2026-11-02 · A complete paper draft Task
 
 - JL 261102: "what is the checklist for the /haipipe-draft and /haipipe-paper-draft, why dont you make them to be

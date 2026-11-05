@@ -168,7 +168,7 @@ class LedgerTest(unittest.TestCase):
         L = led.ledger(self.job)
         self.assertIn("display drawn inside the paper: t03_results/Display1-effect (it has no intake/manifest.yaml)", L["bad"])
         write(unit / "intake/manifest.yaml", "sources:\n  - role: values\n    path: intake/inputs/source_data.csv\n")
-        self.assertTrue(any("Display1-effect (its intake/manifest.yaml names no work Run result/)" in b
+        self.assertTrue(any("Display1-effect (its intake/manifest.yaml names no Run result/)" in b
                             for b in led.ledger(self.job)["bad"]))
         drawn_by(unit)
         self.assertFalse(any("Display1-effect" in b for b in led.ledger(self.job)["bad"]))

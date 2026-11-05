@@ -1,3 +1,101 @@
+## 0.18.0 · 2026-11-04 · a working Word copy with no page measuring
+
+- JL 261104: "we can use method B, as long as the table is at the top of that page" (b16.j02-s22, form Q1). `build.py --word-draft` sets `HAIPIPE_WORD_DRAFT`, `word_can_measure` says no, so each display takes the floating frame already in `float_display_to_top`. The manifest says `word_draft`; `freeze` refuses it and `publish` skips it. A plain build is unchanged.
+- Tried in Word on a scratch placeholder (Quartz, 7 pages, 4.1 s to print): four tables at page tops, two near each other stacked with no overlap, a 22-row table moved to the next page and left white space above it on the page before. Not yet run on a real paper.
+
+## 0.17.2 · 2026-11-04 · builds take turns in Word
+
+- b16.j02-s22: all builds shared one Word with no queue; `selection` follows the front document and a build's quit could end another's work. `scripts/word_lock.py`, held for a whole document's measuring and for each Word print. A build quits Word only with no document open. Timed: 40 seconds for a whole build of Paper-AgreeablePrescriptionDiscretion on a working Word (it was 28 minutes on the stuck one).
+
+## 0.17.1 · 2026-11-04 · a stuck Word is found quickly and said out loud
+
+- b16.j02-s22: Word's main thread stuck on a lock let every display wait out AppleScript's 120 seconds and still fall back, about 28 minutes a paper, in silence, and the Word tabs showed LibreOffice's print. `word_answers` asks once before placing displays; a stuck Word is skipped, `build_delivery.py` warns in its report, and `word_pdf_printed_by` tells the panel. A `--pdf-only` build marks its word count `main_text_words_from`.
+
+## 0.17.0 · 2026-11-04 · a PDF-only build
+
+- JL 261104, relayed by Paper-PhyAbsence: "Yes, let's focus on the pdf first". `build.py --pdf-only`: the stale check, the LaTeX PDFs and the manifest, about a minute. No Word app; Word, the cover letter, the portal and the shared folder stay as the last full build left them. `send` and `release` refuse until a full build runs. A plain `build.py` stays the full build (JL 261023: real Word for what goes to co-authors).
+
+## 0.16.1 · 2026-11-04 · the Word step keeps the last build's manifest
+
+- Paper-PhyAbsence 261104, JL: "not available anymore". `latex_room_to_docx.py` replaced build-manifest.json mid-build, so the Writing view's panel, the cover letter and the portal vanished until the build ended, and `published` was lost. `carried_over`: its receipt goes on top of the last manifest, and a build's named `outputs` stay until the build names them again.
+
+## 0.16.0 · 2026-11-04 · the venue template checklist
+
+- JL 261104: "I think this should be the checklist for the /haipipe-paper-assemble to make sure they follow the venue template". New
+  `scripts/venue_template_check.py`, `[venue_template]` in paper-build.toml, the build's report and manifest row, § The venue template checklist. It reports; it changes nothing.
+- JL 261104: "we should have the MISQ official word template, why don't we use that one?" `word_template` in `[profile]`: the Word lane writes inside the venue's own file,
+  keeping its styles, numbering, page setup and footer. Other keys: `abstract_heading_upper`, `heading_numbers`, `appendix_heading_upper`, `references_new_page`, `appendix_new_page`. Defaults keep every other paper's output.
+
+## 0.15.1 · 2026-11-04 · a venue's format is settled once
+
+- JL 261104: "我觉得这个东西我们早就做过了 为什么现在把模板给我变了 ... update this lesson". § A venue's format is settled once: read the
+  profile's comments, the official-format file and the last round before any format change; a template found later never overrides them unasked.
+
+## 0.15.0 · 2026-11-04 · the final read before an author reads a build
+
+- JL 261104 (through pp-LBP-JAMA): "please write this to the skills as well". § The final read: fresh blind reviewers on
+  the rendered PDFs, findings checked against the source, fixes in the source or generator, repeated until no must-fix
+  item, then one link. What the reviewers must check comes from one paper's real defects.
+
+## 0.14.4 · 2026-11-04 · Word: layout codes, square roots, true minus, the JAMA Supplement's first page
+
+- pp-LBP-JAMA 261103, a proofread of the Supplement. `latex_to_text` takes only a command's name, so measurements printed:
+  "=2em=11emLinear", "1em2-part model", "1.9in Primary". `strip_layout` drops `\hangindent=`, `\hspace*`, `\setlength` and
+  the like, and `\parbox` and `minipage` keep their words. A cell's leading `\hspace*{Nem}` now indents the cell.
+- `_mathml_to_omml` had no `msqrt` case, so `\sqrt` lost its root: `m:rad` now, and `\sqrt` flattens to "√(x)" where no
+  equation fits. A row of letters is one run ("s c o r e" came from one run per letter). A display note's `$...$` stays an
+  equation (`display_note`); it was flattened.
+- A hyphen opening a number in a cell or note is a true minus (`true_minus`); "2016-2019" and "ICD-10" keep theirs.
+- `jama-internal-medicine.toml`: `supplement_contents = true` (0.14.2 said a contents list existed; the key was never
+  set, so page 1 held only the title) and `supplement_heading_upper = false` (headings as the source writes them). The list
+  shows each display's title, not its legend.
+
+## 0.14.3 · 2026-11-03 · the build finds the letter in the submission Job
+
+- JL 261103, the shipped submission Job (haipipe-paper 1.25.0). `cover_letter.py`: `submission_letter` finds
+  `t01_cover-letter/` of the submission Job whose face says `for: <version>`, after the version's own t3N_ letter, and
+  skips a Task that only points back (`words-in:`). `letter_source` read a Task's whole Content only for `t3N_`, so a
+  `t01_cover-letter` holding plain Content, even one named by `[coverletter] task`, came back with no words; it now
+  counts as a letter Task. Test: haipipe-paper `tests/test_portal_fill.py`.
+
+## 0.14.2 · 2026-11-03 · a JAMA Supplement's Word and PDF print eTable N. and raised superscripts
+
+- pp-LBP-JAMA 261103: the separate Supplement `.docx` (and the PDF made from it) printed captions with no label, and
+  "15 yearsa", "aThe cut chosen". `build_jama_internal_medicine` called `add_events` without `number_displays`; it now
+  numbers in source order, the LaTeX lane's order, with the jama-internal-medicine profile's new
+  `supplement_table_prefix = "eTable "` and `supplement_figure_prefix = "eFigure "`. The first-page contents list
+  names the same labels. `\textsuperscript{..}` in cells, notes and prose is now raised (`mark_superscript`, its own
+  marks, so a note's "a" keeps its space, unlike a citation). A superscript inside a caption stays flat. Test:
+  `test_jama_supplement_prints_etable_labels_and_raises_superscripts`.
+
+## 0.14.1 · 2026-11-03 · the portal packet sees a ZIP made after the build; an arXiv id is not a number
+
+- JL 261103 (FairGlucose npj): build.py copies the npj ZIP into `portal/` BEFORE `npj-zip.sh` rebuilds it, so
+  `portal/` held the older ZIP under the new day's name, and portal.md called the manuscript stale. New command
+  `build.py portal` rewrites only the packet from the last manifest (`refresh_portal`); a paper's ZIP script calls it
+  last. Test: `test_portal_refresh_copies_a_zip_made_after_the_build`.
+- cover_letter.py: the "numbers match the manuscript" check failed on "arXiv:2608.18296". `IDENTIFIER` (an arXiv
+  id, a DOI) is dropped before the number check; the existing letter test now carries both.
+
+## 0.14.0 · 2026-11-03 · a stale Section fragment stops the build (MISQ paper, three Sections printed old words)
+
+- JL 261103 (through the MISQ paper session): md2tex REFUSED to overwrite three Sections' fragments because a citation
+  key left each Section on purpose (a rewrite, a moved paragraph); the build read the old fragments and printed their
+  old words with no warning, until someone deleted the fragments and re-exported.
+- build_delivery.py: before `delivery/latex/` is touched, every printed Section whose page `.md` is newer than its
+  fragment is a `stale fragment: <id> (<fragment>), not rebuilt since <date>: <why>` line; `<why>` names the citation
+  keys md2tex would refuse (md2tex's own `drop_check`), or says a plain re-export fixes it. The build stops (exit 1,
+  `StaleFragments`) and prints the fix. `build.py check` lists them too and exits 1.
+- `--allow-stale`: build anyway; the lines print in the summary, go to the manifest's `stale_fragments`, and add a G4
+  blocker. `--accept-dropped-keys`: re-export each stale Section through its own LaTeX lane (`page.py export
+  --lane latex --accept-dropped-keys`, the door a click uses) and then build; a key passes only when another Section
+  in the compile order still cites it or a revise card removed it, otherwise it is named `(refused: unexplained)`
+  and the build still stops. Failing is the default: a warning in the summary is what let the three Sections through.
+- The page manifest keeps its `fragment may be stale` warning (the Paper Workbench reads it).
+- Tests: 6 new (stop, keys named, accept judged per key, lane re-export then build, refused re-export still stops,
+  `--allow-stale` manifest, `main` exit 1); assemble suite 107 pass.
+- Metadata version 0.13.0 -> 0.14.0 (no CHANGELOG entry existed for 0.13.0 or 0.13.1).
+
 ## 0.12.4 · 2026-11-01 · b16 review 261101: current paper names; a Lancet Public Health profile
 
 - Version Jobs are named `jNN_writing_v<MMDD>_<desk>` (from j11), no longer `jNN_v<MMDD>_<desk>` (layout tree,

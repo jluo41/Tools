@@ -223,7 +223,7 @@ def test_behavior_D_cited_live_unit_without_preview_still_gates(paper):
     assert any("preview.pdf missing for cited unit" in r and "Display2-live" in r for r in p["reasons"])
 
 
-def test_stale_fragment_is_a_warning_not_a_blocker(paper):
+def test_inspect_flags_a_stale_fragment(paper):
     m = paper
     intro = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-1-Intro"
     frag = intro / "delivery" / "latex" / "S-T-Main-1-Intro.tex"
@@ -232,6 +232,150 @@ def test_stale_fragment_is_a_warning_not_a_blocker(paper):
     p = m.inspect("S-T-Main-1-Intro", m.rel(m.CFG["pages"]["main"]))
     assert p["ready"], p["reasons"]
     assert any("fragment may be stale" in w for w in p["warnings"])
+
+
+def _stale_intro(m, *, cite_in_methods=False):
+    """the intro's fragment cites alpha and beta; its page, edited later, cites only alpha."""
+    intro = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-1-Intro"
+    frag = intro / "delivery" / "latex" / "S-T-Main-1-Intro.tex"
+    frag.write_text("% GENERATED from S-T-Main-1-Intro.md by md2tex.py. Do not hand-edit: sync is\n"
+                    "% one-way and the next run overwrites this file.\n"
+                    "\\section{Introduction}\nA \\citep{alpha2020}. B \\citep{beta2021}.\n")
+    (intro / "S-T-Main-1-Intro.md").write_text(
+        "# S-T-Main-1-Intro · §1 Introduction\n\n## Content\n\n### 1 · Introduction\n\n"
+        "#### P1. Opening\n\nA \\citep{alpha2020}.\n")
+    if cite_in_methods:
+        methods = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-2-Methods"
+        (methods / "S-T-Main-2-Methods.md").write_text(
+            "# S-T-Main-2-Methods · §2 Methods and Data\n\n## Content\n\n### 2 · Methods\n\n"
+            "#### P1. Data\n\nB \\citep{beta2021}.\n")
+    bib = m.page_bib({"dir": intro, "id": "S-T-Main-1-Intro"})
+    bib.parent.mkdir(parents=True, exist_ok=True)
+    bib.write_text("@article{alpha2020, title={A}, year={2020}}\n@article{beta2021, title={B}, year={2021}}\n")
+    old = frag.stat().st_mtime - 600
+    os.utime(frag, (old, old))
+    return frag
+
+
+def test_a_stale_fragment_stops_the_build_and_names_dropped_keys(paper):
+    """0.14.0 (261103): md2tex refused, the old fragment stayed, and the build printed old words."""
+    m = paper
+    m.LATEX.mkdir(); (m.LATEX / "keep.txt").write_text("previous build")
+    _stale_intro(m)
+    with pytest.raises(m.StaleFragments) as stop:
+        m.build()
+    msg = str(stop.value)
+    assert "stale fragment: S-T-Main-1-Intro (" in msg and "S-T-Main-1-Intro.tex), not rebuilt since " in msg
+    assert "citation keys dropped: beta2021" in msg and "--accept-dropped-keys" in msg and "--allow-stale" in msg
+    assert (m.LATEX / "keep.txt").read_text() == "previous build"      # stopped before delivery/latex/ was touched
+
+
+def test_accept_dropped_keys_judges_each_key(paper):
+    m = paper
+    _stale_intro(m, cite_in_methods=True)
+    for p in (pages := [m.inspect(i, m.rel(m.CFG["pages"]["main"])) for i in ("S-T-Main-1-Intro", "S-T-Main-2-Methods")]):
+        p["included"] = True
+    line, = m.stale_fragments(pages, accept=True)
+    assert "citation keys dropped: beta2021 (accepted: cited in S-T-Main-2-Methods)" in line
+    _stale_intro(m)
+    (m.rel(m.CFG["pages"]["main"]) / "S-T-Main-2-Methods" / "S-T-Main-2-Methods.md").write_text("# S-T-Main-2-Methods\n")
+    line, = m.stale_fragments(pages, accept=True)
+    assert "beta2021 (refused: unexplained)" in line
+
+
+def test_allow_stale_builds_and_lists_them(paper, monkeypatch):
+    m = paper
+    _stale_intro(m)
+    def boom(cmd, **kw): raise FileNotFoundError(cmd[0])
+    monkeypatch.setattr(m.subprocess, "run", boom)
+    monkeypatch.setattr(m, "ALLOW_STALE", True)
+    m.build()
+    import json
+    manifest = json.loads((m.HERE / "build-manifest.json").read_text())
+    assert any("stale fragment: S-T-Main-1-Intro" in l for l in manifest["stale_fragments"])
+    assert any("stale fragments printed" in b for b in manifest["submission_readiness"]["blockers"])
+
+
+def test_pdf_only_builds_the_pdf_and_leaves_word_and_the_rest_alone(paper, monkeypatch):
+    """0.17.0 (JL 261104: "let's focus on the pdf first"): no Word step, no Word preview, no publish, no portal or
+    letter; the manifest keeps the last full build's outputs, and a send refuses until a full build ran."""
+    import json
+    m = paper
+    calls = []
+    def boom(cmd, **kw):
+        calls.append(" ".join(map(str, cmd)))
+        raise FileNotFoundError(cmd[0])
+    monkeypatch.setattr(m.subprocess, "run", boom)
+    monkeypatch.setattr(m, "PDF_ONLY", True)
+    monkeypatch.setattr(m, "word_pdf", lambda *a: pytest.fail("the Word app was asked for a PDF"))
+    monkeypatch.setattr(m, "publish", lambda *a: pytest.fail("the shared folder was written"))
+    monkeypatch.setattr(m, "portal_packet", lambda *a: pytest.fail("the portal was rewritten"))
+    path = m.HERE / "build-manifest.json"
+    path.write_text(json.dumps({"outputs": {"docx_pdf": "word/P.pdf", "supplement_docx_pdf": "word/S.pdf"},
+                                "cover_letter": {"ready": True}, "portal": {"uploads": []}, "published": {"a": 1}}))
+    m.build()
+    manifest = json.loads(path.read_text())
+    assert not any("latex_room_to_docx" in c or "osascript" in c for c in calls)
+    assert manifest["outputs"]["docx_pdf"] == "word/P.pdf" and manifest["outputs"]["supplement_docx_pdf"] == "word/S.pdf"
+    assert manifest["cover_letter"] == {"ready": True} and manifest["portal"] == {"uploads": []}
+    assert manifest["published"] == {"a": 1} and manifest["pdf_only"] is True
+    assert any("Word rendering" in b for b in manifest["submission_readiness"]["blockers"])
+
+
+def test_a_word_draft_build_is_marked_and_cannot_be_sent(paper, monkeypatch):
+    """0.18.0 (JL 261104: "we can use method B, as long as the table is at the top of that page")."""
+    import json
+    m = paper
+    seen = []
+    class Done:
+        returncode, stdout, stderr = 0, "", ""
+    def run(cmd, **kw):
+        if any("latex_room_to_docx" in str(c) for c in cmd):
+            seen.append(kw.get("env", {}).get("HAIPIPE_WORD_DRAFT"))
+        return Done()
+    monkeypatch.setattr(m.subprocess, "run", run)
+    monkeypatch.setattr(m, "WORD_DRAFT", True)
+    monkeypatch.setattr(m, "word_pdf", lambda *a: False)
+    monkeypatch.setattr(m, "publish", lambda *a: pytest.fail("the shared folder was written"))
+    m.build()
+    path = m.HERE / "build-manifest.json"
+    assert seen == ["1"] and json.loads(path.read_text())["word_draft"] is True
+    with pytest.raises(SystemExit, match="word-draft"):
+        m.freeze("sent", "RD09")
+
+
+def test_accept_dropped_keys_reexports_stale_sections_through_their_lane(paper, monkeypatch):
+    """the build passes the flag to each stale Section's own LaTeX lane, then builds from the new fragment."""
+    m = paper
+    frag = _stale_intro(m, cite_in_methods=True)
+    seen = []
+    def lane(folder):
+        seen.append(folder.name)
+        frag.write_text(frag.read_text().replace(" B \\citep{beta2021}.", ""))   # what md2tex writes once beta is accepted
+        return {"ok": True}
+    monkeypatch.setattr(m, "reexport_latex", lane)
+    monkeypatch.setattr(m, "ACCEPT_DROPPED_KEYS", True)
+    monkeypatch.setattr(m.subprocess, "run", lambda cmd, **kw: (_ for _ in ()).throw(FileNotFoundError(cmd[0])))
+    m.build()
+    assert seen == ["S-T-Main-1-Intro"] and m.STALE == []
+    assert "beta2021" not in (m.SEC / "S-T-Main-1-Intro.tex").read_text()
+
+
+def test_a_refused_reexport_still_stops_the_build(paper, monkeypatch):
+    m = paper
+    _stale_intro(m)                                  # beta2021 is cited nowhere else and no card removed it
+    monkeypatch.setattr(m, "reexport_latex", lambda folder: {"ok": False, "err": "md2tex REFUSED to overwrite"})
+    monkeypatch.setattr(m, "ACCEPT_DROPPED_KEYS", True)
+    with pytest.raises(m.StaleFragments, match=r"beta2021 \(refused: unexplained\)"):
+        m.build()
+
+
+def test_main_exits_1_on_a_stale_fragment(paper, capsys):
+    _stale_intro(paper)
+    with pytest.raises(SystemExit) as out:
+        paper.main(["build"])
+    assert out.value.code == 1
+    assert "stale fragment: S-T-Main-1-Intro" in capsys.readouterr().err
 
 
 def _ready_page(m, pid, number, title, body, *, group="main"):
@@ -431,7 +575,7 @@ def test_a_display_page_starts_at_the_top_by_default(paper, monkeypatch):
 def test_misq_profile_ships_with_the_latex_table():
     import tomllib
     prof = tomllib.loads((ENGINE.parents[1] / "profiles" / "misq.toml").read_text())
-    assert prof["latex"]["spacing"] == "double" and prof["latex"]["appendix_newpage"] is True
+    assert prof["latex"]["spacing"] == "double" and prof["latex"]["appendix_newpage"] is False  # the limit counts appendices (guidelines read 2026-11-03)
     assert prof["latex"]["displays"] in ("inline", "end") and prof["venue_label"] == "MIS Quarterly"
 
 
@@ -444,6 +588,22 @@ def test_missing_latexmk_is_reported_not_a_traceback(paper, monkeypatch):
     manifest = json.loads((m.HERE / "build-manifest.json").read_text())
     assert manifest["render"]["latexmk_rc"] == 127 and manifest["status"] == "DRAFT"
     assert "not found" in manifest["render"]["latexmk_tail"]
+
+
+def test_a_pdf_only_build_cannot_be_sent(paper):
+    """0.17.0: its Word files are older than its PDFs."""
+    m = paper
+    for configured in m.OUT.values():
+        path = m.rel(configured)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(b"%PDF" if path.suffix == ".pdf" else b"artifact")
+    (m.HERE / "display-register.md").write_text("# display register\n")
+    round_dir = m.ROOT / "Bc-T-Round" / "RD01-T-review-20260908"
+    round_dir.mkdir(parents=True)
+    m.rel(m.OUT["manifest"]).write_text('{"pdf_only": true}')
+    with pytest.raises(SystemExit, match="--pdf-only"):
+        m.freeze("sent", "RD01")
+    assert not (round_dir / "sent").exists()
 
 
 def test_round_freeze_copies_all_declared_outputs_and_is_immutable(paper):
@@ -631,7 +791,7 @@ def test_cover_letter_lane_fills_facts_and_checks_the_words(tmp_path, monkeypatc
     page.write_text("# RD02\n\n## Content\n\n### Cover letter\n<!-- words arrive after approval -->\n\n### 2 · Feedback Concern Table\nnone\n")
     words = ('We submit "{title}" as a {article_type} in {journal}.\n\n'
              "Agreeableness is associated with 9.34 more MME, and 12.5 more elsewhere; it leads to more.\n\n"
-             "It is not under review elsewhere.\n")
+             "It is not under review elsewhere. A preprint is on arXiv (arXiv:2608.18296), doi:10.48550/arXiv.2608.18296.\n")
     (page_dir / "draft" / "RD02-T-submission-20260929-draft-v1.0.md").write_text("# d\n\n### Cover letter\n\n" + words)
     monkeypatch.setattr(cl, "pdf_text", lambda p: "Table 3 prints 9.34 MME")
     monkeypatch.setattr(cl, "pdf_pages", lambda p: 54 if p.name == "m.pdf" else None)
@@ -646,7 +806,7 @@ def test_cover_letter_lane_fills_facts_and_checks_the_words(tmp_path, monkeypatc
                                 tables=5, figures=2, run=fake)
     checks = {c["check"]: c for c in rep["checks"]}
     assert rep["from"] == "draft" and not rep["ready"]
-    assert checks["numbers match the manuscript"]["detail"] == "12.5"        # 9.34 is in the manuscript, 12.5 is not
+    assert checks["numbers match the manuscript"]["detail"] == "12.5"        # 9.34 is in the manuscript, 12.5 is not; an arXiv id or DOI is not a number
     assert checks["required mentions"]["detail"] == "npj Digital Medicine"
     assert "leads to" in checks["associational language"]["detail"]
     assert checks["manuscript within the page cap"]["ok"] and checks["author block complete"]["detail"] == "affiliation, email"
@@ -740,3 +900,45 @@ def test_direct_task_display_is_discovered_and_keeps_page_identity(paper):
     assert paper.unit_key(unit) == 'S-T-Main-1-Intro/Display1-current'
     (unit / 'README.md').write_text('# Current\n\n## Placement\nMain Results; Table 1.\n')
     assert paper.declared_number(paper.unit_key(unit)) == 'Table 1'
+
+
+def test_portal_refresh_copies_a_zip_made_after_the_build(paper):
+    """0.14.1 (FairGlucose 261103): build.py copies the npj ZIP into portal/ BEFORE npj-zip.sh rebuilds it, so
+    portal/ held the older ZIP under the new name and portal.md called it stale. `build.py portal` rewrites only
+    the packet from the last manifest: the newest ZIP is copied in and compared with latex/ again."""
+    import json, zipfile
+    m = paper
+    (m.HERE / "latex").mkdir(parents=True, exist_ok=True)
+    (m.HERE / "latex" / "master.tex").write_text("new words\n")
+    (m.HERE / "npj").mkdir()
+    def make_zip(text):
+        with zipfile.ZipFile(m.HERE / "npj" / "P-261103-source.zip", "w") as z:
+            z.writestr("master.tex", text)
+    m.CFG["portal"] = {"folder": "portal", "upload": [
+        {"slot": "Files · Manuscript", "from": "npj/*-source.zip", "matches": "latex", "draft": True}]}
+    (m.HERE / "build-manifest.json").write_text(json.dumps({"build": {"status": "DRAFT"}}))
+    make_zip("old words\n")
+    m.refresh_portal()
+    up = json.loads((m.HERE / "build-manifest.json").read_text())["portal"]["uploads"][0]
+    assert up["state"] == "stale" and "master.tex" in up["detail"]
+    make_zip("new words\n")                                        # npj-zip.sh makes it again
+    m.refresh_portal()
+    up = json.loads((m.HERE / "build-manifest.json").read_text())["portal"]["uploads"][0]
+    assert up["state"] == "draft"                                  # current, and waits only for G4
+    copied = m.HERE / "portal" / "P-261103-source.zip"
+    assert copied.read_bytes() == (m.HERE / "npj" / "P-261103-source.zip").read_bytes()
+    assert "0 of 1 slots ready" in (m.HERE / "portal" / "portal.md").read_text()
+
+
+def test_builds_take_turns_in_word(tmp_path, monkeypatch):
+    """b16.j02-s22: one build in Word at a time, and a build that waits too long goes without Word."""
+    import sys, tempfile
+    monkeypatch.setattr(tempfile, "tempdir", str(tmp_path))
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
+    from word_lock import word_turn
+    with word_turn() as first:
+        assert first is True
+        with word_turn(wait=0) as second:
+            assert second is False
+    with word_turn(wait=0) as third:
+        assert third is True

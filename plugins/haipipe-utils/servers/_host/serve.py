@@ -46,6 +46,11 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional
 
+try:
+    from fastapi import Request                 # here, not in create_app: a route's annotation is read as a module name
+except ImportError:                             # --list runs without fastapi
+    Request = None
+
 HOST = Path(__file__).resolve().parent          # plugins/haipipe-utils/servers/_host
 SERVERS = HOST.parent                           # plugins/haipipe-utils/servers
 PLUGIN = SERVERS.parent                         # plugins/haipipe-utils
@@ -57,6 +62,9 @@ DEFAULT_PORT = int(os.environ.get("HAIPIPE_UTILS_PORT", "8070"))
 
 # The env var each lane's client.py reads its URL from. Named here so the banner
 # and the suite runner print the right one; a lane not listed gets <NOUN>NORM_URL.
+# The food lane's event has its own name (JL 261105: a meal holds foods; 95% of these events name no food): the same
+# app answers at /meal, and its page is /try/meal; /food keeps working for whoever already calls it.
+MEAL = "meal"
 URL_VAR = {"food": "FOODNORM_URL", "exercise": "EXNORM_URL",
            "medication": "MEDNORM_URL", "insulin": "INSNORM_URL"}
 
@@ -262,30 +270,48 @@ def create_app(only: Optional[Iterable[str]] = None, store: Optional[str] = None
                               "a reference bank -> numbers with provenance. "
                               "One prefix per noun.")
     from fastapi import HTTPException
-    from fastapi.responses import HTMLResponse
+    from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
+
+    def lane_of(noun: str) -> str:
+        """A page's noun -> its lane: meal is the food lane; a 404 when neither serves."""
+        lane = "food" if noun == MEAL else noun
+        if lane not in mounted:
+            raise HTTPException(404, f"no lane {noun!r}; have {sorted(mounted)}")
+        return lane
 
     @app.get("/try/{noun}", response_class=HTMLResponse)
-    def try_page(noun: str):
+    def try_page(noun: str, request: Request):
         """The try page: type or upload an input, see what the lane was sent and what it answered; its gallery below."""
-        if noun not in mounted:
-            raise HTTPException(404, f"no lane {noun!r}; have {sorted(mounted)}")
+        lane_of(noun)
+        if noun == "food":                     # relative, so it holds through a host that serves this under a prefix
+            query = f"?{request.url.query}" if request.url.query else ""
+            return RedirectResponse(f"{MEAL}{query}", status_code=302)
         return PAGE.read_text(encoding="utf-8")
 
     @app.get("/try/{noun}/gallery")
     def try_gallery(noun: str):
-        if noun not in mounted:
-            raise HTTPException(404, f"no lane {noun!r}; have {sorted(mounted)}")
-        return gallery(noun)
+        return gallery(lane_of(noun))
 
     @app.get("/try/{noun}/events")
     def try_events(noun: str):
         """Real events of every kind of raw, for a lane with an event door; the page sends each to it live."""
-        if noun not in mounted:
-            raise HTTPException(404, f"no lane {noun!r}; have {sorted(mounted)}")
-        return events(noun)
+        return events(lane_of(noun))
+
+    @app.get("/try/{noun}/picture/{name}")
+    def try_picture(noun: str, name: str):
+        """A gallery card's own photo (JL 261105: "how could we show this photo?"): the copy the gallery's builder wrote
+        beside its events, its metadata gone, under a name that says nothing about whose it is. The path stays hidden."""
+        lane, root = lane_of(noun), eventnorm_root()
+        f = root / EVENTS[lane] if root and lane in EVENTS else None
+        f = f.parent / "pictures" / name if f is not None and _re.fullmatch(r"[\w-]+\.jpg", name) else None
+        if f is None or not f.is_file():
+            raise HTTPException(404, "no such picture")
+        return FileResponse(f, media_type="image/jpeg")
 
     for noun, mod in mounted.items():
         app.mount(f"/{noun}", mod.app, name=noun)
+    if "food" in mounted:
+        app.mount(f"/{MEAL}", mounted["food"].app, name=MEAL)
 
     @app.get("/")
     def index():
@@ -293,7 +319,7 @@ def create_app(only: Optional[Iterable[str]] = None, store: Optional[str] = None
                 "lanes": {noun: {"prefix": f"/{noun}", "title": mod.app.title,
                                  "version": mod.app.version, "url_var": url_var(noun),
                                  "routes": _routes(mod.app), "docs": f"/{noun}/docs",
-                                 "try": f"/try/{noun}"}
+                                 "try": f"/try/{MEAL if noun == 'food' else noun}"}
                           for noun, mod in mounted.items()},
                 "failed": failed}
 

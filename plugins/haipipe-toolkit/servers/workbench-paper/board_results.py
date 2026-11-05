@@ -1,5 +1,5 @@
-"""A paper Board's RESULTS band: the eight views A Idea to H Writing in the shape settled in b16 s32 (numbered bars,
-the main point large, card tabs, side tabs, the flow map, folder trees), the same on Report and Work."""
+"""A paper Board's RESULTS band: the views from Idea and Story to Writing in the shape settled in b16 s32 (numbered bars,
+the main point large, side tabs, the flow map, folder trees), the same on Report and Work."""
 from __future__ import annotations
 
 import re
@@ -7,75 +7,50 @@ from pathlib import Path
 from urllib.parse import quote
 
 from live import draft_steps as ds
-from live.frame import esc
-from live.ui_parts import _bar, _cap, _card_tabs, _clean, _kv, _open_btn, _plain, _section, _side_tabs, _when
+from live.frame import _file_url, esc, related_items, related_rows
+from live.ui_parts import _bar, _cap, _clean, _kv, _open_btn, _plain, _section, _side_tabs, _when
 from live.focus_draft import paragraphs
-from live.board_read import display_plan, _after_table, _face, _field, _first_para, _folder_line, _label_rows, _lead_sentence, _mark, _num, _open_link, _page_url, _rq_lists, _section_state, _state_words, _table, _task_url, _undated, _version_url, explore_tree, face_sections, is_version
-from live.board_interactions import ix_answered, ix_item
-from live.board_evidence import EVIDENCE_KINDS, evidence_body
+from live.board_read import display_plan, view_topics, _after_table, _face, _field, _first_para, _folder_line, _label_rows, _lead_sentence, _mark, _num, _open_link, _page_url, _rq_lists, _section_state, _state_words, _table, _task_url, _undated, _version_url, explore_tree, is_version
+from live.paper_version import build_running
+from live.board_evidence import EVIDENCE_KINDS, VALUES_CSS, VALUES_DIALOG, VALUES_JS, empty_job, evidence_body, value_tabs
 
 
-def _topic_view(topic: Path, root: Path, md, items=(), answer_first: bool = False) -> str:
-    """A topic as a view. `answer_first` (b16 s32-D10, view A · Idea, JL 261031: "do you think we should put the
-    Direction to the top?"): the face's first section, then 🙋 what waits on you, then the drawing and the mind
-    map, then the rest of the face, then the answered forms; else the pictures first."""
-    from live import frame
-    face_md = frame._notes(topic)
-    text = face_md.read_text(encoding="utf-8", errors="ignore") if face_md else ""
-    line = _field(text, "Topic")
-    line = (re.match(r"(.+?[.;])(?:\s|$)", line) or [None, line])[1] if line else ""
-    rel = lambda p: "/" + quote(ds._rel(p, root))
-    verbs = [f'<a class=fd-btn data-pop="{esc(topic.name)}" href="/_board/page?path={rel(face_md)}">Open the topic ↗</a>'] if face_md else []
-    deck = topic / f"{topic.name}.slides.html"
-    if deck.is_file():
-        verbs.append(f'<a class=fd-btn data-pop="{esc(topic.name)} · slide" href="{esc(rel(deck))}">Slide</a>')
-    mind = topic / f"{topic.name}.mindmap.md"
-    drawing, png = topic / f"{topic.name}.excalidraw", topic / f"{topic.name}.png"
-    pic = ""
-    if png.is_file():
-        href = frame._draw_url(drawing, root) if drawing.is_file() else rel(png)
-        pic = _section("The drawing", f'<a class=pb-draw data-pop="{esc(topic.name)}" href="{esc(href)}">'
-                                      f'<img src="{esc(rel(png))}" alt="{esc(topic.name)}" loading=lazy></a>')
-    if mind.is_file():                          # the mind map is a section too, in place (JL 261031: "the mind map
-        try:                                    # here should be a section as well")
-            tree = frame.mindmap_module().fragment(mind, ds._rel(mind, root), editable=False,
-                                                   url_of=lambda q: "/" + quote(ds._rel(q, root)))
-            pic += _section("The mind map", f'<div class=pb-map>{tree}</div>')
-        except Exception:
-            pass
-    answered = ix_answered([r for r in items if r.get("topic") == topic], root)   # what was decided here, by form (JL 261031)
-    parts = [f'<section class=fd-sec><h3 class=fd-h>{esc(n)}</h3>{md(b, topic)}</section>' for n, b in face_sections(text)]
-    head = (f'<p class=pb-topic><b>{esc(topic.name)}</b>' + (f' · {esc(line)}' if line else '') + '</p>'
-            + f'<div class=pb-verbs>{"".join(verbs)}</div>')
-    if not answer_first:
-        return head + pic + answered + "".join(parts)
-    waiting = "".join(ix_item(r, root) for r in items if r.get("topic") == topic and r.get("state") == "waiting")
-    return (head + "".join(parts[:1]) + (_section("🙋 Interactions", waiting) if waiting else "")
-            + pic + "".join(parts[1:]) + answered)
-
-
-# the Board Report's views settled one by one, A to H (b16 s32-D09, JL 261031: "we might want to update them one by one");
-# a view here opens answer first (s32-D10)
-ANSWER_FIRST = {"idea"}
-
-
-def _helpers(topic: Path, root: Path, items, mind: bool = True, drawing: bool = True) -> str:
-    """The helpers at the bottom: what waits on you, the drawing (Slides · Draw), the mind map (A only)."""
+def _helpers(topic: Path, root: Path, items, mind: bool = True, drawing: bool = True, label: str = "") -> str:
+    """The helpers at the bottom: the drawing (Slides · Draw), the mind map (Idea only). `label` names the part, as a
+    view can hold two (JL 261104). The dashed rule above them is the view's (_after_rule)."""
     from live import frame
     rel = lambda p: "/" + quote(ds._rel(p, root))
-    out = '<hr class=pb-rule>'                          # Interactions moved into the Process band (JL 261101)
+    of = f" · {label}" if label else ""
+    out = ""                                            # Interactions moved into the Process band (JL 261101)
     show, (drawing, png, deck) = drawing, (topic / f"{topic.name}.excalidraw", topic / f"{topic.name}.png", topic / f"{topic.name}.slides.html")
     if show and png.is_file():
         href = frame._draw_url(drawing, root) if drawing.is_file() else rel(png)
         verbs = ([f'<a class=fd-btn data-pop="{esc(topic.name)} · slide" href="{esc(rel(deck))}">Slides</a>'] if deck.is_file() else []) + \
             [f'<a class=fd-btn data-pop="{esc(topic.name)}" href="{esc(href)}">Draw</a>']
-        out += _bar(None, "The drawing", f'<div class=pb-pic><a data-pop="{esc(topic.name)}" href="{esc(href)}"><img src="{esc(rel(png))}" '
+        out += _section("🖼️ The drawing" + of, f'<div class=pb-pic><a data-pop="{esc(topic.name)}" href="{esc(href)}"><img src="{esc(rel(png))}" '
                                          f'alt="{esc(topic.name)}"></a><div class=pb-verbs>{"".join(verbs)}</div></div>')
     page = topic / f"{topic.name}.mindmap.html"
     if mind and page.is_file():
-        out += _bar(None, "The mind map", f'<div class=pb-verbs><a class=fd-btn data-pop="{esc(topic.name)} · mind map" '
+        out += _section("🧠 The mind map" + of, f'<div class=pb-verbs><a class=fd-btn data-pop="{esc(topic.name)} · mind map" '
                                           f'href="{esc(rel(page))}">Open the mind map</a></div>')
     return out
+
+
+def _studio_panel(topic: Path, root: Path) -> str:
+    """A topic's Studio (JL 261104: "why the mind map is not at the top and should be embedded, and where are the studios
+    here?"): its mind map drawn in place, its drawing, and the way to its card and canvas. A drawing with no picture yet
+    still gets its Draw button."""
+    from live import frame
+    from live.focus_page import topic_home
+    rel = lambda p: "/" + quote(ds._rel(p, root))
+    drawing, png, deck = topic / f"{topic.name}.excalidraw", topic / f"{topic.name}.png", topic / f"{topic.name}.slides.html"
+    draw = frame._draw_url(drawing, root) if drawing.is_file() else rel(png) if png.is_file() else ""
+    verbs = f'<a class=fd-btn href="{esc(topic_home(topic, root))}">Open in Studio</a>' + \
+        (f'<a class=fd-btn data-pop="{esc(topic.name)} · slide" href="{esc(rel(deck))}">Slides</a>' if deck.is_file() else "") + \
+        (f'<a class=fd-btn data-pop="{esc(topic.name)}" href="{esc(draw)}">Draw</a>' if draw else "")
+    pic = (f'<div class=pb-pic><a data-pop="{esc(topic.name)}" href="{esc(draw)}"><img src="{esc(rel(png))}" alt="{esc(topic.name)}"></a></div>'
+           if png.is_file() else "")
+    return f'<div class=pb-verbs>{verbs}</div>{_canvas(topic, root)}{pic}'
 
 
 def _narrative(topic: Path, root: Path, body: str) -> str:
@@ -100,56 +75,92 @@ def _narrative(topic: Path, root: Path, body: str) -> str:
         (f'<div class=pb-verbs>{btn}</div>' if btn else "")
 
 
-def idea_view(topic: Path, root: Path, md, items=()) -> str:
-    """A · Idea (b16 s32 A): 1 · 🧭 Direction large, 2 · 🔀 Directions considered as tiles, 3 · 🤝 Hand-off as a chain."""
+def _side_cards(eid: str, tiles: list, panels: list) -> str:
+    """Idea's and Story's choices as a left tab and right content (JL 261104: "for each of this, could you make it like the
+    style of [Values], we have the left tab and right content"): a card's head and line become the tab's two lines."""
+    return _side_tabs(eid, [(t[0], t[1]) for t in tiles], panels)
+
+
+def _direction_theory(row: dict) -> str:
+    """A direction's theory: its `theory` cell, else the `Theory: ...` sentence that opens its reason."""
+    said = _plain(row.get("theory", ""))
+    if said:
+        return said
+    m = re.match(r"Theory:\s*(.+?)(?:\.(?:\s|$)|$)", _plain(row.get("reason", "")))
+    return m[1] if m else ""
+
+
+IS_VENUE = re.compile(r"\b(?:MISQ|MIS Quarterly|ISR|Information Systems Research|JMIS|JAIS)\b")
+
+
+def _no_theory(board: Path, where: str) -> str:
+    """What an empty Theory says; an information systems journal expects one, so there it is flagged (JL 261105: "we should
+    have the section named theory as well"; "espeically for the IS")."""
+    md_file = board / "board.md"
+    target = _field(md_file.read_text(encoding="utf-8", errors="ignore"), "venue") if md_file.is_file() else ""
+    named = IS_VENUE.search(target or "")
+    head = (f'<p class=pb-state style="color:light-dark(#b35c00,#ffc078)">🙋 {esc(named[0])} is an information systems journal: it '
+            'expects the theory this paper speaks to, and what the paper says back to it.</p>' if named else "")
+    return head + f'<p class=mut>No theory written yet: {where}</p>'
+
+
+def idea_tabs(topic: Path, md) -> list:
+    """Idea's parts (b16 s32 A): Direction large, then the directions considered. The
+    Hand-off is no tab: only a question it holds for the person stays, under the Direction (s32-D35).
+    Returns [(tab name, its small line, its panel)]."""
     text, parts = _face(topic)
-    out, n = "", 0
+    chosen = ""
     if "direction" in parts:
         lead, rest = _lead_sentence(parts["direction"])
-        rows, rest = _label_rows(re.sub(r"(?m)^\*\*Direction\*\*:.*\n?", "", rest))
-        n += 1
-        out += _bar(n, "Direction", f'<p class=pb-big>{esc(_cap(lead))}</p><p class=pb-state>{esc(_field(text, "Stage"))}</p>'
-                    + rows + md(rest, topic))
+        _, rest = _label_rows(re.sub(r"(?m)^\*\*Direction\*\*:.*\n?", "", rest))   # no stage, no START, SETTING, CONTRAST rows (JL 261104: "could we just remve this?")
+        chosen = f'<p class=pb-big>{esc(_cap(lead))}</p>' + md(rest, topic)
     rows = _table(parts.get("directions considered", ""))
     if rows:
         rank = lambda r: next((i for i, w in enumerate(("✅", "fallback", "second", "considered", "lost", "replaced"))
                                if w in r.get("verdict", "")), 9)
         tiles = sorted(rows, key=rank)
         kind = lambda r: " pb-chosen" if rank(r) == 0 else (" pb-gone" if rank(r) >= 4 else "")
-        short = lambda t: t if len(t) <= 90 else t[:88].rsplit(" ", 1)[0] + " …"
+        short = lambda t: t if len(t) <= 60 else t[:58].rsplit(" ", 1)[0] + " …"
         when = lambda r: (re.search(r"\b(\d{6})\b", r.get("verdict", "")) or [None, ""])[1]
-        n += 1
-        out += _bar(n, "Directions considered", _card_tabs("dc", [
-            (_undated(r.get("verdict", "")), short(_plain(r.get("direction", ""))), "", kind(r).replace(" pb-chosen", " pb-chosen1"))
+        considered = _side_cards("dc", [
+            (short(_plain(r.get("direction", ""))), _undated(r.get("verdict", "")), "", kind(r).replace(" pb-chosen", " pb-chosen1"))   # the name large, its status small (JL 261104)
             for r in tiles], [_kv((("Direction", esc(_plain(r.get("direction", "")))), ("Verdict", esc(_undated(r.get("verdict", "")))),
                                    ("Reason", esc(_plain(r.get("reason", "")))), ("Decided", esc(when(r)))))
-                              for r in tiles]))
-    if "hand-off" in parts:
-        body = parts["hand-off"]
-        to = (re.search(r"\bs\d+-[a-z0-9-]+", body) or [""])[0]
-        first, _, rest = body.strip().partition("\n")
-        chain = ('<div class=pb-chain>' + "".join(
-            f'<div class=pb-hop>{"<span class=pb-arrow>→</span>" if k else ""}<div class=pb-step><span class=pb-role>{r}</span>'
-            f'<div class=pb-tile><span>{esc(v)}</span></div></div></div>'
-            for k, (r, v) in enumerate((("from", topic.name), ("hands", "the selected idea"), ("to", to or "the Story")))) + '</div>')
-        n += 1
-        out += _bar(n, "Hand-off", chain + md(rest, topic))
-    return out + _helpers(topic, root, items, mind=True)
+                              for r in tiles])
+    else:
+        considered = ""
+    asks = "\n\n".join(ln.strip() for ln in parts.get("hand-off", "").splitlines() if "🙋" in ln)
+    if asks:
+        chosen += md(asks, topic)
+    theories = []
+    if rows:
+        theories = [(short(_plain(r.get("direction", ""))), _undated(r.get("verdict", "")), "", _direction_theory(r)) for r in tiles]
+    theory = (_side_cards("th", [x[:3] for x in theories], [f'<p>{esc(x[3]) or "No theory written for this direction yet."}</p>' for x in theories])
+              if any(x[3] for x in theories) else "")
+    return ([("Direction", "the direction chosen", chosen)] if chosen else []) + \
+        ([("Directions considered", "what else was weighed", considered)] if considered else []) + \
+        ([("Theory", "each direction's theory", theory)] if theory else [])
 
 
-def story_view(board: Path, topic: Path, root: Path, md, items=()) -> str:
-    """B · Story (b16 s32 B): Pitch large; the RQs and the journals as tabs; the narrative as its mind map."""
+def _named(n: int, emoji: str, name: str, body: str) -> str:
+    """A numbered section whose name is this theme's own, so the shared EMOJI list is left alone."""
+    return _section(f"{n} · {emoji} {name}", body)
+
+
+def story_tabs(board: Path, topic: Path, root: Path, md) -> list:
+    """Story's parts (b16 s32 B; s32-D44): Pitch large, the Research Questions, Stakes,
+    Evidence basis, Venues, Story by Section (its mind map). The Roadmaps are the Plan's (roadmap_section).
+    Returns [(tab name, its small line, its panel)]."""
     text, parts = _face(topic)
     rel = lambda p: "/" + quote(ds._rel(p, root))
-    out, n = "", 0
+    tabs = []
     if "pitch" in parts:
         one = _field(parts.get("identity", ""), "One-sentence identity")
         pitch = _plain(parts["pitch"])
         lead = _clean(one) or _clean(re.split(r"(?<=[.;])\s", pitch, 1)[0])
         rest = pitch if one else (re.split(r"(?<=[.;])\s", pitch, 1) + [""])[1]
-        n += 1
-        out += _bar(n, "Pitch", f'<p class=pb-big>{esc(_cap(lead))}</p><p class=pb-state>{esc(_field(text, "Stage"))}</p>'
-                    + (f'<p>{esc(rest)}</p>' if rest else ""))
+        tabs.append(("Pitch", "the paper in short", f'<p class=pb-big>{esc(_cap(lead))}</p><p class=pb-state>{esc(_field(text, "Stage"))}</p>'
+                     + (f'<p>{esc(rest)}</p>' if rest else "")))
     rq = parts.get("research questions", "")
     qs, said = _rq_lists(rq)
     if qs:
@@ -162,14 +173,13 @@ def story_view(board: Path, topic: Path, root: Path, md, items=()) -> str:
             panels.append(_kv((("Question", esc(_plain(ask))), ("Answer so far", esc(_plain(state))),
                                ("Claim if answered", esc(_plain(said.get(k, "")))),
                                ("Report", _open_link(reports.get(str(k), ""), topic, root)))))
-        n += 1
-        out += _bar(n, "Questions", _card_tabs("rq", tiles, panels))
-    duo = [(k, parts[k]) for k in ("stakes", "evidence basis and boundaries") if k in parts]
-    if duo:
-        n += 1
-        out += _bar(n, "Stakes and evidence basis", _card_tabs("se", [(("Stakes" if k == "stakes" else "Evidence basis"),
-                                                                 ("why it matters, and to whom" if k == "stakes" else "what it can claim, and what it cannot"), "")
-                                                                for k, _ in duo], [md(b, topic) for _, b in duo]))
+        tabs.append(("Research Questions", "what it asks", _side_cards("rq", tiles, panels)))
+    elif rq.strip():                                 # a Story that draws its questions its own way still shows them
+        tabs.append(("Research Questions", "what it asks", md(rq, topic)))
+    if "stakes" in parts:
+        tabs.append(("Stakes", "why it matters, and to whom", md(parts["stakes"], topic)))
+    if "evidence basis and boundaries" in parts:
+        tabs.append(("Evidence basis", "what it can claim, and what it cannot", md(parts["evidence basis and boundaries"], topic)))
     venues = _table(parts.get("venues", ""))
     if venues:
         tiles, panels = [], []
@@ -191,18 +201,141 @@ def story_view(board: Path, topic: Path, root: Path, md, items=()) -> str:
                                ("Related papers", rp),
                                ("All journals", _open_btn("Compare all journals", _page_url(topic / "delivery" / "venue-comparison.md", root), "venue comparison")
                                 if (topic / "delivery" / "venue-comparison.md").is_file() else ""))))
-        n += 1
         full = topic / "delivery" / "venue-comparison.md"
-        out += _bar(n, "Venues", _card_tabs("ve", tiles, panels, chain=True) + ("" if full.is_file() else md(_after_table(parts["venues"]), topic)))
-    road = [(k, parts[k]) for k in ("discovery roadmap", "task roadmap") if k in parts]
-    if road:
-        n += 1
-        out += _bar(n, "Roadmaps", _card_tabs("rm", [(k.capitalize(), "the literature still to read" if k.startswith("discovery")
-                                                 else "the Runs still to make", "") for k, _ in road], [md(b, topic) for _, b in road]))
+        tabs.append(("Venues", "where it is sent", _side_cards("ve", tiles, panels) + ("" if full.is_file() else md(_after_table(parts["venues"]), topic))))
     if "section narrative" in parts:                 # the narrative IS the mind map (JL 261031)
+        tabs.append(("Story by Section", "what each Section says", _narrative(topic, root, parts["section narrative"]) or md(parts["section narrative"], topic)))
+    return tabs
+
+
+def roadmap_section(board: Path, md, n: int) -> str:
+    """The Story's Discovery and Task Roadmaps, what is still to read and to run: the Plan's last section (s32-D35)."""
+    topic = next((t for k, _, t in view_topics(board, "story") if k != "idea"), None)
+    parts = _face(topic)[1] if topic is not None else {}
+    road = [(k, parts[k]) for k in ("discovery roadmap", "task roadmap") if k in parts]
+    return _bar(n, "Roadmaps", _side_cards("rm", [(k.capitalize(), "the literature still to read" if k.startswith("discovery")
+                                                   else "the Runs still to make", "") for k, _ in road],
+                                           [md(b, topic) for _, b in road])) if road else ""
+
+
+def _after_rule(helpers: str) -> str:
+    """The helpers after the view's one dashed rule (board_views.banded splits the view there)."""
+    return "<hr class=pb-rule>" + helpers
+
+
+RELATED_CSS = ("<style>.pb-relhead{margin:0 0 4px;font-weight:600}.pb-relsaid{margin:0 0 8px;font-size:12.5px;color:var(--muted)}"
+               ".pb-relpdf{display:block;width:100%;height:62vh;border:1px solid var(--line);border-radius:6px;background:var(--paper)}</style>"
+               # a PDF loads only once its tab and section are on screen; the browser's loading=lazy fetched all 22 on page open
+               "<script>document.addEventListener('DOMContentLoaded',function(){var o=new IntersectionObserver(function(es){es.forEach(function(e){"
+               "if(e.isIntersecting){e.target.src=e.target.dataset.src;o.unobserve(e.target);}});});"
+               "document.querySelectorAll('iframe.pb-relpdf[data-src]').forEach(function(f){o.observe(f);});});</script>")
+
+
+ARXIV = re.compile(r"https?://(?:www\.)?arxiv\.org/(?:abs|pdf)/([^\s?#]+?)(?:\.pdf)?$")
+
+
+def _related_tab(item: dict, row: dict, board: Path, root: Path) -> tuple:
+    """One related paper as a left tab and its right side: ((short name, author and venue), the panel). A kept PDF or an
+    arXiv paper shows its PDF embedded, loaded only when its tab opens (JL 261104: "I want to embed the pdf here as
+    well"), with Pop out beside it ("I want it can pop out and read"); arXiv's PDF may be framed though its abstract page
+    may not. Any other web address links out, since a publisher's page refuses to be framed."""
+    target, title = item["target"] or "", item["title"]
+    star = "★ " if row.get("key") else ""
+    who = re.search(r"\(([^()]*\d{4}[a-z]?)\)\s*$", title)
+    bare = title[:who.start()].strip() if who else title
+    tab = (star + bare.split(": ", 1)[0], " · ".join(x for x in (who[1] if who else "", _plain(row.get("venue", ""))) if x))
+    said = _plain(row.get("why here", ""))
+    head = f'<p class=pb-relhead>{esc(star + title)}</p>' + (f'<p class=pb-relsaid>{esc(said)}</p>' if said else "")
+    path = board / "related" / target if target else None
+    arxiv = ARXIV.match(target)
+    url = f"https://arxiv.org/pdf/{arxiv[1]}" if arxiv else (_file_url(path, root) if path is not None and not re.match(r"https?://", target) and path.is_file() else "")
+    if url:
+        pop = f'<div class=pb-verbs><a class=fd-btn data-pop="{esc(title)}" href="{esc(url)}" target=_blank rel=noopener>Pop out</a></div>'
+        if arxiv or path.suffix.lower() == ".pdf":
+            return tab, head + pop + f'<iframe class=pb-relpdf title="{esc(title)}" data-src="{esc(url)}"></iframe>'
+        return tab, head + pop
+    if re.match(r"https?://", target):
+        return tab, head + f'<p class=pb-state>No PDF to show here: this site opens only in its own tab.</p><div class=pb-verbs><a class=fd-btn href="{esc(target)}" target=_blank rel=noopener>Open the paper ↗</a></div>'
+    return tab, head + '<p class=pb-state>No PDF or link yet.</p>'
+
+
+def related_section(board: Path, root: Path, n: int) -> tuple:
+    """Story, the Board's related/related.md rows (JL 261104: "could you put the related section to be here?").
+    Left tabs, one per paper, under a small name per `bears on`; the open paper's PDF on the right (JL 261104: "please
+    change all type of these into this style"). Returns (html, the last section number)."""
+    items = related_items(board)
+    if not items:
+        return "", n
+    rows = related_rows(board)[1]
+    groups = {}
+    for item in items:
+        row = rows[item["row"]] if item["row"] is not None else {}
+        bears = _plain(row.get("bears on", "")) or ("Not in the table yet" if item["row"] is None else (item["groups"] or ["Other"])[0].capitalize())
+        groups.setdefault(bears, []).append(_related_tab(item, row, board, root))
+    return _section(f"{n + 1} · 📚 Related", RELATED_CSS + _grouped_tabs("rl", [(_cap(bears), tab, body) for bears, papers in groups.items() for tab, body in papers])), n + 1
+
+
+# a mind map draws its curves only when on screen, so a section opening redraws them
+REDRAW = ("<script>document.addEventListener('click',function(e){if(e.target.closest&&e.target.closest('.fd-h')"
+          "&&window.pmDraw)setTimeout(window.pmDraw,30);});</script>")
+
+
+def idea_view(board: Path, root: Path, md, items=()) -> str:
+    """A · Idea, its own button, for the many directions (JL 261105: "I mean seperate this!!!"; "idea for multiple direction,
+    story for one direction"; s32-D44): its Studio, every direction weighed, left tabs, then each one's Theory. The chosen one's words are the
+    Story's, unless there is no Story yet. The page adds 🙋 Interaction."""
+    out, n = "", 0
+    has_story = bool(view_topics(board, "story"))
+    for _, _, topic in view_topics(board, "idea"):
+        out += _bar(None, "🎨 Studio", _studio_panel(topic, root) + REDRAW)
+        tabs = dict((h, p) for h, _, p in idea_tabs(topic, md))
+        if "Direction" in tabs and not has_story:
+            n += 1
+            out += _bar(n, "Direction", tabs["Direction"])
+        if "Directions considered" in tabs:
+            n += 1
+            out += _named(n, "🔀", "Directions", tabs["Directions considered"])
         n += 1
-        out += _bar(n, "Section narrative", _narrative(topic, root, parts["section narrative"]) or md(parts["section narrative"], topic))
-    return out + _helpers(topic, root, items, mind=False)
+        out += _named(n, "🎓", "Theory", tabs.get("Theory") or _no_theory(
+            board, "each direction names its theory, a <code>theory</code> column in Directions considered (haipipe-paper-ideation)."))
+    if not has_story:                                                   # no Story yet: Related follows the idea
+        out += related_section(board, root, n)[0]
+    return out
+
+
+def story_view(board: Path, root: Path, md, items=()) -> str:
+    """B · Story, its own button, for the one direction chosen (JL 261105: "story for one direction"; s32-D44): its Studio,
+    Direction, Pitch, Theory, Research Questions, Stakes and evidence, Related, Venues, Story by Section. The page adds 🙋 Interaction."""
+    out, n = "", 0
+    for _, _, topic in view_topics(board, "story"):
+        out += _bar(None, "🎨 Studio", _studio_panel(topic, root) + REDRAW)
+        tabs = {h: (w, p) for h, w, p in story_tabs(board, topic, root, md)}
+        def bar(emoji, name, body):
+            nonlocal n, out
+            n += 1
+            out += _named(n, emoji, name, body)
+        for _, _, idea in view_topics(board, "idea"):                   # the chosen direction's words live on the idea topic
+            chosen = dict((h, p) for h, _, p in idea_tabs(idea, md)).get("Direction")
+            if chosen:
+                bar("🧭", "Direction", chosen)
+        if "Pitch" in tabs:
+            bar("💡", "Pitch", tabs["Pitch"][1])
+        said = _field(_face(topic)[1].get("identity", ""), "Theory")
+        whole = _face(topic)[1].get("theory", "")
+        bar("🎓", "Theory", md(whole or said, topic) if whole or said else _no_theory(
+            board, "a <code>**Theory**:</code> line in the Story's Identity (haipipe-paper-story)."))
+        if "Research Questions" in tabs:
+            bar("❓", "Research Questions", tabs["Research Questions"][1])
+        duo = [k for k in ("Stakes", "Evidence basis") if k in tabs]
+        if duo:
+            bar("⚖️", "Stakes and evidence", _side_cards("se", [(k, tabs[k][0], "") for k in duo], [tabs[k][1] for k in duo]))
+        related, n = related_section(board, root, n)
+        out += related
+        if "Venues" in tabs:
+            bar("🏛️", "Venues", tabs["Venues"][1])
+        if "Story by Section" in tabs:
+            bar("🧠", "Story by Section", tabs["Story by Section"][1])
+    return out
 
 
 def dataflow_map(board: Path, topic: Path) -> str:
@@ -256,27 +389,21 @@ def _canvas(topic: Path, root: Path) -> str:
         return f'<p class=pb-state>The mind map did not read: {esc(str(e))}</p>'
 
 
-def _canvas_view(topic: Path, root: Path, items) -> str:
-    """C · Data flow and D · Paper flow: the mind map as the canvas, the window's full width (the view's own line
-    above says what it is for), then the drawing (b16 s32; JL 261102: "the data flow and paper flow are not what we want"). The cards they had (the flow
-    map from -drawing.yaml, Questions to Runs, Send, Sections, Displays, Timeline) left; the Questions and the
-    displays have their own views, B · Story and G · Displays."""
-    return (f'<div class=pb-canvas>{_bar(1, "The mind map", _canvas(topic, root))}</div>'
-            + _helpers(topic, root, items, mind=False))
-
-
-def dataflow_view(board: Path, topic: Path, root: Path, md, items=()) -> str:
-    """C · Data flow: how the data become each answer, worked on as the topic's mind map."""
-    return _canvas_view(topic, root, items)
-
-
-def paperflow_view(board: Path, topic: Path, root: Path, md, items=()) -> str:
-    """D · Paper flow: the Sections in reader order and the steps to the send, worked on as the topic's mind map."""
-    return _canvas_view(topic, root, items)
+def plan_view(board: Path, root: Path, md, items=()) -> str:
+    """B · Data + Paper Plan, one view (JL 261104: "Data flow and Paper flow to be one view of Plan"): 1 · Data flow, how the data
+    become each answer, then 2 · Paper flow, the Sections in reader order and the steps to the send, each worked on as
+    its topic's mind map, the window's full width (b16 s32; JL 261102: "the data flow and paper flow are not what we
+    want"); then their drawings. The cards they had (the flow map from -drawing.yaml, Questions to Runs, Send, Sections,
+    Displays, Timeline) left; the Questions and the displays have their own views, Story and Displays."""
+    parts = view_topics(board, "plan")
+    icon = {"Data flow": "🗄️", "Paper flow": "📝"}                       # every section has its emoji (JL 261105)
+    maps = "".join(_named(n, icon.get(name, "📌"), name, _canvas(topic, root)) for n, (_, name, topic) in enumerate(parts, 1))
+    return (f'<div class=pb-canvas>{maps}</div>' + roadmap_section(board, md, len(parts) + 1)
+            + _after_rule("".join(_helpers(topic, root, items, mind=False, label=name) for _, name, topic in parts)))
 
 
 def explore_view(board: Path, root: Path, md, items=()) -> str:
-    """E · Support blocks as folder trees (JL 261101: "more like the folder tree, only show the related folder tree";
+    """C · Support blocks as folder trees (JL 261101: "more like the folder tree, only show the related folder tree";
     "we will have both the work and discovery, as two sections"; "the works from multiple projects"): 1 · Work and
     2 · Discovery, each one tree per Project, its Blocks, Jobs and Tasks this paper names, one line each, each a link."""
     tree = explore_tree(board)
@@ -285,7 +412,7 @@ def explore_view(board: Path, root: Path, md, items=()) -> str:
     url = lambda d: "/_board/workbench?" + "&".join(f"{a}={quote(b)}" for a, b in (("path", ds._rel(d, root)), ("layout", "focus")))
 
     def apart(lines: list) -> list:
-        """Sibling Tasks' lines without the words they all share (E r03: five lines read "Tables of whether…")."""
+        """Sibling Tasks' lines without the words they all share (s32 E r03: five lines read "Tables of whether…")."""
         if len(lines) < 2 or not all(lines):
             return lines
         ws = [ln.split() for ln in lines]
@@ -344,22 +471,22 @@ def explore_view(board: Path, root: Path, md, items=()) -> str:
                       f'</details></li></ul>')
         venues = "/_board/workbench?" + "&".join(f"{a}={quote(b)}" for a, b in (("path", ds._rel(board, root)), ("layout", "focus"),
                                                                                  ("section", "report"), ("group", "story")))
-        empty = f'<p class=mut>{esc(none)}</p>' if kind == "work" else (     # E r04 fix 2: the venue's papers, one click away
+        empty = f'<p class=mut>{esc(none)}</p>' if kind == "work" else (     # s32 E r04 fix 2: the venue's papers, one click away
             f'<p class=mut>No discovery folder named yet: the venue\'s papers sit in '
-            f'<a href="{esc(venues)}">Story › 4 · Venues</a>, the related-work map.</p>')
+            f'<a href="{esc(venues)}">Story › Venues</a>, the related-work map.</p>')
         out += _bar(n, name, trees or empty)
     return out
 
 
 def evidence_view(board: Path, root: Path, md, items=()) -> str:
-    """F · Evidence: 1 values, 2 citations, each a side tab per Task whose panel shows the thing itself. The displays
-    are a view of their own, G · Displays, after this one (JL 261101: "put the display outside of the Evidence, and put
+    """D · Evidence: 1 values, 2 citations, each a side tab per Task whose panel shows the thing itself. The displays
+    are a view of their own, E · Displays, after this one (JL 261101: "put the display outside of the Evidence, and put
     it after the Evidence and before the Writing, to highlight it")."""
     return _evidence_kinds(board, root, ("Values", "Citations"))[0] or '<p class=mut>No values or citations Job yet.</p>'
 
 
 def displays_view(board: Path, root: Path, md, items=()) -> str:
-    """G · Displays (JL 261101, its own view between Evidence and Writing): 1 · the plan, each display against the
+    """E · Displays (JL 261101, its own view between Evidence and Writing): 1 · the plan, each display against the
     venue's display rules (haipipe-paper-plan's display plan, when the Board has one); 2 · the displays, one side tab
     per pool Task (Figure 1 (Display A), its type and name), its panel the newest preview.pdf, the display as the paper
     prints it, then how it was made; and all of them as one PDF (build_displays_pdf.py). The plan is the s06
@@ -370,11 +497,15 @@ def displays_view(board: Path, root: Path, md, items=()) -> str:
         n += 1
         out += _bar(n, "Plan", plan)
     body, n = _evidence_kinds(board, root, ("Displays",), n)
-    ex = _display_examples(board, root)
-    if ex:                                       # JL 261102: "after the display, could you add a new section named
-        n += 1                                   # 3. Examples ... understand for their display for each paper"
-        body += _bar(n, "Examples", ex)
-    return (out + body) or '<p class=mut>No display Job or display plan yet.</p>'
+    if not (out or body):
+        return '<p class=mut>No display Job or display plan yet.</p>'
+    # JL 261102: "after the display, could you add a new section named 3. Examples"; JL 261103: "we can add the things
+    # like 3-Examples": it always shows, saying how to fill it while it is empty. Its questions are the page's 🙋 Interaction.
+    n += 1
+    body += _named(n, "🔍", "Examples", _display_examples(board, root) or (
+        '<p class=mut>No examples yet. The target venue\'s published displays go on one canvas, the Board topic '
+        '<code>sNN-paper-display-examples</code> (haipipe-paper-display, Examples).</p>'))
+    return out + body
 
 
 def _topic_canvas(board: Path, root: Path, slug: str) -> str:
@@ -410,6 +541,12 @@ def _evidence_kinds(board: Path, root: Path, kinds: tuple, n: int = 0) -> tuple[
         job = next((j for j in jobs if re.search(pat, j.name, re.I)), None)
         if job is None:
             continue
+        vtabs = value_tabs(job, root) if kind == "Values" else None
+        if vtabs:                                # side tabs, each a readable topic with its raw table (JL 261104)
+            n += 1
+            out += _bar(n, kind, f'<div class=pb-verbs>{_open_btn(f"Open {job.name}", _task_url(job, root))}</div>' + VALUES_CSS
+                        + _side_tabs("evV", [(h, w) for h, w, _ in vtabs], [p for _, _, p in vtabs]) + VALUES_DIALOG + VALUES_JS)
+            continue
         tasks = sorted((x for x in job.glob("t[0-9]*_*") if x.is_dir()), key=_num)
         tiles, panels = [], []
         dp = display_plan() if kind == "Displays" else None
@@ -430,12 +567,19 @@ def _evidence_kinds(board: Path, root: Path, kinds: tuple, n: int = 0) -> tuple[
                 head = next((paper_as[k] for k in ks if k in paper_as), head)
                 r = next((plan_of[k] for k in ks if k in plan_of), None)
                 order = list(plan_of).index(r.get("display", "")) if r is not None else 999
-                if r is not None:                # the plan says where it goes
+                if face.is_file() and _field(face.read_text(encoding="utf-8", errors="ignore"), "group").lower() == "others":
+                    group = "unplanned"          # a draft shown apart until it is placed (JL 261104: "先放到 other 里面去")
+                elif r is not None:              # the plan says where it goes
                     group = r["where"]
                 elif plan_of:                    # a plan that does not name it
                     group = "unplanned"
-                else:                            # no plan: t51 and on, or an eTable / Appendix label, is outside the main text
-                    group = "supplement" if _num(t) >= 50 or re.match(r"(?i)(e(?=fig|tab)|appendix|supp)", label or "") else "main"
+                else:                            # no plan: the face's label says where it goes and its number (JL 261103:
+                    lab = re.match(r"(Extended Data |Supplementary )?(Figure|Table) (\d+)", label or "")   # "I didn't see
+                    if lab:                      # the fairness figure": label "Extended Data Figure 1" on t53 sat under Main's
+                        group = "supplement" if lab.group(1) else "main"   # t07 and Figure 4 (t06) after Figure 5 (t04))
+                        order = (lab.group(2) == "Table") * 100 + int(lab.group(3))
+                    else:                        # t51 and on, or an eTable / Appendix label, is outside the main text
+                        group = "supplement" if _num(t) >= 50 or re.match(r"(?i)(e(?=fig|tab)|appendix|supp)", label or "") else "main"
                 groups.append((group, order))
             tiles.append((head, line or status, ""))
             panels.append(body)
@@ -444,18 +588,21 @@ def _evidence_kinds(board: Path, root: Path, kinds: tuple, n: int = 0) -> tuple[
                  + f'<span class=pb-state>built {_when(book)}</span>') if kind == "Displays" and book.is_file() else ""
         n += 1
         if kind == "Displays" and tiles:         # grouped, Main then Appendix (JL 261101: "groups them in different groups,
-            sup = _supplement_word(list(paper_as.values()))   # like the main"), each card thinner
+            sup = _supplement_word(list(paper_as.values()) + [h for h, _w, _x in tiles])   # like the main"), each card thinner
             name = {"main": "Main", "supplement": sup, "unplanned": "Others"}   # JL 261102: candidates not in the plan, "a new section here as Others"
             keyed = sorted(zip(groups, tiles, panels), key=lambda x: (("main", "supplement", "unplanned").index(x[0][0]), x[0][1]))
             tabs = _grouped_tabs("evD", [(name[g], (h, w), b) for (g, _), (h, w, _), b in keyed])
         else:
-            tabs = _side_tabs("ev" + kind[0], [(h, w) for h, w, _ in tiles], panels) if tiles else '<p class=mut>No Tasks yet.</p>'
+            tabs = _side_tabs("ev" + kind[0], [(h, w) for h, w, _ in tiles], panels) if tiles else empty_job(job)
         out += _bar(n, kind, f'<div class=pb-verbs>{whole}{_open_btn(f"Open {job.name}", _task_url(job, root))}</div>' + tabs)
     return out, n
 
 
 def _supplement_word(labels: list) -> str:
-    """What the venue calls the displays outside the main text: Supplement (eFigure, Supplementary Table), else Appendix."""
+    """What the venue calls the displays outside the main text: Extended Data (Nature journals), Supplement (eFigure,
+    Supplementary Table), else Appendix."""
+    if any(x.startswith("Extended Data") for x in labels):
+        return "Extended Data"
     return "Supplement" if any(re.match(r"(?:e(?:Figure|Table)|Supplementary)", x) for x in labels) else "Appendix"
 
 
@@ -486,7 +633,7 @@ DISPLAY_TYPES = (("figure", "📈 Figure"), ("table", "📊 Table"))
 
 
 def _display_plan(board: Path, root: Path, dp, plan: list) -> str:
-    """G · Displays' plan, from the display plan (haipipe-paper-plan; JL 261101: "we should also have the plan for the
+    """E · Displays' plan, from the display plan (haipipe-paper-plan; JL 261101: "we should also have the plan for the
     displays"; "the display ... should also follow the venue"): the venue check first, then each display as a side tab
     (Figure 1 (Display A), its type and name), its panel what it shows, where it goes, its Run and its sketch."""
     face = dp.plan_face(board)
@@ -559,7 +706,51 @@ def _section_read(task: Path) -> str:
 # the Section's sentences, one per line with a small number, citations in grey (this theme's own look)
 WRITING_CSS = ("<style>.pb-sents{margin:2px 0 10px;padding-left:2.1em;line-height:1.5}"
                ".pb-sents li{margin:0 0 3px;padding-left:2px}.pb-sents li::marker{color:var(--muted);font-size:11.5px}"
-               ".pb-cite{color:var(--muted);font-size:.88em}</style>")
+               ".pb-cite{color:var(--muted);font-size:.88em}"
+               # JL 261104: the Section's button in the panel's top right corner, staying there while you read down
+               ".pb-corner{float:right;position:sticky;top:8px;z-index:2;margin:0 0 8px 12px}"
+               ".pb-corner .fd-btn{background:var(--bg)}</style>")
+
+
+def _pdf_facts(pdf: Path | None) -> tuple[str, str]:
+    """A PDF's page count and the program that drew it, read from the file on every open."""
+    import subprocess
+    if pdf is None or pdf.suffix != ".pdf":
+        return "", ""
+    try:
+        info = subprocess.run(["pdfinfo", str(pdf)], capture_output=True, text=True, timeout=5).stdout
+    except (OSError, subprocess.SubprocessError):
+        return "", ""
+    field = lambda k: (re.search(rf"^{k}:\s*(.+)$", info, re.M) or [None, ""])[1].strip()
+    return field("Pages"), field("Producer")
+
+
+def _tab_flag(kind: str, man: dict, pdf: Path | None, running: bool, stand_in: bool = False) -> str:
+    """Each tab's state, one short line on the tab (JL 261104: "could you flag each tab' status?"): can it be read now,
+    and what is not final yet. Everything comes from the manifest and the file itself; nobody types it."""
+    pages, producer = _pdf_facts(pdf)
+    count = f" · {pages} pages" if pages else ""
+    draft = " · draft" if man.get("status") != "READY" else ""
+    if kind == "latex":
+        if running and not man.get("pdf_only"):
+            return "⏳ Rebuilding: last build shown"
+        return f"✅ Read now{draft}{count}"
+    if kind == "word":
+        if running:
+            return "⏳ Rebuilding: do not open"
+        if stand_in or "LibreOffice" in producer:
+            return "❗ Word stuck: layout not final"
+        return f"✅ Read now{draft}{count}"
+    if kind == "letter":
+        cover = man.get("cover_letter") or {}
+        off = [c for c in cover.get("checks", []) if not c.get("ok")]
+        return f"❗ {len(off)} checks open" if off else f"✅ Read now{draft}"
+    if kind == "portal":
+        portal = man.get("portal") or {}
+        uploads = portal.get("uploads") or []
+        ready = sum(u.get("state") == "ready" for u in uploads)
+        return f"⬜ {ready} of {len(uploads)} uploads ready" if uploads else "⬜ Not ready"
+    return ""
 
 
 def _paper_files(vdir: Path, root: Path, eid: str = "pp") -> str:
@@ -572,28 +763,39 @@ def _paper_files(vdir: Path, root: Path, eid: str = "pp") -> str:
     except Exception:
         return ""
     out = man.get("outputs") or {}
+    if not isinstance(out, dict):      # the Word step ran alone, with no build before it (see paper_version.built_outputs)
+        return ""
     f = lambda r: vdir / r if r and (vdir / r).is_file() else None
     sup_pdf = f(out.get("supplement_docx_pdf"))
     sup_docx = f(out.get("supplement_docx_pdf", "")[:-4] + ".docx") if out.get("supplement_docx_pdf") else None
     letter = (man.get("cover_letter") or {}).get("outputs") or {}
+    if not letter.get("pdf"):                    # JL 261103: "where is the cover letter?": a letter Task exported on its
+        for own in sorted(vdir.glob("t3[0-9]_*letter*")):   # own, before the build has [coverletter], still shows
+            letter = {"pdf": f"{own.name}/word/{own.name}.pdf", "docx": f"{own.name}/word/{own.name}.docx"}
+            break
+    by = man.get("word_pdf_printed_by") or {}      # b16.j02-s22 261104: Word stuck, and these tabs showed LibreOffice's print
+    running_now = build_running(vdir)
+    word_how = lambda key, pdf: _tab_flag("word", man, pdf, running_now, by.get(key) == "stand-in")
     # JL 261102: "we should say the results here as well": every document the build makes, the letter too
-    pieces = [("The paper", "as LaTeX builds it", f(out.get("pdf")), None),
-              ("The paper · Word", "as Word prints it", f(out.get("docx_pdf")), f(out.get("docx"))),
-              ("The supplement", "as LaTeX builds it", f(out.get("supplement")), None),
-              ("The supplement · Word", "as Word prints it", sup_pdf, sup_docx),
+    pieces = [("The paper", _tab_flag("latex", man, f(out.get("pdf")), running_now), f(out.get("pdf")), None),
+              ("The paper · Word", word_how("main_docx", f(out.get("docx_pdf"))), f(out.get("docx_pdf")), f(out.get("docx"))),
+              ("The supplement", _tab_flag("latex", man, f(out.get("supplement")), running_now), f(out.get("supplement")), None),
+              ("The supplement · Word", word_how("supplement_docx", sup_pdf), sup_pdf, sup_docx),
               ("The combined copy", "paper and supplement in one PDF", f(out.get("combined")), None),
-              ("The cover letter", "as the build writes it", f(letter.get("pdf")), f(letter.get("docx")))]
+              ("The cover letter", _tab_flag("letter", man, f(letter.get("pdf")), running_now), f(letter.get("pdf")), f(letter.get("docx")))]
     # JL 261102: "add the new tab for the submission portal": the send's submission Job (jNN_submission_…, its face
     # `for: <this version>`) writes delivery/<that Job>/portal-fill.html, every portal field with its value to paste
     for sj in sorted(vdir.parent.parent.glob("j[0-9]*_submission_*")):
         face = sj / f"{sj.name}.md"
         if face.is_file() and re.search(rf"(?m)^for:\s*{re.escape(vdir.name)}\s*$", face.read_text(encoding="utf-8", errors="ignore")):
             fill = vdir.parent / sj.name / "portal-fill.html"
-            pieces.append(("The submission portal", "each field to paste, from the paper", fill if fill.is_file() else None, None))
+            pieces.append(("The submission portal", _tab_flag("portal", man, None, running_now), fill if fill.is_file() else None, None))
+    pieces = [_or_adopted(vdir, p) if p[0].endswith("· Word") else p for p in pieces]
     shown = {p.name for _, _, a, b in pieces for p in (a, b) if p}
     word = vdir / "word"
     older = sorted((x for x in word.glob("*.docx") if x.name not in shown and "supplement" not in x.name),
                    key=lambda x: x.stat().st_mtime, reverse=True) if word.is_dir() else []
+    earlier = [p for p in pieces if p[2] or p[3]]            # how many stand above the fold (below: JL 261103)
     pieces += [(f"Earlier round · {_when(x)}", x.stem, x.with_suffix(".pdf") if x.with_suffix(".pdf").is_file() else None, x) for x in older]
     pieces = [p for p in pieces if p[2] or p[3]]
     if not pieces:
@@ -610,7 +812,38 @@ def _paper_files(vdir: Path, root: Path, eid: str = "pp") -> str:
         verbs = ((_open_btn("Open the page" if pdf.suffix == ".html" else "Open the PDF", href(pdf), pdf.name) if pdf else "")
                  + (_open_btn("Open the Word file", href(doc), doc.name) if doc else ""))
         panels.append(view + f'<div class=pb-verbs>{verbs}</div>')
-    return _side_tabs(eid, items, panels)
+    running = '<p class=pb-state>⏳ A build is running: these are the last built files.</p>' if build_running(vdir) else ""
+    draft = ('<p class=pb-state>📝 Word draft: displays float to page tops, not placed by measuring. Run a full build before sending.</p>'
+             if man.get("word_draft") else "")
+    return running + draft + _fold_earlier(_side_tabs(eid, items, panels), eid, len(earlier), len(items))
+
+
+def _or_adopted(vdir: Path, row: tuple) -> tuple:
+    """A Word row with no file: `word_round.py adopt` renames the build's -draft files to -v<n> (Paper-PhyAbsence 261104:
+    "the panel's Word rows have no file until the next full build"), so the newest adopted copy shows until then."""
+    name, how, pdf, doc = row
+    if pdf or doc:
+        return row
+    supplement = "supplement" in name.lower()
+    kept = sorted((x for x in (vdir / "word").glob("*-v[0-9]*.docx") if ("supplement" in x.name) == supplement),
+                  key=lambda x: x.stat().st_mtime, reverse=True)
+    if not kept:
+        return row
+    twin = kept[0].with_suffix(".pdf")
+    return name, "the copy adopted for the round", twin if twin.is_file() else None, kept[0]
+
+
+def _fold_earlier(tabs: str, eid: str, start: int, total: int) -> str:
+    """The older rounds' side tabs behind one closed fold at the list's end (JL 261103: "for the early round, could you
+    just first to hide them?"), no count; they open as before once it is unfolded. A build with nothing current yet
+    leaves the fold open, so the panel on show has its tab in sight."""
+    if start >= total:
+        return tabs
+    first = tabs.index(f'data-pbtab="{eid}{start}"')
+    at, end = tabs.rindex("<button", 0, first), tabs.index("</div><div class=pb-read>", first)
+    return (tabs[:at] + f'<details class=pb-earlier style="flex-basis:100%"{" open" if start == 0 else ""}>'
+            '<summary style="cursor:pointer;font-size:13px;color:var(--muted);padding:6px 9px">Earlier rounds</summary>'
+            + tabs[at:end] + "</details>" + tabs[end:])
 
 
 PORTAL_WORDS = {"ready": "✅ ready", "draft": "🔶 built, not approved", "stale": "❗ stale", "missing": "⬜ missing"}
@@ -647,7 +880,7 @@ def _portal(vdir: Path, root: Path) -> str:
 
 
 def writing_view(board: Path, root: Path, md, items=()) -> str:
-    """H · Writing: a numbered section per version; its Sections as card tabs (each panel its step words), then the
+    """F · Writing: a numbered section per version; its Sections as card tabs (each panel its step words), then the
     assembled paper."""
     out, n = "", 0
     for job in sorted(d for d in board.glob("j[0-9]*_*") if d.is_dir() and is_version(d)):
@@ -655,7 +888,7 @@ def writing_view(board: Path, root: Path, md, items=()) -> str:
         secs = [(_cap(re.sub(r"^t\d+_", "", t.name).replace("-", " ")), _state_words(_section_state(t, root))) for t in tasks]
         if len({w for _, w in secs}) == 1:          # the same state on every tab says nothing: drop it
             secs = [(h, "") for h, _ in secs]
-        panels = [_section_read(t) + f'<div class=pb-verbs>{_open_btn("Open the Section", _task_url(t, root), t.name)}</div>' for t in tasks]
+        panels = [f'<div class=pb-corner>{_open_btn("Open the Section", _task_url(t, root), t.name)}</div>' + _section_read(t) for t in tasks]
         paper = _paper_files(board / "delivery" / job.name, root, f"pp{n}")
         n += 1
         out += _section(f"{n} · ✍️ {job.name}", f'<div class=pb-verbs>{_open_btn("Open the version", _version_url(job, root, "report"))}</div>'
@@ -667,10 +900,8 @@ def writing_view(board: Path, root: Path, md, items=()) -> str:
         if portal:
             n += 1
             out += _section(f"{n} · 📮 Ready for the portal", portal)
-    return out or '<p class=mut>No version yet.</p>'
+    # every section starts closed (JL 261104: "this should be closed at the begining"); focus_draft's fold reads the mark
+    return '<i data-fd-closed hidden></i>' + out if out else '<p class=mut>No version yet.</p>'
 
 
-SHAPED = {"idea": lambda board, t, root, md, items: idea_view(t, root, md, items),
-          "story": lambda board, t, root, md, items: story_view(board, t, root, md, items),
-          "dataflow": lambda board, t, root, md, items: dataflow_view(board, t, root, md, items),
-          "paperflow": lambda board, t, root, md, items: paperflow_view(board, t, root, md, items)}
+SHAPED = {"idea": idea_view, "story": story_view, "plan": plan_view}

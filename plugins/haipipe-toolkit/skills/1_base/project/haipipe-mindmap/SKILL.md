@@ -11,8 +11,8 @@ description: >-
   refresh a mind map, or to change how §1 and the mind maps draw. Trigger: mind map, mindmap, structured side,
   Free | Structured, structure map, §1 map, map the work, /haipipe-mindmap.
 metadata:
-  version: "0.9.3"
-  last_updated: "2026-10-31"
+  version: "0.9.5"
+  last_updated: "2026-11-04"
   # version history: ./CHANGELOG.md
 ---
 
@@ -56,6 +56,7 @@ The map
    carries one ✎ link ("✎ N slides", or "✎ draw" with none) opened in the page's pop-out to draw on.
    `mindmap.py sketch <x.mindmap.md>` seeds each leaf's drawing (its words on top, its slides in a row under them)
    and never rewrites one that exists (`scripts/mmsketch.py`). A topic's map wraps to its card's width.
+   **Folding** (every map; `fold=False` turns it off): everything under a card or a point starts closed and a click opens it, Open all and Close all sit above the map, and what was opened stays open through an edit, not across a page load (JL 261104: "默认的话，大家都是合着的").
 4. **Written, not only built**: `from-topic` gives a skeleton; a map reads as §1 when
    it is written: each branch a step of the topic's argument with its kind (`[question] What Q01 asks`, the grey line
    over its name), the question it hands to the next (`→ …`), each point one short complete sentence with its role,
@@ -102,6 +103,33 @@ Builders and refresh
 3. **Refresh**: a built node whose words a person did not change takes the new words; a node or words a person added
    stay; a built node gone from disk goes, unless a person changed it or hung something under it. A built node's
    `<!-- @key #hash -->` mark is how it knows.
+
+
+The Block map
+-------------
+
+The template for a Block's map on its focus page (`parts_mindmap` in `servers/workbench/focus_page.py`). Every Block uses
+this same renderer; only what hangs where changes (JL 261104: "这不应该是一样一套东西吗"; "我觉得像这种 template 你应该写到
+skill 里面去").
+
+```text
+b01 ─┬─ Questions                    closed: root + about 8 cards at most, one screen, no scrolling
+     ├─ 🗄️ Data                       one click: a card opens its Jobs on its right
+     ├─ 🏋️ Pretraining                next click: a Job opens its Tasks
+     ├─ 🧠 Finetune head              labels: the Job number, then its short name
+     ├─ 📏 Pretraining eval ─┬─ j61 modelsize
+     │                       └─ j62 epochs
+     └─ 🧪 Head test eval
+```
+
+1. **Group before you list.** A Block with many Jobs gets its groups from its face: `bands:` puts its Jobs under one card per
+   band (`j6N 📏 pretraining eval`). Topics group by `_groups.txt` the same way. 15 flat Jobs took 1284 px; 5 bands take 289 px.
+2. **The closed map is the test.** More cards than fit one screen means the Block needs groups, not smaller cards.
+3. **Short names.** A label drops the words its siblings share (`job_short`); the full name shows on hover.
+4. **Never a second kind of drawing.** No table, no separate page or renderer for one Block: a table replacing this map was
+   rejected the same day (JL 261104: "我还是要mindmap").
+5. **Compare first.** A map that reads badly goes through `haipipe-ui`, "A page reads badly": b35's map (6 cards) is the height
+   to match.
 
 The file's grammar: [ref/grammar.md](ref/grammar.md).
 

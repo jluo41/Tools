@@ -3,7 +3,10 @@
 These writers implement the derived `latex/` and `word/` projections used by
 Board Page workbenches:
 
-- `md2tex.py` reads one accepted Page and emits TeX.
+- `md2tex.py` reads one accepted Page and emits TeX. It refuses to replace a fragment
+  that would lose a citation key (or that it did not write): `❌ REFUSED`, exit 2, the
+  old fragment kept; `--accept-dropped-keys` lets a key go when another Section cites
+  it or a revise card removed it (tests: `test_md2tex.py`).
 - `md2docx.py` reads the same Page and emits DOCX.
 - `docx2pdf.py` renders the DOCX twin used by the Word surface.
 

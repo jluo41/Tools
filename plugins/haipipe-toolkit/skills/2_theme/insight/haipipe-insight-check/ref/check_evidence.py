@@ -46,10 +46,10 @@ AGREED = re.compile(r"^\*\*Needs agreed\*\*:\s*(.+?)\s*$", re.M)
 CELL = re.compile(r"(✅|🟡|🚫|⬜)\s*([DIKW]\d{2}-[a-z]+)(?![\w-])")
 PAGE_STEM = re.compile(r"^([DIKW]\d{2}-[a-z]+)(?:-|$)")
 INLINE = re.compile(r"\[(Q[DIKW]\d+\.E\d+)\]")
-REALIZES = re.compile(r"<!-- realizes: (C\d+\.P\d+\.B\d+) -->")
+REALIZES = re.compile(r"<!-- realizes: (C\d+\.P\d+\.B\d+[a-z]*) -->")
 HEADER = re.compile(r"^([a-z][a-z-]*):\s*(.*?)\s*$", re.M)
 EXEC = re.compile(r'exec\s+"\$\{PAGE\}/([^"]+?\.sh)"')
-ITEM = re.compile(r"^### (E\d+-[A-Z]+-[\w-]+) · (C\d+\.P\d+\.B\d+)", re.M)
+ITEM = re.compile(r"^### (E\d+-[A-Z]+-[\w-]+) · (C\d+\.P\d+\.B\d+[a-z]*)", re.M)
 LEVEL_ORDER = {"D": 0, "I": 1, "K": 2, "W": 3}
 KINDS_AT = {"D": {"compute"}, "I": {"compute", "cite"},
             "K": {"compute", "cite", "judge"}, "W": {"cite", "judge"}}
@@ -314,7 +314,7 @@ def page_citations(page_dir, text):
             if ph:
                 para, bullet = ph.group(1), None
                 continue
-            b = re.match(r"^- (?:\[[ xX]\]\s*)?B(\d+)\s*·", line)
+            b = re.match(r"^- (?:\[[ xX]\]\s*)?B(\d+)[a-z]*\s*·", line)
             if b and para:
                 bullet = f"{para}.B{b.group(1)}"
                 continue

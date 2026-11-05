@@ -25,6 +25,12 @@ code{font:12.5px ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--so
 .pv-frame img{width:100%;display:block}
 .pv-hit{position:absolute;inset:0}
 .pv.on{border-color:var(--on);box-shadow:0 0 0 2px var(--wash)}
+.pop{position:fixed;inset:0;z-index:50;background:rgba(20,24,30,.72);display:flex;align-items:center;justify-content:center;padding:24px;cursor:zoom-out}
+.pop[hidden]{display:none}
+.pop-box{position:relative;background:#fff;border-radius:10px;max-width:96vw;max-height:94vh;overflow:auto;cursor:default}
+.pop-box img{display:block;max-width:94vw;max-height:90vh;width:auto;height:auto}
+.pop-box iframe{display:block;width:92vw;height:88vh;border:0}
+.pop-x{position:sticky;top:0;float:right;margin:6px;padding:2px 10px;border:1px solid var(--line);border-radius:6px;background:#fff;font-size:13px;cursor:pointer;z-index:1}
 .label{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--red);margin:0 0 4px;font-weight:600;overflow-wrap:anywhere}
 h1{font-size:22px;margin:0 0 4px}
 .lead{color:var(--mut);margin:0 0 16px}
@@ -58,13 +64,13 @@ details.box{margin:4px 0 0;color:var(--mut);font-size:13px}
 <div class="wrap">
 <p class="label">Questions for you · r03_collect_board_ui_studio · b16.j01.t01-s34:theme_paper.paper_workbench_pages.board_page @ board_ui_studio</p>
 <h1>Board Studio UI</h1>
-<p class="lead">The Studio's view buttons are its groups, so one choice decides them. My pick is selected; change any, then Copy feedback and paste it to me.
+<p class="lead">The Studio's view buttons are its groups, so one choice decides them. Answered 2026-11-04 14:10: your picks and notes are shown, read only; a flag on a question says whether it is applied or in progress. The answers: <a href="result/answer_collection.md">result/answer_collection.md</a>.
 The questions as Markdown: <a href="question_collection.md">question_collection.md</a>.</p>
-<section class="card" id="Q1"><h2><span class="qid">Q1</span>Studio groups<span class="state" id="state-Q1"></span><span class="applied" id="applied-Q1"></span></h2><p class="applied-by" id="applied-by-Q1" hidden></p><p class="why">Groups are the Board Studio's view buttons; one per group, no All.</p><fieldset><legend class="ask">Which groups does the Board's Studio show?</legend><label class="opt"><input type="radio" name="Q1" value="A"><span><b>A</b> Story, Plan, Related, Ideation, then Other.</span></label><label class="opt"><input type="radio" name="Q1" value="B" checked><span><b>B</b> The Block's own groups from _groups.txt, as they are.<span class="rec">my pick</span></span></label><label class="opt own"><input type="radio" name="Q1" value="own"><span><b>✍</b> My own decision</span></label></fieldset><div class="previews"><figure class="pv" data-q="Q1" data-key="A"><figcaption><b>A</b><a href="option-a.html" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="var r=document.querySelector('input[name=\'Q1\'][value=\'A\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><iframe src="option-a.html" title="option A" tabindex="-1"></iframe><span class="pv-hit"></span></div></figure><figure class="pv" data-q="Q1" data-key="B"><figcaption><b>B</b><a href="option-b.html" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="var r=document.querySelector('input[name=\'Q1\'][value=\'B\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><iframe src="option-b.html" title="option B" tabindex="-1"></iframe><span class="pv-hit"></span></div></figure></div><p class="because">Why B: Groups already live in _groups.txt; no new list to keep.</p><textarea class="note" id="note-Q1" rows="1" placeholder="Note (optional)"></textarea></section>
+<section class="card" id="Q1"><h2><span class="qid">Q1</span>Studio groups<span class="state" id="state-Q1"></span><span class="applied" id="applied-Q1"></span></h2><p class="applied-by" id="applied-by-Q1" hidden></p><p class="why">Groups are the Board Studio's view buttons; one per group, no All.</p><fieldset><legend class="ask">Which groups does the Board's Studio show?</legend><label class="opt"><input type="radio" name="Q1" value="A"><span><b>A</b> Story, Plan, Related, Ideation, then Other.</span></label><label class="opt"><input type="radio" name="Q1" value="B" checked><span><b>B</b> The Block's own groups from _groups.txt, as they are.<span class="rec">my pick</span></span></label><label class="opt own"><input type="radio" name="Q1" value="own"><span><b>✍</b> My own decision</span></label></fieldset><div class="previews"><figure class="pv" data-q="Q1" data-key="A"><figcaption><b>A</b><a href="option-a.html" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="hpPop(this);var r=document.querySelector('input[name=\'Q1\'][value=\'A\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><iframe src="option-a.html" title="option A" tabindex="-1"></iframe><span class="pv-hit"></span></div></figure><figure class="pv" data-q="Q1" data-key="B"><figcaption><b>B</b><a href="option-b.html" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="hpPop(this);var r=document.querySelector('input[name=\'Q1\'][value=\'B\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><iframe src="option-b.html" title="option B" tabindex="-1"></iframe><span class="pv-hit"></span></div></figure></div><p class="because">Why B: Groups already live in _groups.txt; no new list to keep.</p><textarea class="note" id="note-Q1" rows="1" placeholder="Note (optional)"></textarea></section>
 <details class="box"><summary>The text Copy feedback sends</summary><textarea id="out" readonly></textarea></details>
 </div>
 <div class="send"><button type="button" data-copy>Copy feedback</button><button type="button" class="quiet" id="reset">Back to my picks</button><span id="copied"></span></div>
-<script type="application/json" id="form-data">{"run": "r03_collect_board_ui_studio", "title": "Board Studio UI", "built": "2026-10-31 17:14:49.279363", "questions": [{"id": "Q1", "title": "Studio groups", "pick": "B", "options": [{"key": "A", "text": "Story, Plan, Related, Ideation, then Other."}, {"key": "B", "text": "The Block's own groups from _groups.txt, as they are."}]}]}</script>
+<script type="application/json" id="form-data">{"run": "r03_collect_board_ui_studio", "title": "Board Studio UI", "built": "2026-10-31 17:14:49.279363", "questions": [{"id": "Q1", "title": "Studio groups", "pick": "B", "options": [{"key": "A", "text": "Story, Plan, Related, Ideation, then Other."}, {"key": "B", "text": "The Block's own groups from _groups.txt, as they are."}]}], "answered": {"received": "2026-11-04 14:10", "picks": {"Q1": {"pick": "B", "note": "JL in the chat: \"sutdio, not need that, I get confused. But if possible, we can make them consistent as well, that is flexible.\""}}}}</script>
 <script type="text/markdown" id="haipipe-questions"># Board Studio UI
 
 for: b16.j01.t01-s34:theme_paper.paper_workbench_pages.board_page @ board_ui_studio
@@ -168,6 +174,19 @@ Why B: Groups already live in _groups.txt; no new list to keep.
   function lightPreviews(){document.querySelectorAll('.pv').forEach(function(f){
     var r=document.querySelector('input[name="'+f.dataset.q+'"][value="'+f.dataset.key+'"]');f.classList.toggle('on',!!(r&&r.checked));});}
   document.addEventListener('change', lightPreviews); lightPreviews();
+  /* a click on a preview pops it out over the form (JL 261103); a click outside it, x or Esc closes it */
+  var POP = document.createElement('div'); POP.className = 'pop'; POP.hidden = true;
+  POP.innerHTML = '<div class="pop-box"><button type="button" class="pop-x">Close ✕</button><div class="pop-body"></div></div>';
+  document.body.appendChild(POP);
+  function unpop(){ POP.hidden = true; POP.querySelector('.pop-body').innerHTML = ''; }
+  POP.addEventListener('click', function(e){ if (e.target === POP || e.target.classList.contains('pop-x')) unpop(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') unpop(); });
+  window.hpPop = function(frame){
+    var el = frame.querySelector('img, iframe'); if (!el) return;
+    var copy = document.createElement(el.tagName.toLowerCase()); copy.src = el.getAttribute('src');
+    if (copy.tagName === 'IMG') copy.alt = el.alt; else copy.title = el.title;
+    var body = POP.querySelector('.pop-body'); body.innerHTML = ''; body.appendChild(copy); POP.hidden = false;
+  };
   /* the part that differs between a question's previews gets a box (JL 261031: "highlight the part that are different
      by using the box"): a preview's own class="diff" marks it; otherwise the pages are compared, node by node, and the
      smallest block that differs is boxed in every option; each preview then scrolls to its first box */

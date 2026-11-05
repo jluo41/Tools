@@ -90,6 +90,12 @@ def t_typed():
     assert ev["input"]["items"][1]["amount"] == "250 ml"
     (hour, h), = ev["output"].items()
     assert hour == "2026-10-21 08:00 -04:00" and h["share"] == 1.0 and h["total"]["source"] == "tables"
+    for line in ("White Rice 3 cups", "3 cups of White Rice"):           # a typed measure counts, at either end
+        got = event(raw={"type": "text", "rows": [{"text": line}]})
+        it = next(iter(got["output"].values()))["items"][0]
+        assert (it["food"], it["amount"], it["serving"]["times"]) == ("White Rice", "3 cups", 3.0), it
+    kept = event(raw={"type": "text", "rows": [{"text": "Milk 2%"}]})["input"]["items"][0]
+    assert kept["food"] == "Milk 2%" and "amount" not in kept, kept          # a number in a name stays in the name
     none = event(input={"items": [{"food": "Banana"}]})
     assert list(none["output"]) == ["no time"], list(none["output"])
     carbs = [it["macros"]["carbs"] for it in h["items"]]

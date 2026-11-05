@@ -2336,7 +2336,7 @@ def _element_matrix_html(items: list[dict], aim: dict) -> str:
     total = len(drafts)
     foot = ("".join(f"<td>{counts[name]} of {total}</td>" for name, _ in slots) + f"<td>{added_n} of {total}</td>")
     explored = sum(1 for n in counts.values() if n) + (1 if added_n else 0)
-    return ('<details class=elmatrix open><summary>Design elements · '
+    return ('<details class=elmatrix><summary>Design elements · '
             f'{total} design{"s" if total != 1 else ""} × {len(slots)} slots · {explored} explored</summary>'
             '<div class=mut>Each design read slot by slot against the starting text (Design Goal › Resources › '
             'Elements): ★ what it changed, · what it kept. Where a design recorded its elements, each cell says '

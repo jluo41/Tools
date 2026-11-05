@@ -98,6 +98,37 @@ def test_nested_brace_colspecs_arrive_as_word_tables(room):
     assert manifest["build"]["checks"]["tables_rendered"]["ok"] is True
 
 
+def test_a_stuck_word_is_found_quickly(room, monkeypatch):
+    """b16.j02-s22 261104: a Word that gives no answer is asked once, within its time limit, and says False."""
+    monkeypatch.setenv("HAIPIPE_PAPER_BUILD_CONFIG", str(room / "delivery" / "paper-build.toml"))
+    spec = importlib.util.spec_from_file_location("docx_engine_stuck", ENGINE)
+    m = importlib.util.module_from_spec(spec); sys.modules[spec.name] = m
+    spec.loader.exec_module(m)
+    asked = []
+    def stuck(cmd, **kw):
+        asked.append(kw["timeout"])
+        raise subprocess.TimeoutExpired(cmd, kw["timeout"])
+    monkeypatch.setattr(m.subprocess, "run", stuck)
+    assert m.word_answers(wait=5) is False and asked == [15]
+    class Ok: returncode = 0
+    monkeypatch.setattr(m.subprocess, "run", lambda cmd, **kw: Ok)
+    assert m.word_answers() is True
+
+
+def test_the_word_step_keeps_the_last_builds_manifest(room):
+    """Paper-PhyAbsence 261104: replacing the manifest emptied the Writing view for the rest of every build."""
+    env = dict(os.environ, HAIPIPE_PAPER_BUILD_CONFIG=str(room / "delivery" / "paper-build.toml"))
+    path = room / "delivery" / "build-manifest.json"
+    path.write_text(json.dumps({"outputs": {"pdf": "latex/D.pdf"}, "portal": {"uploads": []}, "published": {"a": 1},
+                                "build": {"status": "OLD"}}))
+    r = subprocess.run([sys.executable, str(ENGINE)], cwd=room / "delivery", env=env, capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr[-1500:]
+    manifest = json.loads(path.read_text())
+    assert manifest["outputs"] == {"pdf": "latex/D.pdf"}       # the named files stay until the build names them again
+    assert manifest["portal"] == {"uploads": []} and manifest["published"] == {"a": 1}
+    assert manifest["build"]["status"] != "OLD"                # this step's own receipt is new
+
+
 def test_parse_table_rows_reads_nested_specs_and_spans(room, monkeypatch):
     monkeypatch.setenv("HAIPIPE_PAPER_BUILD_CONFIG", str(room / "delivery" / "paper-build.toml"))
     spec = importlib.util.spec_from_file_location("docx_engine_under_test", ENGINE)
@@ -355,3 +386,135 @@ def test_a_pending_cell_is_shaded_yellow_in_word(room):
     out = _build_with(room, "\\begin{abstract}One sentence.\\end{abstract}")
     assert 'w:fill="FFFF00"' in out and "\\pending" not in out and "providecommand" not in out
     assert out.count('w:fill="FFFF00"') == 1
+
+
+def test_jama_supplement_prints_etable_labels_and_raises_superscripts(room):
+    """pp-LBP-JAMA 261103: the Supplement Word file printed captions with no "eTable N." and flattened \\textsuperscript."""
+    from PIL import Image
+    latex = room / "delivery/latex"
+    Image.new("RGB", (12, 12), "white").save(latex / "displays/extra.png")
+    (latex / "master.tex").write_text(
+        r"\documentclass{article}\begin{document}\begin{center}D\end{center}"
+        r"\section*{Key Points}\textbf{Question} One?"
+        r"\section*{Abstract}\textbf{Importance} One."
+        r"\section{Introduction}One."
+        r"\bibliography{reference}\appendix\section{Extra}One."
+        r"\begin{table}\caption{First supplement table.}\label{tab:s1}"
+        r"\begin{tabular}{ll}\toprule Group & Mean\textsuperscript{a} \\\midrule Older & 1 \\\bottomrule\end{tabular}"
+        r"\begin{flushleft}Adjusted. \textsuperscript{a}The cut chosen.\end{flushleft}\end{table}"
+        r"\begin{figure}\includegraphics{displays/extra.png}\caption{First supplement figure.}\label{fig:s1}\end{figure}"
+        r"\begin{table}\caption{Second supplement table.}\label{tab:s2}"
+        r"\begin{tabular}{ll}\toprule A & B \\\midrule 1 & 2 \\\bottomrule\end{tabular}\end{table}"
+        r"\end{document}")
+    config = room / "delivery/paper-build.toml"
+    config.write_text(config.read_text().replace('venue_profile = ""', 'venue_profile = "jama-internal-medicine"')
+                      .replace('venue_label = "Test"', 'venue_label = "Test"\nsupplement_contents = true'))
+    env = dict(os.environ, HAIPIPE_PAPER_BUILD_CONFIG=str(config))
+    result = subprocess.run([sys.executable, str(ENGINE)], cwd=room / "delivery", env=env, capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr[-1500:]
+    from docx import Document
+    doc = Document(room / "delivery/word/D-supp.docx")
+    text = _text(room / "delivery/word/D-supp.docx")
+    for caption in ("eTable 1. First supplement table.", "eFigure 1. First supplement figure.", "eTable 2. Second supplement table."):
+        assert text.count(caption) == 2, (caption, text.count(caption))   # the contents list and the caption
+    raised = [r.text for t in doc.tables for row in t.rows for c in row.cells for p in c.paragraphs
+              for r in p.runs if r.font.superscript]
+    assert "a" in raised
+    from docx.text.paragraph import Paragraph
+    from docx.oxml.ns import qn
+    every = [Paragraph(e, doc) for e in doc.element.body.iter(qn("w:p"))]     # a display may sit in a float frame
+    note = [p for p in every if "The cut chosen" in p.text][0]
+    assert [r.text for r in note.runs if r.font.superscript] == ["a"]
+    assert "Adjusted. a" in note.text          # a note's mark keeps its space, unlike a citation
+    with zipfile.ZipFile(room / "delivery/word/D-supp.docx") as z:
+        assert "\x10" not in z.read("word/document.xml").decode()
+
+
+def _engine_module(room, monkeypatch):
+    monkeypatch.setenv("HAIPIPE_PAPER_BUILD_CONFIG", str(room / "delivery/paper-build.toml"))
+    spec = importlib.util.spec_from_file_location("engine_under_test", ENGINE)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_layout_codes_never_print(room, monkeypatch):
+    # pp-LBP-JAMA 261103: "=2em=11emLinear", "1em2-part model", "1.9in Primary"
+    m = _engine_module(room, monkeypatch)
+    rows = m.parse_table_rows(
+        r"\begin{tabular}{ll}\toprule A & B \\\midrule "
+        r"\hangindent=2em\hangafter=1\hspace*{1em}Linear & 1 \\"
+        r"\hspace*{2em}\textit{2-part model} & 2 \\"
+        r"\parbox[t]{1.9in}{\raggedright Primary: Total\textsuperscript{a}} & 3 \\\bottomrule\end{tabular}")
+    assert [r[0] for r in rows[1:]] == [m.INDENT_MARK + "Linear", m.INDENT_MARK * 2 + "2-part model", "Primary: Total\x10a\x11"]
+    assert m.latex_to_text(r"\setlength{\tabcolsep}{4.5pt}Word\vspace{2em}") == "Word"
+
+
+@pytest.mark.parametrize("cell,expected", [
+    ("-2.5", "−2.5"), ("-2.5 (-3.1 to -0.5)", "−2.5 (−3.1 to −0.5)"), ("$-.5$", "−.5"),
+    ("2016-2019", "2016-2019"), ("ICD-10", "ICD-10"), ("14-day", "14-day"), ("-", "-"), ("1.2-3.4", "1.2-3.4"),
+])
+def test_a_cell_number_gets_a_true_minus(room, monkeypatch, cell, expected):
+    m = _engine_module(room, monkeypatch)
+    assert m._expand_cell(cell) == [expected]
+
+
+def test_a_square_root_and_a_word_survive_as_equations(room, monkeypatch):
+    # pp-LBP-JAMA 261103: "RR + RR(RR-1)", "s c o r e"
+    m = _engine_module(room, monkeypatch)
+    from lxml import etree
+    xml = etree.tostring(m.latex_to_omml(r"\mathrm{RR} + \sqrt{\mathrm{RR}(\mathrm{RR}-1)}")).decode()
+    assert "m:rad>" in xml and xml.count(">RR</m:t>") == 3
+    assert ">score</m:t>" in etree.tostring(m.latex_to_omml(r"\mathrm{score}_j")).decode()
+    assert m.latex_to_text(r"\sqrt{x}+1") == "√(x)+1"
+
+
+def test_a_table_note_keeps_its_equation(room, monkeypatch):
+    m = _engine_module(room, monkeypatch)
+    display = m.parse_display(r"\begin{table}\caption{T.}\begin{tabular}{l}A\\\end{tabular}"
+                              r"\par\parbox{\linewidth}{\footnotesize E = $\sqrt{x}$, change -2.5.}\end{table}")
+    assert re.fullmatch(r"E = @@MATH\d+@@, change −2\.5\.", display.note)
+
+
+def test_a_jama_supplement_lists_its_contents_and_keeps_heading_case(room):
+    latex = room / "delivery/latex"
+    (latex / "master.tex").write_text(
+        r"\documentclass{article}\begin{document}\begin{center}D\end{center}"
+        r"\section*{Key Points}\textbf{Question} One?\section*{Abstract}\textbf{Importance} One."
+        r"\section{Introduction}Text.\bibliography{reference}\appendix"
+        r"\section{eAppendix 1. Inherited exposure}One."
+        r"\begin{table}\caption{\textbf{The title.} A long legend under it.}\label{tab:s1}"
+        r"\begin{tabular}{ll}\toprule A & B\\\midrule\hspace*{1em}Row & -1\\\bottomrule\end{tabular}\end{table}"
+        r"\end{document}")
+    config = room / "delivery/paper-build.toml"
+    config.write_text(config.read_text().replace('venue_profile = ""', 'venue_profile = "jama-internal-medicine"'))
+    env = dict(os.environ, HAIPIPE_PAPER_BUILD_CONFIG=str(config))
+    result = subprocess.run([sys.executable, str(ENGINE)], cwd=room / "delivery", env=env, capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr[-1500:]
+    from docx import Document
+    doc = Document(room / "delivery/word/D-supp.docx")
+    text = [p.text for p in doc.paragraphs]
+    assert text.count("eAppendix 1. Inherited exposure") == 2           # the contents list and the heading, no capitals
+    assert "EAPPENDIX 1. INHERITED EXPOSURE" not in text
+    assert any(line.strip() == "eTable 1. The title." for line in text)  # the contents list: the title, not the legend
+    from docx.text.paragraph import Paragraph
+    from docx.oxml.ns import qn
+    every = [Paragraph(e, doc) for e in doc.element.body.iter(qn("w:p"))]     # a display may sit in a float frame
+    cell = [p for p in every if p.text == "Row"][0]
+    assert cell.paragraph_format.left_indent is not None
+    with zipfile.ZipFile(room / "delivery/word/D-supp.docx") as z:
+        assert "\x13" not in z.read("word/document.xml").decode()
+
+
+def test_a_word_draft_never_measures(monkeypatch):
+    """--word-draft: no display is held for measuring, so Word is only asked to print."""
+    import latex_room_to_docx as L
+    monkeypatch.setattr(L.sys, "platform", "darwin")
+    monkeypatch.setattr(L, "MSWORD_APP", type("App", (), {"exists": staticmethod(lambda: True)}))
+    monkeypatch.delenv("PYTEST_CURRENT_TEST", raising=False)
+    monkeypatch.delenv("HAIPIPE_WORD_PREVIEW", raising=False)
+    monkeypatch.delenv("HAIPIPE_WORD_DRAFT", raising=False)
+    assert L.word_can_measure()
+    monkeypatch.setenv("HAIPIPE_WORD_DRAFT", "1")
+    assert not L.word_can_measure()

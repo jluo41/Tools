@@ -539,6 +539,24 @@ class RecordTest(unittest.TestCase):
             with self.assertRaises(SystemExit):                                   # every part filled
                 collect.record(page, "empty", "Empty", "b01-s01:x @ y", [("A title", "", "words")])
 
+    def test_know_keeps_notes_that_wait_on_nothing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            page = Path(tmp) / "b01_x"
+            page.mkdir()
+            run = collect.know(page, "to_know", "To Know", "b01-s01:x @ y", [("First", "a thing to know", "the place")],
+                               now=datetime(2026, 11, 5, 9, 0))
+            card = yaml.safe_load((run / "run.yaml").read_text())
+            self.assertEqual((card["status"], card["source"]), ("done", "know"))
+            self.assertIn("a thing to know", (run / f"{run.name}.html").read_text())
+            self.assertFalse((run / collect.ANSWERS).exists())
+            again = collect.know(page, "other", "Ignored", "b01-s01:x @ y", [("Second", "one more")])  # the same topic: appended
+            self.assertEqual(again, run)
+            self.assertIn("## Q2 · Second", (run / collect.QUESTIONS).read_text())
+            collect.applied(run, ["Q1"], "fixed in a.py")                         # settled: the page says so
+            self.assertIn("✅ applied", (run / f"{run.name}.html").read_text())
+            with self.assertRaises(SystemExit):
+                collect.know(page, "bad", "Bad", "b01-s01:x @ y", [("A title", "")])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -190,7 +190,7 @@ def question_row(q):
     work = ''.join(f'<li>{pop(w["task"]["page_url"] or w["task"]["source_url"], w["task"]["name"], cls="idtag")} '
                    f'<span class="mut">{len(w["task"]["papers"])} papers · {w["task"]["complete"]}/{w["task"]["total"]} Runs</span></li>'
                    for w in q["work"])
-    work_cell = (f'<details class="wk" open><summary><span class="kind">Work</span></summary><ul class="plain">{work}</ul></details>'
+    work_cell = (f'<details class="wk"><summary><span class="kind">Work</span></summary><ul class="plain">{work}</ul></details>'
                  if work else '<p class="wk-none">No Task linked yet.</p>')
     r = q["report"]
     report = '<p class="rp-label"><span class="kind">Report</span></p>' + (

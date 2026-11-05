@@ -1478,6 +1478,7 @@ def _checks(d):
         return _empty("No build yet.")
     build, sub, rd = man.get("build") or {}, man.get("submission_readiness") or {}, man.get("readiness") or {}
     facts = [("main text", f'{build.get("main_text_words", "?")} words'
+                           + (f' · from {build["main_text_words_from"]}' if build.get("main_text_words_from") else "")
                            + (f' · limit {build["main_text_word_limit"]}' if build.get("main_text_word_limit") else "")),
              ("citations", f'{build.get("citations", "?")} cited · {man.get("bib_entries", "?")} bib entries'),
              ("displays", f'{build.get("main_tables", "?")} main table(s) · {build.get("main_figures", "?")} main figure(s)'),

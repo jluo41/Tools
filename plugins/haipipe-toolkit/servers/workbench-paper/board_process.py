@@ -1,5 +1,5 @@
 """A paper Board's PROCESS band (b16 s33-D06, D07): step by step, one row per thing to do with its state pill and
-its verb, the decisions waiting for you, Data flow's plan center (Open, the skill, Copy prompt), and the skills."""
+its verb, the decisions waiting for you, Plan's plan center (Open, the skill, Copy prompt), and the skills."""
 from __future__ import annotations
 
 import re
@@ -10,7 +10,7 @@ from live import draft_steps as ds
 from live.frame import esc
 from live.ui_parts import _cap, _plain, _plan_html, _section, _todo
 from live.focus_draft import WORK
-from live.board_read import BOARD_PARTS, DOT_REF, _face, _field, _num, _open_list, _page_url, _section_state, _state_words, _table, _task_url, _waits, board_topic, explore_tree, is_version, md_table, part_topics
+from live.board_read import BOARD_PARTS, DOT_REF, view_topics, _face, _field, _num, _open_list, _page_url, _section_state, _state_words, _table, _task_url, _waits, board_topic, explore_tree, is_version, md_table, part_topics
 from live.board_interactions import answers_of
 from live.board_evidence import EVIDENCE_KINDS, evidence_body
 
@@ -26,11 +26,10 @@ VIEW_SKILLS = {
     "story": (("haipipe-paper-story", "writes the questions, hypotheses, claims and Section narrative"),
               ("haipipe-paper-venue", "keeps each journal's desk rules, venues/<venue>/call.md"),
               ("haipipe-paper-related", "maps the closest related papers, beside ours")),
-    "dataflow": (("haipipe-paper-plan", "draws how the data becomes each answer (the data-flow topic)"),
-                 ("haipipe-report", "keeps each Board Question and its report"),
-                 ("haipipe-task", "runs each Task's Runs and keeps their Results")),
-    "paperflow": (("haipipe-paper-plan", "lays out the Sections, displays and dated steps to the send"),
-                  ("haipipe-paper", "routes the paper's work to the skill that owns it")),
+    "plan": (("haipipe-paper-plan", "draws how the data becomes each answer, then the Sections and dated steps to the send"),
+             ("haipipe-report", "keeps each Board Question and its report"),
+             ("haipipe-task", "runs each Task's Runs and keeps their Results"),
+             ("haipipe-paper", "routes the paper's work to the skill that owns it")),
     "explore": (("haipipe-work", "the work Blocks, Jobs, Tasks and Runs"),
                 ("haipipe-discovery", "the discovery Blocks: each paper read by a Run")),
     "evidence": (("haipipe-paper-evidence", "checks the values and citations as one ledger"),
@@ -130,7 +129,7 @@ def read_board(board: Path) -> str:
 
 
 def _plan_steps(board: Path, root: Path) -> list:
-    """Data flow's plan center (JL 261101: "the design of the dataset, the design of the regression, and how to make them
+    """Plan's plan center (JL 261101: "the design of the dataset, the design of the regression, and how to make them
     run ... the plan center for the work and discovery"; "just open it, and just say use this skill, and copy it"): each
     step (title, what it covers, the skill, Open's href, the prompt to copy). The prompt sends a session to the thing,
     has it screenshot the mind map, and asks for a plan before any change."""
@@ -186,11 +185,12 @@ def process_html(board: Path, key: str, root: Path, md, items, work: bool, item_
     counts; the pills say each row's state): 1 the decisions waiting for you (Report: decided), one row per
     question; 2 this view's things to do, one row each with its state and its verb; 3 in Work, the skills that do it."""
     from live import frame
-    pattern = dict((k, pat) for k, _, pat in BOARD_PARTS).get(key)
-    topic = board_topic(board, key, pattern) if pattern else None
-    face_md = frame._notes(topic) if topic is not None else None
-    text = face_md.read_text(encoding="utf-8", errors="ignore") if face_md else ""
-    mine = [r for r in items if r.get("topic") == topic] if topic is not None else \
+    parts = []                                 # (part, its topic, its face's text); a view of two parts reads both
+    for part, _, topic in view_topics(board, key):
+        face_md = frame._notes(topic)
+        parts.append((part, topic, face_md.read_text(encoding="utf-8", errors="ignore") if face_md else ""))
+    topics = [t for _, t, _ in parts]
+    mine = [r for r in items if r.get("topic") in topics] if topics else \
         [r for r in items if r.get("topic") not in part_topics(board)] if key == "draft" else []
     href = lambda r: f'/{quote(ds._rel(Path(r["form"]), root))}' if r.get("form") else ""
     out, n = "", 0
@@ -198,7 +198,7 @@ def process_html(board: Path, key: str, root: Path, md, items, work: bool, item_
         rows = [(f'{q} · {_plain(ask)}', r["title"], "Needs your judgment", "Answer", href(r), True)
                 for r in mine if r.get("state") == "waiting" for q, _, ask in (r.get("asks") or [(r["run"], "", r["title"])])]
         rows += [(re.sub(r"\s*[⬜✅⏳○]\s*", " ", _plain(ln.lstrip("- ")))[:140].strip(), "", "waiting for you", "", "", False)
-                 for ln in _waits(text)] if topic is not None else []           # the mark is the pill now
+                 for _, _, text in parts for ln in _waits(text)]                # the mark is the pill now
         title = "Decisions waiting for you" if rows else "Nothing waits on you"
     else:                                      # 1 · what was decided: each answered question, its pick
         rows = [(f"{q} · {pick}", (f"note: {note}" if note else r["title"]), "Answered", "See answers", href(r), True)
@@ -208,18 +208,23 @@ def process_html(board: Path, key: str, root: Path, md, items, work: bool, item_
         title = "Decisions made" if rows else "No form answered yet"
     n += 1
     out += _section(f"{n} · 🙋 {_cap(title)}", _todo(rows) if rows else "<span hidden></span>")
-    if key == "dataflow":                      # 2 · the plan center: design the data, the regressions, run, read
+    if key == "plan":                          # 2 · the plan center: design the data, the regressions, run, read
         plan = _plan_steps(board, root)
         if plan:
             n += 1
             session = _field(read_board(board), "session") if (board / "board.md").is_file() else ""   # the Board's own
             out += _section(f"{n} · 🧭 Plan", _plan_html(plan, session, key=f"plan:{ds._rel(board, root)}"))
-    head, rows = _steps(board, key, topic, text, root, md)
-    if rows:
+    # each part's things to do; two parts with the same kind of list (Idea's and Story's Open) read as one
+    lists: dict = {}
+    for part, topic, text in parts or [(key, None, "")]:
+        head, rows = _steps(board, part, topic, text, root, md)
+        if rows:
+            lists.setdefault((head, part if head != "Open" else ""), []).extend(rows)
+    for (head, part), rows in lists.items():
         n += 1
-        emoji = {"dataflow": "⚙️", "paperflow": "🗓️", "evidence": "📋", "displays": "🖼️", "draft": "🪜"}.get(key, "🚧")
+        emoji = {"dataflow": "⚙️", "paperflow": "🗓️", "evidence": "📋", "displays": "🖼️", "draft": "🪜"}.get(part, "🚧")
         out += _section(f"{n} · {emoji} {head}", _todo(rows))
-    if work and key in VIEW_SKILLS and key != "dataflow":   # who does it (Data flow names a skill on each plan step)
+    if work and key in VIEW_SKILLS:            # who does it
         n += 1
         out += _section(f"{n} · 🧰 Skills that do it", '<div class=pb-agents>' + "".join(
             f'<div><span>🤖 <b>/{esc(nm)}</b>: {esc(does)}</span></div>' for nm, does in VIEW_SKILLS[key]) + '</div>')

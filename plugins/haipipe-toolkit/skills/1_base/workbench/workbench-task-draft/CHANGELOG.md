@@ -1,3 +1,38 @@
+## 0.104.19 · 2026-11-03 · a refused LaTeX export fails loudly; --accept-dropped-keys for an intended drop
+
+- JL 261103 (through the MISQ paper session): md2tex refused to overwrite three Sections' fragments when a citation
+  key left each Section on purpose, printed only a `⚠️ note` under a `✅` and exited 0, and the paper build printed
+  the old words. `exporters/md2tex.py`: a refused Section prints `❌ REFUSED <page>: ...` with the dropped keys, the
+  old fragment's path and date, and the fix; the run exits 2 and its header reads `❌`. `main(argv)` returns the code.
+- md2tex `--accept-dropped-keys`: each dropped key passes only when another Section still cites it (`--paper-pages`,
+  else the Section Pages beside this one: the same version Job, or every `B?-` group) or a revise card in
+  `draft/records/<page>-revise.md` removed it (Original cites it, Expected does not); any other key stays refused,
+  named. `--origin` names the Page when md2tex reads a temporary copy. New helpers `drop_check`, `explain_drops`,
+  `revise_cards`, `sibling_sections`, `section_keys` (the paper build reads `drop_check`).
+- `export.py` (LaTeX door): passes `--origin` and, when the POST body says `accept_dropped_keys`, the flag; a REFUSED
+  log is reported before the exit code so the reply names the keys. haipipe-draft `page.py export
+  --accept-dropped-keys` and `src/page_export.py::export(accept_dropped_keys=)` carry it from the terminal.
+- `ref/delivery.md`: new section "A refused LaTeX build". `exporters/README.md` notes the exit code.
+- Tests: new `exporters/test_md2tex.py` (5: refusal reported and exit 2, key cited in another Section accepted, keys
+  removed by revise cards accepted, unexplained drop still refused, `drop_check` names keys); with test_md2docx 16
+  pass. A running Board server picks up export.py at its next restart.
+
+## 0.104.18 · 2026-11-03 · 5 · Revise waits only on proposed cards; split bullet ids (B4a) everywhere
+
+- JL 261103 (through the MISQ paper session): "Revise cards · waits for you" showed whenever a revise file existed.
+  `draft_steps.py::states` now gives 5 · Revise `pass` only while the newest pass holds a card whose State is
+  proposed (a review report is not a card), else `done`; `_proposed_cards` counts them. `_revise_passes` reads
+  `- State: applied` as well as `State: applied` (most records write the dash), so applied cards no longer read as
+  proposed; an `applied` chip joins proposed, accepted, written and rejected. On the MISQ paper (read only): t03,
+  t21, t22 and t31 now read done; the others wait on JL's-call cards only.
+- Split bullet ids: every bullet-id pattern `B\d+` / `B(\d+)` now also takes trailing letters (`B4a`), so a split
+  bullet is no longer read as missing or as "differ". 65 lines in draft_steps.py, outline.py (and its pinned test),
+  runs_panel.py, haipipe-draft (cli/check.py, folder_health.py REALIZES, item_table.py, run_lifecycle.py,
+  page_renumber.py, plan_shape.py, page_adopt.py), haipipe-evidence from_items.py, excalidraw-draft
+  section_canvas.py and read_revise.py, haipipe-paper import_fragments.py, haipipe-insight-check, draw-logic-tree.
+  Moving a bullet renumbers `B4a` to a whole new number. Tests: no new failures against HEAD (draft 17 known,
+  workbench 39 pass, workbench-paper 29 pass, insight-check 49 pass).
+
 ## 0.104.17 · 2026-11-02 · 2 · Write: the editor scrolls beside the text
 
 - JL 261102: "here we should have the scroll bar as well". In 2 · Write's split, the text and "Write it yourself" stand

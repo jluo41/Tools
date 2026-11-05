@@ -1,5 +1,20 @@
 # haipipe-display · Changelog
 
+## [0.8.0] — 2026-11-03
+
+- JL 261103: "for the preview pdf, I think the first section should be: what we want to say with this display".
+  `build_preview.py` takes method.md's `## Message` out and prints it first on page 2 as "What this display says",
+  then "How this display was made" from the rest; with no Message, page 2 says so. SKILL.md's preview section and
+  the script's docstring list Message first. Checked on PhyAbsence's six displays (Display F page 2 read back).
+
+## [0.7.2] — 2026-11-03
+
+- pp-LBP-JAMA 261103: every preview.pdf printed "Figure 1" or "Table 1", and a Supplement table as "Table".
+  `build_preview.py` `numbering(unit)` now sets the float's name and number before `float.tex`: a writing Job unit's
+  README `number:`, else (a Run's result/) its display Task face's `number:` then `label:`. "eTable 11" prints as
+  eTable 11, "Figure 3" as Figure 3, a lettered "Table B1" as written; with none, LaTeX's own count. Tests:
+  `tests/test_numbering.py` (4); checked by building eTable 11 and Figure 3 previews and reading page 1.
+
 ## [0.7.1] — 2026-11-01
 
 Page 1 of `preview.pdf` looks like the paper's page (JL 261101: "the full pdf preview, just like the one we will see in

@@ -12,6 +12,7 @@ the Runs      one fixed Run per lane in the Runs panel on the right:
               run-delivery-webpage · run-delivery-latex · run-delivery-word
               (Done while the lane is current, Ready when the Page changed)
 the command   page.py export <page> [--lane web|latex|word|all] [--author "<name>"]
+                [--accept-dropped-keys]
               writes runs/run-delivery-<lane>.sh and the lane's files
 the writers   web    → haipipe-draft/src/page_workspace.py (build_page)
               latex  → exporters/md2tex.py + LuaLaTeX      (ExportMixin.export_latex)
@@ -40,6 +41,33 @@ migration profile; missing current bindings never fall back to a legacy Bib or
 display. The shared Markdown reader strips HTML comments so Board notes never
 become manuscript prose. The deck is authored by a model (`claude -p`, minutes,
 money), so it builds only on the explicit ✨ press.
+
+## ❌ A refused LaTeX build · the old fragment stays, so it fails loudly
+
+md2tex REFUSES to replace `delivery/latex/<page>.tex` when a citation key would
+leave the Section, or when the old fragment has no `% GENERATED from` header.
+The refused Section keeps its OLD fragment, and the paper build reads that
+fragment, so a refusal is a failure, never a note (261103: three MISQ Sections
+printed old words). md2tex prints `❌ REFUSED <page>: ...` with the dropped keys
+and the old fragment's date and exits 2; the LaTeX door answers `ok: false`;
+`page.py export` prints `❌ latex` and exits 1.
+
+```text
+REFUSED t01_introduction: 1 citation key(s) would leave this Section: example2022two.
+The old fragment .../latex/t01_introduction.tex (written 2026-11-03 11:28) stays, so a
+paper build prints its OLD words. If the drop is intended, rerun with --accept-dropped-keys
+```
+
+An intended drop (a rewrite, a paragraph moved to another Section) passes with
+`page.py export <page> --lane latex --accept-dropped-keys` (md2tex's flag of the
+same name; the door reads `accept_dropped_keys` from the POST body). Each
+dropped key passes only when another Section of the paper still cites it (the
+Section Pages beside this one, in the same version Job or in the `B?-` groups;
+md2tex `--paper-pages` names them explicitly), or a revise card in
+`draft/records/<page>-revise.md` removed it (its `Original:` cites the key, its
+`Expected:` does not). Any other key stays refused, named. The paper build
+(`haipipe-paper-assemble` 0.14.0) stops on a stale fragment and passes the same
+flag to each stale Section's lane.
 
 ## 🔍 Checks · current or stale, by file time
 

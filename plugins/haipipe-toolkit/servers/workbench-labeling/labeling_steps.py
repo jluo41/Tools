@@ -622,8 +622,10 @@ def x_view(task: Path, root: Path, key: str) -> tuple[str, str, str]:
             meaning = next((t for t in sorted(task.parent.iterdir()) if t.is_dir() and kind(t) == "meaning"), None)
             href = _view_url(meaning, root, "prepare") if meaning else ""
             results += _section(f"📋 Round report {now}", f'<p class=pb-big>{esc(head)}</p><div class=ls-verbs>'
-                                f'<span class="pb-pill ok">sent to meaning</span>{_open(report, root, "Open the round report")}'
-                                + (f'<a class=fd-btn href="{esc(href)}">Open in meaning</a>' if href else "") + "</div>")
+                                + (f'<span class="pb-pill ok">sent to meaning</span>' if "meaning" in head else "")
+                                + _open(report, root, "Open the round report")
+                                + (f'<a class=fd-btn href="{esc(href)}">Open in meaning</a>' if href and "meaning" in head else "")
+                                + "</div>")
         errors = _json(out / "errors.json") if out else None
         if isinstance(errors, dict) and errors:
             results += _section("🔍 Errors, by kind", '<div class="pb-tiles ls-tiles4">' + "".join(
@@ -648,13 +650,41 @@ def x_view(task: Path, root: Path, key: str) -> tuple[str, str, str]:
     rows = [(str(c.get("name", "")), "", str(c.get("state", "not yet")), "", "", False) for c in (crit or []) if isinstance(c, dict)]
     rows = rows or [("Quality + coverage floors", "", "not yet", "", "", False), ("Strong-model non-regression", "", "not yet", "", "", False),
                     ("Cost per accepted item", "", "not yet", "", "", False)]
-    met = all(r[2] in ("met", "passed", "pass", "done") for r in rows)
-    process += _bar("✍️ Your sign: the release, once every criterion below is met",
-                    '<button type=button class=fd-btn disabled>Sign release</button>', "you" if met else "wait")
-    results = _section("✅ Release criteria", _todo(rows))
+    met = all(r[2] in MV.MET for r in rows)
+    out = last["release"] / "result" if last["release"] else None
+    finals = out / "final_labels.jsonl" if out else None
+    signed = MV.release_sign(last["release"])
+    if signed:
+        process += _bar(f"✅ {now} released by {signed['by']} · {signed['at']}: its labels are final", "", "done big")
+    elif met and finals and finals.is_file():
+        process += _bar(f"✍️ Your sign: release {now} and its final labels",
+                        f'<input class=ls-by name=by maxlength=80 placeholder="your name" aria-label="Your name">'
+                        f'<button type=button class=fd-btn data-approve="{esc(now)}" data-task="{esc(frame.rel(task, root))}">'
+                        f'Sign release {esc(now)}</button><span class=ls-msg role=status></span>')
+    else:
+        process += _bar("✍️ Your sign: the release, once every criterion below is met",
+                        '<button type=button class=fd-btn disabled>Sign release</button>', "wait")
+    results = _final_labels(finals, root, bool(signed)) + _section("✅ Release criteria", _todo(rows))
     results += _section("🧾 Fresh data for claims", '<p class=ls-line>claims about unseen items need data beyond the '
                                                     'audited staging set</p>')
     return strip + turns, process, results
+
+
+def _final_labels(path: Path | None, root: Path, signed: bool) -> str:
+    """The Job's outcome (the walkthrough, 261104: no page showed it): the counts, the file, and the rows you decided."""
+    if not path or not path.is_file():
+        return ""
+    rows = [json.loads(ln) for ln in path.read_text(encoding="utf-8").splitlines() if ln.strip()]
+    count = lambda word: sum(r.get("label") == word for r in rows)
+    yours = [r for r in rows if str(r.get("decided_by", "")).startswith(("you ", "your "))]
+    tiles = (("items", len(rows)), ("unsafe", count("unsafe")), ("safe", count("safe")), ("you decided", len(yours)))
+    body = ('<div class="pb-tiles ls-tiles4">' + "".join(f'<div class=pb-tile><span class=ls-num>{esc(v)}</span>'
+                                                         f'<small>{esc(k)}</small></div>' for k, v in tiles) + "</div>")
+    body += _table(("item", "label", "who decided", "card", "executors agree"),
+                   [(esc(r["item_id"]), esc(r["label"]), esc(r["decided_by"]), esc(r.get("cites") or ""),
+                     "yes" if r.get("agree") else "no") for r in yours])
+    body += f'<div class=ls-verbs>{_open(path.with_suffix(".md"), root, "Open all final labels")}</div>'
+    return _section("🏷 Final labels" + ("" if signed else " · not signed yet"), body)
 
 
 def states(task: Path) -> dict:
@@ -667,7 +697,8 @@ def states(task: Path) -> dict:
             out[key] = ("done", "ok") if run is not None and MV.state(run) == "done" else \
                 ("running", "run") if run is not None and MV.state(run) in ("running", "waiting") else ("", "")
         run = xr["release"][-1] if xr["release"] else None
-        out["release"] = ("ready", "ok") if run is not None and MV.state(run) == "done" else ("not yet", "")
+        out["release"] = (("released", "ok") if MV.release_sign(run) else ("your sign", "you")) \
+            if run is not None and MV.state(run) == "done" else ("not yet", "")
         return out
     loops, rec = MV.loops(task), MV.frame_record(task)
     out["frame"] = (("agreed", "ok") if rec and rec["decisions"] else ("waiting for you", "you")
@@ -695,7 +726,7 @@ def default_view(task: Path) -> str:
     """Where Work opens: the step that needs you or comes next."""
     if kind(task) == "expression":
         xr = _xruns(task)
-        return next((k for k in ("rewrite", "run", "evaluate", "release") if not xr[k]), "evaluate")
+        return next((k for k in ("rewrite", "run", "evaluate", "release") if not xr[k]), "release")
     loops = MV.loops(task)
     if any(lp.get("collect") is not None and MV.state(lp["collect"]) == "waiting" for lp in loops):
         return "preferences"

@@ -50,7 +50,7 @@ request shape is added to the page (JL 2026-10-21).
 Each lane's interactive docs sit at `/<noun>/docs`. Food also has
 `POST /food/normalize/image` (multipart frames) and `/food/normalize/image/batch`.
 
-THE EVENT DOOR (food, 2026-10-21; JL: "make the page on event to work"). `POST /food/event`
+THE EVENT DOOR (food, 2026-10-21; JL: "make the page on event to work"). `POST /meal/event`
 takes one meal as it arrives, `{"raw": {"type": "app_log" | "text" | "photo" | "numbers_only",
 "rows": [...]}}`, or an input JSON `{"input": {"items": [...], ...}}`, or both (a field given in
 `input` wins: a photo row and the photo API's names). It answers `{"raw", "input", "output",

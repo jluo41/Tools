@@ -2,8 +2,8 @@
 name: describe-food
 description: "Normalize free-text food descriptions (any cohort's dialect) to USDA nutrition. Use when a Diet ProcName's FoodName column needs Calories/Carbs/Protein/Fat/Fiber/Sugar, when a SourceFn must enrich diet data, or when the FoodNorm lexicon needs rebuilding. Trigger: describe food, food to nutrition, food event, food item rules, resolve diet to USDA, fill nutrition columns, foodnorm, 食物营养归一化."
 metadata:
-  version: "0.8.0"
-  last_updated: "2026-11-02"
+  version: "0.9.0"
+  last_updated: "2026-11-04"
   changelog: CHANGELOG.md
   measured: "69.1% of 71,673 Diet rows MEASURED, 5.7% ESTIMATED, 25.2% MISS. ESTIMATED carries median 2.0 g carb error, p90 15.0 g, 10% over 15 g."
 ---
@@ -258,7 +258,7 @@ versioned in ExternalStore -- the same way NDC/NPI reference data works.
 THE FOOD EVENT: WHAT ITS INPUT AND OUTPUT MUST HOLD
 --------------------------------------------------------------------------------
 
-POST /food/event (haipipe-norm eventnorm) calls this skill's foodnorm/items.py on
+POST /meal/event (haipipe-norm eventnorm) calls this skill's foodnorm/items.py on
 a meal's items. The event's shared rules (three parts, times, totals left out,
 source, by hour) are haipipe-norm's THE EVENT JSON; these are food's own, from
 b51 s01-food-api.md (s01-Dnn). All 8 of s01's saved meals pass every line
@@ -292,9 +292,13 @@ b51 s01-food-api.md (s01-Dnn). All 8 of s01's saved meals pass every line
             shows. words = {check: PASS | PARTIAL | NONE, missing: [...]}: does
             that name hold every word asked. A MEASURED match that is not PASS
             reads ESTIMATED (s01-D50, D51).
-    [ ] F7  serving = {basis: per_serving | per_100g, unit, grams}: what the
-            numbers are for. Never scaled to an amount the log did not state
-            (haipipe-norm rule 4).
+    [ ] F7  serving = {basis: per_meal | per_serving | per_100g, unit, grams, times,
+        amount_note}: what the numbers are for. A stated amount counts: grams and
+        ml by basis per_meal; another amount multiplies the table's one serving
+        (times, all 14 and GL) when its unit is that serving's. A unit that differs
+        is never converted: the numbers stay one serving and amount_note says so
+        (haipipe-norm rule 4). total.amounts = {stated, applied} counts them.
+        WellDoc's input.total is rows x ServingsConsumed (t13 r05).
     [ ] F8  FatSecret's 14 nutrients, always in four groups with every name
             present: macros (calories, carbs, protein, fat), carb_parts (fiber,
             sugar, added_sugars), fat_parts (saturated, mono, poly, trans,

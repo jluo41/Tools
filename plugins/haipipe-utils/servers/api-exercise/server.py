@@ -101,7 +101,7 @@ class EventIn(BaseModel):
 
 @app.post("/event")
 def exercise_event(body: EventIn):
-    """ONE exercise event (b51 s12; JL 261022: "就是你要 follow 他，然后做一下跟他一样的事情", as POST /food/event): the
+    """ONE exercise event (b51 s12; JL 261022: "就是你要 follow 他，然后做一下跟他一样的事情", as POST /meal/event): the
     raw, the input JSON the preprocess step makes of it, and the output by local hour, each hour its own part (s02-D23),
     its one item described by describe-exercise (words and minutes only) or by the MET its device gives."""
     try:

@@ -16,11 +16,11 @@ s01 · Ideation
 
 ## Directions considered
 
-| direction | verdict | reason | decided |
-|---|---|---|---|
-| <direction A> | ✅ selected | <why it wins> | <who, when> |
-| <direction B> | ○ second | <why it is second> | <who, when> |
-| <direction C> | ✕ lost | <why it lost> | <who, when> |
+| direction | theory | verdict | reason | decided |
+|---|---|---|---|---|
+| <direction A> | <its theory> | ✅ selected | <why it wins> | <who, when> |
+| <direction B> | <its theory> | ○ second | <why it is second> | <who, when> |
+| <direction C> | <its theory> | ✕ lost | <why it lost> | <who, when> |
 
 ## Hand-off
 

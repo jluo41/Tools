@@ -211,3 +211,22 @@ def test_evidence_lines_are_written_from_the_draft_and_the_ledger(tmp_path):
             "> Value: paper-owned definition · cutoff = 0.75\n") in text          # a line naming no item stays
     assert "hand note" not in text and "deferred for now" not in text           # replaced, and a deferred item
     assert run(folder)["changes"] == []                                           # a second adopt changes nothing
+
+
+def test_a_changed_paragraph_set_is_relaid_never_typed_and_the_gap_shows_until_then(tmp_path):
+    """JL 261102: the letter printed draft v0.1 while its plan was v0.3, because Content was typed by hand when adopt
+    refused. `content_gap` names the gap; `--relayout` lays the Content out from the Draft and stamps `content:`."""
+    from src.page_adopt import content_gap, render
+    structure = STRUCTURE + "\n### C1.P3 · Third · S5\n- B1 · S5 · [Claim] state zeta\n"
+    sentences = SENTENCES + "\n### C1.P3 · Third · S5\n- B1 · S5 · Zeta six.\n"
+    folder = make(tmp_path, structure=structure, sentences=sentences)
+    gap = content_gap(folder)
+    assert gap and gap["current"] == "draft v1.0" and "relayout" in gap["why"]
+    refused = run(folder)
+    assert refused["refused"] and "--relayout" in render(refused)
+    report = run(folder, relayout=True)
+    assert not report["refused"] and report["written"]
+    text = (folder / "Q1-demo.md").read_text(encoding="utf-8")
+    assert "Zeta six. <!-- realizes: C1.P3.B1 -->" in text and "content: draft v1.0 · adopted" in text
+    assert content_gap(folder) is None
+    assert sync(folder)[0]["level"] == "OK"

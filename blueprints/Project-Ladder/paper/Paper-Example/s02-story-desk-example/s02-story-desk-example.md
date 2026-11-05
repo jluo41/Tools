@@ -12,6 +12,8 @@ s02 · Story
 
 **One-sentence identity:** <What the paper finds, for whom, in one plain sentence.>
 
+**Theory**: <The theory this paper speaks to, and what it says back.>
+
 ### 2 · Pitch
 
 <The pitch: why this question matters now, in two or three sentences.>

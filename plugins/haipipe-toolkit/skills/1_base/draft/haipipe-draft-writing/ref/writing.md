@@ -25,9 +25,10 @@ Before a Section is written, or rewritten whole, read how 3 to 4 published paper
 Section, and write to follow them (JL 261022: "你应该先找 example，看看别人是怎么写 abstract 的，然后再看怎么写 ...
 在 write 的时候，你应该先找到相应的 example，这样我们就可以 follow 别人的参考了").
 
-1. **Find them.** The Section's examples are a Studio topic `sNN-<task>-<venue>-examples`, made by `/excalidraw read`:
-   two papers close to the topic, two the venue's author guide quotes, each one's Section read whole (`reads/pNN-
-   <author><year>/reading.yaml`, its blocks shot from the PDF). The Section canvas names it by `examples:`, and the
+1. **Find them.** The Section's examples are a Studio topic `sNN-<task>-<venue>-examples`, made with `/haipipe-studio`:
+   3 to 4 papers of the same article type in that venue, closest to the topic first, each one's Section a whole
+   screenshot (`reads/pNN-<author><year>/shots/section.jpg`, beside its `reading.yaml`), drawn by `excalidraw-read
+   ref/section_screens.py`. The Section canvas names it by `examples:`, and the
    workbench shows it as 📚 Examples in 1 · Plan and 2 · Write. With none, make it first; do not write without it.
 2. **Read what they share.** For each paragraph (or each heading of a structured abstract): its move, the words that
    carry it, its length. One line each, kept in the topic face's `key:` and each reading's `logic:`; for example,
@@ -47,7 +48,9 @@ before writing; its sections are:
 
 1. **The test**: can a reader who does not read English well follow this?
 2. **Words**: a common word when it keeps the exact meaning; no idiom; defined terms stay, explained.
-3. **Sentences**: one reader move a sentence, split at the hinge; avoid semicolons where possible.
+3. **Sentences**: one reader move a sentence, split at the hinge; no semicolons and no `, however,` (JL 261104).
+   **Paragraphs**: 4 to 6 sentences; merge a shorter one, split a longer one, recount after any cut (`cli/paragraphs.py`).
+   **Limits**: say each once, where it carries content; no over-defensive lines ("causation cannot be established").
 4. **Headings and shapes**: a heading names its consequence, not its mechanism; a good/bad pair gets ✅ and ❌ lines.
 5. **The AI tells**: the stock shapes this repo has produced (the reversal flourish, a bolted-on "which is why", "not
    only … but also", the four-slot house skeleton), and the paste test.

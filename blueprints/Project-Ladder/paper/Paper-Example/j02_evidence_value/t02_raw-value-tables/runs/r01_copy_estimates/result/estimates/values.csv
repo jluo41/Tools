@@ -1,0 +1,10 @@
+key,value,unit,text,source
+sample.n_units,12480,units,,r01_source:tables.csv
+main.b,2.3461,points,"2.35 (95% CI, 0.84 to 3.85)",r01_source:tables.csv
+main.ci_lo,0.8412,points,,r01_source:tables.csv
+main.ci_hi,3.8519,points,,r01_source:tables.csv
+main.p,0.0021,,,r01_source:tables.csv
+sub.b,4.1234,points,,r01_source:tables.csv
+mean.before,41.27,points,,r01_source:tables.csv
+mean.after,43.62,points,,r01_source:tables.csv
+extra.sd,9.87,points,,r01_source:tables.csv

@@ -3,8 +3,8 @@ name: haipipe-delivery
 description: "Owns the Block's delivery/ folder (a Job's or Task's output sits under its address there; a page shows its own plus its children's): where built output goes, the Delivery view, moving old outputs in, and the rule that only a person marks a delivery sent; also a Page's Delivery Runs (build the PDF, Word file or web page, ref/page-delivery.md). Trigger: delivery, delivery/, where does the pdf go, build the docx, rebuild delivery, sent, pull from OneDrive, /haipipe-delivery, /haipipe-draft-delivery."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.7.1"
-  last_updated: "2026-11-01"
+  version: "0.8.1"
+  last_updated: "2026-11-04"
   # version history: ./CHANGELOG.md
 ---
 
@@ -73,6 +73,34 @@ One deliverable is one item on screen, however many files and versions it has (b
    a render, a deck drawn slide by slide, or a Word file read from its package.
 5. **The code**: `frame.version_roots` (the rule, shared with Related), `frame.delivery_items`,
    `frame.version_panes`, `frame.pptx_preview` (`?view=pptx`).
+
+
+Live pages
+----------
+
+A page a host serves (an API's try page) is handed over too, and has no file to copy here (JL 261104: "embed this ...
+we can view them in the delivery tab").
+
+1. **One line says it**: a deliverable on a Job's or the Block's face with `url:` (`url: /_api/try/meal`); nothing goes
+   in `delivery/`, so there is no second copy to go stale. `frame._live_pages` reads it.
+2. **Where it shows**: a closed card in Delivery at its Task (`task:`), its Job, its Block and above; opened, the page
+   works in a frame, loaded only then, with an own-tab link. A `url:` on another host gets only the link.
+3. **Say it from this host**: `/_api/...` goes through the host's login to the API host (`api_proxy.py`), so it opens
+   wherever the workbench opens; an API host's own address may not.
+4. **In Findings too**: a Block's Findings has 🌐 Service, one side tab per live page (`service:` names the tab), the
+   site itself on the right (`focus_page.service_section`).
+5. **No versions**: it answers with today's code, so a fix or a bug shows at once. To keep what it answered on a day,
+   freeze that as a Run's result or a gallery, then deliver the file.
+6. **Sent**: it is still a person's word, a row in `delivery/delivery.md`.
+
+
+Models, data and websites
+-------------------------
+
+A work Block can hand over a model, a dataset or a website, not only a document (JL 261104). Their lanes are `model/`, `data/`
+and `web/` (also `models/`, `checkpoints/`, `dataset/`, `datasets/`, `website/`, `site/`), at any address in the folder above. A work
+Block's Report > Findings ends with 📦 Delivery, tabs Models · Data · Website; a live page shows under Website; an empty tab
+says where its files go.
 
 
 Sent is a person's word

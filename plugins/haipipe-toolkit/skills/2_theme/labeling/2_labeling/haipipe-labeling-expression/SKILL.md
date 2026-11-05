@@ -9,8 +9,8 @@ description: >-
   Trigger: expression round, rewrite the wording, run the executors, evaluate, round report, release,
   /haipipe-labeling-expression.
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-11-01"
+  version: "0.2.0"
+  last_updated: "2026-11-04"
   # version history: ./CHANGELOG.md
 ---
 
@@ -38,7 +38,7 @@ with that page's link. A round always names its mNN; a newer signed mNN starts a
 ├── rNN_rewrite_mNN_eNN/    result/expression.md (the wording), changes.md (one line per change from e(N-1))
 ├── rNN_run_mNN_eNN/        result/runs.json [{model, train, test, state}], result/predictions/<model>.jsonl
 ├── rNN_evaluate_mNN_eNN/   result/round_report.md (its first line is the route), errors.json, performance.json
-└── rNN_release_eNN/        result/criteria.json [{name, state}]
+└── rNN_release_eNN/        result/criteria.json [{name, state}], final_labels.jsonl + .md; signed.yaml is your sign
 ```
 
 ## A round: "round eNN" (Rewrite's prompt runs all three; Run's and Evaluate's prompts rerun one)
@@ -65,7 +65,11 @@ with that page's link. A round always names its mNN; a newer signed mNN starts a
 
 Freeze mNN · eNN · its reference labels · the model settings, and check the criteria into `criteria.json`: quality and
 coverage floors on Test, no regression on the strongest model, cost per accepted item. A failed criterion routes back
-(wording: expression; a rule or label: meaning). The person signs the release; no agent does.
+(wording: expression; a rule or label: meaning). Then the Job's outcome: `E/meaning_update.py final --labels <the
+meaning Task's last labels.jsonl> --predictions <the Run's result/predictions> --out <this Run>/result` writes
+`final_labels.jsonl` and `.md`, each item's label, who decided it and what each executor said (a disagreement is a
+flag, never a change). The person signs on the page (Release: Sign release eNN), which writes `result/signed.yaml`
+through `meaning_versions.sign_release` and is refused until every criterion is met; no agent signs.
 
 ## The rules
 

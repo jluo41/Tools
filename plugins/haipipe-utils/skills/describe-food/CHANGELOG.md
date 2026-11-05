@@ -2,10 +2,18 @@ CHANGELOG — describe-food
 ================================================================================
 
 
+0.9.0 — 2026-11-04
+--------------------------------------------------------------------------------
+Stated amounts count (JL 261104): foodnorm.items.amount_times; serving.times, serving.amount_note, total.amounts; rule
+F7. A unit that differs from the table's serving is never converted, and the item says so. t13 r05 on 5,000 WellDoc
+meals against the app's own totals: carbs close 56.9% -> 81.0%, median off 4.8 -> 0.3 g; 82.0% of amounts applied.
+eventnorm's app_log input.total is now rows x ServingsConsumed: close to the app's total 61.9% -> 94.0%.
+
+
 0.8.0 — 2026-11-02
 --------------------------------------------------------------------------------
 
-SKILL.md gains THE FOOD EVENT, the checklist of what a food event's input and
+SKILL.md gains THE FOOD EVENT, the checklist of what a meal event's input and
 output must hold (F1 to F11, from b51 s01-D20 to D51); the rules every event type
 shares went to haipipe-norm's THE EVENT JSON. Checking s01's 8 meals against it
 found one break, now fixed: an output item listed food_zh second while its input
@@ -37,7 +45,7 @@ every word asked.
 unreleased — 2026-10-21
 --------------------------------------------------------------------------------
 
-Two modules the event door (haipipe-norm/eventnorm, POST /food/event) calls; the
+Two modules the event door (haipipe-norm/eventnorm, POST /meal/event) calls; the
 door's normalize() and its answers do not change.
 
 foodnorm/items.py enrich_items(items): a meal's items, each asked alone, enriched

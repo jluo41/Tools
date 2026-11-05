@@ -33,6 +33,7 @@ No empty folder is made ahead of its content (`haipipe-project`): `studio/`, `re
 board-kind: <kind>
 spine: <one sentence naming the Block's topic and boundary>
 close: <what must be true for this Block to close>
+bands: j0N 🗄️ data · j1N 🏋️ pretraining   (optional: names each group of Jobs by its first digit; Status draws one section per group)
 workbench: <theme>              # optional: the theme that reads it, when its Theme folder names another
 
 ## Topic

@@ -2993,7 +2993,9 @@ def _checks_html(d):
     build, sub, rd = man.get("build") or {}, man.get("submission_readiness") or {}, man.get("readiness") or {}
     facts = []
     if build:
-        facts += [("main text", "%s words%s" % (build.get("main_text_words", "?"), (" · limit %s" % build["main_text_word_limit"])
+        facts += [("main text", "%s words%s%s" % (build.get("main_text_words", "?"),
+                                                  " · from %s" % build["main_text_words_from"] if build.get("main_text_words_from") else "",
+                                                  (" · limit %s" % build["main_text_word_limit"])
                                                 if build.get("main_text_word_limit") else "")),
                   ("citations", "%s cited · %s bib entries" % (build.get("citations", "?"), man.get("bib_entries", "?"))),
                   ("displays", "%s main table(s) · %s main figure(s)" % (build.get("main_tables", "?"), build.get("main_figures", "?"))),

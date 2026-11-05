@@ -181,6 +181,9 @@ def main(argv=None):
     export.add_argument("--author", help='Name on the Word comments (papers: "Junjie Luo")')
     export.add_argument("--root", type=Path,
                         help="Root the view links assume (default: the repository root, as the Board server)")
+    export.add_argument("--accept-dropped-keys", action="store_true",
+                        help="LaTeX lane: let a citation key leave the Section when another Section still "
+                             "cites it or a revise card removed it (md2tex); any other drop stays refused")
     open_run = commands.add_parser(
         "open-run", help="Open a Page Run: write its one ticket, runs/run-<kind>-<slug>.md")
     open_run.add_argument("page", type=Path)
@@ -373,7 +376,8 @@ def main(argv=None):
                                           + (run.stderr or run.stdout)[-300:].strip()})
                     rest = []
                 if rest:
-                    results.update(export(context.folder, rest, author=args.author, root=args.root))
+                    results.update(export(context.folder, rest, author=args.author, root=args.root,
+                                          accept_dropped_keys=args.accept_dropped_keys))
                 failed = failed or not all(r["ok"] for r in results.values())
                 for lane, r in results.items():
                     mark_card(context.folder, lane, r["ok"])

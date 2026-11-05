@@ -1,0 +1,13 @@
+run: r01_fill_portal
+kind: hard
+role: make
+run_type: main
+says: 'The portal fill page: every field with its value, a Copy button and its state.'
+host: this machine
+time: seconds
+ticket: r01_fill_portal.sh
+worker: haipipe-paper scripts/portal_fill.py
+writes:
+- result/
+- delivery/j21_submission_v1130_desk/portal-fill.html
+started_by: '<the person who presses Run>'

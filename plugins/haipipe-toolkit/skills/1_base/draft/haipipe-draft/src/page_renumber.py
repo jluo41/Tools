@@ -28,7 +28,7 @@ def order_of(plan_text: str) -> list:
     """The sentence ids in reading order: `## 3 · Draft`'s lines, else the plan's points."""
     match = DRAFT_SECTION.search(plan_text)
     section = re.split(r"(?m)^## ", plan_text[match.end():], maxsplit=1)[0] if match else ""
-    ids = re.findall(r"(?m)^- B\d+ · (S\d+[a-z]?) · ", section) or re.findall(r"(?m)^- B\d+ · (S\d+[a-z]?) · ", plan_text)
+    ids = re.findall(r"(?m)^- B\d+[a-z]* · (S\d+[a-z]?) · ", section) or re.findall(r"(?m)^- B\d+[a-z]* · (S\d+[a-z]?) · ", plan_text)
     return list(dict.fromkeys(ids))
 
 

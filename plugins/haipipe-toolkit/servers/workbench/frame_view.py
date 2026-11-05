@@ -166,7 +166,7 @@ class FrameMixin:
                                    head_only=head_only)
         if get("view") == "focus-map":
             from live import focus_page
-            body = focus_page.mindmap_document((root / raw).resolve(), root)
+            body = focus_page.mindmap_document((root / raw).resolve(), root, compact=get("fit") == "1")
             return self.guide_send(body or "<h1>Mind map unavailable</h1>", 200 if body else 404,
                                    head_only=head_only)
         if get("view") == "focus-part":                  # a row's or an sNN's mind map, Work or delivery, popped out

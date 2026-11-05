@@ -406,6 +406,20 @@ class Builders(unittest.TestCase):
         self.assertTrue((topic / "s04-fees.mindmap.html").is_file())
         self.assertFalse(list(topic.glob("*.excalidraw")))
 
+    def test_every_map_starts_closed(self):
+        # JL 261104: "默认的话，大家都是合着的"
+        kids = [MB.built("a/p", "a point")]
+        tree = MT.MindMap({"mindmap": "1", "title": "x"}, MB.built("root", "x", [MB.built("a", "a card", kids), MB.built("b", "a bare card")]))
+        tree.root.id = "root"
+        plain = MM.draw(tree, editable=False, fold=False)
+        self.assertNotIn("pm-folds", plain)
+        self.assertNotIn("data-foldall", plain)
+        folds = MM.draw(tree, editable=False)
+        self.assertIn('class="pm pm-folds"', folds)
+        self.assertIn('data-foldall=1', folds)
+        self.assertEqual(folds.count(MV.FOLDBTN), 1)                                  # a card with nothing under it has no mark
+        self.assertNotIn(" pm-on", folds.split("<script>")[-1] and folds.split("</style>")[-1].split("<script>")[0])
+
     def test_a_link_opens_only_on_the_web_or_a_path(self):
         # 261031 review: a javascript: or data: link became a pop-out chip on the origin that serves the terminal
         words = "[a](javascript:alert(1)) [b](https://doi.org/x) [c](notes.md) ![d](data:image/png;base64,AA) [e](//evil.x)"

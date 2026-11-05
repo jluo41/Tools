@@ -1,0 +1,44 @@
+# Evidence cards of t03_results (placeholder). The j02 items are bindings: values_ledger.py bind --propose lists the
+# search's hits in evidence/proposals.md, a person ticks them, --adopt writes them here. The RQ1-t01-006 binding was
+# written when its Run returned 4.10; the Run has since returned 4.1234, so the ledger says differs (Tools' example of
+# a number the text must change).
+evidence:
+- kind: value
+  source: j02.t01
+  items:
+  - run: r01
+    for:
+    - C2.P1.B2
+    value: RQ1-t01-006
+    anchor:
+    - '4.10'
+  - run: r01
+    for:
+    - C2.P1.B1
+    value: RQ1-t01-001
+    anchor:
+    - 12,480
+  - run: r01
+    for:
+    - C2.P1.B1
+    value: RQ1-t01-002
+    anchor:
+    - '2.35'
+  - run: r01
+    for:
+    - C2.P1.B1
+    value: RQ1-t01-003
+    anchor:
+    - '0.84'
+  - run: r01
+    for:
+    - C2.P1.B1
+    value: RQ1-t01-004
+    anchor:
+    - '3.85'
+  - run: r01
+    for:
+    - C2.P1.B1
+    value: RQ1-t01-005
+    anchor:
+    - '.002'

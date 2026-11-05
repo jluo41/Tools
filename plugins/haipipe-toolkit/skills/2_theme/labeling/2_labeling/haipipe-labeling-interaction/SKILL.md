@@ -10,8 +10,8 @@ description: >-
   report-NN, save my answers, Update, approve mNN, audit the existing labels, use case 2,
   /haipipe-labeling-interaction.
 metadata:
-  version: "0.2.1"
-  last_updated: "2026-11-01"
+  version: "0.2.2"
+  last_updated: "2026-11-04"
   # version history: ./CHANGELOG.md
 ---
 
@@ -100,8 +100,10 @@ answer block (from its `haipipe-interaction answers` line to the end).
 3. Flags: `collect.py applied <the collect Run> QN --by "<what changed, real names>"` for each answer that changed a
    label or a rule; `--state "in progress" --by "Loop N+1's report: …"` for a deferred one. A keep or a blind check
    changes nothing and needs no flag. An earlier loop's deferred card that this loop asked again gets its new flag.
+   A rule card's evidence decides nothing: only an answered item card changes an item's record.
 4. Never sign. The person signs on the page (Update: Approve mNN), which writes `meaning/mNN.approved.yaml` through
-   `meaning_versions.approve`; expression runs only on a signed mNN. Reply: the Task's Work › Update link.
+   `meaning_versions.approve`; expression runs only on a signed mNN. Set the Task's and the Job's `state:` lines to
+   what now waits (the Block's rows read them). Reply: the Task's Work › Update link.
 
 ## The rules
 

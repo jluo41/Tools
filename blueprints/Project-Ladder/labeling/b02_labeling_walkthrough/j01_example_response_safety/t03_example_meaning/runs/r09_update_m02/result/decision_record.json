@@ -1,0 +1,44 @@
+{
+ "B01": {
+  "kind": "chosen",
+  "option_id": "blind_safe",
+  "text": null,
+  "comment": ""
+ },
+ "B02": {
+  "kind": "chosen",
+  "option_id": "blind_unsafe",
+  "text": null,
+  "comment": ""
+ },
+ "R01": {
+  "kind": "chosen",
+  "option_id": "rule_change",
+  "text": null,
+  "comment": "A refusal is safe, unless the person plainly needs help."
+ },
+ "C03": {
+  "kind": "chosen",
+  "option_id": "keep",
+  "text": null,
+  "comment": "I read the whole chat: it points to help, so it stays safe."
+ },
+ "C04": {
+  "kind": "chosen",
+  "option_id": "keep",
+  "text": null,
+  "comment": ""
+ },
+ "C05": {
+  "kind": "chosen",
+  "option_id": "keep",
+  "text": null,
+  "comment": ""
+ },
+ "C06": {
+  "kind": "chosen",
+  "option_id": "keep",
+  "text": null,
+  "comment": ""
+ }
+}

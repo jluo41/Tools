@@ -11,7 +11,7 @@ description: >-
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 disable-model-invocation: true
 metadata:
-  version: "0.10.2"
+  version: "0.10.3"
   last_updated: "2026-10-26"
   # version history: ./CHANGELOG.md
 ---

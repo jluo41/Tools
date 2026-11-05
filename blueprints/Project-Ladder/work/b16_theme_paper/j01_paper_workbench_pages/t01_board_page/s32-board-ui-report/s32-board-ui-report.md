@@ -88,6 +88,38 @@ s32-D24 · The Report is agreed, all seven views A to G, and handed over: the ag
 s32-D26 · Displays leaves Evidence and becomes its own view, G, after Evidence and before Writing, to highlight it: its RESULTS the display plan against the venue's rules, then each display as the paper prints it (preview.pdf); Writing becomes H (JL 261101: "I am thinking to put the display outside of the Evidence, and put it after the Evidence and before the Writing, to highlight it"; "Please go ahead for it").
 s32-D27 · The Report is the view's own sections only, numbered 1, 2, 3, with no PROCESS or RESULTS band; the two bands are Work's, PROCESS first, its RESULTS the Report's sections drawn by the same code. Replaces s32-D22's Report half (JL 261101: "for the Results and Process, they will just be in the Work, why report have that?"; "report will only have the things like the 1, 2, 3, 4"; the bands removed, the sections kept).
 
+s32-D28 · Idea and Story are one view, Idea + Story; Data flow and Paper flow are one view, Plan: six views, A to F, replacing the letters above (JL 261104: "add Idea + Story to be in one view, and Data flow and Paper flow to be one view of Plan").
+s32-D29 · The Plan view's button reads Data + Paper Plan (JL 261104: "could you call it Data+Paper Plan?").
+
+s32-D30 · Idea + Story ends in a numbered Related section: the Board's related/related.md rows, one small tab per `bears on`, a row with a kept PDF reading it in the pop-out (JL 261104, relayed by Paper-PhyAbsence-PatientCare: "could you put the related section to be here?"; "make this smaller and more compact"; "I want it can pop out and read"). The Related view stays.
+
+s32-D31 · Every choice list in a paper Board view is left tabs and right content, Directions considered, Stakes, Roadmaps, Questions, Venues and Related included; card tabs with a panel below are gone, and Related reads its paper in the right panel (JL 261104: "make all types of this into this left right style"). Checked in Chrome on Paper-PersonalityPrescriptionDemand; 0 card grids on two papers' views.
+
+s32-D32 · Direction and Directions considered are one section, Direction first; in the left tabs the direction's name is bold and its status small under it (JL 261104: "1 and 2 here can be merged together"; "make the name to be more saleint and the status to be small").
+
+s32-D33 · The Direction section no longer shows the stage word or the START, SETTING, OUTCOME, CONTRAST rows; the topic's face keeps them (JL 261104: "could we just remve this?").
+
+s32-D34 · A side tab's open box ends with its content, so a short one leaves no empty box; a glossary line ("GLP-1 = ...") is never a Direction's large line (JL 261104: "yes clean them up").
+
+s32-D35 · Idea + Story reads: Studio (Idea Studio and Story Studio as left tabs), Direction, Pitch, Research Questions, Stakes and evidence, Related, Venues, Story by Section, Interaction. Hand-off is no section (a 🙋 question it holds stays under Direction); Roadmaps move to Data + Paper Plan (JL 261104: "we can have both Idea Studio and Story studio and also hve the left tab right content"; "Please update it again").
+
+s32-D36 · The last section, 🙋 Interaction, shows the collection Runs about the Idea or Story topic: a left tab per question, the Run's built form in one frame on the right, one card at a time, so its picks, Copy feedback and collect.py save are the form's own (JL 261104, relayed by CMS-Server-AI-Code: "could you have the section named Interaction ... left to be the tab, and right to be the questions").
+
+s32-D37 · Interaction walks one question at a time: Back and Next, each left tab's small line its pick with ✓ once visited, Copy feedback on a set's last question. One left list, each Run a folding group, waiting sets open and newest first; Next stops at a set's end, as each Run is saved on its own (JL 261104, relayed by CMS-Server-AI-Code: "we can click the questions one by one, by next --->"; "what if we will have a new qusetion listhere?"; the folding is that session's recommendation, JL's confirmation not seen here).
+
+s32-D38 · 🙋 Interaction closes every Report and Work view of a Block, a Job or a Task, every theme, showing the collection Runs at the page or below; the code moved to the shared live.interaction_section, and Displays' own list left (JL 261104: "could you try to make this section at the bottom for each of the view? not matter for the block, or job or task").
+
+s32-D39 · A paper page is one column about 1200 px wide: title, Purpose, view buttons, bars and open sections share both edges, a paragraph stays at most 880 px, the rail marks stay in the gutters (`board_views.PAGE_CSS`). It replaces the 1400 px breakout, which hung out past its bars (JL 261104: "I think you can make it wider."; "no ,this is not good ... why you don't review it yourself?", relayed by CMS-Server-AI-Code).
+
+s32-D40 · This Interaction is the one standard look: the last section of a view, the Interactions rail and the Interaction button's pop-out all draw `live.interaction_section`; a small line under the form says who asked, what about, and who applies it; a Run with no built form keeps its plain row (JL 261104: "make this to be the standard items for any of them"; "the workbecnh UI code").
+
+s32-D41 · A view's 🙋 Interaction stands there even with no question, saying so (JL 261104: "I still didn't see them here.").
+
+s32-D42 · The section is a folding row on every page, also where the page has no folding sections of its own, closed at first (JL 261104: "you might make this to be like this style as well").
+
+s32-D44 · Idea and Story are two view buttons, Idea first. Idea is for the many directions: its Studio and every direction weighed, left tabs. Story is for the one chosen: its Studio, Direction, Pitch, Research Questions, Stakes and evidence, Related, Venues, Story by Section. Each ends in 🙋 Interaction. It replaces the one-view decision (JL 261104: "add Idea + Story to be in one view"; JL 261105: "I mean seperate this!!!", on the Idea + Story button; "idea for multiple direction, story for one direction").
+
+s32-D45 · Idea and Story each have a 🎓 Theory section, always shown: Idea each direction's theory as left tabs, Story the chosen one's, after Pitch; empty, it says how to fill it, and flags it when the Board's `venue:` is an IS journal (JL 261105: "I think for both of them, we should have the section named theory as well."; "espeically for the IS.").
 s32-D25 · Report's Data flow PROCESS shows the same plan rows as Work's (s33-D07), read side: each step with Open, the skill to use and Copy prompt. A PROCESS title names the step and carries no count (JL's rule "labels carry no counts", decided 261101): the code no longer shows "7 decisions" or "5 of 9 open".
 
 Open

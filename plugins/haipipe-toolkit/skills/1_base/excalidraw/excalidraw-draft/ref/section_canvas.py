@@ -121,10 +121,10 @@ def build(face, out=None, builder=None):
     rows, logic = [], []                     # rows: (address, b, n, text); logic: (address, title, [(n, tag, changes)])
     for address in paragraphs:
         _, text = block('## 3 · Draft', address)
-        rows += [(address, int(b), sid(n), t) for b, n, t in re.findall(r'^- B(\d+) · S(\d+[a-z]*) · (.+)$', text, re.M)]
+        rows += [(address, int(b), sid(n), t) for b, n, t in re.findall(r'^- B(\d+)[a-z]* · S(\d+[a-z]*) · (.+)$', text, re.M)]
         title, plan_ = block('## 1 · Structure', address)
         bullets = []
-        for m in re.finditer(r'^- B\d+ · S(\d+[a-z]*) · (.+)(?:\n\s+Change: (.+))?$', plan_, re.M):
+        for m in re.finditer(r'^- B\d+[a-z]* · S(\d+[a-z]*) · (.+)(?:\n\s+Change: (.+))?$', plan_, re.M):
             bullets.append((sid(m[1]), m[2], [int(i) for i in re.findall(r'(?:^|, )(\d+) · ', m[3] or '')]))
         logic.append((address, title, bullets))
     sentence = {n: t for _, _, n, t in rows}
@@ -611,7 +611,7 @@ def sync(face, out=None, dry=False):
                 section = m[2]
             if (m := re.match(r'^### (C\d+\.P\d+)', line)):
                 para = m[1]
-            m = re.match(r'^(- B(\d+) · S\d+[a-z]* · )(.*\S)\s*$', line)
+            m = re.match(r'^(- B(\d+)[a-z]* · S\d+[a-z]* · )(.*\S)\s*$', line)
             if section == 'Draft' and m and (f'{para}.B{m[2]}', m[3]) in want:
                 lines[k] = m[1] + want[(f'{para}.B{m[2]}', m[3])]
                 hit += 1

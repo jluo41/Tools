@@ -94,6 +94,9 @@ The next send (a revision, or another venue) is a new version, `j12_writing_v<MM
 next`: it starts from the one it follows (each Section's own writing copied, never its Runs, Results or build)
 and answers that version's comments.
 
+Each send also has one submission Job, `j21_submission_v<MMDD>_<desk>/` (face `for: <writing Job>`), made by `paper_ladder.py
+submission`; it is not a version (`haipipe-paper` § The submission Job).
+
 
 Each level
 ----------

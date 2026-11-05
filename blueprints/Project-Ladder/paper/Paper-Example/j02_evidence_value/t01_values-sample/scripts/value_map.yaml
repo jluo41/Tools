@@ -1,0 +1,62 @@
+# t01_values-sample · value map (placeholder): every number Paper-Example prints for its main association, each one row
+# of a work Run's returned values.csv (key, value, source). Read by haipipe-paper-evidence scripts/values_ledger.py.
+rq: RQ1
+group: the sample and the main association
+defaults:
+  file: values.csv
+  column: value
+runs:
+  main: work/b90_example_paper_results/j02_example_estimates/t01_example_main/runs/r01_example_main
+values:
+  sample.n_units:
+    what: '<units> in the sample'
+    run: main
+    where: {key: sample.n_units}
+  main.b:
+    what: '<outcome>: difference after <the policy>'
+    run: main
+    where: {key: main.b}
+    digits: 2
+  main.ci_lo:
+    what: '<outcome>: 95% CI low'
+    run: main
+    where: {key: main.ci_lo}
+    digits: 2
+  main.ci_hi:
+    what: '<outcome>: 95% CI high'
+    run: main
+    where: {key: main.ci_hi}
+    digits: 2
+  main.p:
+    what: '<outcome>: P value'
+    run: main
+    where: {key: main.p}
+    digits: 3
+    p: true
+  sub.b:
+    what: '<outcome> in the <subgroup>: difference'
+    run: main
+    where: {key: sub.b}
+    digits: 2
+  mean.before:
+    what: 'mean <outcome> before <the policy>'
+    run: main
+    where: {key: mean.before}
+    digits: 2
+  mean.after:
+    what: 'mean <outcome> after <the policy>'
+    run: main
+    where: {key: mean.after}
+    digits: 2
+  extra.sd:
+    what: 'SD of <outcome> (kept for checking)'
+    run: main
+    where: {key: extra.sd}
+    digits: 2
+needs:
+  late.b:
+    what: '<a later model>: difference'
+    printed: '1.9'
+    section: t03_results
+    sentence: C2.P1.B3
+    why: waits for its work Run

@@ -1,4 +1,17 @@
+## 0.138.2 · 2026-11-04 · no transition set off by commas
+
+- JL 261104: "don't use things like ' , however ,', Try to make a sentence to be smooth". Rule `parenthetical-transition` in anti_slop.
+
+## 0.138.1 · 2026-11-04 · No semicolons in draft sentences
+
+- JL 261104: "don't use ';' make them as the normal sentences". § Drafting prose, haipipe-draft-writing `ref/writing.md` and haipipe-draft-review `ref/plain-rules.md` now state a rule instead of "avoid where possible"; `anti_slop.py` rule `semicolon` flags it.
+
 ## 0.138.0 · 2026-11-02 · Structure in step with Draft; every step has its file; the final gate
+
+- JL 261102: "could you update the skill, to try do not cause the same problem?". `page.py adopt --relayout` lays
+  Content out again when the Draft's paragraphs changed (a refused adopt now names it), so Content is never typed by
+  hand; `page_adopt.content_gap` says when Content prints an older draft, read by `health` (`content`, FAIL under
+  `--final`) and by every Delivery tab (a ⚠️ line above the file). Tests: relayout and gap, final gate.
 
 - JL 261102: "I think /haipipe-draft should do this final checklist before saying it is finished". `page.py health
   --final`: pending WARNs fail (Content behind the draft, a stale export, a missing step), the new `printed` check

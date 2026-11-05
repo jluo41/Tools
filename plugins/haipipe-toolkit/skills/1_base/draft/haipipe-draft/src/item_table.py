@@ -45,7 +45,7 @@ MARKS = {"🧮": "value", "📚": "cite", "🖼": "display"}  # display-only com
 
 _ITEM_ID = r"E\d+-(?:VALUE|CITE|DISPLAY)-[a-z0-9]+(?:-[a-z0-9]+)*"
 _REC_RE = re.compile(
-    rf"^###\s+({_ITEM_ID})\s*·\s*(C\d+\.P\d+\.B\d+)\s*·\s*(.*)$"
+    rf"^###\s+({_ITEM_ID})\s*·\s*(C\d+\.P\d+\.B\d+[a-z]*)\s*·\s*(.*)$"
 )
 _LABEL_RE = re.compile(r"^-\s+\*\*([^*]+?)\*\*\s*[:：]\s*(.*)$")
 _WALL_NAME_RE = re.compile(r"^[A-Za-z][A-Za-z0-9]{0,11}$")

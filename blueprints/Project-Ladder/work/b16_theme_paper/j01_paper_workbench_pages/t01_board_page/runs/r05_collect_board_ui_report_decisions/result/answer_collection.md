@@ -1,6 +1,6 @@
 # Board UI report decisions · answers
 
-received: 2026-11-01 01:59
+received: 2026-11-04 23:41
 
 for: b16.j01.t01-s32:theme_paper.paper_workbench_pages.board_page @ board_ui_report
 
@@ -116,10 +116,54 @@ Answer: my own decision.
 
 > decision: C · Data flow's Flow map runs past the questions to the Runs and the paper end, reading all six columns of the data-flow topic's drawing yaml (data, linking, tables, analysis, hypothesis to claim, in the paper); it changes s32-D17
 
+## Q11 · Idea plus Story and Plan
+
+Said in the chat: "I am think to add Idea + Story to be in one view, and Data flow and Paper flow to be one view of Plan, How do you think about this? Plase go ahead and update it accordingly."
+
+**Idea and Story are one view; Data flow and Paper flow are one view, Plan**
+
+
+Answer: my own decision.
+
+> decision: Idea and Story are one view; Data flow and Paper flow are one view, Plan
+
+## Q12 · Story Interaction
+
+Said in the chat: "could you have the section named Interaction, and we have the questions to be listed like this as well: ... left to be the tab, and right to be the questions. (relayed by CMS-Server-AI-Code)"
+
+**A section named Interaction on Idea + Story, questions as left tabs, each question on…**
+
+
+Answer: my own decision.
+
+> decision: A section named Interaction on Idea + Story, questions as left tabs, each question on the right
+
+## Q13 · Studio tabs
+
+Said in the chat: "I think for the studio, we can have both Idea Studio and Story studio and also hve the left tab right content, Please update it again."
+
+**One Studio section with Idea Studio and Story Studio as left tabs**
+
+
+Answer: my own decision.
+
+> decision: One Studio section with Idea Studio and Story Studio as left tabs
+
+## Q14 · Interaction everywhere
+
+Said in the chat: "could you try to make this section at the bottom for each of the view? not matter for the block, or job or task; make this to be the standard items for any of them; the workbecnh UI code"
+
+**🙋 Interaction is the last section of every view at every level, and the one look of the…**
+
+
+Answer: my own decision.
+
+> decision: 🙋 Interaction is the last section of every view at every level, and the one look of the rail and the pop-out
+
 ## The pasted text
 
 ```text
-decided in the chat · r05_collect_board_ui_report_decisions · Board UI report decisions · 2026-11-01 01:59
+decided in the chat · r05_collect_board_ui_report_decisions · Board UI report decisions · 2026-11-04 23:41
 Q1 · Paper parts: my own decision
    note: The Board's Report shows the paper's own parts, one view each: Idea, Story, Venue, Data flow, Paper flow (s32-D04).
    said: for the report, I think we should have the things like the idea, the story, the venue, and the data flow, and the paper flow, etc.
@@ -150,4 +194,16 @@ Q9 · Skill and workbench: my own decision
 Q10 · Flow map, whole track: my own decision
    note: C · Data flow's Flow map runs past the questions to the Runs and the paper end, reading all six columns of the data-flow topic's drawing yaml (data, linking, tables, analysis, hypothesis to claim, in the paper); it changes s32-D17
    said: finish all of them and continue, and make the draft as complete as possible (relayed by the Paper-Example session: JL's reply to its plan, whose open point asked whether the Report's map should run on to the Runs and the paper)
+Q11 · Idea plus Story and Plan: my own decision
+   note: Idea and Story are one view; Data flow and Paper flow are one view, Plan
+   said: I am think to add Idea + Story to be in one view, and Data flow and Paper flow to be one view of Plan, How do you think about this? Plase go ahead and update it accordingly.
+Q12 · Story Interaction: my own decision
+   note: A section named Interaction on Idea + Story, questions as left tabs, each question on the right
+   said: could you have the section named Interaction, and we have the questions to be listed like this as well: ... left to be the tab, and right to be the questions. (relayed by CMS-Server-AI-Code)
+Q13 · Studio tabs: my own decision
+   note: One Studio section with Idea Studio and Story Studio as left tabs
+   said: I think for the studio, we can have both Idea Studio and Story studio and also hve the left tab right content, Please update it again.
+Q14 · Interaction everywhere: my own decision
+   note: 🙋 Interaction is the last section of every view at every level, and the one look of the rail and the pop-out
+   said: could you try to make this section at the bottom for each of the view? not matter for the block, or job or task; make this to be the standard items for any of them; the workbecnh UI code
 ```

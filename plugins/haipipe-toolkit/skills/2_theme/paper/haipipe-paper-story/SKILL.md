@@ -2,7 +2,7 @@
 name: haipipe-paper-story
 description: "Draft, review, revise or draw one paper's Story: its Seed, research questions (hypotheses, claims, the work that tests them), Discovery and Task Roadmaps, related papers and Section Narrative; on the ladder a studio topic (sNN-story-<desk>-<idea>/) with Board Questions. Use to plan a telling or check that it holds for an editor, a reviewer and the public. Trigger: story, research question, hypothesis, claim, RoadMap Draw, /haipipe-paper-story."
 metadata:
-  version: "0.24.3"
+  version: "0.25.0"
   last_updated: "2026-11-01"
   group-token: "sNN-story-<desk>-<idea-slug>"
   outline:
@@ -163,6 +163,10 @@ Cover:
   setting and period.
 - **Scope** — the population, construct, outcome, design family, and boundaries
   that make this paper one coherent object.
+- **Theory** — one `**Theory**:` line: the theory this paper speaks to, and what
+  it says back. Required for an information systems journal (MISQ, ISR, JMIS,
+  JAIS), where the workbench flags it when missing (JL 261105: "espeically for
+  the IS"); a longer one gets its own `### Theory` division.
 
 After §1, a reader should be able to say what paper this is without describing
 its workflow or target venue.

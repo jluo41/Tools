@@ -175,6 +175,14 @@ def run_food_without_bank():
             return "mounted, bank_exists=false"
         check("a missing bank degrades /healthz instead of crashing the host", t_degraded)
 
+        def t_meal():
+            st, _ = get(h.base, "/meal/healthz")
+            assert st == 200, f"/meal/healthz {st}"
+            st, _ = get(h.base, "/try/meal/events")
+            assert st == 200, f"/try/meal/events {st}"
+            return "the food lane answers as meal too"
+        check("/meal is the food lane, under the event's name", t_meal)
+
 
 def run_try_page():
     """The try page (JL 261021: a small page that calls the API, with a gallery below): /try/<noun> serves it,
@@ -223,6 +231,13 @@ def run_try_page():
                 assert st == 200 and g["cards"] == [], g
                 return "a lane with no event door: no cards"
             check("GET /try/<noun>/events answers for every mounted lane", t_no_events)
+
+            def t_no_picture():
+                for name in ("nope.jpg", "..%2Fsecret.jpg", "a.png"):
+                    st, _ = get(h.base, f"/try/insulin/picture/{name}")
+                    assert st == 404, (name, st)
+                return "only a named .jpg beside the gallery"
+            check("GET /try/<noun>/picture/<name> serves nothing else", t_no_picture)
 
         def t_events():
             """The event gallery's cards, read in process: record ids, a photo path and a subject id never leave."""

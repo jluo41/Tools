@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.10.3] — 2026-11-04
+
+`ref/section_screens.py`: a Section's examples topic as screenshots, one under the other (JL 261104).
+
 ## [0.10.2] — 2026-10-26
 
 Hidden from the skill listing (`disable-model-invocation: true`); reached through the `/excalidraw` door, which reads this SKILL.md by path. Nothing moved; `/excalidraw-read` still works when a person types it. (hide 261026)

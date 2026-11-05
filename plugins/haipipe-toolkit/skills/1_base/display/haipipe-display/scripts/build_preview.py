@@ -1,5 +1,5 @@
 """A display unit's preview.pdf: page 1 the display as a reader sees it (its float.tex: the figure or table, its caption
-and label), pages 2 and on how it was made, from method.md beside it (JL 261101: "I want to make the preview the first
+and label), pages 2 and on what it says and how it was made, from method.md beside it (JL 261101: "I want to make the preview the first
 page to be the display and content, could you make the second page and beyond to be things like the methods, to
 explain how this display is generated?").
 
@@ -19,6 +19,9 @@ explain how this display is generated?").
 The unit is any folder that holds float.tex (a Section's display/Display<n>-<slug>/, or a display Run's result/).
 method.md is Markdown the display's maker writes, one heading per part:
 
+    ## Message       what we want to say with this display, in one to three sentences: the finding the reader should
+                     leave with (JL 261103: "the first section should be: what we want to say with this display"); it
+                     opens page 2 as "What this display says", before "How this display was made"
     ## Data          what the numbers come from (sources, years)
     ## Sample        who is in it, and how they were chosen
     ## Method        the matching, the model, the estimator
@@ -124,7 +127,55 @@ def paper_head(master: Path) -> str:
     return "\n".join(keep).strip() + "\n"
 
 
-def build(unit: Path, method_from: Path | None = None, look: str = "", preamble_from: Path | None = None) -> Path:
+NUMBERED = re.compile(r"^\s*(e|Extended Data |Supplementary |Appendix )?(Figure|Table)\s+([A-Za-z]?\d+[a-z]?)\b")
+
+
+def numbering(unit: Path) -> str:
+    """The float's printed name and number, as TeX, so page 1 reads "Figure 3" or "eTable 11", never "Figure 1"
+    (pp-LBP-JAMA 261103): a writing Job unit's README `number:`; else, for a Run's result/, its display Task face's
+    `number:` then `label:`. A Supplement display keeps its e (eFigure, eTable); a lettered number (Table B1) prints
+    as written. Nothing found: LaTeX's own count."""
+    fields = []
+    if (unit / "README.md").is_file():
+        fields.append(unit / "README.md")
+    if unit.name == "result" and unit.parent.parent.name == "runs":
+        task = unit.parent.parent.parent
+        fields.append(task / f"{task.name}.md")
+    for f in fields:
+        if not f.is_file():
+            continue
+        text = f.read_text(encoding="utf-8", errors="ignore")
+        for key in ("number", "label"):
+            m = re.search(rf"(?m)^{key}:\s*(.+)$", text)
+            n = NUMBERED.match(m.group(1)) if m else None
+            if n:
+                pre, num = (n.group(1) or ""), n.group(3)
+                return (f"\\renewcommand{{\\figurename}}{{{pre}Figure}}\\renewcommand{{\\tablename}}{{{pre}Table}}"
+                        f"\\renewcommand{{\\thefigure}}{{{num}}}\\renewcommand{{\\thetable}}{{{num}}}\n")
+    return ""
+
+
+def earlier_tex(unit: Path, earlier: list[dict]) -> str:
+    """After the method pages: one page per earlier version, its display page only (its page 1), newest first. Each
+    item holds pdf, name, date, note. The line before them records where the method pages end, for --method-from."""
+    out = "\\clearpage\n\\typeout{PREVIEW-METHOD-PAGES=\\the\\numexpr\\value{page}-1\\relax}\n"
+    for e in earlier:
+        rel = Path(__import__("os").path.relpath(Path(e["pdf"]).resolve(), unit)).as_posix()
+        out += (f"\\section*{{Earlier version: {tex(e['name'])}}}\n{{\\small {tex(e.get('date', ''))}"
+                + (f": {tex(e['note'])}" if e.get("note") else "") + "\\par}\n\\medskip\n"
+                f"\\begin{{center}}\\includegraphics[page=1,width=\\linewidth,height=0.8\\textheight,keepaspectratio]{{{rel}}}\\end{{center}}\n\\clearpage\n")
+    return out
+
+
+def method_range(src: Path) -> str:
+    """Pages of a source preview that hold its method: its pages 2 on, without its earlier versions."""
+    side = src.with_name("preview-method-pages.txt")
+    last = side.read_text().strip() if side.is_file() else ""
+    return f"2-{last}" if last.isdigit() else "2-"
+
+
+def build(unit: Path, method_from: Path | None = None, look: str = "", preamble_from: Path | None = None,
+          earlier: list[dict] | None = None) -> Path:
     unit = unit.resolve()
     if not (unit / "float.tex").is_file():
         sys.exit(f"stop: {unit} has no float.tex (the display with its caption)")
@@ -143,6 +194,9 @@ def build(unit: Path, method_from: Path | None = None, look: str = "", preamble_
             preamble = head + "\n"
     if r"\usepackage{float}" not in preamble and "float" not in re.findall(r"\\usepackage(?:\[[^]]*\])?\{([^}]*)\}", preamble):
         preamble += r"\usepackage{float}" + "\n"
+    if earlier and "graphicx" not in preamble:
+        preamble += r"\usepackage{graphicx}" + "\n"
+    tail = earlier_tex(unit, earlier) if earlier else ""
     method = unit / "method.md"
     if method_from is not None:                    # the source version's method pages, as they are
         src = method_from.resolve()
@@ -152,16 +206,22 @@ def build(unit: Path, method_from: Path | None = None, look: str = "", preamble_
             preamble += r"\usepackage{pdfpages}" + "\n"
         rel = Path(__import__("os").path.relpath(src, unit)).as_posix()
         body = (MARK + "\n" + preamble + "\\begin{document}\n" + _style(preamble) +
-                "\\makeatletter\\renewcommand{\\fps@figure}{H}\\renewcommand{\\fps@table}{H}\\makeatother\n"
-                f"\\input{{float.tex}}\n\\clearpage\n\\includepdf[pages=2-]{{{rel}}}\n\\end{{document}}\n")
+                "\\makeatletter\\renewcommand{\\fps@figure}{H}\\renewcommand{\\fps@table}{H}\\makeatother\n" + numbering(unit) +
+                f"\\input{{float.tex}}\n\\clearpage\n\\includepdf[pages={method_range(src)}]{{{rel}}}\n{tail}\\end{{document}}\n")
         return _compile(unit, old, body)
-    how = (method_tex(re.sub(r"\A#\s+[^\n]*\n", "", method.read_text(encoding="utf-8", errors="ignore")))
-           if method.is_file() else r"\emph{No method written yet: write method.md beside float.tex (Data, Sample, Method, "
-                                    r"Outcomes, Made by, Numbers), then rerun build\_preview.py.}")
+    text = re.sub(r"\A#\s+[^\n]*\n", "", method.read_text(encoding="utf-8", errors="ignore")) if method.is_file() else ""
+    said = re.search(r"(?ms)^##\s*Message\s*\n(.*?)(?=^##\s|\Z)", text)   # the Message part opens page 2 on its own
+    text = (text[:said.start()] + text[said.end():]) if said else text
+    says = (method_tex(said.group(1).strip()) if said and said.group(1).strip() else
+            r"\emph{No message written yet: add a ``\#\# Message'' part to method.md (what we want to say with this "
+            r"display), then rerun build\_preview.py.}")
+    how = (method_tex(text) if method.is_file() else r"\emph{No method written yet: write method.md beside float.tex "
+           r"(Message, Data, Sample, Method, Outcomes, Made by, Numbers), then rerun build\_preview.py.}")
     body = (MARK + "\n" + preamble + "\\begin{document}\n" + _style(preamble) +
-            "\\makeatletter\\renewcommand{\\fps@figure}{H}\\renewcommand{\\fps@table}{H}\\makeatother\n"   # page 1 holds it
+            "\\makeatletter\\renewcommand{\\fps@figure}{H}\\renewcommand{\\fps@table}{H}\\makeatother\n" + numbering(unit) +   # page 1 holds it
             "\\input{float.tex}\n\\clearpage\n" + ("" if "fancyhdr" in preamble else "\\pagestyle{plain}\n") +
-            "\\section*{How this display was made}\n" + how + "\n\\end{document}\n")
+            "\\section*{What this display says}\n" + says + "\n\\section*{How this display was made}\n" + how +
+            "\n" + tail + "\\end{document}\n")
     return _compile(unit, old, body)
 
 
@@ -180,6 +240,12 @@ def _compile(unit: Path, old: Path, body: str) -> Path:
                            capture_output=True, text=True)
     if r.returncode != 0 or not (unit / "preview.pdf").is_file():
         sys.exit("stop: the preview did not compile:\n" + "\n".join(r.stdout.splitlines()[-20:]))
+    pages = re.search(r"PREVIEW-METHOD-PAGES=(\d+)", r.stdout)
+    side = unit / "preview-method-pages.txt"
+    if pages:
+        side.write_text(pages.group(1) + "\n")
+    else:
+        side.unlink(missing_ok=True)
     for ext in (".aux", ".log", ".out"):
         (unit / f"preview{ext}").unlink(missing_ok=True)
     return unit / "preview.pdf"

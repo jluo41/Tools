@@ -1,0 +1,16 @@
+run: r01_collect_word_lane_speed
+kind: hard
+type: collect
+scope: blueprints/Project-Ladder/work/b16_theme_paper/j02_word_lane_speed
+target: b16.j02-s22:theme_paper.word_lane_speed @ word_lane_speed
+ticket: r01_collect_word_lane_speed.html
+skill: haipipe-interaction
+agent: JL
+signs: null
+status: done
+passes:
+- p01-1104
+writes:
+- result/answer_collection.md
+feeds:
+- blueprints/Project-Ladder/work/b16_theme_paper/j02_word_lane_speed/t01_word_lane_code

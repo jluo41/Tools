@@ -102,10 +102,31 @@ AMOUNT = re.compile(r"([0-9]*\.?[0-9]+)\s*(g|ml)\s*$", re.I)
 NOT_RECORDED = {"data not available"}
 
 
-def lines_to_items(cell: str, zh_cell: str = None):
+# A typed amount in a measure, not grams, at either end of its line: "White Rice 3 cups", "1 1/2 cups of rice", "Egg 2
+# large", "White Rice 1 cup, cooked". Only these words, so a number in a name stays in the name ("7 Up", "Milk 2%").
+_MEASURES = (r"cups?|tbsps?|tablespoons?|tsps?|teaspoons?|fl\.? ?oz|oz|ounces?|slices?|pieces?|servings?|cans?|bottles?|"
+             r"glass(?:es)?|bowls?|box(?:es)?|containers?|scoops?|packets?|small|medium|large")
+_COUNT = r"(?:[0-9]+\s+)?[0-9]*\.?[0-9]+(?:\s*/\s*[0-9]+)?"
+MEASURE_END = re.compile(rf"^(.+?)\s+({_COUNT})\s*({_MEASURES})\b(,\s*[a-z ]+)?\s*$", re.I)
+MEASURE_START = re.compile(rf"^({_COUNT})\s*({_MEASURES})\b(?:\s+of)?\s+(.+)$", re.I)
+
+
+def measure_of(line: str):
+    """A typed line -> (food, amount), the amount in a measure; (line, None) when it states none."""
+    m = MEASURE_END.match(line)
+    if m:
+        return m.group(1).strip(), f"{m.group(2)} {m.group(3)}{m.group(4) or ''}"
+    m = MEASURE_START.match(line)
+    if m:
+        return m.group(3).strip(), f"{m.group(1)} {m.group(2)}"
+    return line, None
+
+
+def lines_to_items(cell: str, zh_cell: str = None, measures: bool = False):
     """A cell of foods, one a line, an amount in grams or ml at its end (Shanghai's Dietary intake; anything typed
     the same way) -> (items, the line each is asked with, the lines that are no food). The Chinese cell, line for
-    line, gives each item its food_zh."""
+    line, gives each item its food_zh. `measures`: a typed line may state a measure too (measure_of); it is asked by
+    the food alone, as an app row is, and the amount scales the answer."""
     from foodnorm.dialect import split_meal
     en = [ln.strip() for ln in str(cell or "").split("\n") if ln.strip()]
     zh = [ln.strip() for ln in str(zh_cell or "").split("\n") if ln.strip()]
@@ -119,6 +140,11 @@ def lines_to_items(cell: str, zh_cell: str = None):
         it = {"id": f"i{len(items) + 1}", "food": re.sub(r"\s*[0-9]*\.?[0-9]+\s*(g|ml)\s*$", "", line, flags=re.I)}
         if m:
             it["amount"] = f"{float(m.group(1)):g} {m.group(2)}"
+        elif measures:
+            food, stated = measure_of(line)
+            if stated:
+                it.update(food=food, amount=stated)
+                line = food
         if k < len(zh):
             it["food_zh"] = re.sub(r"[\s\t]*[0-9]*\.?[0-9]+\s*(g|ml|克)?\s*$", "", zh[k])
         items.append(it)

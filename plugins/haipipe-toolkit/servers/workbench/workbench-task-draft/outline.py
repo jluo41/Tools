@@ -668,7 +668,7 @@ function focusRecord(id){{
      target is visible even when the reader arrived in immersive mode. Section
      and paragraph focus belong to the current Draft mode and must not switch
      it back to Table. */
-  var isBullet=/^C\\d+\\.P\\d+\\.B\\d+$/.test(id);
+  var isBullet=/^C\\d+\\.P\\d+\\.B\\d+[a-z]*$/.test(id);
   if(isBullet)activateDraftMode('table',false);
   /* Bullet URLs keep the authored C.P.B address readable.  The DOM id uses a
      prefixed, CSS-safe form so it cannot collide with another record kind. */
@@ -1263,7 +1263,7 @@ def _edit_plan_bullet(page_src, action, paragraph, bullet, head,
         return None, pre_err
     if action == "edit-bullet":
         wanted = (bullet or "").strip()
-        if not re.fullmatch(r"B\d+", wanted):
+        if not re.fullmatch(r"B\d+[a-z]*", wanted):
             return None, "bullet must be a B<n> address"
         if not any(
             (m := _bullet_line(line)) and "B%s" % m.group("number") == wanted
@@ -1300,7 +1300,7 @@ def _edit_plan_bullet(page_src, action, paragraph, bullet, head,
     start, end = region
     if action == "edit-bullet":
         wanted = (bullet or "").strip()
-        if not re.fullmatch(r"B\d+", wanted):
+        if not re.fullmatch(r"B\d+[a-z]*", wanted):
             return None, "bullet must be a B<n> address"
         hit = None
         for i in range(start + 1, end):
@@ -2076,7 +2076,7 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
         next_page_paragraph += 1
 
     def display_address(address):
-        match = re.match(r"^(C\d+\.P\d+)(\.B\d+)$", address)
+        match = re.match(r"^(C\d+\.P\d+)(\.B\d+[a-z]*)$", address)
         if not match:
             return paragraph_display.get(address, address)
         return paragraph_display.get(match.group(1), match.group(1)) + match.group(2)
@@ -2273,7 +2273,7 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
         sn += 1
         # The editor addresses the Bullet the file NAMES (`- B3 ·`); the
         # position counter is only the fallback for an unnumbered plan.
-        explicit = re.match(r"^-\s+B(\d+)\s*·", line)
+        explicit = re.match(r"^-\s+B(\d+)[a-z]*\s*·", line)
         bullet_id = "B%s" % explicit.group(1) if explicit else "B%d" % sn
         body = re.sub(r"^[SB]\d+\s*·\s*", "", line[2:].strip())
         # The FULL address on every row. It was shortened to P<n>.B<n> once
@@ -2684,7 +2684,7 @@ _HDR_RE = re.compile(r"^(page|kind|rounds|written|status|plan|ids|measured):\s")
 _REC_RE = re.compile(r"^###\s+([^·]+?)\s*·\s*(.*)$")
 _OLD_LOG_RE = re.compile(r"^(\d{6}(?:\s+\d{4})?)\s*·\s*(.*)$")
 _OLD_FB_RE = re.compile(r"^- ((?:S[A-Z0-9]+-PP\d+|R\d{2}))\s*·\s*(.*)$")
-_OLD_EV_RE = re.compile(r"^(C\d+\.P\d+\.B\d+)\s+(\S+)\s+(\S+)\s+(.*?)\s{2,}(\S+)\s*$")
+_OLD_EV_RE = re.compile(r"^(C\d+\.P\d+\.B\d+[a-z]*)\s+(\S+)\s+(\S+)\s+(.*?)\s{2,}(\S+)\s*$")
 _LABEL_RE = re.compile(r"^-\s+\*\*([^*]+?)\*\*\s*[:：]\s*(.*)$")
 _KV_RE = re.compile(r"^\s*(status|serves|round|opened|settled|parent|anchors|state|landed|"
                     r"implements|owner|moved|question|ruling|rationale|consequences|refs|"

@@ -148,6 +148,54 @@ def approve(task: Path, version: str, by: str, now: datetime | None = None) -> d
     return {"version": version, "by": by, "at": at}
 
 
+MET = ("met", "passed", "pass", "done")
+
+
+def release_run(task: Path, round_id: str) -> Path | None:
+    """The newest Run that releases round eNN of an expression Task."""
+    runs = sorted(p for p in (Path(task) / "runs").glob(f"r*_release_{round_id}") if p.is_dir())
+    return runs[-1] if runs else None
+
+
+def release_sign(run: Path | None) -> dict | None:
+    """{by, at} once the person has signed this release (result/signed.yaml), else None."""
+    path = Path(run) / "result" / "signed.yaml" if run else None
+    if not path or not path.is_file():
+        return None
+    words = dict(ln.split(": ", 1) for ln in path.read_text(encoding="utf-8").splitlines() if ": " in ln)
+    return {"by": words.get("by", "").strip('"'), "at": words.get("at", "")}
+
+
+def sign_release(task: Path, round_id: str, by: str, now: datetime | None = None) -> dict:
+    """Your sign on a release: <the release Run>/result/signed.yaml. Refused until the Run exists with every criterion
+    met and its final labels written, and once signed; raises ValueError with the reason. No agent calls this."""
+    by = re.sub(r"\s+", " ", str(by or "")).strip()
+    if not re.fullmatch(r"e\d+", str(round_id or "")):
+        raise ValueError("a release names its round, such as e02")
+    if not by or len(by) > 80:
+        raise ValueError("type your name to sign (at most 80 characters)")
+    run = release_run(task, round_id)
+    if run is None:
+        raise ValueError(f"{round_id} has no release Run yet")
+    if release_sign(run):
+        raise ValueError(f"{round_id} is released already")
+    try:
+        criteria = json.loads((run / "result" / "criteria.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        raise ValueError(f"{run.name} has no readable criteria.json") from None
+    unmet = [str(c.get("name")) for c in criteria if str(c.get("state")) not in MET]
+    if not criteria or unmet:
+        raise ValueError("not every criterion is met: " + (", ".join(unmet) or "none listed"))
+    if not (run / "result" / "final_labels.jsonl").is_file():
+        raise ValueError(f"{run.name} has no final_labels.jsonl")
+    at = (now or datetime.now()).strftime("%Y-%m-%d %H:%M")
+    (run / "result" / "signed.yaml").write_text(
+        f"round: {round_id}\nby: {json.dumps(by)}\nat: {at}\n"
+        "means: this round's final labels are released; written by the Sign release button (meaning_versions.py)\n",
+        encoding="utf-8")
+    return {"round": round_id, "by": by, "at": at}
+
+
 def frame_record(task: Path) -> dict | None:
     """The frame: {run, state, when, decisions: [{title, decision, said}]} from the first frame Run, a chat record
     (decisions.yaml) or an answered form (result/answer_collection.md); None when there is no frame Run yet."""
@@ -248,8 +296,10 @@ def report_json(loop_runs: list[Path]) -> dict | None:
 
 def cards_by_item(report: dict | None) -> dict:
     """{item_ref: QN}: which question of the form shows each item (the form keeps the report's card order)."""
-    out = {}
-    for i, card in enumerate((report or {}).get("cards") or [], 1):
+    out, cards = {}, list(enumerate((report or {}).get("cards") or [], 1))
+    # the card that asks about the item comes before a rule card that only cites it as evidence (the walkthrough, 261104)
+    for i, card in [c for c in cards if c[1].get("question_type") != "define_rule"] + \
+            [c for c in cards if c[1].get("question_type") == "define_rule"]:
         for ev in card.get("evidence") or []:
             if ev.get("item_ref"):
                 out.setdefault(ev["item_ref"], f"Q{i}")

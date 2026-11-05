@@ -791,9 +791,52 @@ def build(topic: Path):
         els = text("skA", 690, 280, f"A to {last} · {piece}, every view the same screen", 18, TITLE)
         els += text("lay", 690, 340, lay, 16, BODY)
         e, bottom = screens("sc", 690, 380, items, level, section)
+        if (level, section) == ("task", "work"):            # a Run's pop-out, opened from any Run row (JL 261103)
+            sx = 690 + 2 * (W + 40)
+            els += text("popL", sx, bottom - (screen_h(items) + 120), "P · a Run's pop-out", 22, TITLE)
+            pe, _ = popout("pop", sx, bottom - (screen_h(items) + 80))
+            els += pe
         return els + e + sticky("askD", 1180, bottom + 20, 320, 76, ask, 15, -0.03, RED, RE)
 
     return five_parts.build(topic, spec, design, shift=(W + 40) * min(3, len(items)) - 300)
+
+
+# ── a Run's pop-out (JL 261103: "when I click a run, it will show all the information from that run folder with a pop
+# out window, so we can quickly understand what happened"): everything in runs/<run>/, read in place, over the page ───
+RUN_POP = (
+    ("1 · 📌 What happened", "big", "Outcome A is higher where exposure is higher.", "✅ complete · 10-27, 09:12 to 11:40 · pass p01"),
+    ("2 · 📊 What it made · result/", "sidetabs", (("RUN-REPORT.md", "the report"), ("tables/coef.csv", "the table"),
+                                                  ("figures/coef.png", "the figure"), ("metrics.json", "the numbers")),
+     None, (("", "# r01_years_16_19 · the model, 2016 to 2019"), ("", "Headline: outcome A is higher where exposure is higher."),
+            ("", "Rows: x,xxx cases · years 2016 to 2019"), ("", "Table: tables/coef.csv · Figure: figures/coef.png"),
+            ("", "Open the file")), ""),
+    ("3 · 🎫 How it ran · run.yaml, ticket, config", "kv", (("what it does", "makes the model, one window"),
+                                                          ("reads", "cohort_table v3, 2016 to 2019"),
+                                                          ("who", "you pressed Run · fit skill"),
+                                                          ("ticket", "r01_years_16_19.sh  ·  Copy command"),
+                                                          ("config", "config.yaml: window 2016 to 2019, the OLS model"),
+                                                          ("receipt", "result/runtime.yaml"))),
+    ("4 · 🔁 Passes · passes/", "rows", (("✅ complete", "p01-1027", "10-27 09:12 · log: wrote result/, gate passed, 11:40 done",
+                                         ("Open log",), ""),)),
+)
+
+
+def popout(eid, x, y):
+    """The Run's pop-out over the Task's Work: the page dimmed behind; a panel with the Run's name, Close, and its
+    folder's parts as numbered sections, the thing it made first."""
+    h = 120 + tall(RUN_POP)
+    els = [_el("rectangle", eid + "_dim", x, y, W, h + 60, "#868e96", "#e9ecef", roundness={"type": 3})]
+    els += text(eid + "_bg", x + 20, y + 10, "t01_outcome_a  Work  (the page, dimmed behind)", 11, BODY)
+    px, py, pw = x + 30, y + 40, W - 60
+    els += [_el("rectangle", eid + "_p", px, py, pw, h, INK, "#ffffff", roundness={"type": 3})]
+    els += text(eid + "_t", px + 20, py + 14, "r01_years_16_19", 20, INK) + text(eid + "_tt", px + 220, py + 19, "Run", 14, BODY)
+    els += _btns(eid + "_x", px + pw - 16, py + 14, ("Close",))
+    els += text(eid + "_cap", px + 20, py + 50, "Everything in runs/r01_years_16_19/: what it made first, then how it ran.", 12, BODY)
+    yy = py + 80
+    for k, sec in enumerate(RUN_POP):
+        els += sec_draw(f"{eid}r{k}", px + 20, yy, pw - 40, sec)
+        yy += sec_h(sec)
+    return els, h + 60
 
 
 def letter_png(topic: Path, letter: str, out: Path, scale: float = 1.0) -> Path:
@@ -802,10 +845,14 @@ def letter_png(topic: Path, letter: str, out: Path, scale: float = 1.0) -> Path:
     topic = Path(topic).resolve()
     _, level, section = cell(topic)
     items = VIEWS[(level, section)][1]
-    k = LETTERS.index(letter)
-    view, caption, secs = items[k]
-    views = tuple(v for v, _, _ in items)
-    els = text("L", 0, 0, f"{letter} · {view}", 22, TITLE) + screen("one", 0, 40, screen_h(items), level, section, views, k, secs, caption)
+    if letter == "P":                                    # the Run's pop-out (s58)
+        e, _ = popout("pop", 0, 40)
+        els = text("L", 0, 0, "P · a Run's pop-out", 22, TITLE) + e
+    else:
+        k = LETTERS.index(letter)
+        view, caption, secs = items[k]
+        views = tuple(v for v, _, _ in items)
+        els = text("L", 0, 0, f"{letter} · {view}", 22, TITLE) + screen("one", 0, 40, screen_h(items), level, section, views, k, secs, caption)
     out = Path(out)
     out.parent.mkdir(parents=True, exist_ok=True)
     drawing = out.with_suffix(".excalidraw")

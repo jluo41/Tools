@@ -157,7 +157,7 @@ def _before(ticket_text: str) -> dict[str, str]:
     out = {}
     for line in (found.group(1).splitlines() if found else []):
         address, sep, text = line.partition(" · ")
-        if sep and re.fullmatch(r"C\d+\.P\d+\.B\d+", address.strip()):
+        if sep and re.fullmatch(r"C\d+\.P\d+\.B\d+[a-z]*", address.strip()):
             out[address.strip()] = text.strip()
     return out
 

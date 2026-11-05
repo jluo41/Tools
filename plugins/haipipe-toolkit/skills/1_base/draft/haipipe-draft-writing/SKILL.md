@@ -2,8 +2,8 @@
 name: haipipe-draft-writing
 description: "The writer of a Page: drafts and revises prose from the plan (outline to prose, plain English rewrite), edits a sentence by its address, runs the WRITE step (adopt agreed text, integrate evidence, build, pre-check), auto revise rounds, and the Revise Run (before and after, change ledger). Never reviews its own text (haipipe-draft-review does). Trigger: draft prose, revise this paragraph, edit this sentence, WRITE, auto revise, track changes, /haipipe-draft-writing, /haipipe-sentence, /haipipe-draft-revise."
 metadata:
-  version: "0.27.0"
-  last_updated: "2026-11-02"
+  version: "0.28.0"
+  last_updated: "2026-11-04"
   # version history: ./CHANGELOG.md
 ---
 
@@ -42,6 +42,8 @@ Independence: whoever writes never reviews. The judge is `../haipipe-draft-revie
 `haipipe-draft/cli/wdiff.py` (the word-level change record) stays in `haipipe-draft`; call it from here.
 
 ## ✍️ Writing prose
+
+**A paragraph is 4 to 6 sentences, and a limit is said once (JL 261104, said more than 4 times).** Merge a shorter paragraph, split a longer one, and recount after any cut with `../haipipe-draft-review/cli/paragraphs.py <file>`. A venue's own form (short Conclusions, structured abstract, numbered limitations) is a named departure. No over-defensive lines such as "causation cannot be established"; the words stay associational. Full rule: `../haipipe-draft-review/ref/plain-rules.md` § 3a and 3b.
 
 **Examples first**: before a Section is written or rewritten whole, read how 3 to 4 published papers of the venue write the same Section (a Studio topic `sNN-<task>-<venue>-examples`, made by /excalidraw read when missing), and write to their pattern, naming each departure (`ref/writing.md` § 0, JL 261022). Then realize an approved plan and evidence slice as sentences, weave paragraphs, and revise existing prose by the surgical-revision rule. Read `ref/writing.md` first (its rules section is what every sentence is written by); it points to the rest of `ref/`. The plan, the evidence and the venue belong to the host workflow; a Page's human gate belongs to a person.
 

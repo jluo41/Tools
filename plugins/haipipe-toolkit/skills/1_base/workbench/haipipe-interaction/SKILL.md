@@ -1,21 +1,23 @@
 ---
 name: haipipe-interaction
 description: >-
-  Request and record human input needed to continue a page's work: questions, choices, feedback, clarification or
-  a review. Its first, and so far only, kind is the question-and-answer form: a hard collection Run under the page
-  whose work the answers change (runs/rNN_collect_<slug>/). Its question_collection.md holds compact questions in
+  What passes between the work and the person, kept where they read it: what the work needs from them (questions,
+  choices, feedback, clarification or a review) and what they should know (a behaviour, a limit, a choice made for
+  them; collect.py know). Its question-and-answer form is a hard collection Run under the page whose work the
+  answers change (runs/rNN_collect_<slug>/). Its question_collection.md holds compact questions in
   Markdown with my pick ticked; collect.py build renders them into a form where the person selects; the person
   presses Copy feedback and pastes the text back; collect.py save keeps it as result/answer_collection.md and the
   interaction ends. Applying the answers belongs to the owning Task. Trigger: ask me, questions for you, choose a
-  version, review this design, collect feedback, collection Run, question_collection.md, /haipipe-interaction.
+  version, review this design, collect feedback, collection Run, question_collection.md, things you should know,
+  what to know, document it to the Interaction, /haipipe-interaction.
 metadata:
-  version: "0.8.3"
-  last_updated: "2026-10-31"
+  version: "0.10.0"
+  last_updated: "2026-11-05"
   aliases: [haipipe-collect]
   # version history: ./CHANGELOG.md
 ---
 
-# /haipipe-interaction · ask the person, record the answer
+# /haipipe-interaction · ask the person, keep what they should know
 
 An interaction requests and records the human input a page's work needs before it can go on (JL 261031, renamed from
 haipipe-collect: the name covers questions, choices, feedback, clarification and reviews). It ends when the response
@@ -47,6 +49,7 @@ try to make it as compact as possible".
 ```text
 kind                      status       Run                     reader sees
 questions and choices     built        rNN_collect_<slug>/     "Questions for you"
+what you should know      built        rNN_collect_<slug>/     "📌 What you should know", state "to know"
 review, clarification     not yet      (a later kind)          "Review this design", "Choose a version"
 ```
 
@@ -69,6 +72,8 @@ collect.py applied <run> Q1 [Q2…] --by "…" [--state "in progress"]
                                                         record what applied each answer: its flag on the form
 collect.py record <page> <slug> --title T --for F --decision "title :: what was decided :: their words" [...]
           [--applied-by "…"]                            a decision made in the chat, kept as a done interaction
+collect.py know <page> <slug> --title T --for F --note "title :: what to know :: where to read it" [...]
+                                                        what the person should know, kept and shown; waits on nothing
 collect.py bundle <page>                                one page answering every waiting form at or below the page:
                                                         <page>/runs/answer_all.html (GENERATED; rerun it)
 collect.py save-all [file] [--root SPACE]               the combined page's one paste, each form saved to its Run
@@ -120,6 +125,23 @@ a `because:` field. Those changed the same day (CHANGELOG.md); the Run kind kept
           does what>"; that owner reruns applied QN when done, which replaces the line. Both records are required:
           the decision where its owner keeps decisions (step 8), and the flag here
 ```
+
+## 📌 What the person should know (JL 261105)
+
+JL 261105: "could you document it to the Interaction, about things you should know?"; "it should include both ask
+question and keep what you should know". A thing said only in the chat is lost; keep it where they read.
+
+```text
+keep it     a behaviour they could trip on ("Banana 2" reads the 2 as part of the name), a limit of a result, a
+            choice made for them, a state that is not what it looks like, a mistake they should see
+not here    a question (a form), a decision they made (record), a finding that answers a Question (its report)
+```
+
+1. **One theme, one set**: `collect.py know` appends to the topic's one notes Run, in order; `for:` names its sNN as a form's does.
+2. **One note, one thing**: a short title, what to know in plain words with its real names and measured numbers, where to read more.
+3. **Waits on nothing**: state "to know"; it never flags the section or the button. A question goes on a form.
+4. **Settled**: when it stops being true, `collect.py applied <run> QN --by "<what changed>"` flags it; its words stay.
+5. **The chat still answers**: a note is an ordinary reply naming the Run; the form's link-only rule is for a form.
 
 ## 🗣 A big decision made in the chat is recorded too (JL 261031)
 
@@ -259,6 +281,11 @@ Interactions (right rail)   Needs your input · Answered · All, for this Projec
 Work                        the Interaction button on the Job or Task row it holds up, on its own Run row, and
                             on a row of its own at the top of Work on the Block or Job page that owns it
 Studio                      the Interaction button on the sNN card its for: address names
+Each view                   the last section of every Report and Work view of a Block, Job or Task, 🙋 Interaction:
+                            the Runs at the page or below, a folding group each, a left tab per question, the same
+                            form on the right, Back and Next (JL 261104; servers/workbench/interaction_section.py)
+The one look                the Interactions rail and the Interaction button's pop-out draw this same section
+                            (JL 261104: "make this to be the standard items for any of them")
 ```
 
 The button pops out a list of that row's items, the waiting one first (b16 t01 r04 Q4, Q6). Each item shows its

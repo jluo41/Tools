@@ -180,7 +180,7 @@
       "pattern": ";(?![^()]*\\))",
       "category": "style",
       "weight": 2,
-      "note": "JL 261016: avoid semicolons where possible. Split into two sentences, or use a comma or colon. A semicolon between citations inside parentheses is kept."
+      "note": "JL 261104: no semicolons in draft sentences. Split into plain sentences. A semicolon between citations inside parentheses is kept."
     },
     {
       "id": "curly-double-quotes",
@@ -351,6 +351,14 @@
       "lang": "zh",
       "source": "VincentOld/stop-slop-zh",
       "note": "“加以 + 动词”：直接用那个动词（规则 3）"
+    },
+    {
+      "id": "parenthetical-transition",
+      "category": "pattern",
+      "weight": 1,
+      "flags": "i",
+      "pattern": ",\\s*(however|therefore|moreover|furthermore|thus|nevertheless|nonetheless|consequently|in turn|by contrast|in contrast|for example|for instance)\\s*,",
+      "note": "A transition set off by commas interrupts the sentence: rewrite so the sentence flows (JL 261104: \"don't use things like ' , however ,', Try to make a sentence to be smooth\")."
     }
   ]
 }

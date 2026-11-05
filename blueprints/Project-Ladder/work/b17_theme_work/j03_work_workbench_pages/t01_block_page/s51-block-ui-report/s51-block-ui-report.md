@@ -53,6 +53,8 @@ s51-D08 · B · Data passed the drawing review (haipipe-ui Design loop, stage 1)
 
 s51-D09 · C · Display passed the drawing review (haipipe-ui Design loop, stage 1) in round 2, mean 9.1/10: `review/C-s1-r02.md` (round 1: `review/C-s1-r01.md`); today's page scored 6.5 and did not pass (`review/today-261101.md`). Proposed by the agent; it waits for JL's one look in `runs/r02_collect_block_report_views` (261101).
 
+s51-D10 · A Block's Status: numbered sections per band, closed; one row per Job, opening to its Tasks and Runs; no next-step sentences (JL 261104, on b01_clm_foundation_model: "这个做得很好", "just delete them"). Built in `focus_page.py` `band_board`; the rule is in haipipe-ui.
+
 
 Open
 ----

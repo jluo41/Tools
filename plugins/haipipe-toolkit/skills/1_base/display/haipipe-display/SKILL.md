@@ -2,7 +2,7 @@
 name: haipipe-display
 description: "The one door for display work: routes by kind to its part (_parts/<kind>/PART.md): 📊 table, 📈 figure, 📐 diagram (editable SVG), 🎨 illustration (AI image), 🖼 slide (slide pictures in a named style), ✒️ tex (TikZ, algorithms, equations); every display then passes the blind-review revise loop (at least 8/10, at most 4 rounds). Trigger: 做表, 画图, 架构图, regression table, generate figures, paper plots, concept figure, display unit, revise the figures, figure to svg, icon to svg, html to svg, /haipipe-display."
 metadata:
-  version: "0.7.1"
+  version: "0.8.0"
   last_updated: "2026-11-01"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, mcp__codex__codex, mcp__codex__codex-reply, WebSearch, mcp__codex-image2__generate, mcp__codex-image2__generate_start, mcp__codex-image2__generate_status
 ---
@@ -117,14 +117,17 @@ unless the user explicitly asks to delete or replace them. This gate does not
 apply to ordinary data tables or plots, which follow the approved-intake and
 FigureSpec routes.
 
-## 📄 preview.pdf: the display, then how it was made
+## 📄 preview.pdf: the display, what it says, then how it was made
 
 JL 261101: "I want to make the preview the first page to be the display and content, could you make the second page
 and beyond to be things like the methods, to explain how this display is generated". Every unit's `preview.pdf` has:
 
 ```text
 page 1      the display as a reader sees it: float.tex (the figure or table, its caption, its label)
-page 2 on   "How this display was made", from method.md beside float.tex:
+page 2 on   "What this display says", from method.md's ## Message: what we want to say with this display,
+            1 to 3 sentences, the finding the reader should leave with (JL 261103: "the first section should
+            be: what we want to say with this display"); a method.md with no Message says so, so the gap shows
+            then "How this display was made", from the rest of method.md:
             ## Data · ## Sample · ## Method · ## Outcomes · ## Made by (the Runs, by path) · ## Numbers
             (read from Result files, or screen readings still to return)
 ```

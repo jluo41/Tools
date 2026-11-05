@@ -13,7 +13,22 @@ How a paper calls it — its delivery/build.py is a thin wrapper (see
 ref/build.py.wrapper) that sets HAIPIPE_PAPER_BUILD_CONFIG to its own
 paper-build.toml and execs this file, so a fix here reaches every paper:
 
-  .venv/bin/python delivery/build.py                 build (DRAFT unless every page is ready)
+  .venv/bin/python delivery/build.py                 build (DRAFT unless every page is ready); STOPS, exit 1,
+                                                     when a printed Section's fragment is stale (0.14.0)
+  .venv/bin/python delivery/build.py --allow-stale   build anyway; each stale fragment is listed and a G4 blocker
+  .venv/bin/python delivery/build.py --accept-dropped-keys
+                                                     first re-export each stale Section through its own LaTeX lane
+                                                     (page.py export) with md2tex's --accept-dropped-keys: a key may
+                                                     leave when another Section cites it or a revise card removed it
+  .venv/bin/python delivery/build.py --pdf-only     the LaTeX PDFs and the manifest only, about a minute: no Word app; Word,
+                                                     the cover letter, the portal and the shared folder stay as the last
+                                                     full build left them; `send` and `release` then refuse (0.17.0)
+  .venv/bin/python delivery/build.py --word-draft   a working Word copy: each display floats to the top of the page its
+                                                     citing text reaches, with no page measuring, so it may sit above that
+                                                     text; the shared folder stays as it was; `send` and `release` refuse
+                                                     until a full build runs (0.18.0)
+  .venv/bin/python delivery/build.py portal         rewrite only the [portal] packet from the last manifest, after a
+                                                     ZIP made after the build (npj-zip.sh calls it)
   .venv/bin/python delivery/build.py send RD02       copy every declared output into that Round's sent/
   .venv/bin/python delivery/build.py release RD01    copy every declared output into that Round's released/
                                                      on the ladder (b16 Q05) the name is a comments report of
@@ -115,6 +130,7 @@ DOCX_ENGINE = ENGINE_DIR / "latex_room_to_docx.py"
 COVER_LETTER = ENGINE_DIR / "cover_letter.py"            # 0.9.0: run-delivery-coverletter
 # the Page workbench's renderer: a PDF drawn from the .docx package itself, so a reader can see the Word output
 DOCX2PDF = next(p for p in ENGINE_DIR.parents if p.name == "skills").parent / "servers" / "workbench" / "workbench-task-draft" / "exporters" / "docx2pdf.py"
+MD2TEX = DOCX2PDF.parent / "md2tex.py"   # 0.14.0: its drop_check names the keys a stale fragment still prints
 # 0.12.0 (JL 261023): on a Mac with Microsoft Word, Word itself draws the .docx preview, so the preview shows what a
 # co-author sees: the HTML renderer above lays displays out in text order and cannot show a display floated to the
 # top of its page. HAIPIPE_WORD_PREVIEW=html keeps the HTML renderer.
@@ -125,6 +141,13 @@ def word_pdf(docx: Path, pdf: Path) -> bool:
     if (sys.platform != "darwin" or not MSWORD.exists() or os.environ.get("HAIPIPE_WORD_PREVIEW") == "html"
             or "PYTEST_CURRENT_TEST" in os.environ):   # a test never opens Word
         return False
+    sys.path.insert(0, str(ENGINE_DIR))
+    from word_lock import word_turn
+    with word_turn() as turn:      # builds take turns in Word (b16.j02-s22)
+        return turn and word_print(docx, pdf)
+
+
+def word_print(docx: Path, pdf: Path) -> bool:
     box = Path.home() / "Library" / "Containers" / "com.microsoft.Word" / "Data" / "Documents" / "haipipe-preview"
     try:   # Word's sandbox reads and writes its own container without asking for file access
         box.mkdir(parents=True, exist_ok=True)
@@ -133,7 +156,7 @@ def word_pdf(docx: Path, pdf: Path) -> bool:
         running = subprocess.run(["pgrep", "-x", "Microsoft Word"], capture_output=True).returncode == 0
         script = (f'tell application "Microsoft Word"\nset d to open file name "{src}"\n'
                   f'save as d file name "{out}" file format format PDF\nclose d saving no\n'
-                  + ("" if running else "quit saving no\n") + "end tell")
+                  + ("" if running else "if (count of documents) is 0 then quit saving no\n") + "end tell")
         r = subprocess.run(["osascript", "-e", script], capture_output=True, text=True, timeout=300)
         for _ in range(40 if not running else 0):   # Word quits after a moment; the next file must not find it open
             if subprocess.run(["pgrep", "-x", "Microsoft Word"], capture_output=True).returncode != 0:
@@ -323,10 +346,15 @@ PLACED_FLOATS: set = set()       # units the master already \input after a fragm
 BUILD_WARNINGS: list = []        # document-level warnings (bib collisions, …)
 DRAFT_CITED: list = []           # 0.9.1: Pages whose citations came from their unverified draft Bib
 STORE_READS: dict = {}           # 0.9.1: page id -> store paths its fragment read
+STALE: list = []                 # 0.14.0: one "stale fragment: ..." line per printed Section built from old words
+ALLOW_STALE = False              # 0.14.0: --allow-stale, build anyway and list them
+ACCEPT_DROPPED_KEYS = False      # 0.14.0: --accept-dropped-keys, md2tex's rule for an intended drop
+PDF_ONLY = False                 # 0.17.0: --pdf-only, the LaTeX PDFs and the manifest; no Word app, the rest stays as built
+WORD_DRAFT = False               # 0.18.0: --word-draft, displays float to page tops with no measuring; never sent or shared
 
 def reset_placement():
     EMBEDDED_UNITS.clear(); PLACED_FLOATS.clear(); BUILD_WARNINGS.clear()
-    DRAFT_CITED.clear(); STORE_READS.clear()
+    DRAFT_CITED.clear(); STORE_READS.clear(); STALE.clear()
 
 def prescan_embedded(pages):
     """record every unit any INCLUDED fragment embeds, before any fragment is placed."""
@@ -656,6 +684,106 @@ def unit_is_cited(u: Path, frag_text: str, md_text: str) -> bool:
     return False
 
 
+# ── 0.14.0 (261103, the MISQ paper): a stale fragment stops the build ──────────────────────────────────
+# md2tex REFUSES to overwrite a fragment when a citation key would leave the Section, and the refused
+# Section keeps its OLD fragment. This engine reads fragments, so it printed three MISQ Sections' old
+# words with no warning. A printed Section is STALE when its .md is newer than its fragment; the line
+# names the keys md2tex would refuse (its own drop_check), so the person knows whether a plain re-export
+# fixes it or the drop needs --accept-dropped-keys. A plain build never re-exports (it only reads Sections);
+# `--accept-dropped-keys` re-exports each stale Section through its OWN LaTeX lane (page.py export, the
+# door a click uses), never a bare md2tex run, which would skip the lane's display floats and \ref labels.
+class StaleFragments(RuntimeError):
+    """The build stopped before touching delivery/: printed Sections would carry old words."""
+
+
+def _md2tex():
+    if not MD2TEX.is_file():
+        return None
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("haipipe_md2tex", MD2TEX)
+    mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
+    return mod
+
+
+def _stamp(path: Path) -> str:
+    return datetime.fromtimestamp(path.stat().st_mtime).strftime("%Y-%m-%d %H:%M")
+
+
+def is_stale(p) -> bool:
+    """A printed Section whose page .md is newer than its fragment (1 s slack for a checkout)."""
+    frag, md = p["fragment"], p["dir"] / f"{p['id']}.md"
+    return (bool(p.get("included", p.get("ready"))) and frag.is_file() and md.is_file()
+            and md.stat().st_mtime > frag.stat().st_mtime + 1)
+
+
+def reexport_latex(folder: Path) -> dict:
+    """One Section's LaTeX lane, exactly as `page.py export --lane latex --accept-dropped-keys`."""
+    from src.page_export import export, mark_card, write_ticket
+    write_ticket(folder, "latex")
+    result = export(folder, ["latex"], accept_dropped_keys=True)["latex"]
+    mark_card(folder, "latex", result["ok"])
+    return result
+
+
+def refresh_stale(pages) -> list:
+    """--accept-dropped-keys: re-export each stale printed Section; one console line per Section."""
+    out = []
+    for p in pages:
+        if not is_stale(p):
+            continue
+        try:
+            r = reexport_latex(p["dir"])
+        except Exception as exc:                 # a lane that cannot run is reported, then judged stale below
+            r = {"ok": False, "err": f"{type(exc).__name__}: {exc}"}
+        err = (r.get("err") or "").strip().splitlines()
+        out.append(f"↻ {p['id']}: " + ("re-exported" if r["ok"] else "not re-exported, " + (err[0] if err else "?")))
+    return out
+
+
+def stale_fragments(pages, accept=None):
+    """One line per printed Section whose fragment is older than its page .md:
+    `stale fragment: <id> (<fragment>), not rebuilt since <date>: <why>`."""
+    accept = ACCEPT_DROPPED_KEYS if accept is None else accept
+    sections = [p["dir"] / f"{p['id']}.md" for p in pages]
+    md2tex, out = None, []
+    for p in pages:
+        frag, md = p["fragment"], p["dir"] / f"{p['id']}.md"
+        if not is_stale(p):
+            continue
+        where = frag.relative_to(ROOT) if frag.is_relative_to(ROOT) else frag
+        head = f"stale fragment: {p['id']} ({where}), not rebuilt since {_stamp(frag)}"
+        first = frag.read_text(encoding="utf-8", errors="replace").split("\n", 1)[0]
+        if not first.startswith("% GENERATED from"):
+            out.append(f"{head}: md2tex will not replace it, it has no GENERATED header "
+                       "(move its words into the Page and adopt, then delete the fragment)")
+            continue
+        md2tex = md2tex or _md2tex()
+        if md2tex is None:
+            out.append(f"{head}: the page .md is newer (md2tex.py not found to name dropped keys)")
+            continue
+        chk = md2tex.drop_check(str(md), str(frag), str(ROOT), accept=accept,
+                                others=[str(s) for s in sections if s != md and s.is_file()])
+        if not chk["lost"]:
+            out.append(f"{head}: the page .md is newer (edited {_stamp(md)}); no citation key dropped, "
+                       "a plain re-export refreshes it")
+        elif not accept:
+            out.append(f"{head}: citation keys dropped: {', '.join(chk['lost'])}")
+        else:
+            judged = [f"{k} (accepted: {chk['accepted'][k]})" if k in chk["accepted"] else f"{k} (refused: unexplained)"
+                      for k in chk["lost"]]
+            out.append(f"{head}: citation keys dropped: {', '.join(judged)}")
+    return out
+
+
+def stale_message(lines):
+    fix = ("re-export each Section through its LaTeX lane (page.py export <Section folder> --lane latex, "
+           "or Delivery > LaTeX rebuild); when a drop is intended, delivery/build.py --accept-dropped-keys "
+           "re-exports the stale Sections with md2tex's --accept-dropped-keys and then builds")
+    return "\n".join([f"❌ build stopped: {len(lines)} printed Section(s) would carry OLD words"]
+                     + [f"  {l}" for l in lines]
+                     + [f"  fix: {fix}", "  or build anyway: delivery/build.py --allow-stale (DRAFT, each listed as a G4 blocker)"])
+
+
 def build_readiness(pages, unresolved=(), latex_rc=None, docx_rc=None):
     """Report mechanical checks without treating them as the human G4 gate.
 
@@ -679,6 +807,8 @@ def build_readiness(pages, unresolved=(), latex_rc=None, docx_rc=None):
     if STORE_READS:
         blockers.append("displays read from the paper store, not DISPLAY Results: %s"
                         % ", ".join("%s (%d)" % (k, len(v)) for k, v in STORE_READS.items()))
+    if STALE:
+        blockers.append("stale fragments printed (--allow-stale): %d Section(s) carry old words" % len(STALE))
     if latex_rc != 0:
         blockers.append("LaTeX rendering failed or has not been verified")
     if docx_rc != 0:
@@ -1054,6 +1184,8 @@ def merge_bib(pages):
                         if depth == 0: break
                 body, fixed = latex_safe_entry(txt[start:j+1])
                 body, uncapped = uncap_entry(body)
+                if re.search(r"(?i)\bdoi\s*=", body):   # a DOI and a URL print the same link twice (JL 261104, the MISQ references)
+                    body = re.sub(r"(?i),?\s*url\s*=\s*\{[^{}]*\}", "", body)
                 if uncapped:
                     BUILD_WARNINGS.append(f"bib key {key} ({p['id']}): {' and '.join(uncapped)} in capitals, printed in normal case")
                 if fixed:
@@ -1574,6 +1706,28 @@ def _run(cmd, **kw):
     try: return subprocess.run(cmd, **kw)
     except FileNotFoundError: return _Missing(cmd[0])
 
+def venue_template_report(main_pdf):
+    """0.16.0 (JL 261104): compare the built files with the templates [venue_template] names; a paper naming none is
+    not checked. The report changes nothing: scripts/venue_template_check.py, § The venue template checklist."""
+    cfg = CFG.get("venue_template")
+    if not isinstance(cfg, dict):
+        return {}
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("haipipe_venue_template_check", ENGINE_DIR / "venue_template_check.py")
+    mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
+    docx = rel(OUT["main_docx"])
+    head = (CFG.get("source") or {}).get("head")
+    try:
+        return mod.report(word_template=HERE / cfg["word"] if cfg.get("word") else None, docx=docx,
+                          docx_pdf=docx.with_suffix(".pdf"),
+                          latex_template=HERE / cfg["latex"] if cfg.get("latex") else None,
+                          head=HERE / head if head and cfg.get("latex") else None, latex_pdf=main_pdf,
+                          accepted=tuple(cfg.get("accepted") or ()))
+    except Exception as error:   # the check reports; it never costs a finished build
+        BUILD_WARNINGS.append(f"venue template check could not run: {error}")
+        return {}
+
+
 def build():
     # Recheck immediately before mutation, including symlinks changed since load.
     validate_build_config(CFG, HERE)
@@ -1588,6 +1742,11 @@ def build():
     pages = main + appx
     for p in pages:   # 0.6.1: a DRAFT may print an unready page's fragment when the paper opts in
         p["included"] = p["ready"] or (DRAFT_INCLUDES_UNREADY and p["fragment"].exists())
+    if ACCEPT_DROPPED_KEYS:              # 0.14.0: the flag reaches each stale Section's own LaTeX lane
+        for line in refresh_stale(pages): print(f"  {line}")
+    STALE[:] = stale_fragments(pages)   # 0.14.0: stop before the last good delivery/latex/ is removed
+    if STALE and not ALLOW_STALE:
+        raise StaleFragments(stale_message(STALE))
     require_page_bibs(pages)  # refuse before the last good delivery/latex/ is removed
     if LATEX.exists(): shutil.rmtree(LATEX)
     for d in (SEC, APP, DISP): d.mkdir(parents=True, exist_ok=True)
@@ -1625,28 +1784,37 @@ def build():
             if junk.suffix not in {".tex", ".pdf", ".bbl", ".log"}: junk.unlink()
     main_pdf = rel(OUT["main_pdf"])
     # word
-    docx_rc, docx_err = None, None
-    if DOCX_ENGINE.exists():
+    docx_rc, docx_err, word_stuck = None, None, False
+    if DOCX_ENGINE.exists() and not PDF_ONLY:
         env = dict(os.environ, HAIPIPE_PAPER_BUILD_CONFIG=str(HERE / "paper-build.toml"))
+        if WORD_DRAFT:
+            env["HAIPIPE_WORD_DRAFT"] = "1"
+            BUILD_WARNINGS.append("Word draft: displays float to page tops, one may sit above its citing text. Run a full build before sending.")
         r = _run([sys.executable, str(DOCX_ENGINE)], cwd=HERE, env=env, capture_output=True, text=True)
         docx_rc, docx_err = r.returncode, unrooted((r.stderr or r.stdout)[-1500:])
+        if "Word did not answer" in (r.stderr or ""):    # 0.17.1: said in the report, not only in a log's tail
+            word_stuck = True
+            BUILD_WARNINGS.append("Word did not answer: displays are right after their citing paragraphs, not at page "
+                                  "tops, and its PDFs are not Word's. Restart Word and build again.")
     # JL 260929 "for the word, why we cannot preview it": each .docx gets its PDF twin beside it,
     # <stem>.pdf, drawn from the package the Word lane just wrote; the Paper Workbench's Word Preview shows it
-    twins = {}
-    if DOCX2PDF.exists() or MSWORD.exists():
+    twins, printed_by = {}, {}
+    if (DOCX2PDF.exists() or MSWORD.exists()) and not PDF_ONLY:
         for key in ("main_docx", "supplement_docx"):
             docx = rel(OUT[key]) if OUT.get(key) else None
             if docx is not None and docx.suffix == ".docx" and docx.is_file():
                 twin = docx.with_suffix(".pdf")
-                ok = word_pdf(docx, twin)
+                ok = not word_stuck and word_pdf(docx, twin)    # a stuck Word is not asked again, 2 minutes a file
+                printed_by[key] = "word" if ok else "stand-in"
                 if not ok and DOCX2PDF.exists():
                     r = _run([sys.executable, str(DOCX2PDF), str(docx), "-o", str(twin)], cwd=HERE,
                              capture_output=True, text=True, timeout=300)
                     ok = getattr(r, "returncode", 1) == 0 and twin.is_file()
                 twins[key] = str(twin.relative_to(HERE)) if ok else None
+    template_report = {} if PDF_ONLY else venue_template_report(main_pdf)   # 0.16.0 (JL 261104): does the build follow the venue's own template?
     # 0.9.0 (JL 260929): the submission cover letter, words from the Round page, facts from this build
     cover = None
-    if COVER_LETTER.exists() and isinstance(CFG.get("coverletter"), dict):
+    if COVER_LETTER.exists() and isinstance(CFG.get("coverletter"), dict) and not PDF_ONLY:
         import importlib.util
         spec = importlib.util.spec_from_file_location("haipipe_cover_letter", COVER_LETTER)
         mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
@@ -1661,7 +1829,8 @@ def build():
     except (OSError, json.JSONDecodeError):
         manifest = {}
     purge_retired_delivery_receipts(manifest)
-    published = publish(manifest.get("published") or {})
+    published = {} if PDF_ONLY or WORD_DRAFT else publish(manifest.get("published") or {})   # co-authors get a full build's Word only
+    last_outputs = manifest.get("outputs") if isinstance(manifest.get("outputs"), dict) else {}
     if published or CFG.get("publish"):
         manifest["published"] = {**(manifest.get("published") or {}), **published}
     submission_readiness = build_readiness(pages, unresolved, rc.returncode, docx_rc)
@@ -1680,22 +1849,38 @@ def build():
                           "abstract_page": LATEX_ABSTRACT_PAGE, "running_head": LATEX_RUNNING_HEAD},
         "outputs": {"pdf": OUT["main_pdf"] if main_pdf.exists() else None,
                     "docx": OUT["main_docx"] if rel(OUT["main_docx"]).exists() else None,
-                    "docx_pdf": twins.get("main_docx"), "supplement_docx_pdf": twins.get("supplement_docx")},
+                    "docx_pdf": last_outputs.get("docx_pdf") if PDF_ONLY else twins.get("main_docx"),
+                    "supplement_docx_pdf": last_outputs.get("supplement_docx_pdf") if PDF_ONLY else twins.get("supplement_docx")},
     })
+    if PDF_ONLY:
+        manifest["pdf_only"] = True      # the Word files are the last full build's: freeze() refuses until one runs
+        if isinstance(manifest.get("build"), dict):
+            manifest["build"]["main_text_words_from"] = "the last full build"   # the Word step counts them
+    else:
+        manifest.pop("pdf_only", None)
+        manifest.pop("word_draft", None)
+        if WORD_DRAFT:
+            manifest["word_draft"] = True    # freeze() refuses until a full build runs; the Writing view says so
+        manifest["word_pdf_printed_by"] = printed_by      # the panel says which PDFs are Word's own
     for key in ("supplement_pdf", "combined_pdf"):   # 0.9.1: the paper-owned documents and their length
         if key in printed:
             manifest["outputs"][key.replace("_pdf", "")] = OUT[key] if rel(OUT[key]).exists() else None
     manifest["pages_printed"] = printed
+    if template_report:
+        manifest["venue_template"] = template_report
+    elif not PDF_ONLY:
+        manifest.pop("venue_template", None)
     manifest["draft_citations"] = list(DRAFT_CITED)
+    manifest["stale_fragments"] = list(STALE)
     manifest["store_reads"] = {k: list(v) for k, v in STORE_READS.items()}
     if cover is not None:
         manifest["cover_letter"] = cover
-    else:
+    elif not PDF_ONLY:
         manifest.pop("cover_letter", None)
-    portal = portal_packet(status, main_pdf, cover)
+    portal = None if PDF_ONLY else portal_packet(status, main_pdf, cover)
     if portal is not None:
         manifest["portal"] = portal
-    else:
+    elif not PDF_ONLY:
         manifest.pop("portal", None)
     manifest["readiness"] = {
         "ready": len(ready),
@@ -1720,7 +1905,16 @@ def build():
     print(f"pdf: {'✅ ' + OUT['main_pdf'] if main_pdf.exists() else '❌ latexmk rc=' + str(rc.returncode)}")
     for key, n in printed.items():   # 0.9.1: every document this build compiled, with its length
         print(f"  {'✅' if rel(OUT[key]).exists() else '❌'} {OUT[key]} · {n} pages")
-    print(f"docx: {'✅ ' + OUT['main_docx'] if rel(OUT['main_docx']).exists() else '❌ rc=' + str(docx_rc)}")
+    if PDF_ONLY:
+        print("docx: not rebuilt (--pdf-only); Word, the cover letter, the portal, the shared folder and the word count are the last full build's")
+    else:
+        print(f"docx: {'✅ ' + OUT['main_docx'] if rel(OUT['main_docx']).exists() else '❌ rc=' + str(docx_rc)}")
+    for lane, rows in template_report.items():
+        off = [r for r in rows if r["state"] == "differs"]
+        print(f"venue template, {lane}: {'✅ follows it' if not off else '❌ ' + str(len(off)) + ' difference(s)'}"
+              f" · {sum(r['state'] == 'accepted' for r in rows)} accepted")
+        for r in off:
+            print(f"  ❌ {r['rule']}: template {r['template']} · built {r['built']}")
     if cover is not None:
         todo = [f"{c['check']}: {c['detail']}" for c in cover["checks"] if not c["ok"]]
         print(f"cover letter: {'✅' if cover['outputs']['pdf'] else '❌'} {cover['outputs']['pdf'] or 'latexmk rc=' + str(cover['latexmk_rc'])}"
@@ -1736,6 +1930,7 @@ def build():
     for p in pages:
         for w in p.get("warnings", []): print(f"  ⚠ {p['id']}: {w}")
     for w in BUILD_WARNINGS: print(f"  ⚠ document: {w}")
+    for line in STALE: print(f"  ❗ {line}")
 
 
 # ── 0.13.1 (JL 261102): the letter Task's own Delivery is the letter as sent ─────────────────────────
@@ -1865,6 +2060,23 @@ def portal_packet(status: str, main_pdf: Path, cover: dict | None = None):
     (dest / "portal.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     return {"folder": folder, "uploads": uploads, "ready": n_ok, "total": len(uploads)}
 
+def refresh_portal():
+    """Rewrite only the portal packet from the last build's manifest (0.13.1, FairGlucose 261103): a ZIP made after
+    the build (npj-zip.sh) is copied in and compared again, so portal/ never holds or reports an older ZIP."""
+    manifest_path = HERE / OUT["manifest"]
+    if not manifest_path.exists():
+        sys.exit("no build-manifest.json yet: run build.py first")
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    status = (manifest.get("build") or {}).get("status", "DRAFT") if isinstance(manifest.get("build"), dict) else "DRAFT"
+    portal = portal_packet(status, rel(OUT["main_pdf"]), manifest.get("cover_letter"))
+    if portal is None:
+        sys.exit("paper-build.toml has no [portal]")
+    manifest["portal"] = portal
+    manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    print(f"portal: {portal['folder']}/ · {portal['ready']} of {portal['total']} uploads ready")
+    for u in portal["uploads"]:
+        print(f"  📮 {u['slot']}: {u['state']}" + (f" · {u['detail']}" if u.get("detail") else ""))
+
 def freeze(kind: str, rd: str):
     """Cut one immutable Round snapshot from the current generated delivery.
 
@@ -1873,6 +2085,13 @@ def freeze(kind: str, rd: str):
     partially populated destination is never repaired in place; a new Round
     (or an explicit human migration) is required.
     """
+    try:   # 0.17.0: a --pdf-only build leaves Word behind its PDFs; a send carries one build
+        if json.loads((HERE / OUT["manifest"]).read_text(encoding="utf-8")).get("pdf_only"):
+            sys.exit("cannot freeze a --pdf-only build: its Word files are older than its PDFs; run a full build first")
+        if json.loads((HERE / OUT["manifest"]).read_text(encoding="utf-8")).get("word_draft"):
+            sys.exit("cannot freeze a --word-draft build: its displays were not placed by measuring; run a full build first")
+    except (OSError, ValueError, KeyError):
+        pass
     if kind not in {"sent", "released"}:
         sys.exit(f"invalid freeze target {kind!r}; expected sent or released")
     rounds = list(ROOT.glob(f"B*-*-Round/{rd}-*")) + (list(VERSION.glob(f"{rd}-*")) if VERSION != ROOT else [])
@@ -2001,15 +2220,33 @@ def check():
             missing += state in ("no [pages] group", "page folder missing")
             print(f"  {lane:8} {pid:48} {state}")
     print(f"{len(main_ids) + len(appx_ids)} Sections · {missing} not found")
-    return missing
+    # 0.14.0: a fragment older than its page is reported here too, before anyone builds
+    pages = [{"id": pid, "dir": group / pid, "fragment": page_latex(group / pid) / f"{pid}.tex", "included": True}
+             for _lane, ids, group in (("main", main_ids, g_main), ("appendix", appx_ids, g_app))
+             if group for pid in ids if (group / pid).is_dir()]
+    stale = stale_fragments(pages)
+    for line in stale: print(f"  ❗ {line}")
+    return missing + len(stale)
 
 
 def main(argv=None):
+    global ALLOW_STALE, ACCEPT_DROPPED_KEYS, PDF_ONLY, WORD_DRAFT
     a = list(sys.argv[1:] if argv is None else argv)
+    ALLOW_STALE = "--allow-stale" in a                     # 0.14.0
+    ACCEPT_DROPPED_KEYS = "--accept-dropped-keys" in a     # 0.14.0
+    PDF_ONLY = "--pdf-only" in a                           # 0.17.0
+    WORD_DRAFT = "--word-draft" in a and not PDF_ONLY      # 0.18.0
+    a = [x for x in a if x not in {"--allow-stale", "--accept-dropped-keys", "--pdf-only", "--word-draft"}]
     if a and a[0] in {"check", "--dry-run"}:
         sys.exit(1 if check() else 0)
     if not a or a[0] == "build":
-        with delivery_lock(): build()
+        try:
+            with delivery_lock(): build()
+        except StaleFragments as stop:
+            print(stop, file=sys.stderr)
+            sys.exit(1)
+    elif a[0] == "portal":
+        with delivery_lock(): refresh_portal()
     elif a[0] in {"send", "release"} and len(a) == 2:
         with delivery_lock(): freeze("sent" if a[0] == "send" else "released", a[1])
     else: sys.exit(__doc__)

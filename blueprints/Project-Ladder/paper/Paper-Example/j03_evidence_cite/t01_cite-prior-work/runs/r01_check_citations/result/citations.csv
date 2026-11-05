@@ -1,0 +1,4 @@
+key,group,status,cited_in,sentences,bib_entry,bib_in,in_reference_bib,doi,doi_conflict,title,year,doi_record,verified,cite_card,card_gaps,discovery_runs
+example2024policy,t01_cite-prior-work,bib-only,t01_introduction C1.P1.1,1,yes,t01_introduction,no,10.0000/example.2024.001,,<A policy> and <a service>: a placeholder study,2024,no discovery record,no signed Result,,t01_introduction C1.P1.1,
+example2021one,t01_cite-prior-work,bib-only,t01_introduction C1.P1.2,1,yes,t01_introduction,no,,,<An outcome> in one setting: a placeholder,2021,no discovery record,no signed Result,,t01_introduction C1.P1.2,
+example2022two,t01_cite-prior-work,missing-bib,t01_introduction C1.P1.2,1,no,,no,,,,,no discovery record,no signed Result,,t01_introduction C1.P1.2,

@@ -278,7 +278,7 @@ def check(page_src: pathlib.Path, plan_text: str, skills_root: pathlib.Path):
     return out
 
 
-_ADDR = re.compile(r"C(\d+)\.P(\d+)\.B(\d+)")
+_ADDR = re.compile(r"C(\d+)\.P(\d+)\.B(\d+)[a-z]*")
 
 
 def paragraph_order_findings(plan_text: str) -> list[str]:
@@ -435,7 +435,7 @@ def check_bullet_grammar(plan_text: str):
         paragraph = re.match(r"^### C(\d+)\.P(\d+)\b", line)
         if paragraph:
             cn, pn = map(int, paragraph.groups()); sn = 0; continue
-        m = re.match(r"^- B(\d+)\s*·\s*(.*)$", line)
+        m = re.match(r"^- B(\d+)[a-z]*\s*·\s*(.*)$", line)
         if not m:
             continue
         sn = int(m.group(1))
@@ -544,7 +544,7 @@ def check_coverage(page_src: pathlib.Path, plan_text: str):
         if table.is_file():
             record_re = re.compile(
                 r"^###\s+(E\d+-(?:VALUE|CITE|DISPLAY)-[a-z0-9]+(?:-[a-z0-9]+)*)"
-                r"\s*·\s*(C\d+\.P\d+\.B\d+)\s*·"
+                r"\s*·\s*(C\d+\.P\d+\.B\d+[a-z]*)\s*·"
             )
             for line in table.read_text(encoding="utf-8", errors="replace").splitlines():
                 match = record_re.match(line)
@@ -1097,7 +1097,7 @@ def _bullets_with_notes(plan_text: str):
         if line.startswith("### "):
             mp = re.match(r"^### C\d+\.P(\d+)\b", line)
             pn = int(mp.group(1)) if mp else pn + 1; sn = 0; i += 1; continue
-        m = re.match(r"^- (?:\[[ xX]\] )?B(\d+)\s*·\s*(.*)$", line)
+        m = re.match(r"^- (?:\[[ xX]\] )?B(\d+)[a-z]*\s*·\s*(.*)$", line)
         if not m:
             i += 1; continue
         sn = int(m.group(1))

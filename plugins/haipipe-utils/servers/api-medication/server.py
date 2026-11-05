@@ -88,7 +88,7 @@ class EventIn(BaseModel):
 
 @app.post("/event")
 def medication_event(body: EventIn):
-    """ONE medication event (b51 s13; JL 261027: "啊 整去整吧", as POST /food/event and /exercise/event): the raw, the
+    """ONE medication event (b51 s13; JL 261027: "啊 整去整吧", as POST /meal/event and /exercise/event): the raw, the
     input JSON the preprocess step makes of it (a WellDoc id named through WellDoc's catalog, a cell split into its
     drugs, a pump cell's drug from its header), and the output by local hour, each item described by
     describe-medication; a dose is a moment, so its start's hour holds it all."""

@@ -1,3 +1,159 @@
+## 0.50.0 · 2026-11-05 · a Theory section
+
+- JL 261105: "I think for both of them, we should have the section named theory as well."; "espeically for the IS." Idea and Story each draw 🎓 Theory; an empty one on an IS journal is flagged (s32-D45).
+
+## 0.49.0 · 2026-11-05 · Idea and Story, two buttons
+
+- JL 261105: "I mean seperate this!!!", on the Idea + Story button. `BOARD_VIEWS` has Idea and Story; `idea_view` shows the many directions, `story_view` the one chosen (JL 261105: "idea for multiple direction, story for one direction"), as folding sections again; 0.48.0's two sections with inner tabs are gone (s32-D44).
+
+## 0.48.0 · 2026-11-05 · Idea and Story are two sections
+
+- JL 261105: "I think we should seperate them. Do it,". `idea_tabs`, `story_tabs`: 1 · 🧭 Idea and 2 · 📖 Story, each left tabs and right content with its Studio first; then Related and Interaction (s32-D43).
+
+## 0.47.6 · 2026-11-05 · every section has its emoji
+
+- JL 261105: "for each of them, please try to add the emoji for everyone of them." Data flow 🗄️, Paper flow 📝, Examples 🔍, The drawing 🖼️, The mind map 🧠.
+
+## 0.47.5 · 2026-11-05 · a waiting form has one place
+
+- JL 261105: "we don't need this one anymore, right?" Writing no longer draws its own "N questions for you" row; 🙋 Interaction, each view's last section, shows the same form.
+
+## 0.47.4 · 2026-11-04 · a paper page is one column
+
+- JL 261104: "no ,this is not good ... why you don't review it yourself?" The 1400 px breakout is gone. `board_views.PAGE_CSS`: title, Purpose, buttons, bars and open sections share both edges at 1200 px; paragraphs and lists stay at most 880 px; mind map canvases stay inside the column (s32-D39).
+- JL 261104: "why don't you embed the example paper?" b16's `ui-block`, `ui-job`, `ui-task` name Paper-Example.
+
+## 0.47.3 · 2026-11-04 · Interaction folds on every page
+
+- JL 261104: "you might make this to be like this style as well". `live.interaction_section.FOLD`: the same folding row where a page has no folding look (s32-D42).
+
+## 0.47.2 · 2026-11-04 · Interaction always stands
+
+- JL 261104: "I still didn't see them here." `view_section`: with no question the section still shows, saying none is asked yet (s32-D41).
+
+## 0.47.1 · 2026-11-04 · the one Interaction look
+
+- JL 261104: "make this to be the standard items for any of them". The rail and pop-out draw `live.interaction_section` too (s32-D40).
+
+## 0.47.0 · 2026-11-04 · Interaction on every view; wider left-tab sections
+
+- JL 261104: "could you try to make this section at the bottom for each of the view?" The page adds it (`live.interaction_section`, `focus_page.render`); Displays' section 4 left (s32-D38).
+- JL 261104: "I think you can make it wider." `SIDE_CSS`: left-tab sections up to 1400 px, a 220 px list, rail marks at the window's edges (s32-D39).
+
+## 0.46.1 · 2026-11-04 · Interaction: Back, Next, folding sets
+
+- JL 261104, relayed by CMS-Server-AI-Code: Back and Next walk a set's questions, a tab's small line shows its pick, Copy feedback comes on the last question; each Run is a folding group in one left list (s32-D37).
+
+## 0.46.0 · 2026-11-04 · Idea + Story: new order, Studio tabs, Interaction
+
+- JL 261104: "we can have both Idea Studio and Story studio and also hve the left tab right content". One Studio section with two left tabs; order Direction, Pitch, Research Questions, Stakes and evidence, Related, Venues, Story by Section (s32-D35). Hand-off is no section; Roadmaps moved to Data + Paper Plan. A Story whose questions are no numbered list still shows them.
+- JL 261104, relayed by CMS-Server-AI-Code: `interaction_section`, a left tab per question, the Run's own form on the right (s32-D36).
+
+## 0.45.8 · 2026-11-04 · no empty box, no glossary as the main point
+
+- JL 261104: "yes clean them up". `SIDE_CSS`: the open panel ends with its content. `_lead_sentence` skips a glossary line (s32-D34).
+
+## 0.45.7 · 2026-11-04 · Direction drops its stage and rows
+
+- JL 261104: "could we just remve this?" `idea_sections` no longer draws the stage word or the labelled rows (START, SETTING, CONTRAST); the face still holds them (s32-D33).
+
+## 0.45.6 · 2026-11-04 · Direction holds the directions considered
+
+- JL 261104: "1 and 2 here can be merged together"; "make the name to be more saleint and the status to be small". `idea_sections` writes one Direction section with the side tabs under it; a tab's bold line is the direction's name (cut at 60 characters), its small line the status (s32-D32).
+
+## 0.45.5 · 2026-11-04 · every choice list is left tabs, right content
+
+- JL 261104: "make all types of this into this left right style". Directions considered, Stakes, Roadmaps, Questions, Venues and Related use side tabs (`_side_tabs`, `_grouped_tabs`); no card tabs with a panel below remain in a paper view (s32-D31). Related's 0.45.4 small tabs and row pop-out gave way to a left list with the paper read on the right.
+
+## 0.45.4 · 2026-11-04 · Related: small tabs, a kept PDF reads in the pop-out
+
+- JL 261104, relayed by Paper-PhyAbsence-PatientCare: "make this smaller and more compact"; "I want it can pop out and read". One line per `bears on` tab, a long name cut with …, its whole name under the mouse; a row with a kept file is one link to the pop-out (s32-D30).
+
+## 0.45.3 · 2026-11-04 · Idea + Story ends in Related
+
+- JL 261104, relayed by Paper-PhyAbsence-PatientCare: "could you put the related section to be here?" `related_section` adds a numbered 📚 Related after the Story's sections: `related/related.md` read by `frame.related_items`, one card per `bears on`; a kept file opens in the pop-out, a web address opens out (s32-D30).
+
+## 0.45.2 · 2026-11-04 · the Plan button says what it holds
+
+- JL 261104: "could you call it Data+Paper Plan?" The button reads "Data + Paper Plan", spaced like "Idea + Story" (`BOARD_VIEWS`; s32-D29). The group key stays `plan`, so links keep working.
+
+## 0.45.1 · 2026-11-04 · the Writing view says when Word is a draft
+
+- b16.j02-s22: `_paper_files` adds one line when the manifest has `word_draft` (assemble 0.18.0).
+
+## 0.45.0 · 2026-11-04 · Idea + Story is one view, Data flow + Paper flow is Plan
+
+- JL 261104: "add Idea + Story to be in one view, and Data flow and Paper flow to be one view of Plan". A paper Board now has six views, A Idea + Story · B Plan · C Support blocks · D Evidence · E Displays · F Writing (`board_read.BOARD_VIEWS`, `view_topics`; `board_results.idea_story_view`, `plan_view`; s32-D28).
+- `process_html` reads every part of a view: its waiting forms, Idea's and Story's Open as one list, Plan's plan center, Runs to do and Next steps together.
+- Group keys `story` and `plan`; an old `group=idea`, `dataflow` or `paperflow` link opens the first view. `_topic_view` and `ANSWER_FIRST`, which nothing else called, left.
+
+## 0.44.6 · 2026-11-04 · the Word tab says when its PDF is not Word's
+
+- b16.j02-s22: `_paper_files` reads `word_pdf_printed_by`: "not Word's print: Word did not answer". The Build facts name a `--pdf-only` word count "from the last full build".
+- Paper-PhyAbsence 261104: after `word_round.py adopt` the Word rows were empty until the next full build; `_or_adopted` shows the newest adopted copy until then.
+
+## 0.44.5 · 2026-11-04 · the assembled paper stays on screen during a build
+
+- Paper-PhyAbsence 261104: the Writing view's panel vanished for the rest of every build (the 0.44.3 guard stopped the crash, not the gap). With assemble 0.16.1 the last built files stay; `paper_version.build_running` reads the build's lock and `_paper_files` adds one line, "A build is running".
+- JL 261104: "could you put it in the right up corner and fixed?" Writing view: "Open the Section" sits in the panel's top right corner and stays there while you scroll (`.pb-corner`).
+
+## 0.44.4 · 2026-11-04 · the Writing view opens closed; Report and Work keep the view
+
+- JL 261104: "this should be closed at the begining". `writing_view` marks its page (`data-fd-closed`); `focus_draft`'s
+  fold then opens a page with its top-level sections closed, and what you open stays open in this browser. Other pages keep
+  their sections open by default.
+- JL 261104: "When I switch from Report to Work, could I still stay in the same view". `focus_page.render` `rail_view`: on
+  a paper Board, the rail's Report and Work links carry the current view (`draft` and `work-draft`), the phone tabs too.
+  Shared file, edited on JL's direct request.
+
+## 0.44.3 · 2026-11-04 · a paper's views survive a running build
+
+- Paper-PhyAbsence 261103: the Writing view dropped the connection during a build. `latex_room_to_docx.py` writes the
+  manifest's `outputs` as a list and `build_delivery.py` replaces it with a dict only at the end; `_paper_files` and
+  `paper_rows` called `.get` on the list. `paper_version.built_outputs` (also used by `version_delivery_views`) and
+  `_paper_files` now treat a list as nothing to show yet. Test: `tests/test_build_in_progress.py`.
+
+## 0.44.2 · 2026-11-03 · earlier rounds wait behind one fold
+
+- JL 261103 (through pp-LBP-JAMA): "for the early round, could you just first to hide them?". The assembled paper's
+  side list and the version's Files rows put older `word/*.docx` behind one closed "Earlier rounds" fold, with no
+  count (`board_results._fold_earlier`, `paper_version`). Files stay on disk and open once unfolded. Checked in
+  Chrome on the JAMA Board (read only): closed on load, opens, an old round shows its PDF. Test:
+  `tests/test_earlier_rounds.py`.
+
+## 0.44.1 · 2026-11-03 · the cover letter always shows
+
+- JL 261103: "where is the cover letter?". The assembled paper's list falls back to a letter Task's own `word/` export when
+  the build has no `[coverletter]`, so a written letter never goes missing from the Writing view.
+
+## 0.44.0 · 2026-11-03 · G · Displays gains 3 · Examples and 4 · Interaction
+
+- JL 261103: "I think we can add the things like 3-Examples, and 4-Interaction". `board_results.displays_view` now
+  always draws 3 · Examples (the `sNN-paper-display-examples` drawing, else one line on how to make it) and the new
+  4 · Interaction (`_display_interactions`: every collection Run at `j01_evidence_display` or below, and those whose
+  `for:` names the s06 display-plan topic, drawn by `focus_page.interaction_item`, else one line on how to ask one).
+  Checked on Paper-PhyAbsence-Maternity-JamaIM: sections 1 Plan, 2 Displays, 3 Examples, 4 Interaction; 8 view tests pass.
+
+## 0.43.1 · 2026-11-03 · a /haipipe-ui walk of the Evidence view
+
+- Walked Paper-Example's Board in Chrome (8 views, no console errors, no sideways scroll). Fixed: at 390 px the
+  line beside a ledger's Pop out broke one letter at a time; `board_evidence.py`'s head now wraps (the line first,
+  the buttons under it). Paper-Example's Display B, bound in the value ledger but "Not drawn yet", got its
+  float.tex and method.md and a preview.pdf (preview_display.py). Left for its owner: a Run's focus page shows
+  "Nothing to see yet" when a ledger link opens it (focus_page.py).
+- `board_evidence.display_pick(task, text)`: the printed-or-newest rule in one function, read by the Evidence view
+  and by build_displays_pdf.py. Tests: `tests/test_display_pick.py` (newest, printed wins, a printed png).
+
+## 0.43.0 · 2026-11-03 · every Run address is a link
+
+- JL 261103: "b52.j01.t01.r01 <--- how could you make this to be clickable". A `bNN.jNN[.tNN[.rNN]]` (or with
+  spaces) in a paper Board's views, a version's Work views and a draft Section's step pages links to its folder's
+  focus page, resolved in its own Project, work/ then discovery/, a shared or missing Run falling back to its Task;
+  a writing Job's Section name `tNN_<name>` links to its Work › Write view. One helper,
+  `servers/workbench/address_links.py`, wraps the views where they are built (board_views, paper_version,
+  focus_draft.parts, draft_steps.step_view). Tests: workbench/tests/test_address_links.py and
+  test_board_views.AddressLinksTest.
+
 ## 0.42.0 · 2026-11-01 · Displays, its own view after Evidence
 
 - JL 261101: "put the display outside of the Evidence, and put it after the Evidence and before the Writing, to

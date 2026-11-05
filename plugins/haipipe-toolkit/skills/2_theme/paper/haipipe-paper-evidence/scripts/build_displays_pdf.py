@@ -43,12 +43,25 @@ def num(t: Path) -> int:
     return int(re.match(r"t(\d+)", t.name).group(1))
 
 
+def paper_order(t: Path) -> tuple:
+    """The order the paper prints them (JL 261103: Figure 4 is t06, so Task order is not paper order): main figures,
+    main tables, Extended Data figures, Extended Data tables, each by its number from the face's label:; a Task whose
+    label names no number comes last, in Task order."""
+    md = face(t)
+    label = _field(md.read_text(encoding="utf-8", errors="ignore"), "label") if md else ""
+    m = re.match(r"(Extended Data |Supplementary )?(Figure|Table) (\d+)", label or "")
+    if not m:
+        return (9, 0, num(t))
+    return ((2 if m.group(1) else 0) + (m.group(2) == "Table"), int(m.group(3)), num(t))
+
+
 def page(task: Path) -> str:
     md = face(task)
     text = md.read_text(encoding="utf-8", errors="ignore") if md else ""
     label = _field(text, "label") or task.name
     caption = _field(text, "caption")
-    shown = fd._evidence_file(task, text)
+    preview, forced = fd.display_pick(task, text)        # the face's printed: version, else the newest preview.pdf
+    shown = preview or forced or fd._evidence_file(task, text)
     out = r"\clearpage" + "\n" + rf"{{\Large\bfseries {tex(label)}}}\par\smallskip" + "\n"
     out += rf"{{\small\color{{gray}} {tex(task.name)}}}\par\medskip" + "\n"
     if caption and not caption.startswith("⟦"):
@@ -59,6 +72,9 @@ def page(task: Path) -> str:
         body = shown.read_text(encoding="utf-8", errors="ignore")
         body = re.sub(r"\\begin\{table\}(\[[^\]]*\])?", r"\\begin{table}[H]", body)
         return out + body + "\n"
+    if shown.name.endswith("preview.pdf"):          # page 1 of a version's preview is the display as the paper prints it
+        return out + (r"\begin{center}\includegraphics[page=1,width=\linewidth,height=0.85\textheight,keepaspectratio]{"
+                      + str(shown) + r"}\end{center}" + "\n")
     if shown.suffix.lower() in (".png", ".jpg", ".jpeg", ".pdf"):
         return out + (r"\begin{center}\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{"
                       + str(shown) + r"}\end{center}" + "\n")
@@ -67,7 +83,7 @@ def page(task: Path) -> str:
 
 def build(job: Path) -> Path:
     job = job.resolve()
-    tasks = sorted((t for t in job.glob("t[0-9]*_*") if t.is_dir()), key=num)
+    tasks = sorted((t for t in job.glob("t[0-9]*_*") if t.is_dir()), key=paper_order)
     board = job.parent
     title = (r"{\LARGE\bfseries " + tex(board.name) + r"}\par\medskip{\large All displays}\par\bigskip "
              + "".join(rf"{tex(_field((face(t).read_text(encoding='utf-8', errors='ignore') if face(t) else ''), 'label') or t.name)}"

@@ -12,6 +12,9 @@ passes:
 - p01-1031
 - p02-1031
 - p03-1101
+- p04-1104
+- p05-1104
+- p06-1104
 writes:
 - result/answer_collection.md
 feeds: []

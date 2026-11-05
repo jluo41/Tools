@@ -16,7 +16,9 @@ float.tex, with the paper's fonts, caption style, preamble.tex and header), page
 from __future__ import annotations
 
 import importlib.util
+import re
 import sys
+import time
 from pathlib import Path
 
 SKILLS = next(p for p in Path(__file__).resolve().parents if p.name == "skills")
@@ -42,6 +44,28 @@ def paper_master(unit: Path) -> Path | None:
     return built[-1] if built else None
 
 
+def earlier_versions(unit: Path) -> list[dict]:
+    """A display Run's earlier versions: the same Task's lower-numbered Runs that left a preview.pdf, newest first
+    (the picture as that Run drew it). A unit that is not a Run's result/ has none. A Run card's `change:` says what
+    changed; without one, its `says:`."""
+    if unit.name != "result" or unit.parent.parent.name != "runs":
+        return []
+    number = lambda p: int(m.group(1)) if (m := re.match(r"r(\d+)_", p.name)) else -1
+    here = number(unit.parent)
+    out = []
+    for run in sorted(unit.parent.parent.iterdir(), key=number, reverse=True):
+        pdf = run / "result" / "preview.pdf"
+        if not -1 < number(run) < here or not pdf.is_file():
+            continue
+        card = (run / "run.yaml").read_text(encoding="utf-8", errors="ignore") if (run / "run.yaml").is_file() else ""
+        note = re.search(r"(?m)^change:\s*(.+)$", card) or re.search(r"(?m)^says:\s*(.+)$", card)
+        stamp = run / "result" / "runtime.yaml"
+        when = (stamp if stamp.is_file() else pdf).stat().st_mtime
+        out.append({"pdf": pdf, "name": run.name, "date": time.strftime("%Y-%m-%d", time.localtime(when)),
+                    "note": note.group(1).strip().strip("'\"").replace("''", "'") if note else ""})
+    return out
+
+
 def main(argv: list[str]) -> None:
     src = None
     if "--method-from" in argv:
@@ -54,13 +78,14 @@ def main(argv: list[str]) -> None:
         sys.exit(__doc__)
     unit = Path(argv[0]).resolve()
     master = paper_master(unit)
+    earlier = earlier_versions(unit)
     if master is None:
         print("note: no built paper yet (delivery/<writing Job>/latex/master.tex); page 1 uses the paper's default "
               "look. Build the paper (haipipe-paper-assemble), then rerun for its own head.")
-        print(bp.build(unit, src, look="paper"))
+        print(bp.build(unit, src, look="paper", earlier=earlier))
     else:
         print(f"page 1 uses the built paper's head (fonts, captions, header) from: {master}")
-        print(bp.build(unit, src, preamble_from=master))
+        print(bp.build(unit, src, preamble_from=master, earlier=earlier))
 
 
 if __name__ == "__main__":

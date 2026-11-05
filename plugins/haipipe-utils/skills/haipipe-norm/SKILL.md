@@ -235,7 +235,7 @@ symlink pointing back. Code in git, data in the store, one copy of each.
     eventnorm  the event layer (2026-10-21, food first): raw as it arrives ->
              preprocess/ (a file a raw type) -> the input JSON -> the noun's
              enrich(items) -> the output by local hour (hours.py by_hour, the
-             one every event type shares). Served as POST /food/event; its
+             one every event type shares). Served as POST /meal/event; its
              test sends b51 s01 ③'s eight real meals, read in place, and wants
              them back byte for byte but for one named difference. A member
              still answers only its items: time and the meal's own numbers
@@ -245,7 +245,7 @@ symlink pointing back. Code in git, data in the store, one copy of each.
 THE EVENT JSON: RAW, INPUT, OUTPUT
 --------------------------------------------------------------------------------
 
-Every event door (eventnorm: POST /food/event, /exercise/event, /medication/event,
+Every event door (eventnorm: POST /meal/event, /exercise/event, /medication/event,
 /insulin/event) answers one JSON of three parts. Each rule below came from a real
 row someone questioned in b51's API topics (s01 food, s02 exercise, s03
 medication, s04 insulin; the s01-Dnn numbers are decisions in s01-food-api.md).

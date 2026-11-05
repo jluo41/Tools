@@ -7,8 +7,9 @@ ticket: r03_collect_board_ui_studio.html
 skill: haipipe-interaction
 agent: JL
 signs: null
-status: waiting
-passes: []
+status: done
+passes:
+- p01-1104
 writes:
 - result/answer_collection.md
 feeds: []

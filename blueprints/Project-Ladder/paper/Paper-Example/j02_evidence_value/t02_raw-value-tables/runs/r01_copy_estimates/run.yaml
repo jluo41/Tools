@@ -1,0 +1,16 @@
+run: r01_copy_estimates
+kind: hard
+role: make
+type: value
+scope: blueprints/Project-Ladder/paper/Paper-Example/j02_evidence_value/t02_raw-value-tables
+ticket: r01_copy_estimates.sh
+worker: this ticket
+says: copy a work Run table unchanged
+host: this machine
+time: a few seconds
+started_by: 'JL 261104: the Values tabs as the paper Board standard'
+reads:
+- blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates/t01_example_main/runs/r01_example_main/result/values.csv
+writes:
+- result/estimates/
+- result/values.json

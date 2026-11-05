@@ -4,7 +4,8 @@ text: words. Two shapes today, told apart by their columns.
     Shanghai   one row, "Dietary intake" a cell of foods a line with grams, "饮食" the same lines in Chinese,
                "Date" local time in Shanghai (+08:00)
     typed      one row {"text": "Banana\\nMilk 250 ml", "time"?: "2026-10-21 08:05 -04:00"}: a food a line, an
-               amount in g or ml at its end; the time as written, when given
+               amount in g or ml at its end, or a measure at either end ("White Rice 3 cups", "3 cups of rice"); the
+               time as written, when given
 
 A sentence ("I ate a huge apple two hours ago") is one line, so it is asked whole and misses: the step that finds
 the foods, the amounts and the time in a sentence is not built yet (s01-D30).
@@ -31,7 +32,7 @@ def make(rows) -> dict:
         meal = "; ".join(rows[SHANGHAI["name"]].astype(str).str.strip())
     else:
         cell = rows.iloc[0]["text"]
-        items, asks, skipped = lines_to_items(cell)
+        items, asks, skipped = lines_to_items(cell, measures=True)
         t = str(rows.iloc[0].get("time") or "").strip()
         start = t if STAMP.match(t) else clock(rows, "time") if t else None
         head = f"{len(str(cell or '').strip().splitlines())} line(s) → {len(items)} item{'s' * (len(items) != 1)}"

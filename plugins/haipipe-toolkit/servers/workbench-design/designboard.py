@@ -266,7 +266,7 @@ def _method_steps(snapshot: dict, rows: list[dict], g: dict, empty: str) -> str:
     see = step_card(0)
     for rel in packets:
         f = board / rel
-        see += (f'<details class=packet open><summary>The packet · <code>{_e(rel)}</code></summary>'
+        see += (f'<details class=packet><summary>The packet · <code>{_e(rel)}</code></summary>'
                 + (f'<div class=packet-body>{_plain_md(_read(f))}</div>' if f.is_file()
                    else '<div class=bad>not on disk</div>') + '</details>')
     if (board / "design-goal.md").is_file():

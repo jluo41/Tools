@@ -20,7 +20,9 @@ transition-out: <what the next Section picks up>
 
 ## Content
 
-<the Section's prose, adopted from its Draft>
+#### C1.P1 · Sample · S1
+
+The sample holds 12,480 <units> observed before and after <the policy>. <!-- realizes: C1.P1.B1 -->
 
 ## Aims
 

@@ -1,6 +1,14 @@
 haipipe-delivery · Changelog
 ============================
 
+## 0.8.1 · 2026-11-04 · models, data and websites
+
+- A work Block's Findings ends with 📦 Delivery, tabs Models · Data · Website; lanes `model/`, `data/`, `web/` (JL 261104).
+
+## 0.8.0 · 2026-11-04 · a live page in Delivery
+
+- A deliverable with `url:` shows as a closed card in Delivery, its page working in a frame when opened (JL 261104): `frame._live_pages`, `focus_page.live_pages_html`; new section Live pages. Findings gets 🌐 Service, one side tab per site (`service:`, `focus_page.service_section`).
+
 ## 0.7.1 · 2026-11-01 · b16 review 261101: current paper names
 
 - The opening says the Block owns the one `delivery/`, a level's output under `<Block>/delivery/<its address>/`, as the code (`delivery_dir`) does; so does the description.

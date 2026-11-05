@@ -26,12 +26,12 @@ def editable(what: str, raw: str, shown: str, tag: str, p: str = "") -> str:
 
 def render(name: str, arc: str, parts: list, asks: dict, paras: list, *, task: str = "", file: str = "",
            inline=esc, chips=None, plabel=None, pnode=None, more=None, sub=None, endpoint: str = "",
-           extras: bool = False) -> str:
+           extras: bool = False, fold: bool = True) -> str:
     """The map. `parts` [(C<n>, its name)] (a part is drawn when there is more than one), `asks` {paragraph: the
     question it hands on}, `paras` [(paragraph, its job, [(point, role, words, note)])]. `inline(words)` shows a
     point's words; `chips(point, words, note)` what follows them (a draft's evidence cards; a mind map's file chips);
     `plabel(paragraph)` the small grey label over a paragraph's name; `pnode(paragraph)` what follows that name;
-    `more(id, note)` a mind map's (▸, detail); `sub(point)` the lines under a point. Without them, §1 exactly."""
+    `more(id, note)` a mind map's (▸, detail); `sub(point)` the lines under a point; `fold=False` leaves everything open. Without them, §1 exactly."""
     chips = chips or (lambda s, words, note: "")
     plabel = plabel or (lambda pid: pid)
 
@@ -40,17 +40,18 @@ def render(name: str, arc: str, parts: list, asks: dict, paras: list, *, task: s
         for s, role, words, note in bullets:
             btn, detail = more(s, note) if more else ("", "")
             tip = (" title=" + chr(34) + esc(note) + chr(34)) if note and not more else ""
+            kids = sub(s) if sub else ""
             leaves.append(f'<li data-s="{esc(s)}"{tip}>'
                           f'<span class=pm-s draggable=true>{esc(s) if not more else esc(plabel(s))}</span>'
                           f'{editable("role", role, esc(role), "span class=pm-role")}'
                           f'<span class=pm-w>{editable("words", words, inline(words), "span class=pm-t")}'
-                          f'{chips(s, words, note)}{btn}</span>{detail}{sub(s) if sub else ""}</li>')
+                          f'{chips(s, words, note)}{btn}{SUBFOLD if fold and kids else ""}</span>{detail}{kids}</li>')
         # a point or a paragraph added where it goes (JL 261020: "How could I add the P here or add the S here?")
         leaves.append('<li class=pm-add><button type=button class=pm-plus data-add=point>＋ point</button></li>')
         ask = (f'<div class=pm-q>{editable("ask", asks.get(pid, ""), esc(asks.get(pid, "")), "span", pid)}</div>'
                if i < len(paras) - 1 else "")
         return (f'<div class=pm-para data-p="{esc(pid)}"><div class="pm-node pm-pnode"><span class=pm-id>{esc(plabel(pid))}'
-                f'</span>{editable("para", job, esc(job), "b")}{pnode(pid) if pnode else ""}</div><ul class=pm-leaves>'
+                f'</span>{editable("para", job, esc(job), "b")}{pnode(pid) if pnode else ""}{FOLDBTN if fold and bullets else ""}</div><ul class=pm-leaves>'
                 f'{"".join(leaves)}</ul></div>{ask}'
                 f'<div class=pm-addp><button type=button class=pm-plus data-add=para data-after="{esc(pid)}">＋ paragraph'
                 '</button></div>')
@@ -68,8 +69,10 @@ def render(name: str, arc: str, parts: list, asks: dict, paras: list, *, task: s
                             f'<b>{esc(cname)}</b></div><div>{"".join(para_html(i, *p) for i, p in mine)}</div></div>')
     # editable in place where it is read (JL 261020: "how could I operate and edit it?"): its endpoint writes it
     point = f' data-endpoint="{esc(endpoint)}"' if endpoint else ""
-    return (CSS + (EXTRA_CSS if extras else "") + f'<div class=pm-edit data-task="{esc(task)}" data-file="{esc(file)}"{point}>'
-            '<span class=pm-msg role=status></span><div class=pm><svg class=pm-wires aria-hidden=true></svg>'
+    bar = ('<div class=pm-foldbar><button type=button data-foldall=1>Open all</button>'
+           '<button type=button data-foldall=0>Close all</button></div>') if fold else ""
+    return (CSS + (EXTRA_CSS if extras else "") + (FOLD if fold else "") + f'<div class=pm-edit data-task="{esc(task)}" data-file="{esc(file)}"{point}>'
+            f'<span class=pm-msg role=status></span>{bar}<div class="pm{" pm-folds" if fold else ""}"><svg class=pm-wires aria-hidden=true></svg>'
             f'<div class="pm-node pm-root"><b>{esc(name)}</b>' + (editable("arc", arc, esc(arc), "p") if arc else "")
             + f'</div><div>{"".join(body)}</div></div></div>' + JS + (EXTRA_JS if extras else ""))
 
@@ -130,7 +133,7 @@ JS = """<script>
   m.querySelectorAll('.pm-part').forEach(function(pt){d+=wire(root,pt.querySelector('.pm-cnode'),o);});
   m.querySelectorAll('.pm-para').forEach(function(pa){var p=pa.querySelector('.pm-pnode'),pt=pa.closest('.pm-part');
    d+=wire(pt?pt.querySelector('.pm-cnode'):root,p,o);
-   pa.querySelectorAll('.pm-leaves>li:not(.pm-add)').forEach(function(l){d+=wire(p,l,o,true);});});
+   pa.querySelectorAll('.pm-leaves>li:not(.pm-add)').forEach(function(l){if(l.offsetParent)d+=wire(p,l,o,true);});});
   svg.innerHTML=d;});}
  window.addEventListener('resize',draw);window.addEventListener('load',draw);setTimeout(draw,60);
  document.addEventListener('toggle',function(){setTimeout(draw,0);},true);
@@ -265,5 +268,44 @@ EXTRA_JS = """<script>
    body:JSON.stringify({what:'note',s:li.dataset.s,was:t.dataset.raw,value:v,task:h.dataset.task,file:h.dataset.file})})
    .then(function(r){return r.json();}).then(function(j){if(!j.ok)throw new Error(j.err);again();})
    .catch(function(err){t.style.outline='1.5px dashed #e03131';t.title='not saved: '+err.message;});});
+})();
+</script>"""
+
+
+# Everything that folds starts closed, on every map (JL 261104: "默认的话，大家都是合着的"; "the collapse and open it"): closed by
+# the stylesheet, so a tall map never flashes open. What a person opens stays open through an edit of the map, not across
+# a page load, so every visit starts closed.
+FOLDBTN = '<button type=button class=pm-foldbtn aria-label="open or close"></button>'
+SUBFOLD = '<button type=button class=pm-subfold aria-label="open or close"></button>'
+FOLD = """<style>
+.pm-folds .pm-para:not(.pm-on)>.pm-leaves{display:none}.pm-folds li:not(.pm-on)>.pm-sub{display:none}
+.pm-foldbtn{position:absolute;right:5px;top:5px;border:0;background:none;padding:2px 4px;font:11px/1 system-ui,sans-serif;color:var(--mut);cursor:pointer}
+.pm-foldbtn::before{content:"▸"}.pm-on>.pm-pnode>.pm-foldbtn::before{content:"▾"}
+.pm-subfold{border:0;background:none;padding:0 2px 0 6px;font:11px/1 system-ui,sans-serif;color:var(--mut);cursor:pointer}
+.pm-subfold::before{content:"▸"}li.pm-on>.pm-w>.pm-subfold::before{content:"▾"}
+.pm-folds .pm-pnode:has(>.pm-foldbtn){cursor:pointer}.pm-folds .pm-pnode:has(>.pm-foldbtn):hover{border-color:var(--acc)}
+.pm-foldbar{display:flex;gap:6px;margin:0 0 6px}.pm-foldbar button{border:1px solid var(--line);border-radius:6px;background:none;padding:2px 10px;font:12.5px system-ui,sans-serif;color:inherit;cursor:pointer}
+</style><script>
+(function(){if(window.__pmFold)return;window.__pmFold=1;var kept={};
+ function key(m){var b=m.querySelector('.pm-root b');return b?b.textContent:'';}
+ function ids(m){return m.querySelectorAll('.pm-para[data-p],li[data-s]');}
+ function id(n){return n.dataset.p||n.dataset.s;}
+ function keep(m){var o={};ids(m).forEach(function(n){if(n.classList.contains('pm-on'))o[id(n)]=1;});kept[key(m)]=o;}
+ function redraw(){if(window.pmDraw)window.pmDraw();}
+ function restore(){document.querySelectorAll('.pm-folds').forEach(function(m){if(m.dataset.kept)return;m.dataset.kept=1;var o=kept[key(m)];if(!o)return;
+  ids(m).forEach(function(n){if(o[id(n)])n.classList.add('pm-on');});redraw();});}
+ document.addEventListener('click',function(e){if(!e.target.closest)return;
+  var all=e.target.closest('[data-foldall]');
+  if(all){var w=all.closest('.pm-edit').querySelector('.pm-folds');ids(w).forEach(function(n){n.classList.toggle('pm-on',all.dataset.foldall==='1');});keep(w);redraw();return;}
+  var m=e.target.closest('.pm-folds');if(!m)return;
+  var btn=e.target.closest('.pm-foldbtn,.pm-subfold'),hit=null;
+  if(btn)hit=btn.closest('.pm-para,li');
+  else if(!e.target.isContentEditable&&!e.target.closest('a,button,.pm-detail')){
+   var c=e.target.closest('.pm-pnode');
+   if(c&&c.querySelector(':scope>.pm-foldbtn'))hit=c.parentNode;
+   else{var l=e.target.closest('.pm-leaves li');if(l&&l.querySelector(':scope>.pm-w>.pm-subfold'))hit=l;}}
+  if(!hit)return;e.preventDefault();hit.classList.toggle('pm-on');keep(m);redraw();});
+ document.addEventListener('DOMContentLoaded',restore);setTimeout(restore,40);
+ new MutationObserver(restore).observe(document.documentElement,{childList:true,subtree:true});
 })();
 </script>"""

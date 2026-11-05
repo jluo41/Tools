@@ -194,7 +194,7 @@ class OutlineReviewPacketTest(unittest.TestCase):
             self.assertNotIn('<b>Target</b>', rendered)
             self.assertIn("ev.target.closest('a[data-outline-focus]')", rendered)
             self.assertIn("function focusRecord(id)", rendered)
-            self.assertIn("/^C\\d+\\.P\\d+\\.B\\d+$/.test(id)", rendered)
+            self.assertIn("/^C\\d+\\.P\\d+\\.B\\d+[a-z]*$/.test(id)", rendered)
             self.assertIn('id="bullet-C1-P1-B1" class=point-group data-point="C1.P1.B1"', rendered)
             self.assertIn(
                 'href="/_board/draft?path=/Board/board.md&amp;file=MAIN/SM00-abstract/'

@@ -10,8 +10,11 @@ card is a bag of "Sources still needed" (JL 261020: "cite 1's name is very weird
 the topic").
 
     from cards import load, resolve, title_of, paper, facts, work_value, order, check, proposals, LABEL, COLOR
+    from cards import catalog, item_status, find_value, bind_proposals, adopt_bindings, lineage, tokens, same, agrees
     python cards.py check   <task>/evidence/cards.yaml [--sentences <file.json>]
     python cards.py propose <task>/evidence/cards.yaml [--page <name>] [--write]
+    python cards.py propose <task>/evidence/cards.yaml --catalog <run>/result/values.yaml --source <task address>
+                            --sentences <file.json> [--write] [--adopt]     bind a catalog's values (0.9.0)
     python cards.py bib     <task>/evidence/cards.yaml --draft <draft.md> [--write]
 
 The cards live in the Task's own evidence/ folder, beside draft/ and display/ (JL 261016): evidence/cards.yaml holds
@@ -27,6 +30,14 @@ Task, a new Task in a Job, a new Job in a Block, or a Studio topic), where, and 
 "proposed by evidence". It writes proposals.md beside cards.yaml with --write and keeps every tick already
 there; nothing is made until a person ticks it, and the owner of that level makes it (haipipe-discovery,
 haipipe-task, haipipe-job, haipipe-studio).
+
+VALUE bindings (0.9.0, JL 261103): an item may name a value of a catalog (a Run's result/values.yaml) by its id,
+`value: RQ1-t01-002`, with `anchor:` words (a display's item: `display:` and `printed:`). `item_status` gives a bound
+item its status, match, differs, missing, no anchor, owed or pending, at the printed precision with exact half-up
+rounding; `check` reports a differs as a problem. `propose --catalog` finds each catalog value in the page's sentences
+and adds a "bind VALUE <id> to S<n>" line to proposals.md; a person ticks it once and `--adopt` writes it as an item,
+fixed from then on. `lineage` reads a value's checks: the work Run's values.csv `source` column through its Block's
+src/inputs.yaml (`runs:` address, path, label; `typed:` stand-ins are screen reads).
 """
 import json
 import re
@@ -218,7 +229,9 @@ def check(cards, project, sentences=None, near=None):
             problems.append(f'{label}: {e}')
             continue
         for it in card['items']:
-            where = f"{label} · S{','.join(map(str, it['for']))}"
+            where = f"{label} · " + (it['display'] if it.get('display') else
+                                     ','.join(f'S{n}' if re.fullmatch(r'\d+[a-z]*', str(n)) else str(n) for n in it.get('for') or []) or 'S')
+            row = None
             try:
                 if it.get('run'):
                     res = resolve(project, card['kind'], f"{src}.{it['run']}", near)
@@ -226,16 +239,246 @@ def check(cards, project, sentences=None, near=None):
                         paper(res)
                         if it.get('fact'):
                             facts(res, it['fact'])
+                    elif is_value_id(it.get('value')):
+                        row = catalog_value(res, it['value'])
                     elif it.get('key'):
-                        work_value(res, it['file'], it['key'])
+                        row = {'value': work_value(res, it['file'], it['key'])}
                 elif not it.get('need') and not it.get('value'):
                     problems.append(f'{where}: an item needs `run`, `value` or `need`.')
             except (ValueError, KeyError, IndexError, FileNotFoundError, StopIteration) as e:
                 problems.append(f'{where}: {e}')
-            for phrase in it.get('anchor', []) if sentences else []:
-                if not any(phrase in sentences.get(str(n), '') for n in it['for']):
+            if not sentences or it.get('display'):
+                continue
+            text = ' '.join(sentences.get(str(n), '') for n in it.get('for') or [])
+            for phrase in it.get('anchor', []):
+                if phrase not in text:
                     problems.append(f'{where}: anchor "{phrase}" is not in its sentences.')
+            if row is not None and card['kind'] == 'value':
+                for printed, st, _ in item_status(it, row, text):
+                    if st == 'differs':
+                        problems.append(f'{where}: "{printed}" differs from its value {row.get("shown", row["value"])}.')
     return problems
+
+
+# ── VALUE bindings (0.9.0, JL 261103): an item bound to a value of a catalog, its status, its lineage ──────────────
+# A catalog is a Run's result/values.yaml, `values: {<key>: {id, value, shown, what, scale?, p?, checks, ...}}` (the
+# paper's j02_evidence_value writes one per value Task; any work Run may). An item names a value by its id,
+# `value: RQ1-t01-002` (a `value:` that is not an id stays what it was, a value stated in words), or by `file` + `key`.
+ID = re.compile(r'^[A-Za-z][A-Za-z0-9]*-t\d+-\d{3}$')
+STATUSES = ('match', 'differs', 'missing', 'no anchor', 'owed', 'pending')
+
+
+def is_value_id(v):
+    return isinstance(v, str) and bool(ID.match(v.strip()))
+
+
+def catalog(path):
+    """{id: row} of a catalog file (a Run's result/values.yaml); each row keeps its key as `key`."""
+    data = yaml.safe_load(Path(path).read_text(encoding='utf-8')) or {}
+    return {r['id']: dict(r, key=k) for k, r in (data.get('values') or {}).items() if isinstance(r, dict) and r.get('id')}
+
+
+def catalog_value(result, value_id):
+    rows = catalog(Path(result) / 'values.yaml')
+    if value_id not in rows:
+        raise ValueError(f'{Path(result).parent.name}: no value {value_id} in values.yaml.')
+    return rows[value_id]
+
+
+CITES = re.compile(r'\\(?:cite[pt]?\*?|ref|eqref|label)(?:\[[^\]]*\])*\{[^}]*\}')
+TOKEN = re.compile(r'(?<![\w.])(?:[<>]\s*)?[−–-]?(?:\d[\d,]*(?:\.\d+)?|\.\d+)')
+NUMBER = re.compile(r'-?(?:\d[\d,]*(?:\.\d+)?|\.\d+)')
+
+
+def tokens(sentence):
+    """(printed, number, decimals, the 8 characters before it, the verbatim words) per number of a sentence; a range
+    6.1-16.0 gives two; citation keys are not read."""
+    s = CITES.sub(lambda m: ' ' * len(m.group(0)), sentence).replace('−', '-').replace('–', '-')
+    out = []
+    for m in TOKEN.finditer(s):
+        raw = m.group(0)
+        lt = raw.lstrip().startswith(('<', '>'))
+        body = raw.lstrip('<> ')
+        start = m.end() - len(body)
+        if body.startswith('-') and start > 0 and s[start - 1].isdigit():
+            body, start = body[1:], start + 1                 # the hyphen of a range, not a minus
+        try:
+            x = float(body.replace(',', ''))
+        except ValueError:
+            continue
+        dec = len(body.split('.')[1]) if '.' in body else 0
+        verbatim = sentence[m.start():m.end()].strip() if lt else sentence[start:m.end()]
+        out.append((('<' if lt else '') + body, x, dec, s[max(0, m.start() - 8):m.start()], verbatim))
+    return out
+
+
+def same(x, dec, v, scale=1):
+    """The value v (or v x scale), rounded half up to the printed decimals, is the printed number x."""
+    from decimal import ROUND_HALF_UP, Decimal
+    for w in {v, v * scale}:
+        if dec >= 6 and abs(x - w) <= 1e-6 * max(1.0, abs(w)):
+            return True
+        if dec < 6 and float(Decimal(repr(float(w))).quantize(Decimal(1).scaleb(-dec), rounding=ROUND_HALF_UP)) == x:
+            return True
+    return False
+
+
+def agrees(printed, value, scale=1):
+    """The printed words against the value: `< .001` is a bound; the first number is compared at its printed precision
+    (exact half-up rounding); None when the words hold no number."""
+    words = str(printed).replace('−', '-').replace('–', '-')
+    bound = re.search(r'<\s*(\d*\.?\d+)', words)
+    if bound and isinstance(value, (int, float)):
+        return value < float(bound[1])
+    m = NUMBER.search(words)
+    if not m or not isinstance(value, (int, float)) or isinstance(value, bool):
+        return None
+    token = m[0].replace(',', '')
+    return same(float(token), len(token.split('.')[1]) if '.' in token else 0, value, scale)
+
+
+def item_status(it, row, text, scale=None):
+    """[(printed, status, note)] for a VALUE item against its value row and the text it is bound to: owed (a need),
+    no anchor (no words to check), missing (the words left the text), match or differs (the number at its printed
+    precision), pending (the row says it waits for a Run; the note says what it would be)."""
+    if it.get('need'):
+        return [(' / '.join(it.get('anchor') or []), 'owed', it['need'])]
+    scale = scale if scale is not None else (row or {}).get('scale', 1)
+    out = []
+    for printed in (it.get('printed') if it.get('display') else it.get('anchor')) or [None]:
+        if printed is None:
+            st = 'no anchor'
+        elif printed not in text:
+            st = 'missing'
+        else:
+            ok = agrees(printed, row.get('value'), scale)
+            st = 'match' if ok else ('differs' if ok is False else 'no anchor')
+        note = ''
+        if row.get('pending') and st in ('match', 'differs'):
+            st, note = 'pending', f"{row['pending']} (as printed it would be: {st})"
+        out.append((printed or '', st, note))
+    return out
+
+
+def find_value(row, sentences, loose=False):
+    """[(sentence id, verbatim words)] where a catalog value is printed. Guards: a P value (`p: true`) only after "P ="
+    or "P <"; a whole number under 10 never; fewer than two significant digits and fewer than two decimals only when
+    `loose`; one hit per sentence."""
+    v, scale, is_p = row.get('value'), row.get('scale', 1), bool(row.get('p'))
+    if not isinstance(v, (int, float)) or isinstance(v, bool):
+        return []
+    out = []
+    for sid, text in sentences.items():
+        for printed, x, dec, before, verb in tokens(text):
+            if is_p != bool(re.search(r'\b[Pp]\s*[=<>]?\s*$', before.rstrip())):
+                continue
+            if not is_p and dec == 0 and abs(x) < 10:
+                continue
+            sig = len(printed.lstrip('<-0.').replace(',', '').replace('.', ''))
+            if not is_p and not loose and sig < 2 and dec < 2:
+                continue
+            if (is_p and v < float(printed[1:])) if printed.startswith('<') else same(x, dec, v, scale):
+                out.append((sid, verb))
+                break
+    return out
+
+
+def bind_proposals(rows, sentences, page, source, run, cards, found=None):
+    """The proposed bindings of a page, on the "Proposing what to make" path: [(id, line, (source, item))], one per
+    catalog value printed in a sentence that no item binds yet. `found` may give the hits ({id: [(sid, words)]}, a
+    caller's own finder); else find_value. A person ticks the line; adopt_bindings writes the ticked ones as items."""
+    bound = {(str(it.get('value')), str(n)) for c in cards for it in c.get('items') or [] for n in it.get('for') or []}
+    bound |= {(str(it.get('value')), str(it['display'])) for c in cards for it in c.get('items') or [] if it.get('display')}
+    out = []
+    for vid, row in rows.items():
+        for sid, words in (found or {}).get(vid, None) or (find_value(row, sentences) if found is None else []):
+            if (vid, str(sid)) in bound:
+                continue
+            disp = sid if str(sid).startswith('display:') else None
+            item = ({'run': run, 'for': [], 'display': disp[8:], 'value': vid, 'printed': [words]} if disp else
+                    {'run': run, 'for': [sid], 'value': vid, 'anchor': [words]})
+            where = disp[8:] if disp else f'S{sid}' if re.fullmatch(r'\d+[a-z]*', str(sid)) else str(sid)
+            pid = f"bind-{vid}-{re.sub(r'[^A-Za-z0-9]+', '-', where).strip('-')}"
+            line = (f"bind VALUE {vid} ({row.get('shown', row.get('value'))}) to {page} {where} \"{words}\" · proposed by "
+                    f"evidence (value search) · for: {row.get('what', row.get('key', ''))} · from {source}.{run}")
+            out.append((pid, line, (source, item)))
+    return out
+
+
+def ticked(path):
+    path = Path(path)
+    return set(re.findall(r'^- \[x\] .*?<!-- (.+?) -->$', path.read_text(encoding='utf-8'), re.M)) if path.is_file() else set()
+
+
+def adopt_bindings(cards_path, proposals, only=None):
+    """Write the ticked binding proposals (or the ids in `only`) into cards.yaml as VALUE items of the card of their
+    source; returns how many. A binding once written is fixed: no search rewrites it."""
+    cards_path = Path(cards_path)
+    take = ticked(cards_path.parent / 'proposals.md') if only is None else set(only)
+    chosen = [(src, it) for pid, _, (src, it) in proposals if pid in take]
+    if not chosen:
+        return 0
+    text = cards_path.read_text(encoding='utf-8') if cards_path.is_file() else 'evidence: []\n'
+    head = ''.join(ln + '\n' for ln in text.splitlines() if ln.startswith('#')) if text.startswith('#') else ''
+    doc = yaml.safe_load(text) or {'evidence': []}
+    ev = doc.setdefault('evidence', []) or []
+    doc['evidence'] = ev
+    for src, it in chosen:
+        card = next((c for c in ev if c.get('kind') == 'value' and c.get('source') == src), None)
+        if card is None:
+            card = {'kind': 'value', 'source': src, 'items': []}
+            ev.append(card)
+        card['items'].append(it)
+    cards_path.parent.mkdir(parents=True, exist_ok=True)
+    cards_path.write_text(head + yaml.safe_dump(doc, sort_keys=False, allow_unicode=True, width=120), encoding='utf-8')
+    return len(chosen)
+
+
+def lineage(run_dir, file, where=None, project=None):
+    """The Runs behind a value a work Run returned: the `source` cell of its row in `file` (a .csv; `where` picks the
+    row by {column: value}), read through the work Block's `src/inputs.yaml`: a key of its `runs:` (address, path from
+    work/, label), `typed:"<file>"` (a typed stand-in, a screen read, labelled by `typed:`), or a bNN.jNN.tNN.rNN
+    address. Returns (checks, has_source): each check {address, folder, name[, typed: True]}; has_source is None when
+    the file is not a .csv, False when its row has no `source`."""
+    import csv
+    run_dir = Path(run_dir)
+    path = run_dir / 'result' / file
+    if path.suffix != '.csv' or not path.is_file():
+        return [], None
+    with path.open(newline='', encoding='utf-8') as f:
+        rows = [r for r in csv.DictReader(f)
+                if all(str(r.get(c, '')).strip() in [str(x) for x in (w if isinstance(w, list) else [w])] for c, w in (where or {}).items())]
+    if not rows or 'source' not in rows[0]:
+        return [], False
+    src = ' ; '.join(str(r.get('source') or '') for r in rows)
+    block = next((p for p in run_dir.parents if re.match(r'b\d+_', p.name)), None)
+    inputs = block / 'src' / 'inputs.yaml' if block else None
+    keys = (yaml.safe_load(inputs.read_text(encoding='utf-8')) or {}) if inputs and inputs.is_file() else {}
+    project = Path(project) if project else project_root(run_dir)
+    out, seen = [], set()
+    for token in re.split(r'[;,]\s*|\s+', src):
+        name = token.split(':')[0].strip('"()')
+        hit = None
+        if name in (keys.get('runs') or {}):
+            info = keys['runs'][name]
+            hit = {'address': info.get('address', name), 'folder': project / 'work' / info['path'] if info.get('path') else None,
+                   'name': info.get('label', info.get('says', name))}
+        elif name == 'typed' and ':' in token and block is not None:
+            rel = token.split(':', 1)[1].strip('"')
+            lab = next((v.get('label') for v in (keys.get('typed') or {}).values() if v.get('path') == rel), None)
+            hit = {'address': 'typed ' + Path(rel).name, 'folder': block / rel, 'name': lab or 'typed stand-in ' + Path(rel).name,
+                   'typed': True}
+        else:
+            m = re.search(r'\bb(\d+)\.j(\d+)\.t(\d+)\.r(\d+)\b', token)
+            if m:
+                b, j, t, r = m.groups()
+                found = sorted(project.glob(f'work/b{b}_*/j{j}_*/t{t}_*/runs/r{r}_*'))
+                hit = {'address': m.group(0), 'folder': found[0] if len(found) == 1 else None,
+                       'name': title_of(found[0].parent.parent) if len(found) == 1 else 'not found in work/'}
+        if hit and hit['address'] not in seen:
+            seen.add(hit['address'])
+            out.append(hit)
+    return out, bool(src.strip(' ;'))
 
 
 LEVELS = ('run', 'task', 'job', 'topic')
@@ -333,6 +576,10 @@ def main():
     ap.add_argument('--write', action='store_true',
                     help='propose: write proposals.md beside cards.yaml; bib: write <task>/draft/evidence/bibex/<task>.bib')
     ap.add_argument('--draft', help='bib: the draft whose `## 3 · Draft` cites the keys')
+    ap.add_argument('--catalog', help='propose: a Run\'s result/values.yaml whose values to bind to the --sentences')
+    ap.add_argument('--source', help='propose --catalog: the catalog Run\'s Task address (bNN.jNN.tNN, or a paper Board\'s jNN.tNN)')
+    ap.add_argument('--run', default='r01', help='propose --catalog: the catalog Run, rNN (default r01)')
+    ap.add_argument('--adopt', action='store_true', help='propose --catalog: write the ticked bindings into cards.yaml')
     a = ap.parse_args()
     src = Path(a.cards).resolve()
     cards = load(src, a.key)
@@ -349,6 +596,17 @@ def main():
         sys.exit(1 if missing else 0)
     if a.cmd == 'propose':
         items = proposals(cards, a.page or home.name)
+        binds = []
+        if a.catalog:
+            if not (a.source and sentences):
+                ap.error('propose --catalog needs --source and --sentences')
+            binds = bind_proposals(catalog(a.catalog), sentences, a.page or home.name, a.source, a.run, cards)
+            if a.adopt:
+                n = adopt_bindings(src, binds)
+                print(f'adopted {n} ticked bindings into {src.name}')
+                cards = load(src, a.key)
+                binds = bind_proposals(catalog(a.catalog), sentences, a.page or home.name, a.source, a.run, cards)
+        items += [(pid, line) for pid, line, _ in binds]
         for pid, line in items:
             print('- [ ]', line)
         if a.write:

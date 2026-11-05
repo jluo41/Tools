@@ -1,6 +1,12 @@
 haipipe-block · Changelog
 =========================
 
+**[2.2.2] · 2026-11-04 · `bands:` is a face field**
+
+`ref/board-contract.md` names the optional `bands:` line: it names each group of Jobs by first digit, with its own emoji
+if written, and a Block's Status draws one section per group (JL 261104; the look is `haipipe-ui`'s). Without it, a group
+shows as `j1N` and takes its first Job's emoji.
+
 **[2.2.0] · 2026-10-21 · A new Block is born current**
 
 `scripts/new_board.py` writes the empty `## Questions` register by default (`--no-questions` leaves it out), and a

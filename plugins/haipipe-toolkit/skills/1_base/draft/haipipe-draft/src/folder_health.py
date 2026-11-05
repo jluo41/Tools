@@ -22,7 +22,7 @@ from .plan_shape import iter_plan_bullets
 FAIL, WARN, INFO, OK = "FAIL", "WARN", "INFO", "OK"
 ICON = {FAIL: "❌", WARN: "⚠️", INFO: "ℹ️", OK: "✅"}
 HEAD_SCAN = 3000  # fallback only: `arc:` belongs in the header block, before the first `## `
-REALIZES = re.compile(r"^(.*?)\s*<!-- realizes: (C\d+\.P\d+\.B\d+) -->", re.M)
+REALIZES = re.compile(r"^(.*?)\s*<!-- realizes: (C\d+\.P\d+\.B\d+[a-z]*) -->", re.M)
 EVIDENCE_ID = re.compile(r"^\s*Evidence:\s*(E\d+-[A-Z]+-[A-Za-z0-9-]+)", re.M)
 RESULT_PATH = re.compile(r"^\s*(?:Answered|Drawn):.*?·\s*Result\s+(\S+)", re.M)
 VERSIONED = re.compile(r"-(?:outline|draft)-v\d")
@@ -269,6 +269,29 @@ def check_threads(folder: Path, stem: str, out: list):
             out.append(Finding(INFO, "threads", f"{len(ids)} open thread(s): {', '.join(ids)}"))
 
 
+def examples_state(folder: Path, head: str) -> tuple[bool, str]:
+    """Is this Section's 📚 Examples ready? (JL 261104: "This is a must to do when you call the task for the
+    /haipipe-paper-draft".) Ready: its face says `examples: none · <reason>`, or a Board topic that names this Task holds
+    3 or more `reads/*/reading.yaml`, and the face's `examples:` names it."""
+    m = re.search(r"(?m)^examples:[ \t]*(.*)$", head)
+    said = m.group(1).strip() if m else ""
+    if re.match(r"none\s*·\s*\S", said):
+        return True, ""
+    board = next((p for p in folder.parents if (p / "board.md").is_file()), None)
+    if board is None:
+        return False, "no Board above it, so no examples topic"
+    path = folder.relative_to(board).as_posix()
+    best = 0
+    for t in board.glob("s[0-9]*"):
+        faces = sorted(t.glob("s[0-9]*.md"))
+        text = "\n".join(f.read_text(encoding="utf-8", errors="ignore") for f in faces if ".mindmap." not in f.name and ".ideas." not in f.name)
+        if path in text:
+            best = max(best, len(list(t.glob("reads/*/reading.yaml"))))
+    if best < 3:
+        return False, f"{best} published papers read for {path}; 3 to 4 are required before it is written"
+    return (True, "") if said else (False, "its face has no `examples:` line naming the topic")
+
+
 def check_steps(folder: Path, page: Path, plan: Path | None, out: list):
     """A draft Task's seven steps, each by the file it leaves (ref/page-checklist.md § 6; JL 261102: "what is the
     checklist for the /haipipe-draft and /haipipe-paper-draft, why dont you make them to be complete?"). One WARN per
@@ -283,7 +306,11 @@ def check_steps(folder: Path, page: Path, plan: Path | None, out: list):
     approved = bool(re.search(r"(?m)^approved:\s*✅", plan_text))
     has_items = (d / f"{stem}-evidence-items.md").is_file() or (folder / "evidence" / "cards.yaml").is_file()
     built = [lane for lane in ("web", "latex", "word") if delivery_read_lane_dir(folder, lane).is_dir()]
-    steps = [
+    steps = []
+    if re.search(r"(?m)^page-type:\s*section\b", head):   # a paper Section, Abstract or letter: examples before words
+        ready, why = examples_state(folder, head)
+        steps.append(("0 · Examples", ready, f"📚 Examples not ready: {why} (haipipe-paper-draft § Examples first)"))
+    steps += [
         ("1 · Plan", rec("context"), f"no draft/records/{stem}-context.md (cli/context-record.py {page.name})"),
         ("1 · Plan", rec("requirement"), f"no draft/records/{stem}-requirement.md (its W rules)"),
         ("1 · Plan", bool(plan_text), "no draft/<stem>-draft-v<N>.md"),
@@ -318,7 +345,8 @@ def check_printed(folder: Path, page: Path, blocks: list, out: list):
         return
     norm = lambda t: re.sub(r"\s+", " ", re.sub(r"<!--.*?-->|\\[a-zA-Z]+\*?|[{}$~\\]", " ", t)).translate(
         str.maketrans({"’": "'", "‘": "'", "“": '"', "”": '"', "-": None, "–": None, "—": None})).strip()
-    printed = norm(text)
+    # A sentence that crosses a page must still match: drop the page number and the running head between its halves.
+    printed = norm(re.sub(r"(?m)^\s*(\d{1,4}|DRAFT)\s*$", " ", text.replace("\f", "\n")))
     drafts = [(b["address"], norm(b["draft"])) for b in blocks if b.get("draft")]
     gone = [a for a, d in drafts if d and len(d) > 12 and d[:40] not in printed]
     if gone:

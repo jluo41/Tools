@@ -17,4 +17,11 @@ key_points_heading = "KEY POINTS"
 abstract_heading = "ABSTRACT"
 references_heading = "REFERENCES"
 supplement_title = "ONLINE-ONLY SUPPLEMENTAL MATERIAL"
+# JAMA numbers supplement floats eTable 1, eFigure 1, as the LaTeX lane does
+supplement_table_prefix = "eTable "
+supplement_figure_prefix = "eFigure "
+# JAMA: the first page lists every element and its title. The key was read and never set, so page 1 held only the title.
+supplement_contents = true
+# headings print as the source writes them ("eAppendix 1. Inherited exposure"), never in capitals
+supplement_heading_upper = false
 include_main_displays = false

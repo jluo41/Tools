@@ -1,0 +1,10 @@
+evidence:
+- kind: value
+  source: j02.t01
+  items:
+  - run: r01
+    for:
+    - C1.P1.B1
+    value: RQ1-t01-001
+    anchor:
+    - 12,480

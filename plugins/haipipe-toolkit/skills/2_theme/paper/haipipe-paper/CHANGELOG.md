@@ -1,3 +1,75 @@
+## 1.29.1 · 2026-11-04 · V3 is not ✅ while values are owed
+
+- Reported by Paper-PersonalityPDMPMandate: "✅ 7 of 7 Tasks; 233 owed" read as done. `paper_check` V3 and V4 show ⏳ when the note counts values owed, differing or missing, or keys missing.
+
+## 1.29.0 · 2026-11-04 · the portal sheet is one page, in the side tabs
+
+- JL 261104: "I want the award level UI". `portal_fill.py` `page` now fills
+  `ref/portal-sheet.html`: a sticky header with what is left and filters, the steps on the left, what to settle first, one row per
+  field with a tick and Copy. It opens as the side tab "The submission portal" beside the paper's PDFs, its own Writing row gone (`board_results.py`).
+- A failed copy says so and never ticks. An author's fields carry their names, and "MD 21202" is two fields.
+
+## 1.28.1 · 2026-11-04 · a word count from a --pdf-only build says so
+
+- Paper-PhyAbsence 261104: 774 stayed on the portal fill page while the Discussion grew. `portal_fill.py` `checked`: the field's note says the count is from the last full build.
+
+## 1.28.0 · 2026-11-04 · V6 counts every drawn display
+
+- JL 261104: "把这个加 message 也写到对应的 skill 里好吧 当做一个 checklist". V6 only looked at displays a Section already frames, so it said
+  "no printed display yet" for a paper with eight messages. It now counts each drawn display in the display Job, through
+  haipipe-paper-evidence's caption_check.py.
+
+## 1.27.0 · 2026-11-04 · W6: examples read first
+
+- JL 261104: "This is a must to do when you call the task for the /haipipe-paper-draft"; "update the checklist and must to do before saying such a task session is finished". New checklist row W6, ticked by `paper_check.py`.
+## 1.26.0 · 2026-11-04 · D6 catches a Task reading another bibliography
+
+- pp-LBP-JAMA 261104: a Task's `draft-bibliography:` can point at an old frozen copy, so corrections in its own bibex
+  never print and the export still says ✅. `paper_check.py` D6 now waits and names the Task (`other_bibs`). D10 names the
+  final read that comes before the person's reading pass. Test: `tests/test_paper_check_bib.py`.
+
+## 1.25.0 · 2026-11-03 · the submission Job is shipped
+
+- JL 261103: "you should also prepare the submission portal materials as well, like the cover letter, what content to
+  fill in the submission portal". `scripts/portal_fill.py` is the shared generator: `portal-fields.yaml` +
+  `portal-values.yaml` + the build → `delivery/<submission Job>/portal-fill.html`, the same page the two JAMA IM papers'
+  own `src/gen_portal_fill.py` wrote (byte for byte apart from the build time and the GENERATED comment). New in it: the
+  writing Job comes from the face's `for:`, the walk is the newest Run that has the file, a field with no value asks a
+  person instead of offering an empty paste, `check:` makes ❗ from what the build records, a stale packet file is ❗.
+- `paper_ladder.py submission <Board> --date MMDD` makes the Job (face, t01_cover-letter, t02_portal-walk,
+  t03_portal-fill, starter yaml, tickets), seeded from `venues/<venue>/call.md`, the writing Job's `[portal]` and the
+  build; `rollback` undoes it.
+- `checklist.md`, `paper_check.py`: D9 is The portal fill page; Read and approved moves to D10, Sent to D11. D3 also
+  finds a letter in the submission Job. Paper-Example gains a placeholder `j21_submission_v1130_desk/`, every state.
+  Tests: `tests/test_portal_fill.py`.
+
+## 1.24.0 · 2026-11-03 · V10, captions short
+
+- JL 261103: "for the Figure caption, do not add so much things, don't be too long". `paper_check.py` adds V10 after
+  V6: each drawn display's caption within the word limits (haipipe-paper-evidence `caption_check.py`).
+
+## 1.23.1 · 2026-11-03 · the final draft in the Writing view
+
+- JL 261103: "where is the cover letter?". SKILL.md gains The final draft in the Writing view: what paper-build.toml needs
+  so every document of the send shows. D3 now says what is missing when a letter Task is not built; W3 reads a Section
+  with no draft file (back matter, a letter) from its face, so it no longer undercounts.
+
+## 1.23.0 · 2026-11-03 · the display checklist, V6-V9
+
+- JL 261103: "please update the /haipipe-paper-display's checklist". `paper_check.py` adds four lines after V5, read from
+  the newest writing Job's display units: V6 each printed display has a `## Message` in its Run's method.md, V7 the
+  Board has an `sNN-paper-display-examples` drawing, V8 no display collection Run waits, V9 each printed display is
+  accepted by a person. `checklist.md` lists them. Checked on Paper-PhyAbsence-Maternity-JamaIM: V6 2 of 2, V7 ⬜,
+  V8 none waiting, V9 2 of 2.
+
+## 1.22.1 · 2026-11-03 · V3, V4 and V5 read the value and citation Runs
+
+- `paper_check.py`: V3 counts a value Task filled when its newest Run wrote `result/values.yaml` (haipipe-paper-evidence
+  0.7.0 `values_ledger.py`), noting the printed values that differ or are missing and the owed ones; V4 counts a claim
+  Task checked when its newest Run (`cite_tasks.py`) finds every key verified, noting keys with no bib entry or TOADD;
+  the paper-wide t99 Tasks are not counted. V5 is unchanged in code: `evidence_ledger.py` now also blocks a printed
+  value with no Run, from a screen read, or whose binding differs. `checklist.md` says so.
+
 ## 1.22.0 · 2026-11-02 · the portal packet, D8
 
 - JL 261102: "here we might want to say the final delivery content that are ready to submit directly in the portal".

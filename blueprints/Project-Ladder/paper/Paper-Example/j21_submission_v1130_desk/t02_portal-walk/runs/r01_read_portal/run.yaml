@@ -1,0 +1,10 @@
+run: r01_read_portal
+kind: soft
+role: read
+run_type: main
+says: 'The real portal tabs of this send, read with a person logged in; nothing typed, ticked or saved by the agent.'
+host: a person's own browser
+started_by: '<the person who starts the walk>'
+ticket: r01_read_portal.md
+writes:
+- result/portal-fields.yaml

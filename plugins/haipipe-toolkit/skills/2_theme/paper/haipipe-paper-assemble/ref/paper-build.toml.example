@@ -52,3 +52,9 @@ manifest = "build-manifest.json"
 # display_page = true        # each display on a page of its own, where the text first cites it
 # display_at_first_ref = true # each float after the paragraph that first \ref's it
 # float_page = "top"          # default; "center" keeps LaTeX's own centring of a display page
+
+# The venue's own template, when it publishes one: every build compares both lanes with it (§ The venue template checklist).
+# [venue_template]
+# word = "../../venues/<venue>/kit/<template>.docx"
+# latex = "../../venues/<venue>/kit/<template>.tex"
+# accepted = []   # rule names a person chose to keep different

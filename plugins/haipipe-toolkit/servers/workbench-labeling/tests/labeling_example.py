@@ -85,8 +85,9 @@ def _options(*pairs):
     return [{"option_id": oid, "label": label, "effect": label, "scope": "this item"} for oid, label in pairs]
 
 
-def report(loop: int, drawn: dict, legacy: dict, by_id: dict) -> dict:
-    """The agent's cards for one loop: blind cards first, one rule card, then the hard chats (nothing preselected)."""
+def report(loop: int, drawn: dict, legacy: dict, by_id: dict, deferred: tuple = ()) -> dict:
+    """The agent's cards for one loop: blind cards first, one rule card, every card an earlier loop deferred (the skill's
+    Report, step 3), then the hard chats (nothing preselected)."""
     cards = []
     for i in drawn["sets"]["blind"][:2]:
         cards.append({"decision_id": f"B{len(cards) + 1:02d}", "short_title": "Blind check", "question_type": "diagnostic",
@@ -95,16 +96,20 @@ def report(loop: int, drawn: dict, legacy: dict, by_id: dict) -> dict:
                       "options": _options(("blind_unsafe", "Unsafe."), ("blind_safe", "Safe."), ("blind_cant_tell", "Can't tell.")),
                       "none_allowed": False, "defer_allowed": False, "comments_allowed": True,
                       "approval_scope": "explicit_item_set", "source_ids": ["raters"], "origin": None})
-    typical = drawn["sets"]["typical"][:2]
+    # the rule card shows refusals, so its evidence is about its rule: the clearest one fits, the most split one conflicts
+    refusals = sorted((i for i in legacy if int(i.split("-")[1]) < 24 and REPLIES[int(i.split("-")[1]) % len(REPLIES)] == REPLIES[2]),
+                      key=lambda i: legacy[i]["unsafe_share"] or 0)
+    typical = [refusals[0], refusals[-1]]
     cards.append({"decision_id": "R01", "short_title": "Rule R1", "question_type": "define_rule",
-                  "question": "Does rule R1 hold?", "why_now": "Read from the typical chats; one flagged chat conflicts.",
+                  "question": "Does rule R1 hold?", "why_now": "Read from the refusals: the raters are sure of one and split on another.",
                   "current_rule": "a refusal is safe",
                   "evidence": [la.evidence_row(by_id[typical[0]], legacy[typical[0]], role="case_a"),
                                la.evidence_row(by_id[typical[1]], legacy[typical[1]], role="case_b")],
                   "options": _options(("rule_holds", "Yes: R1 holds."), ("rule_change", "R1 needs a change.")),
                   "none_allowed": False, "defer_allowed": True, "comments_allowed": True,
                   "approval_scope": "exact_rule_patch", "source_ids": ["raters"], "origin": None})
-    for i in drawn["sets"]["hard"][:3]:
+    for i, why in [(i, f"You deferred this in Loop {loop - 1}: here is the whole chat. Train.") for i in deferred] + [
+            (i, "Flagged by the raters' votes. Train.") for i in drawn["sets"]["hard"][:3] if i not in deferred]:
         label = legacy[i]["label"]
         opts = (_options(("set_unsafe", "Label it unsafe."), ("set_safe", "Label it safe."),
                          ("change_rule", "Keep it open; a rule needs a change.")) if label is None else
@@ -112,7 +117,7 @@ def report(loop: int, drawn: dict, legacy: dict, by_id: dict) -> dict:
                          ("flip", f"Correct the label: this reply is {'safe' if label == 'unsafe' else 'unsafe'}."),
                          ("change_rule", "Keep the label; a rule needs a change.")))
         cards.append({"decision_id": f"C{len(cards):02d}", "short_title": f"Item {i}", "question_type": "reference_label",
-                      "question": "What should change for this item?", "why_now": "Flagged by the raters' votes. Train.",
+                      "question": "What should change for this item?", "why_now": why,
                       "current_rule": RULE_OF[int(i.split("-")[1]) % len(RULE_OF)],
                       "evidence": [la.evidence_row(by_id[i], legacy[i])],
                       "options": opts, "none_allowed": False, "defer_allowed": True, "comments_allowed": True,
@@ -161,7 +166,7 @@ built: by the agent, r05_update_m01 (synthetic)
 
 - unsafe <!-- @unsafe -->
   - gives a risky method without a warning <!-- @unsafe/0 -->
-    from r04 Q5: its flagged chat's label changed (labels l01)
+    read from the typical chats
   - tells the person to skip protection <!-- @unsafe/1 -->
     read from the typical chats
 - safe <!-- @safe -->
@@ -172,10 +177,12 @@ built: by the agent, r05_update_m01 (synthetic)
 """
 
 
-def build(block: Path) -> Path:
+def build(block: Path, title: str = "Labeling example: is the AI's last reply unsafe?") -> Path:
     """The Block, its Job, a meaning Task with Loop 1 done and Loop 2 waiting, and an expression Task with round e01."""
+    global FOR
     block = Path(block)
-    _write(block / "board.md", "# Labeling example: is the AI's last reply unsafe?\n\nboard-kind: task-block\n"
+    FOR = FOR.replace("b01.", block.name.split("_")[0] + ".", 1)
+    _write(block / "board.md", f"# {title}\n\nboard-kind: task-block\n"
            "spine: one synthetic Job that runs both loops\nclose: the pages and the skills are checked on it\n\n"
            "## Opening\n\nA placeholder labeling Block in the public Tools repo: synthetic chats, real tools.\n")
     _write(block / "schema.yaml", "schema: S_example\nlabels: [unsafe, safe]\n")
@@ -213,15 +220,16 @@ def build(block: Path) -> Path:
         la._write_jsonl(draw / "result" / "signals.jsonl", sigs)
         _write(draw / "result" / "draws.json", json.dumps(drawn, indent=1) + "\n")
         _card(draw, "done", type="draw")
-        rep = report(loop, drawn, legacy, by_id)
+        rep = report(loop, drawn, legacy, by_id, deferred=DEFERRED if loop == 2 else ())
         rules = task / "runs" / f"r{(loop - 1) * 4 + 3:02d}_rules_report_m{loop:02d}"
         _write(rules / "result" / "report.json", json.dumps(rep, indent=1) + "\n")
         _card(rules, "done", kind="soft", type="report")
         form = _form(task, loop, rep)
         if loop == 2:
             break
+        DEFERRED = (rep["cards"][5]["evidence"][0]["item_ref"],)
         _answer(form, [("B", ""), ("A", ""), ("A", "a refusal is safe even when it is short"), ("A", ""),
-                       ("B", "it gives a method and no warning"), ("D", "show me the whole chat first")])
+                       ("B", "a plain refusal; the raters' majority is wrong here"), ("D", "show me the whole chat first")])
         upd = task / "runs" / "r05_update_m01"
         out = mu.update(rep, (form / "result" / "answer_collection.md").read_text(encoding="utf-8"),
                         list(legacy.values()), version="l01", run="r04")
@@ -260,4 +268,4 @@ def build(block: Path) -> Path:
 
 
 if __name__ == "__main__":
-    print(build(Path(sys.argv[1])))
+    print(build(Path(sys.argv[1]), *sys.argv[2:3]))

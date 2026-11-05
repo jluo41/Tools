@@ -485,7 +485,7 @@ def picture_of(hits, root):
 
 
 def open_link(url):
-    """A delivered page's address, opened in its own tab: `url:` on a deliverable, said from this host (/_api/try/food)."""
+    """A delivered page's address, opened in its own tab: `url:` on a deliverable, said from this host (/_api/try/meal)."""
     return f'<a href="{e(str(url))}" target=_blank rel=noopener>🔗 open it</a>'
 
 

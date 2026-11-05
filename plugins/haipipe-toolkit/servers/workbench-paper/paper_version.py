@@ -12,15 +12,42 @@ from live.focus_draft import CSS, JS, WORK, _facts, _interactions, preview, word
 from live.board_read import PAPER_CAPTIONS, _num, _task_url, display_job, is_version
 from live.board_interactions import ix_item
 from live.board_evidence import evidence_item
+from live.address_links import linked_views, page_linker
+
+
+def built_outputs(vdir: Path) -> dict | None:
+    """The build's named outputs, or None when there is none to show. The Word step alone writes `outputs` as a list when
+    no build came before it (it keeps a build's dict, `carried_over`); reading the list dropped the connection
+    (Paper-PhyAbsence 261103: "'list' object has no attribute 'get'")."""
+    import json
+    try:
+        out = json.loads((vdir / "build-manifest.json").read_text(encoding="utf-8")).get("outputs", {})
+    except Exception:
+        return None
+    return out if isinstance(out, dict) else None
+
+
+def build_running(vdir: Path) -> bool:
+    """A build of this delivery folder is running now: build_delivery.py's lock file (same name as its `lock_path`) names
+    a live process. The file keeps its words after a crash, so the process is what counts. The panel only reads it."""
+    import hashlib, os, tempfile
+    digest = hashlib.sha1(str(vdir.resolve()).encode("utf-8")).hexdigest()[:12]
+    try:
+        held = re.match(r"build pid (\d+) ", (Path(tempfile.gettempdir()) / f"haipipe-paper-build-{digest}.lock").read_text(encoding="utf-8"))
+        if held:
+            os.kill(int(held.group(1)), 0)
+        return bool(held)
+    except PermissionError:      # alive, under another user
+        return True
+    except (OSError, ValueError):
+        return False
 
 
 def paper_rows(vdir: Path, root: Path) -> str:
     """The assembled paper of one version: PDF, Word, Word supplement (each opens in the pop-out), built when, its state;
     then the earlier rounds the word lane keeps."""
-    import json
-    try:
-        out = json.loads((vdir / "build-manifest.json").read_text(encoding="utf-8")).get("outputs", {})
-    except Exception:
+    out = built_outputs(vdir)
+    if out is None:
         return ""
     sup = out.get("supplement_docx_pdf")
     pieces = [("The whole paper · PDF", out.get("pdf")), ("Word", out.get("docx")),
@@ -36,8 +63,11 @@ def paper_rows(vdir: Path, root: Path) -> str:
                     f'<span class=w>{esc(state)} · {_when(f)}</span></div>')
     older = sorted((f for f in (vdir / "word").glob("*.docx") if f.name not in shown and "supplement" not in f.name),
                    key=lambda f: f.stat().st_mtime, reverse=True) if (vdir / "word").is_dir() else []
-    rows += [f'<div class=fd-row><span class=n>Earlier round</span><span class=d>{_file_link(f, root)}</span>'
-             f'<span class=w>{_when(f)}</span></div>' for f in older]
+    earlier = "".join(f'<div class=fd-row><span class=n>Earlier round</span><span class=d>{_file_link(f, root)}</span>'
+                      f'<span class=w>{_when(f)}</span></div>' for f in older)
+    if earlier:                                  # behind one closed fold (JL 261103: "first to hide them")
+        rows.append('<details><summary style="cursor:pointer;color:var(--muted);padding:6px 0">Earlier rounds</summary>'
+                    + earlier + '</details>')
     return "".join(rows)
 
 
@@ -61,11 +91,9 @@ def section_lanes(vdir: Path, job: Path, root: Path) -> str:
 def version_delivery_views(job: Path, root: Path) -> dict:
     """A paper version's Delivery view-button-list: Paper · Word · Supplement · Files, each previewed in the page; the
     send waits here, since the paper is what is sent. {} when the Board holds no built paper for this version."""
-    import json
     vdir = job.parent / "delivery" / job.name
-    try:
-        out = json.loads((vdir / "build-manifest.json").read_text(encoding="utf-8")).get("outputs", {})
-    except Exception:
+    out = built_outputs(vdir)
+    if out is None:
         return {}
     at = lambda key: vdir / out[key] if out.get(key) else None
     table = job.parent / "delivery" / "delivery.md"
@@ -173,7 +201,7 @@ def version_work_views(version: Path, root: Path, items=(), item_html=None) -> d
                                     + _band(PROCESS, _numbered(proc))
                                     + _band(RESULTS, _numbered(_section(("🔢 " if name == "Values" else "📚 ") + name,
                                                                          "".join(evidence_item(x, root) for x in tasks)))) + JS)
-    return views
+    return linked_views(views, page_linker(version, root))   # every bNN.jNN.tNN.rNN a link (address_links, JL 261103)
 
 
 VERSION_CSS = """<style>.fd-steps{display:flex;gap:6px;flex-wrap:wrap}.fd-step{font-size:12px;border:1px solid var(--line);

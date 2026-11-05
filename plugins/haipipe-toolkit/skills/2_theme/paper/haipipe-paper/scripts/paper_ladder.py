@@ -7,6 +7,8 @@ Task, a Run, as the design theme's design_ladder.py makes its own (b16 Q05).
     python paper_ladder.py next    <board> --from <version> --date MMDD                   the next version, from an earlier one
     python paper_ladder.py spaces  <board> <version>                                      give a version reports/ runs/
     python paper_ladder.py task    <version folder> tNN_<title>                           a Section, the Abstract or a letter
+    python paper_ladder.py submission <board> --date MMDD [--for <writing Job>] [--desk <desk>] [--venue <venues folder>]
+                                                                                          a send's submission Job (portal_fill.py writes its page)
     python paper_ladder.py run     <Board or version folder> <type> <target>              a soft Run: runs/run-<type>-<target>/
     python paper_ladder.py audit   <board>                                                is the folder on the latest layout?
     python paper_ladder.py update  <board> [--date MMDD] [--apply]                        bring it there (a dry run without --apply)
@@ -249,6 +251,32 @@ def evidence(run):
         run.set("board.md", pages_add(run.text("board.md"), name, [], f"Evidence {name.split('_')[-1]}: {holds.split(':')[0]}."))
         made.append(name)
     return made
+
+
+# ── submission ────────────────────────────────────────────────────────────────────────────────────
+def submission(run, frm, mmdd, desk, venue):
+    """One send's submission Job j21_submission_v<MMDD>_<desk> (haipipe-paper § The submission Job): its face, t01_cover-letter,
+    t02_portal-walk, t03_portal-fill, starter yaml seeded from venues/<venue>/call.md, and Run tickets. Default: the
+    newest writing Job. The page is written by the shipped scripts/portal_fill.py, so the Job holds only its values."""
+    b = run.board
+    if not re.fullmatch(r"\d{4}", mmdd):
+        sys.exit("stop: --date is MMDD")
+    writing = sorted(p.name for p in b.iterdir() if p.is_dir() and VERSION.match(p.name))
+    if not writing:
+        sys.exit(f"stop: {b.name} has no writing Job to send (paper_ladder.py version)")
+    frm = frm or writing[-1]
+    if frm not in writing:
+        sys.exit(f"stop: {frm} is not a writing Job of this Board: {', '.join(writing)}")
+    desk = desk or VERSION.match(frm).group(3)
+    if not re.fullmatch(r"[a-z0-9-]+", desk):
+        sys.exit("stop: --desk is lowercase (mansci, jama-im)")
+    spec = importlib.util.spec_from_file_location("portal_fill", HERE / "portal_fill.py")
+    fill = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(fill)
+    to, files = fill.scaffold(b, frm, mmdd, desk, venue)
+    run.create.update(files)
+    run.set("board.md", pages_add(run.text("board.md"), to, [], f"Submission {to}: for {frm}."))
+    return to
 
 
 # ── next ──────────────────────────────────────────────────────────────────────────────────────────
@@ -703,6 +731,12 @@ def main(argv=None):
     r.add_argument("target")
     ev = sub.add_parser("evidence")
     ev.add_argument("board", type=Path)
+    sb = sub.add_parser("submission")
+    sb.add_argument("board", type=Path)
+    sb.add_argument("--date", required=True)
+    sb.add_argument("--for", dest="frm", default="", help="the writing Job (default: the newest)")
+    sb.add_argument("--desk", default="", help="default: the writing Job's")
+    sb.add_argument("--venue", default="", help="the venues/<venue>/ folder to seed from (default: the desk's, or the only one)")
     rb = sub.add_parser("rollback")
     rb.add_argument("board", type=Path)
     au = sub.add_parser("audit")
@@ -712,7 +746,7 @@ def main(argv=None):
     up.add_argument("--date", default="", help="MMDD, the send date, when a version is still undated")
     up.add_argument("--apply", action="store_true", help="do it (without it, a dry run)")
     up.add_argument("--rollback", action="store_true", help="undo the newest update's renames and sweeps")
-    for p in (bo, v, n, s, t, r, ev):
+    for p in (bo, v, n, s, t, r, ev, sb):
         p.add_argument("--dry-run", action="store_true")
     a = ap.parse_args(argv)
     if a.cmd == "board":
@@ -744,6 +778,8 @@ def main(argv=None):
         what = f"version {version(run, a.desk, a.date, a.venue)}"
     elif a.cmd == "next":
         what = f"next {next_version(run, a.frm, a.date)} from {a.frm}"
+    elif a.cmd == "submission":
+        what = f"submission {submission(run, a.frm, a.date, a.desk, a.venue)}"
     elif a.cmd == "spaces":
         spaces(run, a.version)
         what = f"spaces {a.version}"
@@ -754,6 +790,9 @@ def main(argv=None):
         run.show()
     else:
         run.apply(what)
+        for rel in run.create:                     # a ticket runs as it is
+            if rel.endswith(".sh"):
+                (root / rel).chmod(0o755)
     return run
 
 

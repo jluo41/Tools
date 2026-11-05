@@ -28,6 +28,10 @@ A base skill sees one Task at a time; this reads the whole version, so it can sa
     ⚠️ the same three, on an appendix an appendix display drawn inside the paper, with no question:, or no passing review
     ⚠️ display outside the display Job a Run that is not in the Board's j01_evidence_display Job (older: a work
                                       Block's j21_paper_displays Job)
+    ❗ value not linked to a Run      a printed value of the Board's j02_evidence_value that names no work Run
+    ❗ value rests on a screen read   a printed value whose lineage (checks:) holds a typed stand-in
+    ❗ value differs / missing / stale a binding of a printed value that its value Run's check failed
+    ⚠️ value lineage stops           its work Run's values.csv keeps no `source` column
     ⬜ open                           citations not yet verified, values not yet landed, needs not yet filled
 
 Only the Sections in the version face's `haipipe:compile-order` block are numbered, counted and compared. Numbers
@@ -382,10 +386,59 @@ def ledger(job: Path, max_displays: int | None = None) -> dict:
                    ([] if r["question"] else [f"display has no question: {t}/{d} (its README names none)"]) + \
                    ([] if r["passed"] else [f"display review not passed: {t}/{d} ({r['why']})"])
         (bad if main_text else warn).extend(problems)
+    vals = value_ledger(job.parent)
+    bad += vals["bad"]
+    warn += vals["warn"]
     return {"version": job.name, "work_block": block, "sections": sections, "displays": numbered, "reviews": reviews,
-            "bad": bad, "warn": warn,
-            "open_cite": sum(s["open_cite"] for s in printed), "open_value": sum(s["open_value"] for s in printed),
+            "bad": bad, "warn": warn, "values": vals,
+            "open_cite": sum(s["open_cite"] for s in printed),
+            "open_value": sum(s["open_value"] for s in printed) + vals["owed"],
             "compile_order": bool(order)}
+
+
+def value_ledger(board: Path) -> dict:
+    """G4 on the Board's value Job (j02_evidence_value; values_ledger.py, 0.7.0): each value Task's newest Run
+    result/values.yaml. A printed value blocks (❗) when it names no Run (`linked: false`, or no `checks:`), when its
+    chain holds a typed stand-in (a screen read: `screen_read`, or a check named `typed ...`), or when a binding of it
+    differs, is missing from its sentence, or names no value (stale); owed values count as open (⬜); a value whose
+    work Run's values.csv keeps no `source` column is a ⚠️. Older values.yaml shapes (a list of rows) are skipped."""
+    import yaml
+    out = {"tasks": 0, "printed": 0, "owed": 0, "bad": [], "warn": []}
+    job = next((j for j in sorted(board.glob("j[0-9]*_*")) if j.is_dir() and re.search(r"evidence_value", j.name)), None)
+    for task in tasks(job) if job else []:
+        found = sorted(task.glob("runs/*/result/values.yaml"))
+        if not found:
+            continue
+        try:
+            doc = yaml.safe_load(found[-1].read_text(encoding="utf-8")) or {}
+        except (OSError, yaml.YAMLError):
+            out["warn"].append(f"value Task {task.name}: its values.yaml does not read")
+            continue
+        values = doc.get("values")
+        if not isinstance(values, dict):
+            continue
+        out["tasks"] += 1
+        out["owed"] += int((doc.get("counts") or {}).get("owed", 0) or 0)
+        for key, row in values.items():
+            if not isinstance(row, dict):
+                continue
+            places = row.get("printed") or row.get("printed_in") or []
+            if not places and not row.get("printed_with_estimate"):
+                continue
+            out["printed"] += 1
+            name = f"{task.name} {row.get('id', '')} {key}".replace("  ", " ")
+            checks = row.get("checks") or []
+            if row.get("linked") is False or not checks:
+                out["bad"].append(f"value not linked to a Run: {name} is printed but names no work Run")
+            if row.get("screen_read") or any(str(c.get("address", "")).startswith("typed") for c in checks if isinstance(c, dict)):
+                out["bad"].append(f"value rests on a screen read: {name} is printed from a typed stand-in")
+            for p in places if isinstance(places, list) else []:
+                st = p.get("status") if isinstance(p, dict) else None
+                if st in ("differs", "missing", "stale"):
+                    out["bad"].append(f"value {st}: {name} at {p.get('where')} (printed {p.get('printed')!r}, value {row.get('shown')})")
+            if row.get("no_source_column"):
+                out["warn"].append(f"value lineage stops: {name}: its work Run's values.csv keeps no `source` column")
+    return out
 
 
 def show(L: dict) -> str:
@@ -402,6 +455,9 @@ def show(L: dict) -> str:
     if L["compile_order"]:
         out += ["", "⏸ off: not in the version's compile order, so not numbered, counted or compared"]
     out += [""] + [f"❗ {b}" for b in L["bad"]] + [f"⚠️ {w}" for w in L["warn"]]
+    v = L.get("values") or {}
+    if v.get("tasks"):
+        out.append(f"🧾 values: {v['printed']} printed values in {v['tasks']} value Tasks of j02_evidence_value")
     out.append(f"⬜ open: {L['open_cite']} citations not verified, {L['open_value']} values not landed")
     out.append("✅ the version's evidence agrees across Sections" if not L["bad"] else f"❗ {len(L['bad'])} to fix")
     return "\n".join(out)

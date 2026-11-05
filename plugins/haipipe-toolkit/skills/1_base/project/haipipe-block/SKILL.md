@@ -3,8 +3,8 @@ name: haipipe-block
 description: "Owns the Block level: its face board.md (title, board-kind, spine, close, workbench:, Topic), its six Spaces and buttons, a new-Block scaffold, and how a theme claims a Block. Use to create a Block, edit or check its face, add a Job, or say which theme reads it. Trigger: block, new block, board.md, block face, add a job, which theme, /haipipe-block, /haipipe-board."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "2.2.1"
-  last_updated: "2026-10-26"
+  version: "2.2.2"
+  last_updated: "2026-11-04"
   aliases: [haipipe-board]
   # version history: ./CHANGELOG.md
 ---

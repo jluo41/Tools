@@ -107,6 +107,7 @@ CSS = """<style>
 /* the box is the heading bar only; the content follows below it, unboxed (JL 261031: "could we put the box just in the
    section? and the content below it we should be outside of the box") */
 .fd-sec{margin:0 0 12px}
+.fd-sec iframe.fd-draw{display:block;width:100%;height:760px;border:1px solid var(--line,#e5e7eb);border-radius:8px}
 .fd-h{font-size:15px;font-weight:600;margin:0;display:flex;align-items:center;gap:8px;border:1px solid var(--line);
  border-radius:8px;background:var(--paper);padding:8px 14px}.fd-h::before{flex:none}
 .fd-h>.topic-pop,.fd-h>.fd-verb{margin-left:auto;font-size:12.5px;font-weight:400}
@@ -149,8 +150,8 @@ JS = """<script>(function(){
  ready(function(){
   document.querySelectorAll('.fd-run textarea[data-key]').forEach(function(t){
    if(!t.value)t.value=get(t.dataset.key);t.addEventListener('input',function(){put(t.dataset.key,t.value);});});
-  /* each section folds by its heading, open by default; what you fold stays folded in this browser (JL 261031:
-     "for the view page's subsection, could they be like collapse as well") */
+  /* each section folds by its heading (JL 261031: "for the view page's subsection, could they be like collapse as well")
+     and starts closed on every page (JL 261104: "默认的话，大家都是合着的"); what you open stays open in this browser */
   var page=new URLSearchParams(location.search),at='fd-fold:'+(page.get('path')||'')+':'+(page.get('section')||'')+':'+(page.get('group')||'');
   var shut={};try{shut=JSON.parse(localStorage.getItem(at)||'{}');}catch(e){}
   document.querySelectorAll('section.fd-sec').forEach(function(sec){
@@ -159,8 +160,8 @@ JS = """<script>(function(){
    while(h.nextSibling)body.appendChild(h.nextSibling);sec.appendChild(body);
    var key=h.textContent.trim().slice(0,80);h.dataset.fold='1';h.tabIndex=0;h.setAttribute('role','button');
    function set(open){body.hidden=!open;h.setAttribute('aria-expanded',String(open));}
-   set(!shut[key]);
-   function flip(){var open=body.hidden;set(open);if(open)delete shut[key];else shut[key]=1;
+   set(key in shut?!shut[key]:false);
+   function flip(){var open=body.hidden;set(open);shut[key]=open?0:1;
     try{localStorage.setItem(at,JSON.stringify(shut));}catch(e){}window.dispatchEvent(new Event('resize'));}
    h.addEventListener('click',function(ev){if(ev.target.closest('a,button'))return;flip();});
    h.addEventListener('keydown',function(ev){if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();flip();}});
@@ -300,9 +301,11 @@ def _interactions(folder: Path, root: Path) -> str:
 
 
 def flatten(html: str) -> str:
-    """Every fold left in a step's HTML becomes a section, its summary the heading; a drawing that loaded only when its
-    fold opened becomes Open, in the popup (haipipe-ui rule 4: no fold arrows; a large view opens in the popup)."""
-    html = LAZY.sub(lambda m: f'<p><a class=fd-btn data-pop="{m.group(1)}" href="{m.group(2)}">Open the drawing</a></p>', html)
+    """Every fold left in a step's HTML becomes a section, its summary the heading (haipipe-ui rule 4: no fold arrows);
+    a drawing that loaded only when its fold opened is embedded where it stands, its heading's Open still pops it out
+    (JL 261104: "why the draw is not emebeded"). `loading=lazy`, so a page of them stays quick."""
+    html = LAZY.sub(lambda m: f'<iframe class="st-frame fd-draw" title="{m.group(1)}" src="{m.group(2)}" loading=lazy '
+                              'referrerpolicy=no-referrer></iframe>', html)
     return FOLD.sub(lambda m: f'<section class=fd-sec><h3 class=fd-h>{m.group(1).replace(">↗</a>", ">Open ↗</a>")}</h3>'
                     f'{re.sub(r"^<div class=work-body[^>]*>(.*)</div>$", lambda b: b.group(1), m.group(2), flags=re.S)}</section>',
                     html)
@@ -574,9 +577,12 @@ def branches(folder: Path, root: Path) -> list:
 def parts(folder: Path, root: Path, url) -> dict:
     """What the base focus page asks of a draft Task (its one hook): Work's views, their words and the open one,
     Report's views, Studio's topics, Delivery, the Aim and the captions."""
+    from live.address_links import linked_views, page_linker
+    link = page_linker(folder, root)                    # every bNN.jNN.tNN.rNN a link (address_links, JL 261103)
     work, words, waiting = work_views(folder, root)
+    work = linked_views(work, link)
     work["runs"] = ("Runs", None)                       # the base fills it with the Task's Runs
-    return {"work": work, "words": words, "open": waiting, "report": report_views(folder, root, url),
+    return {"work": work, "words": words, "open": waiting, "report": linked_views(report_views(folder, root, url), link),
             "delivery_views": section_delivery_views(folder, root),
             "studio": studio_inventory(folder, root), "studio_top": lambda: studio_top(folder, root), "delivery": lambda: delivery_html(folder, root),
             "aim": aim(folder), "captions": CAPTIONS, "verbs": SECTION_VERBS, "css": WIDE + borrowed_css() + JS}

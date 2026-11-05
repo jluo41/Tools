@@ -8,18 +8,17 @@ from pathlib import Path
 
 from live.ui_parts import BOARD_CSS, PB_CSS, PB_JS, PROCESS, RESULTS, _band
 from live.focus_draft import CSS, JS
-from live.board_read import PAPER_CAPTIONS, BOARD_PARTS, board_topic, explore_tree, is_version
+from live.board_read import PAPER_CAPTIONS, BOARD_VIEWS, explore_tree, is_version, view_topics
 from live.board_interactions import ix_item
 from live.paper_version import VERSION_CSS
-from live.board_results import displays_view, ANSWER_FIRST, SHAPED, _topic_view, evidence_view, explore_view, writing_view
+from live.board_results import displays_view, SHAPED, evidence_view, explore_view, writing_view
 from live.board_process import process_html
+from live.address_links import linked_views, page_linker
 
 
-BOARD_CAPTIONS = {"idea": "The idea: the direction chosen, and the others considered.",
-                  "story": "What the paper says, and where it is sent.",
-                  "venue": "Where it is sent: the venue's desk rules, the ladder of journals, and the venue's own papers.",
-                  "dataflow": "How the data becomes each answer: the Runs, the evidence, the claims.",
-                  "paperflow": "The Sections in reader order, their displays, and the steps to the send."}
+BOARD_CAPTIONS = {"idea": "Every direction weighed, and which one was chosen.",
+                  "story": "The one direction chosen: what the paper says, why it matters, and where it is sent.",
+                  "plan": "How the data becomes each answer, then the Sections in reader order and the steps to the send."}
 
 
 # side tabs on a paper Board: the list and the open panel the same height, each with its own scroll bar (JL 261101:
@@ -27,29 +26,41 @@ BOARD_CAPTIONS = {"idea": "The idea: the direction chosen, and the others consid
 # the two sets the height, capped at 72% of the window. This theme's own rule; ui_parts' side tabs stay as they are.
 SIDE_CSS = ("<style>.pb-side{align-items:stretch}"
             ".pb-side>.pb-list{position:static;max-height:72vh;overflow-y:auto;padding:1px 4px 1px 1px;flex-wrap:nowrap}"
-            ".pb-side>.pb-read{max-height:72vh;display:flex;flex-direction:column;min-height:0}"
+            ".pb-side>.pb-read{align-self:start;max-height:72vh;display:flex;flex-direction:column;min-height:0}"   # its box ends with its content (JL 261104: "clean them up")
             ".pb-side>.pb-read>.pb-panel:not([hidden]){flex:1 1 auto;min-height:0;overflow-y:auto;box-sizing:border-box}"
             "@media(max-width:600px){.pb-side>.pb-list{max-height:none;overflow:visible;flex-wrap:wrap}"
             ".pb-side>.pb-read{max-height:80vh}}</style>")
 
 
+# a paper page is one column: title, Purpose, view buttons, every section bar and every open section share one left and
+# one right edge, about 1200 px wide, centred, narrowing with the window; a paragraph keeps a readable width inside it, and
+# the rail marks stay in the gutters (JL 261104: "I think you can make it wider."; "no ,this is not good ... why you don't
+# review it yourself?", on sections that hung out past their own bars)
+PAGE_CSS = ("<style>.focus-page{max-width:1328px}"
+            ".focus-rail.left{left:max(3px,calc((100vw - 1328px)/2 + 3px))}"
+            ".focus-rail.right{right:max(3px,calc((100vw - 1328px)/2 + 3px))}"
+            "@media(min-width:900px){.focus-page .pb-side{grid-template-columns:220px minmax(0,1fr)}}"
+            ".focus-page .pb-panel .pb-side{grid-template-columns:170px minmax(0,1fr)}"   # a tabset inside a panel
+            ".focus-page .fd-body{padding-left:0;padding-right:0}.focus-page .pb-canvas{width:auto;margin-left:0}"
+            ".fd-body>p,.fd-body>ol,.fd-body>ul,.pb-big,.focus-goal p{max-width:880px}</style>")
+
+
 def banded(board: Path, key: str, results: str, root: Path, md, items, work: bool, item_html=None) -> str:
     """One view: Report its own numbered sections only; Work in two bands, PROCESS then RESULTS (RESULTS is the Report's
-    sections, drawn by the same code); the helpers (the drawing, the mind map) stay at the bottom, after the dashed rule."""
+    sections, drawn by the same code); a view's helpers (the drawing, the mind map) stay at the bottom, after the dashed rule; Idea + Story puts them first."""
     res, rule, helpers = results.partition("<hr class=pb-rule>")
     # the Report is the view's own sections only, 1, 2, 3 (JL 261101: "for the Results and Process, they will just be
     # in the Work, why report have that? report will only have the things like the 1, 2, 3, 4"; b16 s32-D27)
     body = (_band(PROCESS, process_html(board, key, root, md, items, work, item_html)) + _band(RESULTS, res)) if work else res
     # VERSION_CSS: Writing's step words; PB_JS: the tab clicks and flow wires; JS: the folds and Copy prompt
-    return (CSS + BOARD_CSS + VERSION_CSS + PB_CSS + SIDE_CSS + body
+    return (CSS + BOARD_CSS + VERSION_CSS + PB_CSS + SIDE_CSS + PAGE_CSS + body
             + (rule + helpers if helpers.strip() else "") + PB_JS + JS)
 
 
 def _results(board: Path, key: str, root: Path, md, items) -> str:
     """The RESULTS band's html of one view: the Report view's own sections."""
     if key in SHAPED:
-        topic = board_topic(board, key, dict((k, pat) for k, _, pat in BOARD_PARTS)[key])
-        return SHAPED[key](board, topic, root, md, items) if topic is not None else ""
+        return SHAPED[key](board, root, md, items)
     return {"explore": explore_view, "evidence": evidence_view, "displays": displays_view, "draft": writing_view}[key](board, root, md, items)
 
 
@@ -57,14 +68,9 @@ def board_report_views(board: Path, root: Path, md, items=()) -> dict:
     """{key: (name, builder)} for the paper parts this Board has, in the paper's own order; `md(text, base)` renders
     Markdown with links relative to `base` (the focus page's renderer)."""
     views = {}
-    for key, name, pattern in BOARD_PARTS:
-        if key == "venue":                       # merged into Story's 4 · Venues (b16 s32 B, JL 261031)
-            continue
-        topic = board_topic(board, key, pattern)
-        if topic is not None and key in SHAPED:
+    for key, name, _ in BOARD_VIEWS:             # Venue sits inside Story (b16 s32 B, JL 261031)
+        if view_topics(board, key):
             views[key] = (name, lambda k=key: banded(board, k, _results(board, k, root, md, items), root, md, items, False))
-        elif topic is not None:
-            views[key] = (name, lambda t=topic, k=key: CSS + BOARD_CSS + _topic_view(t, root, md, items, k in ANSWER_FIRST) + JS)
     tree = explore_tree(board)                     # the work and discovery Blocks this paper draws on (JL 261031), by
     if any(tree.get(k) for k in ("work", "discovery")):   # path, address or another Project, as the view draws them
         views["explore"] = ("Support blocks", lambda: banded(board, "explore", _results(board, "explore", root, md, items), root, md, items, False))   # JL 261031: "support-blocks"
@@ -75,7 +81,7 @@ def board_report_views(board: Path, root: Path, md, items=()) -> dict:
         views["displays"] = ("Displays", lambda: banded(board, "displays", _results(board, "displays", root, md, items), root, md, items, False))
     if any(d.is_dir() for d in board.glob("j[0-9]*_*")):
         views["draft"] = ("Writing", lambda: banded(board, "draft", _results(board, "draft", root, md, items), root, md, items, False))  # j11_writing_… (JL 261031)
-    return views
+    return linked_views(views, page_linker(board, root))   # every bNN.jNN.tNN.rNN a link (address_links, JL 261103)
 
 
 PAPER_CAPTIONS.update(BOARD_CAPTIONS)
@@ -85,11 +91,9 @@ BOARD_CAPTIONS.update({"draft": "Each writing Job, one per version: its Sections
 
 
 BOARD_WORK_CAPTIONS = {
-    "idea": "The idea: what waits on you, what is open, its skills; then the direction chosen.",
-    "story": "The story: what waits on you, what is open, its skills; then the pitch, questions and venues.",
-    "venue": "The venue: what waits on you, what is open, its skills.",
-    "dataflow": "The data flow: what waits on you, its plan (each step a skill and a prompt), the Runs to do; then the map and the questions.",
-    "paperflow": "The paper flow: what waits on you, what is open, its skills; then the send, Sections and timeline.",
+    "idea": "The idea: what waits on you, what is open, its skills; then every direction weighed.",
+    "story": "The story: what waits on you, what is open, its skills; then the direction, pitch, questions and venues.",
+    "plan": "The plan: what waits on you, each step a skill and a prompt, the Runs to do, the next steps; then the two mind maps.",
     "explore": "The support blocks: what waits on you, their skills; then the folder trees.",
     "evidence": "The evidence: what waits on you, where each item stands, its skills; then the values and citations.",
     "displays": "The displays: what waits on you, where each display stands, its skills; then the plan and each display.",
@@ -108,7 +112,7 @@ def board_work_views(board: Path, root: Path, md, versions: str = "", items=(), 
                                                                 True, item_html))
     views.setdefault("work-draft", ("Writing", lambda: banded(board, "draft", _results(board, "draft", root, md, items), root, md,
                                                               items, True, item_html)))   # Writing holds the versions, even before one
-    return views
+    return linked_views(views, page_linker(board, root))
 
 
 PAPER_CAPTIONS.update({"work-" + k: v for k, v in BOARD_WORK_CAPTIONS.items()})

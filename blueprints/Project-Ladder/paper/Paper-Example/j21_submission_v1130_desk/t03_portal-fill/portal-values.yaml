@@ -1,0 +1,17 @@
+# Placeholder values only: Paper-Example shows every state of the fill page.
+# The value for each portal field; this file is all a paper keeps. value: text to paste · file: under delivery/j11_writing_v1130_desk/ · from_tex: a built Section's Task · ask: a person decides · disagree: true · check: title|words|tables|figures|references · note: one line
+fi.manuscript: {file: "../j01_evidence_display/j01_evidence_display-all-displays.pdf", note: "placeholder: any built file; a real paper names its portal/ packet file"}
+fi.figures: {ask: "placeholder: one upload per figure, or one file? A person decides"}
+fi.supplement: {file: "portal/Supplement.pdf", note: "placeholder: this file is not built, so it shows as no file yet"}
+fi.cover-letter: {ask: "no [[portal.upload]] names this file yet: add it to paper-build.toml, then build"}
+ms.title: {value: "Does a policy change an outcome?", check: "title"}
+ms.abstract: {value: "Placeholder abstract: a policy, an outcome, the comparison, and what it found."}
+ms.words: {value: "2500", check: "words", note: "placeholder count; check compares it with the build once one exists"}
+au.authors: {value: "A. Author, PhD, Example University; B. Author, MD, Example Hospital"}
+au.corresponding: {value: "A. Author, Example University; a.author@example.org", disagree: true, note: "placeholder: the portal account shows another email than the manuscript"}
+st.coi: {ask: "each author's conflicts, as the back matter says"}
+st.funding: {ask: "the funding, as the back matter says"}
+st.data: {ask: "the data sharing statement, as the back matter says"}
+st.ai_use: {value: "leave unchecked", note: "placeholder: nothing to do here, and nothing done"}
+st.declaration: {ask: "a person reads each declaration and ticks it; never an agent"}
+af.submit: {ask: "a person presses Submit, then writes `sent` in delivery/delivery.md"}

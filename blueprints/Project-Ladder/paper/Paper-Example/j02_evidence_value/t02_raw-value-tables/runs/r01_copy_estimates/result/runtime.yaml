@@ -1,0 +1,8 @@
+run: r01_copy_estimates
+status: completed
+exit_code: 0
+started_at: '2026-11-04T06:57:22Z'
+finished_at: '2026-11-04T06:57:22Z'
+started_by: 'JL 261104: the Values tabs as the paper Board standard'
+ticket: runs/r01_copy_estimates/r01_copy_estimates.sh
+worker: this ticket

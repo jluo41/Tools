@@ -20,7 +20,11 @@ transition-out: <what the next Section picks up>
 
 ## Content
 
-<the Section's prose, adopted from its Draft>
+#### C2.P1 · Main result · S1 to S3
+
+Across 12,480 <units>, <the policy> was associated with a 2.35 point higher <outcome> (95% CI, 0.84 to 3.85; P = .002). <!-- realizes: C2.P1.B1 -->
+In the <subgroup>, the difference was 4.10 points. <!-- realizes: C2.P1.B2 -->
+A later model put it at 1.9 points, and about 37.5% of <units> were <in a group>. <!-- realizes: C2.P1.B3 -->
 
 ## Aims
 

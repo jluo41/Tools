@@ -1,3 +1,7 @@
+## 0.25.0 · 2026-11-05 · Identity names the theory
+
+- JL 261105: "we should have the section named theory as well"; "espeically for the IS". §1 adds `**Theory**:`, required for an IS journal.
+
 ## 0.24.3 · 2026-11-01 · b16 review 261101: current paper names
 
 - Studio topics are `sNN-…` beside the Jobs, no longer under `studio/` (the telling's face path).

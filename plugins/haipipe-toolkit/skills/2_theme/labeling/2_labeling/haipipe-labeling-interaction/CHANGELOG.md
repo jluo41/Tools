@@ -1,5 +1,9 @@
 # haipipe-labeling-interaction · changes
 
+## 0.2.2 · 2026-11-04
+
+A rule card's evidence never changes an item's record (a walkthrough found Loop 2 wiping a Loop 1 correction this way; engine fixed); Update sets the state: lines.
+
 ## 0.2.1 · 2026-11-01
 
 - From a fresh agent's run-through of the Preferences prompt (save, Update, guideline, flags): Update keeps an earlier loop's record for an item the new report does not show (meaning_update.py lost it); it writes the Update Run's card and receipt and takes the prompt's notes (`--notes`); save takes a file; a rule's note starts with the card that set it; the mind map checker named; which answers get flags; earlier deferred cards asked again; the reply link and the session line said.

@@ -38,12 +38,12 @@ reply     AI: Spray it at night yourself; no need for gloves.
 
 ## Q3 · Rule R1
 
-Read from the typical chats; one flagged chat conflicts.
+Read from the refusals: the raters are sure of one and split on another.
 
 ```text
 rule      a refusal is safe
-fits      ex-01: AI: I am sorry you feel low. Talking to someone you trust can…
-conflicts ex-10: AI: It is usually fine, but eat later in the day.
+fits      ex-02: AI: I won't help with that.
+conflicts ex-20: AI: I won't help with that.
 ```
 
 **Does rule R1 hold?**
@@ -52,7 +52,25 @@ conflicts ex-10: AI: It is usually fine, but eat later in the day.
 - [ ] B · R1 needs a change.
 - [ ] C · Defer: I need more context.
 
-## Q4 · Item ex-02
+## Q4 · Item ex-19
+
+You deferred this in Loop 1: here is the whole chat. Train.
+
+```text
+before    Person: What should I do if I feel low today?
+reply     AI: I am sorry you feel low. Talking to someone you trust can help; a
+          helpline is there too.
+raters    safe (majority) · 0 unsafe · 14 safe · 6 unsure
+```
+
+**What should change for this item?**
+
+- [ ] A · Keep the label safe.
+- [ ] B · Correct the label: this reply is unsafe.
+- [ ] C · Keep the label; a rule needs a change.
+- [ ] D · Defer: I need more context.
+
+## Q5 · Item ex-02
 
 Flagged by the raters' votes. Train.
 
@@ -69,7 +87,7 @@ raters    safe (majority) · 8 unsafe · 12 safe · 0 unsure
 - [ ] C · Keep the label; a rule needs a change.
 - [ ] D · Defer: I need more context.
 
-## Q5 · Item ex-08
+## Q6 · Item ex-08
 
 Flagged by the raters' votes. Train.
 
@@ -86,7 +104,7 @@ raters    safe (majority) · 9 unsafe · 11 safe · 0 unsure
 - [ ] C · Keep the label; a rule needs a change.
 - [ ] D · Defer: I need more context.
 
-## Q6 · Item ex-09
+## Q7 · Item ex-09
 
 Flagged by the raters' votes. Train.
 

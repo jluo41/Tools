@@ -28,6 +28,11 @@ WHERE EACH NUMBER COMES FROM
               comma, & or +; each item names its food ("pork"), how it was cut or cooked ("sliced", `prep`; the
               dish's Chinese name gives `cook`: 炒 stir-fried, 炖 stewed, ...), its amount (a stated amount shared
               evenly, marked a guess) and the line it came from (`dish`). Here every item is one answer.
+    amount    a stated amount counts: an item's numbers are for that much. Grams and ml are asked with the name (basis
+              per_meal). Any other amount multiplies the table's one serving when its unit is that serving's ("3 cups" on
+              a "cup, cooked" serving: serving.times 3, all 14 and GI's GL with it), and a unit that differs is never
+              converted: the numbers stay one serving and serving.amount_note says so. WellDoc's rows hold one serving
+              each (t13 r05: the app's own meal total is rows x servings on 88.0% of 42,687 meals, unchanged on 2.2%).
     total     the six: the items' sum, over the items that have the number, or `answer` when the caller already
               holds the meal's answer (the photo API's); coverage is the share of items counted, conf the weakest
               of them. (Until 261022 the six came from normalize() of the whole meal as one string, which adds up
@@ -128,6 +133,46 @@ def word_check(food: str, matched) -> Optional[Dict]:
     return {"check": "PASS" if not missing else "PARTIAL" if share >= 0.5 else "NONE", "missing": missing}
 
 
+# The same measure, by another name.
+UNIT_SAME = {"tablespoon": "tbsp", "tablespoonful": "tbsp", "teaspoon": "tsp", "teaspoonful": "tsp", "ounce": "oz",
+             "fluid": "fl", "pc": "piece", "gram": "g", "milliliter": "ml", "millilitre": "ml"}
+AMOUNT_NUMBER = re.compile(r"^\s*(?:([0-9]+)\s+)?([0-9]*\.?[0-9]+)(?:\s*/\s*([0-9]+))?\s*(.*)$")
+
+
+def unit_parts(unit) -> Tuple[str, str]:
+    """A serving's unit -> (its measure, what qualifies it): 'Cups, Cooked' -> ('cup', 'cooked'), 'cup; cooked' the
+    same, 'slice (1 oz)' -> ('slice', '1 oz'), 'eggs' -> ('egg', '')."""
+    text = " ".join(str(unit or "").lower().replace(";", ",").split())
+    m = re.match(r"^([^,(]*)[,(]?\s*(.*?)\)?$", text)
+    head, rest = m.group(1).strip(), m.group(2).strip()
+    one = lambda w: UNIT_SAME.get(w) or UNIT_SAME.get(w[:-1]) or (
+        w[:-2] if w.endswith(("sses", "xes", "zes", "ches", "shes")) else w[:-1] if w.endswith("s") and len(w) > 2 and not w.endswith("ss") else w)
+    return " ".join(one(w) for w in head.split()), rest
+
+
+def amount_times(amount, basis, unit) -> Tuple[Optional[float], Optional[str]]:
+    """A stated amount against the numbers it should scale -> (times, why it was not applied). (None, None) when there
+    is nothing to do: no amount, or grams and ml the basis has used (per_meal). Only a table's one serving multiplies,
+    and only by the same measure: per 100 g has no weight for a cup, and a table serving of grams or ml has no size."""
+    text = str(amount or "").strip()
+    if not text or basis == "per_meal":
+        return None, None
+    if basis in (None, "") or basis == "mixed":
+        return None, f"{text} not applied: no numbers to scale"
+    if basis != "per_serving" or not unit:
+        return None, f"{text} not applied: the numbers are {'per 100 g' if basis == 'per_100g' else 'for an unnamed serving'}"
+    m = AMOUNT_NUMBER.match(text)
+    if not m or (m.group(3) and float(m.group(3)) == 0):
+        return None, f"{text} not applied: no number to read"
+    n = float(m.group(2)) / float(m.group(3) or 1) + float(m.group(1) or 0)
+    said, said_more = unit_parts(m.group(4))
+    has, has_more = unit_parts(unit)
+    same = said == has and (not said_more or not has_more or said_more == has_more)
+    if n <= 0 or not said or not same or has in ("g", "ml"):
+        return None, f"{text} not applied: the table's serving is {unit}"
+    return n, None
+
+
 def enrich_items(items: List[Dict], asks: Optional[List[str]] = None, meal: Optional[str] = None,
                  answer: Optional[Dict] = None) -> Tuple[List[Dict], Dict]:
     """items (each {"id", "food", "amount"?, "food_zh"?}) -> (each enriched, the meal's total).
@@ -155,12 +200,14 @@ def enrich_items(items: List[Dict], asks: Optional[List[str]] = None, meal: Opti
             a["NutritionConf"] = "ESTIMATED"
         basis = a.get("NutritionBasis")
         n = (rec or {}).get("n")
+        unit = {"per_serving": clean((rec or {}).get("serving_type")), "per_meal": amount, "per_100g": "100 g"}.get(basis)
+        times, why = (None, None) if a.get("NutritionConf") == "MISS" else amount_times(amount, basis, unit)
+        if times is not None:
+            num = {k: None if v is None or v != v else v * times for k, v in num.items()}
         e.update({"match": {"food": a.get("FoodMatched"), "source": a.get("NutritionSource"),
                             "conf": a.get("NutritionConf"), "words": wc,
                             "times_logged": int(n) if n is not None and n == n else None},
-                  "serving": {"basis": basis, "unit": {"per_serving": clean((rec or {}).get("serving_type")),
-                                                       "per_meal": amount, "per_100g": "100 g"}.get(basis),
-                              "grams": None}})
+                  "serving": {"basis": basis, "unit": unit, "grams": None, "times": times, "amount_note": why}})
         e.update({g: {name: val(num.get(col), u) for name, col, u in fields} for g, fields in FOOD_GROUPS})
         gly = gm.glycemic(m, ask, num.get("Carbs"), num.get("Fiber"), food_zh)
         e["glycemic"] = {"gi": gly["gi"], "gl": gly["gl"], "from": gly["from"]}
@@ -184,6 +231,8 @@ def enrich_items(items: List[Dict], asks: Optional[List[str]] = None, meal: Opti
     total["glycemic"] = {"gl": None if not gls or None in gls else round(sum(gls), 1)}
     total.update({k: clean((tot or {}).get(c)) for k, c in
                   (("conf", "NutritionConf"), ("basis", "NutritionBasis"), ("coverage", "NutritionCoverage"))})
+    stated = [it for it in out if it.get("amount") and it["match"]["conf"] != "MISS"]
+    total["amounts"] = {"stated": len(stated), "applied": sum(not it["serving"]["amount_note"] for it in stated)}
     return out, total
 
 

@@ -1,0 +1,5 @@
+# Where s22's delivery goes (haipipe-studio scripts/render_delivery.py). The deck stays in deck/; the code is built by
+# j02's Task in haipipe-paper-assemble's scripts/latex_room_to_docx.py and build_delivery.py.
+pieces:
+  - code: "word lane: a queue for Word, a stuck-Word check, a safe quit, and what s22's form chooses"
+    by: j02_word_lane_speed/t01_word_lane_code

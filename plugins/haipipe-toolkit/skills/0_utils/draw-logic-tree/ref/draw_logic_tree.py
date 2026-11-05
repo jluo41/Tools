@@ -151,7 +151,7 @@ def parse_logic(text):
             continue
         depth, body = len(m.group(1)) // 2, m.group(2)
         parts = [x.strip() for x in body.split(" · ")]
-        refs = [x for x in parts if re.fullmatch(r"B\d+", x)]
+        refs = [x for x in parts if re.fullmatch(r"B\d+[a-z]*", x)]
         label = " · ".join(x for x in parts if x not in refs)
         node = {"label": label, "refs": refs, "kids": []}
         while stack and stack[-1][0] >= depth:
@@ -457,10 +457,10 @@ def refresh_cards(page_md: Path, scene_path: Path) -> dict:
     for k, text in label.items():
         if by.get(k, {}).get("type") != "rectangle":
             continue
-        head = re.match(r"^(B\d+)\s·", text)
+        head = re.match(r"^(B\d+[a-z]*)\s·", text)
         if head:
             bullet_box[head.group(1)] = by[k]
-        for ref in re.findall(r"(?m)^(B\d+)$", text):     # a claim box naming its Bullet on its own line
+        for ref in re.findall(r"(?m)^(B\d+[a-z]*)$", text):     # a claim box naming its Bullet on its own line
             claim_box[ref] = by[k]
     rights = [b["x"] + b["width"] for b in bullet_box.values()]
     old = next((e for e in scene["elements"] if e.get("id") == "ev-head-evidence"), None)
@@ -500,7 +500,7 @@ def outline_from_scene(scene_path: Path) -> str:
 
     # siblings in the drawing's own direction: a top-down tree reads left to right, a
     # left-to-right one top to bottom (its Bullets share one column)
-    is_b = lambda i: bool(re.match(r"^B\d+\s·", label.get(i, "")))
+    is_b = lambda i: bool(re.match(r"^B\d+[a-z]*\s·", label.get(i, "")))
     parent_of = {b: a for a, bs in kids.items() for b in bs}
     # the first Bullets only: a Bullet under a Bullet sits apart from the shared row or column
     bullets = [i for i in label if is_b(i) and i in by and not is_b(parent_of.get(i))]
@@ -512,12 +512,12 @@ def outline_from_scene(scene_path: Path) -> str:
 
     def line(i, depth):
         text = label[i]
-        bullet = re.match(r"^(B\d+)\s·", text)
+        bullet = re.match(r"^(B\d+[a-z]*)\s·", text)
         if bullet:
             out = ["%s- %s" % ("  " * depth, bullet.group(1))]
         else:
             parts = [l.strip() for l in text.split("\n") if l.strip()]
-            refs = [p for p in parts if re.fullmatch(r"B\d+(\s·\sB\d+)*", p)]
+            refs = [p for p in parts if re.fullmatch(r"B\d+[a-z]*(\s·\sB\d+[a-z]*)*", p)]
             words = " ".join(p for p in parts if p not in refs)
             out = ["%s- %s%s" % ("  " * depth, words, "".join(" · " + r for r in refs))]
         for k in order(kids.get(i, [])):
@@ -597,8 +597,8 @@ def check_scene(page_md: Path, scene_path: Path) -> list[str]:
     by = {e["id"]: e for e in els}
     label = {e["containerId"]: e["text"] for e in els if e["type"] == "text" and e.get("containerId")}
     boxes = {k: by[k] for k in label if by.get(k, {}).get("type") == "rectangle"}
-    bullet_of = {k: re.match(r"^(B\d+)\b", v).group(1) for k, v in label.items()
-                 if k in boxes and re.match(r"^B\d+\b", v)}
+    bullet_of = {k: re.match(r"^(B\d+[a-z]*)\b", v).group(1) for k, v in label.items()
+                 if k in boxes and re.match(r"^B\d+[a-z]*\b", v)}
     out = []
     plan = latest_outline(plan_dir(page_md.parent), page_md.stem)
     if plan is not None:

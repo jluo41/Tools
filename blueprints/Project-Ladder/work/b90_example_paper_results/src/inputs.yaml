@@ -1,0 +1,7 @@
+# The upstream Runs this Block reads, one key each (placeholder). Each path is from work/.
+runs:
+  r01_source:
+    label: returned source tables (placeholder)
+    path: b90_example_paper_results/j01_example_source/t01_example_source/runs/r01_example_source
+    address: b90.j01.t01.r01
+typed: {}

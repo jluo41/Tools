@@ -12,7 +12,7 @@ eventnorm: the event layer every normalizer shares (s01 ⑦ ①; JL 261021: "mak
     assemble.py    event(), assemble(): input + enrich(items) to the output
 
 Food only for now: enrich(items) is describe-food's foodnorm/items.py, put on sys.path here when the caller has not
-(the API host already has). Served as POST /food/event (servers/api-food/server.py); shown on /try/food.
+(the API host already has). Served as POST /meal/event (servers/api-food/server.py); shown on /try/meal.
 """
 import sys
 from pathlib import Path

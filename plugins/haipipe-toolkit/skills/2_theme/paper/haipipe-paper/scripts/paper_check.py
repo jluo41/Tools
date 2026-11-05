@@ -66,6 +66,37 @@ def status_words(ts: list, good: str) -> tuple:
     return done, len(ts)
 
 
+def values_filled(ts: list, good: str, kind: str = "value") -> tuple:
+    """V3: a value Task is filled when its newest Run wrote result/values.yaml (haipipe-paper-evidence values_ledger.py),
+    else when its status says so; the note counts the printed values that differ, are missing or are owed. V4 (kind
+    cite): a claim Task is checked when its newest Run (cite_tasks.py) finds every key verified. The paper-wide t99
+    Task is not counted: it repeats the others."""
+    import yaml
+    done, bad, owed = 0, 0, 0
+    ts = [t for t in ts if not t.name.startswith("t99_")]
+    for t in ts:
+        found = sorted(t.glob("runs/*/result/values.yaml"))
+        if not found:
+            done += status_words([t], good)[0]
+            continue
+        try:
+            c = (yaml.safe_load(read(found[-1])) or {}).get("counts") or {}
+        except yaml.YAMLError:
+            continue
+        if kind == "cite":
+            done += bool(isinstance(c, dict) and c.get("keys") and c.get("verified") == c.get("keys"))
+            bad += int(c.get("missing-bib", 0) or 0) + int(c.get("TOADD", 0) or 0) if isinstance(c, dict) else 0
+            continue
+        done += 1
+        if isinstance(c, dict):
+            bad += int(c.get("differs", 0) or 0) + int(c.get("missing", 0) or 0)
+            owed += int(c.get("owed", 0) or 0)
+    if kind == "cite":
+        return done, len(ts), (f"; {bad} keys missing a bib entry or TOADD" if bad else "")
+    note = (f"; {bad} printed values differ or are missing" if bad else "") + (f"; {owed} owed" if owed else "")
+    return done, len(ts), note
+
+
 def mark(done: int, total: int) -> str:
     return "⬜" if total == 0 or done == 0 else "✅" if done == total else "⏳"
 
@@ -140,6 +171,11 @@ def check(board: Path) -> list:
         ", ".join(j.name for j in jobs.values() if j) or "none")
     for i, what, k, good in (("V2", "Displays drawn", "display", r"\bdrawn\b|accepted"), ("V3", "Values filled", "value", r"filled|checked"),
                              ("V4", "Citations checked", "cite", r"checked|verified")):
+        if k in ("value", "cite"):
+            d, n, note = values_filled(tasks(jobs[k]), good, k)
+            state = "⏳" if note and mark(d, n) == "✅" else mark(d, n)      # every Task run is not done while its values are owed
+            add("evidence", i, what, state, (f"{d} of {n} Tasks" + note) if n else "no Tasks yet")
+            continue
         d, n = status_words(tasks(jobs[k]), good)
         add("evidence", i, what, mark(d, n), f"{d} of {n} Tasks" if n else "no Tasks yet")
 
@@ -152,7 +188,8 @@ def check(board: Path) -> list:
         for t in tasks(j):
             total += 1
             drafts = sorted((t / "draft").glob(f"{t.name}-draft-v*.md"), key=vnum)
-            if not drafts:
+            if not drafts:                         # a Section written straight in its face (back matter, a letter)
+                written += "⟦" not in read(t / f"{t.name}.md")
                 continue
             text = read(drafts[-1])
             signed += field(text, "approved").startswith("✅")
@@ -162,14 +199,89 @@ def check(board: Path) -> list:
     add("writing", "W3", "Text written", mark(written, total), f"{written} of {total} Sections with no placeholder left" if total else "no Sections yet")
     built = [j.name for j in writing if (board / "delivery" / j.name / "build-manifest.json").is_file()]
     add("writing", "W4", "Paper built", "✅" if built and len(built) == len(writing) else ("⏳" if built else "⬜"), ", ".join(built) or "not built")
+    ready = lacking = 0                            # JL 261104: examples are a must before a Section is finished
+    names = []
+    for j in writing[-1:]:
+        for t in tasks(j):
+            said = field(read(t / f"{t.name}.md"), "examples")
+            if re.match(r"none\s*·\s*\S", said):
+                ready += 1
+                continue
+            path = f"{j.name}/{t.name}"
+            n = max((len(list(s.glob("reads/*/reading.yaml"))) for s in board.glob("s[0-9]*")
+                     if path in "".join(read(f) for f in s.glob("s[0-9]*.md") if ".mindmap." not in f.name and ".ideas." not in f.name)), default=0)
+            if n >= 3 and said:
+                ready += 1
+            else:
+                lacking += 1
+                names.append(t.name)
+    add("writing", "W6", "📚 Examples read first", mark(ready, ready + lacking),
+        f"{ready} of {ready + lacking} Sections" + (f"; missing: {', '.join(names)}" if names else "") if ready + lacking else "no Sections yet")
     wait = [r.parent.name for r in board.rglob("runs/r*_collect_*/run.yaml")
             if "_archive" not in r.parts and re.search(r"(?m)^status:\s*waiting", read(r))]
     add("writing", "W5", "Nothing waits on a person", "🙋" if wait else "✅", ", ".join(wait) or "no waiting question set")
     newest = writing[-1] if writing else None
     out[:0] = layout(board, story)
     out.insert(next(k for k, r in enumerate(out) if r[1] == "W1"), ("evidence", "V5", "Numbers agree", *agree(newest)))
+    at = next(k for k, r in enumerate(out) if r[1] == "W1")
+    out[at:at] = displays(board, newest, jobs["display"])
     out.extend(delivery(board, newest, call))
     return out
+
+
+def displays(board: Path, newest, job) -> list:
+    """V6-V10, the display checklist (haipipe-paper-evidence; JL 261103): each printed display says its message, the
+    venue's examples were drawn to compare against, no display question waits, and a person accepted each display.
+    The printed displays are the newest writing Job's units, `<tNN>/display/Display<n>-<slug>/README.md`."""
+    units = sorted(newest.glob("t[0-9]*/display/Display*/README.md")) if newest else []
+    said = accepted = 0
+    for u in units:
+        text = read(u)
+        run = field(text, "drawn_by")
+        method = (board.parent.parent / run / "result" / "method.md") if run else None
+        msg = re.search(r"(?ms)^##\s*Message\s*\n(.*?)(?=^##\s|\Z)", read(method)) if method and method.is_file() else None
+        said += bool(msg and msg.group(1).strip())
+        accepted += field(text, "accepted").lower().startswith(("yes", "✅"))
+    n = len(units)
+    rows = [("evidence", "V6", "Displays say their message", *messages(job, said, n))]
+    rows.append(("evidence", "V10", "Captions short", *captions(job)))
+    ex = next((t for t in sorted(board.glob("s[0-9]*-paper-display-examples")) if (t / f"{t.name}.png").is_file()), None)
+    rows.append(("evidence", "V7", "Examples compared", "✅" if ex else "⬜",
+                 ex.name if ex else "no sNN-paper-display-examples drawing of the venue's displays"))
+    wait = [r.parent.name for r in job.rglob("runs/r*_collect_*/run.yaml")
+            if re.search(r"(?m)^status:\s*waiting", read(r))] if job else []
+    rows.append(("evidence", "V8", "Display questions answered", "🙋" if wait else "✅",
+                 ", ".join(wait) or "none waiting"))
+    rows.append(("evidence", "V9", "Displays accepted", "🙋" if n and accepted < n else mark(accepted, n),
+                 f"{accepted} of {n} printed displays accepted by a person" if n else "no printed display yet"))
+    return rows
+
+
+def messages(job, said: int, n: int) -> tuple:
+    """V6: each drawn display in the display Job says its message, as caption_check.py checks it (JL 261104), so a display
+    counts before any Section frames it; a Board with no display Job counts its printed units."""
+    if job:
+        sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "haipipe-paper-evidence" / "scripts"))
+        import caption_check
+        rows = caption_check.messages(job)
+        if rows:
+            good = sum(not r[-1] for r in rows)
+            return mark(good, len(rows)), f"{good} of {len(rows)} drawn displays say their message (caption_check.py)"
+    return mark(said, n), f"{said} of {n} printed displays have a ## Message in their method.md" if n else "no printed display yet"
+
+
+def captions(job) -> tuple:
+    """V10: each drawn display's caption within the word limits (haipipe-paper-evidence caption_check.py; JL 261103:
+    "for the Figure caption, do not add so much things, don't be too long")."""
+    if not job:
+        return "⬜", "no display Job"
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "haipipe-paper-evidence" / "scripts"))
+    import caption_check
+    rows = caption_check.check(job)
+    if not rows:
+        return "⬜", "no drawn caption yet"
+    short = sum(not r[-1] for r in rows)
+    return mark(short, len(rows)), f"{short} of {len(rows)} captions within the limits (caption_check.py)"
 
 
 OLD_PAGES = re.compile(r"^(A1-Story|B[abc]-[A-Za-z0-9_-]+|Story\d*[A-Z]?-.*)$")
@@ -227,6 +339,52 @@ def agree(job) -> tuple:
                                     f"no number disagrees{f', {warn} to look at' if warn else ''}")
 
 
+def submission_jobs(board: Path, job) -> list:
+    """The submission Jobs of a writing Job: jNN_submission_…, each face saying `for: <writing Job>`."""
+    if job is None:
+        return []
+    said = re.compile(rf"(?m)^for:\s*{re.escape(job.name)}\s*$")
+    return [s for s in sorted(board.glob("j[0-9]*_submission_*")) if s.is_dir() and said.search(read(s / f"{s.name}.md"))]
+
+
+def fill_page(board: Path, subs: list) -> tuple:
+    """D9: the send's submission Job and its fill page, read through portal_fill.py's own survey."""
+    if not subs:
+        return "⬜", "no submission Job (paper_ladder.py submission)"
+    sub = subs[-1]
+    page = board / "delivery" / sub.name / "portal-fill.html"
+    if not page.is_file():
+        return "⏳", f"{sub.name}: the page is not built (t03_portal-fill's Run, portal_fill.py)"
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import portal_fill
+    try:
+        got = portal_fill.survey(sub)
+    except SystemExit as e:
+        return "⏳", f"{sub.name}: {e}"
+    if page.stat().st_mtime < max(got["fields"].stat().st_mtime, got["values"].stat().st_mtime):
+        return "⏳", f"{sub.name}: the page is older than its fields or values; rerun t03_portal-fill's Run"
+    n, walked = got["tally"], (got["fields"].parent / "runtime.yaml").is_file() or "STARTER" not in read(got["fields"])
+    said = ", ".join(f"{n[k]} {portal_fill.STATES[k][0]}" for k in portal_fill.STATES if n[k]) + f"; page delivery/{sub.name}/{page.name}"
+    if not walked:
+        return "⏳", "the portal is not walked yet (a starter); " + said
+    return ("⏳" if n["differ"] or n["missing"] else ("🙋" if n["ask"] else "✅")), said
+
+
+def other_bibs(job) -> list:
+    """A Task whose `draft-bibliography:` is not its own bibex, as "<task> reads <file>": corrections to its bibex never
+    reach the print, and the export still says ✅ (pp-LBP-JAMA 261104: 7 Sections read an old frozen review-inputs copy)."""
+    out = []
+    for t in tasks(job):
+        declared = field(read(t / f"{t.name}.md"), "draft-bibliography")
+        own = t / "draft" / "evidence" / "bibex" / f"{t.name}.bib"
+        if not declared or (t / declared).resolve() == own.resolve():
+            continue
+        used = (t / declared).resolve()
+        older = used.is_file() and own.is_file() and used.stat().st_mtime < own.stat().st_mtime
+        out.append(f"{t.name} reads {Path(declared).name}" + (", older than its bibex" if older else ", not its bibex"))
+    return out
+
+
 def delivery(board: Path, job, call) -> list:
     """⑤ Delivery: the package of the newest send and its requirements: the files (haipipe-paper-assemble's required
     outputs), the venue's desk rules (venues/<venue>/call.md), clean text, the build's readiness (ref/
@@ -249,13 +407,15 @@ def delivery(board: Path, job, call) -> list:
     add("D2", "The supplement", "✅" if not sup or all(here(k) for k in sup) else "⏳",
         ", ".join(Path(outs[k]).name for k in sup) if sup else "none declared")
     letters = [t for t in (job.glob("t[0-9]*_*letter*") if job else []) if t.is_dir()]
+    subs = submission_jobs(board, job)            # the send's submission Job may hold the letter's words (t01_cover-letter)
+    letters += [t for s in subs for t in s.glob("t[0-9]*_*letter*") if t.is_dir() and "\nwords-in:" not in read(t / f"{t.name}.md")]
     cl = man.get("cover_letter") or {}            # build_delivery.py records the letter apart: cover_letter.outputs
     cl_out = {k: v for k, v in (cl.get("outputs") or {}).items() if v}
     built_letter = [v for v in cl_out.values() if (board / "delivery" / job.name / v).is_file()] if job else []
     built_letter += [outs[k] for k in outs if "letter" in k and here(k)]
     add("D3", "The cover letter", ("✅" if cl.get("ready", True) else "⏳") if built_letter else ("⏳" if letters else "⬜"),
         (" and ".join(Path(v).name for v in built_letter) + ("" if cl.get("ready", True) else " (built; its checks not all passed)"))
-        if built_letter else (letters[0].name + " (not built)") if letters else "no letter Task in the writing Job")
+        if built_letter else (letters[0].name + " (not built: add [coverletter] and cover_letter_pdf / _docx to paper-build.toml, then build)") if letters else "no letter Task in the writing Job")
     ctext = read(call) if call else ""
     limit = re.search(r"(?mi)^\|\s*words\s*\|\s*(?:up to|not more than|maximum)?\s*([\d,]+)", ctext) or \
         re.search(r"(?i)\b(?:up to|at most|not more than|no more than|maximum(?: of)?)\s+([\d,]+)\s+words", ctext)   # or in a sentence
@@ -281,8 +441,10 @@ def delivery(board: Path, job, call) -> list:
     owed = [t.stem for t in secs if "TOADD" in read(t)] + list(man.get("draft_citations") or []) + list(man.get("unresolved_refs") or [])
     add("D5", "Clean text", "⬜" if not secs else ("⏳" if marks else "✅"),
         (f"placeholders in {', '.join(marks[:4])}" if marks else "no ⟦…⟧ left") if secs else "no LaTeX Sections yet")
-    add("D6", "Citations verified", "⬜" if not secs else ("⏳" if owed else "✅"),
-        (f"owed: {', '.join(map(str, owed[:4]))}" if owed else "no TOADD, every key resolves") if secs else "no LaTeX Sections yet")
+    bibs = other_bibs(job)
+    add("D6", "Citations verified", "⏳" if bibs else ("⬜" if not secs else ("⏳" if owed else "✅")),
+        "; ".join(([f"owed: {', '.join(map(str, owed[:4]))}"] if owed else []) + bibs[:4]) if owed or bibs
+        else ("no TOADD, every key resolves" if secs else "no LaTeX Sections yet"))
     status = man.get("submission_readiness", {}).get("status") or man.get("status", "")
     blockers = man.get("submission_readiness", {}).get("blockers") or []
     add("D7", "The build is ready", "✅" if status and status != "DRAFT" else ("⏳" if man else "⬜"),
@@ -296,10 +458,11 @@ def delivery(board: Path, job, call) -> list:
          + (f"; missing or stale: {', '.join(off[:3])}" if off else "")
          + (f"; {len(unapproved)} built, not approved" if unapproved else "")) if ups
         else "no [portal] in paper-build.toml (haipipe-paper-assemble § The portal packet)")
-    add("D9", "Read and approved", "🙋", "a person reads the built paper and approves this exact build (G4)")
+    add("D9", "The portal fill page", *fill_page(board, subs))
+    add("D10", "Read and approved", "🙋", "the final read comes back clean (haipipe-paper-assemble), then a person reads the built paper and approves this exact build (G4)")
     sent = [ln for ln in read(board / "delivery" / "delivery.md").splitlines()
             if job is not None and job.name in ln and re.search(r"\|\s*sent\s*\|", ln)]
-    add("D10", "Sent", "✅" if sent else "🙋", sent[-1].strip("| ").split("|")[0].strip() + " sent" if sent
+    add("D11", "Sent", "✅" if sent else "🙋", sent[-1].strip("| ").split("|")[0].strip() + " sent" if sent
         else "only a person marks it sent (delivery/delivery.md)")
     return out
 

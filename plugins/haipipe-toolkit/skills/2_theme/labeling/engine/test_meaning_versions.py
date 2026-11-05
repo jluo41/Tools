@@ -133,6 +133,55 @@ def test_update_turns_saved_answers_into_labels_and_changes(tmp_path):
     assert json.loads((tmp_path / "result" / "decision_record.json").read_text())["C01"]["option_id"] == "flip"
 
 
+def test_a_rule_card_citing_an_item_never_wipes_its_earlier_correction():
+    """The walkthrough, 261104: report-02's rule card cited ex-20 as evidence, and Update reset Loop 1's correction."""
+    rf_test, mu = _load("test_report_form"), _load("meaning_update")
+    report = rf_test.audit_report()
+    cited = next(ev["item_ref"] for c in report["cards"] if c["question_type"] == "define_rule" for ev in c["evidence"])
+    earlier = {"item_id": cited, "label": "safe", "from": "unsafe", "status": "corrected", "cites": "r04 Q5",
+               "note": "a plain refusal", "blind": None}
+    text = "haipipe-interaction answers · r08 · Loop 1 report · x\nQ1 · Blind check: B · Safe.\n"
+    out = mu.update(report, text, [dict(earlier)], version="l02", run="r08")
+    assert next(r for r in out["labels"] if r["item_id"] == cited) == earlier
+
+
+def test_cards_by_item_prefers_the_card_that_asks_about_the_item():
+    mv = _load("meaning_versions")
+    report = {"cards": [{"question_type": "define_rule", "evidence": [{"item_ref": "a"}]},
+                        {"question_type": "reference_label", "evidence": [{"item_ref": "a"}]}]}
+    assert mv.cards_by_item(report) == {"a": "Q2"}
+
+
+def test_final_labels_say_who_decided_and_flag_a_disagreement(tmp_path):
+    mu = _load("meaning_update")
+    rows = mu.final_labels([{"item_id": "a", "label": "safe", "status": "corrected", "cites": "r04 Q5", "note": "n"},
+                            {"item_id": "b", "label": "unsafe", "status": "unreviewed", "cites": None, "note": ""}],
+                           {"m1": {"a": "safe", "b": "safe"}})
+    assert rows[0]["decided_by"] == "you corrected it" and rows[0]["agree"]
+    assert rows[1]["label"] == "unsafe" and not rows[1]["agree"]          # a flag, never a change of label
+    paths = mu.write_final(rows, tmp_path)
+    assert "⚑ safe" in paths[1].read_text(encoding="utf-8") and len(paths[0].read_text().splitlines()) == 2
+
+
+def test_sign_release_needs_every_criterion_and_the_final_labels(tmp_path):
+    mv = _load("meaning_versions")
+    result = tmp_path / "runs" / "r07_release_e02" / "result"
+    result.mkdir(parents=True)
+    (result / "criteria.json").write_text('[{"name": "floor", "state": "met"}, {"name": "cost", "state": "not yet"}]')
+    with pytest.raises(ValueError, match="cost"):
+        mv.sign_release(tmp_path, "e02", "A Person")
+    (result / "criteria.json").write_text('[{"name": "floor", "state": "met"}]')
+    with pytest.raises(ValueError, match="final_labels"):
+        mv.sign_release(tmp_path, "e02", "A Person")
+    (result / "final_labels.jsonl").write_text("{}\n")
+    with pytest.raises(ValueError, match="your name"):
+        mv.sign_release(tmp_path, "e02", " ")
+    assert mv.sign_release(tmp_path, "e02", "A Person")["by"] == "A Person"
+    assert mv.release_sign(result.parent)["by"] == "A Person"
+    with pytest.raises(ValueError, match="already"):
+        mv.sign_release(tmp_path, "e02", "A Person")
+
+
 def test_update_keeps_what_earlier_loops_decided_for_items_it_does_not_show(tmp_path):
     """Loop 2's Update reads l01: an item report-02 does not show keeps l01's record whole (the run-through found it
     reset to unreviewed, 261101); an item it shows takes the new answer."""

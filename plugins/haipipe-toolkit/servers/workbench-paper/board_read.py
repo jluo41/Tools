@@ -21,9 +21,23 @@ PAPER_CAPTIONS: dict = {}
 # Each part is read from the Board's topics by its role, so every paper Board shows its own: Idea (s01-ideation),
 # Story (board.md `story-current:`; the venues and their related work sit inside it, b16 s32-D12), Data flow and
 # Paper flow (haipipe-paper-plan's s03 and s04). "venue" stays in the list for its key only; no view is drawn for it.
+# A part is not a view: Data flow and Paper flow are one view, Data + Paper Plan (JL 261104); Idea and Story each have their
+# own button (JL 261105: "I mean seperate this!!!", on the Idea + Story button; BOARD_VIEWS).
 BOARD_PARTS = (("idea", "Idea", r"s\d+-idea"), ("story", "Story", r"s\d+-story"), ("venue", "Venue", ""),
                ("dataflow", "Data flow", r"s\d+-(?:paper-)?data-?flow"),
                ("paperflow", "Paper flow", r"s\d+-paper-(?:work|paper-)?flow"))
+
+
+# (view key, its button, the parts it shows, in order)
+BOARD_VIEWS = (("idea", "Idea", ("idea",)), ("story", "Story", ("story",)), ("plan", "Data + Paper Plan", ("dataflow", "paperflow")))
+VIEW_PARTS = {key: parts for key, _, parts in BOARD_VIEWS}
+
+
+def view_topics(board: Path, key: str) -> list:
+    """[(part key, part name, topic)] of the view's parts this Board has, in reading order."""
+    named = {k: (name, pat) for k, name, pat in BOARD_PARTS}
+    found = [(k, named[k][0], board_topic(board, k, named[k][1])) for k in VIEW_PARTS.get(key, ())]
+    return [x for x in found if x[2] is not None]
 
 
 RELATED = r"s\d+-related-work"     # the venue's own papers, one sNN (JL 261031): shown inside Venue, never a view of its own
@@ -144,11 +158,11 @@ def _face(topic: Path):
 
 
 def _lead_sentence(body: str):
-    """(the main point, the rest): the first plain paragraph (a `**Label**: definition` line and code skipped)."""
+    """(the main point, the rest): the first plain paragraph (a `**Label**: definition` line, code and a glossary line, "GLP-1 = ...", skipped)."""
     paras = re.split(r"\n\s*\n", body.strip())
     for i, para in enumerate(paras):
         t = para.strip()
-        if t and not t.startswith(("**", "```", "|", "-", "#")):
+        if t and not t.startswith(("**", "```", "|", "-", "#")) and not re.match(r"[^\s=]+ = ", t):
             return re.sub(r"^In plain words:\s*", "", _plain(t)), "\n\n".join(paras[:i] + paras[i + 1:])
     return "", body
 

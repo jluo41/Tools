@@ -1,0 +1,12 @@
+# The Values tabs: each tab one readable topic, each table a window on the raw rows a Run returned (haipipe-paper-evidence).
+words: {key: Value, value: Number, unit: Unit, text: As printed}
+tabs:
+- slug: estimates
+  title: Main estimates
+  line: The sample and the main association
+  story: Every estimate the example work Run returned, as it returned them.
+  values: [V_main]
+  chain: [copy]
+  tables:
+  - from: t02_raw-value-tables/estimates/values.csv
+    list: [key, value, unit, text]

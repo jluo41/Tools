@@ -1,0 +1,9 @@
+run: r01_check_citations
+status: completed
+exit_code: 0
+started_at: '2026-11-03T16:38:31Z'
+finished_at: '2026-11-03T16:38:31Z'
+started_by: 'JL 261103 via the paper sessions: the citation Job as a standard part of haipipe-paper-evidence (Tools placeholder)'
+ticket: runs/r01_check_citations/r01_check_citations.sh
+worker: haipipe-paper-evidence scripts/cite_tasks.py run
+host: jluo41s-Mac-Studio/jluo41

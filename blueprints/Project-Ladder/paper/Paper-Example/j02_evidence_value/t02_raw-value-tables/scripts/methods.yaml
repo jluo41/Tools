@@ -1,0 +1,6 @@
+# "How this table is made" under each tab: shared chains, then a tab's own lines by slug.
+chains:
+  copy:
+  - "Estimating: b90 j02 t01 r01 writes values.csv, one row per estimate."
+  - "Copying: r01_copy_estimates copies values.csv unchanged; this table only arranges its rows."
+tabs: {}

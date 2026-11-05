@@ -128,8 +128,12 @@ def mark_card(folder: Path, lane: str, ok: bool) -> None:
         card.write_text(yaml.safe_dump(value, sort_keys=False, allow_unicode=True), encoding="utf-8")
 
 
-def export(folder: Path, lanes, *, author: str | None = None, root: Path | None = None) -> dict:
-    """Run the `latex` and/or `word` door for the Page in `folder`; {lane: result}."""
+def export(folder: Path, lanes, *, author: str | None = None, root: Path | None = None,
+           accept_dropped_keys: bool = False) -> dict:
+    """Run the `latex` and/or `word` door for the Page in `folder`; {lane: result}.
+
+    `accept_dropped_keys` reaches md2tex as --accept-dropped-keys (261103): a citation key
+    may leave the Section only when another Section still cites it or a revise card removed it."""
     folder = Path(folder).resolve()
     root = Path(root).resolve() if root else repo_root(folder)
     exporter = _exporter(root)
@@ -139,6 +143,8 @@ def export(folder: Path, lanes, *, author: str | None = None, root: Path | None 
         payload = {"path": path, "file": ""}      # `target()` derives the Page Face from the folder
         if lane == "word" and author:
             payload["author"] = author
+        if lane == "latex" and accept_dropped_keys:
+            payload["accept_dropped_keys"] = True
         door = exporter.export_latex if lane == "latex" else exporter.export_word
         res, err = door(payload)
         results[lane] = {"ok": not err, **({"err": err} if err else {}), **(res or {})}

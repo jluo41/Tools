@@ -119,7 +119,7 @@ def _paragraphs(body: str) -> list:
             if cur:
                 out.append(cur)
             continue
-        b = re.match(r"^- B\d+ · (S\d+[a-z]*) · (?:\[([^\]]+)\]\s*)?(.*\S)", line)   # S3a: a split sentence
+        b = re.match(r"^- B\d+[a-z]* · (S\d+[a-z]*) · (?:\[([^\]]+)\]\s*)?(.*\S)", line)   # S3a: a split sentence
         if cur is not None and b:
             cur[1].append((b.group(1), b.group(2) or "", b.group(3)))
     return out
@@ -364,7 +364,7 @@ def _inline(text: str, marks: dict) -> str:
 def _sentence(item: str, marks: dict) -> str:
     """A §3 line, `B1 · S1 · text`: its sentence number small and grey, then the sentence, each in its own span, so the
     text column can hang the numbers in a gutter on the left (CARDS_CSS)."""
-    m = re.match(r"^B\d+ · (S\d+[a-z]*) · (.*)$", item)
+    m = re.match(r"^B\d+[a-z]* · (S\d+[a-z]*) · (.*)$", item)
     if m and isinstance(marks, _Marks):
         marks = {**marks.by_sentence.get("*", {}), **marks.by_sentence.get(m.group(1), {})}
     return (f'<span class="mut s-no" style="font-size:12px">{esc(m.group(1))}</span> '
@@ -513,7 +513,9 @@ def states(f: dict) -> dict:
             "4 · Display": (("done" if all(x["ok"] for x in f["displays"]) else
                              "sign" if all(x.get("built") for x in f["displays"]) else "next" if written else "todo")
                             if f["displays"] else "optional"),
-            "5 · Revise": ("pass" if d.get("previous") or f["revise"].is_file() else "next") if written else "todo",
+            # waits only while the newest pass still has a proposed card; an applied or written pass is done
+            "5 · Revise": (("pass" if _proposed_cards(f["revise"]) else "done") if f["revise"].is_file()
+                           else "next") if written else "todo",
             "Delivery": (("done" if f["sent"] else "send") if f["built"] else "next" if written else "todo")}
 
 
@@ -585,7 +587,7 @@ def _plan_tree(body: str) -> tuple:
             if q and para:
                 asks[para] = q.group(1)
             continue
-        b = re.match(r"^- B\d+ · (S\d+[a-z]*) · (?:\[([^\]]+)\]\s*)?(.*\S)", line)
+        b = re.match(r"^- B\d+[a-z]* · (S\d+[a-z]*) · (?:\[([^\]]+)\]\s*)?(.*\S)", line)
         n = re.match(r"^\s+Note:\s*(.*\S)", line)
         if b:
             last = [b.group(1), b.group(2) or "", b.group(3), ""]
@@ -634,7 +636,7 @@ def _plan_map(d: dict, ev: dict, section: str, task: str = "") -> str:
 def _bullet_block(lines: list, s: str, lo: int, hi: int) -> tuple:
     """(start, end) of the §1 Bullet `S<s>` between lines lo and hi: its line and its indented Note and More lines."""
     for i in range(lo, hi):
-        if re.match(r"^- B\d+ · " + re.escape(s) + r" · ", lines[i]):
+        if re.match(r"^- B\d+[a-z]* · " + re.escape(s) + r" · ", lines[i]):
             j = i + 1
             while j < hi and lines[j].startswith((" ", "\t")) and lines[j].strip():
                 j += 1
@@ -691,7 +693,7 @@ def plan_act(root: Path, p: dict, read_only: bool = False) -> tuple:
         at = _bullet_block(lines, s, top, hi)
         if not at or not value and what == "words":
             return gone() if not at else (400, {"ok": False, "err": "empty: take the point out instead"})
-        m = re.match(r"^(- B\d+ · \S+ · )(?:\[([^\]]*)\]\s*)?(.*?)\s*$", lines[at[0]])
+        m = re.match(r"^(- B\d+[a-z]* · \S+ · )(?:\[([^\]]*)\]\s*)?(.*?)\s*$", lines[at[0]])
         role, words = m.group(2) or "", m.group(3)
         if norm(role if what == "role" else words) != was:
             return gone()
@@ -756,15 +758,15 @@ def plan_act(root: Path, p: dict, read_only: bool = False) -> tuple:
         while not at and to > span[0] + 1 and not lines[to - 1].strip():
             to -= 1
         # the id after the point above it (S4a), so the text's S numbers stay put until Write redrafts
-        prev = [x for x in re.findall(r"(?m)^- B\d+ · (S\d+[a-z]*) · ", "\n".join(lines[top:to]))]
-        ids = set(re.findall(r"(?m)^- B\d+ · (S\d+[a-z]*) · ", "\n".join(lines[top:hi])))
+        prev = [x for x in re.findall(r"(?m)^- B\d+[a-z]* · (S\d+[a-z]*) · ", "\n".join(lines[top:to]))]
+        ids = set(re.findall(r"(?m)^- B\d+[a-z]* · (S\d+[a-z]*) · ", "\n".join(lines[top:hi])))
         m = re.match(r"S(\d+)([a-z]?)", prev[-1]) if prev else None
         num = m.group(1) if m else "0"
         letter = chr(ord(m.group(2)) + 1) if m and m.group(2) else "a"
         while f"S{num}{letter}" in ids:
             letter = chr(ord(letter) + 1)
         sid = f"S{num}{letter}" if prev or ids else "S1"
-        bs = [int(x) for x in re.findall(r"(?m)^- B(\d+) · ", "\n".join(lines[span[0]:span[1]]))]
+        bs = [int(x) for x in re.findall(r"(?m)^- B(\d+)[a-z]* · ", "\n".join(lines[span[0]:span[1]]))]
         role = norm(p.get("role"))
         lines.insert(to, f"- B{max(bs, default=0) + 1} · {sid} · " + (f"[{role}] " if role else "") + value)
     elif what == "addpara":
@@ -815,9 +817,9 @@ def plan_act(root: Path, p: dict, read_only: bool = False) -> tuple:
             while to > span[0] + 1 and not lines[to - 1].strip():
                 to -= 1
         own = "\n".join(lines[span[0]:span[1]])
-        if re.search(r"(?m)^- B" + re.match(r"- B(\d+)", block[0]).group(1) + r" · ", own):   # its B taken there
-            n = max((int(x) for x in re.findall(r"(?m)^- B(\d+) · ", own)), default=0) + 1
-            block[0] = re.sub(r"^- B\d+", f"- B{n}", block[0])
+        if re.search(r"(?m)^- B" + re.match(r"- B(\d+)[a-z]*", block[0]).group(1) + r" · ", own):   # its B taken there
+            n = max((int(x) for x in re.findall(r"(?m)^- B(\d+)[a-z]* · ", own)), default=0) + 1
+            block[0] = re.sub(r"^- B\d+[a-z]*", f"- B{n}", block[0])
         lines[to:to] = block
     else:
         return 400, {"ok": False, "err": "unknown change"}
@@ -888,10 +890,10 @@ def _examples_card(exs: list, d: dict, f: dict, folder: Path, root: Path, own: b
         desk = ((d or {}).get("head", {}).get("desk", "") or f["head"].get("desk", "") or
                 (_header(job.read_text(encoding="utf-8", errors="ignore")).get("desk", "") if job else "")).split(":")[0]
         ask = (f"/excalidraw-read {f['t']}: find 3 to 6 papers published in {desk.strip() or 'the target venue'} itself "
-               f"(only that journal, JL 261022: \"MUST NMI\"; each named by its title first) whose {f['section']} we could "
-               f"follow, close to our topic; read each PDF's {f['section']} "
-               f"whole into a Studio topic sNN-{folder.name}-examples (reads/pNN-<author><year>/reading.yaml, with "
-               "shots), each passage linked to the paragraph of ours it feeds.")
+               f"(only that journal, JL 261022: \"MUST NMI\"; each named by its title first) of the same article type, whose "
+               f"{f['section']} we could follow; make a Studio topic sNN-{folder.name}-examples (/haipipe-studio) holding "
+               f"a screenshot of each paper's {f['section']} (reads/pNN-<author><year>/shots/section.jpg), drawn by "
+               "excalidraw-read ref/section_screens.py; say how each is written, never what the study found.")
         return _fold("📚 Examples", _not_yet("No example papers yet.") + f'<p><button type=button class="run-copy '
                      f'work-act" data-copy="{esc(ask)}">Copy prompt · find examples</button></p>')
     inside = _drawn_inside(f)
@@ -912,8 +914,8 @@ def _examples_card(exs: list, d: dict, f: dict, folder: Path, root: Path, own: b
             out.append(_fold(title, _not_yet(f"{top.name} has no drawing yet.")))
             continue
         url = _draw_url(drawing, root)
-        out.append(f'<details class="topic work-task"><summary><span class=related-head><b>{esc(title)}</b> '
-                   f'<span class=mut>· {esc(top.name)}</span></span><span class=topic-pop>{pop(url, top.name, "↗")}</span>'
+        out.append(f'<details class="topic work-task"><summary><span class=related-head><b>{esc(title)}</b></span>'
+                   f'<span class=topic-pop>{pop(url, top.name, "↗")}</span>'
                    f'</summary><iframe class=st-frame title="{esc(top.name)}" data-src="{esc(url)}" '
                    'referrerpolicy=no-referrer></iframe></details>')
     return "".join(out)
@@ -931,7 +933,7 @@ def _rubric_card(exs: list, d: dict, f: dict, root: Path) -> str:
     if exs and d and d.get("structure"):
         _, _, paras = _plan_tree(d["structure"][1])
         words = sum(len(m.group(1).split()) for _, b in d.get("text", [])
-                    for m in re.finditer(r"(?m)^- B\d+ · S\d+[a-z]* · (.*)$", b))
+                    for m in re.finditer(r"(?m)^- B\d+[a-z]* · S\d+[a-z]* · (.*)$", b))
         n = max([len(paras)] + [max(e["paras"] or [0]) for e in exs])
         ours = {i + 1: f'<b>{esc(job)}</b><br><span class=mut>{esc(" · ".join(r for _, r, _, _ in bs if r))}</span>'
                 for i, (_, job, bs) in enumerate(paras)}
@@ -1253,7 +1255,7 @@ def _embed_displays(html: str, d: dict, xs, root: Path) -> str:
     (JL 261021: "如果我们有图片或者表格的话 ... PNG TO EMBED UNDER THAT SENTENCE"): its rendered preview.png, which
     opens full size; a unit with only preview.pdf links it; one not built yet says so. The unit stays the source (its
     README, recipe and the Run that made the asset); the page only shows its picture."""
-    order = [m for _, b in (d or {}).get("text", []) for m in re.findall(r"(?m)^- B\d+ · (S\d+[a-z]?) · ", b)]
+    order = [m for _, b in (d or {}).get("text", []) for m in re.findall(r"(?m)^- B\d+[a-z]* · (S\d+[a-z]?) · ", b)]
     for x in xs or ():
         first = next((sid for sid in order if sid in x.get("calls", [])), "")
         m = first and re.search(r'<li data-s="' + re.escape(first) + r'">.*?</li>', html, re.S)
@@ -1283,7 +1285,7 @@ def _text_rows(d: dict, marks: dict, right: dict, rest_head: str, xs=(), root: P
     text = "".join((f'<h3 style="margin:14px 0 4px">{esc(t)}</h3>' if len(d["text"]) > 1 else "") + _md(b, marks)
                    for t, b in d["text"])
     text = _embed_displays(text, d, xs, root) if xs else text
-    seq = [m for _, b in d["text"] for m in re.findall(r"(?m)^- B\d+ · (S\d+[a-z]?) · ", b)]
+    seq = [m for _, b in d["text"] for m in re.findall(r"(?m)^- B\d+[a-z]* · (S\d+[a-z]?) · ", b)]
     have, at = set(seq), {sid: i for i, sid in enumerate(seq)}
     # in the order the text reads, which an S number need not follow once a sentence has moved
     order = sorted(right, key=lambda s: (0, at[s], "") if s in at else (1,) + _s_key(s) if s else (2, 10 ** 7, ""))
@@ -1311,7 +1313,7 @@ def _open_points(d: dict | None) -> list:
     point whose evidence line says `Evidence: none · <why>`."""
     out = []
     for _, body in (d or {}).get("text", []):
-        for m in re.finditer(r"(?m)^- B\d+ · (S\d+[a-z]?) · (.*)$", body):
+        for m in re.finditer(r"(?m)^- B\d+[a-z]* · (S\d+[a-z]?) · (.*)$", body):
             for mk in MARK.findall(m.group(2)):
                 low = mk.strip().lower()
                 kind = ("check" if low.startswith("check") else
@@ -1319,7 +1321,7 @@ def _open_points(d: dict | None) -> list:
                 out.append({"s": m.group(1), "kind": kind,
                             "what": re.sub(r"^(check|pending)\b\s*:?\s*", "", mk.strip(), flags=re.I)})
     if d and d.get("structure"):
-        for m in re.finditer(r"(?ms)^- B\d+ · (S\d+[a-z]?) · .*?(?=^- B\d+ · |^#{2,4} |\Z)", d["structure"][1]):
+        for m in re.finditer(r"(?ms)^- B\d+[a-z]* · (S\d+[a-z]?) · .*?(?=^- B\d+[a-z]* · |^#{2,4} |\Z)", d["structure"][1]):
             e = re.search(r"(?m)^\s*Evidence:\s*none\b\s*·?\s*(.*)$", m.group(0))
             if e:
                 out.append({"s": m.group(1), "kind": "none", "what": e.group(1).strip()})
@@ -1464,7 +1466,7 @@ def _calls(d: dict | None) -> dict:
     """What the text calls a display by, and its sentences in order: {"Table 1": ["S1", "S5"]}; a \\ref{label} too."""
     out = {}
     for _, body in (d or {}).get("text", []):
-        for m in re.finditer(r"(?m)^- B\d+ · (S\d+[a-z]?) · (.*)$", body):
+        for m in re.finditer(r"(?m)^- B\d+[a-z]* · (S\d+[a-z]?) · (.*)$", body):
             for name in [n[0].upper() + n[1:] if n[:1] in "tfo" else n for n in CALLS.findall(m.group(2))] + REFS.findall(m.group(2)):
                 out.setdefault(name, []).append(m.group(1)) if m.group(1) not in out.get(name, []) else None
     return out
@@ -1569,7 +1571,8 @@ def _revise_passes(path: Path) -> list:
 
     def cards(body: str) -> list:
         return [(m.group(1).strip(), {**{k.lower(): v.strip() for k, v in re.findall(
-                    r"(?m)^(Why|Original|Expected|State):[^\S\n]*(.*)$", m.group(2))}, "body": m.group(2)})
+                    r"(?m)^(?:[-*][^\S\n]+)?(Why|Original|Expected|State):[^\S\n]*(.*)$", m.group(2))},
+                 "body": m.group(2)})                     # "State: …" or "- State: …" (most records write the dash)
                 for m in re.finditer(r"(?ms)^### ([^\n]+)\n(.*?)(?=^### |^## |\Z)", body)]
     parts = [(t.strip(), b) for t, _, b in (x.partition("\n") for x in re.split(r"(?m)^## ", text)[1:])
              if t.strip().lower().startswith("pass")]
@@ -1579,6 +1582,14 @@ def _revise_passes(path: Path) -> list:
     passes = [(t, cards(b)) for t, b in parts]
     num = lambda t: int(re.search(r"\d+", t).group(0)) if re.search(r"\d+", t) else 0
     return sorted(passes, key=lambda x: -num(x[0]))
+
+
+def _proposed_cards(path: Path) -> int:
+    """How many cards of the newest pass still read `State: proposed` (a card with no State line is proposed; a
+    review report is not a card)."""
+    passes = _revise_passes(path) if path.is_file() else []
+    return sum(re.sub(r"\W+$", "", (c.get("state") or "proposed").split()[0].lower()) == "proposed"
+               for h, c in passes[0][1] if not _is_report(h)) if passes else 0
 
 
 def _before_passes(text: str) -> str:
@@ -1594,7 +1605,8 @@ def _first_pass_title(text: str) -> str:
 
 
 STATE_CHIP = {"proposed": '<span class="st st-warn">🔶 proposed</span>', "accepted": '<span class="st st-ok">✓ accepted</span>',
-              "written": '<span class="st st-ok">✓ written</span>', "rejected": '<span class=st>✗ rejected</span>'}
+              "written": '<span class="st st-ok">✓ written</span>', "rejected": '<span class=st>✗ rejected</span>',
+              "applied": '<span class="st st-ok">✓ applied</span>'}
 
 
 def _old_new(old: str, new: str) -> str:
@@ -1705,7 +1717,7 @@ def _revise_card(head: str, c: dict, task: str, title: str, at: str = "") -> str
     """One Revise card a person acts on (JL 261020: "我想要那种可以交互的感觉"): its kind, sentence and job, its state;
     why; the change; then ✓ Accept · ✗ Reject · ✎ Edit, or ↺ Undo once decided. Hovering it lights its sentence in the
     text above. A click writes only the card's State (or its edited Expected) in the cards file (card_act)."""
-    state = c.get("state", "proposed").split()[0].lower() if c.get("state") else "proposed"
+    state = re.sub(r"\W+$", "", c.get("state").split()[0].lower()) if c.get("state") else "proposed"
     target = (re.match(r"[^·]+·\s*(S\d+[a-z]?)\b", head) or [None, ""])[1]
     para = (re.match(r"[^·]+·\s*(C\d+\.P\d+)\b", head) or [None, ""])[1] or at   # a whole part's card: its first paragraph
     # a card is a choice (JL 261021: "这个 edit 你能不能自动把这几个（比如 A、B、C）都列出来 ... D 是 drop it ... 点击确认 button
@@ -2196,15 +2208,15 @@ def _reading_key(head: str, d: dict) -> tuple:
     if not m:
         return (10 ** 6, "")
     body = "\n".join(b for _, b in (d or {}).get("text", []))
-    order = {sid: i for i, sid in enumerate(re.findall(r"(?m)^- B\d+ · (S\d+[a-z]?) · ", body))}
+    order = {sid: i for i, sid in enumerate(re.findall(r"(?m)^- B\d+[a-z]* · (S\d+[a-z]?) · ", body))}
     if m.group(4):                                   # a card on a whole part (C2) sits at its first paragraph, first
         first = _first_para(m.group(4), d)           # among that paragraph's cards
-        sec = first and re.search(r"(?ms)^### " + re.escape(first) + r"\b.*?^- B\d+ · (S\d+[a-z]?)", body)
+        sec = first and re.search(r"(?ms)^### " + re.escape(first) + r"\b.*?^- B\d+[a-z]* · (S\d+[a-z]?)", body)
         return (order[sec.group(1)] - 0.6, "") if sec and sec.group(1) in order else (-1, "")
     if m.group(1):
         sid = f"S{m.group(1)}{m.group(2)}"
         return (order[sid], "") if sid in order else (int(m.group(1)) + 10 ** 5, m.group(2))
-    sec = re.search(r"(?ms)^### " + re.escape(m.group(3)) + r"\b.*?^- B\d+ · (S\d+[a-z]?)", body)
+    sec = re.search(r"(?ms)^### " + re.escape(m.group(3)) + r"\b.*?^- B\d+[a-z]* · (S\d+[a-z]?)", body)
     return (order[sec.group(1)] - 0.5, "") if sec and sec.group(1) in order else (10 ** 6, "")
 
 
@@ -2241,11 +2253,11 @@ def _text_and_cards(d: dict, ev: dict, root: Path, path: Path, task: Path) -> st
     said = _sentence_lines(rep.get("body", "")) if rep else []
     paras = [pid for _, b in d["text"] for pid in re.findall(r"(?m)^### (C\d+\.P\d+)\b", b)]
     body = "\n".join(b for _, b in d["text"])
-    sids = {pid: re.findall(r"(?m)^- B\d+ · (S\d+[a-z]?) · ", (re.search(r"(?ms)^### " + re.escape(pid) + r"\b.*?(?=^### |\Z)", body)
+    sids = {pid: re.findall(r"(?m)^- B\d+[a-z]* · (S\d+[a-z]?) · ", (re.search(r"(?ms)^### " + re.escape(pid) + r"\b.*?(?=^### |\Z)", body)
                                                                  or [""])[0]) for pid in paras}
     flows = [(k, v, next((pid for pid in paras if pid.endswith("." + k)), "")) for k, v in
              re.findall(r"(?m)^Flow (P\d+): (.*)$", rep.get("body", "").partition("\nSentences:")[2])] if rep else []
-    words = {m.group(1): m.group(2) for _, b in d["text"] for m in re.finditer(r"(?m)^- B\d+ · (S\d+[a-z]?) · (.*)$", b)}
+    words = {m.group(1): m.group(2) for _, b in d["text"] for m in re.finditer(r"(?m)^- B\d+[a-z]* · (S\d+[a-z]?) · (.*)$", b)}
     # each sentence's evidence beside it, the rows 3 · Evidence shows there (JL 261021: "这里最好也加一下 evidence ...
     # 这一块对应的 paper 是什么 ... citation、values")
     evs = {}
@@ -2281,7 +2293,7 @@ def _text_and_cards(d: dict, ev: dict, root: Path, path: Path, task: Path) -> st
     head = ((f'<div class=rv-head><h4 style="margin:0">🃏 Revise cards · {esc(title)}</h4><div class=rv-kinds>'
              + (chip("notes", "Comments", len(notes)) if notes else "")
              + (chip("logic", "Logic", len(said)) if said else "")
-             + (chip("edits", "Edits", len([1 for h, c in cards if not whole(h) and (_options(c) or (c.get("state") or "").split()[:1] != ["written"])]))
+             + (chip("edits", "Edits", len([1 for h, c in cards if not whole(h) and (_options(c) or (c.get("state") or "").split()[:1] not in (["written"], ["applied"]))]))
                 if cs else "")
              + (chip("ev", "Evidence", len(evs)) if evs else "")
              + (f'<button type=button class="run-copy work-act" data-copy="{esc(ask)}">Copy: revise '
@@ -2770,4 +2782,6 @@ def step_view(folder: Path, root: Path, step: str) -> tuple:
     # Report keeps the prompts of the two writing steps (JL 261020: "we should also need to think about to add the
     # prompt to help the structure and drafting, right?")
     ask = op if step in ("1 · Plan", "2 · Write", "5 · Revise") else ""
-    return work, ask + edit + _part("Result") + result, step, runs
+    from live.address_links import page_linker
+    link = page_linker(folder, root)            # every bNN.jNN.tNN.rNN a link (address_links, JL 261103)
+    return link(work), link(ask + edit + _part("Result") + result), step, runs

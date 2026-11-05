@@ -1,6 +1,29 @@
 haipipe-ui · Changelog
 ======================
 
+## [0.4.4] - 2026-11-04
+
+- A work page's Work has the same views as its Report: Process, then the same Results; no more Progress view (JL 261104).
+- A work Block's Findings is a quick overview: closed numbered sections with side tabs: Values, the Questions by `group:`, Delivery.
+- A work page has no Questions view; its Questions live in Findings.
+- Findings gains 🧠 Maps: one tab per mind map in a Task's newest `runs/*/result/maps/`.
+
+## [0.4.3] - 2026-11-04
+
+- A page reads badly: compare it with other pages at the same level before changing anything, name the one difference,
+  fix it with what the page already has (JL 261104, on b01's mind map: "这是一个 huge lesson").
+
+## [0.4.2] - 2026-11-04
+
+- Closed by default on every page (JL 261104: "默认的话，大家都是合着的"); a walk and a review check it. Test:
+  `test_report_opens_on_the_mindmap_with_every_item_closed`.
+
+## [0.4.1] - 2026-11-04
+
+- A Block's Status: closed numbered sections per band, a row per Job, each row opening to its Tasks and Runs; no
+  next-step sentences (JL 261104, on b01_clm_foundation_model, agreed: "这个做得很好"). Built in `focus_page.py`
+  `band_board`.
+
 ## [0.4.0] - 2026-11-02
 
 - Walk (JL 261102: "call it in the chrome and you click it and you review it yourself"): `/haipipe-ui walk <url>`

@@ -1,0 +1,7 @@
+# t01_cite-prior-work · claim group (placeholder): the printed citation keys of one claim. Read by haipipe-paper-evidence
+# scripts/cite_tasks.py.
+label: prior work on <the policy>
+question: What did earlier work find about <the policy>?
+what: the earlier studies of <the policy> and its effect on <an outcome>
+discovery: b01.j01.t01
+keys: [example2024policy, example2021one, example2022two]

@@ -7,9 +7,9 @@ shared-blueprint: b01_haipipe-toolkit
 spine: Design questions about the paper Theme as one ladder: what a paper Board, a version Job and a Section Task each hold and show, where Ideation and the Story sit among the six Spaces, where venues, related papers and the built paper live, and how review rounds and letters appear.
 close: Each recorded question has a report Page with an answer status, and every answered question names the skill, workbench or builder change that settled it.
 session: Ladder-b16-Paper-v1031
-ui-block: http://100.121.165.84:5599/_board/workbench?layout=focus&path=examples-2-cms/Project-Personality-OpioidRx/paper/Paper-AgreeablePrescriptionDiscretion
-ui-job: http://100.121.165.84:5599/_board/workbench?layout=focus&path=examples-2-cms/Project-Personality-OpioidRx/paper/Paper-AgreeablePrescriptionDiscretion/j01_v0929_misq
-ui-task: http://100.121.165.84:5599/_board/workbench?layout=focus&path=examples-2-cms/Project-Personality-OpioidRx/paper/Paper-AgreeablePrescriptionDiscretion/j01_v0929_misq/t01_introduction
+ui-block: blueprints/Project-Ladder/paper/Paper-Example
+ui-job: blueprints/Project-Ladder/paper/Paper-Example/j11_writing_v1130_desk
+ui-task: blueprints/Project-Ladder/paper/Paper-Example/j11_writing_v1130_desk/t01_introduction
 
 ## Topic
 

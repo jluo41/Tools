@@ -1,5 +1,87 @@
 # haipipe-paper-evidence · changelog
 
+## 0.13.0 · 2026-11-04 · a display's PDF ends with its earlier versions
+
+- JL 261104: "add the previous old versions at the bottom of the pdfs". `preview_display.py` passes the Task's lower-numbered Runs to `build_preview.py`, one page each after the method. New rule: new data or a new look means a new Run, with a `change:` line on its card; never delete a display Run's `result/` to redraw it.
+
+## 0.12.1 · 2026-11-04 · a pending value may wait for its Run
+
+- Reported by Paper-PersonalityPDMPMandate: `pending:` crashed when the Run's result file did not exist yet. `catalog` now gives an empty, unlinked value; with no `pending`, a missing file stays an error.
+
+## 0.12.0 · 2026-11-04 · the Values tabs are the paper Board standard
+
+- JL 261104 ("you do it"; ScalingGlucose r04_collect_values_tables, s03-D09): `scripts/build_tables.py` moved here from that
+  Board's t08, with no Run name written in it (the newest Run holding the file) and the column words in `tables.yaml`.
+  SKILL.md "The Values tabs" has the rules and config; example: Paper-Example `t02_raw-value-tables`. The cell's Sections
+  line now reads the Sections. Rerunning ScalingGlucose t08 gave the same tabs.
+
+## 0.11.0 · 2026-11-04 · the venue's caption limit, from call.md
+
+- JL 261104 on r03_collect_caption_style: "let's follow the venue". `caption_check.py` reads `at most N words` from the caption
+  row of the Board's `venues/<venue>/call.md`, so paper_check's V10 uses it too; 75 stays the default when a venue says nothing.
+
+## 0.10.0 · 2026-11-04 · the message is checked per display
+
+- JL 261104: "把这个加 message 也写到对应的 skill 里好吧 当做一个 checklist". V6 only counted messages across the paper, and
+  all eight ScalingGlucose previews still said "No message written yet". V6 now says when and how a message is written (with
+  the display, in the same Run; plain words, the finding, no numbers), and `scripts/caption_check.py` names each display with
+  no `## Message` or more than 3 sentences, and exits 1.
+
+## 0.9.0 · 2026-11-03 · the checklist holds the caption rule
+
+- JL 261103: "add the checklist or the rules, that for the Figure caption, do not add so much things, don't be too
+  long." The 75-word rule sat only in haipipe-display's revise loop, unchecked, and ScalingGlucose's eight captions ran
+  98 to 187 words. The display checklist gains V10 short caption, and `scripts/caption_check.py` counts each display
+  Task's newest float.tex: title at most 15 words, legend at most 75 (a table's 120).
+
+## 0.8.0 · 2026-11-03 · the display checklist
+
+- JL 261103: "please update the /haipipe-paper-display's checklist"; "for the preview pdf, I think the first section
+  should be: what we want to say with this display". SKILL.md gains The display checklist: planned (P9), drawn (V2),
+  its message (V6), examples (V7), questions (V8), reviewed (V5), accepted (V9), the order a display is made and the
+  order the Displays view shows (1 Plan, 2 Displays, 3 Examples, 4 Interaction). preview.pdf's page 2 opens with the
+  message (haipipe-display 0.8.0).
+
+## 0.7.1 · 2026-11-03 · the ledger leads with the value's name
+
+- JL 261103, of the MISQ ledger: "I think the first column should be the name, right? do we have the name for each
+  value?". Every value has one, its value map's `what:` (owed rows too). `values.html` now reads Value name (its ID
+  under it) · Where · Printed · Value · Status · Source and key; the Source column keeps the Run chain and the key.
+  Fixed column widths, so the table fits a workbench frame, and Where keeps its words whole. Checked in Chrome on
+  Paper-Example's Evidence view.
+- A /haipipe-ui walk at 390 px: the six columns piled up. On a phone each row is now a small card (the name, then
+  Where · Printed · Value · Status on one line, then the Source); the status word never breaks.
+- pp-LBP-JAMA 261103: `build_displays_pdf.py` showed a Task's newest alternative, not the face's `printed:` version
+  (JAMA t05 prints r07, the PDF showed r08). It now reads workbench-paper `board_evidence.display_pick`, the same rule
+  the Evidence view uses, and prints page 1 of that version's preview.pdf, the display as the paper prints it.
+
+## 0.7.0 · 2026-11-03 · the value Job and the citation Job, standard for every paper
+
+- JL 261103 via the two paper sessions: the value and citation evidence pattern (the MISQ and JAMA papers wrote their
+  own scripts) is part of this skill, and the two value ledgers are one engine ("how do you think you can unify them
+  together"). New `scripts/values_ledger.py` (run · check · bind): a catalog from each value Task's
+  `scripts/value_map.yaml` (ids `<RQ>-<tNN>-<nnn>`, `checks:` lineage from the work Run's values.csv `source`),
+  bindings as VALUE card items seeded by the search into `evidence/proposals.md` and adopted once ticked, and the check
+  (match, differs, missing, no anchor, owed, pending, stale, found) with the values never printed and, paper-wide, the
+  numbers printed with no binding. values.html in the MISQ ledger look. The generic parts (status, rounding, lineage,
+  proposals) are haipipe-evidence `cards.py` 0.9.0, imported, not written twice.
+- New `gen_value_runs.py` (a j02's Run cards, tickets and `t99_paper_value_check` from its maps), `cite_tasks.py` (a
+  j03's claim groups `scripts/claim_group.yaml`: gen, run, apply, inventory; the MISQ paper's script made generic) and
+  `paper_text.py` (writing Job, printed Sections, both sentence shapes, display rows, workbench links).
+- `evidence_ledger.py`: a printed value with no Run, from a screen read, or whose binding differs, is missing or is
+  stale is a ❗; owed values count as open.
+- The SKILL says the standard shape of j02 and j03 and the migration order: MISQ first (its bindings are the
+  regression test), then JAMA (bindings seeded by the search). Neither paper is migrated here.
+- Tools' Paper-Example gains a value map, a claim group, Section sentences and a drawn Display B, fed by the placeholder
+  work Block `work/b90_example_paper_results`. `tests/test_values_ledger.py` covers every status on it;
+  `test_evidence_ledger.py`'s old "names no work Run" wording follows 0.5.1's message.
+
+## 0.6.3 · 2026-11-03 · a generated preview links its addresses
+
+- A script that writes an HTML preview (values.html, citations.html) links each Run address and Section name through
+  the shared `servers/workbench/address_links.py` (`page_linker`), never its own copy (JL 261103: "b52.j01.t01.r01
+  <--- how could you make this to be clickable").
+
 ## 0.6.2 · 2026-11-01 · the venue's display limit, the display plan's numbers
 
 - `evidence_ledger.py` takes the venue's main display limit from `venues/<venue>/call.md` `## Displays` when no

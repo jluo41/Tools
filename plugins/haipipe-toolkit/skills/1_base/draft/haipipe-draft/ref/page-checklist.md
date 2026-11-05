@@ -117,6 +117,7 @@ is not forgotten; the agent never ticks it.
 | Step | Done when this exists | Made by | Who |
 |---|---|---|---|
 | 🎨 Studio | optional: the Board topic that names the Task | haipipe-studio | either |
+| 📚 0 · Examples (`page-type: section`) | the face's `examples:` names a Board topic holding 3 to 4 `reads/*/reading.yaml`, or says `examples: none · <reason>`; `page.py health` WARNs, `--final` FAILs | /excalidraw-read, haipipe-paper-draft | agent |
 | 📐 1 · Plan | `draft/records/<stem>-context.md` | `cli/context-record.py <stem>.md` | agent |
 | 📐 1 · Plan | `draft/records/<stem>-requirement.md`, its `W<n>` rules (and generated `V<n>` when the venue has a division) | `cli/requirement.py`, then the W block by hand | agent |
 | 📐 1 · Plan | `draft/<stem>-draft-v<N>.md` with `## 1 · Structure` (Overview, one Bullet per sentence, its role and `Evidence:`) and `## 2 · Scratch` | haipipe-draft-logic | agent |
@@ -125,7 +126,8 @@ is not forgotten; the agent never ticks it.
 | 🔎 3 · Evidence | `draft/<stem>-evidence-items.md` (older) or `evidence/cards.yaml`: one item per number, citation or display a sentence uses | haipipe-evidence | agent; a person ticks Decide |
 | 🖼 4 · Display | optional: `display/Display<n>-<slug>/` for each table or figure the text calls | haipipe-display | agent; a person writes `accepted:` |
 | 🔁 5 · Revise | `draft/records/<stem>-revise.md`, a pass with its review report and cards | haipipe-draft-writing `ref/revise.md` | agent; a person decides each card |
-| 📤 Delivery | `delivery/<job>/<task>/web/`, `latex/`, `word/` from the adopted Content | `page.py adopt`, then `page.py export` | agent, on the person's ok |
+| 📤 Delivery | `content: draft v<N>` on the face names the current draft (`health`'s `content` row is quiet) | `page.py adopt`, or `adopt --relayout` when paragraphs changed | agent, on the person's ok |
+| 📤 Delivery | `delivery/<job>/<task>/web/`, `latex/`, `word/` from the adopted Content | `page.py export` | agent, on the person's ok |
 | 📤 Delivery | `sent` in `delivery/delivery.md` | a person | person |
 
 The last row is the final gate: `page.py health --final <task>` (see SKILL.md § ✅ Closing checks). It fails on

@@ -3,7 +3,7 @@
 The haipipe-utils API host (plugins/haipipe-utils/servers/_host/serve.py) has no login of its own and listens on
 localhost only; its page notes say to put a gate in front before it listens on a network. This host is that gate:
 `/_api/<rest>` goes to `$HAIPIPE_UTILS_ORIGIN/<rest>` (default http://127.0.0.1:8070), so its try page opens at
-`/_api/try/food` wherever this host is opened, after this host's own login. Requests and answers pass through as they
+`/_api/try/meal` wherever this host is opened, after this host's own login. Requests and answers pass through as they
 are (GET and POST, a JSON body or a photo's multipart body); nothing is rewritten.
 """
 

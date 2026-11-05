@@ -1,0 +1,57 @@
+{
+ "topic": "s22-word-lane-speed",
+ "style": "sketch-notes",
+ "source": "s22-word-lane-speed.ideas.md",
+ "slides": [
+  {
+   "id": "01",
+   "idea": "Is Word slow, or stuck?",
+   "points": [
+    "28 minutes: 14 displays, each 2 minutes, almost to the second",
+    "2 minutes is AppleScript's timeout, and the placement then failed",
+    "Word's main thread sits on a lock at 0% CPU"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the ideas file; its picture comes when asked"
+  },
+  {
+   "id": "02",
+   "idea": "What must stay",
+   "points": [
+    "each display at the top of the page after its citation",
+    "real Word for what goes to co-authors",
+    "does a draft need it too?"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the ideas file; its picture comes when asked"
+  },
+  {
+   "id": "03",
+   "idea": "It was stuck",
+   "points": [
+    "28 minutes on the stuck Word",
+    "40 seconds on a working Word, displays at page tops",
+    "so builds now take turns, and a stuck Word costs 30 seconds and says so"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the ideas file; its picture comes when asked"
+  },
+  {
+   "id": "04",
+   "idea": "Five ways to go faster",
+   "points": [
+    "a Word queue, so builds take turns: built",
+    "a draft that skips measuring",
+    "one Word session for all displays",
+    "reuse the last placement when the text before did not change",
+    "ask Word for the next page in place of searching for it"
+   ],
+   "leaning": "",
+   "ask": "",
+   "notes": "a scratch: its words from the ideas file; its picture comes when asked"
+  }
+ ]
+}

@@ -1,9 +1,9 @@
 ---
 name: haipipe-paper
-description: "The one door for a paper on the ladder: a paper Board, one version Job per send, one Task per Section, Abstract or letter; routes to the Story, Ideation, Venue, Section, comments and assembly owners. Use for paper setup (paper_ladder.py), bringing an older paper folder onto the latest layout (paper_ladder.py audit, update), where a paper stands (checklist.md, paper_check.py, its sNN-paper-checklist topic), the delivery and its requirements, drafting, or reviews. Trigger: paper, paper Board, version, send, update the paper folder, paper checklist, delivery requirements, /haipipe-paper."
+description: "The one door for a paper on the ladder: a paper Board, one version Job per send, one Task per Section, Abstract or letter; routes to the Story, Ideation, Venue, Section, comments and assembly owners. Use for paper setup (paper_ladder.py), bringing an older paper folder onto the latest layout (paper_ladder.py audit, update), where a paper stands (checklist.md, paper_check.py, its sNN-paper-checklist topic), the delivery and its requirements, the submission portal (paper_ladder.py submission, portal_fill.py), drafting, or reviews. Trigger: paper, paper Board, version, send, update the paper folder, paper checklist, delivery requirements, cover letter, submission portal, /haipipe-paper."
 metadata:
-  version: "1.22.0"
-  last_updated: "2026-11-01"
+  version: "1.28.1"
+  last_updated: "2026-11-04"
   summary: "Paper owns the journey and composition; the shared Page owns each Paper Page's lifecycle and release."
 ---
 
@@ -42,7 +42,7 @@ still reads.
 
 ## ✅ Where a paper stands: `checklist.md`
 
-JL 261031: "here we should also try to add the checklist.md, so everytime, the haipipe-paper we can have the things like check the progress"; JL 261101: "what is the final checklist we should have? what is the delivery, and what is the delivery requirements"; "make the checklist to be a sNN as well". [`checklist.md`](checklist.md) lists what a paper needs, from its question to the send: ⓪ Layout L1-L5, ① Plan P1-P9, ② Explore E1-E3, ③ Evidence V1-V5, ④ Writing W1-W5, ⑤ Delivery D1-D10. `scripts/paper_check.py <Paper-Board>` ticks every line a file can prove (✅ done, ⏳ under way, ⬜ not yet, 🙋 waits on a person). Run it whenever someone asks where a paper stands, and answer from its lines.
+JL 261031: "here we should also try to add the checklist.md, so everytime, the haipipe-paper we can have the things like check the progress"; JL 261101: "what is the final checklist we should have? what is the delivery, and what is the delivery requirements"; "make the checklist to be a sNN as well". [`checklist.md`](checklist.md) lists what a paper needs, from its question to the send: ⓪ Layout L1-L5, ① Plan P1-P9, ② Explore E1-E3, ③ Evidence V1-V5, ④ Writing W1-W5, ⑤ Delivery D1-D11. `scripts/paper_check.py <Paper-Board>` ticks every line a file can prove (✅ done, ⏳ under way, ⬜ not yet, 🙋 waits on a person). Run it whenever someone asks where a paper stands, and answer from its lines.
 
 ```text
 paper_check.py <Board>            print the checklist; change nothing
@@ -51,11 +51,28 @@ paper_check.py <Board> --write    also tick it into sNN-paper-checklist/ below i
 
 **The checklist is a topic.** Each paper Board keeps it as `sNN-paper-checklist/` (s05 when free, the concept band): the face's head (Decided, Open) is the person's; below its GENERATED line is `paper_check.py --write`'s, rerun, never edited.
 
-**The delivery and its requirements (⑤).** One send hands over the manuscript (PDF and Word), the supplement when the venue takes one, the cover letter, the venue's own files (its author kit) and the receipt, `delivery/<writing Job>/build-manifest.json`. Each D line names where its rule lives and never copies it: haipipe-paper-assemble's Required outputs (D1-D3), `venues/<venue>/call.md` (D4: words, desk rules, the venue's own build profile), AGENTS.md § Papers (D5: no process text), haipipe-paper-evidence (D6), haipipe-paper-assemble's portal packet (D8: `delivery/<writing Job>/portal/`, the files uploaded to the venue's portal as they are, one row per slot in `portal.md`), `ref/submission-readiness.md` (D7 the build's blockers, D9 the human reading pass), haipipe-delivery (D10: only a person writes `sent` in `delivery/delivery.md`).
+**The delivery and its requirements (⑤).** One send hands over the manuscript (PDF and Word), the supplement when the venue takes one, the cover letter, the venue's own files (its author kit) and the receipt, `delivery/<writing Job>/build-manifest.json`. Each D line names where its rule lives and never copies it: haipipe-paper-assemble's Required outputs (D1-D3), `venues/<venue>/call.md` (D4: words, desk rules, the venue's own build profile), AGENTS.md § Papers (D5: no process text), haipipe-paper-evidence (D6), haipipe-paper-assemble's portal packet (D8: `delivery/<writing Job>/portal/`, the files uploaded to the venue's portal as they are, one row per slot in `portal.md`), § The submission Job below (D9: the portal fill page), `ref/submission-readiness.md` (D7 the build's blockers, D10 the human reading pass), haipipe-delivery (D11: only a person writes `sent` in `delivery/delivery.md`).
 
 **What goes into the portal: `delivery/<writing Job>/portal/`** (JL 261102: "here we might want to say the final delivery content that are ready to submit directly in the portal"). paper-build.toml `[portal]` lists each upload slot the venue's portal asks for (manuscript, supplement, one file per figure, cover letter, source ZIP, forms) and the built file that fills it; the build copies them into `portal/` and writes `portal/portal.md` with each slot's state (✅ ready, 🔶 built, not approved, ❗ stale, ⬜ missing). Upload exactly those files; list the slots that have no file yet too, so a missing form shows. The cover letter is a letter Task, built by the cover letter lane (`[coverletter]`, its `task =` naming the Task), never a Word file kept by hand.
 
 **The submission Job: the portal, reviewed before anyone submits** (JL 261102: "you should have a new job to go through the whole portal and then create a delviery of html, and prefill the values for us"; "pelae don't submit, I just want to review the content"). Each send has one `j21_submission_v<MMDD>_<desk>/` (face `for: <writing Job>`): `t01_cover-letter` (the letter's words), `t02_portal-walk` (a Run that reads every step of the venue's portal draft, read only, into `portal-fields.yaml`: each field, its options, what the draft holds) and `t03_portal-fill` (`portal-values.yaml`, each field's value as text, a packet file, or `from_tex:` a built Section, then a Run writes `delivery/<submission Job>/portal-fill.html`: one card per field with a Copy button and its state, ✅ already in the draft, ✏️ paste, 📎 upload, 🙋 a person decides, ❗ the portal and the manuscript disagree). The paper workbench shows it as the assembled paper's tab "The submission portal". An agent never types into the portal, never ticks a declaration and never presses Submit: a person pastes and a person submits.
+
+**It is shipped: a paper's Job holds only its values** (JL 261103: "you should also prepare the submission portal materials as well, like the cover letter, what content to fill in the submission portal"). No paper writes its own generator.
+
+```text
+paper_ladder.py submission <Board> --date MMDD [--for <writing Job>] [--desk <desk>] [--venue <venues folder>] [--dry-run]
+    makes j21_submission_v<MMDD>_<desk>/: face, t01_cover-letter, t02_portal-walk, t03_portal-fill, starter yaml, tickets;
+    seeds each field's `says` from venues/<venue>/call.md, each upload from the writing Job's [portal], title and words
+    from the build; `rollback` undoes it
+scripts/portal_fill.py <submission Job>     what t03's ticket runs: portal-fields.yaml + portal-values.yaml + the build
+    → delivery/<submission Job>/portal-fill.html, and the Run's result/ receipt
+```
+
+A paper keeps `t02`'s walk and `t03_portal-fill/portal-values.yaml`, nothing else; `src/gen_portal_fill.py` in an older Job is retired by pointing its ticket at `portal_fill.py` (the page comes out the same). A value is `value:`, `file:` (under `delivery/<writing Job>/`), `from_tex:` (a built Section's Task), `ask:`, `disagree: true`, `check:` and `note:`; the full list is the script's docstring. A file not built yet shows ⬜ no file yet, a sixth state, never ✏️ or 📎.
+
+**❗ comes from what the build records, never a guess.** `check: title|words|tables|figures|references` compares the value, and the portal's `now`, with the build (the title as `declared_title` reads it, `build-manifest.json` for the counts); a packet file the build calls stale is ❗ too. What only a reading can show (an account's old email) is `disagree: true` with a `note:`. With no build the card says "Not checked".
+
+**The walk stays a person-started Run.** `t02_portal-walk/runs/r01_read_portal/` starts as a seeded starter, marked STARTER, so D9 stays ⏳ until a real walk replaces it: a person logs in and opens the draft; an agent then reads each step, read only, into `result/portal-fields.yaml`, as its ticket says. Neither script logs in, opens a browser or reaches the network. The letter's words stay in the writing Job's `t31_cover-letter` when it has one (`t01_cover-letter` then only points there with `words-in:`); otherwise they live in `t01_cover-letter`, which the build finds by the Job's `for:` line.
 
 ## 🔄 Bring an older paper folder up to date: `audit` and `update`
 
@@ -77,6 +94,25 @@ or `studio/` folder. Each step's title names the step, never a count.
 **Undo, newest first.** `paper_ladder.py rollback <Board>` undoes the evidence Jobs step; then `paper_ladder.py update
 <Board> --rollback` undoes the renames and sweeps, from the record `.ladder-undo/update-N/`. To undo the checklist
 topic, delete its `sNN-paper-checklist/` folder. Run update in the paper's own session (one session per Project), dry run first, and show the person the dry run before `--apply`. A subagent, or any session that does not own the paper, stops at the dry run and reports it.
+
+## 📄 The final draft in the Writing view
+
+**Before anyone reads the assembled paper:** the whole build goes through `haipipe-paper-assemble` § The final read, a coauthor's or an author's read alike (JL 261104).
+
+JL 261103: "where is the cover letter?"; "please update /haipipe-paper about this for the final draft writing view". The
+Writing view's **The assembled paper** lists every document of the send, side by side: the paper (LaTeX and Word), the
+supplement, the combined copy, and the cover letter. So a send needs, in the writing Job's `paper-build.toml`:
+
+```text
+[coverletter]   task = the t31 letter Task · journal · article_type · addressee · signatory · authors · affiliation · email
+[outputs]       cover_letter_pdf · cover_letter_docx
+t31 words       the body only: the build adds the date, the addressee, "Dear …" and the signature
+t05_back-matter the statements (corresponding author, contributions, conflicts, funding, data sharing, AI use); in compile
+                order, with [profile.latex] acknowledgments = false; not counted in the venue's words
+[portal]        each upload slot (haipipe-paper-assemble § The portal packet)
+```
+
+A letter Task exported on its own still shows there, from its `word/` folder, but D3 stays ⏳ until the build makes it.
 
 ## 🪜 The ladder: Board · version · Task · Run
 
@@ -227,6 +263,7 @@ Resolve the paper root and target Page before changing anything.
 | respond to reviewers | `haipipe-paper-comments`: a comments report in the version that answers it, its Review Items routed to the Sections |
 | start a paper, a version, a Section or a Run | `scripts/paper_ladder.py` (`board`, `version`, `next`, `task`, `run`) |
 | bring an older paper folder onto the latest layout | `scripts/paper_ladder.py audit`, `update [--date MMDD] [--apply]` |
+| prepare a send's portal: the cover letter, what to paste into each field | § The submission Job: `scripts/paper_ladder.py submission`, then `scripts/portal_fill.py` |
 | where a paper stands, and its delivery | `checklist.md`, `scripts/paper_check.py <Board> [--write]`, the Board's `sNN-paper-checklist/` |
 
 ### Paper verbs
@@ -278,8 +315,8 @@ screen's own rules are in `workbench-paper`.
 | Studio › Related (folded under the topics, the Board's) | `related/related.md`, one row per item, grouped by its subfolder (meetings · papers · files · emails) and then its `group` cell, opening on its file; by question in Report › Related Papers | `haipipe-related` · `haipipe-paper` · `haipipe-discovery` |
 | Studio (top row, the Board's) | the Board's `sNN-<topic>/` folders, one drawing each, with Tags and Stage | the base frame (`haipipe-studio`) |
 | Delivery (top row, the Board's) | `delivery/jNN_<version>/`, one per version; from a version, its part | `haipipe-paper-assemble` · `haipipe-delivery` |
-| Board › Report · Work (focus page, `layout=focus`) | seven views, A Idea · B Story (the venues inside, `venues/<venue>/call.md`) · C Data flow · D Paper flow · E Support blocks · F Evidence · G Writing; Report reads RESULTS first, Work PROCESS first | `haipipe-paper-ideation` · `haipipe-paper-story` · `haipipe-paper-venue` · `haipipe-paper-plan` · `haipipe-paper-evidence` · `haipipe-paper` (`paper_ladder.py`) |
-| Board › Description › Scope · Venue · Resources (frame layout only; on the focus page the venues sit in B Story) | the face; `venues/<venue>/`; resources | `haipipe-paper` · `haipipe-paper-venue` |
+| Board › Report · Work (focus page, `layout=focus`) | seven views, Idea, Story (the venues inside, `venues/<venue>/call.md`) · B Data + Paper Plan · C Support blocks · D Evidence · E Displays · F Writing; Report reads RESULTS first, Work PROCESS first | `haipipe-paper-ideation` · `haipipe-paper-story` · `haipipe-paper-venue` · `haipipe-paper-plan` · `haipipe-paper-evidence` · `haipipe-paper` (`paper_ladder.py`) |
+| Board › Description › Scope · Venue · Resources (frame layout only; on the focus page the venues sit in Story) | the face; `venues/<venue>/`; resources | `haipipe-paper` · `haipipe-paper-venue` |
 | Board › Audience Report › Ideation · Narrative · High-level logic + Low-level work · Related Questions · Related Papers (frame layout) | the ideation Questions; the story; each research question as Question │ Work │ Report; the reviewer and reader questions; the related papers by question | `haipipe-paper-ideation` · `haipipe-paper-story` · `haipipe-report` |
 | version › Description › Version · Venue rules (frame layout) | the version face; the venue's call | `haipipe-paper` · `haipipe-paper-venue` |
 | version › Work › Draft-Main · Draft-Appendix · Display-Main · Display-Appendix · Values · Citations | each Section a row with its five step words, each opening that step; the evidence Jobs' Tasks | `haipipe-paper-draft` over `haipipe-draft`'s steps · `haipipe-paper-evidence` |

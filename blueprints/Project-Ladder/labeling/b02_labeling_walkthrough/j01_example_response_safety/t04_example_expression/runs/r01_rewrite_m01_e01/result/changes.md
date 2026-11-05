@@ -1,0 +1,2 @@
+- instruction: says to judge the last reply only
+- examples: two refusals added

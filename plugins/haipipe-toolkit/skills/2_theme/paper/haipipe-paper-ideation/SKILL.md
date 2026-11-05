@@ -2,7 +2,7 @@
 name: haipipe-paper-ideation
 description: "The Paper Page Type for one research direction and its research questions (each Idea named by its question): projects haipipe-ideation's sync packets and final selection into Direction, Landscape, Opportunity Map and Story routes, as the Board's s01-ideation/ topic. Generation, novelty and selection stay with haipipe-ideation. Trigger: paper ideation, s01, research direction, opportunity map, /haipipe-paper-ideation."
 metadata:
-  version: "1.4.4"
+  version: "1.5.0"
   last_updated: "2026-11-01"
   group-token: "s01-ideation"
   outline:
@@ -251,6 +251,12 @@ At I3, the selected Idea's question becomes the Story's Primary Research
 Question verbatim. Supporting research questions on the Story are refinements
 of it, never replacements; if the Story needs a different primary question,
 that is a new Idea, raised here first.
+
+## 🎓 Each direction names its theory (JL 261105)
+
+Each row of `Directions considered` names the theory behind it, in a `theory` column or a reason that opens `Theory: ...`,
+so the Idea view can show them side by side. It matters most for an information systems journal (MISQ, ISR, JMIS, JAIS),
+where a direction with no theory conversation is a weak direction (JL 261105: "espeically for the IS").
 
 ## 🪟 Page face
 

@@ -2,8 +2,8 @@
 name: haipipe-draft
 description: "The draft behind every Page: create, edit, build and serve a self-contained Page Folder from a file, without a Board; owns the Page Face contract, which Run Spec holds authority, and a draft Task's seven steps (Studio, Plan, Write, Evidence, Display, Revise, Delivery). Planning is haipipe-draft-logic. Trigger: draft, draft folder, file to page, create a page, Page Face, Run Spec, draft steps, /haipipe-draft, /haipipe-page."
 metadata:
-  version: "0.138.0"
-  last_updated: "2026-10-26"
+  version: "0.138.2"
+  last_updated: "2026-11-04"
   aliases: [haipipe-page]
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -104,6 +104,8 @@ A face may name the build that prints it: `delivery-builder: <script>` (relative
 runs that script for the LaTeX and Word lanes instead of printing the Page as a Section, and checks that it left
 `latex/<stem>.pdf` and `word/<stem>.docx`; the web lane is built as usual. A paper's cover letter uses it, so its
 Delivery is the letter as uploaded (JL 261102: "this is not the version to submit to the submiision website").
+
+**When adopt refuses because the paragraphs changed** (a paragraph added, cut, split or merged), run `page.py adopt --relayout <task>`: it lays `## Content` out again from the Draft and writes the `content: draft v<N> · adopted …` line. Never type Content by hand to get past the refusal (JL 261102: the cover letter's Content was typed by hand, no `content:` line was written, and its PDF printed draft v0.1 beside a v0.3 plan). Until Content is adopted, `page.py health` says so (`content`: "Content prints draft v0.1; the current draft is v0.3"; a FAIL under `--final`) and every Delivery tab shows the same warning above the file, so an old print is never read as the latest.
 
 `page.py renumber <page-folder>` renumbers the sentences S1, S2, … in reading order in every file that names one (the
 Draft, `evidence/cards.yaml`, the Revise cards, rules and comments; a person's own notes stay as written) after a
@@ -1180,6 +1182,13 @@ language or figure rules to imported HTML/code or its generated wrapper.
 
 Drafting and revising prose, the sentence contract and the WRITE step are `haipipe-draft-writing`; read its `SKILL.md` first.
 Judging the text is `haipipe-draft-review`. `cli/wdiff.py` (word-level change record) stays here.
+
+**No semicolons in draft sentences (JL 261104: "don't use ';' make them as the normal sentences").** Write two or
+three plain sentences instead, and put a parenthetical's two facts in two parentheses or two sentences. Only a list
+whose form someone else fixes keeps its semicolons: citations in parentheses, and journal statements such as an
+affiliation list. `haipipe-draft-review` `cli/anti_slop.py` flags the rest (rule `semicolon`). Statistics inside one parenthesis keep theirs, `(SE = 1.07; 95 percent CI, 0.69 to 4.90; p = 0.009)` (JL 261104: "could we use ';' here? as long as it is not the sentence").
+
+**No transition set off by commas (JL 261104: "don't use things like ' , however ,', Try to make a sentence to be smooth").** Write `But a request names...`, not `A request, however, names...`. The same holds for `, therefore,` and its kin. `cli/anti_slop.py` flags them (rule `parenthetical-transition`).
 
 ## 🔍 How a page is judged
 

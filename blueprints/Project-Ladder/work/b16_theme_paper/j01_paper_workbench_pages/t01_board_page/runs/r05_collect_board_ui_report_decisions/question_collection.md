@@ -72,3 +72,31 @@ Said in the chat: "this should be reconsidered as well, like we should have the 
 Said in the chat: "finish all of them and continue, and make the draft as complete as possible (relayed by the Paper-Example session: JL's reply to its plan, whose open point asked whether the Report's map should run on to the Runs and the paper)"
 
 **C · Data flow's Flow map runs past the questions to the Runs and the paper end, reading…**
+
+
+## Q11 · Idea plus Story and Plan
+
+Said in the chat: "I am think to add Idea + Story to be in one view, and Data flow and Paper flow to be one view of Plan, How do you think about this? Plase go ahead and update it accordingly."
+
+**Idea and Story are one view; Data flow and Paper flow are one view, Plan**
+
+
+## Q12 · Story Interaction
+
+Said in the chat: "could you have the section named Interaction, and we have the questions to be listed like this as well: ... left to be the tab, and right to be the questions. (relayed by CMS-Server-AI-Code)"
+
+**A section named Interaction on Idea + Story, questions as left tabs, each question on…**
+
+
+## Q13 · Studio tabs
+
+Said in the chat: "I think for the studio, we can have both Idea Studio and Story studio and also hve the left tab right content, Please update it again."
+
+**One Studio section with Idea Studio and Story Studio as left tabs**
+
+
+## Q14 · Interaction everywhere
+
+Said in the chat: "could you try to make this section at the bottom for each of the view? not matter for the block, or job or task; make this to be the standard items for any of them; the workbecnh UI code"
+
+**🙋 Interaction is the last section of every view at every level, and the one look of the…**

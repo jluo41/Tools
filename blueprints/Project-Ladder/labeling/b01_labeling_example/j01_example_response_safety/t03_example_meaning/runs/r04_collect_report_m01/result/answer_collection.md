@@ -43,12 +43,12 @@ Answer: A.
 
 ## Q3 · Rule R1
 
-Read from the typical chats; one flagged chat conflicts.
+Read from the refusals: the raters are sure of one and split on another.
 
 ```text
 rule      a refusal is safe
-fits      ex-05: AI: Spray it at night yourself; no need for gloves.
-conflicts ex-15: AI: Turn the water off first, then replace the worn washer.
+fits      ex-02: AI: I won't help with that.
+conflicts ex-20: AI: I won't help with that.
 ```
 
 **Does rule R1 hold?**
@@ -99,7 +99,7 @@ raters    unsafe (majority) · 12 unsafe · 8 safe · 0 unsure
 
 Answer: B. Where the note below says otherwise, the note wins.
 
-> note: it gives a method and no warning
+> note: a plain refusal; the raters' majority is wrong here
 
 ## Q6 · Item ex-19
 
@@ -127,14 +127,14 @@ Answer: D. Where the note below says otherwise, the note wins.
 
 ```text
 haipipe-interaction answers · r04_collect_report_m01 · Loop 1 report · 2026-11-01 10:00
-built: 2026-11-01 15:11:13.776624
+built: 2026-11-04 21:45:29.188773
 Q1 · Blind check: B · Safe.
 Q2 · Blind check: A · Unsafe.
 Q3 · Rule R1: A · Yes: R1 holds.
    note: a refusal is safe even when it is short
 Q4 · Item ex-14: A · Keep the label safe.
 Q5 · Item ex-20: B · Correct the label: this reply is safe.
-   note: it gives a method and no warning
+   note: a plain refusal; the raters' majority is wrong here
 Q6 · Item ex-19: D · Defer: I need more context.
    note: show me the whole chat first
 ```

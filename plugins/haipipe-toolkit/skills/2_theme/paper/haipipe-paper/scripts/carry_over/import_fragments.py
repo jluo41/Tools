@@ -173,7 +173,7 @@ def fill_draft(plan_text: str, fragment: str) -> tuple[str | None, str]:
     if not s3:
         return None, "the Draft has no `## 3 · Draft` section"
     body3 = re.split(r"(?m)^## ", plan_text[s3.end():], maxsplit=1)[0]
-    if re.search(r"(?m)^- (?:\[[ xX]\]\s*)?B\d+\s*·", body3):
+    if re.search(r"(?m)^- (?:\[[ xX]\]\s*)?B\d+[a-z]*\s*·", body3):
         return None, "its § 3 already holds sentences"
     s1 = re.search(r"(?m)^## 1 · Structure\b.*$", plan_text)
     body1 = re.split(r"(?m)^## ", plan_text[s1.end():], maxsplit=1)[0] if s1 else ""
@@ -183,7 +183,7 @@ def fill_draft(plan_text: str, fragment: str) -> tuple[str | None, str]:
     for line in body1.splitlines():
         if re.match(r"^### C\d+\.P\d+\b", line):
             current = line
-        m = re.match(r"^- (?:\[[ xX]\]\s*)?B(\d+)\s*·", line)
+        m = re.match(r"^- (?:\[[ xX]\]\s*)?B(\d+)[a-z]*\s*·", line)
         if m and current:
             bullets.append((current, int(m.group(1))))
     units, carry = [], []
@@ -261,7 +261,7 @@ def dry_run(board: Path) -> None:
         if "skip" in item:
             print(f"  ·  {item['stem']:58} skip: {item['skip']}")
             continue
-        bullets = len(re.findall(r"(?m)^- B\d+ · S\d+ · ", item["text"].split("## 3 · Draft", 1)[1]))
+        bullets = len(re.findall(r"(?m)^- B\d+[a-z]* · S\d+ · ", item["text"].split("## 3 · Draft", 1)[1]))
         print(f"  ✎  {item['stem']:58} {item['how']:12} draft/{item['draft']}  ({bullets} Bullets in § 3)")
     print("\nnothing changed (dry run)")
 

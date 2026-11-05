@@ -1,7 +1,8 @@
 """run-delivery-coverletter: the submission cover letter, built like the manuscript (0.9.0, JL 260929).
 
 WORDS  on the ladder (b16 Q05) the version's letter Task, t31_cover-letter/ (or another t3N_ whose name
-       says cover): its "Cover letter" division, else its whole Content. Before that, the "Cover
+       says cover), else the t01_cover-letter/ of the submission Job whose face says `for: <version>`:
+       its "Cover letter" division, else its whole Content. Before that, the "Cover
        letter" division of the submission Round page (B<x>-<desk>-Round/RD<NN>-…/<stem>.md), still read
        when paper-build.toml [coverletter] names a round. It is approved like any page. While the page
        Content has no such words, its latest draft is used and the letter stays not ready.
@@ -25,6 +26,8 @@ from pathlib import Path
 HEAD = re.compile(r"(?m)^(#{2,6})\s+(.*)$")
 FACT = re.compile(r"\{(title|journal|article_type|pages|tables|figures)\}")
 NUMBER = re.compile(r"(?<![\w.])\d[\d,]*(?:\.\d+)?")
+# an identifier is not a result: arXiv:2608.18296, a DOI. Dropped before the number check (FairGlucose 261103)
+IDENTIFIER = re.compile(r"\barXiv:\s*\d{4}\.\d{4,5}(?:v\d+)?|\bdoi:\s*\S+|\b10\.\d{4,9}/\S+", re.I)
 CAUSAL = re.compile(r"(?i)\b(causes?|caused|causal effect|leads? to|led to|drives?|driven by|results? in|impact of|effect of)\b")
 PROCESS = re.compile(r"\[(?:TODO|TOADD|Q-|AUTHOR|confirm)[^\]]*\]|\bTOADD\b|\bTODO\b", re.I)
 
@@ -68,6 +71,20 @@ def letter_task(version: Path | None) -> Path | None:
     return hits[0] if len(hits) == 1 else None
 
 
+def submission_letter(version: Path | None) -> Path | None:
+    """t01_cover-letter/ of the submission Job for this version (haipipe-paper § The submission Job), unless that Task
+    only points at the version's own letter (`words-in:`)."""
+    if version is None:
+        return None
+    said = re.compile(rf"(?m)^for:\s*{re.escape(version.name)}\s*$")
+    for job in sorted(version.parent.glob("j[0-9]*_submission_*")):
+        face, page = job / f"{job.name}.md", job / "t01_cover-letter" / "t01_cover-letter.md"
+        if face.is_file() and page.is_file() and said.search(face.read_text(encoding="utf-8")) \
+                and not re.search(r"(?m)^words-in:", page.read_text(encoding="utf-8")):
+            return page
+    return None
+
+
 def content(text: str) -> list[str] | None:
     """The paragraphs of a page's ## Content, for a letter Task whose Content is the letter."""
     return division(text, "content")
@@ -81,7 +98,7 @@ def _draft_version(p: Path):
 def letter_source(page: Path):
     """(paragraphs, where, path): Content first; else the page's latest draft. A letter Task's words are its
     Cover letter division, else its whole Content."""
-    task = re.match(r"^t3\d_", page.parent.name) is not None
+    task = re.match(r"^t3\d_|^t\d\d_cover", page.parent.name) is not None     # t01_cover-letter, the submission Job's
     text = page.read_text(encoding="utf-8")
     words = division(text) or (content(text) if task else None)
     if words:
@@ -203,7 +220,7 @@ def build_cover_letter(cfg: dict, profile: dict, root: Path, here: Path, out: di
     version = (Path(here) / str(cfg.get("pages", {}).get("main", ".."))).resolve()
     named = (Path(here) / str(cl["task"])).resolve() if cl.get("task") else None   # 0.13.0: a letter Task in another
     named = named / f"{named.name}.md" if named and (named / f"{named.name}.md").is_file() else None   # Job (the submission Job)
-    page = (named or letter_task(version) or letter_task(Path(here).parent)
+    page = (named or letter_task(version) or letter_task(Path(here).parent) or submission_letter(version)
             or (round_page(root, rd, Path(here).parent) if rd else None))
     paragraphs, where, source = letter_source(page) if page else ([], "missing", None)
     pages = pdf_pages(main_pdf)
@@ -231,9 +248,9 @@ def build_cover_letter(cfg: dict, profile: dict, root: Path, here: Path, out: di
           {"content": f"the Content of {page.parent.name if page else 'the page'}",
            "draft": f"the draft {source.name if source else ''} (not yet adopted)",
            "missing": f"no letter words on {page.parent.name}" if page
-           else f"no t31_cover-letter Task and no Round page {rd}"}[where])
+           else f"no t31_cover-letter Task, no t01_cover-letter in a submission Job and no Round page {rd}"}[where])
     text = " ".join(filled)
-    body_only = " ".join(FACT.sub("", p) for p in paragraphs)       # facts filled by code are true by construction
+    body_only = IDENTIFIER.sub("", " ".join(FACT.sub("", p) for p in paragraphs))   # code-filled facts are true; ids are not numbers
     manuscript = pdf_text(main_pdf) or ""
     if manuscript:
         flat = re.sub(r"\s+", " ", manuscript)

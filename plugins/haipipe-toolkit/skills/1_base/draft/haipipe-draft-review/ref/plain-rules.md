@@ -49,12 +49,30 @@ before splitting; a clear long sentence may stay as written.
 ✅ `A good question is specific, and being specific usually means naming this board's own things.`
 ✅ `So the sharper the question, the more it leans on words a newcomer does not have.`
 
-**Avoid the semicolon where you can** (JL 2026-10-16, editing Task 2.1's C2: "if possible, do not use ';'").
-A semicolon asks the reader to hold two clauses at once. Split at it, or use a comma or a colon.
-Semicolons between citations inside parentheses stay. `cli/anti_slop.py` flags the rest (rule `semicolon`).
+**No semicolons in draft sentences** (JL 2026-10-16: "if possible, do not use ';'"; JL 2026-11-04: "don't use ';' make them as the normal sentences").
+A semicolon asks the reader to hold two clauses at once. Split it into plain sentences.
+Semicolons stay only where someone else fixes the form: citations inside parentheses, a journal's affiliation list. `cli/anti_slop.py` flags the rest (rule `semicolon`). Statistics inside one parenthesis keep theirs, `(SE = 1.07; 95 percent CI, 0.69 to 4.90; p = 0.009)` (JL 261104: "could we use ';' here? as long as it is not the sentence").
+
+**No transition set off by commas** (JL 261104: "don't use things like ' , however ,', Try to make a sentence to be smooth"). `, however,`, `, therefore,` and their kin stop the sentence in the middle. Rewrite so the sentence carries the turn, and open with a plain `But` or `Yet` when it needs one. `cli/anti_slop.py` flags them (rule `parenthetical-transition`).
+
+❌ `A request, however, names a concrete action.`
+✅ `But a request names a concrete action.`
 
 ❌ `…from 2015 to 2021 (Wang and Chatterjee, 2025); a CGM records glucose every five minutes.`
 ✅ `…from 2015 to 2021 (Wang and Chatterjee, 2025). A CGM records glucose every five minutes.`
+
+## 3a · Paragraphs
+
+**A paragraph holds 4 to 6 sentences** (JL 2026-11-04, said more than 4 times: "一个 paragraph 至少是 4~6 句话", "你只有两句话 有点奇怪吧"). A 1- to 3-sentence paragraph is merged with its neighbour on the same topic. One past 6 is split where its topic turns. After any cut (an anti-AI pass, a trimmed limit), recount: cutting sentences is what makes short paragraphs. `cli/paragraphs.py <file>` counts them.
+
+A venue's own form wins and is named as a departure: a journal's short Conclusions, a structured abstract, a numbered list of limitations.
+
+## 3b · Say a limit once
+
+**No over-defensive lines** (JL 2026-11-04: "会不会有点过度防御啊", "do not do overprotection"). "Associated" already says the design is not causal, so do not add "causation cannot be established" or "these are descriptive associations, not causal effects". State each limit once, where it carries content, usually the Limitations. A line that only repeats "associated" is cut outright; it does not move anywhere. Do not hedge a hedge ("may potentially"). A limit stays when it tells the reader something new: what the data cannot separate, or what a score must not be used for. Never swap in a causal verb to drop a hedge: associational claims stay associational.
+
+❌ `The score may carry information about prescribing; causation cannot be established.`
+✅ `The score may carry information about prescribing beyond star rating.`
 
 ## 4 · Headings
 

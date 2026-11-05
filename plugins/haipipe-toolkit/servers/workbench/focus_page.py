@@ -17,6 +17,8 @@ from urllib.parse import quote, urlencode
 import yaml
 
 from live import frame, page_reader, task_questions
+from live.ui_parts import PB_CSS, PB_JS, _side_tabs
+from live import interaction_section as IX
 
 
 def inside(path: Path, root: Path) -> bool:
@@ -162,7 +164,7 @@ def question_cards(rows, folder, root, detailed=False):
             if aim:
                 body += '<p class="question-aim">' + frame.esc(aim) + '</p>'
             work = row.get('work') if isinstance(row.get('work'), list) else []
-            links = []
+            links, paths = [], []
             for item in work:
                 ref = item if isinstance(item, str) else task_questions.words(item.get('path')) if isinstance(item, dict) else ''
                 if not ref:
@@ -172,9 +174,19 @@ def question_cards(rows, folder, root, detailed=False):
                     continue
                 face = frame.face(path) if path.is_dir() else None
                 label = frame._title(face) if face and inside(face, root) else path.name
+                if path.is_dir() and page_level(path) == "Task":   # "j61 · t03_eval_forecast": four alike were unreadable
+                    label = f"{path.parent.name.split('_')[0]} · {label}"
                 role = task_questions.words(item.get('role')) if isinstance(item, dict) else ''
                 link = frame._link(page_url(path, root), label) if path.is_dir() else frame.esc(label)
                 links.append(f'<li>{link}' + (f'<small>{frame.esc(role)}</small>' if role else '') + '</li>')
+                paths.append(path)
+            if len(links) > 8:                               # many Tasks: one line per Job, its Task count (JL 261103:
+                jobs = {}                                    # 100+ Task names were a wall)
+                for path in paths:
+                    job = path.parent if page_level(path) == "Task" else path
+                    jobs[job] = jobs.get(job, 0) + (job != path)
+                links = [f'<li>{frame._link(page_url(j, root), j.name)}' + (f'<small>{n} Tasks</small>' if n else '') + '</li>'
+                         for j, n in jobs.items()]
             if links:
                 body += '<section class="question-detail"><h4>Linked work</h4><ul>' + ''.join(links) + '</ul></section>'
             logic = ''
@@ -460,10 +472,12 @@ def part_document(folder: Path, root: Path, key: str) -> str:
     """One of a row's parts alone, for its pop-out: its mind map, its Work (Jobs, Tasks, Runs), or its delivery."""
     if key == "interactions" and folder.is_dir() and inside(folder, root):   # the Interaction button's list (JL 261031)
         items = interaction_items(folder, root)
-        body = "".join(interaction_item(r, folder, root, in_pop=True) for r in items) or '<p class="mut">No interactions here.</p>'
+        body = standard_interactions(items, folder, root, in_pop=True) or '<p class="mut">No interactions here.</p>'
         return document(f"{folder.name} · Interaction", '<main class="focus-page"><h1>' + frame.esc(folder.name)
                         + '<span class="h1-section">Interaction</span></h1><section class="focus-card">'
                         + f'<div class="focus-content">{body}</div></section></main>')
+    if key == "run" and folder.is_dir() and inside(folder, root) and folder.parent.name == "runs":
+        return run_document(folder, root)
     if not folder.is_dir() or not inside(folder, root) or key not in dict(PARTS):
         return ""
     if key == "map":
@@ -483,6 +497,144 @@ def part_document(folder: Path, root: Path, key: str) -> str:
     return document(f"{folder.name} · {dict(PARTS)[key]}", '<main class="focus-page"><h1>' + frame.esc(folder.name)
                     + f'<span class="h1-section">{frame.esc(dict(PARTS)[key])}</span></h1><section class="focus-card">'
                     + f'<div class="focus-content">{body}</div></section></main>')
+
+
+# ── a Run's pop-out (JL 261103: "when I click a run, it will show all the information from that run folder with a pop
+# out window, so we can quickly understand what happened"; drawn as b17-s58 screen P): everything in runs/<run>/, read
+# in place: what happened, what it made (result/ as side tabs), how it ran (card, ticket, config), its passes ─────────
+RUN_SHOW = (".md", ".txt", ".csv", ".tsv", ".json", ".yaml", ".yml", ".log", ".png", ".jpg", ".jpeg", ".svg", ".html")
+RUN_BIG = 400_000                                       # a file past this is named, never read into the pop-out
+
+
+def _read(path: Path, limit: int = RUN_BIG) -> str:
+    try:
+        if path.stat().st_size > limit:
+            return ""
+        return path.read_text(encoding="utf-8", errors="ignore")
+    except OSError:
+        return ""
+
+
+def _run_file(path: Path, root: Path) -> str:
+    """One result file shown as what it is: a picture, a small table, or its text."""
+    url = frame._file_url(path, root)
+    ext = path.suffix.lower()
+    if ext in (".png", ".jpg", ".jpeg", ".svg"):
+        return f'<a data-pop="{frame.esc(path.name)}" href="{frame.esc(url)}" target=_blank rel=noopener><img class="run-pic" src="{frame.esc(url)}" alt="{frame.esc(path.name)}"></a>'
+    if ext == ".html":
+        return f'<iframe class="run-frame" src="{frame.esc(url)}" title="{frame.esc(path.name)}"></iframe>'
+    text = _read(path)
+    if not text:
+        return f'<p class="mut">{frame.esc(path.name)} is large: <a href="{frame.esc(url)}" target=_blank rel=noopener>open it</a>.</p>'
+    if ext in (".csv", ".tsv"):
+        sep = "\t" if ext == ".tsv" else ","
+        rows = [ln.split(sep) for ln in text.splitlines()[:21]]
+        more = len(text.splitlines()) - 21
+        head, body = rows[0], rows[1:]
+        return ('<div class="run-table"><table><thead><tr>' + "".join(f"<th>{frame.esc(c)}</th>" for c in head)
+                + "</tr></thead><tbody>" + "".join("<tr>" + "".join(f"<td>{frame.esc(c)}</td>" for c in r) + "</tr>" for r in body)
+                + "</tbody></table></div>" + (f'<p class="mut">and {more} more rows</p>' if more > 0 else ""))
+    lines = text.splitlines()
+    shown = "\n".join(lines[:200])
+    return (f'<pre class="run-text">{frame.esc(shown)}</pre>'
+            + (f'<p class="mut">{len(lines) - 200} more lines: <a href="{frame.esc(url)}" target=_blank rel=noopener>open the file</a></p>' if len(lines) > 200 else ""))
+
+
+def run_order(f: Path):
+    """What a reader reads first: the report and summary, then tables and figures, then the rest; logs and configs last."""
+    name, ext = f.name.lower(), f.suffix.lower()
+    rank = (0 if name in ("run-report.md", "summary.txt", "headline.txt") else 1 if ext == ".md" else
+            2 if ext in (".csv", ".tsv", ".png", ".jpg", ".jpeg", ".svg", ".html") else
+            4 if ext == ".log" or "config" in name or "snapshot" in name else 3)
+    return rank, str(f)
+
+
+def _yaml(path: Path) -> dict:
+    try:
+        data = yaml.safe_load(_read(path)) if path.is_file() else {}
+    except yaml.YAMLError:
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
+def run_document(run: Path, root: Path) -> str:
+    """The Run's pop-out: 1 what happened (its headline and state), 2 what it made (result/ as side tabs, the report
+    first), 3 how it ran (run.yaml in words, its ticket, its config), 4 its passes (each with its log's last lines)."""
+    card = _yaml(run / "run.yaml")
+    result = run / "result"
+    receipt = _yaml(result / "runtime.yaml")
+    first = sorted((f for f in result.glob("*") if f.suffix.lower() in (".md", ".txt") and f.name != "headline.txt"),
+                   key=run_order) if result.is_dir() else []   # no headline: the report's own first line says it
+    summary = next((ln.strip(" #") for f in first[:1] for ln in _read(f).splitlines() if ln.strip()), "")
+    head = (_read(result / "headline.txt").strip() or str(receipt.get("headline") or "") or summary
+            or str(card.get("ask") or card.get("target") or ""))
+    status = str(receipt.get("status") or card.get("status") or "not run yet")
+    when = " to ".join(str(receipt[k])[:16].replace("T", " ") for k in ("started_at", "finished_at") if receipt.get(k))
+    fail = str(receipt.get("failure") or "")
+    passes = sorted((d for d in (run / "passes").glob("*") if d.is_dir()), reverse=True) if (run / "passes").is_dir() else []
+    state = " · ".join(x for x in (status, when, f"newest pass {passes[0].name}" if passes else "") if x)
+    sec = []
+    sec.append('<h3 class="focus-sub">1 · 📌 What happened</h3>'
+               + (f'<p class="run-head">{frame.esc(head)}</p>' if head else '<p class="mut">No headline written.</p>')
+               + f'<p class="run-state">{frame.esc(state)}</p>' + (f'<p class="run-fail">{frame.esc(fail)}</p>' if fail else ""))
+    files = []
+    if result.is_dir():
+        found = sorted((f for f in result.rglob("*") if f.is_file() and f.suffix.lower() in RUN_SHOW and f.name != "runtime.yaml"
+                        and inside(f, root)), key=run_order)
+        files = found[:24]
+    if files:
+        tabs, panels = "", ""
+        for k, f in enumerate(files):
+            rel = f.relative_to(result).as_posix()
+            tabs += (f'<input type="radio" name="runtab" id="rt{k}"' + (" checked" if k == 0 else "") + '>'
+                     f'<label for="rt{k}">{frame.esc(rel)}</label>')
+            panels += f'<div class="run-panel" data-k="{k}">{_run_file(f, root)}</div>'
+        style = "".join(f'#rt{k}:checked~.run-panels .run-panel[data-k="{k}"]{{display:block}}' for k in range(len(files)))
+        sec.append(f'<h3 class="focus-sub">2 · 📊 What it made · result/</h3><style>{style}</style>'
+                   f'<div class="run-tabs">{tabs}<div class="run-panels">{panels}</div></div>')
+    else:
+        sec.append('<h3 class="focus-sub">2 · 📊 What it made · result/</h3><p class="mut">Nothing made yet.</p>')
+    words = [("what it does", card.get("role") or card.get("type")), ("kind", card.get("kind")), ("who", card.get("agent")),
+             ("skill", card.get("skill")), ("reads", card.get("reads") or card.get("inputs")), ("writes", card.get("writes")),
+             ("feeds", card.get("feeds")), ("ticket", card.get("ticket"))]
+    rows = "".join(f'<tr><th>{frame.esc(k)}</th><td>{frame.esc(", ".join(map(str, v)) if isinstance(v, list) else str(v))}</td></tr>'
+                   for k, v in words if v)
+    ticket = run / str(card.get("ticket") or "")
+    if not ticket.is_file():
+        ticket = next((f for f in sorted(run.glob(run.name + ".*")) if f.suffix in (".sh", ".ps1", ".cmd", ".md")), None)
+    config = next((f for f in (run / "config.yaml", run / "config.do") if f.is_file()), None)
+    how = f'<table class="run-card">{rows}</table>' if rows else '<p class="mut">No run.yaml.</p>'
+    for label, f in (("ticket", ticket), ("config", config)):
+        if f and f.is_file() and inside(f, root):
+            how += f'<details><summary>{label}: {frame.esc(f.name)}</summary>{_run_file(f, root)}</details>'
+    sec.append('<h3 class="focus-sub">3 · 🎫 How it ran · run.yaml, ticket, config</h3>' + how)
+    if passes:
+        items = ""
+        for d in passes:
+            title = (re.search(r"(?m)^#\s*(.+)$", _read(d / "pass.md")) or [None, ""])[1]
+            log = next((f for f in sorted(d.rglob("*.log"), key=lambda f: f.stat().st_mtime, reverse=True)), None)
+            tail = "\n".join(_read(log).splitlines()[-5:]) if log else ""
+            items += (f'<li><b>{frame.esc(d.name)}</b> <span class="mut">{frame.esc(title)}</span>'
+                      + (f'<pre class="run-text">{frame.esc(tail)}</pre>' if tail else "") + '</li>')
+        sec.append(f'<h3 class="focus-sub">4 · 🔁 Passes · passes/</h3><ul class="run-passes">{items}</ul>')
+    css = ('<style>.run-head{font-size:20px;margin:6px 0 2px}.run-state{color:#495057;margin:0 0 6px}.run-fail{color:#c92a2a}'
+           '.run-tabs{display:flex;flex-wrap:wrap;gap:6px;align-items:flex-start}.run-tabs input{display:none}'
+           '.run-tabs label{border:1px solid #dee2e6;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;background:#fff}'
+           '.run-tabs input:checked+label{border-color:#1864ab;background:#e7f5ff;color:#1864ab}'
+           '.run-panels{flex-basis:100%}.run-panel{display:none;border:1px solid #dee2e6;border-radius:8px;padding:10px;margin-top:6px}'
+           '.run-pic{max-width:100%;height:auto}.run-frame{width:100%;height:480px;border:0}'
+           '.run-text{white-space:pre-wrap;font-size:12px;max-height:420px;overflow:auto;margin:0}'
+           '.run-table{overflow:auto;max-height:420px}.run-table table,.run-card{border-collapse:collapse;font-size:12px}'
+           '.run-table td,.run-table th,.run-card td,.run-card th{border-bottom:1px solid #e9ecef;padding:3px 8px;text-align:left}'
+           '.run-card th{color:#868e96;font-weight:400}.run-passes{list-style:none;padding:0}</style>')
+    return document(f"{run.name} · Run", css + '<main class="focus-page"><h1>' + frame.esc(run.name)
+                    + '<span class="h1-section">Run</span></h1><p class="view-caption">Everything in runs/'
+                    + frame.esc(run.name) + '/: what it made first, then how it ran.</p><section class="focus-card">'
+                    + '<div class="focus-content">' + "".join(sec) + '</div></section></main>')
+
+
+def run_url(run: Path, root: Path) -> str:
+    return frame.ROUTE + "?" + urlencode({"view": "focus-part", "part": "run", "path": frame.rel(run, root)})
 
 
 def open_topics(folder: Path, root: Path) -> int:
@@ -509,10 +661,56 @@ FOLD_CSS = """<style>
 .fold-tree summary::before{content:"▸";flex:none;width:10px;color:var(--muted,#888);font-size:10px}.fold-tree details[open]>summary::before{content:"▾"}
 .fold-row{display:flex;gap:10px;align-items:baseline;min-width:0}.fold-row.leaf{padding-left:10px}
 .fold-row a{flex:none;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;text-decoration:none}.fold-row a:hover{text-decoration:underline}
-.fold-tree .fold-out{padding:4px 0 6px 10px}.fold-tree .fold-out::before{display:none}.fold-row .st{flex:none;font-size:12px;color:var(--muted,#888)}
+.fold-row b.fam{flex:none;font-size:13px}.fold-tree .fold-out{padding:4px 0 6px 10px}.fold-tree .fold-out::before{display:none}.fold-row .st{flex:none;font-size:12px;color:var(--muted,#888)}
 .fold-row small{flex:1;min-width:0;color:var(--muted,#888);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media (max-width:640px){.fold-row{flex-wrap:wrap;gap:2px 8px}.fold-row small{flex-basis:100%;white-space:normal}}
 </style>"""
+
+
+FAMILY_MIN = 4                                       # four or more same-shaped Tasks fold into one line
+
+
+def task_families(tasks: list) -> list:
+    """A Job's Tasks in families (JL 261103: "walk this block, I still feel it is very hard to read"): Tasks named
+    alike but for a last value (t11_train_numeric_1m … t22_train_numeric_1b) are one family, keyed by the shared middle
+    ("train_numeric") with its values ("1m" … "1b"); others stand alone. Returns [(key or None, [tasks], [values])],
+    in folder order."""
+    keyed = []
+    for t in tasks:
+        m = re.match(r"t\d+_(.+)_([0-9][0-9.]*[a-z]*)$", t.name)
+        keyed.append((m.group(1), m.group(2)) if m else (None, None))
+    count = {}
+    for k, _ in keyed:
+        if k:
+            count[k] = count.get(k, 0) + 1
+    out, seen = [], {}
+    for t, (k, v) in zip(tasks, keyed):
+        if k and count[k] >= FAMILY_MIN:
+            if k not in seen:
+                seen[k] = len(out)
+                out.append((k, [], []))
+            out[seen[k]][1].append(t)
+            out[seen[k]][2].append(v)
+        else:
+            out.append((None, [t], []))
+    return out
+
+
+def family_words(key: str, tasks: list, values: list) -> tuple:
+    """A family's name and its line: "t11–t22 train numeric", "12 Tasks, 1m to 1b"."""
+    first, last = tasks[0].name.split("_")[0], tasks[-1].name.split("_")[0]
+    return f"{first}–{last} {key.replace('_', ' ')}", f"{len(tasks)} Tasks, {values[0]} to {values[-1]}"
+
+
+def run_rows(task: Path) -> list:
+    """A Task's Run folders with their mark and headline: one reading for Status's tree and the mind map."""
+    rows = []
+    for r in sorted(d for d in (task / "runs").glob("*") if d.is_dir() and not d.name.startswith((".", "_"))):
+        rt, card = r / "result" / "runtime.yaml", r / "run.yaml"
+        text = rt.read_text(encoding="utf-8", errors="ignore") if rt.is_file() else ""
+        st = _yaml_status(text) or _yaml_status(card.read_text(encoding="utf-8", errors="ignore") if card.is_file() else "")
+        rows.append((r, RUN_MARK.get(st, "⬜"), (re.search(r'(?m)^headline:\s*"?(.*?)"?\s*$', text) or [None, ""])[1]))
+    return rows
 
 
 def fold_tree(folder: Path, root: Path, level: str, outputs: bool = True) -> str:
@@ -520,37 +718,55 @@ def fold_tree(folder: Path, root: Path, level: str, outputs: bool = True) -> str
     looks like this to be collapsable"; "we also want to see what are the runs under each task"). Each line: its
     name (opens in the pop-out, JL: "I don't want to switch but to have the pop out window first"), its state, its
     goal or, for a Run, its receipt's headline. Everything starts folded."""
-    def line(href, name, label, state, note, kids="", extra=""):
+    def line(href, name, label, state, note, kids="", extra="", short_note=False):
         row = (f'<a href="{frame.esc(href)}" data-pop="{frame.esc(label)}">{frame.esc(name)}</a>'
                + (f'<span class=st>{frame.esc(state)}</span>' if state else "") + extra
-               + (f'<small title="{frame.esc(note)}">{frame.esc(note)}</small>' if note else ""))
+               + (f'<small title="{frame.esc(note)}">{frame.esc(note)}</small>' if note and short_note else ""))
+        if note and not short_note:                       # a goal sentence waits behind a hover (JL 261103: "too many words")
+            row = row.replace(f'data-pop="{frame.esc(label)}"', f'data-pop="{frame.esc(label)}" title="{frame.esc(note)}"', 1)
         if not kids:
             return f'<li><div class="fold-row leaf">{row}</div></li>'
         return f'<li><details><summary class=fold-row>{row}</summary><ul>{kids}</ul></details></li>'
 
     def runs(task: Path) -> str:
         out = ""
-        for r in sorted(d for d in (task / "runs").glob("*") if d.is_dir() and not d.name.startswith((".", "_"))):
-            rt, card = r / "result" / "runtime.yaml", r / "run.yaml"
-            text = rt.read_text(encoding="utf-8", errors="ignore") if rt.is_file() else ""
-            st = _yaml_status(text) or _yaml_status(card.read_text(encoding="utf-8", errors="ignore") if card.is_file() else "")
-            head = (re.search(r'(?m)^headline:\s*"?(.*?)"?\s*$', text) or [None, ""])[1]
-            out += line(page_url(r, root), r.name, f"{task.name} · {r.name}", RUN_MARK.get(st, "⬜"), head)
+        for r, mark, head in run_rows(task):
+            out += line(run_url(r, root), r.name, f"{task.name} · {r.name}", mark, head, short_note=True)
         return out
+
+    tops = [c for c in frame.children(folder, level) if inside(c, root)]
+    waiting = {c for c in tops if open_topics(c, root)}
+    every = len(tops) > 1 and len(waiting) == len(tops)   # on every row it says nothing: once, on top (JL 261103)
 
     def marks(child: Path) -> str:
         """What waits on a person here (never a count) and the interaction button, as the cards had them."""
-        wait = '<span class="row-wait">🙋 open points wait on you</span>' if open_topics(child, root) else ""
+        here = child in waiting if child in tops else bool(open_topics(child, root))
+        wait = '<span class="row-wait">🙋 open points wait on you</span>' if here and not every else ""
         return wait + interaction_button(interactions(child, root), child, root)
 
     def task_line(t: Path) -> str:
         d = read_face(t, root)
         out = output_of(t, root) if outputs else ""   # the Task's output, in place, first inside its fold
         kids = (f'<li class=fold-out>{out}</li>' if out else "") + runs(t)
-        return line(page_url(t, root), t.name, t.name, state_label(d["state"]) or "", d["goal"].split("\n")[0], kids, marks(t))
+        st = state_label(d["state"])                   # "✅ DONE" as the Jobs' "✅ done" (JL 261103)
+        return line(page_url(t, root), t.name, t.name, state_words(st) if st else "", d["goal"].split("\n")[0], kids, marks(t))
+
+    def family_lines(ts: list) -> str:
+        """Same-shaped Tasks as one folded line each family (its state tally, its values), the Tasks inside it."""
+        out = ""
+        for key, members, values in task_families(ts):
+            if key is None:
+                out += task_line(members[0])
+                continue
+            name, words = family_words(key, members, values)
+            tally = task_tally([s for s in (state_label(read_face(t, root)["state"]) for t in members) if s])
+            out += (f'<li><details><summary class=fold-row><b class=fam>{frame.esc(name)}</b>'
+                    + (f'<span class=st>{frame.esc(tally)}</span>' if tally else '')
+                    + f'<small>{frame.esc(words)}</small></summary><ul>{"".join(task_line(t) for t in members)}</ul></details></li>')
+        return out
 
     items = ""
-    for child in frame.children(folder, level):
+    for child in (frame.children(folder, level) if level == "Block" else []):
         if not inside(child, root):
             continue
         d = read_face(child, root)
@@ -558,10 +774,12 @@ def fold_tree(folder: Path, root: Path, level: str, outputs: bool = True) -> str
             ts = [t for t in frame.children(child, "Job") if inside(t, root)]
             tally = task_tally([s for s in (state_label(read_face(t, root)["state"]) for t in ts) if s])
             items += line(page_url(child, root), child.name, child.name, tally, d["goal"].split("\n")[0],
-                          "".join(task_line(t) for t in ts), marks(child))
-        else:
-            items += task_line(child)
-    return FOLD_CSS + f'<ul class=fold-tree>{items}</ul>' if items else ""
+                          family_lines(ts), marks(child))
+    if level != "Block":
+        items += family_lines([c for c in frame.children(folder, level) if inside(c, root)])
+    head = (f'<p class="row-wait">🙋 every {"Job" if level == "Block" else "Task"} has a Studio topic with open points '
+            f'waiting on you</p>') if every else ""
+    return FOLD_CSS + head + f'<ul class=fold-tree>{items}</ul>' if items else ""
 
 
 def _yaml_status(text: str) -> str:
@@ -600,7 +818,10 @@ def status_html(folder: Path, root: Path, level: str, questions: list) -> str:
             if not inside(path, root):
                 continue
             badge = interaction_button([records[path]], path, root) if path in records else ""   # a collection Run
-            rows.append(f'<article class="status-row"><span class="row-name">{frame.esc(run["run"])}</span>'
+            name = (f'<a class="row-name" data-pop="{frame.esc(folder.name)} · {frame.esc(run["run"])}" '
+                    f'href="{frame.esc(run_url(path, root))}" target=_blank rel=noopener>{frame.esc(run["run"])}</a>'
+                    if path.is_dir() else f'<span class="row-name">{frame.esc(run["run"])}</span>')
+            rows.append(f'<article class="status-row">{name}'
                         f'<p class="row-meta">{frame.esc(run["status"])}{badge}</p>'
                         + (output_of(path, root) if path.is_dir() else '') + '</article>')
     body = "".join(rows)
@@ -703,9 +924,39 @@ def topic_rows(folder: Path, root: Path, inventory: list | None = None) -> list:
     return rows
 
 
+def live_page_blocks(folder: Path) -> list:
+    """The Blocks whose live pages can be at this page or below: those it rolls up, and the one above it."""
+    blocks = [p for p in rollup(folder) if frame.level_of(p) == "Block"]
+    above = frame._block_above(folder)
+    return blocks + ([above] if above and above not in blocks else [])
+
+
+def live_pages_html(folder: Path, root: Path) -> str:
+    """A closed card per deliverable with a `url:` at this page or below (frame._live_pages reads the Job's face); opened,
+    the page itself in a frame, loaded only then; a page on another host gets only its link."""
+    below = rollup(folder)
+    cards = []
+    for block in live_page_blocks(folder):
+        for i in frame._live_pages(block):
+            if i["folder"] not in below:
+                continue
+            url, title = frame.esc(i["url"]), frame.esc(i["title"])
+            where = origin(i["folder"], folder)
+            frame_ = (f'<iframe title="{title}" data-src="{url}" referrerpolicy=no-referrer '
+                      f'style="width:100%;height:85vh;border:1px solid var(--line,#ddd)"></iframe>'
+                      if i["url"].startswith("/") else "")
+            cards.append(f'<details class=live-page ontoggle="var f=this.querySelector(\'iframe\');'
+                         f'if(this.open&&f&&!f.src)f.src=f.dataset.src"><summary><b>{title}</b>'
+                         f'{" <span class=mut>" + frame.esc(where) + "</span>" if where else ""} '
+                         f'<span class=mut>live page</span> '
+                         f'<a href="{url}" target=_blank rel=noopener>own tab ↗</a></summary>{frame_}</details>')
+    return f'<section class="delivery-part">{"".join(cards)}</section>' if cards else ""
+
+
 def delivery_html(folder: Path, root: Path) -> str:
-    """Each level's delivery/, the page's own first, then its children's: its table (delivery.md) or its files."""
-    out = []
+    """The page's live pages (JL 261104: a page a host serves, e.g. the food API's try page, seen and used right here),
+    then each level's delivery/, the page's own first, then its children's: its table (delivery.md) or its files."""
+    out = [live_pages_html(folder, root)]
     for source in rollup(folder):
         deliv = source / "delivery"
         if not deliv.is_dir() or not inside(deliv, root):
@@ -1074,6 +1325,12 @@ GOAL_WORD = {"SPACE": "Mission", "Folder": "Mission", "Project": "Mission", "The
              "Job": "Goal", "Task": "Aim"}
 
 
+def band_title(title: str) -> str:
+    """A band's name with its first letter raised, past any emoji: "🧠 heads" -> "🧠 Heads". A name whose first letter
+    is already a capital stays as written: "WellDoc datasets", "AI-READI"."""
+    return re.sub(r"^([^A-Za-z]*)([a-z])", lambda m: m[1] + m[2].upper(), title.strip())
+
+
 def plural(n: int, one: str, many: str = "") -> str:
     """3, "Job" -> "3 Jobs"; a word that does not just take an s gives its plural."""
     return f"{n} {one if n == 1 else many or one + 's'}"
@@ -1085,7 +1342,7 @@ VIEW_WORDS = {"mindmap": "How it is built, as a map: its parts, and what each mu
               "findings": "What it has found so far, in the answers' own words, and what waits for you.",
               "themes": "What each Block is for, Theme by Theme.",
               "status": "How far each Block has got.",
-              "standing": "Where its sNN, its Jobs and its Tasks stand.",
+              "standing": "Where its Jobs, Tasks and sNN stand.",
               "answers": "What it has found, one answer per thing it must find out.",
               "questions": "What it must find out.",
               "progress": "Its parts.",
@@ -1181,7 +1438,7 @@ def paper_look() -> dict:
         from live import board_read, board_views, paper_version  # noqa: F401  (the last two fill board_read.PAPER_CAPTIONS)
         common = re.sub(r"\.focus-(?:page|rail)[^\n]*--fd-w[^\n]*\n", "",           # the common width, like every page
                         focus_draft.WIDE.replace(":root{--fd-w:min(1480px,calc(100vw - 32px))}", ""))   # (JL 261031, b10 r01 Q2)
-        return {"css": common + focus_draft.borrowed_css() + focus_draft.JS, "verbs": focus_draft.SECTION_VERBS,
+        return {"css": common + board_views.PAGE_CSS + focus_draft.borrowed_css() + focus_draft.JS, "verbs": focus_draft.SECTION_VERBS,
                 "captions": {**focus_draft.CAPTIONS, **board_read.PAPER_CAPTIONS}}
     except Exception:
         traceback.print_exc()   # in the server log, not hidden (b16 review 261101)
@@ -1283,9 +1540,14 @@ def design_views(folder: Path, root: Path, section: str) -> dict:
 # ── end HOOK ─────────────────────────────────────────────────────────────────────────────────────────────────────
 
 
+ANSWER_PILL = {"agreed": "✅ answer agreed", "proposed": "🙋 answer: your call", "draft": "🔶 answer not final",
+               "": "⬜ no answer yet"}                     # first_answer's stage, said so a reader need not ask
+LADDER_NAME = re.compile(r'<span class=(pm-role|pm-id)([^>]*)>([jts]\d+)([_-][^<]*)</span>')
+
+
 def parts_mindmap(folder: Path, root: Path) -> str:
-    """A Block's, a Job's or a Task's own mind map (JL 261029: "WE SHOULD HAVE THE MINIMAP AS WELL"): what it must find
-    out with each answer's stage and first sentence, its Jobs with their Tasks, its Tasks with their Runs, its topics."""
+    """A Block's, a Job's or a Task's own mind map (JL 261029: "WE SHOULD HAVE THE MINIMAP AS WELL"): its Questions, each
+    with how far its answer has got, its Jobs with their Tasks, its Tasks with their Runs, its topics."""
     mm_ = frame.mindmap_module()
     import mmbuild, mmtree
     level, branches = page_level(folder), []
@@ -1295,13 +1557,17 @@ def parts_mindmap(folder: Path, root: Path) -> str:
         for i, row in enumerate(rows):
             path = report_path(row, folder, root)
             stage, line = first_answer(path) if path else ("", "")
-            title = task_questions.words(row.get("title")) or task_questions.words(row.get("question"))
-            points.append(mmbuild.built(f"{folder}/q{i}", f"[{stage or 'no answer yet'}] {title}", [],
-                                        [line] if line else []))       # its answer's first sentence, in its box
-        branches.append(mmbuild.built(f"{folder}/find", "To find out", points))
+            asked = task_questions.words(row.get("question")) or task_questions.words(row.get("title"))
+            # the question itself, and on a Block its ↗ opens the report; the answer's words stay there and on Findings
+            # (JL 261103: "what does this mean?" of "To find out" and "draft"; too many words)
+            words = f"[{asked}]({frame.reader(path, root)})" if path and level == "Block" else asked
+            points.append(mmbuild.built(f"{folder}/q{i}", f"[{ANSWER_PILL.get(stage, ANSWER_PILL[''])}] {words}", [],
+                                        [line] if line and level != "Block" else []))
+        branches.append(mmbuild.built(f"{folder}/find", "Questions", points))
 
-    def runs(task):
-        return [mmbuild.built(f"{task}/{r['run']}", f"[{r['status']}] {r['run']}") for r in frame.runs_of(task)]
+    def runs(task):                                   # as Status's tree: its mark, its name, its headline behind ▸
+        return [mmbuild.built(f"{task}/{r.name}", f"[{mark}] [{r.name}]({run_url(r, root)})", [], [head] if head else [])
+                for r, mark, head in run_rows(task)]
 
     # Each sNN hangs on the rung its **At:** names, beside the Jobs, never under a "Studio" node (JL 261029: "each sNN
     # should be just below bNN"); a Block's own topics sit in their groups, its leaves its open questions.
@@ -1338,6 +1604,8 @@ def parts_mindmap(folder: Path, root: Path) -> str:
             note = [" ".join(said)] if said else []
             if (t / f"{t.name}.excalidraw").is_file():           # its quick drawing (quick_draw.py), opened from its label
                 drawn[t.name] = frame._draw_url(t / f"{t.name}.excalidraw", root, edit=True)
+            if at and level == "Block":                          # a Job's drawing in the Block's map: its name only;
+                note, words = [], "the Job as one drawing"        # its Job's node already says what it is (JL 261103)
             out.append(((facts["tags"][:1] or [""])[0], mmbuild.built(str(t), f"[{t.name}] {words}", [], note)))
         return out
 
@@ -1356,19 +1624,47 @@ def parts_mindmap(folder: Path, root: Path) -> str:
         """A Job's or Task's own title, whole (as a topic's line, JL 261030: "short and fully presented"); else its goal."""
         face = f / f"{f.name}.md"
         first = face.read_text(encoding="utf-8", errors="ignore").split("\n", 1)[0] if face.is_file() else ""
-        return first.split(" · ", 1)[1].strip() if " · " in first else one_line(read_face(f, root)["goal"], label_len)
+        return (first.split(" · ", 1)[1].strip() if " · " in first else one_line(read_face(f, root)["goal"], label_len)) \
+            or f.name.split("_", 1)[-1].replace("_", " ")     # its label shows only "j61", so it always has words
 
     def task_node(t, label_len, with_runs):
         title, goal = short(t, label_len), one_line(read_face(t, root)["goal"], 200)
         return mmbuild.built(str(t), f"[{t.name}] {title}", grouped(rung(t)) + (runs(t) if with_runs else []),
-                             [goal] if goal and goal != title else [])  # its goal, in its box, like any point
+                             [goal] if goal and goal != title and level != "Block" else [])  # a Block's map: names only (261103)
     branches += grouped(rung(folder))
     if level == "Block" and kids(folder):
-        branches += [mmbuild.built(str(j), f"[{j.name}] {short(j, 80)}",
-                                   grouped(rung(j)) + [task_node(t, 70, False) for t in kids(j)])
-                     for j in kids(folder)]
+        def family_nodes(j):                              # same-shaped Tasks as one node each family (JL 261103)
+            out = []
+            for key, members, values in task_families(kids(j)):
+                if key is None:
+                    out.append(task_node(members[0], 70, False))
+                else:
+                    name, words = family_words(key, members, values)
+                    out.append(mmbuild.built(f"{j}/family/{key}", f"{name}: {words}"))
+            return out
+        # a face's `bands:` groups the Jobs as a Block's topics group, in the same cards, so 15 Jobs read as 5 lines of
+        # work (JL 261104: "一眼就能看出来这东西是干啥的"; b35 with 6 cards is the height to match)
+        face_text = frame.face(folder).read_text(encoding="utf-8", errors="ignore") if frame.face(folder) else ""
+        bands_line = re.search(r"(?m)^bands:\s*(.+)$", face_text)
+        named = dict(re.findall(r"\bj(\d)N\s+([^·\n]+)", bands_line.group(1))) if bands_line else {}
+        jobs = kids(folder)
+        if named and all(re.match(r"j\d\d_", j.name) and j.name[1] in named for j in jobs):
+            for b, title in named.items():
+                js = [j for j in jobs if j.name[:2] == f"j{b}"]
+                if js:
+                    branches.append(mmbuild.built(f"{folder}/band/{b}", band_title(title),
+                                                  [mmbuild.built(str(j), f"[{j.name}] {job_short(j, js, root)}", grouped(rung(j)) + family_nodes(j)) for j in js]))
+        else:
+            branches += [mmbuild.built(str(j), f"[{j.name}] {short(j, 80)}", grouped(rung(j)) + family_nodes(j))
+                         for j in jobs]
     if level == "Job" and kids(folder):
-        branches += [task_node(t, 80, True) for t in kids(folder)]
+        for key, members, values in task_families(kids(folder)):
+            if key is None:
+                branches.append(task_node(members[0], 80, True))
+            else:
+                name, words = family_words(key, members, values)
+                branches.append(mmbuild.built(f"{folder}/family/{key}", f"{name}: {words}",
+                                              [task_node(t, 80, False) for t in members]))
     if level == "Task" and is_draft(folder):          # HOOK: a Section's map is its paper content, only (JL 261031:
         branches = draft_branches(folder, root)       # "I think the mindmap here should be the paper content")
         drawn = {}
@@ -1383,13 +1679,21 @@ def parts_mindmap(folder: Path, root: Path) -> str:
     for name, url in drawn.items():                          # the label itself opens the drawing (JL 261029: "this should be in the label")
         html = re.sub(rf'<span class=(pm-role|pm-id)[^>]*>{re.escape(name)}</span>',
                       lambda m: f'<a class="{m.group(1)} pm-open pm-draw" data-pop="{frame.esc(name)}" href="{frame.esc(url)}" '
-                                f'title="open its quick drawing">✎ {frame.esc(name)}</a>', html)
-    # every item shows open (JL 261031: "show the mindmap for all the item"); its ▸ still folds one away
-    html = re.sub(r'<div class=pm-detail hidden>(?!<button type=button class=pm-pen)', '<div class=pm-detail>', html)
-    html = html.replace('class=pm-more aria-expanded=false title="its detail">▸', 'class=pm-more aria-expanded=true title="its detail">▾')
+                                f'title="{frame.esc(name)}: open its quick drawing">✎ {frame.esc(name.split("-")[0])}</a>', html)
+    # a label is its number, its full folder name on hover: the long names ran past their card and said the title twice
+    # (JL 261104: "here is display are not the best yet")
+    html = LADDER_NAME.sub(lambda m: f'<span class={m.group(1)}{m.group(2)} title="{m.group(3)}{m.group(4)}">{m.group(3)}</span>', html)
+    if level == "Block":                                     # a question wraps beside its pill, its ↗ never past the box
+        html = html.replace(f'<div class=pm-para data-p="{frame.esc(f"@{folder}/find")}">',
+                            f'<div class="pm-para pm-questions" data-p="{frame.esc(f"@{folder}/find")}">')
     # each box wraps inside its own edge, never past it (a list item's nowrap no longer leaks in)
-    return ('<style>.focus-map .pm-detail{max-width:380px}.focus-map .pm-detail,.focus-map .pm-detail *'
-            '{white-space:normal}</style><div class="focus-map">' + html + '</div>')
+    return ('<style>.focus-map .pm-folds{grid-template-columns:170px auto;gap:0 40px}.focus-map .pm-folds .pm-root b{font-size:15px;overflow-wrap:anywhere}'
+            '.focus-map .pm-folds .pm-para{grid-template-columns:240px auto;gap:0 36px;margin:2px 0}'   # closed: a Job's title in two lines
+            '.focus-map .pm-questions .pm-leaves li{display:flex;align-items:baseline;max-width:340px!important;'
+            'white-space:normal!important}'                  # past the page's own !important "a point never wraps"
+            '.focus-map .pm-questions .pm-role{flex:none}'
+            '.focus-map .pm-id{overflow-wrap:anywhere}.focus-map .pm-detail{max-width:380px}.focus-map .pm-detail,'
+            '.focus-map .pm-detail *{white-space:normal}</style><div class="focus-map">' + html + '</div>')
 
 
 def mindmap_view(folder: Path, root: Path) -> str:
@@ -1451,7 +1755,393 @@ def state_words(label: str) -> str:
     return f"{mark.group(1).strip()} {mark.group(2).strip().lower()}".strip() if label else "⬜ no state"
 
 
-def status_now_html(folder: Path, root: Path, level: str, topics: list) -> str:
+BAND_CSS = """<style>
+.band-sec{margin:0 0 8px}
+.band-sec>summary{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;list-style:none;cursor:pointer;font-size:15px;font-weight:600;
+ border:1px solid var(--line);border-radius:8px;background:var(--paper);padding:8px 14px}
+.band-sec>summary::-webkit-details-marker{display:none}
+.band-sec>summary::before{content:"▸";flex:none;width:12px;color:var(--muted);font-size:12px}.band-sec[open]>summary::before{content:"▾"}
+.band-sec>summary:hover{color:var(--accent)}
+.band-sec .bar{flex:0 0 120px;height:5px;border-radius:3px;background:var(--wash);overflow:hidden}
+.band-sec .bar i{display:block;height:100%;background:#2b8a3e}.band-sec .bar i.part{background:#e8590c}
+.band-sec .word,.job-row small{flex:none;margin-left:auto;font-size:12px;font-weight:400;color:var(--muted);text-align:right}
+.band-jobs{padding:6px 0 4px 14px}
+.job-row{border-bottom:1px solid var(--line)}.job-row:last-child{border-bottom:0}
+.job-row>summary{display:flex;align-items:center;gap:8px;list-style:none;cursor:pointer;padding:7px 15px 7px 2px;font-size:14px}
+.job-row>summary::-webkit-details-marker{display:none}
+.job-row>summary::before{content:"▸";flex:none;width:12px;color:var(--muted);font-size:11px}.job-row[open]>summary::before{content:"▾"}
+.job-row .jn{flex:none;font-size:12px;color:var(--muted)}.job-row b{font-weight:600;overflow-wrap:anywhere}
+.job-row .bar{flex:0 0 120px;height:5px;border-radius:3px;background:var(--wash);overflow:hidden}
+.job-row .bar i{display:block;height:100%;background:#2b8a3e}.job-row .bar i.part{background:#e8590c}
+.job-tree{padding:0 0 8px 20px}
+@media (max-width:600px){.band-sec .bar{flex-basis:70px}.job-row>summary{flex-wrap:wrap}.job-row .bar{flex-basis:70px}}
+</style>"""
+
+
+FINDINGS_CSS = """<style>
+.find-q{padding:10px 2px;border-bottom:1px solid var(--line)}.find-q:last-child{border-bottom:0}
+.find-h{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;font-size:14px}.find-h b{font-weight:600;overflow-wrap:anywhere}
+.find-h .find-open{margin-left:auto;font-size:12px}
+.find-pill{flex:none;font-size:12px;border:1px solid var(--line);border-radius:6px;padding:1px 8px;background:var(--wash);color:var(--muted);white-space:nowrap}
+.find-pill.agreed{border-color:#2b8a3e;color:#2b8a3e}.find-pill.proposed{border-color:#e8590c;color:#c2410c}
+.find-ask{margin:6px 0 0;font-size:13px;color:var(--muted)}.find-sub{margin:12px 0 0;font-size:13px;font-weight:600}.find-verbs{margin:0 0 10px}
+.find-map{display:block;width:100%;height:60vh;border:1px solid var(--line);border-radius:8px}
+.find-a{margin:6px 0 0;font-size:14px;line-height:1.5}
+.find-r{margin:6px 0 0;padding:0 0 0 18px;font-size:13px;line-height:1.5}.find-r li{margin:3px 0}.find-r small{color:var(--muted)}
+.find-more{margin-top:4px;font-size:13px}.find-more>summary{cursor:pointer;color:var(--muted)}
+.wk-rows{list-style:none;margin:0;padding:0;font-size:14px}.wk-rows li{display:flex;flex-wrap:wrap;gap:4px 10px;padding:6px 2px;border-bottom:1px solid var(--line)}
+.wk-rows li:last-child{border-bottom:0}.wk-rows small{margin-left:auto;font-size:12px;color:var(--muted)}
+.wk-band{display:flex;align-items:center;gap:12px;margin:22px 0 10px;font-size:17px;font-weight:600}.wk-band:first-child{margin-top:6px}
+.wk-band::after{content:"";flex:1;border-top:1px solid var(--line)}
+</style>"""
+FOUND_STAGE = {"agreed": "answered", "partial": "partly answered", "proposed": "proposed, waiting for you", "draft": "draft", "": "no answer yet"}
+
+
+def task_reading(folder: Path, root: Path) -> str:
+    """The first thing a Task's or Job's own reading of its results says: the first line of its `## Content` that holds
+    a result, without the line naming the Run; empty when it has written none."""
+    body = re.sub(r"<!--.*?-->", "", read_face(folder, root)["sections"].get("content", ""), flags=re.S)
+    for raw in body.splitlines():
+        line = re.sub(r"\s+", " ", re.sub(r"\*\*|`|^\s*(?:[-*]|\d+\.)\s+|^#+\s+", "", raw)).strip()
+        if line and not line.startswith(("|", "[", "!", "Reading of run")):
+            return line
+    return ""
+
+
+def work_paths(row: dict, folder: Path, root: Path) -> list:
+    """The folders a Question names under `work:`."""
+    out = []
+    for item in row.get("work") if isinstance(row.get("work"), list) else []:
+        ref = item if isinstance(item, str) else task_questions.words(item.get("path")) if isinstance(item, dict) else ""
+        path = (folder / ref).resolve() if ref else None
+        if path and inside(path, root) and path.is_dir():
+            out.append(path)
+    return out
+
+
+def answer_state(path) -> tuple:
+    """(stage, sentence) of a report's answer: its own lead first (agreed, proposed), else its `answer-status:` field,
+    so an answer with no lead reads "answered" or "partly answered" and not "draft"."""
+    stage, answer = first_answer(path) if path else ("", "")
+    if stage == "draft":
+        status = (task_questions.field(path.read_text(encoding="utf-8", errors="replace"), "answer-status") or "").lower()
+        stage = "agreed" if status == "answered" else "partial" if status.startswith("partial") else stage
+    return stage, answer
+
+
+def finding_item(row: dict, folder: Path, root: Path) -> tuple:
+    """(tab name, its line, its panel, stage) of one Question: on the left its name and answer state; on the right what
+    it asks, its answer's words, then what its work has found."""
+    path = report_path(row, folder, root)
+    stage, answer = answer_state(path)
+    title = task_questions.words(row.get("title")) or task_questions.words(row.get("question"))
+    asked = task_questions.words(row.get("question"))
+    results = []
+    for w in work_paths(row, folder, root):
+        said = task_reading(w, root)
+        if said:
+            name = f"{w.parent.name[:3]} {w.name[:3]}" if page_level(w) == "Task" else w.name[:3]
+            results.append(f'<li><a href="{frame.esc(page_url(w, root))}" data-pop="{frame.esc(w.name)}" title="{frame.esc(w.name)}">'
+                           f'{frame.esc(name)}</a> {frame.esc(said)}</li>')
+    word = FOUND_STAGE.get(stage, stage)
+    html = (f'<div class=find-h><b>{frame.esc(title)}</b><span class="find-pill {stage}">{frame.esc(word)}</span>'
+            + (f'<span class=find-open>{frame.pop(frame.reader(path, root), title, "Read full report ↗")}</span>' if path else '') + '</div>')
+    if asked and asked != title:
+        html += f'<p class=find-ask>{frame.esc(asked)}</p>'
+    if answer:
+        html += f'<p class=find-a>{frame.esc(answer)}</p>'
+    if results:
+        html += '<h4 class=find-sub>What its work found</h4><ul class=find-r>' + "".join(results[:8]) + '</ul>'
+    if results[8:]:
+        html += (f'<details class=find-more><summary>{len(results) - 8} more</summary><ul class=find-r>' + "".join(results[8:]) + '</ul></details>')
+    if not answer and not results:
+        html += '<p class="find-a mut">Nothing read from its work yet.</p>'
+    return title, word, html, stage
+
+
+DELIVERY_LANES = (("Models", ("model", "models", "checkpoint", "checkpoints"), "a model it hands over"),
+                  ("Data", ("data", "dataset", "datasets"), "a dataset it hands over"),
+                  ("Website", ("web", "website", "site"), "a site or page it hands over"))
+
+
+def delivery_tabs(folder: Path, root: Path) -> list:
+    """[(tab, line, panel)]: what a Block hands over, by kind (JL 261104: "in case we will delivery some models or data or
+    website"), each tab always there and saying where its files go; then every file, when there are any. A lane is
+    delivery/<lane>/, or the same under a Job's or a Task's address (haipipe-delivery)."""
+    delivs = [d for d in (x / "delivery" for x in rollup(folder)) if d.is_dir() and inside(d, root)]
+    tabs = []
+    for name, words, what in DELIVERY_LANES:
+        rows = []
+        for deliv in delivs:
+            for lane in [p for pat in ("*", "j[0-9]*/*", "j[0-9]*/t[0-9]*/*") for p in sorted(deliv.glob(pat))]:
+                if lane.is_dir() and lane.name.lower() in words:
+                    where = lane.parent.relative_to(deliv).as_posix()
+                    rows += [f'<li><a href="{frame.esc(frame._file_url(q, root))}" target=_blank rel=noopener>{frame.esc(q.name)}</a>'
+                             + (f' <small>{frame.esc(where)}</small>' if where != "." else "") + '</li>'
+                             for q in sorted(lane.iterdir()) if not q.name.startswith(".")]
+        live = live_pages_html(folder, root) if name == "Website" else ""
+        panel = live + (f'<ul class=find-r>{"".join(rows)}</ul>' if rows else "")
+        tabs.append((name, "ready" if panel else "nothing yet", panel or (
+            f'<p class=mut>Nothing handed over yet. When there is {what}, its clean version goes in '
+            f'<code>delivery/{words[0] if name != "Website" else "web"}/</code>, and shows here.</p>')))
+    if any(p for d in delivs for p in d.iterdir() if not p.name.startswith(".")):
+        tabs.append(("All files", "everything in delivery/", delivery_html(folder, root)))
+    return tabs
+
+
+def value_sections(folder: Path, root: Path) -> list:
+    """[(title, html)] of the raw tables of a Block's Jobs that hold a tables.json: the paper's Values tabs, the same code."""
+    try:
+        from live import board_evidence as be
+    except Exception:
+        return []
+    out = []
+    jobs = [j for j in frame.children(folder, "Block") if inside(j, root)]
+    for k, job in enumerate(j for j in jobs if next(j.glob("t[0-9]*_*/runs/r[0-9]*/result/tables.json"), None)):
+        try:
+            tabs = be.value_tabs(job, root)
+        except Exception:
+            continue
+        if tabs:
+            out.append(("🔢 Values", f'<div class=find-verbs>{frame._link(page_url(job, root), "Open " + job.name)}</div>' + be.VALUES_CSS
+                        + _side_tabs(f"fV{k}x", [(h, w) for h, w, _ in tabs], [p for _, _, p in tabs]) + be.VALUES_DIALOG + be.VALUES_JS))
+    return out
+
+
+def service_section(folder: Path, root: Path) -> str:
+    """Findings' 🌐 Service (JL 261104: "a new section named service, and each tab is a website, embedded there"): a side
+    tab per live page at this page or below, the site itself on the right, working; a frame loads when its tab first
+    shows, so a closed section costs nothing."""
+    below = rollup(folder)
+    pages = [i for block in live_page_blocks(folder) for i in frame._live_pages(block) if i["folder"] in below]
+    if not pages:
+        return ""
+    panels = []
+    for i in pages:
+        url, name = frame.esc(i["url"]), frame.esc(i["service"])
+        site = (f'<iframe title="{name}" data-src="{url}" referrerpolicy=no-referrer '
+                f'style="width:100%;height:80vh;border:1px solid var(--line,#ddd);border-radius:6px"></iframe>'
+                if i["url"].startswith("/") else "")
+        panels.append(f'<div class=find-verbs><a href="{url}" target=_blank rel=noopener>Own tab ↗</a></div>{site}')
+    script = ("<script>(function(){var w=document.getElementById('find-service'),s=w.closest('details');"
+              "function load(){if(s.open)w.querySelectorAll('.pb-panel:not([hidden]) iframe[data-src]:not([src])')"
+              ".forEach(function(f){f.src=f.dataset.src})}"
+              "s.addEventListener('toggle',load);w.addEventListener('click',function(){setTimeout(load)});load()})()</script>")
+    return ('<div id=find-service>' + _side_tabs("fSx", [(i["service"], i["title"]) for i in pages], panels)
+            + '</div>' + script)
+
+
+def map_sections(folder: Path, root: Path) -> list:
+    """[(title, html)] of the mind maps a Task's newest Run built in result/maps/ (JL 261104: "for each type of Source Table
+    Name, we should have the mindmap of them"), one side tab per map, in the order of the Task's Values tabs when it has
+    them. Each map is its own framed page, loaded when its tab first shows, its nodes closed."""
+    out = []
+    for k, task in enumerate(t for j in frame.children(folder, "Block") if inside(j, root) for t in frame.children(j, "Job") if inside(t, root)):
+        found = sorted(task.glob("runs/*/result/maps"))
+        maps = sorted(found[-1].glob("*.mindmap.md")) if found else []
+        if not maps:
+            continue
+        order = []
+        for tables in reversed(sorted(task.glob("runs/*/result/tables.json"))):
+            try:
+                order = [t.get("title") for t in json.loads(tables.read_text(encoding="utf-8"))["tabs"]]
+            except (ValueError, KeyError, AttributeError):
+                continue
+            break
+        name = lambda m: m.name[: -len(".mindmap.md")]
+        maps.sort(key=lambda m: order.index(name(m)) if name(m) in order else len(order))
+        tabs, panels = [], []
+        for m in maps:
+            text = m.read_text(encoding="utf-8", errors="replace").split("\n# ", 1)[-1].split("\n")[1:]
+            line = next((x.strip() for x in text if x.strip() and not x.startswith("- ")), "its columns")
+            href = frame.ROUTE + "?" + urlencode({"path": frame.rel(m, root), "view": "focus-map"})
+            tabs.append((name(m), line))
+            panels.append(f'<div class=find-verbs>{frame.pop(href, name(m) + " · mind map", "Enlarge map ↗")}</div>'
+                          f'<iframe class=find-map loading=lazy title="{frame.esc(name(m))} mind map" src="{frame.esc(href)}&amp;fit=1"></iframe>')
+        out.append(("🧠 Maps", _side_tabs(f"fM{k}x", tabs, panels)))
+    return out
+
+
+def findings_board(rows: list, folder: Path, root: Path, lead: str = "") -> str:
+    """A Block's Findings: a quick overview of the results it got and what it hands over (JL 261104: "the quick overview
+    of the results we get from that block"; "we want things like this, left tab panel right content"; Delivery folded
+    in), shaped like a paper Board's Evidence: numbered closed sections, each a side tab per item. Values first, then the
+    Questions by their `group:` (one section when they have fewer than two groups), then 🌐 Service when it has a live
+    page, then 🧠 Maps, then 📦 Delivery."""
+    groups = {}
+    for row in rows:
+        groups.setdefault(task_questions.words(row.get("group")) or "Other", []).append(row)
+    if len(groups) < 2:
+        groups = {"Answers": rows} if rows else {}
+    secs = [(title, "", body) for title, body in value_sections(folder, root)]
+    for g, (name, members) in enumerate(groups.items()):
+        items = [finding_item(r, folder, root) for r in members]
+        stages = [x[3] for x in items]
+        word = ("answered" if all(x == "agreed" for x in stages) else "no answer yet" if not any(stages)
+                else "waits for you" if "proposed" in stages else "partly")
+        secs.append((band_title(name), word, _side_tabs(f"fQ{g}x", [(x[0], x[1]) for x in items], [x[2] for x in items])))
+    service = service_section(folder, root)
+    if service:
+        secs.append(("🌐 Service", "live", service))
+    secs += [(title, "", body) for title, body in map_sections(folder, root)]
+    tabs = delivery_tabs(folder, root)
+    secs.append(("📦 Delivery", "ready" if any(t[1] == "ready" for t in tabs) else "nothing yet",
+                 _side_tabs("fDx", [(t[0], t[1]) for t in tabs], [t[2] for t in tabs])))
+    try:
+        from live.board_views import SIDE_CSS
+    except Exception:
+        SIDE_CSS = ""
+    return (BAND_CSS + FINDINGS_CSS + PB_CSS + SIDE_CSS + lead + "".join(
+        f'<details class=band-sec><summary>{n} · {frame.esc(title)}' + (f'<span class=word>{word}</span>' if word else '')
+        + f'</summary><div class=band-jobs>{body}</div></details>' for n, (title, word, body) in enumerate(secs, 1)) + PB_JS)
+
+
+VIEW_SKILLS = {"mindmap": (("haipipe-mindmap", "draws and refreshes this map"),),
+               "standing": (("haipipe-job", "adds a Job and keeps its Tasks in order"),
+                            ("haipipe-task", "plans, builds and runs each Task"),
+                            ("haipipe-run", "keeps each Run's card and receipt")),
+               "findings": (("haipipe-report", "writes each answer from its Results"),
+                            ("haipipe-task", "reads a Run's Result into its Task"),
+                            ("haipipe-paper-evidence", "builds the raw tables from tables.yaml"),
+                            ("haipipe-delivery", "keeps what it hands over in delivery/"))}
+
+
+def work_process(folder: Path, root: Path, level: str, view: str, questions: list, inbox: list) -> str:
+    """The Process band of a work page's Work view, as on a paper Board: 1 what waits on you, 2 this view's things to
+    do, 3 the skills that do them. Each is a closed numbered section; a step with nothing in it does not show."""
+    steps = []
+    waiting = [r for r in inbox if r["state"] == "waiting"]
+    if waiting:
+        steps.append(("🙋 Waiting on you", "needs you", interactions_html(waiting, folder, root, "waiting")))
+    li = lambda name, url, pop, note: (f'<li><a href="{frame.esc(url)}" data-pop="{frame.esc(pop)}">{frame.esc(name)}</a>'
+                                       f'<small>{frame.esc(note)}</small></li>')
+    todo = []
+    if view == "standing" and level == "Block":
+        for j in frame.children(folder, "Block"):
+            if inside(j, root):
+                said, word, *_ = job_progress(j, root)
+                if word != "done":
+                    todo.append(li(j.name, page_url(j, root), j.name, said))
+        if todo:
+            steps.append(("🚧 Jobs not finished", "", '<ul class=wk-rows>' + "".join(todo) + '</ul>'))
+    elif view == "standing" and level == "Job":
+        for t in frame.children(folder, "Job"):
+            if inside(t, root):
+                label = state_label(read_face(t, root)["state"])
+                if state_kind(label) != "✅ done":
+                    todo.append(li(t.name, page_url(t, root), t.name, state_words(label) if label else "no state"))
+        if todo:
+            steps.append(("🚧 Tasks not finished", "", '<ul class=wk-rows>' + "".join(todo) + '</ul>'))
+    elif view == "findings":
+        for r in questions:
+            path = report_path(r, folder, root)
+            stage = answer_state(path)[0]
+            if stage != "agreed":
+                title = task_questions.words(r.get("title")) or task_questions.words(r.get("question"))
+                todo.append(f'<li>{frame.pop(frame.reader(path, root), title, title) if path else frame.esc(title)}'
+                            f'<small>{frame.esc(FOUND_STAGE.get(stage, stage))}</small></li>')
+        if todo:
+            steps.append(("✍️ Answers to write or agree", "", '<ul class=wk-rows>' + "".join(todo) + '</ul>'))
+    skills = VIEW_SKILLS.get(view, ())
+    if skills:
+        steps.append(("🧰 Skills that do it", "", '<ul class=wk-rows>' + "".join(
+            f'<li><code>{frame.esc(a)}</code><small>{frame.esc(b)}</small></li>' for a, b in skills) + '</ul>'))
+    return "".join(f'<details class=band-sec><summary>{n} · {frame.esc(name)}' + (f'<span class=word>{word}</span>' if word else '')
+                   + f'</summary><div class=band-jobs>{body}</div></details>' for n, (name, word, body) in enumerate(steps, 1))
+
+
+def work_views(overview: dict, folder: Path, root: Path, level: str, questions: list, inbox, runs_html, topics: list) -> dict:
+    """A work page's Work has the same views as its Report (JL 261104: "why we have the progress? it should have the
+    same view to the report"), as on a paper Board: Process first, then Results, the Report's own view drawn by the same
+    code. Status alone adds each Task's output in place; a Task's Results are its Runs with their output."""
+    def view(key, body):
+        def build():
+            if key == "standing":
+                results = runs_html() if level == "Task" else status_now_html(folder, root, level, topics, outputs=True)
+            else:
+                results = body() if callable(body) else body
+            process = work_process(folder, root, level, key, questions, inbox())
+            return (BAND_CSS + FINDINGS_CSS + (f'<h3 class=wk-band>⚙️ Process</h3>{process}' if process else '')
+                    + f'<h3 class=wk-band>📊 Results</h3>{results}')
+        return build
+    return {key: (name, view(key, body)) for key, (name, body) in overview.items()}
+
+
+def job_short(job: Path, siblings: list, root: Path) -> str:
+    """A Job's name in a few words: its face's title after its last colon (j11 "pretrain: model size" -> "model size"),
+    unless every sibling ends the same; then the folder words no sibling shares (j61 -> "modelsize")."""
+    def tail(j):
+        face = j / f"{j.name}.md"
+        first = face.read_text(encoding="utf-8", errors="ignore").split("\n", 1)[0] if face.is_file() else ""
+        title = first.split(" · ", 1)[1].strip() if " · " in first else ""
+        return title.rsplit(":", 1)[-1].strip() if title else ""
+    tails = {j: tail(j) for j in siblings}
+    mine = tails.get(job, "")
+    if mine and (len(siblings) < 2 or sum(t == mine for t in tails.values()) == 1):
+        return mine
+    words = lambda j: j.name.split("_")[1:]
+    shared = set(words(job)).intersection(*[set(words(j)) for j in siblings if j != job]) if len(siblings) > 1 else set()
+    return " ".join(w for w in words(job) if w not in shared) or " ".join(words(job))
+
+
+def job_progress(j: Path, root: Path) -> tuple:
+    """(its line "partly · 2 Tasks · 85%", word, Tasks, share, Tasks' worth done): one count for Status and the map."""
+    labels = [state_label(read_face(t, root)["state"]) for t in frame.children(j, "Job") if inside(t, root)]
+    states = [state_kind(x) for x in labels]
+    done, n = sum(k == "✅ done" for k in states), len(states)
+    partly = [x for x, k in zip(labels, states) if k == "partly done"]
+    # a partly Task fills its share of the bar from its own "N of M" (j61 t03: "652 of 700 complete")
+    fill = done + sum(int(a) / int(b) for a, b in (re.search(r"(\d+) of (\d+)", x).groups()
+                                                 for x in partly if re.search(r"(\d+) of (\d+)", x)) if int(b))
+    share = round(100 * fill / n) if n else 0
+    word = "done" if n and done == n else "not run" if not done and not partly else "partly"
+    return f"{word} · {n} Tasks" + (f" · {share}%" if word == "partly" else ""), word, n, share, fill
+
+
+def band_board(folder: Path, root: Path, outputs: bool = False) -> str:
+    """A Block's Jobs as numbered sections, one per band (j0N, j1N, ...; named by the face's `bands:` line), closed
+    (JL 261104: "I prefer to me make it like the sections"): the band's name, a bar of its Tasks done, one state word.
+    Opened: one row per Job, and a Job's row opens to its Tasks and Runs (JL 261104: "each job each row, and we can
+    collapse them out to see the tasks and runs"; no "Next:" lines, "just delete them")."""
+    face = frame.face(folder)
+    text = face.read_text(encoding="utf-8", errors="ignore") if face else ""
+    named = dict(re.findall(r"\bj(\d)N\s+([^·\n]+)", (re.search(r"(?m)^bands:\s*(.+)$", text) or [None, ""])[1]))
+    jobs = [j for j in frame.children(folder, "Block") if inside(j, root) and re.match(r"j\d\d_", j.name)]
+    bands = {}
+    for j in jobs:
+        bands.setdefault(j.name[1], []).append(j)
+    secs = []
+    for number, (b, js) in enumerate(bands.items(), 1):
+        cards, filled, total, marks = "", 0, 0, []
+        for j in js:
+            jf = j / f"{j.name}.md"
+            jt = jf.read_text(encoding="utf-8", errors="ignore") if jf.is_file() else ""
+            emoji = (re.search(r"(?m)^emoji:\s*(\S+)", jt) or [None, ""])[1]
+            said, word, n, share, fill = job_progress(j, root)
+            filled, total = filled + fill, total + n
+            marks.append(word)
+            goal = one_line(read_face(j, root)["goal"], 300)
+            cards += (f'<details class=job-row><summary><span class=jn>{emoji} {j.name[:3]}</span>'
+                      f'<a href="{frame.esc(page_url(j, root))}" data-pop="{frame.esc(j.name)}" title="{frame.esc(goal)}"><b>{frame.esc(job_short(j, js, root))}</b></a>'
+                      + (interaction_button(interactions(j, root), j, root) if outputs else '')   # Work asks, Report shows
+                      + f'<small>{said}</small>'   # words left of the bar, so
+                      f'<span class=bar><i class="{"part" if word == "partly" else ""}" style="width:{share}%"></i></span></summary>'   # every bar lines up
+                      f'<div class=job-tree>{fold_tree(j, root, "Job", outputs=outputs)}</div></details>')
+        title = named.get(b, "").strip() or f"j{b}N"
+        first = js[0] / f"{js[0].name}.md"
+        emoji = (re.search(r"(?m)^emoji:\s*(\S+)", first.read_text(encoding="utf-8", errors="ignore")) or [None, ""])[1] if first.is_file() else ""
+        if not title[:1].isalnum():                   # the face names its own emoji ("j2N 🧠 heads"); else the band's first Job's
+            emoji = ""
+        word = "done" if all(m == "done" for m in marks) else "not run" if all(m == "not run" for m in marks) else "partly"
+        share = round(100 * filled / total) if total else 0
+        secs.append(f'<details class=band-sec><summary>{number} ·{" " + emoji if emoji else ""} {frame.esc(band_title(title))}'
+                    f'<span class=word>{word}</span>'
+                    f'<span class=bar><i class="{"part" if word == "partly" else ""}" style="width:{share}%"></i></span></summary>'
+                    f'<div class=band-jobs>{cards}</div></details>')
+    return BAND_CSS + "".join(secs) if secs else ""
+
+
+def status_now_html(folder: Path, root: Path, level: str, topics: list, outputs: bool = False) -> str:
     """Report's Status at a Block, Job or Task: where its sNN stand, then its Jobs and Tasks (or a Task's Runs), one
     per row (JL 261030: "I think this should state the studio and jobs/tasks status"; the old Done when and
     Context prose: "we don't need this", "this is not readable")."""
@@ -1467,19 +2157,25 @@ def status_now_html(folder: Path, root: Path, level: str, topics: list) -> str:
         stage = facts.get("stage", "")
         rows.append(li(STAGE_MARK.get(stage, "⬜"), lead + shown, topic_home(topic, root),
                        face_title(frame._notes(topic) or topic / "_"), stage or "no stage"))
-    if rows:
-        parts.append(f'<h3 class="focus-sub">Studio</h3><ul class="glance-list">{"".join(rows)}</ul>')
+    studio = ""
+    if rows:                                         # after the work, folded, its tally in words (JL 261103: "very hard
+        stages = [facts.get("stage", "") or "no stage" for t, _, facts in topics if t.is_dir()]   # to read")
+        tally = ", ".join(f"{stages.count(w)} {w}" for w in dict.fromkeys(stages))
+        studio = (f'<h3 class="focus-sub">Studio</h3><details class="glance-fold"><summary>{len(rows)} topics: '
+                  f'{frame.esc(tally)}</summary><ul class="glance-list">{"".join(rows)}</ul></details>')
     if level == "Task":
         runs = frame.runs_of(folder)
         if runs:
             parts.append(f'<h3 class="focus-sub">Runs</h3><ul class="glance-list">' + "".join(
                 f'<li><b>{frame.esc(r["run"])}</b> <span class="mut">· {frame.esc(r["status"])}</span></li>' for r in runs)
                 + '</ul>')
+    elif level == "Block" and (bands := band_board(folder, root, outputs)):   # its bands, each Job's row opening to its tree (JL 261104)
+        parts.append(bands)
     else:                                            # the same folding tree as Work's Progress, without the outputs
-        tree = fold_tree(folder, root, level, outputs=False)   # (JL 261102: "why this is not changed?")
+        tree = fold_tree(folder, root, level, outputs=outputs)   # (JL 261102: "why this is not changed?")
         if tree:
             parts.append(f'<h3 class="focus-sub">{"Jobs and Tasks" if level == "Block" else "Tasks"}</h3>{tree}')
-    return "".join(parts)
+    return "".join(parts) + studio
 
 
 def related_html(folder: Path, root: Path) -> str:
@@ -1564,7 +2260,7 @@ def interactions(folder: Path, root: Path) -> list:
                 r"(?m)^(Q\d+) · (applied|in progress) · (\d{4}-\d{2}-\d{2}) \d{2}:\d{2} · (.+?)\s*$",
                 done_.read_text(encoding="utf-8", errors="ignore"))} if done_.is_file() else {}
             rows.append({"run": run.name, "path": run, "page": page, "status": status,
-                         "state": "answered" if answers else INTERACTION_STATE.get(status, status or "planned"),
+                         "state": "to know" if card.get("source") == "know" else "answered" if answers else INTERACTION_STATE.get(status, status or "planned"),
                          "title": next((ln[2:].strip() for ln in text.splitlines() if ln.startswith("# ")), run.name),
                          "about": about, "topic": interaction_topic(about, page),
                          "asks": re.findall(r"(?ms)^##\s+(Q\d+)\s*·\s*(.+?)\s*$.*?^\*\*(.+?)\*\*\s*$", text),
@@ -1620,7 +2316,9 @@ def interaction_item(r: dict, folder: Path, root: Path, in_pop: bool = False) ->
         return (f' <span class="ix-applied" title="{frame.esc(mark[2])}">'
                 + ("✅ applied " if mark[0] == "applied" else "⏳ in progress ") + f'{frame.esc(mark[1])}</span>') if mark else ''
     asks = "".join(f'<li><b>{frame.esc(q)}</b> {frame.esc(ask)}{flag(q)}</li>' for q, _, ask in r["asks"])
-    if r["state"] == "answered" and (form or answers):   # the answered form itself, read only, not its raw Markdown
+    if r["state"] == "to know" and form and inside(form, root):
+        button = (f'<a class="row-verb" href="{frame.esc(frame._file_url(form, root))}" {opens(r["title"])}>Read</a>')
+    elif r["state"] == "answered" and (form or answers):   # the answered form itself, read only, not its raw Markdown
         shown = form if form and inside(form, root) else answers     # (JL 261031: "the UI here doesn't good")
         button = (f'<a class="row-verb" href="{frame.esc(frame._file_url(shown, root))}" '
                   f'{opens(r["title"] + " · answers")}>See answers</a>') if shown and inside(shown, root) else ""
@@ -1636,6 +2334,28 @@ def interaction_item(r: dict, folder: Path, root: Path, in_pop: bool = False) ->
             + (f'<ol class="inbox-asks">{asks}</ol>' if asks else '')
             + (f'<p class="inbox-waits">{frame.esc(applies)}</p>' if applies else '')
             + (f'<div class="inbox-actions">{button}</div>' if button else '') + '</article>')
+
+
+def interaction_where(r: dict, folder: Path, root: Path) -> str:
+    """The small line under a set's form: who asked, what it is about, its Run, and who applies its answers."""
+    where = f'asked by <a href="{frame.esc(page_url(r["page"], root))}">{frame.esc(origin(r["page"], folder) or r["page"].name)}</a>'
+    if r["topic"] is not None:
+        where += f' · about <a href="{frame.esc(topic_home(r["topic"], root))}">{frame.esc(r["topic"].name)}</a>'
+    elif r["about"]:
+        where += f' · about {frame.esc(r["about"])}'
+    where += f' · <code>{frame.esc(r["run"])}</code>'
+    if r["received"]:
+        where += f' · {frame.esc(r["received"].split(" ")[0])}'
+    if r["state"] == "answered" and r["feeds"]:
+        where += " · Applying it belongs to " + frame.esc(", ".join(Path(str(f)).name for f in r["feeds"])) + "."
+    return where
+
+
+def standard_interactions(rows: list, folder: Path, root: Path, in_pop: bool = False) -> str:
+    """The standard Interaction for these rows; a Run with no built form or no questions keeps its plain row, so nothing
+    asked goes missing."""
+    return (IX.interaction_section(rows, root, 0, lambda r: interaction_where(r, folder, root))
+            + "".join(interaction_item(r, folder, root, in_pop) for r in rows if r.get("form") is None or not r.get("asks")))
 
 
 def interactions_html(rows: list, folder: Path, root: Path, which: str) -> str:
@@ -1857,7 +2577,7 @@ def render(theme, root: Path, folder: Path, section="", group="") -> str:
         if reports_view and home == "overview-report":
             group = "answers"
 
-    standing = status_now_html(folder, root, level, topics) if level in ("Block", "Job", "Task") and not draft else ""
+    standing = (lambda: status_now_html(folder, root, level, topics)) if level in ("Block", "Job", "Task") and not draft else ""   # built only when opened (each took 4.5 s on b01)
 
     # Overview: read. Its views: Report (what we know: the recorded answers first), Questions, Context, Pipeline,
     # Timeline; each piece of content in one view only.
@@ -1866,10 +2586,12 @@ def render(theme, root: Path, folder: Path, section="", group="") -> str:
     report = ""
     if home == "overview-report":
         report = untabbed(overview_report_html(data, questions, folder, root, False))
+    elif theme.name == "work" and level == "Block" and not draft:
+        report = lambda: findings_board(questions, folder, root, markdown(data["takeaways"], folder, root) if data["takeaways"] else "")   # built only when opened
     elif has_reports:
         report = reports_html(questions, folder, root)
     elif questions:
-        report = question_cards(questions, folder, root)
+        report = question_cards(questions, folder, root, detailed=theme.name == "work")   # it is their only view there
     elif data["takeaways"]:
         report = markdown(data["takeaways"], folder, root)
     elif paper and not draft:
@@ -1892,7 +2614,7 @@ def render(theme, root: Path, folder: Path, section="", group="") -> str:
         overview.update(draft["report"])
     if home == "overview-report" and has_reports:
         overview["answers"] = ("Answers", untabbed(overview_report_html(data, questions, folder, root, True)))
-    if questions:
+    if questions and theme.name != "work":                     # a work page's Questions live in Findings (JL 261104: "we don't need the questions")
         overview["questions"] = ("Questions", question_cards(questions, folder, root, detailed=True))
     for key, name in UI_VIEWS:                                 # a theme Block's real pages, level by level
         if data["ui"][key]:
@@ -1911,9 +2633,11 @@ def render(theme, root: Path, folder: Path, section="", group="") -> str:
 
     # Work: do. Its views: Progress (the children, or a Task's Runs), Deliverables, Files.
     work = {"progress": ("Job-Versions" if paper and level == "Block" else "Progress",
-                         status_html(folder, root, level, [] if overview else questions))}
+                         lambda: status_html(folder, root, level, [] if overview else questions))}   # built when opened
     if draft:                                            # HOOK: the five steps, then the Task's Runs
         work = {**{k: v for k, v in draft["work"].items() if k != "runs"}, "runs": ("Runs", work["progress"][1])}
+    if theme.name == "work" and level in ("Block", "Job", "Task") and not draft:   # the same views as Report (JL 261104)
+        work = work_views(overview, folder, root, level, questions, lambda: inbox, work["progress"][1], topics)
     if data["sections"].get("deliverables"):
         work["deliverables"] = ("Deliverables", deliverables_html(deliverables, folder, root) if deliverables
                                 else markdown(data["sections"]["deliverables"], folder, root))
@@ -1924,7 +2648,7 @@ def render(theme, root: Path, folder: Path, section="", group="") -> str:
     if paper and level == "Job" and not draft:           # HOOK: a paper version's Work, by band (s36-D01, D02)
         work = paper_version_work(folder, root) or work
     if paper and level == "Block":                       # HOOK: a paper Board's Work shares its Report's list
-        work = paper_board_work(folder, root, work["progress"][1]) or work
+        work = paper_board_work(folder, root, work["progress"][1]()) or work
     if theme.name == "design" and level in ("Block", "Job", "Task") and not draft:   # HOOK: the design letters (b12 j01)
         work = design_views(folder, root, "work") or work
     if theme.name == "insight" and level in ("Block", "Task") and not draft:   # HOOK: insight Board and Task Work (s52, s58)
@@ -1942,7 +2666,11 @@ def render(theme, root: Path, folder: Path, section="", group="") -> str:
     # Interactions: the person's inbox, every interaction at this page or below (JL 261031): one record each, the
     # same one its Work row, its map node and its Studio card open
     inbox = interactions(folder, root) if page_level(folder) not in ("SPACE", "Folder") else []
-    asked = {key: (name, interactions_html(inbox, folder, root, key))
+    # the standard Interaction, left tabs and one question on the right (JL 261104: "make this to be the standard items for
+    # any of them"; "the workbecnh UI code"), or what the filter found nothing of
+    empty = {"waiting": "Nothing needs your input.", "answered": "Nothing answered yet."}
+    asked = {key: (name, standard_interactions([r for r in inbox if key == "all" or r["state"] == key], folder, root)
+                   or '<p class="mut">' + empty.get(key, "No interactions here.") + '</p>')
              for key, name in (("all", "All"), ("waiting", "Needs your input"), ("answered", "Answered"))}   # opens on All
     rail = []                                            # (key, label, group): the right rail, in this order
     if overview:
@@ -1991,12 +2719,15 @@ def render(theme, root: Path, folder: Path, section="", group="") -> str:
         view = group if group in views else draft["open"] if section == "work" and draft \
             else "text" if section == "report" and draft \
             else next(iter(views)) if (paper and level == "Block") or (theme.name == "insight" and level in ("Block", "Job", "Task")) \
-            else next((k for k in ("mindmap", "findings", "standing") if k in views), next(iter(views)))   # HOOK: a paper Board opens on its first part
+            else next((k for k in (("standing", "findings", "mindmap") if section == "work" else ("mindmap", "findings", "standing"))
+                       if k in views), next(iter(views)))   # HOOK: a paper Board opens on its first part
         selected = next(r for r in rail if r[0] == section)
         label, body = views[view]
         body = body() if callable(body) else body           # MindMap, Blocks, Status: built only when opened
         caption = (look.get("captions") or {}).get(view) or ("" if theme.name == "insight" and level in ("Block", "Job", "Task")
                                                              and view != "mindmap" else VIEW_WORDS.get(view, ""))   # its letters carry their own
+        if theme.name == "work" and level == "Block" and view == "findings":
+            caption = "What it has found so far, and what it hands over."
         body = (f'<p class="view-caption">{frame.esc(caption)}</p>' if caption else "") + body
         words = draft.get("words", {}) if section == "work" else {}   # a draft step's state word on its button
         bar = ('<nav class="section-views" aria-label="Views">' + "".join(
@@ -2024,6 +2755,9 @@ def render(theme, root: Path, folder: Path, section="", group="") -> str:
                 "timeline": lambda: timeline_html(events, folder, root)}[section]()
         head = section.title()
 
+    if section in ("report", "work") and page_level(folder) in IX.LEVELS:   # 🙋 Interaction closes each view (JL 261104)
+        body += IX.view_section(inbox, root, IX.next_number(body), lambda r: interaction_where(r, folder, root))
+
     sub_line = describe(section, selected[2])
     if look:                                             # HOOK: a draft or paper page's own look (width, sections), every
         body = look["css"] + body                        # section; no verb beside its name (JL 261031, b10 r01 Q2)
@@ -2043,7 +2777,16 @@ def render(theme, root: Path, folder: Path, section="", group="") -> str:
                 left.append(rail_link(rail_url(child, root), child.name, False, "child"))
                 if page_level(child) in ("Theme", "Folder"):
                     left += [rail_link(page_url(g, root), g.name, False, "child grand") for g in kids(child) if inside(g, root)]
-    right = "".join(rail_link(page_url(folder, root, key, tag), name, (key, name, tag) == selected,
+    def rail_view(key, tag=""):
+        """A paper Board's Report and Work share one view list: moving between them stays in the view (JL 261104: "When
+        I switch from Report to Work, could I still stay in the same view")."""
+        if paper and level == "Block" and key in ("report", "work") and section in ("report", "work") and group:
+            base = group.removeprefix("work-")
+            target, there = ("work-" + base, work) if key == "work" else (base, overview)
+            return target if target in there else tag
+        return tag
+
+    right = "".join(rail_link(page_url(folder, root, key, rail_view(key, tag)), name, (key, name, tag) == selected,
                               "", describe(key, tag)) for key, name, tag in rail)
     crumbs, cur = ([frame._link("/", root.name)] if folder != root else []), root   # the path starts at the SPACE (rule 1)
     for part in folder.relative_to(root).parts[:-1]:
@@ -2061,7 +2804,7 @@ def render(theme, root: Path, folder: Path, section="", group="") -> str:
     goal_html = (f'<div class="focus-goal"><span class="goal-word">{GOAL_WORD.get(page_level(folder), "Goal")}</span>'
                  f'{markdown(goal, folder, root)}</div>' if goal else '')
     return page_shell(folder, root, crumbs, frame.esc(folder.name), head, sub_line, bar, goal_html, body, source,
-                      left, right, [(key, name) for key, name, tag in rail if not tag], section)
+                      left, right, [(key, name, rail_view(key)) for key, name, tag in rail if not tag], section)
 
 
 def rail_kids(folder: Path, root: Path) -> list:
@@ -2083,8 +2826,8 @@ def page_shell(folder, root, crumbs, title_html, head, sub_line, bar, goal_html,
     """The one page every level shares: path, title with its section, its views, the goal, the card, both rails."""
     card = f'<section class="focus-card"><div class="focus-content">{body}</div></section>'
     sections_line = ('<nav class="section-line" aria-label="Sections">' + "".join(   # phones only (600px or less, where the rails hide): the rail as tabs (JL 261031)
-        f'<a href="{frame.esc(page_url(folder, root, key))}"' + (' aria-current="page"' if key == section else '')
-        + f'>{frame.esc(name)}</a>' for key, name in rail) + '</nav>')
+        f'<a href="{frame.esc(page_url(folder, root, key, view))}"' + (' aria-current="page"' if key == section else '')
+        + f'>{frame.esc(name)}</a>' for key, name, view in rail) + '</nav>')
     # JL 261029 sketch: "Project-PageParts  Overview" as the title; under it, the views of that section; then the goal
     return document(folder.name, '<main class="focus-page"><div class="focus-crumb">' + ' / '.join(crumbs) + '</div>'
                     f'<h1>{title_html}<span class="h1-section" title="{frame.esc(sub_line)}">{head}</span></h1>'
@@ -2095,12 +2838,16 @@ def page_shell(folder, root, crumbs, title_html, head, sub_line, bar, goal_html,
                     f'<nav class="focus-rail right" aria-label="Page sections">{right}</nav></main>')
 
 
-def mindmap_document(path, root):
+COMPACT_MAP = ('<style>.pm-folds{grid-template-columns:130px auto;gap:0 26px}.pm-folds .pm-root b{font-size:15px}.pm-folds .pm-root *{overflow-wrap:anywhere}'
+               '.pm-folds .pm-para{grid-template-columns:150px auto;gap:0 26px}.pm-folds .pm-q{width:150px}.pm-role:empty{display:none}</style>')
+
+
+def mindmap_document(path, root, compact=False):
     if not inside(path, root) or not path.is_file() or not path.name.endswith(".mindmap.md"):
         return ""
     body = frame.mindmap_module().fragment(path, frame.rel(path, root), editable=False,
                                          url_of=lambda p: frame._file_url(p, root) if inside(p, root) else "")
-    return document(path.name, body)
+    return document(path.name, body + (COMPACT_MAP if compact else ""))   # narrow columns, for a map framed in a side tab
 
 
 def document(title, body):

@@ -13,8 +13,8 @@ description: >-
   ui rules, is this page clear, five-second test, page design, redesign this page, design loop, ui rubrics, walk the
   page in chrome, click through the ui, /haipipe-ui.
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-11-02"
+  version: "0.4.4"
+  last_updated: "2026-11-04"
   # version history: ./CHANGELOG.md
 ---
 
@@ -77,6 +77,29 @@ A reader who has never seen the page looks at it for five seconds and must answe
 A page that needs a sentence of instructions to pass has failed it.
 
 
+**Closed by default (JL 261104: "默认的话，大家都是合着的"):** anything that opens and closes, a section, a tree level, a map
+branch or a card, starts closed on every page, and a click opens it. A walk and a review fail a page that draws one open.
+
+
+## A page reads badly: compare before you change anything
+
+JL 261104: "你早这样不就行了吗 你为啥就是一开始意识不到呢？ ... 这是一个 huge lesson". On b01 a mind map was reworded, folded,
+deepened, swapped for a table and put back, because nobody looked at another Block. One comparison found the cause: 16 cards
+against b35's 6, since b01 listed its 15 Jobs flat. Grouping them took about 15 lines and no new drawing. So, in this order:
+
+1. **Open the same view on 2 or 3 other pages at the same level**, other SPACEs too, and measure them: cards or rows, height,
+   sideways scroll.
+2. **Name the one difference that makes this page read worse.** It is usually the content's shape (too many items, no
+   groups), not the wording or the styling.
+3. **Fix that difference with what the page already has**: the same renderer, and the data it already holds (b01's `bands:`).
+4. **Keep the kind of view the reader named.** Asked about a mind map, leave a mind map. A new kind of drawing, or the
+   same change on every page, is the reader's choice, never yours.
+5. **Make one change, look at it live beside the page you compared with, then report.** If the reader still dislikes it,
+   go back to step 1; don't stack a second patch on the first.
+6. **Write the shape down** in the skill that owns the view, so the next page starts from it (a map: `haipipe-mindmap`,
+   "The Block map").
+
+
 ## Five rules
 
 1. **Where am I, on top.** The path, then the title-&-section, then the view-button-list, then the goal-line
@@ -115,8 +138,8 @@ A page that needs a sentence of instructions to pass has failed it.
 section    verb        holds                                         its view-button-list
 Report     check       the results and the progress                MindMap · Standing · Answers · Questions (Block,
                                                                     Job, Task); MindMap · Findings · Themes · Status above
-Work       do          the children with goal, status, result;      Progress (· Deliverables)
-                       a Task's Runs and their output
+Work       do          the same views as Report (work theme,         same buttons as Report (· Deliverables);
+                       paper Board): Process, then the same Results  elsewhere Progress (· Deliverables)
 Studio     think       sNN topics: slides, drawing, mind map        one button per group, no All; Other last;
                                                                     Topics when no topic has a group
 Interactions answer  every interaction at this page or below       All · Needs your input · Answered (always on the
@@ -142,11 +165,28 @@ Files      browse      the folder itself, its tree                  Folder (one 
    Findings what was found (each answer's first sentence; proposals waiting for you first), Themes what each Block
    is for, Status how far each Block has got. Every view says what it shows in one line above its content.
    A Block, Job or Task has its own MindMap too: what it must find out, its Jobs or Tasks or Runs, its topics.
+   A Block's Status groups its Jobs by band (j0N, j1N, ...; `bands:` in board.md names them) as numbered sections that
+   start closed: `N · <emoji> <band>`, one state word, then a thin bar (JL 261104: "I prefer to me make it like the sections").
+   Words sit left of the bar and every bar has one width on the right edge, so long words never push a bar out of line.
+   Opened, one row per Job, and a Job's row opens to its Tasks and Runs, the same `fold_tree` as Work, each name opening
+   its pop-out (JL 261104: "each job each row, and we can collapse them out to see the tasks and runs"; "这个做得很好").
+   No next-step sentences on these rows (JL 261104: "I don't want this, just delete them").
    A Block that designs a theme (`theme:` in board.md) adds **Block UI · Job UI · Task UI** after Questions (JL 261031):
    each is a real page of that theme, live in a frame, named by `ui-block:`, `ui-job:`, `ui-task:` in the face (an
    http(s) link to the SPACE's server on the Tailscale origin, or a path from this SPACE's root). Pick a full example,
    one with Tasks, Runs and Results, never the first folder on disk; a level the theme does not have gets no button.
-7. **Where we stand** (done when, status, waiting) shows once, at the top of Report's Standing, never in Work too.
+   A work page has no Questions view (JL 261104: "we don't need the questions"). A work Block's **Findings** is a quick
+   overview of the results it got and what it hands over (JL 261104: "the quick overview of the results we get from that
+   block"), shaped like a paper Board's Evidence: numbered closed sections, each with side tabs, a list on the left and
+   the content on the right (JL 261104: "left tab panel right content"). 🔢 Values first, when a Job holds a `tables.json`;
+   then the Questions by `group:` (one section, Answers, with fewer than two groups), each panel what it asks, its answer's
+   words and the first result line of each Task under its `work:`; then 🧠 Maps, one tab per mind map in a Task's newest
+   `runs/*/result/maps/` (JL 261104); last 📦 Delivery, tabs Models · Data · Website (JL
+   261104: "fold / merge the delivery to the Findings"). Delivery stays on the rail too.
+7. **Work has the same views as Report** (work theme, Block, Job and Task; JL 261104: "why we have the progress? it
+   should have the same view to the report"), as on a paper Board: ⚙️ Process first (closed: 🙋 waiting on you, the
+   view's things to do, 🧰 skills), then 📊 Results, the Report's view drawn by the same code. Work opens on Status, whose
+   rows add each Task's output and the Answer button; a Task's Results are its Runs with their output.
 8. **Report shows, Work asks** (JL 261102: "the questions should be in the Work, for the report, we just show the
    report"). A Report view may be explored (hover, pin, compare, folds, a share link) but holds no Ask box, Copy
    prompt, propose or sign control; those live in the same letter's Work view, over the same picture.
@@ -181,7 +221,7 @@ right-rail. Under each view the content is sections, a heading each, never folds
 5. **A to-do row** (PROCESS, b16 s33-D06, from b15 s58): one full-width row per thing to do: its words, its state as
    a coloured pill (orange waits on you, blue running, green done, grey not started or open), and one verb (Answer,
    Open, Open Plan).
-6. **A plan row** (Data flow's PROCESS, the plan center, b16 s33-D07): one step of the plan per row: its name, "use
+6. **A plan row** (Data + Paper Plan's PROCESS, the plan center, b16 s33-D07): one step of the plan per row: its name, "use
    /<skill>", Open (the thing the step works on) and Copy prompt (the prompt sends a session to that thing and asks
    for the plan before any change).
 
@@ -193,7 +233,7 @@ to update them one by one ... you should have the A, B, C, D"; "could you make e
 format"; "for the UI, what is the principle"). One topic per page level × section, numbered in the theme Block's own
 sNN band like any Studio topic (b16 s32 to s40: Board, version, Section × Report, Work, Studio). `<level>` below is
 the page's own word in that theme (the paper theme says board, version, section). A theme's page may have views of
-its own instead of the table above (the paper Board's seven views, A Idea to G Writing, Venue inside Story,
+its own instead of the table above (the paper Board's seven views, Idea and Story to Writing, Venue inside it,
 s32-D12); they still pass the five rules, and
 no view repeats another or a right-rail section (Timeline, Delivery, Interactions stay sections).
 
@@ -214,7 +254,7 @@ no view repeats another or a right-rail section (Timeline, Delivery, Interaction
    workbench skill), both named in `delivery/render.yaml`.
 
 ```text
-s32 board · Report    A Idea ✅   B Story ⬜   C Data flow ⬜ … G Writing ⬜
+s32 board · Report    A Idea ✅   B Story ✅   C Data + Paper Plan ⬜   D Support blocks ⬜ … G Writing ⬜
 round p01  A ─▶ code ─▶ checked live ─▶ ✎ 261031 ─▶ delivery/ui/board-report/A-idea.html
 ```
 
@@ -296,7 +336,7 @@ however clean. The shape that passes, kept the same in every view (JL 261031: "I
 
 1. **Two bands, RESULTS and PROCESS.** Every Board view is two bands, each numbered from 1: RESULTS is the view's
    own sections, PROCESS is how the layer is being made, step by step (1 · 🙋 Interactions, then the view's to-dos,
-   each a to-do row; Data flow's is the plan center, in plan rows). Report reads RESULTS first, Work PROCESS first;
+   each a to-do row; Data + Paper Plan's is the plan center, in plan rows). Report reads RESULTS first, Work PROCESS first;
    RESULTS is drawn by the same code on both, so the two never disagree (b16 s32-D22, s33-D03).
 2. **Numbered heading bars, in reading order.** Every section is a boxed bar `▾ 1 · 🧭 <name>`, `▾ 2 · …`, folding
    by its heading; the numbers, from 1 in each band, make the view read in order. Each section name has one emoji,
@@ -307,21 +347,19 @@ however clean. The shape that passes, kept the same in every view (JL 261031: "I
 4. **Content shows as what it is** under each bar: things a reader compares as cards side by side, a sequence as
    a chain of boxes with arrows and role words (target, fallback 1), dated steps as a timeline with a state mark
    each (✅ done, ⏳ running, ⬜ not started), a plain part as one line.
-5. **Card tabs** (JL 261031: "we will use the cards-tab"): when each card holds more than its line (RQ1, RQ2, RQ3;
-   each direction considered; each Section, display, Block, value set), the cards are a tab list: the first open,
-   one open at a time, the open card's detail in a panel under them, its Open button inside. A **card-tab chain** is
-   the same with arrows between the cards (each journal of Venues, target to fallbacks). The general pattern is
-   master–detail; the standard parts are `tablist`, `tab` and `tabpanel`. **Side tabs** put the list on the left and
-   the open item's content on the right, for content that is read (a Section's text, a display, a list of values):
-   card tabs above would push it down the page (JL 261101: "in the left there is a panel, and we can read the content
-   quickly"). In Report, a panel shows the thing to read, never the steps that make it ("we just report the report").
+5. **Side tabs, the one kind of tabs in a view** (JL 261104: "please change all type of these into this style"; they
+   replace the card tabs of JL 261031): the list on the left, the first open, one open at a time, the open item's
+   content on the right, its Open button inside (RQ1, RQ2, RQ3; each direction considered; each journal; each Section,
+   display, value set; each related paper, its PDF embedded). `_grouped_tabs` adds a small group name above each group.
+   The general pattern is master–detail; the standard parts are `tablist`, `tab` and `tabpanel`. In Report, a panel shows
+   the thing to read, never the steps that make it ("we just report the report").
 6. **Helpers at the bottom**, unnumbered, after a dashed rule: the drawing and the mind map only. 🖼️ The drawing
    (its picture, Slides · Draw), 🧠 The mind map (a button that opens it in the pop-out; drawn inline it repeated the
    face). Interactions moved into PROCESS 1 (b16 s32-D22).
 
 `paper_ui_cells.py` draws this (`band`, `sec_block` with `big`, `cardtabs`, `cardtabchain`, `chain_only`,
 `narrative`, `sidetabs`, `todo`, `one_line`, `ask`, `picture`). The live code: `servers/workbench/ui_parts.py` holds the
-shared pieces (`_card_tabs`, `_side_tabs`, `_band`, `_pill`, `_todo`, `_plan_html`, `PB_CSS`), and
+shared pieces (`_side_tabs`, `_band`, `_pill`, `_todo`, `_plan_html`, `PB_CSS`), and
 `servers/workbench-paper/board_*.py` the views: `board_results.py` one view function per paper part (`idea_view` to
 `writing_view`), `board_process.py` the PROCESS band, `board_views.py` the two bands put together (`banded`).
 `focus_draft.py` is the draft Task page only. b16 s32's seven views A to G are drawn and built this way.
@@ -346,7 +384,7 @@ open ─▶ every view button ─▶ every interactive thing ─▶ 390 px ─�
 2. **Every view.** Click each button of the view-button-list and each right-rail section; screenshot each, the
    whole view (scroll it), not the first screen only.
 3. **Every interactive thing**, one at a time, saying what should happen before checking that it did: hover a
-   canvas card (what lights up, and is it right), click to pin and walk its chips, open a card tab, a side tab and a
+   canvas card (what lights up, and is it right), click to pin and walk its chips, open a side tab and a
    pop-out and close it again, a `#…` share link, a fold, a search box, a Copy prompt (it copies, it posts nothing).
    Never press a button that writes (a sign, Review and approve, a release) unless the person asked: name it and skip.
 4. **Phone.** Resize to 390 px wide: rails hidden, section-line shown, nothing cut off or scrolling sideways. A
@@ -359,8 +397,8 @@ open ─▶ every view button ─▶ every interactive thing ─▶ 390 px ─�
 5. **Console.** Read the console once at the start (tracking begins at the first read), reload, then read errors
    only; any error is a broken step.
 6. **The paper bar.** Open the paper UI's matching view (the paper Board's view of the same job: its Story or
-   Writing card tabs for a list of things compared, its Data flow plan rows for steps) and say, per view, where the
-   page falls short of it, in words: "denser than paper's Story card tabs", "no picture where paper shows one".
+   Writing side tabs for a list of things compared, its Data + Paper Plan rows for steps) and say, per view, where the
+   page falls short of it, in words: "denser than paper's Story side tabs", "no picture where paper shows one".
 7. **Notes.** One line per step: `✅ | ❌ | ⚠️ <what was done> → <what happened>`; a GIF of the walk
    (`gif_creator`, frames before and after each action, named `<page>-walk.gif`). Fix every ❌ and re-walk before
    any review; a ⚠️ (works, but confusing) goes to the review.
@@ -384,7 +422,7 @@ a URL (`s32-board-ui-report · B · stage 1`).
 **Review on Tools' own placeholder page, never a real one** (JL 261101: "you are working with the Tools"). Tools is
 public, and a review quotes what it sees, so a stage-2 review screenshots the placeholder Board,
 `blueprints/Project-Ladder/paper/Paper-Example` on the Tools server (`Tools-SPACE/.server_config`: port 5623), e.g.
-`http://100.121.165.84:5623/_board/workbench?path=blueprints/Project-Ladder/paper/Paper-Example&layout=focus&section=work&group=work-dataflow`.
+`http://100.121.165.84:5623/_board/workbench?path=blueprints/Project-Ladder/paper/Paper-Example&layout=focus&section=work&group=work-plan`.
 Its faces hold `<…>` placeholders only. A bug seen only on a real paper is diagnosed by a new session in that paper's
 own SPACE, which reports back the Tools file and line; the reviewer never opens the real paper.
 

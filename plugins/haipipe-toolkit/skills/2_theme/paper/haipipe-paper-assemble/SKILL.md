@@ -2,8 +2,8 @@
 name: haipipe-paper-assemble
 description: "Builds the whole manuscript deterministically from the Sections' LaTeX and accepted bindings, regenerating delivery/ (DOCX, PDF, supplement, source manifest); never reads a generated Word file back. Use to assemble, build Word, export the paper, regenerate submission files, or check whether a document is stale. Trigger: assemble, build Word, export the paper, /haipipe-paper-assemble."
 metadata:
-  version: "0.13.0"
-  last_updated: "2026-11-01"
+  version: "0.18.0"
+  last_updated: "2026-11-03"
   summary: "Paper-level source-driven document assembly; page-level Word export remains a separate workbench."
 ---
 
@@ -95,11 +95,41 @@ weight, not a gate: it is reported under the page's `warnings` in the manifest
 and never blocks. Before this rule a folded, uncited `S-Display-3a-funnel`
 blocked a fully written §4 on a missing preview.
 
-**A stale fragment is a warning, never silent.** The body fragment is DERIVED
-from the page `.md` by the LaTeX lane; when the `.md` is newer than
-`delivery/latex/<page>.tex` the build would print yesterday's words. The engine
-reports `fragment may be stale` under `warnings` (a warning, not a blocker,
-because mtimes lie after a clone or a bulk rename sweep); rerun the lane.
+**A stale fragment stops the build (0.14.0, 261103).** The body fragment is
+DERIVED from the page `.md` by the LaTeX lane; when the `.md` is newer than
+`delivery/latex/<page>.tex` the build would print yesterday's words. That
+happened silently on the MISQ paper: md2tex REFUSED to replace three Sections'
+fragments because a citation key left each Section (a rewrite, a moved
+paragraph), and the build printed their old text. Now, before it touches
+`delivery/latex/`, the build checks every printed Section and stops (exit 1)
+with one line per stale fragment, naming the keys md2tex would refuse:
+
+```text
+❌ build stopped: 1 printed Section(s) would carry OLD words
+  stale fragment: t01_introduction (delivery/j11_writing_v1130_desk/t01_introduction/latex/t01_introduction.tex), not rebuilt since 2026-11-03 11:29: citation keys dropped: example2021one
+  fix: re-export each Section through its LaTeX lane (page.py export <Section folder> --lane latex, ...)
+  or build anyway: delivery/build.py --allow-stale (DRAFT, each listed as a G4 blocker)
+```
+
+```text
+no key dropped         a plain re-export fixes it: page.py export <Section> --lane latex
+a drop is intended     delivery/build.py --accept-dropped-keys: re-exports each stale Section
+                       through its own LaTeX lane with md2tex's --accept-dropped-keys, then builds
+build anyway           delivery/build.py --allow-stale: prints them, lists each under
+                       stale_fragments in the manifest and as a G4 blocker
+```
+
+`--accept-dropped-keys` lets a key leave only when another Section in the
+compile order still cites it, or a revise card in the Section's
+`draft/records/<page>-revise.md` removed it (its `Original:` cites the key,
+its `Expected:` does not). Any other key stays refused, named
+`<key> (refused: unexplained)`, and the build still stops. Failing is the
+default rather than a warning because a warning in a long summary is what let
+three stale Sections through; `--allow-stale` covers the case where mtimes lie
+(a fresh clone or a bulk rename sweep). The build never runs a bare md2tex: the
+lane also places display floats and `\ref` labels. `build.py check` lists stale
+fragments too and exits 1. The page manifest keeps its `fragment may be stale`
+warning for the Paper Workbench.
 
 Read the current outline's explicit `approved:` record, not merely its filename
 or an older approved outline. When an `outline-version:` is declared, it must
@@ -240,6 +270,10 @@ the LaTeX `[t]` float does, and a paper does not switch this off.
 5. **Check the render**: after a build, render Word's own PDF (`word/<name>.pdf`) page by page and look at every
    display page before saying the file is ready (haipipe-delivery).
 
+Builds take turns in Word (`scripts/word_lock.py`, 0.17.2; one lock per machine). Word is asked one question first; no
+answer in 30 seconds and the build skips measuring and says so (0.17.1). A build quits Word only if it started it and no
+document is open. On a working Word a whole 52-page build with 14 displays took 40 to 80 seconds (three runs, 261104).
+
 ## 📊 Tables must arrive in Word (0.7.1)
 
 The Word engine parses each `table` float into rows itself. Its column-spec
@@ -293,6 +327,59 @@ shifts every later page, and is reported: `its fragment prints N numbered
 sections; inner divisions should be \subsection`. A page whose fragment has only
 `\section*` prints no number and is shown as `(unnumbered)`.
 
+## 🚧 A venue's format is settled once (JL 261104)
+
+JL 261104: "我觉得这个东西我们早就做过了 为什么现在把模板给我变了". A session downloaded the journal's template and changed a
+format the paper had already agreed (the abstract's spacing, the title), with an author watching the PDF change.
+
+```text
+before any format change   read 1 the profile's comments · 2 the paper's official-format file in related/
+                                3 the last round's files in delivery/<job>/word/
+they agree                 that IS the format; say so, and change nothing
+a new source differs       (a template, a guidelines page) list the differences with old and new side by side,
+                           and ask; it never overrides by itself
+a person asks "is it the template?"   answer by comparing; a question is not an order to change
+sources disagree           the paper's own paper-build.toml, with a person's dated line, wins over the profile, the older format file and past rounds
+```
+
+A journal rule that is a hard limit (a page cap) can force a change: say which rule, what it costs, and ask first.
+
+## 📋 The venue template checklist (JL 261104)
+
+JL 261104: "I think this should be the checklist for the /haipipe-paper-assemble to make sure they follow the venue
+template". When a venue publishes a template, every build compares both lanes with it, and the report says which rule differs.
+It changes nothing: a person settles each difference, by asking for the fix or by accepting it (§ above).
+
+```toml
+[venue_template]                                       # paper-build.toml, paths from that file; none named = not checked
+word = "../../venues/MISQ/kit/MISQ_Submission_Template_Word.docx"
+latex = "../../venues/MISQ/kit/latex-template/MISQ_Submission_Template_LaTeX.tex"
+accepted = []                                          # rule names a person chose to keep different
+```
+
+| Lane | The rows `scripts/venue_template_check.py` compares |
+|---|---|
+| Word | page size and margins; body font, size, spacing; title size, bold, alignment; abstract heading case and spacing; keywords spacing; major heading and subhead alignment, bold, case, numbers; references heading, spacing, hanging indent, new page; appendix heading case, new page |
+| LaTeX | the paper's `head` against the template: class, margins, body and abstract stretch; the built PDF's body font |
+| Both PDFs | keywords on page 1; page 2 opens with a major heading |
+
+`build.py` prints the result (`venue template, word: ✅ follows it` or each `❌` row) and keeps it as `venue_template` in the manifest. To run it alone, from the SPACE root (it edits nothing, so a read-only audit may use it):
+
+```bash
+.venv/bin/python <this skill>/scripts/venue_template_check.py --word-template <template.docx> --docx <main_docx> --docx-pdf <main_docx as .pdf> \
+  --latex-template <template.tex> --head <[source] head> --latex-pdf <main_pdf>
+```
+
+A rerun newer than the build outranks the manifest's `venue_template`, which a build only refreshes when it runs. The rows are the rules listed above, not every detail of
+the template (not reference style or the keyword count): say so when you answer. Before you say a file follows the template, read this report. Numbers a Word style draws do not show in a paragraph's text, so read the
+style or run the check, never the text alone.
+
+JL 261104: "we should have the MISQ official word template, why don't we use that one?" When a venue publishes a Word template, write the manuscript
+inside it: `word_template = "<path>"` in the paper's `[profile]`. The engine opens that file, removes its sample text and keeps its styles, heading numbers,
+page setup and footer. Copying its settings onto a blank document missed things. Only what a template leaves as direct paragraph settings stays in
+`[profile]` (their defaults keep the old output): `abstract_heading_upper`, `abstract_line_spacing`, `appendix_heading_upper`, `references_new_page`, `appendix_new_page`.
+Without a template file, `heading_numbers` types the numbers.
+
 ## 🎭 Venue profiles
 
 A profile is presentation, never claims: `profiles/<name>.toml`, selected by
@@ -334,7 +421,8 @@ profile builds as before 0.7.0.
 A submission sends a cover letter with the manuscript, so the build makes it the same way (JL 260929):
 
 ```text
-WORDS   on the ladder (b16 Q05): the version's letter Task t31_cover-letter/, its "Cover letter" division,
+WORDS   on the ladder (b16 Q05): the version's letter Task t31_cover-letter/, else t01_cover-letter/ of the submission
+        Job whose face says `for: <version>` (or the Task [coverletter] task names), its "Cover letter" division,
         else its whole Content; on an older Board the "Cover letter" division of the submission Round page
         (B<x>-<desk>-Round/RD<NN>-…/<stem>.md, named by [coverletter] round) · approved like any page;
         until the Content has the words, the latest draft is used and the letter is not ready
@@ -353,7 +441,8 @@ SEND    build.py send qNN (a comments report of the version) or send RD<NN> (an 
 
 The words are authored and approved; everything factual is code-filled, so a number or a title can
 never drift from the manuscript. `scripts/cover_letter.py` holds the lane; `build-manifest.json`
-records it under `cover_letter` (source, ready, checks). `send` skips an output switched off with an
+records it under `cover_letter` (source, ready, checks). The rules for the words are `haipipe-paper-draft`
+§ A cover letter's words. `send` skips an output switched off with an
 empty value and, when the profile's `appendices = "main"`, the supplement a manuscript-with-appendices
 never produces.
 
@@ -378,6 +467,11 @@ receipt               build-manifest.json "portal": folder, uploads (slot, files
 
 List every slot the venue asks for, also the ones with no file yet, so a missing form shows as ⬜ instead of being
 forgotten. The slots come from `venues/<venue>/call.md` or the version's submission report (its `checklist.md`).
+
+A file made AFTER the build (a venue ZIP from `npj-zip.sh` or `arxiv-zip.sh`) reaches the packet only through
+`build.py portal` (0.14.1), which rewrites the packet from the last manifest: it copies the newest file in and checks
+`matches` again. The ZIP script calls it as its last step, so the order is build.py, then the ZIP script, and
+`portal/` never holds an older ZIP under the new day's name (FairGlucose 261103).
 The packet never decides the send: `sent` is still a person's line in `delivery/delivery.md` (haipipe-delivery),
 and the Writing view of the paper workbench shows the packet under the assembled paper.
 
@@ -498,6 +592,17 @@ any non-accepted receipt item. This is a preflight, not a claim-making step.
 
 ## ▶️ Build protocol
 
+`delivery/build.py --pdf-only` (0.17.0, JL 261104) is the quick look while writing: the stale check, the LaTeX PDFs and
+the manifest, about a minute, no Word app. Word, the cover letter, the portal and the shared folder stay as the last full
+build left them, and `send` and `release` refuse until a full build runs. A plain `build.py` stays the full build, since
+co-authors get real Word (JL 261023).
+
+`delivery/build.py --word-draft` (0.18.0, JL 261104: "we can use method B, as long as the table is at the top of that
+page") is the working Word copy: Word prints it, but no page is measured. Each display floats to the top of the page its
+citing text reaches (`float_display_to_top`), so it may sit above that text, and a display too long for the page moves
+to the next page with its citing paragraph, which can leave white space. A display that needs a whole page keeps a page
+of its own. The shared folder stays as it was, and `send` and `release` refuse until a full build runs.
+
 The public operation is `assemble`:
 
 ```text
@@ -531,7 +636,10 @@ The paper-specific command is the thin wrapper `ref/build.py.wrapper`,
 installed as `delivery/build.py`:
 
 ```bash
-.venv/bin/python delivery/build.py            # build · DRAFT unless every page is ready
+.venv/bin/python delivery/build.py            # build · DRAFT unless every page is ready; stops on a stale fragment
+.venv/bin/python delivery/build.py --accept-dropped-keys  # re-export stale Sections, explained key drops pass
+.venv/bin/python delivery/build.py --allow-stale          # build anyway, stale fragments listed as G4 blockers
+.venv/bin/python delivery/build.py check      # find every Section and fragment, list stale ones; writes nothing
 .venv/bin/python delivery/build.py send q02   # freeze the current build into that comments report's sent/
 .venv/bin/python delivery/build.py send RD02  # (an older Board) into that Round's sent/
 .venv/bin/python delivery/build.py release RD02  # after G5 approval, freeze the answering build
@@ -648,8 +756,37 @@ available:
 - source, config and output paths, profile and engine versions, and the
   `built` time are recorded;
 - DOCX structure has the expected tables, figures, headings, and sections;
+- when `[venue_template]` is declared, both lanes are compared with the venue's template (§ The venue template checklist);
 - rendered pages are visually inspected when the output is being handed off;
 - if the build is run before G4, the result is visibly marked `DRAFT`.
+
+## 🔁 The final read · before an author reads a build (JL 261104)
+
+JL 261104, of the assembled paper view: "please work until you update this ready, I will just read this." A build goes
+to an author or a coauthor only after this loop comes back clean (one Page's own Word export for a coauthor is the other lane, § Two Word lanes):
+
+```text
+1 READ    one fresh blind reviewer: the main paper and the cover letter; another fresh one: the supplement
+          they read the rendered PDFs and view every table and figure page as an image
+2 VERIFY  check each finding against the source; a reviewer can be wrong
+3 FIX     in the source or the generator, never in the build; rebuild
+4 REPEAT  from 1, with fresh reviewers, until a round finds no must-fix item
+5 HAND    the author gets one link: the assembled paper view (the Board's Writing view)
+```
+
+An author's own words, a decision they made, or a scientific choice is never changed silently: list it for them with
+the link, even when a reviewer calls a sentence weak. The reviewers use `haipipe-draft-review`, see no earlier round's findings, and must check at least:
+
+| Check | The defect it catches |
+|---|---|
+| A display's data unit against its caption | a figure plots physicians, its caption says visits |
+| The topic of each display citation after a renumbering | "eTable 5" now names another table; a sweep must match `eTable~5` with a tie as well as "eTable 5" with a space |
+| Every stated count | "5 specifications" where the table shows 6 |
+| Math and layout in the Word version | a lost square root, layout codes printed as text, hyphens for minus signs |
+| A number the text cites from a table | the cited row was never printed in that table |
+
+A clean final read does not replace the person's reading pass (`ref/submission-readiness.md` § Human reading pass); it
+is what makes that pass worth a person's time. Checklist: D10.
 
 ## ⛔ Prohibited shortcuts
 

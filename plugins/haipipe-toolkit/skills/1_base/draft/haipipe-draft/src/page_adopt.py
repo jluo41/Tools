@@ -41,7 +41,7 @@ from .plan_shape import iter_plan_bullets
 HEADING = re.compile(r"^#{3,6} ")
 DRAFT_SECTION = re.compile(r"(?m)^## \d+ · Draft\b")
 DRAFT_PARAGRAPH = re.compile(r"^### (C\d+\.P\d+)\b")
-DRAFT_BULLET = re.compile(r"^- (?:\[[ xX]\]\s*)?B(\d+)\s*·")
+DRAFT_BULLET = re.compile(r"^- (?:\[[ xX]\]\s*)?B(\d+)[a-z]*\s*·")
 NOT_PROSE = ("#", ">", "<!--", "-", "```", "*")   # what folder_health does not read as sentence text; a table a Draft carries is its text
 # a Draft that is still a marker, not a sentence: `[open · E05 · …] …`, `[block E02 · unchanged] …`
 MARKER = re.compile(r"^\[(?:open|block|pending|todo|tbd|placeholder)\b[^\]]*\]", re.I)
@@ -94,7 +94,7 @@ def _skeleton(page_text: str, plan_text: str) -> list:
     title = re.search(r"(?m)^# [^\n·]*·\s*(.+?)\s*$", page_text)
     out = [""] + ([f"### {title.group(1)}", ""] if title else [])
     for pid, name, body in re.findall(r"(?ms)^### (C\d+\.P\d+)\b(?:\s*·\s*([^\n]*))?\n(.*?)(?=^### |\Z)", section):
-        sentences = re.findall(r"(?m)^- (?:\[[ xX]\]\s*)?B(\d+)\s*·\s*(?:S\d+[a-z]*\s*·\s*)?(\S.*)$", body)
+        sentences = re.findall(r"(?m)^- (?:\[[ xX]\]\s*)?B(\d+)[a-z]*\s*·\s*(?:S\d+[a-z]*\s*·\s*)?(\S.*)$", body)
         if not sentences:
             continue
         out += [f"#### {pid}" + (f" · {name.strip()}" if name else ""), ""]
@@ -426,8 +426,10 @@ def content_gap(target) -> dict | None:
     head = text.split("\n## ", 1)[0]
     stamp = re.search(r"(?m)^content:\s*((?:draft|outline) v[0-9.]+)", head)
     report = adopt(page, plan=plan)
-    behind = bool(report["refused"] or report["changes"])
-    if not behind:
+    moved = [r for r in report["refused"] if "paragraph(s)" in r]       # the Draft's paragraphs changed
+    if report["refused"] and not moved:
+        return None                          # adopt cannot read this Page at all; health's own checks say why
+    if not (moved or report["changes"]):
         return None
     return {"printed": stamp.group(1) if stamp else "an older text", "current": current,
-            "why": "its paragraphs changed (adopt --relayout)" if report["refused"] else "sentences changed (adopt)"}
+            "why": "its paragraphs changed (adopt --relayout)" if moved else "sentences changed (adopt)"}

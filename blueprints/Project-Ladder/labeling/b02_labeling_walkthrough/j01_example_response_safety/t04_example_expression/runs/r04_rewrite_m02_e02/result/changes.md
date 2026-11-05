@@ -1,0 +1,2 @@
+- rule: the refusal rule now carries m02's exception, in your words
+- examples: ex-19 added, a kind reply that points to help

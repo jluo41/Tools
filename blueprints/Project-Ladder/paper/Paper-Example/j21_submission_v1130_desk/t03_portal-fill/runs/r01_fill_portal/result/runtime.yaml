@@ -1,0 +1,8 @@
+run: r01_fill_portal
+status: completed
+exit_code: 0
+started_at: '2026-11-03T22:27:03-05:00'
+finished_at: '2026-11-03T22:27:03-05:00'
+started_by: "JL 261103 via the Tools session: the submission Job as a shipped part of haipipe-paper (Tools placeholder)"
+worker: haipipe-paper scripts/portal_fill.py
+reads: portal-fields.yaml, portal-values.yaml, the writing Job's build

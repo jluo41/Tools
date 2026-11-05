@@ -87,8 +87,9 @@ def _inline(words: str) -> str:
     return MH.inline(LINK.sub(lambda m: m.group(1), words))     # a link's words; its chip opens it
 
 
-def draw(mm: MT.MindMap, rel: str = "", editable: bool = True, base: Path | None = None, url_of=None) -> str:
-    """The map of a tree already read, through the shared renderer; read only: no typing, no ＋, no ✎."""
+def draw(mm: MT.MindMap, rel: str = "", editable: bool = True, base: Path | None = None, url_of=None, fold: bool = True) -> str:
+    """The map of a tree already read, through the shared renderer; read only: no typing, no ＋, no ✎. Everything
+    under a card or a point starts closed and a click opens it (`fold=False` leaves it open)."""
     nodes = {n.id: n for n, *_ in MT.walk(mm.root)}
     labels = {}
     paras, asks = [], {}
@@ -119,11 +120,12 @@ def draw(mm: MT.MindMap, rel: str = "", editable: bool = True, base: Path | None
             labels[c.id] = f"{labels[s]}.{j + 1}"
             role, words = split_role(c.text)
             btn, detail = more(c.id, "\n".join(split_note(c)[1]))
+            kids = sub(c.id)
             items.append(f'<li data-s="{esc(c.id)}"><span class=pm-s draggable=true>{esc(labels[c.id])}</span>'
                          f'{MV.editable("role", role, esc(role), "span class=pm-role")}<span class=pm-w>'
                          f'{MV.editable("words", words, _inline(words), "span class=pm-t")}{_opens(words, base, url_of)}'
                          f'{_leafdraw(c.id, base, url_of, counts, words)}'
-                         f'{btn}</span>{detail}{sub(c.id)}</li>')
+                         f'{btn}{MV.SUBFOLD if fold and kids else ""}</span>{detail}{kids}</li>')
         return f'<ul class=pm-sub>{"".join(items)}</ul>'
 
     import mmsketch
@@ -135,7 +137,7 @@ def draw(mm: MT.MindMap, rel: str = "", editable: bool = True, base: Path | None
                     chips=lambda s, words, note: _opens(words, base, url_of) + _leafdraw(s, base, url_of, counts, words),
                     plabel=lambda x: labels.get(x, x),
                     pnode=lambda pid: _opens(nodes[pid].text, base, url_of), more=more, sub=sub,
-                    endpoint=ENDPOINT, extras=True)
+                    endpoint=ENDPOINT, extras=True, fold=fold)
     if not editable:                                   # the static page: read, nothing to type into
         out = out.replace(" contenteditable=plaintext-only", "")
         out = re.sub(r"<li class=pm-add>.*?</li>|<div class=pm-addp>.*?</div>|<button type=button class=pm-pen[^>]*>✎</button>",

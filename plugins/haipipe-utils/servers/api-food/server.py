@@ -22,7 +22,7 @@ swap transport without re-reading the response shape.
     POST /normalize        {"food": "fried rice; egg"}   -> one object
     POST /event            {"raw": {"type", "rows"}} or {"input": {...}} or both
         -> {"raw", "input", "output": {"<local hour>": {...}}, "step", "version"}:
-           one food event, raw to the input JSON to the output by local hour
+           one meal event, raw to the input JSON to the output by local hour
            (skills/haipipe-norm/eventnorm; s01 ⑦ ⑤, JL 261021)
     GET  /healthz          the bank it is actually serving, so a caller can tell
                            WHICH corpus answered before trusting a number
@@ -161,7 +161,7 @@ class EventIn(BaseModel):
 
 @app.post("/event")
 def food_event(body: EventIn):
-    """ONE food event (JL 261021: "make the page on event to work"): the raw, the input JSON the preprocess step
+    """ONE meal event (JL 261021: "make the page on event to work"): the raw, the input JSON the preprocess step
     makes of it, and the output by local hour, each item enriched (match, serving, 14 nutrients, GI and GL). The
     food API still reads only the items; the time, the meal type and the meal's own total pass by it."""
     try:

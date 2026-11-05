@@ -6,7 +6,7 @@
 <title>Try the API</title>
 <!-- The try page (haipipe-utils servers/_host, JL 261021: "最终的产出就是一个类似的小网页 ... 这个网页会调用我们的 API，
      我们输入任何东西，它就会返回我们想要的结果 ... 网页下面还会有很多 gallery"). One page for every lane, served at
-     /try/<noun>. A lane with an event door (food: POST /food/event, JL 261021 "make the page on event to work") shows
+     /try/<noun>. A lane with an event door (meal: POST /meal/event, JL 261021 "make the page on event to work") shows
      the event: what arrives (raw), the input JSON the preprocess step makes of it, and the output by local hour; its
      gallery is real meals of every kind of raw (GET /try/<noun>/events), each run live beside the answer frozen when the
      gallery was built. A lane without one sends its box to /normalize/batch and shows its input gallery
@@ -167,8 +167,10 @@ tr.check td { font-size:12.5px; color:var(--mut); white-space:normal; }
 /* JSON that folds: ▾ open, ▸ shut, the shut block shown as { … n } */
 .jo { cursor:pointer; position:relative; }
 .jo:hover { background:color-mix(in srgb, var(--accent) 8%, transparent); }
-.jc { position:relative; display:inline-block; width:0; }
-.jc::before { content:"▾"; position:absolute; left:-12px; top:-1px; font-size:11px; color:var(--faint); }
+/* one line tall, from the line's top: an empty inline-block has no height and sits on the baseline, so the arrow hung below its line */
+.raw-pic { display:block; max-width:calc(100% - 28px); max-height:340px; margin:12px 14px 2px; border-radius:8px; border:1px solid var(--line); }
+.jc { position:relative; display:inline-block; width:0; height:1.6em; vertical-align:top; }
+.jc::before { content:"▾"; position:absolute; left:-12px; top:0; font-size:11px; line-height:20px; color:var(--faint); }
 .jf.shut > .jo .jc::before { content:"▸"; color:var(--accent); }
 .jf.shut > .jb { display:none; }
 .jf.shut > .jo::after { content:" … " attr(data-n) " "; color:var(--accent); font-style:italic; }
@@ -299,7 +301,7 @@ tr.check td { font-size:12.5px; color:var(--mut); white-space:normal; }
       <div class="stage"><div class="stage-h"><span class="n">2</span>📦 Output JSON back<span class="sp"></span><span class="folds"></span><button data-copy="back">Copy</button></div><pre id="back"></pre></div>
     </div>
     <div class="stages" id="evpanes" hidden>
-      <div class="stage"><div class="stage-h"><span class="n">1</span>📄 Raw, as it arrives<span class="sp"></span><span class="folds"></span><button data-copy="evraw">Copy</button></div><pre id="evraw"></pre></div>
+      <div class="stage"><div class="stage-h"><span class="n">1</span>📄 Raw, as it arrives<span class="sp"></span><span class="folds"></span><button data-copy="evraw">Copy</button></div><div id="evpic"></div><pre id="evraw"></pre></div>
       <div class="stage"><div class="stage-h"><span class="n">2</span>📨 Input JSON<span class="sp"></span><span class="folds"></span><button data-copy="evin">Copy</button></div><pre id="evin"></pre></div>
       <div class="stage"><div class="stage-h"><span class="n">3</span>📦 Output, by local hour<span class="sp"></span><span class="folds"></span><button data-copy="evout">Copy</button></div><pre id="evout"></pre></div>
     </div>
@@ -313,7 +315,7 @@ tr.check td { font-size:12.5px; color:var(--mut); white-space:normal; }
     <div class="code-grid">
       <div class="stage"><div class="stage-h">In this SPACE · <code id="pyImport">from eventnorm import event</code><span class="sp"></span><button data-copy="pyLocal">Copy</button></div>
         <pre id="pyLocal"></pre><div class="code-foot">after <code>source env.sh</code>, which puts eventnorm on the path</div></div>
-      <div class="stage"><div class="stage-h">Over HTTP · <code id="pyDoor">POST /food/event</code><span class="sp"></span><button data-copy="pyHttp">Copy</button></div>
+      <div class="stage"><div class="stage-h">Over HTTP · <code id="pyDoor">POST /meal/event</code><span class="sp"></span><button data-copy="pyHttp">Copy</button></div>
         <pre id="pyHttp"></pre><div class="code-foot" id="pyHost"></div></div>
     </div>
   </section>
@@ -336,12 +338,13 @@ tr.check td { font-size:12.5px; color:var(--mut); white-space:normal; }
   const parts = location.pathname.replace(/\/+$/, '').split('/');
   const noun = parts.pop(); parts.pop();
   const base = parts.join('/');
-  const EMOJI = { food: '🍎', exercise: '🏃', medication: '💊', insulin: '💉', step: '👣', sleep: '😴', still: '🪑' };
-  const ACCENT = { food: '#2f9e44', exercise: '#1c7ed6', medication: '#7048e8', insulin: '#e8590c', step: '#0c8599', sleep: '#5f3dc4', still: '#868e96' };
+  if (noun === 'food') { location.replace(`${base}/try/meal${location.search}`); return; }   // a host that follows the 302 itself
+  const EMOJI = { meal: '🍎', exercise: '🏃', medication: '💊', insulin: '💉', step: '👣', sleep: '😴', still: '🪑' };
+  const ACCENT = { meal: '#2f9e44', exercise: '#1c7ed6', medication: '#7048e8', insulin: '#e8590c', step: '#0c8599', sleep: '#5f3dc4', still: '#868e96' };
   // How a gallery card's input becomes a request, and how a typed box becomes one: per lane. `event` names the lane's
   // event door; such a lane sends its box and its cards there.
   const LANES = {
-    food: {
+    meal: {
       event: 'event',
       fromCard: inp => (inp.FoodName ? { foods: inp.FoodName } : null),
       fromBox: lines => ({ foods: lines }),
@@ -749,17 +752,18 @@ tr.check td { font-size:12.5px; color:var(--mut); white-space:normal; }
     : JSON.stringify(v);
   // An event's raw: broken between fields only, a row's cells one a line, as they came (never wrapped or cut).
   const rawLines = r => r ? pretty(r) : 'null';
+  const rawHtml = r => (r ? fold(rawLines(r)) : '<span class="faint">no raw: this starts at its input JSON</span>');
 
   document.querySelectorAll('.folds').forEach(x => { x.outerHTML = FOLDS; });
-  document.title = `Try describe-${noun}`;
+  document.title = noun === 'meal' ? 'Try the meal event' : `Try describe-${noun}`;
   if (ACCENT[noun]) document.documentElement.style.setProperty('--accent', ACCENT[noun]);
   $('logo').textContent = EMOJI[noun] || '🔎';
-  $('eyebrow').textContent = `describe-${noun} · ${EVENT ? 'event API' : 'normalize API'}`;
-  $('title').textContent = EVENT ? ((lane.texts || {}).title || 'a meal in, its food event out').replace(/^./, c => c.toUpperCase())
+  $('eyebrow').textContent = `${noun === 'meal' ? 'meal event' : 'describe-' + noun} · ${EVENT ? 'event API' : 'normalize API'}`;
+  $('title').textContent = EVENT ? ((lane.texts || {}).title || 'a meal in, its meal event out').replace(/^./, c => c.toUpperCase())
     : `describe-${noun} · try it`;
 
   // ---- one interface: a tab for every event type; a lane this host does not serve is shown, greyed
-  const ORDER = [['food', 'Food'], ['exercise', 'Exercise'], ['medication', 'Medication'], ['insulin', 'Insulin'],
+  const ORDER = [['meal', 'Meal'], ['exercise', 'Exercise'], ['medication', 'Medication'], ['insulin', 'Insulin'],
                  ['step', 'Steps'], ['sleep', 'Sleep'], ['still', 'Still']];
   function drawLanes(served) {
     const known = ORDER.map(([k]) => k), extra = served.filter(k => !known.includes(k)).map(k => [k, k]);
@@ -769,7 +773,7 @@ tr.check td { font-size:12.5px; color:var(--mut); white-space:normal; }
         + `<span>${EMOJI[k] || '•'}</span>${esc(label)}${on ? '' : ' <small>not served here</small>'}</a>`;
     }).join(''));
   }
-  fetch(`${base}/`).then(r => r.json()).then(j => drawLanes(Object.keys(j.lanes || {})))
+  fetch(`${base}/`).then(r => r.json()).then(j => drawLanes(Object.keys(j.lanes || {}).map(k => (k === 'food' ? 'meal' : k))))
     .catch(() => drawLanes([noun]));
 
   fetch(`${base}/${noun}/healthz`).then(r => r.json()).then(h => {
@@ -859,7 +863,7 @@ tr.check td { font-size:12.5px; color:var(--mut); white-space:normal; }
   if (EVENT) {
     $('whenArea').hidden = false;
     $('tryHead').textContent = '✍️ Try a meal';
-    $('hint').innerHTML = 'Type the foods, one a line, an amount in g or ml at its end, and when it was eaten. '
+    $('hint').innerHTML = 'Type the foods, one a line, with an amount (200 g, 250 ml, 3 cups), and when it was eaten. '
       + 'Or paste a raw JSON <code>{"type", "rows"}</code> or an input JSON <code>{"items", ...}</code>, or put a gallery card in the box.';
     $('photoHint').textContent = 'the photo API names its foods (Claude vision); they become the input\'s items';
     $('galleryHead').textContent = '🖼 Gallery: real meals, every kind of raw, its input and its output';
@@ -1095,7 +1099,7 @@ tr.check td { font-size:12.5px; color:var(--mut); white-space:normal; }
     return `<tr class="check"><td></td><td></td><td colspan="4">the items, added · ${why}</td><td class="num">${fmt(carbs, 'g')}</td><td class="num">${fmt(kcal, 'kcal')}</td><td></td><td></td></tr>`;
   }
 
-  // A food event's headline numbers: its hours added up, and how sure.
+  // A meal event's headline numbers: its hours added up, and how sure.
   function foodSum(output) {
     const hs = Object.values(output || {});
     if (!hs.length) return null;
@@ -1126,13 +1130,21 @@ tr.check td { font-size:12.5px; color:var(--mut); white-space:normal; }
     $('tiles').hidden = false;
   }
 
+  // A card's photo (its path stays hidden) or the photo just sent, above the raw it belongs to.
+  const picUrl = c => (c && c.picture ? `${base}/try/${noun}/picture/${encodeURIComponent(c.picture)}` : '');
+  const picHtml = url => (url ? `<a href="${esc(url)}" target="_blank" rel="noopener"><img class="raw-pic" src="${esc(url)}" alt="the meal photo"></a>` : '');
+  let boxCard = null, sentPhoto = '';
+  function putInBox(c) { boxCard = c; $('box').value = pretty(c.send); pyShow(c.send); window.scrollTo({ top: 0, behavior: 'smooth' }); }
   function showEvent(ev) {
+    $('evpic').innerHTML = picHtml(sentPhoto || (boxCard && $('box').value === pretty(boxCard.send) ? picUrl(boxCard) : ''));
+    sentPhoto = '';
     $('result').hidden = false; $('plain').hidden = true; $('evpanes').hidden = false;
     $('step').hidden = false; $('step').innerHTML = `<b>The preprocess step</b> · ${esc(ev.step)}`;
     const rows = (ev.raw || {}).rows || [], keep = 20;            // a file's thousands of rows: its first ones, then a count
     $('evraw').innerHTML = fold(rows.length > 2 * keep
       ? rawLines({ ...ev.raw, rows: [...rows.slice(0, keep), `… ${(rows.length - keep).toLocaleString()} more rows, not shown`] })
       : rawLines(ev.raw));
+    if (!ev.raw) $('evraw').innerHTML = rawHtml(null);
     $('evin').innerHTML = fold(pretty(ev.input));
     $('evout').innerHTML = fold(pretty(ev.output));
     $('readHead').textContent = (lane.texts || {}).readHead || 'Each item, read, hour by hour';
@@ -1188,6 +1200,7 @@ tr.check td { font-size:12.5px; color:var(--mut); white-space:normal; }
         if (!names.length) throw new Error('the photo API named no food in this photo');
         const input = { items: names.map((food, k) => ({ id: `i${k + 1}`, food })) };
         const t = stamp(); if (t) input.start = t;
+        sentPhoto = URL.createObjectURL(f);
         return sendEvent({ input }, `the photo (${names.length} foods named)`);
       }
       show(`POST /${noun}/normalize/image\nfiles = ${f.name} (${f.size.toLocaleString()} bytes)`, j, [f.name]);
@@ -1330,7 +1343,7 @@ tr.check td { font-size:12.5px; color:var(--mut); white-space:normal; }
         <div class="step">${esc(c.step || '')}${noteOf(c) ? ` <span class="faint">· ${esc(noteOf(c))}</span>` : ''}</div>
         ${cardMini(c)}
         <div class="stages" id="panes-${i}" hidden>
-          <div class="stage"><div class="stage-h"><span class="n">1</span>📄 Raw, as it arrives<span class="sp"></span>${FOLDS}</div><pre>${fold(rawLines(c.raw))}</pre></div>
+          <div class="stage"><div class="stage-h"><span class="n">1</span>📄 Raw, as it arrives<span class="sp"></span>${FOLDS}</div>${picHtml(picUrl(c))}<pre>${rawHtml(c.raw)}</pre></div>
           <div class="stage"><div class="stage-h"><span class="n">2</span>📨 Input JSON<span class="sp"></span>${FOLDS}</div><pre>${fold(pretty(c.input))}</pre></div>
           <div class="stage"><div class="stage-h"><span class="n">3</span>📦 Output (frozen)<span class="sp"></span>${FOLDS}</div><pre>${fold(pretty(c.output))}</pre></div>
         </div>
@@ -1371,13 +1384,13 @@ tr.check td { font-size:12.5px; color:var(--mut); white-space:normal; }
       ${noteOf(c) ? `<details><summary>Why it reads this way</summary><p>${esc(noteOf(c))}</p></details>` : ''}
       ${cardMini(c)}
       <div class="stages">
-        <div class="stage"><div class="stage-h"><span class="n">1</span>📄 Raw, as it arrives<span class="sp"></span>${FOLDS}</div><pre>${fold(rawLines(c.raw))}</pre></div>
+        <div class="stage"><div class="stage-h"><span class="n">1</span>📄 Raw, as it arrives<span class="sp"></span>${FOLDS}</div>${picHtml(picUrl(c))}<pre>${rawHtml(c.raw)}</pre></div>
         <div class="stage"><div class="stage-h"><span class="n">2</span>📨 Input JSON<span class="sp"></span>${FOLDS}</div><pre>${fold(pretty(c.input))}</pre></div>
         <div class="stage"><div class="stage-h"><span class="n">3</span>📦 Output (frozen)<span class="sp"></span>${FOLDS}</div><pre>${fold(pretty(c.output))}</pre></div>
       </div>
       <div class="card-actions"><button class="go" id="dRun">Try it live</button><button id="dPut">Put it in the box</button><span id="dRes" class="res">${$(`res-${i}`).innerHTML}</span></div>`;
     $('dRun').onclick = async () => { $('dRes').innerHTML = '<span class="mut">asking…</span>'; await runCard(i); if (picked === i) $('dRes').innerHTML = $(`res-${i}`).innerHTML; };
-    $('dPut').onclick = () => { $('box').value = pretty(c.send); pyShow(c.send); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+    $('dPut').onclick = () => putInBox(c);
     $('galDetail').querySelectorAll('[data-step]').forEach(b => b.onclick = () => pick((i + +b.dataset.step + cards.length) % cards.length));
   }
 
@@ -1408,7 +1421,7 @@ tr.check td { font-size:12.5px; color:var(--mut); white-space:normal; }
     });
     document.querySelectorAll('[data-put]').forEach(b => b.onclick = () => {
       const c = cards[+b.dataset.put];
-      if (EVENT) { $('box').value = pretty(c.send); pyShow(c.send); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+      if (EVENT) { putInBox(c); return; }
       const body = lane.fromCard(c.input);
       if (body && body.foods) { $('box').value = body.foods.join('\n'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
     });

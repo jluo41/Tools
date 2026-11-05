@@ -25,10 +25,20 @@ LaTeX paragraph per heading block (`build_latex_section`).
 
 REFUSE TO REGRESS, which QC5 demands by name. Sync runs one way, so a page whose
 Content lost a citation would silently empty that section's bibliography. Before
-writing over an existing section the generator counts citations in both and
-REFUSES if the new one has fewer. Measured 2026-07-27: all nine pages carry real
-`\\citep{}` in prose (110 total, 0 plain-text author-year), so the check passes
-today. It exists for the day one of them does not.
+writing over an existing section the generator compares the citation KEYS in
+both and REFUSES if a key would leave. Measured 2026-07-27: all nine pages carry
+real `\\citep{}` in prose (110 total, 0 plain-text author-year), so the check
+passes today. It exists for the day one of them does not.
+
+A REFUSAL IS A FAILURE, not a note (261103, the MISQ paper): the old fragment
+stays on disk, so the paper build printed three Sections' OLD words with no
+warning. A refused Section now prints `❌ REFUSED` with the dropped keys and the
+old fragment's date, and the script exits 2. An INTENDED drop (a rewrite, a
+paragraph moved to another Section) passes with `--accept-dropped-keys`, one key
+at a time, and only when the key is still cited by another Section of the paper
+(`--paper-pages`, else the Section Pages beside this one) or a revise card in
+`draft/records/<stem>-revise.md` removed it (its Original cites the key, its
+Expected does not). A key that fails both stays refused, named.
 
 WHERE IT WRITES. The caller supplies `--outdir`; without one, the first Page's
 local `latex/` folder is used. This writer emits Page TeX only. The Board export
@@ -40,6 +50,7 @@ import os
 import pathlib
 import re
 import sys
+import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -60,6 +71,124 @@ def keys_of(text):
     for group in CITE.findall(text):
         out |= {k.strip() for k in group.split(",") if k.strip()}
     return out
+
+
+# ── a dropped key: which ones a person meant (--accept-dropped-keys) ─────────
+# A Section Page is `<group>/<name>/<name>.md`; its revise cards are
+# `<name>/draft/records/<name>-revise.md`. TOADD is a placeholder, never a work.
+OLD_GROUP = re.compile(r"^B[a-z]-")          # Ba-<venue>-Main, Bb-<venue>-Appendix
+CARD_FIELD = re.compile(r"^\s*(?:-\s*)?([A-Z][A-Za-z ]{0,30}):\s?(.*)$")
+
+
+def sibling_sections(page):
+    """The other Section Pages of this page's paper, the default "elsewhere".
+
+    On the ladder they sit in the same version Job (`jNN_writing_*/tNN_*/tNN_*.md`);
+    in the older layout the Main and Appendix groups (`Ba-*`, `Bb-*`, `Bc-*`) are
+    one paper, so every `B?-` group beside this one counts."""
+    group = os.path.dirname(os.path.dirname(os.path.abspath(page)))
+    groups = [group]
+    if OLD_GROUP.match(os.path.basename(group)):
+        parent = os.path.dirname(group)
+        groups = [os.path.join(parent, g) for g in sorted(os.listdir(parent))
+                  if OLD_GROUP.match(g) and os.path.isdir(os.path.join(parent, g))]
+    out = []
+    for g in groups:
+        for name in sorted(os.listdir(g)):
+            cand = os.path.join(g, name, name + ".md")
+            if (not name.startswith((".", "_")) and os.path.isfile(cand)
+                    and os.path.realpath(cand) != os.path.realpath(page)):
+                out.append(cand)
+    return out
+
+
+def section_keys(page, root):
+    """The keys a Section prints now, read by this script's own reader; the raw
+    text's keys if the page cannot be read as a Section."""
+    try:
+        return keys_of(build_section(page, md2docx.Displays(root), []))
+    except (Exception, SystemExit):
+        try:
+            return keys_of(pathlib.Path(page).read_text(encoding="utf-8", errors="replace"))
+        except OSError:
+            return set()
+
+
+def revise_cards(page):
+    """[(heading, original, expected)] from `draft/records/<stem>-revise.md`.
+
+    A card is a `###` block; `Original:` and `Expected:` may run over several
+    lines until the next field or heading. A card without an Expected removed
+    its Original outright."""
+    stem = os.path.splitext(os.path.basename(page))[0]
+    path = os.path.join(os.path.dirname(os.path.abspath(page)), "draft", "records", stem + "-revise.md")
+    if not os.path.isfile(path):
+        return []
+    cards, card, field = [], None, None
+    for line in pathlib.Path(path).read_text(encoding="utf-8", errors="replace").splitlines():
+        if line.startswith("#"):
+            if card:
+                cards.append(card)
+            card = {"heading": line.lstrip("#").strip(), "Original": "", "Expected": ""}
+            field = None
+            continue
+        if card is None:
+            continue
+        m = CARD_FIELD.match(line)
+        if m:
+            field = m.group(1) if m.group(1) in ("Original", "Expected") else None
+            if field:
+                card[field] = m.group(2)
+        elif field and line.strip():
+            card[field] += " " + line.strip()
+    if card:
+        cards.append(card)
+    return [(c["heading"], c["Original"], c["Expected"]) for c in cards if c["Original"]]
+
+
+def explain_drops(page, lost, others, root):
+    """{key: why it may leave, or None}. A key passes when another Section of the
+    paper still cites it, or when a revise card's Original cites it and its
+    Expected does not. `page` is the Section's own path (its records live there)."""
+    lost, why = list(lost), {}
+    for other in others:
+        if os.path.realpath(other) == os.path.realpath(page):
+            continue
+        hit = section_keys(other, root) & set(lost)
+        for k in hit:
+            why.setdefault(k, "cited in %s" % os.path.splitext(os.path.basename(other))[0])
+    cards = revise_cards(page)
+    for k in lost:
+        if k in why:
+            continue
+        card = next((h for h, o, e in cards if k in keys_of(o) and k not in keys_of(e)), None)
+        why[k] = ("removed by revise card '%s'" % " · ".join(card.split(" · ")[:3])) if card else None
+    return why
+
+
+def drop_check(page, fragment, root, accept=False, others=None, origin=None):
+    """Would this script refuse to replace `fragment` with `page`'s Section now?
+
+    -> {"lost": [...], "accepted": {key: why}, "refused": [...]}. Without
+    `accept` every lost key is refused. `origin` is the Section's own path when
+    `page` is a temporary copy (the LaTeX lane rewrites display tokens in one)."""
+    if not os.path.isfile(fragment):
+        return {"lost": [], "accepted": {}, "refused": []}
+    had = keys_of(pathlib.Path(fragment).read_text(encoding="utf-8", errors="replace"))
+    lost = sorted(had - section_keys(page, root) - {"TOADD"})
+    if not lost or not accept:
+        return {"lost": lost, "accepted": {}, "refused": lost}
+    home = origin or page
+    why = explain_drops(home, lost, sibling_sections(home) if others is None else others, root)
+    return {"lost": lost, "accepted": {k: why[k] for k in lost if why[k]},
+            "refused": [k for k in lost if not why[k]]}
+
+
+def written_at(path):
+    """A file's own time, as a reader reads it."""
+    return time.strftime("%Y-%m-%d %H:%M", time.localtime(os.path.getmtime(path)))
+
+
 REF = re.compile(r"\\(?:auto|C|c)?ref\{((?:tab|fig):[^}]*)\}")
 LEVEL = ("section", "subsection", "subsubsection")
 
@@ -127,7 +256,8 @@ def escape_prose(s):
     # TeX read it as a math subscript and ran the sentence off the page (JL 261004). Math
     # spans (`$x_1$`), code spans and a command's argument (`\\citep{key_a}`) keep their own
     # rules, so all three stay untouched here.
-    parts = re.split(r"(`[^`]*`|\$[^$\n]+\$|\\[A-Za-z]+\*?(?:\[[^\]]*\])*\{[^}]*\})", s)
+    # A display equation ($$ ... $$) is math too (JL 261104: both of a paper's regression equations printed "Y\\_ijc").
+    parts = re.split(r"(`[^`]*`|\$\$.+?\$\$|\$[^$\n]+\$|\\[A-Za-z]+\*?(?:\[[^\]]*\])*\{[^}]*\})", s, flags=re.S)
     for i in range(0, len(parts), 2):
         for a, b in _PLAIN_SPECIALS:
             parts[i] = re.sub(
@@ -412,6 +542,13 @@ def build_section(page, displays, report, keep_fences=False):
                               % (os.path.basename(page), lab))
     flush()
     body = "".join(out)
+    # A $$ block arrives line by line, each line escaped as prose; inside it these are math (JL 261104: "Y\_ijc" printed).
+    def _math_restored(m):
+        s = m.group(0)
+        for plain, escaped in _PLAIN_SPECIALS:
+            s = s.replace(escaped, plain)
+        return s
+    body = re.sub(r"\$\$.+?\$\$", _math_restored, body, flags=re.S)
 
     # Keywords are manuscript metadata, not a numbered section.  The shared
     # reader drops their unnumbered heading but retains their prose, so restore
@@ -436,7 +573,7 @@ def build_section(page, displays, report, keep_fences=False):
     return body
 
 
-def main():
+def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("page", nargs="+")
     ap.add_argument("--paper-root", required=True)
@@ -445,20 +582,33 @@ def main():
                     help="render ``` sketches as verbatim blocks instead of "
                          "dropping them; the BOARD exporter's switch, a paper "
                          "keeps the drop (JL 260815)")
-    a = ap.parse_args()
+    ap.add_argument("--accept-dropped-keys", action="store_true",
+                    help="let a citation key leave a Section when another Section "
+                         "of the paper still cites it or a revise card removed it; "
+                         "any other dropped key is still refused, by name")
+    ap.add_argument("--paper-pages", nargs="+", metavar="PAGE",
+                    help="the paper's Section Pages that count as 'cited elsewhere' "
+                         "(default: the Section Pages beside each page, plus the "
+                         "other pages of this call)")
+    ap.add_argument("--origin", metavar="PAGE",
+                    help="the Section's own .md when PAGE is a temporary copy "
+                         "(its revise cards and sibling Sections are found from here)")
+    a = ap.parse_args(argv)
+    if a.origin and len(a.page) != 1:
+        ap.error("--origin names the source of ONE page")
 
     root = os.path.abspath(a.paper_root)
     first_page = os.path.abspath(a.page[0])
     outdir = a.outdir or os.path.join(os.path.dirname(first_page), "latex")
     os.makedirs(outdir, exist_ok=True)
     displays = md2docx.Displays(root)
-    report, wrote, total_cites = [], [], 0
+    report, refused, accepted, wrote, total_cites = [], [], [], [], 0
 
     for page in a.page:
         page = os.path.abspath(page)
+        home = os.path.abspath(a.origin) if a.origin else page
         body = build_section(page, displays, report, keep_fences=a.keep_fences)
         n = len(CITE.findall(body))
-        total_cites += n
         stem = os.path.splitext(os.path.basename(page))[0]
         dest = os.path.join(outdir, stem + ".tex")
 
@@ -481,10 +631,10 @@ def main():
             with open(prior, encoding="utf-8") as f:
                 first = f.readline()
             if not first.startswith(GENERATED_MARK):
-                report.append("REFUSED %s: the existing %s.tex was not written by md2tex "
-                              "(no GENERATED header), so its words may exist only there. "
-                              "Move them into the Page and adopt, then delete the file."
-                              % (stem, stem))
+                refused.append("REFUSED %s: the existing %s.tex was not written by md2tex "
+                               "(no GENERATED header), so its words may exist only there. "
+                               "Move them into the Page and adopt, then delete the file."
+                               % (stem, stem))
                 continue
         if prior:
             had = keys_of(open(prior, encoding="utf-8").read())
@@ -492,27 +642,60 @@ def main():
             # it with a checked key is the change this guard must let through
             # (261031: two checked keys replaced it in a Lancet appendix).
             lost = sorted(had - keys_of(body) - {"TOADD"})
-            if lost:
-                report.append("REFUSED %s: %d citation key(s) would disappear from this "
-                              "section's bibliography (%s). Sync is one-way."
-                              % (stem, len(lost), ", ".join(lost)))
+            # A refusal keeps the OLD fragment, and a paper build prints it, so it
+            # is a failure the caller must see (261103: three MISQ Sections printed
+            # old words). An intended drop passes only when it is explained.
+            why = {}
+            if lost and a.accept_dropped_keys:
+                others = a.paper_pages if a.paper_pages else (
+                    sibling_sections(home) + [os.path.abspath(q) for q in a.page])
+                why = explain_drops(home, lost, [os.path.abspath(q) for q in others], root)
+            unexplained = [k for k in lost if not why.get(k)]
+            if unexplained:
+                since = written_at(prior)
+                if a.accept_dropped_keys:
+                    refused.append(
+                        "REFUSED %s: --accept-dropped-keys cannot explain %d of %d dropped "
+                        "citation key(s): %s (no other Section cites it and no revise card in "
+                        "draft/records/%s-revise.md removed it). The old fragment %s "
+                        "(written %s) stays, so a paper build prints its OLD words."
+                        % (stem, len(unexplained), len(lost), ", ".join(unexplained),
+                           stem, prior, since))
+                else:
+                    refused.append(
+                        "REFUSED %s: %d citation key(s) would leave this Section: %s. "
+                        "The old fragment %s (written %s) stays, so a paper build prints "
+                        "its OLD words. If the drop is intended, rerun with "
+                        "--accept-dropped-keys (a key passes when another Section still "
+                        "cites it or a revise card removed it)."
+                        % (stem, len(lost), ", ".join(lost), prior, since))
                 continue
+            accepted += ["%s: dropped key %s accepted, %s" % (stem, k, why[k]) for k in lost]
         with open(dest, "w", encoding="utf-8") as f:
             f.write("%s %s by md2tex.py. Do not hand-edit: sync is\n"
                     "%% one-way and the next run overwrites this file.\n%s"
-                    % (GENERATED_MARK, os.path.relpath(page, root), body))
+                    % (GENERATED_MARK, os.path.relpath(home, root), body))
         wrote.append((stem, n))
+        total_cites += n
 
-    print("✅ %s" % outdir)
+    print("%s %s" % ("✅" if not refused else "❌", outdir))
     for stem, n in wrote:
         print("   %-34s %3d citations" % (stem + ".tex", n))
-    print("   %d section(s) · %d citations total" % (len(wrote), total_cites))
-
+    print("   %d section(s) written · %d refused · %d citations total"
+          % (len(wrote), len(refused), total_cites))
+    for r in accepted:
+        print("   ✅ " + r)
     if report:
         print("⚠️  %d note(s):" % len(report))
         for r in dict.fromkeys(report):
             print("    " + r)
+    if refused:
+        print("❌ %d Section(s) NOT rebuilt:" % len(refused))
+        for r in refused:
+            print("    " + r)
+        return 2
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

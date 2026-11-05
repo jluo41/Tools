@@ -1180,7 +1180,7 @@ def check_section_sentences(text, path, name, rep):
             rep.add(WARN, "sentence-without-realizes", "%s:%d" % (name, base + i),
                     "a Section sentence drafted from an approved plan names its slot: "
                     "end it with `<!-- realizes: C<n>.P<m>.B<k> -->` (haipipe-draft-writing §①)")
-        realization = re.search(r"<!--\s*realizes:\s*(C\d+\.P\d+\.B\d+)\s*-->", st)
+        realization = re.search(r"<!--\s*realizes:\s*(C\d+\.P\d+\.B\d+[a-z]*)\s*-->", st)
         target = realization.group(1) if realization else ""
         has_citation = bool(re.search(r"\\cite(?:p|t)?\*?(?:\[[^\]]*\])*\{[^}]+\}", core))
         if target and has_citation and "CITE" not in item_types.get(target, set()):

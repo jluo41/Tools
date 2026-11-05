@@ -1,0 +1,94 @@
+# STARTER, not a walk: the fields most portals ask. A person-started read of the venue's own portal replaces it
+# (this Run's ticket says how; a later walk is a new Run).
+# Seeded from venues/venue/call.md: words, main limit, format, supplement limit.
+portal: Example Portal (placeholder)
+draft_saved: 'not opened yet: a starter, not a walk'
+steps:
+- step: 1 Files
+  fields:
+  - id: fi.manuscript
+    label: Manuscript
+    kind: upload
+    required: true
+    now: ''
+  - id: fi.figures
+    label: Figures
+    kind: upload
+    required: true
+    now: ''
+    says: Display limit 5 (figures and tables together). Format PNG, PDF, TIFF, EPS.
+  - id: fi.supplement
+    label: Supplement
+    kind: upload
+    required: false
+    now: ''
+    says: Supplement limit no limit.
+  - id: fi.cover-letter
+    label: Cover letter
+    kind: upload
+    required: true
+    now: ''
+- step: 2 Title and abstract
+  fields:
+  - id: ms.title
+    label: Title
+    kind: text
+    required: true
+    now: 'Does a policy change an outcome?'
+  - id: ms.abstract
+    label: Abstract
+    kind: textarea
+    required: true
+    now: ''
+  - id: ms.words
+    label: Word count
+    kind: text
+    required: false
+    now: ''
+    says: up to 3000 (venues/venue/call.md).
+- step: 3 Authors
+  fields:
+  - id: au.authors
+    label: Authors
+    kind: text
+    required: true
+    now: ''
+  - id: au.corresponding
+    label: Corresponding author
+    kind: text
+    required: true
+    now: 'A. Author, Example University; old.address@example.org'
+- step: 4 Statements
+  fields:
+  - id: st.coi
+    label: Conflicts of interest
+    kind: textarea
+    required: true
+    now: ''
+  - id: st.funding
+    label: Funding
+    kind: text
+    required: true
+    now: ''
+  - id: st.data
+    label: Data sharing
+    kind: textarea
+    required: false
+    now: ''
+  - id: st.ai_use
+    label: Use of AI
+    kind: textarea
+    required: false
+    now: ''
+- step: 5 Before Submit
+  fields:
+  - id: st.declaration
+    label: Declarations
+    kind: checkbox
+    required: true
+    now: ''
+  - id: af.submit
+    label: Submit
+    kind: button
+    required: true
+    now: ''

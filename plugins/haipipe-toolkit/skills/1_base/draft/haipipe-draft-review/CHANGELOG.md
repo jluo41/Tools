@@ -1,3 +1,7 @@
+## 0.5.0 · 2026-11-04 · Paragraphs of 4 to 6 sentences, each limit said once
+
+- JL 261104: "一个 paragraph 至少是 4~6 句话", "这个我觉得我强调过不下 4 遍了"; "do not do overprotection". `haipipe-draft-review/ref/plain-rules.md` § 3a, 3b; `cli/paragraphs.py` counts sentences per paragraph.
+
 ## 0.3.1 · 2026-10-21 · a text under headings
 
 - A blind reviewer of a structured abstract (JAMA IM Key Points and 7 headings) named four gaps in

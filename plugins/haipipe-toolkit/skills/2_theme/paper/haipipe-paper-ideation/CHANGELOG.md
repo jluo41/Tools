@@ -1,3 +1,7 @@
+## 1.5.0 · 2026-11-05 · each direction names its theory
+
+- JL 261105: "we should have the section named theory as well"; "espeically for the IS".
+
 ## 1.4.4 · 2026-11-01 · b16 review 261101: current paper names
 
 - version Jobs are named `jNN_writing_v<MMDD>_<desk>` (from j11), no longer `jNN_v<MMDD>_<desk>`; Studio topics are `sNN-…` beside the Jobs, no longer under `studio/` (the layout tree shows s01 and s02 beside the Jobs).

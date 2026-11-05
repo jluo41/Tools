@@ -52,6 +52,7 @@ ANSWERS = "result/answer_collection.md"
 # what the answers changed, one line per question, written by whoever applied them, beside run.yaml and never in
 # result/, so the Result stays closed (JL 261031: "if we already fix them, then give them the flags")
 APPLIED = "applied.md"
+KNOW = "to_know.yaml"
 APPLIED_STATES = ("applied", "in progress")
 APPLIED_LINE = re.compile(r"^(Q\d+) · (applied|in progress) · (\d{4}-\d{2}-\d{2} \d{2}:\d{2}) · (.+?)\s*$")
 RUN_NAME = re.compile(r"^r(\d{2,})_collect_[a-z0-9]+(?:_[a-z0-9]+)*$")
@@ -310,7 +311,8 @@ def show_html(item: dict) -> str:
 
 def preview_html(qid: str, o: dict) -> str:
     """One option's preview, side by side with the others: the live page (or picture) at half size; a click picks the
-    option, Open shows it full size in a new tab."""
+    option and pops the preview out over the form, full width (JL 261103: "make the options here to be pop out when I
+    click them"); Open shows it alone in a new tab."""
     key, src = html.escape(o["key"]), html.escape(o["preview"])
     pick = (f"var r=document.querySelector('input[name=\\'{qid}\\'][value=\\'{key}\\']');"
             "r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))")
@@ -318,7 +320,7 @@ def preview_html(qid: str, o: dict) -> str:
             if src.endswith((".html", ".htm")) else f'<img src="{src}" alt="option {key}">')
     return (f'<figure class="pv" data-q="{qid}" data-key="{key}"><figcaption><b>{key}</b>'
             f'<a href="{src}" target="_blank" rel="noopener">Open ↗</a></figcaption>'
-            f'<div class="pv-frame" onclick="{pick}">{body}<span class="pv-hit"></span></div></figure>')
+            f'<div class="pv-frame" onclick="hpPop(this);{pick}">{body}<span class="pv-hit"></span></div></figure>')
 
 
 def card(q: dict) -> str:
@@ -364,9 +366,15 @@ code{font:12.5px ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--so
 .pv-frame img{width:100%;display:block}
 .pv-hit{position:absolute;inset:0}
 .pv.on{border-color:var(--on);box-shadow:0 0 0 2px var(--wash)}
+.pop{position:fixed;inset:0;z-index:50;background:rgba(20,24,30,.72);display:flex;align-items:center;justify-content:center;padding:24px;cursor:zoom-out}
+.pop[hidden]{display:none}
+.pop-box{position:relative;background:#fff;border-radius:10px;max-width:96vw;max-height:94vh;overflow:auto;cursor:default}
+.pop-box img{display:block;max-width:94vw;max-height:90vh;width:auto;height:auto}
+.pop-box iframe{display:block;width:92vw;height:88vh;border:0}
+.pop-x{position:sticky;top:0;float:right;margin:6px;padding:2px 10px;border:1px solid var(--line);border-radius:6px;background:#fff;font-size:13px;cursor:pointer;z-index:1}
 .label{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--red);margin:0 0 4px;font-weight:600;overflow-wrap:anywhere}
 h1{font-size:22px;margin:0 0 4px}
-.lead{color:var(--mut);margin:0 0 16px}
+.lead{color:var(--fg);margin:0 0 16px}
 .card{border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin:0 0 12px}
 .card h2{font-size:16px;margin:0 0 4px;display:flex;gap:8px;align-items:baseline}
 .card h2 .qid{color:var(--on)}
@@ -374,15 +382,15 @@ h1{font-size:22px;margin:0 0 4px}
 .card h2 .applied{font-size:12px;color:var(--ok);font-weight:600;white-space:nowrap}
 .card h2 .applied.wip{color:var(--prop)}
 .applied-by{margin:0 0 6px;font-size:12.5px;color:var(--ok)}
-.why{margin:0 0 8px;color:var(--mut)}
-pre.sketch{background:var(--soft);border-radius:8px;padding:8px 10px;overflow-x:auto;font:12px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;margin:0 0 8px}
+.why{margin:0 0 8px;color:var(--fg)}
+pre.sketch{background:var(--soft);color:var(--fg);border-radius:8px;padding:8px 10px;overflow-x:auto;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;margin:0 0 8px}
 img.pic{max-width:100%;max-height:220px;border:1px solid var(--line);border-radius:8px;margin:0 0 8px}
 fieldset{border:0;margin:0;padding:0}
 .ask{font-weight:600;padding:0;margin:0 0 6px}
 .opt{display:flex;gap:8px;align-items:baseline;padding:5px 10px;border:1px solid var(--line);border-radius:8px;margin:0 0 4px;cursor:pointer}
 .opt:has(input:checked){border-color:var(--on);background:var(--wash)}
 .opt .rec{font-size:11px;color:var(--ok);border:1px solid var(--ok);border-radius:6px;padding:0 5px;margin-left:8px;white-space:nowrap}
-.because{font-size:13px;color:var(--mut);margin:4px 0 6px}
+.because{font-size:13.5px;color:var(--fg);margin:4px 0 6px}
 textarea{width:100%;font:inherit;font-size:13.5px;padding:5px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);resize:vertical}
 textarea.note{min-height:32px;field-sizing:content}
 #out{min-height:120px;font:12px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--soft)}
@@ -477,6 +485,19 @@ JS = r"""
   function lightPreviews(){document.querySelectorAll('.pv').forEach(function(f){
     var r=document.querySelector('input[name="'+f.dataset.q+'"][value="'+f.dataset.key+'"]');f.classList.toggle('on',!!(r&&r.checked));});}
   document.addEventListener('change', lightPreviews); lightPreviews();
+  /* a click on a preview pops it out over the form (JL 261103); a click outside it, x or Esc closes it */
+  var POP = document.createElement('div'); POP.className = 'pop'; POP.hidden = true;
+  POP.innerHTML = '<div class="pop-box"><button type="button" class="pop-x">Close ✕</button><div class="pop-body"></div></div>';
+  document.body.appendChild(POP);
+  function unpop(){ POP.hidden = true; POP.querySelector('.pop-body').innerHTML = ''; }
+  POP.addEventListener('click', function(e){ if (e.target === POP || e.target.classList.contains('pop-x')) unpop(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') unpop(); });
+  window.hpPop = function(frame){
+    var el = frame.querySelector('img, iframe'); if (!el) return;
+    var copy = document.createElement(el.tagName.toLowerCase()); copy.src = el.getAttribute('src');
+    if (copy.tagName === 'IMG') copy.alt = el.alt; else copy.title = el.title;
+    var body = POP.querySelector('.pop-body'); body.innerHTML = ''; body.appendChild(copy); POP.hidden = false;
+  };
   /* the part that differs between a question's previews gets a box (JL 261031: "highlight the part that are different
      by using the box"): a preview's own class="diff" marks it; otherwise the pages are compared, node by node, and the
      smallest block that differs is boxed in every option; each preview then scrolls to its first box */
@@ -682,7 +703,8 @@ def build(run: Path) -> Path:
 def applied(run: Path, qids: list[str], by: str, state: str = "applied", now: datetime | None = None) -> Path:
     """Record that answers were applied: one line per question in applied.md, replacing that question's earlier line.
     Only an answered Run, only its own questions; the time from the clock."""
-    if not (run / ANSWERS).is_file():
+    is_note = read_card(run).get("source") == "know"
+    if not is_note and not (run / ANSWERS).is_file():
         raise SystemExit(f"{run.name}: not answered yet, so nothing can be applied ({ANSWERS} is missing)")
     if state not in APPLIED_STATES:
         raise SystemExit(f"--state {state!r}: one of " + ", ".join(APPLIED_STATES))
@@ -708,6 +730,8 @@ def applied(run: Path, qids: list[str], by: str, state: str = "applied", now: da
     path.write_text(f"# Applied · {run.name}\n\nWhat the answers changed, one line per question, written by whoever "
                     "applied them; the answers stay in result/.\n\n" + "\n".join(lines[q] for q in order) + "\n",
                     encoding="utf-8")
+    if is_note:                                    # its page is drawn from its items, so the flag shows on it
+        _write_know(run, load(run)["title"], read_card(run).get("target") or "", know_items(run))
     return path
 
 
@@ -916,13 +940,15 @@ def _write_record(run: Path, title: str, for_: str, items: list, now: datetime) 
                                    "applied them; the answers stay in result/.\n\n" + "\n".join(lines) + "\n", encoding="utf-8")
 
 
-def record_page(run: Path, title: str, for_: str, items: list) -> str:
+def record_page(run: Path, title: str, for_: str, items: list, kicker: str = "✍ Decided in the chat",
+                lead: str = "This topic's decisions, in the order they were made, each with the words that made it.") -> str:
     """A chat record, read only, in the forms' look: each decision as a card, the person's words under it, its flag
     (JL 261031: "the UI here doesn't good", on See answers opening raw Markdown). GENERATED by collect.py."""
     cards = "".join(
-        f'<section class="card"><h2><span class="qid">Q{i}</span>{html.escape(d["title"])}'
+        f'<section class="card"><h2>' + (f'<span class="qid">Q{i}</span>' if kicker.startswith("✍") else "") + f'{html.escape(d["title"])}'
         + (f'<span class="flag">✅ applied {html.escape((d.get("applied_at") or d.get("when") or "")[:10])}</span>' if d.get("applied_by") else "")
-        + f'</h2><p class="dec">{html.escape(d["decision"])}</p><p class="said">“{html.escape(d["said"])}”</p>'
+        + f'</h2><p class="dec">{html.escape(d["decision"])}</p>'
+        + (f'<p class="said">“{html.escape(d["said"])}”</p>' if d.get("said") else "")
         + f'<p class="meta">{html.escape(d.get("when") or "")}' + (f' · {html.escape(d["applied_by"])}' if d.get("applied_by") else "") + '</p></section>'
         for i, d in enumerate(items, 1))
     return f"""<!doctype html><!-- GENERATED by collect.py record; never edit, rerun it -->
@@ -936,10 +962,71 @@ h1{{font-size:24px;margin:4px 0 6px}}.lead{{color:var(--muted);margin:0 0 18px}}
 .card h2{{font-size:16px;margin:0 0 6px;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}}.qid{{color:var(--muted);font-weight:600}}
 .flag{{margin-left:auto;font-size:12.5px;font-weight:600;color:var(--ok)}}.dec{{font-size:16px;margin:0 0 8px}}
 .said{{margin:0 0 6px;padding-left:10px;border-left:3px solid var(--line);color:var(--muted);font-style:italic}}.meta{{font-size:12px;color:var(--muted);margin:0}}
-</style></head><body><main><div class="kicker">✍ Decided in the chat · {html.escape(run.name)} · {html.escape(for_)}</div>
-<h1>{html.escape(title)}</h1><p class="lead">This topic's decisions, in the order they were made, each with the words that made it.</p>
+</style></head><body><main><div class="kicker">{html.escape(kicker)} · {html.escape(run.name)} · {html.escape(for_)}</div>
+<h1>{html.escape(title)}</h1><p class="lead">{html.escape(lead)}</p>
 {cards}</main></body></html>
 """
+
+
+def know_items(run: Path) -> list:
+    """A notes Run's items, with the flag `applied` wrote on each (settled, in progress)."""
+    import yaml
+    items = yaml.safe_load((run / KNOW).read_text(encoding="utf-8")) or [] if (run / KNOW).is_file() else []
+    flags = {m.group(1): m for m in (APPLIED_LINE.match(x) for x in ((run / APPLIED).read_text(encoding="utf-8").splitlines()
+             if (run / APPLIED).is_file() else [])) if m}
+    for i, d in enumerate(items, 1):
+        m = flags.get(f"Q{i}")
+        d["applied_by"], d["applied_at"] = (m.group(4), m.group(3)) if m else ("", "")
+    return items
+
+
+def _write_know(run: Path, title: str, for_: str, items: list) -> None:
+    import yaml
+    spec = {"title": title, "for": for_, "intro": "Things to know about this topic; nothing here needs an answer.",
+            "questions": [{"id": f"Q{i}", "title": d["title"], "why": d["what"], "ask": textwrap_short(d["what"]), "options": []}
+                          for i, d in enumerate(items, 1)]}
+    (run / QUESTIONS).write_text(markdown(spec), encoding="utf-8")
+    keep = [{k: d.get(k, "") for k in ("title", "what", "see", "when")} for d in items]
+    (run / KNOW).write_text(yaml.safe_dump(keep, allow_unicode=True, sort_keys=False, width=200), encoding="utf-8")
+    shown = [{"title": d["title"], "decision": d["what"], "said": "", "when": " · ".join(x for x in (d.get("when"), d.get("see")) if x),
+              "applied_by": d.get("applied_by", ""), "applied_at": d.get("applied_at", "")} for d in know_items(run)]
+    (run / f"{run.name}.html").write_text(record_page(run, title, for_, shown, "📌 What you should know",
+                                                      "Things to know about this topic; nothing here needs an answer."), encoding="utf-8")
+
+
+def know(page_dir: Path, slug: str, title: str, for_: str, notes: list, now: datetime | None = None) -> Path:
+    """What the person should know, kept where they read (JL 261105: "document it to the Interaction, about things you
+    should know"): a behaviour they could trip on, a limit, a choice made for them, a state that is not what it looks
+    like. Nothing waits on it, so it never flags the section. One theme, one set: a topic's notes go into its one Run,
+    appended in order. `notes` is [(title, what to know, where to read it)]; `collect.py applied` marks one settled."""
+    if not page_dir.is_dir():
+        raise SystemExit(f"{page_dir}: no such folder")
+    if not SLUG.match(slug):
+        raise SystemExit(f"slug {slug!r}: lower-case words joined by _")
+    if not topic_of(for_):
+        raise SystemExit(f"--for {for_!r}: a note belongs to one Studio topic; name its sNN, as --for '{EXAMPLE_FOR}'")
+    if not notes or any(not (n[0].strip() and n[1].strip()) for n in notes):
+        raise SystemExit("each --note is 'title :: what to know[ :: where to read it]', the first two filled")
+    now = now or datetime.now()
+    new = [{"title": n[0].strip(), "what": n[1].strip(), "see": n[2].strip() if len(n) > 2 else "", "when": f"{now:%Y-%m-%d}"} for n in notes]
+    runs = page_dir / "runs"
+    here = sorted(x for x in runs.iterdir() if x.is_dir()) if runs.is_dir() else []
+    mine = [x for x in here if "_collect_" in x.name and (x / "run.yaml").is_file()
+            and read_card(x).get("source") == "know" and topic_of(read_card(x).get("target", "")) == topic_of(for_)]
+    if mine:
+        run = mine[0]
+        _write_know(run, load(run)["title"], read_card(run).get("target") or for_, know_items(run) + new)
+        return run
+    if any(x.name.endswith(f"_collect_{slug}") for x in here):
+        raise SystemExit(f"a collection Run for {slug!r} is already under {page_dir.resolve().name}: use a new slug")
+    nums = [int(m.group(1)) for x in here for m in [re.match(r"^r(\d+)_", x.name)] if m]
+    run = runs / f"r{(max(nums) + 1 if nums else 1):02d}_collect_{slug}"
+    run.mkdir(parents=True)
+    _write_know(run, title, for_, new)
+    write_card(run, {"run": run.name, "kind": "hard", "type": "collect", "scope": where(page_dir), "target": for_,
+                     "ticket": None, "skill": "haipipe-interaction", "agent": None, "signs": None, "status": "done",
+                     "source": "know", "passes": [], "writes": [KNOW], "feeds": []})
+    return run
 
 
 def textwrap_short(s: str, n: int = 90) -> str:
@@ -1129,7 +1216,14 @@ padding:9px 18px;background:var(--accent);color:#fff;cursor:pointer}}.b-bar span
 <textarea id="all" readonly></textarea><script>
 (function(){{
   var frames = Array.prototype.slice.call(document.querySelectorAll('.b-form'));
-  function fit(f){{ try {{ var d = f.contentDocument; f.style.height = (d.documentElement.scrollHeight + 8) + 'px';
+  /* the content's own bottom, never scrollHeight: a document is at least as tall as its frame, so measuring that
+     and adding a margin grew every frame by 8px each round, forever (JL 261103: "why this box ... is increasing") */
+  function tall(d){{ var b = 0; Array.prototype.forEach.call(d.body.children, function(e){{
+      if (d.defaultView.getComputedStyle(e).position === 'fixed') return;
+      b = Math.max(b, e.getBoundingClientRect().bottom + d.defaultView.scrollY); }});
+    return Math.ceil(b + parseFloat(d.defaultView.getComputedStyle(d.body).marginBottom || 0) + 8); }}
+  function fit(f){{ try {{ var d = f.contentDocument, h = tall(d);
+    if (Math.abs(f.offsetHeight - h) > 2) f.style.height = h + 'px';
     d.querySelectorAll('[data-copy], #reset').forEach(function(x){{ x.style.display = 'none'; }});   /* one Copy, below */
     d.querySelectorAll('.bar, .actions, #copy-bar').forEach(function(x){{ x.style.position = 'static'; }}); }} catch (e) {{}} }}
   frames.forEach(function(f){{ f.addEventListener('load', function(){{ fit(f); setInterval(function(){{ fit(f); }}, 1500); }}); }});
@@ -1271,6 +1365,12 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--decision", action="append", required=True,
                    help="'title :: what was decided :: the person's own words'; once per decision")
     r.add_argument("--applied-by", default="", help="what already applied them, with real names: flags them applied")
+    k = sub.add_parser("know", help="keep what the person should know, in the Interaction section")
+    k.add_argument("page", type=Path)
+    k.add_argument("slug")
+    k.add_argument("--title", required=True)
+    k.add_argument("--for", dest="for_", required=True, help=f"its Studio topic, as '{EXAMPLE_FOR}'")
+    k.add_argument("--note", action="append", required=True, help="'title :: what to know[ :: where to read it]'; once per note")
     au = sub.add_parser("audit", help="check every question set: one theme, one set")
     au.add_argument("top", type=Path)
     au.add_argument("--fix", action="store_true", help="merge split chat records; rewrite old records")
@@ -1303,6 +1403,9 @@ def main(argv: list[str] | None = None) -> int:
         root = args.root or space_root(Path.cwd())
         for out in save_all(pasted, Path(root)):
             print(out)
+        return 0
+    if args.cmd == "know":
+        print(know(args.page, args.slug, args.title, args.for_, [tuple(x.strip() for x in n.split("::", 2)) for n in args.note]))
         return 0
     if args.cmd == "record":
         parts = [[x.strip() for x in d.split("::")] for d in args.decision]

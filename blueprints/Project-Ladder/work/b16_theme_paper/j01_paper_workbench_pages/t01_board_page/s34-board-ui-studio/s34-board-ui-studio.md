@@ -37,7 +37,7 @@ s34-board-ui-studio/
 Decided
 -------
 
-(none yet: a decision is one line, s34-D01 · <what was decided> (<who> <date>))
+s34-D01 · The Board Studio's buttons stay the Block's own groups, its topics' Tags; they need not match the Report's views (JL 261104: "sutdio, not need that, I get confused. But if possible, we can make them consistent as well, that is flexible"; r03 Q1 B).
 
 
 Open

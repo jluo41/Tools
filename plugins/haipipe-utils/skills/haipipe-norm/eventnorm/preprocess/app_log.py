@@ -6,9 +6,13 @@ app_log: the WellDoc app's ELogFoodItem, a row per food, all the rows of one mea
     meal_type  ActivityTypeID, named by the SourceFn's own ID_to_Type (WellDocDataExtV260930B), Before/After dropped
     items      a row per food; a row the food split calls no food ('Just Carbs', a placeholder) is no item
     amount     ServingsConsumed x ServingSize ServingType ("0.25 serving", "1 slice (1 oz)")
-    total      the rows' own numbers (common.stated_total: a typed carb count is the meal's carbs, once)
+    total      the rows' own numbers, each food's times its ServingsConsumed: a row holds one serving (t13 r05: the
+               app's own meal total is rows x servings on 88.0% of 42,687 meals, unchanged on 2.2%); a typed carb count
+               is the meal's carbs, once (common.stated_total). The raw stays as it came.
 """
-from .common import clock, stated_total, step_text
+import pandas as pd
+
+from .common import clock, groups, stated_total, step_text
 
 # WellDocDataExtV260930B.ID_to_Type, its Before/After dropped (s01-D25)
 MEAL_TYPES = {"1": "breakfast", "2": "breakfast", "3": "lunch", "4": "lunch", "5": "dinner", "6": "dinner",
@@ -18,6 +22,21 @@ SERVING = ("ServingsConsumed", "ServingSize", "ServingType")
 
 def fits(rows) -> bool:
     return {"FoodName", "ObservationDateTime"} <= set(rows.columns)
+
+
+def eaten(rows, skipped):
+    """A copy of the rows with each food's numbers times its ServingsConsumed. A count row, a "not given" (negative) and
+    a row with no usable ServingsConsumed stay as they are."""
+    if "ServingsConsumed" not in rows.columns:
+        return rows
+    out = rows.copy()
+    k = pd.to_numeric(out["ServingsConsumed"], errors="coerce")
+    food = ~out["FoodName"].astype(str).str.strip().isin(list(skipped)) & (k > 0)
+    names = {col.lower() for _, fields in groups() for _, col, _ in fields}
+    for c in [c for c in out.columns if c.lower() in names]:
+        v = pd.to_numeric(out[c], errors="coerce")
+        out[c] = v.where(~(food & (v > 0)), v * k)
+    return out
 
 
 def make(rows) -> dict:
@@ -43,7 +62,7 @@ def make(rows) -> dict:
     t = dict(col="ObservationDateTime", offset="TimezoneOffset")
     return {"input": {"start": clock(rows, **t), "end": None,
                       "logged_at": clock(rows, "ObservationEntryDateTime", "TimezoneOffset", latest=True),
-                      "meal_type": kind, "total": stated_total(rows, "FoodName", skipped),
+                      "meal_type": kind, "total": stated_total(eaten(rows, skipped), "FoodName", skipped),
                       "items": items or None, "timeline": None},
             "asks": asks, "meal": "; ".join(rows["FoodName"].astype(str).str.strip()),
             "step": step_text(len(rows), items, skipped)}

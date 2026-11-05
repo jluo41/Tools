@@ -112,11 +112,11 @@ def row_space(row: dict) -> str:
 
 def _targets(row: dict) -> str:
     """Addresses and Evidence Item ids a run touches (C1.P1.B2 also adds C1.P1; E40)."""
-    found = set(re.findall(r"C\d+(?:\.P\d+)?(?:\.B\d+)?", str(row.get("target") or "") + " " +
+    found = set(re.findall(r"C\d+(?:\.P\d+)?(?:\.B\d+[a-z]*)?", str(row.get("target") or "") + " " +
                            str(row.get("_items") or "")))
     found |= set(re.findall(r"\bE\d+\b", str(row.get("_items") or "")))
     found |= set(str(row.get("_keys") or "").split())      # the Paper workbench names its own keys
-    found |= {re.sub(r"\.B\d+$", "", t) for t in found}
+    found |= {re.sub(r"\.B\d+[a-z]*$", "", t) for t in found}
     ticket = Path(str(row.get("ticket") or ""))
     if ticket.suffix == ".md" and ticket.is_file():
         head = ticket.read_text(encoding="utf-8", errors="replace")[:1500]

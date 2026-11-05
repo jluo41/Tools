@@ -6,7 +6,12 @@ must write.
     python meaning_update.py labels --report <report.json> --form <the collect Run> --previous <labels.jsonl>
                                     --version l02 --out <the update Run>/result
 
-Writes, into --out:
+    python meaning_update.py final --labels <the last Update's labels.jsonl> --predictions <run>/result/predictions
+                                   --out <the release Run>/result
+
+`final` writes final_labels.jsonl and .md for Release: every item's label, who decided it, what each executor said.
+
+`labels` writes, into --out:
     labels.jsonl          every item: label, from, status, cites, note, blind
     changes.md            one line per changed label, then the rule answers the guideline must take
     decision_record.json  the validated answers, keyed by decision_id
@@ -37,16 +42,20 @@ rf = _load("report_form")
 
 def update(report: dict, answer_text: str, previous: list, *, version: str, run: str) -> dict:
     """{version, labels, changes, rules, answers}: the answers read from the saved form (report_form.answers_from,
-    validated), applied to the previous labels (label_audit.apply_answers). An item this loop's report does not show
+    validated), applied to the previous labels (label_audit.apply_answers). An item no answered item card decides
     keeps its previous record whole (its status, cites, note and blind judgment), so Loop N never undoes Loop N-1's
     review (found by the skill's run-through, 261101)."""
     report = rf.mc.validate_report(report)
     answers = rf.answers_from(report, answer_text)
     out = la.apply_answers(previous, report, answers, version=version, run=run)
-    shown = {ev["item_ref"] for card in report["cards"] for ev in card["evidence"] if ev.get("item_ref")}
+    # only an answered item card decides an item: a rule card's evidence, or a blind check, is shown and decides nothing
+    # (the walkthrough, 261104: a rule card citing ex-20 wiped Loop 1's correction of it)
+    decided = {ev["item_ref"] for card in report["cards"] if card["question_type"] == "reference_label"
+               and (answers.get(card["decision_id"]) or {}).get("kind", "unanswered") != "unanswered"
+               for ev in card["evidence"] if ev.get("role") == "case_a"}
     before = {r["item_id"]: r for r in previous if "status" in r}       # an earlier Update's record, not l00's votes
-    out["labels"] = [dict(before[r["item_id"]]) if r["item_id"] in before and r["item_id"] not in shown else r
-                     for r in out["labels"]]
+    out["labels"] = [{**before[r["item_id"]], "blind": r["blind"] or before[r["item_id"]].get("blind")}
+                     if r["item_id"] in before and r["item_id"] not in decided else r for r in out["labels"]]
     out["answers"] = answers
     return out
 
@@ -96,6 +105,40 @@ def write(out: dict, dest: Path, form: str, notes: str = "", now=None) -> list[P
     return paths
 
 
+DECIDED = {"corrected": "you corrected it", "reviewed": "you kept it", "custom": "your own decision",
+           "unreviewed": "raters' majority", "deferred": "raters' majority, you deferred it",
+           "pending_rule": "raters' majority, a rule is open"}
+
+
+def final_labels(labels: list, predictions: dict) -> list:
+    """Release's outcome, one row per item: the reference label, who decided it, each executor's label and whether all
+    agree with it. `predictions`: {model: {item_id: label}}. A disagreement is a flag, never a change of label."""
+    rows = []
+    for r in labels:
+        said = {m: p.get(r["item_id"]) for m, p in sorted(predictions.items())}
+        rows.append({"item_id": r["item_id"], "label": r["label"], "decided_by": DECIDED.get(r.get("status"), r.get("status")),
+                     "cites": r.get("cites"), "note": r.get("note", ""), "executors": said,
+                     "agree": all(v == r["label"] for v in said.values())})
+    return rows
+
+
+def write_final(rows: list, dest: Path) -> list[Path]:
+    """final_labels.jsonl, and final_labels.md, which the page opens: a static GET never reads a labeling folder, a .md
+    opens in the reader (the walkthrough, 261104: the link to the .jsonl gave a 404)."""
+    dest = Path(dest)
+    dest.mkdir(parents=True, exist_ok=True)
+    la._write_jsonl(dest / "final_labels.jsonl", rows)
+    models = sorted({m for r in rows for m in r["executors"]})
+    lines = ["# Final labels", "", f"{len(rows)} items. An executor's disagreement is a flag; it never changes a label.", "",
+             "| item | label | who decided | card | " + " | ".join(models) + " |",
+             "|---|---|---|---|" + "---|" * len(models)]
+    lines += [f"| {r['item_id']} | {r['label']} | {r['decided_by']} | {r['cites'] or ''} | "
+              + " | ".join(("" if r["executors"].get(m) == r["label"] else "⚑ ") + str(r["executors"].get(m)) for m in models) + " |"
+              for r in rows]
+    (dest / "final_labels.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return [dest / "final_labels.jsonl", dest / "final_labels.md"]
+
+
 def main(argv: list[str] | None = None) -> int:
     import argparse
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
@@ -107,7 +150,18 @@ def main(argv: list[str] | None = None) -> int:
     one.add_argument("--version", required=True, help="lNN, the labels this Update makes")
     one.add_argument("--out", type=Path, required=True)
     one.add_argument("--notes", default="", help="the person's notes from the Preferences prompt, kept in changes.md")
+    two = sub.add_parser("final", help="Release's final_labels.jsonl, from the last labels and the executors' predictions")
+    two.add_argument("--labels", type=Path, required=True)
+    two.add_argument("--predictions", type=Path, required=True, help="a folder of <model>.jsonl: {item_id, label}")
+    two.add_argument("--out", type=Path, required=True)
     a = ap.parse_args(argv)
+    if a.cmd == "final":
+        said = {p.stem: {r["item_id"]: r["label"] for r in la._read_jsonl(p)} for p in sorted(a.predictions.glob("*.jsonl"))}
+        rows = final_labels(list(la._read_jsonl(a.labels)), said)
+        for path in write_final(rows, a.out):
+            print(path)
+        print(f"{len(rows)} items; {sum(not r['agree'] for r in rows)} where an executor disagrees")
+        return 0
     saved = a.form / "result" / "answer_collection.md"
     if not saved.is_file():
         print(f"not updated: {saved} is missing; save the answers first (collect.py save)", file=sys.stderr)

@@ -57,9 +57,13 @@ Missing evidence Jobs (V1) are made by update too (`paper_ladder.py evidence`).
 |---|---|---|
 | V1 | The evidence Jobs | `j01_evidence_display`, `j02_evidence_value`, `j03_evidence_cite` exist |
 | V2 | Displays drawn | every display Task's `status:` says drawn (or accepted) |
-| V3 | Values filled | every value Task's `status:` says filled (or checked) |
-| V4 | Citations checked | `j03_evidence_cite` has Tasks, each `status:` checked |
-| V5 | Numbers agree | haipipe-paper-evidence's `evidence_ledger.py` on the newest writing Job finds nothing to fix (❗) |
+| V3 | Values filled | every value Task's newest Run wrote `result/values.yaml` (haipipe-paper-evidence `values_ledger.py`), else its `status:` says filled (or checked); differ, missing and owed counts are noted |
+| V4 | Citations checked | every claim Task of `j03_evidence_cite` (t99 aside) finds all its keys verified in its newest Run (haipipe-paper-evidence `cite_tasks.py`), else its `status:` says checked |
+| V5 | Numbers agree | haipipe-paper-evidence's `evidence_ledger.py` on the newest writing Job finds nothing to fix (❗), its value checks included (a printed value with no Run, from a screen read, or whose binding differs) |
+| V6 | Displays say their message | each printed display (the newest writing Job's `display/Display<n>-*/`) has a `## Message` in its drawing Run's `result/method.md`: what we want to say with it (haipipe-paper-evidence, the display checklist) |
+| V7 | Examples compared | the Board has an `sNN-paper-display-examples` drawing of the venue's published displays |
+| V8 | Display questions answered | no collection Run (haipipe-interaction) under `j01_evidence_display` is `waiting` |
+| V9 | Displays accepted | each printed display's unit README says `accepted: yes`, by a person (a blind review that passes is V5's) |
 
 ## ④ Writing · one Job per send
 
@@ -69,6 +73,7 @@ Missing evidence Jobs (V1) are made by update too (`paper_ladder.py evidence`).
 | W2 | Plans signed | each Section's newest draft says `approved: ✅` |
 | W3 | Text written | each Section's newest draft has no `⟦…⟧` placeholder left |
 | W4 | Paper built | `delivery/<writing Job>/build-manifest.json` exists |
+| W6 | 📚 Examples read first | each Section of the newest send has 3 to 4 published papers of its article type read, or says `examples: none · <reason>`; made before the words (haipipe-paper-draft § Examples first) |
 | W5 | Nothing waits on a person | no waiting question set (`runs/rNN_collect_*`, status waiting) on the Board |
 
 ## ⑤ Delivery · the package of the newest send, and its requirements
@@ -85,11 +90,12 @@ names where its rule lives; the checklist never copies a rule.
 |---|---|---|---|
 | D1 | The manuscript | the manifest's `pdf` and `docx` outputs exist | haipipe-paper-assemble § Required outputs |
 | D2 | The supplement | every supplement output the manifest declares exists (none declared is fine) | haipipe-paper-assemble |
-| D3 | The cover letter | a letter Task in the writing Job, built | haipipe-paper-assemble § The cover letter lane |
+| D3 | The cover letter | a letter Task in the writing Job, built by the paper's build (`[coverletter]` and `[outputs] cover_letter_pdf / _docx` in paper-build.toml), so it shows in the Writing view's assembled paper | haipipe-paper-assemble § The cover letter lane |
 | D4 | The venue's desk rules | main-text words within `call.md`'s limit, no desk rule still UNKNOWN, built with the venue's own profile | `venues/<venue>/call.md` (haipipe-paper-venue) |
 | D5 | Clean text | no `⟦…⟧` placeholder in the built Sections | AGENTS.md § Papers: deliverables carry no process text |
-| D6 | Citations verified | no `\citep{TOADD}`, no draft citation, every key resolves | haipipe-paper-evidence |
+| D6 | Citations verified | no `\citep{TOADD}`, no draft citation, every key resolves; each Task's `draft-bibliography:` is its own `draft/evidence/bibex/<task>.bib` | haipipe-paper-evidence |
 | D7 | The build is ready | the manifest's status is not `DRAFT` (its blockers listed) | `ref/submission-readiness.md` (G4, the 21 SUB-* points) |
 | D8 | The portal packet | `delivery/<writing Job>/portal/portal.md` lists every slot the portal asks for, each ✅ ready (none missing, stale or built but not approved) | haipipe-paper-assemble § The portal packet |
-| D9 | Read and approved | 🙋 a person reads the built paper and approves this exact build | `ref/submission-readiness.md` § Human reading pass |
-| D10 | Sent | `delivery/delivery.md` has a `sent` row for the writing Job; only a person writes it | haipipe-delivery |
+| D9 | The portal fill page | a `jNN_submission_…` Job says `for: <writing Job>`, a real walk replaced its starter, `delivery/<that Job>/portal-fill.html` is newer than its fields and values, with no ❗ or ⬜ (🙋 while a person still decides); made by `scripts/portal_fill.py` | haipipe-paper § The submission Job |
+| D10 | Read and approved | 🙋 the final read (paper, cover letter, supplement) came back clean, then a person reads the built paper and approves this exact build | haipipe-paper-assemble § The final read; `ref/submission-readiness.md` § Human reading pass |
+| D11 | Sent | `delivery/delivery.md` has a `sent` row for the writing Job; only a person writes it | haipipe-delivery |

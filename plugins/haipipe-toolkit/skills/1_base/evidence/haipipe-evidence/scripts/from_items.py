@@ -35,7 +35,7 @@ import cards  # noqa: E402
 ITEM = re.compile(r"^### (E\d+[a-z]?)-(CITE|VALUE|DISPLAY)-([\w-]+)\s*·\s*([^·\n]*)(?:·\s*(.*))?$")
 FIELD = re.compile(r"^- \*\*([\w ]+)\*\*:\s*(.*)$")
 SUPPORT = re.compile(r"(Discovery|Execution)\s*·\s*([\w -]+?)\s*·\s*(b\d+(?:j\d+)?(?:t\d+)?(?:r\d+)?)\b")
-BULLET = re.compile(r"^- B(\d+) · S(\d+)[a-z]* · ")
+BULLET = re.compile(r"^- B(\d+)[a-z]* · S(\d+)[a-z]* · ")
 HEAD = re.compile(r"^### (C\d+\.P\d+)\b")
 DRAFT = re.compile(r"-(?:draft|outline)-v(\d+(?:\.\d+)*)\.md$")
 
@@ -81,7 +81,7 @@ def read_items(path: Path) -> list:
 
 
 def addresses(where: str) -> list:
-    return re.findall(r"C\d+\.P\d+\.B\d+", where)
+    return re.findall(r"C\d+\.P\d+\.B\d+[a-z]*", where)
 
 
 def dotted(compact: str) -> str:

@@ -2,8 +2,8 @@
 name: haipipe-paper-draft
 description: "The paper's draft Task: one Section, the Abstract or a letter of one version (task-type: draft), the paper's rules on top of haipipe-draft; executes one row of the version's ## Narrative and keeps its Requirement (venue rules, rubric, SUB-* rows). Evidence and displays follow haipipe-paper-evidence; the whole manuscript is haipipe-paper-assemble. Use to add, outline, draft, revise, check or retarget one Section. Also opens as /haipipe-paper-section."
 metadata:
-  version: "0.16.0"
-  last_updated: "2026-11-02"
+  version: "0.18.3"
+  last_updated: "2026-11-04"
   aliases: [haipipe-paper-section]
   folder_owner: canonical
   legacy_page_type: section
@@ -128,7 +128,45 @@ A Section is never renamed merely because another
 section is inserted: the new one takes a free number in its band, and the version's compile order, not the
 number, decides where it prints.
 
-## 📚 Examples first (JL 261022)
+## ✂️ No semicolons in the paper's sentences (JL 261104)
+
+Every Section, the Abstract, the Supplement and the letters use plain sentences, never a semicolon (JL 261104: "don't
+use ';' make them as the normal sentences"). A sentence with three findings joined by semicolons becomes three
+sentences, each with its own Bullet in `## 1 · Structure`. Write `(1.57-4.73) (Figure 2)`, not `(1.57-4.73; Figure 2)`.
+Only what the journal fixes keeps them: citations in parentheses and the back matter's affiliation list. Check with
+`haipipe-draft-review` `cli/anti_slop.py` (rule `semicolon`) before a build. Statistics follow what the venue's published papers print, read from its examples in the venue bank, never a style manual from memory (MISQ: `(SE = 1.07, 95% CI [0.69, 4.90], p = 0.009)`, JL 261104: "check other MISQ paper examples for this"). Otherwise statistics inside one parenthesis keep theirs, `(SE = 1.07; 95 percent CI, 0.69 to 4.90; p = 0.009)` (JL 261104: "could we use ';' here? as long as it is not the sentence").
+
+No transition set off by commas either (JL 261104: "don't use things like ' , however ,', Try to make a sentence to be smooth"): `, however,`, `, therefore,` and their kin become a sentence that flows (rule `parenthetical-transition`).
+
+The Introduction says its hypotheses in words, with no `H1` or `H2` label; the labels start where the theory section states them (JL 261104: "why we have the H1 here?").
+
+## 📚 Examples first: a must (JL 261022; 261104)
+
+**⛔ The first thing a session does on a Section, the Abstract or a letter, before Plan and before any word.** The Task's
+📚 Examples card must show real readings. If it says "No example papers yet", make them, then continue. A session is
+not finished, and never says "finished", "done" or "ready", while `page.py health --final <Task>` fails its `0 ·
+Examples` row (JL 261104: "This is a must to do when you call the task for the /haipipe-paper-draft"; "update the
+checklist and must to do before saying such a task session is finished").
+
+Examples show **how other people write this part**: moves, order, lengths, how a number is reported. They are not related
+work: a summary of what those studies found is not an example (JL 261104: "I don't know why you want to just describe
+the related studies here. I think we should check how other people writing it"). A paper is chosen because it is the
+**same article type in the same journal**; closeness of topic is the second test. A Research Letter is read against
+Research Letters, never Original Investigations, and an article whose type is not confirmed on its page does not count.
+A letter's Sections each get their own topic and face, and may read the same papers.
+
+**What "ready" looks like (JL 261104: "for the exmaples here, we just want to have the screenshot intdouction to check"):**
+
+| Step | Do | Tool |
+|---|---|---|
+| 1 Topic | `sNN-<task>-<venue>-examples` beside the Jobs, its face (For, Delivery type, Covers, Excluded, Topic) and its `related:` yaml filled; its first line names `<job>/<task>` | `/haipipe-studio` `new_topic.py topic` |
+| 2 Screenshots | one picture per paper of **that Section and nothing else**, whole and readable: `reads/pNN-<author><year>/shots/section.jpg`; `reading.yaml` beside it with its size and moves | `read_paper.py paras` from the PDF; the article's page if no PDF is free |
+| 3 Drawing | the screenshots one under the other, the shared pattern on top, where ours departs in red. No logic chains, no reference cards | `excalidraw-read ref/section_screens.py draw <topic>` |
+| 4 The card | Work › Plan › 📚 Examples shows the drawing **embedded**; open the page and look | the Task's page |
+| 5 The face | the Task's `examples:` names the topic | `page.py health`, `paper_check.py` W6 |
+
+Counts or a list of papers without the screenshots is not ready.
+
 
 A Section, the Abstract or a letter is written after reading how 3 to 4 published papers of the same venue write the
 same part, never before: a Studio topic `sNN-<task>-<venue>-examples` (`/excalidraw read`; two papers close to the
@@ -420,6 +458,18 @@ face "How much changes" (every paragraph) ─▶ CONTEXT cites it ─▶ SHAPE: 
 Worked example: Paper-TestToLearn-MS2026, s10 to s16, the sent `j01_v0429_mansci` read for `j02_v1007_mansci`:
 107 rows, 13 KEEP · 47 REWRITE · 26 CUT · 21 MOVE.
 
+## ✉️ A cover letter's words (JL 261104)
+
+| Rule | What it means |
+|---|---|
+| One idea per sentence | a long results sentence becomes several; JL split one into 3 |
+| "Why this journal" is about its editor and readers | who acts on the finding, the tension it raises, and a real paper the journal published (verified, from the paper's own references); never "our readers are the best audience" |
+| A related earlier paper is named with its DOI | it is not uploaded unless the journal asks. JL: "I think we don't need to upload it with the submission" |
+| The paper's own words for its evidence | no "validated" unless the paper says so |
+
+The build fills the facts and runs the letter's checks (`haipipe-paper-assemble` § The cover letter lane); the final
+read covers the letter too (§ The final read there).
+
 ## ✅ A complete paper draft Task
 
 The base list is `haipipe-draft` `ref/page-checklist.md` § 6 (one file per step, checked by `page.py health`'s
@@ -430,10 +480,11 @@ you make them to be complete?"):
 |---|---|---|
 | The contract block | every field of § 📥 Required contract block is on the face, none left as `<…>` | the face |
 | The Requirement | `W<n>` rules for the Section's own writing; the venue's `V<n>` when its desk has a division, else the reason in `structure-division:` | `draft/records/<stem>-requirement.md` |
-| Examples | `examples:` names the topic of 3 to 4 published papers, or says why none exist (a cover letter: journals publish none) | the face |
+| 📚 Examples ⛔ first | before Plan: `examples:` names the topic of 3 to 4 published papers of the same article type, each Section read whole with its moves and lengths and each departure of ours named, or says `examples: none · <reason>` (a cover letter: journals publish none) | the face, `page.py health`'s `0 · Examples` row |
 | Evidence for every number | each number, citation and display a sentence uses has an item, and each `Evidence:` line in § 1 names it | `draft/<stem>-evidence-items.md` |
 | Its own delivery | web, LaTeX and Word built under `delivery/<job>/<task>/` (`page.py export`); a letter's face says `delivery-builder: <the paper's build.py>`, so its LaTeX and Word lanes are the letter as uploaded (date, addressee, signature), never a Section print | the Delivery tab |
 | Into the paper | a Section: its LaTeX fragment in the version's paper build; a letter: the cover letter lane (`[coverletter] task`) builds it and the portal packet carries it | `delivery/<writing Job>/` |
+| Content is the latest draft | `content:` names the current draft (adopt, or `adopt --relayout` when paragraphs changed; never typed by hand); no Delivery tab shows the ⚠️ "This prints …" warning | the face, the Delivery tab |
 | The final gate | `page.py health --final` shows no FAIL (the printed PDF holds every § 3 sentence); its only WARN rows are the person's steps | the reply, before the word "finished" |
 
 ## ✅ Closing checks

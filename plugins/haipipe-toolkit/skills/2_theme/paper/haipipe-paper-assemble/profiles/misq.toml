@@ -19,7 +19,7 @@ include_main_displays = true
 #   Tools/plugins/haipipe-toolkit/skills/2_theme/paper/venue/playbook-utd-is/README.md
 #   .../playbook-utd-is/MISQ/MISQ-abstract/style.md  (measured 2026-07-08 from
 #   published MISQ Research Articles: Liu 2021 ~125w, Yin 2014 ~120w)
-# MISQ takes WORD through ScholarOne and ships no LaTeX class, so the LaTeX lane is
+# MISQ takes WORD through ScholarOne; its page also offers templates (read 261104, kept in a paper's venues/<venue>/kit; they do not override the format below unless a paper asks: `word_template` and `[venue_template]` in its paper-build.toml), so the LaTeX lane is
 # a reading copy that reproduces the manuscript rules and the .docx is the
 # submission artifact. The four mechanical rules were verified 260908 against this
 # desk's own v0728 submission (Bc-MISQ-Round/RD01/feedback/): Times New Roman,
@@ -52,7 +52,7 @@ table_header_fill = ""           # no colour behind table headers: the official-
 # ── the Word layout of the co-author's official-format file (delivery/word-feedback/, JL 260928
 #    "does this really following the MISQ word template?"), measured from its styles.xml/document.xml ──
 front_matter = "title-abstract-keywords"   # page 1 = Title style, centred ABSTRACT, abstract, Keywords; break before INTRODUCTION
-abstract_line_spacing = 1.0      # abstract and keywords single-spaced (w:line=240); the body stays double
+abstract_line_spacing = 1.0      # abstract and keywords single-spaced (w:line=240); the body stays double. the template offers 1.5; a paper that follows the template sets the keys in § The venue template checklist in its own paper-build.toml (JL 261104)
 heading_align = "center"         # Heading 1 and Heading 2 are centred
 caption_plain = true             # captions bold, upright, black (the Caption style), not italic grey
 table_borders = "horizontal"     # top, bottom and row rules; no vertical lines
@@ -62,10 +62,10 @@ cover_letter_must_mention = ["MIS Quarterly", "Research Article", "not under rev
 
 
 [latex]
-spacing = "double"          # double-spaced throughout, references included
+spacing = "double"          # the body; MISQ single-spaces references and allows it in tables and figures (guidelines read 2026-11-03)
 bibstyle = "apalike"        # closest stock author-date style; MISQ's own .bst is not shipped, journal names print as the .bib gives them
 displays = "inline"         # "inline": at first reference, for review · "end": every float on its own page after the text (endfloat), for production
-appendix_newpage = true     # lettered appendices after the references, each on a new page
+appendix_newpage = false    # the limit counts appendices and MISQ asks no new page for each (guidelines read 2026-11-03); the first still starts a new page
 title_page = "inline"       # page 1 = title, abstract and keywords, as in the official-format file (JL 260928); was "separate"
 abstract_page = true        # \clearpage after the abstract (and keywords), so the first section starts page 2
 acknowledgments = false     # blind copy: no Acknowledgments section; funding and thanks go in the separate title-page file (JL 260928)

@@ -673,12 +673,16 @@ document.getElementById('rebuild').onclick = function () {
                 source_for_tex.write_text("\n".join(source_lines) + "\n", encoding="utf-8")
         # --keep-fences: a board division is often figure-only, and the paper
         # default (drop sketches) exported it as an empty section (JL 260815).
+        # --origin: the temporary copy's revise cards and sibling Sections are the
+        # Page's own. accept_dropped_keys (POST body) is md2tex's
+        # --accept-dropped-keys: an intended citation drop, explained or refused.
+        cmd = [sys.executable, str(_SCRIPTS / "md2tex.py"), str(source_for_tex),
+               "--paper-root", str(proot or page_src.parent), "-o", str(out_dir),
+               "--keep-fences", "--origin", str(page_src)]
+        if p.get("accept_dropped_keys"):
+            cmd.append("--accept-dropped-keys")
         try:
-            code, log = self._run(
-                [sys.executable, str(_SCRIPTS / "md2tex.py"), str(source_for_tex),
-                 "--paper-root", str(proot or page_src.parent), "-o", str(out_dir),
-                 "--keep-fences"],
-                timeout=120)
+            code, log = self._run(cmd, timeout=120)
         finally:
             if temp_source is not None:
                 temp_source.cleanup()
@@ -687,16 +691,17 @@ document.getElementById('rebuild').onclick = function () {
         # pass: two POSTs returned ok:true while re-floating the PREVIOUS
         # conversion, because only the file's existence was checked and a
         # stale .tex from the last run satisfied that).
+        # md2tex's refuse-to-regress guard leaves the STALE .tex in place, which
+        # satisfies is_file(). On 260908 that cost a full rewrite round: §1's
+        # humanizing pass was refused, the POST answered ok:true, and the page kept
+        # its old prose through a whole rebuild. Since 261103 a refusal also exits 2;
+        # the REFUSED line is checked first so the reply names the dropped keys.
+        if "REFUSED" in log:
+            return None, "md2tex REFUSED to overwrite the existing section:\n" + log[-1500:]
         if code != 0:
             return None, "md2tex exited %s:\n" % code + log[-1500:]
         if not tex.is_file():
             return None, "md2tex wrote no .tex:\n" + log[-1500:]
-        # md2tex's refuse-to-regress guard prints REFUSED and exits 0, so neither
-        # check above sees it and the STALE .tex satisfies is_file(). On 260908 that
-        # cost a full rewrite round: §1's humanizing pass was refused, the POST
-        # answered ok:true, and the page kept its old prose through a whole rebuild.
-        if "REFUSED" in log:
-            return None, "md2tex REFUSED to overwrite the existing section:\n" + log[-1500:]
 
         # THE PAGE'S OWN EVIDENCE PRINTS (JL 260816: "both word and latex
         # didn't include the display?"): a unit the prose cites by short id
