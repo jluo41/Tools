@@ -213,7 +213,7 @@ class LabelingThemeTest(unittest.TestCase):
         where = "Project-X/labeling/b61_demo_label/j01_building_demo/t02_demo_items"
         tabs = {"1 · Data": ("📥 Step 1 · Data", "→ next", "Input",
                              "next: 🧱 Step 2 · Items", f"/haipipe-labeling-preparation {where} describe:"),
-                "2 · Items": ("🧱 Step 2 · Items", "✓ done", "Recipe, signed · r01_demo", "All 3 items",
+                "2 · Items": ("🧱 Step 2 · Items", "✓ done", "Recipe, signed · r01_demo", "📋 All items",
                               "scripts/items_transform.py", "Each row becomes one placeholder item.", "📦 Version",
                               "Yes 5 · No 5", "🧱 Revise the items", f"{where} revise: read my notes"),
                 "3 · Embedding": ("🗺 Step 3 · Embedding", "→ next", "Step 3 fills this",
@@ -260,7 +260,7 @@ class LabelingThemeTest(unittest.TestCase):
                           '<b style="font-size:20px">10</b><span>rows</span>', '<b style="font-size:20px">5</b><span>items</span>',
                           "One placeholder rating of one chat.", "🧩 One row (made up)", "rowspan=2", "an invented reply",
                           "🏷 Current labels", "<code>gold</code>", "💬 Text to label", "⚠️ Watch out",
-                          "a placeholder note", "2 columns", "4 words median", "r02_raw_read"):
+                          "a placeholder note", "🗃 Columns", "4 words median", "r02_raw_read"):   # a label carries no count (round 4)
                 with self.subTest(space=space, words=words):
                     self.assertIn(words, page)
         self.assertNotIn("<h4>Input</h4>", page)                              # Report: the cards only
@@ -278,14 +278,15 @@ class LabelingThemeTest(unittest.TestCase):
             "operation: embed\nmodel: sentence-transformers/all-MiniLM-L6-v2\ninput: main\nmap: tsne\n")
         page = frame.render(self.theme, self.root, items, "Work Details", "3 · Embedding")
         for words in ("Build · r03_embedding_minilm", "all-MiniLM-L6-v2", "data-post=\"/_board/labeling/items\"",
-                      ">Agree</button>", "✍ sign",
+                      ">Agree</button>", "✍ waits for your sign", "✍️ Read the build below and press Agree",
                       "I Agree r03_embedding_minilm on the screen first; then run"):
             with self.subTest(words=words):
                 self.assertIn(words, page)
         (planned / "run.yaml").write_text("run: r03_embedding_minilm\nkind: hard\ntype:\n- embedding-build\n"
                                           "status: planned\nsigns:\n  by: a person\n  at: today\n")
         page = frame.render(self.theme, self.root, items, "Work Details", "3 · Embedding")
-        self.assertIn("✓ agreed</span> by a person", page)
+        self.assertIn("✓ agreed</span> · today", page)                   # no person's name on a page (settled 5)
+        self.assertNotIn("by a person", page)
         self.assertIn("run r03_embedding_minilm and settle it", page)
         (planned / "result").mkdir()
         (planned / "result" / "runtime.yaml").write_text("run: r03_embedding_minilm\nstatus: complete\n")

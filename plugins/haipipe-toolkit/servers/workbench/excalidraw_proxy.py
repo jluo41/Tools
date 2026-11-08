@@ -7,6 +7,9 @@ import os
 import re
 from pathlib import Path
 
+ANALYTICS = re.compile(rb"<script>(?:(?!</script>).)*?(?:simpleanalytics|sa_event)(?:(?!</script>).)*?</script>", re.S)
+NO_SW = b"<script>try{delete Navigator.prototype.serviceWorker}catch(e){}</script>"
+
 
 class ExcalidrawProxyMixin:
     def proxy_excalidraw(self, head_only=False):
@@ -66,6 +69,14 @@ class ExcalidrawProxyMixin:
             if not n:                       # no module to hold; seed anyway
                 body = (body.replace(b"<head>", b"<head>" + tag, 1)
                         if b"<head>" in body else tag + body)
+            # The app's page loads a third-party analytics script, and inside a frame its load handler calls
+            # sa_event(action, ...) with `action` never defined: "action is not defined" on every Draw pop-out
+            # (round 2 review). Nothing local needs it and nothing leaves this host for it, so it is dropped.
+            body = ANALYTICS.sub(b"", body)
+            # The app registers a service worker at the host's root, /sw.js, which this host does not serve: a 404 on
+            # every Draw pop-out (round 3 review). The proxy needs no offline cache, so the page sees no service-worker
+            # API at all and the app skips registering one; nothing is served at the root for it.
+            body = (body.replace(b"<head>", b"<head>" + NO_SW, 1) if b"<head>" in body else NO_SW + body)
         self.send_response(status)
         if ctype:
             self.send_header("Content-Type", ctype)

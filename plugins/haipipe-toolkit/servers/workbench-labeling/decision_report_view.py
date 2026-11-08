@@ -258,11 +258,15 @@ def group(name: str) -> str:
     return f'<h3 class="dec-group">{esc(name)}</h3>'
 
 
-def section(n, title: str, body: str, anchor: str = "") -> str:
-    """One section: a boxed heading bar `N · <emoji> name` that folds, open by default, its content under it."""
+def section(n, title: str, body: str, anchor: str = "", word: str = "", waits: str = "") -> str:
+    """One section: a boxed heading bar `N · <emoji> name` that folds, open by default, its content under it; its state
+    word on the bar's right and, while it waits on the person, that one thing under the bar, shown only while the
+    section is closed (JL 261106: "every closed bar shows a state word on its right"). The fold keys on the title."""
+    from live.ui_parts import word_span
     head = (f"{n} · " if n else "") + title
     return (f'<details class="dec-sec" open data-fold="{esc(head)}"' + (f' id="{esc(anchor)}"' if anchor else '')
-            + f'><summary class="dec-h">{esc(head)}</summary><div class="dec-body">{body}</div></details>')
+            + f'><summary class="dec-h">{esc(head)}{word_span(word)}</summary><div class="dec-body">{body}</div></details>'
+            + (f'<p class="dec-wait">{esc(waits)}</p>' if waits else ""))
 
 
 def big(words: str, state: str = "") -> str:
@@ -412,7 +416,8 @@ def _answer_html(card: dict, answer: dict | None, state: str) -> str:
 
 
 def _unavailable(read_only: bool, words: str, state: str, more: str = "") -> str:
-    return group(RESULTS if read_only else PROCESS) + section(1, TITLE_1, big(words, state) + (line(more) if more else ""))
+    return group(RESULTS if read_only else PROCESS) + section(1, TITLE_1, big(words, state) + (line(more) if more else ""),
+                                                              word="nothing yet" if state.startswith("nothing") else state)
 
 
 def decide_view(task: Path, root: Path, read_only: bool = False) -> str:
@@ -448,14 +453,16 @@ def decide_view(task: Path, root: Path, read_only: bool = False) -> str:
     states, answers = card_states(cards, subs, saved, revision)
     open_i = next((i for want in (WAITING, DRAFTED) for i, s in enumerate(states) if s == want), 0)
     head = big(sentence(newest), state_word(newest))
-    chain = section(2, TITLE_2, _chain(earlier))
+    chain = section(2, TITLE_2, _chain(earlier), word=f"{len(earlier)} earlier" if earlier else "none yet")
+    first = next((c for c, s in zip(cards, states) if s == WAITING), None)
+    word, waits = state_word(newest), (f"🙋 {_question(first)}" if first is not None else "")
 
     if read_only:                                 # Report: each card with its answer, nothing to fill in
         panels = "".join(_card(c, i, open_i, s, _answer_html(c, a, s))
                          for i, (c, s, a) in enumerate(zip(cards, states, answers)))
         inbox = (_inbox(cards, states, open_i) + f'<div class="dec-cardbox">{panels}</div>') if cards \
             else line("This report has no cards.")
-        return wrap(_strip(base) + group(RESULTS) + section(1, TITLE_1, head + inbox) + chain)
+        return wrap(_strip(base) + group(RESULTS) + section(1, TITLE_1, head + inbox, word=word, waits=waits) + chain)
 
     submitted = any(_num(s.get("report_revision")) == revision for s in subs if isinstance(s, dict))
     panels = "".join(_card(c, i, open_i, s, _choices(c, i)) for i, (c, s) in enumerate(zip(cards, states)))
@@ -472,5 +479,5 @@ def decide_view(task: Path, root: Path, read_only: bool = False) -> str:
             '<button type="button" class="dec-btn primary" data-submit disabled>Submit feedback</button></div>'
             '<p class="dec-status" role="status" aria-live="polite" data-status></p></div></div></div>') if cards \
         else line("This report has no cards.")
-    return wrap(_strip(base) + group(PROCESS) + section(1, TITLE_1, head + form, anchor="dec-cards")
+    return wrap(_strip(base) + group(PROCESS) + section(1, TITLE_1, head + form, anchor="dec-cards", word=word, waits=waits)
                 + group(RESULTS) + chain)

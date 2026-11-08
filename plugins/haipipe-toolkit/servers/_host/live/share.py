@@ -396,7 +396,7 @@ def people_group(root, name: str) -> Path:
 # ── the handler ────────────────────────────────────────────────────────────────────────────────
 
 PAGE = """<!doctype html><html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1"><title>{title}</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>{title}</title><link rel="icon" href="data:,">
 <style>body{{font:16px/1.5 -apple-system,Segoe UI,sans-serif;background:#f6f7f9;color:#1e1e1e;margin:0}}
 main{{max-width:420px;margin:12vh auto;background:#fff;border:1px solid #d6d9de;border-radius:10px;padding:28px}}
 h1{{font-size:22px;margin:0 0 12px}}p{{color:#495057}}input{{width:100%;box-sizing:border-box;font-size:18px;padding:10px;

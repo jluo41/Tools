@@ -10,7 +10,7 @@ description: >-
   report-NN, save my answers, Update, approve mNN, audit the existing labels, use case 2,
   /haipipe-labeling-interaction.
 metadata:
-  version: "0.2.2"
+  version: "0.2.3"
   last_updated: "2026-11-04"
   # version history: ./CHANGELOG.md
 ---
@@ -18,7 +18,7 @@ metadata:
 # /haipipe-labeling-interaction · the meaning loop, one step per prompt
 
 Only the 🧭 meaning Task asks the person (b15 s58-D03; JL 261101: "we hope that the interaction is only available in
-the meaning loop task"). Its page (Work: Frame · Report · Preferences · Update) copies one prompt per step into the
+the meaning loop task"). Its page (Work: Frame · Prepare · Preferences · Update; Prepare is the Report step) copies one prompt per step into the
 Task's chat session; each prompt below names its step, and this skill does exactly that step, then replies with the
 page's link and nothing else (the form is the conversation). The link is the Task's own, from
 `skills/1_base/workbench/workbench/cli/wb.py <Task> --no-open` plus `&section=work&group=<step>` (frame, prepare,

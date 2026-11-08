@@ -8,7 +8,7 @@ from pathlib import Path
 
 from live.frame import esc
 from live.ui_parts import GROUP_CSS, PROCESS, RESULTS, _band, _file_link, _numbered, _section, _when
-from live.focus_draft import CSS, JS, WORK, _facts, _interactions, preview, word
+from live.focus_draft import CSS, JS, WORK, _facts, preview, word
 from live.board_read import PAPER_CAPTIONS, _num, _task_url, display_job, is_version
 from live.board_interactions import ix_item
 from live.board_evidence import evidence_item
@@ -105,8 +105,8 @@ def version_delivery_views(job: Path, root: Path) -> dict:
     if out.get("supplement_docx_pdf"):
         sup = at("supplement_docx_pdf")
         views["supplement"] = ("Supplement", lambda: ask + preview(sup, root, sup.with_suffix(".docx")))
-    views["files"] = ("Built files", lambda: CSS + ask + _section("The paper", paper_rows(vdir, root))
-                      + _section("Its Sections", section_lanes(vdir, job, root)) + JS)
+    views["files"] = ("Built files", lambda: CSS + ask + _section("The paper", paper_rows(vdir, root), "sent" if sent else "built")
+                      + _section("Its Sections", section_lanes(vdir, job, root), "built") + JS)
     return views
 
 
@@ -116,10 +116,16 @@ def paper_delivery(folder: Path, root: Path) -> str:
     level = level_of(folder)
     if level == "Job":
         vdir = folder.parent / "delivery" / folder.name
+        if not is_version(folder) and vdir.is_dir():   # an evidence or submission Job: what the Board's delivery/<Job>/
+            files = sorted(f for f in vdir.rglob("*") if f.is_file() and not f.name.startswith("."))   # holds for it (r02:
+            rows = "".join(f'<div class=fd-row><span class=n>{_file_link(f, root)}</span><span class=w>built {_when(f)}</span>'   # the
+                           '</div>' for f in files)                                               # fill page was not listed)
+            return CSS + _section("Handed over", rows, f"{len(files)} file{'s' * (len(files) != 1)}") + JS if rows else ""
         paper = paper_rows(vdir, root) if (vdir / "build-manifest.json").is_file() else ""
-        return (CSS + _section("The paper", paper) + _section("Its Sections", section_lanes(vdir, folder, root)) + JS) if paper else ""
+        return (CSS + _section("The paper", paper, "built") + _section("Its Sections", section_lanes(vdir, folder, root), "built")
+                + JS) if paper else ""
     if level == "Block":
-        out = "".join(_section(v.name, paper_rows(v, root)) for v in sorted((folder / "delivery").glob("j[0-9]*_*"))
+        out = "".join(_section(v.name, paper_rows(v, root), "built") for v in sorted((folder / "delivery").glob("j[0-9]*_*"))
                       if (v / "build-manifest.json").is_file()) if (folder / "delivery").is_dir() else ""
         return CSS + out + JS if out else ""
     return ""
@@ -141,6 +147,14 @@ VERSION_CAPTIONS = {"draft-main": "The main paper's Sections, each with its five
 PAPER_CAPTIONS.update({"work-" + k: v for k, v in VERSION_CAPTIONS.items()})
 
 
+# a version's Report shows the same views, results only (261106); the Values and Citations keys stay the Board's
+PAPER_CAPTIONS.update({"draft-main": "The main paper's Sections, each one's text to read.",
+                       "draft-appendix": "The appendix's Sections, each one's text to read.",
+                       "display-main": VERSION_CAPTIONS["display-main"], "display-appendix": VERSION_CAPTIONS["display-appendix"],
+                       "values": "The printed numbers, one Task per group, each read from a returned Result.",
+                       "citations": "The citations, one Task per claim group, each paper checked."})
+
+
 def section_row(task: Path, root: Path) -> str:
     """A Section: its name, then its five step words, each opening that step (s36-D01)."""
     try:
@@ -153,58 +167,271 @@ def section_row(task: Path, root: Path) -> str:
             f'<span class="d fd-steps">{chips}</span></div>')
 
 
-def version_work_views(version: Path, root: Path, items=(), item_html=None) -> dict:
+def _where_rows(tasks: list, kind: str, root: Path, read: dict) -> list:
+    """Each evidence Task as a to-do row (its name, its state pill, Open), as the Board's "Where each stands" (board_process):
+    its state read from what its Run returned (evidence_read.task_state)."""
+    from live.evidence_read import where_rows
+    return where_rows(tasks, root, read)
+
+
+def version_work_views(version: Path, root: Path, items=(), item_html=None, work: bool = True) -> dict:
+    """A version's views, Draft-Main · Draft-Appendix · Display-Main · Display-Appendix · Values · Citations (JL 261106:
+    "a paper version's Report gets the same six views as its Work, showing results only"). `work`: Work's views, keys
+    `work-<key>`, each ⚙️ Process then 📊 Results; else Report's, keys `<key>`, the Results alone, as board_views.banded.
+    A Draft view's Results are its Sections' text, one side tab per Section (board_results.section_tabs)."""
+    from live.board_results import _evidence_kinds, display_groups, section_tabs, sections_word, text_word
+    from live.board_evidence import evidence_body
+    from live.board_views import SIDE_CSS
+    from live.ui_parts import PB_CSS, PB_JS, todo_section
     item_html = (lambda r: ix_item(r, root)) if item_html else None     # each item a folded row (JL 261031)
     if not is_version(version):                   # the display Job (j21_displays) and the citation Job are not versions
         return {}
+    pre = "work-" if work else ""
+    from live.focus_draft import text_count
+    changes, since = send_changes(version), evidence_since(version)   # a revision: what this send did to each tab
+
+    def page(proc: str, res: str) -> str:
+        body = (_band(PROCESS, _numbered(proc)) + _band(RESULTS, _numbered(res))) if work else _numbered(res)
+        return CSS + VERSION_CSS + GROUP_CSS + PB_CSS + SIDE_CSS + body + PB_JS + JS
+
     views = {}
     for key, name, kind, (lo, hi) in VERSION_BANDS:
         def build(kind=kind, lo=lo, hi=hi, name=name, key=key):
             if kind == "sections":
                 tasks = [t for t in sorted(version.glob("t[0-9]*_*"), key=_num) if t.is_dir() and lo <= _num(t) <= hi]
-                body = "".join(section_row(t, root) for t in tasks) or f'<p class=mut>No {esc(name)} Section yet.</p>'
-            else:
-                job = display_job(version)
-                if job is not None:
-                    tasks = [t for t in sorted(job.glob("t[0-9]*_*"), key=_num) if t.is_dir() and lo <= _num(t) <= hi]
-                else:                              # displays as bands inside the version (b16 r02 Q3 A): t41-t49, t51-t59
-                    band = (40, 49) if hi < 50 else (50, 59)
-                    tasks = [t for t in sorted(version.glob("t[0-9]*_*"), key=_num) if t.is_dir() and band[0] <= _num(t) <= band[1]]
-                    job = version if tasks else None
-                body = ("".join(evidence_item(t, root) for t in tasks)
-                        or (f'<p class=mut>No figure or table here yet in {esc(job.name)}.</p>' if job else
-                            '<p class=mut>No display Job yet: the paper\'s figures and tables become one Job beside the versions, '
-                            'one Task per figure or table (s01-D11).</p>'))
-            # The same rows in the two parts every view has (JL 261101: "keep the content as much as possible but use the
-            # new subsections layout"; "add the Interaction things as well, so we can track our changes along the way"):
-            # ⚙️ Process is this page's interactions, then each Section and its step words; a display view's figures
-            # and tables are its 📊 Results.
-            asks = _interactions(version if kind == "sections" else (job or version), root)
-            proc = _section("🙋 Interactions", asks) if asks else _section("🙋 Nothing waits on you", "<span hidden></span>")
-            if kind == "sections":
-                proc += _section("🪜 Sections", body)
-                res = ""
-            else:
-                res = _section("🖼️ Displays", body)
-            return CSS + VERSION_CSS + GROUP_CSS + _band(PROCESS, _numbered(proc)) + _band(RESULTS, _numbered(res)) + JS
-        views["work-" + key] = (name, build)
-    # Values and Citations: the paper's evidence Jobs beside the version (j02_evidence_value, j03_evidence_cite), else
-    # bands inside a version (t61-t69, t71-t79); shown once they hold a Task (s36-D02: "even more of them. like the citations")
-    for key, name, (lo, hi), pat in (("values", "Values", (60, 69), r"evidence_value"), ("citations", "Citations", (70, 79), r"evidence_cite|citation")):
-        job = next((j for j in sorted(version.parent.glob("j[0-9]*_*")) if j.is_dir() and re.search(pat, j.name, re.I)), None)
-        tasks = (sorted((x for x in job.glob("t[0-9]*_*") if x.is_dir()), key=_num) if job else []) or \
-            [x for x in sorted(version.glob("t[0-9]*_*"), key=_num) if x.is_dir() and lo <= _num(x) <= hi]
+                rows = "".join(section_row(t, root) for t in tasks) or f'<p class=mut>No {esc(name)} Section yet.</p>'
+                # ⚙️ Process: each Section and its five step words; 📊 Results: each Section's text to read (261106)
+                proc = _section("🪜 Sections", rows, *sections_word(tasks, root))
+                words = {t: changes.get(t) for t in tasks} if changes else None if work else {t: text_count(t) for t in tasks}
+                res = _section("📝 Text", section_tabs(tasks, root, f"vt{key[-4:]}", words) if tasks else
+                               f'<p class=mut>No {esc(name)} Section yet.</p>', text_word(tasks))
+                return page(proc, res)
+            # the paper's displays, drawn as the Board's Displays (side tabs, grouped Main then the appendix; r02: "move
+            # Display-Main, Values and Citations rows into side tabs, as on the Board's Evidence"): Main here, the rest in
+            # Display-Appendix, by where the display plan puts each one
+            job = display_job(version)
+            if job is None:
+                return page("", _section("🖼️ Displays", '<p class=mut>No display Job yet: the paper\'s figures and tables '
+                                                       'become one Job beside the versions, one Task per figure or table.</p>',
+                                         "nothing yet"))
+            tasks = [t for t in sorted(job.glob("t[0-9]*_*"), key=_num) if t.is_dir() and not t.name.startswith("t99_")]
+            only = ("main",) if key == "display-main" else ("supplement", "unplanned")
+            placed = display_groups(version.parent, tasks)
+            tasks = [t for t in tasks if placed.get(t) in only]
+            res, _ = _evidence_kinds(version.parent, root, ("Displays",), only=only, since=since)
+            res = res or _section("🖼️ Displays", f'<p class=mut>No {esc(name)} display yet in {esc(job.name)}.</p>', "nothing yet")
+            read = {t: evidence_body(t, root) for t in tasks}
+            proc = todo_section("🖼️ Where each display stands", _where_rows(tasks, "Displays", root, read)) if tasks else ""
+            return page(proc, res)
+        views[pre + key] = (name, build)
+    # Values and Citations: the paper's evidence Jobs beside the version (j02_evidence_value, j03_evidence_cite), drawn
+    # as the Board's Evidence (side tabs; the whole-paper check once, a verdict line; each key counted once)
+    for key, name, pat in (("values", "Values", r"evidence_value|value"), ("citations", "Citations", r"evidence_cite|citation|cite")):
+        job = next((j for j in sorted(version.parent.glob("j[0-9]*_*")) if j.is_dir() and not is_version(j)
+                    and re.search(pat, j.name, re.I) and not re.search("display|submission", j.name, re.I)), None)
+        tasks = [x for x in sorted(job.glob("t[0-9]*_*"), key=_num) if x.is_dir() and not x.name.startswith("t99_")] if job else []
         if tasks:
-            asks = _interactions(job, root) if job else ""
-            proc = _section("🙋 Interactions", asks) if asks else _section("🙋 Nothing waits on you", "<span hidden></span>")
-            views["work-" + key] = (name, lambda tasks=tasks, name=name, proc=proc: CSS + VERSION_CSS + GROUP_CSS
-                                    + _band(PROCESS, _numbered(proc))
-                                    + _band(RESULTS, _numbered(_section(("🔢 " if name == "Values" else "📚 ") + name,
-                                                                         "".join(evidence_item(x, root) for x in tasks)))) + JS)
+            def build(tasks=tasks, name=name):
+                read = {t: evidence_body(t, root) for t in tasks}
+                proc = todo_section("📋 Where each stands", _where_rows(tasks, name, root, read))
+                res, _ = _evidence_kinds(version.parent, root, (name,), since=since)
+                return page(proc, res)
+            views[pre + key] = (name, build)
     return linked_views(views, page_linker(version, root))   # every bNN.jNN.tNN.rNN a link (address_links, JL 261103)
+
+
+def _came_from(version: Path) -> Path | None:
+    """The version a revision was made from (its face's `from:`), None for a first send."""
+    from live.board_read import _field
+    came = _field(_face_of(version), "from")
+    prev = version.parent / came if came else None
+    return prev if prev is not None and prev.is_dir() and prev != version else None
+
+
+def send_changes(version: Path) -> dict:
+    """{Section: what this send did to it} of a revision (r02: "what changed since version 1: could not"): "new in this
+    send" when the version it came from has no such Section, "changed" (for whoever's point lands on it) when its text
+    differs, else "same as <that version>" (and whose point still lands on it). {} for a first send."""
+    from live.focus_draft import paragraphs
+    prev = _came_from(version)
+    if prev is None:
+        return {}
+    points = reviewer_points(version)
+    out = {}
+    for t in (x for x in version.glob("t[0-9]*_*") if x.is_dir()):
+        old = prev / t.name
+        who = list(dict.fromkeys(w for _, w, lands, _, _ in points if w and lands.split()[:1] == [t.name]))
+        if not old.is_dir():
+            out[t] = "new in this send"
+        elif [x[2] for x in paragraphs(t)] != [x[2] for x in paragraphs(old)]:
+            out[t] = "changed" + (f" for {' and '.join(who)}" if who else "")
+        else:
+            out[t] = f"same as {prev.name}" + (f"; {' and '.join(who)}'s point lands here" if who else "")
+    return out
+
+
+def evidence_since(version: Path):
+    """A revision's word for an evidence tab (a display, a value table, a claim group; they are the Board's, shared by
+    every send): "asked by <who>" when a reviewer's point names it, "new in this send" when this send's text names it
+    and the version it came from never did, else "same as <that version>". None for a first send."""
+    from live.focus_draft import paragraphs
+    from live.board_read import _field
+    prev = _came_from(version)
+    if prev is None:
+        return None
+    points = reviewer_points(version)
+    text = lambda v: " ".join(t for s in v.glob("t[0-9]*_*") if s.is_dir() for _, _, t in paragraphs(s))
+    now, before = text(version), text(prev)
+    said = lambda name, words: re.search(rf"(?<![\w-]){re.escape(name)}(?![\w])", words, re.I) is not None
+
+    def since(task, head):
+        face = _face_of(task) if task is not None else ""
+        names = [x for x in (_field(face, "number"), _field(face, "label"), re.sub(r"\s*\(.*\)$", "", head or "")) if x]
+        who = list(dict.fromkeys(w for p, w, *_ in points if w and any(said(n, p) for n in names)))
+        if who:
+            return f"asked by {' and '.join(who)}"
+        if any(said(n, now) and not said(n, before) for n in names):
+            return "new in this send"
+        return f"same as {prev.name}"
+    return since
+
+
+def version_report_views(version: Path, root: Path) -> dict:
+    """A version's Report: its MindMap (the send's facts, a revision's reviewer points, each Section's question), then
+    its Work's six views, the Results alone (JL 261106, decision 1). The focus page keeps the MindMap first."""
+    views = version_work_views(version, root, work=False)
+    if views:
+        views = {"mindmap": ("MindMap", lambda: version_mindmap(version, root)), **views}
+    return views
 
 
 VERSION_CSS = """<style>.fd-steps{display:flex;gap:6px;flex-wrap:wrap}.fd-step{font-size:12px;border:1px solid var(--line);
 border-radius:6px;padding:1px 8px;text-decoration:none;color:var(--ink)}.fd-step b{font-weight:500;color:var(--muted)}
 .fd-step.fd-you{border-color:#ffa94d}.fd-step.fd-you b{color:#b35c00}.fd-step.fd-ok b{color:#2b8a3e}
 .fd-step:hover{border-color:var(--accent)}</style>"""
+
+
+# ── a version's MindMap (stage-2 review round 2, 261106): the send's own facts as leaves of its root (state, venue,
+# close, where it tells from, the version it revises and the comments it answers, as links); for a revision, the
+# reviewers' points, each with the Section it lands on, its reply in the response letter and its state; then each
+# Section with what it must find out (its reader question) and its next step. The Run tree stays in Status. ─────────
+def _face_of(folder: Path) -> str:
+    f = folder / f"{folder.name}.md"
+    return f.read_text(encoding="utf-8", errors="ignore") if f.is_file() else ""
+
+
+def _report_of(version: Path) -> Path | None:
+    """The comments report a revision answers (its face's `responds-to:`), else None."""
+    from live.focus_draft import responds_to
+    return responds_to(version)
+
+
+def reviewer_points(version: Path) -> list:
+    """[(the point, who raised it, the Section it lands on, its reply, its state)] from the comments report, each reply
+    read from the response letter itself (focus_draft.review_points; r02: two points said "routed" while the letter
+    held a reply to each), so the map, the letter's Answers line and its Text agree."""
+    from live.focus_draft import paragraphs, review_points
+    report = _report_of(version)
+    if report is None:
+        return []
+    letter = next((t for t in sorted(version.glob("t3[0-9]_*response*")) if t.is_dir()), None)
+    paras = {pid.split(".")[-1]: name for pid, name, _ in paragraphs(letter)} if letter is not None else {}
+    return [(point, who, lands, (f"{letter.name} {reply}: {paras[reply]}" if letter is not None and reply in paras else
+                                 f"{letter.name} {reply}" if reply and letter is not None else "not written yet"), state)
+            for point, who, lands, reply, state in review_points(report, letter)]
+
+
+# A read-only map drawn inside its own box (r03: the leaves ran 94 px past the box, and at 390 px the opened map was
+# 5,000 px tall with every leaf cut off): the leaves wrap in the space left, a phone stacks each branch over its
+# leaves; no `.focus-map` class, so the frame's map script adds no second fold bar (⊟ ⊞) and no folds of its own, and
+# the map's own Open all opens every level.
+MAP_CSS = """<style>.vmap{border:1px solid var(--line);border-radius:10px;padding:12px 14px 14px;background:var(--paper);
+overflow:hidden}.vmap .pm{width:auto;min-width:0;grid-template-columns:170px minmax(0,1fr);gap:0 32px}
+.vmap .pm-para{grid-template-columns:210px minmax(0,1fr);gap:0 30px;margin:3px 0}
+.vmap .pm-leaves,.vmap .pm-leaves li,.vmap .pm-sub li{white-space:normal!important;min-width:0;max-width:none!important;
+overflow-wrap:break-word}.vmap .pm-root b{font-size:15px;overflow-wrap:break-word}.vmap .pm-pnode{font-size:13.5px}
+.vmap .pm-leaves li{font-size:13px}.vmap .pm-s{display:none}.vmap .pm-more[data-empty]{display:none}
+.vmap .pm-role:empty{display:none}.vmap .pm-leaves li>.pm-role,.vmap .pm-sub li>.pm-role{min-width:0;padding:0 8px;
+border-color:transparent;background:var(--tab-wash,#e7f5ff);color:var(--tab-on,#1864ab);font-weight:600;font-size:12px}
+.vmap .pm-sub{padding-left:18px}.vmap .pm-foldbar{margin:0 0 8px}
+@media(max-width:600px){.vmap{padding:10px}.vmap .pm{grid-template-columns:minmax(0,1fr);gap:10px 0}
+.vmap .pm-para{grid-template-columns:minmax(0,1fr);gap:4px 0;margin:8px 0}.vmap .pm-wires{display:none}
+.vmap .pm-leaves{margin-left:10px;padding-left:10px;border-left:2px solid var(--line)}.vmap .pm-sub{padding-left:12px}}
+</style>"""
+
+
+def breakable(name: str) -> str:
+    """A folder name that breaks only after "_" (r03: "j11_writing_v1130_des / k"): a zero-width space after each."""
+    return name.replace("_", "_\u200b")
+
+
+def paper_map(title: str, kids: list, note=(), key: str = "map") -> str:
+    """One read-only map of a paper page (a version, an evidence Job, an evidence Task, the Board's Paper flow): its
+    root, then a branch per kid, each leaf a "[role] words" line; ids relative to the page (no folder path in the
+    HTML)."""
+    from live import frame
+    mm_ = frame.mindmap_module()                 # puts haipipe-mindmap's scripts on the path first
+    import mmbuild
+    import mmtree
+    node = mmbuild.built(".", breakable(title), kids, list(note))
+    node.id = "root"
+    tree = mmtree.MindMap({"mindmap": "1", "title": title, "built": "focus-page"}, node)
+    return MAP_CSS + f'<div class="vmap" data-map="{esc(key)}">' + mm_.draw(tree, "", editable=False) + '</div>'
+
+
+def version_mindmap(version: Path, root: Path) -> str:
+    """The version's map: its root's leaves, the reviewers' points (a revision), its Sections with their questions."""
+    try:
+        return _version_mindmap(version, root)
+    except Exception:                            # a map that does not draw never takes the page down
+        import traceback
+        traceback.print_exc()
+        return '<p class=mut>The map does not draw yet.</p>'
+
+
+def _version_mindmap(version: Path, root: Path) -> str:
+    from live import frame
+    from live.board_read import _field, _section_state, _state_words
+    from live.address_links import href
+    frame.mindmap_module()                       # puts haipipe-mindmap's scripts on the path first
+    import mmbuild
+    text = _face_of(version)
+    v = version.name
+    link = lambda words, folder, extra="": f"[{words}]({href(folder, root, extra)})"
+    facts = []                                   # the send's own facts; a link opens the version it revises or the
+    for role, key in (("state", "state"), ("venue", "venue"), ("close", "close"), ("tells", "tells")):   # comments
+        val = _field(text, key)                                                                          # it answers
+        if val:
+            facts.append(mmbuild.built(f"{v}/{key}", f"[{role}] {val}"))
+    came = _field(text, "from")
+    if came and (version.parent / came).is_dir():
+        facts.append(mmbuild.built(f"{v}/from", f"[from] {link(came, version.parent / came)}"))
+    report = _report_of(version)
+    if report is not None:
+        facts.append(mmbuild.built(f"{v}/responds", f"[responds to] [{report.parent.name}]({frame.reader(report, root)})"))
+    kids = [mmbuild.built(f"{v}/send", f"This send · {_field(text, 'state') or 'open'}", facts)] if facts else []
+    points = reviewer_points(version)
+    if points:
+        nodes = [mmbuild.built(f"{v}/point/{i}", f"[{state or 'open'}] {point}",
+                               [mmbuild.built(f"{v}/point/{i}/who", f"[raised by] {who}")] * bool(who)
+                               + [mmbuild.built(f"{v}/point/{i}/lands", f"[lands on] {lands}")] * bool(lands)
+                               + [mmbuild.built(f"{v}/point/{i}/reply", f"[reply] {reply}")])
+                 for i, (point, who, lands, reply, state) in enumerate(points)]
+        done = sum(st in ("answered", "applied") for *_, st in points)
+        # the closed branch carries its tally (r02: "Reviewer points" showed none)
+        kids.append(mmbuild.built(f"{v}/points", f"Reviewer points · {done} of {len(points)} answered", nodes))
+    sections, waits = [], 0
+    for t in sorted(x for x in version.glob("t[0-9]*_*") if x.is_dir()):
+        face = _face_of(t)
+        first = face.split("\n", 1)[0]
+        title = first.split(" · ", 1)[1].strip() if " · " in first else t.name.split("_", 1)[-1]
+        asks = _field(face, "reader-question") or _field(face, "goal")
+        step = _state_words(_section_state(t, root))
+        waits += "your" in step
+        sections.append(mmbuild.built(f"{v}/{t.name}", f"[{t.name}] {title}",
+                                      [mmbuild.built(f"{v}/{t.name}/asks", f"[finds out] {asks}")] * bool(asks)
+                                      + [mmbuild.built(f"{v}/{t.name}/step", f"[now] {step}")] * bool(step)))
+    if sections:                                 # its state word on the closed branch, not a bare count (r03: "▾ 2")
+        said = f"{waits} wait{'s' * (waits == 1)} for you" if waits else f"{len(sections)} Sections"
+        kids.append(mmbuild.built(f"{v}/sections", f"Sections · {said}", sections))
+    return paper_map(v, kids, key=v)

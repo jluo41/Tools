@@ -127,6 +127,13 @@ class BoardViewsTest(unittest.TestCase):
         self.assertNotIn("Process</h3>", self.report["plan"])
         self.assertEqual([n for n, _ in bars(self.work["work-plan"]) if n], ["Process", "Results"])
 
+    def test_work_process_never_repeats_the_interaction(self):
+        # JL 261105: the open forms show once, in the view's last section 🙋 Interaction; Process keeps only the
+        # parts' own open points, and only when there are some
+        for key, html in self.work.items():
+            self.assertNotIn("Decisions waiting for you", html, key)
+            self.assertNotIn("Nothing waits on you", html, key)
+
     def test_work_results_are_report_results(self):
         for key in self.report:
             page = re.split(r"<hr class=pb-rule>|<script>", self.report[key], maxsplit=1)[0]
@@ -162,8 +169,8 @@ class BoardViewsTest(unittest.TestCase):
         # JL 261104: "why the mind map is not at the top and should be embedded, and where are the studios here?"
         idea = views["idea"][1]()
         self.assertIn("🎨 Studio<", idea)                                # JL 261105: "idea for multiple direction, story for one direction"
-        self.assertNotIn("🧭 Direction</h3>", idea)
-        self.assertLess(story.index("🎨 Studio<"), story.index("🧭 Direction</h3>"))
+        self.assertNotIn("🧭 Direction<span", idea)                     # a bar's title, then its state word (261106)
+        self.assertLess(story.index("🎨 Studio<"), story.index("🧭 Direction<span"))
         self.assertIn("Open in Studio", story)
         self.assertNotIn("Open the mind map", story)
         self.assertEqual(story.count("<hr class=pb-rule>"), 0)          # nothing left to put under a rule
@@ -171,21 +178,21 @@ class BoardViewsTest(unittest.TestCase):
         self.assertNotIn("Hand-off", story)
         plan = views["plan"][1]()
         self.assertEqual([x for x in re.findall(r"<h3 class=fd-h>(\d+) · ([^<]+)<", plan)][:2], [("1", "🗄️ Data flow"), ("2", "📝 Paper flow")])
-        self.assertIn("Roadmaps</h3>", plan)
+        self.assertIn("Roadmaps<span", plan)
         work = board_views.board_work_views(self.b, self.root, md)
         page = work["work-plan"][1]()
         self.assertIn("🧭 Plan<", page)
         self.assertIn("🗓️ Next steps to the send<", page)
         self.assertIn("⚙️ Runs to do<", page)
-        self.assertIn("🧰 Skills that do it<", page)
+        self.assertNotIn("🧰 Skills that do it<", page)                 # the rail's Skills section holds them (261105)
         self.assertIn("&lt;an open idea&gt;", work["work-idea"][1]())
         opens = work["work-story"][1]()
         self.assertIn("&lt;an open story point&gt;", opens)
-        self.assertEqual(opens.count("🚧 Open<"), 1)
+        self.assertEqual(opens.count("📌 Open points<"), 1)               # one name for open items (261105)
 
     def test_related_is_the_last_numbered_section_of_idea_and_story(self):
         # JL 261104: "could you put the related section to be here?"; one card per `bears on`, a kept PDF opens that PDF
-        self.assertNotIn("Related</h3>", self.report["story"])         # no related/ folder, no section
+        self.assertNotIn("📚 Related<", self.report["story"])           # no related/ folder, no section
         rel = self.b / "related"
         (rel / "papers").mkdir(parents=True)
         (rel / "papers" / "kept.pdf").write_bytes(b"%PDF-1.4")
@@ -197,7 +204,7 @@ class BoardViewsTest(unittest.TestCase):
             "| paper | 2023 | Arxiv 2023 | https://arxiv.org/abs/2304.08593 | Closest: type two |  |  |  |\n", encoding="utf-8")
         md = lambda text, base: text
         story = dict(board_views.board_report_views(self.b, self.root, md))["story"][1]()
-        nums = [int(x) for x in re.findall(r"(\d+) · [^<]*</h3>", story.split("<hr class=pb-rule>")[0])]
+        nums = [int(x) for x in re.findall(r"<h3 class=fd-h>(\d+) · ", story.split("<hr class=pb-rule>")[0])]
         self.assertIn(f"{max(nums)} · 📚 Related", story)
         for head in ("Closest: type one", "Closest: type two", "Shared background: type three"):
             self.assertIn(head, story)
@@ -233,7 +240,8 @@ class BoardViewsTest(unittest.TestCase):
             f"# Story asks\n\nfor: {self.b.name}-s02:paper @ story\n\n## Q1 · First\n\nWhy.\n\n**Which one?**\n\n- [ ] A · Aa\n- [ ] B · Bb\n\n"
             "## Q2 · Second\n\nWhy.\n\n**Which two?**\n\n- [ ] A · Cc\n- [ ] B · Dd\n", encoding="utf-8")
         page = view()
-        self.assertIn("7 · 🙋 Interaction · waiting for you", page)
+        # what waits is the bar's state word, and its first question shows under the closed bar (JL 261106)
+        self.assertIn('7 · 🙋 Interaction<span class="word you">2 wait for you</span></h3><p class=fd-wait>🙋 Story asks: Q1 · First</p>', page)
         self.assertIn('data-ixq="Q1"><b>Q1 · First</b>', page)
         self.assertIn('data-ixq="Q2"><b>Q2 · Second</b>', page)
         self.assertEqual(page.count("class=pb-ixframe title"), 1)       # one form, one Copy
@@ -243,6 +251,7 @@ class BoardViewsTest(unittest.TestCase):
             "# Story asks · answers\n\n## Q1 · First\n\n- [ ] A · Aa\n- [x] B · Bb\n\n## Q2 · Second\n\nAnswer: my own decision.\n", encoding="utf-8")
         page = view()
         self.assertNotIn("waiting for you", page)
+        self.assertIn("7 · 🙋 Interaction<span class=word>answered</span></h3><style>", page)
         self.assertIn(">B · Bb<", page)
         self.assertIn(">my own decision<", page)
 
@@ -257,9 +266,9 @@ class BoardViewsTest(unittest.TestCase):
         idea_dir.mkdir()
         (idea_dir / "s01-ideation.md").write_text(IDEA, encoding="utf-8")
         views = board_views.board_report_views(self.b, self.root, md)
-        self.assertIn("🎓 Theory</h3>", views["idea"][1]())
+        self.assertIn("🎓 Theory<span class=word>not written yet</span>", views["idea"][1]())
         story = views["story"][1]()
-        self.assertIn("🎓 Theory</h3>", story)
+        self.assertIn("🎓 Theory<span class=word>not written yet</span>", story)
         self.assertIn("No theory written yet", story)
         self.assertNotIn("information systems journal", story)          # the fixture's journal is no IS journal
         (self.b / "board.md").write_text("# Paper-X\n\nboard-kind: paper-board\nvenue: MISQ\n", encoding="utf-8")
@@ -283,7 +292,7 @@ class BoardViewsTest(unittest.TestCase):
 
     def test_phone_rules_come_after_the_base_rules(self):
         css = ui_parts.PB_CSS
-        self.assertLess(css.index(".pb-side{display:grid"), css.index(".pb-side{grid-template-columns:1fr}"))
+        self.assertLess(css.index(".pb-side{display:grid"), css.index(".pb-side{grid-template-columns:minmax(0,1fr)}"))
         self.assertLess(css.index(".pb-flow{position:relative"), css.index(".pb-flow{grid-template-columns:1fr}"))
 
 class AddressLinksTest(unittest.TestCase):

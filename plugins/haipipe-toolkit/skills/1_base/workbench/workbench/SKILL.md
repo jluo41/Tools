@@ -2,7 +2,7 @@
 name: workbench
 description: "Open a workbench (/wb): no input opens the SPACE Home, a Project, Theme, Block, Job or Task path its focus page; plain words find the place first (cli/wb.py checks the link on the running server). Also the WORKBENCH contract (STORAGE, SURFACE, WRITER, BOUNDARY; ref/roster.md). Trigger: wb, open the workbench, open a project, open a block, workbench link, workbench roster, /wb, /workbench."
 metadata:
-  version: "1.30.0"
+  version: "1.34.0"
   last_updated: "2026-10-30"
   aliases: [wb]
 ---

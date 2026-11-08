@@ -63,6 +63,8 @@ def data(release: dict, job: dict | None, task_href, root: Path | None = None, p
         state = str(tf.get("answer-status") or ("not in a Job" if not t else "—")).lower()
         if face.get("retired"):
             state = "retired"
+        elif str(tf.get("check") or "").startswith("↩"):          # a returned page is not written (the one count)
+            state = "returned"
         task = ""
         if t and root:
             try:
@@ -97,7 +99,7 @@ CSS = """
 .qc-svg .card text{font:12px system-ui;fill:#1e1e1e;pointer-events:none}.qc-svg .card .qid{font-weight:700}
 .qc-svg .card{cursor:pointer}.qc-svg .card rect,.qc-svg .card text{transition:fill .12s,stroke .12s}
 .qc-svg .card.s-written rect,.qc-svg .card.s-answered rect,.qc-svg .card.s-checked rect{fill:#e9f6ec}
-.qc-svg .card.s-drafted rect{fill:#fff6db}.qc-svg .card.s-retired rect{fill:#eee;stroke-dasharray:4 3}
+.qc-svg .card.s-drafted rect,.qc-svg .card.s-returned rect{fill:#fff6db}.qc-svg .card.s-retired rect{fill:#eee;stroke-dasharray:4 3}
 .qc-svg .card.s-retired text{fill:#8a8f98}
 .qc-svg path.e{fill:none;stroke:#9aa1ab;stroke-width:1;opacity:.35;transition:opacity .12s}
 /* lit: the rest fades but stays opaque, so a lit line passes behind a card, never through its words */
@@ -138,7 +140,7 @@ function draw(){
   // the Executive row
   var xs=keep('X'), per=Math.max(1,Math.floor((W-24+GX)/(cw+GX))), xr=Math.ceil(xs.length/per)||0, y=TOP;
   if(xs.length){var h=26+xr*(ch+GY)+4;el('rect',{x:4,y:y,width:W-8,height:h,rx:10,'class':'band bandx'},bandg);
-    var t=el('text',{x:16,y:y+18,'class':'bandt'},bandg);t.textContent='EXECUTIVE · '+xs.length+' · what a leader reads first';
+    var t=el('text',{x:16,y:y+18,'class':'bandt'},bandg);t.textContent='EXECUTIVE';
     xs.forEach(function(n,i){card(n,14+(i%per)*(cw+GX),y+26+Math.floor(i/per)*(ch+GY),cw,ch);});
     y+=h+22;}
   var colTop=y, bottom=y;
@@ -148,7 +150,7 @@ function draw(){
       return ys.length?ys.reduce(function(s,v){return s+v;},0)/ys.length:1e5+parseInt(n.id.slice(1));}return k(a)-k(b);});
     var h=28+ns.length*(ch+GY)+4;
     el('rect',{x:x,y:colTop,width:colW,height:Math.max(h,60),rx:10,'class':'band'},bandg);
-    var t=el('text',{x:x+10,y:colTop+18,'class':'bandt'},bandg);t.textContent=(names[lv]||lv).toUpperCase()+' · '+ns.length;
+    var t=el('text',{x:x+10,y:colTop+18,'class':'bandt'},bandg);t.textContent=(names[lv]||lv).toUpperCase();
     ns.forEach(function(n,i){card(n,x+10,colTop+28+i*(ch+GY),cw,ch);});
     bottom=Math.max(bottom,colTop+Math.max(h,60));
     if(c<3){var ax=x+colW+GX2/2;el('path',{d:'M'+(ax-7)+','+(colTop+12)+' l7,6 l-7,6','class':'flow'},bandg);}
@@ -194,8 +196,8 @@ function tip(n,g){if(!n){tipEl.style.display='none';return;}
 function chips(ids,cls){return ids.length?'<div class=chips>'+ids.map(function(i){return '<a class='+cls+' data-go="'+i+'" title="'+esc(by[i].q)+'">'+i+'</a>';}).join('')+'</div>':'<p class=mut>none</p>';}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 function panel(id){
-  if(!id){side.innerHTML='<h4>Click a question to read it here</h4><p class=mut>Hover lights its chain. Green: what it rests on, all the way down. Orange: what uses it. Click to pin; click the chips to walk.'
-    +(D.work?' Pinned, a question can be asked about or followed up.':'')+'</p><p class=mut>'+D.nodes.length+' questions · '+D.edges.length+' links</p>';return;}
+  if(!id){side.innerHTML='<h4 title="'+esc('Hover lights its chain: green what it rests on, orange what uses it. Click to pin; click the chips to walk.'
+    +(D.work?' Pinned, a question can be asked about or followed up.':''))+'">Click a question to read it here</h4>';return;}   // its help on hover, never a grey paragraph (round 1)
   var n=by[id];
   side.innerHTML='<div class=qc-two><div><h4>'+esc(n.id)+' · '+esc(n.name)+'</h4><p style="margin:2px 0">'+esc(n.q)+'</p>'
     +(n.answer?'<p class=qc-ans>'+esc(n.answer)+'</p>':(n.ask?'<p class=mut style="margin:2px 0">'+esc(n.ask)+'</p>':''))

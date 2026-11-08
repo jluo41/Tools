@@ -1,21 +1,25 @@
-"""Labeling's single-section pages, backed by the existing presenters and writers.
+"""Labeling's focus pages, backed by the existing presenters and writers.
 
 No parallel workflow state: next actions come from the preparation engine and
 the labeling view model. The focus layout changes presentation, never receipts.
 
-A building Task (its face says `task-type: labeling-building`) has the focus page every level shares instead
-(focus_page.page_shell, the same path, rails and goal-line; b15 j01 t03 s57 and s58): Report and Work each list
+Every labeling Block, Job and Task of a known kind has the focus page every level shares (focus_page.page_shell, the
+same path, rails and goal-line; task_shell below): a Block or Job holds MindMap · Status · Findings (level_page; b15
+review round 2), an items Task Data · Items · Embedding (items_page, task_labeling.items_view), a meaning or an
+expression Task its steps (labeling_steps.page), each view ending in 🙋 Interaction with its own forms. A building Task
+(its face says `task-type: labeling-building`; b15 j01 t03 s57 and s58): Report and Work each list
 Frame · Decide · Changes · Staging · Release · Runs, and open on Decide while a decision report waits for the person,
 else on Frame. Decide is decision_report_view.py's; the other four steps show what they will hold, until they are
 built; Runs lists the Task's Runs. Studio, Interactions, Delivery, Related, Timeline and Files are the base page's.
-Every other labeling page keeps the single-section design below.
+Today's one labeling Page (building and scanning at once) keeps the single-section design below.
 """
 from __future__ import annotations
 
 import re
 from pathlib import Path
 
-from live import decision_report_view as DR, focus_page as F, frame, labeling_theme as T, task_labeling as TL
+from live import decision_report_view as DR, focus_page as F, frame, interaction_section as IX, labeling_theme as T
+from live import task_labeling as TL
 
 ASSETS = Path(__file__).parent / "focus-assets"
 ITEM_VIEWS = {"data": "1 · Data", "items": "2 · Items", "embedding": "3 · Embedding"}
@@ -80,6 +84,8 @@ def _two_loop_next(ts):
             for r in sorted((t / "runs").iterdir()) if r.is_dir() and re.match(r"^r\d+_", r.name)]
     for t, r, state in runs:
         if state == "waiting" and "_collect_" in r.name:
+            if T.types_of(t) == ("items",):                # the items Task names its own step, never Preferences
+                return (t, *_items_form_next(t, r))
             return t, "runs", f"Answer {r.name} on its Preferences step, then press Copy prompt.", ""
     answered = any("_collect_report_" in r.name and state == "done" for _, r, state in runs)
     for t, r, state in runs:
@@ -89,6 +95,18 @@ def _two_loop_next(ts):
     if meaning and not answered:
         return meaning, "goal", "Paste the meaning Task's Report prompt into its chat session.", ""
     return _signs_next(meaning, next((t for t in ts if "expression" in T.types_of(t)), None))
+
+
+def _items_form_next(task: Path, form: Path) -> tuple:
+    """(view, words, note) for a form that waits in an items Task: it asks what the next step's sign rests on, so the
+    words name that step (2 · Items: the recipe and its Sign; 3 · Embedding: the build and its Agree), never the
+    meaning Task's Preferences step (261106)."""
+    card = form / "run.yaml"
+    feeds = re.findall(r"(?m)^\s*-\s*(r\d+_\S+)", card.read_text(encoding="utf-8", errors="ignore")) if card.is_file() else []
+    embed = any(TL._op(task, task / "runs" / f) == "embed" for f in feeds if (task / "runs" / f).is_dir())
+    key, what, verb = ("embedding", "build", "Agree") if embed else ("items", "recipe", "Sign")
+    title = TL._form_title(form)
+    return key, (f"Answer {title} ({form.name}), then read the {what} in {ITEM_VIEWS[key]} and press {verb}."), ""
 
 
 def _signs_next(meaning, expression):
@@ -298,6 +316,9 @@ def content(folder, root, section, data, group=""):
         return reports(folder, root)
     if section == "studio":
         return F.studio_html(F.topic_rows(folder, root), root, '')
+    if section == "skills":                              # the rail's Skills section, as on every page (261106)
+        return F.page_skills(folder, root, "labeling", frame.level_of(folder), False, bool(F.topic_rows(folder, root)),
+                             bool(F.interactions(folder, root)), False)
     if section == "timeline":
         events = F.log_events(data['sections'].get('log', ''))
         return '<ol class="focus-timeline">' + ''.join(
@@ -314,7 +335,7 @@ def is_building(folder) -> bool:
 def base_rail(folder, root) -> list:
     """The right rail exactly as focus_page.render builds it for a Task: (key, name, the words under its name)."""
     inbox = F.interactions(folder, root)
-    delivery = F.paper_delivery(folder, root) + F.delivery_html(folder, root)
+    delivery = F.paper_delivery(folder, root) + F.delivery_html(folder, root) or releases(folder, root)
     rail = [("report", "Report"), ("work", "Work")]
     if F.topic_rows(folder, root):
         rail.append(("studio", "Studio"))
@@ -323,15 +344,19 @@ def base_rail(folder, root) -> list:
         rail.append(("related", "Related"))
     if F.timeline_events(folder, root):
         rail.append(("timeline", "Timeline"))
+    rail.append(("skills", "Skills"))                   # the skills that work on it (JL 261105), as focus_page.render
     rail.append(("files", "Files"))
     from live import labeling_steps as S                 # a meaning or expression Task's Work holds its steps (s58-D02)
-    words = {"report": "read the results and check the progress", "work": "its steps" if S.kind(folder) else "its Runs",
+    level = frame.level_of(folder)
+    work = ("its Jobs" if level == "Block" else "its Tasks" if level == "Job"
+            else "its steps" if S.kind(folder) or is_items(folder) else "its Runs")
+    words = {"report": "read the results and check the progress", "work": work,
              "studio": "drawings, mind maps, slides",
              "interactions": ("🙋 waits on you" if any(r["state"] == "waiting" for r in inbox)
                               else "nothing waits on you" if inbox else "nothing asked yet"),
              "delivery": "what it has handed over" if delivery else "nothing handed over yet",
              "related": "what came in: meetings, papers, emails", "timeline": "what happened when",
-             "files": "the folder itself"}
+             "files": "the folder itself", "skills": "the skills that work on it"}
     return [(key, name, words[key]) for key, name in rail]
 
 
@@ -348,7 +373,8 @@ def building_runs(folder, root) -> str:
                     f'<span class="d">{frame.esc(row["type"])}</span><span class="w">{frame.esc(state)}</span>'
                     + (frame.pop(frame._file_url(card, root), row["run"], "Open").replace("<a ", '<a class="dec-btn" ', 1)
                        if card.is_file() and F.inside(card, root) else "") + "</div>")
-    return DR.section(1, BUILD_VIEWS[-1][3], "".join(rows) or DR.line("No Runs yet."))
+    return DR.section(1, BUILD_VIEWS[-1][3], "".join(rows) or DR.line("No Runs yet."),
+                      word=f"{len(rows)} Run{'' if len(rows) == 1 else 's'}" if rows else "nothing yet")
 
 
 def building_view(folder, root, section, key) -> str:
@@ -362,7 +388,8 @@ def building_view(folder, root, section, key) -> str:
         body = DR.wrap(building_runs(folder, root))
     else:                                         # honest: what the view will show, no number made up
         body = DR.wrap(DR.group(DR.RESULTS if report else DR.PROCESS)
-                       + DR.section(1, first, DR.big("Nothing to show yet") + DR.line(f"This view will show {caption}.")))
+                       + DR.section(1, first, DR.big("Nothing to show yet") + DR.line(f"This view will show {caption}."),
+                                    word="not built yet"))
     if after and not report:
         body += DR.wrap(DR.next_link(F.page_url(folder, root, "work", after), NEXT_WORDS[after]))
     return f'<p class="view-caption">{frame.esc(caption[:1].upper() + caption[1:])}.</p>' + body
@@ -387,11 +414,12 @@ def building_page(theme, root, folder, section="", group=""):
 
 def task_shell(root, folder, section, views: dict, view: str, body: str, head_extra: str = "", tail_extra: str = "",
                words: dict | None = None):
-    """A labeling Task's focus page around one view (building, meaning, expression): the base page's path, title with
-    its section, the views of that section, the Aim, both rails; `head_extra` and `tail_extra` are the view's own
+    """A labeling page's focus page around one view (a Block, a Job, an items, building, meaning or expression Task): the
+    base page's path, title with its section, the views of that section, its goal-line, both rails; `head_extra` and `tail_extra` are the view's own
     stylesheet and script; `words` puts each view's state word on its button ({key: (word, ok | you | run)}).
     """
     rail = base_rail(folder, root)
+    level = frame.level_of(folder)
     cls = {"ok": " fd-ok", "you": " fd-you"}
     bar = ('<nav class="section-views" aria-label="Views">' + "".join(
         f'<a href="{frame.esc(F.page_url(folder, root, section, key))}"' + (' aria-current="page"' if key == view else '')
@@ -401,7 +429,7 @@ def task_shell(root, folder, section, views: dict, view: str, body: str, head_ex
         + '</a>' for key, name in views.items()) + '</nav>')
     data = F.read_face(folder, root)
     goal = data["goal"].split("\n")[0] if data["goal"] else ""
-    goal_html = (f'<div class="focus-goal"><span class="goal-word">{F.GOAL_WORD["Task"]}</span>'
+    goal_html = (f'<div class="focus-goal"><span class="goal-word">{F.GOAL_WORD.get(level, "Goal")}</span>'
                  f'{F.markdown(goal, folder, root)}</div>' if goal else '')
     source = (frame.pop(frame.reader(data["face"], root), "Source Markdown", "Open this page's Markdown")
               if data["face"] and F.inside(data["face"], root) else "")
@@ -411,14 +439,18 @@ def task_shell(root, folder, section, views: dict, view: str, body: str, head_ex
         crumbs.append(frame._link(F.page_url(cur, root), part))
     crumbs.append(f'<span aria-current="page">{frame.esc(folder.name)}</span>')
     left = []
-    for sibling in F.rail_kids(folder.parent, root):          # the Job's sNN and Tasks, this Task's own sNN under it
+    siblings = (F.rail_kids(folder.parent, root) if level in ("Job", "Task") else   # a Job's or Task's include its sNN;
+                sorted(q for q in folder.parent.iterdir() if q.is_dir() and not q.name.startswith((".", "_"))   # a
+                       and F.inside(q, root) and F.page_level(q) == F.page_level(folder)))   # Block's, the Blocks beside it
+    for sibling in siblings:                                  # the Job's sNN and Tasks, this Task's own sNN under it
         left.append(F.rail_link(F.rail_url(sibling, root), sibling.name, sibling == folder))
         if sibling == folder:
             left += [F.rail_link(F.rail_url(child, root), child.name, False, "child")
                      for child in F.rail_kids(folder, root) if F.inside(child, root)]
     right = "".join(F.rail_link(F.page_url(folder, root, key), name, key == section, "", words)
                     for key, name, words in rail)
-    page = F.page_shell(folder, root, crumbs, frame.esc(folder.name), section.title(), dict((k, w) for k, _, w in rail)[section],
+    title_html = frame.esc(folder.name).replace("_", "_<wbr>")   # a phone breaks the name at its words (round 4: "safet/y")
+    page = F.page_shell(folder, root, crumbs, title_html, section.title(), dict((k, w) for k, _, w in rail)[section],
                         bar, goal_html, body, source, left, right, [(key, name, "") for key, name, _ in rail], section)
     head, tail = page.rsplit("</head>", 1)
     page = head + head_extra + "</head>" + tail
@@ -426,15 +458,288 @@ def task_shell(root, folder, section, views: dict, view: str, body: str, head_ex
     return head + tail_extra + "</body>" + tail
 
 
+# ── the shared shape for a labeling Block, Job and items Task (round 2 of the b15 review: the Job page and the items
+# Task kept the older single-section layout; the Block's Work was one Progress view). Report and Work hold the same
+# views, drawn by the same code: Report the results, Work ⚙️ Process then 📊 Results; 🙋 Interaction closes every view
+# with that view's own forms; the rail is the base page's (Report · Work · Studio · Interactions · Delivery · Skills ·
+# Files); every other rail section is focus_page.render's. ──────────────────────────────────────────────────────────
+def _assets() -> tuple:
+    """(head, tail): the shared bars, folds, tabs and prompt box, and the steps' look (labeling_steps.page's)."""
+    from live import focus_draft as FD
+    from live.runs_panel import PANEL_JS
+    from live.ui_parts import GROUP_CSS, PB_CSS, PB_JS
+    css = "<style>" + (ASSETS / "steps.css").read_text(encoding="utf-8") + "</style>"
+    js = "<script>" + (ASSETS / "steps.js").read_text(encoding="utf-8") + "</script>"
+    return PB_CSS + GROUP_CSS + FD.CSS + css + ITEMS_CSS, PB_JS + FD.JS + "<script>" + PANEL_JS + "</script>" + js
+
+
+# an items step's cards and its Sign, inside the shared bars (task_labeling draws them; their look was labeling.css's);
+# its prompt and tables keep the grey wash every other Task's do (round 4: this prompt was blue, its siblings' grey)
+ITEMS_CSS = """<style>.lf-items{--tab-wash:var(--soft);--mut:var(--muted);--acc:var(--accent);--fg:var(--ink)}
+.lf-items details.topic{border:1px solid var(--line);border-radius:7px;margin:0 0 8px;background:var(--paper)}
+.lf-items details.topic>summary{cursor:pointer;padding:7px 12px;font-size:14px}.lf-items details.topic>.work-body{padding:4px 12px 10px}
+.lf-items .st{font-size:12.5px;margin-left:8px;color:var(--accent)}.lf-items .st-ok{color:#2b8a3e}.lf-items .st-warn{color:light-dark(#b35c00,#ffc078)}
+.lf-items button,.lf-items .chip{display:inline-block;border:1px solid var(--line);padding:4px 11px;border-radius:5px;background:var(--paper);font:inherit;font-size:13px;color:var(--ink);cursor:pointer;text-decoration:none}
+.lf-items input{font:inherit;border:1px solid var(--line);border-radius:5px;padding:4px 8px;background:var(--paper);color:var(--ink)}
+.lf-items .space-empty{color:var(--muted);margin:4px 0}.lf-items h4{margin:8px 0 4px;font-size:13.5px}
+.lf-items code{overflow-wrap:anywhere}.lf-items pre{white-space:pre-wrap;overflow-wrap:anywhere}.lf-items table{max-width:100%}
+.lf-items .pb-kv small{color:var(--muted)}
+@media(max-width:600px){.lf-items input{font-size:16px}}</style>"""
+
+LEVEL_VIEWS = (("mindmap", "MindMap"), ("standing", "Status"), ("findings", "Findings"))
+LEVEL_CAPTIONS = {"standing": {"Block": "Where its Jobs and their Tasks stand.", "Job": "Where its Tasks and Runs stand."},
+                  "findings": "What it has released: the final labels, and the rules they follow."}
+# an older link to a labeling Job (the single-section design's keys) still opens the nearest place
+OLD_LEVEL = {"goal": ("report", ""), "tasks": ("work", "standing"), "reports": ("report", "findings"),
+             "outputs": ("delivery", ""), "folders": ("files", ""), "progress": ("work", "standing"),
+             "overview": ("report", "")}
+
+
+def _jobs_of(folder: Path, root: Path) -> list:
+    return [folder] if frame.level_of(folder) == "Job" else [j for j in frame.children(folder, "Block") if F.inside(j, root)]
+
+
+def findings_html(folder: Path, root: Path) -> str:
+    """Findings at a Block or a Job: what each Job has released (its expression Task's newest release: the final
+    labels, signed or not) and the rules they follow (its meaning Task's approved guideline). Numbered closed bars,
+    each with its state word; nothing made up where nothing is released."""
+    from live import labeling_steps as S
+    from live.ui_parts import _numbered, _section
+    if S.MV is None:
+        return ""
+    jobs = _jobs_of(folder, root)
+    many = len(jobs) > 1                    # a Block of one Job needs no Job name on its bars (round 4: "j01_…:" stood in
+    out = []                                # for a Job tab); with more, each bar names its Job in a few words
+    for job in jobs:
+        name = f"{F.job_short(job, jobs, root)}: " if many else ""
+        tasks_ = [t for t in frame.children(job, "Job") if F.inside(t, root)]
+        expression = next((t for t in tasks_ if S.kind(t) == "expression"), None)
+        release = (S._xruns(expression)["release"] or [None])[-1] if expression is not None else None
+        finals = release / "result" / "final_labels.jsonl" if release is not None else None
+        labels = S._final_labels(finals, root, bool(S.MV.release_sign(release))) if finals is not None else ""
+        if labels:
+            out.append(labels.replace("🏷 Final labels", f"🏷 {name}Final labels, release {S._round(release)}", 1))
+        else:
+            out.append(_section(f"🏷 {name}Final labels", S._empty("Nothing released yet: an expression Task's signed "
+                                                                  "release shows its final labels here."), "nothing yet"))
+        got = S.MV.approved_meaning(job)
+        if got:
+            meaning, version, _ = got
+            out.append(_section(f"🧠 {name}The rules they follow", S._maps(meaning, root, on=version, sign=False),
+                                f"{version} approved"))
+    return _numbered("".join(out))
+
+
+def _task_words(task: Path, root: Path, jobs: list) -> str:
+    """A Task named for a row: its title ("Example chats as items"), after its Job's few words when a Block has more
+    than one Job."""
+    words = F.page_title(task)
+    return f"{F.job_short(task.parent, jobs, root)} › {words}" if len(jobs) > 1 and task.parent in jobs else words
+
+
+def next_steps(folder: Path, root: Path, level: str, inbox: list) -> str:
+    """Work › Status's Process at a labeling Block or Job: 🚧 Next steps. Every form that waits comes first, each row
+    opening the form itself in the pop-out (round 4: the release choices were missing, and the row opened a Run card
+    that said only "waiting"); then each Task that is not done and has no form waiting, with its next Run. The first
+    waiting row stands under the closed bar (settled 2)."""
+    jobs = _jobs_of(folder, root)
+    li = lambda name, url, pop, note: (f'<li><a href="{frame.esc(url)}" data-pop="{frame.esc(pop)}">{frame.esc(name)}</a>'
+                                       f'<small>{frame.esc(note)}</small></li>')
+    rows, waiting, held = [], [], set()
+    for r in inbox:
+        if r.get("state") != "waiting" or r.get("form") is None or not F.inside(r["form"], root):
+            continue
+        page = Path(r["page"])
+        held.add(page)
+        words = (f"{_task_words(page, root, jobs)} › " if frame.level_of(page) == "Task" else "") + r["title"]
+        rows.append(li(words, frame._file_url(r["form"], root), r["run"], "waits for you"))
+        waiting.append(words)
+    for job in jobs:
+        for t in (t for t in frame.children(job, "Job") if F.inside(t, root) and t not in held):
+            if F.state_kind(F.state_label(F.read_face(t, root)["state"])) == "✅ done":
+                continue
+            nxt = next(((run, mark) for run, mark, _ in F.run_rows(t) if F.mark_word(mark) != "done"), None)
+            if nxt is not None:
+                rows.append(li(f"{_task_words(t, root, jobs)} › {nxt[0].name}", F.run_url(nxt[0], root),
+                               f"{t.name} · {nxt[0].name}", F.mark_word(nxt[1])))
+    if not rows:
+        return ""
+    word = f"{len(waiting)} wait for you" if waiting else f"{len(rows)} to do"
+    return F.band_sec(1, "🚧 Next steps", word, '<ul class=wk-rows>' + "".join(rows) + '</ul>',
+                      f"🙋 {waiting[0]}" if waiting else "")
+
+
+def _work_views(report: dict, folder: Path, root: Path, level: str, questions: list, inbox: list) -> dict:
+    """Work's views, the Report's own drawn by the same code under ⚙️ Process then 📊 Results (focus_page.work_views'
+    shape); Status's Process is labeling's Next steps (next_steps above)."""
+    def view(key, body):
+        def build():
+            process = (next_steps(folder, root, level, inbox) if key == "standing"
+                       else F.work_process(folder, root, level, key, questions, inbox))
+            return (F.BAND_CSS + F.FINDINGS_CSS + (f'<h3 class=wk-band>⚙️ Process</h3>{process}' if process else '')
+                    + f'<h3 class=wk-band>📊 Results</h3>{body()}')
+        return build
+    return {key: (name, view(key, body)) for key, (name, body) in report.items()}
+
+
+def status_html(folder: Path, root: Path, level: str, topics: list, outputs: bool = False) -> str:
+    """Status, focus_page's, with each Job's row on a Block saying how many of its Tasks are done, "1 of 3 done", the
+    words its own page's Tasks bar says (round 4: the Block said "partly · 3 Tasks · 67%" where the Job said "2 of 3
+    done"). focus_page.job_progress words every Block's rows; until it says the same, a labeling Block's are reworded."""
+    html = F.status_now_html(folder, root, level, topics, outputs)
+    if level != "Block":
+        return html
+    for job in _jobs_of(folder, root):
+        tasks_ = [t for t in frame.children(job, "Job") if F.inside(t, root)]
+        done = sum(F.state_kind(F.state_label(F.read_face(t, root)["state"])) == "✅ done" for t in tasks_)
+        at = html.find(f'data-pop="{frame.esc(job.name)}"')
+        end = html.find("</summary>", at) if at >= 0 else -1
+        m = re.compile(r"<small>[^<]*</small>").search(html, at, end) if end > at else None
+        if m:                                                # its own row's words only, in its closed bar
+            html = html[:m.start()] + f"<small>{done} of {len(tasks_)} done</small>" + html[m.end():]
+    return html
+
+
+def releases(folder: Path, root: Path) -> list:
+    """[(expression Task, release Run, its sign)] at this page or below: each round a person signed for release, the
+    thing a labeling Job hands over (round 4: Delivery said "nothing handed over yet" beside a signed release)."""
+    from live import labeling_steps as S
+    if S.MV is None:
+        return []
+    out = []
+    for page in F.rollup(folder):
+        if frame.level_of(page) == "Task" and S.kind(page) == "expression" and F.inside(page, root):
+            for run in S._xruns(page)["release"]:
+                signed = S.MV.release_sign(run)
+                if signed and S.MV.state(run) == "done":
+                    out.append((page, run, signed))
+    return out
+
+
+def delivery_html(folder: Path, root: Path) -> str:
+    """Delivery at a labeling page: each signed release, its final labels and where they came from, then whatever the
+    Block's delivery/ holds (focus_page.delivery_html). Numbered closed bars, each with its state word."""
+    from live import labeling_steps as S
+    from live.ui_parts import _kv, _numbered, _section
+    jobs = _jobs_of(folder, root) if frame.level_of(folder) in ("Block", "Job") else []
+    out = []
+    for task, run, signed in releases(folder, root):
+        finals = run / "result" / "final_labels.jsonl"
+        rows = []
+        if finals.is_file():
+            import json
+            rows = [json.loads(ln) for ln in finals.read_text(encoding="utf-8").splitlines() if ln.strip()]
+        tally = " · ".join(f"{sum(r.get('label') == w for r in rows)} {w}" for w in sorted({str(r.get("label")) for r in rows}))
+        got = S.MV.approved_meaning(task.parent)
+        where = f"{_task_words(task, root, jobs)} › " if len(jobs) > 1 else ""
+        body = _kv([("labels", frame.esc(f"{len(rows)} final labels" + (f": {tally}" if tally else ""))),
+                    ("the file", S._open(run / "result" / "final_labels.md", root, "Open the final labels")),
+                    ("rules", frame.esc(f"{got[1]}, approved {got[2]['at']}") if got else "—"),
+                    ("signed", frame.esc(signed.get("at", "") or "yes")),
+                    ("made by", f'<a data-pop="{frame.esc(run.name)}" href="{frame.esc(F.run_url(run, root))}">'
+                                f'<code>{frame.esc(run.name)}</code></a>')])
+        out.append(_section(f"🏷 {where}Final labels, release {S._round(run)}", body, "released"))
+    base = F.delivery_html(folder, root)
+    if base:
+        out.append(_section("📁 The Block's delivery/", base, "handed over"))
+    if not out:
+        return ""
+    from live.ui_parts import PB_CSS
+    return PB_CSS + _numbered("".join(out))
+
+
+def delivery_page(theme, root, folder, group=""):
+    """A labeling page's Delivery: its releases (delivery_html), in the page's own shell; the base page's when there is
+    none to show."""
+    body = delivery_html(folder, root)
+    if not body:
+        return F.render(theme, root, folder, "delivery", group)
+    head, tail = _assets()
+    return task_shell(root, folder, "delivery", {"overview": "Deliveries"}, "overview",
+                      '<p class="view-caption">What it hands over: each signed release and its final labels.</p>'
+                      f'<div class=ls-view>{body}</div>', head, tail)
+
+
+def level_forms(folder: Path, view: str, inbox: list) -> list:
+    """A view's own forms (settled 3): the page's own under MindMap, a form about a release (`_collect_release…`)
+    under Findings beside the release it is about, every other form below the page under Status."""
+    def home(r) -> str:
+        if Path(r["page"]) == folder:
+            return "mindmap"
+        return "findings" if "_collect_release" in r["run"] else "standing"
+    return [r for r in inbox if home(r) == view]
+
+
+def level_page(theme, root, folder, section="", group=""):
+    """A labeling Block's or Job's focus page: MindMap · Status · Findings in Report and in Work (see above)."""
+    level = frame.level_of(folder)
+    if section in OLD_LEVEL:
+        section, group = OLD_LEVEL[section][0], OLD_LEVEL[section][1] or group
+    rail = base_rail(folder, root)
+    if section == "delivery":
+        return delivery_page(theme, root, folder, group)
+    if section in {k for k, _, _ in rail} - set(OWN_SECTIONS):
+        return F.render(theme, root, folder, section, group)
+    section = section if section in OWN_SECTIONS else ("report" if level == "Block" else "work")
+    data = F.read_face(folder, root)
+    questions, _ = F.owned_register(data, root, "Questions", "questions")
+    topics, inbox = F.topic_rows(folder, root), F.interactions(folder, root)
+    report = {"mindmap": ("MindMap", lambda: F.parts_mindmap(folder, root)),
+              "standing": ("Status", lambda: status_html(folder, root, level, topics, outputs=section == "work")),
+              "findings": ("Findings", lambda: findings_html(folder, root))}
+    views = report if section == "report" else _work_views(report, folder, root, level, questions, inbox)
+    group = group.removeprefix("work-")
+    view = group if group in views else ("mindmap" if section == "report" else "standing")
+    body = views[view][1]()
+    caption = LEVEL_CAPTIONS.get(view, F.VIEW_WORDS.get(view, ""))
+    caption = caption.get(level, "") if isinstance(caption, dict) else caption
+    body += IX.view_section(level_forms(folder, view, inbox), root, IX.next_number(body),
+                            lambda r: F.interaction_where(r, folder, root))
+    head, tail = _assets()
+    return task_shell(root, folder, section, {k: n for k, n in LEVEL_VIEWS}, view,
+                      (f'<p class="view-caption">{frame.esc(caption)}</p>' if caption else "") + body, head, tail)
+
+
+ITEMS_OLD = {"goal": ("work", ""), "runs": ("work", ""), "reports": ("report", ""), "outputs": ("delivery", ""),
+             "folders": ("files", ""), "context": ("report", ""), "studio-all": ("studio", "")}
+
+
+def is_items(folder) -> bool:
+    return frame.level_of(folder) == "Task" and T.types_of(folder) == ("items",)
+
+
+def items_page(theme, root, folder, section="", group=""):
+    """An items Task's focus page: Data · Items · Embedding in Report and in Work (task_labeling.items_view)."""
+    views = {key: name for key, name, _ in TL.ITEM_VIEWS}
+    if section in ITEMS_OLD:
+        section, group = ITEMS_OLD[section][0], ITEMS_OLD[section][1] or group
+    elif section in views:                                   # a step named as a section: that step, in Work
+        section, group = "work", section
+    rail = base_rail(folder, root)
+    if section == "delivery":
+        return delivery_page(theme, root, folder, group)
+    if section in {k for k, _, _ in rail} - set(OWN_SECTIONS):
+        return F.render(theme, root, folder, section, group)
+    section = section if section in OWN_SECTIONS else "work"
+    view = group if group in views else TL.items_default(folder, root)
+    head, tail = _assets()
+    return task_shell(root, folder, section, views, view, TL.items_view(folder, root, section, view), head, tail,
+                      TL.items_words(folder, root))
+
+
 def render(theme, root, folder, section="", group=""):
     root, folder = Path(root).resolve(), Path(folder).resolve()
     if not F.inside(folder, root):
         raise ValueError("Folder outside root")
+    if frame.level_of(folder) in ("Block", "Job"):     # the shared shape (round 2), MindMap · Status · Findings
+        return level_page(theme, root, folder, section, group)
     if frame.level_of(folder) not in {"Job", "Task"}:
         return F.render(theme, root, folder, section, group)
     from live import labeling_steps as S                 # a 🧭 meaning or 🛠 expression Task: its steps (b15 s58)
     if S.kind(folder):
         return S.page(theme, root, folder, section, group)
+    if is_items(folder):
+        return items_page(theme, root, folder, section, group)
     if is_building(folder):
         return building_page(theme, root, folder, section, group)
     data = F.read_face(folder, root)

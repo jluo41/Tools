@@ -15,8 +15,9 @@ one function serves every question that writes that shape:
   missing   column, null_pct                        share missing per column, sorted
   share     level, share_pct                        each level's share of rows
   estimate  <x>, <..lo..>, <..hi..> (adjacent)       a forest plot per estimate with its interval (a
-                                                    zero line for a gap, gain, effect or drop): the
-                                                    shape of most Knowledge tests
+                                                    zero line for a gap, gain, effect or drop; in points,
+                                                    the plan's smallest effect shaded as ±margin; the axis
+                                                    in the question's words): most Knowledge tests
 
 A need may also declare its own figures (`figures:` in the question file, block-contract.md § The question
 file): kind line, bar, forest or heat over one of its output tables; those are drawn first, then any
@@ -312,27 +313,70 @@ def _share_lead(df):
     return [f"{len(d)} levels; the largest is {_label(r['level'])} at {r['share_pct']:.1f}%"] if r is not None else []
 
 
-def _estimate_draw(df, path, title):
+UNIT = {"_pp": "points", "_pct": "%", "_pts": "points"}
+
+
+def _axis_words(e, lo, hi, needs=None):
+    """An estimate's axis in words, from its column and the question's own words (round 1, 261106: "a worded axis,
+    never column names"): `gap_pp` -> `gap B − A, points, 95% interval` when a need names the gap `gap B - A` and its
+    uncertainty a 95% interval; else the column's words and its unit."""
+    stem, unit = e, ""
+    for suf, word in UNIT.items():
+        if e.endswith(suf):
+            stem, unit = e[: -len(suf)], word
+    words = stem.replace("_", " ").strip()
+    text = " ".join(str(n.get(k) or "") for n in (needs or {}).values() if isinstance(n, dict)
+                    for k in ("what", "measure", "uncertainty"))
+    import re
+    m = re.search(rf"\b{re.escape(words)}\s+([A-Za-z0-9]{{1,3}})\s*[-−]\s*([A-Za-z0-9]{{1,3}})\b", text)
+    if m:
+        words += f" {m.group(1)} − {m.group(2)}"
+    ci = "95% interval" if "95" in text else "interval"
+    return ", ".join(x for x in (words, unit, ci) if x)
+
+
+def _estimate_draw(df, path, title, needs=None, margin=None):
+    """A forest plot per estimate, a row its dot and interval; a centred estimate its zero line and, in points, the
+    plan's margin shaded (±`margin`: thresholds.yaml's smallest effect, the band a difference must stay inside to
+    pool). Rows tall enough to read, the axis in words (round 1, 261106)."""
     plt = _plt()
     d = _readable(df)
     d = d.dropna(subset=[_triples(d)[0][0]]) if _triples(d) else d
     if len(d) > MAX_LEVELS:
         d = d.head(MAX_LEVELS)
     labels, triples = _row_labels(d), _triples(d)
-    fig, axes = plt.subplots(1, len(triples), figsize=(4.4 * len(triples) + 1.6, 0.9 + 0.3 * max(len(d), 2)),
+    fig, axes = plt.subplots(1, len(triples), figsize=(4.8 * len(triples) + 1.8, 1.5 + 0.62 * max(len(d), 2)),
                              squeeze=False, sharey=True)
     y = list(range(len(d)))[::-1]
     for ax, (e, lo, hi) in zip(axes[0], triples):
         v, a, b = (d[c].to_numpy(float) for c in (e, lo, hi))
-        ax.errorbar(v, y, xerr=[v - a, b - v], fmt="o", color="#3e5c84", ms=4, capsize=2, lw=1)
+        if margin and _centred(e) and e.endswith("_pp"):
+            ax.axvspan(-float(margin), float(margin), color="#e7eef8", lw=0, zorder=0)
+            ax.text(float(margin), max(y) + 0.55, f" ±{float(margin):g} points", fontsize=8, color="#3e5c84",
+                    ha="right", va="bottom")
+        ax.errorbar(v, y, xerr=[v - a, b - v], fmt="o", color="#3e5c84", ms=6, capsize=4, lw=1.6, zorder=3)
         if _centred(e):
-            ax.axvline(0, color="#c0504d", lw=.8, ls="--")
-        ax.set_xlabel(f"{e}  (interval {lo} to {hi})", fontsize=8)
+            ax.axvline(0, color="#c0504d", lw=.9, ls="--", zorder=2)
+        ax.set_ylim(-0.6, max(y) + 1.0)
+        ax.set_xlabel(_axis_words(e, lo, hi, needs), fontsize=9)
         ax.grid(axis="x", color="#e4e4e7", lw=.6)
+        ax.set_axisbelow(True)
     axes[0][0].set_yticks(y)
-    axes[0][0].set_yticklabels(labels, fontsize=8)
-    fig.suptitle(title, fontsize=10, x=0.01, ha="left")
-    _save(fig, path)
+    axes[0][0].set_yticklabels(labels, fontsize=9)
+    axes[0][0].set_title(title, fontsize=10, loc="left")
+    fig._placed = False
+    _save_plain(fig, path)
+
+
+def _save_plain(fig, path):
+    """Save with the title on the axes, so no band of white sits above a short figure."""
+    import warnings
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", UserWarning)
+        fig.tight_layout()
+    fig.savefig(path, dpi=DPI, metadata={"Software": None}, bbox_inches="tight", pad_inches=0.15)
+    import matplotlib.pyplot as plt
+    plt.close(fig)
 
 
 def _estimate_lead(df):
@@ -504,9 +548,10 @@ def lead(df):
         return []
 
 
-def draw(out, needs):
+def draw(out, needs, margin=None):
     """Draw every known-shape csv a live compute need writes; return [{need, table, file, kind}].
-    `needs` is {need id: need} (run_question.live_needs). Figures land beside the tables."""
+    `needs` is {need id: need} (run_question.live_needs). Figures land beside the tables. `margin`: the plan's
+    smallest effect in points (thresholds.yaml power.smallest_effect_pp), shaded on an estimate in points."""
     out, made = Path(out), []
     for nid, n in needs.items():
         if n.get("kind") != "compute":
@@ -541,7 +586,10 @@ def draw(out, needs):
                 continue
             fig = out / f"fig_{nid}_{Path(f).stem}.png"
             try:
-                KINDS[k][0](df, fig, f"{nid} · {Path(f).stem.replace('_', ' ')}")
+                if k == "estimate":
+                    _estimate_draw(df, fig, f"{nid} · {Path(f).stem.replace('_', ' ')}", needs, margin)
+                else:
+                    KINDS[k][0](df, fig, f"{nid} · {Path(f).stem.replace('_', ' ')}")
             except Exception as e:  # noqa: BLE001 · a figure that cannot be drawn is named, the run stands
                 made.append({"need": nid, "table": f, "file": "", "kind": k, "problem": f"{type(e).__name__}: {e}"})
                 continue

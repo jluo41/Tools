@@ -25,6 +25,7 @@ sys.path.insert(0, str(HERE))
 import mmbuild as MB  # noqa: E402
 import mmhtml as MH  # noqa: E402
 import mmtree as MT  # noqa: E402
+from mmmap import UNWRITTEN  # noqa: E402
 
 
 def _load(md: Path) -> MT.MindMap:
@@ -100,7 +101,7 @@ def skeleton(topic: Path) -> Path:
         return out
     mm = MB.from_topic(topic)
     mm.root.children = [c for c in mm.root.children if c.id == "@files"]
-    mm.root.note = ["Not written yet: ask in the Studio chat to write this map from the topic's page and drawing."]
+    mm.root.note = [UNWRITTEN]   # a state, not an instruction: who writes it is haipipe-studio's to say (round 3)
     mm.meta["built"] = "from-topic ."
     MT.save(mm, out)
     render(out, mm)

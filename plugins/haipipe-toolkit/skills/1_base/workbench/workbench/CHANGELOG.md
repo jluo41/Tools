@@ -1,3 +1,128 @@
+## 1.34.0 · 2026-11-06 · every theme on one page shape
+
+- Discovery and cowork pages take the work shape (`WORK_SHAPE`): Report MindMap · Status · Findings, Work the same
+  views as ⚙️ Process then 📊 Results. A theme adds its own Findings parts before 📦 Delivery through
+  `live.<theme>_focus.parts` (`theme_parts`), and Status bars for a page the shared Status cannot read through
+  `live.<theme>_focus.status` (`theme_status`). A Job with no Tasks (a cowork Job) is known by its own face's state,
+  never "not run" (`job_progress`); `🟡 ACTIVE` reads as running.
+- A Job's and a Task's Delivery show their part of the Block's `delivery/<job>/<task>/` (`block_delivery_part`,
+  `delivery_sources`), as haipipe-delivery files it.
+- A form's `for:` may name an insight Board's, its Prototype's or a design Block's own Studio topic
+  (`Insight-X.j02-s01`, `Prototype-b91-X-s01`, `Design-X.j01-s02`; `interaction_topic`).
+- Each insight and design view's 🙋 holds only its own forms: the theme says where a form belongs
+  (`live.<theme>_focus.view_of_item`), else a child page's go to the children's view, the page's own to MindMap
+  (`view_items`). A theme's own views name their skills for the Skills rail (`live.<theme>_focus.VIEW_SKILLS`).
+- Switching Report ↔ Work keeps the open view on every page whose Work has the Report's views (`rail_view`). A face's
+  `question:` is its goal when it has none (an insight Task). A Paper Run with no `headline:` reads its Card's Readout,
+  first sentence (`run_headline`).
+- Studio is on the rail at every Block, Job and Task; with no topic it says "No Studio topic here yet." and copies the
+  prompt to add one (`studio_none`; b11 form, 261106). A theme Block's example page on another server shows a note
+  and a link, never a blank frame (`ui_view`).
+- The insight pages follow the shared rules (workbench-insight): a state word on every bar, bars closed on Report,
+  no view's own "Waits on you" section (its rows are Process steps), Work = Report's views, side tabs, MindMap at
+  every level.
+
+## 1.33.0 · 2026-11-06 · round 4: verbs on rows, maps that fit, pop-outs that draw
+
+- Work › Findings: each "Answers to write or agree" row has its verb, Agree (a proposed answer) or Write (none yet), a
+  Copy prompt for haipipe-report (`answer_verb`, `ui_parts.copy_verb`); its waiting line shows once, under Process. A
+  Status row whose Job or Task holds a waiting form has 🙋 Answer (`answer_link`); a Next steps row has Open, and the
+  bar's word says what its rows are ("1 running", `steps_word`). A Job's Status leads with its face's state line
+  (`state_lead`). Rows drop "j01", "t01" and "2 Tasks · 50%"; map labels read "Task 1", "Job 2"; "✎ drawing".
+- Maps fit their box (`FIT_MAP`): columns shrink, leaves wrap, at phone width a card's leaves hang under it; a framed
+  map (Findings › Maps, a Run's map) is as tall as the map (`FIT_FRAME_JS`). No 40 px blank over a map with no bar.
+- A Run's pop-out: result files as side tabs, a mind map drawn, a tables.json as its Values tabs, each path it reads or
+  writes a link (another Run's opens that Run's pop-out, `ref_link`); a form's Run leads with its title and state.
+- Tables and Values keep their columns and names at 390 px, in their own scroll box; `.pb-side` stacks to
+  `minmax(0,1fr)`, so a wide table never slides the page. "2 files", not "2 tables". An empty Delivery lane reads
+  "Nothing handed over yet."; no "All files" tab. Interaction footers lead with words ("Asked by … · about …"), no ids.
+- Skills: a Task's `task-type:` names its skill first (data → /haipipe-data, value → /haipipe-paper-evidence;
+  `TYPE_SKILLS`). The rail's Work reads "the same views, and what to do on each" where Work mirrors Report. A shared
+  to-do row's short id ("G0:", "T1 ·") moves to hover (`ui_parts._no_id`). The Draw page registers no service worker,
+  so no /sw.js 404 (`excalidraw_proxy.NO_SW`). Raw Values show each number as returned (board_evidence `one`).
+
+## 1.32.0 · 2026-11-06 · round 2: what came back, shown where it is read
+
+- A work Task's Status shows what its newest Run returned, drawn by one function in Report and Work
+  (`focus_page.status_now_html` → `output_sections`): 1 · 📌 its headline as the bar itself (its files inside), 🔢 Values
+  when the Run built a tables.json (the Block's Values tabs), else 🗂️ Tables (its result CSVs drawn), 🧠 Map when it has
+  result/maps, then 🧪 Runs. One Run state word everywhere: a waiting collection Run reads "waiting for you" in both
+  (`RUN_MARK`); a Run's headline is read as YAML reads it, its escapes decoded (`run_headline`). A Task's own forms sit in
+  its Status's 🙋 Interaction, beside its Runs (`view_items`).
+- A work Job's Status is the Block's numbered bars: 1 · 🧱 Tasks ("N of M done", a bar), each Task's newest headline on its
+  closed row, its figure and Runs inside (`tasks_section`). A work Job gains Findings (`job_findings`): 📌 Headlines (one
+  side tab per Task), 🔢 Values, 🧠 Maps and 📦 Delivery (the Block's sends its delivery.md names as from this Job).
+- Status keeps to the work's state: no Interaction button and no "open points wait on you" line on any row (`fold_tree`,
+  `band_board`); a Block's Status keeps its Studio topics as a numbered bar, each by its title, its folder small.
+- A work Block: Delivery › Website lists the delivered files with links (the site is embedded once, in 🌐 Service); Work ›
+  Status's Process keeps only each unfinished Job's next step (a Job's: each unfinished Task's next Run), never the rows
+  Results show; a Deliverables row with nothing to tick is one plain line with its link; question groups' bars carry ❓;
+  "What its work found" leads with each Task's title.
+- Titles first, addresses small: 🙋 Interaction's "asked by" names the page's and the topic's titles, their addresses and
+  the Run's id small (`asked_where`). The rail's Interactions bar draws its state word on the right (it ran into the
+  title); its empty line reads "Nothing asked yet."; a values cell's rows (`.fd-row`) are spaced on work pages.
+- 🙋 Interaction keeps a set that has no question cards (no built form, or a form without `## QN` cards) as one plain row
+  with its Answer or Open link (`interaction_section.interaction_section`, `plain`).
+- Mind maps: node ids from the served root (no machine path in the page), the root breaks only at its underscores, a
+  leaf wraps in its column, and at 600 px or less the tree keeps to the screen (`MAP_PHONE`, `map_html`); a framed map
+  drops its node numbers ("3.2").
+- No console errors from the host: every page head names `data:` as its icon and the host answers an icon request with
+  an empty 204; the /_excalidraw page loses its third-party analytics script, whose frame handler threw "action is not
+  defined" on every Draw pop-out (`excalidraw_proxy.ANALYTICS`).
+- Test: `test_round_two_job_and_task_show_what_came_back`; Status, Process and Interaction tests follow the new shape.
+
+## 1.31.0 · 2026-11-05 · a theme's example pages frame in any SPACE
+
+- Every closed bar shows a state word on its right, and what waits on the person shows under the closed bar (JL 261106,
+  decision 2): `ui_parts._section(title, body, word, waits)` and `_bar` draw `<span class=word>` (orange when it waits on
+  you) and `<p class=fd-wait>`; `ui_parts.todo_word`/`todo_section` read a Process step's word and waiting line from its
+  rows' pills; work bars go through `focus_page.band_sec` (`<p class=band-wait>` after the fold, hidden once opened). The
+  fold scripts (`focus_draft.JS`, `interaction_section.FOLD`) keep the waiting line outside the fold and key a bar's
+  remembered state on its title alone. Words are read from the content: Findings' Values (its tables current), Maps
+  (built date), Process steps (N of M done, N wait for you, to write, to record, pass), a draft step's Process (the
+  step's own state, its Input's missing rows, its Runs) and its cards (§1 signed, contract set, examples drawn, items
+  found, displays made, marks open, cards waiting). 🙋 Interaction's word is how many questions wait (its first one
+  under the bar) or answered, not sent yet, nothing yet; the " · waiting for you" title flag is gone. Tests:
+  `test_a_bar_carries_its_state_word_and_what_waits_shows_under_it_closed`,
+  `test_every_numbered_bar_of_the_placeholder_views_carries_a_state_word` (Paper-Example and b90, every Report and Work view).
+- Each view's 🙋 Interaction shows that view's own items (JL 261106, decision 4; `focus_page.view_items`): a paper Board's
+  view the forms about its parts (else by where they were asked), a work page's Findings the forms at its Questions'
+  work, Status the forms below the page, MindMap the page's own; a paper version, Section or evidence Job its own forms.
+  The rail's Interactions keeps everything. Test: `test_findings_holds_the_forms_its_questions_name`.
+- A paper Job's Report hook (`paper_version_report`, `paper_job_views`), its default view and `rail_view` (Report and
+  Work keep the view) now cover a paper Job as they did a paper Board (workbench-paper 0.51.0).
+- A Job's and a Task's MindMap draw what each child must find out (a Task's goal as a `finds out` leaf, a Run's `says:`),
+  never the Run tree Status shows (decided on the lean 261106; `focus_page.run_goal`). Test:
+  `test_a_job_and_a_task_map_show_what_each_child_must_find_out`.
+
+- `focus_page.ui_base`: a theme Block's `ui-block:`, `ui-job:`, `ui-task:` path is tried from the SPACE root, then from
+  each folder above the Block inside the SPACE, so a Tools blueprint's `blueprints/...` frames as `Tools/blueprints/...`
+  in a SPACE and as itself on a Tools server; `..`, absolute paths and missing pages stay "is not a page here". The paper,
+  labeling and work theme Blocks embed their Tools placeholders (haipipe-ui 0.4.5). Test:
+  `test_a_tools_blueprint_names_its_example_from_the_tools_root_in_any_space`.
+- The walks take the same side tabs as the pages, in the same order, and picking a kind in one picks it in the other
+  (JL 261105: "the walk should be left tab and right content as well, to be consistent"); a kind with no walk says so.
+- Work on a Block UI · Job UI · Task UI view says what each kind still needs (JL 261105: "we should update the work as
+  well for each tab of UI"): ⚙️ Process 🎬 Walks to record (no `walks/<level>-<folder>.html` yet) and 🔍 Review rounds
+  (the newest review file under the Block whose `page` line names the page: its mean and pass word, else "not
+  reviewed yet"), then the same Results as Report (`focus_page.ui_todo`).
+- A face may repeat `ui-block:`, `ui-job:`, `ui-task:`, one line per kind of page (JL 261105); several show as side
+  tabs in "1 · 🖥️ The pages, live" (`focus_page.ui_view`, `ui_kind`), each frame loading when its tab shows; a kind's
+  walk is `walks/<level>-<folder>.html`. The paper theme Block names five Jobs and six Tasks, the work theme two and
+  three, the labeling theme two Tasks.
+- A theme Block's Block UI · Job UI · Task UI view is numbered sections like every view (JL 261105: "why not make this
+  to be a section as well?"): 1 · 🖥️ The page, live, 2 · 🎬 The walk, then 🙋 Interaction (`focus_page.ui_sections`);
+  each starts closed and loads its frame when opened. `interaction_section.next_number` reads a band fold with more
+  than one class.
+- Right rail: **Skills** (`skills_section.py`, `focus_page.page_skills`), on every page from Project to Task.
+- From the first stage-2 reviews (261105): a Run's mark carries its word and reads `complete`, `completed` and `ok` as
+  done (finished Runs read ⬜); its headline falls back to `result/headline.txt`; a Task's Status lists its Runs as links
+  to their pop-outs; a Job's and a Task's Status caption names their own level; a band with no `bands:` name reads
+  "🧱 Jobs" (not "j0N"); "1 topic"; a Run pop-out's CSV keeps quoted commas; the empty 🙋 line is "Nothing asked yet.";
+  the Section's Runs view loads its step words' CSS.
+- A work page's Work no longer has a "🙋 Waiting on you" Process step (shown once, in the last section 🙋 Interaction),
+  and that section is numbered after the work band's folds. `interactions_html` (no caller left) is removed.
+
 ## 1.30.0 · 2026-10-30 · /wb opens the focus page
 
 - JL 261030: "is this the latest UI? Why not using the UI that we discussed previously?" `cli/wb.py` `target()`

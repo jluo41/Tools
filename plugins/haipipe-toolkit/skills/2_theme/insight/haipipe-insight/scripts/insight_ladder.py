@@ -17,7 +17,13 @@ versions and questions, the insight Board and its data versions, its Jobs and th
     python insight_ladder.py job       <board> --release p<N> --data v<M>   the next Job jNN_prototype-pN-<slug>_data-<D>vM/
     python insight_ladder.py run       <folder> <type> [<target>]          a soft Run runs/run-<type>-<target>/
     python insight_ladder.py run       <Board Task> partition <name|all>   a hard Run runs/rNN_<partition>/ (planned)
+    python insight_ladder.py goals     <Board, Prototype, Job or Task>     write each face's missing `goal:` line
     (add --dry-run to any command: print what it would make; change nothing)
+
+Every page it makes carries a `goal:` line, the one line a page's header shows under its view buttons (261106): a
+Board the dataset's purpose, a Prototype its questions, a release what it holds, a question Task (its face
+tNN_<L><NN>_<slug>.md beside question.md) and a Board Task the question's ask, a Board Job what its release × data
+version answers. `goals` backfills a face written before that line, from the same source; it writes only a missing line.
 
 Two special boards (b11 s00, JL 261007 plan C; named by their kind, JL 261008). The Prototype, `work/Prototype-<name>/`,
 holds the questions and their scripts; each of its Jobs is one version (a release), j0N_pN/, frozen once a person
@@ -179,13 +185,19 @@ def face(folder: Path) -> dict:
     return front(folder / f"{folder.name}.md")[0]
 
 
+def prototype_goal(title: str) -> str:
+    """A Prototype's goal line: its questions, in its title's words."""
+    words = (title or "the questions and their scripts").strip()
+    return f"{words[:1].upper()}{words[1:]}, one signed release at a time"
+
+
 def prototype(path: Path, serves: str, title: str, plan: Plan) -> None:
     if not PROTO_NAME.match(path.name):
         sys.exit(f"a Prototype is a special board, Prototype-<name> (or the older bNN_<topic>): {path.name}")
     if path.parent.name not in ("tasks", "work"):
         sys.exit(f"a Prototype lives in <Project>/tasks/: {path}")
     plan.write(path / "board.md", with_front(
-        {"board-kind": "prototype", "serves": serves},
+        {"board-kind": "prototype", "serves": serves, "goal": prototype_goal(title)},
         f"\n# {path.name} · {title or 'the Prototype'}\n\n"
         "The questions and their scripts, one Job per release (`jNN_pN/`), frozen once a person signs it. A Board's Job\n"
         "pins one release and one data version; a release is cut from proposals/.\n"))
@@ -209,8 +221,11 @@ def version(proto: Path, slug: str, plan: Plan) -> Path:
     rel = f"p{n}"
     path = proto / (f"j{n:02d}_{rel}_{slug}" if slug else f"j{n:02d}_{rel}")
     prev = old[-1] if old else None
+    kept = len(release(prev).get("questions") or {}) if prev else 0
+    cuts = len(front(prev / "partitions.md")[0].get("partitions") or []) if prev else 0
     plan.write(path / f"{path.name}.md", with_front(
-        {"release": rel, "state": "open", "signed": "", "from": VERSION.match(prev.name).group(2) if prev else ""},
+        {"release": rel, "state": "open", "signed": "", "from": VERSION.match(prev.name).group(2) if prev else "",
+         "goal": release_goal(n, slug.replace("-", " "), kept, cuts)},
         f"\n# AP{n} · analysis plan {n}\n\n<what this analysis plan changes, and which proposals it takes>\n"))
     rows = {}
     if prev:
@@ -233,6 +248,16 @@ def version(proto: Path, slug: str, plan: Plan) -> Path:
     plan.write(path / "release.yaml", dump_yaml({"release": rel, "questions": rows}))
     runs_readme(path, "version", plan)
     return path
+
+
+def release_goal(n: int, words: str, questions: int, cuts) -> str:
+    """A release's goal line: what it holds, in words (`Analysis plan 1, example questions: 8 questions and their
+    scripts on 5 cuts`); a release still without questions says what it will hold."""
+    head = f"Analysis plan {n}" + (f", {words}" if words else "")
+    if not questions:
+        return f"{head}: its questions and their scripts, frozen once a person signs it"
+    return (f"{head}: {questions} question{'s' if questions != 1 else ''} and their scripts"
+            + (f" on {cuts} cut{'s' if cuts != 1 else ''}" if cuts else ""))
 
 
 def _rel(target: Path, base: Path) -> str:
@@ -262,7 +287,18 @@ def _task_number(proto: Path, qid: str) -> int:
     return seen.get(qid) or (max(seen.values(), default=0) + 1)
 
 
-def question(ver: Path, qid: str, slug: str, plan: Plan) -> Path:
+def question_face(task: Path, fields: dict) -> str:
+    """A question Task's face (tNN_<L><NN>_<slug>.md beside question.md): the page's title and its goal line, the ask
+    as question.md holds it; no goal while the ask is still a placeholder (`goals` writes it once it is filled)."""
+    ask = str(fields.get("ask") or "").strip()
+    qid = str(fields.get("id") or TASK.match(task.name).group(2))
+    short = str(fields.get("question") or fields.get("name") or "").strip()
+    head = {"goal": ask} if ask and not ask.startswith("<") else {}
+    return with_front(head, f"\n# {qid} · {short if short and not short.startswith('<') else task.name.split('_', 2)[-1]}"
+                      "\n\nThe question, its needs and its agreed mark live in `question.md`; its scripts in `scripts/`.\n")
+
+
+def question(ver: Path, qid: str, slug: str, plan: Plan, ask: str = "") -> Path:
     _version_open(ver)
     m = QID.match(qid or "")
     if not m or not SLUG.match(slug or ""):
@@ -276,11 +312,12 @@ def question(ver: Path, qid: str, slug: str, plan: Plan) -> Path:
     path = ver / f"t{_task_number(ver.parent, qid):02d}_{qid}_{slug}"
     plan.write(path / "question.md", with_front(
         {"id": qid, "level": LEVEL[m.group(1)], "question": "<the short question a reader scans>",
-         "name": slug.replace("-", " "), "ask": "<the full question, one sentence, as its asker wrote it>",
+         "name": slug.replace("-", " "), "ask": ask or "<the full question, one sentence, as its asker wrote it>",
          "method": {"ask": "<a card>", "answer": "<a card>", "read": "<a card>"},
          "partitions": {"asked": "all", "power": "none"}, "needs": {}, "agreed": "⬜", "signed": ""},
         f"\n{slug.replace('-', ' ').capitalize()}\n{'=' * len(slug)}\n\n**Why now**: <why the Board asks it now>\n\n"
         "**What would answer it**: <the evidence in words, before any need>\n"))
+    plan.write(path / f"{path.name}.md", question_face(path, {"id": qid, "ask": ask, "name": slug.replace("-", " ")}))
     rel.setdefault("questions", {})[qid] = {"task": path.name, "change": "new"}
     plan.write(ver / "release.yaml", dump_yaml(rel), replace=True)
     return path
@@ -368,6 +405,17 @@ def face_kind(block: Path) -> str:
     return ""
 
 
+def board_goal(title: str, dataset: str) -> str:
+    """An insight Board's goal line, the dataset's purpose: its title's words after `<dataset>:` (`Insight · Example:
+    what a two-arm dataset says` -> `What a two-arm dataset says`), else what the dataset says, freeze by freeze."""
+    words = str(title or "").split(" · ", 1)[-1].strip()
+    if dataset and words.lower().startswith(dataset.lower() + ":"):
+        words = words[len(dataset) + 1:].strip()
+    if not words or words.startswith(("Insight-", "<")) or words == dataset:
+        words = f"what {dataset or 'the dataset'} says, data freeze by data freeze"
+    return words[:1].upper() + words[1:]
+
+
 def board(path: Path, dataset: str, proto: str, title: str, accumulates: str, plan: Plan) -> None:
     if path.parent.name not in ("insight", "insights"):          # insights/ is the older name (s01-D29)
         sys.exit(f"an insight Board lives in <Project>/insight/: {path}")
@@ -380,7 +428,7 @@ def board(path: Path, dataset: str, proto: str, title: str, accumulates: str, pl
         sys.exit(f"--prototype {proto}: no Prototype Block there yet (insight_ladder.py prototype)")
     plan.write(path / "board.md", with_front(
         {"board-kind": "insight-board", "workbench": "insight", "dataset": dataset, "prototype": proto,
-         "accumulates": accumulates, "versions": []},
+         "accumulates": accumulates, "goal": board_goal(title, dataset), "versions": []},
         f"\n# {title or path.name}\n\nOne dataset, its data freezes, and one Job per pair (analysis plan × data "
         "freeze).\n\n## Questions\n\n```yaml\nquestions: []\n```\n"))
     plan.write(path / "meta" / "meta.md", f"# {dataset} · what the extract holds\n\n<grain · window · sources · "
@@ -423,7 +471,8 @@ def release_hash(ver: Path) -> str:
     files = [ver / "release.yaml", ver / "partitions.md", ver / "thresholds.yaml"]
     for row in (release(ver).get("questions") or {}).values():
         task = (ver / row["task"]).resolve()
-        files += sorted(p for p in task.rglob("*") if p.is_file() and "__pycache__" not in p.parts)
+        files += sorted(p for p in task.rglob("*") if p.is_file() and "__pycache__" not in p.parts
+                        and p != task / f"{task.name}.md")    # its face is the page's title and goal line, not the plan
     for f in files:
         if f.is_file():
             h.update(f.name.encode() + b"\0" + f.read_bytes())
@@ -469,6 +518,74 @@ def job(block: Path, rel: str, ver: str, plan: Plan) -> Path:
     plan.made += made
     runs_readme(path, "job", plan)
     return path
+
+
+# ── the goal lines, backfilled ──────────────────────────────────────────────────────────────────────
+def _title(md: Path) -> str:
+    """A face's `# ` heading, its words."""
+    return next((ln[2:].strip() for ln in front(md)[1].splitlines() if ln.startswith("# ")), "")
+
+
+def add_goal(md: Path, goal: str, plan: Plan) -> None:
+    """Write `goal:` into a face's front matter when it has none, the rest of the file as it was; never a second line,
+    never over a goal a person wrote."""
+    goal = " ".join(str(goal or "").split())
+    if not goal or goal.startswith("<") or not md.is_file():
+        return
+    text = md.read_text(encoding="utf-8")
+    m = re.match(r"(?s)^---\n(.*?)\n---\n", text)
+    if m and "goal" in (yaml.load(m.group(1), Loader=LOADER) or {}):
+        return
+    line = yaml.safe_dump({"goal": goal}, allow_unicode=True, width=10_000).strip()
+    new = (text[:m.end(1)] + "\n" + line + text[m.end(1):]) if m else f"---\n{line}\n---\n" + text
+    plan.write(md, new, replace=True)
+
+
+def _release_goal_of(ver: Path) -> str:
+    rel_, fm = release(ver), face(ver)
+    m = VERSION.match(ver.name)
+    words = str(fm.get("title") or (m.group(3) or "").replace("-", " "))
+    cuts = len(front(ver / "partitions.md")[0].get("partitions") or [])
+    return release_goal(int(m.group(1)), words, len(rel_.get("questions") or {}), cuts)
+
+
+def _question_goal(task: Path, plan: Plan) -> None:
+    fields = front(task / "question.md")[0]
+    md = task / f"{task.name}.md"
+    if not md.is_file():
+        plan.write(md, question_face(task, fields))
+    else:
+        add_goal(md, str(fields.get("ask") or ""), plan)
+
+
+def goals(folder: Path, plan: Plan) -> None:
+    """Each face's missing goal line under `folder` (a Board, a Prototype, a release, a Job, a Task), from the same
+    source its generator reads: a Board's title, a Prototype's title, a release's questions and cuts, a Job's release
+    and data freeze, a question's ask."""
+    level = level_of(folder)
+    if level == "prototype":
+        add_goal(folder / "board.md", prototype_goal(_title(folder / "board.md").split(" · ", 1)[-1]
+                                                     if " · " in _title(folder / "board.md") else ""), plan)
+        for ver in versions(folder):
+            goals(ver, plan)
+    elif level == "version":
+        add_goal(folder / f"{folder.name}.md", _release_goal_of(folder), plan)
+        for t in sorted(p for p in folder.iterdir() if p.is_dir() and TASK.match(p.name) and (p / "question.md").is_file()):
+            _question_goal(t, plan)
+    elif level == "question":
+        _question_goal(folder, plan)
+    elif level == "board":
+        fm = front(folder / "board.md")[0]
+        add_goal(folder / "board.md", board_goal(_title(folder / "board.md"), str(fm.get("dataset") or "")), plan)
+        for j in jobs(folder):
+            goals(j, plan)
+    elif level == "job":
+        add_goal(folder / f"{folder.name}.md", OJ.job_goal(folder.parent, face(folder)), plan)
+        for t in sorted(p for p in folder.iterdir() if p.is_dir() and TASK.match(p.name)):
+            goals(t, plan)
+    elif level == "task":
+        q = OJ.question_fields(folder.parent.parent, face(folder.parent), TASK.match(folder.name).group(2))
+        add_goal(folder / f"{folder.name}.md", str(q.get("ask") or q.get("question") or ""), plan)
 
 
 # ── a Run ───────────────────────────────────────────────────────────────────────────────────────
@@ -571,7 +688,7 @@ def run(folder: Path, rtype: str, target: str, plan: Plan) -> list[Path]:
 def main(argv=None) -> list[Path]:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("command", choices=("prototype", "version", "question", "change", "retire", "sign", "propose",
-                                        "board", "data", "job", "run"))
+                                        "board", "data", "job", "run", "goals"))
     ap.add_argument("folder", type=Path)
     ap.add_argument("what", nargs="?", default="", help="question/change/retire: <L><NN>; propose: <slug>; "
                                                         "data: v<M>; run: its type")
@@ -579,6 +696,7 @@ def main(argv=None) -> list[Path]:
     ap.add_argument("--serves", default="")
     ap.add_argument("--slug", default="", help="version: what the release is, jNN_pN_<slug>")
     ap.add_argument("--title", default="")
+    ap.add_argument("--ask", default="", help="question: the full question, one sentence (its page's goal line)")
     ap.add_argument("--why", default="")
     ap.add_argument("--date", default="")
     ap.add_argument("--kind", default="")
@@ -603,7 +721,7 @@ def main(argv=None) -> list[Path]:
     elif c == "version":
         version(a.folder, a.slug, plan)
     elif c == "question":
-        question(a.folder, a.what, a.extra, plan)
+        question(a.folder, a.what, a.extra, plan, a.ask)
     elif c == "change":
         change(a.folder, a.what, a.why, plan)
     elif c == "retire":
@@ -618,6 +736,8 @@ def main(argv=None) -> list[Path]:
         data(a.folder, a.what, a.extract, a.rows, a.new, plan, a.data_folder, a.label)
     elif c == "job":
         job(a.folder, a.release, a.data, plan)
+    elif c == "goals":
+        goals(a.folder, plan)
     else:
         if not a.what:
             ap.error("run needs a type, e.g. add, compare, partition")

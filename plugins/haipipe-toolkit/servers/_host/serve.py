@@ -435,8 +435,13 @@ class Handler(ShareMixin, AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteM
             return self.serve_frame()
         if self.path.startswith(self.EXCAL_ICONS) and "/_excalidraw" not in (self.headers.get("Referer") or ""):
             # A workbench page has no icon of its own: the browser's default, not Excalidraw's mark
-            # (JL 261003: "just the default one"). Only the Excalidraw app still gets its icons.
-            return self.send_error(404, "no icon")
+            # (JL 261003: "just the default one"). Only the Excalidraw app still gets its icons. A page head that
+            # names no icon still makes the browser ask: an empty 204, never a 404 in the console (round 2 review).
+            self.send_response(204)
+            self.send_header("Content-Length", "0")
+            self.send_header("Cache-Control", "max-age=86400")
+            self.end_headers()
+            return
         if self.path.startswith(self.EXCAL_PATHS):
             return self.proxy_excalidraw()
         # Last stop before the static handler: send the text compressed if the

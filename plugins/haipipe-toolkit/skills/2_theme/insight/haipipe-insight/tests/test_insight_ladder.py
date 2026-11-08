@@ -85,7 +85,8 @@ def test_a_release_folder_says_what_it_is(tmp_path):
 
 def test_prototype_and_first_release(project):
     p, proto, _ = project
-    assert _front(proto / "board.md") == {"board-kind": "prototype", "serves": "insights/Insight-Demo"}
+    assert _front(proto / "board.md") == {"board-kind": "prototype", "serves": "insights/Insight-Demo",
+                                          "goal": "The questions and their scripts, one signed release at a time"}
     v = proto / "j01_p1"
     assert _front(v / "j01_p1.md")["state"] == "open"
     rel = yaml.safe_load((v / "release.yaml").read_text())
@@ -239,3 +240,38 @@ def test_dry_run_changes_nothing(tmp_path):
     p = tmp_path / "Project-Demo"
     made = L("prototype", p / "tasks" / "Prototype-b01-Demo", "--serves", "insights/Insight-Demo", "--dry-run")
     assert made and not (p / "tasks").exists()
+
+
+def test_every_page_has_a_goal_line_and_goals_backfills_only_a_missing_one(tmp_path):
+    """Each generator writes a face's `goal:` (the line a page's header shows, 261106); `goals` writes it into a face
+    made before that line, from the same source, and never twice."""
+    p = tmp_path / "Project-Demo"
+    proto, board = p / "tasks" / "Prototype-b01-Demo", p / "insights" / "Insight-Demo"
+    L("prototype", proto, "--serves", "insights/Insight-Demo", "--title", "the demo questions")
+    L("version", proto, "--slug", "first-questions")
+    v = proto / "j01_p1_first-questions"
+    L("question", v, "D01", "extract-shape", "--ask", "How many rows does the demo extract hold?")
+    t = v / "t01_D01_extract-shape"
+    assert _front(t / f"{t.name}.md")["goal"] == "How many rows does the demo extract hold?"
+    assert _front(v / f"{v.name}.md")["goal"].startswith("Analysis plan 1, first questions")
+    _agree_and_need(v)
+    _cuts(v)
+    before = IL.release_hash(v)
+    (t / f"{t.name}.md").unlink()                                   # a question made before its face
+    L("goals", proto)
+    assert _front(t / f"{t.name}.md")["goal"] == "How many rows does the demo extract hold?"
+    assert IL.release_hash(v) == before                             # a face is the page's, never the plan's
+    L("sign", v, "--date", "261008")
+    L("board", board, "--dataset", "Demo", "--prototype", "tasks/Prototype-b01-Demo", "--title", "Insight · Demo: what it says")
+    assert _front(board / "board.md")["goal"] == "What it says"
+    L("data", board, "v1", "--extract", "_WorkSpace/<store>/demo_v1.parquet", "--label", "first days")
+    L("job", board, "--release", "p1", "--data", "v1")
+    job = board / "j01_prototype-p1-first-questions_data-Demov1"
+    assert _front(job / f"{job.name}.md")["goal"] == "What the first questions (analysis plan 1) find on data freeze 1, first days"
+    task = job / "t01_D01_extract-shape"
+    assert _front(task / f"{task.name}.md")["goal"] == "How many rows does the demo extract hold?"
+    face = job / f"{job.name}.md"
+    face.write_text(face.read_text().replace("goal: What the first", "goal: My own words for the first"))
+    L("goals", board)
+    assert _front(face)["goal"].startswith("My own words")          # a person's goal stays
+    assert face.read_text().count("goal:") == 1

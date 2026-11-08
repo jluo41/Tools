@@ -32,8 +32,8 @@ class FocusPageTest(unittest.TestCase):
     def test_findings_is_closed_sections_of_the_results(self):
         self.findings_block()
         page = focus_page.render(frame.Theme(name='work'), self.root, self.block, 'report', 'findings')
-        self.assertIn('<details class=band-sec><summary>1 · Coverage<span class=word>no answer yet</span>', page)
-        self.assertIn('<details class=band-sec><summary>2 · Cards<span class=word>answered</span>', page)
+        self.assertIn('<details class=band-sec><summary>1 · ❓ Coverage<span class=word>no answer yet</span>', page)   # every
+        self.assertIn('<details class=band-sec><summary>2 · ❓ Cards<span class=word>answered</span>', page)            # bar its emoji
         self.assertNotIn('band-sec open', page)
         self.assertIn('pb-side', page)                             # left tabs, the content on the right (JL 261104)
         self.assertIn('<b>Stored tables</b>', page)
@@ -56,7 +56,8 @@ class FocusPageTest(unittest.TestCase):
         page = focus_page.render(frame.Theme(name='work'), self.root, self.block, 'report', 'findings')
         self.assertIn('<summary>3 · 🧠 Maps', page)
         self.assertIn('<summary>4 · 📦 Delivery', page)
-        self.assertIn('<b>CGM</b><span title="One row: one reading.">', page)
+        self.assertIn('<b>CGM</b><span title="">', page)                         # no cut grey line under the tab (round 3)
+        self.assertIn('onload="window.fitMap&&fitMap(this)"', page)            # the frame as tall as its map
         self.assertIn('r02_new%2Fresult%2Fmaps%2FCGM.mindmap.md', page)
         self.assertNotIn('r01_old%2Fresult', page)
         self.assertIn('class=find-map loading=lazy', page)
@@ -91,6 +92,70 @@ class FocusPageTest(unittest.TestCase):
         self.block.mkdir()
         self.face = self.block / "board.md"
         self.face.write_text("# Study\nspine: Compare the methods.\nclose: Each result names its source.\n")
+
+    def test_a_named_board_names_its_own_studio_topic(self):          # insight, design, Prototype (261106)
+        for name in ("Insight-Example", "Design-Example", "Prototype-b91-Example", "Paper-Example"):
+            board = self.root / name
+            topic = board / "j01_first" / "s01-example-flow"
+            topic.mkdir(parents=True)
+            (board / "board.md").write_text("# Example\n")
+            (board / "j01_first" / "j01_first.md").write_text("# First\n")
+            (topic / "s01-example-flow.md").write_text("# Flow\n")
+            self.assertEqual(focus_page.interaction_topic(f"{name}.j01-s01:x @ y", board / "j01_first"), topic, name)
+        self.assertIsNone(focus_page.interaction_topic("Other-Example.j01-s01:x @ y", self.root / "Insight-Example"))
+
+    def test_a_job_and_a_task_show_their_part_of_the_blocks_delivery(self):   # haipipe-delivery's <job>/<task>/ (261106)
+        task = self.block / "j02_estimates" / "t04_deliver"
+        task.mkdir(parents=True)
+        (self.block / "j02_estimates" / "j02_estimates.md").write_text("# Estimates\n")
+        (task / "t04_deliver.md").write_text("# Deliver\n")
+        web = self.block / "delivery" / "j02_estimates" / "t04_deliver" / "web"
+        web.mkdir(parents=True)
+        (web / "index.html").write_text("<p>explorer</p>")
+        for page in (self.block / "j02_estimates", task):
+            tabs = dict((name, panel) for name, _, panel in focus_page.delivery_tabs(page, self.root))
+            self.assertIn("index.html", tabs["Website"], page.name)
+            self.assertIn("/delivery/j02_estimates/", focus_page.delivery_html(page, self.root), page.name)
+        other = self.block / "j01_source"
+        other.mkdir()
+        (other / "j01_source.md").write_text("# Source\n")
+        self.assertNotIn("index.html", dict((n, p) for n, _, p in focus_page.delivery_tabs(other, self.root))["Website"])
+
+    def test_discovery_and_cowork_pages_take_the_work_shape(self):   # JL 261106: "very similar to the work"
+        for name in ("discovery", "cowork"):
+            for section in ("report", "work"):
+                page = focus_page.render(frame.Theme(name=name), self.root, self.block, section)
+                bar = page[page.index('class="section-views'):]
+                bar = bar[:bar.index('</nav>')]
+                self.assertIn('group=findings', bar, (name, section))
+                self.assertIn('group=standing', bar, (name, section))
+        self.assertEqual(focus_page.theme_parts("work", self.block, self.root, "Block"), [])
+
+    def test_a_job_with_no_tasks_is_known_by_its_own_state(self):   # a cowork Job, one line of work (261106)
+        job = self.block / "j01_reply"
+        job.mkdir()
+        for state, word in (("🟡 ACTIVE · waiting on the reply", "running"), ("✅ DONE", "done"),
+                            ("🔴 OPEN", "open"), ("", "not run")):
+            (job / "j01_reply.md").write_text(f"# Reply\nstate: {state}\n")
+            self.assertEqual(focus_page.job_progress(job, self.root)[1], word, state)
+
+    def test_an_older_paper_run_has_its_readout_as_headline(self):   # discovery Paper Runs (261106)
+        result = self.block / "j01_x" / "t01_y" / "runs" / "r01_example2024one" / "result"
+        result.mkdir(parents=True)
+        (result / "r01_example2024one.md").write_text("# Card\n\n- cite: @example2024one\n\n## Readout\n\n"
+                                                       "The example shows a small effect. It is one study.\n\n## Limits\n\nOne.\n")
+        self.assertEqual(focus_page.run_headline(result.parent), "The example shows a small effect.")
+
+    def test_every_level_has_its_studio_none_yet_with_add_a_topic(self):   # b11 form, JL 261106
+        job = self.block / "j01_first"
+        job.mkdir()
+        (job / "j01_first.md").write_text("# First\n")
+        page = focus_page.render(frame.Theme(name="work"), self.root, job, "report")
+        self.assertIn("section=studio", page)                          # on the rail with no topic
+        studio = focus_page.render(frame.Theme(name="work"), self.root, job, "studio")
+        self.assertIn("No Studio topic here yet.", studio)
+        self.assertIn(">Add a topic</button>", studio)
+        self.assertIn("new_topic.py", studio)
 
     def test_existing_work_face_needs_no_migration(self):
         data = focus_page.read_face(self.block, self.root)
@@ -184,7 +249,7 @@ class FocusPageTest(unittest.TestCase):
         self.assertNotIn('Longer context.', reports)
         self.assertIn('Which method works?', focus_page.render(theme, self.root, self.block, 'overview', 'questions'))
         self.assertNotIn('Detailed context only.', focus_page.render(theme, self.root, self.block, 'work'))
-        questions = focus_page.render(frame.Theme(name='cowork'), self.root, self.block, 'questions')   # a work page has no Questions view (JL 261104)
+        questions = focus_page.render(frame.Theme(name='ideation'), self.root, self.block, 'questions')   # a work-shaped page has no Questions view (JL 261104); cowork is work-shaped since 261106
         self.assertIn('Hypothesis', questions)
         self.assertIn('An expectation, not a finding.', questions)
 
@@ -288,12 +353,118 @@ class FocusPageTest(unittest.TestCase):
         self.assertLess(bar.index('Block UI'), bar.index('Job UI'))
         self.assertLess(bar.index('Job UI'), bar.index('Task UI'))
         page = focus_page.render(frame.Theme(name='work'), self.root, self.block, 'report', 'ui-block')
-        self.assertIn('<iframe class="ui-page" title="Block UI" loading="lazy" src="http://example.org/board?a=1&amp;b=2">', page)
+        self.assertNotIn('data-src="http://example.org', page)          # another server: no blank frame (261106)
+        self.assertIn('lives on another server', page)
+        self.assertIn('href="http://example.org/board?a=1&amp;b=2"', page)
+        self.assertIn('1 · 🖥️ The page, live', page)                  # a numbered section like every view (261105)
         page = focus_page.render(frame.Theme(name='work'), self.root, self.block, 'report', 'ui-job')
-        self.assertRegex(page, r'<iframe class="ui-page" title="Job UI"[^>]*src="[^"]*path=' + re.escape(rel.replace('/', '%2F')))
+        self.assertRegex(page, r'<iframe class="ui-page" title="Job UI[^"]*"[^>]*src="[^"]*path=' + re.escape(rel.replace('/', '%2F')))
         page = focus_page.render(frame.Theme(name='work'), self.root, self.block, 'report', 'ui-task')
         self.assertNotIn('src="javascript', page)                         # only http(s) or a page of this SPACE
         self.assertIn('is not a page here', page)
+
+    def test_a_tools_blueprint_names_its_example_from_the_tools_root_in_any_space(self):
+        """261105: a Tools theme Block names its placeholder as `blueprints/...`; inside a SPACE, Tools sits at `Tools/`,
+        so the path is found from the Block's own checkout and framed by its path from the SPACE root."""
+        tools = self.root / 'Tools'
+        block = tools / 'blueprints/Project-X/work/b16_theme_x'
+        example = tools / 'blueprints/Project-X/paper/Paper-Example'
+        block.mkdir(parents=True)
+        example.mkdir(parents=True)
+        html = focus_page.ui_view('blueprints/Project-X/paper/Paper-Example', 'Block UI', self.root, block)
+        self.assertRegex(html, r'<iframe class="ui-page" title="Block UI[^"]*"[^>]*src="[^"]*path=Tools%2Fblueprints%2FProject-X%2Fpaper%2FPaper-Example')
+        for bad in ('../outside', 'blueprints/../../outside', '/etc', 'blueprints/Project-X/paper/Missing'):
+            self.assertIn('is not a page here', focus_page.ui_view(bad, 'Block UI', self.root, block), bad)
+
+    def test_each_kind_of_page_at_a_level_is_a_side_tab(self):
+        """JL 261105: "they are all the task, but different UI"; "for the paper's job, we might have different versions"."""
+        a, b = self.block / 'j01_x' / 't01_items', self.block / 'j01_x' / 't02_meaning'
+        a.mkdir(parents=True)
+        b.mkdir()
+        (a / 't01_items.md').write_text('# t01 · Items\ntask-type: labeling-items\n')
+        (b / 't02_meaning.md').write_text('# t02 · Meaning\ntask-type: labeling-meaning\n')
+        ra, rb = (p.relative_to(self.root).as_posix() for p in (a, b))
+        (self.block / 'board.md').write_text(f'# b01\n\ntheme: labeling\nui-task: {ra}\nui-task: {rb}\n\n## Purpose\n\nOne line.\n')
+        page = focus_page.render(frame.Theme(name='work'), self.root, self.block, 'report', 'ui-task')
+        self.assertIn('1 · 🖥️ The pages, live', page)
+        self.assertIn('t01_items', page)
+        self.assertIn('labeling items', page)                          # each tab says its kind
+        self.assertIn('t02_meaning', page)
+        self.assertIn('labeling meaning', page)
+        self.assertIn('pb-list', page)                                  # side tabs: the kind left, the page right
+        (self.block / 'walks').mkdir()
+        (self.block / 'walks' / 'task.html').write_text('<!doctype html>')      # only the first kind walked
+        page = focus_page.render(frame.Theme(name='work'), self.root, self.block, 'report', 'ui-task')
+        walks = page.split('2 · 🎬 The walks', 1)[1]                    # the same tabs, in the same order (261105)
+        self.assertLess(walks.index('t01_items'), walks.index('t02_meaning'))
+        self.assertIn('No walk of t02_meaning yet.', walks)
+
+    def test_work_on_a_ui_view_says_what_each_kind_still_needs(self):
+        """JL 261105: "so we should update the work as well for each tab of UI, right?"."""
+        a, b = self.block / 'j01_x' / 't01_items', self.block / 'j01_x' / 't02_meaning'
+        a.mkdir(parents=True)
+        b.mkdir()
+        ra, rb = (p.relative_to(self.root).as_posix() for p in (a, b))
+        (self.block / 'board.md').write_text(f'# b01\n\ntheme: labeling\nui-task: {ra}\nui-task: {rb}\n\n## Purpose\n\nOne line.\n')
+        (self.block / 'walks').mkdir()
+        (self.block / 'walks' / 'task.html').write_text('<!doctype html>')          # the first kind's walk
+        rv = self.block / 'topic' / 'review'
+        rv.mkdir(parents=True)
+        (rv / 'page-s2-r01.md').write_text(f'```text\npage     http://x/_board/workbench?path={ra} (Report)\n'
+                                           'score    mean 6.0/10 · not yet\n```\n')
+        page = focus_page.render(frame.Theme(name='work'), self.root, self.block, 'work', 'ui-task')
+        self.assertIn('🎬 Walks to record', page)
+        walks = page.split('🎬 Walks to record', 1)[1].split('</ul>', 1)[0]
+        self.assertIn('t02_meaning', walks)                                       # no walk yet
+        self.assertNotIn('t01_items', walks)                                      # its walk is recorded
+        self.assertIn('🔍 Review rounds', page)
+        self.assertIn('6.0 of 10 · not yet', page)                                # t01's newest round
+        self.assertIn('not reviewed yet', page)                                   # t02's
+
+    def test_a_theme_block_shows_its_walk_under_the_live_page(self):
+        """JL 261105: "could you embed the gif as the report as well?"; "a very quick video and we can pause"."""
+        job = self.block / 'j01_x'
+        job.mkdir(exist_ok=True)
+        (self.block / 'walks').mkdir()
+        (self.block / 'walks' / 'block.html').write_text('<!doctype html><title>walk</title>')
+        rel = job.relative_to(self.root).as_posix()
+        (self.block / 'board.md').write_text(f'# b01\n\ntheme: paper\nui-block: {rel}\nui-job: {rel}\n\n## Purpose\n\nOne line.\n')
+        page = focus_page.render(frame.Theme(name='work'), self.root, self.block, 'report', 'ui-block')
+        self.assertIn('2 · 🎬 The walk', page)                         # the second section, under the live page
+        self.assertIn('walks/block.html', page)
+        self.assertIn('3 · 🙋 Interaction', page)                       # then Interaction, last as on every view
+        self.assertNotIn('🎬 The walk', focus_page.render(frame.Theme(name='work'), self.root, self.block, 'report', 'ui-job'))
+
+    def test_a_live_page_written_from_its_face_opens_on_any_server(self):
+        """261106: a live page's url with no leading / is from its face's folder, so a SPACE's and Tools' own server
+        both open it."""
+        site = self.block / 'delivery' / 'web'
+        site.mkdir(parents=True)
+        (site / 'index.html').write_text('<!doctype html>')
+        item = {'url': 'delivery/web/index.html', 'folder': self.block / 'j01_x', 'face': self.block}
+        self.assertIn('b01_study/delivery/web/index.html', frame.live_url(item, self.root))
+        self.assertEqual(frame.live_url({'url': 'https://example.org/x', 'folder': self.block}, self.root), 'https://example.org/x')
+        self.assertEqual(frame.live_url({'url': 'delivery/none.html', 'folder': self.block}, self.root), 'delivery/none.html')
+
+    def test_skills_is_a_rail_section_with_the_page_s_skills(self):
+        """JL 261105: "a new tab in the right rail, named 'SKILL', and we can show the most relevent skills"."""
+        page = focus_page.render(frame.Theme(name='work'), self.root, self.block, 'skills')
+        self.assertIn('>Skills<', page)
+        self.assertIn('the skills that work on it', page)
+        self.assertIn('/haipipe-work', page)                         # the theme's door first
+        self.assertIn('/haipipe-block', page)                        # then the level's skill
+        self.assertIn('Copy prompt', page)
+        work = focus_page.render(frame.Theme(name='work'), self.root, self.block, 'work')
+        self.assertNotIn('Skills that do it', work)                  # shown once: the rail, not every view's Process
+
+    def test_a_finished_run_reads_done_with_its_headline(self):
+        """261105: a receipt saying `completed` read ⬜; every mark has its word, and headline.txt is read."""
+        run = self.block / 'j01_x' / 't01_y' / 'runs' / 'r01_z'
+        (run / 'result').mkdir(parents=True)
+        (run / 'result' / 'runtime.yaml').write_text('run: r01_z\nstatus: completed\n')
+        (run / 'result' / 'headline.txt').write_text('9 values\n')
+        ((_, mark, head),) = focus_page.run_rows(run.parent.parent)
+        self.assertEqual((mark, head), ('✅ done', '9 values'))
 
     def test_an_sNN_card_shows_its_delivery_type_beside_its_stage(self):
         topic = self.block / 's01-first'
@@ -420,14 +591,16 @@ class FocusPageTest(unittest.TestCase):
         self.assertIn('<b>compare</b>', page)
         self.assertIn('data-pop="t03_third"', page)        # the row opens to its Tasks
         self.assertNotIn('Next: settle 3 scores', page)    # no "Next:" lines (JL 261104: "just delete them")
-        self.assertIn('3 Tasks', page)                     # its Tasks, its state word
+        self.assertNotIn('3 Tasks', page)                  # its state word alone, the bar shows how far (round 3)
         self.assertIn('<ul class=fold-tree>', page)        # inside its Job's row, folded
         work = focus_page.render(frame.Theme(name='work'), self.root, self.block, 'work')   # Work opens on the same Status (JL 261104)
         self.assertIn('<ul class=fold-tree>', work)
-        self.assertIn('data-pop="j01_compare" title="Compare two methods"><b>compare</b>', work)   # its goal on hover
+        self.assertIn('data-pop="j01_compare" title="j01_compare: Compare two methods"><b>compare</b>', work)   # its folder and goal on hover
         self.assertIn('data-pop="t03_third"', work)
         self.assertIn('<span class=st>🟠 waiting for a person</span>', work)
-        self.assertIn('🚧 Jobs not finished', work.split('📊 Results')[0])  # Process first, then the same rows
+        process = work.split('📊 Results')[0]                # Process first: only each unfinished Job's next step,
+        self.assertIn('🚧 Next steps', process)               # never the rows Results show (round 2, 261106)
+        self.assertIn('>compare › t01_first</a>', process)
 
     def test_job_rows_show_each_task_output_in_place(self):
         job = self.block / 'j01_compare'
@@ -439,8 +612,9 @@ class FocusPageTest(unittest.TestCase):
         self.assertIn('Does it differ by region?', page)
         self.assertIn('It differs little.', page)
         self.assertIn('🔶 drawn, review open', page)
-        self.assertIn('<ul class=fold-tree>', page)          # its Tasks fold, the output inside (JL 261102)
-        self.assertIn('<li class=fold-out><figure class="row-output">', page)
+        self.assertIn('<details class=job-row>', page)       # its Tasks fold, the output inside (JL 261102), the
+        self.assertIn('<div class=job-tree><figure class="row-output">', page)   # Block's look (round 2, 261106)
+        self.assertIn('<span class=hl>It differs little.</span>', page)          # its headline on its closed row
 
     def test_block_with_answers_opens_on_findings(self):
         report_dir = self.block / 'reports' / 'q01_compare'
@@ -482,10 +656,8 @@ class FocusPageTest(unittest.TestCase):
         self.assertIn('>one_table</a>', page)                                   # a '-' inside a name becomes '_'
         self.assertIn('b01.j01.t03-s09:study.tables.cut @ </span>', page)
         work = focus_page.render(frame.Theme(name='work'), self.root, self.block, 'work')
-        self.assertIn('<span class="row-wait">🙋 open points wait on you</span>', work)  # s07 and s09 hang at j01; no count
-        (studio / 's07-one-table' / 's07-one-table.md').write_text('# s07\n**Stage:** agreed\n\n**At:** j01\n\n**Topic:** about s07-one-table\n')
-        work = focus_page.render(frame.Theme(name='work'), self.root, self.block, 'work')
-        self.assertIn('🙋 open points wait on you', work)                                  # s09 still waits; never a count
+        self.assertNotIn('open points wait on you', work)    # Status keeps to the work's state (261106): the open
+                                                             # topics are the Studio's, what waits the view's 🙋 Interaction
         page = focus_page.render(frame.Theme(name='work'), self.root, job, 'studio')        # s01-D01: the Job sees its own
         self.assertIn('about s07-one-table', page)
         self.assertIn('about s09-cut', page)
@@ -548,7 +720,7 @@ class FocusPageTest(unittest.TestCase):
         self.assertNotIn('To find out', page)
         self.assertIn('Is it trained?', page)                                        # the question, not its title
         self.assertIn('⬜ no answer yet', page)
-        self.assertIn('title="j61_a_very_long_folder_name_for_this_job">j61</span>', page)
+        self.assertIn('title="j61_a_very_long_folder_name_for_this_job">Job 61</span>', page)   # words, no "j61" (round 3)
 
     def test_block_bands_group_jobs_in_the_same_map(self):
         """JL 261104: 15 flat Jobs were too tall; the same map, one card per band of the face's `bands:`."""
@@ -571,7 +743,7 @@ class FocusPageTest(unittest.TestCase):
                                               f'**Topic:** about {name}.\n\n**For:** a deck and a rule.\n')
         page = focus_page.render(frame.Theme(name='work'), self.root, self.block)
         self.assertIn('aria-current="page">MindMap</a>', page)                   # the first view, opened by default
-        self.assertIn('class="focus-map"', page)
+        self.assertIn('class="focus-map fit-map"', page)                         # it fits its box (round 3)
         self.assertIn('Delivers a deck and a rule', page)                         # one plain paragraph, as the draft map
         self.assertIn('<div class=pm-detail hidden><p', page)                    # every item starts closed (JL 261104)
         self.assertIn('class="pm pm-folds"', page)
@@ -620,8 +792,10 @@ class FocusPageTest(unittest.TestCase):
         self.assertIn('>All</a>', page)
         self.assertIn('<b>Cut choices</b>', page)
         self.assertIn('data-ixq="Q1"><b>Q1 · Cut</b>', page)                      # what it asks
-        self.assertIn('>j01 · t01</a>', page)                                     # whose work it holds up
-        self.assertIn('>s01-first</a>', page)                                     # what it is about
+        self.assertIn('Asked by <a href=', page)                                  # who asked, in words (round 3)
+        self.assertIn('title="t01_cut">Cut</a> · about', page)                   # its folder name on hover only
+        self.assertIn('>First idea</a>', page)                                    # what it is about, by its title
+        self.assertNotIn('<small class=ix-addr>j01 · t01</small>', page)
         self.assertIn(form.replace('href=', 'src='), page)
         self.assertIn('<b>Old choices</b>', page)                               # All shows the answered too
         page = focus_page.render(frame.Theme(name='work'), self.root, self.block, 'interactions', 'waiting')
@@ -640,15 +814,14 @@ class FocusPageTest(unittest.TestCase):
         # one button, "Interaction", wherever an item shows; no count and no tag (JL 261031, b16 t01 r04 Q3-Q6); 🙋 when one waits
         button = lambda holder: ('data-pop="' + holder.name + ' · Interaction" href="/_board/workbench?view=focus-part&amp;'
                                  'part=interactions&amp;path=' + str(holder.relative_to(self.root)).replace('/', '%2F') + '"')
-        for page in (focus_page.render(frame.Theme(name='work'), self.root, self.block, 'work'),
-                     focus_page.render(frame.Theme(name='work'), self.root, task, 'work'),
-                     focus_page.render(frame.Theme(name='work'), self.root, self.block, 'studio')):
+        for page in (focus_page.render(frame.Theme(name='work'), self.root, self.block, 'studio'),):
             self.assertIn('Interaction</a>', page)
             self.assertIn('>🙋 Interaction</a>', page)       # a waiting question flags it (JL 261031: "flag them as well")
             self.assertNotIn('Questions for you', page)
             self.assertNotIn('Answered</a>', page.replace('>Answered</a>', ''))
-        self.assertIn(button(job), focus_page.render(frame.Theme(name='work'), self.root, self.block, 'work'))   # the Job row
-        self.assertIn(button(wait), focus_page.render(frame.Theme(name='work'), self.root, task, 'work'))       # the Run row
+        self.assertNotIn(button(job), focus_page.render(frame.Theme(name='work'), self.root, self.block, 'work'))   # no
+        self.assertNotIn(button(wait), focus_page.render(frame.Theme(name='work'), self.root, task, 'work'))       # button on a
+                                                                                  # Status row (261106): the view's 🙋 Interaction asks
         self.assertIn(button(topic), focus_page.render(frame.Theme(name='work'), self.root, self.block, 'studio'))
         listed = focus_page.part_document(topic, self.root, 'interactions')      # the pop-out: the topic's items
         self.assertIn('<b>Cut choices</b>', listed)
@@ -668,19 +841,119 @@ class FocusPageTest(unittest.TestCase):
         (task / 't01_cut.md').write_text('# t01 · Cut\nstate: 🔴 OPEN\n')
         for page in (self.block, job, task):                                     # none asked: it still stands there
             for section in ('report', 'work'):
-                self.assertIn('🙋 Interaction</h3>', focus_page.render(frame.Theme(name='work'), self.root, page, section))
+                self.assertIn('🙋 Interaction<span class=word>nothing yet</span></h3>',
+                              focus_page.render(frame.Theme(name='work'), self.root, page, section))
         run = task / 'runs' / 'r01_collect_cut'
         run.mkdir(parents=True)
         (run / 'run.yaml').write_text('run: r01_collect_cut\nkind: hard\ntype: collect\nstatus: waiting\n')
         (run / 'question_collection.md').write_text('# Cut\n\n## Q1 · Cut\n\nWhy.\n\n**Which?**\n\n- [x] A · a\n- [ ] B · b\n')
         (run / 'r01_collect_cut.html').write_text('<!doctype html>')
         theme = frame.Theme(name='work')
-        for page in (self.block, job, task):
-            for section in ('report', 'work', 'interactions'):
-                html = focus_page.render(theme, self.root, page, section)
-                self.assertIn('🙋 Interaction · waiting for you</h3>', html, (page.name, section))
+        # each view shows its own items (JL 261106): a form below the page is Status's, the page's own MindMap's, a
+        # Task's own Status's, beside its Runs (round 2); the rail's Interactions keeps every item
+        for page, view in ((self.block, 'standing'), (job, 'standing'), (task, 'standing')):
+            for section, group in (('report', view), ('work', view), ('interactions', '')):
+                html = focus_page.render(theme, self.root, page, section, group)
+                self.assertIn('🙋 Interaction<span class="word you">1 waits for you</span></h3>'
+                              '<p class=fd-wait>🙋 Cut: Q1 · Cut</p>', html, (page.name, section))
                 self.assertIn('data-ixq="Q1"', html, (page.name, section))
+                if section == 'work':                  # shown once: Process no longer repeats it (JL 261105)
+                    self.assertNotIn('Waiting on you', html, page.name)
+                    self.assertEqual(html.count('data-ixq="Q1"'), 1, page.name)
+        other = focus_page.render(theme, self.root, self.block, 'report', 'mindmap')
+        self.assertNotIn('data-ixq="Q1"', other)       # not this view's: the Block's MindMap holds its own forms only
+        self.assertIn('🙋 Interaction<span class=word>nothing yet</span>', other)
         self.assertIn('data-ixq="Q1"', focus_page.part_document(job, self.root, 'interactions'))
+        from live import interaction_section as IX     # numbered after a work band's numbered folds (261105)
+        body = '<h3 class=wk-band>📊 Results</h3><details class=band-sec><summary>1 · A</summary></details>' \
+               '<details class=band-sec><summary>2 · B</summary></details>'
+        self.assertEqual(IX.next_number(body), 3)
+        self.assertEqual(IX.next_number('<h3 class=pb-group>RESULTS</h3><section class=fd-sec><h3 class=fd-h>4 · X</h3>'), 5)
+        self.assertEqual(IX.next_number('<p>no numbered section</p>'), 0)
+
+    def test_a_bar_carries_its_state_word_and_what_waits_shows_under_it_closed(self):
+        """JL 261106: "every closed bar shows a state word on its right, and a section that waits on you also shows that
+        one item under its closed bar"; the fold remembers a bar by its title alone, never its word."""
+        from live import interaction_section as IX, ui_parts
+        from live.focus_draft import JS
+        self.assertEqual(ui_parts._section('1 · 🔢 Values', '<p>b</p>', '2 wait for you', '🙋 Q1 · Which?'),
+                         '<section class=fd-sec><h3 class=fd-h>1 · 🔢 Values<span class="word you">2 wait for you</span></h3>'
+                         '<p class=fd-wait>🙋 Q1 · Which?</p><p>b</p></section>')
+        self.assertEqual(ui_parts._section('X', '<p>b</p>', 'done'), '<section class=fd-sec><h3 class=fd-h>X<span class=word>done</span></h3><p>b</p></section>')
+        self.assertTrue(ui_parts._numbered(ui_parts._section('X', '<p>b</p>', 'done')).startswith('<section class=fd-sec><h3 class=fd-h>1 · X<span'))
+        self.assertEqual(IX.next_number(ui_parts._numbered(ui_parts._section('X', '<p>b</p>', 'done'))), 2)
+        for script in (JS, IX.FOLD):                   # the waiting line stays out of the fold; the key skips the word
+            self.assertIn("contains('fd-wait')", script)
+            self.assertIn("querySelectorAll('.word')", script)
+        rows = [('Plan', '', 'done', '', '', False), ('Draw', '', 'waiting for you', '', '', False), ('Run', '', 'not started', '', '', False)]
+        self.assertEqual(ui_parts.todo_word(rows), ('1 waits for you', '🙋 Draw'))
+        self.assertEqual(ui_parts.todo_word(rows[:1] + rows[2:]), ('1 of 2 done', ''))
+        self.assertEqual(ui_parts.todo_word(rows[:1]), ('done', ''))
+        self.assertEqual(ui_parts.todo_word([]), ('nothing yet', ''))
+
+    def test_every_numbered_bar_of_the_placeholder_views_carries_a_state_word(self):
+        """The paper and work placeholders in Tools (blueprints/Project-Ladder) are the prototypes every project gets
+        (JL 261105): every numbered bar of every Report and Work view carries its state word (JL 261106)."""
+        tools = Path(__file__).resolve().parents[5]
+        base = tools / 'blueprints' / 'Project-Ladder'
+        board, block = base / 'paper' / 'Paper-Example', base / 'work' / 'b90_example_paper_results'
+        if not (board.is_dir() and block.is_dir()):
+            self.skipTest('the Tools placeholders are not in this checkout')
+        pages = [board] + [j for j in sorted(board.glob('j[0-9]*_*')) if j.is_dir()]
+        pages += [next(iter(sorted(j.glob('t00_*'))), None) for j in sorted(board.glob('j1[0-9]_*'))]   # one Section a version
+        pages += [block] + [p for j in sorted(block.glob('j[0-9]*_*')) for p in [j, *sorted(j.glob('t[0-9]*_*'))] if p.is_dir()]
+        bar = re.compile(r'<h3 class=fd-h>(\d+ · .*?)</h3>|<details class="?band-sec[^>]*><summary>(\d+ · .*?)</summary>', re.S)
+        missing, seen = [], 0
+        for page in (p for p in pages if p is not None):
+            theme = frame.themes().get(frame.theme_of(page, tools), frame.VANILLA)
+            for section in ('report', 'work'):
+                nav = re.search(r'<nav class="section-views".*?</nav>', focus_page.render(theme, tools, page, section), re.S)
+                for view in dict.fromkeys(re.findall(r'group=([^"&]+)', nav[0]) if nav else ['']):
+                    for m in bar.finditer(focus_page.render(theme, tools, page, section, view)):
+                        seen += 1
+                        title = m.group(1) or m.group(2)
+                        if not re.search(r'<span class=(?:word|"word you")>[^<]+</span>', title):
+                            missing.append(f'{page.name} {section} {view}: {re.sub("<[^>]+>", "", title)[:60]}')
+        self.assertGreater(seen, 100)
+        self.assertEqual(missing, [])
+
+    def test_findings_holds_the_forms_its_questions_name(self):
+        """JL 261106: a work page's view shows its own items: Findings the forms at a Question's work, Status the forms
+        below the page, MindMap the page's own."""
+        self.findings_block()
+        run = self.block / 'j01_work/t01_read/runs/r02_collect_read'
+        run.mkdir(parents=True)
+        (run / 'run.yaml').write_text('status: waiting\n')
+        (run / 'question_collection.md').write_text('# Read asks\n\n## Q1 · Read\n\nWhy.\n\n**Which?**\n\n- [ ] A · a\n- [ ] B · b\n')
+        (run / 'r02_collect_read.html').write_text('<!doctype html>')
+        theme = frame.Theme(name='work')
+        found = focus_page.render(theme, self.root, self.block, 'report', 'findings')
+        self.assertIn('Read asks', found.split('🙋 Interaction')[-1])
+        for view in ('standing', 'mindmap'):
+            self.assertNotIn('Read asks', focus_page.render(theme, self.root, self.block, 'report', view).split('🙋 Interaction')[-1])
+        # Findings' question awaiting agreement shows under its closed bar (JL 261106)
+        (self.block / 'reports/q01_a/q01_a.md').write_text('# A\nstate: OPEN\n\n## Opening\n\nProposed (261106): Every table is kept.\n')
+        found = focus_page.render(theme, self.root, self.block, 'report', 'findings')
+        self.assertIn('<span class="word you">waits for you</span></summary>', found)
+        self.assertIn('<p class=band-wait>🙋 Stored tables: its answer waits for your agreement</p>', found)
+
+    def test_a_job_and_a_task_map_show_what_each_child_must_find_out(self):
+        """Decided on the lean (261106): a Job's and a Task's MindMap draw each child with its goal, not the Run tree that
+        Status shows."""
+        job = self.block / 'j01_compare'
+        task = job / 't01_first'
+        (task / 'runs' / 'r01_fit').mkdir(parents=True)
+        (job / 'j01_compare.md').write_text('# j01 · Compare\ngoal: Compare two methods.\n')
+        (task / 't01_first.md').write_text('# t01 · First\ngoal: Find out whether the first method holds.\nstate: 🟡 RESULTS IN\n')
+        (task / 'runs' / 'r01_fit' / 'run.yaml').write_text('run: r01_fit\nsays: the first fit, by region\nstatus: done\n')
+        theme = frame.Theme(name='work')
+        jmap = focus_page.render(theme, self.root, job, 'report', 'mindmap')
+        self.assertIn('finds out</span><span class=pm-w><span class=pm-t data-edit=words data-raw="Find out whether the first method holds"', jmap)
+        self.assertNotIn('r01_fit', jmap)                                  # no Run tree: Status shows it
+        tmap = focus_page.render(theme, self.root, task, 'report', 'mindmap')
+        self.assertIn('the first fit, by region', tmap)
+        self.assertNotIn('✅ done', tmap)
+        self.assertIn('r01_fit', focus_page.render(theme, self.root, task, 'report', 'standing'))
 
     def test_empty_sections_are_hidden(self):
         page = focus_page.render(frame.Theme(name='work'), self.root, self.block)
@@ -721,6 +994,99 @@ class FocusPageTest(unittest.TestCase):
             page = focus_page.render(frame.Theme(name='work'), self.root, self.block)
             self.assertNotIn('view=focus-map', page)
             self.assertNotIn('private.mindmap.md', page)
+
+    def test_round_two_job_and_task_show_what_came_back(self):
+        """Round 2 (261106): a Task's Status shows its newest Run's output, the same in Report and Work, one Run state
+        word; a Job's Status is numbered bars with each Task's headline on its row, and it has Findings; no machine
+        path in a map; no icon request; a waiting form with no question cards still shows."""
+        job = self.block / 'j01_tables'
+        (job / 'j01_tables.md').parent.mkdir()
+        (job / 'j01_tables.md').write_text('# j01_tables · Tables\n\ngoal: Make the tables.\n')
+        task = self.write_task('j01_tables', 't01_cut', '✅ DONE')
+        res = task / 'runs' / 'r01_cut' / 'result'
+        res.mkdir(parents=True)
+        (task / 'runs' / 'r01_cut' / 'run.yaml').write_text('run: r01_cut\nstatus: done\n')
+        (res / 'runtime.yaml').write_text('status: complete\nheadline: "3 tables \\xB7 12 rows"\n')
+        (res / 'values.csv').write_text('key,value\nn,12\n')
+        wait = task / 'runs' / 'r02_collect_cut'
+        wait.mkdir(parents=True)
+        (wait / 'run.yaml').write_text('run: r02_collect_cut\nkind: hard\ntype: collect\nstatus: waiting\n')
+        (wait / 'question_collection.md').write_text('# Cut words\n\nfor: b01-s01:study @ cut\n')   # no ## QN cards
+        (wait / 'r02_collect_cut.html').write_text('<!doctype html>')
+        theme = frame.Theme(name='work')
+        report = focus_page.render(theme, self.root, task, 'report', 'standing')
+        work = focus_page.render(theme, self.root, task, 'work', 'standing')
+        for page in (report, work):
+            self.assertIn('<summary>1 · 📌 3 tables · 12 rows<span class=word>done</span>', page)   # decoded, as YAML reads it
+            self.assertIn('🗂️ Tables', page)                                     # its returned table, drawn
+            self.assertIn('🙋 waiting for you</span><a', page)                    # one Run state word in both
+            self.assertNotIn('not run', page)
+            self.assertIn('<b>Cut words</b><small>waiting for you</small>', page)  # a form with no cards is kept
+            self.assertIn('<link rel="icon" href="data:,">', page)
+        self.assertNotIn(str(self.root), focus_page.render(theme, self.root, task, 'report', 'mindmap'))
+        status = focus_page.render(theme, self.root, job, 'report', 'standing')
+        self.assertIn('<summary>1 · 🧱 Tasks<span class=word>1 of 1 done</span>', status)
+        self.assertIn('<span class=hl>3 tables · 12 rows</span>', status)          # each Task's headline on its row
+        findings = focus_page.render(theme, self.root, job, 'report', 'findings')
+        self.assertIn('📌 Headlines<span class=word>1 of 1 returned</span>', findings)
+        self.assertIn('📦 Delivery', findings)
+
+
+    def test_round3_work_rows_carry_their_verbs_and_words(self):
+        """Round 3 (261106): Agree or Write on each answer row, Answer on a Status row whose form waits, Open on a next
+        step, words in place of ids, an empty lane says only that, and the Job's state line leads its Status."""
+        self.findings_block()
+        (self.block / 'reports/q01_a/q01_a.md').write_text('# A\n\n## Opening\n\nProposed: the tables hold.\n')
+        page = focus_page.render(frame.Theme(name='work'), self.root, self.block, 'work', 'findings')
+        self.assertIn('class="row-verb pb-copy1"', page)
+        self.assertIn('>Agree</button>', page)                                    # its answer waits for agreement
+        self.assertIn('/haipipe-report b01_study/reports/q01_a/q01_a.md I agree', page)
+        self.assertEqual(page.count('its answer waits for your agreement'), 1)    # once, under Process (round 3)
+        self.assertIn('<p class=mut>Nothing handed over yet.</p>', page)          # no "goes in delivery/model/"
+        self.assertNotIn('All files', page)
+        self.assertNotIn('<small>j01 · t01</small>', page)
+        job = self.block / 'j01_work'
+        (job / 'j01_work.md').write_text('# j01\nstate: ⏳ IN PROGRESS · the reading is running\n')
+        run = job / 't01_read/runs/r01_collect_cut'
+        run.mkdir(parents=True)
+        (run / 'run.yaml').write_text('run: r01_collect_cut\nstatus: waiting\n')
+        (run / 'question_collection.md').write_text('# Cut\n\n## Q1 · Cut\n\nWhy.\n\n**Which cut?**\n\n- [x] A · a\n- [ ] B · b\n')
+        (run / 'r01_collect_cut.html').write_text('<html></html>')
+        status = focus_page.render(frame.Theme(name='work'), self.root, job, 'report', 'standing')
+        self.assertIn('<p class=st-lead>⏳ <b>In progress</b> · the reading is running</p>', status)
+        self.assertIn('🙋 Answer</a>', status)                                    # on the Task's row
+        self.assertNotIn('<span class=jn>t01</span>', status)
+        self.assertEqual(focus_page.steps_word(['running']), '1 running')
+        self.assertEqual(focus_page.steps_word(['running', 'planned']), '2 to do')
+        self.assertEqual(focus_page.ladder_words('t03'), 'Task 3')
+
+    def test_round3_run_popout_draws_its_files_and_links_what_it_reads(self):
+        """Round 3: the pop-out's files are side tabs, a map is drawn, and the path a Run reads opens that Run."""
+        task = self.write_task('j01_compare', 't01_first', '✅ DONE · ok')
+        src = task / 'runs/r01_first/result'
+        src.mkdir(parents=True)
+        (src / 'tables.csv').write_text('a,b\n1,2\n')
+        run = task / 'runs/r02_next'
+        (run / 'result/maps').mkdir(parents=True)
+        (run / 'result/maps/one.mindmap.md').write_text('---\nmindmap: 1\n---\n\n# One\n\n- A\n')
+        (run / 'run.yaml').write_text('run: r02_next\nreads:\n- b01_study/j01_compare/t01_first/runs/r01_first/result/tables.csv\n')
+        page = focus_page.run_document(run, self.root)
+        self.assertIn('pb-side', page)                                             # side tabs, never top tabs
+        self.assertNotIn('name="runtab"', page)
+        self.assertIn('view=focus-map', page)                                      # the map drawn, not its Markdown
+        self.assertIn('part=run&amp;path=b01_study%2Fj01_compare%2Ft01_first%2Fruns%2Fr01_first', page)   # reads: that Run
+        self.assertNotIn(str(self.root), page)
+
+
+    def test_round3_shared_words_and_the_draw_page(self):
+        """Round 3: a to-do row's short id moves to hover; the Draw page registers no service worker (/sw.js 404)."""
+        from live import excalidraw_proxy, ui_parts
+        rows = ui_parts._todo([("G0: the telling is not chosen yet", "", "waiting for you", "", "", False)])
+        self.assertIn('>the telling is not chosen yet<', rows)
+        self.assertIn('title="G0: the telling is not chosen yet"', rows)
+        self.assertEqual(ui_parts.todo_word([("T0 · the main Runs", "", "waiting for you")])[1], "🙋 the main Runs")
+        self.assertEqual(ui_parts._no_id("G01: kept, a name the theme shows"), "G01: kept, a name the theme shows")
+        self.assertIn(b"delete Navigator.prototype.serviceWorker", excalidraw_proxy.NO_SW)
 
 
 if __name__ == '__main__':

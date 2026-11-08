@@ -1,3 +1,8 @@
+## 1.29.2 · 2026-11-06 · the portal walk's card says it is a starter
+
+- `portal_fill.py` scaffold: the walk Run's card carries `status: starter, not walked`, so its Run page and the Task's
+  Status say what the Findings say (stage-2 review round 2: "not run", "not run yet").
+
 ## 1.29.1 · 2026-11-04 · V3 is not ✅ while values are owed
 
 - Reported by Paper-PersonalityPDMPMandate: "✅ 7 of 7 Tasks; 233 owed" read as done. `paper_check` V3 and V4 show ⏳ when the note counts values owed, differing or missing, or keys missing.

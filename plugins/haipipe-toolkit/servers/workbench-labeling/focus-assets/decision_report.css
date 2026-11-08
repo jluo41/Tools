@@ -19,6 +19,11 @@
 .dec-view .dec-sec:not([open])>.dec-h::before{content:"▸"}
 .dec-view .dec-h:hover{color:var(--accent)}
 .dec-view .dec-body{margin:10px 0 18px;padding:0 2px}
+/* each bar's state word on its right; what waits on the person under it, shown only while the section is closed (261106) */
+.dec-view .dec-h>.word{flex:none;margin-left:auto;font-size:12px;font-weight:400;color:var(--muted);white-space:nowrap}
+.dec-view .dec-h>.word.you{color:light-dark(#b35c00,#ffc078);font-weight:600}
+.dec-view .dec-wait{margin:-6px 0 12px 32px;font-size:13px;line-height:1.4;color:light-dark(#b35c00,#ffc078)}
+.dec-view .dec-sec[open]+.dec-wait{display:none}.dec-view .dec-wait+.dec-group{margin-top:22px}
 
 /* the main point, large, its state word under it; plain lines smaller */
 .focus-content .dec-view .dec-big{font-size:20px;line-height:1.45;font-weight:600;margin:4px 0 2px;color:var(--ink)}

@@ -124,6 +124,9 @@ CSS = """<style>
 JS = """<script>
 (function(){if(window.__pmMap)return;window.__pmMap=1;
  function wire(a,b,o,leaf){var p=a.getBoundingClientRect(),q=b.getBoundingClientRect();
+  /* a leaf hung under its card (a narrow box puts it there) gets an elbow from the card's foot, not a curve back */
+  if(leaf&&q.left<p.right-4){var ex=p.left-o.left+10,ey=p.bottom-o.top,ty=q.top+12-o.top,tx=q.left-o.left-4;
+   return '<path d="M'+ex+','+ey+' V'+ty+' H'+tx+'"/>';}
   var x1=p.right-o.left,y1=p.top+p.height/2-o.top,x2=q.left-o.left-6,y2=(leaf?q.top+12:q.top+q.height/2)-o.top,m=(x1+x2)/2;
   return '<path d="M'+x1+','+y1+' C'+m+','+y1+' '+m+','+y2+' '+x2+','+y2+'"/>';}
  function draw(){document.querySelectorAll('.pm').forEach(function(m){var svg=m.querySelector('.pm-wires');
@@ -280,7 +283,9 @@ SUBFOLD = '<button type=button class=pm-subfold aria-label="open or close"></but
 FOLD = """<style>
 .pm-folds .pm-para:not(.pm-on)>.pm-leaves{display:none}.pm-folds li:not(.pm-on)>.pm-sub{display:none}
 .pm-foldbtn{position:absolute;right:5px;top:5px;border:0;background:none;padding:2px 4px;font:11px/1 system-ui,sans-serif;color:var(--mut);cursor:pointer}
-.pm-foldbtn::before{content:"▸"}.pm-on>.pm-pnode>.pm-foldbtn::before{content:"▾"}
+/* a card's fold mark carries its word (every mark has its word: round 3, "the map-card fold mark has no word") */
+.pm-foldbtn::before{content:"▸ show"}.pm-on>.pm-pnode>.pm-foldbtn::before{content:"▾ hide"}
+.pm-pnode:has(>.pm-foldbtn):has(>.pm-id:empty),.pm-pnode:has(>.pm-foldbtn):not(:has(>.pm-id)){padding-right:52px}
 .pm-subfold{border:0;background:none;padding:0 2px 0 6px;font:11px/1 system-ui,sans-serif;color:var(--mut);cursor:pointer}
 .pm-subfold::before{content:"▸"}li.pm-on>.pm-w>.pm-subfold::before{content:"▾"}
 .pm-folds .pm-pnode:has(>.pm-foldbtn){cursor:pointer}.pm-folds .pm-pnode:has(>.pm-foldbtn):hover{border-color:var(--acc)}

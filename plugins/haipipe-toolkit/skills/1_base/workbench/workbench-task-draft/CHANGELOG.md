@@ -1,3 +1,17 @@
+## 0.105.0 · 2026-11-06 · round-3 Section fixes: keys link to the bib, Now from the steps, one sign wait
+
+- Each [key] in a Section's text links to its row in Work › 3 · Evidence's new 📚 Its bib (each entry of the Section's
+  bib, cited or not, and each cited key the bib lacks, flagged); `content_read(folder, root)`, `bib_entries`.
+- Text adopted into the face counts as written: Write is done and the steps after it come next; Status's "Now" is read
+  from the steps ("Write done; Plan waits for your sign"), its "Target" row named as the face names it.
+- The plan's sign wait shows once: Process 1's row "Plan waits for your sign" with its verb "Sign the plan" (how, on
+  hover); Results' §1 Structure says "not signed yet". No "✅ on approved: in the draft" line, no "Copy the prompt
+  below…" line, no "· —" after the draft's name; Scratch has its 📝; the rubric shows its four axes only; the contract's
+  labels are words.
+- A response letter's Text shows each reply beside the reviewer's point it answers (`reply_board`; replies read from
+  the letter, `review_points`), its Plan's Input names the comments report, and at 390 px the Answers row and every
+  evidence card wrap under their label. The Interactions views' captions say what they hold.
+
 ## 0.104.19 · 2026-11-03 · a refused LaTeX export fails loudly; --accept-dropped-keys for an intended drop
 
 - JL 261103 (through the MISQ paper session): md2tex refused to overwrite three Sections' fragments when a citation

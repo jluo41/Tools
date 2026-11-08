@@ -4125,7 +4125,8 @@ def _live_pages(block: Path) -> list:
             out.append({"key": key, "title": str(row["what"]), "files": [], "fixed": [LIVE_PAGE],
                         "groups": [LIVE_PAGE] + [g for g in added.get(key, []) if g != LIVE_PAGE],
                         "source": " › ".join(src) or "the Block", "folder": folder, "when": 0, "size": 0,
-                        "versions": [], "url": str(row["url"]), "service": str(row.get("service") or row["what"])})
+                        "versions": [], "url": str(row["url"]), "service": str(row.get("service") or row["what"]),
+                        "face": owner})                  # a relative url is from the face's own folder (live_url)
     return out
 
 
@@ -4215,6 +4216,17 @@ def _delivery_links(files: list, root: Path) -> str:
                     for f, k in zip(files, kinds))
 
 
+def live_url(item: dict, root: Path) -> str:
+    """A live page's address: an http(s) link or a path from the served root as written; a path with no leading `/` is
+    from its face's own folder (`delivery/web/index.html`), so it opens on any server, a SPACE's or Tools' own (261106:
+    one written from the SPACE root 404'd on a server rooted at Tools)."""
+    url = str(item.get("url") or "")
+    if not url or url.startswith(("http://", "https://", "/")):
+        return url
+    page = (Path(item.get("face") or item["folder"]) / url).resolve()
+    return _file_url(page, root) if page.is_file() and page.is_relative_to(Path(root).resolve()) else url
+
+
 def _delivery_card(i: dict, root: Path) -> str:
     """One closed row per deliverable, as a Studio topic's: ⋮⋮, its name and groups and its newest version's files ↗,
     with no line under the name and no Add to Current (JL 261014: "too hard to read, why you give so many unnecessary
@@ -4223,7 +4235,7 @@ def _delivery_card(i: dict, root: Path) -> str:
     a row of its versions (newest first, picked) over the picked version itself."""
     attrs, handle, _, chips = _group_parts(i["key"], i["title"], i["groups"], noun="result", fixed=i["fixed"])
     if i.get("url"):                               # a live page: the page itself, working, in its card (JL 261104)
-        url = i["url"]
+        url = live_url(i, root)
         frame = (f'<iframe class=st-frame title="{_e(i["title"])}" data-src="{_e(url)}" referrerpolicy=no-referrer>'
                  f'</iframe>' if url.startswith("/") else f'<p class="mut none">It lives on another host: open it above.</p>')
         return (f'<details class=topic data-studio-tags="{_e(json.dumps(i["groups"]))}"{attrs}><summary>{handle}'

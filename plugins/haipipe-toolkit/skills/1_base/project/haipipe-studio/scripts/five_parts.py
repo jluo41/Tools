@@ -483,7 +483,9 @@ def _closed(topic, by):
     return face.is_file() and "CLOSED" in face.read_text().split("\n", 3)[1]
 
 
-def build(topic: Path, spec: dict, design, shift: int = 1050) -> Path:
+def build(topic: Path, spec: dict, design, shift: int = 1050, writer=None) -> Path:
+    """`writer(out, els)`: how the drawing is written. None keeps the plain overwrite (quick_draw.write); a builder whose
+    canvas a person marks passes `marks_writer`, which keeps those marks across rebuilds (canvas.write)."""
     topic = Path(topic)
     out = topic / f"{topic.name}.excalidraw"
     els = heading(spec["title"], spec.get("sub", "from idea to delivery, in five parts"))
@@ -493,9 +495,20 @@ def build(topic: Path, spec: dict, design, shift: int = 1050) -> Path:
         e["x"] += shift
     ids = [e["id"] for e in els]
     assert len(ids) == len(set(ids)), [i for i in ids if ids.count(i) > 1][:5]
-    print(write(out, els))
+    if writer is None:
+        print(write(out, els))
+    else:
+        writer(out, els)
     card(out)
     return out
+
+
+def marks_writer(out: Path, els: list) -> None:
+    """Write a five-part drawing so a person's marks on it stay (canvas.write: content ids, a seed snapshot beside it,
+    their own elements and edits kept, their deletions respected), with the builder's own colours (no studio palette).
+    The first time, move a drawing quick_draw wrote aside first, or every old element is kept as a mark."""
+    from canvas import write as canvas_write
+    canvas_write(out, els, "haipipe-studio five_parts", palette=False)
 
 
 def headings(md: Path) -> list:

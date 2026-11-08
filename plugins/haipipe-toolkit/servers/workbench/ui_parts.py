@@ -9,8 +9,74 @@ from pathlib import Path
 from live.frame import esc
 
 
-def _section(title: str, body: str) -> str:
-    return f'<section class=fd-sec><h3 class=fd-h>{esc(title)}</h3>{body}</section>' if body else ""
+def _section(title: str, body: str, word: str = "", waits: str = "") -> str:
+    """One section: its bar (the title, then its state word on the right) and its content. `word` is the section's state
+    read from its content (answered, 2 wait for you, 3 of 5 done, nothing yet), never a fixed decoration; `waits` is
+    the one thing that waits on the person, shown under the closed bar, outside the fold, so it is seen while the
+    section stays closed (JL 261106: "every closed bar shows a state word on its right"). The fold script keys a bar's
+    remembered state on its title only, never on its word."""
+    if not body:
+        return ""
+    return (f'<section class=fd-sec><h3 class=fd-h>{esc(title)}{word_span(word)}</h3>'
+            + (f'<p class=fd-wait>{esc(waits)}</p>' if waits else "") + f'{body}</section>')
+
+
+WAITS_WORDS = ("wait for you", "waits for you", "waiting for you", "waits for your", "needs your", "your sign", "your call")
+
+
+def waits_on_you(word: str) -> bool:
+    """A state word that asks the person to act (shown in the waiting colour, and with its waiting line)."""
+    low = (word or "").lower()
+    return any(w in low for w in WAITS_WORDS)
+
+
+def word_span(word: str) -> str:
+    """A bar's state word, on its right; a word that waits on the person in the waiting colour."""
+    if not word:
+        return ""
+    return f'<span class="word you">{esc(word)}</span>' if waits_on_you(word) else f'<span class=word>{esc(word)}</span>'
+
+
+def plural_word(n: int, one: str, many: str) -> str:
+    return f"{n} {one if n == 1 else many}"
+
+
+def todo_word(rows) -> tuple:
+    """(state word, waiting line) of a list of to-do rows (_todo's rows: words, sub, state, …): how many wait for you,
+    else whether all are done or running, else how many of them are done; the waiting line is the first row that
+    waits for you."""
+    rows = list(rows)
+    states = [str(r[2] or "").lower() for r in rows]
+    if not states:
+        return "nothing yet", ""
+    you = [r for r, s in zip(rows, states) if waits_on_you(s) or s.startswith("waiting")]
+    if you:
+        sub = _plain(str(you[0][1] or ""))
+        return f'{len(you)} wait{"s" if len(you) == 1 else ""} for you', f"🙋 {_no_id(_plain(str(you[0][0])))}" + (f": {sub}" if sub else "")
+    done = sum(any(w in s for w in ("done", "checked", "answered", "drawn", "ready", "applied", "decided")) for s in states)
+    if done == len(states):
+        return "done", ""
+    if any("running" in s or "in progress" in s for s in states):
+        return "running", ""
+    if all(s == "open" for s in states):
+        return plural_word(len(states), "open", "open"), ""
+    return f"{done} of {len(states)} done", ""
+
+
+def todo_section(title: str, rows, body: str = "") -> str:
+    """A section of to-do rows, its word and waiting line read from the rows' states."""
+    word, waits = todo_word(rows)
+    return _section(title, body or _todo(rows), word, waits)
+
+
+# the state word on a bar's right and the waiting line under a closed bar, for every page that draws `fd-sec` bars
+# (the paper and draft pages carry focus_draft.CSS too; the work pages only interaction_section.FOLD)
+WORD_CSS = ("<style>.fd-h>.word{flex:none;margin-left:auto;font-size:12px;font-weight:400;color:var(--muted);white-space:nowrap}"
+            ".fd-h>.topic-pop~.word,.fd-h>.fd-verb~.word{margin-left:10px}"
+            ".fd-h>.word.you,.band-sec .word.you{color:light-dark(#b35c00,#ffc078);font-weight:600}"
+            ".fd-wait{margin:-6px 0 12px 32px;font-size:13px;line-height:1.4;color:light-dark(#b35c00,#ffc078)}"
+            ".fd-h[aria-expanded=\"true\"]+.fd-wait{display:none}"
+            "@media(max-width:600px){.fd-h{flex-wrap:wrap}.fd-h>.word{margin-left:auto}}</style>")
 
 
 # ── a paper version's whole paper (JL 261031, on t00_summary › Delivery: "the delviery should be here, right?") ────
@@ -40,7 +106,8 @@ EMOJI = {"direction": "🧭", "directions considered": "🔀", "hand-off": "🤝
          "stakes and evidence basis": "⚖️", "venues": "🏛️", "roadmaps": "🗺️", "section narrative": "🧠",
          "interactions": "🙋", "the drawing": "🖼️", "the mind map": "🧠", "flow": "🔗", "questions to runs": "🧩",
          "waits on": "🚧", "interactions": "🙋", "open": "🚧", "skills": "🧰", "where each stands": "📋", "steps": "🪜", "send": "📮", "sections": "📑", "displays": "🖼️", "timeline": "🗓️", "work blocks": "🧪",
-         "discovery blocks": "🔎", "values": "🔢", "citations": "📚", "work": "🧪", "discovery": "🔎"}
+         "discovery blocks": "🔎", "values": "🔢", "citations": "📚", "work": "🧪", "discovery": "🔎",
+         "plan": "📐"}                         # Displays' "1 · Plan" (261105: the one bar with no emoji)
 
 
 PB_CSS = """<style>
@@ -124,8 +191,11 @@ button.pb-tile{cursor:pointer;display:flex;flex-direction:column;justify-content
 @media(max-width:600px){.fd-row{flex-wrap:wrap}.fd-row .n{min-width:0;flex-basis:100%}.pb-kv{grid-template-columns:1fr}
  .pb-chain{flex-direction:column}.pb-chain .pb-step{width:100%}.pb-chain .pb-arrow{transform:rotate(90deg);margin:0;align-self:flex-start;padding:2px 20px}.pb-pic img{max-width:100%}}
 /* phone rules last: an @media rule placed before its base rule loses to it (b16 s32 review r02) */
-@media(max-width:700px){.pb-flow{grid-template-columns:1fr}.pb-wires{display:none}.pb-side{grid-template-columns:1fr}
+@media(max-width:700px){.pb-flow{grid-template-columns:1fr}.pb-wires{display:none}.pb-side{grid-template-columns:minmax(0,1fr)}
  .pb-list{position:static;flex-direction:row;flex-wrap:wrap}.pb-item span{display:none}}
+/* a wide table in a side panel scrolls in its own box; the page never slides sideways (round 3: 1fr let a table's
+   width push the stacked grid to 565 px at 390) */
+.pb-read,.pb-read>.pb-panel{min-width:0}
 @media(max-width:600px){.pb-panel table,.pb-panel tbody,.pb-panel tr,.pb-panel td{display:block;width:100%;min-width:0}
  .pb-panel thead{display:none}.pb-panel tr{border-bottom:1px solid var(--line);padding:6px 0}.pb-panel td{border:0;padding:2px 0}
  .pb-srow{flex-wrap:wrap}.pb-what{flex:1 1 calc(100% - 64px)}.pb-st{margin-left:64px;white-space:normal}
@@ -153,10 +223,10 @@ PB_JS = """<script>(function(){if(window.pbTabs)return;window.pbTabs=1;
  setTimeout(wire,50);})();</script>"""
 
 
-def _bar(n, name: str, body: str) -> str:
-    """One section: `N · <emoji> name` (or unnumbered, a helper), its content under it."""
+def _bar(n, name: str, body: str, word: str = "", waits: str = "") -> str:
+    """One section: `N · <emoji> name` (or unnumbered, a helper), its state word, its content under it."""
     title = (f"{n} · " if n else "") + f"{EMOJI.get(name.lower(), '')} {name}".strip()
-    return _section(title, body)
+    return _section(title, body, word, waits)
 
 
 def _plain(text: str) -> str:
@@ -234,11 +304,21 @@ def _pill(state: str) -> str:
     return f'<span class="pb-pill {cls}">{esc(state)}</span>' if state else ""
 
 
+# A row's own short id ("G0: …", "T1 · …", a face's way to number its open points and Runs) is no word on the page: the
+# row reads from its words, the id kept on hover (round 3, b16 s32: "ids G0, T0 to T2 in Process"). One capital and one
+# digit only, so a name such as "G01" or "Q12" that a theme shows on purpose stays.
+ROW_ID = re.compile(r"^\s*(?:\*\*)?([A-Z]\d(?:\.\d+)?)(?:\*\*)?\s*(?::|·)\s+(?=\S)")
+
+
+def _no_id(words: str) -> str:
+    return ROW_ID.sub("", str(words), count=1)
+
+
 def _todo(rows) -> str:
     """One full-width row per thing to do, step by step: its words large, its state a pill, its verb on the row (b15 s58
-    C2, JL 261101: "in each step, we should have something to do step by step")."""
+    C2, JL 261101: "in each step, we should have something to do step by step"); a row's own short id on hover only."""
     return '<div class=pb-todos>' + "".join(
-        f'<div class=pb-todo><span class=w>{esc(words)}{f"<small>{esc(sub)}</small>" if sub else ""}</span>{_pill(state)}'
+        f'<div class=pb-todo><span class=w title="{esc(words)}">{esc(_no_id(words))}{f"<small>{esc(sub)}</small>" if sub else ""}</span>{_pill(state)}'
         + (f'<a class=fd-btn href="{esc(href)}"{" data-pop=" + chr(34) + esc(words) + chr(34) if pop else ""}>{esc(verb)}</a>' if href else "")
         + '</div>' for words, sub, state, verb, href, pop in rows) + '</div>'
 
@@ -290,6 +370,24 @@ PROMPT_JS = """<script>(function(){if(window.pbPrompt)return;window.pbPrompt=1;
  function cp(text,done){if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(done,function(){old(text);done();});}else{old(text);done();}}function old(text){var t=document.createElement('textarea');t.value=text;t.setAttribute('readonly','');t.style.position='fixed';t.style.top='-1000px';document.body.appendChild(t);t.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(t);}
 })();</script>"""
 NOTES = (("your notes", "notes, a row, a sentence to change"),)
+
+
+# A row's own verb that copies a prompt (round 3, b90 Work › Findings: "no Agree anywhere"): one button on the row, the
+# prompt in its data, no box; the person pastes it in a Claude session and the skill it names does the work.
+COPY_JS = """<script>(function(){if(window.pbCopy1)return;window.pbCopy1=1;
+ document.addEventListener('click',function(ev){var b=ev.target.closest&&ev.target.closest('.pb-copy1');if(!b)return;
+  ev.preventDefault();ev.stopPropagation();var text=b.dataset.copy||'',was=b.dataset.word||b.textContent;b.dataset.word=was;
+  function done(){b.textContent='Copied';setTimeout(function(){b.textContent=was;},1400);}
+  function old(){var t=document.createElement('textarea');t.value=text;t.setAttribute('readonly','');t.style.position='fixed';
+   t.style.top='-1000px';document.body.appendChild(t);t.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(t);}
+  if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(text).then(done,function(){old();done();});else{old();done();}});
+})();</script><style>button.pb-copy1{font:inherit;font-size:13px;background:none;cursor:pointer}</style>"""
+
+
+def copy_verb(label: str, text: str, title: str = "") -> str:
+    """A row's verb that copies `text`, a prompt for a skill (COPY_JS, once per page, does the copying)."""
+    tip = title or "Copies a prompt; paste it in a Claude session"
+    return f'<button type=button class="row-verb pb-copy1" data-copy="{esc(text)}" title="{esc(tip)}">{esc(label)}</button>'
 
 
 def prompt_box(template: str, fields=None, session: str = "", step: str = "", asks: str = "", key: str = "",

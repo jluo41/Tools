@@ -1,5 +1,10 @@
 # haipipe-paper-plan · changelog
 
+## 0.2.1 · 2026-11-06 · a seeded display Task has its Aim
+
+- `display_plan.py seed` writes `goal:` (what the display shows) on each pool Task's face: the page's Aim line.
+  Paper-Example's s06 rows now name each display's Run and state, and its drawing was rebuilt by its builder.
+
 ## 0.2.0 · 2026-11-01 · s06-paper-displays: the display plan, by the venue's rules
 
 - JL 261101: "in the /haipipe-paper-plan, we should also have the plan for the displays"; "the display like that

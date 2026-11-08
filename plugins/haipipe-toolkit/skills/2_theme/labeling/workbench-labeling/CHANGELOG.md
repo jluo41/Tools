@@ -1,3 +1,37 @@
+## 0.36.0 · 2026-11-06 · The Block and Job pages say the same thing, and list what waits (b15 review, round 4)
+
+- Work › Status's Process is labeling's 🚧 Next steps (`labeling_focus.next_steps`): every waiting form first, each
+  row opening the form itself in the pop-out (the release choices were missing, and the row opened a Run card that
+  said only "waiting"), the first under the closed bar; then each unfinished Task's next Run.
+- A Block's Job row says "1 of 3 done", the words the Job's Tasks bar says (`labeling_focus.status_html`), and the
+  walkthrough's expression Task says "🙋 waits for you" while its release choices wait.
+- Delivery lists each signed release: its final labels, the rules they follow, the sign date and the Run
+  (`labeling_focus.delivery_html`, `delivery_page`); the rail says "what it has handed over".
+- Findings names a Job on its bars only when a Block holds more than one; a final label's card ("r08 Q5") opens that
+  question of the meaning Task's form.
+- A page's title breaks at its underscores on a phone; a closed bar's fold mark sits in its gutter there.
+
+
+## 0.35.0 · 2026-11-06 · The Block and Job pages on the shared shape (b15 review, round 2)
+
+- A labeling Block's and Job's focus pages are drawn by `labeling_focus.level_page`: Report and Work both hold
+  MindMap · Status · Findings, Work as ⚙️ Process then 📊 Results (`focus_page.work_views`), each view ending in 🙋
+  Interaction with its own forms (the page's own under MindMap, a release form under Findings, every other form below
+  under Status), and the base page's rails. The Job's older single-section page (Goal, Tasks chips, Reports, Outputs,
+  Studio-All, Folders, its Next action box) is gone; its old links open the nearest view.
+- Findings leads with what each Job released: the expression Task's final labels (`labeling_steps._final_labels`)
+  and the approved guideline they follow.
+- The walkthrough Job's face says where it stands (`🙋 waiting on you · e02 released …`), so its page and its Tasks
+  agree.
+
+
+## 0.34.0 · 2026-11-06 · The items Task's next action names its own step
+
+- A Job's Next action, while an items Task's form waits, says "Answer <form title> (rNN_collect_…), then read
+  the recipe in 2 · Items and press Sign" (3 · Embedding and Agree when the form feeds the build), and opens that view;
+  "on its Preferences step" stays the meaning Task's words (`labeling_focus._items_form_next`).
+
+
 ## 0.32.0 · 2026-10-14 · The building Task works as b15 s42 draws it
 
 - A building Task's Work and Report have one tab per Stage: 1 · Contract · 2 · Initial Labeling Definition ·

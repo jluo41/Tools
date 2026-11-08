@@ -1,6 +1,13 @@
 haipipe-mindmap · Changelog
 ===========================
 
+## [0.9.7] — 2026-11-06
+
+- An unwritten map's root reads "Not written yet." (`mmmap.UNWRITTEN`, `unwritten`), a state, never how to write it; an
+  older map's "Not written yet: ask in the Studio chat…" reads the same. A card's fold mark carries its word ("▸ show",
+  "▾ hide"). A leaf hung under its card (a narrow box) gets an elbow from the card's foot (`mapview` wire).
+  Test: `test_a_new_topics_map_is_honest_about_being_unwritten`.
+
 ## [0.9.6] — 2026-11-04
 
 - "The Block map" template in SKILL.md: groups before lists, one screen when closed, short names, never a second kind of

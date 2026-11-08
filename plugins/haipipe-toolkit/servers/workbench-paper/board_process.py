@@ -8,7 +8,7 @@ from urllib.parse import quote
 
 from live import draft_steps as ds
 from live.frame import esc
-from live.ui_parts import _cap, _plain, _plan_html, _section, _todo
+from live.ui_parts import _cap, _plain, _plan_html, _section, _todo, plural_word, todo_section
 from live.focus_draft import WORK
 from live.board_read import BOARD_PARTS, DOT_REF, view_topics, _face, _field, _num, _open_list, _page_url, _section_state, _state_words, _table, _task_url, _waits, board_topic, explore_tree, is_version, md_table, part_topics
 from live.board_interactions import answers_of
@@ -104,8 +104,11 @@ def _steps(board: Path, key: str, topic, text: str, root: Path, md):
                     r = next((plan[k] for k in ks if k in plan), None)
                     lab = dp.title(r) if r else head
                     name = f"{lab} · {_display_line(t, words)}"
-                rows.append((name, "" if pill in ("done", "waiting") else "", pill,
-                             "Open", _task_url(t, root), False))
+                line = ""
+                if kind != "Displays":           # what its Run returned, in the version's and the Job's words (r03:
+                    from live.evidence_read import task_state   # a pill cut a coded headline, "0 card-o")
+                    line, pill = task_state(t, status)
+                rows.append((name, line, pill, "Open", _task_url(t, root), False))
         return ("Where each display stands" if key == "displays" else "Where each stands", rows) if rows else ("", [])
     if key == "draft":                         # each Section's next step, a verb that opens it
         rows = []
@@ -180,6 +183,18 @@ def _plan_steps(board: Path, root: Path) -> list:
     return steps
 
 
+PTD_CSS = ("<style>.pb-ptd{margin:0 0 6px}.pb-ptd>summary{cursor:pointer;font-size:12.5px;color:var(--muted);padding:2px 0}"
+           ".pb-ptd[open]>summary{margin-bottom:4px}</style>")
+
+
+def behind_copy(html: str) -> str:
+    """Prompt boxes with their prompt behind Copy prompt (r02: Work › Plan showed five prompts open): each prompt's text
+    in a closed "Show the prompt" fold, its session line off the page (Copy prompt still copies both)."""
+    html = re.sub(r"<p class=pb-sess>.*?</p>", "", html, flags=re.S)
+    return PTD_CSS + re.sub(r"(<pre class=pb-pt>.*?</pre>)", r"<details class=pb-ptd><summary>Show the prompt</summary>\1</details>",
+                            html, flags=re.S)
+
+
 def process_html(board: Path, key: str, root: Path, md, items, work: bool, item_html=None) -> str:
     """The PROCESS band, step by step (b15 s58); a title names the step, never a count (JL's rule: labels carry no
     counts; the pills say each row's state): 1 the decisions waiting for you (Report: decided), one row per
@@ -194,38 +209,42 @@ def process_html(board: Path, key: str, root: Path, md, items, work: bool, item_
         [r for r in items if r.get("topic") not in part_topics(board)] if key == "draft" else []
     href = lambda r: f'/{quote(ds._rel(Path(r["form"]), root))}' if r.get("form") else ""
     out, n = "", 0
-    if work:                                   # 1 · the decisions waiting for you: each question of each open form
-        rows = [(f'{q} · {_plain(ask)}', r["title"], "Needs your judgment", "Answer", href(r), True)
-                for r in mine if r.get("state") == "waiting" for q, _, ask in (r.get("asks") or [(r["run"], "", r["title"])])]
-        rows += [(re.sub(r"\s*[⬜✅⏳○]\s*", " ", _plain(ln.lstrip("- ")))[:140].strip(), "", "waiting for you", "", "", False)
-                 for _, _, text in parts for ln in _waits(text)]                # the mark is the pill now
-        title = "Decisions waiting for you" if rows else "Nothing waits on you"
+    if work:                                   # 1 · the open points the parts' faces mark as waiting for you; the open
+        # forms' questions are the view's last section, 🙋 Interaction, so they show once (JL 261105: "keep only the
+        # bottom"; as Writing's own question row went, 261105); with no open point there is no step
+        waits = [(re.sub(r"\s*[⬜✅⏳○]\s*", " ", _plain(ln.lstrip("- ")))[:140].strip(), "", "waiting for you", "", "", False)
+                 for _, _, text in parts for ln in _waits(text)]                # the mark is the pill now; shown with the
+                                                                                # parts' own Open list, one "📌 Open points"
     else:                                      # 1 · what was decided: each answered question, its pick
         rows = [(f"{q} · {pick}", (f"note: {note}" if note else r["title"]), "Answered", "See answers", href(r), True)
                 for r in sorted((x for x in mine if x.get("state") == "answered" and x.get("answers")),
                                 key=lambda x: x.get("received", ""), reverse=True)
                 for q, pick, note in answers_of(r["answers"])]
         title = "Decisions made" if rows else "No form answered yet"
-    n += 1
-    out += _section(f"{n} · 🙋 {_cap(title)}", _todo(rows) if rows else "<span hidden></span>")
+        n += 1
+        out += _section(f"{n} · 🙋 {_cap(title)}", _todo(rows) if rows else "<span hidden></span>",
+                        plural_word(len(rows), "decided", "decided") if rows else "nothing yet")
     if key == "plan":                          # 2 · the plan center: design the data, the regressions, run, read
         plan = _plan_steps(board, root)
         if plan:
             n += 1
             session = _field(read_board(board), "session") if (board / "board.md").is_file() else ""   # the Board's own
-            out += _section(f"{n} · 🧭 Plan", _plan_html(plan, session, key=f"plan:{ds._rel(board, root)}"))
+            out += _section(f"{n} · 🧭 Plan", behind_copy(_plan_html(plan, session, key=f"plan:{ds._rel(board, root)}")),
+                            f"runs in {session}" if session else plural_word(len(plan), "prompt", "prompts"))
     # each part's things to do; two parts with the same kind of list (Idea's and Story's Open) read as one
     lists: dict = {}
     for part, topic, text in parts or [(key, None, "")]:
         head, rows = _steps(board, part, topic, text, root, md)
         if rows:
             lists.setdefault((head, part if head != "Open" else ""), []).extend(rows)
-    for (head, part), rows in lists.items():
+    if work and waits:                         # the waiting lines join the Open list, or stand as it (261105: Idea read
+        lists[("Open", "")] = waits + lists.get(("Open", ""), [])   # "🚧 Open", Story "📌 Open points")
+    for (head, part), rows in sorted(lists.items(), key=lambda kv: kv[0][0] != "Open"):
         n += 1
+        if head == "Open":                     # each step's word and waiting line read from its rows' pills (261106)
+            out += todo_section(f"{n} · 📌 Open points", rows)
+            continue
         emoji = {"dataflow": "⚙️", "paperflow": "🗓️", "evidence": "📋", "displays": "🖼️", "draft": "🪜"}.get(part, "🚧")
-        out += _section(f"{n} · {emoji} {head}", _todo(rows))
-    if work and key in VIEW_SKILLS:            # who does it
-        n += 1
-        out += _section(f"{n} · 🧰 Skills that do it", '<div class=pb-agents>' + "".join(
-            f'<div><span>🤖 <b>/{esc(nm)}</b>: {esc(does)}</span></div>' for nm, does in VIEW_SKILLS[key]) + '</div>')
+        out += todo_section(f"{n} · {emoji} {head}", rows)
+    # who does it: the rail's Skills section, once per page (JL 261105); VIEW_SKILLS feeds it
     return out

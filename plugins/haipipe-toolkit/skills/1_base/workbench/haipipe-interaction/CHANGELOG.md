@@ -1,6 +1,34 @@
 haipipe-interaction · Changelog
 ===============================
 
+0.12.0 · 2026-11-06 · every Board kind names its topic
+
+- A `for:` address may start with a named Board's folder, not only `bNN` or `Paper-<name>`: an insight Board
+  (`Insight-X-s01`), its Prototype (`Prototype-b91-X-s01`) or a design Block (`Design-X.j01-s02`) (`NAMED`, `TOPIC`;
+  `run_chain` anchors on them too). Before, no form could be made on an insight or design example.
+
+0.11.1 · 2026-11-06 · headers in words
+
+- A form's and a chat record's line under the title says what it is about in words (`about_words`: "About example main
+  fit", from the `for:` after "@"), never the Run id or the topic's address (round 3: "r03_collect_… · b90.j02.t01-s03:…
+  @ …" led the decision panel). b90's forms and records were rebuilt with `collect.py build`.
+
+0.11.0 · 2026-11-06 · quiet forms, titles first
+
+- A built form asks for applied.md only when one was beside it at build time (`FORM.applied`); `collect.py applied`
+  rebuilds the form so its flags show. No form sends a request that answers 404.
+- Headers lead with words: a form's label reads "Questions for you" and its Run id and topic address sit small under the
+  title (`.addr`, hidden inside the workbench's Interaction frame); a chat record's kicker reads "✍ Decided in the chat",
+  its address small, with no instruction sentence under the title. Forms and records name `data:` as their icon.
+- `collect.py build` on a chat record or a notes Run draws its page again from decisions.yaml or the notes, its answers
+  and card untouched; every built form and record under the blueprints was rebuilt this way, statuses kept.
+
+0.10.1 · 2026-11-05 · shown once
+
+- Decided 261105 ("keep only the bottom"): the 🙋 Interaction section that ends every Report and Work view is the one
+  place a form shows on a page; no Process step repeats it (paper Board, version, Section, work pages). On a work page
+  the section is numbered after the band's numbered folds (`interaction_section.next_number`).
+
 0.10.0 · 2026-11-05 · what you should know
 
 - JL 261105: "it should include both ask question and keep what you should know". New `collect.py know`: a notes Run,

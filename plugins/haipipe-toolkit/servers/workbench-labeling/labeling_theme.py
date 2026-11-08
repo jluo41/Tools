@@ -91,7 +91,7 @@ TYPES = (
     ("ground_truth", "📏", "the dataset's own labels, never read by building or scanning", ("raw",),
      "haipipe-task-for-raw"),
     # the two loops, one Task each (b15 s13-D12, 261101): meaning asks the person, expression never does
-    ("meaning", "🧭", "what the label means, loop by loop: Frame → Report → Preferences → Update; the only Task that "
+    ("meaning", "🧭", "what the label means, loop by loop: Frame → Prepare → Preferences → Update; the only Task that "
      "asks you", ("labeling-meaning",), "haipipe-labeling-interaction"),
     ("expression", "🛠", "the wording the models follow under one approved meaning: Rewrite → Run → Evaluate → "
      "Release", ("labeling-expression",), "haipipe-labeling-expression"),
@@ -105,7 +105,7 @@ TYPE = {t[0]: t for t in TYPES}
 NOTES = {"items": "📦 items: it makes the items; the labeling job holds back the sealed test from them.",
          "ground_truth": "📏 ground truth: building and scanning never read this Task; only the score Task opens it.",
          "score": "📊 score: it reads the final labels and the ground truth Task, and labels nothing.",
-         "meaning": "🧭 meaning: Frame, then loops of Report → Preferences → Update; the only Task that asks you, "
+         "meaning": "🧭 meaning: Frame, then loops of Prepare → Preferences → Update; the only Task that asks you, "
                     "one interaction per loop, each answer cited by the rule it made.",
          "expression": "🛠 expression: Rewrite → Run → Evaluate under one approved meaning; it never asks you, and its "
                        "round report sends a rule or label issue back to meaning."}

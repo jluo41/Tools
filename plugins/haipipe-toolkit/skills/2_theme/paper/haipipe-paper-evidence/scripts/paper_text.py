@@ -35,10 +35,14 @@ def project_root(path: Path) -> Path:
 
 
 def server_root(path: Path) -> Path:
-    """The SPACE whose workbench serves this folder: the nearest folder with `.server_config/`, else a repository root
-    (pyproject.toml beside code/, or a `.git` folder); workbench links are relative to it."""
+    """The SPACE whose workbench serves this folder: a Tools checkout first (its blueprints are served from its own root,
+    `blueprints/...`, wherever it sits: a SPACE's submodule or a clone of its own; 261106: a ticket rerun inside a
+    SPACE wrote `Tools/blueprints/...` links the Tools workbench could not open), then the nearest folder with
+    `.server_config/`, else a repository root (pyproject.toml beside code/, or a `.git` folder); workbench links are
+    relative to it."""
     path = Path(path).resolve()
-    for test in (lambda p: (p / ".server_config").is_dir(),
+    for test in (lambda p: (p / "blueprints").is_dir() and (p / "plugins" / "haipipe-toolkit").is_dir(),
+                 lambda p: (p / ".server_config").is_dir(),
                  lambda p: (p / "pyproject.toml").is_file() and (p / "code").is_dir(),
                  lambda p: (p / ".git").is_dir()):
         hit = next((p for p in [path, *path.parents] if test(p)), None)

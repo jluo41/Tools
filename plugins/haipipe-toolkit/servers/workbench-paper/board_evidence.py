@@ -38,18 +38,20 @@ def evidence_html(board: Path, root: Path) -> str:
             tasks = sorted((x for x in job.glob("t[0-9]*_*") if x.is_dir()), key=_num)
             if not re.search(pat, job.name, re.I):
                 tasks = [x for x in tasks if band[kind][0] <= _num(x) <= band[kind][1]]
+            read = {x: evidence_body(x, root) for x in tasks}       # read once: its row and the section's word
             if kind == "Displays":
                 main = [x for x in tasks if _num(x) < 50]
                 app = [x for x in tasks if _num(x) >= 50]
-                body = ("<h4 class=pb-part>Main</h4>" + "".join(evidence_item(x, root) for x in main) if main else "") + \
-                       ("<h4 class=pb-part>Appendix</h4>" + "".join(evidence_item(x, root) for x in app) if app else "")
+                body = ("<h4 class=pb-part>Main</h4>" + "".join(evidence_row(x, *read[x]) for x in main) if main else "") + \
+                       ("<h4 class=pb-part>Appendix</h4>" + "".join(evidence_row(x, *read[x]) for x in app) if app else "")
             else:
-                body = "".join(evidence_item(x, root) for x in tasks)
+                body = "".join(evidence_row(x, *read[x]) for x in tasks)
             if not body:
                 md = face(job)
                 state = (_field(md.read_text(encoding="utf-8", errors="ignore"), "state") if md else "") or "no Tasks yet"
                 body = f'<p class=mut>{esc(state)}</p>'
-            out += _section(f"{kind} · {job.name}", body + f'<p><a class=fd-btn href="{esc(_task_url(job, root))}">Open {esc(job.name)} ↗</a></p>')
+            out += _section(f"{kind} · {job.name}", body + f'<p><a class=fd-btn href="{esc(_task_url(job, root))}">Open {esc(job.name)} ↗</a></p>',
+                            evidence_word(kind, [v[1] for v in read.values()]))
     return out or '<p class=mut>No evidence Job yet.</p>'
 
 
@@ -108,8 +110,58 @@ def empty_job(job: Path) -> str:
     return f'<p class=mut>No Tasks yet{(" (state: " + esc(state) + ")") if state else ""}.' + (f" To make them: {esc(how)}." if how else "") + "</p>"
 
 
+def evidence_done(status: str) -> bool:
+    """An evidence Task's status says it is made: drawn, filled, checked or done ("not drawn" is not)."""
+    st = (status or "").lower()
+    if re.search(r"\b(?:not|un)[\s-]*(?:yet\s+)?(?:checked|drawn|filled|done|verified)", st):
+        return False
+    return bool(re.search(r"checked|drawn|filled|done", st))
+
+
+def evidence_word(kind: str, statuses: list) -> str:
+    """The state word of a list of evidence Tasks (JL 261106: "every closed bar shows a state word"): how many of them are
+    drawn (Displays), filled (Values) or verified (Citations, from their check's `N keys: M verified`)."""
+    if not statuses:
+        return "nothing yet"
+    keys = [re.search(r"(\d+) keys?: (\d+) verified", s or "") for s in statuses]
+    if kind == "Citations" and any(keys):
+        return f"{sum(int(m[2]) for m in keys if m)} of {sum(int(m[1]) for m in keys if m)} verified"
+    verb = {"Displays": "drawn", "Values": "filled", "Citations": "checked"}.get(kind, "done")
+    return f"{sum(evidence_done(s) for s in statuses)} of {len(statuses)} {verb}"
+
+
+def check_word(status: str) -> str:
+    """A whole-paper check's state word, from its headline: how many values match, or how many keys are verified."""
+    m = re.search(r"(\d+) values?\b.*?(\d+) match", status or "")
+    if m:
+        return f"{m[2]} of {m[1]} match"
+    m = re.search(r"(\d+) keys?: (\d+) verified", status or "")
+    if m:
+        return f"{m[2]} of {m[1]} verified"
+    return "checked" if status else "not run yet"
+
+
+def values_word(job: Path, root: Path) -> str:
+    """The Values tabs' state word: whether every raw table is still the file its source Run holds (source_status)."""
+    found = sorted(job.glob("t[0-9]*_*/runs/r[0-9]*/result/tables.json"))
+    if not found:
+        return "nothing yet"
+    try:
+        tabs = json.loads(found[-1].read_text(encoding="utf-8"))["tabs"]
+        froms = list(dict.fromkeys(t["from"] for tab in tabs for t in tab["tables"]))
+        states = [source_status(found[-1].parent, frm, found[-1].stat().st_mtime, root)[0] for frm in froms]
+    except Exception:
+        return ""
+    off = sum(not st.startswith("✅") for st in states)
+    return "all current" if not off else f"{off} of {len(states)} need a look"
+
+
 def evidence_item(task: Path, root: Path) -> str:
-    label, status, body = evidence_body(task, root)
+    return evidence_row(task, *evidence_body(task, root))
+
+
+def evidence_row(task: Path, label: str, status: str, body: str) -> str:
+    """One evidence Task as a folded row, from its evidence_body."""
     return (IX_CSS + f'<details class=ix-fold><summary><b>{esc(task.name)}</b><span class=ix-state>{esc(label)}</span>'
             f'<span class=ix-state>{esc(status)}</span></summary><div class=ix-body>{body}</div></details>')
 
@@ -125,7 +177,14 @@ VALUES_CSS = """<style>
 .vt-story{margin:0;font-size:14px;line-height:1.45}
 .vt-cols{align-items:center;padding-top:4px}.vt-cols span{font-size:12.5px;font-weight:600;margin-right:2px}
 .vt-how{margin:12px 0;border:1px solid var(--line);border-radius:8px;padding:8px 12px}.vt-how summary{cursor:pointer;font-size:14px;font-weight:600}.vt-how[open] summary{margin-bottom:8px}.vt-now,.vt-now-runs{margin:6px 0;font-size:12.5px;opacity:.8;overflow-wrap:anywhere}
-.vt-axes{margin:8px 0 0;font-size:12.5px;opacity:.75}
+.vt-axes{margin:8px 0 0;font-size:12.5px;opacity:.75}.vt-axes:empty{display:none}
+.vt-t td.c{cursor:pointer}
+@media(max-width:600px){.vt-t{font-size:12px}.vt-t th,.vt-t td{padding:4px 6px}}
+/* a phone: a list table's rows stack, each cell under its column's name; the panel grows instead of scrolling (r03) */
+@media(max-width:600px){.vt-t.vt-rows,.vt-t.vt-rows tbody,.vt-t.vt-rows tr,.vt-t.vt-rows td{display:block}.vt-t.vt-rows thead{display:none}
+ .vt-t.vt-rows tr{border-bottom:1px solid var(--line);padding:6px 0}.vt-t.vt-rows td{border:0;text-align:left;white-space:normal;padding:1px 4px;position:static}
+ .vt-t.vt-rows td::before{content:attr(data-l);display:inline-block;min-width:92px;color:var(--muted);font-size:11.5px;font-weight:400}
+ .vt-scroll:has(.vt-rows){max-height:none;overflow:visible}}
 .vt-chips{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 7px}
 .vt-chips button{all:unset;cursor:pointer;font-size:12.5px;padding:3px 10px;border:1px solid var(--line);border-radius:999px}
 .vt-chips button.on{background:#1971c2;border-color:#1971c2;color:#fff}
@@ -155,7 +214,8 @@ function grouped(t){return !!t.row_head&&t.rows.length>0&&t.rows.every(function(
 function attr(v){return esc(v).replace(/"/g,'&quot;')}
 function word(w){if(WORDS[w])return WORDS[w];var m=w.match(/^(.*)_([^_]+)$/);
  if(m&&ENDS[m[2]])return word(m[1])+', '+ENDS[m[2]];w=w.replace(/_/g,' ');return w.charAt(0).toUpperCase()+w.slice(1)}
-function one(v){var x=Number(v);if(v===''||isNaN(x))return WORDS[v]||v;if(Number.isInteger(x))return v;return Math.abs(x)<10?x.toFixed(3).replace(/0$/,''):x.toFixed(1)}
+/* a raw table shows each number as its Run returned it, never rounded (round 3: 0.0021 read 0.002 under "as it returned them") */
+function one(v){var x=Number(v);if(v===''||isNaN(x))return WORDS[v]||v;return String(v)}
 function show(v){return String(v).split(' / ').map(one).join(' / ')}
 function esc(t){var d=document.createElement('div');d.textContent=t;return d.innerHTML}
 var data={};
@@ -189,19 +249,21 @@ function draw(box,tab){var keys=tab.tables.map(function(t){return t.key});var de
    b.onclick=function(){var i=picked.indexOf(c);if(i>=0)picked.splice(i,1);else picked.push(c);draw(box,tab)};cr.appendChild(b)});chips.appendChild(cr)}
  t.cols.forEach(function(c){if(shown(c))head.push('<th>'+esc(word(c))+'</th>')});if(!t.row_head)head.push('<th>Status</th>');
  var marks=marksOnly(t),plain=marks||grouped(t),n=head.length,last=null,names=marks?tab.tables.filter(function(x){return x!==t&&x.from===t.from&&x.rows.length===t.rows.length})[0]:null;
- var html='<table class="vt-t'+(marks?' vt-marks':'')+'"><thead><tr>'+head.join('')+'</tr></thead><tbody>';
- t.rows.forEach(function(r,i){var g=plain?String(r.head).match(/^\d+\s+(.+?)\s+·\s+(.+)$/):null;
+ var html='<table class="vt-t'+(marks?' vt-marks':'')+(t.row_head?'':' vt-rows')+'"><thead><tr>'+head.join('')+'</tr></thead><tbody>';
+ var K=box.dataset.keys?JSON.parse(box.dataset.keys):{};   /* each value's name and its printed state, from the check (r03) */
+ t.rows.forEach(function(r,i){var g=plain?String(r.head).match(/^\d+\s+(.+?)\s+·\s+(.+)$/):null;var kv=!t.row_head&&r.cells[0]&&K[String(r.cells[0].v)];
   if(g&&g[1]!==last){last=g[1];html+='<tr><td class=vt-grp colspan="'+n+'">'+esc(g[1])+'</td></tr>'}
   html+='<tr>'+(t.row_head?'<td>'+esc(g?g[2]:r.head)+'</td>':'');
   r.cells.forEach(function(c,k){if(!shown(t.cols[k]))return;var st=c.flag?'🔶 check':m.status;
    var tip=names&&names.rows[i]&&names.rows[i].cells[k]?' title="'+attr(names.rows[i].cells[k].v)+'"':'';
-   html+=(!t.row_head&&k===0?'<td class=c':'<td class=c')+tip+' data-r="'+i+'" data-k="'+k+'">'+esc(show(c.v))+(t.row_head&&c.v!==''&&!plain?'<small>'+esc(st)+'</small>':'')+'</td>'});
-  if(!t.row_head)html+='<td>'+esc(m.status||'')+'</td>';html+='</tr>'});
+   if(kv&&k===0)tip=' title="'+attr(c.v)+'"';var said=kv&&k===0?kv[0]:kv&&t.cols[k]==='text'&&c.v===''&&kv[2]?kv[2]:null;
+   html+=(!t.row_head&&k===0?'<td class=c':'<td class=c')+tip+' data-r="'+i+'" data-k="'+k+'" data-l="'+attr(word(t.cols[k]))+'">'+(said!==null?esc(said):esc(show(c.v)))+(t.row_head&&c.v!==''&&!plain?'<small>'+esc(st)+'</small>':'')+'</td>'});
+  if(!t.row_head)html+='<td data-l="Status">'+esc(kv?kv[1]:(m.status||''))+'</td>';html+='</tr>'});
  box.querySelector('.vt-scroll').innerHTML=html+'</tbody></table>';
  var now=box.parentElement.querySelector('.vt-now');if(now)now.textContent='This table: '+t.from.split('/').pop()+(t.keeps?', keeping '+t.keeps:'')+(t.column?', column '+t.column:'')+'.';
  var state=box.querySelector('.vt-state');if(!state){state=document.createElement('p');state.className='vt-state';box.insertBefore(state,box.querySelector('.vt-axes'))}
  state.textContent=plain?(m.status==='✅ current'?'✅ All current':(m.status||'')+': '+(m.why||'')):'';state.style.display=plain?'':'none';
- box.querySelector('.vt-axes').textContent=marks?'✅ has it · 🔶 partly · ⬜ none. Hover a cell for its raw fields; click for its source.':plain?'Click a cell for its source.':t.row_head?'Rows: '+word(t.row_head)+'. Columns: '+word(t.col_head||'')+'. Cells: '+word(t.cell_head||'')+'. Click a cell for its source.':'One row per source row. Click a cell for its source.';
+ box.querySelector('.vt-axes').textContent=marks?'✅ has it · 🔶 partly · ⬜ none':t.row_head&&!plain?'Rows: '+word(t.row_head)+'. Columns: '+word(t.col_head||'')+'. Cells: '+word(t.cell_head||'')+'.':'';
  box.querySelector('.vt-scroll').onclick=function(ev){var td=ev.target.closest('td.c');if(!td)return;var r=t.rows[+td.dataset.r],c=r.cells[+td.dataset.k];
   var label=t.row_head?'':t.cols.map(function(n,i){return i<3?word(n)+' '+r.cells[i].v:''}).filter(Boolean).join(', ')+'; column '+t.cols[+td.dataset.k];open(box,t,c,label)}}
 function init(){document.querySelectorAll('.vt-tab').forEach(function(box){if(box._on)return;box._on=1;
@@ -211,6 +273,20 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 </script>"""
 
 
+def _source_file(copied: str, rest: str, res: Path, root: Path) -> Path | None:
+    """The source file a copy names (`SOURCE.txt`: "copied from <folder>"), its folder from the SPACE root, else from
+    a folder above the tables inside the SPACE: a Tools blueprint names it from the Tools root, which is `Tools/` in a
+    SPACE (261105, as focus_page.ui_base)."""
+    if copied.startswith(("/", ".")) or ".." in Path(copied).parts:
+        return None
+    top = root.resolve()
+    for base in [root] + [p for p in res.parents if p.resolve().is_relative_to(top)]:
+        src = (base / copied / rest).resolve()
+        if src.is_file() and src.is_relative_to(top):
+            return src
+    return None
+
+
 def source_status(res: Path, frm: str, built: float, root: Path) -> tuple:
     """(status word, why, source Run) of one source file, from the disk as it is now. res: the tables' result folder."""
     task, key, rest = frm.split("/", 2)
@@ -218,9 +294,14 @@ def source_status(res: Path, frm: str, built: float, root: Path) -> tuple:
                res.parents[3] / task)                    # the newest of the Task's Runs that holds it (build_tables.py)
     note = run / key / "SOURCE.txt"
     copied = note.read_text(encoding="utf-8", errors="ignore").strip().removeprefix("copied from ") if note.is_file() else ""
-    real = root / copied / rest if copied else None
+    real = _source_file(copied, rest, res, root) if copied else None
     if real is None or not real.is_file():
         return "❗ source gone", "The source file is no longer in its Run's result.", copied
+    # the source Run's link is its path from the SPACE root, wherever SOURCE.txt counted from (261105: "Source Runs"
+    # links 404'd inside a SPACE, missing "Tools/")
+    top = Path(root).resolve()
+    found = next((p for p in real.parents if p.as_posix().endswith("/" + copied.strip("/"))), None)
+    copied = found.relative_to(top).as_posix() if found and found.is_relative_to(top) else copied
     if not filecmp.cmp(real, run / key / rest):
         return "❗ source changed", "The source file changed after it was collected. Rerun the value Run, then this table.", copied
     if (run / key / rest).stat().st_mtime > built + 1:
@@ -269,16 +350,19 @@ def _value_lines(values: dict, wanted: list, used: set) -> str:
         if vid in used or not any(vid.startswith(w) for w in wanted):
             continue
         used.add(vid)
-        items += (f'<li><b>{esc(v.get("text", ""))}</b>: {esc(v.get("says", ""))}'
-                  f'<small>{esc(vid)} · {esc(v.get("source", ""))}</small></li>')
+        items += (f'<li title="{esc(vid)}"><b>{esc(v.get("text", ""))}</b>: {esc(v.get("says", ""))}'   # its id on hover (r02)
+                  f'<small>from {esc(v.get("source", ""))}</small></li>')
     return f'<p class=pb-state>Numbers the text can quote</p><ol class=vt-list>{items}</ol>' if items else ""
 
 
 def _method(tab: dict, meta: dict, root: Path) -> str:
-    """How this tab's tables are made (JL 261104): the steps from the source Runs, each source Run linked to its Task page."""
+    """How this tab's tables are made (JL 261104): the steps from the source Runs, each source Run linked to its pop-out."""
     steps = "".join(f"<li>{esc(x)}</li>" for x in tab.get("method") or [])
     runs = {m["path"]: m["run"] for m in meta.values() if m.get("path")}
-    links = " · ".join(f'<a data-pop="{esc(p.rsplit("/", 1)[-1])}" href="/_board/workbench?path={quote(p.split("/runs/")[0])}&layout=focus">{esc(r)}</a>'
+    # each source Run opens its own pop-out, what it returned and how it ran (round 3: "Source Runs: a link to that Run")
+    run_of = lambda p: p.rstrip("/").removesuffix("/result")
+    links = " · ".join(f'<a data-pop="{esc(" · ".join(run_of(p).split("/")[-3::2]))}" '
+                       f'href="/_board/workbench?view=focus-part&amp;part=run&amp;path={quote(run_of(p))}">{esc(r)}</a>'
                        for p, r in runs.items())
     return (f'<details class=vt-how><summary>How this table is made</summary><ol class=vt-list>{steps}</ol><p class=vt-now></p>'
             + (f'<p class=vt-now-runs>Source Runs: {links}</p>' if links else "") + '</details>')
@@ -295,6 +379,13 @@ def value_tabs(job: Path, root: Path) -> list | None:
     read_by, base = _read_by(job), "/" + quote(ds._rel(res, root)) + "/"
     values = _values(job)
     quotes = _section_quotes(job.parent, values)
+    # each value's name and what the paper prints for it, so a row reads its name and agrees with the bar (r03: the
+    # table said "current" for sub.b while the bar said it differs)
+    from live.evidence_read import VALUE_WORDS, key_states, value_names
+    names = value_names(job)
+    keys = {k: [names.get(k, k), VALUE_WORDS.get(st, st).replace("matches its Run", "matches"), p]   # As printed shows p
+            for k, (st, p) in key_states(job).items()}
+    keys.update({k: [n, "not printed", ""] for k, n in names.items() if k not in keys})
     used, out = set(), []
     for i, tab in enumerate(tabs):
         meta = {}
@@ -310,6 +401,7 @@ def value_tabs(job: Path, root: Path) -> list | None:
         panel = (f'<div class=vt-panel data-title="{esc(tab["title"])}"><div class=vt-head><p class=vt-story>{esc(tab["story"])}</p>'
                  f'<button type=button class="fd-btn vt-popb" onclick="vtPop(this)">Pop out ↗</button></div>'
                  f'<div class=vt-tab data-i="{i}" data-url="{esc(base)}tables.json" data-base="{esc(base)}" '
+                 f"data-keys='{esc(json.dumps(keys, ensure_ascii=False))}' "
                  f"data-meta='{esc(json.dumps(meta, ensure_ascii=False))}'><div class=vt-pick></div><p class=vt-axes></p><div class=vt-scroll>Loading the table…</div></div>"
                  + _method(tab, meta, root) + _value_lines(values, tab.get("values") or [], used) + '</div>')
         out.append((tab["title"], tab["line"], panel))
@@ -348,7 +440,8 @@ def evidence_body(task: Path, root: Path):
     shown = None if preview else (forced or _evidence_file(task, text))
     if preview is not None:
         body += (f'<div class=pb-ptop style="flex-wrap:wrap"><span class=pb-state style="flex:1 1 220px;min-width:0">{esc(preview.parent.parent.name)} · the display, then how it was made</span>'
-                 f'<a class=fd-btn data-pop="{esc(label or task.name)} · preview" href="{esc(url(preview))}">⤢ Pop out</a></div>'
+                 f'<a class=fd-btn data-pop="{esc(label or task.name)} · preview" href="{esc(url(preview))}">⤢ Pop out</a>'
+                 f'<a class=fd-btn href="{esc(_task_url(task, root))}">Open {esc(task.name)} ↗</a></div>'
                  f'<iframe class=pb-pdf src="{esc(url(preview))}#view=FitH" loading=lazy title="{esc(label or task.name)}"></iframe>')
     if shown is not None:
         if shown.suffix == ".tex":               # a LaTeX table, shown as a table
@@ -377,9 +470,18 @@ def evidence_body(task: Path, root: Path):
         body += "".join(f'<div class=fd-row><span class=n>{esc(r[1] if len(r) > 1 else r[0])}</span><span class=d>{esc(r[3] if len(r) > 3 else "")}</span>'
                         f'<span class=w>{esc(r[2] if len(r) > 2 else "")}</span></div>' for r in rows)
         values = values or papers
+    tables = sorted(task.glob("runs/r[0-9]*/result/tables.json"))
+    if tables and not values:                    # a value Task whose Run built the Values tabs: the same side tabs the
+        from live.ui_parts import _side_tabs     # Board's Values view draws (261106: the version's Values said "Not drawn")
+        vtabs = value_tabs(task.parent, root)
+        if vtabs:
+            body += (VALUES_CSS + _side_tabs(f"evT{task.name[:3]}", [(h, w) for h, w, _ in vtabs], [p for _, _, p in vtabs])
+                     + VALUES_DIALOG + VALUES_JS)
+            values = True
     facts = [(k, _field(text, k)) for k in EV_FACTS if _field(text, k)]
     body += "".join(f'<div class=fd-row><span class=n>{esc(k)}</span><span class=d>{esc(v)}</span></div>' for k, v in facts)
-    body += f'<p><a class=fd-btn href="{esc(_task_url(task, root))}">Open {esc(task.name)} ↗</a></p>'
+    if preview is None:                          # a drawn display has its Open on top, beside Pop out (r01: cut off below)
+        body += f'<p><a class=fd-btn href="{esc(_task_url(task, root))}">Open {esc(task.name)} ↗</a></p>'
     if shown is None and preview is None and not values:
         body = '<p class=mut>Not drawn yet.</p>' + body
     return label, status, body

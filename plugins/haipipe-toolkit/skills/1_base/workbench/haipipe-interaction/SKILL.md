@@ -11,7 +11,7 @@ description: >-
   version, review this design, collect feedback, collection Run, question_collection.md, things you should know,
   what to know, document it to the Interaction, /haipipe-interaction.
 metadata:
-  version: "0.10.0"
+  version: "0.12.0"
   last_updated: "2026-11-05"
   aliases: [haipipe-collect]
   # version history: ./CHANGELOG.md

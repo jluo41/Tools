@@ -243,11 +243,22 @@ def _kv(rows) -> str:
     return f'<table style="border-collapse:collapse;width:100%;margin:6px 0 10px;font-size:14px"><tbody>{body}</tbody></table>'
 
 
-def _fold(title: str, body: str, open_: bool = False) -> str:
+def _word(word: str) -> str:
+    """A card's state word on the focus page's bar (JL 261106: "every closed bar shows a state word on its right"); the
+    old page's folds keep their own look, so it is drawn only there (FLAT)."""
+    if not FLAT.get() or not word:
+        return ""
+    from live.ui_parts import word_span
+    return word_span(word)
+
+
+def _fold(title: str, body: str, open_: bool = False, word: str = "") -> str:
     """A Result card: its title, folded until opened. On the focus page (FLAT set, focus_draft.py) the same card is a
-    section under its heading, open, with no box (b32 s42, JL 261031: "under each view, we will have the sections")."""
+    section under its heading, open, with no box (b32 s42, JL 261031: "under each view, we will have the sections"),
+    its state word on its bar; a card that holds only "not yet" says "nothing yet"."""
     if FLAT.get():
-        return f'<section class=fd-sec><h3 class=fd-h>{esc(title)}</h3>{body}</section>'
+        word = word or ("nothing yet" if body.startswith("<p class=space-empty>") else "")
+        return f'<section class=fd-sec><h3 class=fd-h>{esc(title)}{_word(word)}</h3>{body}</section>'
     return (f'<details class="topic work-task"{" open" if open_ else ""}><summary><span class=related-head>'
             f'<b>{esc(title)}</b></span></summary><div class=work-body style="max-height:85vh;overflow-y:auto">'
             f'{body}</div></details>')
@@ -298,7 +309,11 @@ def _prompt_box(prompt: str, folder: Path, root: Path, key: str, title: str = "P
 
 PROMPT_HEAD = {"plan": ("Plan", "shape the structure"), "write": ("Write", "draft or rewrite the text"),
                "evidence": ("Evidence", "find each item's evidence"), "display": ("Display", "make the displays"),
-               "revise": ("Revise", "one revise pass"), "studio": ("Studio", "talk and sketch")}
+               "revise": ("Revise", "one revise pass"), "studio": ("Studio", "talk and sketch"),
+               "delivery-build": ("Build", "the Section's web, LaTeX and Word files"),
+               "delivery-render": ("Render", "the pages as Word lays them out"),
+               "delivery-send": ("Check", "the built files before you send"),
+               "delivery-back": ("Read back", "the copy that came back")}
 
 
 def _editor(folder: Path, root: Path, title: str, view: str = "revise", open_: bool = True) -> str:
@@ -310,7 +325,7 @@ def _editor(folder: Path, root: Path, title: str, view: str = "revise", open_: b
         return ""
     return (f'<details class="topic work-task"{" open" if open_ else ""}><summary><span class=related-head>'
             f'<b>{esc(title)}</b></span><span class=topic-pop>{pop(src.replace("&embed=1", ""), title, "↗")}</span>'
-            f'</summary><iframe class=space-frame title="{esc(title)}" src="{esc(src)}" style="{FIT_STYLE}" onload="{FIT}">'
+            f'{_word("yours to edit")}</summary><iframe class=space-frame title="{esc(title)}" src="{esc(src)}" style="{FIT_STYLE}" onload="{FIT}">'
             '</iframe></details>')
 
 
@@ -542,6 +557,11 @@ def _topic_rows(f: dict, root: Path) -> str:
     return "".join(_topic_row(t, dr, root, source) for source, t, dr in f["topics"] if t not in inside)
 
 
+def _poss(name: str) -> str:
+    """A name's possessive: "Introduction's", "Response to the reviewers'" (r01: "reviewers's")."""
+    return name + ("'" if name.endswith("s") else "'s")
+
+
 def _studio(f: dict, folder: Path, root: Path, st: str) -> tuple:
     block = chain(folder, root).get("Block")
     theme = theme_of(folder, root)
@@ -552,8 +572,12 @@ def _studio(f: dict, folder: Path, root: Path, st: str) -> tuple:
     related = block / "related" / "related.md" if block else None
     rows = [("Task", f'<code>{esc(folder.name)}</code> · {esc(f["section"])}'), ("Topic", topic),
             ("Related", _code(related, root)), ("Chat", esc(f["head"].get("session") or "Claude or Codex, this Task"))]
-    sid = f["topics"][0][1].name.split("-", 1)[0] if f["topics"] else "a new topic"
-    prompt = (f"/haipipe-studio {_rel(block, root) if block else f['t']} {sid}: talk with me about {f['section']}'s "
+    # the Section's own topic (its name carries the Section's), else a new one: a topic that only lists this Task, as a
+    # paper checklist does, is not where its argument is sketched (r01: the letter's prompt targeted s05-paper-checklist)
+    slug = folder.name.split("_", 1)[-1]
+    own = [t for _, t, _ in f["topics"] if slug and slug in t.name]
+    sid = own[0].name.split("-", 1)[0] if own else "a new topic"
+    prompt = (f"/haipipe-studio {_rel(block, root) if block else f['t']} {sid}: talk with me about {_poss(f['section'])} "
               f"argument and sketch it on the canvas; write no text yet; what we settle goes into the Task's §1.")
     op = _step_box("🎨 Studio · talk and sketch", st, "<h4>Input</h4>" + _kv(rows) + _prompt_box(prompt, folder, root, "studio"))
     # each topic its own card, not cards in a "logic sketch" box (JL 261020: "I want this to be of the item itself,
@@ -915,10 +939,14 @@ def _examples_card(exs: list, d: dict, f: dict, folder: Path, root: Path, own: b
             continue
         url = _draw_url(drawing, root)
         out.append(f'<details class="topic work-task"><summary><span class=related-head><b>{esc(title)}</b></span>'
-                   f'<span class=topic-pop>{pop(url, top.name, "↗")}</span>'
+                   f'<span class=topic-pop>{pop(url, top.name, "↗")}</span>{_word("drawn")}'
                    f'</summary><iframe class=st-frame title="{esc(top.name)}" data-src="{esc(url)}" '
                    'referrerpolicy=no-referrer></iframe></details>')
     return "".join(out)
+
+
+def _cap(text: str) -> str:
+    return text[:1].upper() + text[1:]
 
 
 def _rubric_card(exs: list, d: dict, f: dict, root: Path) -> str:
@@ -952,12 +980,13 @@ def _rubric_card(exs: list, d: dict, f: dict, root: Path) -> str:
     if RUBRIC.is_file():
         axes = [(f"<b>{esc(a)}</b>", esc(q)) for a, q in re.findall(
             r"(?m)^\|\s*([A-Z][a-z]+)\s*\|\s*([^|]+?)\s*\|", RUBRIC.read_text(encoding="utf-8", errors="replace"))
-            if a != "Axis"]
+            if a not in ("Axis", "Score")]             # its score table's head is not an axis (r03)
         alt = _served(root / "Tools" / RUBRIC.relative_to(SKILLS.parents[2]), root)
         body += ('<h4 style="margin:12px 0 4px">The four axes</h4>' + _table(("axis", "the question"), axes)
                  + '<p class=mut style="margin:4px 0">MEETS · NEEDS WORK · N/A · NOT VERIFIABLE (never a pass)'
                  + (f' · <a href="{esc(alt)}" target=_blank>{esc(RUBRIC.name)} ↗</a>' if alt else "") + '</p>')
-    return EX_CSS + _fold("📏 Requirement and Rubric", body or _not_yet("No requirement yet."))
+    return EX_CSS + _fold("📏 Requirement and Rubric", body or _not_yet("No requirement yet."),
+                          word="beside the examples" if exs and d and d.get("structure") else "set" if body else "")
 
 
 EX_CSS = """<style>
@@ -997,7 +1026,7 @@ def _plan(f: dict, folder: Path, root: Path, st: str) -> tuple:
     if paras:
         # one card, the paragraphs and their Bullets together, as a mind map (JL 261020: "merge them together")
         cards = _fold(f"📐 §1 Structure · {d['version']}", _plan_map(d, f["ev"], f["section"], _rel(folder, root)),
-                      open_=True)
+                      open_=True, word="signed" if _signed(d) else "not signed yet")   # the wait is said once, in Process (r02)
     else:
         cards = _not_yet("No §1 Structure yet.")
     try:                                           # an example that does not read: say so, never break the frame
@@ -1006,16 +1035,17 @@ def _plan(f: dict, folder: Path, root: Path, st: str) -> tuple:
     except Exception as e:
         exs = []
         cards += _fold("📚 Examples", _not_yet(f"The examples do not read: {e}"))
-    contract = [(esc(k), esc(head[k])) for k in CONTRACT if head.get(k)]
+    contract = [(esc(_cap(k.replace("-", " "))), esc(head[k])) for k in CONTRACT if head.get(k)]   # words, not keys (r03)
     if contract:
-        cards += _fold("🧭 The Section's contract, from its Story", _kv(contract), open_=not paras)
+        cards += _fold("🧭 The Section's contract, from its Story", _kv(contract), open_=not paras,
+                       word=f"{len(contract)} of {len(CONTRACT)} set")
     try:
         cards += _rubric_card(exs, d, f, root)
     except Exception as e:
         cards += _fold("📏 Requirement and Rubric", _not_yet(f"The rubric does not read: {e}"))
     recs = f["records"]
     cards += _fold("🗂 Records", _table(("record", "bytes"), [(_code(r, root), esc(r.stat().st_size)) for r in recs])
-                   if recs else _not_yet("No records yet."))
+                   if recs else _not_yet("No records yet."), word=(f"{len(recs)} kept" if recs else ""))
     return op, cards, ()
 
 
@@ -1056,7 +1086,8 @@ def _write(f: dict, folder: Path, root: Path, st: str) -> tuple:
         shown = _fold("📚 Examples", _not_yet(f"The examples do not read: {e}"))
     if not d or not d["text"]:
         return op, shown + _not_yet("No text yet."), ()
-    cards = shown + _text_and_editor(d, ev, root, folder) + "".join(_fold(f"🗒 {t}", _md(b, {})) for t, b in d["notes"])
+    cards = shown + _text_and_editor(d, ev, root, folder) + "".join(_fold(f"🗒 {t}", _md(b, {}), word="a note")
+                                                                     for t, b in d["notes"])
     return op, cards, ()
 
 
@@ -1066,7 +1097,8 @@ def _text_card(d: dict, ev: dict, root: Path) -> str:
     marks = _marks(ev)
     body = "".join((f'<h3 style="margin:14px 0 4px">{esc(t)}</h3>' if len(d["text"]) > 1 else "") + _md(b, marks)
                    for t, b in d["text"])
-    return _fold(f"✍️ The text · {d['version']}", f'<p class=space-reads>{_code(d["file"], root)}</p>' + body, open_=True)
+    return _fold(f"✍️ The text · {d['version']}", f'<p class=space-reads>{_code(d["file"], root)}</p>' + body, open_=True,
+                 word=_pending_word(d))
 
 
 def _text_and_editor(d: dict, ev: dict, root: Path, folder: Path) -> str:
@@ -1086,7 +1118,13 @@ def _text_and_editor(d: dict, ev: dict, root: Path, folder: Path) -> str:
              f'onload="{FIT};window.wrHook&&window.wrHook(this)"></iframe>')
     body = (f'<p class=space-reads>{_code(d["file"], root)}</p><span class=wr-msg role=status>Loading the editor…</span>'
             f'<div class="rv-split wr-split"><div class=rv-left>{text}</div><div class=rv-right>{right}</div></div>')
-    return CARDS_CSS + _fold(f"✍️ The text · {d['version']}", body, open_=True) + WRITE_JS
+    return CARDS_CSS + _fold(f"✍️ The text · {d['version']}", body, open_=True, word=_pending_word(d)) + WRITE_JS
+
+
+def _pending_word(d: dict) -> str:
+    """The text's word: how many ⟦…⟧ marks still wait in it (a claim waiting for evidence, a check), else none open."""
+    n = sum(len(re.findall(r"⟦[^⟧]*⟧", b)) for _, b in d.get("text", []))
+    return f'{n} mark{"s" if n != 1 else ""} open' if n else "no marks open"
 
 
 # what is happening, in a corner of the screen while it happens (JL 261020: "when it is loading, could you state that
@@ -1159,7 +1197,7 @@ def _canvas_card(source: Path, topic: Path, drawings: list, root: Path, title: s
         return _fold(head, _not_yet("No drawing yet."))
     url = _draw_url(drawings[0], root)
     return (f'<details class="topic work-task"{" open" if open_ else ""}><summary><span class=related-head><b>'
-            f'{esc(head)}</b></span><span class=topic-pop>{pop(url, topic.name, "↗")}</span></summary>'
+            f'{esc(head)}</b></span><span class=topic-pop>{pop(url, topic.name, "↗")}</span>{_word("drawn")}</summary>'
             f'<iframe class=st-frame title="{esc(topic.name)}" data-src="{esc(url)}" referrerpolicy=no-referrer>'
             '</iframe></details>')
 
@@ -1237,9 +1275,11 @@ def _card_folds(ev: dict) -> str:
     for c in ev["cards"]:
         ink = INK.get(c["kind"], INK["value"])
         rows = "".join(_evidence_row(c, it, n, sentences=True) for n, it in enumerate(c["items"], 1))
+        have = sum(it["state"] == "have" for it in c["items"])
+        word = "every item found" if c["items"] and have == len(c["items"]) else f'{have} of {len(c["items"])} found'
         out.append(f'<details class="topic work-task"><summary><span class=related-head><b style="color:{ink}">'
                    f'{esc(c["label"])}</b> · {esc(c["title"])}'
-                   + (f' <span class=mut>· {esc(c["source"])}</span>' if c["source"] else "") + '</span></summary>'
+                   + (f' <span class=mut>· {esc(c["source"])}</span>' if c["source"] else "") + f'</span>{_word(word)}</summary>'
                    f'<div class=work-body><table class="rv-rows ev-list" style="border-collapse:collapse;width:100%">'
                    f'{rows}</table></div></details>')
     return "".join(out)
@@ -1348,8 +1388,9 @@ def _open_fold(opens: list) -> str:
                    sorted(enumerate(opens, 1), key=lambda x: (rank[x[1]["kind"]], x[0])))
     count = lambda *k: sum(o["kind"] in k for o in opens)
     title = (f"❓ Open points · {count('check', 'find')} to check or find · {count('pending')} wait on a Run · "
-             f"{count('none')} with no evidence")
-    return (f'<details class="topic work-task"><summary><span class=related-head><b>{esc(title)}</b></span></summary>'
+             f"{count('none')} with no evidence") if not FLAT.get() else "❓ Open points"   # a bar's counts go in its word (261106)
+    return (f'<details class="topic work-task"><summary><span class=related-head><b>{esc(title)}</b></span>'
+            f'{_word(str(len(opens)) + " open")}</summary>'
             f'<div class=work-body><table class="rv-rows ev-list" style="border-collapse:collapse;width:100%">{rows}'
             '</table></div></details>')
 
@@ -1370,10 +1411,13 @@ def _text_and_evidence(d: dict, ev: dict, root: Path, opens: list = (), xs=()) -
         order = sorted(by, key=lambda s: _s_key(s) if s else (10 ** 7, ""))
         return EV_CSS + CARDS_CSS + "".join(_ev_card(s, by[s]) for s in order) + CARDS_JS
     marks = _marks({"cards": one})      # each mark names its item, CITE 1.4, as its row does
-    body = (f'<p class=space-reads>{_code(d["file"], root)} · {_code(ev["path"], root)}</p>'
+    body = (f'<p class=space-reads>{_code(d["file"], root)}'                 # no "· —" when no cards file yet (r02)
+            + (f' · {_code(ev["path"], root)}' if ev.get("path") and Path(ev["path"]).is_file() else "") + '</p>'
             + _text_rows(d, marks, {s: _ev_card(s, rows) for s, rows in by.items()}, "Cards for no sentence in this text",
                          xs, root))
-    return EV_CSS + CARDS_CSS + _fold(f"🔎 The text and its Evidence · {d['version']}", body, open_=True) + CARDS_JS
+    items = [it for c in ev["cards"] for it in c["items"]]
+    word = f'{sum(it["state"] == "have" for it in items)} of {len(items)} found' if items else "no evidence yet"
+    return EV_CSS + CARDS_CSS + _fold(f"🔎 The text and its Evidence · {d['version']}", body, open_=True, word=word) + CARDS_JS
 
 
 def _evidence_step(f: dict, folder: Path, root: Path, st: str) -> tuple:
@@ -1394,7 +1438,7 @@ def _evidence_step(f: dict, folder: Path, root: Path, st: str) -> tuple:
             ("Check", ('<span class="st st-ok">every address resolves</span>' if not ev["problems"] else
                        f'<span class="st st-warn">{len(ev["problems"])} to fix</span>') if ev["path"] else
              '<span class=mut>—</span>')]
-    prompt = (f"/haipipe-evidence {f['t']}: a card for each claim in {f['section']}'s plan (have, ask a Job, ask a "
+    prompt = (f"/haipipe-evidence {f['t']}: a card for each claim in {_poss(f['section'])} plan (have, ask a Job, ask a "
               f"person, soften), the asks in proposals.md; then read {f['section']} as a reader for claims the plan "
               "missed. Give every open point an item: each ⟦check⟧ its source verified, each source still to find a "
               "need with a proposal, each ⟦pending⟧ the Run it waits on, and each 'Evidence: none' a reader could "
@@ -1405,9 +1449,11 @@ def _evidence_step(f: dict, folder: Path, root: Path, st: str) -> tuple:
     if ev["proposals"]:
         lines = "".join(f'<li>{"☑" if t else "☐"} {_inline(line, {})}</li>' for t, line in ev["proposals"])
         cards += _fold("✍ Asks, for you to tick", f'<p class=space-reads>{_code(ev["props_path"], root)}</p>'
-                       f'<ul style="list-style:none;padding-left:4px">{lines}</ul>', open_=open_asks > 0)
+                       f'<ul style="list-style:none;padding-left:4px">{lines}</ul>', open_=open_asks > 0,
+                       word=f'{open_asks} wait{"s" if open_asks == 1 else ""} for you' if open_asks else "all ticked")
     if ev["problems"]:
-        cards += _fold("❗ What does not resolve", "<ul>" + "".join(f"<li>{esc(p)}</li>" for p in ev["problems"]) + "</ul>")
+        cards += _fold("❗ What does not resolve", "<ul>" + "".join(f"<li>{esc(p)}</li>" for p in ev["problems"]) + "</ul>",
+                       word=f'{len(ev["problems"])} to fix')
     return op, cards, ()
 
 
@@ -1553,12 +1599,14 @@ def _display_step(f: dict, folder: Path, root: Path, st: str) -> tuple:
             right[x["calls"][0] if x["calls"] else ""] = right.get(x["calls"][0] if x["calls"] else "", "") + _display_card(x, root)
         body = (f'<p class=space-reads>{_code(d["file"], root)}</p>'
                 + _text_rows(d, marks, right, "Displays no sentence calls", xs, root))
-        result = EV_CSS + CARDS_CSS + _fold(f"🖼 The text and its displays · {d['version']}", body, open_=True) + CARDS_JS
+        result = EV_CSS + CARDS_CSS + _fold(f"🖼 The text and its displays · {d['version']}", body, open_=True,
+                                            word=f"{len(made)} of {len(xs)} made") + CARDS_JS
     # each display on its own, folded, its picture at full width
     for x in xs:
         result += (f'<details class="topic work-task"><summary><span class=related-head><b style="color:{DISPLAY_INK}">'
-                   f'{esc(x["label"] if x["made"] else x["title"])}</b>' + (f' · {esc(x["title"])}' if x["made"] else " · not made yet")
-                   + '</span></summary><div class=work-body>' + _display_card(x, root, big=True) + '</div></details>')
+                   f'{esc(x["label"] if x["made"] else x["title"])}</b>' + (f' · {esc(x["title"])}' if x["made"] else
+                                                                            "" if FLAT.get() else " · not made yet")
+                   + f'</span>{_word(("accepted" if x["ok"] else "made") if x["made"] else "not made yet")}</summary><div class=work-body>' + _display_card(x, root, big=True) + '</div></details>')
     return op, result, ()
 
 
@@ -2304,7 +2352,10 @@ def _text_and_cards(d: dict, ev: dict, root: Path, path: Path, task: Path) -> st
             + (f' · {_code(notes_at, root)}' if notes_at.is_file() else "") + '</p>'
             f'<div class=rv-board data-task="{esc(t)}">{head}{top}<div class=rv-split><div class=rv-left>{text}</div>'
             f'<div class=rv-right>{right}{tail}</div></div></div>')
-    return (CARDS_CSS + NOTES_CSS + _fold(f"✍️ The text and its Revise cards · {d['version']}", body, open_=True)
+    proposed = sum((c.get("state") or "proposed").split()[0].lower() == "proposed" for _, c in cs)
+    word = (f'{proposed} card{"s" if proposed != 1 else ""} wait for you' if proposed else
+            f'{waiting} comment{"s" if waiting != 1 else ""} open' if waiting else "every card decided" if cs else "no cards yet")
+    return (CARDS_CSS + NOTES_CSS + _fold(f"✍️ The text and its Revise cards · {d['version']}", body, open_=True, word=word)
             + CARDS_JS + NOTES_JS)
 
 
@@ -2651,7 +2702,8 @@ def _revise(f: dict, folder: Path, root: Path, st: str) -> tuple:
     job = face(chain(folder, root).get("Job") or folder)      # the draft's desk, else its version's (desk: jamaim)
     desk = ((d or {}).get("head", {}).get("desk", "") or f["head"].get("desk", "")
             or (_header(job.read_text(encoding="utf-8", errors="ignore")).get("desk", "") if job else "")).split(":")[0].strip()
-    who = (f"a reviewer for {desk}" if " " in desk else f"a reviewer for the {desk} desk" if desk else
+    who = (f"a reviewer for {desk}" if " " in desk else f"a reviewer for the {desk}" if desk.lower().endswith("desk")
+           else f"a reviewer for the {desk} desk" if desk else
            "the reviewer this Section's venue would send")
     # think as the reviewer first (JL 261020: "think about yourself，就是你是一个什么样的 reviewer，你是怎么审这篇文章的")
     prompt = (f"/haipipe-draft {f['t']} revise: first think as {who}: who you are, what you look for, and how you "
@@ -2719,7 +2771,7 @@ def _delivery_step(f: dict, folder: Path, root: Path, st: str) -> tuple:
                                        ("Builds", "tex · docx · pdf"), ("Into", f"<code>{esc(where)}</code>"),
                                        ("Rule", "built, never edited by hand")],
          f"/haipipe-draft {t} deliver: on my ok, page.py bump (the next draft version), page.py adopt, cards.py bib "
-         f"--write (the .bib from the cited Runs), then page.py export --author \"Junjie Luo\" (web, LaTeX, Word); "
+         f"--write (the .bib from the cited Runs), then page.py export --author \"<the author>\" (web, LaTeX, Word); "
          f"check that no citation prints as ?, and read both PDFs."),
         ("render", "🖼 2 of 4 · render the pages", [("Files", esc(f"{len(built)} built") if built else '<span class=mut>none yet</span>'),
                                                    ("Makes", "<code>render/&lt;name&gt;-v&lt;N&gt;/p-&lt;k&gt;.png</code>"),

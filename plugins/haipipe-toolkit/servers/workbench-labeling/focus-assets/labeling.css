@@ -37,3 +37,6 @@
 .labeling-focus .lf-compose [role=status]:empty{display:none}.labeling-focus .lf-compose [role=status]{margin:0}
 
 .lf-children-label{align-self:center;font-size:12px;color:var(--muted);padding-right:6px}
+
+/* an items step's form row: the questions its Sign rests on (261106) */
+.labeling-focus .items-form{margin:8px 0 10px}.labeling-focus .items-form .chip{margin-left:6px}

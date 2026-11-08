@@ -280,7 +280,9 @@ def seed(board: Path, apply: bool = False) -> list[Path]:
         made.append(face)
         if apply:
             face.parent.mkdir(parents=True)
-            face.write_text(f"# {name}\n\nlabel: {lab}\nname: {r.get('name', '')}\ntype: {r['type']}\n"
+            # its goal is what the display shows, the page's Aim line (r02: a display Task's page had none)
+            face.write_text(f"# {name}\n\nlabel: {lab}\nname: {r.get('name', '')}\ngoal: {r.get('shows') or r.get('name', '')}\n"
+                            f"type: {r['type']}\n"
                             f"answers: {r.get('answers', '')}\nmade by: {r.get('made by', '')}\nstatus: not drawn\n",
                             encoding="utf-8")
     return made

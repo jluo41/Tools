@@ -139,11 +139,16 @@ class BuildingPageTest(Fixture):
                 self.assertEqual(self.render(section), F.render(self.theme, self.root, self.task, section))
 
     def test_other_labeling_pages_are_unchanged(self):
-        for folder, section in ((self.labeling, ""), (self.labeling, "definition"), (self.items, "items"),
-                                (self.labeling.parent, "timeline")):
+        for folder, section in ((self.labeling, ""), (self.labeling, "definition")):
             with self.subTest(page=folder.name, section=section):
                 page = L.render(self.theme, self.root, folder, section)
                 self.assertIn('<main class="focus-page labeling-focus">', page)
+                self.assertNotIn("dec-view", page)
+                self.assertNotIn("decisionReportView", page)
+        for folder, section in ((self.items, "items"), (self.labeling.parent, "timeline")):   # the shared shape (round 2)
+            with self.subTest(page=folder.name, section=section):
+                page = L.render(self.theme, self.root, folder, section)
+                self.assertIn('<main class="focus-page">', page)
                 self.assertNotIn("dec-view", page)
                 self.assertNotIn("decisionReportView", page)
         self.assertFalse(L.is_building(self.labeling))               # today's labeling Page is building and scanning

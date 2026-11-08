@@ -407,6 +407,9 @@ def main():
         "family: discovery",
         "operation: paper-analysis",
         "status: complete",
+        # the Run's one-line result, as every receipt carries it (haipipe-run receipts-and-inventory; the workbench's
+        # Status and Findings read it): the readout's first sentence (261106)
+        "headline: %s" % q(re.split(r"(?<=[.!?])\s+", " ".join((a.readout or "").split()), maxsplit=1)[0][:200]),
         "result_contract: paper-source-v2",
         "ticket: %s" % ("runs/%s.sh" % a.run if older else "runs/%s/%s.sh" % (a.run, a.run)),
         "result: %s/" % result.relative_to(task).as_posix(),

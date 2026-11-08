@@ -7,8 +7,8 @@ description: >-
   Task types) is workbench-task-labeling. Use when opening or diagnosing the labeling workbench, its host, its
   Board view or its Guide, or /workbench-labeling.
 metadata:
-  version: "0.33.0"
-  last_updated: "2026-10-16"
+  version: "0.36.0"
+  last_updated: "2026-11-06"
 ---
 
 # /workbench-labeling · one job, one folder, one operated surface
@@ -109,6 +109,20 @@ capability switch: a paper section, algorithm Page, or other Folder may open
 the same plugin before a job exists and route P0 creation through Chat. The
 control Page `S-Label-Dash` owns no job, so it gets no Page-level lane; it
 opens the Board-level view instead.
+
+### The Block and Job focus pages
+
+On the shared focus layout (`?layout=focus`), a labeling Block or Job is drawn by
+`servers/workbench-labeling/labeling_focus.level_page` in the shape every level shares: Report and Work both hold
+MindMap · Status · Findings, Work as ⚙️ Process then 📊 Results, each view ending in 🙋 Interaction with its own forms
+(the page's own under MindMap, a form about a release under Findings, every other form below the page under Status);
+the rails are the base page's (Report · Work · Studio · Interactions · Delivery · Timeline · Skills · Files). Findings
+leads with what each Job released: its expression Task's final labels, then the approved guideline they follow (a
+Job's name on its bars only when a Block holds more than one). Work › Status's Process is labeling's 🚧 Next steps
+(`labeling_focus.next_steps`): every form that waits first, each row opening the form itself in the pop-out, the
+first under the closed bar; then each unfinished Task's next Run. A Block's Job row says "N of M done", the words its
+Job's Tasks bar says. Delivery lists each signed release (`labeling_focus.delivery_html`: its final labels, rules,
+sign date and Run), then the Block's `delivery/`. A Task's own page is workbench-task-labeling's.
 
 ## 🧭 Guide · how the family works
 

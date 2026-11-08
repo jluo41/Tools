@@ -36,7 +36,7 @@ HEAD = """<!DOCTYPE html>
 <html lang="en" data-theme="academic-report">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{title}</title>
+<title>{title}</title><link rel="icon" href="data:,">
 <link rel="stylesheet" href="{a}/fonts.css">
 <link rel="stylesheet" href="{a}/base.css">
 <link rel="stylesheet" id="theme-link" href="{a}/themes/academic-report.css">

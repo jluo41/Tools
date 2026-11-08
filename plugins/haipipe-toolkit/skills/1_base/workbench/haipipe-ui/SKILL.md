@@ -13,7 +13,7 @@ description: >-
   ui rules, is this page clear, five-second test, page design, redesign this page, design loop, ui rubrics, walk the
   page in chrome, click through the ui, /haipipe-ui.
 metadata:
-  version: "0.4.4"
+  version: "0.5.0"
   last_updated: "2026-11-04"
   # version history: ./CHANGELOG.md
 ---
@@ -132,12 +132,54 @@ against b35's 6, since b01 listed its 15 Jobs flat. Grouping them took about 15 
    Names are the real folder and file names.
 
 
+## The person's page rules (a checklist)
+
+What the person has asked for again and again (261029 to 261105), in one place. The walk checks each on the live page,
+and a reviewer scores Plain, Modern and Complete against it. A page that breaks one is not done.
+
+1. **Seen at a glance.** The main point first and largest ("一眼就能看出来这东西是干啥的"); never a page of headings.
+2. **Few words, nothing missing.** Short and fully presented: cut words, never information.
+3. **Closed by default.** Every numbered section starts closed and opens on a click ("默认的话，大家都是合着的"); a large
+   thing opens in the pop-out. The mind map is the one thing always shown, and a Section's Text view stays open (it is
+   the text itself). A closed bar still says where it stands (261106): its **state word** on the right (answered,
+   2 wait for you, 3 of 5 done, nothing yet, current), read from the section's own content, never a fixed decoration;
+   a section that waits on the person also shows **that one waiting item under its closed bar**, outside the fold
+   (Findings' answer waiting for agreement, 🙋 Interaction's first open question, a Process step's first waiting row).
+   Paper bars: `ui_parts._section(title, body, word, waits)` (`<span class=word>`, `<p class=fd-wait>`); work bars:
+   `focus_page.band_sec` (`<p class=band-wait>` after the fold). The fold remembers a bar by its title alone. A count
+   may be a state word when it is the answer ("2 wait for you"), never part of a title.
+4. **Left tabs, right content.** A list of items is side tabs: the names on the left, each with its state word, the
+   open one's content on the right, each side with its own scroll.
+5. **One standard part, everywhere.** The same part looks the same at Block, Job and Task, on every theme; 🙋
+   Interaction is the last section of every Report and Work view, and it shows **that view's own items** (261106): on a
+   paper Board the forms whose `for:` topic is one of the view's parts (a form about no part by where it was asked: an
+   evidence Job's under Evidence or Displays, the rest under Writing); on a work page the forms at a Question's work
+   under Findings, the forms below the page under Status, the page's own under MindMap; on a version, Section or
+   evidence Job page its own forms (`focus_page.view_items`). The rail's Interactions keeps everything at the page or
+   below; an empty view says "Nothing asked yet.".
+6. **Report shows; Work does the same views.** Work is Process, then the same Results the Report draws, by the same code;
+   switching sections keeps the view.
+7. **Embed the real thing.** A drawing, a site, a paper or a map is shown in place, never described; every address is a
+   link.
+8. **An emoji and a plain name for each section; one question per view.** Two views that answer different questions
+   are two buttons; one that repeats another goes.
+9. **Flag what needs the person.** A question waiting, a proposal to agree, a fixed thing: each marked where it shows.
+10. **Delete what is not needed.** Shown once: no step repeats a section (Process never repeats 🙋 Interaction, 261105);
+    an unneeded line, row or view is removed, not kept "just in case".
+
+How to work on a page: walk it in Chrome before showing it; when it reads badly, compare it with a page at the same
+level first and name the one difference (0.4.3); keep what was agreed on a rebuild; record a big decision on the
+topic's face so it holds.
+
+
 ## Sections: one verb each
 
 ```text
 section    verb        holds                                         its view-button-list
-Report     check       the results and the progress                MindMap · Standing · Answers · Questions (Block,
-                                                                    Job, Task); MindMap · Findings · Themes · Status above
+Report     check       the results and the progress                MindMap · Status · Findings (Block, Job, Task; a
+                                                                    theme's own views replace them, as a paper Board's
+                                                                    Idea to Writing); MindMap · Findings · Themes ·
+                                                                    Status above the Block
 Work       do          the same views as Report (work theme,         same buttons as Report (· Deliverables);
                        paper Board): Process, then the same Results  elsewhere Progress (· Deliverables)
 Studio     think       sNN topics: slides, drawing, mind map        one button per group, no All; Other last;
@@ -147,6 +189,8 @@ Interactions answer  every interaction at this page or below       All · Needs 
 Delivery   hand over   what leaves this folder for someone else     its lanes, each previewed; always on the rail
 Related    take in     meetings, papers, emails that came in        Related (one button)
 Timeline   look back   what happened when: commits, Runs, passes    Timeline (one button)
+Skills     use         the skills that work on it, most relevant    Skills (one button): side tabs, each skill's line,
+                       first: theme, level, its views', its Runs'     version, SKILL.md and a Copy prompt on this folder
 Files      browse      the folder itself, its tree                  Folder (one button)
 ```
 
@@ -164,7 +208,9 @@ Files      browse      the folder itself, its tree                  Folder (one 
 6. **No two views repeat.** Above the Block, Report's views each answer one question: MindMap how it is built,
    Findings what was found (each answer's first sentence; proposals waiting for you first), Themes what each Block
    is for, Status how far each Block has got. Every view says what it shows in one line above its content.
-   A Block, Job or Task has its own MindMap too: what it must find out, its Jobs or Tasks or Runs, its topics.
+   A Block, Job or Task has its own MindMap too: what it must find out, its Jobs or Tasks or Runs, its topics. A Job's
+   map draws each Task with what it must find out (its goal, a `finds out` leaf) and a Task's map each Run with its
+   `says:` (261106, decided on the lean): never the Run tree with its marks, which Status shows.
    A Block's Status groups its Jobs by band (j0N, j1N, ...; `bands:` in board.md names them) as numbered sections that
    start closed: `N · <emoji> <band>`, one state word, then a thin bar (JL 261104: "I prefer to me make it like the sections").
    Words sit left of the bar and every bar has one width on the right edge, so long words never push a bar out of line.
@@ -172,9 +218,21 @@ Files      browse      the folder itself, its tree                  Folder (one 
    its pop-out (JL 261104: "each job each row, and we can collapse them out to see the tasks and runs"; "这个做得很好").
    No next-step sentences on these rows (JL 261104: "I don't want this, just delete them").
    A Block that designs a theme (`theme:` in board.md) adds **Block UI · Job UI · Task UI** after Questions (JL 261031):
-   each is a real page of that theme, live in a frame, named by `ui-block:`, `ui-job:`, `ui-task:` in the face (an
-   http(s) link to the SPACE's server on the Tailscale origin, or a path from this SPACE's root). Pick a full example,
-   one with Tasks, Runs and Results, never the first folder on disk; a level the theme does not have gets no button.
+   each is a real page of that theme, live in a frame, named by `ui-block:`, `ui-job:`, `ui-task:` in the face. A Tools
+   theme Block names a placeholder inside Tools by its path from the Tools root (`blueprints/Project-Ladder/...`): the
+   workbench finds it from the Block's own checkout, so it frames in any SPACE (`Tools/blueprints/...` there) and on a
+   Tools server alike (261105). Tools is public, so never a real project's page; an http(s) link to another machine's
+   server only until the theme has a placeholder, since it breaks off that machine. Pick a full example, one with
+   Tasks, Runs and Results (paper: Paper-Example; labeling: b02_labeling_walkthrough; work:
+   b90_example_paper_results), never the first folder on disk; a level the theme does not have gets no button.
+   One line per kind of page at a level (JL 261105: "they are all the task, but different UI"; "for the paper's job,
+   we might have different versions"): repeat `ui-task:` (or `ui-job:`) for each kind, the first the one walked, and
+   the view shows them as side tabs, the kind on the left (its `task-type:`, or a Job's folder words) and the page live
+   on the right. A paper Board's Jobs: the writing version, the display, value and citation Jobs, the submission; its
+   Tasks: a Section, the cover letter, a display, a value set, a citation, a portal step. A kind of page with no
+   example on the prototype is a gap to fill (labeling has no items or embedding Task yet). Work on each of these
+   views is ⚙️ Process, then the same Results: 🎬 Walks to record (each kind with no walk yet) and 🔍 Review rounds
+   (each kind's newest round, read from its review file's `page` and `score` lines, or "not reviewed yet").
    A work page has no Questions view (JL 261104: "we don't need the questions"). A work Block's **Findings** is a quick
    overview of the results it got and what it hands over (JL 261104: "the quick overview of the results we get from that
    block"), shaped like a paper Board's Evidence: numbered closed sections, each with side tabs, a list on the left and
@@ -186,7 +244,13 @@ Files      browse      the folder itself, its tree                  Folder (one 
 7. **Work has the same views as Report** (work theme, Block, Job and Task; JL 261104: "why we have the progress? it
    should have the same view to the report"), as on a paper Board: ⚙️ Process first (closed: 🙋 waiting on you, the
    view's things to do, 🧰 skills), then 📊 Results, the Report's view drawn by the same code. Work opens on Status, whose
-   rows add each Task's output and the Answer button; a Task's Results are its Runs with their output.
+   rows add each Task's output and the Answer button; a Task's Results are its Runs with their output. A paper version
+   (a writing Job) does the same (261106, decision 1): its Report is its Work's six views, Draft-Main · Draft-Appendix ·
+   Display-Main · Display-Appendix · Values · Citations, results only, MindMap first; a Draft view's Results are each
+   Section's text, one side tab per Section (t00 to t19 main, t20 to t39 appendix), and its Process the Sections' step
+   words. A paper Board's evidence and submission Jobs have views of their own, never the old Progress view (261106):
+   display Job Plan · Displays · Examples; value Job Values · Check (its t99 check Task); citation Job Citations · Check;
+   submission Job Cover letter · Portal (`servers/workbench-paper/paper_jobs.py`).
 8. **Report shows, Work asks** (JL 261102: "the questions should be in the Work, for the report, we just show the
    report"). A Report view may be explored (hover, pin, compare, folds, a share link) but holds no Ask box, Copy
    prompt, propose or sign control; those live in the same letter's Work view, over the same picture.
@@ -335,8 +399,10 @@ however clean. The shape that passes, kept the same in every view (JL 261031: "I
 [heading bar] ... seems to be ordered"; "at the bottom, we should check the Interaction, Draw"):
 
 1. **Two bands, RESULTS and PROCESS.** Every Board view is two bands, each numbered from 1: RESULTS is the view's
-   own sections, PROCESS is how the layer is being made, step by step (1 · 🙋 Interactions, then the view's to-dos,
-   each a to-do row; Data + Paper Plan's is the plan center, in plan rows). Report reads RESULTS first, Work PROCESS first;
+   own sections, PROCESS is how the layer is being made, step by step (the view's to-dos, each a to-do row; Data +
+   Paper Plan's is the plan center, in plan rows; 📌 Open points first when a part's face marks some). The open forms
+   are never a PROCESS step: they show once, in the view's last section 🙋 Interaction (261105, "keep only the
+   bottom"). Report reads RESULTS first, Work PROCESS first;
    RESULTS is drawn by the same code on both, so the two never disagree (b16 s32-D22, s33-D03).
 2. **Numbered heading bars, in reading order.** Every section is a boxed bar `▾ 1 · 🧭 <name>`, `▾ 2 · …`, folding
    by its heading; the numbers, from 1 in each band, make the view read in order. Each section name has one emoji,
@@ -355,7 +421,8 @@ however clean. The shape that passes, kept the same in every view (JL 261031: "I
    the thing to read, never the steps that make it ("we just report the report").
 6. **Helpers at the bottom**, unnumbered, after a dashed rule: the drawing and the mind map only. 🖼️ The drawing
    (its picture, Slides · Draw), 🧠 The mind map (a button that opens it in the pop-out; drawn inline it repeated the
-   face). Interactions moved into PROCESS 1 (b16 s32-D22).
+   face). 🙋 Interaction is not a helper: it is the last numbered section of every Report and Work view (261104), the
+   one place a form shows (261105; it was PROCESS 1 from b16 s32-D22 to 261105).
 
 `paper_ui_cells.py` draws this (`band`, `sec_block` with `big`, `cardtabs`, `cardtabchain`, `chain_only`,
 `narrative`, `sidetabs`, `todo`, `one_line`, `ask`, `picture`). The live code: `servers/workbench/ui_parts.py` holds the
@@ -399,9 +466,24 @@ open ─▶ every view button ─▶ every interactive thing ─▶ 390 px ─�
 6. **The paper bar.** Open the paper UI's matching view (the paper Board's view of the same job: its Story or
    Writing side tabs for a list of things compared, its Data + Paper Plan rows for steps) and say, per view, where the
    page falls short of it, in words: "denser than paper's Story side tabs", "no picture where paper shows one".
-7. **Notes.** One line per step: `✅ | ❌ | ⚠️ <what was done> → <what happened>`; a GIF of the walk
-   (`gif_creator`, frames before and after each action, named `<page>-walk.gif`). Fix every ❌ and re-walk before
-   any review; a ⚠️ (works, but confusing) goes to the review.
+7. **Notes and the walk video.** One line per step: `✅ | ❌ | ⚠️ <what was done> → <what happened>`. The video is
+   recorded by script, one per kind of page (JL 261105: "a very quick video and we can pause in the middle"; "they are
+   all the task, but different UI"):
+
+   ```bash
+   python scripts/walk_all.py <theme Block> [--origin http://127.0.0.1:<Tools server>]   # every ui-* kind, one walk each
+   uv run --no-project --with playwright python scripts/walk_shoot.py <page url> <frames>  # one page: frames + captions
+   python scripts/walk_player.py <frames | walk.gif> <out.html> --title …                  # the player: pause, step, speed
+   ```
+
+   `walk_shoot.py` opens a fresh browser that can only read (GET), visits each section and view, opens each closed bar,
+   clicks side tabs and a pop-out, outlines each target, and writes `NN.jpg`, `captions.txt`, `notes.md` (✅/❌ per step)
+   and `errors.txt` (page errors). A theme Block keeps the players as `walks/<level>-<folder>.html` (the first kind also
+   `walks/<level>.html`); its Report's Block UI · Job UI · Task UI show them as 2 · 🎬 The walks, the same side tabs as
+   1 · 🖥️ The pages, live, and its Work lists the kinds with no walk yet. Record on a server rooted at Tools, so the page
+   path names no SPACE. Rerun `walk_all.py` after every round; an empty recording never replaces a walk. Fix every ❌
+   and re-walk before any review; a ⚠️ (works, but confusing) goes to the review. The script records; it does not
+   judge: reader tasks, hovering a canvas and the paper bar stay the Chrome walk's (steps 1, 3 and 6).
 8. **Builder walks, a fresh reviewer scores.** The walk proves it works; it is not a score (the builder knows what
    each mark means). The Review below then scores the page, from its own Chrome walk when it has the tools, else
    from the walk's screenshots, notes and GIF.
@@ -420,10 +502,12 @@ reviewer gets the drawing instead of a screenshot, skips step 1, and its `page` 
 a URL (`s32-board-ui-report · B · stage 1`).
 
 **Review on Tools' own placeholder page, never a real one** (JL 261101: "you are working with the Tools"). Tools is
-public, and a review quotes what it sees, so a stage-2 review screenshots the placeholder Board,
-`blueprints/Project-Ladder/paper/Paper-Example` on the Tools server (`Tools-SPACE/.server_config`: port 5623), e.g.
-`http://100.121.165.84:5623/_board/workbench?path=blueprints/Project-Ladder/paper/Paper-Example&layout=focus&section=work&group=work-plan`.
-Its faces hold `<…>` placeholders only. A bug seen only on a real paper is diagnosed by a new session in that paper's
+public, and a review quotes what it sees, so a stage-2 review screenshots a theme's placeholder: the paper Board
+`blueprints/Project-Ladder/paper/Paper-Example`, the work Block `blueprints/Project-Ladder/work/b90_example_paper_results`,
+the labeling Block `blueprints/Project-Ladder/labeling/b02_labeling_walkthrough`. On a server rooted at Tools the path
+is as written; on a SPACE's server it is under `Tools/`, e.g.
+`http://127.0.0.1:<port>/_board/workbench?path=Tools/blueprints/Project-Ladder/paper/Paper-Example&layout=focus&section=work&group=work-plan`.
+Their faces hold `<…>` placeholders only. A bug seen only on a real paper is diagnosed by a new session in that paper's
 own SPACE, which reports back the Tools file and line; the reviewer never opens the real paper.
 
 1. Walk the page (Walk, above), or read the builder's walk notes and GIF; then screenshot it at 1440 px wide (and once

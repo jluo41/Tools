@@ -83,6 +83,15 @@ def _resolve(md: str, base: Path | None, url_of) -> str:
     return FULL_LINK.sub(one, md)
 
 
+UNWRITTEN = "Not written yet."
+
+
+def unwritten(line: str) -> str:
+    """A root line that only says the map is unwritten reads as that state, never as how to write it (round 3: "Not
+    written yet: ask in the Studio chat…" sat grey under a map's root as an instruction; older maps keep those words)."""
+    return UNWRITTEN if line.startswith("Not written yet") else line
+
+
 def _inline(words: str) -> str:
     return MH.inline(LINK.sub(lambda m: m.group(1), words))     # a link's words; its chip opens it
 
@@ -132,7 +141,7 @@ def draw(mm: MT.MindMap, rel: str = "", editable: bool = True, base: Path | None
     counts = {}
     for _, leaf, _pic in (mmsketch.slides_of(base / "x") if base else []):
         counts[leaf] = counts.get(leaf, 0) + 1
-    arc = MT.display(" ".join(split_note(mm.root)[1]))
+    arc = unwritten(MT.display(" ".join(split_note(mm.root)[1])))
     out = MV.render(MT.display(mm.root.text), arc, [], asks, paras, task=rel, file=rel, inline=_inline,
                     chips=lambda s, words, note: _opens(words, base, url_of) + _leafdraw(s, base, url_of, counts, words),
                     plabel=lambda x: labels.get(x, x),

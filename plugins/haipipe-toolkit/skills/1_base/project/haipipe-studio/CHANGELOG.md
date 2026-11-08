@@ -2,6 +2,16 @@ haipipe-studio · Changelog
 ==========================
 
 
+## [0.29.0] — 2026-11-05
+
+`five_parts.build` takes `writer=`. None keeps the plain overwrite (`quick_draw.write`), so every existing five-part
+builder is unchanged; `five_parts.marks_writer` writes through `canvas.write`, which keeps a person's marks and edits
+on the canvas and writes the seed snapshot beside it, with the builder's own colours. The paper and work theme UI cells
+(b16 j01 `paper_ui_cells.py`, b17 j03 `work_ui_cells.py`) now pass it: before, a rebuild overwrote the canvas with no
+snapshot. The first build under it starts from an empty file (the old one moved aside), or every old element is kept
+as a mark.
+
+
 ## [0.28.1] — 2026-10-31
 
 `studio_move.py` rewrites a link only when its path, read from the file's folder or one above it, leads to a topic

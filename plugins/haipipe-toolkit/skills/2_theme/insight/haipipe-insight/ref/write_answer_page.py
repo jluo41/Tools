@@ -20,6 +20,27 @@ and `page.py health <page>` afterwards.
 
     write_answer_page.py <page folder> <spec.yaml> [--version v0.1]
 
+A question Task of an insight Board Job (ref/insight-ladder.md: `<Board>/jNN_prototype-pN-…_data-<D>vM/tNN_<L><NN>_<slug>/`)
+is written in its own shape instead (`build_task_page`): its face `tNN_….md` with `question:`, its `goal:` kept,
+`answer-status:`, `answer:`, `how-sure:`, `check:` (reset, since the page changed), `takeaways:` (one line per cut) and, for an
+Executive question, `figures:`; then `# <QID> · <name>`, `**The ask**`, the opening, and one `## <Cut>` section per hard
+Run of the Task, in rNN order, each its takeaway and its bullets; a question with no Run (it cites the answers below
+it) has titled sections instead. A bullet names its evidence and the tool writes the citation: `file:` a table its
+cut's Run wrote (`(r01_full · rates_by_arm.csv)`, refused when the Run is not ok or the file is missing), `cite:` a
+question of the same Job (`(K01 · t05)`, refused when the Job has no such Task). The spec, for a Board Task:
+
+    answer-status: answered | partial | written | drafted
+    answer: <one plain line>
+    how-sure: <one line>
+    opening: [<sentence>, ...]
+    figures: [...]                                # an Executive page only: overall_figures.py's specs, as written
+    divisions:
+      - partition: full                           # one per hard Run, in rNN order, every Run named once
+        takeaway: <one line: what this cut adds up to; a refused or planned Run says so>
+        bullets: [{draft: <sentence>, file: rates_by_arm.csv}, ...]
+      - title: What it rests on                   # titled sections after the cuts (or alone, with no Run)
+        bullets: [{draft: <sentence>, cite: K01}, ...]
+
 An Insight Block question page (ref/block-contract.md: the question's task folder,
 one run per dataset x partition) needs no answers:, state: or ticket: keys: its
 header carries question: and partitions: (its runs) and no state: line (status is
@@ -69,6 +90,9 @@ import yaml
 
 
 KEYS = {
+    "task": {"answer-status", "answer", "how-sure", "opening", "figures", "divisions"},
+    "task-division": {"partition", "title", "takeaway", "paragraphs", "bullets"},
+    "task-bullet": {"draft", "file", "cite"},
     "spec": {"title", "folder-kind", "answers", "strength", "state", "arc", "opening", "sits",
              "matters", "covered", "items", "divisions"},
     "item": {"id", "target", "name", "need", "ticket", "file", "artifact", "columns", "expected", "accept",
@@ -100,6 +124,95 @@ def validate(spec: dict) -> None:
             check(para, "paragraph", f"division {c} paragraph {m}")
             for k, b in enumerate(para["bullets"], 1):
                 check(b, "bullet", f"division {c} paragraph {m} bullet {k}")
+
+
+TASK_STATES = ("drafted", "partial", "written", "answered")
+
+
+def _board_task(page):
+    """A question Task of an insight Board Job: its Job's name reads jNN_prototype-pN-…_data-<D>vM, its Board's
+    board.md says board-kind: insight-board (ref/insight-ladder.md)."""
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from open_job import JOB
+    board = page.parents[1] / "board.md"
+    text = board.read_text(encoding="utf-8") if board.is_file() else ""
+    return bool(JOB.match(page.parent.name)) and bool(re.search(r"(?m)^board-kind:\s*insight-board\s*$", text))
+
+
+def _front(md):
+    text = md.read_text(encoding="utf-8") if md.is_file() else ""
+    m = re.match(r"(?s)^---\n(.*?)\n---\n?(.*)$", text)
+    return ((yaml.safe_load(m.group(1)) or {}), m.group(2)) if m else ({}, text)
+
+
+def build_task_page(page: Path, spec: dict) -> None:
+    """Write a Board Task's page from its spec (the module docstring): the face's fields, then the sections. Every
+    citation is made here from what is on disk, so a page cannot cite a table its Run did not write."""
+    def check(obj, kind, where):
+        bad = [k for k in obj if k not in KEYS[kind]] if isinstance(obj, dict) else ["(not a mapping)"]
+        if bad:
+            raise SystemExit(f"{where}: unknown key(s) {bad}; quote values that contain commas or colons")
+    check(spec, "task", "spec")
+    if spec.get("answer-status") not in TASK_STATES:
+        raise SystemExit(f"answer-status: one of {', '.join(TASK_STATES)}")
+    if not str(spec.get("answer") or "").strip():
+        raise SystemExit("answer: the one plain line is missing")
+    md = page / f"{page.name}.md"
+    face, body = _front(md)
+    qid = face.get("question") or page.name.split("_")[1]
+    title = next((ln for ln in body.splitlines() if ln.startswith("# ")), f"# {qid}")
+    ask = next((ln for ln in body.splitlines() if ln.startswith("**The ask**")), "")
+    runs = sorted(p for p in (page / "runs").glob("r[0-9][0-9]_*") if p.is_dir() and "_collect_" not in p.name)
+    cards = {r.name.split("_", 1)[1]: (r, (yaml.safe_load((r / "run.yaml").read_text(encoding="utf-8")) or {})
+                                         if (r / "run.yaml").is_file() else {}) for r in runs}
+    named = [d.get("partition") for d in spec["divisions"] if d.get("partition")]
+    if named != list(cards):
+        raise SystemExit(f"{page.name}: one division per hard Run, in rNN order: {list(cards)}; the spec names {named}")
+    tasks = {p.name.split("_")[1]: p.name.split("_")[0] for p in page.parent.iterdir()
+             if p.is_dir() and re.match(r"^t\d+_[DIKWX]\d+_", p.name)}
+    out, takeaways = [title, "", *( [ask, ""] if ask else []), *spec.get("opening", []), ""], {}
+    for k, div in enumerate(spec["divisions"], 1):
+        check(div, "task-division", f"division {k}")
+        part = div.get("partition")
+        if part:
+            run, card = cards[part]
+            if not str(div.get("takeaway") or "").strip():
+                raise SystemExit(f"division {k} ({part}): its takeaway is missing")
+            takeaways[part] = div["takeaway"].strip()
+            out += [f"## {part[:1].upper()}{part[1:]}", "", div["takeaway"].strip(), ""]
+        else:
+            if not div.get("title"):
+                raise SystemExit(f"division {k}: a partition or a title")
+            out += [f"## {div['title']}", ""]
+        out += [*(div.get("paragraphs") or [])] + ([""] if div.get("paragraphs") else [])
+        for b, bullet in enumerate(div.get("bullets") or [], 1):
+            check(bullet, "task-bullet", f"division {k} bullet {b}")
+            where = ""
+            if bullet.get("file"):
+                if not part:
+                    raise SystemExit(f"division {k} bullet {b}: a file is cited under its cut's division")
+                if str(card.get("status")) != "ok":
+                    raise SystemExit(f"{run.name} is {card.get('status') or 'planned'}: its takeaway says so; it has no table to cite")
+                if not (run / "result" / bullet["file"]).is_file():
+                    raise SystemExit(f"{run.name}/result/{bullet['file']}: no such table")
+                where = f" ({run.name} · {bullet['file']})"
+            elif bullet.get("cite"):
+                if bullet["cite"] not in tasks:
+                    raise SystemExit(f"division {k} bullet {b}: {bullet['cite']} is not a question of {page.parent.name}")
+                where = f" ({bullet['cite']} · {tasks[bullet['cite']]})"
+            out.append(f"- {bullet['draft'].strip().rstrip('.')}{where}.")
+        out.append("")
+    fields = {"question": qid, **({"goal": face["goal"]} if face.get("goal") else {}),   # its goal line stays (261106)
+              "answer-status": spec["answer-status"], "answer": spec["answer"].strip(),
+              "how-sure": str(spec.get("how-sure") or "").strip(), "check": ""}
+    if takeaways:
+        fields["takeaways"] = takeaways
+    if spec.get("figures"):
+        fields["figures"] = spec["figures"]
+    fields["results-read"] = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    md.write_text("---\n" + yaml.safe_dump(fields, sort_keys=False, allow_unicode=True, width=10_000) + "---\n\n"
+                  + "\n".join(out).rstrip() + "\n", encoding="utf-8")
+    print(f"{page.name}: {spec['answer-status']} · {len(spec['divisions'])} sections · {len(takeaways)} cuts")
 
 
 def _bound_tickets(page):
@@ -275,7 +388,11 @@ def main(argv=None):
     if not a.page.is_dir():
         print(f"{a.page}: not a page folder", file=sys.stderr)
         return 2
-    build(a.page.resolve(), yaml.safe_load(a.spec.read_text(encoding="utf-8")), a.version)
+    spec = yaml.safe_load(a.spec.read_text(encoding="utf-8"))
+    if _board_task(a.page.resolve()):
+        build_task_page(a.page.resolve(), spec)
+    else:
+        build(a.page.resolve(), spec, a.version)
     return 0
 
 

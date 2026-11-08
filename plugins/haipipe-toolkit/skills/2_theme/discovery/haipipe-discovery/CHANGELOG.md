@@ -8,6 +8,13 @@ since this orchestrator owns the layer contract. Newest first. Rollup lives in
 the plugin-level `CHANGELOG.md`. The type specialists keep their own
 `CHANGELOG.md` in their own folders.
 
+## [0.23.3] — 2026-11-06
+
+A Paper Run's headline.
+
+- `paper_result_build.py` writes `headline:` in each receipt, the readout's first sentence, as every receipt carries
+  it (haipipe-run); the workbench's Status and Findings read it. An older Run's headline is read from its Card.
+
 ## [0.23.2] — 2026-10-26
 
 Links, commands and companions repointed at the helper skills merged into `haipipe-ideation`, `haipipe-search`, `haipipe-evidence`, `inlab-human`, `haipipe-draft-review`, `haipipe-display` (now `_parts/<name>/PART.md`). (merge-parts 261026)

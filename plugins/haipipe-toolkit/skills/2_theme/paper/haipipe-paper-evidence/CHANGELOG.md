@@ -1,5 +1,27 @@
 # haipipe-paper-evidence · changelog
 
+## 0.14.0 · 2026-11-06 · a value Task's Run is r01_read_values; Run pages in the workbench's words
+
+- A value Task's Run was `r01_collect_values`, the name of a question form (haipipe-interaction `rNN_collect_<slug>`),
+  so the workbench listed it under 🙋 Interaction as a form "not sent yet" (stage-2 review round 2). `values_ledger.RUN`
+  is now `r01_read_values`; `gen_value_runs.py` writes `supersedes: r01_collect_values` on its card when the old Run is
+  there, and `prune_runs.py` removes it. Paper-Example regenerated, both tickets rerun, the old Run pruned.
+- `values.html`, `citations.html` and both headlines say each state in the workbench's words (differs from its Run,
+  waits for its Run, found, not bound yet; in the bib, no source card; not in the bib; verified by nobody yet), counts
+  in their own number; a proposed binding's note says it waits for your tick (the command rides the value Job's Copy
+  prompt). Generated faces carry `goal:` (the page's Aim line).
+- `paper_text.server_root`: a Tools checkout is its own served root, so a ticket rerun inside a SPACE writes
+  `blueprints/...` links the Tools workbench opens.
+
+## 0.13.1 · 2026-11-06 · a list table keeps each number as written
+
+- Stage-2 review round 2: `build_tables.py` read a list table's source as numbers, so a column holding 12480 and 2.3461
+  came back 12480.0 in its .csv. A list table now copies its rows as text, exactly as the Run wrote them (a pivot still
+  reads numbers, for its `flag` query). The Paper-Example ticket r02_build_tables was rerun. Test:
+  `test_a_list_table_keeps_each_number_as_written`.
+- `values_ledger.py check`'s headline counts in their own number ("1 value Task", "1 printed number"); the next run of a
+  check ticket writes it.
+
 ## 0.13.0 · 2026-11-04 · a display's PDF ends with its earlier versions
 
 - JL 261104: "add the previous old versions at the bottom of the pdfs". `preview_display.py` passes the Task's lower-numbered Runs to `build_preview.py`, one page each after the method. New rule: new data or a new look means a new Run, with a `change:` line on its card; never delete a display Run's `result/` to redraw it.

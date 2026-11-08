@@ -31,8 +31,11 @@
     if (!b) return;
     if (b.dataset.base === undefined) b.dataset.base = b.dataset.tail || '';
     let answers = '';
-    try {
-      const out = document.getElementById('ls-form').contentDocument.getElementById('out');
+    try {                                               // the form is the view's 🙋 Interaction now (round 2), found by its URL
+      const url = (b.closest('.ls-send') || {}).dataset?.form || '';
+      const f = [...document.querySelectorAll('iframe')].find(x => url && (x.getAttribute('src') === url || x.dataset.src === url))
+        || document.getElementById('ls-form');
+      const out = f.contentDocument.getElementById('out');
       answers = out ? out.value.trim() : '';
     } catch (_) {}
     b.dataset.tail = b.dataset.base + '\n\n' + (answers || '(no answer picked in the form yet)');
@@ -45,8 +48,7 @@
     const b = ev.target.closest('[data-approve]');
     if (!b) return;
     const bar = b.closest('.ls-bar'), by = bar.querySelector('.ls-by'), msg = bar.querySelector('.ls-msg');
-    const name = ((by && by.value) || '').trim().replace(/\s+/g, ' ');
-    if (!name) { msg.textContent = 'Type your name to sign.'; if (by) by.focus(); return; }
+    const name = ((by && by.value) || '').trim().replace(/\s+/g, ' ') || 'a person';   // no name needed to sign
     b.disabled = true; msg.textContent = 'Signing…';
     try {
       const r = await fetch('/_board/labeling/approve', {method: 'POST', headers: {'Content-Type': 'application/json'},

@@ -332,6 +332,16 @@ def smallest_effect(pw, thresholds):
     return None if v is None else float(v)
 
 
+def margin(thresholds):
+    """The plan's smallest effect in points (thresholds.yaml power.smallest_effect_pp), shaded on a figure of an
+    estimate in points as the band a difference must stay inside to pool; None when the plan names none."""
+    try:
+        v = ((thresholds or {}).get("power") or {}).get("smallest_effect_pp")
+        return float(v) if v is not None and not str(v).startswith("<") else None
+    except (TypeError, ValueError):
+        return None
+
+
 def power_rows(q, frames, thresholds):
     """partition_power.csv rows, from n and the base rate only: never an outcome contrast."""
     pw = (q.get("partitions") or {}).get("power") or "none"
@@ -565,7 +575,7 @@ def run(qfolder, run_stem):
             else:
                 (out / f).write_text(json.dumps(t, indent=2, default=str))
         receipt.update(status="ok", outputs=sorted(tables) + ["partition_power.csv"])
-        receipt["figures"] = figures.draw(out, live_needs(r["q"]))
+        receipt["figures"] = figures.draw(out, live_needs(r["q"]), margin(thresholds))
         receipt["tables_sha256"] = tables_sha(out, r["q"])
     except Refused as e:
         receipt.update(status="refused", reason=str(e))

@@ -1,10 +1,13 @@
-"""question_map.py <Insight Block> · draw the Block's question map into its studio/.
+"""question_map.py <Insight Block | Prototype | release> [--out <file>] · draw the question map.
 
     .venv/bin/python Tools/plugins/haipipe-toolkit/skills/2_theme/insight/haipipe-insight/ref/question_map.py \\
-        <tasks/bNN_<topic>_dikw>
+        <tasks/bNN_<topic>_dikw | work/Prototype-bNN-<Topic> | work/Prototype-bNN-<Topic>/jNN_pN_<slug>> [--out <file>]
 
-Writes `<Block>/studio/question-map.excalidraw` (block-contract.md § The Block):
-one frame per DIKW level, Data · Information · Knowledge · Wisdom, one box per live question (id,
+An older Insight Block (one Job per DIKW level) writes `<Block>/studio/question-map.excalidraw` (block-contract.md §
+The Block). On the ladder (ref/insight-ladder.md) it reads a release's questions from its release.yaml, a kept
+question where it lives: a Prototype draws its newest release, a release folder that release; it writes
+`<Prototype>/studio/question-map.excalidraw`, or `--out` (a Studio topic's drawing, sNN-<topic>/<file>.excalidraw).
+One frame per level, Data · Information · Knowledge · Wisdom · Executive, one box per live question (id,
 name, the short question), and one arrow per reuse, from the question whose result is reused
 to the question that reuses it (a `cite` need's `from: <L><NN>.E<n>`). A question that reuses
 nothing on the board and that nothing reuses has a dashed box. Retired questions are left out;
@@ -23,22 +26,48 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from run_question import QFILE, LEVEL_DIR, front, live_needs, question_folders, question_id   # noqa: E402
 
+import yaml  # noqa: E402
+
 NAME = "question-map.excalidraw"
 SOURCE = "haipipe-insight/ref/question_map.py"
-LEVEL_NAME = {"D": "Data", "I": "Information", "K": "Knowledge", "W": "Wisdom"}
+LEVEL_NAME = {"D": "Data", "I": "Information", "K": "Knowledge", "W": "Wisdom", "X": "Executive"}
 BLUE, GREEN, INK, MUTED, RULE = "#1864ab", "#2b8a3e", "#1e1e1e", "#495057", "#adb5bd"
-FILL = {"D": "#f8f9fa", "I": "#e7f5ff", "K": "#ebfbee", "W": "#fff9db"}
+FILL = {"D": "#f8f9fa", "I": "#e7f5ff", "K": "#ebfbee", "W": "#fff9db", "X": "#f3f0ff"}
 BOX_W, BOX_H, BOX_GAP = 380, 96, 24          # one question box
 COL_GAP, PAD = 240, 32                        # room between frames for the arrows
 WRAP = 44                                     # characters per line of the short question
 
 
+def release_of(src: Path) -> Path | None:
+    """The release a ladder folder names: itself when it holds release.yaml, else a Prototype's newest release."""
+    if (src / "release.yaml").is_file():
+        return src
+    face = src / "board.md"
+    if face.is_file() and "board-kind: prototype" in face.read_text(encoding="utf-8"):
+        rels = sorted((p for p in src.glob("j*_p*") if (p / "release.yaml").is_file()),
+                      key=lambda p: int(p.name.split("_")[0][1:]))
+        return rels[-1] if rels else None
+    return None
+
+
+def _folders(src: Path) -> list[tuple[Path, str]]:
+    """(question folder, id) in climbing order: a release's from release.yaml (a kept question where it lives, its
+    retired ones too, so the frame counts them), else an older Block's level Jobs."""
+    rel = release_of(src)
+    if rel is None:
+        return [(f, question_id(f)) for f in question_folders(src)]
+    data = yaml.safe_load((rel / "release.yaml").read_text(encoding="utf-8")) or {}
+    rows = [((rel / str(r["task"])).resolve(), q) for q, r in (data.get("questions") or {}).items()]
+    order = "DIKWX"
+    return sorted(rows, key=lambda r: (order.find(r[1][0]), r[1]))
+
+
 def questions(proto: Path) -> tuple[list[dict], dict[str, int]]:
     """Live questions in climbing order, each with the ids it reuses; and the retired count per DIKW level."""
     live, retired = [], {k: 0 for k in LEVEL_NAME}
-    for folder in question_folders(proto):
+    for folder, qid in _folders(proto):
         q, _ = front(folder / QFILE)
-        letter = question_id(folder)[0]
+        letter = qid[0]
         if q.get("retired"):
             retired[letter] += 1
             continue
@@ -47,7 +76,7 @@ def questions(proto: Path) -> tuple[list[dict], dict[str, int]]:
             src = n.get("from")
             if n.get("kind") == "cite" and isinstance(src, str) and src.split(".")[0] not in uses:
                 uses.append(src.split(".")[0])
-        live.append({"id": str(q.get("id") or question_id(folder)), "letter": letter,
+        live.append({"id": str(q.get("id") or qid), "letter": letter,
                      "name": str(q.get("name") or folder.name[4:]), "question": str(q.get("question") or ""),
                      "uses": uses})
     return live, retired
@@ -103,7 +132,8 @@ def draw(proto: Path) -> dict:
     linked = {a for e in edges for a in e}
 
     s = Scene(seed=len(live) * 7919 + len(edges))
-    s.text("title", 0, 0, f"{proto.name} · question map", 30)
+    rel = release_of(proto)
+    s.text("title", 0, 0, f"{proto.name if rel is None else rel.parent.name + ' · ' + rel.name} · question map", 30)
     s.text("lead", 0, 46, f"{len(live)} live questions · {len(edges)} reuse links. An arrow runs from a question "
            "to the question that reuses its result. A dashed box reuses nothing here and nothing here reuses it.", 16, MUTED)
     s.text("source", 0, 72, f"Generated by {SOURCE} from the question files: rerun it after a question changes, "
@@ -111,7 +141,8 @@ def draw(proto: Path) -> dict:
 
     top, box = 150, {}
     frames = []
-    for col, letter in enumerate(LEVEL_NAME):
+    shown = [k for k in LEVEL_NAME if k != "X" or any(q["letter"] == "X" for q in live)]   # X only when asked
+    for col, letter in enumerate(shown):
         fx = col * (BOX_W + 2 * PAD + COL_GAP)
         in_level = [q for q in live if q["letter"] == letter]
         kids = []
@@ -149,15 +180,26 @@ def draw(proto: Path) -> dict:
 
 
 def main(argv: list[str]) -> int:
-    if len(argv) != 2:
+    args = list(argv[1:])
+    out = None
+    if "--out" in args:
+        at = args.index("--out")
+        out = Path(args[at + 1]) if at + 1 < len(args) else None
+        del args[at:at + 2]
+        if out is None:
+            print("--out names the drawing file to write")
+            return 2
+    if len(args) != 1:
         print(__doc__.strip().splitlines()[0])
         return 2
-    proto = Path(argv[1]).resolve()
-    if not any((proto / d).is_dir() for d in LEVEL_DIR.values()):
-        print(f"{argv[1]}: not an Insight Block (no level Job folder)")
+    proto = Path(args[0]).resolve()
+    rel = release_of(proto)
+    if rel is None and not any((proto / d).is_dir() for d in LEVEL_DIR.values()):
+        print(f"{args[0]}: not an Insight Block (no level Job folder), a Prototype or a release")
         return 1
-    out = proto / "studio" / NAME
-    out.parent.mkdir(exist_ok=True)
+    home = rel.parent if rel is not None else proto            # a release's map is its Prototype's
+    out = (out.resolve() if out else home / "studio" / NAME)
+    out.parent.mkdir(parents=True, exist_ok=True)
     scene = draw(proto)
     out.write_text(json.dumps(scene, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     n_box = sum(1 for e in scene["elements"] if e["type"] == "rectangle")

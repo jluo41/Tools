@@ -1,3 +1,107 @@
+## 0.53.0 · 2026-11-06 · round-3 review fixes: maps in their box, what a revision changed, one word per state
+
+- Every paper map is one read-only map in its own box (`paper_version.paper_map`, MAP_CSS): the leaves wrap in the space
+  left, a phone stacks each branch over its leaves, a folder name breaks only after "_", ids are relative (no folder
+  path in the HTML), and the frame's second fold bar (⊟ ⊞) and folds are gone, so Open all opens every level. A closed
+  branch carries its state ("Reviewer points · 3 of 3 answered", "Sections · 3 wait for you").
+- A revision version says what this send did on every tab: Draft tabs "same as j11_…", "changed for Reviewer 1",
+  "new in this send"; Display, Values and Citations tabs "asked by Reviewer 2", "new in this send" or "same as j11_…"
+  (`send_changes`, `evidence_since`; `section_tabs(words=)`, `_evidence_kinds(since=)`). A first send's Report tabs
+  say how much text each Section has, never nothing.
+- Reviewer points read each reply from the response letter (`focus_draft.review_points`), so the map, the Answers
+  line and the letter agree.
+- Evidence and submission Jobs: their own MindMap (each Task by its title, "Table 1 · <name> · drawn 2026-11-06", what
+  it finds out); the value Job's Values view leaves the whole-paper line to Check; the check's Process row says what
+  its Run does (the count once, in Results), with the proposed bindings as a Copy prompt; each value by its name, its
+  key on hover; the Values table's Value, As printed and Status read the check (sub.b: 4.10, differs from its Run), and
+  at 390 px its rows stack under their column names. Citations show the claim, then one line per key; the Check view
+  keeps the cards ("Verified by: nobody yet"). The submission Job's Portal is side tabs by portal step, the step with
+  the field that disagrees first, one row per field; the waiting line names the field; the fill page one Pop out away
+  and listed under Delivery. No "Open <this Job>" on its own page.
+- Evidence Tasks: their own MindMap and Status (📌 Headline in Findings' words with the Run's files, 🧪 Runs; Work's
+  Results without the Runs its Process lists); a display's proposed bindings are the side tab "Waiting for your tick";
+  the Aim line carries the caption, label or question (faces' `goal:`), and Its facts no longer repeat it; the portal
+  walk says "starter, not walked" everywhere, its fields one row each, under 📮.
+- Board: Paper flow draws the s04 face's Sections in reader order (answers, displays, evidence, words) and the steps to
+  the send (`paperflow_map`), root "Plan · shaping"; no "Not written yet: ask in the Studio chat…" on a map's root; the
+  Roadmaps rows lead with their words, not D1/T0; Work › Evidence rows say each Task's state, not a cut headline;
+  Discovery links to the related-work map only when the Board holds related papers.
+
+## 0.52.0 · 2026-11-06 · round-2 review fixes: one check, one count, what each Task made first
+
+- The whole-paper check (t99) shows once (stage-2 round 2): never a side tab, a one-line verdict above the Values and
+  Citations tabs, "Open the check" to the evidence Job's Check view. New `evidence_read.py` reads what the value,
+  citation and portal Runs returned (`values.yaml`, `citations.csv`, `portal-fields.yaml`) and draws each row as a card
+  in plain words (in the bib, no source card; not in the bib; differs from its Run; waits for its Run), so the Board, a
+  version, the evidence Jobs and the evidence Tasks say the same thing. No framed ledger page where a few rows say it
+  (it hid rows and, at 390 px, Status and DOI); each Run's own page stays one Pop out away.
+- Citations count each key once ("0 of 6 verified" was 3 keys counted in the group and the check): "0 of 3 keys
+  verified", the key not in the bib under the closed bar. The Values word agrees with the check: "1 differs", its printed
+  and returned numbers under the bar, on the Board, the version, the value Job's Values and Check.
+- A version's Display-Main, Display-Appendix, Values and Citations are the Board's own side tabs
+  (`board_results._evidence_kinds`, `only=` the display groups the plan places there; `display_groups`); its Process
+  rows read each Task's state from its Run (`evidence_read.task_state`, no more "not started" beside a count line).
+- A version's MindMap (`paper_version.version_mindmap`): This send (state, venue, close, tells, from as a link, responds
+  to as a link), a revision's Reviewer points (each with who raised it, the Section it lands on, its reply paragraph in
+  the response letter, its state; read by `focus_draft.review_items`), each Section with what it must find out and its
+  next step. Draft views: "N of M with text" (not "written"); the waiting word counts every step that waits on you.
+- The submission Job links its own version's Sections first (`paper_jobs._linker`: its t31_cover-letter opened the
+  newest version's letter); the letter's word is one in Report and Work; the Portal's waiting line names the fields
+  where the portal and the manuscript disagree and those a person decides.
+- The evidence and submission Tasks (display, values, raw tables, claim group, portal walk and fill, the submission's
+  letter) get their own views (`paper_tasks.py`, one hook line per section in focus_page.render): Report MindMap ·
+  Findings · Status, Work Findings · Status, ⚙️ Process then 📊 Results; Findings' section 1 is what the Task made as
+  side tabs (the display, its table, how it was made; each value with its state word; each key; each portal step), the
+  open proposals or the person's turn under its bar. No more Progress view or "No takeaways".
+- Board: Work › Plan's prompts sit behind "Show the prompt" under Copy prompt, their session line copied only
+  (`board_process.behind_copy`, also the display Job's Plan; its word "N prompts", never "no session named"). Data flow
+  draws its `-drawing.yaml` flow (data, linking, tables, questions); a map still the from-topic stub shows nowhere
+  (`_plan_part`). The Values tables drop "Click a cell for its source".
+- Sections (workbench-task-draft): the MindMap, Write and Revise read the adopted Content the Text shows
+  (`focus_draft.content_read`, one owner for the Board's Draft tabs too; `content_branches`); the Text starts open
+  (`data-open` on its section); a response letter links the comments it answers (`answers_line`, the map's "Comments it
+  answers"); Status shows the Aims and the Opening and each state once; the session line leaves every visible Prompt
+  box; Delivery's PDF, Word and Web carry the build's own Copy prompt where nothing is built, and Built files lists the
+  four Delivery prompts; Evidence drops its repeated Open points and Display its repeated display cards; Studio's prompt
+  targets the Section's own topic, else a new one; "reviewers's" reads "reviewers'". Tests:
+  `tests/test_review_round2.py`.
+
+## 0.51.0 · 2026-11-05 · 🙋 shown once
+
+- A paper version's Report is its Work's six views, Draft-Main · Draft-Appendix · Display-Main · Display-Appendix · Values
+  · Citations, results only, MindMap first (JL 261106, decision 1): `paper_version.version_work_views(…, work=)` as
+  `board_views.banded` (Report keys drop `work-`), `version_report_views`. A Draft view's Results are each Section's text,
+  one side tab per Section (`board_results.section_tabs`, shared with the Board's Writing); its Process the Sections'
+  step words. The display, Values and Citations views gain a Process, where each Task stands.
+- The evidence and submission Jobs have their own pages (they fell back to the old Progress view):
+  `paper_jobs.job_views`, display Job Plan · Displays · Examples, value Job Values · Check, citation Job Citations ·
+  Check, submission Job Cover letter · Portal, each Report view results only and Work ⚙️ Process then 📊 Results, from the
+  Board's own pieces. Test: `tests/test_version_and_jobs.py`.
+- Every bar carries its state word (JL 261106, decision 2): Idea and Story (a topic's stage, a direction chosen, theory
+  written, research questions open, the target venue, related papers to read), Plan (each map's stage, roadmap rows
+  done), Support blocks (Blocks named), Evidence and Displays (`board_evidence.evidence_word`, `values_word`,
+  `check_word`: drawn, filled, verified, current, match), Writing (`sections_word`: waits for you with its Section under
+  the bar, or N of M done; `paper_word`, `portal_word`), every Process step from its rows (`ui_parts.todo_section`), and
+  the Delivery sections. `evidence_row` draws a Task's row from one `evidence_body` read.
+- Each Board view's 🙋 Interaction shows the forms about its own parts (focus_page.view_items; the rail keeps all).
+
+- Decided 261105 ("keep only the bottom"): a Work view's Process no longer repeats the open forms. The Board's Process
+  step "🙋 Decisions waiting for you / Nothing waits on you" becomes "📌 Open points", the lines a part's face marks
+  waiting, shown only when there are some (`board_process.process_html`); a version's Work drops its "🙋 Interactions"
+  step (`paper_version.py`); a Section's steps keep "📌 Where this step stands" (a Run running, its ask, its sign) and
+  drop the forms (`focus_draft.step_html`). The forms are each view's last section, 🙋 Interaction. Test:
+  `test_work_process_never_repeats_the_interaction`.
+- A Section's Studio shows its Copy prompt again (`focus_draft.studio_top` worked it out and dropped it), as the
+  Section Studio drawing settled ("Copy prompt only").
+- The Board UI · Job UI · Task UI of the paper theme Block frame Paper-Example in any SPACE (haipipe-ui 0.4.5).
+- From the first stage-2 reviews (261105): Idea's "🚧 Open" and the waiting lines read as one "📌 Open points"; Displays'
+  Plan gets 📐; a Values table's "Source Runs" link is its path from the SPACE root; the version's waiting form is built
+  (it failed its own check, so 🙋 showed nothing); a Section's Status hides Display when Work does (its Go opened Plan);
+  "the desk desk" in the Revise prompt; "waiting for JL" in two placeholder faces reads "waiting for you".
+- Values tabs: a copy's `SOURCE.txt` names its source from the Tools root, so inside a SPACE (Tools at `Tools/`) every
+  row of Paper-Example read "❗ source gone". `board_evidence._source_file` tries the SPACE root, then each folder above
+  the tables inside the SPACE (found on a walk, 261105). Test: `test_a_tools_copy_finds_its_source_in_any_space`.
+
 ## 0.50.0 · 2026-11-05 · a Theory section
 
 - JL 261105: "I think for both of them, we should have the section named theory as well."; "espeically for the IS." Idea and Story each draw 🎓 Theory; an empty one on an IS journal is flagged (s32-D45).

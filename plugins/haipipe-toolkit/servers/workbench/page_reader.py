@@ -205,7 +205,7 @@ def markdown_document(path, root, reason=""):
     base = "/" + quote(path.parent.resolve().relative_to(root).as_posix(), safe="/") + "/"
     why = f" · not read as a Page: {html.escape(reason)}" if reason else ""
     return (f'<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,'
-            f'initial-scale=1"><title>{html.escape(path.name)}</title><style>{MARKDOWN_CSS}</style></head><body>'
+            f'initial-scale=1"><title>{html.escape(path.name)}</title><link rel="icon" href="data:,"><style>{MARKDOWN_CSS}</style></head><body>'
             f'<p class=md-file>{html.escape(path.name)} · Markdown{why}</p>'
             f'{markdown_html(path.read_text(encoding="utf-8"), base)}</body></html>')
 

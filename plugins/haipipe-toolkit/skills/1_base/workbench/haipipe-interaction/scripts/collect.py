@@ -207,9 +207,20 @@ def markdown(spec: dict, answers: dict | None = None) -> str:
 
 # the Studio topic an interaction is attached to (JL 261031: "the interaction page should be attached to one studio as
 # well"): the sNN at the head of its for: address, b17-s04 or b16.j01.t03-s38
-# a Block's bNN, or a paper Board's own folder name, which has no bNN (Paper-X-s04, Paper-X.j11-s05)
-TOPIC = re.compile(r"\s*((?:b\d+|Paper-[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*?)(?:\.[jt]\d+)*-s\d+)\b")
+# a Block's bNN, or a named Board's own folder name, which has no bNN: a paper Board (Paper-X-s04, Paper-X.j11-s05), an
+# insight Board or its Prototype (Insight-X-s01, Prototype-b91-X-s01), a design Block (Design-X.j01-s02) (261106)
+NAMED = r"(?:Paper|Insight|Design|Prototype)-[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*?"
+TOPIC = re.compile(rf"\s*((?:b\d+|{NAMED})(?:\.[jt]\d+)*-s\d+)\b")
 EXAMPLE_FOR = "b17-s04:theme_work @ workbench_page_structure"
+
+
+def about_words(about: str) -> str:
+    """What a form is about, in words: the part of its `for:` after "@" ("b90.j02.t01-s03:… @ example-main-fit" ->
+    "About example main fit"); a bare address says nothing in words, so nothing (round 3: the header and a record's
+    eyebrow led with "r03_collect_… · b90.j02.t01-s03:… @ …")."""
+    words = str(about or "").split("@", 1)[1].strip() if "@" in str(about or "") else ""
+    words = re.sub(r"[_-]+", " ", words).strip()
+    return f"About {words}" if words else ""
 
 
 def topic_of(about: str) -> str:
@@ -374,6 +385,7 @@ code{font:12.5px ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--so
 .pop-x{position:sticky;top:0;float:right;margin:6px;padding:2px 10px;border:1px solid var(--line);border-radius:6px;background:#fff;font-size:13px;cursor:pointer;z-index:1}
 .label{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--red);margin:0 0 4px;font-weight:600;overflow-wrap:anywhere}
 h1{font-size:22px;margin:0 0 4px}
+.addr{margin:0 0 8px;font-size:13px;line-height:1.4;color:var(--mut);overflow-wrap:anywhere}
 .lead{color:var(--fg);margin:0 0 16px}
 .card{border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin:0 0 12px}
 .card h2{font-size:16px;margin:0 0 4px;display:flex;gap:8px;align-items:baseline}
@@ -551,8 +563,9 @@ JS = r"""
     if (f.contentDocument && f.contentDocument.readyState === 'complete') diffQuestion(q);
   });
   /* a question already applied carries its flag (JL 261031: "if we already fix them, then give them the flags"):
-     applied.md beside the form, written by collect.py applied, read each time the form opens */
-  if (window.fetch) fetch('applied.md', {cache: 'no-store'}).then(function(r){ return r.ok ? r.text() : ''; })
+     applied.md beside the form, written by collect.py applied (which rebuilds the form), read each time the form
+     opens; only a form built with one beside it asks for it, so a form with none sends no request that answers 404 */
+  if (window.fetch && FORM.applied) fetch('applied.md', {cache: 'no-store'}).then(function(r){ return r.ok ? r.text() : ''; })
     .then(function(text){ text.split('\n').forEach(function(line){
       var m = /^(Q\d+) · (applied|in progress) · (\d{4}-\d{2}-\d{2}) \d{2}:\d{2} · (.+?)\s*$/.exec(line);
       var flag = m && document.getElementById('applied-' + m[1]), by = m && document.getElementById('applied-by-' + m[1]);
@@ -585,6 +598,8 @@ def page(spec: dict, run: Path, built: str = "") -> str:
                            "pick": next((o["key"] for o in q["options"] if o.get("pick")), ""),
                            "options": [{"key": o["key"], "text": o["text"]} for o in q["options"]]}
                           for q in spec["questions"]]}
+    if (run / APPLIED).is_file():                     # the form asks for applied.md only when it is there
+        data["applied"] = True
     answered = run / ANSWERS                          # an answered form shows the person's own picks and notes, read
     if answered.is_file():                            # only, from the paste its answer file keeps (JL 261031)
         text = answered.read_text(encoding="utf-8")
@@ -594,7 +609,10 @@ def page(spec: dict, run: Path, built: str = "") -> str:
         data["answered"] = {"received": when.group(1) if when else "",
                             "picks": {q: {"pick": a["pick"], "note": a["note"]} for q, a in got.items()}}
     payload = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
-    label = "Questions for you · " + html.escape(run.name) + (f' · {html.escape(spec["for"])}' if spec.get("for") else "")
+    # the header leads with words; the Run and the topic's address stay small under the title (round 2 review: a
+    # capitalised run id and a long dotted address led the form)
+    label = "Questions for you"
+    addr = html.escape(about_words(spec.get("for", "")))      # words only; the Run's name is its folder
     intro = inline(spec.get("intro", ""))
     return f"""<!doctype html>
 <html lang="en">
@@ -602,7 +620,7 @@ def page(spec: dict, run: Path, built: str = "") -> str:
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="haipipe-built" content="{html.escape(built)}">
-<title>{html.escape(spec["title"])}</title>
+<title>{html.escape(spec["title"])}</title><link rel="icon" href="data:,">
 <!-- GENERATED FILE by haipipe-interaction scripts/collect.py from this Run's {QUESTIONS}: change the questions there
      and build again, never this page. -->
 <style>{CSS}</style>
@@ -611,6 +629,7 @@ def page(spec: dict, run: Path, built: str = "") -> str:
 <div class="wrap">
 <p class="label">{label}</p>
 <h1>{html.escape(spec["title"])}</h1>
+{f'<p class="addr">{addr}</p>' if addr else ""}
 <p class="lead">{intro + " " if intro else ""}{lead_words(data)}
 The questions as Markdown: <a href="{QUESTIONS}">{QUESTIONS}</a>.</p>
 {"".join(card(q) for q in spec["questions"])}
@@ -671,6 +690,9 @@ def new(page_dir: Path, slug: str, title: str, for_: str = "", person: str = "",
 
 
 def build(run: Path) -> Path:
+    source = read_card(run).get("source") if (run / "run.yaml").is_file() else None
+    if source in ("chat", "know"):                   # a record or notes page: drawn again from its own items, its
+        return _rebuild_record(run, source)          # answers and card untouched (round 2: its header changed)
     try:
         spec = load(run)
     except SpecError as err:
@@ -732,6 +754,8 @@ def applied(run: Path, qids: list[str], by: str, state: str = "applied", now: da
                     encoding="utf-8")
     if is_note:                                    # its page is drawn from its items, so the flag shows on it
         _write_know(run, load(run)["title"], read_card(run).get("target") or "", know_items(run))
+    elif (run / f"{run.name}.html").is_file():     # the form now asks for applied.md (it only does once one is there)
+        build(run)
     return path
 
 
@@ -771,10 +795,10 @@ def picks(pasted: str) -> tuple[dict, list, list]:
 
 def run_chain(here: Path) -> tuple:
     """The folders a form's path must end with to name this Run: from its Project (a `Project-*` folder; else its
-    Block, `bNN_*` or `Paper-*`; else its page) down to the Run. Hosts serve a SPACE root, so a host's path holds them."""
+    Block, `bNN_*` or a named Board `Paper-*`, `Insight-*`, `Design-*`, `Prototype-*`; else its page) down to the Run. Hosts serve a SPACE root, so a host's path holds them."""
     above = [here, *here.parents]
     anchor = (next((p for p in above if p.name.startswith("Project-")), None)
-              or next((p for p in above if re.match(r"^(b\d{2,}_|Paper-)", p.name)), None)
+              or next((p for p in above if re.match(r"^(b\d{2,}_|Paper-|Insight-|Design-|Prototype-)", p.name)), None)
               or here.parent.parent)                   # the page that holds runs/
     return here.relative_to(anchor.parent).parts
 
@@ -940,8 +964,7 @@ def _write_record(run: Path, title: str, for_: str, items: list, now: datetime) 
                                    "applied them; the answers stay in result/.\n\n" + "\n".join(lines) + "\n", encoding="utf-8")
 
 
-def record_page(run: Path, title: str, for_: str, items: list, kicker: str = "✍ Decided in the chat",
-                lead: str = "This topic's decisions, in the order they were made, each with the words that made it.") -> str:
+def record_page(run: Path, title: str, for_: str, items: list, kicker: str = "✍ Decided in the chat", lead: str = "") -> str:
     """A chat record, read only, in the forms' look: each decision as a card, the person's words under it, its flag
     (JL 261031: "the UI here doesn't good", on See answers opening raw Markdown). GENERATED by collect.py."""
     cards = "".join(
@@ -952,20 +975,33 @@ def record_page(run: Path, title: str, for_: str, items: list, kicker: str = "�
         + f'<p class="meta">{html.escape(d.get("when") or "")}' + (f' · {html.escape(d["applied_by"])}' if d.get("applied_by") else "") + '</p></section>'
         for i, d in enumerate(items, 1))
     return f"""<!doctype html><!-- GENERATED by collect.py record; never edit, rerun it -->
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{html.escape(title)}</title>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{html.escape(title)}</title><link rel="icon" href="data:,">
 <style>:root{{color-scheme:light dark;--ink:light-dark(#1c1c1c,#e8e8e6);--muted:light-dark(#6f6f6b,#a0a09c);--line:light-dark(#e3e3e6,#2c2e33);
 --bg:light-dark(#f6f6f7,#161719);--paper:light-dark(#fff,#1b1c1f);--ok:light-dark(#2b8a3e,#8ce99a)}}
 body{{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}}
 main{{max-width:860px;margin:auto;padding:24px 16px 48px}}.kicker{{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}}
+.addr{{margin:0 0 14px;font-size:13px;line-height:1.4;color:var(--muted);overflow-wrap:anywhere}}
 h1{{font-size:24px;margin:4px 0 6px}}.lead{{color:var(--muted);margin:0 0 18px}}
 .card{{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:0 0 12px}}
 .card h2{{font-size:16px;margin:0 0 6px;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}}.qid{{color:var(--muted);font-weight:600}}
 .flag{{margin-left:auto;font-size:12.5px;font-weight:600;color:var(--ok)}}.dec{{font-size:16px;margin:0 0 8px}}
 .said{{margin:0 0 6px;padding-left:10px;border-left:3px solid var(--line);color:var(--muted);font-style:italic}}.meta{{font-size:12px;color:var(--muted);margin:0}}
-</style></head><body><main><div class="kicker">{html.escape(kicker)} · {html.escape(run.name)} · {html.escape(for_)}</div>
-<h1>{html.escape(title)}</h1><p class="lead">{html.escape(lead)}</p>
+</style></head><body><main><div class="kicker">{html.escape(kicker)}</div>
+<h1>{html.escape(title)}</h1>{f'<p class="addr">{html.escape(about_words(for_))}</p>' if about_words(for_) else ""}{f'<p class="lead">{html.escape(lead)}</p>' if lead else ""}
 {cards}</main></body></html>
 """
+
+
+def _rebuild_record(run: Path, source: str) -> Path:
+    """A chat record's or notes Run's page, drawn again from decisions.yaml or notes.yaml; nothing else is written."""
+    card, page_ = read_card(run), run / f"{run.name}.html"
+    title, for_ = load(run)["title"], card.get("target") or ""
+    if source == "chat":
+        page_.write_text(record_page(run, title, for_, record_decisions(run)), encoding="utf-8")
+    else:
+        page_.write_text(record_page(run, title, for_, _know_shown(run), "📌 What you should know",
+                                     "Things to know about this topic; nothing here needs an answer."), encoding="utf-8")
+    return page_
 
 
 def know_items(run: Path) -> list:
@@ -980,6 +1016,11 @@ def know_items(run: Path) -> list:
     return items
 
 
+def _know_shown(run: Path) -> list:
+    return [{"title": d["title"], "decision": d["what"], "said": "", "when": " · ".join(x for x in (d.get("when"), d.get("see")) if x),
+             "applied_by": d.get("applied_by", ""), "applied_at": d.get("applied_at", "")} for d in know_items(run)]
+
+
 def _write_know(run: Path, title: str, for_: str, items: list) -> None:
     import yaml
     spec = {"title": title, "for": for_, "intro": "Things to know about this topic; nothing here needs an answer.",
@@ -988,9 +1029,7 @@ def _write_know(run: Path, title: str, for_: str, items: list) -> None:
     (run / QUESTIONS).write_text(markdown(spec), encoding="utf-8")
     keep = [{k: d.get(k, "") for k in ("title", "what", "see", "when")} for d in items]
     (run / KNOW).write_text(yaml.safe_dump(keep, allow_unicode=True, sort_keys=False, width=200), encoding="utf-8")
-    shown = [{"title": d["title"], "decision": d["what"], "said": "", "when": " · ".join(x for x in (d.get("when"), d.get("see")) if x),
-              "applied_by": d.get("applied_by", ""), "applied_at": d.get("applied_at", "")} for d in know_items(run)]
-    (run / f"{run.name}.html").write_text(record_page(run, title, for_, shown, "📌 What you should know",
+    (run / f"{run.name}.html").write_text(record_page(run, title, for_, _know_shown(run), "📌 What you should know",
                                                       "Things to know about this topic; nothing here needs an answer."), encoding="utf-8")
 
 

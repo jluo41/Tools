@@ -4485,10 +4485,32 @@ class LabelingMixin:
         origin = self.headers.get("Origin") or ""
         return not origin or urlparse(origin).netloc == (self.headers.get("Host") or "")
 
+    def _form_page_target(self, page_q):
+        """A labeling page that may hold collection Runs (a Block, a Job or a Task of any labeling kind: items, meaning,
+        expression, building, ...) inside the served root, or None. frame._file_url sends every labeling form here."""
+        if (not isinstance(page_q, str) or not page_q or page_q.startswith("/") or "\\" in page_q
+                or "\x00" in page_q or any(part in {"", ".", ".."} for part in page_q.strip("/").split("/"))):
+            return None
+        root = self.root.resolve()
+        page = (root / page_q.strip("/")).resolve()
+        try:
+            page.relative_to(root)
+        except ValueError:
+            return None
+        if not ((page / f"{page.name}.md").is_file() or (page / "board.md").is_file()):
+            return None
+        from live import frame
+        if frame.level_of(page) not in ("Block", "Job", "Task"):
+            return None
+        if "labeling" not in (p.casefold() for p in page.relative_to(root).parts):
+            return None
+        return page
+
     def labeling_form_view(self, head_only=False):
-        """A meaning Task's interaction form, and the applied.md beside it (b15 s58, stage 2): a static GET never reads a
+        """A labeling page's interaction form, and the applied.md beside it (b15 s58, stage 2): a static GET never reads a
         labeling folder (host_registry.static_path_allowed), so the Run's own form opens here and nothing else does. The
-        URL keeps the file's path, so the form's copied `form:` line still names its Run (collect.py save checks it)."""
+        URL keeps the file's path, so the form's copied `form:` line still names its Run (collect.py save checks it).
+        Every labeling Task kind's forms open here (round 2: an items or expression Task's Answer gave a 404)."""
         from urllib.parse import unquote
         rel = unquote(self.path.split("?", 1)[0][len("/_board/labeling/form/"):])
         parts = rel.split("/")
@@ -4496,9 +4518,8 @@ class LabelingMixin:
                 or len(parts) < 4 or parts[-3] != "runs" or not re.fullmatch(r"r\d\d_collect_[a-z0-9_]+", parts[-2])
                 or parts[-1] not in (parts[-2] + ".html", "applied.md")):
             return self.send_error(404, "not found")
-        task, _ = self._steps_task_target("/".join(parts[:-3]))
-        from live import labeling_steps as S
-        if task is None or S.kind(task) != "meaning":
+        task = self._form_page_target("/".join(parts[:-3]))
+        if task is None:
             return self.send_error(404, "not found")
         path = task / "runs" / parts[-2] / parts[-1]
         if not (task / "runs" / parts[-2]).is_dir() or (not path.is_file() and parts[-1] != "applied.md"):
@@ -4547,8 +4568,8 @@ class LabelingMixin:
         run = str(p.get("run") or "")
         if not re.fullmatch(r"r\d\d_[A-Za-z0-9_]+", run):
             return 400, {"ok": False, "err": "a Run is named rNN_<name>"}
-        if not str(p.get("by") or "").strip():
-            return 400, {"ok": False, "err": "type your name to sign"}
+        if not str(p.get("by") or "").strip():      # a sign needs no name: the page shows "✅ <date>" (JL: no names on
+            p["by"] = "a person"                     # a page); a private project may still type one
         from live import task_labeling as T
         try:
             signs = T.IT.sign(task, run, str(p["by"]))

@@ -103,7 +103,8 @@ class CollectTest(unittest.TestCase):
         self.assertIn('<p class="because">Why A: One thing in one place.</p>', page)
         self.assertIn('<pre class="sketch">today ─▶ A</pre>', page)
         self.assertIn(f'href="{collect.QUESTIONS}"', page)
-        self.assertIn('<p class="label">Questions for you · ', page)                # concrete words for the reader
+        self.assertIn('<p class="label">Questions for you</p>', page)              # concrete words for the reader;
+        self.assertNotIn('<p class="addr">r01_', page)                              # no Run id under the title (round 3)
         self.assertIn("GENERATED FILE by haipipe-interaction", page)
         self.assertIn("'haipipe-interaction answers · '", page)
         self.assertIn("localStorage.getItem(OLD)", page)                          # answers kept before the rename
@@ -223,6 +224,8 @@ class CollectTest(unittest.TestCase):
         with self.assertRaises(SystemExit):                                       # not answered: nothing to apply
             collect.applied(run, ["Q1"], "x")
         stamp = collect.form_built(form.read_text(encoding="utf-8"))
+        form_data = lambda text: json.loads(re.search(r'<script type="application/json" id="form-data">(.*?)</script>', text, re.S).group(1))
+        self.assertNotIn("applied", form_data(form.read_text(encoding="utf-8")))   # no applied.md: no request (round 2: a 404)
         collect.save(run, self.paste(run, "Q1 · Report or Delivery: A · In the Report.", "Q2 · View buttons: B · No All."))
         with self.assertRaises(SystemExit):                                       # not one of its questions
             collect.applied(run, ["Q9"], "x")
@@ -241,6 +244,7 @@ class CollectTest(unittest.TestCase):
         page = form.read_text(encoding="utf-8")
         self.assertIn('id="applied-Q1"', page)
         self.assertIn("fetch('applied.md'", page)
+        self.assertTrue(form_data(page)["applied"])                              # applied rebuilt it: now it asks
         self.assertEqual(collect.form_built(page), stamp)
         data = json.loads(re.search(r'<script type="application/json" id="form-data">(.*?)</script>', page, re.S).group(1))
         self.assertEqual(data["answered"]["picks"]["Q2"]["pick"], "B")             # the person's picks, read only
@@ -536,6 +540,15 @@ class RecordTest(unittest.TestCase):
             text = (run / collect.ANSWERS).read_text()
             self.assertIn("## Q2 · Second", text)
             self.assertIn("> decision: Idea, Story, Venue", text)
+            before = (run / collect.ANSWERS).read_text()
+            page_ = collect.build(run)                                            # build draws the record again, never
+            shown = page_.read_text()                                             # a form over it (round 2, 261106)
+            self.assertIn('<div class="kicker">✍ Decided in the chat</div>', shown)
+            self.assertIn('<p class="addr">About y</p>', shown)                     # in words, no ids (round 3)
+            self.assertEqual(collect.about_words("b90.j02.t01-s03:x @ example-main-fit"), "About example main fit")
+            self.assertEqual(collect.about_words("b01-s01:studio"), "")             # a bare address says nothing
+            self.assertNotIn("This topic's decisions", shown)                     # no instruction line under the title
+            self.assertEqual((run / collect.ANSWERS).read_text(), before)
             with self.assertRaises(SystemExit):                                   # every part filled
                 collect.record(page, "empty", "Empty", "b01-s01:x @ y", [("A title", "", "words")])
 
@@ -556,6 +569,17 @@ class RecordTest(unittest.TestCase):
             self.assertIn("✅ applied", (run / f"{run.name}.html").read_text())
             with self.assertRaises(SystemExit):
                 collect.know(page, "bad", "Bad", "b01-s01:x @ y", [("A title", "")])
+
+
+class TopicAddressTest(unittest.TestCase):
+    def test_every_board_kind_names_its_own_topic(self):           # a named Board has no bNN (261106)
+        for about, topic in (("b17-s04:x @ y", "b17-s04"), ("b16.j01.t03-s38:x @ y", "b16.j01.t03-s38"),
+                             ("Paper-Example-s04:x @ y", "Paper-Example-s04"),
+                             ("Insight-Example.j02-s01:x @ y", "Insight-Example.j02-s01"),
+                             ("Prototype-b91-Example-s01:x @ y", "Prototype-b91-Example-s01"),
+                             ("Design-Example.j01.t02-s03:x @ y", "Design-Example.j01.t02-s03")):
+            self.assertEqual(collect.topic_of(about), topic, about)
+        self.assertEqual(collect.topic_of("Other-Example-s01:x @ y"), "")
 
 
 if __name__ == "__main__":

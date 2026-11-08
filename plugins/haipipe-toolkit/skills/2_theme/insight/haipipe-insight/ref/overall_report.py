@@ -7,7 +7,10 @@ how sure, read from the Job's Task faces and the release's question.md; page 2, 
 workbench reads the same answers in full, figures beside them, as the Audience Report's Overall Report button. It
 writes the Board's delivery part for the Job, never the Job itself:
 
-    <Board>/delivery/<job>/figures/<X>-<name>.png  each figure (the folder is this script's: an old one is removed)
+    <Board>/delivery/<job>/<tNN_X..>/<X>-<name>.png  each figure, under the Executive Task that names it (a Task's
+                                                   output sits under its address, haipipe-delivery); this script's
+                                                   own PNGs there are replaced, and an older figures/ folder removed
+    <Board>/delivery/<job>/<tNN_X..>/delivery.md   that part previewed: each figure as a picture and its one line
     <Board>/delivery/<job>/overall-report.html     the two pages, self-contained (the figures inlined)
     <Board>/delivery/<job>/overall-report.pdf      the same pages printed by a headless Chrome, Letter
 
@@ -61,16 +64,32 @@ def _chrome():
 
 
 def figures(job: Path, out: Path) -> dict:
-    """Draw every Executive question's figures into out/ (cleared first: it is this script's); {qid: [(spec, path)]}."""
+    """Draw every Executive question's figures into its Task's part of the Job's delivery, out/<tNN_X..>/ (its PNGs
+    there are this script's and are replaced; an older out/figures/ is removed); {qid: [(spec, path)]}."""
     job = Path(job).resolve()
-    for old in out.glob("*.png") if out.is_dir() else []:
-        old.unlink()
+    if (out / "figures").is_dir():                                  # the place before figures moved under their Task
+        shutil.rmtree(out / "figures")
     got = {}
     for t in sorted((t for t in job.iterdir() if t.is_dir() and TASK.match(t.name)), key=lambda t: t.name):
+        qid = TASK.match(t.name).group(1)
+        for old in (out / t.name).glob(f"{qid}-*.png") if (out / t.name).is_dir() else []:
+            old.unlink()
         face, _ = RQ.front(t / f"{t.name}.md")
         if face.get("figures"):
-            got[TASK.match(t.name).group(1)] = OF.draw(job, TASK.match(t.name).group(1), face["figures"], out)
+            got[qid] = OF.draw(job, qid, face["figures"], out / t.name)
+            preview(out / t.name, qid, got[qid])
     return got
+
+
+def preview(part: Path, qid: str, made: list) -> None:
+    """The Task's part of the delivery, previewed (round 1, 261106: "Delivery previews the delivered figure"): its
+    delivery.md, each figure as a picture with its one line, what it shows and the answer it reads."""
+    lines = []
+    for spec, path in made:
+        title = str(spec.get("title") or spec.get("name") or path.stem)
+        lines += [f"![{title}]({path.name})", "",
+                  f"**{title}**: {qid}'s figure in the Overall Report, drawn from {OF.cite(spec) or 'its table'}.", ""]
+    (part / "delivery.md").write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
 
 
 def _inline(path: Path) -> str:
@@ -130,7 +149,7 @@ def main():
     job = Path(a.job).resolve()
     out = job.parent / "delivery" / job.name
     out.mkdir(parents=True, exist_ok=True)
-    figs = figures(job, out / "figures")
+    figs = figures(job, out)
     page, rows = summary(job, figs)
     (out / "overall-report.html").write_text(page, encoding="utf-8")
     made = [p for qid in sorted(figs) for _, p in figs[qid]] + [out / "overall-report.html"]

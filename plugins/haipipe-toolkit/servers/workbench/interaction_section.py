@@ -11,7 +11,7 @@ import re
 from pathlib import Path
 
 from live.frame import _file_url, esc
-from live.ui_parts import PB_CSS, _section
+from live.ui_parts import PB_CSS, WORD_CSS, _section, plural_word
 
 LEVELS = ("Block", "Job", "Task")
 
@@ -25,7 +25,7 @@ INTERACTION_CSS = ("<style>.pb-ixfoot{margin:6px 0 0;font-size:11.5px;color:var(
                    ".pb-side.pb-ix>.pb-read{max-height:none}.pb-side.pb-ix>.pb-read>.pb-panel:not([hidden]){overflow:visible}</style>")
 
 INTERACTION_JS = """<script>(function(){
-var RULE='.wrap{max-width:none;padding:0 0 8px}.wrap>.label,.wrap>h1,.wrap>.lead{display:none}.card{display:none;margin:0 0 10px;border:0;padding:0}.card.pb-on{display:block}.send{padding:8px 0}'
+var RULE='.wrap{max-width:none;padding:0 0 8px}.wrap>.label,.wrap>h1,.wrap>.addr,.wrap>.lead{display:none}.card{display:none;margin:0 0 10px;border:0;padding:0}.card.pb-on{display:block}.send{padding:8px 0}'
  +'#pb-ixnav{display:flex;justify-content:space-between;gap:10px;margin:4px 0 10px}#pb-ixnav [hidden]{visibility:hidden;display:inline-block}body.pb-notlast .send,body.pb-notlast details.box{display:none}';
 function root(b){return b.closest('.pb-ix');}
 function frame(b){return root(b).querySelector('[data-ixpanel="'+b.dataset.ixset+'"] iframe');}
@@ -104,44 +104,93 @@ def _interaction_set(r: dict, k: int, root: Path, foot=None) -> tuple:
 FOLD = """<style>.pb-ixsec{margin:12px 0}.pb-ixsec>.fd-h{font-size:15px;font-weight:600;margin:0;display:flex;align-items:center;gap:8px;
 border:1px solid var(--line);border-radius:8px;background:var(--paper);padding:8px 14px;cursor:pointer;user-select:none}
 .pb-ixsec>.fd-h::before{content:"▾";flex:none;display:inline-block;width:16px;font-size:10px;color:var(--muted)}
-.pb-ixsec>.fd-h[aria-expanded="false"]::before{content:"▸"}.pb-ixsec>.fd-body{margin:10px 0 18px}.pb-ixsec>.fd-body[hidden]{display:none}</style>
+.pb-ixsec>.fd-h[aria-expanded="false"]::before{content:"▸"}.pb-ixsec>.fd-body{margin:10px 0 18px}.pb-ixsec>.fd-body[hidden]{display:none}</style>""" + WORD_CSS + """
 <script>document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){
 var s=document.querySelector('section.pb-ixsec'),h=s&&s.querySelector(':scope>h3.fd-h');if(!h||h.dataset.fold)return;
 var p=new URLSearchParams(location.search),at='fd-fold:'+(p.get('path')||'')+':'+(p.get('section')||'')+':'+(p.get('group')||''),shut={};
 try{shut=JSON.parse(localStorage.getItem(at)||'{}');}catch(e){}
-var b=document.createElement('div');b.className='fd-body';while(h.nextSibling)b.appendChild(h.nextSibling);s.appendChild(b);
-var k=h.textContent.trim().slice(0,80);h.dataset.fold='1';h.tabIndex=0;h.setAttribute('role','button');
+var b=document.createElement('div');b.className='fd-body';for(var n=h.nextSibling,x;n;n=x){x=n.nextSibling;if(!(n.classList&&n.classList.contains('fd-wait')))b.appendChild(n);}s.appendChild(b);
+var c=h.cloneNode(true);c.querySelectorAll('.word').forEach(function(w){w.remove();});var k=c.textContent.trim().slice(0,80);h.dataset.fold='1';h.tabIndex=0;h.setAttribute('role','button');
 function set(o){b.hidden=!o;h.setAttribute('aria-expanded',String(o));}set(k in shut?!shut[k]:false);
 function flip(){var o=b.hidden;set(o);shut[k]=o?0:1;try{localStorage.setItem(at,JSON.stringify(shut));}catch(e){}window.dispatchEvent(new Event('resize'));}
-h.addEventListener('click',flip);h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();flip();}});
+h.addEventListener('click',function(e){if(e.target.closest('a,button'))return;flip();});h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();flip();}});
 },0);});</script>"""
 
-NONE_YET = ('<p class=mut>Nothing for you here yet. A choice this page needs from you, or a thing you should know, shows here, '
-            'as a collection Run: <code>runs/rNN_collect_&lt;slug&gt;/</code> (haipipe-interaction).</p>')
+NONE_YET = '<p class=mut>Nothing asked yet.</p>'   # one plain line; how a form is made lives in haipipe-interaction (261105:
+                                                    # every reviewer read the old how-to sentence as an instruction paragraph)
 
 
 def view_section(rows: list, root: Path, n: int = 0, foot=None) -> str:
     """The section a view always ends in, empty or not, so it stands in one place on every page (JL 261104: "make this to
-    be the standard items for any of them"; "I still didn't see them here")."""
-    html = interaction_section(rows, root, n, foot) or _section((f"{n} · " if n else "") + "🙋 Interaction", NONE_YET)
+    be the standard items for any of them"; "I still didn't see them here"). `rows` are this view's own items (JL
+    261106: "a view's bottom section shows that view's own items"); the rail's Interactions keeps every item."""
+    html = interaction_section(rows, root, n, foot) or _section((f"{n} · " if n else "") + "🙋 Interaction", NONE_YET,
+                                                                "nothing yet")
     return html.replace("<section class=fd-sec>", '<section class="fd-sec pb-ixsec">', 1) + FOLD
 
 
 def next_number(body: str) -> int:
-    """The next number after the view's last band's numbered sections, 0 when its sections carry none."""
-    last = body.rsplit("<h3 class=pb-group>", 1)[-1]
-    return max((int(x) for x in re.findall(r"<h3 class=fd-h>(\d+) · ", last)), default=0) + 1 if re.search(r"<h3 class=fd-h>\d+ · ", last) else 0
+    """The next number after the view's last band's numbered sections, 0 when its sections carry none. A band starts at
+    a paper page's `pb-group` heading or a work page's `wk-band` one; a section is numbered in its `fd-h` heading
+    (paper) or in its fold's `<summary>` (a work page's band-sec), so Interaction is numbered on both (261105)."""
+    last = re.split(r"<h3 class=(?:pb-group|wk-band)>", body)[-1]
+    found = [int(a or b) for a, b in re.findall(r"<h3 class=fd-h>(\d+) · |<details class=\"?band-sec[^>]*><summary>(\d+) · ", last)]
+    return max(found) + 1 if found else 0
 
 
-def interaction_section(rows: list, root: Path, n: int = 0, foot=None) -> str:
+def state_word(rows: list) -> tuple:
+    """(state word, waiting line) of these interactions: how many questions wait for you and the first of them (its
+    form's title, then the question), else whether they are answered, not sent yet or there to read (JL 261106: "every
+    closed bar shows a state word", "a section that waits on you also shows that one item under its closed bar")."""
+    waiting = [r for r in rows if r.get("state") == "waiting"]
+    if waiting:
+        open_ = [(r, q) for r in waiting for q in r.get("asks") or [] if not r.get("applied", {}).get(q[0])]
+        count = len(open_) or len(waiting)
+        first = open_[0] if open_ else (waiting[0], None)
+        line = f'🙋 {first[0]["title"]}' + (f": {first[1][0]} · {first[1][1]}" if first[1] else "")
+        return f'{count} wait{"s" if count == 1 else ""} for you', line
+    states = {r.get("state") for r in rows}
+    if states <= {"answered"}:
+        return "answered", ""
+    if "planned" in states:
+        return "not sent yet", ""
+    if states <= {"to know", "answered"}:
+        return plural_word(sum(r.get("state") == "to know" for r in rows), "note to read", "notes to read"), ""
+    return "", ""
+
+
+PLAIN_CSS = ("<style>.pb-ixplain{list-style:none;margin:6px 0 0;padding:0;font-size:14px}.pb-ixplain li{display:flex;flex-wrap:wrap;"
+             "align-items:baseline;gap:4px 10px;padding:6px 2px;border-bottom:1px solid var(--line)}.pb-ixplain li:last-child{border-bottom:0}"
+             ".pb-ixplain small{color:var(--muted);font-size:12px}.pb-ixplain a{margin-left:auto;font-size:13px}</style>")
+
+
+def _plain_row(r: dict, root: Path) -> str:
+    """A set with no question cards to step through (no built form, or a form without `## QN` cards): its title, its
+    state and one link, its form or what it has, so it is never dropped (round 2, 261106)."""
+    run = r.get("path")
+    kept = [r.get("form"), r.get("answers")] + ([Path(run) / "question_collection.md"] if run else [])
+    target = next((f for f in kept if f is not None and Path(f).is_file()), None)
+    verb = "Answer ↗" if r.get("state") == "waiting" and r.get("form") is not None else "Open ↗"
+    state = "waiting for you" if r.get("state") == "waiting" else str(r.get("state") or "")
+    return (f'<li><b>{esc(r.get("title") or r.get("run") or "")}</b><small>{esc(state)}</small>'
+            + (f'<a data-pop="{esc(r.get("title") or "")}" href="{esc(_file_url(Path(target), root))}" target=_blank '
+               f'rel=noopener>{verb}</a>' if target is not None else '') + '</li>')
+
+
+def interaction_section(rows: list, root: Path, n: int = 0, foot=None, plain: bool = True) -> str:
     """The section for these interactions (focus_page.interactions); nothing to ask or show, no section. A set still
-    waiting flags the section's name, as it flags the Interaction button."""
-    rows = [r for r in rows if r.get("form") is not None and r.get("asks")]
-    if not rows:
+    waiting says so in the bar's state word, as it flags the Interaction button, and its first question shows under the
+    closed bar. A set with no question cards shows as one plain row (`plain`; the rail draws its own fuller row)."""
+    full = [r for r in rows if r.get("form") is not None and r.get("asks")]
+    rest = [r for r in rows if r not in full] if plain else []
+    if not full and not rest:
         return ""
-    rows = sorted(sorted(rows, key=lambda r: r["run"], reverse=True), key=lambda r: r["state"] != "waiting")
-    flag = " · waiting for you" if any(r["state"] == "waiting" for r in rows) else ""
-    sets = [_interaction_set(r, k, root, foot) for k, r in enumerate(rows)]
-    return _section((f"{n} · " if n else "") + f"🙋 Interaction{flag}", PB_CSS + INTERACTION_CSS
-                    + f'<div class="pb-side pb-thin pb-ix"><div class=pb-list>{"".join(g for g, _ in sets)}</div>'
-                    + f'<div class=pb-read>{"".join(p for _, p in sets)}</div></div>' + INTERACTION_JS)
+    full = sorted(sorted(full, key=lambda r: r["run"], reverse=True), key=lambda r: r["state"] != "waiting")
+    rest = sorted(sorted(rest, key=lambda r: r.get("run", ""), reverse=True), key=lambda r: r.get("state") != "waiting")
+    word, waits = state_word(full + rest)
+    sets = [_interaction_set(r, k, root, foot) for k, r in enumerate(full)]
+    body = (PB_CSS + INTERACTION_CSS + f'<div class="pb-side pb-thin pb-ix"><div class=pb-list>{"".join(g for g, _ in sets)}</div>'
+            + f'<div class=pb-read>{"".join(p for _, p in sets)}</div></div>' + INTERACTION_JS) if full else ""
+    if rest:
+        body += PLAIN_CSS + '<ul class=pb-ixplain>' + "".join(_plain_row(r, root) for r in rest) + '</ul>'
+    return _section((f"{n} · " if n else "") + "🙋 Interaction", body, word, waits)

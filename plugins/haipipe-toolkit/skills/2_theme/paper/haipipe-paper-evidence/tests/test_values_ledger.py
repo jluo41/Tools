@@ -130,7 +130,7 @@ class ValuesLedgerTest(unittest.TestCase):
         m = yaml.safe_load(vmap.read_text(encoding="utf-8"))
         m["values"]["sub.b"] = {"what": "typed into the map", "value": 4.10, "digits": 2}
         vmap.write_text(yaml.safe_dump(m, sort_keys=False), encoding="utf-8")
-        vl.run(self.task, self.task / "runs/r01_collect_values/result")
+        vl.run(self.task, self.task / "runs" / vl.RUN / "result")
         bad = led.value_ledger(self.board)["bad"]
         self.assertTrue(any(b.startswith("value rests on a screen read: t01_values-sample RQ1-t01-002 main.b") for b in bad), bad)
         self.assertTrue(any(b.startswith("value not linked to a Run: t01_values-sample RQ1-t01-006 sub.b") for b in bad), bad)

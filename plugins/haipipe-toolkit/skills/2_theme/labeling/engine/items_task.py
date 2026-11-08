@@ -168,6 +168,9 @@ def operation_of(task: Path, run: Path) -> str:
         return cfg["operation"]
     card = read_yaml(run / "run.yaml")
     types = card.get("type") or []
+    if "collect" in (types if isinstance(types, list) else [types]) or "_collect_" in run.name:
+        return "collect"                          # a form beside the steps is never one of them (261106: a form made
+                                                  # after an items Run was taken as the step to sign)
     if "embedding-build" in types:
         return "embed"
     if (run / "result" / "description.json").is_file() or "raw" in run.name:
@@ -209,9 +212,20 @@ def job_data(task: Path, root: Path) -> dict:
     return {"dataset": name.group(1).strip() if name else "", "data": path}
 
 
+def at(root: Path, path: str) -> Path:
+    """A SPACE-relative path, read from `root`. A workbench served from a folder inside the SPACE is given that folder
+    as its root while the files name their paths from the SPACE, so such a path starts with the folder's own name,
+    which is then dropped (round 2 of the b15 review: "Files: not found" beside the file the Data cards read)."""
+    p = root / path
+    parts = Path(path).parts
+    if not p.exists() and len(parts) > 1 and parts[0] == root.name and root.joinpath(*parts[1:]).exists():
+        return root.joinpath(*parts[1:])
+    return p
+
+
 def data_files(root: Path, data: str) -> list:
     """The readable tables under the Job's data path: a file, or every csv/jsonl/parquet/json in a folder."""
-    p = root / data if data else None
+    p = at(root, data) if data else None
     if p is None or not p.exists():
         return []
     if p.is_file():
@@ -459,7 +473,7 @@ def sample(task: Path, kind: str, seed: int, n: int = 5, root: Path | None = Non
     if kind == "raw":
         run = latest(task, "describe")
         card = json.loads((run / "result" / "description.json").read_text()) if run else {}
-        path = root / str(card.get("table", {}).get("file") or "")
+        path = at(root, str(card.get("table", {}).get("file") or ""))
         if not path.is_file():
             files = data_files(root, job_data(task, root)["data"])
             path = files[0] if files else None
@@ -471,7 +485,7 @@ def sample(task: Path, kind: str, seed: int, n: int = 5, root: Path | None = Non
         return {"kind": kind, "seed": seed, "columns": cols, "rows": [
             {"row": i + 1, **{c: _plain(df.iloc[i][c]) for c in cols}} for i in idx]}
     run = latest(task, "items")
-    store = root / _store_of(run) if run else None
+    store = at(root, _store_of(run)) if run else None
     items = read_jsonl(store / "items.jsonl") if store and (store / "items.jsonl").is_file() else []
     pick = sorted(rnd.sample(range(len(items)), min(n, len(items))))
     return {"kind": kind, "seed": seed, "rows": [items[i] for i in pick]}

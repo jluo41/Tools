@@ -50,7 +50,7 @@ def ix_answered(items: list, root: Path) -> str:
         f'<div class=fd-row><span class=n>{esc(q)}</span><span class=d>{esc(pick)}'
         + (f'<br><i>note: {esc(note)}</i>' if note else '') + '</span></div>' for q, pick, note in answers_of(r["answers"])))
         for r in done)
-    return _section("Interactions", body) if body else ""
+    return _section("Interactions", body, "answered") if body else ""
 
 
 IX_CSS = """<style>details.ix-fold{border-bottom:1px solid var(--line)}details.ix-fold>summary{display:flex;align-items:center;
@@ -98,4 +98,6 @@ def ix_waiting(topic, text: str, items: list, item_html, md) -> str:
     lines = _waits(text) + ([ln for ln in _decided(topic) if re.search(r"proposed by (?:the )?agent", ln, re.I)]
                             if topic is not None else [])
     body += "".join(f'<div class=fd-ask><span>{md(ln.lstrip("- "), topic)}</span></div>' for ln in lines)
-    return _section("Interactions", body) if body else ""
+    waiting = sum(r.get("state") == "waiting" for r in items) if item_html else 0
+    count = waiting + len(lines)
+    return _section("Interactions", body, f'{count} wait{"s" if count == 1 else ""} for you' if count else "") if body else ""

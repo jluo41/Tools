@@ -105,7 +105,9 @@ def main() -> None:
     for tab in cfg["tabs"]:
         tables = []
         for spec in tab["tables"]:
-            src = pd.read_csv(copy_path(job, spec["from"]), dtype=None)
+            # a list table copies its rows as the Run wrote them, as text: read as numbers, a column holding 12480 and
+            # 2.3461 came back 12480.0 in its .csv (r02); a pivot reads numbers, its `flag` query compares them
+            src = pd.read_csv(copy_path(job, spec["from"]), dtype=str if "list" in spec else None)
             d0 = keep(src, spec.get("where"))
             dims = spec.get("for", {})
             names = list(dims)

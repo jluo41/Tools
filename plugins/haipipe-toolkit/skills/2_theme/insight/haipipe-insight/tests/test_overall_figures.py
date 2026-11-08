@@ -67,3 +67,18 @@ def test_words():
     assert OF._words("progressFeedback", {}) == "progress feedback"
     assert OF._words("20.0", {}) == "20"
     assert OF._words("default", {"default": "default message"}) == "default message"
+
+
+def test_an_estimate_reads_in_words_with_the_plans_margin(tmp_path):
+    """A run's forest plot (ref/figures.py, round 1, 261106): its axis in the question's words, never column names, and
+    the plan's smallest effect shaded when the estimate is in points; drawn from the table alone."""
+    import figures as FG
+    needs = {"E1": {"kind": "cite", "what": "the gap B - A in each group"},
+             "E2": {"kind": "compute", "what": "the groups' gaps", "uncertainty": "the gaps' 95% intervals",
+                    "output": {"pooling.csv": ["part", "gap_pp", "gap_lo_pp", "gap_hi_pp"]}}}
+    assert FG._axis_words("gap_pp", "gap_lo_pp", "gap_hi_pp", needs) == "gap B − A, points, 95% interval"
+    assert FG._axis_words("effect", "lo", "hi", {}) == "effect, interval"
+    (tmp_path / "pooling.csv").write_text("part,gap_pp,gap_lo_pp,gap_hi_pp\nfirst,16.7,8.6,24.8\nsecond,15.7,5.5,25.9\n"
+                                          "second - first,-1.0,-14.0,12.1\n", encoding="utf-8")
+    made = FG.draw(tmp_path, needs, margin=20)
+    assert [m["file"] for m in made] == ["fig_E2_pooling.png"] and (tmp_path / "fig_E2_pooling.png").is_file()

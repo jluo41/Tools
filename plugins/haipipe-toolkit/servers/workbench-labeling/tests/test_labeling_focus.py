@@ -1,4 +1,5 @@
 """The live focus layout preserves source content, read-only routing and writers."""
+import re
 import sys
 import unittest
 from pathlib import Path
@@ -24,32 +25,49 @@ class LabelingFocusTest(unittest.TestCase):
     def tearDown(self):
         self.temp.cleanup()
 
-    def test_items_reuse_real_preparation_content_without_disclosures(self):
+    def test_items_task_has_the_shared_shape_on_real_preparation_content(self):
+        """Round 2: the items Task's steps are its views, each ⚙️ Process then 📊 Results then 🙋 Interaction."""
         page = L.render(self.theme, self.root, self.items, 'items')
         self.assertIn('placeholder words here', page)
         self.assertIn('One item', page)
         self.assertIn('/_board/labeling/sample?', page)
-        self.assertNotIn('<details', page)
-        self.assertNotIn('<summary', page)
+        views = page.split('<nav class="section-views" aria-label="Views">', 1)[1].split('</nav>', 1)[0]
+        self.assertEqual(re.findall(r'>(Data|Items|Embedding)<', views), ['Data', 'Items', 'Embedding'])
+        order = [page.index(w) for w in ('⚙️ Process', '📊 Results', '🙋 Interaction')]
+        self.assertEqual(order, sorted(order))
+        rail = page.split('aria-label="Page sections">', 1)[1].split('</nav>', 1)[0]
+        for name in ('Report', 'Work', 'Interactions', 'Delivery', 'Skills', 'Files'):
+            self.assertIn(f'<span class="rail-name">{name}<', rail)
+        report = L.render(self.theme, self.root, self.items, 'report', 'items')
+        self.assertNotIn('⚙️ Process', report)
+        self.assertIn('📊 Results', report)
+        self.assertNotIn('<p class=pb-sess>', page)                          # no grey session line (round 2)
 
-    def test_single_job_has_no_left_menu_and_keeps_child_tasks(self):
-        page = L.render(self.theme, self.root, self.task.parent, "timeline")
-        self.assertNotIn('class="focus-rail left"', page)
-        self.assertIn('aria-label="Child tasks"', page)
-        self.assertIn('aria-label="Page sections"', page)
+    def test_a_job_has_the_shared_shape_with_its_tasks_in_the_left_rail(self):
+        page = L.render(self.theme, self.root, self.task.parent)
+        left = page.split('class="focus-rail left"', 1)[1].split('</nav>', 1)[0]
+        self.assertIn(self.items.name, left)
+        self.assertIn(self.task.name, left)
+        views = page.split('<nav class="section-views" aria-label="Views">', 1)[1].split('</nav>', 1)[0]
+        self.assertEqual(re.findall(r'>(MindMap|Status|Findings)<', views), ['MindMap', 'Status', 'Findings'])
+        for section in ('report', 'work'):
+            for view in ('mindmap', 'standing', 'findings'):
+                with self.subTest(section=section, view=view):
+                    html = L.render(self.theme, self.root, self.task.parent, section, view)
+                    self.assertEqual(re.findall(r'<h3 class=fd-h>(?:\d+ · )?([^<]*)', html)[-1], '🙋 Interaction')
+                    self.assertEqual('⚙️ Process' in html or '📊 Results' in html, section == 'work')
 
     def test_left_menu_contains_only_same_level_pages(self):
         other = self.block / 'j02_other'
         other.mkdir()
-        page = L.render(self.theme, self.root, self.task.parent, "timeline")
-        rail = page.split('aria-label="Sibling jobs">', 1)[1].split('</nav>', 1)[0]
+        page = L.render(self.theme, self.root, self.task.parent)
+        rail = page.split('class="focus-rail left"', 1)[1].split('</nav>', 1)[0]
         self.assertIn('j02_other', rail)
-        self.assertNotIn(self.items.name, rail)
-        page = L.render(self.theme, self.root, self.items, "timeline")
-        rail = page.split('aria-label="Sibling tasks">', 1)[1].split('</nav>', 1)[0]
+        page = L.render(self.theme, self.root, self.items)
+        rail = page.split('class="focus-rail left"', 1)[1].split('</nav>', 1)[0]
         self.assertIn(self.task.name, rail)
         self.assertIn(self.items.name, rail)
-        self.assertEqual(rail.count('<a '), len(L.tasks(self.task.parent, self.root)))
+        self.assertNotIn('j02_other', rail)
 
     def test_next_step_does_not_settle_or_run(self):
         with patch.object(L.TL.IT, 'next_step', return_value={
@@ -81,13 +99,13 @@ class LabelingFocusTest(unittest.TestCase):
         (form / "run.yaml").write_text("run: r04_collect_report_m01\nstatus: done\n")
         self.assertEqual(L.next_action(job, self.root)[0], score)
 
-    def test_goal_routes_to_real_task(self):
-        with patch.object(L.TL.IT, 'next_step', return_value={
-            'step':'embed','do':'Review the build','note':''}):
-            page = L.render(self.theme, self.root, self.task.parent)
-        self.assertIn('Review the build', page)
-        self.assertIn('section=embedding', page)
-        self.assertIn('Continue labeling', page)
+    def test_an_older_job_link_opens_the_nearest_view(self):
+        for old, (section, view) in (('goal', ('Report', 'MindMap')), ('tasks', ('Work', 'Status')),
+                                     ('reports', ('Report', 'Findings'))):
+            with self.subTest(old=old):
+                page = L.render(self.theme, self.root, self.task.parent, old)
+                self.assertIn(f'">{section}</span></h1>', page)
+                self.assertIn(f'aria-current="page">{view}</a>', page)
 
     def test_reports_remain_in_the_owning_run_and_do_not_write(self):
         path = self.items / 'runs/r01_demo/result/REPORT.md'
@@ -97,8 +115,7 @@ class LabelingFocusTest(unittest.TestCase):
         (sealed/'REPORT.md').write_text('PROTECTED_SENTINEL')
         before = {str(p):p.stat().st_mtime_ns for p in self.root.rglob('*') if p.is_file()}
         page = L.render(self.theme, self.root, self.items, 'reports')
-        self.assertIn('REPORT.md', page)
-        self.assertIn('r01_demo', page)
+        self.assertIn('📊 Results', page)
         self.assertNotIn('PROTECTED_SENTINEL', page)
         self.assertEqual(before, {str(p):p.stat().st_mtime_ns for p in self.root.rglob('*') if p.is_file()})
 

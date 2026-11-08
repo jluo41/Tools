@@ -43,6 +43,24 @@ tabs:
         self.assertEqual(out["tabs"][0]["method"], [])                     # no methods.yaml is fine
         self.assertTrue((self.res / "headline.txt").is_file())
 
+    def test_a_list_table_keeps_each_number_as_written(self):
+        # r02 (261106): a column holding 12480 and 2.3461 came back 12480.0 in the list table's .csv
+        self.d = tempfile.TemporaryDirectory()
+        self.addCleanup(self.d.cleanup)
+        job = Path(self.d.name) / "j02_evidence_value"
+        src = job / "t01_v" / "runs" / "r01" / "result" / "k" / "values.csv"
+        src.parent.mkdir(parents=True)
+        src.write_text("key,value,unit\nn,12480,units\nb,2.3461,points\n")
+        cfg = job / "t02_tables" / "scripts" / "tables.yaml"
+        cfg.parent.mkdir(parents=True)
+        cfg.write_text("tabs:\n- {slug: s, title: T, line: L, story: S, tables: [{from: t01_v/k/values.csv, list: [key, value, unit]}]}\n")
+        res = job / "t02_tables" / "runs" / "r01" / "result"
+        res.mkdir(parents=True)
+        subprocess.run([sys.executable, str(SCRIPT), str(cfg)], check=True, capture_output=True, env={**os.environ, "RESULT_DIR": str(res)})
+        self.assertIn("n,12480,units", (res / "s.csv").read_text())
+        cells = json.loads((res / "tables.json").read_text())["tabs"][0]["tables"][0]["rows"][0]["cells"]
+        self.assertEqual(cells[1]["v"], "12480")
+
     def test_a_missing_source_stops_the_run(self):
         with self.assertRaises(subprocess.CalledProcessError):
             self.build("tabs:\n- {slug: s, title: T, line: L, story: S, tables: [{from: t01_v/k/none.csv, list: [a]}]}\n")

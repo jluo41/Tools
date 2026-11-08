@@ -168,9 +168,14 @@ def _json(path: Path):
         return None
 
 
+def _at(root: Path, path: str) -> Path:
+    """A SPACE-relative path read from the served root (items_task.at; root / path when the engine is absent)."""
+    return IT.at(root, path) if IT is not None and hasattr(IT, "at") else root / path
+
+
 def _items_file(f: dict, root: Path) -> Path | None:
     store = f["metrics"].get("store") or f["manifest"].get("store")
-    items = root / str(store) / "items.jsonl" if store else None
+    items = _at(root, str(store)) / "items.jsonl" if store else None
     return items if items and items.is_file() else None
 
 
@@ -316,7 +321,7 @@ def _raw_rows(root: Path, file: str) -> tuple:
     """(the header, the first RAW_ROWS rows) of the raw csv, as they are (JL 261014: "for the data I want to see the
     raw data ... to present the raw data as it is if we want"); ((), []) when it is not a readable csv."""
     import csv
-    path = root / file
+    path = _at(root, file)
     if not file.endswith(".csv") or not path.is_file():
         return (), []
     with open(path, encoding="utf-8", errors="replace", newline="") as handle:
@@ -435,84 +440,114 @@ def sample_html(task: Path, root: Path, kind: str, seed: int, n: int = SAMPLE_N)
 
 
 # ── step 1 · Data: the Data cards ──────────────────────────────────────────────────────────────────
-def _data_cards(task: Path, root: Path, job, block) -> str:
+def _tiles(pairs) -> str:
+    """The step's main numbers as tiles, the look of the meaning and expression Tasks' (round 4: Data's point, "600
+    rows · 30 chats · 20 raters", sat inside its third fold)."""
+    return ('<div class="pb-tiles ls-tiles4">' + "".join(f'<div class=pb-tile><span class=ls-num>{esc(v)}</span>'
+                                                         f'<small>{esc(k)}</small></div>' for v, k in pairs) + "</div>")
+
+
+def _plural(n, one: str, many: str) -> str:
+    return f"{n} {one if n == 1 else many}"
+
+
+def _cards(parts: list, top: str, as_parts: bool):
+    """A step's cards: [(title, its state word, body)] and the tiles above them. The older single-section layout folds
+    each card (its tiles inside the first); the shared layout takes (word, tiles, parts) and shows them as side tabs."""
+    if as_parts:
+        return parts, top
+    return "".join(_fold(t, w, (top if i == 0 else "") + b) for i, (t, w, b) in enumerate(parts))
+
+
+def data_point(task: Path) -> str:
+    """Data's point in one line, its Results bar's word: "600 rows · 30 chats · 20 raters" (round 4)."""
+    _, card = _raw_card(task)
+    if not card:
+        return ""
+    t, proof = card.get("table") or {}, (card.get("grain") or {}).get("proof") or {}
+    units = [f"{v:,} " + k[len("distinct_"):].removesuffix("_id") + "s" for k, v in proof.items()
+             if k.startswith("distinct_") and isinstance(v, int) and v != t.get("rows")]
+    return " · ".join([f'{t.get("rows", 0):,} rows'] + units)
+
+
+def _data_cards(task: Path, root: Path, job, block, as_parts: bool = False):
     run, card = _raw_card(task)
     if not card:
-        return _not_yet("Step 1 fills this.")
+        return ([], "") if as_parts else _not_yet("Step 1 fills this.")
     t, g = card.get("table") or {}, card.get("grain") or {}
     proof = g.get("proof") or {}
-    out = []
     seed = (card.get("samples") or {}).get("seed", 7)
-    out.append(_fold("🎲 Random samples", f"{SAMPLE_N} real rows, seed {seed}, kept in {run.name}'s result; Draw again "
-                     "reads others live and writes nothing",
-                     f'<p>{_draw_again(task, root, "raw", "sample-raw")}</p>'
-                     f'<div id=sample-raw>{sample_html(task, root, "raw", int(seed))}</div>', open_=True))
-    bg = card.get("background") or {}
-    if bg:
-        out.append(_fold("📖 Background", " · ".join(re.split(r"\s*[(;]", str(bg.get(k)))[0] for k in ("who", "license")
-                                                     if bg.get(k)),
-                         _kv([(esc(k), _code(esc(str(v)))) for k, v in bg.items()])))
     units = [(f"{v:,}", k[len("distinct_"):].removesuffix("_id") + "s") for k, v in proof.items()
              if k.startswith("distinct_") and v != t.get("rows")]
     size = t.get("bytes")
+    pairs = [(f'{t.get("rows", 0):,}', "rows"), (str(t.get("columns", "—")), "columns"), *units]
+    top = _tiles(pairs) if as_parts else _stats(pairs)      # the older layout keeps its stat row
+    basic = _kv([("one row", esc(g.get("one_row_is") or "—")), ("the file", f'<code>{esc(t.get("file"))}</code>'),
+                 ("size", esc(f"{size / 1e6:.1f} MB" if size else "—")), ("read by", _run_link(task, root, run))]
+                + [(esc(k.replace("_", " ")), esc(f"{v:,}" if isinstance(v, int) else str(v))) for k, v in proof.items()])
+    parts = [("📊 Basic description", f'{t.get("rows", 0):,} rows · ' + _plural(t.get("columns", 0), "column", "columns"),
+              basic),
+             ("🎲 Random samples", _plural(SAMPLE_N, "row", "rows") + ", drawn",
+              f'<p>{_draw_again(task, root, "raw", "sample-raw")}</p>'
+              f'<div id=sample-raw>{sample_html(task, root, "raw", int(seed))}</div>')]
     raw = _raw_rows(root, str(t.get("file") or ""))
-    basic = (_stats([(f'{t.get("rows", 0):,}', "rows"), (str(t.get("columns", "—")), "columns"), *units],
-)
-             + _kv([("one row", esc(g.get("one_row_is") or "—")), ("the file", f'<code>{esc(t.get("file"))}</code>'),
-                                ("size", esc(f"{size / 1e6:.1f} MB" if size else "—")),
-                                ("read by", f"<code>{esc(run.name)}</code>")]
-                     + [(esc(k.replace("_", " ")), esc(f"{v:,}" if isinstance(v, int) else str(v))) for k, v in proof.items()])
-             + (_fold("Raw rows", f'the first {len(raw[1])} of {t.get("rows", 0):,}; real values, '
-                      "the labels included",
-                      _fit_table(raw[0], [[_cell(v) for v in r] for r in raw[1]], raw[1]))
-                if raw[1] else ""))
-    out.append(_fold("📊 Basic description", f'{t.get("rows", 0):,} rows · {t.get("columns", "—")} columns'
-                     + "".join(f" · {v} {k}" for v, k in units), basic, open_=True))
+    if raw[1]:
+        parts.append(("📄 Raw rows", f"the first {len(raw[1])}",
+                      _fit_table(raw[0], [[_cell(v) for v in r] for r in raw[1]], raw[1])))
+    bg = card.get("background") or {}
+    if bg:
+        parts.append(("📖 Background", "recorded", _kv([(esc(k), _code(esc(str(v)))) for k, v in bg.items()])))
     groups = card.get("groups") or []
     rows = (card.get("synth_df") or {}).get("rows") or []
     if rows:
-        out.append(_fold("🧩 One row (made up)", "", _row_table(groups, rows[0])))
+        parts.append(("🧩 One row (made up)", "made up", _row_table(groups, rows[0])))
     labels = card.get("labels") or []
     if labels:
-        who = {}
-        for lb in labels:
-            who[lb.get("who") or "?"] = who.get(lb.get("who") or "?", 0) + 1
-        out.append(_fold("🏷 Current labels", f"{len(labels)} answer columns: "
-                         + " · ".join(f"{n} {w}" for w, n in who.items()),
-                         "".join(f"<h4 style=\"margin:12px 0 2px;font-size:14px\"><code>{esc(lb['column'])}</code> "
-                                 f"· {esc(lb.get('who'))}</h4>{_bars(lb.get('values') or {})}"
-                                 for lb in labels)))
+        parts.append(("🏷 Current labels", _plural(len(labels), "column", "columns"),
+                      "".join(f"<h4 style=\"margin:12px 0 2px;font-size:14px\"><code>{esc(lb['column'])}</code> "
+                              f"· {esc(lb.get('who'))}</h4>{_bars(lb.get('values') or {})}" for lb in labels)))
     text = (card.get("text_to_label") or {}).get("columns") or []
     if text:
-        out.append(_fold("💬 Text to label", " · ".join(f"{x['column']}: {x.get('words_median')} words"
-                                                           for x in text),
-                         table(("column", "values", "words: median · min · max", "lines, median"),
-                               [(f"<code>{esc(x['column'])}</code>", esc(f"{x.get('values', 0):,}"),
-                                 esc(f"{x.get('words_median')} · {x.get('words_min')} · {x.get('words_max')}"),
-                                 esc(x.get("lines_median"))) for x in text])))
+        parts.append(("💬 Text to label", _plural(len(text), "column", "columns"),
+                      table(("column", "values", "words: median · min · max", "lines, median"),
+                            [(f"<code>{esc(x['column'])}</code>", esc(f"{x.get('values', 0):,}"),
+                              esc(f"{x.get('words_median')} · {x.get('words_min')} · {x.get('words_max')}"),
+                              esc(x.get("lines_median"))) for x in text])))
     columns = "".join(f"<h4 title=\"{esc(grp.get('meaning') or '')}\">{esc(grp['name'])}</h4>" + table(
         ("column", "filled", "distinct", "typical values"),
         [(f"<code>{esc(c['name'])}</code>", esc(f"{c.get('filled', 0):.0%}"), esc(f"{c.get('distinct', 0):,}"),
           esc(c.get("typical") or "")) for c in grp.get("columns") or []]) for grp in groups)
+    if columns:
+        parts.append(("🗃 Columns", _plural(len(groups), "group", "groups"), columns))
     gotchas = card.get("gotchas") or []
-    out.append(_fold("⚠️ Watch out", f"{proof.get('exact_duplicate_rows', 0)} duplicate rows · {len(gotchas)} "
-                     f"{'thing' if len(gotchas) == 1 else 'things'} to watch", ("<ul>" + "".join(f"<li>{esc(x)}</li>" for x in gotchas) + "</ul>" if gotchas else "")
-                     + _fold(f'{t.get("columns", "")} columns', f"{len(groups)} groups", columns)))
-    return "".join(out)
+    dups = proof.get("exact_duplicate_rows", 0)
+    parts.append(("⚠️ Watch out", _plural(len(gotchas), "thing", "things") + " to watch" if gotchas
+                  else "nothing to watch",
+                  f"<p>{esc(_plural(dups, 'exact duplicate row', 'exact duplicate rows'))}.</p>"
+                  + ("<ul>" + "".join(f"<li>{esc(x)}</li>" for x in gotchas) + "</ul>" if gotchas else "")))
+    return _cards(parts, top, as_parts)
+
+
+def _run_link(task: Path, root: Path, run: Path | None) -> str:
+    """A Run's name as the link that opens its card and receipt in the pop-out (round 4: no view linked a Run)."""
+    if run is None:
+        return "—"
+    from live import focus_page as F
+    return f'<a data-pop="{esc(run.name)}" href="{esc(F.run_url(run, root))}"><code>{esc(run.name)}</code></a>'
 
 
 # ── step 2 · Items: the items' cards ───────────────────────────────────────────────────────────────
-def _items_cards(task: Path, root: Path, job, block) -> str:
+def _items_cards(task: Path, root: Path, job, block, as_parts: bool = False):
     f = _items_facts(task, root)
     if not f["done"]:
-        return _not_yet("Step 2 fills this, after Sign.")
+        return ([], "") if as_parts else _not_yet("Step 2 fills this, after Sign.")
     m, items = f["manifest"], _items_file(f, root)
     every = _item_rows(items) if items else []
     res = f["run"] / "result"
     stats, check = _json(res / "stats.json") or {}, _json(res / "check.json")
-    out = [_fold("🎲 Random items", f"{SAMPLE_N} items, each drawn before │ judged │ after; Draw again reads others live",
-                 f'<p>{_draw_again(task, root, "items", "sample-items")}</p>'
-                 f'<div id=sample-items>{sample_html(task, root, "items", 7)}</div>', open_=True)]
+    out = [("🎲 Random items", _plural(SAMPLE_N, "item", "items") + ", drawn",
+            f'<p>{_draw_again(task, root, "items", "sample-items")}</p>'
+            f'<div id=sample-items>{sample_html(task, root, "items", 7)}</div>')]
     n_items = m.get("items", len(every))
     pairs = [(f"{n_items:,}" if isinstance(n_items, int) else str(n_items), "items")]
     if every:
@@ -523,10 +558,11 @@ def _items_cards(task: Path, root: Path, job, block) -> str:
     head = ("item", "context before", "main (judged)", "words", "turns")
     rowfmt = lambda r: (f"<code>{esc(r[0])}</code>", _cell(r[4].get('context_before', '')),
                         _cell(r[4].get("main", "")), esc(r[1]), esc(r[2]))
-    listing = (_fold(f"All {len(every)} items", "as they are", _fit_table(head, [rowfmt(r) for r in every]))
-               if every else "")
-    out.append(_fold("📊 Items", " · ".join(f"{v} {k}" for v, k in pairs),
-                     _stats(pairs) + _kv([("One item", esc(str(m.get("item") or "—")))]) + listing, open_=True))
+    top = _tiles(pairs) if as_parts else _stats(pairs)
+    out.insert(0, ("📊 Items", f"{pairs[0][0]} items", _kv([("One item", esc(str(m.get("item") or "—"))),
+                                                            ("made by", _run_link(task, root, f["run"]))])))
+    if every:
+        out.append(("📋 All items", "as they are", _fit_table(head, [rowfmt(r) for r in every])))
     if stats or every:
         wj = stats.get("words_judged") or {}
         tb = stats.get("turns_before") or {}
@@ -541,10 +577,10 @@ def _items_cards(task: Path, root: Path, job, block) -> str:
                 + (_kv([("shortest", " · ".join(f"<code>{esc(i)}</code>" for i in stats.get("shortest") or [])),
                                     ("longest", " · ".join(f"<code>{esc(i)}</code>" for i in stats.get("longest") or []))])
                    if stats.get("shortest") else ""))
-        out.append(_fold("📈 Statistics", "words judged and turns before, as histograms; the shortest and longest", body))
+        out.append(("📈 Statistics", "histograms", body))
     if every:
         first = every[0][4]
-        out.append(_fold("🧩 One item", f"{every[0][0]}: before │ judged │ after", (
+        out.append(("🧩 One item", str(every[0][0]), (
             "<div class=card-row>"
             f"<div><h4>before</h4>{_cell(first.get('context_before', ''))}</div>"
             f"<div class=key><h4>judged</h4>"
@@ -554,15 +590,15 @@ def _items_cards(task: Path, root: Path, job, block) -> str:
     if check:
         names = (("ids_unique", "ids unique"), ("one_item_per_unit", "one item per unit"),
                  ("nothing_judged_empty", "nothing judged empty"), ("no_key_inside", "no label inside"))
-        out.append(_fold("✅ Check", "passed" if check.get("passed") else "FAILED",
+        out.append(("✅ Check", "passed" if check.get("passed") else "failed",
                          table(("check", ""), [(esc(w), '<span class="st st-ok">✓</span>' if check.get(k)
                                                else '<span class="st st-warn">✗</span>') for k, w in names])))
-    store = root / str(f["metrics"].get("store") or m.get("store") or "")
+    store = _at(root, str(f["metrics"].get("store") or m.get("store") or ""))
     kept = [(f"<code>{esc(p.name)}</code>", esc(f"{sum(1 for _ in open(p, encoding='utf-8')):,} rows"))
             for p in (store / "items.ground-truth.jsonl", store / "items.raters.jsonl") if p.is_file()]
     if kept or m.get("kept_out"):
-        out.append(_fold("🏷 Labels kept out", "",
-                         table(("file", ""), kept)))
+        out.append(("🏷 Labels kept out", _plural(len(kept), "file", "files"),
+                    table(("file", ""), kept)))
     older = [r.name for r in _runs_of(task, "items") if r != f["run"]]
     version = _kv([("store", f'<code>{esc(f["metrics"].get("store") or m.get("store") or "—")}</code>'),
                                ("made by", f'<code>{esc(f["run"].name)}</code>' + (f' · {esc(f["headline"])}'
@@ -572,9 +608,8 @@ def _items_cards(task: Path, root: Path, job, block) -> str:
                     + [(esc(k), esc(_value(v))) for k, v in m.items()
                        if k not in {"source", "transform", "item", "items", "store", "kept_out", "revise_of", "changed",
                                     "notes"}])
-    out.append(_fold("📦 Version", f'{Path(str(f["metrics"].get("store") or m.get("store") or "")).name or "—"}'
-                     + (f" · earlier: {', '.join(older)}" if older else ""), version))
-    return "".join(out)
+    out.append(("📦 Version", f'{Path(str(f["metrics"].get("store") or m.get("store") or "")).name or "—"}', version))
+    return _cards(out, top, as_parts)
 
 
 # ── step 3 · Embedding: the map, then its cards ────────────────────────────────────────────────────
@@ -596,7 +631,7 @@ def _map3d(res: Path, man: dict, root: Path) -> list:
     got = _json(res / "map3d.json")
     if got:
         return got
-    vec = root / str(man.get("vectors") or "")
+    vec = _at(root, str(man.get("vectors") or ""))
     if not man.get("vectors") or not vec.is_file():
         return []
     key = (str(vec), vec.stat().st_mtime)
@@ -617,7 +652,7 @@ def _map3d(res: Path, man: dict, root: Path) -> list:
 def _item_texts(root: Path, man: dict) -> dict:
     """item id → (the turns before, the judged text), from the items the build embedded."""
     import json
-    path = root / str(man.get("items_store") or "") / "items.jsonl"
+    path = _at(root, str(man.get("items_store") or "")) / "items.jsonl"
     out = {}
     if man.get("items_store") and path.is_file():
         for line in open(path, encoding="utf-8"):
@@ -720,17 +755,17 @@ def _text_cell(texts: dict, i: str) -> str:
     return f"<code>{esc(i)}</code><br>{_cell((texts.get(str(i)) or ('', ''))[1])}"
 
 
-def _embedding_cards(task: Path, root: Path, job, block) -> str:
+def _embedding_cards(task: Path, root: Path, job, block, as_parts: bool = False):
     built = [r for r in _embed_runs(task) if r[2]]
     if not built:
         lane, emb, summary = _embedding_state(job, block)
         builds = (emb or {}).get("builds") or [] if isinstance(emb, dict) else []
         if builds:                                     # an older build on the labeling job's lane
             src = _view_url(job, VIEW["embedding"])
-            return (_fold("📍 Map", "built on the labeling job's lane",
-                          f'<iframe class=page-view src="{esc(src)}" loading=lazy title="Embedding"></iframe>'
-                          f'<p class=mut>{_open(src, "open it on its own ↗")}</p>', open_=True))
-        return _not_yet("Step 3 fills this, after Agree.")
+            return _cards([("📍 Map", "on the job's lane",
+                            f'<iframe class=page-view src="{esc(src)}" loading=lazy title="Embedding"></iframe>'
+                            f'<p class=mut>{_open(src, "open it on its own ↗")}</p>')], "", as_parts)
+        return ([], "") if as_parts else _not_yet("Step 3 fills this, after Agree.")
     run, card, _ = built[-1]
     res = run / "result"
     points = _json(res / "map.json") or []
@@ -742,30 +777,28 @@ def _embedding_cards(task: Path, root: Path, job, block) -> str:
                      f'fill="{PALETTE[g % 10]}"/></svg>')
     model = str(man.get("model", "")).split("/")[-1]
     texts = _item_texts(root, man)
-    out = [_fold("📍 Map", "", _map_card(points, _map3d(res, man, root), groups, texts, str(man.get("map") or "tsne"))),
-           _fold("🧩 Groups", "",
-                 table(("group", "items", "top words", "typical items"),
-                       [(f"{dot(g['group'])} G{g['group'] + 1}", esc(g.get("size", "")),
-                         esc(" · ".join(g.get("keywords") or [])),
-                         " · ".join(f"<code>{esc(i)}</code>" for i in g.get("typical") or [])) for g in groups])),
-           _fold("📏 Near-duplicates", "",
-                 _fit_table(("item", "item", "cosine"), [(_text_cell(texts, d["a"]), _text_cell(texts, d["b"]),
-                                                          esc(d["cosine"])) for d in dups]) if dups else
-                 "<p>none</p>"),
-           _fold("🧭 Outliers", "",
-                 _fit_table(("item", "group", "closeness"),
-                            [(_text_cell(texts, o["item_id"]), f"G{o['group'] + 1}", esc(o["to_its_group"]))
-                             for o in far]) if far else "<p>none</p>")]
+    out = [("📍 Map", _plural(len(points), "item", "items"),
+            _map_card(points, _map3d(res, man, root), groups, texts, str(man.get("map") or "tsne"))),
+           ("🧩 Groups", _plural(len(groups), "group", "groups"),
+            table(("group", "items", "top words", "typical items"),
+                  [(f"{dot(g['group'])} G{g['group'] + 1}", esc(g.get("size", "")),
+                    esc(" · ".join(g.get("keywords") or [])),
+                    " · ".join(f"<code>{esc(i)}</code>" for i in g.get("typical") or [])) for g in groups])),
+           ("📏 Near-duplicates", _plural(len(dups), "pair", "pairs") if dups else "none",
+            _fit_table(("item", "item", "cosine"), [(_text_cell(texts, d["a"]), _text_cell(texts, d["b"]),
+                                                     esc(d["cosine"])) for d in dups]) if dups else "<p>none</p>"),
+           ("🧭 Outliers", _plural(len(far), "item", "items") if far else "none",
+            _fit_table(("item", "group", "closeness"),
+                       [(_text_cell(texts, o["item_id"]), f"G{o['group'] + 1}", esc(o["to_its_group"]))
+                        for o in far]) if far else "<p>none</p>")]
     rows = [("model", esc(man.get("model", "—"))), ("vector size", esc(man.get("dim", "—"))),
             ("input", esc(man.get("input", "—"))), ("map", esc(str(man.get("map", "—")).upper())),
             ("seed", esc(man.get("seed", "—"))), ("items", f'<code>{esc(man.get("items_store", "—"))}</code>'),
-            ("vectors", f'<code>{esc(man.get("vectors", "—"))}</code>'), ("Run", f"<code>{esc(run.name)}</code>")]
+            ("vectors", f'<code>{esc(man.get("vectors", "—"))}</code>'), ("Run", _run_link(task, root, run))]
     others = built[:-1]
-    out.append(_fold("⚙️ Builds", f"{model} · {run.name}" + (f" · {len(others)} more" if others else "")
-                     + "; another model is another Run, side by side",
-                     _kv(rows + ([("earlier", esc(" · ".join(r[0].name for r in others)))] if others else []))
-                     ))
-    return "".join(out)
+    out.append(("⚙️ Builds", model or run.name,
+                _kv(rows + ([("earlier", esc(" · ".join(r[0].name for r in others)))] if others else []))))
+    return _cards(out, "", as_parts)
 
 
 # ── the steps: state from disk, what we have, the proposal to sign, the prompt that takes notes ───────
@@ -833,7 +866,7 @@ def _what_we_have(key: str, task: Path, root: Path, job) -> str:
         unit = (card.get("grain") or {}).get("unit")
         return _kv([("Data", f"the Data cards, from <code>{esc(run.name)}</code>"),
                                 ("Rows", esc(f'{t.get("rows", 0):,} rows' + (f' · {proof.get("distinct_" + unit, 0):,} '
-                                                                            f'{unit}' if unit else ""))),
+                                                                            + unit.removesuffix("_id") + "s" if unit else ""))),
                                 ("Kept out", esc(" · ".join(lb["column"] for lb in card.get("labels") or []) or "—"))])
     f = _items_facts(task, root)
     if not f["done"]:
@@ -846,11 +879,18 @@ def _what_we_have(key: str, task: Path, root: Path, job) -> str:
 def _sign_box(task: Path, root: Path, run: Path, word: str) -> str:
     s = _signs(run)
     if s:
-        return f'<p><span class="st st-ok">✓ {esc(word)}</span> by {esc(s["by"])} · {esc(s.get("at", ""))}</p>'
+        return f'<p><span class="st st-ok">✓ {esc(word)}</span> · {esc(s.get("at", ""))}</p>'
     body = esc('{"action": "sign", "task": "%s", "run": "%s"}' % (rel(task, root), run.name))
-    return (f'<p class=sign-row><input name=by class=sign-by placeholder="your name" size=18> '
-            f'<button type=button class=work-act data-post="/_board/labeling/items" data-body="{body}" '
-            f'data-fields="by">{"Agree" if word == "agreed" else "Sign"}</button></p>')
+    # a sign needs no name (settled 5; round 4: the "name (optional)" box went): the host records "a person"
+    return (f'<p class=sign-row><button type=button class=work-act data-post="/_board/labeling/items" '
+            f'data-body="{body}">{"Agree" if word == "agreed" else "Sign"}</button></p>')
+
+
+def _speakers(turns: dict) -> str:
+    """The recipe's turn names in words (round 4: "turns: Person → Person"): a speaker kept as it is is named once, a
+    renamed one says what it is shown as."""
+    words = [str(k) if str(k) == str(v) else f"{k} shown as {v}" for k, v in turns.items()]
+    return ("speaker: " if len(words) == 1 else "speakers: ") + ", ".join(words)
 
 
 def _proposal(key: str, task: Path, root: Path) -> str:
@@ -865,12 +905,13 @@ def _proposal(key: str, task: Path, root: Path) -> str:
         cb = r.get("context_before") or {}
         rows = [("One item", esc(f"one {r.get('unit')}") + f" · id <code>{esc(r.get('item_id'))}</code>"),
                 ("Judged", f"<code>{esc(r.get('main'))}</code>"),
-                ("Before", (f"<code>{esc(cb.get('column'))}</code>" + (" · turns: " + esc(", ".join(
-                    f"{k} → {v}" for k, v in (cb.get("turns") or {}).items())) if cb.get("turns") else ""))
+                ("Before", (f"<code>{esc(cb.get('column'))}</code>" + (" · " + esc(_speakers(cb["turns"]))
+                                                                        if cb.get("turns") else ""))
                  if cb else "none"),
                 ("After", f"<code>{esc((r.get('context_after') or {}).get('column'))}</code>"
                  if r.get("context_after") else "none"),
-                ("Kept out", esc(f"{len(r.get('keep_out') or [])} columns: " + ", ".join((r.get("keep_out") or [])[:6])
+                ("Kept out", esc(_plural(len(r.get('keep_out') or []), "column", "columns") + ": "
+                                 + ", ".join((r.get("keep_out") or [])[:6])
                                  + (f" and {len(r['keep_out']) - 6} more" if len(r.get("keep_out") or []) > 6 else ""))),
                 ("Group", esc(f"the {r.get('group')}, never split" if r.get("group") else "—")),
                 ("Writes", f"<code>{esc(c.get('out'))}</code>")]
@@ -908,11 +949,11 @@ def _as_signed(key: str, task: Path, root: Path) -> str:
                  ("Judged", f"<code>{esc(r.get('main'))}</code>"),
                  ("Before", f"<code>{esc((r.get('context_before') or {}).get('column'))}</code>"
                   if r.get("context_before") else "none"),
-                 ("Kept out", esc(f"{len(r.get('keep_out') or [])} columns"))] if isinstance(r, dict)
+                 ("Kept out", esc(_plural(len(r.get('keep_out') or []), "column", "columns")))] if isinstance(r, dict)
                 else [("one item", esc(f["manifest"].get("item") or "—"))])
         rows += [("script", " · ".join(f'<code>{esc(x.relative_to(task).as_posix())}</code>' for x in f["scripts"]))
                  ] if f["scripts"] else []
-        rows += [("signed", esc(f"{s['by']} · {s.get('at', '')}") if s else '—'),
+        rows += [("signed", esc(str(s.get("at", "") or "yes")) if s else '—'),
                  ("its settings", f'<code>{esc(rel(f["config"], root))}</code>' if f["config"] and f["config"].is_file()
                   else "—")]
         return (f'<h4>Recipe, signed · {esc(f["run"].name)}</h4>' + _kv(rows)
@@ -925,7 +966,7 @@ def _as_signed(key: str, task: Path, root: Path) -> str:
         c, s = _config(task, run), _signs(run)
         return (f'<h4>Build, agreed · {esc(run.name)}</h4>' + _kv([
             ("model", esc(c.get("model") or _yaml_file(run / "result" / "manifest.yaml").get("model") or "—")),
-            ("agreed", esc(f"{s['by']} · {s.get('at', '')}") if s else '<span class=mut>—</span>')]))
+            ("agreed", esc(str(s.get("at", "") or "yes")) if s else '<span class=mut>—</span>')]))
     return ""
 
 
@@ -953,17 +994,60 @@ def _prompt_box(prompt: str, task: Path, root: Path, key: str, open_: bool = Tru
                       key=f"notes:{rel(task, root)}#{key}", upload=(rel(task, root), "/_board/labeling/notes"))
 
 
+# each step's state word on its bar (JL 261106: "every closed bar shows a state word on its right")
 CHIPS = {"done": '<span class="st st-ok">✓ done</span>', "next": '<span class="st st-warn">→ next</span>',
-         "sign": '<span class="st st-warn">✍ sign</span>',
-         "ready": '<span class="st st-warn">→ run</span>', "todo": '<span class=st>· later</span>'}
+         "sign": '<span class="st st-warn">✍ waits for your sign</span>',
+         "ready": '<span class="st st-warn">→ signed, ready to run</span>', "todo": '<span class=st>· later</span>'}
+WAIT_STYLE = "margin:2px 0 10px;font-size:13.5px;color:light-dark(#b35c00,#ffc078)"
+
+
+def _waiting_form(task: Path, run: Path | None) -> Path | None:
+    """A 🙋 form beside the steps that waits for the person and feeds `run` (its run.yaml `feeds:`): the questions the
+    step's sign rests on (the walkthrough's items Task: the recipe's choices, asked before the recipe is signed)."""
+    if run is None:
+        return None
+    for r, card in reversed(_item_runs(task)):
+        feeds = card.get("feeds") or []
+        feeds = feeds if isinstance(feeds, list) else [feeds]
+        if "_collect_" in r.name and str(card.get("status") or "") == "waiting" and run.name in map(str, feeds):
+            return r
+    return None
+
+
+def _form_title(form: Path) -> str:
+    """A form's title, the first heading of its question_collection.md; its Run's name when it has none."""
+    md = form / "question_collection.md"
+    head = next((ln[2:].strip() for ln in (md.read_text(encoding="utf-8", errors="ignore").splitlines()
+                                            if md.is_file() else []) if ln.startswith("# ")), "")
+    return head or form.name
+
+
+def _wait_line(task: Path, op: str, state: str) -> tuple:
+    """(the one line that waits on the person, under the step's bar; the form it waits on, or None): only while the
+    step's proposal waits for a Sign (the recipe) or an Agree (the build), and the form first when one feeds it."""
+    if state != "sign" or op not in ("items", "embed"):
+        return "", None
+    what, verb = ("recipe", "Sign") if op == "items" else ("build", "Agree")
+    form = _waiting_form(task, _open_run(task, op))
+    if form is not None:
+        return f"🙋 Answer {_form_title(form)} first, then read the {what} below and press {verb}", form
+    return f"✍️ Read the {what} below and press {verb}", None
 
 
 def _step_box(i: int, task: Path, root: Path, job, state: str) -> str:
+    from live.frame import _file_url
     key, title, op, _ = ITEM_STEPS[i]
-    body = ("<h4>Input</h4>" + _what_we_have(key, task, root, job) + _proposal(key, task, root)
+    wait, form = _wait_line(task, op, state)
+    page = form / f"{form.name}.html" if form is not None else None
+    ask = (f'<p class=items-form>🙋 <b>{esc(_form_title(form))}</b> waits for your answers: its choices are what your '
+           f'{"Sign" if op == "items" else "Agree"} rests on. <a class=chip data-pop="{esc(form.name)}" '
+           f'href="{esc(_file_url(page, root))}">Answer</a></p>' if page is not None and page.is_file() else "")
+    body = ("<h4>Input</h4>" + _what_we_have(key, task, root, job) + ask + _proposal(key, task, root)
             + _prompt_box(_prompt(key, state, task, root), task, root, key, open_=state != "done"))
     return (f'<details class="topic work-task items-step"{"" if state == "done" else " open"}><summary>'
-            f'<span class=related-head><b>{esc(title)}</b> {CHIPS[state]}</span></summary><div class=work-body>{body}</div></details>')
+            f'<span class=related-head><b>{esc(title)}</b> {CHIPS[state]}</span></summary>'
+            + (f'<p class=items-wait style="{WAIT_STYLE}">{esc(wait)}</p>' if wait else "")
+            + f'<div class=work-body>{body}</div></details>')
 
 
 def _again_box(task: Path, root: Path) -> str:
@@ -1006,6 +1090,135 @@ def _items_spaces(folder: Path, root: Path, sub: str) -> dict:
             "Work Details": Space(html=operation + result + after,
                                   subspaces=RESULTS, open=r_sub, run_types=steps, page=True),
             "Description": Space(note=NOTES["items"])}
+
+
+# ── the items Task on the focus page every level shares (round 2 of the b15 review: the items Task kept an older
+# single-section layout). Its views are its steps, Data · Items · Embedding; each is ⚙️ Process (the step: its input,
+# the recipe or build it proposes with its Sign or Agree, then its prompt) and 📊 Results (what the step made), each
+# section closed with its state word, then 🙋 Interaction last with the forms that step's sign rests on. Report shows
+# the Results and the Interaction only. The same parts as _items_spaces, so the two layouts read the same files. ──
+ITEM_VIEWS = (("data", "Data", "the raw table: what it holds, and rows drawn from it"),
+              ("items", "Items", "the items a person labels, made under a signed recipe"),
+              ("embedding", "Embedding", "the items mapped into groups, under an agreed build"))
+ITEM_PROCESS = ("📥 Describe the raw table", "🧱 Make the items", "🗺 Embed the items")
+ITEM_RESULTS = ("🗂 Data cards", "🧱 Items", "🗺 Embedding map")
+OP_VIEW = {"describe": "data", "items": "items", "embed": "embedding"}
+STEP_WORD = {"done": ("done", "ok"), "next": ("next", ""), "sign": ("waits for your sign", "you"),
+             "ready": ("signed, ready to run", "run"), "todo": ("later", "")}
+BUTTON_WORD = {"done": ("done", "ok"), "next": ("next", ""), "sign": ("your sign", "you"), "ready": ("ready to run", ""),
+               "todo": ("later", "")}                 # every button says where its step stands (round 4: Embedding)
+
+
+def items_states(task: Path, root: Path) -> dict:
+    """{view: the step's state (done, next, sign, ready, todo)}."""
+    states = _step_states(task, root, _engine_job(task, root), _block_of(task))
+    return {view: states[key] for (key, *_), (view, *_) in zip(ITEM_STEPS, ITEM_VIEWS)}
+
+
+def items_words(task: Path, root: Path) -> dict:
+    """{view: (its button's word, ok | you | "")}."""
+    return {view: BUTTON_WORD[state] for view, state in items_states(task, root).items()}
+
+
+def items_default(task: Path, root: Path) -> str:
+    """Where Work opens: the step that waits for a sign, else the next one, else the last."""
+    states = items_states(task, root)
+    return (next((v for v, s in states.items() if s == "sign"), "")
+            or next((v for v, s in states.items() if s in ("ready", "next")), "") or ITEM_VIEWS[-1][0])
+
+
+def item_forms(task: Path, root: Path, view: str) -> list:
+    """The collection Runs this step's 🙋 Interaction shows: those that feed one of its Runs (run.yaml `feeds:`), else
+    the step named in the form's own name (_collect_items_…, _collect_embed_…); any other form goes to Items."""
+    from live import focus_page as F
+
+    def home(r) -> str:
+        for fed in r.get("feeds") or []:
+            run = task / "runs" / Path(str(fed)).name
+            if run.is_dir() and _op(task, run) in OP_VIEW:
+                return OP_VIEW[_op(task, run)]
+        slug = r["run"].split("_collect_", 1)[-1]
+        return next((v for word, v in (("describe", "data"), ("data", "data"), ("embed", "embedding"))
+                     if slug.startswith(word)), "items")
+    return [r for r in F.interactions(task, root) if Path(r["page"]) == task and home(r) == view]
+
+
+def _results_word(key: str, task: Path, root: Path, state: str) -> str:
+    """A Results bar's word, read from the step's own files: Data's its point, "600 rows · 30 chats · 20 raters"."""
+    if state == "todo":
+        return "later"
+    if key == "raw":
+        return data_point(task) or "not described yet"
+    if key == "make":
+        f = _items_facts(task, root)
+        n = f["manifest"].get("items") if f["done"] else None
+        return f"{n} items" if n not in (None, "") else "made" if f["done"] else "not made yet"
+    return "built" if state == "done" else "not built yet"
+
+
+RUN_WORD = {"complete": "done", "completed": "done", "done": "done", "ok": "done", "waiting": "waits for you",
+            "planned": "planned", "signed": "signed", "failed": "failed", "running": "running"}
+
+
+def _step_runs(task: Path, root: Path, op: str) -> str:
+    """The step's own Runs, each opening its card and receipt in the pop-out, with its state (round 4: "open
+    r01_describe's receipt: no view links it"). A form that feeds them is the view's 🙋 Interaction, never here
+    (settled 3)."""
+    links = []
+    for run in _runs_of(task, op):
+        links.append(_run_link(task, root, run) + f' <small>{esc(RUN_WORD.get(_status(run), _status(run)))}</small>')
+    return _kv([("Runs", " · ".join(links) or '<span class=mut>no Run yet</span>')])
+
+
+def _side_parts(eid: str, parts: list, top: str) -> str:
+    """A step's cards as side tabs, the one kind of tabs (settled 4; round 4: Data opened onto seven bare folds), its
+    tiles above them."""
+    from live.ui_parts import _side_tabs
+    if not parts:
+        return top
+    return top + _side_tabs(eid, [(t, w) for t, w, _ in parts], [b for _, _, b in parts])
+
+
+def items_view(task: Path, root: Path, section: str, view: str) -> str:
+    """One step of an items Task, in the shared shape (see above): its Process one closed bar holding its input, its
+    Runs, the recipe or build with its Sign or Agree, and its prompt (round 4: the prompt sat open under the bar)."""
+    from live import focus_page as F, interaction_section as IX
+    from live.ui_parts import PROCESS, RESULTS, _band, _numbered, _section
+    from live.labeling_steps import quiet_prompt
+    i = [v for v, *_ in ITEM_VIEWS].index(view)
+    key, _, op, cards_of = ITEM_STEPS[i]
+    job, block = _engine_job(task, root), _block_of(task)
+    state = _step_states(task, root, job, block)[key]
+    forms = item_forms(task, root, view)
+    wait, _ = _wait_line(task, op, state)
+    if wait:                       # the waiting item itself, the first open question as its 🙋 Interaction says it, else
+        run = _open_run(task, op)  # the sign (round 4: "Answer … in 🙋 Interaction below, then …" read as a chore list)
+        what, verb = ("recipe", "Sign") if op == "items" else ("build", "Agree")
+        wait = IX.state_word(forms)[1] or f"✍️ The {what} {run.name if run else ''} waits for your {verb}".replace("  ", " ")
+    prompt = quiet_prompt(_prompt_box(_prompt(key, state, task, root), task, root, key))
+    step = _section(ITEM_PROCESS[i], "<h4>Input</h4>" + _what_we_have(key, task, root, job) + _step_runs(task, root, op)
+                    + _proposal(key, task, root) + prompt, STEP_WORD[state][0], wait)
+    process = step
+    if key == "make" and state == "done":               # Step 2 again (s41-D14): the items as they are, and their revise
+        f = _items_facts(task, root)
+        version = Path(str(f["metrics"].get("store") or f["manifest"].get("store") or "")).name
+        process += _section("🧱 Revise the items", _kv([("Items", esc(f"{version} · {f['manifest'].get('items', '—')} items")),
+                                                       ("Recipe", esc(str(f["manifest"].get("item") or "—")))])
+                            + quiet_prompt(_prompt_box(_prompt("make", "done", task, root, again=True), task, root, "again")),
+                            "when you need it")
+    if state == "todo":
+        cards = _not_yet("The steps before first.")
+    else:
+        parts, top = cards_of(task, root, job, block, as_parts=True)
+        cards = _side_parts(f"it{key}", parts, top) or cards_of(task, root, job, block)   # else its own "not yet" line
+    results = _section(ITEM_RESULTS[i], cards or _not_yet("Nothing to show yet."), _results_word(key, task, root, state))
+    body = ("" if section == "report" else _band(PROCESS, _numbered(process))) + _band(RESULTS, _numbered(results))
+    body += IX.view_section(forms, root, IX.next_number(body), lambda r: F.interaction_where(r, task, root))
+    if section != "report" and i + 1 < len(ITEM_VIEWS):
+        nxt, name, _ = ITEM_VIEWS[i + 1]
+        body += f'<p class=ls-next><a href="{esc(F.page_url(task, root, "work", nxt))}">next: {esc(name)} →</a></p>'
+    caption = ITEM_VIEWS[i][2]
+    return f'<p class="view-caption">{esc(caption[:1].upper() + caption[1:])}.</p><div class="ls-view lf-items">{body}</div>'
 
 
 # ── Task: building, its four Stages (b15 s42: the map ①, the screens ②–⑪) ─────────────────────────

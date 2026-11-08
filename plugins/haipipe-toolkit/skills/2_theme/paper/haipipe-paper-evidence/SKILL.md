@@ -3,7 +3,7 @@ name: haipipe-paper-evidence
 description: "A paper's evidence rules on top of haipipe-evidence and haipipe-display: citations only from verified CITE Results, one number per result in every Section, displays numbered and within the venue limit, each passing the display revise loop. Owns the Board's value Job (value maps, bindings, the check: values_ledger.py) and citation Job (claim groups: cite_tasks.py); reads a whole version as one ledger and flags what disagrees (evidence_ledger.py); each display version's preview.pdf is the display, then how it was made (method.md). Use before a build or a send. Trigger: paper evidence, evidence ledger, value ledger, value map, citation check, numbers disagree, verify citations, paper displays, display preview, display method, /haipipe-paper-evidence, /haipipe-paper-display."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.13.0"
+  version: "0.13.1"
   last_updated: "2026-11-04"
   aliases: [haipipe-paper-display]
   # version history: ./CHANGELOG.md
@@ -144,7 +144,7 @@ work/bNN_/jNN_/tNN_/runs/rNN_/result/values.csv   key, value, ..., source   ◀ 
         ▼
 paper/Paper-X/j02_evidence_value/
 ├── tNN_<group>/scripts/value_map.yaml   1 catalog: rq, group, runs, values{what, run, where, digits, scale, unit, p}
-│   └── runs/r01_collect_values/result/  values.yaml (id RQ1-tNN-nnn, value, shown, checks, printed) · values.html
+│   └── runs/r01_read_values/result/     values.yaml (id RQ1-tNN-nnn, value, shown, checks, printed) · values.html
 │                                        · ledger.csv · headline.txt
 └── t99_paper_value_check/runs/r01_check_values/result/   every binding at once; numbers printed with no binding
         ▲ 2 bindings: VALUE items in each Section's evidence/cards.yaml   {run: r01, for: [S5], value: RQ1-t03-002,
@@ -194,7 +194,7 @@ paper/Paper-X/j03_evidence_cite/
 ```bash
 E=Tools/plugins/haipipe-toolkit/skills/2_theme/paper/haipipe-paper-evidence/scripts
 .venv/bin/python $E/gen_value_runs.py <paper>/j02_evidence_value          # Run cards and tickets from the maps
-bash <paper>/j02_evidence_value/tNN_<group>/runs/r01_collect_values/r01_collect_values.sh
+bash <paper>/j02_evidence_value/tNN_<group>/runs/r01_read_values/r01_read_values.sh
 .venv/bin/python $E/values_ledger.py bind <paper>/j02_evidence_value --propose   # then tick, then --adopt
 .venv/bin/python $E/cite_tasks.py gen <paper>/j03_evidence_cite             # then each Task's ticket
 ```

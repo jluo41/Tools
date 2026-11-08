@@ -756,7 +756,7 @@ def guide_html(family, view, context, embedded=False, tab_url=None, prelude="", 
     heading = prelude or ('' if embedded else f'<header><h1>{esc(profile["label"])} Workbench</h1><p>Guide</p></header>')
     boot = dict(family=family, view=view, context=context)
     return ('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
-            f'<title>{esc(title or profile["label"] + " · Guide")}</title><style>{css}</style></head><body>'
+            f'<title>{esc(title or profile["label"] + " · Guide")}</title><link rel="icon" href="data:,"><style>{css}</style></head><body>'
             # the Views and their content sit in one box, as a workbench Space's content does (JL 261003)
             # the Guide Space's runs sit in the shared Runs panel on the right, as every Space's do
             f'{heading}<div class="split wg-split"><div class="wg-shell space-main"><nav class="wg-views" aria-label="Guide Views">{tabs}</nav><main>'
@@ -831,7 +831,7 @@ def method_page_html(family, profile, editable=True):
     no_pinch = ("<script>addEventListener('wheel',function(e){if(e.ctrlKey)e.preventDefault()},{passive:false})</script>")
     return ('<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">'
             # inside Guide the frame takes this page's height, so nothing here is sized by the viewport
-            f'<title>{esc(profile["label"])} · Method</title><style>{_CSS}body{{max-width:none;padding:2px 2px 12px}}'
+            f'<title>{esc(profile["label"])} · Method</title><link rel="icon" href="data:,"><style>{_CSS}body{{max-width:none;padding:2px 2px 12px}}'
             '.st-frame{height:640px;min-height:0}'
             # the folding cards (draw-fold, sec-fold) are Design's, from its _CSS above
             'article.theory h3{font-size:14.5px;margin:18px 0 6px}</style></head><body><main>'

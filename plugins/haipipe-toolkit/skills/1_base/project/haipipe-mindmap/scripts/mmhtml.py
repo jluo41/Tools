@@ -137,7 +137,7 @@ def page(mm: MT.MindMap) -> str:
     import mmmap
     title = MT.display(mm.meta.get("title") or mm.root.text)
     meta = " · ".join(f"{k}: {v}" for k, v in mm.meta.items() if k in ("built", "source", "updated"))
-    note = blocks("\n".join(mm.root.note)) if mm.root.note else ""
+    note = blocks(mmmap.unwritten("\n".join(mm.root.note))) if mm.root.note else ""
     return (f'<!doctype html>\n<html lang=en><head><meta charset=utf-8>'
             f'<meta name=viewport content="width=device-width, initial-scale=1">'
             f'<title>{html.escape(title)} · mind map</title><style>{CSS}</style></head><body><main>'

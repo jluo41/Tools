@@ -1,5 +1,10 @@
 # haipipe-labeling-interaction · changes
 
+## 0.2.3 · 2026-11-06
+
+The page names the Report step's view Prepare (the b15 review, round 2: the title and the view both read "Report"); the
+step, its prompts and its `group=prepare` link are unchanged.
+
 ## 0.2.2 · 2026-11-04
 
 A rule card's evidence never changes an item's record (a walkthrough found Loop 2 wiping a Loop 1 correction this way; engine fixed); Update sets the state: lines.

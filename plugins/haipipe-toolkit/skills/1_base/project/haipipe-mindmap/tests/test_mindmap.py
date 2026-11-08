@@ -362,6 +362,11 @@ class Builders(unittest.TestCase):
         self.assertEqual([c.id for c in mm.root.children], ["@files"])        # no branch made from a template
         self.assertTrue(mm.root.note[0].startswith("Not written yet"))
         self.assertIn("[md] [s08-new.md](s08-new.md)", [c.text for c in mm.root.children[0].children])
+        self.assertEqual(mm.root.note, ["Not written yet."])                  # a state, never how to write it
+        import mmmap                                                           # an older map's longer words read
+        self.assertEqual(mmmap.unwritten("Not written yet: ask in the Studio chat."), "Not written yet.")   # the same
+        self.assertIn("Not written yet.", mmmap.draw(mm, "", False))
+        self.assertIn('content:"▸ show"', mmmap.draw(mm, "", False))           # a card's fold mark has its word
 
     def test_a_refresh_keeps_a_persons_node_and_words_and_updates_the_rest(self):
         block = work(self.root)

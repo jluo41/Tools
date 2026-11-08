@@ -87,7 +87,7 @@
   bar.innerHTML = '<button type="button" data-all="0" title="Fold every Block" aria-label="Fold every Block">⊟</button>'
                 + '<button type="button" data-all="1" title="Unfold every Block" aria-label="Unfold every Block">⊞</button>';
   bar.addEventListener('click', e => { const b = e.target.closest('[data-all]'); if (!b) return; items.forEach(li => set(li, b.dataset.all === '1')); redraw(); });
-  if (items.length) wrap.append(bar);
+  if (items.length) { wrap.append(bar); wrap.classList.add('has-bar'); }   // room above the map only for its bar (round 3: 40 px blank)
   let down = null;
   map.addEventListener('pointerdown', e => { if (e.button || e.target.closest('a,button,[contenteditable]')) return; down = {x: e.clientX, left: map.scrollLeft}; map.classList.add('panning'); });
   window.addEventListener('pointermove', e => { if (down) map.scrollLeft = down.left - (e.clientX - down.x); });

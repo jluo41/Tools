@@ -99,5 +99,21 @@ class EvidenceViewTest(unittest.TestCase):
             self.assertNotIn("No Tasks yet.</p>", html)
 
 
+class SourceFileTest(unittest.TestCase):
+    def test_a_tools_copy_finds_its_source_in_any_space(self):
+        """261105: SOURCE.txt names its source from the Tools root; in a SPACE, Tools sits at Tools/."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            src = root / "Tools/blueprints/P/work/b90/j02/t01/runs/r01/result"
+            src.mkdir(parents=True)
+            (src / "values.csv").write_text("key,value\n")
+            res = root / "Tools/blueprints/P/work/b90/j02/t03/runs/r02/result"
+            res.mkdir(parents=True)
+            found = board_evidence._source_file("blueprints/P/work/b90/j02/t01/runs/r01/result", "values.csv", res, root)
+            self.assertEqual(found, (src / "values.csv").resolve())
+            self.assertIsNone(board_evidence._source_file("../outside", "values.csv", res, root))
+            self.assertIsNone(board_evidence._source_file("blueprints/P/missing", "values.csv", res, root))
+
+
 if __name__ == "__main__":
     unittest.main()

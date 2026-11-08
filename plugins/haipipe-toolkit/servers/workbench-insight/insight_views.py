@@ -218,11 +218,31 @@ def _run_link(run: dict, root: Path, text: str = "") -> str:
     return _open(run.get("report") or (path / "run.yaml"), root, run["run"], text or run["run"])
 
 
+def page_link(folder: Path, root: Path) -> str:
+    """A page's focus view (a Prototype release, a Task): the frame's own route."""
+    from urllib.parse import urlencode
+    return "/_board/workbench?" + urlencode({"path": rel(Path(folder), root), "layout": "focus"})
+
+
+def open_url(path: Path, root: Path) -> str:
+    """Where a file or folder opens in the pop-out (round 2 walk, 261108: a .txt, .py, .yaml or a folder sent to the
+    Markdown reader showed a 404): Markdown in the page reader; any other file as itself; a page folder (it has a
+    face) as its focus page; another folder as its first file."""
+    from live import frame as F
+    path = Path(path)
+    if path.is_dir():
+        if F.face(path) is not None:
+            return page_link(path, root)
+        first = next((q for q in sorted(path.iterdir()) if q.is_file() and not q.name.startswith((".", "_"))), None)
+        return open_url(first, root) if first is not None else page_link(path.parent, root)
+    return reader(path, root) if path.suffix.lower() in (".md", ".markdown") else F._file_url(path, root)
+
+
 def _open(path: Path | None, root: Path, label: str, text: str = "") -> str:
-    """↗ a file in the frame's pop-out (the page reader)."""
+    """↗ a file in the frame's pop-out: Markdown in the page reader, any other file as itself (open_url)."""
     if not path or not Path(path).exists():
         return esc(text or label)
-    return pop(reader(Path(path), root), label, (text or label) + " ↗")
+    return pop(open_url(Path(path), root), label, (text or label) + " ↗")
 
 
 def second_row(href, space: str, first: str, options: tuple, current: str, label: str) -> str:
@@ -247,10 +267,20 @@ def _qwr(logic: str, work: str, report: str, rid: str = "") -> str:
             f'<div class=q-w>{work}</div><div class=q-r>{report}</div></div>')
 
 
-def _by_level(rows: dict, head: str, empty: str = "No question at this DIKW level.", links: dict | None = None) -> str:
+def _by_level(rows: dict, head: str, empty: str = "No question at this DIKW level.", links: dict | None = None,
+              tabs: str = "", words: dict | None = None) -> str:
     """rows: {level letter: [row html]} -> one header row, then a closed row per DIKW level, as the old
     board laid them (JL 261008): "Data questions 5", its 'may say' line, and on the right a link to where
-    that level's questions are kept (`links`: {letter: html}). A level opens to its question rows."""
+    that level's questions are kept (`links`: {letter: html}). A level opens to its question rows.
+    With `tabs` (the focus page's id for them): side tabs instead, a level's name on the left with its state word
+    (`words`: {letter: word}), no count in a label (haipipe-ui: one kind of tabs, labels carry no counts; 261106)."""
+    if tabs:
+        from live.ui_parts import _side_tabs
+        lvs = [(lv, name, says) for lv, name, says in LEVELS if rows.get(lv)]
+        if not lvs:
+            return f"<p class=mut>{esc(empty)}</p>"
+        return _side_tabs(tabs, [(f"{name}", (words or {}).get(lv, "")) for lv, name, _ in lvs],   # no grey "may say"
+                          [f'<div class=q-table>{"".join(rows[lv])}</div>' for lv, _, says in lvs])   # line (round 1)
     out = []
     for lv, name, says in LEVELS:
         if not rows.get(lv):
@@ -378,8 +408,8 @@ def _goes(n: dict) -> str:
 def _q_work(q: dict, trail: list) -> str:
     steps = "".join(f'<li><b>{esc(STEP.get(n.get("kind"), _cap(str(n.get("kind") or "step"))))}</b> · {esc(n.get("what", ""))}'
                     + (f' → <span class=mut>{esc(_goes(n))}</span>' if _goes(n) else "") + "</li>" for n in _needs(q))
-    return (f'<details><summary><span class=chip>Task Work</span> <span class=mut>{len(_needs(q))} step'
-            f'{"" if len(_needs(q)) == 1 else "s"}</span></summary><ol>{steps}</ol></details>'
+    return (f'<details><summary><span class=chip>Task Work</span> <span class=mut>its steps</span></summary>'   # no count
+            f'<ol>{steps}</ol></details>'
             + "".join(f'<p class=mut>{line}</p>' for line in trail))
 
 
@@ -455,12 +485,20 @@ def _cites(body: str, j: dict, root: Path) -> str:
     return CITE.sub(link, body)
 
 
+def _fig_png(part: Path, j: dict, qid: str, name) -> Path:
+    """An Executive figure as ref/overall_report.py draws it: under its Task's part of the Job's delivery
+    (delivery/<job>/<tNN_X..>/), else the older delivery/<job>/figures/."""
+    t = next((t for t in j["tasks"] if t["qid"] == qid), None)
+    here = part / t["name"] / f"{qid}-{name}.png" if t else None
+    return here if here and here.is_file() else part / "figures" / f"{qid}-{name}.png"
+
+
 def _figure(qid: str, spec: dict, part: Path, j: dict, root: Path) -> str:
     """One figure an Executive page names (`figures:`), as ref/overall_report.py drew it into the Board's
     delivery/<job>/figures/ (JL 261013: "figures to show it to quickly get the outcome"): its outcome as a
     heading, the picture (a click opens it full size), and the answer it reads as a link."""
     title = esc(spec.get("title") or spec.get("name") or "")
-    png = part / "figures" / f'{qid}-{spec.get("name")}.png'
+    png = _fig_png(part, j, qid, spec.get("name"))
     tables = [x.get("table", "") for x in spec["rows"]] if isinstance(spec.get("rows"), list) else [spec.get("table", "")]
     src = ", ".join(dict.fromkeys(f"({m.group(2)} · {m.group(1)})" for t in tables
                                   if (m := re.match(r"^(t\d+)_([DIKWX]\d\d)_", str(t)))))
@@ -496,7 +534,7 @@ def _overall(j: dict, b: dict, r: dict, root: Path) -> str:
         name = str(q.get("name") or t["qid"])
         f = t["face"]
         first = next((x for x in f.get("figures") or [] if isinstance(x, dict)), None)
-        png = part / "figures" / f'{t["qid"]}-{first.get("name")}.png' if first else None
+        png = _fig_png(part, j, t["qid"], first.get("name")) if first else None
         toc.append(f'<a href="#overall-{esc(t["qid"])}"><span>{n} · {esc(name)}</span>'
                    + (f'<b>{esc(first.get("title") or "")}</b><img src="/{esc(rel(png, root))}" alt="" loading=lazy>'
                       if png and png.is_file() else f'<b>{esc(f.get("answer") or "not written yet")}</b>') + "</a>")
@@ -520,6 +558,52 @@ def _overall(j: dict, b: dict, r: dict, root: Path) -> str:
             f'<p class=rep-glance-head>At a glance</p><nav class=rep-glance>{"".join(toc)}</nav>{"".join(body)}'
             '<p class=mut>Each answer rests on the Data, Information, Knowledge and Wisdom questions below it; a '
             '(K01 · t30) opens that Task\'s page.</p></article>')
+
+
+def _overall_tabs(j: dict, b: dict, r: dict, root: Path, eid: str = "ov") -> str:
+    """The Job's Overall Report as side tabs (JL 261106, b11 j01 forms: "one Executive question open, its figure
+    beside"): each Executive question a tab, its state word on it; the open one's answer, its first figure, the
+    other figures small, its page's sections, what it rests on folded; the print one click away above the tabs."""
+    from live.page_reader import markdown_html
+    from live.ui_parts import _side_tabs
+    xs = _executive(j)
+    if not xs:
+        return ""
+    part = b["path"] / "delivery" / j["name"]
+    prints = sorted(f for f in part.glob("overall-report.*") if f.is_file()) if part.is_dir() else []
+    head = ('<p class=ov-print>The print: ' + " · ".join(              # the pair is the view's; its counts the bar's word
+        f'<a href="/{esc(rel(f, root))}" target=_blank rel=noopener>{esc(f.suffix[1:].upper())} ↗</a>' for f in prints)
+            + "</p>") if prints else ""
+    items, panels = [], []
+    for t in xs:
+        q = _spec(r["questions"].get(t["qid"], {}))
+        f = t["face"]
+        figs = [x for x in f.get("figures") or [] if isinstance(x, dict)]
+        first = _figure(t["qid"], figs[0], part, j, root) if figs else ""
+        small = "".join(f'<a class=ov-thumb data-pop="{esc(x.get("title") or x.get("name") or "")}" href="/{esc(rel(p, root))}" '
+                        f'target=_blank rel=noopener><img src="/{esc(rel(p, root))}" alt="" loading=lazy>'
+                        f'<span>{esc(x.get("title") or x.get("name") or "")}</span></a>'
+                        for x in figs[1:] for p in [_fig_png(part, j, t["qid"], x.get("name"))] if p.is_file())
+        parts = []
+        for h, md in _sections(t["page"]):
+            html_ = _cites(markdown_html(md), j, root)
+            parts.append(f'<details><summary>{esc(h)}</summary>{html_}</details>' if h.lower().startswith("what it rests")
+                         else (f"<h4>{esc(h)}</h4>" if h and h.lower() != "answer" else "") + html_)
+        items.append((f'{t["qid"]} · {q.get("name") or t["name"].split("_", 2)[-1].replace("-", " ")}', page_word(t)))
+        panels.append('<div class="report-doc ov-one">'
+                      f'<p class=rep-ask>{esc(_cap(str(q.get("question") or "")))}</p>'
+                      + (f'<p class=rep-lead>{esc(f["answer"])}</p>' if f.get("answer") else
+                         '<p class=mut>Its page answers from the questions below it; it is still to write.</p>')
+                      + (f'<p class=mut>How sure: {esc(f["how-sure"])}</p>' if f.get("how-sure") else "")
+                      + first + (f'<div class=ov-thumbs>{small}</div>' if small else "") + "".join(parts)
+                      + f'<p class=mut>{_task_link(t, root)} · CHECK {esc(f.get("check") or "not yet")}</p></div>')
+    return OV_CSS + head + _side_tabs(eid, items, panels)
+
+
+OV_CSS = ("<style>.ov-print{font-size:13.5px;margin:0 0 8px}.ov-one{font-size:14.5px;max-width:none}.ov-one>*{max-width:none}.ov-one .rep-fig{max-width:620px}"
+          ".ov-thumbs{display:flex;flex-wrap:wrap;align-items:flex-start;gap:10px;margin:4px 0 10px}.ov-thumb{display:block;width:150px;"
+          "text-decoration:none;color:var(--mut);font-size:12px}.ov-thumb img{display:block;width:150px;border:1px solid "
+          "var(--line);border-radius:6px;background:#fff}</style>")
 
 
 def _board_overall(b: dict, root: Path, href) -> str:
@@ -638,22 +722,49 @@ def _map(b: dict, root: Path, href) -> str:
         for v in versions:
             j = cell.get((r["name"], v.get("version")))
             if not j:
-                cells.append('<td><span class=mut>· Add a Job</span></td>')
+                cells.append('<td>—</td>')                # a new Job is Work's (Jobs › ➕ A new Job), never Report's
                 continue
             hard = [x for t in j["tasks"] for x in t["hard"]]
             count = {}
             for x in hard:
                 count[x.get("status") or "planned"] = count.get(x.get("status") or "planned", 0) + 1
             runs = ", ".join(f"{n} {s}" for s, n in sorted(count.items(), key=lambda kv: -kv[1]))
-            st = [str(t["face"].get("answer-status") or "").lower() for t in j["tasks"]]
-            pages = f'{sum(x in WRITTEN for x in st)}'
-            drafted = f' · {st.count("drafted")} drafted' if "drafted" in st else ""
-            checked = sum(bool(t["face"].get("check")) for t in j["tasks"])
+            done, asked = written_of(j["tasks"])
+            checked = sum(is_written(t) and str(t["face"].get("check") or "").startswith("✅") for t in j["tasks"])
             cells.append(f'<td>{_job_link(href, j, short=True)} · {_st(j["state"])}<br><span class=mut>{len(hard)} runs: '
-                         f'{esc(runs) or "none"}<br>{esc(pages)} of {len(j["tasks"])} pages written{esc(drafted)} · {checked} checked</span></td>')
+                         f'{esc(runs) or "none"}<br>{done} of {asked} answered · {checked} checked</span></td>')
         body.append("<tr>" + "".join(cells) + "</tr>")
     return (f'<table class=wf-table style="width:auto"><tr><th>analysis plan \\ data freeze</th>{head}</tr>'
             f'{"".join(body)}</table>')
+
+
+def _prototype_tabs(b: dict, root: Path, eid: str) -> str:
+    """The questions, plan by plan, as side tabs (the focus page; haipipe-ui: one kind of tabs, no count in a label):
+    each analysis plan a tab, its state word (signed or not), its questions by DIKW level as tables; the open
+    proposals last, their word how many are open."""
+    from live.ui_parts import _side_tabs
+    proto = b["prototype"]
+    items, panels = [], []
+    for r in reversed(proto["releases"]):                       # the newest plan first, open
+        parts = []
+        for lv, name, says in LEVELS:
+            qs = [q for q in r["questions"].values() if q["id"][:1] == lv]
+            if qs:
+                rows = [(f'<b>{esc(q["id"])}</b>', _open(q["file"], root, q["id"], q["question"] or "<question>"),
+                         esc(q["change"] or "—")) for q in qs]
+                parts.append(f'<p class=pb-lv><b>{esc(name)}</b></p>'
+                             + table(("#", "question", "in this plan"), rows))
+        signed = str(r["face"].get("signed") or "")
+        items.append((r.get("label") or r["name"], f"signed {signed.lstrip('✅ ').strip()}" if signed.startswith("✅")
+                      else "not signed yet"))
+        panels.append("".join(parts) or "<p class=mut>This plan asks no question yet.</p>")
+    open_ = [p for p in proto["proposals"] if str(p.get("state") or "open").lower() in ("open", "proposed", "")]
+    if proto["proposals"]:
+        items.append(("proposals", f"{len(open_)} open" if open_ else "all triaged"))
+        panels.append(table(("proposal", "kind", "from", "state"),
+                            [(_open(p["file"], root, p["title"]), esc(p.get("kind", "")), esc(p.get("from", "")),
+                              _st(p.get("state", ""))) for p in proto["proposals"]]))
+    return _side_tabs(eid, items, panels) if items else ""
 
 
 def _prototype(b: dict, root: Path, href) -> str:
@@ -838,6 +949,11 @@ def _questions(b: dict) -> dict:
     return out
 
 
+def newest_task(b: dict, qid: str) -> dict | None:
+    """A question's Task in the newest Job that asks it: what the Board's counts read (one count, round 1)."""
+    return next((t for j in reversed(b["jobs"]) for t in j["tasks"] if t["qid"] == qid), None)
+
+
 def _cell(j: dict, qid: str, part: str) -> tuple:
     t = next((t for t in j["tasks"] if t["qid"] == qid), None)
     if not t:
@@ -846,10 +962,12 @@ def _cell(j: dict, qid: str, part: str) -> tuple:
     return t, run
 
 
-def _coverage(b: dict, root: Path, part: str, href) -> str:
-    rows = {}
+def _coverage(b: dict, root: Path, part: str, href, tabs: str = "") -> str:
+    """What each question found on one cut, Job by Job. With `tabs` (the focus page): side tabs, one per DIKW
+    level with its state word, each question a two-part row (the question; what it found, then its trail)."""
+    rows, said_n, all_n = {}, {}, {}
     for qid, q in _questions(b).items():
-        trail, n, last = [], 0, None
+        trail, n, last, said, has_runs = [], 0, None, None, False
         for j in b["jobs"]:
             t, run = _cell(j, qid, part)
             if not t:
@@ -858,16 +976,34 @@ def _coverage(b: dict, root: Path, part: str, href) -> str:
             state = run.get("status", "—") if run else t["face"].get("answer-status", "—")
             n += state in OK
             last = run or last
+            has_runs = has_runs or bool(t["hard"])
+            said = t if str(t["face"].get("answer") or "").strip() else said
             ran = (_run_link(run, root) if run
                    else "no run on this cut")
             trail.append(f'<code>{esc(j["name"])}</code> › <code>{esc(t["name"])}</code> ▸ {ran} · {_st(state)}')
         mark = MARK.get(str((last or {}).get("status")), "·")
-        rows.setdefault(qid[:1], []).append(_qwr(
-            _q_logic(qid, q, mark, root), _q_work(q, trail),
-            _q_report(_spec(q).get("name") or qid, last, root, _label(part),
-                      f'<p class=mut>answered on {n} of {len(b["jobs"])} Jobs</p>'), f"question-{qid}"))
+        tally = f'<p class=mut>answered on {n} of {len(b["jobs"])} Jobs</p>'
+        if last is None and said:         # no Run on this cut: what it found where it is asked (a cross test), or
+            cuts = ", ".join(dict.fromkeys(str(h.get("partition") or "") for h in said["hard"]))   # from the answers below
+            found = (f'<p class=q-head>{esc(str(said["face"]["answer"]))}</p><p class=mut>'
+                     + (f"asked on {esc(cuts)}" if cuts else "it cites the answers below it")
+                     + f' · {_task_link(said, root)}</p>' + tally)
+        elif not has_runs:
+            found = '<p class=mut>It cites the answers below it; its page is still to write</p>' + tally
+        else:
+            found = _q_report(_spec(q).get("name") or qid, last, root, _label(part), tally)
+        all_n[qid[:1]] = all_n.get(qid[:1], 0) + 1
+        said_n[qid[:1]] = said_n.get(qid[:1], 0) + bool(newest_task(b, qid) and is_written(newest_task(b, qid)))
+        if tabs:
+            rows.setdefault(qid[:1], []).append(f'<div class="q-row q-two" id=question-{esc(qid)}><div class=q-l>'
+                                                f'{_q_logic(qid, q, mark, root)}</div><div class=q-r>{found}{_q_work(q, trail)}</div></div>')
+        else:
+            rows.setdefault(qid[:1], []).append(_qwr(_q_logic(qid, q, mark, root), _q_work(q, trail), found, f"question-{qid}"))
     last = b["prototype"]["releases"][-1] if b["prototype"]["releases"] else {}
     latest = last.get("job")
+    if tabs:
+        return _by_level(rows, "", links=_release_links(latest, root, last.get("label", "")), tabs=tabs,
+                         words={lv: f"{said_n.get(lv, 0)} of {n} answered" for lv, n in all_n.items()})
     return _by_level(rows, _qwr_head("Task Work · each Job on this cut", "Report · what it found"),
                      links=_release_links(latest, root, last.get("label", "")))
 
@@ -909,7 +1045,7 @@ def _consistency(b: dict, root: Path, part: str, href) -> str:
             + _by_level(rows, _qwr_head("Work · each step between Jobs", "Report · the verdicts")))
 
 
-def _findings(b: dict, root: Path, part: str, href) -> str:
+def _findings(b: dict, root: Path, part: str, href, tabs: str = "") -> str:
     runs = {r["run"]: r for r in b["runs"]}
     rows = {}
     for rp in b["reports"]:
@@ -921,9 +1057,10 @@ def _findings(b: dict, root: Path, part: str, href) -> str:
         logic = f'<p class=q-head><b>{esc(num.upper())}</b> {_open(rp["file"], root, num.upper(), P.front(rp["file"]).get("title") or rp["slug"])}</p>'
         report = f'{_st(rp.get("answer-status", "—"))} · {_open(rp["file"], root, rp["slug"], "the report")}'
         rows.setdefault(level, []).append(_qwr(logic, work, report))
-    return ("<p class=mut>The Block's own questions, a second D · I · K · W over the Jobs' answers; they live on the "
-            "Board (board.md, reports/qNN_&lt;topic&gt;/).</p>"
-            + _by_level(rows, _qwr_head("Work · the Board's soft run", "Report · what it says"), "No Block question yet."))
+    return (("" if tabs else "<p class=mut>The Block's own questions, a second D · I · K · W over the Jobs' answers; they "
+             "live on the Board (board.md, reports/qNN_&lt;topic&gt;/).</p>")
+            + _by_level(rows, _qwr_head("Work · the Board's soft run", "Report · what it says"), "No Block question yet.",
+                        tabs=tabs, words={lv: f"{len(v)} asked" for lv, v in rows.items()}))
 
 
 WRITTEN = ("written", "answered", "checked")     # a page is written once any of these (the matrix counts the same)
@@ -961,7 +1098,9 @@ def _jobs(b: dict, root: Path, href, only: str) -> str:
                     tally[str(r.get("status") or "—")] = tally.get(str(r.get("status") or "—"), 0) + 1
                 cuts = ", ".join(str(r.get("partition")) for r in t["hard"])
                 said = (" · ".join(f"{n} {st}" for st, n in tally.items()) + f' <span class=mut title="{esc(cuts)}">'
-                        f'({len(t["hard"])} cut{"s" if len(t["hard"]) != 1 else ""})</span>') if t["hard"] else "<span class=mut>not run</span>"
+                        f'({len(t["hard"])} cut{"s" if len(t["hard"]) != 1 else ""})</span>') if t["hard"] else (
+                    "<span class=mut>not run</span>" if t["qid"][:1] in RUN_LEVELS else
+                    "<span class=mut>cites the answers below it</span>")      # W and X have no Run of their own
                 ran_all += bool(t["hard"])
                 words = t["name"].split("_", 2)[-1].replace("-", " ")
                 quick.append((f'<b>{esc(t["qid"])}</b>', f'<a href="{esc(href("", "", t["path"]))}">{esc(words)}</a>',
@@ -1155,7 +1294,9 @@ def _job_current(j: dict, b: dict, r: dict, root: Path, part: str) -> str:
     return head + _by_level(rows, _qwr_head(work_head, "Report · what it found"), links=_release_links(r.get("job"), root, r.get("label", "")))
 
 
-def _vs_previous(j: dict, root: Path) -> str:
+def _vs_previous(j: dict, root: Path, tabs: str = "") -> str:
+    """Each answer against the Job before, as its run-compare wrote it. With `tabs` (the focus page): a side tab per
+    DIKW level, its word what changed there, each row's status a plain word."""
     vs = j["vs"]
     if not vs:
         return (f'<p class=mut>No comparison yet: run-compare-{esc(j["previous"][:3]) or "&lt;prev&gt;"} writes '
@@ -1166,14 +1307,45 @@ def _vs_previous(j: dict, root: Path) -> str:
         tally[row["status"]] = tally.get(row["status"], 0) + 1
     summary = " · ".join(f"{n} {s}" for s, n in tally.items())
     chips = " ".join(_chip(f"{s} {tally.get(s, 0)}") for s in STATUS)
-    rows = {}
+    rows, moved = {}, {}
+    full = _full_answers(j) if tabs else {}
     for qid, row in vs["rows"].items():
+        status = f'<b>{esc(row["status"])}</b>' if tabs else _st(row["status"])
+        if str(row["status"]).lower() != "held":
+            moved.setdefault(qid[:1], []).append(row["status"])
+        if tabs:                                    # each answer whole, from the two Jobs' pages (round 1: never "…")
+            before, now = full.get(qid, ("", ""))
+            rows.setdefault(qid[:1], []).append(
+                f'<div class=vs-q><p class=vs-h><b>{esc(qid)}</b> {status}</p><dl class=vs-ab>'
+                f'<dt>{esc(j["previous"][:3])}</dt><dd>{esc(before or row["previous"])}</dd>'
+                f'<dt>{esc(j["name"][:3])}</dt><dd>{esc(now or row["this"])}</dd><dt>why</dt><dd>{esc(row["why"])}</dd></dl></div>')
+            continue
         rows.setdefault(qid[:1], []).append(_qwr(f'<p class=q-head><b>{esc(qid)}</b></p>',
                                                  f'previous: {esc(row["previous"])}<br>this: {esc(row["this"])}',
-                                                 f'{_st(row["status"])} <span class=mut>{esc(row["why"])}</span>'))
+                                                 f'{status} <span class=mut>{esc(row["why"])}</span>'))
+    said = lambda xs: (f'{xs.count("changed")} changed' if "changed" in xs else xs[0]) if xs else "all held"
+    words = {lv: said([str(x).lower() for x in moved.get(lv, [])]) for lv in rows}
+    if tabs:                                        # no tally line, no chips, no grey sentence (round 1)
+        return VS_CSS + _by_level(rows, "", tabs=tabs, words=words) + f'<p class=vs-file>{_open(vs["file"], root, vs["file"].name)}</p>'
     return (f'<p><b>{esc(summary)}</b> · {_open(vs["file"], root, vs["file"].name)}</p><p>{chips}</p>'
             '<p class=mut>As the Job\'s run-compare wrote it; one clock moved, so "why" names its cause.</p>'
-            + _by_level(rows, _qwr_head("Work · the two answers", "Report · status · why")))
+            + _by_level(rows, _qwr_head("Work · the two answers", "Report · status · why"), words=words))
+
+
+VS_CSS = ("<style>.vs-q{padding:8px 2px;border-bottom:1px solid var(--line)}.vs-q:last-child{border-bottom:0}"
+          ".vs-h{margin:0 0 4px;display:flex;gap:10px;align-items:baseline}.vs-ab{display:grid;grid-template-columns:44px minmax(0,1fr);"
+          "gap:3px 10px;margin:0;font-size:14px;line-height:1.45}.vs-ab dt{color:var(--muted);font-size:12.5px}.vs-ab dd{margin:0;"
+          "overflow-wrap:anywhere}.vs-file{font-size:13px;margin:8px 0 0}</style>")
+
+
+def _full_answers(j: dict) -> dict:
+    """{qid: (the previous Job's answer, this Job's answer)}, whole, from the two Jobs' Task faces; a page not
+    written says so."""
+    prev = j["path"].parent / j["previous"] if j.get("previous") else None
+    before = {t["qid"]: t for t in (P.job(prev)["tasks"] if prev and prev.is_dir() else [])}
+    now = {t["qid"]: t for t in j["tasks"]}
+    said = lambda t: (str(t["face"].get("answer") or "").strip() if t else "") or ("page to write" if t else "")
+    return {q: (said(before.get(q)), said(now.get(q))) for q in set(before) | set(now)}
 
 
 def _tree(j: dict, root: Path, view: str, href) -> str:
@@ -1246,6 +1418,28 @@ def _closed(x: dict) -> bool:
     return s in ("closed", "ok", "done", "signed") or s.startswith("✅")
 
 
+def is_written(t: dict) -> bool:
+    """A question's page is written, the one count every "N of M answered" reads (round 1, 261106: the counts must
+    agree): its answer-status says so, it has its answer, and no CHECK returned it (`check: ↩ …`)."""
+    f = t.get("face") or {}
+    return (str(f.get("answer-status") or "").lower() in WRITTEN and bool(str(f.get("answer") or "").strip())
+            and not str(f.get("check") or "").startswith("↩"))
+
+
+def written_of(tasks: list) -> tuple:
+    """(written, asked) over the live Tasks (a retired question is not asked), by is_written."""
+    live = [t for t in tasks if str((t.get("face") or {}).get("answer-status") or "").lower() != "retired"]
+    return sum(is_written(t) for t in live), len(live)
+
+
+def page_word(t: dict) -> str:
+    """A page's state in a word or two: returned (a CHECK sent it back), else its answer-status, checked when so."""
+    f = t.get("face") or {}
+    if str(f.get("check") or "").startswith("↩"):
+        return "returned"
+    return str(f.get("answer-status") or "to write") + (" · checked" if str(f.get("check") or "").startswith("✅") else "")
+
+
 def _work_facts(j: dict) -> dict:
     """What the Job's steps stand on, from its Tasks' faces and its Runs' cards: the questions still to run, write
     and check, the Job's own Runs by type, and what is running now."""
@@ -1254,8 +1448,7 @@ def _work_facts(j: dict) -> dict:
     ran = [t for t in asked if t["hard"] and all(str(x.get("status")).lower() in FINAL for x in t["hard"])]
     # a page a CHECK returned (its check: line starts ↩) is not written: 3 · Write takes it back with the reason
     returned = [t for t in live if str(t["face"].get("check") or "").startswith("↩")]
-    written = [t for t in live if str(t["face"].get("answer-status", "")).lower() in WRITTEN and t["face"].get("answer")
-               and t not in returned]
+    written = [t for t in live if is_written(t)]
     checked = [t for t in written if str(t["face"].get("check") or "").startswith("✅")]
     name = lambda ts: {t["name"] for t in ts}
     own = {}

@@ -71,3 +71,7 @@
 a.ls-turn{text-decoration:none;color:inherit}a.ls-turn:hover{border-color:var(--accent)}
 .pb-tile .fd-btn{align-self:flex-start;margin-top:8px}
 @media(max-width:600px){.ls-chain .ls-box{flex:none}}
+/* round 4: on a phone a closed bar's fold mark stood alone on a line above its long title; it sits in the bar's gutter,
+   so the title and its state word wrap beside it */
+@media(max-width:600px){.focus-content .fd-h[data-fold]{position:relative;padding-left:30px}
+ .focus-content .fd-h[data-fold]::before{position:absolute;left:12px;top:11px;width:auto}}

@@ -1,6 +1,45 @@
 haipipe-ui · Changelog
 ======================
 
+## [0.5.0] - 2026-11-06
+
+- Walks by script, one per kind of page: `scripts/walk_shoot.py` (read-only fresh browser; each section, view, closed bar,
+  side tab and a pop-out; frames, captions, ✅/❌ notes, page errors), `scripts/walk_all.py` (every `ui-*` kind of a theme
+  Block into `walks/<level>-<folder>.html`; an empty recording never replaces a walk), and `walk_player.py` reads a
+  frames folder with its captions. Walk step 7 says how; the Chrome walk keeps reader tasks, hover and the paper bar.
+- `prototype_coverage.py`: a place empty on one page but shown filled on another page of the same level is covered (the
+  prototype shows each part once); an empty 🙋 is covered when any page shows a form; a bar's state word is not counted
+  again. Work's 🔍 Review rounds picks a page's newest round by its number.
+
+## [0.4.5] - 2026-11-05
+
+- 261106 (JL's decisions 1, 2, 4 and the lean on maps): page rule 3 adds the closed bar's state word and the waiting
+  item under it; rule 5 says each view's 🙋 Interaction holds its own items and the rail all of them; view rule 6 says a
+  Job's and a Task's MindMap show what each child must find out; rule 7 adds the paper version's Report (its Work's six
+  views, results only) and the evidence and submission Jobs' own views.
+
+- New section "The person's page rules": the ten rules gathered from 261029 to 261105 (seen at a glance, few words,
+  closed by default, left tabs and right content, one standard part, Report shows and Work does the same views, embed
+  the real thing, an emoji and one question per view, flag what needs the person, delete what is not needed). The walk
+  checks each; reviewers score Plain, Modern and Complete against it.
+- Block UI · Job UI · Task UI: a Tools theme Block names a placeholder inside Tools by its path from the Tools root; the
+  workbench finds it from the Block's own checkout (`focus_page.ui_base`), so it frames in any SPACE. A link to another
+  machine's server only until a placeholder exists. Paper, labeling and work now embed their placeholders.
+- The Sections table's Report views read MindMap · Status · Findings (it still said Standing · Answers · Questions).
+- New right-rail section **Skills** (JL 261105: "a new tab in the right rail, named 'SKILL', and we can show the most
+  relevent skills"): the theme's door and workbench skill, the level's skill, its views' and its Runs' skills, side tabs
+  with a Copy prompt each (`servers/workbench/skills_section.py`). The "🧰 Skills that do it" Process step is gone from
+  every Work view: the rail shows them once.
+- The walk is a short video to pause (JL 261105: "could you embed the gif as the report as well?"; "a very quick video
+  and we can pause in the middle"): `scripts/walk_player.py` makes a self-contained player from a walk's GIF (play,
+  pause, one step back or on, a scrubber, speed, a caption per frame). A theme Block's `walks/<block|job|task>.html`
+  shows under its Block UI · Job UI · Task UI as "🎬 The walk" (`focus_page.walk_html`); the paper and work theme
+  Blocks have all three, recorded on their placeholders on a Tools-rooted server.
+- A theme's placeholder Block is the prototype (JL 261105: "based on the blocks in the blueprints, we can see all the UI
+  what will be applied to others"): `scripts/prototype_coverage.py <origin> <path>` lists every empty section on it.
+- Shown once: a Work view's Process no longer repeats the open forms; they are the view's last section, 🙋 Interaction
+  (paper Board, version, Section, work pages). On a work page that section is numbered after the band's sections.
+
 ## [0.4.4] - 2026-11-04
 
 - A work page's Work has the same views as its Report: Process, then the same Results; no more Progress view (JL 261104).

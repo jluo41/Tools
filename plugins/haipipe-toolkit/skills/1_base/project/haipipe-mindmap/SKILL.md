@@ -11,7 +11,7 @@ description: >-
   refresh a mind map, or to change how §1 and the mind maps draw. Trigger: mind map, mindmap, structured side,
   Free | Structured, structure map, §1 map, map the work, /haipipe-mindmap.
 metadata:
-  version: "0.9.5"
+  version: "0.9.7"
   last_updated: "2026-11-04"
   # version history: ./CHANGELOG.md
 ---

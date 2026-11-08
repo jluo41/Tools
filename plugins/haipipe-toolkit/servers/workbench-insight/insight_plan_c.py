@@ -115,14 +115,24 @@ TABLE_EXT = (".csv", ".tsv")
 IMAGE_EXT = (".png", ".jpg", ".jpeg", ".svg", ".gif")
 
 
-def version_folder(v: dict, root: Path) -> Path | None:
+def version_folder(v: dict, root: Path, board: Path | None = None) -> Path | None:
     """A data version's folder (JL 261008: "I give you the folder of the data, and you can see all the
-    things"): board.md `folder:`, else the folder of its `extract:` file."""
-    if v.get("folder"):
-        return (Path(root) / str(v["folder"])).resolve()
-    if v.get("extract"):
-        return (Path(root) / str(v["extract"])).resolve().parent
-    return None
+    things"): board.md `folder:`, else the folder of its `extract:` file. The path is SPACE-relative; it is
+    found against the served root, else the Board's own folder, else the root with a leading `Tools/` dropped,
+    so a server rooted at the Tools checkout reads a blueprint's data too (round 1, 261106)."""
+    ref = str(v.get("folder") or v.get("extract") or "")
+    if not ref or ref.startswith("/") or ".." in Path(ref).parts:
+        return None
+    tries = [Path(root) / ref]
+    if board is not None:
+        tries.append(Path(board) / ref)
+    if ref.startswith("Tools/"):
+        tries.append(Path(root) / ref[len("Tools/"):])
+    for t in tries:
+        hit = t.resolve() if v.get("folder") else t.resolve().parent
+        if hit.is_dir():
+            return hit
+    return tries[0].resolve() if v.get("folder") else tries[0].resolve().parent
 
 
 def data_folder(folder: Path, extract: str = "") -> dict:
@@ -211,7 +221,11 @@ def sample_rows(extract: Path, n: int = 5, seed: int = 0, hide: tuple = ()) -> d
 # ── the Prototype Block ─────────────────────────────────────────────────────────────────────────
 def prototype(block: Path) -> dict:
     """{path, releases: [{name, job, face, questions: {qid: {...}}, partitions, thresholds}], proposals}."""
-    path = _project(block) / str(front(block / "board.md").get("prototype", ""))
+    return prototype_at(_project(block) / str(front(block / "board.md").get("prototype", "")))
+
+
+def prototype_at(path: Path) -> dict:
+    """The Prototype Block at `path`, read as prototype() reads the one a Board names."""
     out = {"path": path, "releases": [], "proposals": []}
     if not path.is_dir():
         return out
@@ -223,7 +237,9 @@ def prototype(block: Path) -> dict:
             q = front(task / "question.md")
             qs[qid] = {"id": qid, "level": q.get("level") or LEVEL_OF.get(qid[0], ""), "question": q.get("question", ""),
                        "method": q.get("method") or {}, "signed": q.get("signed", ""), "agreed": q.get("agreed", ""),
-                       "change": row.get("change", ""), "task": task, "file": task / "question.md"}
+                       "change": row.get("change", ""), "task": task, "file": task / "question.md",
+                       "ask": q.get("ask", ""), "name": q.get("name", ""), "needs": q.get("needs") or {},
+                       "asked": (q.get("partitions") or {}).get("asked") if isinstance(q.get("partitions"), dict) else ""}
         name = rel.get("release") or job.name.split("_")[1]
         slug = job.name.split("_", 2)[2] if job.name.count("_") >= 2 else ""
         face = front(job / f"{job.name}.md")                # its title (`title:`), else the folder's slug
@@ -279,7 +295,8 @@ def task(tdir: Path) -> dict:
     rr = runs(tdir)
     return {"name": tdir.name, "path": tdir, "qid": (m.group(1) if m else fm.get("question", "")),
             "page": page if page.is_file() else None, "face": fm,
-            "hard": [r for r in rr if r["kind"] == "hard"], "soft": [r for r in rr if r["kind"] == "soft"]}
+            "hard": [r for r in rr if r["kind"] == "hard" and r.get("type") != "collect"],   # a cut's Run, never a
+            "soft": [r for r in rr if r["kind"] == "soft"]}                                   # collection Run (🙋)
 
 
 def vs_report(jdir: Path) -> dict:

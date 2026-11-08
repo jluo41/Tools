@@ -543,6 +543,7 @@ def scaffold(board: Path, writing: str, mmdd: str, desk: str, venue: str = "") -
         f"{job}/t02_portal-walk/runs/{walk_run}/run.yaml": (
             f"run: {walk_run}\nkind: soft\nrole: read\nrun_type: main\nsays: 'The real portal tabs of this send, read with a person logged in; "
             "nothing typed, ticked or saved by the agent.'\nhost: a person's own browser\nstarted_by: '<the person who starts the walk>'\n"
+            "status: starter, not walked\n"   # the seeded fields are a starter until a person's walk replaces them
             f"ticket: {walk_run}.md\nwrites:\n- result/portal-fields.yaml\n"),
         f"{job}/t02_portal-walk/runs/{walk_run}/{walk_run}.md": WALK_TICKET.format(run=walk_run),
         f"{job}/t02_portal-walk/runs/{walk_run}/result/portal-fields.yaml": fields_text,

@@ -192,7 +192,7 @@ def run(task, stem):
             else:
                 (out / f).write_text(json.dumps(t, indent=2, default=str))
         receipt.update(status="ok", outputs=sorted(tables) + ["partition_power.csv"])
-        receipt["figures"] = figures.draw(out, RQ.live_needs(r["q"]))
+        receipt["figures"] = figures.draw(out, RQ.live_needs(r["q"]), RQ.margin(thresholds))
         receipt["tables_sha256"] = RQ.tables_sha(out, r["q"])
     except RQ.Refused as e:
         receipt.update(status="refused", reason=str(e))

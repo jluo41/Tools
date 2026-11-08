@@ -9,8 +9,8 @@ description: >-
   diagnosing or changing a labeling Task's screen, a Space or View, the write door or the Runs panel, or
   /workbench-task-labeling.
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-11-01"
+  version: "0.5.0"
+  last_updated: "2026-11-06"
   # version history: ./CHANGELOG.md
 ---
 
@@ -62,16 +62,19 @@ JL 261014; moved out of `labeling_theme.py` 261016, s41-D15) reads a labeling Jo
 by the Task face's `task-type:` line, never by its number:
 
 ```text
-📦 items     task-type: items (or data)     three steps, a tab each in Work and Report: 1 · Data · 2 · Items ·
-                                           3 · Embedding (b15 s41); Work: the step (what we have · the recipe or
-                                           build to Sign / Agree · the prompt, which takes notes), folded once done,
-                                           then one card per topic; Report: the cards only
+📦 items     task-type: items (or data)     three steps, a view each in Work and Report: Data · Items · Embedding
+                                           (b15 s41), on the focus page every level shares (task_labeling.items_view);
+                                           Work: ⚙️ Process (one closed bar: what we have · its Runs, each opening
+                                           its card · the recipe or build to Sign / Agree · the prompt, which takes
+                                           notes) then 📊 Results (its tiles, then its cards as side tabs; Data's
+                                           bar says its point, "600 rows · 30 chats · 20 raters"); Report: the
+                                           Results; each view ends in 🙋 Interaction
 📏 ground truth task-type: raw                 the dataset's own labels; building and scanning never read it
 🏗 building  task-type: labeling-building   four Stages, a tab each in Work and Report: 1 · Contract · 2 · Initial
                                            Labeling Definition · 3 · Rounds · 4 · Handoff (b15 s42); Work: the
                                            Stage (its Input, each 👁 reading budget, the prompt), then Result cards
-🧭 meaning   task-type: labeling-meaning    Frame · Report · Preferences · Update (b15 s58): the only Task that
-                                           asks the person; labeling_steps.py
+🧭 meaning   task-type: labeling-meaning    Frame · Prepare · Preferences · Update (b15 s58): the only Task that
+                                           asks what the label means; labeling_steps.py
 🛠 expression task-type: labeling-expression Rewrite · Run · Evaluate · Release under a signed meaning; labeling_steps.py
 🔍 scanning  task-type: labeling-scanning   Work: Test · Evaluation · Scan · Audit; reads the Handoff
 📊 score     task-type: eval                final labels against the ground truth and the raters' spread
@@ -94,27 +97,45 @@ prompt with its notes and keeps unsent notes in the browser.
 ### 🧭 meaning and 🛠 expression: the steps page (b15 s58, stage 2)
 
 `servers/workbench-labeling/labeling_steps.py` draws both on the base focus page (`labeling_focus.task_shell`): the
-steps are the view-button-list, and each view is ⚙️ Process (the step's flow In → who works → Out, its prompt box,
-your sign or the interaction waiting on you) then 📊 Results, each numbered from 1, then the next step; Report shows
-the Results only. Work opens where the person is needed (a waiting form → Preferences; an unsigned guideline →
+steps are the view-button-list, and each view is ⚙️ Process (one closed bar holding the step's flow In → who works →
+Out, your sign and its prompt box; under it, while it waits, the first open question of its forms) then 📊 Results,
+each numbered from 1, then 🙋 Interaction, the last section, with that step's own forms
+(`labeling_steps.view_forms`: a frame form under Frame, each loop's report form under Prepare and Preferences, a
+release form under Release; the rail's Interactions shows every one; Process never repeats a form), then the next
+step; Report shows the Results and the Interaction. A prompt box shows no session line (its Copy still carries it),
+and no page shows who signed, only that and when; a sign asks for no name. A released round whose release choices
+still wait says "released · 3 wait" on its button. Work opens where the person is needed (a waiting form → Preferences; an unsigned guideline →
 Update). Everything is read from the Task's own files, in `engine/meaning_versions.py`'s layout; the prompts run
 `/haipipe-labeling-interaction` (meaning) and `/haipipe-labeling-expression` (expression).
 
 ```text
 meaning  Frame        the frame record: the agreed question, what you confirmed
-         Report       1 the guideline mind map (versions; a Q tag = this report's card on that rule) · 2 the
-                      interaction report per loop · 3 typical · 4 hard · 5 random cases (the draw Run's draws.json)
-         Preferences  the waiting form, embedded; its prompt copies the notes and the form's answers in one send
+         Prepare      1 the guideline mind map (versions; a Q tag = this report's card on that rule) · 2 typical ·
+                      3 hard · 4 random cases (the draw Run's draws.json) · the reports' forms in 🙋 Interaction
+         Preferences  its prompt copies the notes and the answers of the form in 🙋 Interaction in one send
          Update       ✍️ Approve mNN · 1 the mind map (a Q tag = the card that set the rule) · 2 what your answers
-                      changed · 3 reference labels lNN · 4 where it goes · 5 meaning history
-expression  Rewrite · Run · Evaluate · Release, under "🔒 approved meaning mNN"; without a signed meaning it waits
+                      changed ("rule now: …") · 3 reference labels lNN · 4 where it goes · 5 meaning history
+         each 🧭 loop box opens that loop: its answered form in the pop-out, a waiting one in Preferences
+expression  Rewrite · Run · Evaluate · Release; "🔒 approved meaning mNN" on Rewrite (on every step while none is
+            signed: it waits); each round box says its own state (released, report sent) and opens its round report
 ```
 
-Two more narrow doors, for these two Task types only:
+Every numbered bar carries its state word on its right, read from the files (`agreed`, `waiting for you`, `m02
+approved`, `3 cases`, `all met`, `not run yet`), and the bar of a step that waits on the person shows that one thing
+under it while the bar is closed (`ui_parts._section(title, body, word, waits)`; JL 261106). A step's word is its
+button's, said as waiting on you where it waits (`sign m02` → `waits for your sign`; `labeling_steps.bar_word`). The
+items Task's step heading says the same (`✓ done`, `→ next`, `✍ waits for your sign`, `· later`), and while the recipe
+or the build waits for a Sign or an Agree, the line under it names it, the waiting 🙋 form whose `feeds:` names that
+Run first (`🙋 Answer <form title> first, then read the recipe below and press Sign`). A building Task's bars
+(`decision_report_view.section`) carry a word too, the waiting line shown only while the section is closed. A 🙋 form
+beside the steps (`rNN_collect_…`) is never one of them: expression and items both skip it when reading a step's Runs.
+
+Two more narrow doors:
 
 ```text
-GET  /_board/labeling/form/<Task>/runs/<rNN_collect_…>/<same>.html   a meaning Task's form (or the applied.md beside
-                                                                    it): a static GET never reads a labeling folder,
+GET  /_board/labeling/form/<page>/runs/<rNN_collect_…>/<same>.html   a labeling Block's, Job's or Task's form, of any
+                                                                    Task kind (or the applied.md beside it): a static
+                                                                    GET never reads a labeling folder,
                                                                     and the path stays the file's, so the form's
                                                                     copied form: line names its Run
 POST /_board/labeling/approve  {task, version: mNN, by}             your sign: meaning/mNN.approved.yaml, once, only
