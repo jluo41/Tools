@@ -1,0 +1,58 @@
+# A made-up study, so the example carries no real project's text: a clinic closes for some weeks; do its patients
+# keep their blood-pressure checks? Names, counts and Runs below are invented; a real spec names its own.
+kind: workflow
+title: How the dataset is built, from visit records to the patient x month panel
+message: >-
+  Seven steps turn raw visit records into one row per patient and month; only step 4 (which clinics are compared)
+  changes between the main analysis and its checks.
+made_by: b01.j01.t01 r01 (example)
+steps:
+  - name: Visit records
+    rule: Every outpatient visit, 2018-2023, one row per visit line
+    columns: [patient_id, clinic_id, date, code]
+    rows: [[P1, K7, 03 Feb 2020, BP check], [P1, K7, 11 Mar 2020, office visit]]
+    file: VisitLines-<year>.parquet
+    made_by: b01.j01.t01 r01
+  - name: Clinic-day panel
+    rule: One row per clinic and day open; the number of patients seen
+    columns: [clinic_id, date, patients]
+    rows: [[K7, 03 Feb 2020, 41], [K7, 04 Feb 2020, 38]]
+    file: ClinicDay.parquet
+    made_by: b01.j01.t02 r01
+    count: 1.2 million clinic-days
+  - name: Closures
+    rule: A gap of 28-180 days with no visit, and at least 100 open days in the year before and after
+    columns: [clinic_id, closed, reopened, weeks]
+    rows: [[K7, 12 Apr 2020, 06 Jun 2020, 8]]
+    file: Closures.parquet
+    made_by: b01.j02.t01 r01
+    count: 3,410 closures
+  - name: "Stacks: a closure + 3 controls"
+    rule: Controls of the same size band and region that stayed open, taking the closed clinic's dates
+    columns: [stack, clinic_id, closed, start, end]
+    rows: [[S1, K7, 1, 12 Apr 2020, 06 Jun 2020], [S1, K9, 0, 12 Apr 2020, 06 Jun 2020]]
+    file: Stacks.parquet
+    made_by: b01.j03.t01 r01
+    count: 2,980 closures with controls
+    highlight: true
+  - name: Patients attached
+    rule: 2 or more visits to the clinic in the year before the start
+    columns: [stack, clinic_id, patient_id, closed]
+    rows: [[S1, K7, P1, 1], [S1, K9, P4, 0]]
+    file: Pairs.parquet
+    made_by: b01.j03.t01 r01
+    count: 88,000 patients
+    highlight: true
+  - name: Visits of each patient
+    rule: Blood-pressure checks anywhere, from a year before the start to a year after the end
+    columns: [patient_id, date, kind]
+    rows: [[P1, 20 Apr 2020, BP check], [P1, 02 May 2020, ED]]
+    file: PatientVisits.parquet
+    made_by: b01.j03.t01 r01
+  - name: Patient x month
+    rule: 12 months before, the closure, 12 months after; checks per month
+    columns: [patient, month, bp_checks, ED]
+    rows: [[P1, -12, 1, 0], [P1, during 1, 0, 1]]
+    file: PatientMonths.parquet
+    made_by: b01.j03.t01 r01
+    count: the panel every model reads

@@ -1,0 +1,43 @@
+# A made-up study (no real project's text): a clinic closes for some weeks; do its patients keep their checks?
+kind: timeline
+title: Study design on one clock
+message: >-
+  Each closed clinic is compared with 3 clinics that stayed open on the same dates; patients are chosen before the
+  closure and followed through it and after the reopening.
+legend: "Not to scale. Each closure is stacked with 3 control clinics that take its dates; the grey band is the closure."
+label: fig:example-timeline
+data: Outpatient visit records of a made-up health system, 2018-2023.
+sample: Clinics closed 28 to 180 days, each with 3 open clinics of the same size band and region; patients with 2 or more visits in the year before.
+method: Change from the baseline months, closed minus open, a fixed effect per stack, standard errors clustered by clinic.
+outcomes: Blood-pressure checks and ED visits per patient per month.
+made_by: b01.j03.t01 r01 (example)
+numbers: "2,980 closures (made up; a real spec names the Result file each count is read from)."
+clock: {start: 0.31, end: 0.62}
+units:
+  title: Closures and control clinics
+  spans_above:
+    - {from: left, to: start, label: "365 days, at least 100 open days"}
+    - {from: end, to: right, label: "365 days, at least 100 open days"}
+  event_label: "Closure\n28 to 180 days"
+  rows:
+    - {label: Closed clinic, treated: true, gap: true}
+    - {label: Control clinic 1}
+    - {label: Control clinic 2}
+    - {label: Control clinic 3, later: "own closure 2 years later"}
+periods:
+  title: Patients and months
+  axis: Month
+  segments:
+    - {label: "Baseline\n-12 to -4", to: 0.17}
+    - {label: "Run-up\n-3 to -1", to: start, shade: run_up}
+    - {label: During the closure, to: end, shade: event}
+    - {label: "After reopening\n1 to 12", to: right}
+  spans_below:
+    - {from: left, to: start, label: "Patients chosen: 2 or more visits"}
+    - {from: start, to: right, label: "Outcomes: checks, ED visits"}
+comparison:
+  title: Comparison
+  treated: "Patients of closed clinics, change from baseline (2,980 closures; made up)"
+  control: "Patients of clinics that stayed open, change from baseline, same dates"
+  result: Difference
+  note: Linear model with a fixed effect for each closure and its controls, standard errors clustered by clinic

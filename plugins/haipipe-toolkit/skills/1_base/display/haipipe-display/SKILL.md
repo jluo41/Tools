@@ -24,6 +24,7 @@ a concept as an editable SVG     📐 diagram       _parts/diagram/PART.md
 a concept as an AI illustration  🎨 illustration  _parts/illustration/PART.md
 slides as pictures, one style    🖼 slide         _parts/slide/PART.md
 a figure in the document's TeX   ✒️ tex           _parts/tex/PART.md
+how the study works (method)     🕒 method        ../haipipe-display-method/SKILL.md
 an existing figure → editable SVG 🔁 convert      _parts/figure-to-svg/PART.md
 one icon or logo → SVG           🔁 convert      _parts/icon-to-svg/PART.md
 an HTML slide → SVG/PDF/PPTX     🔁 convert      _parts/html-to-svg/PART.md

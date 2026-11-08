@@ -12,6 +12,8 @@ haipipe-display/_parts/diagram/    📐 renderer · FigureSpec JSON → editable
 haipipe-display/_parts/illustration/ 🎨 renderer · AI concept figure via the codex bridge
 haipipe-display/_parts/tex/        ✒️ renderer · hand-authored TeX: TikZ, algorithm
                                blocks, display equations · the writer is a person
+haipipe-display-method/      🕒 renderer · how the study works: timeline on one clock,
+                               workflow of the dataset, regression design (YAML spec)
 ref/                        📜 THE CONSTITUTION · display-unit-output-contract.md
                                + display-intake-contract.md; every renderer obeys them
                                + display-revise-loop.md; every shown display passes it

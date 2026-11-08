@@ -68,7 +68,8 @@ def status_words(ts: list, good: str) -> tuple:
 
 def values_filled(ts: list, good: str, kind: str = "value") -> tuple:
     """V3: a value Task is filled when its newest Run wrote result/values.yaml (haipipe-paper-evidence values_ledger.py),
-    else when its status says so; the note counts the printed values that differ, are missing or are owed. V4 (kind
+    else when its status says so; the note counts the printed values that differ, are missing or are owed, and owed
+    counts every value its Run has not returned yet (value: null). V4 (kind
     cite): a claim Task is checked when its newest Run (cite_tasks.py) finds every key verified. The paper-wide t99
     Task is not counted: it repeats the others."""
     import yaml
@@ -91,6 +92,11 @@ def values_filled(ts: list, good: str, kind: str = "value") -> tuple:
         if isinstance(c, dict):
             bad += int(c.get("differs", 0) or 0) + int(c.get("missing", 0) or 0)
             owed += int(c.get("owed", 0) or 0)
+        try:                                       # a value whose Run has not returned it yet is owed too (JL 261106)
+            vals = (yaml.safe_load(read(found[-1])) or {}).get("values") or {}
+            owed += sum(1 for v in vals.values() if isinstance(v, dict) and v.get("value") is None)
+        except yaml.YAMLError:
+            pass
     if kind == "cite":
         return done, len(ts), (f"; {bad} keys missing a bib entry or TOADD" if bad else "")
     note = (f"; {bad} printed values differ or are missing" if bad else "") + (f"; {owed} owed" if owed else "")
@@ -420,9 +426,13 @@ def delivery(board: Path, job, call) -> list:
     limit = re.search(r"(?mi)^\|\s*words\s*\|\s*(?:up to|not more than|maximum)?\s*([\d,]+)", ctext) or \
         re.search(r"(?i)\b(?:up to|at most|not more than|no more than|maximum(?: of)?)\s+([\d,]+)\s+words", ctext)   # or in a sentence
     words = man.get("build", {}).get("main_text_words")
+    pages_limit = re.search(r"(?mi)^\|\s*pages\s*\|\s*(?:up to|not more than|maximum)?\s*(\d+)", ctext)   # a page-counted desk (ML4H)
+    pages = man.get("build", {}).get("main_text_pages")
     issues = []
     if limit and words and words > int(limit.group(1).replace(",", "")):
         issues.append(f"{words} words, limit {limit.group(1)}")
+    if pages_limit and pages and pages > int(pages_limit.group(1)):
+        issues.append(f"{pages} main pages, limit {pages_limit.group(1)}")
     unknown = ctext.count("UNKNOWN")
     if unknown:
         issues.append(f"{unknown} desk rules not found yet")
@@ -430,10 +440,10 @@ def delivery(board: Path, job, call) -> list:
     prof = man.get("venue_profile", "")
     if prof and venue_slug and not set(re.split(r"[-_]", prof)) & set(re.split(r"[-_]", venue_slug)):
         issues.append(f"built with the {prof} profile")
-    if call and not limit:
-        issues.append("no word limit read from call.md (a `| words | up to N |` row, or \"at most N words\")")
-    if call and words is None:
-        issues.append("not built, so the word count is unknown")
+    if call and not limit and not pages_limit:
+        issues.append("no word or page limit read from call.md (a `| words | up to N |` or `| pages | up to N |` row)")
+    if call and (words if limit or not pages_limit else pages) is None:
+        issues.append("not built, so the " + ("word" if limit or not pages_limit else "page") + " count is unknown")
     add("D4", "The venue's desk rules", ("⏳" if issues else "✅") if call else "⬜",
         ("; ".join(issues) if issues else f"within venues/{venue_slug}/call.md") if call else "no call.md")
     secs = sorted((board / "delivery" / job.name / "latex" / "sections").glob("*.tex")) if job else []   # the build's own copy

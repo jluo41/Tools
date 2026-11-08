@@ -209,7 +209,7 @@ VALUES_JS = r"""<script>
 (function(){
 if(window.vtReady)return;window.vtReady=1;
 var WORDS={},ENDS={},MARK=['✅','🔶','⬜'];
-function marksOnly(t){return !!t.row_head&&t.rows.length>0&&t.rows.every(function(r){return r.cells.every(function(c){return MARK.indexOf(c.v)>=0})})}
+function marksOnly(t){return !!t.row_head&&t.rows.length>0&&t.rows.every(function(r){return r.cells.every(function(c){return MARK.indexOf(c.v)>=0||c.v===''||c.v==null||c.v==='—'})})&&t.rows.some(function(r){return r.cells.some(function(c){return MARK.indexOf(c.v)>=0})})}
 function grouped(t){return !!t.row_head&&t.rows.length>0&&t.rows.every(function(r){return /^\d{4}\s.+\s·\s/.test(String(r.head))})}
 function attr(v){return esc(v).replace(/"/g,'&quot;')}
 function word(w){if(WORDS[w])return WORDS[w];var m=w.match(/^(.*)_([^_]+)$/);

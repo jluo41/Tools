@@ -8,6 +8,9 @@ Two page shapes, one reader (haipipe-paper-evidence 0.7.0, JL 261103: "how do yo
                a sentence's id is its S id without the S (`5`, `5a`), as evidence cards write `for:`
     content    the Section page's `## Content`, one sentence per `<!-- realizes: <id> -->` line (id as written); a line
                with no marker is split into sentences, each `<paragraph>.<k>` (`C1.P1.2`)
+    latex      an older Section whose words live only in its own LaTeX body fragment, `delivery/latex/<section>.tex`
+               (seeded verbatim from an upstream manuscript, no `## Content` and no draft): comments dropped, each
+               paragraph `L<n>`, each sentence `L<n>.<k>` (JL 261106, Paper-AnchorPK-ML4H2026)
 
 `printed(section)` lists what the paper exports, the `## Content` (each line named by its draft S id when the draft holds
 the same text), else the draft when the Content is still a placeholder. `index(section)` is every id of both shapes, so
@@ -147,21 +150,39 @@ def content_sentences(section: Path) -> list[dict]:
     return out
 
 
+def latex_sentences(section: Path) -> list[dict]:
+    """[{id, text, para}] of the Section's own LaTeX body fragment, `delivery/latex/<section>.tex`; [] when none."""
+    frag = section / "delivery" / "latex" / f"{section.name}.tex"
+    if not frag.is_file():
+        return []
+    tex = re.sub(r"(?<!\\)%.*", "", frag.read_text(encoding="utf-8", errors="ignore"))
+    out = []
+    for n, para in enumerate((p for p in re.split(r"\n\s*\n", tex) if p.strip()), 1):
+        flat = re.sub(r"\s+", " ", para).strip()
+        for k, sent in enumerate(SPLIT.split(flat), 1):
+            if sent.strip():
+                out.append({"id": f"L{n}.{k}", "text": sent.strip(), "para": f"L{n}"})
+    return out
+
+
 def printed(section: Path) -> list[dict]:
-    """What the Section prints, in order: [{id, text, para}]; the Content, else the draft's sentences."""
+    """What the Section prints, in order: [{id, text, para}]; the Content, else the draft's sentences, else its own
+    LaTeX fragment."""
     drafted, _ = draft_sentences(section)
     by_text = {v: k for k, v in drafted.items()}
     lines = content_sentences(section)
     if lines:
         return [dict(x, id=by_text.get(x["text"], x["id"])) for x in lines]
-    return [{"id": k, "text": v, "para": ""} for k, v in drafted.items()]
+    if drafted:
+        return [{"id": k, "text": v, "para": ""} for k, v in drafted.items()]
+    return latex_sentences(section)
 
 
 def index(section: Path) -> dict:
-    """Every sentence id of both shapes → its text (draft S ids, then Content ids)."""
+    """Every sentence id of every shape → its text (draft S ids, then Content ids, then LaTeX fragment ids)."""
     drafted, _ = draft_sentences(section)
     out = dict(drafted)
-    for x in content_sentences(section):
+    for x in [*content_sentences(section), *latex_sentences(section)]:
         out.setdefault(x["id"], x["text"])
     return out
 

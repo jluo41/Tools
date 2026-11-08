@@ -1,0 +1,34 @@
+# The same made-up study as workflow-example.yaml: the design behind its regressions.
+kind: design
+title: The regression design, what it compares and what it removes
+message: >-
+  Each closed clinic's patients are compared with the patients of 3 clinics that stayed open on the same dates, each
+  patient against their own months before; beta is how much more the closed clinic's patients changed.
+clock:
+  title: "One stack: a closed clinic and 3 that stayed open, on the same dates"
+  axis: Months
+  start_gap: 9
+  segments:
+    - {label: "Baseline -12 to -4", width: 1}
+    - {label: "Run-up -3 to -1", width: 1, shade: run_up, start_after: true}
+    - {label: During the closure, width: 1.2, shade: event, treated_dashed: true}
+    - {label: "After 1 to 12", width: 2}
+  groups:
+    - {label: "Closed clinic's patients", treated: true}
+    - {label: "Open clinics' patients"}
+  note: the closed clinic sees no one; the others keep working
+did:
+  treated: Closed
+  control: Open
+  before: Baseline
+  after: Window
+  example: "e.g. checks after reopening: beta = -0.8 per 100 patients per month (made up)"
+models_title: "The models (s = stack, i = patient, t = month)"
+models:
+  - {eq: '$\Delta Y_{is} = \alpha_s + \beta\,\mathrm{Closed}_i + \varepsilon_{is}$', what: Change from the baseline, one window}
+  - {eq: '$\Delta Y_{ist} = \alpha_{st} + \beta_t\,\mathrm{Closed}_i + \varepsilon_{ist}$', what: One beta per month, the path}
+models_note: Linear models; one fixed effect per stack; standard errors clustered by clinic.
+removes:
+  - {piece: "Stack fixed effect, same dates", removes: "season, calendar year, region, clinic size band"}
+  - {piece: Change from the baseline, removes: stable differences between the 2 groups of patients}
+  - {piece: Left in, so read with care, removes: "any decline before the closure (the run-up)", left_in: true}
