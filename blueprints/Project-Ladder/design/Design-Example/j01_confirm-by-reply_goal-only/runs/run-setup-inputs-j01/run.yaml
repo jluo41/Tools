@@ -10,6 +10,7 @@ signs: none
 status: done
 passes:
 - p01-1106
+- p02-1106
 writes:
 - inputs/goal.md
 - inputs/rules.md

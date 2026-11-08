@@ -1,0 +1,16 @@
+run: run-propose-method-m01-m3
+kind: soft
+type: propose-method
+scope: Design-Example
+target: m01-m3
+skill: haipipe-design-method
+agent: designer agent
+signs: a person
+status: waiting
+by: designer agent
+started_at: '2026-11-06T11:40:00'
+finished_at: ''
+usage: {}
+passes:
+- p01-1106
+signed: ''

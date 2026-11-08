@@ -4,7 +4,7 @@ state: closed
 signed: ✅ 261106
 from: ''
 title: example questions
-goal: 'Analysis plan 1, example questions: 8 questions and their scripts on 5 cuts'
+goal: 'Analysis plan 1, example questions: the questions and their scripts on the cuts it fixes'
 ---
 
 # AP1 · analysis plan 1

@@ -14,3 +14,13 @@ One of the three Projects of `Tools/blueprints/` (JL 261028: blueprints holds Pr
 - `work/b15_theme_labeling`: Design questions about the labeling Theme as one ladder: what a labeling Block, a dataset × label Job, a step Task and an operation Run each hold and show, how the Building and Scanning sides and their human gates map onto the six Spaces, and where the schema and the frozen handoff live.
 - `work/b16_theme_paper`: Design questions about the paper Theme as one ladder: what a paper Board, a version Job and a Section Task each hold and show, where Ideation and the Story sit among the six Spaces, where venues, related papers and the built paper live, and how review rounds and letters appear.
 - `work/b17_theme_work`: Design questions about the work Theme as one ladder: what a task Block, a work Job, a work Task and a hard Run each hold and show, how Plan, Build, Execute and Report map onto the six Spaces, and how a Question's report reads its Tasks' Runs.
+
+The theme examples, each the placeholder its theme Block embeds as Block UI · Job UI · Task UI (261108):
+
+- `paper/Paper-Example`: a paper Board, its versions, evidence and submission Jobs, and Sections.
+- `labeling/b02_labeling_walkthrough`: a labeling Block, one dataset × label Job and its step Tasks.
+- `insight/Insight-Example` with `work/Prototype-b91-Example`: an insight Board (one dataset, two data versions) and the questions it runs.
+- `design/Design-Example`: a design Block, three Jobs (goal × method × inputs) and their idea, design and review Tasks.
+- `discovery/b01_example_prior_work`: a discovery Block, an inquiry Job and its Paper Runs.
+- `cowork/b01_example_data_request`: a cowork Block, its people and three lines of work.
+- `work/b90_example_paper_results`: a work Block, its Jobs, Tasks and Runs.

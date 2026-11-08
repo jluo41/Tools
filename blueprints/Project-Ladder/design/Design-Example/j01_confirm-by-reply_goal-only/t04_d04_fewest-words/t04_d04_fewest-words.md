@@ -1,5 +1,5 @@
 ---
-state: verify
+state: dropped
 name: fewest-words
 idea: I04
 rank: 
@@ -20,4 +20,6 @@ draft: 1
 
 ## Evaluation
 
-<the verify verdict: T0 · T1 · T2>
+
+v1 (reviewer agent (context R)): T0 ✓ · T1 ✓ → passed
+

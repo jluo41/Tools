@@ -1,0 +1,3 @@
+rank,design,predicted,why,kept
+1,d01,+0.9 pp [-0.2; +2.0],"Keeps P2's reply-first order and its one ask word for word (P2: +1.1 pp [+0.1; +2.1] over the control in e01); only the slot is written shorter, a change e01 did not test, so the forecast is pulled toward the control (P2 was the better of two arms) and widened",yes
+2,d02,+0.4 pp [-0.6; +1.4],"The control P1 without its call-us ask: it carries one of P2's two changes (one ask) but not the other (the ask in front), and e01 cannot split P2's +1.1 pp between them, so the forecast sits between the control and P2 and its range crosses zero; dropped because N is 1 and d01 ranks above it",no

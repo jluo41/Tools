@@ -1,0 +1,7 @@
+rank,design,predicted,why,kept
+1,d01,+1.5 pp [+0.4; +2.6],The ask comes first and the slot right after it: the reply word is the first thing read and the appointment is named; shortest full form (71 characters),yes
+2,d02,+1.2 pp [+0.2; +2.2],As clear as d01 but YES comes second after the slot; close behind d01 and the ranges overlap,no
+3,d05,+1.0 pp [-0.1; +2.1],d02's text plus Thank you: no expected gain from the courtesy and a longer message; a near-twin of d02,no
+4,d06,+0.8 pp [-0.8; +2.4],A question invites a reply but also free-text answers that are not YES; widest range,no
+5,d03,+0.4 pp [-0.7; +1.5],The ask sits at the end of one long sentence in lowercase after a semicolon: the reply word is harder to find,no
+6,d04,-0.5 pp [-2.0; +1.0],Fewest words but never says what YES confirms (no word for the appointment): the reader must infer it,no

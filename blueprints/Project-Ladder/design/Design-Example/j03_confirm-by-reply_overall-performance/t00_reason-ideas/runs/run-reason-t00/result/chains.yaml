@@ -1,0 +1,21 @@
+topics:
+- id: T1
+  title: Keep what worked in the stronger past design
+  from: past-designs.md · P2
+  steps:
+  - says: P2 put the reply word first and came back +1.1 pp against the control in e01
+    so: keep the reply-first order and spend no words before the ask
+  - says: every message opens with who it is from
+    from: rules.md · r1.2
+    so: the sender stays in front, the ask right after it
+  ideas: [I01]
+- id: T2
+  title: Fix the weaker past design's second ask
+  from: past-designs.md · P1
+  steps:
+  - says: P1, the control, asked for two things, reply YES or call to change it
+    so: keep its familiar reminder opening but leave only one ask
+  - says: the goal asks for one clear ask, reply YES to confirm
+    from: goal.md · rules for this goal
+    so: the call-us ask goes; YES is the only reply named
+  ideas: [I02]

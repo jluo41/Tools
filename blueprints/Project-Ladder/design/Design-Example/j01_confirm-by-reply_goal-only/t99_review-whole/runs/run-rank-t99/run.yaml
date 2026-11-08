@@ -1,0 +1,13 @@
+run: run-rank-t99
+kind: hard
+type: rank
+scope: t99_review-whole
+target: t99
+skill: haipipe-design-unit
+agent: reviewer agent
+signs: none
+status: closed
+by: reviewer agent (context R)
+started_at: '2026-11-06T11:05:00'
+finished_at: '2026-11-06T11:12:00'
+usage: {}

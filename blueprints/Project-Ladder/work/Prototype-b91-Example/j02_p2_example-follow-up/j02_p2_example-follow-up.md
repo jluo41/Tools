@@ -4,7 +4,7 @@ state: open
 signed: ''
 from: p1
 title: example follow-up
-goal: 'Analysis plan 2, example follow-up: 9 questions and their scripts on 5 cuts'
+goal: 'Analysis plan 2, example follow-up: the questions and their scripts on the cuts it fixes'
 ---
 
 # AP2 · analysis plan 2

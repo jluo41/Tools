@@ -1,0 +1,37 @@
+version: 6
+kind: discovery
+address: b01.j01.t01
+address_compact: b01j01t01
+discovery_type: topic-summary
+block:
+  id: b01
+  slug: example_prior_work
+  title: "Example prior work (placeholder)"
+job:
+  id: j01
+  slug: policy_effect_inquiry
+  title: "What earlier work found about <the policy>"
+task:
+  id: t01
+  slug: policy_prior_work
+  title: "Prior work on <the policy>"
+page: t01_policy_prior_work.md
+status: reported
+
+# --- Plan (intent) ---
+
+question: |
+  What did earlier work find about <the policy> and its effect on <an outcome>?
+sources:
+  rule: "placeholder papers only, made up for the public example; one Paper Run each"
+placeholder: "Every paper in this Task is made up; its Runs make no network call."
+
+# --- Report ---
+
+report:
+  outcome: reported
+  summary: "Two placeholder papers find that <an outcome> rose in one setting; the third waits for a citation check."
+  confidence: low
+  completed_runs: 3
+  unresolved_runs: 0
+  evidence_bib: draft/evidence/bibex/t01_policy_prior_work.bib

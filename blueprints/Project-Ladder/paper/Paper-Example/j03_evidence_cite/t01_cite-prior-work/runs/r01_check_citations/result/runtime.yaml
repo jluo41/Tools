@@ -1,8 +1,8 @@
 run: r01_check_citations
 status: completed
 exit_code: 0
-started_at: '2026-11-06T09:25:25Z'
-finished_at: '2026-11-06T09:25:25Z'
+started_at: '2026-11-08T17:27:54Z'
+finished_at: '2026-11-08T17:27:54Z'
 started_by: 'cite_tasks.py gen: the citation Job’s Runs, made from its claim groups'
 ticket: runs/r01_check_citations/r01_check_citations.sh
 worker: haipipe-paper-evidence scripts/cite_tasks.py run

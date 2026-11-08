@@ -3,9 +3,13 @@
 board-kind: task-block
 package: plugins/haipipe-toolkit
 theme: design
-ui-block: http://100.121.165.84:5602/_board/workbench?layout=focus&path=examples-5-design/ProjI-Insight-1-Wearable/design/Design-PreVisitChecklist
-ui-job: http://100.121.165.84:5602/_board/workbench?layout=focus&path=examples-5-design/ProjI-Insight-1-Wearable/design/Design-PreVisitChecklist/j01_prepare-before-visit_goal-only
-ui-task: http://100.121.165.84:5602/_board/workbench?layout=focus&path=examples-5-design/ProjI-Insight-1-Wearable/design/Design-PreVisitChecklist/j01_prepare-before-visit_goal-only/t01_d01_keep-devices-on
+ui-block: blueprints/Project-Ladder/design/Design-Example
+ui-job: blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_overall-performance
+ui-job: blueprints/Project-Ladder/design/Design-Example/j01_confirm-by-reply_goal-only
+ui-job: blueprints/Project-Ladder/design/Design-Example/j02_confirm-by-reply_goal-only
+ui-task: blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_overall-performance/t00_reason-ideas
+ui-task: blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_overall-performance/t02_d02_reminder-one-ask
+ui-task: blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_overall-performance/t99_review-whole
 shared-blueprint: b01_haipipe-toolkit
 spine: How the design theme sits on the Block → Job → Task → Run ladder and shows in its workbench: a design Board for one application, a Job for one goal done by one design method returning N designs, a Task for one design, and the Runs that commission, generate, verify and revise them; how an insight Block steers a design through one handoff; and which skill and workbench owns each part.
 close: Each recorded question has a report Page with an answer status; the drawings in studio/ match the shared definitions in b10_project_workbench, and every open point is either decided or carried as a question.

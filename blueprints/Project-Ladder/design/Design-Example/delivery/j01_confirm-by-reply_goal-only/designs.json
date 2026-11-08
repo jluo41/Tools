@@ -1,0 +1,20 @@
+{
+  "designs": [
+    {
+      "job": "j01",
+      "job_name": "j01_confirm-by-reply_goal-only",
+      "design": "d01",
+      "name": "yes-first",
+      "words": "{SENDER}: Reply YES to confirm your appointment on {DAY} at {TIME}. Reply STOP to opt out.",
+      "predicted": "+1.5 pp [+0.4; +2.6]",
+      "against": "the control",
+      "why": "The ask comes first and the slot right after it: the reply word is the first thing read and the appointment is named; shortest full form (71 characters)",
+      "released": "261106",
+      "pins": {
+        "goal": "G01",
+        "method": "M01 m2",
+        "inputs": "i1"
+      }
+    }
+  ]
+}

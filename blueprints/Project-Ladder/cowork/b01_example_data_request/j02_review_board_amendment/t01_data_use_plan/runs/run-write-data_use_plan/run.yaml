@@ -1,0 +1,18 @@
+run: run-write-data_use_plan
+kind: soft
+type: write
+scope: Tools/blueprints/Project-Ladder/cowork/b01_example_data_request/j02_review_board_amendment/t01_data_use_plan
+target: data_use_plan
+ticket: run-write-data_use_plan.md
+skill: haipipe-draft
+agent: null
+signs: null
+status: waiting
+passes:
+- p01-1027
+- p02-1104
+writes:
+- result/data_use_plan_v1.md
+- result/data_use_plan_v2.md
+- result/headline.txt
+feeds: []

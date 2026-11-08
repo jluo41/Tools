@@ -1,0 +1,16 @@
+run: r02_collect_ranking_rule
+kind: hard
+type: collect
+scope: Tools/blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_overall-performance
+target: Design-Example.j03-s02:release_choices @ ranking_rule
+ticket: null
+skill: haipipe-interaction
+agent: null
+signs: null
+status: done
+passes:
+- p01-1108
+writes:
+- result/answer_collection.md
+feeds: []
+source: chat

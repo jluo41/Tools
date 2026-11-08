@@ -1,0 +1,19 @@
+run: run-revise-d02
+kind: soft
+type: revise
+scope: t02_d02_reminder-one-ask
+target: d02
+ticket: null
+skill: haipipe-design-unit
+agent: designer agent
+signs: none
+status: closed
+passes:
+- p01-1108
+writes:
+- passes/design.md
+feeds: null
+by: designer agent (maker context A)
+started_at: '2026-11-08T10:15:00'
+finished_at: '2026-11-08T10:19:00'
+usage: {}

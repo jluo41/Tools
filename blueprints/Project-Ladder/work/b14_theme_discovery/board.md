@@ -3,9 +3,11 @@
 board-kind: task-block
 package: plugins/haipipe-toolkit
 theme: discovery
-ui-block: http://100.121.165.84:5599/_board/workbench?layout=focus&path=examples-1-data/Project-PhyReview-Pipeline/discovery/b01_physician_review_evidence_board
-ui-job: http://100.121.165.84:5599/_board/workbench?layout=focus&path=examples-1-data/Project-PhyReview-Pipeline/discovery/b01_physician_review_evidence_board/j03_physician_appearance_and_photo_effects_inquiry
-ui-task: http://100.121.165.84:5599/_board/workbench?layout=focus&path=examples-1-data/Project-PhyReview-Pipeline/discovery/b01_physician_review_evidence_board/j03_physician_appearance_and_photo_effects_inquiry/t04_face_image_variable_methods_landscape
+ui-block: blueprints/Project-Ladder/discovery/b01_example_prior_work
+ui-job: blueprints/Project-Ladder/discovery/b01_example_prior_work/j01_policy_effect_inquiry
+ui-job: blueprints/Project-Ladder/discovery/b01_example_prior_work/j02_subgroup_effect_inquiry
+ui-task: blueprints/Project-Ladder/discovery/b01_example_prior_work/j01_policy_effect_inquiry/t01_policy_prior_work
+ui-task: blueprints/Project-Ladder/discovery/b01_example_prior_work/j02_subgroup_effect_inquiry/t01_subgroup_prior_work
 shared-blueprint: b01_haipipe-toolkit
 spine: Design questions about the discovery Theme as one ladder: what a Discovery Block, an inquiry Job, a sub-question Task and a Paper Run each hold and show, where papers, citations and the Bib appear at each level, and how a synthesis is handed to the paper or task that reads it.
 close: Each recorded question has a report Page with an answer status, and every answered question names the skill, workbench or builder change that settled it.

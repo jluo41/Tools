@@ -8,36 +8,36 @@ keys:
 counts:
   keys: 3
   verified: 0
-  card-only: 0
-  bib-only: 2
+  card-only: 2
+  bib-only: 0
   missing-bib: 1
   TOADD: 0
   no doi: 2
   back-to-back: 0
   sentences without a card: 3
   card edits: 3
-headline: '3 keys: 0 verified, 2 in the bib, no source card, 1 not in the bib; 2 without a DOI; 3 citing sentences without
+headline: '3 keys: 0 verified, 2 source card, not in the bib, 1 not in the bib; 2 without a DOI; 3 citing sentences without
   a source card'
 ungrouped: []
 citations:
 - key: example2024policy
   group: t01_cite-prior-work
-  status: bib-only
+  status: card-only
   cited_in: t01_introduction C1.P1.1
   doi: 10.0000/example.2024.001
   verified: nobody yet
   cite_card: ''
   card_gaps: t01_introduction C1.P1.1
-  discovery_runs: ''
+  discovery_runs: b01.j01.t01.r01
 - key: example2021one
   group: t01_cite-prior-work
-  status: bib-only
+  status: card-only
   cited_in: t01_introduction C1.P1.2
   doi: ''
   verified: nobody yet
   cite_card: ''
   card_gaps: t01_introduction C1.P1.2
-  discovery_runs: ''
+  discovery_runs: b01.j01.t01.r02
 - key: example2022two
   group: t01_cite-prior-work
   status: missing-bib
@@ -46,11 +46,11 @@ citations:
   verified: nobody yet
   cite_card: ''
   card_gaps: t01_introduction C1.P1.2
-  discovery_runs: ''
+  discovery_runs: b01.j01.t01.r03
 back_to_back: []
 card_fixes:
   t01_introduction:
-  - op: need
+  - op: add
     key: example2024policy
     sentences:
     - C1.P1.1
@@ -58,15 +58,12 @@ card_fixes:
       kind: cite
       source: b01.j01.t01
     item:
-      need: a discovery Run for example2024policy (doi 10.0000/example.2024.001)
+      run: r01
       for:
       - C1.P1.1
       cite: example2024policy
-      propose:
-        level: run
-        in: b01.j01.t01
-    why: no discovery Run holds this source
-  - op: need
+    why: no card item backs example2024policy here; discovery Run b01.j01.t01.r01 holds it (key example2024policy there)
+  - op: add
     key: example2021one
     sentences:
     - C1.P1.2
@@ -74,15 +71,12 @@ card_fixes:
       kind: cite
       source: b01.j01.t01
     item:
-      need: 'a discovery Run for example2021one (no DOI: a web or book source)'
+      run: r02
       for:
       - C1.P1.2
       cite: example2021one
-      propose:
-        level: run
-        in: b01.j01.t01
-    why: no discovery Run holds this source
-  - op: need
+    why: no card item backs example2021one here; discovery Run b01.j01.t01.r02 holds it (key example2021one there)
+  - op: add
     key: example2022two
     sentences:
     - C1.P1.2
@@ -90,11 +84,8 @@ card_fixes:
       kind: cite
       source: b01.j01.t01
     item:
-      need: 'a discovery Run for example2022two (no DOI: a web or book source)'
+      run: r03
       for:
       - C1.P1.2
       cite: example2022two
-      propose:
-        level: run
-        in: b01.j01.t01
-    why: no discovery Run holds this source
+    why: no card item backs example2022two here; discovery Run b01.j01.t01.r03 holds it (key example2022two there)

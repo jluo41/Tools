@@ -1,1 +1,1 @@
-t99_paper_citation_check: 3 keys: 0 verified, 2 in the bib, no source card, 1 not in the bib; 2 without a DOI; 3 citing sentences without a source card
+t99_paper_citation_check: 3 keys: 0 verified, 2 source card, not in the bib, 1 not in the bib; 2 without a DOI; 3 citing sentences without a source card

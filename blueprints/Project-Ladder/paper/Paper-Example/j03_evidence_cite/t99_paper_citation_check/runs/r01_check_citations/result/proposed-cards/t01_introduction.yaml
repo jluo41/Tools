@@ -1,7 +1,7 @@
 # Proposed edits to j12_writing_v0215_desk/t01_introduction/evidence/cards.yaml (CITE only), written by cite_tasks.py run. Not applied.
 section: t01_introduction
 edits:
-- op: need
+- op: add
   key: example2024policy
   sentences:
   - C1.P1.1
@@ -9,15 +9,12 @@ edits:
     kind: cite
     source: b01.j01.t01
   item:
-    need: a discovery Run for example2024policy (doi 10.0000/example.2024.001)
+    run: r01
     for:
     - C1.P1.1
     cite: example2024policy
-    propose:
-      level: run
-      in: b01.j01.t01
-  why: no discovery Run holds this source
-- op: need
+  why: no card item backs example2024policy here; discovery Run b01.j01.t01.r01 holds it (key example2024policy there)
+- op: add
   key: example2021one
   sentences:
   - C1.P1.2
@@ -25,15 +22,12 @@ edits:
     kind: cite
     source: b01.j01.t01
   item:
-    need: 'a discovery Run for example2021one (no DOI: a web or book source)'
+    run: r02
     for:
     - C1.P1.2
     cite: example2021one
-    propose:
-      level: run
-      in: b01.j01.t01
-  why: no discovery Run holds this source
-- op: need
+  why: no card item backs example2021one here; discovery Run b01.j01.t01.r02 holds it (key example2021one there)
+- op: add
   key: example2022two
   sentences:
   - C1.P1.2
@@ -41,11 +35,8 @@ edits:
     kind: cite
     source: b01.j01.t01
   item:
-    need: 'a discovery Run for example2022two (no DOI: a web or book source)'
+    run: r03
     for:
     - C1.P1.2
     cite: example2022two
-    propose:
-      level: run
-      in: b01.j01.t01
-  why: no discovery Run holds this source
+  why: no card item backs example2022two here; discovery Run b01.j01.t01.r03 holds it (key example2022two there)

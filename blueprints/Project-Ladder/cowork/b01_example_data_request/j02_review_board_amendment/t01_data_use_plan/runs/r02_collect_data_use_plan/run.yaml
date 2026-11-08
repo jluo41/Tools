@@ -1,0 +1,16 @@
+run: r02_collect_data_use_plan
+kind: hard
+type: collect
+scope: Tools/blueprints/Project-Ladder/cowork/b01_example_data_request/j02_review_board_amendment/t01_data_use_plan
+target: b01.j02.t01-s01:example_data_request @ data-use-plan
+ticket: null
+skill: haipipe-interaction
+agent: null
+signs: null
+status: done
+passes:
+- p01-1108
+writes:
+- result/answer_collection.md
+feeds: []
+source: chat

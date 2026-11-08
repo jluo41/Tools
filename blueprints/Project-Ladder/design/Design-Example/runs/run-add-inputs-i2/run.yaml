@@ -1,0 +1,19 @@
+run: run-add-inputs-i2
+kind: soft
+type: add-inputs
+scope: Design-Example
+target: i2
+ticket: null
+skill: haipipe-design-goal
+agent: designer agent
+signs: none
+status: closed
+passes:
+- p01-1107
+writes:
+- inputs/i2/manifest.yaml
+feeds: null
+by: designer agent
+started_at: '2026-11-07T09:20:00'
+finished_at: '2026-11-07T09:26:00'
+usage: {}

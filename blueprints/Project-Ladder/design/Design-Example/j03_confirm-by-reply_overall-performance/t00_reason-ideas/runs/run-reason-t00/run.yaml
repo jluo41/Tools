@@ -1,0 +1,13 @@
+run: run-reason-t00
+kind: hard
+type: reason
+scope: t00_reason-ideas
+target: t00
+skill: haipipe-design-unit
+agent: designer agent
+signs: none
+status: closed
+by: designer agent (maker context A)
+started_at: '2026-11-08T09:30:00'
+finished_at: '2026-11-08T09:38:00'
+usage: {}

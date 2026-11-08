@@ -1,0 +1,14 @@
+run: run-verify-d06-v1
+kind: hard
+type: verify
+scope: t06_d06_question-ask
+target: d06-v1
+skill: haipipe-design-unit
+agent: reviewer agent
+signs: none
+status: passed
+tests: {T0: ✓, T1: ✓}
+by: reviewer agent (context R)
+started_at: '2026-11-06T11:00:00'
+finished_at: '2026-11-06T11:03:00'
+usage: {}

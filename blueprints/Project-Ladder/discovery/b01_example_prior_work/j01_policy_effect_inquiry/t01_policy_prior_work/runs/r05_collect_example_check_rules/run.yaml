@@ -1,0 +1,16 @@
+run: r05_collect_example_check_rules
+kind: hard
+type: collect
+scope: Tools/blueprints/Project-Ladder/discovery/b01_example_prior_work/j01_policy_effect_inquiry/t01_policy_prior_work
+target: b01-s01:example_prior_work @ example_reading
+ticket: null
+skill: haipipe-interaction
+agent: null
+signs: null
+status: done
+passes:
+- p01-1108
+writes:
+- result/answer_collection.md
+feeds: []
+source: chat

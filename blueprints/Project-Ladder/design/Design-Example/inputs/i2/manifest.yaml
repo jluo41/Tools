@@ -1,0 +1,18 @@
+version: i2
+frozen: '261108'
+new: adds the example test e01's two past designs and their overall results (synthetic);
+  the rules are r1 as before
+rules: r1
+parts:
+- part: Goal · how much is set
+  file: rules.md
+  says: the shared rules r1 as signed
+- part: Examples
+  file: past-designs.md
+  says: two past designs and their overall results in e01, synthetic
+  kind: ours
+files:
+- path: past-designs.md
+  sha256: 63ecf227d9fa
+- path: rules.md
+  sha256: e19bcaf0ebfe

@@ -4,7 +4,7 @@ layer: evidence
 state: open
 goal: citations: one Task per claim group, each from verified CITE Results
 close: every one the writing Jobs quote is drawn or checked, and accepted
-reads: the returned Results of the work Blocks (internal) and the discovery Blocks (external); never raw data
+reads: the returned Results of the work Blocks (internal) and the discovery Blocks (external), here the papers of discovery/b01_example_prior_work/j01_policy_effect_inquiry/t01_policy_prior_work; never raw data
 
 ## Tasks
 

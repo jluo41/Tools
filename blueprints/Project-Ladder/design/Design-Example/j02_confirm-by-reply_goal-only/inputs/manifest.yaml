@@ -1,0 +1,41 @@
+inputs: i2
+frozen: '261108'
+method: method.md
+parts:
+- part: Goal · how much is set
+  choice: aim · N · leave out
+  file: goal.md
+- part: Goal · how much is set
+  choice: the shared rules r1 as signed
+  file: rules.md
+- part: Goal · for whom
+  choice: 'in goal.md: who'
+  file: ''
+- part: Information · whose
+  choice: nothing
+  file: ''
+- part: Information · form
+  choice: nothing
+  file: ''
+- part: Examples
+  choice: nothing
+  file: ''
+- part: Tools
+  choice: nothing
+  file: ''
+- part: Reading
+  choice: nothing
+  file: ''
+- part: From the last unit
+  choice: nothing
+  file: ''
+files:
+- path: goal.md
+  source: written
+  sha256: 11a94b37ea87
+- path: method.md
+  source: haipipe-design-method/methods/M01-*/m2.md
+  sha256: 0c49ce170f8a
+- path: rules.md
+  source: ../../inputs/i2/rules.md
+  sha256: e19bcaf0ebfe

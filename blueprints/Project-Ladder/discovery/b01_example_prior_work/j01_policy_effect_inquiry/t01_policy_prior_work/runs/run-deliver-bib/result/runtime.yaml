@@ -1,0 +1,9 @@
+run: run-deliver-bib
+status: complete
+headline: "3 placeholder papers in the Evidence Bib, handed over as v1; 1 citation still waits for a check"
+exit_code: 0
+started_at: '2026-11-08T17:22:38Z'
+finished_at: '2026-11-08T17:22:38Z'
+ticket: runs/run-deliver-bib/run-deliver-bib.sh
+worker: scripts/deliver_bib.py
+placeholder: true

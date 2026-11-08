@@ -1,0 +1,21 @@
+run: run-release-j01
+kind: soft
+type: release
+scope: j01_confirm-by-reply_goal-only
+target: j01
+ticket: null
+skill: haipipe-design-delivery
+agent: designer agent
+signs: a person
+status: closed
+passes:
+- p01-1106
+writes:
+- delivery/designs.json
+- delivery/designs.md
+feeds: null
+by: placeholder (no person signed)
+started_at: '2026-11-06T11:20:00'
+finished_at: '2026-11-06T11:25:00'
+usage: {}
+signed: ✅ 261106 · placeholder sign on the example, no person signed, all 1 at once

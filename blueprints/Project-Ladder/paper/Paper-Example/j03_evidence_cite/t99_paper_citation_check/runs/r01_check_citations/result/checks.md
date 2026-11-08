@@ -1,6 +1,6 @@
 # Paper citation check · j12_writing_v0215_desk
 
-Written by cite_tasks.py run on 2026-11-06; read only. A card edit below is proposed, never applied: `cite_tasks.py apply` (run by a person) writes it.
+Written by cite_tasks.py run on 2026-11-08; read only. A card edit below is proposed, never applied: `cite_tasks.py apply` (run by a person) writes it.
 
 ## cards.py check, per printed Section
 
@@ -25,4 +25,4 @@ Written by cite_tasks.py run on 2026-11-06; read only. A card edit below is prop
 
 ## Card edits, per Section (proposed-cards/<section>.yaml)
 
-- `t01_introduction`: 3 need
+- `t01_introduction`: 3 add

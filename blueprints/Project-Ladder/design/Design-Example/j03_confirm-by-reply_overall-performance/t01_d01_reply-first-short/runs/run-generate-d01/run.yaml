@@ -1,0 +1,13 @@
+run: run-generate-d01
+kind: hard
+type: generate
+scope: t01_d01_reply-first-short
+target: d01
+skill: haipipe-design-unit
+agent: designer agent
+signs: none
+status: closed
+by: designer agent (maker context A)
+started_at: '2026-11-08T09:50:00'
+finished_at: '2026-11-08T09:54:00'
+usage: {}

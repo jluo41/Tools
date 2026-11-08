@@ -1,0 +1,22 @@
+run: run-open-designs-j03
+kind: soft
+type: open-designs
+scope: j03_confirm-by-reply_overall-performance
+target: j03
+ticket: null
+skill: haipipe-design
+agent: designer agent
+signs: none
+status: done
+passes:
+- p01-1108
+- p02-1108
+writes:
+- t01_d01_reply-first-short
+- t02_d02_reminder-one-ask
+- t99_review-whole
+feeds: null
+by: designer agent (maker context A); fence check p01 by reviewer agent (context R)
+started_at: '2026-11-08T09:40:00'
+finished_at: '2026-11-08T09:46:00'
+usage: {}

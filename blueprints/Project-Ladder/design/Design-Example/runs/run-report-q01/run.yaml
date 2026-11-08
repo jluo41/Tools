@@ -1,0 +1,19 @@
+run: run-report-q01
+kind: soft
+type: report
+scope: Design-Example
+target: q01
+ticket: null
+skill: haipipe-report
+agent: designer agent
+signs: another agent checks
+status: running
+passes:
+- p01-1108
+writes:
+- reports/q01_example_test/q01_example_test.md
+feeds: null
+by: designer agent
+started_at: '2026-11-08T11:10:00'
+finished_at: ''
+usage: {}

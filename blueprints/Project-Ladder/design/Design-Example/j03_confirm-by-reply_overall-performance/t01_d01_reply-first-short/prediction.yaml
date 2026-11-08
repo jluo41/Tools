@@ -1,0 +1,5 @@
+predicted: +0.9 pp [-0.2; +2.0]
+against: the control
+by: reviewer agent (context R2)
+why: 'Keeps P2''s reply-first order and its one ask word for word (P2: +1.1 pp [+0.1; +2.1] over the control in e01); only the slot is written shorter, a change e01 did not test, so the forecast is pulled toward the control (P2 was the better of two arms) and widened'
+frozen: draft

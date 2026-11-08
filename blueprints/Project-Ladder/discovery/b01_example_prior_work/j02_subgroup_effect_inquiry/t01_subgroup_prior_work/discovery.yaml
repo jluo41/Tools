@@ -1,0 +1,27 @@
+version: 6
+kind: discovery
+address: b01.j02.t01
+address_compact: b01j02t01
+discovery_type: source-map
+block:
+  id: b01
+  slug: example_prior_work
+  title: "Example prior work (placeholder)"
+job:
+  id: j02
+  slug: subgroup_effect_inquiry
+  title: "Whether the effect differs by <a characteristic>"
+task:
+  id: t01
+  slug: subgroup_prior_work
+  title: "Prior work on <the subgroup>"
+page: t01_subgroup_prior_work.md
+status: planned
+
+# --- Plan (intent) ---
+
+question: |
+  Did any earlier work look at the effect of <the policy> by <a characteristic>?
+sources:
+  rule: "placeholder papers only, made up for the public example; one Paper Run each"
+placeholder: "Every paper in this Task would be made up; nothing is admitted yet."

@@ -1,0 +1,11 @@
+ideas:
+- id: I01
+  idea: Keep P2's reply-first order and say the slot in fewer words
+  topic: T1
+  design: d01
+  name: reply-first-short
+- id: I02
+  idea: Keep P1's reminder opening with one ask only
+  topic: T2
+  design: d02
+  name: reminder-one-ask

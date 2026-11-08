@@ -1,0 +1,21 @@
+run: run-add-observed-e01
+kind: soft
+type: add-observed
+scope: Design-Example
+target: e01
+ticket: null
+skill: haipipe-design-method
+agent: designer agent
+signs: none
+status: closed
+passes:
+- p01-1107
+writes:
+- observed/e01_example-test/arms.csv
+- observed/e01_example-test/source.md
+- observed/e01_example-test/manifest.yaml
+feeds: null
+by: designer agent
+started_at: '2026-11-07T09:00:00'
+finished_at: '2026-11-07T09:06:00'
+usage: {}

@@ -1,0 +1,14 @@
+run: r01_collect_next_test_arm
+kind: hard
+type: collect
+scope: Tools/blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_overall-performance
+target: Design-Example.j03-s02:release_choices @ next_test_arm
+ticket: r01_collect_next_test_arm.html
+skill: haipipe-interaction
+agent: null
+signs: null
+status: waiting
+passes: []
+writes:
+- result/answer_collection.md
+feeds: []

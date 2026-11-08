@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "subject": {
+    "kind": "paper",
+    "title": "<An outcome> in a second setting: a placeholder",
+    "doi": null,
+    "venue_url": "https://example.org/placeholder/example2022two"
+  },
+  "links": {
+    "article": "https://example.org/placeholder/example2022two",
+    "doi": null,
+    "publisher": "https://example.org/placeholder/example2022two",
+    "pubmed": "https://pubmed.ncbi.nlm.nih.gov/?term=%3CAn+outcome%3E+in+a+second+setting%3A+a+placeholder%5BTitle%5D",
+    "pubmed_search": "https://pubmed.ncbi.nlm.nih.gov/?term=%3CAn+outcome%3E+in+a+second+setting%3A+a+placeholder%5BTitle%5D",
+    "google_scholar": "https://scholar.google.com/scholar?hl=en&q=%22%3CAn+outcome%3E+in+a+second+setting%3A+a+placeholder%22",
+    "google": "https://www.google.com/search?q=%22%3CAn+outcome%3E+in+a+second+setting%3A+a+placeholder%22",
+    "bibtex": "https://example.org/placeholder/example2022two.bib",
+    "crossref": null,
+    "openalex": null,
+    "openreview": null,
+    "full_text": null
+  },
+  "retrieval": {
+    "crossref": "no-doi",
+    "pubmed": "title-search-link",
+    "openalex": "no-doi",
+    "full_text": "not-found",
+    "full_text_kind": null,
+    "reading_depth": "metadata-only",
+    "claim_support": "pending",
+    "locator_status": "pending",
+    "depth_note": "No abstract was given; identity and metadata only."
+  },
+  "identifiers": {
+    "pmid": null,
+    "pmcid": null,
+    "openalex": null
+  },
+  "abstract": {
+    "source": null,
+    "text": null
+  },
+  "placeholder": {
+    "note": "A made-up paper for a public example: the metadata, abstract and readout are placeholders, written with no network call; nothing here is evidence about any real study."
+  }
+}

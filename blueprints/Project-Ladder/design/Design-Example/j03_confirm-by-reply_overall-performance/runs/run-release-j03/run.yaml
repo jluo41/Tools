@@ -1,0 +1,14 @@
+run: run-release-j03
+kind: soft
+type: release
+scope: j03_confirm-by-reply_overall-performance
+target: j03
+skill: haipipe-design-delivery
+agent: designer agent
+signs: a person
+status: waiting
+by: ''
+started_at: ''
+finished_at: ''
+usage: {}
+signed: ''

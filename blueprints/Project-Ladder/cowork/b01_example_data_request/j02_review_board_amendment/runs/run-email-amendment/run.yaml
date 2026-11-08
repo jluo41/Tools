@@ -1,0 +1,15 @@
+run: run-email-amendment
+kind: soft
+type: email
+scope: Tools/blueprints/Project-Ladder/cowork/b01_example_data_request/j02_review_board_amendment
+target: amendment
+ticket: run-email-amendment.md
+skill: haipipe-cowork
+agent: null
+signs: null
+status: waiting
+passes:
+- p01-1106
+writes:
+- emails/2026-11-06-amendment-draft.md
+feeds: []

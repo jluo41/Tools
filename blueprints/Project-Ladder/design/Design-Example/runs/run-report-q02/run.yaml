@@ -1,0 +1,19 @@
+run: run-report-q02
+kind: soft
+type: report
+scope: Design-Example
+target: q02
+ticket: null
+skill: haipipe-report
+agent: designer agent
+signs: another agent checks
+status: closed
+passes:
+- p01-1108
+writes:
+- reports/q02_prediction_check/q02_prediction_check.md
+feeds: null
+by: designer agent
+started_at: '2026-11-08T11:00:00'
+finished_at: '2026-11-08T11:08:00'
+usage: {}

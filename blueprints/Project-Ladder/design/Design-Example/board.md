@@ -2,7 +2,7 @@
 
 board-kind: design-board
 channel: sms
-spine: A placeholder design Block. One application (an example reminder message), one channel (sms), one signed goal made by the simplest registered method, so a reader sees every view, section and state a real design Block shows. Every word here is a placeholder.
+spine: A placeholder design Block. One application (an example reminder message), one channel (sms), two goals (one signed, one waiting for a person), three Jobs on two registered methods, so a reader sees every view, section and state a real design Block shows. Every word here is a placeholder.
 close: every goal's kept designs released
 
 ## Topic
@@ -14,8 +14,11 @@ application, person or organization; its inputs version is a short synthetic fil
 ```text
 Design-Example/
 ├── board.md · design-goal.md        the goal list and the shared rules, each signed with a date only
-├── inputs/i1/                       one synthetic inputs version, frozen
-├── j01_confirm-by-reply_goal-only/  G01 × M01 m2 × i1 → N = 1
+├── inputs/i1/ · inputs/i2/          two synthetic inputs versions, frozen
+├── j01_confirm-by-reply_goal-only/  G01 × M01 m2 × i1 → N = 1, released (a placeholder sign), tested in e01
+├── j02_confirm-by-reply_goal-only/  G01 × M01 m2 × i2 (moved: inputs), still reasoning
+├── j03_confirm-by-reply_overall-performance/  G01 × M02 m1 × i2 (moved: method), its release waits
+├── observed/e01_example-test/       a synthetic example test's per-arm totals
 └── delivery/                        the Block's one-page summary; the release waits on a person
 ```
 
@@ -55,6 +58,13 @@ questions:
   question: Which kept design of the Block should an example test send, and does its frozen prediction hold?
   hypothesis: The kept design of the goal-only Job is the one to send; its prediction is checked once an example test returns per-arm totals.
   acceptance: Answered when the kept design is released and an example test's per-arm totals are scored.
-  work: [j01_confirm-by-reply_goal-only]
+  work: [j01_confirm-by-reply_goal-only, j02_confirm-by-reply_goal-only, j03_confirm-by-reply_overall-performance]
   report: reports/q01_example_test/q01_example_test.md
+- id: Q02
+  title: Did the goal-only prediction hold?
+  question: Did j01 d01's frozen prediction hold when the example test e01 came back?
+  hypothesis: The observed effect falls inside the predicted range, in the predicted direction.
+  acceptance: Answered when run-score-e01 has scored d01's arm against its frozen prediction.
+  work: [j01_confirm-by-reply_goal-only]
+  report: reports/q02_prediction_check/q02_prediction_check.md
 ```

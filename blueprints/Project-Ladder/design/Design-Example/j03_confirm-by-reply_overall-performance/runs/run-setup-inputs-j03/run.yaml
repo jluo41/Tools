@@ -1,0 +1,20 @@
+run: run-setup-inputs-j03
+kind: soft
+type: setup-inputs
+scope: j03_confirm-by-reply_overall-performance
+target: j03
+ticket: null
+skill: haipipe-design-goal
+agent: designer agent
+signs: none
+status: done
+passes:
+- p01-1108
+writes:
+- inputs/goal.md
+- inputs/manifest.yaml
+feeds: null
+by: designer agent
+started_at: '2026-11-08T09:15:00'
+finished_at: '2026-11-08T09:16:00'
+usage: {}

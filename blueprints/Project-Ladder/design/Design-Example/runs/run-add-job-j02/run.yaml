@@ -1,0 +1,19 @@
+run: run-add-job-j02
+kind: soft
+type: add-job
+scope: Design-Example
+target: j02
+ticket: null
+skill: haipipe-design
+agent: designer agent
+signs: none
+status: done
+passes:
+- p01-1108
+writes:
+- j02_confirm-by-reply_goal-only/j02_confirm-by-reply_goal-only.md
+feeds: null
+by: designer agent
+started_at: '2026-11-08T09:00:00'
+finished_at: '2026-11-08T09:02:00'
+usage: {}

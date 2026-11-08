@@ -1,0 +1,14 @@
+run: run-verify-d02-v1
+kind: hard
+type: verify
+scope: t02_d02_reminder-one-ask
+target: d02-v1
+skill: haipipe-design-unit
+agent: reviewer agent
+signs: none
+status: failed
+tests: {T0: ✗ r1.2, T1: ✓}
+by: reviewer agent (context R)
+started_at: '2026-11-08T10:09:00'
+finished_at: '2026-11-08T10:12:00'
+usage: {}

@@ -1,17 +1,21 @@
 s01 · Example design flow
 =========================
 
-**Stage:** explore
+**Stage:** shaping
 
-**For:** <its one delivery: a deck, and the thing the deck is about (a draft, a figure, code or skills, a data table, a server package), and who it is for>
+**For:** the design prototype: one drawing of how a signed goal becomes kept designs and a release, for anyone
+reading this placeholder Block before opening a real one.
 
-**Delivery type:** <one word: skill · ui · code · draft · display · data; never deck, every sNN has one>
+**Delivery type:** ui
 
-**Covers:** <what this sNN decides, in a few parts>
+**Covers:** the goal and its sign; the method version and what its fence leaves out; t00's ideas; one Task per
+design and its verify; t99's rank; the release that waits on a person; the example test that comes back.
 
-**Excluded:** <what it leaves to other sNN or Blocks, each named>
+**Excluded:** how a page looks (the theme Block's 3×3 pages, b12 j01); real designs (a Project's own design Block).
 
-**Topic:** <one paragraph: what this topic thinks through, and why now>
+**Topic:** A placeholder walk through the design ladder on this Block. Every word is made up: the goal, the
+designs, the predictions and the example test's totals. It shows each state once: signed, running, waiting for a
+person, released, scored.
 
 **Feeds:** `reports/` q01_example_test
 
@@ -21,20 +25,24 @@ Files
 
 ```text
 s01-example-design-flow/
-├── s01-example-design-flow.md        this face
-└── <drawings, builder>
+├── s01-example-design-flow.md               this face
+├── build_s01_example_design_flow.py         the drawing's builder
+├── s01-example-design-flow.excalidraw       the drawing
+├── s01-example-design-flow.png              its preview (render_png.py)
+└── s01-example-design-flow.mindmap.md       its mind map
 ```
 
 
 Decided
 -------
 
-(none yet: a decision is one line, s01-D01 · <what was decided> (<who> <date>))
+s01-D01 · one goal, three Jobs, one clock each: the inputs move from j01 to j02, the method from j02 to j03
+(placeholder decision on the example, 261106)
 
 
 Open
 ----
 
-1. <the first open point>
+1. Should the example test also try the goal-only design made on i2 (j02), once it is done?
 
 (write here, or mark the drawing in red)

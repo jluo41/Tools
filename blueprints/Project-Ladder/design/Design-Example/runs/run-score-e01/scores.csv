@@ -1,0 +1,2 @@
+job,design,predicted,observed,direction,in_range,error
+j01,d01,+1.5 pp [+0.4; +2.6],+1.1 pp [+0.1; +2.1],✓,✓,-0.40

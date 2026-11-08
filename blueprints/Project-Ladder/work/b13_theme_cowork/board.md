@@ -3,8 +3,12 @@
 board-kind: task-block
 package: plugins/haipipe-toolkit
 theme: cowork
-ui-block: http://100.121.165.84:5599/_board/workbench?layout=focus&path=examples-0-cowork/Project-Physician-IRB/cowork/b01_cms_medicare_irb_dua
-ui-job: http://100.121.165.84:5599/_board/workbench?layout=focus&path=examples-0-cowork/Project-Physician-IRB/cowork/b01_cms_medicare_irb_dua/j02_new_irb_application
+ui-block: blueprints/Project-Ladder/cowork/b01_example_data_request
+ui-job: blueprints/Project-Ladder/cowork/b01_example_data_request/j02_review_board_amendment
+ui-job: blueprints/Project-Ladder/cowork/b01_example_data_request/j01_data_access_request
+ui-job: blueprints/Project-Ladder/cowork/b01_example_data_request/j03_kickoff_meeting
+ui-job: blueprints/Project-Ladder/cowork/b01_example_data_request/j00_people
+ui-task: blueprints/Project-Ladder/cowork/b01_example_data_request/j02_review_board_amendment/t01_data_use_plan
 shared-blueprint: b01_haipipe-toolkit
 spine: Design questions about the cowork Theme as one ladder: what a CoWork Block, a line-of-work Job and its pieces (emails, meetings, checklist) each hold and show, whether a cowork Job has Tasks at all, where waiting-on and drafts go once there is no Check Space, and what a cowork Block delivers.
 close: Each recorded question has a report Page with an answer status, and every answered question names the skill, workbench or builder change that settled it.

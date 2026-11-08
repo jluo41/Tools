@@ -1,0 +1,8 @@
+exp: e01
+frozen: '261107'
+source: source.md (synthetic placeholder)
+files:
+- path: arms.csv
+  sha256: aea8dd7d4415
+- path: source.md
+  sha256: 79c9bc102cdf

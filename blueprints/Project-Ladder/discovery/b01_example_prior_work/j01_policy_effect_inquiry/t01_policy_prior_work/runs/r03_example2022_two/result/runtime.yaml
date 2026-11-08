@@ -1,0 +1,45 @@
+run: r03_example2022_two
+address: b01.j01.t01.r03
+address_compact: b01j01t01r03
+family: discovery
+operation: paper-analysis
+status: complete
+headline: "Read from its placeholder metadata only: it names a second setting, and its finding is not read yet."
+result_contract: paper-source-v2
+placeholder: true
+placeholder_note: "A made-up paper for a public example: the metadata, abstract and readout are placeholders, written with no network call; nothing here is evidence about any real study."
+ticket: runs/r03_example2022_two/r03_example2022_two.sh
+result: runs/r03_example2022_two/result/
+trigger:
+  kind: user_request
+  input: "the Paper-Example's introduction cites it"
+  resolved: "https://example.org/placeholder/example2022two"
+subject:
+  kind: paper
+  title: "<An outcome> in a second setting: a placeholder"
+  canonical_url: "https://example.org/placeholder/example2022two"
+  authors: "Ben Sample; Ann Example"
+  venue: "Example Review (2022)"
+source_access:
+  manifest: source-access.json
+  summary: source-access.md
+analysis:
+  reading_depth: metadata-only
+  claim_support: pending
+  locator_status: pending
+  scope_note: "No abstract was given; the card rests on placeholder metadata only."
+worker:
+  kind: placeholder
+  name: "haipipe-discovery scripts/paper_result_build.py --placeholder"
+  calls:
+    - "none: a placeholder writes from the metadata its Ticket gives, with no network call"
+    - "BibTeX copied verbatim from scripts/placeholder.bib (@example2022two)"
+executed_at: "2026-11-08T12:21:51-05:00"
+bib:
+  source: "scripts/placeholder.bib"
+  mode: verbatim_copy
+  source_class: placeholder
+  channel: placeholder-file
+  fetched_at: "2026-11-08T12:21:51-05:00"
+  verification:
+    status: pending
