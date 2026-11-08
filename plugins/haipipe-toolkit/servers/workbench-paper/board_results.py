@@ -567,7 +567,11 @@ def _evidence_kinds(board: Path, root: Path, kinds: tuple, n: int = 0) -> tuple[
                 head = next((paper_as[k] for k in ks if k in paper_as), head)
                 r = next((plan_of[k] for k in ks if k in plan_of), None)
                 order = list(plan_of).index(r.get("display", "")) if r is not None else 999
-                if face.is_file() and _field(face.read_text(encoding="utf-8", errors="ignore"), "group").lower() == "others":
+                fgroup = _field(face.read_text(encoding="utf-8", errors="ignore"), "group").lower() if face.is_file() else ""
+                if fgroup in ("method", "methods"):
+                    group = "method"             # a display that explains how the study is done, for a reader such as an
+                                                 # advisor (JL 261106: "we might have a section named Method")
+                elif fgroup == "others":
                     group = "unplanned"          # a draft shown apart until it is placed (JL 261104: "先放到 other 里面去")
                 elif r is not None:              # the plan says where it goes
                     group = r["where"]
@@ -589,8 +593,8 @@ def _evidence_kinds(board: Path, root: Path, kinds: tuple, n: int = 0) -> tuple[
         n += 1
         if kind == "Displays" and tiles:         # grouped, Main then Appendix (JL 261101: "groups them in different groups,
             sup = _supplement_word(list(paper_as.values()) + [h for h, _w, _x in tiles])   # like the main"), each card thinner
-            name = {"main": "Main", "supplement": sup, "unplanned": "Others"}   # JL 261102: candidates not in the plan, "a new section here as Others"
-            keyed = sorted(zip(groups, tiles, panels), key=lambda x: (("main", "supplement", "unplanned").index(x[0][0]), x[0][1]))
+            name = {"main": "Main", "supplement": sup, "method": "Method", "unplanned": "Others"}   # JL 261102: candidates not in the plan, "a new section here as Others"
+            keyed = sorted(zip(groups, tiles, panels), key=lambda x: (("main", "supplement", "method", "unplanned").index(x[0][0]), x[0][1]))
             tabs = _grouped_tabs("evD", [(name[g], (h, w), b) for (g, _), (h, w, _), b in keyed])
         else:
             tabs = _side_tabs("ev" + kind[0], [(h, w) for h, w, _ in tiles], panels) if tiles else empty_job(job)

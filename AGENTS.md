@@ -37,3 +37,8 @@
 - There is no single root build or test command. Read the relevant package guide and use checks appropriate to the files changed.
 - For skill changes, follow the fresh-context validation process in the root README.
 - For installer or marketplace changes, inspect both platform installers and verify package source paths and metadata. Report platform-specific checks that could not be run.
+
+UI design
+=========
+
+Avoid unnecessary secondary labels and descriptions. Let the layout do the explaining.
