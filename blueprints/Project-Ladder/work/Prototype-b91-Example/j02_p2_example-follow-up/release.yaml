@@ -1,0 +1,29 @@
+release: p2
+questions:
+  D01:
+    task: ../j01_p1_example-questions/t01_D01_extract-shape
+    change: kept
+  D02:
+    task: ../j01_p1_example-questions/t02_D02_arm-balance
+    change: kept
+  I01:
+    task: ../j01_p1_example-questions/t03_I01_outcome-by-arm
+    change: kept
+  I02:
+    task: ../j01_p1_example-questions/t04_I02_outcome-by-day
+    change: kept
+  K01:
+    task: ../j01_p1_example-questions/t05_K01_gap-holds
+    change: kept
+  W01:
+    task: ../j01_p1_example-questions/t06_W01_next-round
+    change: kept
+  X01:
+    task: ../j01_p1_example-questions/t07_X01_what-we-found
+    change: kept
+  X02:
+    task: ../j01_p1_example-questions/t08_X02_what-data-cannot-say
+    change: kept
+  K02:
+    task: t09_K02_gap-over-the-window
+    change: new

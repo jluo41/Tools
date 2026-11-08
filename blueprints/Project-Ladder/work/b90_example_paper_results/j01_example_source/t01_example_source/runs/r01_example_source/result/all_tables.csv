@@ -1,0 +1,4 @@
+table,rows,what
+units,12480,"one row per unit, the analysis sample"
+visits,48210,one row per visit of a unit
+outcomes,12480,"one outcome row per unit, before and after"

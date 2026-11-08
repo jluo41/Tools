@@ -39,10 +39,12 @@ Decided
 
 s34-D01 · The Board Studio's buttons stay the Block's own groups, its topics' Tags; they need not match the Report's views (JL 261104: "sutdio, not need that, I get confused. But if possible, we can make them consistent as well, that is flexible"; r03 Q1 B).
 
+s34-D02 · Skills is a right-rail section on every page, between Timeline and Files (261106). Live: focus_page.render.
+
 
 Open
 ----
 
-1. ? these four groups, or the Block's own
+(none: s34-D01 settled it, the buttons are the topics' Tags)
 
 (write here, or mark the drawing in red)

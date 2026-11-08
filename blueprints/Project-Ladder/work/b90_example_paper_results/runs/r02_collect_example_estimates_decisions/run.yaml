@@ -1,0 +1,16 @@
+run: r02_collect_example_estimates_decisions
+kind: hard
+type: collect
+scope: Tools/blueprints/Project-Ladder/work/b90_example_paper_results
+target: b90-s01:example_paper_results @ example-estimates
+ticket: null
+skill: haipipe-interaction
+agent: null
+signs: null
+status: done
+passes:
+- p01-1106
+writes:
+- result/answer_collection.md
+feeds: []
+source: chat

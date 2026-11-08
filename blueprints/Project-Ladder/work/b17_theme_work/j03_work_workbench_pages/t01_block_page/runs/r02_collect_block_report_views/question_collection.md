@@ -4,45 +4,18 @@ for: b17.j03.t01-s51:theme_work.work_workbench_pages.block_page @ block_ui_repor
 
 <!-- One card per question: ## QN · title, one short why, **the question?**, then - [x] A · my pick and
      - [ ] B · another, each with its picture, then Why A: one line. collect.py check holds the limits; collect.py build
-     renders the form. The earlier questions (261031) are in passes/p01-1031/. -->
+     renders the form. The earlier question sets are in passes/p01-1031/ and passes/p02-1101/. -->
 
-The Block's Report, redrawn as one screen per view on a made-up example Block. Each passed a fresh review; today's page is beside it.
+The Block's Report, redrawn 261105 to the live page; again 261106: each bar its state word, its waiting line, each view's own forms, Skills on the rail.
 
-## Q1 · A · MindMap
+## Q1 · Agree the Report
 
-A · MindMap: each Job, what it makes, its Tasks; no state words. A fresh reviewer passed it in round 2, 8.9 of 10; today's page scored 6.5 and failed Lean 6 and One job 4.
+A · MindMap, B · Status and C · Findings now follow the live page: Data and Display folded into Findings' Delivery, every section closed, 🙋 Interaction last.
 
-**Build A · MindMap as drawn?**
+**Agree A to C as drawn?**
 
-- [x] A · Yes: build it as drawn.
+- [x] A · Yes: agree them; the topic can move to agreed.
   ![A](option-q1-a.png)
-- [ ] B · No: keep today's page.
-  ![B](option-q1-b.png)
+- [ ] B · No: my note says what differs.
 
-Why A: It passed every rubric; today's page did not.
-
-## Q2 · B · Data
-
-B · Data: its data deliveries as side tabs, the open one's table to read. A fresh reviewer passed it in round 2, 9.3 of 10; today's page scored 6.5 and failed Lean 6 and One job 4.
-
-**Build B · Data as drawn?**
-
-- [x] A · Yes: build it as drawn.
-  ![A](option-q2-a.png)
-- [ ] B · No: keep today's page.
-  ![B](option-q2-b.png)
-
-Why A: It passed every rubric; today's page did not.
-
-## Q3 · C · Display
-
-C · Display: its tables and figures as side tabs, the open one to read. A fresh reviewer passed it in round 2, 9.1 of 10; today's page scored 6.5 and failed Lean 6 and One job 4.
-
-**Build C · Display as drawn?**
-
-- [x] A · Yes: build it as drawn.
-  ![A](option-q3-a.png)
-- [ ] B · No: keep today's page.
-  ![B](option-q3-b.png)
-
-Why A: It passed every rubric; today's page did not.
+Why A: Each screen is what you asked for on 261104.

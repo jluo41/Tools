@@ -1,22 +1,22 @@
-# Task Studio screen
+# Task Studio screens
 
 for: b17.j03.t03-s59:theme_work.work_workbench_pages.task_page @ task_ui_studio
 
 <!-- One card per question: ## QN · title, one short why, **the question?**, then - [x] A · my pick and
      - [ ] B · another, each with its picture, then Why A: one line. collect.py check holds the limits; collect.py build
-     renders the form. The earlier questions (261031) are in passes/p01-1031/. -->
+     renders the form. The earlier question sets are in passes/p01-1031/ and passes/p02-1101/. -->
 
-The Task's Studio, redrawn as one screen per view on a made-up example Block. Each passed a fresh review; today's page is beside it.
+A Task's Studio: flat rows as live; two reviewed parts stay red. Redrawn 261106: Skills on the right rail, as live.
 
 ## Q1 · A · Display
 
-A · Display: the topic it makes, large, then its own topics, the helpers last. A fresh reviewer passed it in round 2, 8.9 of 10; today's page scored 7.6 and failed Phone 5 and Salience 6.
+A · Display: the rows as live, with two reviewed parts in red: This Task makes, its Block topic's card, and Ask the agent at the bottom.
 
-**Build A · Display as drawn?**
+**Build A · Display's red parts as drawn?**
 
-- [x] A · Yes: build it as drawn.
+- [x] A · Yes: This Task makes first, Ask the agent last.
   ![A](option-q1-a.png)
-- [ ] B · No: keep today's page.
+- [ ] B · No: flat rows only, as today's page.
   ![B](option-q1-b.png)
 
-Why A: It passed every rubric; today's page did not.
+Why A: The piece it makes leads; a prompt starts a topic here.

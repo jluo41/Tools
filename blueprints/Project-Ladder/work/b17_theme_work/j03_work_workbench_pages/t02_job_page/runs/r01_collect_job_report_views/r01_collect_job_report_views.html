@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="haipipe-built" content="2026-11-01 01:48:35.123529">
-<title>Job Report screens</title>
+<meta name="haipipe-built" content="2026-11-06 02:23:39.338165">
+<title>Job Report screens</title><link rel="icon" href="data:,">
 <!-- GENERATED FILE by haipipe-interaction scripts/collect.py from this Run's question_collection.md: change the questions there
      and build again, never this page. -->
 <style>
@@ -25,9 +25,16 @@ code{font:12.5px ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--so
 .pv-frame img{width:100%;display:block}
 .pv-hit{position:absolute;inset:0}
 .pv.on{border-color:var(--on);box-shadow:0 0 0 2px var(--wash)}
+.pop{position:fixed;inset:0;z-index:50;background:rgba(20,24,30,.72);display:flex;align-items:center;justify-content:center;padding:24px;cursor:zoom-out}
+.pop[hidden]{display:none}
+.pop-box{position:relative;background:#fff;border-radius:10px;max-width:96vw;max-height:94vh;overflow:auto;cursor:default}
+.pop-box img{display:block;max-width:94vw;max-height:90vh;width:auto;height:auto}
+.pop-box iframe{display:block;width:92vw;height:88vh;border:0}
+.pop-x{position:sticky;top:0;float:right;margin:6px;padding:2px 10px;border:1px solid var(--line);border-radius:6px;background:#fff;font-size:13px;cursor:pointer;z-index:1}
 .label{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--red);margin:0 0 4px;font-weight:600;overflow-wrap:anywhere}
 h1{font-size:22px;margin:0 0 4px}
-.lead{color:var(--mut);margin:0 0 16px}
+.addr{margin:0 0 8px;font:12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--mut);overflow-wrap:anywhere}
+.lead{color:var(--fg);margin:0 0 16px}
 .card{border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin:0 0 12px}
 .card h2{font-size:16px;margin:0 0 4px;display:flex;gap:8px;align-items:baseline}
 .card h2 .qid{color:var(--on)}
@@ -35,15 +42,15 @@ h1{font-size:22px;margin:0 0 4px}
 .card h2 .applied{font-size:12px;color:var(--ok);font-weight:600;white-space:nowrap}
 .card h2 .applied.wip{color:var(--prop)}
 .applied-by{margin:0 0 6px;font-size:12.5px;color:var(--ok)}
-.why{margin:0 0 8px;color:var(--mut)}
-pre.sketch{background:var(--soft);border-radius:8px;padding:8px 10px;overflow-x:auto;font:12px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;margin:0 0 8px}
+.why{margin:0 0 8px;color:var(--fg)}
+pre.sketch{background:var(--soft);color:var(--fg);border-radius:8px;padding:8px 10px;overflow-x:auto;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;margin:0 0 8px}
 img.pic{max-width:100%;max-height:220px;border:1px solid var(--line);border-radius:8px;margin:0 0 8px}
 fieldset{border:0;margin:0;padding:0}
 .ask{font-weight:600;padding:0;margin:0 0 6px}
 .opt{display:flex;gap:8px;align-items:baseline;padding:5px 10px;border:1px solid var(--line);border-radius:8px;margin:0 0 4px;cursor:pointer}
 .opt:has(input:checked){border-color:var(--on);background:var(--wash)}
 .opt .rec{font-size:11px;color:var(--ok);border:1px solid var(--ok);border-radius:6px;padding:0 5px;margin-left:8px;white-space:nowrap}
-.because{font-size:13px;color:var(--mut);margin:4px 0 6px}
+.because{font-size:13.5px;color:var(--fg);margin:4px 0 6px}
 textarea{width:100%;font:inherit;font-size:13.5px;padding:5px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);resize:vertical}
 textarea.note{min-height:32px;field-sizing:content}
 #out{min-height:120px;font:12px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--soft)}
@@ -56,46 +63,52 @@ details.box{margin:4px 0 0;color:var(--mut);font-size:13px}
 </head>
 <body>
 <div class="wrap">
-<p class="label">Questions for you · r01_collect_job_report_views · b17.j03.t02-s54:theme_work.work_workbench_pages.job_page @ job_ui_report</p>
+<p class="label">Questions for you</p>
 <h1>Job Report screens</h1>
-<p class="lead">The Job's Report, redrawn the way b16 and b15 draw theirs: each view one step of the work. Each screen sits beside today's page. My pick is selected; change any, then Copy feedback and paste it to me.
+<p class="addr">r01_collect_job_report_views · b17.j03.t02-s54:theme_work.work_workbench_pages.job_page @ job_ui_report</p>
+<p class="lead">A Job's Report as live; the table and figure stay red. Redrawn 261106: the map shows each Task's goal (Q2), each bar its word, each view its own forms. My pick is selected; change any, then Copy feedback and paste it to me.
 The questions as Markdown: <a href="question_collection.md">question_collection.md</a>.</p>
-<section class="card" id="Q1"><h2><span class="qid">Q1</span>A · MindMap<span class="state" id="state-Q1"></span><span class="applied" id="applied-Q1"></span></h2><p class="applied-by" id="applied-by-Q1" hidden></p><p class="why">A · MindMap: what it makes, its Tasks, their Runs. A fresh reviewer passed it, 9.7 of 10; today's page scored 8.1 and failed One job 5.</p><fieldset><legend class="ask">Build A · MindMap as drawn?</legend><label class="opt"><input type="radio" name="Q1" value="A" checked><span><b>A</b> Yes: build it as drawn.<span class="rec">my pick</span></span></label><label class="opt"><input type="radio" name="Q1" value="B"><span><b>B</b> No: keep today's page.</span></label><label class="opt own"><input type="radio" name="Q1" value="own"><span><b>✍</b> My own decision</span></label></fieldset><div class="previews"><figure class="pv" data-q="Q1" data-key="A"><figcaption><b>A</b><a href="option-q1-a.png" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="var r=document.querySelector('input[name=\'Q1\'][value=\'A\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><img src="option-q1-a.png" alt="option A"><span class="pv-hit"></span></div></figure><figure class="pv" data-q="Q1" data-key="B"><figcaption><b>B</b><a href="option-q1-b.png" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="var r=document.querySelector('input[name=\'Q1\'][value=\'B\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><img src="option-q1-b.png" alt="option B"><span class="pv-hit"></span></div></figure></div><p class="because">Why A: Each view is one step of the work, as b15 draws its Task UI.</p><textarea class="note" id="note-Q1" rows="1" placeholder="Note (optional)"></textarea></section><section class="card" id="Q2"><h2><span class="qid">Q2</span>B · Display<span class="state" id="state-Q2"></span><span class="applied" id="applied-Q2"></span></h2><p class="applied-by" id="applied-by-Q2" hidden></p><p class="why">B · Display: what it found, one table across its Tasks, the figure. A fresh reviewer passed it, 9.0 of 10; today's page scored 8.1 and failed One job 5.</p><fieldset><legend class="ask">Build B · Display as drawn?</legend><label class="opt"><input type="radio" name="Q2" value="A" checked><span><b>A</b> Yes: build it as drawn.<span class="rec">my pick</span></span></label><label class="opt"><input type="radio" name="Q2" value="B"><span><b>B</b> No: keep today's page.</span></label><label class="opt own"><input type="radio" name="Q2" value="own"><span><b>✍</b> My own decision</span></label></fieldset><div class="previews"><figure class="pv" data-q="Q2" data-key="A"><figcaption><b>A</b><a href="option-q2-a.png" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="var r=document.querySelector('input[name=\'Q2\'][value=\'A\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><img src="option-q2-a.png" alt="option A"><span class="pv-hit"></span></div></figure><figure class="pv" data-q="Q2" data-key="B"><figcaption><b>B</b><a href="option-q2-b.png" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="var r=document.querySelector('input[name=\'Q2\'][value=\'B\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><img src="option-q2-b.png" alt="option B"><span class="pv-hit"></span></div></figure></div><p class="because">Why A: Each view is one step of the work, as b15 draws its Task UI.</p><textarea class="note" id="note-Q2" rows="1" placeholder="Note (optional)"></textarea></section>
+<section class="card" id="Q1"><h2><span class="qid">Q1</span>C · Findings<span class="state" id="state-Q1"></span><span class="applied" id="applied-Q1"></span></h2><p class="applied-by" id="applied-by-Q1" hidden></p><p class="why">C · Findings: the Job's takeaways as live, then two reviewed parts in red: one table across its Tasks, a column each, and the figure.</p><fieldset><legend class="ask">Build the table across the Tasks and the figure?</legend><label class="opt"><input type="radio" name="Q1" value="A" checked><span><b>A</b> Yes: one table across the Tasks, then the figure.<span class="rec">my pick</span></span></label><label class="opt"><input type="radio" name="Q1" value="B"><span><b>B</b> No: the takeaways only, as today's page.</span></label><label class="opt"><input type="radio" name="Q1" value="C"><span><b>C</b> A table per Task instead, under the takeaways.</span></label><label class="opt own"><input type="radio" name="Q1" value="own"><span><b>✍</b> My own decision</span></label></fieldset><div class="previews"><figure class="pv" data-q="Q1" data-key="A"><figcaption><b>A</b><a href="option-q1-a.png" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="hpPop(this);var r=document.querySelector('input[name=\'Q1\'][value=\'A\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><img src="option-q1-a.png" alt="option A"><span class="pv-hit"></span></div></figure><figure class="pv" data-q="Q1" data-key="B"><figcaption><b>B</b><a href="option-q1-b.png" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="hpPop(this);var r=document.querySelector('input[name=\'Q1\'][value=\'B\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><img src="option-q1-b.png" alt="option B"><span class="pv-hit"></span></div></figure></div><p class="because">Why A: You compare the outcomes in one place.</p><textarea class="note" id="note-Q1" rows="1" placeholder="Note (optional)"></textarea></section><section class="card" id="Q2"><h2><span class="qid">Q2</span>A · MindMap<span class="state" id="state-Q2"></span><span class="applied" id="applied-Q2"></span></h2><p class="applied-by" id="applied-by-Q2" hidden></p><p class="why">A · MindMap now draws each Task with what it finds out, as the live page does since 261106; Status keeps each Run's mark.</p><pre class="sketch">A  t01 outcome A&#x27;s model ── finds out: does A rise with exposure
+B  t01 outcome A&#x27;s model ── ✅ r01 · ⏳ r02 · ⬜ r03</pre><fieldset><legend class="ask">What does a Job's map show under each Task?</legend><label class="opt"><input type="radio" name="Q2" value="A" checked><span><b>A</b> Its goal ("finds out …") and its topics, as drawn.<span class="rec">my pick</span></span></label><label class="opt"><input type="radio" name="Q2" value="B"><span><b>B</b> Its Runs with their marks, as drawn on 261105.</span></label><label class="opt own"><input type="radio" name="Q2" value="own"><span><b>✍</b> My own decision</span></label></fieldset><p class="because">Why A: The map says what each part is for; Status already shows each Run's mark.</p><textarea class="note" id="note-Q2" rows="1" placeholder="Note (optional)"></textarea></section>
 <details class="box"><summary>The text Copy feedback sends</summary><textarea id="out" readonly></textarea></details>
 </div>
 <div class="send"><button type="button" data-copy>Copy feedback</button><button type="button" class="quiet" id="reset">Back to my picks</button><span id="copied"></span></div>
-<script type="application/json" id="form-data">{"run": "r01_collect_job_report_views", "title": "Job Report screens", "built": "2026-11-01 01:48:35.123529", "questions": [{"id": "Q1", "title": "A · MindMap", "pick": "A", "options": [{"key": "A", "text": "Yes: build it as drawn."}, {"key": "B", "text": "No: keep today's page."}]}, {"id": "Q2", "title": "B · Display", "pick": "A", "options": [{"key": "A", "text": "Yes: build it as drawn."}, {"key": "B", "text": "No: keep today's page."}]}]}</script>
+<script type="application/json" id="form-data">{"run": "r01_collect_job_report_views", "title": "Job Report screens", "built": "2026-11-06 02:23:39.338165", "questions": [{"id": "Q1", "title": "C · Findings", "pick": "A", "options": [{"key": "A", "text": "Yes: one table across the Tasks, then the figure."}, {"key": "B", "text": "No: the takeaways only, as today's page."}, {"key": "C", "text": "A table per Task instead, under the takeaways."}]}, {"id": "Q2", "title": "A · MindMap", "pick": "A", "options": [{"key": "A", "text": "Its goal (\"finds out …\") and its topics, as drawn."}, {"key": "B", "text": "Its Runs with their marks, as drawn on 261105."}]}]}</script>
 <script type="text/markdown" id="haipipe-questions"># Job Report screens
 
 for: b17.j03.t02-s54:theme_work.work_workbench_pages.job_page @ job_ui_report
 
-The Job's Report, redrawn the way b16 and b15 draw theirs: each view one step of the work. Each screen sits beside today's page.
+A Job's Report as live; the table and figure stay red. Redrawn 261106: the map shows each Task's goal (Q2), each bar its word, each view its own forms.
 
-## Q1 · A · MindMap
+## Q1 · C · Findings
 
-A · MindMap: what it makes, its Tasks, their Runs. A fresh reviewer passed it, 9.7 of 10; today's page scored 8.1 and failed One job 5.
+C · Findings: the Job's takeaways as live, then two reviewed parts in red: one table across its Tasks, a column each, and the figure.
 
-**Build A · MindMap as drawn?**
+**Build the table across the Tasks and the figure?**
 
-- [x] A · Yes: build it as drawn.
+- [x] A · Yes: one table across the Tasks, then the figure.
   ![A](option-q1-a.png)
-- [ ] B · No: keep today's page.
+- [ ] B · No: the takeaways only, as today's page.
   ![B](option-q1-b.png)
+- [ ] C · A table per Task instead, under the takeaways.
 
-Why A: Each view is one step of the work, as b15 draws its Task UI.
+Why A: You compare the outcomes in one place.
 
-## Q2 · B · Display
+## Q2 · A · MindMap
 
-B · Display: what it found, one table across its Tasks, the figure. A fresh reviewer passed it, 9.0 of 10; today's page scored 8.1 and failed One job 5.
+A · MindMap now draws each Task with what it finds out, as the live page does since 261106; Status keeps each Run's mark.
 
-**Build B · Display as drawn?**
+```text
+A  t01 outcome A's model ── finds out: does A rise with exposure
+B  t01 outcome A's model ── ✅ r01 · ⏳ r02 · ⬜ r03
+```
 
-- [x] A · Yes: build it as drawn.
-  ![A](option-q2-a.png)
-- [ ] B · No: keep today's page.
-  ![B](option-q2-b.png)
+**What does a Job's map show under each Task?**
 
-Why A: Each view is one step of the work, as b15 draws its Task UI.
+- [x] A · Its goal ("finds out …") and its topics, as drawn.
+- [ ] B · Its Runs with their marks, as drawn on 261105.
+
+Why A: The map says what each part is for; Status already shows each Run's mark.
 </script>
 <script>
 (function(){
@@ -181,6 +194,19 @@ Why A: Each view is one step of the work, as b15 draws its Task UI.
   function lightPreviews(){document.querySelectorAll('.pv').forEach(function(f){
     var r=document.querySelector('input[name="'+f.dataset.q+'"][value="'+f.dataset.key+'"]');f.classList.toggle('on',!!(r&&r.checked));});}
   document.addEventListener('change', lightPreviews); lightPreviews();
+  /* a click on a preview pops it out over the form (JL 261103); a click outside it, x or Esc closes it */
+  var POP = document.createElement('div'); POP.className = 'pop'; POP.hidden = true;
+  POP.innerHTML = '<div class="pop-box"><button type="button" class="pop-x">Close ✕</button><div class="pop-body"></div></div>';
+  document.body.appendChild(POP);
+  function unpop(){ POP.hidden = true; POP.querySelector('.pop-body').innerHTML = ''; }
+  POP.addEventListener('click', function(e){ if (e.target === POP || e.target.classList.contains('pop-x')) unpop(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') unpop(); });
+  window.hpPop = function(frame){
+    var el = frame.querySelector('img, iframe'); if (!el) return;
+    var copy = document.createElement(el.tagName.toLowerCase()); copy.src = el.getAttribute('src');
+    if (copy.tagName === 'IMG') copy.alt = el.alt; else copy.title = el.title;
+    var body = POP.querySelector('.pop-body'); body.innerHTML = ''; body.appendChild(copy); POP.hidden = false;
+  };
   /* the part that differs between a question's previews gets a box (JL 261031: "highlight the part that are different
      by using the box"): a preview's own class="diff" marks it; otherwise the pages are compared, node by node, and the
      smallest block that differs is boxed in every option; each preview then scrolls to its first box */
@@ -234,8 +260,9 @@ Why A: Each view is one step of the work, as b15 draws its Task UI.
     if (f.contentDocument && f.contentDocument.readyState === 'complete') diffQuestion(q);
   });
   /* a question already applied carries its flag (JL 261031: "if we already fix them, then give them the flags"):
-     applied.md beside the form, written by collect.py applied, read each time the form opens */
-  if (window.fetch) fetch('applied.md', {cache: 'no-store'}).then(function(r){ return r.ok ? r.text() : ''; })
+     applied.md beside the form, written by collect.py applied (which rebuilds the form), read each time the form
+     opens; only a form built with one beside it asks for it, so a form with none sends no request that answers 404 */
+  if (window.fetch && FORM.applied) fetch('applied.md', {cache: 'no-store'}).then(function(r){ return r.ok ? r.text() : ''; })
     .then(function(text){ text.split('\n').forEach(function(line){
       var m = /^(Q\d+) · (applied|in progress) · (\d{4}-\d{2}-\d{2}) \d{2}:\d{2} · (.+?)\s*$/.exec(line);
       var flag = m && document.getElementById('applied-' + m[1]), by = m && document.getElementById('applied-by-' + m[1]);

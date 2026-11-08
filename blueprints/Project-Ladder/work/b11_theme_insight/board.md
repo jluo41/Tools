@@ -3,9 +3,16 @@
 board-kind: task-block
 package: plugins/haipipe-toolkit
 theme: insight
-ui-block: http://100.121.165.84:5602/_board/workbench?layout=focus&path=examples-5-design/ProjI-Insight-1-Wearable/insight/Insight-S1023
-ui-job: http://100.121.165.84:5602/_board/workbench?layout=focus&path=examples-5-design/ProjI-Insight-1-Wearable/insight/Insight-S1023/j01_p1_s1023v1
-ui-task: http://100.121.165.84:5602/_board/workbench?layout=focus&path=examples-5-design/ProjI-Insight-1-Wearable/insight/Insight-S1023/j01_p1_s1023v1/t01_D01_extract-and-clock
+ui-block: blueprints/Project-Ladder/insight/Insight-Example
+ui-block: blueprints/Project-Ladder/work/Prototype-b91-Example
+ui-job: blueprints/Project-Ladder/insight/Insight-Example/j01_prototype-p1-example-questions_data-Examplev1
+ui-job: blueprints/Project-Ladder/insight/Insight-Example/j02_prototype-p1-example-questions_data-Examplev2
+ui-job: blueprints/Project-Ladder/work/Prototype-b91-Example/j01_p1_example-questions
+ui-task: blueprints/Project-Ladder/insight/Insight-Example/j02_prototype-p1-example-questions_data-Examplev2/t01_D01_extract-shape
+ui-task: blueprints/Project-Ladder/insight/Insight-Example/j02_prototype-p1-example-questions_data-Examplev2/t03_I01_outcome-by-arm
+ui-task: blueprints/Project-Ladder/insight/Insight-Example/j02_prototype-p1-example-questions_data-Examplev2/t05_K01_gap-holds
+ui-task: blueprints/Project-Ladder/insight/Insight-Example/j02_prototype-p1-example-questions_data-Examplev2/t06_W01_next-round
+ui-task: blueprints/Project-Ladder/insight/Insight-Example/j02_prototype-p1-example-questions_data-Examplev2/t07_X01_what-we-found
 shared-blueprint: b01_haipipe-toolkit
 spine: Design questions about the insight Theme as one ladder: what an insight Board (one dataset), an analysis plan × data freeze Job, a question Task and a cut Run each hold and show, how partitions and pooling appear, where a question's gates live, what each level delivers, and what becomes of the older register boards.
 close: Each recorded question has a report Page with an answer status, and every answered question names the skill, workbench or builder change that settled it.

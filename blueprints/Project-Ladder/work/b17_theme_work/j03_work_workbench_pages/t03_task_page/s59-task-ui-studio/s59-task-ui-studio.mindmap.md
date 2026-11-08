@@ -15,8 +15,12 @@ built: from-topic .
 - Delivery type <!-- @delivery-type #58a44f -->
   - ui <!-- @delivery-type/0 #636117 -->
 - Covers <!-- @covers #a6c44a -->
-  - a Task's Studio: one view per group: … <!-- @covers/0 #c9f738 -->
-    a Task's Studio: one view per group: 1 This Task makes (its Block topic's card, large), 2 Its topics; helpers at the bottom: 🙋 Interactions, ✍️ Ask the agent.
+  - a Task's Studio: one view per group, … <!-- @covers/0 #4fcbe7 -->
+    a Task's Studio: one view per group, its topics as flat rows as the live page draws them.
+  - Red, kept proposals: This Task makes (its … <!-- @covers/1 #3d597d -->
+    Red, kept proposals: This Task makes (its Block topic's card, large), ✍️ Ask the agent at the bottom.
+  - No 🙋 Interaction here: a Studio has … <!-- @covers/2 #da2507 -->
+    No 🙋 Interaction here: a Studio has none on the live page.
 - Excluded <!-- @excluded #980495 -->
   - the other eight cells of the 3 … <!-- @excluded/0 #a5f0a1 -->
     the other eight cells of the 3 × 3 (j03's other sNN); what every work page shares (b17-s04).
@@ -44,12 +48,16 @@ built: from-topic .
 - Decided <!-- @decided #55615a -->
   - s59-D01 · A · Display passed the … <!-- @decided/0 #b61bc5 -->
     s59-D01 · A · Display passed the drawing review (haipipe-ui Design loop, stage 1) in round 2, mean 8.9/10: `review/A-s1-r02.md` (round 1: `review/A-s1-r01.md`); today's page scored 7.6 and did not pass (`review/today-261101.md`). Proposed by the agent; it waits for JL's one look in `runs/r03_collect_task_studio_views` (261101).
+  - s59-D02 · The rows follow the live … <!-- @decided/1 #b55883 -->
+    s59-D02 · The rows follow the live Studio (redrawn 261105); the 🙋 Interactions helper leaves, since a Studio has no Interaction section on the live page. This Task makes and Ask the agent stay in red, as open proposals: no 261104 ask overruled them.
 - Open <!-- @open #cf9b77 -->
-  - Your one look: `../runs/r03_collect_task_studio_views` shows each screen … <!-- @open/0 #c901f9 -->
-    Your one look: `../runs/r03_collect_task_studio_views` shows each screen beside today's page: build it as drawn, or keep today's.
+  - Your one look: `../runs/r03_collect_task_studio_views` asks whether to … <!-- @open/0 #1c34ea -->
+    Your one look: `../runs/r03_collect_task_studio_views` asks whether to build the red parts (This Task makes, Ask the agent), beside today's page.
   - Still open after the review (its reviewers' … <!-- @open/1 #27a61b -->
     Still open after the review (its reviewers' asks):
   - Section 1 repeats the Block's topic card; … <!-- @open/2 #c7302e -->
     Section 1 repeats the Block's topic card; one link line could do (r02 asks).
-  - The earlier questions, my picks now drawn … <!-- @open/3 #0a4412 -->
-    The earlier questions, my picks now drawn in, are in `../runs/r03_collect_task_studio_views/passes/p01-1031/`; the full proposal is `result/views-proposal.md`.
+  - Ask the agent, a notes box and … <!-- @open/3 #6ef81a -->
+    Ask the agent, a notes box and its Copy prompt buttons, at the bottom of a Task's Studio (red on the drawing).
+  - The earlier questions, my picks now drawn … <!-- @open/4 #3051d5 -->
+    The earlier questions, my picks now drawn in, are in `../runs/r03_collect_task_studio_views/passes/p01-1031/`; the full proposal is `result/views-proposal.md`; the 261101 screens' form is in `passes/p02-1101/`.

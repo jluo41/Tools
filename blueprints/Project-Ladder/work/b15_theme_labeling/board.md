@@ -3,9 +3,11 @@
 board-kind: task-block
 package: plugins/haipipe-toolkit
 theme: labeling
-ui-block: http://100.121.165.84:5599/_board/workbench?layout=focus&path=examples-6-labeling/Project-Labeling-SocialMediaWithLabels/labeling/b01_dices350
-ui-job: http://100.121.165.84:5599/_board/workbench?layout=focus&path=examples-6-labeling/Project-Labeling-SocialMediaWithLabels/labeling/b01_dices350/j01_dices350_response_safety
-ui-task: http://100.121.165.84:5599/_board/workbench?layout=focus&path=examples-6-labeling/Project-Labeling-SocialMediaWithLabels/labeling/b01_dices350/j01_dices350_response_safety/t01_dices350_items
+ui-block: blueprints/Project-Ladder/labeling/b02_labeling_walkthrough
+ui-job: blueprints/Project-Ladder/labeling/b02_labeling_walkthrough/j01_example_response_safety
+ui-task: blueprints/Project-Ladder/labeling/b02_labeling_walkthrough/j01_example_response_safety/t01_example_items
+ui-task: blueprints/Project-Ladder/labeling/b02_labeling_walkthrough/j01_example_response_safety/t03_example_meaning
+ui-task: blueprints/Project-Ladder/labeling/b02_labeling_walkthrough/j01_example_response_safety/t04_example_expression
 shared-blueprint: b01_haipipe-toolkit
 spine: Design questions about the labeling Theme as one ladder: what a labeling Block, a dataset × label Job, a step Task and an operation Run each hold and show, how the Building and Scanning sides and their human gates map onto the six Spaces, and where the schema and the frozen handoff live.
 close: Each recorded question has a report Page with an answer status, and every answered question names the skill, workbench or builder change that settled it.

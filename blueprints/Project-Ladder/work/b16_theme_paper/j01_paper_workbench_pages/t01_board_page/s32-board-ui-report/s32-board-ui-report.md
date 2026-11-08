@@ -9,7 +9,7 @@ s32 · Board UI: Report
 
 **Delivery type:** ui
 
-**Covers:** the Board's Report: seven views, A Idea · B Story (Venue inside it) · C Data flow · D Paper flow · E Support blocks · F Evidence · G Writing, each in two bands, RESULTS first (the view's own sections), then PROCESS (Interactions, then its to-dos); the drawing and the mind map at the bottom.
+**Covers:** the Board's Report: seven views, A Idea · B Story (Venue inside it) · C Data + Paper Plan · D Support blocks · E Evidence · F Displays · G Writing, each its own numbered sections (no bands), every bar closed at first, 🙋 Interaction the last section; a topic's drawing after the dashed rule.
 
 **Excluded:** the other eight cells of the 3 × 3 (j01's other sNN); the draft Task page itself (b32-s42:draft @ draft_task_focus_page).
 
@@ -108,6 +108,7 @@ s32-D36 · The last section, 🙋 Interaction, shows the collection Runs about t
 s32-D37 · Interaction walks one question at a time: Back and Next, each left tab's small line its pick with ✓ once visited, Copy feedback on a set's last question. One left list, each Run a folding group, waiting sets open and newest first; Next stops at a set's end, as each Run is saved on its own (JL 261104, relayed by CMS-Server-AI-Code: "we can click the questions one by one, by next --->"; "what if we will have a new qusetion listhere?"; the folding is that session's recommendation, JL's confirmation not seen here).
 
 s32-D38 · 🙋 Interaction closes every Report and Work view of a Block, a Job or a Task, every theme, showing the collection Runs at the page or below; the code moved to the shared live.interaction_section, and Displays' own list left (JL 261104: "could you try to make this section at the bottom for each of the view? not matter for the block, or job or task").
+  ✎ 261106 · replaced, in part: a view's 🙋 Interaction shows that view's own items (a paper Board's view the forms about its parts, a version or Section its own forms); the Interactions rail keeps everything at the page or below (JL 261106: "a view's bottom section shows that view's own items, and the rail shows everything at this page and below"; `focus_page.view_items`). The section still closes every view.
 
 s32-D39 · A paper page is one column about 1200 px wide: title, Purpose, view buttons, bars and open sections share both edges, a paragraph stays at most 880 px, the rail marks stay in the gutters (`board_views.PAGE_CSS`). It replaces the 1400 px breakout, which hung out past its bars (JL 261104: "I think you can make it wider."; "no ,this is not good ... why you don't review it yourself?", relayed by CMS-Server-AI-Code).
 
@@ -121,6 +122,9 @@ s32-D44 · Idea and Story are two view buttons, Idea first. Idea is for the many
 
 s32-D45 · Idea and Story each have a 🎓 Theory section, always shown: Idea each direction's theory as left tabs, Story the chosen one's, after Pitch; empty, it says how to fill it, and flags it when the Board's `venue:` is an IS journal (JL 261105: "I think for both of them, we should have the section named theory as well."; "espeically for the IS.").
 s32-D25 · Report's Data flow PROCESS shows the same plan rows as Work's (s33-D07), read side: each step with Open, the skill to use and Copy prompt. A PROCESS title names the step and carries no count (JL's rule "labels carry no counts", decided 261101): the code no longer shows "7 decisions" or "5 of 9 open".
+
+s32-D46 · On every view, each closed bar shows its state word on its right, read from what it holds, and a section that waits on you shows its one waiting line under the closed bar; 🙋 Interaction holds that view's own items only; Skills is a right-rail section on every page, between Timeline and Files (261106). Live: ui_parts._section, focus_page.render, interaction_section.view_section.
+
 
 Open
 ----

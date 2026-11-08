@@ -41,11 +41,15 @@ s36-D01 · A Section row shows its five step words, each opening that step (JL 2
 
 s36-D02 · A version's views are Draft-Main · Draft-Appendix · Display-Main · Display-Appendix, with more to come such as Citations; making each Job's view its Studio is for later (JL 261031, runs/r02_collect_version_ui_work Q2 A: "we will choose A, and even more of them. like the citations? and for each job's view button, later we can make them to be the studio as well. But that can be later.")
 
+s36-D03 · Each Work view is ⚙️ Process then 📊 Results, 🙋 Interaction last: Draft-Main and Draft-Appendix 🪜 Sections, each with its five step words, then 📝 Text, each Section's text in side tabs; Display, Values and Citations their Where each stands, then their items (261106). It settles the 261101 regroup proposal (recorded: t02 runs/r04_collect_version_work_decisions). Live: paper_version.version_work_views.
+
+s36-D04 · The evidence and submission Jobs' own Work pages are drawn here under Other Jobs, G to O, one row a Job, each view ⚙️ Process then 📊 Results (261106). Live: paper_jobs.job_views.
+
+s36-D05 · Every closed bar shows its state word on its right, read from what it holds, and a section that waits on you shows its one waiting line under the closed bar; Skills is a right-rail section on every page, between Timeline and Files (261106). Live: ui_parts._section, focus_page.render.
+
 
 Open
 ----
-
-? (proposed 261101, replaces the earlier proposal) the same views and rows as today, regrouped: Draft-Main and Draft-Appendix ⚙️ Process (1 · 🙋 Interactions, 2 · 🪜 Sections with their five step words); Display, Values and Citations ⚙️ Process (1 · 🙋 Interactions) then 📊 Results (their items). Live: paper_version.version_work_views. Recorded: t02 runs/r04_collect_version_work_decisions.
 
 1. ✓ five words a row (s36-D01)
 

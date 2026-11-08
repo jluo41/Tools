@@ -1,0 +1,17 @@
+run: run-write-script-d02
+kind: soft
+type: write-script
+scope: Tools/blueprints/Project-Ladder/work/Prototype-b91-Example/j01_p1_example-questions/t02_D02_arm-balance
+target: d02
+ticket: run-write-script-d02.md
+skill: haipipe-insight
+agent: haipipe-task-creator-agent
+signs:
+- none
+status: done
+passes:
+- p01-1106
+- p02-1106
+writes:
+- t02_D02_arm-balance/scripts
+feeds: []

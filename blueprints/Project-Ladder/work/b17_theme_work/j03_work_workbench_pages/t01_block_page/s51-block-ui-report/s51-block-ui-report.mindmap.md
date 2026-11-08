@@ -15,14 +15,14 @@ built: from-topic .
 - Delivery type <!-- @delivery-type #58a44f -->
   - ui <!-- @delivery-type/0 #636117 -->
 - Covers <!-- @covers #a6c44a -->
-  - the Block's Report: A · MindMap (1 … <!-- @covers/0 #258a27 -->
-    the Block's Report: A · MindMap (1 The map: each Job, what it makes, its Tasks; no state words), then one view per delivery type, B · Data and C · Display in the example (1 Deliveries as side tabs: each tab its name, version word and Job; the open one's thing to read, its For line, its tags); 🙋 Interactions at the bottom.
+  - the Block's Report, as the live page … <!-- @covers/0 #3ab860 -->
+    the Block's Report, as the live page draws it: A · MindMap (its Questions with their answer pills, its topic groups, its Jobs under their bands; every node closed), B · Status (a closed numbered section per band, its state word and bar; a row per Job, opening to its Tasks and Runs), C · Findings (closed numbered sections with side tabs: 🔢 Values, the Questions by `group:`, 🌐 Service with a live page, 🧠 Maps, 📦 Delivery with tabs Models · Data · Website); 🙋 Interaction each view's last section.
 - Excluded <!-- @excluded #980495 -->
   - the other eight cells of the 3 … <!-- @excluded/0 #a5f0a1 -->
     the other eight cells of the 3 × 3 (j03's other sNN); what every work page shares (b17-s04).
 - Topic <!-- @topic #7e13bd -->
-  - The Block's Report: the map and its … <!-- @topic/0 #a2c8cf -->
-    The Block's Report: the map and its deliveries by type; one cell of the work theme's 3 × 3, the work Block × Report (check) (JL 261031: "I think you should focus on the things like ... b16_theme_paper ... studio ...
+  - The Block's Report: its map, its Status, … <!-- @topic/0 #bf0ac8 -->
+    The Block's Report: its map, its Status, its Findings; one cell of the work theme's 3 × 3, the work Block × Report (check) (JL 261031: "I think you should focus on the things like ... b16_theme_paper ... studio ...
   - UI and think about how you should … <!-- @topic/1 #bd6501 -->
     UI and think about how you should update the work_theme's workbench UI").
   - Its drawing is haipipe-studio's five parts, drawn … <!-- @topic/2 #b799cc -->
@@ -62,12 +62,18 @@ built: from-topic .
     s51-D09 · C · Display passed the drawing review (haipipe-ui Design loop, stage 1) in round 2, mean 9.1/10: `review/C-s1-r02.md` (round 1: `review/C-s1-r01.md`); today's page scored 6.5 and did not pass (`review/today-261101.md`). Proposed by the agent; it waits for JL's one look in `runs/r02_collect_block_report_views` (261101).
   - s51-D10 · A Block's Status: numbered sections … <!-- @decided/9 #68c7ad -->
     s51-D10 · A Block's Status: numbered sections per band, closed; one row per Job, opening to its Tasks and Runs; no next-step sentences (JL 261104, on b01_clm_foundation_model: "这个做得很好", "just delete them"). Built in `focus_page.py` `band_board`; the rule is in haipipe-ui.
+  - s51-D11 · The Report's views are MindMap … <!-- @decided/10 #2c21bc -->
+    s51-D11 · The Report's views are MindMap · Status · Findings, drawn as the live page draws them (asked 261104: "the quick overview of the results we get from that block"; redrawn 261105). A · MindMap follows the live map: the Questions with their answer pills, the topic groups, the Jobs under their bands, every node closed.
+  - s51-D12 · B · Data and C … <!-- @decided/11 #e9d55c -->
+    s51-D12 · B · Data and C · Display fold into Findings' 📦 Delivery, tabs Models · Data · Website (asked 261104: "fold / merge the delivery to the Findings"; 261105). This settles the still-open line "Data and Display show what the right-rail Delivery also lists": the Report shows a delivery once, in Findings, and the rail keeps its Delivery.
+  - s51-D13 · C · Findings is closed … <!-- @decided/12 #b10dc0 -->
+    s51-D13 · C · Findings is closed numbered sections, each with side tabs, the list on the left and the open one on the right: 🔢 Values, the Questions by `group:`, 🌐 Service (only with a live page, each tab a website), 🧠 Maps, 📦 Delivery (asked 261104: "left tab panel right content"; a new section named Service; 261105). It changes s51-D04 in part: no Questions view (asked 261104: "we don't need the questions"), and the Questions return inside Findings as the frame for what was found.
+  - s51-D14 · Every section starts closed (asked … <!-- @decided/13 #3e9761 -->
+    s51-D14 · Every section starts closed (asked 261104: "默认的话，大家都是合着的"); 🙋 Interaction is each view's last section, numbered after its sections, never a Process step (decided for this round, 261105).
 - Open <!-- @open #cf9b77 -->
-  - Your one look: `../runs/r02_collect_block_report_views` shows each screen … <!-- @open/0 #f7c086 -->
-    Your one look: `../runs/r02_collect_block_report_views` shows each screen beside today's page: build it as drawn, or keep today's.
-  - Still open after the review (its reviewers' … <!-- @open/1 #27a61b -->
-    Still open after the review (its reviewers' asks):
-  - Data and Display show what the right-rail … <!-- @open/2 #7d6b6c -->
-    Data and Display show what the right-rail Delivery also lists (rubric 5, r02 asks): Delivery could keep only what was sent.
-  - The earlier questions, my picks now drawn … <!-- @open/3 #0c39f9 -->
-    The earlier questions, my picks now drawn in, are in `../runs/r02_collect_block_report_views/passes/p01-1031/`; the full proposal is `result/views-proposal.md`.
+  - Your one look: `../runs/r02_collect_block_report_views` asks one thing … <!-- @open/0 #0d35b4 -->
+    Your one look: `../runs/r02_collect_block_report_views` asks one thing now: agree A to C as drawn (they follow the live page).
+  - Nothing else is open after the 261105 … <!-- @open/1 #73489e -->
+    Nothing else is open after the 261105 redraw: the line on Data and Display repeating the rail's Delivery is settled (s51-D12).
+  - The earlier questions, my picks now drawn … <!-- @open/2 #b0c999 -->
+    The earlier questions, my picks now drawn in, are in `../runs/r02_collect_block_report_views/passes/p01-1031/`; the full proposal is `result/views-proposal.md`; the 261101 screens' form is in `passes/p02-1101/`.

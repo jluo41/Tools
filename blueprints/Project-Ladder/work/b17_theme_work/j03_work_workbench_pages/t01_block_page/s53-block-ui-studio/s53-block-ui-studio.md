@@ -9,7 +9,7 @@ s53 · Block UI: Studio
 
 **Delivery type:** ui
 
-**Covers:** the Block's Studio: one view per group (A · Data, B · Display in the example): 1 Lead topic (the one that waits on you, else the first; large, Answer beside its word), then its topics under where they sit (At the Block, At each Job); every card its picture, short name, the one line it asks, stage word and tags.
+**Covers:** the Block's Studio: one view per group (A · Data, B · Display in the example), its topics as flat rows as the live page draws them (picture, name, the one line it asks, its stage word, its tags; 🙋 Interaction on a topic whose form waits). Red, kept proposals: the lead topic as a large card, the rows grouped by where they sit.
 
 **Excluded:** the other eight cells of the 3 × 3 (j03's other sNN); what every work page shares (b17-s04).
 
@@ -39,16 +39,21 @@ s53-D01 · A · Data passed the drawing review (haipipe-ui Design loop, stage 1)
 
 s53-D02 · B · Display passed the drawing review (haipipe-ui Design loop, stage 1) in round 2, mean 9.4/10: `review/B-s1-r02.md` (round 1: `review/B-s1-r01.md`); today's page passes too, at 8.2 (`review/today-261101.md`). Proposed by the agent; it waits for JL's one look in `runs/r04_collect_block_studio_views` (261101).
 
+s53-D03 · The rows follow the live Studio: one flat row per topic, its picture, name, the one line it asks, its stage word and its tags, 🙋 Interaction on a topic whose form waits (redrawn 261105). The lead-topic card and the level groups stay in red, as open proposals: no 261104 ask overruled them.
+
+s53-D04 · The right rail gains Skills between Timeline and Files, as the live page; s11's row carries 🙋 Interaction, since its form waits at j21 (261106).
 
 Open
 ----
 
-Your one look: `../runs/r04_collect_block_studio_views` shows each screen beside today's page: build it as drawn, or keep today's.
+Your one look: `../runs/r04_collect_block_studio_views` asks whether to build the red parts (the lead card, the level groups), beside today's page.
 
 Still open after the review (its reviewers' asks):
 
 1. Which topic leads when none waits: the first, or the first still open (r02 fix 1).
+2. The lead topic as a large card above the rows (red on the drawing).
+3. The rows grouped by where they sit: At the Block, At a Job (red on the drawing).
 
-The earlier questions, my picks now drawn in, are in `../runs/r04_collect_block_studio_views/passes/p01-1031/`; the full proposal is `result/views-proposal.md`.
+The earlier questions, my picks now drawn in, are in `../runs/r04_collect_block_studio_views/passes/p01-1031/`; the full proposal is `result/views-proposal.md`; the 261101 screens' form is in `passes/p02-1101/`.
 
 (write here, or mark the drawing in red)

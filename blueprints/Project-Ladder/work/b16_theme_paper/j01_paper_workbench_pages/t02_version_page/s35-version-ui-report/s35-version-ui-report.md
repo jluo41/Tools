@@ -37,13 +37,17 @@ s35-version-ui-report/
 Decided
 -------
 
-(none yet: a decision is one line, s35-D01 · <what was decided> (<who> <date>))
+s35-D01 · A version's Report is MindMap, then the same six views as its Work, results only: Draft-Main · Draft-Appendix · Display-Main · Display-Appendix · Values · Citations, lettered A to G; a Draft view's Results are each Section's text, one side tab per Section (261106). It replaces the frame's MindMap · Status · Findings and settles the 261101 proposal to regroup them (recorded: t02 runs/r04_collect_version_work_decisions). Live: paper_version.version_report_views.
+
+s35-D02 · A Job's MindMap shows each Task with its goal leaf, finds out and what it must find out, never the Run tree (261106). Live: focus_page.parts_mindmap.
+
+s35-D03 · The evidence and submission Jobs' own Reports are drawn here under Other Jobs, H to T, one row a Job: display (MindMap · Plan · Displays · Examples), value (MindMap · Values · Check), citation (MindMap · Citations · Check), submission (MindMap · Cover letter · Portal), each view its Results alone, drawn from the Board's own pieces (261106). Live: paper_jobs.job_views.
+
+s35-D04 · Every closed bar shows its state word on its right, read from what it holds, and a section that waits on you shows its one waiting line under the closed bar; Skills is a right-rail section on every page, between Timeline and Files (261106). Live: ui_parts._section, focus_page.render.
 
 
 Open
 ----
-
-? (proposed 261101) a version's Report shows the frame's own Job views as today (focus_page.py: MindMap, the version and its Sections as a map; Status, its Tasks and where each stands; Findings, its takeaways), each regrouped as 📊 Results then ⚙️ Process (1 · 🙋 Interactions). The live regroup is focus_page.py's, the shared frame's owner (the Basic-Design-BJTR-v2 session): a hook like the Board's paper_board_report would let paper_version draw it. Recorded: t02 runs/r04_collect_version_work_decisions.
 
 1. ? Text: the whole manuscript, or the built PDF
 

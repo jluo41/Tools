@@ -1,0 +1,18 @@
+run: r01_example_source
+kind: hard
+role: make
+type: data
+scope: blueprints/Project-Ladder/work/b90_example_paper_results/j01_example_source/t01_example_source
+skill: haipipe-task
+ticket: r01_example_source.sh
+worker: make_source.py
+says: return the source tables (placeholder)
+host: this machine
+time: a few seconds
+status: done
+started_by: '261105: the example Block of the work theme, placeholders only'
+reads: []
+writes:
+- result/tables.csv
+- result/all_tables.csv
+- result/maps/

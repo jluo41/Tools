@@ -1,0 +1,8 @@
+run: r01_example_source
+status: completed
+exit_code: 0
+started_at: '2026-11-05T20:58:05Z'
+finished_at: '2026-11-05T20:58:05Z'
+started_by: '261105: the example Block of the work theme, placeholders only'
+ticket: runs/r01_example_source/r01_example_source.sh
+worker: make_source.py

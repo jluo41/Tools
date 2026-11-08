@@ -1,0 +1,19 @@
+# The Values tabs of this example Job: raw rows copied unchanged from its Runs (r01_copy_values), arranged into tables
+# (haipipe-paper-evidence build_tables.py; it filters and arranges, never averages). Placeholders only. No story line
+# over a table: the numbers show as returned, so the table says it (round 3: a sentence over each table).
+words: {key: Value, value: Number, unit: Unit, text: As printed}
+tabs:
+- slug: main
+  title: Main estimates
+  line: The sample and the main association
+  story: ""
+  tables:
+  - from: t03_value_tables/main/values.csv
+    list: [key, value, unit, text]
+- slug: subgroup
+  title: The subgroup
+  line: The same association in <the subgroup>
+  story: ""
+  tables:
+  - from: t03_value_tables/subgroup/values.csv
+    list: [key, value, unit, text]

@@ -54,6 +54,11 @@ s33-D07 · Data flow's PROCESS is the plan center for the work and discovery: 2 
 
 s33-D08 · A PROCESS title names the step, never a count (JL's rule "labels carry no counts", decided 261101): the pills carry each row's state, so "1 · 🙋 7 decisions waiting for you" is now "1 · 🙋 Decisions waiting for you".
 
+s33-D09 · On every view, each closed bar shows its state word on its right, read from what it holds, and a section that waits on you shows its one waiting line under the closed bar; 🙋 Interaction holds that view's own items only; Skills is a right-rail section on every page, between Timeline and Files (261106). Live: ui_parts._section, focus_page.render.
+
+s33-D10 · ⚙️ Process holds one 📌 Open points, the lines a part's face marks waiting and its Open rows in one list, then the view's own steps; 🧰 Skills that do it left Process for the rail's Skills section, once per page, so Support blocks has no Process (261106; it replaces s33-D04's per-view Skills step). Live: board_process.process_html, skills_section.py.
+
+
 Open
 ----
 

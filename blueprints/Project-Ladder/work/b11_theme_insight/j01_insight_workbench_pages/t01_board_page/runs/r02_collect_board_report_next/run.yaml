@@ -7,8 +7,9 @@ ticket: r02_collect_board_report_next.html
 skill: haipipe-interaction
 agent: null
 signs: null
-status: waiting
-passes: []
+status: done
+passes:
+- p01-1106
 writes:
 - result/answer_collection.md
 feeds: []

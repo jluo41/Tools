@@ -15,14 +15,16 @@ built: from-topic .
 - Delivery type <!-- @delivery-type #58a44f -->
   - ui <!-- @delivery-type/0 #636117 -->
 - Covers <!-- @covers #a6c44a -->
-  - the Block's Work: A · Progress: 1 … <!-- @covers/0 #26bdf1 -->
-    the Block's Work: A · Progress: 1 Where it stands (what waits on you, large; the close line under it), 2 Jobs (card tabs, the one that waits open: its goal, what it makes, the step each Task is on, in words), 3 Its own Runs; 🙋 Interactions at the bottom.
+  - the Block's Work: the same views as … <!-- @covers/0 #80d3f5 -->
+    the Block's Work: the same views as its Report, A · MindMap, B · Status, C · Findings, each ⚙️ Process first (closed: 🚧 Jobs not finished on Status, ✍️ Answers to write or agree on Findings, 🧰 the skills that do it), then 📊 Results, the Report's view by the same code (Status adds each Task's output and the Interaction button); 🙋 Interaction each view's last section.
+  - Red, kept proposals: 📍 Where it stands … <!-- @covers/1 #af728e -->
+    Red, kept proposals: 📍 Where it stands as Status's main point, the Block's own Runs.
 - Excluded <!-- @excluded #980495 -->
   - the other eight cells of the 3 … <!-- @excluded/0 #a5f0a1 -->
     the other eight cells of the 3 × 3 (j03's other sNN); what every work page shares (b17-s04).
 - Topic <!-- @topic #7e13bd -->
-  - The Block's Work: where it stands, each … <!-- @topic/0 #b79243 -->
-    The Block's Work: where it stands, each Job and the step each Task is on; one cell of the work theme's 3 × 3, the work Block × Work (do) (JL 261031: "I think you should focus on the things like ... b16_theme_paper ... studio ...
+  - The Block's Work: Process, then the Report's … <!-- @topic/0 #6909b5 -->
+    The Block's Work: Process, then the Report's views; one cell of the work theme's 3 × 3, the work Block × Work (do) (JL 261031: "I think you should focus on the things like ... b16_theme_paper ... studio ...
   - UI and think about how you should … <!-- @topic/1 #bd6501 -->
     UI and think about how you should update the work_theme's workbench UI").
   - Its drawing is haipipe-studio's five parts, drawn … <!-- @topic/2 #1890ec -->
@@ -48,11 +50,21 @@ built: from-topic .
     s52-D02 · Redrawn 261101 the way b16 and b15 draw theirs: each view one step of the work, input → who works → output, your part, then the results (JL 261101: "the UI you have here is not that good. please check" b16's Block UI and b15's Task UI); the steps are haipipe-task's life, plan ▶ build ▶ run ▶ read ▶ close (ref/lifecycle.md). The earlier screens' rounds stay in `review/` (r01, r02).
   - s52-D03 · A · Progress passed the … <!-- @decided/2 #34ac8d -->
     s52-D03 · A · Progress passed the drawing review (stage 1), mean 8.9/10 in `review/A-s1-r04.md` (rounds: `review/A-s1-r03.md`, `review/A-s1-r04.md`); today's page scored 7.8 and failed Words 6 and One job 6. Proposed by the agent; it waits for JL's one look in `runs/r03_collect_block_work_views` (261101).
+  - s52-D04 · Work has the same views … <!-- @decided/3 #0270a5 -->
+    s52-D04 · Work has the same views as Report, A · MindMap, B · Status, C · Findings: each ⚙️ Process first, then 📊 Results, the Report's view drawn by the same code; the single A · Progress view is gone (asked 261104: "why we have the progress? it should have the same view to the report"; redrawn 261105). Its 261101 rounds stay in `review/`.
+  - s52-D05 · The Jobs' card tabs give … <!-- @decided/4 #5db49e -->
+    s52-D05 · The Jobs' card tabs give way to Status's rows, one per Job, each opening to its Tasks and Runs (asked 261104: "each job each row, and we can collapse them out to see the tasks and runs"; 261105). This settles the still-open line on which Job the card tabs open on.
+  - s52-D06 · Every section starts closed (asked … <!-- @decided/5 #ea13b9 -->
+    s52-D06 · Every section starts closed (asked 261104: "默认的话，大家都是合着的"); 🙋 Interaction shows once, as each view's last section, numbered after its band's, never a Process step "🙋 Waiting on you"; the drawn 🙋 Interactions helper after a dashed rule became that section (decided for this round, 261105).
+  - s52-D07 · 📍 Where it stands and … <!-- @decided/6 #c219f0 -->
+    s52-D07 · 📍 Where it stands and the Block's own Runs stay on the drawing in red, as open proposals: no 261104 ask overruled them (261105).
 - Open <!-- @open #cf9b77 -->
-  - Your one look: `../runs/r03_collect_block_work_views` shows each screen … <!-- @open/0 #52d3f1 -->
-    Your one look: `../runs/r03_collect_block_work_views` shows each screen beside today's page: build it as drawn, or keep today's.
-  - Still open after the redraw's reviews: <!-- @open/1 #b639b1 -->
-  - The Jobs' card tabs open on the … <!-- @open/2 #4c8ccf -->
-    The Jobs' card tabs open on the Job that waits on you, not the first (r04 asks); b15's tabs do the same.
-  - The earlier questions, my picks now drawn … <!-- @open/3 #c396bf -->
-    The earlier questions, my picks now drawn in, are in `../runs/r03_collect_block_work_views/passes/p01-1031/` and the round 2 screens' form in `passes/p02-1101/`; the full proposal is `result/views-proposal.md`.
+  - Your one look: `../runs/r03_collect_block_work_views` asks about the … <!-- @open/0 #6e8aa1 -->
+    Your one look: `../runs/r03_collect_block_work_views` asks about the two red proposals.
+  - Still open after the 261105 redraw: <!-- @open/1 #03a800 -->
+  - 📍 Where it stands as Status's main … <!-- @open/2 #a5e083 -->
+    📍 Where it stands as Status's main point, one large sentence above Process (red on the drawing).
+  - The Block's own Runs as a Process … <!-- @open/3 #d7c313 -->
+    The Block's own Runs as a Process section (red on the drawing).
+  - The earlier questions, my picks now drawn … <!-- @open/4 #b4a0af -->
+    The earlier questions, my picks now drawn in, are in `../runs/r03_collect_block_work_views/passes/p01-1031/` and the round 2 screens' form in `passes/p02-1101/`; the full proposal is `result/views-proposal.md`; the 261101 screens' form is in `passes/p03-1101/`.

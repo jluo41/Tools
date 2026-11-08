@@ -1,0 +1,15 @@
+run: r01_collect_example_handover
+kind: hard
+type: collect
+scope: Tools/blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates
+target: b90.j02-s02:example_paper_results @ example-job-plan
+ticket: r01_collect_example_handover.html
+skill: haipipe-interaction
+agent: null
+signs: null
+status: waiting
+passes: []
+writes:
+- result/answer_collection.md
+feeds:
+- Tools/blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates/t04_deliver/runs/r02_deliver

@@ -1,0 +1,16 @@
+run: r03_collect_example_model_form
+kind: hard
+type: collect
+scope: Tools/blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates/t01_example_main
+target: b90.j02.t01-s03:example_paper_results @ example-main-fit
+ticket: null
+skill: haipipe-interaction
+agent: null
+signs: null
+status: done
+passes:
+- p01-1106
+writes:
+- result/answer_collection.md
+feeds: []
+source: chat

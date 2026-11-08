@@ -1,0 +1,18 @@
+# Version page, the revision version (j12_writing_v0215_desk) · stage 2 · round 3 · 261106
+
+```text
+page     http://127.0.0.1:5623/_board/workbench?layout=focus&path=blueprints/Project-Ladder/paper/Paper-Example/j12_writing_v0215_desk (Report: mindmap, draft-main, draft-appendix, display-main, display-appendix, values, citations · Work: work-draft-main, work-draft-appendix, work-display-main, work-display-appendix, work-values, work-citations)
+answers  what: j12_writing_v0215_desk, but its goal is version 1's word for word (partial) · where: the path ✅ · here: a map with This send, "Reviewer points · 3 of 3 answered", "Sections · 3 wait for you" ✅ · do: Open all; nothing waits in Report ✅
+rules    1 ✅ · 2 ✅ · 3 ⚠️ the Citations and Values tallies repeat in the check line · 4 ✅ side tabs, each with a change word · 5 ❌ Draft-Main tabs are cut to "same as j11_writing_v1130_desk…", so "Reviewer 1's point lands here" shows only in a hover title; each point says "answered" while the Section it lands on says "same as j11_writing_v1130_desk"
+tasks    what did the reviewers ask, and is each answered: 1 click (MindMap › Reviewer points) · what changed since version 1: 1 click (Draft-Main, Draft-Appendix, Display tabs), but the answers contradict: Introduction and Methods are "same as j11_writing_v1130_desk" while the Response says their first paragraphs "now" changed. Table 1 is "asked by Reviewer 2", yet the Response says eFigure 1 has the change · read the response letter: 2 clicks (Draft-Appendix › Text › Response) · what waits on me: 1 click (Work: 1 + 2 wait; the map says 3)
+walk     32 steps · 32 ✅ · 0 ❌ · 0 ⚠️ (Report). My own load of all 13 views: no console error. Open all now opens every level. At 390 the map stacks with nothing cut; the title still breaks "…v0215_des / k"
+bar      The revision now says what it did on every tab and point, which round 2 lacked. Behind the Board: those words disagree with each other, the Values Status column is cut at 1440, and the PDF opens at 38 %.
+rubrics  Glance 8 · Place 9 · Lean 8 · Words 6 · One job 8 · Same look 8 · Phone 7 · Salience 7 · Works 6 · Modern 7 · Plain 8 · Complete 8
+score    mean 7.5/10 · not yet (Words and Works below 7)
+fixes    1. Rename a point's state from "answered" to "replied, text not changed" while its Section is still "same as j11_writing_v1130_desk". Then the map, the tabs and the Response agree.
+         2. Move "…'s point lands here" to its own line under the tab's state word, so it is not cut to "…". Point Reviewer 2's ask at the one display that changed.
+         3. Break the title at "_" at 390, as the map's root does. Move the Values Status column into view at 1440.
+landed   r02 fix 1 ✅ every Draft, Display, Values and Citations tab has a change word ("same as j11_…", "changed", "new in this send", "asked by Reviewer 2"); each point's state comes from its reply · fix 2 ✅ leaves inside the box, stacked at 390, root breaks at "_", Open all opens every level · ❌ the title still breaks "…_des / k" · fix 3 ✅ "Reviewer points · 3 of 3 answered"; Cover letter "changed", Response "new in this send"; ⊟ ⊞ gone
+complete send ✅ · goal ⚠️ same as version 1 · from ✅ link · responds to ✅ link · reviewer points ✅ map · reply per point ✅ · changes per tab ✅, the point part only in a hover title · state, venue, close, tells ✅ · Sections ✅ · step words ✅ Work · evidence ✅ (Values Status cut)
+questions Should a revision's goal say it answers q01_review-0110 (still open from round 2)? If a point has a reply but its Section's text has not changed, which word wins, "answered" or "same as"?
+```

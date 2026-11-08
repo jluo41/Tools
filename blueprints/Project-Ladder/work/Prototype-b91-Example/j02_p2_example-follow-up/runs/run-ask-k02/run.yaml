@@ -1,0 +1,16 @@
+run: run-ask-k02
+kind: soft
+type: ask
+scope: Tools/blueprints/Project-Ladder/work/Prototype-b91-Example/j02_p2_example-follow-up
+target: k02
+ticket: run-ask-k02.md
+skill: haipipe-insight-question
+agent: haipipe-insight-agent
+signs:
+- none
+status: done
+passes:
+- p01-1106
+writes:
+- release.yaml
+feeds: []

@@ -1,0 +1,17 @@
+run: r01_example_checks
+kind: hard
+role: make
+type: data
+scope: blueprints/Project-Ladder/work/b90_example_paper_results/j01_example_source/t02_example_checks
+skill: haipipe-task
+ticket: r01_example_checks.sh
+worker: check_source.py
+says: check the returned source tables (placeholder)
+host: this machine
+time: a few seconds
+status: planned
+started_by: '261106: the example Block of the work theme, placeholders only'
+reads:
+- blueprints/Project-Ladder/work/b90_example_paper_results/j01_example_source/t01_example_source/runs/r01_example_source/result/all_tables.csv
+writes:
+- result/checks.csv

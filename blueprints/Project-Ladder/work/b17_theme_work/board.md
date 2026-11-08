@@ -3,9 +3,12 @@
 board-kind: task-block
 package: plugins/haipipe-toolkit
 theme: work
-ui-block: http://100.121.165.84:5599/_board/workbench?layout=focus&path=examples-2-cms/Project-Personality-OpioidRx/work/b11_CD_visit_pain_lbp
-ui-job: http://100.121.165.84:5599/_board/workbench?layout=focus&path=examples-2-cms/Project-Personality-OpioidRx/work/b11_CD_visit_pain_lbp/j21_D_reg_VisitLBP_1stPair_yr16_19_bigfive_ols
-ui-task: http://100.121.165.84:5599/_board/workbench?layout=focus&path=examples-2-cms/Project-Personality-OpioidRx/work/b11_CD_visit_pain_lbp/j21_D_reg_VisitLBP_1stPair_yr16_19_bigfive_ols/t01_C1_D_reg_VisitLBP_agre
+ui-block: blueprints/Project-Ladder/work/b90_example_paper_results
+ui-job: blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates
+ui-job: blueprints/Project-Ladder/work/b90_example_paper_results/j01_example_source
+ui-task: blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates/t01_example_main
+ui-task: blueprints/Project-Ladder/work/b90_example_paper_results/j01_example_source/t01_example_source
+ui-task: blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates/t03_value_tables
 shared-blueprint: b01_haipipe-toolkit
 spine: Design the work theme: its three pages (a Block, a Job and a Task, each with Report, Work and Studio), what every page shares, and its two skills, haipipe-work and workbench-work, which say what each level holds.
 close: Every sNN is agreed and its delivery made: the two skills rewritten in skills/2_theme/work/ and the screens named for the focus page's owner.

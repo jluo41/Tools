@@ -9,11 +9,11 @@ s51 · Block UI: Report
 
 **Delivery type:** ui
 
-**Covers:** the Block's Report: A · MindMap (1 The map: each Job, what it makes, its Tasks; no state words), then one view per delivery type, B · Data and C · Display in the example (1 Deliveries as side tabs: each tab its name, version word and Job; the open one's thing to read, its For line, its tags); 🙋 Interactions at the bottom.
+**Covers:** the Block's Report, as the live page draws it: A · MindMap (its Questions with their answer pills, its topic groups, its Jobs under their bands; every node closed), B · Status (a closed numbered section per band, its state word and bar; a row per Job, opening to its Tasks and Runs), C · Findings (closed numbered sections with side tabs: 🔢 Values, the Questions by `group:`, 🌐 Service with a live page, 🧠 Maps, 📦 Delivery with tabs Models · Data · Website); 🙋 Interaction each view's last section.
 
 **Excluded:** the other eight cells of the 3 × 3 (j03's other sNN); what every work page shares (b17-s04).
 
-**Topic:** The Block's Report: the map and its deliveries by type; one cell of the work theme's 3 × 3, the work Block × Report (check) (JL 261031: "I think you should focus on the things like ... b16_theme_paper ... studio ... UI and think about how you should update the work_theme's workbench UI"). Its drawing is haipipe-studio's five parts, drawn by `build_s51_block_ui_report.py` through j03's `work_ui_cells.py`; Its Design is its section's views, lettered A, B …, each one full screen (haipipe-ui "one view, one screen"), every review round in `review/`.
+**Topic:** The Block's Report: its map, its Status, its Findings; one cell of the work theme's 3 × 3, the work Block × Report (check) (JL 261031: "I think you should focus on the things like ... b16_theme_paper ... studio ... UI and think about how you should update the work_theme's workbench UI"). Its drawing is haipipe-studio's five parts, drawn by `build_s51_block_ui_report.py` through j03's `work_ui_cells.py`; Its Design is its section's views, lettered A, B …, each one full screen (haipipe-ui "one view, one screen"), every review round in `review/`.
 
 **Feeds:** none: a work Block keeps no Questions (JL 261031, r01 Q5)
 
@@ -55,16 +55,23 @@ s51-D09 · C · Display passed the drawing review (haipipe-ui Design loop, stage
 
 s51-D10 · A Block's Status: numbered sections per band, closed; one row per Job, opening to its Tasks and Runs; no next-step sentences (JL 261104, on b01_clm_foundation_model: "这个做得很好", "just delete them"). Built in `focus_page.py` `band_board`; the rule is in haipipe-ui.
 
+s51-D11 · The Report's views are MindMap · Status · Findings, drawn as the live page draws them (asked 261104: "the quick overview of the results we get from that block"; redrawn 261105). A · MindMap follows the live map: the Questions with their answer pills, the topic groups, the Jobs under their bands, every node closed.
+
+s51-D12 · B · Data and C · Display fold into Findings' 📦 Delivery, tabs Models · Data · Website (asked 261104: "fold / merge the delivery to the Findings"; 261105). This settles the still-open line "Data and Display show what the right-rail Delivery also lists": the Report shows a delivery once, in Findings, and the rail keeps its Delivery.
+
+s51-D13 · C · Findings is closed numbered sections, each with side tabs, the list on the left and the open one on the right: 🔢 Values, the Questions by `group:`, 🌐 Service (only with a live page, each tab a website), 🧠 Maps, 📦 Delivery (asked 261104: "left tab panel right content"; a new section named Service; 261105). It changes s51-D04 in part: no Questions view (asked 261104: "we don't need the questions"), and the Questions return inside Findings as the frame for what was found.
+
+s51-D14 · Every section starts closed (asked 261104: "默认的话，大家都是合着的"); 🙋 Interaction is each view's last section, numbered after its sections, never a Process step (decided for this round, 261105).
+
+s51-D15 · Redrawn to the live page of 261106: every closed bar carries its state word on its right, and a bar that waits on the person shows its waiting line under it (C · Findings' Outcomes reads "waits for you", the question under the bar); each view's 🙋 Interaction holds its own forms (`focus_page.view_items`: MindMap the Block's own, Status the forms below it, Findings the forms at its Questions' work); the right rail gains Skills between Timeline and Files (261106).
 
 Open
 ----
 
-Your one look: `../runs/r02_collect_block_report_views` shows each screen beside today's page: build it as drawn, or keep today's.
+Your one look: `../runs/r02_collect_block_report_views` asks one thing now: agree A to C as drawn (they follow the live page).
 
-Still open after the review (its reviewers' asks):
+Nothing else is open after the 261105 redraw: the line on Data and Display repeating the rail's Delivery is settled (s51-D12).
 
-1. Data and Display show what the right-rail Delivery also lists (rubric 5, r02 asks): Delivery could keep only what was sent.
-
-The earlier questions, my picks now drawn in, are in `../runs/r02_collect_block_report_views/passes/p01-1031/`; the full proposal is `result/views-proposal.md`.
+The earlier questions, my picks now drawn in, are in `../runs/r02_collect_block_report_views/passes/p01-1031/`; the full proposal is `result/views-proposal.md`; the 261101 screens' form is in `passes/p02-1101/`.
 
 (write here, or mark the drawing in red)

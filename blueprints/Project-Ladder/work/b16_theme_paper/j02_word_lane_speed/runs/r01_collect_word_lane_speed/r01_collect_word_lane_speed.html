@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="haipipe-built" content="2026-11-04 11:45:58.736927">
-<title>Word build speed</title>
+<title>Word build speed</title><link rel="icon" href="data:,">
 <!-- GENERATED FILE by haipipe-interaction scripts/collect.py from this Run's question_collection.md: change the questions there
      and build again, never this page. -->
 <style>
@@ -33,7 +33,8 @@ code{font:12.5px ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--so
 .pop-x{position:sticky;top:0;float:right;margin:6px;padding:2px 10px;border:1px solid var(--line);border-radius:6px;background:#fff;font-size:13px;cursor:pointer;z-index:1}
 .label{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--red);margin:0 0 4px;font-weight:600;overflow-wrap:anywhere}
 h1{font-size:22px;margin:0 0 4px}
-.lead{color:var(--mut);margin:0 0 16px}
+.addr{margin:0 0 8px;font:12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--mut);overflow-wrap:anywhere}
+.lead{color:var(--fg);margin:0 0 16px}
 .card{border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin:0 0 12px}
 .card h2{font-size:16px;margin:0 0 4px;display:flex;gap:8px;align-items:baseline}
 .card h2 .qid{color:var(--on)}
@@ -41,15 +42,15 @@ h1{font-size:22px;margin:0 0 4px}
 .card h2 .applied{font-size:12px;color:var(--ok);font-weight:600;white-space:nowrap}
 .card h2 .applied.wip{color:var(--prop)}
 .applied-by{margin:0 0 6px;font-size:12.5px;color:var(--ok)}
-.why{margin:0 0 8px;color:var(--mut)}
-pre.sketch{background:var(--soft);border-radius:8px;padding:8px 10px;overflow-x:auto;font:12px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;margin:0 0 8px}
+.why{margin:0 0 8px;color:var(--fg)}
+pre.sketch{background:var(--soft);color:var(--fg);border-radius:8px;padding:8px 10px;overflow-x:auto;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;margin:0 0 8px}
 img.pic{max-width:100%;max-height:220px;border:1px solid var(--line);border-radius:8px;margin:0 0 8px}
 fieldset{border:0;margin:0;padding:0}
 .ask{font-weight:600;padding:0;margin:0 0 6px}
 .opt{display:flex;gap:8px;align-items:baseline;padding:5px 10px;border:1px solid var(--line);border-radius:8px;margin:0 0 4px;cursor:pointer}
 .opt:has(input:checked){border-color:var(--on);background:var(--wash)}
 .opt .rec{font-size:11px;color:var(--ok);border:1px solid var(--ok);border-radius:6px;padding:0 5px;margin-left:8px;white-space:nowrap}
-.because{font-size:13px;color:var(--mut);margin:4px 0 6px}
+.because{font-size:13.5px;color:var(--fg);margin:4px 0 6px}
 textarea{width:100%;font:inherit;font-size:13.5px;padding:5px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);resize:vertical}
 textarea.note{min-height:32px;field-sizing:content}
 #out{min-height:120px;font:12px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--soft)}
@@ -62,8 +63,9 @@ details.box{margin:4px 0 0;color:var(--mut);font-size:13px}
 </head>
 <body>
 <div class="wrap">
-<p class="label">Questions for you · r01_collect_word_lane_speed · b16.j02-s22:theme_paper.word_lane_speed @ word_lane_speed</p>
+<p class="label">Questions for you</p>
 <h1>Word build speed</h1>
+<p class="addr">r01_collect_word_lane_speed · b16.j02-s22:theme_paper.word_lane_speed @ word_lane_speed</p>
 <p class="lead">Word was stuck, not slow. On a working Word a whole build took 40 to 80 seconds. Builds now take turns in Word. One choice left. Answered 2026-11-04 13:57: your picks and notes are shown, read only; a flag on a question says whether it is applied or in progress. The answers: <a href="result/answer_collection.md">result/answer_collection.md</a>.
 The questions as Markdown: <a href="question_collection.md">question_collection.md</a>.</p>
 <section class="card" id="Q1"><h2><span class="qid">Q1</span>Draft mode<span class="state" id="state-Q1"></span><span class="applied" id="applied-Q1"></span></h2><p class="applied-by" id="applied-by-Q1" hidden></p><p class="why">Paper-AgreeablePrescriptionDiscretion: 28 minutes on the stuck Word, 40 to 80 seconds now (three runs), 13 of 14 displays opening their page. So skipping page tops would save seconds. For the PDF alone, <code>build.py --pdf-only</code> takes seconds.</p><pre class="sketch">stuck Word     28 min    displays after their paragraphs
@@ -71,7 +73,7 @@ working Word   40-80 s   displays at page tops</pre><fieldset><legend class="ask
 <details class="box"><summary>The text Copy feedback sends</summary><textarea id="out" readonly></textarea></details>
 </div>
 <div class="send"><button type="button" data-copy>Copy feedback</button><button type="button" class="quiet" id="reset">Back to my picks</button><span id="copied"></span></div>
-<script type="application/json" id="form-data">{"run": "r01_collect_word_lane_speed", "title": "Word build speed", "built": "2026-11-04 11:45:58.736927", "questions": [{"id": "Q1", "title": "Draft mode", "pick": "A", "options": [{"key": "A", "text": "No; every Word copy keeps displays at page tops."}, {"key": "B", "text": "Yes; drafts skip page tops, final copies keep them."}]}], "answered": {"received": "2026-11-04 13:57", "picks": {"Q1": {"pick": "B", "note": "JL in the chat: \"don't use 1, we can use method B, as long as the table is at the top of that page, that should be okay\""}}}}</script>
+<script type="application/json" id="form-data">{"run": "r01_collect_word_lane_speed", "title": "Word build speed", "built": "2026-11-04 11:45:58.736927", "questions": [{"id": "Q1", "title": "Draft mode", "pick": "A", "options": [{"key": "A", "text": "No; every Word copy keeps displays at page tops."}, {"key": "B", "text": "Yes; drafts skip page tops, final copies keep them."}]}], "applied": true, "answered": {"received": "2026-11-04 13:57", "picks": {"Q1": {"pick": "B", "note": "JL in the chat: \"don't use 1, we can use method B, as long as the table is at the top of that page, that should be okay\""}}}}</script>
 <script type="text/markdown" id="haipipe-questions"># Word build speed
 
 for: b16.j02-s22:theme_paper.word_lane_speed @ word_lane_speed
@@ -246,8 +248,9 @@ Why A: About a minute is short enough, and nothing is lost.
     if (f.contentDocument && f.contentDocument.readyState === 'complete') diffQuestion(q);
   });
   /* a question already applied carries its flag (JL 261031: "if we already fix them, then give them the flags"):
-     applied.md beside the form, written by collect.py applied, read each time the form opens */
-  if (window.fetch) fetch('applied.md', {cache: 'no-store'}).then(function(r){ return r.ok ? r.text() : ''; })
+     applied.md beside the form, written by collect.py applied (which rebuilds the form), read each time the form
+     opens; only a form built with one beside it asks for it, so a form with none sends no request that answers 404 */
+  if (window.fetch && FORM.applied) fetch('applied.md', {cache: 'no-store'}).then(function(r){ return r.ok ? r.text() : ''; })
     .then(function(text){ text.split('\n').forEach(function(line){
       var m = /^(Q\d+) · (applied|in progress) · (\d{4}-\d{2}-\d{2}) \d{2}:\d{2} · (.+?)\s*$/.exec(line);
       var flag = m && document.getElementById('applied-' + m[1]), by = m && document.getElementById('applied-by-' + m[1]);

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="haipipe-built" content="2026-10-31 17:08:38.244393">
-<title>Version Work UI</title>
+<title>Version Work UI</title><link rel="icon" href="data:,">
 <!-- GENERATED FILE by haipipe-interaction scripts/collect.py from this Run's question_collection.md: change the questions there
      and build again, never this page. -->
 <style>
@@ -25,9 +25,16 @@ code{font:12.5px ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--so
 .pv-frame img{width:100%;display:block}
 .pv-hit{position:absolute;inset:0}
 .pv.on{border-color:var(--on);box-shadow:0 0 0 2px var(--wash)}
+.pop{position:fixed;inset:0;z-index:50;background:rgba(20,24,30,.72);display:flex;align-items:center;justify-content:center;padding:24px;cursor:zoom-out}
+.pop[hidden]{display:none}
+.pop-box{position:relative;background:#fff;border-radius:10px;max-width:96vw;max-height:94vh;overflow:auto;cursor:default}
+.pop-box img{display:block;max-width:94vw;max-height:90vh;width:auto;height:auto}
+.pop-box iframe{display:block;width:92vw;height:88vh;border:0}
+.pop-x{position:sticky;top:0;float:right;margin:6px;padding:2px 10px;border:1px solid var(--line);border-radius:6px;background:#fff;font-size:13px;cursor:pointer;z-index:1}
 .label{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--red);margin:0 0 4px;font-weight:600;overflow-wrap:anywhere}
 h1{font-size:22px;margin:0 0 4px}
-.lead{color:var(--mut);margin:0 0 16px}
+.addr{margin:0 0 8px;font:12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--mut);overflow-wrap:anywhere}
+.lead{color:var(--fg);margin:0 0 16px}
 .card{border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin:0 0 12px}
 .card h2{font-size:16px;margin:0 0 4px;display:flex;gap:8px;align-items:baseline}
 .card h2 .qid{color:var(--on)}
@@ -35,15 +42,15 @@ h1{font-size:22px;margin:0 0 4px}
 .card h2 .applied{font-size:12px;color:var(--ok);font-weight:600;white-space:nowrap}
 .card h2 .applied.wip{color:var(--prop)}
 .applied-by{margin:0 0 6px;font-size:12.5px;color:var(--ok)}
-.why{margin:0 0 8px;color:var(--mut)}
-pre.sketch{background:var(--soft);border-radius:8px;padding:8px 10px;overflow-x:auto;font:12px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;margin:0 0 8px}
+.why{margin:0 0 8px;color:var(--fg)}
+pre.sketch{background:var(--soft);color:var(--fg);border-radius:8px;padding:8px 10px;overflow-x:auto;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;margin:0 0 8px}
 img.pic{max-width:100%;max-height:220px;border:1px solid var(--line);border-radius:8px;margin:0 0 8px}
 fieldset{border:0;margin:0;padding:0}
 .ask{font-weight:600;padding:0;margin:0 0 6px}
 .opt{display:flex;gap:8px;align-items:baseline;padding:5px 10px;border:1px solid var(--line);border-radius:8px;margin:0 0 4px;cursor:pointer}
 .opt:has(input:checked){border-color:var(--on);background:var(--wash)}
 .opt .rec{font-size:11px;color:var(--ok);border:1px solid var(--ok);border-radius:6px;padding:0 5px;margin-left:8px;white-space:nowrap}
-.because{font-size:13px;color:var(--mut);margin:4px 0 6px}
+.because{font-size:13.5px;color:var(--fg);margin:4px 0 6px}
 textarea{width:100%;font:inherit;font-size:13.5px;padding:5px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);resize:vertical}
 textarea.note{min-height:32px;field-sizing:content}
 #out{min-height:120px;font:12px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--soft)}
@@ -56,15 +63,16 @@ details.box{margin:4px 0 0;color:var(--mut);font-size:13px}
 </head>
 <body>
 <div class="wrap">
-<p class="label">Questions for you · r02_collect_version_ui_work · b16.j01.t02-s36:theme_paper.paper_workbench_pages.version_page @ version_ui_work</p>
+<p class="label">Questions for you</p>
 <h1>Version Work UI</h1>
-<p class="lead">Two choices for s36; my pick is ticked. My pick is selected; change any, then Copy feedback and paste it to me.
+<p class="addr">r02_collect_version_ui_work · b16.j01.t02-s36:theme_paper.paper_workbench_pages.version_page @ version_ui_work</p>
+<p class="lead">Two choices for s36; my pick is ticked. Answered 2026-10-31 17:21: your picks and notes are shown, read only; a flag on a question says whether it is applied or in progress. The answers: <a href="result/answer_collection.md">result/answer_collection.md</a>.
 The questions as Markdown: <a href="question_collection.md">question_collection.md</a>.</p>
-<section class="card" id="Q1"><h2><span class="qid">Q1</span>Section rows<span class="state" id="state-Q1"></span><span class="applied" id="applied-Q1"></span></h2><p class="applied-by" id="applied-by-Q1" hidden></p><p class="why">A version's Work lists its Sections; the row says where each stands.</p><fieldset><legend class="ask">How much does one Section row show?</legend><label class="opt"><input type="radio" name="Q1" value="A" checked><span><b>A</b> Five step words; each opens that step.<span class="rec">my pick</span></span></label><label class="opt"><input type="radio" name="Q1" value="B"><span><b>B</b> One word: the step that waits.</span></label><label class="opt own"><input type="radio" name="Q1" value="own"><span><b>✍</b> My own decision</span></label></fieldset><div class="previews"><figure class="pv" data-q="Q1" data-key="A"><figcaption><b>A</b><a href="option-a.html" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="var r=document.querySelector('input[name=\'Q1\'][value=\'A\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><iframe src="option-a.html" title="option A" tabindex="-1"></iframe><span class="pv-hit"></span></div></figure><figure class="pv" data-q="Q1" data-key="B"><figcaption><b>B</b><a href="option-b.html" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="var r=document.querySelector('input[name=\'Q1\'][value=\'B\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><iframe src="option-b.html" title="option B" tabindex="-1"></iframe><span class="pv-hit"></span></div></figure></div><p class="because">Why A: Five words show the whole Section at a glance.</p><textarea class="note" id="note-Q1" rows="1" placeholder="Note (optional)"></textarea></section><section class="card" id="Q2"><h2><span class="qid">Q2</span>View buttons<span class="state" id="state-Q2"></span><span class="applied" id="applied-Q2"></span></h2><p class="applied-by" id="applied-by-Q2" hidden></p><p class="why">A version would hold two kinds of Task, Sections and displays, each for the main paper or the appendix. Report shares this list, as on the Board; Interactions sit inside each view.</p><fieldset><legend class="ask">Which view buttons should a version page have?</legend><label class="opt"><input type="radio" name="Q2" value="A" checked><span><b>A</b> Draft-Main · Draft-Appendix · Display-Main · Display-Appendix, as you suggested.<span class="rec">my pick</span></span></label><label class="opt"><input type="radio" name="Q2" value="B"><span><b>B</b> Main · Appendix, each listing its Sections then its displays.</span></label><label class="opt"><input type="radio" name="Q2" value="C"><span><b>C</b> Sections · Runs, as first drawn.</span></label><label class="opt own"><input type="radio" name="Q2" value="own"><span><b>✍</b> My own decision</span></label></fieldset><div class="previews"><figure class="pv" data-q="Q2" data-key="A"><figcaption><b>A</b><a href="q2-option-a.html" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="var r=document.querySelector('input[name=\'Q2\'][value=\'A\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><iframe src="q2-option-a.html" title="option A" tabindex="-1"></iframe><span class="pv-hit"></span></div></figure><figure class="pv" data-q="Q2" data-key="B"><figcaption><b>B</b><a href="q2-option-b.html" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="var r=document.querySelector('input[name=\'Q2\'][value=\'B\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><iframe src="q2-option-b.html" title="option B" tabindex="-1"></iframe><span class="pv-hit"></span></div></figure><figure class="pv" data-q="Q2" data-key="C"><figcaption><b>C</b><a href="q2-option-c.html" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="var r=document.querySelector('input[name=\'Q2\'][value=\'C\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><iframe src="q2-option-c.html" title="option C" tabindex="-1"></iframe><span class="pv-hit"></span></div></figure></div><p class="because">Why A: One view holds one kind of Task row, matching the bands t0N, t2N, t4N, t5N.</p><textarea class="note" id="note-Q2" rows="1" placeholder="Note (optional)"></textarea></section>
+<section class="card" id="Q1"><h2><span class="qid">Q1</span>Section rows<span class="state" id="state-Q1"></span><span class="applied" id="applied-Q1"></span></h2><p class="applied-by" id="applied-by-Q1" hidden></p><p class="why">A version's Work lists its Sections; the row says where each stands.</p><fieldset><legend class="ask">How much does one Section row show?</legend><label class="opt"><input type="radio" name="Q1" value="A" checked><span><b>A</b> Five step words; each opens that step.<span class="rec">my pick</span></span></label><label class="opt"><input type="radio" name="Q1" value="B"><span><b>B</b> One word: the step that waits.</span></label><label class="opt own"><input type="radio" name="Q1" value="own"><span><b>✍</b> My own decision</span></label></fieldset><div class="previews"><figure class="pv" data-q="Q1" data-key="A"><figcaption><b>A</b><a href="option-a.html" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="hpPop(this);var r=document.querySelector('input[name=\'Q1\'][value=\'A\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><iframe src="option-a.html" title="option A" tabindex="-1"></iframe><span class="pv-hit"></span></div></figure><figure class="pv" data-q="Q1" data-key="B"><figcaption><b>B</b><a href="option-b.html" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="hpPop(this);var r=document.querySelector('input[name=\'Q1\'][value=\'B\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><iframe src="option-b.html" title="option B" tabindex="-1"></iframe><span class="pv-hit"></span></div></figure></div><p class="because">Why A: Five words show the whole Section at a glance.</p><textarea class="note" id="note-Q1" rows="1" placeholder="Note (optional)"></textarea></section><section class="card" id="Q2"><h2><span class="qid">Q2</span>View buttons<span class="state" id="state-Q2"></span><span class="applied" id="applied-Q2"></span></h2><p class="applied-by" id="applied-by-Q2" hidden></p><p class="why">A version would hold two kinds of Task, Sections and displays, each for the main paper or the appendix. Report shares this list, as on the Board; Interactions sit inside each view.</p><fieldset><legend class="ask">Which view buttons should a version page have?</legend><label class="opt"><input type="radio" name="Q2" value="A" checked><span><b>A</b> Draft-Main · Draft-Appendix · Display-Main · Display-Appendix, as you suggested.<span class="rec">my pick</span></span></label><label class="opt"><input type="radio" name="Q2" value="B"><span><b>B</b> Main · Appendix, each listing its Sections then its displays.</span></label><label class="opt"><input type="radio" name="Q2" value="C"><span><b>C</b> Sections · Runs, as first drawn.</span></label><label class="opt own"><input type="radio" name="Q2" value="own"><span><b>✍</b> My own decision</span></label></fieldset><div class="previews"><figure class="pv" data-q="Q2" data-key="A"><figcaption><b>A</b><a href="q2-option-a.html" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="hpPop(this);var r=document.querySelector('input[name=\'Q2\'][value=\'A\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><iframe src="q2-option-a.html" title="option A" tabindex="-1"></iframe><span class="pv-hit"></span></div></figure><figure class="pv" data-q="Q2" data-key="B"><figcaption><b>B</b><a href="q2-option-b.html" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="hpPop(this);var r=document.querySelector('input[name=\'Q2\'][value=\'B\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><iframe src="q2-option-b.html" title="option B" tabindex="-1"></iframe><span class="pv-hit"></span></div></figure><figure class="pv" data-q="Q2" data-key="C"><figcaption><b>C</b><a href="q2-option-c.html" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="hpPop(this);var r=document.querySelector('input[name=\'Q2\'][value=\'C\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><iframe src="q2-option-c.html" title="option C" tabindex="-1"></iframe><span class="pv-hit"></span></div></figure></div><p class="because">Why A: One view holds one kind of Task row, matching the bands t0N, t2N, t4N, t5N.</p><textarea class="note" id="note-Q2" rows="1" placeholder="Note (optional)"></textarea></section>
 <details class="box"><summary>The text Copy feedback sends</summary><textarea id="out" readonly></textarea></details>
 </div>
 <div class="send"><button type="button" data-copy>Copy feedback</button><button type="button" class="quiet" id="reset">Back to my picks</button><span id="copied"></span></div>
-<script type="application/json" id="form-data">{"run": "r02_collect_version_ui_work", "title": "Version Work UI", "built": "2026-10-31 17:08:38.244393", "questions": [{"id": "Q1", "title": "Section rows", "pick": "A", "options": [{"key": "A", "text": "Five step words; each opens that step."}, {"key": "B", "text": "One word: the step that waits."}]}, {"id": "Q2", "title": "View buttons", "pick": "A", "options": [{"key": "A", "text": "Draft-Main · Draft-Appendix · Display-Main · Display-Appendix, as you suggested."}, {"key": "B", "text": "Main · Appendix, each listing its Sections then its displays."}, {"key": "C", "text": "Sections · Runs, as first drawn."}]}]}</script>
+<script type="application/json" id="form-data">{"run": "r02_collect_version_ui_work", "title": "Version Work UI", "built": "2026-10-31 17:08:38.244393", "questions": [{"id": "Q1", "title": "Section rows", "pick": "A", "options": [{"key": "A", "text": "Five step words; each opens that step."}, {"key": "B", "text": "One word: the step that waits."}]}, {"id": "Q2", "title": "View buttons", "pick": "A", "options": [{"key": "A", "text": "Draft-Main · Draft-Appendix · Display-Main · Display-Appendix, as you suggested."}, {"key": "B", "text": "Main · Appendix, each listing its Sections then its displays."}, {"key": "C", "text": "Sections · Runs, as first drawn."}]}], "applied": true, "answered": {"received": "2026-10-31 17:21", "picks": {"Q1": {"pick": "A", "note": "Yes, we can do this."}, "Q2": {"pick": "A", "note": "we will choose A, and even more of them. like the citations?\n\nand for each job's view button, later we can make them to be the studio as well. But that can be later."}}}}</script>
 <script type="text/markdown" id="haipipe-questions"># Version Work UI
 
 for: b16.j01.t02-s36:theme_paper.paper_workbench_pages.version_page @ version_ui_work
@@ -162,6 +170,7 @@ Why A: One view holds one kind of Task row, matching the bands t0N, t2N, t4N, t5
     });
   }
   function done(ok){ document.getElementById('copied').textContent = ok ? 'Copied: paste it into the chat' : 'Open the text below, select it and copy'; }
+  window.haipipeAnswers = text;      /* the combined page reads every form's answer through this (bundle) */
   function copy(){
     var box = document.getElementById('out'); box.value = text();
     function fallback(){ box.closest('details').open = true; box.focus(); box.select(); var ok = false; try { ok = document.execCommand('copy'); } catch (e) {} done(ok); }
@@ -182,6 +191,19 @@ Why A: One view holds one kind of Task row, matching the bands t0N, t2N, t4N, t5
   function lightPreviews(){document.querySelectorAll('.pv').forEach(function(f){
     var r=document.querySelector('input[name="'+f.dataset.q+'"][value="'+f.dataset.key+'"]');f.classList.toggle('on',!!(r&&r.checked));});}
   document.addEventListener('change', lightPreviews); lightPreviews();
+  /* a click on a preview pops it out over the form (JL 261103); a click outside it, x or Esc closes it */
+  var POP = document.createElement('div'); POP.className = 'pop'; POP.hidden = true;
+  POP.innerHTML = '<div class="pop-box"><button type="button" class="pop-x">Close ✕</button><div class="pop-body"></div></div>';
+  document.body.appendChild(POP);
+  function unpop(){ POP.hidden = true; POP.querySelector('.pop-body').innerHTML = ''; }
+  POP.addEventListener('click', function(e){ if (e.target === POP || e.target.classList.contains('pop-x')) unpop(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') unpop(); });
+  window.hpPop = function(frame){
+    var el = frame.querySelector('img, iframe'); if (!el) return;
+    var copy = document.createElement(el.tagName.toLowerCase()); copy.src = el.getAttribute('src');
+    if (copy.tagName === 'IMG') copy.alt = el.alt; else copy.title = el.title;
+    var body = POP.querySelector('.pop-body'); body.innerHTML = ''; body.appendChild(copy); POP.hidden = false;
+  };
   /* the part that differs between a question's previews gets a box (JL 261031: "highlight the part that are different
      by using the box"): a preview's own class="diff" marks it; otherwise the pages are compared, node by node, and the
      smallest block that differs is boxed in every option; each preview then scrolls to its first box */
@@ -235,8 +257,9 @@ Why A: One view holds one kind of Task row, matching the bands t0N, t2N, t4N, t5
     if (f.contentDocument && f.contentDocument.readyState === 'complete') diffQuestion(q);
   });
   /* a question already applied carries its flag (JL 261031: "if we already fix them, then give them the flags"):
-     applied.md beside the form, written by collect.py applied, read each time the form opens */
-  if (window.fetch) fetch('applied.md', {cache: 'no-store'}).then(function(r){ return r.ok ? r.text() : ''; })
+     applied.md beside the form, written by collect.py applied (which rebuilds the form), read each time the form
+     opens; only a form built with one beside it asks for it, so a form with none sends no request that answers 404 */
+  if (window.fetch && FORM.applied) fetch('applied.md', {cache: 'no-store'}).then(function(r){ return r.ok ? r.text() : ''; })
     .then(function(text){ text.split('\n').forEach(function(line){
       var m = /^(Q\d+) · (applied|in progress) · (\d{4}-\d{2}-\d{2}) \d{2}:\d{2} · (.+?)\s*$/.exec(line);
       var flag = m && document.getElementById('applied-' + m[1]), by = m && document.getElementById('applied-by-' + m[1]);

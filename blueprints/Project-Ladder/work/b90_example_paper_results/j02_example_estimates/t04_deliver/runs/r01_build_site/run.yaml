@@ -1,0 +1,17 @@
+run: r01_build_site
+kind: hard
+role: make
+type: delivery
+scope: blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates/t04_deliver
+skill: haipipe-delivery
+ticket: r01_build_site.sh
+worker: build_site.py
+says: a static explorer page over the main values (placeholder)
+host: this machine
+time: a few seconds
+status: done
+started_by: '261106: the example Block of the work theme, placeholders only'
+reads:
+- blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates/t01_example_main/runs/r01_example_main/result/values.csv
+writes:
+- result/index.html

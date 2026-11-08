@@ -1,0 +1,18 @@
+# Version page, the revision version (j12_writing_v0215_desk) · stage 2 · round 1 · 261106
+
+```text
+page     http://127.0.0.1:5623/_board/workbench?layout=focus&path=blueprints/Project-Ladder/paper/Paper-Example/j12_writing_v0215_desk (Report: mindmap, draft-main, draft-appendix, display-main, display-appendix, values, citations · Work: work-draft-main, work-draft-appendix, work-display-main, work-display-appendix, work-values, work-citations)
+answers  what: j12_writing_v0215_desk; its goal is word for word version 1's, and nothing says it revises j11 or answers reviewers (partial) · where: the path ✅ · here: a map of 6 Sections and a folded Questions node ✅ · do: nothing waits ("nothing yet"); only Open all and Close all (partial)
+rules    1 ✅ · 2 ✅ · 3 ✅ · 4 ❌ the reviewers' question is one 3,000 px line in a map leaf that runs off the box ("What must the next version"), and Values and Citations repeat their table as on j11 · 5 ⚠️ Draft-Appendix's tabs (Cover letter, Response) carry no state word while Draft-Main's do; "0 of 6 verified" counts 3 keys twice
+tasks    what did the reviewers ask, and is each point answered: 2 clicks reach "answer not final", whose text runs off the box; 3 clicks reach the replies (Draft-Appendix › Text › Response); the reviewers' report itself is a dead end (not linked) · what changed since version 1: could not (no from:, no comparison, and Draft-Main's text matches version 1's) · what waits on me: 1 click (Work: "Summary: Plan: waits for your sign") · read the response letter: 3 clicks, filed under Draft-Appendix
+walk     33 steps · 33 ✅ · 0 ❌ · 0 ⚠️. My own load: only the favicon 404 (⚠️, every page); the map's Questions leaf scrolls 3,200 px sideways; at 390 px the title breaks mid-word ("…v0215_des / k") and the map's Section names are cut
+bar      The Board's Evidence uses side tabs. Here Display, Values and Citations are stacked rows, identical to version 1's page, so nothing says what this send changed. The Response tab reads as well as the Board's Writing tabs; it is the best part of the page.
+rubrics  Glance 8 · Place 9 · Lean 6 · Words 6 · One job 5 · Same look 6 · Phone 6 · Salience 5 · Works 4 · Modern 6 · Plain 6 · Complete 5
+score    mean 6.0/10 · not yet
+         why: Salience is low because a revision's main point (three reviewer points and their state) sits behind a folded map node and three clicks into Draft-Appendix. Works is capped by the could-not task. The evidence views share j11's Lean, Plain and Modern faults.
+fixes    1. Rename the MindMap's Questions node to the reviewers' points: one wrapped leaf per point (editor, reviewer 1, reviewer 2), each with its Section, its reply and a state word. Add root leaves "from j11_writing_v1130_desk" and "responds to q01_review-0110", as links.
+         2. Wrap every map leaf at about 360 px so none runs off the box. Use the same wrapping for the Section names at 390 px, and let the title wrap at "_" rather than mid-word.
+         3. Move Display, Values and Citations into side tabs, as on the Board's Evidence. Mark each item this send changed or re-checked, else say "same as j11_writing_v1130_desk" in its state word.
+complete send ✅ · goal ✅ (same as v1) · from ❌ · responds-to report ❌ not linked · reviewers' question ✅ map leaf, cut off · reply per point ✅ Response tab, 3 clicks · state, desk, close, tells ❌ · Sections ✅ · step words ✅ Work · evidence ✅ but the Board's, not this send's
+questions Should a revision's Report open on the reviewers' points (a Comments view before Draft-Main)? Settled decision 7 fixes MindMap plus six views, so fix 1 keeps them on the MindMap. Should the response and cover letters sit in Draft-Appendix by their t3N numbers?
+```

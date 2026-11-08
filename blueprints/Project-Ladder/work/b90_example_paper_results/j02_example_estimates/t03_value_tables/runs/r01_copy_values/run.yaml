@@ -1,0 +1,19 @@
+run: r01_copy_values
+kind: hard
+role: make
+type: value
+scope: blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates/t03_value_tables
+skill: haipipe-paper-evidence
+ticket: r01_copy_values.sh
+worker: this ticket
+says: copy the returned values unchanged
+host: this machine
+time: a few seconds
+status: done
+started_by: '261105: the example Block of the work theme, placeholders only'
+reads:
+- blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates/t01_example_main/runs/r01_example_main/result/values.csv
+- blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates/t02_example_subgroup/runs/r01_example_subgroup/result/values.csv
+writes:
+- result/main/
+- result/subgroup/

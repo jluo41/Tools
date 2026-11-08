@@ -1,0 +1,16 @@
+run: run-review-plan-i01
+kind: soft
+type: review-plan
+scope: Tools/blueprints/Project-Ladder/work/Prototype-b91-Example/j01_p1_example-questions/t03_I01_outcome-by-arm
+target: i01
+ticket: run-review-plan-i01.md
+skill: haipipe-insight-evidence-plan
+agent: haipipe-insight-reviewer-agent
+signs:
+- none
+status: done
+passes:
+- p01-1106
+writes:
+- t03_I01_outcome-by-arm/question.md
+feeds: []

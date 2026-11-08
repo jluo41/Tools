@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width, initial-scale=1">
+<title>Example estimates explorer</title>
+<style>
+:root{--bg:#ffffff;--fg:#1e1e1e;--mut:#5c636a;--line:#ced4da;--wash:#f1f3f5;--acc:#1864ab}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16181b;--fg:#e9ecef;--mut:#a5abb1;--line:#3a3f45;--wash:#23272b;--acc:#74c0fc}}
+:root[data-theme="dark"]{--bg:#16181b;--fg:#e9ecef;--mut:#a5abb1;--line:#3a3f45;--wash:#23272b;--acc:#74c0fc}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:760px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:20px;margin:0 0 4px}.mut{color:var(--mut)}
+.lead{border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin:14px 0;background:var(--wash)}
+.lead b{font-size:22px;color:var(--acc)}
+input{width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg);font:inherit}
+table{width:100%;border-collapse:collapse;margin-top:10px;font-size:14px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--wash);font-weight:600}td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}
+</style></head><body><main>
+<h1>Example estimates explorer</h1>
+<p class=mut>Placeholder: every number here is made up. Read from the main Task's values.csv (9 values).</p>
+<div class=lead>The main association is <b>2.35 (95% CI, 0.84 to 3.85)</b> points.</div>
+<label for=q class=mut>Find a value by its key, unit or text</label>
+<input id=q type=search placeholder="main, sample, points..." autocomplete=off>
+<table><thead><tr><th>Key</th><th>Value</th><th>Unit</th><th>As printed</th></tr></thead><tbody id=rows></tbody></table>
+<p id=none class=mut hidden>No value matches.</p>
+</main><script>
+var ROWS = [{"key": "sample.n_units", "value": "12480", "unit": "units", "text": ""}, {"key": "main.b", "value": "2.3461", "unit": "points", "text": "2.35 (95% CI, 0.84 to 3.85)"}, {"key": "main.ci_lo", "value": "0.8412", "unit": "points", "text": ""}, {"key": "main.ci_hi", "value": "3.8519", "unit": "points", "text": ""}, {"key": "main.p", "value": "0.0021", "unit": "", "text": ""}, {"key": "sub.b", "value": "4.1234", "unit": "points", "text": ""}, {"key": "mean.before", "value": "41.27", "unit": "points", "text": ""}, {"key": "mean.after", "value": "43.62", "unit": "points", "text": ""}, {"key": "extra.sd", "value": "9.87", "unit": "points", "text": ""}];
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]})}
+function draw(){var q=document.getElementById("q").value.trim().toLowerCase(),out=[];
+ROWS.forEach(function(r){var t=(r.key+" "+r.unit+" "+r.text).toLowerCase();if(!q||t.indexOf(q)>=0)out.push(
+"<tr><td><code>"+esc(r.key)+"</code></td><td class=num>"+esc(r.value)+"</td><td>"+esc(r.unit)+"</td><td>"+esc(r.text)+"</td></tr>")});
+document.getElementById("rows").innerHTML=out.join("");document.getElementById("none").hidden=out.length>0}
+document.getElementById("q").addEventListener("input",draw);draw();
+</script></body></html>

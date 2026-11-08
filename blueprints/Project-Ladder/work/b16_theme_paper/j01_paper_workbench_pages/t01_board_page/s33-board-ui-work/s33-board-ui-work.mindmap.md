@@ -33,12 +33,11 @@ built: from-topic .
   - `reports/` q01_paper_ladder <!-- @feeds/0 #9e5812 -->
 - Files <!-- @files #6ce6c5 -->
   - [py] [build_s33_board_ui_work.py](build_s33_board_ui_work.py) <!-- @files/0 #ff1fdb -->
-  - delivery/ <!-- @files/1 #404761 -->
-  - result/ <!-- @files/2 #d4a42c -->
-  - review/ <!-- @files/3 #7928fb -->
-  - [excalidraw] [s33-board-ui-work.excalidraw](s33-board-ui-work.excalidraw) <!-- @files/4 #bd41e9 -->
-  - [md] [s33-board-ui-work.md](s33-board-ui-work.md) <!-- @files/5 #5fedaf -->
-  - [png] [s33-board-ui-work.png](s33-board-ui-work.png) <!-- @files/6 #d6d01e -->
+  - result/ <!-- @files/1 #d4a42c -->
+  - review/ <!-- @files/2 #7928fb -->
+  - [excalidraw] [s33-board-ui-work.excalidraw](s33-board-ui-work.excalidraw) <!-- @files/3 #bd41e9 -->
+  - [md] [s33-board-ui-work.md](s33-board-ui-work.md) <!-- @files/4 #5fedaf -->
+  - [png] [s33-board-ui-work.png](s33-board-ui-work.png) <!-- @files/5 #d6d01e -->
     ![s33-board-ui-work.png](s33-board-ui-work.png)
 - Decided <!-- @decided #55615a -->
   - s33-D01 · The Board's Work shares its … <!-- @decided/0 #ce11d9 -->

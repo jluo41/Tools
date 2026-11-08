@@ -1,0 +1,16 @@
+run: r02_example_subgroup_robust
+kind: hard
+role: make
+type: fit
+scope: blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates/t02_example_subgroup
+skill: haipipe-task
+ticket: r02_example_subgroup_robust.sh
+worker: make_subgroup_robust.py
+says: the association in <the subgroup> under a second window (placeholder values)
+host: this machine
+time: a few seconds
+status: running
+started_by: '261106: the example Block of the work theme, placeholders only'
+reads: []
+writes:
+- result/values.csv

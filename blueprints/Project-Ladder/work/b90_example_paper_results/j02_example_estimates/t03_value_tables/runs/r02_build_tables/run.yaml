@@ -1,0 +1,18 @@
+run: r02_build_tables
+kind: hard
+role: make
+type: value
+scope: blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates/t03_value_tables
+skill: haipipe-paper-evidence
+ticket: r02_build_tables.sh
+worker: build_tables.py
+says: arrange the copied values into the Values tabs
+host: this machine
+time: a few seconds
+status: done
+started_by: '261105: the example Block of the work theme, placeholders only'
+reads:
+- blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates/t03_value_tables/runs/r01_copy_values/result/
+writes:
+- result/tables.json
+- result/*.csv

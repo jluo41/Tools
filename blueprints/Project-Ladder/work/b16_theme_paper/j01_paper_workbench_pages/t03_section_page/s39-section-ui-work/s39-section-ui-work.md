@@ -37,7 +37,7 @@ s39-section-ui-work/
 Decided
 -------
 
-(none yet: a decision is one line, s39-D01 · <what was decided> (<who> <date>))
+s39-D01 · Every closed bar shows its state word on its right, read from what it holds, and a section that waits on you shows its one waiting line under the closed bar: a step's Process bars carry the step's own word (waits for your sign, comes next, later), 📥 Input how many of its rows are missing, each Result card the word draft_steps gives it; 📌 Where this step stands shows only on a step that waits, runs or is signed; Skills is a right-rail section on every page, between Timeline and Files (261106). Live: focus_draft.step_html, draft_steps._fold.
 
 
 Open

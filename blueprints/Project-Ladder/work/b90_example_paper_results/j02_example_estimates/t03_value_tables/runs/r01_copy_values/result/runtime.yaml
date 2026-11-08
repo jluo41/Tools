@@ -1,0 +1,8 @@
+run: r01_copy_values
+status: completed
+exit_code: 0
+started_at: '2026-11-05T20:58:05Z'
+finished_at: '2026-11-05T20:58:05Z'
+started_by: '261105: the example Block of the work theme, placeholders only'
+ticket: runs/r01_copy_values/r01_copy_values.sh
+worker: this ticket

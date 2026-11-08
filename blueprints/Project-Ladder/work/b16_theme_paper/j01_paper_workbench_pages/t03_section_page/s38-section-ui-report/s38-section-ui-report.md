@@ -37,7 +37,7 @@ s38-section-ui-report/
 Decided
 -------
 
-(none yet: a decision is one line, s38-D01 · <what was decided> (<who> <date>))
+s38-D01 · Every closed bar shows its state word on its right, read from what it holds, and a section that waits on you shows its one waiting line under the closed bar; Text is one bar, 🔎 The text and its Evidence, its word how many items are found; Skills is a right-rail section on every page, between Timeline and Files (261106). Live: ui_parts._section, focus_page.render, focus_draft.text_html.
 
 
 Open

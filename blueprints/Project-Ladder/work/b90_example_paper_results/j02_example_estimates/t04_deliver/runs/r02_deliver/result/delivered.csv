@@ -1,0 +1,4 @@
+lane,file,version,from,new
+data,delivery/j02_example_estimates/t04_deliver/data/estimates-v1.csv,v1,j02_example_estimates/t01_example_main/runs/r01_example_main/result/values.csv,kept
+model,delivery/j02_example_estimates/t04_deliver/model/model-card-v1.md,v1,j02_example_estimates/t04_deliver/runs/r02_deliver/result/model-card.md,kept
+web,delivery/j02_example_estimates/t04_deliver/web/index.html,v1,j02_example_estimates/t04_deliver/runs/r01_build_site/result/index.html,kept

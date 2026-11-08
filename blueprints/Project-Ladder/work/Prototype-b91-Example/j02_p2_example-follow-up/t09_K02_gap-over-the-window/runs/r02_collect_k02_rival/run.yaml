@@ -1,0 +1,14 @@
+run: r02_collect_k02_rival
+kind: hard
+type: collect
+scope: Tools/blueprints/Project-Ladder/work/Prototype-b91-Example/j02_p2_example-follow-up/t09_K02_gap-over-the-window
+target: Prototype-b91-Example.j02-s01:k02-window @ k02_window
+ticket: r02_collect_k02_rival.html
+skill: haipipe-interaction
+agent: null
+signs: null
+status: waiting
+passes: []
+writes:
+- result/answer_collection.md
+feeds: []

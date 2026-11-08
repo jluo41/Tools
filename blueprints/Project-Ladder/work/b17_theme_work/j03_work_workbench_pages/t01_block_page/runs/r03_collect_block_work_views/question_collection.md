@@ -1,22 +1,35 @@
-# Block Work screen
+# Block Work screens
 
 for: b17.j03.t01-s52:theme_work.work_workbench_pages.block_page @ block_ui_work
 
 <!-- One card per question: ## QN · title, one short why, **the question?**, then - [x] A · my pick and
-     - [ ] B · another, each with its picture, then Why A: one line. collect.py check holds the limits. The earlier
-     question sets are in passes/p01-1031/ and passes/p02-1101/. -->
+     - [ ] B · another, each with its picture, then Why A: one line. collect.py check holds the limits; collect.py build
+     renders the form. The earlier question sets are in passes/p01-1031/ and passes/p02-1101/ and passes/p03-1101/. -->
 
-The Block's Work, redrawn the way b16 and b15 draw theirs: each view one step of the work. Each screen sits beside today's page.
+The Block's Work: the Report's views, Process first; two reviewed parts stay red. Redrawn 261106: skills moved to the rail, each bar its word, each view its own forms.
 
-## Q1 · A · Progress
+## Q1 · Where it stands
 
-A · Progress: what waits, each Job, the step each Task is on. A fresh reviewer passed it, 8.9 of 10; today's page scored 7.8 and failed Words 6 and One job 6.
+B · Status: one large sentence, what waits and the close line, above Process. It was in the reviewed 261101 design; no 261104 ask overruled it.
 
-**Build A · Progress as drawn?**
+**Keep Where it stands above Status's Process?**
 
-- [x] A · Yes: build it as drawn.
+- [ ] A · Yes: keep the sentence, as drawn in red.
   ![A](option-q1-a.png)
-- [ ] B · No: keep today's page.
+- [x] B · No: Status opens on Process, as today's page.
   ![B](option-q1-b.png)
 
-Why A: Each view is one step of the work, as b15 draws its Task UI.
+Why B: You deleted next-step lines on 261104; Interaction already says what waits.
+
+## Q2 · Its own Runs
+
+B · Status: the Block's own Runs (a plan, a collection) as a Process section, a row each with Open. Today they show only in Interaction and Files.
+
+**Show the Block's own Runs in Status's Process?**
+
+- [x] A · Yes: a Process section, each Run a row with Open.
+  ![A](option-q2-a.png)
+- [ ] B · No: they stay in Interaction and Files, as today.
+  ![B](option-q2-b.png)
+
+Why A: A Block's own soft Runs have no other row on its page.

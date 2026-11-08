@@ -1,0 +1,18 @@
+# Job page, the source Job (Report and Work) · stage 2 · round 3 · 261106
+
+```text
+page     http://127.0.0.1:5623/_board/workbench?layout=focus&path=blueprints/Project-Ladder/work/b90_example_paper_results/j01_example_source (Report and Work · MindMap, Status, Findings)
+answers  what: j01_example_source and its goal line (the title phrase is not shown) · where: the path down to j01 · here: MindMap with two Task cards, each fold worded "show"; Status led by "⏳ In progress · the source tables are returned; their checks are planned"; Findings as four numbered closed bars ("1 of 2 returned", "built 2026-11-05", "nothing yet") · do: Open all · Close all, show/hide, Open on the planned row, Enlarge map
+rules    1 ✅ · 2 ✅ · 3 ✅ · 4 ❌ the rail's Delivery reads as an instruction ("Nothing handed over yet: a delivery lands in this folder's delivery/ once it is agreed.") · 5 ❌ the MindMap's "🙋 Interaction" bar has no number; the Maps tab "source" has no state word. Section table ✅ MindMap · Status · Findings on Report and Work
+tasks    how many units came back: 2 clicks (Findings › Headlines, or Status › Tasks) · are the checks run: 2 clicks (Status › Tasks: t02 "not started"; Work › Next steps "1 planned" with Open) · see the source map: 2 clicks (Findings › Maps), drawn in place, Enlarge map opens it large
+walk     33 steps · 33 ✅ · 0 ❌ · 0 ⚠️; my probes add 0 console errors and 0 failed requests; the Maps frame now shows the map and the box fits it · ⚠️ at 390 each Status Task row's ▸ stands alone on a line above its name, and the side tabs lose their state words · ⚠️ at 390 the source map's root shrinks to a narrow column, about two words a line · ⚠️ a pop-out opened from Report still shows the Task's Work
+bar      Findings has the paper Evidence shape (numbered bars, side tabs, the map drawn in place); short of it: Delivery is three side tabs that each say "nothing yet" over the same one line, where paper shows nothing it lacks; Status's Task list is dense one-line rows
+rubrics  Glance 9 · Place 9 · Lean 7 · Words 8 · One job 8 · Same look 8 · Phone 7 · Salience 8 · Works 9 · Modern 8 · Plain 7 · Complete 9
+score    mean 8.1/10 · pass
+fixes    1. remove the three empty side tabs under Findings › 📦 Delivery (the closed bar "nothing yet" says it), and rename the rail Delivery's line to "Nothing handed over yet."
+         2. at 600 px or less, move each Status row's ▸ onto its name's line, keep each side tab's state word under its name, and move the map root above its children so it keeps its width
+         3. rename the MindMap's "🙋 Interaction" bar to "1 · 🙋 Interaction"; give the Maps tab a state word ("built 2026-11-05")
+landed   r02 fix 1 ✅ each empty Delivery tab now reads "Nothing handed over yet." (the delivery/model/, data/, web/ instructions are gone) · fix 2 ✅ Open all hides nothing: leaves beside the cards at 1440, under each card at 390, the box fits the map · fix 3 ✅ the state line leads Status (Report and Work), ✅ the Maps box fits its map, drawn as the fold opens; also ✅ "1 to do" became "1 planned" with an Open verb
+complete title phrase missing · state line shown · goal shown · Task names shown · Task goals one click (show / Open all) · Task state shown · Run state and headline one click · headline.txt, all_tables.csv, tables.csv, runtime.yaml one click · source map shown (Maps) · t02's planned Run one click (Open)
+questions r02's question stands: while nothing is handed over, should Findings drop 📦 Delivery or keep the closed bar reading "nothing yet" (fix 1 keeps the bar)? Findings › Headlines repeats Status's Task rows on a Job with no Questions: keep both? Should a pop-out opened from Report show the Task's Report?
+```

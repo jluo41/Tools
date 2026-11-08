@@ -1,0 +1,16 @@
+run: run-plan-evidence-d02
+kind: soft
+type: plan-evidence
+scope: Tools/blueprints/Project-Ladder/work/Prototype-b91-Example/j01_p1_example-questions/t02_D02_arm-balance
+target: d02
+ticket: run-plan-evidence-d02.md
+skill: haipipe-insight-evidence-plan
+agent: haipipe-insight-agent
+signs:
+- none
+status: done
+passes:
+- p01-1106
+writes:
+- t02_D02_arm-balance/question.md
+feeds: []

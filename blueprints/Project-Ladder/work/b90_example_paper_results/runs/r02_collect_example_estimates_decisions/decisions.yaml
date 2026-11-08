@@ -1,0 +1,5 @@
+- title: Subgroup tab
+  decision: The subgroup shows on its own Values tab, beside the main tab
+  said: (placeholder words) keep the subgroup on its own tab
+  when: 2026-11-06 01:28
+  applied_by: t03_value_tables r02_build_tables arranged the subgroup as its own tab

@@ -1,0 +1,16 @@
+run: r03_collect_k02_split
+kind: hard
+type: collect
+scope: Tools/blueprints/Project-Ladder/work/Prototype-b91-Example/j02_p2_example-follow-up/t09_K02_gap-over-the-window
+target: Prototype-b91-Example.j02-s01:k02-window @ k02_window
+ticket: null
+skill: haipipe-interaction
+agent: null
+signs: null
+status: done
+passes:
+- p01-1106
+writes:
+- result/answer_collection.md
+feeds: []
+source: chat

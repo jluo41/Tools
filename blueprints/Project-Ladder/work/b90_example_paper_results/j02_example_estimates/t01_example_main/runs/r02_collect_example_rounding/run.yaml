@@ -1,0 +1,14 @@
+run: r02_collect_example_rounding
+kind: hard
+type: collect
+scope: Tools/blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates/t01_example_main
+target: b90.j02.t01-s03:example_paper_results @ example-main-fit
+ticket: r02_collect_example_rounding.html
+skill: haipipe-interaction
+agent: null
+signs: null
+status: waiting
+passes: []
+writes:
+- result/answer_collection.md
+feeds: []

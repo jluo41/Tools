@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="haipipe-built" content="2026-10-31 17:14:49.279363">
-<title>Board Studio UI</title>
+<title>Board Studio UI</title><link rel="icon" href="data:,">
 <!-- GENERATED FILE by haipipe-interaction scripts/collect.py from this Run's question_collection.md: change the questions there
      and build again, never this page. -->
 <style>
@@ -33,7 +33,8 @@ code{font:12.5px ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--so
 .pop-x{position:sticky;top:0;float:right;margin:6px;padding:2px 10px;border:1px solid var(--line);border-radius:6px;background:#fff;font-size:13px;cursor:pointer;z-index:1}
 .label{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--red);margin:0 0 4px;font-weight:600;overflow-wrap:anywhere}
 h1{font-size:22px;margin:0 0 4px}
-.lead{color:var(--mut);margin:0 0 16px}
+.addr{margin:0 0 8px;font:12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--mut);overflow-wrap:anywhere}
+.lead{color:var(--fg);margin:0 0 16px}
 .card{border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin:0 0 12px}
 .card h2{font-size:16px;margin:0 0 4px;display:flex;gap:8px;align-items:baseline}
 .card h2 .qid{color:var(--on)}
@@ -41,15 +42,15 @@ h1{font-size:22px;margin:0 0 4px}
 .card h2 .applied{font-size:12px;color:var(--ok);font-weight:600;white-space:nowrap}
 .card h2 .applied.wip{color:var(--prop)}
 .applied-by{margin:0 0 6px;font-size:12.5px;color:var(--ok)}
-.why{margin:0 0 8px;color:var(--mut)}
-pre.sketch{background:var(--soft);border-radius:8px;padding:8px 10px;overflow-x:auto;font:12px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;margin:0 0 8px}
+.why{margin:0 0 8px;color:var(--fg)}
+pre.sketch{background:var(--soft);color:var(--fg);border-radius:8px;padding:8px 10px;overflow-x:auto;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;margin:0 0 8px}
 img.pic{max-width:100%;max-height:220px;border:1px solid var(--line);border-radius:8px;margin:0 0 8px}
 fieldset{border:0;margin:0;padding:0}
 .ask{font-weight:600;padding:0;margin:0 0 6px}
 .opt{display:flex;gap:8px;align-items:baseline;padding:5px 10px;border:1px solid var(--line);border-radius:8px;margin:0 0 4px;cursor:pointer}
 .opt:has(input:checked){border-color:var(--on);background:var(--wash)}
 .opt .rec{font-size:11px;color:var(--ok);border:1px solid var(--ok);border-radius:6px;padding:0 5px;margin-left:8px;white-space:nowrap}
-.because{font-size:13px;color:var(--mut);margin:4px 0 6px}
+.because{font-size:13.5px;color:var(--fg);margin:4px 0 6px}
 textarea{width:100%;font:inherit;font-size:13.5px;padding:5px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);resize:vertical}
 textarea.note{min-height:32px;field-sizing:content}
 #out{min-height:120px;font:12px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--soft)}
@@ -62,15 +63,16 @@ details.box{margin:4px 0 0;color:var(--mut);font-size:13px}
 </head>
 <body>
 <div class="wrap">
-<p class="label">Questions for you · r03_collect_board_ui_studio · b16.j01.t01-s34:theme_paper.paper_workbench_pages.board_page @ board_ui_studio</p>
+<p class="label">Questions for you</p>
 <h1>Board Studio UI</h1>
+<p class="addr">r03_collect_board_ui_studio · b16.j01.t01-s34:theme_paper.paper_workbench_pages.board_page @ board_ui_studio</p>
 <p class="lead">The Studio's view buttons are its groups, so one choice decides them. Answered 2026-11-04 14:10: your picks and notes are shown, read only; a flag on a question says whether it is applied or in progress. The answers: <a href="result/answer_collection.md">result/answer_collection.md</a>.
 The questions as Markdown: <a href="question_collection.md">question_collection.md</a>.</p>
 <section class="card" id="Q1"><h2><span class="qid">Q1</span>Studio groups<span class="state" id="state-Q1"></span><span class="applied" id="applied-Q1"></span></h2><p class="applied-by" id="applied-by-Q1" hidden></p><p class="why">Groups are the Board Studio's view buttons; one per group, no All.</p><fieldset><legend class="ask">Which groups does the Board's Studio show?</legend><label class="opt"><input type="radio" name="Q1" value="A"><span><b>A</b> Story, Plan, Related, Ideation, then Other.</span></label><label class="opt"><input type="radio" name="Q1" value="B" checked><span><b>B</b> The Block's own groups from _groups.txt, as they are.<span class="rec">my pick</span></span></label><label class="opt own"><input type="radio" name="Q1" value="own"><span><b>✍</b> My own decision</span></label></fieldset><div class="previews"><figure class="pv" data-q="Q1" data-key="A"><figcaption><b>A</b><a href="option-a.html" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="hpPop(this);var r=document.querySelector('input[name=\'Q1\'][value=\'A\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><iframe src="option-a.html" title="option A" tabindex="-1"></iframe><span class="pv-hit"></span></div></figure><figure class="pv" data-q="Q1" data-key="B"><figcaption><b>B</b><a href="option-b.html" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="hpPop(this);var r=document.querySelector('input[name=\'Q1\'][value=\'B\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><iframe src="option-b.html" title="option B" tabindex="-1"></iframe><span class="pv-hit"></span></div></figure></div><p class="because">Why B: Groups already live in _groups.txt; no new list to keep.</p><textarea class="note" id="note-Q1" rows="1" placeholder="Note (optional)"></textarea></section>
 <details class="box"><summary>The text Copy feedback sends</summary><textarea id="out" readonly></textarea></details>
 </div>
 <div class="send"><button type="button" data-copy>Copy feedback</button><button type="button" class="quiet" id="reset">Back to my picks</button><span id="copied"></span></div>
-<script type="application/json" id="form-data">{"run": "r03_collect_board_ui_studio", "title": "Board Studio UI", "built": "2026-10-31 17:14:49.279363", "questions": [{"id": "Q1", "title": "Studio groups", "pick": "B", "options": [{"key": "A", "text": "Story, Plan, Related, Ideation, then Other."}, {"key": "B", "text": "The Block's own groups from _groups.txt, as they are."}]}], "answered": {"received": "2026-11-04 14:10", "picks": {"Q1": {"pick": "B", "note": "JL in the chat: \"sutdio, not need that, I get confused. But if possible, we can make them consistent as well, that is flexible.\""}}}}</script>
+<script type="application/json" id="form-data">{"run": "r03_collect_board_ui_studio", "title": "Board Studio UI", "built": "2026-10-31 17:14:49.279363", "questions": [{"id": "Q1", "title": "Studio groups", "pick": "B", "options": [{"key": "A", "text": "Story, Plan, Related, Ideation, then Other."}, {"key": "B", "text": "The Block's own groups from _groups.txt, as they are."}]}], "applied": true, "answered": {"received": "2026-11-04 14:10", "picks": {"Q1": {"pick": "B", "note": "JL in the chat: \"sutdio, not need that, I get confused. But if possible, we can make them consistent as well, that is flexible.\""}}}}</script>
 <script type="text/markdown" id="haipipe-questions"># Board Studio UI
 
 for: b16.j01.t01-s34:theme_paper.paper_workbench_pages.board_page @ board_ui_studio
@@ -240,8 +242,9 @@ Why B: Groups already live in _groups.txt; no new list to keep.
     if (f.contentDocument && f.contentDocument.readyState === 'complete') diffQuestion(q);
   });
   /* a question already applied carries its flag (JL 261031: "if we already fix them, then give them the flags"):
-     applied.md beside the form, written by collect.py applied, read each time the form opens */
-  if (window.fetch) fetch('applied.md', {cache: 'no-store'}).then(function(r){ return r.ok ? r.text() : ''; })
+     applied.md beside the form, written by collect.py applied (which rebuilds the form), read each time the form
+     opens; only a form built with one beside it asks for it, so a form with none sends no request that answers 404 */
+  if (window.fetch && FORM.applied) fetch('applied.md', {cache: 'no-store'}).then(function(r){ return r.ok ? r.text() : ''; })
     .then(function(text){ text.split('\n').forEach(function(line){
       var m = /^(Q\d+) · (applied|in progress) · (\d{4}-\d{2}-\d{2}) \d{2}:\d{2} · (.+?)\s*$/.exec(line);
       var flag = m && document.getElementById('applied-' + m[1]), by = m && document.getElementById('applied-by-' + m[1]);

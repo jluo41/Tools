@@ -1,0 +1,5 @@
+power:
+  smallest_effect_pp: 20
+  alpha: 0.05
+  target_power: 0.8
+seed: 7

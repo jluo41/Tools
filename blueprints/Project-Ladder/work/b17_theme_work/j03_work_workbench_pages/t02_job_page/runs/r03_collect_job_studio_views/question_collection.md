@@ -1,22 +1,22 @@
-# Job Studio screen
+# Job Studio screens
 
 for: b17.j03.t02-s56:theme_work.work_workbench_pages.job_page @ job_ui_studio
 
 <!-- One card per question: ## QN · title, one short why, **the question?**, then - [x] A · my pick and
      - [ ] B · another, each with its picture, then Why A: one line. collect.py check holds the limits; collect.py build
-     renders the form. The earlier questions (261031) are in passes/p01-1031/. -->
+     renders the form. The earlier question sets are in passes/p01-1031/ and passes/p02-1101/. -->
 
-The Job's Studio, redrawn as one screen per view on a made-up example Block. Each passed a fresh review; today's page is beside it.
+A Job's Studio: flat rows as live; two reviewed parts stay red. Redrawn 261106: Skills on the rail, s11's row flagged 🙋, its form waiting.
 
 ## Q1 · A · Display
 
-A · Display: the topic it makes, large, then its own, then its Tasks'. A fresh reviewer passed it in round 2, 9.1 of 10; today's page scored 7.5 and failed Lean 6 and Words 6.
+A · Display: the rows as live, with two reviewed parts in red: This Job makes, its Block topic's card first, and the rows grouped Its own, Its Tasks'.
 
-**Build A · Display as drawn?**
+**Build A · Display's red parts as drawn?**
 
-- [x] A · Yes: build it as drawn.
+- [x] A · Yes: This Job makes first, then the grouped rows.
   ![A](option-q1-a.png)
-- [ ] B · No: keep today's page.
+- [ ] B · No: flat rows only, as today's page.
   ![B](option-q1-b.png)
 
-Why A: It passed every rubric; today's page did not.
+Why A: The topic this Job makes is the one you answer.

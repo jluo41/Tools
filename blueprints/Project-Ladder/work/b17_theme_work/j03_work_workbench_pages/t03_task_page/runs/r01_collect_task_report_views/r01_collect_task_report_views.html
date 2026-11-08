@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="haipipe-built" content="2026-11-01 01:48:35.391871">
-<title>Task Report screens</title>
+<meta name="haipipe-built" content="2026-11-06 02:23:39.546477">
+<title>Task Report screens</title><link rel="icon" href="data:,">
 <!-- GENERATED FILE by haipipe-interaction scripts/collect.py from this Run's question_collection.md: change the questions there
      and build again, never this page. -->
 <style>
@@ -25,9 +25,16 @@ code{font:12.5px ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--so
 .pv-frame img{width:100%;display:block}
 .pv-hit{position:absolute;inset:0}
 .pv.on{border-color:var(--on);box-shadow:0 0 0 2px var(--wash)}
+.pop{position:fixed;inset:0;z-index:50;background:rgba(20,24,30,.72);display:flex;align-items:center;justify-content:center;padding:24px;cursor:zoom-out}
+.pop[hidden]{display:none}
+.pop-box{position:relative;background:#fff;border-radius:10px;max-width:96vw;max-height:94vh;overflow:auto;cursor:default}
+.pop-box img{display:block;max-width:94vw;max-height:90vh;width:auto;height:auto}
+.pop-box iframe{display:block;width:92vw;height:88vh;border:0}
+.pop-x{position:sticky;top:0;float:right;margin:6px;padding:2px 10px;border:1px solid var(--line);border-radius:6px;background:#fff;font-size:13px;cursor:pointer;z-index:1}
 .label{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--red);margin:0 0 4px;font-weight:600;overflow-wrap:anywhere}
 h1{font-size:22px;margin:0 0 4px}
-.lead{color:var(--mut);margin:0 0 16px}
+.addr{margin:0 0 8px;font:12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--mut);overflow-wrap:anywhere}
+.lead{color:var(--fg);margin:0 0 16px}
 .card{border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin:0 0 12px}
 .card h2{font-size:16px;margin:0 0 4px;display:flex;gap:8px;align-items:baseline}
 .card h2 .qid{color:var(--on)}
@@ -35,15 +42,15 @@ h1{font-size:22px;margin:0 0 4px}
 .card h2 .applied{font-size:12px;color:var(--ok);font-weight:600;white-space:nowrap}
 .card h2 .applied.wip{color:var(--prop)}
 .applied-by{margin:0 0 6px;font-size:12.5px;color:var(--ok)}
-.why{margin:0 0 8px;color:var(--mut)}
-pre.sketch{background:var(--soft);border-radius:8px;padding:8px 10px;overflow-x:auto;font:12px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;margin:0 0 8px}
+.why{margin:0 0 8px;color:var(--fg)}
+pre.sketch{background:var(--soft);color:var(--fg);border-radius:8px;padding:8px 10px;overflow-x:auto;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;margin:0 0 8px}
 img.pic{max-width:100%;max-height:220px;border:1px solid var(--line);border-radius:8px;margin:0 0 8px}
 fieldset{border:0;margin:0;padding:0}
 .ask{font-weight:600;padding:0;margin:0 0 6px}
 .opt{display:flex;gap:8px;align-items:baseline;padding:5px 10px;border:1px solid var(--line);border-radius:8px;margin:0 0 4px;cursor:pointer}
 .opt:has(input:checked){border-color:var(--on);background:var(--wash)}
 .opt .rec{font-size:11px;color:var(--ok);border:1px solid var(--ok);border-radius:6px;padding:0 5px;margin-left:8px;white-space:nowrap}
-.because{font-size:13px;color:var(--mut);margin:4px 0 6px}
+.because{font-size:13.5px;color:var(--fg);margin:4px 0 6px}
 textarea{width:100%;font:inherit;font-size:13.5px;padding:5px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);resize:vertical}
 textarea.note{min-height:32px;field-sizing:content}
 #out{min-height:120px;font:12px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--soft)}
@@ -56,72 +63,124 @@ details.box{margin:4px 0 0;color:var(--mut);font-size:13px}
 </head>
 <body>
 <div class="wrap">
-<p class="label">Questions for you · r01_collect_task_report_views · b17.j03.t03-s57:theme_work.work_workbench_pages.task_page @ task_ui_report</p>
+<p class="label">Questions for you</p>
 <h1>Task Report screens</h1>
-<p class="lead">The Task's Report, redrawn the way b16 and b15 draw theirs: each view one step of the work. Each screen sits beside today's page. My pick is selected; change any, then Copy feedback and paste it to me.
+<p class="addr">r01_collect_task_report_views · b17.j03.t03-s57:theme_work.work_workbench_pages.task_page @ task_ui_report</p>
+<p class="lead">A Task's Report: the MindMap, then five step views, the target. Redrawn 261106: each bar its word, each Run's words on the map (Q6), forms by step (Q7). My pick is selected; change any, then Copy feedback and paste it to me.
 The questions as Markdown: <a href="question_collection.md">question_collection.md</a>.</p>
-<section class="card" id="Q1"><h2><span class="qid">Q1</span>A · MindMap<span class="state" id="state-Q1"></span><span class="applied" id="applied-Q1"></span></h2><p class="applied-by" id="applied-by-Q1" hidden></p><p class="why">A · MindMap: its topic and its Runs by what they do. A fresh reviewer passed it, 9.4 of 10; today's page scored 7.8 and failed One job 5 and Salience 6.</p><fieldset><legend class="ask">Build A · MindMap as drawn?</legend><label class="opt"><input type="radio" name="Q1" value="A" checked><span><b>A</b> Yes: build it as drawn.<span class="rec">my pick</span></span></label><label class="opt"><input type="radio" name="Q1" value="B"><span><b>B</b> No: keep today's page.</span></label><label class="opt own"><input type="radio" name="Q1" value="own"><span><b>✍</b> My own decision</span></label></fieldset><div class="previews"><figure class="pv" data-q="Q1" data-key="A"><figcaption><b>A</b><a href="option-q1-a.png" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="var r=document.querySelector('input[name=\'Q1\'][value=\'A\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><img src="option-q1-a.png" alt="option A"><span class="pv-hit"></span></div></figure><figure class="pv" data-q="Q1" data-key="B"><figcaption><b>B</b><a href="option-q1-b.png" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="var r=document.querySelector('input[name=\'Q1\'][value=\'B\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><img src="option-q1-b.png" alt="option B"><span class="pv-hit"></span></div></figure></div><p class="because">Why A: Each view is one step of the work, as b15 draws its Task UI.</p><textarea class="note" id="note-Q1" rows="1" placeholder="Note (optional)"></textarea></section><section class="card" id="Q2"><h2><span class="qid">Q2</span>B · Plan<span class="state" id="state-Q2"></span><span class="applied" id="applied-Q2"></span></h2><p class="applied-by" id="applied-by-Q2" hidden></p><p class="why">B · Plan: done when, what it makes and who makes it. A fresh reviewer passed it, 9.1 of 10; today's page scored 7.8 and failed One job 5 and Salience 6.</p><fieldset><legend class="ask">Build B · Plan as drawn?</legend><label class="opt"><input type="radio" name="Q2" value="A" checked><span><b>A</b> Yes: build it as drawn.<span class="rec">my pick</span></span></label><label class="opt"><input type="radio" name="Q2" value="B"><span><b>B</b> No: keep today's page.</span></label><label class="opt own"><input type="radio" name="Q2" value="own"><span><b>✍</b> My own decision</span></label></fieldset><div class="previews"><figure class="pv" data-q="Q2" data-key="A"><figcaption><b>A</b><a href="option-q2-a.png" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="var r=document.querySelector('input[name=\'Q2\'][value=\'A\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><img src="option-q2-a.png" alt="option A"><span class="pv-hit"></span></div></figure><figure class="pv" data-q="Q2" data-key="B"><figcaption><b>B</b><a href="option-q2-b.png" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="var r=document.querySelector('input[name=\'Q2\'][value=\'B\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><img src="option-q2-b.png" alt="option B"><span class="pv-hit"></span></div></figure></div><p class="because">Why A: Each view is one step of the work, as b15 draws its Task UI.</p><textarea class="note" id="note-Q2" rows="1" placeholder="Note (optional)"></textarea></section><section class="card" id="Q3"><h2><span class="qid">Q3</span>C · Build<span class="state" id="state-Q3"></span><span class="applied" id="applied-Q3"></span></h2><p class="applied-by" id="applied-by-Q3" hidden></p><p class="why">C · Build: the code review, how the code was built. A fresh reviewer passed it, 8.9 of 10; today's page scored 7.8 and failed One job 5 and Salience 6.</p><fieldset><legend class="ask">Build C · Build as drawn?</legend><label class="opt"><input type="radio" name="Q3" value="A" checked><span><b>A</b> Yes: build it as drawn.<span class="rec">my pick</span></span></label><label class="opt"><input type="radio" name="Q3" value="B"><span><b>B</b> No: keep today's page.</span></label><label class="opt own"><input type="radio" name="Q3" value="own"><span><b>✍</b> My own decision</span></label></fieldset><div class="previews"><figure class="pv" data-q="Q3" data-key="A"><figcaption><b>A</b><a href="option-q3-a.png" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="var r=document.querySelector('input[name=\'Q3\'][value=\'A\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><img src="option-q3-a.png" alt="option A"><span class="pv-hit"></span></div></figure><figure class="pv" data-q="Q3" data-key="B"><figcaption><b>B</b><a href="option-q3-b.png" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="var r=document.querySelector('input[name=\'Q3\'][value=\'B\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><img src="option-q3-b.png" alt="option B"><span class="pv-hit"></span></div></figure></div><p class="because">Why A: Each view is one step of the work, as b15 draws its Task UI.</p><textarea class="note" id="note-Q3" rows="1" placeholder="Note (optional)"></textarea></section><section class="card" id="Q4"><h2><span class="qid">Q4</span>D · Read<span class="state" id="state-Q4"></span><span class="applied" id="applied-Q4"></span></h2><p class="applied-by" id="applied-by-Q4" hidden></p><p class="why">D · Read: the headline, the Table Card, the coefficient plot. A fresh reviewer passed it, 9.1 of 10; today's page scored 7.8 and failed One job 5 and Salience 6.</p><fieldset><legend class="ask">Build D · Read as drawn?</legend><label class="opt"><input type="radio" name="Q4" value="A" checked><span><b>A</b> Yes: build it as drawn.<span class="rec">my pick</span></span></label><label class="opt"><input type="radio" name="Q4" value="B"><span><b>B</b> No: keep today's page.</span></label><label class="opt own"><input type="radio" name="Q4" value="own"><span><b>✍</b> My own decision</span></label></fieldset><div class="previews"><figure class="pv" data-q="Q4" data-key="A"><figcaption><b>A</b><a href="option-q4-a.png" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="var r=document.querySelector('input[name=\'Q4\'][value=\'A\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><img src="option-q4-a.png" alt="option A"><span class="pv-hit"></span></div></figure><figure class="pv" data-q="Q4" data-key="B"><figcaption><b>B</b><a href="option-q4-b.png" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="var r=document.querySelector('input[name=\'Q4\'][value=\'B\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><img src="option-q4-b.png" alt="option B"><span class="pv-hit"></span></div></figure></div><p class="because">Why A: Each view is one step of the work, as b15 draws its Task UI.</p><textarea class="note" id="note-Q4" rows="1" placeholder="Note (optional)"></textarea></section>
+<section class="card" id="Q1"><h2><span class="qid">Q1</span>B · Plan<span class="state" id="state-Q1"></span><span class="applied" id="applied-Q1"></span></h2><p class="applied-by" id="applied-by-Q1" hidden></p><p class="why">B · Plan: done when, what it makes, where it lands; drawn closed, 🙋 Interaction last. It passed review on 261101 at 9.1.</p><fieldset><legend class="ask">Build B · Plan as drawn?</legend><label class="opt"><input type="radio" name="Q1" value="A" checked><span><b>A</b> Yes: build it as drawn.<span class="rec">my pick</span></span></label><label class="opt"><input type="radio" name="Q1" value="B"><span><b>B</b> No: keep today's page.</span></label><label class="opt own"><input type="radio" name="Q1" value="own"><span><b>✍</b> My own decision</span></label></fieldset><div class="previews"><figure class="pv" data-q="Q1" data-key="A"><figcaption><b>A</b><a href="option-q1-a.png" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="hpPop(this);var r=document.querySelector('input[name=\'Q1\'][value=\'A\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><img src="option-q1-a.png" alt="option A"><span class="pv-hit"></span></div></figure><figure class="pv" data-q="Q1" data-key="B"><figcaption><b>B</b><a href="option-q1-b.png" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="hpPop(this);var r=document.querySelector('input[name=\'Q1\'][value=\'B\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><img src="option-q1-b.png" alt="option B"><span class="pv-hit"></span></div></figure></div><p class="because">Why A: Each step shows its own results; today's page shows only Status.</p><textarea class="note" id="note-Q1" rows="1" placeholder="Note (optional)"></textarea></section><section class="card" id="Q2"><h2><span class="qid">Q2</span>C · Build<span class="state" id="state-Q2"></span><span class="applied" id="applied-Q2"></span></h2><p class="applied-by" id="applied-by-Q2" hidden></p><p class="why">C · Build: the code review, then the code as side tabs. It passed review on 261101 at 8.9.</p><fieldset><legend class="ask">Build C · Build as drawn?</legend><label class="opt"><input type="radio" name="Q2" value="A" checked><span><b>A</b> Yes: build it as drawn.<span class="rec">my pick</span></span></label><label class="opt"><input type="radio" name="Q2" value="B"><span><b>B</b> No: keep today's page.</span></label><label class="opt own"><input type="radio" name="Q2" value="own"><span><b>✍</b> My own decision</span></label></fieldset><div class="previews"><figure class="pv" data-q="Q2" data-key="A"><figcaption><b>A</b><a href="option-q2-a.png" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="hpPop(this);var r=document.querySelector('input[name=\'Q2\'][value=\'A\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><img src="option-q2-a.png" alt="option A"><span class="pv-hit"></span></div></figure><figure class="pv" data-q="Q2" data-key="B"><figcaption><b>B</b><a href="option-q2-b.png" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="hpPop(this);var r=document.querySelector('input[name=\'Q2\'][value=\'B\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><img src="option-q2-b.png" alt="option B"><span class="pv-hit"></span></div></figure></div><p class="because">Why A: Each step shows its own results; today's page shows only Status.</p><textarea class="note" id="note-Q2" rows="1" placeholder="Note (optional)"></textarea></section><section class="card" id="Q3"><h2><span class="qid">Q3</span>D · Run<span class="state" id="state-Q3"></span><span class="applied" id="applied-Q3"></span></h2><p class="applied-by" id="applied-by-Q3" hidden></p><p class="why">D · Run, new: each Run with its status and what it made; Open pops the Run out. Not reviewed yet.</p><fieldset><legend class="ask">Build D · Run as drawn?</legend><label class="opt"><input type="radio" name="Q3" value="A" checked><span><b>A</b> Yes: build it as drawn.<span class="rec">my pick</span></span></label><label class="opt"><input type="radio" name="Q3" value="B"><span><b>B</b> No: keep today's page.</span></label><label class="opt own"><input type="radio" name="Q3" value="own"><span><b>✍</b> My own decision</span></label></fieldset><div class="previews"><figure class="pv" data-q="Q3" data-key="A"><figcaption><b>A</b><a href="option-q3-a.png" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="hpPop(this);var r=document.querySelector('input[name=\'Q3\'][value=\'A\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><img src="option-q3-a.png" alt="option A"><span class="pv-hit"></span></div></figure><figure class="pv" data-q="Q3" data-key="B"><figcaption><b>B</b><a href="option-q3-b.png" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="hpPop(this);var r=document.querySelector('input[name=\'Q3\'][value=\'B\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><img src="option-q3-b.png" alt="option B"><span class="pv-hit"></span></div></figure></div><p class="because">Why A: Each step shows its own results; today's page shows only Status.</p><textarea class="note" id="note-Q3" rows="1" placeholder="Note (optional)"></textarea></section><section class="card" id="Q4"><h2><span class="qid">Q4</span>E · Read<span class="state" id="state-Q4"></span><span class="applied" id="applied-Q4"></span></h2><p class="applied-by" id="applied-by-Q4" hidden></p><p class="why">E · Read, was D: the headline, mark read, the Table Card, the plot. It passed review on 261101 at 9.1.</p><fieldset><legend class="ask">Build E · Read as drawn?</legend><label class="opt"><input type="radio" name="Q4" value="A" checked><span><b>A</b> Yes: build it as drawn.<span class="rec">my pick</span></span></label><label class="opt"><input type="radio" name="Q4" value="B"><span><b>B</b> No: keep today's page.</span></label><label class="opt own"><input type="radio" name="Q4" value="own"><span><b>✍</b> My own decision</span></label></fieldset><div class="previews"><figure class="pv" data-q="Q4" data-key="A"><figcaption><b>A</b><a href="option-q4-a.png" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="hpPop(this);var r=document.querySelector('input[name=\'Q4\'][value=\'A\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><img src="option-q4-a.png" alt="option A"><span class="pv-hit"></span></div></figure><figure class="pv" data-q="Q4" data-key="B"><figcaption><b>B</b><a href="option-q4-b.png" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="hpPop(this);var r=document.querySelector('input[name=\'Q4\'][value=\'B\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><img src="option-q4-b.png" alt="option B"><span class="pv-hit"></span></div></figure></div><p class="because">Why A: Each step shows its own results; today's page shows only Status.</p><textarea class="note" id="note-Q4" rows="1" placeholder="Note (optional)"></textarea></section><section class="card" id="Q5"><h2><span class="qid">Q5</span>F · Close<span class="state" id="state-Q5"></span><span class="applied" id="applied-Q5"></span></h2><p class="applied-by" id="applied-by-Q5" hidden></p><p class="why">F · Close, new: the close checklist's state, read only, and what it ticks. Not reviewed yet.</p><fieldset><legend class="ask">Build F · Close as drawn?</legend><label class="opt"><input type="radio" name="Q5" value="A" checked><span><b>A</b> Yes: build it as drawn.<span class="rec">my pick</span></span></label><label class="opt"><input type="radio" name="Q5" value="B"><span><b>B</b> No: keep today's page.</span></label><label class="opt own"><input type="radio" name="Q5" value="own"><span><b>✍</b> My own decision</span></label></fieldset><div class="previews"><figure class="pv" data-q="Q5" data-key="A"><figcaption><b>A</b><a href="option-q5-a.png" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="hpPop(this);var r=document.querySelector('input[name=\'Q5\'][value=\'A\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><img src="option-q5-a.png" alt="option A"><span class="pv-hit"></span></div></figure><figure class="pv" data-q="Q5" data-key="B"><figcaption><b>B</b><a href="option-q5-b.png" target="_blank" rel="noopener">Open ↗</a></figcaption><div class="pv-frame" onclick="hpPop(this);var r=document.querySelector('input[name=\'Q5\'][value=\'B\']');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))"><img src="option-q5-b.png" alt="option B"><span class="pv-hit"></span></div></figure></div><p class="because">Why A: Each step shows its own results; today's page shows only Status.</p><textarea class="note" id="note-Q5" rows="1" placeholder="Note (optional)"></textarea></section><section class="card" id="Q6"><h2><span class="qid">Q6</span>A · MindMap<span class="state" id="state-Q6"></span><span class="applied" id="applied-Q6"></span></h2><p class="applied-by" id="applied-by-Q6" hidden></p><p class="why">A · MindMap now draws each Run with what it says, as the live page does since 261106; D · Run keeps each Run's mark.</p><pre class="sketch">A  Runs ── r01 · the model, 2016 to 2019 ── r04 · Window choice
+B  Runs ── ✅ r01_years_16_19 ── ⏳ r02_years_16_23</pre><fieldset><legend class="ask">What does a Task's map show for each Run?</legend><label class="opt"><input type="radio" name="Q6" value="A" checked><span><b>A</b> What the Run says it finds out or makes, as drawn.<span class="rec">my pick</span></span></label><label class="opt"><input type="radio" name="Q6" value="B"><span><b>B</b> Its mark, as drawn on 261105.</span></label><label class="opt own"><input type="radio" name="Q6" value="own"><span><b>✍</b> My own decision</span></label></fieldset><p class="because">Why A: The map says what each Run is for; D · Run shows where each stands.</p><textarea class="note" id="note-Q6" rows="1" placeholder="Note (optional)"></textarea></section><section class="card" id="Q7"><h2><span class="qid">Q7</span>Where forms show<span class="state" id="state-Q7"></span><span class="applied" id="applied-Q7"></span></h2><p class="applied-by" id="applied-by-Q7" hidden></p><p class="why">Today's Task page shows every form in MindMap's 🙋 Interaction. On the six views, the drawing puts Window choice in E · Read, whose headline waits on it.</p><pre class="sketch">A  E · Read     4 · 🙋 Interaction   2 wait for you
+   A · MindMap  🙋 Interaction       nothing yet
+B  A · MindMap  🙋 Interaction       2 wait for you
+   E · Read     4 · 🙋 Interaction   nothing yet</pre><fieldset><legend class="ask">Where does a Task's form show?</legend><label class="opt"><input type="radio" name="Q7" value="A" checked><span><b>A</b> In the step its answer changes; MindMap keeps the rest.<span class="rec">my pick</span></span></label><label class="opt"><input type="radio" name="Q7" value="B"><span><b>B</b> In MindMap, every form, as today's page.</span></label><label class="opt own"><input type="radio" name="Q7" value="own"><span><b>✍</b> My own decision</span></label></fieldset><p class="because">Why A: You answer it beside the headline it changes.</p><textarea class="note" id="note-Q7" rows="1" placeholder="Note (optional)"></textarea></section>
 <details class="box"><summary>The text Copy feedback sends</summary><textarea id="out" readonly></textarea></details>
 </div>
 <div class="send"><button type="button" data-copy>Copy feedback</button><button type="button" class="quiet" id="reset">Back to my picks</button><span id="copied"></span></div>
-<script type="application/json" id="form-data">{"run": "r01_collect_task_report_views", "title": "Task Report screens", "built": "2026-11-01 01:48:35.391871", "questions": [{"id": "Q1", "title": "A · MindMap", "pick": "A", "options": [{"key": "A", "text": "Yes: build it as drawn."}, {"key": "B", "text": "No: keep today's page."}]}, {"id": "Q2", "title": "B · Plan", "pick": "A", "options": [{"key": "A", "text": "Yes: build it as drawn."}, {"key": "B", "text": "No: keep today's page."}]}, {"id": "Q3", "title": "C · Build", "pick": "A", "options": [{"key": "A", "text": "Yes: build it as drawn."}, {"key": "B", "text": "No: keep today's page."}]}, {"id": "Q4", "title": "D · Read", "pick": "A", "options": [{"key": "A", "text": "Yes: build it as drawn."}, {"key": "B", "text": "No: keep today's page."}]}]}</script>
+<script type="application/json" id="form-data">{"run": "r01_collect_task_report_views", "title": "Task Report screens", "built": "2026-11-06 02:23:39.546477", "questions": [{"id": "Q1", "title": "B · Plan", "pick": "A", "options": [{"key": "A", "text": "Yes: build it as drawn."}, {"key": "B", "text": "No: keep today's page."}]}, {"id": "Q2", "title": "C · Build", "pick": "A", "options": [{"key": "A", "text": "Yes: build it as drawn."}, {"key": "B", "text": "No: keep today's page."}]}, {"id": "Q3", "title": "D · Run", "pick": "A", "options": [{"key": "A", "text": "Yes: build it as drawn."}, {"key": "B", "text": "No: keep today's page."}]}, {"id": "Q4", "title": "E · Read", "pick": "A", "options": [{"key": "A", "text": "Yes: build it as drawn."}, {"key": "B", "text": "No: keep today's page."}]}, {"id": "Q5", "title": "F · Close", "pick": "A", "options": [{"key": "A", "text": "Yes: build it as drawn."}, {"key": "B", "text": "No: keep today's page."}]}, {"id": "Q6", "title": "A · MindMap", "pick": "A", "options": [{"key": "A", "text": "What the Run says it finds out or makes, as drawn."}, {"key": "B", "text": "Its mark, as drawn on 261105."}]}, {"id": "Q7", "title": "Where forms show", "pick": "A", "options": [{"key": "A", "text": "In the step its answer changes; MindMap keeps the rest."}, {"key": "B", "text": "In MindMap, every form, as today's page."}]}]}</script>
 <script type="text/markdown" id="haipipe-questions"># Task Report screens
 
 for: b17.j03.t03-s57:theme_work.work_workbench_pages.task_page @ task_ui_report
 
-The Task's Report, redrawn the way b16 and b15 draw theirs: each view one step of the work. Each screen sits beside today's page.
+A Task's Report: the MindMap, then five step views, the target. Redrawn 261106: each bar its word, each Run's words on the map (Q6), forms by step (Q7).
 
-## Q1 · A · MindMap
+## Q1 · B · Plan
 
-A · MindMap: its topic and its Runs by what they do. A fresh reviewer passed it, 9.4 of 10; today's page scored 7.8 and failed One job 5 and Salience 6.
+B · Plan: done when, what it makes, where it lands; drawn closed, 🙋 Interaction last. It passed review on 261101 at 9.1.
 
-**Build A · MindMap as drawn?**
+**Build B · Plan as drawn?**
 
 - [x] A · Yes: build it as drawn.
   ![A](option-q1-a.png)
 - [ ] B · No: keep today's page.
   ![B](option-q1-b.png)
 
-Why A: Each view is one step of the work, as b15 draws its Task UI.
+Why A: Each step shows its own results; today's page shows only Status.
 
-## Q2 · B · Plan
+## Q2 · C · Build
 
-B · Plan: done when, what it makes and who makes it. A fresh reviewer passed it, 9.1 of 10; today's page scored 7.8 and failed One job 5 and Salience 6.
+C · Build: the code review, then the code as side tabs. It passed review on 261101 at 8.9.
 
-**Build B · Plan as drawn?**
+**Build C · Build as drawn?**
 
 - [x] A · Yes: build it as drawn.
   ![A](option-q2-a.png)
 - [ ] B · No: keep today's page.
   ![B](option-q2-b.png)
 
-Why A: Each view is one step of the work, as b15 draws its Task UI.
+Why A: Each step shows its own results; today's page shows only Status.
 
-## Q3 · C · Build
+## Q3 · D · Run
 
-C · Build: the code review, how the code was built. A fresh reviewer passed it, 8.9 of 10; today's page scored 7.8 and failed One job 5 and Salience 6.
+D · Run, new: each Run with its status and what it made; Open pops the Run out. Not reviewed yet.
 
-**Build C · Build as drawn?**
+**Build D · Run as drawn?**
 
 - [x] A · Yes: build it as drawn.
   ![A](option-q3-a.png)
 - [ ] B · No: keep today's page.
   ![B](option-q3-b.png)
 
-Why A: Each view is one step of the work, as b15 draws its Task UI.
+Why A: Each step shows its own results; today's page shows only Status.
 
-## Q4 · D · Read
+## Q4 · E · Read
 
-D · Read: the headline, the Table Card, the coefficient plot. A fresh reviewer passed it, 9.1 of 10; today's page scored 7.8 and failed One job 5 and Salience 6.
+E · Read, was D: the headline, mark read, the Table Card, the plot. It passed review on 261101 at 9.1.
 
-**Build D · Read as drawn?**
+**Build E · Read as drawn?**
 
 - [x] A · Yes: build it as drawn.
   ![A](option-q4-a.png)
 - [ ] B · No: keep today's page.
   ![B](option-q4-b.png)
 
-Why A: Each view is one step of the work, as b15 draws its Task UI.
+Why A: Each step shows its own results; today's page shows only Status.
+
+## Q5 · F · Close
+
+F · Close, new: the close checklist's state, read only, and what it ticks. Not reviewed yet.
+
+**Build F · Close as drawn?**
+
+- [x] A · Yes: build it as drawn.
+  ![A](option-q5-a.png)
+- [ ] B · No: keep today's page.
+  ![B](option-q5-b.png)
+
+Why A: Each step shows its own results; today's page shows only Status.
+
+## Q6 · A · MindMap
+
+A · MindMap now draws each Run with what it says, as the live page does since 261106; D · Run keeps each Run's mark.
+
+```text
+A  Runs ── r01 · the model, 2016 to 2019 ── r04 · Window choice
+B  Runs ── ✅ r01_years_16_19 ── ⏳ r02_years_16_23
+```
+
+**What does a Task's map show for each Run?**
+
+- [x] A · What the Run says it finds out or makes, as drawn.
+- [ ] B · Its mark, as drawn on 261105.
+
+Why A: The map says what each Run is for; D · Run shows where each stands.
+
+## Q7 · Where forms show
+
+Today's Task page shows every form in MindMap's 🙋 Interaction. On the six views, the drawing puts Window choice in E · Read, whose headline waits on it.
+
+```text
+A  E · Read     4 · 🙋 Interaction   2 wait for you
+   A · MindMap  🙋 Interaction       nothing yet
+B  A · MindMap  🙋 Interaction       2 wait for you
+   E · Read     4 · 🙋 Interaction   nothing yet
+```
+
+**Where does a Task's form show?**
+
+- [x] A · In the step its answer changes; MindMap keeps the rest.
+- [ ] B · In MindMap, every form, as today's page.
+
+Why A: You answer it beside the headline it changes.
 </script>
 <script>
 (function(){
@@ -207,6 +266,19 @@ Why A: Each view is one step of the work, as b15 draws its Task UI.
   function lightPreviews(){document.querySelectorAll('.pv').forEach(function(f){
     var r=document.querySelector('input[name="'+f.dataset.q+'"][value="'+f.dataset.key+'"]');f.classList.toggle('on',!!(r&&r.checked));});}
   document.addEventListener('change', lightPreviews); lightPreviews();
+  /* a click on a preview pops it out over the form (JL 261103); a click outside it, x or Esc closes it */
+  var POP = document.createElement('div'); POP.className = 'pop'; POP.hidden = true;
+  POP.innerHTML = '<div class="pop-box"><button type="button" class="pop-x">Close ✕</button><div class="pop-body"></div></div>';
+  document.body.appendChild(POP);
+  function unpop(){ POP.hidden = true; POP.querySelector('.pop-body').innerHTML = ''; }
+  POP.addEventListener('click', function(e){ if (e.target === POP || e.target.classList.contains('pop-x')) unpop(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') unpop(); });
+  window.hpPop = function(frame){
+    var el = frame.querySelector('img, iframe'); if (!el) return;
+    var copy = document.createElement(el.tagName.toLowerCase()); copy.src = el.getAttribute('src');
+    if (copy.tagName === 'IMG') copy.alt = el.alt; else copy.title = el.title;
+    var body = POP.querySelector('.pop-body'); body.innerHTML = ''; body.appendChild(copy); POP.hidden = false;
+  };
   /* the part that differs between a question's previews gets a box (JL 261031: "highlight the part that are different
      by using the box"): a preview's own class="diff" marks it; otherwise the pages are compared, node by node, and the
      smallest block that differs is boxed in every option; each preview then scrolls to its first box */
@@ -260,8 +332,9 @@ Why A: Each view is one step of the work, as b15 draws its Task UI.
     if (f.contentDocument && f.contentDocument.readyState === 'complete') diffQuestion(q);
   });
   /* a question already applied carries its flag (JL 261031: "if we already fix them, then give them the flags"):
-     applied.md beside the form, written by collect.py applied, read each time the form opens */
-  if (window.fetch) fetch('applied.md', {cache: 'no-store'}).then(function(r){ return r.ok ? r.text() : ''; })
+     applied.md beside the form, written by collect.py applied (which rebuilds the form), read each time the form
+     opens; only a form built with one beside it asks for it, so a form with none sends no request that answers 404 */
+  if (window.fetch && FORM.applied) fetch('applied.md', {cache: 'no-store'}).then(function(r){ return r.ok ? r.text() : ''; })
     .then(function(text){ text.split('\n').forEach(function(line){
       var m = /^(Q\d+) · (applied|in progress) · (\d{4}-\d{2}-\d{2}) \d{2}:\d{2} · (.+?)\s*$/.exec(line);
       var flag = m && document.getElementById('applied-' + m[1]), by = m && document.getElementById('applied-by-' + m[1]);

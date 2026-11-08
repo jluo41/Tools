@@ -1,0 +1,25 @@
+run: r02_deliver
+kind: hard
+role: make
+type: delivery
+scope: blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates/t04_deliver
+skill: haipipe-delivery
+ticket: r02_deliver.sh
+worker: deliver.py
+says: a clean copy of the agreed estimates handed over under -v1 (placeholder)
+host: this machine
+time: a few seconds
+status: done
+started_by: '261106: the example Block of the work theme, placeholders only'
+reads:
+- blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates/t01_example_main/runs/r01_example_main/result/values.csv
+- blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates/t04_deliver/runs/r01_build_site/result/index.html
+writes:
+- result/model-card.md
+- result/delivered.csv
+- blueprints/Project-Ladder/work/b90_example_paper_results/delivery/j02_example_estimates/t04_deliver/data/estimates-v1.csv
+- blueprints/Project-Ladder/work/b90_example_paper_results/delivery/j02_example_estimates/t04_deliver/model/model-card-v1.md
+- blueprints/Project-Ladder/work/b90_example_paper_results/delivery/j02_example_estimates/t04_deliver/web/index.html
+- blueprints/Project-Ladder/work/b90_example_paper_results/delivery/delivery.md (draft rows only)
+retires:
+- blueprints/Project-Ladder/work/b90_example_paper_results/delivery/data/, model/, web/ (its own unsent copies at the Block's own lanes, made before 261106)

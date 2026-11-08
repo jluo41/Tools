@@ -9,7 +9,18 @@ close: Each recorded question has a report Page with an answer status, and every
 session: Ladder-b16-Paper-v1031
 ui-block: blueprints/Project-Ladder/paper/Paper-Example
 ui-job: blueprints/Project-Ladder/paper/Paper-Example/j11_writing_v1130_desk
+ui-job: blueprints/Project-Ladder/paper/Paper-Example/j12_writing_v0215_desk
+ui-job: blueprints/Project-Ladder/paper/Paper-Example/j01_evidence_display
+ui-job: blueprints/Project-Ladder/paper/Paper-Example/j02_evidence_value
+ui-job: blueprints/Project-Ladder/paper/Paper-Example/j03_evidence_cite
+ui-job: blueprints/Project-Ladder/paper/Paper-Example/j21_submission_v1130_desk
 ui-task: blueprints/Project-Ladder/paper/Paper-Example/j11_writing_v1130_desk/t01_introduction
+ui-task: blueprints/Project-Ladder/paper/Paper-Example/j11_writing_v1130_desk/t31_cover-letter
+ui-task: blueprints/Project-Ladder/paper/Paper-Example/j12_writing_v0215_desk/t32_response
+ui-task: blueprints/Project-Ladder/paper/Paper-Example/j01_evidence_display/t02_table1-example
+ui-task: blueprints/Project-Ladder/paper/Paper-Example/j02_evidence_value/t01_values-sample
+ui-task: blueprints/Project-Ladder/paper/Paper-Example/j03_evidence_cite/t01_cite-prior-work
+ui-task: blueprints/Project-Ladder/paper/Paper-Example/j21_submission_v1130_desk/t02_portal-walk
 
 ## Topic
 

@@ -37,7 +37,7 @@ s40-section-ui-studio/
 Decided
 -------
 
-(none yet: a decision is one line, s40-D01 · <what was decided> (<who> <date>))
+s40-D01 · Skills is a right-rail section on every page, between Timeline and Files (261106). Live: focus_page.render.
 
 
 Open
