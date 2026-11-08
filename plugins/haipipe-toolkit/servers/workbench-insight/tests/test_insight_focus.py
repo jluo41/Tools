@@ -71,7 +71,7 @@ class InsightFocusTest(unittest.TestCase):
         self.assertIn('<span class="word you">1 waits for you</span>', html)        # the bar's word, then its line
         self.assertIn("<p class=fd-wait>🙋 Sign the plan", html)
         self.assertIn("Sign in the Prototype", html)
-        self.assertIn("a preview: the plan is not signed", self.view(self.open, "overall"))
+        self.assertIn("its plan is not signed", self.view(self.open, "overall"))
 
     def test_the_grid_cells_carry_their_next_verb(self):
         html = self.view(self.open, "grid")
@@ -132,7 +132,7 @@ class InsightLettersTest(unittest.TestCase):
 
     def test_task(self):
         keys = ["answer", "by-cut", "across-jobs", "plan"]
-        self.report_ok(IF.task_views(self.task, self.root, "report"), keys)
+        self.report_ok(IF.task_views(self.task, self.root, "report"), keys + ["mindmap"])   # its own map (round 2)
         work = IF.task_views(self.task, self.root, "work")
         self.work_ok(work, keys)
         chain = work["work-answer"][1]().split("📊 Results")[0]
@@ -312,10 +312,31 @@ class RoundOneTest(unittest.TestCase):
         for gone in ("no state", "not run", "0 of"):
             self.assertNotIn(gone, words)
         job = next(p for p in sorted(self.proto.iterdir()) if p.name.startswith("j01_"))
-        self.assertEqual([s[0] for s in IF.prototype_status(job, self.root, "Job")], ["📜 The release", "❓ Questions"])
-        levels = IF.prototype_parts(job, self.root, "Job")[0]
+        self.assertEqual([s[0] for s in IF.prototype_status(job, self.root, "Job")], ["📜 The release"])  # questions:
+        levels = IF.prototype_parts(job, self.root, "Job")[0]                   # Findings' (round 2)
         self.assertEqual(levels[0], "❓ Questions")                             # by DIKW level at a release
-        self.assertIn("agreed", IF.prototype_status(job, self.root, "Job")[1][1])
+        self.assertIn("agreed", levels[1])
+
+    def test_a_prototype_is_signed_and_triaged_on_its_own_work(self):
+        """Round 2: the Prototype's Work · Findings carries the triage and the sign, each a Copy prompt for
+        /haipipe-insight; Status says "nothing to do" when nothing waits; a release's map groups its questions by
+        DIKW level; Status and Findings each open with a main line."""
+        A.set_front(self.root / F.PROJECT / F.PROTO / "j02_p2" / "j02_p2.md", {"signed": "", "state": "draft"})
+        steps = IF.prototype_process(self.proto, self.root, "Block", "findings")
+        body = steps[0][2]
+        self.assertIn("Triage the open proposals", body)
+        self.assertIn("Sign ", body)
+        self.assertIn("/haipipe-insight ", body)
+        self.assertIn("for you", steps[0][1])
+        job = next(p for p in sorted(self.proto.iterdir()) if p.name.startswith("j01_"))
+        self.assertEqual(IF.prototype_process(job, self.root, "Job", "standing")[0][1], "nothing to do")
+        self.assertIsNone(IF.prototype_process(job, self.root, "Job", "mindmap"))
+        levels = [lv for lv, _ in IF.prototype_map_branches(job, self.root, "Job")]
+        self.assertTrue(levels and set(levels) <= {"Data", "Information", "Knowledge", "Wisdom", "Executive"})
+        self.assertIn("closed, signed ✅", IF.prototype_lead(job, self.root, "Job", "standing"))
+        self.assertIn("questions agreed and scripted", IF.prototype_lead(job, self.root, "Job", "findings"))
+        for _, _, panel in IF.prototype_delivery_tabs(self.proto, self.root, "Block"):
+            self.assertNotIn("Nothing handed over yet", panel)
 
     def test_every_count_reads_one_function(self):
         from live import insight_views as V
@@ -323,8 +344,10 @@ class RoundOneTest(unittest.TestCase):
         done, asked = V.written_of(j["tasks"])
         grid = IF.job_report_views(self.job, self.root)["grid"][1]()
         self.assertIn(f"{done} of {asked} answered", grid)
-        answers = IF.board_report_views(self.board, self.root)["answers"][1]()
-        self.assertIn(f"{done} of {asked} answered", answers)                  # the same Job, the same count
+        jobs = IF.board_report_views(self.board, self.root)["jobs"][1]()
+        self.assertIn(f"{done} of {asked} written", jobs)                      # the same Job, the same count (the
+        answers = IF.board_report_views(self.board, self.root)["answers"][1]()  # plans × freezes: Jobs' alone, round 2)
+        self.assertNotIn("Analysis plans × data freezes", answers)
 
     def test_the_grid_question_opens_its_answer(self):
         grid = IF.job_report_views(self.job, self.root)["grid"][1]()

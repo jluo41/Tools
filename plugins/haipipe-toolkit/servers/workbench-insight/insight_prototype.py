@@ -396,7 +396,10 @@ def _handed(r: dict, root: Path) -> str:
             if r.get("job") and (r["job"] / f).is_file()]
     if not rows:
         return f'<p class=mut>{esc(_label(r))} is cut from the proposals; its files are written then.</p>'
-    return (f'<p class=in-sub>{esc(_cap(r_word(r)))}: a Board Job pins these files.</p>'
+    signed = str(r["face"].get("signed") or "")
+    lead_ = (f"Signed {signed}: a Board Job pins these files." if signed.startswith("✅") else
+             "A draft, not signed yet: a Board Job pins these files once a person signs it.")
+    return (f'<p class=in-sub>{esc(lead_)}</p>'
             f'<ul class=wk-rows>{"".join(rows)}</ul>')
 
 

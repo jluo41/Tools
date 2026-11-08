@@ -94,6 +94,17 @@ def _state_group(j: dict) -> str:
     return "ours" if j["ours"] else "theirs" if j["theirs"] else "open"
 
 
+def _items(job: Path, block: Path, root: Path) -> list:
+    """A Job's dated items, newest first (cowork_theme.timeline_items), its Timeline.md lines called notes; a note on a
+    day that already has an email, a meeting or a send is that item's twin and is left out (b13 review r01)."""
+    from live.cowork_theme import timeline_items
+    items = timeline_items(job, block, root, notes(job / "emails", block, root, job.name),
+                           notes(job / "meetings", block, root, job.name))
+    dated = {d for d, k, _ in items if k != "entry" and d}
+    return [(d, "note" if k == "entry" else "sent" if k == "delivery" else k, h) for d, k, h in items
+            if not (k == "entry" and d in dated)]
+
+
 def _job_url(job: Path, root: Path) -> str:
     from live import focus_page as F
     return F.page_url(job, root)
@@ -180,9 +191,10 @@ def people_part(folder: Path, root: Path, level: str, rows: list) -> tuple | Non
     if not found:
         return None
     own = level == "Job" and folder.name != "j00_people"         # a Job: only its own move counts here
+    home = level == "Job" and folder == people_page(block).parent    # the people Job itself: a list, no move, no self-link
     tabs, panels, moving = [], [], 0
     for name, cells in found:
-        moves = [j for j in _moves(name, rows) if not own or j["name"] == folder.name]
+        moves = [] if home else [j for j in _moves(name, rows) if not own or j["name"] == folder.name]
         moving += bool(moves)
         side = cells.get("Side") or cells.get("side") or ""
         tabs.append((name, "has the move" if moves else side))
@@ -194,7 +206,8 @@ def people_part(folder: Path, root: Path, level: str, rows: list) -> tuple | Non
                 for j in moves) + '</ul>'
         panels.append(panel)
     page = people_page(block)
-    panels = [p + f'<div class=cw-verbs>{pop(reader(page, root), "People", "Open the people page ↗")}</div>' for p in panels]
+    if not home:
+        panels = [p + f'<div class=cw-verbs>{pop(reader(page, root), "People", "Open the people page ↗")}</div>' for p in panels]
     word = f"{moving} {'has' if moving == 1 else 'have'} the move" if moving else "reference"
     return "👥 People", word, CSS + _side_tabs("cwP" + folder.name[:3] + "x", tabs, panels), ""
 
@@ -280,6 +293,26 @@ def next_part(folder: Path, root: Path, level: str, rows: list) -> tuple | None:
     return "⏳ Next move", word or "open", CSS + _side_tabs("cwNx", tabs, panels), waits
 
 
+def headlines_part(folder: Path, root: Path, level: str) -> tuple | None:
+    """A Job's 📌 Headlines: each meeting's Decided and Next lines, newest first (b13 review r01: a done Job's
+    Findings opens with what it settled)."""
+    if level != "Job":
+        return None
+    block = block_of(folder, level)
+    tabs, panels = [], []
+    for n in notes(folder / "meetings", block, root, folder.name):
+        text = (folder / "meetings" / n["name"]).read_text(encoding="utf-8", errors="ignore")
+        said = [(k, v.strip()) for k, v in re.findall(r"(?m)^(Decided|Next):\s*(.+)$", text)]
+        if said:
+            tabs.append((n["title"], n["date"] or "undated"))
+            panels.append(_kv([(k, esc(v)) for k, v in said])
+                          + f'<div class=cw-verbs>{pop(reader(folder / "meetings" / n["name"], root), n["title"], "Read the notes ↗")}</div>')
+    if not tabs:
+        return None
+    title = "📌 Headlines" if not any(folder.glob("t[0-9]*_*/")) else "📌 Meeting headlines"   # a Task's Headlines come first
+    return title, f"newest {tabs[0][1]}", CSS + _side_tabs("cwH" + folder.name[:3] + "x", tabs, panels), ""
+
+
 def parts(folder: Path, root: Path, level: str) -> list:
     """A cowork page's Findings parts, before 📦 Delivery: 👥 People, ✉️ Messages, ⏳ Next move (a Block only); a part
     with nothing in it is left out."""
@@ -288,8 +321,16 @@ def parts(folder: Path, root: Path, level: str) -> list:
     if level not in ("Block", "Job") or not (block / "board.md").is_file():
         return []
     rows = _jobs(block, root)
-    found = [people_part(folder, root, level, rows), messages_part(folder, root, level), next_part(folder, root, level, rows)]
-    return [p for p in found if p]
+    found = [headlines_part(folder, root, level), people_part(folder, root, level, rows), messages_part(folder, root, level),
+             next_part(folder, root, level, rows)]
+    found = [p for p in found if p]
+    # a waiting item shows once per page, under the first section that holds it (b13 review r01): the next move of a
+    # Job whose draft already waits under Messages is named in its tab, not waited on again
+    if any(p[0] == "✉️ Messages" and p[3] for p in found):
+        drafting = [j["short"] for j in rows if j["ours"] and any(n["draft"] for n in notes(block / j["name"] / "emails", block, root))]
+        found = [(t_, w, h, "" if t_ == "⏳ Next move" and any(x.startswith(f"🙋 {s}:") for s in drafting) else x)
+                 for t_, w, h, x in found]
+    return found
 
 
 # ── Status ───────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -298,13 +339,11 @@ GROUPS = (("ours", "🙋 Waiting on us"), ("theirs", "⏳ Waiting on them"), ("o
 
 
 def _job_row(j: dict, block: Path, root: Path) -> str:
-    from live.cowork_theme import timeline_items
     job = block / j["name"]
     who = ("us" if j["ours"] else j["waiting"]) if j["open"] else ""
     note = (f"{who} · {_days(j['days'])}" if who and j["days"] is not None else who or
             (f"since {j['since']}" if j["since"] else ""))
-    items = timeline_items(job, block, root, notes(job / "emails", block, root, job.name),
-                           notes(job / "meetings", block, root, job.name))
+    items = _items(job, block, root)
     tree = _timeline_rows(items[:8]) if items else '<p class=mut>No dated entry yet.</p>'   # its next is on the row
     return (f'<details class=job-row><summary><a href="{esc(_job_url(job, root))}" data-pop="{esc(job.name)}" '
             f'title="{esc(job.name)}"><b>{esc(j["short"])}</b></a>'
@@ -337,7 +376,6 @@ def block_status(block: Path, root: Path) -> list:
 
 
 def job_status(job: Path, root: Path) -> list:
-    from live.cowork_theme import timeline_items
     block = job.parent
     j = next((r for r in _jobs(block, root) if r["name"] == job.name), None)
     if j is None:
@@ -346,17 +384,21 @@ def job_status(job: Path, root: Path) -> list:
     group = _state_group(j)
     since = (j["since"] or "—") + (f" · {_days(j['days'])}" if j["days"] is not None else "")
     ticket = _ticket(j)
-    facts = _kv([("Has the move", esc("us" if j["ours"] else j["waiting"]) if j["open"] else ""), ("Since", esc(since)),
-                 ("Next", esc(j["next"]) if j["open"] else ""), ("Ticket", ticket), ("State", esc(j["state"]))])
-    title, word, waits = {
-        "ours": ("🙋 Waiting on us", f"waits for you · {_days(j['days'])}" if j["days"] is not None else "waits for you",
-                 f"🙋 the next move is ours: {j['next']}" if j["next"] else "🙋 the next move is ours"),
-        "theirs": ("⏳ Waiting on them", f"{j['waiting']}" + (f" · {_days(j['days'])}" if j["days"] is not None else ""), ""),
-        "open": ("🟡 Open", "open", ""), "hold": ("⏸️ On hold", "on hold", ""),
-        "done": ("✅ Done", "done", ""), "reference": ("📇 Reference", "reference", "")}[group]
-    out.append((esc(title), word, CSS + facts, waits))
-    items = timeline_items(job, block, root, notes(job / "emails", block, root, job.name),
-                           notes(job / "meetings", block, root, job.name))
+    if group == "reference":                          # the people Job: one list of roles, nothing to wait on
+        found = people(block)
+        return [("📇 Who to ask, by role", "reference", CSS + '<ul class=cw-rows>' + "".join(
+            f'<li><span class=t><b>{esc(n)}</b> {esc(c.get("Role here", ""))}</span><small>{esc(c.get("Side", ""))}</small></li>'
+            for n, c in found) + '</ul>', "")] if found else []
+    facts = _kv([("Has the move", esc("us" if j["ours"] else j["waiting"])), ("Since", esc(since)),
+                 ("Next", esc(j["next"])), ("Ticket", ticket)])
+    if group in ("ours", "theirs", "open", "hold"):   # done: the lead's state line says it, no bar repeats it
+        title, word, waits = {
+            "ours": ("🙋 Waiting on us", f"waits for you · {_days(j['days'])}" if j["days"] is not None else "waits for you",
+                     "🙋 the next move is ours"),
+            "theirs": ("⏳ Waiting on them", f"{j['waiting']}" + (f" · {_days(j['days'])}" if j["days"] is not None else ""), ""),
+            "open": ("🟡 Open", "open", ""), "hold": ("⏸️ On hold", "on hold", "")}[group]
+        out.append((esc(title), word, CSS + facts, waits))
+    items = _items(job, block, root)
     if items:
         out.append(("🗓️ Timeline", f"newest {items[0][0]}" if items[0][0] else "undated", CSS + _timeline_rows(items), ""))
     checklist = steps(job / "CHECKLIST.md", block, job.name)
@@ -439,7 +481,7 @@ def status(folder: Path, root: Path, level: str) -> list:
 
 
 # ── MindMap: a Job with no Tasks ─────────────────────────────────────────────────────────────────────────────────
-KIND_WORD = {"entry": "", "email": "email", "meeting": "meeting", "delivery": "sent"}
+KIND_WORD = {"note": "", "email": "email", "meeting": "meeting", "sent": "sent"}
 
 
 def map_branches(folder: Path, root: Path, level: str) -> list:
@@ -447,7 +489,6 @@ def map_branches(folder: Path, root: Path, level: str) -> list:
     261108): a cowork Job's newest dated items, who has the move, its next step and its open steps; the people Job its
     roles. Short labels in words."""
     import html as _html
-    from live.cowork_theme import timeline_items
     folder, root = Path(folder), Path(root)
     block = block_of(folder, level)
     if level != "Job" or not (block / "board.md").is_file():
@@ -459,8 +500,7 @@ def map_branches(folder: Path, root: Path, level: str) -> list:
         roles = [f"{n} · {c.get('Side')}" if c.get("Side") else n for n, c in people(block)]
         return [("👥 Who to ask", roles)] if roles else []
     out = []
-    items = timeline_items(folder, block, root, notes(folder / "emails", block, root, folder.name),
-                           notes(folder / "meetings", block, root, folder.name))
+    items = _items(folder, block, root)
     plain = lambda h: " ".join(_html.unescape(re.sub(r"<[^>]+>", "", h)).split())
     if items:
         out.append(("🗓️ What happened", [f"{d} · {plain(h)}" + (f" ({KIND_WORD[k]})" if KIND_WORD.get(k) else "")

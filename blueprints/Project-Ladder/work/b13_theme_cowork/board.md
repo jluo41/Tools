@@ -45,7 +45,9 @@ chat section -> Related question -> haipipe-report -> skill, workbench or builde
 
 ## Pages
 
-No Jobs yet. The studio topics:
+`j01_cowork_workbench_pages/` (261108) draws the cowork pages as a 3 × 3, as the paper (b16 j01), work (b17 j03), labeling (b15 j01) and insight (b11 j01) themes do: Block, Job and Task × Report, Work and Studio, one sNN each (t01 s51 · s52 · s53, t02 s54 · s55 · s56, t03 s57 · s58 · s59), every view the live page's full screen, lettered, all drawn by its `cowork_ui_cells.py`.
+
+The studio topics:
 
 - `s01-cowork-ladder/`: every cowork row, Block to Run, proposed and today, with Q01's
   proposed answer in its overview frame. Drawn from b03's shared definitions

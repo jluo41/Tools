@@ -51,7 +51,7 @@ def rows(board: Path) -> list:
         face, _ = RQ.front(job / f"{job.name}.md")
         closed = str(face.get("state") or "") == "closed"
         signed = _signed(face.get("signed"))
-        state = ("closed " + signed).strip() if closed else "preview: its Job is still open"
+        state = ("closed " + signed).strip() if closed else "preview"
         out.append((" · ".join(files), f"The Overall Report of {_plain(job.name)}", state))
     return out
 
