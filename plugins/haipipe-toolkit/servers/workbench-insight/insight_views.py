@@ -368,7 +368,7 @@ def _cap(text: str) -> str:
     return (text[:1].upper() + text[1:]) if text else ""
 
 
-def _q_logic(qid: str, q: dict, mark: str, root: Path) -> str:
+def _q_logic(qid: str, q: dict, mark: str, root: Path, word: str = "") -> str:
     s = _spec(q)
     more = [(k, s.get(k)) for k in ("ask", "why", "answer") if isinstance(s.get(k), str) and s.get(k)]
     asked = (s.get("partitions") or {}).get("asked") if isinstance(s.get("partitions"), dict) else ""
@@ -383,7 +383,9 @@ def _q_logic(qid: str, q: dict, mark: str, root: Path) -> str:
             by.setdefault(c[0], []).append(str(int(c[1:])))
         builds = ("<p class=mut>builds on " + "; ".join(f"{LEVEL_WORD[k]} questions {', '.join(v)}" for k, v in by.items())
                   + "</p>")
-    return (f'<p class=q-head><span class=chip>Question {int(qid[1:])}</span> {esc(mark)}</p>'
+    from live.ui_parts import _pill
+    return (f'<p class=q-head><span class=chip>Question {int(qid[1:])}</span> '
+            + (_pill(word) if word else esc(mark)) + '</p>'
             + (f'<p><b>{esc(s.get("name"))}</b></p>' if s.get("name") else "")
             + f'<p>{esc(_cap(s.get("question") or q.get("question") or ""))}</p>' + builds
             + f'<details><summary class=mut>More</summary>{body}<p>{_open(q.get("file"), root, qid, "question.md")}</p></details>')
@@ -962,27 +964,43 @@ def _cell(j: dict, qid: str, part: str) -> tuple:
     return t, run
 
 
-def _coverage(b: dict, root: Path, part: str, href, tabs: str = "") -> str:
+def _newest_word(b: dict, qid: str) -> str:
+    """A question's mark on the Board, its newest Job's page in its tab's word (round 2: "rename each ✅/· to its
+    tab's word"): page written, else page and its state (partial, returned, open), else not asked yet."""
+    t = newest_task(b, qid)
+    if not t:
+        return "not asked yet"
+    if is_written(t):
+        return "page written"
+    if any(_rtype(r) == "write" and str(r.get("status") or "").lower() in ("running", "started") for r in t.get("soft") or []):
+        return "page being written"
+    return "page " + page_word(t).replace(" · checked", "")
+
+
+def _coverage(b: dict, root: Path, part: str, href, tabs: str = "", work: bool = False) -> str:
     """What each question found on one cut, Job by Job. With `tabs` (the focus page): side tabs, one per DIKW
-    level with its state word, each question a two-part row (the question; what it found, then its trail)."""
+    level with its state word, each question a two-part row (the question; what it found); with `work` (the focus
+    page's Work) also its steps and its trail through the Jobs (round 2: "the path lines leave Report")."""
     rows, said_n, all_n = {}, {}, {}
     for qid, q in _questions(b).items():
-        trail, n, last, said, has_runs = [], 0, None, None, False
+        trail, n, last, said, has_runs, asked = [], 0, None, None, False, 0
         for j in b["jobs"]:
             t, run = _cell(j, qid, part)
             if not t:
-                trail.append(f'<code>{esc(j["name"])}</code> · not in its release')
+                trail.append(f'<span title="{esc(j["name"])}">{esc(j["name"][:3])}</span> · not in its release')
                 continue
+            asked += 1
             state = run.get("status", "—") if run else t["face"].get("answer-status", "—")
-            n += state in OK
+            n += is_written(t)
             last = run or last
             has_runs = has_runs or bool(t["hard"])
             said = t if str(t["face"].get("answer") or "").strip() else said
             ran = (_run_link(run, root) if run
                    else "no run on this cut")
-            trail.append(f'<code>{esc(j["name"])}</code> › <code>{esc(t["name"])}</code> ▸ {ran} · {_st(state)}')
+            trail.append(f'<span title="{esc(j["name"])} › {esc(t["name"])}">{esc(j["name"][:3])}</span> ▸ {ran} · '
+                         f'{_st(state)} · page {esc(page_word(t))}')
         mark = MARK.get(str((last or {}).get("status")), "·")
-        tally = f'<p class=mut>answered on {n} of {len(b["jobs"])} Jobs</p>'
+        tally = f'<p class=mut>page written in {n} of {asked} Jobs</p>' if asked else ""
         if last is None and said:         # no Run on this cut: what it found where it is asked (a cross test), or
             cuts = ", ".join(dict.fromkeys(str(h.get("partition") or "") for h in said["hard"]))   # from the answers below
             found = (f'<p class=q-head>{esc(str(said["face"]["answer"]))}</p><p class=mut>'
@@ -996,14 +1014,15 @@ def _coverage(b: dict, root: Path, part: str, href, tabs: str = "") -> str:
         said_n[qid[:1]] = said_n.get(qid[:1], 0) + bool(newest_task(b, qid) and is_written(newest_task(b, qid)))
         if tabs:
             rows.setdefault(qid[:1], []).append(f'<div class="q-row q-two" id=question-{esc(qid)}><div class=q-l>'
-                                                f'{_q_logic(qid, q, mark, root)}</div><div class=q-r>{found}{_q_work(q, trail)}</div></div>')
+                                                f'{_q_logic(qid, q, mark, root, _newest_word(b, qid))}</div><div class=q-r>{found}'
+                                                + (_q_work(q, trail) if work else "") + '</div></div>')
         else:
             rows.setdefault(qid[:1], []).append(_qwr(_q_logic(qid, q, mark, root), _q_work(q, trail), found, f"question-{qid}"))
     last = b["prototype"]["releases"][-1] if b["prototype"]["releases"] else {}
     latest = last.get("job")
     if tabs:
         return _by_level(rows, "", links=_release_links(latest, root, last.get("label", "")), tabs=tabs,
-                         words={lv: f"{said_n.get(lv, 0)} of {n} answered" for lv, n in all_n.items()})
+                         words={lv: f"{said_n.get(lv, 0)} of {n} written" for lv, n in all_n.items()})
     return _by_level(rows, _qwr_head("Task Work · each Job on this cut", "Report · what it found"),
                      links=_release_links(latest, root, last.get("label", "")))
 
@@ -1133,8 +1152,8 @@ def _board_runs(b: dict, root: Path, view: str) -> str:
 def _handoff(b: dict, root: Path) -> str:
     rows = [(_open(h["file"], root, h.get("counsel", h["file"].stem)), esc(h.get("job", "")), _st(h.get("signed", "—")))
             for h in b["handoffs"]]
-    return ('<p class=mut>The signed Wisdom counsel, naming the Job (pN × vM) it came from. Only a signed counsel leaves '
-            'this Board.</p>' + (table(("counsel", "from Job", "signed"), rows) if rows else
+    return ('<p class=mut>The signed Wisdom counsel, naming the Job (its analysis plan and data freeze) it came from. '
+            'Only a signed counsel leaves this Board.</p>' + (table(("counsel", "from Job", "signed"), rows) if rows else
                                  '<p class=mut>No signed counsel yet.</p>'))
 
 

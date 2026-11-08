@@ -20,6 +20,14 @@ cards read (workbench-paper 0.16.0):
 
 An older Task that still has a results/ folder and no runs/<run>/ folder gets results/<run>/.
 
+`--placeholder` writes the same receipt, Card, facts, source-access pair and one-entry Bib for a
+made-up paper in a public example, from the metadata the Ticket gives (--title, --authors, --year,
+--venue, --abstract; --doi is optional) and with no network call. Its entry is still copied, never
+composed: --bib-file names the placeholder .bib that holds it, --bib-key its key. The receipt
+(`placeholder: true`, `placeholder_note:`) and the Card both say it is a placeholder; a person's
+citation check stays pending. --verification sets the Card's `- verification:` line (a line that
+starts with NEEDS is the one the workbench shows as waiting on the person).
+
 The task's question comes from its discovery.yaml. Every path written is relative to
 the Task folder. Nothing here judges relevance: the readout and reuse are inputs.
 """
@@ -283,7 +291,150 @@ def save_pdf(result, pdf_from, doi, space_root, aid="", pmcid="", title="", pdf_
     return None
 
 
-def main():
+PLACEHOLDER_NOTE = ("A made-up paper for a public example: the metadata, abstract and readout are placeholders, "
+                    "written with no network call; nothing here is evidence about any real study.")
+
+
+def result_dir(task, run):
+    """runs/<run>/result/, or results/<run>/ for an older Task that has a results/ folder and no runs/<run>/."""
+    run_folder = task / "runs" / run
+    older = not run_folder.is_dir() and (task / "results").is_dir()
+    return (task / "results" / run if older else run_folder / "result"), older
+
+
+def task_question(task):
+    y = (task / "discovery.yaml").read_text(encoding="utf-8") if (task / "discovery.yaml").is_file() else ""
+    qm = re.search(r"(?ms)^question:\s*\|\s*\n(.*?)(?=^\S)", y)
+    return " ".join(x.strip() for x in (qm.group(1) if qm else "").splitlines() if x.strip())
+
+
+def build_placeholder(a, task):
+    """The Result of a placeholder paper (--placeholder): the files a real Run writes, from the given metadata, with
+    no network call. The Bib entry is copied verbatim from --bib-file by --bib-key; the receipt and the Card say what
+    it is. Returns the Result folder."""
+    sys.path.insert(0, str(HERE))
+    import paper_bib_fetch as pbf
+    import paper_source_access as psa
+    bib_file = a.bib_file if a.bib_file.is_absolute() else (Path.cwd() / a.bib_file)
+    entries = {key: text for _, key, text in pbf.parse_entries(bib_file.read_text(encoding="utf-8"))}
+    if a.bib_key not in entries:
+        sys.exit("--bib-file %s holds no entry @%s" % (a.bib_file, a.bib_key))
+    result, older = result_dir(task, a.run)
+    result.mkdir(parents=True, exist_ok=True)
+    question = task_question(task)
+    try:                                          # the receipt names its source by the Task's own path, never an absolute one
+        bib_source = bib_file.resolve().relative_to(task).as_posix()
+    except ValueError:
+        bib_source = bib_file.name
+    names = [n.strip() for n in a.authors.split(";") if n.strip()]
+    meta = {"title": a.title.strip(), "authors": "; ".join(names), "first_family": names[0].split()[-1] if names else "anon",
+            "year": a.year, "journal": a.venue, "venue": "%s (%s)" % (a.venue, a.year), "n_authors": len(names),
+            "landing": a.landing or "https://example.org/placeholder/%s" % a.bib_key}
+    abstract = " ".join((a.abstract or "").split())
+    sa = psa.build_venue_record(meta["title"], meta["landing"], meta["landing"] + ".bib", abstract=abstract or None,
+                                abstract_source=meta["landing"] if abstract else None)
+    if a.doi:
+        sa["subject"]["doi"] = a.doi
+    abstract = (sa.get("abstract") or {}).get("text") or ""     # under 30 words is no abstract (paper_source_access)
+    depth = "abstract" if abstract else "metadata-only"
+    sa["retrieval"].update({"reading_depth": depth, "claim_support": "supported" if abstract else "pending",
+                            "locator_status": "complete" if abstract else "pending",
+                            "depth_note": ("The Run reads the placeholder abstract given to it." if abstract else
+                                           "No abstract was given; identity and metadata only.")})
+    sa["placeholder"] = {"note": PLACEHOLDER_NOTE}
+    psa.write_outputs(sa, result)
+    with (result / "source-access.md").open("a", encoding="utf-8") as f:
+        f.write("\n- **Placeholder:** %s\n" % PLACEHOLDER_NOTE)
+
+    bib_path = result / (a.run + ".bib")
+    bibtex = entries[a.bib_key].strip() + "\n"
+    unchanged = bib_path.is_file() and bib_path.read_text(encoding="utf-8") == bibtex
+    keep = pbf.existing_verification(result / "runtime.yaml") if unchanged else None
+    bib_path.write_text(bibtex, encoding="utf-8")
+    now = dt.datetime.now().astimezone().isoformat(timespec="seconds")
+    runtime = "\n".join([
+        "run: %s" % a.run,
+        "address: %s" % a.address,
+        "address_compact: %s" % a.address.replace(".", ""),
+        "family: discovery",
+        "operation: paper-analysis",
+        "status: complete",
+        "headline: %s" % q(re.split(r"(?<=[.!?])\s+", " ".join((a.readout or "").split()), maxsplit=1)[0][:200]),
+        "result_contract: paper-source-v2",
+        "placeholder: true",
+        "placeholder_note: %s" % q(PLACEHOLDER_NOTE),
+        "ticket: %s" % ("runs/%s.sh" % a.run if older else "runs/%s/%s.sh" % (a.run, a.run)),
+        "result: %s/" % result.relative_to(task).as_posix(),
+        "trigger:",
+        "  kind: user_request",
+        "  input: %s" % q(a.trigger or question),
+        "  resolved: %s" % q(meta["landing"]),
+        "subject:",
+        "  kind: paper",
+        "  title: %s" % q(meta["title"]),
+        "  canonical_url: %s" % q(meta["landing"]),
+    ] + (["  doi: %s" % q(a.doi)] if a.doi else []) + [
+        "  authors: %s" % q(meta["authors"]),
+        "  venue: %s" % q(meta["venue"]),
+        "source_access:",
+        "  manifest: source-access.json",
+        "  summary: source-access.md",
+        "analysis:",
+        "  reading_depth: %s" % depth,
+        "  claim_support: %s" % ("supported" if abstract else "pending"),
+        "  locator_status: %s" % ("complete" if abstract else "pending"),
+        "  scope_note: %s" % q("Only the placeholder abstract was read; every fact is a sentence of it." if abstract
+                               else "No abstract was given; the card rests on placeholder metadata only."),
+        "worker:",
+        "  kind: placeholder",
+        "  name: %s" % q("haipipe-discovery scripts/paper_result_build.py --placeholder"),
+        "  calls:",
+        "    - %s" % q("none: a placeholder writes from the metadata its Ticket gives, with no network call"),
+        "    - %s" % q("BibTeX copied verbatim from %s (@%s)" % (bib_source, a.bib_key)),
+        "executed_at: %s" % q(now),
+        "",
+    ])
+    (result / "runtime.yaml").write_text(runtime, encoding="utf-8")
+    pbf.stamp_runtime(result / "runtime.yaml", pbf.build_bib_block(
+        source=bib_source, channel="placeholder-file", source_class="placeholder", fetched_at=now, verification=keep),
+        keep_verification=keep)
+
+    cite = "%s %s" % (who(meta), meta["year"])
+    facts = ["# %s · facts from the placeholder abstract" % cite, "",
+             "- `F01` · Subject identity: %s, %s; %s%s. Locator: placeholder record." % (
+                 q(meta["title"]), meta["authors"], meta["venue"], ("; DOI " + a.doi) if a.doi else "")]
+    for i, s in enumerate(sentences(abstract), start=2):
+        facts.append("- `F%02d` · Abstract sentence: %s Locator: abstract S%d." % (i, q(s), i - 1))
+    (result / "facts.md").write_text("\n".join(facts) + "\n", encoding="utf-8")
+    card = "\n".join([
+        "# %s" % meta["title"], "",
+        "- run: %s" % a.run,
+        "- address: %s" % a.address,
+        "- cite: @%s" % a.bib_key,
+        "- subject: [%s](%s)%s" % (meta["journal"], meta["landing"], (" · DOI %s" % a.doi) if a.doi else " · no DOI"),
+        "- venue: %s" % meta["venue"],
+        "- status: complete",
+        "- placeholder: yes; %s" % (PLACEHOLDER_NOTE[0].lower() + PLACEHOLDER_NOTE[1:]),
+        "- verification: %s" % (a.verification or "pending person-level confirmation"), "",
+        "## Question", "", question or "(the Task's question)", "",
+        "## Readout", "", a.readout, "",
+        "## Source access", "",
+        "Links are in `source-access.md`; the BibTeX entry is copied from `%s`.%s" % (
+            bib_source, " The abstract is in `abstract.md`." if abstract else ""), "",
+        "## Retrieval scope", "",
+        "- Reading depth: %s." % depth,
+        "- Claim support: %s." % ("supported for the placeholder abstract only" if abstract else "not assessed"),
+        "- Locator: %s." % ("complete; each fact in `facts.md` names its abstract sentence" if abstract else "metadata only"), "",
+        "## Limits", "",
+        "A placeholder: no real paper stands behind this Result, so it supports no claim about any study.", "",
+        "## Reuse", "", a.reuse, "",
+    ])
+    (result / (a.run + ".md")).write_text(card, encoding="utf-8")
+    print("built %s · %s · %s · placeholder" % (a.address, cite, depth))
+    return result
+
+
+def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--task", required=True, type=Path, help="the Discovery Task folder (tNN_<slug>/)")
     ap.add_argument("--run", required=True, help="rNN_<author><year>_<slug>")
@@ -312,7 +463,24 @@ def main():
                                                    "collides with another Result's in this Task")
     ap.add_argument("--set-aside-abstract", default="", metavar="REASON",
                     help="the retrieved abstract is not this paper's (say why); the Run stays metadata-only")
-    a = ap.parse_args()
+    ph = ap.add_argument_group("placeholder", "a made-up paper for a public example: no network call")
+    ph.add_argument("--placeholder", action="store_true", help="write the Result from the metadata below")
+    ph.add_argument("--title", default="", help="the placeholder paper's title")
+    ph.add_argument("--authors", default="", help="its authors, 'Given Family; Given Family'")
+    ph.add_argument("--year", type=int, default=0, help="its year")
+    ph.add_argument("--venue", default="", help="its journal or venue")
+    ph.add_argument("--abstract", default="", help="its placeholder abstract (30 words or more), else metadata only")
+    ph.add_argument("--landing", default="", help="its page (default https://example.org/placeholder/<key>)")
+    ph.add_argument("--bib-file", type=Path, help="the placeholder .bib its entry is copied from, by --bib-key")
+    ph.add_argument("--verification", default="", help="the Card's verification line; 'NEEDS …' waits on a person")
+    a = ap.parse_args(argv)
+    if a.placeholder:
+        missing = [n for n in ("title", "authors", "year", "venue", "bib_file", "bib_key") if not getattr(a, n)]
+        if missing:
+            ap.error("--placeholder needs " + ", ".join("--" + n.replace("_", "-") for n in missing))
+        if a.pmlr_url or a.arxiv or a.pdf_from or a.pdf_url or a.bib_from != "doi":
+            ap.error("--placeholder makes no network call: no --pmlr-url, --arxiv, --pdf-from, --pdf-url or --bib-from")
+        return build_placeholder(a, a.task.resolve())
     if bool(a.doi) == bool(a.pmlr_url):
         ap.error("give exactly one of --doi or --pmlr-url")
     if bool(a.accepted_venue) != bool(a.accepted_url):

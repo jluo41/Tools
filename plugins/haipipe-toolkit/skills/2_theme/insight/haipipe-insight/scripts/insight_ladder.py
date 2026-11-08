@@ -251,13 +251,13 @@ def version(proto: Path, slug: str, plan: Plan) -> Path:
 
 
 def release_goal(n: int, words: str, questions: int, cuts) -> str:
-    """A release's goal line: what it holds, in words (`Analysis plan 1, example questions: 8 questions and their
-    scripts on 5 cuts`); a release still without questions says what it will hold."""
+    """A release's goal line: what it is for, in words, no count (b11 round 2: "take the counts out of the goal line";
+    how many questions and cuts is its page's main line): `Analysis plan 1, example questions: the questions and
+    their scripts on the cuts it fixes`; a release still without questions says what it will hold."""
     head = f"Analysis plan {n}" + (f", {words}" if words else "")
     if not questions:
         return f"{head}: its questions and their scripts, frozen once a person signs it"
-    return (f"{head}: {questions} question{'s' if questions != 1 else ''} and their scripts"
-            + (f" on {cuts} cut{'s' if cuts != 1 else ''}" if cuts else ""))
+    return f"{head}: the questions and their scripts" + (" on the cuts it fixes" if cuts else "")
 
 
 def _rel(target: Path, base: Path) -> str:

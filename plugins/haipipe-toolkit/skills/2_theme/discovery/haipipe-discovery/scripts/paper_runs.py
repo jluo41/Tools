@@ -16,6 +16,7 @@ from typing import Iterable
 
 
 RUN_RE = re.compile(r"^r[0-9]{2}_[a-z0-9]+[0-9]{4}_[a-z0-9_]+$")
+COLLECT_RE = re.compile(r"^r[0-9]{2,}_collect_[a-z0-9_]+$")
 PAGE_RUN_RE = re.compile(
     r"^rp(?:00_mermaid-structure|[0-9]{2}_p[0-9]{2}(?:-p[0-9]{2})?)$"
 )
@@ -235,9 +236,11 @@ def _pair_maps(topic: Path) -> tuple[dict[str, Path], dict[str, Path]]:
         if results_dir.is_dir()
         else {}
     )
-    # One folder per Run (haipipe-run 0.31.0): runs/<run>/<run>.sh beside runs/<run>/result/.
+    # One folder per Run (haipipe-run 0.31.0): runs/<run>/<run>.sh beside runs/<run>/result/. A collection Run
+    # (`rNN_collect_<slug>`, haipipe-interaction: a person's answers about this Page) is never a Paper Run either.
     if runs_dir.is_dir():
-        for folder in sorted(p for p in runs_dir.iterdir() if p.is_dir() and not p.name.startswith("run-")):
+        for folder in sorted(p for p in runs_dir.iterdir() if p.is_dir() and not p.name.startswith("run-")
+                             and not COLLECT_RE.match(p.name)):
             ticket = folder / f"{folder.name}.sh"                # a soft run-<type>-<target> is never a Paper Run
             if ticket.is_file():
                 runs[folder.name] = ticket

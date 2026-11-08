@@ -28,6 +28,7 @@ _TITLE = re.compile(r"^#\s+(.+)$", re.M)
 _JOB = re.compile(r"^j\d{2}_[a-z0-9_]+$", re.I)
 _TASK = re.compile(r"^t\d{2}_[a-z0-9_]+$", re.I)
 _RUN = re.compile(r"^rp?\d{2}_[\w.-]+$")
+_COLLECT = re.compile(r"^r\d{2,}_collect_")
 _BULLET = re.compile(r"(?m)^- (cite|subject|venue|verification|run):[ \t]*(.+)$")
 _TEXT = {".md", ".txt", ".bib", ".yaml", ".yml", ".sh"}
 SYNTHESIS = ("summary.md", "verdict.md", "landscape.md")
@@ -96,7 +97,8 @@ def run_results(task: Path) -> list[tuple[str, Path]]:
     if (task / "runs").is_dir():
         found.update((r.name, r / "result") for r in (task / "runs").iterdir()
                      if r.is_dir() and _RUN.match(r.name) and (r / "result").is_dir())
-    return sorted(found.items())
+    # a collection Run (rNN_collect_<slug>, a person's answers about the Page) is never a Paper Run
+    return sorted((name, r) for name, r in found.items() if not _COLLECT.match(name))
 
 
 def paper(result: Path, board: Path, root: Path, task: dict, name: str = "") -> dict:

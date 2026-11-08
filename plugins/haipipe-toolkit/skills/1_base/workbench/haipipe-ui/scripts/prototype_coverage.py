@@ -20,7 +20,8 @@ import sys
 import urllib.parse
 import urllib.request
 
-EMPTY = re.compile(r"class=\"?mut\"?[^>]*>\s*((?:Nothing|No |Not )[^<]{0,90})", re.I)   # a bar's state word repeats its body
+EMPTY = re.compile(r"class=\"?mut\"?[^>]*>\s*((?:Nothing|No |Not )[^<]{0,90})")   # an empty state starts a sentence: a
+#                                                         lowercase "no two alike" label is not one (261108)   # a bar's state word repeats its body
 ASKED = "Nothing asked yet."         # a view's own 🙋 with no item: covered when any page shows a form (JL 261105-06)
 VIEW = re.compile(r'class="section-views.*?</nav>', re.S)
 GROUP = re.compile(r'group=([A-Za-z0-9_-]+)')

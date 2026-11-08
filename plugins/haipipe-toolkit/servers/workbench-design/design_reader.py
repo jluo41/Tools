@@ -47,6 +47,7 @@ def registry(path: Path | None = None) -> dict:
     return out
 METHOD_PIN = re.compile(r"^(M\d\d)\s*(m\d+)?")
 DESIGN_TASK = re.compile(r"^t(\d+)_d(\d+)_(.+)$")
+FENCED = re.compile(r"(?s)```[a-z]*\n(.*?)\n?```")   # a design's words in a fenced block, a note around it (release.py)
 FENCE_PARTS = ("Goal · how much is set", "Goal · for whom", "Information · whose", "Information · form",
                "Examples", "Tools", "Reading", "From the last unit")      # step ① See input's parts (s03)
 
@@ -207,6 +208,13 @@ def kind_of(task: Path) -> str:
     return "t00" if task.name.startswith("t00_") else "t99" if task.name.startswith("t99_") else "design"
 
 
+def words(text: str) -> str:
+    """A design's words from its face's ## Design: the fenced block when there is one (a character count beside it is
+    not the design), else the section as written; release.py's words_of, so a page and the delivery agree."""
+    m = FENCED.search(text or "")
+    return m.group(1).strip() if m else (text or "").strip()
+
+
 def design(task: Path) -> dict:
     """One design Task: its face, its message, its elements, prediction, drafts and tests."""
     md, m = face(task), DESIGN_TASK.match(task.name)
@@ -217,7 +225,7 @@ def design(task: Path) -> dict:
     elements = _yaml(task / "elements.yaml")
     return {"path": task, "name": task.name, "id": f"d{m.group(2)}" if m else task.name, "slug": m.group(3) if m else "",
             "number": int(m.group(1)) if m else 0, "state": str(f.get("state", "draft")), "idea": str(f.get("idea", "")),
-            "short": str(f.get("name", m.group(3) if m else "")), "message": parts.get("Design", "").strip(),
+            "short": str(f.get("name", m.group(3) if m else "")), "message": words(parts.get("Design", "")),
             "evaluation": parts.get("Evaluation", "").strip(), "elements": elements if isinstance(elements, list) else [],
             "prediction": _yaml(task / "prediction.yaml") or {}, "runs": rs, "drafts": drafts, "verifies": verifies,
             "first_try": bool(verifies) and verifies[0]["status"] == "passed"}

@@ -130,6 +130,8 @@ def _approved_words(j: dict) -> str:
     from live import design_views as V
     short, full = V._approved(j)
     day = re.search(r"\d{6}", str(short or ""))
+    if "placeholder" in str(full or "").lower():     # an example Block's stand-in sign never reads as a person's (261108)
+        return f"✅ placeholder sign {day.group(0)}, no person signed" if day else "✅ placeholder sign, no person signed"
     return f"✅ signed by a person {day.group(0)}" if day else "✅ signed by a person"
 
 

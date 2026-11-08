@@ -1002,5 +1002,18 @@ class PaperRunContractTest(unittest.TestCase):
             self.assertEqual([], errors)
 
 
+    def test_a_collection_run_is_never_a_paper_run(self) -> None:
+        # a person's answers about the Page (haipipe-interaction) sit in runs/rNN_collect_<slug>/ with a result/
+        with tempfile.TemporaryDirectory() as temp:
+            topic = make_topic_path(Path(temp))
+            make_topic_contract(topic)
+            answered = topic / "runs" / "r01_collect_example_reading" / "result"
+            answered.mkdir(parents=True)
+            (answered / "answer_collection.md").write_text("# Answers\n", encoding="utf-8")
+            (topic / "runs" / "r02_collect_example_order").mkdir(parents=True)
+            errors, counts, _ = paper_runs.check_topic(topic)
+            self.assertEqual([], errors)
+            self.assertEqual(0, sum(counts.values()))
+
 if __name__ == "__main__":
     unittest.main()

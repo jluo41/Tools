@@ -194,8 +194,9 @@ def _block(block, root, sub):
     return out
 
 
-def _timeline(job_dir, block, root, emails, meetings, checklist):
-    """Every dated thing in one Job, newest first: Timeline.md lines, emails, meetings, done steps."""
+def timeline_items(job_dir, block, root, emails, meetings):
+    """Every dated thing in one Job, newest first, as (date, kind, html): Timeline.md lines, emails, meetings and its
+    sends (delivery/jNN_<job>/<date>-<what>/); the Job's Status (cowork_focus) and its Work card read the same list."""
     items = []
     for line in read(job_dir / "Timeline.md", block).splitlines():
         found = _DATE.search(line)
@@ -205,11 +206,18 @@ def _timeline(job_dir, block, root, emails, meetings, checklist):
     for kind, rows in (("email", emails), ("meeting", meetings)):
         for n in rows:
             state = " <b>draft ✎</b>" if n.get("draft") else ""
-            items.append((n["date"], kind, link(reader(job_dir / (kind + "s") / n["name"], root), n["title"]) + state))
+            items.append((n["date"], kind, pop(reader(job_dir / (kind + "s") / n["name"], root), n["title"]) + state))
     for m in _deliveries(job_dir, block):
-        items.append((m["date"], "delivery", (link(reader(m["md"], root), m["title"]) if m["md"] else esc(m["title"]))
+        items.append((m["date"], "delivery", (pop(reader(m["md"], root), m["title"]) if m["md"] else esc(m["title"]))
                       + (" <b>draft ✎</b>" if m["draft"] else "")))
     items.sort(key=lambda x: x[0], reverse=True)
+    return items
+
+
+def _timeline(job_dir, block, root, emails, meetings, checklist):
+    """Every dated thing in one Job, newest first: Timeline.md lines, emails, meetings, sends; then how many
+    checklist steps are open."""
+    items = timeline_items(job_dir, block, root, emails, meetings)
     undated = sum(1 for s in checklist if not s["done"])
     shown = table(("date", "item", ""), [(esc(d or "—"), esc(k), h) for d, k, h in items])
     return shown + (f'<p class=mut>{undated} checklist steps open: see Checklist.</p>' if undated else "")

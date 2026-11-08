@@ -196,9 +196,31 @@ def questionnaire_card(message: str, small: bool = False) -> str:
     return _channel_card("Questionnaire", title, intro, rows, done, small)
 
 
+FENCED = re.compile(r"(?s)```[a-z]*\n(.*?)\n?```")
+
+
+def words_of(text: str) -> str:
+    """A design's words: the fenced block when its text has one (a note around it, such as a character count, is not
+    the design), else the text as written; the rule release.py's words_of keeps for the delivery (the design example
+    exposed it, 261108: a phone showed the fence and the count note)."""
+    m = FENCED.search(text or "")
+    return m.group(1).strip() if m else (text or "").strip()
+
+
+def draft_files(d: dict) -> list:
+    """A design's drafts in order, each (its Run, its design.md): draft 1 is the generate's result/, then one per pass of
+    run-revise-d<NN> that wrote a design.md (a revise keeps its draft in its pass, never in a result/)."""
+    out = []
+    for r in d["drafts"]:
+        passes = sorted((r["path"] / "passes").glob("*/design.md")) if r["type"] == "revise" else []
+        out += [(r, f) for f in passes] or [(r, r["path"] / "result" / "design.md")]   # an older revise kept result/
+    return out
+
+
 def as_read(message: str, venue: str = "", small: bool = False) -> str:
     """A design in its channel's look: a phone for an SMS, a push or a reminder; tick boxes for a checklist;
     answer boxes for a questionnaire; a card named by its channel for the rest."""
+    message = words_of(message)
     v = (venue or "").strip().lower()
     if v in PHONE_LABEL:
         return phone(message, small, PHONE_LABEL[v])
@@ -886,6 +908,12 @@ def _scorecard(b: dict, root: Path, href) -> str:
             + ("".join(out) or '<p class=mut>No Job yet.</p>'))
 
 
+def _run_state(r: dict | None) -> str:
+    """A t00 or t99 tile's state: its Run's own status (running, closed …), "waiting" before the Run exists; a Run that
+    exists is not yet closed (j02 of the design example: its reason Run still running, 261108)."""
+    return str(r["status"]) if r else "waiting"
+
+
 def _preview(j: dict, href, root: Path) -> str:
     """An open Job card: a preview of its Tasks (t00 · each design as it reads · t99 · released)."""
     order = {"setup-goal": 0, "setup-method": 1, "setup-inputs": 2}
@@ -894,11 +922,11 @@ def _preview(j: dict, href, root: Path) -> str:
     tiles = []
     if j["t00"]:
         tiles.append((f'<a href="{esc(href("", "", j["t00"]))}">{_id("t00", "reason ideas")}</a>',
-                      f'② {len(j["topics"])} topics → {len(j["ideas"])} ideas', _st("closed" if j["reason"] else "waiting")))
+                      f'② {len(j["topics"])} topics → {len(j["ideas"])} ideas', _st(_run_state(j["reason"]))))
     if j["t99"]:
         kept = sum(r.get("kept") == "yes" for r in j["ranking"])
         tiles.append((f'<a href="{esc(href("", "", j["t99"]))}">{_id("t99", "review whole")}</a>',
-                      f'⑤ ranked {len(j["ranking"])} · kept {kept}', _st("closed" if j["rank"] else "waiting")))
+                      f'⑤ ranked {len(j["ranking"])} · kept {kept}', _st(_run_state(j["rank"]))))
     if j["delivered"]:
         tiles.append(("released", " · ".join(esc(d.get("design", "")) for d in j["delivered"]) + " → Delivery", _st("released")))
     designs = [(f'<a href="{esc(href("", "", d["path"]))}">{_id(d["name"][:3] + " · " + d["id"])}</a>',
@@ -906,7 +934,9 @@ def _preview(j: dict, href, root: Path) -> str:
     more = len(j["designs"]) - 6
     return ((f'<p class=mut>set up {setup}</p>' if setup else "") + table(("Task", "what it holds", "state"), tiles)
             + '<p class=mut style="margin-top:10px">③ ④ one design each, in order</p>'
-            + table(("design", "as it reads", "state"), designs)
+            + (table(("design", "as it reads", "state"), designs) if designs else
+               f'<p class=mut>Its design Tasks open after t00\'s ideas pass the fence check '
+               f'(run-open-designs-{esc(j["id"])}).</p>')
             + (f'<p class=mut>+ {more} more · {_job_link(href, j, "open the Job")}</p>' if more > 0 else ""))
 
 
@@ -1444,7 +1474,7 @@ def _coverage(j: dict) -> str:
     topics = {i.get("design"): i.get("topic") for i in j["ideas"]}
     covered = sorted({topics.get(d["id"], "") for d in kept} - {""})
     return _pairs([("topics covered by the kept", esc(" · ".join(covered) or "—")),
-                   ("kept", esc(f"{len(kept)} designs")), ("no two alike", "read from the ranking's why")])
+                   ("kept", esc(f"{len(kept)} designs")), ("each one distinct", "read from the ranking's why")])
 
 
 def _kept(j: dict, href) -> str:
@@ -1490,13 +1520,12 @@ def _tests(d: dict, j: dict, b: dict, root: Path) -> str:
 
 def _drafts(d: dict, j: dict, b: dict, root: Path) -> str:
     out = []
-    for k, r in enumerate(d["drafts"], 1):
-        text = ""
-        f = r["path"] / "result" / "design.md"
-        if f.is_file():
-            text = f.read_text(encoding="utf-8", errors="ignore").strip()
-        out.append((f"draft {k}", _id(r["run"]), as_it_reads(text, d["path"] if k == len(d["drafts"]) else None, root,
-                                                         venue=R.venue_of(d["path"]))))
+    files = draft_files(d)
+    for k, (r, f) in enumerate(files, 1):
+        text = f.read_text(encoding="utf-8", errors="ignore").strip() if f.is_file() else ""
+        where = r["run"] + (f" · {f.parent.name}" if r["type"] == "revise" else "")
+        out.append((f"draft {k}", _id(where), as_it_reads(text, d["path"] if k == len(files) else None, root,
+                                                          venue=R.venue_of(d["path"]))))
     return table(("draft", "Run", "as it reads"), out) if out else '<p class=mut>No draft yet.</p>'
 
 

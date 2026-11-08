@@ -333,8 +333,8 @@ def board(block: Path) -> dict:
     fm = front(block / "board.md")
     jobs = [job(p) for p in sorted(block.iterdir()) if p.is_dir() and JOB_NAME.match(p.name)]
     reports = sorted((block / "reports").glob("q*/q*.md")) if (block / "reports").is_dir() else []
-    handoffs = [dict(front(h), file=h) for h in sorted((block / "delivery").glob("*.md"))] \
-        if (block / "delivery").is_dir() else []
+    handoffs = [dict(front(h), file=h) for h in sorted((block / "delivery").glob("*.md"))
+                if h.name != "delivery.md"] if (block / "delivery").is_dir() else []   # delivery.md: the folder's table
     return {"path": block, "face": fm, "dataset": fm.get("dataset", ""), "versions": fm.get("versions") or [],
             "accumulates": fm.get("accumulates", ""), "jobs": jobs, "runs": runs(block),
             "reports": [dict(front(r), file=r, slug=r.parent.name) for r in reports], "handoffs": handoffs,

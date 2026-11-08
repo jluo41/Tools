@@ -1205,12 +1205,19 @@ def delivery_html(folder: Path, root: Path) -> str:
     then each level's delivery/, the page's own first, then its children's: its table (delivery.md) or its files; a Job
     or a Task also its part of its Block's delivery/ (block_delivery_part)."""
     out = [live_pages_html(folder, root)]
-    for deliv, where in delivery_sources(folder, root):
+    level = page_level(folder)
+    mod, prefix = page_module(frame.theme_of(folder, root), folder, root) if level in ("Block", "Job", "Task") else (None, "")
+    if mod is not None and hasattr(mod, prefix + "delivery_tabs"):   # a page's own handover (a Prototype's releases;
+        tabs = own_delivery_tabs(frame.theme_of(folder, root), folder, root, level)   # round 2, 261108: its rail said
+        out.append(side_css() + _side_tabs("rDx", [(t[0], t[1]) for t in tabs], [t[2] for t in tabs]) + PB_JS)   # "Nothing
+    for deliv, where in delivery_sources(folder, root):   # handed over yet" beside its signed release)
         table = deliv / "delivery.md"
+        files = sorted(p for p in deliv.iterdir() if not p.name.startswith("."))
+        if not table.is_file() and not files:        # an empty delivery/ a scaffold made says nothing (261108: "Empty.")
+            continue
         if table.is_file():
             body = markdown(table.read_text(encoding="utf-8", errors="replace"), deliv, root)
         else:
-            files = sorted(p for p in deliv.iterdir() if not p.name.startswith("."))
             body = "<ul>" + "".join(f'<li><a href="{frame.esc(frame._file_url(p, root))}" target=_blank rel=noopener>'
                                     f'{frame.esc(p.name)}</a></li>' for p in files) + "</ul>" if files else '<p class="mut">Empty.</p>'
         out.append(f'<section class="delivery-part"><h3 class="focus-sub">{frame.esc(where)}</h3>{body}</section>')
@@ -2055,6 +2062,16 @@ def parts_mindmap(folder: Path, root: Path) -> str:
         branches.append(mmbuild.built(f"{folder}/runs", "Runs", [
             mmbuild.built(f"{folder}/{r.name}", f"[{r.name}] {one_line(run_goal(r), 120)}", [])
             for r in sorted(d for d in (folder / "runs").glob("*") if d.is_dir() and not d.name.startswith((".", "_")))]))
+    if not branches and level in ("Block", "Job", "Task"):   # a page the shared map cannot read (a cowork Job, no Tasks):
+        mod, prefix = page_module(frame.theme_of(folder, root), folder, root)   # its theme's own branches (261108)
+        fn = getattr(mod, prefix + "map_branches", None) if mod is not None else None
+        try:
+            own = list(fn(folder, root, level) or []) if fn else []
+        except Exception:
+            own = []
+        for k, (label, leaves) in enumerate(own):
+            branches.append(mmbuild.built(f"{folder}/own/{k}", str(label),
+                                          [mmbuild.built(f"{folder}/own/{k}/{i}", str(leaf), []) for i, leaf in enumerate(leaves)]))
     if not branches:
         return '<p class="mut">Nothing to map yet.</p>'
     rootnode = mmbuild.built(".", folder.name, branches)
@@ -2278,7 +2295,9 @@ def work_paths(row: dict, folder: Path, root: Path) -> list:
     for item in row.get("work") if isinstance(row.get("work"), list) else []:
         ref = item if isinstance(item, str) else task_questions.words(item.get("path")) if isinstance(item, dict) else ""
         path = (folder / ref).resolve() if ref else None
-        if path and inside(path, root) and path.is_dir():
+        if path and path.is_file():                  # a file names its folder's work (haipipe-cowork: `work:` names files)
+            path = path.parent
+        if path and inside(path, root) and path.is_dir() and path not in out:
             out.append(path)
     return out
 
@@ -2710,9 +2729,14 @@ def job_findings(job: Path, root: Path, extra=()) -> str:
     proto = page_module(frame.theme_of(job, root), job, root)[1] == "prototype_"   # a release returns no Run headline
     if tasks and not proto:
         items, panels, returned = [], [], 0
+        mod, prefix = page_module(frame.theme_of(job, root), job, root)   # a theme's own Task headline (a discovery
+        own_head = getattr(mod, prefix + "headline", None) if mod is not None else None   # Task leads with its synthesis)
         for t in tasks:
             run = output_run(t)
-            head = run_headline(run) if run else ""
+            try:
+                head = (own_head(t, root) if own_head else "") or (run_headline(run) if run else "")
+            except Exception:
+                head = run_headline(run) if run else ""
             label = state_label(read_face(t, root)["state"])
             returned += run is not None
             items.append((page_title(t), mark_word(state_words(label)) if label else "no state"))
@@ -3618,6 +3642,9 @@ def render(theme, root: Path, folder: Path, section="", group="") -> str:
         if view == "standing" and caption and level in ("Job", "Task"):   # its own level's words (261105)
             caption = {"Job": "Where its Tasks stand, each with its newest result.",
                        "Task": "What its newest Run returned, and where its Runs stand."}[level]
+        if level in ("Block", "Job", "Task"):            # a theme's own words for a view at a level (CAPTIONS, 261108)
+            _mod, _prefix = page_module(theme.name, folder, root)
+            caption = (getattr(_mod, _prefix + "CAPTIONS", {}) if _mod is not None else {}).get((level, view.removeprefix("work-")), caption)
         body = (f'<p class="view-caption">{frame.esc(caption)}</p>' if caption else "") + body
         words = draft.get("words", {}) if section == "work" else {}   # a draft step's state word on its button
         bar = ('<nav class="section-views" aria-label="Views">' + "".join(

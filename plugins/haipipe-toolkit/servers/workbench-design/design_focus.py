@@ -404,18 +404,20 @@ def task_view(tdir: Path, root: Path, step: str) -> tuple:
         d = R.design(tdir)
         did = d["id"]
         state = _design_state(d)
-        revised = sum(1 for r in d["runs"] if r["type"] == "revise")
+        k = len(V.draft_files(d))                       # drafts so far: the generate's, then one per revise pass
+        revised = max(k - 1, 0)
         spec = {"Draft": ((f'Idea {d["idea"] or "—"}', "from t00's ideas.yaml, and inputs/ only"),
-                          ("🤖 Designer agent", "③ conduct the method's process"), ("Draft + elements.yaml", f'{len(d["drafts"])} drafts'),
+                          ("🤖 Designer agent", "③ conduct the method's process"), ("Draft + elements.yaml", f'{k} draft{"" if k == 1 else "s"}'),
                           "done" if d["drafts"] else "next", f"run-generate-{did}", "Task", tdir,
                           lambda: V._design(d, j, href, root) + V._elements(d)),
                 "Verify": (("The last draft", "the design + elements.yaml"), ("🤖 Reviewer agent", "④ T0 rules · T1 sources, fresh"),
                            ("verdict", d["verifies"][-1]["status"] if d["verifies"] else "not yet"),
                            "done" if d["verifies"] and d["verifies"][-1]["status"] == "passed" else
-                           "next" if d["drafts"] else "waits on the draft", f"run-verify-{did}-v1", "Task", tdir,
+                           "next" if d["drafts"] else "waits on the draft", f"run-verify-{did}-v{max(k, 1)}", "Task", tdir,
                            lambda: V._tests(d, j, b, root)),
                 "Revise": (("A failed verify", "its notes"), ("🤖 Designer agent", "one more draft, then verify again"),
-                           ("Draft v" + str(revised + 2), f"{revised} revisions"),
+                           ("Draft v" + str(k + 1 if state == "revise next" else k),
+                            f"{revised} revision{'' if revised == 1 else 's'}"),
                            "next" if state == "revise next" else "done" if revised else "not needed",
                            f"run-revise-{did}", "Task", tdir, lambda: V._drafts(d, j, b, root)),
                 "State": (("t99's ranking", "rank and kept"), ("🤖 Reviewer agent", "⑤ at t99; you sign at the Job"),

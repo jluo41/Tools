@@ -13,6 +13,8 @@ writes the Board's delivery part for the Job, never the Job itself:
     <Board>/delivery/<job>/<tNN_X..>/delivery.md   that part previewed: each figure as a picture and its one line
     <Board>/delivery/<job>/overall-report.html     the two pages, self-contained (the figures inlined)
     <Board>/delivery/<job>/overall-report.pdf      the same pages printed by a headless Chrome, Letter
+    <Board>/delivery/delivery.md                   the Board's delivery as one table, each row its state
+                                                   (delivery_index.py)
 
 Generated: never edit either file; change a Task's page and run this again. An X question with no written answer
 prints "not written yet". Without Chrome it writes the HTML only and says so.
@@ -28,6 +30,7 @@ import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import delivery_index as DI  # noqa: E402
 import overall_figures as OF  # noqa: E402
 import run_question as RQ  # noqa: E402
 from open_job import JOB  # noqa: E402
@@ -162,6 +165,8 @@ def main():
         made.append(out / "overall-report.pdf")
     elif not a.no_pdf:
         print("no Chrome found: wrote the HTML only")
+    index = DI.write(job.parent)                                  # the Board's delivery table, each row its state
+    made += [index] if index else []
     root = RQ.space_root(job)
     for p in made:
         print(f"wrote {p.relative_to(root).as_posix()}")

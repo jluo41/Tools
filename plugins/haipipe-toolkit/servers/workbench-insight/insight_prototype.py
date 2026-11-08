@@ -18,7 +18,7 @@ from urllib.parse import quote
 from live import insight_plan_c as P
 from live import insight_views as V
 from live.frame import esc, pop, reader, rel
-from live.ui_parts import _kv, _pill, _side_tabs
+from live.ui_parts import COPY_JS, _kv, _pill, _side_tabs, copy_verb
 
 ORDER = "DIKWX"                                   # the ladder, the Executive answers last
 LEVEL = {"D": "Data", "I": "Information", "K": "Knowledge", "W": "Wisdom", "X": "Executive"}
@@ -115,6 +115,23 @@ def r_word(r: dict) -> str:
     if str(r["face"].get("state")) == "closed" or signed.startswith("✅"):
         return "closed · " + (f"signed {signed}" if signed.startswith("✅") else "not signed")
     return "draft · not signed yet"
+
+
+def _closed_r(r: dict) -> bool:
+    return r_word(r).startswith("closed")
+
+
+def tally_word(r: dict) -> str:
+    """A Status bar's word with its tally (round 2: "draft · 8 of 9 agreed"): a closed release its sign; a draft how
+    many of its questions are agreed and scripted."""
+    if _closed_r(r):
+        return r_word(r)
+    qs = list(r["questions"].values())
+    return f"draft · {sum(_ready(q) for q in qs)} of {len(qs)} agreed" if qs else "draft · no question yet"
+
+
+def _release_of(proto: dict, folder: Path) -> dict | None:
+    return next((x for x in proto["releases"] if x.get("job") == folder or Path(x.get("job") or "").name == folder.name), None)
 
 
 def _label(r: dict) -> str:
@@ -226,11 +243,8 @@ def _cuts_part(r: dict, qs: list, root: Path) -> tuple | None:
         items.append((name, V._where(p)))
         panels.append(_kv([("where", f'<code>{esc(V._where(p))}</code>'), ("why", esc(str(p.get("why") or "—"))),
                            ("asked by", esc(", ".join(asks) or "—"))]))
-    files = [V._open(r["job"] / f, root, f) for f in ("partitions.md", "thresholds.yaml", "release.yaml")
-             if r.get("job") and (r["job"] / f).is_file()]
-    head = (f'<p>Fixed in {esc(_label(r))} before any outcome'
-            + (f'; a cut too thin to see a {esc(floor)}-point gap is refused for power' if floor else "") + '.</p>'
-            + f'<p class=pr-files>{" ".join(files)}</p>')
+    head = (f'<p>Fixed in {esc(_label(r))} before any outcome'       # its files are 📦 Delivery's (round 2: shown once)
+            + (f'; a cut too thin to see a {esc(floor)}-point gap is refused for power' if floor else "") + '.</p>')
     return ("✂️ Cuts", f"power floor {floor} points" if floor else _label(r), head + _side_tabs("prc", items, panels), "")
 
 
@@ -303,12 +317,6 @@ def _share(qs: list) -> int:
     return round(100 * sum(_ready(q) for q in qs) / len(qs)) if qs else 0
 
 
-def _files(r: dict, root: Path) -> str:
-    files = [V._open(r["job"] / f, root, f) for f in ("release.yaml", "partitions.md", "thresholds.yaml")
-             if r.get("job") and (r["job"] / f).is_file()]
-    return f'<p class=pr-files>{" ".join(files)}</p>' if files else ""
-
-
 def status(folder: Path, root: Path, level: str) -> list:
     """A Prototype's Status bars: [(title, word, html, waits, share)]."""
     folder, root = Path(folder), Path(root).resolve()
@@ -317,15 +325,15 @@ def status(folder: Path, root: Path, level: str) -> list:
     if level == "Block":
         for r in reversed(proto["releases"]):
             qs = list(r["questions"].values())
-            body = (_q_rows(qs, root) + _files(r, root)
+            body = (_q_rows(qs, root)
                     + f'<div class=find-verbs>{_open_btn(_focus(r["job"], root), _label(r), "Open " + _label(r))}</div>')
-            out.append((f"📜 {_label(r)}", r_word(r), body, _release_waits(r, proto), _share(qs)))
+            out.append((f"📜 {_label(r)}", tally_word(r), body, _release_waits(r, proto), _share(qs)))
     elif level == "Job":
-        r = next((x for x in proto["releases"] if Path(x.get("job") or "").name == folder.name), None)
-        if r:
-            qs = list(r["questions"].values())
-            out.append(("📜 The release", r_word(r), _release_runs(r, root) + _files(r, root), _release_waits(r, proto)))
-            out.append(("❓ Questions", _level_word(qs), _q_rows(qs, root), "", _share(qs)))
+        r = _release_of(proto, folder)
+        if r:                                   # its questions are Findings' (round 2, settled: Status is the release's
+            qs = list(r["questions"].values())  # state and sign); its files 📦 Delivery's
+            out.append(("📜 The release", tally_word(r), _release_runs(r, root) or '<p class=mut>No Run on the release yet.</p>',
+                        _release_waits(r, proto), _share(qs)))
     elif level == "Task":
         out += _task_status(folder, root, proto)
     return [(esc(x[0]),) + tuple(x[1:]) for x in out]          # a Status title is HTML (focus_page.numbered)
@@ -374,5 +382,171 @@ def delivery_tabs(folder: Path, root: Path, level: str) -> list:
     if level != "Block":
         rs = [r for r in rs if r.get("job") == folder or Path(r.get("job") or "").name == folder.name
               or (level == "Task" and Path(r.get("job") or "") == folder.parent)]
-    return [(_label(r), r_word(r), _files(r, root) or '<p class=mut>Nothing handed over yet.</p>') for r in rs]
+    return [(_label(r), r_word(r), _handed(r, root)) for r in rs]
+
+
+FILE_WORDS = (("release.yaml", "its questions, each with its Task and what changed"),
+              ("partitions.md", "its cuts, fixed before any outcome"),
+              ("thresholds.yaml", "its power floor and its thresholds"))
+
+
+def _handed(r: dict, root: Path) -> str:
+    """A release's handover: each file a Board Job pins, linked, with what it holds and the release's sign."""
+    rows = [f'<li>{V._open(r["job"] / f, root, f)}<small>{esc(what)}</small></li>' for f, what in FILE_WORDS
+            if r.get("job") and (r["job"] / f).is_file()]
+    if not rows:
+        return f'<p class=mut>{esc(_label(r))} is cut from the proposals; its files are written then.</p>'
+    return (f'<p class=in-sub>{esc(_cap(r_word(r)))}: a Board Job pins these files.</p>'
+            f'<ul class=wk-rows>{"".join(rows)}</ul>')
+
+
+def _cap(text: str) -> str:
+    return text[:1].upper() + text[1:] if text else ""
+
+
+# ── what the page leads with, what is done on it, and its map (the shared page asks; round 2, 261108) ──────────────
+def lead(folder: Path, root: Path, level: str, view: str) -> str:
+    """The main line a view opens with (round 2: "Status and Findings each open with a main line"): on Status the
+    release's state and sign, on Findings what its questions are; '' for any other view."""
+    folder, root = Path(folder), Path(root).resolve()
+    proto = _proto(folder, level)
+    if not proto["releases"] or level not in ("Block", "Job"):
+        return ""
+    if level == "Job":
+        r = _release_of(proto, folder)
+        if r is None:
+            return ""
+        rs = [r]
+    else:
+        rs = list(reversed(proto["releases"]))
+    if view == "standing":
+        words = "; ".join(_status_line(r) for r in rs)
+    elif view == "findings":
+        r = rs[0]
+        words = _findings_line(r)
+        open_ = [p for p in _proposals(proto, r if level == "Job" else None) if _is_open(p)]
+        if open_ and not _closed_r(r):
+            words += f'; {len(open_)} proposal{"" if len(open_) == 1 else "s"} wait{"s" if len(open_) == 1 else ""} for your triage'
+    else:
+        return ""
+    return f'<p class=pb-big>{esc(_cap(words))}</p>'
+
+
+def _status_line(r: dict) -> str:
+    signed = str(r["face"].get("signed") or "")
+    if _closed_r(r):
+        return f"{_label(r)}: closed, signed {signed}" if signed.startswith("✅") else f"{_label(r)}: closed, not signed"
+    qs = list(r["questions"].values())
+    return f"{_label(r)}: a draft, {sum(_ready(q) for q in qs)} of {len(qs)} questions agreed and scripted, not signed yet"
+
+
+def _findings_line(r: dict) -> str:
+    qs = list(r["questions"].values())
+    cuts = len(r.get("partitions") or [])
+    ready = sum(_ready(q) for q in qs)
+    on = f" on {cuts} cut{'' if cuts == 1 else 's'}" if cuts else ""
+    if qs and ready == len(qs):
+        return f"{len(qs)} questions agreed and scripted{on}"
+    left = [q["id"] for q in qs if not _ready(q)]
+    return f"{len(qs)} questions{on}: {ready} agreed and scripted, {', '.join(left)} still to finish"
+
+
+def _is_open(p: dict) -> bool:
+    return str(p.get("state") or "open").lower() in ("open", "proposed", "")
+
+
+def _skill(text: str) -> str:
+    return copy_verb("Copy prompt", text, "Copies a prompt for /haipipe-insight; paste it in a Claude session")
+
+
+def _li(name: str, href: str, pop: str, note: str, verb: str = "") -> str:
+    return (f'<li><a href="{esc(href)}" data-pop="{esc(pop)}">{esc(name)}</a><small>{esc(note)}</small>{verb}</li>'
+            if href else f'<li><span>{esc(name)}</span><small>{esc(note)}</small>{verb}</li>')
+
+
+def _next_step(q: dict) -> str:
+    """A question's next step in words (round 2: "K02 · script to write", never "no state")."""
+    agreed, script = q_state(q)
+    if agreed == "plan returned":
+        return "plan returned: revise it"
+    if agreed == "to agree":
+        return "plan to agree"
+    return {"script written": "script to review"}.get(script, script)
+
+
+def process(folder: Path, root: Path, level: str, view: str) -> list | None:
+    """A Prototype's ⚙️ Process steps on one Work view, in place of the shared ones (round 2: "sign a release and triage
+    a proposal on the Prototype too"); None leaves the shared steps. [(title, word, html, waits)].
+
+      findings  📋 the analysis plan: triage its open proposals, then sign it, each a Copy prompt for /haipipe-insight
+      standing  🚧 Next steps: each question not yet agreed and scripted, by its name and its step; "nothing to do"
+                when none (never a row per Task saying "no Run waiting")"""
+    folder, root = Path(folder), Path(root).resolve()
+    if level not in ("Block", "Job"):
+        return None
+    proto = _proto(folder, level)
+    r = _release_of(proto, folder) if level == "Job" else (proto["releases"][-1] if proto["releases"] else None)
+    if r is None:
+        return None
+    where = rel(r["job"], root) if r.get("job") else rel(folder, root)
+    if view == "findings":
+        rows, waits = [], ""
+        if not _closed_r(r):
+            open_ = [p for p in _proposals(proto, r) if _is_open(p)]
+            names = ", ".join(str(p.get("title") or "").replace("-", " ") for p in open_)
+            pdir = rel(Path(proto["path"]) / "proposals", root)
+            rows.append(_li("Triage the open proposals", V.open_url(Path(proto["path"]) / "proposals", root) if open_ else "",
+                            "proposals", ("waiting for you · " + names) if open_ else "done: none open",
+                            _skill(f"/haipipe-insight {pdir} triage the open proposals ({names}) for {_label(r)}: take each "
+                                   "in, merge it or decline it, and say why in its file.") if open_ else ""))
+            if open_:
+                p = open_[0]
+                waits = f'🙋 {str(p.get("title") or "").replace("-", " ")}: a proposed {p.get("kind") or "change"} waits for your triage'
+        qs = list(r["questions"].values())
+        left = [q["id"] for q in qs if not _ready(q)]
+        signed = str(r["face"].get("signed") or "")
+        if _closed_r(r):
+            sign = f"done: signed {signed}" if signed.startswith("✅") else "closed, not signed"
+        elif left:
+            sign = "waits on " + ", ".join(left)
+        else:
+            sign = "waiting for you"
+            waits = waits or f"🙋 {_label(r)}: every question is ready; it waits for your sign"
+        rows.append(_li(f"Sign {_label(r)}", V.page_link(r["job"], root) if r.get("job") else "", _label(r), sign,
+                        "" if _closed_r(r) else
+                        _skill(f"/haipipe-insight {where} I sign {_label(r)}: check every question is agreed and its "
+                               "script reviewed, then record my sign (run-sign-release); if one is not, say which.")))
+        you = sum("waiting for you" in x for x in rows)
+        word = (f"{you} wait{'s' if you == 1 else ''} for you" if you else "done" if _closed_r(r) else f"waits on {', '.join(left)}"
+                if left else "done")
+        return [("📋 " + _cap(_label(r)), word, f'<ul class=wk-rows>{"".join(rows)}</ul>' + COPY_JS, waits)]
+    if view == "standing":
+        todo = [q for q in r["questions"].values() if not _ready(q)] if not _closed_r(r) else []
+        if not todo:
+            return [("🚧 Next steps", "nothing to do", f'<p class=mut>Nothing to do: {esc(_status_line(r))}.</p>', "")]
+        rows = []
+        for q in sorted(todo, key=lambda q: (ORDER.find(q["id"][:1]), q["id"])):
+            short = str(q.get("question") or q.get("name") or "").strip()
+            rows.append(_li(f'{q["id"]} · {_cap(short)}', _focus(Path(q["task"]), root) if q.get("task") else "",
+                            q["id"], _next_step(q)))
+        word = _next_step(todo[0]) if len(todo) == 1 else f"{len(todo)} to do"
+        return [("🚧 Next steps", word, f'<ul class=wk-rows>{"".join(rows)}</ul>', "")]
+    return None
+
+
+def map_branches(folder: Path, root: Path, level: str) -> list:
+    """A release's MindMap (round 2: "group its question Tasks by DIKW level, each leaf the full question", as an
+    insight Job's map does): [(level, [leaf words])]; [] for any other page (the shared map draws it)."""
+    if level != "Job":
+        return []
+    r = _release_of(_proto(Path(folder), level), Path(folder))
+    if r is None:
+        return []
+    out = []
+    for lv in ORDER:
+        qs = sorted((q for q in r["questions"].values() if q["id"][:1] == lv), key=lambda q: q["id"])
+        if qs:
+            out.append((LEVEL[lv], [f'[{q["id"]}] ' + _cap(str(q.get("question") or q.get("ask") or q.get("name") or "").strip())
+                                    for q in qs]))
+    return out
 

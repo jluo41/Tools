@@ -27,7 +27,7 @@ from live.ui_parts import (GROUP_CSS, PB_CSS, PB_JS, PROCESS, PROMPT_CSS, PROMPT
                            _section, _side_tabs, prompt_box)
 
 VIEWS = (("overall", "Overall"), ("grid", "Grid"), ("vs-previous", "vs previous"))
-CAPTIONS = {"overall": "the Overall Report, written last, and the pair this Job runs",
+CAPTIONS = {"overall": "the Overall Report, written last, and the analysis plan and data freeze it runs",
             "grid": "every question × cut, by DIKW level: one dot a cell",
             "vs-previous": "this Job against the one before: what changed",
             }
@@ -77,8 +77,9 @@ CSS = """<style>.in-sign{display:flex;flex-wrap:wrap;align-items:center;gap:8px;
 .in-key .in-dot{margin:0 3px 0 8px}.in-key .in-dot:first-child{margin-left:0}
 .jb{list-style:none;margin:2px 0;padding:0}.jb li{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;padding:8px 2px;
  border-bottom:1px solid var(--line);font-size:14px}.jb li:last-child{border-bottom:0}.jb .pins{color:var(--muted);font-size:13px}
-.jb .strip{display:inline-flex;flex-wrap:wrap;align-items:center;gap:3px 4px;font-size:12px;color:var(--muted)}
-.jb .strip b{margin-left:6px;font-weight:600}.jb .strip b:first-child{margin-left:0}.jb small{margin-left:auto;font-size:12.5px;color:var(--muted)}
+.jb .strip,.in-plans .strip{display:inline-flex;flex-wrap:wrap;align-items:center;gap:3px 4px;font-size:12px;color:var(--muted);margin:3px 0}
+.jb .strip b,.in-plans .strip b{margin-left:6px;font-weight:600}.jb .strip b:first-child,.in-plans .strip b:first-child{margin-left:0}
+.in-plans td{vertical-align:top}.in-plans .pb-pill{font-size:11.5px}.jb small{margin-left:auto;font-size:12.5px;color:var(--muted)}
 .in-card{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin:2px 0 10px}
 .in-card div{border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--paper)}
 .in-card b{display:block;font-size:17px;font-weight:600;overflow-wrap:anywhere}.in-card span{font-size:12px;color:var(--muted)}
@@ -209,8 +210,19 @@ def _focus(path: Path, root: Path, section: str = "report") -> str:
     return f"/_board/workbench?path={quote(rel(path, root))}&layout=focus&section={section}"
 
 
+def _proto_work(path: Path, root: Path) -> str:
+    """Where a plan is signed and its proposals triaged: the Prototype's (or the release's) Work · Findings, whose ⚙️
+    Process carries both (round 2: "the Board's Open the proposals landed on MindMap")."""
+    return _focus(Path(path), root, "work") + "&group=findings"
+
+
 def _jlink(j: dict, root: Path, words: str = "") -> str:
     return f'<a href="{esc(_focus(j["path"], root))}" title="{esc(j["name"])}">{esc(words or j["name"][:3])}</a>'
+
+
+def _pair(j: dict) -> str:
+    """A Job in plain words: `j02 · analysis plan 1 × data freeze 2` (round 2: never "(pN × vM)")."""
+    return f'{j["name"][:3]} · {P.plan_code(j["release"])} × {P.freeze_code(j["data"])}'
 
 
 def _written(t: dict) -> bool:
@@ -290,7 +302,7 @@ def _sign_rows(x: dict) -> list:
     if _plan_signed(x):
         sign = (f"Sign the plan {plan}", "signed in the Prototype", _done(r["face"]["signed"]), "")
     else:
-        go = (f'<a class=fd-btn data-pop="{esc(plan)}" href="{esc(V.page_link(r["job"], x["root"]))}">Sign in the Prototype</a>'
+        go = (f'<a class=fd-btn data-pop="{esc(plan)}" href="{esc(_proto_work(r["job"], x["root"]))}">Sign in the Prototype</a>'
               if r.get("job") else "")
         sign = (f"Sign the plan {plan}", "until then this Job is a preview", "waiting for you", go)
     waits = [WAIT_WORD[s] for s in V.WORK_STEPS[:-1] if st[s] not in ("done", "optional")]
@@ -347,11 +359,14 @@ def _overall_res(x: dict, eid: str = "ov") -> str:
     ov = (_section("📄 Overall Report", V._overall_tabs(j, b, r, x["root"], eid), f"{written} of {asked} written")
           if xs else _section("📄 Overall Report", "<p class=mut>This plan asks no Executive question, so it has no "
                                                   "Overall Report.</p>", "none in this plan"))
+    closed = str((j.get("face") or {}).get("signed") or "") if j["state"] == "closed" else ""
+    changed = ("nothing (the first Job)" if not j["previous"] or j["moved"] == "start"
+               else f'{MOVED.get(j["moved"], j["moved"] or "—")}, from {j["previous"][:3]}')
     facts = [("plan", esc(V._rlabel(b, j["release"]))), ("freeze", esc(V._vlabel(b, j["data"]))),
-             ("state", esc(("closed" if j["state"] == "closed" else "open")
-                           + ("" if _plan_signed(x) else " · a preview: the plan is not signed"))),
-             ("moved", esc(j["moved"] or "—")), ("Job before", esc(j["previous"] or "none: the first Job"))]
-    word = ("closed" if j["state"] == "closed" else "open") + ("" if _plan_signed(x) else " · a preview")
+             ("state", esc((("closed " + closed).strip() if j["state"] == "closed" else "preview: still open")
+                           + ("" if _plan_signed(x) else " · its plan is not signed"))),
+             ("changed from the Job before", esc(changed))]
+    word = (("closed " + closed).strip() if j["state"] == "closed" else "preview") + ("" if _plan_signed(x) else " · plan not signed")
     return big + ov + _section("🧷 This Job", _kv(facts), word)
 
 
@@ -395,7 +410,7 @@ def _grid(x: dict, verbs: bool) -> str:
     cuts = _cuts(x)
     ran = {t["name"] for t in f["ran"]}
     written, checked, returned = ({t["name"] for t in f[k]} for k in ("written", "checked", "returned"))
-    folds = []
+    folds, opened = [], False
     for lv in V.WRITE_ORDER:
         ts = [t for t in f["live"] if t["qid"][:1] == lv]
         if not ts:
@@ -438,12 +453,16 @@ def _grid(x: dict, verbs: bool) -> str:
             rows.append((f'<a href="/_board/insight-run?answer={esc(rel(Path(t["path"]), root))}" data-pop="{esc(t["name"])} · '
                          f'the page" title="{esc(ask)}">{esc(_qname(t["qid"], t))}</a>',) + tuple(cells) + (page, check))
         done = sum(t["name"] in written for t in ts)
-        folds.append(f'<details{" open" if not folds else ""}><summary><span class=lv>{esc(V.LEVEL_WORD[lv])}</span>'
+        opens = done < len(ts) and not opened          # the first level with work left opens (round 2, j02)
+        opened = opened or opens
+        folds.append(f'<details{" open" if opens else ""}><summary><span class=lv>{esc(V.LEVEL_WORD[lv])}</span>'
                      f'<span class=dots>{"".join(dots)}</span><span class=tally>{done} of {len(ts)} answered</span></summary>'
                      f'<div class=in-grid>{_ctable(("question",) + tuple(V._label(p) for p in cuts) + ("page", "check"), rows)}'
                      f'</div></details>')
     if not folds:
         return "<p class=mut>This Job asks no question yet.</p>"
+    if not opened:                                     # every level written: the first opens
+        folds[0] = folds[0].replace("<details>", "<details open>", 1)
     return QA_CSS + KEY + f'<div class=qa>{"".join(folds)}</div>'
 
 
@@ -454,10 +473,11 @@ def _grid_word(x: dict) -> str:
 
 def _grid_res(x: dict, verbs: bool) -> str:
     f = x["f"]
-    left = [t["qid"] for t in f["live"] if t["name"] not in {w["name"] for w in f["written"]}]
+    left = [t for t in f["live"] if t["name"] not in {w["name"] for w in f["written"]}]
+    name = lambda t: t["name"].split("_", 2)[-1].replace("-", " ")      # the question's name, never its id (round 2)
     big = _big("Every question answered at the cuts it asks" if not left else
                f'{len(f["live"]) - len(left)} of {len(f["live"])} questions answered',
-               "still to write: " + ", ".join(left[:6]) if left else "")
+               "still to write: " + ", ".join(name(t) for t in left[:6]) if left else "")
     return big + _section("🔲 Questions × cuts", _grid(x, verbs), _grid_word(x))
 
 
@@ -507,34 +527,78 @@ def _vs_proc(x: dict) -> str:
     return _step("🔁 Compare, then propose", rows, prompts)
 
 
+def draw_map(folder: Path, root: Path, branches: list, empty: str) -> str:
+    """A map drawn by the shared mind-map module from [(label, [leaf words])]: the folder at its root, a card per
+    branch, each leaf whole (a Job's DIKW levels, a Task's answer and cuts, a release's questions)."""
+    from live import frame
+    from live import focus_page as FP
+    mm_ = frame.mindmap_module()
+    import mmbuild, mmtree
+    nodes = [mmbuild.built(f"{folder}/b{k}", str(label), [mmbuild.built(f"{folder}/b{k}/{i}", str(leaf)) for i, leaf in enumerate(leaves)])
+             for k, (label, leaves) in enumerate(branches) if leaves]
+    if not nodes:
+        return f'<p class="mut">{esc(empty)}</p>'
+    top = mmbuild.built(".", folder.name, nodes)
+    top.id = "root"
+    tree = mmtree.MindMap({"mindmap": "1", "title": folder.name, "built": "focus-page"}, top)
+    html = FP.map_html(mm_.draw(tree, "", editable=False), folder, root)
+    return ('<style>' + FP.FIT_MAP + '.focus-map .pm-detail{max-width:380px}.focus-map .pm-detail,'
+            '.focus-map .pm-detail *{white-space:normal}</style><div class="focus-map fit-map">' + html + '</div>')
+
+
 def _job_mindmap(jdir: Path, root: Path):
     """A Job's MindMap (JL 261106: "Tasks by DIKW level"): a card per DIKW level, each Task a leaf with the question it
     asks, from the plan; how far each has got stays in Status and the Grid."""
     def build():
-        from live import frame
-        from live import focus_page as FP
-        mm_ = frame.mindmap_module()
-        import mmbuild, mmtree
         x = _facts(jdir, root)
         branches = []
         for lv, name, _ in V.LEVELS:
-            ts = [t for t in x["j"]["tasks"] if t["qid"][:1] == lv]
-            if not ts:
-                continue
             leaves = []
-            for t in ts:
+            for t in (t for t in x["j"]["tasks"] if t["qid"][:1] == lv):
                 q = x["r"]["questions"].get(t["qid"], {})
                 asks = str(q.get("question") or V._spec(q).get("question") or "").strip() or t["name"].split("_", 2)[-1].replace("-", " ")
-                leaves.append(mmbuild.built(str(t["path"]), f'[{t["qid"]}] {_cap1(asks)}'))
-            branches.append(mmbuild.built(f"{jdir}/{lv}", f"{name}", leaves))
-        if not branches:
-            return '<p class="mut">This Job asks no question yet.</p>'
-        top = mmbuild.built(".", jdir.name, branches)
-        top.id = "root"
-        tree = mmtree.MindMap({"mindmap": "1", "title": jdir.name, "built": "focus-page"}, top)
-        html = FP.map_html(mm_.draw(tree, "", editable=False), jdir, root)
-        return ('<style>' + FP.FIT_MAP + '.focus-map .pm-detail{max-width:380px}.focus-map .pm-detail,'
-                '.focus-map .pm-detail *{white-space:normal}</style><div class="focus-map fit-map">' + html + '</div>')
+                leaves.append(f'[{t["qid"]}] {_cap1(asks)}')
+            branches.append((name, leaves))
+        return draw_map(jdir, root, branches, "This Job asks no question yet.")
+    return build
+
+
+def _task_mindmap(tdir: Path, root: Path):
+    """A Task's MindMap (round 2: "each Run leaf says what it found, not its name"): the answer; each cut and what its
+    Run found (a cite-only question: each answer it cites); then what each check said."""
+    def build():
+        x = _task_x(tdir, root)
+        t = x["t"]
+        fm = t["face"]
+        said = str(fm.get("answer") or "").strip()
+        last = None if said else _last_answer(x)
+        answer = said or (f'[last Job] {last[1]["face"]["answer"]}' if last else
+                          f'Its page is {"being written" if _writing(t) else "still to write"}')
+        branches = [("The answer", [answer])]
+        if _cite_only(x):
+            branches.append(("What it cites", [f'[{c["qid"]}] {_qlabel(x, c).split(" · ", 1)[-1]}: '
+                                               f'{c["face"].get("answer") or "its page is still to write"}'
+                                               for c, via in _plan_cites(x)]))
+        else:
+            from live import focus_page as FP
+            takes = fm.get("takeaways") if isinstance(fm.get("takeaways"), dict) else {}
+            leaves = []
+            for h in sorted(t["hard"], key=lambda h: h["run"]):
+                cut = str(h.get("partition") or h["run"].split("_", 1)[-1])
+                st = str(h.get("status") or "planned").lower()
+                found = (str(takes.get(cut) or "").strip() if st == "ok" else "") or (
+                    FP.run_headline(Path(h["path"])) if st == "ok" else
+                    str(h.get("reason") or "refused: too thin to answer") if st == "refused" else f"{CUT_WORD.get(st, st)}: not run yet")
+                leaves.append(f"[{cut}] {found or 'ran; its page says what it found'}")
+            branches.append(("By cut", leaves))
+        checks = []
+        if str(fm.get("check") or "").startswith(("✅", "↩")):
+            checks.append(f'[page check] {"passed " + str(fm["check"]).lstrip("✅ ") if str(fm["check"]).startswith("✅") else "returned: " + str(fm["check"]).lstrip("↩ ")}')
+        verdict, line, _ = _aligned(t)
+        if verdict:
+            checks.append(f"[alignment] {verdict}" + (f": {line}" if line else ""))
+        branches.append(("Its checks", checks))
+        return draw_map(tdir, root, branches, "Nothing to map yet.")
     return build
 
 
@@ -577,12 +641,12 @@ def job_report_views(jdir: Path, root: Path) -> dict:
 
 # ── a Board: Answers · Questions · Jobs · Data · Handoff ────────────────────────────────────────────────────────
 BOARD_VIEWS = (("answers", "Answers"), ("questions", "Questions"), ("jobs", "Jobs"), ("data", "Data"), ("handoff", "Handoff"))
-BOARD_CAPTIONS = {"answers": "the newest answer first, the plans × data freezes, the newest Overall Report, and what each question found",
+BOARD_CAPTIONS = {"answers": "the newest answer first, the newest Overall Report, and what each question found",
                   "questions": "how the questions build on each other, then every plan's questions",
-                  "jobs": "each Job by DIKW level, the newest Job's Tasks, and the one clock each Job moved",
+                  "jobs": "the analysis plans × data freezes, a Job in each cell, the newest Job's Tasks, and the one clock each Job moved",
                   "data": "each data freeze's key numbers and files, then the cuts every question runs on",
                   "handoff": "what the handoff will say, its draft, and what was handed to Design"}
-BOARD_WORK_CAPTIONS = {"answers": "the Overall Report to write, then the Report's Answers",
+BOARD_WORK_CAPTIONS = {"answers": "the Overall Report to write, then the Report's Answers with each question's trail through the Jobs",
                        "questions": "your sign on the next plan, the proposals, new questions, then the questions to ask about",
                        "jobs": "each Job's steps and a new Job, then the Report's Jobs",
                        "data": "a new freeze or cut, then the freezes and cuts",
@@ -649,25 +713,59 @@ def _preview(b: dict, j: dict) -> str:
     return "" if str(plan["face"].get("signed") or "").startswith("✅") else f'{j["name"][:3]} is a preview: its plan is not signed'
 
 
+def _job_state(j: dict) -> str:
+    """A Job's state in a word: closed, else a preview (round 2, settled: the newest Job, still open, is a preview of
+    what its plan will say once it closes)."""
+    return "closed" if j["state"] == "closed" else "preview"
+
+
 def _map_word(b: dict) -> str:
     n = sum(j["state"] != "closed" for j in b["jobs"])
-    return f"{n} open" if n else "all closed"
+    return f"{n} preview" if n else "all closed"
 
 
-def _answers(b: dict, root: Path) -> str:
-    """Answers (JL 261102, 261106; round 1): the newest Job's X01 in one line as the view's headline, the matrix of
-    plans × data freezes, the newest Job's Overall Report as side tabs (each Executive answer once), then what each
-    question found, a side tab per DIKW level. Every "N of M" by the one count (insight_views.is_written)."""
+def _plans_grid(b: dict, root: Path) -> str:
+    """The analysis plans × data freezes (the Board's two clocks crossed; shown once, in Jobs, round 2): a row per plan
+    (its questions, cuts and sign), a column per data freeze, a Job in each cell: its state word, its pages as a dot
+    row per DIKW level and how many are written. Stacks into cards under 600 px (round 2: "the grid scrolls sideways")."""
+    versions = b["versions"]
+    rels = b["prototype"]["releases"] or [{"name": n, "label": n, "questions": {}, "partitions": [], "face": {}}
+                                          for n in sorted({j["release"] for j in b["jobs"]})]
+    cell = {(j["release"], j["data"]): j for j in b["jobs"]}
+    heads = ["analysis plan"] + [V._vlabel(b, str(v.get("version", ""))) + (f' · frozen {v["frozen"]}' if v.get("frozen") else "")
+                                 for v in versions]
+    rows = []
+    for r in rels:
+        signed = str(r["face"].get("signed") or "")
+        row = [f'<b>{esc(r.get("label") or r["name"])}</b><br><span class=mut>{len(r["questions"])} questions · '
+               f'{len(r.get("partitions") or [])} cuts · {esc("signed " + signed if signed.startswith("✅") else "not signed yet")}</span>']
+        for v in versions:
+            j = cell.get((r["name"], v.get("version")))
+            if not j:
+                row.append('<span class=mut>no Job yet</span>')   # a new Job is Work's (Jobs › ➕ A new Job)
+                continue
+            wrote, asked = V.written_of(j["tasks"])
+            row.append(f'{_jlink(j, root)} {_pill(_job_state(j) + (" · plan not signed" if _preview(b, j) else ""))}'
+                       f'<br>{_strip(j)}<br><span class=mut>{wrote} of {asked} written</span>')
+        rows.append(row)
+    return JOB_KEY + '<div class=in-plans>' + _ctable(heads, rows) + '</div>'
+
+
+def _answers(b: dict, root: Path, work: bool = False) -> str:
+    """Answers (JL 261102, 261106; rounds 1, 2): the newest Job's X01 in one line as the view's headline, the newest
+    Job's Overall Report as side tabs (each Executive answer once), then what each question found, a side tab per DIKW
+    level. The plans × data freezes are Jobs' (shown once, round 2); each question's trail through the Jobs is Work's
+    (`work`). Every "N of M" by the one count (insight_views.is_written)."""
     href = _href(b, root)
     if not b["jobs"]:
-        return _section("🧷 Analysis plans × data freezes", V._map(b, root, href), "no Job yet")
+        return _section("🔎 What each question found", "<p class=mut>No Job yet: add one in Work › Jobs.</p>", "no Job yet")
     newest = b["jobs"][-1]
     shown = next((j for j in reversed(b["jobs"]) if V._executive(j)), None)    # the newest Job with an Overall Report
     first = next((t for t in (V._executive(shown) if shown else []) if _written(t)), None)
     out = _big(str(first["face"]["answer"]) if first else "What this dataset says, Job by Job")
-    if _preview(b, newest):
-        out += f'<p class=in-sub>{esc(_preview(b, newest))}.</p>'
-    out += _section("🧷 Analysis plans × data freezes", '<div class=in-grid>' + V._map(b, root, href) + "</div>", _map_word(b))
+    if first and shown is not None:
+        out += (f'<p class=in-sub>{_pill(_job_state(shown))} {_jlink(shown, root, _pair(shown))}'
+                + (f'; {esc(_preview(b, shown))}' if _preview(b, shown) else "") + '</p>')
     if shown:
         xs = V._executive(shown)
         earlier = [j for j in b["jobs"] if V._executive(j) and j is not shown]
@@ -680,8 +778,8 @@ def _answers(b: dict, root: Path) -> str:
     cut = next((V._part_key(x) for x in V._part_names(plan.get("partitions") or [])), "full") or "full"
     asked = V._questions(b)                              # each question by its newest Job's page (the one count)
     said = sum(bool(V.newest_task(b, q)) and _written(V.newest_task(b, q)) for q in asked)
-    out += _section("🔎 What each question found", V._coverage(b, root, cut, href, tabs="cov"),
-                    f'{said} of {len(asked)} answered')
+    out += _section("🔎 What each question found", V._coverage(b, root, cut, href, tabs="cov", work=work),
+                    f'{said} of {len(asked)} written')
     return out
 
 
@@ -785,19 +883,12 @@ def _jobs_view(b: dict, root: Path) -> str:
     """Jobs: each Job a row, its pins and its pages as a dot row per DIKW level; the newest Job's Tasks by level, as
     Questions; the one clock each Job moved."""
     if not b["jobs"]:
-        return _section("🧷 Each Job", "<p class=mut>No Job yet: add one in Work.</p>", "no Job yet")
-    rows = []
-    for j in reversed(b["jobs"]):
-        wrote = sum(_written(t) for t in j["tasks"])
-        state = ("closed" if j["state"] == "closed" else "open") + (" · a preview" if _preview(b, j) else "")
-        rows.append(f'<li>{_jlink(j, root, j["name"][:3])}<span class=pins>{esc(V._rlabel(b, j["release"]))} × '
-                    f'{esc(V._vlabel(b, j["data"]))}</span>{_strip(j)}<small>{wrote} of {len(j["tasks"])} written · '
-                    f'{esc(state)}</small></li>')
-    out = _section("🧷 Each Job", JOB_KEY + f'<ul class=jb>{"".join(rows)}</ul>', _map_word(b))
+        return _section("🧷 Analysis plans × data freezes", _plans_grid(b, root), "no Job yet")
+    out = _section("🧷 Analysis plans × data freezes", _plans_grid(b, root), _map_word(b))
     newest = b["jobs"][-1]
     html, wrote, n = _job_tasks(newest, root)
     out += _section(f"📂 The newest Job, {newest['name'][:3]} · its Tasks", html,
-                    f"{wrote} of {n} written" + (" · a preview" if _preview(b, newest) else ""))
+                    f"{wrote} of {n} written · {_job_state(newest)}")
     moved = [(j["name"][:3], esc(MOVED.get(j["moved"], j["moved"] or "—") + (f' · from {j["previous"][:3]}' if j["previous"] else "")))
              for j in b["jobs"]]
     last = b["jobs"][-1]
@@ -910,7 +1001,7 @@ def _handoff_view(b: dict, root: Path) -> str:
     out += _section("🤝 The handoff draft", _kv([
         ("pair", esc(f'{V._rlabel(b, j["release"])} × {V._vlabel(b, j["data"])}') if j else "no Job yet"),
         ("counsel", esc(f"{len(answered)} of {len(w)} Wisdom answers written" if w else "no Wisdom question in this plan")),
-        ("draft", _pop(_focus(draft["file"].parent, root), draft["file"].name, esc(draft["file"].name)) if draft else "not written")]),
+        ("draft", V._open(draft["file"], root, draft["file"].name) if draft else "not written")]),
         "a draft, not signed" if draft else "signed" if signed else "not written")
     if b["handoffs"]:
         out += _section("📦 Handoffs", V._handoff(b, root), f"{len(signed)} signed" if signed else "none signed yet")
@@ -985,14 +1076,14 @@ def _bw_questions(x: dict) -> str:
     rows = []
     if proto["releases"]:
         r = proto["releases"][-1]
-        go = (f'<a class=fd-btn data-pop="{esc(r.get("label") or r["name"])}" href="{esc(V.page_link(r["job"], root))}">Open in the Prototype</a>'
+        go = (f'<a class=fd-btn data-pop="{esc(r.get("label") or r["name"])}" href="{esc(_proto_work(r["job"], root))}">Sign in the Prototype</a>'
               if r.get("job") else "")
         signed = str(r["face"].get("signed") or "")
         rows.append((f'Sign the plan {r.get("label") or r["name"]}', "in the Prototype",
                      _done(signed) if signed.startswith("✅") else "waiting for you", "" if signed.startswith("✅") else go))
     open_ = _open_proposals(b)
     if proto["proposals"]:
-        pgo = (f'<a class=fd-btn data-pop="proposals" href="{esc(_focus(proto["path"], root))}">Open the proposals</a>'
+        pgo = (f'<a class=fd-btn data-pop="proposals" href="{esc(_proto_work(proto["path"], root))}">Open the proposals</a>'
                if open_ and proto["path"].exists() else "")
         rows.append(("Triage the open proposals", "into one batch for the next plan · in the Prototype",
                      "waiting for you" if open_ else "done", pgo))
@@ -1072,6 +1163,8 @@ def board_work_views(block: Path, root: Path, items=(), item_html=None) -> dict:
             if key == "questions":
                 res = _questions_view(x["b"], root, {"board": x["folder"],
                                                       "tail": f'Run this in the Claude session "{x["session"]}"; start it if it is not running.'})
+            elif key == "answers":                      # the trail through the Jobs is Work's (round 2)
+                res = _answers(x["b"], root, work=True)
             else:
                 res = BOARD_PARTS[key](x["b"], root)
             return _work_page(BOARD_WORK_CAPTIONS[key], BOARD_PROC[key](x), res)
@@ -1134,10 +1227,11 @@ def _blank(png: Path) -> bool:
     return bool(vals) and all(v == 0 for v in vals)
 
 
-def _figures(x: dict, run: dict | None = None) -> list:
+def _figures(x: dict, run: dict | None = None, keep_blank: bool = False) -> list:
     """The page's figures, first one first: an Executive page's `figures:` (drawn into the Board's delivery), else the
-    figures its ok Runs drew, the full cut's first (one Run's only, with `run`); an all-zero chart left out. [(png,
-    caption)]."""
+    figures its ok Runs drew, the full cut's first (one Run's only, with `run`); an all-zero chart left out unless
+    `keep_blank` (a Data page shows it under its tiles, round 2: "move the missing by column figure into The answer").
+    [(png, caption)]."""
     t, j, b = x["t"], x["j"], x["b"]
     figs = [s for s in t["face"].get("figures") or [] if isinstance(s, dict)]
     if figs and run is None:
@@ -1149,7 +1243,8 @@ def _figures(x: dict, run: dict | None = None) -> list:
         key=lambda h: (str(h.get("partition") or "") not in ("full", V.OVERALL), h["run"]))
     name = lambda p: FIG_NAME.sub("", p.stem).replace("_", " ")
     return [(p, f'{name(p)} · {h.get("partition") or h["run"]}')
-            for h in ok if str(h.get("status")) == "ok" for p in sorted((Path(h["path"]) / "result").glob("fig_*.png")) if not _blank(p)]
+            for h in ok if str(h.get("status")) == "ok" for p in sorted((Path(h["path"]) / "result").glob("fig_*.png"))
+            if keep_blank or not _blank(p)]
 
 
 FIG_NAME = re.compile(r"^fig_(?:E\d+_)?")
@@ -1265,40 +1360,64 @@ def _writing(t: dict) -> bool:
     return any(V._rtype(r) == "write" and str(r.get("status") or "").lower() in ("running", "started") for r in t["soft"])
 
 
+def _last_answer(x: dict) -> tuple | None:
+    """(Job, Task) of the newest Job before this one whose page answers the same question: what stands while this
+    Job's page is written (round 2, W01: "the last Job's counsel in the headline slot, marked last Job")."""
+    jobs = x["b"]["jobs"]
+    me = next((i for i, j in enumerate(jobs) if j["name"] == x["j"]["name"]), len(jobs))
+    for j in reversed(jobs[:me]):
+        t = next((t for t in j["tasks"] if t["qid"] == x["t"]["qid"]), None)
+        if t and _written(t):
+            return j, t
+    return None
+
+
 def _t_answer(x: dict) -> str:
     """Answer: the answer as the view's headline (the bar stays closed, round 1: settled), then the answer's bar: what
-    its one cut adds, its lead picture (a Data page its key numbers), its sourced facts, its page; then how sure it is
-    and what it rests on, each question by its words."""
+    its one cut adds, its lead picture (a Data page its key numbers, then its figure under them), its sourced facts,
+    its page; then how sure it is and what it rests on, each question by its words. A page still to write heads the
+    view with the last Job's answer, marked "last Job" (round 2, W01), never with a status line."""
     t, root = x["t"], x["root"]
     fm = t["face"]
     said = str(fm.get("answer") or "").strip()
-    head = _big(said if said else "Its page is being written" if _writing(t) else "Its page is still to write")
+    last = None if said else _last_answer(x)
+    now = "being written" if _writing(t) else "still to write"
+    if said:
+        head = _big(said)
+    elif last:
+        head = (_big(str(last[1]["face"]["answer"]))
+                + f'<p class=in-sub>{_pill("last Job")} {_jlink(last[0], root)}\'s answer; this Job\'s page is {now}.</p>')
+    else:
+        head = _big(f"Its page is {now}")
     takes = fm.get("takeaways") if isinstance(fm.get("takeaways"), dict) else {}
     under = (f'<p class=in-sub>{esc(next(iter(takes.values())))}</p>'     # the cross takeaway under the verdict (K01)
              if len(takes) == 1 and str(next(iter(takes.values()))).strip() != said else "")
     tiles = _tiles(x)
-    figs = _figures(x)
-    first = "" if tiles or not figs else (
-        f'<figure class=in-fig><a href="/{esc(rel(figs[0][0], root))}" target=_blank rel=noopener data-pop="{esc(figs[0][1])}">'
-        f'<img src="/{esc(rel(figs[0][0], root))}" alt="{esc(figs[0][1])}" loading=lazy></a>'
-        f'<figcaption>{esc(figs[0][1])}</figcaption></figure>')
-    rest = figs if tiles else figs[1:]
+    figs = _figures(x, keep_blank=bool(tiles))          # a Data page: its figure under its tiles (round 2, D01)
+    lead = figs[0] if figs else None
+    first = "" if not lead else (
+        f'<figure class=in-fig><a href="/{esc(rel(lead[0], root))}" target=_blank rel=noopener data-pop="{esc(lead[1])}">'
+        f'<img src="/{esc(rel(lead[0], root))}" alt="{esc(lead[1])}" loading=lazy></a>'
+        f'<figcaption>{esc(lead[1])}</figcaption></figure>')
     thumbs = "".join(f'<a class=ov-thumb data-pop="{esc(c)}" href="/{esc(rel(p, root))}" target=_blank rel=noopener>'
-                     f'<img src="/{esc(rel(p, root))}" alt="" loading=lazy><span>{esc(c)}</span></a>' for p, c in rest)
+                     f'<img src="/{esc(rel(p, root))}" alt="" loading=lazy><span>{esc(c)}</span></a>' for p, c in figs[1:])
     cites = _plan_cites(x) if _cite_only(x) else []
     if said:
         body = (under + tiles + first + (V.OV_CSS + f'<div class=ov-thumbs>{thumbs}</div>' if thumbs else "")
                 + _sourced(x) + f'<p>{V._page_link(t, root)}</p>')
-    else:                                           # a page still to write shows what it will rest on (round 1, W01)
-        body = ('<p class=in-sub>It will rest on:</p><ul class=in-facts>' + "".join(
-            f'<li>{_answer_pop(c, root, _qlabel(x, c))}: {esc(str(c["face"].get("answer") or "its page is still to write"))}</li>'
-            for c, via in cites if not via) + '</ul>') if cites else '<p class=in-sub>Its Runs come first; then its page.</p>'
+    elif last:                                      # what it rests on is How sure's and By cut's (round 2, W01)
+        body = (f'<p class=in-sub>This Job\'s page is {now}; until then {_jlink(last[0], root)}\'s answer stands: '
+                f'{_answer_pop(last[1], root, "its page")}</p>')
+    else:
+        body = (f'<p class=in-sub>Its page is {now}, from the answers it cites.</p>' if cites
+                else '<p class=in-sub>Its Runs come first; then its page.</p>')
     big = _section("⚓ The answer", body, _answer_word(t))
     ok = [h for h in t["hard"] if str(h.get("status")) == "ok"]
     plan = [c for c, via in (_plan_cites(x) if not cites else cites) if not via]
     rests = ", ".join([V._run_link(h, root, f'the {h.get("partition") or h["run"]} cut') for h in ok]
                       + [_answer_pop(c, root, _qlabel(x, c)) for c in plan]) or "its Runs, once they run"
-    return head + big + _section("🎯 How sure", _kv([("how sure", esc(fm.get("how-sure") or "—")), ("rests on", rests)]),
+    sure = str(fm.get("how-sure") or "").strip() or ("once its page is written" if not said else "not said on its page")
+    return head + big + _section("🎯 How sure", _kv([("how sure", esc(sure)), ("rests on", rests)]),
                                  "checked" if str(fm.get("check") or "").startswith("✅") else "not checked yet")
 
 
@@ -1329,15 +1448,8 @@ def _t_cuts(x: dict) -> str:
     fm = t["face"]
     if _cite_only(x):
         cites = _plan_cites(x)
-        named = {c["qid"] for c in _cited(x)}
-        rows = [(_answer_pop(c, root, _qlabel(x, c)),          # the question opens its page in the pop-out
-                 esc(str(c["face"].get("answer") or "its page is still to write")),
-                 "cited" if c["qid"] in named else f"under {via}" if via else "to cite") for c, via in cites]
-        direct = [r for r, (_, via) in zip(rows, cites) if not via]
-        cited = sum(r[2] == "cited" for r in direct)
-        word = (f"{cited} of {len(direct)} cited" if cited else f"{len(direct)} to cite") if direct else "cites none yet"
-        return _section("🔗 What it cites", '<div class=in-cites>' + _ctable(("question", "its answer", "state"), rows) + '</div>'
-                        if rows else "<p class=in-sub>Its plan names the answers it will cite.</p>", word)
+        return _section("🔗 What it cites", _cite_chain(x, cites) if cites else
+                        "<p class=in-sub>Its plan names the answers it will cite.</p>", _gather_word(x) if cites else "cites none yet")
     takes = fm.get("takeaways") if isinstance(fm.get("takeaways"), dict) else {}
     hard = sorted(t["hard"], key=lambda h: h["run"])
     items, panels = [], []
@@ -1363,17 +1475,68 @@ def _t_cuts(x: dict) -> str:
     return _section("🔲 By cut", _side_tabs("cut", items, panels), f"{ran} of {len(hard)} ran")
 
 
+def _cite_word(c: dict) -> str:
+    """One cited question's state, one word from one source (round 2, X01: "four state words for one step"): cited once
+    its page in this Job is written, else what it waits on."""
+    return "cited" if _written(c) else f"waits on {c['qid']}'s page"
+
+
+def _gather_word(x: dict) -> str:
+    """Gathering what a page cites, in that same word: cited when every question it cites directly is, else the first
+    it waits on (the chain row, Work · By cut and What it cites all read this)."""
+    direct = [c for c, via in _plan_cites(x) if not via]
+    return next((_cite_word(c) for c in direct if not _written(c)), "cited") if direct else "cites none yet"
+
+
+CHAIN_CSS = """<style>.in-chain{display:flex;flex-direction:column;gap:10px;margin:2px 0 6px}
+.in-chain .row{display:flex;flex-wrap:wrap;align-items:stretch;gap:6px 8px}
+.in-chain .node{flex:1 1 220px;max-width:380px;border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--paper);
+ font-size:13.5px;line-height:1.45}.in-chain .node b{display:block;font-size:14px;margin:0 0 2px}
+.in-chain .node .pb-pill{margin-top:4px}.in-chain .to{align-self:center;color:var(--muted);font-size:18px}
+.in-chain .to .dn{display:none}
+@media(max-width:600px){.in-chain .row{flex-direction:column}.in-chain .node{max-width:none;flex:none}
+ .in-chain .to .rt{display:none}.in-chain .to .dn{display:inline}.in-chain .to{align-self:flex-start;padding-left:14px}}</style>"""
+
+
+def _cite_chain(x: dict, cites: list) -> str:
+    """What a page cites drawn as a chain (round 2, W01: "K01 → I01"): a row per question it cites, then the questions
+    that one rests on, each a card with its answer and its state word."""
+    root = x["root"]
+
+    def node(c, word):
+        return (f'<div class=node><b>{_answer_pop(c, root, _qlabel(x, c))}</b>'
+                f'{esc(str(c["face"].get("answer") or "its page is still to write"))}<br>{_pill(word)}</div>')
+    arrow = '<span class=to title="rests on"><span class=rt>→</span><span class=dn>↓</span></span>'
+    rows = []
+    for c, via in cites:
+        if via:
+            continue
+        under = [d for d, v in cites if v == c["qid"]]
+        rows.append('<div class=row>' + node(c, _cite_word(c))
+                    + "".join(arrow + node(d, f"under {c['qid']}") for d in under) + '</div>')
+    return CHAIN_CSS + f'<div class=in-chain>{"".join(rows)}</div>'
+
+
+ACROSS_CSS = """<style>.in-across .st-m{display:none}
+@media(max-width:600px){.in-across .st-m{display:block;margin:3px 0 0}.in-across td.st{display:none!important}}</style>"""
+
+
 def _t_across(x: dict) -> str:
+    """This question in each Job: the Job, its answer, its status; under 600 px the status sits under the Job's name
+    (round 2: "Across Jobs status cut off at 390 px")."""
     b, t, root = x["b"], x["t"], x["root"]
     rows = []
     for j in b["jobs"]:
         word, tt = _in_job(j, t["qid"])
         if word == "not asked":
             continue
-        rows.append((_jlink(j, root, f'{j["name"][:3]} · {P.plan_code(j["release"])} × {P.freeze_code(j["data"])}'),
-                     esc(str((tt or {}).get("face", {}).get("answer") or "—")), V._st(word)))
-    return _section("🔁 This question in each Job", table(("Job", "answer", "status"), rows) if rows else
-                    "<p class=mut>Only this Job asks it so far.</p>", f"in {len(rows)} Jobs" if len(rows) > 1 else "this Job only")
+        st = V._st(word)
+        rows.append(f'<tr><td>{_jlink(j, root, _pair(j))}<span class=st-m>{st}</span></td>'
+                    f'<td>{esc(str((tt or {}).get("face", {}).get("answer") or "—"))}</td><td class=st>{st}</td></tr>')
+    grid = (ACROSS_CSS + '<table class="wf-table in-ct in-across"><thead><tr><th>Job</th><th>answer</th><th>status</th></tr>'
+            f'</thead><tbody>{"".join(rows)}</tbody></table>')
+    return _section("🔁 This question in each Job", grid if rows else "<p class=mut>Only this Job asks it so far.</p>",
+                    f"in {len(rows)} Jobs" if len(rows) > 1 else "this Job only")
 
 
 def _t_plan(x: dict) -> str:
@@ -1433,6 +1596,8 @@ def _tw_answer(x: dict) -> str:
         label = V.WRITE_CARD.get(x["t"]["qid"][:1], "Write a report") if label == "page" else label
         state = "done" if done else "ready" if k == nxt else "to do"
         verb = _copy_btn(_prompt("Task", label, x["folder"]), x["session"]) if k == nxt and label else ""
+        if key == "gather":                          # one word for gathering, from one source (round 2, X01)
+            state, verb = _gather_word(x), ""
         if k == "page" and not done and _writing(x["t"]):
             state, verb = "running", ""
         if k == "alignment":
@@ -1443,6 +1608,7 @@ def _tw_answer(x: dict) -> str:
         rows.append((words, who, state, verb))
     nxt_words = CHAIN["gather" if nxt == "Runs" and _cite_only(x) else nxt][0] if nxt else ""
     word = "done" if not nxt else ("running: write the page" if nxt == "page" and _writing(x["t"])
+                                   else _gather_word(x) if nxt == "Runs" and _cite_only(x)
                                    else f"next: {nxt_words[:1].lower() + nxt_words[1:]}")
     return _section("🔗 The chain", _todo(rows), word)
 
@@ -1451,7 +1617,7 @@ def _tw_cuts(x: dict) -> str:
     """By cut's Process: the next act on each cut, a new cut for the next plan; a question with no Run of its own
     gathers what it cites instead (round 1, W01: no "Next on each cut" or "A new cut" there)."""
     if _cite_only(x):
-        rows = [(f'Cite {_qlabel(x, c)}', "its page written first", "done" if _written(c) else f"waits on {c['qid']}", "")
+        rows = [(f'Cite {_qlabel(x, c)}', "its page written first", _cite_word(c), "")
                 for c, via in _plan_cites(x) if not via]
         return _step("🔗 Gather what it cites", rows) if rows else ""
     rows = []
@@ -1505,7 +1671,9 @@ def task_views(tdir: Path, root: Path, section: str) -> dict:
                 return _page(cap(key, x, TASK_CAPTIONS), _numbered(TASK_PARTS[key](x)))
             views[key] = (name, build)
     if section == "work":
-        views["work-mindmap"] = _map_view(_parts_map(tdir, root))
+        views["work-mindmap"] = _map_view(_task_mindmap(tdir, root))
+    else:
+        views["mindmap"] = ("MindMap", _task_mindmap(tdir, root))
     return views
 
 
@@ -1528,6 +1696,26 @@ def prototype_status(folder: Path, root: Path, level: str) -> list:
     question.md and its Runs; a question its Runs (insight_prototype.py)."""
     from live import insight_prototype as PR
     return PR.status(folder, root, level)
+
+
+def prototype_process(folder: Path, root: Path, level: str, view: str) -> list | None:
+    """A Prototype's ⚙️ Process steps on a Work view, in place of the shared ones: on Findings triage its proposals
+    and sign the analysis plan, each a Copy prompt; on Status each question's next step, or "nothing to do"; None
+    leaves the shared steps (insight_prototype.process)."""
+    from live import insight_prototype as PR
+    return PR.process(folder, root, level, view)
+
+
+def prototype_lead(folder: Path, root: Path, level: str, view: str) -> str:
+    """The main line a Prototype's Status or Findings opens with (insight_prototype.lead)."""
+    from live import insight_prototype as PR
+    return PR.lead(folder, root, level, view)
+
+
+def prototype_map_branches(folder: Path, root: Path, level: str) -> list:
+    """A release's MindMap: its questions by DIKW level, each leaf the question (insight_prototype.map_branches)."""
+    from live import insight_prototype as PR
+    return PR.map_branches(folder, root, level)
 
 
 # ── which view a form belongs to (focus_page.view_items asks; R2, 261106) ──────────────────────────────────────────

@@ -135,5 +135,102 @@ class AcceptedFlagsTest(unittest.TestCase):
                                           "--accepted-url", "https://example.org/x"))
 
 
+class PlaceholderTest(unittest.TestCase):
+    """--placeholder writes a whole Result from the given metadata, with no network call, and says so."""
+
+    BIB = ("% placeholder entries\n@article{example2024policy,\n  title = {<A policy>: a placeholder study},\n"
+           "  author = {Example, Ann and Sample, Ben},\n  journal = {Example Journal},\n  year = {2024}\n}\n"
+           "@article{example2021one,\n  title = {<An outcome>: a placeholder},\n  author = {Example, Ann},\n"
+           "  journal = {Example Journal},\n  year = {2021}\n}\n")
+    ABSTRACT = ("A placeholder abstract for a public example. <A policy> changed how <a group> receives <a service> "
+                "in one setting, and <an outcome> rose by a made-up amount in the year after it began. Every word here "
+                "is a placeholder.")
+
+    def build(self, task, run="r01_example2024_policy", **extra):
+        import contextlib, io
+        args = ["--placeholder", "--task", str(task), "--run", run, "--address", "b01.j01.t01.r01",
+                "--title", "<A policy>: a placeholder study", "--authors", "Ann Example; Ben Sample",
+                "--year", "2024", "--venue", "Example Journal", "--bib-file", str(task / "scripts" / "placeholder.bib"),
+                "--bib-key", "example2024policy", "--readout", "It rose in one setting (placeholder). More words.",
+                "--reuse", "The introduction cites it."]
+        for k, v in extra.items():
+            args += ["--" + k.replace("_", "-"), v]
+        with contextlib.redirect_stdout(io.StringIO()):
+            return paper_result_build.main(args)
+
+    def task(self, root: Path) -> Path:
+        tests = Path(__file__).parent
+        spec = importlib.util.spec_from_file_location("discovery_check_fixture", tests / "test_paper_runs.py")
+        fixture = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(fixture)
+        task = fixture.make_topic_path(root)
+        fixture.make_topic_contract(task)
+        (task / "scripts").mkdir()
+        (task / "scripts" / "placeholder.bib").write_text(self.BIB, encoding="utf-8")
+        ticket = task / "runs" / "r01_example2024_policy" / "r01_example2024_policy.sh"
+        ticket.parent.mkdir(parents=True)
+        ticket.write_text("#!/usr/bin/env bash\n", encoding="utf-8")
+        ticket.chmod(0o755)
+        return task, fixture
+
+    def test_no_network_call_and_it_says_placeholder(self) -> None:
+        import urllib.request
+        with tempfile.TemporaryDirectory() as td:
+            task, fixture = self.task(Path(td))
+            real = urllib.request.urlopen
+            urllib.request.urlopen = lambda *a, **k: self.fail("a placeholder made a network call")
+            try:
+                result = self.build(task, abstract=self.ABSTRACT, verification="NEEDS a person to check its venue")
+            finally:
+                urllib.request.urlopen = real
+            runtime = (result / "runtime.yaml").read_text(encoding="utf-8")
+            card = (result / "r01_example2024_policy.md").read_text(encoding="utf-8")
+            self.assertIn("placeholder: true", runtime)
+            self.assertIn("placeholder_note:", runtime)
+            self.assertIn('source: "scripts/placeholder.bib"', runtime)     # the Task's own path, never an absolute one
+            self.assertNotIn(td, runtime)
+            self.assertIn("reading_depth: abstract", runtime)
+            self.assertIn("- placeholder: yes;", card)
+            self.assertIn("- cite: @example2024policy", card)
+            self.assertIn("- verification: NEEDS a person to check its venue", card)
+            # the entry is the placeholder file's, copied verbatim, and only that one
+            bib = (result / "r01_example2024_policy.bib").read_text(encoding="utf-8")
+            self.assertTrue(bib.startswith("@article{example2024policy,"))
+            self.assertNotIn("example2021one", bib)
+            self.assertIn("Placeholder", (result / "source-access.md").read_text(encoding="utf-8"))
+            # the Result passes the Discovery checker as it stands
+            errors, counts, _ = fixture.paper_runs.check_topic(task)
+            self.assertEqual([], errors)
+            self.assertEqual(1, counts["complete"])
+
+    def test_without_an_abstract_it_is_metadata_only(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            task, _ = self.task(Path(td))
+            result = self.build(task)
+            runtime = (result / "runtime.yaml").read_text(encoding="utf-8")
+            self.assertIn("reading_depth: metadata-only", runtime)
+            self.assertIn("claim_support: pending", runtime)
+            self.assertFalse((result / "abstract.md").exists())
+
+    def test_a_key_the_file_lacks_is_refused(self) -> None:
+        import contextlib, io
+        with tempfile.TemporaryDirectory() as td:
+            task, _ = self.task(Path(td))
+            with contextlib.redirect_stdout(io.StringIO()), self.assertRaises(SystemExit) as stop:
+                paper_result_build.main(["--placeholder", "--task", str(task), "--run", "r01_example2024_policy",
+                                         "--address", "b01.j01.t01.r01", "--title", "t", "--authors", "A B",
+                                         "--year", "2024", "--venue", "V", "--bib-file",
+                                         str(task / "scripts" / "placeholder.bib"), "--bib-key", "nosuchkey",
+                                         "--readout", "r", "--reuse", "u"])
+            self.assertIn("nosuchkey", str(stop.exception.code))
+            self.assertFalse((task / "runs" / "r01_example2024_policy" / "result" / "runtime.yaml").exists())
+
+    def test_placeholder_needs_its_metadata(self) -> None:
+        import contextlib, io
+        with contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit) as stop:
+            paper_result_build.main(["--placeholder", "--task", "t01_x", "--run", "r01_x2026_y", "--address",
+                                     "b01.j01.t01.r01", "--readout", "r", "--reuse", "u"])
+        self.assertEqual(2, stop.exception.code)
+
 if __name__ == "__main__":
     unittest.main()
