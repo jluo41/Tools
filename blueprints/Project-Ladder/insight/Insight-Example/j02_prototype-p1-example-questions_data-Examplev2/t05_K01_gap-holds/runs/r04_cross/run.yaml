@@ -1,0 +1,14 @@
+run: r04_cross
+kind: hard
+type: cross
+partition: cross
+target: t05_K01_gap-holds
+question: K01
+release: p1
+data: v2
+status: ok
+passes: 2
+script: 923145db5311
+n: 0
+power: ok
+ticket: Tools/blueprints/Project-Ladder/insight/Insight-Example/j02_prototype-p1-example-questions_data-Examplev2/t05_K01_gap-holds/runs/r04_cross/run.sh

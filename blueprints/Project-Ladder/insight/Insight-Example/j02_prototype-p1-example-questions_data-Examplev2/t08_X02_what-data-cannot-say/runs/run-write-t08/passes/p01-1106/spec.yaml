@@ -1,0 +1,33 @@
+answer-status: answered
+answer: It cannot say whether the groups differ (the difference spans -14 to +12 points), group_3 has not been read yet, and it covers only 16 days.
+how-sure: 'these limits are exact: counts, a refused cut and an interval'
+opening:
+- What the example data cannot say, read before acting on what it does.
+figures:
+- name: gap-by-group
+  title: The groups' gaps cannot yet be told apart
+  kind: dots
+  table: t05_K01_gap-holds/runs/r04_cross/result/pooling.csv
+  label: part
+  value: gap_pp
+  low: gap_lo_pp
+  high: gap_hi_pp
+  zero: no gap
+  axis: gap B - A, points
+divisions:
+- title: Answer
+  bullets:
+  - draft: The window is 16 days of made-up rows
+    cite: D01
+  - draft: 'The small group: group_3 has not been read yet'
+    cite: I01
+  - draft: The groups' difference has a wide interval
+    cite: K01
+- title: What it rests on
+  bullets:
+  - draft: The extract's size and window
+    cite: D01
+  - draft: Each cut's arm rates, and the cut refused for power
+    cite: I01
+  - draft: The pooling test
+    cite: K01

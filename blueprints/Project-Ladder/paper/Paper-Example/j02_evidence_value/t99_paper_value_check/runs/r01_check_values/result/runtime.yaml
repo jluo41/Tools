@@ -1,9 +1,9 @@
 run: r01_check_values
 status: completed
 exit_code: 0
-started_at: '2026-11-03T20:08:00Z'
-finished_at: '2026-11-03T20:08:00Z'
-started_by: 'JL 261103 via the paper sessions: the value Job as a standard part of haipipe-paper-evidence (Tools placeholder)'
+started_at: '2026-11-06T09:24:11Z'
+finished_at: '2026-11-06T09:24:11Z'
+started_by: 'gen_value_runs.py: the value Job’s Runs, made from its value maps'
 ticket: runs/r01_check_values/r01_check_values.sh
 worker: haipipe-paper-evidence scripts/values_ledger.py check
-host: jluo41s-Mac-Studio/jluo41
+host: Mac/jluo

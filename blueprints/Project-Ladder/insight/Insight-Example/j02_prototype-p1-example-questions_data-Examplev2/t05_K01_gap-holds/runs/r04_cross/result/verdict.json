@@ -1,0 +1,6 @@
+{
+  "verdict": "POOL",
+  "test": "pooling: z test of two gaps",
+  "p_value": 0.8844,
+  "rule": "the difference's 95% interval lies inside \u00b120 points"
+}

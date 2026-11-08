@@ -9,7 +9,7 @@ worker: haipipe-paper-evidence scripts/values_ledger.py check
 says: check every printed number of the paper at once, and list the printed numbers with no binding
 host: this machine
 time: a few seconds
-started_by: 'JL 261103 via the paper sessions: the value Job as a standard part of haipipe-paper-evidence (Tools placeholder)'
+started_by: 'gen_value_runs.py: the value Job''s Runs, made from its value maps'
 reads:
 - t01_values-sample/scripts/value_map.yaml
 writes:

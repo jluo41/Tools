@@ -1,0 +1,19 @@
+run: r01_draw_efigure1
+kind: hard
+role: make
+type: display
+scope: blueprints/Project-Ladder/paper/Paper-Example/j01_evidence_display/t03_display-c-placebo-check
+skill: haipipe-display
+ticket: r01_draw_efigure1.sh
+worker: draw_placebo_check.py
+says: draw Display C, the placebo check, from the work Run's returned estimate (placeholder placebo years)
+host: this machine
+time: a few seconds
+status: done
+started_by: '261106: the paper prototype, placeholders only'
+reads:
+- work/b90_example_paper_results/j02_example_estimates/t01_example_main/runs/r01_example_main (result/values.csv)
+writes:
+- result/assets/figure.png
+- result/float.tex
+- result/method.md

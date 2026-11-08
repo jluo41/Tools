@@ -28,4 +28,4 @@ Planned in `s06-paper-displays` (each display, its Run, the venue's rules).
 |---|---|---|---|
 | 11-05 | <first full draft> | <who> | ⏳ running |
 | 11-15 | <coauthor read> | <who> | ⬜ not started |
-| 11-30 | <send> | <who> | ⬜ waiting for JL |
+| 11-30 | <send> | <who> | ⬜ waiting for you |

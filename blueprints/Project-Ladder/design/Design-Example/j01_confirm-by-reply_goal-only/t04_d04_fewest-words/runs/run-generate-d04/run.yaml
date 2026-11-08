@@ -1,0 +1,13 @@
+run: run-generate-d04
+kind: hard
+type: generate
+scope: t04_d04_fewest-words
+target: d04
+skill: haipipe-design-unit
+agent: designer agent
+signs: none
+status: closed
+by: designer agent (maker context A)
+started_at: '2026-11-06T10:20:00'
+finished_at: '2026-11-06T10:24:00'
+usage: {}

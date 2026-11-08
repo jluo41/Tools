@@ -1,0 +1,10 @@
+run: r05_third
+kind: hard
+type: partition
+partition: third
+target: t03_I01_outcome-by-arm
+question: I01
+release: p1
+data: v2
+status: planned
+passes: 0

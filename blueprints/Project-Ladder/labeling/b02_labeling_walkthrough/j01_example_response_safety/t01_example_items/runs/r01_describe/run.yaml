@@ -1,0 +1,15 @@
+run: r01_describe
+kind: hard
+type:
+- items-describe
+scope: Tools/blueprints/Project-Ladder/labeling/b02_labeling_walkthrough/j01_example_response_safety/t01_example_items
+target: describe
+ticket: r01_describe.sh
+skill: haipipe-labeling-preparation
+agent: null
+signs: null
+status: complete
+passes: []
+writes:
+- result/
+feeds: []

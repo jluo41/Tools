@@ -1,0 +1,19 @@
+run: run-context-page-setup
+family: page
+operation: page-setup
+interaction: delegated
+mode: create-semantic-records
+target: CM01-review-0110.md
+ticket: runs/run-context-page-setup/run-context-page-setup.md
+result: runs/run-context-page-setup/passes/p01-1106
+outcome: "Created semantic records: 3 sections and 3 reader-move Bullets; mechanical gate passed"
+inputs:
+  - path: "draft/evidence/materials/q01_review-0110.md"
+status: complete
+started_at: 2026-11-06T06:31:19Z
+finished_at: 2026-11-06T06:31:19Z
+worker:
+  kind: skill
+  name: haipipe-draft
+supersedes: null
+failure: null

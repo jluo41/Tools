@@ -1,0 +1,37 @@
+status: ok
+question: I01
+run: r01_full
+partition: full
+release: p1
+data: v2
+ticket: Tools/blueprints/Project-Ladder/insight/Insight-Example/j02_prototype-p1-example-questions_data-Examplev2/t03_I01_outcome-by-arm/runs/r01_full/run.sh
+job: Tools/blueprints/Project-Ladder/insight/Insight-Example/j02_prototype-p1-example-questions_data-Examplev2
+prototype: Tools/blueprints/Project-Ladder/work/Prototype-b91-Example/j01_p1_example-questions
+extract: Tools/blueprints/Project-Ladder/insight/Insight-Example/data/v2/example.parquet
+spec: Tools/blueprints/Project-Ladder/work/Prototype-b91-Example/j01_p1_example-questions/t03_I01_outcome-by-arm/question.md
+spec_sha256: 300ff71af767177241c2f60c554f07bfa8600d827b44e06c0396260942417528
+scripts: Tools/blueprints/Project-Ladder/work/Prototype-b91-Example/j01_p1_example-questions/t03_I01_outcome-by-arm/scripts
+scripts_sha256: 4aa6f79116c796be8ae073bd537070ec44f6676e3f1c7712359190226d309c13
+shared_sha256: 4f5c73210fda352f18d32178744ce4feca1bf1ec6ae56d493da984f3bacd2477
+git_sha: a62ac8cd9
+started: '2026-11-06T20:27:40Z'
+rows_before: 960
+rows_after: 960
+power: ok
+outputs:
+- gap.csv
+- rates_by_arm.csv
+- partition_power.csv
+figures:
+- need: E1
+  table: rates_by_arm.csv
+  file: fig_E1_rates_by_arm.png
+  kind: rates
+- need: E2
+  table: gap.csv
+  file: fig_E2_gap.png
+  kind: estimate
+tables_sha256: d223bea3274b9e5249d2dacb498e7e511ac5c91518ba8f9f01c1cb1526402959
+ended: '2026-11-06T20:27:40Z'
+duration_s: 0.5
+content_since: '2026-11-06T18:58:03Z'

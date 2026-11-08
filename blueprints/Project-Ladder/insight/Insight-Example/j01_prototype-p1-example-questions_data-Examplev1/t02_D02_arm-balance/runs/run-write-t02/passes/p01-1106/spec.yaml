@@ -1,0 +1,34 @@
+answer-status: answered
+answer: The arms are close to even in every cut (arm A holds 40% to 48% of a cut), and group_3 is a small share of the rows.
+how-sure: exact counts in every cut
+opening:
+- Both arms must be present in a cut before a gap between them is read there.
+divisions:
+- partition: full
+  takeaway: 'Arm A 47% and arm B 53% of 600 rows; groups: group_1 58%, group_2 35%, group_3 7%.'
+  bullets:
+  - draft: Arm A holds 282 rows and arm B 318
+    file: share_by_arm.csv
+  - draft: 'By group: group_1 58%, group_2 35%, group_3 7%'
+    file: share_by_group.csv
+- partition: first
+  takeaway: Arm A 47% and arm B 53% of 350 rows; one group only (group_1).
+  bullets:
+  - draft: Arm A holds 166 rows and arm B 184
+    file: share_by_arm.csv
+  - draft: The cut is one group, group_1, so its group share is 100%
+    file: share_by_group.csv
+- partition: second
+  takeaway: Arm A 48% and arm B 52% of 210 rows; one group only (group_2).
+  bullets:
+  - draft: Arm A holds 100 rows and arm B 110
+    file: share_by_arm.csv
+  - draft: The cut is one group, group_2, so its group share is 100%
+    file: share_by_group.csv
+- partition: third
+  takeaway: Arm A 40% and arm B 60% of 40 rows; one group only (group_3).
+  bullets:
+  - draft: Arm A holds 16 rows and arm B 24
+    file: share_by_arm.csv
+  - draft: The cut is one group, group_3, so its group share is 100%
+    file: share_by_group.csv

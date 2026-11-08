@@ -1,0 +1,17 @@
+run: run-add-version-v1
+kind: soft
+type: add-version
+scope: Tools/blueprints/Project-Ladder/insight/Insight-Example
+target: v1
+ticket: run-add-version-v1.md
+skill: haipipe-insight-meta
+agent: haipipe-insight-agent
+signs:
+- none
+status: done
+passes:
+- p01-1106
+writes:
+- board.md
+- meta/meta.md
+feeds: []

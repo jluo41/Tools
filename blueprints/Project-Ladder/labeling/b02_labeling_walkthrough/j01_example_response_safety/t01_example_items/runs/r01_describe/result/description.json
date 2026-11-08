@@ -1,0 +1,143 @@
+{
+  "schema": "labeling-items-task/v1",
+  "table": {
+    "file": "Tools/blueprints/Project-Ladder/labeling/b02_labeling_walkthrough/data/chats/chats.csv",
+    "rows": 600,
+    "columns": 6,
+    "bytes": 72933,
+    "what_it_is": "30 synthetic chats between a person and an AI, each one ask and one reply, rated by 20 synthetic raters"
+  },
+  "grain": {
+    "unit": "chat_id",
+    "one_row_is": "One made-up rater's answer on one made-up chat, so each chat repeats on its 20 rows.",
+    "proof": {
+      "rows": 600,
+      "distinct_chat_id": 30,
+      "rows_per_unit_median": 20.0,
+      "distinct_rater_id": 20,
+      "exact_duplicate_rows": 0
+    }
+  },
+  "background": {
+    "what": "30 synthetic chats between a person and an AI, each one ask and one reply, rated by 20 synthetic raters",
+    "who": "nobody; every ask, reply, rater and answer is invented for the walkthrough Block",
+    "why": "a placeholder corpus, so the labeling walkthrough shows a Job from the raw table on",
+    "source": "data/SOURCE.md in the Block (made by data/make_chats.py)",
+    "license": "none needed; synthetic",
+    "cite": "none"
+  },
+  "groups": [
+    {
+      "name": "the chat",
+      "meaning": "the chat a rater read, the same on all of its rows",
+      "columns": [
+        {
+          "name": "chat_id",
+          "filled": 1.0,
+          "distinct": 30,
+          "typical": "30 values, e.g. ex-00"
+        },
+        {
+          "name": "context",
+          "filled": 1.0,
+          "distinct": 6,
+          "typical": "text, 8 words at the median"
+        },
+        {
+          "name": "response",
+          "filled": 1.0,
+          "distinct": 6,
+          "typical": "text, 11 words at the median"
+        }
+      ]
+    },
+    {
+      "name": "the rater",
+      "meaning": "who answered, made up",
+      "columns": [
+        {
+          "name": "rater_id",
+          "filled": 1.0,
+          "distinct": 20,
+          "typical": "20 values, e.g. r0"
+        },
+        {
+          "name": "rater_gender",
+          "filled": 1.0,
+          "distinct": 2,
+          "typical": "Man 300 · Woman 300"
+        }
+      ]
+    },
+    {
+      "name": "the answer",
+      "meaning": "the rater's answer to: is the AI's last reply unsafe? (Yes, No or Unsure)",
+      "columns": [
+        {
+          "name": "Q_overall",
+          "filled": 1.0,
+          "distinct": 3,
+          "typical": "No 394 · Yes 183 · Unsure 23"
+        }
+      ]
+    }
+  ],
+  "synth_df": {
+    "rows": [
+      {
+        "chat_id": "ex-16",
+        "context": "<text, 10 words>",
+        "response": "AI: I won't help with that.",
+        "rater_id": "r9",
+        "rater_gender": "Man",
+        "Q_overall": "No"
+      }
+    ]
+  },
+  "labels": [
+    {
+      "column": "Q_overall",
+      "who": "rater",
+      "counted_per": "row",
+      "values": {
+        "No": 394,
+        "Yes": 183,
+        "Unsure": 23
+      }
+    }
+  ],
+  "text_to_label": {
+    "columns": [
+      {
+        "column": "context",
+        "words_median": 8.0,
+        "words_min": 7,
+        "words_max": 10,
+        "values": 30,
+        "lines_median": 1.0
+      },
+      {
+        "column": "response",
+        "words_median": 11.0,
+        "words_min": 6,
+        "words_max": 19,
+        "values": 30,
+        "lines_median": 1.0
+      }
+    ]
+  },
+  "samples": {
+    "seed": 7,
+    "rows": [
+      50,
+      75,
+      155,
+      332,
+      405
+    ]
+  },
+  "gotchas": [
+    "1 label columns stay out of the items"
+  ],
+  "notes": ""
+}

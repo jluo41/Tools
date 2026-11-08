@@ -1,0 +1,33 @@
+answer-status: answered
+answer: Arm B's outcome rate is about 19 points higher than arm A's (50% against 31%), on 600 made-up rows.
+how-sure: firm on the whole population; open by group
+opening:
+- The plain answer a leader reads first.
+figures:
+- name: outcome-by-arm
+  title: Arm B's outcome rate is the higher one
+  kind: bars
+  table: t03_I01_outcome-by-arm/runs/r01_full/result/rates_by_arm.csv
+  label: level
+  value: rate_pct
+  count: k
+  of: n
+  rows:
+    A: Arm A
+    B: Arm B
+  mark:
+    B: best
+  axis: outcome rate, %
+divisions:
+- title: Answer
+  bullets:
+  - draft: The gap holds on the whole extract, its interval clear of zero
+    cite: I01
+  - draft: Whether the two groups share it is not settled
+    cite: K01
+- title: What it rests on
+  bullets:
+  - draft: Each arm's rate and the gap B - A, cut by cut
+    cite: I01
+  - draft: The pooling test of the first and second groups
+    cite: K01

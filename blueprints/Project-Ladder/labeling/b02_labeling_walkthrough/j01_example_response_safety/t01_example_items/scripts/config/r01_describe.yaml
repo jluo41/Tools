@@ -1,0 +1,43 @@
+notebook: off   # the worker writes the Result; no notebook
+_meta:
+  purpose: Read the Job's raw data once and write the Data cards (result/description.json). No items.
+  schema: labeling-items-task/v1
+operation: describe
+data: Tools/blueprints/Project-Ladder/labeling/b02_labeling_walkthrough/data/chats/
+file: Tools/blueprints/Project-Ladder/labeling/b02_labeling_walkthrough/data/chats/chats.csv
+unit: chat_id
+one_row_is: One made-up rater's answer on one made-up chat, so each chat repeats on its 20 rows.
+background:
+  what: 30 synthetic chats between a person and an AI, each one ask and one reply, rated by 20 synthetic raters
+  who: nobody; every ask, reply, rater and answer is invented for the walkthrough Block
+  why: a placeholder corpus, so the labeling walkthrough shows a Job from the raw table on
+  source: data/SOURCE.md in the Block (made by data/make_chats.py)
+  license: none needed; synthetic
+  cite: none
+groups:
+- name: the chat
+  meaning: the chat a rater read, the same on all of its rows
+  columns:
+  - chat_id
+  - context
+  - response
+- name: the rater
+  meaning: who answered, made up
+  columns:
+  - rater_id
+  - rater_gender
+- name: the answer
+  meaning: "the rater's answer to: is the AI's last reply unsafe? (Yes, No or Unsure)"
+  columns:
+  - Q_overall
+labels:
+  expert: []
+  rater:
+  - Q_overall
+text:
+- context
+- response
+samples:
+  n: 5
+  seed: 7
+notes: ''

@@ -1,0 +1,15 @@
+run: r08_collect_release_choices
+kind: hard
+type: collect
+scope: Tools/blueprints/Project-Ladder/labeling/b02_labeling_walkthrough/j01_example_response_safety/t04_example_expression
+target: b02.j01.t04-s03:labeling_walkthrough.example_response_safety.example_expression
+  @ example_release_choices
+ticket: r08_collect_release_choices.html
+skill: haipipe-interaction
+agent: null
+signs: null
+status: waiting
+passes: []
+writes:
+- result/answer_collection.md
+feeds: []

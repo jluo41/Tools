@@ -1,0 +1,8 @@
+run: r01_draw_efigure1
+status: completed
+exit_code: 0
+started_at: '2026-11-06T06:37:24Z'
+finished_at: '2026-11-06T06:37:24Z'
+started_by: '261106: the paper prototype, placeholders only'
+ticket: runs/r01_draw_efigure1/r01_draw_efigure1.sh
+worker: draw_placebo_check.py

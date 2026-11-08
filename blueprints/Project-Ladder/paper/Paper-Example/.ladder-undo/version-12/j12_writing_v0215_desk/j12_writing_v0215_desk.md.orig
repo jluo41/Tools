@@ -1,0 +1,31 @@
+# j12_writing_v0215_desk · the next version of the paper, from j11_writing_v1130_desk
+
+send: j12_writing_v0215_desk
+desk: desk
+venue: Example Journal
+state: drafting
+tells: studio/sNN-story-<telling>
+from: j11_writing_v1130_desk
+goal: <the paper this send puts before Example Journal>
+close: <sent, and every comment it drew answered>
+
+## Tasks
+
+1. t00_summary · Summary
+2. t01_introduction · Introduction
+3. t02_methods · Methods
+4. t03_results · Results
+5. t31_cover-letter · Cover letter
+
+## Narrative
+
+How this version tells the story, in reading order: one row per Section (its job, the claims it carries, its release).
+
+<!-- haipipe:compile-order:start -->
+<!-- haipipe:compile-order:end -->
+
+## Questions
+
+```yaml
+questions: []
+```

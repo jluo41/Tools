@@ -1,0 +1,17 @@
+run: run-write-t06
+kind: soft
+type: write
+scope: Tools/blueprints/Project-Ladder/insight/Insight-Example/j01_prototype-p1-example-questions_data-Examplev1/t06_W01_next-round
+target: t06
+ticket: run-write-t06.md
+skill: haipipe-insight-wisdom
+agent: haipipe-insight-agent
+signs:
+- none
+status: done
+passes:
+- p01-1106
+- p02-1106
+writes:
+- t06_W01_next-round/t06_W01_next-round.md
+feeds: []

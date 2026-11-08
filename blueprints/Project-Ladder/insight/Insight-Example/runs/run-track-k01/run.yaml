@@ -1,0 +1,15 @@
+run: run-track-k01
+kind: soft
+type: track
+scope: Tools/blueprints/Project-Ladder/insight/Insight-Example
+target: k01
+ticket: run-track-k01.md
+skill: haipipe-insight-check
+agent: haipipe-insight-agent
+signs:
+- none
+status: done
+passes:
+- p01-1106
+writes: []
+feeds: []

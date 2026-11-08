@@ -1,0 +1,20 @@
+run: run-setup-method-j01
+kind: soft
+type: setup-method
+scope: j01_confirm-by-reply_goal-only
+target: j01
+ticket: null
+skill: haipipe-design-method
+agent: designer agent
+signs: none
+status: done
+passes:
+- p01-1106
+writes:
+- inputs/method.md
+- j01_confirm-by-reply_goal-only.md
+feeds: null
+by: designer agent
+started_at: '2026-11-06T09:30:00'
+finished_at: '2026-11-06T09:32:00'
+usage: {}

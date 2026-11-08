@@ -1,0 +1,11 @@
+id,where,status,bound,printed,value,key,note
+RQ1-t01-001,t02_methods C1.P1.B1,match,card,"12,480","12,480",sample.n_units,
+RQ1-t01-006,t03_results C2.P1.B2,differs,card,4.10,4.12,sub.b,
+RQ1-t01-001,t03_results C2.P1.B1,match,card,"12,480","12,480",sample.n_units,
+RQ1-t01-002,t03_results C2.P1.B1,match,card,2.35,2.35,main.b,
+RQ1-t01-003,t03_results C2.P1.B1,match,card,0.84,0.84,main.ci_lo,
+RQ1-t01-004,t03_results C2.P1.B1,match,card,3.85,3.85,main.ci_hi,
+RQ1-t01-005,t03_results C2.P1.B1,match,card,.002,0.002,main.p,
+RQ1-t01-007,Display B,found,,41.27,41.27,mean.before,found by the search; waits for your tick in evidence/proposals.md
+RQ1-t01-008,Display B,found,,43.62,43.62,mean.after,found by the search; waits for your tick in evidence/proposals.md
+,t03_results C2.P1.B3,owed,map,1.9,,late.b,waits for its work Run

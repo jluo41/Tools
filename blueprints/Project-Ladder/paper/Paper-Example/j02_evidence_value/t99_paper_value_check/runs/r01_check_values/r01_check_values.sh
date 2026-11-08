@@ -29,7 +29,7 @@ status: $([ "$RC" = 0 ] && echo completed || echo failed)
 exit_code: $RC
 started_at: '$STARTED_AT'
 finished_at: '$(date -u +%Y-%m-%dT%H:%M:%SZ)'
-started_by: 'JL 261103 via the paper sessions: the value Job as a standard part of haipipe-paper-evidence (Tools placeholder)'
+started_by: 'gen_value_runs.py: the value Job’s Runs, made from its value maps'
 ticket: runs/r01_check_values/r01_check_values.sh
 worker: haipipe-paper-evidence scripts/values_ledger.py check
 host: $(hostname -s)/$(whoami)

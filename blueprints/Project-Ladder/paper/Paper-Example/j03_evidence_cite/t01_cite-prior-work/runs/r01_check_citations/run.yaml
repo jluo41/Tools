@@ -14,4 +14,4 @@ reads:
 - discovery/ (the Project's discovery bank)
 writes:
 - result/
-started_by: 'JL 261103 via the paper sessions: the citation Job as a standard part of haipipe-paper-evidence (Tools placeholder)'
+started_by: 'cite_tasks.py gen: the citation Job''s Runs, made from its claim groups'

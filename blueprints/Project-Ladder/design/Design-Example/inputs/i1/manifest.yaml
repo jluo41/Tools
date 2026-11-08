@@ -1,0 +1,16 @@
+version: i1
+frozen: '261106'
+new: the first inputs version (synthetic), the shared rules r1 and one reading note
+rules: r1
+parts:
+- part: Goal · how much is set
+  file: rules.md
+  says: the shared rules r1 as signed
+- part: Reading
+  file: reading-note.md
+  says: a synthetic reading note of three placeholder lines
+files:
+- path: reading-note.md
+  sha256: 829e3d41905d
+- path: rules.md
+  sha256: e19bcaf0ebfe

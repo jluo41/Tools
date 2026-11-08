@@ -1,0 +1,16 @@
+run: run-write-counsel
+kind: soft
+type: write
+scope: Tools/blueprints/Project-Ladder/insight/Insight-Example
+target: counsel
+ticket: run-write-counsel.md
+skill: haipipe-insight-wisdom
+agent: haipipe-insight-agent
+signs:
+- none
+status: done
+passes:
+- p01-1106
+writes:
+- j01_prototype-p1-example-questions_data-Examplev1/t06_W01_next-round/t06_W01_next-round.md
+feeds: []

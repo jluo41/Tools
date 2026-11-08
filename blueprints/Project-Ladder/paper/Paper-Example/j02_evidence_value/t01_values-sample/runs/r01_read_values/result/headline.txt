@@ -1,0 +1,1 @@
+t01_values-sample: 9 values, 8 printed in 9 places (1 differs from its Run, 1 waits for its Run, 6 match, 2 found, not bound yet); 1 never printed

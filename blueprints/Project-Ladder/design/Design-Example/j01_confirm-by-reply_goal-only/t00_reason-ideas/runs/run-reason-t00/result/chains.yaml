@@ -1,0 +1,27 @@
+topics:
+- id: T1
+  title: One clear ask
+  from: goal.md · rules for this goal
+  steps:
+  - says: the goal asks for one clear ask, reply YES to confirm
+    so: the reply word must be the easiest thing to find in the message
+  - says: the goal names the slot as {DAY} {TIME}
+    so: the reader checks the slot before replying, so the slot sits next to the ask
+  ideas: [I01, I02]
+- id: T2
+  title: Who it is from
+  from: rules.md · r1.2
+  steps:
+  - says: every message opens with who it is from, {SENDER}
+    so: the opening is fixed, so the ideas differ in what follows it
+  - says: at most 160 characters, slots not counted
+    from: rules.md · r1.1
+    so: one idea keeps only what the rules require, to test the shortest form
+  ideas: [I03, I04]
+- id: T3
+  title: Tone of the close
+  from: own knowledge
+  steps:
+  - says: a polite close or a plain question may make a reply feel easier
+    so: two ideas try the tone around the ask, not the ask itself
+  ideas: [I05, I06]

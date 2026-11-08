@@ -1,0 +1,15 @@
+run: run-power-j01
+kind: soft
+type: power
+scope: Tools/blueprints/Project-Ladder/insight/Insight-Example/j01_prototype-p1-example-questions_data-Examplev1
+target: j01
+ticket: run-power-j01.md
+skill: haipipe-insight
+agent: haipipe-insight-agent
+signs:
+- none
+status: done
+passes:
+- p01-1106
+writes: []
+feeds: []

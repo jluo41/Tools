@@ -1,0 +1,37 @@
+status: ok
+question: D02
+run: r02_first
+partition: first
+release: p1
+data: v2
+ticket: Tools/blueprints/Project-Ladder/insight/Insight-Example/j02_prototype-p1-example-questions_data-Examplev2/t02_D02_arm-balance/runs/r02_first/run.sh
+job: Tools/blueprints/Project-Ladder/insight/Insight-Example/j02_prototype-p1-example-questions_data-Examplev2
+prototype: Tools/blueprints/Project-Ladder/work/Prototype-b91-Example/j01_p1_example-questions
+extract: Tools/blueprints/Project-Ladder/insight/Insight-Example/data/v2/example.parquet
+spec: Tools/blueprints/Project-Ladder/work/Prototype-b91-Example/j01_p1_example-questions/t02_D02_arm-balance/question.md
+spec_sha256: d36976b5adbcce5bf2231f49dbdf80ae4b4fbdac5fd0b7e5d322833dc20a6ebc
+scripts: Tools/blueprints/Project-Ladder/work/Prototype-b91-Example/j01_p1_example-questions/t02_D02_arm-balance/scripts
+scripts_sha256: 9d05896614c2cc6072fa0bc752a014dedc79dfcd682ef62c17f0bfd90850cfcb
+shared_sha256: b7dcbab9b21a2c8f88d01923af46b005ec559c4db8cff795f224471b9366177f
+git_sha: a62ac8cd9
+started: '2026-11-06T18:57:59Z'
+rows_before: 960
+rows_after: 541
+power: ok
+outputs:
+- share_by_arm.csv
+- share_by_group.csv
+- partition_power.csv
+figures:
+- need: E1
+  table: share_by_arm.csv
+  file: fig_E1_share_by_arm.png
+  kind: share
+- need: E2
+  table: share_by_group.csv
+  file: fig_E2_share_by_group.png
+  kind: share
+tables_sha256: bf8e09f99fe46bfd26f74c8dcdb56feacdb3ae6c7c23911b0db9f6a7380714fe
+ended: '2026-11-06T18:57:59Z'
+duration_s: 0.4
+content_since: '2026-11-06T18:57:59Z'

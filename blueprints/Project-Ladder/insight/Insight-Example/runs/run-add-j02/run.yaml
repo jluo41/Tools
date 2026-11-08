@@ -1,0 +1,16 @@
+run: run-add-j02
+kind: soft
+type: add
+scope: Tools/blueprints/Project-Ladder/insight/Insight-Example
+target: j02
+ticket: run-add-j02.md
+skill: haipipe-insight
+agent: haipipe-insight-agent
+signs:
+- none
+status: done
+passes:
+- p01-1106
+writes:
+- j02_prototype-p1-example-questions_data-Examplev2
+feeds: []

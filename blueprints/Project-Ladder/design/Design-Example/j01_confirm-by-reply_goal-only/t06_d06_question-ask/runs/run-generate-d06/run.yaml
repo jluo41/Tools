@@ -1,0 +1,13 @@
+run: run-generate-d06
+kind: hard
+type: generate
+scope: t06_d06_question-ask
+target: d06
+skill: haipipe-design-unit
+agent: designer agent
+signs: none
+status: closed
+by: designer agent (maker context A)
+started_at: '2026-11-06T10:30:00'
+finished_at: '2026-11-06T10:34:00'
+usage: {}

@@ -1,0 +1,14 @@
+run: r01_full
+kind: hard
+type: partition
+partition: full
+target: t03_I01_outcome-by-arm
+question: I01
+release: p1
+data: v1
+status: ok
+passes: 1
+script: 4aa6f79116c7
+n: 600
+power: ok
+ticket: Tools/blueprints/Project-Ladder/insight/Insight-Example/j01_prototype-p1-example-questions_data-Examplev1/t03_I01_outcome-by-arm/runs/r01_full/run.sh

@@ -19,9 +19,10 @@ Sections that carry them).
 
 | Display | name | type | shows | answers | section | where | made by | state |
 |---|---|---|---|---|---|---|---|---|
-| Display A | <Outcome> by <group>, before and after | figure | <bars: one per group and period; colour = group> | RQ1 | Results | main | j01.t01.r01 | ✅ done |
-| Display B | <Patients> at baseline | table | <one row per characteristic, one column per group> | RQ1 | Methods | main | <the Run that tables it> | ⬜ not started |
-| Display C | <Placebo check> | figure | <the same model on a period with no policy> | RQ2 | Results | supplement | <a new figure Run after T5> | ⬜ not started |
+| Display A | <Outcome> by <group>, before and after | figure | <bars: one per group and period; colour = group> | RQ1 | Results | main | j01.t01.r01 | ✅ drawn 2026-11-01 |
+| Display B | <Patients> at baseline | table | <one row per characteristic, one column per group> | RQ1 | Methods | main | j01.t02.r01 | ✅ drawn (placeholder table body) |
+| Display C | <Placebo check> | figure | <the same model on a period with no policy> | RQ2 | Results | supplement | j01.t03.r01 | ✅ drawn 2026-11-06 |
+| Display D | <Subgroup> estimate beside the whole sample | figure | <one point per group, everyone and the subgroup, each with its interval> | RQ2 | Results | supplement | j01.t51.r01 | ✅ drawn 2026-11-06 |
 
 
 ### Sketches
@@ -50,6 +51,14 @@ Sections that carry them).
  <estimate>
    │   ●───      ●───      0 ─ ─ ─ ─
    └──────────────────     <placebo period> vs <policy period>
+```
+
+#### Display D
+
+```text
+ everyone        ├──●──┤
+ <the subgroup>     ├────●────┤
+                 0 ─ ─ ─ ─ ─ ─ ─   <estimate>
 ```
 
 Files

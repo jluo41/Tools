@@ -1,0 +1,19 @@
+run: run-setup-rules
+kind: soft
+type: setup-rules
+scope: Design-Example
+target: rules
+ticket: null
+skill: haipipe-design-goal
+agent: designer agent
+signs: a person
+status: done
+passes:
+- p01-1106
+writes:
+- design-goal.md
+feeds: null
+by: designer agent
+started_at: '2026-11-06T09:10:00'
+finished_at: '2026-11-06T09:18:00'
+usage: {}

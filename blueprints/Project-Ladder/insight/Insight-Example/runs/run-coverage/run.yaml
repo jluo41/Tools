@@ -1,0 +1,15 @@
+run: run-coverage
+kind: soft
+type: coverage
+scope: null
+target: every Job
+ticket: null
+skill: haipipe-insight-check
+agent: haipipe-insight-agent
+signs:
+- none
+status: done
+passes:
+- p01-1106
+writes: []
+feeds: []

@@ -1,0 +1,32 @@
+run:        r01_describe
+family:     Execution
+operation:  describe
+target:     describe
+status:     complete
+attempt:    1
+ticket:     t01_example_items/runs/r01_describe/r01_describe.sh
+result:     t01_example_items/runs/r01_describe/result
+inputs:
+  - path: 't01_example_items/scripts/config/r01_describe.yaml'
+worker:
+  kind: script
+  name: t01_example_items/scripts/prepare.py
+started_at: 2026-11-06T01:30:23-05:00
+finished_at: 2026-11-06T01:30:24-05:00
+supersedes: null
+failure: null
+git_sha: a62ac8cd9
+git_dirty: true
+host: Mac/jluo
+exit_code: 0
+cmd: bash Tools/blueprints/Project-Ladder/labeling/b02_labeling_walkthrough/j01_example_response_safety/t01_example_items/runs/r01_describe/r01_describe.sh
+address: b02j01t01r01
+address_readable: b02.j01.t01.r01
+project: Project-Ladder
+config_file: t01_example_items/scripts/config/r01_describe.yaml
+settings:
+  config_file: t01_example_items/scripts/config/r01_describe.yaml
+  ticket_args: []
+notebook: (off)
+duration: 0m01s
+headline: "600 rows \u00b7 6 columns \u00b7 30 units"

@@ -29,7 +29,7 @@ status: $([ "$RC" = 0 ] && echo completed || echo failed)
 exit_code: $RC
 started_at: '$STARTED_AT'
 finished_at: '$(date -u +%Y-%m-%dT%H:%M:%SZ)'
-started_by: 'JL 261103 via the paper sessions: the citation Job as a standard part of haipipe-paper-evidence (Tools placeholder)'
+started_by: 'cite_tasks.py gen: the citation Job’s Runs, made from its claim groups'
 ticket: runs/r01_check_citations/r01_check_citations.sh
 worker: haipipe-paper-evidence scripts/cite_tasks.py run
 host: $(hostname -s)/$(whoami)

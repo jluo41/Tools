@@ -1,5 +1,5 @@
 key,value,unit,text,source
-sample.n_units,12480.0,units,,r01_source:tables.csv
+sample.n_units,12480,units,,r01_source:tables.csv
 main.b,2.3461,points,"2.35 (95% CI, 0.84 to 3.85)",r01_source:tables.csv
 main.ci_lo,0.8412,points,,r01_source:tables.csv
 main.ci_hi,3.8519,points,,r01_source:tables.csv

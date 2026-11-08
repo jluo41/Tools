@@ -1,0 +1,20 @@
+answer-status: answered
+answer: Keep arm B for the next round, for the whole population; leave counsel by group undecided until the groups can be pooled or split.
+how-sure: 'moderate: one window, one gap; the pooling verdict is UNDETERMINED'
+opening:
+- The counsel a person signs before Design reads it.
+divisions:
+- title: Counsel
+  bullets:
+  - draft: 'Do: keep arm B as the default for the next round, for every contact'
+  - draft: 'Leave undecided: whether a group should get its own arm'
+- title: What it rests on
+  bullets:
+  - draft: 'Arm B leads in both groups: a gap of 20 points in the first and 16 in the second, both above zero'
+    cite: K01
+  - draft: The pooling test of the two groups, verdict UNDETERMINED
+    cite: K01
+- title: What it must not be read to say
+  bullets:
+  - draft: It does not say why arm B does better, nor that it would in another population
+  - draft: It says nothing of group_3, whose cut was too thin to answer

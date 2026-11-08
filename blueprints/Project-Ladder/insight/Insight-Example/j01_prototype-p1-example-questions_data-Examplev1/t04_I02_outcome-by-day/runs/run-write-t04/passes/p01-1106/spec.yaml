@@ -1,0 +1,13 @@
+answer-status: answered
+answer: 'The daily rate runs from 28% to 50%, with a downward drift: -1.8 points a day (95% -3.5 to -0.1).'
+how-sure: a weighted slope with a t interval; daily rates are thin
+opening:
+- Whether the rate moves inside the window, so a gap read over it means one thing.
+divisions:
+- partition: full
+  takeaway: 'The daily rate runs from 28% to 50%, with a downward drift: -1.8 points a day (95% -3.5 to -0.1).'
+  bullets:
+  - draft: Over 10 days the daily rate runs from 28.3% to 50.0%
+    file: rates_by_day.csv
+  - draft: The drift is -1.80 points a day (95% -3.45 to -0.14)
+    file: trend.csv

@@ -1,0 +1,12 @@
+{
+  "output_file": "example.parquet",
+  "n_rows": 600,
+  "n_cols": 5,
+  "start_date": "2026-01-05",
+  "end_date": "2026-01-14",
+  "source_set": "synthetic (make_example_data.py, seed 7)",
+  "label": "first ten days",
+  "groups": {
+    "identity": []
+  }
+}

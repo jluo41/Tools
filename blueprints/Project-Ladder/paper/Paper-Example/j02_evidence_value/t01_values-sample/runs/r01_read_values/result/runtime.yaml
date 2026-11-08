@@ -1,0 +1,9 @@
+run: r01_read_values
+status: completed
+exit_code: 0
+started_at: '2026-11-06T09:24:10Z'
+finished_at: '2026-11-06T09:24:10Z'
+started_by: 'gen_value_runs.py: the value Job’s Runs, made from its value maps'
+ticket: runs/r01_read_values/r01_read_values.sh
+worker: haipipe-paper-evidence scripts/values_ledger.py run
+host: Mac/jluo

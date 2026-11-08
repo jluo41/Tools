@@ -6,6 +6,7 @@ folder-kind: section
 section_kind: summary
 structure-source: paper/haipipe-paper-draft/ref/generic-template.md
 state: ⬜ OPEN · plan to write
+content: draft v0.1 · adopted 261106 0138
 story-row: j11_writing_v1130_desk ## Narrative / t00_summary
 reader-question: <what the reader asks here>
 entry-state: <what the reader holds coming in>
@@ -20,7 +21,14 @@ transition-out: <what the next Section picks up>
 
 ## Content
 
-<the Section's prose, adopted from its Draft>
+### Summary
+
+#### C1.P1 · The question, the data and the answer · S1 to S4
+
+This paper asks whether <a policy> changes <an outcome>, and for whom. <!-- realizes: C1.P1.B1 -->
+We use <the data source>, which follows <the units> before and after <the policy> began. <!-- realizes: C1.P1.B2 -->
+After <the policy>, <the outcome> rose, and it rose most for <one group>. <!-- realizes: C1.P1.B3 -->
+This tells <a reader> where <the policy> is most likely to help. <!-- realizes: C1.P1.B4 -->
 
 ## Aims
 

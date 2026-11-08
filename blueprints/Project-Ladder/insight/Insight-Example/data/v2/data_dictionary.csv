@@ -1,0 +1,6 @@
+name,group,dtype,null_pct,n_unique,notes
+date,time,datetime64[ns],0.0,16,the day of the contact
+arm,design,object,0.0,2,the arm it got: A or B
+group,design,object,0.0,3,"its group: group_1, group_2 or the small group_3"
+outcome,outcome,int64,0.0,2,"1 when the made-up outcome happened, else 0"
+score,measure,float64,0.0,381,"a plain numeric score, higher with the outcome"

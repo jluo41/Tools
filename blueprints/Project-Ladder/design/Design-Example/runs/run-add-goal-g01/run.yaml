@@ -1,0 +1,19 @@
+run: run-add-goal-g01
+kind: soft
+type: add-goal
+scope: Design-Example
+target: g01
+ticket: null
+skill: haipipe-design-goal
+agent: designer agent
+signs: a person
+status: done
+passes:
+- p01-1106
+writes:
+- board.md
+feeds: null
+by: designer agent
+started_at: '2026-11-06T09:00:00'
+finished_at: '2026-11-06T09:10:00'
+usage: {}

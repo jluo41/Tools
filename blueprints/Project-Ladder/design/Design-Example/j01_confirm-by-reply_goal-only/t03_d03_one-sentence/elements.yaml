@@ -1,0 +1,19 @@
+- element: opening
+  words: '{SENDER} reminds you'
+  from: rules.md · r1.2
+  because: the sender opens the one sentence
+  step: ③
+  changed: ''
+- element: slot and ask
+  words: of your appointment on {DAY} at {TIME}; reply YES to confirm.
+  from: goal.md · rules for this goal
+  because: sender
+  slot and ask in one sentence: null
+  step: ③
+  changed: ''
+- element: stop line
+  words: Reply STOP to opt out.
+  from: rules.md · r1.3
+  because: every message says how to stop
+  step: ③
+  changed: ''

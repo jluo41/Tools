@@ -23,6 +23,17 @@ t02_methods.md
 t03_results.md
 t31_cover-letter.md
 
+### J12 · j12_writing_v0215_desk
+
+From j11_writing_v1130_desk: each Section's own writing, to be revised.
+
+t00_summary.md
+t01_introduction.md
+t02_methods.md
+t03_results.md
+t31_cover-letter.md
+t32_response.md
+
 ### J01 · j01_evidence_display
 
 Evidence display: displays.

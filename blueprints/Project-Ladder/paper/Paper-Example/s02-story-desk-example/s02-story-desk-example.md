@@ -50,7 +50,7 @@ s02 · Story
 
 | T | work | where | state | what it gives | feeds |
 |---|---|---|---|---|---|
-| T0 | <return the main Runs> | b01.j01.t01 | ⬜ waiting for JL | <the main tables> | E1 |
+| T0 | <return the main Runs> | b01.j01.t01 | ⬜ waiting for you | <the main tables> | E1 |
 | T1 | <a second window> | b01.j01.t02 | ⏳ running | <a check> | E2 |
 | T2 | <a subgroup> | b01.j01.t03 | ✅ done | <RQ2's answer> | E3 |
 

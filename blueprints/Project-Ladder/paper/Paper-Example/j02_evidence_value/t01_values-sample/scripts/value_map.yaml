@@ -2,6 +2,7 @@
 # of a work Run's returned values.csv (key, value, source). Read by haipipe-paper-evidence scripts/values_ledger.py.
 rq: RQ1
 group: the sample and the main association
+writing: j11_writing_v1130_desk   # the send its bindings were ticked in; the revision j12 has no evidence cards yet
 defaults:
   file: values.csv
   column: value

@@ -1,0 +1,21 @@
+notebook: off   # the worker writes the Result; no notebook
+_meta:
+  purpose: Make the items under the signed recipe, into the store, and run the item check.
+  schema: labeling-items-task/v1
+operation: items
+data: Tools/blueprints/Project-Ladder/labeling/b02_labeling_walkthrough/data/chats/
+file: Tools/blueprints/Project-Ladder/labeling/b02_labeling_walkthrough/data/chats/chats.csv
+recipe:
+  unit: chat_id
+  item_id: "{chat_id}"   # the chats already carry ids ex-00..ex-29, the ones the meaning and expression Tasks read (r02_collect_items_recipe Q2)
+  main: response
+  context_before:
+    column: context
+    turns:
+      Person: Person
+  context_after: null
+  keep_out:
+  - Q_overall
+  group: chat_id
+out: Tools/blueprints/Project-Ladder/labeling/b02_labeling_walkthrough/data/items-v1
+notes: ''

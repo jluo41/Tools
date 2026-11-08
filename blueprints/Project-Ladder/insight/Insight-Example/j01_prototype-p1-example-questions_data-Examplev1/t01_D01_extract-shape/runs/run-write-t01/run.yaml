@@ -1,0 +1,16 @@
+run: run-write-t01
+kind: soft
+type: write
+scope: Tools/blueprints/Project-Ladder/insight/Insight-Example/j01_prototype-p1-example-questions_data-Examplev1/t01_D01_extract-shape
+target: t01
+ticket: run-write-t01.md
+skill: haipipe-insight-data
+agent: haipipe-insight-agent
+signs:
+- none
+status: done
+passes:
+- p01-1106
+writes:
+- t01_D01_extract-shape/t01_D01_extract-shape.md
+feeds: []

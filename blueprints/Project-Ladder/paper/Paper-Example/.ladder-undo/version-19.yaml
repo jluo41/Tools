@@ -1,0 +1,10 @@
+run: '2026-11-06'
+what: task j12_writing_v0215_desk/t31_cover-letter (Letters)
+tool: haipipe-paper/scripts/paper_ladder.py
+moves: []
+rewritten:
+- board.md
+created:
+- j12_writing_v0215_desk/t31_cover-letter/t31_cover-letter.md
+kept: .ladder-undo/version-19
+roll_back_first: any record newer than this one

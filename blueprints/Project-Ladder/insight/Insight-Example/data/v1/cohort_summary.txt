@@ -1,0 +1,5 @@
+Example data freeze v1: first ten days (synthetic, made by make_example_data.py)
+rows: 600  ·  days: 10  ·  2026-01-05 to 2026-01-14
+rows per arm: A 282, B 318
+rows per group: group_1 350, group_2 210, group_3 40
+outcome rate per arm: A 0.31, B 0.50

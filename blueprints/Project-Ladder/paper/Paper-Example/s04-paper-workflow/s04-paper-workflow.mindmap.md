@@ -4,10 +4,13 @@ title: s04 · Paper flow · structured
 built: from-topic .
 ---
 
-# s04 · Paper flow <!-- root #d4333b -->
+# s04 · Paper flow <!-- root #1035d2 -->
 
-Not written yet: ask in the Studio chat to write this map from the topic's page and drawing.
+**Tags:** `Plan`
+**Stage:** shaping
 
-- Files <!-- @files #6ce6c5 -->
-  - delivery/ <!-- @files/0 #404761 -->
-  - [md] [s04-paper-workflow.md](s04-paper-workflow.md) <!-- @files/1 #0fc0a7 -->
+- Send <!-- @send #9bc257 -->
+  - 2026-11-30 (the first send) <!-- @send/0 #fbfec9 -->
+- Topic <!-- @topic #7e13bd -->
+  - The Sections in reader order, their displays, … <!-- @topic/0 #0b6135 -->
+    The Sections in reader order, their displays, and the dated steps to the send.

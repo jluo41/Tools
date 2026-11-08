@@ -1,0 +1,16 @@
+run: r02_collect_items_recipe
+kind: hard
+type: collect
+scope: Tools/blueprints/Project-Ladder/labeling/b02_labeling_walkthrough/j01_example_response_safety/t01_example_items
+target: b02.j01.t01-s02:labeling_walkthrough.example_response_safety.example_items
+  @ example_items_recipe
+ticket: r02_collect_items_recipe.html
+skill: haipipe-interaction
+agent: Example Person
+signs: null
+status: waiting
+passes: []
+writes:
+- result/answer_collection.md
+feeds:
+- r03_items

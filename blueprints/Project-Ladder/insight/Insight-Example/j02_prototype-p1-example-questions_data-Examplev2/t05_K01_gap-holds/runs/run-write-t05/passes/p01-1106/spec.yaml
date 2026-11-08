@@ -1,0 +1,19 @@
+answer-status: answered
+answer: 'POOL: one counsel serves both groups.'
+how-sure: the difference's interval is 26 points wide
+opening:
+- Whether the first and second groups' gaps can be pooled into one counsel.
+divisions:
+- partition: cross
+  takeaway: 'The gap is 17 points in the first group and 16 in the second; their difference, -1 points (95% -14 to +12, p = 0.8844), gives POOL: the difference''s 95% interval lies inside ±20 points.'
+  bullets:
+  - draft: 'First group: a gap of 16.7 points (95% 8.6 to 24.8)'
+    file: pooling.csv
+  - draft: 'Second group: a gap of 15.7 points (95% 5.5 to 25.9)'
+    file: pooling.csv
+  - draft: 'The verdict is POOL (pooling: z test of two gaps, p = 0.8844)'
+    file: verdict.json
+- title: What it rests on
+  bullets:
+  - draft: Each group's gap, as the Information question wrote it
+    cite: I01

@@ -1,0 +1,9 @@
+run: '2026-11-06'
+what: route Review-placebo-check → t03_results ¶1 (run-revise-placebo-check)
+tool: haipipe-paper/scripts/paper_ladder.py
+moves: []
+rewritten:
+- j12_writing_v0215_desk/reports/q01_review-0110/q01_review-0110.md
+created: []
+kept: .ladder-undo/version-16
+roll_back_first: any record newer than this one

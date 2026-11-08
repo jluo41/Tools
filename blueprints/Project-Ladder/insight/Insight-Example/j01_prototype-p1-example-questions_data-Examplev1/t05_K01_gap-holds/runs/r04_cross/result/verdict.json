@@ -1,0 +1,6 @@
+{
+  "verdict": "UNDETERMINED",
+  "test": "pooling: z test of two gaps",
+  "p_value": 0.5992,
+  "rule": "no difference shown, but its 95% interval reaches past \u00b120 points"
+}

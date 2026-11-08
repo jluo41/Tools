@@ -1,0 +1,31 @@
+ideas:
+- id: I01
+  idea: Put the reply word first, then the slot
+  topic: T1
+  design: d01
+  name: yes-first
+- id: I02
+  idea: Lead with the slot, then ask for the reply
+  topic: T1
+  design: d02
+  name: slot-first
+- id: I03
+  idea: Sender, slot and ask in one sentence
+  topic: T2
+  design: d03
+  name: one-sentence
+- id: I04
+  idea: Only what the rules require, the fewest words
+  topic: T2
+  design: d04
+  name: fewest-words
+- id: I05
+  idea: Close with thanks after the ask
+  topic: T3
+  design: d05
+  name: thanks-close
+- id: I06
+  idea: Ask as a question the reader answers with YES
+  topic: T3
+  design: d06
+  name: question-ask

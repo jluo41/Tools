@@ -1,0 +1,15 @@
+run: run-launch-j02
+kind: soft
+type: launch
+scope: Tools/blueprints/Project-Ladder/insight/Insight-Example/j02_prototype-p1-example-questions_data-Examplev2
+target: j02
+ticket: run-launch-j02.md
+skill: haipipe-insight
+agent: haipipe-insight-agent
+signs:
+- none
+status: waiting
+passes:
+- p01-1106
+writes: []
+feeds: []

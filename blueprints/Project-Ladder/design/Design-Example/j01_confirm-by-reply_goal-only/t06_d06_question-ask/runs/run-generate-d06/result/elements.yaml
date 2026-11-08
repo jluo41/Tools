@@ -1,0 +1,24 @@
+- element: opening
+  words: '{SENDER}:'
+  from: rules.md · r1.2
+  because: every message opens with who it is from
+  step: ③
+  changed: ''
+- element: question
+  words: Will you make your appointment on {DAY} at {TIME}?
+  from: own knowledge
+  because: a question the reader answers with YES
+  step: ③
+  changed: ''
+- element: ask
+  words: Reply YES to confirm.
+  from: goal.md · rules for this goal
+  because: one clear ask names the reply word
+  step: ③
+  changed: ''
+- element: stop line
+  words: Reply STOP to opt out.
+  from: rules.md · r1.3
+  because: every message says how to stop
+  step: ③
+  changed: ''

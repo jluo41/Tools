@@ -1,0 +1,15 @@
+answer-status: answered
+answer: 600 rows and 5 columns over 10 days, 2026-01-05 to 2026-01-14; no column has a missing value.
+how-sure: exact counts on the whole extract
+opening:
+- What the example extract holds, before any question reads it.
+divisions:
+- partition: full
+  takeaway: 600 rows and 5 columns over 10 days, 2026-01-05 to 2026-01-14; no column has a missing value.
+  bullets:
+  - draft: The extract holds 600 rows and 5 columns, one row per made-up contact
+    file: shape.json
+  - draft: It covers 10 days, from 2026-01-05 to 2026-01-14
+    file: shape.json
+  - draft: 'Every column is complete: its missing share is 0%'
+    file: missing_by_column.csv
