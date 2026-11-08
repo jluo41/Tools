@@ -184,6 +184,13 @@ def method_pin(value: str) -> tuple:
     return (m.group(1), m.group(2) or "") if m else ("", "")
 
 
+def goal_pin(value) -> str:
+    """A Job face's `goal:` pin as its id: `G01` and `G01 · confirm-by-reply` (the goal's name after the id, so a map
+    reads it, 261108) → "G01"; anything else → ""."""
+    m = re.match(r"^\s*(G\d+)\b", str(value or ""))
+    return m.group(1) if m else ""
+
+
 def is_job(folder: Path) -> bool:
     """A Job on the ladder: a jNN_ folder whose face pins a registered method."""
     return folder.name.startswith("j") and folder.is_dir() and bool(method_pin(front(face(folder)).get("method"))[0])
@@ -258,7 +265,7 @@ def job(jdir: Path) -> dict:
             files.append({"name": p.name + ("/" if p.is_dir() else ""), "link": target,
                           "broken": p.is_symlink() and not p.exists()})
     delivered = _yaml(delivery_dir(jdir) / "designs.json") if (delivery_dir(jdir) / "designs.json").is_file() else {}
-    return {"path": jdir, "name": jdir.name, "id": jdir.name.split("_")[0], "goal": str(f.get("goal", "")),
+    return {"path": jdir, "name": jdir.name, "id": jdir.name.split("_")[0], "goal": goal_pin(f.get("goal")),
             "method": mid, "version": version, "method_name": METHODS.get(mid, ("", ""))[0],
             "type": METHODS.get(mid, ("", "—"))[1], "sha": str(f.get("method-sha", "")), "inputs": str(f.get("inputs", "")),
             "state": str(f.get("state", "—")), "moved": str(f.get("moved", "")), "n": f.get("n", ""),
@@ -328,7 +335,7 @@ def venue_of(folder: Path | None) -> str:
         return ""
     for p in (folder, *folder.parents):
         if p.is_dir() and is_job(p):
-            goal = str(front(face(p)).get("goal", ""))
+            goal = goal_pin(front(face(p)).get("goal"))
             for g in block_goals(block_of(p.parent)):
                 if str(g.get("id", "")) == goal:
                     return str(g.get("venue", "")).strip().lower()

@@ -101,6 +101,7 @@ def _seen(entry: dict, sees: dict) -> bool:
 def job(jdir: Path, made: list) -> None:
     face = jdir / f"{jdir.name}.md"
     pins = front(face)
+    pins["goal"] = str(pins.get("goal") or "").split(" · ")[0].strip()   # `G01 · <name>`: the id is the pin (261108)
     if not pins.get("goal") or not pins.get("inputs"):
         sys.exit(f"{face.name} pins no goal: or inputs: (run-setup-goal first)")
     block = jdir.parent

@@ -1,6 +1,6 @@
 # j03 · Kickoff meeting with the partner office
 job-kind: cowork-job
-state: ✅ DONE
+state: ✅ DONE · 2026-10-15: the request goes through the partner office's form; the notes went to everyone
 waiting-on: nobody
 since: 2026-10-15
 goal: The partner office and our team agree what the request asks for.

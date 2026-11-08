@@ -695,7 +695,7 @@ def _in_job(j: dict, qid: str) -> tuple:
     if st == "retired":
         return "retired", t
     if st not in ("answered", "written", "checked"):
-        return "⏳ " + (st or "page to write"), t
+        return "⏳ " + ("being written" if _writing(t) else st or "page to write"), t
     v = (j["vs"].get("rows") or {}).get(qid) if j["vs"] else None
     if v:
         s = str(v.get("status") or "")
@@ -929,7 +929,11 @@ def _version_panel(b: dict, v: dict, root: Path) -> str:
         sample = (f'<p class=pb-lv><b>A few rows</b> <span title="drawn at random; identifying columns left out">'
                   f'{len(s["rows"])} of {s["total"]:,}</span></p><div class=wk-scroll>'
                   + table(tuple(cols), [tuple(esc(r[s["columns"].index(c)]) for c in cols) for r in s["rows"]]) + '</div>')
-    return card + f'<div class=in-files>{" ".join(files)}</div>' + sample
+    fig = next((f for f in d["figures"] if f.suffix.lower() in (".png", ".svg", ".jpg")), None)   # shown, not only
+    pic = (f'<figure class=in-fig><a href="/{esc(rel(fig, root))}" target=_blank rel=noopener data-pop="{esc(fig.name)}">'  # linked
+           f'<img src="/{esc(rel(fig, root))}" alt="{esc(fig.stem)}" loading=lazy></a>'                             # (round 2)
+           f'<figcaption>{esc(fig.stem.replace("_", " ").replace("-", " "))}</figcaption></figure>') if fig else ""
+    return card + pic + f'<div class=in-files>{" ".join(files)}</div>' + sample
 
 
 def _data_view(b: dict, root: Path) -> str:

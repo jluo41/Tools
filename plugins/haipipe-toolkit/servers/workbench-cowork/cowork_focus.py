@@ -64,6 +64,11 @@ def _short(title: str) -> str:
     return re.sub(r"^[a-z]\d+\s*[·:-]\s*", "", title or "").strip()
 
 
+def _ancestry(rel: Path) -> list:
+    """j02_x/t01_y -> [j02_x, j02_x/t01_y]: a Job, then its Task."""
+    return [Path(*rel.parts[:k]) for k in range(1, len(rel.parts) + 1)]
+
+
 def _title_of(folder: Path) -> str:
     """A Job's or Task's title in words, from its face's first heading; its folder name when it has none."""
     face = folder / f"{folder.name}.md"
@@ -314,8 +319,8 @@ def headlines_part(folder: Path, root: Path, level: str) -> tuple | None:
 
 
 def parts(folder: Path, root: Path, level: str) -> list:
-    """A cowork page's Findings parts, before 📦 Delivery: 👥 People, ✉️ Messages, ⏳ Next move (a Block only); a part
-    with nothing in it is left out."""
+    """A cowork page's Findings parts, before 📦 Delivery: 📌 Headlines (a Job's meetings: Decided, Next), 👥 People,
+    ✉️ Messages, ⏳ Next move (a Block only); a part with nothing in it is left out."""
     folder, root = Path(folder), Path(root)
     block = block_of(folder, level)
     if level not in ("Block", "Job") or not (block / "board.md").is_file():
@@ -390,7 +395,8 @@ def job_status(job: Path, root: Path) -> list:
             f'<li><span class=t><b>{esc(n)}</b> {esc(c.get("Role here", ""))}</span><small>{esc(c.get("Side", ""))}</small></li>'
             for n, c in found) + '</ul>', "")] if found else []
     facts = _kv([("Has the move", esc("us" if j["ours"] else j["waiting"])), ("Since", esc(since)),
-                 ("Next", esc(j["next"])), ("Ticket", ticket)])
+                 ("Next", "" if j["next"] and j["next"] in j["state"] else esc(j["next"])),   # the lead says it
+                 ("Ticket", ticket)])
     if group in ("ours", "theirs", "open", "hold"):   # done: the lead's state line says it, no bar repeats it
         title, word, waits = {
             "ours": ("🙋 Waiting on us", f"waits for you · {_days(j['days'])}" if j["days"] is not None else "waits for you",
@@ -429,35 +435,68 @@ def rounds(task: Path) -> list:
     return out
 
 
+CHAIN_CSS = """<style>
+.cw-chain{list-style:none;display:flex;flex-wrap:wrap;align-items:stretch;gap:8px 0;margin:4px 0 14px;padding:0}
+.cw-chain li{display:flex;align-items:center}.cw-chain li+li::before{content:"→";margin:0 8px;color:var(--muted)}
+.cw-chain .box{border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:13px;line-height:1.4;max-width:220px}
+.cw-chain .box b{display:block;font-weight:600}.cw-chain .box small{color:var(--muted)}
+.cw-chain .box.you{border-color:light-dark(#ffa94d,#b35c00)}.cw-chain .box.next{border-style:dashed}
+</style>"""
+
+
+def _mmdd(folder: Path) -> str:
+    m = re.match(r"^p\d+-(\d\d)(\d\d)$", folder.name)
+    return f"{m.group(1)}-{m.group(2)}" if m else ""
+
+
+def _chain(task: Path, root: Path, found: list, nxt: str) -> str:
+    """The rounds as one chain, oldest first: each version sent, what came back before the next (the Job's emails in
+    between), the choice that waits on the person (a waiting form under the Task), then the next version."""
+    from live import focus_page as F
+    job, block = task.parent, task.parent.parent
+    mails = [n for n in notes(job / "emails", block, root, job.name) if not n["draft"] and n["date"]]
+    mails.sort(key=lambda n: n["date"])
+    boxes = []
+    for k, (run, folder, title, summary, files) in enumerate(found):
+        day, after = _mmdd(folder), _mmdd(found[k + 1][1]) if k + 1 < len(found) else "99-99"
+        links = " · ".join(pop(_file_url(f, root), f.name, f.stem.replace("_", " ")) for f in files if f.suffix == ".md")
+        boxes.append(f'<li><div class=box><b>{esc(title)}</b><small>{esc(day)}</small>'
+                     + (f'<br>{links}' if links else "") + '</div></li>')
+        for n in (n for n in mails if day < n["date"][5:] < after):
+            boxes.append(f'<li><div class=box><b>{pop(reader(job / "emails" / n["name"], root), n["title"])}</b>'
+                         f'<small>{esc(n["date"][5:])} · came back</small></div></li>')
+    for r in (r for r in F.interactions(task, root) if r["state"] == "waiting" and r["page"] == task):
+        ask = r["asks"][0][2] if r["asks"] else r["title"]
+        boxes.append(f'<li><div class="box you"><b>? {esc(r["title"])}</b><small>{esc(ask)}</small></div></li>')
+    if nxt:
+        last = re.split(r",\s*then\s+", nxt)[-1]                       # "pick …, then write v3" -> "write v3"
+        boxes.append(f'<li><div class="box next"><b>{esc(last)}</b><small>next</small></div></li>')
+    return CHAIN_CSS + '<ol class=cw-chain>' + "".join(boxes) + '</ol>'
+
+
 def task_status(task: Path, root: Path) -> list:
+    """A document written in rounds: its newest round's headline first, the rounds as a chain and newest first, its
+    Runs (b13 review r01)."""
     found = rounds(task)
     if not found:
         return []                                    # a Task that is no document in rounds: the shared Status
     from live import focus_page as F
     from live.task_questions import field, read
-    out = []
     text = read(task / f"{task.name}.md", task)
-    status = (re.search(r"(?m)^status:\s*(\S+)", (found[-1][0] / "run.yaml").read_text(encoding="utf-8", errors="ignore"))
-              or [None, ""])[1] if (found[-1][0] / "run.yaml").is_file() else ""
+    who, nxt = field(text, "waiting-on"), field(text, "next")
+    run, folder, title, summary, files = found[-1]
+    head = F.run_headline(run) or title
+    links = " · ".join(pop(_file_url(f, root), f.name) for f in files)
+    out = [("📌 " + esc(head), "waits for you" if who.strip().lower() == "us" else who or "current", CSS
+            + (f'<p class=cw-next>{esc(summary)}</p>' if summary else "") + (f'<div class=cw-verbs>{links}</div>' if links else "")
+            + f'<div class=cw-verbs>{pop(F.run_url(run, root), task.name + " · " + run.name, "Open " + run.name + " ↗")}</div>', "")]
     tabs, panels = [], []
-    for k, (run, folder, title, summary, files) in enumerate(found):
-        last = k == len(found) - 1
-        tabs.append((title, (status or "current") if last else "done"))
+    for run, folder, title, summary, files in reversed(found):           # newest first
+        tabs.append((title, _mmdd(folder) or folder.name))
         links = " · ".join(pop(_file_url(f, root), f.name) for f in files)
-        panels.append((f'<p class=cw-next>{esc(summary)}</p>' if summary else "")
-                      + (f'<div class=cw-verbs>{links}</div>' if links else "")
-                      + f'<div class=cw-verbs>{pop(F.run_url(run, root), task.name + " · " + run.name, "Open " + run.name + " ↗")}</div>')
-    out.append(("📝 Rounds", f"round {len(found)} · {status or 'current'}", CSS + _side_tabs("cwRx", tabs, panels), ""))
-    who, since, nxt = field(text, "waiting-on"), field(text, "since"), field(text, "next")
-    if who or nxt:
-        from live.coworkboard import waited
-        days = waited(since) if since else None
-        ours = who.strip().lower() == "us"
-        out.append(("🙋 Waiting on us" if ours else "⏳ Waiting on them",
-                    ("waits for you" if ours else who) + (f" · {_days(days)}" if days is not None else ""),
-                    CSS + (f'<p class=cw-next>{esc(nxt)}</p>' if nxt else "")
-                    + _kv([("Has the move", esc(who)), ("Since", esc(since))]),
-                    (f"🙋 the next move is ours: {nxt}" if nxt else "🙋 the next move is ours") if ours else ""))
+        panels.append((f'<p class=cw-next>{esc(summary)}</p>' if summary else "") + (f'<div class=cw-verbs>{links}</div>' if links else ""))
+    out.append(("📝 Rounds", f"newest {_mmdd(found[-1][1])}" if _mmdd(found[-1][1]) else "rounds",
+                CSS + _chain(task, root, found, nxt) + _side_tabs("cwRx", tabs, panels), ""))
     runs = F.runs_section(task, root)
     if runs:
         out.append(runs + ("",))
@@ -530,7 +569,7 @@ def delivery_tabs(folder: Path, root: Path, level: str) -> list:
     for m in _all_sends(folder, block, level):
         head = dict(_HEAD.findall(m["md"].read_text(encoding="utf-8", errors="ignore"))) if m["md"] else {}
         word = "draft ✎ not sent" if m["draft"] and not m["sent"] else "sent" if m["sent"] else "not marked sent"
-        where = m["from"].relative_to(block).as_posix()
+        where = " › ".join(_title_of(block / q) for q in _ancestry(m["from"].relative_to(block)))
         body = _kv([("Date", esc(m["date"] or "—")), ("From", esc(where)), ("To", esc(head.get("To", ""))),
                     ("Cc", esc(head.get("Cc", ""))), ("Subject", esc(head.get("Subject", ""))), ("State", esc(word))])
         files = " · ".join(pop(_file_url(f, root), f.name) for f in m["attach"] if f.is_file())

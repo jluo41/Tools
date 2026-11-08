@@ -123,7 +123,7 @@ def release(job: Path, freeze: str = "", dry: bool = False) -> list:
         d = {"job": jid, "job_name": job.name, "design": m.group(1), "name": str(front(face).get("name", m.group(2))),
              "words": words, "predicted": str(pred.get("predicted", "")), "against": str(pred.get("against", "")),
              "why": str(pred.get("why", "")), "released": freeze if draft else str(pred.get("frozen")),
-             "pins": {"goal": str(pins.get("goal", "")), "method": str(pins.get("method", "")),
+             "pins": {"goal": str(pins.get("goal", "")).split(" · ")[0].strip(), "method": str(pins.get("method", "")),
                       "inputs": str(pins.get("inputs", ""))}}
         screen = last_screen(t)
         if screen is not None:

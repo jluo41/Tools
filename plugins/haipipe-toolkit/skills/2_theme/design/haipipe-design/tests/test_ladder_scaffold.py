@@ -106,7 +106,8 @@ class DesignLadderTest(unittest.TestCase):
         job = self.block / "j02_prepare-before-visit_actionable-insights"
         D.main(["job", str(job), "--goal", "G01", "--method", "M04 m2", "--inputs", "i2", "--n", "3"])
         face = (job / f"{job.name}.md").read_text()
-        self.assertIn("goal: G01", face)
+        self.assertIn("goal: G01 · prepare-before-visit\n", face)       # the id, then the goal's name (261108)
+        self.assertEqual(reader().job(job)["goal"], "G01")                 # the reader takes the id
         self.assertIn("method: M04 m2", face)
         self.assertIn("# Prepare before visit, by Actionable insights", face)
         self.assertEqual(D.level_of(job), "Job")
@@ -114,6 +115,19 @@ class DesignLadderTest(unittest.TestCase):
         for wrong in ("j03_prepare-before-visit_goal-only", "j03_questions-before-visit_actionable-insights"):
             with self.assertRaises(SystemExit):                          # the words must name the pinned goal and method
                 D.main(["job", str(self.block / wrong), "--goal", "G01", "--method", "M04 m2", "--inputs", "i2"])
+
+    def test_goals_gives_an_older_job_face_its_goal_name(self):
+        """`goals <block>` adds the goal's name to a face whose `goal:` holds the id alone, and touches nothing else."""
+        board = self.block / "board.md"
+        board.write_text(board.read_text().replace("id: G01", "id: G01\n  name: a-goal", 1))
+        face = self.job / f"{self.job.name}.md"
+        before = face.read_text()
+        self.assertIn("goal: G01\n", before)                              # made before G01 had a name
+        self.assertEqual(D.main(["goals", str(self.block)]), [face])
+        after = face.read_text()
+        self.assertEqual(after, before.replace("goal: G01\n", "goal: G01 · a-goal\n", 1))
+        self.assertEqual(D.main(["goals", str(self.block)]), [])          # a named face is left as it is
+        self.assertEqual(reader().job(self.job)["goal"], "G01")
 
     def test_a_block_is_named_by_its_kind(self):
         """A design Block is a special board, Design-<name>[-<YYMMDD>] (JL 261008); bNN_<app> stays readable."""

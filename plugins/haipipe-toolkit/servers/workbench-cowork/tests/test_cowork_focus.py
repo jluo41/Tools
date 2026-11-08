@@ -34,7 +34,7 @@ def demo(tmp_path):
           "| ROLE_A | Office A | the extract |\n| ROLE_B | Our team | every send |\n| (to add) | … | … |\n")
     a = block / "j01_ask"
     write(a / "j01_ask.md", face("j01", "Ask OFFICE_A", "🟡 ACTIVE", "ROLE_A", "2026-10-01", "chase them"))
-    write(a / "Timeline.md", "- 2026-09-28 asked\n- 2026-10-01 they replied\n")
+    write(a / "Timeline.md", "- 2026-09-25 agreed the fields\n- 2026-09-28 asked\n- 2026-10-01 they replied\n")
     write(a / "CHECKLIST.md", "- [x] 1. Ask\n- [ ] 2. Get the date\n")
     write(a / "emails/2026-10-01-reply.md", "# Reply from ROLE_A\n")
     write(a / "meetings/2026-09-30-call.md", "# Call with ROLE_A\n")
@@ -70,7 +70,8 @@ def test_the_block_findings_add_people_messages_and_the_next_move(demo):
     assert word == "1 draft waits for you" and waits.startswith("🙋 a draft waits for you to send")
     assert all(t in html for t in (">Emails<", ">Meetings<", ">Drafts<", "Reply from ROLE_A", "Call with ROLE_A"))
     title, word, html, waits = got["⏳ Next move"]
-    assert word == "1 waits for you · 1 on them" and waits.startswith("🙋 Amendment: ours since 2026-10-05")
+    assert word == "1 waits for you · 1 on them"
+    assert waits == ""                                     # its draft already waits under Messages: once per page
     assert html.index("Amendment") < html.index("Ask OFFICE_A")                        # ours first
     assert "Kickoff" not in html and "People" not in html                              # done and reference Jobs: no move
 
@@ -89,7 +90,9 @@ def test_the_block_status_groups_its_jobs_by_who_has_the_move(demo):
     got = CF.status(block, root, "Block")
     assert titles(got) == ["🙋 Waiting on us", "⏳ Waiting on them", "✅ Done"]           # a reference Job is no line
     assert got[0][1] == "1 waits for you" and got[0][3] == "🙋 Amendment: send the draft"
-    assert got[1][1].startswith("longest ") and "Ask OFFICE_A" in got[1][2] and "they replied" in got[1][2]
+    assert got[1][1].startswith("longest ") and "Ask OFFICE_A" in got[1][2] and "agreed the fields" in got[1][2]
+    assert "they replied" not in got[1][2] and "Reply from ROLE_A" in got[1][2]     # a note twin of an email goes
+    assert ">note<" in got[1][2] and ">entry<" not in got[1][2]
     assert got[2][1] == "done" and "Kickoff" in got[2][2]
 
 
@@ -105,16 +108,21 @@ def test_a_job_status_is_its_move_its_timeline_and_its_steps(demo):
     assert "Ask OFFICE_A" in timeline                                                         # its send, dated
     assert got[2][1] == "1 of 2 done"
     ours = CF.status(block / "j02_amend", root, "Job")
-    assert ours[0][0] == "🙋 Waiting on us" and ours[0][3] == "🙋 the next move is ours: send the draft"
+    assert ours[0][0] == "🙋 Waiting on us" and ours[0][3] == "🙋 the next move is ours"     # its sentence: the lead
+    assert ">State<" not in ours[0][2]
+    assert titles(CF.status(block / "j03_done", root, "Job"))[:1] != ["✅ Done"]          # the lead says done
     assert "🧱 Tasks" in titles(ours)                                                       # its Task, the shared row
 
 
 def test_a_task_written_in_rounds_shows_each_round(demo):
     root, block = demo
     got = CF.status(block / "j02_amend" / "t01_plan", root, "Task")
-    assert titles(got)[:2] == ["📝 Rounds", "🙋 Waiting on us"]
-    assert got[0][1] == "round 2 · waiting" and "v1 to ROLE_A" in got[0][2] and "plan_v1.md" in got[0][2]
-    assert got[1][3] == "🙋 the next move is ours: write v3"
+    assert titles(got)[0] == "📌 v2 answers the comments" and got[0][1] == "waits for you"   # the newest round first
+    assert titles(got)[1] == "📝 Rounds" and got[1][1] == "newest 10-04"
+    rounds = got[1][2]
+    assert "cw-chain" in rounds and rounds.index("v1 to ROLE_A") < rounds.index(">write v3<")   # the chain, v1 to v3
+    tabs = rounds[rounds.index("pb-list"):]
+    assert tabs.index("v2 answers the comments") < tabs.index("v1 to ROLE_A")                 # the tabs newest first
     plain = block / "j01_ask" / "t01_note"
     write(plain / "t01_note.md", "# t01 · Note\n")
     assert CF.status(plain, root, "Task") == []                                              # no rounds: the shared bars
@@ -149,8 +157,9 @@ def test_the_prototype_block_shows_every_cowork_part():
     assert titles(CF.parts(EXAMPLE, root, "Block")) == ["👥 People", "✉️ Messages", "⏳ Next move"]
     assert titles(CF.status(EXAMPLE, root, "Block")) == ["🙋 Waiting on us", "⏳ Waiting on them", "✅ Done"]
     task = EXAMPLE / "j02_review_board_amendment" / "t01_data_use_plan"
-    assert titles(CF.status(task, root, "Task"))[0] == "📝 Rounds"
-    assert len(CF.delivery_tabs(EXAMPLE, root, "Block")) == 2
+    assert [x[:1] for x in titles(CF.status(task, root, "Task"))[:2]] == ["📌", "📝"]
+    assert len(CF.delivery_tabs(EXAMPLE, root, "Block")) == 3
+    assert titles(CF.parts(EXAMPLE / "j03_kickoff_meeting", root, "Job"))[0] == "📌 Headlines"
     for path in EXAMPLE.rglob("*"):                     # public placeholders: no machine path, no address
         if path.is_file() and path.suffix in (".md", ".yaml", ".csv", ".txt", ".html", ".py"):
             text = path.read_text(encoding="utf-8", errors="ignore")

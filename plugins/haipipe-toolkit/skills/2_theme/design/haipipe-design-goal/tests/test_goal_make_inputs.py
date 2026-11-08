@@ -89,6 +89,15 @@ class MakeInputsTest(unittest.TestCase):
         self.assertIn({"part": "Examples", "choice": "nothing", "file": ""}, man["parts"])
         self.assertEqual(M.main(["job", str(self.job)]), [])             # built once
 
+    def test_a_goal_pin_with_its_name_builds_the_fence(self):
+        """A face pins `goal: G01 · <name>` (design_ladder.py, 261108): the fence reads the id before the name."""
+        face = self.job / f"{self.job.name}.md"
+        face.write_text(face.read_text().replace("goal: G01\n", "goal: G01 · a-goal\n", 1))
+        M.main(["freeze", str(self.block / "inputs" / "i2")])
+        self.method(["Goal · how much is set"])
+        M.main(["job", str(self.job)])
+        self.assertIn("<the behaviour to change>", (self.job / "inputs" / "goal.md").read_text())
+
     def test_a_kind_narrows_a_part(self):
         """sees: `<part> [<kind>]` links only that kind's files; a plain part links all its kinds (JL 261008)."""
         v = self.block / "inputs" / "i2"

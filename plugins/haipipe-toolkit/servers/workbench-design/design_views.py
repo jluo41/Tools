@@ -1159,7 +1159,7 @@ def _job_method(j: dict, b: dict, root: Path, href=None) -> str:
             + "".join(f'<p class=mut>{esc(p)}</p>' for p in note.split("\n\n") if p.strip()))
 
 
-def _job_inputs(j: dict, b: dict, root: Path) -> str:
+def _job_inputs(j: dict, b: dict, root: Path, fold: bool = True) -> str:
     man = j["manifest"]
     files = {f["name"].rstrip("/"): f for f in j["files"]}
     sha = {f.get("path"): f.get("sha256", "") for f in man.get("files", [])}
@@ -1170,8 +1170,10 @@ def _job_inputs(j: dict, b: dict, root: Path) -> str:
                      _file_cell(j, p.get("file", ""), files, sha, root) if p.get("file") else "<span class=mut>—</span>"))
     return (f'<p><code>{esc(j["name"])}/inputs/</code> <span class=mut>· the fence: Generate and Verify see these and '
             f'nothing else</span></p>' + table(("① See input · part", f'{j["method"]}\'s choice', "in inputs/"), rows)
-            + _fold("manifest.yaml", f'every file above, its source and sha256 · frozen {esc(man.get("frozen", "—"))} = '
-                                     f'{esc(man.get("inputs", j["inputs"]))}', mono=True))
+            + (_fold("manifest.yaml", f'every file above, its source and sha256 · frozen {esc(man.get("frozen", "—"))} = '
+                                      f'{esc(man.get("inputs", j["inputs"]))}', mono=True) if fold else
+               f'<p class=mut><code>manifest.yaml</code> · every file above, its source and sha256 · frozen '
+               f'{esc(man.get("frozen", "—"))} = {esc(man.get("inputs", j["inputs"]))}</p>'))
 
 
 def _file_cell(j: dict, name: str, files: dict, sha: dict, root: Path) -> str:
@@ -1205,7 +1207,7 @@ def _display(j: dict, b: dict, root: Path, href) -> str:
     rows += [_card(d, j, href, root) for d in j["designs"] if d["state"] != "dropped"]
     if dropped:
         why = lambda d: f'rank #{rank[d["id"]].get("rank")}' if d["id"] in rank else "not ranked"
-        rows.append(_fold(f"Dropped, kept for the record · {len(dropped)}",
+        rows.append(_fold("Dropped, kept for the record",
                           esc(" · ".join(f'{d["id"]} ({why(d)})' for d in dropped)),
                           "".join(_card(d, j, href, root) for d in dropped)))
     return "".join(rows)
@@ -1220,7 +1222,7 @@ def _card(d: dict, j: dict, href, root: Path) -> str:
                           f'<p class=mut>from idea {esc(d["idea"])} · ③ {esc(d["drafts"][0]["run"]) if d["drafts"] else "—"} · '
                           f'{len(d["drafts"])} draft(s)</p>'
                           # each element's source, folded until opened (JL 261008: "hidden by default ... we can open and check")
-                          + (f'<details class=q-more><summary>› Elements and sources · {len(d["elements"])}</summary>'
+                          + (f'<details class=q-more><summary>› Elements and sources</summary>'
                              + "".join(f'<p>{esc(e.get("words", ""))} <span class=mut>← {esc(e.get("from", ""))}</span></p>'
                                        for e in d["elements"]) + '</details>' if d["elements"] else ""),
                           f'<p>④ {" · ".join(f"{_test(t)} {esc(v)}" for t, v in tests.items()) or "—"} · {_st(d["state"])}</p>'
@@ -1317,7 +1319,7 @@ def _job_runs(j: dict, root: Path, view: str) -> str:
                   for r, pre in rs])
 
 
-def _approve_panel(j: dict, jdir: Path, root: Path) -> str:
+def _approve_panel(j: dict, jdir: Path, root: Path, head: bool = True) -> str:
     """🙋 Review and approve, by a person on the screen (JL 261023: "design the work in a way that we human can operate
     this system as well"): each kept design as it reads with its prediction and why, as release.py's own dry run would
     release it today, then one tick and one sign (POST /_board/design-ladder-act, design_ladder_act.py). A refusal says
@@ -1326,7 +1328,7 @@ def _approve_panel(j: dict, jdir: Path, root: Path) -> str:
     from live.design_ladder_act import ready
     done = next((r for r in j["runs"] if r["type"] == "release" and r["status"] == "closed"), None)
     designs, why = ready(jdir)
-    head = '<h3 style="margin:0 0 6px">🙋 Review and approve</h3>'
+    head = '<h3 style="margin:0 0 6px">🙋 Review and approve</h3>' if head else ""     # the focus page's Process names it
     if done and not designs:
         return (head + f'<p><span class="st st-ok">✓ released</span> {esc(str(done["card"].get("signed") or ""))}</p>')
     if not designs:
@@ -1483,7 +1485,7 @@ def _kept(j: dict, href) -> str:
         dropped = d["state"] == "dropped"
         (dropped_ if dropped else kept_).append(_fold(f'{d["name"][:3]} · {d["id"]}',
                                                      ("dropped, folded" if dropped else "kept") + f' · {_st(d["state"])}', mono=True))
-    return "".join(kept_) + (_fold(f"Dropped by t99, kept for the record · {len(dropped_)}", "", "".join(dropped_))
+    return "".join(kept_) + (_fold("Dropped by t99, kept for the record", "", "".join(dropped_))
                              if dropped_ else "")
 
 

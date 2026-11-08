@@ -1909,8 +1909,10 @@ def insight_views_for(folder: Path, root: Path, section: str) -> dict:
         traceback.print_exc()   # in the server log, not hidden
     return {}
 def design_views(folder: Path, root: Path, section: str) -> dict:
-    """A design Block's, Job's or Task's Report or Work in the j01 letters (design_focus.views; b12 j01 s51 to s58,
-    JL 261101); {} for any other page."""
+    """A design Block's, Job's or Task's Report (plain keys; the page adds the shared MindMap last) or Work (`work-<key>`,
+    its MindMap last) in the j01 letters (design_focus.views; b12 j01 s51 to s58, JL 261101; the shared page rules,
+    261106); its forms in each view's own 🙋 Interaction (view_items asks design_focus.view_of_item); {} for any other
+    page."""
     try:
         from live import design_focus
         return design_focus.views(folder, root, section)
@@ -2829,8 +2831,14 @@ def work_process(folder: Path, root: Path, level: str, view: str, questions: lis
         if todo:
             steps.append(("🚧 Next steps", steps_word(notes), '<ul class=wk-rows>' + "".join(todo) + '</ul>', ""))
     elif view == "standing" and level == "Job":
+        # a form's collection Run is the view's 🙋, never a next step (cowork round 1, 261108: "repeats Interaction Q1")
+        waiting = lambda page: [(r, m) for r, m, _ in run_rows(page) if mark_word(m) != "done" and "_collect_" not in r.name]
+        if not any(inside(t, root) for t in frame.children(folder, "Job")):   # a Job with no Tasks (a cowork Job): its
+            for r, m in waiting(folder):                                       # own Runs waiting (an email to send)
+                notes.append(mark_word(m))
+                todo.append(li(r.name, run_url(r, root), r.name, notes[-1], opener(run_url(r, root), r.name)))
         for t in (t for t in frame.children(folder, "Job") if inside(t, root) and unfinished(t)):
-            nxt = next(((r, m) for r, m, _ in run_rows(t) if mark_word(m) != "done"), None)
+            nxt = next(iter(waiting(t)), None)
             if nxt is not None:
                 notes.append(mark_word(nxt[1]))
                 todo.append(li(f"{page_title(t)} › {nxt[0].name}", run_url(nxt[0], root), f"{t.name} · {nxt[0].name}",
@@ -3513,8 +3521,12 @@ def render(theme, root: Path, folder: Path, section="", group="") -> str:
     for key, name in UI_VIEWS:                                 # a theme Block's real pages, level by level
         if data["ui"][key]:
             overview["ui-" + key] = (name, ui_view(data["ui"][key], name, root, folder, folder / "walks" / f"{key}.html"))
-    if theme.name == "design" and level in ("Block", "Job", "Task") and not draft:   # HOOK: the design letters (b12 j01)
-        overview = design_views(folder, root, "report") or overview
+    if theme.name == "design" and level in ("Block", "Job", "Task") and not draft:   # HOOK: the design letters (b12 j01),
+        letters = design_views(folder, root, "report")                                # the shared MindMap last (R6), and
+        if letters:                                                                    # Report opens on its first letter
+            overview = {**letters, **{k: v for k, v in overview.items() if k == "mindmap"}}
+            group = ("summary" if group == "findings" and "summary" in letters      # OLD_VIEWS read its Summary as Findings
+                     else group or (next(iter(letters)) if section in ("", "report") else ""))
     if theme.name == "insight" and level == "Block" and not draft:   # HOOK: an insight Board's letters (b11 s51), MindMap last
         letters = insight_board_report(folder, root)
         overview = {**letters, **{k: v for k, v in overview.items() if k == "mindmap"}} if letters else overview
@@ -3645,6 +3657,11 @@ def render(theme, root: Path, folder: Path, section="", group="") -> str:
         if level in ("Block", "Job", "Task"):            # a theme's own words for a view at a level (CAPTIONS, 261108)
             _mod, _prefix = page_module(theme.name, folder, root)
             caption = (getattr(_mod, _prefix + "CAPTIONS", {}) if _mod is not None else {}).get((level, view.removeprefix("work-")), caption)
+            _cap = getattr(_mod, _prefix + "caption", None) if _mod is not None else None   # a page's own words (j00 people)
+            try:
+                caption = (_cap(folder, level, view.removeprefix("work-")) if _cap else None) or caption
+            except Exception:
+                pass
         body = (f'<p class="view-caption">{frame.esc(caption)}</p>' if caption else "") + body
         words = draft.get("words", {}) if section == "work" else {}   # a draft step's state word on its button
         bar = ('<nav class="section-views" aria-label="Views">' + "".join(

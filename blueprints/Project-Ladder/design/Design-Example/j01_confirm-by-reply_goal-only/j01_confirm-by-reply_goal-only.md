@@ -1,5 +1,5 @@
 ---
-goal: G01
+goal: G01 · confirm-by-reply
 method: M01 m2
 method-sha: 0c49ce170f8a
 inputs: i1

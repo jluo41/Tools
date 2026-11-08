@@ -154,7 +154,7 @@ board contact named in the comments on v1.
 PEOPLE = """
 # j00 · People
 job-kind: cowork-job
-state: 📇 REFERENCE
+state: 📇 REFERENCE · kept current as a role joins a Job
 waiting-on: nobody
 since: 2026-10-07
 next: keep current as a role joins a Job
@@ -178,16 +178,16 @@ def job_face(nn: str, title: str, head: dict, content: str, tasks: str = "") -> 
 
 JOBS = {
     J01: dict(nn="j01", title="Data access request to the partner office",
-              head={"state": "🟡 ACTIVE", "waiting-on": "Data owner", "since": "2026-10-28",
+              head={"state": "🟡 ACTIVE · waiting on the Data owner since 2026-10-28; chase by 2026-11-12", "waiting-on": "Data owner", "since": "2026-10-28",
                     "next": "chase the extract date if there is no word by 2026-11-12", "ticket": "REQ-0001",
                     "goal": "The partner office sends the extract with every field on the request's list.",
                     "close": "The extract is in and the data analyst has checked its fields."},
               content="""
 We asked the partner office for a placeholder extract: twelve fields, counted by month, no row-level data. The data
-owner answered that the extract follows the approved amendment (j02); its date is theirs to give.
+owner answered that the extract follows the approved amendment (the review board amendment); its date is theirs to give.
 """,
               timeline="""
-- 2026-10-14 the kickoff agreed what the request asks for (j03)
+- 2026-10-14 the kickoff agreed what the request asks for
 - 2026-10-20 sent the request with the field list
 - 2026-10-24 intro call with the data owner
 - 2026-10-28 the data owner: the extract follows the approved amendment; waiting on them since
@@ -229,13 +229,13 @@ The partner office's form, as we filled it in: who asks, what for, which fields,
 a placeholder.
 """}),
     J02: dict(nn="j02", title="Review board amendment",
-              head={"state": "🟡 ACTIVE", "waiting-on": "us", "since": "2026-11-05",
+              head={"state": "🟡 ACTIVE · waiting on us since 2026-11-05: pick the retention period, then send the amendment draft", "waiting-on": "us", "since": "2026-11-05",
                     "next": "pick the retention period, then send the amendment draft", "ticket": "RB-0001",
                     "goal": "The review board approves the amendment that lets the partner office send the extract.",
                     "close": "The amendment is approved and filed with the data-use plan."},
               content="""
 The extract needs an amendment to the study's review board approval. The amendment carries the data-use plan, which
-we write with the review board contact in rounds (Task t01). v2 answered every comment on v1; the retention period is
+we write with the review board contact in rounds (the data-use plan Task). v2 answered every comment on v1; the retention period is
 the one point left, and the amendment email waits as a draft until it is set.
 """,
               tasks="1. t01_data_use_plan · Data-use plan, written in rounds",
@@ -293,7 +293,7 @@ Decided: v2 answers the wording; the retention period is ours to pick.
 Next: send v2 (sent 2026-11-04).
 """}),
     J03: dict(nn="j03", title="Kickoff meeting with the partner office",
-              head={"state": "✅ DONE", "waiting-on": "nobody", "since": "2026-10-15",
+              head={"state": "✅ DONE · 2026-10-15: the request goes through the partner office's form; the notes went to everyone", "waiting-on": "nobody", "since": "2026-10-15",
                     "goal": "The partner office and our team agree what the request asks for.",
                     "close": "The kickoff notes are sent."},
               content="""
@@ -310,14 +310,14 @@ everyone the next day.
 - [x] 2. Hold the kickoff
 - [x] 3. Send the notes
 """,
-              emails={"2026-10-15-kickoff-notes.md": """
-# Kickoff notes
+              emails={"2026-10-07-invite.md": """
+# Invite to the kickoff
 From: Project lead
-To: Data owner, Partner coordinator
-Date: 2026-10-15
-Subject: Kickoff notes (placeholder)
+To: Partner coordinator
+Date: 2026-10-07
+Subject: Kickoff with the partner office (placeholder)
 
-Thank you for the meeting. The notes are below; the request follows next week with the field list.
+Could we meet on 2026-10-14 to agree what the request asks for? One hour is enough.
 """},
               meetings={"2026-10-14-kickoff.md": """
 # Kickoff with the partner office
@@ -328,7 +328,7 @@ With: Data owner, Partner coordinator, Project lead, Data analyst
 - Who signs: the project lead signs each send.
 
 Decided: the request goes through the partner office's form.
-Next: send the request with the field list (j01).
+Next: send the request with the field list.
 """}),
 }
 
@@ -366,6 +366,24 @@ PLAN = {"data_use_plan_v1.md": """
 """}
 
 SENDS = {
+    f"{J03}/2026-10-15-kickoff-notes": ("2026-10-15-kickoff-notes.md", """
+# Kickoff notes
+status: sent
+How: paste into a new email to everyone at the kickoff.
+To: Data owner, Partner coordinator
+Cc: Data analyst
+Subject: Kickoff notes (placeholder)
+---
+Hello,
+
+Thank you for the meeting. What we agreed:
+
+1. The request goes through the partner office's form.
+2. The project lead signs each send.
+
+Best regards,
+Project lead
+""", {}),
     f"{J01}/2026-10-20-access-request": ("2026-10-20-access-request.md", """
 # Data access request
 status: sent
@@ -410,6 +428,7 @@ What this Block has sent, one row per send; a person marks a row sent.
 
 | Send | From | State |
 |---|---|---|
+| `{J03}/2026-10-15-kickoff-notes/` | from {J03} | sent |
 | `{J01}/2026-10-20-access-request/` | from {J01} | sent |
 | `{J02}/{T01}/2026-11-04-plan-v2/` | from {J02} | sent |
 """

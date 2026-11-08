@@ -44,7 +44,9 @@ chat section -> Related question -> haipipe-report -> skill, workbench or builde
 
 ## Pages
 
-No Jobs yet. The studio holds the theme's drawings, one topic each, each beside the script that
+`j01_discovery_workbench_pages/` (261108) draws the discovery pages as the 3 × 3 the paper, labeling, insight and work Blocks have: Block, Job and Task × Report, Work and Studio, one sNN each (s51 to s59: t01 Block s51 · s52 · s53, t02 Job s54 · s55 · s56, t03 Task s57 · s58 · s59), every view the same full screen, lettered, drawn by its `discovery_ui_cells.py` from the live discovery pages (Block and Job MindMap · Status · Findings, the Task MindMap · Status; 📚 Papers, 📖 Evidence Bib, 🧾 Synthesis; Work ⚙️ Process then 📊 Results).
+
+The studio holds the theme's drawings, one topic each, each beside the script that
 draws it (261007: the servers hold code only):
 
 ```text

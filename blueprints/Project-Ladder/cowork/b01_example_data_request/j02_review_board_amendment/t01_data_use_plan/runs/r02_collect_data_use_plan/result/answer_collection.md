@@ -1,6 +1,6 @@
 # Plan decisions · answers
 
-received: 2026-11-08 12:29
+received: 2026-11-08 13:27
 
 for: b01.j02.t01-s01:example_data_request @ data-use-plan
 
@@ -20,7 +20,7 @@ Answer: my own decision.
 ## The pasted text
 
 ```text
-decided in the chat · r02_collect_data_use_plan · Plan decisions · 2026-11-08 12:29
+decided in the chat · r02_collect_data_use_plan · Plan decisions · 2026-11-08 13:27
 Q1 · Four sections: my own decision
    note: The plan keeps four sections: purpose, fields, storage, retention
    said: a placeholder decision on the example; no person decided this

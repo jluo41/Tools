@@ -102,14 +102,17 @@ CSS = """<style>.pb-prompt.in-copy{display:inline;border:0;padding:0;margin:0;ba
 .work-act{font:inherit;font-size:13px;border:1px solid var(--line);border-radius:6px;padding:3px 10px;background:var(--paper);cursor:pointer}
 .work-act[disabled]{opacity:.55;cursor:default}
 .dz-close{font-size:13px;margin:2px 0 4px}.pb-state.you{color:light-dark(#b35c00,#ffc078)}
-.dz-pick{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.dz-pick select{font:inherit;font-size:13px;border:1px solid var(--line);
+.pb-prompt.in-copy.dz-pick{display:inline-flex;flex-wrap:wrap;gap:6px;align-items:center}.dz-pick select{font:inherit;font-size:13px;border:1px solid var(--line);
  border-radius:6px;padding:2px 6px;background:var(--paper);color:var(--ink)}
 .dz-strip{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 14px;font-size:13px}
 .dz-strip b{font-weight:600;margin-right:4px}.dz-chip{border:1px solid var(--line);border-radius:12px;padding:2px 10px;background:var(--paper)}
 .dz-chip.on{border-color:var(--accent);color:var(--accent)}.dz-chip.bad{color:light-dark(#b02a37,#ff8787)}
 .dz-next{margin:18px 0 6px;font-size:14px}.dz-next b{font-weight:600}
-.dz-verdict{font-size:18px;margin:2px 0 8px}.dz-text{white-space:pre-wrap;font-size:13.5px;line-height:1.5;margin:0}
-@media(max-width:600px){.dz-flow{grid-template-columns:1fr}.dz-arrow{transform:rotate(90deg);justify-self:start}
+.dz-verdict{font-size:18px;margin:2px 0 8px}
+.dz-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:0 0 4px}.dz-pair small{display:block;
+ color:var(--muted);font-size:12px;margin:0 0 2px}
+.dz-card{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:18px;align-items:start}.dz-text{white-space:pre-wrap;font-size:13.5px;line-height:1.5;margin:0}
+@media(max-width:600px){.dz-flow{grid-template-columns:1fr}.dz-card,.dz-pair{grid-template-columns:1fr}.dz-arrow{transform:rotate(90deg);justify-self:start}
  .pb-chain .pb-step{width:100%}.pb-chain .pb-arrow{transform:rotate(90deg);margin:0}}</style>"""
 
 
@@ -174,8 +177,9 @@ def _rows_word(rows: list) -> tuple:
         return "nothing yet", ""
     you = [r for r, s in zip(rows, states) if "waiting for you" in s]
     if you:
+        sub = str(you[0][1] or "")
         return (f'{len(you)} wait{"s" if len(you) == 1 else ""} for you',
-                f"🙋 {_plain(you[0][0])}" + (f": {you[0][1]}" if you[0][1] else ""))
+                f"🙋 {_plain(you[0][0])}" + (f": {sub}" if sub and len(sub) <= 70 else ""))
     done = sum(s.startswith(DONE_WORDS) for s in states)
     if done == len(states):
         return "done", ""
@@ -310,6 +314,43 @@ def view_of_item(row: dict, folder: Path, root: Path, level: str, keys) -> str |
     return None
 
 
+# ── a design, as the focus page shows it ───────────────────────────────────────────────────────────────────────
+def _design_card(d: dict, j: dict, root: Path) -> str:
+    """One design: as it reads on the left, on the right its idea, drafts, verify (④), prediction and rank (⑤), and
+    each element with its source (the drawing's design card, b12 j01 B1 and B4)."""
+    r = {x.get("design"): x for x in j["ranking"]}.get(d["id"], {})
+    tests = d["verifies"][-1]["card"].get("tests", {}) if d["verifies"] else {}
+    words = V._ideas_text(j).get(str(d["idea"]), "")
+    elements = "".join(f'<li>{esc(e.get("words", ""))} <span class=mut>← {esc(e.get("from", ""))}</span></li>'
+                       for e in d["elements"] if isinstance(e, dict))
+    right = _kv([("idea", esc(f'{d["idea"]} · {words}' if words else d["idea"] or "—")),
+                 ("drafts", esc(_chain_words(d))),
+                 ("verify ④", (" · ".join(f"{V._test(t)} {esc(v)}" for t, v in tests.items()) or "not yet") + " · " + V._st(_design_state(d))),
+                 ("predicted", V._pred(d["prediction"])),
+                 ("rank ⑤", esc(f'#{r.get("rank")} · {"kept" if r.get("kept") == "yes" else "dropped"}') if r else "not ranked yet"),
+                 ("elements", f"<ul style='margin:0;padding-left:18px'>{elements}</ul>" if elements else ""),
+                 ("Task", _link(d["path"], root, d["name"]))])
+    return f'<div class=dz-card><div>{V.as_it_reads(d["message"], d["path"], root)}</div><div>{right}</div></div>'
+
+
+def _pvo(b: dict, jobs: list, root: Path) -> tuple:
+    """Predicted vs observed, one row per tested design: as it reads, its frozen prediction, its Exp arm, and whether
+    the direction and the range held; (html, tested)."""
+    rows = []
+    for j in jobs:
+        for d in j["designs"]:
+            a = R.arm_of(b, j["id"], d["id"])
+            if not a:
+                continue
+            sc = b["scores"].get((j["id"], d["id"]), {})
+            p = d["prediction"] if isinstance(d["prediction"], dict) else {}
+            rows.append((_link(d["path"], root, f'{j["id"]} · {d["id"]} {d["short"]}') + V.as_it_reads(d["message"], d["path"], root, small=True),
+                         V._pred(p, "cell") + f'<br><span class=mut>frozen {esc(p.get("frozen", "—"))}</span>',
+                         esc(a.get("observed", "—")) + f'<br><span class=mut>arm {esc(a.get("arm", ""))} of {esc(a.get("exp", ""))}</span>',
+                         V._st(sc.get("direction", "—")), V._st(sc.get("in_range", "—"))))
+    return (table(("design", "predicted", "observed", "direction", "in range"), rows) if rows else ""), len(rows)
+
+
 # ── the Block (s51 Report, s52 Work) ────────────────────────────────────────────────────────────────────────────
 def _job_next(j: dict) -> tuple:
     """A Job's next move and its state word, in the method's order."""
@@ -388,7 +429,8 @@ def _standing(b: dict) -> tuple:
     if not jobs:
         return "No Job yet: a signed goal waits for its first Job.", "next: launch a Job"
     if waiting:
-        return f"{waiting} kept designs wait for your review; {released} are released.", "waiting for you"
+        return (f'{waiting} kept design{" waits" if waiting == 1 else "s wait"} for your review; '
+                f'{released} {"is" if released == 1 else "are"} released.', "waiting for you")
     if released and not b["observed"]:
         return (f"{released} designs released from {len(jobs)} Jobs; the experiment has not come back yet.",
                 "next: run the experiment")
@@ -444,7 +486,7 @@ def _rules_file(block: Path) -> dict:
 def _goal_panel(g: dict, b: dict, root: Path) -> str:
     jobs = [j for j in b["jobs"] if j["goal"] == g.get("id")]
     return _kv([("aim", esc(g.get("aim", ""))), ("who", esc(g.get("who", ""))), ("venue", esc(g.get("venue", ""))),
-                ("N", esc(f'{g.get("n", "")} designs a Job, from N + 5 ideas')),
+                ("N", esc(f'{g.get("n", "")} design{"" if str(g.get("n")) == "1" else "s"} a Job, from N + 5 ideas')),
                 ("rules", V._ul([str(r) for r in g.get("rules") or []]) if g.get("rules") else "the shared ones only"),
                 ("leave out", esc(g.get("leave-out", "") or "—")),
                 ("Jobs", " · ".join(_link(j["path"], root, j["name"]) for j in jobs) or "none yet"),
@@ -469,7 +511,7 @@ def _b_goals(b: dict, block: Path, root: Path) -> tuple:
         body = (_kv([("version", esc(rules["version"] or "—")), ("signed", esc(rules["signed"] or "not yet")),
                      ("file", pop(reader(rules["path"], root), "design-goal.md", "design-goal.md ↗"))])
                 + '<p class=mut style="margin:8px 0 2px">Every design keeps, checked on its text alone</p>' + V._ul(rules["rules"])
-                + ('<p class=mut style="margin:8px 0 2px">No design may use</p>' + V._ul(rules["leave"]) if rules["leave"] else ""))
+                + ('<p class=mut style="margin:8px 0 2px">What no design may use</p>' + V._ul(rules["leave"]) if rules["leave"] else ""))
         on = rules["signed"].startswith("✅")
         res += _section("📏 The shared rules", body, ("signed " + rules["signed"].lstrip("✅ ")) if on else "waits for your sign",
                         "" if on else "🙋 Sign the shared rules: a Job pins only signed rules")
@@ -532,9 +574,11 @@ def _b_jobs(b: dict, block: Path, root: Path) -> tuple:
         verb = (_link_btn(j["path"], root, "work", "work-release", "Review") if step == "review and approve" else
                 _copy(f'run-close-{j["id"]}', "Job", j["path"], root, "Close {folder} once its designs are released; frozen.")
                 if step == "close the Job" else "")
-        rows.append((_link(j["path"], root, j["name"]),
+        rows.append((f'{esc(_cap(step))} · {_link(j["path"], root, j["name"])}' if state == "waiting for you" else
+                     _link(j["path"], root, j["name"]),
                      f'{_goal_name(b, j["goal"])} × {C.method_words(j["method"])}, {C.version_words(j["version"])}'
-                     f' × {C.inputs_words(j["inputs"])} · next: {step}', state, verb))
+                     f' × {C.inputs_words(j["inputs"])}' + ("" if state == "waiting for you" else f' · next: {step}'),
+                     state, verb))
     proc = _step("🧭 Each Job's next move", rows) if rows else _section("🧭 Each Job's next move",
                                                                         '<p class=mut>No Job yet.</p>', "no Job yet")
     proc += _step("➕ A new Job", [(_picker(b, block, root), "one clock moves at a time: a signed goal × a method version × "
@@ -623,7 +667,7 @@ def _proposals(b: dict) -> list:
         passes = sorted((r["path"] / "passes").glob("*/proposal.md")) if (r["path"] / "passes").is_dir() else []
         head = next((l[2:].strip() for l in passes[-1].read_text(encoding="utf-8", errors="ignore").splitlines()
                      if l.startswith("# ")), r["target"]) if passes else r["target"]
-        out.append((r, re.sub(r"\s*\(.*\)$", "", head), passes[-1] if passes else None))
+        out.append((r, re.sub(r"^Proposal\s*·\s*|\s*\(.*\)$", "", head), passes[-1] if passes else None))
     return out
 
 
@@ -647,8 +691,9 @@ def _b_methods(b: dict, block: Path, root: Path) -> tuple:
     big = _big(f"{len(scores)} design{'' if len(scores) == 1 else 's'} tested: {hits} in the predicted direction, "
                f"{inr} in range" if scores else "No method scored yet: scores come after the experiment",
                "a hint, not a verdict: few arms tested" if scores else "waits on an experiment")
-    res = big + _section("🎯 Predicted vs observed", V._predicted(b, root, href),
-                         f"{inr} of {len(scores)} in range" if scores else "not tested yet")
+    pvo, n = _pvo(b, b["jobs"], root)
+    res = big + _section("🎯 Predicted vs observed", pvo or '<p class=mut>No Exp result yet: observed/eNN_<exp>/ is filled by '
+                         'run-add-observed-<eNN>.</p>', f"{inr} of {len(scores)} in range" if scores else "not tested yet")
     groups = {}
     for j in b["jobs"]:
         groups.setdefault((j["method"], j["version"]), []).append(j)
@@ -779,8 +824,7 @@ def _j_designs(j: dict, b: dict, jdir: Path, root: Path) -> tuple:
                ("released" if any(d_state(d) == "released" for d in ds) else "waits for your review" if kept
                 else "at work") if ds else "the fence check opens them")
     order = kept + [d for d in ds if d not in kept and d not in dropped] + dropped
-    tabs = _tabs("design", [(f'{d["id"]} · {d["short"]}', _design_state(d), V._qhead("Design", "Process (③)", "Review (④ ⑤)")
-                             + V._card(d, j, href, root)) for d in order])
+    tabs = _tabs("design", [(f'{d["id"]} · {d["short"]}', _design_state(d), _design_card(d, j, root)) for d in order])
     res = big + _section("✏️ The designs, as they read", tabs or '<p class=mut>No design Task yet: the fence check opens them.</p>',
                          f"{len(kept)} kept of {len(ds)}" if ds else "no design yet")
     rows = [(_link(d["path"], root, f'{d["id"]} · {d["short"]}'), _chain_words(d), _design_state(d), "") for d in ds]
@@ -796,8 +840,8 @@ def _j_ranking(j: dict, b: dict, jdir: Path, root: Path) -> tuple:
                "ranked by another agent" if j["ranking"] else "waits on the designs" if not j["designs"] else "next: t99")
     res = big + _section("🏆 Ranking", V._review_whole(j, b, root, href), f"{kept} kept" if j["ranking"] else "not ranked yet")
     res += _section("🧭 Coverage", _coverage(j, root), "checked" if _coverage_md(j) else "from the kept" if j["ranking"] else "not yet")
-    proc = _step("🏆 Review the whole (t99)", [(
-        "Rank, keep the top N, a predicted effect each", "another agent, in a fresh context",
+    proc = _step("🏆 Review the whole", [(
+        "Rank, keep the top N, a predicted effect each (t99)", "another agent, in a fresh context",
         "done" if _closed(j["rank"]) and j["ranking"] else "next" if j["designs"] else "waits on the designs",
         "" if j["ranking"] else _copy("run-rank-t99", "Task", j["t99"] or jdir, root))])
     return proc, res
@@ -827,7 +871,7 @@ def _j_release(j: dict, b: dict, jdir: Path, root: Path) -> tuple:
                                                                           if tested else ""),
                    "closed" if closed else "waiting for you: the close")
     elif designs:
-        big = _big(f'{len(designs)} kept design{"" if len(designs) == 1 else "s"} wait for your review and approval',
+        big = _big(f'{len(designs)} kept design{" waits" if len(designs) == 1 else "s wait"} for your review and approval',
                    "waiting for you")
     else:
         big = _big("Nothing to release yet", "waits on " + (why.split(":")[0][:60] if why else "the ranking"))
@@ -838,7 +882,8 @@ def _j_release(j: dict, b: dict, jdir: Path, root: Path) -> tuple:
              "draft: freezes at your sign" if designs else "draft" if rows else "nothing kept yet")
     res += _section("🔒 Frozen predictions", table(("design", "predicted", "against", "why", "frozen"), rows) if rows else
                     '<p class=mut>No kept design yet: t99 keeps the top N, each with its prediction.</p>', fword)
-    res += _section("🎯 Predicted vs observed", V._job_observed(j, b, root, href),
+    pvo, _n = _pvo(b, [j], root)
+    res += _section("🎯 Predicted vs observed", pvo or '<p class=mut>None of this Job\'s designs is in an Exp yet.</p>',
                     "tested in " + R.arm_of(b, j["id"], tested[0]["id"])["exp"] if tested else "not tested yet")
     rel_state = "done" if approved else "waiting for you" if designs else "waits on " + (why.split(":")[0][:60] if why else "the ranking")
     rows = [("Review and approve", "read each kept design, its prediction and why; one sign freezes and releases", rel_state, ""),
@@ -950,7 +995,7 @@ def _opened_chain(j: dict) -> str:
                    ("⑤ rank", "t99", j["t99"].name if j["t99"] else "not opened")])
 
 
-def _feedback(d: dict) -> tuple:
+def _feedback(d: dict, root: Path) -> tuple:
     """The frozen feedback each failed verify gave, and what the revise read: (html, word)."""
     out = []
     for i, v in enumerate(d["verifies"]):
@@ -961,7 +1006,7 @@ def _feedback(d: dict) -> tuple:
         tests = " · ".join(f"{V.TESTS.get(t, t)} {r}" for t, r in (v["card"].get("tests") or {}).items())
         out.append(f'<p style="margin:0 0 4px"><b>{esc(v["run"])}</b> <span class=mut>· {esc(tests)} · {esc(v["by"])}</span></p>'
                    + (_md_lines(change) if change else '<p class=mut>Its review names no change.</p>')
-                   + (f'<p class=mut style="margin:4px 0 10px">{pop(reader(review, d["path"].parents[3]), "review.md", "review.md ↗")}</p>'
+                   + (f'<p class=mut style="margin:4px 0 10px">{pop(reader(review, root), "review.md", "review.md ↗")}</p>'
                       if review.is_file() else ""))
     if not out:
         return "", ""
@@ -974,24 +1019,27 @@ def _changes(d: dict, root: Path) -> tuple:
     if len(files) < 2:
         return "", ""
     venue = R.venue_of(d["path"])
-    rows = []
+    where = lambda r, f: r["run"] + (f" · {f.parent.name}" if r["type"] == "revise" else "")
+    out = []
     for k in range(1, len(files)):
         (r0, f0), (r1, f1) = files[k - 1], files[k]
         before = f0.read_text(encoding="utf-8", errors="ignore") if f0.is_file() else ""
         after = f1.read_text(encoding="utf-8", errors="ignore") if f1.is_file() else ""
         summary = _section_of(f1.parent / "pass.md", "Summary")
-        rows.append((f"draft {k} → {k + 1}", V.as_read(before, venue, small=True), V.as_read(after, venue, small=True),
-                     esc(summary or "—")))
-    return table(("drafts", "before", "after", "what changed"), rows), f"{len(rows)} revise pass" + ("" if len(rows) == 1 else "es")
+        out.append(f'<div class=dz-pair><div><small>draft {k} · {esc(where(r0, f0))}</small>{V.as_read(before, venue)}</div>'
+                   f'<div><small>draft {k + 1} · {esc(where(r1, f1))}</small>{V.as_read(after, venue)}</div></div>'
+                   + (f'<p style="margin:2px 0 12px">{esc(summary)}</p>' if summary else ""))
+    return "".join(out), f"{len(out)} revise pass" + ("" if len(out) == 1 else "es")
 
 
 def _walk(d: dict, j: dict) -> tuple:
     """A design's state walk (haipipe-design-workflow): draft → verify → revise → passed → kept | dropped → released,
     each step with its word."""
-    steps = [("③ draft", "v1", "done" if d["drafts"] else "not yet")]
+    n = len(V.draft_files(d)) or len(d["drafts"])
+    steps = [("③ draft", "v1", "done" if n else "not yet")]
     for i, v in enumerate(d["verifies"]):
         steps.append((f"④ verify v{i + 1}", v["status"], v["by"].split(" (")[0] or "another agent"))
-        if v["status"] == "failed" and i + 1 < len(d["drafts"]):
+        if v["status"] == "failed" and i + 1 < n:
             steps.append(("revise", f"v{i + 2}", "done"))
     state = d_state(d)
     steps.append(("⑤ rank", state if state in ("kept", "dropped", "released") else "not ranked yet", "by t99"))
@@ -1002,12 +1050,12 @@ def _walk(d: dict, j: dict) -> tuple:
 
 def _strip(d: dict) -> str:
     """The drafts strip, above every view of a design Task (b12 j01 B1 to B4): v1 · v2 · kept."""
-    chips = []
-    for i, _draft in enumerate(d["drafts"]):
+    chips, n = [], len(V.draft_files(d)) or len(d["drafts"])
+    for i in range(n):
         v = d["verifies"][i] if i < len(d["verifies"]) else None
         word = ("verify " + v["status"]) if v else "to verify"
         bad = " bad" if v and v["status"] == "failed" else ""
-        on = " on" if i == len(d["drafts"]) - 1 else ""
+        on = " on" if i == n - 1 else ""
         chips.append(f'<span class="dz-chip{bad}{on}">v{i + 1} · {esc(word)}</span>')
     state = d_state(d)
     if state in ("kept", "dropped", "released"):
@@ -1027,6 +1075,16 @@ def _coverage(j: dict, root: Path) -> str:
     said = _section_of(md, "Does the kept design cover the goal") if md else ""
     return V._coverage(j) + (_md_lines(said) + f'<p class=mut>{pop(reader(md, root), "coverage.md", "coverage.md ↗")}</p>'
                              if said else "")
+
+
+def _kept_table(j: dict, root: Path) -> str:
+    """Each design and where t99 left it: kept first, the dropped kept for the record (no fold, no count in a label)."""
+    rank = {r.get("design"): r for r in j["ranking"]}
+    order = sorted(j["designs"], key=lambda d: (d_state(d) == "dropped", int(rank.get(d["id"], {}).get("rank") or 99)
+                                                if str(rank.get(d["id"], {}).get("rank") or "").isdigit() else 99))
+    rows = [(_link(d["path"], root, f'{d["id"]} · {d["short"]}'), esc(str(rank.get(d["id"], {}).get("rank") or "—")),
+             V._st(d_state(d))) for d in order]
+    return table(("design", "rank", "state"), rows) if rows else ""
 
 
 def _next_link(tdir: Path, root: Path, key: str) -> str:
@@ -1092,12 +1150,12 @@ def task_view(tdir: Path, root: Path, step: str) -> tuple:
     elif kind == "design":
         d = R.design(tdir)
         did = d["id"]
-        state = _design_state(d)
+        state = dstate = _design_state(d)               # dstate: the design's own word (the closures below read it)
         k = len(V.draft_files(d))                       # drafts so far: the generate's, then one per revise pass
         revised = max(k - 1, 0)
 
         def verify_res():
-            fb, word = _feedback(d)
+            fb, word = _feedback(d, root)
             return (_section("🧪 Tests", V._tests(d, j, b, root), d["verifies"][-1]["status"] if d["verifies"] else "not yet")
                     + _section("📝 Feedback", fb or '<p class=mut>No feedback to act on: every verify passed.</p>',
                                word or ("none needed" if d["verifies"] else "not verified yet")))
@@ -1106,8 +1164,7 @@ def task_view(tdir: Path, root: Path, step: str) -> tuple:
             ch, word = _changes(d, root)
             return (_section("↔️ What changed", ch or '<p class=mut>Not revised: it needed no revise.</p>', word or "not needed")
                     + _section("🔁 The loop", f'<p style="margin:0 0 6px">{esc(_chain_words(d))}</p><p class=mut>fail → revise '
-                               'what the verify named → verify again, until it passes or t99 drops it</p>', state)
-                    + _section("📄 Drafts", V._drafts(d, j, b, root), f'{k} draft{"" if k == 1 else "s"}' if k else "none yet"))
+                               'what the verify named → verify again, until it passes or t99 drops it</p>', dstate))
 
         def state_res():
             walk, word = _walk(d, j)
@@ -1117,7 +1174,7 @@ def task_view(tdir: Path, root: Path, step: str) -> tuple:
         spec = {"Draft": ((f'Idea {d["idea"] or "—"}', "from t00's ideas.yaml, and inputs/ only"),
                           ("🤖 Designer agent", "③ conduct the method's process"), ("Draft + elements.yaml", f'{k} draft{"" if k == 1 else "s"}'),
                           "done" if d["drafts"] else "next", f"run-generate-{did}", "Task", tdir,
-                          lambda: (_section("📄 The design, as it reads", V._design(d, j, href, root), state)
+                          lambda: (_section("📄 The design, as it reads", _design_card(d, j, root), dstate)
                                    + _section("🧩 Elements and sources", V._elements(d),
                                               f'{len(d["elements"])} elements' if d["elements"] else "none yet"))),
                 "Verify": (("The last draft", "the design + elements.yaml"), ("🤖 Reviewer agent", "④ T0 rules · T1 sources, fresh"),
@@ -1146,7 +1203,7 @@ def task_view(tdir: Path, root: Path, step: str) -> tuple:
             return (_section("✅ Kept and dropped", _tiles([(str(len(kept)), f'kept: the goal\'s N = {j["n"]}'),
                                                            (str(len(dropped)), "dropped, kept for the record"),
                                                            (str(len(failed)), "failed their last verify")])
-                             + V._kept(j, href), f"{len(kept)} kept" if j["ranking"] else "not ranked yet")
+                             + _kept_table(j, root), f"{len(kept)} kept" if j["ranking"] else "not ranked yet")
                     + _section("➡️ To the release", to, approved.replace("approved", "released") if approved
                                else "at the Job" if kept else "waits on the ranking"))
         spec = {"Rank": (("The designs", f'{len(j["designs"])} drafted'), ("🤖 Reviewer agent", "⑤ rank, a predicted effect each"),

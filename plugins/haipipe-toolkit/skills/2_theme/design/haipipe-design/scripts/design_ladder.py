@@ -7,14 +7,16 @@
     python design_ladder.py task  <job> d<NN> <slug>          tNN_d<NN>_<slug>/   (③ ④ one design)
     python design_ladder.py task  <job> t99                   t99_review-whole/   (⑤ review whole)
     python design_ladder.py run   <folder> <type> [<target>]  runs/run-<type>-<target>/ with its run.yaml
+    python design_ladder.py goals <block>                     each Job face's `goal: G01` gets its name: `G01 · <name>`
 
 Every Run is named run-<type>-<target> (JL 261007); reason, generate, verify and rank are hard (their own result/),
 the rest soft (passes/). A Job Run's target defaults to the Job's id, a Task Run's to the Task's (t00, t99, d<NN>);
 a verify names the draft it reads, d<NN>-v<k>: k = 1 for the generate's draft, plus one per revise pass that wrote
 a design.md. `job` checks run-add-job's gates: the goal is in board.md ## Goals and signed, the method version is
 registered (haipipe-design-method/methods/), the inputs version exists, the folder's ids match the pins, and N is the
-goal's n. Each command writes only
-what is missing (it never overwrites a file) and prints what it made. Placeholders only: a person or an agent
+goal's n. A Job face pins its goal as `goal: G01 · <name>`, the id first and the goal's `name:` after it, so a mind map
+and a reader see the goal's words, not only its id (261108); every reader takes the id before " · ". Each command
+writes only what is missing (it never overwrites a file; `goals` adds only a missing name) and prints what it made. Placeholders only: a person or an agent
 fills them through the design skills.
 """
 import argparse
@@ -160,6 +162,36 @@ def _job_title(block: Path, goal: str, method: str) -> str:
     return f"{words[:1].upper()}{words[1:]}, by {method_card(method.split()[0])[1] or method}"
 
 
+def goal_pin(block: Path, goal: str) -> str:
+    """A Job face's goal pin: the id, then the goal's name from board.md ## Goals (`G01 · confirm-by-reply`); the id
+    alone when the goal has no name."""
+    g = next((x for x in goals(block) if str(x.get("id")) == goal), None) or {}
+    name = str(g.get("name") or "").strip()
+    return f"{goal} · {name}" if name else goal
+
+
+def goals_named(block: Path, made: list) -> None:
+    """Give each Job face's `goal:` its goal's name where it holds the id alone (`G01` → `G01 · confirm-by-reply`):
+    the one line changes, nothing else; a face that names its goal already, or a goal with no name, is left as it is."""
+    if not BLOCK_NAME.match(block.name) or not (block / "board.md").is_file():
+        sys.exit(f"not a design Block (Design-<name>/ with a board.md): {block}")
+    for jdir in sorted(p for p in block.iterdir() if p.is_dir() and JOB.match(p.name)):
+        face = jdir / f"{jdir.name}.md"
+        if not face.is_file():
+            continue
+        text = face.read_text(encoding="utf-8")
+        front = re.match(r"(?s)\A---\n(.*?)\n---\n", text)
+        line = re.search(r"(?m)^goal:[ \t]*(G\d+)[ \t]*$", front.group(1)) if front else None
+        if not line:
+            continue
+        pin = goal_pin(block, line.group(1))
+        if pin == line.group(1):
+            continue
+        start = front.start(1) + line.start()
+        face.write_text(text[:start] + f"goal: {pin}" + text[start + len(line.group(0)):], encoding="utf-8")
+        made.append(face)
+
+
 def job(path: Path, goal: str, method: str, inputs: str, n, moved: str, made: list) -> None:
     if not JOB.match(path.name):
         sys.exit(f"a Job folder is jNN_<goal name>_<method name> (j01_prepare-before-visit_goal-only): {path.name}")
@@ -181,7 +213,7 @@ def job(path: Path, goal: str, method: str, inputs: str, n, moved: str, made: li
         return                                           # already launched: nothing is overwritten
     n = _gates(path.parent, goal, method, inputs, n)
     _write(path / f"{path.name}.md", _front(
-        [("goal", goal), ("method", method), ("method-sha", "<sha, written by run-setup-method>"), ("inputs", inputs),
+        [("goal", goal_pin(path.parent, goal)), ("method", method), ("method-sha", "<sha, written by run-setup-method>"), ("inputs", inputs),
          ("n", n), ("state", "open"), ("moved", moved)],
         f"# {_job_title(path.parent, goal, method)}\n"), made)
     (path / "inputs").mkdir(parents=True, exist_ok=True)
@@ -279,7 +311,7 @@ def run(folder: Path, rtype: str, target: str, made: list) -> Path:
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("level", choices=("block", "job", "task", "run"))
+    ap.add_argument("level", choices=("block", "job", "task", "run", "goals"))
     ap.add_argument("folder", type=Path)
     ap.add_argument("what", nargs="?", default="", help="task: t00 · t99 · d<NN>; run: its type")
     ap.add_argument("extra", nargs="?", default="", help="task d<NN>: its slug; run: its target")
@@ -294,6 +326,8 @@ def main(argv=None):
     made = []
     if a.level == "block":
         block(a.folder, a.title, a.channel, made)
+    elif a.level == "goals":
+        goals_named(a.folder, made)
     elif a.level == "job":
         job(a.folder, a.goal, a.method, a.inputs, a.n, a.moved, made)
     elif a.level == "task":
@@ -305,7 +339,7 @@ def main(argv=None):
             ap.error("run needs a type: reason, generate, verify, revise, rank, setup-goal, add-job, …")
         run(a.folder, a.what, a.extra, made)
     for p in made:
-        print("made", p)
+        print("named" if a.level == "goals" else "made", p)
     return made
 
 

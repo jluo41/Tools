@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kickoff notes</title>
+<style>
+  :root { --ink:#1e1e1e; --muted:#666; --line:#d0d0d0; --bg:#ffffff; --panel:#f6f6f6; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.5 -apple-system, "Segoe UI", Arial, sans-serif; }
+  main { max-width:860px; margin:0 auto; padding:24px 16px 48px; }
+  h1 { font-size:20px; margin:0 0 4px; }
+  .note { color:var(--muted); font-size:13px; margin:0 0 20px; }
+  .row { display:grid; grid-template-columns:72px 1fr auto; gap:10px; align-items:start; margin:0 0 10px; }
+  .label { font-weight:600; padding-top:7px; }
+  .box { border:1px solid var(--line); border-radius:6px; padding:6px 10px; background:var(--panel); word-break:break-word; }
+  button { font:inherit; font-size:13px; padding:6px 14px; border:1px solid var(--ink); border-radius:6px;
+           background:#fff; color:var(--ink); cursor:pointer; min-width:84px; }
+  button.done { background:var(--ink); color:#fff; }
+  #body { background:#fff; padding:14px 16px; font-family:Aptos, Calibri, Arial, sans-serif; font-size:11pt; color:#000; }
+  ul.files { margin:6px 0 0; padding-left:20px; }
+  @media (max-width:560px) { .row { grid-template-columns:1fr; } .label { padding-top:0; } }
+</style></head><body><main>
+<h1>Kickoff notes</h1>
+<p class="note">How: paste into a new email to everyone at the kickoff. Made by haipipe-cowork scripts/email_page.py from 2026-10-15-kickoff-notes.md: to change a word, edit
+that file and rerun it. Paste each part with its Copy button, then attach the files below from this folder.</p>
+<div class="row"><div class="label">To</div><div class="box" id="to">Data owner, Partner coordinator</div><button onclick="copyBox('to', this)">Copy</button></div>
+<div class="row"><div class="label">Cc</div><div class="box" id="cc">Data analyst</div><button onclick="copyBox('cc', this)">Copy</button></div>
+<div class="row"><div class="label">Subject</div><div class="box" id="subject">Kickoff notes (placeholder)</div><button onclick="copyBox('subject', this)">Copy</button></div>
+<div class="row"><div class="label">Body</div>
+<div class="box" id="body"><p style="margin:0 0 11pt 0">Hello,</p><p style="margin:0 0 11pt 0">Thank you for the meeting. What we agreed:</p><p style="margin:0 0 4pt 24pt;text-indent:-18pt">1.&nbsp;&nbsp;The request goes through the partner office&#x27;s form.</p><p style="margin:0 0 11pt 24pt;text-indent:-18pt">2.&nbsp;&nbsp;The project lead signs each send.</p><p style="margin:0 0 11pt 0">Best regards,<br>Project lead</p></div>
+<button onclick="copyBox('body', this)">Copy</button></div>
+<div class="row"><div class="label">Attach</div><div class="box"><ul class="files">
+<li>nothing</li>
+</ul></div><div></div></div>
+</main>
+<script>
+function copyBox(id, btn) {
+  const el = document.getElementById(id), range = document.createRange(), sel = window.getSelection();
+  range.selectNodeContents(el); sel.removeAllRanges(); sel.addRange(range);
+  let ok = false;
+  try { ok = document.execCommand("copy"); } catch (err) { ok = false; }
+  if (ok) sel.removeAllRanges();
+  btn.textContent = ok ? "Copied" : "Now press Cmd+C";
+  btn.classList.toggle("done", ok);
+  setTimeout(() => { btn.textContent = "Copy"; btn.classList.remove("done"); }, 2000);
+}
+</script></body></html>

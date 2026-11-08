@@ -87,7 +87,10 @@ pages and the print. Each X page also names its figure in its face, `figures:` (
 quickly get the outcome"): the outcome as its title, a kind (bars, dots, lines, ranges) and the result table of a Run
 the page cites. `ref/overall_figures.py`, called by `overall_report.py`, draws it into `delivery/<job>/figures/`; the
 Overall Report opens with them as **At a glance** (a card per question: its outcome and its figure) and shows each
-under its answer; the print's page 2 holds them.
+under its answer; the print's page 2 holds them. `ref/delivery_index.py <Board>`, also run by `overall_report.py`,
+writes the Board's `delivery/delivery.md`: one row per thing it hands over (each handoff draft, each Job's Overall
+Report), linked, with its state (`not signed`, `signed ✅ <date>`, `preview`, `closed ✅ <date>`); run it again once a
+handoff is drafted or signed.
 
 
 How they work together
