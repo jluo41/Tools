@@ -33,6 +33,8 @@ def version_words(v: str) -> str:
 
 
 def inputs_words(v: str) -> str:
+    if re.match(r"^inputs-v\d+$", str(v or "")):          # the id itself, the same on screen as in folders (JL 261109)
+        return str(v)
     m = re.match(r"^i(\d+)$", str(v or ""))
     return f"inputs version {m.group(1)}" if m else str(v or "no inputs yet")
 

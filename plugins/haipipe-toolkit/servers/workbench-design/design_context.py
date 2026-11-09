@@ -14,19 +14,28 @@ def applies(folder):
     return D.level_of(folder) == 'Block'
 
 
+def old_view(folder, group):
+    """An older Board link's view (Summary, Jobs, Methods) as the view that shows it now; a Book keeps its own."""
+    return group if design_reader.is_method_book(folder) else D.OLD_BLOCK_VIEWS.get(group, group)
+
+
 def scope(folder, root, view, topics, every, knows):
     selected = shared_frame.shared_scope(folder, root, view, topics, every, knows)
     if view:
+        from live import design_book
         selected['ui_sources'] = [Path(module.__file__) for module in
-                                  (D, design_reader, design_views, design_canvas)] + [Path(__file__)]
+                                  (D, design_reader, design_views, design_canvas, design_book)] + [Path(__file__)]
     return selected
 
 
 def skill_rows(folder, root, level, view, selected):
     key = shared_frame.view_key(view) if view else None
-    support = {**D.VIEW_SKILLS, 'overview': (('haipipe-mindmap', 'the design ladder'),)}
+    book = design_reader.is_method_book(folder)
+    if book:
+        from live import design_book as BK
+    support = {**D.VIEW_SKILLS, **(BK.VIEW_SKILLS if book else {}), 'overview': (('haipipe-mindmap', 'the design ladder'),)}
     if key is None:
-        names = [name for k, _ in D.BLOCK_VIEWS for name, _ in support[k]] + ['haipipe-mindmap']
+        names = [name for k, _ in (BK.BOOK_VIEWS if book else D.BLOCK_VIEWS) for name, _ in support[k]] + ['haipipe-mindmap']
         return skills_section.relevant(folder, 'design', level, names, topics=bool(selected['topics']),
                                        inbox=bool(selected['interactions']), limit=None)
     rows = list(support.get(key, ()))
@@ -54,9 +63,16 @@ def shared(folder, root, theme, level, view, topics, own, knows, events, every):
 
 def report_views(folder, root):
     """Reuse the design content and actions, numbered once under Review Content."""
+    book = design_reader.is_method_book(folder)
+    if book:
+        from live import design_book as BK
+
     def build(key):
         if key == 'mindmap':
             content = f.parts_mindmap(folder, root)
+        elif book:                                       # a Design Method Book: its own views (JL 261109)
+            process, results = BK.book_view(folder, root, key)
+            content = D._numbered(results + process)
         else:
             _, lead, process, results, after = D.block_view(folder, root, key)
             # The action section owns the pending instruction; keep result state words.
@@ -68,5 +84,5 @@ def report_views(folder, root):
 
     from live.address_links import linked_views, page_linker
     return linked_views({key: (name, lambda k=key: build(k))
-                         for key, name in (*D.BLOCK_VIEWS, ('mindmap', 'MindMap'))},
+                         for key, name in (*(BK.BOOK_VIEWS if book else D.BLOCK_VIEWS), ('mindmap', 'MindMap'))},
                         page_linker(folder, root))

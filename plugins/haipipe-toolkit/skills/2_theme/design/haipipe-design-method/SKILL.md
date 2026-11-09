@@ -34,6 +34,11 @@ methods, cuts their versions, and learns which version works from what each Exp 
 Three layers
 ------------
 
+A Project's own releases of a method live in its **Design Method Book** (`design/DesignMethodBook-<Topic>/`, JL
+261109), one Job per release `jNN_method-vN_<slug>/`, each cut from a version below (`from: M01 m2`, its `method.md`
+copied and frozen) and signed by a person. The registry here stays the library every Book cuts from; a proposal from a
+Board with a Book lands in the Book's `proposals/` (haipipe-design `ref/design-ladder.md`).
+
 ```text
 a card       the Guide's 13 types (servers/workbench-design/guide/methods/): By goal, By insight, By precedent …
              the move, the literature, the tests; generic, never pinned

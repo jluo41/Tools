@@ -64,7 +64,7 @@
     "🔁 The rounds": {
       "what": "Group Jobs, releases and returned experiments by frozen inputs version.",
       "layout": "Left Tabs · Right Content → Round",
-      "example": "Source: inputs/iN, Job pins and observed/eNN.\nSkill: haipipe-design-goal.\nExample: Design-Example; open the corresponding View to inspect the current records."
+      "example": "Source: inputs/inputs-vN, Job pins and observed/eNN.\nSkill: haipipe-design-goal.\nExample: Design-Example; open the corresponding View to inspect the current records."
     },
     "📋 What each Job kept": {
       "what": "Distinguish kept designs waiting for review from released designs.",
@@ -74,7 +74,7 @@
     "📥 Inputs versions": {
       "what": "Inspect the frozen input manifests and their actual source files.",
       "layout": "Input cards → Manifest",
-      "example": "Source: inputs/iN/manifest.yaml.\nSkill: haipipe-design-goal.\nExample: Design-Example; open the corresponding View to inspect the current records."
+      "example": "Source: inputs/inputs-vN/manifest.yaml.\nSkill: haipipe-design-goal.\nExample: Design-Example; open the corresponding View to inspect the current records."
     },
     "🔁 The next round": {
       "what": "Copy the prompts to record returned per-arm totals and create the next frozen inputs version.",
@@ -87,7 +87,7 @@
       "example": "Source: prediction.yaml, observed/eNN/arms.csv and score results.\nSkill: haipipe-design-method.\nExample: Design-Example; open the corresponding View to inspect the current records."
     },
     "🏅 Method scorecard": {
-      "what": "Group measured scores and design verification results by the pinned method version.",
+      "what": "Group measured scores and design verification results by the pinned method version. Shown on a Board with no Design Method Book; with one, the Book's Scorecard holds it.",
       "layout": "Left Tabs · Right Content → Method",
       "example": "Source: Method pins, verification results and scores.\nSkill: haipipe-design-method.\nExample: Design-Example; open the corresponding View to inspect the current records."
     },
@@ -285,10 +285,60 @@
       "what": "The review whole Task role, selected by the existing Design renderer.",
       "layout": "Existing Report and Work views",
       "example": "Source: design_focus.JOB_VIEWS and TASK_STEPS; design_reader.kind_of. Example content is synthetic."
+    },
+    "🪜 The five steps": {
+      "what": "The newest release, step by step: ① See input to ⑤ Review whole.",
+      "layout": "Table → step",
+      "example": "Source: the newest release's frozen method.md.\nSkill: haipipe-design-method.\nExample: DesignMethodBook-Example."
+    },
+    "👀 What step ① sees": {
+      "what": "The parts of the inputs the method reads; the one lever a release usually moves.",
+      "layout": "List",
+      "example": "Source: method.md sees:.\nSkill: haipipe-design-method.\nExample: DesignMethodBook-Example."
+    },
+    "📄 The frozen recipe": {
+      "what": "Open the signed method.md; it never changes after the sign.",
+      "layout": "Open → method.md",
+      "example": "Source: jNN_method-vN_<slug>/method.md.\nSkill: haipipe-design-method.\nExample: DesignMethodBook-Example."
+    },
+    "🔖 The releases": {
+      "what": "Each release: what it was cut from, its sign, and the Board Jobs that run it.",
+      "layout": "Left Tabs · Right Content → Release",
+      "example": "Source: each release face and the served Boards' Job faces (release:).\nSkill: haipipe-design-method.\nExample: DesignMethodBook-Example."
+    },
+    "🧭 What changed between releases": {
+      "what": "Which steps changed from one release to the next; one step a release keeps a result's cause single.",
+      "layout": "Table",
+      "example": "Source: the releases' steps.\nSkill: haipipe-design-method.\nExample: DesignMethodBook-Example."
+    },
+    "💡 Proposals": {
+      "what": "The ideas sent back from Jobs and experiments; the next release is cut from here once a person signs.",
+      "layout": "Left Tabs · Right Content → Proposal",
+      "example": "Source: proposals/<slug>.md.\nSkill: haipipe-design-method.\nExample: DesignMethodBook-Example."
+    },
+    "✍️ Ideas to settle": {
+      "what": "Sign or return each waiting idea; copy the prompt to write a new one.",
+      "layout": "Action rows → Copy prompt",
+      "example": "Source: proposals/ and run-propose-method-<slug>.\nSkill: haipipe-design-method.\nExample: DesignMethodBook-Example."
+    },
+    "🏅 Each release, on the Boards it serves": {
+      "what": "Pass rate, first try and predicted vs observed of each release, from the Boards' own scores.",
+      "layout": "Table",
+      "example": "Source: the served Boards' Jobs, score Runs and observed totals.\nSkill: haipipe-design-method.\nExample: DesignMethodBook-Example."
+    },
+    "📘 Design Method Book": {
+      "what": "The method's own Block, beside the Design Board it serves: one Job per release, each cut from a registered method version and signed by a person; the next release is cut from its proposals.",
+      "layout": "Method · Versions · Ideas · Scorecard · MindMap",
+      "example": "Source: board.md (board-kind: design-method-book, serves:), jNN_method-vN_<slug>/ and proposals/.\nSkill: haipipe-design-method.\nExample: DesignMethodBook-Example, serving Design-Example."
+    },
+    "📘 Method release": {
+      "what": "One release of a Design Method Book: the method version a person signed, frozen in method.md, and the Board Jobs that run it.",
+      "layout": "Face page: Steps · Used by",
+      "example": "Source: jNN_method-vN_<slug>/ face (release · from · signed) and method.md.\nSkill: haipipe-design-method.\nExample: DesignMethodBook-Example/j02_method-v2_overall-performance."
     }
   },
   "skills": {
-    "Summary": [
+    "Designs": [
       "haipipe-design-workflow",
       "haipipe-report",
       "haipipe-design-delivery"
@@ -296,18 +346,28 @@
     "Goals": [
       "haipipe-design-goal"
     ],
-    "Jobs": [
+    "Inputs": [
+      "haipipe-design-goal"
+    ],
+    "Rounds": [
       "haipipe-design",
       "haipipe-design-workflow"
     ],
-    "Rounds": [
-      "haipipe-design-goal",
-      "haipipe-design-delivery",
-      "haipipe-design-method"
-    ],
-    "Methods": [
+    "Tests": [
       "haipipe-design-method",
       "haipipe-design-workflow"
+    ],
+    "Method": [
+      "haipipe-design-method"
+    ],
+    "Versions": [
+      "haipipe-design-method"
+    ],
+    "Ideas": [
+      "haipipe-design-method"
+    ],
+    "Scorecard": [
+      "haipipe-design-method"
     ],
     "MindMap": [
       "haipipe-mindmap"
@@ -316,37 +376,39 @@
   "examples": {
     "block": {
       "Design Board": "blueprints/Project-Ladder/design/Design-Example",
-      "Around the Work": "blueprints/Project-Ladder/design/Design-Example"
+      "Around the Work": "blueprints/Project-Ladder/design/Design-Example",
+      "Design Method Book": "blueprints/Project-Ladder/design/DesignMethodBook-Example"
     },
     "job": {
-      "Design Job": "blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_overall-performance"
+      "Design Job": "blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_method-v2-overall-performance_inputs-v2",
+      "Method release": "blueprints/Project-Ladder/design/DesignMethodBook-Example/j02_method-v2_overall-performance"
     },
     "task": {
-      "Reason ideas": "blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_overall-performance/t00_reason-ideas",
-      "One design": "blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_overall-performance/t02_d02_reminder-one-ask",
-      "Review whole": "blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_overall-performance/t99_review-whole"
+      "Reason ideas": "blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_method-v2-overall-performance_inputs-v2/t00_reason-ideas",
+      "One design": "blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_method-v2-overall-performance_inputs-v2/t02_d02_reminder-one-ask",
+      "Review whole": "blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_method-v2-overall-performance_inputs-v2/t99_review-whole"
     }
   },
   "view_routes": {
-    "Summary": {
+    "Designs": {
       "section": "report",
-      "group": "summary"
+      "group": "designs"
     },
     "Goals": {
       "section": "report",
       "group": "goals"
     },
-    "Jobs": {
+    "Inputs": {
       "section": "report",
-      "group": "jobs"
+      "group": "inputs"
     },
     "Rounds": {
       "section": "report",
       "group": "rounds"
     },
-    "Methods": {
+    "Tests": {
       "section": "report",
-      "group": "methods"
+      "group": "tests"
     },
     "MindMap": {
       "section": "report",
@@ -363,24 +425,40 @@
           }
         ],
         "Checklist design": []
+      },
+      "Design Method Book": {
+        "Method development": [
+          {
+            "path": "blueprints/Project-Ladder/design/DesignMethodBook-Example",
+            "label": "Blueprint example"
+          }
+        ]
       }
     },
     "job": {
       "Design Job": {
         "SMS design": [
           {
-            "path": "blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_overall-performance",
+            "path": "blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_method-v2-overall-performance_inputs-v2",
             "label": "Blueprint example"
           }
         ],
         "Checklist design": []
+      },
+      "Method release": {
+        "Method development": [
+          {
+            "path": "blueprints/Project-Ladder/design/DesignMethodBook-Example/j02_method-v2_overall-performance",
+            "label": "Blueprint example"
+          }
+        ]
       }
     },
     "task": {
       "Reason ideas": {
         "Generate ideas from frozen inputs": [
           {
-            "path": "blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_overall-performance/t00_reason-ideas",
+            "path": "blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_method-v2-overall-performance_inputs-v2/t00_reason-ideas",
             "label": "Blueprint example"
           }
         ]
@@ -388,7 +466,7 @@
       "One design": {
         "Draft and verify a design": [
           {
-            "path": "blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_overall-performance/t02_d02_reminder-one-ask",
+            "path": "blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_method-v2-overall-performance_inputs-v2/t02_d02_reminder-one-ask",
             "label": "Blueprint example"
           }
         ]
@@ -396,7 +474,7 @@
       "Review whole": {
         "Rank and select designs": [
           {
-            "path": "blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_overall-performance/t99_review-whole",
+            "path": "blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_method-v2-overall-performance_inputs-v2/t99_review-whole",
             "label": "Blueprint example"
           }
         ]
@@ -489,6 +567,30 @@
         "Kept": {
           "section": "report",
           "group": "kept"
+        },
+        "MindMap": {
+          "section": "report",
+          "group": "mindmap"
+        }
+      }
+    },
+    "block": {
+      "Design Method Book": {
+        "Method": {
+          "section": "report",
+          "group": "method"
+        },
+        "Versions": {
+          "section": "report",
+          "group": "versions"
+        },
+        "Ideas": {
+          "section": "report",
+          "group": "ideas"
+        },
+        "Scorecard": {
+          "section": "report",
+          "group": "scorecard"
         },
         "MindMap": {
           "section": "report",

@@ -43,7 +43,7 @@ The design (settled: implement)
    ```text
    bNN_<app>/                              Block: one application, one channel
    ├── board.md                            ## Goals: one card per goal (aim · who · venue · N · rules · leave out · signed)
-   ├── inputs/iN/ + manifest.yaml          inputs versions: rules · theory · handoff links, each file's sha256
+   ├── inputs/inputs-vN/ + manifest.yaml          inputs versions: rules · theory · handoff links, each file's sha256
    ├── observed/eNN_<exp>/                 what an Exp returned: arms.csv (arm · jNN · dNN · n · totals) · source.md · manifest.yaml
    ├── runs/run-<type>-<target>/           the Block's Runs, every one soft
    ├── reports/qNN_<topic>/                the Block's questions' reports
@@ -73,7 +73,7 @@ The design (settled: implement)
    prediction beside its arm in observed/, scored by run-score-eNN's scores.csv) · Method scorecard (a
    card per method version, summed from scores.csv). Work Details = one card per Job (All · per goal);
    open, a preview of its Tasks: t00 · each design as a small phone with its state · t99 · released.
-   Runs = all soft, grouped Set up (run-add-goal-<goal> · run-setup-rules · run-add-inputs-<iN>) ·
+   Runs = all soft, grouped Set up (run-add-goal-<goal> · run-setup-rules · run-add-inputs-<vN>) ·
    Launch a Job (run-add-job-<jNN>) · Report (run-add-observed-<eNN> · run-score-<eNN> ·
    run-propose-questions · run-report-<qNN>), plus run-propose-<method> · run-draw-<sNN>. Delivery =
    every released design as it reads (an SMS as a phone bubble, a UI as its screen), in order, naming

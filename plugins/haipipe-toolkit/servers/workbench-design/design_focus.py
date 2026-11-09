@@ -10,7 +10,7 @@ rules", 261106; insight_focus is the model):
   of its own: 🙋 Interaction is the last section of every view, added by the page itself with that view's own forms
   (view_of_item). Lists of items are side tabs, their labels with no count; the MindMap is always a view, last.
 
-    Block   Summary · Goals · Jobs · Rounds · Methods · MindMap         (s51 Report, s52 Work)
+    Block   Designs · Goals · Inputs · Rounds · Tests · MindMap         (s51 Report, s52 Work)
     Job     Setup · Ideas · Designs · Ranking · Release · MindMap       (s54 Report, s55 Work)
     Task    by its type, one view per step, then MindMap (s57 Report, s58 Work):
             💡 t00 reason ideas   Inputs · Chains · Ideas · Fence check
@@ -22,6 +22,7 @@ no Task asks you. The Results reuse design_views' parts, so the focus page and t
 write is the release, design_ladder_act.py's."""
 from __future__ import annotations
 
+import html as html_lib
 import re
 from pathlib import Path
 
@@ -33,14 +34,19 @@ from live.frame import esc, pop, reader, rel, table
 from live.ui_parts import (GROUP_CSS, PB_CSS, PB_JS, PROCESS, PROMPT_CSS, PROMPT_JS, RESULTS, _band, _kv, _numbered, _pill,
                            _section, _side_tabs)
 
-BLOCK_VIEWS = (("summary", "Summary"), ("goals", "Goals"), ("jobs", "Jobs"), ("rounds", "Rounds"), ("methods", "Methods"))
+# a Design Board's buttons, in plain words, paired with the insight Board's (Findings · Questions · Data · Rounds ·
+# Advice; JL 261109): Designs what was made · Goals what was asked · Inputs what it read · Rounds each Job, one release
+# on one inputs version · Tests what came back. The method's own views are the Design Method Book's (design_book.py).
+BLOCK_VIEWS = (("designs", "Designs"), ("goals", "Goals"), ("inputs", "Inputs"), ("rounds", "Rounds"), ("tests", "Tests"))
+OLD_BLOCK_VIEWS = {"summary": "designs", "jobs": "rounds", "methods": "tests"}     # an older link opens its new view
 JOB_VIEWS = (("setup", "Setup"), ("ideas", "Ideas"), ("designs", "Designs"), ("ranking", "Ranking"), ("release", "Release"))
 TASK_STEPS = {"t00": ("💡", "reason ideas", ("Inputs", "Chains", "Ideas", "Fence check")),
               "design": ("✏️", "design", ("Draft", "Verify", "Revise", "State")),
               "t99": ("🏆", "review whole", ("Rank", "Coverage", "Kept"))}
-CAPTIONS = {"summary": "where this Block stands, from what its Runs wrote", "goals": "the signed goals and the shared rules",
-            "jobs": "each goal × method version × inputs version, and how far each Job has got", "rounds": "one round per inputs version",
-            "methods": "how each method's predictions held up, and what they cost",
+CAPTIONS = {"designs": "where this Block stands and what each Job kept", "goals": "the signed goals, the shared rules and the Block's questions",
+            "inputs": "each frozen inputs version, one round each",
+            "rounds": "each goal × method release × inputs version, and how far each Job has got",
+            "tests": "how the predictions held up in the experiment, and what each Job cost",
             "setup": "the three pins: goal, method, inputs", "ideas": "what was reasoned, from the fence only",
             "designs": "each design as it reads, and its verdict", "ranking": "t99's ranking and coverage",
             "release": "what was released, and its frozen predictions"}
@@ -54,14 +60,14 @@ NEXT = {"inputs": ("🔗 Chains", "chains"), "chains": ("💡 Ideas", "ideas"), 
 
 # the skills each view's work calls on (the rail's Skills: focus_page.page_skills reads it, 261106)
 VIEW_SKILLS = {
-    "summary": (("haipipe-design-workflow", "says where each Job stands and which Run is next"),
+    "designs": (("haipipe-design-workflow", "says where each Job stands and which Run is next"),
                 ("haipipe-design-delivery", "builds the one-page summary from what the Runs wrote")),
     "goals": (("haipipe-design-goal", "adds a goal and sets the shared rules; a person signs each"),),
-    "jobs": (("haipipe-design", "launches a Job: a signed goal × a method version × an inputs version"),
-             ("haipipe-design-workflow", "says each Job's next Run and checks its gates")),
-    "rounds": (("haipipe-design-goal", "adds the next inputs version, frozen"),
-               ("haipipe-design-method", "adds an experiment's per-arm totals")),
-    "methods": (("haipipe-design-method", "scores the predictions and proposes the next method version"),),
+    "inputs": (("haipipe-design-goal", "adds the next inputs version, frozen"),),
+    "rounds": (("haipipe-design", "launches a Job: a signed goal × a method release × an inputs version"),
+               ("haipipe-design-workflow", "says each Job's next Run and checks its gates")),
+    "tests": (("haipipe-design-method", "adds an experiment's per-arm totals, scores the predictions and proposes "
+               "the next method release"),),
     "setup": (("haipipe-design-goal", "pins the goal and builds the Job's fence"),
               ("haipipe-design-method", "pins the method version")),
     "ideas": (("haipipe-design-unit", "reasons the ideas, step by step, from the fence only"),
@@ -123,8 +129,8 @@ def level_of(folder: Path) -> str:
         return "Job" if R.is_ladder(folder.parent) else ""
     if re.match(r"^t\d+_", folder.name) and R.is_job(folder.parent) and R.is_ladder(folder.parent.parent):
         return "Task"
-    if (folder / "board.md").is_file() and R.is_ladder(folder):
-        return "Block"
+    if (folder / "board.md").is_file() and (R.is_ladder(folder) or R.is_method_book(folder)):
+        return "Block"                                       # a Design Method Book is a Block too (JL 261109)
     return ""
 
 
@@ -285,8 +291,8 @@ def _views(keys, build, report: bool, folder: Path, root: Path) -> dict:
 ABOUT_JOB = (("ranking", r"\brank"), ("release", r"release|test.?arm|next.?test|send|freeze|predict"),
              ("ideas", r"idea|chain|fence|reason"), ("designs", r"design|draft|verify|revise"),
              ("setup", r"goal|method|input|pin|setup"))
-ABOUT_BLOCK = (("goals", r"goal|rule"), ("rounds", r"round|inputs|observed|experiment"),
-               ("methods", r"method|score|predict"), ("jobs", r"\bjob|launch"))
+ABOUT_BLOCK = (("goals", r"goal|rule"), ("inputs", r"inputs"), ("tests", r"observed|experiment|method|score|predict|test"),
+               ("rounds", r"round|\bjob|launch"))
 
 
 def view_of_item(row: dict, folder: Path, root: Path, level: str, keys) -> str | None:
@@ -302,7 +308,7 @@ def view_of_item(row: dict, folder: Path, root: Path, level: str, keys) -> str |
     def by_words(table_, default):
         return next((k for k, pat in table_ if k in keys and re.search(pat, about)), default)
     if level == "Block":
-        return "jobs" if page != folder else by_words(ABOUT_BLOCK, "summary")
+        return "rounds" if page != folder else by_words(ABOUT_BLOCK, "designs")
     if level == "Job":
         if page != folder:
             kind = R.kind_of(next((p for p in [page, *page.parents] if p.parent == folder), page))
@@ -455,7 +461,7 @@ def _b_summary(b: dict, block: Path, root: Path) -> tuple:
             else f"{released} of {len(b['jobs'])} released" if b["jobs"] else "no Job yet")
     waits = f"🙋 {_cap(yours[0][1])} · {yours[0][0]['name']}" if yours else ""
     res = big + _section("📊 Where each Job stands", table(("Job", "where it is", "next"), rows) if rows else
-                         '<p class=mut>No Job yet: launch one in Work › Jobs.</p>', word, waits)
+                         '<p class=mut>No Job yet: launch one in Rounds.</p>', word, waits)
     then = state.removeprefix("next: ") if state.startswith("next") else ""
     nxt = _kv([("you", " · ".join(f'{esc(step)} {_link(j["path"], root, j["id"])}' for j, step in yours)),
                ("the agents", " · ".join(f'{_link(j["path"], root, j["id"])} {esc(step)}' for j, step in agents)),
@@ -632,7 +638,7 @@ def _b_rounds(b: dict, block: Path, root: Path) -> tuple:
                             ("new", esc(man.get("new", "") or "—")),
                             ("Jobs", " · ".join(_link(j["path"], root, j["name"]) for j in js) or "none yet")])
         tabs.append((f"Round {k} · {v['id']}", state, body))
-    res = big + _section("🔁 The rounds", _tabs("round", tabs) or '<p class=mut>No inputs version yet: inputs/iN/.</p>',
+    res = big + _section("🔁 The rounds", _tabs("round", tabs) or '<p class=mut>No inputs version yet: inputs/inputs-vN/.</p>',
                          rounds[-1][-1] if rounds else "no round yet")
     kept_rows = []
     for j in b["jobs"]:
@@ -647,14 +653,15 @@ def _b_rounds(b: dict, block: Path, root: Path) -> tuple:
     res += _section("📋 What each Job kept", table(("Job", "round", "kept", "where"), kept_rows) if kept_rows else
                     '<p class=mut>No Job yet.</p>', f"{n_kept} kept, {n_rel} released" if kept_rows else "no Job yet")
     res += _section("📥 Inputs versions", V._inputs(b, root, href), f'{len(b["inputs"])} frozen' if b["inputs"] else "none yet")
-    nxt = f'i{len(b["inputs"]) + 1}'
+    nxt = (f'inputs-v{len(b["inputs"]) + 1}' if any(v["id"].startswith("inputs-v") for v in b["inputs"])
+           else f'i{len(b["inputs"]) + 1}')                 # a Block on the newer names keeps them (JL 261109)
     released = any(d["state"] == "released" for j in b["jobs"] for d in j["designs"])
     proc = _step("🔁 The next round", [
         (f"Add the Exp's data", "observed/eNN: per-arm totals only, never rows",
          "done" if b["observed"] else "open" if released else "waits on a release",
          _copy("run-add-observed-<eNN>", "Block", block, root)),
-        (f"Add the next inputs version {nxt}", "inputs/iN/: rules, theory, the insight handoff, frozen",
-         "open" if b["observed"] else "waits on the experiment", _copy("run-add-inputs-<iN>", "Block", block, root))])
+        (f"Add the next inputs version {nxt}", "inputs/inputs-vN/: rules, theory, the insight handoff, frozen",
+         "open" if b["observed"] else "waits on the experiment", _copy("run-add-inputs-<vN>", "Block", block, root))])
     return proc, res
 
 
@@ -692,6 +699,9 @@ def _b_methods(b: dict, block: Path, root: Path) -> tuple:
                f"{inr} in range" if scores else "No method scored yet: scores come after the experiment",
                "a hint, not a verdict: few arms tested" if scores else "waits on an experiment")
     pvo, n = _pvo(b, b["jobs"], root)
+    book = R.book_of(block)                                   # the method's own Block (JL 261109)
+    big += (f'<p>Its releases live in {_link(book, root, book.name)}: '
+            + " · ".join(dict.fromkeys(j["release"] for j in b["jobs"] if j["release"])) + '.</p>') if book else ""
     res = big + _section("🎯 Predicted vs observed", pvo or '<p class=mut>No Exp result yet: observed/eNN_<exp>/ is filled by '
                          'run-add-observed-<eNN>.</p>', f"{inr} of {len(scores)} in range" if scores else "not tested yet")
     groups = {}
@@ -726,13 +736,64 @@ def _b_methods(b: dict, block: Path, root: Path) -> tuple:
     return _step("📏 Score and learn", rows), res
 
 
+def _split(html: str) -> tuple:
+    """(what stands before the first section, {section title: its html}) of a part's top-level sections, so a view takes
+    the sections it shows from the part that builds them."""
+    out, depth, start, first = {}, 0, None, None
+    for m in re.finditer(r"<section\b[^>]*>|</section>", html):
+        if m.group(0).startswith("</"):
+            depth -= 1
+            if depth == 0 and start is not None:
+                chunk = html[start:m.end()]
+                title = re.search(r"<h3 class=fd-h>(.*?)(?:<span|</h3>)", chunk, re.S)
+                out[html_lib.unescape(_plain(title.group(1))) if title else str(len(out))] = chunk
+                start = None
+            continue
+        if depth == 0:
+            start = m.start()
+            first = m.start() if first is None else first
+        depth += 1
+    return (html if first is None else html[:first]), out
+
+
+# which part builds each section of a Board view (JL 261109: the buttons regrouped in plain words; every section keeps
+# its builder and its words). (part, "p" process or "r" results, section title)
+BOARD_LAYOUT = {
+    "designs": ("summary", [("summary", "r", "📊 Where each Job stands"), ("summary", "r", "➡️ Next"),
+                            ("rounds", "r", "📋 What each Job kept"), ("summary", "p", "📄 Build the summary")]),
+    "goals": ("goals", [("goals", "r", "🎯 The goals"), ("goals", "r", "📏 The shared rules"),
+                        ("summary", "r", "❓ What the Block asks"), ("goals", "p", "🎯 Goals and rules")]),
+    "inputs": ("rounds", [("rounds", "r", "📥 Inputs versions"), ("rounds", "r", "🔁 The rounds"),
+                          ("rounds", "p", "🔁 The next round")]),
+    "rounds": ("jobs", [("jobs", "r", "🗺️ Goals × methods"), ("jobs", "r", "🧭 What moves across the grid"),
+                        ("jobs", "r", "📋 The Jobs"), ("jobs", "p", "🧭 Each Job's next move"), ("jobs", "p", "➕ A new Job")]),
+    "tests": ("methods", [("methods", "r", "🎯 Predicted vs observed"), ("methods", "r", "🏅 Method scorecard"),
+                          ("methods", "r", "⏱️ What each Job cost, by method"), ("methods", "p", "📏 Score and learn")]),
+}
 BLOCK_PARTS = {"summary": _b_summary, "goals": _b_goals, "jobs": _b_jobs, "rounds": _b_rounds, "methods": _b_methods}
 
 
 def block_view(block: Path, root: Path, key: str) -> tuple:
-    """(caption, lead, process, results, after) of a Block view."""
-    proc, res = BLOCK_PARTS[key](R.board(block), block, root)
-    return CAPTIONS[key], "", proc, res, ""
+    """(caption, lead, process, results, after) of a Board view: its big line from its leading part, then the sections
+    BOARD_LAYOUT names, each drawn by the part that owns it. A Board with a Design Method Book leaves the method
+    scorecard to the Book's Scorecard."""
+    key = OLD_BLOCK_VIEWS.get(key, key)
+    lead_part, layout = BOARD_LAYOUT[key]
+    b, built = R.board(block), {}
+    for name in dict.fromkeys([lead_part] + [n for n, _k, _t in layout]):
+        proc, res = BLOCK_PARTS[name](b, block, root)
+        built[name] = {"p": _split(proc), "r": _split(res)}
+    has_book = R.book_of(block) is not None
+    proc = res = ""
+    for name, kind, title in layout:
+        if has_book and title == "🏅 Method scorecard":
+            continue
+        chunk = built[name][kind][1].get(_plain(title), "")
+        if kind == "p":
+            proc += chunk
+        else:
+            res += chunk
+    return CAPTIONS[key], "", proc, built[lead_part]["r"][0] + res, ""
 
 
 # ── the Job (s54 Report, s55 Work) ──────────────────────────────────────────────────────────────────────────────
@@ -760,6 +821,16 @@ def _design_state(d: dict) -> str:
     return "verify next" if d["drafts"] else "generate next"
 
 
+def _release_line(j: dict, jdir: Path, root: Path) -> str:
+    """The Design Method Book release a Job runs, linked to its page (JL 261109); "" for a Board with no Book."""
+    book = R.book_of(jdir.parent)
+    if not (book and j["release"]):
+        return ""
+    rel = next((p for p in sorted(book.glob("j*_*")) if R.front(R.face(p)).get("release") == j["release"]), None)
+    return (f'<p>Runs {_link(rel, root, j["release"]) if rel else esc(j["release"])} of '
+            f'{_link(book, root, book.name)}, cut from {esc(j["method"] + " " + j["version"])}.</p>')
+
+
 def _j_setup(j: dict, b: dict, jdir: Path, root: Path) -> tuple:
     href, jid = _href(root), j["id"]
     pins = (("Goal", bool(j["goal"]), "setup-goal"), ("Method", bool(j["method"]), "setup-method"),
@@ -769,7 +840,8 @@ def _j_setup(j: dict, b: dict, jdir: Path, root: Path) -> tuple:
                f'{C.inputs_words(j["inputs"])}', "all three pinned" if n == 3 else f"{n} of 3 pinned")
     man = j["manifest"]
     res = (big + _section("🎯 Goal", V._setup_strip(j) + V._job_goal(j, b, root), f'{j["goal"]} pinned' if j["goal"] else "not pinned")
-           + _section("🧩 Method", V._job_method(j, b, root, href=href), f'{j["method"]} {j["version"]}' if j["method"] else "not pinned")
+           + _section("🧩 Method", _release_line(j, jdir, root) + V._job_method(j, b, root, href=href),
+                      j["release"] or (f'{j["method"]} {j["version"]}' if j["method"] else "not pinned"))
            + _section("📥 Inputs", V._job_inputs(j, b, root, fold=False),
                       f'{j["inputs"]} · frozen {man.get("frozen", "—")}' if man else "no fence yet"))
     proc = _step("📌 The three pins", [
@@ -1246,6 +1318,9 @@ def views(folder: Path, root: Path, section: str, items=(), item_html=None) -> d
     root = root.resolve()
     level = level_of(folder)
     report = section == "report"
+    if level == "Block" and R.is_method_book(folder):        # the Book's own views: Method · Versions · Ideas · Scorecard
+        from live import design_book as BK
+        return _views(BK.BOOK_VIEWS, lambda k: ("", "", *BK.book_view(folder, root, k), ""), report, folder, root)
     if level == "Block":
         return _views(BLOCK_VIEWS, lambda k: block_view(folder, root, k), report, folder, root)
     if level == "Job":

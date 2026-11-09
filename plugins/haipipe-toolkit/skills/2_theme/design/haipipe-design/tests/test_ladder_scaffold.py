@@ -152,5 +152,51 @@ class DesignLadderTest(unittest.TestCase):
         self.assertEqual(j["designs"][0]["drafts"][0]["run"], "run-generate-d01")
 
 
+class MethodBookScaffoldTest(unittest.TestCase):
+    """A Design Method Book beside its Board (JL 261109): book, release, then a Job named by release and inputs."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.design = Path(self.tmp.name) / "Project" / "design"
+        self.board = self.design / "Design-Try"
+        D.main(["block", str(self.board), "--title", "Try", "--channel", "sms"])
+        text = (self.board / "board.md").read_text().replace(
+            "goals: []", "goals:\n- id: G01\n  name: confirm-by-reply\n  n: 1\n  signed: ✅ 261109")
+        (self.board / "board.md").write_text(text)
+        rules = self.board / "design-goal.md"
+        rules.write_text(rules.read_text().replace("signed: ''", "signed: ✅ 261109"))
+        (self.board / "inputs" / "inputs-v1").mkdir(parents=True)
+        self.book = self.design / "DesignMethodBook-Try"
+        D.main(["book", str(self.book), "--serves", "design/Design-Try"])
+        self.rel = self.book / "j01_method-v1_goal-only"
+        D.main(["release", str(self.rel), "--from", "M01 m2"])
+        self.job = self.board / "j01_confirm-by-reply_method-v1-goal-only_inputs-v1"
+
+    def _sign(self):
+        face = self.rel / f"{self.rel.name}.md"
+        face.write_text(face.read_text().replace("signed: ''", "signed: ✅ 261109"))
+
+    def test_book_links_its_board_and_freezes_the_release(self):
+        self.assertIn("board-kind: design-method-book", (self.book / "board.md").read_text())
+        self.assertIn("method-book: design/DesignMethodBook-Try", (self.board / "board.md").read_text())
+        self.assertIn("version: m2", (self.rel / "method.md").read_text())
+
+    def test_a_job_runs_only_a_signed_release_and_is_named_by_it(self):
+        with self.assertRaises(SystemExit):
+            D.main(["job", str(self.job), "--goal", "G01", "--release", "method-v1", "--inputs", "inputs-v1"])
+        self._sign()
+        D.main(["job", str(self.job), "--goal", "G01", "--release", "method-v1", "--inputs", "inputs-v1"])
+        face = (self.job / f"{self.job.name}.md").read_text()
+        self.assertIn("method: M01 m2", face)
+        self.assertIn("release: method-v1", face)
+        D.main(["task", str(self.job), "t00"])
+        self.assertTrue((self.job / "t00_reason-ideas").is_dir())
+        with self.assertRaises(SystemExit):
+            D.main(["job", str(self.board / "j02_confirm-by-reply_method-v1-other_inputs-v1"), "--goal", "G01",
+                    "--release", "method-v1", "--inputs", "inputs-v1"])
+        self.assertEqual(reader().job(self.job)["release"], "method-v1")
+
+
 if __name__ == "__main__":
     unittest.main()

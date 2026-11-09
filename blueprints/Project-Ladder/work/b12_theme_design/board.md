@@ -4,12 +4,14 @@ board-kind: task-block
 package: plugins/haipipe-toolkit
 theme: design
 ui-block: blueprints/Project-Ladder/design/Design-Example
-ui-job: blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_overall-performance
-ui-job: blueprints/Project-Ladder/design/Design-Example/j01_confirm-by-reply_goal-only
-ui-job: blueprints/Project-Ladder/design/Design-Example/j02_confirm-by-reply_goal-only
-ui-task: blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_overall-performance/t00_reason-ideas
-ui-task: blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_overall-performance/t02_d02_reminder-one-ask
-ui-task: blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_overall-performance/t99_review-whole
+ui-block: blueprints/Project-Ladder/design/DesignMethodBook-Example
+ui-job: blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_method-v2-overall-performance_inputs-v2
+ui-job: blueprints/Project-Ladder/design/Design-Example/j01_confirm-by-reply_method-v1-goal-only_inputs-v1
+ui-job: blueprints/Project-Ladder/design/Design-Example/j02_confirm-by-reply_method-v1-goal-only_inputs-v2
+ui-job: blueprints/Project-Ladder/design/DesignMethodBook-Example/j02_method-v2_overall-performance
+ui-task: blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_method-v2-overall-performance_inputs-v2/t00_reason-ideas
+ui-task: blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_method-v2-overall-performance_inputs-v2/t02_d02_reminder-one-ask
+ui-task: blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_method-v2-overall-performance_inputs-v2/t99_review-whole
 shared-blueprint: b01_haipipe-toolkit
 spine: How the design theme sits on the Block → Job → Task → Run ladder and shows in its workbench: a design Board for one application, a Job for one goal done by one design method returning N designs, a Task for one design, and the Runs that commission, generate, verify and revise them; how an insight Block steers a design through one handoff; and which skill and workbench owns each part.
 close: Each recorded question has a report Page with an answer status; the drawings in studio/ match the shared definitions in b10_project_workbench, and every open point is either decided or carried as a question.
@@ -22,7 +24,7 @@ pass; running the experiment is outside it. This Block designs that theme's plac
 
 ```text
 design/Design-<name>/             Block: one application, one channel; goals signed, inputs versions, Exp results
-└── jNN_<goal>_<method>/           Job: goal G01 × method M04 m2 × inputs i2 → N designs; inputs/ is its fence
+└── jNN_<goal>_method-vN-<slug>_inputs-vM/           Job: goal G01 × method M04 m2 × inputs inputs-v2 → N designs; inputs/ is its fence
     ├── inputs/                    goal.md · method.md (the pinned version) · manifest.yaml
     ├── t00_reason-ideas/          ② reason ideas        run-reason-t00
     ├── tNN_d<NN>_<slug>/          ③ ④ one design        run-generate-d<NN> · run-verify-d<NN>-v<k> · run-revise-d<NN>
@@ -104,7 +106,7 @@ questions:
     drawn in s11-design-block, s12-design-job and s13-design-task, and method-folders.md
     agrees or is changed.
   work: []
-  report: reports/q01_design_ladder/q01_design_ladder.md
+  report: s01-design/s01-design.md
 - id: Q02
   title: What does the design workbench show?
   question: What does the design workbench show at each level, Space by Space, and
@@ -115,7 +117,7 @@ questions:
   acceptance: Answered when each level's screen is drawn (s02-workbench-ui
     redrawn on the new Job) and the workbench serves it.
   work: []
-  report: reports/q02_design_workbench/q02_design_workbench.md
+  report: s01-design/s01-design.md
 - id: Q03
   title: How does insight steer a design?
   question: How does an insight Block steer a design, and where does that link show
@@ -126,7 +128,7 @@ questions:
   acceptance: Answered when the handoff path is written on both sides (b11 Q04 and
     here) and drawn.
   work: []
-  report: reports/q03_insight_steers_design/q03_insight_steers_design.md
+  report: s01-design/s01-design.md
 - id: Q04
   title: How does one design round feed the next?
   question: 'How does a design Block keep its memory across rounds: what an Exp returns,
@@ -136,9 +138,8 @@ questions:
     version holds them with the insight Board newer data version, and its Jobs pin
     it (moved: inputs). Audience Report › Rounds strings the rounds in time order.'
   acceptance: Answered when the SMSR2 design Block closes one round (observed e01
-    scored) and starts i2, and Rounds shows both.
+    scored) and starts inputs-v2, and Rounds shows both.
   work: []
-  report: reports/q04_design_rounds/q04_design_rounds.md
 - id: Q05
   title: Do the design methods predict what an Exp observes?
   question: How well do each method version frozen predictions match what an Exp observes,
@@ -149,13 +150,13 @@ questions:
   acceptance: Answered when one Exp has been scored across two or more methods and
     the Method scorecard reads it.
   work: []
-  report: reports/q05_method_predictions/q05_method_predictions.md
+  report: s06-design-workflow/s06-design-workflow.md
 - id: Q06
   title: Where is a design method made and tried?
   question: Where on the ladder is a design method version written, tested and compared
     before a design Job pins it, and how do the Board's results come back as its next
     version?
-  hypothesis: 'A method Block beside the design Board (as insight''s Prototype): one
+  hypothesis: 'A Method Book (design/DesignMethodBook-<app>/) beside the design Board (as insight''s Question Book): one
     Job per method version with five Tasks (write the recipe, build its checks, bench
     it on fixed goals and inputs, compare it with another agent, release it with a
     person''s sign); a Board Job pins a released version by path and hash; Board results
@@ -165,7 +166,7 @@ questions:
     scaffolded by haipipe-design, and one real version (M05 m3) is carried onto it with
     its five Tasks and shown in the Block's Methods view.
   work: []
-  report: reports/q06_design_method_ladder/q06_design_method_ladder.md
+  report: s05-design-method-ladder/s05-design-method-ladder.md
 ```
 
 ## Blueprint home

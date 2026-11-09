@@ -2,7 +2,7 @@
   "designs": [
     {
       "job": "j01",
-      "job_name": "j01_confirm-by-reply_goal-only",
+      "job_name": "j01_confirm-by-reply_method-v1-goal-only_inputs-v1",
       "design": "d01",
       "name": "yes-first",
       "words": "{SENDER}: Reply YES to confirm your appointment on {DAY} at {TIME}. Reply STOP to opt out.",
@@ -13,7 +13,7 @@
       "pins": {
         "goal": "G01",
         "method": "M01 m2",
-        "inputs": "i1"
+        "inputs": "inputs-v1"
       }
     }
   ]

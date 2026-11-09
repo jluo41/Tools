@@ -24,7 +24,7 @@ From the last unit         the previous round's results (a looping method)
 ```
 
 
-A Block's inputs version · inputs/iN/
+A Block's inputs version · inputs/inputs-vN/
 -------------------------------------
 
 Any files, then `manifest.yaml`, written last by `make_inputs.py freeze` and never edited:
@@ -51,7 +51,7 @@ draft manifest and lists every file under `files:`. A handoff is copied in, neve
 a newer one, which is a new inputs version.
 
 
-A Job's fence · jNN_<goal>_<method>/inputs/
+A Job's fence · jNN_<goal>_method-vN-<slug>_inputs-vM/inputs/
 -------------------------------------------
 
 ```text
@@ -94,7 +94,7 @@ files:                       # every file in the fence but the manifest
    there (`run-setup-method-j<NN>` first), writes what is missing and never overwrites; with a manifest already there
    it does nothing. Rebuilding (a goal or method re-pinned before t00 ran) removes `inputs/` and runs
    again, as a new pass of `run-setup-inputs-j<NN>`.
-2. **Links are relative**, `../../inputs/iN/<file>`, so the Block moves as one folder; no absolute path.
+2. **Links are relative**, `../../inputs/inputs-vN/<file>`, so the Block moves as one folder; no absolute path.
 3. **Every reasoning step names its source**: a `from:` in t00's `chains.yaml` (a topic's, or a step's own) or a
    design's `elements.yaml` names a file in this manifest or says exactly `own knowledge`. The reviewer agent checks
    t00's in the first pass of `run-open-designs-j<NN>` (`passes/pNN-<MMDD>/fence-check.md`) before the design Tasks

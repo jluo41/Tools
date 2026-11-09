@@ -17,7 +17,7 @@ design and its verify; t99's rank; the release that waits on a person; the examp
 designs, the predictions and the example test's totals. It shows each state once: signed, running, waiting for a
 person, released, scored.
 
-**Feeds:** `reports/` q01_example_test
+**Feeds:** Q01
 
 
 Files
@@ -43,6 +43,6 @@ s01-D01 · one goal, three Jobs, one clock each: the inputs move from j01 to j02
 Open
 ----
 
-1. Should the example test also try the goal-only design made on i2 (j02), once it is done?
+1. Should the example test also try the goal-only design made on inputs-v2 (j02), once it is done?
 
 (write here, or mark the drawing in red)

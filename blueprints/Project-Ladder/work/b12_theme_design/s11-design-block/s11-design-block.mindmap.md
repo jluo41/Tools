@@ -36,7 +36,7 @@ built: from-topic .
   - Runs: every Block Run is soft (JL … <!-- @proposed-261007/7 #7ea75b -->
     Runs: every Block Run is soft (JL 261007); hard Runs sit in a Job's Tasks. One folding card per Run,
   - `run-<type>-<target>`, grouped by purpose <!-- @proposed-261007/8 #b05dad -->
-    `run-<type>-<target>`, grouped by purpose. Set up, before any Job: `run-add-goal-<goal>` (a person signs), `run-setup-rules`, `run-add-inputs-<iN>`. Launch a Job: `run-add-job-<jNN>` (needs a signed goal, a registered method, a frozen inputs version; makes the empty Job), then the Job's own setup Runs (s12). Report: `run-add-observed-<eNN>`, `run-score-<eNN>` (each arm's design scored, `scores.csv`), `run-propose-questions` (reads the Map, the scores and the scorecard, proposes the Block's questions into `board.md`, another agent agrees), `run-report-<qNN>`.
+    `run-<type>-<target>`, grouped by purpose. Set up, before any Job: `run-add-goal-<goal>` (a person signs), `run-setup-rules`, `run-add-inputs-<vN>`. Launch a Job: `run-add-job-<jNN>` (needs a signed goal, a registered method, a frozen inputs version; makes the empty Job), then the Job's own setup Runs (s12). Report: `run-add-observed-<eNN>`, `run-score-<eNN>` (each arm's design scored, `scores.csv`), `run-propose-questions` (reads the Map, the scores and the scorecard, proposes the Block's questions into `board.md`, another agent agrees), `run-report-<qNN>`.
   - Delivery: every released design as it reads, … <!-- @proposed-261007/9 #bb2833 -->
     Delivery: every released design as it reads, in order, each naming its Job, to the Exp.
   - **Source:** the screens are drawn by `../_build/design_ui.py`, … <!-- @proposed-261007/10 #493161 -->

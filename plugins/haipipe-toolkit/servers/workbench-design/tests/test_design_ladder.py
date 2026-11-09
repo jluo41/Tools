@@ -36,9 +36,9 @@ BLOCK = {"Description": (["Map", "Goals", "Methods", "Inputs"], ["run-add-job-<j
                   ["run-add-goal-<goal>", "run-add-job-<jNN>", "run-propose-questions"]),
          "Delivery": ([], ["run-release-<jNN>"])}
 BLOCK_VIEWS = {("Description", "Goals"): ["run-add-goal-<goal>"], ("Description", "Methods"): ["run-propose-method-<slug>"],
-               ("Description", "Inputs"): ["run-add-inputs-<iN>"], ("Audience Report", "Cost"): [],
+               ("Description", "Inputs"): ["run-add-inputs-<vN>"], ("Audience Report", "Cost"): [],
                ("Audience Report", "Predicted vs observed"): ["run-add-observed-<eNN>", "run-score-<eNN>"],
-               ("Audience Report", "Method scorecard"): [], ("Audience Report", "Rounds"): ["run-add-inputs-<iN>"],
+               ("Audience Report", "Method scorecard"): [], ("Audience Report", "Rounds"): ["run-add-inputs-<vN>"],
                ("Audience Report", "Questions"): ["run-propose-questions", "run-report-<qNN>"],
                ("Audience Report", "Summary"): ["run-build-summary"]}
 JOB = {"Description": (["Goal", "Method", "Inputs"], ["run-setup-goal-j03", "run-close-j03"]),

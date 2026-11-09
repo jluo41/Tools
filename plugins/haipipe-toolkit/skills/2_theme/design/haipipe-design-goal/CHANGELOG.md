@@ -4,9 +4,9 @@
 
 0.4.0 current · 261007 · Onto the design ladder (JL 261007, b12 s11 · s12 · s21) (version unchanged; the Design family version is frozen)
 - Owns what a design reads on the ladder: the Block's goal list (`board.md ## Goals`, one yaml entry per goal,
-  signed by a person), the shared rules (`design-goal.md`), frozen inputs versions (`inputs/iN/` + manifest.yaml)
+  signed by a person), the shared rules (`design-goal.md`), frozen inputs versions (`inputs/inputs-vN/` + manifest.yaml)
   and a Job's `inputs/` fence (goal.md, relative links chosen by the method's `sees:`, manifest.yaml with sha256).
-- Runs: run-add-goal-<goal>, run-setup-rules, run-add-inputs-i<N>, run-setup-goal-j<NN>, run-setup-inputs-j<NN>.
+- Runs: run-add-goal-<goal>, run-setup-rules, run-add-inputs-v<N>, run-setup-goal-j<NN>, run-setup-inputs-j<NN>.
 - New `ref/inputs.md`, `scripts/make_inputs.py` (freeze · job), `tests/test_goal_make_inputs.py`.
 - The older board's design-goal.md contract (Aim · Venue · Rules · Resources · Leave out) moved word for word to
   `ref/legacy/design-goal-older.md`; the old page keeps reading it. The Brief's goal list merges in here.

@@ -1,6 +1,6 @@
 """run-setup-method-j<NN>: copy the Job's pinned method version from the registry into its inputs/method.md.
 
-    python pin_method.py <block>/jNN_<goal>_<method>          reads the face's `method: M04 m2`
+    python pin_method.py <block>/jNN_<goal>_method-vN-<slug>_inputs-vM          reads the face's `method: M04 m2`
     python pin_method.py --list                                  the registered methods and their versions
 
 The registry is this skill's methods/MNN-<slug>/m<k>.md. The copy is word for word; the face's `method-sha:` gets the

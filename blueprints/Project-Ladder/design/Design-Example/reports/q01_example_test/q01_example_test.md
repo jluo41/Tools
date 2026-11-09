@@ -13,9 +13,9 @@ came back; j03's kept design waits for a person's release before it can join the
 
 ### 1 · Answer so far
 
-- j01_confirm-by-reply_goal-only: d01 yes-first, released 261106 with a placeholder sign, tested in e01 (arm B).
-- j03_confirm-by-reply_overall-performance: one design kept by t99; its release waits on a person.
-- j02_confirm-by-reply_goal-only: still reasoning ideas.
+- j01_confirm-by-reply_method-v1-goal-only_inputs-v1: d01 yes-first, released 261106 with a placeholder sign, tested in e01 (arm B).
+- j03_confirm-by-reply_method-v2-overall-performance_inputs-v2: one design kept by t99; its release waits on a person.
+- j02_confirm-by-reply_method-v1-goal-only_inputs-v2: still reasoning ideas.
 
 ### 2 · What would close it
 

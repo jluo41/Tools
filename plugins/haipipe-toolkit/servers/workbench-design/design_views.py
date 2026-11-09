@@ -434,8 +434,8 @@ def block_spaces(block: Path, root: Path, sub: str, href) -> dict:
                             "aim · who · venue · N · its own rules · leave out; a person signs (run-add-goal-<goal>)."),),
               "Methods": (_bk(b, root, "run-propose-method-<slug>", "propose", "Propose a change to a registered method from {folder}'s "
                               "Jobs (run-propose-method-<slug>); a new version is cut in the design skill's registry, not here."),),
-              "Inputs": (_bk(b, root, "run-add-inputs-<iN>", "add-inputs", "Add an inputs version to {folder}: inputs/iN/ (rules · "
-                             "theory · handoff links) and its frozen manifest.yaml (run-add-inputs-<iN>)."),)}[d_open]
+              "Inputs": (_bk(b, root, "run-add-inputs-<vN>", "add-inputs", "Add an inputs version to {folder}: inputs/inputs-vN/ (rules · "
+                             "theory · handoff links) and its frozen manifest.yaml (run-add-inputs-<vN>)."),)}[d_open]
     ar = ("Summary", "Rounds", "Questions", "Predicted vs observed", "Method scorecard", "Cost")
     a_open = first if first in ar else "Summary"
     a_html = {"Summary": _summary, "Rounds": _rounds, "Questions": _questions, "Cost": _costs,
@@ -443,9 +443,9 @@ def block_spaces(block: Path, root: Path, sub: str, href) -> dict:
     a_runs = {"Summary": (_bk(b, root, "run-build-summary", "build-summary", "Build {folder}'s one-page summary with "
                               "haipipe-design-delivery's summary.py into delivery/summary.html and summary.pdf, and check "
                               "it is one page (run-build-summary)."),),
-              "Rounds": (_bk(b, root, "run-add-inputs-<iN>", "add-inputs", "Add the next inputs version "
-                                            "to {folder}: inputs/iN/ with the last round's Exp results and the insight "
-                                            "Board's newer data version, frozen (run-add-inputs-<iN>)."),),
+              "Rounds": (_bk(b, root, "run-add-inputs-<vN>", "add-inputs", "Add the next inputs version "
+                                            "to {folder}: inputs/inputs-vN/ with the last round's Exp results and the insight "
+                                            "Board's newer data version, frozen (run-add-inputs-<vN>)."),),
               "Questions": (_bk(b, root, "run-propose-questions", "propose-questions", "Propose {folder}'s report questions "
                                 "from the Map, scores.csv and the method scorecard, into board.md ## Questions; another agent "
                                 "agrees (run-propose-questions)."),
@@ -619,7 +619,7 @@ def _inputs(b: dict, root: Path, href) -> str:
                    f' · <span class=mut>{esc(man.get("new", ""))}</span></p>'
                    f'<table class=wf-table><thead><tr><th>file</th>{head}<th>what it is</th></tr></thead>'
                    f'<tbody>{"".join(rows)}</tbody></table>')
-    return (''.join(out) or '<p class=mut>No inputs version yet: inputs/iN/.</p>') + (
+    return (''.join(out) or '<p class=mut>No inputs version yet: inputs/inputs-vN/.</p>') + (
         '<p class=mut>Each version is frozen once on the Block; a Job\'s fence (its inputs/) holds the files its '
         'method\'s step ① lets it see, and nothing else.</p>')
 
@@ -856,7 +856,8 @@ def _rounds(b: dict, root: Path, href) -> str:
                        ("scored", esc(f"{len(scored)} designs") if scored else "—")])
         meta = (f'{len(js)} Jobs · {n_rel} released · ' + (esc("Exp " + ", ".join(e["id"] for e in exps)) if exps else "no Exp yet"))
         out.append(_fold(f'Round {k + 1} · {v["id"]}', meta, body, opened=k == len(b["inputs"]) - 1))
-    nxt = f'i{len(b["inputs"]) + 1}'
+    nxt = (f'inputs-v{len(b["inputs"]) + 1}' if any(v["id"].startswith("inputs-v") for v in b["inputs"])
+           else f'i{len(b["inputs"]) + 1}')                 # a Block on the newer names keeps them (JL 261109)
     return ('<p class=mut>One round per inputs version: what it saw, what it made, what came back. A later version '
             'starts new Jobs (moved: inputs); a released design is never edited.</p>' + "".join(out)
             + f'<p class=mut>Next round: inputs version <code>{nxt}</code> (run-add-inputs-{nxt}) once an Exp has returned, '

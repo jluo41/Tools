@@ -3,10 +3,10 @@ name: haipipe-design-goal
 description: >-
   Everything a design reads, on the design ladder: a Block's goal list
   (board.md ## Goals, each goal signed by a person), its shared rules
-  (design-goal.md), its frozen inputs versions (inputs/iN/ + manifest.yaml), and
+  (design-goal.md), its frozen inputs versions (inputs/inputs-vN/ + manifest.yaml), and
   a Job's inputs/ fence (goal.md, links into one inputs version, manifest.yaml
   with each file's sha256), which is all the design work may see. Owns
-  run-add-goal-<goal>, run-setup-rules, run-add-inputs-i<N>,
+  run-add-goal-<goal>, run-setup-rules, run-add-inputs-v<N>,
   run-setup-goal-j<NN> and run-setup-inputs-j<NN>. Use to add or sign a goal, set
   the shared rules, freeze an inputs version, or build a Job's fence. An older
   board's design-goal.md (Aim · Venue · Rules · Resources · Leave out) keeps its
@@ -34,10 +34,10 @@ records, each written once and read by every Job that pins it:
 design/Design-<name>/
 ├── board.md ## Goals          the goal list: one entry per goal, signed by a person      run-add-goal-<goal>
 ├── design-goal.md             the shared rules every goal keeps; a person signs them     run-setup-rules
-├── inputs/iN/                 one inputs version: rules · theory · handoff copies,       run-add-inputs-i<N>
+├── inputs/inputs-vN/                 one inputs version: rules · theory · handoff copies,       run-add-inputs-v<N>
 │   └── manifest.yaml          frozen: each file, its part of step ①, its sha256
-└── jNN_<goal>_<method>/
-    └── inputs/                the fence: goal.md · method.md · links into ../../inputs/iN/ ·
+└── jNN_<goal>_method-vN-<slug>_inputs-vM/
+    └── inputs/                the fence: goal.md · method.md · links into ../../inputs/inputs-vN/ ·
         └── manifest.yaml      what the design work may see                                run-setup-inputs-j<NN>
 ```
 
@@ -89,7 +89,7 @@ narrows it.
 Inputs versions
 ---------------
 
-An inputs version `inputs/iN/` is a frozen set of files a Job may read: the shared rules as signed, theory notes,
+An inputs version `inputs/inputs-vN/` is a frozen set of files a Job may read: the shared rules as signed, theory notes,
 copies of the insight Block's signed handoff (copied, not linked: a later handoff is a new version), past released
 designs. Its `manifest.yaml`:
 
@@ -105,7 +105,7 @@ files:
 - {path: rules.md, sha256: <first 12 hex>}  # sha256 is stored as the first 12 hex of the file's sha256
 ```
 
-`run-add-inputs-i<N>` writes the files, then freezes them (`scripts/make_inputs.py freeze`). A frozen version is
+`run-add-inputs-v<N>` writes the files, then freezes them (`scripts/make_inputs.py freeze`). A frozen version is
 never edited; new material is `i<N+1>`, and a Job on it is a new Job (one clock: `moved: inputs`). A newer handoff
 never makes a released design stale.
 
@@ -121,7 +121,7 @@ confirmed and the method is pinned, with `scripts/make_inputs.py job <job>`, whi
 2. `method.md`, already there: `run-setup-method-j<NN>` (haipipe-design-method) copies the pinned version; the
    manifest records its source as that registry version.
 3. One relative link per Block input the method's step ① lets it see (`sees:` in `method.md`), into
-   `../../inputs/iN/`; nothing else.
+   `../../inputs/inputs-vN/`; nothing else.
 4. `manifest.yaml`: each part of step ① with its choice and file (a part the method leaves out reads `nothing`),
    and each file with its source (`written` or the link) and sha256.
 
@@ -141,7 +141,7 @@ The Runs
 |---|---|---|---|
 | `run-add-goal-<goal>` | Block | one entry in `board.md ## Goals` | the goal |
 | `run-setup-rules` | Block | `design-goal.md` `## Rules` · `## Leave out` | the rules |
-| `run-add-inputs-i<N>` | Block | `inputs/iN/` and its frozen `manifest.yaml` | none |
+| `run-add-inputs-v<N>` | Block | `inputs/inputs-vN/` and its frozen `manifest.yaml` | none |
 | `run-setup-goal-j<NN>` | Job | nothing but its pass: confirms the face's `goal:` pin names a signed, filled goal | none |
 | `run-setup-inputs-j<NN>` | Job | `inputs/goal.md`, the links, `inputs/manifest.yaml` (after `inputs/method.md`) | none |
 
@@ -157,7 +157,7 @@ python scripts/make_inputs.py job design/Design-<name>/j03_<goal-name>_<method-n
 Boundary
 --------
 
-This skill writes the goal list, `design-goal.md`, `inputs/iN/` and a Job's `inputs/` (except `method.md`, which
+This skill writes the goal list, `design-goal.md`, `inputs/inputs-vN/` and a Job's `inputs/` (except `method.md`, which
 `haipipe-design-method` copies). It does not choose or version a method, open Tasks, design, or score. It never
 writes patient rows or raw data into an inputs version: a handoff is a signed counsel, an Exp's result is per-arm
 totals at `observed/` (`haipipe-design-method`).

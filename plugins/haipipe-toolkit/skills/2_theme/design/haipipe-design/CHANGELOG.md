@@ -12,7 +12,7 @@ Recovered from the SKILL.md frontmatter summary on 260827, when the family retir
     (t00 · tNN_d<NN> · t99) · run-<type>-<target> Runs, and a routing table to the goal, method, unit, workflow and
     delivery owners. The older Design Folder contract moved word for word to `ref/legacy/design-folder.md`;
     `ref/method-folders.md` moved to `ref/legacy/`.
-  - `ref/design-ladder.md` rewritten to s11 – s13: `board.md` with ## Goals, `inputs/iN/`, `observed/eNN/`, the Job's
+  - `ref/design-ladder.md` rewritten to s11 – s13: `board.md` with ## Goals, `inputs/inputs-vN/`, `observed/eNN/`, the Job's
     face pins and its `inputs/` fence, ten rules, the Runs by level and their owners, the six Spaces per level.
   - `scripts/design_ladder.py` rewritten: `job --goal --method --inputs`, `task t00 | d<NN> <slug> | t99`,
     `run <folder> <type> [<target>]` (hard: reason · generate · verify · rank). The first ladder's `_by-<method>`

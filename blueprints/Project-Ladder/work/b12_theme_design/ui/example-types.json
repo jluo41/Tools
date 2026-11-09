@@ -1,15 +1,17 @@
 {
   "block": {
-    "blueprints/Project-Ladder/design/Design-Example": "🎨 Design Board"
+    "blueprints/Project-Ladder/design/Design-Example": "🎨 Design Board",
+    "blueprints/Project-Ladder/design/DesignMethodBook-Example": "📘 Design Method Book"
   },
   "job": {
-    "blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_overall-performance": "🧩 Design Job · review example",
-    "blueprints/Project-Ladder/design/Design-Example/j01_confirm-by-reply_goal-only": "🧩 Design Job · released example",
-    "blueprints/Project-Ladder/design/Design-Example/j02_confirm-by-reply_goal-only": "🧩 Design Job · reasoning example"
+    "blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_method-v2-overall-performance_inputs-v2": "🧩 Design Job · review example",
+    "blueprints/Project-Ladder/design/Design-Example/j01_confirm-by-reply_method-v1-goal-only_inputs-v1": "🧩 Design Job · released example",
+    "blueprints/Project-Ladder/design/Design-Example/j02_confirm-by-reply_method-v1-goal-only_inputs-v2": "🧩 Design Job · reasoning example",
+    "blueprints/Project-Ladder/design/DesignMethodBook-Example/j02_method-v2_overall-performance": "📘 Method release"
   },
   "task": {
-    "blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_overall-performance/t00_reason-ideas": "💡 Reason ideas",
-    "blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_overall-performance/t02_d02_reminder-one-ask": "✏️ One design",
-    "blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_overall-performance/t99_review-whole": "🏆 Review whole"
+    "blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_method-v2-overall-performance_inputs-v2/t00_reason-ideas": "💡 Reason ideas",
+    "blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_method-v2-overall-performance_inputs-v2/t02_d02_reminder-one-ask": "✏️ One design",
+    "blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_method-v2-overall-performance_inputs-v2/t99_review-whole": "🏆 Review whole"
   }
 }

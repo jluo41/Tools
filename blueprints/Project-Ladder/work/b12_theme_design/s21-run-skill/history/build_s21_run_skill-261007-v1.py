@@ -34,7 +34,7 @@ RUN_COLS = [("Run", 330), ("kind", 80), ("what it does", 250), ("who does it", 2
 RUNS = [("Block", [   # every Block Run is soft (JL 261007)
             ("run-add-goal-<goal>", "soft", "add a goal", "designer agent", "a person signs", "haipipe-design-goal", "Description › Goals"),
             ("run-setup-rules", "soft", "set up shared rules", "designer agent", "a person signs", "haipipe-design-goal", "Description › Rules"),
-            ("run-add-inputs-i<N>", "soft", "add an inputs version", "designer agent", "manifest sha256", "haipipe-design", "Description › Inputs"),
+            ("run-add-inputs-v<N>", "soft", "add an inputs version", "designer agent", "manifest sha256", "haipipe-design", "Description › Inputs"),
             ("run-add-job-j<NN>", "soft", "launch a Job", "designer agent", "-", "haipipe-design", "Map · Work Details"),
             ("run-add-observed-e<NN>", "soft", "add the Exp's data", "designer agent", "manifest sha256", "haipipe-design", "Predicted vs observed"),
             ("run-score-e<NN>", "soft", "score the predictions", "another agent", "-", "haipipe-design", "Predicted vs observed"),

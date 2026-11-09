@@ -54,7 +54,7 @@ class DesignFocusTest(unittest.TestCase):
 
     def test_each_level_has_the_cells_letters(self):
         self.assertEqual(D.level_of(self.block), "Block")
-        self.assertEqual(self.names(self.block, "work"), ["Summary", "Goals", "Jobs", "Rounds", "Methods", "MindMap"])
+        self.assertEqual(self.names(self.block, "work"), ["Designs", "Goals", "Inputs", "Rounds", "Tests", "MindMap"])
         self.assertEqual(self.names(self.job, "report"), ["Setup", "Ideas", "Designs", "Ranking", "Release"])
         by_kind = {D.R.kind_of(t): self.names(t, "work") for t in self.tasks}
         self.assertEqual(by_kind["t00"], ["Inputs", "Chains", "Ideas", "Fence check", "MindMap"])
@@ -93,7 +93,7 @@ class DesignFocusTest(unittest.TestCase):
         self.assertIn('<span class="word you">1 waits for you</span>', process)     # a Process step, its word and line
         self.assertIn("<p class=fd-wait>🙋 Review and approve", process)
         self.assertIn('data-post="/_board/design-ladder-act"', process)        # the sign, on the Release view's Process
-        block = D.views(self.block, self.root, "work")["work-jobs"][1]()
+        block = D.views(self.block, self.root, "work")["work-rounds"][1]()
         self.assertIn("Review and approve · ", block.split("📊 Results")[0])
         self.assertIn("j03_g01_m04", block.split("📊 Results")[0])
 
@@ -101,9 +101,9 @@ class DesignFocusTest(unittest.TestCase):
         self.assertTrue(D.V._approved(D.R.job(self.job))[0])                         # the fixture's j03 is released
         job = D.views(self.job, self.root, "work")["work-release"][1]()
         self.assertIn("<p class=fd-wait>🙋 Close the Job", job.split("📊 Results")[0])  # the close is a person's sign
-        block = D.views(self.block, self.root, "work")["work-jobs"][1]()
+        block = D.views(self.block, self.root, "work")["work-rounds"][1]()
         self.assertIn("Close the Job · ", block.split("📊 Results")[0])
-        summary = D.views(self.block, self.root, "report")["summary"][1]()
+        summary = D.views(self.block, self.root, "report")["designs"][1]()
         self.assertIn("<p class=fd-wait>🙋 Close the Job", summary)              # flagged on the Report too, under its bar
 
     def test_a_task_never_asks_you(self):
@@ -159,7 +159,7 @@ class DesignFocusTest(unittest.TestCase):
 
     def test_the_mindmap_is_shown_at_every_level(self):
         """R6: the shared MindMap stays a view at the Block, the Job and the Task, last; Report opens on its first letter."""
-        for folder, first in ((self.block, "Summary"), (self.job, "Setup"), (self.tasks[0], "Inputs")):
+        for folder, first in ((self.block, "Designs"), (self.job, "Setup"), (self.tasks[0], "Inputs")):
             page = FP.render(THEME, self.root, folder, "report", "")
             nav = re.search(r'<nav class="section-views".*?</nav>', page, re.S).group(0)
             names = re.findall(r">([^<>]+)</a>", nav)
@@ -167,7 +167,7 @@ class DesignFocusTest(unittest.TestCase):
             self.assertIn(f'aria-current="page">{first}</a>', nav)
             self.assertIn("focus-map", FP.render(THEME, self.root, folder, "report", "mindmap"))
             self.assertIn("focus-map", FP.render(THEME, self.root, folder, "work", "work-mindmap"))
-        self.assertIn('aria-current="page">Summary</a>', FP.render(THEME, self.root, self.block, "report", "summary"))
+        self.assertIn('aria-current="page">Designs</a>', FP.render(THEME, self.root, self.block, "report", "summary"))   # an older link
 
     def test_labels_carry_no_counts(self):
         """R4: a bar's title, a side tab's name and a view button carry no count; lists of items are side tabs."""
@@ -215,7 +215,7 @@ class DesignFocusTest(unittest.TestCase):
         page = FP.render(THEME, self.root, self.job, "work", "work-designs")
         self.assertIn("Each design", page)
         self.assertIn(">Setup<", page)
-        self.assertIn("Summary", FP.render(THEME, self.root, self.block, "report", ""))
+        self.assertIn("Designs", FP.render(THEME, self.root, self.block, "report", ""))
 
 
 if __name__ == "__main__":

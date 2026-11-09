@@ -6,7 +6,7 @@
   this is recorded under the existing version.
 
 - JL 261101: "I think you need to update the UI as well to make things to work". New
-  `servers/workbench-design/design_focus.py`: the Block (Summary · Goals · Jobs · Rounds · Methods), a Job (Setup · Ideas ·
+  `servers/workbench-design/design_focus.py`: the Block (Designs · Goals · Inputs · Rounds · Tests), a Job (Setup · Ideas ·
   Designs · Ranking · Release) and each Task type's steps, Report the Results only, Work ⚙️ Process over 📊 Results, with
   the shared ui_parts as the paper, labeling and insight pages; `focus_page.py` asks it through one hook, `design_views`.
   Before, a design page on the focus page was the base's (Work: "no state recorded"; a Task: nothing).

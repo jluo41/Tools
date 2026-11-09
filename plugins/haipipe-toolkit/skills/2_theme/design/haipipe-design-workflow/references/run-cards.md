@@ -36,13 +36,13 @@ page's workbench (`servers/workbench-design/design.py`) reads them, and their on
 🧩 SKILL    haipipe-design-goal
 🤖 AGENT    haipipe-designer-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-design goal freeze a new inputs version of {folder}: inputs/iN/ (the rules, theory, the insight handoff copied in) and its manifest.yaml with each file's sha256, as run-add-inputs-i<N>; say what is new against the last version.
+💬 PROMPT   /haipipe-design goal freeze a new inputs version of {folder}: inputs/inputs-vN/ (the rules, theory, the insight handoff copied in) and its manifest.yaml with each file's sha256, as run-add-inputs-v<N>; say what is new against the last version.
 
 🔘 BUTTON   Launch a Job · Block › Description · ^run-add-job- · views map
 🧩 SKILL    haipipe-design
 🤖 AGENT    haipipe-designer-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-design launch a Job in {folder}: a signed goal × a registered method version × a frozen inputs version, jNN_<goal>_<method>/ with its pins, as run-add-job-j<NN>; tell me which one clock moved from the Job before it.
+💬 PROMPT   /haipipe-design launch a Job in {folder}: a signed goal × a registered method version × a frozen inputs version, jNN_<goal>_method-vN-<slug>_inputs-vM/ with its pins, as run-add-job-j<NN>; tell me which one clock moved from the Job before it.
 
 🔘 BUTTON   Propose a method change · Block › Description · ^run-propose-method- · views methods
 🧩 SKILL    haipipe-design-method

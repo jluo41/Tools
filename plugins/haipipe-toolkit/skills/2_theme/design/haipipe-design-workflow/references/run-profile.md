@@ -23,7 +23,7 @@ board).
 |---|---|---|---|---|---|---|---|
 | Block | `run-add-goal-<goal>` | soft | a goal into `board.md ## Goals` | designer agent | — | a person | haipipe-design-goal |
 | Block | `run-setup-rules` | soft | the shared rules, `design-goal.md` | designer agent | — | a person | haipipe-design-goal |
-| Block | `run-add-inputs-i<N>` | soft | an inputs version `inputs/iN/` + manifest, frozen | designer agent | manifest sha256 | none | haipipe-design-goal |
+| Block | `run-add-inputs-v<N>` | soft | an inputs version `inputs/inputs-vN/` + manifest, frozen | designer agent | manifest sha256 | none | haipipe-design-goal |
 | Block | `run-add-job-j<NN>` | soft | an empty Job, its pins on its face | designer agent | — | none | haipipe-design |
 | Block | `run-propose-method-<slug>` | soft | a method change, sent to the registry | designer agent | — | a person | haipipe-design-method |
 | Block | `run-add-observed-e<NN>` | soft | an Exp's per-arm totals, `observed/eNN_<exp>/` | designer agent | manifest sha256 | none | haipipe-design-method |

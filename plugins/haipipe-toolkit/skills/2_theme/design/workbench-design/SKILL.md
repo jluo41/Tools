@@ -42,10 +42,11 @@ by step: t00, the designs in order with the dropped folded at the end, t99).
 
 ## A Job is named by its folder
 
-Every view that names a Job shows its folder name as it is, `jNN_<goal name>_<method name>`
-(`j01_prepare-before-visit_goal-only`), as the Job ▾ menu does: a card title, a link, a list of Jobs, a column head
+Every view that names a Job shows its folder name as it is, `jNN_<goal name>_method-vN-<slug>_inputs-vM` on a Board
+with a Design Method Book (`j03_confirm-by-reply_method-v2-overall-performance_inputs-v2`), else
+`jNN_<goal name>_<method name>` (`j01_prepare-before-visit_goal-only`), as the Job ▾ menu does: a card title, a link, a list of Jobs, a column head
 (JL 261011: "I don't want we just have jNN here, not readable"). Never the bare `jNN`: it says nothing on its own.
-The ids (`G01`, `M01 m2`, `i1`) stay on the face as pins and may follow the name as plain detail. An older id-form
+The ids (`G01`, `M01 m2`, `method-v1`, `inputs-v1`) stay on the face as pins and may follow the name as plain detail. An older id-form
 folder (`j03_g01-review-new-rx_m04-actionable-insights`) shows the same way, by its folder name.
 
 Two Jobs can share their words: one method's two versions on one goal (`j05_review-new-rx_raw-data-agent` pins M05 m2
@@ -73,8 +74,8 @@ haipipe-design-delivery's `summary.py` builds into `delivery/summary.pdf` (JL 26
 ### Current Block frame (2026-11-08)
 
 For a ladder Design **Block**, Report now combines the existing results and actions under
-**Review Content**, followed by **Around the Work**. The views stay Summary · Goals · Jobs · Rounds ·
-Methods · MindMap; Delivery remains a right-rail entry. Old Block Work links open the matching Report view.
+**Review Content**, followed by **Around the Work**. The views are Designs · Goals · Inputs · Rounds ·
+Tests · MindMap; Delivery remains a right-rail entry. Old Block Work links open the matching Report view.
 `servers/workbench-design/design_context.py` adapts `design_focus.py` to the shared `work_frame.py` renderers.
 
 The eight supporting sections use the shared names and order: Studio · Interactions · Decisions · Things to Know ·
@@ -100,7 +101,8 @@ over the same Results. `servers/workbench-design/design_focus.py` draws them; `f
 `design_views`, as it asks the paper and insight themes'.
 
 ```text
-Block (s51, s52)  Summary · Goals · Jobs · Rounds · Methods
+Book              Method · Versions · Ideas · Scorecard        a Design Method Book (design_book.py, JL 261109)
+Block (s51, s52)  Designs · Goals · Inputs · Rounds · Tests
 Job   (s54, s55)  Setup · Ideas · Designs · Ranking · Release
 Task  (s57, s58)  by type, one view per step:
                   💡 t00 reason ideas   Inputs · Chains · Ideas · Fence check
@@ -121,9 +123,9 @@ Each view reads the files named beside it; nothing is stored twice and nothing i
 
 | Space | Views | Reads |
 |---|---|---|
-| Description | Map · Goals · Methods · Inputs | `board.md ## Goals`; the Jobs' pins (the Map: goals down × methods across, each cell its chain of Jobs); the method registry (read only); `inputs/iN/manifest.yaml` |
+| Description | Map · Goals · Methods · Inputs | `board.md ## Goals`; the Jobs' pins (the Map: goals down × methods across, each cell its chain of Jobs); the method registry (read only); `inputs/inputs-vN/manifest.yaml` |
 | Idea Studio | the Block's topics | `sNN-<topic>/` |
-| Audience Report | Summary · Rounds · Questions · Predicted vs observed · Method scorecard · Cost | Summary (first, JL 261012): the goal, the answered questions' Openings, one row per Job (method, state and who approved, top design, prediction with its why on hover), the next step, `close:`, the one-page PDF; no design cards; Rounds: one round per `inputs/iN/manifest.yaml`, its Jobs, releases and Exp results; `board.md ## Questions` and `reports/`; `observed/eNN_<exp>/arms.csv` and `run-score-eNN` `scores.csv`; the scores summed per method version; each Job's Run cards (`usage:`, times, rounds) |
+| Audience Report | Summary · Rounds · Questions · Predicted vs observed · Method scorecard · Cost | Summary (first, JL 261012): the goal, the answered questions' Openings, one row per Job (method, state and who approved, top design, prediction with its why on hover), the next step, `close:`, the one-page PDF; no design cards; Rounds: one round per `inputs/inputs-vN/manifest.yaml`, its Jobs, releases and Exp results; `board.md ## Questions` and `reports/`; `observed/eNN_<exp>/arms.csv` and `run-score-eNN` `scores.csv`; the scores summed per method version; each Job's Run cards (`usage:`, times, rounds) |
 | Work Details | All · one per goal | one card per Job: goal · method version · inputs · state; open, a preview of its Tasks |
 | Runs | All · Set up · Launch a Job · Report | the Block's `runs/run-<type>-<target>/run.yaml` |
 | Delivery | — | `delivery/designs.json` · `designs.md`: every Job's release |

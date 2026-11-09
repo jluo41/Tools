@@ -1,1 +1,0 @@
-../../inputs/i2/rules.md

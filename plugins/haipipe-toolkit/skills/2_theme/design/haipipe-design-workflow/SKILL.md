@@ -43,7 +43,7 @@ the Task opens.
 ## Runs by level
 
 ```text
-Block  set up      run-add-goal-<goal> (a person signs) · run-setup-rules (a person signs) · run-add-inputs-i<N>
+Block  set up      run-add-goal-<goal> (a person signs) · run-setup-rules (a person signs) · run-add-inputs-v<N>
        launch      run-add-job-j<NN>  (needs a signed goal, a registered method version, a frozen inputs version)
        report      run-add-observed-e<NN> · run-score-e<NN> · run-propose-questions · run-report-q<NN>
        also        run-propose-method-<slug> · run-draw-s<NN>
@@ -63,7 +63,7 @@ frozen predictions with the release, and the close.
 ```text
 run-add-goal (signed) ─┐
 run-setup-rules (signed)┤
-run-add-inputs-i<N> ───┼─▶ run-add-job-j<NN>
+run-add-inputs-v<N> ───┼─▶ run-add-job-j<NN>
 registered method ─────┘        │
                                 ▼
           run-setup-goal · run-setup-method · run-setup-inputs     all three closed = set up

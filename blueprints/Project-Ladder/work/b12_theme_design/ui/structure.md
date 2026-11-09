@@ -1,13 +1,14 @@
-Design Board · Current Block structure
+Design Board and Design Method Book · Current Block structure
 
-**Report → Review Content → Around the Work**. Summary, Goals, Jobs, Rounds, Methods and MindMap retain their design meaning. Delivery remains a rail entry. The Block’s old Work links open the corresponding Report view.
+**Report → Review Content → Around the Work**. The Design Board reads Designs, Goals, Inputs, Rounds, Tests and MindMap; the Design Method Book reads Method, Versions, Ideas, Scorecard and MindMap (JL 261109). Delivery remains a rail entry. The Block’s old Work links open the corresponding Report view.
 
 ## 🪜 Design ladder
 
 | Level | Owns | Current interface |
 | --- | --- | --- |
+| Design Method Book | The method, one signed release at a time; its proposals. | Method, Versions, Ideas, Scorecard, MindMap; merged Block Report with eight shared sections. |
 | Design Board | One application and channel; signed goals, rules, inputs versions, Jobs and experiment totals. | Merged Block Report with eight shared sections. |
-| Design Job | One goal × one registered method version × one inputs version. | Setup, Ideas, Designs, Ranking, Release; existing Report and Work. |
+| Design Job | One goal × one method release × one inputs version. | Setup, Ideas, Designs, Ranking, Release; existing Report and Work. |
 | Reason-ideas Task | Input-bounded reasoning, chains, ideas and the fence check. | Inputs, Chains, Ideas, Fence check; existing Report and Work. |
 | Design Task | One design’s generation, verification, revision and prediction. | Draft, Verify, Revise, State; existing Report and Work. |
 | Review-whole Task | Ranking, coverage and the kept set. | Rank, Coverage, Kept; existing Report and Work. |
@@ -15,24 +16,41 @@ Design Board · Current Block structure
 
 A person signs goals and shared rules at the Block. A Job’s **Review and approve** performs the existing checked release and prediction freeze. Opening a page or copying a prompt never signs or releases a design. Task verification and revision remain unchanged.
 
-## 📊 Summary
+## 📊 Designs
+
+Design Board. Was Summary.
 
 | Section | Content and source | Layout |
 | --- | --- | --- |
 | 📊 Where each Job stands | Show each Job’s recorded state and next permitted action. Held and unsigned releases remain distinguishable. Source: Job faces, verification and release Run receipts. | Table → Job |
 | ➡️ Next | Separate the person’s pending review from agent work; retain links to the original Job. Source: The same Job states and gates. | Action summary |
-| ❓ What the Block asks | Show each recorded question and the status read from its report; do not create an answer from a state count. Source: board.md Questions and reports/. | Table → Report |
+| 📋 What each Job kept | Distinguish kept designs waiting for review from released designs. Source: Task states and release receipts. | Table → Job |
 | 📄 Build the summary | Copy the prompt that rebuilds the summary from recorded results. Viewing does not build or release anything. Source: delivery/summary.pdf and the summary Run card. | Action row → Copy prompt |
 
 ## 🎯 Goals
+
+Design Board.
 
 | Section | Content and source | Layout |
 | --- | --- | --- |
 | 🎯 The goals | Show aim, audience, channel, N, rules, exclusions and actual signature for each goal. Source: board.md Goals. | Left Tabs · Right Content → Goal |
 | 📏 The shared rules | Read the common rules and their recorded signature; missing signatures remain pending. Source: design-goal.md. | Rules and signature |
+| ❓ What the Block asks | Show each recorded question and the status read from its report; do not create an answer from a state count. Source: board.md Questions and reports/. | Table → Report |
 | 🎯 Goals and rules | Expose goal and rule preparation actions with their real signature gates. Source: Goal and rules records; setup Run cards. | Action rows → Copy prompt |
 
-## 🧩 Jobs
+## 📥 Inputs
+
+Design Board. Was Rounds.
+
+| Section | Content and source | Layout |
+| --- | --- | --- |
+| 📥 Inputs versions | Inspect the frozen input manifests and their actual source files. Source: inputs/inputs-vN/manifest.yaml. | Input cards → Manifest |
+| 🔁 The rounds | Group Jobs, releases and returned experiments by frozen inputs version. Source: inputs/inputs-vN, Job pins and observed/eNN. | Left Tabs · Right Content → Round |
+| 🔁 The next round | Copy the prompts to record returned per-arm totals and create the next frozen inputs version. Source: Observed totals and input-version Run cards. | Action rows → Copy prompt |
+
+## 🔁 Rounds
+
+Design Board. Was Jobs: a round is one Job, one release on one inputs version.
 
 | Section | Content and source | Layout |
 | --- | --- | --- |
@@ -42,16 +60,9 @@ A person signs goals and shared rules at the Block. A Job’s **Review and appro
 | 🧭 Each Job's next move | Link a ready Job to Review and approve; show preparation or closure actions without executing them. Source: Workflow gates and release receipts. | Action rows → Review / Copy prompt |
 | ➕ A new Job | Choose a goal, registered method and inputs version, then copy the setup prompt. Source: Signed goals, method registry, inputs versions. | Selectors → Copy prompt |
 
-## 🔁 Rounds
+## 🧪 Tests
 
-| Section | Content and source | Layout |
-| --- | --- | --- |
-| 🔁 The rounds | Group Jobs, releases and returned experiments by frozen inputs version. Source: inputs/iN, Job pins and observed/eNN. | Left Tabs · Right Content → Round |
-| 📋 What each Job kept | Distinguish kept designs waiting for review from released designs. Source: Task states and release receipts. | Table → Job |
-| 📥 Inputs versions | Inspect the frozen input manifests and their actual source files. Source: inputs/iN/manifest.yaml. | Input cards → Manifest |
-| 🔁 The next round | Copy the prompts to record returned per-arm totals and create the next frozen inputs version. Source: Observed totals and input-version Run cards. | Action rows → Copy prompt |
-
-## 📏 Methods
+Design Board. Was Methods. The method scorecard shows only on a Board with no Design Method Book.
 
 | Section | Content and source | Layout |
 | --- | --- | --- |
@@ -59,6 +70,42 @@ A person signs goals and shared rules at the Block. A Job’s **Review and appro
 | 🏅 Method scorecard | Group measured scores and design verification results by the pinned method version. Source: Method pins, verification results and scores. | Left Tabs · Right Content → Method |
 | ⏱️ What each Job cost, by method | Read timing and usage from Run receipts; missing measurements remain unknown. Source: Run started_at, finished_at and usage fields. | Table |
 | 📏 Score and learn | Expose scoring and method proposal actions; a proposal still requires its recorded human sign. Source: Score Runs and proposal passes. | Action rows → Copy prompt / Proposal |
+
+## 🪜 Method
+
+Design Method Book.
+
+| Section | Content and source | Layout |
+| --- | --- | --- |
+| 🪜 The five steps | The newest release, step by step: ① See input to ⑤ Review whole. Source: the newest release's frozen method.md. | Table → step |
+| 👀 What step ① sees | The parts of the inputs the method reads; the one lever a release usually moves. Source: method.md sees:. | List |
+| 📄 The frozen recipe | Open the signed method.md; it never changes after the sign. Source: jNN_method-vN_<slug>/method.md. | Open → method.md |
+
+## 🔖 Versions
+
+Design Method Book.
+
+| Section | Content and source | Layout |
+| --- | --- | --- |
+| 🔖 The releases | Each release: what it was cut from, its sign, and the Board Jobs that run it. Source: each release face and the served Boards' Job faces (release:). | Left Tabs · Right Content → Release |
+| 🧭 What changed between releases | Which steps changed from one release to the next; one step a release keeps a result's cause single. Source: the releases' steps. | Table |
+
+## 💡 Ideas
+
+Design Method Book.
+
+| Section | Content and source | Layout |
+| --- | --- | --- |
+| 💡 Proposals | The ideas sent back from Jobs and experiments; the next release is cut from here once a person signs. Source: proposals/<slug>.md. | Left Tabs · Right Content → Proposal |
+| ✍️ Ideas to settle | Sign or return each waiting idea; copy the prompt to write a new one. Source: proposals/ and run-propose-method-<slug>. | Action rows → Copy prompt |
+
+## 🏅 Scorecard
+
+Design Method Book.
+
+| Section | Content and source | Layout |
+| --- | --- | --- |
+| 🏅 Each release, on the Boards it serves | Pass rate, first try and predicted vs observed of each release, from the Boards' own scores. Source: the served Boards' Jobs, score Runs and observed totals. | Table |
 
 ## 🧠 MindMap
 
@@ -89,9 +136,10 @@ Release → returned experiment totals → prediction score → Studio and metho
 
 ## 📐 Implementation boundary
 
-- Implemented in the focus page: the Design Board’s merged Report, six existing views, eight shared sections, strict View scope and full rail, existing Job-release links, and this Block UI matrix with routed examples.
+- Implemented in the focus page: the Design Board’s merged Report, its six views (Designs, Goals, Inputs, Rounds, Tests, MindMap), eight shared sections, strict View scope and full rail, existing Job-release links, and this Block UI matrix with routed examples.
 - Preserved: Job and Task specialist pages, verification loops, human release approval and the older six-Space and Design Folder pages.
-- Still a proposal: replacing Design’s business views with Overview / Status / Findings / Delivery; the separate method-development Block; the four-state Checklist acceptance workflow. No new Checklist state API or reviewer sign is claimed here.
+- Implemented 261109: the method's own Block, the **Design Method Book** (`design/DesignMethodBook-<Topic>/`, views Method · Versions · Ideas · Scorecard · MindMap), beside the Design Board it serves; a Board Job runs one release on one inputs version, `jNN_<goal>_method-vN-<slug>_inputs-vM/`.
+- Still a proposal: replacing Design’s business views with Overview / Status / Findings / Delivery; the four-state Checklist acceptance workflow. No new Checklist state API or reviewer sign is claimed here.
 - Historical: s11–s13 and j01’s s51–s59 drawings document earlier screens. They have not been redrawn to match this Block frame. This structure and matrix describe the current Block implementation.
 
 ## 📝 Checklist

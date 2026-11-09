@@ -216,7 +216,12 @@ def ui_matrix_html(source: Path, root: Path) -> str:
 
     def turn(table):
         """The matrix turned (JL 261108: the table fits the page): a column per type under its category, a row per
-        view; a row the same under every view (Around the Work) is said once, across the types."""
+        view; a row the same under every view (Around the Work) is said once, across the types. Each Category table
+        is turned with its own headings, so a second family of types (a Design Method Book beside the Design Board,
+        261109) keeps its own views."""
+        headings = re.findall(r'<th>(.*?)</th>', table.group(0).split('</thead>')[0], re.S)
+        if not any(matrix_help.plain(h) == 'Category' for h in headings):
+            return table.group(0)
         rows = [re.findall(r'<td>(.*?)</td>', row, re.S)
                 for row in re.findall(r'<tr>(.*?)</tr>', table.group(0).split('</thead>')[-1], re.S)]
         if not rows or any(len(row) < 3 for row in rows):
@@ -244,7 +249,7 @@ def ui_matrix_html(source: Path, root: Path) -> str:
         return (f'<table class="ui-turned" style="--ui-type-count:{len(types)}">'
                 + columns + head + '<tbody>' + body + '</tbody></table>')
 
-    html = re.sub(r'<table[^>]*>.*?</table>', turn, html, count=1, flags=re.S)
+    html = re.sub(r'<table[^>]*>.*?</table>', turn, html, flags=re.S)
     return matrix_help.with_dialog(html, source) if guide else html
 
 
@@ -3881,6 +3886,11 @@ def render(theme, root: Path, folder: Path, section="", group="") -> str:
     if design_block:
         context_frame = design_context
         if section in ('report', 'work', ''):
+        from live import design_reader as _DR               # a Design Method Book and its releases (JL 261109)
+        if level == 'Block' and _DR.is_method_book(folder):
+            return '📘 Design Method Book'
+        if level == 'Job' and _DR.is_method_book(folder.parent):
+            return '📘 Method release'
             section, group = 'report', group.removeprefix('work-').removeprefix('report-')
     if live_work:
         from live import work_frame as WF
@@ -3976,6 +3986,7 @@ def render(theme, root: Path, folder: Path, section="", group="") -> str:
             if home == 'overview-report':
                 return untabbed(overview_report_html(data, questions, folder, root, False))
             extra = theme_parts(theme.name, folder, root, level)
+            group = design_context.old_view(folder, group)   # Summary · Jobs · Methods open Designs · Rounds · Tests (261109)
             if level == 'Block':
                 return findings_board(questions, folder, root, markdown(data['takeaways'], folder, root), extra, include_delivery=False)
             if level == 'Job':

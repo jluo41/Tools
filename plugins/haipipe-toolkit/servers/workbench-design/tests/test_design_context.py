@@ -30,7 +30,7 @@ class DesignContextTest(unittest.TestCase):
         self.job.mkdir()
         (self.job / (self.job.name + '.md')).write_text('---\ngoal: G01\nmethod: M01 m2\ninputs: i1\n---\n# Example Job\n')
         self.topics = []
-        for name, tag, marker in [('s01-goals', 'Goals', 'GOALS'), ('s02-methods', 'Methods', 'METHODS'),
+        for name, tag, marker in [('s01-goals', 'Goals', 'GOALS'), ('s02-tests', 'Tests', 'METHODS'),
                                   ('s03-unassigned', '', 'UNASSIGNED')]:
             topic = self.board / name
             topic.mkdir()
@@ -39,7 +39,7 @@ class DesignContextTest(unittest.TestCase):
                 f'## Things to Know\n{marker}_NOTE\n')
             self.topics.append((topic, [], {'tags': [tag] if tag else []}))
         self.rows = []
-        for name, topic, view in [('goals', self.topics[0][0], ''), ('override', self.topics[0][0], 'methods'),
+        for name, topic, view in [('goals', self.topics[0][0], ''), ('override', self.topics[0][0], 'tests'),
                                   ('unassigned', None, '')]:
             run = self.job / 'runs' / ('r01_' + name)
             (run / 'result').mkdir(parents=True)
@@ -55,7 +55,7 @@ class DesignContextTest(unittest.TestCase):
         selected = c.scope(self.board, self.root, 'goals', self.topics, self.rows, [])
         self.assertEqual(selected['interactions'], self.rows[:1])
         self.assertEqual(selected['runs'], [self.rows[0]['path']])
-        self.assertEqual(c.scope(self.board, self.root, 'methods', self.topics, self.rows, [])['interactions'], self.rows[1:2])
+        self.assertEqual(c.scope(self.board, self.root, 'tests', self.topics, self.rows, [])['interactions'], self.rows[1:2])
         self.assertEqual(c.scope(self.board, self.root, 'jobs', self.topics, self.rows, [])['interactions'], [])
         self.assertEqual(c.scope(self.board, self.root, None, self.topics, self.rows, [])['interactions'], self.rows)
 
@@ -98,7 +98,7 @@ class DesignContextTest(unittest.TestCase):
         blueprint = REPO / 'blueprints/Project-Ladder/work/b12_theme_design'
         guide = json.loads((blueprint / 'ui/view-guide.json').read_text())
         matrix = f.ui_matrix_html(blueprint / 'ui/block-views.md', REPO)
-        for key in ('summary', 'goals', 'jobs', 'rounds', 'methods', 'mindmap'):
+        for key in ('designs', 'goals', 'inputs', 'rounds', 'tests', 'mindmap'):
             self.assertIn('group='+key, html.unescape(matrix))
         matrices = ''.join(f.ui_matrix_html(blueprint / ('ui/' + level + '-views.md'), REPO)
                            for level in ('block', 'job', 'task'))
@@ -136,13 +136,16 @@ class DesignContextTest(unittest.TestCase):
                         self.assertIn('data-title="'+case+'"', matrix)
                         for row in rows:
                             self.assertEqual(row['label'], 'Blueprint example')
-                            self.assertEqual(d.level_of(row['page']).lower(), level)
+                            if kind == 'Method release':      # a Book's release: a Job with no Design Job views (261109)
+                                self.assertTrue(d.R.is_release(row['page']))
+                            else:
+                                self.assertEqual(d.level_of(row['page']).lower(), level)
                             if level == 'task':
                                 role = {'Reason ideas':'t00', 'One design':'design', 'Review whole':'t99'}[kind]
                                 self.assertEqual(d.R.kind_of(row['page']), role)
                         if not configured:
                             self.assertIn('No linked examples yet.', matrix)
-            self.assertEqual(list(guide['use_cases']['job']), ['Design Job'])
+            self.assertEqual(list(guide['use_cases']['job']), ['Design Job', 'Method release'])
         for level, kinds in guide['type_view_routes'].items():
             for kind, routes in kinds.items():
                 page = REPO / guide['examples'][level][kind]

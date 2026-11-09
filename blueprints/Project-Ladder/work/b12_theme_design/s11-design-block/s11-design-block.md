@@ -56,7 +56,7 @@ Run's receipt).
    is for working on one.
 4. Runs: every Block Run is soft (JL 261007); hard Runs sit in a Job's Tasks. One folding card per Run,
    `run-<type>-<target>`, grouped by purpose. Set up, before any Job: `run-add-goal-<goal>` (a person
-   signs), `run-setup-rules`, `run-add-inputs-<iN>`. Launch a Job: `run-add-job-<jNN>` (needs a signed goal,
+   signs), `run-setup-rules`, `run-add-inputs-<vN>`. Launch a Job: `run-add-job-<jNN>` (needs a signed goal,
    a registered method, a frozen inputs version; makes the empty Job), then the Job's own setup Runs (s12).
    Report: `run-add-observed-<eNN>`, `run-score-<eNN>` (each arm's design scored, `scores.csv`),
    `run-propose-questions` (reads the Map, the scores and the scorecard, proposes the Block's questions
@@ -68,7 +68,7 @@ Run's receipt).
 `servers/workbench-design/guide/methods/` at build time. The rows of b03 (proposed above today's served
 screens) stay in `../../b10_project_workbench/studio/` s11-block-variants, s12-job-variants and s13-task-variants.
 
-**Feeds:** `../reports/` q01_design_ladder · q02_design_workbench.
+**Feeds:** `../reports/` Q01 · Q02.
 
 
 Files

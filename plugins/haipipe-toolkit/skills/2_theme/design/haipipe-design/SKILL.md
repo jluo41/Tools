@@ -47,12 +47,24 @@ Read [ref/design-ladder.md](ref/design-ladder.md) on every invocation that creat
 folder. In one picture (designed in `Tools/blueprints/Project-Ladder/work/b12_theme_design`, s11 · s12 · s13 · s21):
 
 ```text
+design/DesignMethodBook-<Topic>/  Block: the method, one Job per release jNN_method-vN_<slug>/, proposals/ its backlog
 design/Design-<name>/             Block: one application, one channel; goals signed, inputs versions, Exp results
-└── jNN_<goal>_<method>/           Job: goal G01 × method M04 m2 × inputs i2 → N designs; inputs/ is its fence
+└── jNN_<goal>_method-vN-<slug>_inputs-vM/   Job: goal G01 × release method-v2 × inputs-v2 → N designs; inputs/ is its fence
     ├── t00_reason-ideas/          ② reason ideas           run-reason-t00            (hard)
     ├── tNN_d<NN>_<slug>/          ③ ④ one design           run-generate-d<NN> · run-verify-d<NN>-v<k> (hard)
     │                                                       run-revise-d<NN>          (soft)
     └── t99_review-whole/          ⑤ review whole           run-rank-t99              (hard)
+```
+
+A design method's own versions live in a **Design Method Book** beside the Board, `design/DesignMethodBook-<Topic>/`
+(JL 261109: named as insight's `insight/InsightQuestionBook-<Topic>/`; on screen "Design Method Book", views Method ·
+Versions · Ideas · Scorecard · MindMap). Each release `jNN_method-vN_<slug>/` is cut from a registered version
+(`from: M01 m2`) and signed by a person; the Board names its Book (`method-book:`) and each Job its release
+(`release: method-vN`). Example: `blueprints/Project-Ladder/design/DesignMethodBook-Example/` beside `Design-Example/`.
+
+```bash
+python scripts/design_ladder.py book design/DesignMethodBook-<Topic> --serves design/Design-<name>
+python scripts/design_ladder.py release design/DesignMethodBook-<Topic>/j01_method-v1_goal-only --from "M01 m2"
 ```
 
 A design method is the recipe that turns a goal and its inputs into N designs in five steps (① See input · ② Reason
@@ -84,11 +96,12 @@ goal, the shared rules, the frozen predictions with the release, and the close.
 
 **`run-add-job-j<NN>`** (Block, soft). Needs a signed goal in `board.md ## Goals`, signed shared rules
 (`design-goal.md` `rules:` and `signed:`), a registered method version and a frozen inputs version; the scaffold
-refuses any of them missing, and a folder whose ids differ from `--goal` and `--method`. Makes the empty Job with its
+refuses any of them missing, an unsigned release, and a folder whose words differ from its pins. Makes the empty Job with its
 pins; `n` comes from the goal's line (`--n` only to say the same):
 
 ```bash
-python scripts/design_ladder.py job design/Design-<name>/j03_<goal-name>_<method-name> --goal G01 --method "M04 m2" --inputs i2 --moved method
+python scripts/design_ladder.py job design/Design-<name>/j03_<goal-name>_method-v2-<slug>_inputs-v2 --goal G01 --release method-v2 --inputs inputs-v2 --moved method
+python scripts/design_ladder.py job design/Design-<name>/j03_<goal-name>_<method-name> --goal G01 --method "M04 m2" --inputs i2 --moved method   # no Book: older names
 python scripts/design_ladder.py run design/Design-<name> add-job j03
 ```
 

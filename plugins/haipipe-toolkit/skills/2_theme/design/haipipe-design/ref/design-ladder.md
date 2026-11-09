@@ -19,20 +19,26 @@ The tree
 --------
 
 ```text
+design/DesignMethodBook-<Topic>/           Block: the method, one signed release at a time (JL 261109)
+├── board.md                                its face: board-kind: design-method-book · serves: design/Design-<name> · goal
+├── jNN_method-vN_<slug>/                   one release: its face (release · from: M01 m2 · state · signed) and
+│                                           method.md, the registered version it was cut from, frozen once signed
+└── proposals/<slug>.md                     the backlog: kind · step · from · state · taken-in; the next release is cut here
+
 design/Design-<name>/                      Block: one application, one channel
-├── board.md                                its face: board-kind: design-board · channel · spine · close
+├── board.md                                its face: board-kind: design-board · channel · method-book · spine · close
 │                                           ## Goals (```yaml goals:) · ## Questions (```yaml questions:)
 ├── design-goal.md                          the shared rules every goal keeps: rules: r<k> · signed: (haipipe-design-goal)
-├── inputs/iN/                              one inputs version: rules · theory · handoff copies, manifest.yaml (frozen)
+├── inputs/inputs-vN/                       one inputs version: rules · theory · handoff copies, manifest.yaml (frozen)
 ├── observed/eNN_<exp>/                     what one Exp returned: arms.csv · source.md · manifest.yaml (frozen)
 ├── sNN-<topic>/                     Idea Studio: drawings, one topic each
 ├── reports/qNN_<topic>/                    Audience Report: the Block's questions
 ├── runs/run-<type>-<target>/               every Block Run is soft: run.yaml · passes/
 ├── delivery/                               designs.json · designs.md · screens/<jNN>-<dNN>.<ext>: every Job's release
-└── jNN_<goal>_<method>/                    Job: one goal × one method version × one inputs version → N designs
-    ├── jNN_<goal>_<method>.md              its face (front matter): goal · method · method-sha · inputs · n ·
-    │                                       state · moved
-    ├── inputs/                             the fence: goal.md · method.md · links into ../inputs/iN/ ·
+└── jNN_<goal>_method-vN-<slug>_inputs-vM/  Job: one goal × one release × one inputs version → N designs
+    ├── jNN_<goal>_method-vN-<slug>_inputs-vM.md   its face (front matter): goal · method · release · method-sha ·
+    │                                       inputs · n · state · moved
+    ├── inputs/                             the fence: goal.md · method.md · links into ../inputs/inputs-vM/ ·
     │                                       manifest.yaml (each file, its source, its sha256 as its first 12 hex)
     ├── studio/ · reports/                  optional
     ├── runs/                               soft: run-setup-goal · run-setup-method · run-setup-inputs ·
@@ -54,16 +60,30 @@ design/Design-<name>/                      Block: one application, one channel
         └── runs/run-rank-t99/result/       hard: ranking.csv (rank · design · predicted · why · kept)
 ```
 
-A design Block is a special board (JL 261008: Paper, Insight, Prototype and Design are the special boards; Labeling will be one too), named by its kind: `Design-<name>[-<YYMMDD>]`, e.g. `Design-<app>-<round>-<YYMMDD>`. The folder name is a label; a reader knows the Block by its `board.md` (`board-kind: design-board`). An older `bNN_<app>` Block stays readable.
+A design Block is a special board (JL 261008: Paper, Insight, Question Book and Design are the special boards; Labeling will be one too), named by its kind: `Design-<name>[-<YYMMDD>]`, e.g. `Design-<app>-<round>-<YYMMDD>`. The folder name is a label; a reader knows the Block by its `board.md` (`board-kind: design-board`). An older `bNN_<app>` Block stays readable.
 
-`jNN_<goal name>_<method name>` names the Job in words: the goal's `name:` in `board.md ## Goals` and the method's registry slug (`M01-goal-only` gives `goal-only`), so a person reads the folder as it is, and the workbench shows it as it is, wherever it names the Job, never the bare `jNN` (JL 261011: "make the j01 job folder name to be as readable as possible"; "I don't want we just have jNN here, not readable"; b10 s32-D15): `j01_prepare-before-visit_goal-only`, `j02_prepare-before-visit_actionable-insights`. The ids are not in the name: the face's `goal:`, `method:` and `inputs:` lines are the pins every reader uses, and the scaffold refuses a name whose words do not match them. The face's heading is in words too: `# Prepare before visit, by Actionable insights`. The older id form `jNN_<goal>[-<goal-slug>]_<method>[-<method-slug>]` (`j03_g01-review-new-rx_m04-actionable-insights`, JL 261008) stays readable.
+**The Design Method Book** (JL 261109: "we should have both … just like Workbench Insight, we have the Prototype block
+and Insight Block"; named `DesignMethodBook`, as insight's `InsightQuestionBook`) is the method's own Block, beside the
+Board it serves. A Book is to the method what the Insight Question Book is to the questions: one Job per release
+`jNN_method-vN_<slug>/`, frozen once a person signs it; the Board's Jobs and experiments come back as `proposals/`; a
+signed proposal becomes the next release. A release is cut from a registered method version (`from: M01 m2`): the
+registry in `haipipe-design-method/methods/` stays the library every Book cuts from. The Board names its Book
+(`method-book: design/DesignMethodBook-<Topic>`), and each Job names the release it runs (`release: method-vN`) beside
+its registered pin (`method: M01 m2`). On screen the Book reads Method · Versions · Ideas · Scorecard · MindMap.
+
+On a Board with a Book, a Job is `jNN_<goal name>_method-vN-<release slug>_inputs-vM`: the goal in words, then the
+same ids a person reads on screen, in the face and in the Run names (`j03_confirm-by-reply_method-v2-overall-performance_inputs-v2`),
+as the insight Board's `jNN_code-vN-<slug>_data-vM`. An inputs version is `inputs/inputs-vN/`. `design_ladder.py book`,
+`release` and `job --release` make them, and refuse an unsigned release or a name whose words do not match its pins.
+
+On a Board with no Book (the older names), `jNN_<goal name>_<method name>` names the Job in words: the goal's `name:` in `board.md ## Goals` and the method's registry slug (`M01-goal-only` gives `goal-only`), so a person reads the folder as it is, and the workbench shows it as it is, wherever it names the Job, never the bare `jNN` (JL 261011: "make the j01 job folder name to be as readable as possible"; "I don't want we just have jNN here, not readable"; b10 s32-D15): `j01_prepare-before-visit_goal-only`, `j02_prepare-before-visit_actionable-insights`. The ids are not in the name: the face's `goal:`, `method:` and `inputs:` lines are the pins every reader uses, and the scaffold refuses a name whose words do not match them. The face's heading is in words too: `# Prepare before visit, by Actionable insights`. The older id form `jNN_<goal>[-<goal-slug>]_<method>[-<method-slug>]` (`j03_g01-review-new-rx_m04-actionable-insights`, JL 261008) stays readable.
 
 
 The rules
 ---------
 
 1. **One goal × one method version × one inputs version per Job.** The face pins `goal: G01`, `method: M04 m2` with
-   `method-sha:` and `inputs: i2`. A changed method or a new inputs version is a new Job, never an edit; `moved:`
+   `method-sha:`, `release: method-v2` on a Board with a Book, and `inputs: inputs-v2` (an older Block: `i2`). A changed method or a new inputs version is a new Job, never an edit; `moved:`
    says which one clock moved from the Job before it (`start` · `method` · `inputs`). Two Jobs on one goal and one
    inputs version, with different methods, compare methods.
 2. **The goal is signed once, at the Block.** `run-add-goal-<goal>` writes it into `board.md ## Goals` and a person
@@ -73,10 +93,11 @@ The rules
 3. **A method is registered, never written in a Job.** The registry is `haipipe-design-method/methods/`: a method
    `MNN` and its versions `m<k>`, each version its choices at the five steps of the design unit (① See input ·
    ② Reason ideas · ③ Conduct process · ④ Review item · ⑤ Review whole). `run-setup-method-jNN` copies the pinned
-   version into `inputs/method.md` and records its sha. A Block proposes changes (`run-propose-method-<slug>`); the
+   version into `inputs/method.md` and records its sha. A Block proposes changes (`run-propose-method-<slug>`); on a
+   Board with a Book the proposal lands in the Book's `proposals/` and a person signs the next release there, else the
    registry cuts the next version.
 4. **The Job's `inputs/` is the fence.** The design work sees only `inputs/`: `goal.md`, `method.md`, relative links
-   into the Block's `inputs/iN/` (and the insight handoff copied there), and `manifest.yaml`, which lists every file
+   into the Block's `inputs/inputs-vN/` (and the insight handoff copied there), and `manifest.yaml`, which lists every file
    with its source and its sha256 (stored as the first 12 hex) and which part of step ① it serves. Each reasoning
    step's `from` (its own, or its topic's) names a file in the manifest or says `own knowledge`. Before any design
    Task opens, the reviewer agent checks it in the first pass of `run-open-designs-jNN`
@@ -129,7 +150,7 @@ reads, never a counter: the verify of draft 2 of d04 is `run-verify-d04-v2` (k =
 level  Run                              kind  does                                    skill
 Block  run-add-goal-<goal>              soft  a goal into the goal list; a person signs haipipe-design-goal
        run-setup-rules                  soft  the shared rules                          haipipe-design-goal
-       run-add-inputs-i<N>              soft  an inputs version, frozen                 haipipe-design-goal
+       run-add-inputs-v<N>              soft  an inputs version, frozen                 haipipe-design-goal
        run-add-job-j<NN>                soft  an empty Job, its pins written            haipipe-design
        run-propose-method-<slug>        soft  a method change, to the registry          haipipe-design-method
        run-add-observed-e<NN>           soft  an Exp's per-arm totals                   haipipe-design-method

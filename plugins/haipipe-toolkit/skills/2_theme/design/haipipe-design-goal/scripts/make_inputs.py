@@ -1,9 +1,9 @@
 """Freeze a Block's inputs version, or build a Job's inputs/ fence (ref/inputs.md).
 
-    python make_inputs.py freeze <block>/inputs/iN [--new "<what changed>"] [--rules r2]
-    python make_inputs.py job    <block>/jNN_<goal>_<method>
+    python make_inputs.py freeze <block>/inputs/inputs-vN [--new "<what changed>"] [--rules r2]   (an older Block: iN)
+    python make_inputs.py job    <block>/jNN_<goal>_method-vN-<slug>_inputs-vM   (an older Block: jNN_<goal>_<method>)
 
-freeze writes inputs/iN/manifest.yaml: every file with the first 12 hex of its sha256, keeping a parts: list a draft
+freeze writes inputs/inputs-vN/manifest.yaml: every file with the first 12 hex of its sha256, keeping a parts: list a draft
 manifest already has. job writes the Job's inputs/goal.md from its pinned goal (board.md ## Goals), links every file
 of the pinned inputs version whose part the method's step ① sees (inputs/method.md `sees:`), and writes
 inputs/manifest.yaml. Neither ever overwrites: with a frozen manifest there, nothing is made.
@@ -52,8 +52,8 @@ def today() -> str:
 
 
 def freeze(version: Path, new: str, rules: str, made: list) -> None:
-    if not re.match(r"^i\d+$", version.name) or version.parent.name != "inputs":
-        sys.exit(f"an inputs version is <block>/inputs/iN: {version}")
+    if not re.match(r"^(inputs-v|i)\d+$", version.name) or version.parent.name != "inputs":
+        sys.exit(f"an inputs version is <block>/inputs/inputs-vN (an older Block: iN): {version}")
     man = version / "manifest.yaml"
     draft = yaml.safe_load(man.read_text(encoding="utf-8")) if man.is_file() else {}
     if draft and draft.get("frozen"):

@@ -11,7 +11,7 @@ status: done
 passes:
 - p01-1108
 writes:
-- j02_confirm-by-reply_goal-only/j02_confirm-by-reply_goal-only.md
+- j02_confirm-by-reply_method-v1-goal-only_inputs-v2/j02_confirm-by-reply_method-v1-goal-only_inputs-v2.md
 feeds: null
 by: designer agent
 started_at: '2026-11-08T09:00:00'

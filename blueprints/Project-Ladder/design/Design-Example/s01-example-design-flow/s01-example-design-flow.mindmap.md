@@ -40,4 +40,4 @@ built: from-topic .
     s01-D01 · one goal, three Jobs, one clock each: the inputs move from j01 to j02, the method from j02 to j03 (placeholder decision on the example, 261106)
 - Open <!-- @open #cf9b77 -->
   - Should the example test also try the … <!-- @open/0 #11d02d -->
-    Should the example test also try the goal-only design made on i2 (j02), once it is done?
+    Should the example test also try the goal-only design made on inputs-v2 (j02), once it is done?
