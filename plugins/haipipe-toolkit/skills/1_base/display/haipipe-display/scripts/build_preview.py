@@ -43,7 +43,7 @@ from pathlib import Path
 
 PLAIN = r"""\documentclass[11pt]{article}
 \usepackage[letterpaper,margin=1in]{geometry}
-\usepackage{graphicx,booktabs,tabularx,multirow,array,longtable,float,caption,amsmath,amssymb,xcolor}
+\usepackage{graphicx,booktabs,tabularx,multirow,array,longtable,float,caption,amsmath,amssymb,xcolor,adjustbox}
 \usepackage[T1]{fontenc}
 """
 # the paper's default head, as haipipe-paper-assemble build_delivery.write_master writes it before a paper has a
@@ -53,7 +53,7 @@ PAPER = r"""\documentclass[12pt]{article}
 \usepackage{fontspec}
 \IfFontExistsTF{TeX Gyre Termes}{\setmainfont{TeX Gyre Termes}}{\IfFontExistsTF{Times New Roman}{\setmainfont{Times New Roman}}{}}
 \usepackage{microtype}
-\usepackage{graphicx,booktabs,tabularx,multirow,array,longtable,amsmath,amssymb,setspace,caption,float,xcolor}
+\usepackage{graphicx,booktabs,tabularx,multirow,array,longtable,amsmath,amssymb,setspace,caption,float,xcolor,adjustbox}
 \usepackage{fancyhdr}
 \onehalfspacing
 \setlength{\parindent}{0.25in}
@@ -194,6 +194,8 @@ def build(unit: Path, method_from: Path | None = None, look: str = "", preamble_
             preamble = head + "\n"
     if r"\usepackage{float}" not in preamble and "float" not in re.findall(r"\\usepackage(?:\[[^]]*\])?\{([^}]*)\}", preamble):
         preamble += r"\usepackage{float}" + "\n"
+    if r"\adjustbox" in (unit / "float.tex").read_text(encoding="utf-8", errors="ignore") and "adjustbox" not in preamble:
+        preamble += r"\usepackage{adjustbox}" + "\n"   # a table scaled to the page; without it the box prints as text
     if earlier and "graphicx" not in preamble:
         preamble += r"\usepackage{graphicx}" + "\n"
     tail = earlier_tex(unit, earlier) if earlier else ""
