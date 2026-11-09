@@ -1,7 +1,7 @@
 # Stage 2 review r01 · t07_X01_what-we-found (Executive level, its figure in Delivery)
 
 ```text
-page     http://127.0.0.1:5623/_board/workbench?layout=focus&path=blueprints/Project-Ladder/insight/Insight-Example/j02_prototype-p1-example-questions_data-Examplev2/t07_X01_what-we-found (Report, Work · Answer, By cut, Across Jobs, Plan, MindMap)
+page     http://127.0.0.1:5623/_board/workbench?layout=focus&path=blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2/t07_X01_what-we-found (Report, Work · Answer, By cut, Across Jobs, Plan, MindMap)
 answers  what: folder name "what-we-found"; "Aim X01" (partly) · where: path ✅ · here: "answered · checked", "checked", "nothing yet" ✅ · do: Work chain "Check the alignment · Copy prompt" ✅
 rules    1 ✅ · 2 ✅ · 3 ✅ · 4 ✅ · 5 ❌ "Aim X01"; "rests on I01, K01" shows ids as link text · section table ❌ Delivery "each previewed": a bare file name under "THIS PAGE", opening a raw PNG in a new tab
 tasks    the plain finding: 1 click ✅ (big sentence, worded bar chart) · what it rests on: 2 clicks (By cut, What it cites) ✅ · get the delivered figure: 2 clicks (Delivery, file name), no preview, leaves the page

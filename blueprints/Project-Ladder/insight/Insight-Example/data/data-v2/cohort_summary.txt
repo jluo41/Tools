@@ -1,0 +1,5 @@
+Example data-v2: all sixteen days (synthetic, made by make_example_data.py)
+rows: 960  ·  days: 16  ·  2026-01-05 to 2026-01-20
+rows per arm: A 459, B 501
+rows per group: group_1 541, group_2 351, group_3 68
+outcome rate per arm: A 0.32, B 0.47

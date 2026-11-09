@@ -47,14 +47,14 @@ The three levels
 Block     Map (releases × data         question map ·     Overall Report · then           the Jobs: All ·     soft · from below ·
 (Board)   versions) · Prototype ·      topics             Partition × Reading: Coverage · p1 · p2 …           Handoff
           Dataset · Partitions                            Tracks · Consistency · Findings
-Job       the Job's line (pN × vM ·    topics             Overall Report · then           its steps:          All · hard · soft ·
+Job       the Job's line (code-vN × data-vM ·    topics             Overall Report · then           its steps:          All · hard · soft ·
           state · moved) atop                             Partition × Period: Current ·   1 Launch · 2 Run ·  launch · power ·
           Prototype · Dataset                             vs previous                     3 Write · 4 Check · compare · propose · close
                                                                                           5 Compare · 6 Close
 Task      Question · Records           topics             Table · Reading                 Partitions          All · hard · soft
 ```
 
-The words (JL 261011): the Map's corner reads `analysis plan \ data freeze`, a row `AP1 · first ladder`, a column `F1 · first 5 days`; the Job ▾ menu shows the Job's folder name as it is, `j01_prototype-p1-basic-questions_data-SMSR2v1` (JL 261012).
+The words (JL 261109: "code-v1 x data-v1, make it readable"): the Map's corner reads `code version \ data version`, a row `code-v1 · first ladder`, a column `data-v1 · first 5 days`; the Job ▾ menu shows the Job's folder name as it is, `j01_code-v1-basic-questions_data-v1`. An older Board's p1 and v1 read as code-v1 and data-v1.
 
 The Overall Report (JL 261012: "before the Full, we should have a Overall Report ... we can click and read it"): when a
 release asks Executive questions (X), the Audience Report's first button, before Full, reads them as one document: a
@@ -132,7 +132,7 @@ its Results the Report view's own sections. Each opens on its first letter; Mind
 
 ```text
 Board  Report  A Answers (question × Job) · B Questions (each, its DIKW level, where answered; the Board's own) ·
-               C Jobs (analysis plan × data freeze, what each Job moved) · D Data (freezes, cuts) · E Handoff
+               C Jobs (code version × data version, what each Job moved) · D Data (versions, cuts) · E Handoff
        Work    the same letters; Process: 🙋 sign the newest plan, triage the proposals, then the letter's acts
                (write the Overall Report · propose questions · open the newest Job, add a Job · add a freeze, propose
                a cut · write the counsel, draft the handoff), each with its run card's Copy prompt

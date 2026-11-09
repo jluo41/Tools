@@ -1,5 +1,6 @@
 # t32_response · Response to the reviewers
 
+use-case: Reviewer response
 task-type: draft
 page-type: section
 folder-kind: section

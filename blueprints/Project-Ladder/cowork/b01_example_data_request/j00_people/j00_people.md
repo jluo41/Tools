@@ -1,5 +1,6 @@
 # j00 · People
 job-kind: cowork-job
+use-case: Team directory
 state: 📇 REFERENCE · kept current as a role joins a Job
 waiting-on: nobody
 since: 2026-10-07

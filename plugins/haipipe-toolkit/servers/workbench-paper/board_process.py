@@ -12,7 +12,6 @@ from live.ui_parts import _cap, _plain, _plan_html, _section, _todo, plural_word
 from live.focus_draft import WORK
 from live.board_read import BOARD_PARTS, DOT_REF, view_topics, _face, _field, _num, _open_list, _page_url, _section_state, _state_words, _table, _task_url, _waits, board_topic, explore_tree, is_version, md_table, part_topics
 from live.board_interactions import answers_of
-from live.board_evidence import EVIDENCE_KINDS, evidence_body
 
 
 # ── every Board view in two bands, PROCESS and RESULTS, each numbered from 1 (JL 261101: "the index for each section
@@ -21,8 +20,9 @@ from live.board_evidence import EVIDENCE_KINDS, evidence_body
 # Work: what waits on you), 2 its open points or where each item stands, 3 the skills that do it (Work; JL 261101:
 # "show what is the skills related to each UI"). PROCESS is Work's only (s32-D27) ─────────────────────
 VIEW_SKILLS = {
-    "idea": (("haipipe-paper-ideation", "picks the direction and the target, through your gate"),
-             ("haipipe-ideation", "finds candidate ideas and tests their novelty and fit")),
+    "idea": (("haipipe-paper-ideation", "projects candidate directions and the recorded selection"),
+             ("haipipe-ideation", "finds candidate ideas and tests their novelty and fit"),
+             ("haipipe-paper-related", "positions candidate directions against the closest related work")),
     "story": (("haipipe-paper-story", "writes the questions, hypotheses, claims and Section narrative"),
               ("haipipe-paper-venue", "keeps each journal's desk rules, venues/<venue>/call.md"),
               ("haipipe-paper-related", "maps the closest related papers, beside ours")),
@@ -35,6 +35,7 @@ VIEW_SKILLS = {
     "evidence": (("haipipe-paper-evidence", "checks the values and citations as one ledger"),
                  ("haipipe-evidence", "lands each Evidence Item from its Results")),
     "displays": (("haipipe-paper-plan", "plans each display against the venue's rules (the display plan)"),
+                 ("haipipe-paper-story", "owns the shared Story by Section that the displays support"),
                  ("haipipe-display", "draws each table and figure, then its review loop"),
                  ("haipipe-paper-evidence", "each version's preview.pdf, as the paper prints it")),
     "draft": (("haipipe-paper-draft", "drafts one Section through its steps"),
@@ -80,36 +81,8 @@ def _steps(board: Path, key: str, topic, text: str, root: Path, md):
         rows = [(f'{_plain(r.get("when", ""))} · {_plain(r.get("step", ""))}', _plain(r.get("who", "")), _state_of(r.get("state", "")), "", "", False)
                 for r in steps if not _plain(r.get("state", "")).startswith("✅")]
         return ("Next steps to the send", rows) if rows else ("", [])
-    if key in ("evidence", "displays"):        # each item, in RESULTS' order, its state
-        jobs = [d for d in sorted(board.glob("j[0-9]*_*")) if d.is_dir() and not is_version(d)]
-        rows = []
-        mine = ("Displays",) if key == "displays" else ("Values", "Citations")
-        for kind, pat in sorted((k for k in EVIDENCE_KINDS if k[0] in mine), key=lambda k: ("Values", "Citations", "Displays").index(k[0])):
-            job = next((j for j in jobs if re.search(pat, j.name, re.I)), None)
-            for t in (sorted((x for x in job.glob("t[0-9]*_*") if x.is_dir()), key=_num) if job else []):
-                label, status, _ = evidence_body(t, root)
-                words = re.sub(r"^(?:e?figure|e?table|values|cite)\d*\s*", "", re.sub(r"^t\d+_", "", t.name).replace("-", " "), flags=re.I)
-                head = label if label and label.lower() not in ("values", "citations") else _cap(words)
-                st = (status or "").lower()
-                pill = ("not started" if re.search(r"\b(?:not|un)[\s-]*(?:yet\s+)?(?:checked|drawn|filled|done)", st)   # "not drawn" is not done
-                        else "done" if re.search(r"checked|drawn|filled|done", st)
-                        else "waiting" if st.startswith("wait") else _cap(status or "not started")[:28])
-                name = f"{kind} · {head}"
-                if kind == "Displays":           # its plan name, as RESULTS shows it: Figure 1 (Display A) · 📈 Figure · <name>
-                    from live.board_results import _display_line, display_plan
-                    dp = display_plan()
-                    plan = {r.get("display", ""): r for r in (dp.rows(board) if dp else [])}
-                    face = t / f"{t.name}.md"
-                    ks = dp.keys(face.read_text(encoding="utf-8", errors="ignore")) if dp and face.is_file() else []
-                    r = next((plan[k] for k in ks if k in plan), None)
-                    lab = dp.title(r) if r else head
-                    name = f"{lab} · {_display_line(t, words)}"
-                line = ""
-                if kind != "Displays":           # what its Run returned, in the version's and the Job's words (r03:
-                    from live.evidence_read import task_state   # a pill cut a coded headline, "0 card-o")
-                    line, pill = task_state(t, status)
-                rows.append((name, line, pill, "Open", _task_url(t, root), False))
-        return ("Where each display stands" if key == "displays" else "Where each stands", rows) if rows else ("", [])
+    if key in ("evidence", "displays"):        # each item's state is its own tab's, the whole-paper check a verdict
+        return ("", [])                        # line above them: no second list (JL 261109: "maybe we don't need it")
     if key == "draft":                         # each Section's next step, a verb that opens it
         rows = []
         for job in sorted(d for d in board.glob("j[0-9]*_*") if d.is_dir() and is_version(d)):

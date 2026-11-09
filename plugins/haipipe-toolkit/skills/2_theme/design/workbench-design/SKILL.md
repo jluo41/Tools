@@ -16,7 +16,7 @@ description: >-
   design spaces on screen, theory of design, /workbench-design.
 metadata:
   version: "0.18.0"
-  last_updated: "2026-11-01"
+  last_updated: "2026-11-08"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -69,6 +69,29 @@ full line on hover; its Next line is plain words, never a Run name; and it links
 haipipe-design-delivery's `summary.py` builds into `delivery/summary.pdf` (JL 261013).
 
 ## On the focus page: the j01 letters (b12 j01, 261101)
+
+### Current Block frame (2026-11-08)
+
+For a ladder Design **Block**, Report now combines the existing results and actions under
+**Review Content**, followed by **Around the Work**. The views stay Summary · Goals · Jobs · Rounds ·
+Methods · MindMap; Delivery remains a right-rail entry. Old Block Work links open the matching Report view.
+`servers/workbench-design/design_context.py` adapts `design_focus.py` to the shared `work_frame.py` renderers.
+
+The eight supporting sections use the shared names and order: Studio · Interactions · Decisions · Things to Know ·
+Checklist · Timeline · Skills · Files. Inside a View, explicit `view:` assignment wins; otherwise a linked Topic
+must match that View. Unassigned records stay in the right rail, which aggregates the Block and its descendants.
+Skills and Files use the same selection. Do not infer a View from a Run name or move records to populate a View.
+
+The theme blueprint's `ui/structure.md`, `ui/block-views.md`, `ui/view-guide.json` and `ui/example-types.json`
+under `blueprints/Project-Ladder/work/b12_theme_design/` describe the current Block, its sections, sources,
+layouts, support skills and real example routes. The earlier s51/s52 drawings remain historical; they have not
+been redrawn. A four-view replacement and the four-state Checklist workflow remain proposals.
+
+**Job and Task focus pages retain the Report/Work behavior described below.** Their verification, revision and
+human **Review and approve** gate are unchanged. Opening a page or copying a prompt never approves or releases.
+The six-Space frame and older Design Folder boards also retain their existing contracts.
+
+### Earlier Block layout; current Job and Task layout
 
 The focus page (`layout=focus`, what `/wb` opens) draws a design Block, Job and Task in b12 j01's letters, with the
 parts every theme's page shares (`servers/workbench/ui_parts.py`): Report is a view's 📊 Results only; Work is ⚙️ Process

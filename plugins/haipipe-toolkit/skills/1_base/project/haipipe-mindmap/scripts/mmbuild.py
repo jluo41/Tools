@@ -36,7 +36,7 @@ def leaf(key: str, item: str) -> MT.Node:
     if f:
         shown = f"![{f.group(1)}]({f.group(2)})" if f.group(2).lower().endswith(IMAGE) else ""
         return built(key, item, note=[shown] if shown else [])
-    title, whole = short(item, 7), " ".join(item.split())
+    title, whole = short(item.replace("**", ""), 7), " ".join(item.split())   # no half-open ** on a card
     return built(key, title, note=[] if title == whole.rstrip(".;") else [whole])
 
 
@@ -220,6 +220,31 @@ def face_of(topic: Path) -> Path | None:
     return md if md.is_file() else None
 
 
+SUB, TAB = "\x00h", "\x00t"                           # markers _sections leaves for from_topic: a sub-heading, a table
+
+
+def _nest(key: str, items: list) -> list:
+    """A section's items as a tree: each sub-heading (###, ####) a branch, what follows it its children, a table one
+    leaf naming its columns and rows; so a long face reads as its own outline, not one flat list of raw lines."""
+    top, stack = [], []                                  # stack: (level, children list)
+    for j, it in enumerate(items):
+        if it.startswith(SUB):
+            lvl, text = it[len(SUB):].split(SUB, 1)
+            node = built(f"{key}/{j}", short(text.replace("**", ""), 10))
+            while stack and stack[-1][0] >= int(lvl):
+                stack.pop()
+            (stack[-1][1] if stack else top).append(node)
+            stack.append((int(lvl), node.children))
+            continue
+        if it.startswith(TAB):
+            n, cols = it[len(TAB):].split(TAB, 1)
+            node = built(f"{key}/{j}", f"table · {n} rows", note=[f"columns: {cols}"])
+        else:
+            node = leaf(f"{key}/{j}", it)
+        (stack[-1][1] if stack else top).append(node)
+    return top
+
+
 def _sections(lines: list) -> tuple:
     """The face as (title, [(heading or None, [paragraph or item, ...])]); code blocks left out."""
     title, i = "", 0
@@ -251,6 +276,18 @@ def _sections(lines: list) -> tuple:
             flush()
             out.append((head, cur))
             head, cur = ln[3:].strip(), []
+        elif re.match(r"^#{3,6}\s", ln):                # a sub-heading: a branch of its own under the section
+            flush()                                      # (JL 261109: "why this is so hard to read?")
+            cur.append(f"{SUB}{len(ln) - len(ln.lstrip('#'))}{SUB}{ln.lstrip('#').strip()}")
+        elif ln.lstrip().startswith("|"):                # a table: one line saying what it holds, never its rows
+            flush()
+            cells = [c.strip() for c in ln.strip().strip("|").split("|")]
+            if cur and cur[-1].startswith(TAB):
+                if not all(re.fullmatch(r":?-{2,}:?", c) for c in cells if c):
+                    n, cols = cur[-1][len(TAB):].split(TAB, 1)
+                    cur[-1] = f"{TAB}{int(n) + 1}{TAB}{cols}"
+            else:
+                cur.append(f"{TAB}0{TAB}{', '.join(c for c in cells if c)[:80]}")
         elif MT.BULLET.match(ln):
             flush()
             cur.append(MT.BULLET.match(ln).group(2))
@@ -298,8 +335,7 @@ def from_topic(topic: Path) -> MT.MindMap:
     kids = []
     for k, (head, items) in enumerate(branches):
         key = re.sub(r"[^a-z0-9]+", "-", head.lower()).strip("-") or f"b{k}"
-        leaves = [leaf(f"{key}/{j}", it) for j, it in enumerate(items)]
-        kids.append(built(key, head, leaves))
+        kids.append(built(key, head, _nest(key, items)))
     root = built(".", short(title, 14), kids, note)
     root.id = "root"
     return MT.MindMap({"mindmap": "1", "title": f"{title} · structured", "built": "from-topic"}, root)

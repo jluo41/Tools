@@ -1,5 +1,6 @@
 # t03_results · Results
 
+use-case: Manuscript section
 task-type: draft
 page-type: section
 folder-kind: section

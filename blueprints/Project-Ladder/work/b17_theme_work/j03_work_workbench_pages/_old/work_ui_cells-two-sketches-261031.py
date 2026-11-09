@@ -1,4 +1,4 @@
-"""The nine sNN of j03 · The work pages, level by level: one per level (Block, Job, Task) and section (Report, Work,
+"""The nine sNN of j03 · Work workbench pages: one per level (Block, Job, Task) and section (Report, Work,
 Studio), each drawn in haipipe-studio's five parts (scripts/five_parts.py), as b16's paper_ui_cells.py draws the
 paper's (JL 261031: "I think you should focus on the things like ... b16_theme_paper ... studio ... UI and think about
 how you should update the work_theme's workbench UI"). Each sNN's builder is `build(Path(__file__).parent)`: its cell

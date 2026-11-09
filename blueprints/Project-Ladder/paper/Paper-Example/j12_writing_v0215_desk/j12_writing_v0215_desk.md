@@ -1,5 +1,6 @@
 # j12_writing_v0215_desk · the next version of the paper, from j11_writing_v1130_desk
 
+use-case: Feedback revision
 send: j12_writing_v0215_desk
 desk: desk
 venue: Example Journal

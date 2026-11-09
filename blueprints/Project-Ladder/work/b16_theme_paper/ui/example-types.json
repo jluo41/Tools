@@ -1,0 +1,28 @@
+{
+  "block": {
+    "blueprints/Project-Ladder/paper/Paper-Example": "📄 Paper Board"
+  },
+  "job": {
+    "blueprints/Project-Ladder/paper/Paper-Example/j11_writing_v1130_desk": "✍️ Writing Version",
+    "blueprints/Project-Ladder/paper/Paper-Example/j12_writing_v0215_desk": "Writing Version · Revision example",
+    "blueprints/Project-Ladder/paper/Paper-Example/j01_evidence_display": "🖼️ Display Evidence",
+    "blueprints/Project-Ladder/paper/Paper-Example/j02_evidence_value": "🔢 Value Evidence",
+    "blueprints/Project-Ladder/paper/Paper-Example/j03_evidence_cite": "📚 Citation Evidence",
+    "blueprints/Project-Ladder/paper/Paper-Example/j21_submission_v1130_desk": "📮 Submission"
+  },
+  "task": {
+    "blueprints/Project-Ladder/paper/Paper-Example/j11_writing_v1130_desk/t01_introduction": "Draft · Manuscript Section",
+    "blueprints/Project-Ladder/paper/Paper-Example/j11_writing_v1130_desk/t00_summary": "Draft · Abstract / Summary",
+    "blueprints/Project-Ladder/paper/Paper-Example/j11_writing_v1130_desk/t31_cover-letter": "Draft · Cover Letter",
+    "blueprints/Project-Ladder/paper/Paper-Example/j12_writing_v0215_desk/t32_response": "Draft · Reviewer Response",
+    "blueprints/Project-Ladder/paper/Paper-Example/j01_evidence_display/t02_table1-example": "🖼️ Figure / Table",
+    "blueprints/Project-Ladder/paper/Paper-Example/j02_evidence_value/t01_values-sample": "Values · Value group",
+    "blueprints/Project-Ladder/paper/Paper-Example/j02_evidence_value/t02_raw-value-tables": "🗄️ Raw Value Tables",
+    "blueprints/Project-Ladder/paper/Paper-Example/j02_evidence_value/t99_paper_value_check": "Values · Whole-paper audit",
+    "blueprints/Project-Ladder/paper/Paper-Example/j03_evidence_cite/t01_cite-prior-work": "Citations · Claim group",
+    "blueprints/Project-Ladder/paper/Paper-Example/j03_evidence_cite/t99_paper_citation_check": "Citations · Whole-paper audit",
+    "blueprints/Project-Ladder/paper/Paper-Example/j21_submission_v1130_desk/t01_cover-letter": "✉️ Submission Letter",
+    "blueprints/Project-Ladder/paper/Paper-Example/j21_submission_v1130_desk/t02_portal-walk": "🚶 Portal Walk",
+    "blueprints/Project-Ladder/paper/Paper-Example/j21_submission_v1130_desk/t03_portal-fill": "📮 Portal Fill"
+  }
+}

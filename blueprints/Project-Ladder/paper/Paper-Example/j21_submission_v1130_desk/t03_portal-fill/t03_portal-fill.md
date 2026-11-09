@@ -1,5 +1,6 @@
 # t03_portal-fill · Portal fill
 
+use-case: Portal preparation
 task-type: description
 state: ✅ built · placeholder values · nothing submitted
 owner: <person>

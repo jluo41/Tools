@@ -1,7 +1,7 @@
 # t06_W01_next-round · Wisdom Task · stage 2 · r02
 
 ```text
-page     http://127.0.0.1:5623/_board/workbench?layout=focus&path=blueprints/Project-Ladder/insight/Insight-Example/j02_prototype-p1-example-questions_data-Examplev2/t06_W01_next-round (Report, Work: Answer · By cut · Across Jobs · Plan · MindMap)
+page     http://127.0.0.1:5623/_board/workbench?layout=focus&path=blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2/t06_W01_next-round (Report, Work: Answer · By cut · Across Jobs · Plan · MindMap)
 answers  what: the folder, Aim "what should the next round keep or change" · where: crumb to j02 · here: partly, headline "Its page is being written" is a state, not the counsel · do: partly, open bars
 rules    1 ✅ · 2 ✅ · 3 ✅ · 4 ⚠️ the view's main point is a status line; MindMap is root + "Runs ▸ show" · 5 ⚠️ "how sure —"
 tasks    what it rests on: 1 click | last Job's counsel: 2 clicks (Across Jobs) | who acts next: 2 clicks (Work chain "running: write the page"); but Process "Cite K01 · done" against Results "to cite"

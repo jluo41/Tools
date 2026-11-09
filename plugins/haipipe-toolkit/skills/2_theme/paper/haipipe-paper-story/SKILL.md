@@ -2,8 +2,8 @@
 name: haipipe-paper-story
 description: "Draft, review, revise or draw one paper's Story: its Seed, research questions (hypotheses, claims, the work that tests them), Discovery and Task Roadmaps, related papers and Section Narrative; on the ladder a studio topic (sNN-story-<desk>-<idea>/) with Board Questions. Use to plan a telling or check that it holds for an editor, a reviewer and the public. Trigger: story, research question, hypothesis, claim, RoadMap Draw, /haipipe-paper-story."
 metadata:
-  version: "0.25.0"
-  last_updated: "2026-11-01"
+  version: "0.27.0"
+  last_updated: "2026-11-08"
   group-token: "sNN-story-<desk>-<idea-slug>"
   outline:
     mode: fixed
@@ -22,6 +22,25 @@ how the Story is authored; this skill defines what the Story says.
 For workflow, Section, or compiler integration, also read
 [ref/integration.md](ref/integration.md).
 
+## Shared narrative across Views
+
+Section Narrative is authored once on the selected Story topic. The focused
+workbench renders it as Story by Section in both Story and Displays: the same
+section, in Displays the last one, after the displays and their examples (JL
+261109). The Displays entry connects the argument to its figures; it does not
+own another narrative.
+Version-specific compile order remains on the writing Job and with assembly.
+
+Related appears in both Idea and Story, reading the same Board records. Closest-
+work positioning remains with haipipe-paper-related and reference storage with
+haipipe-related.
+
+Grant is a type within Paper and uses this same narrative contract: connect the
+research gap, specific aims, significance, approach and supporting evidence.
+Keep proposed outcomes distinct from established results and obtain the exact
+section requirements from the funding call. Grant-specific workbench behavior
+is still proposed; do not infer implementation from the design matrix.
+
 ## 🪜 Where a Story lives on the ladder (b16 Q04, JL 261007)
 
 The Story is not a Page on the ladder (`haipipe-paper/ref/paper-ladder.md`). Its eight parts are spread over
@@ -33,8 +52,9 @@ the folders that show them, and this skill writes each one there:
 | the telling's drawings | the same topic, one `build_*.py` per drawing | Block › Idea Studio |
 | §3, one research question each | `board.md ## Questions` (`group:` the telling) + `reports/qNN_<question>/` | Block › Audience Report › High-level logic + Low-level work |
 | §5 · §6 · §7 | the topic face, and each report's Work as the work lands | the Question's Work column |
-| §8 + compile order | each version face's `## Narrative`; before a version, `s04-paper-workflow/`'s Sections table (haipipe-paper-plan) | the version's Draft-Main · the build |
-| related papers | `related/related.md` | Studio › Related (folded under the topics; was Block › Description › Related) |
+| version narrative + compile order | each version face's `## Narrative`; before a version, `s04-paper-workflow/`'s Sections table (haipipe-paper-plan) | the version's Draft-Main · the build |
+| Section Narrative for the current telling | the selected Story topic face (`story-current:`) | focused Report › Story and Displays, the same Story by Section |
+| related papers | `related/related.md` | focused Report › Idea and Story; classic Studio › Related |
 
 The topic face keeps the studio marks every topic has (haipipe-studio `ref/topic-contract.md`: `**Tags:**`,
 `**Stage:**` explore · shaping · agreed · closed, moved only by a person, `**Topic:**`, `**Feeds:**` its
@@ -513,12 +533,45 @@ where | state | starts |`, where `state` is done, ticket next or not started, an
 After §7 the telling's face keeps **§9 · Venues**, its venue list from the target down to the fallbacks: one row per
 venue (`| V | venue | kind | why it fits | leads with | still needs | desk record |`). A venue changes which questions
 lead, not the questions; each venue's rules stay in its haipipe-paper-venue desk record (JL 261019: "我们要不要把这个 venue 直接塞到这个 story 里面去？ ... 也要想想它适合什么样的 journal，然后搞出来一个 journal list or conference list"). §8, the Section
-Narrative, lives in each version's face.
+Narrative, lives on the selected Story topic. Each writing version's `## Narrative`
+records that send's concrete Section rows and compile order, linked to its Story
+through `tells:`; it is not a second authoring location for the shared argument.
 
 ### 8 · Section Narrative
 
 Show how the finished paper will turn the Seed, discoveries, and produced
-evidence into one reader-ordered argument. Cover:
+evidence into one reader-ordered argument. It opens with the whole paper's
+story arc, under its own heading, before any table (JL 261109: "at the top
+of the tab, to describe the narrative of this paper, what is the story arc
+of it"); the workbench shows it as the first tab of Story by Section, above
+the Sections:
+
+```markdown
+#### Story arc
+
+1. **Puzzle**: what the reader expects, and what does not fit.
+2. **Gap**: why prior work cannot settle it.
+3. **What we do**: the design, in one line.
+4. **What we find**: the headline claim and the claims that set it up (C-ids).
+5. **Where it stops**: the boundary the paper will not cross.
+6. **So what**: what changes for the reader.
+```
+
+One move per line, in reader order, each naming its claims; a telling may
+rename or add moves, never drop the order. Without it the workbench falls
+back to the ```text block that opens §8, else asks for the arc.
+
+Each Section's tab then tells that Section's part of the arc before its
+claims (JL 261109: "not just the claims ... the narratives, the arc, how to
+make it smooth"): what the reader asks, comes in with, the moves in order,
+leaves with, how it hands on, what it must not say, its displays. The
+workbench reads the per-Section table whose first header is `Section`
+(columns `reader question`, `entry`, `ordered moves`, `must refuse`,
+`displays`, `exit`), here in §8, else in the newest writing version's
+`## Narrative`, and completes each row from the Section face
+(`reader-question`, `entry-state`, `exit-state`, `transition-in`,
+`transition-out`). Each tab's small line is its `exit`, so the left column
+reads as the arc. Then cover:
 
 - **Target reader and venue promise** — when a target is selected, who the
   paper addresses, the question that reader brings, and the contribution the
@@ -557,10 +610,15 @@ One claim may appear in several Sections for different reader purposes.
 row per Section with the questions it answers, its job, displays, evidence and words, then the displays with the Run
 that makes each and the dated steps to the send. The first version's `## Narrative` is seeded from that table.
 
-**On the ladder this part is each version's (b16 Q04).** The rows, the claim system and the compile order are
-written in the version face's `## Narrative`, between `<!-- haipipe:compile-order:start -->` and `end`; each
-Section's `story-row:` points at its row there. A revision copies its Narrative from the version it follows
-(`paper_ladder.py next`) and changes it there; the telling's research meaning stays in its topic and Questions.
+**On the ladder, the shared argument stays on the Story topic.** Its §8 owns the
+claim system, reader journey and Section Narrative. Each writing version's
+`## Narrative` binds that argument to concrete Section rows and compile order;
+only the compiler projection goes between `<!-- haipipe:compile-order:start -->`
+and `end`. Existing Section `story-row:` anchors keep their version-row bindings.
+A revision copies its version Narrative from the version it follows
+(`paper_ladder.py next`) and updates its concrete rows and order there. Changes
+to the shared argument belong on the Story topic and must be reconciled with
+affected version rows; neither UI entry creates a second argument source.
 
 The selected target/category and its binding Venue contract belong here.
 An unselected target stays open; no target selection is inferred from a sample

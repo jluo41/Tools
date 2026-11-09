@@ -3,8 +3,8 @@ name: haipipe-paper-plan
 description: "A paper Board's plan, the studio topics after its story: s03 data flow (how the data becomes each answer: Runs, evidence rows, claims), s04 paper flow (Sections in reader order with their questions, evidence, words, and the dated steps to the send) and s06 paper displays (each display: name, type, what it shows, main or supplement, the Run that makes it, checked against the venue's display rules). Checks that every question lands in a Section and every display has a Run and follows the venue. Trigger: paper plan, data flow, paper flow, display plan, plan the displays, venue display rules, s03, s04, s06, word budget, timeline to the send, /haipipe-paper-plan."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-11-01"
+  version: "0.2.2"
+  last_updated: "2026-11-08"
   group-token: "s03-paper-dataflow"
   # version history: ./CHANGELOG.md
 ---
@@ -30,6 +30,20 @@ s10-related-work-…    which papers are closest to ours?    20 to 25 papers    
 s03 and s04 both start from the story's research questions and go opposite ways: s03 back to the data, s04 forward
 to the reader. Each changes for its own reason: s03 when a Run lands, s04 when a Section is written or a date moves.
 
+
+## Shared Paper and Grant planning
+
+Grant is a type within the Paper theme and shares Data + Paper Plan. Data flow
+maps existing and proposed data to the aims; Paper flow maps the application’s
+argument, sections, evidence and figures. Keep the application preparation
+roadmap distinct from the proposed research milestones. Requirements and limits
+come from the selected funding call, not manuscript defaults.
+
+Story by Section appears in both Story and Displays but remains the Story
+owner’s Section Narrative. The display plan links figures to that argument;
+it never maintains a second narrative. The current Paper renderer shares that
+source; Grant-specific rendering, scaffolding and assembly support must be
+verified before treating the proposed matrix as executable behavior.
 
 One owner per fact
 ------------------
@@ -122,8 +136,9 @@ the send. The face carries two lines and three tables:
    which the drawing marks 🙋 until the step is done; a step a person and an agent share names the person's verb.
    Today comes from the clock; a later date is a proposal counted from it. The version is named by its planned send
    date and the story topic's desk part (`jNN_writing_v<send MMDD>_<desk>`, the first one `j11`; the desk from `s02-story-<desk>-…`).
-5. **When the first version is made**, its `## Narrative` is seeded from the Sections table (haipipe-paper-story §8)
-   and the version owns the Section rows from then on; s04 keeps the Displays and the Timeline current.
+5. **When the first version is made**, its `## Narrative` is seeded from the Sections table, aligned with
+   the Story topic's §8 argument. The version owns its concrete Section rows and compile order;
+   the shared Section Narrative remains on the Story topic, and s04 keeps the Displays and the Timeline current.
 
 
 s06-paper-displays

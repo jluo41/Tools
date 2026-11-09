@@ -217,8 +217,8 @@ Files      browse      the folder itself, its tree                  Folder (one 
    Opened, one row per Job, and a Job's row opens to its Tasks and Runs, the same `fold_tree` as Work, each name opening
    its pop-out (JL 261104: "each job each row, and we can collapse them out to see the tasks and runs"; "这个做得很好").
    No next-step sentences on these rows (JL 261104: "I don't want this, just delete them").
-   A Block that designs a theme (`theme:` in board.md) adds **Block UI · Job UI · Task UI** after Questions (JL 261031):
-   each is a real page of that theme, live in a frame, named by `ui-block:`, `ui-job:`, `ui-task:` in the face. A Tools
+   A Block that designs a theme (`theme:` in board.md) adds **Block UI · Job UI · Task UI · Run UI** after Questions (JL 261031):
+   each is a real page of that theme, live in a frame, named by `ui-block:`, `ui-job:`, `ui-task:`, `ui-run:` in the face. A Tools
    theme Block names a placeholder inside Tools by its path from the Tools root (`blueprints/Project-Ladder/...`): the
    workbench finds it from the Block's own checkout, so it frames in any SPACE (`Tools/blueprints/...` there) and on a
    Tools server alike (261105). Tools is public, so never a real project's page; an http(s) link to another machine's
@@ -265,7 +265,12 @@ Theme     <theme>.md        Work        its Blocks           every Block's
 Block     board.md          Report      its Jobs             its own + its Jobs' and Tasks'
 Job       jNN_<job>.md      Work        its Tasks            its own + its Tasks'
 Task      tNN_<task>.md     Work        its Runs (+ draft)   its own
+Run       run.yaml          one page    its result/ first    none (the page above it holds them)
 ```
+
+A Run has one page for every theme (JL 261109: "the Run will be shared by all others and we should have the same
+results"): 1 What happened, 2 What it made (result/, the report first), 3 How it ran (run.yaml, ticket, config),
+4 Passes. Its use case is its `type:`; the design is `blueprints/Project-Ladder/work/b17_theme_work/ui/run-views.md`.
 
 Rolled-up items carry where they live (`s22 · j02`). A Block opens on Report because its Questions are what it
 exists to answer; every other level opens where its goal is judged, its Work. A draft Task (`task-type: draft`, b32 s42) has a
@@ -479,7 +484,7 @@ open ─▶ every view button ─▶ every interactive thing ─▶ 390 px ─�
    `walk_shoot.py` opens a fresh browser that can only read (GET), visits each section and view, opens each closed bar,
    clicks side tabs and a pop-out, outlines each target, and writes `NN.jpg`, `captions.txt`, `notes.md` (✅/❌ per step)
    and `errors.txt` (page errors). A theme Block keeps the players as `walks/<level>-<folder>.html` (the first kind also
-   `walks/<level>.html`); its Report's Block UI · Job UI · Task UI show them as 2 · 🎬 The walks, the same side tabs as
+   `walks/<level>.html`); its Report's Block UI · Job UI · Task UI · Run UI show them as 2 · 🎬 The walks, the same side tabs as
    1 · 🖥️ The pages, live, and its Work lists the kinds with no walk yet. Record on a server rooted at Tools, so the page
    path names no SPACE. Rerun `walk_all.py` after every round; an empty recording never replaces a walk. Fix every ❌
    and re-walk before any review; a ⚠️ (works, but confusing) goes to the review. The script records; it does not

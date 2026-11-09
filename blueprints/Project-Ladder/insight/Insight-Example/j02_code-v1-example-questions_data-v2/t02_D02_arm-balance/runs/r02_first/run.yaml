@@ -1,0 +1,14 @@
+run: r02_first
+kind: hard
+type: partition
+partition: first
+target: t02_D02_arm-balance
+question: D02
+release: code-v1
+data: data-v2
+status: ok
+passes: 1
+script: 9d05896614c2
+n: 541
+power: ok
+ticket: Tools/blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2/t02_D02_arm-balance/runs/r02_first/run.sh

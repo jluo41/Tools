@@ -1,3 +1,8 @@
+## 0.2.2 · 2026-11-08 · Paper types and shared content ownership
+
+- Grant is a type within Paper; its specific runtime remains proposed.
+- Align shared Section ownership and placement with the Paper renderer and the design matrix.
+
 # haipipe-paper-plan · changelog
 
 ## 0.2.1 · 2026-11-06 · a seeded display Task has its Aim

@@ -56,6 +56,17 @@ s02 · Story
 
 ### 8 · Section Narrative
 
+#### Story arc
+
+1. **Puzzle**: <a policy> was meant to change <an outcome>, yet reports disagree on whether it did.
+2. **Gap**: earlier studies compare places, not the same group before and after.
+3. **What we do**: follow <the group> across the policy's start, against a group it did not reach.
+4. **What we find**: the outcome moves (C1), and most for <a subgroup> (C2).
+5. **Where it stops**: one policy, one country; no claim about why.
+6. **So what**: <who decides> can expect the effect where <the subgroup> is large.
+
+#### Claims
+
 | claim | proposition | lands in |
 |---|---|---|
 | C1 | <the main claim> | Introduction, Results |

@@ -105,7 +105,7 @@ def summary(job: Path, figs: dict | None = None) -> tuple[str, list]:
     job = Path(job).resolve()
     board = job.parent
     if not JOB.match(job.name):
-        raise SystemExit(f"{job.name} is not a Board Job (jNN_prototype-pN-<slug>_data-<D>vM)")
+        raise SystemExit(f"{job.name} is not a Board Job (jNN_code-vN-<slug>_data-vM)")
     jface, _ = RQ.front(job / f"{job.name}.md")
     bface, _ = RQ.front(board / "board.md")
     proto = board.parent.parent / str(jface.get("prototype", ""))

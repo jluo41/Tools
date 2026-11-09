@@ -1,0 +1,15 @@
+{
+  "block": {
+    "blueprints/Project-Ladder/design/Design-Example": "🎨 Design Board"
+  },
+  "job": {
+    "blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_overall-performance": "🧩 Design Job · review example",
+    "blueprints/Project-Ladder/design/Design-Example/j01_confirm-by-reply_goal-only": "🧩 Design Job · released example",
+    "blueprints/Project-Ladder/design/Design-Example/j02_confirm-by-reply_goal-only": "🧩 Design Job · reasoning example"
+  },
+  "task": {
+    "blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_overall-performance/t00_reason-ideas": "💡 Reason ideas",
+    "blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_overall-performance/t02_d02_reminder-one-ask": "✏️ One design",
+    "blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_overall-performance/t99_review-whole": "🏆 Review whole"
+  }
+}

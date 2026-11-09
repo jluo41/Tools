@@ -2,7 +2,7 @@
 as full screens (JL 261007: "s11, s12, s13 ... for the Block level, Job level and task level").
 
 The Board follows s00 (261007): one dataset with its versions; its Jobs pin one Prototype version and one
-data version (j03_p2_<d>v2); the questions and their code live in the Prototype's own work Block. So the
+data version (j03_code-v2_data-v2); the questions and their code live in the Prototype's own work Block. So the
 Description is one Map, the two clocks crossed (JL 261007: "for the description you only show
 Partition. How about the Dataset and Questions? do we have a better way?"): the data versions are its
 columns (the Dataset, each with its partitions' counts), the Prototype releases its rows (the
@@ -132,10 +132,10 @@ def work(cx, cy, cw):
     y = cy + 26
     path([(cx, y), (cx + cw, y)], arrow=False, color=GRAY)
     for job, pin, moved, ans, state, opened in [
-            ("j01_p1_<d>v1/", "p1 · v1", "start", "2/2 · 3/3 · 2/2 · 1/1", "✅ closed", False),
-            ("j02_p1_<d>v2/", "p1 · v2", "data", "2/2 · 3/3 · 2/2 · 1/1", "✅ closed", False),
-            ("j03_p2_<d>v2/", "p2 · v2", "code", "2/2 · 4/4 · 3/3 · 1/1", "✅ closed", False),
-            ("j04_p2_<d>v3/", "p2 · v3", "data", "2/2 · 2/4 · 0/3 · 0/1", "open", True)]:
+            ("j01_code-v1_data-v1/", "p1 · v1", "start", "2/2 · 3/3 · 2/2 · 1/1", "✅ closed", False),
+            ("j02_code-v1_data-v2/", "p1 · v2", "data", "2/2 · 3/3 · 2/2 · 1/1", "✅ closed", False),
+            ("j03_code-v2_data-v2/", "p2 · v2", "code", "2/2 · 4/4 · 3/3 · 1/1", "✅ closed", False),
+            ("j04_code-v2_data-v3/", "p2 · v3", "data", "2/2 · 2/4 · 0/3 · 0/1", "open", True)]:
         for c, cell in zip(cols, [("▾ " if opened else "▸ ") + job, pin, moved, ans, state]):
             text(cx + c + 10, y + 10, cell, 14, INK, MONO if c == 0 else U.SANS)
         y += 38
@@ -251,7 +251,7 @@ def runs(cx, cy, cw):
     then the Jobs' hard Runs from below."""
     y = U.table(cx, cy, cw, ["Run", "type", "writes", "state"], [0, 360, 560, 860],
                 ["the Board's own · soft",
-                 ("run-add-job-j04/", "Add a Job", "j04_p2_<d>v3/", "closed · p01"),
+                 ("run-add-job-j04/", "Add a Job", "j04_code-v2_data-v3/", "closed · p01"),
                  ("run-coverage/", "Update the coverage", "Coverage", "closed · p03"),
                  ("run-track-k01/", "Draw a track", "Tracks › K01", "closed · p02"),
                  ("run-consistency-j02-j03/", "Check consistency", "Consistency", "closed · p01"),
@@ -267,7 +267,7 @@ def runs(cx, cy, cw):
 def delivery(cx, cy, cw):
     base("rectangle", cx, cy, cw, 190, INK, 1, rough=0)
     text(cx + 14, cy + 12, "W01 · <counsel> ↗", 17, INK)
-    text(cx + 14, cy + 44, "from j03_p2_<d>v2 · cites K01 · I01", 15, INK, MONO)
+    text(cx + 14, cy + 44, "from j03_code-v2_data-v2 · cites K01 · I01", 15, INK, MONO)
     text(cx + 14, cy + 76, "signed ✅ <date> by a person · → Design, as an internal insight", 15, INK)
     text(cx + 14, cy + 140, "? stale once j04 lands, or it stands for its own pair", 14, RED)
 
@@ -282,7 +282,7 @@ SCREENS = [
                    ("work/bNN_<topic>_prototype/j0N_pN/release.yaml", "the rows: one per release")]),
     ("Description", DESC(1), ["Open the Prototype Block ↗"], "releases are cut there", prototype,
      [("work/bNN_<topic>_prototype/", "the Prototype Block (its own tab)"), ("├── proposals/", "the backlog"),
-      ("├── j01_p1/release.yaml", "a row: p1"), ("├── j02_p2/release.yaml", "a row: p2"),
+      ("├── j01_code-v1/release.yaml", "a row: p1"), ("├── j02_code-v2/release.yaml", "a row: p2"),
       ("└── j0N_pN/partitions.md · thresholds.yaml", "its cuts and power: part of the release")]),
     ("Description", DESC(2), ["Add a data version"], "", dataset,
      [("insights/bNN_<topic>/board.md", "dataset: <d> · its versions"), ("$EXTRACTS/<d>v1 · v2 · v3", "a row each: frozen extracts")]),
@@ -290,8 +290,8 @@ SCREENS = [
      [("work/bNN_<topic>_prototype/j0N_pN/partitions.md", "filter · why · since: the release's"),
       ("work/…_prototype/j0N_pN/thresholds.yaml", "power.smallest_effect_pp"), ("$EXTRACTS/<d>vM", "the counts, per data version")]),
     ("Work Details", [("All", 1), ("p1", 0), ("p2", 0)], ["Add a Job", "Close a Job"], "", work,
-     BOARD_TREE[:1] + [("├── j01_p1_<d>v1/", "a row"), ("│   └── j01_p1_<d>v1.md", "pins: j01_p1 (hash) · <d>v1"),
-                       ("├── j03_p2_<d>v2/", "uses p2 by path + hash, never a copy"), ("└── j04_p2_<d>v3/", "open: its Tasks shown"),
+     BOARD_TREE[:1] + [("├── j01_code-v1_data-v1/", "a row"), ("│   └── j01_code-v1_data-v1.md", "pins: j01_code-v1 (hash) · <d>v1"),
+                       ("├── j03_code-v2_data-v2/", "uses p2 by path + hash, never a copy"), ("└── j04_code-v2_data-v3/", "open: its Tasks shown"),
                        ("    └── tNN_…/runs/rNN_<partition>/result/", "a Task's quick result, per partition")]),
     ("Audience Report", AR(0), ["Update the coverage"], "run-coverage/ · reads every\nJob's receipts", coverage,
      [("insights/bNN_<topic>/runs/run-coverage/", "soft: the Board's own Run"), ("├── run.yaml", "type: coverage · reads: j01 – j04"),
@@ -324,7 +324,7 @@ POPOUTS = [("<d>v2  ·  a data version (a column)", [("$EXTRACTS/<d>v2 · frozen
                                                     ("new since v1: <n> rows · fields: + <field>", GRAY),
                                                     ("partitions: full <n> · A <n> · B <n>", INK),
                                                     ("Jobs on it: j02 (p1) · j03 (p2)", GRAY)]),
-           ("p2  ·  a release (a row), in the Prototype Block", [("work/bNN_<topic>_prototype/j02_p2/release.yaml", INK),
+           ("p2  ·  a release (a row), in the Prototype Block", [("work/bNN_<topic>_prototype/j02_code-v2/release.yaml", INK),
                                                                 ("live: D 2 · I 4 · K 3 · W 1 · signed <date>", INK),
                                                                 ("new: I04, K03 · changed: K01 (its script) · retired: none", GRAY),
                                                                 ("each question: its methods (ask · answer · read)", RED),

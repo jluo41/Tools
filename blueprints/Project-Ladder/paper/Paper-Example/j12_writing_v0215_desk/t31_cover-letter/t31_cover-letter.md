@@ -1,5 +1,6 @@
 # t31_cover-letter · Cover letter
 
+use-case: Cover letter drafting
 task-type: draft
 page-type: section
 folder-kind: section

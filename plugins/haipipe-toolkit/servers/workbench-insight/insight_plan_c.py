@@ -3,7 +3,7 @@
 Plan C: the Prototype (questions + scripts) is its own work Block, `work/bNN_<topic>_prototype/`, whose
 Jobs are versions `j0N_pN/` (release.yaml · partitions.md · thresholds.yaml · the questions' Tasks). The
 insight Board, `insights/bNN_<topic>/`, holds one dataset with dated versions (board.md `dataset:`,
-`versions:`, `prototype:`); its Jobs `jNN_prototype-pN-<slug>_data-<d>vM/` pin one Prototype version and
+`versions:`, `prototype:`); its Jobs `jNN_code-vN-<slug>_data-vM/` pin one Prototype version and
 one data version; a Job's Tasks are its questions, their hard Runs `runs/rNN_<partition>/`; the Job's
 `reports/vs-<prev>.md` is written by its run-compare. Read-only: this module only reads.
 """
@@ -14,10 +14,23 @@ from pathlib import Path
 
 import yaml
 
-# a Board Job's folder (JL 261012): jNN_prototype-pN-<release slug>_data-<D>vM, read left to right; underscores
-# part its three fields, hyphens join the words inside one. The older jNN_pN_<D>vM still reads. Groups: release,
-# dataset, version (haipipe-insight ref/open_job.py writes the name).
-JOB_NAME = re.compile(r"^j\d+_(?:prototype-)?(p\d+)(?:-[a-z0-9-]+)?_(?:data-)?(.+?)(v\d+)$")
+# a Board Job's folder (JL 261109): jNN_code-vN-<release slug>_data-vM, read left to right; underscores part its three
+# fields, hyphens join the words inside one. The older jNN_prototype-pN-<slug>_data-<D>vM and jNN_pN_<D>vM still read,
+# until haipipe-insight ref/rename_code_data.py carries their Board over. Groups: release, dataset ('' in the new name),
+# version (haipipe-insight ref/open_job.py writes the name).
+class _Either:
+    """Two patterns read as one: the first that matches (re has no branch reset, so the groups stay numbered alike)."""
+
+    def __init__(self, *pats):
+        self.pats = pats
+
+    def match(self, s):
+        return next((m for m in (p.match(s) for p in self.pats) if m), None)
+
+
+JOB_NAME = _Either(re.compile(r"^j\d+_(code-v\d+)(?:-[a-z0-9-]+)?_()(data-v\d+)$"),
+                   re.compile(r"^j\d+_(?:prototype-)?(p\d+)(?:-[a-z0-9-]+)?_(?:data-)?(.+?)(v\d+)$"))
+RELEASE_NAME = re.compile(r"^j\d+_(?:code-v|p)\d+(_.+)?$")     # a Prototype's Job, one code version
 TASK_NAME = re.compile(r"^t\d+_([DIKWX]\d+)_")
 LEVEL_OF = {"X": "executive", "D": "data", "I": "information", "K": "knowledge", "W": "wisdom"}
 
@@ -229,7 +242,7 @@ def prototype_at(path: Path) -> dict:
     out = {"path": path, "releases": [], "proposals": []}
     if not path.is_dir():
         return out
-    for job in sorted(p for p in path.iterdir() if p.is_dir() and re.match(r"^j\d+_p\d+(_.+)?$", p.name)):
+    for job in sorted(p for p in path.iterdir() if p.is_dir() and RELEASE_NAME.match(p.name)):
         rel = _yaml(job / "release.yaml")
         qs = {}
         for qid, row in (rel.get("questions") or {}).items():
@@ -256,16 +269,16 @@ def prototype_at(path: Path) -> dict:
     return out
 
 
-# ── the words a person reads (JL 261011): an analysis plan AP<N> is the release pN, a data freeze F<M> the data
-# version vM; folders and files keep pN and vM, which every script and ticket reads ──────────────────────
+# ── the words a person reads (JL 261109: "code-v1 x data-v1, make it readable"): the screen, the folders and the
+# files say the same id; an older Board's pN and vM read as code-vN and data-vM until it is carried over ──────────
 def plan_code(release: str) -> str:
-    """Spelled out on screen (JL 261102: "why still AP1 x F1?"): `analysis plan 1`; folders keep pN."""
-    return re.sub(r"^p(\d+)$", r"analysis plan \1", str(release or ""))
+    """A code version (a release) as it is written everywhere: `code-v1` (an older `p1` reads the same)."""
+    return re.sub(r"^p(\d+)$", r"code-v\1", str(release or ""))
 
 
 def freeze_code(version: str) -> str:
-    """Spelled out on screen (JL 261102): `data freeze 1`; folders and ids keep vM."""
-    return re.sub(r"^v(\d+)$", r"data freeze \1", str(version or ""))
+    """A data version as it is written everywhere: `data-v1` (an older `v1` reads the same)."""
+    return re.sub(r"^v(\d+)$", r"data-v\1", str(version or ""))
 
 
 def freeze_words(v: dict) -> str:

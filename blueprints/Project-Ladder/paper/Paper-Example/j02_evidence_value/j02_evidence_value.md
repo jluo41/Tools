@@ -1,5 +1,6 @@
 # j02_evidence_value · the paper's evidence: values
 
+use-case: Printed-value verification
 layer: evidence
 state: open
 goal: values: one Task per group of printed numbers, each read from a returned Result

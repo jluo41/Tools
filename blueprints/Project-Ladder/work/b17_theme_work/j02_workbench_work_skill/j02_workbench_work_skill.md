@@ -1,7 +1,8 @@
-# j02 · Rewrite workbench-work for the work pages
+# j02 · Workbench work skill
 
 goal: workbench-work's SKILL.md and ref/workbench-table.md teach the focus page's three work pages, a Block, a Job and a Task, each with Report (check), Work (do) and Studio (think), as j03's nine cells design them
 close: both files are written from JL's answers to the nine cell forms and follow b17-s02's outline; the old Scope · Task · Check · Delivery text, the Questions and the question map are gone; the ref passes `render_workbench_table.py --check`; a fresh agent given only the skill reads b17's Block page, j03's Job page and t01_block_page's Task page right
+emoji: 📘
 renamed-from: j02_work_skill_homes
 
 ## Topic

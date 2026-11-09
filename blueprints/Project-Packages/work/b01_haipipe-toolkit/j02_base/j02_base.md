@@ -3,6 +3,7 @@
 job-of: b01_haipipe-toolkit (the Block `b02_base` until 261009; its questions, studio and runs moved with it)
 spine: Design questions about the base layer, `plugins/haipipe-toolkit/skills/1_base/`: what each base family (project, task, page, question, writing, display, ideation, search) gives the themes, whether every base family has one common shape, and which skills sit in base but belong elsewhere.
 close: Each recorded question has a report Page with an answer status, and every answered question names the skill change that settled it (or the move b04 made for it).
+emoji: 🧱
 
 ## Topic
 

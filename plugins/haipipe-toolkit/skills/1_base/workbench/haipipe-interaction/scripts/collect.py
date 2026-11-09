@@ -208,7 +208,7 @@ def markdown(spec: dict, answers: dict | None = None) -> str:
 # the Studio topic an interaction is attached to (JL 261031: "the interaction page should be attached to one studio as
 # well"): the sNN at the head of its for: address, b17-s04 or b16.j01.t03-s38
 # a Block's bNN, or a named Board's own folder name, which has no bNN: a paper Board (Paper-X-s04, Paper-X.j11-s05), an
-# insight Board or its Prototype (Insight-X-s01, Prototype-b91-X-s01), a design Block (Design-X.j01-s02) (261106)
+# insight Board or its Prototype (Insight-X-s01, Prototype-X-s01), a design Block (Design-X.j01-s02) (261106)
 NAMED = r"(?:Paper|Insight|Design|Prototype)-[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*?"
 TOPIC = re.compile(rf"\s*((?:b\d+|{NAMED})(?:\.[jt]\d+)*-s\d+)\b")
 EXAMPLE_FOR = "b17-s04:theme_work @ workbench_page_structure"

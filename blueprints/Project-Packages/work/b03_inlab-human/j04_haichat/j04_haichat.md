@@ -3,6 +3,7 @@
 job-of: b03_inlab-human (261009)
 spine: `servers/haichat-inlab/haichat_api.py`: one Claude Agent SDK client per browser session, streamed, every tool call blocked on the clinician's Allow or Deny.
 close: Each recorded question has a report Page with an answer status, and every answered question names the change that settled it.
+emoji: 💬
 
 ## Topic
 

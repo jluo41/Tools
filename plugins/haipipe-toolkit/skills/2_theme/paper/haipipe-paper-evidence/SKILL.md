@@ -3,7 +3,7 @@ name: haipipe-paper-evidence
 description: "A paper's evidence rules on top of haipipe-evidence and haipipe-display: citations only from verified CITE Results, one number per result in every Section, displays numbered and within the venue limit, each passing the display revise loop. Owns the Board's value Job (value maps, bindings, the check: values_ledger.py) and citation Job (claim groups: cite_tasks.py); reads a whole version as one ledger and flags what disagrees (evidence_ledger.py); each display version's preview.pdf is the display, then how it was made (method.md). Use before a build or a send. Trigger: paper evidence, evidence ledger, value ledger, value map, citation check, numbers disagree, verify citations, paper displays, display preview, display method, /haipipe-paper-evidence, /haipipe-paper-display."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.13.1"
+  version: "0.13.2"
   last_updated: "2026-11-04"
   aliases: [haipipe-paper-display]
   # version history: ./CHANGELOG.md
@@ -324,7 +324,9 @@ V9  accepted      a person writes `accepted: yes` in the unit README, with their
 ```
 
 **The Displays view shows the same order** (workbench-paper G · Displays): 1 · Plan (the s06 drawing), 2 · Displays
-(each Task's newest preview.pdf), 3 · Examples (the examples drawing, else how to make it), and the page's last section, 🙋 Interaction (the
+(each Task's newest preview.pdf; each display's state is its tab's, no separate "Where each display stands" list), 3 ·
+Examples (the examples drawing, else how to make it), 4 · Story by Section (the Story view's own section, the same
+panel, last; JL 261109), and the page's last section, 🙋 Interaction (the
 collection Runs at the Board or below, haipipe-interaction). The message is written in the display Run's
 config (`message:`) or straight into its method.md, or in one file per Job the Runs read (ScalingGlucose:
 `j01_evidence_display/src/display_messages.yaml`, by label); a paper's preview script writes `## Message` first.

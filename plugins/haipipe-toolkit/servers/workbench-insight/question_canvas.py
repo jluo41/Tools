@@ -1,5 +1,5 @@
 """The question canvas (JL 261102: "how to make the questions to be a canvas, to show their relationships?"):
-an analysis plan's questions drawn as cards, one band per DIKW level, Executive at the top and Data at the bottom,
+a code version's questions drawn as cards, one band per DIKW level, Executive at the top and Data at the bottom,
 with an arrow from each question to the ones whose answers it cites (its evidence plan, `needs: Ek: from: D01.E8`).
 
 Interactive in the page, nothing written: hover a card to light up what it rests on (below) and what rests on it
@@ -47,7 +47,7 @@ def _gaps(qid: str, face: dict, t: dict | None, cites: list) -> list:
         out += [f"Answer {qid} on the {c} cut too: it is asked there but has no Run yet" for c in asked if str(c) not in ran]
     if qid[:1] in "KWX" and not cites:
         out.append(f"Which Data or Information answers should {qid} rest on? Its evidence plan names none")
-    out.append(f"What would change the answer to {qid}, and how would we see it in the next data freeze?")
+    out.append(f"What would change the answer to {qid}, and how would we see it in the next data version?")
     return out[:3]
 
 
@@ -211,7 +211,7 @@ function act(n){  // Work only: ask about it, or propose a follow-up for the nex
   var w=D.work, where='the insight Board '+w.board+(w.job?', Job '+w.job:'');
   var ask='On '+where+': a question about '+n.id+' ('+n.q+').'+(n.answer?' Its answer now: '+n.answer:'')
     +' It rests on '+ids(down[n.id])+' and is used by '+ids(up[n.id])+'.'+(n.task?' Read its Task '+n.task+' and its Runs\' results first, then answer from them; say what they cannot tell.':'');
-  var prop=function(t){return 'Propose a follow-up to '+n.id+' ('+n.q+') for the next analysis plan: write it as a proposal in '
+  var prop=function(t){return 'Propose a follow-up to '+n.id+' ('+n.q+') for the next code version: write it as a proposal in '
     +w.proposals+' (haipipe-insight-question), with from: '+n.id+' and the level it asks at. The follow-up: '+t;};
   var h='<div class=qc-act><span class="pb-prompt qc-askbox"><textarea data-field="My question" rows=2 placeholder="Ask about '+esc(n.id)+' …"></textarea>'
     +'<button type=button class="fd-btn pb-copy" data-copy="'+esc(ask)+'" data-tail="'+esc(w.tail)+'">Ask about it</button></span>';

@@ -11,7 +11,7 @@ Where each theme stands
 ```text
 theme      example (in Project-Ladder/)              ui lines  pages aligned        drawings (3x3)  walks   reviews
 insight    insight/Insight-Example                   yes       yes                  yes (b11 j01)   yes     r01, r02 done (6 of 10 pass);
-           + work/Prototype-b91-Example                                                                     r02 fixes done, r03 not run
+           + insight/Prototype-Example                                                                     r02 fixes done, r03 not run
 design     design/Design-Example (3 Jobs)            yes       HALF (stopped)       not redrawn     no      none
 discovery  discovery/b01_example_prior_work          yes       yes (work shape)     yes (b14 j01)   no      none
 cowork     cowork/b01_example_data_request           yes       yes (work shape)     yes (b13 j01)   yes     r01 done (Block passes); r01 fixes

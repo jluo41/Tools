@@ -192,7 +192,8 @@ class DesignLadderTest(unittest.TestCase):
         self.assertIn("j04", page(self.block, "Delivery"))
         self.assertIn("../../inputs/i2/rules.md", unescape(page(self.job, "Description", "Inputs")))
         shown = page(self.job, "Audience Report", "Design display")
-        self.assertIn("Dropped, kept for the record · 5", shown)
+        self.assertIn("Dropped, kept for the record", shown)
+        self.assertNotIn("Dropped, kept for the record · 5", shown)
         self.assertEqual(shown.count("Text message"), 15)                  # every design a full card, dropped ones too
         self.assertIn("arm B of e01", page(self.job, "Audience Report", "Predicted vs observed"))
         self.assertIn("{LINK}", page(self.design, "Description", "Design"))

@@ -1,0 +1,16 @@
+run: run-check-alignment-t06
+kind: soft
+type: check-alignment
+scope: Tools/blueprints/Project-Ladder/insight/Insight-Example/j01_code-v1-example-questions_data-v1/t06_W01_next-round
+target: t06
+ticket: run-check-alignment-t06.md
+skill: haipipe-insight-check
+agent: haipipe-insight-reviewer-agent
+signs:
+- none
+status: done
+passes:
+- p01-1106
+- p02-1106
+writes: []
+feeds: []

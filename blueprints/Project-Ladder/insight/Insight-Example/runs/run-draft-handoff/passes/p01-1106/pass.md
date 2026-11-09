@@ -6,7 +6,7 @@ draft the handoff
 
 ## Summary
 
-delivery/handoff-W01.md names its pair (p1 × v1); signed: empty
+delivery/handoff-W01.md names its pair (code-v1 × data-v1); signed: empty
 
 ## Changed
 

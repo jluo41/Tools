@@ -481,7 +481,7 @@ def process(folder: Path, root: Path, level: str, view: str) -> list | None:
     """A Prototype's ⚙️ Process steps on one Work view, in place of the shared ones (round 2: "sign a release and triage
     a proposal on the Prototype too"); None leaves the shared steps. [(title, word, html, waits)].
 
-      findings  📋 the analysis plan: triage its open proposals, then sign it, each a Copy prompt for /haipipe-insight
+      findings  📋 the code version: triage its open proposals, then sign it, each a Copy prompt for /haipipe-insight
       standing  🚧 Next steps: each question not yet agreed and scripted, by its name and its step; "nothing to do"
                 when none (never a row per Task saying "no Run waiting")"""
     folder, root = Path(folder), Path(root).resolve()

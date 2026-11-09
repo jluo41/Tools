@@ -1,16 +1,15 @@
 ---
 name: workbench-paper
 description: >-
-  The paper theme of the shared workbench frame: a paper Board, each version and
-  each Section open on the frame's top row Guide · Studio | Paper Board ·
-  Version ▾ · Section ▾ | Delivery, each level with its work row (Description ·
-  Report · Work · Runs) and a Runs panel whose buttons are the paper's run cards by
-  level and Space; Studio (with Related folded under its topics) and Delivery are the Board's. Read-only: it shows the paper's Markdown and copies prompts.
-  Trigger: Paper Workbench, paper workbench, paper theme, paper tab, version tab,
-  Section tab, paper spaces, /workbench-paper.
+  Read the Paper theme workbench: a Board's current focus Report, its shared
+  supporting sections, and specialized version, evidence, submission and draft
+  pages. Maps views to their source records and semantic skill owners; distinguishes
+  the proposed Grant type from implemented Paper behavior. Also documents the
+  classic frame. Trigger: Paper Workbench, paper workbench, paper theme, paper tab,
+  version tab, Section tab, paper spaces, Grant Board design, /workbench-paper.
 metadata:
-  version: "0.52.0"
-  last_updated: "2026-11-01"
+  version: "0.57.0"
+  last_updated: "2026-11-09"
 ---
 
 # /workbench-paper · the paper theme on the shared frame
@@ -59,7 +58,31 @@ finds no folder stays plain text, and a page never links to itself. One helper d
 is the origin the reader uses (the host's `--public-url`); find the listening port before quoting a link, and
 never hand a remote reader `127.0.0.1`. Follow the link and read one real value off the page before returning it.
 
-## 🪜 Levels and Spaces
+## Paper types and semantic owners
+
+Paper Board and Grant Board belong to the same Paper theme. Grant shares the
+Paper content and lifecycle contracts; its extra Sections adapt the funding
+call, aims, approach, team, budget and application package. Its design uses Idea,
+Story and Data + Paper Plan too. Venues means the funding program/call and Paper
+flow means the application narrative in that context.
+
+The [Paper router](../haipipe-paper/SKILL.md#paper-types-and-shared-content)
+links each content owner. This skill owns which source the UI reads and where
+it appears, not the source’s meaning or approval. Related reads the same Board
+records in Idea and Story. Story by Section reads the same Story topic in Story
+and Displays. Never copy records to make another View.
+
+The Grant matrix is a proposed adaptation, not an implemented Grant renderer,
+scaffold or example. Keep that status explicit and do not link its examples to
+a manuscript page as though it were a working grant. Every Paper Board, Job
+and Task page shows its type and use case under its title (the shared
+`focus_page.page_identity_html`). The use case is the face's `use-case:` line,
+else the single use its type has in the b16 matrices; a type with several and
+none written shows none, never a guess. The face writes it: `haipipe-paper`
+scaffolds stamp every new Board, Job and Task face, and `paper_ladder.py update`
+(layout line L6) stamps an older Board's.
+
+## 🪜 Classic frame and specialized level contracts
 
 `servers/workbench-paper/paper_theme.py` exports `THEME`: `spaces(level, folder, root, sub)` returns each Space
 of a level; anything it leaves out is the frame's vanilla Space. `level_patterns` reads both layouts: a
@@ -72,7 +95,7 @@ of a level; anything it leaves out is the frame's vanilla Space. `level_patterns
 | Block › Idea Studio | one row per topic | `sNN-<topic>/` (the frame's studio rows) |
 | Block › Audience Report | Ideation · Narrative · High-level logic + Low-level work · Related Questions · Related Papers | `board.md ## Questions` by `group:`, their `reports/qNN_`; the current telling's studio topic; the related papers under the question each bears on (`related/related.md`, else the telling's related-papers table) |
 | Block › Work Details | Idea · Story · DataFlow · PaperFlow · Jobs | the paper's steps before its versions, each Operation (Input, Prompt) over Result (its Studio topic's drawing, then Open and Decided): Idea the Ideation topic (s01), each idea a card; Story the Story topic (s02), as sections with a card per research question; DataFlow and PaperFlow the Plan topics (s03, s04); then the versions |
-| Block › Report · Work (focus page) | Idea · Story · Data + Paper Plan · Support blocks · Evidence · Displays · Writing | `layout=focus&section=report\|work&group=<key>\|work-<key>`; the views are below (🖥 The focus page) |
+| Block › Report (focus page; legacy Work links redirect) | Idea · Story · Data + Paper Plan · Support blocks · Evidence · Displays · Writing | `layout=focus&section=report\|work&group=<key>\|work-<key>`; the views are below (🖥 The focus page) |
 | Block › Runs · Delivery | (Delivery) LaTeX · Word · Cover letter · Rounds | the Board's `runs/`; the newest version's `delivery/jNN_<version>/`; then Sections in the build, every version's Sections from its `build-manifest.json`: ready at the build, in the build or changed after it, a link to each Section's part and its folder |
 | Job › Description | Version · Venue rules | the version face; its venue's `call.md` |
 | Job › Audience Report | Questions · Draft-Main · Draft-Appendix · Comments · Cover letter | the face's `## Questions` and the standing J1–J5; each Section as Question │ Work │ Report with its rendered draft beside its drawing; the comments reports' `## Review Items`; the letter by paragraph |
@@ -92,59 +115,69 @@ type 16px, never under 12px, every table with cell edges, a closed card shows it
 ## 🖥 The focus page: a paper Board's views (`layout=focus`)
 
 <!-- render b16.j01.t01-s32 board-report-views: generated from Tools blueprints/Project-Ladder/work/b16_theme_paper/j01_paper_workbench_pages/t01_board_page/s32-board-ui-report/delivery/skill/board-report-views.md; edit it there, then render_delivery.py -->
-### The paper Board's Report and Work: seven views, A to G
+### The focused Paper Board: seven content Views
 
-A paper Board's Report and Work show the paper's four layers as views, one button each, in this order, with the same
-letters on both (b16 s32-D12, s33-D02): the plan (A to C), what supports it (D), the evidence (E, F), the writing (G).
-Idea (the many directions) and Story (the one chosen) are two views (s32-D44); Data flow and Paper flow are one,
-Data + Paper Plan (s32-D28, D29); Venue is inside Story (s32-D12); Displays stands after Evidence and before Writing
-(s32-D26). A view shows only when the Board has its part: no ideation topic, no Idea view; no Story topic, no Story
-view; no evidence Job, no Evidence view; no display Job or display plan, no Displays view.
+The current focused Board uses Report → Review Content → Around the Work.
+Review Content combines each View's content and its existing preparation actions.
+Legacy `section=work&group=work-<key>` Board links open the corresponding Report
+View. The classic frame and specialized Job/Task Report/Work workflows remain
+supported separately; Board behavior does not imply their migration.
+
+| Key | View | Content sources and Sections |
+|---|---|---|
+| idea | Idea | Ideation topic: Directions and Theory; Related from the Board reference records, even when a Story exists. Direction appears here only before a Story exists. |
+| story | Story | Current Story topic and chosen direction: Direction, Pitch, Theory, Research Questions, Stakes and evidence, Related, Venues and Story by Section (left tabs: first the whole paper's Story arc, then each Section's part of the arc, its claims last). |
+| plan | Data + Paper Plan | Data flow and Paper flow from their topics, then Roadmaps and the preparation plan, Runs to do and next steps to the send. |
+| explore | Support blocks | Internal Work and external Discovery Blocks named by the paper, linked back to their source work. |
+| evidence | Evidence | Returned values and citations from evidence Jobs, with their current state. |
+| displays | Displays | The display plan, display previews (each display's state in its tab), examples, then last Story by Section from the same Story topic, the same section the Story view shows. |
+| draft | Writing | Version sections, assembled documents, portal preparation and sections still to finish. |
+
+**One source, several entry points.** Related in Idea and Story is the same
+`related/` material. Closest-work positioning is owned by haipipe-paper-related;
+record storage by haipipe-related. Story by Section in Story and Displays is the
+same current Story topic's `Section Narrative`, owned by haipipe-paper-story.
+Its per-version compile order remains with the writing Job and assembly. Neither
+extra UI entry creates another authoring location.
+
+Views and Sections depend on source content. No ideation topic means no Idea
+View; no Story topic means no Story View. Evidence is registered when a
+non-version Job exists (including submission); its Sections render only the
+sources present. Displays is registered when a display Job or display-plan
+topic exists.
+Related is omitted when no reference items exist. Story by Section is omitted
+when the selected Story has no Section Narrative. Do not invent source content
+to fill a matrix cell.
+
+Around the Work uses the shared unnumbered order: Studio, Interactions,
+Decisions, Things to Know, Checklist, Timeline, Skills and Files. Supporting
+records belong to a View through explicit `view:` metadata first, then their
+linked Topic. Unassigned records stay available in the aggregate right rail.
+The same selection drives view-scoped Skills and Files. Studio is shown in this
+shared group, not repeated above Idea and Story. Delivery remains a rail entry.
+
+Section bars start closed. The view buttons stay above the goal. Content and
+supporting sections use the shared components and style rules; no Paper-specific
+copy of the common frame is introduced.
+
+**Grant is a Paper type.** Its design shares Idea, Story, Data + Paper Plan,
+Related and Story by Section with Paper Board. Funding-call requirements, aims,
+approach, team, budget and submission preparation specialize the content.
+Grant-specific rendering, examples and scaffolding are not implemented merely
+because they appear in the matrix. See the Paper router's ownership table.
 
 ```text
-idea      A Idea               the many directions: 🎨 Studio, then 🔀 Directions and 🎓 Theory as left tabs (no Story yet: 🧭 Direction first, 📚 Related after Theory)
-story     B Story              the one chosen: 🎨 Studio, Direction, Pitch, Theory, Research Questions, Stakes and evidence, Related (related/related.md), Venues (venues/<venue>/call.md), Story by Section
-plan      C Data + Paper Plan  🗄️ Data flow and 📝 Paper flow, each its topic's mind map worked on in place, then 🗺️ Roadmaps; each topic's drawing after the dashed rule
-explore   D Support blocks     🧪 Work and 🔎 Discovery: the Blocks its pages name, one folder tree per Project, folding down to each Task's Runs
-evidence  E Evidence           🔢 Values and 📚 Citations: a left tab per Task, the thing itself on the right
-displays  F Displays           Plan (the display plan's drawing), 🖼️ Displays by Main, Supplement and Others (each its preview.pdf), 🔍 Examples
-draft     G Writing            a ✍️ section per version, its Sections as left tabs to read; 📄 The assembled paper; 📮 Ready for the portal
-```
-
-**Every view ends in 🙋 Interaction, and every bar starts closed** (s32-D38, D41, D42). The last numbered section of
-each Report and Work view is 🙋 Interaction: the collection Runs about this view, a left tab per question and its form
-on the right, Back and Next, Copy feedback on a set's last question; with none it says so. Every section bar starts
-closed (▸); what you open stays open in this browser.
-
-**The Report is the view's own sections, 1, 2, 3; Work adds two bands, each numbered from 1** (s32-D27, from
-s32-D22 and s33-D03; JL 261101: "for the Results and Process, they will just be in the Work"). ⚙️ PROCESS is how the
-layer is being made, step by step (s33-D06): 📌 Open points, only when a part's face marks lines waiting for you; then
-the view's own steps (Idea and Story 🚧 Open; Data + Paper Plan 🧭 Plan, ⚙️ Runs to do when the Story has a Task
-Roadmap, 🗓️ Next steps to the send; Evidence 📋 Where each stands; Displays 🖼️ Where each display stands; Writing 🪜
-Sections to finish); then 🧰 Skills that do it. PROCESS has no 🙋 step: the open forms show once, in 🙋 Interaction
-(JL 261105: "keep only the bottom"). 📊 RESULTS is the Report's sections, drawn with the same code, so the two never
-disagree. A PROCESS title names the step, never a count (s33-D08).
-
-**The Data + Paper Plan view's PROCESS is the plan center** (s33-D07): 🗂️ Design the dataset, 📈 Design the
-regressions, ⚙️ Make them run, 🖼️ Plan the displays, 🔎 Plan the reading, each one row with the skill to use, Open (the
-mind map, the main analysis Job, the Story's roadmaps, the display plan) and Copy prompt; the prompt has the session
-screenshot the mind map and show its plan before any change.
-
-A state is always a coloured word: orange waits on you, blue running, green done, grey not started or open.
-
-```text
-servers/workbench/ui_parts.py            the shared pieces and their stylesheet (phone rules last)
-servers/workbench/interaction_section.py 🙋 Interaction, the last section of every Report and Work view
-servers/workbench-paper/board_views.py   board_report_views, board_work_views: the two bands
-                        board_results.py the seven views' RESULTS
-                        board_process.py PROCESS: the rows, the plan center
-                        board_read.py    BOARD_VIEWS; reading the Board's topics, faces, tables and folders
-                        board_evidence.py, board_interactions.py, paper_version.py
+servers/workbench/work_frame.py          shared sections and view ownership
+servers/workbench/skills_section.py      skill catalog and links
+servers/workbench-paper/paper_focus.py   Paper content adapter and scoped sources
+                        board_views.py  View registration and classic wrappers
+                        board_results.py content renderers shared across Views
+                        board_process.py preparation actions and semantic skills
+                        board_read.py   source topics, faces, tables and folders
 ```
 <!-- /render b16.j01.t01-s32 board-report-views -->
 
-**Skills band.** The PROCESS band's last section, 🧰 Skills that do it, shows in every Work view (`board_process.py`
-`VIEW_SKILLS`); Data + Paper Plan's also lists the skills its plan rows name.
+**Skills.** Current focused Boards show Skills once in Around the Work and in the aggregate rail. `board_process.py` `VIEW_SKILLS` supplies the semantic owners; it is not an extra PROCESS step.
 
 ## ✍️ Writer: the Runs panel
 

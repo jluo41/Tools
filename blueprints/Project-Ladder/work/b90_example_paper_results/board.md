@@ -3,6 +3,7 @@
 board-kind: task-block
 spine: The placeholder work Runs whose returned values.csv feed Tools' Paper-Example (paper/Paper-Example/j02_evidence_value); every number here is made up.
 close: Paper-Example's value Tasks read every value they print from a Run here.
+use-case: 📊 Paper results
 
 ## Topic
 

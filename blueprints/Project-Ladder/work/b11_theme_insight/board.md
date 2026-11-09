@@ -4,15 +4,15 @@ board-kind: task-block
 package: plugins/haipipe-toolkit
 theme: insight
 ui-block: blueprints/Project-Ladder/insight/Insight-Example
-ui-block: blueprints/Project-Ladder/work/Prototype-b91-Example
-ui-job: blueprints/Project-Ladder/insight/Insight-Example/j01_prototype-p1-example-questions_data-Examplev1
-ui-job: blueprints/Project-Ladder/insight/Insight-Example/j02_prototype-p1-example-questions_data-Examplev2
-ui-job: blueprints/Project-Ladder/work/Prototype-b91-Example/j01_p1_example-questions
-ui-task: blueprints/Project-Ladder/insight/Insight-Example/j02_prototype-p1-example-questions_data-Examplev2/t01_D01_extract-shape
-ui-task: blueprints/Project-Ladder/insight/Insight-Example/j02_prototype-p1-example-questions_data-Examplev2/t03_I01_outcome-by-arm
-ui-task: blueprints/Project-Ladder/insight/Insight-Example/j02_prototype-p1-example-questions_data-Examplev2/t05_K01_gap-holds
-ui-task: blueprints/Project-Ladder/insight/Insight-Example/j02_prototype-p1-example-questions_data-Examplev2/t06_W01_next-round
-ui-task: blueprints/Project-Ladder/insight/Insight-Example/j02_prototype-p1-example-questions_data-Examplev2/t07_X01_what-we-found
+ui-block: blueprints/Project-Ladder/insight/Prototype-Example
+ui-job: blueprints/Project-Ladder/insight/Insight-Example/j01_code-v1-example-questions_data-v1
+ui-job: blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2
+ui-job: blueprints/Project-Ladder/insight/Prototype-Example/j01_code-v1_example-questions
+ui-task: blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2/t01_D01_extract-shape
+ui-task: blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2/t03_I01_outcome-by-arm
+ui-task: blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2/t05_K01_gap-holds
+ui-task: blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2/t06_W01_next-round
+ui-task: blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2/t07_X01_what-we-found
 shared-blueprint: b01_haipipe-toolkit
 spine: Design questions about the insight Theme as one ladder: what an insight Board (one dataset), an analysis plan × data freeze Job, a question Task and a cut Run each hold and show, how partitions and pooling appear, where a question's gates live, what each level delivers, and what becomes of the older register boards.
 close: Each recorded question has a report Page with an answer status, and every answered question names the skill, workbench or builder change that settled it.
@@ -22,19 +22,38 @@ session: Ladder-b11-Insight-v1031
 
 The insight Theme answers what one dataset can and cannot say, climbing Data → Information →
 Knowledge → Wisdom. Its layout (plan C, `haipipe-insight` ref/insight-ladder.md) has two folders: a
-Prototype (`work/Prototype-bNN-<Topic>/`, the questions and their scripts, one Job per release, read as
+Prototype (`insight/Prototype-<Topic>/`, the questions and their scripts, one Job per release, read as
 an analysis plan AP<N>) and an insight Board (`insight/Insight-<dataset>/`, one dataset and its data
 freezes F<M>). A Board Job runs one analysis plan on one data freeze (`jNN_pN_<d>vM/`); a Task is one
 question at one level (`tNN_<L><NN>_<slug>/`); a hard Run is one cut (`r01_full`, `r02_<cut>`,
 `r04_cross`). The older layouts (an Insight Block with `j01_data` … `j04_wisdom`; a register board
 `*-InsightBoard`) keep their shape until carried over.
 
-The shared ladder (b10) gives every level one frame: Guide · Studio | Block · Job · Task | Delivery on
-top, and on each focus page three sections with three aims: Report checks, Work does, Studio thinks.
-Today (curled 261101) the insight focus page is the base's vanilla page at all three levels (Report =
-MindMap · Status, Work = Progress, "no state recorded"); the insight content still lives on the old
-five-Space page (Scope · Prototype · Insight · Check · Delivery, s02). This Block asks how insight fits
-the ladder level by level, and what it needs that no other Theme has.
+The original focus-page design gives every level Report (check), Work (do) and Studio (think).
+The 261101 baseline used the base's vanilla views; the later Insight renderer now supplies the
+Board's Answers, Questions, Jobs, Data and Handoff; the Job's Overall, Grid and vs previous; and the
+Task's Answer, By cut, Across Jobs and Plan. Each also has MindMap. The earlier five-Space and
+six-Space drawings remain historical references. This Block asks how Insight fits the ladder level
+by level, and what it needs that no other theme has.
+
+## Work alignment and Task design
+
+The [comparison](ui/structure.md) distinguishes the original three-level design, current implementation
+and proposed alignment with Work's shared frame. The **Block UI**, **Job UI** and **Task UI** views show their respective
+[Block](ui/block-views.md), [Job](ui/job-views.md) and [Task](ui/task-views.md) tables above the existing
+live examples. Each specialized section has a clickable specification with content, layout, source,
+skills and its actual View route. The shared-section row is an integration target; the dataset-facing
+Insight pages are unchanged.
+
+Use Cases in all three matrices now open source-backed project pages and Blueprint examples, grouped
+by SPACE with hierarchy links and expandable Tasks/Path. Source coverage and service availability
+are recorded in [acceptance](ui/acceptance.md); private mappings remain in ignored local configuration.
+
+Keep the three levels and their different responsibilities. Overview, Status, Findings and Delivery
+remain a proposal, not a requirement for adopting Review Content and Around the Work. The linked
+Prototype keeps its own question/script and release responsibilities. The [new Task discussion](ui/task-design.md)
+separates ongoing data enrichment, question development and literature/theory work from finite Tasks,
+with inputs, outputs, completion evidence and placement options. No new Task kinds are implemented.
 
 Most answers here are a change to the insight skills (`2_theme/insight/haipipe-insight`,
 `workbench-insight`, `haipipe-insight-workflow`), the Insight workbench server, or b10's
@@ -57,9 +76,11 @@ chat section -> Related question -> haipipe-report -> skill, workbench or builde
 `j01_insight_workbench_pages/` (261101) designs the insight pages as a 3 × 3, copied from the paper
 theme's (b16 j01) and the labeling theme's (b15 j01): Board, Job and Task × Report, Work and Studio, one
 sNN each (s51 to s59, labeling's numbers), every view drawn as the same full screen, lettered, settled
-one letter per round. All nine are drawn by its `insight_ui_cells.py`. The Job page letters the DIKW
-levels (A Plan, B Data … E Wisdom, F Overall); the Task page follows one question (A Question to F
-Across Jobs). The earlier level sketches s11 · s12 · s13 (six Spaces each) are the "before" it refines.
+one letter per round. All nine are drawn by its `insight_ui_cells.py`. In the later designs the Job
+has Overall, Grid and vs previous; the Task has Answer, By cut, Across Jobs and Plan. DIKW levels
+classify the questions, not separate analysis Jobs. The earlier level sketches s11 · s12 · s13
+(six Spaces each) are the "before" it refines. The Work alignment tables preserve this design
+history while proposing a new shared frame.
 
 ```text
                  Report · check    Work · do    Studio · think

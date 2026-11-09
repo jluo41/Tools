@@ -138,6 +138,11 @@ class DesignFocusTest(unittest.TestCase):
                     self.assertFalse([t for t in own if "🙋" in t], (folder.name, key, own))
                     page = FP.render(THEME, self.root, folder, section, key)
                     heads = [title(h) for h in HEADS.findall(page.split('class="focus-card', 1)[-1])]
+                    if folder == self.block:
+                        self.assertIn('🧭 Around the Work', page)
+                        self.assertIn('🙋 Interactions', page)
+                        self.assertNotIn('🙋 Interaction', heads)
+                        continue
                     self.assertEqual([t for t in heads if "🙋" in t], ["🙋 Interaction"], (folder.name, key))
                     self.assertEqual(heads[-1], "🙋 Interaction", (folder.name, key))
 
@@ -186,10 +191,14 @@ class DesignFocusTest(unittest.TestCase):
         (run / "question_collection.md").write_text("# Rank rule asks\n\nfor: rank rule\n\n## Q1 · Rule\n\nWhy.\n\n"
                                                     "**Which?**\n\n- [ ] A · a\n- [ ] B · b\n", encoding="utf-8")
         (run / "r01_collect_rank_rule.html").write_text("<!doctype html>", encoding="utf-8")
-        for folder, home in ((self.job, "ranking"), (self.block, "jobs")):
+        for folder, home in ((self.job, "ranking"),):
             for key in D.views(folder, self.root, "report"):
                 last = FP.render(THEME, self.root, folder, "report", key).split("🙋 Interaction")[-1]
                 (self.assertIn if key == home else self.assertNotIn)("Rank rule asks", last, (folder.name, key))
+        # Block support now requires an explicit View/Topic; the unassigned question stays in the rail.
+        for key in D.views(self.block, self.root, "report"):
+            self.assertNotIn("Rank rule asks", FP.render(THEME, self.root, self.block, "report", key))
+        self.assertIn("Rank rule asks", FP.render(THEME, self.root, self.block, "interactions"))
         self.assertEqual(D.view_of_item({"page": self.job, "about": "release choices @ next test arm"}, self.job,
                                         self.root, "Job", ["setup", "release", "mindmap"]), "release")
 

@@ -177,7 +177,7 @@ def _plain_row(r: dict, root: Path) -> str:
                f'rel=noopener>{verb}</a>' if target is not None else '') + '</li>')
 
 
-def interaction_section(rows: list, root: Path, n: int = 0, foot=None, plain: bool = True) -> str:
+def interaction_section(rows: list, root: Path, n: int = 0, foot=None, plain: bool = True, title: str = "🙋 Interaction", *, body_only=False) -> str:
     """The section for these interactions (focus_page.interactions); nothing to ask or show, no section. A set still
     waiting says so in the bar's state word, as it flags the Interaction button, and its first question shows under the
     closed bar. A set with no question cards shows as one plain row (`plain`; the rail draws its own fuller row)."""
@@ -193,4 +193,4 @@ def interaction_section(rows: list, root: Path, n: int = 0, foot=None, plain: bo
             + f'<div class=pb-read>{"".join(p for _, p in sets)}</div></div>' + INTERACTION_JS) if full else ""
     if rest:
         body += PLAIN_CSS + '<ul class=pb-ixplain>' + "".join(_plain_row(r, root) for r in rest) + '</ul>'
-    return _section((f"{n} · " if n else "") + "🙋 Interaction", body, word, waits)
+    return body if body_only else _section((f"{n} · " if n else "") + title, body, word, waits)

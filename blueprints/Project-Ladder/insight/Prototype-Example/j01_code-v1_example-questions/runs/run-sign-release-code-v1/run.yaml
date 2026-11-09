@@ -1,0 +1,16 @@
+run: run-sign-release-code-v1
+kind: soft
+type: sign-release
+scope: Tools/blueprints/Project-Ladder/insight/Prototype-Example/j01_code-v1_example-questions
+target: code-v1
+ticket: run-sign-release-p1.md
+skill: haipipe-insight
+agent: haipipe-insight-agent
+signs:
+- a person
+status: done
+passes:
+- p01-1106
+writes:
+- j01_code-v1_example-questions.md
+feeds: []

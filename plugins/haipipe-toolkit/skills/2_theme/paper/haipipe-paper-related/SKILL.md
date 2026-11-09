@@ -3,8 +3,8 @@ name: haipipe-paper-related
 description: "A paper Board's closest related work: the 20 to 25 nearest papers, sorted into 3 or 4 types, mapped beside our paper (studio s10, related_map.py) and read closely in s11 to s19, so the paper can say what each leaves open and what it adds. Not the literature (haipipe-discovery) or the related/ folder (haipipe-related). Trigger: related work, closest papers, related-work map, s10, positioning, /haipipe-paper-related."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Agent, WebSearch, WebFetch
 metadata:
-  version: "0.1.2"
-  last_updated: "2026-11-01"
+  version: "0.1.3"
+  last_updated: "2026-11-08"
   group-token: "s10-related-work-map"
   # version history: ./CHANGELOG.md
 ---
@@ -25,6 +25,19 @@ Asked by JL 261019: "for the related work we can do things like s10-related-work
 s12, etc"; "it is different from the literature"; "we can use haipipe-paper-related, to find the most related
 papers". The pattern is Paper-Example-B's s10 to s15, built 2026-10-13.
 
+
+## Shared use in Idea and Story
+
+The focused Paper workbench exposes Related in both Idea and Story, including
+after a Story is chosen. Both read the same Board reference records; neither
+view owns a separate copy. The workbench omits the section when no reference
+items exist.
+
+This skill owns closest-work positioning. haipipe-related continues to own
+related/ storage, and haipipe-discovery owns literature collection and reading.
+A new UI entry does not move these responsibilities. Grant, as a Paper type,
+uses the same positioning work to motivate its research gap and proposed aims;
+its proposed UI is not proof of an implemented Grant runtime.
 
 Related is not literature
 -------------------------

@@ -1,3 +1,39 @@
+## 0.57.0 · 2026-11-09 · Section tabs lead with the narrative
+
+- Each Section tab: reader asks, comes in with, moves, leaves with, hands on, must not say, displays; claims last. Its
+  small line is what the reader leaves with, so the left column reads as the arc.
+
+## 0.56.0 · 2026-11-09 · Story by Section opens with the Story arc
+
+- Story by Section is left tabs, right content; its first tab is the whole paper's Story arc (§8 `#### Story arc`,
+  haipipe-paper-story), else the text block that opens §8. The same section shows in Story and, last, in Displays.
+
+## 0.55.2 · 2026-11-09 · no second status list, no wait line under Sections
+
+- A fresh reviewer (haipipe-ui rules) read Board, Job and Task pages. Evidence's "📋 Where each stands" goes too
+  (Board, a version's Values and Citations, the value and citation Jobs): each item's state is its tab's, the
+  whole-paper check a verdict line above them.
+- JL 261109 on "🙋 Summary: Plan: waits for your sign": "we don't want this". A version's Sections bar keeps its word
+  ("2 wait for you") and shows no line under it.
+
+## 0.55.1 · 2026-11-09 · Displays: Story by Section last; "Where each display stands" removed
+
+- JL 261109: "this Story by Section should be at the bottom"; "what does 'Where each display stands' mean? maybe we don't need to use it". Each display's state is its tab's; Board Displays, a version's Display-Main/Appendix and the display Job's Displays drop the second list.
+
+## 0.55.0 · 2026-11-09 · type and use case on every Paper page
+
+- Board, Job and Task pages show type and use case under the title (shared `page_identity_html`); the faces carry
+  the use, written by haipipe-paper (L6).
+
+## 0.54.1 · 2026-11-09 · where the use-case line comes from
+
+- Says that `haipipe-paper` scaffolds and `paper_ladder.py update` (L6) write each Job's `use-case:` line.
+
+## 0.54.0 · 2026-11-08 · Paper types and shared content ownership
+
+- Grant is a type within Paper; its specific runtime remains proposed.
+- Align shared Section ownership and placement with the Paper renderer and the design matrix.
+
 ## 0.53.0 · 2026-11-06 · round-3 review fixes: maps in their box, what a revision changed, one word per state
 
 - Every paper map is one read-only map in its own box (`paper_version.paper_map`, MAP_CSS): the leaves wrap in the space

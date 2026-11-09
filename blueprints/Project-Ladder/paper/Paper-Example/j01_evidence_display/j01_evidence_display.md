@@ -1,5 +1,6 @@
 # j01_evidence_display · the paper's evidence: displays
 
+use-case: Figure and table preparation
 layer: evidence
 state: open
 goal: displays: one Task per figure or table, t01-t19 main, t51-t59 appendix

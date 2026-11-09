@@ -1,0 +1,500 @@
+{
+  "proposed": false,
+  "sections": {
+    "📊 Where each Job stands": {
+      "what": "Show each Job’s recorded state and next permitted action. Held and unsigned releases remain distinguishable.",
+      "layout": "Table → Job",
+      "example": "Source: Job faces, verification and release Run receipts.\nSkill: haipipe-design-workflow.\nExample: Design-Example; open the corresponding View to inspect the current records."
+    },
+    "➡️ Next": {
+      "what": "Separate the person’s pending review from agent work; retain links to the original Job.",
+      "layout": "Action summary",
+      "example": "Source: The same Job states and gates.\nSkill: haipipe-design-workflow.\nExample: Design-Example; open the corresponding View to inspect the current records."
+    },
+    "❓ What the Block asks": {
+      "what": "Show each recorded question and the status read from its report; do not create an answer from a state count.",
+      "layout": "Table → Report",
+      "example": "Source: board.md Questions and reports/.\nSkill: haipipe-report.\nExample: Design-Example; open the corresponding View to inspect the current records."
+    },
+    "📄 Build the summary": {
+      "what": "Copy the prompt that rebuilds the summary from recorded results. Viewing does not build or release anything.",
+      "layout": "Action row → Copy prompt",
+      "example": "Source: delivery/summary.pdf and the summary Run card.\nSkill: haipipe-design-delivery.\nExample: Design-Example; open the corresponding View to inspect the current records."
+    },
+    "🎯 The goals": {
+      "what": "Show aim, audience, channel, N, rules, exclusions and actual signature for each goal.",
+      "layout": "Left Tabs · Right Content → Goal",
+      "example": "Source: board.md Goals.\nSkill: haipipe-design-goal.\nExample: Design-Example; open the corresponding View to inspect the current records."
+    },
+    "📏 The shared rules": {
+      "what": "Read the common rules and their recorded signature; missing signatures remain pending.",
+      "layout": "Rules and signature",
+      "example": "Source: design-goal.md.\nSkill: haipipe-design-goal.\nExample: Design-Example; open the corresponding View to inspect the current records."
+    },
+    "🎯 Goals and rules": {
+      "what": "Expose goal and rule preparation actions with their real signature gates.",
+      "layout": "Action rows → Copy prompt",
+      "example": "Source: Goal and rules records; setup Run cards.\nSkill: haipipe-design-goal.\nExample: Design-Example; open the corresponding View to inspect the current records."
+    },
+    "🗺️ Goals × methods": {
+      "what": "Place existing Jobs by goal and pinned method version. A cell opens the real Job.",
+      "layout": "Matrix → Job",
+      "example": "Source: Job goal, method, version and inputs pins.\nSkill: haipipe-design.\nExample: Design-Example; open the corresponding View to inspect the current records."
+    },
+    "🧭 What moves across the grid": {
+      "what": "Identify whether method or inputs changed between Jobs; flag changes of both.",
+      "layout": "Comparison table",
+      "example": "Source: Job pins and moved field.\nSkill: haipipe-design.\nExample: Design-Example; open the corresponding View to inspect the current records."
+    },
+    "📋 The Jobs": {
+      "what": "Browse each Job with its design Tasks and recorded states.",
+      "layout": "Left Tabs · Right Content → Job preview",
+      "example": "Source: Job and Task faces; Run results.\nSkill: haipipe-design-workflow.\nExample: Design-Example; open the corresponding View to inspect the current records."
+    },
+    "🧭 Each Job's next move": {
+      "what": "Link a ready Job to Review and approve; show preparation or closure actions without executing them.",
+      "layout": "Action rows → Review / Copy prompt",
+      "example": "Source: Workflow gates and release receipts.\nSkill: haipipe-design-workflow.\nExample: Design-Example; open the corresponding View to inspect the current records."
+    },
+    "➕ A new Job": {
+      "what": "Choose a goal, registered method and inputs version, then copy the setup prompt.",
+      "layout": "Selectors → Copy prompt",
+      "example": "Source: Signed goals, method registry, inputs versions.\nSkill: haipipe-design.\nExample: Design-Example; open the corresponding View to inspect the current records."
+    },
+    "🔁 The rounds": {
+      "what": "Group Jobs, releases and returned experiments by frozen inputs version.",
+      "layout": "Left Tabs · Right Content → Round",
+      "example": "Source: inputs/iN, Job pins and observed/eNN.\nSkill: haipipe-design-goal.\nExample: Design-Example; open the corresponding View to inspect the current records."
+    },
+    "📋 What each Job kept": {
+      "what": "Distinguish kept designs waiting for review from released designs.",
+      "layout": "Table → Job",
+      "example": "Source: Task states and release receipts.\nSkill: haipipe-design-delivery.\nExample: Design-Example; open the corresponding View to inspect the current records."
+    },
+    "📥 Inputs versions": {
+      "what": "Inspect the frozen input manifests and their actual source files.",
+      "layout": "Input cards → Manifest",
+      "example": "Source: inputs/iN/manifest.yaml.\nSkill: haipipe-design-goal.\nExample: Design-Example; open the corresponding View to inspect the current records."
+    },
+    "🔁 The next round": {
+      "what": "Copy the prompts to record returned per-arm totals and create the next frozen inputs version.",
+      "layout": "Action rows → Copy prompt",
+      "example": "Source: Observed totals and input-version Run cards.\nSkill: haipipe-design-method.\nExample: Design-Example; open the corresponding View to inspect the current records."
+    },
+    "🎯 Predicted vs observed": {
+      "what": "Compare frozen predictions with recorded experimental totals and scores. Preserve the prediction basis.",
+      "layout": "Comparison table",
+      "example": "Source: prediction.yaml, observed/eNN/arms.csv and score results.\nSkill: haipipe-design-method.\nExample: Design-Example; open the corresponding View to inspect the current records."
+    },
+    "🏅 Method scorecard": {
+      "what": "Group measured scores and design verification results by the pinned method version.",
+      "layout": "Left Tabs · Right Content → Method",
+      "example": "Source: Method pins, verification results and scores.\nSkill: haipipe-design-method.\nExample: Design-Example; open the corresponding View to inspect the current records."
+    },
+    "⏱️ What each Job cost, by method": {
+      "what": "Read timing and usage from Run receipts; missing measurements remain unknown.",
+      "layout": "Table",
+      "example": "Source: Run started_at, finished_at and usage fields.\nSkill: haipipe-design-workflow.\nExample: Design-Example; open the corresponding View to inspect the current records."
+    },
+    "📏 Score and learn": {
+      "what": "Expose scoring and method proposal actions; a proposal still requires its recorded human sign.",
+      "layout": "Action rows → Copy prompt / Proposal",
+      "example": "Source: Score Runs and proposal passes.\nSkill: haipipe-design-method.\nExample: Design-Example; open the corresponding View to inspect the current records."
+    },
+    "🧠 MindMap": {
+      "what": "Show the Block’s existing topics and linked work, preserving the actual hierarchy.",
+      "layout": "Expandable MindMap",
+      "example": "Source: Block face, topics and work links.\nSkill: haipipe-mindmap.\nExample: Design-Example; open the corresponding View to inspect the current records."
+    },
+    "🎨 Studio": {
+      "what": "Linked Topics and their existing drawing, slide, map and delivery assets.",
+      "layout": "Left Tabs · Right Content → Preview",
+      "example": "Source: Topic faces and assets.\nSkill: haipipe-studio.\nExample: Design-Example; open the corresponding View to inspect the current records."
+    },
+    "🙋 Interactions": {
+      "what": "Questions and forms explicitly assigned to this View or a linked Topic; waiting counts use that selection.",
+      "layout": "Left Tabs · Right Content → Questions",
+      "example": "Source: Interaction Run cards and forms.\nSkill: haipipe-interaction.\nExample: Design-Example; open the corresponding View to inspect the current records."
+    },
+    "⚖️ Decisions": {
+      "what": "Recorded choices and reasons from assigned pages or Topics.",
+      "layout": "Left Tabs · Right Content → Records",
+      "example": "Source: Decisions sections on selected faces.\nSkill: haipipe-interaction.\nExample: Design-Example; open the corresponding View to inspect the current records."
+    },
+    "📚 Things to Know": {
+      "what": "Relevant constraints and notes from assigned pages or Topics.",
+      "layout": "Left Tabs · Right Content → Notes",
+      "example": "Source: Things to Know sections and note records.\nSkill: haipipe-interaction.\nExample: Design-Example; open the corresponding View to inspect the current records."
+    },
+    "📝 Checklist": {
+      "what": "Read the checks actually recorded for the selected View or Topic. Do not infer completion from the presence of code or a file.",
+      "layout": "Recorded checklist",
+      "example": "Source: Checklist sections on selected faces.\nSkill: haipipe-ui.\nExample: Design-Example; open the corresponding View to inspect the current records."
+    },
+    "🕒 Timeline": {
+      "what": "Read dated events from the selected Runs and records, with their original sources.",
+      "layout": "Chronological list",
+      "example": "Source: Selected Run receipts and dated records.\nSkill: haipipe-run.\nExample: Design-Example; open the corresponding View to inspect the current records."
+    },
+    "🧰 Skills": {
+      "what": "Show declared support skills plus the selected Runs and Topics; use the same selection in Files.",
+      "layout": "Left Tabs · Right Content → Skill",
+      "example": "Source: Design VIEW_SKILLS, selected Run cards and skill catalog.\nSkill: workbench-design.\nExample: Design-Example; open the corresponding View to inspect the current records."
+    },
+    "📁 Files": {
+      "what": "Browse selected Topic and Run directories, assigned page faces and supporting tools. Unassigned files stay reachable through the rail.",
+      "layout": "Left Folder Types · Right Folder Tree → Pop-out",
+      "example": "Source: Original files, skill catalog and Design renderer files.\nSkill: workbench-design.\nExample: Design-Example; open the corresponding View to inspect the current records."
+    },
+    "🎨 Design Board": {
+      "what": "One application and channel, signed goals, frozen inputs, Jobs and returned experiment totals.",
+      "layout": "Report → Review Content → Around the Work",
+      "example": "Design-Example has a released Job, a reasoning Job and a Job awaiting review. Its content is synthetic."
+    },
+    "🧭 Around the Work": {
+      "what": "One set of records, scoped inside each View and aggregated in the right rail.",
+      "layout": "Eight unnumbered sections in shared order",
+      "example": "Explicit view takes priority over a linked Topic. Unassigned records remain in the rail."
+    },
+    "🎯 Goal": {
+      "what": "Read the recorded Goal.",
+      "layout": "Existing Design Job Report",
+      "example": "Source: Job pins, Task faces and Run results. Skill: haipipe-design-workflow. Work retains the corresponding actions and approval gates."
+    },
+    "🧩 Method": {
+      "what": "Read the recorded Method.",
+      "layout": "Existing Design Job Report",
+      "example": "Source: Job pins, Task faces and Run results. Skill: haipipe-design-workflow. Work retains the corresponding actions and approval gates."
+    },
+    "📥 Inputs": {
+      "what": "Read the recorded Inputs.",
+      "layout": "Existing Design Job Report",
+      "example": "Source: Job pins, Task faces and Run results. Skill: haipipe-design-workflow. Work retains the corresponding actions and approval gates."
+    },
+    "🔗 Where each design came from": {
+      "what": "Read the recorded Where each design came from.",
+      "layout": "Existing Design Job Report",
+      "example": "Source: Job pins, Task faces and Run results. Skill: haipipe-design-workflow. Work retains the corresponding actions and approval gates."
+    },
+    "🔗 Chains": {
+      "what": "Read the recorded Chains.",
+      "layout": "Existing Design Job Report",
+      "example": "Source: Job pins, Task faces and Run results. Skill: haipipe-design-workflow. Work retains the corresponding actions and approval gates."
+    },
+    "💡 The ideas": {
+      "what": "Read the recorded The ideas.",
+      "layout": "Existing Design Job Report",
+      "example": "Source: Job pins, Task faces and Run results. Skill: haipipe-design-workflow. Work retains the corresponding actions and approval gates."
+    },
+    "✏️ The designs, as they read": {
+      "what": "Read the recorded The designs, as they read.",
+      "layout": "Existing Design Job Report",
+      "example": "Source: Job pins, Task faces and Run results. Skill: haipipe-design-workflow. Work retains the corresponding actions and approval gates."
+    },
+    "🏆 Ranking": {
+      "what": "Read the recorded Ranking.",
+      "layout": "Existing Design Job Report",
+      "example": "Source: Job pins, Task faces and Run results. Skill: haipipe-design-workflow. Work retains the corresponding actions and approval gates."
+    },
+    "🧭 Coverage": {
+      "what": "Read the recorded Coverage.",
+      "layout": "Existing Design Job Report",
+      "example": "Source: Job pins, Task faces and Run results. Skill: haipipe-design-workflow. Work retains the corresponding actions and approval gates."
+    },
+    "📄 Released designs": {
+      "what": "Read the recorded Released designs.",
+      "layout": "Existing Design Job Report",
+      "example": "Source: Job pins, Task faces and Run results. Skill: haipipe-design-workflow. Work retains the corresponding actions and approval gates."
+    },
+    "🔒 Frozen predictions": {
+      "what": "Read the recorded Frozen predictions.",
+      "layout": "Existing Design Job Report",
+      "example": "Source: Job pins, Task faces and Run results. Skill: haipipe-design-workflow. Work retains the corresponding actions and approval gates."
+    },
+    "Inputs": {
+      "what": "Inspect the recorded inputs for this Task role.",
+      "layout": "Existing Design Task Report",
+      "example": "Source: Task face and its Run results; the pinned Job inputs supply the fence. Skill: haipipe-design-unit. Execution remains in the matching Work step; release approval remains at the Job."
+    },
+    "Chains": {
+      "what": "Inspect the recorded chains for this Task role.",
+      "layout": "Existing Design Task Report",
+      "example": "Source: Task face and its Run results; the pinned Job inputs supply the fence. Skill: haipipe-design-unit. Execution remains in the matching Work step; release approval remains at the Job."
+    },
+    "Ideas": {
+      "what": "Inspect the recorded ideas for this Task role.",
+      "layout": "Existing Design Task Report",
+      "example": "Source: Task face and its Run results; the pinned Job inputs supply the fence. Skill: haipipe-design-unit. Execution remains in the matching Work step; release approval remains at the Job."
+    },
+    "Fence check": {
+      "what": "Inspect the recorded fence check for this Task role.",
+      "layout": "Existing Design Task Report",
+      "example": "Source: Task face and its Run results; the pinned Job inputs supply the fence. Skill: haipipe-design-unit. Execution remains in the matching Work step; release approval remains at the Job."
+    },
+    "Draft": {
+      "what": "Inspect the recorded draft for this Task role.",
+      "layout": "Existing Design Task Report",
+      "example": "Source: Task face and its Run results; the pinned Job inputs supply the fence. Skill: haipipe-design-unit. Execution remains in the matching Work step; release approval remains at the Job."
+    },
+    "Verify": {
+      "what": "Inspect the recorded verify for this Task role.",
+      "layout": "Existing Design Task Report",
+      "example": "Source: Task face and its Run results; the pinned Job inputs supply the fence. Skill: haipipe-design-unit. Execution remains in the matching Work step; release approval remains at the Job."
+    },
+    "Revise": {
+      "what": "Inspect the recorded revise for this Task role.",
+      "layout": "Existing Design Task Report",
+      "example": "Source: Task face and its Run results; the pinned Job inputs supply the fence. Skill: haipipe-design-unit. Execution remains in the matching Work step; release approval remains at the Job."
+    },
+    "State": {
+      "what": "Inspect the recorded state for this Task role.",
+      "layout": "Existing Design Task Report",
+      "example": "Source: Task face and its Run results; the pinned Job inputs supply the fence. Skill: haipipe-design-unit. Execution remains in the matching Work step; release approval remains at the Job."
+    },
+    "Rank": {
+      "what": "Inspect the recorded rank for this Task role.",
+      "layout": "Existing Design Task Report",
+      "example": "Source: Task face and its Run results; the pinned Job inputs supply the fence. Skill: haipipe-design-unit. Execution remains in the matching Work step; release approval remains at the Job."
+    },
+    "Coverage": {
+      "what": "Inspect the recorded coverage for this Task role.",
+      "layout": "Existing Design Task Report",
+      "example": "Source: Task face and its Run results; the pinned Job inputs supply the fence. Skill: haipipe-design-unit. Execution remains in the matching Work step; release approval remains at the Job."
+    },
+    "Kept": {
+      "what": "Inspect the recorded kept for this Task role.",
+      "layout": "Existing Design Task Report",
+      "example": "Source: Task face and its Run results; the pinned Job inputs supply the fence. Skill: haipipe-design-unit. Execution remains in the matching Work step; release approval remains at the Job."
+    },
+    "Design Job": {
+      "what": "One goal × method version × inputs version.",
+      "layout": "Existing Report and Work views",
+      "example": "Source: design_focus.JOB_VIEWS and TASK_STEPS; design_reader.kind_of. Example content is synthetic."
+    },
+    "Reason ideas": {
+      "what": "The reason ideas Task role, selected by the existing Design renderer.",
+      "layout": "Existing Report and Work views",
+      "example": "Source: design_focus.JOB_VIEWS and TASK_STEPS; design_reader.kind_of. Example content is synthetic."
+    },
+    "One design": {
+      "what": "The one design Task role, selected by the existing Design renderer.",
+      "layout": "Existing Report and Work views",
+      "example": "Source: design_focus.JOB_VIEWS and TASK_STEPS; design_reader.kind_of. Example content is synthetic."
+    },
+    "Review whole": {
+      "what": "The review whole Task role, selected by the existing Design renderer.",
+      "layout": "Existing Report and Work views",
+      "example": "Source: design_focus.JOB_VIEWS and TASK_STEPS; design_reader.kind_of. Example content is synthetic."
+    }
+  },
+  "skills": {
+    "Summary": [
+      "haipipe-design-workflow",
+      "haipipe-report",
+      "haipipe-design-delivery"
+    ],
+    "Goals": [
+      "haipipe-design-goal"
+    ],
+    "Jobs": [
+      "haipipe-design",
+      "haipipe-design-workflow"
+    ],
+    "Rounds": [
+      "haipipe-design-goal",
+      "haipipe-design-delivery",
+      "haipipe-design-method"
+    ],
+    "Methods": [
+      "haipipe-design-method",
+      "haipipe-design-workflow"
+    ],
+    "MindMap": [
+      "haipipe-mindmap"
+    ]
+  },
+  "examples": {
+    "block": {
+      "Design Board": "blueprints/Project-Ladder/design/Design-Example",
+      "Around the Work": "blueprints/Project-Ladder/design/Design-Example"
+    },
+    "job": {
+      "Design Job": "blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_overall-performance"
+    },
+    "task": {
+      "Reason ideas": "blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_overall-performance/t00_reason-ideas",
+      "One design": "blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_overall-performance/t02_d02_reminder-one-ask",
+      "Review whole": "blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_overall-performance/t99_review-whole"
+    }
+  },
+  "view_routes": {
+    "Summary": {
+      "section": "report",
+      "group": "summary"
+    },
+    "Goals": {
+      "section": "report",
+      "group": "goals"
+    },
+    "Jobs": {
+      "section": "report",
+      "group": "jobs"
+    },
+    "Rounds": {
+      "section": "report",
+      "group": "rounds"
+    },
+    "Methods": {
+      "section": "report",
+      "group": "methods"
+    },
+    "MindMap": {
+      "section": "report",
+      "group": "mindmap"
+    }
+  },
+  "use_cases": {
+    "block": {
+      "Design Board": {
+        "SMS design": [
+          {
+            "path": "blueprints/Project-Ladder/design/Design-Example",
+            "label": "Blueprint example"
+          }
+        ],
+        "Checklist design": []
+      }
+    },
+    "job": {
+      "Design Job": {
+        "SMS design": [
+          {
+            "path": "blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_overall-performance",
+            "label": "Blueprint example"
+          }
+        ],
+        "Checklist design": []
+      }
+    },
+    "task": {
+      "Reason ideas": {
+        "Generate ideas from frozen inputs": [
+          {
+            "path": "blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_overall-performance/t00_reason-ideas",
+            "label": "Blueprint example"
+          }
+        ]
+      },
+      "One design": {
+        "Draft and verify a design": [
+          {
+            "path": "blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_overall-performance/t02_d02_reminder-one-ask",
+            "label": "Blueprint example"
+          }
+        ]
+      },
+      "Review whole": {
+        "Rank and select designs": [
+          {
+            "path": "blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_overall-performance/t99_review-whole",
+            "label": "Blueprint example"
+          }
+        ]
+      }
+    }
+  },
+  "type_view_routes": {
+    "job": {
+      "Design Job": {
+        "Setup": {
+          "section": "report",
+          "group": "setup"
+        },
+        "Ideas": {
+          "section": "report",
+          "group": "ideas"
+        },
+        "Designs": {
+          "section": "report",
+          "group": "designs"
+        },
+        "Ranking": {
+          "section": "report",
+          "group": "ranking"
+        },
+        "Release": {
+          "section": "report",
+          "group": "release"
+        },
+        "MindMap": {
+          "section": "report",
+          "group": "mindmap"
+        }
+      }
+    },
+    "task": {
+      "Reason ideas": {
+        "Inputs": {
+          "section": "report",
+          "group": "inputs"
+        },
+        "Chains": {
+          "section": "report",
+          "group": "chains"
+        },
+        "Ideas": {
+          "section": "report",
+          "group": "ideas"
+        },
+        "Fence check": {
+          "section": "report",
+          "group": "fence-check"
+        },
+        "MindMap": {
+          "section": "report",
+          "group": "mindmap"
+        }
+      },
+      "One design": {
+        "Draft": {
+          "section": "report",
+          "group": "draft"
+        },
+        "Verify": {
+          "section": "report",
+          "group": "verify"
+        },
+        "Revise": {
+          "section": "report",
+          "group": "revise"
+        },
+        "State": {
+          "section": "report",
+          "group": "state"
+        },
+        "MindMap": {
+          "section": "report",
+          "group": "mindmap"
+        }
+      },
+      "Review whole": {
+        "Rank": {
+          "section": "report",
+          "group": "rank"
+        },
+        "Coverage": {
+          "section": "report",
+          "group": "coverage"
+        },
+        "Kept": {
+          "section": "report",
+          "group": "kept"
+        },
+        "MindMap": {
+          "section": "report",
+          "group": "mindmap"
+        }
+      }
+    }
+  }
+}

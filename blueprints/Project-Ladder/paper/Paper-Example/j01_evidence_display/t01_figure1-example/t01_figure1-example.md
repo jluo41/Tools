@@ -1,5 +1,6 @@
 # t01_figure1-example
 
+use-case: Figure preparation
 label: Display A
 goal: Figure 1 · <its caption>
 number: Figure 1

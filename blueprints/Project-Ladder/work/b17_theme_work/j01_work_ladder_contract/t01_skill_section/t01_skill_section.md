@@ -4,7 +4,7 @@ goal: haipipe-work's SKILL.md says today's work ladder
 close: the SKILL.md says each rung (what it holds, whether it gets a page) and each route as b17-s01's agreed Design draws them, its version and CHANGELOG move with it, and t03's fresh-agent check passes
 task-type: tool
 
-Part of j01 · Make s01's delivery (its sNN's Process). Its Runs are soft (agent work, one pass each), in `runs/`.
+Part of j01 · Work ladder contract (its sNN's Process). Its Runs are soft (agent work, one pass each), in `runs/`.
 run-write-ladder-section
 
 It writes the five rungs (what a work Block, Job, Task, Run and Studio topic each hold, which of them get a page) and

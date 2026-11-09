@@ -1,0 +1,26 @@
+release: code-v1
+questions:
+  D01:
+    task: t01_D01_extract-shape
+    change: new
+  D02:
+    task: t02_D02_arm-balance
+    change: new
+  I01:
+    task: t03_I01_outcome-by-arm
+    change: new
+  I02:
+    task: t04_I02_outcome-by-day
+    change: new
+  K01:
+    task: t05_K01_gap-holds
+    change: new
+  W01:
+    task: t06_W01_next-round
+    change: new
+  X01:
+    task: t07_X01_what-we-found
+    change: new
+  X02:
+    task: t08_X02_what-data-cannot-say
+    change: new

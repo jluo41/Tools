@@ -1,0 +1,16 @@
+run: run-write-script-i01
+kind: soft
+type: write-script
+scope: Tools/blueprints/Project-Ladder/insight/Prototype-Example/j01_code-v1_example-questions/t03_I01_outcome-by-arm
+target: i01
+ticket: run-write-script-i01.md
+skill: haipipe-insight
+agent: haipipe-task-creator-agent
+signs:
+- none
+status: done
+passes:
+- p01-1106
+writes:
+- t03_I01_outcome-by-arm/scripts
+feeds: []

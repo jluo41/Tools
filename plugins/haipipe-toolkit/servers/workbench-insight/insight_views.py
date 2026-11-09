@@ -55,7 +55,7 @@ SKILLS = {"Add a data version": ("haipipe-insight-meta",), "Add a Job": ("haipip
 
 # each button named by the Run it makes (haipipe-run ref/run-types-by-space.md rule 6; b11 s21's names);
 # a hard Run keeps its rNN_ name. Its words stay as what it does, the small line under the button.
-RUNS = {"Add a data version": "run-add-version-<d>vM", "Add a Job": "run-add-<jNN>", "Close a Job": "run-close-<jNN>",
+RUNS = {"Add a data version": "run-add-version-data-v<M>", "Add a Job": "run-add-<jNN>", "Close a Job": "run-close-<jNN>",
         "Close the Job": "run-close-<jNN>", "Run the Job": "run-launch-<jNN>", "Propose a cut": "run-propose-cut-<slug>",
         "Propose questions": "run-propose-<jNN>", "Update the coverage": "run-coverage", "Draw a track": "run-track-<q>",
         "Check consistency": "run-consistency-<jA>-<jB>", "Pool or split": "run-pool-<tNN>",
@@ -628,11 +628,11 @@ def board_spaces(block: Path, root: Path, sub: str, href) -> dict:
     d_open = sub if sub in desc else "Map"
     d_html = {"Map": _map, "Prototype": _prototype, "Dataset": _dataset, "Partitions": _partitions}[d_open](b, root, href)
     d_runs = {"Map": (_kind("Add a data version", "Add a data version to the Board {folder}: register the extract, frozen, "
-                            "its rows counted per cut (run-add-version-<d>vM)."),
+                            "its rows counted per cut (run-add-version-data-v<M>)."),
                       _kind("Add a Job", "Add a Job to {folder}: pair a Prototype release with a data version, one clock "
-                                         "moved from its neighbour (run-add-<jNN>; the Job folder jNN_prototype-pN-<slug>_data-<d>vM carries the pair).", rows=_rows(b["runs"], root, "add"))),
+                                         "moved from its neighbour (run-add-<jNN>; the Job folder jNN_code-vN-<slug>_data-vM carries the pair).", rows=_rows(b["runs"], root, "add"))),
               "Prototype": (_kind("Open the Prototype Block ↗", f"Open the Prototype Block {prel}: releases are cut there."),),
-              "Dataset": (_kind("Add a data version", "Add a data version to the Board {folder} (run-add-version-<d>vM)."),),
+              "Dataset": (_kind("Add a data version", "Add a data version to the Board {folder} (run-add-version-data-v<M>)."),),
               "Partitions": (_kind("Propose a cut", f"Propose a cut for {prel}/proposals/ (run-propose-cut-<slug>): a cut is plan, so it lands "
                                                     "in the next release."),)}[d_open]
     told = [j for j in b["jobs"] if _executive(j)]          # Jobs whose release asks Executive questions
@@ -693,12 +693,12 @@ def _job_link(href, j: dict, short: bool = False) -> str:
 
 
 def _rlabel(b: dict, name: str) -> str:
-    """An analysis plan (a release) by its code and words, `AP1 · first ladder`, from the Prototype's release folder."""
+    """A code version (a release) by its id and words, `code-v1 · first ladder`, from the Prototype's release folder."""
     return next((r.get("label") or r["name"] for r in b["prototype"]["releases"] if r["name"] == name), P.plan_code(name))
 
 
 def _vlabel(b: dict, version: str) -> str:
-    """A data freeze (a data version) by its code and words, `F1 · first 5 days`, from board.md versions:."""
+    """A data version by its id and words, `data-v1 · first 5 days`, from board.md versions:."""
     v = next((v for v in b["versions"] if str(v.get("version")) == str(version)), {})
     words = P.freeze_words(v)
     return f"{P.freeze_code(version)} · {words}" if words else P.freeze_code(version)
@@ -736,13 +736,13 @@ def _map(b: dict, root: Path, href) -> str:
             cells.append(f'<td>{_job_link(href, j, short=True)} · {_st(j["state"])}<br><span class=mut>{len(hard)} runs: '
                          f'{esc(runs) or "none"}<br>{done} of {asked} answered · {checked} checked</span></td>')
         body.append("<tr>" + "".join(cells) + "</tr>")
-    return (f'<table class=wf-table style="width:auto"><tr><th>analysis plan \\ data freeze</th>{head}</tr>'
+    return (f'<table class=wf-table style="width:auto"><tr><th>code version \\ data version</th>{head}</tr>'
             f'{"".join(body)}</table>')
 
 
 def _prototype_tabs(b: dict, root: Path, eid: str) -> str:
     """The questions, plan by plan, as side tabs (the focus page; haipipe-ui: one kind of tabs, no count in a label):
-    each analysis plan a tab, its state word (signed or not), its questions by DIKW level as tables; the open
+    each code version a tab, its state word (signed or not), its questions by DIKW level as tables; the open
     proposals last, their word how many are open."""
     from live.ui_parts import _side_tabs
     proto = b["prototype"]
@@ -1152,7 +1152,7 @@ def _board_runs(b: dict, root: Path, view: str) -> str:
 def _handoff(b: dict, root: Path) -> str:
     rows = [(_open(h["file"], root, h.get("counsel", h["file"].stem)), esc(h.get("job", "")), _st(h.get("signed", "—")))
             for h in b["handoffs"]]
-    return ('<p class=mut>The signed Wisdom counsel, naming the Job (its analysis plan and data freeze) it came from. '
+    return ('<p class=mut>The signed Wisdom counsel, naming the Job (its code version and data version) it came from. '
             'Only a signed counsel leaves this Board.</p>' + (table(("counsel", "from Job", "signed"), rows) if rows else
                                  '<p class=mut>No signed counsel yet.</p>'))
 
@@ -1246,7 +1246,7 @@ def _job_prototype(j: dict, r: dict, root: Path) -> str:
     power = (r["thresholds"].get("power") or {})
     compare = r["thresholds"].get("compare")
     code = [d for d in ("src", "configs") if r["job"] and (r["job"] / d).is_dir()]
-    return (f'<p class=mut>Analysis plan {esc(r.get("label") or r["name"])}: {esc(rel(r["job"], root)) if r["job"] else "—"} (read only).</p>' + body
+    return (f'<p class=mut>{esc(r.get("label") or r["name"])}: {esc(rel(r["job"], root)) if r["job"] else "—"} (read only).</p>' + body
             + _fold("the cuts, as defined in the release", f"{len(defs)}", table(("partition", "where", "why"), defs))
             + f'<p class=mut>Power floor: {esc(power.get("smallest_effect_pp", "—"))} pp · compare rule: '
               f'{esc(compare) if compare else "not set (still open)"} · shared code: {esc(", ".join(code) or "none")}</p>')
@@ -1562,7 +1562,7 @@ def _launch_step(j, b, r, f, root, href, ask):
 
 
 def _job_prototype_line(r: dict, root: Path) -> str:
-    return f'<p class=mut>Analysis plan {esc(r.get("label") or r["name"])}: {esc(rel(r["job"], root)) if r["job"] else "—"} (read only).</p>'
+    return f'<p class=mut>{esc(r.get("label") or r["name"])}: {esc(rel(r["job"], root)) if r["job"] else "—"} (read only).</p>'
 
 
 def _run_step(j, b, r, f, root, href, ask):

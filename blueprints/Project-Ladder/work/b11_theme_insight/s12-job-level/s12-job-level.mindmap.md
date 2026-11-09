@@ -14,8 +14,8 @@ built: from-topic .
 - Delivery type <!-- @delivery-type #58a44f -->
   - ui <!-- @delivery-type/0 #636117 -->
 - Topic <!-- @topic #7e13bd -->
-  - one Job's tab, drawn for j03_p2_<d>v2: one … <!-- @topic/0 #29cb97 -->
-    one Job's tab, drawn for j03_p2_<d>v2: one Prototype version × one data version (s00), its six Spaces as full screens on the shared frame (Guide · Block · Job · Task), each with "on disk" under it (JL 261007: "s11, s12, s13 ... for the Block level, Job level and task level, to make each of them, instead of nesting all the things together").
+  - one Job's tab, drawn for j03_code-v2_data-v2: one … <!-- @topic/0 #29cb97 -->
+    one Job's tab, drawn for j03_code-v2_data-v2: one Prototype version × one data version (s00), its six Spaces as full screens on the shared frame (Guide · Block · Job · Task), each with "on disk" under it (JL 261007: "s11, s12, s13 ... for the Block level, Job level and task level, to make each of them, instead of nesting all the things together").
   - It follows s00: a Job pins one … <!-- @topic/1 #c78fdd -->
     It follows s00: a Job pins one Prototype version and one data version; a DIKW level groups the questions inside a Job.
   - The method cards come from s03 <!-- @topic/2 #e174a8 -->

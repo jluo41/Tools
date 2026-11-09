@@ -1,7 +1,7 @@
 # t07_X01_what-we-found · Executive Task · stage 2 · r02
 
 ```text
-page     http://127.0.0.1:5623/_board/workbench?layout=focus&path=blueprints/Project-Ladder/insight/Insight-Example/j02_prototype-p1-example-questions_data-Examplev2/t07_X01_what-we-found (Report, Work: Answer · By cut · Across Jobs · Plan · MindMap)
+page     http://127.0.0.1:5623/_board/workbench?layout=focus&path=blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2/t07_X01_what-we-found (Report, Work: Answer · By cut · Across Jobs · Plan · MindMap)
 answers  what: the folder, Aim "in one plain line, what did we find" · where: crumb to j02 · here: Report · Answer, headline "Arm B's outcome rate is about 15 points higher" · do: partly, open bars
 rules    1 ✅ · 2 ✅ · 3 ✅ · 4 ⚠️ MindMap is root + "Runs ▸ show" · 5 ✅
 tasks    the one line: 0 clicks | what it rests on: 1 click (How sure: I01, K01) | is it current: unclear in 4 clicks: Report "answered · page checked", By cut "2 of 2 cited", Work chain "Gather · ready" after "Write · done", Work · By cut "waits on I01"

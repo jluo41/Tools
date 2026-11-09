@@ -1,5 +1,6 @@
 # j03_evidence_cite · the paper's evidence: citations
 
+use-case: Citation verification
 layer: evidence
 state: open
 goal: citations: one Task per claim group, each from verified CITE Results

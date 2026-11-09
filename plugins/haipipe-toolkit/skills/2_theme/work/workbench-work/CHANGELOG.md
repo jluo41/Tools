@@ -1,3 +1,16 @@
+## 0.10.0 · 2026-11-09 · current format and update door
+
+- Lead with current focus pages, Work/Blueprint UI types, and shared view-versus-rail scope.
+- Route format alignment to `/haipipe-work update`; keep classic workbench and workflow guidance explicitly separate.
+- Clarify authored skill-based checklists versus derived walkthrough presence.
+
+## 0.9.0 · 2026-11-08 · the focus page's work pages
+
+- New section "The focus page's work pages": the rules JL decided on 261108 for the Block, Job and Task pages, each
+  pointing at b17 `s04-workbench-page-structure` s04-D12 to s04-D19 (two groups Review Content and Around the Work;
+  Interactions and Decisions with topics as left tabs; readable Decisions; a view's own Studio topics; 📝 Checklist;
+  Skills read in place; Status Jobs first in the 261105 look; a Job's name is its folder's words).
+
 ## 0.8.4 · 2026-10-31 · the question map is retired
 
 - `servers/workbench-work/question_map.py` writes nothing now: `main()` prints why and exits 1 (JL 261031, b35 r02 Q2:

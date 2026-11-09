@@ -1,12 +1,78 @@
 ---
 name: workbench-work
-description: "Open and read a work-theme Block Workbench: Scope (Block, Questions, Resources, RoadMap Draw), Task (a row per Question: Logic, Task Work, Report), Check and Delivery, with the Runs panel and Guide; a workflow-layout Block shows Goal · Plan · Execution · Results. It only shows: execution is haipipe-task, reports are haipipe-draft. Trigger: work workbench, work Block view, open the Block's reports, /workbench-work."
+description: "Open and interpret current work focus pages at Block, Job and Task level: Overview, Status, Findings, Delivery and view-scoped Around the Work. Distinguish Work Block and Blueprint Block with configured UI views. Read-only; /haipipe-work update aligns existing records. Classic layouts remain supported. Trigger: work workbench, work Block view, /workbench-work."
 metadata:
-  version: "0.8.4"
-  last_updated: "2026-10-26"
+  version: "0.10.0"
+  last_updated: "2026-11-09"
 ---
 
 # Work Block Workbench (the work theme, once task)
+
+## Current focus pages
+
+By default, open a work Block, Job or Task on the focus page (`servers/workbench/focus_page.py`,
+`work_frame.py`), its views Overview · Status · Findings · Delivery. These hold, each one
+b17 `s04-workbench-page-structure` Decided:
+
+| Rule | What the page does | Decided |
+|---|---|---|
+| Two groups | **📋 Review Content**: the view's own numbered sections. **Around the Work**: Studio, Interactions, Decisions, Things to Know, Checklist, Timeline, Skills, Files, unnumbered, the same under every view | s04-D12 |
+| Interactions, Decisions | Separate sections with topics on the left and their questions or decisions on the right. Inside a view, show its linked records; on the rail, roll up the page and its descendants across views | s04-D13; current shared scope |
+| Decisions readable | One row per `sNN-DNN`: number, first clause, a tag only from its own words (Replaced, Waiting, Proposed); full text on open; nothing called confirmed from a quote | s04-D14 |
+| View's own records | Every shared section uses the same explicit view/topic association. Matching Studio tags provide a fallback when no explicit view is set; this applies to all views | s04-D15; current shared scope |
+| Checklist icon | 📝 (☑️ draws as a grey box) | s04-D16 |
+| Skills | Each skill read in place: its SKILL.md, and a button per file in its folder, SKILL.md first | s04-D17 |
+| Status | Jobs and Tasks first, the 261105 look: a band per jNN, each Job its emoji, jNN, name and how far (`partly · 7 Tasks · 14%`), opening to Tasks and Runs; Topics only when they group differently | s04-D18 |
+| Job names | A Job's name is its folder's words; its emoji is its face's `emoji:` line (`haipipe-job`) | s04-D19 |
+
+One thing shows once, in one look, under one name: a topic has the same name in Studio and
+Decisions, and Jobs are never listed twice.
+
+## Work Block and Blueprint Block
+
+Both belong to Work; neither changes the B–J–T–R ladder or introduces a new
+`board-kind`. **Work Block** executes work and returns results. **Blueprint Block**
+develops a theme's UI and skills. A folder inside `blueprints/` can still be a
+normal Work example: the purpose and authored configuration decide.
+
+Both have Overview · Status · Findings · Delivery. Only a Blueprint with the
+corresponding `ui-block:`, `ui-job:`, `ui-task:`, `ui-run:` examples adds Block UI · Job UI ·
+Task UI · Run UI. The ordinary Work example is `b90_example_paper_results`; the Blueprint
+example is `b17_theme_work`, both under `blueprints/Project-Ladder/work/` in Tools.
+The type/view matrices and `view-guide.json` in b17's `ui/` are the current comparison.
+
+Each main view has numbered **📋 Review Content**, then the same eight unnumbered
+**🧭 Around the Work** sections: Studio, Interactions, Decisions, Things to Know,
+Checklist, Timeline, Skills, Files. The right rail uses those same names and
+aggregates the current page and its descendants across views. Report combines
+results and work actions; there is no separate Work rail entry in this focus UI.
+
+Status uses topics on the left and related B–J–T–R on the right, alongside actual
+Jobs/Tasks/Run states. It does not replace those records with a generic Next Steps
+list. The other views read their own source records and retain theme-specific parts.
+
+Checklist reads authored checks in scoped faces/topics and, for UI views, recorded
+walkthrough presence. A skill-based acceptance checklist must be authored and
+verified; it is not automatically generated or certified by the renderer.
+See [the update procedure](../haipipe-work/ref/update.md) for source fields, view
+associations, evidence, and the difference between format alignment and completion.
+
+## Open or update
+
+Use `/wb <Block | Job | Task>` for the current focus page on its existing SPACE
+host, with `layout=focus&section=report` and the appropriate `group`. Use the host's
+configured origin; preserve its authentication and binding settings.
+
+This skill reads and verifies; it does not edit records. To align an existing
+Block and its child pages, use `/haipipe-work update <Block>`; add `--check` for
+inspection only. That is an agent procedure, not a `wb.py` subcommand. Do not
+apply the legacy `/wb update` migration merely to adopt the current focus format.
+
+## Classic workbench (compatibility only)
+
+The remaining sections describe classic routes and their stored contracts. They
+are not the target format for `/haipipe-work update`. Do not remove their metadata
+or move their files merely to open the current focus page.
 
 One `work/bNN_*/board.md` declaring `board-kind: task-block` opens one
 Workbench, drawn in the Insight Workbench's style (`servers/workbench-insight/`):
@@ -20,7 +86,8 @@ cards with its Run and Report method cards (`guide/methods/`); Related Paper is
 `related/papers.md`, all in `servers/workbench-work/`; RoadMap Draw opens the generated
 `Tools/blueprints/Project-Ladder/work/b17_theme_work/s04-workbench-page-structure/result/merged-s03-work-workbench/task-workbench-design.excalidraw`.
 
-## The workflow layout, and updating an older Block
+### Classic workflow layout
+
 
 A Block whose `board.md` says `workbench-layout: workflow` (LLMRec b01 and b02, 261021) opens on
 **Goal · Plan · Execution · Results**: Goal is one folded to-do tree, Goal → Job → Task → item, built
@@ -28,12 +95,11 @@ from each Job face's `## Deliverables` (haipipe-job `ref/job-contract.md`) and t
 Execution groups each Task's Runs by their card's `role:`. The server is
 `servers/workbench-work/work_progress.py`; its README says what each view reads.
 
-This skill only shows a Block. It never changes one. To bring an older Block up to today's
-structure, run `/wb update <Block>` (the `wb` skill): a dry run first, then `--apply`, then write the
-face lines it lists (each Job's `emoji:` and `## Deliverables`, each work Task's `goal:` and
-`close:`) from the Block's own records, and open the Block again to read the Goal tree.
+For an explicitly requested structural migration to this classic workflow, `/wb update`
+has its own dry run, apply and proposal rules. It can move files and add Run metadata.
+It is not required to render the current focus page, and is not `/haipipe-work update`.
 
-## Open
+### Classic routes
 
 Use the existing shared host at the selected SPACE, Project, tasks or Block
 root. Derive the board path relative to the root:

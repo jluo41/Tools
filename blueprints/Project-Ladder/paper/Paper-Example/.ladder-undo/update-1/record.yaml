@@ -1,0 +1,26 @@
+moves: []
+swept:
+- board.md
+- j01_evidence_display/t01_figure1-example/t01_figure1-example.md
+- j01_evidence_display/t02_table1-example/t02_table1-example.md
+- j01_evidence_display/t03_display-c-placebo-check/t03_display-c-placebo-check.md
+- j01_evidence_display/t51_display-d-subgroup-estimate/t51_display-d-subgroup-estimate.md
+- j02_evidence_value/t01_values-sample/t01_values-sample.md
+- j02_evidence_value/t02_raw-value-tables/t02_raw-value-tables.md
+- j02_evidence_value/t99_paper_value_check/t99_paper_value_check.md
+- j03_evidence_cite/t01_cite-prior-work/t01_cite-prior-work.md
+- j03_evidence_cite/t99_paper_citation_check/t99_paper_citation_check.md
+- j11_writing_v1130_desk/t00_summary/t00_summary.md
+- j11_writing_v1130_desk/t01_introduction/t01_introduction.md
+- j11_writing_v1130_desk/t02_methods/t02_methods.md
+- j11_writing_v1130_desk/t03_results/t03_results.md
+- j11_writing_v1130_desk/t31_cover-letter/t31_cover-letter.md
+- j12_writing_v0215_desk/t00_summary/t00_summary.md
+- j12_writing_v0215_desk/t01_introduction/t01_introduction.md
+- j12_writing_v0215_desk/t02_methods/t02_methods.md
+- j12_writing_v0215_desk/t03_results/t03_results.md
+- j12_writing_v0215_desk/t31_cover-letter/t31_cover-letter.md
+- j12_writing_v0215_desk/t32_response/t32_response.md
+- j21_submission_v1130_desk/t01_cover-letter/t01_cover-letter.md
+- j21_submission_v1130_desk/t02_portal-walk/t02_portal-walk.md
+- j21_submission_v1130_desk/t03_portal-fill/t03_portal-fill.md

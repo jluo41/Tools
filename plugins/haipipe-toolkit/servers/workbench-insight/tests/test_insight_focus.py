@@ -122,7 +122,7 @@ class InsightLettersTest(unittest.TestCase):
         self.report_ok(IF.board_report_views(self.board, self.root), keys)
         work = IF.board_work_views(self.board, self.root)
         self.work_ok(work, keys)
-        self.assertRegex(HEADS.findall(work["work-questions"][1]())[0], r"^1 · 📋 The next analysis plan")
+        self.assertRegex(HEADS.findall(work["work-questions"][1]())[0], r"^1 · 📋 The next code version")
 
     def test_job_report(self):
         views = IF.job_report_views(self.job, self.root)
@@ -347,7 +347,7 @@ class RoundOneTest(unittest.TestCase):
         jobs = IF.board_report_views(self.board, self.root)["jobs"][1]()
         self.assertIn(f"{done} of {asked} written", jobs)                      # the same Job, the same count (the
         answers = IF.board_report_views(self.board, self.root)["answers"][1]()  # plans × freezes: Jobs' alone, round 2)
-        self.assertNotIn("Analysis plans × data freezes", answers)
+        self.assertNotIn("Code versions × data versions", answers)
 
     def test_the_grid_question_opens_its_answer(self):
         grid = IF.job_report_views(self.job, self.root)["grid"][1]()

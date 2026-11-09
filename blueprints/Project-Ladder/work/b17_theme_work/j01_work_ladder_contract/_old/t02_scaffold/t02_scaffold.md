@@ -4,7 +4,7 @@ goal: the work theme scaffolds a new Block, Job, Task and Run with the folders t
 close: each level's scaffold writes the agreed folders and faces
 task-type: tool
 
-Part of j01 · Make s01's delivery (its sNN's Process). Its Runs are soft (agent work, one pass each), in `runs/`.
+Part of j01 · Work ladder contract (its sNN's Process). Its Runs are soft (agent work, one pass each), in `runs/`.
 run-build-work-scaffold
 
 Moved to `_old/` on 2026-10-31, never run: s01's delivery is now haipipe-work's SKILL.md alone (s01-D03), and the

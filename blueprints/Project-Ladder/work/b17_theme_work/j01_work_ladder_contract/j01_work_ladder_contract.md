@@ -1,7 +1,8 @@
-# j01 · Make s01's delivery
+# j01 · Work ladder contract
 
 goal: build what b17-s01 hands over: haipipe-work's SKILL.md rewritten to today's work ladder, checked by a fresh agent on a demo Block
 close: every Task's Runs are done and b17-s01 is agreed
+emoji: 🪜
 
 ## Topic
 

@@ -1,7 +1,7 @@
 # t05_K01_gap-holds · Knowledge Task (pooling verdict, a waiting form) · stage 2 · r02
 
 ```text
-page     http://127.0.0.1:5623/_board/workbench?layout=focus&path=blueprints/Project-Ladder/insight/Insight-Example/j02_prototype-p1-example-questions_data-Examplev2/t05_K01_gap-holds (Report, Work: Answer · By cut · Across Jobs · Plan · MindMap)
+page     http://127.0.0.1:5623/_board/workbench?layout=focus&path=blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2/t05_K01_gap-holds (Report, Work: Answer · By cut · Across Jobs · Plan · MindMap)
 answers  what: the folder, Aim "same gap in both groups, one counsel?" · where: crumb to j02 · here: Report · Answer, headline "POOL: one counsel serves both groups." · do: the orange line under 🙋 Interaction, "2 wait for you"
 rules    1 ✅ · 2 ✅ · 3 ✅ · 4 ⚠️ MindMap is root + "Runs ▸ show" · 5 ⚠️ "rows —" in By cut
 tasks    pool or split: 0 clicks | what waits for me: 1 click (open 🙋, pick, Next) | how it moved from j01: 2 clicks (UNDETERMINED to POOL, "changed: the data")

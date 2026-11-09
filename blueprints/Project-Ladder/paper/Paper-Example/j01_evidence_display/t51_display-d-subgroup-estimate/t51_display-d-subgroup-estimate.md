@@ -1,5 +1,6 @@
 # t51_display-d-subgroup-estimate
 
+use-case: Figure preparation
 label: Display D
 goal: eFigure 2 · <Subgroup> estimate beside the whole sample: the same model in <the subgroup> and in everyone
 number: eFigure 2

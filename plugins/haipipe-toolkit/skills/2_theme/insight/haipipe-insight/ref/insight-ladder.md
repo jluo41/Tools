@@ -16,18 +16,18 @@ written there (block-contract.md § The question file, § The script); only wher
 its proposals to its signature, is [release.md](release.md).
 
 
-**The words a person reads (JL 261011).** A release is called an **analysis plan**, `AP<N>` (release `pN`): the questions and their code, frozen once signed. A data version is called a **data freeze**, `F<M>` (data version `vM`), with a few words in its `label:`. Screens spell them out (JL 261102: "why still AP1 x F1?"): `analysis plan 1 · first ladder × data freeze 1 · first 5 days`; AP1 and F1 stay the short ids in faces and docs; the Job ▾ menu says `j01 · first ladder × first 5 days`. Folder names, YAML ids and Run names keep `pN` and `vM`, which every script and ticket reads.
+**The words a person reads (JL 261109: "code-v1 x data-v1, make it readable").** A release is a **code version**, `code-vN`: the questions and their code, frozen once signed. A data version is `data-vM`, with a few words in its `label:`. The screen, the folder names, the YAML ids and the Run names all say the same id: `code-v1 · first ladder × data-v1 · first 5 days`; the Job ▾ menu says `j01 · first ladder × first 5 days`. An older Board's `pN` and `vM` (and the screen words AP<N>, F<M>, analysis plan, data freeze before 261109) read as `code-vN` and `data-vM` until `ref/rename_code_data.py` carries it over.
 
 The two trees
 -------------
 
 ```text
-<Project>/work/Prototype-bNN-<Topic>/        the Prototype: questions + scripts, by version
+<Project>/insight/Prototype-<Topic>/        the Prototype: questions + scripts, by version
 ├── board.md                                  board-kind: prototype · serves: insight/Insight-<name>
 ├── proposals/                                the backlog: <slug>.md (kind · level · from · state · why), README.md
 ├── studio/ · runs/                           the question map, its own Runs (triage · open a version · carry)
-└── jNN_pN_<slug>/                            one version (a release), frozen once a person signs it
-    ├── jNN_pN_<slug>.md                      release · state: open | closed · signed: ✅ <YYMMDD> · from: p<N-1>
+└── jNN_code-vN_<slug>/                            one version (a release), frozen once a person signs it
+    ├── jNN_code-vN_<slug>.md                      release · state: open | closed · signed: ✅ <YYMMDD> · from: code-v<N-1>
     │                                         · carried-from (when a Block was carried in)
     ├── release.yaml                          release · questions: {<L><NN>: {task, change}} · retired: {<L><NN>: why}
     ├── partitions.md                         the cuts (front matter partitions:), set before any outcome
@@ -40,15 +40,15 @@ The two trees
 
 <Project>/insight/Insight-<name>/            the insight Board: one dataset, its versions, a Job per pair
 ├── board.md                                  board-kind: insight-board · workbench: insight · dataset: <D> ·
-│                                             prototype: work/Prototype-… · accumulates: yes | no | ? ·
+│                                             prototype: insight/Prototype-… · accumulates: yes | no | ? ·
 │                                             versions: [{version: v<M>, folder, frozen, new, preview}]
 │                                             ## Questions (```yaml questions:): the Board's own questions
 ├── meta/meta.md · meta/status.md             what the extract holds · the status grid (the checker writes it)
 ├── studio/ · reports/qNN_<topic>/            topics · the Board's questions, answered across Jobs
 ├── runs/run-<type>-<target>/                 every Board Run is soft (add a version, add a Job, readings, …)
-├── delivery/                                 the signed handoffs: handoff-<W>.md names its pair (pN × vM)
-└── jNN_prototype-pN-<slug>_data-<D>vM/     a Job: release pN × data version vM, frozen once closed
-    ├── jNN_prototype-…_data-<D>vM.md         release · prototype (the release's path) · hash · data · state ·
+├── delivery/                                 the signed handoffs: handoff-<W>.md names its pair (code-vN × data-vM)
+└── jNN_code-vN-<slug>_data-vM/     a Job: code version code-vN × data version data-vM, frozen once closed
+    ├── jNN_code-vN-…_data-vM.md              release · prototype (the release's path) · hash · data · state ·
     │                                         moved: start | data | code · previous
     ├── reports/vs-<prev>.md                  run-compare's table: question · previous · this · status · why
     ├── runs/                                 soft: launch · power · compare · propose · close
@@ -60,19 +60,21 @@ The two trees
             └── run-<type>-t<NN>/             soft: write · check · pool · check-alignment
 ```
 
-**Names.** Both are special boards, named by their kind (JL 261008): the Prototype `Prototype-bNN-<Topic>` in
-`work/`, the Board `Insight-<name>[-<YYMMDD>]` in `insight/`. The folder name is a label: a reader knows each by its
+**Names.** Both are special boards, named by their kind (JL 261008), side by side in `insight/` (JL 261109): the
+Prototype `Prototype-<Topic>`, the Board `Insight-<name>[-<YYMMDD>]`. An older Prototype in `work/` (`Prototype-bNN-<Topic>`)
+still reads, and still opens on the work page (the work theme claims `board-kind: prototype` wherever it sits). The folder name is a label: a reader knows each by its
 `board.md` (`board-kind:`; a Board also by `prototype:`). An older `bNN_<topic>` name stays readable. Inside, Jobs and
-Tasks keep `jNN_` and `tNN_`: a release `jNN_pN_<slug>` (the slug says what it is, JL 261008; its id stays
-`pN` in release.yaml, the faces and Run names; an older `jNN_pN` stays readable), a Board Job
-`jNN_prototype-pN-<slug>_data-<D>vM` (`<D>` the dataset, `vM` its version), a question `tNN_<L><NN>_<slug>`
+Tasks keep `jNN_` and `tNN_`: a release `jNN_code-vN_<slug>` (the slug says what it is, JL 261008; its id stays
+`code-vN` in release.yaml, the faces and Run names; an older `jNN_code-vN` stays readable), a Board Job
+`jNN_code-vN-<slug>_data-vM` (one dataset per Board, named in board.md `dataset:`, so the name carries none), a question `tNN_<L><NN>_<slug>`
 (`t03_D03_<slug>`).
 
-A Board Job's name reads left to right (JL 261012: "make the job folder name to be human readable"):
-`j01_prototype-p1-basic-questions_data-SMSR2v1`. Underscores part its three fields (the number, the release with
-its slug, the data version) and hyphens join the words inside one, as in a Task's name; the Job ▾ menu shows it
-as it is. `ref/open_job.py` writes it (`job_name`); an older `jNN_pN_<D>vM` (`j01_p1_<D>v1`) stays readable. A renamed
-Job keeps its old name in its face, `renamed-from: j01_p1_SMSR2v1`, so an old workbench link still opens it.
+A Board Job's name reads left to right (JL 261012: "make the job folder name to be human readable"; JL 261109):
+`j02_code-v1-example-questions_data-v2`. Underscores part its three fields (the number, the code version with its
+slug, the data version) and hyphens join the words inside one, as in a Task's name; the Job ▾ menu shows it as it is.
+`ref/open_job.py` writes it (`job_name`); the older `jNN_prototype-pN-<slug>_data-<D>vM` and `jNN_pN_<D>vM` stay
+readable until `ref/rename_code_data.py` carries the Board over. A renamed Job keeps its old name in its face,
+`renamed-from: j01_p1_SMSR2v1`, so an old workbench link still opens it.
 
 **The Executive level, X** (JL 261012: "based on the whole bottom level question, what are the high level question we
 should have?"). Above D, I, K and W, a release may ask a few Executive questions, `tNN_X<NN>_<slug>/` with
@@ -97,15 +99,15 @@ How they work together
 ----------------------
 
 ```text
-          Prototype (work/Prototype-bNN-<Topic>/)                    insight Board (insight/Insight-<name>/)
+          Prototype (insight/Prototype-<Topic>/)                    insight Board (insight/Insight-<name>/)
 
 proposals/<slug>.md ◀─────────── propose (questions, a cut) ──────────── a Job's vs-previous · Coverage's gaps
       │ triage: one batch                                                 · a weak or refused answer
       ▼
-jNN_pN_<slug>/ open ▶ ask · plan · script ─▶ set the cuts ─▶ SIGN (frozen)
+jNN_code-vN_<slug>/ open ▶ ask · plan · script ─▶ set the cuts ─▶ SIGN (frozen)
                  (another agent reviews each)        a person              │
                                                                           ▼
-                                     data: a new extract ─▶ add v<M> ─▶ add a Job jNN_prototype-…_data-<D>vM
+                                     data: a new extract ─▶ add data-v<M> ─▶ add a Job jNN_code-vN-…_data-vM
                                                          (frozen)        moved: start | data | code
                                                                           │ launch · power · the hard Runs
                                                                           ▼
@@ -125,33 +127,33 @@ so a change in an answer has one cause.
 The rules
 ---------
 
-1. **One release × one data version per Job, one clock at a time.** The face pins `release: pN` (with the
+1. **One release × one data version per Job, one clock at a time.** The face pins `release: code-vN` (with the
    release's path and `hash:`, the first 12 hex of a sha256 over release.yaml, the cuts, the thresholds and every
-   question's files) and `data: vM`. `moved:` says which clock moved from the Job before it: `start`, `data` (the
+   question's files) and `data: data-vM`. `moved:` says which clock moved from the Job before it: `start`, `data` (the
    same release on the next data version) or `code` (the next release on the same data). Both at once is refused:
    add the one, then the other. One Job per pair; a Job is frozen once closed (`run-close-jNN`, a person signs).
-2. **A release is signed, then frozen.** A version opens from the newest one (`run-open-version-pN`): every
+2. **A release is signed, then frozen.** A version opens from the newest one (`run-open-version-code-vN`): every
    question kept, its Task pointed back to the release that holds it (`task: ../j01_p1_<slug>/t02_I01_…`), the cuts,
    thresholds and `src/` copied. A question new or changed in this release has its Task here; a changed one is
-   carried forward under the same `tNN` and its `agreed:` resets. Signing (`run-sign-release-pN`, a person) needs
+   carried forward under the same `tNN` and its `agreed:` resets. Signing (`run-sign-release-code-vN`, a person) needs
    every new or changed question agreed by an agent that did not draft it, and the cuts set. A Board runs only a
    signed release.
 3. **A question id is never reused, and a question keeps its `tNN`** in every release and every Job. A retired
    question leaves `questions:` for `retired: {<L><NN>: why}`; its id is not asked again.
 4. **The cuts belong to the release.** `partitions.md` and `thresholds.yaml` are set in the version
-   (`run-set-cuts-pN`, a person signs the cuts) before any outcome is seen. A Board never sets a cut; it proposes
+   (`run-set-cuts-code-vN`, a person signs the cuts) before any outcome is seen. A Board never sets a cut; it proposes
    one (`run-propose-cut-<slug>`). A Run's `rNN` is the cut's place in the release's `partitions.md`.
 5. **Proposals are the only way in.** A question, a fix, a retirement or a cut reaches a release only as
    `proposals/<slug>.md` (`kind: new question | fix | retire | cut`, `level:`, `from:` the Job or report it came
-   from, `state: open | taken | declined`, `taken-in: pN`, why). The Board's and a Job's Propose Runs write there
-   and nowhere else. Decided (261008): **a release is cut per triaged batch** (`run-triage-proposals-pN` takes a
+   from, `state: open | taken | declined`, `taken-in: code-vN`, why). The Board's and a Job's Propose Runs write there
+   and nowhere else. Decided (261008): **a release is cut per triaged batch** (`run-triage-proposals-code-vN` takes a
    batch into the next version), never per single proposal, so one new question does not make a new Job each time.
-6. **A data version is frozen once added.** `run-add-version-vM` appends `{version, folder, frozen, new}` to
+6. **A data version is frozen once added.** `run-add-version-data-vM` appends `{version, folder, frozen, new}` to
    board.md `versions:` (261008: a version is its data folder, not one file): the folder holds the data file
    (named by its manifest.json `output_file`, else the one .parquet on top), and may hold manifest.json,
    data_dictionary.csv, cohort_summary.txt, figures/ and documents, all shown on Description › Dataset; a name
    starting with `_` is work beside it, listed, never read. `preview:` names the columns its few sample rows show
-   first. `label:` gives the data freeze its few words (`first 5 days`; `insight_ladder.py data --label`). An older version may still name one `extract:` file (with `rows:`). Paths are SPACE-relative (or
+   first. `label:` gives the data version its few words (`first 5 days`; `insight_ladder.py data --label`). An older version may still name one `extract:` file (with `rows:`). Paths are SPACE-relative (or
    through a variable), never absolute.
    `accumulates:` says whether a later version holds the earlier rows. `meta/meta.md` says what the extract holds.
 7. **A Job's Tasks are its release's questions.** `run-add-jNN` writes the face, one Task per question (the same
@@ -175,7 +177,7 @@ The rules
 12. **The Board reads across Jobs.** Coverage (`run-coverage`: which question × cut × Job has an answer), tracks
    (`run-track-<q>`: one question across Jobs), consistency (`run-consistency-<jA>-<jB>`), and the Board's own
    questions (`run-ask-qNN`, `run-report-qNN`, `run-check-qNN`). Its Wisdom counsel (`run-write-counsel`) becomes a
-   handoff (`run-draft-handoff`) that names its pair (`pN × vM`) and is signed by a person
+   handoff (`run-draft-handoff`) that names its pair (`code-vN × data-vM`) and is signed by a person
    (`signed: ✅ <YYMMDD>`, never a name); Design reads only a signed handoff.
 
 
@@ -190,19 +192,19 @@ closed. A button the shared frame also has keeps the frame's name (haipipe-run `
 
 ```text
 level      Run                              kind  does                                       skill
-Prototype  run-triage-proposals-p<N>        soft  take a batch of proposals into p<N>        haipipe-insight-question
-           run-open-version-p<N>            soft  the next version, from the newest          haipipe-insight
+Prototype  run-triage-proposals-code-v<N>        soft  take a batch of proposals into p<N>        haipipe-insight-question
+           run-open-version-code-v<N>            soft  the next version, from the newest          haipipe-insight
            run-map-questions                soft  draw the question map                      haipipe-insight
            run-carry-<board>                soft  carry an older Block or board in, once     haipipe-insight
 version    run-ask-<l><nn>                  soft  a new question's Task                      haipipe-insight-question
-           run-review-questions-p<N>        soft  Q1–Q7 on the release (another agent)       haipipe-report
-           run-set-cuts-p<N>                soft  partitions.md · thresholds.yaml (a person) haipipe-insight
-           run-sign-release-p<N>            soft  freeze the release (a person signs)        haipipe-insight
+           run-review-questions-code-v<N>        soft  Q1–Q7 on the release (another agent)       haipipe-report
+           run-set-cuts-code-v<N>                soft  partitions.md · thresholds.yaml (a person) haipipe-insight
+           run-sign-release-code-v<N>            soft  freeze the release (a person signs)        haipipe-insight
 question   run-plan-evidence-<l><nn>        soft  its needs and work specs                   haipipe-insight-evidence-plan
            run-review-plan-<l><nn>          soft  agree the needs (another agent)            haipipe-insight-evidence-plan
            run-write-script-<l><nn>         soft  its one script                             haipipe-insight
            run-review-script-<l><nn>        soft  review the script (another agent)          haipipe-insight
-Board      run-add-version-v<M>             soft  a data version, frozen                     haipipe-insight-meta
+Board      run-add-version-data-v<M>             soft  a data version, frozen                     haipipe-insight-meta
            run-add-j<NN>                    soft  a Job: release × data version              haipipe-insight
            run-propose-cut-<slug>           soft  a cut, into the Prototype's proposals/     haipipe-insight-question
            run-propose-<target>             soft  questions, into proposals/ (coverage gaps) haipipe-insight-question
@@ -237,9 +239,9 @@ The six Spaces at each level
 ```text
           Description                  Idea Studio        Audience Report                 Work Details        Runs · Delivery
 Board     Map (releases × data         question map ·     Overall Report · then           the Jobs: All ·     soft Runs ·
-          versions) · Prototype ·      topics             Partition × Reading: Coverage · p1 · p2 …           Handoff
+          versions) · Prototype ·      topics             Partition × Reading: Coverage · code-v1 · code-v2 …           Handoff
           Dataset · Partitions                            Tracks · Consistency · Findings
-Job       the Job's line (pN × vM ·    topics             Overall Report · then           Job → Task → Run    launch · power ·
+Job       the Job's line (code-vN × data-vM ·    topics             Overall Report · then           Job → Task → Run    launch · power ·
           state · moved) atop                             Partition × Period: Current ·   (All · hard · soft) compare · propose ·
           Prototype · Dataset                             vs previous                                         close
 Task      Question · Records           topics             Table · Reading                 Partitions          All · hard · soft
@@ -259,7 +261,11 @@ ref/figures.py              the run report's figures, from result tables only
 ref/question_map.py         the question map
 ref/prototype_from_block.py carry an Insight Block (one Job per level) into a release, word for word
 ref/carry_over.py           carry a register board into an Insight Block, word for word
+ref/rename_code_data.py     carry pN/vM names and work/Prototype-bNN-<T>/ onto code-vN × data-vM (insight_ladder.py update calls it)
 ```
 
+An older folder: `insight_ladder.py audit <Board, Prototype or Project>` says what it lacks; `update` (a dry run, then
+`--apply`) fixes the names, the goal lines and each Job's hash; stale receipts are rerun by their tickets.
+
 A new topic: `insight_ladder.py prototype`, `version`, one `question` per question, then the review, the plan, the
-scripts and `sign`; `board`, `data v1`, `job --release p1 --data v1`; the tickets; then the pages.
+scripts and `sign`; `board`, `data data-v1`, `job --release code-v1 --data data-v1`; the tickets; then the pages.

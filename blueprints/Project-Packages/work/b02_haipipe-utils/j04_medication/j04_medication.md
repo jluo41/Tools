@@ -3,6 +3,7 @@
 job-of: b02_haipipe-utils (261009)
 spine: `skills/describe-medication` (0.1.1): a logged medication (a WellDoc MedicationID, an OhioT1DM class, a Shanghai free-text string) to an FDA-identified drug and a dose that states its own unit.
 close: Each recorded question has a report Page with an answer status, and every answered question names the change that settled it.
+emoji: 💊
 
 ## Topic
 

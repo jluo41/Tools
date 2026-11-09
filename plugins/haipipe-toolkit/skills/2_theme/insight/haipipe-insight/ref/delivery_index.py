@@ -17,7 +17,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import run_question as RQ  # noqa: E402
-from open_job import JOB  # noqa: E402
+from open_job import JOB, code_id, data_id  # noqa: E402
 
 def _signed(value) -> str:
     v = str(value or "").strip()
@@ -25,9 +25,9 @@ def _signed(value) -> str:
 
 
 def _plain(job: str) -> str:
-    """A Job in plain words, `j02 · analysis plan 1 × data freeze 2`, from its folder name."""
-    m = re.match(r"^(j\d+)_prototype-p(\d+)-.+_data-.+?v(\d+)$", job)
-    return f"{m.group(1)} · analysis plan {m.group(2)} × data freeze {m.group(3)}" if m else job
+    """A Job in plain words, `j02 · code-v1 × data-v2`, from its folder name (an older name reads the same)."""
+    m = JOB.match(job)
+    return f"j{m.group(1)} · {code_id(m.group(2))} × {data_id(m.group(4))}" if m else job
 
 
 def rows(board: Path) -> list:

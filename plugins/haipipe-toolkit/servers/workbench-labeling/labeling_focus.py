@@ -413,12 +413,16 @@ def building_page(theme, root, folder, section="", group=""):
 
 
 def task_shell(root, folder, section, views: dict, view: str, body: str, head_extra: str = "", tail_extra: str = "",
-               words: dict | None = None):
+               words: dict | None = None, aligned: bool = False):
     """A labeling page's focus page around one view (a Block, a Job, an items, building, meaning or expression Task): the
     base page's path, title with its section, the views of that section, its goal-line, both rails; `head_extra` and `tail_extra` are the view's own
     stylesheet and script; `words` puts each view's state word on its button ({key: (word, ok | you | run)}).
     """
-    rail = base_rail(folder, root)
+    if aligned:
+        from live import work_frame as WF
+        rail = [("report", "Report", "")] + [(key, title, "") for key, title in WF.SHARED]
+    else:
+        rail = base_rail(folder, root)
     level = frame.level_of(folder)
     cls = {"ok": " fd-ok", "you": " fd-you"}
     bar = ('<nav class="section-views" aria-label="Views">' + "".join(
@@ -451,7 +455,8 @@ def task_shell(root, folder, section, views: dict, view: str, body: str, head_ex
                     for key, name, words in rail)
     title_html = frame.esc(folder.name).replace("_", "_<wbr>")   # a phone breaks the name at its words (round 4: "safet/y")
     page = F.page_shell(folder, root, crumbs, title_html, section.title(), dict((k, w) for k, _, w in rail)[section],
-                        bar, goal_html, body, source, left, right, [(key, name, "") for key, name, _ in rail], section)
+                        bar, goal_html, body, source, left, right, [(key, name, "") for key, name, _ in rail], section,
+                        identity=F.page_identity_html("labeling", folder, root, F.read_face(folder, root)))   # type line (261109)
     head, tail = page.rsplit("</head>", 1)
     page = head + head_extra + "</head>" + tail
     head, tail = page.rsplit("</body>", 1)
@@ -582,11 +587,11 @@ def _work_views(report: dict, folder: Path, root: Path, level: str, questions: l
     return {key: (name, view(key, body)) for key, (name, body) in report.items()}
 
 
-def status_html(folder: Path, root: Path, level: str, topics: list, outputs: bool = False) -> str:
+def status_html(folder: Path, root: Path, level: str, topics: list, outputs: bool = False, html: str | None = None) -> str:
     """Status, focus_page's, with each Job's row on a Block saying how many of its Tasks are done, "1 of 3 done", the
     words its own page's Tasks bar says (round 4: the Block said "partly · 3 Tasks · 67%" where the Job said "2 of 3
     done"). focus_page.job_progress words every Block's rows; until it says the same, a labeling Block's are reworded."""
-    html = F.status_now_html(folder, root, level, topics, outputs)
+    html = F.status_now_html(folder, root, level, topics, outputs) if html is None else html
     if level != "Block":
         return html
     for job in _jobs_of(folder, root):
@@ -671,33 +676,50 @@ def level_forms(folder: Path, view: str, inbox: list) -> list:
 
 
 def level_page(theme, root, folder, section="", group=""):
-    """A labeling Block's or Job's focus page: MindMap · Status · Findings in Report and in Work (see above)."""
+    """Shared Work navigation with Labeling-owned findings and signed releases."""
+    from live import work_frame as WF
     level = frame.level_of(folder)
     if section in OLD_LEVEL:
         section, group = OLD_LEVEL[section][0], OLD_LEVEL[section][1] or group
-    rail = base_rail(folder, root)
     if section == "delivery":
-        return delivery_page(theme, root, folder, group)
-    if section in {k for k, _, _ in rail} - set(OWN_SECTIONS):
-        return F.render(theme, root, folder, section, group)
-    section = section if section in OWN_SECTIONS else ("report" if level == "Block" else "work")
+        section, group = "report", "delivery"
+    group = WF.view_key(group)
     data = F.read_face(folder, root)
     questions, _ = F.owned_register(data, root, "Questions", "questions")
-    topics, inbox = F.topic_rows(folder, root), F.interactions(folder, root)
-    report = {"mindmap": ("MindMap", lambda: F.parts_mindmap(folder, root)),
-              "standing": ("Status", lambda: status_html(folder, root, level, topics, outputs=section == "work")),
-              "findings": ("Findings", lambda: findings_html(folder, root))}
-    views = report if section == "report" else _work_views(report, folder, root, level, questions, inbox)
-    group = group.removeprefix("work-")
-    view = group if group in views else ("mindmap" if section == "report" else "standing")
-    body = views[view][1]()
-    caption = LEVEL_CAPTIONS.get(view, F.VIEW_WORDS.get(view, ""))
-    caption = caption.get(level, "") if isinstance(caption, dict) else caption
-    body += IX.view_section(level_forms(folder, view, inbox), root, IX.next_number(body),
-                            lambda r: F.interaction_where(r, folder, root))
+    topics, every = F.topic_rows(folder, root), F.interactions(folder, root)
+    knows, events = F.known(folder, root, every), F.timeline_events(folder, root)
+    shared_keys = {key for key, _ in WF.SHARED}
+    if section in shared_keys:
+        items = every
+        if section == "interactions" and group in ("waiting", "answered"):
+            items = [r for r in every if r.get("state") == group]
+        body, _ = WF.shared_bodies(folder, root, theme.name, level, None, topics, items,
+                                   knows, events, items, only=section)[section]
+        views = ({"all": "All", "waiting": "Needs your input", "answered": "Answered"}
+                 if section == "interactions" else {"all": "All"})
+        view = group if group in views else "all"
+    elif section == "related":
+        return F.render(theme, root, folder, section, group)
+    else:
+        section = "report"  # Old Work links open the combined Report.
+        groups = WF.topics_for(folder, root, questions)
+        views = {"overview": "Overview", "standing": "Status", "findings": "Findings", "delivery": "Delivery"}
+        view = group if group in views else "overview"
+        if view == "overview":
+            body = WF.overview(folder, root, data, questions, groups)
+        elif view == "standing":
+            body = status_html(folder, root, level, topics, html=WF.status(folder, root, data, groups))
+        elif view == "findings":
+            body = findings_html(folder, root) or WF.empty("No labeling findings recorded yet.")
+        else:
+            body = delivery_html(folder, root) or WF.empty("No signed labeling release recorded yet.")
+        shared = WF.shared(folder, root, theme.name, level, view, topics, every, knows, events, every)
+        body = ('<section class="work-section-group"><h2>📋 Review Content</h2>' + body
+                + '</section><section class="work-section-group"><h2>🧭 Around the Work</h2>'
+                + shared + '</section>')
     head, tail = _assets()
-    return task_shell(root, folder, section, {k: n for k, n in LEVEL_VIEWS}, view,
-                      (f'<p class="view-caption">{frame.esc(caption)}</p>' if caption else "") + body, head, tail)
+    return task_shell(root, folder, section, views, view, WF.STYLE + F.side_css() + body,
+                      head, tail + F.PB_JS, aligned=True)
 
 
 ITEMS_OLD = {"goal": ("work", ""), "runs": ("work", ""), "reports": ("report", ""), "outputs": ("delivery", ""),

@@ -99,7 +99,7 @@ def test_the_block_status_groups_its_jobs_by_who_has_the_move(demo):
 def test_a_job_status_is_its_move_its_timeline_and_its_steps(demo):
     root, block = demo
     got = CF.status(block / "j01_ask", root, "Job")
-    assert titles(got) == ["⏳ Waiting on them", "🗓️ Timeline", "☑️ Steps"]
+    assert titles(got) == ["⏳ Waiting on them", "🗓️ Timeline", "📝 Steps"]
     assert got[0][1].startswith("ROLE_A · ") and "chase them" in got[0][2]
     timeline = got[1][2]
     assert got[1][1] == "newest 2026-10-01"

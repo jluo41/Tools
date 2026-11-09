@@ -1,5 +1,6 @@
 # t99_paper_citation_check · Paper citation check
 
+use-case: Whole-paper citation audit
 label: Paper citation check
 status: see runs/r01_check_citations/result/headline.txt
 answers: Is every citation the paper prints backed, verified and placed well?

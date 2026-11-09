@@ -1,0 +1,17 @@
+run: run-check-t02
+kind: soft
+type: check
+scope: Tools/blueprints/Project-Ladder/insight/Insight-Example/j01_code-v1-example-questions_data-v1/t02_D02_arm-balance
+target: t02
+ticket: run-check-t02.md
+skill: haipipe-report
+agent: haipipe-draft-check-agent
+signs:
+- none
+status: done
+passes:
+- p01-1106
+- p02-1106
+writes:
+- t02_D02_arm-balance/t02_D02_arm-balance.md
+feeds: []

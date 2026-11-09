@@ -27,7 +27,7 @@ from live.ui_parts import (GROUP_CSS, PB_CSS, PB_JS, PROCESS, PROMPT_CSS, PROMPT
                            _section, _side_tabs, prompt_box)
 
 VIEWS = (("overall", "Overall"), ("grid", "Grid"), ("vs-previous", "vs previous"))
-CAPTIONS = {"overall": "the Overall Report, written last, and the analysis plan and data freeze it runs",
+CAPTIONS = {"overall": "the Overall Report, written last, and the code version and data version it runs",
             "grid": "every question × cut, by DIKW level: one dot a cell",
             "vs-previous": "this Job against the one before: what changed",
             }
@@ -41,8 +41,8 @@ VIEW_SKILLS = {
     "answers": (("haipipe-insight", "writes the Overall Report from the answers below it"),),
     "questions": (("haipipe-insight-question", "proposes questions and cuts for the next plan"),
                   ("haipipe-insight-evidence-plan", "plans each question's evidence before any Run")),
-    "jobs": (("haipipe-insight", "adds a Job: a signed plan × a data freeze, one clock moved"),),
-    "data": (("haipipe-insight-meta", "adds a data freeze and counts its rows per cut"),),
+    "jobs": (("haipipe-insight", "adds a Job: a signed code version × a data version, one clock moved"),),
+    "data": (("haipipe-insight-meta", "adds a data version and counts its rows per cut"),),
     "handoff": (("haipipe-insight-wisdom", "writes the counsel and drafts the handoff"),),
     "overall": (("haipipe-insight", "writes the Overall Report and closes the Job"),),
     "grid": (("haipipe-insight-data", "writes a Data page from its Runs"),
@@ -221,7 +221,7 @@ def _jlink(j: dict, root: Path, words: str = "") -> str:
 
 
 def _pair(j: dict) -> str:
-    """A Job in plain words: `j02 · analysis plan 1 × data freeze 2` (round 2: never "(pN × vM)")."""
+    """A Job in plain words: `j02 · code-v1 × data-v2` (JL 261109: the same id on screen and on disk)."""
     return f'{j["name"][:3]} · {P.plan_code(j["release"])} × {P.freeze_code(j["data"])}'
 
 
@@ -643,8 +643,8 @@ def job_report_views(jdir: Path, root: Path) -> dict:
 BOARD_VIEWS = (("answers", "Answers"), ("questions", "Questions"), ("jobs", "Jobs"), ("data", "Data"), ("handoff", "Handoff"))
 BOARD_CAPTIONS = {"answers": "the newest answer first, the newest Overall Report, and what each question found",
                   "questions": "how the questions build on each other, then every plan's questions",
-                  "jobs": "the analysis plans × data freezes, a Job in each cell, the newest Job's Tasks, and the one clock each Job moved",
-                  "data": "each data freeze's key numbers and files, then the cuts every question runs on",
+                  "jobs": "the code versions × data versions, a Job in each cell, the newest Job's Tasks, and the one clock each Job moved",
+                  "data": "each data version's key numbers and files, then the cuts every question runs on",
                   "handoff": "what the handoff will say, its draft, and what was handed to Design"}
 BOARD_WORK_CAPTIONS = {"answers": "the Overall Report to write, then the Report's Answers with each question's trail through the Jobs",
                        "questions": "your sign on the next plan, the proposals, new questions, then the questions to ask about",
@@ -725,14 +725,14 @@ def _map_word(b: dict) -> str:
 
 
 def _plans_grid(b: dict, root: Path) -> str:
-    """The analysis plans × data freezes (the Board's two clocks crossed; shown once, in Jobs, round 2): a row per plan
-    (its questions, cuts and sign), a column per data freeze, a Job in each cell: its state word, its pages as a dot
+    """The code versions × data versions (the Board's two clocks crossed; shown once, in Jobs, round 2): a row per plan
+    (its questions, cuts and sign), a column per data version, a Job in each cell: its state word, its pages as a dot
     row per DIKW level and how many are written. Stacks into cards under 600 px (round 2: "the grid scrolls sideways")."""
     versions = b["versions"]
     rels = b["prototype"]["releases"] or [{"name": n, "label": n, "questions": {}, "partitions": [], "face": {}}
                                           for n in sorted({j["release"] for j in b["jobs"]})]
     cell = {(j["release"], j["data"]): j for j in b["jobs"]}
-    heads = ["analysis plan"] + [V._vlabel(b, str(v.get("version", ""))) + (f' · frozen {v["frozen"]}' if v.get("frozen") else "")
+    heads = ["code version"] + [V._vlabel(b, str(v.get("version", ""))) + (f' · frozen {v["frozen"]}' if v.get("frozen") else "")
                                  for v in versions]
     rows = []
     for r in rels:
@@ -754,7 +754,7 @@ def _plans_grid(b: dict, root: Path) -> str:
 def _answers(b: dict, root: Path, work: bool = False) -> str:
     """Answers (JL 261102, 261106; rounds 1, 2): the newest Job's X01 in one line as the view's headline, the newest
     Job's Overall Report as side tabs (each Executive answer once), then what each question found, a side tab per DIKW
-    level. The plans × data freezes are Jobs' (shown once, round 2); each question's trail through the Jobs is Work's
+    level. The code versions × data versions are Jobs' (shown once, round 2); each question's trail through the Jobs is Work's
     (`work`). Every "N of M" by the one count (insight_views.is_written)."""
     href = _href(b, root)
     if not b["jobs"]:
@@ -798,7 +798,7 @@ def _answering(b: dict, r: dict) -> dict | None:
 
 
 def _canvas(b: dict, root: Path, work: dict | None = None) -> str:
-    """The question canvas of the newest analysis plan, on its newest Job (question_canvas.py): Report reads it, Work
+    """The question canvas of the newest code version, on its newest Job (question_canvas.py): Report reads it, Work
     asks from it (JL 261102: "the questions should be in the Work, for the report, we just show the report")."""
     from live import question_canvas as QC
     if not b["prototype"]["releases"]:
@@ -883,8 +883,8 @@ def _jobs_view(b: dict, root: Path) -> str:
     """Jobs: each Job a row, its pins and its pages as a dot row per DIKW level; the newest Job's Tasks by level, as
     Questions; the one clock each Job moved."""
     if not b["jobs"]:
-        return _section("🧷 Analysis plans × data freezes", _plans_grid(b, root), "no Job yet")
-    out = _section("🧷 Analysis plans × data freezes", _plans_grid(b, root), _map_word(b))
+        return _section("🧷 Code versions × data versions", _plans_grid(b, root), "no Job yet")
+    out = _section("🧷 Code versions × data versions", _plans_grid(b, root), _map_word(b))
     newest = b["jobs"][-1]
     html, wrote, n = _job_tasks(newest, root)
     out += _section(f"📂 The newest Job, {newest['name'][:3]} · its Tasks", html,
@@ -897,7 +897,7 @@ def _jobs_view(b: dict, root: Path) -> str:
 
 
 def _version_panel(b: dict, v: dict, root: Path) -> str:
-    """One data freeze (JL 261106: "a card of key numbers, files one click away"): its numbers as a card, what is new,
+    """One data version (JL 261106: "a card of key numbers, files one click away"): its numbers as a card, what is new,
     its files each one click away, a few rows."""
     import zlib
     name = str(v.get("version", ""))
@@ -937,22 +937,22 @@ def _version_panel(b: dict, v: dict, root: Path) -> str:
 
 
 def _data_view(b: dict, root: Path) -> str:
-    """Data: a side tab per data freeze, its new line and key numbers and files; then the cuts, a side tab each."""
+    """Data: a side tab per data version, its new line and key numbers and files; then the cuts, a side tab each."""
     vs = list(reversed(b["versions"]))
     freezes = _side_tabs("frz", [(V._vlabel(b, str(v.get("version", ""))), f'frozen {v.get("frozen")}' if v.get("frozen") else "")
                                  for v in vs], [_version_panel(b, v, root) for v in vs]) if vs else ""
     r = b["prototype"]["releases"][-1] if b["prototype"]["releases"] else {}
     floor = ((r.get("thresholds") or {}).get("power") or {}).get("smallest_effect_pp")
-    return (_section("🗄 Data freezes", freezes or "<p>Add a data freeze in Work.</p>", f"{len(vs)} frozen" if vs else "none yet")
+    return (_section("🗄 Data versions", freezes or "<p>Add a data version in Work.</p>", f"{len(vs)} frozen" if vs else "none yet")
             + _section("✂️ Cuts", _cuts_tabs(b, r, root), f"power floor {floor} points" if floor else "fixed in the plan"))
 
 
 def _cuts_tabs(b: dict, r: dict, root: Path) -> str:
     """The plan's cuts, a side tab each (round 1: no grey paragraph): where, why, the questions that ask it, its rows
-    in each data freeze; the plan's files one click away."""
+    in each data version; the plan's files one click away."""
     parts = r.get("partitions") or []
     if not parts:
-        return "<p>The cuts are set in the Prototype's analysis plan.</p>"
+        return "<p>The cuts are set in the Prototype's code version.</p>"
     items, panels = [], []
     for p in parts:
         name = str(p.get("name") or "")
@@ -1091,7 +1091,7 @@ def _bw_questions(x: dict) -> str:
                if open_ and proto["path"].exists() else "")
         rows.append(("Triage the open proposals", "into one batch for the next plan · in the Prototype",
                      "waiting for you" if open_ else "done", pgo))
-    out = _step("📋 The next analysis plan", rows) if rows else ""
+    out = _step("📋 The next code version", rows) if rows else ""
     new = [("Propose questions", "the gaps and weak answers, as proposals for the next plan",
             "ready" if j else "waits on a Job", _copy_btn(_prompt("Block", "Propose questions", x["folder"]), x["session"]) if j else ""),
            ("Ask a Board question", "a question over the Jobs' answers (board.md ## Questions)", "ready",
@@ -1123,15 +1123,15 @@ def _bw_jobs(x: dict) -> str:
         word = (f'{j["name"][:3]} next: {step.split(" · ")[-1].lower()}' if step else "every Job closed"
                 if all(o["state"] == "closed" for o in x["b"]["jobs"]) else "done")
         out += _section("🪜 Each Job, its steps", _job_steps(x), word)
-    return out + _step("➕ A new Job", [("Add a Job", "a signed analysis plan × a data freeze, one clock moved", "ready",
+    return out + _step("➕ A new Job", [("Add a Job", "a signed code version × a data version, one clock moved", "ready",
                                         _copy_btn(_prompt("Block", "Add a Job", x["folder"]), x["session"]))])
 
 
 def _bw_data(x: dict) -> str:
     return _step("🗄 Freezes and cuts", [
-        ("Add a data freeze", "a new extract, frozen, its rows counted per cut", "ready",
+        ("Add a data version", "a new extract, frozen, its rows counted per cut", "ready",
          _copy_btn(_prompt("Block", "Add a data version", x["folder"]), x["session"])),
-        ("Propose a cut", "to the next analysis plan: a cut is plan, fixed before any outcome", "ready",
+        ("Propose a cut", "to the next code version: a cut is plan, fixed before any outcome", "ready",
          _copy_btn(_prompt("Block", "Propose a cut", x["folder"]), x["session"]))])
 
 
@@ -1704,7 +1704,7 @@ def prototype_status(folder: Path, root: Path, level: str) -> list:
 
 def prototype_process(folder: Path, root: Path, level: str, view: str) -> list | None:
     """A Prototype's ⚙️ Process steps on a Work view, in place of the shared ones: on Findings triage its proposals
-    and sign the analysis plan, each a Copy prompt; on Status each question's next step, or "nothing to do"; None
+    and sign the code version, each a Copy prompt; on Status each question's next step, or "nothing to do"; None
     leaves the shared steps (insight_prototype.process)."""
     from live import insight_prototype as PR
     return PR.process(folder, root, level, view)

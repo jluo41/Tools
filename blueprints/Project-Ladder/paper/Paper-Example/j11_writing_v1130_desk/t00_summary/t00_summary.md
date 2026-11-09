@@ -1,5 +1,6 @@
 # t00_summary · Summary
 
+use-case: Abstract or summary
 task-type: draft
 page-type: section
 folder-kind: section

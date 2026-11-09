@@ -1,5 +1,102 @@
 # Workbench · the base: Studio and Guide, reused by every theme
 
+At widths of 600px or less, **Pages** opens the left navigation drawer and
+**Sections** opens the right navigation drawer. The view buttons remain below the
+title; rail links are no longer repeated there. Wider pages retain both rails.
+Drawers close with their Close button, Escape, or a click on the backdrop.
+Work's Interaction header keeps the waiting badge; question previews appear only
+inside the section, not below its closed header.
+
+The shared Studio section uses a Topic list on the left and the selected Topic's
+preview on the right. Available Slide, Draw, MindMap, Work and Delivery assets open
+inline, with an Open action for the larger view. Preview frames load only when
+visible. On narrow screens, a Topic selector replaces the left list.
+
+Work, CoWork, and Discovery now expose **Overview · Status · Findings · Delivery**
+on live Block, Job, and Task pages. `work_frame.py` reads their existing records:
+Overview contains Goal, Requirements and MindMap; Status uses the same Topic groups
+as the map, with a pruned Block–Job–Task–Run tree and Dependencies. Question `work`
+links define groups first; existing bands or children provide the fallback. Unlinked
+work remains reachable. Findings keeps the theme's results; Delivery owns handoff
+files, live services, explicit Acceptance and Usage notes. No acceptance is inferred.
+Report and Work are one **Report** entry for these pages. Each view shows Review Content,
+including its existing actions when present. Status uses View BJTR: topic tabs on the
+left and the linked Block–Job–Task–Run tree on the right, replacing Next steps. The right rail and narrow
+screen drawer omit Work; old `section=work` links resolve to the matching Report
+view. Job and Task default links retain their Status landing view.
+
+Group headings use an icon, bold title and trailing rule. **Review Content** contains the
+view's output and next steps, without a separate Process heading;
+**Around the Work** contains eight unnumbered sections, in the same order and
+with the same labels/icons as the right rail: Studio, Interactions, Decisions,
+Things to Know, Checklist, Timeline, Skills, Files. Both entrances reuse the same
+renderers and source records. The rail aggregates the page and its descendants;
+view sections use one explicit scope across Studio, Interactions, Decisions,
+Things to Know, Checklist, Timeline, Skills and Files. A `view:` field on a page
+face or Run takes priority; otherwise a linked Studio Topic must have a matching
+view tag (Overview/MindMap, Status, Findings, Delivery, Block UI, Job UI, Task UI).
+Unassigned topics and records remain in the right rail, never default to Status
+or repeat as common context in every view. The right rail includes only the
+current page and its descendants, not ancestor notes.
+
+Decisions, notes and Checklist follow their assigned page or Topic. Timeline
+uses that same selection for records and exact Run receipts; page-wide commits
+stay in the rail. Delivery records belong to Delivery. No date or approval is
+inferred. Skills in a view come from its declared support skills, assigned Tasks,
+selected Runs and linked sections; rail Skills include all page support skills
+without the former ten-item cap. Pending-question counts use the filtered items.
+
+View Files uses selected Topic/Run directories and assigned page faces, never
+falls back to the whole Block or SPACE stores. Its Tools · Skills uses the same
+selected skills as Skills; Tools · UI links the source files implementing the
+view and its authored view assets. The rail retains the full folder browser.
+No records are moved, copied, or relabeled to fill an empty view.
+
+Files uses five folder-type tabs: Workspace, Blocks, Code, Tools · Skills,
+and Tools · UI. Only types with existing, accessible directories appear. The right
+panel shows expandable folder trees rooted at SPACE-relative paths. Expanding a
+folder loads one directory level and keeps its ancestors visible. Selected source
+paths share their actual parent branches; intermediate groups include only relevant
+paths, while each selected folder can be browsed normally. Clicking a file
+opens the shared pop-out viewer; closing it returns to the same tree. Files retain
+Open and Download actions. Workspace opens the
+served SPACE's `_WorkSpace/` store and is hidden when that directory is absent; Blocks links the containing Block and relevant work pages;
+Code opens the served SPACE's existing `code/` directory, never a Block's
+src/scripts/config directories; the type is hidden when that store is absent; Tools · Skills resolves
+relevant skills through the catalog, and Tools · UI links the current renderer,
+theme renderer and authored UI directories. Nothing outside the served root is
+exposed. Directory contents load on demand, rather than scanning the workspace.
+Static-file policy applies to both listings and previews; text previews are bounded
+to 200 KB with a truncation notice. Python previews use token-based syntax highlighting
+without executing the source or loading external libraries. Text previews provide a
+Line wrap checkbox; switching it off preserves original line widths with horizontal scrolling. No files are copied or moved.
+
+The old `group=mindmap` and `section=delivery` links remain supported. Paper Boards
+also use the Report/shared-section frame through `../workbench-paper/paper_focus.py`,
+retaining their seven paper views and separate Delivery entry. The adapter supplies
+paper Topic ownership and skills to the shared renderers; old Board Work links
+open the matching Report view. Paper versions and draft Tasks, Labeling and
+specialized Prototype pages keep their existing workflows.
+
+A theme blueprint may keep an authored type/view comparison in `ui/block-views.md`,
+`ui/job-views.md`, or `ui/task-views.md`. Its matching UI view reads the Markdown
+as a closed **Type × View Button** section.
+Blueprints without that file retain their existing sections.
+An optional `ui/structure.md` adds a preceding **Work Structure** section.
+Its `##` headings select structure tabs; `###` headings select nested
+topic examples. These authored examples are explanatory, not live execution state.
+An optional `ui/view-guide.json` supplies section definitions, expected outputs,
+layouts, examples by type, and skills by view. Matching section names become
+buttons opening a read-only dialog; Close, Escape, or a click outside dismisses it.
+Set `proposed: true` in the guide to omit links from these explanations to current
+pages that do not yet implement the proposed views. Live examples remain separate.
+Live UI examples use the shared left-tab/right-content component even when only
+one example is configured. The tabs select actual example pages; their right
+panels embed the page and offer an Open action. Optional `ui/example-types.json`
+maps each `block`, `job`, or `task` example path to its display type. That type
+names the left tab in both the preview and its walkthrough; the actual example
+name remains in the preview and Open link. Unmapped examples retain their labels.
+
 Delivery storage (JL 261010)
 ---------------------------
 
@@ -680,3 +777,31 @@ current proposal:
 - [Insight Workbench implementation](../workbench-insight/insightboard.py)
 - [Insight design studio](../../../../blueprints/Project-Ladder/work/b11_theme_insight/s02-insight-workbench/insight-workbench-design.excalidraw)
 - [Studio contract](../../skills/1_base/project/haipipe-studio/ref/screen.md)
+
+### Linked use cases
+
+A matrix's `Use Cases` cells open related Block/Job/Task links. Public examples
+are declared in the adjacent `view-guide.json` under
+`use_cases[level][type][case]`, as a list of `{ "path": "relative/page", "label": "Blueprint example" }`.
+The optional label distinguishes demonstration records from active work.
+
+Cross-SPACE examples stay in the served root's ignored
+`.server_config/workbench-examples.json`: `spaces` maps an alias to an absolute
+`root`; `matrices` maps a root-relative matrix file to the same level/type/case
+mapping. An entry may add `"space": "alias"`. Only this private allowlist can
+refer outside the served root. The destination uses its own configured `DOMAIN`;
+no proxy or extra file-serving route is added. Missing pages are omitted, and a
+SPACE without an address is shown without an Open link. Related Tasks are read
+from the selected Job's immediate existing Task faces. Runs stay within Tasks.
+
+Work-shaped Job pages show their Job type below the title. The type follows the
+existing Work, CoWork, Discovery, or People presentation; application purposes do
+not create new types. An optional `use-case:` header on the Job's own face names
+its application case. It is not inferred from folder names, inherited from the
+Block, or copied from the example index. Missing use cases are omitted.
+
+### UI walkthroughs
+
+Block UI, Job UI and Task UI each have one **Walkthroughs** section. Its left tabs match the live examples; the right panel plays the recording or shows **Not recorded**. Recording requirements appear in that view's **Checklist**, derived from the same file lookup as the player. The right-rail Checklist includes all three UI views, grouped by view. Do not add a separate **Walks to record** section. Recorded means a recording file exists, not that the UI passed review.
+
+Use-case mappings must be checked against source faces and, when ambiguous, their implementation. A Job-level example is labeled as related work at Job level; it does not count as Task coverage. `use_case_notes[level][type][case]` can explain a verified coverage gap. A private mapping with `preview_available: false` retains its verified source path but does not offer a broken preview link. Recheck the preview before removing that flag.

@@ -1,7 +1,7 @@
-"""open_job.py <insight Board> --release pN --data vM [--previous jNN_…] [--moved code|data|start]
+"""open_job.py <insight Board> --release code-vN --data data-vM [--previous jNN_…] [--moved code|data|start]
 
 Open one plan-C Job on an insight Board (b11 s00 · s11 · s12, 261007):
-`jNN_prototype-pN-<release slug>_data-<dataset>vM/` (`job_name`), pinning one Prototype release (board.md
+`jNN_code-vN-<release slug>_data-vM/` (`job_name`), pinning one Prototype release (board.md
 `prototype:`) and one data version (board.md `versions:`). It writes:
 
     <job>.md                              the Job's face: release, data, state open, moved, previous, and its
@@ -25,22 +25,56 @@ import yaml
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import run_question as RQ  # noqa: E402
 
-# A Board Job's folder name, read left to right (JL 261012: "make the job folder name to be human readable"):
-# j01_prototype-p1-basic-questions_data-SMSR2v1. Underscores part its three fields (the number, the Prototype
-# release, the data version) and hyphens join the words inside one, as in a Task's tNN_<L><NN>_<slug>. The
-# older jNN_pN_<D>vM still reads. Groups: number, release, dataset, version.
-JOB = re.compile(r"^j(\d+)_(?:prototype-)?(p\d+)(?:-[a-z0-9-]+)?_(?:data-)?([A-Za-z][A-Za-z0-9]*?)(v\d+)$")
+# A Board Job's folder name, read left to right (JL 261012: "make the job folder name to be human readable"; JL 261109:
+# "code-v1 x data-v1, make it readable"): j02_code-v1-example-questions_data-v2. Underscores part its three fields (the
+# number, the code version, the data version) and hyphens join the words inside one, as in a Task's tNN_<L><NN>_<slug>.
+# The older j01_prototype-p1-basic-questions_data-SMSR2v1 and jNN_pN_<D>vM still read, until rename_code_data.py
+# carries their Board over. Groups: number, release, dataset ('' in the new name), version.
+JOB_NEW = re.compile(r"^j(\d+)_(code-v\d+)(?:-[a-z0-9-]+)?_()(data-v\d+)$")
+JOB_OLD = re.compile(r"^j(\d+)_(?:prototype-)?(p\d+)(?:-[a-z0-9-]+)?_(?:data-)?([A-Za-z][A-Za-z0-9]*?)(v\d+)$")
+
+
+class Either:
+    """Two patterns read as one: the first that matches (re has no branch reset, so the groups stay numbered alike)."""
+
+    def __init__(self, *pats):
+        self.pats = pats
+
+    def match(self, s):
+        return next((m for m in (p.match(s) for p in self.pats) if m), None)
+
+    fullmatch = match
+
+
+JOB = Either(JOB_NEW, JOB_OLD)
+
+
+def num(vid: str) -> int:
+    """The number of a code or data version id: 2 from code-v2, data-v2, p2 or v2."""
+    m = re.search(r"(\d+)$", str(vid or ""))
+    return int(m.group(1)) if m else 0
+
+
+def code_id(rid: str) -> str:
+    """A code version as a person reads it: code-v1 (an older p1 reads the same)."""
+    return re.sub(r"^p(\d+)$", r"code-v\1", str(rid or ""))
+
+
+def data_id(vid: str) -> str:
+    """A data version as a person reads it: data-v1 (an older v1 reads the same)."""
+    return re.sub(r"^v(\d+)$", r"data-v\1", str(vid or ""))
 
 
 def release_slug(rdir: Path) -> str:
-    """A release folder's words: `basic-questions` from j01_p1_basic-questions ('' for a bare jNN_pN)."""
+    """A release folder's words: `basic-questions` from j01_code-v1_basic-questions ('' for a bare jNN_code-vN)."""
     return rdir.name.split("_", 2)[2] if rdir.name.count("_") >= 2 else ""
 
 
 def job_name(number: int, release: str, slug: str, dataset: str, data: str) -> str:
-    """j01_prototype-p1-basic-questions_data-SMSR2v1: the Job's number, its release and words, its data."""
-    plan = "-".join(x for x in (release, slug) if x)
-    return f"j{int(number):02d}_prototype-{plan}_data-{dataset}{data}"
+    """j01_code-v1-basic-questions_data-v1: the Job's number, its code version and words, its data version (one
+    dataset per Board, named in board.md, so the name carries none)."""
+    plan = "-".join(x for x in (code_id(release), slug) if x)
+    return f"j{int(number):02d}_{plan}_{data_id(data)}"
 
 TICKET = """#!/bin/bash
 # run.sh · one hard Run of a plan-C Job: this Task's question on this cut (haipipe-insight ref/run_job.py).
@@ -59,8 +93,8 @@ def _words(rdir: Path, release: str) -> str:
 
 
 def job_goal(board, jface: dict) -> str:
-    """A Board Job's goal line, what its release × data version answers: `What the example questions (analysis plan 1)
-    find on data freeze 2, all sixteen days`."""
+    """A Board Job's goal line, what its code version × data version answers: `What the example questions (code-v1)
+    find on data-v2, all sixteen days`."""
     board = Path(board)
     face, _ = RQ.front(board / "board.md")
     release, data = str(jface.get("release") or ""), str(jface.get("data") or "")
@@ -68,9 +102,9 @@ def job_goal(board, jface: dict) -> str:
     words = _words(rdir, release) if rdir.is_dir() else ""
     v = next((v for v in face.get("versions") or [] if str(v.get("version")) == data), {})
     label = str(v.get("label") or "").strip()
-    plan = f"analysis plan {release[1:]}" if re.fullmatch(r"p\d+", release) else release
+    plan = code_id(release)
     return (f"What the {words} ({plan})" if words else f"What {plan}") + \
-        f" find{'' if words else 's'} on data freeze {data[1:] if data[:1] == 'v' else data}" + (f", {label}" if label else "")
+        f" find{'' if words else 's'} on {data_id(data)}" + (f", {label}" if label else "")
 
 
 def question_fields(board, jface: dict, qid: str) -> dict:
@@ -100,7 +134,7 @@ def open_job(board, release, data, previous="", moved="start", number=None):
     board = Path(board).resolve()
     face, _ = RQ.front(board / "board.md")
     proto = board.parent.parent / str(face.get("prototype", ""))
-    rdir = next((p for p in sorted(proto.glob("j*_*")) if p.is_dir()          # jNN_pN or jNN_pN_<slug>
+    rdir = next((p for p in sorted(proto.glob("j*_*")) if p.is_dir()          # jNN_code-vN or jNN_code-vN_<slug>
                  and re.match(rf"^j\d+_{release}(_.+)?$", p.name)), None)
     if rdir is None:
         raise SystemExit(f"no release {release} in {proto}")
@@ -108,17 +142,16 @@ def open_job(board, release, data, previous="", moved="start", number=None):
         raise SystemExit(f"no data version {data} in {board.name}/board.md versions:")
     jobs = sorted(p for p in board.glob("j[0-9][0-9]_*") if p.is_dir() and JOB.match(p.name))
     dataset = str(face.get("dataset", ""))
-    job = next((j for j in jobs if JOB.match(j.name).group(2, 3, 4) == (release, dataset, data)), None) \
+    job = next((j for j in jobs if JOB.match(j.name).group(2, 4) == (release, data)), None) \
         or board / job_name(number or len(jobs) + 1, release, release_slug(rdir), dataset, data)
     made = []
     plan_words = _words(rdir, release)
-    heading = f"{plan_words[:1].upper()}{plan_words[1:]} ({release}) on data {dataset}{data}"   # the folder, in words
+    heading = f"{plan_words[:1].upper()}{plan_words[1:]} ({code_id(release)}) on {data_id(data)}"   # the folder, in words
     jface = {"release": release, "prototype": str(rdir.relative_to(board.parent.parent)), "data": data, "state": "open",
              "moved": moved, "previous": previous}
     jface["goal"] = job_goal(board, jface)
     _write(job / f"{job.name}.md", _front(jface,
-                                          f"# {heading}\n\nAnalysis plan {release.replace('p', 'AP', 1)} (release {release}) on data freeze "
-                                          f"{data.replace('v', 'F', 1)} (data version {data}). "
+                                          f"# {heading}\n\n{code_id(release)} on {data_id(data)}. "
                                           "Frozen once closed (run-close).\n"), made)
     rows = yaml.safe_load((rdir / "release.yaml").read_text())["questions"]
     partitions = RQ.front(rdir / "partitions.md")[0]["partitions"]

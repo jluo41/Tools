@@ -31,14 +31,14 @@ metadata:
 ## Position
 
 Load `haipipe-insight` (`ref/insight-ladder.md`, `ref/release.md`). A question lives in a Prototype release, one
-Task per question: `work/Prototype-bNN-<Topic>/jNN_pN_<slug>/tNN_<L><NN>_<slug>/question.md`
+Task per question: `insight/Prototype-<Topic>/jNN_code-vN_<slug>/tNN_<L><NN>_<slug>/question.md`
 (`haipipe-insight/ref/block-contract.md` § The question file: id, level, the short question, the ask, Why now, What
 would answer it, the partitions it is asked on, its needs, agreed). This skill owns how a question gets there and
 how it changes; whether it is answered is the Board's.
 
 ```text
 the Board, a Job ──propose──▶ proposals/<slug>.md ──triage──▶ a release ──ask · change · retire──▶ question.md
-                              (open)                         (taken-in: pN)                       (agreed by another agent)
+                              (open)                         (taken-in: code-vN)                       (agreed by another agent)
 ```
 
 ## Folder Kind
@@ -70,16 +70,16 @@ with no answer) and `run-propose-cut-<slug>`. `insight_ladder.py propose` makes 
 preferred answer: "nothing changes" and a null stay admissible.
 
 
-**Triage.** `run-triage-proposals-pN` takes one batch into one release, never one proposal at a time (decided 261008): the
-newest release while it is open, otherwise the next one. Each proposal is taken (`taken-in: pN`), declined with a
-reason, or left open for a later batch. `python scripts/proposals.py list | take <slugs> --into pN | decline <slug>
+**Triage.** `run-triage-proposals-code-vN` takes one batch into one release, never one proposal at a time (decided 261008): the
+newest release while it is open, otherwise the next one. Each proposal is taken (`taken-in: code-vN`), declined with a
+reason, or left open for a later batch. `python scripts/proposals.py list | take <slugs> --into code-vN | decline <slug>
 --why "…"` records it and prints how to apply each taken one:
 
 ```text
 new question   insight_ladder.py question <release> <L><NN> <slug>     run-ask-<l><nn>
 fix            insight_ladder.py change <release> <L><NN> --why "…"     then plan, review, script, review again
 retire         insight_ladder.py retire <release> <L><NN> --why "…"
-cut            the release's partitions.md, then run-set-cuts-pN         a person signs the cuts
+cut            the release's partitions.md, then run-set-cuts-code-vN         a person signs the cuts
 ```
 
 ## Page Face
@@ -108,19 +108,19 @@ one retired. A retired question leaves `questions:` for `retired:` in release.ya
 ## Workbenches
 
 ```text
-run-triage-proposals-p<N>   Prototype › Description   haipipe-insight-agent            signs none
+run-triage-proposals-code-v<N>   Prototype › Description   haipipe-insight-agent            signs none
 run-ask-<l><nn>             Release › Work Details    haipipe-insight-agent            signs none
 run-propose-j<NN>           Job › Audience Report     haipipe-insight-agent            signs none
 run-propose-coverage        Block › Audience Report   haipipe-insight-agent            signs none
 run-propose-cut-<slug>      Block › Description       haipipe-insight-agent            signs none
-run-review-questions-p<N>   Release › Work Details    haipipe-insight-reviewer-agent   a person signs a change (skill haipipe-report)
+run-review-questions-code-v<N>   Release › Work Details    haipipe-insight-reviewer-agent   a person signs a change (skill haipipe-report)
 ```
 
 Their cards are `haipipe-insight-workflow/ref/run-cards.md`; no code or analysis Run belongs to a question here.
 
 ## Gate and Closure
 
-`run-review-questions-pN`: before a release is signed, a reviewer agent that wrote none of its new or changed
+`run-review-questions-code-vN`: before a release is signed, a reviewer agent that wrote none of its new or changed
 questions judges each through `haipipe-report` (the seven tests; keep, split, merge or move; a person signs a
 change; never a reworded ask). What insight adds:
 
@@ -143,8 +143,8 @@ permission.
 
 ```text
 proposals/<slug>.md · proposals/README.md                       the backlog (Prototype)
-jNN_pN_<slug>/release.yaml                                      questions · retired
-jNN_pN_<slug>/tNN_<L><NN>_<slug>/question.md · scripts/          a question new or changed in that release
+jNN_code-vN_<slug>/release.yaml                                      questions · retired
+jNN_code-vN_<slug>/tNN_<L><NN>_<slug>/question.md · scripts/          a question new or changed in that release
 scripts/proposals.py                                            list · take · decline
 ```
 

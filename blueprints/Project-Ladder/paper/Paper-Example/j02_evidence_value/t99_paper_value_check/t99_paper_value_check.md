@@ -1,5 +1,6 @@
 # t99_paper_value_check · every printed number at once
 
+use-case: Whole-paper value audit
 label: Paper value check
 goal: every printed number of the paper checked at once against its returned Result
 status: see runs/r01_check_values/result/headline.txt

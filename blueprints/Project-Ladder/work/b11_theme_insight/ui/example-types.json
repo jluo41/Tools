@@ -1,0 +1,18 @@
+{
+  "block": {
+    "blueprints/Project-Ladder/insight/Insight-Example": "Insight Board",
+    "blueprints/Project-Ladder/insight/Prototype-Example": "Prototype"
+  },
+  "job": {
+    "blueprints/Project-Ladder/insight/Insight-Example/j01_code-v1-example-questions_data-v1": "Analysis · first freeze",
+    "blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2": "Analysis · updated freeze",
+    "blueprints/Project-Ladder/insight/Prototype-Example/j01_code-v1_example-questions": "Prototype release"
+  },
+  "task": {
+    "blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2/t01_D01_extract-shape": "Data question",
+    "blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2/t03_I01_outcome-by-arm": "Information question",
+    "blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2/t05_K01_gap-holds": "Knowledge question",
+    "blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2/t06_W01_next-round": "Wisdom question",
+    "blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2/t07_X01_what-we-found": "Executive question"
+  }
+}

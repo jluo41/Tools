@@ -1,5 +1,6 @@
 # j03 · Kickoff meeting with the partner office
 job-kind: cowork-job
+use-case: Kickoff coordination
 state: ✅ DONE · 2026-10-15: the request goes through the partner office's form; the notes went to everyone
 waiting-on: nobody
 since: 2026-10-15

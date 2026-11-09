@@ -3,6 +3,7 @@
 job-of: b01_haipipe-toolkit (the Block `b01_utils` until 261009; its questions, studio and runs moved with it)
 spine: Design questions about the small cross-cutting skills in `plugins/haipipe-toolkit/skills/0_utils/`: how chat replies are shaped, how questions are tracked, and the helpers every session shares.
 close: Each recorded question has a report Page with an answer status, and every answered question names the skill change that settled it.
+emoji: 🧰
 
 ## Topic
 

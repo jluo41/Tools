@@ -1,5 +1,6 @@
 # t02_raw-value-tables · the Values tabs: raw tables from the Runs
 
+use-case: Source table inspection
 label: The raw value tables
 status: filled by r02_build_tables
 task-type: value

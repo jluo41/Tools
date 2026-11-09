@@ -1,0 +1,24 @@
+status: refused
+question: I01
+run: r05_third
+partition: third
+release: code-v1
+data: data-v1
+ticket: Tools/blueprints/Project-Ladder/insight/Insight-Example/j01_code-v1-example-questions_data-v1/t03_I01_outcome-by-arm/runs/r05_third/run.sh
+job: Tools/blueprints/Project-Ladder/insight/Insight-Example/j01_code-v1-example-questions_data-v1
+prototype: Tools/blueprints/Project-Ladder/insight/Prototype-Example/j01_code-v1_example-questions
+extract: Tools/blueprints/Project-Ladder/insight/Insight-Example/data/data-v1/example.parquet
+spec: Tools/blueprints/Project-Ladder/insight/Prototype-Example/j01_code-v1_example-questions/t03_I01_outcome-by-arm/question.md
+spec_sha256: 300ff71af767177241c2f60c554f07bfa8600d827b44e06c0396260942417528
+scripts: Tools/blueprints/Project-Ladder/insight/Prototype-Example/j01_code-v1_example-questions/t03_I01_outcome-by-arm/scripts
+scripts_sha256: 4aa6f79116c796be8ae073bd537070ec44f6676e3f1c7712359190226d309c13
+shared_sha256: 4f5c73210fda352f18d32178744ce4feca1bf1ec6ae56d493da984f3bacd2477
+git_sha: a62ac8cd9
+started: '2026-11-06T18:57:53Z'
+rows_before: 600
+rows_after: 40
+power: low
+reason: 'underpowered: third MDE 42.89 > 20.0'
+ended: '2026-11-06T18:57:53Z'
+duration_s: 0.1
+content_since: '2026-11-06T18:57:53Z'

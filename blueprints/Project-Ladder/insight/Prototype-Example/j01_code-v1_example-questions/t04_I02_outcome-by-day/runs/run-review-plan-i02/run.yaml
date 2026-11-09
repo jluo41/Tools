@@ -1,0 +1,16 @@
+run: run-review-plan-i02
+kind: soft
+type: review-plan
+scope: Tools/blueprints/Project-Ladder/insight/Prototype-Example/j01_code-v1_example-questions/t04_I02_outcome-by-day
+target: i02
+ticket: run-review-plan-i02.md
+skill: haipipe-insight-evidence-plan
+agent: haipipe-insight-reviewer-agent
+signs:
+- none
+status: done
+passes:
+- p01-1106
+writes:
+- t04_I02_outcome-by-day/question.md
+feeds: []

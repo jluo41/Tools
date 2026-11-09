@@ -1,6 +1,12 @@
 haipipe-job · Changelog
 =======================
 
+## [0.3.2] — 2026-11-08
+
+A Job's title is its folder's words, and its face carries an `emoji:` line; a Block's Status row shows that emoji,
+its jNN, its name and how far (b17 s04-D19, JL 261108: "we want to have the job name to be the same to the job folder
+name").
+
 ## [0.3.1] — 2026-10-26
 
 Shorter description (655 -> 348 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)

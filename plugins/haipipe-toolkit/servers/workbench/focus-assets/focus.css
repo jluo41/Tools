@@ -47,6 +47,7 @@ body:has(.overview-report-page){--bg:#fff;--paper:#fff;--ink:#24282e;--muted:#68
 .overview-tabs{display:flex;gap:8px;margin:0 0 20px}
 .overview-tabs a{border:1px solid var(--line);border-radius:5px;padding:5px 12px;font-size:13px;text-decoration:none}
 .overview-tabs a[aria-current]{background:var(--soft);border-color:#88baff;color:var(--accent)}
+.ui-sec .pb-item b{overflow-wrap:anywhere}
 .ui-page{width:100%;height:760px;max-height:80vh;border:1px solid var(--line);border-radius:8px;background:var(--bg,#fff)}
 .overview-map{width:100%;height:620px;max-height:76vh;border:1px solid var(--line);border-radius:8px;background:#fff}
 .report-answer-status{font-size:13px;font-weight:500}
@@ -140,3 +141,26 @@ h1{display:flex;align-items:baseline;flex-wrap:wrap;gap:18px}.h1-section{font-si
 
 /* phone: the view-button-list wraps instead of widening the page (b11 insight walk 261102; every theme, not only labeling and draft) */
 @media(max-width:600px){.section-views{flex-wrap:wrap}.focus-crumb{overflow-wrap:anywhere}}
+
+/* Narrow screens retain both rails behind separate, named drawer controls. */
+.mobile-rail-controls{display:none}
+.rail-drawer{position:fixed;inset:0 0 0 auto;margin:0;width:min(300px,85vw);height:100dvh;max-height:100dvh;max-width:85vw;box-sizing:border-box;padding:20px;border:0;border-left:1px solid var(--line);border-radius:0;background:var(--paper);color:var(--ink);overflow:auto}
+.rail-drawer::backdrop{background:#0005}
+.rail-drawer header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.rail-drawer button{min-width:44px;min-height:44px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);cursor:pointer}
+.rail-drawer nav{display:flex;flex-direction:column;gap:4px}
+.rail-drawer nav a{display:block;padding:12px;border-radius:8px;color:var(--ink);text-decoration:none;overflow-wrap:anywhere}
+.rail-drawer nav a[aria-current]{background:var(--soft);color:var(--accent);font-weight:600}
+.rail-drawer nav a:hover{background:var(--soft)}
+#page-drawer{inset:0 auto 0 0;border-left:0;border-right:1px solid var(--line)}
+#page-drawer .rail-name{position:static;opacity:1;visibility:visible;white-space:normal}
+#page-drawer .rail-name small{display:block;font-size:12px;color:var(--muted)}
+#page-drawer a.child{padding-left:26px}#page-drawer a.grand{padding-left:40px}
+.section-drawer-open{overflow:hidden}
+@media(max-width:600px){.mobile-rail-controls{display:flex;justify-content:space-between;gap:12px;margin:12px 0 0}.mobile-rail-controls button{min-height:44px;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);font-size:13px;cursor:pointer}}
+
+/* Job identity is stable across views; purposes are authored on the Job face. */
+.job-identity{display:flex;flex-wrap:wrap;gap:8px 24px;margin:-4px 0 18px;font-size:13px;line-height:1.6}
+.job-identity>div{display:flex;flex-wrap:wrap;gap:4px 8px;min-width:0}
+.job-identity dt{color:var(--muted)}
+.job-identity dd{margin:0;font-weight:600;overflow-wrap:anywhere}

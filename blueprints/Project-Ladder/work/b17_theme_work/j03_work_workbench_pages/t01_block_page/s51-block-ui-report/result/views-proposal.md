@@ -57,7 +57,7 @@ The map, branch by branch (r02 Q4 A):
 
 ```text
 root     the Block's folder name: b17_theme_work
-level 1  each Job, in folder order: pill j01_work_ladder_contract, title "Make s01's delivery", box its goal: line
+level 1  each Job, in folder order: pill j01_work_ladder_contract, title "Work ladder contract", box its goal: line
 level 2  under a Job: first the sNN it makes (pill s01-work-ladder, title "work ladder", box below),
          then its Tasks (pill t01_skill_section, title, box its goal: line)
 level 3  under a Task: the sNN that sit in it (s51, s52, s53 under t01_block_page), title only

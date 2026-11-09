@@ -211,7 +211,7 @@ Boards to their owning world. No routine update moves an active Board.
 ## `insight/`
 
 **Current Insight layout (haipipe-insight, 261009):** a topic's Prototype is a task-world Block
-`work/Prototype-bNN-<Topic>/` (`board-kind: prototype`, a Job per release, `proposals/`) and each
+`insight/Prototype-<Topic>/` (`board-kind: prototype`, a Job per release, `proposals/`) and each
 dataset is a Board `insight/Insight-<name>/`. haipipe-insight's SKILL.md is the authority; the
 `b5N_<topic>_dikw` Block below is its older layout (`ref/prototype_from_block.py` carries it).
 

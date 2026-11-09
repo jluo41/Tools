@@ -1,0 +1,16 @@
+run: run-plan-evidence-d01
+kind: soft
+type: plan-evidence
+scope: Tools/blueprints/Project-Ladder/insight/Prototype-Example/j01_code-v1_example-questions/t01_D01_extract-shape
+target: d01
+ticket: run-plan-evidence-d01.md
+skill: haipipe-insight-evidence-plan
+agent: haipipe-insight-agent
+signs:
+- none
+status: done
+passes:
+- p01-1106
+writes:
+- t01_D01_extract-shape/question.md
+feeds: []

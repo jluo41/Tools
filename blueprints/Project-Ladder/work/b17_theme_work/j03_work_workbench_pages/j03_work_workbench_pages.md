@@ -1,7 +1,8 @@
-# j03 · The work pages, level by level
+# j03 · Work workbench pages
 
 goal: the work theme's three pages on the focus page, each in its three sections: Block, Job and Task × Report, Work and Studio, and the parts all three share (b17-s04)
 close: all nine sNN and b17-s04's six shared parts are agreed, and each names the code change for its owner (the base page, design_b02_workbench)
+emoji: 🖥️
 answers: Q01,Q02,Q03
 
 ## Topic

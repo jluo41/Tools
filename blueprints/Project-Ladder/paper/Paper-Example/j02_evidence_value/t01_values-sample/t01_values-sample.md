@@ -1,5 +1,6 @@
 # t01_values-sample · the sample and the main association
 
+use-case: Printed-value verification
 label: RQ1 · the sample and the main association
 goal: every number the paper prints for the sample and the main association, each read from its returned Result
 status: filled by r01_read_values

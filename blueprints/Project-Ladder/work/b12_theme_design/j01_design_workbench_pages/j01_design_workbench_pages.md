@@ -48,3 +48,7 @@ The Studio cells (s53, s56, s59) stay the base's Studio.
 1. t01_block_page · The design Block page
 2. t02_job_page · A design Job page
 3. t03_task_page · A design Task page, by type
+
+## Current Block frame · 2026-11-08
+
+The Design Board now combines content and actions in Report, under Review Content followed by the shared Around the Work sections. Summary, Goals, Jobs, Rounds, Methods and MindMap remain the business views. The previous Report/Work split above is historical for the Block; Job and Task pages retain their specialist workflow. The current Block specification is `blueprints/Project-Ladder/work/b12_theme_design/ui/structure.md`, with the section matrix in `ui/block-views.md` and routed examples in `ui/view-guide.json`. Historical drawings have not been redrawn. Human approval of release is unchanged.

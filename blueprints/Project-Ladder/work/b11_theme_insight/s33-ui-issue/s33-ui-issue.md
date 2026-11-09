@@ -10,7 +10,7 @@ s33 · Insight UI issues
 **Delivery type:** ui
 
 **Topic:** a review of the Insight workbench as it is served on 261008: the Board
-`insights/Insight-SMSR2v1`, its one Job `j01_p1_SMSR2v1`, three of its Tasks (K01, D01, W01), and its
+`insights/Insight-SMSR2v1`, its one Job `j01_code-v1_data-v1`, three of its Tasks (K01, D01, W01), and its
 Prototype `tasks/Prototype-b01-SMSExperiement` with that Prototype's Job and two Tasks. Every Space and
 every third-row view was opened, shot with headless Chrome (1500 × 1400) and curled for its links. Each
 screen is judged against what JL asked for (clean, no nested boxes, no filler repeated on every row;

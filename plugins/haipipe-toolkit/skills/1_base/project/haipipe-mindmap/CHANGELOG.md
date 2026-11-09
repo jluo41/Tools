@@ -1,6 +1,14 @@
 haipipe-mindmap · Changelog
 ===========================
 
+## [0.9.8] — 2026-11-09 · from-topic nests sub-headings, tables become one line
+
+- JL 261109: "why this is so hard to read?" (s02's mind map). `mmbuild._sections` only split on `##`, so a long face
+  became one flat list of raw `### 1 · Identity …` and `| E | RQ | …` lines. Now each `###`/`####` is a branch with what
+  follows under it (`_nest`), a table is one leaf "table · N rows" (its columns in the detail), and a card's words drop
+  `**`. A map built by the old builder: rebuild it with `from-topic` when no person edited it (refresh keeps old flat
+  nodes whose fingerprint no longer matches, as if a person had changed them).
+
 ## [0.9.7] — 2026-11-06
 
 - An unwritten map's root reads "Not written yet." (`mmmap.UNWRITTEN`, `unwritten`), a state, never how to write it; an

@@ -3,6 +3,7 @@
 job-of: b03_inlab-human (261009)
 spine: What may enter a bundle or the console: de-identified cases only, outcome fields scrubbed from the patient store, study data kept in the study's repository.
 close: Each recorded question has a report Page with an answer status, and every answered question names the change that settled it.
+emoji: 🛡️
 
 ## Topic
 

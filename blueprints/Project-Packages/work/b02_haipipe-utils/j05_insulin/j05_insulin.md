@@ -3,6 +3,7 @@
 job-of: b02_haipipe-utils (261009)
 spine: `skills/describe-insulin` (0.1.1): an insulin product (describe-medication's DrugKey, or only a class) to pharmacokinetic parameters: class, onset, peak, duration.
 close: Each recorded question has a report Page with an answer status, and every answered question names the change that settled it.
+emoji: 💉
 
 ## Topic
 

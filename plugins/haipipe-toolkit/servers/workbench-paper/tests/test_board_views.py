@@ -204,6 +204,12 @@ class BoardViewsTest(unittest.TestCase):
             "| paper | 2023 | Arxiv 2023 | https://arxiv.org/abs/2304.08593 | Closest: type two |  |  |  |\n", encoding="utf-8")
         md = lambda text, base: text
         story = dict(board_views.board_report_views(self.b, self.root, md))["story"][1]()
+        topic = self.b / 's01-ideation'
+        topic.mkdir()
+        (topic / 's01-ideation.md').write_text(IDEA)
+        idea = dict(board_views.board_report_views(self.b, self.root, md))["idea"][1]()
+        self.assertIn('📚 Related', idea)              # remains in Idea even after a Story exists
+        self.assertIn('Kept 2020', idea)
         nums = [int(x) for x in re.findall(r"<h3 class=fd-h>(\d+) · ", story.split("<hr class=pb-rule>")[0])]
         self.assertIn(f"{max(nums)} · 📚 Related", story)
         for head in ("Closest: type one", "Closest: type two", "Shared background: type three"):
@@ -221,6 +227,51 @@ class BoardViewsTest(unittest.TestCase):
         self.assertEqual(part.count("<iframe"), 2)
         self.assertIn("because A", story)
         self.assertIn("Journal A", story)
+
+    def test_section_story_is_shared_with_displays_without_a_display_job(self):
+        from live import board_results
+        face = self.b / 's02-story-desk-idea/s02-story-desk-idea.md'
+        face.write_text(face.read_text() + '\n## Section narrative\n\nA shared section argument.\n')
+        for render in (board_results.story_view, board_results.displays_view):
+            page = render(self.b, self.root, lambda text, base: text)
+            self.assertIn('🧠 Story by Section', page)
+            self.assertIn('A shared section argument.', page)
+            self.assertEqual(page.count('🧠 Story by Section'), 1)
+        displays = board_results.displays_view(self.b, self.root, lambda text, base: text)
+        heads = re.findall(r'<h3 class=fd-h>\d+ · ([^<]+)', displays)
+        self.assertEqual(heads[-1].strip(), '🧠 Story by Section')     # last in Displays (JL 261109)
+        self.assertNotIn('Where each display stands', displays)
+        from live import board_process
+        for key in ('evidence', 'displays'):                           # no second list of the tabs' own states
+            self.assertEqual(board_process._steps(self.b, key, None, '', self.root, lambda t, b: t), ('', []))
+        self.assertEqual(board_results.sections_word([], self.root), ('nothing yet', ''))
+
+    def test_story_by_section_opens_with_the_story_arc(self):
+        """JL 261109: the first tab is the whole paper's story arc: `#### Story arc`, else the opening text block."""
+        from live import board_results as br
+        arc = br._story_arc(self.b, "#### Story arc\n\n1. **Puzzle**: p\n\n#### Claims\n\n| claim |\n")
+        self.assertIn("Puzzle", arc)
+        self.assertNotIn("claim", arc)
+        spine = br._story_arc(self.b, "A note.\n\n```text\nHEADLINE  C4\n```\n\n#### 8.1 · Claims\n")
+        self.assertIn("HEADLINE  C4", spine)
+        self.assertIn("haipipe-paper-story", br._story_arc(self.b, "| claim | proposition |\n"))
+
+    def test_each_section_tells_its_part_of_the_arc_before_its_claims(self):
+        """JL 261109: "this is not just the claims, it is also about the narratives, the arc, how to make it smooth"."""
+        from live import board_results as br
+        v = self.b / 'j11_writing_v0101_x'
+        (v / 't01_introduction').mkdir(parents=True, exist_ok=True)
+        (v / 'j11_writing_v0101_x.md').write_text(
+            '# v\n\n## Narrative\n\n| Section | reader question | entry | ordered moves | must refuse | displays | exit |\n'
+            '|---|---|---|---|---|---|---|\n| t01_introduction | Why ask? | Has the abstract. | a → b → c | "first" | none |'
+            ' accepts the gap |\n')
+        (v / 't01_introduction' / 't01_introduction.md').write_text('# t01\n\ntransition-out: Results opens on the law\n')
+        body = '| claim | proposition | lands in |\n|---|---|---|\n| C1 | The main claim | Introduction |\n'
+        html = br._narrative(self.b / 's02-story-desk-idea', self.root, body)
+        self.assertIn('accepts the gap', html.split('data-pbpanel')[0])          # the tab's line: what the reader leaves with
+        panel = html[html.index('Why ask?'):]
+        self.assertLess(panel.index('a → b → c'), panel.index('The main claim'))  # the arc first, the claims last
+        self.assertIn('Results opens on the law', panel)                        # the Section face's hand-on
 
     def test_the_large_line_of_a_direction_is_never_its_glossary(self):
         from live.board_read import _lead_sentence
@@ -336,3 +387,18 @@ class StoryListsTest(unittest.TestCase):
         qs, said = board_read._rq_lists(body)
         self.assertEqual([k for k, _ in qs], [0, 1])
         self.assertEqual(said[0], "<what RQ0 says>")
+
+
+def test_a_discovery_block_named_alone_shows_every_paper(tmp_path):
+    """JL 261108: the Discovery section showed the Block and nothing under it; it shows each Job, Task and paper."""
+    import board_results
+    proj = tmp_path / "Project-X"
+    run = proj / "discovery" / "b01_evidence" / "j01_landscape" / "t01_trait" / "runs" / "r01_smith2020"
+    (run / "result").mkdir(parents=True)
+    (run / "result" / "r01_smith2020.bib").write_text("@article{s, title={Doctors and {Opioids}}, year={2020}}")
+    (run / "result" / "runtime.yaml").write_text("status: complete\n")
+    board = proj / "paper" / "Paper-X"
+    board.mkdir(parents=True)
+    (board / "board.md").write_text("# X\n\nReads discovery/b01_evidence.\n")
+    html = board_results.explore_view(board, tmp_path, "")
+    assert "r01_smith2020" in html and "Doctors and Opioids" in html

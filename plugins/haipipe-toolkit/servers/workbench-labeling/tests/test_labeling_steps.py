@@ -177,7 +177,7 @@ class StepsPageTest(unittest.TestCase):
         run = self.expression / "runs" / "r90_collect_release_choices"
         run.mkdir()
         try:
-            (run / "run.yaml").write_text("run: r90_collect_release_choices\nkind: hard\ntype: collect\nstatus: waiting\n")
+            (run / "run.yaml").write_text("run: r90_collect_release_choices\nkind: hard\ntype: collect\nview: findings\nstatus: waiting\n")
             (run / "question_collection.md").write_text(
                 "# Release Use Choices\n\nfor: placeholder\n\n## Q1 · Serving executor\nWhy it matters.\n"
                 "**Which executor labels new items?**\n- [x] A · one\n- [ ] B · another\nWhy A: placeholder.\n")
@@ -197,11 +197,13 @@ class StepsPageTest(unittest.TestCase):
             findings = L.render(self.theme, self.root, self.job, "report", "findings")
             self.assertIn("r90_collect_release_choices", findings.split("🙋 Interaction", 1)[1])
             standing = L.render(self.theme, self.root, self.job, "report", "standing")
-            self.assertNotIn("r90_collect_release_choices.html", standing.split("· 🙋 Interaction<")[-1])
-            work = L.render(self.theme, self.root, self.job, "work", "standing")   # round 4: Next steps lists it, and
-            steps = work.split("🚧 Next steps", 1)[1].split("📊 Results", 1)[0]   # its row opens the form itself
-            self.assertIn(frame._file_url(form, self.root), steps)
-            self.assertIn("Release Use Choices", steps)
+            self.assertNotIn("r90_collect_release_choices.html", standing.split("🧭 Around the Work", 1)[1])
+            work = L.render(self.theme, self.root, self.job, "work", "standing")
+            self.assertIn("View BJTR", work)
+            self.assertNotIn("🚧 Next steps", work)
+            all_forms = L.render(self.theme, self.root, self.job, "interactions")
+            self.assertIn(frame._file_url(form, self.root), all_forms)
+            self.assertIn("Release Use Choices", all_forms)
         finally:
             import shutil
             shutil.rmtree(run)
@@ -210,7 +212,8 @@ class StepsPageTest(unittest.TestCase):
         html = L.render(self.theme, self.root, self.job, "report", "findings")
         bars = re.findall(r"<h3 class=fd-h>\d+ · ([^<]*)", html)
         self.assertTrue(bars[0].startswith("🏷 Final labels"), bars)
-        self.assertEqual(bars[-1], "🙋 Interaction")
+        self.assertIn("🧭 Around the Work", html)
+        self.assertIn("🙋 Interactions", html)
 
     def test_every_step_holds_its_prompt_inside_its_closed_bar(self):
         """Round 4: a prompt card and its notes box sat open under every closed Process bar; now each step is one

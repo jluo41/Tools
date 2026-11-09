@@ -3,6 +3,7 @@
 job-of: b03_inlab-human (261009)
 spine: CONSOLE mode: `/inlab-human-console` (0.1.0) and `servers/haichat-inlab` (FastAPI routers and a React SPA, built by HAIChat-SPACE as a per-thread iframe).
 close: Each recorded question has a report Page with an answer status, and every answered question names the change that settled it.
+emoji: 🖥️
 
 ## Topic
 

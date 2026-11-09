@@ -42,7 +42,7 @@ the future, the Labeling will be the same"). A theme's own Board is named by its
 ```text
 <Project>/paper/Paper-<Slug>/                 a paper Board          (haipipe-paper)
 <Project>/insight/Insight-<name>[-<YYMMDD>]/  an insight Board       (haipipe-insight)
-<Project>/work/Prototype-bNN-<Topic>/         an insight Prototype   (haipipe-insight)
+<Project>/insight/Prototype-<Topic>/         an insight Prototype   (haipipe-insight)
 <Project>/design/Design-<name>[-<YYMMDD>]/    a design Block         (haipipe-design)
 <Project>/labeling/Labeling-<name>/           a labeling Board, later (haipipe-labeling)
 ```

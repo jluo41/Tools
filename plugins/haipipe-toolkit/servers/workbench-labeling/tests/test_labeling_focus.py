@@ -35,7 +35,7 @@ class LabelingFocusTest(unittest.TestCase):
         self.assertEqual(re.findall(r'>(Data|Items|Embedding)<', views), ['Data', 'Items', 'Embedding'])
         order = [page.index(w) for w in ('⚙️ Process', '📊 Results', '🙋 Interaction')]
         self.assertEqual(order, sorted(order))
-        rail = page.split('aria-label="Page sections">', 1)[1].split('</nav>', 1)[0]
+        rail = page.split('class="focus-rail right"', 1)[1].split('aria-label="Page sections">', 1)[1].split('</nav>', 1)[0]
         for name in ('Report', 'Work', 'Interactions', 'Delivery', 'Skills', 'Files'):
             self.assertIn(f'<span class="rail-name">{name}<', rail)
         report = L.render(self.theme, self.root, self.items, 'report', 'items')
@@ -49,13 +49,37 @@ class LabelingFocusTest(unittest.TestCase):
         self.assertIn(self.items.name, left)
         self.assertIn(self.task.name, left)
         views = page.split('<nav class="section-views" aria-label="Views">', 1)[1].split('</nav>', 1)[0]
-        self.assertEqual(re.findall(r'>(MindMap|Status|Findings)<', views), ['MindMap', 'Status', 'Findings'])
+        self.assertEqual(re.findall(r'>(Overview|Status|Findings|Delivery)<', views),
+                         ['Overview', 'Status', 'Findings', 'Delivery'])
         for section in ('report', 'work'):
-            for view in ('mindmap', 'standing', 'findings'):
+            for view in ('overview', 'standing', 'findings', 'delivery'):
                 with self.subTest(section=section, view=view):
                     html = L.render(self.theme, self.root, self.task.parent, section, view)
-                    self.assertEqual(re.findall(r'<h3 class=fd-h>(?:\d+ · )?([^<]*)', html)[-1], '🙋 Interaction')
-                    self.assertEqual('⚙️ Process' in html or '📊 Results' in html, section == 'work')
+                    self.assertIn('📋 Review Content', html)
+                    self.assertIn('🧭 Around the Work', html)
+                    rail = html.split('class="focus-rail right"', 1)[1].split('</nav>', 1)[0]
+                    self.assertNotIn('section=work', rail)
+                    self.assertNotIn('section=delivery', rail)
+                    for label in ('Studio', 'Interactions', 'Decisions', 'Things to Know', 'Checklist', 'Timeline', 'Skills', 'Files'):
+                        self.assertIn(label, rail)
+                    if view == 'standing':
+                        self.assertIn('View BJTR', html)
+                        self.assertNotIn('🚧 Next steps', html)
+
+    def test_block_and_job_shared_scope_does_not_assign_unlinked_records_to_status(self):
+        from live import work_frame as WF
+        record = dict(page=self.items, title='Unassigned question', state='waiting',
+                      path=self.items / 'runs/r01_demo', view='', topic=None)
+        # a waiting form with no view stands in Status too (261109); an answered one does not, and one naming a view stays there
+        self.assertEqual(WF.shared_scope(self.task.parent, self.root, 'standing', [], [record], [])['interactions'], [record])
+        done = dict(record, state='answered')
+        self.assertEqual(WF.shared_scope(self.task.parent, self.root, 'standing', [], [done], [])['interactions'], [])
+        elsewhere = dict(record, view='findings')
+        self.assertEqual(WF.shared_scope(self.task.parent, self.root, 'standing', [], [elsewhere], [])['interactions'], [])
+        self.assertEqual(WF.shared_scope(self.task.parent, self.root, None, [], [record], [])['interactions'], [record])
+        linked = dict(record, view='standing')
+        self.assertEqual(WF.shared_scope(self.task.parent, self.root, 'standing', [], [linked], [])['interactions'], [linked])
+
 
     def test_left_menu_contains_only_same_level_pages(self):
         other = self.block / 'j02_other'
@@ -100,7 +124,7 @@ class LabelingFocusTest(unittest.TestCase):
         self.assertEqual(L.next_action(job, self.root)[0], score)
 
     def test_an_older_job_link_opens_the_nearest_view(self):
-        for old, (section, view) in (('goal', ('Report', 'MindMap')), ('tasks', ('Work', 'Status')),
+        for old, (section, view) in (('goal', ('Report', 'Overview')), ('tasks', ('Report', 'Status')),
                                      ('reports', ('Report', 'Findings'))):
             with self.subTest(old=old):
                 page = L.render(self.theme, self.root, self.task.parent, old)

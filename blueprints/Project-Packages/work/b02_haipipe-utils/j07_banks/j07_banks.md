@@ -3,6 +3,7 @@
 job-of: b02_haipipe-utils (261009)
 spine: The banks every member resolves against, kept in a SPACE's `_WorkSpace/ExternalStore`: USDA FDC with its branded and China tables, the PA Compendium mirror, the FDA NDC medbank, the insulin PK table.
 close: Each recorded question has a report Page with an answer status, and every answered question names the change that settled it.
+emoji: 📚
 
 ## Topic
 

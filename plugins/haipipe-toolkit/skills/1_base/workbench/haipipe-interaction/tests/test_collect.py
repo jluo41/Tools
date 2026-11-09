@@ -576,7 +576,7 @@ class TopicAddressTest(unittest.TestCase):
         for about, topic in (("b17-s04:x @ y", "b17-s04"), ("b16.j01.t03-s38:x @ y", "b16.j01.t03-s38"),
                              ("Paper-Example-s04:x @ y", "Paper-Example-s04"),
                              ("Insight-Example.j02-s01:x @ y", "Insight-Example.j02-s01"),
-                             ("Prototype-b91-Example-s01:x @ y", "Prototype-b91-Example-s01"),
+                             ("Prototype-Example-s01:x @ y", "Prototype-Example-s01"),
                              ("Design-Example.j01.t02-s03:x @ y", "Design-Example.j01.t02-s03")):
             self.assertEqual(collect.topic_of(about), topic, about)
         self.assertEqual(collect.topic_of("Other-Example-s01:x @ y"), "")

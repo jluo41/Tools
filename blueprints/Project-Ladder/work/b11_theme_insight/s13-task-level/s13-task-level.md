@@ -9,7 +9,7 @@ s13 · Task level
 
 **Delivery type:** ui
 
-**Topic:** one question's Task tab, drawn for K01 in `j03_p2_<d>v2`, its Spaces as full screens on the shared
+**Topic:** one question's Task tab, drawn for K01 in `j03_code-v2_data-v2`, its Spaces as full screens on the shared
 frame (Guide · Block · Job · Task), each with "on disk" under it (JL 261007: "s11, s12, s13 ... for the Block
 level, Job level and task level, to make each of them"). It follows s00 (a Job pins one Prototype version and
 one data version) and s12 one level down (JL 261007: "yes, I think so, that will be better").
@@ -41,7 +41,7 @@ Proposed (261007)
    say and which methods fit; a W Task cites the levels below and is signed (JL 261007: "we just have the insight
    discovery tasks, right?").
 2. No band beside the tab (JL 261007: remove it on every frame page). Its line,
-   `K01 · in j03_p2_<d>v2 · release p2 · <d>v2 · ✅ checked`, opens Description › Question.
+   `K01 · in j03_code-v2_data-v2 · release p2 · <d>v2 · ✅ checked`, opens Description › Question.
 3. Description: Question · Plan · Data. Question and Plan are the release's question.md, read only (the ask,
    DIKW level, why now, signed; the three methods; the needs with work spec, pass rule, Ask covered, agreed).
    Data is this question's n, base rate and power on each partition, before any outcome; a weak cut is refused

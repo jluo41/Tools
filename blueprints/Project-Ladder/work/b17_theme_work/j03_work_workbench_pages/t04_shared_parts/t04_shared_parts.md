@@ -4,7 +4,7 @@ goal: the frame every work page shares, the same at Block, Job and Task (path, t
 close: b17-s04's six pieces are agreed screen drafts in its `delivery/ui/`, and the code change is named for its owner (design_b02_workbench)
 task-type: ui
 
-Part of j03 · The work pages, level by level. It makes b17-s04's delivery
+Part of j03 · Work workbench pages. It makes b17-s04's delivery
 (`../../s04-workbench-page-structure/delivery/render.yaml`: frame, interactions, delivery, related, timeline, files),
 the column every level shares beside the nine cells of t01 to t03; it holds no sNN of its own. Its Run, in `runs/`:
 

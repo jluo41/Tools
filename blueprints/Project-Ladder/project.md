@@ -19,7 +19,7 @@ The theme examples, each the placeholder its theme Block embeds as Block UI · J
 
 - `paper/Paper-Example`: a paper Board, its versions, evidence and submission Jobs, and Sections.
 - `labeling/b02_labeling_walkthrough`: a labeling Block, one dataset × label Job and its step Tasks.
-- `insight/Insight-Example` with `work/Prototype-b91-Example`: an insight Board (one dataset, two data versions) and the questions it runs.
+- `insight/Insight-Example` with `insight/Prototype-Example`: an insight Board (one dataset, two data versions) and the questions it runs.
 - `design/Design-Example`: a design Block, three Jobs (goal × method × inputs) and their idea, design and review Tasks.
 - `discovery/b01_example_prior_work`: a discovery Block, an inquiry Job and its Paper Runs.
 - `cowork/b01_example_data_request`: a cowork Block, its people and three lines of work.

@@ -42,10 +42,10 @@ What the drawing holds
    `insights/bNN_<topic>/` (one dataset, its versions, the answers); designs and discoveries optional;
    the data versions outside the Project.
 2. The two Blocks, each a box, a definition and its tree. Prototype Block: one Job per Prototype
-   version (`j01_p1`, `j02_p2`), frozen when closed; a version Job holds `release.yaml` (every live
+   version (`j01_code-v1`, `j02_code-v2`), frozen when closed; a version Job holds `release.yaml` (every live
    question, pointing to its Task here or in an earlier version) and only new or changed Tasks;
    `proposals/` is the backlog. Insight Board: one Job per pair, Prototype version × data version
-   (`j03_p2_<d>v2`); its Tasks are the questions on that pair, its Runs one per partition. Arrows: the
+   (`j03_code-v2_data-v2`); its Tasks are the questions on that pair, its Runs one per partition. Arrows: the
    Board's Job uses a version by path and hash, never a copy; the Board sends proposals back.
 3. Two clocks and the chain of Jobs; one clock per Job, so a change in an answer has one cause.
 4. Where a new release comes from: six triggers (a level answered, a check failed, a weak answer, new

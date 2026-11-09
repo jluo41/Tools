@@ -1,5 +1,6 @@
 # t02_methods · Methods
 
+use-case: Manuscript section
 task-type: draft
 page-type: section
 folder-kind: section

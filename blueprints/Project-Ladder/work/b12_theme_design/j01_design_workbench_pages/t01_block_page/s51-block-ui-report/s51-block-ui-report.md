@@ -52,3 +52,7 @@ Open
 4. Which letter to settle next.
 
 (write here, or mark the drawing in red)
+
+## Current Block frame · 2026-11-08
+
+The Design Board now combines content and actions in Report, under Review Content followed by the shared Around the Work sections. Summary, Goals, Jobs, Rounds, Methods and MindMap remain the business views. The previous Report/Work split above is historical for the Block; Job and Task pages retain their specialist workflow. The current Block specification is `blueprints/Project-Ladder/work/b12_theme_design/ui/structure.md`, with the section matrix in `ui/block-views.md` and routed examples in `ui/view-guide.json`. Historical drawings have not been redrawn. Human approval of release is unchanged.

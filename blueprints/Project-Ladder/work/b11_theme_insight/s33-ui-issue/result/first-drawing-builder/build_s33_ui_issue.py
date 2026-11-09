@@ -212,7 +212,7 @@ def main():
     width = sum(w for _, w, _ in COLS)
     f1 = el("frame", 0, 0, width + 80, 100, name="1 · Insight UI issues, worst first")
     text(40, 30, "s33 · Insight UI issues · the live workbench, 261008", 34, f1["id"])
-    text(40, 80, "Board Insight-SMSR2v1 · its Job j01_p1_SMSR2v1 · Tasks K01, D01, W01 · the Prototype and its Job "
+    text(40, 80, "Board Insight-SMSR2v1 · its Job j01_code-v1_data-v1 · Tasks K01, D01, W01 · the Prototype and its Job "
                  "and Tasks; every Space and view, shot into shots/", 18, f1["id"])
     for i, (date, what) in enumerate(CHANGES):          # the title frame's list of changes
         els.append(canvas.change_note(40, 112 + i * 26, what, date, f1["id"]))

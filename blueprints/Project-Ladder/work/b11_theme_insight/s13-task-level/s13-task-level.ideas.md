@@ -3,7 +3,7 @@
 The open ideas of this topic, one per slide: written from its face as a quick scratch (261031); a person edits them here, and its pictures come when asked.
 
 ## Task level
-- one question's Task tab, drawn for K01 in j03_p2_<d>v2, its Spaces as full screens on the shared…
+- one question's Task tab, drawn for K01 in j03_code-v2_data-v2, its Spaces as full screens on the shared…
 - It follows s00 (a Job pins one Prototype version and one data version) and s12 one level down
 
 ## What it hands over

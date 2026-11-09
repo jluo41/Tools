@@ -2,6 +2,7 @@
 
 goal: the paper's three pages on the focus page, each in its three sections: Board, version and Section × Report, Work and Studio
 close: all nine sNN are agreed and each names the code change for its owner (base page, paper workbench, draft Task page)
+emoji: 📄
 answers: Q01
 
 ## Topic

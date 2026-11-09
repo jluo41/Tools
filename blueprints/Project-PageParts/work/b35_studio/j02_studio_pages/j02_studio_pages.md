@@ -2,6 +2,7 @@
 
 goal: build what b35-s02 hands over: the Studio inside a page, an sNN's link landing on its card (s02-D05), the Studio card, the pop-outs
 close: every Task's Runs are done and b35-s02 is agreed
+emoji: 🎨
 
 ## Topic
 

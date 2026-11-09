@@ -1,0 +1,16 @@
+run: run-triage-proposals-code-v2
+kind: soft
+type: triage-proposals
+scope: Tools/blueprints/Project-Ladder/insight/Prototype-Example
+target: code-v2
+ticket: run-triage-proposals-p2.md
+skill: haipipe-insight-question
+agent: haipipe-insight-agent
+signs:
+- none
+status: done
+passes:
+- p01-1106
+writes:
+- proposals/gap-over-the-window.md
+feeds: []

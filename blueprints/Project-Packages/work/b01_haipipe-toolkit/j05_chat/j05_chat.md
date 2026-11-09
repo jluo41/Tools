@@ -3,6 +3,7 @@
 job-of: b01_haipipe-toolkit (new 261009)
 spine: What we do about chat: the old in-page chat and terminal (kept, no longer served), and how a workbench Run reaches Claude Code working in the project folder.
 close: Each recorded question has a report Page with an answer status, and every answered question names the server, skill or MCP change that settled it.
+emoji: 💬
 
 ## Topic
 

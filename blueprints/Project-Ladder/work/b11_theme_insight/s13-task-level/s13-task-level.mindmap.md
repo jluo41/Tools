@@ -15,7 +15,7 @@ built: from-topic .
   - ui <!-- @delivery-type/0 #636117 -->
 - Topic <!-- @topic #7e13bd -->
   - one question's Task tab, drawn for K01 … <!-- @topic/0 #0abb2f -->
-    one question's Task tab, drawn for K01 in `j03_p2_<d>v2`, its Spaces as full screens on the shared frame (Guide · Block · Job · Task), each with "on disk" under it (JL 261007: "s11, s12, s13 ... for the Block level, Job level and task level, to make each of them").
+    one question's Task tab, drawn for K01 in `j03_code-v2_data-v2`, its Spaces as full screens on the shared frame (Guide · Block · Job · Task), each with "on disk" under it (JL 261007: "s11, s12, s13 ... for the Block level, Job level and task level, to make each of them").
   - It follows s00 (a Job pins one … <!-- @topic/1 #f39e14 -->
     It follows s00 (a Job pins one Prototype version and one data version) and s12 one level down (JL 261007: "yes, I think so, that will be better").
 - Source <!-- @source #6da13a -->
@@ -35,8 +35,8 @@ built: from-topic .
     say and which methods fit; a W Task cites the levels below and is signed (JL 261007: "we just have the insight discovery tasks, right?").
   - No band beside the tab (JL 261007: … <!-- @proposed-261007/2 #a99968 -->
     No band beside the tab (JL 261007: remove it on every frame page). Its line,
-  - `K01 · in j03_p2_<d>v2 · release p2 … <!-- @proposed-261007/3 #df936a -->
-    `K01 · in j03_p2_<d>v2 · release p2 · <d>v2 · ✅ checked`, opens Description › Question.
+  - `K01 · in j03_code-v2_data-v2 · release p2 … <!-- @proposed-261007/3 #df936a -->
+    `K01 · in j03_code-v2_data-v2 · release p2 · <d>v2 · ✅ checked`, opens Description › Question.
   - Description: Question · Plan · Data <!-- @proposed-261007/4 #620531 -->
     Description: Question · Plan · Data. Question and Plan are the release's question.md, read only (the ask,
   - DIKW level, why now, signed; the three … <!-- @proposed-261007/5 #1764a2 -->

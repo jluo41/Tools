@@ -1,0 +1,10 @@
+One Work Job layout; CoWork and Discovery add their own content. Sections depend on source records.
+
+
+| 🗂️ Category | 🧩 Job Type | 💼 Use Cases | 🧭 Overview | 📊 Status | 💡 Findings | 📦 Delivery |
+| --- | --- | --- | --- | --- | --- | --- |
+| 🛠️ Work | 🧩 Job | 🗃️ Data preparation<br>🧪 Model training<br>📈 Statistical analysis<br>💻 Software development<br>⚖️ Model comparison<br>🎨 Theme development | 🎯 Goal<br>📋 Requirements<br>🧠 MindMap | 🧱 Tasks<br>🧩 View BJTR<br>🔗 Dependencies | 📌 Headlines<br>🔢 Values<br>🧠 Maps | 📦 Deliverables<br>✅ Acceptance<br>📖 Usage |
+| 🤝 CoWork | 🤝 Collaboration Job | 🔑 Data access request<br>📝 IRB<br>🤝 Kickoff coordination | 🎯 Goal<br>📋 Requirements<br>🧠 MindMap | 🙋 Waiting on us<br>⏳ Waiting on them<br>🟡 Open<br>⏸️ On hold<br>🗓️ Timeline<br>📝 Steps<br>🧱 Tasks<br>🧩 View BJTR<br>🔗 Dependencies | 📌 Headlines<br>📌 Meeting headlines<br>🔢 Values<br>🧠 Maps<br>👥 People<br>✉️ Messages | 📦 Deliverables<br>✅ Acceptance<br>📖 Usage |
+| 🤝 CoWork | 👥 People | 👥 Team directory<br>🧭 Role lookup<br>📇 Contact reference | 🎯 Goal<br>📋 Requirements<br>🧠 MindMap | 📇 Who to ask, by role<br>🧩 View BJTR<br>🔗 Dependencies | 👥 People | 📦 Deliverables<br>✅ Acceptance<br>📖 Usage |
+| 🔎 Discovery | 🔎 Inquiry Job | 📚 Literature review<br>🧾 Evidence synthesis<br>🔎 Prior-work investigation | 🎯 Goal<br>📋 Requirements<br>🧠 MindMap | 🧱 Tasks<br>🧩 View BJTR<br>🔗 Dependencies | 📌 Headlines<br>🔢 Values<br>🧠 Maps<br>📚 Papers<br>📖 Evidence Bib<br>🧾 Synthesis | 📦 Deliverables<br>✅ Acceptance<br>📖 Usage |
+| All | 🧭 Around the Work | — | 🎨 Studio<br>🙋 Interactions<br>⚖️ Decisions<br>📚 Things to Know<br>📝 Checklist<br>🕒 Timeline<br>🧰 Skills<br>📁 Files | 🎨 Studio<br>🙋 Interactions<br>⚖️ Decisions<br>📚 Things to Know<br>📝 Checklist<br>🕒 Timeline<br>🧰 Skills<br>📁 Files | 🎨 Studio<br>🙋 Interactions<br>⚖️ Decisions<br>📚 Things to Know<br>📝 Checklist<br>🕒 Timeline<br>🧰 Skills<br>📁 Files | 🎨 Studio<br>🙋 Interactions<br>⚖️ Decisions<br>📚 Things to Know<br>📝 Checklist<br>🕒 Timeline<br>🧰 Skills<br>📁 Files |

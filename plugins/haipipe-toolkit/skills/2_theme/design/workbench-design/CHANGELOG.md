@@ -1,5 +1,10 @@
 ## 0.18.0 · 2026-11-01 · The design pages on the focus page, in the j01 letters (b12 j01)
 
+- 2026-11-08: the ladder Block merges Report and Work with the common Review Content / Around the Work frame.
+  Explicit View/Topic scope applies to all eight supporting sections. The blueprint adds the current section
+  matrix, source and layout requirements, skills and routed examples. Job/Task and release contracts stay intact;
+  this is recorded under the existing version.
+
 - JL 261101: "I think you need to update the UI as well to make things to work". New
   `servers/workbench-design/design_focus.py`: the Block (Summary · Goals · Jobs · Rounds · Methods), a Job (Setup · Ideas ·
   Designs · Ranking · Release) and each Task type's steps, Report the Results only, Work ⚙️ Process over 📊 Results, with

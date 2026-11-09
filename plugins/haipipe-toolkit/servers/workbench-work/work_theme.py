@@ -77,6 +77,15 @@ RUN_NAMES = {"Plan a Task": "run-plan-<tNN>", "Build the Task": "run-build-<tNN>
              "Check a Task": "run-check-<tNN>", "Write the report": "run-write-<tNN>",
              "Review the Task code": "run-review-code-<tNN>"}
 
+def claims(block) -> bool:
+    """A Prototype Block (`board-kind: prototype`, insight's questions and their scripts) wherever it sits: since JL
+    261109 it lives in insight/ beside the Board it serves, and still opens on the work page with insight's
+    prototype_ parts (focus_page.page_module)."""
+    face_md = Path(block) / "board.md"
+    return face_md.is_file() and bool(re.search(r"(?m)^board-kind:\s*prototype\s*$",
+                                                 face_md.read_text(encoding="utf-8", errors="ignore")[:2000]))
+
+
 # the Report's suggested groups, the kinds of question a work Block keeps asking (b10 s05-D07)
-THEME = Theme(name="work", label="Work", icon="🧪", guide="work", spaces=spaces, run_names=RUN_NAMES,
+THEME = Theme(name="work", label="Work", icon="🧪", guide="work", spaces=spaces, run_names=RUN_NAMES, claims=claims,
               report_groups=("Data", "Pilot", "Evaluation"))

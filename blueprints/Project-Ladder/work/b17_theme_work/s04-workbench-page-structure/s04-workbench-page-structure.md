@@ -82,6 +82,41 @@ s04-D10 · The frame's order, top to bottom: path, title-&-section, view-button-
 
 s04-D11 · Left-rail changes page, right-rail section: the left-rail lists the siblings with the open page's children under it, a level's sNN first; both rails are pale short lines until hovered (JL 261028: "I don't want to make them too obvious"; JL 261030: "you should show the sNN as well, they are in the same level now"; built in `focus_page.rail_kids`). It settles the old Open 2.
 
+s04-D12 · Two groups under every view: 📋 Review Content holds the view's own numbered sections; Around the Work holds
+Studio, Interactions, Decisions, Things to Know, Checklist, Timeline, Skills and Files, unnumbered, the same under every view
+(JL 261108: "View content should keep it as it is, and Shared should be the Around the work"; then, renaming the top
+group: "Change the Results to the things like "Review Content"").
+
+s04-D13 · Interactions and Decisions are two sections, each with its topics as left tabs: Interactions in the standard
+look, each form a topic with its questions under it and the form on the right, the page's whole inbox under every
+view; Decisions one tab per Studio topic (JL 261108: "maybe we still seperate the decision, and for both interaction and
+decisions, we have the left tab to be the topics").
+
+s04-D14 · Decisions read one row per sNN-DNN: its number, its first clause, and a tag only when its own words carry one
+(Replaced, Waiting, Proposed); the full text opens under the row, and no row is called confirmed from a quote (JL
+261108: "this is not readable, could you redo it?").
+
+s04-D15 · A view named like a Studio group (Block UI, Job UI, Task UI) shows only that group's topics in Studio and
+Decisions; every other view shows all of them. Proposed by the agent on JL's question (JL 261108: "is this for all the
+studio, or just the studio related to this view?").
+
+s04-D16 · Checklist's icon is 📝, as CoWork's Steps: ☑️ draws as a grey box (JL 261108: "could you have a better icon
+for this?"; the agent picked 📝, since ✅ is Acceptance's and 📋 Requirements').
+
+s04-D17 · Skills reads each skill in place: its SKILL.md under its prompt, and a button per file its folder holds,
+SKILL.md first, caches left out; a frame loads only when it can be seen (JL 261108: "how could I preview all the
+skills' content?"; "we also have other file, how do we show them as well?").
+
+s04-D18 · Status shows the Jobs and Tasks first, in the 261105 look: a band per jNN (its `bands:` name, else jNN), each
+Job a row with its emoji, its jNN, its name and how far ("partly · 7 Tasks · 14%"), opening to its Tasks and Runs;
+Topics follow only when they group the work differently from the Jobs. One thing shows once, in one look, under one
+name (JL 261108: "what I want is first showing the jobs and tasks"; "we want the style like this"; "how could we make
+them to be consistent?").
+
+s04-D19 · A Job's name is its folder's words (j01_work_ladder_contract reads "Work ladder contract"), and its emoji is
+its face's `emoji:` line (JL 261108: "we want to have the job name to be the same to the job folder name"; "why not
+emoji for these job?").
+
 Previously stated requirements, recorded here on 2026-10-28:
 
 1. Show the path first, then introduce the current Block or location.

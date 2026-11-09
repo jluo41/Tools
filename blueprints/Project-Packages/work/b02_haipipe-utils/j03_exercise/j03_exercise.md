@@ -3,6 +3,7 @@
 job-of: b02_haipipe-utils (261009)
 spine: `skills/describe-exercise` (0.5.0): a logged activity (free text or vendor code) to a PA Compendium MET, and kcal when minutes and body mass are known.
 close: Each recorded question has a report Page with an answer status, and every answered question names the change that settled it.
+emoji: 🏃
 
 ## Topic
 

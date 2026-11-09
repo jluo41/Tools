@@ -1,7 +1,7 @@
 """question_map.py <Insight Block | Prototype | release> [--out <file>] · draw the question map.
 
     .venv/bin/python Tools/plugins/haipipe-toolkit/skills/2_theme/insight/haipipe-insight/ref/question_map.py \\
-        <tasks/bNN_<topic>_dikw | work/Prototype-bNN-<Topic> | work/Prototype-bNN-<Topic>/jNN_pN_<slug>> [--out <file>]
+        <tasks/bNN_<topic>_dikw | insight/Prototype-<Topic> | insight/Prototype-<Topic>/jNN_code-vN_<slug>> [--out <file>]
 
 An older Insight Block (one Job per DIKW level) writes `<Block>/studio/question-map.excalidraw` (block-contract.md §
 The Block). On the ladder (ref/insight-ladder.md) it reads a release's questions from its release.yaml, a kept
@@ -44,7 +44,7 @@ def release_of(src: Path) -> Path | None:
         return src
     face = src / "board.md"
     if face.is_file() and "board-kind: prototype" in face.read_text(encoding="utf-8"):
-        rels = sorted((p for p in src.glob("j*_p*") if (p / "release.yaml").is_file()),
+        rels = sorted((p for p in src.glob("j*_*") if (p / "release.yaml").is_file()),
                       key=lambda p: int(p.name.split("_")[0][1:]))
         return rels[-1] if rels else None
     return None

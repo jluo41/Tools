@@ -1,3 +1,41 @@
+## 1.34.0 · 2026-11-09 · L5 asks for the Story arc and the Section rows
+
+- JL 261109: "what is the story arc of it"; "not just the claims ... the narratives, the arc, how to make it smooth".
+  L5 also asks for §8's `#### Story arc` and a per-Section narrative row that says something (§8, else a writing
+  version's `## Narrative`, newest first), the two things Story by Section shows above the claims.
+- `version` writes the `## Narrative` table header; `task` adds the new Section's placeholder row (`narrative_row`).
+
+## 1.33.0 · 2026-11-09 · L5 checks the Story's §8 Section Narrative
+
+- JL 261109: "where is the story? how these displays can support the story here?". Report › Story and › Displays read
+  Story by Section from the story-current topic's `### 8 · Section Narrative`; a 261102 update had moved it into the
+  version's `## Narrative`, so both views showed nothing and audit stayed green. L5 now lists it as missing (🙋).
+- workbench-paper `board_results._narrative`: each claim chip names the display that carries it (the claims table's
+  `displays` cell), so the Displays view shows which figure supports which claim in which Section.
+- Story by Section is side tabs (JL 261109: "for this we should have the left tab and right content"): each Section on
+  the left with its claim count, its claims on the right with the question each answers and the display it is shown in.
+
+## 1.32.0 · 2026-11-09 · L6 covers the Board and every Task
+
+- JL 261109: "there are no page type and use case". L6 is "Pages say their use": `board.md`, each Job face and each
+  Task face. The Board's use comes from `board-kind:`, a draft Task's from `section_kind:`/`responds-to:`, a display
+  Task's from its declared `type:`/`label:`, an evidence or submission Task's from its Job and name.
+- Every scaffold stamps the faces it makes (`Run.apply` → `paper_check.stamp_use_case`); `board` writes the Board's.
+- Paper-Example updated: the Board and its 24 Task faces now say their use.
+
+## 1.31.0 · 2026-11-09 · L6: every Job says its use
+
+- `paper_check.py` layout line L6 "Jobs say their use": ⬜ when a Job face has no `use-case:` line, 🙋 when no word fits.
+- `paper_ladder.py update` writes the Job UI matrix's word under the H1 (a version: Feedback revision with
+  `responds-to:`, else Manuscript drafting; evidence and submission Jobs by kind; any other Job 🙋, no guess);
+  `update --rollback` takes it back out.
+- `version`, `next`, `evidence` and `submission` write the line on every new Job, by the same rule.
+
+## 1.30.0 · 2026-11-08 · Paper types and shared content ownership
+
+- Grant is a type within Paper; its specific runtime remains proposed.
+- Align shared Section ownership and placement with the Paper renderer and the design matrix.
+
 ## 1.29.2 · 2026-11-06 · the portal walk's card says it is a starter
 
 - `portal_fill.py` scaffold: the walk Run's card carries `status: starter, not walked`, so its Run page and the Task's

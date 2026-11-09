@@ -69,7 +69,7 @@ SLIDES = [
                           "versions <d>v1 → <d>v2 build up",
                           "a new one needs no release"]),
              ("Job", ["one release × one data version",
-                      "j03_p2_<d>v2 in insights/bNN_<topic>/",
+                      "j03_code-v2_data-v2 in insights/bNN_<topic>/",
                       "frozen when closed; a change is a new Job"])])),
          src="s00", lead="laid on a grid",
          notes="This is the core move. Everything after it follows from pinning the two clocks."),
@@ -92,7 +92,7 @@ SLIDES = [
          bullets=["Every theme has these four levels; what each holds is insight's own."],
          picture=("ladder", dict(rows=[
              ("Board", "insights/bNN_<topic>/", "one dataset, its versions, the Map, and reports across Jobs"),
-             ("Job", "j03_p2_<d>v2/", "one release × one data version; its questions grouped by D · I · K · W"),
+             ("Job", "j03_code-v2_data-v2/", "one release × one data version; its questions grouped by D · I · K · W"),
              ("Task", "t04_K01_<q>/", "one question on this pair, at its DIKW level, with its page"),
              ("Run", "runs/r02_<A>/ · run-<type>-<target>/",
               "hard: one partition's result/ · soft: write, check, compare, propose")])),

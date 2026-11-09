@@ -4,11 +4,12 @@ Read this reference for an actual migration, workflow handoff, Section
 binding, or compile-order edit. The eight Content divisions and their semantic
 meaning live only in `../SKILL.md`; routers resolve that contract directly.
 
-On the ladder (b16 Q04) a telling feeds each version: its seed and roadmaps stay in
-its studio topic, its research questions are Board Questions with reports, and §8
-(the Section rows and the compile order below) is written in each version face's
-`## Narrative`. Where this file says "§8" or "the Story's order", read the version
-face on a Board on the ladder, and the Story Page on an older Board.
+On the ladder a telling feeds each version: its seed, roadmaps and §8 Section
+Narrative stay on its Story topic, and its research questions are Board Questions
+with reports. §8 owns the shared argument and intended reader order. Each writing
+version's `## Narrative` binds it to concrete Section rows and compile order for
+that send. Story and Displays read the same Story topic; they do not create a
+second argument source. Older Boards retain their existing Story Page bindings.
 
 ## Page and workflow records
 
@@ -45,9 +46,11 @@ generated table into the Page's Outline.
 
 A planned row can exist before its Section Page. Once instantiated, retain its
 exact `section-id`, target/category, Story version and `story-row:` binding.
-Resolve by semantic row id within §8; do not assume the subsection is §8.1.
-Current Section bindings use `story-row:` anchors; update an anchor only as
-part of the affected Page's authorized revision.
+Resolve the shared argument by semantic row id within §8; do not assume the
+subsection is §8.1. Current ladder Section bindings use `story-row:` anchors to
+the writing version's concrete rows. Preserve these anchors and reconcile those
+rows with §8; update an anchor only as part of the affected Page's authorized
+revision. This distinction does not migrate or rename existing records.
 
 Section-local paragraph detail may elaborate the Story's ordered moves but
 cannot change its central claim, evidential limit or reader transition. A
@@ -70,8 +73,10 @@ appendix:
 ```
 
 These ids illustrate the format only; emit only the paper's actual Section ids.
-The block is derived from the selected §8 rows. Before Section files exist,
-keep their intended reader order in §8 without inventing compilable paths.
+On the ladder the block lives in the writing version's `## Narrative` and is
+derived from its concrete Section rows, aligned with the selected Story's §8.
+Before Section files exist, keep their intended reader order in §8 without
+inventing compilable paths.
 Before assembly, require an unambiguous selected target and real Section ids
 consistent with `delivery/paper-build.toml`. Use one active marker block;
 additional candidate Section orders stay in §8 until a target is selected or the

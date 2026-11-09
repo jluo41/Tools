@@ -1,3 +1,25 @@
+## 0.27.0 · 2026-11-09 · each Section tells its part of the arc
+
+- JL 261109: "this is not just the claims, it is also about the narratives, the arc, how to make it smooth". Story by
+  Section's Section tabs read the per-Section rows (§8, else the version's `## Narrative`) and the Section faces'
+  transitions; claims come last. Paper-Example's j11 carries example rows.
+
+## 0.26.0 · 2026-11-09 · §8 opens with the Story arc
+
+- JL 261109: "at the top of the tab, to describe the narrative of this paper, what is the story arc of it". §8 Section
+  Narrative opens with `#### Story arc`, one move per line in reader order (puzzle, gap, what we do, what we find, where
+  it stops, so what), each naming its claims. The workbench shows it as the first tab of Story by Section.
+- Paper-Example's Story carries one.
+
+## 0.25.2 · 2026-11-09 · Story by Section is the last section of Displays, the same one Story shows
+
+- JL 261109: "this Story by Section should be at the bottom"; "what does 'Where each display stands' mean? maybe we don't need to use it". Each display's state is its tab's; Board Displays, a version's Display-Main/Appendix and the display Job's Displays drop the second list.
+
+## 0.25.1 · 2026-11-08 · Paper types and shared content ownership
+
+- Grant is a type within Paper; its specific runtime remains proposed.
+- Align shared Section ownership and placement with the Paper renderer and the design matrix.
+
 ## 0.25.0 · 2026-11-05 · Identity names the theory
 
 - JL 261105: "we should have the section named theory as well"; "espeically for the IS". §1 adds `**Theory**:`, required for an IS journal.

@@ -3,6 +3,7 @@
 job-of: b03_inlab-human (261009)
 spine: STUDY mode: `/inlab-human` (0.2.0) with `-bundle`, `-review`, `-report` (0.1.0), the bundle and feedback contracts in `skills/ref/`, and the narrator agent.
 close: Each recorded question has a report Page with an answer status, and every answered question names the change that settled it.
+emoji: 🔬
 
 ## Topic
 

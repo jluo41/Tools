@@ -1,0 +1,18 @@
+run: run-set-cuts-code-v1
+kind: soft
+type: set-cuts
+scope: Tools/blueprints/Project-Ladder/insight/Prototype-Example/j01_code-v1_example-questions
+target: code-v1
+ticket: run-set-cuts-p1.md
+skill: haipipe-insight
+agent: haipipe-insight-agent
+signs:
+- a person (the cuts)
+status: done
+passes:
+- p01-1106
+- p02-1106
+writes:
+- partitions.md
+- thresholds.yaml
+feeds: []

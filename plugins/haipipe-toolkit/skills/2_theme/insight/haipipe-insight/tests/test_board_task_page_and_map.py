@@ -56,10 +56,10 @@ COMPUTE = {"kind": "compute", "what": "<what>", "pass": "<pass>", "cut": "the ce
 def board(tmp_path):
     (tmp_path / "env.sh").write_text("# the SPACE root of the test\n")
     p = tmp_path / "Project-Demo"
-    proto, board = p / "work" / "Prototype-b01-Demo", p / "insight" / "Insight-Demo"
+    proto, board = p / "insight" / "Prototype-Demo", p / "insight" / "Insight-Demo"
     L("prototype", proto, "--serves", "insight/Insight-Demo")
     L("version", proto, "--slug", "first")
-    v = proto / "j01_p1_first"
+    v = proto / "j01_code-v1_first"
     L("question", v, "D01", "counts")
     L("question", v, "X01", "the-line")
     d01, x01 = v / "t01_D01_counts", v / "t02_X01_the-line"
@@ -76,13 +76,13 @@ def board(tmp_path):
     (v / "partitions.md").write_text("---\npartitions:\n- {name: full, where: [], why: every row}\n"
                                      "- {name: small, where: [{column: arm, eq: A}], why: <why>}\n---\n")
     L("sign", v, "--date", "261106")
-    data = p / "insight" / "Insight-Demo-data" / "v1"
+    data = p / "insight" / "Insight-Demo-data" / "data-v1"
     data.mkdir(parents=True)
     pd.DataFrame({"arm": ["A", "B"] * 30}).to_parquet(data / "demo.parquet", index=False)
-    L("board", board, "--dataset", "Demo", "--prototype", "work/Prototype-b01-Demo")
-    L("data", board, "v1", "--data-folder", data.relative_to(tmp_path).as_posix() + "/")
-    L("job", board, "--release", "p1", "--data", "v1")
-    job = board / "j01_prototype-p1-first_data-Demov1"
+    L("board", board, "--dataset", "Demo", "--prototype", "insight/Prototype-Demo")
+    L("data", board, "data-v1", "--data-folder", data.relative_to(tmp_path).as_posix() + "/")
+    L("job", board, "--release", "code-v1", "--data", "data-v1")
+    job = board / "j01_code-v1-first_data-v1"
     assert RJ.run(job / "t01_D01_counts", "r01_full")["status"] == "ok"
     return proto, board, job
 

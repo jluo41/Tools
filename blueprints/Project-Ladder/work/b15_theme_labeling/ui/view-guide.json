@@ -1,0 +1,363 @@
+{
+  "proposed": false,
+  "sections": {
+    "🎯 Goal": {
+      "what": "Read the authored purpose and completion boundary. Source: Block board.md or Job face goal/spine.",
+      "layout": "Paragraph inside a numbered disclosure",
+      "example": "The walkthrough Job aims to run two loops on 30 synthetic chats.\nSkills: haipipe-block, haipipe-job."
+    },
+    "📋 Requirements": {
+      "what": "Read recorded requirements and questions; absence does not imply a requirement has passed. Source: face Requirements section and Questions register.",
+      "layout": "Requirements list and question records",
+      "example": "Inspect the walkthrough’s recorded questions; do not invent missing acceptance criteria.\nSkills: haipipe-report, haipipe-labeling."
+    },
+    "🧠 MindMap": {
+      "what": "Inspect Topics and the actual work hierarchy. Source: Topics, Questions and real child folders.",
+      "layout": "Left tabs: Topics / Work Structure; right: diagram",
+      "example": "Expand the walkthrough Job into Items, Meaning and Expression Tasks.\nSkills: haipipe-mindmap, haipipe-studio."
+    },
+    "📊 Job progress": {
+      "what": "Read each Job’s actual Task completion state. Band headings come from the Block. Source: Job faces and Task/Run state through status_now_html.",
+      "layout": "Numbered Job bands → expandable Job / Task rows",
+      "example": "The walkthrough Job has a signed expression release while its item recipe still waits for a person.\nSkills: haipipe-job, haipipe-task, haipipe-run."
+    },
+    "📋 Tasks": {
+      "what": "Read each Task’s newest recorded state and result headline. Source: child Task faces and Run records.",
+      "layout": "Task rows inside a numbered disclosure",
+      "example": "Items, Meaning and Expression retain independent progress; a release does not mark every Task done.\nSkills: haipipe-task, haipipe-run."
+    },
+    "🧩 View BJTR": {
+      "what": "Inspect the real Block → Job → Task → Run hierarchy by Topic. Source: Topic work links and existing child folders.",
+      "layout": "Left Topic tabs · right expandable tree → record pop-out",
+      "example": "Choose a Topic and open an associated Run without allocating a new Run.\nSkills: haipipe-studio, haipipe-job, haipipe-task, haipipe-run."
+    },
+    "🔗 Dependencies": {
+      "what": "Read only authored dependency information; this section is conditional. Source: face Dependencies section.",
+      "layout": "Markdown inside a numbered disclosure",
+      "example": "The walkthrough has no Dependencies section, so this bar is absent; opening Status shows the actual state.\nSkills: haipipe-job, haipipe-task."
+    },
+    "🏷 Final labels": {
+      "what": "Inspect the newest expression release result. Labels may be unsigned; the displayed signature state is authoritative. Source: Expression release Run result/final_labels.jsonl and its signature.",
+      "layout": "Numbered disclosure → label table and case details",
+      "example": "The synthetic walkthrough exposes e02 labels. They demonstrate UI behavior, not a production-quality claim.\nSkills: haipipe-labeling-expression, haipipe-labeling-final-labels."
+    },
+    "🧠 The rules they follow": {
+      "what": "Read the approved meaning version associated with the Job. Omit this section when no approved version exists. Source: meaning_versions.approved_meaning and the Meaning Task results.",
+      "layout": "Numbered disclosure → guideline mind map",
+      "example": "Inspect the walkthrough’s approved m02 rules beside its labels.\nSkills: haipipe-labeling-interaction, haipipe-labeling-guideline."
+    },
+    "📦 Signed releases": {
+      "what": "List only expression release Runs that are done and have a release signature. Actual bars are titled Final labels, release … . Source: release Run result/signed.yaml, final_labels files and runtime state.",
+      "layout": "One numbered disclosure per release → labels, file, rules, signed date and Run pop-out",
+      "example": "Inspect e02’s signed release and open its final-label file; an unfinished or unsigned release must be excluded.\nSkills: haipipe-labeling-expression, haipipe-labeling-final-labels."
+    },
+    "📁 The Block's delivery/": {
+      "what": "Inspect existing handoff files when the delivery reader returns content. This section is conditional. Source: existing delivery/ artifacts.",
+      "layout": "Numbered disclosure → existing delivery reader",
+      "example": "The walkthrough’s release files remain in their owning Run; no delivery directory is fabricated.\nSkills: haipipe-delivery, haipipe-labeling-handoff."
+    },
+    "🎨 Studio": {
+      "what": "Read Topics explicitly assigned to this View or linked by its Topic tags. Source: Topic faces and drawing files.",
+      "layout": "Left Topic tabs · right drawing and content",
+      "example": "Open the matching walkthrough View. Unassigned records are reachable from its right rail; an empty scoped section is valid.\nSkills: haipipe-studio."
+    },
+    "🙋 Interactions": {
+      "what": "Read and answer only in-scope questions; the right rail includes unassigned questions. Source: interaction Run cards, forms and answers.",
+      "layout": "Left Topic/question tabs · right existing form or record",
+      "example": "Open the matching walkthrough View. Unassigned records are reachable from its right rail; an empty scoped section is valid.\nSkills: haipipe-interaction."
+    },
+    "⚖️ Decisions": {
+      "what": "Read recorded choices and reasons without inferring approval from a completed Run. Source: selected face or Topic Decisions sections.",
+      "layout": "Left record tabs · right decision text",
+      "example": "Open the matching walkthrough View. Unassigned records are reachable from its right rail; an empty scoped section is valid.\nSkills: haipipe-studio."
+    },
+    "📚 Things to Know": {
+      "what": "Read scoped background and constraints. Source: selected Things to Know sections and to-know interaction records.",
+      "layout": "Left record tabs · right notes",
+      "example": "Open the matching walkthrough View. Unassigned records are reachable from its right rail; an empty scoped section is valid.\nSkills: haipipe-interaction."
+    },
+    "📝 Checklist": {
+      "what": "Read authored checks. Four review states and evidence fields remain a proposal, not an implemented API. Source: selected face or Topic Checklist sections.",
+      "layout": "Source tabs → Markdown checklist",
+      "example": "Open the matching walkthrough View. Unassigned records are reachable from its right rail; an empty scoped section is valid.\nSkills: haipipe-ui."
+    },
+    "🕒 Timeline": {
+      "what": "Read dated events belonging to the current selection. Source: selected Run history, interactions and decisions.",
+      "layout": "Chronological records with source links",
+      "example": "Open the matching walkthrough View. Unassigned records are reachable from its right rail; an empty scoped section is valid.\nSkills: haipipe-run, haipipe-interaction."
+    },
+    "🧰 Skills": {
+      "what": "Inspect relevant skills for this View and its selected work. Source: shared view skill mapping, selected Task kinds and Run skill fields.",
+      "layout": "Left skill tabs · right skill details",
+      "example": "Open the matching walkthrough View. Unassigned records are reachable from its right rail; an empty scoped section is valid.\nSkills: workbench-labeling."
+    },
+    "📁 Files": {
+      "what": "Browse existing directories admitted by the same View scope and the host’s private-source boundary. Source: selected work, Tools skills and UI folders; code and _WorkSpace only when applicable.",
+      "layout": "Left folder types · right real directory tree → file pop-out",
+      "example": "Open the matching walkthrough View. Unassigned records are reachable from its right rail; an empty scoped section is valid.\nSkills: workbench-labeling, haipipe-ui."
+    },
+    "🧭 Around the Work": {
+      "what": "The same eight unnumbered sections follow Review Content on Block and Job pages. Source: work_frame.SHARED and shared_bodies.",
+      "layout": "Studio → Interactions → Decisions → Things to Know → Checklist → Timeline → Skills → Files",
+      "example": "The rail aggregates the current page and descendants. Task adoption is pending.\nSkills: workbench-labeling, haipipe-ui."
+    },
+    "📥 Source Records": {
+      "what": "Read source descriptions and samples. Existing Task workflow; shared-frame migration remains pending. Source: Items preparation receipts.",
+      "layout": "Data cards and sample table",
+      "example": "Synthetic walkthrough: t01 → Data. The link opens the current Work step.\nSkills: haipipe-labeling-preparation."
+    },
+    "🧱 Item Recipe": {
+      "what": "Inspect the recipe that turns raw records into items. Existing Task workflow; shared-frame migration remains pending. Source: Items preparation recipe.",
+      "layout": "Recipe disclosure and existing signing form",
+      "example": "Synthetic walkthrough: t01 → Items. The link opens the current Work step.\nSkills: haipipe-labeling-preparation."
+    },
+    "✅ Build Acceptance": {
+      "what": "Inspect recipe acceptance and build state; opening the page signs nothing. Existing Task workflow; shared-frame migration remains pending. Source: Items preparation signatures and build receipts.",
+      "layout": "Existing acceptance control and recorded receipt",
+      "example": "Synthetic walkthrough: t01 → Items. The link opens the current Work step.\nSkills: haipipe-labeling-preparation."
+    },
+    "🗺️ Embedding Map": {
+      "what": "Inspect the item embedding and agreed build. Existing Task workflow; shared-frame migration remains pending. Source: Items embedding artifacts.",
+      "layout": "Embedding map and build state",
+      "example": "Synthetic walkthrough: t01 → Embedding. The link opens the current Work step.\nSkills: haipipe-labeling-embedding."
+    },
+    "🎯 Label Scope": {
+      "what": "Read the initial agreement about what is judged. Existing Task workflow; shared-frame migration remains pending. Source: Meaning Frame Run result.",
+      "layout": "Agreement disclosure and confirmation form",
+      "example": "Synthetic walkthrough: t03 → Frame. The link opens the current Work step.\nSkills: haipipe-labeling-interaction."
+    },
+    "📋 Decision Report": {
+      "what": "Inspect guideline rules, typical, hard and random cases for this loop. Existing Task workflow; shared-frame migration remains pending. Source: Meaning report Run results.",
+      "layout": "Guideline map and case disclosures",
+      "example": "Synthetic walkthrough: t03 → Prepare. The link opens the current Work step.\nSkills: haipipe-labeling-interaction."
+    },
+    "🙋 Human Judgments": {
+      "what": "Read or save the identified person’s judgments. Existing Task workflow; shared-frame migration remains pending. Source: Meaning collection Run forms and answer records.",
+      "layout": "Question cards and existing preference form",
+      "example": "Synthetic walkthrough: t03 → Preferences. The link opens the current Work step.\nSkills: haipipe-labeling-interaction."
+    },
+    "📖 Guideline Revision": {
+      "what": "Read what answers changed and where the next loop goes. Existing Task workflow; shared-frame migration remains pending. Source: Meaning update Run results.",
+      "layout": "Guideline map, changes, reference labels and history",
+      "example": "Synthetic walkthrough: t03 → Update. The link opens the current Work step.\nSkills: haipipe-labeling-interaction."
+    },
+    "✍️ Meaning Approval": {
+      "what": "Inspect the meaning signature required before execution. Existing Task workflow; shared-frame migration remains pending. Source: Meaning version and signature records.",
+      "layout": "Existing human approval form",
+      "example": "Synthetic walkthrough: t03 → Update. The link opens the current Work step.\nSkills: haipipe-labeling-interaction."
+    },
+    "📝 Executable Rules": {
+      "what": "Inspect wording rewritten under a fixed approved meaning. Existing Task workflow; shared-frame migration remains pending. Source: Expression rewrite Run results.",
+      "layout": "Round selector and wording changes",
+      "example": "Synthetic walkthrough: t04 → Rewrite. The link opens the current Work step.\nSkills: haipipe-labeling-expression."
+    },
+    "🏷️ Model Labels": {
+      "what": "Inspect executor runs on Train and Test. Existing Task workflow; shared-frame migration remains pending. Source: Expression executor Run results.",
+      "layout": "Round selector and executor table",
+      "example": "Synthetic walkthrough: t04 → Run. The link opens the current Work step.\nSkills: haipipe-labeling-expression."
+    },
+    "📊 Quality Results": {
+      "what": "Read the round report, error kinds and measured performance. Existing Task workflow; shared-frame migration remains pending. Source: Expression evaluation Run results.",
+      "layout": "Report disclosures and quality table",
+      "example": "Synthetic walkthrough: t04 → Evaluate. The link opens the current Work step.\nSkills: haipipe-labeling-expression, haipipe-labeling-evaluation."
+    },
+    "✍️ Release Approval": {
+      "what": "Inspect final labels, the release decision and fresh-data claim boundary. Existing Task workflow; shared-frame migration remains pending. Source: Expression release Run results and signature.",
+      "layout": "Existing release form and result disclosures",
+      "example": "Synthetic walkthrough: t04 → Release. The link opens the current Work step.\nSkills: haipipe-labeling-expression."
+    }
+  },
+  "examples": {
+    "block": {
+      "Labeling": "blueprints/Project-Ladder/labeling/b02_labeling_walkthrough",
+      "Around the Work": "blueprints/Project-Ladder/labeling/b02_labeling_walkthrough"
+    },
+    "job": {
+      "Dataset × Label": "blueprints/Project-Ladder/labeling/b02_labeling_walkthrough/j01_example_response_safety",
+      "Around the Work": "blueprints/Project-Ladder/labeling/b02_labeling_walkthrough/j01_example_response_safety"
+    },
+    "task": {
+      "Items": "blueprints/Project-Ladder/labeling/b02_labeling_walkthrough/j01_example_response_safety/t01_example_items",
+      "Meaning": "blueprints/Project-Ladder/labeling/b02_labeling_walkthrough/j01_example_response_safety/t03_example_meaning",
+      "Expression": "blueprints/Project-Ladder/labeling/b02_labeling_walkthrough/j01_example_response_safety/t04_example_expression"
+    }
+  },
+  "view_routes": {
+    "Overview": {
+      "section": "report",
+      "group": "overview"
+    },
+    "Status": {
+      "section": "report",
+      "group": "standing"
+    },
+    "Findings": {
+      "section": "report",
+      "group": "findings"
+    },
+    "Delivery": {
+      "section": "report",
+      "group": "delivery"
+    },
+    "Data": {
+      "section": "work",
+      "group": "data"
+    },
+    "Items": {
+      "section": "work",
+      "group": "items"
+    },
+    "Embedding": {
+      "section": "work",
+      "group": "embedding"
+    },
+    "Frame": {
+      "section": "work",
+      "group": "frame"
+    },
+    "Prepare": {
+      "section": "work",
+      "group": "prepare"
+    },
+    "Preferences": {
+      "section": "work",
+      "group": "preferences"
+    },
+    "Update": {
+      "section": "work",
+      "group": "update"
+    },
+    "Rewrite": {
+      "section": "work",
+      "group": "rewrite"
+    },
+    "Run": {
+      "section": "work",
+      "group": "run"
+    },
+    "Evaluate": {
+      "section": "work",
+      "group": "evaluate"
+    },
+    "Release": {
+      "section": "work",
+      "group": "release"
+    },
+    "": {
+      "section": "report",
+      "group": "overview"
+    }
+  },
+  "skills": {
+    "Overview": [
+      "haipipe-block / haipipe-job — Maintain purpose and scope.",
+      "haipipe-mindmap — Draw the real hierarchy."
+    ],
+    "Status": [
+      "haipipe-job / haipipe-task / haipipe-run — Read progress.",
+      "haipipe-studio — Associate Topics with work."
+    ],
+    "Findings": [
+      "haipipe-labeling-expression — Inspect label results.",
+      "haipipe-labeling-interaction — Inspect approved meaning."
+    ],
+    "Delivery": [
+      "haipipe-labeling-final-labels — Inspect signed outputs.",
+      "haipipe-labeling-handoff — Maintain handoff boundaries."
+    ]
+  },
+  "overrides": {
+    "task": {
+      "Around the Work": {
+        "🎨 Studio": {
+          "what": "Pending: apply the shared 🎨 Studio contract to each Task step. Current Task screens retain their existing Report / Work layout.",
+          "example": "No implemented Task example is claimed. Verify each step and its existing human gates during migration."
+        },
+        "🙋 Interactions": {
+          "what": "Pending: apply the shared 🙋 Interactions contract to each Task step. Current Task screens retain their existing Report / Work layout.",
+          "example": "No implemented Task example is claimed. Verify each step and its existing human gates during migration."
+        },
+        "⚖️ Decisions": {
+          "what": "Pending: apply the shared ⚖️ Decisions contract to each Task step. Current Task screens retain their existing Report / Work layout.",
+          "example": "No implemented Task example is claimed. Verify each step and its existing human gates during migration."
+        },
+        "📚 Things to Know": {
+          "what": "Pending: apply the shared 📚 Things to Know contract to each Task step. Current Task screens retain their existing Report / Work layout.",
+          "example": "No implemented Task example is claimed. Verify each step and its existing human gates during migration."
+        },
+        "📝 Checklist": {
+          "what": "Pending: apply the shared 📝 Checklist contract to each Task step. Current Task screens retain their existing Report / Work layout.",
+          "example": "No implemented Task example is claimed. Verify each step and its existing human gates during migration."
+        },
+        "🕒 Timeline": {
+          "what": "Pending: apply the shared 🕒 Timeline contract to each Task step. Current Task screens retain their existing Report / Work layout.",
+          "example": "No implemented Task example is claimed. Verify each step and its existing human gates during migration."
+        },
+        "🧰 Skills": {
+          "what": "Pending: apply the shared 🧰 Skills contract to each Task step. Current Task screens retain their existing Report / Work layout.",
+          "example": "No implemented Task example is claimed. Verify each step and its existing human gates during migration."
+        },
+        "📁 Files": {
+          "what": "Pending: apply the shared 📁 Files contract to each Task step. Current Task screens retain their existing Report / Work layout.",
+          "example": "No implemented Task example is claimed. Verify each step and its existing human gates during migration."
+        }
+      }
+    }
+  },
+  "use_cases": {
+    "block": {
+      "Labeling": {
+        "Response safety annotation": [
+          {
+            "path": "blueprints/Project-Ladder/labeling/b02_labeling_walkthrough",
+            "label": "Blueprint example"
+          }
+        ],
+        "Clinical dialogue annotation": [],
+        "Symptom annotation": []
+      }
+    },
+    "job": {
+      "Dataset × Label": {
+        "Response safety annotation": [
+          {
+            "path": "blueprints/Project-Ladder/labeling/b02_labeling_walkthrough/j01_example_response_safety",
+            "label": "Blueprint example"
+          }
+        ],
+        "Clinical dialogue annotation": [],
+        "Symptom annotation": [],
+        "Rater label audit": []
+      }
+    },
+    "task": {
+      "Items": {
+        "Conversation items": [
+          {
+            "path": "blueprints/Project-Ladder/labeling/b02_labeling_walkthrough/j01_example_response_safety/t01_example_items",
+            "label": "Blueprint example"
+          }
+        ],
+        "Encounter transcripts": [],
+        "Post transcripts": []
+      },
+      "Meaning": {
+        "Response safety definition": [
+          {
+            "path": "blueprints/Project-Ladder/labeling/b02_labeling_walkthrough/j01_example_response_safety/t03_example_meaning",
+            "label": "Blueprint example"
+          }
+        ],
+        "Rater label audit": []
+      },
+      "Expression": {
+        "Response safety execution": [
+          {
+            "path": "blueprints/Project-Ladder/labeling/b02_labeling_walkthrough/j01_example_response_safety/t04_example_expression",
+            "label": "Blueprint example"
+          }
+        ]
+      }
+    }
+  }
+}

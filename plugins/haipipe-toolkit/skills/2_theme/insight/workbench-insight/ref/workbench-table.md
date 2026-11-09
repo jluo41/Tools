@@ -8,7 +8,7 @@ Shape and check: `skills/0_utils/table-workbench/SKILL.md`. Level is the insight
 |---|---|---|---|---|---|---|---|
 | Guide | Method | method | Add a method | haipipe-insight-agent | workbench-insight | none | Guide › runs/`run-add-method-<slug>/` |
 | Guide | Related Paper | related-paper | Add a paper | haipipe-discovery-orchestrator-agent | haipipe-discovery | none | Guide › runs/`run-add-paper-<slug>/` |
-| Block | Description | map · dataset | Add a data version | haipipe-insight-agent | haipipe-insight-meta | none | Board › runs/`run-add-version-v<M>/` |
+| Block | Description | map · dataset | Add a data version | haipipe-insight-agent | haipipe-insight-meta | none | Board › runs/`run-add-version-data-v<M>/` |
 | Block | Description | map | Add a Job | haipipe-insight-agent | haipipe-insight | none | Board › runs/`run-add-j<NN>/` |
 | Block | Description | partitions | Propose a cut | haipipe-insight-agent | haipipe-insight-question | none | Board › runs/`run-propose-cut-<slug>/` |
 | Block | Idea Studio | every view | Draw the question map | haipipe-insight-agent | haipipe-insight | none | Board › runs/`run-map-questions/` |
@@ -65,14 +65,14 @@ Shape and check: `skills/0_utils/table-workbench/SKILL.md`. Level is the insight
 | Task | Work Details | every view | Check alignment | haipipe-insight-reviewer-agent | haipipe-insight-check | none | Task › runs/`run-check-alignment-t<NN>/` |
 | Task | Runs | hard | Run a partition | haipipe-task-orchestrator-agent | haipipe-insight | none | Task › runs/`rNN_<partition>/` |
 | Task | Runs | soft | Check alignment | haipipe-insight-reviewer-agent | haipipe-insight-check | none | Task › runs/`run-check-alignment-t<NN>/` |
-| Prototype | Description | proposals | Take the proposals | haipipe-insight-agent | haipipe-insight-question | none | Prototype › runs/`run-triage-proposals-p<N>/` |
-| Prototype | Description | releases | Open a release | haipipe-insight-agent | haipipe-insight | none | Prototype › runs/`run-open-version-p<N>/` |
+| Prototype | Description | proposals | Take the proposals | haipipe-insight-agent | haipipe-insight-question | none | Prototype › runs/`run-triage-proposals-code-v<N>/` |
+| Prototype | Description | releases | Open a release | haipipe-insight-agent | haipipe-insight | none | Prototype › runs/`run-open-version-code-v<N>/` |
 | Prototype | Idea Studio | every view | Draw the question map | haipipe-insight-agent | haipipe-insight | none | Prototype › runs/`run-map-questions/` |
 | Prototype | Runs | every view | Carry a board over | haipipe-insight-agent | haipipe-insight | the carry | Prototype › runs/`run-carry-<board>/` |
 | Release | Work Details | every view | Ask a question | haipipe-insight-agent | haipipe-insight-question | none | Release › runs/`run-ask-<l><nn>/` |
-| Release | Work Details | every view | Review the questions | haipipe-insight-reviewer-agent | haipipe-report | a change | Release › runs/`run-review-questions-p<N>/` |
-| Release | Description | partitions | Set the cuts | haipipe-insight-agent | haipipe-insight | the cuts | Release › runs/`run-set-cuts-p<N>/` |
-| Release | Delivery | every view | Sign the release | haipipe-insight-agent | haipipe-insight | the release | Release › runs/`run-sign-release-p<N>/` |
+| Release | Work Details | every view | Review the questions | haipipe-insight-reviewer-agent | haipipe-report | a change | Release › runs/`run-review-questions-code-v<N>/` |
+| Release | Description | partitions | Set the cuts | haipipe-insight-agent | haipipe-insight | the cuts | Release › runs/`run-set-cuts-code-v<N>/` |
+| Release | Delivery | every view | Sign the release | haipipe-insight-agent | haipipe-insight | the release | Release › runs/`run-sign-release-code-v<N>/` |
 | Question | Work Details | every view | Plan the evidence | haipipe-insight-agent | haipipe-insight-evidence-plan | none | Question › runs/`run-plan-evidence-<l><nn>/` |
 | Question | Work Details | every view | Review the evidence plan | haipipe-insight-reviewer-agent | haipipe-insight-evidence-plan | none | Question › runs/`run-review-plan-<l><nn>/` |
 | Question | Work Details | every view | Write the script | haipipe-task-creator-agent | haipipe-insight | none | Question › runs/`run-write-script-<l><nn>/` |

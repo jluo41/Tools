@@ -60,16 +60,16 @@ def prototype_state(proto: Path) -> tuple[str, str]:
     open_props = [p for p in (proto / "proposals").glob("*.md")
                   if p.name != "README.md" and IL.front(p)[0].get("state", "open") == "open"]
     if not vers:
-        return "no release yet", "run-open-version-p1"
+        return "no code version yet", "run-open-version-code-v1"
     state, nxt = release_state(vers[-1])
     if str(IL.face(vers[-1]).get("state")) == "closed":
-        n = int(IL.VERSION.match(vers[-1].name).group(2)[1:]) + 1
+        n = IL.OJ.num(IL.VERSION.match(vers[-1].name).group(2)) + 1
         taken = [p for p in (proto / "proposals").glob("*.md")
-                 if str(IL.front(p)[0].get("taken-in", "")) == f"p{n}"]
+                 if str(IL.front(p)[0].get("taken-in", "")) in (f"code-v{n}", f"p{n}")]
         if taken:
-            return f"{state}; {len(taken)} proposals taken into p{n}", f"run-open-version-p{n}, then apply them"
+            return f"{state}; {len(taken)} proposals taken into code-v{n}", f"run-open-version-code-v{n}, then apply them"
         if open_props:
-            return f"{state}; {len(open_props)} open proposals", f"run-triage-proposals-p{n}, then run-open-version-p{n}"
+            return f"{state}; {len(open_props)} open proposals", f"run-triage-proposals-code-v{n}, then run-open-version-code-v{n}"
     return state, nxt
 
 
@@ -111,7 +111,7 @@ def job_state(job: Path) -> tuple[str, str]:
 def board_state(board: Path) -> tuple[str, str]:
     fm = IL.front(board / "board.md")[0]
     if not fm.get("versions"):
-        return "no data version yet", "run-add-version-v1"
+        return "no data version yet", "run-add-version-data-v1"
     jobs = IL.jobs(board)
     if not jobs:
         return f"{len(fm['versions'])} data versions, no Job yet", "run-add-j01"
@@ -127,7 +127,7 @@ def board_state(board: Path) -> tuple[str, str]:
         if newest_data != ldata and (lrel, newest_data) not in pairs:
             return f"{st}; data {newest_data} is new", f"run-add-j{len(jobs) + 1:02d} ({lrel} on {newest_data}: data moved)"
         if newest_rel and newest_rel != lrel and (newest_rel, ldata) not in pairs:
-            return f"{st}; release {newest_rel} is signed", f"run-add-j{len(jobs) + 1:02d} ({newest_rel} on {ldata}: code moved)"
+            return f"{st}; code version {newest_rel} is signed", f"run-add-j{len(jobs) + 1:02d} ({newest_rel} on {ldata}: code moved)"
         return f"{st}; the newest pair has run", "run-coverage, then the Board's questions"
     return f"{last.name}: {st}", nxt
 

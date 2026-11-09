@@ -1,0 +1,1564 @@
+{
+  "proposed": false,
+  "sections": {
+    "📄 Paper Board": {
+      "what": "Coordinates one paper: its ideas, evidence, versions and submission outputs.",
+      "layout": "Report → Review Content → Around the Work",
+      "example": "One Board reuses its evidence across two writing versions."
+    },
+    "🧭 Around the Work": {
+      "what": "The eight shared sections use the current View’s scope; the right rail aggregates the Board and descendants.",
+      "layout": "Unnumbered sections in the shared order",
+      "example": "An unassigned review question remains in the right rail until a View or Topic is linked."
+    },
+    "🔀 Directions": {
+      "what": "Compare candidate research directions and the recorded selection.",
+      "layout": "Left Tabs · Right Content → Direction",
+      "example": "Compare candidate questions, theory and evidence needs; keep the recorded verdict beside each direction."
+    },
+    "🎓 Theory": {
+      "what": "Read the theoretical basis of the candidate direction or chosen Story.",
+      "layout": "Idea: Left Tabs · Right Content; Story: Paragraph",
+      "example": "State which theory is tested or extended and what the proposed result would add."
+    },
+    "📌 Open points": {
+      "what": "Read unresolved points recorded by the current Topic.",
+      "layout": "Action rows",
+      "example": "A Story question is still waiting for a choice of scope."
+    },
+    "🧭 Direction": {
+      "what": "Read the direction chosen for the paper.",
+      "layout": "Paragraph",
+      "example": "The selected policy, outcome and population define the telling."
+    },
+    "💡 Pitch": {
+      "what": "Read what the paper claims and why the question matters.",
+      "layout": "Paragraph",
+      "example": "A short pitch connects the question, contribution and intended reader."
+    },
+    "❓ Research Questions": {
+      "what": "Read each research question with its narrative and recorded state.",
+      "layout": "Left Tabs · Right Content → Question",
+      "example": "RQ0 describes the cohort; RQ1 asks about the main effect; RQ2 asks for whom it changes."
+    },
+    "⚖️ Stakes and evidence": {
+      "what": "Compare why an answer matters with the evidence and boundaries supporting it.",
+      "layout": "Left Tabs · Right Content → Notes",
+      "example": "Keep the claimed contribution within the study design’s supported scope."
+    },
+    "📚 Related": {
+      "what": "Read related papers under the question each paper bears on.",
+      "layout": "Left Tabs · Right Content → Paper",
+      "example": "A prior study can support more than one question without duplicating its source record."
+    },
+    "🏛️ Venues": {
+      "what": "Review target venues, fit and remaining desk requirements.",
+      "layout": "Left Tabs · Right Content → Venue",
+      "example": "Read the venue’s call and identify the contribution to lead with."
+    },
+    "🧠 Story by Section": {
+      "what": "See where the claims land in the manuscript’s reader order.",
+      "layout": "Diagram",
+      "example": "C1 appears in Introduction and Results; C2 appears in Results and Discussion."
+    },
+    "🗄️ Data flow": {
+      "what": "Follow how the inputs become the evidence needed for each question.",
+      "layout": "MindMap / Diagram",
+      "example": "Cohort → outcomes and covariates → estimates → evidence for RQ1."
+    },
+    "📝 Paper flow": {
+      "what": "Follow the manuscript’s section order and the route to a send.",
+      "layout": "MindMap / Diagram",
+      "example": "Question → Methods → Results → Discussion → assembled manuscript."
+    },
+    "🗺️ Roadmaps": {
+      "what": "Read the planned discovery and internal analysis work.",
+      "layout": "Left Tabs · Right Content → Table",
+      "example": "A roadmap row names the work, its source location, state and the question it feeds."
+    },
+    "🧭 Plan": {
+      "what": "Open the planning work and copy the prompt for the responsible skill.",
+      "layout": "Action rows → Open / Copy prompt",
+      "example": "Design the dataset, analysis, execution, displays and reading. Copying a prompt does not execute it."
+    },
+    "⚙️ Runs to do": {
+      "what": "Inspect the work and Runs named in the Story’s Task roadmap.",
+      "layout": "Action rows",
+      "example": "Open the referenced Task or Run to inspect its actual execution record."
+    },
+    "🗓️ Next steps to the send": {
+      "what": "Read recorded steps and dates leading to the manuscript send.",
+      "layout": "Action rows",
+      "example": "Finish a missing Section, rebuild and check the submission materials."
+    },
+    "🧪 Work": {
+      "what": "Browse internal analysis Blocks referenced by the paper.",
+      "layout": "Expandable B–J–T–R tree → Pop-out",
+      "example": "Expand a supporting Block through its Jobs and Tasks to the actual Runs."
+    },
+    "🔎 Discovery": {
+      "what": "Browse referenced literature Blocks and their reading Runs.",
+      "layout": "Expandable B–J–T–R tree → Pop-out",
+      "example": "Open the reading Run behind a cited source while retaining the tree position."
+    },
+    "🔢 Values": {
+      "what": "The values renderer presents a group of values or a whole-paper audit result.",
+      "layout": "Left value tabs · Right result and checks",
+      "example": "The parent evidence Job and returned values.yaml select this presentation. Skill: haipipe-paper-evidence."
+    },
+    "📚 Citations": {
+      "what": "Citation records and verification; at Task level the same renderer serves claim groups and whole-paper audits.",
+      "layout": "Left citation tabs · Right source/check records",
+      "example": "Use Cases selects a claim group or the whole-paper audit. Skill: haipipe-paper-evidence."
+    },
+    "📐 Plan": {
+      "what": "Read the display plan and its venue constraints.",
+      "layout": "Diagram",
+      "example": "Plan the main figure and supplement with the permitted display count and format."
+    },
+    "🖼️ Displays": {
+      "what": "Inspect the rendered figures and tables.",
+      "layout": "Left Tabs · Right Content → PDF preview",
+      "example": "Choose a main or supplementary display and read its current preview."
+    },
+    "🔍 Examples": {
+      "what": "Inspect reference displays collected for the target venue.",
+      "layout": "Diagram / Preview",
+      "example": "Compare layout and presentation choices against published examples."
+    },
+    "✍️ Version sections": {
+      "what": "Read Sections within each writing version; the actual section heading is the version name.",
+      "layout": "Left Tabs · Right Content → Draft section",
+      "example": "Select Introduction or Methods within the first or revised writing version."
+    },
+    "📄 The assembled paper": {
+      "what": "Read a version’s existing built manuscript. This section appears when an output is present.",
+      "layout": "Preview",
+      "example": "Inspect the assembled PDF and Word output together with their build state."
+    },
+    "📮 Ready for the portal": {
+      "what": "Inspect the existing submission outputs for a version.",
+      "layout": "Preview / File links",
+      "example": "Read the cover letter and portal materials; their presence alone is not submission approval."
+    },
+    "🪜 Sections to finish": {
+      "what": "Open each manuscript Section’s recorded draft steps.",
+      "layout": "Action rows → Draft step",
+      "example": "Find the Section that needs evidence review or writing before the next build."
+    },
+    "🎨 Studio": {
+      "what": "AI and people develop and compare design options from findings and feedback.",
+      "layout": "Left Tabs · Right Content → Drawing",
+      "example": ""
+    },
+    "🙋 Interactions": {
+      "what": "Questions and feedback for the selected topic.",
+      "layout": "Left Tabs · Right Content",
+      "example": "",
+      "outcome": "Answers linked to their original topic.",
+      "layout_detail": "Topics on the left; questions and their form on the right."
+    },
+    "⚖️ Decisions": {
+      "what": "Recorded choices and their reasons.",
+      "layout": "Left Tabs · Right Content",
+      "example": "",
+      "outcome": "A traceable decision record.",
+      "layout_detail": "Topics on the left; source decision records on the right."
+    },
+    "📚 Things to Know": {
+      "what": "Find the terms, assumptions, and references needed here.",
+      "layout": "Left Tabs · Right Content → Notes",
+      "example": ""
+    },
+    "📝 Checklist": {
+      "what": "Read the checks recorded for this View or Topic. Completion is taken from the source record.",
+      "layout": "Checklist",
+      "example": "A display review or evidence check remains open until its source is updated."
+    },
+    "🕒 Timeline": {
+      "what": "Read dated Runs, feedback and decisions linked to this View; the right rail gathers the Board’s history.",
+      "layout": "Chronological List",
+      "example": ""
+    },
+    "🧰 Skills": {
+      "what": "Find the skills that help maintain this view.",
+      "layout": "Left Tabs · Right Content → Skill Details",
+      "example": ""
+    },
+    "📁 Files": {
+      "what": "Related directories grouped by Workspace, Blocks, Code, Tools · Skills and Tools · UI.",
+      "outcome": "Open, preview or download the original file.",
+      "layout": "Left Folder Types · Right Folder Tree",
+      "layout_detail": "Select a type, expand folders in the tree, and click a file to inspect it in a pop-out. Closing it keeps your place in the tree; Runs stay inside Blocks."
+    },
+    "🧠 Version map": {
+      "what": "The version’s venue, Story and Sections, with previous-version and reviewer-response context when those records exist.",
+      "layout": "Expandable diagram",
+      "example": "Source: version face and Section Tasks. Skill: haipipe-paper-draft."
+    },
+    "🧠 Revision map": {
+      "what": "Earlier version, reviewer points, linked replies and revised Sections.",
+      "layout": "Expandable diagram",
+      "example": "Source: the version’s from: link and responds-to/report records. Skill: haipipe-paper-comments."
+    },
+    "🧠 Task map": {
+      "what": "The Job’s Tasks, each purpose, result state and page link.",
+      "layout": "Expandable diagram",
+      "example": "Source: Job face and child Tasks. Open a Task to inspect its actual record."
+    },
+    "📝 Main text": {
+      "what": "The version’s main Sections in reader order.",
+      "layout": "Left Section tabs · Right text",
+      "example": "Source: t00–t19 draft Tasks. Work adds each Section’s next draft step. Skill: haipipe-paper-draft."
+    },
+    "📝 Appendix and letters": {
+      "what": "The version’s appendix and letter Tasks.",
+      "layout": "Left Section tabs · Right text",
+      "example": "Current grouping includes t20–t39, including cover and response letters. Work adds draft-step actions."
+    },
+    "🔎 Check": {
+      "what": "The evidence check’s actual findings and unresolved mismatches.",
+      "layout": "Result rows · Source links",
+      "example": "Source: t99 check Task Results. Work adds the check’s Run and applicable binding proposals. Skill: haipipe-paper-evidence."
+    },
+    "✉️ Cover letter": {
+      "what": "The referenced writing Task’s letter, with its current draft state.",
+      "layout": "Text · PDF link when built",
+      "example": "Source: submission for / words-in links. Work opens the letter’s next draft step. Skill: haipipe-paper-draft."
+    },
+    "📮 Portal fields": {
+      "what": "Portal steps, required values, uploads and differences still to resolve.",
+      "layout": "Left portal-step tabs · Right fields",
+      "example": "Source: portal-fields.yaml, submission values and existing outputs. Skill: haipipe-paper. Viewing does not submit."
+    },
+    "🧠 Task purpose and Runs": {
+      "what": "The Task’s purpose, returned output and recorded Runs.",
+      "layout": "Expandable diagram",
+      "example": "Source: Task face and Run records. A completed Run does not imply accepted output."
+    },
+    "📝 The text": {
+      "what": "The latest draft or adopted text, with sentence evidence and change cards when present.",
+      "layout": "Text on the left · Evidence and review cards on the right",
+      "example": "Source: draft history and adopted Content. Review decisions are made in Work → Revise. Skill: haipipe-draft-writing."
+    },
+    "💬 Points and replies": {
+      "what": "Each reviewer point beside its response and affected manuscript Sections.",
+      "layout": "Point and reply pairs",
+      "example": "Source: responds-to links and the response draft. Skill: haipipe-paper-comments."
+    },
+    "📋 Draft progress": {
+      "what": "The Task’s aim, current step and each draft step’s recorded state.",
+      "layout": "State rows · Go links",
+      "example": "Source: draft workflow records. Skills: haipipe-draft-workflow, haipipe-paper-draft."
+    },
+    "📌 Headline": {
+      "what": "What the latest Run returned, with original result links.",
+      "layout": "Result summary · File links",
+      "example": "Source: Run Results and runtime records; starter portal data stays marked as a starter."
+    },
+    "🧪 Runs": {
+      "what": "Recorded Runs, their purpose and execution state.",
+      "layout": "Run rows · Open original record",
+      "example": "Source: runs/ and Result receipts. Skill: haipipe-run."
+    },
+    "🖼️ Its display": {
+      "what": "The Task’s figure or table, input table and build details.",
+      "layout": "Left tabs · Right preview and source",
+      "example": "Source: display Run Results. Skill: haipipe-display."
+    },
+    "🔢 Its values": {
+      "what": "Each value, its provenance and check result.",
+      "layout": "Left value tabs · Right result",
+      "example": "Source: values.yaml and returned tables. Skill: haipipe-paper-evidence."
+    },
+    "🔢 The raw tables": {
+      "what": "Returned source tables used for value selection.",
+      "layout": "Left table tabs · Right table",
+      "example": "Source: tables.json from the value build Run. Skill: haipipe-paper-evidence."
+    },
+    "📚 Its citations": {
+      "what": "Each citation key, source evidence and check status.",
+      "layout": "Left key tabs · Right records",
+      "example": "Source: citations.csv and source records. Skill: haipipe-paper-evidence."
+    },
+    "📋 Its facts": {
+      "what": "The Task’s recorded label, caption, question, source and completion conditions.",
+      "layout": "Label and value rows",
+      "example": "Source: Task face; only authored fields appear."
+    },
+    "✉️ The letter": {
+      "what": "The letter text owned by the linked writing Task.",
+      "layout": "Read-only text · Open Section",
+      "example": "Source: words-in. Editing belongs to the writing Task’s draft workflow."
+    },
+    "📮 The portal’s fields": {
+      "what": "The recorded portal steps and field definitions.",
+      "layout": "Left step tabs · Right field records",
+      "example": "Source: portal-fields.yaml. An unopened starter remains visibly unwalked."
+    },
+    "📮 The fill page": {
+      "what": "The prepared submission fill page and its field values.",
+      "layout": "Preview · Pop-out",
+      "example": "Source: existing portal-fill.html. Human review and submission remain separate."
+    },
+    "📌 Step state": {
+      "what": "The current step’s state and any required human action.",
+      "layout": "State row · Relevant action",
+      "example": "Source: draft workflow state. Displayed when there is a waiting or actionable state."
+    },
+    "📥 Input": {
+      "what": "The actual inputs read by this writing step.",
+      "layout": "Source table · Links",
+      "example": "Source: the draft step’s input contract. Response planning also reads reviewer comments."
+    },
+    "🏃 Step Runs": {
+      "what": "Runs attached to the selected writing step.",
+      "layout": "Run rows",
+      "example": "Source: writing Run records; shown when present."
+    },
+    "📝 Plan and scratch": {
+      "what": "The Task’s structure, outline and notes.",
+      "layout": "Plan cards · Scratch editor when present",
+      "example": "Source: current draft plan. Skill: haipipe-draft-logic. Human plan approval remains explicit."
+    },
+    "✍️ Draft text": {
+      "what": "The draft produced for this Section, summary or letter.",
+      "layout": "Draft text · Supporting cards",
+      "example": "Source: writing Results or adopted Content. Skill: haipipe-draft-writing."
+    },
+    "🔎 Evidence and bib": {
+      "what": "Evidence requests, source bindings and the Section’s bibliography.",
+      "layout": "Evidence cards · Bibliography rows",
+      "example": "Source: the Task’s evidence records and bib. Skill: haipipe-evidence."
+    },
+    "🖼️ Display review": {
+      "what": "The displays called for by this Task and their acceptance records.",
+      "layout": "Display preview · Review records",
+      "example": "Conditional view: appears only when this Task calls for or has displays. Skill: haipipe-display."
+    },
+    "💬 Review and revision": {
+      "what": "Review cards, proposed changes and recorded accept/reject decisions.",
+      "layout": "Text · Review cards · Decisions",
+      "example": "Source: revision history. Skill: haipipe-draft-review. Human decisions are preserved."
+    },
+    "🤖 Ask the agent": {
+      "what": "The existing prompts for the current writing step.",
+      "layout": "Action controls · Copy prompt",
+      "example": "Appears for Plan, Write and Revise when a prompt exists. Copying does not start a Run."
+    },
+    "✍️ Writing Version": {
+      "what": "One manuscript version for a venue or send; its own Sections reuse Board evidence.",
+      "layout": "One row per type; select its view to inspect its sections.",
+      "example": "Current example: j11_writing_v1130_desk."
+    },
+    "🔁 Revised Version": {
+      "what": "A writing version linked to an earlier send, reviewer points and a response letter. It uses the writing-version renderer.",
+      "layout": "One row per type; select its view to inspect its sections.",
+      "example": "Current example: j12_writing_v0215_desk."
+    },
+    "🖼️ Display Evidence": {
+      "what": "The Board’s figure and table collection, its plan and venue examples.",
+      "layout": "One row per type; select its view to inspect its sections.",
+      "example": "Current example: j01_evidence_display."
+    },
+    "🔢 Value Evidence": {
+      "what": "The Board’s printed-value groups, source tables and whole-paper value check.",
+      "layout": "One row per type; select its view to inspect its sections.",
+      "example": "Current example: j02_evidence_value."
+    },
+    "📚 Citation Evidence": {
+      "what": "The Board’s claim groups and whole-paper citation check.",
+      "layout": "One row per type; select its view to inspect its sections.",
+      "example": "Current example: j03_evidence_cite."
+    },
+    "📮 Submission": {
+      "what": "The materials and portal preparation for one named writing version.",
+      "layout": "One row per type; select its view to inspect its sections.",
+      "example": "Current example: j21_submission_v1130_desk."
+    },
+    "📝 Manuscript Section": {
+      "what": "One main-text or appendix Section, with its own writing history and evidence.",
+      "layout": "One row per type; select its view to inspect its sections.",
+      "example": "Current example: t01_introduction."
+    },
+    "📄 Abstract / Summary": {
+      "what": "A summary Task using the same draft workflow, with scope and constraints in its plan.",
+      "layout": "One row per type; select its view to inspect its sections.",
+      "example": "Current example: t00_summary."
+    },
+    "✉️ Cover Letter": {
+      "what": "The writing version’s cover-letter draft; submission references these words.",
+      "layout": "One row per type; select its view to inspect its sections.",
+      "example": "Current example: t31_cover-letter."
+    },
+    "💬 Reviewer Response": {
+      "what": "A response-letter draft with reviewer points linked to replies and affected Sections.",
+      "layout": "One row per type; select its view to inspect its sections.",
+      "example": "Current example: t32_response."
+    },
+    "🖼️ Figure / Table": {
+      "what": "One display output with its preview, source table, build details and Runs.",
+      "layout": "One row per type; select its view to inspect its sections.",
+      "example": "Current example: t02_table1-example."
+    },
+    "🔢 Value Group": {
+      "what": "One group of printed values traced to returned source results.",
+      "layout": "One row per type; select its view to inspect its sections.",
+      "example": "Current example: t01_values-sample."
+    },
+    "🗄️ Raw Value Tables": {
+      "what": "Source tables used to inspect and select values for the manuscript.",
+      "layout": "One row per type; select its view to inspect its sections.",
+      "example": "Current example: t02_raw-value-tables."
+    },
+    "🔎 Value Check": {
+      "what": "A whole-paper check Task comparing printed values with their source results.",
+      "layout": "One row per type; select its view to inspect its sections.",
+      "example": "Current example: t99_paper_value_check."
+    },
+    "📚 Citation Group": {
+      "what": "A claim group’s citation keys, source records and checks.",
+      "layout": "One row per type; select its view to inspect its sections.",
+      "example": "Current example: t01_cite-prior-work."
+    },
+    "🔍 Citation Check": {
+      "what": "A whole-paper check Task for keys, citation cards and bibliography records.",
+      "layout": "One row per type; select its view to inspect its sections.",
+      "example": "Current example: t99_paper_citation_check."
+    },
+    "✉️ Submission Letter": {
+      "what": "A submission Task referencing the writing version’s cover letter through words-in.",
+      "layout": "One row per type; select its view to inspect its sections.",
+      "example": "Current example: t01_cover-letter."
+    },
+    "🚶 Portal Walk": {
+      "what": "A recorded survey of the portal’s steps and fields; a starter is not a completed walk.",
+      "layout": "One row per type; select its view to inspect its sections.",
+      "example": "Current example: t02_portal-walk."
+    },
+    "📮 Portal Fill": {
+      "what": "A prepared fill page for one submission. The person checks the fields and submits.",
+      "layout": "One row per type; select its view to inspect its sections.",
+      "example": "Current example: t03_portal-fill."
+    },
+    "📝 Draft Task": {
+      "what": "One draft workflow for a Section, abstract, cover letter or reviewer response. The face declares task-type: draft; responds-to adds point/reply content.",
+      "layout": "Report reading views · Work writing steps",
+      "example": "Open a Use Case for a purpose-specific example. Skills: haipipe-draft-workflow, haipipe-paper-draft."
+    },
+    "🖼️ Display Task": {
+      "what": "The display renderer presents a figure or table and its source/build records.",
+      "layout": "Preview · Input and build tabs",
+      "example": "Figure and table preparation are uses of the same display branch. Skill: haipipe-display."
+    },
+    "🗄️ Value Tables": {
+      "what": "The tables branch presents raw returned tables. It is selected by tables.json when values.yaml is absent, not by a new execution-type enum.",
+      "layout": "Left table tabs · Right source table",
+      "example": "Open Source table inspection. Skill: haipipe-paper-evidence."
+    },
+    "💰 Grant Board": {
+      "what": "A type within the Paper theme for a grant application. It shares the Paper planning, evidence, writing-version, review and assembly structure, with funding-call, aims, team and budget requirements. Grant-specific behavior and examples are not implemented yet.",
+      "layout": "Report → Review Content → Around the Work",
+      "example_title": "Proposed example",
+      "example": "An initial application and its resubmission share evidence and the research plan; each submission retains its own requirements."
+    },
+    "🏛️ Funding call": {
+      "what": "Read the selected funding opportunity and its source documents.",
+      "layout": "Call details and source links",
+      "example_title": "Proposed example",
+      "example": "A call defines the proposed scope and application documents."
+    },
+    "✅ Eligibility and fit": {
+      "what": "Compare the proposal and team against the selected call’s stated eligibility and scope.",
+      "layout": "Requirement rows with source and recorded assessment",
+      "example_title": "Proposed example",
+      "example": "A requirement remains unresolved until its supporting information is recorded."
+    },
+    "📋 Application requirements": {
+      "what": "Track the exact documents, limits and evaluation criteria from the selected call.",
+      "layout": "Requirements linked to proposal sections",
+      "example_title": "Proposed example",
+      "example": "Each application document points to its required format and source."
+    },
+    "🗓️ Deadlines": {
+      "what": "Show recorded sponsor and internal deadlines with their sources.",
+      "layout": "Timeline",
+      "example_title": "Proposed example",
+      "example": "Internal review precedes the recorded submission deadline."
+    },
+    "❓ Research gap": {
+      "what": "State the unresolved problem the proposed research addresses.",
+      "layout": "Claim with supporting literature",
+      "example_title": "Proposed example",
+      "example": "The proposal identifies an unanswered question and the evidence for that gap."
+    },
+    "🎯 Specific aims": {
+      "what": "State the proposed aims, expected outcomes and their dependencies.",
+      "layout": "Aim cards",
+      "example_title": "Proposed example",
+      "example": "Each aim links to its approach and measurable outcome."
+    },
+    "✨ Significance and innovation": {
+      "what": "Explain why the proposed work matters and what it contributes.",
+      "layout": "Claims linked to evidence",
+      "example_title": "Proposed example",
+      "example": "A contribution is supported by the documented research gap."
+    },
+    "🔬 Approach": {
+      "what": "Describe how each aim will be investigated.",
+      "layout": "Aim-linked methods and analysis plan",
+      "example_title": "Proposed example",
+      "example": "The method names inputs, analysis and success criteria."
+    },
+    "🗓️ Milestones": {
+      "what": "Connect the proposed work to dated milestones and deliverables.",
+      "layout": "Timeline",
+      "example_title": "Proposed example",
+      "example": "Each milestone names its output and responsible role."
+    },
+    "⚠️ Risks and alternatives": {
+      "what": "Record feasibility risks and alternative approaches.",
+      "layout": "Risk and response rows",
+      "example_title": "Proposed example",
+      "example": "A dependency has a fallback if the planned input is unavailable."
+    },
+    "👥 Team roles": {
+      "what": "Describe who contributes which capability and responsibility.",
+      "layout": "Role rows",
+      "example_title": "Proposed example",
+      "example": "Each aim has an accountable role and required expertise."
+    },
+    "💰 Budget and justification": {
+      "what": "Link proposed resources and their justification to the research plan.",
+      "layout": "Budget rows linked to aims",
+      "example_title": "Proposed example",
+      "example": "A resource request identifies the work it supports; funder-specific rules come from the call."
+    },
+    "🤝 Commitments": {
+      "what": "Track required support letters and institutional commitments.",
+      "layout": "Document checklist",
+      "example_title": "Proposed example",
+      "example": "A requested letter has an owner and a received version."
+    },
+    "🧪 Preliminary evidence": {
+      "what": "Present existing results that support feasibility, separate from proposed future outcomes.",
+      "layout": "Evidence tabs linked to source results",
+      "example_title": "Proposed example",
+      "example": "A feasibility result points to the Work Block that produced it."
+    },
+    "📚 Supporting literature": {
+      "what": "Connect proposal claims to verified literature.",
+      "layout": "Claim and citation rows",
+      "example_title": "Proposed example",
+      "example": "A significance claim links to its supporting sources."
+    },
+    "🖼️ Proposal figures": {
+      "what": "Read figures explaining the aims, approach and preliminary evidence.",
+      "layout": "Figure tabs",
+      "example_title": "Proposed example",
+      "example": "A study schematic links each aim to its method."
+    },
+    "📝 Proposal sections": {
+      "what": "Read the sections of one application version.",
+      "layout": "Section tabs",
+      "example_title": "Proposed example",
+      "example": "An aims page and research strategy belong to the same application version."
+    },
+    "📄 Assembled proposal": {
+      "what": "Read the application documents assembled for a specific call.",
+      "layout": "Document preview",
+      "example_title": "Proposed example",
+      "example": "The preview contains the selected version’s required sections."
+    },
+    "💬 Reviewer feedback": {
+      "what": "Link received feedback to the revisions that address it.",
+      "layout": "Comment and response rows",
+      "example_title": "Proposed example",
+      "example": "A resubmission links each response to a revised section."
+    },
+    "📦 Application package": {
+      "what": "List the exact documents prepared for one submission.",
+      "layout": "Files by application slot",
+      "example_title": "Proposed example",
+      "example": "Each requested slot links to its prepared document."
+    },
+    "✅ Readiness checks": {
+      "what": "Compare the prepared package against recorded call requirements and unresolved decisions.",
+      "layout": "Checks with supporting evidence",
+      "example_title": "Proposed example",
+      "example": "An absent attachment remains unresolved; a built package is not evidence of submission."
+    },
+    "📮 Submission record": {
+      "what": "Record the actual send and receipt when they exist.",
+      "layout": "Submission record and receipt links",
+      "example_title": "Proposed example",
+      "example": "Preparing the package does not mark it submitted."
+    }
+  },
+  "skills": {
+    "Idea": [
+      "haipipe-paper-ideation — Compare directions.",
+      "haipipe-ideation — Develop candidate ideas.",
+      "haipipe-paper-related — Position candidate directions against related work."
+    ],
+    "Story": [
+      "haipipe-paper-story — Maintain the telling.",
+      "haipipe-paper-venue — Check venue rules.",
+      "haipipe-paper-related — Position related papers."
+    ],
+    "Data + Paper Plan": [
+      "haipipe-paper-plan — Maintain the data and paper plans.",
+      "haipipe-task — Connect execution work.",
+      "haipipe-report — Maintain research-question reports."
+    ],
+    "Support blocks": [
+      "haipipe-work — Inspect internal work.",
+      "haipipe-discovery — Inspect literature work."
+    ],
+    "Evidence": [
+      "haipipe-paper-evidence — Check values and citations.",
+      "haipipe-evidence — Trace supporting results."
+    ],
+    "Displays": [
+      "haipipe-display — Build and review displays.",
+      "haipipe-paper-plan — Maintain the display plan.",
+      "haipipe-paper-story — Maintain the shared Story by Section."
+    ],
+    "Writing": [
+      "haipipe-paper-draft — Maintain Section drafts.",
+      "haipipe-draft-writing — Write and revise.",
+      "haipipe-paper-assemble — Build the manuscript."
+    ]
+  },
+  "examples": {
+    "block": {
+      "Paper Board": "blueprints/Project-Ladder/paper/Paper-Example",
+      "Around the Work": "blueprints/Project-Ladder/paper/Paper-Example"
+    },
+    "job": {
+      "Writing Version": "blueprints/Project-Ladder/paper/Paper-Example/j11_writing_v1130_desk",
+      "Revised Version": "blueprints/Project-Ladder/paper/Paper-Example/j12_writing_v0215_desk",
+      "Display Evidence": "blueprints/Project-Ladder/paper/Paper-Example/j01_evidence_display",
+      "Value Evidence": "blueprints/Project-Ladder/paper/Paper-Example/j02_evidence_value",
+      "Citation Evidence": "blueprints/Project-Ladder/paper/Paper-Example/j03_evidence_cite",
+      "Submission": "blueprints/Project-Ladder/paper/Paper-Example/j21_submission_v1130_desk"
+    },
+    "task": {
+      "Manuscript Section": "blueprints/Project-Ladder/paper/Paper-Example/j11_writing_v1130_desk/t01_introduction",
+      "Abstract / Summary": "blueprints/Project-Ladder/paper/Paper-Example/j11_writing_v1130_desk/t00_summary",
+      "Cover Letter": "blueprints/Project-Ladder/paper/Paper-Example/j11_writing_v1130_desk/t31_cover-letter",
+      "Reviewer Response": "blueprints/Project-Ladder/paper/Paper-Example/j12_writing_v0215_desk/t32_response",
+      "Figure / Table": "blueprints/Project-Ladder/paper/Paper-Example/j01_evidence_display/t02_table1-example",
+      "Value Group": "blueprints/Project-Ladder/paper/Paper-Example/j02_evidence_value/t01_values-sample",
+      "Raw Value Tables": "blueprints/Project-Ladder/paper/Paper-Example/j02_evidence_value/t02_raw-value-tables",
+      "Value Check": "blueprints/Project-Ladder/paper/Paper-Example/j02_evidence_value/t99_paper_value_check",
+      "Citation Group": "blueprints/Project-Ladder/paper/Paper-Example/j03_evidence_cite/t01_cite-prior-work",
+      "Citation Check": "blueprints/Project-Ladder/paper/Paper-Example/j03_evidence_cite/t99_paper_citation_check",
+      "Submission Letter": "blueprints/Project-Ladder/paper/Paper-Example/j21_submission_v1130_desk/t01_cover-letter",
+      "Portal Walk": "blueprints/Project-Ladder/paper/Paper-Example/j21_submission_v1130_desk/t02_portal-walk",
+      "Portal Fill": "blueprints/Project-Ladder/paper/Paper-Example/j21_submission_v1130_desk/t03_portal-fill",
+      "Draft Task": "blueprints/Project-Ladder/paper/Paper-Example/j11_writing_v1130_desk/t01_introduction",
+      "Display Task": "blueprints/Project-Ladder/paper/Paper-Example/j01_evidence_display/t02_table1-example",
+      "Values": "blueprints/Project-Ladder/paper/Paper-Example/j02_evidence_value/t01_values-sample",
+      "Value Tables": "blueprints/Project-Ladder/paper/Paper-Example/j02_evidence_value/t02_raw-value-tables",
+      "Citations": "blueprints/Project-Ladder/paper/Paper-Example/j03_evidence_cite/t01_cite-prior-work"
+    }
+  },
+  "view_routes": {
+    "Idea": {
+      "section": "report",
+      "group": "idea"
+    },
+    "Story": {
+      "section": "report",
+      "group": "story"
+    },
+    "Data + Paper Plan": {
+      "section": "report",
+      "group": "plan"
+    },
+    "Support blocks": {
+      "section": "report",
+      "group": "explore"
+    },
+    "Evidence": {
+      "section": "report",
+      "group": "evidence"
+    },
+    "Displays": {
+      "section": "report",
+      "group": "displays"
+    },
+    "Writing": {
+      "section": "report",
+      "group": "draft"
+    }
+  },
+  "type_view_routes": {
+    "job": {
+      "Writing Version": {
+        "MindMap": {
+          "section": "report",
+          "group": "mindmap"
+        },
+        "Draft-Main": {
+          "section": "report",
+          "group": "draft-main"
+        },
+        "Draft-Appendix": {
+          "section": "report",
+          "group": "draft-appendix"
+        },
+        "Display-Main": {
+          "section": "report",
+          "group": "display-main"
+        },
+        "Display-Appendix": {
+          "section": "report",
+          "group": "display-appendix"
+        },
+        "Values": {
+          "section": "report",
+          "group": "values"
+        },
+        "Citations": {
+          "section": "report",
+          "group": "citations"
+        }
+      },
+      "Revised Version": {
+        "MindMap": {
+          "section": "report",
+          "group": "mindmap"
+        },
+        "Draft-Main": {
+          "section": "report",
+          "group": "draft-main"
+        },
+        "Draft-Appendix": {
+          "section": "report",
+          "group": "draft-appendix"
+        },
+        "Display-Main": {
+          "section": "report",
+          "group": "display-main"
+        },
+        "Display-Appendix": {
+          "section": "report",
+          "group": "display-appendix"
+        },
+        "Values": {
+          "section": "report",
+          "group": "values"
+        },
+        "Citations": {
+          "section": "report",
+          "group": "citations"
+        }
+      },
+      "Display Evidence": {
+        "MindMap": {
+          "section": "report",
+          "group": "mindmap"
+        },
+        "Plan": {
+          "section": "report",
+          "group": "display-plan"
+        },
+        "Displays": {
+          "section": "report",
+          "group": "display-list"
+        },
+        "Examples": {
+          "section": "report",
+          "group": "display-examples"
+        }
+      },
+      "Value Evidence": {
+        "MindMap": {
+          "section": "report",
+          "group": "mindmap"
+        },
+        "Values": {
+          "section": "report",
+          "group": "value-list"
+        },
+        "Check": {
+          "section": "report",
+          "group": "value-check"
+        }
+      },
+      "Citation Evidence": {
+        "MindMap": {
+          "section": "report",
+          "group": "mindmap"
+        },
+        "Citations": {
+          "section": "report",
+          "group": "cite-list"
+        },
+        "Check": {
+          "section": "report",
+          "group": "cite-check"
+        }
+      },
+      "Submission": {
+        "MindMap": {
+          "section": "report",
+          "group": "mindmap"
+        },
+        "Cover letter": {
+          "section": "report",
+          "group": "letter"
+        },
+        "Portal": {
+          "section": "report",
+          "group": "portal"
+        }
+      }
+    },
+    "task": {
+      "Manuscript Section": {
+        "MindMap": {
+          "section": "report",
+          "group": "mindmap"
+        },
+        "Text": {
+          "section": "report",
+          "group": "text"
+        },
+        "Status": {
+          "section": "report",
+          "group": "status"
+        },
+        "Plan": {
+          "section": "work",
+          "group": "plan"
+        },
+        "Write": {
+          "section": "work",
+          "group": "write"
+        },
+        "Evidence": {
+          "section": "work",
+          "group": "evidence"
+        },
+        "Display": {
+          "section": "work",
+          "group": "display",
+          "example": false
+        },
+        "Revise": {
+          "section": "work",
+          "group": "revise"
+        },
+        "Runs": {
+          "section": "work",
+          "group": "runs"
+        }
+      },
+      "Abstract / Summary": {
+        "MindMap": {
+          "section": "report",
+          "group": "mindmap"
+        },
+        "Text": {
+          "section": "report",
+          "group": "text"
+        },
+        "Status": {
+          "section": "report",
+          "group": "status"
+        },
+        "Plan": {
+          "section": "work",
+          "group": "plan"
+        },
+        "Write": {
+          "section": "work",
+          "group": "write"
+        },
+        "Evidence": {
+          "section": "work",
+          "group": "evidence"
+        },
+        "Display": {
+          "section": "work",
+          "group": "display",
+          "example": false
+        },
+        "Revise": {
+          "section": "work",
+          "group": "revise"
+        },
+        "Runs": {
+          "section": "work",
+          "group": "runs"
+        }
+      },
+      "Cover Letter": {
+        "MindMap": {
+          "section": "report",
+          "group": "mindmap"
+        },
+        "Text": {
+          "section": "report",
+          "group": "text"
+        },
+        "Status": {
+          "section": "report",
+          "group": "status"
+        },
+        "Plan": {
+          "section": "work",
+          "group": "plan"
+        },
+        "Write": {
+          "section": "work",
+          "group": "write"
+        },
+        "Evidence": {
+          "section": "work",
+          "group": "evidence"
+        },
+        "Display": {
+          "section": "work",
+          "group": "display",
+          "example": false
+        },
+        "Revise": {
+          "section": "work",
+          "group": "revise"
+        },
+        "Runs": {
+          "section": "work",
+          "group": "runs"
+        }
+      },
+      "Reviewer Response": {
+        "MindMap": {
+          "section": "report",
+          "group": "mindmap"
+        },
+        "Text": {
+          "section": "report",
+          "group": "text"
+        },
+        "Status": {
+          "section": "report",
+          "group": "status"
+        },
+        "Plan": {
+          "section": "work",
+          "group": "plan"
+        },
+        "Write": {
+          "section": "work",
+          "group": "write"
+        },
+        "Evidence": {
+          "section": "work",
+          "group": "evidence"
+        },
+        "Display": {
+          "section": "work",
+          "group": "display"
+        },
+        "Revise": {
+          "section": "work",
+          "group": "revise"
+        },
+        "Runs": {
+          "section": "work",
+          "group": "runs"
+        }
+      },
+      "Figure / Table": {
+        "MindMap": {
+          "section": "report",
+          "group": "mindmap"
+        },
+        "Findings": {
+          "section": "report",
+          "group": "findings"
+        },
+        "Status": {
+          "section": "report",
+          "group": "standing"
+        }
+      },
+      "Value Group": {
+        "MindMap": {
+          "section": "report",
+          "group": "mindmap"
+        },
+        "Findings": {
+          "section": "report",
+          "group": "findings"
+        },
+        "Status": {
+          "section": "report",
+          "group": "standing"
+        }
+      },
+      "Raw Value Tables": {
+        "MindMap": {
+          "section": "report",
+          "group": "mindmap"
+        },
+        "Findings": {
+          "section": "report",
+          "group": "findings"
+        },
+        "Status": {
+          "section": "report",
+          "group": "standing"
+        }
+      },
+      "Value Check": {
+        "MindMap": {
+          "section": "report",
+          "group": "mindmap"
+        },
+        "Findings": {
+          "section": "report",
+          "group": "findings"
+        },
+        "Status": {
+          "section": "report",
+          "group": "standing"
+        }
+      },
+      "Citation Group": {
+        "MindMap": {
+          "section": "report",
+          "group": "mindmap"
+        },
+        "Findings": {
+          "section": "report",
+          "group": "findings"
+        },
+        "Status": {
+          "section": "report",
+          "group": "standing"
+        }
+      },
+      "Citation Check": {
+        "MindMap": {
+          "section": "report",
+          "group": "mindmap"
+        },
+        "Findings": {
+          "section": "report",
+          "group": "findings"
+        },
+        "Status": {
+          "section": "report",
+          "group": "standing"
+        }
+      },
+      "Submission Letter": {
+        "MindMap": {
+          "section": "report",
+          "group": "mindmap"
+        },
+        "Findings": {
+          "section": "report",
+          "group": "findings"
+        },
+        "Status": {
+          "section": "report",
+          "group": "standing"
+        }
+      },
+      "Portal Walk": {
+        "MindMap": {
+          "section": "report",
+          "group": "mindmap"
+        },
+        "Findings": {
+          "section": "report",
+          "group": "findings"
+        },
+        "Status": {
+          "section": "report",
+          "group": "standing"
+        }
+      },
+      "Portal Fill": {
+        "MindMap": {
+          "section": "report",
+          "group": "mindmap"
+        },
+        "Findings": {
+          "section": "report",
+          "group": "findings"
+        },
+        "Status": {
+          "section": "report",
+          "group": "standing"
+        }
+      },
+      "Draft Task": {
+        "MindMap": {
+          "section": "report",
+          "group": "mindmap"
+        },
+        "Text": {
+          "section": "report",
+          "group": "text"
+        },
+        "Status": {
+          "section": "report",
+          "group": "status"
+        },
+        "Plan": {
+          "section": "work",
+          "group": "plan"
+        },
+        "Write": {
+          "section": "work",
+          "group": "write"
+        },
+        "Evidence": {
+          "section": "work",
+          "group": "evidence"
+        },
+        "Display": {
+          "section": "work",
+          "group": "display",
+          "example": false
+        },
+        "Revise": {
+          "section": "work",
+          "group": "revise"
+        },
+        "Runs": {
+          "section": "work",
+          "group": "runs"
+        }
+      },
+      "Display Task": {
+        "MindMap": {
+          "section": "report",
+          "group": "mindmap"
+        },
+        "Findings": {
+          "section": "report",
+          "group": "findings"
+        },
+        "Status": {
+          "section": "report",
+          "group": "standing"
+        }
+      },
+      "Values": {
+        "MindMap": {
+          "section": "report",
+          "group": "mindmap"
+        },
+        "Findings": {
+          "section": "report",
+          "group": "findings"
+        },
+        "Status": {
+          "section": "report",
+          "group": "standing"
+        }
+      },
+      "Value Tables": {
+        "MindMap": {
+          "section": "report",
+          "group": "mindmap"
+        },
+        "Findings": {
+          "section": "report",
+          "group": "findings"
+        },
+        "Status": {
+          "section": "report",
+          "group": "standing"
+        }
+      },
+      "Citations": {
+        "MindMap": {
+          "section": "report",
+          "group": "mindmap"
+        },
+        "Findings": {
+          "section": "report",
+          "group": "findings"
+        },
+        "Status": {
+          "section": "report",
+          "group": "standing"
+        }
+      }
+    },
+    "block": {
+      "Grant Board": {
+        "Idea": {
+          "example": false
+        },
+        "Story": {
+          "example": false
+        },
+        "Data + Paper Plan": {
+          "example": false
+        },
+        "Support blocks": {
+          "example": false
+        },
+        "Evidence": {
+          "example": false
+        },
+        "Displays": {
+          "example": false
+        },
+        "Writing": {
+          "example": false
+        },
+        "Opportunity": {
+          "example": false
+        },
+        "Aims": {
+          "example": false
+        },
+        "Research Plan": {
+          "example": false
+        },
+        "Team & Budget": {
+          "example": false
+        },
+        "Submission": {
+          "example": false
+        }
+      }
+    }
+  },
+  "overrides": {
+    "job": {
+      "Writing Version": {
+        "🖼️ Displays": {
+          "what": "Figures or tables read from the Board’s display Job, restricted to this view’s main/appendix placement when applicable.",
+          "example": "Source: display plan and original display Task Results. Work adds the linked display progress; viewing never copies evidence into this version."
+        }
+      },
+      "Revised Version": {
+        "🖼️ Displays": {
+          "what": "Figures or tables read from the Board’s display Job, restricted to this view’s main/appendix placement when applicable.",
+          "example": "Source: display plan and original display Task Results. Work adds the linked display progress; viewing never copies evidence into this version."
+        }
+      },
+      "Display Evidence": {
+        "🖼️ Displays": {
+          "what": "Figures or tables read from the Board’s display Job, restricted to this view’s main/appendix placement when applicable.",
+          "example": "Source: display plan and original display Task Results. Work adds the linked display progress; viewing never copies evidence into this version."
+        }
+      },
+      "Value Evidence": {
+        "🖼️ Displays": {
+          "what": "Figures or tables read from the Board’s display Job, restricted to this view’s main/appendix placement when applicable.",
+          "example": "Source: display plan and original display Task Results. Work adds the linked display progress; viewing never copies evidence into this version."
+        }
+      },
+      "Citation Evidence": {
+        "🖼️ Displays": {
+          "what": "Figures or tables read from the Board’s display Job, restricted to this view’s main/appendix placement when applicable.",
+          "example": "Source: display plan and original display Task Results. Work adds the linked display progress; viewing never copies evidence into this version."
+        }
+      },
+      "Submission": {
+        "🖼️ Displays": {
+          "what": "Figures or tables read from the Board’s display Job, restricted to this view’s main/appendix placement when applicable.",
+          "example": "Source: display plan and original display Task Results. Work adds the linked display progress; viewing never copies evidence into this version."
+        }
+      }
+    },
+    "task": {
+      "Draft Task": {
+        "📝 The text": {
+          "what": "The newest draft or adopted text; responds-to selects point/reply content for a reviewer-response Task.",
+          "example": "Use Cases → Reviewer response opens that variant; all draft purposes keep the same Plan, Write, Evidence, Display and Revise workflow."
+        }
+      }
+    },
+    "block": {
+      "Grant Board": {
+        "🧪 Work": {
+          "what": "Link internal Work Blocks that produce feasibility evidence or develop the proposed methods.",
+          "layout": "Linked Work Blocks",
+          "example_title": "Proposed example",
+          "example": "Preliminary results retain their source Work Block."
+        },
+        "🔎 Discovery": {
+          "what": "Link Discovery Blocks that establish the research gap and supporting literature.",
+          "layout": "Linked Discovery Blocks",
+          "example_title": "Proposed example",
+          "example": "Verified literature informs the proposed aims."
+        },
+        "🔀 Directions": {
+          "what": "Compare candidate grant directions against the research gap, feasibility and funding opportunity.",
+          "example_title": "Proposed grant example",
+          "example": "Two candidate directions are compared before selecting the application’s scope."
+        },
+        "🎓 Theory": {
+          "what": "Explain the theoretical or conceptual basis for the proposed research and its aims.",
+          "example_title": "Proposed grant example",
+          "example": "A conceptual model connects the research gap to the expected mechanisms and outcomes."
+        },
+        "📌 Open points": {
+          "what": "Track unresolved choices in the grant’s direction, narrative or preparation plan.",
+          "example_title": "Proposed grant example",
+          "example": "A choice of study scope remains open until the team records a decision."
+        },
+        "🧭 Direction": {
+          "what": "Read the selected direction and central argument of the grant proposal.",
+          "example_title": "Proposed grant example",
+          "example": "The chosen direction connects the problem, proposed approach and intended impact."
+        },
+        "💡 Pitch": {
+          "what": "State the grant’s problem, proposed contribution and reason to fund it.",
+          "example_title": "Proposed grant example",
+          "example": "A short pitch explains why this work matters and why the approach is promising."
+        },
+        "❓ Research Questions": {
+          "what": "Connect the proposed research questions and hypotheses to the specific aims.",
+          "example_title": "Proposed grant example",
+          "example": "Each aim names a question and the evidence needed to answer it."
+        },
+        "⚖️ Stakes and evidence": {
+          "what": "Connect the importance of the proposed work to existing evidence, uncertainty and feasibility.",
+          "example_title": "Proposed grant example",
+          "example": "Preliminary evidence supports feasibility without presenting proposed outcomes as established results."
+        },
+        "📚 Related": {
+          "what": "Position the proposed research against related literature and existing approaches.",
+          "example_title": "Proposed grant example",
+          "example": "The narrative identifies what is already known and the gap the grant would address."
+        },
+        "🏛️ Venues": {
+          "what": "For a grant, the target is the funding program or call. Read its fit and requirements from Opportunity.",
+          "example_title": "Proposed grant example",
+          "example": "The narrative links to the selected call’s recorded evaluation criteria.",
+          "layout": "Left Tabs · Right Content → Funding call"
+        },
+        "🧠 Story by Section": {
+          "what": "Map the grant’s argument across its application sections.",
+          "example_title": "Proposed grant example",
+          "example": "Specific aims, significance, innovation and approach each carry part of one argument."
+        },
+        "🗄️ Data flow": {
+          "what": "Map the data, access, preparation and analysis needed for the proposed aims; distinguish existing evidence from planned work.",
+          "example_title": "Proposed grant example",
+          "example": "Existing data supports a feasibility result; planned collection feeds a later aim."
+        },
+        "📝 Paper flow": {
+          "what": "For a grant, map how the application sections use aims, evidence and figures to build the proposal.",
+          "example_title": "Proposed grant example",
+          "example": "The aims page sets up the approach, supported by preliminary results and a study diagram."
+        },
+        "🗺️ Roadmaps": {
+          "what": "Connect application preparation to the proposed research roadmap.",
+          "example_title": "Proposed grant example",
+          "example": "The preparation roadmap ends at submission; the research roadmap continues through the proposed milestones."
+        },
+        "🧭 Plan": {
+          "what": "Plan the evidence, drafting and review work needed to prepare the grant application.",
+          "example_title": "Proposed grant example",
+          "example": "A missing feasibility result is linked to a Work Block; a drafting task uses its returned evidence."
+        },
+        "⚙️ Runs to do": {
+          "what": "List the concrete Runs needed for application preparation and link them to their owning work.",
+          "example_title": "Proposed grant example",
+          "example": "A literature check, feasibility analysis and section revision each have an assigned Run."
+        },
+        "🗓️ Next steps to the send": {
+          "what": "Track the remaining preparation, review and package steps before the grant submission.",
+          "example_title": "Proposed grant example",
+          "example": "The next steps complete the narrative, verify attachments and obtain the required human review."
+        }
+      }
+    }
+  },
+  "use_cases": {
+    "block": {
+      "Paper Board": {
+        "Manuscript development": [
+          {
+            "path": "blueprints/Project-Ladder/paper/Paper-Example",
+            "label": "Blueprint example"
+          }
+        ],
+        "Evidence coordination": [
+          {
+            "path": "blueprints/Project-Ladder/paper/Paper-Example",
+            "label": "Blueprint example"
+          }
+        ],
+        "Submission preparation": [
+          {
+            "path": "blueprints/Project-Ladder/paper/Paper-Example",
+            "label": "Blueprint example"
+          }
+        ]
+      }
+    },
+    "job": {
+      "Writing Version": {
+        "Manuscript drafting": [
+          {
+            "path": "blueprints/Project-Ladder/paper/Paper-Example/j11_writing_v1130_desk",
+            "label": "Blueprint example"
+          }
+        ],
+        "Feedback revision": [
+          {
+            "path": "blueprints/Project-Ladder/paper/Paper-Example/j12_writing_v0215_desk",
+            "label": "Blueprint example"
+          }
+        ]
+      },
+      "Display Evidence": {
+        "Figure and table preparation": [
+          {
+            "path": "blueprints/Project-Ladder/paper/Paper-Example/j01_evidence_display",
+            "label": "Blueprint example"
+          }
+        ]
+      },
+      "Value Evidence": {
+        "Printed-value verification": [
+          {
+            "path": "blueprints/Project-Ladder/paper/Paper-Example/j02_evidence_value",
+            "label": "Blueprint example"
+          }
+        ]
+      },
+      "Citation Evidence": {
+        "Citation verification": [
+          {
+            "path": "blueprints/Project-Ladder/paper/Paper-Example/j03_evidence_cite",
+            "label": "Blueprint example"
+          }
+        ]
+      },
+      "Submission": {
+        "Submission package preparation": [
+          {
+            "path": "blueprints/Project-Ladder/paper/Paper-Example/j21_submission_v1130_desk",
+            "label": "Blueprint example"
+          }
+        ]
+      }
+    },
+    "task": {
+      "Draft Task": {
+        "Manuscript section": [
+          {
+            "path": "blueprints/Project-Ladder/paper/Paper-Example/j11_writing_v1130_desk/t01_introduction",
+            "label": "Blueprint example"
+          }
+        ],
+        "Abstract or summary": [
+          {
+            "path": "blueprints/Project-Ladder/paper/Paper-Example/j11_writing_v1130_desk/t00_summary",
+            "label": "Blueprint example"
+          }
+        ],
+        "Cover letter drafting": [
+          {
+            "path": "blueprints/Project-Ladder/paper/Paper-Example/j11_writing_v1130_desk/t31_cover-letter",
+            "label": "Blueprint example"
+          }
+        ],
+        "Reviewer response": [
+          {
+            "path": "blueprints/Project-Ladder/paper/Paper-Example/j12_writing_v0215_desk/t32_response",
+            "label": "Blueprint example"
+          }
+        ]
+      },
+      "Display Task": {
+        "Figure preparation": [
+          {
+            "path": "blueprints/Project-Ladder/paper/Paper-Example/j01_evidence_display/t01_figure1-example",
+            "label": "Blueprint example"
+          }
+        ],
+        "Table preparation": [
+          {
+            "path": "blueprints/Project-Ladder/paper/Paper-Example/j01_evidence_display/t02_table1-example",
+            "label": "Blueprint example"
+          }
+        ]
+      },
+      "Values": {
+        "Printed-value verification": [
+          {
+            "path": "blueprints/Project-Ladder/paper/Paper-Example/j02_evidence_value/t01_values-sample",
+            "label": "Blueprint example"
+          }
+        ],
+        "Whole-paper value audit": [
+          {
+            "path": "blueprints/Project-Ladder/paper/Paper-Example/j02_evidence_value/t99_paper_value_check",
+            "label": "Blueprint example"
+          }
+        ]
+      },
+      "Value Tables": {
+        "Source table inspection": [
+          {
+            "path": "blueprints/Project-Ladder/paper/Paper-Example/j02_evidence_value/t02_raw-value-tables",
+            "label": "Blueprint example"
+          }
+        ]
+      },
+      "Citations": {
+        "Claim-group citation check": [
+          {
+            "path": "blueprints/Project-Ladder/paper/Paper-Example/j03_evidence_cite/t01_cite-prior-work",
+            "label": "Blueprint example"
+          }
+        ],
+        "Whole-paper citation audit": [
+          {
+            "path": "blueprints/Project-Ladder/paper/Paper-Example/j03_evidence_cite/t99_paper_citation_check",
+            "label": "Blueprint example"
+          }
+        ]
+      },
+      "Submission Letter": {
+        "Reference the version letter": [
+          {
+            "path": "blueprints/Project-Ladder/paper/Paper-Example/j21_submission_v1130_desk/t01_cover-letter",
+            "label": "Blueprint example"
+          }
+        ]
+      },
+      "Portal Walk": {
+        "Portal field survey": [
+          {
+            "path": "blueprints/Project-Ladder/paper/Paper-Example/j21_submission_v1130_desk/t02_portal-walk",
+            "label": "Blueprint example"
+          }
+        ]
+      },
+      "Portal Fill": {
+        "Portal preparation": [
+          {
+            "path": "blueprints/Project-Ladder/paper/Paper-Example/j21_submission_v1130_desk/t03_portal-fill",
+            "label": "Blueprint example"
+          }
+        ]
+      }
+    }
+  },
+  "types": {
+    "Grant Board": {
+      "result": "proposal documents",
+      "evidence": "preliminary results and supporting literature"
+    }
+  }
+}

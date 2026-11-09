@@ -1,5 +1,6 @@
 # t01_cover-letter · Cover letter
 
+use-case: Reference the version letter
 task-type: description
 state: the words are in the writing Job
 owner: <person>

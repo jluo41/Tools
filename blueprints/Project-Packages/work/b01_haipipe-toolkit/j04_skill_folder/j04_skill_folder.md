@@ -3,6 +3,7 @@
 job-of: b01_haipipe-toolkit (the Block `b04_skill_folder` until 261009; its questions, studio and runs moved with it)
 spine: How the toolkit's skills and servers are laid out on disk: the three skill layers (0_utils · 1_base · 2_theme), the servers that pair with them (workbench-shared as the base, one workbench per theme), the paths that must follow a move, and folding the subjective-label plugin in as a theme.
 close: Each recorded question has a report Page with an answer status; every move ends with no broken path (code, Markdown links, AGENTS.md) and its tests rerun.
+emoji: 📁
 
 ## Topic
 

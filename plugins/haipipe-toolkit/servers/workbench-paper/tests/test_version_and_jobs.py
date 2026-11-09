@@ -102,7 +102,7 @@ class VersionAndJobsTest(unittest.TestCase):
                 self.assertNotIn("Process</h3>", page, (job, key))
                 self.assertIn("🙋 Interaction<span", page, (job, key))
         displays = self.render(self.b / "j01_evidence_display", "work", "work-display-list")
-        self.assertLess(displays.index("⚙️ Process"), displays.index("📊 Results"))
+        self.assertNotIn("Where each display stands", displays)      # its state is its tab's (JL 261109)
         self.assertIn("Displays<span class=word>1 of 1 drawn</span>", displays)
         cites = self.render(self.b / "j03_evidence_cite", "report", "cite-list")
         self.assertIn("Citations<span class=word>1 of 3 verified</span>", cites)
@@ -115,13 +115,13 @@ class VersionAndJobsTest(unittest.TestCase):
         form(self.b / "j02_evidence_value" / "t01_values", "r01_collect_values", "Value asks")
         form(self.version / "t00_summary", "r01_collect_words", "Section asks")
         story = self.render(self.b, "report", "story")
-        self.assertIn("Story asks", story.split("🙋 Interaction")[-1])
+        self.assertIn("Story asks", story)
         self.assertNotIn("Value asks", story)
         evidence = self.render(self.b, "report", "evidence")
-        self.assertIn("Value asks", evidence)
-        self.assertNotIn("Story asks", evidence.split("🙋 Interaction")[-1])
+        self.assertNotIn("Value asks", evidence)  # a folder's type does not assign a question to a View
+        self.assertNotIn("Story asks", evidence)
         writing = self.render(self.b, "report", "draft")
-        self.assertIn("Section asks", writing)                            # about no part: Writing's
+        self.assertNotIn("Section asks", writing)  # unassigned questions remain in the rail
         version = self.render(self.version, "report", "draft-main")
         self.assertIn("Story asks", version)                              # a version: its own forms
         self.assertNotIn("Section asks", version.split("🙋 Interaction")[-1])

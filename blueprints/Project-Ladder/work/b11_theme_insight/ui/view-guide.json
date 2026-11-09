@@ -1,0 +1,361 @@
+{
+  "proposed": false,
+  "sections": {
+    "📄 The Overall Report": {
+      "what": "Current: show Executive answers for the newest Job containing Executive Tasks, its source Job and preview state. Earlier recorded intent says newest Job; do not hide a fallback selection. Source: insight_focus.py _answers → insight_views._overall_tabs. Skills: haipipe-insight.",
+      "layout": "Left Executive tabs · Right answer and first figure",
+      "example": "Insight-Example: compare the displayed report source with the newest Job. Other figures stay reachable."
+    },
+    "🔎 What each question found": {
+      "what": "Current: show the newest answer per question across Jobs, grouped by evidence level. Keep coverage distinct from checked evidence. Source: insight_focus.py _answers → insight_views._coverage. Skills: haipipe-insight-check.",
+      "layout": "Left DIKW tabs · Right question answers",
+      "example": "Use the two freezes to inspect question coverage; Work adds each question’s trail."
+    },
+    "🕸 How the questions build on each other": {
+      "what": "Current: show the latest analysis plan, its question dependencies and signature state. The live heading also names the plan. Source: insight_focus.py _questions_view / _canvas → question_canvas.canvas. Skills: haipipe-insight-question, haipipe-insight-evidence-plan.",
+      "layout": "Canvas · Executive above D → I → K → W; citation edges and foldable groups",
+      "example": "Select a question in the Example plan. Report explores; Work can propose from the selected question."
+    },
+    "❓ The questions, plan by plan": {
+      "what": "Current: keep versioned question definitions and proposal state distinguishable from the dataset answers. Source: insight_focus.py _questions_view → insight_views._prototype_tabs. Skills: haipipe-insight-question.",
+      "layout": "Left plan tabs · Right question content",
+      "example": "Open the Example plan and compare it with the linked Prototype release; no copied question definition."
+    },
+    "🧭 The Board's own questions": {
+      "what": "Current, conditional: show Board-level reports only when the Board declares its own questions. Source: insight_focus.py _questions_view → insight_views._findings; board.md Questions / reports. Skills: haipipe-report.",
+      "layout": "Question reports grouped by question",
+      "example": "The example link opens Questions; this section appears only if Board reports exist, independently of release questions."
+    },
+    "🧷 Analysis plans × data freezes": {
+      "what": "Current: rows are named analysis plans, columns named freezes; each occupied cell opens its Job and shows state with DIKW marks and a legend. Keep absent pairs empty of invented work. Source: insight_focus.py _jobs_view / _plans_grid; Board versions and Prototype releases. Skills: haipipe-insight.",
+      "layout": "Matrix · one Job per pair",
+      "example": "Example j01 and j02 hold the same plan with different freezes. This matrix currently appears in Jobs, not Answers."
+    },
+    "📂 The newest Job, its Tasks": {
+      "what": "Current: show the newest Job’s question Tasks grouped by DIKW with links and real states. The live heading includes the Job id. Source: insight_focus.py _jobs_view / _job_tasks. Skills: haipipe-insight-workflow.",
+      "layout": "Grouped Task rows and progress marks",
+      "example": "Example j02 exposes its question Tasks. Opening a Task preserves its parent analysis identity."
+    },
+    "⏱ What each Job moved": {
+      "what": "Current: report start, data or code from each Job’s recorded moved field and previous Job. Source: insight_focus.py _jobs_view; Job faces moved / previous. Skills: haipipe-insight.",
+      "layout": "Job facts table",
+      "example": "Compare j01 start with j02 data; do not infer a changed method from changed results."
+    },
+    "🗄 Data freezes": {
+      "what": "Current: show dated versions, what changed, aggregate key numbers and source files; no row-level data in reports. Source: insight_focus.py _data_view / _version_panel; board.md versions and dataset manifests. Skills: haipipe-insight-meta.",
+      "layout": "Left freeze tabs · Right number cards and file links",
+      "example": "Compare data-v1 with data-v2 and open the recorded summary/dictionary files."
+    },
+    "✂️ Cuts": {
+      "what": "Current: explain planned cut filters, reasons, question coverage and available row counts by freeze. Cuts come from the plan. Source: insight_focus.py _cuts_tabs; partitions.md / thresholds.yaml. Skills: haipipe-insight, haipipe-insight-evidence-plan.",
+      "layout": "Left cut tabs · Right facts; plan-file links",
+      "example": "Open full and another planned cut; a new cut is proposed for a future plan, not silently applied to a frozen Job."
+    },
+    "🧠 What the handoff will say": {
+      "what": "Current, conditional on Wisdom Tasks: show each draft counsel and its answer state before a signature exists. Source: insight_focus.py _handoff_view; latest Job Wisdom pages. Skills: haipipe-insight-wisdom.",
+      "layout": "Wisdom answer list",
+      "example": "Example W01 remains readable while the handoff is unsigned. An unwritten answer remains visibly unwritten."
+    },
+    "🤝 The handoff draft": {
+      "what": "Current: identify the plan/freeze pair, readiness of the counsel and the existing draft file. Presence is not approval. Source: insight_focus.py _handoff_view / _draft_handoff; delivery handoff records. Skills: haipipe-insight-wisdom.",
+      "layout": "Facts table · Open draft",
+      "example": "Inspect the draft or its missing state at Handoff. A person owns the signature."
+    },
+    "📦 Handoffs": {
+      "what": "Current, conditional on handoff records: list counsel links, source Job and signature. Read the boundary in the linked handoff file. Stale-handoff handling is a contract requirement, not a displayed status column in this table. Source: insight_focus.py _handoff_view → insight_views._handoff. Skills: haipipe-insight-wisdom.",
+      "layout": "Table · counsel / from Job / signed",
+      "example": "Open Handoff and then its source file to inspect scope and evidence. No records means the section is omitted; a stale indicator in the View is still an integration requirement."
+    },
+    "🗺 Board structure": {
+      "what": "Current: expose the Board’s structural relationships and navigable children; preserve a real drawing rather than prose listing. Source: insight_focus.py _parts_map and focus-page MindMap integration. Skills: haipipe-mindmap, workbench-insight.",
+      "layout": "MindMap · expandable branches",
+      "example": "Open Insight-Example at Report / MindMap and follow its Jobs."
+    },
+    "📄 Overall Report": {
+      "what": "Current: show this Job’s Executive answers with preview state for an unsigned plan. Never replace this Job’s report with another Job’s. Source: insight_focus.py _overall_res → insight_views._overall_tabs. Skills: haipipe-insight.",
+      "layout": "Left Executive tabs · Right answer and figure",
+      "example": "Example j02 Overall: inspect Executive answers, the source artifacts and their actual review state."
+    },
+    "🧷 This Job": {
+      "what": "Current: identify the pinned plan, freeze, state, previous Job and the one changed clock. Source: insight_focus.py _overall_res; Job face and linked plan. Skills: haipipe-insight-workflow.",
+      "layout": "Compact facts table",
+      "example": "Example j02 shows its updated freeze and previous Job. Writing a report does not close the Job."
+    },
+    "🔲 Questions × cuts": {
+      "what": "Current: show each question’s evidence at the cuts it asks; distinguish planned, refused, run, written and checked evidence with words. Source: insight_focus.py _grid_res / _grid. Skills: haipipe-insight-workflow, haipipe-insight-check.",
+      "layout": "Question × cut grid grouped by evidence level",
+      "example": "Inspect Example j02 Grid; citation-only questions must not gain artificial compute tickets."
+    },
+    "🔁 Per question": {
+      "what": "Current: compare this Job with its previous Job, including changed or unchanged answers and the recorded explanation. Hide the View without a predecessor. Source: insight_focus.py _vs_res → insight_views._vs_previous; reports/vs-*.md. Skills: haipipe-insight-knowledge.",
+      "layout": "Left comparison tabs · Right per-question evidence",
+      "example": "Example j02 has a predecessor; Example j01 must not display vs previous. A comparison can still be awaiting its report."
+    },
+    "🗺 Questions by evidence level": {
+      "what": "Current: draw this Job’s question labels grouped by D/I/K/W/X. The map uses text leaves, not linked Task/Run nodes. Source: insight_focus.py _job_mindmap / draw_map. Skills: haipipe-mindmap, haipipe-insight.",
+      "layout": "MindMap · evidence level → question text",
+      "example": "Example j02 shows its question wording under each evidence level. Open source Tasks and Runs through Grid or page navigation; direct map navigation remains a target."
+    },
+    "⚓ The answer": {
+      "what": "Current: lead with the answer, first figure, other thumbnails, sourced facts and page. If using a previous Job answer while writing, label that fallback explicitly. Source: insight_focus.py _t_answer; Task face / Run results / figures. Skills: haipipe-insight-data, haipipe-insight-information, haipipe-insight-knowledge, haipipe-insight-wisdom, haipipe-insight, haipipe-insight-check.",
+      "layout": "Answer headline · aggregate tiles when applicable · lead figure and thumbnails",
+      "example": "D shows extract facts; I contrasts; K robustness; W counsel; X a plain synthesis. The current Task type controls which real example opens."
+    },
+    "🎯 How sure": {
+      "what": "Current: show recorded uncertainty and supporting Runs or cited answers. A CHECK mark describes review, not certainty. Source: insight_focus.py _t_answer / _plan_cites; how-sure and check fields. Skills: haipipe-insight-check.",
+      "layout": "Confidence facts and evidence links",
+      "example": "Compare checked evidence with an answer still awaiting CHECK; retain its limitations."
+    },
+    "🔲 By cut": {
+      "what": "Current for compute Tasks: show each real cut’s results, power/refusal and provenance. The plan defines the cuts. Source: insight_focus.py _t_cuts; hard Run records and results. Skills: haipipe-insight-workflow.",
+      "layout": "Left cut tabs · Right evidence",
+      "example": "D/I/K examples have compute evidence. A refused cut remains refused, not a successful null finding."
+    },
+    "🔗 What it cites": {
+      "what": "Current for citation-only Tasks: show the supporting answer chain and source readiness instead of a compute grid. Source: insight_focus.py _t_cuts / _cite_chain / _cite_only. Skills: haipipe-insight-evidence-plan, haipipe-insight-check.",
+      "layout": "Cited-answer chain and linked pages",
+      "example": "W and X examples show this section because they have no hard Runs and their roles are outside the renderer’s compute levels. The K example uses By cut."
+    },
+    "🔁 This question in each Job": {
+      "what": "Current: compare the stable question id across Jobs with source links and plan/freeze identity. Keep the explicit single-Job state when necessary. Source: insight_focus.py _t_across. Skills: haipipe-insight-check.",
+      "layout": "Cross-Job comparison table",
+      "example": "Open D01 across the two freezes. Interpret changed definitions using the linked plans before comparing answers."
+    },
+    "📋 Needs": {
+      "what": "Current: show the question, evidence needs, work steps, permitted claims, agreement and authoritative question file. Source: insight_focus.py _t_plan; Prototype question.md. Skills: haipipe-insight-evidence-plan.",
+      "layout": "Needs / agreement facts with question-file pop-out",
+      "example": "Open the question’s plan, including citation needs for W/X. An empty agreement field is not approval."
+    },
+    "🗺 Question evidence": {
+      "what": "Current: retain the Task MindMap as explicitly decided; summarize the answer, per-cut findings or cited answers, and checks. Text leaves do not link to source Runs. Source: insight_focus.py _task_mindmap / draw_map. Skills: haipipe-mindmap, haipipe-insight.",
+      "layout": "MindMap · answer / cut findings or citations / checks",
+      "example": "Compare D01 with W01/X01. Use By cut or the answer’s evidence links to open sources; the map itself summarizes them."
+    },
+    "🎨 Studio": {
+      "what": "Shared integration target; not yet integrated in Insight. Develop alternatives as drawings under the explicitly linked View or Topic. Source: shared work_frame.py and its section components. Skills: haipipe-studio.",
+      "layout": "Left Topic tabs · Right drawing",
+      "example": "No live Insight implementation is claimed. Acceptance scenario: A question-development Topic belongs to Questions; unrelated topics remain outside that View."
+    },
+    "🙋 Interactions": {
+      "what": "Shared integration target; not yet integrated in Insight. Read and answer the View/Topic’s linked questions; unassigned records stay only in the page rail. Source: shared work_frame.py and its section components. Skills: haipipe-interaction.",
+      "layout": "Left Topic tabs · Right question form",
+      "example": "No live Insight implementation is claimed. Acceptance scenario: An unassigned question must not appear in every Insight View."
+    },
+    "⚖️ Decisions": {
+      "what": "Shared integration target; not yet integrated in Insight. Read recorded choices and reasons from the selected scope, keeping the original decision record. Source: shared work_frame.py and its section components. Skills: haipipe-interaction.",
+      "layout": "Left Topic tabs · Right decisions",
+      "example": "No live Insight implementation is claimed. Acceptance scenario: A plan choice links to its source; it does not silently sign a release."
+    },
+    "📚 Things to Know": {
+      "what": "Shared integration target; not yet integrated in Insight. Read terms, assumptions and references needed for this View or linked Topic. Source: shared work_frame.py and its section components. Skills: haipipe-related.",
+      "layout": "Left Topic tabs · Right notes",
+      "example": "No live Insight implementation is claimed. Acceptance scenario: A theory relevant to a Knowledge question links back to its source and transfer limits."
+    },
+    "📝 Checklist": {
+      "what": "Shared integration target; not yet integrated in Insight. Read existing checks and evidence in this scope. The proposed four-state Work checklist is not an implemented API. Source: shared work_frame.py and its section components. Skills: haipipe-insight-check.",
+      "layout": "Checklist with source evidence links",
+      "example": "No live Insight implementation is claimed. Acceptance scenario: A completed Run cannot automatically pass the answer’s independent review."
+    },
+    "🕒 Timeline": {
+      "what": "Shared integration target; not yet integrated in Insight. Read dated work, feedback and decisions linked to this View; the rail aggregates the page and descendants. Source: shared work_frame.py and its section components. Skills: haipipe-run.",
+      "layout": "Chronological records",
+      "example": "No live Insight implementation is claimed. Acceptance scenario: A new freeze event and a question proposal keep separate provenance."
+    },
+    "🧰 Skills": {
+      "what": "Shared integration target; not yet integrated in Insight. Open the skills relevant to the selected View and its work. Source: shared work_frame.py and its section components. Skills: workbench-insight.",
+      "layout": "Left skill tabs · Right skill contents",
+      "example": "No live Insight implementation is claimed. Acceptance scenario: Use the owner listed for this View; do not infer authority to execute from a skill link."
+    },
+    "📁 Files": {
+      "what": "Shared integration target; not yet integrated in Insight. Open source directories grouped by Workspace, Blocks, Code, Tools · Skills and Tools · UI; absent types are hidden. Source: shared work_frame.py and its section components. Skills: workbench-insight.",
+      "layout": "Left folder types · Right expandable tree · File pop-out",
+      "example": "No live Insight implementation is claimed. Acceptance scenario: Closing a file retains the selected tree location. Runs remain within Blocks."
+    }
+  },
+  "skills": {
+    "Answers": [
+      "haipipe-insight",
+      "haipipe-insight-check"
+    ],
+    "Questions": [
+      "haipipe-insight-question",
+      "haipipe-insight-evidence-plan"
+    ],
+    "Jobs": [
+      "haipipe-insight",
+      "haipipe-insight-workflow"
+    ],
+    "Data": [
+      "haipipe-insight-meta"
+    ],
+    "Handoff": [
+      "haipipe-insight-wisdom"
+    ],
+    "Overall": [
+      "haipipe-insight"
+    ],
+    "Grid": [
+      "haipipe-insight-workflow",
+      "haipipe-insight-check"
+    ],
+    "vs previous": [
+      "haipipe-insight-knowledge"
+    ],
+    "Answer": [
+      "haipipe-insight-check"
+    ],
+    "By cut": [
+      "haipipe-insight-workflow",
+      "haipipe-insight-evidence-plan"
+    ],
+    "Across Jobs": [
+      "haipipe-insight-check"
+    ],
+    "Plan": [
+      "haipipe-insight-evidence-plan"
+    ],
+    "MindMap": [
+      "haipipe-mindmap",
+      "workbench-insight"
+    ]
+  },
+  "examples": {
+    "block": {
+      "Insight Board": "blueprints/Project-Ladder/insight/Insight-Example"
+    },
+    "job": {
+      "Analysis": "blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2"
+    },
+    "task": {
+      "Data question": "blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2/t01_D01_extract-shape",
+      "Information question": "blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2/t03_I01_outcome-by-arm",
+      "Knowledge question": "blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2/t05_K01_gap-holds",
+      "Wisdom question": "blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2/t06_W01_next-round",
+      "Executive question": "blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2/t07_X01_what-we-found"
+    }
+  },
+  "view_routes": {
+    "Answers": {
+      "section": "report",
+      "group": "answers"
+    },
+    "Questions": {
+      "section": "report",
+      "group": "questions"
+    },
+    "Jobs": {
+      "section": "report",
+      "group": "jobs"
+    },
+    "Data": {
+      "section": "report",
+      "group": "data"
+    },
+    "Handoff": {
+      "section": "report",
+      "group": "handoff"
+    },
+    "Overall": {
+      "section": "report",
+      "group": "overall"
+    },
+    "Grid": {
+      "section": "report",
+      "group": "grid"
+    },
+    "vs previous": {
+      "section": "report",
+      "group": "vs-previous"
+    },
+    "Answer": {
+      "section": "report",
+      "group": "answer"
+    },
+    "By cut": {
+      "section": "report",
+      "group": "by-cut"
+    },
+    "Across Jobs": {
+      "section": "report",
+      "group": "across-jobs"
+    },
+    "Plan": {
+      "section": "report",
+      "group": "plan"
+    },
+    "MindMap": {
+      "section": "report",
+      "group": "mindmap"
+    }
+  },
+  "use_cases": {
+    "block": {
+      "Insight Board": {
+        "Dataset investigation": [
+          {
+            "path": "blueprints/Project-Ladder/insight/Insight-Example",
+            "label": "Blueprint example"
+          }
+        ]
+      }
+    },
+    "job": {
+      "Analysis": {
+        "Apply an analysis plan": [
+          {
+            "path": "blueprints/Project-Ladder/insight/Insight-Example/j01_code-v1-example-questions_data-v1",
+            "label": "Blueprint example"
+          }
+        ],
+        "Compare analyses": [
+          {
+            "path": "blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2",
+            "label": "Blueprint example"
+          }
+        ]
+      }
+    },
+    "task": {
+      "Data question": {
+        "Audit extract quality": [
+          {
+            "path": "blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2/t01_D01_extract-shape",
+            "label": "Blueprint example"
+          }
+        ]
+      },
+      "Information question": {
+        "Measure outcomes": [
+          {
+            "path": "blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2/t03_I01_outcome-by-arm",
+            "label": "Blueprint example"
+          }
+        ]
+      },
+      "Knowledge question": {
+        "Assess differences across cuts": [
+          {
+            "path": "blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2/t05_K01_gap-holds",
+            "label": "Blueprint example"
+          }
+        ]
+      },
+      "Wisdom question": {
+        "Develop counsel": [
+          {
+            "path": "blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2/t06_W01_next-round",
+            "label": "Blueprint example"
+          }
+        ]
+      },
+      "Executive question": {
+        "Summarize findings": [
+          {
+            "path": "blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2/t07_X01_what-we-found",
+            "label": "Blueprint example"
+          }
+        ]
+      }
+    }
+  }
+}

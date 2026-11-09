@@ -2,6 +2,8 @@
 
 state: ⏳ IN PROGRESS · the main values are handed over; the subgroup robustness Run is running
 goal: Return the estimates the paper prints, from the main Task and the subgroup Task, and hand over a clean copy.
+emoji: 📈
+use-case: 📈 Statistical analysis
 
 ## Tasks
 

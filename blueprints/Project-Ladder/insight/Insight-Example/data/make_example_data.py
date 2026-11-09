@@ -1,14 +1,14 @@
-"""The example Board's data: two data freezes of one made-up dataset, so every insight page has something to show.
+"""The example Board's data: two data versions of one made-up dataset, so every insight page has something to show.
 
 Every row is synthetic (numpy, fixed seed); nothing comes from a real dataset, person or organization. One row is one
 made-up contact: its day, the arm it got (A or B), its group (group_1, group_2, and a deliberately small group_3), a
 0/1 outcome and a plain numeric score. Arm B is given a higher outcome rate than arm A, so the example has a gap to find.
 
-    python make_example_data.py        writes v1/ (the first ten days) and v2/ (all sixteen days) beside this file
+    python make_example_data.py        writes data-v1/ (the first ten days) and data-v2/ (all sixteen days) beside this file
 
-Each freeze folder holds the data file (example.parquet), its manifest.json, data_dictionary.csv, cohort_summary.txt
-and figures/rows-per-day.png: what a data freeze folder holds (haipipe-insight ref/insight-ladder.md rule 6). v2 holds
-every v1 row plus the later days (accumulates: yes). Rerun it to rebuild both; the same seed writes the same rows.
+Each data version folder holds the data file (example.parquet), its manifest.json, data_dictionary.csv, cohort_summary.txt
+and figures/rows-per-day.png: what a data version folder holds (haipipe-insight ref/insight-ladder.md rule 6). data-v2 holds
+every data-v1 row plus the later days (accumulates: yes). Rerun it to rebuild both; the same seed writes the same rows.
 """
 from __future__ import annotations
 
@@ -48,7 +48,7 @@ DICTIONARY = [("date", "time", "the day of the contact"), ("arm", "design", "the
 
 
 def freeze(name: str, days: int, label: str) -> None:
-    # v2 accumulates: the first DAYS_V1 days are the same rows as v1 (same seed, rows drawn day by day in order)
+    # data-v2 accumulates: the first DAYS_V1 days are the same rows as data-v1 (same seed, rows drawn day by day in order)
     df = rows(DAYS_V2).loc[lambda d: d["date"] < START + pd.Timedelta(days=days)].reset_index(drop=True)
     out = HERE / name
     (out / "figures").mkdir(parents=True, exist_ok=True)
@@ -64,7 +64,7 @@ def freeze(name: str, days: int, label: str) -> None:
     dd.to_csv(out / "data_dictionary.csv", index=False)
     by_arm = df.groupby("arm")["outcome"].agg(["size", "mean"])
     by_group = df["group"].value_counts().sort_index()
-    lines = [f"Example data freeze {name}: {label} (synthetic, made by make_example_data.py)",
+    lines = [f"Example data version {name}: {label} (synthetic, made by make_example_data.py)",
              f"rows: {len(df)}  ·  days: {df['date'].nunique()}  ·  {manifest['start_date']} to {manifest['end_date']}",
              "rows per arm: " + ", ".join(f"{a} {int(r['size'])}" for a, r in by_arm.iterrows()),
              "rows per group: " + ", ".join(f"{g} {int(n)}" for g, n in by_group.items()),
@@ -88,8 +88,8 @@ def freeze(name: str, days: int, label: str) -> None:
 
 
 def main() -> int:
-    freeze("v1", DAYS_V1, "first ten days")
-    freeze("v2", DAYS_V2, "all sixteen days")
+    freeze("data-v1", DAYS_V1, "first ten days")
+    freeze("data-v2", DAYS_V2, "all sixteen days")
     return 0
 
 

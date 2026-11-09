@@ -3,8 +3,8 @@ name: haipipe-job
 description: "Owns the Job level: its face jNN_<job>.md (goal, close, answers:, its Tasks in order, ## Deliverables ticked from disk), its Spaces and buttons, a new-Job scaffold with Task slots, a check of Tasks against folders, and a theme's own Job and Task names. Trigger: job, new job, add a task, job face, jNN, tasks in order, level_patterns, /haipipe-job."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.3.1"
-  last_updated: "2026-10-26"
+  version: "0.3.2"
+  last_updated: "2026-11-08"
   # version history: ./CHANGELOG.md
 ---
 
@@ -34,6 +34,11 @@ bNN_<block>/jNN_<job>/
 
 Read `ref/job-contract.md` before creating a Job or adding a Task: the face, the Spaces, the
 buttons, a theme's own names.
+
+A Job's title is its folder's words: `j01_work_ladder_contract` is `# j01 · Work ladder contract`,
+so the name on every page row matches the folder; give `new_job.py` that `--title`, and rename the
+title with the folder. Its face carries an `emoji:` line (after `close:`); a Block's Status shows
+each Job as that emoji, its jNN, its name and how far (b17 s04-D19, JL 261108).
 
 
 Create a Job, add its Tasks

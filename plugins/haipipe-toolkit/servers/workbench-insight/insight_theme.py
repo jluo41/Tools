@@ -1,7 +1,7 @@
 """The insight theme on the base frame (servers/workbench/frame.py): only what differs from vanilla.
 
 Two layouts (b11, 261007). Plan C (a Board whose board.md names its `prototype:`, or whose Jobs pair a
-release and a data version, jNN_prototype-pN-<slug>_data-<d>vM/): every level is drawn by insight_views.py
+release and a data version, jNN_code-vN-<slug>_data-vM/): every level is drawn by insight_views.py
 from the folders (insight_plan_c.py): the Board (s11), a Job (s12), a Task (s13). Today's layout (a register board in
 insights/, or an Insight Block in tasks/ claimed by `workbench: insight`): the Block tab below, from the
 old page's data, with b11's Map, the Reading row (Coverage · Tracks · Consistency · Findings) and Check's
@@ -310,8 +310,8 @@ def claims(block):
 
 # today's layout's buttons (the old page's run cards), named by the Run each makes (haipipe-run ref/run-types-by-space.md
 # rule 6, b11 s21's names); a hard Run keeps its rNN_ name. Plan C's are named in insight_views.RUNS.
-RUN_NAMES = {"Prepare extract": "run-add-version-<d>vM", "Ask": "run-ask-<L><NN>", "Carry a board over": "run-carry-<board>",
-             "Register a cut": "run-set-cuts-p<N>", "Review the questions": "run-review-questions-p<N>",
+RUN_NAMES = {"Prepare extract": "run-add-version-data-v<M>", "Ask": "run-ask-<L><NN>", "Carry a board over": "run-carry-<board>",
+             "Register a cut": "run-set-cuts-code-v<N>", "Review the questions": "run-review-questions-code-v<N>",
              "Plan the evidence": "run-plan-evidence-<L><NN>", "Write the script": "run-write-script-<L><NN>",
              "Review the script": "run-review-script-<L><NN>", "Draw the question map": "run-map-questions",
              "Report": "run-write-<tNN>", "Pool or split": "run-pool-<tNN>", "Data runs": "rNN_<partition>",

@@ -2,6 +2,7 @@
 
 goal: the labeling theme's three pages on the focus page, each in its three sections: Block, Job and Task × Report, Work and Studio
 close: all nine sNN are agreed and each names the code change for its owner (labeling_theme.py, task_labeling.py, workbench-labeling skill)
+emoji: 🏷️
 answers: Q01
 
 ## Topic

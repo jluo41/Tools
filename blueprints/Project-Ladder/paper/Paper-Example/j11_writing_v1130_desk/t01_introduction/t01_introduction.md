@@ -1,5 +1,6 @@
 # t01_introduction · Introduction
 
+use-case: Manuscript section
 task-type: draft
 page-type: section
 folder-kind: section

@@ -4,7 +4,8 @@ Task, a Run, as the design theme's design_ladder.py makes its own (b16 Q05).
 
     python paper_ladder.py board   <paper/>Paper-<Slug>  [--title "<paper>"]             a new paper Board
     python paper_ladder.py version <board> --desk <desk> --date MMDD [--venue "<venue>"]  the first (or a fresh) version
-    python paper_ladder.py next    <board> --from <version> --date MMDD                   the next version, from an earlier one
+    python paper_ladder.py next    <board> --from <version> --date MMDD [--desk <desk>]   the next version, from an earlier one
+                                                                                          (--desk: a new desk when the paper retargets)
     python paper_ladder.py spaces  <board> <version>                                      give a version reports/ runs/
     python paper_ladder.py task    <version folder> tNN_<title>                           a Section, the Abstract or a letter
     python paper_ladder.py submission <board> --date MMDD [--for <writing Job>] [--desk <desk>] [--venue <venues folder>]
@@ -148,12 +149,14 @@ class Run:
             dst.parent.mkdir(parents=True, exist_ok=True)
             dst.write_text(read(b / rel), encoding="utf-8")
             (b / rel).write_text(text, encoding="utf-8")
+        import paper_check
         for rel, text in self.create.items():
             (b / rel).parent.mkdir(parents=True, exist_ok=True)
-            if isinstance(text, Path):
+            if isinstance(text, Path) and paper_check.face_use(rel, "") is None:
                 shutil.copy2(text, b / rel)
-            else:
-                (b / rel).write_text(text, encoding="utf-8")
+            else:                                  # a new face says its use (L6), a copied one too
+                text = read(text) if isinstance(text, Path) else text
+                (b / rel).write_text(paper_check.stamp_use_case(rel, text), encoding="utf-8")
         rec = {"run": date.today().isoformat(), "what": what, "tool": "haipipe-paper/scripts/paper_ladder.py",
                "moves": done, "rewritten": sorted(self.rewrite), "created": sorted(self.create),
                "kept": f"{UNDO}/{keep.name}",
@@ -197,7 +200,7 @@ def board(path: Path, title: str, dry: bool) -> list:
     if not re.match(r"^Paper-[A-Za-z0-9-]+$", path.name):
         sys.exit(f"stop: a paper Board folder is Paper-<Slug>: {path.name}")
     files = {                                   # the face only: a Space folder comes with its first item
-        "board.md": f"# {title or '<paper>'}\n\nboard-kind: paper-board\ndialect: paper\npaper-root: .\n"
+        "board.md": f"# {title or '<paper>'}\n\nuse-case: Manuscript development\nboard-kind: paper-board\ndialect: paper\npaper-root: .\n"
                     "story-current: none yet\nspine: <the question the paper answers, in one sentence>\n"
                     "close: <what makes this paper done: sent, answered, accepted>\n\n## Topic\n\n"
                     "<what the paper argues and for whom>\n\n## Pages\n\n## Questions\n\n```yaml\nquestions: []\n```\n",
@@ -217,6 +220,25 @@ def spaces(run, version):
             run.create[f"{version}/{d}/README.md"] = readme(d, "version")
 
 
+# a version's per-Section narrative (JL 261109: "not just the claims ... the narratives, the arc"): the workbench's
+# Story by Section reads it, haipipe-paper-story writes it; a new Section adds its row with placeholders
+NARRATIVE_HEAD = ("| Section | reader question | entry | ordered moves | must refuse | displays | exit |\n"
+                  "|---|---|---|---|---|---|---|\n")
+
+
+def narrative_row(face_text: str, stem: str) -> str:
+    """The version face with a placeholder row for `stem` in its ## Narrative table, when the table is there and has none."""
+    m = re.search(r"(?ms)^## Narrative[ \t]*\n(.*?)(?=^## |\Z)", face_text)
+    if m is None or re.search(rf"(?m)^\|\s*{re.escape(stem)}\s*\|", m.group(1)):
+        return face_text
+    rows = list(re.finditer(r"(?m)^\|.*\|[ \t]*$", m.group(1)))
+    if not rows or not re.match(r"\|\s*Section\s*\|", rows[0].group(0)):
+        return face_text
+    at = m.start(1) + rows[-1].end()
+    row = f"\n| {stem} | <what the reader asks here> | <what they hold coming in> | <a → b → c> | <what it must not say> | <displays> | <what they leave with> |"
+    return face_text[:at] + row + face_text[at:]
+
+
 def version(run, desk, mmdd, venue):
     b = run.board
     if not re.fullmatch(r"\d{4}", mmdd) or not re.fullmatch(r"[a-z0-9-]+", desk):
@@ -225,11 +247,11 @@ def version(run, desk, mmdd, venue):
     n = max([WRITING_FROM - 1] + [u for u in used if u >= WRITING_FROM]) + 1
     to = f"j{n:02d}_writing_v{mmdd}_{desk}"
     run.create[f"{to}/{to}.md"] = (
-        f"# {to} · version {n - WRITING_FROM + 1} of the paper\n\nsend: {to}\ndesk: {desk}\n"
+        f"# {to} · version {n - WRITING_FROM + 1} of the paper\n\nuse-case: Manuscript drafting\nsend: {to}\ndesk: {desk}\n"
         f"venue: {venue or '<venue>'}\nstate: drafting\ntells: studio/sNN-story-<telling>\nfrom: none (the first send)\n"
         f"goal: <the paper this send puts before {venue or '<venue>'}>\nclose: <sent, and every comment it drew answered>\n\n"
         "## Tasks\n\n## Narrative\n\nHow this version tells the story, in reading order: one row per Section (its job, the claims "
-        "it carries, its release).\n\n<!-- haipipe:compile-order:start -->\n<!-- haipipe:compile-order:end -->\n\n"
+        "it carries, its release).\n\n" + NARRATIVE_HEAD + "\n<!-- haipipe:compile-order:start -->\n<!-- haipipe:compile-order:end -->\n\n"
         "## Questions\n\n```yaml\nquestions: []\n```\n")
     run.set("board.md", pages_add(run.text("board.md"), to, [], f"Version {to}: {venue or '<venue>'}."))
     return to
@@ -239,12 +261,14 @@ def version(run, desk, mmdd, venue):
 def evidence(run):
     """The Board's three evidence Jobs, the ones not made yet: j01_evidence_display, j02_evidence_value,
     j03_evidence_cite (JL 261031). Each deposits what its discovery and work Blocks returned, for every writing Job."""
+    import paper_check
     made = []
     for name, holds in EVIDENCE_JOBS:
         if (run.board / name).is_dir() or any(r.startswith(f"{name}/") for r in run.create):
             continue
         run.create[f"{name}/{name}.md"] = (
-            f"# {name} · the paper's evidence: {holds.split(':')[0]}\n\nlayer: evidence\nstate: open\n"
+            f"# {name} · the paper's evidence: {holds.split(':')[0]}\n\n"
+            f"use-case: {paper_check.USE_CASES[paper_check.job_kind(Path(name))]}\nlayer: evidence\nstate: open\n"
             f"goal: {holds}\nclose: every one the writing Jobs quote is drawn or checked, and accepted\n"
             "reads: the returned Results of the work Blocks (internal) and the discovery Blocks (external); never raw data\n\n"
             "## Tasks\n")
@@ -274,21 +298,28 @@ def submission(run, frm, mmdd, desk, venue):
     fill = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(fill)
     to, files = fill.scaffold(b, frm, mmdd, desk, venue)
+    import paper_check
+    face_rel = f"{to}/{to}.md"
+    if isinstance(files.get(face_rel), str):
+        files[face_rel] = paper_check.put_use_case(files[face_rel], paper_check.USE_CASES["submission"])
     run.create.update(files)
     run.set("board.md", pages_add(run.text("board.md"), to, [], f"Submission {to}: for {frm}."))
     return to
 
 
 # ── next ──────────────────────────────────────────────────────────────────────────────────────────
-def next_version(run, frm, mmdd):
+def next_version(run, frm, mmdd, desk=""):
     b = run.board
     m = VERSION.match(frm)
     if not m or not (b / frm).is_dir():
         sys.exit(f"stop: {frm} is not a version folder (jNN_v<…>_<desk>)")
+    desk = desk or m.group(3)                  # a retarget names its new desk; otherwise the earlier version's
+    if not re.fullmatch(r"[a-z0-9-]+", desk):
+        sys.exit("stop: --desk is lowercase (mansci, jama-im)")
     used = sorted(int(VERSION.match(p.name).group(1)) for p in b.iterdir() if p.is_dir() and VERSION.match(p.name))
-    empty = next((p.name for p in b.iterdir() if p.is_dir() and VERSION.match(p.name) and p.name.endswith(f"_v{mmdd}_{m.group(3)}")
+    empty = next((p.name for p in b.iterdir() if p.is_dir() and VERSION.match(p.name) and p.name.endswith(f"_v{mmdd}_{desk}")
                   and not any(x for x in p.iterdir() if x.name not in (".DS_Store",))), None)
-    to = empty or f"j{max(used[-1], WRITING_FROM - 1) + 1:02d}_writing_v{mmdd}_{m.group(3)}"
+    to = empty or f"j{max(used[-1], WRITING_FROM - 1) + 1:02d}_writing_v{mmdd}_{desk}"
     if (b / to).exists() and not empty:
         sys.exit(f"stop: {to} exists and is not empty")
     stems = []                                 # each Section's own writing
@@ -319,8 +350,10 @@ def next_version(run, frm, mmdd):
         run.create[f"delivery/{to}/paper-build.toml"] = t
     old = read(b / frm / (frm + ".md"))        # the face: from, tells, the Narrative it follows; its own Questions
     face = re.sub(r"(?m)\A# .*$", f"# {to} · the next version of the paper, from {frm}", old, count=1)
-    for k, v in (("send", to), ("state", "drafting"), ("from", frm)):
+    for k, v in (("send", to), ("state", "drafting"), ("from", frm)) + ((("desk", desk),) if desk != m.group(3) else ()):
         face = header(face, k, v)
+    import paper_check
+    face = paper_check.put_use_case(face, paper_check.version_use(face))   # the same rule update's L6 uses
     face = re.sub(r"(?ms)^## Questions.*?(?=^## |\Z)", "", face).rstrip("\n")
     face += "\n\n## Questions\n\n```yaml\nquestions: []\n```\n"
     run.create[f"{to}/{to}.md"] = face
@@ -388,6 +421,7 @@ def task(run, ver, stem):
             n = len(re.findall(r"(?m)^\d+\. ", tasks.group(1))) + 1
             body = tasks.group(1).rstrip("\n")
             vt = vt[:tasks.start(1)] + (body + "\n" if body.strip() else "\n") + f"{n}. {line}\n\n" + vt[tasks.end(1):]
+        vt = narrative_row(vt, stem)                # its row in ## Narrative, for haipipe-paper-story to fill
         run.set(vface, vt)
     return f"{ver}/{stem} ({part})"
 
@@ -608,6 +642,7 @@ def update(board: Path, date: str, dry: bool) -> list:
              and (f.with_suffix("") / f.name).is_file() and f.stat().st_size < f.with_suffix("").joinpath(f.name).stat().st_size]  # its topic's
     plain = sorted(j for j in board.glob("j[0-9]*_*") if j.is_dir() and re.fullmatch(r"j\d+_v\d{4}_[A-Za-z0-9-]+", j.name))
     record = None
+    import paper_check
     if (lift or plain) and not dry:                # one record per update: its moves, each swept file's old text
         undo = board / ".ladder-undo"
         n_rec = 1 + max([int(p.name.split("-")[1]) for p in undo.glob("update-*") if p.name.split("-")[1].isdigit()] or [0])
@@ -674,6 +709,28 @@ def update(board: Path, date: str, dry: bool) -> list:
                             f.rename(g)
                             record["moves"].append([f.relative_to(board).as_posix(), g.relative_to(board).as_posix()])
         did.append(f"writing Job {new}")
+    bare = paper_check.faces_without_use_case(board)  # L6, read after the moves and renames: a face they made counts
+    if bare and not dry and record is None:
+        undo = board / ".ladder-undo"
+        n_rec = 1 + max([int(p.name.split("-")[1]) for p in undo.glob("update-*") if p.name.split("-")[1].isdigit()] or [0])
+        record = {"dir": undo / f"update-{n_rec}", "moves": [], "swept": []}
+    if bare:                                       # write each page's use, the old face kept for the rollback
+        for rel, word in bare:
+            if not word:
+                print(f"\n▶ {rel}: fits no use; write its use-case: line by hand (🙋)")
+                continue
+            print(f"\n▶ say the page's use: {rel} -> use-case: {word}")
+            if not dry:
+                f = board / rel
+                rel = Path(rel)
+                text = f.read_text(encoding="utf-8")
+                keep = record["dir"] / "files" / rel
+                if not keep.exists():
+                    keep.parent.mkdir(parents=True, exist_ok=True)
+                    keep.write_text(text, encoding="utf-8")
+                f.write_text(paper_check.put_use_case(text, word), encoding="utf-8")
+                record["swept"].append(rel.as_posix())
+            did.append(f"use-case of {rel}")
     if record is not None:
         import yaml
         record["dir"].mkdir(parents=True, exist_ok=True)
@@ -719,6 +776,7 @@ def main(argv=None):
     n.add_argument("board", type=Path)
     n.add_argument("--from", dest="frm", required=True)
     n.add_argument("--date", required=True)
+    n.add_argument("--desk", default="", help="a new desk when the paper retargets (default: the earlier version's)")
     s = sub.add_parser("spaces")
     s.add_argument("board", type=Path)
     s.add_argument("version")
@@ -777,7 +835,7 @@ def main(argv=None):
     elif a.cmd == "version":
         what = f"version {version(run, a.desk, a.date, a.venue)}"
     elif a.cmd == "next":
-        what = f"next {next_version(run, a.frm, a.date)} from {a.frm}"
+        what = f"next {next_version(run, a.frm, a.date, a.desk)} from {a.frm}"
     elif a.cmd == "submission":
         what = f"submission {submission(run, a.frm, a.date, a.desk, a.venue)}"
     elif a.cmd == "spaces":

@@ -1,5 +1,6 @@
 # t02_portal-walk · Portal walk
 
+use-case: Portal field survey
 task-type: description
 state: ⬜ not walked · the fields are a starter
 owner: <person>

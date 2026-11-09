@@ -20,7 +20,7 @@ and `page.py health <page>` afterwards.
 
     write_answer_page.py <page folder> <spec.yaml> [--version v0.1]
 
-A question Task of an insight Board Job (ref/insight-ladder.md: `<Board>/jNN_prototype-pN-…_data-<D>vM/tNN_<L><NN>_<slug>/`)
+A question Task of an insight Board Job (ref/insight-ladder.md: `<Board>/jNN_code-vN-…_data-vM/tNN_<L><NN>_<slug>/`)
 is written in its own shape instead (`build_task_page`): its face `tNN_….md` with `question:`, its `goal:` kept,
 `answer-status:`, `answer:`, `how-sure:`, `check:` (reset, since the page changed), `takeaways:` (one line per cut) and, for an
 Executive question, `figures:`; then `# <QID> · <name>`, `**The ask**`, the opening, and one `## <Cut>` section per hard
@@ -130,7 +130,7 @@ TASK_STATES = ("drafted", "partial", "written", "answered")
 
 
 def _board_task(page):
-    """A question Task of an insight Board Job: its Job's name reads jNN_prototype-pN-…_data-<D>vM, its Board's
+    """A question Task of an insight Board Job: its Job's name reads jNN_code-vN-…_data-vM, its Board's
     board.md says board-kind: insight-board (ref/insight-ladder.md)."""
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     from open_job import JOB

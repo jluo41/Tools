@@ -1,9 +1,10 @@
-"""prototype_from_block.py <Insight Block> <Prototype Block> [--release p1] [--serves <board>]
+"""prototype_from_block.py <Insight Block> <Prototype Block> [--release code-v1] [--serves <board>]
 
 Carry an Insight Block's questions into a plan-C Prototype release (b11 s00 · s11 · s12, 261007). The
-Prototype is its own work Block; each of its Jobs is one release, `jNN_pN/`, holding:
+Prototype is its own Block beside the Board (insight/Prototype-<name>/); each of its Jobs is one code version,
+`jNN_code-vN/`, holding:
 
-    jNN_pN.md         the release's face (release, state, from)
+    jNN_code-vN.md    the code version's face (release, state, from)
     release.yaml      every live question -> its Task (here, or in an earlier release), and what changed
     partitions.md     the cuts, defined before any outcome (front matter `partitions:`)
     thresholds.yaml   the shared values (cuts' floors, power, ...)
@@ -43,20 +44,20 @@ def _front(fields, body):
     return "---\n" + yaml.safe_dump(fields, sort_keys=False, allow_unicode=True) + "---\n\n" + body
 
 
-def carry(block, proto, release="p1", serves=""):
+def carry(block, proto, release="code-v1", serves=""):
     block, proto = Path(block).resolve(), Path(proto).resolve()
-    made, n = [], int(release[1:])
+    made, n = [], int(re.search(r"(\d+)$", release).group(1))
     job = proto / f"j{n:02d}_{release}"
     _write(proto / "board.md", _front({"board-kind": "prototype", "serves": serves},
                                       f"# {proto.name} · the Prototype\n\nThe questions and their scripts, one "
-                                      "Job per release (jNN_pN/). A Board's Job pins one release and one data "
-                                      "version; a release is cut from proposals/.\n"), made)
+                                      "Job per code version (jNN_code-vN/). A Board's Job pins one code version and "
+                                      "one data version; a code version is cut from proposals/.\n"), made)
     _write(proto / "proposals" / "README.md", "# proposals\n\nThe backlog: new · fix · retire, one file each "
                                              "(`<slug>.md`: kind · DIKW level · from <job> · why). The next "
                                              "release is cut from here.\n", made)
     _write(job / f"{job.name}.md", _front({"release": release, "state": "open", "signed": "", "from": "",
                                            "carried-from": str(Path(*[".."] * 3, *block.parts[-2:]))},
-                                          f"# {release} · the first release\n\nCarried from the Insight Block "
+                                          f"# {release} · the first code version\n\nCarried from the Insight Block "
                                           f"{block.name}: its questions, scripts, cuts and thresholds.\n"), made)
     rows, k = {}, 0
     for qf in question_folders(block):
@@ -98,7 +99,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("block")
     ap.add_argument("proto")
-    ap.add_argument("--release", default="p1")
+    ap.add_argument("--release", default="code-v1")
     ap.add_argument("--serves", default="")
     a = ap.parse_args()
     made = carry(a.block, a.proto, a.release, a.serves)

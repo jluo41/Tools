@@ -33,17 +33,17 @@ base frame adds its own (Add a topic); a "… ↗" link opens a file and makes n
 
 ## Block › Description · Map, Prototype, Dataset, Partitions
 
-🔘 BUTTON   Add a data version · Block › Description · ^run-add-version-v\d+$ · views map dataset
+🔘 BUTTON   Add a data version · Block › Description · ^run-add-version-data-v\d+$ · views map dataset
 🧩 SKILL    haipipe-insight-meta
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight-meta add the next data version to {folder}: one entry in board.md versions: (version · extract, SPACE-relative · frozen · rows · what is new) and a line in meta/meta.md, as run-add-version-v<M>; the extract is frozen once added, and say whether it accumulates the earlier rows.
+💬 PROMPT   /haipipe-insight-meta add the next data version to {folder}: one entry in board.md versions: (version · extract, SPACE-relative · frozen · rows · what is new) and a line in meta/meta.md, as run-add-version-data-v<M>; the extract is frozen once added, and say whether it accumulates the earlier rows.
 
 🔘 BUTTON   Add a Job · Block › Description · ^run-add-j\d+$ · views map
 🧩 SKILL    haipipe-insight
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight add a Job to {folder}: one signed release × one data version, jNN_prototype-pN-<slug>_data-<D>vM/ with a Task per question and a ticket per asked cut (insight_ladder.py job), as run-add-j<NN>; tell me which one clock moved from the Job before it (data or code), never both.
+💬 PROMPT   /haipipe-insight add a Job to {folder}: one signed release × one data version, jNN_code-vN-<slug>_data-vM/ with a Task per question and a ticket per asked cut (insight_ladder.py job), as run-add-j<NN>; tell me which one clock moved from the Job before it (data or code), never both.
 
 🔘 BUTTON   Propose a cut · Block › Description · ^run-propose-cut- · views partitions
 🧩 SKILL    haipipe-insight-question
@@ -109,7 +109,7 @@ base frame adds its own (Add a topic); a "… ↗" link opens a file and makes n
 🧩 SKILL    haipipe-insight
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight add a Job to {folder}: one signed release × one data version, jNN_prototype-pN-<slug>_data-<D>vM/ with a Task per question and a ticket per asked cut (insight_ladder.py job), as run-add-j<NN>; tell me which one clock moved from the Job before it (data or code), never both.
+💬 PROMPT   /haipipe-insight add a Job to {folder}: one signed release × one data version, jNN_code-vN-<slug>_data-vM/ with a Task per question and a ticket per asked cut (insight_ladder.py job), as run-add-j<NN>; tell me which one clock moved from the Job before it (data or code), never both.
 
 🔘 BUTTON   Close a Job · Block › Work Details · ^run-close-j\d+$
 🧩 SKILL    haipipe-insight-check
@@ -123,7 +123,7 @@ base frame adds its own (Add a topic); a "… ↗" link opens a file and makes n
 🧩 SKILL    haipipe-insight
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight add a Job to {folder}: one signed release × one data version, jNN_prototype-pN-<slug>_data-<D>vM/ with a Task per question and a ticket per asked cut (insight_ladder.py job), as run-add-j<NN>; tell me which one clock moved from the Job before it (data or code), never both.
+💬 PROMPT   /haipipe-insight add a Job to {folder}: one signed release × one data version, jNN_code-vN-<slug>_data-vM/ with a Task per question and a ticket per asked cut (insight_ladder.py job), as run-add-j<NN>; tell me which one clock moved from the Job before it (data or code), never both.
 
 🔘 BUTTON   Update the coverage · Block › Runs · ^run-coverage$
 🧩 SKILL    haipipe-insight-check
@@ -149,7 +149,7 @@ base frame adds its own (Add a topic); a "… ↗" link opens a file and makes n
 🧩 SKILL    haipipe-insight-wisdom
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    the handoff
-💬 PROMPT   /haipipe-insight-wisdom draft the Design handoff of {folder} into delivery/handoff-<W>.md: the finding, its strength and the Knowledge results it rests on, its boundary, its pair (pN × vM), the design consequence and what it must not be read to say, as run-draft-handoff; I sign it (signed: ✅ <YYMMDD>).
+💬 PROMPT   /haipipe-insight-wisdom draft the Design handoff of {folder} into delivery/handoff-<W>.md: the finding, its strength and the Knowledge results it rests on, its boundary, its pair (code-vN × data-vM), the design consequence and what it must not be read to say, as run-draft-handoff; I sign it (signed: ✅ <YYMMDD>).
 
 ## Job › Audience Report · Overall Report, then Partition × Period: Current · vs previous
 
@@ -402,17 +402,17 @@ the person's notes, what is running, what a person signs) over its result. `view
 
 ## Prototype › Description · the releases, the proposals
 
-🔘 BUTTON   Take the proposals · Prototype › Description · ^run-triage-proposals-p\d+$ · views proposals
+🔘 BUTTON   Take the proposals · Prototype › Description · ^run-triage-proposals-code-v\d+$ · views proposals
 🧩 SKILL    haipipe-insight-question
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight-question triage the open proposals of {folder} into one batch for the next release: each taken (taken-in: pN), declined with a reason, or left open, as run-triage-proposals-p<N>; one release per batch, never per proposal.
+💬 PROMPT   /haipipe-insight-question triage the open proposals of {folder} into one batch for the next release: each taken (taken-in: code-vN), declined with a reason, or left open, as run-triage-proposals-code-v<N>; one release per batch, never per proposal.
 
-🔘 BUTTON   Open a release · Prototype › Description · ^run-open-version-p\d+$ · views releases
+🔘 BUTTON   Open a release · Prototype › Description · ^run-open-version-code-v\d+$ · views releases
 🧩 SKILL    haipipe-insight
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight open the next release of {folder} from the newest signed one (insight_ladder.py version --slug <what-it-is>): every question kept and pointed back, the cuts, thresholds and src/ copied, as run-open-version-p<N>; then apply the triaged batch.
+💬 PROMPT   /haipipe-insight open the next release of {folder} from the newest signed one (insight_ladder.py version --slug <what-it-is>): every question kept and pointed back, the cuts, thresholds and src/ copied, as run-open-version-code-v<N>; then apply the triaged batch.
 
 ## Prototype › Idea Studio
 
@@ -438,27 +438,27 @@ the person's notes, what is running, what a person signs) over its result. `view
 ✍️ SIGNS    none
 💬 PROMPT   /haipipe-insight-question ask one question into the open release {folder} from plain words: its level, id (never reused) and Task tNN_<L><NN>_<slug>/question.md (insight_ladder.py question), as run-ask-<l><nn>; never answer it here.
 
-🔘 BUTTON   Review the questions · Release › Work Details · ^run-review-questions-p\d+$
+🔘 BUTTON   Review the questions · Release › Work Details · ^run-review-questions-code-v\d+$
 🧩 SKILL    haipipe-report
 🤖 AGENT    haipipe-insight-reviewer-agent
 ✍️ SIGNS    a change
-💬 PROMPT   /haipipe-report review the new and changed questions of {folder} (Q1–Q7) in a fresh context, as run-review-questions-p<N>: propose keep, split, merge or move, never reword; I sign each change.
+💬 PROMPT   /haipipe-report review the new and changed questions of {folder} (Q1–Q7) in a fresh context, as run-review-questions-code-v<N>: propose keep, split, merge or move, never reword; I sign each change.
 
 ## Release › Description · its cuts
 
-🔘 BUTTON   Set the cuts · Release › Description · ^run-set-cuts-p\d+$ · views partitions
+🔘 BUTTON   Set the cuts · Release › Description · ^run-set-cuts-code-v\d+$ · views partitions
 🧩 SKILL    haipipe-insight
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    the cuts
-💬 PROMPT   /haipipe-insight set the cuts of {folder} before any outcome is seen: partitions.md (full, each filter, cross) and thresholds.yaml (power.smallest_effect_pp, alphas, floors), each with why, as run-set-cuts-p<N>; I sign the cuts.
+💬 PROMPT   /haipipe-insight set the cuts of {folder} before any outcome is seen: partitions.md (full, each filter, cross) and thresholds.yaml (power.smallest_effect_pp, alphas, floors), each with why, as run-set-cuts-code-v<N>; I sign the cuts.
 
 ## Release › Delivery · the signature
 
-🔘 BUTTON   Sign the release · Release › Delivery · ^run-sign-release-p\d+$
+🔘 BUTTON   Sign the release · Release › Delivery · ^run-sign-release-code-v\d+$
 🧩 SKILL    haipipe-insight
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    the release
-💬 PROMPT   /haipipe-insight get {folder} ready to sign, as run-sign-release-p<N>: every new or changed question agreed by another agent, every script reviewed, the cuts signed; show me the release, and record my signature (insight_ladder.py sign --date YYMMDD). It is frozen after.
+💬 PROMPT   /haipipe-insight get {folder} ready to sign, as run-sign-release-code-v<N>: every new or changed question agreed by another agent, every script reviewed, the cuts signed; show me the release, and record my signature (insight_ladder.py sign --date YYMMDD). It is frozen after.
 
 ## Question › Work Details · its plan and script
 
@@ -496,10 +496,10 @@ it (`haipipe-insight/scripts/insight_ladder.py`).
 gate                     level      Run that passes it          what must hold
 a question agreed        Question   run-review-plan-<l><nn>     another agent agreed its needs (agreed: ✅)
 a script reviewed        Question   run-review-script-<l><nn>   another agent passed it against the agreed needs
-the cuts set             Release    run-set-cuts-p<N>           full and every cut named, each with why; a person signed
-a release signed         Release    run-sign-release-p<N>       the three above for every new or changed question;
+the cuts set             Release    run-set-cuts-code-v<N>           full and every cut named, each with why; a person signed
+a release signed         Release    run-sign-release-code-v<N>       the three above for every new or changed question;
                                                                 a person signed (signed: ✅ <YYMMDD>); frozen after
-a data version frozen    Block      run-add-version-v<M>        in board.md versions:, SPACE-relative, never edited
+a data version frozen    Block      run-add-version-data-v<M>        in board.md versions:, SPACE-relative, never edited
 a Job added              Block      run-add-j<NN>               a signed release × a frozen data version, a new pair,
                                                                 one clock moved
 power before contrast    Job        run-power-j<NN>, rNN_…      the cut can answer (MDE ≤ the smallest effect), else refused

@@ -2,6 +2,7 @@
 
 goal: the discovery theme's three pages on the focus page, each in its three sections: Block, Job and Task × Report, Work and Studio
 close: all nine sNN are agreed and each names the code change for its owner (the discovery workbench server, workbench-discovery skill)
+emoji: 🔎
 answers: Q01,Q02
 
 ## Topic

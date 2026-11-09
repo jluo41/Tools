@@ -9,6 +9,18 @@ from pathlib import Path
 from live.frame import esc
 
 
+FOLDER_ICON = ('<svg class="folder-icon" width="20" height="18" viewBox="0 0 24 20" '
+               'aria-hidden="true" focusable="false" style="flex:none;vertical-align:-3px">'
+               '<path d="M2 5V3a1 1 0 0 1 1-1h6l2 3h10a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1Z" '
+               'fill="#f8c44f" stroke="#996515" stroke-width="1.4" stroke-linejoin="round"/>'
+               '<path d="M2 7h20" stroke="#b27b22" stroke-width="1.2"/></svg>')
+
+
+def icon_label(text):
+    """A stable folder icon rather than platform-dependent grey emoji."""
+    return FOLDER_ICON + ' Files' if text == '📁 Files' else esc(text)
+
+
 def _section(title: str, body: str, word: str = "", waits: str = "") -> str:
     """One section: its bar (the title, then its state word on the right) and its content. `word` is the section's state
     read from its content (answered, 2 wait for you, 3 of 5 done, nothing yet), never a fixed decoration; `waits` is
@@ -211,7 +223,7 @@ PB_JS = """<script>(function(){if(window.pbTabs)return;window.pbTabs=1;
  document.addEventListener('click',function(ev){var t=ev.target.closest('[data-pbtab]');if(!t)return;
   var set=t.closest('.pb-tabset');if(!set)return;var own=function(e){return e.closest('.pb-tabset')===set;};  /* a tabset inside a panel keeps its own */
   set.querySelectorAll('[data-pbtab]').forEach(function(b){if(own(b))b.classList.toggle('on',b===t);});
-  set.querySelectorAll('.pb-panel').forEach(function(p){if(own(p))p.hidden=p.dataset.pbpanel!==t.dataset.pbtab;});});
+  set.querySelectorAll('.pb-panel[data-pbpanel]').forEach(function(p){if(own(p))p.hidden=p.dataset.pbpanel!==t.dataset.pbtab;});});
  function wire(){document.querySelectorAll('.pb-flow').forEach(function(f){var svg=f.querySelector('.pb-wires');if(!svg)return;
   var r=f.getBoundingClientRect(),out='';JSON.parse(f.dataset.links||'[]').forEach(function(l){
    var a=f.querySelector('[data-key="'+CSS.escape(l[0])+'"]'),b=f.querySelector('[data-key="'+CSS.escape(l[1])+'"]');if(!a||!b)return;

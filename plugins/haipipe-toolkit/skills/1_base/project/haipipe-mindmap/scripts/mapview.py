@@ -253,10 +253,11 @@ EXTRA_JS = """<script>
   d.hidden=!on;b.setAttribute('aria-expanded',String(on));if(on)window.pmOpen.add(li.dataset.s);else window.pmOpen.delete(li.dataset.s);
   if(on&&b.dataset.empty){var pen=d.querySelector('.pm-pen');if(pen)pen.click();}draw();});
  /* after the map reloads (an edit), the details that were open open again */
- new MutationObserver(function(){document.querySelectorAll('.pm-edit li[data-s]').forEach(function(li){
+ function watch(){new MutationObserver(function(){document.querySelectorAll('.pm-edit li[data-s]').forEach(function(li){
   if(!window.pmOpen.has(li.dataset.s))return;var d=li.querySelector(':scope>.pm-detail'),b=li.querySelector('.pm-more');
   if(d&&d.hidden){d.hidden=false;if(b)b.setAttribute('aria-expanded','true');draw();}});})
-  .observe(document.body,{childList:true,subtree:true});
+  .observe(document.documentElement,{childList:true,subtree:true});}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',watch);else watch();
  /* ✎: the detail as its Markdown, in a box; leaving the box saves it */
  document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.pm-edit .pm-pen');if(!b)return;e.preventDefault();
   var d=b.closest('.pm-detail'),t=document.createElement('textarea');t.value=b.dataset.raw;t.dataset.raw=b.dataset.raw;t.className='pm-notebox';
@@ -311,6 +312,7 @@ FOLD = """<style>
    else{var l=e.target.closest('.pm-leaves li');if(l&&l.querySelector(':scope>.pm-w>.pm-subfold'))hit=l;}}
   if(!hit)return;e.preventDefault();hit.classList.toggle('pm-on');keep(m);redraw();});
  document.addEventListener('DOMContentLoaded',restore);setTimeout(restore,40);
- new MutationObserver(restore).observe(document.documentElement,{childList:true,subtree:true});
+ function watch(){new MutationObserver(restore).observe(document.documentElement,{childList:true,subtree:true});}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',watch);else watch();
 })();
 </script>"""

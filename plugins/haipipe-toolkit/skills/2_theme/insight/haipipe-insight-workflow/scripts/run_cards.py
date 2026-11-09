@@ -123,7 +123,7 @@ def against_scaffold(path: Path = CARDS) -> list[str]:
         level = LADDER_LEVEL[lv]
         sample = "r01_x" if hard else ("run-" + rtype if (lv, rtype) in il.ALONE else
                                        f"run-{rtype}-{il.DEFAULT_TARGET.get((lv, rtype), 'x01')}")
-        targets = ("x01", "j01", "t01", "q01", "d01", "p1", "v1", "coverage")
+        targets = ("x01", "j01", "t01", "q01", "d01", "code-v1", "data-v1", "coverage")
         names = [sample] + ([] if hard else [f"run-{rtype}-{t}" for t in targets])
         mine = [c for c in all_cards if c["level"] == level and any(re.match(c["pattern"], n) for n in names)]
         if not mine:

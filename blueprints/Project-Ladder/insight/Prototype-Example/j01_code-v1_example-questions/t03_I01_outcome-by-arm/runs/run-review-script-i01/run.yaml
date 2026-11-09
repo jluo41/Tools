@@ -1,0 +1,15 @@
+run: run-review-script-i01
+kind: soft
+type: review-script
+scope: Tools/blueprints/Project-Ladder/insight/Prototype-Example/j01_code-v1_example-questions/t03_I01_outcome-by-arm
+target: i01
+ticket: run-review-script-i01.md
+skill: haipipe-insight
+agent: haipipe-task-reviewer-agent
+signs:
+- none
+status: done
+passes:
+- p01-1106
+writes: []
+feeds: []

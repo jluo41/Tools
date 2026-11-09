@@ -1,0 +1,1014 @@
+{
+  "sections": {
+    "🔭 Scope": {
+      "what": "The question, goal, and boundaries of this work.",
+      "outcome": "A clear statement of what is included, excluded, and considered complete.",
+      "example": "Set the boundaries and acceptance criteria for producing {result}.",
+      "layout": "Short paragraph",
+      "layout_detail": "One goal statement, followed by concise boundaries and a completion condition."
+    },
+    "🧩 Structure": {
+      "what": "How the work is organized into parts.",
+      "outcome": "A map of the parts, their roles, and how they fit together.",
+      "example": "Map the steps needed to produce {result} and show where {evidence} is checked.",
+      "layout": "Diagram",
+      "layout_detail": "Show parts and their relationships as a tree or flow; selecting a part opens its details."
+    },
+    "🔗 Dependencies": {
+      "what": "See what each Topic or work item needs, who owns it, and the condition that allows work to continue.",
+      "layout": "Relationship Table",
+      "example": ""
+    },
+    "📈 Progress": {
+      "what": "Where the work stands against its completion criteria.",
+      "outcome": "Visible completed, active, and remaining work, backed by current records.",
+      "example": "Show whether {result} is planned, in progress, or checked against {evidence}.",
+      "layout": "Left tabs · Right content",
+      "layout_detail": "List work items with status words on the left; show progress, completion criteria, and records on the right."
+    },
+    "🚧 Blockers": {
+      "what": "The unresolved issues preventing the next step or completion.",
+      "outcome": "Each obstacle, its owner, and the condition needed to remove it.",
+      "example": "Show missing inputs or failed checks that prevent acceptance of {result}.",
+      "layout": "Left tabs · Right content",
+      "layout_detail": "List obstacles on the left; show the selected obstacle, owner, impact, and resolution condition on the right."
+    },
+    "➡️ Next Steps": {
+      "what": "The next actions that move the work forward.",
+      "outcome": "An ordered set of concrete actions with owners and completion criteria.",
+      "example": "Name the next action needed to produce or verify {result}.",
+      "layout": "Ordered action list",
+      "layout_detail": "Show each action with its owner, state, and completion condition in execution order."
+    },
+    "📦 Results": {
+      "what": "The outputs and answers this work has produced.",
+      "outcome": "Readable results with links to the actual deliverables and their current state.",
+      "example": "Show {result}.",
+      "layout": "Left tabs · Right content",
+      "layout_detail": "List outputs on the left; show the selected result or embedded artifact on the right, with an Open action."
+    },
+    "🧾 Evidence": {
+      "what": "The sources and checks supporting the results.",
+      "outcome": "Traceable support for each important result, including verification status.",
+      "example": "Link {evidence} to the claims made about {result}.",
+      "layout": "Left tabs · Right content",
+      "layout_detail": "List supporting sources or checks on the left; show the evidence, supported claim, and verification state on the right."
+    },
+    "⚠️ Limitations": {
+      "what": "Where the results are uncertain, incomplete, or not applicable.",
+      "outcome": "Clear boundaries on interpretation and use, with the remaining gaps.",
+      "example": "Explain which conditions {evidence} does not cover and how that limits {result}.",
+      "layout": "Bullet list",
+      "layout_detail": "One limitation per item, stating the affected result and the consequence for interpretation or use."
+    },
+    "🎨 Studio": {
+      "what": "AI and people develop and compare design options from findings and feedback.",
+      "layout": "Left Tabs · Right Content → Drawing",
+      "example": ""
+    },
+    "📚 Things to Know": {
+      "what": "Find the terms, assumptions, and references needed here.",
+      "layout": "Left Tabs · Right Content → Notes",
+      "example": ""
+    },
+    "☑️ Checklist": {
+      "what": "Track required checks and actions. Delivery Acceptance refers to these checks instead of duplicating them.",
+      "layout": "Checklist",
+      "example": ""
+    },
+    "🧰 Skills": {
+      "what": "Find the skills that help maintain this view.",
+      "layout": "Left Tabs · Right Content → Skill Details",
+      "example": ""
+    },
+    "📋 Block Type × View Button": {
+      "what": "Compare Block types, their views, and their content.",
+      "layout": "Table",
+      "example": ""
+    },
+    "📋 Job Type × View Button": {
+      "what": "Compare Job types, their views, and their content.",
+      "layout": "Table",
+      "example": ""
+    },
+    "📋 Task Type × View Button": {
+      "what": "Compare Task types, their views, and their content.",
+      "layout": "Table",
+      "example": ""
+    },
+    "🖥️ The page, live": {
+      "what": "Select a UI type on the left and try its example page on the right.",
+      "layout": "Left Tabs · Right Content → Live Page",
+      "example": ""
+    },
+    "🎬 The walk": {
+      "what": "Watch an example page in use. Pause, step, or replay.",
+      "layout": "Walkthrough Player",
+      "example": ""
+    },
+    "🖥️ The pages, live": {
+      "what": "Select a UI type on the left and try its example page on the right.",
+      "layout": "Left Tabs · Right Content → Live Page",
+      "example": ""
+    },
+    "🎬 Walkthroughs": {
+      "what": "Select an example and watch its walkthrough.",
+      "layout": "Left Tabs · Right Content → Walkthrough Player",
+      "example": ""
+    },
+    "⚙️ Execution": {
+      "what": "Work carried out through Jobs, Tasks, and Runs.",
+      "layout": "",
+      "example": "Data · Models & Experiments · Statistical Analysis · Software & Services · Comparison · Mixed Work",
+      "example_title": "Use Cases"
+    },
+    "🎨 Theme Development": {
+      "what": "An Execution Block that also designs and previews Block, Job, and Task pages.",
+      "layout": "",
+      "example": "Page design · UI previews · Walkthroughs",
+      "example_title": "Use Cases"
+    },
+    "🤝 CoWork": {
+      "what": "Work that moves through people, replies, and approvals.",
+      "layout": "",
+      "example": "Coordination & Approvals · Study Operations",
+      "example_title": "Use Cases"
+    },
+    "🔎 Discovery": {
+      "what": "Work that collects sources and turns them into supported answers.",
+      "layout": "",
+      "example": "Literature Review · Evidence Synthesis",
+      "example_title": "Use Cases"
+    },
+    "🧠 MindMap": {
+      "what": "See this work’s Topics and how the related work fits together.",
+      "layout": "MindMap",
+      "example": "",
+      "example_title": "Use Cases"
+    },
+    "🧱 Jobs": {
+      "what": "Check each Job’s progress. Expand a Job to see its Tasks and Runs.",
+      "layout": "Expandable Rows",
+      "example": "",
+      "example_title": "Use Cases"
+    },
+    "🔢 Values": {
+      "what": "Read the values returned by the work, with their labels and units.",
+      "layout": "Left Tabs · Right Content → Table",
+      "example": "",
+      "example_title": "Use Cases"
+    },
+    "❓ Answers": {
+      "what": "Read answers to the Block’s questions, grouped by topic.",
+      "layout": "Left Tabs · Right Content → Report",
+      "example": "",
+      "example_title": "Use Cases"
+    },
+    "🌐 Service": {
+      "what": "Try a website or service produced by this Block.",
+      "layout": "Left Tabs · Right Content → Live Page",
+      "example": "",
+      "example_title": "Use Cases"
+    },
+    "🧠 Maps": {
+      "what": "Explore maps produced by the work.",
+      "layout": "Left Tabs · Right Content → MindMap",
+      "example": "",
+      "example_title": "Use Cases"
+    },
+    "📦 Delivery": {
+      "what": "Open the files and outputs handed over by this work.",
+      "layout": "Left Tabs · Right Content → File List",
+      "example": "",
+      "example_title": "Use Cases"
+    },
+    "🙋 Waiting on us": {
+      "what": "Only the bar matching the recorded collaboration state appears. It shows who has the move, since when, the next action and any ticket. A completed Job does not acquire an invented waiting state.",
+      "layout": "State details",
+      "example_title": "Source",
+      "example": "cowork_focus.job_status; Job face state / waiting-on / since / next."
+    },
+    "⏳ Waiting on them": {
+      "what": "Only the bar matching the recorded collaboration state appears. It shows who has the move, since when, the next action and any ticket. A completed Job does not acquire an invented waiting state.",
+      "layout": "State details",
+      "example_title": "Source",
+      "example": "cowork_focus.job_status; Job face state / waiting-on / since / next."
+    },
+    "🟡 Open": {
+      "what": "Only the bar matching the recorded collaboration state appears. It shows who has the move, since when, the next action and any ticket. A completed Job does not acquire an invented waiting state.",
+      "layout": "State details",
+      "example_title": "Source",
+      "example": "cowork_focus.job_status; Job face state / waiting-on / since / next."
+    },
+    "⏸️ On hold": {
+      "what": "Only the bar matching the recorded collaboration state appears. It shows who has the move, since when, the next action and any ticket. A completed Job does not acquire an invented waiting state.",
+      "layout": "State details",
+      "example_title": "Source",
+      "example": "cowork_focus.job_status; Job face state / waiting-on / since / next."
+    },
+    "✅ Done": {
+      "what": "Review completed Jobs and their recorded history.",
+      "layout": "Expandable Rows",
+      "example": "",
+      "example_title": "Use Cases"
+    },
+    "👥 People": {
+      "what": "Find each person’s role and the Jobs waiting on them.",
+      "layout": "Left Tabs · Right Content → Role Details",
+      "example": "",
+      "example_title": "Use Cases"
+    },
+    "✉️ Messages": {
+      "what": "Read emails, meeting notes, and drafts waiting to be sent.",
+      "layout": "Left Tabs · Right Content → Message List",
+      "example": "",
+      "example_title": "Use Cases"
+    },
+    "⏳ Next move": {
+      "what": "See who acts next in each open Job and what needs to happen.",
+      "layout": "Left Tabs · Right Content → Action Details",
+      "example": "",
+      "example_title": "Use Cases"
+    },
+    "📚 Papers": {
+      "what": "Read each paper’s findings, source links, and verification state.",
+      "layout": "Left Tabs · Right Content → Paper Details",
+      "example": "",
+      "example_title": "Use Cases"
+    },
+    "📖 Evidence Bib": {
+      "what": "Bibliography entries built by the Job’s Discovery Tasks; present only when the source bibliography exists.",
+      "layout": "Left Tasks · Right bibliography",
+      "example_title": "Source",
+      "example": "discovery_focus.bib_part."
+    },
+    "🧾 Synthesis": {
+      "what": "Read the conclusions drawn across the sources.",
+      "layout": "Left Tabs · Right Content → Report",
+      "example": "",
+      "example_title": "Use Cases"
+    },
+    "🎯 Goal": {
+      "what": "The intended outcome and boundaries of this work.",
+      "layout": "Short Paragraph",
+      "example": ""
+    },
+    "📋 Requirements": {
+      "what": "What must be true, who requested it, and how completion will be checked. Accepted feedback links back here.",
+      "layout": "Table → Details",
+      "example": ""
+    },
+    "🧩 Topics": {
+      "what": "Choose a Topic on the left; inspect its related Block, Jobs, Tasks, and Runs on the right. Topics reuse the MindMap and link existing work.",
+      "layout": "Left Tabs · Right Content → Expandable B–J–T–R",
+      "example": ""
+    },
+    "📦 Deliverables": {
+      "what": "Open the actual outputs with their versions. Feedback refers to the version that was reviewed.",
+      "layout": "Left Tabs · Right Content → Preview",
+      "example": ""
+    },
+    "✅ Acceptance": {
+      "what": "Check each deliverable against its requirements and recorded acceptance. Reuse the existing checks.",
+      "layout": "Requirements Table",
+      "example": ""
+    },
+    "📖 Usage": {
+      "what": "How to use the selected deliverable, including its known constraints.",
+      "layout": "Short Guide",
+      "example": ""
+    },
+    "💡 Design Findings": {
+      "what": "Read what the design reviews and trials taught us. Working UI packages live in Delivery.",
+      "layout": "Left Tabs · Right Content → Findings",
+      "example": ""
+    },
+    "🧾 Review Evidence": {
+      "what": "Inspect the walkthroughs, checks, and observations supporting a design finding.",
+      "layout": "Left Tabs · Right Content → Review",
+      "example": ""
+    },
+    "🤝 Agreements": {
+      "what": "Read the agreements reached through coordination, linked to their source discussions.",
+      "layout": "Left Tabs · Right Content → Agreement",
+      "example": ""
+    },
+    "💬 Open Differences": {
+      "what": "See where participants still disagree and what would resolve the difference.",
+      "layout": "Left Tabs · Right Content → Discussion",
+      "example": ""
+    },
+    "🧾 Communication Evidence": {
+      "what": "Read the messages and meeting records supporting an agreement or finding.",
+      "layout": "Left Tabs · Right Content → Source",
+      "example": ""
+    },
+    "⚠️ Evidence Gaps": {
+      "what": "See questions the collected sources cannot yet answer, and why.",
+      "layout": "List",
+      "example": ""
+    },
+    "💡 Conclusions": {
+      "what": "Read what this work established and how far the conclusion applies.",
+      "layout": "Left Tabs · Right Content → Findings",
+      "example": ""
+    },
+    "🕒 Timeline": {
+      "what": "Dated history for this page: changes, Runs, feedback, decisions, and delivery records. Open an event’s source; undated items stay in their own sections.",
+      "layout": "Chronological List",
+      "example": ""
+    },
+    "🧭 Work Structure": {
+      "what": "Read the shared live view structure and the feedback-to-design loop.",
+      "layout": "Left Tabs · Right Content",
+      "example": ""
+    },
+    "📌 Headlines": {
+      "what": "Read the latest result from each Task.",
+      "layout": "Left Tabs · Right Content",
+      "example": ""
+    },
+    "📌 Latest Result": {
+      "what": "Read the latest available Run result.",
+      "layout": "Result Summary",
+      "example": ""
+    },
+    "🗂️ Tables": {
+      "what": "Read tables returned by the latest Run.",
+      "layout": "Table",
+      "example": ""
+    },
+    "🙋 Interactions": {
+      "what": "Questions and feedback for the selected topic.",
+      "layout": "Left Tabs · Right Content",
+      "example": "",
+      "outcome": "Answers linked to their original topic.",
+      "layout_detail": "Topics on the left; questions and their form on the right."
+    },
+    "⚖️ Decisions": {
+      "what": "Recorded choices and their reasons.",
+      "layout": "Left Tabs · Right Content",
+      "example": "",
+      "outcome": "A traceable decision record.",
+      "layout_detail": "Topics on the left; source decision records on the right."
+    },
+    "📁 Files": {
+      "what": "Related directories grouped by Workspace, Blocks, Code, Tools · Skills and Tools · UI.",
+      "outcome": "Open, preview or download the original file.",
+      "layout": "Left Folder Types · Right Folder Tree",
+      "layout_detail": "Select a type, expand folders in the tree, and click a file to inspect it in a pop-out. Closing it keeps your place in the tree; Runs stay inside Blocks."
+    },
+    "🧩 Job": {
+      "what": "One group of Tasks sharing inputs, code or a question. Data preparation, model training and software development use the same Job UI; they are use cases, not separate UI types.",
+      "layout": "One Job page",
+      "example_title": "Source",
+      "example": "haipipe-job/ref/job-contract.md; workbench-work/work_theme.py; focus_page.job_findings."
+    },
+    "🤝 Collaboration Job": {
+      "what": "A line of collaboration with messages, meetings, steps and a recorded next move. Tasks appear only when present.",
+      "layout": "One Job page",
+      "example_title": "Source",
+      "example": "cowork_focus.job_status and parts. The reference People Job has its own row."
+    },
+    "🔎 Inquiry Job": {
+      "what": "A group of Discovery Tasks. Inquiry subjects differ; the Job renderer is shared. Findings add source papers, bibliography and synthesis when present.",
+      "layout": "One Job page",
+      "example_title": "Source",
+      "example": "discovery_focus.parts and status; focus_page.job_findings."
+    },
+    "🧱 Tasks": {
+      "what": "Actual child Tasks, each with its recorded state and latest Run result. Expand a Task to inspect its Runs. Omitted when no Tasks exist.",
+      "layout": "Expandable Task rows → Runs",
+      "example_title": "Source",
+      "example": "focus_page.tasks_section; status_now_html."
+    },
+    "🧩 View BJTR": {
+      "what": "Choose an existing Topic to inspect its linked Tasks and Runs with Block context. This does not create new work or infer a type from a title.",
+      "layout": "Left Topics · Right B–J–T–R tree",
+      "example_title": "Source",
+      "example": "work_frame.topics_for, tree and status."
+    },
+    "📇 Who to ask, by role": {
+      "what": "The reference People Job lists people and roles. It has no next-move workflow.",
+      "layout": "Role list",
+      "example_title": "Source",
+      "example": "cowork_focus.job_status: reference branch."
+    },
+    "🗓️ Timeline": {
+      "what": "Dated collaboration entries from this Job. This existing Status section is distinct from the shared Timeline and has not yet been consolidated.",
+      "layout": "Chronological list",
+      "example_title": "Source",
+      "example": "cowork_focus.job_status and _items."
+    },
+    "📝 Steps": {
+      "what": "The existing steps in this Job’s CHECKLIST.md, with their recorded completion marks. These are not the proposed evidence/reviewer Checklist workflow.",
+      "layout": "Step list",
+      "example_title": "Source",
+      "example": "cowork_focus.job_status and steps."
+    },
+    "📝 Checklist": {
+      "what": "Checklist records explicitly linked to this View or Topic. The current renderer displays source notes; evidence submission and review states are not implemented.",
+      "layout": "Left Topics · Right source records",
+      "example": ""
+    },
+    "📌 Meeting headlines": {
+      "what": "Decisions and next actions from this Job’s meeting notes. When the Job also has Tasks, meeting headlines remain separate from Task result headlines.",
+      "layout": "Left meetings · Right notes",
+      "example_title": "Source",
+      "example": "cowork_focus.headlines_part."
+    },
+    "✍️ Answers to write or agree": {
+      "what": "The Block's Questions whose answer is drafted but not yet written or agreed by a person.",
+      "outcome": "You see which answers wait for you and open each to write or agree it.",
+      "layout": "List",
+      "layout_detail": "One row per Question, its state on the right.",
+      "example": "Estimates: answer drafted from j02, waits for you."
+    },
+    "📝 Rounds": {
+      "what": "Each round of a collaboration Task's document: what was sent, what came back, and when.",
+      "outcome": "You see the newest round first and what changed since the last one.",
+      "layout": "List",
+      "layout_detail": "One row per round, newest first.",
+      "example": "v2 sent 11-04, answers all six comments on v1."
+    },
+    "🧪 Runs": {
+      "what": "The Task's Runs and where each stands: done, waiting or failed.",
+      "outcome": "You see how far the Task got and open a Run's receipt.",
+      "layout": "List",
+      "layout_detail": "One row per Run with its state.",
+      "example": "2 of 3 done, 1 waiting."
+    },
+    "🧩 Work Block": {
+      "what": "A Block that carries out work and returns results.",
+      "layout": "Overview · Status · Findings · Delivery",
+      "example": ""
+    },
+    "📐 Blueprint Block": {
+      "what": "A Block that develops and checks a theme’s pages and supporting skills.",
+      "layout": "Overview · Status · Findings · Delivery · Block UI · Job UI · Task UI",
+      "example": ""
+    },
+    "📋 Run Type × View Button": {
+      "what": "Compare what one Run page shows, the same for every theme.",
+      "layout": "Table",
+      "example": ""
+    },
+    "📌 What happened": {
+      "what": "Its headline, its state and when it ran, and its failure if it failed.",
+      "outcome": "One line that says what the Run found or why it stopped.",
+      "layout": "Numbered section",
+      "example": ""
+    },
+    "📊 What it made": {
+      "what": "Everything in its result/, the report first, each file drawn as what it is.",
+      "outcome": "Open a report, a table, a figure or a map without leaving the page.",
+      "layout": "Numbered section",
+      "example": ""
+    },
+    "🎫 How it ran": {
+      "what": "Its run.yaml in words, its ticket and its config; each path it reads or writes is a link.",
+      "outcome": "See exactly what ran and rerun it.",
+      "layout": "Numbered section",
+      "example": ""
+    },
+    "🔁 Passes": {
+      "what": "Each pass of the Run, newest first, with the last lines of its log.",
+      "outcome": "See how many times it ran and how the last one ended.",
+      "layout": "Numbered section",
+      "example": ""
+    }
+  },
+  "types": {
+    "Data": {
+      "result": "a documented dataset",
+      "evidence": "source records and data quality checks"
+    },
+    "Data Pipeline": {
+      "result": "a documented dataset",
+      "evidence": "source records and data quality checks"
+    },
+    "Data Extraction": {
+      "result": "a documented dataset",
+      "evidence": "source records and data quality checks"
+    },
+    "Data Transformation": {
+      "result": "a documented dataset",
+      "evidence": "source records and data quality checks"
+    },
+    "Data Description": {
+      "result": "a table card with field meanings",
+      "evidence": "schema checks and sample records"
+    },
+    "Models & Experiments": {
+      "result": "a trained model and comparison results",
+      "evidence": "evaluation metrics and run records"
+    },
+    "Model Experiment": {
+      "result": "a trained model and comparison results",
+      "evidence": "evaluation metrics and run records"
+    },
+    "Model Fitting": {
+      "result": "a trained model and comparison results",
+      "evidence": "evaluation metrics and run records"
+    },
+    "Algorithm Development": {
+      "result": "a working algorithm",
+      "evidence": "smoke tests and reference comparisons"
+    },
+    "Evaluation": {
+      "result": "a model evaluation report",
+      "evidence": "pinned model versions, test splits, and metrics"
+    },
+    "Statistical Analysis": {
+      "result": "estimates and analysis figures",
+      "evidence": "analysis specifications and robustness checks"
+    },
+    "Individual Analysis": {
+      "result": "an individual summary for a defined time window",
+      "evidence": "source observations and coverage checks"
+    },
+    "Software & Services": {
+      "result": "a working feature or service",
+      "evidence": "tests and release checks"
+    },
+    "Software Development": {
+      "result": "a working feature or service",
+      "evidence": "tests and release checks"
+    },
+    "Comparison": {
+      "result": "a comparison and its conclusions",
+      "evidence": "source results and comparison criteria"
+    },
+    "Mixed Work": {
+      "result": "the combined workstream outputs",
+      "evidence": "acceptance checks for each workstream"
+    },
+    "Theme Development": {
+      "result": "a page design and working preview",
+      "evidence": "UI walkthroughs and validation checks"
+    },
+    "Report Production": {
+      "result": "a readable draft",
+      "evidence": "cited sources and review comments"
+    },
+    "Draft Writing": {
+      "result": "a readable draft",
+      "evidence": "cited sources and review comments"
+    },
+    "Display Preparation": {
+      "result": "a figure or summary table",
+      "evidence": "source values and display checks"
+    },
+    "Endpoint Packaging": {
+      "result": "a packaged model endpoint",
+      "evidence": "version records and endpoint tests"
+    },
+    "Agent Execution": {
+      "result": "an agent output",
+      "evidence": "execution records and output checks"
+    },
+    "Evidence Preparation": {
+      "result": "a set of traceable evidence values",
+      "evidence": "source records and value checks"
+    },
+    "Coordination & Approvals": {
+      "result": "an agreement and a handoff",
+      "evidence": "recorded approvals and communication history"
+    },
+    "Study Operations": {
+      "result": "a completed operational step",
+      "evidence": "process records and completion checks"
+    },
+    "Communication Draft": {
+      "result": "a message ready for review",
+      "evidence": "source facts and reviewer feedback"
+    },
+    "Review & Approval": {
+      "result": "a documented review outcome",
+      "evidence": "review criteria and the recorded decision"
+    },
+    "Literature & Evidence": {
+      "result": "a source review and its findings",
+      "evidence": "verified citations and supporting passages"
+    },
+    "Literature Review": {
+      "result": "a source review and its findings",
+      "evidence": "verified citations and supporting passages"
+    },
+    "Source Review": {
+      "result": "a source review and its findings",
+      "evidence": "verified citations and supporting passages"
+    },
+    "Evidence Synthesis": {
+      "result": "a synthesis answering the research question",
+      "evidence": "linked sources, disagreements, and evidence gaps"
+    },
+    "Evidence Search": {
+      "result": "a screened source list",
+      "evidence": "search queries and inclusion criteria"
+    },
+    "Work Block": {
+      "result": "the work outputs",
+      "evidence": "source records and validation checks"
+    },
+    "Blueprint Block": {
+      "result": "a page design and working preview",
+      "evidence": "UI walkthroughs and validation checks"
+    }
+  },
+  "skills": {
+    "MindMap": [
+      "haipipe-mindmap — Organize and draw the structure of the work."
+    ],
+    "Status": [
+      "haipipe-{level} — Inspect the related work and its state.",
+      "haipipe-run — Interpret Run outcomes.",
+      "haipipe-interaction — Follow unresolved inputs and dependencies."
+    ],
+    "Findings": [
+      "haipipe-report — Organize answers and findings.",
+      "haipipe-evidence — Find and trace the support for claims."
+    ],
+    "Block UI": [
+      "haipipe-ui — Design and review page behavior.",
+      "workbench-work — Interpret the work theme and its page content."
+    ],
+    "Job UI": [
+      "haipipe-ui — Design and review page behavior.",
+      "haipipe-job — Check the Job structure and its Tasks."
+    ],
+    "Task UI": [
+      "haipipe-ui — Design and review page behavior.",
+      "haipipe-task — Check Task types, lifecycle, and results."
+    ],
+    "Overview": [
+      "haipipe-{level} — Define the goal and requirements.",
+      "haipipe-mindmap — Organize the Topics and related work."
+    ],
+    "Delivery": [
+      "haipipe-delivery — Organize outputs and handoff.",
+      "haipipe-interaction — Collect feedback tied to the delivered version."
+    ]
+  },
+  "examples": {
+    "block": {
+      "Collaboration Block": "blueprints/Project-Ladder/cowork/b01_example_data_request",
+      "Inquiry Block": "blueprints/Project-Ladder/discovery/b01_example_prior_work",
+      "Work Block": "blueprints/Project-Ladder/work/b90_example_paper_results",
+      "Blueprint Block": "blueprints/Project-Ladder/work/b16_theme_paper"
+    },
+    "job": {
+      "Job": "blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates",
+      "Collaboration Job": "blueprints/Project-Ladder/cowork/b01_example_data_request/j02_review_board_amendment",
+      "People": "blueprints/Project-Ladder/cowork/b01_example_data_request/j00_people",
+      "Inquiry Job": "blueprints/Project-Ladder/discovery/b01_example_prior_work/j01_policy_effect_inquiry"
+    },
+    "task": {
+      "Task": "blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates/t01_example_main",
+      "Collaboration Task": "blueprints/Project-Ladder/cowork/b01_example_data_request/j02_review_board_amendment/t01_data_use_plan",
+      "Inquiry Task": "blueprints/Project-Ladder/discovery/b01_example_prior_work/j01_policy_effect_inquiry/t01_policy_prior_work"
+    },
+    "run": {
+      "Run": "blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates/t01_example_main/runs/r01_example_main"
+    }
+  },
+  "overrides": {
+    "block": {
+      "CoWork": {
+        "🧠 MindMap": {
+          "what": "See the coordination Jobs, their topics, and the work under them."
+        }
+      },
+      "Discovery": {
+        "🧠 MindMap": {
+          "what": "See the research questions, inquiry Jobs, and reading Tasks."
+        }
+      },
+      "Theme Development": {
+        "🧠 MindMap": {
+          "what": "See the design topics and the Jobs that develop the theme."
+        }
+      },
+      "Blueprint Block": {
+        "🧠 MindMap": {
+          "what": "See the design topics and the Jobs that develop the theme."
+        }
+      }
+    },
+    "job": {
+      "Job": {
+        "📋 Requirements": {
+          "what": "Recorded requirements, close conditions and question acceptance text. No automatic acceptance comparison is performed.",
+          "layout": "Rendered Markdown"
+        },
+        "🔗 Dependencies": {
+          "what": "The Job face’s Dependencies section, only when recorded.",
+          "layout": "Rendered Markdown"
+        },
+        "✅ Acceptance": {
+          "what": "The Job face’s Acceptance record. A build or file does not imply approval.",
+          "layout": "Rendered Markdown"
+        },
+        "📖 Usage": {
+          "what": "The Job face’s Usage notes, or a meaningful empty state when absent.",
+          "layout": "Rendered Markdown"
+        },
+        "📌 Headlines": {
+          "what": "Each child Task’s latest returned result. CoWork also reads meeting decisions and next actions; Discovery can supply synthesis headlines.",
+          "layout": "Left Tasks or meetings · Right result"
+        }
+      },
+      "Collaboration Job": {
+        "📋 Requirements": {
+          "what": "Recorded requirements, close conditions and question acceptance text. No automatic acceptance comparison is performed.",
+          "layout": "Rendered Markdown"
+        },
+        "🔗 Dependencies": {
+          "what": "The Job face’s Dependencies section, only when recorded.",
+          "layout": "Rendered Markdown"
+        },
+        "✅ Acceptance": {
+          "what": "The Job face’s Acceptance record. A build or file does not imply approval.",
+          "layout": "Rendered Markdown"
+        },
+        "📖 Usage": {
+          "what": "The Job face’s Usage notes, or a meaningful empty state when absent.",
+          "layout": "Rendered Markdown"
+        },
+        "📌 Headlines": {
+          "what": "Each child Task’s latest returned result. CoWork also reads meeting decisions and next actions; Discovery can supply synthesis headlines.",
+          "layout": "Left Tasks or meetings · Right result"
+        }
+      },
+      "People": {
+        "📋 Requirements": {
+          "what": "Recorded requirements, close conditions and question acceptance text. No automatic acceptance comparison is performed.",
+          "layout": "Rendered Markdown"
+        },
+        "🔗 Dependencies": {
+          "what": "The Job face’s Dependencies section, only when recorded.",
+          "layout": "Rendered Markdown"
+        },
+        "✅ Acceptance": {
+          "what": "The Job face’s Acceptance record. A build or file does not imply approval.",
+          "layout": "Rendered Markdown"
+        },
+        "📖 Usage": {
+          "what": "The Job face’s Usage notes, or a meaningful empty state when absent.",
+          "layout": "Rendered Markdown"
+        },
+        "📌 Headlines": {
+          "what": "Each child Task’s latest returned result. CoWork also reads meeting decisions and next actions; Discovery can supply synthesis headlines.",
+          "layout": "Left Tasks or meetings · Right result"
+        },
+        "👥 People": {
+          "what": "The reference People Job is a roster, not a collaboration waiting for a next move. Findings lists its people; Status lists who to ask by role.",
+          "layout": "People and role records",
+          "example": "cowork_focus.job_status: reference branch; people_part."
+        }
+      },
+      "Inquiry Job": {
+        "📋 Requirements": {
+          "what": "Recorded requirements, close conditions and question acceptance text. No automatic acceptance comparison is performed.",
+          "layout": "Rendered Markdown"
+        },
+        "🔗 Dependencies": {
+          "what": "The Job face’s Dependencies section, only when recorded.",
+          "layout": "Rendered Markdown"
+        },
+        "✅ Acceptance": {
+          "what": "The Job face’s Acceptance record. A build or file does not imply approval.",
+          "layout": "Rendered Markdown"
+        },
+        "📖 Usage": {
+          "what": "The Job face’s Usage notes, or a meaningful empty state when absent.",
+          "layout": "Rendered Markdown"
+        },
+        "📌 Headlines": {
+          "what": "Each child Task’s latest returned result. CoWork also reads meeting decisions and next actions; Discovery can supply synthesis headlines.",
+          "layout": "Left Tasks or meetings · Right result"
+        }
+      }
+    },
+    "task": {
+      "Data Extraction": {
+        "🧩 Topics": {
+          "what": "Choose a Topic and inspect its related Runs, with Block and Job context. Expand history when needed; do not duplicate work records."
+        }
+      },
+      "Data Description": {
+        "🧩 Topics": {
+          "what": "Choose a Topic and inspect its related Runs, with Block and Job context. Expand history when needed; do not duplicate work records."
+        }
+      },
+      "Data Transformation": {
+        "🧩 Topics": {
+          "what": "Choose a Topic and inspect its related Runs, with Block and Job context. Expand history when needed; do not duplicate work records."
+        }
+      },
+      "Algorithm Development": {
+        "🧩 Topics": {
+          "what": "Choose a Topic and inspect its related Runs, with Block and Job context. Expand history when needed; do not duplicate work records."
+        }
+      },
+      "Model Fitting": {
+        "🧩 Topics": {
+          "what": "Choose a Topic and inspect its related Runs, with Block and Job context. Expand history when needed; do not duplicate work records."
+        }
+      },
+      "Evaluation": {
+        "🧩 Topics": {
+          "what": "Choose a Topic and inspect its related Runs, with Block and Job context. Expand history when needed; do not duplicate work records."
+        }
+      },
+      "Statistical Analysis": {
+        "🧩 Topics": {
+          "what": "Choose a Topic and inspect its related Runs, with Block and Job context. Expand history when needed; do not duplicate work records."
+        }
+      },
+      "Individual Analysis": {
+        "🧩 Topics": {
+          "what": "Choose a Topic and inspect its related Runs, with Block and Job context. Expand history when needed; do not duplicate work records."
+        }
+      },
+      "Display Preparation": {
+        "🧩 Topics": {
+          "what": "Choose a Topic and inspect its related Runs, with Block and Job context. Expand history when needed; do not duplicate work records."
+        }
+      },
+      "Endpoint Packaging": {
+        "🧩 Topics": {
+          "what": "Choose a Topic and inspect its related Runs, with Block and Job context. Expand history when needed; do not duplicate work records."
+        }
+      },
+      "Agent Execution": {
+        "🧩 Topics": {
+          "what": "Choose a Topic and inspect its related Runs, with Block and Job context. Expand history when needed; do not duplicate work records."
+        }
+      },
+      "Evidence Preparation": {
+        "🧩 Topics": {
+          "what": "Choose a Topic and inspect its related Runs, with Block and Job context. Expand history when needed; do not duplicate work records."
+        }
+      },
+      "Draft Writing": {
+        "🧩 Topics": {
+          "what": "Choose a Topic and inspect its related Runs, with Block and Job context. Expand history when needed; do not duplicate work records."
+        }
+      },
+      "Communication Draft": {
+        "🧩 Topics": {
+          "what": "Choose a Topic and inspect its related Runs, with Block and Job context. Expand history when needed; do not duplicate work records."
+        }
+      },
+      "Review & Approval": {
+        "🧩 Topics": {
+          "what": "Choose a Topic and inspect its related Runs, with Block and Job context. Expand history when needed; do not duplicate work records."
+        }
+      },
+      "Evidence Search": {
+        "🧩 Topics": {
+          "what": "Choose a Topic and inspect its related Runs, with Block and Job context. Expand history when needed; do not duplicate work records."
+        }
+      },
+      "Source Review": {
+        "🧩 Topics": {
+          "what": "Choose a Topic and inspect its related Runs, with Block and Job context. Expand history when needed; do not duplicate work records."
+        }
+      },
+      "Evidence Synthesis": {
+        "🧩 Topics": {
+          "what": "Choose a Topic and inspect its related Runs, with Block and Job context. Expand history when needed; do not duplicate work records."
+        }
+      }
+    }
+  },
+  "proposed": false,
+  "use_cases": {
+    "job": {
+      "Job": {
+        "Data preparation": [
+          {
+            "path": "blueprints/Project-Ladder/work/b90_example_paper_results/j01_example_source",
+            "label": "Blueprint example"
+          }
+        ],
+        "Model training": [],
+        "Statistical analysis": [
+          {
+            "path": "blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates",
+            "label": "Blueprint example"
+          }
+        ],
+        "Software development": [
+          {
+            "path": "blueprints/Project-Ladder/work/b17_theme_work/j03_work_workbench_pages",
+            "label": "Theme workspace"
+          }
+        ],
+        "Model comparison": [],
+        "Theme development": [
+          {
+            "path": "blueprints/Project-Ladder/work/b17_theme_work/j03_work_workbench_pages",
+            "label": "Theme workspace"
+          },
+          {
+            "path": "blueprints/Project-Ladder/work/b16_theme_paper/j01_paper_workbench_pages",
+            "label": "Theme workspace"
+          }
+        ]
+      },
+      "Collaboration Job": {
+        "Data access request": [
+          {
+            "path": "blueprints/Project-Ladder/cowork/b01_example_data_request/j01_data_access_request",
+            "label": "Blueprint example"
+          }
+        ],
+        "Kickoff coordination": [
+          {
+            "path": "blueprints/Project-Ladder/cowork/b01_example_data_request/j03_kickoff_meeting",
+            "label": "Blueprint example"
+          }
+        ],
+        "IRB": [
+          {
+            "path": "blueprints/Project-Ladder/cowork/b01_example_data_request/j02_review_board_amendment",
+            "label": "Blueprint example · Amendment"
+          }
+        ]
+      },
+      "People": {
+        "Team directory": [
+          {
+            "path": "blueprints/Project-Ladder/cowork/b01_example_data_request/j00_people",
+            "label": "Blueprint example"
+          }
+        ],
+        "Role lookup": [
+          {
+            "path": "blueprints/Project-Ladder/cowork/b01_example_data_request/j00_people",
+            "label": "Blueprint example"
+          }
+        ],
+        "Contact reference": [
+          {
+            "path": "blueprints/Project-Ladder/cowork/b01_example_data_request/j00_people",
+            "label": "Blueprint example"
+          }
+        ]
+      },
+      "Inquiry Job": {
+        "Literature review": [
+          {
+            "path": "blueprints/Project-Ladder/discovery/b01_example_prior_work/j01_policy_effect_inquiry",
+            "label": "Blueprint example"
+          }
+        ],
+        "Evidence synthesis": [
+          {
+            "path": "blueprints/Project-Ladder/discovery/b01_example_prior_work/j02_subgroup_effect_inquiry",
+            "label": "Blueprint example"
+          }
+        ],
+        "Prior-work investigation": [
+          {
+            "path": "blueprints/Project-Ladder/discovery/b01_example_prior_work/j01_policy_effect_inquiry",
+            "label": "Blueprint example"
+          }
+        ]
+      }
+    },
+    "task": {
+      "Collaboration Task": {
+        "Data use plan": [
+          {
+            "path": "blueprints/Project-Ladder/cowork/b01_example_data_request/j02_review_board_amendment/t01_data_use_plan",
+            "label": "Blueprint example · Task-level data-use plan"
+          }
+        ]
+      }
+    },
+    "block": {
+      "Blueprint Block": {
+        "Theme development": [
+          {
+            "path": "blueprints/Project-Ladder/work/b17_theme_work",
+            "label": "Work theme"
+          },
+          {
+            "path": "blueprints/Project-Ladder/work/b16_theme_paper",
+            "label": "Paper theme"
+          }
+        ]
+      }
+    }
+  },
+  "use_case_notes": {
+    "task": {
+      "Task": {
+        "Individual analysis": "Example needed: no verified individual-query Task found in the scanned workspaces."
+      }
+    }
+  }
+}

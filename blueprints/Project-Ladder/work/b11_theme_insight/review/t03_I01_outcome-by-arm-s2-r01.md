@@ -1,7 +1,7 @@
 # Stage 2 review r01 · t03_I01_outcome-by-arm (Information level, partly answered, one cut planned)
 
 ```text
-page     http://127.0.0.1:5623/_board/workbench?layout=focus&path=blueprints/Project-Ladder/insight/Insight-Example/j02_prototype-p1-example-questions_data-Examplev2/t03_I01_outcome-by-arm (Report, Work · Answer, By cut, Across Jobs, Plan, MindMap)
+page     http://127.0.0.1:5623/_board/workbench?layout=focus&path=blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2/t03_I01_outcome-by-arm (Report, Work · Answer, By cut, Across Jobs, Plan, MindMap)
 answers  what: folder name; goal-line "Aim I01", an id (partly) · where: path ✅ · here: closed bars, "partial", "3 of 4 ran" ✅ · do: Work · By cut "Run the third cut · Copy prompt" ✅
 rules    1 ✅ · 2 ✅ · 3 ✅ · 4 ✅ · 5 ❌ goal-line id "I01"; MindMap leaves "Run 1 · partition" … "Run 5" name no cut
 tasks    gap on the whole extract: 1 click · gap in the second cut: 3 clicks (By cut, Cut × step, its ✅ ok pop-out); By cut shows only "The full result" · which cut is planned and how to run it: 2 clicks ✅ · how it moved since j01: 2 clicks ✅

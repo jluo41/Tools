@@ -1,7 +1,7 @@
 """s13 · Task level: s13-task-level.excalidraw, one question's Task tab on the shared frame, its Spaces as full
 screens (JL 261007: "s11, s12, s13 ... for the Block level, Job level and task level").
 
-A Task is one question on one Job's pair (s00): drawn for K01 in j03_p2_<d>v2. On the Insight Board every Task is
+A Task is one question on one Job's pair (s00): drawn for K01 in j03_code-v2_data-v2. On the Insight Board every Task is
 of one type, an insight question; its DIKW level changes what it may say and which methods fit, and a W Task
 cites the levels below and is signed. Its question, plan and three methods (ask, answer, read) are the pinned
 release's, read only here; a new or changed question is proposed from the Job (run-propose), not from a Task
@@ -22,11 +22,11 @@ import insight_ui as U  # noqa: E402
 
 text, base, path, INK, GRAY, RED, TEAL, MONO, GREEN = U.text, U.base, U.path, U.INK, U.GRAY, U.RED, U.TEAL, U.MONO, U.GREEN
 ASK, ANSWER, READ = "By estimand", "By hypothesis test", "By multiverse"
-STATUS = "K01 · in j03_p2_<d>v2 · release p2 · <d>v2 · ✅ checked"   # no band (JL 261007): Question's first line
-TASK = "j03_p2_<d>v2/t04_K01_<q>/"
-REL = "work/…_prototype/j02_p2/t04_K01_<q>/"
+STATUS = "K01 · in j03_code-v2_data-v2 · release p2 · <d>v2 · ✅ checked"   # no band (JL 261007): Question's first line
+TASK = "j03_code-v2_data-v2/t04_K01_<q>/"
+REL = "work/…_prototype/j02_code-v2/t04_K01_<q>/"
 
-MOVES = [("Insight › a question's row", "the Task tab t04_K01_<q> in j03_p2_<d>v2: one question on one pair"),
+MOVES = [("Insight › a question's row", "the Task tab t04_K01_<q> in j03_code-v2_data-v2: one question on one pair"),
          ("Prototype › its question.md", "Description: Question · Plan · Data, read only from release p2; ? its three methods"),
          ("(none)", "a new or changed question is proposed from the Job (run-propose), never from a Task"),
          ("its page tNN_<name>.md", "Audience Report: Question │ Work │ Report over its needs, Partition × Period"),
@@ -202,7 +202,7 @@ SCREENS = [
      [(REL + "question.md", "needs · work spec · Ask covered · agreed"), ("check_evidence.py", "T0 covered · T1 specified")]),
     ("Description", DESC(2), [], "", data,
      [(TASK + "runs/rNN_<partition>/result/partition_power.csv", "n · base rate · power"),
-      ("work/…_prototype/j02_p2/thresholds.yaml", "the smallest effect that matters")]),
+      ("work/…_prototype/j02_code-v2/thresholds.yaml", "the smallest effect that matters")]),
     ("Idea Studio", None, ["Add a topic"], "", studio,
      [(TASK + "studio/", "optional"), ("└── s01-<page-logic>/", "the page's argument")]),
     ("Audience Report", PERIOD("<partition A>", 0), ["Write the Knowledge report", "Check a report"], "", current,
@@ -211,8 +211,8 @@ SCREENS = [
     ("Audience Report", PERIOD("Cross", 0), ["Pool or split"], "", cross,
      [(TASK + "runs/r04_cross/result/", "the difference test"), (TASK + "t04_K01_<q>.md", "its Cross section")]),
     ("Audience Report", PERIOD("<partition A>", 1), [], "from the Job's\nrun-compare-j02", vs_previous,
-     [("j03_p2_<d>v2/reports/vs-j02.md", "the Job's comparison, this question's rows"),
-      ("j02_p1_<d>v2/t04_K01_<q>/", "K01 in the Job before")]),
+     [("j03_code-v2_data-v2/reports/vs-j02.md", "the Job's comparison, this question's rows"),
+      ("j02_code-v1_data-v2/t04_K01_<q>/", "K01 in the Job before")]),
     ("Work Details", [("All", 1), ("hard", 0), ("soft", 0)], ["Run a partition", "Check alignment"], "", tree,
      [(TASK, "the Task"), ("├── runs/rNN_<partition>/", "hard: one per partition, + r04_cross"),
       ("│   ├── run.yaml · passes/", "kind · status · passes · last"), ("│   └── result/", "what its pop-out previews"),
@@ -257,7 +257,7 @@ ASIDES = {"Idea Studio": ("typical topics, tNN_…/sNN-<topic>/", [
 def main():
     out = Path(sys.argv[1]) if len(sys.argv) > 1 else HERE / "s13-task-level.excalidraw"
     U.level_drawing(out, Path(__file__).name, "Task",
-                    "Task level: one question on one Job's pair (K01 in j03_p2_<d>v2)",
+                    "Task level: one question on one Job's pair (K01 in j03_code-v2_data-v2)",
                     "One Task type on the Insight Board, an insight question: its question is the release's, read only; "
                     "its needs are answered by its Runs and cited by its page.", MOVES, SCREENS, POPOUTS, QUESTIONS, ASIDES,
                     changes=CHANGES)

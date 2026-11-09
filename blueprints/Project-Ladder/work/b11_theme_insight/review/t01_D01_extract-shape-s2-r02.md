@@ -1,7 +1,7 @@
 # t01_D01_extract-shape · Data Task · stage 2 · r02
 
 ```text
-page     http://127.0.0.1:5623/_board/workbench?layout=focus&path=blueprints/Project-Ladder/insight/Insight-Example/j02_prototype-p1-example-questions_data-Examplev2/t01_D01_extract-shape (Report, Work: Answer · By cut · Across Jobs · Plan · MindMap)
+page     http://127.0.0.1:5623/_board/workbench?layout=focus&path=blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2/t01_D01_extract-shape (Report, Work: Answer · By cut · Across Jobs · Plan · MindMap)
 answers  what: the folder, Aim "rows, columns, days, missing?" · where: crumb to j02 · here: Report · Answer, headline "960 rows and 5 columns over 16 days" · do: partly, only open bars
 rules    1 ✅ · 2 ✅ · 3 ✅ · 4 ⚠️ MindMap shows root + "Runs ▸ show" only · 5 ✅
 tasks    rows held: 0 clicks | column missing most: 4 clicks (By cut, bar, r01_full pop-out, scroll to its figure) | changed since j01: 2 clicks ("changed: the data")

@@ -1,5 +1,6 @@
 # j21_submission_v1130_desk · the send to Example Journal
 
+use-case: Submission package preparation
 layer: submission
 for: j11_writing_v1130_desk
 venue: Example Journal

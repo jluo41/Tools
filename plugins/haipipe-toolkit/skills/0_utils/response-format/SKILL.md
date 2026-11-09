@@ -449,6 +449,32 @@ The rebuild wrote `_WorkSpace/3-CaseStore/x/@v0002/`, which git ignores. Once th
 model is picked, the training Run can start from this CaseSet.
 ```
 
+## 🌳 Work tree: the Block map (JL 261108)
+
+When JL asks about work (where it lives, how far it got, which Run counts, how a Block is
+organized), the sketch is the Block map: the Block on top, one line per Job, its Task and
+Run range in aligned columns, then the state and what that Job builds or answers. It is a
+template; fill it with the real names each time.
+
+```text
+<bNN_block>
+├─ <jNN_C_data_job>  ─▶ <tNN>  <rNN-rNN rNN>  <state> <what it builds>
+├─ <jNN_D_reg_job>   ─▶ <tNN>  <rNN-rNN>      <state> <the question it answers>
+└─ <jNN_D_reg_job>   ─▶ <tNN>  <rNN-rNN>      <state> <the question it answers>
+```
+
+1. **One line per Job**: `<jNN_job> ─▶ <tNN> <runs>`, the columns aligned down the map.
+2. **Runs as a range**: `r01-r08`, a gap or the one that counts written after it (`r01-r07 r09`).
+3. **The state comes first**: ✅ done, 🏃 running, ⬜ stopped or not yet, ❗ void or wrong, 🙋 your call.
+4. **What it is for**: a build Job says what it builds; a question Job says what it answers.
+5. **Real folder names**: the Jobs in number order, every Job the question touches.
+
+A Job with several Tasks gets one line per Task, the Job name written once. When one
+Task's Runs matter (which one is void, which one counts), its Runs hang under its line,
+one `└─ <rNN> <state> <words>` each. A Run that moved keeps one line under the map:
+`<old address> ─▶ <new address>`. The map stands in for the section's sketch, so it keeps
+the 10-line cap.
+
 ## 📎 "Show me" means in the reply (2026-09-04)
 
 "Show me", "preview", "so we can understand it": paste the content INTO the

@@ -1,0 +1,38 @@
+status: ok
+question: K01
+run: r04_cross
+partition: cross
+release: code-v1
+data: data-v1
+ticket: Tools/blueprints/Project-Ladder/insight/Insight-Example/j01_code-v1-example-questions_data-v1/t05_K01_gap-holds/runs/r04_cross/run.sh
+job: Tools/blueprints/Project-Ladder/insight/Insight-Example/j01_code-v1-example-questions_data-v1
+prototype: Tools/blueprints/Project-Ladder/insight/Prototype-Example/j01_code-v1_example-questions
+extract: Tools/blueprints/Project-Ladder/insight/Insight-Example/data/data-v1/example.parquet
+spec: Tools/blueprints/Project-Ladder/insight/Prototype-Example/j01_code-v1_example-questions/t05_K01_gap-holds/question.md
+spec_sha256: 7e896e245cf67236dea613f3fa55d36cb3e4114a5653ab920e57cbce811c7f34
+scripts: Tools/blueprints/Project-Ladder/insight/Prototype-Example/j01_code-v1_example-questions/t05_K01_gap-holds/scripts
+scripts_sha256: 923145db5311b2a9548e94d5000bcdda1e5ac2fddf4ce9eb0fe5741fb57d5677
+shared_sha256: 4f5c73210fda352f18d32178744ce4feca1bf1ec6ae56d493da984f3bacd2477
+git_sha: a62ac8cd9
+started: '2026-11-06T18:57:56Z'
+rows_before: 0
+rows_after: 0
+power: ok
+reads:
+  ? Tools/blueprints/Project-Ladder/insight/Insight-Example/j01_code-v1-example-questions_data-v1/t03_I01_outcome-by-arm/runs/r02_first/result/gap.csv
+  : 12c8ad85497d138d0b9541a0b8b43c6265df62c32845ea7d3eb307ee4a029850
+  ? Tools/blueprints/Project-Ladder/insight/Insight-Example/j01_code-v1-example-questions_data-v1/t03_I01_outcome-by-arm/runs/r03_second/result/gap.csv
+  : 3f912276496c6193dfa670295f393c159956800658dfeecd988813420287ee62
+outputs:
+- pooling.csv
+- verdict.json
+- partition_power.csv
+figures:
+- need: E2
+  table: pooling.csv
+  file: fig_E2_pooling.png
+  kind: estimate
+tables_sha256: 40f8ab7fd0fe19608b9042f0f3e26c52577b555551188a5b6f789ff79b7e1252
+ended: '2026-11-06T18:57:56Z'
+duration_s: 0.4
+content_since: '2026-11-06T18:57:56Z'

@@ -1,0 +1,18 @@
+run: run-write-t07
+kind: soft
+type: write
+scope: Tools/blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2/t07_X01_what-we-found
+target: t07
+ticket: run-write-t07.md
+skill: haipipe-insight
+agent: haipipe-insight-agent
+signs:
+- none
+status: done
+passes:
+- p01-1106
+- p02-1106
+- p03-1106
+writes:
+- t07_X01_what-we-found/t07_X01_what-we-found.md
+feeds: []

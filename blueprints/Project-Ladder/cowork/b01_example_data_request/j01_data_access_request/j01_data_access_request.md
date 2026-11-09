@@ -1,5 +1,6 @@
 # j01 · Data access request to the partner office
 job-kind: cowork-job
+use-case: Data access request
 state: 🟡 ACTIVE · waiting on the Data owner since 2026-10-28; chase by 2026-11-12
 waiting-on: Data owner
 since: 2026-10-28

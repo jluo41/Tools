@@ -25,7 +25,8 @@ order (a dry run without `--apply`), each step a script with its own rollback.
 | L2 | Versions dated, Sections tNN | no `jNN_v<N>_` version, no `S-…` Section folder | `carry_over/rename_tasks.py --date MMDD` |
 | L3 | Writing Jobs named | no `jNN_v<MMDD>_<desk>/`: it is `jNN_writing_v<MMDD>_<desk>/`, from j11 | rename the Job and its `delivery/` folder, sweep the name |
 | L4 | The checklist topic | `sNN-paper-checklist/` exists | make it (haipipe-studio `new_topic.py`), then `paper_check.py --write` |
-| L5 | Faces the views read | the Story has its Task Roadmap (T) and Discovery Roadmap (D) tables; the data-flow topic its `-drawing.yaml` | 🙋 haipipe-paper-story, haipipe-paper-plan |
+| L5 | Faces the views read | the Story has its Task Roadmap (T) and Discovery Roadmap (D) tables, §8 Section Narrative opening with `#### Story arc`, and per-Section rows (§8 or a version's `## Narrative`); the data-flow topic its `-drawing.yaml` | 🙋 haipipe-paper-story, haipipe-paper-plan |
+| L6 | Pages say their use | `board.md`, every Job face and every Task face has a `use-case:` line (the b16 matrices' word) | update writes it |
 
 Missing evidence Jobs (V1) are made by update too (`paper_ladder.py evidence`).
 

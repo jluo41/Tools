@@ -1,9 +1,9 @@
 ---
 name: haipipe-paper
-description: "The one door for a paper on the ladder: a paper Board, one version Job per send, one Task per Section, Abstract or letter; routes to the Story, Ideation, Venue, Section, comments and assembly owners. Use for paper setup (paper_ladder.py), bringing an older paper folder onto the latest layout (paper_ladder.py audit, update), where a paper stands (checklist.md, paper_check.py, its sNN-paper-checklist topic), the delivery and its requirements, the submission portal (paper_ladder.py submission, portal_fill.py), drafting, or reviews. Trigger: paper, paper Board, version, send, update the paper folder, paper checklist, delivery requirements, cover letter, submission portal, /haipipe-paper."
+description: "The router for the Paper family, including manuscript and grant types; manuscript runtime commands are implemented and Grant-specific support must be verified. For a paper on the ladder: a paper Board, one version Job per send, one Task per Section, Abstract or letter; routes to the Story, Ideation, Venue, Section, comments and assembly owners. Use for paper setup (paper_ladder.py), bringing an older paper folder onto the latest layout (paper_ladder.py audit, update), where a paper stands (checklist.md, paper_check.py, its sNN-paper-checklist topic), the delivery and its requirements, the submission portal (paper_ladder.py submission, portal_fill.py), drafting, or reviews. Trigger: paper, paper Board, grant proposal, Grant Board, version, send, update the paper folder, paper checklist, delivery requirements, cover letter, submission portal, /haipipe-paper."
 metadata:
-  version: "1.28.1"
-  last_updated: "2026-11-04"
+  version: "1.34.0"
+  last_updated: "2026-11-09"
   summary: "Paper owns the journey and composition; the shared Page owns each Paper Page's lifecycle and release."
 ---
 
@@ -16,6 +16,38 @@ metadata:
 
 `haipipe-paper` is the Paper-family router. It does not implement the Page
 workflow and it does not replace the specialist Page Type contracts.
+
+## Paper types and shared content
+
+Paper is the theme family. The manuscript-oriented Paper Board and Grant Board
+are types within it. Grant uses the same planning, evidence, writing-version,
+review and assembly contracts, with the funding call supplying its application
+requirements. Do not create a separate Grant theme or parallel lifecycle.
+
+Grant shares Idea, Story and Data + Paper Plan, including Related in both Idea
+and Story and Story by Section in both Story and Displays. Funding opportunity,
+specific aims, research approach, team, budget and submission requirements extend
+that shared structure. For Grant, Venues means the funding program or call;
+Paper flow means the application narrative and sections. Keep preliminary
+findings distinct from proposed future outcomes.
+
+| Content | Semantic owner | Workbench placement |
+|---|---|---|
+| Candidate directions and their theory | [haipipe-paper-ideation](../haipipe-paper-ideation/SKILL.md) | Idea |
+| Related-work positioning | [haipipe-paper-related](../haipipe-paper-related/SKILL.md); records remain owned by haipipe-related | Related in Idea and Story |
+| Chosen argument and Section Narrative | [haipipe-paper-story](../haipipe-paper-story/SKILL.md) | Story; the same Story by Section also appears in Displays |
+| Data flow, application/paper flow and display plan | [haipipe-paper-plan](../haipipe-paper-plan/SKILL.md) | Data + Paper Plan; Displays |
+| Target requirements | [haipipe-paper-venue](../haipipe-paper-venue/SKILL.md) | Venues; Grant design also has Opportunity |
+| Returned values, citations and display evidence | [haipipe-paper-evidence](../haipipe-paper-evidence/SKILL.md) | Evidence and Displays |
+| Section drafts and assembled outputs | [haipipe-paper-draft](../haipipe-paper-draft/SKILL.md), [haipipe-paper-assemble](../haipipe-paper-assemble/SKILL.md) | Writing and Delivery |
+| Reading and rendering these records | [workbench-paper](../workbench-paper/SKILL.md) | Shared Paper frame |
+
+**Implementation boundary:** the manuscript Paper runtime is implemented; the
+Grant column in the design matrix records the agreed family relationship and
+proposed Grant-specific Sections. It does not establish a Grant renderer,
+scaffold, submission adapter or working example. Inspect those capabilities
+before applying a manuscript command to a grant. A matrix entry does not by
+itself authorize migrating an existing grant folder or submitting an application.
 
 ## 🧭 Four layers: plan, explore, evidence, writing (JL 261031; b16-s01-paper-tree-concept)
 
@@ -85,8 +117,40 @@ L3 jNN_v<MMDD>_<desk>/             renamed jNN_writing_v<MMDD>_<desk>/ (from j11
                                    its delivery/<job>/ folder and build inputs too, the whole name swept
 V1 missing evidence Jobs           paper_ladder.py evidence
 L4 no checklist topic              sNN-paper-checklist/ (haipipe-studio new_topic.py --over-limit), then paper_check.py --write
-L5 faces the views read            🙋 not mechanical: haipipe-paper-story (T, D tables), haipipe-paper-plan (-drawing.yaml)
+L5 faces the views read            🙋 not mechanical: haipipe-paper-story (T, D tables, §8 Section Narrative, its #### Story arc,
+                                   the per-Section rows), haipipe-paper-plan (-drawing.yaml)
+L6 a page face with no use-case:   writes the matrices' word under the H1: Board, Job, Task (🙋 when none fits)
 ```
+
+**L5, the story the views read (JL 261109).** Report › Story and › Displays show Story by Section: first the whole
+paper's Story arc (§8 `#### Story arc`), then each Section's part of the arc (the per-Section table, first header
+`Section`, in §8 or the newest writing version's `## Narrative`, newest first), its claims last. L5 asks for both;
+`haipipe-paper-story` writes them. `version` writes the table's header and `task` adds the new Section's row with
+`<placeholders>`, which count as unwritten until a person or haipipe-paper-story fills them.
+
+**L6, every page says its use (JL 261108, 261109).** Each Board, Job and Task page shows its type and use case under
+its title. The workbench never guesses a use: it shows the face's `use-case:` line, or the one use a type has in
+the b16 matrices, and nothing when a type has several. So the face says it. `update` writes it from what the face
+and folder already declare, never from nothing:
+
+```text
+Board      board-kind: grant-board → Initial application; else Manuscript development
+Job        version: responds-to: → Feedback revision, else Manuscript drafting (from: alone is no sign)
+           evidence: Figure and table preparation · Printed-value verification · Citation verification
+           submission: Submission package preparation
+Task       draft: responds-to: → Reviewer response; section_kind abstract|summary → Abstract or summary;
+                  letter → Cover letter drafting; else Manuscript section
+           display: type:, label: or display: (then the name) says figure or table → Figure|Table preparation
+           value: …value-tables → Source table inspection; t99_ → Whole-paper value audit; else Printed-value verification
+           citation: t99_ → Whole-paper citation audit; else Claim-group citation check
+           submission: letter → Reference the version letter; portal-walk → Portal field survey; portal-fill → Portal preparation
+```
+
+A page that fits none (a `j51_insight_demo` Job, a display Task that says neither figure nor table) gets no guess:
+L6 shows 🙋 and a person writes its line. A line already there is kept; when you add `responds-to:` later, change
+`use-case:` too. Every scaffold (`board`, `version`, `next`, `task`, `evidence`, `submission`) stamps the faces it
+makes by the same rule (`paper_check.stamp_use_case`), so L6 only fails on older Boards. The words are the Use Cases
+of b16 `ui/block-views.md`, `job-views.md`, `task-views.md`; change them in both places.
 
 Every carry-over step keeps its own rollback; nothing is committed. Update also removes an empty leftover `A1-Story/`
 or `studio/` folder. Each step's title names the step, never a count.
@@ -315,7 +379,7 @@ screen's own rules are in `workbench-paper`.
 | Studio › Related (folded under the topics, the Board's) | `related/related.md`, one row per item, grouped by its subfolder (meetings · papers · files · emails) and then its `group` cell, opening on its file; by question in Report › Related Papers | `haipipe-related` · `haipipe-paper` · `haipipe-discovery` |
 | Studio (top row, the Board's) | the Board's `sNN-<topic>/` folders, one drawing each, with Tags and Stage | the base frame (`haipipe-studio`) |
 | Delivery (top row, the Board's) | `delivery/jNN_<version>/`, one per version; from a version, its part | `haipipe-paper-assemble` · `haipipe-delivery` |
-| Board › Report · Work (focus page, `layout=focus`) | seven views, Idea, Story (the venues inside, `venues/<venue>/call.md`) · B Data + Paper Plan · C Support blocks · D Evidence · E Displays · F Writing; Report reads RESULTS first, Work PROCESS first | `haipipe-paper-ideation` · `haipipe-paper-story` · `haipipe-paper-venue` · `haipipe-paper-plan` · `haipipe-paper-evidence` · `haipipe-paper` (`paper_ladder.py`) |
+| Board › Report (focus page, `layout=focus`) | seven views: Idea, Story (including venues, `venues/<venue>/call.md`), Data + Paper Plan, Support blocks, Evidence, Displays and Writing; each has Review Content followed by Around the Work. Legacy Board Work routes redirect to Report. | `haipipe-paper-ideation` · `haipipe-paper-story` · `haipipe-paper-venue` · `haipipe-paper-plan` · `haipipe-paper-evidence` · `haipipe-paper` (`paper_ladder.py`) |
 | Board › Description › Scope · Venue · Resources (frame layout only; on the focus page the venues sit in Story) | the face; `venues/<venue>/`; resources | `haipipe-paper` · `haipipe-paper-venue` |
 | Board › Audience Report › Ideation · Narrative · High-level logic + Low-level work · Related Questions · Related Papers (frame layout) | the ideation Questions; the story; each research question as Question │ Work │ Report; the reviewer and reader questions; the related papers by question | `haipipe-paper-ideation` · `haipipe-paper-story` · `haipipe-report` |
 | version › Description › Version · Venue rules (frame layout) | the version face; the venue's call | `haipipe-paper` · `haipipe-paper-venue` |
@@ -398,9 +462,10 @@ topic-entry tooling, stage-specific craft, and their helper scripts are outside
 the current Paper runtime. This door does not load them.
 
 A telling's seed (identity, pitch, stakes) and its roadmaps live in its studio
-topic, its research questions in Board Questions with reports, and its Section
-Narrative in each version face's `## Narrative`; the corresponding execution,
-Section, compile and comments records stay with their native owners. The router reads no retired child
+topic, alongside the shared Section Narrative. Its research questions live in
+Board Questions with reports. Each writing version's `## Narrative` holds its
+concrete Section bindings and compile order, aligned with the Story topic;
+execution, Section, compile and comments records stay with their native owners. The router reads no retired child
 Page, compatibility alias, or fallback source.
 
 ## ✅ Completion checks

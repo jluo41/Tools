@@ -186,6 +186,13 @@ def _all_sends(folder: Path, block: Path, level: str) -> list:
     return sorted(out, key=lambda m: m["date"], reverse=True)
 
 
+def history(folder: Path, root: Path, level: str) -> list:
+    """Dated delivery records; their dates do not imply an unrecorded send time."""
+    return [(m['date'], 'Delivery · ' + ('marked sent' if m['sent'] else 'draft' if m['draft'] else 'not marked sent'),
+             m['title'], m['md']) for m in _all_sends(folder, block_of(folder, level), level)
+            if m['date'] and m['md'] and m['md'].resolve().is_relative_to(root.resolve())]
+
+
 # ── Findings: 👥 People · ✉️ Messages · ⏳ Next move ──────────────────────────────────────────────────────────────
 def people_part(folder: Path, root: Path, level: str, rows: list) -> tuple | None:
     block = block_of(folder, level)
@@ -410,7 +417,7 @@ def job_status(job: Path, root: Path) -> list:
     checklist = steps(job / "CHECKLIST.md", block, job.name)
     if checklist:
         done = sum(1 for s in checklist if s["done"])
-        out.append(("☑️ Steps", f"{done} of {len(checklist)} done", CSS + '<ul class=cw-rows>' + "".join(
+        out.append(("📝 Steps", f"{done} of {len(checklist)} done", CSS + '<ul class=cw-rows>' + "".join(
             f'<li><span class=d>{"☑" if s["done"] else "☐"} {esc(s["number"])}</span><span class=t>{esc(s["text"])}</span>'
             + ('' if s["done"] else '<small>open</small>') + '</li>' for s in checklist) + '</ul>', ""))
     from live import focus_page as F

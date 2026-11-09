@@ -2,8 +2,8 @@
 name: haipipe-paper-ideation
 description: "The Paper Page Type for one research direction and its research questions (each Idea named by its question): projects haipipe-ideation's sync packets and final selection into Direction, Landscape, Opportunity Map and Story routes, as the Board's s01-ideation/ topic. Generation, novelty and selection stay with haipipe-ideation. Trigger: paper ideation, s01, research direction, opportunity map, /haipipe-paper-ideation."
 metadata:
-  version: "1.5.0"
-  last_updated: "2026-11-01"
+  version: "1.5.1"
+  last_updated: "2026-11-08"
   group-token: "s01-ideation"
   outline:
     mode: grammar
@@ -51,6 +51,18 @@ them. `haipipe-paper-workflow` tests G0 from the same receipt and reciprocal
 Story links; it never asks for another selection tick. The Page itself always
 runs through `/haipipe-draft` and `haipipe-draft-workflow`
 (CONTEXT → OUTLINE → EVIDENCE → CONTENT → CHECK), never a private lifecycle.
+
+## Shared Paper and Grant ideation
+
+This semantic contract also informs Grant as a type within the Paper theme.
+Compare research directions, theory, evidence gaps and fit to the intended target;
+for a grant the target is its funding program or call. Selection and lifecycle
+authority remain with the owners above; do not invent a separate grant gate.
+
+The workbench shows Related in Idea even when a Story already exists. It reads
+the same Board reference records used by Story. Use haipipe-paper-related for
+positioning and haipipe-related for storage; do not maintain an Idea-only copy.
+Grant-specific workbench behavior remains proposed until implemented.
 
 ## 🔌 Semantic adapter and single authority
 

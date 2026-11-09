@@ -3,6 +3,7 @@
 job-of: b02_haipipe-utils (261009)
 spine: `skills/describe-food` (0.7.0): a FoodName in any cohort's dialect to USDA nutrition through the bank ladder, with a confidence word per answer.
 close: Each recorded question has a report Page with an answer status, and every answered question names the change that settled it.
+emoji: 🍽️
 
 ## Topic
 

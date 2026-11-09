@@ -50,6 +50,128 @@ def face(folder: Path) -> Path:
     return folder / f"{folder.name}.md"
 
 
+# Each page's `use-case:` line: the Board's, each Job's and each Task's (JL 261108, 261109: "there are no page type
+# and use case"). The workbench shows a use case only when the face writes one, or when the page's type has a single
+# use in the b16 matrices (blueprints/Project-Ladder/work/b16_theme_paper/ui/{block,job,task}-views.md); it never
+# guesses. So haipipe-paper writes it: from what the face and folder already declare (board-kind, responds-to,
+# section_kind, a display's type, the Job's kind), never from nothing. The words are the matrices' Use Cases; change
+# them in both places. The scaffolds stamp new faces (stamp_use_case); `update` stamps older ones (layout line L6).
+USE_CASES = {"display": "Figure and table preparation", "value": "Printed-value verification",
+             "citation": "Citation verification", "submission": "Submission package preparation"}
+VERSION_NAME = re.compile(r"j\d{2}_(?:writing_)?v\d")
+
+
+def job_kind(job: Path) -> str:
+    """The workbench's own branch for a Job, by its name: display, value, citation, submission, or "" for a version."""
+    name = job.name.lower()
+    if not re.search(r"display|citation|cite|evidence|value|submission", name):
+        return ""
+    for kind, words in (("submission", r"submission"), ("display", r"display"), ("value", r"value"),
+                        ("citation", r"cite|citation")):
+        if re.search(words, name):
+            return kind
+    return "other"
+
+
+def version_use(text: str) -> str:
+    """A writing version's use, from its face: answering comments (`responds-to:`) or drafting."""
+    return "Feedback revision" if field(text, "responds-to") else "Manuscript drafting"
+
+
+def board_use(text: str) -> str:
+    """A Board's use, by its `board-kind:`: a Grant Board's first application, else a manuscript."""
+    return "Initial application" if field(text, "board-kind").lower() == "grant-board" else "Manuscript development"
+
+
+def job_use(name: str, text: str) -> str:
+    """A Job's use; "" when its name says neither a version nor an evidence or submission Job."""
+    kind = job_kind(Path(name))
+    if kind:
+        return USE_CASES.get(kind, "")
+    return version_use(text) if VERSION_NAME.match(name) else ""
+
+
+def task_use(job: str, name: str, text: str) -> str:
+    """A Task's use, by its Job's kind and what its face declares; "" when nothing declared fits."""
+    kind, low = job_kind(Path(job)), name.lower()
+    if not kind:
+        if not VERSION_NAME.match(job):
+            return ""
+        part = field(text, "section_kind").lower()
+        return ("Reviewer response" if field(text, "responds-to") or "response" in low else
+                "Abstract or summary" if part in ("abstract", "summary") else
+                "Cover letter drafting" if part == "letter" else "Manuscript section")
+    whole = low.startswith("t99_")
+    if kind == "display":
+        said = " ".join([field(text, "type"), field(text, "label"), field(text, "display"), low]).lower()
+        shown = re.search(r"\b(fig|figure|figures|table|tables|tab)\b|(fig|table)", said)  # declared first, then name
+        return "" if not shown else "Table preparation" if "tab" in shown.group(0) else "Figure preparation"
+    if kind == "value":
+        return "Source table inspection" if "value-tables" in low else \
+            "Whole-paper value audit" if whole else "Printed-value verification"
+    if kind == "citation":
+        return "Whole-paper citation audit" if whole else "Claim-group citation check"
+    if kind == "submission":
+        return ("Reference the version letter" if "letter" in low else "Portal field survey" if "portal-walk" in low
+                else "Portal preparation" if "portal-fill" in low else "")
+    return ""
+
+
+def face_use(rel: str, text: str) -> str | None:
+    """The use for the face at `rel` (relative to the Board): board.md, jNN/jNN.md or jNN/tNN/tNN.md; None when `rel`
+    is no such face."""
+    parts = Path(rel).parts
+    if parts == ("board.md",):
+        return board_use(text)
+    if len(parts) == 2 and re.match(r"j\d", parts[0]) and parts[1] == f"{parts[0]}.md":
+        return job_use(parts[0], text)
+    if len(parts) == 3 and re.match(r"j\d", parts[0]) and re.match(r"t\d", parts[1]) and parts[2] == f"{parts[1]}.md":
+        return task_use(parts[0], parts[1], text)
+    return None
+
+
+def use_case(job: Path) -> str:
+    """The use a Job's face should say (kept for callers that hold a Job folder)."""
+    return job_use(job.name, read(face(job)))
+
+
+def put_use_case(text: str, value: str) -> str:
+    """The face with its `use-case:` line set: replaced where it is, else first under the H1, as the scaffolds write it."""
+    if re.search(r"(?m)^use-case:", text):
+        return re.sub(r"(?m)^use-case:.*$", f"use-case: {value}", text, count=1)
+    m = re.match(r"(# [^\n]*\n)(\n?)", text)
+    if not m:
+        return f"use-case: {value}\n" + text
+    return text[:m.end(1)] + "\n" + f"use-case: {value}\n" + text[m.end():]
+
+
+def stamp_use_case(rel: str, text: str) -> str:
+    """A new face as a scaffold writes it: with its use-case: line when it has none and one fits."""
+    word = face_use(rel, text)
+    return put_use_case(text, word) if word and not field(text, "use-case") else text
+
+
+def faces_without_use_case(board: Path) -> list:
+    """(face path relative to the Board, the word it should say, "" when only a person can) for board.md, each Job face
+    and each Task face with no `use-case:` line."""
+    faces = [board / "board.md"] + [face(j) for j in sorted(board.glob("j[0-9]*_*")) if j.is_dir()]
+    faces += [face(t) for j in sorted(board.glob("j[0-9]*_*")) if j.is_dir() for t in tasks(j)]
+    out = []
+    for f in faces:
+        if not f.is_file():
+            continue
+        text = read(f)
+        if not field(text, "use-case"):
+            rel = f.relative_to(board).as_posix()
+            out.append((rel, face_use(rel, text) or ""))
+    return out
+
+
+def jobs_without_use_case(board: Path) -> list:
+    """(Job, the word it should say) for each Job face with no `use-case:` line."""
+    return [(board / Path(rel).parts[0], w) for rel, w in faces_without_use_case(board) if len(Path(rel).parts) == 2]
+
+
 def tasks(job: Path | None) -> list:
     return sorted(t for t in job.glob("t[0-9]*_*") if t.is_dir()) if job else []
 
@@ -293,6 +415,26 @@ def captions(job) -> tuple:
 OLD_PAGES = re.compile(r"^(A1-Story|B[abc]-[A-Za-z0-9_-]+|Story\d*[A-Z]?-.*)$")
 
 
+def section_rows(board: Path, story_text: str) -> bool:
+    """Whether a per-Section narrative table (first header `Section`, with a `reader question` column and a row that
+    says something) is written: in the Story's §8, else in a writing version's `## Narrative`, newest first."""
+    def told(text: str) -> bool:
+        lines = text.splitlines()
+        for i, line in enumerate(lines):
+            cells = [c.strip().lower() for c in line.strip().strip("|").split("|")]
+            if line.lstrip().startswith("|") and cells[:1] == ["section"] and "reader question" in cells:
+                q = cells.index("reader question")
+                for row in lines[i + 2:]:
+                    if not row.lstrip().startswith("|"):
+                        break
+                    vals = [c.strip() for c in row.strip().strip("|").split("|")]
+                    if len(vals) > q and vals[q] and not re.fullmatch(r"<[^>]*>|—|-", vals[q]):
+                        return True
+        return False
+    versions = sorted((j for j in board.glob("j[0-9]*_*") if j.is_dir() and VERSION_NAME.match(j.name)), reverse=True)
+    return told(story_text) or any(told(read(face(v))) for v in versions)       # as the workbench: newest first
+
+
 def layout(board: Path, story) -> list:
     """⓪ Layout: is the folder on the latest paper layout? Each line names the step of `paper_ladder.py update` that
     fixes it, or the skill that owns it."""
@@ -323,9 +465,22 @@ def layout(board: Path, story) -> list:
     flow = topic(board, r"s\d+-(?:paper-)?data-?flow")
     need = [n for n, ok in (("Story's Task Roadmap (T table)", re.search(r"(?m)^\|\s*T\s*\|", stext)),
                             ("Story's Discovery Roadmap (D table)", re.search(r"(?m)^\|\s*D\s*\|", stext)),
+                            # Story by Section, read by Report › Story and › Displays; a 261102 update moved it into the
+                            # version's ## Narrative, where neither view finds it (JL 261109: "where is the story?")
+                            ("Story's §8 Section Narrative", re.search(r"(?m)^#{2,4}\s*(?:\d+\s*·\s*)?Section Narrative\s*$", stext)),
+                            # the first tab of Story by Section, and each Section's part of the arc (JL 261109: "what
+                            # is the story arc of it"; "not just the claims ... the narratives, the arc")
+                            ("§8's Story arc (#### Story arc)", re.search(r"(?mi)^#{2,5}[ \t]*(?:[\d.]+[ \t]*·[ \t]*)?story arc\b", stext)),
+                            ("per-Section narrative rows (| Section | reader question | … |)", section_rows(board, stext)),
                             ("data flow's -drawing.yaml", flow and list(flow.glob("*-drawing.yaml")))) if not ok]
     add("L5", "Faces the views read", "🙋" if need else "✅",
-        ("missing: " + "; ".join(need) + " (haipipe-paper-story, haipipe-paper-plan)") if need else "T and D tables, the data-flow map")
+        ("missing: " + "; ".join(need) + " (haipipe-paper-story, haipipe-paper-plan)") if need else "T and D tables, Section Narrative, its Story arc and Section rows, the data-flow map")
+    bare = faces_without_use_case(board)
+    unknown = [rel for rel, w in bare if not w]
+    add("L6", "Pages say their use", "⬜" if bare and not unknown else "🙋" if unknown else "✅",
+        (f"{unknown[0]} fits no use (haipipe-paper: write its use-case: line)" + (f" and {len(unknown) - 1} more" if len(unknown) > 1 else ""))
+        if unknown else ("no use-case: " + ", ".join(rel.split("/")[-1][:-3] for rel, _ in bare[:4]) + (" …" if len(bare) > 4 else "") +
+         " (update writes it)") if bare else "the Board, every Job and every Task face has a use-case: line")
     return out
 
 

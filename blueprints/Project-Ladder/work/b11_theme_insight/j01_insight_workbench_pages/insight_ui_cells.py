@@ -46,13 +46,13 @@ PALE = "#dee2e6"
 
 # ── the example: the theme's public Insight-Example, as the live pages show it ──────────────────────────────────────
 SPACE = "<SPACE> / Tools / blueprints / Project-Ladder / insight"
-BOARD, JOB, TASK = "Insight-Example", "j02_prototype-p1-example-questions_data-Examplev2", "t03_I01_outcome-by-arm"
+BOARD, JOB, TASK = "Insight-Example", "j02_code-v1-example-questions_data-v2", "t03_I01_outcome-by-arm"
 PAGE = {"block": (BOARD, f"{SPACE} / {BOARD}", ""),
         "job": (JOB, f"{SPACE} / {BOARD} / {JOB}", ""),
         "task": (TASK, f"{SPACE} / {BOARD} / {JOB} / {TASK}", "Aim  ·  I01")}       # only a Task has a goal-line
 LEFT = {"block": (0, 4, 1), "job": (2, 12, 3), "task": (3, 9, 99)}   # this page's line, how many, the first child line
 RIGHT = ("Report", "Work", "Studio", "Interactions", "Delivery", "Timeline", "Skills", "Files")   # as served 261106
-J1, J2 = "j01_prototype-p1-example-questions_data-Examplev1", JOB
+J1, J2 = "j01_code-v1-example-questions_data-v1", JOB
 
 
 # ── the screen's parts, one name each (haipipe-ui: path, title-&-section, view-button-list, goal-line, view-caption,
@@ -867,7 +867,7 @@ BLOCK_STUDIO = (                       # live studio rows; the groups by Tag and
 
 # ── the Job (s54 Report, s55 Work, s56 Studio) ───────────────────────────────────────────────────────────────────────
 DG_KEY = "●  ran     ○  planned     ◌  running     ✕  refused or failed     —  not asked"
-JOB_MAP = (("", "verbs", ("Open all", "Close all")), ("", "tree", "j02_prototype-p1-\nexample-questions_\ndata-Examplev2", (
+JOB_MAP = (("", "verbs", ("Open all", "Close all")), ("", "tree", "j02_prototype-p1-\nexample-questions_\ndata-data-v2", (
     ("", "Executive", "", ("X01 · What did the example find?", "X02 · What can this data not say?")),
     ("", "Data", "", ("D01 · What does the extract hold?", "D02 · Are the arms the size we expect?")),
     ("", "Information", "", ("I01 · How often in each arm?", "I02 · Does the rate move by day?")),

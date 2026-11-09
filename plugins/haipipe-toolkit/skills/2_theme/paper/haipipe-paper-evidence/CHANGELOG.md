@@ -1,3 +1,7 @@
+## 0.13.2 · 2026-11-09 · the Displays view ends with Story by Section; no "Where each display stands" list
+
+- JL 261109: "this Story by Section should be at the bottom"; "what does 'Where each display stands' mean? maybe we don't need to use it". Each display's state is its tab's; Board Displays, a version's Display-Main/Appendix and the display Job's Displays drop the second list.
+
 # haipipe-paper-evidence · changelog
 
 ## 0.14.0 · 2026-11-06 · a value Task's Run is r01_read_values; Run pages in the workbench's words

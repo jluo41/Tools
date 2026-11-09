@@ -54,26 +54,133 @@ def _studio_panel(topic: Path, root: Path) -> str:
     return f'<div class=pb-verbs>{verbs}</div>{_canvas(topic, root)}{pic}'
 
 
-def _narrative(topic: Path, root: Path, body: str) -> str:
-    """The Section narrative drawn as a small map: the paper, then each Section in reader order, then the claims that
-    land in it (the face's claims table, `lands in`); the full mind map opens by its button (b16 s32 B r02)."""
-    rows = [r for r in _table(body) if r.get("lands in") and r.get("proposition")]
-    if not rows:
-        return ""
-    order = ("abstract", "introduction", "data", "methods", "results", "robustness", "discussion", "cover letter")
-    where = {}
+def _story_arc(topic: Path, body: str, md=None) -> str:
+    """The whole paper's story arc, the first tab of Story by Section (JL 261109: "at the top of the tab, to describe the
+    narrative of this paper, what is the story arc of it"): the Section Narrative's `#### Story arc` (haipipe-paper-story);
+    else the ```text block that opens it (identity, question, headline, boundaries); else where to write it."""
+    m = re.search(r"(?ims)^#{2,5}[ \t]*(?:[\d.]+[ \t]*·[ \t]*)?(?:story|argument)[ \t]+arc\b[^\n]*\n(.*?)(?=^#{2,5}[ \t]|\Z)", body)
+    if m and m[1].strip():
+        return md(m[1].strip(), topic) if md else f'<p>{esc(_plain(m[1].strip()))}</p>'
+    pre = re.split(r"(?m)^#{2,5}[ \t]|^\|", body, maxsplit=1)[0]
+    block = re.search(r"```text\n(.*?)```", pre, re.S)
+    if block:
+        return f'<pre style="white-space:pre-wrap;margin:0">{esc(block[1].rstrip())}</pre>'
+    return ('<p class=mut>No story arc yet: the Story\'s Section Narrative opens with <code>#### Story arc</code> '
+            '(haipipe-paper-story).</p>')
+
+
+NARRATIVE_ORDER = ("abstract", "summary", "introduction", "background", "theory", "data", "methods", "results",
+                   "robustness", "discussion", "conclusion", "appendix", "extended data", "supplement", "cover letter",
+                   "letter", "response")
+
+
+def _sec_key(name: str) -> str:
+    """A Section's name for matching: `t01_introduction`, `Introduction` and `introduction` alike."""
+    return re.sub(r"[\s_-]+", " ", re.sub(r"^t\d+_", "", _plain(name))).strip().lower()
+
+
+def _said(value: str) -> str:
+    """A cell or face line as words; a `<placeholder>` or a dash says nothing."""
+    v = _plain(value or "").strip()
+    return "" if not v or v in ("—", "-", "none") or re.fullmatch(r"<[^>]*>", v) else v
+
+
+def _section_story(board: Path, body: str) -> list:
+    """[(Section key, its name, {reader question, entry, moves, must refuse, displays, exit, in, out})] in reader order:
+    the per-Section rows of the Story's §8 (a table whose first header is `Section`), else of the newest writing
+    version's `## Narrative`; each completed by its Section face (`reader-question`, `entry-state`, `exit-state`,
+    `transition-in`, `transition-out`) in that version."""
+    versions = sorted((j for j in board.glob("j[0-9]*_*") if j.is_dir() and is_version(j)), reverse=True)
+    from live.board_read import md_table
+    rows, version = [], None
+    sources = [(None, body)] + [(v, (v / f"{v.name}.md").read_text(encoding="utf-8", errors="ignore"))
+                                for v in versions if (v / f"{v.name}.md").is_file()]
+    for owner, src in sources:
+        rows = [r for r in md_table(src, "Section") or md_table(src, "section")       # a row still all <placeholders>
+                if _said(r.get("Section", r.get("section", "")))                       # (a new Section's, haipipe-paper
+                and any(_said(v) for k, v in r.items() if k.lower() != "section")]      # task) tells nothing yet
+        if rows:
+            version = owner
+            break
+    version = version or (versions[0] if versions else None)
+    faces = {}
+    for sec in (sorted(x for x in version.glob("t[0-9]*_*") if x.is_dir()) if version else []):
+        f = sec / f"{sec.name}.md"
+        faces[_sec_key(sec.name)] = f.read_text(encoding="utf-8", errors="ignore") if f.is_file() else ""
+    out, seen = [], set()
     for r in rows:
+        low = {k.lower(): v for k, v in r.items()}
+        name = low.get("section", "")
+        key = _sec_key(name)
+        out.append((key, name, low))
+        seen.add(key)
+    for key, text in faces.items():                       # a Section with no row still tells its face's lines
+        if key not in seen and any(_said(_field(text, f)) for f in ("reader-question", "exit-state", "transition-out")):
+            out.append((key, key, {}))
+    for key, name, low in out:
+        text = faces.get(key, "")
+        for col, field in (("reader question", "reader-question"), ("entry", "entry-state"), ("exit", "exit-state"),
+                           ("in", "transition-in"), ("out", "transition-out"), ("must refuse", "must-refuse")):
+            if not _said(low.get(col, "")) and _said(_field(text, field)):
+                low[col] = _field(text, field)
+    rank = lambda k: next((i for i, o in enumerate(NARRATIVE_ORDER) if k.startswith(o)), 99)
+    return out if rows else sorted(out, key=lambda x: rank(x[0]))
+
+
+def _narrative(topic: Path, root: Path, body: str, md=None) -> str:
+    """Story by Section as side tabs (JL 261109: "for this we should have the left tab and right content"; "this is not
+    just the claims, it is also about the narratives, the arc, how to make it smooth"). The first tab is the whole
+    paper's story arc (_story_arc). Then one tab per Section in reader order, its small line what the reader leaves
+    with; on the right the Section's part of the arc first: what the reader asks, comes in with, the moves in order,
+    leaves with, how it hands on to the next Section, what it must not say, its displays; its claims last (the claims
+    table, `lands in`), each with the question it answers and the display that carries it. The full mind map opens by
+    its button (b16 s32 B r02)."""
+    claims = [r for r in _table(body) if r.get("lands in") and r.get("proposition")]
+    story = _section_story(topic.parent, body)
+    if not (claims or story):
+        return ""
+    where = {}
+    for r in claims:
         for sec in (x.strip() for x in r["lands in"].split(",")):
-            where.setdefault(sec, []).append(r)
-    secs = sorted(where, key=lambda x: next((i for i, o in enumerate(order) if x.lower().startswith(o)), 99))
-    tree = "".join(f'<div class=pb-nrow><span class=pb-sbox>{esc(_cap(sec))}</span><div class=pb-chips>' + "".join(
-        f'<span class=pb-chip><b>{esc(r.get("claim", ""))}</b> {esc(_plain(r["proposition"]))}</span>' for r in where[sec])
-        + '</div></div>' for sec in secs)
+            where.setdefault(_sec_key(sec), (sec, []))[1].append(r)
+    secs = [(key, name, low) for key, name, low in story]
+    known = {k for k, _, _ in secs}
+    rank = lambda k: next((i for i, o in enumerate(NARRATIVE_ORDER) if k.startswith(o)), 99)
+    for key in sorted(where, key=rank):                   # a Section only the claims name, after the told ones
+        if not any(key.startswith(k) or k.startswith(key) for k in known):
+            secs.append((key, where[key][0], {}))
+
+    def claims_of(key):
+        return [r for k, (_, rs) in where.items() if k == key or k.startswith(key) or key.startswith(k) for r in rs]
+
+    def moves(text):
+        steps = [s.strip() for s in re.split(r"\s*(?:→|->)\s*", _said(text)) if s.strip()]
+        return " → ".join(esc(s) for s in steps) if len(steps) > 1 else esc(_said(text))
+
+    items, panels = [], []
+    for key, name, low in secs:
+        mine = claims_of(key)
+        told = _kv([("Reader asks", esc(_said(low.get("reader question", "")))),
+                    ("Comes in with", esc(_said(low.get("entry", "")) or _said(low.get("in", "")))),
+                    ("Moves", moves(low.get("ordered moves", ""))),
+                    ("Leaves with", esc(_said(low.get("exit", "")))),
+                    ("Hands on", esc(_said(low.get("out", "")))),
+                    ("Must not say", esc(_said(low.get("must refuse", "")))),
+                    ("Displays", esc(_said(low.get("displays", ""))))])
+        said = _kv((r.get("claim", ""), esc(_plain(r["proposition"])) + "".join(
+                   f'<br><span class=mut>{esc(k)}: {esc(_plain(r[c]))}</span>'
+                   for c, k in (("answers", "Answers"), ("displays", "Shown in")) if _plain(r.get(c, "")))) for r in mine)
+        if told == '<dl class=pb-kv></dl>':
+            told = ""
+        panels.append(told + (('<p class=pb-part>Claims</p>' if told else "") + said if mine else ""))
+        exit_ = _said(low.get("exit", ""))
+        items.append((_cap(_sec_key(name)), exit_[:60] if exit_ else
+                      f'{len(mine)} claim{"s" if len(mine) != 1 else ""}' if mine else ""))
     page = topic / f"{topic.name}.mindmap.html"
     btn = (f'<a class=fd-btn data-pop="{esc(topic.name)} · mind map" href="/{quote(ds._rel(page, root))}">Mind map</a>'
            if page.is_file() else "")
-    return f'<div class=pb-tree><span class=pb-root>{esc(topic.name.split("-", 2)[-1].replace("-", " "))}</span><div class=pb-nar>{tree}</div></div>' + \
-        (f'<div class=pb-verbs>{btn}</div>' if btn else "")
+    items, panels = [("📖 Story arc", "the whole paper")] + items, [_story_arc(topic, body, md)] + panels
+    return _side_tabs("nar", items, panels) + (f'<div class=pb-verbs>{btn}</div>' if btn else "")
 
 
 def _side_cards(eid: str, tiles: list, panels: list) -> str:
@@ -236,7 +343,7 @@ def story_tabs(board: Path, topic: Path, root: Path, md) -> list:
         full = topic / "delivery" / "venue-comparison.md"
         tabs.append(("Venues", "where it is sent", _side_cards("ve", tiles, panels) + ("" if full.is_file() else md(_after_table(parts["venues"]), topic))))
     if "section narrative" in parts:                 # the narrative IS the mind map (JL 261031)
-        tabs.append(("Story by Section", "what each Section says", _narrative(topic, root, parts["section narrative"]) or md(parts["section narrative"], topic)))
+        tabs.append(("Story by Section", "what each Section says", _narrative(topic, root, parts["section narrative"], md) or md(parts["section narrative"], topic)))
     return tabs
 
 
@@ -318,7 +425,7 @@ REDRAW = ("<script>document.addEventListener('click',function(e){if(e.target.clo
           "&&window.pmDraw)setTimeout(window.pmDraw,30);});</script>")
 
 
-def idea_view(board: Path, root: Path, md, items=()) -> str:
+def idea_view(board: Path, root: Path, md, items=(), *, studio=True) -> str:
     """A · Idea, its own button, for the many directions (JL 261105: "I mean seperate this!!!"; "idea for multiple direction,
     story for one direction"; s32-D44): its Studio, every direction weighed, left tabs, then each one's Theory. The chosen one's words are the
     Story's, unless there is no Story yet. The page adds 🙋 Interaction."""
@@ -326,7 +433,8 @@ def idea_view(board: Path, root: Path, md, items=()) -> str:
     has_story = bool(view_topics(board, "story"))
     for _, _, topic in view_topics(board, "idea"):
         stage = _stage(topic)
-        out += _bar(None, "🎨 Studio", _studio_panel(topic, root) + REDRAW, stage)
+        if studio:
+            out += _bar(None, "🎨 Studio", _studio_panel(topic, root) + REDRAW, stage)
         tabs = dict((h, p) for h, _, p in idea_tabs(topic, md))
         if "Direction" in tabs and not has_story:
             n += 1
@@ -340,18 +448,18 @@ def idea_view(board: Path, root: Path, md, items=()) -> str:
         out += _named(n, "🎓", "Theory", tabs.get("Theory") or _no_theory(
             board, "each direction names its theory, a <code>theory</code> column in Directions considered (haipipe-paper-ideation)."),
             _written(tabs.get("Theory", "")))
-    if not has_story:                                                   # no Story yet: Related follows the idea
-        out += related_section(board, root, n)[0]
+    out += related_section(board, root, n)[0]            # the same references inform both candidate ideas and the Story
     return out
 
 
-def story_view(board: Path, root: Path, md, items=()) -> str:
+def story_view(board: Path, root: Path, md, items=(), *, studio=True) -> str:
     """B · Story, its own button, for the one direction chosen (JL 261105: "story for one direction"; s32-D44): its Studio,
     Direction, Pitch, Theory, Research Questions, Stakes and evidence, Related, Venues, Story by Section. The page adds 🙋 Interaction."""
     out, n = "", 0
     for _, _, topic in view_topics(board, "story"):
         stage = _stage(topic) or "written"
-        out += _bar(None, "🎨 Studio", _studio_panel(topic, root) + REDRAW, stage)
+        if studio:
+            out += _bar(None, "🎨 Studio", _studio_panel(topic, root) + REDRAW, stage)
         tabs = {h: (w, p) for h, w, p in story_tabs(board, topic, root, md)}
         parts = _face(topic)[1]
         def bar(emoji, name, body, word):
@@ -532,6 +640,9 @@ def plan_view(board: Path, root: Path, md, items=()) -> str:
             + _after_rule("".join(_helpers(topic, root, items, mind=False, label=name) for _, name, topic in parts)))
 
 
+BIB_TITLE = re.compile(r'(?i)(?<![a-z])title\s*=\s*(?:\{((?:[^{}]|\{[^{}]*\})*)\}|"([^"]*)")')   # a .bib entry's title, braces kept inside
+
+
 def explore_view(board: Path, root: Path, md, items=()) -> str:
     """C · Support blocks as folder trees (JL 261101: "more like the folder tree, only show the related folder tree";
     "we will have both the work and discovery, as two sections"; "the works from multiple projects"): 1 · Work and
@@ -578,6 +689,11 @@ def explore_view(board: Path, root: Path, md, items=()) -> str:
             text = rt.read_text(encoding="utf-8", errors="ignore") if rt.is_file() else ""
             st = (re.search(r"(?m)^status:\s*(\S+)", text) or [None, ""])[1]
             head = (re.search(r'(?m)^headline:\s*"?(.*?)"?\s*$', text) or [None, ""])[1]
+            if not head:                             # a discovery paper Run: its paper's title, from its .bib
+                bib = next(iter(sorted((r / "result").glob("*.bib"))), None)
+                bt = bib.read_text(encoding="utf-8", errors="ignore") if bib else ""
+                m = BIB_TITLE.search(bt)
+                head = re.sub(r"[{}]", "", (m.group(1) or m.group(2) or "") if m else "").strip()
             out += (f'<li><div class="pb-frow pb-leaf pb-run"><a href="{esc(url(r))}" data-pop="{esc(task.name)} · {esc(r.name)}" '
                     f'title="{esc(head)}">{MARK.get(st, "⬜")} {esc(r.name)}</a>' + (f'<small>{esc(head)}</small>' if head else "")
                     + '</div></li>')
@@ -593,6 +709,9 @@ def explore_view(board: Path, root: Path, md, items=()) -> str:
                                             ("discovery", "Discovery", "No discovery folder named yet.")), 1):
         trees = ""
         for proj, blocks in sorted(tree.get(kind, {}).items(), key=lambda x: (x[0] != board.parents[1], x[0].name)):
+            if kind == "discovery":   # a discovery Block named alone shows every Job, Task and paper Run (JL 261108:
+                blocks = {b: jobs or {j: set() for j in sorted(b.glob("j[0-9]*_*")) if j.is_dir()}   # "make the discovery
+                          for b, jobs in blocks.items()}                                              # runs as complete")
             inner = "".join(node(b, "".join(node(j, tasks(j, ts)) for j, ts in sorted(jobs.items())), open_=True)
                             for b, jobs in sorted(blocks.items()))   # Blocks open, Jobs shut: the tree starts short
             trees += (f'<ul class=pb-ftree><li><details open><summary class=pb-frow><a href="{esc(url(proj))}" '
@@ -618,19 +737,27 @@ def evidence_view(board: Path, root: Path, md, items=()) -> str:
 
 
 def displays_view(board: Path, root: Path, md, items=()) -> str:
-    """E · Displays (JL 261101, its own view between Evidence and Writing): 1 · the plan, each display against the
-    venue's display rules (haipipe-paper-plan's display plan, when the Board has one); 2 · the displays, one side tab
+    """E · Displays: the plan against the venue's display rules
+    (haipipe-paper-plan's display plan, when the Board has one), followed by the displays, one side tab
     per pool Task (Figure 1 (Display A), its type and name), its panel the newest preview.pdf, the display as the paper
-    prints it, then how it was made; and all of them as one PDF (build_displays_pdf.py). The plan is the s06
-    display-plan topic's drawing only; its venue check lines live in that drawing and in display_plan.py check."""
+    prints it, then how it was made; and all of them as one PDF (build_displays_pdf.py); then Examples; last the
+    shared Story by Section, the same section the Story view shows (JL 261109: "this Story by Section should be at the
+    bottom"). The plan is the s06 display-plan topic's drawing only; its venue check lines live in that drawing and
+    in display_plan.py check. Each display's state is its tab's (the section word counts them), so no separate
+    "Where each display stands" list (JL 261109: "maybe we don't need to use it")."""
     out, n = "", 0
     plan = _topic_canvas(board, root, "paper-displays")   # JL 261102: "we might want to have this to be a excalidraw
     if plan:                                              # only. No need to put others" (the venue check stays in s06)
         n += 1
         out += _bar(n, "Plan", plan, _stage(next((t for t in sorted(board.glob("s[0-9]*-paper-displays")) if t.is_dir()), None)) or "drawn")
     body, n = _evidence_kinds(board, root, ("Displays",), n)
-    if not (out or body):
-        return '<p class=mut>No display Job or display plan yet.</p>'
+    story = ""                                            # last: the Story view's own section, the same panel
+    for _, _, topic in view_topics(board, "story"):
+        for name, _, panel in story_tabs(board, topic, root, md):
+            if name == "Story by Section":
+                story += _named(n + (2 if plan or body else 1), "🧠", name, panel, _stage(topic) or "written")
+    if not (plan or body):
+        return story or '<p class=mut>No display Job or display plan yet.</p>'
     # JL 261102: "after the display, could you add a new section named 3. Examples"; JL 261103: "we can add the things
     # like 3-Examples": it always shows, saying how to fill it while it is empty. Its questions are the page's 🙋 Interaction.
     n += 1
@@ -638,7 +765,7 @@ def displays_view(board: Path, root: Path, md, items=()) -> str:
     body += _named(n, "🔍", "Examples", examples or (
         '<p class=mut>No examples yet. The target venue\'s published displays go on one canvas, the Board topic '
         '<code>sNN-paper-display-examples</code> (haipipe-paper-display, Examples).</p>'), "drawn" if examples else "nothing yet")
-    return out + body
+    return out + body + story
 
 
 def _topic_canvas(board: Path, root: Path, slug: str) -> str:
@@ -1131,9 +1258,9 @@ def sections_word(tasks: list, root: Path) -> tuple:
     you = [(t, w) for t, w in states if "your" in w]
     signs = _waiting_steps(tasks, root)          # every step that waits on you, as many as the sign chips (r02: "1
     if you or signs:                              # waits for you" stood beside two "sign" chips)
-        name = _cap(re.sub(r"^t\d+_", "", (you or signs)[0][0].name).replace("-", " "))
         n = max(len(signs), len(you))
-        return f'{n} wait{"s" if n == 1 else ""} for you', f"🙋 {name}: {(you or signs)[0][1]}"
+        return f'{n} wait{"s" if n == 1 else ""} for you', ""   # no line under the bar: the word says it, the
+                                                                  # rows say which (JL 261109: "we don't want this")
     done = sum(w == "done" for _, w in states)
     return f"{done} of {len(states)} done", ""
 

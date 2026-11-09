@@ -45,7 +45,7 @@ def q(path: str) -> str:
 
 PROJ = "examples-5-design/Project-Application-SMSDesign"
 BOARD = f"{PROJ}/insights/SMSR2v1-InsightBoard"                 # plan C: its Jobs pair a release and a data version
-JOB = f"{BOARD}/j01_p1_SMSR2v1"
+JOB = f"{BOARD}/j01_code-v1_data-v1"
 TASK = f"{JOB}/t05_I01_funnel-fundamentals"
 B52 = f"{PROJ}/tasks/b52_sms_question_dikw"                     # today's layout: an Insight Block, `workbench: insight`
 B52J = f"{B52}/j01_data"

@@ -134,6 +134,16 @@ class FrameMixin:
             if not (here == root or root in here.parents) or not here.is_dir():
                 return self.guide_send("<li class=mut>No such folder under this root.</li>", 404, head_only=head_only)
             return self.guide_send(frame.folder_rows(here, root, None if get("all") else 300), 200, head_only=head_only)
+        if get("view") == "focus-folder":
+            from live import work_files
+            target = (root / get("path").lstrip("/")).resolve()
+            body = work_files.tree_rows(target, root) if get('fragment') == '1' else work_files.browse(target, root)
+            return self.guide_send(body or "<h1>Folder unavailable</h1>", 200 if body else 404, head_only=head_only)
+        if get("view") == "focus-file":
+            from live import work_files
+            target = (root / get("path").lstrip("/")).resolve()
+            body = work_files.preview(target, root)
+            return self.guide_send(body or "<h1>File unavailable</h1>", 200 if body else 404, head_only=head_only)
         raw = get("path").lstrip("/")
         code = 200
         if not raw:

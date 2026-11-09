@@ -2,6 +2,7 @@
 
 goal: build what b35-s01 hands over: the haipipe-studio rule, the For: line, b35's renumbering, the scan of kinds, the s00 cleanup
 close: every Task's Runs are done and b35-s01 is agreed
+emoji: 📦
 
 ## Topic
 

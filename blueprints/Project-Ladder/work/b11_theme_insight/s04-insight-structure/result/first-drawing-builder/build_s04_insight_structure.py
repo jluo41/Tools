@@ -114,26 +114,26 @@ PROJECT = [("<project>/", ""),
 PROTO = ("bNN_<topic>_prototype/", "work theme: the Prototype, made once per version, reviewed, signed", [
     ("├── board.md", "kind: prototype · serves: insights/bNN_<topic>"),
     ("├── proposals/", "the backlog: new · fix · retire, from the Board"),
-    ("├── j01_p1/", "Job = Prototype version p1, frozen when closed"),
+    ("├── j01_code-v1/", "Job = Prototype version p1, frozen when closed"),
     ("│   ├── release.yaml", "every live question -> its Task (here or earlier)"),
     ("│   ├── partitions.md · thresholds.yaml", "the cuts, power floors, compare rule: plan"),
     ("│   ├── t01_D01_<q>/", "question.md · scripts/<name>.py · a test"),
     ("│   ├── t02_D02_<q>/ …", "grouped by level: D · I · K · W"),
     ("│   └── runs/", "soft: ask · plan · script · review · sign"),
-    ("├── j02_p2/", "only new or changed Tasks, + release.yaml"),
-    ("└── j03_p3/ …", "the next version, opened from proposals/")])
+    ("├── j02_code-v2/", "only new or changed Tasks, + release.yaml"),
+    ("└── j03_code-v3/ …", "the next version, opened from proposals/")])
 BOARD = ("bNN_<topic>/", "insight theme: one dataset, its versions, the answers", [
     ("├── board.md", "dataset: <d> · versions · accumulates ?"),
     ("│", "prototype: work/bNN_<topic>_prototype"),
     ("├── meta/status.md", "written only by the checker; the cuts live in the release"),
     ("├── reports/qNN_<topic>/", "the Block's own questions: D · I · K · W over the Jobs"),
-    ("├── j01_p1_<d>v1/", "Job = Prototype p1 x data v1, frozen"),
-    ("│   ├── j01_p1_<d>v1.md", "pins: j01_p1 (hash) · <d>v1"),
+    ("├── j01_code-v1_data-v1/", "Job = Prototype p1 x data v1, frozen"),
+    ("│   ├── j01_code-v1_data-v1.md", "pins: j01_code-v1 (hash) · <d>v1"),
     ("│   └── t01_D01_<q>/", "the question on this pair: its page"),
     ("│   ├── t01_D01_<q>/runs/r01_full/ …", "hard: one per partition"),
     ("│   └── reports/vs-<prev>.md", "run-compare: new · held · changed · dropped"),
-    ("├── j02_p1_<d>v2/", "data moved"),
-    ("├── j03_p2_<d>v2/", "code moved"),
+    ("├── j02_code-v1_data-v2/", "data moved"),
+    ("├── j03_code-v2_data-v2/", "code moved"),
     ("└── delivery/", "the signed Wisdom handoff, latest Job")])
 
 # ── 4 · where a new release comes from ──────────────────────────────────────────────────────────
@@ -349,8 +349,8 @@ def main():
          18, INK, MONO)
     text(0, cy + 110, "data", 22)
     text(240, cy + 112, "<d>v1  ->  <d>v2  ->  <d>v3  …", 18, INK, MONO)
-    chain = [("j01_p1_<d>v1", "start"), ("j02_p1_<d>v2", "data moved"), ("j03_p2_<d>v2", "code moved"),
-             ("j04_p2_<d>v3", "data moved")]
+    chain = [("j01_code-v1_data-v1", "start"), ("j02_code-v1_data-v2", "data moved"), ("j03_code-v2_data-v2", "code moved"),
+             ("j04_code-v2_data-v3", "data moved")]
     x = 0
     for k, (job, moved) in enumerate(chain):
         box(x, cy + 180, 470, 100)

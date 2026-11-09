@@ -1,7 +1,7 @@
 # t03_I01_outcome-by-arm · Information Task · stage 2 · r02
 
 ```text
-page     http://127.0.0.1:5623/_board/workbench?layout=focus&path=blueprints/Project-Ladder/insight/Insight-Example/j02_prototype-p1-example-questions_data-Examplev2/t03_I01_outcome-by-arm (Report, Work: Answer · By cut · Across Jobs · Plan · MindMap)
+page     http://127.0.0.1:5623/_board/workbench?layout=focus&path=blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2/t03_I01_outcome-by-arm (Report, Work: Answer · By cut · Across Jobs · Plan · MindMap)
 answers  what: the folder, Aim "outcome rate per arm and the gap, per cut" · where: crumb to j02 · here: Report · Answer, headline "Arm B's rate is 15 points above arm A's" · do: partly, open bars; "partial" hints at work left
 rules    1 ✅ · 2 ✅ · 3 ✅ · 4 ⚠️ MindMap is root + "Runs ▸ show" · 5 ⚠️ "power —", "rows —" on the planned cut
 tasks    gap in the second cut: 3 clicks (By cut, bar, "second") | what is left: 2 clicks (Work · By cut: "Run the third cut ready") | interval clear of zero: 1 click (How sure)

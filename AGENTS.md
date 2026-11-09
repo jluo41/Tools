@@ -38,7 +38,20 @@
 - For skill changes, follow the fresh-context validation process in the root README.
 - For installer or marketplace changes, inspect both platform installers and verify package source paths and metadata. Report platform-specific checks that could not be run.
 
+## Work tree replies
+
+When the user asks about work (where it lives, how far it got, which Run counts), reply with the Block map: the Block on top, one line per Job, its Task and Run range in aligned columns, then the state emoji (✅ done, 🏃 running, ⬜ stopped or not yet, ❗ void, 🙋 your call) and what that Job builds or answers. Template and rules: the `response-format` skill, § Work tree.
+
+```text
+<bNN_block>
+├─ <jNN_C_data_job>  ─▶ <tNN>  <rNN-rNN rNN>  <state> <what it builds>
+├─ <jNN_D_reg_job>   ─▶ <tNN>  <rNN-rNN>      <state> <the question it answers>
+└─ <jNN_D_reg_job>   ─▶ <tNN>  <rNN-rNN>      <state> <the question it answers>
+```
+
 UI design
 =========
 
 Avoid unnecessary secondary labels and descriptions. Let the layout do the explaining.
+
+Do not add unnecessary UI text. Let grouping, spacing, controls, and content explain themselves. Omit routine hints such as "available", "nothing yet", "one per kind", and instructions that repeat visible controls. Keep text when it communicates a meaningful state, a required action, or an otherwise unclear empty state.

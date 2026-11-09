@@ -3,6 +3,7 @@
 job-of: b03_inlab-human (261009)
 spine: `mcp-servers/endpoint-predict` (server.py, predict_cli.py): an endpoint URL as an MCP tool and a CLI; local Flask, Databricks or SageMaker, one wire contract.
 close: Each recorded question has a report Page with an answer status, and every answered question names the change that settled it.
+emoji: 🎯
 
 ## Topic
 

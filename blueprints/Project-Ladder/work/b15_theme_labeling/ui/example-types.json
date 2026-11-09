@@ -1,0 +1,13 @@
+{
+  "block": {
+    "blueprints/Project-Ladder/labeling/b02_labeling_walkthrough": "🏷️ Labeling"
+  },
+  "job": {
+    "blueprints/Project-Ladder/labeling/b02_labeling_walkthrough/j01_example_response_safety": "🗃️ Dataset × Label"
+  },
+  "task": {
+    "blueprints/Project-Ladder/labeling/b02_labeling_walkthrough/j01_example_response_safety/t01_example_items": "📦 Items",
+    "blueprints/Project-Ladder/labeling/b02_labeling_walkthrough/j01_example_response_safety/t03_example_meaning": "🧭 Meaning",
+    "blueprints/Project-Ladder/labeling/b02_labeling_walkthrough/j01_example_response_safety/t04_example_expression": "🛠️ Expression"
+  }
+}

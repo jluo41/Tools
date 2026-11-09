@@ -1,5 +1,6 @@
 # t03_display-c-placebo-check
 
+use-case: Figure preparation
 label: Display C
 goal: eFigure 1 · <Placebo check>: the same model in years with no policy
 number: eFigure 1

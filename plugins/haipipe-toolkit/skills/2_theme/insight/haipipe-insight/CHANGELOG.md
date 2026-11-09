@@ -1,5 +1,26 @@
 # haipipe-insight · version history
 
+## 3.6.0 · 2026-11-09 · /haipipe-insight update
+
+- `insight_ladder.py audit <Board, Prototype or Project>` (read-only) and `update [--apply]` (a dry run without it):
+  names (via `ref/rename_code_data.py`), missing goal lines, each Job's hash re-pinned, stale receipts listed.
+- `ref/rename_code_data.py` no longer rewrites what names another thing: the Board's own folder name, a data
+  version's `folder:`/`extract:` path, a register board's `*-InsightBoard` name, a `renamed-from:` line, a code
+  file's `p1`/`v2` variables, or a dataset id inside a file name (`20250616_SMSR2v1_…`). Found by a dry run on a
+  real Board, before anything was applied. "data version v1" now reads "data-v1", not "data version data-v1".
+
+## 3.5.0 · 2026-11-09 · code-v1 × data-v1, and the Prototype beside its Board
+
+- JL 261109: "code-v1 x data-v1, make it readable". A release is `code-vN` (was `pN`, shown as AP<N> or
+  "analysis plan N"), a data version is `data-vM` (was `vM`, shown as F<M> or "data freeze M"). The screen, the
+  folder names, the faces and the Run names say the same id. A Board Job is `jNN_code-vN-<slug>_data-vM/`
+  (one dataset per Board, so the name carries none); a release is `jNN_code-vN_<slug>/`.
+- The Prototype moves from `<Project>/work/Prototype-bNN-<Topic>/` to `<Project>/insight/Prototype-<Topic>/`, beside
+  the Board it serves. The work theme claims `board-kind: prototype` wherever it sits, so its page is unchanged.
+- The readers (`ref/open_job.py` `JOB`, `insight_plan_c.JOB_NAME`, `VERSION`) still read the older names, and the
+  screen shows an older `p1`/`v1` as `code-v1`/`data-v1`, until `ref/rename_code_data.py` carries the Board over
+  (dry run by default, `--apply` writes). `blueprints/Project-Ladder/insight/` is carried.
+
 ## [3.4.1] — 2026-10-26
 
 Shorter description (914 -> 463 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)

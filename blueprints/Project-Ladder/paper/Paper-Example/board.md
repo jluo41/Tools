@@ -1,5 +1,6 @@
 # Paper-Example: does <a policy> change <an outcome>?
 
+use-case: Manuscript development
 board-kind: paper-board
 dialect: paper
 paper-root: .

@@ -4,13 +4,25 @@ board-kind: task-block
 package: plugins/haipipe-toolkit
 theme: work
 ui-block: blueprints/Project-Ladder/work/b90_example_paper_results
+ui-block: blueprints/Project-Ladder/work/b16_theme_paper
+ui-block: blueprints/Project-Ladder/cowork/b01_example_data_request
+ui-block: blueprints/Project-Ladder/discovery/b01_example_prior_work
 ui-job: blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates
-ui-job: blueprints/Project-Ladder/work/b90_example_paper_results/j01_example_source
+ui-job: blueprints/Project-Ladder/cowork/b01_example_data_request/j02_review_board_amendment
+ui-job: blueprints/Project-Ladder/cowork/b01_example_data_request/j00_people
+ui-job: blueprints/Project-Ladder/discovery/b01_example_prior_work/j01_policy_effect_inquiry
 ui-task: blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates/t01_example_main
 ui-task: blueprints/Project-Ladder/work/b90_example_paper_results/j01_example_source/t01_example_source
 ui-task: blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates/t03_value_tables
+ui-task: blueprints/Project-Ladder/cowork/b01_example_data_request/j02_review_board_amendment/t01_data_use_plan
+ui-task: blueprints/Project-Ladder/discovery/b01_example_prior_work/j01_policy_effect_inquiry/t01_policy_prior_work
+ui-run: blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates/t01_example_main/runs/r01_example_main
+ui-run: blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates/t03_value_tables/runs/r02_build_tables
+ui-run: blueprints/Project-Ladder/discovery/b01_example_prior_work/j01_policy_effect_inquiry/t01_policy_prior_work/runs/r01_example2024_policy
+ui-run: blueprints/Project-Ladder/paper/Paper-Example/j01_evidence_display/t02_table1-example/runs/r01_draw_table1
+ui-run: blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates/t01_example_main/runs/r02_collect_example_rounding
 shared-blueprint: b01_haipipe-toolkit
-spine: Design the work theme: its three pages (a Block, a Job and a Task, each with Report, Work and Studio), what every page shares, and its two skills, haipipe-work and workbench-work, which say what each level holds.
+spine: Design the work theme: Block, Job and Task pages with results and actions together in Report, shared Studio and supporting sections, and the skills that support each level.
 close: Every sNN is agreed and its delivery made: the two skills rewritten in skills/2_theme/work/ and the screens named for the focus page's owner.
 session: Ladder-b17-Work-v1031
 

@@ -1,6 +1,6 @@
 """run_job.py <Board Task folder> <rNN_partition> · run one question of a plan-C Job on one partition.
 
-Plan C (b11 s00 · s12 · s13, 261007): an insight Board's Job `jNN_pN_<d>vM/` pins one Prototype release
+Plan C (b11 s00 · s12 · s13, 261007): an insight Board's Job `jNN_code-vN-<slug>_data-vM/` pins one Prototype release
 (board.md `prototype:` + the Job face's `release:`) and one data version (board.md `versions:` + `data:`).
 Each of its Tasks `tNN_<L><NN>_<slug>/` is one question; its hard Runs are `runs/rNN_<partition>/`. This is
 the one runner of their tickets (`runs/rNN_<partition>/run.sh`, written by open_job.py).
@@ -70,7 +70,7 @@ def resolve(task, stem):
     rel = jface.get("release") or (jm.group(2) if jm else "")
     data = jface.get("data") or (jm.group(4) if jm else "")
     proto = project / str(bface.get("prototype", ""))
-    rdir = next((p for p in sorted(proto.glob("j*_*")) if p.is_dir()          # jNN_pN or jNN_pN_<slug>
+    rdir = next((p for p in sorted(proto.glob("j*_*")) if p.is_dir()          # jNN_code-vN or jNN_code-vN_<slug>
                  and re.match(rf"^j\d+_{rel}(_.+)?$", p.name)), None)
     if rdir is None:
         raise RQ.GateError(f"no release {rel} in {proto}")

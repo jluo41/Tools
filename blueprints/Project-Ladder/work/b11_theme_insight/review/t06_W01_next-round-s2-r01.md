@@ -1,7 +1,7 @@
 # Stage 2 review r01 · t06_W01_next-round (Wisdom level, being written, a decided record)
 
 ```text
-page     http://127.0.0.1:5623/_board/workbench?layout=focus&path=blueprints/Project-Ladder/insight/Insight-Example/j02_prototype-p1-example-questions_data-Examplev2/t06_W01_next-round (Report, Work · Answer, By cut, Across Jobs, Plan, MindMap)
+page     http://127.0.0.1:5623/_board/workbench?layout=focus&path=blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2/t06_W01_next-round (Report, Work · Answer, By cut, Across Jobs, Plan, MindMap)
 answers  what: folder name; "Aim W01" (partly) · where: path ✅ · here: "open", "not checked yet", "answered" ✅ · do: Work chain "Write the page · Copy prompt" ✅
 rules    1 ✅ · 2 ✅ · 3 ✅ · 4 ❌ grey "It has no Run: this question cites the answers below it." with nothing below · 5 ❌ "Aim W01"; decided Q1, Q2 carry "my own decision" as their state
 tasks    what holds it up: 2 clicks (Work, The chain: "next: write the page") ✅ · what the counsel will rest on: dead end at By cut ("cites below", empty); Plan's "from K01.E2" after 2 clicks · what was decided on scope: 1 click (Interaction, Q1 · Q2 side tabs) ✅

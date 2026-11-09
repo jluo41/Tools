@@ -1,3 +1,8 @@
+## 1.5.1 · 2026-11-08 · Paper types and shared content ownership
+
+- Grant is a type within Paper; its specific runtime remains proposed.
+- Align shared Section ownership and placement with the Paper renderer and the design matrix.
+
 ## 1.5.0 · 2026-11-05 · each direction names its theory
 
 - JL 261105: "we should have the section named theory as well"; "espeically for the IS".

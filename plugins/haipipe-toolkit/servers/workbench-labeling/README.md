@@ -105,3 +105,22 @@ Content disclosures become stable sections in this layout. Job/Task folders,
 Run tickets, receipt authority and computational workers are unchanged. This
 UI does not implement missing guideline-learning, executor-optimization or
 large-scale labeling workers. A page load starts no Run and signs nothing.
+
+## Shared Work alignment
+
+Labeling Block and Job focus pages now use the shared Work components:
+Overview (Goal, Requirements, MindMap), Status (topic-based View BJTR),
+Findings (Labeling's existing result reader), and Delivery (Labeling's signed
+release reader). Report includes the content and actions; old Work and MindMap
+links resolve to the corresponding Report view. No engine writer changes.
+
+`work_frame.SHARED` supplies the eight unnumbered supporting sections and their
+rail labels. Both entrances use `work_frame.shared_bodies`: explicit View or
+Topic associations limit in-view content; the rail includes all records in the
+current Block or Job scope. Unassigned records remain in the rail. The shared
+Files browser, Studio tabs, and mobile navigation are reused.
+
+The design matrices and migration boundaries live in
+`blueprints/Project-Ladder/work/b15_theme_labeling/ui/`. Items, Meaning,
+Expression and legacy Task screens still retain their existing Report/Work
+workflow; their table describes the alignment target, not a completed migration.

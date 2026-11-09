@@ -164,7 +164,7 @@ OPEN = [("①", "Plan C: a Job = one Prototype release × one data version? (A a
          "Carry each over (carry_over.py, word for word) when next worked on; read-only until then.")]
 
 LADDER = [("Board", "b5N_<topic>_dikw/", "the Prototype (made once) + the dataset"),
-          ("Job", "j03_p2_<dataset>0807/", "one release × one data version"),
+          ("Job", "j03_code-v2_<dataset>0807/", "one release × one data version"),
           ("Task", "t01_D01_<question>/", "one question in that Job: its page"),
           ("Run", "runs/r01_full/", "one partition: hard")]
 
@@ -209,7 +209,7 @@ sys.path.insert(0, str(B03 / "s02-studio-workbench-skill"))
 import build_s02_studio_workbench_skill as S2  # noqa: E402  (chrome, runs_panel, on_disk: the base's look)
 UI = S2.UI
 INK, GRAY, RED, TEAL, MONO = L.INK, L.GRAY, L.RED, L.TEAL, L.MONO
-TABS = ["Guide", "Board", "Job · j03_p2_0807 ▾", "Task · D01 ▾"]
+TABS = ["Guide", "Board", "Job · j03_code-v2_0807 ▾", "Task · D01 ▾"]
 
 
 def cells(x, y, heads, rows, cols):
@@ -240,7 +240,7 @@ C_SCREENS = [   # (title, tab on, Space, third row, heads, cols, rows, run butto
       ("│   ├── information/ … wisdom/", "the same, one folder per question"),
       ("│   └── releases.yaml", "p1 · p2: the signed sets ②"),
       ("├── runs/", "soft: ask · plan · script · sign · add a version"),
-      ("└── j01_p1_<d>0801/ …", "the Jobs (Work Details › Jobs)"),
+      ("└── j01_code-v1_<d>0801/ …", "the Jobs (Work Details › Jobs)"),
       ("insight_theme.py", "servers/workbench-insight/: level names, third rows")]),
     ("Board › Audience Report: across the Jobs", 1, "Audience Report", ["Across Jobs", "Full", "<cut>", "Cross"],
      ["Question", "j01 p1×0801 · j02 p1×0807", "j03 p2×0807"], [0, 380, 760],
@@ -257,7 +257,7 @@ C_SCREENS = [   # (title, tab on, Space, third row, heads, cols, rows, run butto
       ("t02_D02_<question> ↗", "r01_full ok · r02_<cut> —", "page draft"),
       ("t05_I01_<question> ↗", "r01_full ok", ("no answer", GRAY))],
      ["Run the Job", "Write the pages", "Close the Job"], "run-launch-j03   p01 running",
-     [("j03_p2_<d>0807/", ""), ("├── j03_p2_<d>0807.md", "the band: release p2 · version 0807 · frozen when closed"),
+     [("j03_code-v2_<d>0807/", ""), ("├── j03_code-v2_<d>0807.md", "the band: release p2 · version 0807 · frozen when closed"),
       ("├── t01_D01_<question>/ …", "one Task per live question of p2"),
       ("└── runs/", "soft: run-launch-j03 · run-close-j03"),
       ("", "a new release or a new version → a new Job ③")]),
@@ -306,8 +306,8 @@ def evolve(x0, y0):
            INK, MONO)
     L.text(x0, ty + 50, "data", 22)
     L.text(x0 + 220, ty + 52, "<d>0801   →   <d>0807   →   <d>0815  …", 18, INK, MONO)
-    chain = [("j01_p1_<d>0801", "start"), ("j02_p1_<d>0807", "data moved"), ("j03_p2_<d>0807", "code moved"),
-             ("j04_p2_<d>0815", "data moved")]
+    chain = [("j01_code-v1_<d>0801", "start"), ("j02_code-v1_<d>0807", "data moved"), ("j03_code-v2_<d>0807", "code moved"),
+             ("j04_code-v2_<d>0815", "data moved")]
     cy, x = ty + 140, x0
     for k, (job, moved) in enumerate(chain):
         L.base("rectangle", x, cy, 520, 110, INK, 1.5)

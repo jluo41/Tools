@@ -40,6 +40,14 @@ def job_kind(job: Path) -> str:
     return ""
 
 
+def job_type_label(job: Path) -> str:
+    """Name the same branch that renders this Job, without inferring its use case."""
+    if is_version(job):
+        return '✍️ Writing Version'
+    return {'display': '🖼️ Display Evidence', 'value': '🔢 Value Evidence',
+            'citation': '📚 Citation Evidence', 'submission': '📮 Submission'}.get(job_kind(job), '')
+
+
 # (key, button, what its Results show) of each kind; Work's keys are `work-<key>`
 VIEWS = {"display": (("display-plan", "Plan"), ("display-list", "Displays"), ("display-examples", "Examples")),
          "value": (("value-list", "Values"), ("value-check", "Check")),
@@ -59,7 +67,7 @@ CAPTIONS = {"display-plan": "How each display is planned against the venue's rul
 PAPER_CAPTIONS.update(CAPTIONS)
 PAPER_CAPTIONS.update({"work-" + k: v for k, v in {
     "display-plan": "The display plan: its prompt, then its drawing.",
-    "display-list": "Where each display stands, then each display.",
+    "display-list": "Each display, its state in its tab.",
     "display-examples": "The venue's published displays, to compare with ours.",
     "value-list": "Where each value Task stands, then the tables and values.",
     "value-check": "The check's Run, then what it found.",
@@ -87,11 +95,6 @@ def _run_pill(task: Path) -> tuple:
 
 def _check_task(job: Path) -> Path | None:
     return next((t for t in sorted(job.glob("t99_*")) if t.is_dir()), None)
-
-
-def _where_rows(tasks: list, root: Path) -> list:
-    from live.evidence_read import where_rows
-    return where_rows(tasks, root)
 
 
 def _check(job: Path, root: Path, work: bool) -> tuple:
@@ -271,7 +274,7 @@ def _portal(job: Path, root: Path, work: bool) -> tuple:
 
 def _display(key: str, job: Path, root: Path, work: bool) -> tuple:
     from live.board_results import _display_examples, _evidence_kinds, _stage, _topic_canvas
-    from live.board_process import _plan_steps, _steps, read_board
+    from live.board_process import _plan_steps, read_board
     board = job.parent
     if key == "display-plan":
         plan = _topic_canvas(board, root, "paper-displays")
@@ -284,11 +287,9 @@ def _display(key: str, job: Path, root: Path, work: bool) -> tuple:
         return proc, _section("📐 Plan", plan or "<p class=mut>No display plan drawn yet: the Board topic "
                               "<code>sNN-paper-displays</code> (haipipe-paper-plan).</p>", (_stage(topic) or "drawn") if plan else "nothing yet")
     if key == "display-list":
-        head, rows = _steps(board, "displays", None, "", root, lambda t, b: t)
-        proc = todo_section(f"🖼️ {head}", rows) if rows else ""
-        res, _ = _evidence_kinds(board, root, ("Displays",))
+        res, _ = _evidence_kinds(board, root, ("Displays",))  # each display's state is its tab's (JL 261109)
         res = _not_here(res, job, root)
-        return proc, res or _section("🖼️ Displays", "<p class=mut>No display Task yet.</p>", "nothing yet")
+        return "", res or _section("🖼️ Displays", "<p class=mut>No display Task yet.</p>", "nothing yet")
     examples = _display_examples(board, root)
     return "", _section("🔍 Examples", examples or "<p class=mut>No examples yet. The target venue's published displays go "
                         "on one canvas, the Board topic <code>sNN-paper-display-examples</code>.</p>",
@@ -301,12 +302,10 @@ def _not_here(html: str, job: Path, root: Path) -> str:
 
 
 def _items(kind: str, job: Path, root: Path, work: bool) -> tuple:
-    """Values or Citations: where each Task stands, then the Board's own section for them (side tabs, the whole-paper
-    check once as a verdict line; never a tab of its own: the Check view owns it)."""
+    """Values or Citations: the Board's own section for them (side tabs, the whole-paper check once as a verdict line;
+    never a tab of its own: the Check view owns it). No "Where each stands" list: each Task's state is its tab's."""
     from live.board_results import _evidence_kinds
-    from live.evidence_read import item_tasks
-    tasks = sorted(item_tasks(job), key=_num)
-    proc = todo_section("📋 Where each stands", _where_rows(tasks, root)) if tasks else ""
+    proc = ""
     res, _ = _evidence_kinds(job.parent, root, (kind,), check=False)   # the Check view beside it owns the whole-paper
     res = _not_here(res, job, root)
     return proc, res or _section(("🔢 " if kind == "Values" else "📚 ") + kind,   # line (r02: it showed in both)

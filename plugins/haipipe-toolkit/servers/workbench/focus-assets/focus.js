@@ -1,4 +1,27 @@
 (() => {
+  document.querySelectorAll('[data-rail-menu]').forEach(menu => {
+    const drawer = document.getElementById(menu.getAttribute('aria-controls'));
+    if (!drawer) return;
+    menu.addEventListener('click', () => {
+      drawer.showModal();
+      menu.setAttribute('aria-expanded', 'true');
+      document.body.classList.add('section-drawer-open');
+    });
+    drawer.querySelector('[data-drawer-close]').addEventListener('click', () => drawer.close());
+    drawer.addEventListener('click', e => {
+      if (e.target === drawer) {
+        const r = drawer.getBoundingClientRect();
+        if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) drawer.close();
+      }
+    });
+    drawer.addEventListener('close', () => {
+      menu.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('section-drawer-open');
+    });
+    window.matchMedia('(max-width:600px)').addEventListener('change', e => {
+      if (!e.matches && drawer.open) drawer.close();
+    });
+  });
   const rails = [...document.querySelectorAll('.focus-rail')];
   function closeRails() { rails.forEach(rail => rail.classList.remove('is-open')); }
   rails.forEach(rail => {

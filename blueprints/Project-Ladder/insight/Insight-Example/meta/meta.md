@@ -9,7 +9,7 @@ Synthetic, made by `data/make_example_data.py` (seed 7); nothing in it comes fro
 - **limits**: group_3 is small on purpose, so a powered question refuses it; the window is short, so a daily rate is
   thin.
 
-What each data freeze adds:
+What each data version adds:
 
-- **v1** · first ten days: 600 rows, the first extract.
-- **v2** · all sixteen days: 960 rows; the first ten days are the same rows as v1 (accumulates: yes).
+- **data-v1** · first ten days: 600 rows, the first extract.
+- **data-v2** · all sixteen days: 960 rows; the first ten days are the same rows as data-v1 (accumulates: yes).

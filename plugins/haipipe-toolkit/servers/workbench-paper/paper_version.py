@@ -167,22 +167,14 @@ def section_row(task: Path, root: Path) -> str:
             f'<span class="d fd-steps">{chips}</span></div>')
 
 
-def _where_rows(tasks: list, kind: str, root: Path, read: dict) -> list:
-    """Each evidence Task as a to-do row (its name, its state pill, Open), as the Board's "Where each stands" (board_process):
-    its state read from what its Run returned (evidence_read.task_state)."""
-    from live.evidence_read import where_rows
-    return where_rows(tasks, root, read)
-
-
 def version_work_views(version: Path, root: Path, items=(), item_html=None, work: bool = True) -> dict:
     """A version's views, Draft-Main · Draft-Appendix · Display-Main · Display-Appendix · Values · Citations (JL 261106:
     "a paper version's Report gets the same six views as its Work, showing results only"). `work`: Work's views, keys
     `work-<key>`, each ⚙️ Process then 📊 Results; else Report's, keys `<key>`, the Results alone, as board_views.banded.
     A Draft view's Results are its Sections' text, one side tab per Section (board_results.section_tabs)."""
     from live.board_results import _evidence_kinds, display_groups, section_tabs, sections_word, text_word
-    from live.board_evidence import evidence_body
     from live.board_views import SIDE_CSS
-    from live.ui_parts import PB_CSS, PB_JS, todo_section
+    from live.ui_parts import PB_CSS, PB_JS
     item_html = (lambda r: ix_item(r, root)) if item_html else None     # each item a folded row (JL 261031)
     if not is_version(version):                   # the display Job (j21_displays) and the citation Job are not versions
         return {}
@@ -220,9 +212,7 @@ def version_work_views(version: Path, root: Path, items=(), item_html=None, work
             tasks = [t for t in tasks if placed.get(t) in only]
             res, _ = _evidence_kinds(version.parent, root, ("Displays",), only=only, since=since)
             res = res or _section("🖼️ Displays", f'<p class=mut>No {esc(name)} display yet in {esc(job.name)}.</p>', "nothing yet")
-            read = {t: evidence_body(t, root) for t in tasks}
-            proc = todo_section("🖼️ Where each display stands", _where_rows(tasks, "Displays", root, read)) if tasks else ""
-            return page(proc, res)
+            return page("", res)                # each display's state is its tab's (JL 261109), no second list
         views[pre + key] = (name, build)
     # Values and Citations: the paper's evidence Jobs beside the version (j02_evidence_value, j03_evidence_cite), drawn
     # as the Board's Evidence (side tabs; the whole-paper check once, a verdict line; each key counted once)
@@ -232,10 +222,8 @@ def version_work_views(version: Path, root: Path, items=(), item_html=None, work
         tasks = [x for x in sorted(job.glob("t[0-9]*_*"), key=_num) if x.is_dir() and not x.name.startswith("t99_")] if job else []
         if tasks:
             def build(tasks=tasks, name=name):
-                read = {t: evidence_body(t, root) for t in tasks}
-                proc = todo_section("📋 Where each stands", _where_rows(tasks, name, root, read))
                 res, _ = _evidence_kinds(version.parent, root, (name,), since=since)
-                return page(proc, res)
+                return page("", res)            # each item's state is its tab's (JL 261109), no second list
             views[pre + key] = (name, build)
     return linked_views(views, page_linker(version, root))   # every bNN.jNN.tNN.rNN a link (address_links, JL 261103)
 

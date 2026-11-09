@@ -21,6 +21,12 @@ ui-task: blueprints/Project-Ladder/paper/Paper-Example/j01_evidence_display/t02_
 ui-task: blueprints/Project-Ladder/paper/Paper-Example/j02_evidence_value/t01_values-sample
 ui-task: blueprints/Project-Ladder/paper/Paper-Example/j03_evidence_cite/t01_cite-prior-work
 ui-task: blueprints/Project-Ladder/paper/Paper-Example/j21_submission_v1130_desk/t02_portal-walk
+ui-task: blueprints/Project-Ladder/paper/Paper-Example/j11_writing_v1130_desk/t00_summary
+ui-task: blueprints/Project-Ladder/paper/Paper-Example/j02_evidence_value/t02_raw-value-tables
+ui-task: blueprints/Project-Ladder/paper/Paper-Example/j02_evidence_value/t99_paper_value_check
+ui-task: blueprints/Project-Ladder/paper/Paper-Example/j03_evidence_cite/t99_paper_citation_check
+ui-task: blueprints/Project-Ladder/paper/Paper-Example/j21_submission_v1130_desk/t01_cover-letter
+ui-task: blueprints/Project-Ladder/paper/Paper-Example/j21_submission_v1130_desk/t03_portal-fill
 
 ## Topic
 

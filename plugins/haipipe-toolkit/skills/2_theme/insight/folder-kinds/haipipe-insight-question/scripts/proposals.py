@@ -5,7 +5,7 @@
     python proposals.py decline <Prototype> <slug> --why "…"             mark one declined, with its reason
 
 A proposal is `proposals/<slug>.md` (kind · level · from · state · taken-in, then why), written by a Propose Run
-(`insight_ladder.py propose`). Triage (`run-triage-proposals-pN`) takes one batch into one release: the newest release
+(`insight_ladder.py propose`). Triage (`run-triage-proposals-code-vN`) takes one batch into one release: the newest release
 while it is still open, or the next one (opened after, with `insight_ladder.py version`). This script writes only the
 proposals' state; applying a taken proposal is the release's own Run, printed for each. Exit 1 on a refused step.
 """
@@ -24,7 +24,7 @@ _spec.loader.exec_module(IL)
 APPLY = {"new question": "insight_ladder.py question <release> <L><NN> <slug>   (run-ask-<l><nn>)",
          "fix": "insight_ladder.py change <release> <L><NN> --why \"…\"      (then plan, review, script, review again)",
          "retire": "insight_ladder.py retire <release> <L><NN> --why \"…\"",
-         "cut": "edit the release's partitions.md, then run-set-cuts-p<N> (a person signs the cuts)"}
+         "cut": "edit the release's partitions.md, then run-set-cuts-code-v<N> (a person signs the cuts)"}
 
 
 def proposals(proto: Path) -> list[tuple[Path, dict, str]]:
@@ -42,7 +42,7 @@ def _target_release(proto: Path, into: str) -> str:
     vers = IL.versions(proto)
     newest = vers[-1] if vers else None
     rel = IL.VERSION.match(newest.name).group(2) if newest else ""
-    nxt = f"p{int(rel[1:]) + 1}" if rel else "p1"
+    nxt = f"code-v{IL.OJ.num(rel) + 1}" if rel else "code-v1"
     if newest is not None and str(IL.face(newest).get("state")) != "closed":
         if into != rel:
             sys.exit(f"{newest.name} is still open: a batch goes into {rel}, or sign it first")

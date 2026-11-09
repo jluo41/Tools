@@ -1,0 +1,16 @@
+run: run-review-questions-code-v1
+kind: soft
+type: review-questions
+scope: Tools/blueprints/Project-Ladder/insight/Prototype-Example/j01_code-v1_example-questions
+target: code-v1
+ticket: run-review-questions-p1.md
+skill: haipipe-report
+agent: haipipe-insight-reviewer-agent
+signs:
+- a person (a change)
+status: done
+passes:
+- p01-1106
+- p02-1106
+writes: []
+feeds: []

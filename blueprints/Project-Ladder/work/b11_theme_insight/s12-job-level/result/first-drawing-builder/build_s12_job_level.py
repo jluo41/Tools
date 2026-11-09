@@ -2,7 +2,7 @@
 (JL 261007: "s11, s12, s13 ... for the Block level, Job level and task level").
 
 A Job pins one Prototype version and one data version (s00, 261007: "the prototype_version (method version)
-and data version to be a job"), drawn for j03_p2_<d>v2. Its questions are grouped by DIKW level, D · I · K
+and data version to be a job"), drawn for j03_code-v2_data-v2. Its questions are grouped by DIKW level, D · I · K
 · W headings in one Logic │ Work │ Report table, with the partitions as the third row (JL 261007). Each row
 shows its three methods, read from the pinned release. Placeholders only; written through canvas.write,
 so every mark a person adds survives a rebuild.
@@ -24,7 +24,7 @@ CHANGES = [  # the drawing's own history (JL 261007: "add the short green commen
     "✎ 261007  Runs › run types: the Board's soft Runs now in s11's words (was: run-check-board · run-read-<reading>)",
     "✎ 261007  no band beside the tab (JL: remove it on every frame page); its line opens Description › Prototype"]
 
-MOVES = [("(none: a Job was a DIKW level)", "the Job tab j03_p2_<d>v2: one Prototype version × one data version"),
+MOVES = [("(none: a Job was a DIKW level)", "the Job tab j03_code-v2_data-v2: one Prototype version × one data version"),
          ("Scope, at one data version", "Description: Prototype (release p2) · Dataset (<d>v2); the pair's line opens Prototype"),
          ("Insight › <partition>", "Audience Report: Question │ Work │ Report under D · I · K · W; every cell opens a pop-out"),
          ("(none)", "Work Details: the Job › Task › Run tree; the partitions are the hard Runs"),
@@ -155,7 +155,7 @@ def work_open(cx, cy, cw):
     y += 34
     base("rectangle", ix, y, cw - 40, 92, GRAY, 1, rough=0)
     for k, line in enumerate(["Run with haipipe-insight-reviewer-agent. /haipipe-insight-check check each answered",
-                              "cut of a question in <Board>/j03_p2_<d>v2 against its question and plan, as",
+                              "cut of a question in <Board>/j03_code-v2_data-v2 against its question and plan, as",
                               "run-check-alignment-t<NN>. Still to check: t05_K02_<q>, t06_I04_<q>, t08_W01_<q>."]):
         text(ix + 12, y + 10 + k * 26, line, 14, INK, MONO)
     y += 92
@@ -282,28 +282,28 @@ def runs(cx, cy, cw):
 def delivery(cx, cy, cw):
     base("rectangle", cx, cy, cw, 150, RED, 1, dashed=True, rough=0)
     text(cx + 14, cy + 14, "? W01's counsel for this pair, if this is the latest Job", 16, RED)
-    text(cx + 14, cy + 50, "→ Block › Delivery › Handoff, naming j03_p2_<d>v2", 15, INK)
+    text(cx + 14, cy + 50, "→ Block › Delivery › Handoff, naming j03_code-v2_data-v2", 15, INK)
 
 
-JOB = "j03_p2_<d>v2/"
+JOB = "j03_code-v2_data-v2/"
 SCREENS = [
     ("Description", DESC(0), ["Open the release ↗"], "read only: the release is\nchanged in the Prototype Block", job_prototype,
-     [("work/bNN_<topic>_prototype/j02_p2/", "the release, used by path + hash"), ("├── release.yaml", "its questions"),
+     [("work/bNN_<topic>_prototype/j02_code-v2/", "the release, used by path + hash"), ("├── release.yaml", "its questions"),
       ("├── partitions.md · thresholds.yaml", "its cuts and power"), ("├── src/ · configs/", "the shared code"),
       ("└── tNN_<L><NN>_<q>/scripts/", "each question's own script")]),
     ("Description", DESC(1), [], "", job_dataset,
-     [("$EXTRACTS/<d>v2", "the data version, frozen"), (JOB + "j03_p2_<d>v2.md", "pins: j02_p2 (hash) · <d>v2 · state"),
+     [("$EXTRACTS/<d>v2", "the data version, frozen"), (JOB + "j03_code-v2_data-v2.md", "pins: j02_code-v2 (hash) · <d>v2 · state"),
       (JOB + "tNN_…/runs/rNN_<partition>/result/partition_power.csv", "power, per question")]),
     ("Audience Report", PERIOD(0), ["Write a report", "Check a report"], "", current,
      [(JOB + "tNN_<L><NN>_<q>/tNN_….md", "Report: the page, at the picked partition"),
-      (JOB + "tNN_…/runs/rNN_<partition>/", "Work: the Run"), ("work/…_prototype/j02_p2/tNN_…/question.md", "Logic: the question")]),
+      (JOB + "tNN_…/runs/rNN_<partition>/", "Work: the Run"), ("work/…_prototype/j02_code-v2/tNN_…/question.md", "Logic: the question")]),
     ("Audience Report", [[("Partition:", 0), ("Full", 0), ("<partition A>", 0), ("<partition B>", 0), ("Cross", 1)],
                          [("Period:", 0), ("Current", 1), ("vs previous", 0)]], ["Pool or split"], "", cross_current,
      [(JOB + "tNN_…/runs/rNN_cross/", "the difference test"), (JOB + "tNN_…/tNN_….md", "its Cross section")]),
     ("Audience Report", PERIOD(1), ["Compare with j02", "Propose questions"], "run-compare-j02/ · after\nevery check", vs_previous,
      [(JOB + "runs/run-compare-j02/", "soft: reads both Jobs' results and pages"),
       (JOB + "reports/vs-j02.md", "generated: this view reads only it"),
-      ("work/…_prototype/j02_p2/thresholds.yaml", "compare: the held rule, fixed in the release"),
+      ("work/…_prototype/j02_code-v2/thresholds.yaml", "compare: the held rule, fixed in the release"),
       (JOB + "runs/run-propose-j03/", "soft: files new or changed questions"),
       ("work/bNN_<topic>_prototype/proposals/<slug>.md", "kind · DIKW level · from j03 · why"),
       ("insights/bNN_<topic>/reports/", "the same across all Jobs (s11)")]),
@@ -318,7 +318,7 @@ SCREENS = [
      [(JOB + "tNN_…/runs/run-check-alignment-tNN/", "alignment: the reviewer's Run"),
       (JOB + "tNN_…/runs/run-check-tNN/", "the page's CHECK, by another agent"),
       (JOB + "tNN_…/tNN_….md", "check: ✅ <date>  (the verdict line)"),
-      (JOB + "j03_p2_<d>v2.md", "session: the Job's Claude session (optional)")]),
+      (JOB + "j03_code-v2_data-v2.md", "session: the Job's Claude session (optional)")]),
     ("Idea Studio", None, ["Add a topic"], "", studio, [(JOB + "studio/", "optional")]),
     ("Runs", [("All", 1), ("hard", 0), ("soft", 0), ("launch", 0), ("power", 0), ("compare", 0), ("propose", 0), ("close", 0)],
      ["Run the Job", "Run a partition", "Compare with j02", "Propose questions", "Close the Job"], "", runs,
@@ -329,7 +329,7 @@ SCREENS = [
 
 POPOUTS = [  # each cell opens one: the question (Logic), the Run (Work), the page (Report), the card (a chip)
     ("K01 · the question  ·  from release p2", [
-        ("work/bNN_<topic>_prototype/j02_p2/t04_K01_<q>/question.md", GRAY),
+        ("work/bNN_<topic>_prototype/j02_code-v2/t04_K01_<q>/question.md", GRAY),
         ("ask: <question>, one thing, at Knowledge", INK), ("why now: <the reason>", INK),
         ("needs: E1 compute <spec> · E2 cite <source>", INK),
         ("method: ask By estimand ↗ · answer By hypothesis test ↗ · read By multiverse ↗", RED),
@@ -400,7 +400,7 @@ ASIDES = {"Work Details": ("one Job through its six steps (built 261022)", [
 def main():
     out = Path(sys.argv[1]) if len(sys.argv) > 1 else HERE / "s12-job-level.excalidraw"
     U.level_drawing(out, Path(__file__).name, "Job",
-                    "Job level: one Prototype version × one data version (j03_p2_<d>v2)",
+                    "Job level: one Prototype version × one data version (j03_code-v2_data-v2)",
                     "After s00: a Job pins a release and a data version; its questions sit under D · I · K · W headings.",
                     MOVES, SCREENS, POPOUTS, QUESTIONS, ASIDES, changes=CHANGES)
 

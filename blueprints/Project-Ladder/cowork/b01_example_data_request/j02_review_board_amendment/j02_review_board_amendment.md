@@ -1,5 +1,6 @@
 # j02 · Review board amendment
 job-kind: cowork-job
+use-case: IRB · Amendment
 state: 🟡 ACTIVE · waiting on us since 2026-11-05: pick the retention period, then send the amendment draft
 waiting-on: us
 since: 2026-11-05
