@@ -261,6 +261,8 @@ def displays(board: Path, job: Path | None) -> list[dict]:
                 continue
             rows += tex_rows(tex.read_text(encoding="utf-8", errors="ignore"))
         for f in sorted((run / "result").glob("*.csv")):
+            if f.name == "values_used.csv":      # the ids the display read (the chain's rule 2), not text it prints
+                continue
             rows += [" | ".join(str(v) for v in r.values()) for r in rows_of(f)]
         card = run / "run.yaml"
         out.append({"name": name or task.name, "holder": task, "unit": run, "rows": rows,

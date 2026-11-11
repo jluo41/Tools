@@ -1,0 +1,21 @@
+run: r02_draw_table1
+kind: hard
+role: make
+type: display
+scope: blueprints/Project-Ladder/paper/Paper-Example/j01_evidence_display/t02_table1-example
+skill: haipipe-display
+ticket: r02_draw_table1.sh
+worker: draw_table1.py
+says: draw Display B, the before and after means, by id from the value Run (placeholder)
+host: this machine
+time: a few seconds
+status: done
+started_by: '261110: the evidence chain rules, placeholders only'
+reads:
+- j02_evidence_value/t01_values-sample/runs/r01_read_values (result/values.yaml)
+writes:
+- result/table-body.tex
+- result/float.tex
+- result/method.md
+- result/values_used.csv
+- result/preview.pdf

@@ -2,7 +2,7 @@
 name: haipipe-paper-story
 description: "Draft, review, revise or draw one paper's Story: its Seed, research questions (hypotheses, claims, the work that tests them), Discovery and Task Roadmaps, related papers and Section Narrative; on the ladder a studio topic (sNN-story-<desk>-<idea>/) with Board Questions. Use to plan a telling or check that it holds for an editor, a reviewer and the public. Trigger: story, research question, hypothesis, claim, RoadMap Draw, /haipipe-paper-story."
 metadata:
-  version: "0.27.0"
+  version: "0.28.0"
   last_updated: "2026-11-08"
   group-token: "sNN-story-<desk>-<idea-slug>"
   outline:
@@ -223,7 +223,8 @@ research questions in reading order, each a plain question with its answer so fa
 the list is the paper's narrative, and each question's Section is where the paper answers it (JL 261019: "the
 quesiton can be the narrative as well"). excalidraw-story titles its steps from this list. Then
 `**The narrative, if the questions are answered**`: a numbered list of what the paper can say, step by step, once each
-question is answered as expected. The face also keeps a `**G0:**` line (JL's mark, ✅ or ⬜) and a `**Desk:**` line
+question is answered as expected, item n saying what question n lets the paper say (the Story view pairs them by
+number). The face also keeps a `**G0:**` line (JL's mark, ✅ or ⬜) and a `**Desk:**` line
 under its studio marks, and §5 ends with a `**We will not claim**:` list; excalidraw-story reads all of these labels
 as written.
 

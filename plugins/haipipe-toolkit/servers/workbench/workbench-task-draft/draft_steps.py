@@ -1784,7 +1784,7 @@ def _revise_card(head: str, c: dict, task: str, title: str, at: str = "") -> str
                '<span class="rv-msg mut"></span></p>')
     # a card made for a person's comment names it (`Answers: Comment 3`), so the comment and its change read together
     answers = re.findall(r"Comment (\d+)", (re.search(r"(?m)^Answers:[^\S\n]*(.*)$", c.get("body", "")) or [None, ""])[1])
-    link = "".join(f' <span class="st nt-link">💬 answers Comment {esc(n)}</span>' for n in answers)
+    link = "".join(f' <span class="st nt-link">💬 answers Comment {esc(n)}</span>' for n in answers) + _review_chips(c)
     opts = _options(c)
     rows = opts or [("A", "this change", c.get("expected", ""))]
     chosen = _chosen(c, opts) or "A"
@@ -1816,6 +1816,32 @@ def _revise_card(head: str, c: dict, task: str, title: str, at: str = "") -> str
             + (choices if choice else f'<div class=rv-change>{_change(head, orig, c.get("expected", ""))}</div>')
             + f'<div class=rv-edit contenteditable=true spellcheck=false>{esc(c.get("expected", ""))}</div>'
             f'{buttons}</div>')
+
+
+def _review_chips(c: dict) -> str:
+    """A card's sentence review beside its state (JL 261110: the per-sentence review and the easier-to-read verdict beside
+    each card): its `Score: <n>/10` and its `Readable:` line, the blind A/B readers' verdict (haipipe-paper-draft,
+    Co-authors' patterns): rewrite easier and the same meaning, green; the original easier or the meaning changed, amber;
+    no gain, grey. The whole line shows on hover."""
+    body = c.get("body", "")
+    score = re.search(r"(?m)^(?:[-*][^\S\n]+)?Score:[^\S\n]*(\d+(?:\.\d+)?)\s*/\s*10", body)
+    read = re.search(r"(?m)^(?:[-*][^\S\n]+)?Readable:[^\S\n]*(.+)$", body)
+    out = f' <span class=st title="sentence review score">{esc(score[1])}/10</span>' if score else ""
+    if read:
+        line = read[1].strip()
+        low = line.lower()
+        if re.search(r"chang\w* (?:the )?meaning|meaning differs|same[_ ]meaning: no|meaning: no", low):
+            chip = ("st st-warn", "📖 changes the meaning")
+        elif "original easier" in low:
+            chip = ("st st-warn", "📖 original easier")
+        elif "no gain" in low or re.search(r"\beasier: same\b", low):
+            chip = ("st", "📖 no gain")
+        elif re.search(r"rewrite easier|keep rewrite", low):
+            chip = ("st st-ok", "📖 easier to read")
+        else:
+            chip = ("st", "📖 " + line[:40])
+        out += f' <span class="{chip[0]}" title="{esc(line)}">{esc(chip[1])}</span>'
+    return out
 
 
 def _options(c: dict) -> list:

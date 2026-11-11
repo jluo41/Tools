@@ -1,3 +1,19 @@
+## 0.58.0 · 2026-11-10 · the Story view reads as a story
+
+- Paper-CMS-AI-Usage 261110 (JL: "the display here is not well to ready"): Direction shows its question large and Why
+  now, Admission rule as label rows; Pitch shows its identity large, then a sentence a line, with no repeated stage word
+  and `⟦pending …⟧` as a muted chip; Research Questions shows the paper's question large, then each question paired with
+  what it lets the paper say, its state a chip (no ⬜ square), without the "Board Question" process line. Prose keeps a
+  92-character measure; the question rows fill the card in two columns, the question and what it lets the paper say
+  (JL 261110: "we have a large margin here"), stacked under 900 px.
+- Every capped block in a paper section (the Story's prose, a section's own paragraphs and lists) sits centred in its
+  card, its text left-aligned (JL 261110: "at least you put the paragraph in the middle"); the Purpose stays on the title's edge. Research Questions now also reads the story skill's own form (`**The paper's question**:` then the list).
+- The assembled paper has a tab "The paper · Word, tracked" after "The paper · Word": the co-authors' own Word file, their
+  tracked changes and comments kept and ours added (delivery/<writing Job>/word-tracked/*-tracked.pdf and .docx); its line
+  is the review Job's tracked-Word Run headline, e.g. "v4 + 2 changes by <author>" (JL 261110).
+- `display_tabs` (board_results): any page's display Tasks drawn as the paper's Displays view draws them; the work
+  Block's Findings calls it.
+
 ## 0.57.0 · 2026-11-09 · Section tabs lead with the narrative
 
 - Each Section tab: reader asks, comes in with, moves, leaves with, hands on, must not say, displays; claims last. Its

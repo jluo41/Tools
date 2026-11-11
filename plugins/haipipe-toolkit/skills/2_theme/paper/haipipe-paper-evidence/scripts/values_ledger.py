@@ -328,6 +328,9 @@ def drawn_from(d, row):
     (or it names nothing, so it cannot be held to one)."""
     if d is None or not d["sources"].strip():
         return True
+    task = re.search(r"-(t\d+)-\d+$", row.get("id") or "")   # a display that reads this value's own value Run (the
+    if task and re.search(rf"evidence_value/{task[1]}_[^/\s]*/runs/", d["sources"]):   # chain: displays read the value Job)
+        return True
     for c in row.get("checks") or []:
         parts = Path(c.get("path", "")).parts
         tail = "/".join(parts[-3:]) if len(parts) >= 3 else c.get("path", "")

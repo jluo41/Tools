@@ -42,7 +42,10 @@ PAGE_CSS = ("<style>.focus-page{max-width:1328px}"
             "@media(min-width:900px){.focus-page .pb-side{grid-template-columns:220px minmax(0,1fr)}}"
             ".focus-page .pb-panel .pb-side{grid-template-columns:170px minmax(0,1fr)}"   # a tabset inside a panel
             ".focus-page .fd-body{padding-left:0;padding-right:0}.focus-page .pb-canvas{width:auto;margin-left:0}"
-            ".fd-body>p,.fd-body>ol,.fd-body>ul,.pb-big,.focus-goal p{max-width:880px}</style>")
+            ".fd-body>p,.fd-body>ol,.fd-body>ul,.pb-big,.focus-goal p{max-width:880px}"
+            # a capped paragraph in a section sits in the middle of its card, its text left-aligned (JL 261110: "at least
+            # you put the paragraph in the middle"); the Purpose under the title stays on the title's edge
+            ".fd-body>p,.fd-body>ol,.fd-body>ul,.fd-body>.pb-big{margin-left:auto;margin-right:auto}</style>")
 
 
 def banded(board: Path, key: str, results: str, root: Path, md, items, work: bool, item_html=None) -> str:

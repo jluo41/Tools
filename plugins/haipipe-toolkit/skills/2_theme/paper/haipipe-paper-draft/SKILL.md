@@ -2,7 +2,7 @@
 name: haipipe-paper-draft
 description: "The paper's draft Task: one Section, the Abstract or a letter of one version (task-type: draft), the paper's rules on top of haipipe-draft; executes one row of the version's ## Narrative and keeps its Requirement (venue rules, rubric, SUB-* rows). Evidence and displays follow haipipe-paper-evidence; the whole manuscript is haipipe-paper-assemble. Use to add, outline, draft, revise, check or retarget one Section. Also opens as /haipipe-paper-section."
 metadata:
-  version: "0.18.3"
+  version: "0.20.0"
   last_updated: "2026-11-04"
   aliases: [haipipe-paper-section]
   folder_owner: canonical
@@ -139,6 +139,42 @@ Only what the journal fixes keeps them: citations in parentheses and the back ma
 No transition set off by commas either (JL 261104: "don't use things like ' , however ,', Try to make a sentence to be smooth"): `, however,`, `, therefore,` and their kin become a sentence that flows (rule `parenthetical-transition`).
 
 The Introduction says its hypotheses in words, with no `H1` or `H2` label; the labels start where the theory section states them (JL 261104: "why we have the H1 here?").
+
+## 🧑‍🤝‍🧑 Co-authors' patterns, every sentence, and the easier-to-read check (JL 261110)
+
+JL 261110: "will you add it and update it to the /haipipe-paper?"; "ask the agent to read each sentences to see
+whether it is easier to understand". When co-authors return a round (a Word file pulled by `word_round.py pull`,
+their comments, a meeting), the paper keeps what they want and checks every sentence against it:
+
+1. **The patterns live on the Board**: `<Board>/writing-patterns.md`, numbered `### N. <pattern>` with their own
+   words, our sentence, theirs, the fix and its support; the Writing view shows it as "Writing patterns to avoid".
+   The generic tells are `haipipe-draft-review` `ref/ai-tells.md` § 5; this file holds the paper's own.
+2. **Their text is theirs**: a sentence that carries a co-author's tracked insertion is never rewritten; it gets a
+   Review card with a suggestion. Their own sentences keep their register (a semicolon included); our rewrites still
+   follow the house rules: no semicolons, no transition set off by commas, no longer than the original. Run
+   `haipipe-draft-review` `cli/anti_slop.py audit` on the rewrites, before the easier-to-read check (JL 261110:
+   the first round's kept rewrites scored worse than the originals on it, 26 against 19, and ran 9% longer).
+3. **Every sentence is reviewed**: one blind reviewer per Section (never the writer), reading the round's newest
+   text, scores each sentence 1 to 10 against `ai-tells.md` § 5, the Board's patterns and the comments in that
+   Section; under 8 gets a rewrite that keeps every number, citation and claim. A round is a Job on the Board, not a
+   `reports/` folder (JL 261110: "we will no long using the reports/ plesae use the job or studio"):
+   `jNN_review_<who>_v<MMDD>/` (face `for: <writing Job>`), its Tasks `t01_sentence_review` (the comments as
+   received in `result/feedback/`, the reviews in `result/review/review-<section>.md`), `t02_readability_check` and
+   `t03_tracked_word`. A Job named with "review" is never read as a writing version.
+4. **The easier-to-read check**: before a rewrite becomes a Revise card's default, a fresh reader (not the
+   reviewer, not the writer) reads it in place: the sentence before, then the original and the rewrite in random
+   order as A and B, then the sentence after. It answers two questions per pair: which one is easier to
+   understand on a first read, and do both say the same thing (numbers, citations, claim strength). A rewrite
+   that is not easier, or that changes the meaning, is not proposed as written: it goes back to the reviewer, or the
+   original stays. The pairs, the readers' verdicts, the key and the unblinded verdict per sentence are
+   `t02_readability_check`'s Result.
+5. **Back to the co-authors as tracked changes**: accepted cards are adopted into the Section, and the same edits
+   go onto a copy of the co-authors' own latest file as tracked changes by the person who answers them
+   (`excalidraw-draft/ref/track_changes.py` `write_tracked`): their comments and tracked changes stay. The edits are
+   `t03_tracked_word/scripts/edits.yaml` (find, new, why), its Run writes `delivery/<writing Job>/word-tracked/`, the
+   send's third paper beside the PDF and the Word file (JL 261110: "the Word-Change-Track, which is based on the
+   previous change tracks from professors and you add the changes as well"). It is written locally;
+   `word_round.py push` sends it only on the person's word.
 
 ## 📚 Examples first: a must (JL 261022; 261104)
 
@@ -353,6 +389,11 @@ expected prose or display placement
 transition to the next move
 known limitation or unresolved need
 ```
+
+**A Section quotes, it never computes (0.20.0, JL 261110).** Every number in its prose is a value id of the value
+Job, bound by id, and the Section names the value Run it quotes (its VALUE card or binding says the Run, never "the
+newest"). A number with no id gets one in the value Job first; a newer value Run marks the binding stale until the
+Section is read again (haipipe-paper-evidence, The chain; `chain_check.py` says where it breaks).
 
 **The plan is a list of sentence slots (0.5.3, JL 260831).** One bullet is one
 sentence slot, `S<n> · <what the sentence does>` in 4 to 11 plain words;

@@ -1,3 +1,13 @@
+## 0.20.0 · 2026-11-10 · a Section quotes, it never computes
+
+- JL 261110: every number in a Section is a value id, bound by id, and the Section names the value Run it quotes;
+  a newer value Run marks the binding stale (haipipe-paper-evidence 0.15.0, The chain). The frontmatter version, left
+  at 0.18.3 by 0.19.0, now matches.
+
+## 0.19.0 · 2026-11-10 · co-authors' patterns, every sentence, the easier-to-read check
+
+- JL 261110: "will you add it and update it to the /haipipe-paper?"; "ask the agent to read each sentences to see whether it is easier to understand". New § Co-authors' patterns: the Board's `writing-patterns.md`; their text never rewritten; one blind reviewer per Section scores every sentence; a fresh reader compares original and rewrite (A/B, in context) and keeps a rewrite only when it is easier and says the same; accepted edits go back as tracked changes (`track_changes.py`). A round is a review Job (`jNN_review_<who>_v<MMDD>`: t01 sentence review, t02 readability check, t03 tracked Word into `delivery/<writing Job>/word-tracked/`), never `reports/`.
+
 ## 0.18.3 · 2026-11-04 · no transition set off by commas; Introduction hypotheses in words
 
 - JL 261104: "don't use things like ' , however ,', Try to make a sentence to be smooth". Rule `parenthetical-transition` in anti_slop.

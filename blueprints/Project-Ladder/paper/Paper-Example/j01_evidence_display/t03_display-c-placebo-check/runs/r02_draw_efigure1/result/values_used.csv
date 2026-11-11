@@ -1,0 +1,4 @@
+id,key,value,shown,value_task,value_run
+RQ1-t01-002,main.b,2.3461,2.35,t01_values-sample,r01_read_values
+RQ1-t01-003,main.ci_lo,0.8412,0.84,t01_values-sample,r01_read_values
+RQ1-t01-004,main.ci_hi,3.8519,3.85,t01_values-sample,r01_read_values

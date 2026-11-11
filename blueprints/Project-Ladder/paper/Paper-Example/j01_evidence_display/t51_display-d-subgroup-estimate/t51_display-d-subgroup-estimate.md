@@ -8,5 +8,6 @@ name: <Subgroup> estimate beside the whole sample
 type: figure
 answers: RQ2
 caption: <Subgroup> estimate beside the whole sample: the same model in <the subgroup> and in everyone
-made by: runs/r01_draw_efigure2 (scripts/draw_subgroup_estimate.py), from the work Runs' main and subgroup estimates
-status: drawn 2026-11-06 (placeholder estimates)
+made by: runs/r02_draw_efigure2 (scripts/draw_subgroup_estimate.py), from the value Run j02_evidence_value/t01_values-sample/runs/r01_read_values
+printed: r02_draw_efigure2
+status: drawn 2026-11-11 (r02, by id from the value Run; placeholder estimates)

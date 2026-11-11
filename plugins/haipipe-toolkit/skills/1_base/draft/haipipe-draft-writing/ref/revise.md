@@ -10,6 +10,11 @@ card goes into `## 3 · Draft` by its sentence's address as the next version. A 
 it first and keeps every decision the person made (a `State:` accepted, rejected or edited, a `Chosen:` option), the card
 otherwise refreshed; only a card still proposed, or written by the writer, takes a new State (JL 261021, whose ✓ on a
 Section question was once written back to proposed).
+A card from a sentence review may add two lines before `State:` (0.29.0, JL 261110): `Score: <n>/10`, the blind
+reviewer's score of the original sentence, and `Readable: <verdict>`, the fresh A/B readers' verdict on the rewrite
+(`rewrite easier, same meaning`, `original easier`, `rewrite changes meaning` or `no gain`; haipipe-paper-draft,
+Co-authors' patterns). The Revise step shows both beside the card's state: easier to read in green, original easier
+or the meaning changed in amber, no gain in grey.
 
 Each revise run is one **pass**, and the file keeps only the latest (JL 261020: "we just need one of it, do you get
 it? always keep the latest version"): the run rewrites the file as `## Pass <k> · <yymmdd> · on draft v<N>` with its

@@ -26,12 +26,14 @@ Before a Story exists, Direction and Related can also appear here. The chosen te
 
 ## 📖 Story
 
+Prose is capped at a reading measure and centred in its card, its text left-aligned; a list of rows fills the card.
+
 | Section | Content | Layout |
 | --- | --- | --- |
-| 🧭 Direction | The chosen direction. | Paragraph |
-| 💡 Pitch | The paper's claim and why it matters. | Paragraph |
+| 🧭 Direction | The chosen direction: its question large, Why now and the other labels as rows. | Big line · Label rows |
+| 💡 Pitch | The paper in one line, then its moves (tension, what we do, the answer, who cares) a sentence a line; a pending answer a muted chip. | Big line · Sentence lines |
 | 🎓 Theory | The theory being tested or extended. | Paragraph |
-| ❓ Research Questions | Each question and its narrative. | Left Tabs · Right Content → Question |
+| ❓ Research Questions | The paper's question large, then a row per question: the question, and beside it what it lets the paper say with its state as a chip; stacked on a phone. | Big line · Two-column rows |
 | ⚖️ Stakes and evidence | Why the answer matters and what supports it. | Left Tabs · Right Content → Notes |
 | 📚 Related | Related papers grouped by the questions they bear on. | Left Tabs · Right Content → Paper |
 | 🏛️ Venues | Target venues and their fit. | Left Tabs · Right Content → Venue |

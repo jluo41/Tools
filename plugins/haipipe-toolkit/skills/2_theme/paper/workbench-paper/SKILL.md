@@ -8,7 +8,7 @@ description: >-
   classic frame. Trigger: Paper Workbench, paper workbench, paper theme, paper tab,
   version tab, Section tab, paper spaces, Grant Board design, /workbench-paper.
 metadata:
-  version: "0.57.0"
+  version: "0.58.0"
   last_updated: "2026-11-09"
 ---
 
@@ -126,7 +126,7 @@ supported separately; Board behavior does not imply their migration.
 | Key | View | Content sources and Sections |
 |---|---|---|
 | idea | Idea | Ideation topic: Directions and Theory; Related from the Board reference records, even when a Story exists. Direction appears here only before a Story exists. |
-| story | Story | Current Story topic and chosen direction: Direction, Pitch, Theory, Research Questions, Stakes and evidence, Related, Venues and Story by Section (left tabs: first the whole paper's Story arc, then each Section's part of the arc, its claims last). |
+| story | Story | Current Story topic and chosen direction: Direction (its question large, `**Label**:` paragraphs as label rows), Pitch (the one-sentence identity large, then the pitch a sentence a line; the stage only on the bar; `⟦pending …⟧` a muted chip), Theory, Research Questions (the paper's question large, then a row per question: the question, and beside it its `The narrative` line as "→ what it lets the paper say" with its state as a chip, stacked under 900 px; process text left out), Stakes and evidence, Related, Venues and Story by Section (left tabs: first the whole paper's Story arc, then each Section's part of the arc, its claims last). Prose keeps a 92-character measure and sits centred in its card, its text left-aligned (as every capped paragraph in a paper section does); the question rows use the card's width. |
 | plan | Data + Paper Plan | Data flow and Paper flow from their topics, then Roadmaps and the preparation plan, Runs to do and next steps to the send. |
 | explore | Support blocks | Internal Work and external Discovery Blocks named by the paper, linked back to their source work. |
 | evidence | Evidence | Returned values and citations from evidence Jobs, with their current state. |

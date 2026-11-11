@@ -1,0 +1,21 @@
+run: r02_draw_figure1
+kind: hard
+role: make
+type: display
+scope: blueprints/Project-Ladder/paper/Paper-Example/j01_evidence_display/t01_figure1-example
+skill: haipipe-display
+ticket: r02_draw_figure1.sh
+worker: draw_figure1.py
+says: draw Display A, the before and after bars, from the value Run (placeholder bars; prints no number)
+host: this machine
+time: a few seconds
+status: done
+started_by: '261110: the evidence chain rules, placeholders only'
+reads:
+- j02_evidence_value/t01_values-sample/runs/r01_read_values (result/values.yaml)
+writes:
+- result/assets/figure.png
+- result/float.tex
+- result/method.md
+- result/values_used.csv
+- result/preview.pdf

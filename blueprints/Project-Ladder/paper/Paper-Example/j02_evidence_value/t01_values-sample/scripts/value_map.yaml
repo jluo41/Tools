@@ -8,6 +8,7 @@ defaults:
   column: value
 runs:
   main: work/b90_example_paper_results/j02_example_estimates/t01_example_main/runs/r01_example_main
+  sub: work/b90_example_paper_results/j02_example_estimates/t02_example_subgroup/runs/r01_example_subgroup
 values:
   sample.n_units:
     what: '<units> in the sample'
@@ -53,6 +54,20 @@ values:
     what: 'SD of <outcome> (kept for checking)'
     run: main
     where: {key: extra.sd}
+    digits: 2
+  sub.n_units:
+    what: '<units> in the <subgroup>'
+    run: sub
+    where: {key: sub.n_units}
+  sub.ci_lo:
+    what: '<outcome> in the <subgroup>: 95% CI low'
+    run: sub
+    where: {key: sub.ci_lo}
+    digits: 2
+  sub.ci_hi:
+    what: '<outcome> in the <subgroup>: 95% CI high'
+    run: sub
+    where: {key: sub.ci_hi}
     digits: 2
 needs:
   late.b:

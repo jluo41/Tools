@@ -17,12 +17,12 @@ Data processing, model experiments, statistical analysis, software development, 
 
 | Contract | Existing behavior | Fit / boundary |
 | --- | --- | --- |
-| Work Job | Tasks, their Runs and result headlines; conditional Values and Maps | One Job matrix row. Same contract across different work purposes. |
+| Work Job | Tasks, their Runs and result headlines; conditional Data, Displays and Maps | One Job matrix row. Same contract across different work purposes. |
 | CoWork Job | Recorded move, waiting state, messages, meetings and checklist steps; Tasks when present | Real adapter. People is a reference Job variant, without a next-move workflow. |
 | Discovery Job | Groups inquiry Tasks and adds Papers, Evidence Bib and Synthesis | One inquiry Job renderer; research subjects are not distinct Job UI types. |
 | Work Task | Common result/Run page; task-type can select supporting skills | Execution kinds are not automatically different page layouts. |
 | Draft Task | Dedicated Plan, Write, Evidence, Display, Revise and Runs workflow; separate reading views | Must not be presented as a verified generic four-view Task. |
-| Prototype | Release Jobs, question sets, proposals and pinned/frozen releases | Insight-owned adapter, explicitly excluded from the new common Work frame. |
+| Question Book | Release Jobs, question sets, proposals and pinned/frozen releases | Insight-owned adapter, explicitly excluded from the new common Work frame. |
 | Paper, Insight, Design, Labeling | Theme-owned views, metadata, checks and approval gates | Own matrices must use actual dispatch and contracts, not arbitrary names. |
 | Workflow layout | Goal, Plan, Execution, Results; file-backed Deliverables and execution state | Exists alongside focus pages. No completed parity audit or migration is claimed. |
 | Legacy work locations | Both tasks/ and work/ trees; some undeclared or historical type aliases | Preserve routes and actual metadata. Do not infer missing types from titles. |
@@ -33,14 +33,14 @@ Data processing, model experiments, statistical analysis, software development, 
 
 - Replaced the fabricated Work Job purpose rows with the common Job contract and actual CoWork/Discovery adapters.
 - Registered one public Job example for each displayed variant. Kept existing example folders intact.
-- Restored Tasks in the generic Job Status cell and renamed Topics to the implemented View BJTR.
+- Restored Tasks in the generic Job Plan + Results cell; Plan + Results lists each Job type, its Jobs' plans and what they returned (261109: no View BJTR).
 - Documented conditional content and mutually exclusive CoWork states in clickable explanations.
 - Marked the old Task matrix as an unverified draft. Its current rows still mix execution kinds and use cases; its cells are not a verified inventory of each Task renderer.
 
 ## Open checks
 
 - [ ] Rebuild Task UI rows from actual renderer dispatch; expose execution kinds separately without losing their contracts.
-- [ ] Check every Block UI row against its adapter, including Prototype and workflow-layout boundaries.
+- [ ] Check every Block UI row against its adapter, including Question Book and workflow-layout boundaries.
 - [ ] Compare focus views with Goal/Plan/Execution/Results: planning, execution controls, receipt provenance, Deliverables and closure checks.
 - [ ] Check external _WorkSpace references in Files and Delivery against real declared sources.
 - [ ] Review undeclared/legacy Task metadata without inventing new types or rewriting source records.
@@ -66,7 +66,7 @@ The proposed Checklist evidence/reviewer state machine is not implemented. These
 - Seven targeted matrix/example regression tests passed.
 - Four registered Job examples rendered Overview, Status, Findings and Delivery: sixteen views checked.
 - Live browser check confirmed the reduced matrix, Job explanation dialog, its source example URL, and the People reference example in the left-tab/right-content preview.
-- Independent factual review found missing conditional CoWork Values, Maps and Meeting headlines; these were added.
+- Independent factual review found missing conditional CoWork Data, Maps and Meeting headlines; these were added.
 - Independent screenshot review did not grant visual acceptance: the rightmost column is clipped until horizontally scrolled, some icons/labels wrap poorly, and mutually exclusive collaboration states are too easy to read as simultaneous sections. Phone layout was not verified in this correction.
 
 Classification is corrected. Full layout and cross-SPACE workflow acceptance remain open.

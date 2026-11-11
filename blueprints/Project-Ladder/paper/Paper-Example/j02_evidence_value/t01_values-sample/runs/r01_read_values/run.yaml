@@ -12,9 +12,9 @@ time: a few seconds
 started_by: 'gen_value_runs.py: the value Job''s Runs, made from its value maps'
 reads:
 - work/b90_example_paper_results/j02_example_estimates/t01_example_main/runs/r01_example_main (result/)
+- work/b90_example_paper_results/j02_example_estimates/t02_example_subgroup/runs/r01_example_subgroup (result/)
 writes:
 - result/values.yaml
 - result/values.html
 - result/ledger.csv
 - result/headline.txt
-supersedes: r01_collect_values

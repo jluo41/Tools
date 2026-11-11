@@ -2,7 +2,7 @@
 name: haipipe-draft-writing
 description: "The writer of a Page: drafts and revises prose from the plan (outline to prose, plain English rewrite), edits a sentence by its address, runs the WRITE step (adopt agreed text, integrate evidence, build, pre-check), auto revise rounds, and the Revise Run (before and after, change ledger). Never reviews its own text (haipipe-draft-review does). Trigger: draft prose, revise this paragraph, edit this sentence, WRITE, auto revise, track changes, /haipipe-draft-writing, /haipipe-sentence, /haipipe-draft-revise."
 metadata:
-  version: "0.28.0"
+  version: "0.29.0"
   last_updated: "2026-11-04"
   # version history: ./CHANGELOG.md
 ---

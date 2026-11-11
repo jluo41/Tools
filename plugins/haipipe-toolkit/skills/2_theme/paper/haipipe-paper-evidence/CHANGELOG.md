@@ -1,3 +1,22 @@
+## 0.15.0 · 2026-11-10 · the chain: work → value → display → writing
+
+- JL 261110 (from Paper-ScalingGlucose-NatSeries2026: display numbers worked out in drawing scripts, displays on value
+  Runs r11 and r12 while the Values view showed r13, a forecast compared on different window sets, old-setup ids mixed
+  with current ones, raw tables stale after a rescoring): eight rules, one section, "The chain". Only work computes;
+  id before ink; pinned versions; same setup for things compared; an older setup leaves the list; staleness travels
+  down; a second route for headline numbers; one check before a send, blocking G4.
+- New `scripts/chain_check.py`: reads both value-Job shapes and says where the chain breaks; one row in paper_check.py.
+- `paper_text.displays` no longer reads a display Run's `values_used.csv` as printed text, and `values_ledger.drawn_from`
+  counts a display that reads the value's own value Run. Paper-Example's four displays are r02 Runs that read the value
+  Run by id (`values_used.csv`); its chain check shows only the deliberate RQ1-t01-006 mismatch.
+
+## 0.14.1 · 2026-11-10 · values first, then displays
+
+- JL 261110: "we want the data first prepared ready in the Values, and then these data will be used to support the
+  Displays". Rule 3 and the flow sketch now say it: a display Run reads only the value Job's Run (its copied tables,
+  and its `values.json` ids for every number it prints), never `work/`, and one version's displays read one value Run.
+  Before, the sketch drew work feeding the display Job and the value Job side by side. No script checks this yet.
+
 ## 0.13.2 · 2026-11-09 · the Displays view ends with Story by Section; no "Where each display stands" list
 
 - JL 261109: "this Story by Section should be at the bottom"; "what does 'Where each display stands' mean? maybe we don't need to use it". Each display's state is its tab's; Board Displays, a version's Display-Main/Appendix and the display Job's Displays drop the second list.

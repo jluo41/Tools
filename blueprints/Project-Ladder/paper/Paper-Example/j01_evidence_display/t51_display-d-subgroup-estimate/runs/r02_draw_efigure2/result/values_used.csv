@@ -1,0 +1,9 @@
+id,key,value,shown,value_task,value_run
+RQ1-t01-002,main.b,2.3461,2.35,t01_values-sample,r01_read_values
+RQ1-t01-003,main.ci_lo,0.8412,0.84,t01_values-sample,r01_read_values
+RQ1-t01-004,main.ci_hi,3.8519,3.85,t01_values-sample,r01_read_values
+RQ1-t01-006,sub.b,4.1234,4.12,t01_values-sample,r01_read_values
+RQ1-t01-011,sub.ci_lo,1.2034,1.20,t01_values-sample,r01_read_values
+RQ1-t01-012,sub.ci_hi,7.0451,7.05,t01_values-sample,r01_read_values
+RQ1-t01-001,sample.n_units,12480,"12,480",t01_values-sample,r01_read_values
+RQ1-t01-010,sub.n_units,3120,"3,120",t01_values-sample,r01_read_values

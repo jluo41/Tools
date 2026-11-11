@@ -2,7 +2,7 @@
 name: haipipe-paper
 description: "The router for the Paper family, including manuscript and grant types; manuscript runtime commands are implemented and Grant-specific support must be verified. For a paper on the ladder: a paper Board, one version Job per send, one Task per Section, Abstract or letter; routes to the Story, Ideation, Venue, Section, comments and assembly owners. Use for paper setup (paper_ladder.py), bringing an older paper folder onto the latest layout (paper_ladder.py audit, update), where a paper stands (checklist.md, paper_check.py, its sNN-paper-checklist topic), the delivery and its requirements, the submission portal (paper_ladder.py submission, portal_fill.py), drafting, or reviews. Trigger: paper, paper Board, grant proposal, Grant Board, version, send, update the paper folder, paper checklist, delivery requirements, cover letter, submission portal, /haipipe-paper."
 metadata:
-  version: "1.34.0"
+  version: "1.36.0"
   last_updated: "2026-11-09"
   summary: "Paper owns the journey and composition; the shared Page owns each Paper Page's lifecycle and release."
 ---
@@ -178,6 +178,11 @@ t05_back-matter the statements (corresponding author, contributions, conflicts, 
 
 A letter Task exported on its own still shows there, from its `word/` folder, but D3 stays ⏳ until the build makes it.
 
+The Writing view also shows two Board files when they exist, each as its own section (JL 261110): `revision-plan.md`
+first, "🗺️ Revision plan" (the round's steps as ⬜/✅ lines, counted done of total), and `writing-patterns.md`
+last, "🚫 Writing patterns to avoid" (the co-authors' patterns, `### N.` each; haipipe-paper-draft § Co-authors'
+patterns). Both are authored files on the Board, so a private paper's words never enter Tools.
+
 ## 🪜 The ladder: Board · version · Task · Run
 
 A paper is one Board; each send to a venue is a writing Job (a version); each Section, the
@@ -293,7 +298,8 @@ composition references, editable reconstruction and candidate promotion.
 have a paper block and a work block to provide the displays and E-work, right?"; JL 261031, the four layers above).
 Work Blocks `work/bNN_.../` hold the Runs that make every number and every underlying table on raw data; the paper
 Board's evidence Jobs deposit them: `j01_evidence_display` (one Task per display, each picture or table drawn by its
-own Run from returned, aggregated Results), `j02_evidence_value`, `j03_evidence_cite`. Until 261031 the display Job sat
+own Run from the value Job's copies of returned, aggregated Results: values first, then displays, JL 261110),
+`j02_evidence_value`, `j03_evidence_cite`. Until 261031 the display Job sat
 in the work Block (`j21_paper_displays`, `j21_<venue>_displays`); an older Project keeps it there until it is moved. The display Job opens with a **display plan** the authors agree before anything is
 drawn (JL 261023: "this should be a plan, proposed to the author to think about how to draw them"): one row per
 display with its number, title, the one question it answers, its layout (rows, columns or axes), its source Runs
@@ -454,6 +460,10 @@ after assembly: freeze evidence, check the story and reporting, apply the
 21-point `SUB-*` overlay, verify venue files, and complete the independent human
 pass. A clean render is necessary but never sufficient. The build remains
 `DRAFT` while hard blockers or required human decisions are open.
+
+G4 also needs the evidence chain to hold: `haipipe-paper-evidence/scripts/chain_check.py <Board>` exits 0
+(run as the value Job's `t99_paper_value_check`). Work computes, the value Run copies and gives ids, displays and
+Sections read pinned ids only; a failing line blocks the send (haipipe-paper-evidence, The chain).
 
 ## 🧱 Current architecture boundary
 

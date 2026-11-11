@@ -27,18 +27,18 @@
       "example": "A Story question is still waiting for a choice of scope."
     },
     "🧭 Direction": {
-      "what": "Read the direction chosen for the paper.",
-      "layout": "Paragraph",
+      "what": "Read the direction chosen for the paper: its question as the large line, why now and the admission rule as rows.",
+      "layout": "Big line · Label rows",
       "example": "The selected policy, outcome and population define the telling."
     },
     "💡 Pitch": {
-      "what": "Read what the paper claims and why the question matters.",
-      "layout": "Paragraph",
+      "what": "Read the paper in one line, then its pitch a sentence a line: the tension, what it does, the answer expected, who should care. A pending answer shows as a muted chip.",
+      "layout": "Big line · Sentence lines",
       "example": "A short pitch connects the question, contribution and intended reader."
     },
     "❓ Research Questions": {
-      "what": "Read each research question with its narrative and recorded state.",
-      "layout": "Left Tabs · Right Content → Question",
+      "what": "Read the paper's question, then a row per research question: the question, and beside it what it lets the paper say if answered, its state as a chip.",
+      "layout": "Big line · Two-column rows",
       "example": "RQ0 describes the cohort; RQ1 asks about the main effect; RQ2 asks for whom it changes."
     },
     "⚖️ Stakes and evidence": {

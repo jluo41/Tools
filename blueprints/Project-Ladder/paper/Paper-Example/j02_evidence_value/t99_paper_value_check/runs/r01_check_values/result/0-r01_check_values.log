@@ -1,1 +1,1 @@
-t99_paper_value_check: 9 values in 1 value Task; 1 differs from its Run, 1 waits for its Run, 6 match, 2 found, not bound yet; 1 never printed; 1 printed number with no binding
+t99_paper_value_check: 12 values in 1 value Task; 1 differs from its Run, 1 waits for its Run, 6 match, 2 found, not bound yet; 4 never printed; 1 printed number with no binding

@@ -3,8 +3,8 @@ task: t01_values-sample
 group: the sample and the main association
 rq: RQ1
 writing: j11_writing_v1130_desk
-headline: 't01_values-sample: 9 values, 8 printed in 9 places (1 differs from its Run, 1 waits for its Run, 6 match, 2 found,
-  not bound yet); 1 never printed'
+headline: 't01_values-sample: 12 values, 8 printed in 9 places (1 differs from its Run, 1 waits for its Run, 6 match, 2 found,
+  not bound yet); 4 never printed'
 counts:
   differs: 1
   missing: 0
@@ -241,8 +241,74 @@ values:
     where:
       key: extra.sd
     printed: []
+  sub.n_units:
+    id: RQ1-t01-010
+    rq: RQ1
+    what: <units> in the <subgroup>
+    value: 3120
+    shown: 3,120
+    checks:
+    - address: b90.j02.t02.r01
+      path: blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates/t02_example_subgroup/runs/r01_example_subgroup
+      name: computed in the association in <the subgroup> (placeholder)
+    - address: b90.j01.t01.r01
+      path: blueprints/Project-Ladder/work/b90_example_paper_results/j01_example_source/t01_example_source/runs/r01_example_source
+      name: returned source tables (placeholder)
+    linked: true
+    screen_read: false
+    source: work/b90_example_paper_results/j02_example_estimates/t02_example_subgroup/runs/r01_example_subgroup/result
+    file: values.csv
+    column: value
+    where:
+      key: sub.n_units
+    printed: []
+  sub.ci_lo:
+    id: RQ1-t01-011
+    rq: RQ1
+    what: '<outcome> in the <subgroup>: 95% CI low'
+    value: 1.2034
+    shown: '1.20'
+    checks:
+    - address: b90.j02.t02.r01
+      path: blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates/t02_example_subgroup/runs/r01_example_subgroup
+      name: computed in the association in <the subgroup> (placeholder)
+    - address: b90.j01.t01.r01
+      path: blueprints/Project-Ladder/work/b90_example_paper_results/j01_example_source/t01_example_source/runs/r01_example_source
+      name: returned source tables (placeholder)
+    linked: true
+    screen_read: false
+    source: work/b90_example_paper_results/j02_example_estimates/t02_example_subgroup/runs/r01_example_subgroup/result
+    file: values.csv
+    column: value
+    where:
+      key: sub.ci_lo
+    printed: []
+  sub.ci_hi:
+    id: RQ1-t01-012
+    rq: RQ1
+    what: '<outcome> in the <subgroup>: 95% CI high'
+    value: 7.0451
+    shown: '7.05'
+    checks:
+    - address: b90.j02.t02.r01
+      path: blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates/t02_example_subgroup/runs/r01_example_subgroup
+      name: computed in the association in <the subgroup> (placeholder)
+    - address: b90.j01.t01.r01
+      path: blueprints/Project-Ladder/work/b90_example_paper_results/j01_example_source/t01_example_source/runs/r01_example_source
+      name: returned source tables (placeholder)
+    linked: true
+    screen_read: false
+    source: work/b90_example_paper_results/j02_example_estimates/t02_example_subgroup/runs/r01_example_subgroup/result
+    file: values.csv
+    column: value
+    where:
+      key: sub.ci_hi
+    printed: []
 never_printed:
 - extra.sd
+- sub.n_units
+- sub.ci_lo
+- sub.ci_hi
 needs:
   late.b:
     what: '<a later model>: difference'

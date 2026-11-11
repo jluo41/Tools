@@ -1,3 +1,8 @@
+## 0.28.0 · 2026-11-10 · the narrative pairs with its question
+
+- The Story view shows each research question with its narrative item of the same number, so item n says what
+  question n lets the paper say.
+
 ## 0.27.0 · 2026-11-09 · each Section tells its part of the arc
 
 - JL 261109: "this is not just the claims, it is also about the narratives, the arc, how to make it smooth". Story by

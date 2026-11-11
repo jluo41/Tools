@@ -109,6 +109,39 @@ class VersionAndJobsTest(unittest.TestCase):
         check = self.render(self.b / "j02_evidence_value", "report", "value-check")
         self.assertIn("🔎 Check<span class=word>nothing yet</span>", check)
 
+    def test_display_tabs_draw_any_display_tasks_as_the_paper_does(self):
+        # JL 261109: the work Block's Findings displays are drawn by the paper's own code, grouped by `group:`
+        from live.board_results import display_tabs
+        job = self.root / "work" / "b01_x" / "j21_display"
+        for t, face in (("t01_figure_a", "label: Display 1\nname: Switches\ntype: figure\ngroup: result\nstatus: drawn\n"),
+                        ("t21_method_a", "label: Method 1\nname: The rule\ntype: figure\ngroup: method\nstatus: drawn\n")):
+            (job / t / "runs" / "r01_draw" / "result").mkdir(parents=True)
+            (job / t / "runs" / "r01_draw" / "result" / "preview.pdf").write_bytes(b"%PDF-1.4\n")
+            (job / t / f"{t}.md").write_text(f"# {t}\ntask-type: display\n{face}", encoding="utf-8")
+        html, word = display_tabs(sorted(job.iterdir()), self.root, names={"main": "Results", "method": "Methods"})
+        self.assertEqual(word, "2 of 2 drawn")
+        self.assertEqual(re.findall(r"pb-lgroup>([^<]+)", html), ["Results", "Methods"])
+        self.assertIn("📈 Figure · Switches", html)
+        self.assertIn("r01_draw/result/preview.pdf", html)
+        self.assertEqual(display_tabs([], self.root), ("", ""))
+
+    def test_the_tracked_word_file_has_its_own_tab(self):
+        # JL 261110: "the Word-Change-Track ... based on the previous change tracks from professors and you add the changes"
+        from live.board_results import _paper_files
+        out = self.b / "delivery" / "j11_writing_v1130_desk"
+        (out / "word-tracked").mkdir(parents=True)
+        (out / "build-manifest.json").write_text('{"outputs": {}}', encoding="utf-8")
+        for ext in ("pdf", "docx"):
+            (out / "word-tracked" / f"Paper-X-v4-tracked.{ext}").write_bytes(b"x")
+        res = self.b / "j31_review_coauthor_v1110" / "t03_tracked_word" / "runs" / "r01_v4_plus_ours" / "result"
+        res.mkdir(parents=True)
+        (res / "headline.txt").write_text("Paper-X-v4.docx + 2 tracked changes by <author> -> Paper-X-v4-tracked.docx\n", encoding="utf-8")
+        html = _paper_files(out, self.root)
+        self.assertIn("The paper · Word, tracked", html)
+        self.assertIn("v4 + 2 changes by &lt;author&gt;", html)
+        self.assertIn("word-tracked/Paper-X-v4-tracked.pdf", html)
+        self.assertIn("word-tracked/Paper-X-v4-tracked.docx", html)
+
     def test_each_view_shows_its_own_items(self):
         # JL 261106: "a view's bottom section shows that view's own items, and the rail shows everything"
         form(self.version, "r01_collect_story", "Story asks", "Paper-X-s02:paper @ story")

@@ -3,8 +3,8 @@ name: haipipe-paper-evidence
 description: "A paper's evidence rules on top of haipipe-evidence and haipipe-display: citations only from verified CITE Results, one number per result in every Section, displays numbered and within the venue limit, each passing the display revise loop. Owns the Board's value Job (value maps, bindings, the check: values_ledger.py) and citation Job (claim groups: cite_tasks.py); reads a whole version as one ledger and flags what disagrees (evidence_ledger.py); each display version's preview.pdf is the display, then how it was made (method.md). Use before a build or a send. Trigger: paper evidence, evidence ledger, value ledger, value map, citation check, numbers disagree, verify citations, paper displays, display preview, display method, /haipipe-paper-evidence, /haipipe-paper-display."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.13.2"
-  last_updated: "2026-11-04"
+  version: "0.15.0"
+  last_updated: "2026-11-10"
   aliases: [haipipe-paper-display]
   # version history: ./CHANGELOG.md
 ---
@@ -30,10 +30,12 @@ Results only; the writing Jobs (versions) quote them, so every number and every 
 
 ```text
 work/bNN_<topic>/  creates            paper/Paper-X/  evidence                    paper/Paper-X/j11_writing_…/  writes
-jNN_/tNN_/runs/rNN/result/ ──────▶   j01_evidence_display/ colour-scheme.yaml ─▶ tNN_<section>/display/  frames it
-discovery/bNN_ … CITE Results ──▶      t01_figure1-<slug>/runs/rNN/result/figure.pdf
+jNN_/tNN_/runs/rNN/result/ ──────▶   j02_evidence_value/ tNN_values-<group>/ ───▶ tNN_<section>/evidence/cards.yaml
+                                       │ values first: its copies and its ids are all a display reads
+                                       ▼
+discovery/bNN_ … CITE Results ──▶    j01_evidence_display/ colour-scheme.yaml ─▶ tNN_<section>/display/  frames it
+                                       t01_figure1-<slug>/runs/rNN/result/figure.pdf
                                        t51_etable1-<slug>/runs/rNN/result/table-body.tex
-                                     j02_evidence_value/ tNN_values-<group>/ ───▶ tNN_<section>/evidence/cards.yaml
                                      j03_evidence_cite/  tNN_<claim group>/  ───▶ \citep keys in the Section
 ```
 
@@ -71,8 +73,15 @@ The rules
 3. **Displays are the paper's.** Each `Display<n>-<slug>/` is built on cards (haipipe-display). The paper numbers them
    in Section order: the main text Display 1, 2 …, the appendix (`t2N_`) eDisplay 1, 2 …; each is cited in its
    Section's text; the main text stays within the venue's limit (its call, or what the person says).
-   **A display is drawn in the paper's display Job, from work's returned Results, and framed by the Section** (JL
-   261022; moved to the paper Board 261031):
+   **A display is drawn in the paper's display Job, from the value Job's copies of work's returned Results, and
+   framed by the Section** (JL 261022; moved to the paper Board 261031):
+   - **Values first, then displays** (JL 261110: "we want the data first prepared ready in the Values, and then these
+     data will be used to support the Displays"). A display Run reads only `j02_evidence_value/<Task>/runs/<value
+     Run>/result/`, never a path under `work/`: the tables it plots are the value Run's copies, and every number it
+     prints (a median, a mean, a percent in a corner) is an id of that Run's `values.json`, read by id, never worked
+     out again in the drawing script. A number with no id gets its id in the value Job first. The displays of one
+     version read one value Run; when a newer value Run changes a file a display reads, that display is drawn again
+     as a new Run. The display Run's `run.yaml` `reads:` lists those value files, so the check can compare them.
    - The paper Board owns one display Job, `j01_evidence_display`, with one Task per display (`t01_figure1-<slug>`,
      `t02_table1-<slug>`, …; appendix `t51_etable1-<slug>`, …), each face with `label:`, `status:`, `answers:`,
      `cited-in:`, `layout:`, `sources:`, `made-by:`. The Job face opens with the **display plan** the
@@ -111,6 +120,57 @@ The rules
    its accepted local Result), framed as interpretation and bounded by its evidence, or a visible open need that
    keeps the Section from closing. haipipe-paper-draft writes the sentence; this skill checks which of the three it is.
 
+
+The chain: work → value → display → writing
+-------------------------------------------
+
+Every number the paper prints passes down one chain, and each layer only does its own job (JL 261110, after a paper
+whose displays drifted from its values: medians worked out in drawing scripts, displays on an older value Run, a
+forecast set beside another scored on different windows, ids from an older setup mixed with current ones, and a raw
+table built before a rescoring that nobody marked stale). Eight rules keep it solid:
+
+```text
+work Run ─▶ value Run (copies, gives ids) ─▶ display Run (draws by id) ─▶ Section (quotes by id)
+   ✅ computes      ❌ computes nothing         ❌ computes nothing          ❌ computes nothing
+```
+
+1. **Only work computes.** A value Run copies work's returned files and gives each number an id; a display Run draws;
+   a Section quotes. No layer after work computes a number the paper prints.
+2. **Id before ink.** Every number a display prints (a takeaway, a corner label, a table cell) is a value id, read by
+   id; a missing id fails the Run. Where the display also plots the points behind that number, it asserts that what
+   it drew equals the id. The display Run writes the ids it used, with their values, to `result/values_used.csv`.
+3. **Pinned versions.** A display Run names its value Run in its own config (`run.yaml` `reads:`); a Section names
+   the value Run it quotes. Never "the newest". A closed Run's ticket refuses to run again: a change is a new Run.
+4. **Same setup for things compared.** Each work Run writes its setup (patients, windows, scoring rule) into its
+   `metrics.json`; the value Run gives those ids; a display that sets two things side by side asserts their setups
+   are equal before it says so. A caption sentence about the setup is read from those ids, never typed.
+5. **An older setup leaves the list.** When the setup changes, ids measured the old way stay in the old value Run
+   and are not carried into the new one. No "right, but check before quoting" flags: a `flag:` on a value fails
+   the check.
+6. **Staleness travels down.** A source work Task with a newer Run marks the value Task stale; a newer value Run marks
+   the displays and Section bindings that still read the old one stale.
+7. **A second route for headline numbers.** The check recomputes the headline numbers with independent code, from
+   the scores rather than from the Task's own output: a paper's own `scripts/recompute_check.py`, which the check
+   runs when it is there.
+8. **One check before a send.** The chain check runs as the value Job's paper-wide Task (`t99_paper_value_check`)
+   and blocks gate G4 (haipipe-paper): a version is not sent while it fails.
+
+**The check**, `scripts/chain_check.py`:
+
+```bash
+python scripts/chain_check.py <paper Board> [--json]
+```
+
+It reads both value-Job shapes, the standard one below (`value_map.yaml`, `values_ledger.py`) and a copying one
+(`scripts/values.yaml` with `sources:` and `values:`, Runs with `values.json` and `result/<key>/SOURCE.txt`), and
+says, one line per failure: a copied file that differs from its source Run's file, or a source Run not complete; an
+id whose value no longer equals its source; an id in two value Tasks; a value or display reading an older Run than
+the current one; a display that reads `work/` or prints an id whose value moved; a Section binding on an older value
+Run; a flagged id; and the paper's own recompute, when it fails. It writes nothing and exits non-zero on any failure.
+`paper_check.py` shows it as row V11, "The chain holds" (without the recompute, to stay quick; run the script itself
+before a send). What it cannot see: rule 4, since no work Run yet names its setup in a form it can compare, so a person
+reads each side-by-side display for it; and a value Task with no spec to re-read from (a raw-tables Task) is checked
+for copies and staleness only.
 
 A generated preview links its addresses
 ---------------------------------------

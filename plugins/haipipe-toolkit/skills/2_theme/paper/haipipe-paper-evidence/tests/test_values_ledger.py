@@ -85,9 +85,10 @@ class ValuesLedgerTest(unittest.TestCase):
         self.assertEqual(self.status(rows, "sub.b"), {"differs"})
         self.assertEqual(self.status(rows, "late.b"), {"owed"})
         self.assertEqual(self.status(rows, "mean.before", "Display B"), {"found"})   # a display hit, still proposed
-        self.assertEqual(doc["never_printed"], ["extra.sd"])
+        # the subgroup's n and CI are ids Display D reads (the chain, 261110); it draws them, it prints no text of them
+        self.assertEqual(doc["never_printed"], ["extra.sd", "sub.n_units", "sub.ci_lo", "sub.ci_hi"])
         self.assertIn("2.35 (0.84 to 3.85)", page)                            # the estimate row prints its CI
-        self.assertIn("1 never printed", doc["headline"])
+        self.assertIn("4 never printed", doc["headline"])
         vl.bind(self.j02, confirm=[])                                          # an agent confirms the rest
         _, rows, _ = self.run_task()
         self.assertEqual(self.status(rows, "mean.before", "Display B"), {"match"})
@@ -95,9 +96,10 @@ class ValuesLedgerTest(unittest.TestCase):
         self.assertEqual([x["printed"] for x in chk["printed_unbound"]], ["37.5"])
 
     def test_a_display_not_drawn_from_the_values_run_is_no_hit(self):
-        card = self.board / "j01_evidence_display/t02_table1-example/runs/r01_draw_table1/run.yaml"
-        card.write_text(card.read_text(encoding="utf-8").replace("t01_example_main/runs/r01_example_main",
-                                                                 "t09_other/runs/r01_other"), encoding="utf-8")
+        # the display's newest Run (r02, 261110) reads the value Run; pointed at another value Task, it is no hit
+        card = self.board / "j01_evidence_display/t02_table1-example/runs/r02_draw_table1/run.yaml"
+        card.write_text(card.read_text(encoding="utf-8").replace("t01_values-sample/runs/r01_read_values",
+                                                                 "t09_other/runs/r01_read_values"), encoding="utf-8")
         _, rows, _ = self.run_task()
         self.assertFalse([r for r in rows if r["where"] == "Display B"])
 

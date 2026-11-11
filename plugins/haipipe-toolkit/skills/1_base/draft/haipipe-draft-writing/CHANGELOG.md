@@ -1,3 +1,9 @@
+## 0.29.0 · 2026-11-10 · a Revise card shows its sentence review
+
+- JL 261110 (the per-sentence review and the easier-to-read verdict beside each card): a card may carry `Score: <n>/10`
+  and `Readable: <verdict>` before `State:`; the Revise step (workbench draft_steps `_review_chips`) shows them beside
+  the card's state. `ref/revise.md`.
+
 ## 0.28.0 · 2026-11-04 · Paragraphs of 4 to 6 sentences, each limit said once
 
 - JL 261104: "一个 paragraph 至少是 4~6 句话", "这个我觉得我强调过不下 4 遍了"; "do not do overprotection". `haipipe-draft-review/ref/plain-rules.md` § 3a, 3b; `cli/paragraphs.py` counts sentences per paragraph.

@@ -1,0 +1,3 @@
+id,key,value,shown,value_task,value_run
+RQ1-t01-007,mean.before,41.27,41.27,t01_values-sample,r01_read_values
+RQ1-t01-008,mean.after,43.62,43.62,t01_values-sample,r01_read_values

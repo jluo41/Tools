@@ -1,3 +1,12 @@
+## 1.36.0 · 2026-11-10 · G4 needs the evidence chain to hold
+
+- JL 261110: the send gate G4 now also needs `chain_check.py` (haipipe-paper-evidence 0.15.0, The chain) to pass;
+  paper_check.py shows it as one row. The frontmatter version, left at 1.34.0 by 1.35.0, now matches.
+
+## 1.35.0 · 2026-11-10 · the Writing view shows the revision plan and the writing patterns
+
+- JL 261110: "put it in the Writing View as a new section"; "put the plan to somewhere in the workbench UI". The Writing view renders the Board's `revision-plan.md` first and `writing-patterns.md` last (workbench-paper `board_results.writing_view`).
+
 ## 1.34.0 · 2026-11-09 · L5 asks for the Story arc and the Section rows
 
 - JL 261109: "what is the story arc of it"; "not just the claims ... the narratives, the arc, how to make it smooth".

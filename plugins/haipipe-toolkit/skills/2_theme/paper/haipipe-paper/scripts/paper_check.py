@@ -216,7 +216,8 @@ def values_filled(ts: list, good: str, kind: str = "value") -> tuple:
             owed += int(c.get("owed", 0) or 0)
         try:                                       # a value whose Run has not returned it yet is owed too (JL 261106)
             vals = (yaml.safe_load(read(found[-1])) or {}).get("values") or {}
-            owed += sum(1 for v in vals.values() if isinstance(v, dict) and v.get("value") is None)
+            rows = vals.values() if isinstance(vals, dict) else vals   # a ledger Run writes a list of rows
+            owed += sum(1 for v in rows if isinstance(v, dict) and v.get("value") is None)
         except yaml.YAMLError:
             pass
     if kind == "cite":
@@ -351,6 +352,7 @@ def check(board: Path) -> list:
     newest = writing[-1] if writing else None
     out[:0] = layout(board, story)
     out.insert(next(k for k, r in enumerate(out) if r[1] == "W1"), ("evidence", "V5", "Numbers agree", *agree(newest)))
+    out.insert(next(k for k, r in enumerate(out) if r[1] == "W1"), ("evidence", "V11", "The chain holds", *chain(board)))
     at = next(k for k, r in enumerate(out) if r[1] == "W1")
     out[at:at] = displays(board, newest, jobs["display"])
     out.extend(delivery(board, newest, call))
@@ -482,6 +484,24 @@ def layout(board: Path, story) -> list:
         if unknown else ("no use-case: " + ", ".join(rel.split("/")[-1][:-3] for rel, _ in bare[:4]) + (" …" if len(bare) > 4 else "") +
          " (update writes it)") if bare else "the Board, every Job and every Task face has a use-case: line")
     return out
+
+
+def chain(board: Path) -> tuple:
+    """V11: haipipe-paper-evidence's chain_check.py, work → value → display → writing (JL 261110); its rule-7
+    recompute hook is not run here (run chain_check.py itself before a send)."""
+    if not any((board / j).is_dir() for j in ("j01_evidence_display", "j02_evidence_value")) \
+            and not list(board.glob("j[0-9]*_*evidence*")):
+        return "⬜", "no evidence Job"
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "haipipe-paper-evidence" / "scripts"))
+        import chain_check
+        fails = chain_check.chain(board, recompute=False).fails
+    except (Exception, SystemExit) as e:         # the check is another skill's; its failure is a line, not a crash
+        return "⬜", f"the chain check did not read ({type(e).__name__})"
+    if not fails:
+        return "✅", "every copy, id, display and Section reads the current value Run (chain_check.py)"
+    rules = sorted({f["rule"] for f in fails})
+    return "❗", f"{len(fails)} failure{'s' * (len(fails) != 1)}, rule{'s' * (len(rules) != 1)} {', '.join(map(str, rules))} (chain_check.py)"
 
 
 def agree(job) -> tuple:

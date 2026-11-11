@@ -146,15 +146,22 @@
       "example": "",
       "example_title": "Use Cases"
     },
-    "🧱 Jobs": {
-      "what": "Check each Job’s progress. Expand a Job to see its Tasks and Runs.",
-      "layout": "Expandable Rows",
+    "🧱 Jobs by type": {
+      "what": "One section per Job type: the face's bands:, else each Job's use-case:, else what its Tasks' task-type add up to. Expand a Job to see its Tasks and Runs.",
+      "layout": "Numbered sections → expandable Job rows",
       "example": "",
       "example_title": "Use Cases"
     },
-    "🔢 Values": {
+    "🗂️ Data": {
       "what": "Read the values returned by the work, with their labels and units.",
       "layout": "Left Tabs · Right Content → Table",
+      "example": "",
+      "example_title": "Use Cases"
+    },
+    "🖼️ Displays": {
+      "what": "See each display (figure or table) the work drew, as the paper shows it: the display, then how it was made.",
+      "layout": "Left Tabs · Right Content → Preview PDF",
+      "layout_detail": "One tab per display Task, grouped Results then Methods by its group:.",
       "example": "",
       "example_title": "Use Cases"
     },
@@ -381,12 +388,6 @@
       "layout": "Expandable Task rows → Runs",
       "example_title": "Source",
       "example": "focus_page.tasks_section; status_now_html."
-    },
-    "🧩 View BJTR": {
-      "what": "Choose an existing Topic to inspect its linked Tasks and Runs with Block context. This does not create new work or infer a type from a title.",
-      "layout": "Left Topics · Right B–J–T–R tree",
-      "example_title": "Source",
-      "example": "work_frame.topics_for, tree and status."
     },
     "📇 Who to ask, by role": {
       "what": "The reference People Job lists people and roles. It has no next-move workflow.",
@@ -620,7 +621,7 @@
     "MindMap": [
       "haipipe-mindmap — Organize and draw the structure of the work."
     ],
-    "Status": [
+    "Plan + Results": [
       "haipipe-{level} — Inspect the related work and its state.",
       "haipipe-run — Interpret Run outcomes.",
       "haipipe-interaction — Follow unresolved inputs and dependencies."

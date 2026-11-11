@@ -174,7 +174,12 @@ def _rq_lists(body: str):
         m = re.search(rf"\*\*{label}[^*]*\*\*:?\s*\n((?:\s*\d+\.\s.+\n?)+)", body)
         return [(int(g.group(1)), g.group(2).strip()) for x in m.group(1).strip().splitlines()
                 if (g := re.match(r"\s*(\d+)\.\s*(.*)", x))] if m else []
-    return items_after("The story, question by question"), dict(items_after("The narrative"))
+    qs = items_after("The story, question by question")
+    if not qs:                                   # the skill's own form: **The paper's question**: ..., then the list
+        m = re.search(r"\*\*The paper's question\*\*[^\n]*\n\s*\n((?:\s*\d+\.\s.+\n?)+)", body)
+        qs = [(int(g.group(1)), g.group(2).strip()) for x in m.group(1).strip().splitlines()
+              if (g := re.match(r"\s*(\d+)\.\s*(.*)", x))] if m else []
+    return qs, dict(items_after("The narrative"))
 
 
 def _page_url(f: Path, root: Path) -> str:
@@ -328,7 +333,7 @@ def _task_url(task: Path, root: Path, group: str = "") -> str:
 def is_version(job: Path) -> bool:
     """A paper Board's Job is a version unless it is the display Job (j21_displays, s01-D11), the citation Job, or the
     submission Job of a send (jNN_submission_<version>: its letters and the portal; JL 261102)."""
-    return not re.search(r"display|citation|cite|evidence|value|submission", job.name, re.I)
+    return not re.search(r"display|citation|cite|evidence|value|submission|review", job.name, re.I)   # a coauthor review Job too (JL 261110)
 
 
 def display_job(version: Path) -> Path | None:
