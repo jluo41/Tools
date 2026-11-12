@@ -4,8 +4,8 @@ description: "Data-pipeline Job specialist: scaffolds and executes canonical BJT
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 disable-model-invocation: true
 metadata:
-  version: "0.10.2"
-  last_updated: "2026-10-26"
+  version: "0.11.0"
+  last_updated: "2026-11-11"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -64,6 +64,34 @@ work/bNN_<block>/
 ```
 
 Heavy outputs land in: `_WorkSpace/{1..4}-*Store/`.
+
+
+Findings: what a data Task shows (REACH 261111)
+------------------------------------------------
+
+The work focus page builds a page's Findings from files, never from typed text. A data Task feeds five
+parts, so write these when you make the Task, not afterwards.
+
+1. **🧩 Fn**: a Task that generates a Fn names the versioned file in its face, `output:` (and
+   `develops:`), e.g. `code/haifn/fn_case/<fn_version>/case_casefn/<Fn>.py`. Findings › 🧩 Fn then
+   shows its docstring, Settings and functions on the Task, Job and Block pages, and the Project
+   🔎 Findings band counts it (`focus_page.fn_found`). The Fn is GENERATED: change the build config or the
+   generator in the Job's `src/`, rebuild, and never edit the Fn file.
+2. **🧠 Maps**: a laptop Task (`j49_*_design`, `.sh` ticket) can draw a stage's target shape from the Fn
+   files alone (no patient data) as `result/maps/*.mindmap.md`: the ProcNames, the RecordSet, or every
+   df_case column by its TriggerFn and CaseFn. When a generator changes a Fn's columns, redraw the maps
+   in a new Run; a closed Run's result is never rewritten.
+3. **🗄️ Data**: the Block's `board.md` has a `## Data` yaml `data:` block: each stage store's `where:`
+   on the Volume, `holds:`, `access:`, and `count:` lines only from a server Result.
+4. **🔢 Values, 🖼️ Displays**: built from server Results only (a j90-style value Job writing
+   `tables.json`, a j91-style display Job). A selftest or synthetic receipt never feeds them.
+5. **A check writes the number to verify**: a cook's inventory writes the counts a person would check,
+   not only ok or failed, e.g. the case inventory's `value_stats` (min, median, max and zeros of a
+   CaseFn `--val` key, masked `<11`). On synthetic data this found an age of 0 on every case of one
+   CaseSet before the server ran it.
+
+A laptop selftest that walks Tasks skips those without a Databricks notebook entry (a `.sh` Maps Task),
+or it fails on them.
 
 
 Notebook template pattern

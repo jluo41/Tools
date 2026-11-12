@@ -5,6 +5,13 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.11.0] — 2026-11-11
+
+New section "Findings: what a data Task shows": a Fn Task names its versioned Fn in `output:` so Findings › 🧩 Fn
+shows it (Task, Job, Block, Project band); j49 laptop Maps from Fn files; the Block `## Data` block; Values and
+Displays only from server Results; a check writes the number to verify (`value_stats`); selftests skip laptop
+Tasks. From REACH ADHD and PD2D, 261111.
+
 ## [0.10.2] — 2026-10-26
 
 Hidden from the skill listing (`disable-model-invocation: true`); reached through the `/haipipe-task` door, which reads this SKILL.md by path. Nothing moved; `/haipipe-task-for-data` still works when a person types it. (hide 261026)
