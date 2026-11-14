@@ -94,6 +94,18 @@ def _note_card(c: dict, by: list) -> str:
 NOTE_LABEL = {"open": "Open", "answered": "AI replied", "done": "Resolved"}
 
 
+def _adopt_page(task: Path) -> str:
+    """The Page's Content follows its Draft at once after a sentence is written (JL 261114: "I approved the changes, but
+    it is not updated, why?"); "" when adopted, else why not (adopt refuses when the Draft's paragraphs changed, and
+    `page.py adopt --relayout` is then the person's call). The delivery build stays a separate step."""
+    try:
+        from src.page_adopt import run
+        report = run(task)
+        return "; ".join(report.get("refused") or [])
+    except Exception as e:                             # never lose the written sentence over the Page
+        return f"adopt failed: {e}"
+
+
 def _write_sentence(path: Path, sid: str, orig: str, new: str) -> tuple:
     """Put `new` in place of sentence `sid` in the current Draft's §3 text: (the Draft, "") when written or already
     there, (the Draft or None, why not) when the sentence is no longer `orig`."""
@@ -101,6 +113,9 @@ def _write_sentence(path: Path, sid: str, orig: str, new: str) -> tuple:
     draft = Path(read_draft(path.parents[2]).get("file") or "")
     if not draft.is_file():
         return None, "no current Draft"
+    # a card may quote its words ("…" or “…”); the sentence in the Draft never carries those outer quotes
+    unq = lambda w: re.sub(r'^\s*["“](.*)["”]\s*$', r"\1", w, flags=re.S)
+    orig, new = unq(orig), unq(new)
     dt = draft.read_text(encoding="utf-8")
     head, mark, tail = dt.partition("## 3 ·")
     if not mark:
@@ -114,6 +129,7 @@ def _write_sentence(path: Path, sid: str, orig: str, new: str) -> tuple:
         return draft, f"{sid} is no longer the reviewed sentence; reload"
     tail = tail.replace(line.group(0) + "\n", "", 1) if cut else tail.replace(line.group(0), line.group(1) + new, 1)
     draft.write_text(head + mark + tail, encoding="utf-8")
+    _adopt_page(path.parents[2])                       # and into the Page's Content at once, as page.py adopt does
     return draft, ""
 
 
@@ -191,7 +207,10 @@ def card_act(root: Path, p: dict, read_only: bool = False) -> tuple:
         found = list(re.finditer(r"(?ms)^### " + loose + r"[^\S\n]*\n(.*?)(?=^### |^## |\Z)", seg))
     if len(found) != 1:
         return 409, {"ok": False, "err": "the card changed on disk; reload"}
-    body = found[0].group(1)
+    # a card may write its fields as "- State: ..." (most records do, and the page reads both); undash them here so
+    # the state check and the rewrites below see the same card the page showed (JL 261114: Confirm said "it is
+    # proposed on disk now; reload" on a "- State: JL's call" card)
+    body = re.sub(r"(?m)^[-*][^\S\n]+(Why|Original|Expected|State|By|Chosen|Note):", r"\1:", found[0].group(1))
     cur = re.search(r"(?m)^State:[^\S\n]*(\S*)", body)
     now = (cur.group(1).lower() if cur and cur.group(1) else "proposed")
     if p.get("was") and str(p["was"]) != now:
