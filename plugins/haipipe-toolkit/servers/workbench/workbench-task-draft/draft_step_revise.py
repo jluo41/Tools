@@ -101,7 +101,7 @@ def _text_and_cards(d: dict, ev: dict, root: Path, path: Path, task: Path) -> st
         seen.update({sid: _when(day) for sid in re.findall(r"S\d+[a-z]*", ids)})
     later = lambda w, t: w and t and (w[:3] > t[:3] if t[3] < 0 else w > t)   # a date alone compares by day
     since = {sid for h, c in (passes[0][1] if passes else []) if seen[""] and not _is_report(h)
-             and re.match(r"(written|applied|done)\b", c.get("state", ""))
+             and re.match(r"(written|applied|done|accepted)\b", c.get("state", ""))   # an accepted card writes at once
              for sid in re.findall(r"\bS\d+[a-z]*\b", h.split(" · ")[1] if " · " in h else "")
              if later(_when(c.get("state", "")), seen.get(sid) or seen[""])}
     for x in said:
@@ -361,7 +361,7 @@ def _logic_card(x: dict, now: str = "") -> str:
     scores += f" · {nw} words" if nw else ""
     applied = now and x["fix"] and " ".join(now.split()) == " ".join(x["fix"].split())
     fix = ""
-    if x["fix"]:
+    if x["fix"] and not x.get("stale"):           # a suggestion for words the sentence no longer has is not offered
         fix = ('<div class="lg-text lg-sugg"><span class=lg-lab>✓ Fixed: the suggestion is in the text now; the score above '
                'was for the old wording</span></div>' if applied else
                f'<div class="lg-text lg-sugg"><span class=lg-lab>Suggested</span> '
