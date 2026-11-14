@@ -1,5 +1,5 @@
 # The Paper family's Guide (family `paper`): Guide › Description, Method, RoadMap Draw, Related Paper.
-# Loaded by servers/workbench/guide_families.py (moved from its "paper" entry, 261007). Paths: guide/…
+# Loaded by servers/workbench/guide/guide_families.py (moved from its "paper" entry, 261007). Paths: guide/…
 # related/… or a module are relative to servers/workbench-paper; skill:<name>/<rest> is a skill's file;
 # Tools/… is SPACE-relative.
 family: paper

@@ -10,16 +10,19 @@ The pages frame no ledger page any more where a few rows say the same thing (the
 px, its right columns); each row is drawn here and the Run's own page stays one Pop out away. Read-only."""
 from __future__ import annotations
 
-import csv
 import re
 from pathlib import Path
-from urllib.parse import quote
 
 import yaml
 
-from live import draft_steps as ds
 from live.frame import esc
 from live.ui_parts import _side_tabs, plural_word
+from live.evidence_common import (CITE_WORDS, VALUE_CSS, _kv, _pop, check_task, is_check, item_tasks,  # noqa: F401
+                                  newest, url)
+from live.evidence_cite import (cite_rows, job_cites, cite_state, cite_waits, _cite_cls, cite_row, verified_by,
+                                cite_panel, bib_entries, abstract_bank, _field, reference, abstract_html,
+                                citing_sentences, key_detail, cite_lines, cite_key_tabs, _ENTRY, CK_CSS, _PART,
+                                _CITE_CMD)  # noqa: F401
 
 
 # a value's state and a key's status in plain words (the Run's codes stay in its own files)
@@ -28,37 +31,6 @@ VALUE_WORDS = {"match": "matches its Run", "differs": "differs from its Run", "o
                "pending": "waits for its Run", "no anchor": "its sentence moved"}
 VALUE_SHORT = {"match": "matches", "differs": "differs", "owed": "waits for its Run", "found": "found, not bound",
                "missing": "missing", "stale": "Run changed", "pending": "waits", "no anchor": "sentence moved"}
-CITE_WORDS = {"verified": "verified", "card-only": "source card, not in the bib", "bib-only": "in the bib, no source card",
-              "missing-bib": "not in the bib", "TOADD": "to add", "toadd": "to add"}
-
-
-def is_check(task: Path) -> bool:
-    """A whole-paper check Task (t99_*): it reads every other Task of its Job, so it is shown once, as a verdict."""
-    return task.name.startswith("t99_")
-
-
-def check_task(job: Path) -> Path | None:
-    return next((t for t in sorted(job.glob("t99_*")) if t.is_dir()), None)
-
-
-def item_tasks(job: Path) -> list:
-    """A Job's Tasks without its whole-paper check, in their number order."""
-    return sorted((t for t in job.glob("t[0-9]*_*") if t.is_dir() and not is_check(t)), key=lambda t: t.name)
-
-
-def newest(task: Path, name: str) -> Path | None:
-    """The newest Run's result file `name` of a Task (by Run name, then time), else None."""
-    found = list(task.glob(f"runs/*/result/{name}")) if task is not None else []
-    return max(found, key=lambda f: (f.parent.parent.name, f.stat().st_mtime)) if found else None
-
-
-def url(f: Path, root: Path) -> str:
-    return "/" + quote(ds._rel(f, root))
-
-
-def _pop(label: str, f: Path | None, root: Path, name: str = "") -> str:
-    return (f'<a class=fd-btn data-pop="{esc(name or label)}" href="{esc(url(f, root))}">{esc(label)}</a>'
-            if f is not None and f.is_file() else "")
 
 
 # ── Values ─────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -71,6 +43,9 @@ def value_data(task: Path | None) -> dict:
         data = (yaml.safe_load(f.read_text(encoding="utf-8")) or {}) if f else {}
     except Exception:
         return {}
+    if isinstance(data.get("values"), list) and not data.get("rows"):   # a ledger Run: one row per printed place
+        rows = [dict(v, run=v.get("source", "")) for v in data["values"] if isinstance(v, dict)]
+        return {**data, "rows": rows, "board": task.parent.parent}
     if data.get("rows") or not isinstance(data.get("values"), dict):
         return _named(data, task.parent) if data.get("rows") else data
     rows = []
@@ -136,57 +111,17 @@ def job_values(job: Path) -> dict:
     return {"rows": rows, "never_printed": never, "printed_unbound": unbound} if rows else {}
 
 
-def value_counts(data: dict) -> dict:
-    out: dict = {}
-    for r in data.get("rows") or []:
-        out[r.get("status", "")] = out.get(r.get("status", ""), 0) + 1
-    return out
-
-
-def value_line(data: dict) -> str:
-    """The check's count line in plain words, said once: '6 match · 1 differs from its Run · …'."""
-    c = value_counts(data)
-    bits = [f"{c[k]} {('match' if c[k] != 1 else 'matches') if k == 'match' else VALUE_WORDS.get(k, k)}"
-            for k in ("differs", "missing", "stale", "owed", "pending", "found", "no anchor", "match") if c.get(k)]
-    never, loose = len(data.get("never_printed") or []), len(data.get("printed_unbound") or [])
-    if never:
-        bits.append(f"{plural_word(never, 'value', 'values')} never printed")
-    if loose:
-        bits.append(f"{plural_word(loose, 'printed number', 'printed numbers')} with no binding")
-    return " · ".join(bits)
-
 
 def value_state(data: dict) -> tuple:
-    """(word, waiting line) of a set of printed numbers: what differs first, since a person must fix it."""
-    rows = data.get("rows") or []
-    if not rows:
-        return "nothing yet", ""
-    c = value_counts(data)
-    bad = [r for r in rows if r.get("status") in ("differs", "missing", "stale")]
-    if bad:
-        r = bad[0]
-        what = (f'{r.get("where", "")} prints {r.get("printed", "")}, its Run returned {r.get("value", "")}'
-                if r.get("status") == "differs" else f'{r.get("where", "")}: {VALUE_WORDS.get(r.get("status"), r.get("status"))}')
-        word = f'{len(bad)} {"differs" if len(bad) == 1 else "differ"}' if all(x.get("status") == "differs" for x in bad) \
-            else f"{len(bad)} to fix"
-        return word, f"🙋 {plural_word(len(bad), 'printed number', 'printed numbers')} to fix: {what}"
-    return f'{c.get("match", 0)} of {len(rows)} match', ""
+    """(word, waiting line) of a set of printed numbers: none. A page carries no check tally ("6 to fix", "41 of 70
+    match", "🙋 6 printed numbers to fix: …"); each printed number's own row shows its state where it lands (AGENTS
+    § Page words). The counts stay in the check's own receipt. Kept so callers still unpack a pair."""
+    return "", ""
 
 
-VALUE_CSS = """<style>.ev-line{margin:0 0 10px;font-size:13.5px}.ev-verdict{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;
-margin:0 0 12px;padding:7px 12px;border:1px solid var(--line);border-radius:8px;font-size:13.5px}.ev-verdict b{font-weight:600}
-.ev-verdict .fd-btn{margin-left:auto}
-.ev-rows{display:grid;gap:6px;margin:0 0 12px}.ev-row{border:1px solid var(--line);border-radius:8px;padding:7px 11px;font-size:13.5px}
-.ev-row.bad{border-left:3px solid light-dark(#c92a2a,#ff8787)}.ev-row.wait{border-left:3px solid light-dark(#b35c00,#ffc078)}
-.ev-row.ok{border-left:3px solid light-dark(#2b8a3e,#8bd49a)}
-.ev-row>b{display:block;font-size:14px;margin:0 0 3px;overflow-wrap:anywhere}
-.ev-kv{display:grid;grid-template-columns:110px minmax(0,1fr);gap:2px 10px;margin:0;font-size:13px}
-.ev-kv dt{color:var(--muted)}.ev-kv dd{margin:0;overflow-wrap:anywhere}
-@media(max-width:600px){.ev-kv{grid-template-columns:1fr;gap:0}.ev-kv dt{margin-top:4px}.ev-verdict .fd-btn{margin-left:0}}</style>"""
-
-
-def _kv(pairs) -> str:
-    return '<dl class=ev-kv>' + "".join(f'<dt>{esc(k)}</dt><dd>{v}</dd>' for k, v in pairs if v) + '</dl>'
+def value_waits(data: dict) -> bool:
+    """Does a printed number wait on the person (differs, missing, stale)? For a to-do row's pill, never a count."""
+    return any(r.get("status") in ("differs", "missing", "stale") for r in data.get("rows") or [])
 
 
 def _value_cls(status: str) -> str:
@@ -194,20 +129,53 @@ def _value_cls(status: str) -> str:
         else "ok" if status == "match" else ""
 
 
-def value_row(r: dict) -> str:
-    """One printed number as a card: what it is, where it is printed, printed against returned, its state in words."""
+def sentence_at(board: Path | None, where: str) -> tuple:
+    """(Section, S-id, sentence) of a place like 't05_results S14', read from the Section's newest Draft; empty when
+    it cannot be found. Shared by the Values and Citations views."""
+    sec, _, sid = (where or "").strip().partition(" ")
+    if board is None or not sec or not sid:
+        return ("", "", "")
+    drafts = sorted(board.glob(f"j*/{sec}/draft/{sec}-draft-v*.md"), key=lambda f: f.stat().st_mtime)
+    if not drafts:
+        return (sec, sid, "")
+    hits = re.findall(r"(?m)^- B\d+ · " + re.escape(sid.split()[0]) + r" · (.+)$",
+                      drafts[-1].read_text(encoding="utf-8", errors="ignore"))
+    text = re.sub(r"\s{2,}", " ", _CITE_CMD.sub("", hits[-1])).strip() if hits else ""
+    return (sec, sid, re.sub(r"\s+([.,;])", r"\1", text))
+
+
+def value_row(r: dict, board: Path | None = None) -> str:
+    """One printed number, opened like a citation key (JL 261110: "for the values, you should update it as well"): its
+    name, the number as printed and its state on the closed line; open, the sentence that prints it (the number in
+    bold), the value its Run returned, the Run and key it reads, and any note."""
     st = r.get("status", "")
-    name = r.get("what") or r.get("key") or r.get("id") or ""          # the value's name; its key on hover (r02)
-    key = " · ".join(str(x) for x in (r.get("key"), r.get("id")) if x)
-    return (f'<div class="ev-row {_value_cls(st)}"><b title="{esc(key)}">{esc(name)}</b>' + _kv((
-        ("State", esc(VALUE_WORDS.get(st, st))), ("Printed in", esc(r.get("where", ""))),
-        ("Printed", esc(str(r.get("printed", "")) or "not yet")), ("Its Run", esc(str(r.get("value", "")))),
-        ("Bound by", esc({"card": "an evidence card", "map": "the value map"}.get(r.get("bound", ""), r.get("bound", "")))),
-        ("Note", esc(r.get("note", ""))))) + '</div>')
+    name = r.get("what") or r.get("key") or r.get("id") or ""
+    printed = str(r.get("printed", "") or "")
+    word = VALUE_WORDS.get(st, st)
+    if st == "no anchor" and not printed:         # the sentence rests on the value but prints no number of it
+        word = "backs its sentence, no number printed"
+    cls = "fd-ok" if st == "match" else "fd-you" if _value_cls(st) == "bad" else ""
+    sec, sid, sent = sentence_at(board, r.get("where", ""))
+    if sent and printed and printed in sent:
+        shown = esc(sent).replace(esc(printed), f"<b class=vk>{esc(printed)}</b>", 1)
+    else:
+        shown = esc(sent)
+    body = []
+    if r.get("where"):
+        body.append("<h5>Where it is printed</h5>" + (f'<p class=ck-cite>{shown} <span class=src>{esc(r["where"])}</span></p>'
+                                                      if sent else f'<p>{esc(r["where"])}</p>'))
+    run, key = r.get("run") or r.get("source") or "", r.get("key", "")
+    body.append("<h5>What it is checked against</h5><p>" + " · ".join(x for x in (
+        f"returned value <b>{esc(str(r.get('value', '')))}</b>" if r.get("value", "") != "" else "no returned value yet",
+        f"Run {esc(run)}" if run else "", f"key <code>{esc(key)}</code>" if key else "") if x) + "</p>")
+    if r.get("note"):
+        body.append(f"<h5>Note</h5><p>{esc(r['note'])}</p>")
+    return (f'<details class=ck><summary class=fd-row><span class=n>{esc(printed or "—")}</span><span class=d>{esc(name)}</span>'
+            f'<span class="w {cls}">{esc(word)}</span></summary><div class=ck-body>' + "".join(body) + '</div></details>')
 
 
 def value_check_html(data: dict, task: Path | None, root: Path) -> str:
-    """The whole-paper value check, drawn as rows: the count line once, what to fix first, every printed number, then
+    """The whole-paper value check, drawn as rows: what to fix first, every printed number, then
     the values never printed and the printed numbers with no binding; the Run's own page one Pop out away."""
     rows = data.get("rows") or []
     if not rows:
@@ -215,10 +183,11 @@ def value_check_html(data: dict, task: Path | None, root: Path) -> str:
     order = {"differs": 0, "missing": 0, "stale": 0, "owed": 1, "pending": 1, "found": 2, "no anchor": 2, "match": 3}
     shown = sorted(rows, key=lambda r: order.get(r.get("status", ""), 4))
     page = newest(task, "values.html") if task is not None else None
-    out = (VALUE_CSS + f'<p class=ev-line>{esc(value_line(data))}</p>'
+    out = (VALUE_CSS
            + (f'<div class=pb-verbs>{_pop(f"⤢ Open {task.name}{chr(39)}s table", page, root, task.name + " · values")}</div>'
               if page and task is not None else "")
-           + '<div class=ev-rows>' + "".join(value_row(r) for r in shown) + '</div>')
+           + CK_CSS + "<style>b.vk{background:var(--hl,#fff3bf);padding:0 2px}</style>"
+           + "".join(value_row(r, data.get("board")) for r in shown))
     loose = data.get("printed_unbound") or []
     if loose:
         out += ('<p class=pb-state>Printed numbers with no binding</p><div class=ev-rows>' + "".join(
@@ -226,7 +195,7 @@ def value_check_html(data: dict, task: Path | None, root: Path) -> str:
             + _kv((("Printed in", esc(u.get("where", ""))), ("Sentence", esc(u.get("sentence", ""))))) + '</div>' for u in loose) + '</div>')
     never = data.get("never_printed") or []
     if never:
-        out += f'<p class=pb-state>Never printed: {esc(", ".join(map(str, never)))}</p>'
+        out += f'<p class=pb-state>Never printed: {esc(", ".join(map(str, never)))}</p>'   # names, not a count
     return out
 
 
@@ -252,116 +221,6 @@ def value_tabs_per_value(data: dict, eid: str) -> str:
     return VALUE_CSS + _side_tabs(eid, items, panels)
 
 
-# ── Citations ──────────────────────────────────────────────────────────────────────────────────────────────────
-def cite_rows(task: Path | None) -> list:
-    """A claim group's (or the check's) newest citations.csv, one dict per key."""
-    f = newest(task, "citations.csv") if task is not None else None
-    if f is None:
-        return []
-    try:
-        with f.open(encoding="utf-8", newline="") as fh:
-            return [r for r in csv.DictReader(fh) if r.get("key")]
-    except Exception:
-        return []
-
-
-def job_cites(job: Path) -> list:
-    """Every key a citation Job checks, once: the whole-paper check's rows, else its claim groups' put together."""
-    rows = cite_rows(check_task(job))
-    if not rows:
-        rows = [r for t in item_tasks(job) for r in cite_rows(t)]
-    seen, out = set(), []
-    for r in rows:
-        if r["key"] not in seen:
-            seen.add(r["key"])
-            out.append(r)
-    return out
-
-
-def cite_state(rows: list) -> tuple:
-    """(word, waiting line) of a set of keys, each counted once: how many are verified; a key not in the bib waits."""
-    if not rows:
-        return "nothing yet", ""
-    ok = sum(r.get("status") == "verified" for r in rows)
-    missing = [r["key"] for r in rows if r.get("status") in ("missing-bib", "TOADD", "toadd")]
-    waits = (f"🙋 {plural_word(len(missing), 'key', 'keys')} not in the bib: {', '.join(missing)}" if missing else "")
-    return f"{ok} of {plural_word(len(rows), 'key', 'keys')} verified", waits
-
-
-def cite_line(rows: list) -> str:
-    """The keys' count line in plain words, said once."""
-    c: dict = {}
-    for r in rows:
-        w = CITE_WORDS.get(r.get("status", ""), r.get("status", ""))
-        c[w] = c.get(w, 0) + 1
-    nodoi = sum(not r.get("doi") for r in rows)
-    bits = [f"{n} {w}" for w, n in c.items()] + ([f"{nodoi} without a DOI"] if nodoi else [])
-    return " · ".join(bits)
-
-
-def _cite_cls(status: str) -> str:
-    return "ok" if status == "verified" else "bad" if status in ("missing-bib", "TOADD", "toadd") else "wait"
-
-
-def cite_row(r: dict) -> str:
-    """One key as a card that stacks at phone width: its title and year, its status in words, where it is cited, its
-    DOI, its signature and its source card."""
-    st = r.get("status", "")
-    title = " · ".join(x for x in (r.get("title", ""), r.get("year", "")) if x) or "no bib entry yet"
-    return (f'<div class="ev-row {_cite_cls(st)}"><b>{esc(r["key"])}</b>' + _kv((
-        ("Status", esc(CITE_WORDS.get(st, st))), ("Paper", esc(title)), ("Cited in", esc(r.get("cited_in", ""))),
-        ("DOI", esc(r.get("doi", "") or "none")), ("Verified by", esc(verified_by(r.get("verified", "")))),
-        ("Source card", esc(r.get("cite_card", "") or "none yet: a Discovery card on the citing sentence")),
-        ("Discovery Run", esc(r.get("discovery_runs", ""))))) + '</div>')
-
-
-def verified_by(said: str) -> str:
-    """Who verified a key, in words (r02: "Signed: no signed Result")."""
-    return "nobody yet" if not said or said.startswith("no signed") else said
-
-
-def cite_panel(task: Path, root: Path) -> str:
-    """A claim group's keys, each a card (no framed page: it hid Status and DOI at 390 px), the count line once, the
-    Run's own page one Pop out away."""
-    rows = cite_rows(task)
-    if not rows:
-        return ""
-    page = newest(task, "citations.html")
-    return (VALUE_CSS + f'<p class=ev-line>{esc(cite_line(rows))}</p>'
-            + (f'<div class=pb-verbs>{_pop(f"⤢ Open {task.name}{chr(39)}s table", page, root, task.name + " · citations")}</div>' if page else "")
-            + '<div class=ev-rows>' + "".join(cite_row(r) for r in rows) + '</div>')
-
-
-def cite_lines(task: Path, root: Path) -> str:
-    """A claim group in the Citations view: its claim first, then one line per key (the key and its paper, its status in
-    words) and one Open; the cards are the Check view's (r02: the Citations tab drew the same three cards as Check)."""
-    from live.board_read import _task_url
-    rows = cite_rows(task)
-    if not rows:
-        return ""
-    face = task / f"{task.name}.md"
-    text = face.read_text(encoding="utf-8", errors="ignore") if face.is_file() else ""
-    claim = (re.search(r"(?m)^answers:\s*(.+?)\s*$", text) or [None, ""])[1]
-    order = {"missing-bib": 0, "TOADD": 0, "toadd": 0, "bib-only": 1, "card-only": 1, "verified": 2}
-    lines = "".join(
-        f'<div class=fd-row><span class=n>{esc(r["key"])}</span><span class=d>{esc(r.get("title") or "no bib entry yet")}</span>'
-        f'<span class="w {"fd-ok" if r.get("status") == "verified" else "fd-you" if _cite_cls(r.get("status", "")) == "bad" else ""}">'
-        f'{esc(CITE_WORDS.get(r.get("status", ""), r.get("status", "")))}</span></div>'
-        for r in sorted(rows, key=lambda r: order.get(r.get("status", ""), 3)))
-    return (VALUE_CSS + (f'<p class=ev-line><b>Claim</b> · {esc(claim)}</p>' if claim else "") + lines
-            + f'<p style="margin-top:10px"><a class=fd-btn href="{esc(_task_url(task, root))}">Open {esc(task.name)} ↗</a></p>')
-
-
-def cite_key_tabs(rows: list, eid: str) -> str:
-    """A claim group's keys, one side tab each (the key; its status in words), its card on the right."""
-    if not rows:
-        return ""
-    order = {"missing-bib": 0, "TOADD": 0, "toadd": 0, "bib-only": 1, "card-only": 1, "verified": 2}
-    rows = sorted(rows, key=lambda r: order.get(r.get("status", ""), 3))
-    return VALUE_CSS + _side_tabs(eid, [(r["key"], CITE_WORDS.get(r.get("status", ""), r.get("status", ""))) for r in rows],
-                                  [cite_row(r) for r in rows])
-
-
 # ── the whole-paper check, once, as a verdict line on top of the items it checks ───────────────────────────────
 def verdict(job: Path, root: Path, kind: str, href: str = "") -> str:
     """One line above a Job's Values or Citations: what the whole-paper check found (its t99 Task), and where to read it.
@@ -369,21 +228,11 @@ def verdict(job: Path, root: Path, kind: str, href: str = "") -> str:
     task = check_task(job)
     if task is None:
         return ""
-    if kind == "Values":
-        data = value_data(task)
-        if not data.get("rows"):
-            return ""
-        word, _ = value_state(data)
-        line = value_line(data)
-    else:
-        rows = cite_rows(task)
-        if not rows:
-            return ""
-        word, _ = cite_state(rows)
-        line = cite_line(rows)
+    if not (value_data(task) if kind == "Values" else {"rows": cite_rows(task)}).get("rows"):
+        return ""
+    # no count line (AGENTS § Page words): what it found shows on each number or key below; the line only leads there
     go = f'<a class=fd-btn href="{esc(href)}">Open the check</a>' if href else ""
-    said = line if kind == "Values" else f"{word} · {line}"     # a value line already says what differs
-    return VALUE_CSS + f'<div class=ev-verdict><span>🔎 <b>The whole-paper check</b>: {esc(said)}</span>{go}</div>'
+    return VALUE_CSS + f'<div class=ev-verdict><span>🔎 <b>The whole-paper check</b></span>{go}</div>'
 
 
 # ── Portal ─────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -417,30 +266,18 @@ def portal_tabs(data: dict, eid: str) -> str:
 
 # ── where each evidence Task stands, one to-do row each (a version's and an evidence Job's ⚙️ Process) ──────────
 def task_state(task: Path, status: str = "") -> tuple:
-    """(its line, its pill) from what its newest Run returned, so a checked claim group no longer reads "not started"
-    beside its own count line: keys verified, numbers that match, a drawn display."""
+    """(its line, its pill) from what its newest Run returned, so a checked claim group no longer reads "not started";
+    no count in the line (each key and number shows its own state on its page)."""
     from live.board_evidence import evidence_done
     rows = cite_rows(task)
     if rows:
-        word, waits = cite_state(rows)
-        return word, "waiting for you" if waits else "checked"
+        return "", "waiting for you" if cite_waits(rows) else "checked"
     data = value_data(task)
     if data.get("rows"):
-        word, waits = value_state(data)
-        return word, "waiting for you" if waits else "done"
+        return "", "waiting for you" if value_waits(data) else "done"
     if newest(task, "tables.json") is not None:
         return "the raw tables, built", "done"
     st = (status or "").lower()
     return status or "", "done" if evidence_done(status) else "waiting for you" if st.startswith("wait") else "not started"
 
 
-def where_rows(tasks: list, root: Path, read: dict | None = None) -> list:
-    """Each Task as a to-do row: its label, its line, its pill, Open (ui_parts.todo_section's rows)."""
-    from live.board_evidence import evidence_body
-    from live.board_read import _task_url
-    out = []
-    for t in tasks:
-        label, status, _ = (read or {}).get(t) or evidence_body(t, root)
-        line, pill = task_state(t, status)
-        out.append((label or t.name, line, pill, "Open", _task_url(t, root), False))
-    return out

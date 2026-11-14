@@ -99,25 +99,23 @@ def _check_task(job: Path) -> Path | None:
 
 def _check(job: Path, root: Path, work: bool) -> tuple:
     """A whole-paper check's (Process, Results): its Run's state; then what it found, each row drawn (no framed page:
-    it cut off its last rows), the count line once, what to fix first under the closed bar, its page one Pop out away."""
+    it cut off its last rows), no count line (each row shows its own state), its page one Pop out away."""
     from live import evidence_read as er
     from live.board_evidence import check_word, evidence_body
     task = _check_task(job)
     if task is None:
         return "", _section("🔎 Check", '<p class=mut>No check Task yet: a <code>t99_</code> Task runs the whole-paper check '
-                                       '(haipipe-paper-evidence).</p>', "nothing yet")
-    pill, line = _run_pill(task)
+                                       '(haipipe-paper-evidence).</p>', "")
+    pill, _ = _run_pill(task)
     data = er.value_data(task)
     if data.get("rows"):                         # the value check: what differs, each printed number
         word, waits = er.value_state(data)
-        line = er.value_line(data)
         body = er.value_check_html(data, task, root)
     else:                                        # the citation check: each key once
         rows = er.cite_rows(task)
         word, waits = er.cite_state(rows) if rows else (check_word(evidence_body(task, root)[1]), "")
-        line = er.cite_line(rows) if rows else line
         body = er.cite_panel(task, root) if rows else evidence_body(task, root)[2]
-    # the count line is said once, in the Results (r02: three times in Work · Check); the Process row says what the Run does
+    # no count line (AGENTS § Page words); the Process row says what the Run does
     says = (re.search(r"(?m)^says:\s*(.+?)\s*$", "".join(f.read_text(encoding="utf-8", errors="ignore")
                                                            for f in sorted(task.glob("runs/*/run.yaml"))[-1:])) or [None, ""])[1]
     proc = todo_section("⚙️ The check's Run", [("Run the whole-paper check", says, pill, "Open", _task_url(task, root), False)])
@@ -165,7 +163,7 @@ def _letter(job: Path, root: Path, work: bool) -> tuple:
     task = _letter_task(job)
     if task is None:
         return "", _section("✉️ Cover letter", "<p class=mut>No letter Section yet: the writing Job's "
-                                               "<code>t3N_cover-letter</code> holds the letter's words.</p>", "nothing yet")
+                                               "<code>t3N_cover-letter</code> holds the letter's words.</p>", "")
     say = _state_words(_section_state(task, root))
     step, _, st = say.partition(": ")
     pill = "done" if say == "done" else "waiting for you" if "your" in st else st or "not started"
@@ -211,9 +209,8 @@ def portal_fields_tabs(s: dict, eid: str) -> tuple:
     items, panels, clash = [], [], None
     for k in order:
         rows = sorted(steps[k], key=rank)
-        bad = sum(r["state"] in ("differ", "missing") for r in rows)
-        ask = sum(r["state"] == "ask" for r in rows)
-        word = (f"{bad} to fix" if bad else f"{ask} for you to decide" if ask else "ready")
+        ask = sum(r["state"] == "ask" for r in rows)   # the answer to "what waits on me"; no "N to fix" tally: each
+        word = f"{ask} for you to decide" if ask else ""   # field row shows its own state
         items.append((k, word))
         out = ""
         for r in rows:
@@ -254,7 +251,7 @@ def _portal(job: Path, root: Path, work: bool) -> tuple:
                 + body)
     if not body:
         return proc, _section("📮 Portal", "<p class=mut>No fill page yet: haipipe-paper <code>portal_fill.py</code> builds "
-                                           f"<code>delivery/{esc(job.name)}/portal-fill.html</code>.</p>", "nothing yet")
+                                           f"<code>delivery/{esc(job.name)}/portal-fill.html</code>.</p>", "")
     # a person checks every field and presses Submit themselves (the Job's close): until `sent`, it waits on them
     word = "sent" if sent else "waits for you" if fill.is_file() or tabs else portal_word(vdir)
     n = s.get("tally") or {}
@@ -285,15 +282,15 @@ def _display(key: str, job: Path, root: Path, work: bool) -> tuple:
                         f"runs in {session}" if session else "1 prompt") if step else ""
         topic = next((t for t in sorted(board.glob("s[0-9]*-paper-displays")) if t.is_dir()), None)
         return proc, _section("📐 Plan", plan or "<p class=mut>No display plan drawn yet: the Board topic "
-                              "<code>sNN-paper-displays</code> (haipipe-paper-plan).</p>", (_stage(topic) or "drawn") if plan else "nothing yet")
+                              "<code>sNN-paper-displays</code> (haipipe-paper-plan).</p>", (_stage(topic) or "drawn") if plan else "")
     if key == "display-list":
         res, _ = _evidence_kinds(board, root, ("Displays",))  # each display's state is its tab's (JL 261109)
         res = _not_here(res, job, root)
-        return "", res or _section("🖼️ Displays", "<p class=mut>No display Task yet.</p>", "nothing yet")
+        return "", res or _section("🖼️ Displays", "<p class=mut>No display Task yet.</p>", "")
     examples = _display_examples(board, root)
     return "", _section("🔍 Examples", examples or "<p class=mut>No examples yet. The target venue's published displays go "
                         "on one canvas, the Board topic <code>sNN-paper-display-examples</code>.</p>",
-                        "drawn" if examples else "nothing yet")
+                        "drawn" if examples else "")
 
 
 def _not_here(html: str, job: Path, root: Path) -> str:
@@ -309,7 +306,7 @@ def _items(kind: str, job: Path, root: Path, work: bool) -> tuple:
     res, _ = _evidence_kinds(job.parent, root, (kind,), check=False)   # the Check view beside it owns the whole-paper
     res = _not_here(res, job, root)
     return proc, res or _section(("🔢 " if kind == "Values" else "📚 ") + kind,   # line (r02: it showed in both)
-                                 "<p class=mut>No Task yet.</p>", "nothing yet")
+                                 "<p class=mut>No Task yet.</p>", "")
 
 
 def job_views(job: Path, root: Path, work: bool) -> dict:
@@ -323,16 +320,17 @@ def job_views(job: Path, root: Path, work: bool) -> dict:
 
     def build(key):
         if kind == "display":
-            proc, res = _display(key, job, root, work)
+            proc, res = _display(key, job, root, True)
         elif key in ("value-list", "cite-list"):
-            proc, res = _items("Values" if kind == "value" else "Citations", job, root, work)
+            proc, res = _items("Values" if kind == "value" else "Citations", job, root, True)
         elif key in ("value-check", "cite-check"):
-            proc, res = _check(job, root, work)
+            proc, res = _check(job, root, True)
         elif key == "letter":
-            proc, res = _letter(job, root, work)
+            proc, res = _letter(job, root, True)
         else:
-            proc, res = _portal(job, root, work)
-        body = (_band(PROCESS, _numbered(proc)) + _band(RESULTS, _numbered(res))) if work else _numbered(res)
+            proc, res = _portal(job, root, True)
+        # Work is retired in the paper theme (JL 261111): Report draws what Process drew, numbered first, no band headings
+        body = (_band(PROCESS, _numbered(proc)) + _band(RESULTS, _numbered(res))) if work else _numbered(proc + res)
         return CSS + BOARD_CSS + VERSION_CSS + GROUP_CSS + PB_CSS + SIDE_CSS + PAGE_CSS + body + PB_JS + JS
     pre = "work-" if work else ""
     views = {pre + key: (name, lambda key=key: build(key)) for key, name in VIEWS[kind]}

@@ -177,8 +177,10 @@ class BoardViewsTest(unittest.TestCase):
         self.assertNotIn("Roadmap", story)                              # the Plan's now (s32-D35)
         self.assertNotIn("Hand-off", story)
         plan = views["plan"][1]()
-        self.assertEqual([x for x in re.findall(r"<h3 class=fd-h>(\d+) · ([^<]+)<", plan)][:2], [("1", "🗄️ Data flow"), ("2", "📝 Paper flow")])
-        self.assertIn("Roadmaps<span", plan)
+        # JL 261111 (r03_collect_plan_view_decisions): the Plan is its two flows only, s03 then s04; no summary on top
+        self.assertEqual([x for x in re.findall(r"<h3 class=fd-h>(\d+) · ([^<]+)<", plan)][:1], [("1", "🗄️ Data flow")])
+        self.assertNotIn("The plan<", plan)
+        self.assertNotIn("Roadmaps<span", plan)
         work = board_views.board_work_views(self.b, self.root, md)
         page = work["work-plan"][1]()
         self.assertIn("🧭 Plan<", page)
@@ -187,8 +189,8 @@ class BoardViewsTest(unittest.TestCase):
         self.assertNotIn("🧰 Skills that do it<", page)                 # the rail's Skills section holds them (261105)
         self.assertIn("&lt;an open idea&gt;", work["work-idea"][1]())
         opens = work["work-story"][1]()
-        self.assertIn("&lt;an open story point&gt;", opens)
-        self.assertEqual(opens.count("📌 Open points<"), 1)               # one name for open items (261105)
+        self.assertNotIn("📌 Open points<", opens)       # the Story's Open list is no section (JL 261111: "meaningless")
+        self.assertNotIn("&lt;an open story point&gt;", opens)
 
     def test_related_is_the_last_numbered_section_of_idea_and_story(self):
         # JL 261104: "could you put the related section to be here?"; one card per `bears on`, a kept PDF opens that PDF
@@ -244,7 +246,7 @@ class BoardViewsTest(unittest.TestCase):
         from live import board_process
         for key in ('evidence', 'displays'):                           # no second list of the tabs' own states
             self.assertEqual(board_process._steps(self.b, key, None, '', self.root, lambda t, b: t), ('', []))
-        self.assertEqual(board_results.sections_word([], self.root), ('nothing yet', ''))
+        self.assertEqual(board_results.sections_word([], self.root), ('', ''))   # no "nothing yet" state word
 
     def test_story_by_section_opens_with_the_story_arc(self):
         """JL 261109: the first tab is the whole paper's story arc: `#### Story arc`, else the opening text block."""
@@ -268,9 +270,10 @@ class BoardViewsTest(unittest.TestCase):
         (v / 't01_introduction' / 't01_introduction.md').write_text('# t01\n\ntransition-out: Results opens on the law\n')
         body = '| claim | proposition | lands in |\n|---|---|---|\n| C1 | The main claim | Introduction |\n'
         html = br._narrative(self.b / 's02-story-desk-idea', self.root, body)
+        # JL 261111 ("I want the left tab right content, git it back to me"): side tabs again, the moves numbered
         self.assertIn('accepts the gap', html.split('data-pbpanel')[0])          # the tab's line: what the reader leaves with
         panel = html[html.index('Why ask?'):]
-        self.assertLess(panel.index('a → b → c'), panel.index('The main claim'))  # the arc first, the claims last
+        self.assertLess(panel.index('<li>a</li><li>b</li><li>c</li>'), panel.index('The main claim'))  # the arc first, claims last
         self.assertIn('Results opens on the law', panel)                        # the Section face's hand-on
 
     def test_the_large_line_of_a_direction_is_never_its_glossary(self):
@@ -317,9 +320,9 @@ class BoardViewsTest(unittest.TestCase):
         idea_dir.mkdir()
         (idea_dir / "s01-ideation.md").write_text(IDEA, encoding="utf-8")
         views = board_views.board_report_views(self.b, self.root, md)
-        self.assertIn("🎓 Theory<span class=word>not written yet</span>", views["idea"][1]())
+        self.assertIn("🎓 Theory</h3>", views["idea"][1]())                 # no "not written yet" state word
         story = views["story"][1]()
-        self.assertIn("🎓 Theory<span class=word>not written yet</span>", story)
+        self.assertIn("🎓 Theory</h3>", story)
         self.assertIn("No theory written yet", story)
         self.assertNotIn("information systems journal", story)          # the fixture's journal is no IS journal
         (self.b / "board.md").write_text("# Paper-X\n\nboard-kind: paper-board\nvenue: MISQ\n", encoding="utf-8")
@@ -346,24 +349,6 @@ class BoardViewsTest(unittest.TestCase):
         self.assertLess(css.index(".pb-side{display:grid"), css.index(".pb-side{grid-template-columns:minmax(0,1fr)}"))
         self.assertLess(css.index(".pb-flow{position:relative"), css.index(".pb-flow{grid-template-columns:1fr}"))
 
-class AddressLinksTest(unittest.TestCase):
-    """Every bNN.jNN.tNN in a paper Board view is a link to its folder's focus page (address_links, JL 261103)."""
-
-    def test_roadmap_address_links_to_its_task(self):
-        import html
-        with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp).resolve()
-            b = board(root)
-            (root / "project.yaml").write_text("name: <a Project>\n", encoding="utf-8")
-            (root / "work" / "b11_x" / "j25_y" / "t01_z").mkdir(parents=True)
-            md = lambda text, base: html.escape(text)
-            for views in (board_views.board_report_views(b, root, md), board_views.board_work_views(b, root, md)):
-                page = next(f() for k, (_, f) in views.items() if k.endswith("plan"))      # the Roadmaps are the Plan's (s32-D35)
-                self.assertIn('<a class=addr-link href="/_board/workbench?path=work/b11_x/j25_y/t01_z&amp;layout=focus" '
-                              'target="_top">b11.j25.t01</a>', page)
-                self.assertIn('path=work/b11_x/j25_y&amp;layout=focus" target="_top">b11.j25.t02</a>', page)   # no such Task: its Job
-
-
 class JobNameFormsTest(unittest.TestCase):
     """Support blocks reads a Job however the pages write it (JL 261102: it missed every b51 Job)."""
 
@@ -372,6 +357,39 @@ class JobNameFormsTest(unittest.TestCase):
         self.assertEqual(R.DOT_REF.findall("b51.j04.t02 and b51 j07 t02 and b01 j11"),
                          [("51", "04", "02"), ("51", "07", "02"), ("01", "11", "")])
         self.assertEqual(R.RANGE_REF.findall("b01 j11 to j14; b01 j20-j23"), [("01", "11", "14"), ("01", "20", "23")])
+
+
+class PlanTwoFlowsTest(unittest.TestCase):
+    """The Plan view is s03 and s04, each with its own plan prompts on its bar; the reading is the Story's (JL 261111,
+    Paper-CMS-AI-Usage r03_collect_plan_view_decisions); a template slot is not content."""
+
+    def test_the_plan_is_two_flows_with_their_prompts_and_reading_is_the_storys(self):
+        from live import paper_focus
+        from live.paper_reading import drop_slots
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp).resolve()
+            b = board(root)
+            (b / "s04-paper-workflow").mkdir()
+            (b / "s04-paper-workflow" / "s04-paper-workflow.md").write_text(PAPERFLOW, encoding="utf-8")
+            story = b / "s02-story-desk-idea" / "s02-story-desk-idea.md"
+            story.write_text(story.read_text() + "\n### 6 · Discovery Roadmap\n\n| D | name | folder |\n|---|---|---|\n"
+                             "| D1 | <Already done?> | none yet |\n", encoding="utf-8")
+            views = paper_focus.report_views(b, root)
+            plan = views["plan"][1]()
+            heads = re.findall(r"<h3 class=fd-h>(\d+) · ([^<]+)<", plan)
+            self.assertEqual(heads[:2], [("1", "🗄️ Data flow"), ("2", "📝 Paper flow")])
+            self.assertNotIn("Runs to do", plan)                      # § 7 shows in the Data flow drawing
+            self.assertNotIn("🧭 Plan<", plan)                        # no separate Plan prompts section
+            data = plan.split("1 · 🗄️ Data flow", 1)[1].split("2 · 📝 Paper flow", 1)[0]
+            self.assertIn("class=pb-hbtn", data)                      # its prompts on its own bar
+            self.assertIn("Design the dataset", data)
+            self.assertNotIn("Plan the displays", data)
+            self.assertIn("Plan the displays", plan.split("2 · 📝 Paper flow", 1)[1])
+            self.assertNotIn("📚 Reading", plan)
+            self.assertIn("📚 Reading", views["story"][1]())          # the reading is the Story's § 6
+            self.assertIn("&lt;Already done?&gt; · <span class=mut>⬜ none yet</span>", views["story"][1]())
+        slot = "<ul><li>&lt;a decision made while planning&gt;</li><li>kept &lt;n&gt; rows</li></ul><td>&lt;who&gt; (&lt;when&gt;)</td>"
+        self.assertEqual(drop_slots(slot), "<ul><li>kept &lt;n&gt; rows</li></ul><td></td>")
 
 
 if __name__ == "__main__":

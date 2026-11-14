@@ -149,12 +149,12 @@ def _values(task: Path, root: Path) -> tuple:
     from live import evidence_read as er
     data = er.value_data(task)
     if not data.get("rows"):
-        return "🔢 Its values", '<p class=mut>No values yet: its value Run writes values.yaml.</p>', "nothing yet", ""
+        return "🔢 Its values", '<p class=mut>No values yet: its value Run writes values.yaml.</p>', "", ""
     word, waits = er.value_state(data)
     page = er.newest(task, "values.html")
     pop = (f'<div class=pb-verbs><a class=fd-btn data-pop="{esc(task.name)} · values" href="{esc(_url(page, root))}">'
            f'⤢ Open {esc(page.parent.parent.name)}{chr(39)}s table</a></div>') if page else ""
-    return ("🔢 Its values", f'<p class=ev-line>{esc(er.value_line(data))}</p>' + pop
+    return ("🔢 Its values", pop
             + er.value_tabs_per_value(data, f"pv{task.name[:3]}"), word, waits)
 
 
@@ -162,7 +162,7 @@ def _tables(task: Path, root: Path) -> tuple:
     from live.board_evidence import VALUES_CSS, VALUES_DIALOG, VALUES_JS, value_tabs, values_word
     tabs = value_tabs(task.parent, root)
     if not tabs:
-        return "🔢 The raw tables", '<p class=mut>No tables yet: its build Run writes tables.json.</p>', "nothing yet", ""
+        return "🔢 The raw tables", '<p class=mut>No tables yet: its build Run writes tables.json.</p>', "", ""
     return ("🔢 The raw tables", VALUES_CSS + _side_tabs("ptT", [(h, w) for h, w, _ in tabs], [p for _, _, p in tabs])
             + VALUES_DIALOG + VALUES_JS, values_word(task.parent, root), "")
 
@@ -171,12 +171,12 @@ def _citations(task: Path, root: Path) -> tuple:
     from live import evidence_read as er
     rows = er.cite_rows(task)
     if not rows:
-        return "📚 Its citations", '<p class=mut>Not checked yet: its check Run writes citations.csv.</p>', "nothing yet", ""
+        return "📚 Its citations", '<p class=mut>Not checked yet: its check Run writes citations.csv.</p>', "", ""
     word, waits = er.cite_state(rows)
     page = er.newest(task, "citations.html")
     pop = (f'<div class=pb-verbs><a class=fd-btn data-pop="{esc(task.name)} · citations" href="{esc(_url(page, root))}">'
            f'⤢ Open {esc(page.parent.parent.name)}{chr(39)}s table</a></div>') if page else ""
-    return "📚 Its citations", f'<p class=ev-line>{esc(er.cite_line(rows))}</p>' + pop + er.cite_key_tabs(rows, f"pc{task.name[:3]}"), word, waits
+    return "📚 Its citations", pop + er.cite_key_tabs(rows, f"pc{task.name[:3]}"), word, waits
 
 
 def _portal_walk(task: Path, root: Path) -> tuple:
@@ -194,7 +194,7 @@ def _portal_walk(task: Path, root: Path) -> tuple:
 def _portal_fill(task: Path, root: Path) -> tuple:
     fill = task.parent.parent / "delivery" / task.parent.name / "portal-fill.html"
     if not fill.is_file():
-        return "📮 The fill page", '<p class=mut>Not built yet: its fill Run writes the fill page.</p>', "not built yet", ""
+        return "📮 The fill page", '<p class=mut>Not built yet: its fill Run writes the fill page.</p>', "", ""
     u = _url(fill, root)
     return ("📮 The fill page", f'<div class=pb-verbs><a class=fd-btn data-pop="{esc(fill.name)}" href="{esc(u)}">⤢ Pop out</a></div>'
             f'<iframe src="{esc(u)}" loading=lazy title="The portal fill page" style="width:100%;height:max(620px,80vh);'
@@ -208,10 +208,10 @@ def _letter(task: Path, root: Path) -> tuple:
     ref = _field(_face(task), "words-in")
     words = (task / ref).resolve() if ref else None
     if words is None or not words.is_dir():
-        return "✉️ The letter", '<p class=mut>No letter Section named yet (`words-in:`).</p>', "nothing yet", ""
+        return "✉️ The letter", '<p class=mut>No letter Section named yet (`words-in:`).</p>', "", ""
     return ("✉️ The letter", f'<div class=pb-verbs><a class=fd-btn href="{esc(_task_url(words, root))}">Open the Section '
             f'{esc(words.parent.name)} · {esc(words.name)}</a></div>' + (content_read(words, root) or '<p class=mut>No text yet.</p>'),
-            "written" if content_read(words) else "nothing yet", "")
+            "written" if content_read(words) else "", "")
 
 
 MADE = {"display": _display, "values": _values, "tables": _tables, "citations": _citations, "portal-walk": _portal_walk,
@@ -262,11 +262,10 @@ def headline(task: Path, root: Path, kind: str) -> str:
     """What its newest Run returned, in the words its Findings use (r02: Status's bar 1 was the Run's coded headline,
     "0 card-only, 2 bib-only, 1 missing-bib, 0 TOADD")."""
     from live import evidence_read as er
-    if kind == "citations" and er.cite_rows(task):
-        rows = er.cite_rows(task)
-        return f"{er.cite_state(rows)[0]} · {er.cite_line(rows)}"
-    if kind == "values" and er.value_data(task).get("rows"):
-        return er.value_line(er.value_data(task))
+    if kind == "citations" and er.cite_rows(task):    # no count line (AGENTS § Page words): each key shows its status
+        return "the keys, checked"
+    if kind == "values" and er.value_data(task).get("rows"):   # each printed number shows its own state
+        return "the printed numbers, checked"
     if kind == "portal-walk":
         data = er.portal_fields(task)
         n = sum(len(s_.get("fields") or []) for s_ in data.get("steps") or [])
@@ -304,11 +303,10 @@ def status(task: Path, root: Path, kind: str, work: bool) -> str:
                    + files, word)
     if not work and runs:
         states = [_run_state(r) for r in runs]
-        done = sum(pill == "done" for pill, _ in states)
         rows = "".join(f'<div class=fd-row><span class=n>{esc(r.name)}</span><span class=d>{esc(says)}</span>'
                        f'<span class="w {"fd-ok" if pill == "done" else "fd-you" if "you" in pill or "starter" in pill else ""}">'
                        f'{esc(pill)}</span></div>' for r, (pill, says) in zip(runs, states))
-        out += _section("🧪 Runs", rows, f"{done} of {len(runs)} done" if done or len(runs) > 1 else states[0][0])
+        out += _section("🧪 Runs", rows)          # each Run row shows its own pill; no "N of M done" on the bar
     return out
 
 
@@ -325,11 +323,10 @@ def task_mindmap(task: Path, root: Path, kind: str) -> str:
         made = [mmbuild.built(f"{task.name}/made/{k}", f"[{k}] {v}") for k, v in
                 (("finds out", _field(text, "goal") or _field(text, "answers")), ("returned", headline(task, root, kind)))
                 if v]
-        kids = [mmbuild.built(f"{task.name}/made", f"{re.sub(r'^[^A-Za-z]+', '', title)} · {word}", made)]
+        kids = [mmbuild.built(f"{task.name}/made", re.sub(r'^[^A-Za-z]+', '', title) + (f" · {word}" if word else ""), made)]
         runs = [(r, *_run_state(r)) for r in _runs(task)]
         if runs:
-            done = sum(pill == "done" for _, pill, _ in runs)
-            kids.append(mmbuild.built(f"{task.name}/runs", f"Runs · {done} of {len(runs)} done",
+            kids.append(mmbuild.built(f"{task.name}/runs", "Runs",
                                       [mmbuild.built(f"{task.name}/runs/{r.name}", f"[{pill}] {r.name}: {says or 'no says: line'}")
                                        for r, pill, says in runs]))
         return paper_map(task.name, kids, key=task.name)
@@ -347,9 +344,10 @@ def views(task: Path, root: Path, section: str, base: dict) -> dict:
             return base
         page = lambda body: CSS + GROUP_CSS + PB_CSS + body + PB_JS + JS
         if section == "report":                  # its map, what it made, then what its Runs returned (r02: its own)
+            # Work is retired in the paper theme (JL 261111): what its Process held (how it is made, its Runs) comes first
             return {"mindmap": ("MindMap", lambda: page(task_mindmap(task, root, kind))),
-                    "findings": ("Findings", lambda: page(_numbered(findings(task, root, kind)))),
-                    "standing": ("Status", lambda: page(_numbered(status(task, root, kind, False))))}
+                    "findings": ("Findings", lambda: page(_numbered(_process(task, root, kind, "findings") + findings(task, root, kind)))),
+                    "standing": ("Plan + Results", lambda: page(_numbered(_process(task, root, kind, "standing") + status(task, root, kind, True))))}
 
         def work(view):
             def build():
@@ -359,7 +357,7 @@ def views(task: Path, root: Path, section: str, base: dict) -> dict:
                     res = status(task, root, kind, True)
                 return page(_band(PROCESS, _numbered(_process(task, root, kind, view))) + _band(RESULTS, _numbered(res)))
             return build
-        return {"work-findings": ("Findings", work("findings")), "work-standing": ("Status", work("standing"))}
+        return {"work-findings": ("Findings", work("findings")), "work-standing": ("Plan + Results", work("standing"))}
     except Exception:                            # a Task page that does not draw keeps the base page
         traceback.print_exc()
         return base

@@ -6,8 +6,8 @@ A cell's Design is its page's views, lettered A, B, C …, each drawn as the sam
 word, view buttons with that view in orange, its sections as heading bars with what each holds under it), three a row,
 the open question in red under them (JL 261031: "could you make each of them to be the same size and format"). A view
 is settled one round at a time; a settled view's screen is written to delivery/ui/ (AGREED). Names are placeholders: the
-papers are unpublished and Tools is public. The draft step names come from draft_steps.STEPS on every build (JL 261031:
-"I think it should be 3 x 3").
+papers are unpublished and Tools is public. The Section × Work cell draws the live Draft view; its spec and the two
+helpers it needs live in paper_ui_section_draft.py, checked against the live code on every build (261113).
 
 261105: each view is drawn as the live page draws it (servers/workbench-paper; workbench-task-draft/focus_draft.py;
 focus_page.py). Every section bar starts closed (▸); under it, what it shows once opened. 🙋 Interaction is every
@@ -36,8 +36,7 @@ from canvas import change_note  # noqa: E402
 from quick_draw import WIDE  # noqa: E402  (a character's width per font size, to set a word flush right)
 import five_parts  # noqa: E402
 
-_ds = (TOOLS / "plugins/haipipe-toolkit/servers/workbench/workbench-task-draft/draft_steps.py").read_text(encoding="utf-8")
-STEPS = [s for s in re.search(r"^STEPS = \((.*?)\)$", _ds, re.M).group(1).replace('"', "").split(", ") if s[:1].isdigit()]
+import paper_ui_section_draft as SD  # noqa: E402  (s39: the Section page's Draft view, 261113)
 VERB = {"report": "Report", "work": "Work", "studio": "Studio"}          # no verb after the section word (b10-s33-D06)
 LIST = ("Idea", "Story", "Data + Paper Plan", "Support blocks", "Evidence", "Displays", "Writing")   # the Board's views (board_read.BOARD_VIEWS, 261105)
 PAGE = {"board": ("Paper-Example", "…/paper/Paper-Example"),
@@ -506,13 +505,13 @@ def editor(eid, x, y, w, label):
 
 def band(eid, x, y, w, name, why=""):
     """A view's part, ⚙️ Process or 📊 Results: its name and a thin rule after it, as b15 s58 and the live page draw it
-    (servers/workbench/ui_parts.py PROCESS, RESULTS; JL 261101: one look in every theme)."""
+    (servers/workbench/page/ui_parts.py PROCESS, RESULTS; JL 261101: one look in every theme)."""
     return text(eid + "_n", x, y + 6, name, 16, INK) + line(eid + "_r", [(x + 120, y + 16), (x + w, y + 16)], ROOM, 1)
 
 
 UNDER = {"chips": (chips, 0), "split": (split, 0), "paras": (paras, 0), "editor": (editor, 76), "todo": (todo, 4 * 40 + 2), "rows": (rows, 3 * 24 + 4), "big": (big, 64), "sidetabs": (sidetabs, 18 + 24 * 4 + 6), "ftree": (ftree, 9 * 22 + 6), "flowmap": (flowmap, 18 + 5 * 28 + 6), "narrative": (narrative, 4 * 32 + 6), "cardtabchain": (cardtabchain, 68 + 18 + 26 * 4 + 6), "cardtabs": (cardtabs, 76 + 18 + 26 * 4 + 6), "tiles": (tiles, 96), "chain": (chain_only, 70), "ask": (ask, 50), "picture": (picture, 100),
          "line": (one_line, 26), "canvas": (mapcanvas, 0), "studio": (studio_panel, 128), "drawing": (drawing, 110), "gtabs": (gtabs, 0),
-         "goalmap": (goalmap, 0)}
+         "goalmap": (goalmap, 0), "lab": (SD.lab, 0)}
 
 
 def sec_block(eid, x, y, w, title, inner, word="", waits=""):
@@ -534,7 +533,7 @@ def sec_block(eid, x, y, w, title, inner, word="", waits=""):
 
 
 BLOCK = {"band": (band, 40), "lead": (lead, 140), "ask": (ask, 52), "tiles": (tiles, 100), "chain": (chain, 106),
-         "note": (note, 28), "prompt": (prompt_box, 172)}
+         "note": (note, 28), "prompt": (prompt_box, 172), "bandw": (SD.bandw, 40)}
 
 
 SIZE = {"todo": lambda inner: 40 * len(inner[1]) + 2, "rows": lambda inner: 24 * len(inner[1]) + 4,
@@ -545,7 +544,7 @@ SIZE = {"todo": lambda inner: 40 * len(inner[1]) + 2, "rows": lambda inner: 24 *
         "sidetabs": lambda inner: max(18 + 24 * len(inner[2]), 40 * len(inner[1])) + 6,
         "gtabs": lambda inner: max(18 + 24 * len(inner[2]), sum(20 + 40 * len(g[1]) for g in inner[1])) + 6,
         "ftree": lambda inner: 22 * len(inner[1]) + 6, "narrative": lambda inner: 32 * len(inner[2]) + 6,
-        "canvas": lambda inner: 32 * len(inner[2]) + 22, "goalmap": lambda inner: 44 * len(inner[2]) + 26}
+        "canvas": lambda inner: 32 * len(inner[2]) + 22, "goalmap": lambda inner: 44 * len(inner[2]) + 26, "lab": SD.lab_h}
 
 
 def inner_h(inner):
@@ -572,15 +571,17 @@ def screen(eid, x, y, h, level, section, views, on, secs, page=None):
     state word[, its waiting line]]); a body is content with no bar; a topic is a box with its picture, name, line and
     stage (name, words, stage). `page`: (name, path, crumb, goal) of another page at this level (an Other Job)."""
     name, path, crumb, goal = page or (*PAGE[level], CRUMB[level], GOAL[level])
+    cap = CAPTION.get((level, section, views[on]), "")
+    rail, buttons_of = RAILS.get((level, section), RAIL), BUTTON.get((level, section))
+    section = SHOWN.get((level, section), section)
     els = window(eid + "w", x, y, 700, h, f"…&path={path}&section={section}")
     els += text(eid + "_cr", x + 40, y + 38, crumb, 10, ROOM)
-    els += head(eid + "h", x + 40, y + 56, name, section, views, on, BUTTON.get((level, section)))
+    els += head(eid + "h", x + 40, y + 56, name, section, views, on, buttons_of)
     els += text(eid + "_go", x + 40, y + 126, goal, 11, BODY)
-    cap = CAPTION.get((level, section, views[on]), "")
     els += text(eid + "_ca", x + 40, y + 146, cap, 11, INK) if cap else []
     for k in range(4):                                            # left-rail: pale page lines
         els += line(f"{eid}_lr{k}", [(x + 10, y + 180 + k * 22), (x + 28, y + 180 + k * 22)], ROOM, 1)
-    for k, r in enumerate(RAIL):                                  # right-rail: the sections, this one marked
+    for k, r in enumerate(rail):                                  # right-rail: the sections, this one marked
         els += text(f"{eid}_rr{k}", x + 622, y + 180 + k * 22, r, 9, OR if r.lower() == section else ROOM)
     yy = y + 172
     for k, sec in enumerate(secs):
@@ -814,21 +815,17 @@ LAYERS = "① plan: A to C   ·   ② explore: D   ·   ③ evidence: E, F   · 
 CAPTION = {("version", "report", "MindMap"): "How it is built, as a map: its parts, and what each must find out.",
            ("section", "report", "MindMap"): "The content as a map: each part, then what it holds.",
            ("section", "report", "Text"): "Each sentence beside its evidence, its changes and the review's notes.",
-           ("section", "report", "Status"): "Where each step stands, and what waits for you.",
-           ("section", "work", "Plan"): "The plan: its paragraphs and their points, before the sentences.",
-           ("section", "work", "Write"): "The text, and your own sentences typed beside it.",
-           ("section", "work", "Evidence"): "The text beside the evidence for each sentence, and what is still open.",
-           ("section", "work", "Display"): "The Tables and Figures the text calls, each beside its sentence.",
-           ("section", "work", "Revise"): "The text beside its review cards: accept or reject each change.",
-           ("section", "work", "Runs"): "Every Run of this Task."}
+           ("section", "report", "Status"): "Where each step stands, and what waits for you."}
 CRUMB = {"board": "SPACE › Project-Example › paper › Paper-Example", "version": "… › Paper-Example › j11_writing_v1130_venue",
          "section": "… › j11_writing_v1130_venue › t00_summary"}
 GOAL = {"board": "Purpose: one paper, from its idea to its send", "version": "Goal: this send, ready by its date",
         "section": "Aim: this Section, as the venue asks"}
 RAIL = ("Report", "Work", "Studio", "Interactions", "Delivery", "Related", "Timeline", "Skills", "Files")   # Skills before Files (focus_page.render, 261106)
-# a draft step's button: its number and name, then its state word small (focus_draft.WORK; focus_page `<span class=vw>`)
-BUTTON = {("section", "work"): {"Plan": ("1 · Plan", "sign"), "Write": ("2 · Write", "next"), "Evidence": ("3 · Evidence", "later"),
-                                "Display": ("4 · Display", "later"), "Revise": ("5 · Revise", "later")}}
+# a draft view's button: its number and name, then its word small (focus_draft_words.WORK; focus_page `<span class=vw>`)
+BUTTON = {("section", "work"): SD.BUTTON_DRAFT}
+# Work is retired on paper pages (261113): the Section × Work cell draws the Report's Draft view, with the live rail
+SHOWN = {("section", "work"): "report"}
+RAILS = {("section", "work"): SD.RAIL_DRAFT}
 
 
 # ── the Studio cells: the buttons are the topics' Tags, in the order first seen, then Other (focus_page.render) ──────
@@ -984,51 +981,9 @@ def other_jobs(section):
     return out
 
 
-# Each step as the draft workbench shows it today (focus_draft.step_html): ⚙️ Process 📌 Where this step stands (a Run
-# running, its ask, its sign: only a step that waits, runs or is signed), 🤖 Ask the agent (Plan, Write, Revise), 📥
-# Input, 🏃 Runs of this step, each only with content, each bar with the step's state word; 📊 Results, the step's own
-# cards, by the names and words draft_steps gives them; then 🙋 Interaction.
-STRUCT = ("narrative", "<Section>", (("C1.P1", "<point 1> · <point 2>"), ("C1.P2", "<point 3> · <point 4>"),
-                                    ("C1.P3", "<point 5>"), ("C1.P4", "<point 6> · <point 7>")))
 PARAS = (("C1.P1 · Background", 2), ("C1.P2 · Methods", 3), ("C1.P3 · Findings", 2))
-TEXT = ("paras", PARAS)
-TEXT_WRITE = ("split", PARAS, "✍️ Write it yourself", "editor")                     # draft_steps._text_and_editor
-TEXT_EVIDENCE = ("split", PARAS, "🔎 Its evidence", {3: ("VALUE <the number>", "checked"), 5: ("CITE <the source>", "owed"),
-                                                     6: ("DISPLAY Figure 1", "drawn")})  # draft_steps ev-split
-# Revise as the page lays it out (draft_steps._revise, _text_and_cards): the text on the left, a + beside each sentence
-# for your comment; on the right the pass's cards in reading order, filtered by chips (Comments · Logic · Edits ·
-# Evidence): an Edit card with ✓ Accept ✗ Reject ✎ Edit, your Comment and its reply, a Logic score per sentence
-TEXT_REVISE = ("split", PARAS, "🃏 Revise cards · Pass 2\n[Comments] [Logic] [Edits] [Evidence]",
-               {2: ("Edit · <Why · Original → Expected>", "✓ Accept ✗ Reject ✎ Edit"), 4: ("Comment · <your note>", "AI replied"),
-                6: ("Logic · S6 · logic 7/10 · read 8/10", "")})
 TEXT_READ = ("split", PARAS, "Its evidence, read only", {3: "VALUE <the number> · checked", 5: "CITE <the source> · owed",
                                                          6: "DISPLAY Figure 1 · drawn"})   # focus_draft.text_html: read, never decided
-STEP_CARDS = {   # each card by the name draft_steps gives it, drawn as a scratch of its layout (JL 261101), with its word;
-    # the Revise pass's report, marks, rules and older versions carry no word on the live page, so none here (261106)
-    "Plan": (("📐 §1 Structure · v0.1", STRUCT, "waits for your sign"),
-             ("Scratch · your notes, a paragraph each", ("editor", "<your note on C1.P1>"), "yours to edit"),
-             ("📚 Examples", ("rows", (("<an example paper>", "what to copy from it"), ("<another>", "its opening move"))), "drawn"),
-             ("🧭 The Section's contract, from its Story", ("rows", (("Answers", "RQ1, RQ2"), ("Claims", "C1, C2"), ("Words", "<its budget>"))),
-              "7 of 7 set"),
-             ("📏 Requirement and Rubric", ("rows", (("<a venue rule>", "must"), ("<a rubric point>", "scored /10"))), "set"),
-             ("🗂 Records", ("rows", (("<context record>", "<date>"), ("<plan record>", "<date>"))), "2 kept")),
-    "Write": (("📚 Examples", ("rows", (("<an example paper>", "its paragraph shape"),)), "drawn"),     # Examples first, as live
-              ("✍️ The text · v0.1", TEXT_WRITE, "no marks open")),
-    "Evidence": (("🔎 The text and its Evidence · v0.1", TEXT_EVIDENCE, "2 of 3 found"),
-                 ("❓ Open points", ("rows", (("OPEN 1 · S7", "<a value with no Run> · to find"),)), "1 open"),
-                 ("✍ Asks, for you to tick", ("todo", (("S3 · VALUE · <the number it quotes>", "waiting for you", "Tick"),
-                                                      ("S5 · CITE · <the source>", "done", "Open"))), "1 waits for you"),
-                 ("❗ What does not resolve", ("todo", (("S7 · <a value with no Run>", "not started", "Open"),)), "1 to fix")),
-    "Display": (("🖼 The text and its displays · v0.1", ("picture", "<Figure 1, beside the sentence that calls it>"), "1 of 1 made"),),
-    "Revise": (("📋 Revise Review Report · Pass 2", ("rows", (("Mechanics", "MEETS · 8/10 · Fix: <the smallest fix>"),
-                                                               ("Function", "NEEDS WORK · 6/10 · Fix: <the smallest fix>"),
-                                                               ("Evidence", "MEETS · 8/10"), ("Readability", "MEETS · 9/10"),
-                                                               ("Coherence · Anti-AI · Venue", "<each, the same way>"))), ""),
-               ("✍️ The text and its Revise cards · v0.2", TEXT_REVISE, "1 comment open"),
-               ("💬 Your marks from the canvas", ("rows", (("<a red mark on the drawing>", "its words"),)), ""),
-               ("📜 Revise rules · how a pass runs, and the author's rulings", ("rows", (("R1", "<a rule>"), ("R2", "<your ruling>"))), ""),
-               ("🕘 Older versions", ("rows", (("draft-v0.1", "previous/"),)), "")),
-}
 SECTION_REPORT = (                   # MindMap · Text · Status, opening on Text (focus_draft.report_views); cards read only
     ("MindMap", _body(("canvas", "<the Section>", (("C1.P1", "<point 1> · <point 2>"), ("C1.P2", "<point 3> · <point 4>"),
                                                    ("C1.P3", "<point 5>"))))),
@@ -1040,27 +995,9 @@ SECTION_REPORT = (                   # MindMap · Text · Status, opening on Tex
         ("3 · Evidence", "later", "later"), ("4 · Display", "optional", "optional"), ("5 · Revise", "later", "later"),
         ("Delivery", "later", "later")))))),
 )
-SAID = {"Plan": "waits for your sign", "Write": "comes next", "Evidence": "later", "Display": "later", "Revise": "later"}   # BUTTON's
-INPUT = {"Plan": "2 of 5 missing", "Write": "1 of 5 missing", "Evidence": "3 of 5 missing", "Display": "2 of 5 missing",   # words, as
-         "Revise": "1 of 5 missing"}                                                                                      # STATUS_WHAT
-
-
-def _step(name):
-    if name == "Runs":                         # the base page's list of the Task's Runs: no bands
-        return _body(("todo", (("<a Run of this Section>", "done", "Open"), ("<a Run of this Section>", "running", "Open"))))
-    said, proc = SAID[name], []
-    if name == "Plan":                         # the one step that waits on you here: its ask, under the closed bar too
-        proc.append(("📌 Where this step stands", ("todo", (("The plan: waits for your sign", "waiting for you", "Open the draft"),)),
-                     said, "🙋 The plan: waits for your sign: ✅ on approved: in the draft"))
-    if name in ("Plan", "Write", "Revise"):
-        proc.append(("🤖 Ask the agent", ("rows", (("Copy prompt", "the step's prompt, with your notes"),)), said))
-    proc += [("📥 Input", ("line", "the table of what the step reads"), INPUT[name]),
-             ("🏃 Runs of this step", ("rows", (("<a Run>", "its type · its status"),)), "1 of 1 done")]
-    return _lvl(proc, STEP_CARDS[name])
-
-
-SECTION_WORK = tuple((v, _step(v)) for v in tuple(STEP_CARDS) + ("Runs",))
-assert [v for v, _ in SECTION_WORK][:-1] == [x.split(" · ")[1] for x in STEPS], "draft_steps.STEPS changed"
+# s39 (Section × Work): Work is retired, so the cell draws the Section page's Draft view as it is live; its titles and
+# view order are checked against focus_draft_steps.py and focus_draft_words.WORK in paper_ui_section_draft (261113)
+SECTION_WORK = SD.SECTION_WORK
 
 
 # ── each cell: the line above its screens, its views, its open question (None: none), its green notes, its proposals ──
@@ -1148,19 +1085,15 @@ VIEWS = {   # (level, section): (the line above the screens, the views, the open
                                    "B": ["B: content as today (proposed)", ("261105", "as live: the text with its cards read only, then 🙋 Interaction"),
                                          ("261106", "the text is one bar: 🔎 The text and its Evidence")],
                                    "C": [("261105", "as live: each step's row and Go, then 🙋 Interaction")]}, 3, WORDS, OWN_IX)),
-    ("section", "work"): ("buttons 1 · Plan … 5 · Revise, each with its state word (4 · Display only when the Section has a display), then Runs; each step:\n"
-                          "⚙️ Process (📌 Where this step stands only when it waits, runs or is signed; 🤖 Ask the agent; 📥 Input; 🏃 Runs of this step),\n"
-                          "📊 Results, 🙋 Interaction; each bar its state word, the step's own on Process",
-                          SECTION_WORK, "? the same sections, regrouped\n(proposed 261101)",
-                          every({"A": ["A: content as today (proposed)", ("261105", "📌 Where this step stands replaces the 🙋 step"), CLOSED],
-                                 "B": [("261105", "📌 Where this step stands replaces the 🙋 step"), CLOSED,
-                                       ("261106", "no 📌: the step does not wait; Examples first")],
-                                 "C": [("261105", "📌 Where this step stands replaces the 🙋 step"), CLOSED,
-                                       ("261106", "no 📌 or 🤖; ❓ Open points added")],
-                                 "D": [("261105", "shows only when the Section has a display"), CLOSED, ("261106", "no 📌 or 🤖")],
-                                 "E": [("261105", "📌 Where this step stands replaces the 🙋 step"), CLOSED,
-                                       ("261106", "no 📌: the step does not wait")],
-                                 "F": [("261105", "as live: the Runs, then 🙋 Interaction; no bands")]}, 6, WORDS, OWN_IX)),
+    ("section", "work"): ("Work is retired on paper pages: a Section page is Report alone, and an old Work, Write or Revise link opens Draft;\n"
+                          "buttons 1 · Draft, 2 · Plan, 3 · Evidence, 4 · Display (Display only when the Section has one); 📋 Review Content holds\n"
+                          "five numbered sections, no state word on a bar; 🧭 Around the Work hides an empty section, and its heading when all are",
+                          SECTION_WORK, "",
+                          {"A": [("261113", "Work retired: the Section page is Report, Draft first"),
+                                 ("261113", "Draft: five numbered sections, no state word on a bar"),
+                                 ("261113", "gone: Where this step stands, Ask the agent, Input, Runs"),
+                                 ("261113", "the first section is Draft Lab; a view button carries its name alone"),
+                                 ("261113", "cards carry by badges (JL, RA, GG, AI, ✓JL); headings keep C2.P2")]}),
     ("section", "studio"): ("the step's Copy prompt box on top, then the topics that name this Section;\n"
                             "the buttons are their Tags (B), else one Topics button (A)", SECTION_STUDIO,
                             "? start a topic from here\nwith one click",
@@ -1182,8 +1115,8 @@ PIECE = {
                             ["a send's telling had\nno place of its own", "review rounds sat\nin the Board", "no talk-and-sketch\nprompt here"]),
     ("section", "report"): ("a Section's Report: sentences beside their cards",
                             ["Findings said No\ntakeaways recorded", "the text read as\none block", "no evidence beside\nthe sentence"]),
-    ("section", "work"): ("a Section's Work: the draft Task page",
-                          ["the steps were old\npages in iframes", "cards inside cards,\nfold arrows", "no verb said what\nto do next"]),
+    ("section", "work"): ("a Section's Work, retired: its Draft view",
+                          ["Work held a page\nper step, five of them", "every bar carried\na state word", "Plan, Evidence, Display\nare made at the Board"]),
     ("section", "studio"): ("a Section's Studio: always on the right-rail",
                             ["Studio sat as a\nWork button", "no topic named the\nSection: it vanished", "the prompt was\na long box"]),
 }
@@ -1292,11 +1225,11 @@ def build(topic: Path):
                        or ([] if (ui / f"{level}-{section}").exists() else [(part, "the agreed screen, not drawn yet")])}
     if lettered:
         spec["have"] = [(name, "agreed") for icon, name, _, done in pieces if done and icon == "page"]
-        spec["what"]["head"] = f"② what s{nn} hands over: one screen, A to {last}"
+        spec["what"]["head"] = f"② what s{nn} hands over: one screen" + (f", A to {last}" if last != "A" else "")
         spec["target"] = "servers/workbench-paper/ · workbench-paper/SKILL.md"
 
     def design():                                    # A, B, C … every view the same screen; no separate main sketch
-        els = text("skA", 690, 280, f"A to {last} · {piece}, every view the same screen", 18, TITLE)
+        els = text("skA", 690, 280, f"A · {piece}" if last == "A" else f"A to {last} · {piece}, every view the same screen", 18, TITLE)
         els += text("lay", 690, 340, lay, 16, BODY)
         e, bottom = screens("sc", 690, 380 + 22 * lay.count("\n"), items, level, section, changed, proposed=proposed)
         if others:                                   # the evidence and submission Jobs' own pages, one row a Job (261106)

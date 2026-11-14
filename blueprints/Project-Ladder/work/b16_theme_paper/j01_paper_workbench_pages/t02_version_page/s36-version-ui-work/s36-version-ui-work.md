@@ -18,7 +18,7 @@ paper version, and task of the section draft, I think it should be 3 x 3"). Its 
 drawn by `build_s36_version_ui_work.py` through j01's `paper_ui_cells.py`; its Design is the screen as proposed
 (A) and what it leans on (B). Names are placeholders: the papers are unpublished, and Tools is public.
 
-**Feeds:** `reports/` q01_paper_ladder
+**Feeds:** Q01
 
 
 Files

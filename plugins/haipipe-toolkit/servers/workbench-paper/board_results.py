@@ -1,5 +1,8 @@
-"""A paper Board's RESULTS band: the views from Idea and Story to Writing in the shape settled in b16 s32 (numbered bars,
-the main point large, side tabs, the flow map, folder trees), the same on Report and Work."""
+"""A paper Board's RESULTS band, the same on Report and Work: the Idea, Story, Plan, Explore, Evidence and Displays
+views in the shape settled in b16 s32 (numbered bars, the main point large, side tabs, the flow map, folder trees),
+and the drawing and mind-map helpers under them. Writing is board_writing's; the Story, Related, canvas and display
+parts live in board_story, board_related, board_canvas and board_displays, and the names callers still import from
+here are re-exported below."""
 from __future__ import annotations
 
 import re
@@ -7,12 +10,18 @@ from pathlib import Path
 from urllib.parse import quote
 
 from live import draft_steps as ds
-from live.frame import _file_url, esc, related_items, related_rows
-from live.ui_parts import _bar, _cap, _clean, _kv, _open_btn, _plain, _section, _side_tabs, _when, plural_word
-from live.focus_draft import paragraphs
-from live.board_read import display_plan, view_topics, _after_table, _face, _field, _first_para, _folder_line, _label_rows, _lead_sentence, _mark, _num, _open_link, _page_url, _rq_lists, _section_state, _state_words, _table, _task_url, _undated, _version_url, explore_tree, is_version
-from live.paper_version import build_running
-from live.board_evidence import EVIDENCE_KINDS, VALUES_CSS, VALUES_DIALOG, VALUES_JS, empty_job, evidence_body, evidence_word, value_tabs, values_word
+from live.frame import esc
+from live.ui_parts import _bar, _cap, _plain, _section, _when, plural_word
+from live.board_read import view_topics, _face, _field, _folder_line, _rq_lists, _table, explore_tree
+from live.board_evidence import evidence_body  # noqa: F401  (callers import it from here)
+# moved out by part of the page; the names callers still import from here
+from live.board_story import (_story_arc, _section_rows, _narrative, _direction_theory, _no_theory,  # noqa: F401
+                              idea_tabs, story_tabs)
+from live.board_related import related_section  # noqa: F401
+from live.board_canvas import _canvas, _topic_canvas, _display_examples  # noqa: F401
+from live.board_displays import _evidence_kinds, _display_head, GROUP_ORDER, display_tabs, display_groups  # noqa: F401
+from live.board_writing import (_section_read, _tab_flag, _paper_files, _fold_earlier, _portal, writing_view,  # noqa: F401
+                                section_tabs, text_word, sections_word, portal_word)
 
 
 def _helpers(topic: Path, root: Path, items, mind: bool = True, drawing: bool = True, label: str = "") -> str:
@@ -54,250 +63,6 @@ def _studio_panel(topic: Path, root: Path) -> str:
     return f'<div class=pb-verbs>{verbs}</div>{_canvas(topic, root)}{pic}'
 
 
-def _story_arc(topic: Path, body: str, md=None) -> str:
-    """The whole paper's story arc, the first tab of Story by Section (JL 261109: "at the top of the tab, to describe the
-    narrative of this paper, what is the story arc of it"): the Section Narrative's `#### Story arc` (haipipe-paper-story);
-    else the ```text block that opens it (identity, question, headline, boundaries); else where to write it."""
-    m = re.search(r"(?ims)^#{2,5}[ \t]*(?:[\d.]+[ \t]*·[ \t]*)?(?:story|argument)[ \t]+arc\b[^\n]*\n(.*?)(?=^#{2,5}[ \t]|\Z)", body)
-    if m and m[1].strip():
-        return md(m[1].strip(), topic) if md else f'<p>{esc(_plain(m[1].strip()))}</p>'
-    pre = re.split(r"(?m)^#{2,5}[ \t]|^\|", body, maxsplit=1)[0]
-    block = re.search(r"```text\n(.*?)```", pre, re.S)
-    if block:
-        return f'<pre style="white-space:pre-wrap;margin:0">{esc(block[1].rstrip())}</pre>'
-    return ('<p class=mut>No story arc yet: the Story\'s Section Narrative opens with <code>#### Story arc</code> '
-            '(haipipe-paper-story).</p>')
-
-
-NARRATIVE_ORDER = ("abstract", "summary", "introduction", "background", "theory", "data", "methods", "results",
-                   "robustness", "discussion", "conclusion", "appendix", "extended data", "supplement", "cover letter",
-                   "letter", "response")
-
-
-def _sec_key(name: str) -> str:
-    """A Section's name for matching: `t01_introduction`, `Introduction` and `introduction` alike."""
-    return re.sub(r"[\s_-]+", " ", re.sub(r"^t\d+_", "", _plain(name))).strip().lower()
-
-
-def _said(value: str) -> str:
-    """A cell or face line as words; a `<placeholder>` or a dash says nothing."""
-    v = _plain(value or "").strip()
-    return "" if not v or v in ("—", "-", "none") or re.fullmatch(r"<[^>]*>", v) else v
-
-
-def _section_story(board: Path, body: str) -> list:
-    """[(Section key, its name, {reader question, entry, moves, must refuse, displays, exit, in, out})] in reader order:
-    the per-Section rows of the Story's §8 (a table whose first header is `Section`), else of the newest writing
-    version's `## Narrative`; each completed by its Section face (`reader-question`, `entry-state`, `exit-state`,
-    `transition-in`, `transition-out`) in that version."""
-    versions = sorted((j for j in board.glob("j[0-9]*_*") if j.is_dir() and is_version(j)), reverse=True)
-    from live.board_read import md_table
-    rows, version = [], None
-    sources = [(None, body)] + [(v, (v / f"{v.name}.md").read_text(encoding="utf-8", errors="ignore"))
-                                for v in versions if (v / f"{v.name}.md").is_file()]
-    for owner, src in sources:
-        rows = [r for r in md_table(src, "Section") or md_table(src, "section")       # a row still all <placeholders>
-                if _said(r.get("Section", r.get("section", "")))                       # (a new Section's, haipipe-paper
-                and any(_said(v) for k, v in r.items() if k.lower() != "section")]      # task) tells nothing yet
-        if rows:
-            version = owner
-            break
-    version = version or (versions[0] if versions else None)
-    faces = {}
-    for sec in (sorted(x for x in version.glob("t[0-9]*_*") if x.is_dir()) if version else []):
-        f = sec / f"{sec.name}.md"
-        faces[_sec_key(sec.name)] = f.read_text(encoding="utf-8", errors="ignore") if f.is_file() else ""
-    out, seen = [], set()
-    for r in rows:
-        low = {k.lower(): v for k, v in r.items()}
-        name = low.get("section", "")
-        key = _sec_key(name)
-        out.append((key, name, low))
-        seen.add(key)
-    for key, text in faces.items():                       # a Section with no row still tells its face's lines
-        if key not in seen and any(_said(_field(text, f)) for f in ("reader-question", "exit-state", "transition-out")):
-            out.append((key, key, {}))
-    for key, name, low in out:
-        text = faces.get(key, "")
-        for col, field in (("reader question", "reader-question"), ("entry", "entry-state"), ("exit", "exit-state"),
-                           ("in", "transition-in"), ("out", "transition-out"), ("must refuse", "must-refuse")):
-            if not _said(low.get(col, "")) and _said(_field(text, field)):
-                low[col] = _field(text, field)
-    rank = lambda k: next((i for i, o in enumerate(NARRATIVE_ORDER) if k.startswith(o)), 99)
-    return out if rows else sorted(out, key=lambda x: rank(x[0]))
-
-
-def _narrative(topic: Path, root: Path, body: str, md=None) -> str:
-    """Story by Section as side tabs (JL 261109: "for this we should have the left tab and right content"; "this is not
-    just the claims, it is also about the narratives, the arc, how to make it smooth"). The first tab is the whole
-    paper's story arc (_story_arc). Then one tab per Section in reader order, its small line what the reader leaves
-    with; on the right the Section's part of the arc first: what the reader asks, comes in with, the moves in order,
-    leaves with, how it hands on to the next Section, what it must not say, its displays; its claims last (the claims
-    table, `lands in`), each with the question it answers and the display that carries it. The full mind map opens by
-    its button (b16 s32 B r02)."""
-    claims = [r for r in _table(body) if r.get("lands in") and r.get("proposition")]
-    story = _section_story(topic.parent, body)
-    if not (claims or story):
-        return ""
-    where = {}
-    for r in claims:
-        for sec in (x.strip() for x in r["lands in"].split(",")):
-            where.setdefault(_sec_key(sec), (sec, []))[1].append(r)
-    secs = [(key, name, low) for key, name, low in story]
-    known = {k for k, _, _ in secs}
-    rank = lambda k: next((i for i, o in enumerate(NARRATIVE_ORDER) if k.startswith(o)), 99)
-    for key in sorted(where, key=rank):                   # a Section only the claims name, after the told ones
-        if not any(key.startswith(k) or k.startswith(key) for k in known):
-            secs.append((key, where[key][0], {}))
-
-    def claims_of(key):
-        return [r for k, (_, rs) in where.items() if k == key or k.startswith(key) or key.startswith(k) for r in rs]
-
-    def moves(text):
-        steps = [s.strip() for s in re.split(r"\s*(?:→|->)\s*", _said(text)) if s.strip()]
-        return " → ".join(esc(s) for s in steps) if len(steps) > 1 else esc(_said(text))
-
-    items, panels = [], []
-    for key, name, low in secs:
-        mine = claims_of(key)
-        told = _kv([("Reader asks", esc(_said(low.get("reader question", "")))),
-                    ("Comes in with", esc(_said(low.get("entry", "")) or _said(low.get("in", "")))),
-                    ("Moves", moves(low.get("ordered moves", ""))),
-                    ("Leaves with", esc(_said(low.get("exit", "")))),
-                    ("Hands on", esc(_said(low.get("out", "")))),
-                    ("Must not say", esc(_said(low.get("must refuse", "")))),
-                    ("Displays", esc(_said(low.get("displays", ""))))])
-        said = _kv((r.get("claim", ""), esc(_plain(r["proposition"])) + "".join(
-                   f'<br><span class=mut>{esc(k)}: {esc(_plain(r[c]))}</span>'
-                   for c, k in (("answers", "Answers"), ("displays", "Shown in")) if _plain(r.get(c, "")))) for r in mine)
-        if told == '<dl class=pb-kv></dl>':
-            told = ""
-        panels.append(told + (('<p class=pb-part>Claims</p>' if told else "") + said if mine else ""))
-        exit_ = _said(low.get("exit", ""))
-        items.append((_cap(_sec_key(name)), exit_[:60] if exit_ else
-                      f'{len(mine)} claim{"s" if len(mine) != 1 else ""}' if mine else ""))
-    page = topic / f"{topic.name}.mindmap.html"
-    btn = (f'<a class=fd-btn data-pop="{esc(topic.name)} · mind map" href="/{quote(ds._rel(page, root))}">Mind map</a>'
-           if page.is_file() else "")
-    items, panels = [("📖 Story arc", "the whole paper")] + items, [_story_arc(topic, body, md)] + panels
-    return _side_tabs("nar", items, panels) + (f'<div class=pb-verbs>{btn}</div>' if btn else "")
-
-
-def _side_cards(eid: str, tiles: list, panels: list) -> str:
-    """Idea's and Story's choices as a left tab and right content (JL 261104: "for each of this, could you make it like the
-    style of [Values], we have the left tab and right content"): a card's head and line become the tab's two lines."""
-    return _side_tabs(eid, [(t[0], t[1]) for t in tiles], panels)
-
-
-def _direction_theory(row: dict) -> str:
-    """A direction's theory: its `theory` cell, else the `Theory: ...` sentence that opens its reason."""
-    said = _plain(row.get("theory", ""))
-    if said:
-        return said
-    m = re.match(r"Theory:\s*(.+?)(?:\.(?:\s|$)|$)", _plain(row.get("reason", "")))
-    return m[1] if m else ""
-
-
-IS_VENUE = re.compile(r"\b(?:MISQ|MIS Quarterly|ISR|Information Systems Research|JMIS|JAIS)\b")
-
-
-def _no_theory(board: Path, where: str) -> str:
-    """What an empty Theory says; an information systems journal expects one, so there it is flagged (JL 261105: "we should
-    have the section named theory as well"; "espeically for the IS")."""
-    md_file = board / "board.md"
-    target = _field(md_file.read_text(encoding="utf-8", errors="ignore"), "venue") if md_file.is_file() else ""
-    named = IS_VENUE.search(target or "")
-    head = (f'<p class=pb-state style="color:light-dark(#b35c00,#ffc078)">🙋 {esc(named[0])} is an information systems journal: it '
-            'expects the theory this paper speaks to, and what the paper says back to it.</p>' if named else "")
-    return head + f'<p class=mut>No theory written yet: {where}</p>'
-
-
-# the Story view's reading parts (Paper-CMS-AI-Usage 261110: "the display here is not well to ready"): a reading
-# measure, label and value rows, a sentence a line, each question with what it lets the paper say, pending as a chip
-# a capped block sits in the middle of its card, its text left-aligned (JL 261110: "at least you put the paragraph in
-# the middle"); the question rows fill the card, their head capped and centred like the prose above them
-STORY_CSS = ("<style>.pb-story,.pb-story.pb-wide .pb-head{max-width:92ch;margin-inline:auto}.pb-story .pb-big{margin:2px 0 12px;max-width:none}"
-             ".pb-story .pb-kv{grid-template-columns:130px 1fr;margin:0 0 6px}"
-             ".pb-label{font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:0}"
-             ".pb-chip{display:inline-block;font-size:11.5px;line-height:1.6;color:var(--muted);border:1px solid var(--line);"
-             "border-radius:10px;padding:0 8px;white-space:nowrap;vertical-align:1px}"
-             ".pb-story ul.pb-lines,.pb-story ol.pb-rqs{padding:0;margin-left:0}.pb-lines{list-style:none;margin:0}.pb-lines li{margin:0 0 7px;line-height:1.55}"
-             # a list uses the card's width, a column each at a reading measure (JL 261110: "we have a large margin here"):
-             # the question, then what it lets the paper say; stacked again on a narrow screen
-             ".pb-story.pb-wide{max-width:none}"
-             ".pb-rqs{list-style:none;margin:4px 0 0}.pb-rqs li{display:grid;grid-template-columns:42px minmax(0,62ch) minmax(0,54ch);gap:3px 22px;"
-             "padding:9px 0;border-top:1px solid var(--line)}.pb-rqs .k{color:var(--accent);font-weight:600;font-size:13px;padding-top:1px}"
-             ".pb-rqs p{margin:0}.pb-rqs .q{line-height:1.5}.pb-rqs .if{font-size:13.5px;line-height:1.5}"
-             ".pb-rqs .st{margin-top:5px}@media(max-width:900px){.pb-rqs li{grid-template-columns:42px 1fr}.pb-rqs .a{grid-column:2}"
-             ".pb-rqs .if{color:var(--muted)}}@media(max-width:600px){.pb-story .pb-kv{grid-template-columns:1fr}}</style>")
-
-
-def _chips(text: str) -> str:
-    """Escaped text with each `⟦pending ...⟧` mark as a muted chip, not raw brackets."""
-    return re.sub(r"⟦([^⟧]*)⟧", lambda m: f"<span class=pb-chip>{m[1]}</span>", esc(text))
-
-
-def _sentences(text: str) -> list:
-    """A paragraph a sentence a line: split after . ? ! before a capital, a <placeholder> or a pending mark (which then
-    leads the anticipated sentence it marks)."""
-    return [x.strip() for x in re.split(r"(?<=[.?!])\s+(?=[A-Z<⟦])", text.strip()) if x.strip()]
-
-
-def _bold_rows(body: str) -> tuple:
-    """([(label, value)], the rest): each paragraph that opens `**Label**: value`, as a label and value row."""
-    rows = []
-
-    def take(m):
-        rows.append((m[1].strip(), _plain(" ".join(m[2].split()))))
-        return ""
-    rest = re.sub(r"(?m)^\*\*([^*\n]+)\*\*:\s*(.+(?:\n(?![ \t]*\n).+)*)\n?", take, body)
-    return rows, rest
-
-
-def idea_tabs(topic: Path, md) -> list:
-    """Idea's parts (b16 s32 A): Direction large, then the directions considered. The
-    Hand-off is no tab: only a question it holds for the person stays, under the Direction (s32-D35).
-    Returns [(tab name, its small line, its panel)]."""
-    text, parts = _face(topic)
-    chosen = ""
-    if "direction" in parts:
-        lead, rest = _lead_sentence(parts["direction"])
-        _, rest = _label_rows(re.sub(r"(?m)^\*\*Direction\*\*:.*\n?", "", rest))   # no stage, no START, SETTING, CONTRAST rows (JL 261104: "could we just remve this?")
-        rows, rest = _bold_rows(rest)
-        if not lead and rows:                    # a face of **Label**: paragraphs (Paper-CMS-AI-Usage 261110: "not well to
-            at = next((i for i, (k, _) in enumerate(rows) if "question" in k.lower()), 0)   # read"): its question large,
-            lead = rows.pop(at)[1]               # the rest (Why now, Admission rule) as label and value rows
-        chosen = (f'<p class=pb-big>{_chips(_cap(lead))}</p>' + _kv((k, _chips(_cap(v))) for k, v in rows)
-                  + (md(rest, topic) if rest.strip() else ""))
-    rows = _table(parts.get("directions considered", ""))
-    if rows:
-        rank = lambda r: next((i for i, w in enumerate(("✅", "fallback", "second", "considered", "lost", "replaced"))
-                               if w in r.get("verdict", "")), 9)
-        tiles = sorted(rows, key=rank)
-        kind = lambda r: " pb-chosen" if rank(r) == 0 else (" pb-gone" if rank(r) >= 4 else "")
-        short = lambda t: t if len(t) <= 60 else t[:58].rsplit(" ", 1)[0] + " …"
-        when = lambda r: (re.search(r"\b(\d{6})\b", r.get("verdict", "")) or [None, ""])[1]
-        considered = _side_cards("dc", [
-            (short(_plain(r.get("direction", ""))), _undated(r.get("verdict", "")), "", kind(r).replace(" pb-chosen", " pb-chosen1"))   # the name large, its status small (JL 261104)
-            for r in tiles], [_kv((("Direction", esc(_plain(r.get("direction", "")))), ("Verdict", esc(_undated(r.get("verdict", "")))),
-                                   ("Reason", esc(_plain(r.get("reason", "")))), ("Decided", esc(when(r)))))
-                              for r in tiles])
-    else:
-        considered = ""
-    asks = "\n\n".join(ln.strip() for ln in parts.get("hand-off", "").splitlines() if "🙋" in ln)
-    if asks:
-        chosen += md(asks, topic)
-    chosen = STORY_CSS + f'<div class=pb-story>{chosen}</div>' if chosen else ""
-    theories = []
-    if rows:
-        theories = [(short(_plain(r.get("direction", ""))), _undated(r.get("verdict", "")), "", _direction_theory(r)) for r in tiles]
-    theory = (_side_cards("th", [x[:3] for x in theories], [f'<p>{esc(x[3]) or "No theory written for this direction yet."}</p>' for x in theories])
-              if any(x[3] for x in theories) else "")
-    return ([("Direction", "the direction chosen", chosen)] if chosen else []) + \
-        ([("Directions considered", "what else was weighed", considered)] if considered else []) + \
-        ([("Theory", "each direction's theory", theory)] if theory else [])
-
-
 def _named(n: int, emoji: str, name: str, body: str, word: str = "", waits: str = "") -> str:
     """A numbered section whose name is this theme's own, so the shared EMOJI list is left alone."""
     return _section(f"{n} · {emoji} {name}", body, word, waits)
@@ -313,167 +78,18 @@ def _stage(topic: Path | None) -> str:
 
 
 def _written(text: str) -> str:
-    return "written" if (text or "").strip() else "not written yet"
+    return "written" if (text or "").strip() else ""   # an empty bar shows no word (AGENTS § Page words)
 
 
 def _rq_word(rq: str) -> str:
-    """The Research Questions' word: how many are still open, from each question's own state after its question mark."""
-    qs, _ = _rq_lists(rq)
-    states = [(re.match(r".+?\?\s*(.*)$", q) or [None, ""])[1].strip().lower() for _, q in qs]
-    if not states:
-        return "written" if rq.strip() else "none yet"
-    still = sum(not st or st.startswith(("open", "⬜", "not")) for st in states)
-    return f"{still} of {len(states)} open" if still else "none open"
-
-
-def _rows_done(rows: list) -> str:
-    """A roadmap table's word: how many of its rows are done (✅), from its `state` column, else its `folder` column."""
-    def done(r):
-        cell = _plain(r.get("state") or r.get("folder") or "")
-        return cell.startswith("✅") or cell.lower().startswith("done")
-    return f"{sum(done(r) for r in rows)} of {len(rows)} done" if rows else "nothing yet"
-
-
-def story_tabs(board: Path, topic: Path, root: Path, md) -> list:
-    """Story's parts (b16 s32 B; s32-D44): Pitch large, the Research Questions, Stakes,
-    Evidence basis, Venues, Story by Section (its mind map). The Roadmaps are the Plan's (roadmap_section).
-    Returns [(tab name, its small line, its panel)]."""
-    text, parts = _face(topic)
-    rel = lambda p: "/" + quote(ds._rel(p, root))
-    tabs = []
-    if "pitch" in parts:
-        one = _field(parts.get("identity", ""), "One-sentence identity")
-        pitch = _plain(parts["pitch"])
-        lead = _clean(one) or _clean(re.split(r"(?<=[.;])\s", pitch, maxsplit=1)[0])
-        rest = pitch if one else (re.split(r"(?<=[.;])\s", pitch, maxsplit=1) + [""])[1]
-        # the stage is the bar's word, so not again under the sentence; the rest a sentence a line, the Pitch's moves
-        # (tension, what we do, the answer, who cares), a pending answer a muted chip (Paper-CMS-AI-Usage 261110)
-        tabs.append(("Pitch", "the paper in short", STORY_CSS + f'<div class=pb-story><p class=pb-big>{_chips(_cap(lead))}</p>'
-                     + (f'<ul class=pb-lines>{"".join(f"<li>{_chips(x)}</li>" for x in _sentences(rest))}</ul>' if rest else "")
-                     + '</div>'))
-    rq = parts.get("research questions", "")
-    qs, said = _rq_lists(rq)
-    if qs:                                       # each question with what it lets the paper say, one story (261110)
-        reports = dict(re.findall(r"Q0*(\d+)\s*(\[[^\]]+\]\([^)]+\))", rq))
-        whole = re.search(r"\*\*The paper's question\*\*:?\s*(.+)", rq)
-        items = ""
-        for k, q in qs:                              # k: the item's own number (a story may start at RQ0)
-            m = re.match(r"(.+?\?)\s*(.*)$", q)
-            ask, state = (m.group(1), m.group(2)) if m else (q, "")
-            state = re.sub(r"^[⬜✅🔶🟡⏳❗🙋☑️\s]+", "", _plain(state)).strip()
-            link = _open_link(reports.get(str(k), ""), topic, root)
-            items += (f'<li><span class=k>RQ{k}</span><p class=q>{_chips(ask)}</p><div class=a>'
-                      + (f'<p class=if>→ {_chips(_plain(said[k]))}</p>' if said.get(k) else "")
-                      + (f'<p class=st><span class=pb-chip>{esc(state)}</span>{" " + link if link else ""}</p>' if state or link else "")
-                      + '</div></li>')
-        tabs.append(("Research Questions", "what it asks", STORY_CSS + '<div class="pb-story pb-wide">'
-                     + (f'<div class=pb-head><p class=pb-label>The paper\'s question</p><p class=pb-big>{_chips(_plain(whole[1]))}</p></div>' if whole else "")
-                     + f'<ol class=pb-rqs>{items}</ol></div>'))
-    elif rq.strip():                                 # a Story that draws its questions its own way still shows them
-        tabs.append(("Research Questions", "what it asks", md(rq, topic)))
-    if "stakes" in parts:
-        tabs.append(("Stakes", "why it matters, and to whom", md(parts["stakes"], topic)))
-    if "evidence basis and boundaries" in parts:
-        tabs.append(("Evidence basis", "what it can claim, and what it cannot", md(parts["evidence basis and boundaries"], topic)))
-    venues = _table(parts.get("venues", ""))
-    if venues:
-        tiles, panels = [], []
-        for k, v in enumerate(venues):
-            name = _plain(v.get("venue", ""))
-            slug = re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
-            call = board / "venues" / slug / "call.md"
-            related = next(iter(sorted(board.glob(f"s[0-9]*-related-work-{slug}"))), None)
-            rp = ""
-            if related is not None and (related / f"{related.name}.png").is_file():
-                rp = (f'<a data-pop="{esc(related.name)}" href="{esc(rel(related / (related.name + ".png")))}"><img src="{esc(rel(related / (related.name + ".png")))}" '
-                      f'alt="{esc(related.name)}" style="max-width:min(320px,100%);border:1px solid var(--line);border-radius:6px"></a>'
-                      f'<br><a class=fd-btn data-pop="{esc(related.name)}" href="{esc(rel(related / (related.name + ".png")))}">Open the related-work map</a>')
-            tiles.append((name, _plain(v.get("kind", "")), "target" if k == 0 else f"fallback {k}"))
-            panels.append(_kv((("Why it fits", esc(_plain(v.get("why it fits", "")))), ("Leads with", esc(_plain(v.get("leads with", "")))),
-                               ("Still needs", esc(_plain(v.get("still needs", "")))),
-                               ("Desk rules", f'<a class=fd-btn data-pop="{esc(slug)}" href="/_board/page?path={rel(call)}">Open call.md</a>'
-                                if call.is_file() else esc(_plain(v.get("desk record", ""))) or "none yet"),
-                               ("Related papers", rp),
-                               ("All journals", _open_btn("Compare all journals", _page_url(topic / "delivery" / "venue-comparison.md", root), "venue comparison")
-                                if (topic / "delivery" / "venue-comparison.md").is_file() else ""))))
-        full = topic / "delivery" / "venue-comparison.md"
-        tabs.append(("Venues", "where it is sent", _side_cards("ve", tiles, panels) + ("" if full.is_file() else md(_after_table(parts["venues"]), topic))))
-    if "section narrative" in parts:                 # the narrative IS the mind map (JL 261031)
-        tabs.append(("Story by Section", "what each Section says", _narrative(topic, root, parts["section narrative"], md) or md(parts["section narrative"], topic)))
-    return tabs
-
-
-def roadmap_section(board: Path, md, n: int) -> str:
-    """The Story's Discovery and Task Roadmaps, what is still to read and to run: the Plan's last section (s32-D35)."""
-    topic = next((t for k, _, t in view_topics(board, "story") if k != "idea"), None)
-    parts = _face(topic)[1] if topic is not None else {}
-    road = [(k, parts[k]) for k in ("discovery roadmap", "task roadmap") if k in parts]
-    rows = [r for _, b in road for r in _table(b)]
-    # each row by its words, not its id (r03: D1, T0 to T2 led every row); the id stays in the face
-    no_id = lambda b: re.sub(r"(?m)^\|\s*(?:[A-Z]\d*|[A-Z])\s*\|", "|", b)
-    return _bar(n, "Roadmaps", _side_cards("rm", [(k.capitalize(), "the literature still to read" if k.startswith("discovery")
-                                                   else "the Runs still to make", "") for k, _ in road],
-                                           [md(no_id(b), topic) for _, b in road]), _rows_done(rows)) if road else ""
+    """The Research Questions' bar word: none. Each question shows its own state after its question mark; a count of
+    the open ones is a progress tally, which a page never carries (AGENTS § Page words)."""
+    return ""
 
 
 def _after_rule(helpers: str) -> str:
     """The helpers after the view's one dashed rule (board_views.banded splits the view there)."""
     return "<hr class=pb-rule>" + helpers
-
-
-RELATED_CSS = ("<style>.pb-relhead{margin:0 0 4px;font-weight:600}.pb-relsaid{margin:0 0 8px;font-size:12.5px;color:var(--muted)}"
-               ".pb-relpdf{display:block;width:100%;height:62vh;border:1px solid var(--line);border-radius:6px;background:var(--paper)}</style>"
-               # a PDF loads only once its tab and section are on screen; the browser's loading=lazy fetched all 22 on page open
-               "<script>document.addEventListener('DOMContentLoaded',function(){var o=new IntersectionObserver(function(es){es.forEach(function(e){"
-               "if(e.isIntersecting){e.target.src=e.target.dataset.src;o.unobserve(e.target);}});});"
-               "document.querySelectorAll('iframe.pb-relpdf[data-src]').forEach(function(f){o.observe(f);});});</script>")
-
-
-ARXIV = re.compile(r"https?://(?:www\.)?arxiv\.org/(?:abs|pdf)/([^\s?#]+?)(?:\.pdf)?$")
-
-
-def _related_tab(item: dict, row: dict, board: Path, root: Path) -> tuple:
-    """One related paper as a left tab and its right side: ((short name, author and venue), the panel). A kept PDF or an
-    arXiv paper shows its PDF embedded, loaded only when its tab opens (JL 261104: "I want to embed the pdf here as
-    well"), with Pop out beside it ("I want it can pop out and read"); arXiv's PDF may be framed though its abstract page
-    may not. Any other web address links out, since a publisher's page refuses to be framed."""
-    target, title = item["target"] or "", item["title"]
-    star = "★ " if row.get("key") else ""
-    who = re.search(r"\(([^()]*\d{4}[a-z]?)\)\s*$", title)
-    bare = title[:who.start()].strip() if who else title
-    tab = (star + bare.split(": ", 1)[0], " · ".join(x for x in (who[1] if who else "", _plain(row.get("venue", ""))) if x))
-    said = _plain(row.get("why here", ""))
-    head = f'<p class=pb-relhead>{esc(star + title)}</p>' + (f'<p class=pb-relsaid>{esc(said)}</p>' if said else "")
-    path = board / "related" / target if target else None
-    arxiv = ARXIV.match(target)
-    url = f"https://arxiv.org/pdf/{arxiv[1]}" if arxiv else (_file_url(path, root) if path is not None and not re.match(r"https?://", target) and path.is_file() else "")
-    if url:
-        pop = f'<div class=pb-verbs><a class=fd-btn data-pop="{esc(title)}" href="{esc(url)}" target=_blank rel=noopener>Pop out</a></div>'
-        if arxiv or path.suffix.lower() == ".pdf":
-            return tab, head + pop + f'<iframe class=pb-relpdf title="{esc(title)}" data-src="{esc(url)}"></iframe>'
-        return tab, head + pop
-    if re.match(r"https?://", target):
-        return tab, head + f'<p class=pb-state>No PDF to show here: this site opens only in its own tab.</p><div class=pb-verbs><a class=fd-btn href="{esc(target)}" target=_blank rel=noopener>Open the paper ↗</a></div>'
-    return tab, head + '<p class=pb-state>No PDF or link yet.</p>'
-
-
-def related_section(board: Path, root: Path, n: int) -> tuple:
-    """Story, the Board's related/related.md rows (JL 261104: "could you put the related section to be here?").
-    Left tabs, one per paper, under a small name per `bears on`; the open paper's PDF on the right (JL 261104: "please
-    change all type of these into this style"). Returns (html, the last section number)."""
-    items = related_items(board)
-    if not items:
-        return "", n
-    rows = related_rows(board)[1]
-    groups = {}
-    for item in items:
-        row = rows[item["row"]] if item["row"] is not None else {}
-        bears = _plain(row.get("bears on", "")) or ("Not in the table yet" if item["row"] is None else (item["groups"] or ["Other"])[0].capitalize())
-        groups.setdefault(bears, []).append(_related_tab(item, row, board, root))
-    kept = sum("pb-relpdf" in body or "Pop out" in body for papers in groups.values() for _, body in papers)
-    word = "every paper to read here" if kept == len(items) else f"{kept} of {len(items)} to read here"
-    return _section(f"{n + 1} · 📚 Related", RELATED_CSS + _grouped_tabs("rl", [(_cap(bears), tab, body) for bears, papers in groups.items() for tab, body in papers]),
-                    word), n + 1
 
 
 # a mind map draws its curves only when on screen, so a section opening redraws them
@@ -510,7 +126,7 @@ def idea_view(board: Path, root: Path, md, items=(), *, studio=True) -> str:
 
 def story_view(board: Path, root: Path, md, items=(), *, studio=True) -> str:
     """B · Story, its own button, for the one direction chosen (JL 261105: "story for one direction"; s32-D44): its Studio,
-    Direction, Pitch, Theory, Research Questions, Stakes and evidence, Related, Venues, Story by Section. The page adds 🙋 Interaction."""
+    Direction, Pitch, Theory, Research Questions, Related, Venues, Story by Section. The page adds 🙋 Interaction."""
     out, n = "", 0
     for _, _, topic in view_topics(board, "story"):
         stage = _stage(topic) or "written"
@@ -534,12 +150,15 @@ def story_view(board: Path, root: Path, md, items=(), *, studio=True) -> str:
             board, "a <code>**Theory**:</code> line in the Story's Identity (haipipe-paper-story)."), _written(whole or said))
         if "Research Questions" in tabs:
             bar("❓", "Research Questions", tabs["Research Questions"][1], _rq_word(parts.get("research questions", "")))
-        duo = [k for k in ("Stakes", "Evidence basis") if k in tabs]
-        if duo:
-            bar("⚖️", "Stakes and evidence", _side_cards("se", [(k, tabs[k][0], "") for k in duo], [tabs[k][1] for k in duo]),
-                "both written" if len(duo) == 2 else f"{duo[0].lower()} only")
+        # no Stakes and evidence section: the RQ table's Why we ask column says why each question matters, and the
+        # Story's §4 and §5 stay in its file (JL 261111: "should we delete the Stakes and Evidence, no information from it")
         related, n = related_section(board, root, n)
         out += related
+        from live.paper_reading import reading_list      # § 6 is the Story's: what the paper must read (JL 261111)
+        reading, rword = reading_list(board)
+        if reading:
+            n += 1
+            out += with_prompts(_named(n, "📚", "Reading", reading, rword), _prompts_for(board, root, "Reading")) + HP_CSS + HP_JS
         if "Venues" in tabs:
             venues = _table(parts.get("venues", ""))
             bar("🏛️", "Venues", tabs["Venues"][1], f'target {_plain(venues[0].get("venue", ""))}' if venues else "written")
@@ -548,152 +167,67 @@ def story_view(board: Path, root: Path, md, items=(), *, studio=True) -> str:
     return out
 
 
-def dataflow_map(board: Path, topic: Path) -> str:
-    """How the data come together, as a map (JL 261101: "for the data flow, we should focus on the mindmap, show the
-    mind map of how these data are collected together"): four columns joined by lines, the data, the linking, the
-    tables, then the questions each table feeds; read from the topic's `<topic>-drawing.yaml` (excalidraw-workflow's
-    words), the Board Questions from reports/."""
-    import json
-    import yaml
-    f = topic / f"{topic.name}-drawing.yaml"
-    if not f.is_file():
-        return ""
-    try:
-        spec = yaml.safe_load(f.read_text(encoding="utf-8")) or {}
-    except Exception:
-        return ""
-    found, cols = spec.get("foundation") or {}, spec.get("columns") or {}
-    qs = [d for d in sorted((board / "reports").glob("q[0-9]*_*")) if d.is_dir()]
-    title = lambda q: next((ln[2:].strip() for ln in (q / f"{q.name}.md").read_text(encoding="utf-8", errors="ignore").splitlines()
-                            if ln.startswith("# ")), q.name) if (q / f"{q.name}.md").is_file() else q.name
-    links = [(x["from"], x["to"]) for x in spec.get("links") or [] if isinstance(x, dict)]
-    links += [(str(t), f"q{int(k):02d}") for k, t in (spec.get("feeds") or {}).items()]      # a table feeds a question
-
-    def box(key, head, line="", gray=""):
-        return (f'<div class=pb-node data-key="{esc(key)}"><b>{esc(head)}</b>' + (f'<span>{esc(line)}</span>' if line else "")
-                + (f'<small>{esc(gray)}</small>' if gray else "") + '</div>')
-    out = ""
-    for c in ("D", "S", "T"):
-        head = (cols.get(c) or [c, ""])
-        out += (f'<div class=pb-col><p class=pb-colh>{esc(head[0].capitalize())}<small>{esc(head[1] if len(head) > 1 else "")}</small></p>'
-                + "".join(box(n.get("key", ""), n.get("map") or n.get("title", ""), (n.get("lines") or [""])[0], n.get("gray", ""))
-                          for n in found.get(c) or []) + '</div>')
-    out += ('<div class=pb-col><p class=pb-colh>The questions<small>what each table answers</small></p>'
-            + "".join(box(q.name.split("_", 1)[0], q.name.split("_", 1)[0].upper() + " · " + title(q)) for q in qs) + '</div>')
-    return f'<div class=pb-flow data-links="{esc(json.dumps(links))}">{out}<svg class=pb-wires aria-hidden=true></svg></div>'
-
-
-def _canvas(topic: Path, root: Path) -> str:
-    """The topic's mind map as the canvas to work on, edited in place where it is read (JL 261102: "I think we should
-    have the mindmap canvas to work on"): the same map and endpoint as the topic card's Structured side."""
-    from live import frame
-    mind = topic / f"{topic.name}.mindmap.md"
-    if not mind.is_file():
-        return (f'<p class=pb-state>No mind map yet: <code>mindmap.py from-topic {esc(topic.name)}</code> '
-                f'(haipipe-mindmap) makes {esc(mind.name)}.</p>')
-    try:
-        html = frame.mindmap_module().fragment(mind, ds._rel(mind, root), editable=not frame.READ_ONLY_MAPS,
-                                               url_of=lambda q: "/" + quote(ds._rel(q, root)))
-        # a map not written yet says so by its state word, never by a grey instruction on its root (r03: "Not written
-        # yet: ask in the Studio chat…" on Idea's and Story's roots); its root line stays there to type into
-        html = re.sub(r'(<p data-edit=arc data-raw=")Not written yet[^"]*("[^>]*>)Not written yet[^<]*(</p>)', r"\1\2\3", html)
-        return '<div class=pb-map>' + html + '</div>'
-    except Exception as e:                          # a map that fails to read says so, never a blank view
-        return f'<p class=pb-state>The mind map did not read: {esc(str(e))}</p>'
-
-
-def _written_map(topic: Path) -> bool:
-    """A topic's mind map a person wrote (its front matter's `written:`), not the one `mindmap.py from-topic` built."""
-    mind = topic / f"{topic.name}.mindmap.md"
-    return mind.is_file() and re.search(r"(?m)^written:", mind.read_text(encoding="utf-8", errors="ignore")) is not None
-
-
-def _stub_map(topic: Path) -> bool:
-    """A topic's mind map is still the stub `mindmap.py from-topic` writes before anyone fills it: its root's line asks
-    for it to be written, and it holds no branch but Files."""
-    mind = topic / f"{topic.name}.mindmap.md"
-    if not mind.is_file():
-        return True
-    text = mind.read_text(encoding="utf-8", errors="ignore")
-    heads = re.findall(r"(?m)^- (.+?)(?:\s*<!--.*)?$", text)
-    return "Not written yet" in text and all(h.strip() == "Files" for h in heads)
-
-
-def _face_tables(text: str) -> dict:
-    """{heading words, lowercased and without its number: [row dicts]} of a face's `### N · <name>` tables."""
-    from live.focus_draft import md_tables
-    out = {}
-    for m in re.finditer(r"(?ms)^###\s+(?:\d+\s*·\s*)?(.+?)\s*$(.*?)(?=^#{2,3}\s|^\S.*\n-{3,}\s*$|\Z)", text):
-        tables = md_tables(m.group(2))
-        if tables:
-            out[m.group(1).strip().lower()] = tables[0]
-    return out
-
-
-def paperflow_map(topic: Path, root: Path) -> str:
-    """Paper flow's map, from its face (r03: the map showed only Send and a cut Topic line, while the face held the
-    Sections): the send, each Section in reader order with what it answers, its displays, its evidence and its words,
-    then the dated steps to the send. Drawn on every open from the face, the one source; "" when it has no Sections."""
-    face = topic / f"{topic.name}.md"
-    text = face.read_text(encoding="utf-8", errors="ignore") if face.is_file() else ""
-    tables = _face_tables(text)
-    secs = tables.get("sections") or []
-    if not secs:
-        return ""
-    from live import frame
-    from live.paper_version import paper_map
-    frame.mindmap_module()
-    import mmbuild
-    label = lambda k: (re.search(rf"(?m)^\*\*{k}:\*\*\s*`?([^`\n]+?)`?\s*$", text) or [None, ""])[1]
-    t = topic.name
-    kids = []
-    send = label("Send")
-    if send:
-        kids.append(mmbuild.built(f"{t}/send", f"Send · {send}"))
-    for i, r in enumerate(secs, 1):
-        name = r.get("section") or r.get("S") or f"Section {i}"
-        words = r.get("words", "")
-        leaves = [mmbuild.built(f"{t}/s{i}/{k}", f"[{k}] {v}") for k, v in
-                  (("answers", r.get("answers", "")), ("displays", r.get("displays", "")), ("evidence", r.get("evidence", "")),
-                   ("words", "" if re.match(r"^\d", words or "") else words), ("job", r.get("job", ""))) if v and v not in ("—", "-")]
-        kids.append(mmbuild.built(f"{t}/s{i}", f"{i} · {name}" + (f" · {words} words" if re.match(r"^\d", words or "") else ""),
-                                  leaves))
-    steps = tables.get("timeline") or []
-    if steps:
-        kids.append(mmbuild.built(f"{t}/steps", "Steps to the send", [
-            mmbuild.built(f"{t}/steps/{j}", f"[{r.get('when', '')}] {r.get('step', '')}"
-                          + (f" · {re.sub(r'^[^A-Za-z<]+', '', r.get('state', ''))}" if r.get("state") else ""))
-            for j, r in enumerate(steps)]))
-    note = " · ".join(x for x in (label("Tags"), label("Stage")) if x)
-    return paper_map("Paper flow", kids, [note] if note else [], key=t)
-
-
 def _plan_part(board: Path, topic: Path, root: Path) -> tuple:
-    """(body, word) of a Plan part (r02: Data flow drew a stub map and a grey "Not written yet: ask in the Studio chat"
-    line, while its -drawing.yaml held the data → linking → tables flow): the flow from the drawing's words when the
-    topic has them, its mind map when one is written, else the topic's drawing, else a short state."""
-    flow = dataflow_map(board, topic) or paperflow_map(topic, root)
-    stub = _stub_map(topic)
-    canvas = "" if stub or (flow and not _written_map(topic)) else _canvas(topic, root)   # a built map says what the
-                                                                                          # flow above already draws
-    if flow or canvas:
-        return flow + canvas, (_stage(topic) or "drawn")
+    """(body, word) of a Plan part: its topic's Excalidraw drawing, the way Displays › Plan shows s06 (JL 261111: "for
+    the dataflow, it should have a draw as well, right?"; JL 261102: "excalidraw only"). The HTML flow map and the
+    s04 mind map left: the drawings carry the same content, read in board.md's order and names."""
     drawing = _topic_canvas(board, root, re.sub(r"^s\d+-", "", topic.name))
-    return (drawing or '<p class=mut>No map drawn yet.</p>'), ("drawn" if drawing else "no map yet")
+    return (drawing or '<p class=mut>No drawing yet.</p>'), ((_stage(topic) or "drawn") if drawing else "no drawing yet")
+
+
+# Which plan prompts sit on which section's bar (JL 261111, Paper-CMS-AI-Usage r03_collect_plan_view_decisions: "each
+# section's prompts become a small button in THAT section's header bar"): the data become each answer on Data flow,
+# each answer becomes the page on Paper flow, the reading on the Story's Reading
+PROMPT_HOME = {"Design the dataset": "Data flow", "Design the regressions": "Data flow", "Make them run": "Data flow",
+               "Plan the displays": "Paper flow", "Plan the reading": "Reading"}
+
+
+HP_CSS = ("<style>.pb-hbtn{margin-left:10px;font-size:12px;font-weight:500;border:1px solid var(--line);border-radius:12px;"
+          "padding:1px 10px;background:var(--paper);color:var(--ink);cursor:pointer;vertical-align:1px}"
+          ".pb-hbtn:hover{border-color:var(--accent)}.pb-hp{margin:0 0 12px}</style>")
+
+
+HP_JS = ("<script>document.addEventListener('click',function(e){var b=e.target.closest('.pb-hbtn');if(!b)return;"
+         "e.preventDefault();e.stopPropagation();var s=b.closest('section');var hp=s&&s.querySelector('.pb-hp');if(!hp)return;"
+         "hp.hidden=!hp.hidden;var d=b.closest('details');if(d&&!d.open)d.open=true;"
+         "if(!hp.hidden&&!hp.offsetParent){var h=s.querySelector('h3.fd-h');if(h)h.click();}},true);</script>")
+
+
+def _prompts_for(board: Path, root: Path, home: str) -> str:
+    """The plan prompts whose home is this section, as the Copy-prompt boxes the Plan center drew (board_process)."""
+    from live.board_process import _plan_steps, behind_copy
+    from live.ui_parts import _plan_html
+    steps = [st for st in _plan_steps(board, root) if PROMPT_HOME.get(re.sub(r"^\W+\s*", "", st[0])) == home]
+    if not steps:
+        return ""
+    session = _field((board / "board.md").read_text(encoding="utf-8", errors="ignore"), "session") if (board / "board.md").is_file() else ""
+    return behind_copy(_plan_html(steps, session, key=f"plan:{home}:{ds._rel(board, root)}"))
+
+
+def with_prompts(section: str, prompts: str) -> str:
+    """A section whose bar carries a small Prompts button; the prompts open under the bar, the section stays as it is."""
+    if not section or not prompts:
+        return section
+    section = re.sub(r"(<h3 class=fd-h>.*?)(<span class=\"?word|</h3>)", lambda m: m.group(1)
+                     + '<button type=button class=pb-hbtn aria-label="Prompts for this section">Prompts</button>' + m.group(2),
+                     section, count=1, flags=re.S)
+    return section.replace("</h3>", f"</h3><div class=pb-hp hidden>{prompts}</div>", 1)
 
 
 def plan_view(board: Path, root: Path, md, items=()) -> str:
-    """B · Data + Paper Plan, one view (JL 261104: "Data flow and Paper flow to be one view of Plan"): 1 · Data flow, how the data
-    become each answer, then 2 · Paper flow, the Sections in reader order and the steps to the send, each worked on as
-    its topic's mind map, the window's full width (b16 s32; JL 261102: "the data flow and paper flow are not what we
-    want"); then their drawings. The cards they had (the flow map from -drawing.yaml, Questions to Runs, Send, Sections,
-    Displays, Timeline) left; the Questions and the displays have their own views, Story and Displays."""
+    """B · Data + Paper Plan, two sections (JL 261111, after re-reading haipipe-paper-plan, Paper-CMS-AI-Usage
+    r03_collect_plan_view_decisions: "okay, go ahead and do it"): 1 · 🗄️ Data flow, the s03 topic (how the data become
+    each answer), 2 · 📝 Paper flow, the s04 topic (how each answer becomes the page), each with its own plan prompts on
+    its bar. Every fact once: the Story's § 7 Runs show in the Data flow drawing, § 6 reading in the Story view, the
+    displays in Displays; no "The plan" summary, no Runs to do, no separate Plan prompts."""
+    from live.paper_reading import drop_slots
     parts = view_topics(board, "plan")
     icon = {"Data flow": "🗄️", "Paper flow": "📝"}                       # every section has its emoji (JL 261105)
-    maps = "".join(_named(n, icon.get(name, "📌"), name, *_plan_part(board, topic, root))
+    maps = "".join(with_prompts(_named(n, icon.get(name, "📌"), name, *_plan_part(board, topic, root)),
+                                _prompts_for(board, root, name))
                    for n, (_, name, topic) in enumerate(parts, 1))
-    return (f'<div class=pb-canvas>{maps}</div>' + roadmap_section(board, md, len(parts) + 1)
-            + _after_rule("".join(_helpers(topic, root, items, mind=False, label=name) for _, name, topic in parts)))
+    return drop_slots(HP_CSS + f'<div class=pb-canvas>{maps}</div>' + HP_JS
+                      + _after_rule("".join(_helpers(topic, root, items, mind=False, label=name) for _, name, topic in parts)))
 
 
 BIB_TITLE = re.compile(r'(?i)(?<![a-z])title\s*=\s*(?:\{((?:[^{}]|\{[^{}]*\})*)\}|"([^"]*)")')   # a .bib entry's title, braces kept inside
@@ -820,621 +354,8 @@ def displays_view(board: Path, root: Path, md, items=()) -> str:
     examples = _display_examples(board, root)
     body += _named(n, "🔍", "Examples", examples or (
         '<p class=mut>No examples yet. The target venue\'s published displays go on one canvas, the Board topic '
-        '<code>sNN-paper-display-examples</code> (haipipe-paper-display, Examples).</p>'), "drawn" if examples else "nothing yet")
+        '<code>sNN-paper-display-examples</code> (haipipe-paper-display, Examples).</p>'), "drawn" if examples else "")
     return out + body + story
-
-
-def _topic_canvas(board: Path, root: Path, slug: str) -> str:
-    """A Board topic `sNN-<slug>` shown as its drawing only: the picture, opening the Excalidraw editor, and a Draw
-    button; nothing else (JL 261102). Empty when the topic or its picture is missing."""
-    from live import frame
-    topic = next((t for t in sorted(board.glob(f"s[0-9]*-{slug}")) if t.is_dir()), None)
-    if topic is None:
-        return ""
-    png, drw = topic / f"{topic.name}.png", topic / f"{topic.name}.excalidraw"
-    if not png.is_file():
-        return ""
-    href = frame._draw_url(drw, root) if drw.is_file() else "/" + quote(ds._rel(png, root))
-    return (f'<div class=pb-verbs>{_open_btn("Draw", href, topic.name)}</div>'
-            f'<a data-pop="{esc(topic.name)}" href="{esc(href)}"><img src="/{esc(quote(ds._rel(png, root)))}" '
-            f'alt="{esc(topic.name)}" loading=lazy style="display:block;max-width:100%;border:1px solid var(--line);'
-            'border-radius:6px"></a>')
-
-
-def _display_examples(board: Path, root: Path) -> str:
-    """3 · Examples: the displays of the target venue's papers on one canvas, to compare with ours (JL 261102: "what I
-    want is just one excalidraw and put all other papers's displays only ... no more text here"): the Board's
-    `sNN-paper-display-examples` drawing only."""
-    return _topic_canvas(board, root, "paper-display-examples")
-
-
-def _check_href(job: Path, root: Path, kind: str) -> str:
-    """The evidence Job's Check view, where the whole-paper check is read in full."""
-    return _version_url(job, root, "report") + "&group=" + ("value-check" if kind == "Values" else "cite-check")
-
-
-def _evidence_kinds(board: Path, root: Path, kinds: tuple, n: int = 0, only: tuple | None = None,
-                    check: bool = True, since=None) -> tuple[str, int]:
-    """The numbered sections of these evidence kinds (Values, Citations, Displays), in that order, each a side tab per
-    Task; the displays also as one PDF (`delivery/<job>/<job>-all-displays.pdf`). The Board's Evidence, a version's
-    Values, Citations and Display views and the evidence Jobs draw these same sections, so their words agree (261106,
-    review round 2). A Job's whole-paper check (t99) is never a tab: it shows once, a verdict line above the tabs
-    (`check`; off in the Check view itself). Its state word comes from that check, each citation key counted once;
-    what differs or is missing waits under the closed bar. `only`: only these display groups (main, supplement,
-    unplanned), as a version's Display-Main and Display-Appendix. `since(task or None, tab name)`: a revision's word for
-    a tab, what this send did to it ("same as j11_…", "new in this send", "asked by Reviewer 2"), or None."""
-    from live import evidence_read as er
-    since = since or (lambda task, head: None)
-    jobs = [d for d in sorted(board.glob("j[0-9]*_*")) if d.is_dir() and not is_version(d)]
-    out = ""
-    for kind, pat in sorted((k for k in EVIDENCE_KINDS if k[0] in kinds), key=lambda k: ("Values", "Citations", "Displays").index(k[0])):
-        job = next((j for j in jobs if re.search(pat, j.name, re.I)), None)
-        if job is None:
-            continue
-        top = er.verdict(job, root, kind, _check_href(job, root, kind)) if check and kind != "Displays" else ""
-        vtabs = value_tabs(job, root) if kind == "Values" else None
-        if vtabs:                                # side tabs, each a readable topic with its raw table (JL 261104)
-            n += 1
-            # the word agrees with the check (r02: "all current" stood beside "1 differs"): what differs first, then a
-            # raw table whose source moved, then how many printed numbers match
-            word, waits = er.value_state(er.job_values(job))
-            fresh = values_word(job, root)
-            if not waits and (word == "nothing yet" or fresh.endswith("need a look")):
-                word = fresh or word
-            out += _bar(n, kind, f'<div class=pb-verbs>{_open_btn(f"Open {job.name}", _task_url(job, root))}</div>' + top + VALUES_CSS
-                        + _side_tabs("evV", [(h, since(None, h) or w) for h, w, _ in vtabs], [p for _, _, p in vtabs]) + VALUES_DIALOG + VALUES_JS,
-                        word, waits)
-            continue
-        tasks = sorted((x for x in job.glob("t[0-9]*_*") if x.is_dir() and not er.is_check(x)), key=_num)
-        tiles, panels = [], []
-        dp = display_plan() if kind == "Displays" else None
-        paper_as = {r.get("display", ""): dp.title(r) for r in (dp.rows(board) if dp else [])}
-        plan_of = {r.get("display", ""): r for r in (dp.rows(board) if dp else [])}
-        groups = []                              # (group, plan order) per tile, for the Displays' Main / Appendix lists
-        statuses = []                            # each Task's status, for the section's state word
-        for t in tasks:                          # each item to read: its list on the left, the thing itself on the right
-            label, status, body = evidence_body(t, root)
-            if kind == "Citations" and er.cite_rows(t):   # its claim, then one line per key; the cards are the Check
-                body = er.cite_lines(t, root)               # view's (r02: the same three cards in both views)
-                status = er.cite_state(er.cite_rows(t))[0]
-            if kind == "Values" and er.value_data(t).get("rows"):   # each printed number drawn, no framed page
-                data = er.value_data(t)
-                body = er.value_check_html(data, t, root) + f'<p><a class=fd-btn href="{esc(_task_url(t, root))}">Open {esc(t.name)} ↗</a></p>'
-                status = er.value_state(data)[0]
-            statuses.append(status)
-            words = re.sub(r"^t\d+_", "", t.name).replace("-", " ")
-            words = re.sub(r"^(?:e?figure|e?table|values|cite)\d*\s*", "", words, flags=re.I)
-            head = label if label and label.lower() not in ("values", "citations") else _cap(words)
-            line = words if head == label else re.sub(r"^\d+\s+", "", status or "")
-            line = "waiting" if line.startswith("waits") else line
-            if kind in ("Citations", "Values") and (er.cite_rows(t) or er.value_data(t).get("rows")):
-                line = status                    # its tab says how many keys are verified, or what differs
-            if kind == "Displays":               # JL 261101: "for each display, we might also want to have the name and type"
-                group, order, head, line = _display_head(t, label, head, words, dp, paper_as, plan_of)
-                groups.append((group, order))
-            emo = _face_emoji(t)                 # the Task face's `emoji:` marks its tab (JL 261110)
-            head = f"{emo} {head}" if emo and not head.startswith(emo) else head
-            tiles.append((head, since(t, head) or line or status, ""))
-            panels.append(body)
-        if kind == "Displays" and only is not None:   # a version's Display-Main or Display-Appendix: those groups only
-            keep = [k for k, (g, _) in enumerate(groups) if g in only]
-            tiles, panels, groups, statuses = ([x[k] for k in keep] for x in (tiles, panels, groups, statuses))
-            if not tiles:
-                continue
-        book = board / "delivery" / job.name / f"{job.name}-all-displays.pdf"   # build_displays_pdf.py writes it
-        whole = (_open_btn("Open all displays as one PDF", "/" + quote(ds._rel(book, root)), book.name)
-                 + f'<span class=pb-state>built {_when(book)}</span>') if kind == "Displays" and book.is_file() else ""
-        n += 1
-        if kind == "Displays" and tiles:         # grouped, Main then Appendix (JL 261101: "groups them in different groups,
-            tabs = _display_groups("evD", groups, tiles, panels, list(paper_as.values()))   # like the main"), each card thinner
-        else:
-            tabs = _side_tabs("ev" + kind[0], [(h, w) for h, w, _ in tiles], panels) if tiles else empty_job(job)
-        keys = er.job_cites(job) if kind == "Citations" else []
-        checked = er.job_values(job) if kind == "Values" else {}
-        if keys:                                 # each key once, from the whole-paper check (a key in two groups, or in
-            word, waits = er.cite_state(keys)    # a group and the check, was counted twice: "0 of 6")
-        elif checked.get("rows"):                # the Values word is the check's: what differs waits under the bar
-            word, waits = er.value_state(checked)
-        else:
-            word, waits = evidence_word(kind, statuses), ""
-        out += _bar(n, kind, f'<div class=pb-verbs>{whole}{_open_btn(f"Open {job.name}", _task_url(job, root))}</div>' + top + tabs,
-                    word, waits)
-    return out, n
-
-
-def _display_head(t: Path, label: str, head: str, words: str, dp=None, paper_as=None, plan_of=None) -> tuple:
-    """(group, order, tab name, tab line) of one display Task: where it goes, and its tab's two lines (name; type · name)."""
-    group, order, head = _display_place(t, label, head, dp, paper_as or {}, plan_of or {})
-    return group, order, head, _display_line(t, words)
-
-
-GROUP_ORDER = ("main", "supplement", "method", "unplanned")
-
-
-def _display_groups(eid: str, groups: list, tiles: list, panels: list, planned=(), names=None) -> str:
-    """The display tabs in their groups, Main, Appendix, Method, Others (JL 261102: candidates not in the plan, "a new
-    section here as Others"), each by its plan order; `names` renames a group (a work Block has no Main text)."""
-    sup = _supplement_word(list(planned) + [h for h, _w, _x in tiles])
-    name = {"main": "Main", "supplement": sup, "method": "Method", "unplanned": "Others", **(names or {})}
-    keyed = sorted(zip(groups, tiles, panels), key=lambda x: (GROUP_ORDER.index(x[0][0]), x[0][1]))
-    return _grouped_tabs(eid, [(name[g], (h, w), b) for (g, _), (h, w, _), b in keyed])
-
-
-def display_tabs(tasks: list, root: Path, eid: str = "evD", names: dict | None = None) -> tuple[str, str]:
-    """(html, state word) of these display Task folders drawn exactly as a paper's Displays view draws them, for any
-    page that lists displays (the work Block's Findings, JL 261109: "consistent with the paper theme's displays"). One
-    side tab per Task: its `label:` (else its folder words) over its type and `name:`; its panel the shown version
-    (display_pick: the face's `printed:` Run, else the newest preview.pdf; else the newest picture), its facts and its
-    Open button. Grouped by the face's `group:` (method, others) or its label (Figure, Extended Data, eTable) or its
-    number (t50 on: Appendix); `names` renames a group, e.g. {"main": "Results", "method": "Methods"}. No display
-    plan is read: a paper Board's plan places its displays in _evidence_kinds. workbench focus_page.display_sections
-    calls it: keep this signature and the ("", "") empty return, or tell the work side."""
-    groups, tiles, panels, statuses = [], [], [], []
-    for t in tasks:
-        label, status, body = evidence_body(t, root)
-        words = re.sub(r"^t\d+_", "", t.name).replace("-", " ").replace("_", " ")
-        words = re.sub(r"^(?:e?figure|e?table|values|cite)\d*\s*", "", words, flags=re.I)
-        group, order, head, line = _display_head(t, label, label or _cap(words), words)
-        groups.append((group, order))
-        tiles.append((head, line or status, ""))
-        panels.append(body)
-        statuses.append(status)
-    if not tiles:
-        return "", ""
-    return _display_groups(eid, groups, tiles, panels, names=names), evidence_word("Displays", statuses)
-
-
-def _display_place(t: Path, label: str, head: str, dp, paper_as: dict, plan_of: dict) -> tuple:
-    """(group, order, head) of one display Task: where it goes (main, supplement, method, unplanned), its place in the plan, and
-    what the paper calls it (Figure 1 (Display A)), from the display plan, by any key its face answers to."""
-    face = t / f"{t.name}.md"
-    ks = dp.keys(face.read_text(encoding="utf-8", errors="ignore")) if dp and face.is_file() else []
-    head = next((paper_as[k] for k in ks if k in paper_as), head)
-    r = next((plan_of[k] for k in ks if k in plan_of), None)
-    order = list(plan_of).index(r.get("display", "")) if r is not None else 999
-    fgroup = _field(face.read_text(encoding="utf-8", errors="ignore"), "group").lower() if face.is_file() else ""
-    if fgroup in ("method", "methods"):
-        group = "method"             # a display that explains how the study is done, for a reader such as an
-                                     # advisor (JL 261106: "we might have a section named Method")
-    elif fgroup == "others":
-        group = "unplanned"          # a draft shown apart until it is placed (JL 261104: "先放到 other 里面去")
-    elif r is not None:              # the plan says where it goes
-        group = r["where"]
-    elif plan_of:                    # a plan that does not name it
-        group = "unplanned"
-    else:                            # no plan: the face's label says where it goes and its number (JL 261103:
-        lab = re.match(r"(Extended Data |Supplementary )?(Figure|Table) (\d+)", label or "")   # "I didn't see
-        if lab:                      # the fairness figure": label "Extended Data Figure 1" on t53 sat under Main's
-            group = "supplement" if lab.group(1) else "main"   # t07 and Figure 4 (t06) after Figure 5 (t04))
-            order = (lab.group(2) == "Table") * 100 + int(lab.group(3))
-        else:                        # t51 and on, or an eTable / Appendix label, is outside the main text
-            group = "supplement" if _num(t) >= 50 or re.match(r"(?i)(e(?=fig|tab)|appendix|supp)", label or "") else "main"
-    return group, order, head
-
-
-def display_groups(board: Path, tasks: list) -> dict:
-    """{display Task: its group}, as the Displays tabs place it (a version's Display-Main and its Process list the same
-    displays)."""
-    dp = display_plan()
-    rows = dp.rows(board) if dp else []
-    paper_as = {r.get("display", ""): dp.title(r) for r in rows}
-    plan_of = {r.get("display", ""): r for r in rows}
-    out = {}
-    for t in tasks:
-        face = t / f"{t.name}.md"
-        label = _field(face.read_text(encoding="utf-8", errors="ignore"), "label") if face.is_file() else ""
-        out[t] = _display_place(t, label, label, dp, paper_as, plan_of)[0]
-    return out
-
-
-def _supplement_word(labels: list) -> str:
-    """What the venue calls the displays outside the main text: Extended Data (Nature journals), Supplement (eFigure,
-    Supplementary Table), else Appendix."""
-    if any(x.startswith("Extended Data") for x in labels):
-        return "Extended Data"
-    return "Supplement" if any(re.match(r"(?:e(?:Figure|Table)|Supplementary)", x) for x in labels) else "Appendix"
-
-
-def _grouped_tabs(eid: str, items: list) -> str:
-    """Side tabs in groups (Main, Appendix): the shared side-tab markup (ui_parts._side_tabs, so its clicks work), a
-    small group name above each group's cards, each card thinner (this theme's own style, DISPLAY_CSS)."""
-    rows, panels, last = "", "", None
-    for k, (group, (h, w), body) in enumerate(items):
-        if group != last:
-            rows += f'<div class=pb-lgroup>{esc(group)}</div>'
-            last = group
-        rows += (f'<button type=button class="pb-item{" on" if k == 0 else ""}" data-pbtab="{eid}{k}"><b>{esc(h)}</b>'
-                 f'<span title="{esc(w)}">{esc(w)}</span></button>')
-        panels += f'<div class=pb-panel data-pbpanel="{eid}{k}"{"" if k == 0 else " hidden"}>{body}</div>'
-    return (DISPLAY_CSS + f'<div class="pb-tabset pb-side pb-thin"><div class=pb-list>{rows}</div>'
-            f'<div class=pb-read>{panels}</div></div>')
-
-
-# the Displays' side lists: thinner cards, a group name above each group (this theme's own look; ui_parts stays shared)
-DISPLAY_CSS = ("<style>.pb-thin .pb-item{padding:3px 9px;margin:0 0 1px}.pb-thin .pb-item b{font-size:13px;line-height:1.3}"
-               ".pb-thin .pb-item span{font-size:11.5px;line-height:1.3}"
-               ".pb-lgroup{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);"
-               "margin:10px 0 3px 2px}.pb-lgroup:first-child{margin-top:0}"
-               "@media(max-width:600px){.pb-lgroup{flex-basis:100%;margin:6px 0 2px}}</style>")
-
-
-DISPLAY_TYPES = (("figure", "📈 Figure"), ("table", "📊 Table"))
-
-
-def _display_plan(board: Path, root: Path, dp, plan: list) -> str:
-    """E · Displays' plan, from the display plan (haipipe-paper-plan; JL 261101: "we should also have the plan for the
-    displays"; "the display ... should also follow the venue"): the venue check first, then each display as a side tab
-    (Figure 1 (Display A), its type and name), its panel what it shows, where it goes, its Run and its sketch."""
-    face = dp.plan_face(board)
-    text = face.read_text(encoding="utf-8", errors="ignore")
-    checks = dp.check(board)
-    call = dp.venue_call(board)
-    bad = [t for m, t in checks if m == "❗"]
-    head = (f'<p class=pb-state>{"❗ " + str(len(bad)) + " against the venue" if bad else "✅ within the venue" + chr(39) + "s rules"}'
-            + (f' · {esc(call.parent.name)}' if call else '') + '</p>'
-            + '<ul class=pb-checks>' + "".join(f'<li>{esc(m)} {esc(t)}</li>' for m, t in checks) + '</ul>'
-            + f'<div class=pb-verbs>{_open_btn("Open the display plan", _page_url(face, root), face.name)}'
-            + (_open_btn("Open the venue rules", _page_url(call, root), "call.md") if call else "") + '</div>')
-    labs = [dp.title(r) for r in plan]
-    sup = _supplement_word(labs)
-    items = [("Main" if r["where"] == "main" else sup, (lab, f"{dp.TYPES[r['type']]} · {_plain(r.get('name', ''))}"), None)
-             for r, lab in zip(plan, labs)]
-    panels = [_kv((("Shows", esc(_plain(r.get("shows", "")))), ("Answers", esc(_plain(r.get("answers", "")))),
-                   ("Section", esc(_plain(r.get("section", "")))), ("Where", esc(r["where"])),
-                   ("Made by", esc(_plain(r.get("made by", "")))), ("State", esc(_plain(r.get("state", ""))))))
-              + (f'<pre class=pb-sketch>{esc(dp.sketch(text, r.get("display", "")))}</pre>' if dp.sketch(text, r.get("display", "")) else "")
-              for r in plan]
-    keyed = sorted(zip(items, panels), key=lambda x: x[0][0] != "Main")          # Main first, the plan's order kept
-    return PLAN_CSS + head + _grouped_tabs("dpl", [(g, t, b) for (g, t, _), b in keyed])
-
-
-# the plan's check list and sketches, this theme's own look (shared ui_parts stays its owners')
-PLAN_CSS = ("<style>.pb-checks{list-style:none;margin:4px 0 8px;padding:0;font-size:13.5px;line-height:1.6}"
-            ".pb-sketch{margin:8px 0 0;padding:8px 10px;border-radius:6px;background:var(--wash);"
-            "font:12.5px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre;overflow-x:auto}</style>")
-
-
-def _display_line(task: Path, slug: str) -> str:
-    """A Display tab's second line: its type, then its name. The name is the face's `name:` line, else the title after
-    "<label>," in its first line, else the folder's words; the type is the face's `type:` (or `kind:`) line, else what
-    its newest float.tex begins (a figure or a table environment)."""
-    face = task / f"{task.name}.md"
-    text = face.read_text(encoding="utf-8", errors="ignore") if face.is_file() else ""
-    field = lambda k: (re.search(rf"^{k}:\s*(.+?)\s*$", text, re.M) or [None, ""])[1]
-    name = field("name")
-    if not name:
-        m = re.match(r"#\s*[^,\n]*?\b(?:Display|e?Figure|e?Table)\s+\w+\s*[,:·]\s*(.+)", text.strip())
-        name = m.group(1).strip() if m else _cap(slug)
-    kind = (field("type") or field("kind")).lower()
-    if not kind:
-        floats = sorted([*task.glob("runs/*/result/float.tex"), *task.glob("display/*/float.tex")],
-                        key=lambda f: f.stat().st_mtime)
-        body = floats[-1].read_text(encoding="utf-8", errors="ignore") if floats else ""
-        kind = next((k for k in ("table", "figure") if f"\\begin{{{k}" in body), "")
-    word = next((w for k, w in DISPLAY_TYPES if k in kind), kind.capitalize())
-    return f"{word} · {name}" if word else name
-
-
-def _section_read(task: Path, root: Path | None = None) -> str:
-    """A Section's text to read: its paragraphs in order, each under its name, each sentence on its own numbered line
-    (JL 261101: "the content here is not readable? could you still make each sentence to be a line"); a citation
-    command reads as its keys. One owner, focus_draft.content_read, so the Section's own Text reads the same (r02)."""
-    from live.focus_draft import content_read
-    return content_read(task, root) or '<p class=mut>No text yet: 2 · Write writes it.</p>'
-
-
-# the Section's sentences, one per line with a small number, citations in grey (this theme's own look)
-WRITING_CSS = ("<style>.pb-sents{margin:2px 0 10px;padding-left:2.1em;line-height:1.5}"
-               ".pb-sents li{margin:0 0 3px;padding-left:2px}.pb-sents li::marker{color:var(--muted);font-size:11.5px}"
-               ".pb-cite{color:var(--muted);font-size:.88em}"
-               # JL 261104: the Section's button in the panel's top right corner, staying there while you read down
-               ".pb-corner{float:right;position:sticky;top:8px;z-index:2;margin:0 0 8px 12px}"
-               ".pb-corner .fd-btn{background:var(--bg)}</style>")
-
-
-def _pdf_facts(pdf: Path | None) -> tuple[str, str]:
-    """A PDF's page count and the program that drew it, read from the file on every open."""
-    import subprocess
-    if pdf is None or pdf.suffix != ".pdf":
-        return "", ""
-    try:
-        info = subprocess.run(["pdfinfo", str(pdf)], capture_output=True, text=True, timeout=5).stdout
-    except (OSError, subprocess.SubprocessError):
-        return "", ""
-    field = lambda k: (re.search(rf"^{k}:\s*(.+)$", info, re.M) or [None, ""])[1].strip()
-    return field("Pages"), field("Producer")
-
-
-def _tab_flag(kind: str, man: dict, pdf: Path | None, running: bool, stand_in: bool = False) -> str:
-    """Each tab's state, one short line on the tab (JL 261104: "could you flag each tab' status?"): can it be read now,
-    and what is not final yet. Everything comes from the manifest and the file itself; nobody types it."""
-    pages, producer = _pdf_facts(pdf)
-    count = f" · {pages} pages" if pages else ""
-    draft = " · draft" if man.get("status") != "READY" else ""
-    if kind == "latex":
-        if running and not man.get("pdf_only"):
-            return "⏳ Rebuilding: last build shown"
-        return f"✅ Read now{draft}{count}"
-    if kind == "word":
-        if running:
-            return "⏳ Rebuilding: do not open"
-        if stand_in or "LibreOffice" in producer:
-            return "❗ Word stuck: layout not final"
-        return f"✅ Read now{draft}{count}"
-    if kind == "letter":
-        cover = man.get("cover_letter") or {}
-        off = [c for c in cover.get("checks", []) if not c.get("ok")]
-        return f"❗ {len(off)} checks open" if off else f"✅ Read now{draft}"
-    if kind == "portal":
-        portal = man.get("portal") or {}
-        uploads = portal.get("uploads") or []
-        ready = sum(u.get("state") == "ready" for u in uploads)
-        return f"⬜ {ready} of {len(uploads)} uploads ready" if uploads else "⬜ Not ready"
-    return ""
-
-
-def _tracked_word(vdir: Path) -> tuple:
-    """The co-authors' own Word file with their tracked changes and comments kept and ours added as tracked changes (JL
-    261110: "the Word-Change-Track, which is based on the previous change tracks from professors and you add the changes
-    as well"): the newest *-tracked.pdf and .docx in delivery/<writing Job>/word-tracked/; its line, the newest
-    headline.txt of a review Job's tracked-Word Run (e.g. "v4 + 37 changes by <author>"). (name, line, pdf, docx)."""
-    folder = vdir / "word-tracked"
-    newest = lambda pat: max(folder.glob(pat), key=lambda x: x.stat().st_mtime, default=None) if folder.is_dir() else None
-    pdf, doc = newest("*-tracked.pdf"), newest("*-tracked.docx")
-    heads = [h for h in vdir.parent.parent.glob("j[0-9]*_*review*/t[0-9]*_*tracked*/runs/*/result/headline.txt") if h.is_file()]
-    head = max(heads, key=lambda x: x.stat().st_mtime, default=None)
-    line = head.read_text(encoding="utf-8", errors="ignore").strip().splitlines()[0] if head else ""
-    short = re.search(r"-(v\d+)\.docx \+ (\d+) tracked changes? by (.+?)\s*->", line)   # "<file>-v4.docx + 2 tracked
-    line = f"{short[1]} + {short[2]} changes by {short[3]}" if short else line             # changes by X -> …" → "v4 + 2 changes by X"
-    return ("The paper · Word, tracked", line or "the co-authors' Word file, our changes tracked", pdf, doc)
-
-
-def _paper_files(vdir: Path, root: Path, eid: str = "pp") -> str:
-    """The assembled paper to read (JL 261101: "should we show it as well? like different versions of the output with the
-    left panel?"): side tabs, each output on the left (the paper as LaTeX builds it, as Word prints it, the Word
-    supplement, then earlier rounds), the open one shown on the right as its PDF, with its Open buttons."""
-    import json
-    try:
-        man = json.loads((vdir / "build-manifest.json").read_text(encoding="utf-8"))
-    except Exception:
-        return ""
-    out = man.get("outputs") or {}
-    if not isinstance(out, dict):      # the Word step ran alone, with no build before it (see paper_version.built_outputs)
-        return ""
-    f = lambda r: vdir / r if r and (vdir / r).is_file() else None
-    sup_pdf = f(out.get("supplement_docx_pdf"))
-    sup_docx = f(out.get("supplement_docx_pdf", "")[:-4] + ".docx") if out.get("supplement_docx_pdf") else None
-    letter = (man.get("cover_letter") or {}).get("outputs") or {}
-    if not letter.get("pdf"):                    # JL 261103: "where is the cover letter?": a letter Task exported on its
-        for own in sorted(vdir.glob("t3[0-9]_*letter*")):   # own, before the build has [coverletter], still shows
-            letter = {"pdf": f"{own.name}/word/{own.name}.pdf", "docx": f"{own.name}/word/{own.name}.docx"}
-            break
-    by = man.get("word_pdf_printed_by") or {}      # b16.j02-s22 261104: Word stuck, and these tabs showed LibreOffice's print
-    running_now = build_running(vdir)
-    word_how = lambda key, pdf: _tab_flag("word", man, pdf, running_now, by.get(key) == "stand-in")
-    # JL 261102: "we should say the results here as well": every document the build makes, the letter too
-    pieces = [("The paper", _tab_flag("latex", man, f(out.get("pdf")), running_now), f(out.get("pdf")), None),
-              ("The paper · Word", word_how("main_docx", f(out.get("docx_pdf"))), f(out.get("docx_pdf")), f(out.get("docx"))),
-              _tracked_word(vdir),
-              ("The supplement", _tab_flag("latex", man, f(out.get("supplement")), running_now), f(out.get("supplement")), None),
-              ("The supplement · Word", word_how("supplement_docx", sup_pdf), sup_pdf, sup_docx),
-              ("The combined copy", "paper and supplement in one PDF", f(out.get("combined")), None),
-              ("The cover letter", _tab_flag("letter", man, f(letter.get("pdf")), running_now), f(letter.get("pdf")), f(letter.get("docx")))]
-    # JL 261102: "add the new tab for the submission portal": the send's submission Job (jNN_submission_…, its face
-    # `for: <this version>`) writes delivery/<that Job>/portal-fill.html, every portal field with its value to paste
-    for sj in sorted(vdir.parent.parent.glob("j[0-9]*_submission_*")):
-        face = sj / f"{sj.name}.md"
-        if face.is_file() and re.search(rf"(?m)^for:\s*{re.escape(vdir.name)}\s*$", face.read_text(encoding="utf-8", errors="ignore")):
-            fill = vdir.parent / sj.name / "portal-fill.html"
-            pieces.append(("The submission portal", _tab_flag("portal", man, None, running_now), fill if fill.is_file() else None, None))
-    pieces = [_or_adopted(vdir, p) if p[0].endswith("· Word") else p for p in pieces]
-    shown = {p.name for _, _, a, b in pieces for p in (a, b) if p}
-    word = vdir / "word"
-    older = sorted((x for x in word.glob("*.docx") if x.name not in shown and "supplement" not in x.name),
-                   key=lambda x: x.stat().st_mtime, reverse=True) if word.is_dir() else []
-    earlier = [p for p in pieces if p[2] or p[3]]            # how many stand above the fold (below: JL 261103)
-    pieces += [(f"Earlier round · {_when(x)}", x.stem, x.with_suffix(".pdf") if x.with_suffix(".pdf").is_file() else None, x) for x in older]
-    pieces = [p for p in pieces if p[2] or p[3]]
-    if not pieces:
-        return ""
-    href = lambda x: "/" + quote(ds._rel(x, root))
-    items, panels = [], []
-    for name, how, pdf, doc in pieces:
-        newest = max((x for x in (pdf, doc) if x), key=lambda x: x.stat().st_mtime)
-        items.append((name, how))
-        made = f'<span class=pb-state>{"draft" if "-draft" in newest.stem else "built"} {_when(newest)}</span>'
-        view = (f'<div class=pb-ptop>{made}{_open_btn("⤢ Pop out", href(pdf), f"{name} · {pdf.name}")}</div>'   # a large view pops out
-                f'<iframe class=pb-pdf src="{esc(href(pdf))}{"" if pdf.suffix == ".html" else "#view=FitH"}" title="{esc(name)}"></iframe>') if pdf \
-            else f'<p class=mut>{esc(how)}: no PDF beside it to show here.</p>'
-        verbs = ((_open_btn("Open the page" if pdf.suffix == ".html" else "Open the PDF", href(pdf), pdf.name) if pdf else "")
-                 + (_open_btn("Open the Word file", href(doc), doc.name) if doc else ""))
-        panels.append(view + f'<div class=pb-verbs>{verbs}</div>')
-    running = '<p class=pb-state>⏳ A build is running: these are the last built files.</p>' if build_running(vdir) else ""
-    draft = ('<p class=pb-state>📝 Word draft: displays float to page tops, not placed by measuring. Run a full build before sending.</p>'
-             if man.get("word_draft") else "")
-    return running + draft + _fold_earlier(_side_tabs(eid, items, panels), eid, len(earlier), len(items))
-
-
-def _or_adopted(vdir: Path, row: tuple) -> tuple:
-    """A Word row with no file: `word_round.py adopt` renames the build's -draft files to -v<n> (Paper-PhyAbsence 261104:
-    "the panel's Word rows have no file until the next full build"), so the newest adopted copy shows until then."""
-    name, how, pdf, doc = row
-    if pdf or doc:
-        return row
-    supplement = "supplement" in name.lower()
-    kept = sorted((x for x in (vdir / "word").glob("*-v[0-9]*.docx") if ("supplement" in x.name) == supplement),
-                  key=lambda x: x.stat().st_mtime, reverse=True)
-    if not kept:
-        return row
-    twin = kept[0].with_suffix(".pdf")
-    return name, "the copy adopted for the round", twin if twin.is_file() else None, kept[0]
-
-
-def _fold_earlier(tabs: str, eid: str, start: int, total: int) -> str:
-    """The older rounds' side tabs behind one closed fold at the list's end (JL 261103: "for the early round, could you
-    just first to hide them?"), no count; they open as before once it is unfolded. A build with nothing current yet
-    leaves the fold open, so the panel on show has its tab in sight."""
-    if start >= total:
-        return tabs
-    first = tabs.index(f'data-pbtab="{eid}{start}"')
-    at, end = tabs.rindex("<button", 0, first), tabs.index("</div><div class=pb-read>", first)
-    return (tabs[:at] + f'<details class=pb-earlier style="flex-basis:100%"{" open" if start == 0 else ""}>'
-            '<summary style="cursor:pointer;font-size:13px;color:var(--muted);padding:6px 9px">Earlier rounds</summary>'
-            + tabs[at:end] + "</details>" + tabs[end:])
-
-
-PORTAL_WORDS = {"ready": "✅ ready", "draft": "🔶 built, not approved", "stale": "❗ stale", "missing": "⬜ missing"}
-
-
-def _portal(vdir: Path, root: Path) -> str:
-    """What goes into the venue's portal as it is (JL 261102: "the final delivery content that are ready to submit
-    directly in the portal"): the build's portal packet, delivery/<job>/portal/, one row per upload slot with its
-    file and its state, each file opening in the pop-out (haipipe-paper-assemble § The portal packet)."""
-    import json
-    try:
-        portal = json.loads((vdir / "build-manifest.json").read_text(encoding="utf-8")).get("portal") or {}
-    except Exception:
-        return ""
-    ups = portal.get("uploads") or []
-    if not ups:
-        return ""
-    folder = vdir / str(portal.get("folder", "portal"))
-    href = lambda x: "/" + quote(ds._rel(x, root))
-    rows = []
-    for i, u in enumerate(ups, 1):
-        files = [folder / n for n in u.get("files") or [] if (folder / n).is_file()]
-        links = " ".join(_open_btn(x.name, href(x), x.name) for x in files) or '<span class=mut>no file yet</span>'
-        note = "; ".join(x for x in (u.get("detail", ""), u.get("note", "")) if x)
-        rows.append(f'<tr><td>{i}</td><td>{esc(u.get("slot", ""))}</td><td>{links}</td>'
-                    f'<td>{esc(PORTAL_WORDS.get(u.get("state"), u.get("state", "")))}</td><td class=mut>{esc(note)}</td></tr>')
-    table = folder / "portal.md"
-    head = (f'<p class=pb-state>{portal.get("ready", 0)} of {len(ups)} slots ready · upload these files as they are, '
-            f'each into its slot · {_open_btn("Open portal.md", href(table), table.name) if table.is_file() else ""}</p>')
-    return (head + '<table class=pb-portal><tr><th>#</th><th>slot</th><th>file</th><th>state</th><th>note</th></tr>'
-            + "".join(rows) + '</table>'
-            + '<style>.pb-portal{border-collapse:collapse;width:100%;font-size:13px}.pb-portal td,.pb-portal th'
-              '{border-top:1px solid var(--line);padding:5px 6px;text-align:left;vertical-align:top}</style>')
-
-
-def _face_emoji(task: Path) -> str:
-    """A Task face's `emoji:` line, the mark on its tab; empty when the face has none."""
-    face = task / f"{task.name}.md"
-    if not face.is_file():
-        return ""
-    m = re.search(r"(?m)^emoji:\s*(\S+)\s*$", face.read_text(encoding="utf-8", errors="ignore")[:2000])
-    return m[1] if m else ""
-
-
-def writing_view(board: Path, root: Path, md, items=()) -> str:
-    """F · Writing: a numbered section per version; its Sections as card tabs (each panel its step words), then the
-    assembled paper."""
-    out, n = "", 0
-    plan = board / "revision-plan.md"               # the Board's plan for the round under way, first (JL 261110)
-    if plan.is_file():
-        text = re.sub(r"^#\s+.*\n", "", plan.read_text(encoding="utf-8"), count=1)
-        done, todo = len(re.findall(r"^- ✅", text, re.M)), len(re.findall(r"^- (?:✅|⬜|⏳)", text, re.M))
-        n += 1
-        out += _section(f"{n} · 🗺️ Revision plan", md(text, board) if md else f"<pre>{esc(text)}</pre>",
-                        f"{done} of {todo} done" if todo else "the plan")
-    for job in sorted(d for d in board.glob("j[0-9]*_*") if d.is_dir() and is_version(d)):
-        tasks = sorted(d for d in job.glob("t[0-9]*_*") if d.is_dir())
-        paper = _paper_files(board / "delivery" / job.name, root, f"pp{n}")
-        n += 1
-        word, waits = sections_word(tasks, root)
-        out += _section(f"{n} · ✍️ {job.name}", f'<div class=pb-verbs>{_open_btn("Open the version", _version_url(job, root, "report"))}</div>'
-                        + (section_tabs(tasks, root, f"wr{n}") if tasks else '<p class=mut>No Sections yet.</p>'), word, waits)
-        if paper:
-            n += 1
-            out += _section(f"{n} · 📄 The assembled paper", paper, paper_word(board / "delivery" / job.name))
-        portal = _portal(board / "delivery" / job.name, root)
-        if portal:
-            n += 1
-            out += _section(f"{n} · 📮 Ready for the portal", portal, portal_word(board / "delivery" / job.name))
-    rules = board / "writing-patterns.md"          # the Board's own list of patterns a co-author flagged (JL 261110)
-    if rules.is_file():
-        text = re.sub(r"^#\s+.*\n", "", rules.read_text(encoding="utf-8"), count=1)
-        k = len(re.findall(r"^###\s+\d", text, re.M))
-        n += 1
-        out += _section(f"{n} · 🚫 Writing patterns to avoid", md(text, board) if md else f"<pre>{esc(text)}</pre>",
-                        plural_word(k, "pattern", "patterns") if k else "the list")
-    # every section starts closed (JL 261104: "this should be closed at the begining"); focus_draft's fold reads the mark
-    return '<i data-fd-closed hidden></i>' + out if out else '<p class=mut>No version yet.</p>'
-
-
-def section_tabs(tasks: list, root: Path, eid: str, words: dict | None = None) -> str:
-    """Each Section's text to read, one side tab per Section (its name, its next step), its sentences on the right with
-    its Open button in the corner: the Board's Writing and a version's Draft views draw the same tabs (JL 261106).
-    `words` {Section: its word} names each tab's word instead (a revision: what this send did to it; a Report: how
-    much text it has); a tab is never left without one (r03: the Cover letter tab had none)."""
-    from live.focus_draft import text_count
-    secs = [(_cap(re.sub(r"^t\d+_", "", t.name).replace("-", " ")), _state_words(_section_state(t, root))) for t in tasks]
-    if words is not None:
-        secs = [(h, words.get(t) or w) for (h, w), t in zip(secs, tasks)]
-    elif len({w for _, w in secs}) == 1:        # the same step on every tab says nothing: how much text each has
-        secs = [(h, text_count(t)) for (h, _), t in zip(secs, tasks)]
-    panels = [f'<div class=pb-corner>{_open_btn("Open the Section", _task_url(t, root), t.name)}</div>' + _section_read(t, root) for t in tasks]
-    return _side_tabs(eid, secs, panels)
-
-
-def text_word(tasks: list) -> str:
-    """How many of these Sections have text to read (their adopted Content)."""
-    if not tasks:
-        return "nothing yet"
-    have = sum(any(t for _, _, t in paragraphs(x)) for x in tasks)
-    return f"{have} of {len(tasks)} with text"          # adopted text, not the Write step's word (r02: "4 of 4 written"
-                                                        # stood beside Write: later)
-
-
-def sections_word(tasks: list, root: Path) -> tuple:
-    """(state word, waiting line) of a version's Sections: how many wait for you and the first of them, else how many
-    are done (each Section's own next step, board_read._section_state)."""
-    if not tasks:
-        return "nothing yet", ""
-    states = [(t, _state_words(_section_state(t, root))) for t in tasks]
-    you = [(t, w) for t, w in states if "your" in w]
-    signs = _waiting_steps(tasks, root)          # every step that waits on you, as many as the sign chips (r02: "1
-    if you or signs:                              # waits for you" stood beside two "sign" chips)
-        n = max(len(signs), len(you))
-        return f'{n} wait{"s" if n == 1 else ""} for you', ""   # no line under the bar: the word says it, the
-                                                                  # rows say which (JL 261109: "we don't want this")
-    done = sum(w == "done" for _, w in states)
-    return f"{done} of {len(states)} done", ""
-
-
-def _waiting_steps(tasks: list, root: Path) -> list:
-    """[(Section, "<step>: waits for …")] of every step of these Sections that waits on the person (sign, asked, send,
-    pass), in Section order."""
-    from live.focus_draft import STATUS_WHAT, WAITS, WORK, _facts
-    out = []
-    for t in tasks:
-        try:
-            f, st, k = _facts(t, root)
-        except Exception:
-            continue
-        out += [(t, f'{step.split(" · ")[1]}: {STATUS_WHAT[st[step]].format(k=k)}') for _, step in WORK if st.get(step) in WAITS]
-    return out
-
-
-def paper_word(vdir: Path) -> str:
-    """The assembled paper's word: rebuilding while a build runs, else built (the manifest READY) or a draft."""
-    import json
-    if build_running(vdir):
-        return "rebuilding"
-    try:
-        man = json.loads((vdir / "build-manifest.json").read_text(encoding="utf-8"))
-    except Exception:
-        return "not built yet"
-    return "built" if man.get("status") == "READY" else "draft"
-
-
-def portal_word(vdir: Path) -> str:
-    """The portal packet's word: how many of its upload slots are ready."""
-    import json
-    try:
-        ups = (json.loads((vdir / "build-manifest.json").read_text(encoding="utf-8")).get("portal") or {}).get("uploads") or []
-    except Exception:
-        return "not built yet"
-    return f'{sum(u.get("state") == "ready" for u in ups)} of {len(ups)} ready' if ups else "not built yet"
 
 
 SHAPED = {"idea": idea_view, "story": story_view, "plan": plan_view}

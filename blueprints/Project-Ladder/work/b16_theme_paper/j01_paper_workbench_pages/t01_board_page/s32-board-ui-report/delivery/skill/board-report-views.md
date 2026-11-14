@@ -10,7 +10,7 @@ supported separately; Board behavior does not imply their migration.
 |---|---|---|
 | idea | Idea | Ideation topic: Directions and Theory; Related from the Board reference records, even when a Story exists. Direction appears here only before a Story exists. |
 | story | Story | Current Story topic and chosen direction: Direction, Pitch, Theory, Research Questions, Stakes and evidence, Related, Venues and Story by Section (left tabs: first the whole paper's Story arc, then each Section's part of the arc, its claims last). |
-| plan | Data + Paper Plan | Data flow and Paper flow from their topics, then Roadmaps and the preparation plan, Runs to do and next steps to the send. |
+| plan | Data + Paper Plan | Two sections, the skill's Plan (JL 261111, after re-reading haipipe-paper-plan; Paper-CMS-AI-Usage r03_collect_plan_view_decisions): 1 · 🗄️ Data flow, the s03 topic's Excalidraw drawing (how the data become each answer), and 2 · 📝 Paper flow, the s04 topic's drawing (how each answer becomes the page), as Displays shows s06. Each bar carries a small Prompts button with that flow's plan prompts (Data flow: design the dataset, design the regressions, make them run; Paper flow: plan the displays). Every fact once: no summary on top, no Runs to do (§ 7 shows in the Data flow drawing), no separate Plan prompts; the § 6 reading is the Story view's 📚 Reading. A line that is only a template slot (`<...>`) is not shown. |
 | explore | Support blocks | Internal Work and external Discovery Blocks named by the paper, linked back to their source work. |
 | evidence | Evidence | Returned values and citations from evidence Jobs, with their current state. |
 | displays | Displays | The display plan, display previews (each display's state in its tab), examples, then last Story by Section from the same Story topic, the same section the Story view shows. |
@@ -50,8 +50,8 @@ Grant-specific rendering, examples and scaffolding are not implemented merely
 because they appear in the matrix. See the Paper router's ownership table.
 
 ```text
-servers/workbench/work_frame.py          shared sections and view ownership
-servers/workbench/skills_section.py      skill catalog and links
+servers/workbench/page/work_frame.py          shared sections and view ownership
+servers/workbench/page/skills_section.py      skill catalog and links
 servers/workbench-paper/paper_focus.py   Paper content adapter and scoped sources
                         board_views.py  View registration and classic wrappers
                         board_results.py content renderers shared across Views

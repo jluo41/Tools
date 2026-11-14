@@ -40,6 +40,8 @@ def scope(board, root, view, topics, every, knows):
     if view:
         sources = [Path(__file__), Path(board_views.__file__), Path(board_results.__file__),
                    Path(board_read.__file__), Path(board_process.__file__)]
+        sources += [Path(__file__).with_name(f'board_{name}.py')   # board_results' parts (split 261113)
+                    for name in ('story', 'writing', 'displays', 'canvas', 'related')]
         if view == 'evidence':
             sources += [Path(__file__).with_name(name) for name in ('board_evidence.py', 'evidence_read.py')]
         elif view == 'draft':
@@ -75,7 +77,8 @@ def shared_bodies(folder, root, theme, level, view, topics, own, knows, events, 
 
 def shared(folder, root, theme, level, view, topics, own, knows, events, every):
     bodies = shared_bodies(folder, root, theme, level, view, topics, own, knows, events, every)
-    return ''.join(shared_frame.section(0, title, *bodies[key]) for key, title in shared_frame.SHARED)
+    return ''.join(shared_frame.section(0, title, *bodies[key]) for key, title in shared_frame.SHARED
+                   if not shared_frame.blank(bodies[key][0]))        # an empty section is not shown
 
 
 def report_views(board, root):
@@ -92,7 +95,9 @@ def report_views(board, root):
             result = board_views._results(board, key, root, md, items)
         # Plan's auxiliary drawings now live in the shared Studio section.
         result = result.partition('<hr class=pb-rule>')[0]
-        process = board_process.process_html(board, key, root, md, items, True)
+        # the Plan view is its two flows, their prompts on their own bars (JL 261111, r03_collect_plan_view_decisions):
+        # no Plan center, no Runs to do, below them
+        process = "" if key == "plan" else board_process.process_html(board, key, root, md, items, True)
         offset = max(0, f.IX.next_number(result) - 1)
         process = re.sub(r'(<h3 class=fd-h>)(\d+) · ',
                          lambda m: m[1] + str(int(m[2]) + offset) + ' · ', process)

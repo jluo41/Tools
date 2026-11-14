@@ -108,27 +108,34 @@ class ReviewRound2Test(unittest.TestCase):
 
     def test_citations_count_each_key_once_and_the_check_shows_once(self):
         for page in (self.render(self.b, "report", "evidence"), self.render(self.b / "j03_evidence_cite", "report", "cite-list"),
-                     self.render(self.b / "j11_writing_v1130_desk", "report", "citations")):
-            self.assertIn("Citations<span class=word>0 of 3 keys verified</span>", page)   # was "0 of 6": t01 and t99
-            self.assertIn("🙋 1 key not in the bib: key2022", page)                        # under the closed bar
+                     self.render(self.b / "j11_writing_v1130_desk", "report", "evidence")):
+            self.assertIn("Citations</h3>", page)                                         # no check tally on the bar
+            self.assertNotIn("keys verified", page)                                       # (AGENTS § Page words)
+            self.assertNotIn("🙋 1 key not in the bib", page)                              # nor a count line under it
+            self.assertIn("key2022", page)                                                # the key shows on its own row
             if "j03_evidence_cite" not in page.split("<title>")[1][:40]:                 # the check, once, a line; the
                 self.assertIn("The whole-paper check", page)                              # citation Job's Check view owns it
             self.assertNotIn('<b>t99_check</b>', page)                                    # never a tab of its own
-            self.assertNotIn("<iframe", page.split("Citations<span")[1].split("🙋 Interaction")[0])   # cards, no frame
+            self.assertNotIn("<iframe", page.split("Citations</h3>")[1].split("🙋 Interaction")[0])   # cards, no frame
         check = self.render(self.b / "j03_evidence_cite", "report", "cite-check")
-        self.assertIn("Check<span class=word>0 of 3 keys verified</span>", check)
+        self.assertIn("Check</h3>", check)
+        self.assertNotIn("keys verified", check)
+        self.assertIn('<div class="ev-row bad"><b>key2022</b>', check)                   # its state, on its own card
         listed = self.render(self.b / "j03_evidence_cite", "report", "cite-list")
-        self.assertNotIn("class=ev-row", listed.split("Citations<span")[1].split("🙋 Interaction")[0])   # r03: one line per
+        self.assertNotIn("class=ev-row", listed.split("Citations</h3>")[1].split("🙋 Interaction")[0])   # r03: one line per
         self.assertIn("class=ev-row", check)                                                            # key; Check: cards
 
     def test_the_values_word_agrees_with_the_check(self):
         listed = self.render(self.b / "j02_evidence_value", "report", "value-list")
         check = self.render(self.b / "j02_evidence_value", "report", "value-check")
-        version = self.render(self.b / "j11_writing_v1130_desk", "report", "values")
-        for page in (check, version, listed):
-            self.assertIn("🙋 1 printed number to fix: t03_results C2.P1.B2 prints 4.10, its Run returned 4.12", page)
-        self.assertIn("Check<span class=word>1 differs</span>", check)
-        self.assertNotIn("iframe", check.split("Check<span")[1].split("🙋 Interaction")[0])   # each row drawn
+        version = self.render(self.b / "j11_writing_v1130_desk", "report", "evidence")
+        for page in (check, version, listed):                                    # no check tally (AGENTS § Page words)
+            self.assertNotIn("printed number to fix", page)
+            self.assertNotIn("1 differs", page)
+        self.assertIn("Check</h3>", check)
+        self.assertIn('<span class="w fd-you">differs from its Run</span>', check)  # the differing number's own row
+        self.assertIn("4.10", check)
+        self.assertNotIn("iframe", check.split("Check</h3>")[1].split("🙋 Interaction")[0])   # each row drawn
 
     def test_a_submission_links_its_own_versions_letter(self):
         letter = self.render(self.b / "j21_submission_v1130_desk", "work", "work-letter")
@@ -136,50 +143,39 @@ class ReviewRound2Test(unittest.TestCase):
         self.assertTrue(links)
         self.assertTrue(all("j11_writing_v1130_desk" in x for x in links), links)   # r01: it opened j12's letter
 
-    def test_a_versions_mindmap_carries_the_send_and_the_reviewer_points(self):
+    def test_a_version_has_no_mindmap_view(self):
+        # JL 261113: a version is Structure · Evidence · Display; an old MindMap link opens Structure
         first = self.render(self.b / "j11_writing_v1130_desk", "report", "mindmap")
-        self.assertIn("This send", first)
-        self.assertIn("&lt;what the reader asks&gt;", first)                         # each Section's question
-        self.assertNotIn("Reviewer points", first)
-        rev = self.render(self.b / "j12_writing_v0215_desk", "report", "mindmap")
-        self.assertIn("Reviewer points", rev)
-        self.assertIn("Say how &lt;the policy&gt; was assigned", rev)
-        self.assertIn("t02_methods ¶1", rev)
-        self.assertIn('href="/_board/workbench?path=paper/Paper-X/j11_writing_v1130_desk&amp;layout=focus"', rev)   # from
-        self.assertIn(">responds to<", rev)                                          # the comments it answers
-        self.assertIn("q01_review.md", rev)                                          # opening the report
+        self.assertIn('group=structure" aria-current="page"', first)
 
-    def test_a_sections_map_and_steps_read_the_text_its_text_shows(self):
+    def test_a_sections_draft_reads_its_text_and_plan_its_aims(self):
         sec = self.b / "j11_writing_v1130_desk" / "t00_summary"
-        mind = self.render(sec, "report", "mindmap")
-        self.assertNotIn("Nothing to map yet", mind)
-        self.assertIn("The first sentence states the problem", mind)
-        self.assertNotIn("\\citep", mind)
-        text = self.render(sec, "report", "text")
-        self.assertIn("<section class=fd-sec data-open>", text)                      # the Text starts open
-        self.assertIn("[<span title=\"not in this Section's bib\">key2024 ⚠</span>]", text)   # a key the bib lacks (r03)
-        for step in ("write", "revise"):
+        for step in ("write", "revise", "draft"):              # Write and Revise are one view, Draft (JL 261113)
             page = self.render(sec, "work", step)
-            self.assertIn("The adopted text", page, step)
+            self.assertIn("Draft Lab", page, step)            # JL 261113: three plain names
+            self.assertIn("The first sentence states the problem", page, step)
             self.assertNotIn("No text yet.", page, step)
-        self.assertNotIn("<p class=pb-sess>", self.render(sec, "work", "write"))   # the session line rides the copy only
-        status = self.render(sec, "report", "status")
-        self.assertIn("&lt;the aim&gt;", status)
-        self.assertIn("&lt;one opening line&gt;", status)
+            self.assertNotIn("\\citep", page, step)
+        self.assertNotIn("<p class=pb-sess>", self.render(sec, "work", "draft"))   # the session line rides the copy only
+        plan = self.render(sec, "report", "plan")              # the aims, once Plan + Results' (that view went)
+        self.assertIn("&lt;the aim&gt;", plan)
+        self.assertIn("&lt;one opening line&gt;", plan)
 
     def test_evidence_tasks_show_what_they_made_first(self):
         cite = self.b / "j03_evidence_cite" / "t01_cite"
         report, work = self.render(cite, "report"), self.render(cite, "work")
         self.assertEqual(views_of(report), ["mindmap", "findings", "standing"])
-        self.assertEqual(views_of(work), ["work-findings", "work-standing"])
+        self.assertEqual(views_of(work), views_of(report))       # Work retired in the paper theme (JL 261111): Report
         self.assertNotIn(">Progress<", work)
         made = self.render(cite, "report", "findings")
-        self.assertIn("1 · 📚 Its citations<span class=word>0 of 3 keys verified</span>", made)
+        self.assertIn(" · 📚 Its citations</h3>", made)                               # no "0 of 3 keys verified"
+        self.assertNotIn("keys verified", made)
         self.assertIn("pb-side", made)                                               # a side tab per key
         self.assertIn("not in the bib", made)                                        # plain words, not missing-bib
         values = self.render(self.b / "j02_evidence_value" / "t01_values", "work", "work-findings")
-        self.assertLess(values.index("⚙️ Process"), values.index("📊 Results"))
-        self.assertIn("Its values<span class=word>1 differs</span>", values)
+        self.assertNotIn("📊 Results", values)                     # what Process held comes first, no band headings
+        self.assertIn("Its values</h3>", values)                                    # no "1 differs" tally
+        self.assertNotIn("1 differs", values)
         walk = self.render(self.b / "j21_submission_v1130_desk" / "t02_portal-walk", "report", "findings")
         self.assertIn("starter, not walked", walk)
         self.assertIn("🙋 A person starts this walk", walk)

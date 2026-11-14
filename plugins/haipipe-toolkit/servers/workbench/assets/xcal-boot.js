@@ -153,6 +153,18 @@
   var edit = q.get("edit") === "1";
   var guide = q.get("guide") === "1";
   var mode = q.get("mode") || "";
+  // An embed that reads like a page (JL 261111): `fit=width` opens it at its width, top first, so its first box is
+  // readable and the reader scrolls down; `bare=1` takes the drawing tools off, leaving zoom and the page's Draw.
+  var fitWidth = q.get("fit") === "width";
+  // `focus=<frame name>[,<frame name>]`: open on those frames (a jump to one paper's area, JL 261111)
+  var focusNames = (q.get("focus") || "").split(",").filter(Boolean);
+  if (q.get("bare") === "1" && !edit) {
+    var bare = document.createElement("style");
+    bare.textContent = ".App-menu_top,.App-toolbar,.App-toolbar-container,.main-menu-trigger,.dropdown-menu-button," +
+      ".layer-ui__wrapper__top-right,.help-icon,.footer-center,.App-menu_bottom .undo-redo-buttons," +
+      ".layer-ui__wrapper__footer-right{display:none!important}";
+    (document.head || document.documentElement).appendChild(bare);
+  }
   var K_EL = "excalidraw", K_ST = "excalidraw-state";
   var LOCK = "haipipe-xcal-edit", LOCK_MS = 6000;
   var SAVE = "/_board/excalidraw-save";
@@ -218,6 +230,7 @@
   var box = null;
   els.forEach(function (e) {
     if (frame && e.type !== "frame") return;   // fit the FRAME, not its contents
+    if (focusNames.length && !(e.type === "frame" && focusNames.indexOf(e.name || "") >= 0)) return;
     var b = [e.x, e.y, e.x + (e.width || 0), e.y + (e.height || 0)];
     box = box ? [Math.min(box[0], b[0]), Math.min(box[1], b[1]),
                  Math.max(box[2], b[2]), Math.max(box[3], b[3])] : b;
@@ -225,12 +238,13 @@
   function fit() {                               // the whole drawing (or the frames) centred in this window
     if (!box) return;
     var vw = innerWidth || 1200, vh = innerHeight || 800, pad = 48;
-    var z = Math.min(1, (vw - 2 * pad) / Math.max(1, box[2] - box[0]),
-                        (vh - 2 * pad) / Math.max(1, box[3] - box[1]));
+    var z = fitWidth ? Math.min(1, (vw - 2 * pad) / Math.max(1, box[2] - box[0]))
+                     : Math.min(1, (vw - 2 * pad) / Math.max(1, box[2] - box[0]),
+                                   (vh - 2 * pad) / Math.max(1, box[3] - box[1]));
     z = Math.max(0.1, z);
     st.zoom = { value: z };
     st.scrollX = (vw / z - (box[2] - box[0])) / 2 - box[0];
-    st.scrollY = (vh / z - (box[3] - box[1])) / 2 - box[1];
+    st.scrollY = fitWidth ? pad / z - box[1] : (vh / z - (box[3] - box[1])) / 2 - box[1];
   }
   fit();
   // An embed can boot before its frame is laid out (a row just opened, a tab in the background): its window is
@@ -241,7 +255,8 @@
     return new Promise(function (res) {
       var t0 = Date.now();
       (function wait() {
-        if ((innerWidth >= 200 && innerHeight >= 200) || Date.now() - t0 > 2000) return res();
+        // an embed in a closed tab or fold waits until it is shown, so its fit uses the size it is shown at
+        if ((innerWidth >= 200 && innerHeight >= 200) || (canvasEdit && Date.now() - t0 > 2000)) return res();
         requestAnimationFrame(wait);
       })();
     }).then(function () {
@@ -275,6 +290,45 @@
       Object.defineProperty(window, "localStorage", { value: shim, configurable: true });
     } catch (e) {
       console.error("[haipipe] could not shim localStorage; not seeding", e);
+    }
+    // A card's Excalidraw `link` to a workbench page opens that page in the tab, on a click (JL 261111: "the item is
+    // also clickable"): the hand tool pans on a drag, so a press that does not move is a click. The view (scroll,
+    // zoom) is the one the app keeps saving into this embed's in-memory storage; the pointer turns to a hand over a
+    // linked card. Only links inside this server (a path from /) are followed.
+    var linkEls = els.filter(function (e) { return e.link && /^\/(?!\/)/.test(e.link); });
+    if (linkEls.length) {
+      var down = null;
+      var view = function () {
+        try { var s = JSON.parse(mem[K_ST] || "{}"); return { x: s.scrollX || 0, y: s.scrollY || 0, z: (s.zoom && s.zoom.value) || 1 }; }
+        catch (_) { return null; }
+      };
+      var hit = function (ev) {
+        var v = view(); if (!v) return null;
+        var cv = document.querySelector("canvas.interactive") || document.querySelector("canvas");
+        var r = cv ? cv.getBoundingClientRect() : { left: 0, top: 0 };
+        var sx = (ev.clientX - r.left) / v.z - v.x, sy = (ev.clientY - r.top) / v.z - v.y;
+        for (var i = linkEls.length - 1; i >= 0; i--) {
+          var e = linkEls[i];
+          if (sx >= e.x && sx <= e.x + (e.width || 0) && sy >= e.y && sy <= e.y + (e.height || 0)) return e;
+        }
+        return null;
+      };
+      addEventListener("pointerdown", function (ev) { down = { x: ev.clientX, y: ev.clientY }; }, true);
+      addEventListener("pointerup", function (ev) {
+        if (!down) return;
+        var moved = Math.abs(ev.clientX - down.x) + Math.abs(ev.clientY - down.y);
+        down = null;
+        if (moved > 5) return;
+        var e = hit(ev);
+        if (e) { try { window.top.location.href = e.link; } catch (_) { location.href = e.link; } }
+      }, true);
+      addEventListener("pointermove", function (ev) {
+        if (ev.buttons) return;
+        var e = hit(ev), cv = document.querySelector("canvas.interactive");
+        if (cv) cv.style.cursor = e ? "pointer" : "";
+        document.documentElement.title = e ? "Open " + e.link.replace(/^.*path=([^&]*).*$/, function (_, p) {
+          return decodeURIComponent(p).split("/").pop(); }) : "";
+      }, true);
     }
   }
 

@@ -125,7 +125,7 @@ class PaperFocusTest(unittest.TestCase):
 
     def test_live_report_and_old_work_bookmark_are_the_same_view(self):
         theme = frame.themes()['paper']
-        with patch.object(f, 'interactions', return_value=self.rows):
+        with patch.object(f, 'interactions', return_value=self.rows), patch('live.focus_interactions.interactions', return_value=self.rows):
             report = f.render(theme, self.root, self.board, 'report', 'story')
             legacy = f.render(theme, self.root, self.board, 'work', 'work-story')
         for html in (report, legacy):
@@ -136,10 +136,10 @@ class PaperFocusTest(unittest.TestCase):
             self.assertNotIn('unassigned_QUESTION', html)
             self.assertNotIn('view-caption', re.sub(r'<style>.*?</style>', '', html, flags=re.S))
             content = html.split('id="work-shared"', 1)[1]
-            positions = [content.index(title) for _, title in w.SHARED]
+            positions = [content.index(title) for _, title in w.SHARED if title in content]   # empty ones hidden (JL 261113)
             self.assertEqual(positions, sorted(positions))
             self.assertEqual(html.count('<h2>📋 Review Content</h2>'), 1)
-            self.assertEqual(html.count('<summary>🎨 Studio'), 1)
+            self.assertLessEqual(html.count('<summary>🎨 Studio'), 1)                          # once, or hidden when empty
             self.assertNotIn('aria-label="Work"', html)
         self.assertEqual(report, legacy)
 
@@ -148,6 +148,9 @@ class PaperFocusTest(unittest.TestCase):
         self.assertIn('work-story', board_views.board_work_views(self.board, self.root, lambda s, p: s))
         version = f.render(frame.themes()['paper'], self.root, self.job, 'work', '')
         self.assertIn('Work', version)
+        # a version Job takes the draft Task's bands: 📋 Review Content, then 🧭 Around the Work, hidden here as
+        # every section of it is empty (JL 261113)
+        self.assertIn('<h2>📋 Review Content</h2>', version)
         self.assertNotIn('work-shared', re.sub(r'<style>.*?</style>', '', version, flags=re.S))
 
 

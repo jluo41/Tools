@@ -11,7 +11,6 @@ from live.ui_parts import GROUP_CSS, PROCESS, RESULTS, _band, _file_link, _numbe
 from live.focus_draft import CSS, JS, WORK, _facts, preview, word
 from live.board_read import PAPER_CAPTIONS, _num, _task_url, display_job, is_version
 from live.board_interactions import ix_item
-from live.board_evidence import evidence_item
 from live.address_links import linked_views, page_linker
 
 
@@ -138,7 +137,8 @@ VERSION_BANDS = (("draft-main", "Draft-Main", "sections", (0, 19)), ("draft-appe
                  ("display-main", "Display-Main", "displays", (0, 49)), ("display-appendix", "Display-Appendix", "displays", (50, 99)))
 
 
-VERSION_CAPTIONS = {"draft-main": "The main paper's Sections, each with its five steps; a word opens that step.",
+VERSION_CAPTIONS = {"structure": "The Story's Narrative beside this version's, and the paper map, one line per paragraph.",
+                    "draft-main": "The main paper's Sections, each with its five steps; a word opens that step.",
                     "draft-appendix": "The appendix's Sections, each with its five steps; a word opens that step.",
                     "display-main": "The main paper's figures and tables, from the paper's display Job.",
                     "display-appendix": "The appendix's figures and tables, from the paper's display Job."}
@@ -148,7 +148,8 @@ PAPER_CAPTIONS.update({"work-" + k: v for k, v in VERSION_CAPTIONS.items()})
 
 
 # a version's Report shows the same views, results only (261106); the Values and Citations keys stay the Board's
-PAPER_CAPTIONS.update({"draft-main": "The main paper's Sections, each one's text to read.",
+PAPER_CAPTIONS.update({"structure": VERSION_CAPTIONS["structure"],
+                       "draft-main": "The main paper's Sections, each one's text to read.",
                        "draft-appendix": "The appendix's Sections, each one's text to read.",
                        "display-main": VERSION_CAPTIONS["display-main"], "display-appendix": VERSION_CAPTIONS["display-appendix"],
                        "values": "The printed numbers, one Task per group, each read from a returned Result.",
@@ -183,10 +184,18 @@ def version_work_views(version: Path, root: Path, items=(), item_html=None, work
     changes, since = send_changes(version), evidence_since(version)   # a revision: what this send did to each tab
 
     def page(proc: str, res: str) -> str:
-        body = (_band(PROCESS, _numbered(proc)) + _band(RESULTS, _numbered(res))) if work else _numbered(res)
+        # Work is retired in the paper theme (JL 261111: "the Work is no longer used"): Report holds what Process held,
+        # numbered first, with no Process or Results heading over it
+        body = (_band(PROCESS, _numbered(proc)) + _band(RESULTS, _numbered(res))) if work else _numbered(proc + res)
         return CSS + VERSION_CSS + GROUP_CSS + PB_CSS + SIDE_CSS + body + PB_JS + JS
 
     views = {}
+    # Structure first (JL 261111): the Story's Narrative beside this version's, then one line per paragraph, read-only
+    def structure():
+        from live.focus_page import markdown
+        from live.paper_structure import structure_view
+        return page("", structure_view(version, root, lambda text, base: markdown(text, base, root)))
+    views[pre + "structure"] = ("Structure", structure)
     for key, name, kind, (lo, hi) in VERSION_BANDS:
         def build(kind=kind, lo=lo, hi=hi, name=name, key=key):
             if kind == "sections":
@@ -205,13 +214,13 @@ def version_work_views(version: Path, root: Path, items=(), item_html=None, work
             if job is None:
                 return page("", _section("🖼️ Displays", '<p class=mut>No display Job yet: the paper\'s figures and tables '
                                                        'become one Job beside the versions, one Task per figure or table.</p>',
-                                         "nothing yet"))
+                                         ""))
             tasks = [t for t in sorted(job.glob("t[0-9]*_*"), key=_num) if t.is_dir() and not t.name.startswith("t99_")]
             only = ("main",) if key == "display-main" else ("supplement", "unplanned")
             placed = display_groups(version.parent, tasks)
             tasks = [t for t in tasks if placed.get(t) in only]
             res, _ = _evidence_kinds(version.parent, root, ("Displays",), only=only, since=since)
-            res = res or _section("🖼️ Displays", f'<p class=mut>No {esc(name)} display yet in {esc(job.name)}.</p>', "nothing yet")
+            res = res or _section("🖼️ Displays", f'<p class=mut>No {esc(name)} display yet in {esc(job.name)}.</p>', "")
             return page("", res)                # each display's state is its tab's (JL 261109), no second list
         views[pre + key] = (name, build)
     # Values and Citations: the paper's evidence Jobs beside the version (j02_evidence_value, j03_evidence_cite), drawn
@@ -225,7 +234,18 @@ def version_work_views(version: Path, root: Path, items=(), item_html=None, work
                 res, _ = _evidence_kinds(version.parent, root, (name,), since=since)
                 return page("", res)            # each item's state is its tab's (JL 261109), no second list
             views[pre + key] = (name, build)
-    return linked_views(views, page_linker(version, root))   # every bNN.jNN.tNN.rNN a link (address_links, JL 261103)
+    # three views, Structure first (JL 261113: "we want to put the structure at the first one ... I think we can just
+    # keep the evidence and display views here"): Values and Citations are one Evidence view, the main text's and the
+    # appendix's displays one Display view; each Section's text is a click away from its row in Structure
+    kinds = tuple(n for k, n in (("values", "Values"), ("citations", "Citations")) if pre + k in views)
+    three = {pre + "structure": views[pre + "structure"]}
+    if kinds:
+        three[pre + "evidence"] = ("Evidence", lambda: page("", _evidence_kinds(version.parent, root, kinds, since=since)[0]))
+    if display_job(version) is not None:
+        three[pre + "display"] = ("Display", lambda: page("", _evidence_kinds(
+            version.parent, root, ("Displays",), only=("main", "supplement", "unplanned"), since=since)[0]
+            or _section("🖼️ Displays", "<p class=mut>No display yet.</p>", "")))
+    return linked_views(three, page_linker(version, root))   # every bNN.jNN.tNN.rNN a link (address_links, JL 261103)
 
 
 def _came_from(version: Path) -> Path | None:
@@ -287,10 +307,9 @@ def evidence_since(version: Path):
 def version_report_views(version: Path, root: Path) -> dict:
     """A version's Report: its MindMap (the send's facts, a revision's reviewer points, each Section's question), then
     its Work's six views, the Results alone (JL 261106, decision 1). The focus page keeps the MindMap first."""
-    views = version_work_views(version, root, work=False)
-    if views:
-        views = {"mindmap": ("MindMap", lambda: version_mindmap(version, root)), **views}
-    return views
+    # Structure · Evidence · Display, Structure first; no MindMap (JL 261113: "we want to put the structure at the first
+    # one ... I think we can just keep the evidence and display views here")
+    return version_work_views(version, root, work=False)
 
 
 VERSION_CSS = """<style>.fd-steps{display:flex;gap:6px;flex-wrap:wrap}.fd-step{font-size:12px;border:1px solid var(--line);
@@ -405,9 +424,8 @@ def _version_mindmap(version: Path, root: Path) -> str:
                                + [mmbuild.built(f"{v}/point/{i}/lands", f"[lands on] {lands}")] * bool(lands)
                                + [mmbuild.built(f"{v}/point/{i}/reply", f"[reply] {reply}")])
                  for i, (point, who, lands, reply, state) in enumerate(points)]
-        done = sum(st in ("answered", "applied") for *_, st in points)
-        # the closed branch carries its tally (r02: "Reviewer points" showed none)
-        kids.append(mmbuild.built(f"{v}/points", f"Reviewer points · {done} of {len(points)} answered", nodes))
+        # each point carries its own [state]; the branch label carries no tally (AGENTS § Page words)
+        kids.append(mmbuild.built(f"{v}/points", "Reviewer points", nodes))
     sections, waits = [], 0
     for t in sorted(x for x in version.glob("t[0-9]*_*") if x.is_dir()):
         face = _face_of(t)

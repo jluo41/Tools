@@ -18,7 +18,7 @@ SERVER_DIR = Path(__file__).resolve().parents[1]
 PAGE_ROOT = SERVER_DIR.parents[3] / "skills" / "1_base" / "draft" / "haipipe-draft"
 sys.path.insert(0, str(PAGE_ROOT))
 sys.path.insert(0, str(SERVER_DIR.parent))                      # workbench-task-draft: the Page Task views
-sys.path.insert(0, str(SERVER_DIR.parents[1]))   # runs_panel.py: the base's, every theme's
+sys.path.insert(0, str(SERVER_DIR.parents[1] / "page"))   # runs_panel.py: the base's, every theme's
 
 from src.run_folders import folder_for  # noqa: E402
 from runs import _TICKET_NAME, _valid_page_run_id  # noqa: E402

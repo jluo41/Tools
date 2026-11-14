@@ -64,27 +64,22 @@ class VersionAndJobsTest(unittest.TestCase):
     def render(self, folder, section="", group=""):
         return focus_page.render(self.theme, self.root, folder, section, group)
 
-    def test_a_version_report_is_its_work_views_results_only(self):
-        # JL 261106: "A paper version's Report gets the same six views as its Work ... showing results only"
+    def test_a_version_is_structure_evidence_and_display(self):
+        # JL 261113: "we want to put the structure at the first one ... I think we can just keep the evidence and display
+        # views here": Structure first and opened by default; Values and Citations one Evidence view; no MindMap and no
+        # Draft-Main or Draft-Appendix (each Section's text is a click away from its row in Structure)
         report = self.render(self.version, "report")
-        work = self.render(self.version, "work")
-        self.assertEqual(views_of(report)[0], "mindmap")                    # MindMap first
-        self.assertEqual(views_of(report)[1:], [k.removeprefix("work-") for k in views_of(work)])
-        self.assertEqual(views_of(report)[1:7], ["draft-main", "draft-appendix", "display-main", "display-appendix",
-                                                 "values", "citations"])
-        main = self.render(self.version, "report", "draft-main")
-        self.assertNotIn("Process</h3>", main)                              # results only
-        self.assertIn("1 · 📝 Text<span class=word>1 of 1 with text</span>", main)   # each Section's text, a side tab each
-        self.assertIn("The first sentence states the problem.", main)
-        self.assertIn("pb-side", main)
-        done = self.render(self.version, "work", "work-draft-main")
-        self.assertLess(done.index("⚙️ Process"), done.index("📊 Results"))
-        self.assertIn("🪜 Sections", done)
-        self.assertIn("The first sentence states the problem.", done.split("📊 Results")[1])
-        self.assertIn("t21_appendix", self.render(self.version, "report", "draft-appendix"))
-        # switching between Report and Work keeps the view (rail_view)
-        self.assertIn("section=work&amp;group=work-draft-appendix", self.render(self.version, "report", "draft-appendix"))
-        self.assertIn("section=report&amp;group=values", self.render(self.version, "work", "work-values"))
+        views = views_of(report)
+        self.assertEqual(views[0], "structure")
+        self.assertTrue(set(views) <= {"structure", "evidence", "display"}, views)
+        self.assertIn("evidence", views)
+        self.assertEqual(views_of(self.render(self.version, "work")), views)   # Work retired (JL 261111)
+        self.assertNotIn(">Work<", report.split("focus-rail right")[-1][:3000])
+        old = self.render(self.version, "report", "draft-main")              # an old link opens Structure
+        self.assertIn('group=structure" aria-current="page"', old)
+        evidence = self.render(self.version, "report", "evidence")
+        self.assertIn("Values</h3>", evidence)                              # a bar with no tally word (AGENTS § Page words)
+        self.assertIn("Citations</h3>", evidence)
 
     def test_evidence_and_submission_jobs_have_their_own_views(self):
         # JL 261106: the evidence and submission Jobs fell back to the old Progress view
@@ -95,7 +90,7 @@ class VersionAndJobsTest(unittest.TestCase):
         for job, keys in want.items():
             report, work = self.render(self.b / job, "report"), self.render(self.b / job, "work")
             self.assertEqual(views_of(report), ["mindmap"] + keys, job)
-            self.assertEqual(views_of(work), ["work-" + k for k in keys], job)
+            self.assertEqual(views_of(work), views_of(report), job)   # Work retired (JL 261111)
             self.assertNotIn(">Progress<", work, job)
             for key in keys:
                 page = self.render(self.b / job, "report", key)
@@ -103,11 +98,13 @@ class VersionAndJobsTest(unittest.TestCase):
                 self.assertIn("🙋 Interaction<span", page, (job, key))
         displays = self.render(self.b / "j01_evidence_display", "work", "work-display-list")
         self.assertNotIn("Where each display stands", displays)      # its state is its tab's (JL 261109)
-        self.assertIn("Displays<span class=word>1 of 1 drawn</span>", displays)
+        self.assertIn("Displays</h3>", displays)                           # no "1 of 1 drawn" tally on the bar
+        self.assertNotIn("1 of 1 drawn", displays)
         cites = self.render(self.b / "j03_evidence_cite", "report", "cite-list")
-        self.assertIn("Citations<span class=word>1 of 3 verified</span>", cites)
+        self.assertIn("Citations</h3>", cites)                             # no "1 of 3 verified" tally
+        self.assertNotIn("1 of 3 verified", cites)
         check = self.render(self.b / "j02_evidence_value", "report", "value-check")
-        self.assertIn("🔎 Check<span class=word>nothing yet</span>", check)
+        self.assertIn("🔎 Check</h3>", check)                              # no "nothing yet" state word on its bar
 
     def test_display_tabs_draw_any_display_tasks_as_the_paper_does(self):
         # JL 261109: the work Block's Findings displays are drawn by the paper's own code, grouped by `group:`
@@ -119,7 +116,7 @@ class VersionAndJobsTest(unittest.TestCase):
             (job / t / "runs" / "r01_draw" / "result" / "preview.pdf").write_bytes(b"%PDF-1.4\n")
             (job / t / f"{t}.md").write_text(f"# {t}\ntask-type: display\n{face}", encoding="utf-8")
         html, word = display_tabs(sorted(job.iterdir()), self.root, names={"main": "Results", "method": "Methods"})
-        self.assertEqual(word, "2 of 2 drawn")
+        self.assertEqual(word, "")                                          # each tab shows its own state; no tally
         self.assertEqual(re.findall(r"pb-lgroup>([^<]+)", html), ["Results", "Methods"])
         self.assertIn("📈 Figure · Switches", html)
         self.assertIn("r01_draw/result/preview.pdf", html)
@@ -142,6 +139,73 @@ class VersionAndJobsTest(unittest.TestCase):
         self.assertIn("word-tracked/Paper-X-v4-tracked.pdf", html)
         self.assertIn("word-tracked/Paper-X-v4-tracked.docx", html)
 
+    def test_the_structure_view_reads_the_story_and_the_version_side_by_side(self):
+        # JL 261111: "it should be a view for the job workbench UI"; the Story's Narrative beside the version's, signed
+        story = self.b / "s02-story-desk-x" / "s02-story-desk-x.md"
+        story.write_text(STORY + "\n### 8 · Section Narrative\n\nC1 the first claim, then C2.\n", encoding="utf-8")
+        face = self.version / "j11_writing_v1130_desk.md"
+        face.write_text(face.read_text() + "\n## Narrative\n\n| Section | question |\n|---|---|\n| t00_summary | Q |\n",
+                        encoding="utf-8")
+        plan = self.version / "t00_summary" / "draft"
+        plan.mkdir()
+        (plan / "t00_summary-draft-v0.1.md").write_text(
+            "# t00_summary\napproved: ⬜\n\n## 1 · Structure\n\n### C1.P1 · The problem · S1 to S2\n- B1 · S1 · x\n",
+            encoding="utf-8")
+        page = self.render(self.version, "report", "structure")
+        self.assertIn("C1 the first claim, then C2.", page)                 # the Story, read, not copied
+        self.assertNotIn("not signed", page)                               # the mark carries the state
+        self.assertIn('<div class="st-sign st-no"><b>⬜</b>', page)
+        self.assertNotIn("plans signed", page)
+        self.assertIn("The problem", page)                                   # the paper map, one line per paragraph
+        self.assertIn("pm-root", page)                                      # the Section's Plan mind map, the draft's own
+        self.assertNotIn("contenteditable", page.split("pm-root", 1)[1][:4000])   # read-only here
+        import sys as _s
+        _s.path.insert(0, str(Path(__file__).resolve().parents[3] / "skills/1_base/draft/haipipe-draft"))
+        from src.page_sign import sign_narrative
+        self.assertTrue(sign_narrative(self.version, "this order")["ok"])
+        page = self.render(self.version, "report", "structure")
+        self.assertIn('in chat: &quot;this order&quot;', page)
+        story.write_text(story.read_text().replace("then C2", "then C3"), encoding="utf-8")
+        self.assertIn("changed since", self.render(self.version, "report", "structure"))
+
+    def test_the_structure_view_shows_the_examples_as_one_live_drawing(self):
+        # JL 261111: "one draw should be okay": the Section's examples topic as its live drawing, a jump per frame
+        # (Pattern, each paper), opening on the first; nothing listed under it
+        import json
+        task = self.version / "t00_summary"
+        face = task / "t00_summary.md"
+        face.write_text((face.read_text() if face.is_file() else "# t00_summary\n") + "examples: s23-t00-summary-desk-examples\n",
+                        encoding="utf-8")
+        topic = self.b / "s23-t00-summary-desk-examples"
+        (topic / "reads" / "p02-frey2023").mkdir(parents=True)
+        (topic / "reads" / "p02-frey2023" / "reading.yaml").write_text("paper:\n  title: <a paper>\n", encoding="utf-8")
+        (topic / f"{topic.name}.excalidraw").write_text(json.dumps({"elements": [
+            {"type": "frame", "name": "Pattern", "x": 0, "y": 0, "width": 100, "height": 50},
+            {"type": "frame", "name": "Frey et al. 2023", "x": 0, "y": 60, "width": 100, "height": 50}]}), encoding="utf-8")
+        page = self.render(self.version, "report", "structure")
+        self.assertIn("The venue's papers", page)
+        self.assertIn("fit=width&amp;bare=1&amp;focus=Pattern", page)       # opens on the first frame, its width
+        self.assertIn(">Frey et al. 2023</button>", page)                    # a jump to that paper's area
+        self.assertIn(">Whole drawing</button>", page)
+        self.assertNotIn("st-paper", page)                                   # no rows under the drawing
+        self.assertNotIn("open the page ↗", page)
+
+    def test_a_paragraph_outside_4_to_7_sentences_is_marked_on_the_plan_map(self):
+        # JL 261112: "unless having good reason, we might make sure they are between 4~7 sentences": red on the map,
+        # muted with a reason, counted on the Section's tab
+        task = self.version / "t00_summary"
+        face = task / "t00_summary.md"
+        face.write_text((face.read_text() if face.is_file() else "# t00_summary\n") + "section_kind: results\n", encoding="utf-8")
+        (task / "draft").mkdir(exist_ok=True)
+        (task / "draft" / "t00_summary-draft-v0.1.md").write_text(
+            "# t00_summary\napproved: ⬜\n\n## 1 · Structure\n\n### C1.P1 · The long one · S1 to S10\n- B1 · S1 · x\n\n"
+            "### C1.P2 · The short one · S11 to S12\nreason: one table, read once\n- B1 · S11 · y\n", encoding="utf-8")
+        page = self.render(self.version, "report", "structure")
+        self.assertIn("❗ 10 sentences (4 to 7)", page)
+        self.assertIn("2 sentences · reason given", page)
+        self.assertNotIn("2 paragraphs · 1 off", page)                    # no paragraph tally on the Section's tab
+        self.assertNotIn("paragraphs ·", page)
+
     def test_each_view_shows_its_own_items(self):
         # JL 261106: "a view's bottom section shows that view's own items, and the rail shows everything"
         form(self.version, "r01_collect_story", "Story asks", "Paper-X-s02:paper @ story")
@@ -155,9 +219,10 @@ class VersionAndJobsTest(unittest.TestCase):
         self.assertNotIn("Story asks", evidence)
         writing = self.render(self.b, "report", "draft")
         self.assertNotIn("Section asks", writing)  # unassigned questions remain in the rail
-        version = self.render(self.version, "report", "draft-main")
-        self.assertIn("Story asks", version)                              # a version: its own forms
-        self.assertNotIn("Section asks", version.split("🙋 Interaction")[-1])
+        version = self.render(self.version, "report", "draft-main")      # a version takes the draft Task's bands
+        self.assertIn("📋 Review Content", version)                       # (JL 261113): its forms on its own rail;
+        self.assertNotIn("Story asks", version)                           # an empty 🧭 band is hidden
+        self.assertIn("Story asks", self.render(self.version, "interactions"))
         rail = self.render(self.b, "interactions")
         for title in ("Story asks", "Value asks", "Section asks"):          # the rail keeps everything
             self.assertIn(title, rail)

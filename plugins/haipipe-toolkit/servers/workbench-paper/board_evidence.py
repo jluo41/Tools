@@ -5,7 +5,6 @@ from __future__ import annotations
 import filecmp
 import json
 import re
-import time
 from pathlib import Path
 from urllib.parse import quote
 
@@ -119,41 +118,21 @@ def evidence_done(status: str) -> bool:
 
 
 def evidence_word(kind: str, statuses: list) -> str:
-    """The state word of a list of evidence Tasks (JL 261106: "every closed bar shows a state word"): how many of them are
-    drawn (Displays), filled (Values) or verified (Citations, from their check's `N keys: M verified`)."""
-    if not statuses:
-        return "nothing yet"
-    keys = [re.search(r"(\d+) keys?: (\d+) verified", s or "") for s in statuses]
-    if kind == "Citations" and any(keys):
-        return f"{sum(int(m[2]) for m in keys if m)} of {sum(int(m[1]) for m in keys if m)} verified"
-    verb = {"Displays": "drawn", "Values": "filled", "Citations": "checked"}.get(kind, "done")
-    return f"{sum(evidence_done(s) for s in statuses)} of {len(statuses)} {verb}"
+    """The state word of a list of evidence Tasks: none. "N of M drawn / filled / verified" is a progress tally, which
+    a page never carries (AGENTS § Page words); each Task's own tab shows its state. Kept for its callers."""
+    return ""
 
 
 def check_word(status: str) -> str:
-    """A whole-paper check's state word, from its headline: how many values match, or how many keys are verified."""
-    m = re.search(r"(\d+) values?\b.*?(\d+) match", status or "")
-    if m:
-        return f"{m[2]} of {m[1]} match"
-    m = re.search(r"(\d+) keys?: (\d+) verified", status or "")
-    if m:
-        return f"{m[2]} of {m[1]} verified"
-    return "checked" if status else "not run yet"
+    """A whole-paper check's state word: "checked" once its Run returned a headline, else none. No "N of M match /
+    verified" tally (AGENTS § Page words): what it found shows on each number or key."""
+    return "checked" if status else ""
 
 
 def values_word(job: Path, root: Path) -> str:
-    """The Values tabs' state word: whether every raw table is still the file its source Run holds (source_status)."""
-    found = sorted(job.glob("t[0-9]*_*/runs/r[0-9]*/result/tables.json"))
-    if not found:
-        return "nothing yet"
-    try:
-        tabs = json.loads(found[-1].read_text(encoding="utf-8"))["tabs"]
-        froms = list(dict.fromkeys(t["from"] for tab in tabs for t in tab["tables"]))
-        states = [source_status(found[-1].parent, frm, found[-1].stat().st_mtime, root)[0] for frm in froms]
-    except Exception:
-        return ""
-    off = sum(not st.startswith("✅") for st in states)
-    return "all current" if not off else f"{off} of {len(states)} need a look"
+    """The Values tabs' state word: none. Each raw table's tab shows whether it is still the file its source Run holds
+    (source_status); "N of M need a look" or "all current" is a check tally (AGENTS § Page words). Kept for callers."""
+    return ""
 
 
 def evidence_item(task: Path, root: Path) -> str:

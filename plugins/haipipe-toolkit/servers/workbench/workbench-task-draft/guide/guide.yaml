@@ -1,5 +1,5 @@
 # The Page family's Guide (a Page Task's views: servers/workbench/workbench-task-draft). Loaded by
-# servers/workbench/guide_families.py. Paths: guide/… related/… or a module are relative to
+# servers/workbench/guide/guide_families.py. Paths: guide/… related/… or a module are relative to
 # servers/workbench/workbench-task-draft; skill:<name>/<rest> is a skill's file; Tools/… is SPACE-relative.
 family: page
 label: Page

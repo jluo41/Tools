@@ -14,4 +14,4 @@ Q9 · applied · 2026-10-31 22:33 · s32-D09 to D11, s33-D02; focus_draft.ANSWER
 Q11 · applied · 2026-11-04 13:38 · board_read.BOARD_VIEWS, board_results.idea_story_view and plan_view, board_process.process_html; workbench-paper 0.45.0
 Q12 · applied · 2026-11-04 23:08 · workbench-paper 0.46.0, board_results.py interaction_section, idea_story_view
 Q13 · applied · 2026-11-04 23:08 · workbench-paper 0.46.0, board_results.py interaction_section, idea_story_view
-Q14 · applied · 2026-11-04 23:41 · servers/workbench/interaction_section.py, focus_page.py
+Q14 · applied · 2026-11-04 23:41 · servers/workbench/page/interaction_section.py, focus_page.py

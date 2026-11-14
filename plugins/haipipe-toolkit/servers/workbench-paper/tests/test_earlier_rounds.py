@@ -35,5 +35,5 @@ def test_each_tab_flags_its_state():
     assert br._tab_flag("latex", man, None, True) == "⏳ Rebuilding: last build shown"
     assert br._tab_flag("word", man, None, False, stand_in=True) == "❗ Word stuck: layout not final"
     assert br._tab_flag("word", man, None, True) == "⏳ Rebuilding: do not open"
-    assert br._tab_flag("letter", man, None, False) == "❗ 1 checks open"
-    assert br._tab_flag("portal", man, None, False) == "⬜ 1 of 2 uploads ready"
+    assert br._tab_flag("letter", man, None, False) == "❗ Checks open"          # no check tally (AGENTS § Page words)
+    assert br._tab_flag("portal", man, None, False) == "⬜"                      # each slot shows its own state

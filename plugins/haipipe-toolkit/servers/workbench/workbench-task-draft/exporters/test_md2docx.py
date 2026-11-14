@@ -249,6 +249,18 @@ Table \\ref{tab:c} pools them. <!-- realizes: C1.P2.B2 -->
 
 
 class WordPreviewTests(unittest.TestCase):
+    def test_appendix_heading_that_repeats_the_title_prints_once(self):
+        body = "## Content\n\n### Appendix A · Extended Data\n\n#### C1.P1 · Fig · S1 to S1\n\nA caption.\n"
+        with tempfile.TemporaryDirectory() as tmp:
+            page = Path(tmp) / "t21_extended-data.md"
+            page.write_text("# t21_extended-data · Appendix A · Extended Data\n" + body)
+            other = Path(tmp) / "t22_more.md"
+            other.write_text("# t22_more · Appendix B · More\n" + body)
+            heads = [b for b in md2docx.parse_page(page)[0] if b[0] == "h"]
+            kept = [b for b in md2docx.parse_page(other)[0] if b[0] == "h"]
+        self.assertEqual(heads, [("h", 1, "Extended Data")])
+        self.assertEqual(len(kept), 2)
+
     def test_renderer_success_without_fresh_pdf_preserves_old_preview(self):
         import docx2pdf
         import sys

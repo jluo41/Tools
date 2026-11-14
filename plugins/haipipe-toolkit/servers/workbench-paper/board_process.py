@@ -7,7 +7,6 @@ from pathlib import Path
 from urllib.parse import quote
 
 from live import draft_steps as ds
-from live.frame import esc
 from live.ui_parts import _cap, _plain, _plan_html, _section, _todo, plural_word, todo_section
 from live.focus_draft import WORK
 from live.board_read import BOARD_PARTS, DOT_REF, view_topics, _face, _field, _num, _open_list, _page_url, _section_state, _state_words, _table, _task_url, _waits, board_topic, explore_tree, is_version, md_table, part_topics
@@ -196,7 +195,7 @@ def process_html(board: Path, key: str, root: Path, md, items, work: bool, item_
         title = "Decisions made" if rows else "No form answered yet"
         n += 1
         out += _section(f"{n} · 🙋 {_cap(title)}", _todo(rows) if rows else "<span hidden></span>",
-                        plural_word(len(rows), "decided", "decided") if rows else "nothing yet")
+                        "")                     # each decision is its own row; no count on the bar
     if key == "plan":                          # 2 · the plan center: design the data, the regressions, run, read
         plan = _plan_steps(board, root)
         if plan:
@@ -213,6 +212,8 @@ def process_html(board: Path, key: str, root: Path, md, items, work: bool, item_
     if work and waits:                         # the waiting lines join the Open list, or stand as it (261105: Idea read
         lists[("Open", "")] = waits + lists.get(("Open", ""), [])   # "🚧 Open", Story "📌 Open points")
     for (head, part), rows in sorted(lists.items(), key=lambda kv: kv[0][0] != "Open"):
+        if head == "Open" and key == "story":   # the Story's Open list is no section (JL 261111: "this is
+            continue                            # meaningless, we can drop it"); it stays in the face
         n += 1
         if head == "Open":                     # each step's word and waiting line read from its rows' pills (261106)
             out += todo_section(f"{n} · 📌 Open points", rows)

@@ -70,4 +70,4 @@
   decision: 🙋 Interaction is the last section of every view at every level, and the one look of the rail and the pop-out
   said: could you try to make this section at the bottom for each of the view? not matter for the block, or job or task; make this to be the standard items for any of them; the workbecnh UI code
   when: 2026-11-04 23:41
-  applied_by: servers/workbench/interaction_section.py, focus_page.py
+  applied_by: servers/workbench/page/interaction_section.py, focus_page.py
