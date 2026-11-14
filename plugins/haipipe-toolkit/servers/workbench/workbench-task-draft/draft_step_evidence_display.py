@@ -80,6 +80,8 @@ def _displays(folder: Path, d: dict | None) -> list:
     calls, out, used = _calls(d), [], set()
     for u in _units(folder):
         names = [n for n in calls if (u["shown"] and n.lower() == u["shown"].lower()) or n in u["labels"]]
+        if not names and "display" not in u["dir"].parts:   # an old pass's unit no sentence calls: not this Section's
+            continue
         used.update(names)
         words = u["slug"].replace("-", " ")
         out.append({**u, "label": f"DISPLAY {u['n']}", "names": names, "made": True,
