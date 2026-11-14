@@ -49,11 +49,11 @@ def _units(folder: Path) -> list:
         # the name the text calls it by: `shown as:`, else a Table or Figure in its `label:`, its heading or its Placement
         hit = next((h for h in (CALLS.search(x) for x in (_field(text, "label"), head.group(1) if head else "",
                                                            place.group(1) if place else "")) if h), None)
-        shown = _field(text, "shown as") or (hit.group(0) if hit else "")
+        shown = _field(text, "shown as") or (hit.group(0) if hit else "") or _field(text, "number")
         status = re.search(r"(?ms)^##\s*Status\s*\n+\s*(\S.*?)\s*$", text)
         pic = next((x for x in (p / "preview.png", p / "assets" / "figure.png", p / "assets" / "figure.svg") if x.is_file()), None)
         out.append({"n": int(m.group(1)), "slug": m.group(2), "dir": p, "readme": readme if readme.is_file() else None,
-                    "claim": _field(text, "claim"), "shown": shown, "labels": set(re.findall(r"\\label\{([^}]+)\}", text + tex)),
+                    "claim": _field(text, "claim"), "shown": shown, "labels": set(re.findall(r"\\label\{([^}]+)\}", text + tex)) | ({_field(text, "label")} - {""}),
                     "kind": _field(text, "kind") or ("table" if (p / "assets" / "table-body.tex").is_file() else "figure" if pic else ""),
                     "built_on": _field(text, "built_on"), "accepted": _field(text, "accepted"),
                     "layout": _field(text, "layout"), "made_by": _field(text, "made by"),
