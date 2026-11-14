@@ -65,6 +65,9 @@ def _text_and_cards(d: dict, ev: dict, root: Path, path: Path, task: Path) -> st
     text = "".join((f'<h3 style="margin:14px 0 4px">{esc(t)}</h3>' if len(d["text"]) > 1 else "")
                    + _md(b, marks, _parts(d), rows=True) for t, b in d["text"])
     text = _cite_names(_embed_displays(text, d, _displays(task, d), root), d)
+    from live.draft_card_text import ref_names, ref_text   # \ref prints its display's number ("Figure 2"), as LaTeX does
+    refs = ref_names(task)
+    text = ref_text(text, refs)
     # a sentence the person checked, while its words are the same (draft_step_revise_notes.checked)
     from live.draft_step_revise_notes import checked
     held = checked(path)
@@ -131,7 +134,7 @@ def _text_and_cards(d: dict, ev: dict, root: Path, path: Path, task: Path) -> st
            for sid, rows in _sentence_history(d, path).items()],
         key=lambda x: x[0]))
     from live.draft_card_text import cite_text    # the cards' citations print as the sentences' do, never as LaTeX
-    right = [cite_text(h, d) for h in right]
+    right = [ref_text(cite_text(h, d), refs) for h in right]
     some = any((c.get("state") or "proposed").split()[0].lower() == "proposed" for _, c in cs)
     waiting = sum(c["state"] == "open" for c in notes)
     # a card already written into the text, or a comment its person closed, is hidden until asked for (JL 261021:
