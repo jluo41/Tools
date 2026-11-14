@@ -10,7 +10,10 @@ moved or merged, the ids no longer follow the text (S5 before S4, a new S22 afte
 - `draft/records/<stem>-revise.md` and `<stem>-revise-rules.md`, every S id;
 - `draft/records/<stem>-comments.md`, each comment's target and each AI reply; a person's own notes stay as written.
 
-An id the text no longer has (a retired or merged sentence) is left as it is; say where it went with `--merged`.
+Only page addresses change: `S4`, `· S4 ·`, `C2.P3.S4`, `S4 to S7`. A Word or tracked-edit address, `P8.S3` or
+`02-literature:P4.S3` (a P with no C before it), keeps its numbers. An id the text no longer has (a cut or merged
+sentence) is left as it is, unless a new sentence takes that number: then it is marked `S2-cut`, so an old note never
+points at the new S2. Say where a merged one went with `--merged`.
 """
 from __future__ import annotations
 
@@ -21,14 +24,15 @@ from .folder_health import _page_md
 from .outline_version import latest_outline, plan_dir
 
 DRAFT_SECTION = re.compile(r"(?m)^## \d+ · Draft\b")
-SID = re.compile(r"(?<![A-Za-z0-9_])S(\d+[a-z]?)(?![0-9])")
+SID = re.compile(r"(?<![A-Za-z0-9_])S(\d+[a-z]*)(?![0-9A-Za-z-])")
+WORD_ADDRESS = re.compile(r"(?<![.A-Za-z0-9])P\d+\.$")   # "P8." or ":P4." just before the id: a Word address
 
 
 def order_of(plan_text: str) -> list:
     """The sentence ids in reading order: `## 3 · Draft`'s lines, else the plan's points."""
     match = DRAFT_SECTION.search(plan_text)
     section = re.split(r"(?m)^## ", plan_text[match.end():], maxsplit=1)[0] if match else ""
-    ids = re.findall(r"(?m)^- B\d+[a-z]* · (S\d+[a-z]?) · ", section) or re.findall(r"(?m)^- B\d+[a-z]* · (S\d+[a-z]?) · ", plan_text)
+    ids = re.findall(r"(?m)^- B\d+[a-z]* · (S\d+[a-z]*) · ", section) or re.findall(r"(?m)^- B\d+[a-z]* · (S\d+[a-z]*) · ", plan_text)
     return list(dict.fromkeys(ids))
 
 
@@ -45,11 +49,24 @@ def renumber(target, *, dry_run: bool = False, merged: dict | None = None) -> di
     for gone, into in (merged or {}).items():
         if into in mapping:
             mapping[gone] = mapping[into]
+    records = plan_dir(folder) / "records"
+    page_ids = lambda text: [m for m in SID.finditer(text) if not WORD_ADDRESS.search(text[max(0, m.start() - 12):m.start()])]
+    names = {records / f"{stem}-{k}.md" for k in ("revise", "revise-rules", "comments")} | {plan}
+    seen = {m.group(0) for path in names if path.is_file() for m in page_ids(path.read_text(encoding="utf-8"))}
+    taken = set(mapping.values())
+    for gone in sorted(seen - set(mapping)):          # a cut sentence whose number a new sentence now takes
+        if gone in taken:
+            mapping[gone] = f"{gone}-cut"
     report["mapping"] = {k: v for k, v in mapping.items() if k != v}
     if not report["mapping"]:
         return report
-    sub = lambda text: SID.sub(lambda m: mapping.get(m.group(0), m.group(0)), text)
-    records = plan_dir(folder) / "records"
+
+    def sub(text: str) -> str:
+        out, at = [], 0
+        for m in page_ids(text):
+            out += [text[at:m.start()], mapping.get(m.group(0), m.group(0))]
+            at = m.end()
+        return "".join(out) + text[at:]
     edits = {plan: sub}
     edits[records / f"{stem}-revise.md"] = sub
     edits[records / f"{stem}-revise-rules.md"] = sub
@@ -61,7 +78,7 @@ def renumber(target, *, dry_run: bool = False, merged: dict | None = None) -> di
         for line in text.splitlines(True):
             if line.strip() == "for:":
                 under = True
-            elif under and (m := re.match(r"^(\s*- )(\d+[a-z]?)\s*$", line)):
+            elif under and (m := re.match(r"^(\s*- )(\d+[a-z]*)\s*$", line)):
                 line = f"{m.group(1)}{mapping.get('S' + m.group(2), 'S' + m.group(2))[1:]}\n"
             else:
                 under = False

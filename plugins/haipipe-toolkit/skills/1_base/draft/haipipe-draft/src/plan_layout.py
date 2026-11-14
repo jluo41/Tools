@@ -31,7 +31,7 @@ DIVISION_HEAD = re.compile(r"^## (C\d+)\b\s*(?:·\s*(.*))?$")
 DIVISION_LINE = re.compile(r"^- (C\d+) · (.+)$")
 BULLET = re.compile(
     r"^(?P<prefix>- (?:\[[ xX]\]\s*)?(?:B|S)(?P<number>\d+)\s*·\s*)"
-    r"(?P<tag>S\d+[a-z]?(?:\s*(?:-|–|to)\s*S\d+[a-z]?)?\s*·\s*)?(?P<text>.*)$"
+    r"(?P<tag>S\d+[a-z]*(?:\s*(?:-|–|to)\s*S\d+[a-z]*)?\s*·\s*)?(?P<text>.*)$"
 )
 
 
@@ -605,7 +605,7 @@ def structure_draft_mismatches(text: str) -> list[str]:
             m = re.match(r"^- (C\d+\.P\d+) · (.+?)\s*$", lines[i])
             if m:
                 title, arrow = m.group(2), ""
-                inline = re.match(r"^(.*?)\s*·\s*(S\d+[a-z]?\s*(?:-|–|to)\s*S\d+[a-z]?)\s*$", title)
+                inline = re.match(r"^(.*?)\s*·\s*(S\d+[a-z]*\s*(?:-|–|to)\s*S\d+[a-z]*)\s*$", title)
                 if inline:                           # the one-line form: `- C1.P1 · <title> · S1 to S2`
                     title, arrow = inline.group(1), inline.group(2)
                 elif i + 1 < len(lines) and lines[i + 1].strip().startswith("→"):

@@ -357,7 +357,7 @@ def plan_addresses(plan_text: str) -> set:
     the Bullet identity.  Unnumbered ``-`` rows are not addressable and are
     intentionally omitted from the returned set."""
     plan_text = canonical_plan(plan_text)
-    out, cn, pn = set(), 0, 0
+    out, cn, pn = set(), 0, -1
     for line in plan_text.splitlines():
         if line.startswith("## ") and not re.match(r"^## C\d+\b", line):
             if cn:
@@ -365,13 +365,13 @@ def plan_addresses(plan_text: str) -> set:
             continue
         division = re.match(r"^## C(\d+)\b", line)
         if division:
-            cn = int(division.group(1)); pn = 0; continue
+            cn = int(division.group(1)); pn = -1; continue
         paragraph = re.match(r"^### C(\d+)\.P(\d+)\b", line)
         if paragraph:
             cn, pn = map(int, paragraph.groups()); continue
         bullet = re.match(r"^- (?:\[[ xX]\]\s*)?(?:B|S)(\d+)\s*·", line)
         if bullet:
-            out.add("C%d.P%d.B%d" % (cn, max(pn, 1), int(bullet.group(1))))
+            out.add("C%d.P%d.B%d" % (cn, (pn if pn >= 0 else 1), int(bullet.group(1))))
     return out
 
 
@@ -422,7 +422,7 @@ def check_bullet_grammar(plan_text: str):
     fold pass appended Answered:/Drawn: onto 260817 long-sentence bullets and
     every check stayed green."""
     plan_text = canonical_plan(plan_text)
-    out, cn, pn, sn = [], 0, 0, 0
+    out, cn, pn, sn = [], 0, -1, 0
     lines = plan_text.splitlines()
     for i, line in enumerate(lines):
         if line.startswith("## ") and not re.match(r"^## C\d+\b", line):
@@ -431,7 +431,7 @@ def check_bullet_grammar(plan_text: str):
             continue
         division = re.match(r"^## C(\d+)\b", line)
         if division:
-            cn = int(division.group(1)); pn = 0; continue
+            cn = int(division.group(1)); pn = -1; continue
         paragraph = re.match(r"^### C(\d+)\.P(\d+)\b", line)
         if paragraph:
             cn, pn = map(int, paragraph.groups()); sn = 0; continue
@@ -453,10 +453,10 @@ def check_bullet_grammar(plan_text: str):
         )
         if point["number_explicit"] and point["number"] != sn:
             out.append("C%d.P%d.B%d point number %s does not match Bullet number" %
-                       (cn, max(pn, 1), sn, point["number"]))
+                       (cn, (pn if pn >= 0 else 1), sn, point["number"]))
         if not folded:
             out.append("C%d.P%d.B%d has no Note:/Evidence:/Answered:/Drawn: line"
-                       % (cn, max(pn, 1), sn))
+                       % (cn, (pn if pn >= 0 else 1), sn))
     return out
 
 
@@ -894,7 +894,7 @@ def split_embedded_draft(continuation):
 # writer emits the Draft-first shape for every drafted Bullet.
 
 _POINT_LINE = re.compile(r"^Point:\s*(.*)$", re.I)
-_SENTENCE_TAG = re.compile(r"^(S\d+[a-z]?(?:\s*(?:-|–|to)\s*S\d+[a-z]?)?\s*·\s*)")  # S7, S26a, or a range S3-S4
+_SENTENCE_TAG = re.compile(r"^(S\d+[a-z]*(?:\s*(?:-|–|to)\s*S\d+[a-z]*)?\s*·\s*)")  # S7, S26a, or a range S3-S4
 _BULLET_LINE = re.compile(r"^(- (?:\[[ xX]\]\s*)?(?:B|S)\d+\s*·\s*)(.*)$")
 
 
@@ -1003,7 +1003,7 @@ def iter_plan_bullets(plan_text: str):
     """
     plan_text = canonical_plan(plan_text)
     lines = (plan_text or "").splitlines()
-    blocks, cn, pn, sn = [], 0, 0, 0
+    blocks, cn, pn, sn = [], 0, -1, 0
     division_title = paragraph_title = ""
     i = 0
     while i < len(lines):
@@ -1015,7 +1015,7 @@ def iter_plan_bullets(plan_text: str):
             continue
         division = re.match(r"^## (C\d+)\s*·\s*(.*)$", line)
         if division:
-            cn, pn, sn = int(division.group(1)[1:]), 0, 0
+            cn, pn, sn = int(division.group(1)[1:]), -1, 0
             division_title = division.group(2).strip()
             paragraph_title = ""
             i += 1
@@ -1041,13 +1041,13 @@ def iter_plan_bullets(plan_text: str):
             continuation.append(lines[j].strip())
             j += 1
         plan_continuation, draft, reviews = split_embedded_draft(continuation)
-        bullet_no = explicit_no or sn
-        address = "C%d.P%d.B%d" % (cn, max(pn, 1), bullet_no)
+        bullet_no = explicit_no  # B0 is a real number (S0, a title row; JL 261111), never "unnumbered"
+        address = "C%d.P%d.B%d" % (cn, (pn if pn >= 0 else 1), bullet_no)
         blocks.append({
             "address": address,
             "division": "C%d" % cn,
             "division_title": division_title,
-            "paragraph": "C%d.P%d" % (cn, max(pn, 1)),
+            "paragraph": "C%d.P%d" % (cn, (pn if pn >= 0 else 1)),
             "paragraph_title": paragraph_title,
             "bullet": "B%d" % bullet_no,
             "head": head,
@@ -1081,7 +1081,7 @@ def _bullets_with_notes(plan_text: str):
     the labelled continuation lines, and the indented lines that follow a Note
     WITHOUT a label (a Note that wrapped onto a second source line)."""
     plan_text = canonical_plan(plan_text)
-    out, cn, pn, sn = [], 0, 0, 0
+    out, cn, pn, sn = [], 0, -1, 0
     lines = plan_text.splitlines()
     i = 0
     while i < len(lines):
@@ -1093,10 +1093,10 @@ def _bullets_with_notes(plan_text: str):
             continue
         mc = re.match(r"^## C(\d+)\b", line)
         if mc:
-            cn = int(mc.group(1)); pn = 0; i += 1; continue
+            cn = int(mc.group(1)); pn = -1; i += 1; continue
         if line.startswith("### "):
             mp = re.match(r"^### C\d+\.P(\d+)\b", line)
-            pn = int(mp.group(1)) if mp else pn + 1; sn = 0; i += 1; continue
+            pn = int(mp.group(1)) if mp else max(pn, 0) + 1; sn = 0; i += 1; continue
         m = re.match(r"^- (?:\[[ xX]\] )?B(\d+)[a-z]*\s*·\s*(.*)$", line)
         if not m:
             i += 1; continue
@@ -1119,7 +1119,7 @@ def _bullets_with_notes(plan_text: str):
             elif in_note and lines[j].strip():
                 extra.append(lines[j].strip())
             j += 1
-        out.append(("C%d.P%d.B%d" % (cn, max(pn, 1), sn), head, notes, extra))
+        out.append(("C%d.P%d.B%d" % (cn, (pn if pn >= 0 else 1), sn), head, notes, extra))
         i = j
     return out
 

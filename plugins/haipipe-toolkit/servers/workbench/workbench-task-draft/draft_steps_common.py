@@ -275,7 +275,9 @@ def _md(text: str, marks: dict, parts: dict = None, rows: bool = False) -> str:
     is its own row with a slot for its cards, and every paragraph heading one for the paragraph's (JL 261113: "the
     sentences will be the basic unit"); each sentence carries its full address, C1.P2.S2, in `data-a`."""
     out, part, pid = [], None, ""
-    for block in re.split(r"\n\s*\n", text.strip()):
+    # a blank line ends a block only when the next line starts at the margin: an indented line (a $$ display under a
+    # Bullet, after a whitespace-only line) carries on the Bullet above it, so the Bullets after it keep their rows
+    for block in re.split(r"\n[ \t]*\n(?=\S)", text.strip()):
         lines = block.splitlines()
         while lines and lines[0].startswith("#"):
             h = lines.pop(0).lstrip("#").strip()
@@ -303,13 +305,13 @@ def _md(text: str, marks: dict, parts: dict = None, rows: bool = False) -> str:
                     items[-1] += " " + line.strip()
             if rows:
                 for i in items:
-                    m = re.match(r"^B[0-9]+[a-z]* · (S[0-9]+[a-z]?) · ", i)
+                    m = re.match(r"^B[0-9]+[a-z]* · (S[0-9]+[a-z]*) · ", i)
                     a = (f"{pid}.{m.group(1)}" if pid else m.group(1)) if m else ""
                     out.append(_sx_row(f'<ul><li data-s="{m.group(1)}" data-a="{esc(a)}">{_sentence(i, marks)}</li></ul>', a)
                                if m else f"<ul><li>{_sentence(i, marks)}</li></ul>")
                 continue
             out.append("<ul>" + "".join(
-                f'<li{(" data-s=" + chr(34) + m.group(1) + chr(34)) if (m := re.match(r"^B[0-9]+ · (S[0-9]+[a-z]?) · ", i)) else ""}>'
+                f'<li{(" data-s=" + chr(34) + m.group(1) + chr(34)) if (m := re.match(r"^B[0-9]+[a-z]* · (S[0-9]+[a-z]*) · ", i)) else ""}>'
                 f"{_sentence(i, marks)}</li>" for i in items) + "</ul>")
         else:
             out.append(f'<p style="line-height:1.6">{_inline(" ".join(x.strip() for x in lines), marks)}</p>')

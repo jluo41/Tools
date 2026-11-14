@@ -112,3 +112,19 @@ def test_adopt_lays_out_a_new_pages_content_from_its_draft(tmp_path):
     assert "A new sentence. <!-- realizes: C1.P1.B4 -->" in face
     assert "<the Section's prose" not in face
     assert adopt_run(folder)["changes"] == []                               # a second run finds it equal
+
+
+def test_renumber_keeps_word_addresses_and_marks_a_cut_id(tmp_path):
+    """A Word or tracked-edit address (P8.S3, 02-literature:P4.S3) keeps its numbers; a cut sentence whose number a
+    new sentence takes is marked S<n>-cut, so an old note never points at the new one."""
+    folder = _page(tmp_path)
+    revise = folder / "draft" / "records" / "t01_note-revise.md"
+    revise.write_text("# r\n\n### Edit · S3 · the cost\nWhy: v4 P8.S3 and tracked edit 02-literature:P4.S3; C1.P1.S3 too\n"
+                      "\n### Edit · S4 · a cut sentence\nWhy: S4 was cut\n", encoding="utf-8")
+    report = renumber(folder)
+    text = revise.read_text(encoding="utf-8")
+    assert "P8.S3" in text and "02-literature:P4.S3" in text      # Word addresses untouched
+    assert "C1.P1.S2" in text and "Edit · S2 · the cost" in text  # page addresses renumbered (S3 reads second)
+    assert "Edit · S4-cut · a cut sentence" in text                # S22 became S4, so the cut S4 is marked
+    assert report["mapping"]["S4"] == "S4-cut"
+    assert renumber(folder)["mapping"] == {}                        # a second run changes nothing

@@ -43,7 +43,7 @@ def box_text(texts: list[str]) -> str:
     return "\n".join(s for t in texts if t and t.strip() for s in split_sentences(t))
 
 
-_SID_RE = re.compile(r"^(S\d+[a-z]?(?:\s*(?:-|–|to)\s*S\d+[a-z]?)?)\s*·")
+_SID_RE = re.compile(r"^(S\d+[a-z]*(?:\s*(?:-|–|to)\s*S\d+[a-z]*)?)\s*·")
 
 
 def sentence_id(head: str) -> str:
