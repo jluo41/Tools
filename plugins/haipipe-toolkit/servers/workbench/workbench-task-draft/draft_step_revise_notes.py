@@ -94,6 +94,65 @@ def _note_card(c: dict, by: list) -> str:
 NOTE_LABEL = {"open": "Open", "answered": "AI replied", "done": "Resolved"}
 
 
+def _write_sentence(path: Path, sid: str, orig: str, new: str) -> tuple:
+    """Put `new` in place of sentence `sid` in the current Draft's §3 text: (the Draft, "") when written or already
+    there, (the Draft or None, why not) when the sentence is no longer `orig`."""
+    from live.draft_steps_common import read_draft
+    draft = Path(read_draft(path.parents[2]).get("file") or "")
+    if not draft.is_file():
+        return None, "no current Draft"
+    dt = draft.read_text(encoding="utf-8")
+    head, mark, tail = dt.partition("## 3 ·")
+    if not mark:
+        head, tail = "", dt
+    line = re.search(r"(?m)^(- B\d+[a-z]* · " + re.escape(sid) + r" · )(.*)$", tail)
+    said = " ".join(line.group(2).split()) if line else ""
+    if said == " ".join(new.split()):
+        return draft, ""
+    if not line or said != " ".join(orig.split()):
+        return draft, f"{sid} is no longer the reviewed sentence; reload"
+    tail = tail.replace(line.group(0), line.group(1) + new, 1)
+    draft.write_text(head + mark + tail, encoding="utf-8")
+    return draft, ""
+
+
+def _adopt(path: Path, p: dict) -> tuple:
+    """✓ Use this on a reviewer's suggested sentence (JL 261113: "I think this is good, how could I accept it?"): a new
+    Edit card at the end of the cards file, the reviewer's words as its Expected, accepted now; the pass that applies
+    accepted cards writes it into the text."""
+    sid, orig, new = (str(p.get(k) or "").strip() for k in ("s", "original", "expected"))
+    if not re.fullmatch(r"S\d+[a-z]*", sid) or not new:
+        return 400, {"ok": False, "err": "a sentence and its new words"}
+    text = path.read_text(encoding="utf-8")
+    if f"Expected: {new}\n" in text:
+        return 409, {"ok": False, "err": "already a card with these words; reload"}
+    when = f"{datetime.datetime.now():%Y-%m-%d %H:%M}"
+    # the sentence changes now, in the current Draft (JL 261114: "When I click this, will it just update the
+    # sentence?"), so the text, its 🕘 history and its card agree; refused when the sentence is no longer the original
+    draft, err = _write_sentence(path, sid, orig, new)
+    if err:
+        return 409 if draft else 404, {"ok": False, "err": err}
+    card = (f"\n\n### Edit · {sid} · the reviewer's suggestion\nBy: AI\n"
+            f"Why: the blind review's suggested sentence, taken by the person with ✓ Use this.\n"
+            f"Original: {orig}\nExpected: {new}\nState: written · {when} · JL, into {draft.name}\n")
+    path.write_text(_into_newest_pass(text, card), encoding="utf-8")
+    return 200, {"ok": True, "state": "written"}
+
+
+def _into_newest_pass(text: str, card: str) -> str:
+    """The cards file with `card` at the end of its newest "## Pass" part (above the next "## " heading), so it shows in
+    the current Pass and never inside an older hidden "## Round" part below it; with no Pass, above the first Round."""
+    passes = list(re.finditer(r"(?m)^## Pass\b", text))
+    if passes:
+        nxt = re.search(r"(?m)^## ", text[passes[-1].end():])
+        at = passes[-1].end() + nxt.start() if nxt else len(text)
+    else:
+        rnd = re.search(r"(?m)^## Round\b", text)
+        at = rnd.start() if rnd else len(text)
+    head, tail = text[:at].rstrip("\n"), text[at:]
+    return head + card + ("\n" + tail if tail else "")
+
+
 def card_act(root: Path, p: dict, read_only: bool = False) -> tuple:
     """A person's ✓ Accept, ✗ Reject, ↺ Undo or edited Expected on one Revise card (b32 s41-D32): writes only that card's
     `State:` (with the time) and, for an edit, its `Expected:` in `draft/records/<stem>-revise.md`. The text itself is
@@ -110,6 +169,8 @@ def card_act(root: Path, p: dict, read_only: bool = False) -> tuple:
     state, head, title = str(p.get("state") or ""), str(p.get("card") or ""), str(p.get("pass") or "")
     if not path.is_file():
         return 404, {"ok": False, "err": f"no {path.name}"}
+    if p.get("act") == "adopt":
+        return _adopt(path, p)
     if state not in ("proposed", "accepted", "rejected"):
         return 400, {"ok": False, "err": "a card is proposed, accepted or rejected"}
     text = path.read_text(encoding="utf-8")
@@ -146,9 +207,22 @@ def card_act(root: Path, p: dict, read_only: bool = False) -> tuple:
         if re.fullmatch(r"[A-Z]", opt):
             body = (re.sub(r"(?m)^Chosen:.*$", "Chosen: " + opt, body, count=1) if re.search(r"(?m)^Chosen:", body)
                     else body.rstrip("\n") + f"\nChosen: {opt}\n\n")
+    # ✓ Accept writes the chosen words into the text now, as ✓ Use this does (JL 261114: "why the proposed
+    # suggestions are gone?": an accepted card folded away while its sentence stayed the old one)
+    sm, note = re.search(r"(?<![\w.])S\d+[a-z]*\b", head), ""      # "Edit · S41 · C1.P8.B4 · …"
+    sid = sm.group(0) if sm else ""
+    exp, orig = (re.search(r"(?m)^" + k + r":[^\S\n]*(.*)$", body) for k in ("Expected", "Original"))
+    if state == "accepted" and re.fullmatch(r"S\d+[a-z]*", sid) and exp and orig and exp.group(1).strip():
+        draft, err = _write_sentence(path, sid, orig.group(1).strip(), exp.group(1).strip())
+        if draft and not err:
+            body = re.sub(r"(?m)^State:.*$", f"State: written · {datetime.datetime.now():%Y-%m-%d %H:%M} · JL, into {draft.name}",
+                          body, count=1)
+            state = "written"
+        else:
+            note = err
     seg = seg[:found[0].start(1)] + body + seg[found[0].end(1):]
     path.write_text(text[:start] + seg + text[end:], encoding="utf-8")
-    return 200, {"ok": True, "state": state, "change": change}
+    return 200, {"ok": True, "state": state, "change": change, "note": note}
 
 
 def _checked_path(revise: Path) -> Path:

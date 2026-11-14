@@ -290,9 +290,8 @@ def _sx_bar(cards: list) -> str:
 def _sx_board(rows: str, cls: str = "") -> str:
     """The rows, with the switch between cards beside each sentence and cards under it (CARDS_JS keeps the choice),
     and the switch that folds every sentence to one line or opens them all (SX_ROWS)."""
-    # no switches above the text (JL 261113, of "Fold all · Open all · Beside · Below": "do we really need this?"): each
-    # row and heading folds by its own ▸, and the cards always sit under their sentence
-    return SX_ROWS + f'<div class="sx-board sx-ud sx-fixed{(" " + cls) if cls else ""}">' + rows + '</div>'
+    from live.draft_autofold import AUTOFOLD_JS   # no switches above the text; a fully checked paragraph starts folded
+    return SX_ROWS + AUTOFOLD_JS + f'<div class="sx-board sx-ud sx-fixed{(" " + cls) if cls else ""}">' + rows + '</div>'
 
 
 # Each sentence folds its cards away and keeps its whole text (JL 261113: "why we don't have things like > to click and we can save more spaces"; "I want them to show the whole sentence"):
@@ -342,6 +341,7 @@ SX_ROWS = """<link rel=stylesheet href="https://fonts.googleapis.com/css2?family
 .sx-row.sx-open .sx-pen{color:var(--acc);background:color-mix(in srgb,var(--acc) 12%,transparent);font-weight:600}
 .sx-row:not(.sx-fold) .sx-marks>span.sx-pen,.sx-row:not(.sx-fold) .sx-marks>span.sx-evm{display:inline}
 .sx-evm{cursor:pointer;border-radius:8px;padding:0 3px}.sx-evm:hover{color:var(--acc)}
+.sx-board .sx-row.sx-evon>.rv-right>.rv-ev{display:block!important}.sx-row.sx-evon .sx-evm{color:var(--acc)}
 /* a card under its sentence starts where the sentence's text starts (position 24 + id 38) */
 .sx-board.sx-ud .sx-row>.rv-right{padding-left:62px}
 /* a card's text runs exactly as wide as the sentence's (JL 261113: "make the card width the same to the sentences"):
@@ -387,6 +387,8 @@ SX_ROWS = """<link rel=stylesheet href="https://fonts.googleapis.com/css2?family
 .sx-board .rv-left h4[data-p] .p-no{font:400 10.5px/1 system-ui,-apple-system,sans-serif;color:#b5b3ab;margin-left:6px}
 /* comments open: the row shows its comments, the other cards stay folded */
 .sx-row.sx-cm-on>.rv-right>.rv-card:not(.rv-note){display:none!important}
+.sx-row.sx-cm-on>.rv-right>.rv-note.nt-new{display:none!important}
+.sx-row.sx-add-on>.rv-right>.rv-card:not(.nt-new){display:none!important}
 .sx-row.sx-cm-on>.rv-right>.rv-note{display:block!important}
 .sx-row.sx-cm-on .sx-cmt{opacity:1;color:var(--ink,#333)}
 .sx-wc{color:var(--mut);font-size:11.5px}
@@ -443,6 +445,8 @@ SX_ROWS = """<link rel=stylesheet href="https://fonts.googleapis.com/css2?family
 .sx-board .rv-left li[data-s]>.s-tx{grid-column:3;grid-row:1/span 3;margin-left:34px}   /* air after the number (JL 261113: "this is too close") */
 .sx-board .rv-left li[data-s]>.sx-marks{grid-column:4;grid-row:1}
 .sx-board .rv-left li[data-s]>.nt-gut{position:absolute;right:-30px;top:2px;margin:0;padding:0}
+/* the margin keeps only +: the old open-comment 💬 repeated the 💬N in the marks (JL 261114: "maybe we don't need it") */
+.sx-board .nt-mark{display:none!important}
 </style><script>
 (function(){if(window.__sxRows)return;window.__sxRows=1;
  function marks(r){var g=r.querySelector('.rv-right');if(!g)return'';
@@ -457,8 +461,9 @@ SX_ROWS = """<link rel=stylesheet href="https://fonts.googleapis.com/css2?family
    +(nd?ek+nd+' display'+(nd>1?'s':'')+'">🖼️'+nd+'</span>':'')+(ev&&!(nv||nc||nd)?ek+'evidence">📎'+ev+'</span>':'');
   /* the reviewer's score, the lowest of logic, read and AI (JL 261113: "another icon should be AI rating"), and 💬 to
      comment on the sentence, with how many comments it has (JL 261113: "where is the things like the comments icon") */
-  var rv=g.querySelector('.rv-rev'),lo=rv?+rv.dataset.low:0,nt=g.querySelectorAll('.rv-note').length;
-  var ai=rv?'<span class="sx-ai '+(lo>=8?'ok':lo>=7?'mid':'low')+'" role=button tabindex=0 title="'+(rv.dataset.scores||'')+'">★'+lo+'</span>':'';
+  var rv=g.querySelector('.rv-rev'),lo=rv?+rv.dataset.low:0,nt=g.querySelectorAll('.rv-note:not(.nt-new)').length;
+  var fx=rv&&rv.dataset.fixed;  /* the reviewer's fix is in the text: its old score no longer applies */
+  var ai=rv?'<span class="sx-ai '+(fx||lo>=8?'ok':lo>=7?'mid':'low')+'" role=button tabindex=0 title="'+(fx?'fixed since the review; ':'')+(rv.dataset.scores||'')+'">★'+(fx?'✓':lo)+'</span>':'';
   /* the sentence's length in words, its citations left out (JL 261113: "could you also show the number of words") */
   var tx=r.querySelector('.rv-left li[data-s] .s-tx'),nw=0;
   if(tx){var cl=tx.cloneNode(true);cl.querySelectorAll('.cite,.sx-marks').forEach(function(x){x.remove();});
@@ -474,11 +479,11 @@ SX_ROWS = """<link rel=stylesheet href="https://fonts.googleapis.com/css2?family
    +(pen||old?'<span class="sx-pen'+(w?' w':'')+(pen?'':' faint')+'" role=button tabindex=0 title="edits: '+pen+' current'+(w?' ('+w+' wait for you)':'')+', '+old+' decided">📝'+(pen||old)+'</span>':'')+cm];}
  /* ★ opens the reviewer's card on the sentence, a good one too (JL 261113: "when I click ★8, why there are no ...") */
  document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('.sx-ai');if(!a)return;e.preventDefault();
-  e.stopImmediatePropagation();var r=a.closest('.sx-row');if(!r)return;var on=!(r.classList.contains('sx-rev-on')||!r.classList.contains('sx-fold'));
+  e.stopImmediatePropagation();var r=a.closest('.sx-row');if(!r)return;var on=!r.classList.contains('sx-rev-on');   /* its own toggle: ❝ or 🕘 open beside it do not count */
   /* a second click hides the cards again (JL 261113: "I want to hide it by clicking it, it doesn't work anymore") */
   r.classList.toggle('sx-rev-on',on);
   if(on){r.classList.remove('sx-fold');r.classList.add('sx-open');var c=r.querySelector('.rv-rev');if(c)c.classList.add('open');}
-  else{r.classList.remove('sx-open','sx-hist');r.classList.add('sx-fold');}},true);
+  else{r.classList.remove('sx-open','sx-hist');if(!r.classList.contains('sx-evon')&&!r.classList.contains('sx-ver'))r.classList.add('sx-fold');}},true);
  document.addEventListener('click',function(e){var k=e.target.closest&&e.target.closest('.sx-ok');if(!k)return;e.preventDefault();e.stopImmediatePropagation();   /* the ✓ only marks; it opens no card (JL 261113) */
   var li=k.closest('li[data-s]'),bd=k.closest('.rv-board'),on=!k.classList.contains('on');if(!li||!bd)return;
   fetch('/_board/draft-comment',{method:'POST',headers:{'Content-Type':'application/json'},
@@ -492,15 +497,23 @@ SX_ROWS = """<link rel=stylesheet href="https://fonts.googleapis.com/css2?family
   e.stopImmediatePropagation();var li=c.closest('li[data-s],h4[data-p],h3[data-p]'),r=c.closest('.sx-row');if(!li||!r)return;
   var g=r.querySelector('.rv-right');
   if(r.classList.contains('sx-cm-on')){r.classList.remove('sx-cm-on');
-   g&&g.querySelectorAll('.rv-note.nt-new').forEach(function(n){var b=n.querySelector('textarea');if(!b||!b.value.trim())n.remove();});
-   if(r.dataset.cmWasFold==='1'){r.classList.add('sx-fold');r.classList.remove('sx-open');}return;}
-  r.dataset.cmWasFold=r.classList.contains('sx-fold')?'1':'';r.classList.add('sx-cm-on');r.classList.remove('sx-fold');r.classList.add('sx-open');
-  if(!(g&&g.querySelector('.rv-note.nt-new'))){var p=li.querySelector('.nt-plus');if(p)p.click();}
-  if(g){var nw=g.querySelector('.rv-note.nt-new'),old=g.querySelectorAll('.rv-note:not(.nt-new)');
-   if(nw&&old.length){old[old.length-1].after(nw);}var bx=nw&&nw.querySelector('textarea');if(bx)bx.focus();}},true);
+   if(r.dataset.cmWasFold==='1')r.classList.add('sx-fold');if(r.dataset.cmWasOpen!=='1')r.classList.remove('sx-open');return;}
+  /* 💬 only shows the comments; the + in the margin only adds one (JL 261113: "how to make 💬1 to just show the
+     comments, and + to just add the comments") */
+  r.dataset.cmWasFold=r.classList.contains('sx-fold')?'1':'';r.dataset.cmWasOpen=r.classList.contains('sx-open')?'1':'';r.classList.add('sx-cm-on');r.classList.remove('sx-fold');r.classList.add('sx-open');
+  g&&g.querySelectorAll('.rv-note:not(.nt-new)').forEach(function(n){n.classList.add('open');});},true);
+ /* the + only adds a comment: it leaves the comments view, so its new box shows */
+ document.addEventListener('click',function(e){var p=e.target.closest&&e.target.closest('.nt-plus');if(!p)return;
+  var r=p.closest('.sx-row');if(!r)return;r.classList.remove('sx-cm-on');
+  if(!r.classList.contains('sx-add-on')){r.dataset.addWasOpen=r.classList.contains('sx-open')?'1':'';r.classList.add('sx-add-on');}},true);
+ /* the new box closed (Comment or Cancel): the row goes back to how it was */
+ document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('.nt-new [data-note-act=cancel],.nt-new [data-note-act=add]');
+  if(!a)return;var r=a.closest('.sx-row');if(!r||!r.classList.contains('sx-add-on'))return;
+  setTimeout(function(){if(r.querySelector('.rv-note.nt-new'))return;r.classList.remove('sx-add-on');
+   if(r.dataset.addWasOpen!=='1')r.classList.remove('sx-open');},1200);},true);
  function fold(r,on){r.classList.toggle('sx-fold',on);if(on){r.classList.remove('sx-open','sx-hist');}else if(r.querySelector('.sx-sum'))r.classList.add('sx-open');}
  /* a paragraph folds its sentences; a Section folds its paragraphs and their sentences */
- function pfold(h,on){h.classList.toggle('sx-pfold',on);var sec=h.classList.contains('sx-c'),n=h.nextElementSibling;
+ window.sxPfold=pfold;function pfold(h,on){h.classList.toggle('sx-pfold',on);var sec=h.classList.contains('sx-c'),n=h.nextElementSibling;
   while(n&&n.classList.contains('sx-row')&&!n.classList.contains('sx-c')&&(sec||!n.classList.contains('sx-p'))){
    n.classList.toggle('sx-hide',on);if(!on)n.classList.remove('sx-pfold');n=n.nextElementSibling;}}
  /* row by row, as each arrives: the page streams in, so a board can be half drawn when this first runs */
@@ -527,12 +540,18 @@ SX_ROWS = """<link rel=stylesheet href="https://fonts.googleapis.com/css2?family
    o.textContent=m;o.title='paragraph '+m+' in reading order; '+h.dataset.p+' is its fixed id';});});}
  /* paragraphs keep their old fixed id, "C2.P2 · title" (JL 261113: "I want the old paragraph index, current one
     is so ugly"); porder stays unused */
+ /* the large number counts again in each paragraph (JL 261114: "it is section level, how could we make it sentence
+    level"): 1, 2, 3 within the paragraph; the fixed id (S7) stays small under it, as cards and comments name it */
  function order(){document.querySelectorAll('.sx-board').forEach(function(b){var n=0;
-  b.querySelectorAll('h3.rv-part,.rv-left li[data-s]').forEach(function(x){if(x.tagName==='H3'){n=0;return;}
-   var o=x.querySelector(':scope>.s-ord');if(!o)return;n+=1;o.textContent=n;o.title='sentence '+n+' in reading order; '+
+  b.querySelectorAll('h3.rv-part,.rv-left h4[data-p],.rv-left li[data-s]').forEach(function(x){if(x.tagName==='H3'||x.tagName==='H4'){n=0;return;}
+   var o=x.querySelector(':scope>.s-ord');if(!o)return;n+=1;o.textContent=n;o.title='sentence '+n+' of its paragraph; '+
    (x.dataset.a||x.dataset.s)+' is its fixed id';});});}
  document.addEventListener('click',function(e){if(!e.target.closest)return;
-  var q=e.target.closest('.sx-pen,.sx-evm');if(q){e.preventDefault();e.stopPropagation();var qr=q.closest('.sx-row');
+  /* ❝ 📊 🖼️ open the sentence's evidence only, on their own toggle (JL 261113: "when I click it, there are not reaction"):
+     sharing the 📝 toggle, a click on ❝ after ★ had opened the row closed it again */
+  var v=e.target.closest('.sx-evm');if(v){e.preventDefault();e.stopPropagation();var vr=v.closest('.sx-row');
+   vr.classList.remove('sx-fold');vr.classList.toggle('sx-evon');return;}
+  var q=e.target.closest('.sx-pen');if(q){e.preventDefault();e.stopPropagation();var qr=q.closest('.sx-row');
    qr.classList.remove('sx-fold');var qon=!qr.classList.contains('sx-open');qr.classList.toggle('sx-open',qon);qr.classList.toggle('sx-hist',qon);return;}
   var k=e.target.closest('.sx-clk');if(k){e.preventDefault();e.stopPropagation();var kr=k.closest('.sx-row');
    kr.classList.remove('sx-fold');kr.classList.toggle('sx-ver');return;}
@@ -543,8 +562,26 @@ SX_ROWS = """<link rel=stylesheet href="https://fonts.googleapis.com/css2?family
    b.querySelectorAll('.sx-row').forEach(function(r){if(r.querySelector('.sx-tog'))fold(r,on);});return;}
   var li=e.target.closest('.sx-row.sx-fold .rv-left li[data-s]');if(li&&!e.target.closest('a')){e.preventDefault();fold(li.closest('.sx-row'),false);}},true);
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup);else setup();
+ /* a row's cards can stream in after its row was set up, so its marks are counted again once the page is whole
+    (S6a lost its 📊 and 🕘 when its cards came late) */
+ /* ✓ Use this on a reviewer's suggestion: an accepted Edit card with its words (card_act adopt), then the page again */
+ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.lg-use');if(!b)return;
+  e.preventDefault();e.stopPropagation();var t=b.closest('[data-task]')||document.querySelector('[data-task]'),m=b.nextElementSibling;
+  if(!t){if(m)m.textContent='no Task here';return;}b.disabled=true;
+  fetch('/_board/draft-card',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({task:t.dataset.task,
+   act:'adopt',s:b.dataset.adopt,original:b.dataset.orig,expected:b.dataset.new})}).then(function(r){return r.json();})
+   .then(function(j){if(!j.ok){b.disabled=false;if(m)m.textContent=j.err||'not saved';return;}if(m)m.textContent='accepted';
+    setTimeout(function(){location.reload();},400);}).catch(function(x){b.disabled=false;if(m)m.textContent=String(x);});},true);
+ function remark(){document.querySelectorAll('.sx-board .sx-row[data-sx]').forEach(function(r){
+  var li=r.querySelector('.rv-left li[data-s]'),s=li&&li.querySelector('.sx-marks');if(!s)return;var m=marks(r);
+  /* compare with the last marks written, never with innerHTML: the browser rewrites quotes, so innerHTML never equals
+     the string, and each rewrite fired the observer again, every frame; a ✓ swapped out between mouse down and up lost
+     its click (JL 261113: "the check doesn't work anymore") */
+  if(m&&s.dataset.m!==m[1]){s.innerHTML=m[1];s.dataset.m=m[1];}});}
+ document.addEventListener('DOMContentLoaded',remark);window.addEventListener('load',remark);
  var due=0;new MutationObserver(function(){if(due)return;due=1;requestAnimationFrame(function(){due=0;
-  if(document.querySelector('.sx-board .sx-row:not([data-sx])'))setup();});}).observe(document.documentElement,{childList:true,subtree:true});
+  if(document.querySelector('.sx-board .sx-row:not([data-sx])'))setup();
+  if(document.readyState==='complete')remark();});}).observe(document.documentElement,{childList:true,subtree:true});
 })();
 </script>"""
 
