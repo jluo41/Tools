@@ -319,7 +319,7 @@ def _sentence_lines(body: str) -> list:
         problem = problem[link.end():] if link else problem
         word = link.group(1).strip() if link else ""
         state = (re.search(r"\b(carried|weak|broken)\b", word) or [None, ""])[1]
-        none = lambda t: "" if t.strip().lower() in ("", "none") else t.strip()
+        none = lambda t: "" if re.match(r"(?i)\s*(none\b|$)", t) else t.strip()   # "none (add one clause …)" too
         out.append({"s": sid, "logic": lo, "read": rd, "ai": (two and two.group(3)) or "", "link": word, "state": state, "problem": none(problem),
                     "fix": none(fix), "pass": min(float(v) for v in (lo or 10, rd, (two and two.group(3)) or 10)) >= 8 and state != "broken"})
     return out

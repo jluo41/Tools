@@ -383,7 +383,7 @@ SX_ROWS = """<link rel=stylesheet href="https://fonts.googleapis.com/css2?family
 .sx-ok:hover{color:var(--ink,#333)}.sx-ok.on{color:var(--ink,#333)}
 .sx-board .sx-ok.stale{color:#b06d1a;background:color-mix(in srgb,#e8a33d 16%,transparent);border-radius:9px;padding:0 6px}
 .sx-row:not(.sx-fold) .sx-marks>.sx-ok{display:inline!important}
-.sx-board .rv-left li[data-checked="1"] .sx-ai{display:none!important}
+.sx-board .rv-left li[data-checked="1"] .sx-ai,.sx-board .sx-row:has(.rv-left li[data-checked="1"])>.rv-right :is(.rv-rev,.rv-card[data-state=proposed]){display:none!important}   /* checked: no review, no proposal (JL 261114) */
 .sx-cmt{cursor:pointer;opacity:.75}.sx-cmt:hover{opacity:1}
 .nt-co .nt-av{background:color-mix(in srgb,#b8894a 18%,transparent);color:#7a5a2e}   /* a co-author's comment: their initials */
 .sx-board .rv-left h4[data-p] .p-ord{font:600 13px/1 system-ui,-apple-system,sans-serif;color:var(--ink,#333);min-width:16px;text-align:right;margin-right:6px}
@@ -403,8 +403,8 @@ SX_ROWS = """<link rel=stylesheet href="https://fonts.googleapis.com/css2?family
  border-radius:6px;background:var(--card,#fff);box-shadow:none;padding:8px 12px;font:13.5px/1.5 system-ui,-apple-system,sans-serif}
 .sx-board .sx-row:hover>.rv-right>.rv-card:not(.rv-ev),.sx-board .sx-row>.rv-right>.rv-card.open:not(.rv-ev){
  border-color:color-mix(in srgb,var(--ink,#333) 28%,transparent)}
-.sx-board .sx-row>.rv-right .rv-card.has-choice{border-left:3px solid color-mix(in srgb,#b8894a 70%,transparent)}
-.sx-board .sx-row>.rv-right .rv-card.has-choice[data-state=written]{border-left-color:color-mix(in srgb,#5f9e72 70%,transparent)}
+/* a card with choices has no coloured edge (JL 261113: "I don't want this"; 261114 again of the line at a row's edge) */
+.sx-board .sx-row>.rv-right .rv-card.has-choice{border-left:1px solid var(--line)}
 .sx-board .sx-row>.rv-right .rv-note .nt-box{font:14px/1.5 system-ui,-apple-system,sans-serif;border-radius:6px}
 /* the history reads like the text: the sentence in the text's serif, its date and source small above it */
 .sx-board .sx-histcard .sx-h{font-family:"Source Serif 4",Charter,"Iowan Old Style",Georgia,serif;font-size:16px;line-height:1.6;text-align:left}
@@ -449,7 +449,7 @@ SX_ROWS = """<link rel=stylesheet href="https://fonts.googleapis.com/css2?family
 .sx-board .rv-left li[data-s]>.sx-marks{grid-column:4;grid-row:1}
 .sx-board .rv-left li[data-s]>.nt-gut{position:absolute;right:-30px;top:2px;margin:0;padding:0}
 /* the sentence just changed, found again after the page loads (sxKeep) */
-.sx-board .sx-row.sx-low .rv-left li[data-s]{background:color-mix(in srgb,#e8590c 10%,transparent)}   /* a tint only, no edge line (JL 261114: "I don't like this") */
+/* a sentence scored below 7 looks like every other: its ★ is the only mark (JL 261114: "too alarming"; "no such a things") */
 .sx-board .sx-flash{animation:sxflash 2.6s ease-out}
 @keyframes sxflash{0%,35%{box-shadow:0 0 0 3px color-mix(in srgb,#e8a33d 70%,transparent);border-radius:6px}100%{box-shadow:0 0 0 3px transparent}}
 /* the margin keeps only +: the old open-comment 💬 repeated the 💬N in the marks (JL 261114: "maybe we don't need it") */
@@ -573,6 +573,17 @@ SX_ROWS = """<link rel=stylesheet href="https://fonts.googleapis.com/css2?family
     (S6a lost its 📊 and 🕘 when its cards came late) */
  /* after a written change the page loads again; it comes back to the same sentence, flashed, instead of the top
     (JL 261114: "the focal sentence is jump to another places and it is hard for me to find") */
+ /* a confirmed card or ✓ Use this changes its sentence IN PLACE, no reload (JL 261114: "the changes is not realy time ... it
+    seems to be of stuck": each write reloaded the page, 2 s white and a jump); a sentence with citations or maths, whose
+    words the page renders, still reloads */
+ window.sxInPlace=function(el,words){try{var r=el&&el.closest&&el.closest('.sx-row'),tx=r&&r.querySelector('.rv-left li[data-s] .s-tx');
+  if(!tx||words==null)return false;words=String(words).replace(/^\\s*["\u201c]([\\s\\S]*)["\u201d]\\s*$/,'$1').trim();
+  if(/\\\\[a-zA-Z]|\\$/.test(words)||tx.querySelector('.cite,.katex'))return false;
+  if(words==='(cut)'){r.style.display='none';return true;}
+  var mk=tx.querySelector('.sx-marks');Array.prototype.slice.call(tx.childNodes).forEach(function(n){if(n!==mk&&!(n.classList&&n.classList.contains('mut')))tx.removeChild(n);});
+  tx.insertBefore(document.createTextNode(words+' '),mk||null);var rv=r.querySelector('.rv-rev');if(rv)rv.dataset.fixed='1';
+  r.classList.remove('sx-low');window.sxQuiet=Date.now()+6000;if(window.sxRemark)window.sxRemark();
+  r.classList.remove('sx-flash');void r.offsetWidth;var li=r.querySelector('.rv-left li[data-s]');if(li){li.classList.add('sx-flash');}return true;}catch(x){return false;}};
  window.sxKeep=function(el){try{var r=el&&el.closest&&el.closest('.sx-row'),li=r&&r.querySelector('.rv-left li[data-s]');
   if(li)sessionStorage.setItem('sx-keep',li.dataset.a||li.dataset.s);}catch(x){}};
  (function(){var k=null;try{k=sessionStorage.getItem('sx-keep');sessionStorage.removeItem('sx-keep');}catch(x){}if(!k)return;window.sxKept=k;
@@ -590,6 +601,7 @@ SX_ROWS = """<link rel=stylesheet href="https://fonts.googleapis.com/css2?family
   fetch('/_board/draft-card',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({task:t.dataset.task,
    act:'adopt',s:b.dataset.adopt,original:b.dataset.orig,expected:b.dataset.new})}).then(function(r){return r.json();})
    .then(function(j){if(!j.ok){b.disabled=false;if(m)m.textContent=j.err||'not saved';return;}if(m)m.textContent='accepted';
+    if(window.sxInPlace&&window.sxInPlace(b,b.dataset.new)){if(m)m.textContent='written into the text';return;}
     setTimeout(function(){if(window.sxKeep)window.sxKeep(b);location.reload();},400);}).catch(function(x){b.disabled=false;if(m)m.textContent=String(x);});},true);
  /* 🔄 the page follows its files (JL 261114: "How to make the UI to be auto refreshed to show the changes?"): every 4 s
     it asks /_board/draft-stamp for the folder's newest change; when that moves and the reader is not typing, editing a
@@ -607,6 +619,7 @@ SX_ROWS = """<link rel=stylesheet href="https://fonts.googleapis.com/css2?family
    if(last===null||Date.now()<(window.sxQuiet||0)){last=j.stamp;due=false;return;}if(j.stamp!==last){last=j.stamp;due=true;}
    if(due&&window.sxPill)window.sxPill(reload);else if(due&&!busy())reload();}).catch(function(){});}
   setInterval(tick,4000);tick();})();
+ window.sxRemark=function(){remark();};
  function remark(){document.querySelectorAll('.sx-board .sx-row[data-sx]').forEach(function(r){
   var li=r.querySelector('.rv-left li[data-s]'),s=li&&li.querySelector('.sx-marks');if(!s)return;var m=marks(r);
   /* compare with the last marks written, never with innerHTML: the browser rewrites quotes, so innerHTML never equals
