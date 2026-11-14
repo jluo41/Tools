@@ -376,7 +376,7 @@ SX_ROWS = """<link rel=stylesheet href="https://fonts.googleapis.com/css2?family
 /* no coloured edge on a card, and a decided edit shows its change, not its A/B choices (JL 261113: "I don't want this") */
 .sx-row>.rv-right .rv-card.sx-old .rv-choices,.sx-row>.rv-right .rv-card.sx-old .rv-acts{display:none}
 /* quiet marks, so the eye stays on the sentence (JL 261113: "I don't want this to be too colorful") */
-.sx-ai{font-weight:400;color:var(--mut)}.sx-ai.low{color:color-mix(in srgb,var(--mut) 70%,#8a3b2b)}
+.sx-ai{font-weight:400;color:var(--mut)}.sx-ai.old{opacity:.55}.sx-ai.low{color:color-mix(in srgb,var(--mut) 70%,#8a3b2b)}
 .sx-ok{cursor:pointer;color:color-mix(in srgb,var(--mut) 55%,transparent);font-weight:600;padding:0 2px}
 .sx-ok:hover{color:var(--ink,#333)}.sx-ok.on{color:var(--ink,#333)}
 .sx-board .sx-ok.stale{color:#b06d1a;background:color-mix(in srgb,#e8a33d 16%,transparent);border-radius:9px;padding:0 6px}
@@ -466,8 +466,8 @@ SX_ROWS = """<link rel=stylesheet href="https://fonts.googleapis.com/css2?family
   /* the reviewer's score, the lowest of logic, read and AI (JL 261113: "another icon should be AI rating"), and 💬 to
      comment on the sentence, with how many comments it has (JL 261113: "where is the things like the comments icon") */
   var rv=g.querySelector('.rv-rev'),lo=rv?+rv.dataset.low:0,nt=g.querySelectorAll('.rv-note:not(.nt-new)').length;
-  var fx=rv&&rv.dataset.fixed;  /* the reviewer's fix is in the text: its old score no longer applies */
-  var ai=rv?'<span class="sx-ai '+(fx||lo>=8?'ok':lo>=7?'mid':'low')+'" role=button tabindex=0 title="'+(fx?'fixed since the review; ':'')+(rv.dataset.scores||'')+'">★'+(fx?'✓':lo)+'</span>':'';
+  var fx=rv&&rv.dataset.fixed,so=rv&&rv.dataset.stale;  /* fixed by the reviewer's words, or changed since: the score is old */
+  var ai=rv?'<span class="sx-ai '+(so?'old':fx||lo>=8?'ok':lo>=7?'mid':'low')+'" role=button tabindex=0 title="'+(fx?'fixed since the review; ':so?'scored before the last change; ':'')+(rv.dataset.scores||'')+'">★'+(fx?'✓':so?'–':lo)+'</span>':'';
   /* the sentence's length in words, its citations left out (JL 261113: "could you also show the number of words") */
   var tx=r.querySelector('.rv-left li[data-s] .s-tx'),nw=0;
   if(tx){var cl=tx.cloneNode(true);cl.querySelectorAll('.cite,.sx-marks').forEach(function(x){x.remove();});
@@ -588,6 +588,22 @@ SX_ROWS = """<link rel=stylesheet href="https://fonts.googleapis.com/css2?family
    act:'adopt',s:b.dataset.adopt,original:b.dataset.orig,expected:b.dataset.new})}).then(function(r){return r.json();})
    .then(function(j){if(!j.ok){b.disabled=false;if(m)m.textContent=j.err||'not saved';return;}if(m)m.textContent='accepted';
     setTimeout(function(){if(window.sxKeep)window.sxKeep(b);location.reload();},400);}).catch(function(x){b.disabled=false;if(m)m.textContent=String(x);});},true);
+ /* 🔄 the page follows its files (JL 261114: "How to make the UI to be auto refreshed to show the changes?"): every 4 s
+    it asks /_board/draft-stamp for the folder's newest change; when that moves and the reader is not typing, editing a
+    card, writing a comment or selecting text, it reloads and comes back to the sentence in view (sxKeep) */
+ (function live(){if(window.__sxLive)return;var bd=document.querySelector('.rv-board[data-task]');
+  if(!bd){setTimeout(live,1000);return;}window.__sxLive=1;   /* the board streams in after this script */
+  var url='/_board/draft-stamp?path='+encodeURIComponent(bd.dataset.task),last=null,due=false;
+  function busy(){var a=document.activeElement;if(a&&(a.isContentEditable||/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)))return true;
+   if(document.querySelector('.rv-card.editing,.rv-note.writing,.rv-note.nt-new'))return true;
+   var sel=window.getSelection&&window.getSelection();return !!(sel&&String(sel).trim());}
+  function inView(){var best=null,d=1e9,mid=innerHeight/2;document.querySelectorAll('.sx-board .rv-left li[data-s]').forEach(function(li){
+   var r=li.getBoundingClientRect();if(r.bottom<0||r.top>innerHeight)return;var x=Math.abs((r.top+r.bottom)/2-mid);if(x<d){d=x;best=li;}});return best;}
+  function reload(){var li=inView();if(li&&window.sxKeep)window.sxKeep(li);location.reload();}
+  function tick(){if(document.hidden)return;fetch(url,{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
+   if(last===null){last=j.stamp;return;}if(j.stamp!==last){last=j.stamp;due=true;}
+   if(due&&!busy())reload();}).catch(function(){});}
+  setInterval(tick,4000);tick();})();
  function remark(){document.querySelectorAll('.sx-board .sx-row[data-sx]').forEach(function(r){
   var li=r.querySelector('.rv-left li[data-s]'),s=li&&li.querySelector('.sx-marks');if(!s)return;var m=marks(r);
   /* compare with the last marks written, never with innerHTML: the browser rewrites quotes, so innerHTML never equals

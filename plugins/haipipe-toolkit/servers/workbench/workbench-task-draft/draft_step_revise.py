@@ -91,6 +91,18 @@ def _text_and_cards(d: dict, ev: dict, root: Path, path: Path, task: Path) -> st
     # the newest report scores today's text: a record that keeps its rounds in order has the latest at the bottom
     rep = next((c for h, c in reversed(passes[0][1] if passes else []) if _is_report(h)), None)
     said = _sentence_lines(rep.get("body", "")) if rep else []
+    # a sentence written after the newest report was made: its ★ is out of date (a card synced before it is not)
+    head = rep.get("reviewer", "") or rep.get("body", "")[:600] if rep else ""
+    seen = {"": _when(head)}                          # the review's date, then each sentence rescored later ("S3 and S8
+    for ids, day in re.findall(r"((?:S\d+[a-z]*(?:,\s*|\s+and\s+)?)+) (?:were|was) rescored (\S+)", head):   # were rescored …")
+        seen.update({sid: _when(day) for sid in re.findall(r"S\d+[a-z]*", ids)})
+    later = lambda w, t: w and t and (w[:3] > t[:3] if t[3] < 0 else w > t)   # a date alone compares by day
+    since = {sid for h, c in (passes[0][1] if passes else []) if seen[""] and not _is_report(h)
+             and re.match(r"(written|applied|done)\b", c.get("state", ""))
+             for sid in re.findall(r"\bS\d+[a-z]*\b", h.split(" · ")[1] if " · " in h else "")
+             if later(_when(c.get("state", "")), seen.get(sid) or seen[""])}
+    for x in said:
+        x["stale"] = x["s"] in since
     paras = [pid for _, b in d["text"] for pid in re.findall(r"(?m)^### (C\d+\.P\d+)\b", b)]
     body = "\n".join(b for _, b in d["text"])
     sids = {pid: re.findall(r"(?m)^- B\d+[a-z]* · (S\d+[a-z]*) · ", (re.search(r"(?ms)^### " + re.escape(pid) + r"\b.*?(?=^### |\Z)", body)
@@ -308,6 +320,16 @@ def _sentence_lines(body: str) -> list:
     return out
 
 
+def _when(text: str):
+    """The first date (and time, if any) in `text`, as a comparable tuple: 2026-11-14 00:13, else 261113; None if none.
+    A date alone sorts before every time that day is known, so a card written later that day counts as later."""
+    m = re.search(r"(20\d\d)-(\d\d)-(\d\d)(?:[ T](\d\d):(\d\d))?", text or "")
+    if m:
+        return (int(m[1]), int(m[2]), int(m[3]), int(m[4] or -1), int(m[5] or -1))
+    m = re.search(r"\b(\d\d)(\d\d)(\d\d)\b", text or "")
+    return (2000 + int(m[1]), int(m[2]), int(m[3]), -1, -1) if m else None
+
+
 def _logic_card(x: dict, now: str = "") -> str:
     """The reviewer's logic comment on one sentence, beside it in the column of cards (JL 261021: "这个 sentence 应该当做一个
     新的 type ... logic comments ... 应该是放到右边的"): its logic and read scores, its link to the sentence before, the
@@ -344,7 +366,7 @@ def _logic_card(x: dict, now: str = "") -> str:
                f'data-new="{esc(x["fix"])}">✓ Use this</button> <span class="lg-msg mut"></span></div>')
     # one line until clicked, so each card stays about as tall as its sentence and beside it
     return (f'<div class="rv-card rv-rev" data-s="{esc(x["s"])}" data-state="review" data-low="{low:g}" '
-            f'data-scores="{esc(scores)}"{" data-fixed=1" if applied else ""}>'
+            f'data-scores="{esc(scores)}"{" data-fixed=1" if applied else " data-stale=1" if x.get("stale") else ""}>'
             f'<div class=lg-head><b class=lg-q>★{low:g} {esc(word)}</b>'
             f'<span class=lg-sc title="9-10 good · 8 passes · 7 weak · 6 or less needs work">{esc(scores)}</span></div>'
             + (f'<div class="lg-text lg-prob">{_inline(x["problem"][:1].upper() + x["problem"][1:], {})}.</div>'
