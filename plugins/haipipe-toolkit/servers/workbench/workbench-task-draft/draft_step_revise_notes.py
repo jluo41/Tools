@@ -107,11 +107,12 @@ def _write_sentence(path: Path, sid: str, orig: str, new: str) -> tuple:
         head, tail = "", dt
     line = re.search(r"(?m)^(- B\d+[a-z]* · " + re.escape(sid) + r" · )(.*)$", tail)
     said = " ".join(line.group(2).split()) if line else ""
-    if said == " ".join(new.split()):
+    cut = new.strip() == "(cut)"                        # a card that removes the sentence (`Expected: (cut)`)
+    if (said == " ".join(new.split())) or (cut and not line):
         return draft, ""
     if not line or said != " ".join(orig.split()):
         return draft, f"{sid} is no longer the reviewed sentence; reload"
-    tail = tail.replace(line.group(0), line.group(1) + new, 1)
+    tail = tail.replace(line.group(0) + "\n", "", 1) if cut else tail.replace(line.group(0), line.group(1) + new, 1)
     draft.write_text(head + mark + tail, encoding="utf-8")
     return draft, ""
 

@@ -71,7 +71,10 @@ def _text_and_cards(d: dict, ev: dict, root: Path, path: Path, task: Path) -> st
     now_words = {m.group(1): " ".join(m.group(2).split()) for _, b in d["text"]
                  for m in re.finditer(r"(?m)^- B\d+[a-z]* · (S\d+[a-z]*) · (.*)$", b)}
     ok = {s for s, w in held.items() if now_words.get(s) == " ".join(w.split())}
-    text = re.sub(r'<li data-s="(S\d+[a-z]*)"', lambda m: m.group(0) + (' data-checked="1"' if m.group(1) in ok else ""), text)
+    # a ✓ on an earlier wording is shown as lapsed, so the person sees which sentences to pass again (JL 261114: "when I
+    # reload, the C2.P2 is not folded")
+    text = re.sub(r'<li data-s="(S\d+[a-z]*)"', lambda m: m.group(0) + (' data-checked="1"' if m.group(1) in ok else
+                  ' data-checked="stale"' if m.group(1) in held else ""), text)
     passes = _revise_passes(path)[:1] if path.is_file() else []
     title, cs = passes[0] if passes else ("", [])
     t = _rel(task, root)
@@ -85,7 +88,8 @@ def _text_and_cards(d: dict, ev: dict, root: Path, path: Path, task: Path) -> st
     # first and the change that answers it after (JL 261021: "你的 change 怎么跟我的 comments 一起来做交互、解决我的 comments")
     notes_at = _comments_path(path)
     notes, by = _comments(notes_at), _answered_by(path)
-    rep = next((c for h, c in (passes[0][1] if passes else []) if _is_report(h)), None)
+    # the newest report scores today's text: a record that keeps its rounds in order has the latest at the bottom
+    rep = next((c for h, c in reversed(passes[0][1] if passes else []) if _is_report(h)), None)
     said = _sentence_lines(rep.get("body", "")) if rep else []
     paras = [pid for _, b in d["text"] for pid in re.findall(r"(?m)^### (C\d+\.P\d+)\b", b)]
     body = "\n".join(b for _, b in d["text"])
@@ -196,7 +200,9 @@ def _wordings(d: dict, revise: Path) -> list:
                 label = re.sub(r"\s*·\s*S\d+[a-z]*\b", "", m.group(1)).strip()
                 n += 1
                 out.append((when, rank + n, f"before: {label}", f["Original"], []))
-                if state not in ("proposed", "rejected"):
+                # only a wording the text really had: an accepted card not yet written in is not history (JL 261114,
+                # of S13 showing a change and its undoing: "I feel the logic here is not good")
+                if state in ("written", "applied", "done"):
                     n += 1
                     out.append((when, rank + n, label, f["Expected"],
                                 _by({k.lower(): v for k, v in f.items()})))
@@ -236,14 +242,17 @@ def _sentence_history(d: dict, revise: Path) -> dict:
             seq.append((when, label, text, by))
         # the wording that is today's text is folded into "now", and its author goes with it (JL 261113: "why you
         # don't see this is from Ritu??"); a later card that only kept the text names no one new
-        made = []
+        made, since = [], ""                       # everyone whose card wrote today's text (S3b: Ritu and JL)
         for when, label, text, by in rows:
-            if _plain(text) == keys[s] and by and not label.startswith("before:"):
-                made = made or by
+            if _plain(text) == keys[s] and not label.startswith("before:"):
+                made += [k for k in by if k not in made]
+                since = max(since, when)           # the last time today's text was written (JL 261113: "who made
+                                                   # this change? what is the date?"; 261114: a text written twice
+                                                   # dates from the second time)
         if seq and _plain(seq[-1][2]) == keys[s]:
-            made = seq.pop()[3] or made
+            seq.pop()
         if seq:
-            out[s] = seq + [("now", "current text", now[s], made)]
+            out[s] = seq + [("now", f"current text, since {since}" if since else "current text", now[s], made)]
     return out
 
 
@@ -326,12 +335,16 @@ def _logic_card(x: dict, now: str = "") -> str:
     applied = now and x["fix"] and " ".join(now.split()) == " ".join(x["fix"].split())
     fix = ""
     if x["fix"]:
-        fix = ('<div class="lg-text lg-sugg"><span class=lg-lab>✓ Already in the text</span></div>' if applied else
+        fix = ('<div class="lg-text lg-sugg"><span class=lg-lab>✓ Fixed: the suggestion is in the text now; the score above '
+               'was for the old wording</span></div>' if applied else
                f'<div class="lg-text lg-sugg"><span class=lg-lab>Suggested</span> '
-               f'{_old_new(now, x["fix"]) if now else _inline(x["fix"], {})}</div>')
+               f'{_old_new(now, x["fix"]) if now else _inline(x["fix"], {})}'
+               # take the reviewer's sentence (JL 261113: "I think this is good, how could I accept it?")
+               f' <button type=button class="work-act lg-use" data-adopt="{esc(x["s"])}" data-orig="{esc(now or "")}" '
+               f'data-new="{esc(x["fix"])}">✓ Use this</button> <span class="lg-msg mut"></span></div>')
     # one line until clicked, so each card stays about as tall as its sentence and beside it
     return (f'<div class="rv-card rv-rev" data-s="{esc(x["s"])}" data-state="review" data-low="{low:g}" '
-            f'data-scores="{esc(scores)}">'
+            f'data-scores="{esc(scores)}"{" data-fixed=1" if applied else ""}>'
             f'<div class=lg-head><b class=lg-q>★{low:g} {esc(word)}</b>'
             f'<span class=lg-sc title="9-10 good · 8 passes · 7 weak · 6 or less needs work">{esc(scores)}</span></div>'
             + (f'<div class="lg-text lg-prob">{_inline(x["problem"][:1].upper() + x["problem"][1:], {})}.</div>'

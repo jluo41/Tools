@@ -1,4 +1,4 @@
-"""The base frame (servers/workbench/frame.py): the levels, the six Spaces, the third row, the Runs
+"""The base frame (servers/workbench/page/frame.py): the levels, the six Spaces, the third row, the Runs
 panel, the vanilla defaults read from disk, a theme laid over them, and the route."""
 from __future__ import annotations
 
@@ -413,7 +413,7 @@ class PageTaskTest(unittest.TestCase):
             self.assertIn("OPEN 1</b></td><td style=\"width:1%;padding:5px 8px 5px 0\">⚪", html)    # S1: no evidence
             self.assertIn("to check</span> · <span class=mut>KFF poll, 2024", html)                     # S2: a source to verify
             self.assertIn("waits on a Run</span> · <span class=mut>T4: ⟦x⟧ times chance", html)           # one nested mark
-            self.assertIn("❓ Open points · 1 to check or find · 1 wait on a Run · 1 with no evidence", html)
+            self.assertIn("<b>❓ Open points</b>", html)              # no tally in the label (AGENTS.md § Page words)
             self.assertIn("→ next", html)                       # no cards.yaml yet: the step's prompt makes them
 
     def test_a_draft_tasks_display_step_sets_each_display_beside_the_sentence_that_calls_it(self):
@@ -585,7 +585,7 @@ class PageTaskTest(unittest.TestCase):
             self.assertIn("↳ Edit · S2 · the cost", html)                       # and the comment its card
             self.assertIn("how much?", html)                                     # its thread, the person's note
             self.assertIn("S2 now gives the cost (card S2).", html)               # and the pass's reply
-            self.assertLess(html.index('data-n="1" data-s="S2"'), html.index("Edit · S2 · the cost</b>"))
+            self.assertLess(html.index('data-n="1" data-s="S2"'), html.index('data-card="Edit · S2 · the cost'))
             self.assertEqual(draft_steps.note_act(root, {"task": rel, "act": "delete", "n": "1"})[0], 409)
             self.assertEqual(draft_steps.note_act(root, {"task": rel, "act": "done", "n": "1", "was": "open"})[0], 409)
             code, res = draft_steps.note_act(root, {"task": rel, "act": "done", "n": "1", "was": "answered"})
@@ -615,7 +615,7 @@ class PageTaskTest(unittest.TestCase):
                              "Option B (the cause first): Costs make the problem grow.\nChosen: A\n"
                              "State: written · 2026-10-21 17:00\n")
             html = task_draft.draft_task_spaces(task, root, "5 · Revise")["Work Details"].html
-            self.assertIn("2 options", html)                                      # every option listed (JL 261021)
+            self.assertIn('data-opt="B"', html)                                   # every option listed (JL 261021); the chip went 261113
             self.assertIn('value="B"', html)
             self.assertIn('<label class="rv-choice sel" data-opt="A"', html)
             self.assertIn('<label class="rv-choice rv-drop" data-opt="drop">', html)  # C: drop it
@@ -1256,7 +1256,7 @@ class FrameTest(unittest.TestCase):
             (runs / "run-draw-s01").mkdir(parents=True)                       # a soft Run: not listed
             page = frame.render(frame.VANILLA, root, block, studio=True)
             self.assertIn("id=studio-runs", page)
-            self.assertIn("3 hard Runs · ✅2 ⬜1", page)                     # with the fixture's r01_fit (done)
+            self.assertNotIn("3 hard Runs", page)                           # no tally on the page (JL 261113)
             self.assertRegex(page, r"✅</span><code>r01_done</code><span class=rn-st>complete</span><span class=rn-day>2026-10-19")
             self.assertRegex(page, r"⬜</span><code>r02_waits</code><span class=rn-st>planned")
             self.assertNotIn("<code>run-draw-s01</code>", page)
@@ -1754,7 +1754,7 @@ class ButtonSkillTest(unittest.TestCase):
                     yield "Page Task", space + " " + sub, k
 
     def test_every_button_names_a_skill_that_exists(self):
-        skills = Path(frame.__file__).resolve().parents[2] / "skills"
+        skills = Path(frame.__file__).resolve().parents[3] / "skills"    # servers/workbench/page/frame.py
         names = {p.parent.name for p in skills.glob("**/SKILL.md")}
         with tempfile.TemporaryDirectory() as tmp:
             seen = list(self.buttons(project(tmp)))

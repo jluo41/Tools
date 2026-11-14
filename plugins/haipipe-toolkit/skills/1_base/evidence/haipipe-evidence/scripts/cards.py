@@ -46,6 +46,25 @@ from pathlib import Path
 
 import yaml
 
+
+_LOADER = getattr(yaml, 'CSafeLoader', yaml.SafeLoader)
+_READ = {}
+
+
+def _read_data(path):
+    """A Run's result file, parsed once per change: {path: (mtime, size, data)}. A workbench page reads the same
+    values.yaml for every sentence that cites it (1,864 reads on one paper Board, 2 minutes, JL 261110), so parse it
+    once until the file changes. Callers only read the data, never change it."""
+    path = Path(path)
+    st = path.stat()
+    hit = _READ.get(str(path))
+    if hit and hit[0] == st.st_mtime_ns and hit[1] == st.st_size:
+        return hit[2]
+    text = path.read_text(encoding='utf-8')
+    data = json.loads(text) if path.suffix == '.json' else yaml.load(text, Loader=_LOADER)
+    _READ[str(path)] = (st.st_mtime_ns, st.st_size, data)
+    return data
+
 # VALUE, not WORK: what the item is, a number (JL 261020: "the work 1's name is not good ... more like something else")
 LABEL = {'cite': 'CITE', 'value': 'VALUE'}
 COLOR = {'cite': '#1971c2', 'value': '#7048e8', 'need': '#e03131'}   # external blue, internal violet, needed red
@@ -141,11 +160,21 @@ def facts(result, ids):
 
 
 def work_value(result, file, key):
-    """A value from a work Run's own output: `key` (dotted) in a .json or .yaml file in its result/; `len(<key>)` counts
+    """A value from a work Run's own output: `key` (dotted) in a .json or .yaml file in its result/, or `<row>.<column>`
+    in a .csv; `len(<key>)` counts
     the entries there (the six agents are the six keys of `metrics.b_by_model`, so a sentence's "6 AI agents" is read,
     not typed)."""
     path = Path(result) / file
-    data = json.loads(path.read_text()) if path.suffix == '.json' else yaml.safe_load(path.read_text())
+    if path.suffix == '.csv':          # `<row>.<column>`: the row whose first cell is <row> (a cohort table's counts)
+        import csv
+        row, _, col = key.strip().partition('.')
+        with path.open(newline='', encoding='utf-8') as f:
+            got = [r for r in csv.DictReader(f) if next(iter(r.values()), None) == row]
+        if len(got) != 1:
+            raise KeyError(f'{row} in {file}')
+        v = got[0][col]
+        return float(v) if re.fullmatch(r'-?\d+(\.\d+)?', v or '') else v
+    data = _read_data(path)
     count = re.fullmatch(r'len\((.+)\)', key.strip())
     for part in (count[1] if count else key).split('.'):
         data = data[int(part)] if isinstance(data, list) else data[part]
@@ -274,7 +303,7 @@ def is_value_id(v):
 
 def catalog(path):
     """{id: row} of a catalog file (a Run's result/values.yaml); each row keeps its key as `key`."""
-    data = yaml.safe_load(Path(path).read_text(encoding='utf-8')) or {}
+    data = _read_data(path) or {}
     return {r['id']: dict(r, key=k) for k, r in (data.get('values') or {}).items() if isinstance(r, dict) and r.get('id')}
 
 
@@ -334,6 +363,10 @@ def agrees(printed, value, scale=1):
     if not m or not isinstance(value, (int, float)) or isinstance(value, bool):
         return None
     token = m[0].replace(',', '')
+    # a count printed in words, "3.9 million" or "227 thousand", is the value in that unit at the printed precision
+    unit = re.match(r'\s*(million|thousand)\b', words[m.end():])
+    if unit:
+        value = value / (1e6 if unit[1] == 'million' else 1e3)
     return same(float(token), len(token.split('.')[1]) if '.' in token else 0, value, scale)
 
 

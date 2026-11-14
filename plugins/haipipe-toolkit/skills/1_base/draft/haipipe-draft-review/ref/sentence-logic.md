@@ -32,11 +32,16 @@ each sentence with the sentence before it and the sentence after it in view, and
 4. **Claim fit.** The claim is no stronger than what supports it (a hedge where the source is indirect); the facts
    agree with the sentences before; a word keeps one meaning (term drift: "agent", then "chatbot", then "model" for one
    thing).
-5. **Job.** The sentence does a step of its paragraph's job, and the argument would break without it; it does not
+5. **Introduced before used (JL 261111: "glucose here is appeared all of a sudden. Do we want to introduce a bit or
+   not?").** A domain word, a data type or a model kind is introduced (what it is, where it comes from) before a
+   sentence argues with it. "Glucose data are limited" right after a sentence on scaling laws in general is a weak
+   link: first "Foundation models are trained on continuous glucose monitoring data, which come only from people
+   wearing a sensor", then the limit.
+6. **Job.** The sentence does a step of its paragraph's job, and the argument would break without it; it does not
    repeat a sentence before.
 
 Logic has three levels, and this method reads all three (JL 261021: "当我们说 logic 的时候，是不是指既有它所谓的
-logic，比如 transition、逻辑衔接，或者是不是达到了总分总这种结构？"): the sentence (checks 1 to 5), the paragraph's shape,
+logic，比如 transition、逻辑衔接，或者是不是达到了总分总这种结构？"): the sentence (checks 1 to 6), the paragraph's shape,
 and the Section's arc.
 
 - **Paragraph shape: topic, support, hand-off (总分接).** The first sentence says what the paragraph is for (topic,
@@ -61,22 +66,30 @@ English included), subject and verb early, nothing between subject and verb that
 
 ## Scores
 
-Each sentence gets a logic score and a read score, out of 10. A sentence passes at 8 or more on both, with no broken
-link.
+Each sentence gets a logic score, a read score (easy to read) and an ai score (free of AI-writing patterns), out of
+10 (JL 261113: every sentence carries an AI-writing and an easy-to-read score). A sentence passes at 8 or more on all
+three, with no broken link.
 
-| Score | Logic | Read |
-|---|---|---|
-| 9-10 | link carried, every pointer clear, the payoff matches its setup | reads in one pass, natural |
-| 8 | one tiny gap a reader would not notice | one tiny stumble |
-| 7 | the link is weak, or one pointer is unclear | one clear stumble |
-| 5-6 | the payoff does not match its setup, or the claim outruns its support | hard to read in one pass |
-| 0-4 | broken: no link, or the sentence contradicts the one before | broken |
+| Score | Logic | Read | AI |
+|---|---|---|---|
+| 9-10 | link carried, every pointer clear, the payoff matches its setup | reads in one pass, natural | no AI-writing pattern |
+| 8 | one tiny gap a reader would not notice | one tiny stumble | one faint pattern |
+| 7 | the link is weak, or one pointer is unclear | one clear stumble | one clear pattern (a stock word, a definition stack, self-narration) |
+| 5-6 | the payoff does not match its setup, or the claim outruns its support | hard to read in one pass | two or more patterns |
+| 0-4 | broken: no link, or the sentence contradicts the one before | broken | reads as machine text |
+
+The ai score uses the anti-AI evaluator's patterns (`haipipe-draft-review`, Mode 1); the problem names the pattern.
+
+**Topic check (JL 261111).** Name each sentence's topic in two or three words before scoring. A sentence with two
+topics scores at most 7 on read ("too packed": split it); a sentence that carries only half of the topic its neighbour
+started scores at most 7 on read ("fragmented": merge it with that neighbour). One topic with one or two points is
+the target (`plain-rules.md` §3).
 
 ## The line, one per sentence
 
 ```
 Sentences:
-- S<n> · logic <0-10>/10 · read <0-10>/10 · link: <relation>, <carried | weak | broken> · <the specific problem> · Fix: <none | the rewritten sentence>
+- S<n> · logic <0-10>/10 · read <0-10>/10 · ai <0-10>/10 · link: <relation>, <carried | weak | broken> · <the specific problem> · Fix: <none | the rewritten sentence>
 ```
 
 - **The specific problem** names the words and the check that fails, in at most 25 words: "'this' points to coverage
@@ -84,7 +97,9 @@ Sentences:
   reader would ask at that spot ("why is this here?", "what does 'this' mean?"): the words, what they promised, what
   the reader got. When the logic holds, say what holds it in the link field ("'This list' picks up S6's short list"),
   so the author can trust it and move on; the problem is then "none", or a tiny gap named as tiny.
-- **Fix** is the full rewritten sentence, one sentence, the same facts, numbers and citation keys, no fact added;
+- **Fix** is the full rewritten sentence, one sentence, the same facts, numbers and citation keys, no fact added,
+  changing the fewest words that cure the problem; a Fix that keeps less than 60% of the sentence (difflib ratio)
+  needs a problem a small edit cannot cure, never style alone (JL 261113; haipipe-draft-writing `ref/revise.md`);
   given for every sentence below 8 and every weak or broken link; a sentence at 8 or more may carry one marked
   `Fix (optional):`. A rewrite that breaks one of the author's rulings is
   no fix. When the sentence is right but in the wrong place, the Fix is `move after S<n>` with its reason in the
@@ -97,4 +112,4 @@ Sentences:
   strong one.
 
 The host shows these lines as a table beside the text (haipipe-draft-writing `ref/revise.md`, the workbench's 📋
-Revise Review Report); a Revise loop ends only when every sentence passes.
+Revise Review Report, and each score on the sentence's own row); a Revise loop ends only when every sentence passes.

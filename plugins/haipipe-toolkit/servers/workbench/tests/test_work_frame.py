@@ -90,17 +90,11 @@ class WorkFrameTest(unittest.TestCase):
         self.assertNotIn('t02_b', narrowed)
         self.assertNotIn(str(self.root), narrowed)
 
-    def test_status_topic_panels_keep_only_linked_work(self):
+    def test_plan_and_results_has_no_topic_navigation(self):
         groups = [('First topic', [self.a]), ('Second topic', [self.b])]
         page = w.status(self.block, self.root, f.read_face(self.block, self.root), groups)
-        self.assertIn('🧩 View BJTR', page)
-        first = re.search(r'data-pbpanel="work-status-topic0"[^>]*>(.*?)</div>', page, re.S)[1]
-        self.assertIn('Block ·', first)
-        self.assertIn('Job ·', first)
-        self.assertIn('t01_a', first)
-        self.assertNotIn('t02_b', first)
-        self.assertIn('No Run yet.', first)
-        self.assertIn('data-pop=', first)
+        self.assertNotIn('🧩 View BJTR', page)            # JL 261109: "maybe we don't need this"
+        self.assertNotIn('work-status-topic', page)
 
     def test_block_runs_only_appear_when_the_block_is_selected(self):
         run = self.block / 'runs/r01_collect'
@@ -267,17 +261,16 @@ class WorkFrameTest(unittest.TestCase):
 
     def test_all_views_have_shared_sections_and_delivery_alias(self):
         theme = frame.Theme(name='work')
-        titles = ['🎨 Studio', '🙋 Interactions', '⚖️ Decisions', '📚 Things to Know', '📝 Checklist', '🕒 Timeline', '🧰 Skills', ' Files</summary>']
+        titles = ['🎨 Studio', '🙋 Interactions', '⚖️ Decisions', '📚 Things to Know', '📝 Checklist', '🕒 Timeline', '🧰 Skills', ' Files</span></summary>']
         for level in [self.block, self.job, self.a]:
             for view in ['overview', 'standing', 'findings', 'delivery']:
                 html = f.render(theme, self.root, level, 'report', view)
-                for title in titles:
-                    self.assertIn(title, html)
+                for title in titles:                       # an empty one is hidden (JL 261113); a shown one is unnumbered
                     self.assertNotRegex(html, r'\d+ · ' + title)
-                for name in ['Overview', 'Status', 'Findings', 'Delivery']:
+                self.assertNotIn('No Decisions linked to this view.', html)
+                for name in ['Overview', 'Plan + Results', 'Findings', 'Delivery']:
                     self.assertIn('>' + name + '</a>', html)
                 self.assertNotIn('💬 Feedback', html)
-                self.assertIn('⚖️ Decisions</summary>', html)
                 self.assertIn('aria-labelledby="work-shared"', html)
         old_map = f.render(theme, self.root, self.block, 'report', 'mindmap')
         self.assertIn('aria-current="page">Overview</a>', old_map)
@@ -305,8 +298,8 @@ class WorkFrameTest(unittest.TestCase):
                     self.assertNotIn('aria-label="Work"', nav)
         report = f.render(frame.Theme(name='work'), self.root, self.block, 'report', 'standing')
         self.assertNotIn('🚧 Next steps', report)
-        self.assertIn('🧩 View BJTR', report)
-        self.assertLess(report.index('📋 Review Content'), report.index('🧩 View BJTR'))
+        self.assertIn('📋 Review Content', report)
+        self.assertNotIn('🧩 View BJTR', report)
 
     def test_shared_rail_order_and_child_record_rollup(self):
         (self.a / (self.a.name + '.md')).write_text('# Task\n## Decisions\nChild decision.\n## Checklist\n- [ ] Verify child.\n')
@@ -406,3 +399,13 @@ class WorkFrameTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class BlankSectionTest(unittest.TestCase):
+    def test_an_empty_shared_section_is_hidden(self):
+        """JL 261113: "if the section is empty, then we can hide that section"."""
+        from live import work_frame
+        self.assertTrue(work_frame.blank('<p class="mut">No decision records yet.</p>'))
+        self.assertTrue(work_frame.blank('<p class=mut>Nothing asked yet.</p>'))
+        self.assertTrue(work_frame.blank('<p class="mut">No Studio topic here yet.</p><div class="focus-actions"><a>Add</a></div>'))
+        self.assertFalse(work_frame.blank('<ol class="work-history"><li>261113</li></ol>'))

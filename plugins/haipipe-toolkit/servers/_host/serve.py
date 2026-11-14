@@ -109,7 +109,7 @@ from host_registry import WORKBENCH_ROUTES, route_allowed, static_path_allowed  
 # ── QC8: the live layer is the `live` namespace over every server folder ─────
 # serve.py is now what build.py became on 260724: a thin CLI plus the routing
 # table.  Each area is a mixin; the class below is only their assembly order.
-# `live.<module>` resolves into servers/space-home, servers/workbench-*, or a
+# `live.<module>` resolves into servers/workbench, servers/workbench-*, or a
 # sibling workbench's servers/workbench-* (see _host/live/__init__.py).
 from live.base import BaseMixin, HOLD, TERMS, RUNS, ASKS, ALWAYS, ASK_SEQ
 from live.auth import AuthMixin, AuthConfigError, host_is_loopback
@@ -134,8 +134,6 @@ from live.folderstat import FolderStatMixin
 from live.design import DesignMixin
 from live.designboard import DesignBoardMixin
 from live.taskboard import TaskBoardMixin
-from live.coworkboard import CoworkBoardMixin
-from live.discoveryboard import DiscoveryBoardMixin
 from live.workbench_guide import WorkbenchGuideMixin
 from live.shared_workbench import SharedWorkbenchMixin
 from live.frame_view import FrameMixin
@@ -193,7 +191,7 @@ def new_route_name(path: str, method: str = "GET") -> str:
     return head + sep + query
 
 
-class Handler(ShareMixin, AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ApiProxyMixin, PageReaderMixin, ExportMixin, PlugViewMixin, FolderStatMixin, InsightBoardMixin, DesignMixin, DesignBoardMixin, TaskBoardMixin, CoworkBoardMixin, DiscoveryBoardMixin, WorkbenchGuideMixin, SharedWorkbenchMixin, FrameMixin, OutlineMixin, PaperWorkbenchMixin, ValueMixin, EvidenceTabMixin, DeliveryTabMixin, LabelingMixin, PageRunsMixin, RunsTabMixin, SimpleHTTPRequestHandler):
+class Handler(ShareMixin, AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ApiProxyMixin, PageReaderMixin, ExportMixin, PlugViewMixin, FolderStatMixin, InsightBoardMixin, DesignMixin, DesignBoardMixin, TaskBoardMixin, WorkbenchGuideMixin, SharedWorkbenchMixin, FrameMixin, OutlineMixin, PaperWorkbenchMixin, ValueMixin, EvidenceTabMixin, DeliveryTabMixin, LabelingMixin, PageRunsMixin, RunsTabMixin, SimpleHTTPRequestHandler):
     root = Path(".")
     space_name = ""
     public_url = ""
@@ -373,10 +371,6 @@ class Handler(ShareMixin, AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteM
             return self.design_board_view()
         if self.path.split("?", 1)[0] == "/_board/work-board":
             return self.task_board_view()
-        if self.path.split("?", 1)[0] == "/_board/cowork-board":
-            return self.cowork_board_view()
-        if self.path.split("?", 1)[0] == "/_board/discovery-board":
-            return self.discovery_board_view()
         if self.path.split("?", 1)[0] == "/_board/guide":
             return self.guide_view()
         if self.path.split("?", 1)[0] == "/_board/shared":
@@ -506,10 +500,6 @@ class Handler(ShareMixin, AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteM
             return self.design_board_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/work-board":
             return self.task_board_view(head_only=True)
-        if self.path.split("?", 1)[0] == "/_board/cowork-board":
-            return self.cowork_board_view(head_only=True)
-        if self.path.split("?", 1)[0] == "/_board/discovery-board":
-            return self.discovery_board_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/guide":
             return self.guide_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/shared":
@@ -670,14 +660,6 @@ class Handler(ShareMixin, AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteM
             res, err = self.plug_task_board(p)
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/cowork-board":
-            res, err = self.plug_cowork_board(p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/discovery-board":
-            res, err = self.plug_discovery_board(p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
         if self.path == "/_board/design-board-act":  # add design tasks · open a Design Folder for a line
             res, err = self.design_board_act(p)
             return self.reply(200 if not err else 400,
@@ -699,6 +681,15 @@ class Handler(ShareMixin, AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteM
                 return self.reply(403, {"ok": False, "err": "cross-origin write refused"})
             from live.draft_steps import note_act
             code, res = note_act(self.root, p, read_only=getattr(self.server, "read_only", False))
+            return self.reply(code, res)
+        if self.path == "/_board/draft-rule":
+            # a rule added on a draft Task's 4 · Writing Rubric, into its tab's file (JL 261113)
+            from urllib.parse import urlparse
+            origin = self.headers.get("Origin") or ""
+            if origin and urlparse(origin).netloc != (self.headers.get("Host") or ""):
+                return self.reply(403, {"ok": False, "err": "cross-origin write refused"})
+            from live.draft_rubric import rule_act
+            code, res = rule_act(self.root, p, read_only=getattr(self.server, "read_only", False))
             return self.reply(code, res)
         if self.path == "/_board/draft-plan":
             # a person's change on a draft Task's §1 mind map: a point's words or role, a paragraph's name, a point

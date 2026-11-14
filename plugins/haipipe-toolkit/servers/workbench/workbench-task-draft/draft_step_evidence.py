@@ -379,6 +379,7 @@ SX_ROWS = """<link rel=stylesheet href="https://fonts.googleapis.com/css2?family
 .sx-ai{font-weight:400;color:var(--mut)}.sx-ai.low{color:color-mix(in srgb,var(--mut) 70%,#8a3b2b)}
 .sx-ok{cursor:pointer;color:color-mix(in srgb,var(--mut) 55%,transparent);font-weight:600;padding:0 2px}
 .sx-ok:hover{color:var(--ink,#333)}.sx-ok.on{color:var(--ink,#333)}
+.sx-board .sx-ok.stale{color:#b06d1a;background:color-mix(in srgb,#e8a33d 16%,transparent);border-radius:9px;padding:0 6px}
 .sx-row:not(.sx-fold) .sx-marks>.sx-ok{display:inline!important}
 .sx-board .rv-left li[data-checked="1"] .sx-ai{display:none!important}
 .sx-cmt{cursor:pointer;opacity:.75}.sx-cmt:hover{opacity:1}
@@ -445,6 +446,9 @@ SX_ROWS = """<link rel=stylesheet href="https://fonts.googleapis.com/css2?family
 .sx-board .rv-left li[data-s]>.s-tx{grid-column:3;grid-row:1/span 3;margin-left:34px}   /* air after the number (JL 261113: "this is too close") */
 .sx-board .rv-left li[data-s]>.sx-marks{grid-column:4;grid-row:1}
 .sx-board .rv-left li[data-s]>.nt-gut{position:absolute;right:-30px;top:2px;margin:0;padding:0}
+/* the sentence just changed, found again after the page loads (sxKeep) */
+.sx-board .sx-flash{animation:sxflash 2.6s ease-out}
+@keyframes sxflash{0%,35%{box-shadow:0 0 0 3px color-mix(in srgb,#e8a33d 70%,transparent);border-radius:6px}100%{box-shadow:0 0 0 3px transparent}}
 /* the margin keeps only +: the old open-comment 💬 repeated the 💬N in the marks (JL 261114: "maybe we don't need it") */
 .sx-board .nt-mark{display:none!important}
 </style><script>
@@ -473,8 +477,8 @@ SX_ROWS = """<link rel=stylesheet href="https://fonts.googleapis.com/css2?family
      from the + in the margin */
   var cm=nt?'<span class=sx-cmt role=button tabindex=0 title="the comments on this sentence">💬'+nt+'</span>':'';
   /* ✓ the person's own pass on the sentence (JL 261113: "a button, which means check ... no need to modify it") */
-  var li0=r.querySelector('.rv-left li[data-s]'),on=li0&&li0.dataset.checked==='1';
-  cm=cm+(li0?'<span class="sx-ok'+(on?' on':'')+'" role=button tabindex=0 title="'+(on?'you checked this sentence; click to take it back':'check: this sentence passes, leave it as it is')+'">✓</span>':'');   /* ✓ last (JL 261113) */
+  var li0=r.querySelector('.rv-left li[data-s]'),on=li0&&li0.dataset.checked==='1',st=li0&&li0.dataset.checked==='stale';
+  cm=cm+(li0?'<span class="sx-ok'+(on?' on':st?' stale':'')+'" role=button tabindex=0 title="'+(on?'you checked this sentence; click to take it back':st?'you checked an earlier wording; the words changed, so check it again':'check: this sentence passes, leave it as it is')+'">'+(st?'✓?':'✓')+'</span>':'');   /* ✓ last (JL 261113) */
   return [w,ai+evm+(h?'<span class=sx-clk role=button tabindex=0 title="earlier versions of this sentence">🕘'+h+'</span>':'')
    +(pen||old?'<span class="sx-pen'+(w?' w':'')+(pen?'':' faint')+'" role=button tabindex=0 title="edits: '+pen+' current'+(w?' ('+w+' wait for you)':'')+', '+old+' decided">📝'+(pen||old)+'</span>':'')+cm];}
  /* ★ opens the reviewer's card on the sentence, a good one too (JL 261113: "when I click ★8, why there are no ...") */
@@ -489,7 +493,7 @@ SX_ROWS = """<link rel=stylesheet href="https://fonts.googleapis.com/css2?family
   fetch('/_board/draft-comment',{method:'POST',headers:{'Content-Type':'application/json'},
    body:JSON.stringify({task:bd.dataset.task,act:on?'check':'uncheck',s:li.dataset.s})})
    .then(function(r){return r.json();}).then(function(j){if(!j.ok){k.title=j.err||'not saved';return;}
-    k.classList.toggle('on',j.checked);li.dataset.checked=j.checked?'1':'';
+    k.classList.toggle('on',j.checked);k.classList.remove('stale');k.textContent='✓';li.dataset.checked=j.checked?'1':'';
     k.title=j.checked?'you checked this sentence; click to take it back':'check: this sentence passes, leave it as it is';});},true);
  /* 💬 opens the sentence's comments: the earlier ones, then a box for a new one under them; a second click closes them
     (JL 261113: "does this mean adding the comments, or showing the previous comments? they are different right?") */
@@ -564,6 +568,18 @@ SX_ROWS = """<link rel=stylesheet href="https://fonts.googleapis.com/css2?family
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup);else setup();
  /* a row's cards can stream in after its row was set up, so its marks are counted again once the page is whole
     (S6a lost its 📊 and 🕘 when its cards came late) */
+ /* after a written change the page loads again; it comes back to the same sentence, flashed, instead of the top
+    (JL 261114: "the focal sentence is jump to another places and it is hard for me to find") */
+ window.sxKeep=function(el){try{var r=el&&el.closest&&el.closest('.sx-row'),li=r&&r.querySelector('.rv-left li[data-s]');
+  if(li)sessionStorage.setItem('sx-keep',li.dataset.a||li.dataset.s);}catch(x){}};
+ (function(){var k=null;try{k=sessionStorage.getItem('sx-keep');sessionStorage.removeItem('sx-keep');}catch(x){}if(!k)return;
+  var n=0;(function go(){var li=document.querySelector('.sx-board .rv-left li[data-a="'+k+'"]')||document.querySelector('.sx-board .rv-left li[data-s="'+k+'"]');
+   if(!li){if(++n<40)setTimeout(go,150);return;}
+   var row=li.closest('.sx-row'),hs=[];for(var x=row&&row.previousElementSibling;x;x=x.previousElementSibling){
+    if(x.classList.contains('sx-c')){hs.unshift(x);break;}if(x.classList.contains('sx-p')&&!hs.length)hs.push(x);}
+   hs.forEach(function(h){if(h.classList.contains('sx-pfold')&&window.sxPfold)window.sxPfold(h,false);});   /* open its folded paragraph */
+   var land=function(){li.scrollIntoView({block:'center'});};land();setTimeout(land,700);
+   var r=li.closest('.sx-row')||li;r.classList.add('sx-flash');setTimeout(function(){r.classList.remove('sx-flash');},2600);})();})();
  /* ✓ Use this on a reviewer's suggestion: an accepted Edit card with its words (card_act adopt), then the page again */
  document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.lg-use');if(!b)return;
   e.preventDefault();e.stopPropagation();var t=b.closest('[data-task]')||document.querySelector('[data-task]'),m=b.nextElementSibling;
@@ -571,7 +587,7 @@ SX_ROWS = """<link rel=stylesheet href="https://fonts.googleapis.com/css2?family
   fetch('/_board/draft-card',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({task:t.dataset.task,
    act:'adopt',s:b.dataset.adopt,original:b.dataset.orig,expected:b.dataset.new})}).then(function(r){return r.json();})
    .then(function(j){if(!j.ok){b.disabled=false;if(m)m.textContent=j.err||'not saved';return;}if(m)m.textContent='accepted';
-    setTimeout(function(){location.reload();},400);}).catch(function(x){b.disabled=false;if(m)m.textContent=String(x);});},true);
+    setTimeout(function(){if(window.sxKeep)window.sxKeep(b);location.reload();},400);}).catch(function(x){b.disabled=false;if(m)m.textContent=String(x);});},true);
  function remark(){document.querySelectorAll('.sx-board .sx-row[data-sx]').forEach(function(r){
   var li=r.querySelector('.rv-left li[data-s]'),s=li&&li.querySelector('.sx-marks');if(!s)return;var m=marks(r);
   /* compare with the last marks written, never with innerHTML: the browser rewrites quotes, so innerHTML never equals

@@ -50,37 +50,33 @@ class FocusDraftTest(unittest.TestCase):
     def page(self, section="", group=""):
         return focus_page.render(self.theme, self.root, self.task, section, group)
 
-    def test_work_is_the_five_steps_in_place_with_their_state_words(self):
+    def test_work_is_the_five_steps_in_place_by_name_only(self):
         page = self.page()
         bar = re.search(r'<nav class="section-views".*?</nav>', page, re.S).group(0)
-        for step in ("1 · Plan", "2 · Write", "3 · Evidence", "5 · Revise", "Runs"):
+        for step in ("1 · Draft", "2 · Plan", "3 · Evidence"):          # Draft first (JL 261113)
             self.assertIn(step, bar)
+        for gone in ("2 · Write", "5 · Revise", ">Runs<", "MindMap", ">Text<", "Plan + Results"):   # JL 261113
+            self.assertNotIn(gone, bar)
         self.assertNotIn("4 · Display", bar)          # the text calls no Table or Figure: no empty view (JL 261031)
         self.assertNotIn("Ask the agent", self.page("work", "evidence"))   # prompts only on Plan, Write, Revise
         self.assertNotIn(">Studio<", bar)                            # a section, never a view (haipipe-ui Page parts)
         self.assertNotIn(">Delivery<", bar)
         self.assertNotIn("space=Work+Details", page)                # no old step page in an iframe
         self.assertNotIn('class="draft-frame"', page)
-        self.assertIn('class="vw', bar)                              # each step's state, a word on its button
+        self.assertNotIn('class="vw', bar)                           # a view button carries only its name (Page words)
 
     def test_the_aim_is_the_reader_question(self):
         self.assertIn('<span class="goal-word">Aim</span><p>What did the study find?</p>', self.page())
 
     def test_studio_and_delivery_are_on_the_right_rail(self):
         rail = re.search(r'<nav class="focus-rail right".*?</nav>', self.page(), re.S).group(0)
-        self.assertIn('aria-label="Studio"', rail)
+        self.assertIn('aria-label="🎨 Studio"', rail)
         self.assertIn('aria-label="Delivery"', rail)
 
-    def test_report_is_mindmap_text_status_and_opens_on_the_text(self):
-        page = self.page("report")
-        bar = re.search(r'<nav class="section-views".*?</nav>', page, re.S).group(0)
-        for view in ("MindMap", "Text", "Status"):
-            self.assertIn(view, bar)
-        self.assertNotIn("Review", bar)                              # the review is Work › 5 · Revise's (JL 261031)
+    def test_draft_is_the_sentence_board(self):
+        page = self.page("report", "draft")                          # Write and Revise in one view (JL 261113)
         self.assertIn("The first sentence states the problem.", page)
-        status = self.page("report", "status")
-        self.assertIn("1 · Plan", status)
-        self.assertIn("Go</a>", status)
+        self.assertIn("sx-row", page)
 
     def test_the_steps_have_sections_not_folds(self):
         plan = self.page("work", "plan")
@@ -88,6 +84,52 @@ class FocusDraftTest(unittest.TestCase):
         self.assertNotIn('<details class="topic work-task', content)
         self.assertIn("class=fd-sec", content)
         self.assertIn("fd-copy", content)                            # the prompt as a verb
+
+    def test_old_work_links_open_report_with_shared_context_and_keep_actions(self):
+        from live import work_frame
+        for view, now in (('plan', 'plan'), ('write', 'draft'), ('evidence', 'evidence'), ('revise', 'draft')):
+            page = self.page('work', view)
+            self.assertIn('<h2>📋 Review Content</h2>', page)
+            self.assertIn('🧭 Around the Work', page)
+            rail = re.search(r'<nav class="focus-rail right".*?</nav>', page, re.S).group()
+            self.assertNotIn('aria-label="Work"', rail)
+            for key, title in work_frame.SHARED:
+                self.assertIn(f'aria-label="{title}"', rail)
+            bar = re.search(r'<nav class="section-views".*?</nav>', page, re.S).group()
+            self.assertIn(f'section=report&amp;group={now}" aria-current="page"', bar)
+            self.assertNotIn('⚙️ Process', page)
+            self.assertNotIn('📊 Results', page)
+        plan = self.page('work', 'work-plan')
+        self.assertLess(plan.index('§1 Structure'), plan.index('Where this step stands'))
+        self.assertIn('Sign the plan', plan)
+        self.assertIn('fd-copy', plan)
+        self.assertIn('fd-copy', self.page('studio'))
+
+    def test_draft_context_respects_explicit_run_ownership_and_keeps_source_files(self):
+        from live import draft_context, work_files
+        def run(name, metadata=''):
+            path = self.task / 'runs' / name
+            path.mkdir(parents=True)
+            (path / 'run.yaml').write_text('state: done\n' + metadata)
+            return path
+        native = run('run-structure-native')
+        paragraph = run('run-paragraph-native', 'target: C1.P1\n')
+        explicit = run('run-structure-explicit', 'view: revise\n')
+        unknown = run('run-unknown')
+        selected = draft_context.scope(self.task, self.root, 'plan', [], [], [])
+        self.assertIn(native, selected['runs'])
+        self.assertNotIn(explicit, selected['runs'])
+        self.assertNotIn(unknown, selected['runs'])
+        self.assertIn(explicit, draft_context.scope(self.task, self.root, 'revise', [], [], [])['runs'])
+        self.assertIn(paragraph, draft_context.scope(self.task, self.root, 'write', [], [], [])['runs'])
+        self.assertIn(unknown, draft_context.scope(self.task, self.root, None, [], [], [])['runs'])
+        sources = dict(work_files.folder_groups(self.task, self.root, 'plan', scope=selected, skill_rows=[]))['🧩 Blocks']
+        self.assertIn(self.task / 'draft' / 't00_summary-draft-v0.1.md', sources)
+        outside = self.root.parent / 'outside'
+        selected['source_paths'].append(outside)
+        self.assertNotIn(outside, dict(work_files.folder_groups(self.task, self.root, 'plan', scope=selected, skill_rows=[]))['🧩 Blocks'])
+        (self.task / 'display').mkdir()
+        self.assertIn(self.task / 'display', draft_context.scope(self.task, self.root, 'display', [], [], [])['source_paths'])
 
 
     def test_a_version_shows_its_whole_paper_and_a_section_previews_its_lanes(self):
@@ -129,8 +171,8 @@ class PaperJobNamesTest(unittest.TestCase):
             self.assertEqual(re.findall(r"<h3 class=fd-h>([^<]*)", board_evidence.evidence_html(b, Path(tmp))),
                              ["Displays · j01_evidence_display", "Values · j02_evidence_value", "Citations · j03_evidence_cite"])
             views = paper_version.version_work_views(b / "j11_writing_v1130_venue", Path(tmp))
-            self.assertIn("t01_figure1-x", views["work-display-main"][1]())
-            self.assertIn("t51_etable1-x", views["work-display-appendix"][1]())
+            self.assertIn("t01_figure1-x", views["work-display"][1]())     # main and appendix, one Display view (261113)
+            self.assertIn("t51_etable1-x", views["work-display"][1]())
 
 
 if __name__ == "__main__":

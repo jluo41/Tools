@@ -42,6 +42,29 @@ burden, not a ceiling. Keep causal/logical relations and all qualifiers. A
 Section's sentence/Bullet mapping may require an owner-approved plan change
 before splitting; a clear long sentence may stay as written.
 
+**One sentence, one topic: one or two points as a rule, three at most, short enough to read in one pass (JL
+2026-11-11: "One sentences, you can have one or two points, but must be one topic"; JL 2026-11-13: "one sentence, one
+topic, and with general 1 or 2 points, and at most 3 points to show ... the sentence length should not be too long, and
+easier to read").** A third point is the ceiling, never the habit; a fourth means the sentence carries a list or a second
+topic, so split it. Two points on the same topic stay in one sentence; two topics become two sentences. The error runs both ways: a sentence that joins two topics is too packed, and
+a run of short sentences that each carry half a topic is too fragmented. Test: name the topic of each sentence in two or
+three words; two topics in one sentence means split, the same topic in two neighbouring sentences means merge.
+
+❌ packed: `However, models are used for tasks rather than for their loss, and with limited glucose data the gain from scale on each task is unclear.` (how models are judged + how much data exists)
+
+❌ fragmented: `Ten times more new data lowered 5-minute forecast error by 13.3%. Their error in predicting age group dropped by 13.0%.` (one topic, where new data pays, cut in two)
+
+✅ `With ten times more new data, number-reading models lowered 5-minute forecast error by 13.3% and age-group error by 13.0%.`
+
+**Say a number's change in everyday words (JL 2026-11-11: "what is the tenfold increase? hard to understand. why
+use "cut", could you just use the simple work?").** Write "ten times more data", not "a tenfold increase" or "per 10x";
+write "lowered", "fell" or "dropped", not "cut" or "reduced by a factor". The reader should not convert a unit or decode
+a verb before reading the number.
+
+❌ `For number-reading models, each tenfold increase in new data cut 5-minute forecast error by 13.3%.`
+
+✅ `With ten times more new data, number-reading models lowered 5-minute forecast error by 13.3%.`
+
 **Split at the hinge**, which is where the sentence changes subject:
 
 ❌ `A good question is specific, and being specific usually means naming this board's own things, so the sharper the question the more it leans on words a newcomer does not have.`

@@ -2,6 +2,13 @@
 
 # /haipipe-draft-revise · two texts in, decisions out
 
+**Structure first, then sentences (JL 261111).** A pass on a Section first reads the plan: `approved:` without ✅
+sends the turn to 1 · Plan and writes no cards. With a signed plan, the pass checks the structure before any sentence:
+does each paragraph do one move of the governing Narrative row, in its order, at the venue examples' lengths? If not,
+the pass holds `### Section question` cards only (what to move, merge or cut, and why), its report says
+`Verdict: structure first`, and the Section returns to Plan for the person's new word. Sentence cards wait until the
+structure holds.
+
 **A Section's Revise cards** (the draft Task's 5 · Revise tab, b32 s41): `/haipipe-draft <task> revise` reads the
 person's notes and writes `draft/records/<stem>-revise.md`, one card per change, each a `### ` heading named by its
 kind and sentence (`### Edit · S1 · split into three sentences`; kinds Edit, Review, Section question, never R1-R7),
@@ -10,6 +17,12 @@ card goes into `## 3 · Draft` by its sentence's address as the next version. A 
 it first and keeps every decision the person made (a `State:` accepted, rejected or edited, a `Chosen:` option), the card
 otherwise refreshed; only a card still proposed, or written by the writer, takes a new State (JL 261021, whose ✓ on a
 Section question was once written back to proposed).
+**Small changes, or a solid reason (JL 261113).** An Edit card changes the fewest words that fix the problem and
+keeps the rest of the sentence word for word. The workbench prints each card's similarity to its Original (`difflib`
+ratio, "73% same"), in red below 60%. A card below 60% is allowed only when its `Why:` names a defect that a small edit
+cannot fix (a wrong fact, a claim the evidence does not carry, a sentence that breaks the paragraph's logic, or the
+author's own ruling); a reason of style, flow or "reads better" is not enough, and the card is not written. When
+in doubt, offer the small edit as Option A and the larger rewrite as Option B.
 A card from a sentence review may add two lines before `State:` (0.29.0, JL 261110): `Score: <n>/10`, the blind
 reviewer's score of the original sentence, and `Readable: <verdict>`, the fresh A/B readers' verdict on the rewrite
 (`rewrite easier, same meaning`, `original easier`, `rewrite changes meaning` or `no gain`; haipipe-paper-draft,
@@ -68,9 +81,23 @@ then `- Note · <time>: …` lines). Each pass reads the open ones before the bl
 author's ruling: change the sentence as an Edit card carrying `Answers: Comment <n>` (one per sentence, as always),
 or say why not; then append `- Reply · <yyyy-mm-dd HH:MM>: <what changed, and its rule>` (the time from the
 clock), at most two short sentences and 30 words, since the page shows it as the AI's message in the thread and set `State: answered`. Never write a Note line, mark a comment done or delete one: those are the
-person's. A comment that is a rule for the whole Section also goes into the Revise rules as a new R#. A blind
+person's. Every review and edit pass reads the Writing Rubric first (the Draft view's 4 · Writing Rubric, JL 261113: "when AI work on this reviewing or edit, will it consider this writing rubric?"): the page's `<stem>-requirement.md` (venue V and Section W rules), its `<stem>-revise-rules.md`, the Board's `writing-patterns.md`, and haipipe-draft-review `ref/plain-rules.md` and `ref/ai-tells.md`; each card names the rule it applies. The rubric holds writing rules only, how a sentence is written; a ruling on what a Section must claim or refuse is a decision and goes into its contract (the face's must-establish and must-refuse, or a D-thread), never the rubric (JL 261113, of "Lead with the osteoarthritis result": "this is more like the decisions to make"). The Writing Rubric grows as the work goes (JL 261113: "this rubric or writing patterns can be accumulated along the way, when we have more edit, or comments"): a comment, a co-author's tracked change or a decided card that states a rule for the whole Section goes into the Revise rules as a new R# (shown under 4 · Writing Rubric › This Section); one that holds for every Section of the paper (a co-author's pattern) goes into the Board's `writing-patterns.md` as a new numbered pattern with its Fix (› Coauthors). Say which rule a card added. A blind
 reviewer never sees the comments; it sees the rules (JL 261021: "你每次改的时候，能不能通过我的 comments 来回复那种？";
 "你的 change 怎么跟我的 comments 一起来做交互、解决我的 comments 呢？").
+
+**Every new version is reviewed before it is shown as done (JL 261111: "where is the reviwing loops? ... loop by
+loop, and then give the rubic review scores").** After a rewrite becomes draft v<N+1>, run one blind round on it: a
+reviewer who did not write it scores each sentence (topic, link, logic /10, read /10) and the four rubric axes; a
+sentence under 8 gets a rewrite; a fresh A/B reader compares the rewrite with the version in place; only a rewrite the
+reader finds easier with the same meaning becomes the next version. Report each round's scores to the person as a
+table (round, version, overall, the main problem). ScalingGlucose t00_abstract went 6.5 → 7.0 → 8.0 → 8.5 in four rounds
+(r04 to r06 and an A/B read, 261111); v0.11 to v0.13 had been shown unreviewed, which is what the person caught.
+
+**A title is chosen the same way.** Give 3 or 4 candidates, have a blind reviewer score each on accuracy to the findings,
+clarity, the venue's title style and searchability, and let the person pick. The preposition carries the claim:
+"Scaling laws are not universal for glucose foundation models" says general laws do not carry over, while "Scaling laws
+of glucose foundation models …" and "Glucose foundation models' scaling laws …" say the models have their own laws,
+which the paper never fitted (JL picked the first, 261111). Avoid a possessive on a long noun phrase in a title.
 
 **LOAD `../../haipipe-draft-workflow/SKILL.md` FIRST.** This file owns the
 Revise Run's delta. The Run contract is `../../../project/haipipe-run/SKILL.md`;

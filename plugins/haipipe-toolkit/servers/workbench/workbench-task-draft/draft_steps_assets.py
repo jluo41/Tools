@@ -394,6 +394,7 @@ CARDS_JS = """<script>
      var ch=c.querySelector('.rv-change');if(j.change&&ch){ch.innerHTML=j.change;}if(body.expected)ed.innerText=body.expected;
      if(body.option)c.dataset.chosen=body.option;
      if(body.option)c.querySelectorAll('.rv-opt').forEach(function(o){o.classList.toggle('chosen',o.dataset.opt===body.option);});c.classList.remove('editing');msg(c,j.note||'');
+     if(j.state==='written'&&body.state==='accepted'){msg(c,'written into the text');setTimeout(function(){if(window.sxKeep)window.sxKeep(c);location.reload();},400);}
      allbtn(scope(c));align();return true;})
    .catch(function(err){if(b)b.disabled=false;msg(c,String(err),true);return false;});}
  document.addEventListener('change',function(e){var i=e.target;if(!i.closest||!i.closest('.rv-choice'))return;
