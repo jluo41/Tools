@@ -602,7 +602,7 @@ SX_ROWS = """<link rel=stylesheet href="https://fonts.googleapis.com/css2?family
   function reload(){var li=inView();if(li&&window.sxKeep)window.sxKeep(li);location.reload();}
   function tick(){if(document.hidden)return;fetch(url,{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
    if(last===null||Date.now()<(window.sxQuiet||0)){last=j.stamp;due=false;return;}if(j.stamp!==last){last=j.stamp;due=true;}
-   if(due&&!busy())reload();}).catch(function(){});}
+   if(due&&window.sxPill)window.sxPill(reload);else if(due&&!busy())reload();}).catch(function(){});}
   setInterval(tick,4000);tick();})();
  function remark(){document.querySelectorAll('.sx-board .sx-row[data-sx]').forEach(function(r){
   var li=r.querySelector('.rv-left li[data-s]'),s=li&&li.querySelector('.sx-marks');if(!s)return;var m=marks(r);
