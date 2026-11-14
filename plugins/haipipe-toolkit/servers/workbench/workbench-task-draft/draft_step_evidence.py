@@ -572,7 +572,7 @@ SX_ROWS = """<link rel=stylesheet href="https://fonts.googleapis.com/css2?family
     (JL 261114: "the focal sentence is jump to another places and it is hard for me to find") */
  window.sxKeep=function(el){try{var r=el&&el.closest&&el.closest('.sx-row'),li=r&&r.querySelector('.rv-left li[data-s]');
   if(li)sessionStorage.setItem('sx-keep',li.dataset.a||li.dataset.s);}catch(x){}};
- (function(){var k=null;try{k=sessionStorage.getItem('sx-keep');sessionStorage.removeItem('sx-keep');}catch(x){}if(!k)return;
+ (function(){var k=null;try{k=sessionStorage.getItem('sx-keep');sessionStorage.removeItem('sx-keep');}catch(x){}if(!k)return;window.sxKept=k;
   var n=0;(function go(){var li=document.querySelector('.sx-board .rv-left li[data-a="'+k+'"]')||document.querySelector('.sx-board .rv-left li[data-s="'+k+'"]');
    if(!li){if(++n<40)setTimeout(go,150);return;}
    var row=li.closest('.sx-row'),hs=[];for(var x=row&&row.previousElementSibling;x;x=x.previousElementSibling){
@@ -601,7 +601,7 @@ SX_ROWS = """<link rel=stylesheet href="https://fonts.googleapis.com/css2?family
    var r=li.getBoundingClientRect();if(r.bottom<0||r.top>innerHeight)return;var x=Math.abs((r.top+r.bottom)/2-mid);if(x<d){d=x;best=li;}});return best;}
   function reload(){var li=inView();if(li&&window.sxKeep)window.sxKeep(li);location.reload();}
   function tick(){if(document.hidden)return;fetch(url,{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
-   if(last===null){last=j.stamp;return;}if(j.stamp!==last){last=j.stamp;due=true;}
+   if(last===null||Date.now()<(window.sxQuiet||0)){last=j.stamp;due=false;return;}if(j.stamp!==last){last=j.stamp;due=true;}
    if(due&&!busy())reload();}).catch(function(){});}
   setInterval(tick,4000);tick();})();
  function remark(){document.querySelectorAll('.sx-board .sx-row[data-sx]').forEach(function(r){
