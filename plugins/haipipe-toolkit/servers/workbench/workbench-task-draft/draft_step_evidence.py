@@ -101,6 +101,8 @@ def _embed_displays(html: str, d: dict, xs, root: Path) -> str:
     README, recipe and the Run that made the asset); the page only shows its picture."""
     order = [m for _, b in (d or {}).get("text", []) for m in re.findall(r"(?m)^- B\d+[a-z]* · (S\d+[a-z]*) · ", b)]
     for x in xs or ():
+        if x.get("owner"):  # another Section's display shows only where the paper prints it (JL 261114: "only need to show in first place ... should be in the results")
+            continue
         first = next((sid for sid in order if sid in x.get("calls", [])), "")
         m = first and re.search(r'<li data-s="' + re.escape(first) + r'"[^>]*>.*?</li>', html, re.S)
         if not m:
@@ -290,8 +292,8 @@ def _sx_bar(cards: list) -> str:
 def _sx_board(rows: str, cls: str = "") -> str:
     """The rows, with the switch between cards beside each sentence and cards under it (CARDS_JS keeps the choice),
     and the switch that folds every sentence to one line or opens them all (SX_ROWS)."""
-    from live.draft_autofold import AUTOFOLD_JS   # no switches above the text; a fully checked paragraph starts folded
-    return SX_ROWS + AUTOFOLD_JS + f'<div class="sx-board sx-ud sx-fixed{(" " + cls) if cls else ""}">' + rows + '</div>'
+    from live.draft_autofold import AUTOFOLD_JS; from live.draft_math import MATH_JS   # folds; math typeset (KaTeX)
+    return SX_ROWS + AUTOFOLD_JS + MATH_JS + f'<div class="sx-board sx-ud sx-fixed{(" " + cls) if cls else ""}">' + rows + '</div>'
 
 
 # Each sentence folds its cards away and keeps its whole text (JL 261113: "why we don't have things like > to click and we can save more spaces"; "I want them to show the whole sentence"):
@@ -447,6 +449,7 @@ SX_ROWS = """<link rel=stylesheet href="https://fonts.googleapis.com/css2?family
 .sx-board .rv-left li[data-s]>.sx-marks{grid-column:4;grid-row:1}
 .sx-board .rv-left li[data-s]>.nt-gut{position:absolute;right:-30px;top:2px;margin:0;padding:0}
 /* the sentence just changed, found again after the page loads (sxKeep) */
+.sx-board .sx-row.sx-low .rv-left li[data-s]{background:color-mix(in srgb,#e8590c 10%,transparent)}   /* a tint only, no edge line (JL 261114: "I don't like this") */
 .sx-board .sx-flash{animation:sxflash 2.6s ease-out}
 @keyframes sxflash{0%,35%{box-shadow:0 0 0 3px color-mix(in srgb,#e8a33d 70%,transparent);border-radius:6px}100%{box-shadow:0 0 0 3px transparent}}
 /* the margin keeps only +: the old open-comment 💬 repeated the 💬N in the marks (JL 261114: "maybe we don't need it") */
@@ -525,7 +528,7 @@ SX_ROWS = """<link rel=stylesheet href="https://fonts.googleapis.com/css2?family
   (function(){var li=r.querySelector('.rv-left li[data-s]'),h=r.querySelector('.rv-left h4[data-p]');
    if(li){var t=document.createElement('button');t.type='button';t.className='sx-tog';t.title='open or fold this sentence';
     li.insertBefore(t,li.firstChild);var o=document.createElement('span');o.className='s-ord';t.after(o);var m=marks(r),s=document.createElement('span');s.className='sx-marks';s.innerHTML=m?m[1]:'';
-    (li.querySelector('.s-tx')||li).appendChild(s);fold(r,!(m&&m[0]));}
+    (li.querySelector('.s-tx')||li).appendChild(s);/* a sentence the reviewer scored below 7 on any axis stands out and opens on its edit cards (JL 261114: "for the sentence below 7, highlight and show what is the editing cards") */var rv7=r.querySelector('.rv-rev'),lo7=rv7&&!rv7.dataset.fixed&&!rv7.dataset.stale?+rv7.dataset.low:10;if(lo7<7)r.classList.add('sx-low');fold(r,!(m&&m[0])&&lo7>=7);}
    else if(r.classList.contains('sx-p')||r.classList.contains('sx-c')){h=h||r.querySelector('.rv-left h3[data-p]');if(!h)return;
     var p=document.createElement('button');p.type='button';p.className='sx-ptog';
     p.title=r.classList.contains('sx-c')?'fold or open this Section':'fold or open this paragraph';h.insertBefore(p,h.firstChild);
