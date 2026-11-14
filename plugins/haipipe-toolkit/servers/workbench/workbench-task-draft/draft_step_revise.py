@@ -130,6 +130,8 @@ def _text_and_cards(d: dict, ev: dict, root: Path, path: Path, task: Path) -> st
         + [((_reading_key(f"History · {sid}", d), 4), _history_card(sid, rows))
            for sid, rows in _sentence_history(d, path).items()],
         key=lambda x: x[0]))
+    from live.draft_card_text import cite_text    # the cards' citations print as the sentences' do, never as LaTeX
+    right = [cite_text(h, d) for h in right]
     some = any((c.get("state") or "proposed").split()[0].lower() == "proposed" for _, c in cs)
     waiting = sum(c["state"] == "open" for c in notes)
     # a card already written into the text, or a comment its person closed, is hidden until asked for (JL 261021:
