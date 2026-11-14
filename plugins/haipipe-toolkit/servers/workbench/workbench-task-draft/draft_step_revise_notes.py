@@ -186,6 +186,9 @@ def card_act(root: Path, p: dict, read_only: bool = False) -> tuple:
         return 409, {"ok": False, "err": "the pass changed on disk; reload"}
     seg = text[start:end]
     found = list(re.finditer(r"(?ms)^### " + re.escape(head) + r"[^\S\n]*\n(.*?)(?=^### |^## |\Z)", seg))
+    if not found:                                 # renumbered since the page showed it (S8 is S7 now): the same card
+        loose = re.sub(r"S\\d\+\[a-z\]\*|S\d+[a-z]*", r"S\\d+[a-z]*", re.escape(head))   # with any sentence id
+        found = list(re.finditer(r"(?ms)^### " + loose + r"[^\S\n]*\n(.*?)(?=^### |^## |\Z)", seg))
     if len(found) != 1:
         return 409, {"ok": False, "err": "the card changed on disk; reload"}
     body = found[0].group(1)
