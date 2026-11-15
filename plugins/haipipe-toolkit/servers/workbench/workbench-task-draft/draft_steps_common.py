@@ -251,11 +251,11 @@ def _inline(text: str, marks: dict) -> str:
     s = re.sub(r"`([^`]+)`", r"<code>\1</code>", s)
     s = re.sub(r"⟦([^⟧]*)⟧", r'<span style="color:#e03131;font-weight:600">⟦\1⟧</span>', s)
     # a citation reads as its keys, quiet and small (JL 261021: "读起来比较乱糟糟的"), not as LaTeX
-    s = re.sub(r"\\citep\{([^}]*)\}", lambda m: '<span class=cite>[' + "; ".join(
+    s = re.sub(r"\\cite[p]?\*?\{([^}]*)\}", lambda m: '<span class=cite>[' + "; ".join(
         k.strip() for k in m.group(1).split(",") if k.strip()) + "]</span>", s)
     s = re.sub("\x00(\\d+)\x00", lambda m: held[int(m.group(1))], s)
     # a citation inside a marked phrase reads the same way (JL 261024: "\\citep{Wang_2022}" showed raw in S6)
-    return re.sub(r"\\citep\{([^}]*)\}", lambda m: '<span class=cite>[' + "; ".join(
+    return re.sub(r"\\cite[p]?\*?\{([^}]*)\}", lambda m: '<span class=cite>[' + "; ".join(
         k.strip() for k in m.group(1).split(",") if k.strip()) + "]</span>", s)
 
 

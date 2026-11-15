@@ -137,7 +137,7 @@ SX_ROWS = """<link rel=stylesheet href="https://fonts.googleapis.com/css2?family
 .sx-board.sx-ud .sx-row>.rv-right{padding-left:62px!important}
 .sx-board.sx-ud .sx-row.sx-p>.rv-right,.sx-board.sx-ud .sx-row.sx-c>.rv-right{padding-left:22px!important}
 .sx-row:not(.sx-fold) .sx-marks>.sx-cmt,.sx-row:not(.sx-fold) .sx-marks>.sx-ai{display:inline!important}
-.sx-board .cite{white-space:normal}.sx-board .cite-ay{font-size:.9em;color:color-mix(in srgb,var(--ink,#333) 70%,transparent)}
+.sx-board .cite{white-space:normal}.cite-miss{font-size:.8em;color:#c92a2a;border:1px solid #f1aeb5;border-radius:4px;padding:0 3px}.sx-board .cite-ay{font-size:.9em;color:color-mix(in srgb,var(--ink,#333) 70%,transparent)}
 .sx-board .cite-tex{font:12.5px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--mut);overflow-wrap:anywhere}
 /* a checked ✓ is a soft grey-green chip; the sentence itself keeps its look (JL 261113: "the grey green I mean for
    this icon only, not the whole sentence element") */

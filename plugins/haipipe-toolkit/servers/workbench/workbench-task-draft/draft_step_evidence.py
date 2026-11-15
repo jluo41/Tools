@@ -142,19 +142,23 @@ def _bib_names(d: dict) -> dict:
             who = ((names[0] if raw else last(names[0])) + (" et al." if len(names) > 2 else f" and {last(names[1])}"
                    if len(names) == 2 else "")) if names else ""
             year = (re.search(r"\d{4}", get("year")) or [None])[0] if get("year") else ""
-            if who:
-                out.setdefault(m.group(1), f"{who} {year}".strip())
+            who = re.sub(r"\\([&%$#_])", r"\1", who)   # a Bib's LaTeX escape reads as the sign (AITC 261115: "Medicare \& Medicaid")
+            if who and year:                   # an entry without author or year reads as "not in Bib"
+                out.setdefault(m.group(1), f"{who} {year}")
     return out
 
 
 def _cite_names(html: str, d: dict) -> str:
     """Each citation as the compiled paper prints it, "(Barnett et al. 2017; Hoppe et al. 2017)", its keys on hover; the
     source keeps \\citep{...} (JL 261113, after trying the raw LaTeX: "how about we just make the citations to be the
-    readable one?"). A key with no Bib entry stays a key."""
+    readable one?"). A key with no Bib entry (or one without author and year) shows the key and a visible "not in Bib"
+    mark (must-check M-D02). The web export does the same with its own copy, haipipe-draft `src/cite_names.py`."""
     names = _bib_names(d)
+    miss = lambda k: f'{esc(k)} <span class=cite-miss title="no entry for {esc(k)} in draft/evidence/bibex/*.bib">not in Bib</span>'
+    shown_one = lambda k: esc(names[k]) if k in names else miss(k)
     def one(m):
         keys = [k.strip() for k in m.group(1).split(";") if k.strip()]
-        shown = "; ".join(esc(names.get(k, k)) for k in keys)
+        shown = "; ".join(shown_one(k) for k in keys)
         return f'<span class="cite cite-ay" title="{esc(", ".join(keys))}">({shown})</span>'
     html = CITE_SPAN.sub(one, html)
     # \\citet is the narrative form, as natbib prints it: "Barnett et al. (2017)", so the two never look alike (JL 261113:
@@ -164,8 +168,8 @@ def _cite_names(html: str, d: dict) -> str:
         parts = []
         for k in keys:
             who, _, year = names.get(k, k).rpartition(" ")
-            parts.append(f"{who} ({year})" if who and year.isdigit() else names.get(k, k))
-        return f'<span class="cite cite-ay cite-t" title="{esc(", ".join(keys))}">{esc("; ".join(parts))}</span>'
+            parts.append(esc(f"{who} ({year})") if k in names and who and year.isdigit() else shown_one(k))
+        return f'<span class="cite cite-ay cite-t" title="{esc(", ".join(keys))}">{"; ".join(parts)}</span>'
     return re.sub(r"\\citet\{([^}]*)\}", narr, html)
 
 

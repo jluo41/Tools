@@ -85,7 +85,7 @@ def blind_refusal(revise: Path, words: str, card_body: str = "") -> str:
     task = Path(revise).parents[2]
     for pid, res, said in blocked(task):
         old = _norm(said)
-        if old and (old == new or old in new):
+        if old and (old == new or old.rstrip(".!?;:") in new):
             return (f"not written: the blind A/B readers said this rewrite changes the meaning (pair {pid}, "
                     f"meaning: no, in {res.parent.name}/result)")
     return ""

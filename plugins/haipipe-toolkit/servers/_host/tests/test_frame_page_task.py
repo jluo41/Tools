@@ -371,13 +371,16 @@ class PageTaskTest(unittest.TestCase):
             rel = task.relative_to(root).as_posix()
             ask = {"task": rel, "pass": "Pass 1 · 261020 · on draft v0.1", "card": "Edit · S1 · a number"}
             self.assertEqual(draft_steps.card_act(root, {**ask, "state": "accepted", "was": "proposed"})[0], 200)
-            self.assertIn("State: accepted · ", cards.read_text())
+            # ✓ Accept writes the words into the Draft at once (JL 261114), so the card reads written
+            self.assertIn("State: written · ", cards.read_text())
+            self.assertIn("- B1 · S1 · The problem grows by 10%.", (task / "draft" / "t01_note-draft-v0.1.md").read_text())
             self.assertEqual(draft_steps.card_act(root, {**ask, "state": "rejected", "was": "proposed"})[0], 409)
-            code, res = draft_steps.card_act(root, {**ask, "state": "accepted", "was": "accepted",
+            code, res = draft_steps.card_act(root, {**ask, "state": "accepted", "was": "written",
                                                     "expected": "The problem grows by 12%."})
             self.assertEqual((code, "<ins" in res["change"]), (200, True))
             self.assertIn("Expected: The problem grows by 12%.", cards.read_text())
-            self.assertIn("- B1 · S1 · The problem grows.", (task / "draft" / "t01_note-draft-v0.1.md").read_text())
+            # its Original is no longer the sentence, so the edited words wait on the card and the Draft keeps 10%
+            self.assertIn("- B1 · S1 · The problem grows by 10%.", (task / "draft" / "t01_note-draft-v0.1.md").read_text())
             self.assertEqual(draft_steps.card_act(root, {**ask, "task": "../..", "state": "accepted"})[0], 400)
             self.assertEqual(draft_steps.card_act(root, {**ask, "state": "accepted"}, read_only=True)[0], 403)
 
@@ -488,7 +491,7 @@ class PageTaskTest(unittest.TestCase):
                 self.assertIn("display/Display1-growth/preview.png", html)
                 self.assertIn("<b>Table 2</b> · no unit in display/ yet", html)
             html = task_draft.draft_task_spaces(task, root, "5 · Revise")["Work Details"].html
-            self.assertIn("data-cards-kind=edits", html)                         # the kind chips
+            self.assertNotIn("data-cards-kind=", html)                           # no kind chips (JL 261113)
             self.assertNotIn("data-cards-all=accept", html)                      # no Accept all (JL 261021)
             self.assertNotIn("data-cards-done", html)                            # no Show finished
 
@@ -522,7 +525,7 @@ class PageTaskTest(unittest.TestCase):
             self.assertIn("The logic needs work", html)                     # the link said in plain words (261113)
             self.assertIn("weakest join S1 to S2", html)
             self.assertIn('data-p="C1.P1"', html)
-            self.assertIn("data-cards-kind=logic", html)                        # show or hide the logic cards
+            self.assertNotIn("data-cards-kind=", html)                          # no filter chips (JL 261113)
             # an older pass's line has one score
             path.write_text(path.read_text().split("Sentences:")[0] + "Sentences:\n- S1 · 6/10 · link: weak · odd · Fix: X.\n")
             self.assertIn("read 6.0 of 10 · 0 of 1 pass (8 or more, no broken link)", draft_steps._review_report(path))

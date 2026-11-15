@@ -308,6 +308,9 @@ def render_page(context):
             sanitizer = _SafeMarkup()
             sanitizer.feed(content)
             content = ''.join(sanitizer.parts)
+            # a reader sees each citation as name-year, never the LaTeX key (M-D02; src/cite_names.py)
+            from .cite_names import name_year
+            content = name_year(content, context.folder)
         finally:
             for key, value in old.items():
                 setattr(grammar, key, value)

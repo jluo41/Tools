@@ -116,7 +116,7 @@ def _text_and_cards(d: dict, ev: dict, root: Path, path: Path, task: Path) -> st
     # the newest report scores today's text: a record that keeps its rounds in order has the latest at the bottom
     rep = next((c for h, c in reversed(passes[0][1] if passes else []) if _is_report(h)), None)
     said = _sentence_lines(rep.get("body", "")) if rep else []
-    for x, k in zip(said, keys.resolve_seq([x["raw"] for x in said])):
+    for x, k in zip(said, keys.resolve_seq([x["raw"] for x in said], [x["flow"] for x in said])):
         x["s"] = k or x["s"]
     # a sentence written after the newest report was made: its ★ is out of date (a card synced before it is not)
     head = rep.get("reviewer", "") or rep.get("body", "")[:600] if rep else ""
@@ -169,6 +169,9 @@ def _text_and_cards(d: dict, ev: dict, root: Path, path: Path, task: Path) -> st
     # the text, so the head is empty unless there is nothing yet
     head = (''
             if cs or notes or said or evs else '<p class=space-empty>No Revise cards yet.</p>')
+    # where the Section stands in haipipe-paper-draft's eight steps, marks only (ref/section-method.md)
+    from live.draft_step_revise_stands import stands, stands_line
+    head = stands_line(stands(d, path, task, cs, words, ok, title if rep else "")) + head
     tail = ""
     body = (f'<p class=space-reads>{_code(d["file"], root)}' + (f' · {_code(path, root)}' if path.is_file() else "")
             + (f' · {_code(notes_at, root)}' if notes_at.is_file() else "") + '</p>'
@@ -199,7 +202,11 @@ def _sentence_lines(body: str) -> list:
     its sentence by its full address, `- C3.P1.s1 · …` (M-D05; its `raw`), and may carry a note before its scores,
     `- C4.P3.s22 · (v6.0 C4.P3.S4, now split) · logic …`."""
     out = []
-    for sid, rest in re.findall(r"(?m)^- (" + ADDR + r") · (.*)$", body.partition("\nSentences:")[2]):
+    sec = body.partition("\nSentences:")[2]
+    flows = [(m.start(), m.group(1)) for m in re.finditer(r"(?m)^Flow (C\d+\.P\d+|P\d+):", sec)]
+    for m in re.finditer(r"(?m)^- (" + ADDR + r") · (.*)$", sec):
+        sid, rest = m.groups()
+        flow = next((k for at, k in flows if at > m.start()), "")      # the paragraph block the line sits in
         rest = re.sub(r"^\([^)]*\) · ", "", rest)
         two = re.match(r"logic (\d+(?:\.\d+)?)/10 · read (\d+(?:\.\d+)?)/10 · (?:ai (\d+(?:\.\d+)?)/10 · )?", rest)
         one = None if two else re.match(r"(\d+(?:\.\d+)?)/10 · ", rest)
@@ -212,7 +219,7 @@ def _sentence_lines(body: str) -> list:
         word = link.group(1).strip() if link else ""
         state = (re.search(r"\b(carried|weak|broken)\b", word) or [None, ""])[1]
         none = lambda t: "" if re.match(r"(?i)\s*(none\b|$)", t) else t.strip()   # "none (add one clause …)" too
-        out.append({"s": _sid(sid), "raw": _sid(sid), "logic": lo, "read": rd, "ai": (two and two.group(3)) or "", "link": word, "state": state, "problem": none(problem),
+        out.append({"s": _sid(sid), "raw": _sid(sid), "flow": flow, "logic": lo, "read": rd, "ai": (two and two.group(3)) or "", "link": word, "state": state, "problem": none(problem),
                     "fix": none(fix), "pass": min(float(v) for v in (lo or 10, rd, (two and two.group(3)) or 10)) >= 8 and state != "broken"})
     return out
 

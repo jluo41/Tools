@@ -15,7 +15,7 @@ def cite_text(html: str, d: dict) -> str:
         t = m.group(1)
         if "\\cite" not in t:
             return m.group(0)
-        t = re.sub(r"\\citep?\{([^}]*)\}", lambda c: "<span class=cite>[" + "; ".join(
+        t = re.sub(r"\\citep?\*?\{([^}]*)\}", lambda c: "<span class=cite>[" + "; ".join(
             k.strip() for k in c.group(1).split(",") if k.strip()) + "]</span>", t)
         return ">" + _cite_names(t, d) + "<"
     return re.sub(r">([^<]*)<", seg, html)

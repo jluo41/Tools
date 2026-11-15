@@ -103,15 +103,25 @@ class Keys:
                 return hit
         return hits[0]
 
-    def resolve_seq(self, raws: list) -> list:
+    def resolve_seq(self, raws: list, flows: list | None = None) -> list:
         """The keys of a review report's lines, read in their order: on a Draft that repeats bare ids, a bare id is the
-        next sentence with that id at or after the paragraph of the line before it (the report reads the text in
-        order), so `s1 … s10, s1 … s6` lands on C1.P1 and then C2.P1."""
+        sentence of the paragraph its block's `Flow <k>:` line names, when the report gives each paragraph its own
+        block; else the next sentence with that id at or after the paragraph of the line before it (the report reads
+        the text in order), so `s1 … s10, s1 … s6` lands on C1.P1 and then C2.P1."""
         if not self.rep:
             return [self.resolve(r) for r in raws]
+        flows = list(flows or [""] * len(raws))
+        blocks = len(set(f for f in flows if f)) > 1
         out, at, used = [], 0, set()
-        for raw in raws:
+        for raw, flow in zip(raws, flows):
             raw = _sid(raw)
+            pid = self.flow_pid(flow) if blocks and flow and "." not in raw else ""
+            if pid and f"{pid}.{raw}" in self.full:
+                k = f"{pid}.{raw}"
+                used.add(k)
+                at = self.paras.index(pid)
+                out.append(k)
+                continue
             if "." in raw:
                 k = self.resolve(raw)
                 pp = k.rsplit(".", 1)[0] if k else ""

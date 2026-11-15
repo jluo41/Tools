@@ -217,19 +217,24 @@ def transit_map():
     for t, d in enumerate(decs):                             # a station per decision; a shared one is an interchange
         names = [s.strip() for s in d["session"].split(",") if s.strip() in y]
         tip = html.escape(f"{d['time'][5:]} · {d['title']}: {d['decided']}")
+        card = html.escape(json.dumps({"tm": d["time"][5:], "ti": d["title"],               # a click shows the whole card
+                                       "chips": [short(x.strip()) for x in d["session"].split(",")] + [d["area"]],
+                                       "blocks": [["Decided", d["decided"]], ["JL asked", d["asked"]],
+                                                  ["Built", d["done"]]]}, ensure_ascii=False), quote=True)
         if len(names) > 1:
             ys = sorted(y[n] for n in names)
             out.append(f'<rect x="{x[t] - 4}" y="{ys[0] - 5}" width="8" height="{ys[-1] - ys[0] + 10}" rx="4" '
-                       f'fill="#fff" stroke="#1b1c1f" stroke-width="1.5"><title>{tip}</title></rect>')
+                       f'fill="#fff" stroke="#1b1c1f" stroke-width="1.5" data-card="{card}"><title>{tip}</title></rect>')
         for n in names:
-            out.append(f'<circle cx="{x[t]}" cy="{y[n]}" r="3.6" fill="#fff" stroke="#1b1c1f" stroke-width="1.3">'
+            out.append(f'<circle cx="{x[t]}" cy="{y[n]}" r="3.6" fill="#fff" stroke="#1b1c1f" stroke-width="1.3" '
+                       f'data-card="{card}">'
                        f'<title>{tip}</title></circle>')
     ly = height - 14                                         # the legend: what a line and a station mean
     out.append(f'<g font-size="12" fill="#5f6368"><line x1="{left - 120}" y1="{ly - 4}" x2="{left - 96}" y2="{ly - 4}" '
                'stroke="#0072ce" stroke-width="5" stroke-linecap="round"/>'
                f'<text x="{left - 88}" y="{ly}">one session</text>'
                f'<circle cx="{left + 10}" cy="{ly - 4}" r="3.6" fill="#fff" stroke="#1b1c1f" stroke-width="1.3"/>'
-               f'<text x="{left + 20}" y="{ly}">one decision (hover it)</text>'
+               f'<text x="{left + 20}" y="{ly}">one decision (click it)</text>'
                f'<rect x="{left + 176}" y="{ly - 13}" width="8" height="18" rx="4" fill="#fff" stroke="#1b1c1f" '
                f'stroke-width="1.5"/><text x="{left + 192}" y="{ly}">a decision sessions shared</text></g>')
     out.append("</svg>")
