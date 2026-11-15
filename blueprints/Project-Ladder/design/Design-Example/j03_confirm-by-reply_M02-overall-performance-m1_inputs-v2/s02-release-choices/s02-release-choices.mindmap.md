@@ -25,7 +25,7 @@ built: from-topic .
   - The release waits on a person; a … <!-- @topic/1 #f39d2d -->
     The release waits on a person; a form on this topic asks which arm the next example test carries.
 - Feeds <!-- @feeds #ffe8e9 -->
-  - `reports/` q01_example_test <!-- @feeds/0 #d1a5a1 -->
+  - `s03-q01-example-test` <!-- @feeds/0 #d1a5a1 -->
 - Files <!-- @files #6ce6c5 -->
   - [py] [build_s02_release_choices.py](build_s02_release_choices.py) <!-- @files/0 #853f51 -->
   - delivery/ <!-- @files/1 #404761 -->

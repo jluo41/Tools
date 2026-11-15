@@ -1,10 +1,10 @@
 # The base workbench's own Guide (family `shared`): Guide › Description, Method, RoadMap Draw.
-# Loaded by servers/workbench/guide_families.py; the same shape for every theme's guide/guide.yaml.
+# Loaded by servers/workbench/guide/guide_families.py; the same shape for every theme's guide/guide.yaml.
 # Paths: guide/… related/… or a module are relative to this server folder; skill:<name>/<rest>
 # is a skill's file; Tools/… is SPACE-relative.
 family: shared
 label: Workbench
-presenter: shared_workbench.py
+presenter: guide/shared_workbench.py
 standalone: true
 table: skill:haipipe-studio/ref/workbench-table.md
 papers_table: related/papers.md
@@ -62,23 +62,23 @@ spaces: []
 folders:
 - - Guide / families
   - Shared Guide owner
-  - servers/workbench/guide_families.py
+  - servers/workbench/guide/guide_families.py
   - guide_families.py
 - - Guide / presenter
   - Shared Guide owner
-  - servers/workbench/workbench_guide.py
+  - servers/workbench/guide/workbench_guide.py
   - workbench_guide.py
 - - Studio / draw
   - Studio owner
-  - servers/workbench/xcal.py + excalidraw_proxy.py + assets/xcal-boot.js
+  - servers/workbench/studio/xcal.py + excalidraw_proxy.py + assets/xcal-boot.js
   - xcal.py
 - - Studio / chat and terminal
   - Studio owner
-  - servers/workbench/chat.py + turnring.py + term.py
+  - servers/workbench/studio/chat.py + turnring.py + term.py
   - chat.py
 - - Studio / ✨ pens
   - Studio owner
-  - servers/workbench/autodraw.py + autodeck.py
+  - servers/workbench/studio/autodraw.py + autodeck.py
   - autodraw.py
 - - Design scenes
   - Generator owner

@@ -81,14 +81,14 @@
     ],
     "example": "This Block presents its seven Studios, with direct delivery and Draw links.",
     "open": "Should a Studio detail open on its Draw or its delivery preview?",
-    "source": "plugins/haipipe-toolkit/servers/workbench/focus_page.py",
+    "source": "plugins/haipipe-toolkit/servers/workbench/page/focus_page.py",
     "preview": "../../result/delivery-preview.png",
     "page": "index.html",
     "contract": "contract.html",
     "draw": "../../delivery-design.png",
     "scene": "../../delivery-design.excalidraw",
     "deck": "../deck/index.html",
-    "source_url": "../../../../../../../plugins/haipipe-toolkit/servers/workbench/focus_page.py",
+    "source_url": "../../../../../../../plugins/haipipe-toolkit/servers/workbench/page/focus_page.py",
     "studio_url": "/_board/workbench?path=blueprints/Project-PageParts/work/b35_studio/s02-studio-pages&layout=focus"
   },
   {

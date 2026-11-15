@@ -64,7 +64,7 @@ class BindingTest(unittest.TestCase):
         sents = {"5": "The gain was 2.35 points (95% CI, 0.84 to 3.85).", "6": "Nothing here."}
         f = write(self.tmp / "task/evidence/cards.yaml", "evidence: []\n")
         props = cards.bind_proposals(cards.catalog(res / "values.yaml"), sents, "task", "b51.j02.t01", "r01", [])
-        self.assertEqual([p[0] for p in props], ["bind-RQ1-t01-002-S5"])
+        self.assertEqual([p[0] for p in props], ["bind-RQ1-t01-002-s5"])
         cards.write_proposals(f.parent / "proposals.md", [(p, line) for p, line, _ in props])
         self.assertEqual(cards.adopt_bindings(f, props), 0)       # nothing before the tick
         pm = f.parent / "proposals.md"

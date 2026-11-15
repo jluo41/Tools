@@ -2,12 +2,14 @@
 name: haipipe-draft-writing
 description: "The writer of a Page: drafts and revises prose from the plan (outline to prose, plain English rewrite), edits a sentence by its address, runs the WRITE step (adopt agreed text, integrate evidence, build, pre-check), auto revise rounds, and the Revise Run (before and after, change ledger). Never reviews its own text (haipipe-draft-review does). Trigger: draft prose, revise this paragraph, edit this sentence, WRITE, auto revise, track changes, /haipipe-draft-writing, /haipipe-sentence, /haipipe-draft-revise."
 metadata:
-  version: "0.29.0"
-  last_updated: "2026-11-04"
+  version: "0.30.0"
+  last_updated: "2026-11-11"
   # version history: ./CHANGELOG.md
 ---
 
 # /haipipe-draft-writing · write the text, adopt agreed text, deliver one Page version
+
+> In a paper Section, writing follows haipipe-paper-draft `ref/section-method.md`: the structure loop before prose, then the draft loop; adopt only kept rewrites, show every change as a card, never touch a sentence the person checked.
 
 > ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; AGENTS.md rule 6). Here that means every delivery artifact, and `## Content` itself (`cli/page.py adopt` writes it from the Draft's `## 3 · Draft`): change the Draft or the exporter, then rerun. A one-sentence change is the haipipe-draft fast path.
 
@@ -49,9 +51,9 @@ Independence: whoever writes never reviews. The judge is `../haipipe-draft-revie
 
 **Structure and Draft move together (JL 261102: "when you update the draft, you should also udpate teh structure as
 well")**. A Draft Markdown's `## 1 · Structure` is the plan of its `## 3 · Draft`, so every edit to the sentences
-makes the same change to the plan in that edit: a sentence added or cut adds or cuts its Bullet (`- B<k> · S<n> ·
+makes the same change to the plan in that edit: a sentence added or cut adds or cuts its Bullet (`- B<k> · s<n> ·
 [Role] what it does`, with its `Evidence:` line), a sentence moved moves its Bullet, a paragraph added, split, merged
-or renamed changes its `### C<n>.P<m> · <title> · S<a> to S<b>` heading in sections 1, 2 and 3 and its entry in the
+or renamed changes its `### C<n>.P<m> · <title> · s<a> to s<b>` heading in sections 1, 2 and 3 and its entry in the
 Structure Overview, and the S numbers and spans are renumbered to match. A new structure is a new draft version
 (`draft-v<G>.<S+1>`, the older one moved to `draft/previous/`), never a section 3 rewritten under the old plan; its
 Evidence Items and the face's `evidence-allowlist:` follow their sentences. `page.py health <Task>` checks it
@@ -61,7 +63,8 @@ also reads the built PDF back against section 3 (haipipe-draft § ✅ Closing ch
 
 ## 🔤 The sentence
 
-One prose line is one sentence, with a dotted address (`QB8.C1.P1.S1`), `>` comment lanes beneath it, and a change record for every edit. The full contract is `ref/sentence.md`. Evidence on a span of words is not defined here: it is `haipipe-evidence`'s `anchor` (`../../evidence/haipipe-evidence/SKILL.md`).
+One prose line is one sentence, with a dotted address (`QB8.C1.P1.s1`), `>` comment lanes beneath it, and a change record for every edit. The full contract is `ref/sentence.md`. Evidence on a span of words is not defined here: it is `haipipe-evidence`'s `anchor` (`../../evidence/haipipe-evidence/SKILL.md`).
+A sentence id is written `s8` (`C1.P2.s8`); an older `S8` is read as the same sentence.
 
 ## 🧭 Run Workflow placement
 
@@ -146,6 +149,11 @@ The interactive workflow owns original feedback, Steps, Versions and scoped
 human acceptance; this Run owns the adopted Page and delivery trace.
 
 ## Entry gates · publication, not rehearsal
+
+**The plan is signed first (JL 261111).** Before writing a sentence, read the current Draft Markdown's `approved:`.
+Without ✅, write nothing: the turn goes to 1 · Plan (haipipe-draft-logic, Plan is the entry), even when the prompt
+names a later step ("revise in a loop", "make v0.11 with current numbers"). The same holds when `page.py health`
+names `order` or `row`.
 
 Before adoption, read the current Context, selected plan, accepted writing
 snapshot and destination Page. Follow only selected Evidence Result pointers,

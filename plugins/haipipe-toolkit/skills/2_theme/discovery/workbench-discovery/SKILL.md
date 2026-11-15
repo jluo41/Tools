@@ -24,7 +24,7 @@ the title alone in the header, the Block band, the Spaces Guide · Scope · Work
 Delivery, every View opened by a heading and one lead line, and each Space's content in
 one box beside its Runs panel. Guide lives with the server: `servers/workbench-discovery/guide/`
 (`guide.yaml`, `method.md` with its cards in `methods/`, `methods.excalidraw`) and `related/papers.md`
-(Guide › Related Paper); `workbench/guide_families.py` loads it. This skill keeps only the run-type
+(Guide › Related Paper); `workbench/guide/guide_families.py` loads it. This skill keeps only the run-type
 contract, `ref/workbench-table.md`.
 
 ## Open
@@ -61,7 +61,7 @@ status is its receipt's status exactly as for a Task Run.
 | Delivery › Reports | answered reports, word for word | report Pages |
 | Delivery › BibTeX | every one-entry `.bib` of the Block, together | `runs/rNN_*/result/rNN_*.bib` |
 
-Each Space has the shared Runs panel on the right (`servers/workbench/runs_panel.py`),
+Each Space has the shared Runs panel on the right (`servers/workbench/page/runs_panel.py`),
 folded at first; its run types are the rows of `ref/workbench-table.md` for that Space,
 each with its agent, skill and a prompt to copy. Nothing starts a run.
 

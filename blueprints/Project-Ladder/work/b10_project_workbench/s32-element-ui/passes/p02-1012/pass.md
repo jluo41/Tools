@@ -10,7 +10,7 @@ Built in the base (frame.py): a Studio row links only its own drawing (s32-D17);
 
 ## Changed
 
-- `Tools/plugins/haipipe-toolkit/servers/workbench/frame.py`
+- `Tools/plugins/haipipe-toolkit/servers/workbench/page/frame.py`
 - `Tools/plugins/haipipe-toolkit/servers/workbench-labeling/labeling_theme.py`
 - `s32-element-ui/build_s32_element_ui.py`
 - `s32-element-ui/s32-element-ui.md`

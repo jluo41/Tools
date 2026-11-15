@@ -116,7 +116,7 @@ class FocusPageTest(fixtures.FocusPageCase):
             for section, group in (('report', view), ('work', view), ('interactions', '')):
                 html = focus_page.render(theme, self.root, page, section, group)
                 if section != 'interactions':
-                    self.assertIn('🙋 Interactions</span><span class="word you">1 waits for you</span>', html, (page.name, section))
+                    self.assertIn('🙋 Interactions</span><span class="word you mk" title="1 waits for you">🙋 1</span>', html, (page.name, section))
                 self.assertNotIn('🙋 Cut: Q1 · Cut</p>', html, (page.name, section))
                 self.assertIn('data-ixq="Q1"', html, (page.name, section))
                 if section == 'work':                  # shown once: Process no longer repeats it (JL 261105)
@@ -137,10 +137,15 @@ class FocusPageTest(fixtures.FocusPageCase):
         one item under its closed bar"; the fold remembers a bar by its title alone, never its word."""
         from live import interaction_section as IX, ui_parts
         from live.focus_draft import JS
+        # JL 261114: a bar carries a mark, never a state word: what waits is an orange 🙋 N (the sentence on hover),
+        # a finished section a quiet ✓, any other state nothing
         self.assertEqual(ui_parts._section('1 · 🔢 Values', '<p>b</p>', '2 wait for you', '🙋 Q1 · Which?'),
-                         '<section class=fd-sec><h3 class=fd-h>1 · 🔢 Values<span class="word you">2 wait for you</span></h3>'
+                         '<section class=fd-sec><h3 class=fd-h>1 · 🔢 Values<span class="word you mk" title="2 wait for you">🙋 2</span></h3>'
                          '<p class=fd-wait>🙋 Q1 · Which?</p><p>b</p></section>')
-        self.assertEqual(ui_parts._section('X', '<p>b</p>', 'done'), '<section class=fd-sec><h3 class=fd-h>X<span class=word>done</span></h3><p>b</p></section>')
+        self.assertIn('class="word ok mk"', ui_parts.word_span('answered'))
+        self.assertEqual(ui_parts.word_span('nothing yet'), '')
+        self.assertEqual(ui_parts.word_span('3 of 5 done'), '')
+        self.assertEqual(ui_parts._section('X', '<p>b</p>', 'done'), '<section class=fd-sec><h3 class=fd-h>X<span class="word ok mk" aria-label="done">✓</span></h3><p>b</p></section>')
         self.assertTrue(ui_parts._numbered(ui_parts._section('X', '<p>b</p>', 'done')).startswith('<section class=fd-sec><h3 class=fd-h>1 · X<span'))
         self.assertEqual(IX.next_number(ui_parts._numbered(ui_parts._section('X', '<p>b</p>', 'done'))), 2)
         for script in (JS, IX.FOLD):                   # the waiting line stays out of the fold; the key skips the word

@@ -71,12 +71,12 @@ DEFAULTS = {
 
 
 def sid(x):
-    """A sentence id as the files write it after the S: 4 is 4, and a sentence added after S4 (S4a) is '4a'."""
-    return int(x) if str(x).isdigit() else str(x)
+    """A sentence id as the files write it after the s (or an older S): 4 is 4, and one added after s4 (s4a) is '4a'."""
+    return int(str(x).lstrip('Ss')) if str(x).lstrip('Ss').isdigit() else str(x).lstrip('Ss')
 
 
 def in_order(n):
-    """S4, S4a, S5: a sentence id's place in reading order."""
+    """s4, s4a, s5: a sentence id's place in reading order."""
     m = re.match(r'(\d+)(.*)', str(n))
     return (int(m[1]), m[2]) if m else (10 ** 6, str(n))
 
@@ -121,10 +121,10 @@ def build(face, out=None, builder=None):
     rows, logic = [], []                     # rows: (address, b, n, text); logic: (address, title, [(n, tag, changes)])
     for address in paragraphs:
         _, text = block('## 3 · Draft', address)
-        rows += [(address, int(b), sid(n), t) for b, n, t in re.findall(r'^- B(\d+)[a-z]* · S(\d+[a-z]*) · (.+)$', text, re.M)]
+        rows += [(address, int(b), sid(n), t) for b, n, t in re.findall(r'^- B(\d+)[a-z]* · [Ss](\d+[a-z]*) · (.+)$', text, re.M)]
         title, plan_ = block('## 1 · Structure', address)
         bullets = []
-        for m in re.finditer(r'^- B\d+[a-z]* · S(\d+[a-z]*) · (.+)(?:\n\s+Change: (.+))?$', plan_, re.M):
+        for m in re.finditer(r'^- B\d+[a-z]* · [Ss](\d+[a-z]*) · (.+)(?:\n\s+Change: (.+))?$', plan_, re.M):
             bullets.append((sid(m[1]), m[2], [int(i) for i in re.findall(r'(?:^|, )(\d+) · ', m[3] or '')]))
         logic.append((address, title, bullets))
     sentence = {n: t for _, _, n, t in rows}
@@ -203,7 +203,7 @@ def build(face, out=None, builder=None):
         d.para(x + 13, y + 10, f'{address.split(".")[1]} · {title}', w - 26, 26)
         y += h + 10
         for n, tag, _ in bullets:
-            y = aside(x + 24, y, f'S{n} · {tag}', w - 30, 20) + 4
+            y = aside(x + 24, y, f's{n} · {tag}', w - 30, 20) + 4
         if i < len(logic) - 1:
             d.line([(x + 30, y + 6), (x + 30, y + 34), (x + 46, y + 34)], GREY, sw=1.2)
         y += 44
@@ -261,7 +261,7 @@ def build(face, out=None, builder=None):
             offset = max(offset, start + len(line))
         e = d.text(MX + 50, yy, wrapped, SIZE)
         e['customData'] = {'sentence': {'address': f'{address}.B{b}', 'n': n, 'built': text}}
-        canvas.aside(d.text(MX + 12, yy + 3, f'S{n}', 19, GREY))
+        canvas.aside(d.text(MX + 12, yy + 3, f's{n}', 19, GREY))
         anchor_y[n] = yy + e['height'] / 2
         yy += e['height'] + 8
     if body:
@@ -303,7 +303,7 @@ def build(face, out=None, builder=None):
                     state += f" = {value:.4g}" if isinstance(value, float) else f" = {value}"
                 except (ValueError, KeyError, IndexError, FileNotFoundError):
                     state += ' · ❗ its value does not read'
-            lines.append((f"S{','.join(map(str, it['for']))} · {words[:160]}{'…' if len(words) > 160 else ''}",
+            lines.append((f"s{','.join(str(x).lstrip('Ss') for x in it['for'])} · {words[:160]}{'…' if len(words) > 160 else ''}",
                           ev_cards.COLOR['need'] if it.get('need') else INK, 19))
             lines.append((state, GREY, 18))
         if not any(sid(n) in sentence for it in c['items'] for n in it['for']):
@@ -320,7 +320,7 @@ def build(face, out=None, builder=None):
             n = where(e['anchor'])
             lines = [(f"need: {e['need'][:220]}{'…' if len(e['need']) > 220 else ''}", INK, 19),
                      (f"who: {', '.join(e['who'])}", INK, 20),
-                     (f"on S{n}: “{e['anchor']}”" if n else f"❓ its words are no longer in {version}: “{e['anchor']}”",
+                     (f"on s{n}: “{e['anchor']}”" if n else f"❓ its words are no longer in {version}: “{e['anchor']}”",
                       GREY if n else RED, 19),
                      ('asked · no answer yet', RED, 20)]
             box, ey = card(EX, ey, EW, f"E{k} · {e['ask']}", lines, RED)
@@ -340,7 +340,7 @@ def build(face, out=None, builder=None):
         cy += 10
         for item in reply['items']:
             n = where(item['anchor'])
-            head = f"↳ on S{n}" if n else f"❓ ↳ its words are no longer in {version}"
+            head = f"↳ on s{n}" if n else f"❓ ↳ its words are no longer in {version}"
             rb, cy = card(CX + 30, cy, CW - 30, head,
                           [(item['reply'], INK, 19)] + ([] if n else [(f"“{item['anchor']}”", RED, 19)]),
                           INK if n else RED)
@@ -356,7 +356,7 @@ def build(face, out=None, builder=None):
             old = ' '.join(str(c.get('find', '')).split())
             lines = [(f"why: {c['why']}", INK, 20),
                      (f"file: {old[:150]}{'…' if len(old) > 150 else ''}", RED, 19),
-                     (f"→ draft: {', '.join(f'S{n}' for n in hit)}" if hit else '→ deleted: the template\'s guidance',
+                     (f"→ draft: {', '.join(f's{n}' for n in hit)}" if hit else '→ deleted: the template\'s guidance',
                       GREEN, 20),
                      (f'written in {version} · a tracked change in the Word file', GREEN, 19)]
             box, cy = card(CX, cy, CW, f"#{c['id']} · {c['title']}", lines, GREEN)
@@ -573,7 +573,7 @@ def sync(face, out=None, dry=False):
             return 'the canvas'
         a, z, address, n, _ = min(band, key=lambda b: 0 if b[0] <= y <= b[1] else min(abs(y - b[0]), abs(y - b[1])))
         col = 'the file and logic' if x < text_x - 60 else 'the text' if x < text_x + 1000 else 'the cards'
-        return f'S{n} ({address}), in {col}'
+        return f's{n} ({address}), in {col}'
 
     colour = {'#e03131': 'red', '#2f9e44': 'green', '#1971c2': 'blue', '#1e1e1e': 'black'}
     marks = []
@@ -594,7 +594,7 @@ def sync(face, out=None, dry=False):
         marks.append((e, f'{kind} {where}' + (f': "{what}"' if what else '')))
 
     for address, n, built, now in edited:
-        print(f'S{n} {address}\n  before: {built}\n  after:  {now}')
+        print(f's{n} {address}\n  before: {built}\n  after:  {now}')
     for _, line in marks:
         print(f'mark: {line}')
     if not edited and not marks:
@@ -611,7 +611,7 @@ def sync(face, out=None, dry=False):
                 section = m[2]
             if (m := re.match(r'^### (C\d+\.P\d+)', line)):
                 para = m[1]
-            m = re.match(r'^(- B(\d+)[a-z]* · S\d+[a-z]* · )(.*\S)\s*$', line)
+            m = re.match(r'^(- B(\d+)[a-z]* · [Ss]\d+[a-z]* · )(.*\S)\s*$', line)
             if section == 'Draft' and m and (f'{para}.B{m[2]}', m[3]) in want:
                 lines[k] = m[1] + want[(f'{para}.B{m[2]}', m[3])]
                 hit += 1
@@ -625,7 +625,7 @@ def sync(face, out=None, dry=False):
                                         '`section_canvas.py sync`: what a person did on a Section canvas. An agent '
                                         'turns the marks into Revise cards or a §1 change.\n')
     entry = [f'\n{stamp} · {out.name}']
-    entry += [f'- applied S{n} {a}: "{b}" → "{now}"' for a, n, b, now in edited]
+    entry += [f'- applied s{n} {a}: "{b}" → "{now}"' for a, n, b, now in edited]
     entry += [f'- [ ] {line}' for _, line in marks]
     with record.open('a', encoding='utf-8') as fh:
         fh.write(head + '\n'.join(entry) + '\n')

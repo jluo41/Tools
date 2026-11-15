@@ -1,9 +1,9 @@
 ---
 name: haipipe-insight-question
 description: >-
-  The insight questions on the ladder: how a question gets into a Prototype
+  The insight questions on the ladder: how a question gets into a Question Book
   release and how it changes. Owns the proposals (proposals/<slug>.md: new
-  question · fix · retire · cut, written by a Board's or a Job's Propose Run),
+  question · fix · retire · segment, written by a Board's or a Job's Propose Run),
   their triage into one release per batch, asking a question into a release
   (its id, its tNN, its question.md), and the question review (Q1–Q7, with
   haipipe-report). Never answers a question and never signs. Use to
@@ -30,15 +30,15 @@ metadata:
 
 ## Position
 
-Load `haipipe-insight` (`ref/insight-ladder.md`, `ref/release.md`). A question lives in a Prototype release, one
-Task per question: `insight/Prototype-<Topic>/jNN_code-vN_<slug>/tNN_<L><NN>_<slug>/question.md`
+Load `haipipe-insight` (`ref/insight-ladder.md`, `ref/release.md`). A question lives in a Question Book release, one
+Task per question: `insight/InsightQuestionBook-<Topic>/jNN_question-vN_<slug>/tNN_<L><NN>_<slug>/question.md`
 (`haipipe-insight/ref/block-contract.md` § The question file: id, level, the short question, the ask, Why now, What
-would answer it, the partitions it is asked on, its needs, agreed). This skill owns how a question gets there and
+would answer it, the segments it is asked on, its needs, agreed). This skill owns how a question gets there and
 how it changes; whether it is answered is the Board's.
 
 ```text
 the Board, a Job ──propose──▶ proposals/<slug>.md ──triage──▶ a release ──ask · change · retire──▶ question.md
-                              (open)                         (taken-in: code-vN)                       (agreed by another agent)
+                              (open)                         (taken-in: question-vN)                       (agreed by another agent)
 ```
 
 ## Folder Kind
@@ -48,12 +48,12 @@ an answer. Its id `<L><NN>` fixes its level; its `tNN` stays the same in every r
 
 ## Input
 
-**Proposals** are the only way a question, a fix, a retirement or a cut reaches a release. One file each, `proposals/<slug>.md`:
+**Proposals** are the only way a question, a fix, a retirement or a segment reaches a release. One file each, `proposals/<slug>.md`:
 
 ```yaml
 ---
-kind: new question          # new question · fix · retire · cut
-level: information          # the DIKW level it would sit at, or executive (X); blank for a cut
+kind: new question          # new question · fix · retire · segment
+level: information          # the DIKW level it would sit at, or executive (X); blank for a segment
 from: j03                   # the Job, report or reading it came from (coverage, q02, a vs-previous row)
 state: open                 # open · taken · declined
 taken-in: ''                # the release that took it
@@ -61,40 +61,40 @@ taken-in: ''                # the release that took it
 
 # <a short title>
 
-<why, in a line or two: the gap, the weak answer, the new field, the cut and why it is asked about>
+<why, in a line or two: the gap, the weak answer, the new field, the segment and why it is asked about>
 ```
 
 Three Runs write them, and write nothing else: a Job's `run-propose-j<NN>` (new or changed questions from its
-comparison, and what it could not answer), the Board's `run-propose-coverage` (a DIKW level with no question, a cut
+comparison, and what it could not answer), the Board's `run-propose-coverage` (a DIKW level with no question, a segment
 with no answer) and `run-propose-cut-<slug>`. `insight_ladder.py propose` makes the file. A proposal records no
 preferred answer: "nothing changes" and a null stay admissible.
 
 
-**Triage.** `run-triage-proposals-code-vN` takes one batch into one release, never one proposal at a time (decided 261008): the
-newest release while it is open, otherwise the next one. Each proposal is taken (`taken-in: code-vN`), declined with a
-reason, or left open for a later batch. `python scripts/proposals.py list | take <slugs> --into code-vN | decline <slug>
+**Triage.** `run-triage-proposals-question-vN` takes one batch into one release, never one proposal at a time (decided 261008): the
+newest release while it is open, otherwise the next one. Each proposal is taken (`taken-in: question-vN`), declined with a
+reason, or left open for a later batch. `python scripts/proposals.py list | take <slugs> --into question-vN | decline <slug>
 --why "…"` records it and prints how to apply each taken one:
 
 ```text
 new question   insight_ladder.py question <release> <L><NN> <slug>     run-ask-<l><nn>
 fix            insight_ladder.py change <release> <L><NN> --why "…"     then plan, review, script, review again
 retire         insight_ladder.py retire <release> <L><NN> --why "…"
-cut            the release's partitions.md, then run-set-cuts-code-vN         a person signs the cuts
+segment            the release's partitions.md, then run-set-segments-question-vN         a person signs the segments
 ```
 
 ## Page Face
 
 The question's page is its `question.md` (`haipipe-insight/ref/block-contract.md` § The question file): the YAML block
-(id, level, the short question, name, the ask, method, partitions, needs, agreed, signed), then its prose (**Why now**,
+(id, level, the short question, name, the ask, method, segments, needs, agreed, signed), then its prose (**Why now**,
 **What would answer it**, any field it was carried with). The short question stays short and plain, the long form is
 the ask; the page asks and never concludes.
 
 ## Task Face
 
 `run-ask-<l><nn>` asks one question into an open release from plain words: the minimum level that can answer it
-(D observes · I derives inside a cut, no cause word · K claims across results, with rivals · W counsels), its id
+(D observes · I derives inside a segment, no cause word · K claims across results, with rivals · W counsels), its id
 `<L><NN>` (the next number at that level, never reused, a retired one included), its Task `tNN_<L><NN>_<slug>/`
-(`tNN` the next number in the Prototype, kept in every later release and every Board Job) and its `question.md`. It
+(`tNN` the next number in the Question Book, kept in every later release and every Board Job) and its `question.md`. It
 never answers the question. Its needs come next, from `haipipe-insight-evidence-plan`, agreed by another agent.
 
 A question may record **Expected** before any run: the asker's prior, written once, never edited after the first
@@ -108,25 +108,25 @@ one retired. A retired question leaves `questions:` for `retired:` in release.ya
 ## Workbenches
 
 ```text
-run-triage-proposals-code-v<N>   Prototype › Description   haipipe-insight-agent            signs none
+run-triage-proposals-question-v<N>   Question Book › Description   haipipe-insight-agent            signs none
 run-ask-<l><nn>             Release › Work Details    haipipe-insight-agent            signs none
 run-propose-j<NN>           Job › Audience Report     haipipe-insight-agent            signs none
 run-propose-coverage        Block › Audience Report   haipipe-insight-agent            signs none
 run-propose-cut-<slug>      Block › Description       haipipe-insight-agent            signs none
-run-review-questions-code-v<N>   Release › Work Details    haipipe-insight-reviewer-agent   a person signs a change (skill haipipe-report)
+run-review-questions-question-v<N>   Release › Work Details    haipipe-insight-reviewer-agent   a person signs a change (skill haipipe-report)
 ```
 
 Their cards are `haipipe-insight-workflow/ref/run-cards.md`; no code or analysis Run belongs to a question here.
 
 ## Gate and Closure
 
-`run-review-questions-code-vN`: before a release is signed, a reviewer agent that wrote none of its new or changed
+`run-review-questions-question-vN`: before a release is signed, a reviewer agent that wrote none of its new or changed
 questions judges each through `haipipe-report` (the seven tests; keep, split, merge or move; a person signs a
 change; never a reworded ask). What insight adds:
 
 - **Q4 the level is the level**: Data observes, Information derives with no cause word, Knowledge claims with rivals,
   Wisdom counsels.
-- **Q5 answerable is the extract**: a field exists, a cut is not degenerate on it, or the refusal is itself computed.
+- **Q5 answerable is the extract**: a field exists, a segment is not degenerate on it, or the refusal is itself computed.
 - `haipipe-insight-check` only flags suspects for Q1, Q2, Q4 and Q6 as notes; the review reads the question.
 
 - A question passes into a signed release only when its needs are agreed by another agent
@@ -136,15 +136,15 @@ change; never a reworded ask). What insight adds:
 ## Handoff
 
 Hand the evidence plan (`haipipe-insight-evidence-plan`) and, through the release, the Board a neutral question id,
-the exact ask, its level, the cuts it is asked on and its agreed needs. Never an anticipated answer or a Design
+the exact ask, its level, the segments it is asked on and its agreed needs. Never an anticipated answer or a Design
 permission.
 
 ## Files
 
 ```text
-proposals/<slug>.md · proposals/README.md                       the backlog (Prototype)
-jNN_code-vN_<slug>/release.yaml                                      questions · retired
-jNN_code-vN_<slug>/tNN_<L><NN>_<slug>/question.md · scripts/          a question new or changed in that release
+proposals/<slug>.md · proposals/README.md                       the backlog (Question Book)
+jNN_question-vN_<slug>/release.yaml                                      questions · retired
+jNN_question-vN_<slug>/tNN_<L><NN>_<slug>/question.md · scripts/          a question new or changed in that release
 scripts/proposals.py                                            list · take · decline
 ```
 

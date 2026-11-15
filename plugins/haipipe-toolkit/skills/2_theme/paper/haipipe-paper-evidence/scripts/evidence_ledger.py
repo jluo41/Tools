@@ -62,7 +62,7 @@ ROUND = re.compile(r"^r(\d+)\.md$")
 DIMENSIONS = ("question", "readability", "honesty", "journal-ready")
 WORK_RUN = re.compile(r"(?:^|[/\s'\"`])(work/(b\d+_[\w.-]+)/(j\d+_[\w.-]+)/(t\d+_[\w.-]+)/runs/([\w.-]+)/result)(?=[/\s'\"`]|$)", re.M)
 # s01-D13 (261031): a display's Run may sit in the paper Board's own display Job
-PAPER_RUN = re.compile(r"(?:^|[/\s'\"`])(paper/(Paper-[\w.-]+)/(j01_evidence_display)/(t\d+_[\w.-]+)/runs/([\w.-]+)/result)(?=[/\s'\"`]|$)", re.M)
+PAPER_RUN = re.compile(r"(?:^|[/\s'\"`])(paper/((?:Paper|Grant)-[\w.-]+)/(j01_evidence_display)/(t\d+_[\w.-]+)/runs/([\w.-]+)/result)(?=[/\s'\"`]|$)", re.M)
 DISPLAY_JOBS = ("j01_evidence_display",)     # the display Job today; an older work Block's j21_paper_displays still counts
 PASS_OVERALL, PASS_EACH = 8.0, 7.0          # haipipe-display ref/display-revise-loop.md, the pass rule
 

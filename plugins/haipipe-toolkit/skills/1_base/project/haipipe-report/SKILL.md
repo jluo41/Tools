@@ -10,6 +10,14 @@ metadata:
 
 # /haipipe-report · a Question, the work on it, and what it says
 
+**No new `reports/` anywhere since 261110 (JL: "we will no longer use the reports/, please use
+the job or studio"; CoWork first, 261109).** A Question's answer lives in the Studio topic that
+answers it, as a `Q01 · Answer` part of its face (`haipipe-studio` `ref/topic-contract.md`); the
+face's `report:` points at that topic. Work done in answer (a review round, a feedback pass) is a
+Job, `jNN_review_<kind>_v<MMDD>/` with `for: <the Job it serves>` (`haipipe-job`). No level keeps
+a `reports/` folder. The `reports/qNN_<topic>/` Page below describes older folders, still read
+until they move.
+
 A Report keeps its Page source at its owning level. Its delivered formats go to
 its containing Block's `delivery/<report-source-path>/<lane>/`; for a Block
 Report this is `delivery/reports/qNN_<topic>/<lane>/`. Report ownership and
@@ -212,7 +220,7 @@ Boundary
 | `haipipe-draft` | writing the report's prose, its Draft, evidence binding, CHECK and release |
 | `excalidraw-report` | the drawing kit: scratch and report modes, plot kit, pictures |
 | `haipipe-studio` | the studio topics a Question's row lists as feeding it |
-| theme workbenches | the screens: `servers/workbench/frame.py` `question_rows`, and each theme's own row |
+| theme workbenches | the screens: `servers/workbench/page/frame.py` `question_rows`, and each theme's own row |
 
 
 Files

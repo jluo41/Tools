@@ -113,26 +113,21 @@ The Paper family now follows a thin-door pattern: `/haipipe-paper` routes to six
 current Page Types and the shared Page workflow. Archived stage skills are not a
 second public surface.
 
-**Folder names are organization only.** A skill is identified *solely* by the
-`name:` field in its `SKILL.md` frontmatter. Moving a folder never renames a skill.
+**Layers organize skills; folder names identify installer links.** The
+`name:` field in `SKILL.md` declares a skill's name, while both root installers
+create links from the skill folder's basename. Keep those names aligned when
+renaming a skill. Moving the folder between layers preserves its link name.
 
 ```
 skills/
-├── task/              ⚙️ internal execution + the engineering substrate
-│   ├── haipipe-task/       the 4-stage lifecycle hub + Run/Result receipts
-│   ├── 1_data/ 2_nn/ 3_end/ 4_individual/    the task-domain families
-│   └── agents/             orchestrator · creator · reviewer
-│
-├── discovery/         🔍 external evidence — Search | Review | Synthesize + Run/Result
-├── ideation/          💡 semantic research directions over Task + Discovery evidence
-├── paper/             📄 academic composition over six Page Types
-├── insight/           🔎 evidence-led understanding — native Runs and DIKW resources
-├── design/            🎨 creative production — Brief → Commission → Verify
-├── board/             🧭 Board + Page and Run contracts + producer/reviewer/orchestrator
-├── diagrams/          🗺 working design Boards; kept outside delivery skills
-├── project/           📦 container setup
-├── 0_utils/           🧰 utilities and connector skills (personal-data connectors are in haipipe-utils)
-└── run/               🎟 the neutral Level-4 Run/Result contract
+├── 0_utils/           generic helpers
+├── 1_base/            shared foundations
+│   ├── project/           Block, Job, Studio, and Run contracts
+│   ├── task/              execution and the data → model → endpoint pipeline
+│   ├── draft/             Page writing, review, and runtime
+│   ├── workbench/         shared screen manuals
+│   └── evidence/ display/ excalidraw/ ideation/ search/
+└── 2_theme/           cowork/ design/ discovery/ insight/ labeling/ paper/ work/
 ```
 
 Beside `skills/`, the plugin carries its infrastructure at plugin level, none
@@ -140,18 +135,18 @@ of it a skill:
 
 ```
 servers/               🌐 everything a browser is served by: _host/ (serve.py, auth,
-│                         the `live` namespace), space-home/, haipipe-draft/, and one
+│                         the `live` namespace), space-home/, workbench/ (including
+│                         workbench-task-draft/ and its reader/), and one
 │                         workbench-<name>/ per live tab; see servers/README.md
 mcp-servers/           🔌 MCP servers (codex-image2)
 agents/                🤖 plugin-level agent definitions
 ```
 
-**There is no `_archive/` in this tree, and that is deliberate** (JL 260822:
-"我既然把它变成 archive 了，意思就是说要把它们都删掉"). Retiring a skill means
-DELETING it. Nine archive roots holding 487 files were removed on 260822; they are
-recoverable from git at `438d1c87` and nowhere else. A retired skill that stays on
-disk gets read, cited and followed — every archive root here had a live file
-pointing into it when it was deleted.
+**Retired content is excluded from installation.** Both root installers skip
+folders whose names start with `_`, including `_archive/`, `_old/`, and `_parts/`,
+as well as `node_modules/`. Parking retired content there does not install it as
+a skill. Deletion is a separate maintenance decision; check remaining references
+and preserve existing work before removing anything.
 
 
 Where to read next
@@ -160,7 +155,7 @@ Where to read next
 ```
 skills/1_base/project/haipipe-run/SKILL.md  the neutral Level-4 Run/Result contract
 skills/1_base/draft/haipipe-draft-workflow/  the Page workflow: the list of Runs and their routes
-skills/STRUCTURE.md      the skill-tree mental model
+skills/README.md         the skill-tree mental model
 skills/1_base/draft/haipipe-draft/agents/README.md   the Page agents, the Board reviewer among them
 ```
 

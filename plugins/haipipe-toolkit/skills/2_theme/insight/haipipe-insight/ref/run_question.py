@@ -1,11 +1,11 @@
-"""run_question.py <task folder> <run> · run one Insight question on one dataset x partition.
+"""run_question.py <task folder> <run> · run one Insight question on one dataset x segment.
 
 The one runner of every Insight run ticket, `<Block>/jNN_<level>/tNN_<task>/runs/<run>.sh`
 (ref/block-contract.md § The run). An Insight Block is a task Block (haipipe-task):
 one Job per DIKW level, one Task per question, its spec in `question.md`, its code in
-`scripts/`. The run's stem is `<dataset>_<partition>`: the dataset names an extract in
-the Block's board.md `datasets:`, the partition a filter in `meta/partitions.md`; there
-is no per-run config. It writes a receipt before the work, filters the partition,
+`scripts/`. The run's stem is `<dataset>_<segment>`: the dataset names an extract in
+the Block's board.md `datasets:`, the segment a filter in `meta/partitions.md`; there
+is no per-run config. It writes a receipt before the work, filters the segment,
 checks power BEFORE any outcome contrast, runs the question's script, gates its output
 against the spec, writes the tables to results/<run>/, draws their figures beside them
 (ref/figures.py), and writes the generated report, the run's report, to
@@ -40,7 +40,7 @@ OPS = {
     "isin": lambda s, v: s.isin(v), "notin": lambda s, v: ~s.isin(v),
     "notna": lambda s, v: s.notna() if v else s.isna(),
 }
-META = "meta"                                                                    # partitions, thresholds, meta, status
+META = "meta"                                                                    # segments, thresholds, meta, status
 LEVEL_DIR = {"D": "j01_data", "I": "j02_information", "K": "j03_knowledge", "W": "j04_wisdom"}   # one Job per level
 QFOLDER = re.compile(r"^t(\d{2})_([a-z0-9]+(?:_[a-z0-9]+)*)$")                   # t01_extract_shape_and_quality
 QFILE = "question.md"                                                            # the question's spec, beside its page
@@ -133,16 +133,11 @@ def block_meta(block):
     return meta
 
 
-def runs_of(block, partitions):
-    """Every possible run stem of the Block: <dataset>_<partition>, datasets in board.md order."""
-    return [f"{d}_{p['name']}" for d in block_meta(block)["datasets"] for p in partitions]
-
-
 def split_run(run, datasets):
-    """<dataset>_<partition> → (dataset, partition); the dataset is a board.md name (no underscore)."""
+    """<dataset>_<segment> → (dataset, segment); the dataset is a board.md name (no underscore)."""
     ds, _, part = str(run).partition("_")
     if ds not in datasets or not part:
-        raise GateError(f"{run} is not <dataset>_<partition> with a dataset of board.md ({', '.join(datasets)})")
+        raise GateError(f"{run} is not <dataset>_<segment> with a dataset of board.md ({', '.join(datasets)})")
     return ds, part
 
 
@@ -183,7 +178,7 @@ def shared_digest(block, level_dir, scripts, question=None):
 
 
 def shared_paths(block, level_dir=None, scripts=None):
-    """What a script rests on besides its own files: the Block's partitions and thresholds, and the
+    """What a script rests on besides its own files: the Block's segments and thresholds, and the
     shared modules (its Job's src/, the Block's src/) its scripts import. Without `scripts`, every one."""
     block = Path(block)
     others = [block / d / "src" for d in LEVEL_DIR.values() if d != level_dir]       # a later level may reuse an earlier one's
@@ -195,7 +190,7 @@ def shared_paths(block, level_dir=None, scripts=None):
 
 
 def asked_partitions(q, partitions):
-    """The partitions a question is asked on, in partitions.md order; a retired question, none."""
+    """The segments a question is asked on, in partitions.md order; a retired question, none."""
     if q.get("retired"):
         return []
     asked = (q.get("partitions") or {}).get("asked", "all")
@@ -226,7 +221,7 @@ def resolve(qfolder, run):
     partitions = front(block / META / "partitions.md")[0]["partitions"]
     part = next((p for p in partitions if p["name"] == partition), None)
     if part is None:
-        raise GateError(f"{partition} is not a partition in {block.name}/{META}/partitions.md")
+        raise GateError(f"{partition} is not a segment in {block.name}/{META}/partitions.md")
     qfile = qfolder / QFILE
     q, _ = front(qfile)
     if q.get("id") != qid:
@@ -248,7 +243,7 @@ def apply_filter(df, part):
             if op != "column":
                 df = df[OPS[op](df[col], val)]
     if len(df) == 0:
-        raise Refused(f"partition {part['name']} selects no rows")
+        raise Refused(f"segment {part['name']} selects no rows")
     return df, before
 
 
@@ -441,8 +436,10 @@ def _cell(v):
 
 
 def md_table(df, limit=REPORT_ROWS):
-    """A markdown table of a result, cut at `limit` rows with the cut said."""
-    lines = ["| " + " | ".join(map(str, df.columns)) + " |", "|" + "---|" * len(df.columns)]
+    """A markdown table of a result, the first `limit` rows, with a line saying so when it holds more. A person
+    reads "segment": the tables keep the column `partition` (a receipt hashes them), the page shows the word."""
+    lines = ["| " + " | ".join("segment" if c == "partition" else str(c) for c in df.columns) + " |",
+             "|" + "---|" * len(df.columns)]
     lines += ["| " + " | ".join(_cell(v) for v in r) + " |" for r in df.head(limit).itertuples(index=False)]
     if len(df) > limit:
         lines.append(f"\n({len(df)} rows; the first {limit} are shown, the full table is in results/)")
@@ -462,7 +459,7 @@ def write_report(r, receipt, out, rep):
     lines = [f"# {r['qid']} · {q.get('name', '')} · {r['run']}".replace(" ·  · ", " · "), "",
              f"**The ask**: {q.get('ask')}", "",
              f"**Run**: {status} · {receipt.get('rows_after', '')} of {receipt.get('rows_before', '')} rows"
-             f" · dataset {r['dataset']} · partition {part['name']}" + (f" ({part['plain']})" if part.get("plain") else "")
+             f" · dataset {r['dataset']} · segment {part['name']}" + (f" ({part['plain']})" if part.get("plain") else "")
              + f" · ended {receipt.get('ended', '')}", "",
              "Generated by haipipe-insight ref/run_question.py from this run's results; rerun the ticket "
              f"`{receipt['ticket']}` to change it.", ""]
@@ -515,7 +512,6 @@ def run(qfolder, run_stem):
     old_since = old.get("content_since") or old.get("ended") if old.get("status") == "ok" else None
     _clear(out)
     _clear(rep)
-    shared = shared_paths(r["block"], r["level_dir"], r["scripts"])
     receipt = {
         "status": "running", "question": r["qid"], "run": r["run"], "dataset": r["dataset"], "partition": partition,
         "ticket": rel(r["qfolder"] / "runs" / f"{r['run']}.sh"),

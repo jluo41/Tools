@@ -228,7 +228,7 @@ Decided here, not asked (each follows a rule or a decision already made):
 The code change, for its owner
 ------------------------------
 
-The owner is design_b02_workbench; the file is `servers/workbench/focus_page.py`, never edited from this Task.
+The owner is design_b02_workbench; the file is `servers/workbench/page/focus_page.py`, never edited from this Task.
 
 1. `status_html()`, its Task branch: the three sections (Waits for you, Runs by role, Ask the agent) in place of today's flat rows; the view key `progress` is named Runs at Task level, with its caption in `VIEW_WORDS`.
 2. `part_document()`: a new part, `run`, the Run pop-out (Card, Ticket, Config, Result, Passes).

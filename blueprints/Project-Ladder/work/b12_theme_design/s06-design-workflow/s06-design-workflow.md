@@ -1,5 +1,6 @@
 s06 · The design workflow: from a signed goal to released designs, and back from the experiment
 ================================================================================================
+view: findings
 
 **Tags:** `Workflow`
 
@@ -15,7 +16,15 @@ s06 · The design workflow: from a signed goal to released designs, and back fro
 
 **Topic:** one map of how a design travels, as b11 s05 draws insight's workflow (JL 261102: "we have the workflow for the insight, could you make one for the design as well? try to make it to be vivid"). It starts from the goal (JL 261102: "Where is the Goal?"): written once in the Block's goal list (`board.md`, Goals) and signed by a person, pinned by every Job that works on it, copied into the Job's fence (`inputs/goal.md`) as all the design work may see, read by the rules check on every design and by the ranking. Each Job pins one signed goal, one registered method version and one frozen inputs version, so a changed answer has one cause. The designer agent makes, the reviewer agent checks (never what it made), and a person signs five things: the goal, the shared rules, a Job's Review and approve, its close, and a method change. What an experiment returns lands once at the Block and starts the next round. Every word is a full name, never a short id (excalidraw-studio, the look, rule 5; JL 261102). The steps are haipipe-design ref/design-ladder.md's rules and Runs and haipipe-design-workflow's routes and gates, checked against the workbench (servers/workbench-design); the words are written once in `s06-design-workflow-workflow.yaml`.
 
-**Feeds:** `reports/` q01_design_ladder · q05_method_predictions · q06_design_method_ladder
+**Feeds:** Q01 · Q05 · Q06
+
+
+Q05 · Answer
+------------
+
+**Question:** Do the design methods predict what an Exp observes?
+
+**Answer (open):** not written yet.
 
 
 Files

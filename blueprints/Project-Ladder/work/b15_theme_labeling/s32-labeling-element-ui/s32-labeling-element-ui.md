@@ -15,7 +15,7 @@ dashed), and as b03's s11 · s12 · s13 plan it for labeling. Beside each elemen
 look, b03's picks kept, with why, a green line for what changed and a red line for what is open. It is b03's
 `s32-element-ui` cut to one theme, and it adds the six elements only labeling has.
 
-**Feeds:** `../reports/` q01_labeling_ladder · q02_building_scanning_gates · q03_schema_and_handoff; and
+**Feeds:** `../reports/` Q01 · Q02 · Q03; and
 b03's s32 (its Theme elements frame reads the list below).
 
 

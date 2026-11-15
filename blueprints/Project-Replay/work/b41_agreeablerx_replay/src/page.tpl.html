@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AgreeableRx Replay</title>
+<style>
+/* the workbench focus page's frame (title, views, goal, section rule) with Material 3 content:
+   tonal surfaces, an 8 px grid, the M3 type scale (body 16/24, title 16/24 medium, label 12/16 medium),
+   12 px card corners, one primary colour, state shown by colour and shape rather than words */
+:root{color-scheme:light dark;
+ --bg:light-dark(#fff,#161719);--surface:light-dark(#fff,#1b1c1f);--s-low:light-dark(#f7f9fc,#1f2125);--s-mid:light-dark(#eef2f7,#26292e);
+ --ink:light-dark(#1b1c1f,#e6e6e3);--muted:light-dark(#5f6368,#a6a8ab);--line:light-dark(#e1e4e8,#33363b);
+ --primary:light-dark(#1864ab,#91caff);--on-primary-c:light-dark(#0b3a66,#d4e8ff);--primary-c:light-dark(#e3effb,#21364b);
+ --tert:light-dark(#8a4b08,#ffb874);--tert-c:light-dark(#fff1e0,#3a2a18);--ok:light-dark(#1e7b34,#8bd49a);--ok-c:light-dark(#e8f6ec,#1c3324)}
+:root[data-theme="light"]{color-scheme:light}:root[data-theme="dark"]{color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+code{font:13px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--s-mid);padding:1px 5px;border-radius:4px;overflow-wrap:anywhere}
+.page{max-width:1240px;margin:auto;padding:20px 48px 48px}
+.crumb{font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+h1{display:flex;align-items:baseline;flex-wrap:wrap;gap:16px;font-size:28px;font-weight:700;line-height:1.25;letter-spacing:-.01em;margin:12px 0 16px}
+.h1-section{font-size:22px;font-weight:600;color:var(--muted)}
+.identity{display:flex;flex-wrap:wrap;gap:8px 24px;margin:0 0 16px;font-size:13px}
+.identity div{display:flex;gap:6px}.identity dt{color:var(--muted)}.identity dd{margin:0;font-weight:600}
+.views{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+.views a{border:1px solid var(--line);border-radius:8px;padding:6px 16px;font-size:14px;font-weight:500;color:var(--ink);text-decoration:none;background:var(--surface)}
+.views a:hover{background:var(--s-low)}
+.views a[aria-current]{border-color:transparent;background:var(--primary-c);color:var(--on-primary-c)}
+.goal{margin:0 0 24px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+.goal p{margin:0;max-width:72ch}
+.overline{display:block;font-size:12px;line-height:16px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+.layout{display:grid;grid-template-columns:200px minmax(0,1fr);gap:32px;align-items:start}
+.rail{position:sticky;top:16px;display:flex;flex-direction:column;gap:2px;max-height:calc(100vh - 32px);overflow:auto}
+.rail a{display:block;padding:8px 12px;border-radius:999px;font-size:14px;font-weight:500;color:var(--ink);text-decoration:none}
+.rail a small{display:block;font-size:12px;font-weight:400;color:var(--muted)}
+.rail a:hover{background:var(--s-low)}
+.rail a.on{background:var(--primary-c);color:var(--on-primary-c)}.rail a.on small{color:inherit}
+.search{display:flex;gap:8px;margin:0 0 16px}
+.search input{flex:1;min-width:0;font:inherit;font-size:15px;padding:10px 16px;border:1px solid var(--line);border-radius:999px;background:var(--s-low);color:var(--ink)}
+.search input:focus{outline:2px solid var(--primary);outline-offset:-1px;background:var(--surface)}
+.day{scroll-margin-top:16px;margin:0 0 40px}
+.day>h2{display:flex;align-items:center;gap:12px;font-size:22px;line-height:28px;font-weight:600;margin:0 0 16px}
+.day>h2::after{content:"";flex:1;border-top:1px solid var(--line)}
+.happened{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin:0 0 24px}
+.phase{background:var(--s-low);border-radius:12px;padding:16px}
+.phase h3{margin:0 0 4px;font-size:16px;line-height:24px;font-weight:600}
+.phase .t{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.phase p{margin:8px 0 0;font-size:14px;line-height:20px}
+.decs{display:flex;flex-direction:column;gap:8px}
+.dec{border:1px solid var(--line);border-radius:12px;background:var(--surface);overflow:hidden}
+.dec[open]{border-color:transparent;box-shadow:0 1px 2px light-dark(#0000001a,#0006),0 2px 8px light-dark(#0000000f,#0004)}
+.dec summary{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:12px;align-items:baseline;padding:12px 16px;cursor:pointer;list-style:none}
+.dec summary::-webkit-details-marker{display:none}
+.dec summary:hover{background:var(--s-low)}
+.dec .tm{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.dec .ti{font-size:16px;line-height:24px;font-weight:500;overflow-wrap:anywhere}
+.chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+.chip{font-size:12px;line-height:16px;font-weight:500;padding:4px 10px;border-radius:8px;background:var(--s-mid);color:var(--muted);white-space:nowrap}
+.body{padding:4px 16px 16px 80px;display:flex;flex-direction:column;gap:12px;max-width:900px}
+.blk{border-radius:8px;padding:12px 16px}
+.blk p{margin:0;font-size:15px;line-height:24px;overflow-wrap:anywhere}
+.blk.ask{background:var(--tert-c)}.blk.ask .overline{color:var(--tert)}
+.blk.ask p{font-style:italic}
+.blk.dd{background:var(--primary-c)}.blk.dd .overline{color:var(--primary)}
+.blk.done{background:var(--ok-c)}.blk.done .overline{color:var(--ok)}
+.meta{font-size:13px;color:var(--muted)}
+.empty{color:var(--muted);margin:8px 0}
+.who{margin:0 0 24px}.who h2{font-size:22px;margin:0 0 4px}.who .meta{margin:0 0 8px}.who p{max-width:72ch;margin:0}
+.decs>.overline{margin-top:16px}
+.open-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;max-width:900px}
+.open-list li{background:var(--s-low);border-radius:12px;padding:12px 16px;font-size:15px;line-height:22px;overflow-wrap:anywhere}
+.foot{margin-top:32px;color:var(--muted);font-size:13px;max-width:72ch}
+[hidden]{display:none!important}
+/* a topic's page inside the Studio frame: only its part, no title bar, no rail */
+body.topic .page>:not(section){display:none}
+body.topic .page{padding:16px}
+body.topic [data-view=days] .layout{grid-template-columns:minmax(0,1fr)}
+body.topic #dayRail,body.topic .search{display:none}
+@media(max-width:760px){
+ .page{padding:16px 16px 32px}
+ .layout{grid-template-columns:minmax(0,1fr);gap:16px}
+ .rail{position:static;flex-direction:row;flex-wrap:wrap;max-height:none}
+ .rail a{padding:6px 12px}.rail a small{display:none}
+ .dec summary{grid-template-columns:44px minmax(0,1fr)}.chips{grid-column:2;justify-content:flex-start}
+ .body{padding:4px 12px 12px}
+}
+</style>
+</head><body>
+<main class="page">
+  <div class="crumb">blueprints / Project-Replay / work / b41_agreeablerx_replay / delivery</div>
+  <h1>AgreeableRx Replay <span class="h1-section">Report</span></h1>
+  <dl class="identity">
+    <div><dt>Paper</dt><dd>Paper-AgreeablePrescriptionDiscretion</dd></div>
+    <div><dt>Dates</dt><dd>2026-11-08 to 2026-11-14</dd></div>
+    <div><dt>Times</dt><dd>US Eastern</dd></div>
+  </dl>
+  <nav class="views" aria-label="Views" id="views">
+    <a href="#days" data-v="days">📅 Days</a>
+    <a href="#sessions" data-v="sessions">👥 Sessions</a>
+    <a href="#open" data-v="open">🙋 Still open</a>
+  </nav>
+  <div class="goal"><span class="overline">Goal</span><p>See how the MISQ paper and its workbench were reshaped: what JL asked, what was decided, and what was built, day by day.</p></div>
+
+  <section data-view="days" hidden>
+    <div class="layout">
+      <nav class="rail" id="dayRail" aria-label="Days"></nav>
+      <div>
+        <div class="search"><input id="q" type="search" placeholder="Search words, files, quotes" aria-label="Search decisions"></div>
+        <div id="days"></div>
+      </div>
+    </div>
+  </section>
+
+  <section data-view="sessions" hidden>
+    <div class="layout">
+      <nav class="rail" id="sessRail" aria-label="Sessions"></nav>
+      <div id="sessBody"></div>
+    </div>
+  </section>
+
+  <section data-view="open" hidden>
+    <ul class="open-list" id="openList"></ul>
+  </section>
+
+  <p class="foot">Built from the transcripts of the eleven sessions: JL's own messages, the sessions' messages to each other, and the first line of each reply. Quotes are JL's words as typed, trimmed with … where long. Some open items may have been settled after the log ends.</p>
+</main>
+
+<script>
+const DATA = /*DATA*/null;
+const MODE = /*MODE*/null;   // a topic's own page: {view, day}; null for the whole replay
+const $ = id => document.getElementById(id);
+const esc = s => String(s||"").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const inline = s => esc(s).replace(/`([^`]+)`/g, "<code>$1</code>");
+const short = n => {
+  if (/^Pp-AgreeableRx/.test(n)) return "Main paper";
+  if (n === "WorkBench-Paper-UI") return "Workbench UI";
+  const m = n.match(/^AgreeableRx-(t\d\d)_(.+)$/); if (m) return m[1] + " " + m[2].replace(/[-_]/g," ").replace(/^./, c=>c.toUpperCase());
+  if (n === "AgreeableRx-Appendix") return "Appendix";
+  return n;
+};
+const ORDER = n => n.startsWith("Pp-") ? 0 : n === "WorkBench-Paper-UI" ? 99 : n === "AgreeableRx-Appendix" ? 50 : 10 + parseInt((n.match(/t(\d\d)/)||[0,40])[1]);
+const sessNames = [...new Set(DATA.sessions.map(s=>s.name))].sort((a,b)=>ORDER(a)-ORDER(b));
+const sessOf = d => d.session.split(/,\s*|\s+and\s+/).map(s=>s.trim()).filter(Boolean);
+const dayName = d => new Date(d+"T12:00:00").toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
+const store = {get:k=>{try{return localStorage.getItem("replay-"+k)}catch(e){return null}}, set:(k,v)=>{try{localStorage.setItem("replay-"+k,v)}catch(e){}}};
+const span = (a,b) => a + " to " + (b.slice(0,10) === a.slice(0,10) ? b.slice(11) : b.slice(5));
+
+function card(d, withSess = true){
+  return `<details class="dec"><summary><span class="tm">${esc(d.time.slice(11))}</span><span class="ti">${esc(d.title)}</span>`
+    + `<span class="chips">${withSess ? sessOf(d).map(s=>`<span class="chip">${esc(short(s))}</span>`).join("") : ""}${d.area?`<span class="chip">${esc(d.area)}</span>`:""}</span></summary>`
+    + `<div class="body">`
+    + (d.asked ? `<div class="blk ask"><span class="overline">JL asked</span><p>${esc(d.asked.replace(/^"|"$/g,""))}</p></div>` : "")
+    + (d.decided ? `<div class="blk dd"><span class="overline">Decided</span><p>${inline(d.decided)}</p></div>` : "")
+    + (d.done ? `<div class="blk done"><span class="overline">Built</span><p>${inline(d.done)}</p></div>` : "")
+    + `</div></details>`;
+}
+
+/* Days: one section per date (one Studio topic per date in the Block); what happened, then each decision */
+const days = MODE && MODE.day ? [MODE.day] : [...new Set(DATA.decisions.map(d=>d.time.slice(0,10)).concat(DATA.phases.map(p=>p.start.slice(0,10))))].sort();
+$("dayRail").innerHTML = days.map((d,i) => `<a href="#d-${d}" data-d="${d}">${esc(dayName(d))}<small>s${String(i+2).padStart(2,"0")}</small></a>`).join("");
+let io;
+function drawDays(q){
+  $("days").innerHTML = days.map(d => {
+    const ph = DATA.phases.filter(p => p.start.startsWith(d));
+    const ds = DATA.decisions.filter(x => x.time.startsWith(d) && (!q || [x.title,x.asked,x.decided,x.done,x.session,x.area].join(" ").toLowerCase().includes(q)));
+    if (q && !ds.length) return "";
+    return `<section class="day" id="d-${d}"><h2>📅 ${esc(dayName(d))}</h2>`
+      + (ph.length && !q ? `<div class="happened">${ph.map(p => `<div class="phase"><h3>${esc(p.title)}</h3><div class="t">${esc(span(p.start,p.end))}</div><p>${inline(p.text)}</p></div>`).join("")}</div>` : "")
+      + `<div class="decs">${ds.map(x => card(x)).join("")}</div></section>`;
+  }).join("") || `<p class="empty">No decision matches.</p>`;
+  if (q) $("days").querySelectorAll(".dec").forEach(e => e.open = true);
+  if (io) io.disconnect();
+  io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) $("dayRail").querySelectorAll("a").forEach(a => a.classList.toggle("on", "d-"+a.dataset.d === e.target.id)); }), {rootMargin:"0px 0px -70% 0px"});
+  document.querySelectorAll(".day").forEach(s => io.observe(s));
+}
+$("q").addEventListener("input", e => drawDays(e.target.value.trim().toLowerCase()));
+drawDays("");
+$("dayRail").addEventListener("click", e => { const a = e.target.closest("a"); if (!a) return; e.preventDefault(); document.getElementById("d-"+a.dataset.d)?.scrollIntoView({behavior:"smooth"}); });
+
+/* Sessions: who they are and what they decided */
+$("sessRail").innerHTML = sessNames.map(n => `<a href="#sessions" data-n="${esc(n)}">${esc(short(n))}</a>`).join("");
+function pickSess(n){
+  $("sessRail").querySelectorAll("a").forEach(a => a.classList.toggle("on", a.dataset.n === n)); store.set("sess", n);
+  const s = DATA.sessions.find(x=>x.name===n);
+  const sp = s.text.match(/(?:first )?(\d{4}-\d\d-\d\d \d\d:\d\d)(?:, last | to )(\d{4}-\d\d-\d\d \d\d:\d\d)/);
+  const role = s.text.replace(/;?\s*(first )?\d{4}-.*$/,"").replace(/^owns /,"Owns ").replace(/^the /,"The ");
+  const mine = DATA.decisions.filter(d => sessOf(d).includes(n));
+  let out = `<div class="who"><h2>${esc(short(n))}</h2><div class="meta"><code>${esc(n)}</code>${sp?` · ${esc(span(sp[1],sp[2]))}`:""}</div><p>${inline(role)}</p></div><div class="decs">`, day = "";
+  for (const d of mine){ const dd = d.time.slice(0,10); if (dd !== day){ day = dd; out += `<span class="overline">${esc(dayName(dd))}</span>`; } out += card(d, false); }
+  $("sessBody").innerHTML = out + "</div>";
+}
+$("sessRail").addEventListener("click", e => { const a = e.target.closest("a"); if (a){ e.preventDefault(); pickSess(a.dataset.n); } });
+pickSess(sessNames.includes(store.get("sess")) ? store.get("sess") : sessNames[0]);
+
+$("openList").innerHTML = DATA.open.map(o => `<li>🙋 ${inline(o)}</li>`).join("");
+
+function show(){
+  if (MODE){ document.body.classList.add("topic"); document.querySelectorAll("[data-view]").forEach(s => s.hidden = s.dataset.view !== MODE.view); return; }
+  const h = location.hash.slice(1), v = ["days","sessions","open"].includes(h) ? h : (store.get("view") || "days");
+  document.querySelectorAll("[data-view]").forEach(s => s.hidden = s.dataset.view !== v);
+  document.querySelectorAll("#views a").forEach(a => a.dataset.v === v ? a.setAttribute("aria-current","page") : a.removeAttribute("aria-current"));
+  store.set("view", v);
+}
+addEventListener("hashchange", show); show();
+</script>
+</body></html>

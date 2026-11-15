@@ -6,7 +6,7 @@ import re
 
 
 def _plain(value):
-    """Ignore hash fields left in older records (JL 260928: no content hashes)."""
+    """Ignore hash fields left in older records (no content hashes)."""
     if isinstance(value, dict):
         return {k: _plain(v) for k, v in value.items()
                 if k not in {"sha256", "hash"} and not str(k).endswith(("_sha256", "_hash"))}

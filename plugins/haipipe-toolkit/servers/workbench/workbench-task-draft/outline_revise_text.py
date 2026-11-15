@@ -7,6 +7,8 @@ from __future__ import annotations
 import difflib
 import re
 
+from live.sentence_id import sid as _sid
+
 
 _PROTECT_RE = re.compile(r"\b(?:e\.g\.|i\.e\.|et al\.|cf\.|vs\.|Dr\.|Mr\.|Ms\.|Prof\.|Fig\.|Eq\.|No\.|St\.|Jr\.|Inc\.|Ltd\.|[A-Z]\.)", re.I)
 # a sentence may also open on a ⟦pending⟧ or ⟦check⟧ mark, or on a LaTeX command (JL 261020: a mark alone is its own
@@ -43,13 +45,14 @@ def box_text(texts: list[str]) -> str:
     return "\n".join(s for t in texts if t and t.strip() for s in split_sentences(t))
 
 
-_SID_RE = re.compile(r"^(S\d+[a-z]*(?:\s*(?:-|–|to)\s*S\d+[a-z]*)?)\s*·")
+_SID_RE = re.compile(r"^([Ss]\d+[a-z]*(?:\s*(?:-|–|to)\s*[Ss]\d+[a-z]*)?)\s*·")
 
 
 def sentence_id(head: str) -> str:
-    """A Bullet's sentence id, `S2` or `S2a`, from its head (`S2 · [Role] point`); empty on a plan without them."""
+    """A Bullet's sentence id, `s2` or `s2a`, from its head (`s2 · [Role] point`; an older `S2` reads as s2); empty
+    on a plan without them."""
     match = _SID_RE.match(head or "")
-    return match.group(1) if match else ""
+    return _sid(match.group(1)) if match else ""
 
 
 def screen_rows(bullets: list[dict]) -> list[dict]:

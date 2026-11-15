@@ -41,6 +41,7 @@ from src.plan_shape import iter_plan_bullets, render_bullet
 from src.plan_layout import (SCRATCH_TARGET, _assemble, _sections, from_canonical, is_sectioned,
                              overview_lines, set_overview, to_canonical)
 from src.run_lifecycle import find_open, open_run
+from live.sentence_id import sid as _sid
 from live.outline_preview import (bullet_token, draft_path, page_lock, read_drafts,
                                   reader_prose, record_token, write_drafts)
 
@@ -53,7 +54,7 @@ def _now() -> str:
     return dt.datetime.now().strftime("%Y-%m-%d %H:%M")
 
 
-_REALIZES_RE = re.compile(r"(?m)^([^\n]*?)<!--\s*realizes:\s*(C\d+\.P\d+\.[BS]\d+)\s*-->\s*$")
+_REALIZES_RE = re.compile(r"(?m)^([^\n]*?)<!--\s*realizes:\s*(C\d+\.P\d+\.[BSs]\d+)\s*-->\s*$")
 
 
 def page_realizations(page_src: Path) -> dict[str, str]:
@@ -69,7 +70,7 @@ def page_realizations(page_src: Path) -> dict[str, str]:
         return {}
     found: dict[str, list[str]] = {}
     for match in _REALIZES_RE.finditer(text):
-        address = re.sub(r"\.S(\d+)$", r".B\1", match.group(2))
+        address = re.sub(r"\.[Ss](\d+)$", r".B\1", match.group(2))
         prose = reader_prose(match.group(1)).strip()
         if prose:
             found.setdefault(address, []).append(prose)
@@ -120,7 +121,7 @@ def _point(sentence: str, words: int = 8) -> str:
 
 def _new_ids(plan_text: str, paragraph: str, inserts: list) -> list:
     """Give each new sentence its Bullet number (the paragraph's highest + 1, never renumbering) and its sentence id:
-    the id before it with the next free letter (S2 → S2a, then S2b), page-wide; none on a plan that has none."""
+    the id before it with the next free letter (s2 → s2a, then s2b), page-wide; none on a plan that has none."""
     blocks = list(iter_plan_bullets(plan_text))
     sids = [sentence_id(b["head"]) for b in blocks]
     taken = {s for s in sids if s}
@@ -135,13 +136,13 @@ def _new_ids(plan_text: str, paragraph: str, inserts: list) -> list:
             prior = [s for s in sids[:at + 1] if s]
         else:
             prior = [s for b, s in zip(blocks, sids) if s and b["paragraph"] in earlier]
-        base = int(re.findall(r"S(\d+)", prior[-1])[-1]) if prior else 0
+        base = int(re.findall(r"[Ss](\d+)", prior[-1])[-1]) if prior else 0
         made = []
         for sentence in sentences:
             sid = ""
             if taken:
-                letter = next(c for c in "abcdefghijklmnopqrstuvwxyz" if "S%d%s" % (base, c) not in taken)
-                sid = "S%d%s" % (base, letter)
+                letter = next(c for c in "abcdefghijklmnopqrstuvwxyz" if "s%d%s" % (base, c) not in taken)
+                sid = "s%d%s" % (base, letter)
                 taken.add(sid)
             made.append({"address": "%s.B%d" % (paragraph, next_b), "number": next_b, "sid": sid, "text": sentence})
             next_b += 1
@@ -291,13 +292,13 @@ def _id_clash(text: str) -> str:
     for line in text.splitlines():
         m = re.match(r"^## (\d+)\s*·", line)
         h = re.match(r"^### (C\d+\.P\d+)\b", line)
-        b = re.match(r"^- B(\d+) · (S\d+[a-z]*) · ", line)
+        b = re.match(r"^- B(\d+) · ([Ss]\d+[a-z]*) · ", line)
         if m:
             part = m.group(1)
         elif h:
             para = h.group(1)
         elif b and para and part in ids:
-            ids[part][(para, b.group(1))] = b.group(2)
+            ids[part][(para, b.group(1))] = _sid(b.group(2))
     for (para, n), sid in ids["3"].items():
         planned = ids["1"].get((para, n))
         if planned and planned != sid:

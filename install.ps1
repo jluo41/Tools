@@ -153,10 +153,9 @@ function Get-Agents {
 
         # install.sh's prunes, as exclusions.
         if (@($parts | Where-Object { $_.StartsWith('_') -or $_ -eq 'node_modules' }).Count -gt 0) { continue }
-        # install.sh matches */agents/*-agent.md, so the file must sit DIRECTLY in
-        # an agents/ dir. Matching 'agents' anywhere in the path would also pull in
-        # agents/<subdir>/x-agent.md, which the .sh installer never sees.
-        if ($parts.Length -lt 2 -or $parts[-2] -ne 'agents') { continue }
+        # find's -path wildcard spans separators: agents/ may have subfolders.
+        # Ignore the package name itself when looking for an agents/ tree.
+        if ($parts.Length -lt 3 -or $parts[1..($parts.Length - 2)] -notcontains 'agents') { continue }
 
         $plugin  = $parts[0]
         $relPath = ($parts[1..($parts.Length - 1)] -join '/')
@@ -257,7 +256,7 @@ function Install-Agents {
     }
     foreach ($entry in Get-ChildItem -LiteralPath $AgentsDir -Filter "*.md" -Force) {
         $isReparse = ($entry.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0
-        if ($isReparse -and -not (Test-Path -LiteralPath $entry.Target)) {
+        if ($isReparse -and -not (Resolve-LinkTarget -LinkPath $entry.FullName -Target $entry.Target)) {
             $entry.Delete(); $cleaned++
             Write-Host "  - $($entry.Name) (stale symlink, removed)"
         }
@@ -430,10 +429,21 @@ function Test-WorkspaceLinks {
         # The agent manifest is the installer's own bookkeeping, not a link.
         $entries = @(Get-ChildItem -LiteralPath $check.Dir -Force |
                      Where-Object { $_.Name -ne $AgentManifestName })
-        $dangling = @(); $drift = @(); $owned = @()
+        $dangling = @(); $drift = @(); $owned = @(); $staleCopies = @()
+        $managed = if ($check.Label -eq "Claude agents") { @(Get-AgentManifest $check.Dir) } else { @() }
         foreach ($entry in $entries) {
             $isReparse = ($entry.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0
-            if (-not $isReparse) { $owned += $entry.Name; continue }
+            if (-not $isReparse) {
+                if ($managed -contains $entry.Name) {
+                    if (-not $check.Expected.ContainsKey($entry.Name) -or $entry.PSIsContainer) {
+                        $staleCopies += $entry.Name
+                    } elseif ((Get-FileHash -LiteralPath $entry.FullName).Hash -ne
+                              (Get-FileHash -LiteralPath $check.Expected[$entry.Name]).Hash) {
+                        $staleCopies += $entry.Name
+                    }
+                } else { $owned += $entry.Name }
+                continue
+            }
             $target = Resolve-LinkTarget -LinkPath $entry.FullName -Target $entry.Target
             if (-not $target) { $dangling += $entry.Name; continue }
             if ($check.Expected.ContainsKey($entry.Name)) {
@@ -449,6 +459,7 @@ function Test-WorkspaceLinks {
         $unknown = @($present | Where-Object {
             -not $check.Expected.ContainsKey($_) -and
             $dangling -notcontains $_ -and
+            $managed -notcontains $_ -and
             $owned -notcontains $_
         })
 
@@ -459,10 +470,11 @@ function Test-WorkspaceLinks {
             foreach ($d in $drift) { Write-Host "      $($d.Name) -> $($d.Target)" }
         }
         if ($missing) { Write-Host "    $($missing.Count) not linked: $($missing -join ', ')" }
+        if ($staleCopies) { Write-Host "    $($staleCopies.Count) outdated installer-owned agent copies: $($staleCopies -join ', ')" }
         if ($unknown) { Write-Host "    $($unknown.Count) links with no matching skill or agent on disk: $($unknown -join ', ')" }
         if ($owned) { Write-Host "    $($owned.Count) real directories you own (the installer leaves these alone): $($owned -join ', ')" }
 
-        $problems += $dangling.Count + $drift.Count + $missing.Count
+        $problems += $dangling.Count + $drift.Count + $missing.Count + $staleCopies.Count
     }
 
     # A skill that shells out to a server is only real if that server is registered.
@@ -532,7 +544,13 @@ if (-not $NoMarketplace) {
     New-Item -ItemType Directory -Force -Path $marketplaces | Out-Null
 
     if (Test-Path -LiteralPath $marketplaceDir) {
-        (Get-Item -LiteralPath $marketplaceDir -Force).Delete()
+        $item = Get-Item -LiteralPath $marketplaceDir -Force
+        if (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -eq 0) {
+            Write-Host "Marketplace path is not a link; leaving it untouched: $marketplaceDir"
+            Write-Host "Move it aside before registering this checkout, or use -NoMarketplace."
+            exit 1
+        }
+        $item.Delete()
     }
     if ($Symlink) {
         New-Item -ItemType SymbolicLink -Path $marketplaceDir -Target $ScriptDir -Force | Out-Null
@@ -606,7 +624,7 @@ if ($Hooks) {
             New-Item -ItemType Directory -Force -Path $ClaudeDir | Out-Null
         }
 
-        $hooksObj = [pscustomobject]@{}
+        $hooksObj = if ($null -ne $settings.hooks) { $settings.hooks } else { [pscustomobject]@{} }
         $missing = 0
         # $ev, not $event: $event is a PowerShell automatic variable.
         foreach ($ev in $spec.sounds.PSObject.Properties) {
@@ -616,12 +634,25 @@ if ($Hooks) {
             # [object[]] casts are deliberate: a one-element array can be unrolled
             # on its way through Add-Member, and settings.json needs arrays here.
             $inner = [object[]]@([pscustomobject]@{ type = "command"; command = $cmd; async = $true })
-            $hooksObj | Add-Member -NotePropertyName $ev.Name -NotePropertyValue ([object[]]@(
-                [pscustomobject]@{ matcher = "*"; hooks = $inner }
-            )) -Force
+            $entries = @()
+            $property = $hooksObj.PSObject.Properties[$ev.Name]
+            if ($property) { $entries = @($property.Value) }
+            $present = $false
+            foreach ($entry in $entries) {
+                if ($entry.matcher -ne "*") { continue }
+                foreach ($hook in $entry.hooks) {
+                    if ($hook.type -eq "command" -and $hook.command -ceq $cmd -and $hook.async -eq $true) {
+                        $present = $true
+                    }
+                }
+            }
+            if (-not $present) {
+                $entries += [pscustomobject]@{ matcher = "*"; hooks = $inner }
+                $hooksObj | Add-Member -NotePropertyName $ev.Name -NotePropertyValue ([object[]]$entries) -Force
+            }
         }
 
-        # Overwrite the hooks section, preserve everything else.
+        # Preserve user hooks and all other settings.
         $settings | Add-Member -NotePropertyName "hooks" -NotePropertyValue $hooksObj -Force
         Write-JsonFile -Path $settingsFile -Object $settings
 

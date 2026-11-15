@@ -369,7 +369,7 @@ def frame_proposed(ekey, title, x0, y0, facts) -> dict:
     theme), its numbers, and why."""
     fr = L.open_frame(title + " · proposed")
     text(x0, y0, title + " · proposed", 34)
-    text(x0, y0 + 50, "one look for every theme, drawn by the base (servers/workbench/frame.py); a theme gives "
+    text(x0, y0 + 50, "one look for every theme, drawn by the base (servers/workbench/page/frame.py); a theme gives "
                       "the words only", 20)
     shot = next((SHOTS / f"{ekey}__{k}.png" for k in ("proposal", "base", "design-job")
                  if (SHOTS / f"{ekey}__{k}.png").exists()), None)

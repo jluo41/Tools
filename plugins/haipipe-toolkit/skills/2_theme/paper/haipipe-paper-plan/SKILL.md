@@ -3,7 +3,7 @@ name: haipipe-paper-plan
 description: "A paper Board's plan, the studio topics after its story: s03 data flow (how the data becomes each answer: Runs, evidence rows, claims), s04 paper flow (Sections in reader order with their questions, evidence, words, and the dated steps to the send) and s06 paper displays (each display: name, type, what it shows, main or supplement, the Run that makes it, checked against the venue's display rules). Checks that every question lands in a Section and every display has a Run and follows the venue. Trigger: paper plan, data flow, paper flow, display plan, plan the displays, venue display rules, s03, s04, s06, word budget, timeline to the send, /haipipe-paper-plan."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.2.2"
+  version: "0.3.0"
   last_updated: "2026-11-08"
   group-token: "s03-paper-dataflow"
   # version history: ./CHANGELOG.md
@@ -137,8 +137,14 @@ the send. The face carries two lines and three tables:
    Today comes from the clock; a later date is a proposal counted from it. The version is named by its planned send
    date and the story topic's desk part (`jNN_writing_v<send MMDD>_<desk>`, the first one `j11`; the desk from `s02-story-<desk>-…`).
 5. **When the first version is made**, its `## Narrative` is seeded from the Sections table, aligned with
-   the Story topic's §8 argument. The version owns its concrete Section rows and compile order;
-   the shared Section Narrative remains on the Story topic, and s04 keeps the Displays and the Timeline current.
+   the Story topic's §8 claims. The version owns its Section rows, claims to displays and compile order;
+   the shared Section Narrative (§8: title, story, claims; no Section rows) remains on the Story topic, and s04
+   keeps the Displays and the Timeline current.
+6. **s04 is the plan; the Structure view is what is written (JL 261111).** s04's Sections table is the plan: word
+   budget, reader order, displays and dates to the send. The version Job's Report › Structure view (workbench-paper)
+   shows the paper map: each Section's paragraphs as its current Draft holds them. The two overlap on purpose and
+   are never merged. When they disagree, the Drafts count for what is written, and s04 counts for what is still
+   planned: update s04's rows or dates to match, or send the Section back to its plan.
 
 
 s06-paper-displays

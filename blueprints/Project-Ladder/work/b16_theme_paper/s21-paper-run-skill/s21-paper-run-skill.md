@@ -1,5 +1,6 @@
 s21 · paper Run and skill
 =========================
+view: findings
 
 **Tags:** `Run and Skill`
 
@@ -28,8 +29,18 @@ b12 has a drawing of that name.
 Typed, since they are the proposal: each skill's job and its change on the ladder, the owner and folder of a run
 type with no card yet, and the plan.
 
-**Feeds:** `../reports/q05_skills_and_runs/` (Q05, "Which skills and Runs make the paper theme?") and
-`../reports/q01_paper_ladder/` (run types per level). The plan is run by `../goals/g04-paper-skills.md`.
+**Feeds:** `../Q05 (Q05, "Which skills and Runs make the paper theme?") and
+`../s01-paper-tree-concept/q01_paper_ladder/` (run types per level). The plan is run by `../goals/g04-paper-skills.md`.
+
+
+Q05 · Answer
+------------
+
+**Question:** Which skills and Runs make the paper theme?
+
+**Answer (partial):** The paper theme is nine skills under `skills/2_theme/paper/` and the base skills it borrows. On the ladder, each level's Spaces offer buttons, and each button makes one Run, named `run-<type>-<target>`. This report says which skill owns each Run, where the skills fall short today, and how their folders change to close the gap.
+
+**Page:** [q05_skills_and_runs.md](q05_skills_and_runs/q05_skills_and_runs.md): the full answer, its evidence and limits (moved from reports/)
 
 
 Files

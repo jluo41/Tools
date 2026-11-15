@@ -3,10 +3,10 @@
 Three frames (JL 261012: "每一个 frame 都太像一张 slide ... 我个人更 prefer 那种 tree 结构"): ① Background, the words
 a newcomer needs and where a Run sits; ② the Tree, the topic itself as one folder tree (what a Run is, hard and
 soft, passes, the workbench and the skill, the folders in Tools, red ? leaves where it is still open); ③ the
-screen, this Block's Runs Space as servers/workbench/frame.py draws it, beside the skill (a ui_frame).
+screen, this Block's Runs Space as servers/workbench/page/frame.py draws it, beside the skill (a ui_frame).
 
 Read from disk on every build: this Block's own Runs (runs/*/run.yaml and each ticket's close: line), the Runs
-Space as servers/workbench/frame.py draws it for this Block, haipipe-run's version and folder. Typed, since they
+Space as servers/workbench/page/frame.py draws it for this Block, haipipe-run's version and folder. Typed, since they
 are the design or sit in another repository: the hard example (Proj11-CGM-Corpus r01_rate_tir_hypo), the rules of
 hard and soft, the open points. The 261010 and 261012 builders (five frames, then four frames and a row below)
 are in history/.
@@ -249,8 +249,8 @@ def tree_nodes(runs, space, version):
                                                    "haipipe-task runs a hard Run",
                                                    "haipipe-run keeps only the card and the passes"]},
         {"in Tools/plugins/haipipe-toolkit": [
-            "skills/1_base/project/haipipe-run/", "servers/workbench/frame.py: runs_of",
-            "servers/workbench/runs_panel.py: run_types, panel_html, panel_markup"]}]}
+            "skills/1_base/project/haipipe-run/", "servers/workbench/page/frame.py: runs_of",
+            "servers/workbench/page/runs_panel.py: run_types, panel_html, panel_markup"]}]}
 
     openq = {"7  Still open": [
         "? wet Runs: add the protocol ticket and the person-signed receipt to haipipe-run? (s06-D02)",
@@ -272,7 +272,7 @@ def frame_screen(space, version):
     fr = L.open_frame("The screen: Runs Space and skill")
     canvas.ui_frame(fr, since="261012")                      # a screen: the workbench's colours (JL 261012)
     L.text(0, 0, "The screen: Block b10 › Runs, and /haipipe-run", T)
-    y = say(0, 58, "Read from servers/workbench/frame.py; buttons start Runs, the list reads each run.yaml.", SUB) + 30
+    y = say(0, 58, "Read from servers/workbench/page/frame.py; buttons start Runs, the list reads each run.yaml.", SUB) + 30
     x = 0
     for k, s in enumerate(subs):                              # the third row
         w = int(len(s) * BODY * 0.55) + 40

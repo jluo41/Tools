@@ -48,7 +48,7 @@ before writing; its sections are:
 
 1. **The test**: can a reader who does not read English well follow this?
 2. **Words**: a common word when it keeps the exact meaning; no idiom; defined terms stay, explained.
-3. **Sentences**: one reader move a sentence, split at the hinge; no semicolons and no `, however,` (JL 261104).
+3. **Sentences**: one topic a sentence, carrying one or two points (JL 261111: "you can have one or two points, but must be one topic"); split at the hinge where the topic changes, merge two short sentences that share one topic; no semicolons and no `, however,` (JL 261104).
    **Paragraphs**: 4 to 6 sentences; merge a shorter one, split a longer one, recount after any cut (`cli/paragraphs.py`).
    **Limits**: say each once, where it carries content; no over-defensive lines ("causation cannot be established").
 4. **Headings and shapes**: a heading names its consequence, not its mechanism; a good/bad pair gets ✅ and ❌ lines.

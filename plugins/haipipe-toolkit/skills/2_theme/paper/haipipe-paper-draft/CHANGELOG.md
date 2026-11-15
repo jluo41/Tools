@@ -1,3 +1,49 @@
+## 0.26.0 · 2026-11-13 · a display is its Board Task's
+
+- JL 261113: a Section keeps no `display/` folder; its displays are the Board's display Tasks, bound by `cited-in:`
+  (haipipe-paper-evidence 0.18.0). The Section tree and § Evidence is haipipe-paper-evidence's say so.
+
+## 0.25.0 · 2026-11-13 · showing prose changes in a reply
+
+- JL 261113: "never return the things like this … Make it the same to the index in the UI, sentence by sentence,
+  and also show what changes you made compared to previous. You can report paragraph by paragraph."
+- New § Showing prose changes in a reply: paragraph by paragraph, one line per sentence with its workbench address
+  (`C<n>.P<m>`, `B<k> · S<n>`), a kept/changed/new/cut/moved mark, before and after for a changed sentence, against
+  a named version; the format and example live in response-format 0.27.0.
+
+## 0.24.0 · 2026-11-12 · writing patterns found on ScalingGlucose
+
+- JL 261112: "could you summarize these patterns to the skills as well". New § Writing patterns found on
+  ScalingGlucose (261111-261112): nine patterns, each with JL's words, our sentence, the fix and its check.
+- Their checks: `page.py health` rows `expect` (an Introduction's `[Expect]` with Evidence: none) and `title` (a
+  `[Title]` Bullet still a placeholder); anti_slop rules `money-metaphor` (prose) and `in-group-shorthand` (titles).
+
+## 0.23.0 · 2026-11-12 · paragraphs of 4 to 7 sentences, titles that read like the text
+
+- JL 261112: "abstract should be okay. for other, unless having good reason, we might make sure they are between 4~7
+  sentences". New § Paragraphs of 4 to 7 sentences: the count from the `C<n>.P<m> · S<a> to S<b>` heading, the exempt
+  kinds, a `reason:` line accepts one, how to fix one, and the checks (`page.py health` row `paragraph`, W7,
+  `paragraph-length`).
+- JL 261112, on "Here we measure what scale buys for each use": new § Titles read like the text: a blind reviewer
+  scores every part title, paragraph title, Bullet label, arc and reader question 1 to 10; under 8 is rewritten in
+  § 1 and § 3 together; no metaphor verbs (rule `title-metaphor`).
+
+## 0.22.0 · 2026-11-11 · two layers, one source each
+
+- JL 261111: the Story's § 8 holds what every version shares (title, story, claims C1..Cn and their numbers) and no
+  Section rows; the version face's `## Narrative` holds that venue's layout, one row per Section. Authority order and
+  Paper ownership and entry say so; G3 is one draft Task per Section row of the version's Narrative.
+- Sign order: `page.py sign-narrative <version>` first, then each Section's `page.py sign`; health rows `order`, `row`
+  and `narrative` (WARN, FAIL with `--final`). The structure is the version Job's Report › Structure view, never a Task.
+- Examples: one source, shown at two levels. Example papers belong to the version; each Task's 📚 Examples card shows
+  its Section, and the version's Structure view joins the Sections' examples topics by paper (`pNN-<author><year>`).
+
+## 0.21.0 · 2026-11-11 · a Section starts at Plan after the Examples
+
+- JL 261111 (t01_introduction of Paper-ScalingGlucose-NatSeries2026, written and revised on an unsigned plan): after
+  📚 Examples a Section starts at 1 · Plan until the person's word is signed with `page.py sign --quote`; a changed
+  Narrative or Story § 8 row sends it back. New row "1 · Plan signed" in A complete paper draft Task.
+
 ## 0.20.0 · 2026-11-10 · a Section quotes, it never computes
 
 - JL 261110: every number in a Section is a value id, bound by id, and the Section names the value Run it quotes;

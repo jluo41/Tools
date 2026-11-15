@@ -26,6 +26,7 @@ import re
 from pathlib import Path
 
 from live import paper as P
+from live import rq_accept  # noqa: F401  (registers Accept for RQ.<key> edit cards, cards.md §7)
 from live.frame import _file_url
 from live.frame import Space, Theme, esc, face, link, reader, rel, studio_cards, table, vanilla
 

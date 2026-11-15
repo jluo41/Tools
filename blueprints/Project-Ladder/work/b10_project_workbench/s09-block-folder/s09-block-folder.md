@@ -15,7 +15,7 @@ folder as a tree, so a person sees what each folder of the Block holds without l
 看到这些 folder 里面（也就是这个 block 的 folder）都长什么内容。" Then: "I want to make it to be the s09-block-folder"
 (s09-D10). Its decisions start at D10: s09-D01 to D09 are the old s09's, kept in s01 since it merged there.
 
-**Feeds:** `reports/` q09_studio_report_on_screen
+**Feeds:** Q09
 
 
 What it shows
@@ -44,7 +44,7 @@ What it shows
 5. **Left out**: dotfiles (a drawing's `.seed.json`), `__pycache__`, `node_modules`; a link that leaves the root
    is named, not followed.
 
-It writes nothing. Code: `servers/workbench/frame.py` `studio_folder`, `folder_rows`, `_run_word`, the page
+It writes nothing. Code: `servers/workbench/page/frame.py` `studio_folder`, `folder_rows`, `_run_word`, the page
 script's Folder loader; `frame_view.py` answers `view=dir`. Shared viewers reach only their grant: the share doors
 check `path=` (s52).
 

@@ -2,6 +2,7 @@
 
 goal: the design theme's three pages on the focus page, each in its three sections: Block, Job and Task × Report, Work and Studio
 close: all nine sNN are agreed and each names the code change for its owner (design_views.py, design_reader.py, workbench-design skill)
+emoji: 📐
 answers: Q02
 
 ## Topic

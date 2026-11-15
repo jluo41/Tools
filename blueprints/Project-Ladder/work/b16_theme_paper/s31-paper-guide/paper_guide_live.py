@@ -3,7 +3,7 @@
 Read at build time from the paper workbench's own files, so the drawing shows what the Guide renders:
 servers/workbench-paper/guide/guide.yaml (levels:, roadmap:), guide/method.md (its **Block · …** · **Job · …** ·
 **Task · …** step tables and its method-card tables), related/papers.md (its level column); and the
-six Spaces' third rows and run types from the live frame (servers/workbench/frame.py with the paper theme),
+six Spaces' third rows and run types from the live frame (servers/workbench/page/frame.py with the paper theme),
 over a placeholder paper Board in a temp folder, never a real paper.
 """
 import re

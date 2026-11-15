@@ -147,8 +147,8 @@ frames:
     tree:
     - ✅ soft_run.py new <scope> --type draw --target s05
     - ✅ soft_run.py pass <scope>/runs/run-draw-s05
-    - "🖥️ servers/workbench/frame.py: runs_of"
-    - "🖥️ servers/workbench/runs_panel.py: run_types, panel_html, panel_markup"
+    - "🖥️ servers/workbench/page/frame.py: runs_of"
+    - "🖥️ servers/workbench/page/runs_panel.py: run_types, panel_html, panel_markup"
     - "❓ wet Runs: add a protocol ticket and a person-signed receipt? (s06-D02)"
   arrows:
   - {from: button, to: run, label: starts}
@@ -192,8 +192,8 @@ skills/1_base/project/
 ├── haipipe-related/    s04 Related
 ├── haipipe-report/     s05 Report
 └── haipipe-run/        s06 Run        ◀ this topic
-servers/workbench/frame.py         runs_of
-servers/workbench/runs_panel.py    run_types · panel_html · panel_markup
+servers/workbench/page/frame.py         runs_of
+servers/workbench/page/runs_panel.py    run_types · panel_html · panel_markup
 ```
 
 
@@ -211,7 +211,7 @@ What the drawing holds
 ```
 
 Frames ① and ② are the face's `frames:` yaml above, drawn by `topic_map.draw_topic`; the builder fills the words in ‹ › from disk on every build: this Block's Runs (`runs/*/run.yaml`, each ticket's `close:` line), its
-Runs Space through `servers/workbench/frame.py`, and haipipe-run's version.
+Runs Space through `servers/workbench/page/frame.py`, and haipipe-run's version.
 
 
 Finding (read 261011)

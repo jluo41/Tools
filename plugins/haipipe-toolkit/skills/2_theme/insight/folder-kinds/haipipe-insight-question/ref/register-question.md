@@ -1,7 +1,7 @@
 # The question register · the older layout (until carried over)
 
 > **Older layout (261008).** This was `haipipe-insight-question`'s SKILL.md body (1.10.0), kept word for word for
-> register boards (MT01-MT04) and Insight Blocks until each is carried into a Prototype release. On the ladder a
+> register boards (MT01-MT04) and Insight Blocks until each is carried into a Question Book release. On the ladder a
 > question lives in a release; the SKILL.md says how.
 
 
@@ -42,8 +42,8 @@ marks. The successor starts with its own open cells and answerability test;
 no completion or person signature transfers. Record both links in owner logs.
 
 The register is one DIKW-axis slice of the board. Its intersection with each
-eligible partition column is a derived Question Group: MT02 column `<partition>` is
-`QG-<partition>-I`, and MT04 column `full` is `QG-full-W`. A Question Group is never a fifth
+eligible segment column is a derived Question Group: MT02 column `<segment>` is
+`QG-<segment>-I`, and MT04 column `full` is `QG-full-W`. A Question Group is never a fifth
 register or a Folder. One row may contribute cells to several groups while
 retaining one id and one origin.
 
@@ -88,7 +88,7 @@ workbench prints it beside "Question N") with these fields, one paragraph each:
 **Why now**: <why the board needs it>
 **What would answer it**: <the evidence that would settle it, in words>
 - E1 · compute · <what a run must produce> · pass: <what a result must show>
-    cut: <partition> | the cell's partition | cross
+    cut: <segment> | the cell's partition | cross
     unit: <what one row is>
     measure: <the quantity>
     by: <the grouping or the contrast>
@@ -115,8 +115,8 @@ unplanned: legal on a board made before this contract, and reported by
 The Queue row keeps the question SHORT and plain (the workbench's question
 line); the long form belongs in **The ask**.
 The Queue shows the current Folder ids and canonical marks (`⬜`, `🟡`, `✅`,
-`🚫`) per partition where applicable. Its partition columns plus this Folder's
-`question-level:` derive the `QG-<partition>-<level>` handles; no group state is
+`🚫`) per segment where applicable. Its segment columns plus this Folder's
+`question-level:` derive the `QG-<segment>-<level>` handles; no group state is
 written. It asks and tracks; it never contains a D/I/K/W conclusion.
 
 ## Task Face
@@ -164,7 +164,7 @@ question is an ask in that skill's sense; its topic, when it has one, is a board
 
 - **Q4 level is the level**: Data observes, Information derives with no cause word,
   Knowledge claims with rivals, Wisdom counsels.
-- **Q5 answerable is the extract**: a field exists, a partition is not degenerate on it,
+- **Q5 answerable is the extract**: a field exists, a segment is not degenerate on it,
   or the refusal is itself computed.
 - **A retired question** keeps `retired:` on its needs and names its successor id; a
   carried question (`ref/carry_over.py`) keeps its words until a signed change replaces them.
@@ -176,17 +176,17 @@ question is an ask in that skill's sense; its topic, when it has one, is a board
 GI1 passes for one question when the question review has a verdict for it
 (`keep`, or a signed change applied) and its id prefix agrees with `question-level:`,
 origin and answerability test are complete, its evidence needs are written
-with kinds legal at its level, and every eligible partition has an explicit
+with kinds legal at its level, and every eligible segment has an explicit
 Queue cell. Those cells derive their Question Group memberships;
 no separate group acceptance exists. A bridge QW additionally requires its exact
 instance/item/version/RF packet and local W Folder. GI6 closes the registered chain only
 when its target level is terminal, `haipipe-insight-check` finds no overclaim on
 the cell (every need bound, fit, cited and current), and every partial final
 has a reason on its target Folder; for a bridge, that terminal is the signed local Wisdom Folder, never
-the external RF. Under a current `UNDETERMINED` partition verdict, a non-template
+the external RF. Under a current `UNDETERMINED` segment verdict, a non-template
 W cell may settle `🟡 <page> final` only when the answering W Page records the
 exact unresolved blocker and what could resolve it, and quotes the licensing
-sentence in `ref/partition-policy.md`. The W Page receipt and this register's
+sentence in `ref/segment-policy.md`. The W Page receipt and this register's
 GI6 receipt both quote that sentence; the partial exit creates no GI5 pass,
 signature, or Design input. If the evidence remains obtainable within the
 frozen Workflow, keep the cell open instead. An empty register is valid and
@@ -202,7 +202,7 @@ permission.
 ## Files
 
 - Runtime: `0-MT-meta/MT01-question-data/` through `MT04-question-wisdom/`
-- A settled cell names its answering page: `✅ <page id>` (`✅ <L><NN>-<partition>`), `🟡 <page id>
+- A settled cell names its answering page: `✅ <page id>` (`✅ <L><NN>-<segment>`), `🟡 <page id>
   final`, or `🚫 <reason>`. The page's state line names the question back
   (`answers QI2`); one page may answer several questions, and the cell is the join.
 - A ✅ cell that `haipipe-insight-check` reports GAP, STALE or UNBOUND is an

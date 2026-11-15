@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-"""review_items.py · a paper version's comments reports and their Review Items (haipipe-paper-comments, b16 Q05).
+"""review_items.py · a paper's review Jobs and their Review Items (haipipe-paper-comments, b16 Q05).
 
-    python review_items.py <board> add <batch folder> --to <version>    a review batch into the version's reports/
+    python review_items.py <board> add <batch folder> --to <version>    a review batch into a review Job on the Board
     python review_items.py <board> route <report> <item> --to "<stem> ¶N · C2" [--work <run> | --decline]
     python review_items.py <board> reply <report> <item> --reply P3 [--state answered|applied|declined|deferred]
     python review_items.py <board> rollback                            undo the newest add, route or reply
     (add --dry-run to add, route or reply: print what it would do; change nothing)
 
-add: a review batch is a report of type comments (JL 261007), in the version that answers it:
-    <version>/reports/qNN_<kind>-<MMDD>/, its face page-type: comments, a row in that version's ## Questions
-    (group: comments). Its folder keeps feedback/, meeting/ and sent/ unchanged. Every source text that names it
-    or links to it follows. (Was version_paper.py comments.)
+add: a review batch is a review Job on the Board (JL 261110; a report in <version>/reports/ before):
+    jNN_review_<kind>_v<MMDD>/t01_<kind>_comments/, its Job face `for: <version>`, the version's face
+    `responds-to: <the Job>`. Its folder keeps feedback/, meeting/ and sent/ unchanged. Every source text that
+    names it or links to it follows. (Was version_paper.py comments.)
 
 Every rewritten file's old text is kept in <board>/.paper-version-N/<path>.orig with its record
 .paper-version-N.yaml, the records haipipe-paper/scripts/paper_ladder.py keeps, so rollback restores it exactly.
@@ -38,7 +38,13 @@ _spec.loader.exec_module(L)
 T, M, read, header = L.T, L.M, L.read, L.header
 
 
+KIND_WORD = {"review": "reviewers"}             # a Job's kind word: j31_review_reviewers_v0110, not review_review
+
+
 def add(run, batch, to):
+    """A review batch becomes a review Job on the Board (JL 261110: "we will no longer use the reports/, please use the
+    job or studio"): jNN_review_<kind>_v<MMDD>/, its face `for: <the version>`, the batch Page its first Task
+    t01_<kind>_comments/; the version's face says `responds-to: <the Job>`."""
     b = run.board
     src = b / batch
     if not src.is_dir() or not (src / (src.name + ".md")).is_file():
@@ -46,11 +52,15 @@ def add(run, batch, to):
     if not (b / to).is_dir() and f"{to}/{to}.md" not in run.create:
         sys.exit(f"stop: {to} is not a version folder")
     old = src.name
-    rest = re.sub(r"^(t\d{2}_|RD\d+[-_]|CM\d+[-_])", "", old)
-    have = [int(p.name[1:3]) for p in (b / to / "reports").glob("q[0-9][0-9]_*")] + \
-           [int(Path(r).parts[2][1:3]) for r in run.create if r.startswith(f"{to}/reports/q")]
-    stem = f"q{(max(have) if have else 0) + 1:02d}_{rest}"
-    target = f"{to}/reports/{stem}"
+    rest = re.sub(r"^(t\d{2}_|q\d{2}_|RD\d+[-_]|CM\d+[-_])", "", old)
+    m = re.match(r"(?i)(.+?)[-_](\d{4})$", rest)
+    kind, mmdd = (m.group(1), m.group(2)) if m else (rest, "")
+    kind = re.sub(r"[^a-z0-9]+", "_", KIND_WORD.get(kind.lower(), kind.lower())).strip("_") or "comments"
+    have = [int(p.name[1:3]) for p in b.glob("j3[0-9]_*") if p.is_dir()] + \
+           [int(r[1:3]) for r in run.create if re.match(r"j3\d_", r)]
+    job = f"j{(max(have) if have else 30) + 1:02d}_review_{kind}" + (f"_v{mmdd}" if mmdd else "")
+    stem = f"t01_{kind}_comments"
+    target = f"{job}/{stem}"
     run.moves += [(batch, target), (f"{target}/{old}.md", f"{target}/{stem}.md")]
     run.moves += [(f"{target}/draft/{f.name}", f"{target}/draft/{f.name.replace(old, stem, 1)}")
                   for f in sorted((src / "draft").glob(f"{old}-*")) if f.is_file()]
@@ -58,29 +68,18 @@ def add(run, batch, to):
     face = read(src / (old + ".md"))           # its face: the type, its name
     face = re.sub(r"(?m)\A# +%s\b" % re.escape(old), "# " + stem, face, count=1)
     face = header(header(face, "page-type", "comments"), "folder-kind", "comments")
+    face = header(face, "use-case", "Reviewer response")
     title = re.sub(r"^#\s+\S+\s*·?\s*", "", face.splitlines()[0]).strip() or rest
-    first = re.search(r"(?ms)^## Opening\s*\n+(.*?)(?:\n\n|\Z)", face)          # its Opening's first paragraph
-    opening = first.group(1).strip() if first else title
-    vface = f"{to}/{to}.md"                    # a row in the version's ## Questions (group: comments)
-    vt = run.text(vface)
-    reg = re.search(r"(?ms)^## Questions.*?```ya?ml\n(.*?)```", vt)
-    ids = [int(x) for x in re.findall(r"(?m)^- id: Q(\d+)", reg.group(1))] if reg else []
-    qid = f"Q{(max(ids) if ids else 0) + 1:02d}"
-    # a report names the Question it answers, and its walk starts open (haipipe-report)
-    face = header(face, "answers", qid)
-    if not re.search(r"(?m)^answer-status:", face):
-        face = header(face, "answer-status", "open")
     run.rewrite[f"{target}/{stem}.md"] = T.fix_links(face.replace(old, stem), f"{batch}/{old}.md",
                                                     f"{target}/{stem}.md", b, mapping)
-    row = (f"- id: {qid}\n  title: {T.yaml_s(title)}\n  question: {T.yaml_s(opening)}\n  group: comments\n"
-           f"  report: reports/{stem}/{stem}.md\n")
-    if reg:
-        body = reg.group(1).replace("questions: []", "questions:\n")
-        vt = vt[:reg.start(1)] + body.rstrip("\n") + "\n" + row + vt[reg.end(1):]
-    else:
-        vt = vt.rstrip("\n") + f"\n\n## Questions\n\n```yaml\nquestions:\n{row}```\n"
-    # the version responds to it; `answers:` on a Job face is for the Block's Question ids (haipipe-report)
-    run.set(vface, header(vt, "responds-to", f"reports/{stem}/{stem}.md"))
+    run.create[f"{job}/{job}.md"] = (
+        f"# {job} · {title}\nuse-case: Feedback revision\nlayer: review\nfor: {to}\nfolder-kind: job\n"
+        f"state: open · no reply yet\ngoal: every point in this batch answered once, in {to}\n"
+        f"close: each Review Item is routed to its Section in {to} and answered in its response letter\n\n"
+        f"## Tasks\n\n1. [{stem}]({stem}/{stem}.md) · {title}: what came back, its Review Items, and where each "
+        f"is answered\n")
+    vface = f"{to}/{to}.md"                    # the version responds to the Job
+    run.set(vface, header(run.text(vface), "responds-to", job))
     for f in sorted(b.rglob("*")):             # every other source text that names it or links to it
         rel = f.relative_to(b).as_posix()
         if (not f.is_file() or f.suffix not in L.TEXT or rel.startswith(".") or rel.startswith(batch + "/")
@@ -92,8 +91,7 @@ def add(run, batch, to):
             nt = re.sub(r"(?m)^%s\.md\n" % re.escape(stem), "", nt)
         if nt != t:
             run.set(rel, nt)
-    return stem
-
+    return job
 
 ITEMS = re.compile(r"(?ms)^## Review Items\s*\n(?:.*?\n)??(\|[^\n]*\|\n\|[-| :]+\|\n(?:\|[^\n]*\|\n?)*)")
 STATES = ("open", "routed", "applied", "answered", "declined", "deferred")

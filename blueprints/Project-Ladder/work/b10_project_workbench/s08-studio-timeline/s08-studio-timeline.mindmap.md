@@ -41,7 +41,7 @@ built: from-topic .
   - only its topics stay as columns and … <!-- @what-it-shows/7 #1f616c -->
     only its topics stay as columns and lines; a day left empty hides and the bars are recounted. By group shows every group again. The level picked is kept in this browser.
   - It writes nothing <!-- @what-it-shows/8 #3472e1 -->
-    It writes nothing. It reads what a topic already keeps: each decision `sNN-DNN · … (JL 261011)` by the first date in it, each session `runs/run-draw-<sNN>/passes/pNN-<MMDD>/` (the year from its notes), and the green change notes `✎ <YYMMDD> …` in the topic's drawings. Decisions with no date are left off. Code: `servers/workbench/frame.py` `timeline_events`, `studio_timeline` and the page script's `timeline()`.
+    It writes nothing. It reads what a topic already keeps: each decision `sNN-DNN · … (JL 261011)` by the first date in it, each session `runs/run-draw-<sNN>/passes/pNN-<MMDD>/` (the year from its notes), and the green change notes `✎ <YYMMDD> …` in the topic's drawings. Decisions with no date are left off. Code: `servers/workbench/page/frame.py` `timeline_events`, `studio_timeline` and the page script's `timeline()`.
 - Files <!-- @files #6ce6c5 -->
   - [py] [build_s08_studio_timeline.py](build_s08_studio_timeline.py) <!-- @files/0 #f8b32d -->
   - delivery/ <!-- @files/1 #404761 -->

@@ -74,7 +74,7 @@ questions:
   acceptance: Answered when every level names its folder, its six Spaces' content and the today View
     it replaces, drawn in studio/.
   work: []
-  report: reports/q01_discovery_ladder/q01_discovery_ladder.md
+  report: s01-discovery-ladder/s01-discovery-ladder.md
 - id: Q02
   title: Where do papers, citations and the Bib show?
   question: Where do the papers read, a citation still waiting on a person, and the derived Evidence
@@ -84,7 +84,7 @@ questions:
   acceptance: Answered when each of today's Work, Check and Delivery Views has a place in the six
     Spaces.
   work: []
-  report: reports/q02_papers_citations_bib/q02_papers_citations_bib.md
+  report: s01-discovery-ladder/s01-discovery-ladder.md
 - id: Q03
   title: How is a synthesis handed on?
   question: How does a Task's synthesis reach the paper Section or work Task that reads it, and where
@@ -93,7 +93,7 @@ questions:
     lists who reads it; no copy crosses.'
   acceptance: Answered when the handoff path is written for a paper reader and a task reader.
   work: []
-  report: reports/q03_synthesis_handoff/q03_synthesis_handoff.md
+  report: s01-discovery-ladder/s01-discovery-ladder.md
 ```
 
 ## Related resources

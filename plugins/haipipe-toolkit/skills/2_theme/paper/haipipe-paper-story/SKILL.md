@@ -2,7 +2,7 @@
 name: haipipe-paper-story
 description: "Draft, review, revise or draw one paper's Story: its Seed, research questions (hypotheses, claims, the work that tests them), Discovery and Task Roadmaps, related papers and Section Narrative; on the ladder a studio topic (sNN-story-<desk>-<idea>/) with Board Questions. Use to plan a telling or check that it holds for an editor, a reviewer and the public. Trigger: story, research question, hypothesis, claim, RoadMap Draw, /haipipe-paper-story."
 metadata:
-  version: "0.28.0"
+  version: "0.33.0"
   last_updated: "2026-11-08"
   group-token: "sNN-story-<desk>-<idea-slug>"
   outline:
@@ -24,12 +24,12 @@ For workflow, Section, or compiler integration, also read
 
 ## Shared narrative across Views
 
-Section Narrative is authored once on the selected Story topic. The focused
-workbench renders it as Story by Section in both Story and Displays: the same
-section, in Displays the last one, after the displays and their examples (JL
-261109). The Displays entry connects the argument to its figures; it does not
-own another narrative.
-Version-specific compile order remains on the writing Job and with assembly.
+Section Narrative (§ 8) is authored once on the selected Story topic: the title, story, explanation and claims every
+version shares, with no per-Section rows. The focused workbench renders it as Story by Section in both Story and
+Displays: the same section, in Displays the last one, after the displays and their examples (JL 261109). The
+Displays entry connects the argument to its figures; it does not own another narrative.
+Each version's layout (one row per Section, claims to displays, compile order) remains on the writing Job's
+`## Narrative` and with assembly.
 
 Related appears in both Idea and Story, reading the same Board records. Closest-
 work positioning remains with haipipe-paper-related and reference storage with
@@ -48,12 +48,12 @@ the folders that show them, and this skill writes each one there:
 
 | Story part | lives in | shows in |
 |---|---|---|
-| §1 Identity · §2 Pitch · §4 Stakes | the telling's studio topic face, `sNN-story-<desk>-<idea>/sNN-story-<desk>-<idea>.md` beside the Jobs | Block › Description › Scope · Audience Report › Narrative |
+| §1 Identity · §2 Pitch · §4 Stakes | the telling's studio topic face, `sNN-story-<desk>-<idea>/sNN-story-<desk>-<idea>.md` beside the Jobs | focused Report › Story: Identity and Pitch; §4 Stakes stays in the file (no Story section since 261111: the RQ table's Why we ask column says why each question matters) |
 | the telling's drawings | the same topic, one `build_*.py` per drawing | Block › Idea Studio |
-| §3, one research question each | `board.md ## Questions` (`group:` the telling) + `reports/qNN_<question>/` | Block › Audience Report › High-level logic + Low-level work |
-| §5 · §6 · §7 | the topic face, and each report's Work as the work lands | the Question's Work column |
-| version narrative + compile order | each version face's `## Narrative`; before a version, `s04-paper-workflow/`'s Sections table (haipipe-paper-plan) | the version's Draft-Main · the build |
-| Section Narrative for the current telling | the selected Story topic face (`story-current:`) | focused Report › Story and Displays, the same Story by Section |
+| §3, one research question each | `board.md ## Questions` (`group:` the telling) + `reports/qNN_<question>/` | focused Report › Story: one table, a row per question (Question · Why we ask · Asked before · New here · Expected, the report link at its end) |
+| §5 · §6 · §7 | the topic face, and each report's Work as the work lands | §5 stays in the file (no Story section since 261111); §6 · §7 in focused Work › Data + Paper Plan, Roadmaps |
+| version layout: one row per Section, claims to displays, compile order | each version face's `## Narrative` (points at § 8, copies no claim); before a version, `s04-paper-workflow/`'s Sections table (haipipe-paper-plan) | the version Job's Report › Structure · the build |
+| § 8 Section Narrative: title, story, explanation, claims C1..Cn | the selected Story topic face (`story-current:`) | focused Report › Story and Displays, the same Story by Section; the version's Structure view beside its Narrative |
 | related papers | `related/related.md` | focused Report › Idea and Story; classic Studio › Related |
 
 The topic face keeps the studio marks every topic has (haipipe-studio `ref/topic-contract.md`: `**Tags:**`,
@@ -141,7 +141,7 @@ separate planning pages:
 Seed                  defines the paper and its starting evidence boundary
 Discovery Roadmap     plans knowledge the paper must obtain from outside itself
 Task Roadmap          plans evidence the paper must generate through the study
-Section Narrative     plans the claims and reader journey of the finished paper
+Section Narrative     plans the title, story and claims every version of the paper shares
 ```
 
 The first five divisions are the Seed. They should remain comparatively stable
@@ -227,6 +227,18 @@ question is answered as expected, item n saying what question n lets the paper s
 number). The face also keeps a `**G0:**` line (JL's mark, ✅ or ⬜) and a `**Desk:**` line
 under its studio marks, and §5 ends with a `**We will not claim**:` list; excalidraw-story reads all of these labels
 as written.
+
+§3 may then carry **why each question is asked, and how others asked it** (0.30.0, Paper-CMS-AI-Usage 261111): a
+table whose header names `why we ask it`, `how others asked it` and `what is new here`, one row per question, its
+first cell starting with the question's number (`1 · how many physicians`). The workbench shows the questions as one
+table, these three columns between the question and what it lets the paper say (no State column); keep each cell to a few words
+and name the prior work (Wu et al., NEJM AI 2024).
+
+```markdown
+| RQ | why we ask it | how others asked it | what is new here |
+|---|---|---|---|
+| 1 · <short name> | <who needs the answer, and why> | <prior work: how it asked it> | <what this paper adds> |
+```
 
 Write each research question as one long, plain sentence a patient or a reader could ask out loud, not a short
 label (JL 261019: "你不能太简短，你要说得像人话 ... 一个 research question，肯定是相对比较长，然后比较 straightforward、比较易懂的"):
@@ -532,20 +544,39 @@ where | state | starts |`, where `state` is done, ticket next or not started, an
 (haipipe-paper-plan) draws how the data flows through them to each question, without copying them.
 
 After §7 the telling's face keeps **§9 · Venues**, its venue list from the target down to the fallbacks: one row per
-venue (`| V | venue | kind | why it fits | leads with | still needs | desk record |`). A venue changes which questions
+venue (`| V | venue | kind | editor's test | why it fits | leads with | still needs | desk record |`; the `editor's test`
+cell is the short decision of that venue's editor's test, shown as the first row of its venue card, JL 261111; the
+detail, a fresh-context desk screen with its decision, biggest risk, verdicts and changes, is a Board Question report
+`reports/qNN_editor_test_<venue slug without hyphens>/`, which the card opens; the report keeps a
+`**To raise the odds**` numbered list, each item's first sentence one plain change, which the card shows as "To pass
+the desk"). A venue changes which questions
 lead, not the questions; each venue's rules stay in its haipipe-paper-venue desk record (JL 261019: "我们要不要把这个 venue 直接塞到这个 story 里面去？ ... 也要想想它适合什么样的 journal，然后搞出来一个 journal list or conference list"). §8, the Section
 Narrative, lives on the selected Story topic. Each writing version's `## Narrative`
-records that send's concrete Section rows and compile order, linked to its Story
-through `tells:`; it is not a second authoring location for the shared argument.
+records that send's layout (one row per Section, claims to displays, compile order), linked to its Story
+through `tells:`; it is not a second authoring location for the title, story or claims.
 
 ### 8 · Section Narrative
 
-Show how the finished paper will turn the Seed, discoveries, and produced
-evidence into one reader-ordered argument. It opens with the whole paper's
-story arc, under its own heading, before any table (JL 261109: "at the top
-of the tab, to describe the narrative of this paper, what is the story arc
-of it"); the workbench shows it as the first tab of Story by Section, above
-the Sections:
+§ 8 holds what every version of the paper shares, and nothing that changes with the venue (JL 261111: two layers,
+one source each): the title, the story, its explanation, and the claims C1..Cn with their numbers. It holds **no
+per-Section rows**. Each version Job face's `## Narrative` lays that venue's paper out: claims to displays, the
+display Runs, one row per Section, the compile order. The version face points at this § 8 and never copies a claim.
+
+```text
+Story § 8 (every version)            version face ## Narrative (one venue)
+title · story arc · explanation  ─▶  points at § 8, copies nothing
+claims C1..Cn and their numbers  ─▶  claim → display → display Run
+                                     one row per Section · compile order
+```
+
+Write § 8 in four parts, in this order.
+
+**Title.** The title every version prints, one line (`**Title:** <words>`), settled from §1's working title. A
+version may shorten it for its venue on its face; the words here are the source.
+
+**Story arc.** The whole paper's story, under its own heading, before any table (JL 261109: "at the top of the tab,
+to describe the narrative of this paper, what is the story arc of it"); the workbench shows it as the first tab of
+Story by Section:
 
 ```markdown
 #### Story arc
@@ -558,84 +589,65 @@ the Sections:
 6. **So what**: what changes for the reader.
 ```
 
-One move per line, in reader order, each naming its claims; a telling may
-rename or add moves, never drop the order. Without it the workbench falls
-back to the ```text block that opens §8, else asks for the arc.
+One move per line, in reader order, each naming its claims; a telling may rename or add moves, never drop the order.
+Without it the workbench falls back to the ```text block that opens § 8, else asks for the arc.
 
-Each Section's tab then tells that Section's part of the arc before its
-claims (JL 261109: "not just the claims ... the narratives, the arc, how to
-make it smooth"): what the reader asks, comes in with, the moves in order,
-leaves with, how it hands on, what it must not say, its displays. The
-workbench reads the per-Section table whose first header is `Section`
-(columns `reader question`, `entry`, `ordered moves`, `must refuse`,
-`displays`, `exit`), here in §8, else in the newest writing version's
-`## Narrative`, and completes each row from the Section face
-(`reader-question`, `entry-state`, `exit-state`, `transition-in`,
-`transition-out`). Each tab's small line is its `exit`, so the left column
-reads as the arc. Then cover:
+**Explanation.** Plain prose under the arc: who the paper is for and the question that reader brings; the argument's
+dependency order (puzzle, gap, mechanism, evidence, boundary, contribution, implication); what the reader believes,
+asks and may conclude at each turn; how the paper changes when a planned evidence item does not land; and a
+whole-paper reading: why the sequence is necessary, how the primary answer accumulates, where the strongest boundary
+enters, and what the reader should carry away. When §3 Research Questions holds the hypotheses, name their roles and
+point to §3 instead of restating each statement.
 
-- **Target reader and venue promise** — when a target is selected, who the
-  paper addresses, the question that reader brings, and the contribution the
-  telling promises without changing the Seed's identity.
-- **Claim system** — each exact proposition, its role, E-row parent, evidence
-  state, boundary, and intended landing place. When §3 Research Questions
-  holds the hypotheses (one block per question), this §8 Section Narrative
-  names their roles and points to §3 instead of restating each statement.
-- **Argument arc** — the dependency order among puzzle, gap, mechanism,
-  evidence, boundary, contribution, and implication.
-- **Reader journey** — what the reader believes, asks, sees, and may conclude
-  at each turn.
-- **Per-section narrative** — one detailed row for every manuscript and
-  appendix Section in reader order.
-- **Evidence and display allocation** — where each discovery, study result,
-  citation, table, figure, and appendix object does narrative work.
-- **Transitions, cut rules, and open risks** — what each Section receives from
-  the previous one, what the next may assume, and how the paper changes when a
-  planned evidence item does not land.
-- **Compile order** — the final main-text and appendix order as a projection of
-  the Section rows.
+**Claims.** One table, one row per claim, its id stable across versions:
 
-Each Section row must cover:
-
-```text
-Section | reader question | reader entry state | ordered moves | must establish | must refuse | Discovery/Task evidence | display | reader exit state | transition / cut rule
+```markdown
+| claim | proposition | answers | numbers | evidence | boundary | lands in |
+|---|---|---|---|---|---|---|
+| C1 | <the exact proposition> | <RQ> | <the value ids or numbers it states> | <E-rows> | <its limit> | <Results, Discussion> |
 ```
 
-Keep the paper-wide claim system, argument arc, and reader journey explicit
-before the detailed Section map; they cannot be inferred merely from section
-titles. A claim has a stable id, precise proposition, E-row support, rhetorical
-role, and limit. Planned claims remain conditional where support is missing.
-One claim may appear in several Sections for different reader purposes.
+`numbers` names the values the claim states (value ids of the value Job, haipipe-paper-evidence), so every version
+quotes the same numbers. `lands in` names the kind of Section that carries the claim; the version's rows fix the
+exact Section, its display and the display's Run. Planned claims stay conditional where support is missing. One
+claim may appear in several Sections for different reader purposes.
 
-**Before a version exists**, the Section rows are planned on `s04-paper-workflow/` (haipipe-paper-plan): one
-row per Section with the questions it answers, its job, displays, evidence and words, then the displays with the Run
-that makes each and the dated steps to the send. The first version's `## Narrative` is seeded from that table.
+**Story by Section** (focused Report › Story and Displays) reads this § 8 as the shared narrative: its first tab is
+the Story arc, and each claim shows under the Section its `lands in` names. Each Section's tab tells that Section's
+part of the arc from the newest writing version's `## Narrative` row (JL 261109: "not just the claims ... the
+narratives, the arc, how to make it smooth"; JL 261111: "I want the left tab right content"): what the reader asks,
+comes in with, the moves as a numbered list (1, 2, 3, one per line; JL 261111: "the 1, 2, 3, 4 for the narrative
+follow"), leaves with, how it hands on, what it must not say, its displays. The workbench reads the per-Section table
+whose first header is `Section` (columns `reader question`, `entry`, `ordered moves`, `must refuse`, `displays`,
+`exit`) and completes each row from the Section face (`reader-question`, `entry-state`, `exit-state`,
+`transition-in`, `transition-out`). Each tab's small line is its `exit`, so the left column reads as the arc. A move
+list may use `→` or `;`. An older Story whose § 8 still holds that table is read first; move it to the version face
+when that version is next touched.
 
-**On the ladder, the shared argument stays on the Story topic.** Its §8 owns the
-claim system, reader journey and Section Narrative. Each writing version's
-`## Narrative` binds that argument to concrete Section rows and compile order;
-only the compiler projection goes between `<!-- haipipe:compile-order:start -->`
-and `end`. Existing Section `story-row:` anchors keep their version-row bindings.
-A revision copies its version Narrative from the version it follows
-(`paper_ladder.py next`) and updates its concrete rows and order there. Changes
-to the shared argument belong on the Story topic and must be reconciled with
-affected version rows; neither UI entry creates a second argument source.
+**Before a version exists**, the Section rows are planned on `s04-paper-workflow/` (haipipe-paper-plan): one row per
+Section with the questions it answers, its job, displays, evidence and words, then the displays with the Run that
+makes each and the dated steps to the send. The first version's `## Narrative` is seeded from that table, never from
+§ 8.
 
-The selected target/category and its binding Venue contract belong here.
-An unselected target stays open; no target selection is inferred from a sample
-outline. Later rebindings record the user's decision. Scope, data and prior
-evidence survive retargeting unless a substantive change is explicitly made.
+**On the ladder, each layer has one source.** § 8 owns the title, story, explanation and claims. Each writing
+version's `## Narrative` owns that venue's layout: which claim goes to which display and Section, the display Runs,
+one row per Section, and the compile order between `<!-- haipipe:compile-order:start -->` and `end`. Existing
+Section `story-row:` anchors keep their version-row bindings. A revision copies its version Narrative from the
+version it follows (`paper_ladder.py next`) and updates its rows and order there. A change to a claim belongs here
+and is then reconciled with the affected version rows; neither layer copies the other. The person signs the
+version's Narrative (`page.py sign-narrative`, haipipe-draft § The Plan gate), which keeps this § 8 as text; when
+§ 8 changes after that sign, each Section's health shows `narrative`. The whole-paper structure is a view on the
+version Job page (Report › Structure, workbench-paper), never a Task.
 
-A planned Section can have a stable Story row before its Page exists; distinguish
-its proposed identity from a real file path. An execution release is a separate
-workflow decision, never implied by including the Section in the blueprint.
-Preserve exact existing Section ids when repairing an established paper.
+The selected target/category and its binding Venue contract belong to the version. An unselected target stays open;
+no target selection is inferred from a sample outline. Later rebindings record the user's decision. Scope, data and
+prior evidence survive retargeting unless a substantive change is explicitly made.
 
-The row should be rich enough that a fresh Section writer can understand its
-job without inventing the paper's logic. It should not contain final prose.
-The Section Narrative ends with a whole-paper reading: why the sequence is
-necessary, how the primary answer accumulates, where the strongest boundary
-enters, and what the reader should carry away from the conclusion.
+A planned Section can have a row on the version before its Page exists; distinguish its proposed identity from a real
+file path. An execution release is a separate workflow decision, never implied by including the Section in the
+layout. Preserve exact existing Section ids when repairing an established paper. A version row should be rich enough
+that a fresh Section writer can understand its job without inventing the paper's logic; neither layer holds final
+prose.
 
 ## 🧵 Evidence is the through-line
 
@@ -645,7 +657,7 @@ Evidence is not a separate ninth division and not synonymous with execution:
 §5  states the evidence the paper starts with and the limits it already knows
 §6  identifies outside knowledge needed to interpret and position the paper
 §7  identifies study evidence needed to answer the paper's questions
-§8  assigns both kinds of evidence to claims, displays, and reader turns
+§8  assigns both kinds of evidence to claims (each version places them in displays and Sections)
 ```
 
 Every central claim should therefore be readable as one continuous line:
@@ -713,7 +725,7 @@ content, not whether the future study has finished.
 | A5 Evidence Basis and Boundaries | Sources, support, gaps, and non-claims are distinguishable. |
 | A6 Discovery Roadmap | Needed knowledge, source coverage, synthesis, and story consequences are concrete. |
 | A7 Task Roadmap | Study design, contrasts, outputs, dependencies, and outcome branches are concrete. |
-| A8 Section Narrative | Claims, reader journey, Section moves, evidence allocation, and ending fit together. |
+| A8 Section Narrative | Title, story arc, explanation and claims fit together; no per-Section rows sit in § 8. |
 
 An Aim may be satisfied by clearly describing an unresolved research need;
 that does not answer the RQ or establish its E-row. CHECK remains the shared
@@ -734,8 +746,9 @@ CHECK the built Story as a prospective paper, not as a record of finished work:
   result form, interpretation branches, and paper destination?
 - Can every central claim be traced from RQ and E-row through Discovery/Task
   evidence into exactly the Sections that use it?
-- Does §8 explain the paper's claim order, reader journey, section jobs,
-  evidence/display allocation, transitions, cut rules, and ending?
+- Does §8 explain the paper's title, story arc, claim order, reader journey,
+  and ending, with each claim's numbers? Section jobs, display allocation,
+  transitions and cut rules are checked on the version's `## Narrative`.
 - Are anticipated results visibly distinguished from established findings?
 - Could the Story remain intellectually coherent under a null or adverse
   result, or does it state exactly which claim and Section would change?

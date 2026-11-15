@@ -35,7 +35,7 @@ task31_file_edits:
   review:                                      # optional, sentence mode: a writing review's proposals (haipipe-writing),
     label: <one line above the first note>     #   each a red note at its sentence, a red L from it, after the changes'
     items:                                     #   notes; open until a person picks (b21 s04, JL 261014)
-    - {id: W1, at: C2.P3.S1, title: <short>, change: <the proposed words>, why: <one line>, ask: "Ask JL: <question>"}
+    - {id: W1, at: C2.P3.s1, title: <short>, change: <the proposed words>, why: <one line>, ask: "Ask JL: <question>"}
   edits:
   - id: 2                                      # a plain number, shown by the highlight and the note
     part: "1"                                  # "title", a heading number, "R" References, "F" Overview Figure,
@@ -78,7 +78,7 @@ draft/
 ## 1 · Structure · Bullet Point Table      per sentence: its Point, and `Change: 4 · <title>` when a planned
 - B4 · [Evidence] Trials show ...           change touches it (no Change line: the file author's own sentence)
 ## 2 · Scratch · What to write here
-## 3 · Draft · Reading and Revise          the sentences: `- B<k> · S<n> · <sentence>`, one per Bullet
+## 3 · Draft · Reading and Revise          the sentences: `- B<k> · s<n> · <sentence>`, one per Bullet
 ```
 
 A division `## C<n> · <name>` is matched to the file's section by name ("Challenge and Significance" is

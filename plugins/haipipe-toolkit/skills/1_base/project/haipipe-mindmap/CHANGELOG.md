@@ -33,7 +33,7 @@ haipipe-mindmap · Changelog
 
 - A map can fold (`draw(..., fold=True)`, `mapview.FOLD`): its cards start closed, a click opens what hangs under one, a
   count marks a closed card, Open all and Close all sit above it, and what was opened is kept in the browser. Only a
-  Block's map on the workbench uses it (JL 261104, on b01_clm_foundation_model: "the collapse and open it"); a draft's
+  Block's map on the workbench uses it (JL 261104, on b01_c_q25_clm_fm: "the collapse and open it"); a draft's
   §1 and Studio topics draw as before, except that a hidden point no longer gets a curve.
 
 ## [0.9.3] — 2026-10-31

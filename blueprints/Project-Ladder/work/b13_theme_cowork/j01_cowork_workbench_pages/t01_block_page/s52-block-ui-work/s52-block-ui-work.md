@@ -15,7 +15,7 @@ s52 · Block UI: Work
 
 **Topic:** One cell of the cowork 3 × 3, the cowork Block (one topic coordinated with people) × Work (do), copied from the paper (b16 j01), work (b17 j03), labeling (b15 j01) and insight (b11 j01) themes' (asked 261108: the cowork Block's UI drawings, drawn from the live cowork pages). Its drawing is haipipe-studio's five parts, drawn by `build_s52_block_ui_work.py` through j01's `cowork_ui_cells.py`; its Design is every view as the same full screen, lettered, settled one round each. The example is the theme's own public example, `cowork/b01_example_data_request` (every role, date and number made up), as the live page served it on 261108.
 
-**Feeds:** `reports/` q01_cowork_ladder
+**Feeds:** Q01
 
 
 Files

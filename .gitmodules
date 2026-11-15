@@ -245,3 +245,7 @@
 [submodule "references/ian-handdrawn-ppt"]
 	path = references/ian-handdrawn-ppt
 	url = https://github.com/helloianneo/ian-handdrawn-ppt.git
+[submodule "references/edithere"]
+	path = references/edithere
+	url = https://github.com/Inginnng/EditHere.git
+	update = none

@@ -20,13 +20,13 @@ and `page.py health <page>` afterwards.
 
     write_answer_page.py <page folder> <spec.yaml> [--version v0.1]
 
-A question Task of an insight Board Job (ref/insight-ladder.md: `<Board>/jNN_code-vN-…_data-vM/tNN_<L><NN>_<slug>/`)
+A question Task of an insight Board Job (ref/insight-ladder.md: `<Board>/jNN_question-vN-…_data-vM/tNN_<L><NN>_<slug>/`)
 is written in its own shape instead (`build_task_page`): its face `tNN_….md` with `question:`, its `goal:` kept,
-`answer-status:`, `answer:`, `how-sure:`, `check:` (reset, since the page changed), `takeaways:` (one line per cut) and, for an
-Executive question, `figures:`; then `# <QID> · <name>`, `**The ask**`, the opening, and one `## <Cut>` section per hard
+`answer-status:`, `answer:`, `how-sure:`, `check:` (reset, since the page changed), `takeaways:` (one line per segment) and, for an
+Executive question, `figures:`; then `# <QID> · <name>`, `**The ask**`, the opening, and one `## <Segment>` section per hard
 Run of the Task, in rNN order, each its takeaway and its bullets; a question with no Run (it cites the answers below
 it) has titled sections instead. A bullet names its evidence and the tool writes the citation: `file:` a table its
-cut's Run wrote (`(r01_full · rates_by_arm.csv)`, refused when the Run is not ok or the file is missing), `cite:` a
+segment's Run wrote (`(r01_full · rates_by_arm.csv)`, refused when the Run is not ok or the file is missing), `cite:` a
 question of the same Job (`(K01 · t05)`, refused when the Job has no such Task). The spec, for a Board Task:
 
     answer-status: answered | partial | written | drafted
@@ -36,17 +36,17 @@ question of the same Job (`(K01 · t05)`, refused when the Job has no such Task)
     figures: [...]                                # an Executive page only: overall_figures.py's specs, as written
     divisions:
       - partition: full                           # one per hard Run, in rNN order, every Run named once
-        takeaway: <one line: what this cut adds up to; a refused or planned Run says so>
+        takeaway: <one line: what this segment adds up to; a refused or planned Run says so>
         bullets: [{draft: <sentence>, file: rates_by_arm.csv}, ...]
-      - title: What it rests on                   # titled sections after the cuts (or alone, with no Run)
+      - title: What it rests on                   # titled sections after the segments (or alone, with no Run)
         bullets: [{draft: <sentence>, cite: K01}, ...]
 
 An Insight Block question page (ref/block-contract.md: the question's task folder,
-one run per dataset x partition) needs no answers:, state: or ticket: keys: its
+one run per dataset x segment) needs no answers:, state: or ticket: keys: its
 header carries question: and partitions: (its runs) and no state: line (status is
 computed). It has one division per run the question is asked on, datasets in
-board.md order and partitions in meta/partitions.md order, each naming its run as
-`partition:` (`<dataset>_<partition>`). Each item and figure names its `partition:`,
+board.md order and segments in meta/partitions.md order, each naming its run as
+`partition:` (`<dataset>_<segment>`). Each item and figure names its `partition:`,
 and reads results/<run>/<file> unless it names
 another `artifact:`.
 
@@ -130,7 +130,7 @@ TASK_STATES = ("drafted", "partial", "written", "answered")
 
 
 def _board_task(page):
-    """A question Task of an insight Board Job: its Job's name reads jNN_code-vN-…_data-vM, its Board's
+    """A question Task of an insight Board Job: its Job's name reads jNN_question-vN-…_data-vM, its Board's
     board.md says board-kind: insight-board (ref/insight-ladder.md)."""
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     from open_job import JOB
@@ -182,7 +182,7 @@ def build_task_page(page: Path, spec: dict) -> None:
             out += [f"## {part[:1].upper()}{part[1:]}", "", div["takeaway"].strip(), ""]
         else:
             if not div.get("title"):
-                raise SystemExit(f"division {k}: a partition or a title")
+                raise SystemExit(f"division {k}: a segment or a title")
             out += [f"## {div['title']}", ""]
         out += [*(div.get("paragraphs") or [])] + ([""] if div.get("paragraphs") else [])
         for b, bullet in enumerate(div.get("bullets") or [], 1):
@@ -190,7 +190,7 @@ def build_task_page(page: Path, spec: dict) -> None:
             where = ""
             if bullet.get("file"):
                 if not part:
-                    raise SystemExit(f"division {k} bullet {b}: a file is cited under its cut's division")
+                    raise SystemExit(f"division {k} bullet {b}: a file is cited under its segment's division")
                 if str(card.get("status")) != "ok":
                     raise SystemExit(f"{run.name} is {card.get('status') or 'planned'}: its takeaway says so; it has no table to cite")
                 if not (run / "result" / bullet["file"]).is_file():
@@ -212,7 +212,7 @@ def build_task_page(page: Path, spec: dict) -> None:
     fields["results-read"] = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     md.write_text("---\n" + yaml.safe_dump(fields, sort_keys=False, allow_unicode=True, width=10_000) + "---\n\n"
                   + "\n".join(out).rstrip() + "\n", encoding="utf-8")
-    print(f"{page.name}: {spec['answer-status']} · {len(spec['divisions'])} sections · {len(takeaways)} cuts")
+    print(f"{page.name}: {spec['answer-status']} · {len(spec['divisions'])} sections · {len(takeaways)} segments")
 
 
 def _bound_tickets(page):
@@ -237,7 +237,7 @@ def _instance_page(page):
 
 
 def _partition_runs(page):
-    """The page's runs (<dataset>_<partition>), datasets in board.md order, partitions in meta order."""
+    """The page's runs (<dataset>_<segment>), datasets in board.md order, segments in meta order."""
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     from run_question import META, block_meta, front
     runs = {t.stem for t in (page / "runs").glob("*.sh") if not t.stem.startswith("run-")}

@@ -30,7 +30,7 @@ Files
 -----
 
 - `s04-workbench-page-structure.mindmap.md`: the written structure map.
-- `s04-workbench-page-structure.excalidraw`: the generated discussion drawing; since 2026-10-28 also two proposal frames: one Block page drawn as a screen (path, introduction, section, one row per Job, one row opened to its figure), and the site as the project memory (show content, show progress, do operations); and the plan to update the layout in six steps, from `servers/workbench/focus_page.py` (`layout=focus`): Phase A read only (intro, Goal & status rows, output in place, the same rows at Job and Task), Phase B operations that write back, Phase C the default switch. Placeholders only.
+- `s04-workbench-page-structure.excalidraw`: the generated discussion drawing; since 2026-10-28 also two proposal frames: one Block page drawn as a screen (path, introduction, section, one row per Job, one row opened to its figure), and the site as the project memory (show content, show progress, do operations); and the plan to update the layout in six steps, from `servers/workbench/page/focus_page.py` (`layout=focus`): Phase A read only (intro, Goal & status rows, output in place, the same rows at Job and Task), Phase B operations that write back, Phase C the default switch. Placeholders only.
 - `s04-workbench-page-structure.png`: the generated preview.
 - `build_s04_workbench_page_structure.py`: draws the five parts (haipipe-studio `five_parts.py`): Idea, Now, Process and Delivery read from disk; Design holds one sketch per delivery piece (A Block page, B Job and Task rows, C element looks, D the merge), each made by a j03 Task; the first drawing kept whole below, its screenshot carried over (261031).
 - `result/first-drawing-builder/build_s04_workbench_page_structure.py`: the first drawing's builder, kept whole; it no longer runs from there.
@@ -51,7 +51,7 @@ as s04, the work workbench's pages; both are kept whole in `result/merged-s03-wo
 `result/merged-s32-work-element-ui/`, and their numbers are retired (JL 261031, agreed the b17 plan).
 
 s04-D03 · One ui delivery, made by j03: the work Block, Job and Task pages, made by j03_work_workbench_pages (Phase A
-first); the code lands in `servers/workbench/focus_page.py` through its owner, design_b02_workbench; the topic sits
+first); the code lands in `servers/workbench/page/focus_page.py` through its owner, design_b02_workbench; the topic sits
 beside its Job, out of `studio/` (JL 261031, agreed the b17 plan).
 
 s04-D04 · The work pages are a 3 × 3, as the paper's (b16 j01): Block, Job and Task × Report, Work and Studio, one

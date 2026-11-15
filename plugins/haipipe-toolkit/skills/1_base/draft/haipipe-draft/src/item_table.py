@@ -643,7 +643,7 @@ def bullets(plan_text: str):
             continue
         if re.match(r"^## Aims\b", line):
             break
-        m = re.match(r"^- (?:\[[ xX]\] )?[BS](\d+)\s*·\s*(.*)$", line)
+        m = re.match(r"^- (?:\[[ xX]\] )?[BSs](\d+)\s*·\s*(.*)$", line)
         if not m:
             i += 1
             continue
@@ -693,7 +693,7 @@ def evidence_none_targets(plan_text: str) -> dict[str, str]:
         if match:
             c, p, b = int(match.group(1)), int(match.group(2)), 0
             continue
-        match = re.match(r"^- (?:\[[ xX]\] )?[BS](\d+)\s*·", line)
+        match = re.match(r"^- (?:\[[ xX]\] )?[BSs](\d+)\s*·", line)
         if match:
             b = int(match.group(1))
             continue

@@ -182,6 +182,40 @@ def _rq_lists(body: str):
     return qs, dict(items_after("The narrative"))
 
 
+def rq_key(cell: str) -> str:
+    """A research question's address key from its first cell (workbench/ref/cards.md §2): "1 · how many …" and "RQ1"
+    are RQ1, "H2" is H2, "H2 check" is H2-check; a name, never a position."""
+    num = re.match(r"\s*(?:RQ\s*)?(\d+)\b", cell, re.I)
+    return f"RQ{num[1]}" if num else re.sub(r"[^A-Za-z0-9_-]+", "-", _plain(cell)).strip("-")
+
+
+KEYED = re.compile(r"^\s*(?:RQ\s*\d+|H\d+[a-z]?(?:\s+\w+)?|\d+(?:\s*·.*)?)\s*$", re.I)
+
+
+def _rq_table(body: str):
+    """(heads, [(key, label, cells)]) for §3 drawn as one table whose rows start with a keyed first cell (H1, "H2 check",
+    RQ1, "1 · …"), as AgreeableRx's Story writes it; ([], []) when there is none. Its first column is the key; a state
+    column is left out (JL 261111: no State column)."""
+    lines = body.splitlines()
+    for i, line in enumerate(lines):
+        if not line.lstrip().startswith("|") or i + 1 >= len(lines) or not re.match(r"\s*\|[\s:|-]+\|?\s*$", lines[i + 1]):
+            continue
+        head = [c.strip() for c in line.strip().strip("|").split("|")]
+        if not any("question" in h.lower() for h in head[1:]):
+            continue
+        keep = [j for j in range(1, len(head)) if "state" not in head[j].lower()]
+        rows = []
+        for row in lines[i + 2:]:
+            if not row.lstrip().startswith("|"):
+                break
+            cells = [c.strip() for c in row.strip().strip("|").split("|")]
+            if cells and KEYED.match(_plain(cells[0])):
+                rows.append((rq_key(cells[0]), _plain(cells[0]), [cells[j] if j < len(cells) else "" for j in keep]))
+        if rows:
+            return [head[j] for j in keep], rows
+    return [], []
+
+
 def _page_url(f: Path, root: Path) -> str:
     return "/_board/page?path=" + quote("/" + ds._rel(f, root))
 
@@ -216,7 +250,24 @@ PROJ_REF = re.compile(r"\b(Project-[A-Za-z0-9_-]+)(?:/|\s+)(?:(work|discovery)/)
                       r"(?:[./](j\d{2})(?:_[A-Za-z0-9_-]+)?)?(?:[./](t\d{2}))?")
 
 
+_TREE: dict = {}
+TREE_TTL = 10.0                                  # seconds: one page render asks three times (views x2, the plan steps)
+
+
 def explore_tree(board: Path) -> dict:
+    """explore_tree, computed once per render: its scan of the Project takes seconds (Project-UI profile 261114: 3 calls,
+    8.7 s), so a second ask within TREE_TTL reuses the first answer."""
+    import time
+    key, now = str(board), time.monotonic()
+    hit = _TREE.get(key)
+    if hit and now - hit[0] < TREE_TTL:
+        return hit[1]
+    tree = _explore_tree(board)
+    _TREE[key] = (now, tree)
+    return tree
+
+
+def _explore_tree(board: Path) -> dict:
     """{kind: {Project: {Block: {Job: {Tasks}}}}}: only the folders this paper's pages name, in its own Project (by
     path `work/bNN_…/jNN_…` or address `bNN.jNN.tNN`) or in another (`Project-Example-B bNN_<block>`,
     `Project-X/work/b03_…/j01_…`); never its archive or built output (JL 261101: "we can have the works from

@@ -1,5 +1,6 @@
 s32 · The console's element UI
 ==============================
+view: findings
 
 **Stage:** explore
 
@@ -9,7 +10,15 @@ s32 · The console's element UI
 
 **Topic:** Every kind of element the console draws (25), shot on the synthetic fixtures with its computed style (`shots/facts.json`), beside the toolkit frame's element of the same kind where there is one (from b01 j03 s32's shots), so one look can be judged (261009, g01).
 
-**Feeds:** `reports/` q04_one_look
+**Feeds:** Q04
+
+
+Q04 · Answer
+------------
+
+**Question:** One look for the console and the workbench?
+
+**Answer (open):** not written yet.
 
 
 Files

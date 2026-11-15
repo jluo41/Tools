@@ -9,7 +9,7 @@ s12 · The Individual scope
 
 **Topic:** Every view with one synthetic human selected (SynthCGM_v0 · synth-cgm-001), shot on the fixtures, with what each reads on disk and the route that serves it (261009, g01).
 
-**Feeds:** `reports/` q01_console_vs_toolkit
+**Feeds:** Q01
 
 
 Files

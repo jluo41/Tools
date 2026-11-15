@@ -1,0 +1,28 @@
+# 👥 Sessions
+
+- **Main paper** · The paper's main session · 11-08 → 11-14
+  - Pp-AgreeableRx-Discrention-v1108
+  - Ran 11-08 12:39 → 11-14 03:48
+- **Workbench UI** · The session that writes the paper workbench code and skills (audit rules, Displays and Story views, Draft Lab, file splits, page-words rules) · 11-08 → 11-14
+  - WorkBench-Paper-UI
+  - Ran 11-08 23:57 → 11-14 04:01
+- **t00 Abstract** · Owns the Abstract Section Page · 11-13 → 11-14
+  - AgreeableRx-t00_abstract
+  - Ran 11-13 18:39 → 11-14 01:47
+- **t01 Introduction** · Owns the Introduction Section Page · 11-13 → 11-14
+  - AgreeableRx-t01_introduction
+  - Ran 11-13 18:39 → 11-14 01:31
+- **t02 Literature review** · Owns Section 2, Literature Review
+  - AgreeableRx-t02_literature-review
+- **t03 Theory** · Owns Section 3, Theory (hypotheses H1, H2 and Figure 1)
+  - AgreeableRx-t03_theory
+- **t04 Empirical strategy** · Owns Section 4, Empirical Strategy and Data
+  - AgreeableRx-t04_empirical-strategy
+- **t05 Results** · Owns Section 5, Results
+  - AgreeableRx-t05_results
+- **t06 Discussion** · Owns Section 6, Discussion
+  - AgreeableRx-t06_discussion
+- **t07 Conclusion** · Owns Section 7, Conclusion
+  - AgreeableRx-t07_conclusion
+- **Appendix** · Owns the whole Appendix (pages t21_prompts to t26_big-five, worked mainly on t21 to t25)
+  - AgreeableRx-Appendix

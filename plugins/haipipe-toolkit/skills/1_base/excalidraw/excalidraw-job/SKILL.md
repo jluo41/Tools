@@ -342,6 +342,7 @@ excalidraw-job/
 ├── CHANGELOG.md                its versions
 ├── agents/openai.yaml          Codex's card
 ├── scripts/job_drawing.py      the readers, make, draw, adopt, preview; the classic, plain and explained frames; draw_job
+├── scripts/job_tables.py       the table, bar and figure frames of a group topic (split out of job_drawing.py, 261113)
 │                               sends every Job to the staircase unless the face says layout: classic, plain or explained;
 │                               PALETTE and bar_colors, every chart's colours
 ├── scripts/job_ladder.py       the staircase, its In and Out with paths (io_card), its results blocks (charts, tables,

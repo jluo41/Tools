@@ -399,7 +399,7 @@ Step 7: Save/load roundtrip
 **Key display rules for Layer 1:**
 
 - Step 4b is the most important step -- this is where transform_fn is
-  DESIGNED, not just tested. Prototype it here, validate with actual data,
+  DESIGNED, not just tested. Question Book it here, validate with actual data,
   then move the final version into tuner_<name>.py as a standalone function
 - Use `print(dataset_object)` to show HF Dataset schema + row count
 - Use `print(dataset_object[0])` to show one concrete sample

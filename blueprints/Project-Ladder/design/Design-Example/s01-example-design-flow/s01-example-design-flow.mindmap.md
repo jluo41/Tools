@@ -27,7 +27,7 @@ built: from-topic .
   - It shows each state once: signed, running, … <!-- @topic/2 #4f703a -->
     It shows each state once: signed, running, waiting for a person, released, scored.
 - Feeds <!-- @feeds #ffe8e9 -->
-  - `reports/` q01_example_test <!-- @feeds/0 #d1a5a1 -->
+  - `s03-q01-example-test` <!-- @feeds/0 #d1a5a1 -->
 - Files <!-- @files #6ce6c5 -->
   - [py] [build_s01_example_design_flow.py](build_s01_example_design_flow.py) <!-- @files/0 #c242c4 -->
   - delivery/ <!-- @files/1 #404761 -->

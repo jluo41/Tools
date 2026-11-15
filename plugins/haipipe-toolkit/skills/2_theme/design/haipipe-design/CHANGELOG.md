@@ -141,6 +141,11 @@ Recovered from the SKILL.md frontmatter summary on 260827, when the family retir
 
 ## [0.4.2] — 2026-10-26
 
+261109, under this version (no new version without a person's approval): the Design Method Book beside the Board
+(`design/DesignMethodBook-<Channel>/`, one Job per method type, its signed versions inside), Jobs named
+`jNN_<goal>_M0x-<slug>-mK_inputs-vM`, inputs `inputs/inputs-vN/`, and `/haipipe-design update <Block>`
+(`design_ladder.py audit` · `update [--apply]`, `ref/update.md`) to bring an older Block onto them.
+
 Door for hidden helpers (brief, goal, delivery): they leave the skill listing (`disable-model-invocation: true`) and this door reads their SKILL.md by path. (door 261026)
 
 ## 0.4.1 · 2026-10-09 · Theme folders are singular

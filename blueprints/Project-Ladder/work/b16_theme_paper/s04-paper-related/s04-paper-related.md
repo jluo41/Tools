@@ -18,7 +18,7 @@ Scope · Venue · Resources. This topic settles where venues and
 related papers go on that shelf, and who writes them. Its decisions start at s04-D06: s04-D01..D05 are
 the retired Story decisions, kept by their old ids in s01's notes.
 
-**Feeds:** `reports/` q02_venues_related_built
+**Feeds:** Q02
 
 
 Files

@@ -1,3 +1,40 @@
+## 0.143.0 · 2026-11-13 · showing prose changes in a reply
+
+- JL 261113: "never return the things like this … Make it the same to the index in the UI, sentence by sentence,
+  and also show what changes you made compared to previous. You can report paragraph by paragraph."
+- New § Showing prose changes in a reply: paragraph by paragraph, one line per sentence with its workbench address
+  (`C<n>.P<m>`, `B<k> · S<n>`), a kept/changed/new/cut/moved mark, before and after for a changed sentence, against
+  a named version; the format and example live in response-format 0.27.0.
+
+## 0.142.0 · 2026-11-12 · ScalingGlucose writing patterns
+
+- JL 261112 ("could you summarize these patterns to the skills as well"): rows `expect` (an Introduction `[Expect]` with Evidence: none) and `title` (a `[Title]` Bullet still a placeholder) in `page.py health`, read by `src/paragraph_length.py`.
+
+## 0.141.0 · 2026-11-12 · health row `paragraph`
+
+- JL 261112: Closing checks name the `page.py health` row `paragraph` (4 to 7 sentences per paragraph, WARN while
+  writing, FAIL with `--final`, a `reason:` line accepts one, exempt kinds skipped) and its one reader
+  `src/paragraph_length.py`.
+
+## 0.140.0 · 2026-11-11 · the Section row lives on the version
+
+- The Plan gate matches the two layers (JL 261111): the Story's § 8 is the shared narrative (title, story, claims)
+  and holds no Section rows; the row a Section sign keeps is its version Job's `## Narrative` row (the Story's § 8
+  row only on an older Board). Sign order: `sign-narrative` on the version first, then each Section's `sign`.
+
+## 0.139.0 · 2026-11-11
+
+- The Plan gate (JL 261111, from the t01_introduction case): Write, Evidence, Display and Revise read the plan state first
+  and go back to 1 · Plan when it is unsigned; the sign is the person's word in chat, written by the new
+  `page.py sign --quote` (`src/page_sign.py`), which keeps the governing Narrative or Story row as text in
+  `draft/records/<stem>-sign.md` (no hash; a content compare).
+- `page.py sign-narrative <job> --quote`: a paper version's `## Narrative` is signed on its face (`narrative-approved:`,
+  `story-at-sign:`), the Story's § 8 kept in `<job>/records/narrative-sign.md`; health row `narrative`.
+- `page.py health`: `order` (§ 3 Draft on an unsigned plan), `row` (the governing row moved since the sign) and
+  `narrative` (the version's Narrative unsigned, or the Story's § 8 moved since its sign), each WARN,
+  FAIL at `--final`. Tests in `tests/test_folder_health.py`.
+- The release-barrier paragraph no longer calls `approved:` optional.
+
 ## 0.138.2 · 2026-11-04 · no transition set off by commas
 
 - JL 261104: "don't use things like ' , however ,', Try to make a sentence to be smooth". Rule `parenthetical-transition` in anti_slop.

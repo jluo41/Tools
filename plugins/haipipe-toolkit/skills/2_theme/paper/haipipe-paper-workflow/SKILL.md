@@ -8,7 +8,7 @@ description: >-
   whether work may be released, or what may be compiled next. Trigger: paper
   journey, paper-runs, workflow, Run routing, gate, /haipipe-paper-workflow.
 metadata:
-  version: "1.9.5"
+  version: "1.10.0"
   last_updated: "2026-11-01"
 ---
 
@@ -48,7 +48,7 @@ Select the relevant Specs rather than executing a fixed sequence:
 Ideation native work / bounded idea judgments → I3 + G0 → Story work
 Story claim/task/narrative judgments → G1 → native Supporting Runs
 native accepted Results → G2 → affected Story rows / Page Evidence Runs
-reviewed Section Narrative row → G3 → selected Page Structure/Writing/Evidence/Delivery Runs
+signed version Narrative + its Section row → G3 → selected Page Structure/Writing/Evidence/Delivery Runs
 current Section deliveries → manuscript compile Run → G4 readiness control
 feedback batch → response work + affected owner Runs → G5 closure
 ```
@@ -71,7 +71,7 @@ controller steps and compatibility labels do not add Run identities.
 | Ideation (`s01-ideation/` + Questions) | candidate projections, comparisons, venue-fit projection, projection of the final I3 handoff, and its reciprocal route to one Story | owning the I3 decision, minting another selection, evidence execution, binding desk rules, or manuscript prose |
 | Venue (`venues/<venue>/`) | one target/category's typed and versioned external-desk contract | choosing the target or ranking Ideas |
 | Story (a telling's studio topic, its Board Questions and reports) | seed, research questions, Discovery and Task Roadmaps, the selected telling | executing Runs, replacing work records, or storing manuscript Section prose |
-| version face (`## Narrative`, `## Questions`) | one send's Section Narrative and compile order, its standing questions | changing the telling's research meaning |
+| version face (`## Narrative`, `## Questions`) | one send's layout (claims to displays, display Runs, one row per Section, compile order), pointing at the Story's §8, and its standing questions | changing the telling's research meaning, or copying §8's claims |
 | Discovery block | external literature/source inquiry and its Results | changing the Story's claim state |
 | Task block | jobs, configurations, and execution Runs | silently releasing itself or rewriting Story rows |
 | Run receipt | what actually ran, its provenance, checks, and Result | deciding how the paper should be told |
@@ -142,20 +142,31 @@ G2  Evidence/Execution → Story
     Each returning block has an accepted owner-native Result, limitations and
     a full path/id. Record that return without requiring every other released
     block to finish. Update §5 support and §3 answers as justified, then the
-    affected §6/§7 needs and §8 narrative. Preserve null, contradictory and
+    affected §6/§7 needs and §8 claims, then the version rows that place them. Preserve null, contradictory and
     inconclusive outcomes. G2 is repeatable and does not grant a version promotion.
 
 G3  Narrative → Section
-    A person releases each Section row of the version face's `## Narrative` independently. The row names its
-    reader question, ordered moves, claim role, entry/exit state, required
-    evidence/displays, current target/category and Venue contract, transitions,
-    cut rules and open risks. A proposed §8 row may precede its Section file;
-    release binds the exact Section identity and human decision. No fixed
-    percentage or automatic v1 promotion is required.
+    First the person signs the version face's `## Narrative` (`page.py
+    sign-narrative <version> --quote "…"`: `narrative-approved:` and
+    `story-at-sign:` on the face, the Story's §8 kept as text in
+    `<version>/records/narrative-sign.md`). Then a person releases each Section
+    row independently, and the Section's plan is signed with `page.py sign
+    <task> --quote "…"` (the row kept as text in `draft/records/<stem>-sign.md`).
+    The row names its reader question, ordered moves, the claims it carries by
+    §8 id, entry/exit state, required evidence/displays, current
+    target/category and Venue contract, transitions, cut rules and open risks.
+    §8 holds no Section rows (JL 261111); a proposed version row may precede
+    its Section file; release binds the exact Section identity and human
+    decision. The whole-paper structure is the version Job's Report ›
+    Structure view, never a Task. No fixed percentage or automatic v1
+    promotion is required.
 
 G4  Section → Compile
     Every Section admitted to a ready build has an approved outline, accepted
-    evidence bindings, current delivery output, and Page CHECK closure. The
+    evidence bindings, current delivery output, and Page CHECK closure, and
+    `page.py health --final` shows no `order`, `row` or `narrative` FAIL: the
+    version's Narrative is signed, and neither §8 nor the Section's row has
+    changed since its sign. Records are text; no hash is written or compared. The
     assembler may run earlier, but the receipt must say DRAFT until the full
     intended set is closed; only a human may label the build ready. At the final
     G4 pass, apply the Paper submission-readiness reference: Section Pages own

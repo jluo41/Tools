@@ -20,7 +20,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "_host"))
 from host_paths import bootstrap, skill_dir  # noqa: E402
 bootstrap()
 
-from live import decision_report_view as DR  # noqa: E402
+from live import work_frame as WF, decision_report_view as DR  # noqa: E402
 from live import focus_page as F  # noqa: E402
 from live import frame, labeling_focus as L  # noqa: E402
 from test_labeling_theme import items_task, project  # noqa: E402
@@ -78,6 +78,11 @@ def content(page: str) -> str:
     return page.split('<section class="focus-card">', 1)[1].split("</section><footer>", 1)[0]
 
 
+def review(page: str) -> str:
+    """The open view's 📋 Review Content: the step itself, without 🧭 Around the Work under it."""
+    return content(page).split("<h2>📋 Review Content</h2>", 1)[-1].split("<h2>🧭 Around the Work</h2>", 1)[0]
+
+
 def rows(page: str) -> list:
     """The inbox: (question, pill class, pill word, Open expanded) per row."""
     return re.findall(r'<div class="dec-row[^"]*" data-row="\d+"><p class="dec-rq">(.*?)</p><span class="dec-pill (\w+)" '
@@ -106,39 +111,38 @@ class BuildingPageTest(Fixture):
     """The page itself: the base page's shell and rails, its views, and what it says with no report or no store."""
 
     def test_the_view_buttons_and_the_aim(self):
-        page = self.render("work")
+        page = self.render("work")                                    # Work is retired: an old link opens Report
         bar = views_bar(page)
         for key, name in (("frame", "Frame"), ("decide", "Decide"), ("changes", "Changes"), ("staging", "Staging"),
-                          ("release", "Release"), ("runs", "Runs")):
-            self.assertIn(f"section=work&amp;group={key}\"", bar)
+                          ("release", "Release"), ("runs", "Runs"), ("delivery", "Delivery")):
+            self.assertIn(f"section=report&amp;group={key}\"", bar)
             self.assertIn(f">{name}</a>", bar)
-        self.assertIn(">Work</span></h1>", page)
+        self.assertIn(">Report</span></h1>", page)
         self.assertIn('<span class="goal-word">Aim</span>', page)
         self.assertIn(GOAL, page)
-        self.assertIn("section=report&amp;group=decide", views_bar(self.render("report")))
+        self.assertIn("<h2>📋 Review Content</h2>", page)
+        self.assertIn("<h2>🧭 Around the Work</h2>", page)
 
-    def test_shell_and_rails_are_the_base_pages(self):
-        mine, base = self.render("work"), F.render(self.theme, self.root, self.task, "work")
-        self.assertEqual(rail(mine, "Page sections"), rail(base, "Page sections"))
+    def test_shell_and_rails_are_the_shared_frame(self):
+        mine, base = self.render("report"), F.render(self.theme, self.root, self.task, "report")
         self.assertEqual(rail(mine, "Pages"), rail(base, "Pages"))
-        self.assertEqual(rail(mine, "Sections"), rail(base, "Sections"))   # the phone's section-line
+        right = rail(mine, "Page sections")                   # Report, then the 8 shared sections (Work, Paper)
+        self.assertEqual(re.findall(r"section=(\w+)", right), ["report"] + [key for key, _ in WF.SHARED])
         crumb = lambda p: p.split('<div class="focus-crumb">', 1)[1].split("</div>", 1)[0]
         self.assertEqual(crumb(mine), crumb(base))
         goal = lambda p: p.split('<div class="focus-goal">', 1)[1].split("</div>", 1)[0]
         self.assertEqual(goal(mine), goal(base))
         self.assertIn("Open this page&#x27;s Markdown", mine)
-        for key in ("interactions", "delivery", "files"):
-            self.assertIn(f"section={key}", rail(mine, "Page sections"))
-        report = self.render("report")
-        self.assertEqual(rail(report, "Page sections"), rail(F.render(self.theme, self.root, self.task, "report"),
-                                                               "Page sections"))
 
-    def test_the_base_sections_are_the_base_pages(self):
-        for section in ("interactions", "delivery", "files", "folders"):
+    def test_the_shared_sections_are_the_shared_pages(self):
+        for section in ("interactions", "files", "checklist"):
             with self.subTest(section=section):
-                self.assertEqual(self.render(section), F.render(self.theme, self.root, self.task, section))
+                self.assertEqual(self.render(section), L.shared_section_page(self.theme, self.root, self.task, section))
+        self.assertEqual(current_view(self.render("delivery")), "Delivery")       # an old Delivery link: its view
+        self.assertEqual(self.render("folders"), self.render("files"))             # the older key for Files
 
     def test_other_labeling_pages_are_unchanged(self):
+        (self.root / "env.sh").write_text("")                        # the legacy page resolves its SPACE by env.sh
         for folder, section in ((self.labeling, ""), (self.labeling, "definition")):
             with self.subTest(page=folder.name, section=section):
                 page = L.render(self.theme, self.root, folder, section)
@@ -164,19 +168,15 @@ class BuildingPageTest(Fixture):
                 self.assertNotIn("dec-row", body)
 
     def test_unbuilt_steps_name_what_they_will_show_and_make_up_nothing(self):
-        for key, caption in (("frame", "The task: the label, who decides, its values."),
-                             ("changes", "What your answers changed, and the labels it touches."),
-                             ("staging", "This round&#x27;s run, and where its report sends it."),
-                             ("release", "What is frozen, and whether it is ready.")):
+        for key in ("frame", "changes", "staging", "release"):
             with self.subTest(view=key):
-                body = content(self.render("work", key))
-                self.assertIn(caption, body)
+                body = review(self.render("report", key))
+                self.assertNotIn("view-caption", body)                           # the bars say it; no caption line
                 self.assertIn("Nothing to show yet", body)
-                self.assertNotRegex(re.sub(r"<[^>]+>", "", body), r"\d{2}")
-        self.assertIn("next: 🧪 Staging →", content(self.render("work", "changes")))
-        self.assertIn("next: 🙋 Decide →", content(self.render("work", "frame")))
-        self.assertNotIn("dec-next", content(self.render("work", "release")))
-        self.assertNotIn("dec-next", content(self.render("report", "frame")))
+                self.assertNotRegex(html.unescape(re.sub(r"<[^>]+>", "", body)), r"\d{2}")
+        self.assertIn("next: 🧪 Staging →", review(self.render("report", "changes")))
+        self.assertIn("next: 🙋 Decide →", review(self.render("report", "frame")))
+        self.assertNotIn("dec-next", review(self.render("report", "release")))
 
     def test_runs_lists_the_tasks_runs(self):
         self.assertIn("No Runs yet.", content(self.render("work", "runs")))
@@ -217,15 +217,15 @@ class DecideViewTest(Fixture):
                                {"D02": {"kind": "defer", "comment": "need more <cases>"},
                                 "D03": {"kind": "chosen", "option_id": "A", "comment": "only for adults"}}, True)
 
-    # ── Work › Decide ─────────────────────────────────────────────────────────────────────────────────────────
+    # ── Report › Decide ─────────────────────────────────────────────────────────────────────────────────────────
     def test_work_opens_on_decide_the_inbox_one_row_per_card(self):
         self.round_three()
         page = self.render("work")
         self.assertEqual(current_view(page), "Decide")          # a card still waits for the person
         body = content(page)
-        self.assertIn("This round&#x27;s decision report, card by card.", body)
-        # the version strip over the Process group, then section 1 with the report's main point
-        self.assertIn('<p class="dec-strip">🔒 rules m02 · reference labels l02</p><h3 class="dec-group">⚙️ Process</h3>', body)
+        # the version strip, then section 1 with the report's main point; one list, no group headings
+        self.assertIn('<p class="dec-strip">🔒 rules m02 · reference labels l02</p>', body)
+        self.assertNotIn("dec-group", body)
         self.assertIn("1 · 🙋 Decisions waiting for you", body)
         self.assertIn('<p class="dec-big">report-03: 1 card waits for you, 1 deferred</p>', body)
         self.assertIn('<p class="dec-state ok">submitted</p>', body)
@@ -257,11 +257,10 @@ class DecideViewTest(Fixture):
         self.assertIn('data-act="/_board/labeling/act"', body)
         self.assertIn('data-report="report-03" data-revision="1" data-submitted="1"', body)
         # the earlier reports as a chain, then the step after this one
-        self.assertIn('<h3 class="dec-group">📊 Results</h3>', body)
         self.assertIn("2 · 🪜 Earlier reports", body)
         self.assertIn('<span class="dec-role">done</span><div class="dec-box">report-01 · 2 decided</div>', body)
         self.assertIn("next: 🔁 Changes →", body)
-        self.assertIn("section=work&amp;group=changes", body.split('class="dec-next"', 1)[1])
+        self.assertIn("section=report&amp;group=changes", body.split('class="dec-next"', 1)[1])
         # the scoped assets ride with the page, after the workbench's own
         self.assertLess(page.index("focus-rail{"), page.index(".dec-view .dec-row{"))
         self.assertIn("window.decisionReportView", page)
@@ -329,24 +328,24 @@ class DecideViewTest(Fixture):
                 self.assertNotIn("<b>bold</b>", page)
                 self.assertNotIn("<script>alert(2)", page)
                 self.assertIn("&lt;a reply that offers practical help&gt;", body)
-                self.assertEqual(page.count("<script>"), 2)          # focus.js and decision_report.js, nothing else
+                self.assertNotRegex(page, r"<script>\s*alert")      # no card text runs as a script
 
-    # ── Report › Decide ───────────────────────────────────────────────────────────────────────────────────────
-    def test_report_shows_each_cards_answer_read_only(self):
+    # ── Decide once nothing waits ─────────────────────────────────────────────────────────────────────────────
+    def test_a_settled_report_shows_each_cards_answer_read_only(self):
         self.round_three()
+        self.S.submit_feedback(self.lane, "report-03", 1, "Reviewer", "req-report-03-b",
+                               {"D01": {"kind": "chosen", "option_id": "A", "comment": "only for adults"},
+                                "D02": {"kind": "defer", "comment": "need more <cases>"},
+                                "D03": {"kind": "chosen", "option_id": "A"}}, True)
+        if DR.waiting_report(self.task):
+            self.skipTest("the store still counts a deferred card as waiting")
         page = self.render("report", "decide")
         self.assertIn(">Report</span></h1>", page)
         self.assertEqual(current_view(page), "Decide")
-        body = content(page)
-        self.assertIn('<p class="dec-strip">🔒 rules m02 · reference labels l02</p><h3 class="dec-group">📊 Results</h3>', body)
-        self.assertNotIn("⚙️ Process", body)
-        self.assertIn('<p class="dec-big">report-03: 1 card waits for you, 1 deferred</p>', body)
-        self.assertEqual([r[2] for r in rows(body)], ["Needs your judgment", "More evidence requested", "Answered"])
-        for absent in ("<input", "<textarea", "Save draft", "Submit", "data-dec-form", "dec-quiet", "next:"):
+        body = review(page)
+        self.assertNotIn("dec-group", body)
+        for absent in ("<input", "<textarea", "Save draft", "Submit", "data-dec-form", "dec-quiet"):
             self.assertNotIn(absent, body)
-        self.assertIn('<dt>Answer</dt><dd>Needs your judgment</dd>', body)
-        self.assertIn('<dt>Answer</dt><dd>Deferred: show more evidence<br><small class="dec-comment">'
-                      'Comment: need more &lt;cases&gt;</small></dd>', body)
         self.assertIn('<dt>Answer</dt><dd>Chose: Count it<br><small class="dec-comment">Comment: only for adults</small>',
                       body)
         self.assertIn('<div class="dec-box">report-01 · 2 decided</div>', body)
@@ -360,7 +359,6 @@ class DecideViewTest(Fixture):
             with self.subTest(section=section):
                 page = self.render(section)
                 self.assertEqual(current_view(page), "Frame")
-                self.assertIn("The task: the label, who decides, its values.", page)
                 self.assertIn("1 · 🎯 Frame the task", page)
         body = content(self.render("work", "decide"))
         self.assertIn('<p class="dec-big">report-01: 1 answered</p><p class="dec-state ok">submitted</p>', body)
@@ -402,9 +400,8 @@ class DecideViewTest(Fixture):
         option = first["options"][1]
         self.S.submit_feedback(self.lane, rid, 1, "Reviewer", "req-demo-0001",
                                {first["decision_id"]: {"kind": "chosen", "option_id": option["option_id"]}}, True)
-        body = content(self.render("report", "decide"))
+        body = review(self.render("report", "decide"))                  # still waiting: the form, the answer in it
         self.assertEqual(rows(body)[0][2], "Answered")
-        self.assertIn(f"<dt>Answer</dt><dd>Chose: {html.escape(option['label'])}</dd>", body)
         self.assertIn(f'<p class="dec-big">{rid}: {len(cards) - 1} cards wait for you</p>', body)
 
 

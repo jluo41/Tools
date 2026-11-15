@@ -14,7 +14,7 @@ through `work_ui_cells.py` and hands over its screen in its own `delivery/ui/`. 
 every work page shares, the same at all three levels (the frame: path, title-&-section, view-button-list, goal-line,
 both rails, the pop-out; and the right-rail's other sections: Interactions, Delivery, Related, Timeline, Files), made
 by t04_shared_parts (JL 261031: "the interface and the Block UI Job UI and Task UI, there are some overlap, right?").
-The code lands in the base workbench (`servers/workbench/focus_page.py`), owned by design_b02_workbench: these Tasks
+The code lands in the base workbench (`servers/workbench/page/focus_page.py`), owned by design_b02_workbench: these Tasks
 name that change for its owner and never edit it here.
 
 ```text

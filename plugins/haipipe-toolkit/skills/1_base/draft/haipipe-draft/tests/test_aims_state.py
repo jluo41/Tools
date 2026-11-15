@@ -77,7 +77,7 @@ class AimsStateTest(unittest.TestCase):
     def test_current_page_generators_keep_status_inside_aims(self):
         root = Path(__file__).resolve().parent.parent  # the engine dir
         servers = next(p for p in root.parents if p.name == "skills").parent / "servers"
-        for rel, path in (("servers/space-home/structure.py", servers / "space-home" / "structure.py"),
+        for rel, path in (("servers/workbench/home/structure.py", servers / "workbench" / "home" / "structure.py"),
                           ("cli/stage.py", root / "cli" / "stage.py"),
                           ("cli/skillpage.py", root / "cli" / "skillpage.py")):
             text = path.read_text(encoding="utf-8")

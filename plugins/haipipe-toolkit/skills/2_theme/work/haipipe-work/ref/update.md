@@ -14,7 +14,7 @@ not copy a demonstration Block, execute pending work, or certify completion.
    Inventory child pages before claiming the whole Block was checked. Read large
    result files only as necessary; do not enumerate private datasets into UI text.
 3. Resolve the theme through the existing workbench reader. A folder under `work/`
-   may be a specialized Prototype or claimed by another theme. Route specialized
+   may be a specialized Question Book or claimed by another theme. Route specialized
    Paper, Design, Insight or Labeling pages to their own skills. CoWork and Discovery
    share the frame but retain their own records and content; do not reclassify them.
 4. Identify **Work Block** or **Blueprint Block** from its purpose and existing
@@ -41,8 +41,8 @@ The shared UI determines the layout; the Block's records determine what it says.
 | View | Inspect and align | Do not invent |
 |---|---|---|
 | Overview | Goal from the level's face; Requirements and close conditions; MindMap from existing topics, Questions and work | Goals or requirements inferred only from folder names |
-| Status | Existing Jobs/Tasks/Runs and recorded states; topic tabs with related B–J–T–R on the right; authored Dependencies | New Job types, synthetic Runs, or a generic Next Steps list replacing View BJTR |
-| Findings | Actual outputs, values, answers, maps, and theme-specific records with their sources | Findings copied from a template or completion inferred from a file's existence |
+| Plan + Results | One section per Job type (face `bands:`, else the Job's `use-case:`, else its Tasks' task-type); each Job row its state and a bar of its Tasks done, opened to its Tasks and Runs; authored Dependencies | New Job types, synthetic Runs, or a generic Next Steps list in place of the Job rows |
+| Findings | A Block first shows 🗄️ Data, its stores from board.md's `data:` block (`haipipe-block` board contract; counts read from a Result, never typed). Then, at every level and nothing else (JL 261111): 🔢 Values, the value Jobs' newest tables.json and the values.json numbers the text can quote (`haipipe-evidence`, VALUE catalog); 🖼️ Displays, the display Tasks' preview.pdf (`haipipe-display`, display unit). Each keeps its slot when empty. Last, 🧠 Maps, only when the work drew maps (result/maps/). Studio topics and ❓ questions are not Findings (CoWork and Discovery keep their questions) | Findings copied from a template or completion inferred from a file's existence |
 | Delivery | Actual artifacts, recorded acceptance and usage | Acceptance, release, or delivery merely because a build exists |
 | Blueprint UI views | Configured real example pages, type/view matrix, walkthroughs, review evidence | Block UI / Job UI / Task UI / Run UI on an ordinary Work Block, or an unsupported level's example |
 | Title line | The type and use case under each title come from the records: a face's `use-case:`, a work Task's `task-type:`, a Run's `type:` | A `use-case:` guessed from a folder name, or one copied from the Block to its Jobs |
@@ -71,7 +71,7 @@ Do not add every heading to every file simply to fill a screen.
   STARTED or OPEN while its Runs hold non-empty `result/` folders becomes
   `🟡 RESULTS IN, UNREAD · <n> of <m> Runs returned`. Never write DONE: a person
   closes a Task. Skip faces another session has not committed.
-- A Job face without `emoji:` may get one that names what the Job does (the Status
+- A Job face without `emoji:` may get one that names what the Job does (the Plan + Results
   row shows it); keep any emoji already chosen.
 - Blueprint example entries must point to existing pages of the correct level.
   Public Tools blueprints use repository-local demonstration pages. Cross-SPACE
@@ -101,7 +101,7 @@ Do not attach all Block records to every view to avoid an empty section.
 The current reader resolves explicit `view:` first, then a valid topic association
 (`for:` on page faces, `target`/`for` on Run cards). Studio topic tags can match a
 view when no explicit view is authored. Canonical keys are `overview`, `standing`
-(Status), `findings`, `delivery`, `ui-block`, `ui-job`, `ui-task`, `ui-run`. Status also lists
+(Plan + Results), `findings`, `delivery`, `ui-block`, `ui-job`, `ui-task`, `ui-run`. Plan + Results also lists
 every Interaction still waiting on the person unless the form names another view (261109). Use these only
 when the record's content supports the association. Preserve an explicit existing
 association; genuinely cross-view records remain available on the rail rather
@@ -120,7 +120,7 @@ to paste as completed):
 
 | Check | State | Evidence | Skill rule |
 |---|---|---|---|
-| Selecting a Status topic shows only its linked Tasks and Runs | Not checked | Link to the actual topic and subsequent browser check | workbench-work: view scope |
+| Selecting a Plan + Results topic shows only its linked Tasks and Runs | Not checked | Link to the actual topic and subsequent browser check | workbench-work: view scope |
 | Every displayed delivery opens its recorded artifact | Not checked | Link to the actual delivery record and checked artifact | haipipe-delivery: source ownership |
 
 Mark Done only after checking the criterion. Preserve unrelated completed items;

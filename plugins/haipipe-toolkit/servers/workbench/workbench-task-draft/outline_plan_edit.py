@@ -150,8 +150,8 @@ def _edit_plan_bullet(page_src, action, paragraph, bullet, head,
         if hit is None:
             return None, "%s was not found under %s" % (wanted, paragraph)
         m = _bullet_line(lines[hit])
-        slot = re.match(r"(S\d+\s*·\s*)", m.group("body"))
-        if slot and not re.match(r"^S\d+\s*·\s*", raw_head):
+        slot = re.match(r"([Ss]\d+\s*·\s*)", m.group("body"))
+        if slot and not re.match(r"^[Ss]\d+\s*·\s*", raw_head):
             raw_head = slot.group(1) + raw_head
         lines[hit] = m.group("prefix") + raw_head
         changed = True
@@ -182,14 +182,14 @@ def _edit_plan_bullet(page_src, action, paragraph, bullet, head,
             if not m:
                 continue
             numbers.append(int(m.group("number")))
-            sm = re.search(r"\bS(\d+)\s*·", m.group("body"))
+            sm = re.search(r"\b[Ss](\d+)\s*·", m.group("body"))
             if sm:
                 sentence_numbers.append(int(sm.group(1)))
             last = i
         number = max(numbers or [0]) + 1
         sentence = max(sentence_numbers or [0]) + 1
-        raw_head = re.sub(r"^S\d+\s*·\s*", "", raw_head)
-        new_line = "- B%d · S%d · %s" % (number, sentence, raw_head)
+        raw_head = re.sub(r"^[Ss]\d+\s*·\s*", "", raw_head)
+        new_line = "- B%d · s%d · %s" % (number, sentence, raw_head)
         if last is None:
             insert_at = start + 1
         else:

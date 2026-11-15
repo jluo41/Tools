@@ -1,6 +1,6 @@
 # t03 · Task page
 state: 🔴 OPEN
-goal: an insight Task's page (one question): its ask, evidence plan, one Run per cut, answer, check, and the same question in other Jobs
+goal: an insight Task's page (one question): its ask, evidence plan, one Run per segment, answer, check, and the same question in other Jobs
 close: its three sNN (s57 · s58 · s59) are agreed and the code change is named for its owner
 task-type: ui
 answers: Q01

@@ -59,7 +59,7 @@ with that page's link. A round always names its mNN; a newer signed mNN starts a
    Write `errors.json` (kind → count), `performance.json`, and `round_report.md`, whose first line is its route:
    `<n> wrong label, <n> rule gaps → meaning, Loop <N+1>`, or `wording only → e<N+1>`.
 4. **Stop at the round report.** Nothing asks the person; 🧭 meaning's next Report reads it as a source. Reply: the
-   expression Task's Work › Evaluate link.
+   expression Task's Report › Evaluate link.
 
 ## Release: "step Release"
 

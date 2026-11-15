@@ -36,7 +36,7 @@ questions:
   acceptance: Answered when the manifest and README list every member and the API,
     and a member's release updates them.
   work: []
-  report: reports/q01_package_description/q01_package_description.md
+  report: s01-norm-map/s01-norm-map.md
 - id: Q02
   title: How is a new member added?
   question: 'When a fifth noun joins (a lab value, a symptom), what does it need:
@@ -47,5 +47,4 @@ questions:
   acceptance: Answered when the checklist is tested by adding a member (or a dry run
     of one) and every step lands where the contract says.
   work: []
-  report: reports/q02_adding_a_member/q02_adding_a_member.md
 ```

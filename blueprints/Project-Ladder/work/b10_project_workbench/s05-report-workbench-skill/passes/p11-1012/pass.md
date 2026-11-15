@@ -14,7 +14,7 @@ Built in the workbench: a Report group is gray when fixed by the theme, amber wh
 - `s05-report-workbench-skill/s05-report-workbench-skill.md`
 - `s05-report-workbench-skill/s05-report-workbench-skill.excalidraw`
 - `s05-report-workbench-skill/s05-report-workbench-skill.png`
-- `Tools/plugins/haipipe-toolkit/servers/workbench/frame.py`
+- `Tools/plugins/haipipe-toolkit/servers/workbench/page/frame.py`
 - `Tools/plugins/haipipe-toolkit/servers/workbench-work/work_theme.py`
 - `Tools/plugins/haipipe-toolkit/servers/workbench-cowork/cowork_theme.py`
 - `Tools/plugins/haipipe-toolkit/servers/_host/tests/test_frame.py`

@@ -198,7 +198,7 @@ receive their applicable registry from the Page server and use the compact
 Page-owned pane. `order` fixes the reader-facing sequence independently of
 asset load order. A host omits a Workbench whose real presenter or writer is not
 available; a disabled imitation is not applicability.
-Server-side builders live as one `live/` module per concern and one `/_board/<workbench>` route (`servers/workbench/autodeck.py` and `/_board/autodeck` are the slide's pair).
+Server-side builders live as one `live/` module per concern and one `/_board/<workbench>` route (`servers/workbench/studio/autodeck.py` and `/_board/autodeck` are the slide's pair).
 
 ## 🚧 Boundary
 

@@ -24,6 +24,8 @@ from __future__ import annotations
 
 import re
 
+from .sentence_id import sid
+
 SECTION = re.compile(r"^## (\d+) · (Structure|Scratch|Draft)\b")
 SECTIONED = re.compile(r"(?m)^## \d+ · Structure\b")
 PARAGRAPH = re.compile(r"^### (C\d+\.P\d+)\b")
@@ -31,7 +33,7 @@ DIVISION_HEAD = re.compile(r"^## (C\d+)\b\s*(?:·\s*(.*))?$")
 DIVISION_LINE = re.compile(r"^- (C\d+) · (.+)$")
 BULLET = re.compile(
     r"^(?P<prefix>- (?:\[[ xX]\]\s*)?(?:B|S)(?P<number>\d+)\s*·\s*)"
-    r"(?P<tag>S\d+[a-z]*(?:\s*(?:-|–|to)\s*S\d+[a-z]*)?\s*·\s*)?(?P<text>.*)$"
+    r"(?P<tag>[Ss]\d+[a-z]*(?:\s*(?:-|–|to)\s*[Ss]\d+[a-z]*)?\s*·\s*)?(?P<text>.*)$"
 )
 
 
@@ -296,7 +298,7 @@ def overview_entries(divisions, paragraphs) -> list[str]:
                 continue
             parts = heading[4:].split(" · ")
             out.append("- %s · %s" % (address, parts[1]) if len(parts) > 1 else "- " + address)
-            span = next((x for x in parts[2:] if x.startswith("S")), "")
+            span = next((x for x in parts[2:] if x.startswith(("S", "s"))), "")
             if span:
                 out.append("  → " + span)
     return out
@@ -548,7 +550,7 @@ def set_overview(text: str, entries: list[str]) -> str:
 # so a sentence added, cut, moved or a paragraph renamed in one is made in the other in the same edit. This is the
 # mechanical half of that rule; folder_health.check_structure reports what it finds, page.py health shows it.
 
-SPAN = re.compile(r"S(\d+)[a-z]?\s*(?:-|–|to)\s*S(\d+)")
+SPAN = re.compile(r"[Ss](\d+)[a-z]?\s*(?:-|–|to)\s*[Ss](\d+)")
 
 
 def _section_map(body: list[str]) -> list[tuple[str, str, list[str]]]:
@@ -560,7 +562,7 @@ def _section_map(body: list[str]) -> list[tuple[str, str, list[str]]]:
         for dash, _cont in _bullets(lines):
             m = BULLET.match(dash)
             tag = (m.group("tag") or "").strip(" ·")
-            tags.append(tag or f"B{m.group('number')}")
+            tags.append(sid(tag) or f"B{m.group('number')}")      # S8 and s8 are one sentence
         out.append((address, _title(heading), tags))
     return out
 
@@ -605,7 +607,7 @@ def structure_draft_mismatches(text: str) -> list[str]:
             m = re.match(r"^- (C\d+\.P\d+) · (.+?)\s*$", lines[i])
             if m:
                 title, arrow = m.group(2), ""
-                inline = re.match(r"^(.*?)\s*·\s*(S\d+[a-z]*\s*(?:-|–|to)\s*S\d+[a-z]*)\s*$", title)
+                inline = re.match(r"^(.*?)\s*·\s*([Ss]\d+[a-z]*\s*(?:-|–|to)\s*[Ss]\d+[a-z]*)\s*$", title)
                 if inline:                           # the one-line form: `- C1.P1 · <title> · S1 to S2`
                     title, arrow = inline.group(1), inline.group(2)
                 elif i + 1 < len(lines) and lines[i + 1].strip().startswith("→"):
@@ -620,9 +622,9 @@ def structure_draft_mismatches(text: str) -> list[str]:
             otitle, ospan = listed[a]
             if otitle != title:
                 out.append(f"{a} is titled \"{otitle}\" in the Structure Overview and \"{title}\" below it")
-            nums = [int(t[1:]) for t in tags if re.fullmatch(r"S\d+", t)]
+            nums = [int(t[1:]) for t in tags if re.fullmatch(r"[Ss]\d+", t)]
             if ospan and nums and ospan != (min(nums), max(nums)):
-                out.append(f"{a} spans S{ospan[0]} to S{ospan[1]} in the Structure Overview but holds S{min(nums)} to S{max(nums)}")
+                out.append(f"{a} spans s{ospan[0]} to s{ospan[1]} in the Structure Overview but holds s{min(nums)} to s{max(nums)}")
         for a in listed:
             if a not in pa:
                 out.append(f"{a} is in the Structure Overview but has no paragraph")

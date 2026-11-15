@@ -66,7 +66,7 @@ renumbers the source or silently retargets an existing Run.
                                           Section page: a budget clause may follow a
                                           second ` · ` (one paragraph, nine sentences,
                                           about 190 words)
-### C<n>.P<m> · <move> · S<a> to S<b>     Section page: the paragraph's move and its
+### C<n>.P<m> · <move> · s<a> to s<b>     Section page: the paragraph's move and its
                                           sentence span
 ### C<n>.P<m> · <brief>                   any other page: one line saying what the
                                           paragraph does
@@ -97,17 +97,18 @@ prose when folded in any Markdown editor. The planned point moves to the first
 continuation line, `Point:`, and the other fields follow unchanged:
 
 ```markdown
-- B1 · S1 · Physicians treating clinically comparable patients can make markedly different opioid-prescribing decisions.
+- B1 · s1 · Physicians treating clinically comparable patients can make markedly different opioid-prescribing decisions.
   Point: [Problem] Comparable patients can receive different physician decisions.
   Note: The first move opens with physician decision variation.
   Transition: phenomenon → gap
   Evidence: E01-CITE-prescribing-decision-problem · comparable physician decisions
   Accept: background support remains in the Introduction evidence record.
-- B2 · S2 · [Gap] Physician interpersonal orientation remains underexamined.
+- B2 · s2 · [Gap] Physician interpersonal orientation remains underexamined.
   Note: Not drafted yet, so the point stays on the dash line.
 ```
 
-- A Bullet with a `Point:` line is Draft-first: the text after `B<k> · [S<n> · ]`
+- A sentence id is written `s<n>` (`s3b` for a split one); an older `S<n>` is read as the same sentence.
+- A Bullet with a `Point:` line is Draft-first: the text after `B<k> · [s<n> · ]`
   is its Draft, and `Point:` holds `[Role] statement` exactly as the classic
   dash line would. Lines between the dash line and `Point:` continue the Draft.
 - A Bullet without `Point:` is classic: the dash line holds the point, and an
@@ -168,7 +169,7 @@ head remains a valid backward-compatible form). `Note:`, `Annotation:`, `More:`,
 between adjacent Point groups. `Evidence:`, `Accept:`, `Answered:`, `Drawn:`,
 and `Routed:` remain process metadata and are not duplicated in the reader
 view. The existing 4–11 word head check counts only the statement, not the
-`S<n> ·` slot or `[Role]` metadata. No renderer invents a role for an old plan:
+`s<n> ·` slot or `[Role]` metadata. No renderer invents a role for an old plan:
 legacy Bullets use the neutral `Point` label until the Outline producer
 re-proposes them through a new unapproved Shape.
 
@@ -232,7 +233,7 @@ two bullets); one source may legitimately serve both.
 
 ```text
 page-type: section     one bullet = one SENTENCE SLOT
-                       head `S<n> · <what the sentence does>`
+                       head `s<n> · <what the sentence does>`
                        one Bullet maps to exactly one sentence; no shared slots
                        merge redundant points or split independent points
                        a finding's head carries its claim id and a word

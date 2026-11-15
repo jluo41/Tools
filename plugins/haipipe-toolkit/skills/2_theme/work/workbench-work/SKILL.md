@@ -1,17 +1,17 @@
 ---
 name: workbench-work
-description: "Open and interpret current work focus pages at Block, Job and Task level: Overview, Status, Findings, Delivery and view-scoped Around the Work. Distinguish Work Block and Blueprint Block with configured UI views. Read-only; /haipipe-work update aligns existing records. Classic layouts remain supported. Trigger: work workbench, work Block view, /workbench-work."
+description: "Open and interpret current work focus pages at Block, Job and Task level: Overview, Plan + Results, Findings, Delivery and view-scoped Around the Work. Distinguish Work Block and Blueprint Block with configured UI views. Read-only; /haipipe-work update aligns existing records. Classic layouts remain supported. Trigger: work workbench, work Block view, /workbench-work."
 metadata:
-  version: "0.10.0"
-  last_updated: "2026-11-09"
+  version: "0.10.2"
+  last_updated: "2026-11-11"
 ---
 
 # Work Block Workbench (the work theme, once task)
 
 ## Current focus pages
 
-By default, open a work Block, Job or Task on the focus page (`servers/workbench/focus_page.py`,
-`work_frame.py`), its views Overview · Status · Findings · Delivery. These hold, each one
+By default, open a work Block, Job or Task on the focus page (`servers/workbench/page/focus_page.py`,
+`work_frame.py`), its views Overview · Plan + Results · Findings · Delivery. These hold, each one
 b17 `s04-workbench-page-structure` Decided:
 
 | Rule | What the page does | Decided |
@@ -22,7 +22,7 @@ b17 `s04-workbench-page-structure` Decided:
 | View's own records | Every shared section uses the same explicit view/topic association. Matching Studio tags provide a fallback when no explicit view is set; this applies to all views | s04-D15; current shared scope |
 | Checklist icon | 📝 (☑️ draws as a grey box) | s04-D16 |
 | Skills | Each skill read in place: its SKILL.md, and a button per file in its folder, SKILL.md first | s04-D17 |
-| Status | Jobs and Tasks first, the 261105 look: a band per jNN, each Job its emoji, jNN, name and how far (`partly · 7 Tasks · 14%`), opening to Tasks and Runs; Topics only when they group differently | s04-D18 |
+| Plan + Results | Jobs and Tasks first (b01 look): a section per Job type (face `bands:`, else `use-case:`, else its Tasks' task-type), each Job its emoji, jNN, name and how far (`partly · 7 Tasks · 14%`), opening to Tasks and Runs; Topics only when they group differently | s04-D18 |
 | Job names | A Job's name is its folder's words; its emoji is its face's `emoji:` line (`haipipe-job`) | s04-D19 |
 
 One thing shows once, in one look, under one name: a topic has the same name in Studio and
@@ -35,7 +35,7 @@ Both belong to Work; neither changes the B–J–T–R ladder or introduces a ne
 develops a theme's UI and skills. A folder inside `blueprints/` can still be a
 normal Work example: the purpose and authored configuration decide.
 
-Both have Overview · Status · Findings · Delivery. Only a Blueprint with the
+Both have Overview · Plan + Results · Findings · Delivery. Only a Blueprint with the
 corresponding `ui-block:`, `ui-job:`, `ui-task:`, `ui-run:` examples adds Block UI · Job UI ·
 Task UI · Run UI. The ordinary Work example is `b90_example_paper_results`; the Blueprint
 example is `b17_theme_work`, both under `blueprints/Project-Ladder/work/` in Tools.
@@ -47,9 +47,17 @@ Checklist, Timeline, Skills, Files. The right rail uses those same names and
 aggregates the current page and its descendants across views. Report combines
 results and work actions; there is no separate Work rail entry in this focus UI.
 
-Status uses topics on the left and related B–J–T–R on the right, alongside actual
-Jobs/Tasks/Run states. It does not replace those records with a generic Next Steps
-list. The other views read their own source records and retain theme-specific parts.
+Plan + Results shows actual Jobs/Tasks/Run states, one section per Job type; it
+does not replace those records with a generic Next Steps list. Findings reads, on a
+Block first 🗄️ Data (its stores, board.md `data:`), then 🔢 Values (tables.json, values.json;
+haipipe-evidence), 🖼️ Displays (preview.pdf; haipipe-display), and 🧠 Maps when the work
+drew maps; Studio topics are Around the Work's Studio, not Findings (JL 261111). The other views read their own source records and retain theme-specific parts.
+
+A face may name its own sections instead (JL 261114): `## Review Content` replaces the Overview's Goal ·
+Requirements · MindMap, `## Plan + Results` adds sections after the Jobs, and `## Findings` replaces Data · Values ·
+Displays. Each `### <title>` is one
+numbered section; `embed: <path>` brings in a `.md` or an `.svg` drawing (an `.html` is never framed); `each: <glob>` makes one section per `.md`, titled by
+its `# ` line; a list item with sub-items shows as a card that opens (`Session:`/`Area:` chips, `Decided:`/`JL asked:`/`Built:` blocks), and a list of bold-time items is a timeline. Fixed Findings sections with nothing in them (Data, Values, Displays) are not drawn. `servers/workbench/page/work_sections.py` reads them; `/haipipe-work propose` writes them.
 
 Checklist reads authored checks in scoped faces/topics and, for UI views, recorded
 walkthrough presence. A skill-based acceptance checklist must be authored and
@@ -135,7 +143,7 @@ available. Preserve the existing host's authentication settings.
 | Check › Reports | Each report's answer status, evidence warnings and next action | Same snapshot; no second progress file |
 | Delivery › Reports | Each report whose `answer-status` is `answered`: its Opening and Answer word for word, its evidence and drawings | report Pages |
 
-Each Space has the shared Runs panel on the right (`servers/workbench/runs_panel.py`),
+Each Space has the shared Runs panel on the right (`servers/workbench/page/runs_panel.py`),
 folded at first as Insight's: its run types are this skill's `ref/workbench-table.md` rows
 for that Space, each with its agent, skill and a prompt to copy; Task's "Run a Task" lists
 every native Run with its status. Clicking a Question row (outside its links) selects it:

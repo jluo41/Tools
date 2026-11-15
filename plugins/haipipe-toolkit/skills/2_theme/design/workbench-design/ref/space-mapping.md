@@ -8,7 +8,7 @@ Design workbench: Space to file map and the state fold (Page level)
 This is the Page level of the Design workbench, as served in 0.14.0.
 One Design Folder is one design task, so its designs share one aim.
 The page has three Spaces: Design Goal, Design, and Delivery
-(input, process, output). It is served by `servers/workbench-design/design.py`
+(input, process, output). It is served by `servers/workbench-design/design.py` and drawn by `design_page.py`
 at `/_board/design?path=<board.md>&file=2-Design/<folder>/<folder>.md`.
 `legacy/design-board-space-mapping.md` is the same map one grain up.
 

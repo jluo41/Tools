@@ -1,5 +1,6 @@
 s01 路 discovery ladder
 =======================
+view: findings
 
 **Stage:** explore
 
@@ -18,7 +19,33 @@ workbench (gray, dashed), and a Run-level frame: a Paper Run opened from Task 鈥
 discovery entries are this Block's, marked `b14 Q01`); edit them there and this drawing and b03's s06,
 s07, s08 follow on their next build. The overview and the Run frame are drawn by this topic's builder.
 
-**Feeds:** `../reports/` q01 (the ladder question); q02 and q03 pick up its open points.
+**Feeds:** Q03 路 Q02 路 Q01 路 `../reports/` q01 (the ladder question); q02 and q03 pick up its open points.
+
+
+Q01 路 Answer
+------------
+
+**Question:** How does an inquiry climb the ladder?
+
+**Answer (open):** Proposed (261007), waiting on JL: a discovery Block holds the inquiries and the Questions; a Job is one inquiry with the Block's six Spaces, its Work Details its sub-question Tasks; a Task is one Page that makes facts (hard Paper Runs, and its Page's soft Runs), its Work Details its papers; a Paper Run is hard, one per source. Every one of today's sixteen Discovery Views has a place. The hypothesis holds, with one addition: the Task is both a Page and a maker of facts, which no other Theme's Task is.
+
+**Page:** [q01_discovery_ladder.md](q01_discovery_ladder/q01_discovery_ladder.md): the full answer, its evidence and limits (moved from reports/)
+
+
+Q02 路 Answer
+------------
+
+**Question:** Where do papers, citations and the Bib show?
+
+**Answer (open):** not written yet.
+
+
+Q03 路 Answer
+------------
+
+**Question:** How is a synthesis handed on?
+
+**Answer (open):** not written yet.
 
 
 Files

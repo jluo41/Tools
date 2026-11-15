@@ -1,3 +1,23 @@
+## 0.18.0 · 2026-11-13 · one display, one home
+
+- JL 261113 ("Similarly, we have the displays that are in the block level as well ... we should update it to be the
+  same"): rule 9 covers displays; rule 3's unit becomes "One display, one home": the display Task holds the caption,
+  legend, number, size, `cited-in:` and reviews; a Section keeps no `display/Display<n>-<slug>/` copy (an older one
+  moves to `display/_old/`). The two trees drop the Section's `display/` folder.
+
+## 0.17.0 · 2026-11-13 · a Section reads the Board's verdict
+
+- JL 261113 ("do we need this? how do you think this to the block level evidence???"): rule 9, a Section never runs
+  evidence itself; its 3 · Evidence view reads the value and citation Jobs' ledgers ("✅ Checked at the Board") in
+  place of its own Runs and Input.
+
+## 0.16.0 · 2026-11-11 · stale only when what was read moved
+
+- JL 261111 ("yes, please change them", via Paper-ScalingGlucose): rule 6 now judges a display or a Section on an older
+  value Run by what it read: stale when a read file under result/ changed or an id it prints or quotes moved or left;
+  a value Run that only adds ids leaves them current. A source Task is stale only past the newest Run read there.
+  `chain_check.py` (`moved`, `tree_same`); tests for both cases.
+
 ## 0.15.0 · 2026-11-10 · the chain: work → value → display → writing
 
 - JL 261110 (from Paper-ScalingGlucose-NatSeries2026: display numbers worked out in drawing scripts, displays on value
@@ -124,7 +144,7 @@
 ## 0.6.3 · 2026-11-03 · a generated preview links its addresses
 
 - A script that writes an HTML preview (values.html, citations.html) links each Run address and Section name through
-  the shared `servers/workbench/address_links.py` (`page_linker`), never its own copy (JL 261103: "b52.j01.t01.r01
+  the shared `servers/workbench/page/address_links.py` (`page_linker`), never its own copy (JL 261103: "b52.j01.t01.r01
   <--- how could you make this to be clickable").
 
 ## 0.6.2 · 2026-11-01 · the venue's display limit, the display plan's numbers

@@ -18,6 +18,26 @@ def _write(root: Path, text: str) -> dict:
 
 
 class ServerConfigTest(unittest.TestCase):
+    def test_hash_inside_quoted_value_is_not_a_comment(self):
+        with tempfile.TemporaryDirectory() as directory:
+            values = _write(Path(directory),
+                'SPACE_NAME="Study # 2" # display name\n'
+                "AUTH_FILE='/tmp/team # 2/users.auth' # credentials path\n"
+                "INDEX_LINKED_SPACES='{\"study\": {\"path\": \"../Study # 2\"}}' # links\n")
+        self.assertEqual(values["SPACE_NAME"], "Study # 2")
+        self.assertEqual(values["AUTH_FILE"], "/tmp/team # 2/users.auth")
+        self.assertEqual(values["INDEX_LINKED_SPACES"], '{"study": {"path": "../Study # 2"}}')
+
+    def test_unquoted_comments_and_url_fragments_keep_existing_meaning(self):
+        with tempfile.TemporaryDirectory() as directory:
+            values = _write(Path(directory),
+                'SPACE_NAME=Study room # comment\n'
+                'INDEX_URL=/guide#details # comment\n'
+                'DOMAIN="https://example.test" # comment\n')
+        self.assertEqual(values["SPACE_NAME"], "Study room")
+        self.assertEqual(values["INDEX_URL"], "/guide#details")
+        self.assertEqual(values["DOMAIN"], "https://example.test")
+
     def test_reads_only_known_values_without_executing_shell(self):
         with tempfile.TemporaryDirectory() as directory:
             values = _write(Path(directory),
@@ -51,6 +71,14 @@ class ServerConfigTest(unittest.TestCase):
                 "PUBLIC_URL=http://alias.example\nDOMAIN=http://canon.example\n"
                 "TAILSCALE_URL=http://later-alias.example\n")
         self.assertEqual(values["DOMAIN"], "http://canon.example")
+
+    def test_bare_canonical_settings_beat_prefixed_settings_in_either_order(self):
+        canonical = "PORT=5599\nNO_AUTH=0\nDOMAIN=https://example.test\n"
+        prefixed = "REDIS_PORT=6379\nWEB_PORT=80\nSKIP_NO_AUTH=1\nOTHER_DOMAIN=https://other.test\n"
+        for content in (canonical + prefixed, prefixed + canonical):
+            with self.subTest(content=content), tempfile.TemporaryDirectory() as directory:
+                values = _write(Path(directory), content)
+                self.assertEqual(values, {"PORT": "5599", "NO_AUTH": "0", "DOMAIN": "https://example.test"})
 
     def test_configured_domain_order(self):
         with tempfile.TemporaryDirectory() as directory:

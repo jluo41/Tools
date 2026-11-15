@@ -94,7 +94,7 @@ def arrow(id_, x, y, points, color, both=False):
 
 
 def chips(key, x, y, labels, sel, size=16, h=40):
-    """A row of buttons, each as wide as its label (tabs, views, partitions)."""
+    """A row of buttons, each as wide as its label (tabs, views, segments)."""
     for n, label in enumerate(labels):
         w = max(96, int(len(label) * size * 0.56) + 32)
         button(f"{key}-{n}", x, y, w, h, label, sel=n == sel, size=size)
@@ -110,14 +110,14 @@ PARTS = ["Full", "Young male", "Young female", "Older", "Midlife male", "Midlife
 text("title", 48, 24, "Insight Workbench · design", 34)
 text("subtitle", 48, 74, "One workbench, one dataset. Logic on the left: the questions asked at Data, "
      "Information, Knowledge and Wisdom. Work on the right: the runs that answer them. "
-     "One table per partition.", 18, MUTED)
+     "One table per segment.", 18, MUTED)
 rect("ds-head", 48, 118, 4 * FW + 3 * GAP, 64, BLUE, "#e7f5ff")
 text("ds-text", 72, 128,
      "Dataset  SMSR2v1 · 20250616_SMSR2v1_min_2025-07-03 · one row = one sent invitation · 444,691 rows · "
      "122 columns · 13 messages · 2025-06-16 → 2025-07-03", 19, BLUE)
 text("ds-rule", 72, 154,
-     "Every Space reads this one extract. Partitions are cuts of it. A new extract is a new Instance "
-     "of the same Prototype (Instance-Insight-SMSR3Full).", 15, MUTED)
+     "Every Space reads this one extract. Segments are parts of it. A new extract is a new Instance "
+     "of the same Question Book (Instance-Insight-SMSR3Full).", 15, MUTED)
 
 # ---- part 1 · Space → sub-space → runs in order → skill ----------------------
 P1 = 222
@@ -140,11 +140,11 @@ import canvas  # noqa: E402  (writes the studio palette and keeps a person's mar
 
 TABLE = skill_dir("workbench-insight") / "ref" / "legacy" / "workbench-table-older.md"   # the retired page (261008)
 SPACE_TEXT = {   # what each Space asks, and what it hands on: prose the table does not hold
-    "Prototype": ("What is asked, how, and by which code?",
+    "Question Book": ("What is asked, how, and by which code?",
                   "hands on: questions and scripts → this board's runs (JL 261003: its own Space)"),
-    "Scope": ("Which data, which cuts, which questions?", "hands on: the questions → Insight › Questions"),
+    "Scope": ("Which data, which segments, which questions?", "hands on: the questions → Insight › Questions"),
     "Insight": ("What does each question need, and what answers it?",
-                "tabs Full · Young male · … · Cross pick the partition · hands on: Wisdom answers → Delivery"),
+                "tabs Full · Young male · … · Cross pick the segment · hands on: Wisdom answers → Delivery"),
     "Check": ("Can each answer be trusted?", "hands on: a failed check routes back to the run that owns it"),
     "Delivery": ("What goes to Design?", "hands on: the signed handoff → the DesignBoard"),
 }
@@ -221,7 +221,7 @@ for i in range(len(MAP) - 1):
     arrow(f"m-link{i}", XM[i] + FW + 2, mid, [[0, 0], [GAP - 4, 0]], BLUE)
 text("m-rules", 48, P1 + 56 + BH + 28,
      "Drawn from workbench-insight/ref/workbench-table.md. The number is the order inside a Space; · marks a view with no run; * marks a planned skill or agent. "
-     "A question is written first; it owns its script, and a run is that question on one partition (runs/<partition>.sh).\n"
+     "A question is written first; it owns its script, and a run is that question on one segment (runs/<segment>.sh).\n"
      "Each run names its skill. Writing a script never starts a run: the person presses Run.\n"
      "Guide, shared by every workbench, holds the method and the papers: "
      + " · ".join(f'{r["View"]} → {r["Run type"]} ({r["Skill"].replace(" (new)", "*")})' for r in GUIDE_RUNS) + ".", 17)
@@ -277,12 +277,12 @@ def kv(key, x, y, rows, lw=150, w=516, size=13):
 
 
 def prototype_content(key, cx, cy):
-    """Prototype › Knowledge: one folding row per question (JL 261003: the Prototype gets its own Space)."""
+    """Question Book › Knowledge: one folding row per question (JL 261003: the Question Book gets its own Space)."""
     text(f"{key}-q", cx + 18, cy + 18, "What must be established as holding, with its rivals named?", 15)
-    rows = [("K01", "Psychological Triggers", "which triggers work here?", "all partitions · 4 needs"),
+    rows = [("K01", "Psychological Triggers", "which triggers work here?", "all segments · 4 needs"),
             ("K02", "Segmentation", "should messages be segmented?", "full · 2 needs"),
-            ("K03", "Communication Timing", "when should a message be sent?", "all partitions · 3 needs"),
-            ("K04", "Medication Type", "differ by medication type?", "all partitions · 5 needs"),
+            ("K03", "Communication Timing", "when should a message be sent?", "all segments · 3 needs"),
+            ("K04", "Medication Type", "differ by medication type?", "all segments · 5 needs"),
             ("K05", "Optimization Framework", "what framework should optimize?", "full · 3 needs")]
     for n, (qid, name, q, tags) in enumerate(rows):
         y = cy + 56 + n * 62
@@ -302,34 +302,34 @@ def scope_content(key, cx, cy):
         ("Dates", "2025-06-16 → 2025-07-03 · 18 days"),
         ("Experiment", "13 message wordings, about 34,000 each"),
         ("Outcomes", "messaged → clicked → authenticated"),
-        ("Cut of", "SMSR2Full (751,110 rows, to 2025-07-17)"),
-        ("Partitions", "Full + 5 cuts · Cross compares them"),
-        ("Results", "in each question folder: results/<partition>/"),
+        ("Segment of", "SMSR2Full (751,110 rows, to 2025-07-17)"),
+        ("Partitions", "Full + 5 segments · Cross compares them"),
+        ("Results", "in each question folder: results/<segment>/"),
         ("Files", "manifest.json · data_dictionary.csv"),
     ])
 
 
-space("prototype", 1, "Prototype Space", ["Meta", "Data", "Information", "Knowledge", "Wisdom", "RoadMap Draw"], 3, [], None,
+space("prototype", 1, "Question Book Space", ["Meta", "Data", "Information", "Knowledge", "Wisdom", "RoadMap Draw"], 3, [], None,
       prototype_content,
-      ["1 Carry a board", "2 Register a cut", "3 Review questions", "4 Plan evidence", "5 Write script",
+      ["1 Carry a board", "2 Register a segment", "3 Review questions", "4 Plan evidence", "5 Write script",
        "6 Review script"], 4,
       {"name": "run-script-1003-k02-segmentation", "skill": "haipipe-insight",
-       "prompt": "Write the Prototype script for K02\nfrom its live needs: gain.csv with\nthe columns its spec names.",
+       "prompt": "Write the Question Book script for K02\nfrom its live needs: gain.csv with\nthe columns its spec names.",
        "process": "Done · reviewed by another agent",
        "results": "3-Knowledge/K02-segmentation/scripts/"},
-      "Meta → the summary, the partitions in words, the shared settings, the design files\n"
+      "Meta → the summary, the segments in words, the shared settings, the design files\n"
       "Data · Information · Knowledge · Wisdom → one folding row per question; retired ones folded\n"
-      "The Prototype holds the design and no data; every board of this kind reads through it.")
+      "The Question Book holds the design and no data; every board of this kind reads through it.")
 
 
 space("scope", 0, "Scope Space", ["Dataset", "Partitions", "Questions"], 0, [], None, scope_content,
       ["1 Prepare extract", "2 Ask", "+ New Run"], 1,
       {"name": "run-ask-1001-message-order", "skill": "haipipe-insight-question",
-       "prompt": "Register this question: does the\norder of messages matter? Pick the\nlevel and partitions; do not answer.",
+       "prompt": "Register this question: does the\norder of messages matter? Pick the\nlevel and segments; do not answer.",
        "process": "Done · Knowledge question 17,\nFull only",
        "results": "MT03 · one new row"},
       "Dataset → 1 Prepare extract · Questions → 2 Ask\n"
-      "Partitions: Full, Young male, Young female, Older, Midlife male, Midlife female, Cross.\n"
+      "Segments: Full, Young male, Young female, Older, Midlife male, Midlife female, Cross.\n"
       "No dataset switcher: this workbench has one extract.")
 
 
@@ -360,7 +360,7 @@ space("insight", 2, "Insight Space", PARTS, 0, [], None, insight_content,
        "process": "Done · status ok · answers\nInformation questions 1-6, 15-18",
        "results": "<page>/results/\nrun_b51j21t01r01_full_funnel_rates/"},
       "Questions → 3 Data runs · 4 Information runs · 5 Report · 6 Pool or split (Cross)\n"
-      "Picking a question narrows the Runs panel to it, in this partition.\n"
+      "Picking a question narrows the Runs panel to it, in this segment.\n"
       "A run opens its results, a report opens as a document, in a pop-out (part 3).")
 
 
@@ -396,7 +396,7 @@ def delivery_content(key, cx, cy):
         ("Strength", "STRONG, from Knowledge question 1"),
         ("Boundary", "round 2 only; no untested message"),
         ("Overreach", "no segment-specific copy"),
-        ("Cross", "POOL: the five cuts defer to Full"),
+        ("Cross", "POOL: the five segments defer to Full"),
         ("Signed", "⬜ not current · re-sign"),
         ("Goes to", "B00 DesignBoard"),
     ])
@@ -414,9 +414,9 @@ space("delivery", 4, "Delivery Space", ["Handoff"], 0, [], None, delivery_conten
 for i in range(4):
     arrow(f"link{i}", X[i] + FW + 2, Y0 + 346, [[0, 0], [GAP - 4, 0]], BLUE if i <= 1 else MUTED)
 
-# ---- part 3 · Insight › Questions: one High/Low table per partition ------------
+# ---- part 3 · Insight › Questions: one High/Low table per segment ------------
 P3 = Y0 + FH + 90
-text("p3-title", 48, P3, "3 · Insight › Questions: one table per partition · Logic · Work · Report", 28)
+text("p3-title", 48, P3, "3 · Insight › Questions: one table per segment · Logic · Work · Report", 28)
 text("p3-sub", 48, P3 + 44, "The question asks, the runs compute, the report says what the answer is. The same "
      "questions in the same order in every table; a refused question says why in Report.", 18, MUTED)
 TY, TH = P3 + 96, 900
@@ -472,12 +472,12 @@ table("full", 0, 0, "Full · 444,691 rows",
       "▸ Wisdom questions       2  ✅",
       "\n\n\n"
       "⌄ Question 2's run\n"
-      "  1 partition · full\n"
+      "  1 segment · full\n"
       "    2-Information ›\n"
       "      I02-variant-performance\n"
       "        full  ok   ↗\n"
       "› Question 4's run\n"
-      "  1 partition · full · ok\n"
+      "  1 segment · full · ok\n"
       "\n\n\n\n"
       "› Runs behind it\n"
       "  5 runs, from the\n"
@@ -531,7 +531,7 @@ table("young", 1, 1, "Young male · 53,342 rows",
       "  Which messages to exploit?",
       "\n—\n\n\n"
       "› Question 3's run\n"
-      "  1 partition · youngmale · ok\n"
+      "  1 segment · youngmale · ok\n"
       "\n\n\n"
       "⌄ Question 2's run\n"
       "    2-Information ›\n"
@@ -545,7 +545,7 @@ table("young", 1, 1, "Young male · 53,342 rows",
       "Answered on Full · a property\n"
       "of the whole extract\n"
       "\n"
-      "The funnel in this cut\n"
+      "The funnel in this segment\n"
       "counts at each step, young men only\n"
       "\n\n\n"
       "How the 13 messages performed here\n"
@@ -560,10 +560,10 @@ table("young", 1, 1, "Young male · 53,342 rows",
       "\n\n\n"
       "Defers to Full · the Cross verdict\n"
       "says POOL",
-      "Same questions, same order as Full. Work shows only this cut's runs (youngmale).",
+      "Same questions, same order as Full. Work shows only this segment's runs (youngmale).",
       marks=[(182 + 9 * R - 4, 4 * R + 6)])
 
-table("cross", 2, 6, "Cross · compares the cuts",
+table("cross", 2, 6, "Cross · compares the segments",
       "▾ Data questions         1\n"
       "  Question 4                ✅\n"
       "  What does chance do to\n"
@@ -572,11 +572,11 @@ table("cross", 2, 6, "Cross · compares the cuts",
       "▾ Information questions  1\n"
       "  Question 14               ✅\n"
       "  How large is the gap\n"
-      "  between the partitions?\n"
+      "  between the segments?\n"
       "\n"
       "▾ Knowledge questions    2\n"
       "  Question 15               ✅\n"
-      "  Do the partitions really\n"
+      "  Do the segments really\n"
       "  differ?\n"
       "\n"
       "  Question 16               ✅\n"
@@ -587,7 +587,7 @@ table("cross", 2, 6, "Cross · compares the cuts",
       "\n"
       "› Question 4's run\n"
       "  1-Data › D04-expected-balance\n"
-      "  ▸ cross · 5 partitions\n"
+      "  ▸ cross · 5 segments\n"
       "\n\n"
       "› Question 14's run\n"
       "  cross  ok   ↗\n"
@@ -596,19 +596,19 @@ table("cross", 2, 6, "Cross · compares the cuts",
       "\n\n\n"
       "—",
       "\n"
-      "Chance balance, cut by cut\n"
-      "the deviation each cut's size allows\n"
+      "Chance balance, segment by segment\n"
+      "the deviation each segment's size allows\n"
       "\n\n\n"
-      "The gap between the cuts\n"
+      "The gap between the segments\n"
       "same best and worst message in all\n"
-      "six cuts\n"
+      "six segments\n"
       "\n\n"
-      "The cuts differ in size, not in\n"
+      "The segments differ in size, not in\n"
       "which message wins\n"
       "\n\n"
-      "One story: pool the cuts\n"
+      "One story: pool the segments\n"
       "POOL · every Wisdom answer waits for it",
-      "Cross owns no rows. It lists only the questions that compare the cuts, and the verdict.",
+      "Cross owns no rows. It lists only the questions that compare the segments, and the verdict.",
       marks=[(182 + 15 * R - 4, 5 * R + 6)])
 
 
@@ -656,16 +656,16 @@ rect("one-box", 48, P4 + 56, FW, 520)
 text("one-text", 72, P4 + 82,
      "1. The workbench is born from one extract: MT00 names it, the banner\n"
      "   shows it on every Space, and there is no dataset switcher.\n\n"
-     "2. A partition is a cut of that extract, never a second dataset:\n"
-     "   0-Meta/partitions.md names its filter; a run is one partition.\n\n"
-     "3. Each question owns its code: the Prototype holds the question\n"
+     "2. A segment is a segment of that extract, never a second dataset:\n"
+     "   0-Meta/partitions.md names its filter; a run is one segment.\n\n"
+     "3. Each question owns its code: the Question Book holds the question\n"
      "   and its script, the Instance a tracked copy of the script\n"
      "   (prototype.lock; a difference shows as ⚑).\n\n"
-     "4. A run is runs/<partition>.sh in the question's own folder:\n"
+     "4. A run is runs/<segment>.sh in the question's own folder:\n"
      "   its results/ and reports/ answer that question only.\n\n"
-     "5. A new extract is a new Instance of the same Prototype. Round 3\n"
+     "5. A new extract is a new Instance of the same Question Book. Round 3\n"
      "   checking round 2 is a comparison between two Instances,\n"
-     "   not a partition of either.", 17, INK)
+     "   not a segment of either.", 17, INK)
 
 CX = X[1]
 text("change-title", CX, P4, "What changes", 28)
@@ -675,9 +675,9 @@ text("change-table", CX + 24, P4 + 82,
      "\n"
      "6 Spaces: Scope, Insight, Evidence, Check,      4 Spaces, a Runs panel beside each: Scope, Insight,\n"
      "  Run, Delivery                                   Check, Delivery (Evidence → the Work side; Run → the panels)\n"
-     "Question × partition grid                       one High/Low table per partition; logic left, work right\n"
-     "D/I/K/W answer pages (D03-full, I02-full …)     Work: the question's runs, one per partition · Report: one page\n"
-     "                                                  per question, one section per partition, checked by another agent\n"
+     "Question × segment grid                       one High/Low table per segment; logic left, work right\n"
+     "D/I/K/W answer pages (D03-full, I02-full …)     Work: the question's runs, one per segment · Report: one page\n"
+     "                                                  per question, one section per segment, checked by another agent\n"
      "Page-level Insight view (This page, Cites,      retired: a run line opens its results in a pop-out\n"
      "  Cited by, Gates, Log)\n"
      "QK2, FD02, B, C … on screen                     Knowledge questions › Question 2 · Young male; codes stay in files\n"
@@ -692,11 +692,11 @@ text("files-map", RX + 24, P4 + 82,
      "\n"
      "Scope › Dataset      0-Meta/meta.md · manifest  7-AgentStore/A0-DIKW-\n"
      "                                                Prepare/<extract>/\n"
-     "Scope › Partitions   0-Meta/partitions.md       (filters, no runs)\n"
+     "Scope › Segments   0-Meta/partitions.md       (filters, no runs)\n"
      "Scope › Questions    each <L><NN>-<name>.md     (questions, no runs)\n"
-     "Insight › Questions  the question files + the   <question>/runs/<partition>.sh\n"
-     "                     checker's computed grid    <question>/results/<partition>/\n"
-     "                                                <question>/reports/<partition>/\n"
+     "Insight › Questions  the question files + the   <question>/runs/<segment>.sh\n"
+     "                     checker's computed grid    <question>/results/<segment>/\n"
+     "                                                <question>/reports/<segment>/\n"
      "Check › Gates        the GI records             _runs/insight/\n"
      "Check › Checks       check_block.py             page CHECK runs\n"
      "Insight › Report     <question>.md, one page    the page flow + CHECK\n"
@@ -705,9 +705,9 @@ text("files-map", RX + 24, P4 + 82,
 
 # ---- part 5 · how one run attaches to its dataset and its result -------------
 P5 = P4 + 680
-text("p5-title", 48, P5, "5 · One run: one question on one partition, and where its result lands", 28)
+text("p5-title", 48, P5, "5 · One run: one question on one segment, and where its result lands", 28)
 text("p5-sub", 48, P5 + 44, "The ticket's name is the partition: runs/youngmale.sh in the question's folder writes "
-     "results/youngmale/ and reports/youngmale/. The Instance names the dataset; the Prototype names the cut.", 18, MUTED)
+     "results/youngmale/ and reports/youngmale/. The Instance names the dataset; the Question Book names the segment.", 18, MUTED)
 BY, BH5 = P5 + 100, 330
 
 
@@ -727,16 +727,16 @@ box("ds", X[0], BY, FW, BH5, "1 · The dataset · read, never written",
     "one prepared extract = one Instance (board.md names it)\n"
     "444,691 rows · one row = one sent invitation",
     sub="prepared before the board exists; every run of this board reads it")
-box("task", X[1], BY, FW, BH5, "2 · The question · authored, in the Prototype",
-    "Prototype-Insight-SMS/2-Information/I04-temporal-dynamics/\n"
+box("task", X[1], BY, FW, BH5, "2 · The question · authored, in the Question Book",
+    "InsightQuestionBook-Insight-SMS/2-Information/I04-temporal-dynamics/\n"
     "├── I04-temporal-dynamics.md      question · ask · needs · specs\n"
     "└── scripts/temporal_dynamics.py  SPEC = \"I04\" · run(df, ctx)\n"
     "0-Meta/partitions.md\n"
-    "│     youngmale: gender = M · age ≤ 35           ← the cut\n"
+    "│     youngmale: gender = M · age ≤ 35           ← the segment\n"
     "0-Meta/thresholds.yaml  floors · power.smallest_effect_pp\n"
     "Instance: a copy of scripts/ + prototype.lock (⚑ if they differ)\n\n"
     "the question owns its code; no task, no config, no answers:",
-    BLUE, "#f3f8fd", sub="one question = one folder = one script; a partition is never a config")
+    BLUE, "#f3f8fd", sub="one question = one folder = one script; a segment is never a config")
 box("res", X[2], BY, FW, BH5, "3 · The run · generated, in the Instance",
     "2-Information/I04-temporal-dynamics/          ← 4\n"
     "├── runs/youngmale.sh            the ticket you press\n"
@@ -745,7 +745,7 @@ box("res", X[2], BY, FW, BH5, "3 · The run · generated, in the Instance",
     "│   ├── partition_power.csv · rates_by_weekday.csv · …\n"
     "│   └── provenance/    the exact spec and scripts it ran\n"
     "└── reports/youngmale/report.md   generated from results/\n\n"
-    "one run per partition; the question's page reads them all",
+    "one run per segment; the question's page reads them all",
     GREEN, "#f4fbf5", sub="never edited by hand; rerun the ticket to change it")
 box("wb", X[3], BY, FW, BH5, "5 · The workbench · reads, never writes",
     "Insight › Questions › Young male\n\n"
@@ -761,9 +761,9 @@ box("board", X[0], BY + BH5 + 80, FW, 250, "4 · The Instance · holds the runs 
     "├── board.md      prototype: · extract:\n"
     "├── 0-Meta/status.md   the grid, written by the checker\n"
     "└── 2-Information/I04-temporal-dynamics/   runs · results · page\n\n"
-    "the same folders as the Prototype, at the same paths",
-    sub="it mirrors the Prototype: 0-Meta, 1-Data … 4-Wisdom")
-box("two", X[2], BY + BH5 + 80, FW, 250, "Same Prototype, another dataset → another Instance",
+    "the same folders as the Question Book, at the same paths",
+    sub="it mirrors the Question Book: 0-Meta, 1-Data … 4-Wisdom")
+box("two", X[2], BY + BH5 + 80, FW, 250, "Same Question Book, another dataset → another Instance",
     "insights/Instance-Insight-SMSR3Full/\n"
     "  board.md  extract: …/20250829_SMSR3Full/…parquet\n"
     "→ 2-Information/I04-temporal-dynamics/\n"
@@ -772,8 +772,8 @@ box("two", X[2], BY + BH5 + 80, FW, 250, "Same Prototype, another dataset → an
     MUTED, sub="the code is shared; the result is not")
 box("heavy", X[3], BY + BH5 + 80, FW, 250, "Heavy output stays out of results/",
     "a model, an array, a row-level table, any file > 10 MB\n"
-    "→ _WorkSpace/ProjectResult/<Project>/insights/<Instance>/…/<partition>/\n"
-    "  results/<partition>/heavy.yaml points to it   (AGENTS.md rule 10)\n\n"
+    "→ _WorkSpace/ProjectResult/<Project>/insights/<Instance>/…/<segment>/\n"
+    "  results/<segment>/heavy.yaml points to it   (AGENTS.md rule 10)\n\n"
     "receipts write paths relative to the SPACE root (rule 7)",
     MUTED, sub="the result stays light")
 mid5 = BY + BH5 // 2
@@ -781,11 +781,11 @@ arrow("a-ds-task", X[0] + FW + 2, mid5, [[0, 0], [GAP - 4, 0]], BLUE)
 arrow("a-task-res", X[1] + FW + 2, mid5, [[0, 0], [GAP - 4, 0]], GREEN)
 arrow("a-res-wb", X[2] + FW + 2, mid5, [[0, 0], [GAP - 4, 0]], MUTED)
 arrow("a-board-task", X[0] + FW // 2, BY + BH5 + 78, [[0, 0], [0, -40], [X[1] - X[0], -40], [X[1] - X[0], -76]], INK)
-text("a-board-label", X[0] + FW // 2 + 20, BY + BH5 + 14, "board.md prototype: names the question's Prototype", 15, INK)
+text("a-board-label", X[0] + FW // 2 + 20, BY + BH5 + 14, "board.md prototype: names the question's Question Book", 15, INK)
 arrow("a-task-two", X[1] + FW - 120, BY + BH5 + 2, [[0, 0], [0, 140], [X[2] - X[1] - FW + 118, 140]], MUTED)
 text("p5-rules", 48, BY + BH5 + 360,
-     "1. The ticket's name is the partition: runs/<partition>.sh writes results/<partition>/ and reports/<partition>/.   "
-     "2. The cut lives in partitions.md, the code in the question's scripts/.\n"
+     "1. The ticket's name is the partition: runs/<segment>.sh writes results/<segment>/ and reports/<segment>/.   "
+     "2. The segment lives in partitions.md, the code in the question's scripts/.\n"
      "3. The receipt is written before the work and finalized after the gate: spec, scripts and shared files by sha256.   "
      "4. A rerun replaces its result; a changed spec or script makes it STALE.", 17)
 
@@ -826,7 +826,7 @@ box("qa-shape", QX[1], QB, FW, QH, "2 · Shape it · the shaper",
     "  level      D · I · K · W; a D or I ask states no cause\n"
     "  why now    who waits on the answer, and what it replicates\n"
     "  answer     what would answer it, then its needs\n"
-    "  partitions asked where it means the same, and why not elsewhere\n\n"
+    "  segments asked where it means the same, and why not elsewhere\n\n"
     "the shaper plans from the question and the column list;\n"
     "it never reads results to fit a question to them",
     BLUE, "#f3f8fd", sub="haipipe-insight-agent · skill haipipe-insight-question")
@@ -846,9 +846,9 @@ box("qa-sign", QX[3], QB, FW, QH, "4 · Sign it, then it lands",
     "the person signs each change the review proposes   ✅ <YYMMDD>\n"
     "  a split, a merge, a move or a rewording; never by a rule\n\n"
     "→ the old question is retired with its reason, never edited\n"
-    "→ Prototype question file  <level>/<L><NN>-<name>/\n"
+    "→ Question Book question file  <level>/<L><NN>-<name>/\n"
     "→ the needs' specs and the script follow (the evidence plan)\n"
-    "→ each Instance scaffolds it and runs it, partition by partition\n\n"
+    "→ each Instance scaffolds it and runs it, segment by segment\n\n"
     "a question is never answered on the screen that asked it",
     sub="the person · Scope › Questions › Ask in the workbench")
 arrow("qa-a1", QX[0] + FW + 2, QB + QH // 2, [[0, 0], [GAP - 4, 0]], BLUE)

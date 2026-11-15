@@ -31,7 +31,7 @@ import canvas  # noqa: E402  (haipipe-studio's merge-safe writer)
 
 INK, RED, MONO = L.INK, L.RED, L.MONO
 text, path, base = L.text, L.path, L.base
-FRAME_PY = L.TOOLKIT / "servers/workbench/frame.py"
+FRAME_PY = L.TOOLKIT / "servers/workbench/page/frame.py"
 
 # the proposal (s07-D03): theme, its groups on the bar, what stays a row above the list; guessed rows red.
 # Paper and insight revised 261011 from their real Reports (JL: "think about what is the current things looks like")
@@ -277,7 +277,7 @@ def today_frame():
     for i, (s_, q) in enumerate(n["subjects"].items()):
         text(xi + 24, 592 + i * 30, f"{s_:<17} {' · '.join(q)}", 20, INK, MONO)
     yq = 592 + len(n["subjects"]) * 30 + 20
-    text(xi, yq, f"its board.md register holds {n['register']} Questions: they live in the Prototype's release.yaml", 20)
+    text(xi, yq, f"its board.md register holds {n['register']} Questions: they live in the Question Book's release.yaml", 20)
     text(xi, yq + 32, "? a subject's group: line goes in each question.md (s07 Open 7)", 20, RED)
     # ── the rule ──
     yr = max(y + 200, yq + 100)
@@ -467,7 +467,7 @@ def main():
     today = today_frame()
     tools = L.tools_frame(
         "In Tools: haipipe-report", ["1_base/project/haipipe-report/", "1_base/project/haipipe-report"],
-        [("servers/workbench/frame.py", ["question_rows", "group_list", "studio_group_op", "_group_members"])],
+        [("servers/workbench/page/frame.py", ["question_rows", "group_list", "studio_group_op", "_group_members"])],
         around=["each theme's Report row: servers/workbench-<theme>/<theme>_theme.py",
                 "haipipe-studio: the group bar's first home (s02)", "haipipe-related: its own groups (s04)",
                 "b16 s05-paper-report: the paper's own list"])

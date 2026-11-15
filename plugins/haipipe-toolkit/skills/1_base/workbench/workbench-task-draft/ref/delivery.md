@@ -17,7 +17,7 @@ the command   page.py export <page> [--lane web|latex|word|all] [--author "<name
 the writers   web    → haipipe-draft/src/page_workspace.py (build_page)
               latex  → exporters/md2tex.py + LuaLaTeX      (ExportMixin.export_latex)
               word   → exporters/md2docx.py + docx2pdf.py  (ExportMixin.export_word)
-              slides → servers/workbench/autodeck.py, only on the ✨ press
+              slides → servers/workbench/studio/autodeck.py, only on the ✨ press
 ```
 
 ## 🗂 Storage · derived, never hand-edited
@@ -88,4 +88,4 @@ older 📤 tab, kept for old links.
 - `../../../../../servers/workbench/workbench-task-draft/delivery.py` · `check_delivery`, `FIXED_RUNS`, the Checks view
 - `../../../../../servers/workbench/workbench-task-draft/runs.py` · `_fixed_delivery_run`, the Runs panel rows
 - `../../../../../servers/workbench/workbench-task-draft/export.py` · `exporters/` · the LaTeX and Word writers
-- `../../../../../servers/workbench/autodeck.py` · the deck's ✨ pen
+- `../../../../../servers/workbench/studio/autodeck.py` · the deck's ✨ pen

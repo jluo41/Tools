@@ -652,8 +652,9 @@ def main(argv=None):
         findings = bib_review.get("errors") or bib_review.get("warnings") or []
         why = "; ".join(findings) if findings else bib_review.get("refused", "BibTeX fetch failed")
         (result / "runtime.yaml").write_text(
-            runtime.replace("status: complete\n", "status: blocked\nblocked_reason: %s\n" % q(
-                "%s (%s); rerun the Ticket" % (why, " ".join(ident)))), encoding="utf-8")
+            # only the top-level status line: "  locator_status: complete" also ends in "status: complete"
+            re.sub(r"(?m)^status: complete\n", lambda m: "status: blocked\nblocked_reason: %s\n" % q(
+                "%s (%s); rerun the Ticket" % (why, " ".join(ident))), runtime, count=1), encoding="utf-8")
         sys.exit("blocked %s · %s" % (a.address, why))
     for warning in bib_review.get("warnings") or []:
         print("Bib review warning: %s" % warning, file=sys.stderr)

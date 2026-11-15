@@ -3,6 +3,7 @@ overwrites, and writes what the design workbench's reader (servers/workbench-des
 from __future__ import annotations
 
 import importlib.util
+import re
 import sys
 import tempfile
 import unittest
@@ -169,33 +170,81 @@ class MethodBookScaffoldTest(unittest.TestCase):
         (self.board / "inputs" / "inputs-v1").mkdir(parents=True)
         self.book = self.design / "DesignMethodBook-Try"
         D.main(["book", str(self.book), "--serves", "design/Design-Try"])
-        self.rel = self.book / "j01_method-v1_goal-only"
-        D.main(["release", str(self.rel), "--from", "M01 m2"])
-        self.job = self.board / "j01_confirm-by-reply_method-v1-goal-only_inputs-v1"
+        self.rel = self.book / "j01_M01-goal-only"
+        D.main(["method", str(self.rel), "--version", "m2"])
+        self.job = self.board / "j01_confirm-by-reply_M01-goal-only-m2_inputs-v1"
 
     def _sign(self):
         face = self.rel / f"{self.rel.name}.md"
-        face.write_text(face.read_text().replace("signed: ''", "signed: ✅ 261109"))
+        face.write_text(face.read_text().replace("m2: ''", "m2: ✅ 261109"))
 
-    def test_book_links_its_board_and_freezes_the_release(self):
+    def test_book_links_its_board_and_freezes_the_version(self):
         self.assertIn("board-kind: design-method-book", (self.book / "board.md").read_text())
+        channel = re.search(r"(?m)^channel:.*$", (self.board / "board.md").read_text()).group(0)
+        self.assertIn(channel, (self.book / "board.md").read_text())            # the Book takes its Board's channel
         self.assertIn("method-book: design/DesignMethodBook-Try", (self.board / "board.md").read_text())
-        self.assertIn("version: m2", (self.rel / "method.md").read_text())
+        self.assertIn("version: m2", (self.rel / "m2.md").read_text())
+        D.main(["method", str(self.rel), "--version", "m1"])                 # the same type gains a version
+        face = (self.rel / f"{self.rel.name}.md").read_text()
+        self.assertIn("  m2: ''", face)
+        self.assertIn("  m1: ''", face)
+        self.assertTrue((self.rel / "m1.md").is_file())
+        with self.assertRaises(SystemExit):                                  # a type is named as it is registered
+            D.main(["method", str(self.book / "j02_M02-goal-only"), "--version", "m1"])
 
-    def test_a_job_runs_only_a_signed_release_and_is_named_by_it(self):
+    def test_a_job_runs_only_a_signed_version_and_is_named_by_it(self):
         with self.assertRaises(SystemExit):
-            D.main(["job", str(self.job), "--goal", "G01", "--release", "method-v1", "--inputs", "inputs-v1"])
+            D.main(["job", str(self.job), "--goal", "G01"])
         self._sign()
-        D.main(["job", str(self.job), "--goal", "G01", "--release", "method-v1", "--inputs", "inputs-v1"])
+        D.main(["job", str(self.job), "--goal", "G01"])
         face = (self.job / f"{self.job.name}.md").read_text()
         self.assertIn("method: M01 m2", face)
-        self.assertIn("release: method-v1", face)
+        self.assertIn("inputs: inputs-v1", face)
         D.main(["task", str(self.job), "t00"])
         self.assertTrue((self.job / "t00_reason-ideas").is_dir())
-        with self.assertRaises(SystemExit):
-            D.main(["job", str(self.board / "j02_confirm-by-reply_method-v1-other_inputs-v1"), "--goal", "G01",
-                    "--release", "method-v1", "--inputs", "inputs-v1"])
-        self.assertEqual(reader().job(self.job)["release"], "method-v1")
+        with self.assertRaises(SystemExit):                                  # M02 is no method type of this Book
+            D.main(["job", str(self.board / "j02_confirm-by-reply_M02-overall-performance-m1_inputs-v1"), "--goal", "G01"])
+        self.assertEqual(reader().job(self.job)["release"], "M01 m2")
+
+
+class UpdateOlderBoardTest(unittest.TestCase):
+    """design_ladder.py update: an older Board (inputs/i1, jNN_<goal>_<method name>) onto the current names, with its
+    Book; a file whose hash a manifest records is never rewritten."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.design = Path(self.tmp.name).resolve() / "design"
+        self.board = self.design / "Design-Old"
+        old = self.board / "j01_confirm-by-reply_goal-only"
+        (self.board / "inputs" / "i1").mkdir(parents=True)
+        (old / "inputs").mkdir(parents=True)
+        (self.board / "board.md").write_text("---\nboard-kind: design-board\nchannel: sms\n---\n# Old\n\nJob j01_confirm-by-reply_goal-only on i1.\n")
+        task = self.board / "inputs" / "i1" / "task.md"
+        task.write_text("The task, frozen with i1.\n")
+        import hashlib
+        sha = hashlib.sha256(task.read_bytes()).hexdigest()[:12]
+        (self.board / "inputs" / "i1" / "manifest.yaml").write_text(f"version: i1\nfiles:\n- path: task.md\n  sha256: {sha}\n")
+        (old / f"{old.name}.md").write_text("---\ngoal: G01 · confirm-by-reply\nmethod: M01 m2\ninputs: i1\nstate: open\n---\n# Job\n")
+        (old / "inputs" / "task.md").symlink_to("../../inputs/i1/task.md")
+
+    def test_dry_run_changes_nothing_and_apply_renames_and_builds_the_book(self):
+        D.main(["update", str(self.board)])
+        self.assertTrue((self.board / "j01_confirm-by-reply_goal-only").is_dir())
+        D.main(["update", str(self.board), "--apply"])
+        job = self.board / "j01_confirm-by-reply_M01-goal-only-m2_inputs-v1"
+        self.assertIn("inputs: inputs-v1", (job / f"{job.name}.md").read_text())
+        self.assertEqual((job / "inputs" / "task.md").read_text(), "The task, frozen with i1.\n")   # hashed: its words stay
+        self.assertIn("version: inputs-v1", (self.board / "inputs" / "inputs-v1" / "manifest.yaml").read_text())
+        self.assertIn(job.name + " on inputs-v1", (self.board / "board.md").read_text())
+        self.assertIn("method-book: design/DesignMethodBook-SMS", (self.board / "board.md").read_text())
+        kind = self.design / "DesignMethodBook-SMS" / "j01_M01-goal-only"
+        self.assertIn("  m2: ''", (kind / f"{kind.name}.md").read_text())          # a person signs; update never does
+        self.assertTrue((kind / "m2.md").is_file())
+        import design_update as U
+        self.assertEqual([r[2] for r in U.audit(self.board, lambda m: D.method_card(m)[0])], [0, 0, 0, 0, 1, 0])
+        D.main(["update", str(self.board), "--apply"])                              # a second run finds nothing to do
+        self.assertEqual(reader().job(job)["release"], "M01 m2")
 
 
 if __name__ == "__main__":

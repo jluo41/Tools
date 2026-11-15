@@ -31,6 +31,7 @@ Every piece of report text is escaped; no file system path reaches the HTML.
 from __future__ import annotations
 
 import importlib.util
+import traceback
 import json
 import re
 import sys
@@ -52,7 +53,6 @@ PILL = {WAITING: ("Needs your judgment", "wait"), DRAFTED: ("Draft saved", "draf
 QUIET = "Continue later. Your draft stays saved."
 
 TITLE_1, TITLE_2 = "🙋 Decisions waiting for you", "🪜 Earlier reports"
-PROCESS, RESULTS = "⚙️ Process", "📊 Results"
 
 
 # ── the store ──────────────────────────────────────────────────────────────────────────────────────────────────
@@ -79,6 +79,7 @@ def store():
         sys.modules[STORE_NAME] = module               # a dataclass in it looks its module up by name
         spec.loader.exec_module(module)
     except Exception:                                  # a broken store shows as unavailable, never a broken page
+        traceback.print_exc()
         sys.modules.pop(STORE_NAME, None)
         return None
     _LOADED.update(stamp=stamp, module=module)
@@ -150,6 +151,7 @@ def waiting_report(task: Path) -> bool:
     try:
         rows = reports(mod, lane(task))
     except Exception:
+        traceback.print_exc()
         return False
     return bool(rows) and waits(rows[-1])
 
@@ -232,6 +234,7 @@ def drafts(mod, J: Path, report_id: str) -> dict:
         try:
             found = [d for d in mod.list_drafts(J, report_id) or [] if isinstance(d, dict)]
         except Exception:
+            traceback.print_exc()
             found = []
     elif SAFE_ID.fullmatch(report_id):
         folder = J / "meaning" / "drafts" / report_id
@@ -241,6 +244,7 @@ def drafts(mod, J: Path, report_id: str) -> dict:
             try:
                 d = mod.load_draft(J, report_id, f.stem)
             except Exception:
+                traceback.print_exc()
                 continue
             if isinstance(d, dict):
                 found.append({"actor_id": f.stem, **d})
@@ -254,15 +258,12 @@ def drafts(mod, J: Path, report_id: str) -> dict:
 
 
 # ── the shape every building view shares (haipipe-ui Salience: numbered heading bars that fold) ───────────────
-def group(name: str) -> str:
-    return f'<h3 class="dec-group">{esc(name)}</h3>'
-
-
 def section(n, title: str, body: str, anchor: str = "", word: str = "", waits: str = "") -> str:
     """One section: a boxed heading bar `N · <emoji> name` that folds, open by default, its content under it; its state
     word on the bar's right and, while it waits on the person, that one thing under the bar, shown only while the
     section is closed (JL 261106: "every closed bar shows a state word on its right"). The fold keys on the title."""
-    from live.ui_parts import word_span
+    from live.ui_parts import waits_on_you, word_span
+    waits = waits if waits_on_you(word) else ""               # the bar's mark is word_span's: 🙋, ✓ or nothing
     head = (f"{n} · " if n else "") + title
     return (f'<details class="dec-sec" open data-fold="{esc(head)}"' + (f' id="{esc(anchor)}"' if anchor else '')
             + f'><summary class="dec-h">{esc(head)}{word_span(word)}</summary><div class="dec-body">{body}</div></details>'
@@ -416,12 +417,12 @@ def _answer_html(card: dict, answer: dict | None, state: str) -> str:
 
 
 def _unavailable(read_only: bool, words: str, state: str, more: str = "") -> str:
-    return group(RESULTS if read_only else PROCESS) + section(1, TITLE_1, big(words, state) + (line(more) if more else ""),
+    return section(1, TITLE_1, big(words, state) + (line(more) if more else ""),
                                                               word="nothing yet" if state.startswith("nothing") else state)
 
 
 def decide_view(task: Path, root: Path, read_only: bool = False) -> str:
-    """Work › Decide (read_only False) or Report › Decide (True), for one building Task, without the next link."""
+    """Report › Decide for one building Task: the form while a report waits (read_only False), else each answer."""
     task, root = Path(task).resolve(), Path(root).resolve()
     mod = store()
     if mod is None:
@@ -462,7 +463,7 @@ def decide_view(task: Path, root: Path, read_only: bool = False) -> str:
                          for i, (c, s, a) in enumerate(zip(cards, states, answers)))
         inbox = (_inbox(cards, states, open_i) + f'<div class="dec-cardbox">{panels}</div>') if cards \
             else line("This report has no cards.")
-        return wrap(_strip(base) + group(RESULTS) + section(1, TITLE_1, head + inbox, word=word, waits=waits) + chain)
+        return wrap(_strip(base) + section(1, TITLE_1, head + inbox, word=word, waits=waits) + chain)
 
     submitted = any(_num(s.get("report_revision")) == revision for s in subs if isinstance(s, dict))
     panels = "".join(_card(c, i, open_i, s, _choices(c, i)) for i, (c, s) in enumerate(zip(cards, states)))
@@ -479,5 +480,5 @@ def decide_view(task: Path, root: Path, read_only: bool = False) -> str:
             '<button type="button" class="dec-btn primary" data-submit disabled>Submit feedback</button></div>'
             '<p class="dec-status" role="status" aria-live="polite" data-status></p></div></div></div>') if cards \
         else line("This report has no cards.")
-    return wrap(_strip(base) + group(PROCESS) + section(1, TITLE_1, head + form, anchor="dec-cards", word=word, waits=waits)
-                + group(RESULTS) + chain)
+    return wrap(_strip(base) + section(1, TITLE_1, head + form, anchor="dec-cards", word=word, waits=waits)
+                + chain)  # Work retired (JL 261111): one list, no Process/Results heading

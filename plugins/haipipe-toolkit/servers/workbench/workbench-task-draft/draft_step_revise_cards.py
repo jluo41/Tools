@@ -7,6 +7,7 @@ import re
 from pathlib import Path
 
 from live.frame import _table, esc
+from live.sentence_id import sid as _sid
 from live.draft_steps_common import _inline
 
 
@@ -88,7 +89,7 @@ def _paragraph_plan(text: str):
 def _plan_cell(text: str, changed: bool) -> str:
     if not text:
         return '<span class=mut>—</span>'
-    body = re.sub(r"\((S\d+[^)]*)\)", r'<span class=mut>(\1)</span>', esc(text))     # its sentences, quiet
+    body = re.sub(r"\(([Ss]\d+[^)]*)\)", r'<span class=mut>(\1)</span>', esc(text))     # its sentences, quiet
     return f'<span style="background:#ebfbee;border-radius:3px;padding:0 3px">{body}</span>' if changed else body
 
 
@@ -113,16 +114,16 @@ def _change(head: str, original: str, expected: str) -> str:
 
 def _by_sentence(head: str, original: str, expected: str) -> str:
     """A change over several sentences, sentence by sentence (JL 261020: "I think this should be sentence by sentence"):
-    a row per old sentence, its S, its words old → new. Each new sentence goes to the old one it reads most like; an
+    a row per old sentence, its s id, its words old → new. Each new sentence goes to the old one it reads most like; an
     old one that gets none shows struck, with the sentence it went into. "" when the change holds one old sentence."""
     from live.outline_revise import split_sentences
     old, new = split_sentences(original), split_sentences(expected)
     if len(old) < 2:
         return ""
-    m = re.search(r"\bS(\d+)(?:\s*(?:to|–|-)\s*S?(\d+))?", head)
+    m = re.search(r"\b[Ss](\d+)(?:\s*(?:to|–|-)\s*[Ss]?(\d+))?", head)
     first = int(m.group(1)) if m else None
-    labels = ([f"S{first + i}" for i in range(len(old))] if m and m.group(2) and int(m.group(2)) - first + 1 == len(old)
-              else [f"S{first}" if m and i == 0 else "" for i in range(len(old))])
+    labels = ([f"s{first + i}" for i in range(len(old))] if m and m.group(2) and int(m.group(2)) - first + 1 == len(old)
+              else [f"s{first}" if m and i == 0 else "" for i in range(len(old))])
     words = lambda t: [w.strip(".,;:()[]{}\"'“”").lower() for w in t.split()]
     like = [[difflib.SequenceMatcher(None, words(o), words(n)).ratio() for n in new] for o in old]
     # each new sentence's old one: the earliest that reads nearly as much like it as the best does, so sentences joined
@@ -198,7 +199,9 @@ def _revise_card(head: str, c: dict, task: str, title: str, at: str = "") -> str
     why; the change; then ✓ Accept · ✗ Reject · ✎ Edit, or ↺ Undo once decided. Hovering it lights its sentence in the
     text above. A click writes only the card's State (or its edited Expected) in the cards file (card_act)."""
     state = re.sub(r"\W+$", "", c.get("state").split()[0].lower()) if c.get("state") else "proposed"
-    target = (re.match(r"[^·]+·\s*(S\d+[a-z]*)\b", head) or [None, ""])[1]
+    if state in ("jl's", "jl"):   # "State: JL's call" waits on the person like proposed (JL 261114: the waiting cards were folded away)
+        state = "proposed"
+    target = _sid((re.match(r"[^·]+·\s*((?:C\d+\.P\d+\.)?[Ss]\d+[a-z]*)\b", head) or [None, ""])[1])   # s3 or C2.P1.s3
     para = (re.match(r"[^·]+·\s*(C\d+\.P\d+)\b", head) or [None, ""])[1] or at   # a whole part's card: its first paragraph
     # a card is a choice (JL 261021: "这个 edit 你能不能自动把这几个（比如 A、B、C）都列出来 ... D 是 drop it ... 点击确认 button
     # 就可以了"): every option listed, A, B, C (one, "this change", when the card has no options), then the next letter,
@@ -258,8 +261,8 @@ def _short_head(head: str) -> str:
     """A card's title as its row shows it (JL 261113: "the Edit box is too wordy"): ✏️ and what the change is about; the
     sentence id and Bullet address go, the row already names them, and a Review reads as an Edit."""
     kind, _, rest = head.partition("·")
-    rest = re.sub(r"^\s*(?:S\d+[a-z]*|C\d+(?:\.P\d+)?(?:\.B\d+[a-z]?)?)\s*·\s*", "", rest.strip())
-    rest = re.sub(r"^(?:S\d+[a-z]*|C\d+(?:\.P\d+)?(?:\.B\d+[a-z]?)?)\s*·\s*", "", rest)
+    rest = re.sub(r"^\s*(?:[Ss]\d+[a-z]*|C\d+(?:\.P\d+)?(?:\.B\d+[a-z]?)?)\s*·\s*", "", rest.strip())
+    rest = re.sub(r"^(?:[Ss]\d+[a-z]*|C\d+(?:\.P\d+)?(?:\.B\d+[a-z]?)?)\s*·\s*", "", rest)
     k = kind.strip().lower()
     icon = "✏️ " if k in ("edit", "review") else ""
     return (icon + rest) if rest else (icon + kind.strip())

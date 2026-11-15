@@ -2,7 +2,7 @@
 
 Proposal, 2026-10-31. One cell of b17's 3 × 3: a work Task's page × Studio (verb: think). JL's choices go to the form
 `../../runs/r03_collect_task_studio_views/` (five questions, each option previewed); everything else here is decided
-by me and marked so. Sources: today's code (`servers/workbench/focus_page.py`, `frame.py`), today's pages on 5623
+by me and marked so. Sources: today's code (`servers/workbench/page/focus_page.py`, `frame.py`), today's pages on 5623
 (t03_task_page, t01_block_page, t01_skill_section), a research Task page on 5599 (structure only), b16's s40 and its
 form, the sibling cells' forms (s53 `t01_block_page/runs/r04_collect_block_studio_views`, s56
 `t02_job_page/runs/r03_collect_job_studio_views`), and JL's r01 answers (s51-D01 to D06).

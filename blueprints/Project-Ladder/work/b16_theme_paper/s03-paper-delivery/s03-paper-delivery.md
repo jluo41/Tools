@@ -15,7 +15,7 @@ s03 · Paper Delivery: the built paper, per version
 outputs; haipipe-delivery owns the folder and the rule that only a person marks a send done. This topic
 settles what paper adds: the lanes a paper needs, how versions sit side by side, and what a send freezes.
 
-**Feeds:** `reports/` q02_venues_related_built
+**Feeds:** Q02
 
 
 Files

@@ -10,5 +10,5 @@ Picking a group hid the topic cards above, so the page shrank or grew and the Ti
 
 ## Changed
 
-- `plugins/haipipe-toolkit/servers/workbench/frame.py (.tl-map handler keep)`
+- `plugins/haipipe-toolkit/servers/workbench/page/frame.py (.tl-map handler keep)`
 - `s08-studio-timeline/ (face D15)`

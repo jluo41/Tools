@@ -114,7 +114,7 @@ designs; comparing methods takes one page per method on the same task.
   Guide › Method; an old `space=theory|methods|studio` link forwards to `guide=method`,
   and `space=papers` to `guide=related-paper`. Old `space=goal|design|delivery|run` board links open Design Tasks.
 - Guide is mounted at both levels by `workbench`; the Design family's entry in
-  `servers/workbench/guide_families.py` gives its skills, method steps, Spaces,
+  `servers/workbench/guide/guide_families.py` gives its skills, method steps, Spaces,
   folders, a `description`, and three framed pages (`explain`): Guide › Method gives six steps,
   then frames one page (`/_board/design-board?embed=theory&view=method&views=method`):
   the methods drawing first, then `servers/workbench-design/guide/method.md`, built on the six steps (the steps,

@@ -138,3 +138,32 @@ def test_chinese_register_rules_fire_without_word_boundaries():
     } <= ids
     assert result["diagnostic_only"] is True
     assert result["rules_version"] == "1.1.0"
+
+
+def test_paragraph_length_reports_a_prose_paragraph_outside_4_to_7():
+    """JL 261112: "unless having good reason, we might make sure they are between 4~7 sentences"."""
+    import anti_slop as a
+    text = "One. Two. Three.\n\nA. B. C. D. E.\n\nOnly one sentence here.\n\n# Heading\n\nA. B. C. D. E. F. G. H."
+    found = [f for f in a.detect(text, a.load_rules()) if f["id"] == "paragraph-length"]
+    assert [f["line"] for f in found] == [1, 9]
+    assert found[0]["note"].startswith("3 sentences")
+
+
+def test_title_metaphor_flags_casual_verbs_in_titles_and_labels_only():
+    """JL 261112: "I don't know why here we use the word of 'buy'"."""
+    import anti_slop as a
+    text = ("### C1.P5 · Here we measure what scale buys for each use · S1 to S13\n\n"
+            "- B1 · S1 · [What it pays] the gain is small\n\narc: scale pays off early\n\n"
+            "The authors pay for compute in the prose, which is not a title.\n")
+    hits = [f["line"] for f in a.detect(text, a.load_rules()) if f["id"] == "title-metaphor"]
+    assert hits == [1, 3, 5]
+
+
+def test_money_metaphor_in_prose_and_shorthand_in_titles():
+    """JL 261112: no money metaphors in prose; no in-group shorthand ("rolled forward", "head", "grid") in titles."""
+    import anti_slop as a
+    text = ("### C2.P1 · Rolled forward on the grid · S1 to S4\n\n"
+            "We ask where scale buys accuracy. The paid claims are counted.\n\nAnother paragraph is here.\n")
+    got = {f["id"]: f["line"] for f in a.detect(text, a.load_rules()) if f["id"] in ("money-metaphor", "in-group-shorthand")}
+    assert got == {"in-group-shorthand": 1, "money-metaphor": 3}
+

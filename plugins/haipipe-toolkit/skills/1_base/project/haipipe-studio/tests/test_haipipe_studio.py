@@ -98,12 +98,35 @@ class StudioTest(unittest.TestCase):
         text = md.read_text()
         self.assertTrue(text.startswith("s01 · First\n==========="))
         self.assertIn("**Topic:**", text)
-        self.assertIn("**Feeds:** `reports/` q01_one · q02_two", text)
-        for head in ("Files\n-----", "Decided\n-------", "Open\n----"):
+        self.assertIn("**Feeds:** Q01 · Q02", text)                 # no reports/ page any more (JL 261109)
+        self.assertNotIn("reports/", text)
+        for head in ("Files\n-----", "Decided\n-------", "Open\n----", "Q01 · Answer\n------------", "Q02 · Answer"):
             self.assertIn(head, text)
 
+    def test_the_face_names_its_view_and_its_why(self):
+        # JL 261109: b12's topics showed in no focus view until each face had its view: line
+        md = new_topic.new_topic(self.block, "routes", "Routes", view="findings")
+        lines = md.read_text().splitlines()
+        self.assertEqual(lines[2], "view: findings")
+        self.assertIn("**Why:**", md.read_text())
+        with self.assertRaises(ValueError):
+            new_topic.new_topic(self.block, "bad", "Bad", view="report")
+
+    def test_update_flags_a_missing_view_and_why_and_never_draws_a_placeholder(self):
+        sys.path.insert(0, str(Path(new_topic.__file__).parent))
+        import studio_update
+        t = self.block / "s05-old"
+        t.mkdir()
+        (t / "s05-old.md").write_text("s05 · Old\n=========\n\n**Topic:** an old one.\n\n"
+                                      "**Feeds:** `reports/` q01_x\n", encoding="utf-8")
+        keys = {k for _, k, _ in studio_update.checks(t, {})}
+        self.assertTrue({"view", "why", "feeds"} <= keys)
+        self.assertNotIn("draw", keys)
+        with self.assertRaises(SystemExit):
+            studio_update.draw(t)
+
     def test_a_builder_draws_and_a_rebuild_keeps_the_persons_mark(self):
-        md = new_topic.new_topic(self.block, "drawn", "Drawn", builder=True)
+        md = new_topic.new_topic(self.block, "drawn", "Drawn", builder="draw")
         drawing = md.with_suffix(".excalidraw")
         script = md.parent / "build_s01_drawn.py"
         self.assertTrue(drawing.is_file() and script.is_file())
@@ -118,10 +141,50 @@ class StudioTest(unittest.TestCase):
         self.assertIn("s01 · Drawn", texts)
         self.assertIn('sys.path.insert(0, str((HERE / "..', script.read_text())   # a relative path, never absolute
 
+    def test_a_new_builder_draws_the_five_parts_by_default(self):
+        """JL 261112: "I want the vivid ones": --builder writes a five_parts builder and its A · B · C sketch stubs."""
+        md = new_topic.new_topic(self.block, "vivid", "Vivid", builder=True)
+        drawing, script = md.with_suffix(".excalidraw"), md.parent / "build_s01_vivid.py"
+        sketch = md.parent / "sketch_vivid.py"
+        self.assertTrue(drawing.is_file() and script.is_file() and sketch.is_file())
+        self.assertIn("import five_parts", script.read_text())
+        self.assertNotIn("from draw import", script.read_text())
+        for text in (script.read_text(), sketch.read_text()):                  # relative paths, never absolute
+            self.assertIn('sys.path.insert(0, str((HERE / "..', text)
+        els = json.loads(drawing.read_text())["elements"]
+        texts = {e.get("text") for e in els}
+        self.assertTrue({"Idea", "Now", "Design", "Process", "Delivery"} <= texts)
+        self.assertTrue(any(str(t).startswith(k + " ·") for t in texts for k in "ABC"))
+        self.assertTrue(any(e.get("backgroundColor") not in (None, "transparent") for e in els))   # its colours stay
+        doc = json.loads(drawing.read_text())                       # a person's mark survives a rebuild (a whole
+        mark = dict(next(e for e in doc["elements"] if e["type"] == "text"))   # text element, as Excalidraw saves one)
+        mark.update(id="mine", text="my note", originalText="my note", strokeColor="#e03131")
+        doc["elements"].append(mark)
+        drawing.write_text(json.dumps(doc))
+        subprocess.run([sys.executable, str(script)], check=True, capture_output=True)
+        self.assertIn("my note", [e.get("text") for e in json.loads(drawing.read_text())["elements"]])
+        check = SCRIPTS.parents[2] / "excalidraw" / "excalidraw-studio" / "scripts" / "check.py"
+        out = subprocess.run([sys.executable, str(check), str(drawing)], capture_output=True, text=True).stdout
+        self.assertIn("a five-part drawing", out)
+        self.assertIn("✅ all five parts", out)
+        self.assertIn("placeholder words left", out)                    # the stubs still to fill
+
+    def test_check_finds_the_parts_by_the_names_and_size_five_parts_draws(self):
+        import importlib.util
+        found = {}
+        for name, path in (("five_parts", SCRIPTS / "five_parts.py"),
+                           ("check", SCRIPTS.parents[2] / "excalidraw" / "excalidraw-studio" / "scripts" / "check.py")):
+            sys.path.insert(0, str(path.parent))
+            spec = importlib.util.spec_from_file_location(name + "_under_test", path)
+            found[name] = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(found[name])
+        self.assertEqual(tuple(found["check"].PARTS.values()), found["five_parts"].PART_NAMES)
+        self.assertLessEqual(found["check"].PART_MIN, found["five_parts"].PART_SIZE)
+
     def test_a_change_gets_a_green_note_where_it_changed_and_in_the_title(self):
         note = canvas.change_note(100, 200, "moved the box", "261007", frame="f1")
         self.assertEqual((note["text"], note["strokeColor"], note["frameId"]), ("✎ 261007 moved the box", canvas.GREEN, "f1"))
-        md = new_topic.new_topic(self.block, "drawn", "Drawn", builder=True)
+        md = new_topic.new_topic(self.block, "drawn", "Drawn", builder="draw")
         script = md.parent / "build_s01_drawn.py"
         script.write_text(script.read_text().replace("CHANGES = []", 'CHANGES = [("261007", "added the first box")]'))
         subprocess.run([sys.executable, str(script)], check=True, capture_output=True)
@@ -131,7 +194,7 @@ class StudioTest(unittest.TestCase):
 
     def test_the_skeleton_draws_in_black_red_and_green_and_one_key_colour(self):
         # excalidraw-studio's principle 5 (b31 s01-D05): one slight colour marks a frame's key point, nothing else
-        md = new_topic.new_topic(self.block, "plain", "Plain", builder=True)
+        md = new_topic.new_topic(self.block, "plain", "Plain", builder="draw")
         els = json.loads(md.with_suffix(".excalidraw").read_text())["elements"]
         key = canvas.KEY
         self.assertEqual(canvas.off_palette(els), [])                                   # the key fill is the look's
@@ -151,7 +214,7 @@ class StudioTest(unittest.TestCase):
         fams = {e["text"]: e["fontFamily"] for e in json.loads(out.read_text())["elements"]}
         self.assertEqual(fams, {"hand": canvas.FONT, "comic": canvas.FONT, "path/to/code.py": canvas.CODE_FONT})
         self.assertEqual(canvas.change_note(0, 0, "moved", "261009")["fontFamily"], canvas.FONT)
-        md = new_topic.new_topic(self.block, "plain", "Plain", builder=True)
+        md = new_topic.new_topic(self.block, "plain", "Plain", builder="draw")
         texts = [e for e in json.loads(md.with_suffix(".excalidraw").read_text())["elements"] if e["type"] == "text"]
         self.assertEqual({e["fontFamily"] for e in texts}, {canvas.FONT})
 
@@ -449,7 +512,7 @@ class StudioUpdateTest(unittest.TestCase):
             topic.mkdir(parents=True)
             (topic / "s01-a.md").write_text("s01 · a\n=====\n\n**Topic:** one thing.\n\n\nOpen\n----\n\n1. first\n")
             keys = {k for _, k, _ in su.checks(topic, su.level_counts([topic]))}
-            self.assertEqual(keys, {"place", "stage", "for", "type", "delivery", "render", "mindmap", "draw", "slides"})
+            self.assertEqual(keys, {"place", "stage", "for", "type", "delivery", "render", "mindmap", "view", "why", "slides"})   # no Why: no draw (261109)
             su.add_stage(topic)
             su.add_delivery(topic)
             su.name(topic, "a deck, and one table, for its reader", "data")
@@ -460,7 +523,7 @@ class StudioUpdateTest(unittest.TestCase):
             self.assertTrue((topic / "delivery" / "render.yaml").is_file())
             keys = {k for _, k, _ in su.checks(topic, su.level_counts([topic]))}
             # a data topic also owes its data drawn step by step (excalidraw-studio § A data topic, JL 261031)
-            self.assertEqual(keys, {"place", "mindmap", "draw", "slides", "data-built"})     # never deck as a type
+            self.assertEqual(keys, {"place", "mindmap", "view", "why", "slides", "data-built"})     # never deck as a type
             with self.assertRaises(SystemExit):
                 su.name(topic, "", "deck")
 

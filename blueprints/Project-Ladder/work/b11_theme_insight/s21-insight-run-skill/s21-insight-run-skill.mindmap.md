@@ -22,8 +22,8 @@ built: from-topic .
 - Source <!-- @source #6da13a -->
   - read from disk on every build: <!-- @source/0 #497260 -->
 - Feeds <!-- @feeds #ffe8e9 -->
-  - `../reports/q01_insight_ladder/` (run types per level) and the … <!-- @feeds/0 #89d0d8 -->
-    `../reports/q01_insight_ladder/` (run types per level) and the proposed Q06 (the Prototype and data versions).
+  - `../_old/reports/q01_insight_ladder/` (run types per level) and the … <!-- @feeds/0 #89d0d8 -->
+    `../_old/reports/q01_insight_ladder/` (run types per level) and the proposed Q06 (the Question Book and data versions).
 - Files <!-- @files #6ce6c5 -->
   - [py] [build_s21_insight_run_skill.py](build_s21_insight_run_skill.py) <!-- @files/0 #3e30bf -->
   - delivery/ <!-- @files/1 #404761 -->
@@ -35,12 +35,12 @@ built: from-topic .
   - "today" says where a run type stands: … <!-- @what-the-drawing-holds/0 #1ea811 -->
     "today" says where a run type stands: **card** (a run card names its skill, agent and sign; 261008), **base** (the shared frame runs it), **live** (the insight theme shows the button, but no card says who runs it), **drawn** (only in the drawing).
 - Decided (261007) <!-- @decided-261007 #b885e6 -->
-  - The Prototype Block's run types are typed … <!-- @decided-261007/0 #f2f77a -->
-    The Prototype Block's run types are typed here: Take the proposals, Open a version, Ask, Review the questions,
+  - The Question Book Block's run types are typed … <!-- @decided-261007/0 #f2f77a -->
+    The Question Book Block's run types are typed here: Take the proposals, Open a version, Ask, Review the questions,
   - Plan the evidence, Review the evidence plan, … <!-- @decided-261007/1 #eeb20b -->
-    Plan the evidence, Review the evidence plan, Set the cuts, Write the script, Review the script, Draw the question map, Sign a release, Carry a board over.
-  - A cut is set in the release … <!-- @decided-261007/2 #eddbe5 -->
-    A cut is set in the release (Set the cuts, haipipe-insight); the Board only proposes one (Propose a cut), with
+    Plan the evidence, Review the evidence plan, Set the segments, Write the script, Review the script, Draw the question map, Sign a release, Carry a board over.
+  - A segment is set in the release … <!-- @decided-261007/2 #eddbe5 -->
+    A segment is set in the release (Set the segments, haipipe-insight); the Board only proposes one (Propose a segment), with
   - the s11 session <!-- @decided-261007/3 #7f01ec -->
     the s11 session. No new `haipipe-insight-partition` skill.
   - `haipipe-insight-bind` has no ladder Run: it stays … <!-- @decided-261007/4 #6a1f47 -->
@@ -64,8 +64,8 @@ built: from-topic .
   - (haipipe-insight-workflow 3.0.0) and the table generated from … <!-- @decided-261007/13 #0bdd39 -->
     (haipipe-insight-workflow 3.0.0) and the table generated from them (workbench-insight 1.0.0). Frame 1 reads the cards.
 - Open (another owner) <!-- @open-another-owner #da2c70 -->
-  - The Prototype Block has no level drawing: … <!-- @open-another-owner/0 #4dc712 -->
-    The Prototype Block has no level drawing: a session drawing it (as s11 · s12 · s13 do) should show these buttons.
+  - The Question Book Block has no level drawing: … <!-- @open-another-owner/0 #4dc712 -->
+    The Question Book Block has no level drawing: a session drawing it (as s11 · s12 · s13 do) should show these buttons.
 - Open <!-- @open #cf9b77 -->
   - Agree its **For:** line and **Delivery type:** … <!-- @open/0 #09a2ba -->
     Agree its **For:** line and **Delivery type:** (skill), proposed by the agent 261030?

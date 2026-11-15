@@ -23,7 +23,7 @@ each sentence with the sentence before it and the sentence after it in view, and
    or `broken` when it does not.
 2. **Reference.** Every `this`, `that`, `it`, `these`, `such`, `also`, `still`, `the same` and `instead` points to one thing,
    in the sentence before, that the reader can name. A pointer that reaches back two sentences, or that could mean two
-   things, is a problem. A repeated noun is not a pointer: "an agent" in S6 may name the agent of S4 across S5 and
+   things, is a problem. A repeated noun is not a pointer: "an agent" in s6 may name the agent of s4 across s5 and
    still carry, because the noun says what it means; only the pointer words must land in the sentence before.
    A word the author's rulings fix (an opening the author chose) is noted in the problem, not scored down.
 3. **Setup and payoff.** A colon, `but`, `because`, `although`, `while`, `if` or `so` promises a relation. Check that
@@ -87,27 +87,29 @@ the target (`plain-rules.md` §3).
 
 ## The line, one per sentence
 
+The id is the Draft's own, written `s<n>`; an older report's `S<n>` is read as the same sentence.
+
 ```
 Sentences:
-- S<n> · logic <0-10>/10 · read <0-10>/10 · ai <0-10>/10 · link: <relation>, <carried | weak | broken> · <the specific problem> · Fix: <none | the rewritten sentence>
+- s<n> · logic <0-10>/10 · read <0-10>/10 · ai <0-10>/10 · link: <relation>, <carried | weak | broken> · <the specific problem> · Fix: <none | the rewritten sentence>
 ```
 
 - **The specific problem** names the words and the check that fails, in at most 25 words: "'this' points to coverage
-  in S8, but the second half is about wrong names" (setup and payoff), not "flows poorly". It answers the question a
+  in s8, but the second half is about wrong names" (setup and payoff), not "flows poorly". It answers the question a
   reader would ask at that spot ("why is this here?", "what does 'this' mean?"): the words, what they promised, what
-  the reader got. When the logic holds, say what holds it in the link field ("'This list' picks up S6's short list"),
+  the reader got. When the logic holds, say what holds it in the link field ("'This list' picks up s6's short list"),
   so the author can trust it and move on; the problem is then "none", or a tiny gap named as tiny.
 - **Fix** is the full rewritten sentence, one sentence, the same facts, numbers and citation keys, no fact added,
   changing the fewest words that cure the problem; a Fix that keeps less than 60% of the sentence (difflib ratio)
   needs a problem a small edit cannot cure, never style alone (JL 261113; haipipe-draft-writing `ref/revise.md`);
   given for every sentence below 8 and every weak or broken link; a sentence at 8 or more may carry one marked
   `Fix (optional):`. A rewrite that breaks one of the author's rulings is
-  no fix. When the sentence is right but in the wrong place, the Fix is `move after S<n>` with its reason in the
+  no fix. When the sentence is right but in the wrong place, the Fix is `move after s<n>` with its reason in the
   problem; the move is the writer's to weigh, since it changes the paragraph's order (its plan). When a word cap binds
   (an abstract at its venue's limit), a Fix that adds words names what it cuts, or the Venue row says how many words
   the Fixes add in all; a sentence too long for one pass is shortened, never split, since one sentence per S holds.
-- After the lines, one line per paragraph: `Flow P<k>: S<a> <step> → S<b> <step> → … · shape: topic S<a>, support
-  S<b> to S<c>, hand-off S<d> (or "none", with what is missing) · weakest join S<x> to S<y>`.
+- After the lines, one line per paragraph: `Flow P<k>: s<a> <step> → s<b> <step> → … · shape: topic s<a>, support
+  s<b> to S<c>, hand-off S<d> (or "none", with what is missing) · weakest join S<x> to S<y>`.
   The paragraph's opening seam belongs to it and may be its weakest join; when every join carries, name the least
   strong one.
 

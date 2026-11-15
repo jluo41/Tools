@@ -76,6 +76,14 @@ names are Insight's (`assets/css/90-task-workbench.css`).
 | Check › Runs · Tasks · Reports | Every receipt's status; each Task Folder's findings; each report's answer state, evidence warnings and next action. |
 | Delivery › Reports | Each report whose `answer-status` is `answered`, its Opening and Answer word for word, with its evidence. |
 
+On the current focus page (`servers/workbench/page/focus_page.py`, `work_findings`), a work Block's, Job's or Task's
+**Findings** opens, on a Block, with **🗄️ Data**: where its data is, one row per store from
+board.md's ```yaml `data:` block, each count read from a Result. Then two sections, drawn as the paper Board's
+Evidence views: **🔢 Values**, the value
+Jobs' newest `tables.json` with the numbers `values.json` lets the text quote (owner `haipipe-evidence`), and
+**🖼️ Displays**, the display Tasks' `preview.pdf` (owner `haipipe-display`). Each keeps its slot when empty;
+then **🧠 Maps**, only when the work drew maps. Studio topics belong to Around the Work › Studio (JL 261111).
+
 Jobs and Tasks without a Question remain visible under **Not under a Question**, at the
 end of the last group's table. An existing Block needs no migration; an empty Question
 register does not hide its execution records. Folding state and the selected View are
@@ -191,7 +199,7 @@ records, not actual project execution, evidence approval or Page CHECK.
 ## Guide and the Workbench design
 
 Guide's four Views come from `guide/guide.yaml` (family `task`), loaded by
-`workbench/guide_families.py`. Description is text there. Method is the shared
+`workbench/guide/guide_families.py`. Description is text there. Method is the shared
 method page (`/_board/guide?family=work&mode=method`): the methods drawing
 `guide/methods.excalidraw` first (drawn once by
 `blueprints/Project-Ladder/work/b10_project_workbench/s31-guide/method-canvas.py`, then edited as the source), then

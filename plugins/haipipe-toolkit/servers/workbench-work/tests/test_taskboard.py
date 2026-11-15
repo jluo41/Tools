@@ -161,11 +161,10 @@ def test_named_question_ids_and_a_question_without_a_title(demo):
 
 
 def test_add_report_frames_a_registered_question_with_its_drawing(demo):
-    """block_questions.py add-report: a report for a Question already in the register, with a
-    studio drawing under Evidence that the Report column then shows."""
+    """block_questions.py add-report (JL 261109: no reports/ folder): the Question's answer place is a Studio topic
+    whose face holds a `Q-food-1 · Answer` part with the given evidence; the register's report: points at it."""
     import subprocess
     import sys
-    from urllib.parse import quote
     from task_questions import replace_register
     root, board = demo
     head = board / "board.md"
@@ -179,24 +178,12 @@ def test_add_report_frames_a_registered_question_with_its_drawing(demo):
                                          "--slug", "input_forms", *extra], capture_output=True, text=True)
     done = run("--evidence", f"Food drawing|studio/{drawing.name}")
     assert done.returncode == 0, done.stderr
-    page = board / "reports/q-food-1_input_forms/q-food-1_input_forms.md"
-    assert page.is_file() and (page.parent / "page.toml").is_file()
-    assert f"- [Food drawing](../../studio/{quote(drawing.name)})" in page.read_text()
-    assert run().returncode == 1                                    # the Question now names its report
-    q = task_board_snapshot(board, root)["questions"][0]
-    assert q["report"]["present"] and q["report"]["status"] == "open"
-    # linked but not yet read: Check says so until a reader sets results-read
-    assert q["report"]["issues"] == ["Evidence review time is not recorded (results-read)"]
-    assert [d["title"] for d in q["report"]["drawings"]] == ["Food drawing"]
-    assert q["report"]["drawings"][0]["png"] == ""                  # no picture yet: a text link
-    drawing.with_suffix(".png").write_bytes(b"\x89PNG\r\n\x1a\n")
-    q = task_board_snapshot(board, root)["questions"][0]
-    assert q["report"]["drawings"][0]["png"].endswith(".png")      # the preview picture beside it
-    assert '<a class="rp-thumb"' in render_task_board(task_board_snapshot(board, root))
-    other = subprocess.run([sys.executable, str(helper), "add-report", str(board), "--id", "Q-food-9",
-                            "--slug", "x"], capture_output=True, text=True)
-    assert other.returncode == 1 and "use add-question" in other.stderr
-
+    assert not list(board.glob("reports/q-food-1*"))                 # nothing new under reports/
+    face = next(p for p in board.glob("s[0-9][0-9]-q-food-1-input-forms/*.md") if p.stem == p.parent.name)
+    text = face.read_text()
+    assert "Q-food-1 · Answer" in text and "Food drawing" in text and "view: findings" in text
+    assert f"report: {face.parent.name}/{face.name}" in head.read_text()
+    assert run().returncode == 1                                    # the Question now names its answer place
 
 def test_a_question_gets_its_group_on_add_and_later(demo):
     """block_questions.py add-question --group, and set-group on a registered Question: the Report's group bar

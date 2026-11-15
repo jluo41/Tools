@@ -121,7 +121,7 @@ Caption: "What this Job hands over." Two sections, a heading each; they fold by 
 - s51 (Block UI: Report): the delivery card itself and its picture (its open question). A Job shows the same card.
 - b17-s04 (what every work page shares): path, title, goal-line, right rail, the pop-out, and which section a Job
   opens on (Work today, haipipe-ui's level table).
-- Owners outside j03: design_b02_workbench writes the code in `servers/workbench/focus_page.py`; haipipe-studio owns
+- Owners outside j03: design_b02_workbench writes the code in `servers/workbench/page/focus_page.py`; haipipe-studio owns
   what render.yaml means (`render_delivery.py`); haipipe-delivery owns versions (`-v<N>`).
 
 
@@ -190,7 +190,7 @@ the map misses what the Job makes and the Tasks' own sNN, and Status repeats Wor
 
 ## The code change, named for design_b02_workbench
 
-In `servers/workbench/focus_page.py`, after JL answers r01:
+In `servers/workbench/page/focus_page.py`, after JL answers r01:
 
 1. `render()`: at a work Job, no `overview["standing"]`; after `"mindmap"`, one view per delivery type of the sNN in
    `job_deliveries(job)`, keyed by the type, named Skill, UI, Code, Draft, Display or Data.

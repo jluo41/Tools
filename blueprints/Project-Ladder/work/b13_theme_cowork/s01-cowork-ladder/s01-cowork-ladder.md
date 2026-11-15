@@ -1,5 +1,6 @@
 s01 · cowork ladder
 ====================
+view: findings
 
 **Stage:** explore
 
@@ -17,7 +18,17 @@ proposal (teal, solid) above today's workbench (gray, dashed). There is no cowor
 (`build_ladder_v4.py`, `level_views.py`). This topic's own builder draws them under its overview
 frame, as b12's s01-design does. Edit the cowork rows there and this drawing follows on its next build.
 
-**Feeds:** `../reports/` q01 (the ladder question).
+**Feeds:** Q01 · `../reports/` q01 (the ladder question).
+
+
+Q01 · Answer
+------------
+
+**Question:** How does a cowork topic climb the ladder?
+
+**Answer (open):** Proposed 261007, waiting for JL: a cowork topic climbs Block → Job → Run; an email, a meeting or a checklist step is a row of its Job, not a Task.
+
+**Page:** [q01_cowork_ladder.md](q01_cowork_ladder/q01_cowork_ladder.md): the full answer, its evidence and limits (moved from reports/)
 
 
 Files

@@ -1,5 +1,6 @@
 s02 · The data lineage
 ======================
+view: findings
 
 **Stage:** explore
 
@@ -9,7 +10,17 @@ s02 · The data lineage
 
 **Topic:** The four DATA views as one dataset at four stages (Raw · Source · Record · Case), each with its store, its transform and its route, and the fork of `diagram/09-workspace-wiring.txt` (copy each human into a json, or read the record store in place), drawn open in g01 and decided in g02: read in place (261009).
 
-**Feeds:** `reports/` q02_copy_or_read
+**Feeds:** Q02
+
+
+Q02 · Answer
+------------
+
+**Question:** Copy each human to json, or read the record store in place?
+
+**Answer (answered):** Read the record store in place. The console now assembles each human's json per request from the record set (`INLAB_RECORD_STORE`), and the per-human json copy is only the fallback where no record store is mounted. One source of truth and no second copy of patient data to secure outweigh a parquet filter per request, which is cached per human.
+
+**Page:** [q02_copy_or_read.md](q02_copy_or_read/q02_copy_or_read.md): the full answer, its evidence and limits (moved from reports/)
 
 
 Files

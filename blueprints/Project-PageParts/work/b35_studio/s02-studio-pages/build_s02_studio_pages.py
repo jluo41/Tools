@@ -13,8 +13,8 @@ import five_parts  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
 WB = Path("/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/servers/workbench")
-_fp = (WB / "focus_page.py").read_text(encoding="utf-8")
-_fr = (WB / "frame.py").read_text(encoding="utf-8")
+_fp = (WB / "page" / "focus_page.py").read_text(encoding="utf-8")
+_fr = (WB / "page" / "frame.py").read_text(encoding="utf-8")
 _css = (WB / "focus-assets/focus.css").read_text(encoding="utf-8")
 SPEC = {
     "title": "The Studio's UI: inside every page, an sNN's link lands on its card",

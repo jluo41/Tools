@@ -57,7 +57,7 @@ logical, not a new storage schema:
 
 ```yaml
 point: C3.P1.B4
-sentences: [C3.P1.S1, C3.P1.S2]
+sentences: [C3.P1.s1, C3.P1.s2]
 obligations:
   value: 1
   citation: 1

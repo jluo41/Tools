@@ -1,3 +1,49 @@
+## 0.63.0 · 2026-11-12 · an off paragraph is marked
+
+- JL 261112: a paragraph outside 4 to 7 sentences shows "❗ <n> sentences (4 to 7)" in red on the Plan mind map
+  (Structure and the draft Task's Plan view, `draft_steps._plan_map`); one with a `reason:` line shows muted; a
+  Section's tab in Structure reads "<N> paragraphs · <k> off".
+
+## 0.62.0 · 2026-11-11 · Work retired; the Structure view redone
+
+- JL 261111: "the Work is no longer used". Work is off the rail at Block, Job and Task; old Work links open the same
+  Report view; what its Process held is the Report view's first numbered sections; no grey caption under the buttons.
+- JL 261111: "it is so ugly, could you try it again". Structure is two sections: 🧭 The story (title, story, claim
+  cards, the sign) and 🗺️ The Sections (a closed row per Section, its paragraphs and the venue's papers inside). The
+  side-by-side Markdown and the wide Examples table are gone.
+- The Plan's first section is cards, not a table (JL 261111: "not good, not beautiful, and not readable"): a card per
+  question with one chip flow (work → display → Section), a Now box with Next by who moves first, the Fork as dashed
+  boxes. No id or Run address on screen. Reviewed round by round by fresh reviewers.
+- The Plan view is the skill's Plan (JL 261111, "okay, go ahead and do it"): Data flow and Paper flow, each its
+  topic's drawing with its prompts on its bar. The earlier Plan summary (cards, then tabs) and its module
+  paper_plan.py are gone; Reading moved to the Story view (paper_reading.py).
+
+## 0.61.0 · 2026-11-11 · the Plan on one screen; Structure's Examples panel built
+
+- JL 261111 ("for the whole Plan view, it is hard for me to understand the whole plan"): Data + Paper Plan opens with
+  🗺️ The plan (`servers/workbench-paper/paper_plan.py`): the paper's question and budget, a row per Question with its
+  work, displays and Section, ▶ Now grouped by who starts, ⑂ Fork from the Story's `**Fork**:` line. The Roadmaps
+  section left the Plan (its rows are the plan's); § 6 D rows are 📚 Reading, one line each. The old "N of M done"
+  word, which counted general-question rows, is gone. A template slot (`<...>`) line is not shown anywhere in the Plan.
+- Structure's 📚 Examples panel is built: a row per example paper, a column per Section, joined by `<author><year>`
+  across the Sections' examples topics; our row first.
+
+## 0.60.0 · 2026-11-11 · Structure has three panels; Story by Section reads § 8 as the shared narrative
+
+- JL 261111, two layers: the Story's § 8 is title, story and claims (every version), the version face's `## Narrative`
+  is that venue's layout. The Structure view's Narrative panel says so; the paper map is what the Drafts hold now
+  (s04 is the plan). The structure is a view, never a Task.
+- A third Structure panel, 📚 Examples, is documented (code being built elsewhere): each example paper's sections
+  beside our paper map, joined across the Sections' examples topics by `pNN-<author><year>`.
+- Story by Section takes the arc and claims from § 8 and each Section's tab from the newest version's `## Narrative`.
+- The Level › Space table gains a Job › Report row for Structure.
+
+## 0.59.0 · 2026-11-11 · a version's Structure view
+
+- JL 261111 ("it should be a view for the job workbench UI"; "the narrative from the block can be presented in the job
+  UI as well"): a version's first view, Structure, shows the Story's § 8 beside the version's `## Narrative` and its
+  sign, then the paper map, one line per paragraph (`paper_structure.py`; test in `tests/test_version_and_jobs.py`).
+
 ## 0.58.0 · 2026-11-10 · the Story view reads as a story
 
 - Paper-CMS-AI-Usage 261110 (JL: "the display here is not well to ready"): Direction shows its question large and Why
@@ -8,6 +54,29 @@
   (JL 261110: "we have a large margin here"), stacked under 900 px.
 - Every capped block in a paper section (the Story's prose, a section's own paragraphs and lists) sits centred in its
   card, its text left-aligned (JL 261110: "at least you put the paragraph in the middle"); the Purpose stays on the title's edge. Research Questions now also reads the story skill's own form (`**The paper's question**:` then the list).
+- Research Questions is ONE table, a row per question, every field side by side (JL 261111: "why you don't just add
+  more columns????? so hard to review and read"): RQ | Question | Why we ask | Asked before | New here | Expected |
+  State (the mark, ⬜ for nothing yet, a short note after it); the three middle columns come from §3's table and are
+  absent without it. A compared table takes the card's width; stacked per row on a phone.
+- Then (JL 261111, done in the CMS paper session): no State column ("no need for this, drop it"), the report link at
+  the end of Expected; the paper's question in `.pb-rqhead` on the table's left edge; no "Stakes and evidence" section
+  ("no information from it"), so Venues is 5 and Story by Section 6.
+- A venue card's "To pass the desk" row, under Editor's test: the first sentence of each item of the editor's-test
+  report's `**To raise the odds**` numbered list (JL 261111: "the suggestions about how could I improve to pass the desk
+  rejection"; CMS paper session). Hidden with no report.
+- The Editor's test row gains an "Open the editor's test" pop-out when the Board has the venue's editor-test report,
+  `reports/q*_editor_test_<venue slug without hyphens>*/q*_editor_test_*.md` (JL 261111: "I might want to see the details
+  about it"; CMS paper session).
+- Correction (JL 261111, CMS paper session): Story by Section is side tabs again ("I want the left tab right content,
+  git it back to me!!!!"), its Moves a numbered list 1, 2, 3; the numbered Section rows are withdrawn. Each venue card
+  opens with its editor's test (§9's `editor's test` column; "you didn't give the Editor Test").
+- A Section row's ordered moves are a numbered list, one per line in ink, not a muted → line (JL 261111: "I want the
+  introduction to have the 1, 2, 3, 4 for the narrative follow"; done in the CMS paper session).
+- Story by Section is the arc, then a numbered row per Section (1, 2, 3; S1 for a supplement), exactly the Research
+  Questions' row (JL 261111: "they are very differnt, where is the 1, 2, 3, 4"): the reader's question, the moves as a
+  quieter → chain; → what the reader leaves with, displays and claims as chips, ✗ what it must not say. No side tabs.
+  The paper's question, both lists and the arc share one centred measure (JL 261111: "the same width to the Paper
+  questions"). The Story view has no "Open points" section (JL 261111: "this is meaningless, we can drop it").
 - The assembled paper has a tab "The paper · Word, tracked" after "The paper · Word": the co-authors' own Word file, their
   tracked changes and comments kept and ours added (delivery/<writing Job>/word-tracked/*-tracked.pdf and .docx); its line
   is the review Job's tracked-Word Run headline, e.g. "v4 + 2 changes by <author>" (JL 261110).
@@ -306,7 +375,7 @@
   spaces) in a paper Board's views, a version's Work views and a draft Section's step pages links to its folder's
   focus page, resolved in its own Project, work/ then discovery/, a shared or missing Run falling back to its Task;
   a writing Job's Section name `tNN_<name>` links to its Work › Write view. One helper,
-  `servers/workbench/address_links.py`, wraps the views where they are built (board_views, paper_version,
+  `servers/workbench/page/address_links.py`, wraps the views where they are built (board_views, paper_version,
   focus_draft.parts, draft_steps.step_view). Tests: workbench/tests/test_address_links.py and
   test_board_views.AddressLinksTest.
 
@@ -352,7 +421,7 @@
   step with state pills (s33-D06); Data flow as the plan center, each step Open, its skill and Copy prompt (s33-D07).
 - The code moved out of workbench-task-draft/focus_draft.py (2,380 lines; JL 261101: "try to split them") into
   servers/workbench-paper/: board_views.py (the bands), board_results.py, board_process.py, board_read.py,
-  board_evidence.py, board_interactions.py, paper_version.py, and the shared servers/workbench/ui_parts.py; dead code
+  board_evidence.py, board_interactions.py, paper_version.py, and the shared servers/workbench/page/ui_parts.py; dead code
   went. 39 of 53 pages came out byte-identical; the 14 Board views gained only the tail a cut return line had lost
   (the drawing helper, the tab clicks, the folds and Copy prompt). Tests: tests/test_board_views.py.
 
@@ -501,7 +570,7 @@ Links, commands and companions repointed at the helper skills merged into `haipi
 
 ## 0.28.0 · 2026-10-07 · The Guide moves to the server folder (JL 261007, via b02)
 
-- Guide's files live with the server, `servers/workbench-paper/`: `guide/guide.yaml` (was the `paper` entry of `workbench/guide_families.py`, now deleted with `PAPER_DESIGN`), `guide/method.md` (was `ref/paper-method.md`), `guide/methods/` (was `ref/methods/`), `guide/methods.excalidraw` (was `ref/paper-methods.excalidraw`) and `related/papers.md` (was `ref/paper-papers.md`). The Workbench Table stays in `ref/workbench-table.md`.
+- Guide's files live with the server, `servers/workbench-paper/`: `guide/guide.yaml` (was the `paper` entry of `workbench/guide/guide_families.py`, now deleted with `PAPER_DESIGN`), `guide/method.md` (was `ref/paper-method.md`), `guide/methods/` (was `ref/methods/`), `guide/methods.excalidraw` (was `ref/paper-methods.excalidraw`) and `related/papers.md` (was `ref/paper-papers.md`). The Workbench Table stays in `ref/workbench-table.md`.
 
 ## 0.27.0 · 2026-10-07 · Renamed from haipipe-workbench-paper (JL 261007)
 

@@ -129,7 +129,7 @@ Description · Report · Work Details · Runs            second row: what each l
 4. **Inside the Studio**: the third folding part, under Related (what came in, then what went
    out): every result of the Block, as the same cards, each opened on its preview (b10 s03-D09,
    JL 261014; `frame.studio_delivery`).
-5. **Second row**: Delivery is not there; the workbench frame is `servers/workbench/frame.py`.
+5. **Second row**: Delivery is not there; the workbench frame is `servers/workbench/page/frame.py`.
 
 
 Moving old local outputs

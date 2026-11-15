@@ -1,6 +1,6 @@
 # The card Guide's default words (b03 s31-guide, s31-D05 to D08): what each level is, and
 # what each of its six Spaces is and reads, in the words of the vanilla frame (frame.py vanilla()).
-# Loaded by servers/workbench/guide_families.py. A theme's guide/guide.yaml `levels:` overrides
+# Loaded by servers/workbench/guide/guide_families.py. A theme's guide/guide.yaml `levels:` overrides
 # only the words that differ, in this same shape. A Space card's `sub` and `runs` are never written
 # here: the Guide reads them live from the frame (frame.spaces_for).
 Block:

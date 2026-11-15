@@ -182,9 +182,9 @@ def work_value(result, file, key):
 
 
 def sentence_key(n):
-    """A sentence id's place in reading order: `5`, `"5a"` and `"S5b"` sort as (5, ''), (5, 'a'), (5, 'b'). A sentence
-    added between two others takes a letter (S2a after S2), so `for` may hold a string (JL 261020)."""
-    m = re.match(r"S?(\d+)([a-z]*)$", str(n).strip())
+    """A sentence id's place in reading order: `5`, `"5a"` and `"s5b"` (or an older `"S5b"`) sort as (5, ''), (5, 'a'),
+    (5, 'b'). A sentence added between two others takes a letter (s2a after s2), so `for` may hold a string (JL 261020)."""
+    m = re.match(r"[Ss]?(\d+)([a-z]*)$", str(n).strip())
     return (int(m.group(1)), m.group(2)) if m else (10 ** 9, str(n))
 
 
@@ -259,7 +259,7 @@ def check(cards, project, sentences=None, near=None):
             continue
         for it in card['items']:
             where = f"{label} · " + (it['display'] if it.get('display') else
-                                     ','.join(f'S{n}' if re.fullmatch(r'\d+[a-z]*', str(n)) else str(n) for n in it.get('for') or []) or 'S')
+                                     ','.join(f's{n}' if re.fullmatch(r'\d+[a-z]*', str(n)) else str(n) for n in it.get('for') or []) or 's')
             row = None
             try:
                 if it.get('run'):
@@ -278,7 +278,7 @@ def check(cards, project, sentences=None, near=None):
                 problems.append(f'{where}: {e}')
             if not sentences or it.get('display'):
                 continue
-            text = ' '.join(sentences.get(str(n), '') for n in it.get('for') or [])
+            text = ' '.join(sentences.get(str(n), sentences.get(str(n).lstrip('Ss'), '')) for n in it.get('for') or [])
             for phrase in it.get('anchor', []):
                 if phrase not in text:
                     problems.append(f'{where}: anchor "{phrase}" is not in its sentences.')
@@ -430,7 +430,7 @@ def bind_proposals(rows, sentences, page, source, run, cards, found=None):
             disp = sid if str(sid).startswith('display:') else None
             item = ({'run': run, 'for': [], 'display': disp[8:], 'value': vid, 'printed': [words]} if disp else
                     {'run': run, 'for': [sid], 'value': vid, 'anchor': [words]})
-            where = disp[8:] if disp else f'S{sid}' if re.fullmatch(r'\d+[a-z]*', str(sid)) else str(sid)
+            where = disp[8:] if disp else f's{sid}' if re.fullmatch(r'\d+[a-z]*', str(sid)) else str(sid)
             pid = f"bind-{vid}-{re.sub(r'[^A-Za-z0-9]+', '-', where).strip('-')}"
             line = (f"bind VALUE {vid} ({row.get('shown', row.get('value'))}) to {page} {where} \"{words}\" · proposed by "
                     f"evidence (value search) · for: {row.get('what', row.get('key', ''))} · from {source}.{run}")
@@ -440,14 +440,15 @@ def bind_proposals(rows, sentences, page, source, run, cards, found=None):
 
 def ticked(path):
     path = Path(path)
-    return set(re.findall(r'^- \[x\] .*?<!-- (.+?) -->$', path.read_text(encoding='utf-8'), re.M)) if path.is_file() else set()
+    return {re.sub(r'-S(\d+[a-z]*)$', r'-s\1', x) for x in re.findall(r'^- \[x\] .*?<!-- (.+?) -->$',   # an older -S5 is -s5
+            path.read_text(encoding='utf-8'), re.M)} if path.is_file() else set()
 
 
 def adopt_bindings(cards_path, proposals, only=None):
     """Write the ticked binding proposals (or the ids in `only`) into cards.yaml as VALUE items of the card of their
     source; returns how many. A binding once written is fixed: no search rewrites it."""
     cards_path = Path(cards_path)
-    take = ticked(cards_path.parent / 'proposals.md') if only is None else set(only)
+    take = ticked(cards_path.parent / 'proposals.md') if only is None else {re.sub(r'-S(\d+[a-z]*)$', r'-s\1', x) for x in only}
     chosen = [(src, it) for pid, _, (src, it) in proposals if pid in take]
     if not chosen:
         return 0
@@ -530,7 +531,7 @@ def proposals(cards, page):
             p = {'level': 'task', 'in': card.get('propose_in') or card.get('source') or '?', **(it.get('propose') or {})}
             if p['level'] not in LEVELS:
                 raise ValueError(f"{label}: propose.level is one of {', '.join(LEVELS)}.")
-            sents = ','.join(f'S{n}' for n in it['for'])
+            sents = ','.join(f's{str(n).lstrip("Ss")}' for n in it['for'])
             slug = re.sub(r'[^a-z0-9]+', '-', it['need'].lower()).strip('-')[:40]
             pid = f'{page}-{sents}-{slug}'
             world = THEME[card['kind']]

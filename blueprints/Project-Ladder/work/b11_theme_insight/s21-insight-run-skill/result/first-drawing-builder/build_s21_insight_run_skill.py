@@ -4,25 +4,25 @@ JL 261007: "I am thinking we should have a s21-skills to show all the skills rel
 s21-run-skill, it should include both runs and skills"; then "you should follow this one" (b16's
 s21-paper-run-skill). Drawn in black only (haipipe-studio's palette): lines-only tables, a decision in green and dated, red
 only for work another owner must do. Seven frames, top to bottom:
-  1. Runs by level: every run type a Space shows in s11 · s12 · s13, plus the Prototype Block's (no level drawing
+  1. Runs by level: every run type a Space shows in s11 · s12 · s13, plus the Question Book Block's (no level drawing
      yet), where it stands today (a row of the workbench table, the base frame, the live theme only, drawn only),
      who does it, who checks it, its skill;
   2. one release and one data version, in order: open a version → ask · plan · script → sign → add a data version →
-     add a Job → run the partitions → write and check the pages → read across Jobs → counsel and handoff, and back;
+     add a Job → run the segments → write and check the pages → read across Jobs → counsel and handoff, and back;
   3. the skills: each insight skill and the base skills it borrows: what it owns, the Runs that use it, how often
      it still writes an old name, what changes under plan C;
   3b. skill folders, before → after: today's tree read from disk, the proposed tree, and per file the change, what
      it does, why, and the plan phase that makes it;
   4. skill × Run: which skill each run type loads;
   5. Runs on disk: the Runs in the Project insight Blocks and register boards, by type and DIKW level (counts only;
-     no Board, dataset or partition name is drawn);
+     no Board, dataset or segment name is drawn);
   6. the skill update plan: six phases, each skill's change and the run types it gains.
 
 Read from disk every build: the skills in skills/2_theme/insight; the level builders' SCREENS (imported, never
 run); the workbench table (workbench-insight/ref/workbench-table.md, today's run types with agent, skill and
 sign); the live insight theme (servers/workbench-insight: insight_theme.py, insight_views.py) and the base frame
 (servers/workbench); the Runs in the Project insight folders (names only, counted by type). Typed, since they are
-the proposal: the Prototype Block's run types, each skill's job and plan-C change, the owner and name of a run type
+the proposal: the Question Book Block's run types, each skill's job and plan-C change, the owner and name of a run type
 with no row yet, and the plan. canvas.write keeps every mark a person adds through a rebuild.
 
     python build_s21_insight_run_skill.py [out.excalidraw]
@@ -63,23 +63,23 @@ LEVELS = [("Block", "s11-block-level/build_s11_block_level.py"),
 DATE = "261007"
 
 # ── the typed part (proposal, 261007) ──────────────────────────────────────────────────────────
-# the Prototype Block (work/bNN_<topic>_prototype/, s00): no level drawing yet, so its buttons are typed here
-PROTOTYPE = [("Prototype", "Description › Proposals", "Take the proposals"),
-             ("Prototype", "Work Details", "Open a version"),
-             ("Prototype", "Work Details › a version", "Ask"),
-             ("Prototype", "Work Details › a version", "Review the questions"),
-             ("Prototype", "Work Details › a question", "Plan the evidence"),
-             ("Prototype", "Work Details › a question", "Review the evidence plan"),
-             ("Prototype", "Description › Partitions", "Set the cuts"),
-             ("Prototype", "Work Details › a question", "Write the script"),
-             ("Prototype", "Work Details › a question", "Review the script"),
-             ("Prototype", "Idea Studio", "Draw the question map"),
-             ("Prototype", "Delivery", "Sign a release"),
-             ("Prototype", "Runs", "Carry a board over")]
+# the Question Book Block (work/bNN_<topic>_prototype/, s00): no level drawing yet, so its buttons are typed here
+PROTOTYPE = [("Question Book", "Description › Proposals", "Take the proposals"),
+             ("Question Book", "Work Details", "Open a version"),
+             ("Question Book", "Work Details › a version", "Ask"),
+             ("Question Book", "Work Details › a version", "Review the questions"),
+             ("Question Book", "Work Details › a question", "Plan the evidence"),
+             ("Question Book", "Work Details › a question", "Review the evidence plan"),
+             ("Question Book", "Description › Segments", "Set the segments"),
+             ("Question Book", "Work Details › a question", "Write the script"),
+             ("Question Book", "Work Details › a question", "Review the script"),
+             ("Question Book", "Idea Studio", "Draw the question map"),
+             ("Question Book", "Delivery", "Sign a release"),
+             ("Question Book", "Runs", "Carry a board over")]
 # each insight skill: what it owns, and what changes under plan C ("?" = still to do, red)
 SKILL_JOB = {
     "haipipe-insight": ("the door; the Block contract; its scripts (scaffold · run · carry over)",
-                        "two Blocks (Prototype · Board); a Job = pN × vM; ref/insight-ladder.md + insight_ladder.py ?"),
+                        "two Blocks (Question Book · Board); a Job = pN × vM; ref/insight-ladder.md + insight_ladder.py ?"),
     "haipipe-insight-workflow": ("Run Specs, GI gates, dispatch, the handoff record",
                                  "run cards by level × six Spaces; Sign a release; Run · Close a Job ?"),
     "workbench-insight": ("the served insight board and its workbench table",
@@ -99,8 +99,8 @@ SKILL_JOB = {
                              "decided: no ladder Run uses it; kept for register boards until carried over"),
     "haipipe-page-insight": ("the task-side Insight Page and its RI Runs", "unchanged: its own route")}
 # old names a skill should no longer write as current under plan C (261007)
-STALE = (r"answers\.yaml|Prototype \+ Instance|one Job per (?:DIKW )?level|j0[1-4]_(?:data|information|knowledge|"
-         r"wisdom)|<dataset>_<partition>\.sh|\bMT0[1-4]\b")
+STALE = (r"answers\.yaml|Question Book \+ Instance|one Job per (?:DIKW )?level|j0[1-4]_(?:data|information|knowledge|"
+         r"wisdom)|<dataset>_<segment>\.sh|\bMT0[1-4]\b")
 OLDER = re.compile(r"older|still read|legacy|historical|was |were |carry_over|carry-over|carried|retired|readable|"
                    r"register board|before it", re.I)
 # the base skills insight borrows, by what they do for it
@@ -113,24 +113,24 @@ BORROWS = [("the ladder: Board · Job · studio · report", ["haipipe-block", "h
 # a run type the workbench table has no row for: its owner skill (decided 261007; the plan gives each its card)
 OWNER = {"Add a data version": "haipipe-insight-meta", "Add a Job": "haipipe-insight",
          "Close a Job": "haipipe-insight-workflow", "Close the Job": "haipipe-insight-workflow",
-         "Run the Job": "haipipe-insight-workflow", "Propose a cut": "haipipe-insight-question",
+         "Run the Job": "haipipe-insight-workflow", "Propose a segment": "haipipe-insight-question",
          "Propose questions": "haipipe-insight-question", "Take the proposals": "haipipe-insight-question",
          "Update the coverage": "haipipe-insight-check", "Draw a track": "haipipe-insight-check",
          "Check consistency": "haipipe-insight-knowledge", "Compare with j02": "haipipe-insight-knowledge",
          "Ask a Block question": "haipipe-report", "Write the report": "haipipe-report",
          "Write a report": "haipipe-insight-<level>", "Check a report": "haipipe-draft-review",
-         "Open a version": "haipipe-insight", "Set the cuts": "haipipe-insight", "Sign a release": "haipipe-insight-workflow",
-         "Open the Prototype Block ↗": "the frame", "Open the release ↗": "the frame", "Add a topic": "the frame"}
-# one name per Run, run-<type>-<target> (as b16's s21); a hard Run keeps rNN_<partition>
+         "Open a version": "haipipe-insight", "Set the segments": "haipipe-insight", "Sign a release": "haipipe-insight-workflow",
+         "Open the Question Book Block ↗": "the frame", "Open the release ↗": "the frame", "Add a topic": "the frame"}
+# one name per Run, run-<type>-<target> (as b16's s21); a hard Run keeps rNN_<segment>
 RUN_NAME = {"Take the proposals": "run-triage-proposals-p<N>", "Open a version": "run-open-version-p<N>",
             "Ask": "run-ask-<L><NN>", "Review the questions": "run-review-questions-p<N>",
             "Plan the evidence": "run-plan-evidence-<L><NN>", "Review the evidence plan": "run-review-plan-<L><NN>",
-            "Set the cuts": "run-set-cuts-p<N>", "Write the script": "run-write-script-<L><NN>",
+            "Set the segments": "run-set-segments-p<N>", "Write the script": "run-write-script-<L><NN>",
             "Review the script": "run-review-script-<L><NN>", "Draw the question map": "run-map-questions",
             "Sign a release": "run-sign-release-p<N>", "Carry a board over": "run-carry-<board>",
             "Add a data version": "run-add-version-<d>v<M>", "Add a Job": "run-add-<jNN>",
             "Close a Job": "run-close-<jNN>", "Close the Job": "run-close-<jNN>",
-            "Propose a cut": "run-propose-cut-<slug>", "Update the coverage": "run-coverage",
+            "Propose a segment": "run-propose-cut-<slug>", "Update the coverage": "run-coverage",
             "Draw a track": "run-track-<q>", "Check consistency": "run-consistency-<jA>-<jB>",
             "Ask a Block question": "run-ask-<qNN>", ("Block", "Write the report"): "run-report-<qNN>",
             ("Block", "Check a report"): "run-check-<qNN>", "Add a topic": "run-draw-<sNN>",
@@ -138,20 +138,20 @@ RUN_NAME = {"Take the proposals": "run-triage-proposals-p<N>", "Open a version":
             "Write a report": "run-write-<tNN>", ("Task", "Write the report"): "run-write-<tNN>",
             "Write the Knowledge report": "run-write-<tNN>", "Check a report": "run-check-<tNN>",
             "Pool or split": "run-pool-<tNN>", "Compare with j02": "run-compare-<jNN>",
-            "Propose questions": "run-propose-<jNN>", "Run a partition": "rNN_<partition> (hard)",
+            "Propose questions": "run-propose-<jNN>", "Run a segment": "rNN_<segment> (hard)",
             "Check alignment": "run-check-alignment-<tNN>", "Run the Job": "run-launch-<jNN>",
             "Add a method": "run-add-method-<slug>", "Add a paper": "run-add-paper-<slug>",
-            "Open the Prototype Block ↗": "- (a link)", "Open the release ↗": "- (a link)"}
+            "Open the Question Book Block ↗": "- (a link)", "Open the release ↗": "- (a link)"}
 # today's table rows renamed on the ladder (old label → new label): a table row counts for its new button
-RENAMED = {"Record the extract": "Add a data version", "Register a cut": "Set the cuts",
+RENAMED = {"Record the extract": "Add a data version", "Register a segment": "Set the segments",
            "Write the Data report": "Write a report", "Write the Information report": "Write a report",
            "Review an answer": "Check a report"}
-# a decided skill that overrides today's table row (261007): no partition skill; a page's skill follows its level
-SKILL_OVERRIDE = {"Set the cuts": "haipipe-insight", "Write a report": "haipipe-insight-<D·I·K> (its level)",
+# a decided skill that overrides today's table row (261007): no segment skill; a page's skill follows its level
+SKILL_OVERRIDE = {"Set the segments": "haipipe-insight", "Write a report": "haipipe-insight-<D·I·K> (its level)",
                   "Check a report": "haipipe-report"}
 # a button the frame runs, and the skill the live theme names for it (insight_views.py SKILLS, with s11, 261007)
 FRAME_SKILL = {"Add a topic": "haipipe-studio", "Open the release ↗": "haipipe-insight",
-               "Open the Prototype Block ↗": "haipipe-insight"}
+               "Open the Question Book Block ↗": "haipipe-insight"}
 GUIDE_RUNS = {"Add a method", "Add a paper"}         # the Guide's own Runs panel (the shared frame), on every level
 
 # 2 · one release and one data version, in order: (step, skill, note)
@@ -160,13 +160,13 @@ FLOW = [("open a version", "haipipe-insight", "j0N_pN/ from proposals/"),
         ("sign the release", "-workflow", "a person signs pN"),
         ("add a data version", "-meta", "<d>v<M>, frozen"),
         ("add a Job", "haipipe-insight", "j0N_pN_<d>vM/"),
-        ("run the partitions", "run_question.py", "hard rNN_<partition>"),
+        ("run the partitions", "run_question.py", "hard rNN_<segment>"),
         ("write · check pages", "-data · -information · -knowledge", "one page per question"),
         ("read across Jobs", "-check · -knowledge", "coverage · tracks · consistency"),
         ("counsel · handoff", "-wisdom", "a person signs")]
 # 6 · the skill update plan: (phase, skill, what it learns, run types it gains, done when)
 PLAN = [("1 · contract", "haipipe-insight",
-         "two special boards: Prototype (Jobs = releases), Board (Jobs = pN × vM); insight_ladder.py with its gates",
+         "two special boards: Question Book (Jobs = releases), Board (Jobs = pN × vM); insight_ladder.py with its gates",
          "Open a version · Add a Job · Carry a board over (to both Blocks)", "a placeholder Project the server reads back"),
         ("2 · cards", "haipipe-insight-workflow",
          "run-cards.md by level × the six Spaces, one card per button; gates at their level",
@@ -174,12 +174,12 @@ PLAN = [("1 · contract", "haipipe-insight",
         ("2 · cards", "workbench-insight",
          "insight_views.py reads its run types from the cards; workbench-table.md regenerated from them",
          "every button names its skill, agent and sign", "workbench-insight and _host tests"),
-        ("3 · Prototype", "haipipe-insight-question",
-         "questions in a version Job; proposals/ (new · fix · retire · cut) and their triage; release.yaml",
-         "Take the proposals · Ask · Propose questions · Propose a cut", "p2 cut from p1's proposals"),
-        ("3 · Prototype", "haipipe-insight",
-         "cuts in the release (partitions.md · thresholds.yaml); Sign a release closes the version",
-         "Set the cuts · Sign a release", "a release signed and frozen"),
+        ("3 · Question Book", "haipipe-insight-question",
+         "questions in a version Job; proposals/ (new · fix · retire · segment) and their triage; release.yaml",
+         "Take the proposals · Ask · Propose questions · Propose a segment", "p2 cut from p1's proposals"),
+        ("3 · Question Book", "haipipe-insight",
+         "segments in the release (partitions.md · thresholds.yaml); Sign a release closes the version",
+         "Set the segments · Sign a release", "a release signed and frozen"),
         ("4 · Board", "haipipe-insight-meta",
          "a dataset with dated versions in board.md; accumulates: yes · no", "Add a data version",
          "b52's extract as <d>v1"),
@@ -187,31 +187,31 @@ PLAN = [("1 · contract", "haipipe-insight",
          "readings across Jobs: coverage and tracks from the receipts; Close a Job checks and freezes",
          "Update the coverage · Draw a track · Close a Job", "check_block reads a Board"),
         ("5 · Job · Task", "haipipe-insight",
-         "run_question.py writes runs/rNN_<partition>/ (run.yaml · result/ · passes/), pinned to pN × vM",
-         "Run a partition · Run the Job", "b52 re-run as j01_code-v1_data-v1"),
+         "run_question.py writes runs/rNN_<segment>/ (run.yaml · result/ · passes/), pinned to pN × vM",
+         "Run a segment · Run the Job", "b52 re-run as j01_question-v1_data-v1"),
         ("5 · Job · Task", "haipipe-insight-knowledge",
          "Compare with the previous Job; Check consistency; pool or split on Cross",
          "Compare with j02 · Check consistency · Pool or split", "held · changed · dropped per question"),
         ("6 · old words", "all thirteen",
-         "drop answers.yaml, MT0N, one Job per DIKW level, <dataset>_<partition>.sh as current (frame 3 counts)",
+         "drop answers.yaml, MT0N, one Job per DIKW level, <dataset>_<segment>.sh as current (frame 3 counts)",
          "-", "0 old names; tests pass")]
 
 # 3b · skill folders, before → after (proposal, 261007): (after path or "" to retire, change, what, why, phase)
 FOLDERS = {
     "haipipe-insight/SKILL.md": ("haipipe-insight/SKILL.md", "rewrite",
-        "routes Prototype Block · Board · Job · Task", "today: one Block, a Job per DIKW level", "1"),
+        "routes Question Book Block · Board · Job · Task", "today: one Block, a Job per DIKW level", "1"),
     "haipipe-insight/ref/block-contract.md": ("haipipe-insight/ref/block-contract.md", "edit",
         "marked the older layout; its question file and script stay current", "Insight Blocks made before it are read", "1"),
     "haipipe-insight/ref/scaffold_block.py": ("haipipe-insight/ref/scaffold_block.py", "keep",
         "tickets for the older Insight Block", "b52-style Blocks, until carried into a release", "6"),
     "haipipe-insight/ref/run_question.py": ("haipipe-insight/scripts/run_question.py", "move",
-        "writes runs/rNN_<partition>/ with result/ and passes/", "scripts sit in scripts/; the Run contract", "5"),
+        "writes runs/rNN_<segment>/ with result/ and passes/", "scripts sit in scripts/; the Run contract", "5"),
     "haipipe-insight/ref/carry_over.py": ("haipipe-insight/scripts/carry_over/carry_over.py", "move",
-        "a register board → a Prototype + a Board, once", "a carry-over, not how insight is made", "6"),
+        "a register board → a Question Book + a Board, once", "a carry-over, not how insight is made", "6"),
     "haipipe-insight/ref/question_map.py": ("haipipe-insight/scripts/question_map.py", "move",
         "draws a version Job's questions", "scripts sit in scripts/", "3"),
     "haipipe-insight/ref/partition.md": ("haipipe-insight/ref/partition.md", "edit",
-        "cuts live in the release; a Board only proposes one", "s11: a cut is part of the plan", "3"),
+        "segments live in the release; a Board only proposes one", "s11: a segment is part of the plan", "3"),
     "haipipe-insight/ref/board-contract.md": ("haipipe-insight/ref/board-contract.md", "keep",
         "the register boards' law, until carried over", "older boards are still read", "6"),
     "haipipe-insight-workflow/SKILL.md": ("haipipe-insight-workflow/SKILL.md", "rewrite",
@@ -237,7 +237,7 @@ FOLDERS = {
     "haipipe-insight-bind/SKILL.md": ("haipipe-insight-bind/SKILL.md", "keep",
         "answers.yaml, for register boards only", "decided: no ladder Run binds; retire with the last register board", "6")}
 NEW_FILES = [
-    ("haipipe-insight/ref/insight-ladder.md", "two special boards; a Job = pN × vM; cuts in the release; 12 rules",
+    ("haipipe-insight/ref/insight-ladder.md", "two special boards; a Job = pN × vM; segments in the release; 12 rules",
      "one contract per theme, named like design-ladder.md", "1"),
     ("haipipe-insight/scripts/insight_ladder.py", "scaffold prototype · version · question · board · data · job · run",
      "a scaffold for every level, as design and paper; job writes through open_job.py", "1"),
@@ -256,8 +256,8 @@ NEW_FILES = [
     ("workbench-insight/ref/old-page.md", "the old SKILL.md body, word for word", "the retired page's record", "2"),
     ("workbench-insight/ref/legacy/workbench-table-older.md", "the retired page's table, moved",
      "s02 still draws the page that came before", "2"),
-    ("haipipe-insight/ref/release.md", "release.yaml · proposals/ · cuts · signing",
-     "a Prototype version is the unit of change", "3"),
+    ("haipipe-insight/ref/release.md", "release.yaml · proposals/ · segments · signing",
+     "a Question Book version is the unit of change", "3"),
     ("folder-kinds/haipipe-insight-question/scripts/proposals.py", "triage: list · take --into pN · decline",
      "one release per batch, recorded on each proposal", "3"),
     ("folder-kinds/haipipe-insight-question/ref/register-question.md", "the old SKILL.md body, word for word",
@@ -267,10 +267,10 @@ PHASES_DONE = {"1", "2", "3"}                         # 1-3 done 261008 (contrac
 CHANGES = {
     "runs": ["new drawing, in b16's s21-paper-run-skill shape (JL 261007: \"you should follow this one\")",
              "black only (haipipe-studio 0.2.0 palette): the gray text and lines are black; red stays for open ?, green for changes",
-             "the Prototype Block's run types are typed here: no level drawing shows that Block yet",
+             "the Question Book Block's run types are typed here: no level drawing shows that Block yet",
              "decided: a run type with no table row gets its owner skill and its run-<type>-<target> name here; "
              "phase 2 gives each its card",
-             "decided (with s11): a cut is set in the release (Set the cuts); the Board only proposes one",
+             "decided (with s11): a segment is set in the release (Set the segments); the Board only proposes one",
              "a Board's report is haipipe-report's (b03 261007: Question │ Work │ Report; haipipe-report keeps the asking)",
              "aligned with the live theme's skills: map (s11): Check a report = haipipe-report; Add a topic = haipipe-studio; "
              "the Open … links = haipipe-insight",
@@ -278,11 +278,11 @@ CHANGES = {
              "run-add-job-p<N>-<d>v<M>) · run-ask-<qNN> · run-check-<qNN> · run-draw-<sNN> (was run-add-topic-<sNN>)"],
     "flow": ["new frame: one release on one data version, in order; proposals loop back to the next version"],
     "skills": ["decided: haipipe-insight-bind has no ladder Run; kept for register boards until the last is carried over",
-               "decided: no new haipipe-insight-partition skill; cuts belong to haipipe-insight's release (ref/partition.md)",
-               "decided: new Board and Prototype runs go to the skill whose folder they write (frame 1's skill column)"],
+               "decided: no new haipipe-insight-partition skill; segments belong to haipipe-insight's release (ref/segment.md)",
+               "decided: new Board and Question Book runs go to the skill whose folder they write (frame 1's skill column)"],
     "matrix": ["new frame: which skill each run type loads; x ? = decided owner, no card yet"],
-    "disk": ["counts only: no Board, dataset or partition name is drawn",
-             "today's hard tickets are <dataset>_<partition>.sh beside results/: plan C makes them runs/rNN_<partition>/"],
+    "disk": ["counts only: no Board, dataset or segment name is drawn",
+             "today's hard tickets are <dataset>_<segment>.sh beside results/: plan C makes them runs/rNN_<segment>/"],
     "folders": ["new frame: the skill folders before → after, each change with its why",
                 "shaped like the design and paper skills: ref/insight-ladder.md + scripts/insight_ladder.py"],
     "plan": ["new frame: the skill update plan; phases run in order, the contract and the cards first",
@@ -296,7 +296,7 @@ CHANGES = {
              "261008 decided: the workflow skill only routes, so Run the Job and Sign the release name haipipe-insight, "
              "Close haipipe-insight-check; Check consistency is the reviewer's; one Write card per DIKW level",
              "261008 the server reads its Block · Job · Task buttons from the cards (insight_views.py, by the s11 session)",
-             "261008 phase 3 done: ref/release.md (the life of a release, the cuts, signing) · haipipe-insight-question "
+             "261008 phase 3 done: ref/release.md (the life of a release, the segments, signing) · haipipe-insight-question "
              "2.0.0 (proposals, triage, asking, review; the folder contract's sections) · proposals.py"]}
 
 
@@ -384,7 +384,7 @@ def agent_exists(name):
 
 
 def thirds(t):
-    """The views a screen has open: its third row, or its rows (Partition: … · Reading: …)."""
+    """The views a screen has open: its third row, or its rows (Segment: … · Reading: …)."""
     if not t:
         return []
     rows = t if isinstance(t[0], list) else [t]
@@ -392,7 +392,7 @@ def thirds(t):
 
 
 def designed():
-    """Every run type a screen shows in s11 · s12 · s13, then the Prototype Block's: [(level, where, label)]."""
+    """Every run type a screen shows in s11 · s12 · s13, then the Question Book Block's: [(level, where, label)]."""
     out = []
     for level, rel in LEVELS:
         spec = importlib.util.spec_from_file_location(f"s21_{level}", HERE.parent / rel)
@@ -418,7 +418,7 @@ def said(label, code):
 
 def _sample(name: str) -> str:
     """A Run name with its placeholders filled, so a card's pattern can match it."""
-    for a, b in (("rNN_<partition> (hard)", "r01_x"), ("<jA>-<jB>", "j01-j02"), ("<jNN>", "j01"), ("<tNN>", "t01"),
+    for a, b in (("rNN_<segment> (hard)", "r01_x"), ("<jA>-<jB>", "j01-j02"), ("<jNN>", "j01"), ("<tNN>", "t01"),
                  ("<qNN>", "q01"), ("<sNN>", "s01"), ("<L><NN>", "d01"), ("p<N>", "p1"), ("<d>v<M>", "v1"),
                  ("<q>", "x01"), ("<slug>", "x01"), ("<board>", "x01")):
         name = name.replace(a, b)
@@ -426,8 +426,8 @@ def _sample(name: str) -> str:
 
 
 def card_of(level: str, name: str):
-    """The run card of a drawn Run: its own level's (the Prototype's three levels for the Prototype rows)."""
-    levels = ("Prototype", "Release", "Question") if level == "Prototype" else (level,)
+    """The run card of a drawn Run: its own level's (the Question Book's three levels for the Question Book rows)."""
+    levels = ("Question Book", "Release", "Question") if level == "Question Book" else (level,)
     sample = _sample(name)
     found = [c for c in CARDS if c["level"] in levels and re.match(c["pattern"], sample)]
     return found
@@ -472,7 +472,7 @@ def insight_runs():
     folders = [p for p in SPACE.glob("examples-*/*/tasks/b5*_dikw") if p.is_dir()]
     folders += [p for p in SPACE.glob("examples-*/*/insights/*-InsightBoard") if p.is_dir()]
     folders += [p for p in SPACE.glob("examples-*/*/insights/Insight-*") if p.is_dir()]       # plan C Boards (261008)
-    folders += [p for p in SPACE.glob("examples-*/*/tasks/Prototype-*") if p.is_dir()]      # plan C Prototypes
+    folders += [p for p in SPACE.glob("examples-*/*/tasks/Prototype-*") if p.is_dir()]      # plan C Question Books
     found = []
     for f in folders:
         for d in f.rglob("runs"):
@@ -488,9 +488,9 @@ def insight_runs():
                 if stem.startswith("run-"):
                     kind = "run-" + stem.split("-")[1] + "-…"
                 elif re.match(r"^r\d", stem):
-                    kind = "rNN_<partition>"
+                    kind = "rNN_<segment>"
                 elif r.suffix == ".sh" and "_" in stem:
-                    kind = "<dataset>_<partition>.sh"
+                    kind = "<dataset>_<segment>.sh"
                 else:
                     continue
                 found.append((kind, lvl))
@@ -535,12 +535,12 @@ def main():
     L.els.clear()
     L.FRAME[0] = None
     by_level, tally, left = run_rows()
-    levels = ("Prototype", "Block", "Job", "Task")
+    levels = ("Question Book", "Block", "Job", "Task")
 
     # 1 · Runs by level
     fr = L.open_frame("Runs by level")
     L.text(0, 0, "Insight Runs, level by level", 30)
-    L.text(0, 46, "the Prototype Block (typed: no level drawing yet), then every Run a Space's buttons make in s11 · s12 · "
+    L.text(0, 46, "the Question Book Block (typed: no level drawing yet), then every Run a Space's buttons make in s11 · s12 · "
                   "s13, one row per Run, named run-<type>-<target> · today: card = a run card names its skill, agent and "
                   "sign (haipipe-insight-workflow/ref/run-cards.md) · base = the shared frame · live = the insight theme "
                   "shows the button, no card says who runs it · drawn = only in the drawing · red ? = no card yet", 16, L.INK)
@@ -561,7 +561,7 @@ def main():
     runnable = {lv: (t["card"] + t["base"]) * 100 // max(1, sum(t.values())) for lv, t in tally.items()}
     L.text(0, y, "runnable today (a card or the frame): " + " · ".join(f"{lv} {p}%" for lv, p in runnable.items()),
            18)
-    notes(0, y + 50, ["? the Prototype Block has no level drawing: a session drawing it (as s11 · s12 · s13) should "
+    notes(0, y + 50, ["? the Question Book Block has no level drawing: a session drawing it (as s11 · s12 · s13) should "
                       "show these buttons"] + CHANGES["runs"])
     L.close_frame(fr, pad=40)
 
@@ -580,7 +580,7 @@ def main():
         fx += 340
     lx, ox = 7 * 340 + 130, 130                        # read across Jobs → proposals → the next version
     L.path([(lx, fy - 4), (lx, fy - 50), (ox, fy - 50), (ox, fy - 4)], color=L.INK, dashed=True)
-    L.text(ox + 40, fy - 80, "proposals (new · fix · retire · a cut) go to the Prototype's proposals/ and open the "
+    L.text(ox + 40, fy - 80, "proposals (new · fix · retire · a segment) go to the Question Book's proposals/ and open the "
                              "next version; new data alone makes a new Job, no release", 14, L.INK)
     L.text(0, fy + 150, "a person signs each release and the handoff; an agent that did not write them reviews the "
                         "questions, the plans, the scripts and every page", 16, L.INK)
@@ -592,7 +592,7 @@ def main():
     fr = L.open_frame("the skills")
     L.text(0, y, "The skills behind the Runs", 30)
     L.text(0, y + 46, "skills/2_theme/insight/ · callers = files elsewhere in the toolkit that name it · old = lines that "
-                      "still write answers.yaml, MT0N, one Job per DIKW level or <dataset>_<partition>.sh as current", 16,
+                      "still write answers.yaml, MT0N, one Job per DIKW level or <dataset>_<segment>.sh as current", 16,
            L.INK)
     uses, rows_by_skill = Counter(), {}
     for rows in by_level.values():
@@ -684,18 +684,18 @@ def main():
     fr = L.open_frame("Runs on disk")
     found, n_folders = insight_runs()
     L.text(0, y, f"The Runs in the {n_folders} Project insight folders today", 30)
-    L.text(0, y + 46, "run type · DIKW level · count; counts only, no Board, dataset or partition is named", 16, L.INK)
+    L.text(0, y + 46, "run type · DIKW level · count; counts only, no Board, dataset or segment is named", 16, L.INK)
     by_type = Counter(found)
     rows = [[t, lvl, str(k) + (" ?" if t.endswith(".sh") else "")]
             for (t, lvl), k in sorted(by_type.items(), key=lambda x: (-x[1], x[0]))]
     yb = table(0, y + 100, [("run type", 320), ("DIKW level", 160), ("count", 90)], rows, mono=("run type",))
     yn = table(800, y + 100, [("family", 220), ("name", 470), ("note", 470)], [
-        ["a partition (hard)", "rNN_<partition>/", "one per cut, in a question's Task; result/ · passes/"],
+        ["a segment (hard)", "rNN_<segment>/", "one per segment, in a question's Task; result/ · passes/"],
         ["a question's page", "run-write-<tNN> · run-check-<tNN>", "the Page's own Runs"],
         ["a Job", "run-launch-<jNN> · run-compare-<jNN> · run-close-<jNN>", "soft, in the Job's runs/"],
         ["a Board reading", "run-coverage · run-track-<q> · run-consistency-<jA>-<jB>", "soft, in the Board's runs/"],
-        ["the Prototype", "run-open-version-p<N> · run-sign-release-p<N>", "soft, in the Prototype Block"],
-        ["old, still read", "<dataset>_<partition>.sh beside results/", "today's tickets; re-cut by phase 5"]],
+        ["the Question Book", "run-open-version-p<N> · run-sign-release-p<N>", "soft, in the Question Book Block"],
+        ["old, still read", "<dataset>_<segment>.sh beside results/", "today's tickets; re-cut by phase 5"]],
         mono=("name",))
     notes(0, max(yb, yn) + 30, CHANGES["disk"])
     L.close_frame(fr, pad=40)

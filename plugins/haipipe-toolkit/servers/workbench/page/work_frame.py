@@ -155,6 +155,9 @@ def goal(folder, root, data):
 
 def overview(folder, root, data, questions, groups):
     f = api()
+    from live import work_sections
+    if own := work_sections.view_html(folder, root, data, 'overview', section):   # the face names its own sections
+        return OV_CSS + own
     # Both maps are live: Topic navigation and the original complete work map.
     maps = '<div class=wk-map>' + _side_tabs('work-overview-map', [('Topics', ''), ('Work Structure', '')],
                                              [map_html(folder, root, groups), f.parts_mindmap(folder, root)]) + '</div>'
@@ -173,12 +176,16 @@ def status(folder, root, data, groups):
     dependencies = data['sections'].get('dependencies', '')
     if dependencies:
         body += section(n, '🔗 Dependencies', f.markdown(dependencies, folder, root))
-    return body
+        n += 1
+    from live import work_sections                   # then the face's own sections, after its Jobs (JL 261114)
+    return body + work_sections.view_html(folder, root, data, 'standing', section, start=n)
 
 
 def delivery(folder, root, data):
     f = api()
-    tabs = f.own_delivery_tabs(frame.theme_of(folder, root), folder, root, f.page_level(folder))
+    # a lane with nothing handed over is not a tab (JL 261114: "if they are empty, we will not show them")
+    tabs = [t for t in f.own_delivery_tabs(frame.theme_of(folder, root), folder, root, f.page_level(folder))
+            if not (len(t) > 1 and t[1] == 'nothing yet')]
     # Keep uncategorized outputs and authored handoff records reachable, without
     # calling delivery_html (which repeats the theme tabs and service previews).
     for directory, where in f.delivery_sources(folder, root):
@@ -190,14 +197,19 @@ def delivery(folder, root, data):
             if entries:
                 listing = '<ul>' + ''.join(f'<li><a href="{frame.esc(frame._file_url(p, root))}">{frame.esc(p.name)}</a></li>' for p in entries) + '</ul>'
                 tabs.append((where + ' · Files', '', listing))
-    files = _side_tabs('work-delivery', [(n, w) for n, w, _ in tabs], [b for _, _, b in tabs]) if tabs else ''
+    if any(not n.endswith((' · Files', ' · Record')) for n, *_ in tabs):   # the lanes already list the files
+        tabs = [t for t in tabs if not t[0].endswith(' · Files')]
+    # no "ready" beside a lane: a lane that is shown holds something (JL 261113: no state words)
+    files = _side_tabs('work-delivery', [(n, '') for n, *_ in tabs], [t[-1] for t in tabs]) if tabs else ''
     if service := f.service_section(folder, root):
         files += service
     acceptance = data['sections'].get('acceptance', '')
     usage = data['sections'].get('usage', '')
-    return (section(1, '📦 Deliverables', files or empty('Nothing handed over yet.'))
-            + section(2, '✅ Acceptance', f.markdown(acceptance, folder, root) if acceptance else empty('No acceptance recorded yet.'))
-            + section(3, '📖 Usage', f.markdown(usage, folder, root) if usage else empty('No usage notes recorded yet.')))
+    # only the sections with something in them, numbered in turn; none at all is one plain line
+    secs = [(t, b) for t, b in (('📦 Deliverables', files),
+                                ('✅ Acceptance', f.markdown(acceptance, folder, root) if acceptance else ''),
+                                ('📖 Usage', f.markdown(usage, folder, root) if usage else '')) if b]
+    return ''.join(section(n, t, b) for n, (t, b) in enumerate(secs, 1)) or empty('Nothing handed over yet.')
 
 
 def recorded_sections(folder, root, topics, names, include_page=True):
@@ -218,9 +230,9 @@ def recorded_sections(folder, root, topics, names, include_page=True):
     return records
 
 
-DECISION_ID = re.compile(r'(?m)^(?=[a-z]\d{2}-D\d{2} · )')
+DECISION_ID = re.compile(r'(?m)^(?=[a-z]\d{2}-D\d{2,3} · )')
 # A tag is shown only when the entry's own words say it; nothing is inferred from a quote or a date.
-DECISION_TAGS = (('Replaced', re.compile(r'Replaced by [a-z]\d{2}-D\d{2}')),
+DECISION_TAGS = (('Replaced', re.compile(r'Replaced by [a-z]\d{2}-D\d{2,3}')),
                  ('Waiting', re.compile(r'\bwaits? for\b')),
                  ('Proposed', re.compile(r'\bopen proposals?\b|\bProposed by\b|decided for this round')))
 
@@ -242,7 +254,7 @@ def decision_list(text, base, root):
         chunk = chunk.strip()
         if not chunk:
             continue
-        found = re.match(r'([a-z]\d{2}-D\d{2}) · (.*)', chunk, re.S)
+        found = re.match(r'([a-z]\d{2}-D\d{2,3}) · (.*)', chunk, re.S)
         if not found:
             if rows:
                 out.append('<ul class=wk-dec>' + ''.join(rows) + '</ul>')

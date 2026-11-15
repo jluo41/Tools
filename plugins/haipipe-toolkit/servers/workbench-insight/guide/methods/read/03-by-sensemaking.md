@@ -16,7 +16,7 @@ reads: question · the lower pages' answers · the rival explanations
 returns: the claim, its strength, each rival and why it is or is not ruled out, and the
   claim's boundary
 test now: T5 the claim says what its results say · T6 a different agent's rivals
-test in use: T8 the claim holds on the next partition
+test in use: T8 the claim holds on the next segment
 
 
 What the literature says

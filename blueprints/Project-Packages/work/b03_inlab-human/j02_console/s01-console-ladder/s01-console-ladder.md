@@ -1,5 +1,6 @@
 s01 · The console ladder
 ========================
+view: findings
 
 **Stage:** explore
 
@@ -9,7 +10,15 @@ s01 · The console ladder
 
 **Topic:** The In-Lab Console's ladder (Dataset → Human → Case → Score or Label), its scope axis (Individual · Group) and its rail groups as its Spaces, each read against the toolkit workbench's counterpart; views read from `web/src/views.ts` (261009, g01).
 
-**Feeds:** `reports/` q01_console_vs_toolkit
+**Feeds:** Q01
+
+
+Q01 · Answer
+------------
+
+**Question:** What does the console own, and what is the toolkit's?
+
+**Answer (open):** not written yet.
 
 
 Files

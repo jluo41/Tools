@@ -33,7 +33,7 @@ Notes
 
 - **Draw is the Excalidraw skill.** `haipipe-studio-draw` (new) collects what
   is spread today over `ref/draw.md` (lanes, owners, the style contract) and the
-  prompt in `servers/workbench/autodraw.py`: transparent boxes, colored
+  prompt in `servers/workbench/studio/autodraw.py`: transparent boxes, colored
   strokes, bound labels and arrows, under 40 elements, near 900 x 600.
 - **Chat and Terminal.** "Talk about the page" and "Keep the session" follow
   `ref/chat.md`; a chat may redraw the open page's scene when the person asks

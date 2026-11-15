@@ -87,7 +87,8 @@ def render(theme, root: Path, folder: Path, section="", group="") -> str:
     rail_sections(ctx)                               # Delivery, Related, Interactions, Know, and the right rail
     section_body(ctx)                                # the open section: its view, body, heading and bar
     around_work(ctx)                                 # 🧭 Around the Work under a shared frame's Report
-    return page_document(ctx)                        # the shell, both rails, the path and the goal
+    from live import section_eval                    # each numbered section's ★ AI readability on its bar (JL 261114)
+    return section_eval.mark(page_document(ctx), folder)   # the shell, both rails, the path and the goal
 
 
 def __getattr__(name: str):

@@ -1,4 +1,4 @@
-"""The labeling theme on the base frame (servers/workbench/frame.py): only what differs from vanilla.
+"""The labeling theme on the base frame (servers/workbench/page/frame.py): only what differs from vanilla.
 
 A labeling Job is one dataset × one label (`jNN_<dataset>_<label>/`, its `schema.yaml`); each of its Tasks
 is one of five types, read from the face's `task-type:` line (Tools/blueprints/Project-Ladder/work/b15_theme_labeling,
@@ -34,6 +34,7 @@ Drawn in the base's look only (JL 261007: no theme stylesheet): wf-table, .chip,
 """
 from __future__ import annotations
 
+import traceback
 import re
 from pathlib import Path
 from urllib.parse import quote
@@ -43,11 +44,12 @@ from live.frame import Space, Theme, children, esc, face, rel, table
 try:                                            # the optional haipipe-labeling package (labeling.py)
     from live import labeling as L
 except Exception:                               # absent or broken: the frame shows vanilla
+    traceback.print_exc()
     L = None
 
 try:
     import yaml
-except Exception:                               # a Run's manifest then shows its headline only
+except ImportError:                               # a Run's manifest then shows its headline only
     yaml = None
 
 # (old Space id, view id, frame subspace, what it is, the skill that works it)
@@ -77,7 +79,6 @@ BY_SUB = {v[2]: v for v in VIEWS}
 # the engine's views on each side of the Label Handoff (s13): Scan is a scanning step, so it sits in Work Details
 BUILD_WORK = ("preparation", "embedding", "definition", "rounds", "guideline")
 SCAN_WORK = ("test", "evaluation", "scan", "audit")
-WORK = tuple(VIEW[v] for v in BUILD_WORK + SCAN_WORK)
 DELIVER = (VIEW["handoff"], VIEW["final"])
 
 # ── the Task types of a labeling Job (b15 s13-labeling-task, JL 261014: "for the design, we have three types of
@@ -163,6 +164,7 @@ def _jobs(block: Path, root: Path) -> list[dict]:
     try:
         data = L.board_jobs(block, rel(block / "board.md", root))
     except Exception:                           # a broken lane must not blank the frame
+        traceback.print_exc()
         return []
     return list(data.get("jobs") or []) + [dict(e, kind="empty") for e in data.get("empty") or []]
 

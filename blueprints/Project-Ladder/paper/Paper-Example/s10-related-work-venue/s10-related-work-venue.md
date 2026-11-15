@@ -13,7 +13,7 @@ s10 · Related work
 
 **Topic:** <one paragraph: what this topic thinks through, and why now>
 
-**Feeds:** `reports/` <the Questions it feeds: qNN_related-work-venue>
+**Feeds:** <the Questions it feeds: qNN_related-work-venue>
 
 
 Files

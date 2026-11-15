@@ -43,7 +43,7 @@ from pathlib import Path
 
 PLAIN = r"""\documentclass[11pt]{article}
 \usepackage[letterpaper,margin=1in]{geometry}
-\usepackage{graphicx,booktabs,tabularx,multirow,array,longtable,float,caption,amsmath,amssymb,xcolor,adjustbox}
+\usepackage{graphicx,booktabs,tabularx,multirow,array,longtable,float,caption,amsmath,amssymb,xcolor,colortbl,adjustbox}
 \usepackage[T1]{fontenc}
 """
 # the paper's default head, as haipipe-paper-assemble build_delivery.write_master writes it before a paper has a
@@ -167,6 +167,22 @@ def earlier_tex(unit: Path, earlier: list[dict]) -> str:
     return out
 
 
+def fit_page(unit: Path) -> str:
+    """Page 1's float, its picture kept low enough that the picture and its caption fit one page. A float set [H] that is
+    taller than the page never gets placed and LaTeX makes pages without end (ScalingGlucose t03 r19, 261110: a 7.6 in
+    figure with a 190-word caption ran past 65,000 pages and left a broken preview.pdf). The room the caption needs is
+    estimated from its length (about 16 words a line, 16 pt a line); a table has no picture
+    and is set as it is."""
+    flt = (unit / "float.tex").read_text(encoding="utf-8", errors="ignore")
+    cap = re.search(r"\\caption\{(.*?)\}\s*\n", flt, re.S)
+    lines = len(re.findall(r"\S+", cap.group(1))) / 16 + 1 if cap else 2
+    room = max(0.30, min(0.85, 1 - (lines * 16 + 40) / 648))      # of a 9 in text height
+    rows = len(re.findall(r"\\\\", flt))                       # a table's rows; a wrapped cell makes a row two lines, so 20 pt each
+    tall = "tabular" in flt and rows * 20 + lines * 16 + 40 > 648  # a table longer than the page: placed [p], it runs
+    free = "\\makeatletter\\renewcommand{\\fps@table}{p}\\makeatother" if tall else ""   # off the page but ends
+    return f"{{{free}\\setkeys{{Gin}}{{height={room:.2f}\\textheight,keepaspectratio}}\\input{{float.tex}}}}\n"
+
+
 def method_range(src: Path) -> str:
     """Pages of a source preview that hold its method: its pages 2 on, without its earlier versions."""
     side = src.with_name("preview-method-pages.txt")
@@ -209,7 +225,7 @@ def build(unit: Path, method_from: Path | None = None, look: str = "", preamble_
         rel = Path(__import__("os").path.relpath(src, unit)).as_posix()
         body = (MARK + "\n" + preamble + "\\begin{document}\n" + _style(preamble) +
                 "\\makeatletter\\renewcommand{\\fps@figure}{H}\\renewcommand{\\fps@table}{H}\\makeatother\n" + numbering(unit) +
-                f"\\input{{float.tex}}\n\\clearpage\n\\includepdf[pages={method_range(src)}]{{{rel}}}\n{tail}\\end{{document}}\n")
+                fit_page(unit) + f"\\clearpage\n\\includepdf[pages={method_range(src)}]{{{rel}}}\n{tail}\\end{{document}}\n")
         return _compile(unit, old, body)
     text = re.sub(r"\A#\s+[^\n]*\n", "", method.read_text(encoding="utf-8", errors="ignore")) if method.is_file() else ""
     said = re.search(r"(?ms)^##\s*Message\s*\n(.*?)(?=^##\s|\Z)", text)   # the Message part opens page 2 on its own
@@ -221,7 +237,7 @@ def build(unit: Path, method_from: Path | None = None, look: str = "", preamble_
            r"(Message, Data, Sample, Method, Outcomes, Made by, Numbers), then rerun build\_preview.py.}")
     body = (MARK + "\n" + preamble + "\\begin{document}\n" + _style(preamble) +
             "\\makeatletter\\renewcommand{\\fps@figure}{H}\\renewcommand{\\fps@table}{H}\\makeatother\n" + numbering(unit) +   # page 1 holds it
-            "\\input{float.tex}\n\\clearpage\n" + ("" if "fancyhdr" in preamble else "\\pagestyle{plain}\n") +
+            fit_page(unit) + "\\clearpage\n" + ("" if "fancyhdr" in preamble else "\\pagestyle{plain}\n") +
             "\\section*{What this display says}\n" + says + "\n\\section*{How this display was made}\n" + how +
             "\n" + tail + "\\end{document}\n")
     return _compile(unit, old, body)
@@ -237,6 +253,8 @@ def _compile(unit: Path, old: Path, body: str) -> Path:
     engine = "xelatex" if shutil.which("xelatex") else "pdflatex"
     if "fontspec" in body and engine == "pdflatex":
         sys.exit("stop: the paper look loads fontspec, which needs xelatex; install it or pass no --look")
+    for ext in (".aux", ".out"):                 # a build that was cut off leaves a broken .aux, and the next one stops on it
+        (unit / f"preview{ext}").unlink(missing_ok=True)
     for _ in range(2):
         r = subprocess.run([engine, "-interaction=nonstopmode", "-halt-on-error", "preview.tex"], cwd=unit,
                            capture_output=True, text=True)

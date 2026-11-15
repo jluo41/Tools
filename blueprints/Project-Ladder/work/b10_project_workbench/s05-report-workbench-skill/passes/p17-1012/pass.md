@@ -15,7 +15,7 @@ The group every theme starts with is Random thoughts (was Asked by others): an u
 - `s05-report-workbench-skill/s05-report-workbench-skill.excalidraw`
 - `s05-report-workbench-skill/s05-report-workbench-skill.png`
 - `s05-report-workbench-skill/history/`
-- `Tools/plugins/haipipe-toolkit/servers/workbench/frame.py`
+- `Tools/plugins/haipipe-toolkit/servers/workbench/page/frame.py`
 - `Tools/plugins/haipipe-toolkit/servers/_host/tests/test_frame.py`
 - `Tools/plugins/haipipe-toolkit/skills/1_base/draft/workbench/CHANGELOG.md`
 - `Tools/blueprints/Project-Ladder/work/b16_theme_paper/s05-paper-report/`

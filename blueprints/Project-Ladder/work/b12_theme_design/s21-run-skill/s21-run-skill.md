@@ -28,7 +28,7 @@ lines-only tables, black, red for what is open, green for what changed (the stud
 Typed, since they are the proposal: one name per Run, each Run's owner after the plan, each skill's job and its
 change on the ladder, the folder moves, and the plan.
 
-**Feeds:** `../reports/q01_design_ladder/` (the Runs per level) and `../reports/q02_design_workbench/`
+**Feeds:** `../Q01 (the Runs per level) and `../Q02
 (the Runs panel); a proposed Q04, "Which skill owns each part of the design ladder?".
 
 

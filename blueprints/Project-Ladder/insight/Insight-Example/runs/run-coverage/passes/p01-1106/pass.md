@@ -2,7 +2,7 @@
 
 ## Ask
 
-which question × cut × Job has an answer
+which question × segment × Job has an answer
 
 ## Summary
 

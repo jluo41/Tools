@@ -19,7 +19,7 @@ Why A: The evidence shows where the claim is.
 
 ## Q2 · Task MindMap
 
-A Task's MindMap holds about 18 words: the question and its cuts.
+A Task's MindMap holds about 18 words: the question and its segments.
 
 **Does a Task page keep its MindMap?**
 

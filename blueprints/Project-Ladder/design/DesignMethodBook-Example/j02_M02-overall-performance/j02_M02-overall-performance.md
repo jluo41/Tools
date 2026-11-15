@@ -1,20 +1,19 @@
 ---
-release: method-v2
-from: M02 m1
-state: closed
-signed: ✅ 261108
+method: M02
 title: overall performance
-goal: 'method-v2, overall performance: the designs also read past released designs and their overall results'
+state: closed
+versions:
+  m1: ✅ 261108
+goal: 'M02, overall performance: the designs also read past released designs and their overall results'
 ---
 
-# method-v2 · overall performance
+# M02 · overall performance
 
-From method-v1: step ① also sees past released designs and their overall results, and step ② reasons one idea per
-strong past design, adapted to the goal, instead of N + 5 freestyle ideas. Steps ③ and ⑤ lose the freestyle and the
-N + 5 pool that came with it; ④ is unchanged. It is cut from the registered method M02 m1 and frozen in `method.md`
-beside this face.
+Another type beside M01, not a newer M01: step ① also sees past released designs and their overall results, and step
+② reasons one idea per strong past design, adapted to the goal. Its signed version m1 is copied from the Guide's
+library and frozen in `m1.md` beside this face.
 
-## Steps
+## Steps of m1
 
 ```text
 ① See input       goal · rules · ours: past released designs and their overall results
@@ -26,4 +25,4 @@ beside this face.
 
 ## Used by
 
-- design/Design-Example/j03_confirm-by-reply_method-v2-overall-performance_inputs-v2 (its release waits)
+- design/Design-Example/j03_confirm-by-reply_M02-overall-performance-m1_inputs-v2 (its release waits)

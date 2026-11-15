@@ -119,7 +119,7 @@ async function main() {
   await tab.ev(`localStorage.clear(), true`);
 
   // B · each step tab of j04: its chip, its Runs panel, no console error
-  const want = { '1 · Launch': ['run-launch-j04', 'run-power-j04'], '2 · Run': ['rNN_<partition>', 'run-pool-t<NN>'],
+  const want = { '1 · Launch': ['run-launch-j04', 'run-power-j04'], '2 · Run': ['rNN_<segment>', 'run-pool-t<NN>'],
     '3 · Write': ['run-write-t<NN>', 'run-write-t<NN>', 'run-write-t<NN>', 'run-write-t<NN>', 'run-overall-j04'],
     '4 · Check': ['run-check-alignment-t<NN>', 'run-check-t<NN>'], '5 · Compare': ['run-compare-j03', 'run-propose-j04'],
     '6 · Close': ['run-close-j04'] };

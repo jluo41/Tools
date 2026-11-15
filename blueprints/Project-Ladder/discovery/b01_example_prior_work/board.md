@@ -22,7 +22,7 @@ questions:
   title: The earlier effect
   group: Prior work
   question: What did earlier work find about <the policy> and its effect on <an outcome>?
-  report: reports/q01-earlier-effect.md
+  report: s04-q01-earlier-effect/s04-q01-earlier-effect.md
   work:
   - path: j01_policy_effect_inquiry/t01_policy_prior_work
     stage: Discovery
@@ -31,7 +31,7 @@ questions:
   title: The setting
   group: Prior work
   question: In which settings was the effect measured?
-  report: reports/q02-setting.md
+  report: s05-q02-setting/s05-q02-setting.md
   work:
   - path: j01_policy_effect_inquiry/t01_policy_prior_work
     stage: Discovery

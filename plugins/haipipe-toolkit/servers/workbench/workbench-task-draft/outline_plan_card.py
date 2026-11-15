@@ -130,7 +130,7 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
                scratch_heading_attr("paragraph", current_paragraph,
                                     read_only=read_only),
                _e(display_paragraph),
-               _e(re.sub(r"\s*·\s*S\d+\s+to\s+S\d+\s*$", "", current_paragraph_title)),
+               _e(re.sub(r"\s*·\s*[Ss]\d+\s+to\s+[Ss]\d+\s*$", "", current_paragraph_title)),
                _scratch_run_meta(scratch_latest.get(("paragraph", current_paragraph))),
                scratch_flag_html("paragraph", current_paragraph,
                                  scratch_latest.get(("paragraph", current_paragraph)),
@@ -208,7 +208,7 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
         # position counter is only the fallback for an unnumbered plan.
         explicit = re.match(r"^-\s+B(\d+)[a-z]*\s*·", line)
         bullet_id = "B%s" % explicit.group(1) if explicit else "B%d" % sn
-        body = re.sub(r"^[SB]\d+\s*·\s*", "", line[2:].strip())
+        body = re.sub(r"^[SsB]\d+\s*·\s*", "", line[2:].strip())
         # The FULL address on every row. It was shortened to P<n>.B<n> once
         # (JL 260817: "为什么还要保留 C1") and JL reversed it on 260819
         # ("could you add back the C? like P2.B1 to C1.P2.B1, so we can know

@@ -44,14 +44,14 @@ SLIDES = [
 
     dict(n=3, slug="why", group="why",
          title="Today we cannot say why an answer changed",
-         bullets=["A register board holds one extract, its partitions and the questions, edited in place.",
+         bullets=["A register board holds one extract, its segments and the questions, edited in place.",
                   "A new extract, a fixed script and a new question tend to land in the same week.",
                   "When an answer moves, nobody can name the one cause."],
          picture=("cards", dict(arrow=True, cards=[
              ("Today", ["insights/<Dataset>-InsightBoard/: one extract",
                         "questions and their code edited in place",
                         "a new extract: a new board, or an overwrite"]),
-             ("On the ladder", ["a Prototype Block: the questions and their code, released p1, p2",
+             ("On the ladder", ["a Question Book Block: the questions and their code, released p1, p2",
                                 "an insight Board: the data versions, a Job per pair",
                                 "a Job pins one release and one data version"])])),
          src="s00 · s01", lead="so: version both, separately",
@@ -62,14 +62,14 @@ SLIDES = [
          bullets=["The questions change when we learn; the data changes when it arrives.",
                   "A Job pins one of each, by path and hash, and is frozen when it closes."],
          picture=("cards", dict(cards=[
-             ("Prototype", ["the questions, their scripts, the cuts and the compare rule",
+             ("Question Book", ["the questions, their scripts, the segments and the compare rule",
                             "released p1 → p2 → p3; a person signs each",
                             "lives in work/bNN_<topic>_prototype/"]),
              ("Dataset", ["extracts by date, outside the Project",
                           "versions <d>v1 → <d>v2 build up",
                           "a new one needs no release"]),
              ("Job", ["one release × one data version",
-                      "j03_code-v2_data-v2 in insights/bNN_<topic>/",
+                      "j03_question-v2_data-v2 in insights/bNN_<topic>/",
                       "frozen when closed; a change is a new Job"])])),
          src="s00", lead="laid on a grid",
          notes="This is the core move. Everything after it follows from pinning the two clocks."),
@@ -92,12 +92,12 @@ SLIDES = [
          bullets=["Every theme has these four levels; what each holds is insight's own."],
          picture=("ladder", dict(rows=[
              ("Board", "insights/bNN_<topic>/", "one dataset, its versions, the Map, and reports across Jobs"),
-             ("Job", "j03_code-v2_data-v2/", "one release × one data version; its questions grouped by D · I · K · W"),
+             ("Job", "j03_question-v2_data-v2/", "one release × one data version; its questions grouped by D · I · K · W"),
              ("Task", "t04_K01_<q>/", "one question on this pair, at its DIKW level, with its page"),
              ("Run", "runs/r02_<A>/ · run-<type>-<target>/",
               "hard: one partition's result/ · soft: write, check, compare, propose")])),
          src="s11 · s12 · s13", lead="what a level may claim",
-         notes="The Prototype Block beside the Board has the same four levels: a release is its Job, a question "
+         notes="The Question Book Block beside the Board has the same four levels: a release is its Job, a question "
                "its Task."),
 
     dict(n=7, slug="dikw", group="what",
@@ -113,7 +113,7 @@ SLIDES = [
 
     dict(n=8, slug="question", group="how",
          title="A question is planned, agreed and signed before any data is read",
-         bullets=["The ask, the plan, the cuts, the power floors and the compare rule are fixed in a release.",
+         bullets=["The ask, the plan, the segments, the power floors and the compare rule are fixed in a release.",
                   "A different agent agrees the plan (T0 – T3), and a person signs the release."],
          picture=("flow", dict(nodes=[
              ("ask", "a person signs it", "in"),
@@ -128,19 +128,19 @@ SLIDES = [
 
     dict(n=9, slug="one-job", group="how",
          title="Inside one Job: power first, then run, check, compare and propose",
-         bullets=["Power is checked before any outcome is read, so a weak cut is refused and shown, never run.",
-                  "Each partition is its own hard Run; Cross runs one test of the difference.",
+         bullets=["Power is checked before any outcome is read, so a weak segment is refused and shown, never run.",
+                  "Each segment is its own hard Run; Cross runs one test of the difference.",
                   "Compare and propose come after the checks, so a proposal rests on checked answers."],
          picture=("flow", dict(nodes=[
              ("launch", "pins · one Task per question", "in"),
-             ("power", "n per cut; refuse"),
-             ("rNN_<cut>", "hard · result/"),
+             ("power", "n per segment; refuse"),
+             ("rNN_<segment>", "hard · result/"),
              ("rNN_cross", "POOL or SPLIT"),
              ("write · check", "the page · T4 – T7"),
              ("compare", "vs the previous Job"),
              ("close", "frozen", "out")])),
          src="s12 · s13", lead="what keeps it honest",
-         notes="Run order: Add a Job (Board) → run-launch → run-power → rNN_<partition> → rNN_cross → run-write → "
+         notes="Run order: Add a Job (Board) → run-launch → run-power → rNN_<segment> → rNN_cross → run-write → "
                "run-check → run-compare-<prev> → run-propose-<job> → run-close."),
 
     dict(n=10, slug="guardrails", group="how",
@@ -149,8 +149,8 @@ SLIDES = [
          picture=("cards", dict(cards=[
              ("Plan first", ["the release is fixed before outcomes",
                              "T0 – T3 gate the plan"]),
-             ("Planned cuts", ["filters and power floors live in the release",
-                               "a weak cut is refused and shown",
+             ("Planned segments", ["filters and power floors live in the release",
+                               "a weak segment is refused and shown",
                                "Cross tests the difference"]),
              ("Another agent checks", ["T4 – T7 by an agent that did not write it",
                                        "T5: each sentence says what its result says"]),
@@ -230,7 +230,7 @@ SLIDES = [
          title="One workbench: the same six Spaces at every level",
          bullets=["Board, Job and Task each show the same six Spaces; what a Space holds follows the level."],
          picture=("grid", dict(head=["Space", "Board", "Job", "Task"], rows=[
-             ["Description", "Map · Prototype · Dataset · Partitions", "the release and the data version",
+             ["Description", "Map · Question Book · Dataset · Segments", "the release and the data version",
               "Question · Plan · Data"],
              ["Audience Report", "Coverage · Tracks · Consistency · Findings", "Question │ Work │ Report",
               "need → Run → sentence"],
@@ -238,7 +238,7 @@ SLIDES = [
              ["Runs", "add a version or a Job · readings", "launch … compare · propose", "rNN · cross · write · check"],
              ["Delivery", "the signed handoff", "its counsel, to the Board", "W only"]])),
          src="s11 · s12 · s13", lead="what it does not do",
-         notes="Partition × Period filters every Audience Report: Full · <A> · <B> · Cross, and Current · vs "
+         notes="Segment × Period filters every Audience Report: Full · <A> · <B> · Cross, and Current · vs "
                "previous. Every cell opens the Run behind it."),
 
     dict(n=17, slug="limits", group="now",
@@ -247,15 +247,15 @@ SLIDES = [
          picture=("cards", dict(cards=[
              ("It guarantees", ["every sentence traces to a Run and a release",
                                 "each change between Jobs has one cause",
-                                "tests and cuts were fixed before outcomes",
+                                "tests and segments were fixed before outcomes",
                                 "a person signed what left"]),
              ("It does not guarantee", ["that the question was worth asking",
                                         "causal validity beyond what the data supports",
                                         "power in small data (it refuses instead)",
                                         "that the signer read carefully"]),
-             ("It costs", ["a Run per partition, plus cross, write, check",
+             ("It costs", ["a Run per segment, plus cross, write, check",
                            "a review and a signature per release",
-                           "coverage: refused cuts"])])),
+                           "coverage: refused segments"])])),
          src="s00 · s12", lead="so is it worth it?",
          notes="Mitigations proposed: reuse unchanged Runs by hash; batch proposals into one release."),
 
@@ -266,7 +266,7 @@ SLIDES = [
          picture=("grid", dict(head=["measure", "definition", "read against"], rows=[
              ["Replication (T8)", "K answers held on the next data version", "an agent's ad hoc analysis"],
              ["Attributed changes", "changed answers with one moved clock", "100% by construction"],
-             ["Refusals", "planned cuts refused for power", "the coverage we give up"],
+             ["Refusals", "planned segments refused for power", "the coverage we give up"],
              ["Time per Job", "launch to close", "the latency we pay"]])),
          src="Guide method.md", lead="where it stands",
          notes="From the Insight Guide: the workbench is itself a bet."),
@@ -278,8 +278,8 @@ SLIDES = [
              ("Done", ["the design: structure (s00), Board · Job · Task screens (s11 – s13), the Guide (s31)",
                        "the workbench draws all three levels from a placeholder Board; 17 tests pass"]),
              ("In progress", ["the run types and skills by level (s21)",
-                              "the first Board with a Prototype and data versions on disk"]),
-             ("Open", ["one Prototype per Board, or shared?",
+                              "the first Board with a Question Book and data versions on disk"]),
+             ("Open", ["one Question Book per Board, or shared?",
                        "when a release is cut",
                        "does a signed handoff go stale?"])])),
          src="s00 · s11 – s13 · s31", lead=None,

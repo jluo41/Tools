@@ -42,7 +42,7 @@ built: from-topic .
     **Left out**: dotfiles (a drawing's `.seed.json`), `__pycache__`, `node_modules`; a link that leaves the root
   - is named, not followed <!-- @what-it-shows/8 #3987c7 -->
   - It writes nothing <!-- @what-it-shows/9 #809762 -->
-    It writes nothing. Code: `servers/workbench/frame.py` `studio_folder`, `folder_rows`, `_run_word`, the page script's Folder loader; `frame_view.py` answers `view=dir`. Shared viewers reach only their grant: the share doors check `path=` (s52).
+    It writes nothing. Code: `servers/workbench/page/frame.py` `studio_folder`, `folder_rows`, `_run_word`, the page script's Folder loader; `frame_view.py` answers `view=dir`. Shared viewers reach only their grant: the share doors check `path=` (s52).
 - Files <!-- @files #6ce6c5 -->
   - [py] [build_s09_block_folder.py](build_s09_block_folder.py) <!-- @files/0 #00c4f7 -->
   - delivery/ <!-- @files/1 #404761 -->

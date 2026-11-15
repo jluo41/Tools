@@ -71,7 +71,7 @@ def cite_checks(folder: Path) -> list:
     for task in sorted(board.glob("j*_evidence_cite/t[0-9]*_*")) if board else []:
         table = _newest(task, "citations.csv")
         for r in _read(table) if table else []:
-            m = re.search(rf"{re.escape(folder.name)}\s+((?:S\d+[a-z]*(?:,\s*)?)+)", r.get("cited_in") or "")
+            m = re.search(rf"{re.escape(folder.name)}\s+((?:[Ss]\d+[a-z]*(?:,\s*)?)+)", r.get("cited_in") or "")
             if m:
                 out.append((m.group(1).strip(" ,"), (r.get("key") or "").strip(),
                             (r.get("status") or "").strip().lower(), task))

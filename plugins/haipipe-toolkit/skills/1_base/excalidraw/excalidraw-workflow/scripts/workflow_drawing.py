@@ -185,10 +185,12 @@ class Telling:
         lines = self.face.read_text(encoding="utf-8").splitlines()
         qs = []
         for q in board_questions(board):
+            if str(q.get("group", "")).lower() == "dropped":   # a question the paper dropped keeps its report but leaves the map (Paper-CMS-AI-Usage 261111)
+                continue
             rp = board / str(q.get("report", ""))
             if q.get("report") and rp.is_file():
                 qs += story_questions(rp.read_text(encoding="utf-8").splitlines())
-        self.qs = sorted(qs or story_questions(lines), key=lambda q: q["n"])
+        self.qs = qs or sorted(story_questions(lines), key=lambda q: q["n"])   # reports: board.md order (a check first)
         if not self.qs:
             raise SystemExit(f"{self.face.name}: no '#### 3.N · Question N · RQN' block in the reports or the face")
         self.T = {r["T"]: r for r in story_table(lines, "T")}
@@ -335,8 +337,10 @@ class Canvas:
                 "versionNonce": self.n * 7, "isDeleted": False, "boundElements": None, "updated": 1790000000000,
                 "link": None, "locked": False}
 
-    def rect(self, x, y, w, h, stroke=INK, sw=2, style="solid", fill="#ffffff"):
-        self.els.append(self.base("rectangle", x, y, w, h, stroke, fill, sw, style, True))
+    def rect(self, x, y, w, h, stroke=INK, sw=2, style="solid", fill="#ffffff", link=None):
+        e = self.base("rectangle", x, y, w, h, stroke, fill, sw, style, True)
+        e["link"] = link                   # a card opens its page in the workbench (JL 261111: "the item is also clickable")
+        self.els.append(e)
 
     def text(self, x, y, s, size=14, color=INK2):
         lines = s.split("\n")
@@ -369,15 +373,15 @@ def wrap(s, width, size):
     return out + [cur] if cur else out
 
 
-def card(c, x, y, w, lines, dashed=False, stroke=INK, sw=2, pad=14):
+def card(c, x, y, w, lines, dashed=False, stroke=INK, sw=2, pad=14, link=None):
     """A rounded box around lines of (text, size, colour), each wrapped to the box. Returns its height."""
     rows = [(part, sz, col) for s, sz, col in lines for part in wrap(s, w - 2 * pad, sz)]
     h = 10 + sum(int(sz * 1.55) for _, sz, _ in rows) + 8
     if stroke in (RED, GREEN):
-        c.rect(x, y, w, h, stroke=stroke, sw=3 if stroke == RED else 2, style="dashed" if dashed else "solid")
+        c.rect(x, y, w, h, stroke=stroke, sw=3 if stroke == RED else 2, style="dashed" if dashed else "solid", link=link)
     else:
         c.rect(x, y, w, h, stroke=INK3 if dashed else stroke, sw=1 if dashed else sw,
-               style="dashed" if dashed else "solid")
+               style="dashed" if dashed else "solid", link=link)
     yy = y + 10
     for s, sz, col in rows:
         c.text(x + pad, yy, s, sz, col)
@@ -436,6 +440,22 @@ class Map:
         except (ImportError, SystemExit):
             self.shown = {}
 
+    def href(self, *texts):
+        """The workbench page of the first Block, Job or Task address in the texts (b06.j03.t04), else None."""
+        from urllib.parse import quote
+        for text in texts:
+            for b, j, t in re.findall(r"b(\d\d)\.j(\d\d)(?:\.t(\d\d))?", str(text or "")):
+                dirs = self.t.task_dirs(b, j, t) if t else sorted(self.t.tasks.glob(f"b{b}_*/j{j}_*"))
+                if dirs:
+                    rel = dirs[0].resolve().relative_to(self.root.resolve()).as_posix()
+                    return f"/_board/workbench?path={quote(rel)}&layout=focus"
+        return None
+
+    def page(self, path, **extra):
+        from urllib.parse import quote
+        rel = path.resolve().relative_to(self.root.resolve()).as_posix()
+        return f"/_board/workbench?path={quote(rel)}&layout=focus" + "".join(f"&{k}={v}" for k, v in extra.items())
+
     # one foundation card, from its SPEC entry
     def fcard(self, item, x, y, w):
         t = self.t
@@ -459,8 +479,10 @@ class Map:
                     ([(item["gray"], 12, INK3)] if item.get("gray") else [])
             dashed = item.get("dashed", False)
         extra, stroke = self.rv.lines([k for k in keys if k])
+        link = self.href(item.get("where"), item.get("gray"), *item.get("lines", []),
+                         t.T.get(item.get("task", ""), {}).get("folders"))
         h = card(self.c, x, y, w, lines + extra, dashed=dashed, stroke=stroke or item.get("stroke", INK),
-                 sw=item.get("sw", 2))
+                 sw=item.get("sw", 2), link=link)
         if item.get("key"):
             self.at[item["key"]] = (x, y, w, h)
         if item.get("task"):
@@ -562,7 +584,8 @@ class Map:
                     lines = [(f"{wid} {row['name']}", 15, INK), (row.get("question", ""), 12, INK2),
                              ("Discovery · " + ("not opened" if dashed else folder.split(":")[-1].strip(" `")), 12, INK3)]
                 extra, stroke = self.rv.lines([wid])
-                h = card(c, XA, ay, WA, lines + extra, dashed=dashed, stroke=stroke or INK)
+                h = card(c, XA, ay, WA, lines + extra, dashed=dashed, stroke=stroke or INK,
+                         link=self.href(row.get("where"), row.get("folders")))
                 self.at[wid] = (XA, ay, WA, h)
                 a_edges.append((XA + WA, ay + h / 2, dashed))
                 ay += h + 10
@@ -604,7 +627,8 @@ class Map:
                     ([("a reader gains: " + contrib, 12, INK2)] if q["contrib"] else []) + \
                     [(spec.get("figures_state", "drawn by its display script"), 12, INK3)]
             extra, stroke = self.rv.lines([f"Q{q['n']}"])
-            fh = card(c, XF, y, WF, lines + extra, dashed=True, stroke=stroke or INK)
+            fh = card(c, XF, y, WF, lines + extra, dashed=True, stroke=stroke or INK,
+                      link=self.page(t.board, section="report", group="displays"))
             f_mid = y + fh / 2
             bracket(c, XA + WA + 30, [(ex, ey) for ex, ey, _ in a_edges], [(XC, m) for m in c_mids],
                     [i for i, d in enumerate(c_dash) if d])

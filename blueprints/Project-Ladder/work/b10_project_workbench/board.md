@@ -4,6 +4,7 @@ board-kind: task-block
 spine: Design questions about how a Project is built from its root down to one Run: the Themes (tasks, discoveries, cowork, papers, insights, designs), the Block → Job → Task → Run levels inside them, the Questions at Block level, how content crosses Themes, the checker that tests it all, and the workbench that shows it: the base frame (Block · Job · Task × six Spaces), each theme on it, and its Guide.
 close: Each recorded question has a report Page with an answer status, and every answered question names the skill, checker or workbench change that settled it.
 session: Ladder-b10-ProjectWorkbench-v1031
+ui-project: blueprints/Project-Ladder
 
 ## Topic
 
@@ -44,6 +45,10 @@ chat section -> Studio line -> Block topic -> skill or checker change -> report 
 
 ## Pages
 
+**Project UI** holds the proposed Project page: Theme view buttons, each with its Purpose,
+Plan, Blocks and Handoffs, plus the shared Around the Work sections. Its clickable
+preview and view/skill map live in `ui/`; the current Project page is shown separately.
+
 No Jobs yet. The working drawing is `s12-project-scratch/s12-project-scratch.excalidraw`, rebuilt by
 `studio/_build/make.sh` from what is on disk.
 The workbench drawings are `s02-studio-workbench-skill/` (the base frame and each theme on it) and
@@ -65,7 +70,7 @@ questions:
   acceptance: Answered when each level has one definition, its required files and
     its owner skill, written in one hierarchy reference that the checker reads.
   work: []
-  report: reports/q01_bjtr_boundary/q01_bjtr_boundary.md
+  report: s01-overall-tree-structure/s01-overall-tree-structure.md
 - id: Q02
   title: How does B-J-T-R run through each Theme?
   group: Levels
@@ -77,7 +82,7 @@ questions:
   acceptance: Answered when every Theme has a row saying which folder fills each level
     or that it skips it, and the scan on disk agrees with the table.
   work: []
-  report: reports/q02_bjtr_across_themes/q02_bjtr_across_themes.md
+  report: s01-overall-tree-structure/s01-overall-tree-structure.md
 - id: Q03
   title: How do Questions live at the Block level?
   group: Report
@@ -89,7 +94,7 @@ questions:
   acceptance: Answered when each Theme's Block has the same register and reports/
     shape, or a stated reason why not, and the checker can see it.
   work: []
-  report: reports/q03_block_questions/q03_block_questions.md
+  report: s02-studio-workbench-skill/s02-studio-workbench-skill.md
 - id: Q04
   title: How is content shared across Themes?
   group: Structure
@@ -99,11 +104,10 @@ questions:
   hypothesis: 'A consumer binds a producer''s Result by exact identity and never copies
     it: papers bind Task and Discovery Results, designs read a signed Insight handoff.
     Whether Insight calls Task Runs or runs its own is open: the older register board
-    runs from tasks/, the Prototype/Instance pair runs its own.'
+    runs from tasks/, the Question Book/Instance pair runs its own.'
   acceptance: Answered when each consumer and producer pair names what crosses (a
     Result, a handoff, a Page) and how it is bound, and the insights choice is made.
   work: []
-  report: reports/q04_cross_theme_content/q04_cross_theme_content.md
 - id: Q05
   title: Which skill owns each level?
   group: Run and Skill
@@ -119,7 +123,7 @@ questions:
     are separated from the level owners, and the migration of haipipe-block, haipipe-folder
     and haipipe-run is written.
   work: []
-  report: reports/q05_skill_per_level/q05_skill_per_level.md
+  report: s10-haipipe-project/s10-haipipe-project.md
 - id: Q06
   title: What should the project checker test?
   group: Run and Skill
@@ -131,7 +135,7 @@ questions:
   acceptance: Answered when audit_projects.py walks all six levels, the report lists
     what it finds on disk, and the skill documents the checks.
   work: []
-  report: reports/q06_project_checker/q06_project_checker.md
+  report: s10-haipipe-project/s10-haipipe-project.md
 - id: Q07
   title: How does the workbench map onto the ladder?
   group: UI
@@ -146,7 +150,7 @@ questions:
   acceptance: Answered when a table maps each level to its workbench, Spaces and Run
     types, and each Run type names its skill, agent and signer.
   work: []
-  report: reports/q07_workbench_mapping/q07_workbench_mapping.md
+  report: s02-studio-workbench-skill/s02-studio-workbench-skill.md
 - id: Q08
   title: 'How is a workbench managed: one shared base, a theme each?'
   group: UI
@@ -161,7 +165,7 @@ questions:
     the Runs panel lives in workbench, one theme (task) runs on the base, and each
     theme's Guide is read from its own guide/.
   work: []
-  report: reports/q08_workbench_base/q08_workbench_base.md
+  report: s02-studio-workbench-skill/s02-studio-workbench-skill.md
 - id: Q09
   title: How do Studio drawings and Reports show and save in a workbench?
   group: UI
@@ -177,7 +181,7 @@ questions:
     change) are made or turned down with a reason, and a stale editor tab can no longer
     save over a newer build.
   work: []
-  report: reports/q09_studio_report_on_screen/q09_studio_report_on_screen.md
+  report: s02-studio-workbench-skill/s02-studio-workbench-skill.md
 - id: Q10
   title: How should a workbench's Guide explain its method?
   group: Guide
@@ -189,7 +193,7 @@ questions:
   acceptance: Answered when the families' Method pages follow one shape, served by
     one renderer, and the shape is written in servers/README.md.
   work: []
-  report: reports/q10_guide_method/q10_guide_method.md
+  report: s13-q10-guide-method/s13-q10-guide-method.md
 - id: Q11
   title: How should a Page's logic and structure be drawn?
   group: Guide
@@ -201,7 +205,7 @@ questions:
   acceptance: Answered when both drawings exist on a real Section, pass their checks,
     and show in the workbench without one canvas saving into another.
   work: []
-  report: reports/q11_logic_drawing/q11_logic_drawing.md
+  report: s14-q11-logic-drawing/s14-q11-logic-drawing.md
 - id: Q12
   title: How do we host the SPACE so others can open it?
   group: Server
@@ -216,7 +220,7 @@ questions:
     their own machine, sees only what a viewer may see, and the host, sign-in, viewer
     mode and sync are written in servers/README.md.
   work: []
-  report: reports/q12_space_hosting/q12_space_hosting.md
+  report: s51-server-runtime/s51-server-runtime.md
 ```
 
 ## Renumbered (261007)

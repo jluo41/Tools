@@ -1,5 +1,6 @@
 s02 · Studio: its workbench and its skill
 =========================================
+view: findings
 
 Was b03's s08, then b02's s01, then b03's s07; s02 since the renumbering (261007), as the workbench topic of this Block. Renamed
 s02-studio-workbench-skill on 261010 (JL), when s04-studio-and-report was merged in (its decisions
@@ -23,11 +24,45 @@ Report (261010). Earlier framing (JL 261007:
 "should it propose the structure of board, job, and tasks? ... what are their relationship to the
 workbench shared?").
 
-**Feeds:** `q03_block_questions` · `q07_workbench_mapping` · `q08_workbench_base` · `q09_studio_report_on_screen`
+**Feeds:** `Q03` · `Q07` · `Q08` · `Q09`
 
 **Source:** the reference grid is read off each workbench's own Python every build (an
 import or link of a shared part; its own stylesheet), so it shows what the code does now. The Space
 rows come from `../s01-overall-tree-structure/level_views.py` (`SERVER`, read from the server code).
+
+
+Q03 · Answer
+------------
+
+**Question:** How do Questions live at the Block level?
+
+**Answer (open):** Proposed, not yet answered (261007). Every level, Block, Job and Task, keeps its Questions the same way: the register in its face (`board.md`, or the Job's or Task's `.md`), one folder per Question in `reports/qNN_<topic>/`, and its thinking in `sNN-<topic>/`. The studio makes, the report shows: a topic holds many rough drawings a person edits; a report holds one drawing, generated from named studio frames listed under its `## Figures`. A topic's sessions are passes of its own soft Run, `runs/run-draw-<sNN>/passes/pNN-<MMDD>/`. Open: the checker that sees this shape in every Theme (the acceptance), and whether each Theme's Block follows it today (studio topic s04, decisions D01 to D06).
+
+**Page:** [q03_block_questions.md](q03_block_questions/q03_block_questions.md): the full answer, its evidence and limits (moved from reports/)
+
+
+Q07 · Answer
+------------
+
+**Question:** How does the workbench map onto the ladder?
+
+**Answer (open):** not written yet.
+
+
+Q08 · Answer
+------------
+
+**Question:** How is a workbench managed: one shared base, a theme each?
+
+**Answer (open):** not written yet.
+
+
+Q09 · Answer
+------------
+
+**Question:** How do Studio drawings and Reports show and save in a workbench?
+
+**Answer (open):** not written yet.
 
 
 Files
@@ -65,9 +100,9 @@ skills/1_base/project/
 ├── haipipe-related/    s04 Related
 ├── haipipe-report/     s05 Report
 └── haipipe-run/        s06 Run
-servers/workbench/frame.py   studio_cards · _topic_row · studio_inventory · group_list
+servers/workbench/page/frame.py   studio_cards · _topic_row · studio_inventory · group_list
                              studio_anchor · studio_group_op
-servers/workbench/xcal.py    XcalMixin, the drawing editor in a topic row
+servers/workbench/studio/xcal.py    XcalMixin, the drawing editor in a topic row
 ```
 
 
@@ -327,7 +362,7 @@ s02-D31 · Guide's first button, Index, is now **SPACE**, and a **Project** butt
     this host's SPACE Home showing only the folder's Project, `/?project=<Project folder>`, or its SPACE bucket
     (`shared:space`) outside a Project (s01-D39). Both leave the whole workbench; a bar parts them from
     Description, Method, RoadMap Draw and Related Paper. This updates D12's name; its place stays
-    (261012, requested and implemented in servers/workbench/workbench_guide.py).
+    (261012, requested and implemented in servers/workbench/guide/workbench_guide.py).
 
 The shared relationship is owned here: `b10_project_workbench/s02-studio-workbench-skill/`,
 at Block level. CoWork and other themes use the same contract. No new Job is needed to draw

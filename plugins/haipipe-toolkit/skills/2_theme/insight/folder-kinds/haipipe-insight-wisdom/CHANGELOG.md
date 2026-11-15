@@ -9,9 +9,9 @@
 
 - A Wisdom question's needs are cite (Knowledge) and judge only, so its page has no `runs/`; a compute need on a QW row is misrouted to a Knowledge successor. Each `W<n>` cites its needs; GI5 requires `haipipe-insight-check` to find no overclaim.
 
-## 1.7.0 · 2026-10-01 · Partition names, not letters (JL 261001)
+## 1.7.0 · 2026-10-01 · Segment names, not letters (JL 261001)
 
-- Wisdom page folder reads `<n>-<partition>/W<NN>-<partition>-<slug>/` (e.g. `1-full/W<NN>-full-<slug>/`).
+- Wisdom page folder reads `<n>-<segment>/W<NN>-<segment>-<slug>/` (e.g. `1-full/W<NN>-full-<slug>/`).
 
 ## 1.6.0 · 2026-10-01 · Cites Knowledge pages (JL 261001)
 
@@ -19,7 +19,7 @@
 
 ## 1.5.0 · 2026-10-01 · Runs and reports (JL 261001)
 
-- Wisdom stays a Page Folder (the signed handoff is bound by path) and cites Knowledge reports by question id and partition; legacy boards keep PARENTS records for K pages.
+- Wisdom stays a Page Folder (the signed handoff is bound by path) and cites Knowledge reports by question id and segment; legacy boards keep PARENTS records for K pages.
 
 ## 1.4.2 · 2026-09-29 · outline/ to draft/ in current-layout prose (JL 260929)
 
@@ -87,6 +87,6 @@ Recovered from the SKILL.md frontmatter summary on 260827, when the family retir
 
 - 0.3.1 (260828, fieldtest round 2 F2): the `signed:` row gets its SEAT (the handoff block's last line, below SERVES) and its form ruled deliberate (lowercase machine token vs the block's uppercase labels — a gate greps it); recording `✅ <initials> <YYMMDD>` verbatim on the person's stated decision is legal, the release/kill precedent.
 
-- 0.4.0 (260828, page-type normalization): gains `## Boundary`, which lifts the never-write-copy rule out of an outline bullet into the section every sibling contract already had and names the handoff as the seam between what evidence permits and someone else's authorship; states the 🟡-final receipt duty; rules that a deferral is a CLOSE and not a block, after a live run climbed past two partitions leaving their W pages unwritten on the reading that POOL had blocked them; and replaces the copied chain-law block with a CITATION of `haipipe-insight` §The Climb Law. Migration: owe-on-next-touch for the 🟡 check, which restates a rule the board checker already enforces. The deferral check is NEW and un-closes any partition-major board carrying a POOL verdict with a missing non-template W page — A00 owed two on the day this shipped.
+- 0.4.0 (260828, page-type normalization): gains `## Boundary`, which lifts the never-write-copy rule out of an outline bullet into the section every sibling contract already had and names the handoff as the seam between what evidence permits and someone else's authorship; states the 🟡-final receipt duty; rules that a deferral is a CLOSE and not a block, after a live run climbed past two segments leaving their W pages unwritten on the reading that POOL had blocked them; and replaces the copied chain-law block with a CITATION of `haipipe-insight` §The Climb Law. Migration: owe-on-next-touch for the 🟡 check, which restates a rule the board checker already enforces. The deferral check is NEW and un-closes any partition-major board carrying a POOL verdict with a missing non-template W page — A00 owed two on the day this shipped.
 
 - 0.3.2 (260828, fieldtest round 3 Fr7): the mint-time Queue-row allocation is the register pen's act, performed by the lap — the old wording put a register write inside a chain-page instruction, against the door's three-pens law.

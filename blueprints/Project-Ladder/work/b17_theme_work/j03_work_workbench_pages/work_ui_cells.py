@@ -1127,7 +1127,7 @@ def build(topic: Path):
             "what": {"head": f"② what s{nn} hands over: one screen, A to {last}", "icon": "page", "name": "delivery/ui/",
                      "type": "ui", "deck_why": f"stays in s{nn}'s delivery/deck/, so anyone gets it in a minute", "parts": pieces},
             "job": topic.parent.parent,
-            "target": "servers/workbench/focus_page.py · workbench-work/SKILL.md",
+            "target": "servers/workbench/page/focus_page.py · workbench-work/SKILL.md",
             "missing": [(name, "not settled yet") for _, name, _, done in pieces if not done],
             "have": [(name, "agreed") for icon, name, _, done in pieces if done and icon == "page"]}
 

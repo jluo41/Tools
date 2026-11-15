@@ -34,7 +34,7 @@ the tasks, right?"
   Projects only). `ref/running-process.txt` (a tasks/ and outline/ diagram) is gone.
 - `ref/task-page.md` § Displays holds the haipipe-page-task skill's rules (a numbers page needs a table, a figure and
   a diagram; which one for which reader move; the worklist inventory; numbers only through the evidence graph);
-  haipipe-page-task is deleted, and `servers/workbench/chat.py` sends a Task face to haipipe-task.
+  haipipe-page-task is deleted, and `servers/workbench/studio/chat.py` sends a Task face to haipipe-task.
 - `scripts/check_task_tree.py` (from ref/): R01 reads `runs/<run>/result/` and a receipt in `passes/`; S16 names a
   path in the old `tasks/` world and skips generated `result/` paths; S17 (a src/ in every Job) dropped; Stata Runs
   with their own `config.do` and a two-line caller pass N7 and S2; S1 skips Run snapshots. OpioidRx b11 went from

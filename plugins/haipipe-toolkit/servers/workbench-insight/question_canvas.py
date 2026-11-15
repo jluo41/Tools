@@ -1,5 +1,5 @@
-"""The question canvas (JL 261102: "how to make the questions to be a canvas, to show their relationships?"):
-a code version's questions drawn as cards, one band per DIKW level, Executive at the top and Data at the bottom,
+"""The question canvas (cards and lines show which question rests on which):
+a question version's questions drawn as cards, one band per DIKW level, Executive at the top and Data at the bottom,
 with an arrow from each question to the ones whose answers it cites (its evidence plan, `needs: Ek: from: D01.E8`).
 
 Interactive in the page, nothing written: hover a card to light up what it rests on (below) and what rests on it
@@ -8,7 +8,6 @@ with no link; the search box finds a question by id or words. Plain SVG and a li
 """
 import json
 import re
-from html import escape as esc
 from pathlib import Path
 
 from live import insight_plan_c as P
@@ -34,26 +33,26 @@ REFUSED = ("refused", "failed", "error", "thin")
 
 
 def _gaps(qid: str, face: dict, t: dict | None, cites: list) -> list:
-    """Up to three follow-up questions, from what this question's own record lacks: a refused or failed cut, a cut it
+    """Up to three follow-up questions, from what this question's own record lacks: a refused or failed segment, a segment it
     asks with no Run, a claim with no evidence named, and always what would change its answer. Work only."""
     out = []
     hard = (t or {}).get("hard", [])
     for r in hard:
         if str(r.get("status") or "").lower() in REFUSED:
-            out.append(f"Why was the {r.get('partition')} cut refused for {qid}, and which cut could answer it instead?")
+            out.append(f"Why was the {r.get('partition')} segment refused for {qid}, and which segment could answer it instead?")
     asked = (face.get("partitions") or {}).get("asked") if isinstance(face.get("partitions"), dict) else None
     ran = {str(r.get("partition")) for r in hard}
     if t and hard and isinstance(asked, list):        # only a question that runs (X and W are written from pages)
-        out += [f"Answer {qid} on the {c} cut too: it is asked there but has no Run yet" for c in asked if str(c) not in ran]
+        out += [f"Answer {qid} on the {c} segment too: it is asked there but has no Run yet" for c in asked if str(c) not in ran]
     if qid[:1] in "KWX" and not cites:
         out.append(f"Which Data or Information answers should {qid} rest on? Its evidence plan names none")
     out.append(f"What would change the answer to {qid}, and how would we see it in the next data version?")
     return out[:3]
 
 
-def data(release: dict, job: dict | None, task_href, root: Path | None = None, proposals=()) -> dict:
+def data(release: dict, job: dict | None, task_href, root: Path | None = None, proposals=(), mode: str = "board") -> dict:
     """{nodes: [{id, lv, name, q, ask, answer, state, href, task, gaps}], edges: [[from, to]]}: from = the citing
-    question. `proposals` (Work only): the Prototype's open proposals, drawn as dashed "asked" cards."""
+    question. `proposals` (Work only): the Question Book's open proposals, drawn as dashed "asked" cards."""
     tasks = {t["qid"]: t for t in (job or {}).get("tasks", [])}
     nodes, edges = [], []
     for qid, q in release.get("questions", {}).items():
@@ -61,6 +60,9 @@ def data(release: dict, job: dict | None, task_href, root: Path | None = None, p
         t = tasks.get(qid)
         tf = (t or {}).get("face", {})
         state = str(tf.get("answer-status") or ("not in a Job" if not t else "—")).lower()
+        if mode == "code":                                         # a Code Board: what this version did to it
+            state = "new" if str(q.get("change") or "") == "new" else (
+                "changed" if str(q.get("change") or "") == "changed" else "kept")
         if face.get("retired"):
             state = "retired"
         elif str(tf.get("check") or "").startswith("↩"):          # a returned page is not written (the one count)
@@ -73,7 +75,7 @@ def data(release: dict, job: dict | None, task_href, root: Path | None = None, p
                 task = Path(t["path"]).name
         nodes.append({"id": qid, "lv": qid[:1], "name": str(face.get("name") or ""), "q": str(q.get("question") or ""),
                       "ask": str(face.get("ask") or ""), "answer": str(tf.get("answer") or ""), "state": state,
-                      "href": task_href(t) if t else "", "task": task, "gaps": _gaps(qid, face, t, cites)})
+                      "href": task_href(t) if t else (task_href({"path": q["task"]}) if mode == "code" and q.get("task") else ""), "task": task, "gaps": _gaps(qid, face, t, cites)})
         edges += [[qid, c] for c in cites if c in release.get("questions", {})]
     for k, pr in enumerate(proposals):
         src = str(pr.get("from") or pr.get("question") or "")
@@ -85,7 +87,7 @@ def data(release: dict, job: dict | None, task_href, root: Path | None = None, p
                       "href": "", "task": "", "gaps": []})
         if m and m.group(1) in release.get("questions", {}):
             edges.append([pid, m.group(1)])
-    return {"nodes": nodes, "edges": edges, "levels": LEVELS}
+    return {"nodes": nodes, "edges": edges, "levels": LEVELS, "mode": mode}
 
 
 CSS = """
@@ -108,13 +110,24 @@ CSS = """
 .qc-svg .card.on rect{stroke-width:2.6;stroke:#1f6feb}
 .qc-svg .card.down rect{stroke:#1a7f37;stroke-width:2}.qc-svg .card.up rect{stroke:#bc4c00;stroke-width:2}
 .qc-svg.lit path.e.down{opacity:1;stroke:#1a7f37;stroke-width:1.8}.qc-svg.lit path.e.up{opacity:1;stroke:#bc4c00;stroke-width:1.8}
-.qc-side{border:1px solid #d0d7de;border-radius:10px;padding:10px 12px;font-size:13px;background:#fff;min-height:92px;position:sticky;top:0;z-index:2}
+.qc-side{border:1px solid #d0d7de;border-radius:10px;padding:10px 12px;font-size:13px;background:#fff}.qc-side[hidden]{display:none}
 .qc-ans{margin:6px 0;padding:6px 8px;border-left:3px solid #1a7f37;background:#f3faf4}.qc-act{margin-top:10px;border-top:1px solid #e1e4e8;padding-top:8px;display:flex;flex-direction:column;gap:6px}.qc-act .pb-prompt{display:flex;gap:6px;align-items:flex-start;border:0;padding:0;margin:0;background:none;box-shadow:none}.qc-side:has(.qc-act){position:static}.qc-act textarea{flex:1;font:inherit;padding:4px 6px;border:1px solid #c9ccd1;border-radius:6px}.qc-gaps{margin:0;padding-left:0;list-style:none}.qc-gaps li{margin:3px 0;display:flex;gap:6px;align-items:baseline}.qc-svg .card.s-asked rect{fill:#fff;stroke-dasharray:5 3}.qc-side .chips a{color:#1864ab}.qc-two{display:grid;grid-template-columns:1.4fr 1fr;gap:14px}.qc-side .chips+b{display:block}.qc-side h4{margin:0 0 4px;font-size:15px}.qc-side .mut{color:#57606a}
 .qc-tip{position:absolute;z-index:5;pointer-events:none;max-width:340px;background:#fff;border:1px solid #d0d7de;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.12);padding:7px 10px;font-size:12.5px;line-height:1.4;display:none}
 .qc-tip b{font-size:13px}.qc-tip .mut{color:#57606a}
 .qc-side .chips{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0 8px}
 .qc-side .chips a{border:1px solid #c9ccd1;border-radius:10px;padding:1px 7px;cursor:pointer;text-decoration:none;color:inherit}
 .qc-side .chips a.down{border-color:#1a7f37}.qc-side .chips a.up{border-color:#bc4c00}
+.qc-style{display:inline-flex;border:1px solid #c9ccd1;border-radius:6px;overflow:hidden}
+.qc-style button{border:0;background:#fff;padding:3px 10px;font:inherit;cursor:pointer;color:#57606a}.qc-style button.on{background:#eaf2fe;color:#1f6feb}
+.qc-svg .card circle{fill:#fff;stroke:#1e1e1e;stroke-width:1.4;transition:fill .12s,stroke .12s}
+.qc-svg .card .nid{font:700 11px system-ui;text-anchor:middle}.qc-svg .card .nname{font:11px system-ui;fill:#57606a;text-anchor:middle}
+.qc-svg .colt{font:600 12px system-ui;fill:#8a8f98;letter-spacing:.04em;text-anchor:middle}
+.qc-svg .card.s-written circle,.qc-svg .card.s-answered circle,.qc-svg .card.s-checked circle{fill:#d3f0da}
+.qc-svg .card.s-drafted circle,.qc-svg .card.s-returned circle{fill:#fff1c2}.qc-svg .card.s-new circle{fill:#dbe9ff}
+.qc-svg .card.s-changed circle{fill:#fff1c2}.qc-svg .card.s-new rect{fill:#dbe9ff}.qc-svg .card.s-changed rect{fill:#fff1c2}.qc-svg .card.s-retired circle,.qc-svg .card.s-asked circle{stroke-dasharray:4 3}
+.qc-svg.net path.e{opacity:.55;stroke:#9aa1ab;stroke-width:1.3}
+.qc-svg.lit .card:not(.on):not(.up):not(.down) circle{fill:#fff;stroke:#e1e4e8}
+.qc-svg .card.on circle{stroke-width:3;stroke:#1f6feb}.qc-svg .card.down circle{stroke:#1a7f37;stroke-width:2.4}.qc-svg .card.up circle{stroke:#bc4c00;stroke-width:2.4}
 @media(max-width:600px){.qc-two{grid-template-columns:1fr}.qc-bar input[type=search]{width:100%}}   /* phone last (haipipe-ui rule 5) */
 """
 
@@ -129,9 +142,43 @@ var onlyLinked=false, pinned=null, pos={}, hov=0, tipEl=document.createElement('
 function el(t,a,p){var x=document.createElementNS(NS,t);for(var k in a)x.setAttribute(k,a[k]);if(p)p.appendChild(x);return x;}
 function linked(n){return down[n.id].length||up[n.id].length;}
 function short(s,k){return s.length>k?s.slice(0,k-1)+'…':s;}
-function draw(){
-  // Executive on top, as a row; under it the evidence builds left to right, D → I → K → W, one column a level
-  // (JL 261102: "should we start from the Executive, and the Data, and then I, K, W").
+var style='cards';
+function draw(){svg.classList.toggle('net',style==='net');if(style==='net')return drawNet();drawCards();}
+function drawNet(){
+  // the questions as a network: one column a level, Data on the left to
+  // Executive on the right, a dot a question, a line from each answer to every question that uses it
+  svg.innerHTML='';pos={};
+  var eg=el('g',{},svg), cg=el('g',{},svg), cols=['D','I','K','W','X'], names={};D.levels.forEach(function(L){names[L[0]]=L[1];});
+  function keep(lv){return D.nodes.filter(function(n){return n.lv===lv&&(!onlyLinked||linked(n));});}
+  var colW=(W-16)/5, R=16, SP=74, TOP=44, most=Math.max.apply(null,cols.map(function(lv){return keep(lv).length;}).concat([1]));
+  cols.forEach(function(lv,c){var ns=keep(lv), cx=8+colW*c+colW/2;
+    ns.sort(function(a,b){function k(n){var ys=down[n.id].concat(up[n.id]).filter(function(i){return pos[i];}).map(function(i){return pos[i].y;});
+      return ys.length?ys.reduce(function(s,v){return s+v;},0)/ys.length:1e5+parseInt(n.id.slice(1));}return k(a)-k(b);});
+    var t=el('text',{x:cx,y:16,'class':'colt'},cg);t.textContent=(names[lv]||lv).toUpperCase();
+    var off=TOP+R+(most-ns.length)*SP/2;
+    ns.forEach(function(n,i){dot(n,cx,off+i*SP,R,colW-8,cg);});});
+  D.edges.forEach(function(e){var a=pos[e[0]],b=pos[e[1]];if(!a||!b)return;var d,ay=a.y+R,by_=b.y+R;
+    if(a.lv===b.lv){var rx=a.x+2*R;d='M'+rx+','+ay+' C'+(rx+30)+','+ay+' '+(rx+30)+','+by_+' '+rx+','+by_;}
+    else{var L=b.x<a.x?b:a,Rr=b.x<a.x?a:b,x1=L.x+2*R,y1=L.y+R,x2=Rr.x,y2=Rr.y+R,mx=(x1+x2)/2,
+      skip=Math.round((x2-x1)/colW), bow=skip>0?skip*16+(y1===y2?10:0):0;   // a line past a level arcs over it,
+      d=bow?'M'+x1+','+y1+' C'+(x1+(x2-x1)/3)+','+(y1-bow)+' '+(x2-(x2-x1)/3)+','+(y2-bow)+' '+x2+','+y2   // never through its dots
+        :'M'+x1+','+y1+' C'+mx+','+y1+' '+mx+','+y2+' '+x2+','+y2;}
+    el('path',{d:d,'class':'e','data-a':e[0],'data-b':e[1]},eg);});
+  svg.setAttribute('viewBox','0 0 '+W+' '+(TOP+most*SP+12));svg.style.height='auto';
+  if(!(pinned&&pos[pinned]))pinned=null;light(pinned);panel(pinned);
+}
+function dot(n,cx,cy,r,w,parent){pos[n.id]={x:cx-r,y:cy-r,w:2*r,h:2*r,lv:n.lv};
+  var g=el('g',{'class':'card s-'+n.state.replace(/\s+/g,'-'),'data-id':n.id,transform:'translate('+cx+','+cy+')'},parent);
+  el('circle',{r:r},g);
+  var a=el('text',{y:4,'class':'nid'},g);a.textContent=n.id;
+  var b=el('text',{y:r+14,'class':'nname'},g);b.textContent=short(n.name||n.q,Math.floor(w/6.2));
+  var tt=el('title',{},g);tt.textContent=n.id+' · '+n.q+'\n'+n.state;
+  g.addEventListener('mouseenter',function(){clearTimeout(hov);light(n.id);tip(n,g);});
+  g.addEventListener('mouseleave',function(){clearTimeout(hov);hov=setTimeout(function(){light(pinned);tip(null);},90);});
+  g.addEventListener('click',function(){pin(pinned===n.id?null:n.id);});
+}
+function drawCards(){
+  // Executive on top, as a row; under it the evidence builds left to right, D → I → K → W, one column a level.
   svg.innerHTML='';pos={};
   var bandg=el('g',{},svg), eg=el('g',{},svg), cg=el('g',{},svg);
   var cols=['D','I','K','W'], names={};D.levels.forEach(function(L){names[L[0]]=L[1];});
@@ -196,8 +243,10 @@ function tip(n,g){if(!n){tipEl.style.display='none';return;}
 function chips(ids,cls){return ids.length?'<div class=chips>'+ids.map(function(i){return '<a class='+cls+' data-go="'+i+'" title="'+esc(by[i].q)+'">'+i+'</a>';}).join('')+'</div>':'<p class=mut>none</p>';}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 function panel(id){
-  if(!id){side.innerHTML='<h4 title="'+esc('Hover lights its chain: green what it rests on, orange what uses it. Click to pin; click the chips to walk.'
-    +(D.work?' Pinned, a question can be asked about or followed up.':''))+'">Click a question to read it here</h4>';return;}   // its help on hover, never a grey paragraph (round 1)
+  // nothing pinned, nothing shown: the panel opens under the
+  // canvas when a question is clicked; the hover tip and the canvas's title say how to use it
+  if(!id){side.hidden=true;side.innerHTML='';return;}
+  side.hidden=false;
   var n=by[id];
   side.innerHTML='<div class=qc-two><div><h4>'+esc(n.id)+' · '+esc(n.name)+'</h4><p style="margin:2px 0">'+esc(n.q)+'</p>'
     +(n.answer?'<p class=qc-ans>'+esc(n.answer)+'</p>':(n.ask?'<p class=mut style="margin:2px 0">'+esc(n.ask)+'</p>':''))
@@ -211,7 +260,7 @@ function act(n){  // Work only: ask about it, or propose a follow-up for the nex
   var w=D.work, where='the insight Board '+w.board+(w.job?', Job '+w.job:'');
   var ask='On '+where+': a question about '+n.id+' ('+n.q+').'+(n.answer?' Its answer now: '+n.answer:'')
     +' It rests on '+ids(down[n.id])+' and is used by '+ids(up[n.id])+'.'+(n.task?' Read its Task '+n.task+' and its Runs\' results first, then answer from them; say what they cannot tell.':'');
-  var prop=function(t){return 'Propose a follow-up to '+n.id+' ('+n.q+') for the next code version: write it as a proposal in '
+  var prop=function(t){return 'Propose a follow-up to '+n.id+' ('+n.q+') for the next question version: write it as a proposal in '
     +w.proposals+' (haipipe-insight-question), with from: '+n.id+' and the level it asks at. The follow-up: '+t;};
   var h='<div class=qc-act><span class="pb-prompt qc-askbox"><textarea data-field="My question" rows=2 placeholder="Ask about '+esc(n.id)+' …"></textarea>'
     +'<button type=button class="fd-btn pb-copy" data-copy="'+esc(ask)+'" data-tail="'+esc(w.tail)+'">Ask about it</button></span>';
@@ -223,32 +272,41 @@ function act(n){  // Work only: ask about it, or propose a follow-up for the nex
 }
 function pin(id,go){pinned=id;if(id&&!pos[id]){onlyLinked=false;root.querySelector('.qc-only').checked=false;draw();}light(id);panel(id);tip(null);
   try{history.replaceState(null,'',location.pathname+location.search+(id?'#q='+id:''));}catch(e){}   // the share link follows the pin
-  if(id&&go){var c=svg.querySelector('.card[data-id="'+id+'"]');if(c)c.scrollIntoView({block:'nearest',behavior:'smooth'});}}
+  if(id&&go){var c=svg.querySelector('.card[data-id="'+id+'"]');if(c)c.scrollIntoView({block:'nearest',behavior:'smooth'});}
+  else if(id)side.scrollIntoView({block:'nearest',behavior:'smooth'});}   // the panel under the canvas comes into view
+root.querySelectorAll('.qc-style button').forEach(function(b){b.addEventListener('click',function(){style=b.dataset.s;
+  root.querySelectorAll('.qc-style button').forEach(function(x){x.classList.toggle('on',x===b);});draw();});});
 root.querySelector('.qc-only').addEventListener('change',function(e){onlyLinked=e.target.checked;draw();});
 root.querySelector('.qc-find').addEventListener('input',function(e){var s=e.target.value.trim().toLowerCase();if(!s){pin(null);return;}
   var hit=D.nodes.find(function(n){return n.id.toLowerCase()===s;})||D.nodes.find(function(n){return (n.id+' '+n.name+' '+n.q).toLowerCase().indexOf(s)>=0;});if(hit)pin(hit.id,true);});
 function fit(){var w=svg.getBoundingClientRect().width||900;W=Math.max(520,Math.round(w));draw();}
 window.addEventListener('resize',function(){clearTimeout(fit.t);fit.t=setTimeout(fit,150);});fit();
+// a canvas in a closed tab draws at its real width when the tab opens (one canvas per question version or Job)
+if(window.ResizeObserver){var lastW=0;new ResizeObserver(function(){var w=Math.round(svg.getBoundingClientRect().width);
+  if(w&&Math.abs(w-lastW)>4){lastW=w;fit();}}).observe(root);}
 var h=(location.hash.match(/q=([DIKWX]\d+)/)||[])[1];if(h&&by[h])pin(h);
 })();
 """
 
 
 def canvas(release: dict, job: dict | None, task_href, root: Path | None = None, work: dict | None = None,
-           proposals=()) -> str:
+           proposals=(), mode: str = "board") -> str:
     """Report (work=None): read and explore. Work (work={board, job, proposals, tail}): the same canvas, and a pinned
-    question's panel can be asked about or followed up (JL 261102: "the questions should be in the Work")."""
-    d = data(release, job, task_href, root, proposals if work else ())
+    question's panel can be asked about or followed up (a question is asked where the work is done)."""
+    d = data(release, job, task_href, root, proposals if work else (), mode)
     if not d["nodes"]:
         return ""
     d["work"] = work
     blob = json.dumps(d).replace("</", "<\\/")
-    key = ('<span class=qc-key><span><i style="background:#e9f6ec;border:1px solid #1e1e1e"></i>page written</span>'
-           '<span><i style="background:#fff6db;border:1px solid #1e1e1e"></i>drafted</span>'
-           '<span><i style="background:#fff;border:1px solid #1e1e1e"></i>not yet</span>'
-           + ('<span><i style="background:#fff;border:1px dashed #1e1e1e"></i>asked, not planned</span>' if work else "")
+    key = ('<span class=qc-key><span><i style="background:#dbe9ff;border:1px solid #1e1e1e;border-radius:50%"></i>new in this version</span>'
+           '<span><i style="background:#fff;border:1px solid #1e1e1e;border-radius:50%"></i>kept</span></span>') if mode == "code" else (
+           '<span class=qc-key><span><i style="background:#e9f6ec;border:1px solid #1e1e1e;border-radius:50%"></i>page written</span>'
+           '<span><i style="background:#fff6db;border:1px solid #1e1e1e;border-radius:50%"></i>drafted</span>'
+           '<span><i style="background:#fff;border:1px solid #1e1e1e;border-radius:50%"></i>not yet</span>'
+           + ('<span><i style="background:#fff;border:1px dashed #1e1e1e;border-radius:50%"></i>asked, not planned</span>' if work else "")
            + '</span>')
     return (f'<style>{CSS}</style><div class=qc><div class=qc-bar><input class=qc-find type=search placeholder="find X03, timing …">'
+            f'<span class=qc-style><button type=button class=on data-s=cards>Cards</button><button type=button data-s=net>Dots</button></span>'
             f'<label><input class=qc-only type=checkbox> Only linked</label>{key}</div>'
-            f'<aside class=qc-side></aside><svg class=qc-svg></svg>'
+            f'<svg class=qc-svg></svg><aside class=qc-side hidden></aside>'
             f'<script type="application/json">{blob}</script></div><script>{JS}</script>')

@@ -1,6 +1,6 @@
 """next_run.py <insight folder> · where it stands on the ladder and which Run is next (b11 s21 phase 2).
 
-    python next_run.py <Prototype | release | insight Board | Job | Task>
+    python next_run.py <Question Book | release | insight Board | Job | Task>
 
 Reads the folder's files only (faces, release.yaml, board.md, run.yaml cards) and prints its state and the next
 Run, by the gates in ref/run-cards.md § Gates. It never runs or writes anything: a person or an agent presses the
@@ -19,7 +19,7 @@ _spec = importlib.util.spec_from_file_location(
     "insight_ladder", HERE.parents[1] / "haipipe-insight" / "scripts" / "insight_ladder.py")
 IL = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(IL)
-LOADER = getattr(yaml, "CSafeLoader", yaml.SafeLoader)   # the C loader when built: a Job has a run.yaml per cut
+LOADER = getattr(yaml, "CSafeLoader", yaml.SafeLoader)   # the C loader when built: a Job has a run.yaml per segment
 
 
 def _card(run_dir: Path) -> dict:
@@ -51,8 +51,8 @@ def release_state(ver: Path) -> tuple[str, str]:
             return f"{rel} open; {q} has no script", f"run-write-script-{q.lower()}"
     parts = IL.front(ver / "partitions.md")[0].get("partitions") or []
     if not any(p.get("name") == "full" for p in parts) or any("<" in str(p.get("name")) for p in parts):
-        return f"{rel} open; the cuts are not set", f"run-set-cuts-{rel}"
-    return f"{rel} open; every question agreed, the cuts set", f"run-sign-release-{rel} (a person signs)"
+        return f"{rel} open; the segments are not set", f"run-set-segments-{rel}"
+    return f"{rel} open; every question agreed, the segments set", f"run-sign-release-{rel} (a person signs)"
 
 
 def prototype_state(proto: Path) -> tuple[str, str]:
@@ -60,16 +60,16 @@ def prototype_state(proto: Path) -> tuple[str, str]:
     open_props = [p for p in (proto / "proposals").glob("*.md")
                   if p.name != "README.md" and IL.front(p)[0].get("state", "open") == "open"]
     if not vers:
-        return "no code version yet", "run-open-version-code-v1"
+        return "no question version yet", "run-open-version-question-v1"
     state, nxt = release_state(vers[-1])
     if str(IL.face(vers[-1]).get("state")) == "closed":
         n = IL.OJ.num(IL.VERSION.match(vers[-1].name).group(2)) + 1
         taken = [p for p in (proto / "proposals").glob("*.md")
-                 if str(IL.front(p)[0].get("taken-in", "")) in (f"code-v{n}", f"p{n}")]
+                 if str(IL.front(p)[0].get("taken-in", "")) in (f"question-v{n}", f"code-v{n}", f"p{n}")]
         if taken:
-            return f"{state}; {len(taken)} proposals taken into code-v{n}", f"run-open-version-code-v{n}, then apply them"
+            return f"{state}; {len(taken)} proposals taken into question-v{n}", f"run-open-version-question-v{n}, then apply them"
         if open_props:
-            return f"{state}; {len(open_props)} open proposals", f"run-triage-proposals-code-v{n}, then run-open-version-code-v{n}"
+            return f"{state}; {len(open_props)} open proposals", f"run-triage-proposals-question-v{n}, then run-open-version-question-v{n}"
     return state, nxt
 
 
@@ -78,10 +78,10 @@ def task_state(task: Path) -> tuple[str, str]:
     hard = [_card(r) for r in sorted((task / "runs").glob("r[0-9][0-9]_*"))] if (task / "runs").is_dir() else []
     waiting = [c.get("run") for c in hard if not _done(c.get("status"))]
     if waiting:
-        return f"{len(hard) - len(waiting)} of {len(hard)} cuts run", f"{waiting[0]} (its run.sh)"
+        return f"{len(hard) - len(waiting)} of {len(hard)} segments run", f"{waiting[0]} (its run.sh)"
     face = IL.face(task)
     if str(face.get("answer-status", "open")) != "answered":
-        return "every cut run; the page not written", f"run-write-{t}"
+        return "every segment run; the page not written", f"run-write-{t}"
     if not str(face.get("check", "")).startswith("✅"):
         return "the page written, not checked", f"run-check-{t} (another agent)"
     return "answered and checked", "-"
@@ -98,7 +98,7 @@ def job_state(job: Path) -> tuple[str, str]:
     if todo:
         t, (st, nxt) = todo[0]
         launched = (job / "runs").is_dir() and any((job / "runs").glob("run-launch-*"))
-        if not launched and st.endswith("cuts run"):
+        if not launched and st.endswith("segments run"):
             return f"{jid} open; {len(todo)} of {len(tasks)} questions not done, not launched", f"run-launch-{jid}"
         return f"{jid} open; {len(todo)} of {len(tasks)} questions not done ({t.name}: {st})", nxt
     prev = str(face.get("previous") or "")
@@ -127,7 +127,7 @@ def board_state(board: Path) -> tuple[str, str]:
         if newest_data != ldata and (lrel, newest_data) not in pairs:
             return f"{st}; data {newest_data} is new", f"run-add-j{len(jobs) + 1:02d} ({lrel} on {newest_data}: data moved)"
         if newest_rel and newest_rel != lrel and (newest_rel, ldata) not in pairs:
-            return f"{st}; code version {newest_rel} is signed", f"run-add-j{len(jobs) + 1:02d} ({newest_rel} on {ldata}: code moved)"
+            return f"{st}; question version {newest_rel} is signed", f"run-add-j{len(jobs) + 1:02d} ({newest_rel} on {ldata}: code moved)"
         return f"{st}; the newest pair has run", "run-coverage, then the Board's questions"
     return f"{last.name}: {st}", nxt
 
@@ -149,7 +149,7 @@ def main(argv=None) -> int:
         return 2
     found = state(Path(args[0]))
     if found is None:
-        print(f"{args[0]}: not an insight Prototype, release, Board, Job or Task folder")
+        print(f"{args[0]}: not an insight Question Book, release, Board, Job or Task folder")
         return 1
     print(f"state  {found[0]}\nnext   {found[1]}")
     return 0

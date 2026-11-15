@@ -2,17 +2,17 @@
 
 An Insight Block (haipipe-insight ref/block-contract.md) is a task Block: one Job per DIKW level
 (j01_data … j04_wisdom), one Task per question (tNN_<name>/: question.md, scripts/, runs/<dataset>_
-<partition>.sh, results/, reports/, the page). It is drawn by the SAME Insight workbench as every
+<segment>.sh, results/, reports/, the page). It is drawn by the SAME Insight workbench as every
 InsightBoard: insightboard.render_insight_board, its Spaces, Insight › Questions one table per
-partition with Logic · Work · Report, the Runs panels and the pop-outs. This module only READS the
+segment with Logic · Work · Report, the Runs panels and the pop-outs. This module only READS the
 Block and returns the snapshot shape insightboard.py already renders, for one dataset at a time
-(board.md `datasets:`, the first unless one is named), so a partition stays the screen's unit:
+(board.md `datasets:`, the first unless one is named), so a segment stays the screen's unit:
 
     questions   one row per question, id `Q<L><N>` (I03 → QI3), its cells computed by
                 haipipe-insight-check ref/check_block.py
     pages       the question's page in its task folder, plus the meta page the Dataset view reads
                 (meta/meta.md, carried word for word from the board it was made from)
-    work        one run per question × partition of the dataset (runs/<dataset>_<partition>.sh)
+    work        one run per question × segment of the dataset (runs/<dataset>_<segment>.sh)
     notes       each question.md's short question, name, ask, why now, what would answer it,
                 any other carried field, and its live needs
 
@@ -27,6 +27,7 @@ import importlib
 import json
 import re
 import sys
+import traceback
 from pathlib import Path
 from urllib.parse import quote
 
@@ -73,6 +74,9 @@ def datasets(board: Path) -> list[str]:
 def _front(path: Path) -> tuple[dict, str]:
     try:
         return _tools()[1].front(path)
+    except ImportError:                              # the insight skill's own tools did not load: say so once per read
+        traceback.print_exc()
+        return {}, ""
     except Exception:  # noqa: BLE001 · a broken file reads as empty, never raised to the reader
         return {}, ""
 
@@ -112,7 +116,7 @@ def _cell(mark: str, page_id: str) -> dict:
     elif mark.startswith("🚫"):
         m, note = "🚫", mark[1:].replace("⚑", "").strip()
     elif mark.startswith("STALE"):
-        m, note = "🟡", "stale: rerun the partition, then re-read"
+        m, note = "🟡", "stale: rerun the segment, then re-read"
     else:
         m, note = "🟡", ""
     return {"mark": m, "page": page_id, "note": note, "raw": f"{m} {page_id} {note}".strip()}
@@ -149,7 +153,7 @@ def legacy_snapshot(board: Path, root: Path, dataset: str = "") -> dict:
     ds = dataset if dataset in names else (names[0] if names else "")
     parts = _front(board / rq.META / "partitions.md")[0].get("partitions") or []
     problems, grid, check_notes = ci.run(board)
-    strip = lambda run: run[len(ds) + 1:] if run.startswith(f"{ds}_") else None   # this dataset's runs, by partition
+    strip = lambda run: run[len(ds) + 1:] if run.startswith(f"{ds}_") else None   # this dataset's runs, by segment
     grid = {qid: {strip(r): m for r, m in row.items() if strip(r)} for qid, row in grid.items()}
     pages, questions, work, notes, report_rows, rows_of, registers = [], [], [], {}, [], {}, {}
     for task in rq.question_folders(board):
@@ -240,8 +244,8 @@ def legacy_snapshot(board: Path, root: Path, dataset: str = "") -> dict:
 
 
 def render_prototype(board: Path, root: Path) -> str:
-    """Prototype › Meta: the Block's design, the questions and their code, laid out for the reader:
-    four numbers, one table by level of questions, needs and scripts, the partitions, the shared
+    """Question Book › Meta: the Block's design, the questions and their code, laid out for the reader:
+    four numbers, one table by level of questions, needs and scripts, the segments, the shared
     settings, the design files. Read-only: a question changes only by a signed change."""
     ci, rq = _tools()
     board, root = Path(board).resolve(), Path(root).resolve()
@@ -263,7 +267,7 @@ def render_prototype(board: Path, root: Path) -> str:
     head = (f'<h2>Meta</h2><div class=pcard><div class=ptitle>{link(board / "board.md", board.name)}</div>'
             f'<div class=psub>{_e(title)}</div>'
             '<p class=lead>One task Block: one Job per level, one Task per question, holding its question, its one '
-            'script, one run per dataset and partition, and its page.</p>'
+            'script, one run per dataset and segment, and its page.</p>'
             '<div class=ptiles>' + tile(total("live"), "live questions") + tile(total("needs"), "live needs")
             + tile(total("scripts"), "with a script") + tile(len(datasets(board)), "datasets") + '</div></div>')
     table = ('<h3>By level</h3><table><tr><th>Job</th><th class=num>Questions</th><th class=num>Needs</th>'
@@ -274,7 +278,7 @@ def render_prototype(board: Path, root: Path) -> str:
              + '</table><p class=mut>A question changes only by a signed change: the old one is retired, never edited.</p>')
     shared = sorted(board.glob("src/*.py")) + sorted(board.glob("j0[1-4]_*/src/*.py"))
     files = ('<h3>Design files</h3><table>'
-             '<tr><th>Partitions and data</th><td>' + " · ".join(link(board / rq.META / n, n) for n in
+             '<tr><th>Segments and data</th><td>' + " · ".join(link(board / rq.META / n, n) for n in
                                                     ("meta.md", "partitions.md", "thresholds.yaml")) + '</td></tr>'
              '<tr><th>Level rules</th><td>' + " · ".join(link(f, f.parent.name) for f in sorted(level_file(j) for j in board.glob("j0[1-4]_*") if level_file(j).is_file()))
              + '</td></tr>'
@@ -297,7 +301,7 @@ def _where_text(rule: dict) -> str:
 
 
 def _partitions_html(proto: Path) -> str:
-    """meta/partitions.md as a table: each partition and who it holds, in words."""
+    """meta/partitions.md as a table: each segment and who it holds, in words."""
     rows = (_front(proto / "meta" / "partitions.md")[0].get("partitions") or [])
     if not rows:
         return ''
@@ -306,8 +310,8 @@ def _partitions_html(proto: Path) -> str:
         + (_e("every row") if not r.get("where") and not r.get("of") else
            _e("compares " + ", ".join(r["of"])) if r.get("of") else
            _e(" · ".join(_where_text(w) for w in r["where"]))) + '</td></tr>' for r in rows)
-    return ('<h3>Partitions</h3><table><tr><th>Partition</th><th>Who it holds</th></tr>' + body +
-            '</table><p class=mut>Row counts for this board are in Scope › Partitions.</p>')
+    return ('<h3>Segments</h3><table><tr><th>Segment</th><th>Who it holds</th></tr>' + body +
+            '</table><p class=mut>Row counts for this board are in Scope › Segments.</p>')
 
 
 def _settings_html(proto: Path) -> str:
@@ -339,7 +343,7 @@ def _prose(body: str, label: str) -> str:
 
 def _level_html(board: Path, root: Path, level_job: Path, n_parts: int) -> str:
     """One level's Job: its opening question, then one folding row per live question (id, name, the
-    short question, partitions, script, agreed), then the retired ones folded."""
+    short question, segments, script, agreed), then the retired ones folded."""
     ci, rq = _tools()
     link = lambda path, label: (f'<a class=pop href="{_e(file_url(board, path, root))}" data-pop="{_e(label)}">'
                                 f'{_e(label)}</a>' if path.exists() else f'<span class=mut>{_e(label)}</span>')
@@ -360,7 +364,7 @@ def _level_html(board: Path, root: Path, level_job: Path, n_parts: int) -> str:
         (retired if q.get("retired") else live).append((task, q, body))
     for task, q, body in live:
         asked = (q.get("partitions") or {}).get("asked") or []
-        if isinstance(asked, str):                       # `asked: all` names every partition
+        if isinstance(asked, str):                       # `asked: all` names every segment
             asked = [asked]
         where = ("all partitions" if asked == ["all"] or (n_parts and len(asked) >= n_parts - 1 and "cross" not in asked)
                  else " · ".join(asked) or "not asked")
@@ -393,7 +397,7 @@ def _level_html(board: Path, root: Path, level_job: Path, n_parts: int) -> str:
 
 
 def prototype_views(board: Path, root: Path) -> list[tuple[str, str, str]]:
-    """The Prototype Space (JL 261003): Meta, then one View per level's Job. Returns [(key, label, html)]."""
+    """The Question Book Space: Meta, then one View per level's Job. Returns [(key, label, html)]."""
     board, root = Path(board).resolve(), Path(root).resolve()
     views = [("meta", "Meta", render_prototype(board, root))]
     n_parts = len(_front(board / "meta" / "partitions.md")[0].get("partitions") or [])
@@ -409,7 +413,7 @@ def _allowed(board: Path) -> list[Path]:
 
 
 def render_run(board: Path, root: Path, task: str, partition: str) -> str:
-    """One run (`partition` is the run stem, <dataset>_<partition>) as the workbench's run pop-out
+    """One run (`partition` is the run stem, <dataset>_<segment>) as the workbench's run pop-out
     lays a run out: where it is, its links, its generated report first, its receipt, its tables."""
     from .paper import _RESULT_PAGE, _csv_view, _md_view
     board, root = Path(board).resolve(), Path(root).resolve()
@@ -427,7 +431,7 @@ def render_run(board: Path, root: Path, task: str, partition: str) -> str:
     receipt = res / "runtime.yaml"
     docs = sorted(rep.glob("*.md")) if rep.is_dir() else []
     if docs:                                    # the run's report first: the point, its figures, its tables
-        body.append(f'<h2>Report</h2>' + "".join(
+        body.append('<h2>Report</h2>' + "".join(
             f'<div class=doc>{_md_view(f.read_text(encoding="utf-8"), base=raw(f).rsplit("/", 1)[0] + "/")}</div>'
             for f in docs))
     body.append(f'<details><summary><b>Receipt</b></summary><pre>{_e(receipt.read_text()[:4000])}</pre></details>'

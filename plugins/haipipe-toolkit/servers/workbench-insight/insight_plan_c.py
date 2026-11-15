@@ -1,10 +1,10 @@
-"""Read a plan-C insight Board and its Prototype Block from disk (b11 s00 · s11 · s12 · s13, 261007).
+"""Read a plan-C insight Board and its Question Book Block from disk (b11 s00 · s11 · s12 · s13, 261007).
 
-Plan C: the Prototype (questions + scripts) is its own work Block, `work/bNN_<topic>_prototype/`, whose
+Plan C: the Question Book (questions + scripts) is its own work Block, `work/bNN_<topic>_prototype/`, whose
 Jobs are versions `j0N_pN/` (release.yaml · partitions.md · thresholds.yaml · the questions' Tasks). The
 insight Board, `insights/bNN_<topic>/`, holds one dataset with dated versions (board.md `dataset:`,
-`versions:`, `prototype:`); its Jobs `jNN_code-vN-<slug>_data-vM/` pin one Prototype version and
-one data version; a Job's Tasks are its questions, their hard Runs `runs/rNN_<partition>/`; the Job's
+`versions:`, `prototype:`); its Jobs `jNN_question-vN-<slug>_data-vM/` pin one Question Book version and
+one data version; a Job's Tasks are its questions, their hard Runs `runs/rNN_<segment>/`; the Job's
 `reports/vs-<prev>.md` is written by its run-compare. Read-only: this module only reads.
 """
 from __future__ import annotations
@@ -14,7 +14,7 @@ from pathlib import Path
 
 import yaml
 
-# a Board Job's folder (JL 261109): jNN_code-vN-<release slug>_data-vM, read left to right; underscores part its three
+# a Board Job's folder: jNN_question-vN-<release slug>_data-vM, read left to right; underscores part its three
 # fields, hyphens join the words inside one. The older jNN_prototype-pN-<slug>_data-<D>vM and jNN_pN_<D>vM still read,
 # until haipipe-insight ref/rename_code_data.py carries their Board over. Groups: release, dataset ('' in the new name),
 # version (haipipe-insight ref/open_job.py writes the name).
@@ -28,9 +28,9 @@ class _Either:
         return next((m for m in (p.match(s) for p in self.pats) if m), None)
 
 
-JOB_NAME = _Either(re.compile(r"^j\d+_(code-v\d+)(?:-[a-z0-9-]+)?_()(data-v\d+)$"),
+JOB_NAME = _Either(re.compile(r"^j\d+_((?:question|code)-v\d+)(?:-[a-z0-9-]+)?_()(data-v\d+)$"),
                    re.compile(r"^j\d+_(?:prototype-)?(p\d+)(?:-[a-z0-9-]+)?_(?:data-)?(.+?)(v\d+)$"))
-RELEASE_NAME = re.compile(r"^j\d+_(?:code-v|p)\d+(_.+)?$")     # a Prototype's Job, one code version
+RELEASE_NAME = re.compile(r"^j\d+_(?:question-v|code-v|p)\d+(_.+)?$")     # a Question Book's Job, one question version
 TASK_NAME = re.compile(r"^t\d+_([DIKWX]\d+)_")
 LEVEL_OF = {"X": "executive", "D": "data", "I": "information", "K": "knowledge", "W": "wisdom"}
 
@@ -103,8 +103,8 @@ def runs(folder: Path) -> list:
 
 
 # ── a data version's sample rows ────────────────────────────────────────────────────────────────
-# a column that names a person, a place or a record, or holds free text, is never shown (JL 261008: "preview
-# some data examples ... randomly a few lines"); a version's `preview:` list picks the readable ones first
+# a column that names a person, a place or a record, or holds free text, is never shown (the sample
+# shows what the data looks like without exposing a person); a version's `preview:` list picks the readable ones first
 HIDDEN = re.compile(r"(^|_)(id|ids|encoded|npi|zip\w*|phone|email|address|ssn|mrn|dob)($|_)|_id$|_encoded$|zip|npi",
                     re.I)
 _SAMPLES: dict = {}                                            # {(path, mtime, n, seed): sample}
@@ -129,8 +129,8 @@ IMAGE_EXT = (".png", ".jpg", ".jpeg", ".svg", ".gif")
 
 
 def version_folder(v: dict, root: Path, board: Path | None = None) -> Path | None:
-    """A data version's folder (JL 261008: "I give you the folder of the data, and you can see all the
-    things"): board.md `folder:`, else the folder of its `extract:` file. The path is SPACE-relative; it is
+    """A data version's folder (it holds everything about the version, so the page reads the
+    folder): board.md `folder:`, else the folder of its `extract:` file. The path is SPACE-relative; it is
     found against the served root, else the Board's own folder, else the root with a leading `Tools/` dropped,
     so a server rooted at the Tools checkout reads a blueprint's data too (round 1, 261106)."""
     ref = str(v.get("folder") or v.get("extract") or "")
@@ -231,14 +231,14 @@ def sample_rows(extract: Path, n: int = 5, seed: int = 0, hide: tuple = ()) -> d
     return out
 
 
-# ── the Prototype Block ─────────────────────────────────────────────────────────────────────────
+# ── the Question Book Block ─────────────────────────────────────────────────────────────────────────
 def prototype(block: Path) -> dict:
-    """{path, releases: [{name, job, face, questions: {qid: {...}}, partitions, thresholds}], proposals}."""
+    """{path, releases: [{name, job, face, questions: {qid: {...}}, segments, thresholds}], proposals}."""
     return prototype_at(_project(block) / str(front(block / "board.md").get("prototype", "")))
 
 
 def prototype_at(path: Path) -> dict:
-    """The Prototype Block at `path`, read as prototype() reads the one a Board names."""
+    """The Question Book Block at `path`, read as prototype() reads the one a Board names."""
     out = {"path": path, "releases": [], "proposals": []}
     if not path.is_dir():
         return out
@@ -269,11 +269,11 @@ def prototype_at(path: Path) -> dict:
     return out
 
 
-# ── the words a person reads (JL 261109: "code-v1 x data-v1, make it readable"): the screen, the folders and the
-# files say the same id; an older Board's pN and vM read as code-vN and data-vM until it is carried over ──────────
+# ── the words a person reads: the screen, the folders and the
+# files say the same id; an older Board's pN and vM read as question-vN and data-vM until it is carried over ──────────
 def plan_code(release: str) -> str:
-    """A code version (a release) as it is written everywhere: `code-v1` (an older `p1` reads the same)."""
-    return re.sub(r"^p(\d+)$", r"code-v\1", str(release or ""))
+    """A question version (a release) as it is written everywhere: `question-v1` (an older `p1` reads the same)."""
+    return re.sub(r"^(?:p|code-v)(\d+)$", r"question-v\1", str(release or ""))
 
 
 def freeze_code(version: str) -> str:
@@ -308,7 +308,7 @@ def task(tdir: Path) -> dict:
     rr = runs(tdir)
     return {"name": tdir.name, "path": tdir, "qid": (m.group(1) if m else fm.get("question", "")),
             "page": page if page.is_file() else None, "face": fm,
-            "hard": [r for r in rr if r["kind"] == "hard" and r.get("type") != "collect"],   # a cut's Run, never a
+            "hard": [r for r in rr if r["kind"] == "hard" and r.get("type") != "collect"],   # a segment's Run, never a
             "soft": [r for r in rr if r["kind"] == "soft"]}                                   # collection Run (🙋)
 
 

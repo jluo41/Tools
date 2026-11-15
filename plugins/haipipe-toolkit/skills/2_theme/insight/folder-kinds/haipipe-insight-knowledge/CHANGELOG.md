@@ -15,9 +15,9 @@
 - A claim computes whenever its question has a compute need (a gain with uncertainty, an adjusted contrast for a named rival, a held-out score, a size); a compute need answered by reasoning is a GAP, never a WEAK claim. Rivals the ask names are compute needs. GI4 uses `haipipe-insight-check`.
 - Page shape follows `ref/report.md` § Shape (a Page Face: objective title, the Opening answers, one division per need), replacing the finding-as-headline rule.
 
-## 2.2.0 · 2026-10-01 · Partition names, not letters (JL 261001)
+## 2.2.0 · 2026-10-01 · Segment names, not letters (JL 261001)
 
-- Page paths read `<n>-<partition>/K<NN>-<partition>-<slug>/` (no partition letters).
+- Page paths read `<n>-<segment>/K<NN>-<segment>-<slug>/` (no segment letters).
 
 ## 2.1.0 · 2026-10-01 · Page tickets (JL 261001)
 
@@ -73,6 +73,6 @@ Recovered from the SKILL.md frontmatter summary on 260827, when the family retir
 
 - 0.2.0 (JL 260823): partition-major home path, and the pooling-verdict K page may cite the heterogeneity K row (K-from-K, one step) since its subject is a claim about claims. 0.1.0: a proposition with strength, rivals and boundary.
 
-- 0.3.0 (260828, page-type normalization): gains `## Boundary`, which lifts the never-advise rule out of an outline bullet into the section every sibling contract already had and restates that a POOL/SPLIT verdict is a claim about exchangeability whose W-page obligations belong to `ref/partition.md`; states the 🟡-final receipt duty this level has owed since for-question 0.4.0 and the board checker has enforced since; and replaces the copied chain-law block with a CITATION of `haipipe-insight` §The Climb Law, keeping only the K-from-K exception this level actually owns. Migration: owe-on-next-touch — the new closing check restates a rule already enforced by `partial-final-no-page-receipt`, so no settled page changes state.
+- 0.3.0 (260828, page-type normalization): gains `## Boundary`, which lifts the never-advise rule out of an outline bullet into the section every sibling contract already had and restates that a POOL/SPLIT verdict is a claim about exchangeability whose W-page obligations belong to `ref/segment.md`; states the 🟡-final receipt duty this level has owed since for-question 0.4.0 and the board checker has enforced since; and replaces the copied chain-law block with a CITATION of `haipipe-insight` §The Climb Law, keeping only the K-from-K exception this level actually owns. Migration: owe-on-next-touch — the new closing check restates a rule already enforced by `partial-final-no-page-receipt`, so no settled page changes state.
 
 - 0.2.1 (260828, fieldtest round 3 Fr7): the mint-time Queue-row allocation is the register pen's act, performed by the lap — the old wording put a register write inside a chain-page instruction, against the door's three-pens law.

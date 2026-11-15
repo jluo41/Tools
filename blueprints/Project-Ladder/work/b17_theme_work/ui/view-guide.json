@@ -152,6 +152,18 @@
       "example": "",
       "example_title": "Use Cases"
     },
+    "🗄️ Data": {
+      "what": "Where the Block's data is: one row per store it reads or writes, with where it sits, what it holds, how many (read from a Result) and who can read it.",
+      "layout": "Table → one row per store",
+      "example": "",
+      "example_title": "Use Cases"
+    },
+    "🔢 Values": {
+      "what": "One section for the page: the value Jobs' newest tables.json, and the numbers its values.json lets the text quote, as the paper's Evidence › Values.",
+      "layout": "Left Tabs · Right Content → Table",
+      "example": "",
+      "example_title": "Use Cases"
+    },
     "🗂️ Data": {
       "what": "Read the values returned by the work, with their labels and units.",
       "layout": "Left Tabs · Right Content → Table",

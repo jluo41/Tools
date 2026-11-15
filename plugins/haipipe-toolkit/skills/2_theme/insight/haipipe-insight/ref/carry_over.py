@@ -9,14 +9,14 @@ Insight Block, a task Block (ref/block-contract.md), without rewriting a word of
     board.md                       board-kind: task-block · workbench: insight · datasets:
                                    (from --dataset); the old board's title and purpose sections
     meta/meta.md                   the meta page's Opening, Diagram and Content
-    meta/partitions.md             the partition register, parsed into filters; its division verbatim
+    meta/partitions.md             the segment register, parsed into filters; its division verbatim
     meta/thresholds.yaml           the shared thresholds file the meta page names, values verbatim
     jNN_<level>/level.md           each register's Opening, Queue and Law, verbatim
     jNN_<level>/tNN_<name>/question.md   one question file v2 per register division
 
 Ids are renamed by one rule, Q<L><n> -> <L><NN> (QI3 -> I03), in the question's id and in
 every need's `from:`; the task folder is t<NN>_<name> in its level's Job; no other text changes. A cell the register refused for a LOGIC
-reason (full-only, defer) is not asked on that partition; a cell refused for a DATA reason
+reason (full-only, defer) is not asked on that segment; a cell refused for a DATA reason
 (thin, no measure) is asked, and the run refuses it again or answers it.
 
 --check re-reads the old board and compares every carried field with the Block's files
@@ -34,7 +34,7 @@ import yaml
 
 LEVEL_JOB = {"D": ("data", "j01_data"), "I": ("information", "j02_information"),
            "K": ("knowledge", "j03_knowledge"), "W": ("wisdom", "j04_wisdom")}
-LOGIC_REFUSALS = {"full-only", "defer"}          # the question does not mean the same inside a partition
+LOGIC_REFUSALS = {"full-only", "defer"}          # the question does not mean the same inside a segment
 FIELD = re.compile(r"^\*\*([^*]+)\*\*: ?(.*)$")
 NEED = re.compile(r"^- (E\d+) · (compute|cite|judge) · (.*?)(?: · pass: (.*?))?(?: · from: (.*?))?"
                   r"(?: · retired: (.*))?$")
@@ -344,7 +344,7 @@ def read_v2(path):
 
 # ── meta ─────────────────────────────────────────────────────────────────────
 def partitions_of(meta_text):
-    """The partition register division → [{name, where} | {name, of}], in its order."""
+    """The segment register division → [{name, where} | {name, of}], in its order."""
     div = section(meta_text, "2 · Partition Register", 4)
     m = re.search(r"```text\n(.*?)\n```", div, re.S)
     if not m:
@@ -378,7 +378,7 @@ def partitions_of(meta_text):
                 elif len(t) == 2 and col:
                     op, val = t
                 else:
-                    raise CarryError(f"partition {p['name']}: clause {clause!r}")
+                    raise CarryError(f"segment {p['name']}: clause {clause!r}")
                 try:
                     val = float(val)
                 except ValueError:
@@ -386,7 +386,7 @@ def partitions_of(meta_text):
                 where.append({"column": col, op: val})
             out.append({"name": p["name"], "where": where})
     if not out or out[0]["name"] != "full":
-        raise CarryError("the partition register does not start with full")
+        raise CarryError("the segment register does not start with full")
     return out, div
 
 
@@ -400,7 +400,7 @@ def thresholds_text(meta_text, project, override):
     text = path.read_text(encoding="utf-8")
     yaml.safe_load(text)
     body = re.sub(r"\A(?:#.*\n|\s*\n)*", "", text)
-    return ("# thresholds.yaml · the values every question and partition of this Block shares,\n"
+    return ("# thresholds.yaml · the values every question and segment of this Block shares,\n"
             "# carried word for word from the board it was made from. A question names a key here and\n"
             "# never restates a value; a key is declared before the first run that reads it.\n\n"
             + body.rstrip("\n") + "\n\n"

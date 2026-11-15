@@ -1,7 +1,7 @@
 run: run-freeze-predictions-j01
 kind: soft
 type: freeze-predictions
-scope: j01_confirm-by-reply_method-v1-goal-only_inputs-v1
+scope: j01_confirm-by-reply_M01-goal-only-m2_inputs-v1
 target: j01
 ticket: null
 skill: haipipe-design-delivery

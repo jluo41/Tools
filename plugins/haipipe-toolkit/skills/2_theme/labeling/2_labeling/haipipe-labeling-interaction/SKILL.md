@@ -18,10 +18,10 @@ metadata:
 # /haipipe-labeling-interaction · the meaning loop, one step per prompt
 
 Only the 🧭 meaning Task asks the person (b15 s58-D03; JL 261101: "we hope that the interaction is only available in
-the meaning loop task"). Its page (Work: Frame · Prepare · Preferences · Update; Prepare is the Report step) copies one prompt per step into the
+the meaning loop task"). Its page (Report: Frame · Prepare · Preferences · Update · Delivery) copies one prompt per step into the
 Task's chat session; each prompt below names its step, and this skill does exactly that step, then replies with the
 page's link and nothing else (the form is the conversation). The link is the Task's own, from
-`skills/1_base/workbench/workbench/cli/wb.py <Task> --no-open` plus `&section=work&group=<step>` (frame, prepare,
+`skills/1_base/workbench/workbench/cli/wb.py <Task> --no-open` plus `&section=report&group=<step>` (frame, prepare,
 preferences, update). The prompt's last line names the chat it belongs in; you are that chat, so it asks nothing.
 
 ```text
@@ -54,7 +54,7 @@ stands. Scripts: engine `E = skills/2_theme/labeling/engine/`; `collect.py` is
    "<the Task's sNN address>"`, write `question_collection.md` (your assumptions in each why), `check`, `build`.
    When the person already decided in the chat, `collect.py record <Task> frame_decisions …` instead.
 3. Once answered: `collect.py save`, write the Task face's `goal:` and the Job's `schema.yaml` (the label values) from
-   the answers, then `collect.py applied` on each. Reply: the Task's Work › Frame link.
+   the answers, then `collect.py applied` on each. Reply: the Task's Report › Frame link.
 
 ## 2 · Report: "Loop N: prepare interaction report-0N"
 
@@ -72,7 +72,7 @@ stands. Scripts: engine `E = skills/2_theme/labeling/engine/`; `collect.py` is
 4. The form: `collect.py new <Task> report_mNN --title "Loop N report" --for "<sNN address>"`, then
    `E/report_form.py form report.json <the Run> --title … --for … --intro "<≤30 words>"`; keep `report.json` beside
    the form; `collect.py check <Run>` and `collect.py build <Run>`.
-5. Reply: the Task's Work › Preferences link only.
+5. Reply: the Task's Report › Preferences link only.
 
 ## 3 · Preferences: "save my answers to report-0N … then start Update"
 
@@ -103,7 +103,7 @@ answer block (from its `haipipe-interaction answers` line to the end).
    A rule card's evidence decides nothing: only an answered item card changes an item's record.
 4. Never sign. The person signs on the page (Update: Approve mNN), which writes `meaning/mNN.approved.yaml` through
    `meaning_versions.approve`; expression runs only on a signed mNN. Set the Task's and the Job's `state:` lines to
-   what now waits (the Block's rows read them). Reply: the Task's Work › Update link.
+   what now waits (the Block's rows read them). Reply: the Task's Report › Update link.
 
 ## The rules
 

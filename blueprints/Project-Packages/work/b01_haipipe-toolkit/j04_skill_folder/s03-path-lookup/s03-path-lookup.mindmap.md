@@ -24,7 +24,7 @@ built: from-topic .
   - Drawn with `../_build/sketch.py` through b03's canvas writer, … <!-- @source/3 #30dd41 -->
     Drawn with `../_build/sketch.py` through b03's canvas writer, so marks survive a rebuild.
 - Feeds <!-- @feeds #ffe8e9 -->
-  - `../reports/q02_path_fix/` <!-- @feeds/0 #7b60ea -->
+  - `../_old/reports/q02_path_fix/` <!-- @feeds/0 #7b60ea -->
 - Files <!-- @files #6ce6c5 -->
   - [py] [build_s03_path_lookup.py](build_s03_path_lookup.py) <!-- @files/0 #43ee9a -->
   - delivery/ <!-- @files/1 #404761 -->

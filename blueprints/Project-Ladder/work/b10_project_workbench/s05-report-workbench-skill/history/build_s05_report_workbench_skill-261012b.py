@@ -8,7 +8,7 @@ The 261011 builder (four frames in a row, plus three below) is in history/.
 
 Read from disk on every build: this Block's Questions (board.md ## Questions), each report's answer-status,
 which studio topics feed each Question (their **Feeds:** lines, read as frame.py reads them), the Runs that
-target a Question (runs/*/run.yaml), q01's ## Figures, the Report Space as servers/workbench/frame.py draws
+target a Question (runs/*/run.yaml), q01's ## Figures, the Report Space as servers/workbench/page/frame.py draws
 it for this Block, and haipipe-report's version. Typed, since they are the design: the level tree of ①, the
 link rule of ②, the walk of ③, the open points.
 
@@ -173,7 +173,7 @@ def tree_nodes(qs, unread, space, versions):
     by_state = [{f"{st}  ({sum(1 for x in qs if x['status'] == st)})":
                  [f"{x['id']}  {x['title']}"[:70] for x in qs if x["status"] == st]} for st in STATES]
     figs = [f"{t}  >  \"{n}\"" for t, n in figures()]
-    fn = SERVERS / "workbench/frame.py"
+    fn = SERVERS / "workbench/page/frame.py"
     still = [
         "? What must each level's report answer? The Studio sets it, each level reports (s09 Open 2).",
         "? List Job and Task reports in the Block's Report, by source (s09-D08), once a Job has one?",
@@ -223,7 +223,7 @@ def tree_nodes(qs, unread, space, versions):
             {f"haipipe-report  {versions['report']}": skill_folder(SKILLS / "project/haipipe-report")},
             {f"haipipe-report  {versions['question']}": skill_folder(SKILLS / "project/haipipe-report")[:5]},
             {"servers/workbench/": [where(f, fn) for f in ("question_rows", "_report_cell", "_answering", "_opening")]
-                                   + [where("page_document", SERVERS / "workbench/page_reader.py")]},
+                                   + [where("page_document", SERVERS / "workbench/page/page_reader.py")]},
             "haipipe-draft writes the prose; haipipe-studio feeds frames (s02); haipipe-delivery keeps built files (s03)"]},
         {f"6 This Block's {len(qs)} Questions": by_state},
         {"7 Still open": still},
@@ -241,7 +241,7 @@ def screen_frame(qs, frame):
                        r'.*?<span class=topic-meta>(.*?)</span>', html, re.S)
     fr = L.open_frame("The Report Space on screen")
     canvas.ui_frame(fr, since="261012")                      # a screen: the workbench's colours (JL 261012)
-    say(0, 0, f"Block {BLOCK.name.split('_')[0]} > Report  (read from servers/workbench/frame.py)", 34)
+    say(0, 0, f"Block {BLOCK.name.split('_')[0]} > Report  (read from servers/workbench/page/frame.py)", 34)
     say(0, 56, "One folding card per Question, under a group bar; the Runs panel sits beside it.", 22)
     x, y = 0, 120
     for label, n in groups + [("Untagged", ""), ("+ Group", "")]:

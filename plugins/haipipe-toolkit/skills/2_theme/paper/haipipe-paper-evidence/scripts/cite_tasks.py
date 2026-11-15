@@ -123,7 +123,7 @@ def cards_module():
 
 
 def sid_label(sid):
-    return f"S{sid}" if re.fullmatch(r"\d+[a-z]*", str(sid)) else str(sid)
+    return f"s{sid}" if re.fullmatch(r"\d+[a-z]*", str(sid)) else str(sid)
 
 
 def text_of(sec):
@@ -186,7 +186,7 @@ def card_items(secs, cm, project):
                 continue
             for ii, it in enumerate(card.get("items") or []):
                 row = {"section": sec.name, "card": ci, "index": ii, "source": card.get("source"), "run": it.get("run"),
-                       "for": [str(n).lstrip("S") for n in it.get("for") or []], "item": it.get("item", ""),
+                       "for": [str(n).lstrip("Ss") for n in it.get("for") or []], "item": it.get("item", ""),
                        "label": it.get("label", ""), "cite": it.get("cite", ""), "need": it.get("need", ""),
                        "verified": str(it.get("verified") or ""), "key": "", "doi": "", "entry": None}
                 if it.get("run") and card.get("source"):
@@ -267,7 +267,7 @@ def ledger(paper):
         signed = [s for s in mine if s["signed"]] + [{"by": c["verified"].split("·")[0].strip(), "section": c["section"],
                                                       "run": f"{c['source']}.{c['run']}"} for c in cards if c["verified"].startswith("✅")]
         citing = sorted({s for s, _ in cites[k]}, key=order.get)
-        gaps = [f"{s} {sid}" for s, sid in cites[k] if not any(c["section"] == s and sid.lstrip("S") in c["for"] for c in cards)]
+        gaps = [f"{s} {sid}" for s, sid in cites[k] if not any(c["section"] == s and sid.lstrip("Ss") in c["for"] for c in cards)]
         status = ("TOADD" if k == "TOADD" else "missing-bib" if not b else "verified" if signed
                   else "card-only" if cards or disc else "bib-only")
         rows.append({
@@ -315,8 +315,8 @@ def card_fixes(paper, secs, text, rows, items, bank, groups):
         printed = defaultdict(list)
         for sid, _, _, keys in text[s]:
             for k in keys:
-                if sid.lstrip("S") not in printed[k]:
-                    printed[k].append(sid.lstrip("S"))
+                if sid.lstrip("Ss") not in printed[k]:
+                    printed[k].append(sid.lstrip("Ss"))
         used = set()
         for k, want in printed.items():
             if k == "TOADD":

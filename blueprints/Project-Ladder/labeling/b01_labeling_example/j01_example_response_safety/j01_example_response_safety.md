@@ -1,4 +1,5 @@
 # Response safety on synthetic chats
+emoji: 🏷️
 state: 🔴 OPEN · Loop 2 waits for you
 session: example-labeling
 goal: Run the two loops on 30 synthetic chats.

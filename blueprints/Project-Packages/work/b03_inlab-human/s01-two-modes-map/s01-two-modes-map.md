@@ -1,5 +1,6 @@
 s01 · The two modes
 ===================
+view: findings
 
 **Stage:** explore
 
@@ -9,7 +10,15 @@ s01 · The two modes
 
 **Topic:** How `plugins/inlab-human` fits together: the reader study (bundle, blind then assisted review, report), the clinician console (its routers and the agent drawer), the endpoint-predict tool both use, and the de-identification boundary in front of them, each with the Job of b03 that owns it. Read from code and docs only; no case data (261009).
 
-**Feeds:** `reports/` q01_ownership
+**Feeds:** Q01
+
+
+Q01 · Answer
+------------
+
+**Question:** What does inlab-human own, and what belongs to the toolkit?
+
+**Answer (open):** not written yet.
 
 
 Files

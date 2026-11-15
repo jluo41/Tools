@@ -1,0 +1,361 @@
+# 🧪 Draft lab
+
+- Each sentence is the unit; its cards and comments sit right below it.
+- A ✓ tick means keep it: no more proposals; changed words show ✓?.
+- Fully ticked paragraphs start folded; only paragraphs fold, never whole Sections.
+- **📜 The decisions**
+- **11-13 19:00** · Cards link to their sentences
+  - Decided: the page is sentence-first: each card hangs on its sentence instead of piling at the top of the paragraph.
+  - JL asked: "why the comments here is not linked to the sentences? I think it should be sentences ---> comments, how do you think you can update it?"
+  - Built: proposal at first; built at 19:05 (next block)
+  - Session: t00 Abstract
+- **11-13 19:03** · Sentence is the basic unit
+  - Decided: the sentence is the basic unit; its comments sit beside it (left-right) or below it (up-down).
+  - JL asked: "yes, we should do it, the sentences will be the basic unit. We can be sentece comments to be left-right, and it can also be up-down."
+  - Built: server puts each card in its sentence's row using `data-s` (sentence) or `data-p` (paragraph); server restart needed to show it
+  - Session: t00 Abstract
+- **11-13 19:19** · Comments pop out at sentences
+  - Decided: open items appear at their sentences, with how many remain.
+  - JL asked: "still hard to read, how about these things will pop out to the sentences, show how many comments we need to solve."
+  - Built: 5 open items listed (2 Ritu comments for JL, 3 small AI fixes)
+  - Session: t01 Introduction
+- **11-13 19:21** · Each sentence a collapsible item
+  - Decided: each sentence is an item with its cards beside it, folded to one line until opened.
+  - JL asked: "I want you make these sentences collapable, and you can add your comments here as well … each sentence can be a item."
+  - Built: built in 5 · Revise; page top showed "5 cards wait for you" (removed later)
+  - Session: t01 Introduction
+- **11-13 19:31** · ▸ opens evidence, history, comments
+  - Decided: each sentence shows one line with ▸; opening it shows its evidence, earlier versions and comments.
+  - JL asked: "How could we see this sentences previous versions, etc. … why we don't have things like > to click and we can save more spaces."
+  - Built: proposal first (shared Tools code)
+  - Session: t01 Introduction
+- **11-13 19:42** · Unify the per-sentence card format
+  - Decided: one card format for every sentence.
+  - JL asked: "could you also unify the card format? for eahc snetences, How do you think."
+  - Built: unclear
+  - Session: Workbench UI
+- **11-13 19:56** · Draft view shows text and cards only
+  - Decided: Draft shows the text and its cards and little else.
+  - JL asked: "these views are not that necessary, do you get it?"
+  - Built: extra sections trimmed in `focus_draft.py` (WorkBench-Paper-UI told)
+  - Session: t00 Abstract
+- **11-13 19:59** · Writing mode, classic font
+  - Decided: the body reads like a printed paper; cards and buttons step aside.
+  - JL asked: "how do you think you can mkae the font to be something that is more classic and easier to read, and put pepple in the writing mode"
+  - Built: proposal at first; font changed at 21:15
+  - Session: t01 Introduction
+- **11-13 20:17** · Findings live as cards on the page
+  - Decided: a finding or decision is a card on its sentence (for example S6a) or on its paragraph or section heading (for example C2.P2), not only in chat or a records file.
+  - JL asked: "the message should be a card in the sentence or the section name, do you get twhat i mean?"
+  - Built: AI checked how the Draft view reads cards, to add them there
+  - Session: t00 Abstract
+- **11-13 20:25** · Show whole sentences
+  - Decided: sentences show in full, not cut to one line.
+  - JL asked: "no, I want them to show the whole sentence, not like this."
+  - Built: page fixed and server restarted
+  - Session: t01 Introduction
+- **11-13 20:27** · Align indexes, shrink edit card
+  - Decided: sentence numbers start at the same point; cards stop inheriting the 17px text font.
+  - JL asked: "why the index here are not aligned? … the edit card here is too large, not fit well."
+  - Built: two layout bugs fixed in the sentence-board styles
+  - Session: t00 Abstract
+- **11-13 20:29** · Cards on paragraph and section headings
+  - Decided: paragraph and section headings hold cards and comments the way sentences do.
+  - JL asked: "do you think for the section or for the paragraph, could we add the cards as well?"
+  - Built: the paragraph "+" extended to the section heading
+  - Session: t01 Introduction
+- **11-13 21:09** · Clock click hides the icon
+  - Decided: clicking the 🕘 history mark should hide/toggle it (unclear).
+  - JL asked: "when I click the clock, could I hide the icon here"
+  - Built: unclear
+  - Session: t00 Abstract
+- **11-13 21:09** · Remove the chips
+  - Decided: remove the chips shown in the screenshot.
+  - JL asked: "do we still need this? amybe we don;t need this anymore, hwo do you think about this?"
+  - Built: chips removed, tests pass
+  - Session: t01 Introduction
+- **11-13 21:13** · Card icon after the clock, aligned cards
+  - Decided: each sentence gets one row of marks: 📎 evidence, 🕘 history, ✎ cards (orange when one waits); the "1 card · 1 wait for you" button goes; cards start where the text starts.
+  - JL asked: "I want it to be after [Image #19], like it should be things like the pen? … could this card be aligned wit hteh text?"
+  - Built: marks and alignment changed
+  - Session: t00 Abstract
+- **11-13 21:15** · Literata font and paper background
+  - Decided: main text in Literata (a reading serif) on a light paper-coloured background; cards stay white.
+  - JL asked: "I think the fond could be better? waht are other options? could we give some background light color to the main text"
+  - Built: live, with other options listed
+  - Session: t01 Introduction
+- **11-13 21:20** · Modern colour emoji for marks
+  - Decided: replace the plain ✎ text symbol with a colour emoji, choosing from a list.
+  - JL asked: "could you use some modern color emojis? could you list them. I don't like the current one."
+  - Built: choices listed and swapped in
+  - Session: t00 Abstract
+- **11-13 21:23** · Marks at sentence end, grouped history
+  - Decided: marks go right after the sentence's last word like footnote marks; history is grouped; 🔢 dropped (shows as a grey keycap).
+  - JL asked: "I think we should group them. … how about you think we put the emojis at the end of the sentences, instead in the right part?"
+  - Built: icons and inline placement done; history grouping planned
+  - Session: t00 Abstract
+- **11-13 21:40** · Citations resolve to author and year
+  - Decided: citations in the page come from the LaTeX citation keys (unclear: the change shown is that all keys resolve to author and year).
+  - JL asked: "how do you think for the citation here, should just just use the latex citaiton here? … for this one, we will just use the latex version?"
+  - Built: all 51 citations resolve to author and year; tests pass
+  - Session: t01 Introduction
+- **11-13 21:43** · Review cards become Edit; comment icon
+  - Decided: Review cards are renamed Edit, the Edit box is shorter, and a comments icon is added.
+  - JL asked: "I think we migt wnat to chane the Review to Edit. and the Edit box is too wordy … where is the things like the commetns icon"
+  - Built: S8 and S41 changed from Review to Edit; four items and an AI score icon done, each clicked in Chrome
+  - Session: t01 Introduction
+- **11-13 21:50** · Plain review card, aligned cards
+  - Decided: the review card reads verdict, then problem, then suggested change in red and green; cards align with sentence text.
+  - JL asked: "How to undersand these here, kind of hard to read. … why cards and sentencse are not fully aligned."
+  - Built: card rewritten and aligned
+  - Session: t01 Introduction
+- **11-13 21:54** · Calmer colours, focus on sentences
+  - Decided: tone down colour so the sentences stay the focus; "5 cards wait for you" and "nothing yet" removed.
+  - JL asked: "I dont' want this to be too colorful, to eye-catching, we want to focus on the sentences."
+  - Built: colours toned and the two lines removed
+  - Session: t01 Introduction
+- **11-13 21:54** · A ✓ check button per sentence
+  - Decided: each sentence gets a ✓ meaning it passed JL's judgment and should not be modified.
+  - JL asked: "could you add a button, which means check, which means I think this sentences passed my judgment, and you can fix that, no need to modify it"
+  - Built: ✓ saved through the comment endpoint
+  - Session: t01 Introduction
+- **11-13 21:59** · More space after the number
+  - Decided: widen the gap between the sentence number and the sentence.
+  - JL asked: "this is too close."
+  - Built: gap 6px to 16px; view title changed to "✍️ Draft Lab"
+  - Session: t01 Introduction
+- **11-13 22:04** · Build section 4 from skill rules
+  - Decided: build the missing section 4, each tab reading its rules from the real skill source.
+  - JL asked: "where is the section 4???? could you create it? i think in THE skill we have such the rules."
+  - Built: section 4 built (tabs including Anti-AI)
+  - Session: t00 Abstract
+- **11-13 22:04** · Discuss before changing citations
+  - Decided: JL wanted discussion first; the AI had already shown citations as `\citep{…}` and given ✓ a light green background (display-only, reversible).
+  - JL asked: "I want to make the citaiton to tbe latex mode of \cite … or you think the current one is better? please explain … with the light green shadowing."
+  - Built: `\citep{…}` display and green ✓ live; discussion given
+  - Session: t01 Introduction
+- **11-13 22:11** · Readable citations on the page
+  - Decided: citations show readable, like "(Song et al. 2022; Gowrisankaran et al. 2023)", key on hover; source stays `\citep{…}`.
+  - JL asked: "how about we just make the citaitons to be the readable one? what is your thoughts?"
+  - Built: changed back to readable form
+  - Session: t01 Introduction
+- **11-13 22:13** · ✓ rightmost, green on icon only
+  - Decided: ✓ sits rightmost in the marks, green only on the icon; references show when clicked; `\citet` prints as "Barnett et al. (2017)" and `\citep` as "(Barnett et al. 2017)".
+  - JL asked: "for the check, I mean you put it to the most right of the icon list, and the grey green I mean for this icon only, now the whole senentece element"
+  - Built: all three changed
+  - Session: t01 Introduction
+- **11-13 22:14** · Rules tabs list real rules
+  - Decided: a rules tab lists the actual rules, not chapter titles like "The catalogue".
+  - JL asked: "I don;t undertand about this. Will we have the writing-rubric markdonw things in this section?"
+  - Built: AI checked how the two skill files write their rules
+  - Session: t00 Abstract
+- **11-13 22:17** · Bigger font, newest wording first
+  - Decided: larger text, fitted card style, and sentence history newest first.
+  - JL asked: "how could you make the font size larger? … the card style here is not fit well … could we put the most recent ones to the top?"
+  - Built: font size, card style and history order changed
+  - Session: t01 Introduction
+- **11-13 22:21** · JL edits sentences directly
+  - Decided: Draft Lab should let JL edit a sentence in place, faster than commenting.
+  - JL asked: "what is I want to modify the sentences myself? how do you think?"
+  - Built: proposal only (discussion, no code)
+  - Session: t01 Introduction
+- **11-13 22:22** · Compact add-rule row
+  - Decided: the add box becomes one compact row: slim input, small Add button, file link on the same line.
+  - JL asked: "this layout is too large and ugly, does fit, how to update this?"
+  - Built: compact row; source line already "📄 t00_abstract-requirement.md ↗"
+  - Session: t00 Abstract
+- **11-13 22:23** · Evidence card as a reference list
+  - Decided: the opened evidence card reads like a paper's reference list.
+  - JL asked: "this layout is not that good."
+  - Built: live, checked in Chrome
+  - Session: t01 Introduction
+- **11-13 22:28** · Remove layout toggles, cards below
+  - Decided: remove the unneeded controls (unclear which) and keep the layout fixed at cards below the sentence ("Below").
+  - JL asked: "I THINK THE INDEX can be a bit to the left as well."
+  - Built: controls removed (unclear whether the index was moved)
+  - Session: t01 Introduction
+- **11-13 22:33** · Word count; ★ toggles closed
+  - Decided: show each sentence's word count; a second click on ★ closes its card.
+  - JL asked: "could you also how the number of words in this sentncse, and also , why I open it, I want to hide it by clicking it, it doesn't work anymore."
+  - Built: word count works (S4 16 words, S5 19); toggle bug fixed
+  - Session: t01 Introduction
+- **11-13 22:36** · Word count inside the ★ card
+  - Decided: the word count sits in the card the ★ opens, not in the sentence row.
+  - JL asked: "I wnat the wr is just in the star store, you ge it》 I CLICK IT AND SEE IT."
+  - Built: moved
+  - Session: t01 Introduction
+- **11-13 22:45** · 💬 shows old comments and new box
+  - Decided: clicking 💬 shows earlier comments on top and the new-comment box below; a second click hides both.
+  - JL asked: "does this mean adding the comments, or showing the previous comments? they are different right?" then "okay, plaese go ahead and update it."
+  - Built: works; test comment deleted
+  - Session: t01 Introduction
+- **11-13 22:51** · Paragraph numbers like sentence numbers
+  - Decided: paragraphs show a large reading-order number with the small fixed id underneath, like sentences.
+  - JL asked: "I mean for the paragraph index, the order should be consistent as well?" then "yes, I think it should be just like the sentences, right?"
+  - Built: paragraph numbering changed; UI update note sent to the other 8 AgreeableRx writing sessions
+  - Session: t01 Introduction
+- **11-13 23:02** · Call it Draft Lab
+  - Decided: the Section drafting view is named "Draft Lab".
+  - JL asked: "call it Draft Lab!!!!"
+  - Built: code already said "Draft Lab"; design record updated and the open question closed
+  - Session: Workbench UI
+- **11-13 23:04** · Restore the old paragraph index
+  - Decided: go back to the old paragraph index look.
+  - JL asked: "I want the old paragraph index, curretn one is so ugly"
+  - Built: unclear; the same turn added Ritu's Round 3 Abstract edits as cards marked RA and updated the S4a card to 226,999
+  - Session: t00 Abstract
+- **11-13 23:05** · Co-author comments in the 💬 thread
+  - Decided: Ritu's and Gordon's comments appear in the 💬 thread on their sentence, with their names.
+  - JL asked: "I think for the comments, we should collect the co-author's comments as well, do you get it? we should try it."
+  - Built: two-step plan (threads learn commenter names, then import); completion unclear
+  - Session: t01 Introduction
+- **11-13 23:05** · Copy the t00 Abstract page shape
+  - Decided: each Section copies the Abstract session's Draft Lab records (decisions file, short Writing Rubric, blind ★ scores).
+  - JL asked: "AgreeableRx-t00_abstract <--- please raed this and update the UI" (t07 adds "and update this version")
+  - Built: t03 applied JL's 8 comments to the Theory draft; t07 bumped to v1.3 with a blind score; Appendix launched one blind reviewer per page; others mirrored the files
+  - Session: t02 Literature review, t03 Theory, t04 Empirical strategy, t05 Results, t06 Discussion, t07 Conclusion, Appendix
+- **11-13 23:17** · ✓ no longer opens citation card
+  - Decided: clicking ✓ must not open the citation card.
+  - JL asked: "when I click the check, the citation card will be shown, why?"
+  - Built: fixed and tested in Chrome
+  - Session: t01 Introduction
+- **11-13 23:23** · Show Ritu as the author
+  - Decided: the "now" line shows the author badge of the card that wrote the current text.
+  - JL asked: "for this one, why you don't see this is from Ritu??"
+  - Built: dropped author fixed
+  - Session: t00 Abstract
+- **11-13 23:24** · Show who changed a sentence and when
+  - Decided: every changed sentence shows its author and date.
+  - JL asked: "who made this change? what is the date? I think you should add this as well, right?"
+  - Built: author and date added for 27 changed sentences
+  - Session: t01 Introduction
+- **11-13 23:37** · Comment icon appears at once
+  - Decided: the comment icon appears as soon as a comment is added.
+  - JL asked: "when I add the comments, the comment icon is not shown here."
+  - Built: fixed; reload shows it
+  - Session: t00 Abstract
+- **11-13 23:46** · Add a Use this button
+  - Decided: reviewer suggestions get a "✓ Use this" button so JL can accept one.
+  - JL asked: "I think this is good, how could I accept it?"
+  - Built: "✓ Use this" button added and used on that suggestion
+  - Session: t00 Abstract
+- **11-13 23:52** · 💬 shows, + adds
+  - Decided: 💬 only shows comments; "+" only opens the new-comment box.
+  - JL asked: "how to make 💬1 to just show the comments, and [Image #39] to just add the comments."
+  - Built: both changed
+  - Session: t01 Introduction
+- **11-13 23:54** · Citation mark opens evidence; S7a options
+  - Decided: the ❝ citation mark opens its evidence card; the close of the Abstract gets a two-option card on S7a, A preselected.
+  - JL asked: "when I click it, there are not reaction, why?"
+  - Built: ❝ fixed; S7a card added
+  - Session: t00 Abstract
+- **11-14 00:04** · Use this writes into the draft
+  - Decided: "✓ Use this" writes the chosen sentence into the draft and marks the card as written.
+  - JL asked: "When I click us this, will it just update to the sentences? … I feel the logic here is not good."
+  - Built: S13 written from JL's earlier "Use this"
+  - Session: t01 Introduction
+- **11-14 00:11** · Hide the margin 💬
+  - Decided: drop the old margin 💬 in the sentence board (it duplicates 💬N in the marks).
+  - JL asked: "why i still have 💬 in the right up corner, maybe we don't need it."
+  - Built: hidden in the sentence board only (`marks()` in `draft_steps_assets.py`)
+  - Session: t01 Introduction
+- **11-14 00:11** · Copy the Introduction revise layout
+  - Decided: Theory gets a new "Pass" at the top of its revise record, a blind per-sentence review and one card per Round 3 change.
+  - JL asked: "AgreeableRx-t01_introduction <--- read it, how do you think you can update the UI here"
+  - Built: blind reviewer started; cards built
+  - Session: t03 Theory
+- **11-14 00:16** · Rename paragraphs to P1 to P8
+  - Decided: paragraph ids follow the skill's reading-order rule, P1 to P8.
+  - JL asked: "this one is still not updated."
+  - Built: renamed with `page.py migrate-addresses`, after a backup
+  - Session: t01 Introduction
+- **11-14 00:26** · Sentence numbers restart per paragraph
+  - Decided: the large number restarts in each paragraph (1, 2, 3); the small fixed id (S7) stays underneath.
+  - JL asked: "for the setnence index, of 7, 8, 9, etc, it is section level, how could we make it sentence level?"
+  - Built: numbering changed
+  - Session: t01 Introduction
+- **11-14 00:29** · Auto-fold fully checked paragraphs
+  - Decided: a paragraph whose sentences are all checked is folded by default.
+  - JL asked: "you can also by dafult to collapse the paragraph if all the sentences are checked … could you do it for me."
+  - Built: fix landed in workbench code; server restarted with the same command (00:40)
+  - Session: t02 Literature review
+- **11-14 00:40** · Fold paragraphs whose sentences are checked
+  - Decided: a paragraph starts folded when every sentence in it is ✓ checked; ▸ still opens it.
+  - JL asked: "and you can also by dafult to collapse the paragraph if all the sentences are checked."
+  - Built: auto-fold built (later moved by another session into its own committed module)
+  - Session: t00 Abstract
+- **11-14 00:46** · Stale ticks show as ✓?
+  - Decided: a ✓ no longer counts once the sentence's words change, and shows as "✓?" so JL knows to tick again.
+  - JL asked: "when I reload, the C2.P2 is not folded."
+  - Built: "✓?" mark added
+  - Session: t00 Abstract
+- **11-14 00:47** · Fold at paragraph level only
+  - Decided: fold only paragraphs, never a whole Section; each fully checked paragraph shows as one line with its title.
+  - JL asked: "please only fold as the paragraph level"
+  - Built: reported to WorkBench-Paper-UI
+  - Session: t02 Literature review
+- **11-14 01:00** · Keep the focal sentence after Accept
+  - Decided: the page remembers the sentence before reloading, scrolls back to it and briefly highlights it.
+  - JL asked: "when I accept the changes, the focal setnence is jump to another places and it is hard for me to find, how to deal with that?"
+  - Built: built
+  - Session: t01 Introduction
+- **11-14 01:24** · Draft page refreshes itself
+  - Decided: the Draft page reloads by itself when anything in the Section's folder changes, and returns to the sentence in view.
+  - JL asked: "How to make the UI to be auto refreshed to show the changes?"
+  - Built: auto-refresh within a few seconds
+  - Session: t00 Abstract
+- **11-14 02:06** · No self-reload on ✓
+  - Decided: the page never reloads itself; a click updates its row in place, AI changes show as a notice to apply, and paragraphs do not fold while reading.
+  - JL asked: "The jump is very annoying, what is the better way for it?"
+  - Built: reported to WorkBench-Paper-UI as urgent
+  - Session: t02 Literature review
+- **11-14 02:35** · Auto-fold after one idle minute
+  - Decided: (unclear) JL proposed folding a finished paragraph after one untouched minute; the reply only explained why it does not fold now.
+  - JL asked: "why it cannot do the auto fold? how do you think? if it is not touched within 1 minutes?"
+  - Built: proposal only
+  - Session: t03 Theory
+- **11-14 02:59** · Math not typeset
+  - Decided: bug report; Tools has no KaTeX or MathJax, so `$...$` shows raw.
+  - JL asked: "[Image #5] things here is not compiled in the UI."
+  - Built: reported to WorkBench-Paper-UI
+  - Session: t04 Empirical strategy
+- **11-14 03:01** · Remove orange bar
+  - Decided: drop the orange vertical bar; below-7 sentences keep only a light orange background.
+  - JL asked: "[Image #3] I don't like this."
+  - Built: orange bar removed
+  - Session: t06 Discussion
+- **11-14 03:07** · Changes do not feel real-time
+  - Decided: (unclear) bug report; session measured load time and tested auto-reload, no result reported.
+  - JL asked: "why I feel the chnages is not realy time, should we still want the real time changes?" (03:15: "why not the auto relaod")
+  - Built: (unclear)
+  - Session: t06 Discussion
+- **11-14 03:11** · Two suggestions on one card
+  - Decided: differing suggestions show as options A, B and C on one card.
+  - JL asked: "[Image #5] what if the two suggestions are not the same?"
+  - Built: card changed; stray quote marks in the diff removed
+  - Session: t06 Discussion
+- **11-14 03:12** · Softer low-score background
+  - Decided: low-score sentences use the same background as the others.
+  - JL asked: "I don't want this background color, too alarming, jus tthe same as the others should be okay"
+  - Built: reported to WorkBench-Paper-UI
+  - Session: t05 Results
+- **11-14 03:14** · Checked sentence gets no proposals
+  - Decided: once JL ticks ✓, no more comments or edit proposals show.
+  - JL asked: "If I checked, no more comments or edit propossal"
+  - Built: S20 suggestion fixed by the session; hiding cards reported to WorkBench-Paper-UI
+  - Session: t05 Results
+- **11-14 03:28** · Give reasons on edit cards
+  - Decided: (unclear) each card should carry a reason; the reply did not address it.
+  - JL asked: "[Image #15] for each editing card, we might give some reasons as well."
+  - Built: proposal only; JL's card choices put on the page and LaTeX edits
+  - Session: t03 Theory
+- **11-14 03:42** · Waiting cards open in the UI
+  - Decided: sentences with waiting cards, and the cards themselves, show open on the page.
+  - JL asked: "No, what I mean you need to show them our in the UI [Image #6]. currently all of them are hiden"
+  - Built: sentences opened; cards being opened
+  - Session: t06 Discussion
+- **11-14 03:44** · Simplify a confusing card
+  - Decided: remove the extra "B keep" line that duplicated the page's own drop option.
+  - JL asked: "[Image #16] this is confusing."
+  - Built: card simplified
+  - Session: t03 Theory

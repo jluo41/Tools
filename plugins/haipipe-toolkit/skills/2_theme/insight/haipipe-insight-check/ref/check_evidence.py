@@ -355,7 +355,7 @@ def check_cell(q, mark, pid, pages, questions):
                 problems.append(f"{n.full}: work spec names no output file")
             cut = n.spec.get("cut", "")
             if cut and cut not in OPEN_CUTS and cut != part:
-                problems.append(f"{n.full}: spec cut is {cut}, page {pid} is on {part}")
+                problems.append(f"{n.full}: spec segment is {cut}, page {pid} is on {part}")
         if n.kind in ("cite", "judge") and not n.from_:
             problems.append(f"{n.full}: a {n.kind} need has no from:")
         for f in n.from_ if n.kind == "cite" else []:
@@ -396,7 +396,7 @@ def check_cell(q, mark, pid, pages, questions):
                 src = questions.get(n.from_[0].split(".")[0]) if n.from_ else None
                 cited_pages = [p for _m, p in (src.cells if src else []) if p.endswith(f"-{part}")][:1]
             if not cited_pages:
-                problems.append(f"{n.full}: no page answers {', '.join(n.from_)} on this partition")
+                problems.append(f"{n.full}: no page answers {', '.join(n.from_)} on this segment")
             for cp in cited_pages or []:
                 cdir = pages.get(cp)
                 if cdir is None:
@@ -469,14 +469,14 @@ def check_ticket(n, b, ticket, page_dir, problems, artifacts, read_at, refused):
             if served - {n.qid}:
                 problems.append(f"{n.full}: run {cfg.stem} of {cfg.parent.parent.parent.name} also serves "
                                 f"{', '.join(sorted(served - {n.qid}))}; a run answers one question")
-            # the run must be on the population the spec's cut names (a cross page reads many)
+            # the run must be on the population the spec's segment names (a cross page reads many)
             part = page_dir.name.split("-")[1] if "-" in page_dir.name else ""
             cut = n.spec.get("cut", "")
             want = (part if cut == "the cell's partition" else "full" if cut in ("full", "the whole extract")
                     else None if cut in OPEN_CUTS or cut == "cross" else cut)
             pop = ((load_yaml(cfg) or {}).get("population") or {}).get("name")
             if want and part != "cross" and pop and pop != want:
-                problems.append(f"{n.full}: {ticket} runs on population {pop}; the spec's cut asks for {want}")
+                problems.append(f"{n.full}: {ticket} runs on population {pop}; the spec's segment asks for {want}")
     bound_files = {f"results/{t}/{fn}" for t in ([b.get("ticket")] if b.get("ticket") else []) + list(b.get("tickets") or []) for fn in files}
     for art in artifacts.get(n.full, ()):
         if art not in bound_files:

@@ -84,6 +84,30 @@ def _content_span(lines: list) -> tuple[int, int] | None:
     return start + 1, end
 
 
+PART_HEADINGS = re.compile(r"(?m)^part-headings:\s*print\s*$")
+# `part-headings: sections`: one draft Task holds several Sections (JL 261114: "a draft-task is one session, and it
+# can have multiple sections"). Each part (`- C<n> · <name>` in the Draft's Structure Overview) prints as its own
+# Section heading, `### <name>`, which md2tex and md2docx read as `\section`; the Task's own title is not printed.
+PART_SECTIONS = re.compile(r"(?m)^part-headings:\s*sections\s*$")
+
+
+def _part_headings(page_text: str, plan_text: str, title: str) -> dict:
+    """{C<n>: `### §<N>.<k> <part name>`} when the Page face says `part-headings: print` and the Draft has two or
+    more parts: each part (the `- C<n> · <name>` rows of the Draft's Structure Overview) then prints as a numbered
+    subsection of the Section, which md2tex and md2docx read as `\\subsection` (JL 261112, ScalingGlucose NMI:
+    the venue's examples all carry Results and Methods subheadings). Without the key nothing changes."""
+    head = page_text.split("\n## ", 1)[0]
+    names = dict(re.findall(r"(?m)^- (C\d+) · (.+?)\s*$", plan_text))
+    if PART_SECTIONS.search(head) and len(names) >= 2:
+        return {cid: f"### {name}" for cid, name in names.items()}
+    number = re.match(r"^\u00a7?\s*(\d+)\s", title)
+    if not PART_HEADINGS.search(head) or not number:
+        return {}
+    if len(names) < 2:
+        return {}
+    return {cid: f"### \u00a7{number.group(1)}.{k} {name}" for k, (cid, name) in enumerate(names.items(), 1)}
+
+
 def _skeleton(page_text: str, plan_text: str) -> list:
     """The Content's lines laid out from the Draft's `## 3 · Draft`: the Page's title as a `###` heading, then one
     `#### C<n>.P<m> · <its name>` block per paragraph holding each sentence on its own line, tagged with its address."""
@@ -92,11 +116,18 @@ def _skeleton(page_text: str, plan_text: str) -> list:
         return []
     section = re.split(r"(?m)^## ", plan_text[match.end():], maxsplit=1)[0]
     title = re.search(r"(?m)^# [^\n·]*·\s*(.+?)\s*$", page_text)
-    out = [""] + ([f"### {title.group(1)}", ""] if title else [])
+    parts = _part_headings(page_text, plan_text, title.group(1) if title else "")
+    as_sections = bool(parts) and PART_SECTIONS.search(page_text.split("\n## ", 1)[0])
+    out = [""] + ([f"### {title.group(1)}", ""] if title and not as_sections else [])
+    printed = set()
     for pid, name, body in re.findall(r"(?ms)^### (C\d+\.P\d+)\b(?:\s*·\s*([^\n]*))?\n(.*?)(?=^### |\Z)", section):
-        sentences = re.findall(r"(?m)^- (?:\[[ xX]\]\s*)?B(\d+)[a-z]*\s*·\s*(?:S\d+[a-z]*\s*·\s*)?(\S.*)$", body)
+        sentences = re.findall(r"(?m)^- (?:\[[ xX]\]\s*)?B(\d+)[a-z]*\s*·\s*(?:[Ss]\d+[a-z]*\s*·\s*)?(\S.*)$", body)
         if not sentences:
             continue
+        cid = pid.split(".")[0]
+        if parts and cid in parts and cid not in printed:
+            printed.add(cid)
+            out += [parts[cid], ""]
         out += [f"#### {pid}" + (f" · {name.strip()}" if name else ""), ""]
         out += [f"{text} <!-- realizes: {pid}.B{b} -->" for b, text in sentences] + [""]
     return out if len(out) > 3 else []

@@ -3,7 +3,7 @@
 This is an internal lane contract of `haipipe-studio`. The category
 skill owns the public surface; this reference owns chat storage, routing,
 writer, and boundary details. The session's
-rules (`servers/workbench/chat.py` primes every session with the compact form of §🗺 and
+rules (`servers/workbench/studio/chat.py` primes every session with the compact form of §🗺 and
 §🔒 and points here), and the kept record.
 
 > 🎨 Since 260831 evening this pane is the LOWER half of the one 🎨 Studio tab (`haipipe-studio`), staged under the live drawing; the GUI/TUI segment, session keep, walls and log record are unchanged — only where the pane hangs moved.
@@ -12,8 +12,8 @@ rules (`servers/workbench/chat.py` primes every session with the compact form of
 
 ## 📡 Surface · one Studio surface, the Chat form inside it
 
-One 💬 Chat pane; GUI (the SDK chat box, `servers/workbench/chat.py`) or TUI (the real CLI
-in a terminal, `servers/workbench/term.py`) is a form segment inside Studio, never a second
+One 💬 Chat pane; GUI (the SDK chat box, `servers/workbench/studio/chat.py`) or TUI (the real CLI
+in a terminal, `servers/workbench/studio/term.py`) is a form segment inside Studio, never a second
 Workbench tab or skill. On a Page URL Studio ranks after 📃 Page, which is
 the default; on a group page, which has no live Page, the Chat pane is the
 fallback. A session opened
@@ -74,12 +74,12 @@ what you type                         lands in                                gr
 "why 8.69 million?"  answerable       the reply + a reply lane                >> CC<MMDD>: answer · source path       none · haipipe-draft-writing
 "should the title get a subtitle?"    draft/records/<stem>-discussion.md              ### D<nn> · Ask · Options · We lean ·   OUTLINE · workbench-outline
   an open question                                                            Decide (board-wide id)                    ref/record-shape.md
-"make S6 shorter"  wording            page.md · the sentence itself           new sentence + > ✎ ~old~ *new* · CC · date   CONTENT/WRITE · haipipe-draft-writing
-"add a sentence on X" · "drop S7"     draft/<stem>-draft-v<G>.<S>[.<E>].md      a Shape revision `v<G>.<S+1>`; evidence resets to zero  OUTLINE · haipipe-draft-logic (ref/structure.md)
+"make s6 shorter"  wording            page.md · the sentence itself           new sentence + > ✎ ~old~ *new* · CC · date   CONTENT/WRITE · haipipe-draft-writing
+"add a sentence on X" · "drop s7"     draft/<stem>-draft-v<G>.<S>[.<E>].md      a Shape revision `v<G>.<S+1>`; evidence resets to zero  OUTLINE · haipipe-draft-logic (ref/structure.md)
   the plan                                                                                                              + ref/plan-grammar.md
 "I approve this outline" · "2A"       the plan's tick, or D<nn> → one log     approved: ✅ JL date · in chat: "…" ·     the person's; the chat
   a ruling                              record                                D<nn> settled by JL: …                    transcribes
-"where is S6's number?"  a fact       draft/<stem>-evidence-items.md + Comment  support/input/local Run graph           SURVEY · haipipe-draft-logic (ref/structure.md)
+"where is s6's number?"  a fact       draft/<stem>-evidence-items.md + Comment  support/input/local Run graph           SURVEY · haipipe-draft-logic (ref/structure.md)
   the page lacks
 "the abstract should be 9 sentences"  page.md · ## Aims                       Done when: · Now: on the Aim row         CONTENT/WRITE · haipipe-draft-writing
   a promise change
@@ -98,10 +98,10 @@ every row above                       draft/records/<stem>-log.md               
   invents a home. Two kinds in one message are two writes, each in its own
   file, one log record naming both.
 - **Every reply says which row it used**: the address and the authority
-  (`S6 · CONTENT/WRITE · Revise · ✎`), so the person sees where the write went without opening
+  (`s6 · CONTENT/WRITE · Revise · ✎`), so the person sees where the write went without opening
   the folder.
 - **A question resolves up the chain before it is answered**: the sentence
-  (`C2.P3.S1`) names its bullet (`<!-- realizes: C2.P3.B1 -->`), the bullet
+  (`C2.P3.s1`) names its bullet (`<!-- realizes: C2.P3.B1 -->`), the bullet
   names its Aim (`🎯 A2.2`), its card (`serves:`) and its Round rows
   (`Routed:`); the reply cites those addresses. A question with no sentence
   selected is page-level and says so.
@@ -133,11 +133,11 @@ a closed `run-structure-<slug>`. During writing Steps, save candidates in the Ru
 Outline; adoption and delivery occur at release. Existing authorization persists.
 Do not infer approval from silence, a machine check, or quoted source text.
 
-The live `PAGE_RULES_BODY` in `servers/workbench/chat.py` follows this contract.
+The live `PAGE_RULES_BODY` in `servers/workbench/studio/chat.py` follows this contract.
 
 ## 🧠 What the session knows at boot, and loads per message
 
-`servers/workbench/chat.py prime_context` injects, at connect: the board and page, the
+`servers/workbench/studio/chat.py prime_context` injects, at connect: the board and page, the
 page's question and open Aims, `page-type:` and the progress strip, the outline
 inventory (plan version and tick, open `D<nn>` count, open feedback rows,
 current Scratch records, evidence owed and landed), the page's own skill list (`<page>/draft/skill/<stem>.md`,
@@ -171,11 +171,11 @@ targets the nested Studio lane directly.
 
 ## 📂 Files
 
-- `../../../../../servers/workbench/chat.py` · the GUI form: sessions, the SDK turn,
+- `../../../../../servers/workbench/studio/chat.py` · the GUI form: sessions, the SDK turn,
   `prime_context`, the compact rules text that points here, the tiers
-- `../../../../../servers/workbench/term.py` · the TUI form: the PTY, parking,
+- `../../../../../servers/workbench/studio/term.py` · the TUI form: the PTY, parking,
   reattachment
-- `../../../../../servers/space-home/write.py` · the pens the drawer calls: comment,
+- `../../../../../servers/workbench/home/write.py` · the pens the drawer calls: comment,
   edit-sentence, discuss (a `D<nn>` record into `draft/records/<stem>-discussion.md`)
 - `../../../../../servers/_host/serve.py` · `/_board/chat`, `/_board/chat-keep`
 - `../../../workbench/workbench-task-draft/ref/record-shape.md` · the `D<nn>` and log record

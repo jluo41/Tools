@@ -30,7 +30,7 @@ questions:
     and display.
   acceptance: Answered when every persona has one home and the console reads it, never copies it.
   work: []
-  report: reports/q01_console_vs_toolkit/q01_console_vs_toolkit.md
+  report: s01-console-ladder/s01-console-ladder.md
 - id: Q02
   title: Copy each human to json, or read the record store in place?
   question: The engine reads one json per human, so a build step copies each RecSet into InLabStore/<dataset>/patients/
@@ -49,7 +49,7 @@ questions:
   - ../../../../../plugins/inlab-human/servers/haichat-inlab/labeling_api.py
   - ../../../../../plugins/inlab-human/servers/haichat-inlab/fixtures/build_fixtures.py
   - ../../../../../plugins/inlab-human/servers/haichat-inlab/diagram/09-workspace-wiring.txt
-  report: reports/q02_copy_or_read/q02_copy_or_read.md
+  report: s02-data-lineage/s02-data-lineage.md
 - id: Q03
   title: How does the tasks feed read the project ladder?
   question: tasks_api.py reads examples/Project-*/tasks/<A01_*> (a letter series) and classifies each task as individual
@@ -64,7 +64,7 @@ questions:
   - ../../../../../plugins/inlab-human/servers/haichat-inlab/tasks_api.py
   - ../../../../../plugins/inlab-human/servers/haichat-inlab/web/src/components/TasksView.tsx
   - ../../../../../plugins/inlab-human/servers/haichat-inlab/fixtures/build_fixtures.py
-  report: reports/q03_tasks_on_the_ladder/q03_tasks_on_the_ladder.md
+  report: s03-q03-tasks-on-the-ladder/s03-q03-tasks-on-the-ladder.md
 - id: Q04
   title: One look for the console and the workbench?
   question: 'The console draws in a Databricks/Mattermost grammar (rail, tab strip, dock); the toolkit''s workbench
@@ -74,7 +74,7 @@ questions:
     rail and dock, which the frame has no counterpart for.
   acceptance: Answered when each element of s32 is marked share or keep, with a reason.
   work: []
-  report: reports/q04_one_look/q04_one_look.md
+  report: s32-console-element-ui/s32-console-element-ui.md
 - id: Q05
   title: Build or drop the placeholder views?
   question: 'Seven views are a placeholder at Group scope (Raw, Source, Record, Internal, External, Model, Checklist),
@@ -87,5 +87,5 @@ questions:
   - ../../../../../plugins/inlab-human/servers/haichat-inlab/web/src/views.ts
   - ../../../../../plugins/inlab-human/servers/haichat-inlab/web/src/components/NavRail.tsx
   - ../../../../../plugins/inlab-human/servers/haichat-inlab/web/src/Console.tsx
-  report: reports/q05_placeholder_views/q05_placeholder_views.md
+  report: s11-group-scope/s11-group-scope.md
 ```

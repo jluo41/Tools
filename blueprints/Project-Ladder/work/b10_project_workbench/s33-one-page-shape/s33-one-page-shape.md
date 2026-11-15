@@ -55,7 +55,7 @@ Open
 Proposal: three clean pages (261027, waiting for JL)
 -----------------------------------------------------
 
-Read from `servers/workbench/frame.py` (`render()` 4263, `vanilla()` 367, the Studio's six parts 1735-2254),
+Read from `servers/workbench/page/frame.py` (`render()` 4263, `vanilla()` 367, the Studio's six parts 1735-2254),
 `workbench-work/work_progress.py` (`spaces()` 1597) and both READMEs.
 
 ```text

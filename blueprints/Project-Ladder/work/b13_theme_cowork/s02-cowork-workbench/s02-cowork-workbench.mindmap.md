@@ -23,7 +23,7 @@ built: from-topic .
 - Served <!-- @served #4de0b1 -->
   - the workbench's Guide › RoadMap Draw shows … <!-- @served/0 #0e0dcc -->
     the workbench's Guide › RoadMap Draw shows this drawing, view only.
-  - Its path is `COWORK_DESIGN` in `plugins/haipipe-toolkit/servers/workbench/guide_families.py` <!-- @served/1 #3b7567 -->
+  - Its path is `COWORK_DESIGN` in `plugins/haipipe-toolkit/servers/workbench/guide/guide_families.py` <!-- @served/1 #3b7567 -->
 - Files <!-- @files #6ce6c5 -->
   - [excalidraw] [cowork-workbench-design.excalidraw](cowork-workbench-design.excalidraw) <!-- @files/0 #6b0f9a -->
   - [py] [cowork-workbench-design.py](cowork-workbench-design.py) <!-- @files/1 #3a0049 -->

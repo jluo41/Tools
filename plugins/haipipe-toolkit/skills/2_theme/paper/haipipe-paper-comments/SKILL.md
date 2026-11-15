@@ -23,9 +23,11 @@ that still declares `page-type: round` (written before 1.0.0) is a review batch 
 This skill replaces `haipipe-paper-round` (JL 261007: "we do not need to keep the round anymore … change it to
 the comments"). Everything the Round did carries over: one batch, one concern table, every point exactly once,
 routing to the owner, human authority, CHECK before close. What is new: any source, point ids by source,
-Review Items, proposed questions, and a batch placed where its subject lives: a batch is a **report of type
-comments** in that level's `reports/` (1.1.0; JL 261007: "comments … are a special type of report … it should be
-in the reports/ but you can say its type is the Comments").
+Review Items, proposed questions, and a batch placed where its subject lives. Since 261110 a batch is a **Job**
+on the paper Board, `jNN_review_<kind>_v<MMDD>/` with `for: <the version Job it serves>`, its Tasks doing the
+work (JL 261110: "we will no longer use the reports/, please use the job or studio"); a batch about the Story
+with nothing to run is a Studio topic. `reports/qNN_<kind>-<MMDD>/` batches written before (1.1.0 to 261109)
+are still read as they are.
 
 ## 🗂️ Batch kinds and where each lives
 
@@ -33,22 +35,21 @@ One **batch** is one bounded set of comments taken in together. Its kind names i
 
 ```text
 kind      source                         lives in (the ladder)                       shows in
-review    reviewers' reports             <answering version>/reports/qNN_<kind>-<MMDD>/   version › Audience Report › Comments
-editor    the editor's letter            with its reviews, one batch                 (same)
-coauthor  a coauthor's pass on a draft   <the version drafted>/reports/qNN_…/        version › Comments
-meeting   what a meeting said            Paper-<Slug>/reports/qNN_…/ (the Board)     Block › Related Questions (proposed)
-advisor   an advisor's notes             Paper-<Slug>/reports/qNN_…/ (the Board)     Comments, then proposed questions
-internal  a pre-submission audit         <the version>/reports/qNN_…/                version › Comments
-(today's desk shelves: B<x>-<desk>-Round/CM<NN>-…/, and Paper-<Slug>/comments/ for a Board batch, still read)
+review    reviewers' reports             Paper-<Slug>/jNN_review_reviewers_v<MMDD>/   for: the answering version
+editor    the editor's letter            with its reviews, one batch               (same)
+coauthor  a coauthor's pass on a draft   Paper-<Slug>/jNN_review_coauthor_v<MMDD>/ for: the version drafted
+meeting   what a meeting said            Paper-<Slug>/sNN-<meeting>-<MMDD>/        a Studio topic
+advisor   an advisor's notes             Paper-<Slug>/sNN-<advisor>-<MMDD>/        a Studio topic
+internal  a pre-submission audit         Paper-<Slug>/jNN_review_internal_v<MMDD>/ for: the version
+(older shelves, still read: <version>/reports/qNN_…/, B<x>-<desk>-Round/CM<NN>-…/, Paper-<Slug>/comments/)
 ```
 
 A batch about a send (a review, an editor's letter, a coauthor pass on that draft) belongs to that version; a
-batch about the Story (a meeting, an advisor) belongs to the Board. Either way it is a report: one folder in that
-level's `reports/`, numbered with the other reports (`qNN_<kind>-<MMDD>/`), its face declaring
-`page-type: comments`, registered in the face's `## Questions` with group `comments`. A review batch sits in the
-version that answers it (the next send, whose face says `responds-to: reports/qNN_<kind>-<MMDD>/…`; the report's own
-`answers:` names its Question id, haipipe-report); its Review Items'
-work and the response letter (`t32_response`, a letter Task) are in that version too. A batch is never a Task.
+batch about the Story (a meeting, an advisor) belongs to the Board as a Studio topic. A send's batch is a Job
+on the Board, `jNN_review_<kind>_v<MMDD>/`, its face saying `for: <the version Job>` and declaring
+`page-type: comments`; the answering version's face says `responds-to: jNN_review_<kind>_v<MMDD>`.
+`workbench-paper` `board_read.is_version` reads a Job named `review` as not a writing version. Its Review Items'
+work is its Tasks; the response letter (`t32_response`, a letter Task) stays in the answering version.
 
 ## Paper ownership and entry
 
@@ -107,9 +108,8 @@ version you released with every concern answered. Both are frozen inside the bat
 
 ```text
 Paper-<Slug>/
-└── j0N_v<MMDD>_<desk>/reports/                the answering version's reports (today: B<x>-<desk>-Round/)
-    └── qNN_<kind>-<MMDD>/                     (today: CM<NN>-<desk>-<kind>-<YYYYMMDD>/)
-        ├── qNN_<kind>-<MMDD>.md               the batch Page: page-type: comments
+└── jNN_review_<kind>_v<MMDD>/                 the batch Job (older: <version>/reports/qNN_…/, CM<NN>-…/)
+        ├── jNN_review_<kind>_v<MMDD>.md       the batch face: page-type: comments, for: <version Job>
         ├── sent/             (review) immutable copy of every declared submission output,
         │                     plus build-manifest.json and display-register.md
         ├── feedback/         immutable received letters, memos, notes and marked-up files
@@ -117,8 +117,8 @@ Paper-<Slug>/
         ├── response/         (external review) approved response letter/table and its manifest
         └── draft/            Page Context/Outline/Evidence/Log projections
 
-Paper-<Slug>/reports/qNN_<meeting|advisor>-<MMDD>/   a Board-level batch: feedback/ + draft/
-                                                       (today: Paper-<Slug>/comments/CM<NN>-story-…/)
+Paper-<Slug>/sNN-<meeting|advisor>-<MMDD>/          a Board-level batch: a Studio topic
+                                                       (older: Paper-<Slug>/reports/qNN_…/, comments/CM<NN>-story-…/)
 ```
 
 `sent/` and `released/` contain the exact output set declared by the paper-root `delivery/paper-build.toml`. If
@@ -141,13 +141,13 @@ instead of holding a copy. An older batch's own `meeting/` folder is still read.
 ### 🪪 Naming law
 
 ```text
-j12_writing_v<MMDD>_<desk>/reports/q01_review-1020/   a review batch, in the version that answers it
-reports/q07_meeting-1022/                         a meeting about the telling, at the Board
+j31_review_coauthor_v1110/                       a coauthor batch, for: j11_writing_v0929_misq
+s07-meeting-1022/                                a meeting about the telling, a Board Studio topic
 Bc-<desk>-Round/CM03-<desk>-review-<YYYYMMDD>/   older shelves (legacy, read as is), RD<NN>-… too
 ```
 
-- On the ladder a batch is a report, `reports/qNN_<kind>-<MMDD>/`, numbered after the level's other reports
-  and typed by its face (`page-type: comments`); never a Task, so never `t3N_` (that band is letters: t31 cover
+- On the ladder a batch is a Job, `jNN_review_<kind>_v<MMDD>/`, typed by its face (`page-type: comments`), or a
+  Studio topic when nothing runs; never a Task, so never `t3N_` (that band is letters: t31 cover
   letter, t32 response). Its `batch-id` stays `CM<NN>` (a legacy batch keeps `RD<NN>`) inside the Page. On older desk shelves it
   keeps `CM<NN>-…`. `haipipe-paper/scripts/carry_over/rename_tasks.py` moves an old `RD<NN>-…` batch into `reports/`.
 - `CM<NN>` is unique across the paper. Existing `RD<NN>-…` Pages keep their names: Runs, receipts and Story

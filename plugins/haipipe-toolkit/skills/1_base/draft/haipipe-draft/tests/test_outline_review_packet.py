@@ -111,7 +111,7 @@ class OutlineReviewPacketTest(unittest.TestCase):
             page = self._page(directory)
             body = plan_card(page)
             for wanted in (
-                "✍️ plan v1", "approved: ⬜", "1 evidence item · Decisions 0/1",
+                "✍️ plan v1", "approved: ⬜", "not decided yet",   # a state word, no tally (JL 261113)
                 "1</b> SHAPE", "2</b> SURVEY", "3</b> LAND", "4</b> EMBED",
             ):
                 self.assertIn(wanted, body)

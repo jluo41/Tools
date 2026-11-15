@@ -22,7 +22,7 @@ Walked Work's three views; the Process rows work; A's Results repeat the whole O
 
 ## Next
 
-- Cut A's Results to how far the report is
+- Segment A's Results to how far the report is
 - take s54's dot grid.
 
 ## Read

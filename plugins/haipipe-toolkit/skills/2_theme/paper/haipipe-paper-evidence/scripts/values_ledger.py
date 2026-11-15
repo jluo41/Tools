@@ -41,7 +41,7 @@ value-first (each value searched for in the text and the displays, with no hand 
    line per search hit to the holder's `evidence/proposals.md` (cards.bind_proposals, the "Proposing what to make"
    path); a person ticks it once and `bind --adopt` writes it (or an agent confirms with `bind --confirm`); a written
    binding is never rewritten by the search. A sentence id is a draft S id (`5`, the `## 3 · Draft` line
-   `- B<n> · S5 · ...`) or a `## Content` `<!-- realizes: <id> -->` id (paper_text.py).
+   `- B<n> · s5 · ...`) or a `## Content` `<!-- realizes: <id> -->` id (paper_text.py).
 
 3. Check. Each binding: match (the anchor is in its sentence and its number is the value at the printed precision),
    differs (the anchor is there, the number is not the value's), missing (the anchor's words left the sentence), no

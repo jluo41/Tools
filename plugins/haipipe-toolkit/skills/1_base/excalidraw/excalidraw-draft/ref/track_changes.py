@@ -20,6 +20,9 @@ An edit is a dict (s04's yaml):
             at a paragraph's start changes nothing. With `gap: true` an empty tracked paragraph goes between the two,
             for forms that space paragraphs with empty ones.
   paragraphs [{at, topic, does}]: a comment on each new paragraph's first words, saying what it does.
+  comment   plain text: one Word comment by the author on the find's words (or on `anchor`, inside the
+            changed paragraph). With no `new` it only comments: the way to raise a point on a co-author's
+            own sentence without rewriting it.
   table     {title, header, rows, widths?, size?}: a new table, tracked, after the change's last paragraph.
   evidence  {need, ask, who, anchor, found?}, or a list of them: one Word comment each, "Evidence needed: ...",
             on its anchor words, looked for first in the changed paragraphs, then in the whole file.
@@ -345,6 +348,11 @@ class Tracker:
         return [gap, title] + list(tbl.iter(W("w:p")))
 
 
+def INITIALS(author):
+    """Word comment initials: the first letter of each name ("Junjie Luo" -> "JL")."""
+    return "".join(w[0] for w in author.split() if w[:1].isalpha()).upper()[:3] or author[:2]
+
+
 def write_tracked(template, edits, out, author="JL", figure=None, image_width=6.2):
     """Write `out`: the template with every edit as a tracked change and every evidence item as a comment."""
     template, out = Path(template), Path(out)
@@ -353,6 +361,10 @@ def write_tracked(template, edits, out, author="JL", figure=None, image_width=6.
     body = doc.element.body
     tr = Tracker(doc, author)
     touched = {}                                    # edit id -> the paragraphs it changed or added
+    ids = [e["id"] for e in edits]
+    dup = sorted({i for i in ids if ids.count(i) > 1})
+    if dup:
+        raise SystemExit(f"duplicate edit ids (each id must be unique): {dup[:5]}")
     for edit in edits:
         paras = paragraphs(body)
         if edit.get("split"):
@@ -431,7 +443,19 @@ def write_tracked(template, edits, out, author="JL", figure=None, image_width=6.
             found = "; ".join(f["cite"] for f in ev.get("found") or [])      # papers a Discovery Run found
             text = (f"Found: {found}. " if found else "") + f"Evidence needed: {ev['need']}." \
                 + (f" {ask[:1].upper() + ask[1:]}" if ask else "") + (f" (ask: {who})" if who else "")
-            doc.add_comment(runs, text, author=author, initials=author[:2])
+            doc.add_comment(runs, text, author=author, initials=INITIALS(author))
+            n_comments += 1
+        if edit.get("comment"):                                   # a plain note on the find (or `anchor`) words
+            q, anchor = None, None
+            for anchor in [edit.get("anchor"), edit.get("find"), (edit.get("new") or "").split("\n")[0].strip()]:
+                q = next((q for q in touched[edit["id"]] if anchor and para_text(q).find(anchor) >= 0), None)
+                if q is not None:                                 # the find, else the words it became
+                    break
+            if q is None:
+                raise SystemExit(f"edit {edit['id']}: comment anchor {anchor!r} not found")
+            i = para_text(q).find(anchor)
+            runs = [Run(r, Paragraph(q, doc.part)) for r in tr.runs_between(q, i, i + len(anchor))]
+            doc.add_comment(runs, edit["comment"], author=author, initials=INITIALS(author))
             n_comments += 1
         for k, pp in enumerate(edit.get("paragraphs") or []):     # what each new paragraph does
             q = next((q for q in touched[edit["id"]] if para_text(q).find(pp["at"]) >= 0), None)
@@ -440,7 +464,7 @@ def write_tracked(template, edits, out, author="JL", figure=None, image_width=6.
             i = para_text(q).find(pp["at"])
             runs = [Run(r, Paragraph(q, doc.part)) for r in tr.runs_between(q, i, i + len(pp["at"]))]
             doc.add_comment(runs, f"Paragraph {k + 1}, {pp['topic']}: {pp['does']}", author=author,
-                            initials=author[:2])
+                            initials=INITIALS(author))
             n_comments += 1
 
     out.parent.mkdir(parents=True, exist_ok=True)

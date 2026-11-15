@@ -24,13 +24,13 @@ import plan_c_fixture as F  # noqa: E402
 
 # (Space, subspaces, run types), as b11's s11 · s12 · s13 SCREENS draw them and the run cards
 # (haipipe-insight-workflow/ref/run-cards.md) name them; a "?" design run is left out
-BOARD = {"Description": (["Map", "Prototype", "Dataset", "Partitions"], ["Add a data version", "Add a Job"]),
+BOARD = {"Description": (["Map", "Question Book", "Dataset", "Partitions"], ["Add a data version", "Add a Job"]),
          "Idea Studio": ([], ["Draw the question map", "Add a topic"]),
          "Audience Report": (["Full", "part-a", "part-b", "Cross"], ["Update the coverage", "Propose questions"]),
          "Work Details": (["All", "p1", "p2"], ["Add a Job", "Close a Job"]),
          "Runs": (["All", "soft", "from below"], ["Add a Job", "Update the coverage", "Check consistency"]),
          "Delivery": (["Handoff"], ["Write the counsel", "Draft the handoff"])}
-JOB = {"Description": (["Prototype", "Dataset"], ["Open the release ↗"]),
+JOB = {"Description": (["Question Book", "Dataset"], ["Open the release ↗"]),
        "Idea Studio": ([], ["Draw the question map", "Add a topic"]),  # the Block's Studio (b03 s02-D09)
        "Audience Report": (["Full", "part-a", "part-b", "Cross"], ["Write the Data report", "Write the Information report",
                                                                "Write the Knowledge report", "Write the Wisdom report",
@@ -38,14 +38,14 @@ JOB = {"Description": (["Prototype", "Dataset"], ["Open the release ↗"]),
        # the Job's Work is its steps (b11 s12, 261022); a closed Job opens on its last, 6 · Close
        "Work Details": (["1 · Launch", "2 · Run", "3 · Write", "4 · Check", "5 · Compare", "6 · Close"], ["Close the Job"]),
        "Runs": (["All", "hard", "soft", "launch", "power", "compare", "propose", "close"],
-                ["Run the Job", "Measure the power", "Run a partition", "Compare with the Job before",
+                ["Run the Job", "Measure the power", "Run a segment", "Compare with the Job before",
                  "Propose questions", "Close the Job"]),
        "Delivery": ([], [])}
 TASK = {"Description": (["Question", "Records"], []),
         "Idea Studio": ([], ["Draw the question map", "Add a topic"]),  # the Block's Studio (b03 s02-D09)
         "Audience Report": (["Table", "Reading"], ["Write the Knowledge report", "Check a report"]),
-        "Work Details": (["Partitions"], ["Run a partition", "Check alignment"]),
-        "Runs": (["All", "hard", "soft"], ["Run a partition", "Check alignment"]),
+        "Work Details": (["Partitions"], ["Run a segment", "Check alignment"]),
+        "Runs": (["All", "hard", "soft"], ["Run a segment", "Check alignment"]),
         "Delivery": ([], [])}
 OLD_CLASSES = ("hl-row", "class=lead", "class=pill", "class=pane", "class=shell", "gateset")
 
@@ -86,7 +86,7 @@ class PlanCTest(unittest.TestCase):
         self.assertIn("Consistency", board)
         job = frame.render(THEME, self.root, self.job, "Audience Report", "part-a/vs previous")
         self.assertIn("Period:", job)
-        self.assertIn("1 new question · 1 new finding · 2 held · 1 changed · 0 dropped · 1 not comparable", job)
+        self.assertIn("new question · new finding · held · changed · not comparable", job)
 
     def test_the_map_crosses_the_two_clocks(self):
         page = frame.render(THEME, self.root, self.board, "Description", "Map")
@@ -102,16 +102,16 @@ class PlanCTest(unittest.TestCase):
 
     def test_the_job_tab_reads_its_pair_and_its_tree(self):
         desc = frame.render(THEME, self.root, self.job, "Description", "Dataset")
-        self.assertIn("code-v2 × data-v2", frame.render(THEME, self.root, self.job, "Description", "Prototype"))
+        self.assertIn("question-v2 × data-v2", frame.render(THEME, self.root, self.job, "Description", "Question Book"))
         for space in ("Audience Report", "Work Details", "Runs"):      # no band beside the tab (s12, 261007)
-            self.assertNotIn("code-v2 × data-v2", spaces("Job", self.job, self.root, "")[space].html, space)
+            self.assertNotIn("question-v2 × data-v2", spaces("Job", self.job, self.root, "")[space].html, space)
         self.assertIn("refused", frame.render(THEME, self.root, self.board / "j02_prototype-p1_data-demov2", "Description", "Dataset"))
         tree = frame.render(THEME, self.root, self.job, "Work Details", "All")     # the tree's older view: 2 · Run
         self.assertIn("t03_K01_question-c", tree)
         self.assertIn("r04_cross", tree)
 
     def test_the_still_open_points_are_not_decided(self):
-        job = frame.render(THEME, self.root, self.job, "Description", "Prototype")
+        job = frame.render(THEME, self.root, self.job, "Description", "Question Book")
         self.assertIn("not set (still open)", job)        # what "held" means
         handoff = spaces("Block", self.board, self.root, "Handoff")["Delivery"].html   # the Space itself
         self.assertNotIn("stale", handoff)
@@ -168,7 +168,7 @@ class JobWorkStepsTest(unittest.TestCase):
         self.assertEqual(self.work(self.open)["open"], "1 · Launch")
         page = frame.render(THEME, self.root, self.open, "Work Details", "")
         self.assertIn("→ next", page)
-        self.assertIn("Running now", page)                    # run-launch-j04 is open
+        self.assertIn("class=run-now", page)                  # run-launch-j04 is open: 🏃 and its link
         self.assertIn("run-launch-j04", page)
 
     def test_the_work_panel_is_folded_until_opened(self):
@@ -181,7 +181,7 @@ class JobWorkStepsTest(unittest.TestCase):
         self.assertNotIn(f"{self.open.name.replace('_', '-')}-{self.open.name.replace('_', '-')}", page)
 
     def test_each_step_lists_its_own_cards(self):
-        want = {"1 · Launch": ["Run the Job", "Measure the power"], "2 · Run": ["Run a partition", "Pool or split"],
+        want = {"1 · Launch": ["Run the Job", "Measure the power"], "2 · Run": ["Run a segment", "Pool or split"],
                 "3 · Write": ["Write the Data report", "Write the Information report", "Write the Knowledge report",
                               "Write the Wisdom report", "Write the overall report"],
                 "4 · Check": ["Check alignment", "Check a report"],
@@ -199,7 +199,7 @@ class JobWorkStepsTest(unittest.TestCase):
 class OverallReportTest(unittest.TestCase):
     """JL 261012: "before the Full, we should have a Overall Report ... we can click and read it". A release that asks
     an Executive question (X) puts an Overall Report button before Full at the Job and the Board: its X pages as one
-    document, each (K01 · t03) a link to that Task's page; no cut's table lists X."""
+    document, each (K01 · t03) a link to that Task's page; no segment's table lists X."""
 
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()

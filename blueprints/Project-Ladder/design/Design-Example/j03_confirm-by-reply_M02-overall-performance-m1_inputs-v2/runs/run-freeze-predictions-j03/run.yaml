@@ -1,7 +1,7 @@
 run: run-freeze-predictions-j03
 kind: soft
 type: freeze-predictions
-scope: j03_confirm-by-reply_method-v2-overall-performance_inputs-v2
+scope: j03_confirm-by-reply_M02-overall-performance-m1_inputs-v2
 target: j03
 skill: haipipe-design-delivery
 agent: designer agent

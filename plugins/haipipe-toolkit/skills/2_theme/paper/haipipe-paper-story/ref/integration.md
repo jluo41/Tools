@@ -6,9 +6,10 @@ meaning live only in `../SKILL.md`; routers resolve that contract directly.
 
 On the ladder a telling feeds each version: its seed, roadmaps and §8 Section
 Narrative stay on its Story topic, and its research questions are Board Questions
-with reports. §8 owns the shared argument and intended reader order. Each writing
-version's `## Narrative` binds it to concrete Section rows and compile order for
-that send. Story and Displays read the same Story topic; they do not create a
+with reports. §8 owns what every version shares: title, story, explanation and the
+claims C1..Cn with their numbers, and no per-Section rows. Each writing version's
+`## Narrative` holds that venue's layout (claims to displays, display Runs, one row
+per Section, compile order); it points at §8 and copies no claim. Story and Displays read the same Story topic; they do not create a
 second argument source. Older Boards retain their existing Story Page bindings.
 
 ## Page and workflow records
@@ -27,7 +28,7 @@ CHECK pass or requested edit constitutes a new execution release.
 
 On returned evidence: read the Result and its limitations, update the §5
 proposition and §3 answer as justified, then revise affected §6/§7 needs and
-§8 claims/Section moves. A halted run is not a null result. A null result
+§8 claims, then the affected version rows. A halted run is not a null result. A null result
 is not automatically evidence of no relationship. Receipt acceptance and
 claim support are different decisions.
 
@@ -38,23 +39,25 @@ remain historical; a changed structure gets a new unapproved v0.x draft.
 
 ## Section rows
 
-§8's detailed Section Narrative rows own reader question, ordered moves,
-claims, evidence/display allocation, entry/exit, transitions and cut rules.
-The compact section-map projection must agree with those rows. Keep the shared
+The version face's `## Narrative` rows own reader question, ordered moves,
+the claims each Section carries (by id), display allocation, entry/exit,
+transitions and cut rules; §8 holds none of them (JL 261111). The compact
+section-map projection must agree with those rows. Keep the shared
 Outline presenter and its supported projection mechanism; do not hand-copy a
 generated table into the Page's Outline.
 
 A planned row can exist before its Section Page. Once instantiated, retain its
 exact `section-id`, target/category, Story version and `story-row:` binding.
-Resolve the shared argument by semantic row id within §8; do not assume the
-subsection is §8.1. Current ladder Section bindings use `story-row:` anchors to
-the writing version's concrete rows. Preserve these anchors and reconcile those
-rows with §8; update an anchor only as part of the affected Page's authorized
-revision. This distinction does not migrate or rename existing records.
+Resolve the shared argument by claim id within §8. Ladder Section bindings use
+`story-row:` anchors to the writing version's rows. Preserve these anchors and
+reconcile those rows with §8's claims; update an anchor only as part of the
+affected Page's authorized revision. An older Board whose §8 still holds Section
+rows keeps them until that version is next touched, then they move to its face. This distinction does not migrate or rename existing records.
 
 Section-local paragraph detail may elaborate the Story's ordered moves but
 cannot change its central claim, evidential limit or reader transition. A
-material Story-row revision reopens affected Section checks. The selected
+material change to a version row reopens that Section's plan (health `row`);
+a change to §8 after the version's `sign-narrative` shows as health `narrative`. The selected
 Venue contract supplies the desk rules, not new research findings.
 
 ## Compile projection
@@ -74,12 +77,12 @@ appendix:
 
 These ids illustrate the format only; emit only the paper's actual Section ids.
 On the ladder the block lives in the writing version's `## Narrative` and is
-derived from its concrete Section rows, aligned with the selected Story's §8.
-Before Section files exist, keep their intended reader order in §8 without
-inventing compilable paths.
+derived from its Section rows, aligned with the selected Story's §8 claims.
+Before Section files exist, keep their intended reader order in
+`s04-paper-workflow/` (haipipe-paper-plan) without inventing compilable paths.
 Before assembly, require an unambiguous selected target and real Section ids
 consistent with `delivery/paper-build.toml`. Use one active marker block;
-additional candidate Section orders stay in §8 until a target is selected or the
+additional candidate Section orders stay in `s04-paper-workflow/` until a target is selected or the
 declared builder explicitly supports target-qualified selection. Do not
 promise multiple identical marker blocks to a single-block parser.
 
@@ -93,7 +96,8 @@ approve the Story skill, a Story outline, work releases, or submission.
 Inspect the current Page, outline, Aims, accepted sources and any unmerged
 source content before editing. Map source/proposition/boundary content into
 §5, external inquiries into §6, study evidence plans into §7, and claims,
-argument, reader journey and Section plans into §8. Retain Seed identity and
+argument and reader journey into §8, and Section plans into the version face's
+`## Narrative`. Retain Seed identity and
 source references.
 Preserve actual findings and historical approvals as evidence of past state;
 do not carry an old approval to the new shape or promote a preliminary claim.

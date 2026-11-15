@@ -81,7 +81,7 @@ one old-layout and one new-layout project.
 Done 261007: the table is `skills/1_base/draft/haipipe-draft/src/themes.py` (kind · folder · old
 folder; `theme_dir`, `theme_dirs`, `kind_of`). Read through it: space-home `home.py`, haipipe-draft
 `common.py`, `dialect_paper.py`, `item_table.py`, and the workbench servers (discovery, design,
-work, insight, paper, `workbench/related_papers.py`). Standalone scripts carry the same pairs
+work, insight, paper, `workbench/guide/related_papers.py`). Standalone scripts carry the same pairs
 inline: haipipe-project `ladder.py`, haipipe-task `check_task_tree.py` (S16 checks `work/` or
 `tasks/` paths by the name they use), haipipe-data `space_check.py`, haipipe-discovery
 `regroup_bjtr.py` and `migrate_bjtr.py`. The work Theme's kind stays `task` (folder-kind,

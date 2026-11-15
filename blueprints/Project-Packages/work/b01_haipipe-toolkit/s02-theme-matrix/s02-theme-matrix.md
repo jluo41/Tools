@@ -1,5 +1,6 @@
 s02 · The theme matrix
 ======================
+view: findings
 
 **Stage:** explore
 
@@ -9,7 +10,15 @@ s02 · The theme matrix
 
 **Topic:** The seven themes side by side: each one's Block, skills, workbench server, which of the shared studio topics its Block has drawn (s01 or consolidated s05 ladder, s11 s12 s13 levels, s21 runs and skills, s31 Guide, s32 element UI, s33 UI issues), and its question count. It is the evidence for Q02: where the themes drift is where a topic is missing (261009).
 
-**Feeds:** `reports/` q02_one_ladder
+**Feeds:** Q02
+
+
+Q02 · Answer
+------------
+
+**Question:** Does every theme follow one ladder?
+
+**Answer (open):** not written yet.
 
 
 Files

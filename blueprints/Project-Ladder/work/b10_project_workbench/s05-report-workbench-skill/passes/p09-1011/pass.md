@@ -10,4 +10,4 @@ Built in frame.py (workbench 1.19.0): each Question a folding card under the Stu
 
 ## Changed
 
-- `servers/workbench/frame.py · board.md · s05-report-workbench-skill/`
+- `servers/workbench/page/frame.py · board.md · s05-report-workbench-skill/`

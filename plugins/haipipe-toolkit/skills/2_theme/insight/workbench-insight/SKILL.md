@@ -7,7 +7,7 @@ description: >-
   (Description · Idea Studio · Audience Report | Work Details | Runs ·
   Delivery) as b11's s11 · s12 · s13 draw them, and a Runs panel whose buttons
   are the insight run cards by level and Space. It shows the Board's and the
-  Prototype's files and copies prompts; the one thing it writes is a person's
+  Question Book's files and copies prompts; the one thing it writes is a person's
   own CHECK of a page and sign of a Job's close (POST /_board/insight-act),
   every other write staying with the insight skills. Use to see or explain what an insight screen shows, which file
   each view reads, and which card a button copies. Trigger: insight workbench,
@@ -32,8 +32,8 @@ that came before (`/_board/insight-board`) is retired and redirects here; what i
 
 ```text
 the link       /_board/workbench?path=<Project>/insight/Insight-<name>[/<Job>[/<Task>]]
-the server     servers/workbench-insight/insight_theme.py (the Theme) · insight_views.py (the three levels) ·
-               insight_plan_c.py (reads the Board and its Prototype) · guide/guide.yaml (the Guide's words)
+the server     servers/workbench-insight/insight_theme.py (the Theme) · insight_views.py (the three levels; drawn in insight_view_*.py) ·
+               insight_plan_c.py (reads the Board and its Question Book) · guide/guide.yaml (the Guide's words)
 the cards      haipipe-insight-workflow/ref/run-cards.md (one per button; scripts/run_cards.py --check)
 the table      ref/workbench-table.md, generated from the cards by scripts/cards_table.py; never edited by hand
 ```
@@ -45,16 +45,16 @@ The three levels
 ```text
           Description                  Idea Studio        Audience Report                 Work Details        Runs · Delivery
 Block     Map (releases × data         question map ·     Overall Report · then           the Jobs: All ·     soft · from below ·
-(Board)   versions) · Prototype ·      topics             Partition × Reading: Coverage · p1 · p2 …           Handoff
-          Dataset · Partitions                            Tracks · Consistency · Findings
-Job       the Job's line (code-vN × data-vM ·    topics             Overall Report · then           its steps:          All · hard · soft ·
-          state · moved) atop                             Partition × Period: Current ·   1 Launch · 2 Run ·  launch · power ·
-          Prototype · Dataset                             vs previous                     3 Write · 4 Check · compare · propose · close
+(Board)   versions) · Question Book ·      topics             Segment × Reading: Coverage · p1 · p2 …           Handoff
+          Dataset · Segments                            Tracks · Consistency · Findings
+Job       the Job's line (question-vN × data-vM ·    topics             Overall Report · then           its steps:          All · hard · soft ·
+          state · moved) atop                             Segment × Period: Current ·   1 Launch · 2 Run ·  launch · power ·
+          Question Book · Dataset                             vs previous                     3 Write · 4 Check · compare · propose · close
                                                                                           5 Compare · 6 Close
-Task      Question · Records           topics             Table · Reading                 Partitions          All · hard · soft
+Task      Question · Records           topics             Table · Reading                 Segments          All · hard · soft
 ```
 
-The words (JL 261109: "code-v1 x data-v1, make it readable"): the Map's corner reads `code version \ data version`, a row `code-v1 · first ladder`, a column `data-v1 · first 5 days`; the Job ▾ menu shows the Job's folder name as it is, `j01_code-v1-basic-questions_data-v1`. An older Board's p1 and v1 read as code-v1 and data-v1.
+The words (JL 261109: "code-v1 x data-v1, make it readable"): the Map's corner reads `question version \ data version`, a row `question-v1 · first ladder`, a column `data-v1 · first 5 days`; the Job ▾ menu shows the Job's folder name as it is, `j01_question-v1-basic-questions_data-v1`. An older Board's p1 and v1 read as question-v1 and data-v1.
 
 The Overall Report (JL 261012: "before the Full, we should have a Overall Report ... we can click and read it"): when a
 release asks Executive questions (X), the Audience Report's first button, before Full, reads them as one document: a
@@ -63,10 +63,10 @@ a link to the Task it rests on, and the print (`delivery/<job>/overall-report.pd
 (JL 261013: "figures to show it to quickly get the outcome"): a card per question, its outcome in bold over its
 figure, a click to its section. The figures are the X pages' `figures:`, drawn by haipipe-insight
 `ref/overall_figures.py` into `delivery/<job>/figures/`; one not drawn yet says so. At the Board it is the latest
-Job's. No cut's table lists the X questions (`insight_views._overall`, `_figure`, `_board_overall`). Each Space reads files only: the Board's `board.md` (dataset, versions, prototype), the Prototype's releases
+Job's. No segment's table lists the X questions (`insight_views._overall`, `_figure`, `_board_overall`). Each Space reads files only: the Board's `board.md` (dataset, versions, prototype), the Question Book's releases
 (`release.yaml`, `partitions.md`, each question's `question.md`), a Job's face and `reports/vs-<prev>.md`, a Task's
-page and its Runs' `run.yaml` and `result/report.md`. A "… ↗" opens a file in the pop-out. The Prototype in `work/`
-opens in the work theme until a Prototype level is drawn (s21 lists its run types).
+page and its Runs' `run.yaml` and `result/report.md`. A "… ↗" opens a file in the pop-out. The Question Book in `work/`
+opens in the work theme until a Question Book level is drawn (s21 lists its run types).
 
 
 A Job's Work: its steps (b11 s12, 261022)
@@ -83,8 +83,8 @@ Operation  🚀 1 · Launch  ✓ done           folded until opened; its chip re
            Prompt         the step's run card, the Job filled in, "Still to …" the Tasks named; your notes go with it
                           (user feedback:), then "Run this in the Claude session <Board>: <job>"
            🙋 sign        6 · Close only: a person signs the close
-Result     a card per DIKW level (2 · Run: Task × cut marks; 3 · Write: each page's answer; 4 · Check: CHECK and
-           alignment), the pins and cuts (1 · Launch), the comparison (5 · Compare), what the close freezes (6 · Close)
+Result     a card per DIKW level (2 · Run: Task × segment marks; 3 · Write: each page's answer; 4 · Check: CHECK and
+           alignment), the pins and segments (1 · Launch), the comparison (5 · Compare), what the close locks (6 · Close)
 ```
 
 The chips: a step is done from its files (Launch: a closed run-launch, or the Runs ran; Run: every Data, Information and
@@ -99,26 +99,26 @@ A Job on the focus page: Work by letter (b11 j01 s55, 261101)
 -------------------------------------------------------------
 
 The focus page (`layout=focus`, what `/wb` opens) shows an insight Job's Work in the Report's three letters, the same parts
-the paper's version Work and the labeling Task's steps use (`servers/workbench/ui_parts.py`): each view ⚙️ Process
+the paper's version Work and the labeling Task's steps use (`servers/workbench/page/ui_parts.py`): each view ⚙️ Process
 then 📊 Results, numbered sections, to-do rows that end in a state word, Copy prompt on a row, the one Prompt box for a
-single next act. `servers/workbench-insight/insight_focus.py` draws them; `focus_page.py` asks it through one hook
+single next act. `servers/workbench-insight/insight_focus.py` draws them (its parts are `insight_focus_*.py`); `focus_page.py` asks it through one hook
 (`insight_job_work`), as it asks the paper theme's.
 
 ```text
-A Overall       Process  🙋 your signs · Write the Overall Report (its state: done, ready, waits on <questions>) ·
-                         what the close freezes, once the close is yours to sign
-                Results  the Overall Report · this Job: plan, freeze, state, what moved, the Job before
-B Grid          Process  🙋 your signs · Launch all · Write all · Check all (Copy prompt each) · the grid, each
+A Findings      Process  🙋 your signs · Write the Overall Report (its state: done, ready, waits on <questions>) ·
+                         what the close fixes, once the close is yours to sign
+                Results  the Overall Report · this Job: question version, data version, state, what moved, the Job before
+B Changes       Process  🙋 your signs · "<n> changed answers to turn into ideas" · Compare, then Propose
+                Results  the comparison against the Job before (from the second Job)
+C Progress      Process  🙋 your signs · Launch all · Write all · Check all (Copy prompt each) · the grid, each
                          cell its next verb: launch on a planned Run, write on a page ready, check it on a written page
-                Results  the question × cut grid, rows by DIKW level, marks only (Report B)
-C vs previous   Process  🙋 your signs · "<n> changed answers to turn into proposals" · Compare, then Propose
-                Results  the comparison against the Job before
+                Results  the question × segment grid, rows by DIKW level, marks only (Report C)
 ```
 
 Three letters, not four (s54 round 2): The pair's facts sit under the Overall Report.
 
-🙋 your signs, first on every view, in their order: sign the plan (in the Prototype, `signed: ✅` on its release;
-until then the Job is a preview), then close the Job (greyed with what it waits on; once every step is done, Sign the
+🙋 your signs, first on every view, in their order: sign the plan (in the Question Book, `signed: ✅` on its release;
+until then the Job says its question version is not signed), then close the Job (greyed with what it waits on; once every step is done, Sign the
 close posts to `/_board/insight-act`). The steps' facts and states stay `insight_views` (`_work_facts`,
 `_work_states`), so the focus page and the six-Space page agree. Tests: `tests/test_insight_focus.py`.
 
@@ -128,19 +128,30 @@ Every level on the focus page (b11 j01 s51 to s58, 261102)
 
 The rest of the 3 × 3 is live in the same file, each view as its cell in b11 j01 (`insight_ui_cells.py`). A Report view
 is its numbered sections only, no ⚙️ Process or 📊 Results band (s51-D02); a Work view is ⚙️ Process then 📊 Results,
-its Results the Report view's own sections. Each opens on its first letter; MindMap stays last in Report.
+its Results the Report view's own sections. Each opens on its first letter; MindMap stays last in Report. Every
+Report view ends with 🙋 Interaction and prints no caption line. The buttons are plain words (JL 261109) and the key in
+a link stays: a Board's Findings (`answers`) · Questions (`questions`) · Data (`data`) · Advice (`handoff`) · Jobs
+(`jobs`); a Question Book's Questions (`questions`) · Ideas (`ideas`) · Versions (`versions`); a Job's Findings
+(`overall`) · Changes (`vs-previous`) · Progress (`grid`); a Task's Answer (`answer`) · Changes (`across-jobs`) ·
+Method (`plan`). Words a person reads: a question version is `question-vN`, a segment (the file `partitions.md` and the
+keys `partition:` and `cut:` keep their names), a Job is open until closed, a data version is locked on a date.
 
 ```text
-Board  Report  A Answers (question × Job) · B Questions (each, its DIKW level, where answered; the Board's own) ·
-               C Jobs (code version × data version, what each Job moved) · D Data (versions, cuts) · E Handoff
-       Work    the same letters; Process: 🙋 sign the newest plan, triage the proposals, then the letter's acts
-               (write the Overall Report · propose questions · open the newest Job, add a Job · add a freeze, propose
-               a cut · write the counsel, draft the handoff), each with its run card's Copy prompt
-Job    Report  Overall · Grid (marks only) · vs previous          (Work: above)
-Task   Report  Answer (the answer, how sure, what it rests on) · By cut (cut × step, the full result) ·
-               Across Jobs · Plan (needs, may say, agreed)
+Board  Report  A Findings (📄 Overall Report · 🔎 Answers) · B Questions (❓ Questions · 🕸 Question map ·
+               🧭 Board questions) · C Data (🗄 Data versions · ✂️ Segments, those of the question version the newest
+               Job runs) · D Advice (🧠 Advice so far · 📦 Signed) · E Jobs (🧷 Jobs · 📂 Newest Job · ⏱ Changes)
+       Work    the same letters; Process: 🙋 sign the newest question version, sort the ideas, then the letter's acts
+               (write the Overall Report · propose questions · add a data version, propose a segment · write the
+               advice, draft it · open the newest Job, add a Job), each with its run card's Copy prompt
+Book   Report  Questions (❓ Questions: the newest version's list, each marked new or kept · 🕸 Question map) ·
+               Ideas (📮 Ideas) · Versions (a section per version, 📜 question-vN and its words: its sign state,
+               what is new in it, its Segments, Open)
+Job    Report  Findings (📄 Overall Report · 🧷 This Job) · Changes (🔁 Changes, from the second Job) ·
+               Progress (🔲 Progress, marks only)          (Work: above)
+Task   Report  Answer (⚓ The answer · 🔲 By segment, or 🔗 What it cites for a question with no Run · 🎯 How sure) ·
+               Changes (🔁 Changes, across Jobs) · Method (📋 Needs: needs, may say, agreed)
        Work    the same letters; Process: the chain plan → agree → Runs → page → check → alignment, one verb live on
-               the next link · the next act per cut, propose a cut · track across Jobs · the plan's steps. No 🙋
+               the next link · the next act per segment, propose a segment · track across Jobs · the method's steps. No 🙋
 ```
 
 Hooks in `focus_page.py`: `insight_board_report` and `insight_views_for` (Board Work, Job Report, Task Report and Work),
@@ -150,7 +161,7 @@ The Runs panel
 --------------
 
 Each Space's buttons are the run cards whose `<Level> › <Space>` matches, shown in the views the card names. A button
-shows its Run's name (`run-add-j<NN>`, `rNN_<partition>`) with its words in small under it, and copies the card's
+shows its Run's name (`run-add-j<NN>`, `rNN_<segment>`) with its words in small under it, and copies the card's
 prompt with `{folder}` filled in. A button the shared frame also has keeps the frame's Run name (Add a topic:
 `run-draw-<sNN>`). The Guide's Runs (Add a method, Add a paper) are on every tab.
 
@@ -170,7 +181,7 @@ CHECK a page     4 · Check, the page's row ▸ "check it": tick "I read the pag
                  ✅ Pass, or ↩ Return with the reason. Writes the page's check: line (✅ <YYMMDD> · a person, or
                  ↩ <YYMMDD> · a person · <why>) and a pass of run-check-tNN (by: a person). A returned page counts
                  as not written: 3 · Write lists it under "Returned by CHECK" and its prompt asks for a rewrite.
-Sign the close   6 · Close, once every step before it is done: tick "I read what the close freezes", then Sign.
+Sign the close   6 · Close, once every step before it is done: tick "I read what it locks", then Sign.
                  Writes the Job face's state: closed and signed: ✅ <YYMMDD>, and a pass of run-close-jNN.
 ```
 

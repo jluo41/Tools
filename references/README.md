@@ -19,6 +19,7 @@ These entries are tracked as Git submodules so their upstream history stays sepa
   read-only `cli/anti_slop.py` adapter consume one selected reference after
   paragraph drafting; the references here remain independently updateable.
 - Tool libraries used as references: `tools/statsmodels`, `tools/dowhy`, `tools/causalml`, `tools/econml`, `tools/python-causality-handbook`, `tools/chatgpt-comparison-detection`.
+- Visual feedback tools: [`edithere`](edithere) (PolyForm Noncommercial 1.0.0, source-available; commercial use requires separate authorization). [Review and workbench mapping](edithere-review.md).
 
 Use this after cloning the parent repository:
 

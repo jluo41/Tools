@@ -17,7 +17,7 @@ screens, "on disk" under each, two pop-outs, then Guide › Method opened from t
 steps and method cards are read from `servers/workbench-paper/guide/method.md` and its `methods/`
 (and the Page Task's `guide.yaml` at Task level) at build time. Placeholders only.
 
-**Feeds:** `../reports/` q01_paper_ladder (and the open marks of q02, q03).
+**Feeds:** `../reports/` Q01 (and the open marks of q02, q03).
 
 
 Files

@@ -1,13 +1,13 @@
-"""A Design Method Book on the focus page (JL 261109: "we should have both designer block and design block, just like
-Workbench Insight"): the method's own Block, beside the Design Board that runs it, as the Insight Question Book sits
-beside its Board. Its views, in plain words, each answering one question:
+"""A Design Method Book on the focus page: the designer of one kind of thing (a message, a checklist), beside the Design Board that runs it,
+as the Insight Question Book sits beside its Board. It holds method types (M01 goal only, M02 overall performance …),
+side by side, and each type's signed versions. Its views, in plain words, each answering one question:
 
-    Method     what the newest release does, step by step (① See input … ⑤ Review whole)
-    Versions   each release: what it was cut from, what changed from the one before, who signed, which Jobs ran it
-    Ideas      the proposals the Board's Jobs and experiments sent back; the next release is cut from here
-    Scorecard  how each release did on the Boards it serves: pass rate, first try, and predicted vs observed
+    Method     what each method type does, step by step (① See input … ⑤ Review whole), in its newest version
+    Versions   each type's signed versions: what changed from the one before, who signed, which Jobs ran it
+    Ideas      the proposals the Board's Jobs and experiments sent back; a type's next version is cut from here
+    Scorecard  how each method did on the Boards it serves: pass rate, first try, and predicted vs observed
 
-then the shared MindMap and 🧭 Around the Work (the page adds both). Read-only; a release is signed by a person
+then the shared MindMap and 🧭 Around the Work (the page adds both). Read-only; a version is signed by a person
 through haipipe-design-method, never here.
 """
 from __future__ import annotations
@@ -23,10 +23,10 @@ BOOK_VIEWS = (("method", "Method"), ("versions", "Versions"), ("ideas", "Ideas")
 STEP_ORDER = ("① See input", "② Reason ideas", "③ Conduct process", "④ Review item", "⑤ Review whole")
 
 VIEW_SKILLS = {
-    "method": (("haipipe-design-method", "keeps each release's five steps, frozen once signed"),),
-    "versions": (("haipipe-design-method", "cuts the next release from a signed proposal"),),
+    "method": (("haipipe-design-method", "keeps each method type's five steps, frozen once signed"),),
+    "versions": (("haipipe-design-method", "cuts a type's next version from a signed proposal"),),
     "ideas": (("haipipe-design-method", "writes a proposal from a Job or an experiment"),),
-    "scorecard": (("haipipe-design-method", "scores each release from what the experiments returned"),),
+    "scorecard": (("haipipe-design-method", "scores each method from what the experiments returned"),),
 }
 
 
@@ -44,41 +44,57 @@ def _job_links(rel: dict, root: Path) -> str:
     return " · ".join(_link(j["path"], root, j["name"]) for j in rel["jobs"]) or "no Job yet"
 
 
+def _signed(rel: dict) -> bool:
+    return rel["signed"].startswith("✅")
+
+
 def _method(book: dict, folder: Path, root: Path) -> tuple:
-    rels = book["releases"]
-    if not rels:
-        return "", _big("No release yet", "next: cut the first release")
-    new = rels[-1]
-    big = _big(f'{new["id"]} is the newest release: {new["title"] or new["from"]}',
-               "signed" if new["signed"].startswith("✅") else "waits for your sign")
-    res = big + _section("🪜 The five steps", _steps_table(new), new["id"])
-    sees = "".join(f"<li>{esc(str(s))}</li>" for s in new["sees"])
-    res += _section("👀 What step ① sees", f"<ul>{sees}</ul>" if sees else "", f'{len(new["sees"])} parts')
-    res += _section("📄 The frozen recipe", pop(reader(new["path"] / "method.md", root), "method.md", "Open")
-                    + f' <span class=mut>cut from {esc(new["from"])}</span>' if (new["path"] / "method.md").is_file() else "",
-                    "frozen")
+    kinds = [k for k in book["types"] if k["releases"]]
+    if not kinds:
+        return "", _big("No method yet", "next: add the first method type")
+    names = " · ".join(f'{k["method"]} {k["title"]}'.strip() for k in kinds)
+    big = _big((f'The {book["channel"]} designer: ' if book["channel"] else "") + names,
+               "all signed" if all(_signed(r) for k in kinds for r in k["releases"]) else "waits for your sign")
+    tabs = []
+    for k in kinds:
+        new = k["releases"][-1]
+        sees = "".join(f"<li>{esc(str(s))}</li>" for s in new["sees"])
+        body = (_kv([("version", esc(new["version"])), ("signed", esc(new["signed"] or "not yet")),
+                     ("Jobs", _job_links(new, root)), ("face", _link(k["path"], root, k["name"]))])
+                + _steps_table(new) + (f"<p>Step ① sees</p><ul>{sees}</ul>" if sees else "")
+                + (pop(reader(new["card_path"], root), new["card_path"].name, "Open") if new["card_path"].is_file() else ""))
+        tabs.append((f'{k["method"]} {k["title"]}'.strip(), new["signed"] or new["state"], body))
+    res = big + _section("🪜 The five steps", _tabs("method", tabs), "")
+    rows = [(esc(f'{k["method"]} {k["title"]}'.strip()), esc(str(k["releases"][-1]["steps"].get(STEP_ORDER[0], "—"))))
+            for k in kinds]
+    res += _section("👀 What step ① sees", table(("method", "① See input"), rows), "")
+    from live import design as _design                       # the channel's own rules: the Guide's venue pack
+    rules = _design.venue_defaults(book["channel"]) if book["channel"] else {}
+    if rules:
+        res += _section("📏 The channel's rules", table(("rule", "the channel keeps"),
+                                                        [(esc(k), esc(v)) for k, v in rules.items()]), book["channel"])
     return "", res
 
 
 def _versions(book: dict, folder: Path, root: Path) -> tuple:
     rels = book["releases"]
-    signed = sum(r["signed"].startswith("✅") for r in rels)
-    big = _big(f'{len(rels)} release{"" if len(rels) == 1 else "s"}, {signed} signed' if rels else "No release yet",
-               "all signed" if rels and signed == len(rels) else "waits for your sign" if rels else "next: cut the first release")
-    tabs = []
-    for k, rel in reversed(list(enumerate(rels))):
-        before = rels[k - 1] if k else None
-        change = (", ".join(_changed(before, rel)) or "nothing in the steps") if before else "the first release"
-        body = _kv([("cut from", esc(rel["from"])), ("changed from " + (before["id"] if before else "—"), esc(change)),
-                    ("signed", esc(rel["signed"] or "not yet")), ("Jobs", _job_links(rel, root)),
-                    ("face", _link(rel["path"], root, rel["name"]))]) + _steps_table(rel)
-        tabs.append((rel["id"], rel["signed"] or rel["state"], body))
-    res = big + _section("🔖 The releases", _tabs("release", tabs), rels[-1]["id"] if rels else "")
-    rows = [(esc(f'{a["id"]} → {b["id"]}'), esc(", ".join(_changed(a, b)) or "nothing"),
-             "one step" if len(_changed(a, b)) == 1 else f'{len(_changed(a, b))} steps')
-            for a, b in zip(rels, rels[1:])]
-    res += _section("🧭 What changed between releases", table(("from → to", "steps that changed", "how much"), rows) if rows else "",
-                    "one step a release" if rows and all(len(_changed(a, b)) <= 1 for a, b in zip(rels, rels[1:])) else "")
+    waits = [r for r in rels if not _signed(r)]
+    big = _big("Every version is signed" if rels and not waits else
+               f'{len(waits)} version{"" if len(waits) == 1 else "s"} wait{"s" if len(waits) == 1 else ""} for your sign'
+               if rels else "No version yet", "all signed" if rels and not waits else "waits for your sign" if rels else "")
+    tabs, rows = [], []
+    for k in book["types"]:
+        mine = k["releases"]
+        for n, rel in reversed(list(enumerate(mine))):
+            before = mine[n - 1] if n else None
+            change = (", ".join(_changed(before, rel)) or "nothing in the steps") if before else "the first signed version"
+            body = _kv([("changed from " + (before["version"] if before else "—"), esc(change)),
+                        ("signed", esc(rel["signed"] or "not yet")), ("Jobs", _job_links(rel, root)),
+                        ("face", _link(rel["path"], root, rel["name"]))]) + _steps_table(rel)
+            tabs.append((rel["id"], rel["signed"] or rel["state"], body))
+        rows += [(esc(f'{a["id"]} → {b["version"]}'), esc(", ".join(_changed(a, b)) or "nothing")) for a, b in zip(mine, mine[1:])]
+    res = big + _section("🔖 The versions", _tabs("release", tabs), "")
+    res += _section("🧭 What changed between versions", table(("from → to", "steps that changed"), rows) if rows else "", "")
     return "", res
 
 
@@ -97,7 +113,7 @@ def _ideas(book: dict, folder: Path, root: Path) -> tuple:
                     ("file", pop(reader(p["path"], root), p["path"].name, "Open"))]) + f'<p>{esc(p["body"])}</p>'
         tabs.append((p["title"], "waiting for you" if p in waiting else p["state"], body))
     res = big + _section("💡 Proposals", _tabs("idea", tabs), f'{len(waiting)} wait{"s" if len(waiting) == 1 else ""} for you' if waiting else "")
-    rows = [(f'Sign or return the idea {esc(p["title"])}', "the next release is cut only when a person signs",
+    rows = [(f'Sign or return the idea {esc(p["title"])}', "the next version is cut only when a person signs",
              "waiting for you", pop(reader(p["path"], root), p["path"].name, "Open")) for p in waiting]
     rows.append(("Write a new idea", "from a Job's ranking or an experiment's scores", "open",
                  _copy("run-propose-method-<slug>", "Block", folder, root)))
@@ -122,9 +138,9 @@ def _scorecard(book: dict, folder: Path, root: Path) -> tuple:
                          esc(f'{len(sc)} designs' if sc else "not yet"),
                          esc(f'{sum(s.get("in_range") == "✓" for s in sc)} of {len(sc)}' if sc else "—")))
     big = _big(f"Tested on {tested_any} design{'' if tested_any == 1 else 's'}: a hint, not a verdict" if tested_any
-               else "No release tested yet", "few arms tested" if tested_any else "waits on an experiment")
-    res = big + _section("🏅 Each release, on the Boards it serves",
-                         table(("release", "Board", "Jobs", "pass rate", "first try", "tested", "in range"), rows) if rows else "",
+               else "No method tested yet", "few arms tested" if tested_any else "waits on an experiment")
+    res = big + _section("🏅 Each method, on the Boards it serves",
+                         table(("method", "Board", "Jobs", "pass rate", "first try", "tested", "in range"), rows) if rows else "",
                          "from the Boards' own scores")
     return "", res
 

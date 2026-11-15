@@ -22,7 +22,7 @@ built: from-topic .
   - Drawn with b04's helpers through b03's canvas … <!-- @source/1 #00c3d0 -->
     Drawn with b04's helpers through b03's canvas writer, so marks survive a rebuild.
 - Feeds <!-- @feeds #ffe8e9 -->
-  - `../reports/q01_base_map/` (answer drafted), and Q03's candidates <!-- @feeds/0 #fa3023 -->
+  - `q01_base_map/` (answer drafted), and Q03's candidates <!-- @feeds/0 #fa3023 -->
 - Files <!-- @files #6ce6c5 -->
   - [py] [build_s02_base_map.py](build_s02_base_map.py) <!-- @files/0 #c86832 -->
   - [py] [callmap.py](callmap.py) <!-- @files/1 #febe48 -->

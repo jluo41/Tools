@@ -1,0 +1,136 @@
+# 📊 Evidence & displays
+
+- Section evidence points to the Block-level records, never copies them.
+- A display shows under its citing sentence, only where it first prints.
+- Figure 1 stays minimal: construct boxes and two hypothesis arrows only.
+- **📜 The decisions**
+- **11-08 13:03** · Theory citations from econ and psychology
+  - Decided: theory papers go into this paper's own Citations Job `j03_evidence_cite`, drawn from economics and psychology, not into the GLP-1 paper.
+  - JL asked: "I think here we should have the theory for the Agreeable Discretion paper, please rethink about it. from econ and psychological, could you double check it?"
+  - Built: six CITE Runs created (Graziano 2007, Mischel and Shoda 1995, McGuire 2000, Arrow, Wennberg 2002, Borghans et al. 2008); Cutler et al. 2019 reused its existing CITE card
+  - Session: Main paper
+- **11-08 13:47** · Citation rows link to previews
+  - Decided: each citation row in the table carries links so JL can read the paper quickly.
+  - JL asked: "for these citation, how could I read the preview and webitse of them quicly? to say their content?"
+  - Built: citation table generator changed (details cut off in the log, unclear)
+  - Session: Main paper
+- **11-08 13:51** · Citation rows show title and abstract
+  - Decided: every citation row shows the full title and the paper's abstract.
+  - JL asked: "at least you show the paper's articile title and abstract, so we know what is the paper about."
+  - Built: new fetch Run collects abstracts once (OpenAlex, then Crossref, then Semantic Scholar); the table reads that Run's result
+  - Session: Main paper
+- **11-10 11:19** · Figure 1 boxes hold constructs
+  - Decided: Figure 1 boxes should hold the construct (and the statement); later narrowed to construct names only after the meeting.
+  - JL asked: "make the box to be the construct, and the statement."
+  - Built: AI started reading the source `scripts/figure.pptx`; outcome unclear
+  - Session: Main paper
+- **11-10 15:59** · Values and skills kept current
+  - Decided: update the value ledger too, and change the skills so values and citations stay updated.
+  - JL asked: "I think for the values, you should update it as well? please check /haipipe-paper-evidence ⏎ How do you think you can update the skills accoridngly…"
+  - Built: "no anchor" value rows now worded plainly instead of "its sentence moved"; rest unclear
+  - Session: Main paper
+- **11-10 16:19** · Update Figure 1 first
+  - Decided: Figure 1 is next: boxes are constructs not statements, arrows carry only H1 and H2, the mechanism moves to the Discussion.
+  - JL asked: "how to updaet the Figure 1? please check the commetns, please update the figure 1 first."
+  - Built: AI checked how the figure's Runs are generated; redraw outcome unclear
+  - Session: Main paper
+- **11-11 00:30** · Rule 6 stale-source change
+  - Decided: take the proposed rule-6 change: a source Task is stale only when a completed Run is newer than the newest Run the value Job reads.
+  - JL asked: "continue"
+  - Built: change made in `chain_check.py`
+  - Session: Workbench UI
+- **11-13 13:31** · Figure box says Clinical uncertainty
+  - Decided: keep "Clinical uncertainty" in the box (the meeting asked for that word); discretion is argued in the text.
+  - JL asked: "is this correct? should we say the Clinical Uncertainty or CLinical discretion?"
+  - Built: no change needed
+  - Session: Main paper
+- **11-13 19:02** · Show block-level displays in t04
+  - Decided: t04's Display view should show the figures and tables made by the Board-level Job j01_evidence_display.
+  - JL asked: "I think you should update the display, is that available in the blcok level?"
+  - Built: investigated; finished at 2026-11-14 01:43 (see below)
+  - Session: t04 Empirical strategy
+- **11-13 19:32** · Page evidence follows Block-level evidence
+  - Decided: the page's evidence should agree with the Block-level evidence; conflicts between the page records and the Board check get found.
+  - JL asked: "do we need this? how do you think this to the block level evidence??? … please rethink about this." then "I thikn there should be some conflicts, right?"
+  - Built: old evidence-items paths moved to `runs/_old/`; conflict check started
+  - Session: t00 Abstract
+- **11-13 19:40** · Evidence points to Block level
+  - Decided: Section evidence and display cards point to the Project's Block, never copy; the paper Board's j01, j02, j03 check them.
+  - JL asked: "so for the evidnece and display, they will borrow or point it to the block level content, rightt?"
+  - Built: proposal only (confirmation); t01 numbers matched b52 by hand
+  - Session: t01 Introduction
+- **11-13 22:50** · Check 226,999 is used throughout
+  - Decided: confirm the counts agree across the draft and bind 226,999 to a Board value if one exists.
+  - JL asked: "Draft Lab V2,2 why we have these differences? I think it should be 226,999? Are we consistent through the whole draft? … pelase go ahead adn do it."
+  - Built: both numbers found correct and consistent; Board value lookup started
+  - Session: t00 Abstract
+- **11-14 00:45** · Move misplaced number cards
+  - Decided: S23's 📊 cards belong to S33 (the 2.79 MME finding) and must move.
+  - JL asked: "the numbers here is not consistent with the abstract, how do you think I should be consistent with them?"
+  - Built: AI looked for the file that places them; fix unclear
+  - Session: t01 Introduction
+- **11-14 00:50** · Subagent and t00 verify the counts
+  - Decided: a subagent checks the review and physician counts, and the t01 session works with the t00 session on them ("3.9 million" is visits, not reviews).
+  - JL asked: "could you call a subagent to check whether these values are correct or not." and "AgreeableRx-t00_abstract <--- you may call it to work teogether with you"
+  - Built: subagent started; t00 session brought in; results not shown
+  - Session: t01 Introduction
+- **11-14 01:04** · Show the full figure float
+  - Decided: the Theory display shows the figure's full float with caption (its preview PDF), not the bare figure.
+  - JL asked: "please make the display to be full, I want the float version with the caption as well."
+  - Built: (unclear) session checked how the preview PDF renders; result not reported
+  - Session: t03 Theory
+- **11-14 01:19** · Find citations for S20 and S17
+  - Decided: search the literature for S20 first, then S17, in one search.
+  - JL asked: "[Image #3] plase do this work first." then "[Image #4] and also work on this."
+  - Built: Discovery Task t09_request_accommodation_orientation (b01.j01.t09) set up; search agent running
+  - Session: t02 Literature review
+- **11-14 01:24** · Figure 1 back to Ritu's version
+  - Decided: Figure 1 returns to r02 with the "clinical uncertainty" box Ritu named in the meeting, not r03 "Clinical discretion".
+  - JL asked: "is this what Ritu be okay with?" … "how about now? could I check it now?"
+  - Built: r02 available; switch on the page waits on the main paper session
+  - Session: t03 Theory
+- **11-14 01:28** · Figure 1 stays minimal
+  - Decided: Figure 1 has only the three boxes and H1 (+), H2 (+) labels, no mechanism or hypothesis text.
+  - JL asked: "so we don't add the mechenism. or the H1 H2 explanation, right?"
+  - Built: proposal only (confirmation of the r02 figure)
+  - Session: t03 Theory
+- **11-14 01:40** · Add displays and plan co-author edits
+  - Decided: show t04's 6 displays in Draft Lab and turn co-author comments into cards.
+  - JL asked: "please try to add the displays to the [Image #2] and then think about the coauthors' comments"
+  - Built: WorkBench-Paper-UI fixed Tools reading the README `label:` field; 8 co-author cards made
+  - Session: t04 Empirical strategy
+- **11-14 01:45** · Citations not linked to evidence
+  - Decided: rebind citations to the sentences they support and link papers to their Runs.
+  - JL asked: "[Image #6] the cusions here are not well linked to the evidences"
+  - Built: 35 citations rebound; next step linking 4 online-review papers to Runs in t08
+  - Session: t02 Literature review
+- **11-14 01:46** · Displays shown under their sentences
+  - Decided: displays appear in place under the sentence that cites them.
+  - JL asked: "no display... we wnat things like this."
+  - Built: Figure 2 under S6 and Table 1 under S55, confirmed in Chrome
+  - Session: t04 Empirical strategy
+- **11-14 01:52** · Readers never see LaTeX citations
+  - Decided: anything JL reads shows "(Butler et al. 1998)" style, never `\citep{...}`.
+  - JL asked: "for the citation, we agreed to not use the latex version, right?"
+  - Built: own comment reply fixed; the review card "Suggested" line reported to WorkBench-Paper-UI
+  - Session: t02 Literature review
+- **11-14 01:52** · Fix S18 citation and wording
+  - Decided: give Eddy 1984 a Discovery Run and fix the "definition stack" in S18.
+  - JL asked: "[Image #7] have we fixed this?"
+  - Built: (unclear) fix started with the Run; finish not reported
+  - Session: t02 Literature review
+- **11-14 02:01** · Verify a citation against its source
+  - Decided: verify against the paper itself; the citation supports the sentence; S42's Xu 2021 only partly supports it.
+  - JL asked: "I want you to double check this, whether this cititon support this or not."
+  - Built: checked against the abstract from Crossref
+  - Session: t02 Literature review
+- **11-14 02:28** · Close Comment 2; Figure 1 accepted
+  - Decided: Comment 2 is closed and Figure 1 is accepted.
+  - JL asked: "[Image #7] we can close it."
+  - Built: recorded on the Theory page
+  - Session: t03 Theory
+- **11-14 02:54** · A display shows only where first printed
+  - Decided: a table shows only in the Section where it first prints (Results), not in Discussion.
+  - JL asked: "No need, only need to show in first place, do you get it, that one should be in the rseults"
+  - Built: workbench code traced; t04 later reports this rule is in the Tools code
+  - Session: t06 Discussion

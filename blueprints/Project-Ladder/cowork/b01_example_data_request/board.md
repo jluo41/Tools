@@ -33,7 +33,7 @@ questions:
   title: What the partner office needs
   group: Needs
   question: What does the partner office need from us before it sends the extract?
-  report: reports/q01_partner_needs/q01_partner_needs.md
+  report: s02-q01-partner-needs/s02-q01-partner-needs.md
   work:
   - path: j01_data_access_request
     role: The request and the data owner's reply.
@@ -41,7 +41,7 @@ questions:
   title: The retention period
   group: Needs
   question: Which retention period does the data-use plan ask for?
-  report: reports/q02_retention_period/q02_retention_period.md
+  report: s03-q02-retention-period/s03-q02-retention-period.md
   work:
   - path: j02_review_board_amendment/t01_data_use_plan
     role: The plan, written in rounds.

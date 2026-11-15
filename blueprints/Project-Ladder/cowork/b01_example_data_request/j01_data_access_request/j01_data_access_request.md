@@ -8,6 +8,7 @@ next: chase the extract date if there is no word by 2026-11-12
 ticket: REQ-0001
 goal: The partner office sends the extract with every field on the request's list.
 close: The extract is in and the data analyst has checked its fields.
+emoji: 🔑
 
 ## Content
 

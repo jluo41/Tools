@@ -1,5 +1,6 @@
 b04 s01 · Skill folder changes
 ==============================
+view: findings
 
 **Stage:** explore
 
@@ -13,10 +14,34 @@ their fix, the checks, and the open choices per question.
 
 **Source:** every fact is read when the builder runs. "Before" is `git ls-tree` of Tools HEAD;
 "now" is the disk (layers, families and their SKILL.md counts, server folders); the check lines
-are the Checks sections of `../reports/q02_path_fix/` and `../reports/q03_merge_subjective_label/`;
+are the Checks sections of `../_old/reports/q02_path_fix/` and `../_old/reports/q03_merge_subjective_label/`;
 the question rows come from `../board.md`.
 
-**Feeds:** `reports/` q02_path_fix · q03_merge_subjective_label (and q01_skill_layers' choices).
+**Feeds:** Q02 · Q03 (and Q01' choices).
+
+
+Q01 · Answer
+------------
+
+**Question:** 
+
+**Answer (open):** not written yet.
+
+
+Q02 · Answer
+------------
+
+**Question:** 
+
+**Answer (open):** not written yet.
+
+
+Q03 · Answer
+------------
+
+**Question:** 
+
+**Answer (open):** not written yet.
 
 
 Files

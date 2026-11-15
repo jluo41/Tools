@@ -226,7 +226,7 @@ order, rows flat, the version word's source, the empty states, the headings rule
 
 ## The code change, named for its owner (not made here)
 
-design_b02_workbench owns `servers/workbench/focus_page.py`; this cell names the change and never edits it.
+design_b02_workbench owns `servers/workbench/page/focus_page.py`; this cell names the change and never edits it.
 
 1. **`render()`**: a work Block's Report becomes MindMap plus `report_type_views(folder, root)`; no standing, findings, answers or questions keys.
 2. **`report_type_views()`, new**: the Block's own sNN by `**Delivery type:**`, ordered by maker Job; each a delivery-rows view.

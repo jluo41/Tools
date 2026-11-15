@@ -15,7 +15,7 @@ s58 · Task UI: Work
 
 **Topic:** A Task's Work: each step's input, prompt and sign; one cell of the labeling 3 × 3, a labeling Task (one step, of six types) × Work (do), copied from the paper theme's (b16 j01; JL 261031: "please go ahead and update them"). Its drawing is haipipe-studio's five parts, drawn by `build_s58_task_ui_work.py` through j01's `labeling_ui_cells.py`; its Design is every view as the same full screen, lettered, settled one round each. Names are the public DICES-350 dataset's; no item text is drawn.
 
-**Feeds:** `reports/` q01_labeling_ladder
+**Feeds:** Q01
 
 
 Files

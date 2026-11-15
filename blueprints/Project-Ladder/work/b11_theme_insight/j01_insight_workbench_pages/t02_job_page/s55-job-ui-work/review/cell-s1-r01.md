@@ -4,7 +4,7 @@ Scores: A 7.6 not yet (Salience 4) · B 7.4 not yet (One job 6, Salience 4) · C
 
 Does each letter belong?
 - A Overall: belongs as "write the Overall Report", but its first box says "Waits on you: nothing" while D holds two 🙋 rows. The design intent "Work opens on what waits on the person" is not met.
-- B Grid: does not show a grid. It must be Report B's question × cut grid with a verb in each cell, or it should not carry the letter B.
+- B Grid: does not show a grid. It must be Report B's question × segment grid with a verb in each cell, or it should not carry the letter B.
 - C vs previous: belongs; needs state words and the right Run name (run-compare-j03, not run-compare-j01).
 - D The pair: holds the person's only two actions on a Job (sign the plan, close the Job), in the wrong order, on the last letter.
 

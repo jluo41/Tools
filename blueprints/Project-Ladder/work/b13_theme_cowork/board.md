@@ -75,7 +75,7 @@ questions:
   acceptance: Answered when each level names its folder and its six Spaces' content, and the Task
     question is decided, drawn in studio/.
   work: []
-  report: reports/q01_cowork_ladder/q01_cowork_ladder.md
+  report: s01-cowork-ladder/s01-cowork-ladder.md
 - id: Q02
   title: Where do waiting-on and drafts go?
   question: Today's Check Space shows Waiting on, Drafts and Reports; the six Spaces have no Check.
@@ -86,7 +86,7 @@ questions:
   acceptance: Answered when every one of today's Check Views has a place in the six Spaces, or a stated
     reason to keep one.
   work: []
-  report: reports/q02_waiting_and_drafts/q02_waiting_and_drafts.md
+  report: s32-cowork-element-ui/s32-cowork-element-ui.md
 - id: Q03
   title: What does a cowork Block deliver?
   question: What does a cowork Job or Block release (a sent email, a signed decision, a done Job),
@@ -96,7 +96,7 @@ questions:
   acceptance: Answered when Delivery at each level is either empty with a reason or names what it
     holds.
   work: []
-  report: reports/q03_cowork_delivery/q03_cowork_delivery.md
+  report: s32-cowork-element-ui/s32-cowork-element-ui.md
 ```
 
 ## Related resources

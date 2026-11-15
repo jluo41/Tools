@@ -9,7 +9,7 @@ s51 · The console runtime
 
 **Topic:** How the console runs: standalone, embedded in a HAI-Chat thread, and on the fixtures; every INLAB_* setting and who reads it; and the image's contents checked against what `main.py` imports (four routers missing) (261009, g01).
 
-**Feeds:** `reports/` q01_console_vs_toolkit
+**Feeds:** Q01
 
 
 Files

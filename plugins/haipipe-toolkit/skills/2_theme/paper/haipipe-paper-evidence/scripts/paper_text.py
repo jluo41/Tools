@@ -4,7 +4,7 @@ cite_tasks.py (j03_evidence_cite); it reads only and writes nothing.
 
 Two page shapes, one reader (haipipe-paper-evidence 0.7.0, JL 261103: "how do you think you can unify them together"):
 
-    draft      the newest `draft/<section>-draft-v*.md`, its `## 3 · Draft` lines `- B<n> · S<id> · <sentence>`;
+    draft      the newest `draft/<section>-draft-v*.md`, its `## 3 · Draft` lines `- B<n> · s<id> · <sentence>`;
                a sentence's id is its S id without the S (`5`, `5a`), as evidence cards write `for:`
     content    the Section page's `## Content`, one sentence per `<!-- realizes: <id> -->` line (id as written); a line
                with no marker is split into sentences, each `<paragraph>.<k>` (`C1.P1.2`)
@@ -25,7 +25,7 @@ from urllib.parse import quote
 
 TASK = re.compile(r"^t(\d+)_")
 WRITING = re.compile(r"^j\d+_(?:writing_)?v\d")
-DRAFT_LINE = re.compile(r"^- B\w+ · S(\d+[a-z]*) · (.*)$", re.M)
+DRAFT_LINE = re.compile(r"^- B\w+ · [Ss](\d+[a-z]*) · (.*)$", re.M)   # an older S8 reads as s8
 REALIZES = re.compile(r"<!--\s*realizes:\s*([^ ]+?)\s*-->")
 
 
@@ -93,7 +93,7 @@ def sections(job: Path) -> list[Path]:
 
 # ── sentences ───────────────────────────────────────────────────────────────────────────────────────────────────────
 def draft_sentences(section: Path) -> tuple[dict, str]:
-    """S id (no S) → sentence, from the newest draft's `## <n> · Draft`; ({}, '') when there is none."""
+    """sentence id (no s) → sentence, from the newest draft's `## <n> · Draft`; ({}, '') when there is none."""
     drafts = sorted(section.glob(f"draft/{section.name}-draft-v*.md"),
                     key=lambda p: [int(x) for x in re.findall(r"\d+", p.name.rsplit("-v", 1)[1])])
     if not drafts:

@@ -23,12 +23,12 @@ must do. Named `s21-insight-run-skill`, as the paper's is `s21-paper-run-skill`.
 - the skills in `skills/2_theme/insight/` (version, callers, how often each still writes a plan-C-retired name)
 - the base skills insight borrows, found by name; the agents, checked on disk
 - the Runs in the Project insight folders (`tasks/b5*_dikw`, `insights/*-InsightBoard`), counted by type and
-  DIKW level; no Board, dataset or partition name is drawn
+  DIKW level; no Board, dataset or segment name is drawn
 
-Typed, since they are the proposal: the Prototype Block's run types (no level drawing shows that Block yet), each
+Typed, since they are the proposal: the Question Book Block's run types (no level drawing shows that Block yet), each
 skill's job and its plan-C change, the owner and name of a run type with no table row, and the plan.
 
-**Feeds:** `../reports/q01_insight_ladder/` (run types per level) and the proposed Q06 (the Prototype and data
+**Feeds:** `../Q01 (run types per level) and the proposed Q06 (the Question Book and data
 versions).
 
 
@@ -51,10 +51,10 @@ What the drawing holds
 ----------------------
 
 ```text
-Runs by level          Prototype (typed) · Block · Job · Task: Run · button · Space › view · today · who does it ·
+Runs by level          Question Book (typed) · Block · Job · Task: Run · button · Space › view · today · who does it ·
                        who checks · skill; then today's table rows no level screen shows
 one Job, in order      open a version → ask · plan · script → sign → add a data version → add a Job → run the
-                       partitions → write · check pages → read across Jobs → counsel · handoff; proposals loop back
+                       segments → write · check pages → read across Jobs → counsel · handoff; proposals loop back
 the skills             the 13 insight skills (owns · Runs that use it · old names · under plan C), the borrowed
                        base skills, the agents
 skill folders          before → after: today's tree beside the proposed one, one row per changed file
@@ -71,10 +71,10 @@ skill update plan      six phases: each skill, what it learns, the run types it 
 Decided (261007)
 ----------------
 
-1. The Prototype Block's run types are typed here: Take the proposals, Open a version, Ask, Review the questions,
-   Plan the evidence, Review the evidence plan, Set the cuts, Write the script, Review the script, Draw the question
+1. The Question Book Block's run types are typed here: Take the proposals, Open a version, Ask, Review the questions,
+   Plan the evidence, Review the evidence plan, Set the segments, Write the script, Review the script, Draw the question
    map, Sign a release, Carry a board over.
-2. A cut is set in the release (Set the cuts, haipipe-insight); the Board only proposes one (Propose a cut), with
+2. A segment is set in the release (Set the segments, haipipe-insight); the Board only proposes one (Propose a segment), with
    the s11 session. No new `haipipe-insight-partition` skill.
 3. `haipipe-insight-bind` has no ladder Run: it stays for register boards and retires with the last one.
 4. A run type with no table row gets its owner (the skill whose folder it writes) and its `run-<type>-<target>`
@@ -93,7 +93,7 @@ Decided (261007)
 Open (another owner)
 --------------------
 
-- The Prototype Block has no level drawing: a session drawing it (as s11 · s12 · s13 do) should show these buttons.
+- The Question Book Block has no level drawing: a session drawing it (as s11 · s12 · s13 do) should show these buttons.
 
 (write here, or mark the drawing in red)
 

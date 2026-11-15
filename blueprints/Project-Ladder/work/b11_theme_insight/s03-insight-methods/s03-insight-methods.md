@@ -62,7 +62,7 @@ What the drawing holds
                             -> insightboard._render_methods -> Guide › Method, Related Paper;
                             red: no card reaches a question's run
 3 · Today                   today's Insight workbench: Guide › Method, Guide › Related Paper,
-                            Insight › <partition>; "on disk" under each; the pop-outs
+                            Insight › <segment>; "on disk" under each; the pop-outs
 4 · The sixteen cards       each card's move, reads, returns, tests, source and named skill
 5 · the logic tree          guide/method.md -> family -> skill (with its cards) -> the code
                             that runs or checks it, with the tests on each arrow
@@ -83,7 +83,7 @@ What it found (261007)
    but `question.md` has no field for it, and nothing names an answering or reading method.
 4. 7 of the 16 cards name a skill that has no folder yet (`haipipe-insight-by-<method>`).
 5. T7 (robustness) and T8 (replication) have no code. `rivals` is a plan field only, and the
-   POOL · SPLIT verdict of By heterogeneity is described only in `ref/partition.md`.
+   POOL · SPLIT verdict of By heterogeneity is described only in `ref/segment.md`.
 
 
 Proposed (261007)
@@ -92,7 +92,7 @@ Proposed (261007)
 The proposed screens are one topic per level (JL 261007: "s11, s12, s13 ... instead of nesting all
 the things together"): `../s11-block-level/`, `../s12-job-level/`, `../s13-task-level/`. In short,
 each question names its three methods in its plan (Task), each row carries them as chips under its
-D · I · K · W heading with the partitions as the third row (Block and Job › Work Details), and a
+D · I · K · W heading with the segments as the third row (Block and Job › Work Details), and a
 Job lists the cards that fit its level. The screen helpers and the card reader are shared in
 `../_build/insight_ui.py`.
 

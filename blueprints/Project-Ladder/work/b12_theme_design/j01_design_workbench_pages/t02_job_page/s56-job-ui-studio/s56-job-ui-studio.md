@@ -15,7 +15,7 @@ s56 · Job UI: Studio
 
 **Topic:** The Job's Studio (think); one cell of the design 3 × 3, copied from the labeling theme's (b15 j01), itself copied from the paper theme's (b16 j01; JL 261101: "How about you to udpate the theme_design?"). Its drawing is haipipe-studio's five parts, drawn by `build_s56_job_ui_studio.py` through j01's `design_ui_cells.py`; its Design is every view as the same full screen, lettered, settled one round each. Names are the Block's folder names; no design text is drawn.
 
-**Feeds:** `reports/` q02_design_workbench
+**Feeds:** Q02
 
 
 Files

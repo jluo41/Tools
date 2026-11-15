@@ -4,7 +4,7 @@ haipipe-interaction · Changelog
 0.12.0 · 2026-11-06 · every Board kind names its topic
 
 - A `for:` address may start with a named Board's folder, not only `bNN` or `Paper-<name>`: an insight Board
-  (`Insight-X-s01`), its Prototype (`Prototype-b91-X-s01`) or a design Block (`Design-X.j01-s02`) (`NAMED`, `TOPIC`;
+  (`Insight-X-s01`), its Question Book (`Prototype-b91-X-s01`) or a design Block (`Design-X.j01-s02`) (`NAMED`, `TOPIC`;
   `run_chain` anchors on them too). Before, no form could be made on an insight or design example.
 
 0.11.1 · 2026-11-06 · headers in words
@@ -371,7 +371,7 @@ clarification and reviews; the question-and-answer form is its first and only ki
   - a badge on the Work row the interaction holds up;
   - the map's 🙋;
   - a badge on the Studio card it is about (the coordinator session's part).
-  Every entry opens the one form URL, so state is shared. See SKILL.md "Where it shows" and `servers/workbench/focus_page.py`.
+  Every entry opens the one form URL, so state is shared. See SKILL.md "Where it shows" and `servers/workbench/page/focus_page.py`.
 - **Rebuilt and swept**: b17's r01 was rebuilt, and its card says `skill: haipipe-interaction`.
   haipipe-run, haipipe-project's ladder audit, `focus_page.py`, the workbench README and the b17 faces name the new
   skill. b35's r01 is the coordinator session's.

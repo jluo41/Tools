@@ -55,7 +55,7 @@ The "before": the Task workbench as built, one Task Block, four Spaces; s01's la
 - [moved] Design lives with its theme's Block <!-- n32 -->
   - [from] Moved from the server's own studio/ (261007) <!-- n33 -->
   - [served] Shown in Guide › RoadMap Draw, view only <!-- n34 -->
-    Its path is `TASK_DESIGN` in `plugins/haipipe-toolkit/servers/workbench/guide_families.py`.
+    Its path is `TASK_DESIGN` in `plugins/haipipe-toolkit/servers/workbench/guide/guide_families.py`.
   - [code] question_map.py stays: it is server code <!-- n35 -->
 - [files] What the folder holds <!-- @files #6ce6c5 -->
   - [md] [plan-insight-style-261003.md](plan-insight-style-261003.md) <!-- @files/0 #ba7cda -->

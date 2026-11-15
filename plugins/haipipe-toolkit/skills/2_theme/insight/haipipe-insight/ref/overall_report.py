@@ -1,9 +1,9 @@
 """overall_report.py <Board Job> [--no-pdf]
 
-The Job's Overall Report in print (JL 261012: the high-level questions "also become the one-page PDF"; "before
-the Full, we should have a Overall Report"): page 1, its Executive questions (X01, X02, ...) each with its answer and
-how sure, read from the Job's Task faces and the release's question.md; page 2, each question's figure (JL 261013:
-"figures to show it to quickly get the outcome"), drawn by overall_figures.py from the `figures:` its page names. The
+The Job's Overall Report in print (the Executive answers as a one-page PDF, read before the Full
+report): page 1, its Executive questions (X01, X02, ...) each with its answer and
+how sure, read from the Job's Task faces and the release's question.md; page 2, each question's figure (a figure gives
+each outcome at a glance), drawn by overall_figures.py from the `figures:` its page names. The
 workbench reads the same answers in full, figures beside them, as the Audience Report's Overall Report button. It
 writes the Board's delivery part for the Job, never the Job itself:
 
@@ -105,7 +105,7 @@ def summary(job: Path, figs: dict | None = None) -> tuple[str, list]:
     job = Path(job).resolve()
     board = job.parent
     if not JOB.match(job.name):
-        raise SystemExit(f"{job.name} is not a Board Job (jNN_code-vN-<slug>_data-vM)")
+        raise SystemExit(f"{job.name} is not a Board Job (jNN_question-vN-<slug>_data-vM)")
     jface, _ = RQ.front(job / f"{job.name}.md")
     bface, _ = RQ.front(board / "board.md")
     proto = board.parent.parent / str(jface.get("prototype", ""))

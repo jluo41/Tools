@@ -55,7 +55,7 @@ command, which then rebuilds the canvas:
 ```text
 .venv/bin/python <this skill>/ref/section_canvas.py sync <face.md> [--dry]
 a sentence typed over          → §3 of the Draft, by its address; logged before → after
-a note, box, arrow or line     → draft/records/<stem>-feedback.md as "- [ ] a red arrow from S7 (C2.P4.B1) to S11 …"
+a note, box, arrow or line     → draft/records/<stem>-feedback.md as "- [ ] a red arrow from s7 (C2.P4.B1) to s11 …"
 ```
 
 A mark is recorded once (it keeps `recorded:` on the canvas) and stays where you drew it. An edit whose sentence

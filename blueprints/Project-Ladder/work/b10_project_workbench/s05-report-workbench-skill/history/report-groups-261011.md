@@ -12,7 +12,7 @@ groups its Questions, in every theme.
 
 **Topic:** how a Report groups its Questions, theme by theme. Today every Block of every theme shows
 the paper Board's four buttons, Ideation · Narrative · High-level logic + Low-level work · Related
-Questions (`AUDIENCE_VIEWS`, servers/workbench/frame.py, since 261009), and two of them list studio
+Questions (`AUDIENCE_VIEWS`, servers/workbench/page/frame.py, since 261009), and two of them list studio
 topics, not Questions. JL 261011, on a screenshot of b10's Report: "for the Report, definitely, the
 groups should not be design in this way ... these group names should be predefined and also can be
 added if we want? ... I think for the groups in the report, this will be an very important question
@@ -61,7 +61,7 @@ reads the same off the disk on every build.
 ```text
 skills/1_base/project/haipipe-report/   the register: a Question's group: line
 skills/1_base/project/haipipe-report/      the Report (s05)
-servers/workbench/frame.py                 question_rows · group_list · studio_group_op
+servers/workbench/page/frame.py                 question_rows · group_list · studio_group_op
                                            AUDIENCE_VIEWS · WHO_ASKS, the four buttons today
 servers/workbench-<theme>/<theme>_theme.py each theme's Report row today; its starting groups
 ```
@@ -106,7 +106,7 @@ and the real Boards:
    asleep · cross, one cut at a time; row 3 the readings, Coverage · Tracks · Consistency · Findings; the
    body folds by Data · Information · Knowledge · Wisdom, read off each Question's id (release p2: 20
    Questions, D 6 · I 6 · K 6 · W 2). A Job: the partitions, then Current · vs previous; a Task: Table ·
-   Reading. Its board.md register is empty: the Questions live in the Prototype's release (release.yaml,
+   Reading. Its board.md register is empty: the Questions live in the Question Book's release (release.yaml,
    one question.md each). No `group:` anywhere.
 5. Insight's subjects cut across its levels: sleep (I03 · K04 · K05), walking (I04 · K02), stress and
    heart (I05 · K03), events (D05 · I06 · K06), glucose control (I01 · I02 · K01).
@@ -184,7 +184,7 @@ s07-D08 · Proposed (JL 261011): a theme may also predefine **standing Questions
     changed since the last send?, J5 a revision only; `STANDING` in paper_theme.py). This is where "what
     are the typical questions to ask" (JL 261011, to the sNN session) gets each theme's answer.
 
-s07-D09 · Built 261011 in servers/workbench/frame.py (workbench 1.19.0). `report_view` draws each Question as
+s07-D09 · Built 261011 in servers/workbench/page/frame.py (workbench 1.19.0). `report_view` draws each Question as
     a folding card, as a Studio topic is (⋮⋮ · its id and title · its chips · state and work · Add to
     Current), opened on its Logic │ Work │ Report row, under `group_list(kind="reports")`; the vanilla
     Report has no second row any more. `_question_records` reads the register once for the cards and for
@@ -220,8 +220,8 @@ Open
    its **Feeds:** line (q00_ to q06_), so Research questions are the Questions it feeds, read by id; a
    research question needs no group line, and `nmi-cgm-scaling-axes` keeps working unedited. b16 s05
    Open 5 asks which name the screen keeps, RQ0 or Q00 (JL's choice).
-7. An insight subject group (Sleep): in each question.md's front matter in the Prototype, so every
-   Board of that Prototype shares it?
+7. An insight subject group (Sleep): in each question.md's front matter in the Question Book, so every
+   Board of that Question Book shares it?
 8. A paper's research questions have two names, RQ0 to RQ6 in the Story and Q00 to Q06 in the
    register: which one does the screen keep (b16 s05 Open 5, JL's choice)?
 

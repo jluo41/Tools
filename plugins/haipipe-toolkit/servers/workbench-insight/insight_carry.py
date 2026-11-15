@@ -1,15 +1,15 @@
 """Today's register board read as plan C (b11 s11 · s12 · s13, 261007): nothing is moved or copied.
 
 A register board (insights/<board>/: 0-MT-meta/ with MT00 and the MT01-MT04 registers, one folder per
-partition holding its answering pages) gets one carried Job, `j01_p1_<dataset><vM>/`, and one Task per
+segment holding its answering pages) gets one carried Job, `j01_p1_<dataset><vM>/`, and one Task per
 registered question, `tNN_<L><NN>_<slug>/`, written by carry_today.py. Their faces hold pointers only
 (`carried: today`, `question: QD1`); everything shown is read live from today's folders by the old page's
 reader (insightboard.board_snapshot):
 
-    the Prototype, release p1   the MT01-MT04 registers (the questions) and the work Block whose Tasks
-                                hold the scripts; the cuts from MT00
+    the Question Book, release p1   the MT01-MT04 registers (the questions) and the work Block whose Tasks
+                                hold the scripts; the segments from MT00
     the dataset, version vM     the extract MT00 names (`20250616_<dataset><vM>_…`)
-    a Task's hard Run per cut   the question's cell on that partition: its tickets, its answering page
+    a Task's hard Run per segment   the question's cell on that partition: its tickets, its answering page
     a Task's soft Runs          the page runs beside each cell (runs/run-<type>-….md)
     the Board's handoff         the signed Wisdom answers
 
@@ -28,10 +28,6 @@ from live import insightboard as IB
 MARK = {"✅": "✅ answered", "🟡": "🟡 partial", "🚫": "refused"}
 _CACHE: dict = {}
 TTL = 120.0   # a cold read of a large board takes seconds; answers change slowly
-
-
-def is_carried(block: Path) -> bool:
-    return any(P.front(j / f"{j.name}.md").get("carried") for j in _jobs(block))
 
 
 def _jobs(block: Path) -> list:
@@ -84,7 +80,7 @@ def dataset_version(snap: dict) -> tuple:
 
 
 def prototype(block: Path) -> dict:
-    """Release p1: today's questions (the registers), the cuts (MT00), the scripts' work Block."""
+    """Release p1: today's questions (the registers), the segments (MT00), the scripts' work Block."""
     snap = snapshot(block)
     notes = IB.question_notes(snap)
     tasks = [Path(r["task_path"]) for r in IB.work_runs(snap) if r.get("task_path")]
@@ -104,7 +100,7 @@ def prototype(block: Path) -> dict:
     names = [part_name(snap, p["id"]) for p in snap["partitions"] if p["id"] != IB.CROSS]
     parts = [{"name": part_name(snap, p["id"]), "where": p["where"] or "",
               "why": " · ".join(x for x in (f'{p["rows"]} rows' if p["rows"] else "", p["share"] or "") if x)}
-             if p["id"] != IB.CROSS else {"name": "cross", "of": names, "why": "compares the cuts"}
+             if p["id"] != IB.CROSS else {"name": "cross", "of": names, "why": "compares the segments"}
              for p in snap["partitions"]]
     rel = {"name": "p1", "job": path, "face": {"state": "today's questions, not yet versioned", "signed": ""},
            "questions": qs, "partitions": parts, "thresholds": {}}
@@ -112,7 +108,7 @@ def prototype(block: Path) -> dict:
 
 
 def _hard(snap: dict, block: Path, q: dict) -> list:
-    """One hard Run per cut the question is asked on: its tickets, its answering page."""
+    """One hard Run per segment the question is asked on: its tickets, its answering page."""
     from live.insight_theme import _cell_runs
     answered = IB._answered_by(snap)
     rows = {p["id"]: p for p in snap["partitions"]}

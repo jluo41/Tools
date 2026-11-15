@@ -182,7 +182,7 @@ Caption: "What it must hand over, ticked from the disk." (today's `VIEW_WORDS["d
   view-button-list, goal-line, view-caption, both rails) and the right rail's sections: Interactions (the inbox),
   Delivery, Timeline, Files.
 - **haipipe-interaction**: the forms themselves, `collect.py bundle` (Answer all) and the applied flags.
-- **design_b02_workbench**, the code's owner: the change in `servers/workbench/focus_page.py`, never made here:
+- **design_b02_workbench**, the code's owner: the change in `servers/workbench/page/focus_page.py`, never made here:
   1. `render()`: at a Job, Work's first view becomes `("tasks", "Tasks", ...)` in place of `("progress", "Progress",
      ...)`; add `"runs"` only on Q1 B; keep `"deliverables"` only on Q2 B; `VIEW_WORDS["tasks"]` holds the caption.
   2. `status_html(folder, root, "Job", ...)`: order the rows by the face's `## Tasks` (a helper reading the lines

@@ -34,7 +34,7 @@ questions:
   acceptance: Answered when each shared piece has one owner and the other side imports
     or reads it.
   work: []
-  report: reports/q01_ownership/q01_ownership.md
+  report: s01-two-modes-map/s01-two-modes-map.md
 - id: Q02
   title: How is the plugin tested?
   question: 'inlab-human has no tests: what should a suite cover across the study,
@@ -45,5 +45,4 @@ questions:
   acceptance: Answered when one command runs a suite over all three parts on synthetic
     data and it fails on a broken bundle, a premature reveal and a payload change.
   work: []
-  report: reports/q02_plugin_tests/q02_plugin_tests.md
 ```

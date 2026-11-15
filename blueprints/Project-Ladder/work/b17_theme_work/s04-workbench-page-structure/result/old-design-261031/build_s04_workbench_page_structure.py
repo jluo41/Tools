@@ -18,7 +18,7 @@ import five_parts  # noqa: E402
 
 BLOCK = HERE.parent
 WB = TOOLS / "plugins/haipipe-toolkit/servers/workbench"
-_fp = (WB / "focus_page.py").read_text(encoding="utf-8")
+_fp = (WB / "page" / "focus_page.py").read_text(encoding="utf-8")
 RAIL = re.findall(r'rail\.append\(\("\w+", "([^"]+)", ""\)\)', _fp)          # the right rail, in its order
 JOBS = sorted(BLOCK.glob("j[0-9]*_*"))
 J03 = BLOCK / "j03_work_workbench_pages"
@@ -54,7 +54,7 @@ SPEC = {
                  ("page", "ui/task-page", "the work Task page: Report, Work, Studio (s57 · s58 · s59)",
                   (HERE / "delivery/ui/task-page").exists())]},
     "job": J03,
-    "target": "servers/workbench/focus_page.py (design_b02_workbench)",
+    "target": "servers/workbench/page/focus_page.py (design_b02_workbench)",
     "missing": [(f"ui/{n}", "the agreed screen draft, not drawn yet") for n in ("block-page", "job-page", "task-page")
                 if not (HERE / "delivery/ui" / n).exists()],
 }

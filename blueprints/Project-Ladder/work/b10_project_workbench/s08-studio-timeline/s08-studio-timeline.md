@@ -16,7 +16,7 @@ section of the Timeline"), then: "I want it to be a real timelne, and make it ve
 timeline with a axis down", "it should also be up to done [down]", "we can show different level of
 details", "We should create a new sNN for it, and show the UI".
 
-**Feeds:** `reports/` q09_studio_report_on_screen
+**Feeds:** Q09
 
 
 What it shows
@@ -49,7 +49,7 @@ Everything         decided  s04-D07 Related uses the Studio's group bar …
 It writes nothing. It reads what a topic already keeps: each decision `sNN-DNN · … (JL 261011)` by the first
 date in it, each session `runs/run-draw-<sNN>/passes/pNN-<MMDD>/` (the year from its notes), and the green
 change notes `✎ <YYMMDD> …` in the topic's drawings. Decisions with no date are left off.
-Code: `servers/workbench/frame.py` `timeline_events`, `studio_timeline` and the page script's `timeline()`.
+Code: `servers/workbench/page/frame.py` `timeline_events`, `studio_timeline` and the page script's `timeline()`.
 
 
 Files

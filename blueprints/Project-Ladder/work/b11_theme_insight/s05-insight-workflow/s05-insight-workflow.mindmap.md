@@ -24,9 +24,9 @@ built: from-topic .
   - one map of how a question travels, … <!-- @topic/0 #996ab7 -->
     one map of how a question travels, as b15 s03 draws labeling's complete workflow (JL 261101: "we should have a studio to understand what is the overall workflow").
   - Insight answers what one dataset can and … <!-- @topic/1 #7f87a2 -->
-    Insight answers what one dataset can and cannot say on two clocks: the plan moves in the Prototype, the data moves on the Board, and each Job pins one of each.
+    Insight answers what one dataset can and cannot say on two clocks: the plan moves in the Question Book, the data moves on the Board, and each Job pins one of each.
   - Agents plan, run, write and check; a … <!-- @topic/2 #bf3276 -->
-    Agents plan, run, write and check; a person sets the cuts and signs the plan, closes each Job and signs the handoff.
+    Agents plan, run, write and check; a person sets the segments and signs the plan, closes each Job and signs the handoff.
   - Each card names its Runs and the … <!-- @topic/3 #f4ba65 -->
     Each card names its Runs and the 3 × 3 screen it lives on, so the map also reads the UI: a step with no screen shows.
   - The steps are haipipe-insight ref/insight-ladder.md's rules and … <!-- @topic/4 #f53552 -->
@@ -48,7 +48,7 @@ built: from-topic .
     (none yet: a decision is one line, s05-D01 · <what was decided> (<who> <date>))
 - Open <!-- @open #cf9b77 -->
   - ? <!-- @open/0 #2858b7 -->
-    ? Steps 02 and 03 (ask a question, plan and agree its evidence) live in the Prototype: the Task screens show the plan, but no Board or Job screen asks for one. A Prototype page, or a Plan view on the Job?
+    ? Steps 02 and 03 (ask a question, plan and agree its evidence) live in the Question Book: the Task screens show the plan, but no Board or Job screen asks for one. A Question Book page, or a Plan view on the Job?
   - ? <!-- @open/1 #003e1c -->
     ? Step 14's Board questions (run-ask-qNN, run-report-qNN) have no Board Work row yet.
   - ? <!-- @open/2 #95df58 -->

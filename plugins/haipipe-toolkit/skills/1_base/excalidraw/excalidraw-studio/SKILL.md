@@ -5,11 +5,12 @@ description: >-
   map or a mind map inside; the frames as one story, in acts, joined by named arrows; a folder tree only for
   real folders; big words and one slight colour for the key point; each frame's density measured; few words
   in a workflow, fewest small ones; room between boxes; vivid, never a wall of text), the look
-  (black, red open, green a change, Nunito, names no one), the shapes that keep their own rules (screens,
+  (the five-part drawing, the default since 261112: icons, coloured tables, stickies; black, red open, green a
+  change for the draw.py drawings; Nunito, names no one), the shapes that keep their own rules (screens,
   s00, reports, slides), and one set of drawing helpers every builder imports (scripts/draw.py). Use before
   drawing or redrawing any sNN topic, to check a drawing against the principles, or to pick a pattern (mind
   map, flow, acts, folder tree, a checked picture). Loaded by /haipipe-studio before it draws or redraws a
-  topic; its new builders start on draw.py. The topic folder, face, numbering, sessions and the writer that
+  topic; its new builders start on five_parts.py (draw.py for a special shape). The topic folder, face, numbering, sessions and the writer that
   keeps a person's marks stay haipipe-studio's. Trigger: studio drawing, draw a topic, redraw, too many
   frames, low density, mind map, workflow map, acts, named arrows, key point, folder tree, /excalidraw-studio.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
@@ -39,9 +40,10 @@ Read the principles, pick the patterns, draw with `scripts/draw.py`, write throu
 `canvas.write` (via `Drawing.write`), check the frame badges, rebuild until every check passes.
 
 **With /haipipe-studio** (linked 261012): haipipe-studio makes the topic (`new_topic.py topic`), keeps its face and
-saves its sessions; before it draws or redraws, it loads this skill. `new_topic.py --builder` writes a builder
-already on `draw.py` (a frame, its key point, a workflow map, the density badge, an act); `check.py` comes after
-every rebuild.
+saves its sessions; before it draws or redraws, it loads this skill. `new_topic.py --builder` writes the five-part
+drawing's builder on `five_parts.py` and its `sketch_<topic>.py` (A · B · C stubs), the default for every kind of
+topic (JL 261112: "I want the vivid ones"); `--builder draw` writes one on `draw.py` (a frame, its key point, a
+workflow map, the density badge, an act) for a special shape. `check.py` comes after every rebuild.
 
 ```text
 /haipipe-studio  new_topic.py topic ─▶ /excalidraw-studio  principles · draw.py ─▶ builder ─▶ check.py
@@ -107,6 +109,10 @@ The principles
 The look
 --------
 
+The five-part drawing (§ The five parts) has its own look: icons, coloured data tables, stickies, red question
+stickies and orange leanings. The rules below are the look of the draw.py drawings: the special shapes and the
+topics drawn before 261112, which stay as they are until someone redraws them.
+
 1. **Colours**: black lines and words; red for an open point (❓) or a missing check; green for a change
    note where it changed (`canvas.change_note`); the one slight colour of ⑤ for a key point, nothing else.
 2. **Font**: Nunito for words, Cascadia for paths and code; never a handwritten font.
@@ -167,14 +173,17 @@ the topic's Job, each Task and each Run with its status, agent and skill from it
 
 How to build it (found by a fresh agent's test, 261031):
 
-- **Start by copying an example builder**: `new_topic.py --builder` still starts an old `draw.py` builder, so copy
-  the example's `build_sNN_<topic>.py` (its header, `SPEC`, `design()`) and put each sketch in its own
-  `sketch_<what>.py` beside it, a function `(x, y) -> (els, y_bottom)`. Import five_parts by its absolute path, as the
-  example does (`STUDIO = Path(".../haipipe-studio")`).
-- **Its look is five_parts', not the principles'**: inside a five-part Design the coloured fills, the 12-15 px table
-  text and `quick_draw.write` are right; ①-⑨ and `check.py` judge framed drawings and say "0 frames, nothing to
-  judge" here. Judge it by rendering it and reading it as a newcomer.
-- **No marks kept**: `five_parts.build` rewrites the drawing; a person's edits go into the builder, never the canvas.
+- **Start from `new_topic.py --builder`**: it writes `build_sNN_<topic>.py` (its header, `SPEC`, `design()`) and
+  `sketch_<topic>.py` beside it, three functions `(x, y) -> (els, y_bottom)`: `sketch_a` the pieces step by step,
+  `sketch_b` how it grew, `sketch_c` the open choices. Both import five_parts by a path relative to the topic. Fill
+  the `<…>` placeholders; `check.py` counts the ones left. A full example: the Physician example's b63-s04.
+- **Its look is five_parts', not the principles'**: inside a five-part Design the coloured fills and the 12-15 px
+  table text are right; ①-⑨ judge the draw.py drawings. `check.py` recognises a five-part drawing by its part names
+  and checks ⑤P instead: all five parts, the Design's A · B · C, no `<…>` left. Then render it and read it as a
+  newcomer.
+- **Marks kept**: the builder `new_topic.py` writes passes `writer=five_parts.marks_writer` (canvas.write with
+  `palette=False`): a person's marks on the canvas survive a rebuild and the colours stay. An older builder without
+  it rewrites the drawing; a person's edits there go into the builder.
 - **Unique ids**: every table and step needs its own eid; `data_step` adds `<eid>_t` for its words, `data_table`
   adds `<eid>_h`, `_hd`, `_bd`, `_cJ`, `_vJ`, `_rI_J`. A clash stops `build` with an assertion naming the id.
 - **The old drawing**: when the topic's owner says the kept first drawing goes, delete `result/first-drawing*` and
@@ -242,7 +251,7 @@ Boundary
 | Owner | Owns |
 |---|---|
 | `excalidraw-studio` | how a Studio topic's drawing looks and reads: the principles, the look, the patterns, `draw.py` |
-| `haipipe-studio` | the topic: folder, face, numbering, builders' place, sessions, `canvas.write` and its checks, `render_png.py`; it loads this skill before drawing, and `new_topic.py --builder` starts a builder on `draw.py` |
+| `haipipe-studio` | the topic: folder, face, numbering, builders' place, sessions, `canvas.write` and its checks, `render_png.py`; it loads this skill before drawing; `new_topic.py --builder` starts a five_parts builder (`--builder draw` one on `draw.py`) |
 | `excalidraw-report` · `-slide` · `-read` · `-section` · `-job` | their own drawings (b31 s02 to s06) |
 
 

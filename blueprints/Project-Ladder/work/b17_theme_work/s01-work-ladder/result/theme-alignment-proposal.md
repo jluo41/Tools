@@ -49,7 +49,7 @@ Everything else takes b16's name where b17 has the same kind of topic.
   j01 t01's r01, r04 to r07 (none decides a Studio group); b17 j03 t01 r01's answers (JL 261031, s51-D01 to D06);
   the cards of every b17 collection Run.
 - Live pages on 5623 (Studio, Report and Work of b10 to b17), read with curl.
-- Code: `servers/workbench/focus_page.py` (`read_face`, `home_section`, `render`, `studio_html`), `frame.py`
+- Code: `servers/workbench/page/focus_page.py` (`read_face`, `home_section`, `render`, `studio_html`), `frame.py`
   (`_note_facts`, `topic_label`, `studio_inventory`, `studio_group_order`), `haipipe-studio/scripts/new_topic.py`
   (`face_text`, `BANDS`, `LIMITS`), `haipipe-studio/SKILL.md` and `ref/topic-contract.md`, `haipipe-run/SKILL.md`,
   `2_theme/work/haipipe-work/SKILL.md`, `servers/workbench-work/guide/guide.yaml` and `guide/method.md`.
@@ -418,7 +418,7 @@ close: Every sNN is agreed and its Job has made its delivery: each skill piece r
 > (s21), the Guide (s31).
 >
 > Most answers here are a change to the work skills (`2_theme/work/haipipe-work`, `workbench-work`, the Task skills in
-> `1_base/task`) or to the base page (`servers/workbench/focus_page.py`, owned by design_b02_workbench), not a Task
+> `1_base/task`) or to the base page (`servers/workbench/page/focus_page.py`, owned by design_b02_workbench), not a Task
 > Run. Excluded: the ladder itself and what every Theme shares (b10_project_workbench); the stage pipelines a Task
 > runs (haipipe-data, -nn, -end).
 
@@ -515,7 +515,7 @@ Proposed outline, same length:
 2. **Goal**: the work pages on the focus page (j03's 3 × 3, s51 to s59) and the work skills (s01 by j01, s21 by
    j02, s31 by j04); no Questions.
 3. **Where**: topics beside their Jobs; forms in `runs/` and each Task's `runs/`; the base page
-   `servers/workbench/focus_page.py` (design_b02_workbench); `servers/workbench-work/`; `skills/2_theme/work/`.
+   `servers/workbench/page/focus_page.py` (design_b02_workbench); `servers/workbench-work/`; `skills/2_theme/work/`.
 4. **How**: decide in the sNN (Decided, Open), ask JL by a form (haipipe-interaction), make the delivery in its
    Job, render it out; never edit a generated file; never commit.
 

@@ -29,8 +29,8 @@ _spec.loader.exec_module(bp)
 
 
 def board_of(unit: Path) -> Path | None:
-    """The paper Board above the unit: the nearest folder named Paper-* that holds board.md."""
-    return next((p for p in unit.parents if p.name.startswith("Paper-") and (p / "board.md").is_file()), None)
+    """The paper Board above the unit: the nearest folder named Paper-* or Grant-* that holds board.md."""
+    return next((p for p in unit.parents if p.name.startswith(("Paper-", "Grant-")) and (p / "board.md").is_file()), None)
 
 
 def paper_master(unit: Path) -> Path | None:

@@ -10,5 +10,5 @@ Undated decisions are left off (s08-D10). The Timeline has its own row of groups
 
 ## Changed
 
-- `plugins/haipipe-toolkit/servers/workbench/frame.py (studio_timeline · timeline(key) · .tl-groups)`
+- `plugins/haipipe-toolkit/servers/workbench/page/frame.py (studio_timeline · timeline(key) · .tl-groups)`
 - `s08-studio-timeline/ (face D10 and D11 · builder draws the group row · preview)`

@@ -5,8 +5,8 @@ Checked 2026-11-08 against the current shared Work components. This record cover
 | Expected behavior | Verification | Result |
 | --- | --- | --- |
 | Every matrix Section has content requirements, source, layout and applicable skills. | Rendered all three matrices through `focus_page.ui_matrix_html` and inspected their button data. | 188 Section buttons have explanations. |
-| Example links select the displayed View. | Parsed all distinct generated links and rendered each target with its actual Labeling adapter; checked the active View. | All 19 distinct routes select the requested View. Block/Job use Report; Task steps use Work. |
-| Pending Task shared sections do not imply a completed migration. | Inspected Task overrides and their example mapping. | Marked pending; no example route is claimed for that target row. |
+| Example links select the displayed View. | Parsed all distinct generated links and rendered each target with its actual Labeling adapter; checked the active View. | All 19 distinct routes select the requested View. Block, Job and Task steps all use Report (2026-11-12). |
+| Task pages use the shared frame (2026-11-12). | Rendered the b02 items, meaning and expression Tasks for every step, old `section=work` links, Delivery and the rail sections. | Every step is Review Content then Around the Work; rail is Report plus the 8 shared sections; Block and Job pages byte-identical before and after. |
 | Section explanation works in the real browser. | Opened Block UI → Signed releases and Task UI → Source Records. | Dialogs show source, layout, skills and the matching Delivery / Data link. |
 | Delivery example opens real release content. | Opened the dialog’s example link. | Block Report → Delivery shows signed e02 under Review Content, followed by Around the Work. |
 | Existing Labeling navigation and domain readers remain compatible. | Ran `test_labeling_focus`, `test_labeling_steps`, `test_labeling_theme`. | 50 tests passed. |
@@ -21,17 +21,18 @@ PYTHONPATH=plugins/haipipe-toolkit/servers/_host:plugins/haipipe-toolkit/servers
 PYTHONPATH=plugins/haipipe-toolkit/servers/_host python -B -m unittest discover -s plugins/haipipe-toolkit/servers/workbench-labeling/tests -q
 ```
 
-## Existing legacy Building gaps
+## Task shared frame (2026-11-12)
 
-- `test_other_labeling_pages_are_unchanged`: temporary fixture lacks a SPACE root `env.sh`; renderer exits while resolving the legacy page.
-- `test_shell_and_rails_are_the_base_pages`: expected equality between the legacy Building rail and the newly shared base rail no longer holds.
-- `test_unbuilt_steps_name_what_they_will_show_and_make_up_nothing` (staging): the numeric-content assertion sees `27` in the HTML entity `&#x27;` after stripping tags.
-
-These same three problems were reproduced before this blueprint update. They are not marked passed and are outside the Block/Job design clarification. A fresh legacy Task migration review should address them together with the remaining Ground Truth, Building, Scanning and Score surfaces.
+- Items, meaning, expression and building Tasks render through `labeling_focus.task_frame`: one Report section, the Task's steps then Delivery as views, each 📋 Review Content then 🧭 Around the Work. This is the Paper Section Task's and the Work Task's shape.
+- Work is retired at Task level: `section=work`, a step named as a section and older keys open the same step in Report.
+- Building › Decide shows the form while a report waits for the person, and each card's answer read only once nothing waits.
+- POST routes (`/_board/labeling/approve`, `/items`, `/notes`, `/act`) are unchanged.
+- The legacy combined `task-type: labeling` page is not migrated; no example uses it.
+- The three earlier Building test failures are fixed (test fixture `env.sh`, shared rail assertion, HTML-entity unescape). All workbench-labeling tests plus `test_work_frame` and `test_focus_page`: 189 passed.
 
 ## Pending decisions
 
-Task adoption of the combined Report frame remains pending. Checklist’s proposed To do / In progress / Ready for review / Passed workflow and evidence fields have not been implemented as a shared schema. Existing Markdown checklists are the current mechanism.
+Checklist’s proposed To do / In progress / Ready for review / Passed workflow and evidence fields have not been implemented as a shared schema. Existing Markdown checklists are the current mechanism.
 
 ## Clickable Use Cases
 

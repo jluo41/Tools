@@ -76,7 +76,7 @@
       ],
       "example": "This Block presents its seven Studios, with direct delivery and Draw links.",
       "open": "Should a Studio detail open on its Draw or its delivery preview?",
-      "source": "plugins/haipipe-toolkit/servers/workbench/focus_page.py"
+      "source": "plugins/haipipe-toolkit/servers/workbench/page/focus_page.py"
     },
     {
       "id": "s03",

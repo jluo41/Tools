@@ -12,7 +12,7 @@ b04 s02 · Skill layers
 **Source:** read from disk every build: each layer's families and skills, the workbench-* skills and their server folders, folder names that occur twice. Concerns and open questions are red text; JL's choices are pink notes.
 Drawn with `../_build/sketch.py` through b03's canvas writer, so marks survive a rebuild.
 
-**Feeds:** `../reports/q01_skill_layers/`.
+**Feeds:** `../Q01.
 
 
 Files

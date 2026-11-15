@@ -1,5 +1,6 @@
 s01 · The normalizer map
 ========================
+view: findings
 
 **Stage:** explore
 
@@ -9,7 +10,15 @@ s01 · The normalizer map
 
 **Topic:** How `plugins/haipipe-utils` fits together, left to right: the contract (haipipe-norm), each member with its version and the banks it resolves against, the API lane that serves it, and the Job of b02 that owns it; describe-medication's DrugKey feeds describe-insulin. A bank this SPACE's ExternalStore does not hold is red, which today is every bank (261009).
 
-**Feeds:** `reports/` q01_package_description
+**Feeds:** Q01
+
+
+Q01 · Answer
+------------
+
+**Question:** Does the package say what it is?
+
+**Answer (open):** not written yet.
 
 
 Files

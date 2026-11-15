@@ -18,13 +18,12 @@ Overview replaces the MindMap view button. MindMap remains a section inside Over
 
 **Data → Insight → Design:** Overview brings together the context and inputs. Requirements may also contain design constraints.
 
-## 📊 Status
+## 📊 Plan + Results
 
 **How is the work moving?**
 
 | Section | Content | Layout |
 | --- | --- | --- |
-| 🧩 View BJTR | Topics and their related work with its current state. | Left Tabs · Right Content → B–J–T–R |
 | 🔗 Dependencies | Prerequisites, waiting conditions, and the work they affect. | Relationship Table |
 
 Topics match Overview's MindMap. A Topic links existing work; it does not add a level to the ladder or duplicate records.
@@ -113,9 +112,9 @@ Delivery carries the outputs of Design. Design itself also happens in Studio and
 4. 🎨 **Studio** — AI and people develop and compare design options.
 5. ⚖️ **Decision** — Record the selected approach and its reasons.
 6. 📋 **Requirements** — Update the affected requirements.
-7. 📊 **Status** — Follow the linked B–J–T–R work to the next delivery.
+7. 📊 **Plan + Results** — Follow the linked B–J–T–R work to the next delivery.
 
-Feedback becomes new **Data**, interpretation produces **Insight**, and the next **Design** produces another delivery. Status follows the process throughout.
+Feedback becomes new **Data**, interpretation produces **Insight**, and the next **Design** produces another delivery. Plan + Results follows the process throughout.
 
 AI can carry out already-authorized changes. Unresolved choices stay in Interactions; Decisions keeps the resulting records.
 

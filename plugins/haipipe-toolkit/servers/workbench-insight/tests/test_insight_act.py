@@ -62,7 +62,7 @@ class InsightActTest(unittest.TestCase):
 
     def test_a_returned_page_goes_back_to_write_with_its_reason(self):
         self.assertEqual(self.check("return")[0], 400)                       # a reason is asked for
-        code, res = self.check("return", "the B cut's interval is not cited")
+        code, res = self.check("return", "the B segment's interval is not cited")
         self.assertEqual(code, 200, res)
         self.assertTrue(front(self.page)["check"].startswith("↩ "))
         f = V._work_facts(P.job(self.open))

@@ -141,6 +141,10 @@ JS = """<script>
  window.addEventListener('resize',draw);window.addEventListener('load',draw);setTimeout(draw,60);
  document.addEventListener('toggle',function(){setTimeout(draw,0);},true);
  window.pmDraw=draw;document.addEventListener('input',function(e){if(e.target.closest&&e.target.closest('.pm'))draw();});
+ /* a map in a hidden tab or a closed section has no size, so it drew no lines; it draws them when it is shown (JL 261111: "why there are no lines here?") */
+ if(window.ResizeObserver){var ro=new ResizeObserver(function(){requestAnimationFrame(draw);});
+  var watch=function(){document.querySelectorAll('.pm').forEach(function(m){if(!m.dataset.pmro){m.dataset.pmro=1;ro.observe(m);}});};
+  watch();window.addEventListener('load',watch);}
 })();
 </script>""" + """<script>
 (function(){if(window.__pmEdit)return;window.__pmEdit=1;

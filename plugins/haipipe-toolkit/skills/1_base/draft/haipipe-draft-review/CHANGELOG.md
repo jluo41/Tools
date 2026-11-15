@@ -1,3 +1,22 @@
+## 0.9.0 · 2026-11-15 · paragraph logic review
+
+- JL 261115 ("I think we should also have a AI reviewer to review the paragraph level logics"): new `ref/paragraph-logic.md`, Mode 1 step 0a. A blind reviewer reads each paragraph as one argument before the sentence review: a skeleton of roles and topics (named by axis, so new and repeated data are one topic), six checks scored 0-10 (question answered, order with no A-B-A return, inference, scope, complete, shape) and the smallest fix; a move or a missing step goes to the writer as a Section question. Found on the ScalingGlucose Abstract, where every sentence join read "carried" but the paragraph went data, model, data and its close used an idea nothing set up.
+
+## 0.8.0 · 2026-11-12 · ScalingGlucose writing patterns
+
+- JL 261112 ("could you summarize these patterns to the skills as well"): anti_slop rules `in-group-shorthand` (titles: rolled forward, head, route, grid, roadmap, each use) and `money-metaphor` (prose: where scale buys, pays off); `title-metaphor` also flags spend.
+
+## 0.7.0 · 2026-11-12 · paragraph length and title words
+
+- JL 261112: Mode 1 names the anti_slop rules `paragraph-length` (4 to 7 sentences, `paragraphLength` in
+  `ref/anti-slop-rules.json`) and `title-metaphor` (buy, pay, win, land on headings, `arc:` lines and labels), and
+  adds the blind title review: a reviewer that is never the writer scores each title 1 to 10 on register,
+  first-read understanding and naming the paragraph; under 8 is rewritten.
+
+## 0.6.0 · 2026-11-10 · what senior readers flag as hard to read
+
+- JL 261110, from two senior co-authors' comments on an IS paper: `ref/ai-tells.md` § 5, nine tells (room metaphor, things as subjects, definition stacks, self-narration, over-defense, self-praise, theory as one cited line, granular openings, loose verbs), each with its published support (Clark, Martin and Mahowald 2026; Kobak et al. 2025; Sutton and Staw 1995; Hyland 1998). A co-author's register wins in their paper.
+
 ## 0.5.0 · 2026-11-04 · Paragraphs of 4 to 6 sentences, each limit said once
 
 - JL 261104: "一个 paragraph 至少是 4~6 句话", "这个我觉得我强调过不下 4 遍了"; "do not do overprotection". `haipipe-draft-review/ref/plain-rules.md` § 3a, 3b; `cli/paragraphs.py` counts sentences per paragraph.

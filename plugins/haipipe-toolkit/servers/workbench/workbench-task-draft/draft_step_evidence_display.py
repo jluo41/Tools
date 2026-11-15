@@ -7,6 +7,7 @@ from pathlib import Path
 from urllib.parse import quote
 
 from live.frame import _rel, esc
+from live.sentence_id import sid as _sid
 from live.draft_steps_assets import CARDS_CSS, CARDS_JS, EV_CSS
 from live.draft_steps_common import (
     _code, FLAT, _fold, INK, _kv, _not_yet, _prompt_box, _step_box, _word)
@@ -64,12 +65,13 @@ def _units(folder: Path) -> list:
 
 
 def _calls(d: dict | None) -> dict:
-    """What the text calls a display by, and its sentences in order: {"Table 1": ["S1", "S5"]}; a \\ref{label} too."""
+    """What the text calls a display by, and its sentences in order: {"Table 1": ["s1", "s5"]}; a \\ref{label} too."""
     out = {}
     for _, body in (d or {}).get("text", []):
-        for m in re.finditer(r"(?m)^- B\d+[a-z]* · (S\d+[a-z]*) · (.*)$", body):
+        for m in re.finditer(r"(?m)^- B\d+[a-z]* · ([Ss]\d+[a-z]*) · (.*)$", body):
             for name in [n[0].upper() + n[1:] if n[:1] in "tfo" else n for n in CALLS.findall(m.group(2))] + REFS.findall(m.group(2)):
-                out.setdefault(name, []).append(m.group(1)) if m.group(1) not in out.get(name, []) else None
+                s = _sid(m.group(1))
+                out.setdefault(name, []).append(s) if s not in out.get(name, []) else None
     return out
 
 
@@ -97,7 +99,7 @@ def _displays(folder: Path, d: dict | None) -> list:
         hit = next(((t, u) for t, u in others if name in u["labels"] or (u["shown"] and name.lower() == u["shown"].lower())), None)
         if hit:
             t, u = hit
-            out.append({**u, "label": f"{u['shown'] or 'DISPLAY'} · {t.name}", "names": [name], "made": True,
+            out.append({**u, "label": f"{u['shown'] or 'DISPLAY'} · {t.name}", "names": [name], "made": True, "owner": t.name,
                         "title": u["shown"] or u["slug"].replace("-", " "), "calls": ss, "ok": bool(u["accepted"]) and not u["accepted"].startswith("⬜")})
         else:
             out.append({"label": name, "names": [name], "made": False, "title": name, "calls": ss, "ok": False})

@@ -166,7 +166,7 @@
   }
   function bubble(kind, text) {
     /* The live path bubbles an answer as 'cc'; the server's session-log
-       (servers/workbench/chat.py) returns the very same thing as 'ai'. Only 'cc' got
+       (servers/workbench/studio/chat.py) returns the very same thing as 'ai'. Only 'cc' got
        md2html and only '.m.cc' has a style, so a REPLAYED answer arrived as
        raw text in an unstyled box while the identical live answer rendered
        (JL 260801: "History content 没有 Markdown render 的模式").

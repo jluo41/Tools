@@ -13,7 +13,7 @@ s02 · What the policy inquiry admits
 
 **Topic:** A placeholder topic: one inquiry, one question, one rule for what enters. Every paper here is made up.
 
-**Feeds:** `reports/q01-earlier-effect.md`
+**Feeds:** Q01.md`
 
 ```yaml
 frames:

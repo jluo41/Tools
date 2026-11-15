@@ -10,7 +10,7 @@ Built Studio › Folder: the Block folder as one tree; a folder says its count a
 
 ## Changed
 
-- `plugins/haipipe-toolkit/servers/workbench/frame.py (studio_folder · folder_rows · folder_word · _run_word · Folder CSS and loader)`
-- `plugins/haipipe-toolkit/servers/workbench/frame_view.py (view=dir)`
+- `plugins/haipipe-toolkit/servers/workbench/page/frame.py (studio_folder · folder_rows · folder_word · _run_word · Folder CSS and loader)`
+- `plugins/haipipe-toolkit/servers/workbench/page/frame_view.py (view=dir)`
 - `s09-block-folder/ (face · builder · drawing · preview)`
 - `s01-overall-tree-structure/history/run-draw-s09/ (the old s09 session moved here)`

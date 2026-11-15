@@ -16,7 +16,7 @@ changed.
 
 **Source:** read from disk on every build:
 
-- the base frame's Run buttons per level and Space (`servers/workbench/frame.py`: `vanilla()` through
+- the base frame's Run buttons per level and Space (`servers/workbench/page/frame.py`: `vanilla()` through
   `spaces_for`, and the Page Task's `draft_task_spaces`), and whether each names a skill
 - each skill's folder in `Tools/`, found by name: its `SKILL.md` version and what it holds (ref ·
   scripts · tests), every skill in `skills/1_base/project/`, and the themes in `skills/2_theme/` and
@@ -86,7 +86,7 @@ frames:
     - 🔁 pass = a new round on the same Run target, passes/pNN-MMDD/
     - 🎨 theme = the kind of Block (work, cowork, paper ...); it keeps its own skills over the base
   - 📍 Where it sits:
-    - 💻 servers/workbench/frame.py gives each button its skills field (s21-D02)
+    - 💻 servers/workbench/page/frame.py gives each button its skills field (s21-D02)
     - 📐 the whole Run contract is s06-run-workbench-skill
     - 📊 feeds the Questions q05_skill_per_level and q08_workbench_base
   - 🧭 How to read the next two frames:

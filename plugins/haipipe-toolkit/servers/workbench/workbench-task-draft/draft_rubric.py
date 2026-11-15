@@ -92,7 +92,7 @@ CSS = """<style>
 .rb-tabs{display:flex;flex-direction:column;gap:2px;position:sticky;top:8px}
 .rb-tab{font:inherit;font-size:13.5px;text-align:left;padding:6px 10px;border:0;border-radius:6px;background:transparent;
  color:var(--muted,#6f6f6b);cursor:pointer}
-.rb-tab span{float:right;font-size:12px;opacity:.7}.rb-tab:hover{background:var(--wash)}
+.rb-tab:hover{background:var(--wash)}
 .rb-tab[aria-selected=true]{background:var(--soft,#e7f5ff);color:var(--ink);font-weight:600}
 .rb-pane[hidden]{display:none}.rb-list{list-style:none;margin:0;padding:0 6px 0 0;counter-reset:rb;max-height:min(60vh,520px);overflow-y:auto;scrollbar-width:thin}   /* a long list scrolls in place (JL 261113) */
 .rb-list li{counter-increment:rb;padding:8px 0 8px 30px;border-bottom:1px solid var(--line);position:relative;
@@ -144,8 +144,9 @@ def html(folder: Path, root: Path, ts: list | None = None, word: str = "a rule")
     """The section's body: tabs on the left, the open tab's rules on the right, an add box on writable tabs."""
     task = folder.relative_to(root).as_posix()
     ts = tabs(folder) if ts is None else ts
+    # a tab names its rules, no count (AGENTS § Page words)
     nav = "".join(f'<button type=button class=rb-tab data-k="{k}" aria-selected={"true" if i == 0 else "false"}>'
-                  f'{esc(n)}<span>{len(rules)}</span></button>' for i, (k, n, rules, _, _) in enumerate(ts))
+                  f'{esc(n)}</button>' for i, (k, n, rules, _, _) in enumerate(ts))
     panes = ""
     for i, (k, n, rules, src, add) in enumerate(ts):
         tag = lambda t: (lambda m: f'<span class=rb-tag>{esc(m.group(1))}</span>{esc(m.group(2))}' if m else esc(t))(

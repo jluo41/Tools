@@ -16,7 +16,7 @@ built: from-topic .
   - ui <!-- @delivery-type/0 #636117 -->
 - Covers <!-- @covers #a6c44a -->
   - the agents' chain, the whole chain visible … <!-- @covers/0 #7ed73e -->
-    the agents' chain, the whole chain visible and one verb live, no sign: A Answer (plan, agree, cuts, page, check, alignment) · B By cut · C Across Jobs · D Plan.
+    the agents' chain, the whole chain visible and one verb live, no sign: A Answer (plan, agree, segments, page, check, alignment) · B By segment · C Across Jobs · D Plan.
 - Excluded <!-- @excluded #980495 -->
   - the other eight cells of the 3 … <!-- @excluded/0 #0c287c -->
     the other eight cells of the 3 × 3 (s51, s52, s53, s54, s55, s56, s57, s59); the old five-Space Insight page (s02); every Theme's shared frame (b10).
@@ -38,7 +38,7 @@ built: from-topic .
     ![s58-task-ui-work.png](s58-task-ui-work.png)
 - Decided <!-- @decided #55615a -->
   - s58-D01 · One grid per level (Board … <!-- @decided/0 #f6ea98 -->
-    s58-D01 · One grid per level (Board question × Job, Job question × cut, Task cut × step); Report opens on the answer; Work opens on what waits on the person; no Task asks the person (JL 261101: "go ahead", on the proposal in chat).
+    s58-D01 · One grid per level (Board question × Job, Job question × segment, Task segment × step); Report opens on the answer; Work opens on what waits on the person; no Task asks the person (JL 261101: "go ahead", on the proposal in chat).
 - Open <!-- @open #cf9b77 -->
   - ? <!-- @open/0 #f22f9c -->
     ? The whole chain, one verb live on the next step (proposed).

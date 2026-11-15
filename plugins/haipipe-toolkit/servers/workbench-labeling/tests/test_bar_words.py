@@ -1,5 +1,6 @@
-"""Every closed bar of a labeling page shows a state word on its right, and a bar whose state waits on the person shows
-that one thing under it (JL 261106, built for the other themes in servers/workbench/ui_parts.py). Checked on the
+"""A closed bar of a labeling page carries a word on its right only when it asks the person to act ("waits for your
+sign", "3 wait for you"), with that one waiting thing under it; a state alone (done, agreed, nothing yet, a count) is
+never said on the page (AGENTS.md § Page words), as on the other themes' bars (servers/workbench/page/ui_parts.py). Checked on the
 placeholder Job that runs both loops with the real tools (labeling_example.py), on an items Task whose recipe waits for
 a Sign behind a waiting form, and on a building Task's bars."""
 import re
@@ -14,19 +15,23 @@ bootstrap()
 from live import decision_report_view as DR, frame, interaction_section as IX, labeling_focus as L  # noqa: E402
 from live import labeling_steps as S  # noqa: E402
 from live import task_labeling as TL  # noqa: E402
+from live import task_labeling_steps as TS  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import labeling_example  # noqa: E402
+import page_parts as P  # noqa: E402
 
 BAR = re.compile(r"<h3 class=fd-h>(\d+ · [^<]*)(.*?)</h3>(<p class=fd-wait>([^<]*)</p>)?", re.S)
 
 
 def bars(html: str) -> list:
-    """[(title, word, waiting line)] of every numbered bar on a page."""
+    """[(title, mark, waiting line)] of every numbered bar on a page: the mark is the hover sentence of a 🙋 that waits
+    on you, ✓ for a done bar, else ""."""
     out = []
     for m in BAR.finditer(html):
-        word = re.search(r'<span class="?word(?: you)?"?>([^<]*)</span>', m.group(2))
-        out.append((m.group(1), word.group(1) if word else "", m.group(4) or ""))
+        you = re.search(r'<span class="word you mk" title="([^"]*)">', m.group(2))
+        ok = '<span class="word ok mk"' in m.group(2)
+        out.append((m.group(1), you.group(1) if you else "✓" if ok else "", m.group(4) or ""))
     return out
 
 
@@ -47,7 +52,7 @@ class StepBarsTest(unittest.TestCase):
     def page(self, task, section, view):
         return L.render(self.theme, self.root, task, section, view)
 
-    def test_every_numbered_bar_of_every_step_carries_a_word(self):
+    def test_a_bar_says_a_word_only_when_it_asks_you_to_act(self):
         for task in (self.meaning, self.expression):
             for key, *_ in S.STEPS[S.kind(task)]:
                 for section in ("report", "work"):
@@ -56,18 +61,19 @@ class StepBarsTest(unittest.TestCase):
                         found = bars(html)
                         self.assertTrue(found)
                         self.assertEqual(len(found), len(re.findall(r"<h3 class=fd-h>\d+ · ", html)))
-                        self.assertEqual([t for t, w, _ in found if not w.strip()], [])
+                        self.assertEqual([(t, w) for t, w, _ in found if w not in ("", "✓") and not S.waits_on_you(w)], [])
+                        self.assertNotRegex(html, r"\d+ of \d+ (done|met|applied)")
 
     def test_the_bar_keeps_its_numbered_start_and_the_word_sits_after_the_title(self):
         html = self.page(self.meaning, "work", "frame")
-        self.assertIn("<h3 class=fd-h>1 · 🎯 Frame the labeling task<span class=word>agreed</span></h3>", html)
-        self.assertNotIn("fd-verb", html.split("📊 Results")[0].split("⚙️ Process")[-1])   # no pill in the bar any more
+        self.assertIn('<h3 class=fd-h>1 · 🎯 Frame the labeling task<span class="word ok mk" aria-label="done">✓</span></h3>', html)   # agreed: ✓, no wait
+        self.assertNotRegex(P.review(html), r'class="?fd-verb')                # no pill in the bar any more
 
     def test_a_step_that_waits_on_you_says_so_and_shows_what_waits_under_its_bar(self):
         html = self.page(self.meaning, "work", "preferences")                   # Loop 2's form waits for the person
         first = IX.state_word(S.view_forms(self.meaning, self.root, "preferences"))[1]   # the waiting item itself, its
         self.assertTrue(first.startswith("🙋 ") and " · " in first)                     # first open question (round 4)
-        self.assertIn('1 · 🙋 Collect preferences<span class="word you">waiting for you</span></h3>'
+        self.assertIn('1 · 🙋 Collect preferences<span class="word you mk" title="waiting for you">🙋</span></h3>'
                       f"<p class=fd-wait>{frame.esc(first)}</p>", html)
         self.assertNotIn("then press Copy prompt</p>", html)
         self.assertIn("fd-wait", S.view_html(self.meaning, self.root, "work", "preferences"))
@@ -77,21 +83,22 @@ class StepBarsTest(unittest.TestCase):
     def test_a_made_guideline_waits_for_your_sign_until_you_sign_it(self):
         self.assertEqual(S.bar_word(("sign m02", "you")), "waits for your sign")
         self.assertEqual(S.bar_word(("draw planned", "you")), "draw planned, waits for you")
-        self.assertEqual(S.bar_word(("", "")), "not started yet")
+        self.assertEqual(S.bar_word(("", "")), "")
+        self.assertEqual(S.bar_word(("m01 approved", "ok")), "done")             # a done step's bar shows ✓
         self.assertEqual(S.bar_word(("waiting for you", "you")), "waiting for you")
         update = self.page(self.meaning, "work", "update")                      # m01 is signed in the fixture
-        self.assertIn("1 · 🔁 Integrate feedback and check alignment<span class=word>m01 approved</span>", update)
+        self.assertIn('1 · 🔁 Integrate feedback and check alignment<span class="word ok mk" aria-label="done">✓</span></h3>', update)
 
-    def test_results_words_come_from_the_files(self):
+    def test_results_bars_show_their_content_not_a_word_about_it(self):
         found = dict((t, w) for t, w, _ in bars(self.page(self.expression, "report", "evaluate")))
-        self.assertIn("models", found["3 · 📈 Labeling performance"])
-        self.assertRegex(found["2 · 🔍 Errors, by kind"], r"^\d+ errors? in \d+ kinds?$")
+        self.assertEqual(found["4 · 📈 Labeling performance"], "")
+        self.assertEqual(found["3 · 🔍 Errors, by kind"], "")
         release = dict((t.split(" · ", 1)[1], w) for t, w, _ in bars(self.page(self.expression, "report", "release")))
-        self.assertRegex(release["✅ Release criteria"], r"^(all met|\d+ of \d+ met)$")
-        self.assertTrue(all("not signed yet" not in t for t in release))      # the state is the word, not the title
+        self.assertEqual(release["✅ Release criteria"], "")                    # each criterion's row shows its own mark
+        self.assertTrue(all("not signed yet" not in t for t in release))
         prepare = dict((t.split(" · ", 1)[1], w) for t, w, _ in bars(self.page(self.meaning, "report", "prepare")))
-        self.assertRegex(prepare["📌 Typical cases"], r"^(\d+ cases?|nothing yet)$")
-        self.assertRegex(prepare["🧠 Guideline rules, as a mind map"], r"^m\d\d (approved|not approved yet)$")
+        self.assertEqual(prepare["📌 Typical cases"], "")
+        self.assertEqual(prepare["🧠 Guideline rules, as a mind map"], "")
 
 
 class ItemsBarTest(unittest.TestCase):
@@ -139,13 +146,13 @@ class ItemsBarTest(unittest.TestCase):
         """Round 2: the form the recipe's Sign rests on is the Items view's 🙋 Interaction (never in Process), named in
         the step's waiting line, and it opens through the form route (it gave a 404 for any Task but meaning)."""
         from unittest.mock import patch
-        with patch.object(TL, "_step_states", return_value={"raw": "done", "make": "sign", "embed": "todo"}):
+        with patch.object(TS, "_step_states", return_value={"raw": "done", "make": "sign", "embed": "todo"}):
             html = L.render(frame.themes()["labeling"], self.root, self.items, "work", "items")
-        process = html.split("⚙️ Process", 1)[1].split("📊 Results", 1)[0]
+        process = P.step(html)
         self.assertNotIn("r02_collect_items_recipe.html", process)
         self.assertIn("<p class=fd-wait>🙋 Items recipe choices: Q1 · ", process)   # the waiting item (round 4)
         self.assertNotIn("then read the recipe and press Sign", process)
-        self.assertIn("r02_collect_items_recipe", html.split("📊 Results", 1)[1])
+        self.assertIn("r02_collect_items_recipe", P.made(html))
         self.assertNotIn("r02_collect_items_recipe.html", L.render(frame.themes()["labeling"], self.root, self.items,
                                                                     "work", "data"))
         from live.labeling import LabelingMixin
@@ -167,12 +174,12 @@ class ItemsBarTest(unittest.TestCase):
         """Round 4: the prompt card sits inside the step's closed bar, the step links its own Runs (r03_items opens its
         card), and Sign asks for no name."""
         from unittest.mock import patch
-        with patch.object(TL, "_step_states", return_value={"raw": "done", "make": "sign", "embed": "todo"}):
+        with patch.object(TS, "_step_states", return_value={"raw": "done", "make": "sign", "embed": "todo"}):
             html = L.render(frame.themes()["labeling"], self.root, self.items, "work", "items")
             words = TL.items_words(self.items, self.root)
-        process = html.split("⚙️ Process", 1)[1].split("📊 Results", 1)[0]
+        process = P.step(html)
         self.assertIn("pb-prompt", process)
-        self.assertNotIn("pb-prompt", re.sub(r"<section class=fd-sec>.*?</section>", "", process, flags=re.S))
+        self.assertNotIn("pb-prompt", P.outside_sections(P.review(html)))
         self.assertIn("part=run", process)                                      # r03_items opens its Run card
         self.assertIn("<code>r03_items</code>", process)
         self.assertNotIn("name (optional)", html)
@@ -196,7 +203,7 @@ class BuildingBarTest(unittest.TestCase):
     def test_a_building_bar_carries_its_word_and_what_waits_only_while_closed(self):
         html = DR.section(1, "🙋 Decisions waiting for you", "<p>b</p>", word="waiting for you", waits="🙋 Which?")
         self.assertIn('data-fold="1 · 🙋 Decisions waiting for you"', html)  # the fold keys on the title alone
-        self.assertIn('<span class="word you">waiting for you</span></summary>', html)
+        self.assertIn('<span class="word you mk" title="waiting for you">🙋</span></summary>', html)
         self.assertTrue(html.endswith('</details><p class="dec-wait">🙋 Which?</p>'))
         css = (Path(DR.__file__).parent / "focus-assets" / "decision_report.css").read_text(encoding="utf-8")
         self.assertIn(".dec-sec[open]+.dec-wait{display:none}", css)

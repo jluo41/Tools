@@ -523,7 +523,7 @@ BLOCK_TREES = [
         ("├── j04_wisdom/", "DIKW level W: counsel, handoff"),
         ("one script per question; Runs = dataset × partition", ""),
         ("on screen: the Block's Spaces; Work Details = the DIKW levels", ""),
-        ("a DIKW level opens its own Job tab (was Prototype › Data)", ""),
+        ("a DIKW level opens its own Job tab (was Question Book › Data)", ""),
         ("Meta (counts per DIKW level) stays on the Block ?", "")]),
     ("insight register board", "<Dataset>-InsightBoard/", [
         ("├── board.md", "the register (older layout)"),
@@ -616,7 +616,7 @@ JOB_TREES = [
         ("└── tNN_<question>/ …", "one Task per question"),
         ("j02_information/ · j03_knowledge/", "· j04_wisdom/: the same"),
         ("on screen: its Job tab, the Block's six Spaces", ""),
-        ("today: a View of Block › Prototype", ""),
+        ("today: a View of Block › Question Book", ""),
         ("its rows in each partition's Insight table", "")]),
     ("design method", "jNN_<goal>_by-<method>/", [   # one goal x one method -> N designs (JL 261007)
         ("├── jNN_<goal>_by-<method>.md", "Description: the goal, its rules, N"),
@@ -879,7 +879,7 @@ TASK_RUNS = [
     ("discovery Task", "tNN_<task>/", f"{TK}/2_theme/discovery/workbench-discovery", {"Work", "Check"},
      {"Write the report", "Check a report"}, "rNN_<author><year>_<subject>.sh", "Discovery workbench · /w/<block>"),
     ("insight question", "tNN_<question>/", f"{TK}/2_theme/insight/workbench-insight",
-     {"Prototype", "Insight", "Check"}, {"Carry a board over", "Register a cut", "Draw the question map"},
+     {"Question Book", "Insight", "Check"}, {"Carry a board over", "Register a segment", "Draw the question map"},
      "<dataset>_<partition>.sh · run-check-…", "Insight workbench · /w/<block>"),
     ("design folder", "Design-NN-<slug>/", f"{TK}/2_theme/design/workbench-design",
      {"Design Task", "Design Item", "Delivery"}, set(), "run-commission- (soft) · rNN_generate_ · rNN_verify_",
@@ -1012,7 +1012,7 @@ LEVEL_TABS = ["Guide", "Block", "Job ▾", "Task ▾"]
 # (delivery/); Runs and Delivery are optional. Every family keeps them; its own views go in the
 # third row. Insight puts today's Insight workbench views there
 # (workbench-insight 0.16.0): Scope → Description, RoadMap Draw → Idea Studio, Insight (by
-# partition) → Audience Report, Prototype (by DIKW level) → Work Details; today's Check is left out.
+# partition) → Audience Report, Question Book (by DIKW level) → Work Details; today's Check is left out.
 BLOCK_SPACES = ["Description", "|", "Idea Studio", "Audience Report", "|", "Work Details", "|", "~Runs",
                 "~Delivery"]
 INSIGHT_VIEWS = {"Description": ["Dataset", "Partitions", "Questions"],
@@ -1022,7 +1022,7 @@ JOB_CHILDREN = {"task": ["Tasks"], "discovery": ["Tasks"], "cowork": ["Timeline"
                 "insight": ["Questions"], "paper": ["Sections"], "design": ["Design folders"],
                 "labeling": ["Tasks"]}
 # A DIKW level is a Job (JL 261006: "they are in the board level, do you think in the job level"): its tab
-# takes the Block's six Spaces; today's Prototype › Data view becomes its Work Details (its questions).
+# takes the Block's six Spaces; today's Question Book › Data view becomes its Work Details (its questions).
 JOB_SPACES_DIKW = ["Description", "|", "~Idea Studio", "Audience Report", "|", "Work Details", "|", "Runs",
                    "~Delivery"]
 # A design Job is one goal done by one method, returning N designs (JL 261007: "a design method + design
@@ -1146,7 +1146,7 @@ UI_WHERE = {
                     "the Block tab; its Jobs are the versions"),
     "insight Block (DIKW)": ("insight", "Block", None, "Scope", None, "card", "dataset · partitions",
                              "the Block tab; its Jobs are the 4 DIKW levels"),
-    "insight register board": ("insight", "Block", None, "Prototype", "Meta", "card", "0-MT-meta · MT01-MT04",
+    "insight register board": ("insight", "Block", None, "Question Book", "Meta", "card", "0-MT-meta · MT01-MT04",
                                "same tabs, older board on disk"),
     "design Board": ("design", "Block", None, "Scope", None, "card", "what this Board designs", "the Block tab"),
     "labeling Block": ("labeling", "Block", None, "Scope", None, "card", "the labels this Block builds",
@@ -1158,8 +1158,8 @@ UI_WHERE = {
     "paper version": ("paper", "Block", None, "Jobs", "current", "rows", "jNN_v<N>_<venue>",
                       "a version = a row in Block › Jobs"),
     "cowork Job": ("cowork", "Block", None, "Jobs", "open", "rows", "jNN_<job>", "a row in Block › Jobs"),
-    "DIKW level": ("insight", "Block", None, "Prototype", "Data", "rows", "Question N",
-                  "a DIKW level = one view (Data) of Block › Prototype"),
+    "DIKW level": ("insight", "Block", None, "Question Book", "Data", "rows", "Question N",
+                  "a DIKW level = one view (Data) of Block › Question Book"),
     "design method": ("design", "Block", None, "Jobs", "Internal", "rows", "jNN_<goal>_by-insight",
                       "goal × method = a row, grouped by method family"),
     "labeling Job": ("labeling", "Block", None, "Jobs", "All", "rows", "jNN_<dataset>_<label>",
@@ -1484,14 +1484,14 @@ COLUMN_HEAD = {"Guide": "Guide · its own tab: the family's docs, as today",
                "Delivery": "Block › Delivery (optional: a work Block's may be empty)"}
 # insight fills the columns with today's views: column → (Space, view, content key)
 FAMILY_COLUMNS = {"insight": {"Scope": ("Description", "Dataset", "Scope"),
-                              "Studio": ("Idea Studio", None, "Prototype›RoadMap Draw"),
+                              "Studio": ("Idea Studio", None, "Question Book›RoadMap Draw"),
                               "Reports": ("Audience Report", "Full", "Insight"),
                               "Jobs": ("Work Details", None, "Levels"),
                               "Runs": ("Runs", None, "Runs"), "Preview": ("Runs", None, "Preview"),
                               "Delivery": ("Delivery", "Handoff", "Delivery")}}
 # a note under a screen: what changed and what is open ("?" = open, in red)
 FAMILY_CAPTIONS = {("paper", "Jobs"): "▢ = the Section's map (excalidraw-draft), embedded, view only",
-                   ("insight", "Jobs"):"was Prototype › Data · Information …: now each DIKW level's Job tab",
+                   ("insight", "Jobs"):"was Question Book › Data · Information …: now each DIKW level's Job tab",
                    ("insight-reg", "Jobs"): "carry over: each register → a DIKW level Job ?",
                    # discovery (b14 Q01, 261007): where today's Discovery Views went
                    ("discovery", "Scope"): "was Scope › Block (its state, spine, close)",
@@ -1604,31 +1604,31 @@ VIEW_FAMILY = {
         "Delivery": (["part             what          made by", "j02_<v>/latex/   LaTeX         run-delivery-latex",
                       "j02_<v>/word/    Word          run-delivery-word", "j02_<v>/tNN/     Cover letter  j02 › tNN letter",
                       "j02_<v>/tNN/     Rebuttal      j02 › tNN rebuttal", "delivery.md: one row per send"], ["Build", "Check"])},
-    "insight": {   # today's Insight workbench, aligned: Scope · Prototype · Insight · Check · Delivery
+    "insight": {   # today's Insight workbench, aligned: Scope · Question Book · Insight · Check · Delivery
         "Scope": (["dataset: <dataset> ▾ · one at a time", "the extract: rows · fields · <date>",
                    "meta/meta.md: what it is, no values", "Partitions: Full · <cut> · <cut> · Cross",
                    "Questions: 12 live · the Ask box"], ["Record the extract", "Ask"]),
-        "Prototype": (["Data: the DIKW level's opening question · level.md", "▾ Question 1  <short question>",
+        "Question Book": (["Data: the DIKW level's opening question · level.md", "▾ Question 1  <short question>",
                        "    chips: full · <cut> · script · signed", "▸ Question 2  <short question>",
                        "▸ Question 3  <short question>", "retired questions, folded"],
-                      ["Carry a board over", "Register a cut", "Review the questions", "Plan the evidence",
+                      ["Carry a board over", "Register a segment", "Review the questions", "Plan the evidence",
                        "Review the evidence plan", "Write the script", "Review the script"]),
         "Levels": (["Level · Job        asked  needs  script  signed", "▾ j01_data        5      8      5       3",
                    "    t01_<question>   full · <cut>   ok", "    t02_<question>   full           open",
                    "▸ j02_information 4      6      3       1", "▸ j03_knowledge   3      4      1       0",
                    "▸ j04_wisdom      1      2      0       0"], ["Open a DIKW level", "Ask a Question"], 1),
         "Runs": ([("Run", "type", "writes", "state"), ("run-extract-<dataset>", "Record the extract", "meta/", "closed · p01"),
-                  ("run-cut-<cut>", "Register a cut", "meta/", "closed · p02"),
+                  ("run-cut-<cut>", "Register a segment", "meta/", "closed · p02"),
                   ("run-map-questions", "Draw the question map", "studio/", "open · p03"),
                   ("run-carry-<board>", "Carry a board over", "j0N · tNN", "waiting")],
-                 ["Record the extract", "Register a cut", "Draw the question map", "Carry a board over"], 2),
-        "Prototype›RoadMap Draw": ([("question-map", "", "generated"),
+                 ["Record the extract", "Register a segment", "Draw the question map", "Carry a board over"], 2),
+        "Question Book›RoadMap Draw": ([("question-map", "", "generated"),
                                     ("<drawing>", "", "Edit drawing"), ("<drawing>", "", "folded")],
                                    ["Draw the question map"]),
         "Insight": ([("Logic", "Work", "Report"), ("Question 1 <question>", "E1 → full · ok", "page <id>"),
                      ("Question 2 <question>", "E1 → full · ok", "page <id>"),
                      ("Question 4 <question>", "E2 → not bound", "No answer")],
-                    ["Run a partition", "Write the Data report", "Write the Information report",
+                    ["Run a segment", "Write the Data report", "Write the Information report",
                      "Write the Knowledge report", "Check alignment", "Pool or split"], 0),
         "Check": (["the picked question's seven gates", "G1 asked · G2 planned · G3 run: open",
                    "Checks: cli/check.py", "Runtime: the workflow index", "a gate closes with its owner, not here"],
@@ -1676,11 +1676,11 @@ VIEW_FAMILY["insight-reg"]["Scope"] = (["board.md (older) = the register", "kind
 VIEW_FAMILY["insight-reg"]["Levels"] = (["0-MT-meta/ = its design", "MT01-MT04: the registers, D · I · K · W",
                                         "N-<partition>/: one folder per partition", "no DIKW level Jobs: carry over to get them"],
                                        ["Carry a board over"])
-VIEW_FAMILY["insight-reg"]["Prototype"] = (["0-MT-meta/ = its design", "MT01-MT04: the question registers",
+VIEW_FAMILY["insight-reg"]["Question Book"] = (["0-MT-meta/ = its design", "MT01-MT04: the question registers",
                                             "→ carry over to an Insight Block ?"], ["Carry a board over"])
 VIEW_FAMILY["insight-reg"]["Insight"] = ([("Logic", "Work", "Report"), ("Question 1 <question>", "1-full/ ok", "page <id>"),
                                           ("Question 2 <question>", "2-<cut>/ ok", "page <id>"),
-                                          ("carry over ?", "—", "—")], ["Run a partition"], None)
+                                          ("carry over ?", "—", "—")], ["Run a segment"], None)
 
 
 def block_dividers(x0, top, bottom):
@@ -1744,7 +1744,7 @@ def block_views(x, y, variant):
         groups = JOB_GROUPS.get(family) or [None]
         open_group = view or (("j1N" if "j1N" in groups else groups[min(1, len(groups) - 1)])
                               if key == "Jobs" else None)
-        body = {"Studio": "studio", "Reports": "qwr", "Prototype›RoadMap Draw": "studio",
+        body = {"Studio": "studio", "Reports": "qwr", "Question Book›RoadMap Draw": "studio",
                 "Insight": "table", "Runs": "table"}.get(key, "lines")
         row = BLOCK_ROWS.get((fam, col))
         if row:

@@ -11,7 +11,7 @@ Where each theme stands
 ```text
 theme      example (in Project-Ladder/)              ui lines  pages aligned        drawings (3x3)  walks   reviews
 insight    insight/Insight-Example                   yes       yes                  yes (b11 j01)   yes     r01, r02 done (6 of 10 pass);
-           + insight/Prototype-Example                                                                     r02 fixes done, r03 not run
+           + insight/InsightQuestionBook-Example                                                                     r02 fixes done, r03 not run
 design     design/Design-Example (3 Jobs)            yes       HALF (stopped)       not redrawn     no      none
 discovery  discovery/b01_example_prior_work          yes       yes (work shape)     yes (b14 j01)   no      none
 cowork     cowork/b01_example_data_request           yes       yes (work shape)     yes (b13 j01)   yes     r01 done (Block passes); r01 fixes
@@ -29,13 +29,13 @@ Next, in order
    counts; `view_of_item` and `VIEW_SKILLS` in design_focus.py; a Job face `goal: G01 · <name>` through
    design_ladder.py; the lettered parts the b12 drawings show (task_views.py coverage A1–A4, B1–B4, C1–C3).
 2. **Theme pages read like paper's** (the person's 261108 "go ahead with 1 to 3"), for b11, b12, b13, b14:
-   1. Answer each question in board.md ## Questions in its `reports/qNN_*/qNN_*.md` from what is now built
+   1. Answer each question in board.md ## Questions in the Studio topic that answers it (`sNN-qNN-<topic>/`, its `QNN · Answer` part) from what is now built
       (`answer-status: partial|answered`, a `state:` line, ## Opening, ## Content › 1 · Answer, and the skill or
       workbench change that settled it), as b16's reports are written.
    2. Record the decisions taken on Claude's lean as WAITING forms (collect.py new / check / build, my pick ticked) under
       `j0N_<theme>_workbench_pages/t01..t03`, at most 3 forms of at most 5 questions each:
       - **insight:**
-        - a Prototype is insight's: its own Findings, Status, Delivery (releases), and Skills (/haipipe-insight)
+        - a Question Book is insight's: its own Findings, Status, Delivery (releases), and Skills (/haipipe-insight)
         - inbox rows become ⚙️ Process steps
         - the Job Overall headline carries X01
         - Wisdom and Executive Tasks keep "By cut"
@@ -59,8 +59,8 @@ Next, in order
         - a Task only for a document written in rounds
    3. Group each theme's Studio like paper's: `_studio_groups.txt` with Structure, Levels, Run and Skill, Guide,
       Block UI, Job UI, Task UI, and each topic face's **Tags:** line.
-3. **Shared hooks still asked for** (servers/workbench/focus_page.py):
-   - **Insight's Prototype:**
+3. **Shared hooks still asked for** (servers/workbench/page/focus_page.py):
+   - **Insight's Question Book:**
      - `work_process` uses `prototype_process(folder, root, level, view)`
      - `prototype_lead(...)` sits above Status and Findings
      - `parts_mindmap` prefers `prototype_map_branches` on a release even with Tasks

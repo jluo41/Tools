@@ -42,13 +42,12 @@ Topics live beside the owning page’s work. Their associations select View cont
 
 The source is `work_frame.overview`. Missing requirements are not inferred as satisfied.
 
-## 📊 Status
+## 📊 Plan + Results
 
 | Section | Content and source | Layout |
 | --- | --- | --- |
 | 📊 Job progress — Block | Existing Job bands, Task completion and current Run state. Band headings use the Block’s own names. | Numbered bands → expandable Job and Task rows |
 | 📋 Tasks — Job | The Job’s state line and each Task’s latest recorded state or result. | Numbered disclosure → Task rows |
-| 🧩 View BJTR | Real Block → Job → Task → Run relationships grouped by Topic. | Left Topic tabs · right expandable tree → pop-out |
 | 🔗 Dependencies | Authored Dependencies section, only when present. | Markdown disclosure |
 
 The source is `work_frame.status` with Labeling’s Task completion wording. Status displays existing work; expanding a tree does not start a Run. Work’s BJTR grouping is reused without changing the Labeling sequence.
@@ -98,7 +97,7 @@ These unnumbered sections use `work_frame.SHARED` and `shared_bodies` in the sam
 | Meaning | Frame → Prepare → Preferences → Update | One identified human remains semantic authority. |
 | Expression | Rewrite → Run → Evaluate → Release | Fixed approved meaning, measured results and human release signature. |
 
-Task examples open `section=work` and the exact step key. The shared-section row in Task UI is explicitly a target and has no implemented example link. Ground Truth, legacy Building, Scanning and Score require separate review. This update does not claim their migration or implement missing workers.
+Task examples open `section=report` and the exact step key (an old `section=work` link opens the same step). Every Task step is 📋 Review Content then 🧭 Around the Work, with Delivery as the last view, the Paper Section Task's shape. Ground Truth, legacy Building, Scanning and Score require separate review. This update does not claim their migration or implement missing workers.
 
 ## 📋 Alignment and verification
 
@@ -109,7 +108,7 @@ Task examples open `section=work` and the exact step key. The shared-section row
 | Findings and signed Delivery preserve domain gates. | Existing readers retained; `test_labeling_steps` checks result and release behavior. |
 | Matrix sections explain content, source, layout and skills. | Authored in `view-guide.json`; example routes point to the actual walkthrough and View. |
 | Missing conditional sections remain absent. | Dependencies and Block delivery are documented as conditional; the example link opens the View without fabricating content. |
-| Task shared-frame migration. | Pending; current domain-step links remain usable. |
+| Task shared-frame migration. | Implemented 2026-11-12 for items, meaning, expression and building Tasks (`labeling_focus.task_frame`); the legacy combined `labeling` Task keeps its old page. Decide shows the form while a report waits, the answers read only after. |
 | Four Checklist states with verification evidence. | Discussion proposal; no new public schema or acceptance writer is claimed. |
 
 Detailed checks and current limitations are recorded in `ui/verification.md`. Old Work and MindMap links at Block and Job level remain usable. No source folders, Runs or signatures are moved by this design update.

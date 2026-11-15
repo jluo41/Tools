@@ -9,7 +9,7 @@ s33 · The console UI issues
 
 **Topic:** A review of the console as served on its synthetic fixtures: 66 screens (two scopes × three data types × eleven views), every link and request, ranked worst first (where · what is wrong · what it should be · evidence · owner), then what works (261009, g01).
 
-**Feeds:** `reports/` q01_console_vs_toolkit
+**Feeds:** Q01
 
 
 Files

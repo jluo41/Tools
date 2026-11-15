@@ -3,7 +3,7 @@
 board-kind: design-board
 channel: sms
 method-book: design/DesignMethodBook-Example
-spine: A placeholder design Block. One application (an example reminder message), one channel (sms), two goals (one signed, one waiting for a person), three Jobs on two releases of its Design Method Book, so a reader sees every view, section and state a real design Block shows. Every word here is a placeholder.
+spine: A placeholder design Block. One application (an example reminder message), one channel (sms), two goals (one signed, one waiting for a person), three Jobs on two method types of its Design Method Book, so a reader sees every view, section and state a real design Block shows. Every word here is a placeholder.
 close: every goal's kept designs released
 
 ## Topic
@@ -16,9 +16,9 @@ application, person or organization; its inputs version is a short synthetic fil
 Design-Example/
 ├── board.md · design-goal.md        the goal list and the shared rules, each signed with a date only
 ├── inputs/inputs-v1/ · inputs/inputs-v2/          two synthetic inputs versions, frozen
-├── j01_confirm-by-reply_method-v1-goal-only_inputs-v1/  G01 × method-v1 × inputs-v1 → N = 1, released (a placeholder sign), tested in e01
-├── j02_confirm-by-reply_method-v1-goal-only_inputs-v2/  G01 × method-v1 × inputs-v2 (moved: inputs), still reasoning
-├── j03_confirm-by-reply_method-v2-overall-performance_inputs-v2/  G01 × method-v2 × inputs-v2 (moved: method), its release waits
+├── j01_confirm-by-reply_M01-goal-only-m2_inputs-v1/  G01 × M01 m2 × inputs-v1 → N = 1, released (a placeholder sign), tested in e01
+├── j02_confirm-by-reply_M01-goal-only-m2_inputs-v2/  G01 × M01 m2 × inputs-v2 (moved: inputs), still reasoning
+├── j03_confirm-by-reply_M02-overall-performance-m1_inputs-v2/  G01 × M02 m1 × inputs-v2 (moved: method), its release waits
 ├── observed/e01_example-test/       a synthetic example test's per-arm totals
 └── delivery/                        the Block's one-page summary; the release waits on a person
 ```
@@ -59,13 +59,13 @@ questions:
   question: Which kept design of the Block should an example test send, and does its frozen prediction hold?
   hypothesis: The kept design of the goal-only Job is the one to send; its prediction is checked once an example test returns per-arm totals.
   acceptance: Answered when the kept design is released and an example test's per-arm totals are scored.
-  work: [j01_confirm-by-reply_method-v1-goal-only_inputs-v1, j02_confirm-by-reply_method-v1-goal-only_inputs-v2, j03_confirm-by-reply_method-v2-overall-performance_inputs-v2]
-  report: reports/q01_example_test/q01_example_test.md
+  work: [j01_confirm-by-reply_M01-goal-only-m2_inputs-v1, j02_confirm-by-reply_M01-goal-only-m2_inputs-v2, j03_confirm-by-reply_M02-overall-performance-m1_inputs-v2]
+  report: s03-q01-example-test/s03-q01-example-test.md
 - id: Q02
   title: Did the goal-only prediction hold?
   question: Did j01 d01's frozen prediction hold when the example test e01 came back?
   hypothesis: The observed effect falls inside the predicted range, in the predicted direction.
   acceptance: Answered when run-score-e01 has scored d01's arm against its frozen prediction.
-  work: [j01_confirm-by-reply_method-v1-goal-only_inputs-v1]
-  report: reports/q02_prediction_check/q02_prediction_check.md
+  work: [j01_confirm-by-reply_M01-goal-only-m2_inputs-v1]
+  report: s04-q02-prediction-check/s04-q02-prediction-check.md
 ```

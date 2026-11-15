@@ -9,7 +9,7 @@ s13 · The case builder
 
 **Topic:** The Case view on each synthetic data type, and how a case is meant to be built (TriggerFn · Key · CaseFn, `diagram/07-case-builder.txt`). Today any record row with text is a case: on a timeline that is every reading (261009, g01).
 
-**Feeds:** `reports/` q01_console_vs_toolkit
+**Feeds:** Q01
 
 
 Files

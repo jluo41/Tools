@@ -8,7 +8,7 @@ Decided in the chat, not on a form; this topic's decisions, in the order they we
 
 ## Q1 · Matrix first
 
-Said in the chat: "I think n the block level, it should be something like Question Prototype x and Data versions, right? I remember we have a matrix for that."
+Said in the chat: "I think n the block level, it should be something like Question Question Book x and Data versions, right? I remember we have a matrix for that."
 
 **A Answers opens on the analysis plan × data freeze matrix, one cell a Job**
 
@@ -89,7 +89,7 @@ Answer: my own decision.
 decided in the chat · r01_collect_board_report_decisions · Board Report decisions · 2026-11-02 15:09
 Q1 · Matrix first: my own decision
    note: A Answers opens on the analysis plan × data freeze matrix, one cell a Job
-   said: I think n the block level, it should be something like Question Prototype x and Data versions, right? I remember we have a matrix for that.
+   said: I think n the block level, it should be something like Question Question Book x and Data versions, right? I remember we have a matrix for that.
 Q2 · Full names: my own decision
    note: screens spell out analysis plan 1 × data freeze 1, never AP1 × F1
    said: why still AP1 x F1?

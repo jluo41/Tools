@@ -10,5 +10,5 @@ Status view and sNN beside the Jobs; done 261030
 
 ## Changed
 
-- `servers/workbench/focus_page.py`
-- `servers/workbench/frame.py`
+- `servers/workbench/page/focus_page.py`
+- `servers/workbench/page/frame.py`

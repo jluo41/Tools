@@ -16,7 +16,7 @@ of the element, show the different versions, like the gallery, and we will pick 
 for the audience report, we might have different versions as well"). It answers JL's "the current
 UI is very bad, not as good as the previous ones": the previous looks are all here to choose from.
 
-**Feeds:** `reports/` q08_workbench_base (one shared base, a theme each)
+**Feeds:** Q08 (one shared base, a theme each)
 
 Reshot 261012 (JL: "please read s32, it is old enough, right? DO we want to update it again?"): the
 261010 shots showed six theme pages that have since retired or moved. Every theme now draws on the shared
@@ -87,7 +87,7 @@ s32-D01 · Done (261007, JL's marks on frame 1: arrows from D and E to A; "what 
     6px corners, padding 6px 14px, a grey border (#ced4da), the open one washed blue (#e7f5ff,
     #1864ab). The look only: each workbench keeps its own tabs and words, the frame its level row
     (Guide · Block · Job ▾ · Task ▾) and its six Spaces with their dividers; an optional Space's
-    border is solid like the rest (JL 261007: "could you make it the solid line as well?"). The frame took it (`servers/workbench/frame.py`, the `.levels`/`.spaces` rules and the
+    border is solid like the rest (JL 261007: "could you make it the solid line as well?"). The frame took it (`servers/workbench/page/frame.py`, the `.levels`/`.spaces` rules and the
     `--tab-*` tokens); the third row keeps its own look until picked.
 
 s32-D02 · Done (261007, JL's tick on frame 2, card E; "do not use this one" on the small pills): the
@@ -178,7 +178,7 @@ s32-D15 · Done (261011, replaces the short-name sentence of s32-D13): a Job or 
     as readable as possible". So a folder name is made readable where it is made: a design Job is
     `jNN_<goal name>_<method name>` (`j01_prepare-before-visit_goal-only`; b12, haipipe-design ref/design-ladder.md),
     its ids kept in the face's pins. The rest of s32-D13 (the four lines of the page top) stands.
-    `servers/workbench/frame.py` `short_name` returns the name; the delivery chip takes the Job's tag itself.
+    `servers/workbench/page/frame.py` `short_name` returns the name; the delivery chip takes the Job's tag itself.
 
 s32-D16 · Done (261012, JL: "please read s32, it is old enough, right? DO we want to update it again?"):
     the gallery is reshot from the frame. Its versions are the base and each theme on the shared frame, one
@@ -195,7 +195,7 @@ s32-D16 · Done (261012, JL: "please read s32, it is old enough, right? DO we wa
 s32-D17 · Done (261012, JL on 3 · Studio · proposed, a red box round s02's "studio-and-report ↗
     studio-workbench-reference ↗": "for the studio, remove the content in the block box here"): a Studio topic's
     row links only its own drawing (↗) and Add to Current; its other drawings get no link on the row (the face
-    lists them). `servers/workbench/frame.py` `_topic_row`.
+    lists them). `servers/workbench/page/frame.py` `_topic_row`.
 s32-D18 · Done (261012, JL on 4 · Delivery · proposed: "for the delivery, we should also have the group tags as
     well, and have the delivery card, similar to the studio"): the base's Delivery is one folding card per
     result under the group bar, as the Studio's: ⋮⋮, its name, its groups, where it came from ↗, when built,
@@ -260,7 +260,7 @@ Open
 1. Pick one look per element: write the letter you keep on its frame, or draw a new one. Kept so far (the
    green line on each frame): the top of the page, the Report's bar, the Studio, Delivery, Work, the Runs
    panel and the Design display.
-2. Once picked: the base (`servers/workbench/frame.py` CSS, `runs_panel.py`) draws each picked look,
+2. Once picked: the base (`servers/workbench/page/frame.py` CSS, `runs_panel.py`) draws each picked look,
    every theme gets it, and the older pages keep theirs until they retire.
 3. The Report's group bar on paper, insight, design, discovery and labeling (Finding 1): each theme's
    starting groups are s05's (s05-D07); build them there.

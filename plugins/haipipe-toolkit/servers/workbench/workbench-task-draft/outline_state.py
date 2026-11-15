@@ -40,7 +40,7 @@ def _disk_state(page_src):
             why_empty = bool(re.search(r"^why_empty:\s*\S+", t, re.M))
             sv = (re.search(r"^serves:\s*(.+)$", t, re.M) or [None, ""])[1]
             serves.setdefault(d.name.split("-")[0], []).extend(
-                [re.sub(r"\.S(\d+)$", r".B\1", a) for a in re.findall(r"C\d+\.P\d+\.[BS]\d+", sv)])
+                [re.sub(r"\.[Ss](\d+)$", r".B\1", a) for a in re.findall(r"C\d+\.P\d+\.[BSs]\d+", sv)])
             q = (re.search(r"^question:\s*(.+)$", t, re.M) or [None, ""])[1]
             if not q:
                 q = (re.search(r"^#\s*\S+\s*\n+(.+)$", t, re.M) or [None, ""])[1]
@@ -107,7 +107,7 @@ def _disk_state(page_src):
                                  intake_ready and renderer, renderer, asset)
             sv = (re.search(r"^serves:\s*(.+)$", txt, re.M) or [None, ""])[1]
             display_serves[m.group(1)] = re.findall(
-                r"C\d+\.P\d+\.[BS]\d+", sv
+                r"C\d+\.P\d+\.[BSs]\d+", sv
             )
     # The KEY alone says the citation resolves; the reader also wants to see
     # WHAT it is without leaving the tab (JL 260817: "我点它之后，它把这个内容

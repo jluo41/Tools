@@ -8,7 +8,7 @@ same two goal rules (t00 topics T1 and T2), so the N + 5 spread buys little diff
 - m2: N + 5 ideas, freestyle, from what ① sees
 - m3 (proposed): N + 5 ideas, at most two per goal rule or shared rule, the rest from own knowledge and marked so
 
-**Evidence:** j01_confirm-by-reply_method-v1-goal-only_inputs-v1/t00_reason-ideas/runs/run-reason-t00/result/chains.yaml (topics T1 to
+**Evidence:** j01_confirm-by-reply_M01-goal-only-m2_inputs-v1/t00_reason-ideas/runs/run-reason-t00/result/chains.yaml (topics T1 to
 T3) and ideas.yaml (I01 to I06).
 
 **What it does not change:** ① (still the goal and the shared rules only), ③, ④ and ⑤. A Job on m3 would be a new

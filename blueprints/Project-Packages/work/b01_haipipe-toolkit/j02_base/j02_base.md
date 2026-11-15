@@ -71,7 +71,7 @@ questions:
     drawn from disk, and every theme-to-theme call and every single-caller base skill
     is listed.
   work: []
-  report: reports/q01_base_map/q01_base_map.md
+  report: s02-base-map/s02-base-map.md
 - id: Q02
   title: Does a base family have one common shape?
   question: What should every base family have (door skill, ref/, cli/ or scripts/,
@@ -82,7 +82,7 @@ questions:
   acceptance: Answered when the common shape is written down and one row per family
     shows where it differs, drawn in studio/.
   work: []
-  report: reports/q02_base_shape/q02_base_shape.md
+  report: j02_base.md
 - id: Q03
   title: What sits in base but is not base?
   question: Which skills in 1_base are specific to one domain or one theme (the HAI-Pipe
@@ -95,7 +95,7 @@ questions:
   acceptance: Answered when every candidate has a proposed home JL agrees, and b04
     has moved the ones that move.
   work: []
-  report: reports/q03_not_base/q03_not_base.md
+  report: s02-base-map/s02-base-map.md
 - id: Q04
   title: Where does the page family's workbench part belong?
   question: The page family holds three workbench skills (workbench, workbench-studio,
@@ -108,5 +108,5 @@ questions:
   acceptance: Answered when JL and b03 agree where the three skills sit, and b04 has
     moved them.
   work: []
-  report: reports/q04_workbench_skills/q04_workbench_skills.md
+  report: j02_base.md
 ```

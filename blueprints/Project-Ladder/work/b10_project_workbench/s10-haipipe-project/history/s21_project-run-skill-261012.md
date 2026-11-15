@@ -16,7 +16,7 @@ changed.
 
 **Source:** read from disk on every build:
 
-- the base frame's Run buttons per level and Space (`servers/workbench/frame.py`: `vanilla()` through
+- the base frame's Run buttons per level and Space (`servers/workbench/page/frame.py`: `vanilla()` through
   `spaces_for`, and the Page Task's `draft_task_spaces`), and whether each names a skill
 - each skill's folder in `Tools/`, found by name: its `SKILL.md` version and what it holds (ref ·
   scripts · tests), every skill in `skills/1_base/project/`, and the themes in `skills/2_theme/` and

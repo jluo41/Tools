@@ -117,7 +117,7 @@ Links, commands and companions repointed at the helper skills merged into `haipi
 
 - A theme names its own buttons in `Theme.run_names` (frame.py `named`); the catalogue lists the themes named so far: paper (itself), work, discovery, labeling, cowork; insight and design are open.
 
-- `ref/run-types-by-space.md` rule 6 and the SKILL's Runs-by-Space note: the Runs panel names each button by the soft Run it makes, `run-<type>-<target>`, with what it does in small under it; a target the open folder fixes is filled in (`run-face-b03`), one still to choose stays a placeholder (`run-draw-<sNN>`). Buttons that make the same Run are one: Idea Studio's add, redraw and save-a-session are `run-draw-<sNN>`, its cards one per topic with its passes. The Page Task's buttons show their Page Runs (`run-scratch-<target>`, `run-structure-<slug>`, ...). Code: `servers/workbench/frame.py` `run_type`, `PAGE_RUN_NAMES`; `runs_panel.py` shows the name and the line under it.
+- `ref/run-types-by-space.md` rule 6 and the SKILL's Runs-by-Space note: the Runs panel names each button by the soft Run it makes, `run-<type>-<target>`, with what it does in small under it; a target the open folder fixes is filled in (`run-face-b03`), one still to choose stays a placeholder (`run-draw-<sNN>`). Buttons that make the same Run are one: Idea Studio's add, redraw and save-a-session are `run-draw-<sNN>`, its cards one per topic with its passes. The Page Task's buttons show their Page Runs (`run-scratch-<target>`, `run-structure-<slug>`, ...). Code: `servers/workbench/page/frame.py` `run_type`, `PAGE_RUN_NAMES`; `runs_panel.py` shows the name and the line under it.
 
 # haipipe-run · CHANGELOG
 

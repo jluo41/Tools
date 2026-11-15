@@ -92,7 +92,7 @@ def build(topic: Path) -> Path:
                      "parts": [("page", f"ui/{level}-{part}", f"the Studio in {a}'s {part.capitalize()}",
                                 (topic / "delivery" / "ui").is_dir() and any((topic / "delivery" / "ui").iterdir()))]},
             "job": topic.parent.parent,
-            "target": "servers/workbench/focus_page.py (the shared page)",
+            "target": "servers/workbench/page/focus_page.py (the shared page)",
             "missing": []}
     shot = topic / "screen.png"
     h = round(900 * SHOT_W / 920)

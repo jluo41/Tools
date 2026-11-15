@@ -15,6 +15,7 @@ from live import focus_page as F, frame, labeling_focus as L, labeling_steps as 
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import labeling_example  # noqa: E402
+import page_parts as P  # noqa: E402
 
 
 class StepsPageTest(unittest.TestCase):
@@ -41,25 +42,47 @@ class StepsPageTest(unittest.TestCase):
         html = self.page(self.meaning)
         for name in ("Frame", "Prepare", "Preferences", "Update"):
             self.assertIn(f">{name}<", html)
-        self.assertIn('Frame<span class="vw fd-ok">agreed</span>', html)            # each step's state on its button
-        self.assertIn('Preferences<span class="vw fd-you">waiting for you</span>', html)
-        self.assertIn("its steps", html)                                            # Work holds the steps (s58-D02)
+        self.assertIn(">Frame</a>", html)                                       # a done step: no word on its button
+        self.assertIn('Preferences<span class="vw fd-you" title="waits for you">🙋</span>', html)   # a mark, only here
+        self.assertNotIn('class="vw fd-ok"', html)
+        self.assertIn(">Delivery<", html)                                          # its releases, last (Paper's shape)
+        self.assertIn("🧭 Around the Work", html)                                   # the shared frame (Work, Paper)
 
     def test_work_opens_where_the_person_is_needed(self):
         self.assertEqual(S.default_view(self.meaning), "preferences")          # Loop 2's form waits
         self.assertEqual(S.default_view(self.expression), "release")            # e01 ran Rewrite, Run, Evaluate
 
-    def test_report_section_shows_results_only_and_work_shows_both(self):
+    def test_the_job_names_one_next_thing_by_the_same_rule_the_page_opens_on(self):
+        """engine/two_loops.py is the one rule: the page opens a Task on task_step, and /haipipe-labeling <Job>
+        (start.py) opens the Task job_now names. A waiting form comes first."""
+        now = S.TWO.job_now(self.job)
+        self.assertEqual((now["task"], now["kind"], now["who"]), (self.meaning, "meaning", "person"))
+        self.assertEqual(now["step"], S.default_view(self.meaning))
+
+    def test_a_round_report_sends_its_cards_back_to_the_loop_it_names(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            for name, line, loop in (("r03_evaluate_m01_e01", "1 wrong label, 1 rule gap → meaning, Loop 2", 2),
+                                     ("r06_evaluate_m02_e02", "0 wrong label, 0 rule gaps → Release", 0),
+                                     ("r09_evaluate_m02_e03", "wording only → e04", 0),
+                                     ("r12_evaluate_m02_e04", "2 rule gaps → meaning", 3)):
+                result = Path(tmp) / name / "result"
+                result.mkdir(parents=True)
+                (result / "round_report.md").write_text(f"# Round report\n\n{line}\n")
+                self.assertEqual(S.TWO.sends_back(result.parent), loop, name)
+        self.assertEqual(S.TWO.sends_back(None), 0)
+
+    def test_report_holds_each_whole_step_and_old_work_links_open_it(self):
         for view in ("frame", "prepare", "preferences", "update"):
             work, report = self.page(self.meaning, "work", view), self.page(self.meaning, "report", view)
-            self.assertIn("⚙️ Process", work)
-            self.assertIn("📊 Results", work)
-            self.assertNotIn("⚙️ Process", report)
-            self.assertIn("📊 Results", report)
+            self.assertEqual(work, report)                                      # Work is retired: same page
+            self.assertIn("<h3 class=fd-h>1 · ", P.step(report))                 # the step itself leads the list
+            self.assertTrue(P.made(report))                                         # then what it made
+            self.assertNotIn("⚙️ Process", report)                                  # one list, no group headings
+            self.assertLess(report.index("📋 Review Content"), report.index("🧭 Around the Work"))
 
     def test_report_step_leads_with_the_mind_map_then_the_report_and_its_cases(self):
         html = self.page(self.meaning, "work", "prepare")
-        results = html[html.index("📊 Results"):]
+        results = P.made(html)
         order = [results.index(t) for t in ("Guideline rules, as a mind map", "Typical cases", "Hard cases",
                                             "Random cases", "🙋 Interaction")]
         self.assertEqual(order, sorted(order))                                   # the reports' forms come last
@@ -76,7 +99,8 @@ class StepsPageTest(unittest.TestCase):
         rel = (self.meaning / "runs" / "r08_collect_report_m02" / "r08_collect_report_m02.html").relative_to(self.root)
         src = f'src="/_board/labeling/form/{rel.as_posix()}"'
         self.assertIn(src, html)
-        self.assertGreater(html.index(src), html.index("📊 Results"))   # the form is 🙋 Interaction's, never Process's
+        self.assertIn(src, P.made(html))                                # the form is 🙋 Interaction's, never the step's
+        self.assertNotIn(src, P.step(html))
         self.assertIn(f'class="ls-send" data-form="/_board/labeling/form/{rel.as_posix()}"', html)
         self.assertIn("save my answers to report-02", html)
         self.assertIn("Not saved yet", html)                    # Results: the decision record, once the chat saves it
@@ -145,8 +169,9 @@ class StepsPageTest(unittest.TestCase):
             (self.meaning / "meaning" / "m02.approved.yaml").unlink(missing_ok=True)
 
     def test_every_view_ends_in_its_own_interaction(self):
-        """Settled 3 (round 2): 🙋 Interaction is the last section of every Report and Work view, with that step's own
-        forms; the grey session line under a prompt is gone."""
+        """Settled 3 (round 2): 🙋 Interaction is the last section of every Report and Work view that has forms, with
+        that step's own forms; a step with none has no 🙋 Interaction section at all (the shared bar design, 261114);
+        the grey session line under a prompt is gone."""
         own = {"frame": "r01_collect_frame_decisions", "prepare": "r08_collect_report_m02",
                "preferences": "r08_collect_report_m02", "update": None}
         for view, run in own.items():
@@ -154,13 +179,14 @@ class StepsPageTest(unittest.TestCase):
                 with self.subTest(view=view, section=section):
                     html = self.page(self.meaning, section, view)
                     bars = re.findall(r"<h3 class=fd-h>\d+ · ([^<]*)", html)
-                    self.assertEqual(bars[-1], "🙋 Interaction")
-                    last = html[html.rindex("🙋 Interaction</h3>") if "🙋 Interaction</h3>" in html
-                                else html.rindex("🙋 Interaction<span"):]
                     if run:
+                        self.assertEqual(bars[-1], "🙋 Interaction")
+                        last = html[html.rindex("🙋 Interaction</h3>") if "🙋 Interaction</h3>" in html
+                                    else html.rindex("🙋 Interaction<span"):]
                         self.assertIn(run, last)
                     else:
-                        self.assertIn("Nothing asked yet.", last)
+                        self.assertNotIn("🙋 Interaction", bars)
+                        self.assertNotIn("Nothing asked yet.", html)
                     self.assertNotIn("<p class=pb-sess>", html)
         frame_view = self.page(self.meaning, "work", "frame")
         self.assertNotIn("r08_collect_report_m02", frame_view)            # another step's form stays in its own view
@@ -199,7 +225,7 @@ class StepsPageTest(unittest.TestCase):
             standing = L.render(self.theme, self.root, self.job, "report", "standing")
             self.assertNotIn("r90_collect_release_choices.html", standing.split("🧭 Around the Work", 1)[1])
             work = L.render(self.theme, self.root, self.job, "work", "standing")
-            self.assertIn("View BJTR", work)
+            self.assertNotIn("View BJTR", work)
             self.assertNotIn("🚧 Next steps", work)
             all_forms = L.render(self.theme, self.root, self.job, "interactions")
             self.assertIn(frame._file_url(form, self.root), all_forms)
@@ -221,11 +247,11 @@ class StepsPageTest(unittest.TestCase):
         for task in (self.meaning, self.expression):
             for key, *_ in S.STEPS[S.kind(task)]:
                 with self.subTest(task=task.name, view=key):
-                    process = self.page(task, "work", key).split("⚙️ Process", 1)[1].split("📊 Results", 1)[0]
-                    outside = re.sub(r"<section class=fd-sec>.*?</section>", "", process, flags=re.S)
+                    body = P.review(self.page(task, "work", key))
+                    outside = P.outside_sections(body)
                     self.assertNotIn("pb-prompt", outside)
                     self.assertNotIn("ls-bar", outside)
-                    self.assertNotIn("ls-by", process)                        # a sign needs no name (settled 5)
+                    self.assertNotIn("ls-by", body)                        # a sign needs no name (settled 5)
 
     def test_an_answered_loop_says_when_its_answers_came_back(self):
         saved = self.root / "answer_collection.md"
@@ -258,7 +284,7 @@ class StepsPageTest(unittest.TestCase):
             self.assertEqual(S.states(self.expression, self.root)["release"], ("released · 1 wait", "you"))
             self.assertEqual(S.states(self.expression)["release"], ("released", "ok"))
             release = self.page(self.expression, "work", "release")
-            self.assertIn('<span class="vw fd-you">released · 1 wait</span>', release)
+            self.assertIn('Release<span class="vw fd-you" title="waits for you">🙋</span>', release)   # its choices wait
             self.assertIn(f'#Q2" title="{report.name}, Q2">{cite}</a>', release)   # the card opens its question
             for page in (self.job, self.block, self.expression):
                 with self.subTest(page=page.name):
@@ -270,14 +296,16 @@ class StepsPageTest(unittest.TestCase):
             shutil.rmtree(run, ignore_errors=True)
             shutil.rmtree(form, ignore_errors=True)
 
-    def test_a_block_row_says_how_many_tasks_are_done_as_its_job_does(self):
+    def test_a_block_row_marks_where_its_job_stands_with_no_word_or_count(self):
         block = L.render(self.theme, self.root, self.block, "report", "standing")
-        n = len([t for t in frame.children(self.job, "Job")])
-        done = sum(F.state_kind(F.state_label(F.read_face(t, self.root)["state"])) == "✅ done"
-                   for t in frame.children(self.job, "Job"))
+        kinds = [F.state_kind(F.state_label(F.read_face(t, self.root)["state"])) for t in frame.children(self.job, "Job")]
         row = block.split(f'data-pop="{self.job.name}"', 1)[1].split("</summary>", 1)[0]
-        self.assertIn(f"<small>{done} of {n} done</small>", row)
-        self.assertIn(f"{done} of {n} done", L.render(self.theme, self.root, self.job, "report", "standing"))
+        self.assertIn(f"<small>{L.job_word(kinds)}</small>", row)
+        self.assertNotRegex(row, r"\d+ of \d+ done")                             # no check or progress tally (AGENTS.md)
+        self.assertEqual(L.job_word(["✅ done", "🙋 waiting on you"]), "🙋")
+        self.assertEqual(L.job_word(["✅ done", "✅ done"]), "✅")
+        self.assertEqual(L.job_word(["✅ done", "⏳ running"]), "🏃")
+        self.assertEqual(L.job_word(["✅ done", "⬜ not run yet"]), "⬜")
         self.assertIn("_<wbr>", block.split("<h1>", 1)[1].split("</h1>", 1)[0])   # a phone breaks the name at words
 
     def handler(self):

@@ -827,7 +827,7 @@ PIECE = {   # the why notes: what b14 had before this Job (261108)
 }
 TARGET = {"report": "servers/workbench-discovery/discovery_focus.py · workbench-discovery/SKILL.md",
           "work": "servers/workbench-discovery/discovery_focus.py · workbench-discovery/SKILL.md",
-          "studio": "servers/workbench/focus_page.py · workbench-discovery/SKILL.md"}
+          "studio": "servers/workbench/page/focus_page.py · workbench-discovery/SKILL.md"}
 
 AGREED = {}                            # (level, section): {letter: sections}, the letters settled so far; none yet
 MOCK = """<!doctype html><meta charset=utf-8><title>{letter} · {view}</title>

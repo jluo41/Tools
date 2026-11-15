@@ -1,6 +1,6 @@
 """Scratch for Phase A of the layout plan: what changes in focus_page.py, step by step, before any code (261028).
 
-Code lines are read from servers/workbench/focus_page.py when this runs, so the scratch quotes what is there.
+Code lines are read from servers/workbench/page/focus_page.py when this runs, so the scratch quotes what is there.
 Placeholders only for project content: this blueprint is public. JL's own marks are kept on a rebuild.
 
     python build_s04_plan_scratch.py     # writes s04-plan-scratch.excalidraw
@@ -15,7 +15,7 @@ sys.path.insert(0, str(TOOLS / 'plugins/haipipe-toolkit/skills/1_base/project/ha
 import canvas  # noqa: E402
 
 canvas.assign_ids = lambda elements: elements      # explicit ids; no content hashes
-SRC = TOOLS / 'plugins/haipipe-toolkit/servers/workbench/focus_page.py'
+SRC = TOOLS / 'plugins/haipipe-toolkit/servers/workbench/page/focus_page.py'
 random.seed(1)
 HAND, MONO = 6, 3
 INK, GRAY, RED, BLUE = '#1e1e1e', '#868e96', '#e03131', '#1971c2'
@@ -170,13 +170,13 @@ OFFSET[0] = 2250
 
 # ── title ───────────────────────────────────────────────────────────────────────────────────────────────────
 text('title', 0, 0, 'Phase A in the code: the layout=focus page becomes "Goal & status"', 44)
-text('sub', 0, 66, 'Read only. Four steps in servers/workbench/focus_page.py. No code until JL marks this.', 26, GRAY)
+text('sub', 0, 66, 'Read only. Four steps in servers/workbench/page/focus_page.py. No code until JL marks this.', 26, GRAY)
 
 # ── cluster: today ──────────────────────────────────────────────────────────────────────────────────────────
 text('today-h', 0, 150, 'today: what focus_page.py does', 32)
 today = src_lines('def home_section', 'if theme == "work"', 'return "goal"', 'sections = [(home',
                   'sections += [("children"', 'elif section == "children"', 'focus-child', '<h1>')
-bottom = mono('today', 0, 200, today, 16, title='servers/workbench/focus_page.py, read at build time')
+bottom = mono('today', 0, 200, today, 16, title='servers/workbench/page/focus_page.py, read at build time')
 tw = max(len(l) for l in today) * 16 * 0.6 + 40   # the box's width, so a mark fits inside it
 row = next(i for i, l in enumerate(today) if 'focus-child' in l)
 mark('today-mark', 8, 200 + 36 + row * 16 * 1.3 - 3, tw - 16, 16 * 1.3 + 6)

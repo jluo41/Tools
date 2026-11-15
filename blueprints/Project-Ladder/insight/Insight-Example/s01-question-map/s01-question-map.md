@@ -9,11 +9,11 @@ s01 · How the questions build on each other
 
 **Covers:** which question rests on which (a cite need is an arrow), level by level, Data to Executive
 
-**Excluded:** the answers themselves (the Jobs' pages); the next plan's new questions (the Prototype's proposals)
+**Excluded:** the answers themselves (the Jobs' pages); the next plan's new questions (the Question Book's proposals)
 
 **Topic:** the example's questions as one map, generated from the plan's question files by `haipipe-insight/ref/question_map.py`: a box per question, an arrow from a question to the one that cites it. It shows at a glance that the Executive answers rest on Knowledge, and Knowledge on the arm gap.
 
-**Feeds:** `reports/q01_gap-across-data-versions`
+**Feeds:** Q01
 
 
 Files

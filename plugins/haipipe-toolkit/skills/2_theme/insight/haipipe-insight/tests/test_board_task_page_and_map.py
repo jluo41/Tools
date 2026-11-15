@@ -1,4 +1,4 @@
-"""The answering page of a Board Task and a Prototype's question map are generated, never typed (ref/insight-ladder.md):
+"""The answering page of a Board Task and a Question Book's question map are generated, never typed (ref/insight-ladder.md):
 write_answer_page.py writes a Board Task's face and sections from a spec, citing only tables its Runs wrote, and
 question_map.py draws a release's questions, Executive included. Placeholders only: a made-up extract in a temp folder.
 """
@@ -56,10 +56,10 @@ COMPUTE = {"kind": "compute", "what": "<what>", "pass": "<pass>", "cut": "the ce
 def board(tmp_path):
     (tmp_path / "env.sh").write_text("# the SPACE root of the test\n")
     p = tmp_path / "Project-Demo"
-    proto, board = p / "insight" / "Prototype-Demo", p / "insight" / "Insight-Demo"
+    proto, board = p / "insight" / "InsightQuestionBook-Demo", p / "insight" / "Insight-Demo"
     L("prototype", proto, "--serves", "insight/Insight-Demo")
     L("version", proto, "--slug", "first")
-    v = proto / "j01_code-v1_first"
+    v = proto / "j01_question-v1_first"
     L("question", v, "D01", "counts")
     L("question", v, "X01", "the-line")
     d01, x01 = v / "t01_D01_counts", v / "t02_X01_the-line"
@@ -79,10 +79,10 @@ def board(tmp_path):
     data = p / "insight" / "Insight-Demo-data" / "data-v1"
     data.mkdir(parents=True)
     pd.DataFrame({"arm": ["A", "B"] * 30}).to_parquet(data / "demo.parquet", index=False)
-    L("board", board, "--dataset", "Demo", "--prototype", "insight/Prototype-Demo")
+    L("board", board, "--dataset", "Demo", "--prototype", "insight/InsightQuestionBook-Demo")
     L("data", board, "data-v1", "--data-folder", data.relative_to(tmp_path).as_posix() + "/")
-    L("job", board, "--release", "code-v1", "--data", "data-v1")
-    job = board / "j01_code-v1-first_data-v1"
+    L("job", board, "--release", "question-v1", "--data", "data-v1")
+    job = board / "j01_question-v1-first_data-v1"
     assert RJ.run(job / "t01_D01_counts", "r01_full")["status"] == "ok"
     return proto, board, job
 

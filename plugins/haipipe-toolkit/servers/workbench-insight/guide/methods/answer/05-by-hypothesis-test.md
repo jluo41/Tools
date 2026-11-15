@@ -17,7 +17,7 @@ reads: question · the stated hypothesis · its test, alpha and power
 returns: the estimate, its interval, its p-value against the stated alpha, and the number
   of tests run on the question
 test now: T4 the run is the test the spec names · T5 the sentence says what the test says
-test in use: T8 the same test on another partition or time window
+test in use: T8 the same test on another segment or time window
 
 
 What the literature says
@@ -52,7 +52,7 @@ returns: The test's result, the number of tests on the question, and any deviati
   the spec.
 verify: A different agent checks that the run is the test the spec names (T4) and that
   each sentence says what the test says (T5, T6).
-risk: Choosing a test, a cut or an exclusion after seeing the data makes a false
+risk: Choosing a test, a segment or an exclusion after seeing the data makes a false
   hypothesis look supported [Simmons 2011].
 evidence on AI: LLM agents that design falsification tests under sequential Type-I error
   control were run in six domains, and matched human scientists on complex

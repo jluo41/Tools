@@ -36,13 +36,13 @@ is `haipipe-project`'s, and each theme adds its words over the face.
 └── jNN_<job>/           its Jobs (haipipe-job)
 ```
 
-**Special boards** (JL 261008: "Paper, Insight, (and Prototype), and Design, these four are the special boards; in
+**Special boards** (JL 261008: "Paper, Insight, (and Question Book), and Design, these four are the special boards; in
 the future, the Labeling will be the same"). A theme's own Board is named by its kind, not `bNN_`:
 
 ```text
 <Project>/paper/Paper-<Slug>/                 a paper Board          (haipipe-paper)
 <Project>/insight/Insight-<name>[-<YYMMDD>]/  an insight Board       (haipipe-insight)
-<Project>/insight/Prototype-<Topic>/         an insight Prototype   (haipipe-insight)
+<Project>/insight/InsightQuestionBook-<Topic>/         an insight Question Book   (haipipe-insight)
 <Project>/design/Design-<name>[-<YYMMDD>]/    a design Block         (haipipe-design)
 <Project>/labeling/Labeling-<name>/           a labeling Board, later (haipipe-labeling)
 ```
@@ -114,7 +114,7 @@ Boundary
 | `haipipe-report` | its Questions register · their reports |
 | `haipipe-studio` | its studio topics |
 | theme skills | their own Block template and fields over this one (work: `haipipe-task` `ref/block-board-template.md`) |
-| `servers/workbench/frame.py` | drawing the Spaces |
+| `servers/workbench/page/frame.py` | drawing the Spaces |
 
 
 Files

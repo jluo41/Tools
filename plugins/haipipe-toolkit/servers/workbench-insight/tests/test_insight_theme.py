@@ -76,7 +76,7 @@ class InsightThemeTest(unittest.TestCase):
     def test_the_block_spaces_carry_the_old_pages_content(self):
         s = self.json(self.board)
         # b11 s11: the Map first (one row on today's layout: one set of questions, not yet versioned)
-        self.assertEqual(s["Description"]["subspaces"], ["Map", "Prototype", "Dataset", "Partitions"])
+        self.assertEqual(s["Description"]["subspaces"], ["Map", "Question Book", "Dataset", "Partitions"])
         self.assertEqual(s["Audience Report"]["subspaces"][:2], ["Full", "Young"])
         self.assertEqual(s["Audience Report"]["run_doing"], ["Report", "Pool or split"])
         self.assertIn("Mechanical check", s["Runs"]["run_doing"])
@@ -89,10 +89,10 @@ class InsightThemeTest(unittest.TestCase):
         self.assertIn('id="question-QW1"', page)
         self.assertIn("Extract shape", page)                    # the answering page, as the Report
         young = frame.render(THEME, self.root, self.board, "Audience Report", "Young")
-        self.assertIn("Answered on Full", young)               # a question refused on this cut says why
+        self.assertIn("Answered on Full", young)               # a question refused on this segment says why
 
     def test_every_view_draws_with_base_classes_only(self):
-        for sub in ("Prototype", "Dataset", "Partitions", "Full", "Young", ""):
+        for sub in ("Question Book", "Dataset", "Partitions", "Full", "Young", ""):
             for name, space in spaces("Block", self.board, self.root, sub).items():
                 with self.subTest(space=name, sub=sub):
                     for old in OLD_CLASSES:
@@ -142,16 +142,16 @@ class CarriedBoardTest(unittest.TestCase):
 
     def test_each_level_draws_as_designed(self):
         board_s = spaces("Block", self.board, self.root, "")
-        self.assertEqual(board_s["Description"].subspaces, ("Map", "Prototype", "Dataset", "Partitions"))
+        self.assertEqual(board_s["Description"].subspaces, ("Map", "Question Book", "Dataset", "Partitions"))
         self.assertIn(self.job.name, board_s["Description"].html)              # the Map's one cell
         job_s = spaces("Job", self.job, self.root, "")
-        self.assertEqual(job_s["Description"].subspaces, ("Prototype", "Dataset"))
+        self.assertEqual(job_s["Description"].subspaces, ("Question Book", "Dataset"))
         self.assertIn("Propose questions", [k["doing"] for k in job_s["Runs"].run_types])
         task = self.job / "t01_D01_what-does-the-extract-hold"
         task_s = spaces("Task", task, self.root, "Table")
         self.assertEqual(task_s["Audience Report"].subspaces, ("Table", "Reading"))
-        self.assertIn("Extract shape", task_s["Audience Report"].html)          # the answering page, per cut
-        self.assertIn("refused", task_s["Audience Report"].html)                # 🚫 on young
+        self.assertIn("Extract shape", task_s["Audience Report"].html)          # the answering page, per segment
+        self.assertIn("❗", task_s["Audience Report"].html)                      # refused on young, as a mark
         for level, folder in (("Block", self.board), ("Job", self.job), ("Task", task)):
             page = frame.render(THEME, self.root, folder)
             self.assertNotIn("Traceback", page, level)

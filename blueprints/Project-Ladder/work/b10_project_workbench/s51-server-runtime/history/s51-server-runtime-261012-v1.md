@@ -60,7 +60,7 @@ workbench-paper.
 
 **The Task level's routes, merged into the frame (JL 261007: "why not merge them into the base?";
 "go ahead and do it"):** they were the old Page workbench, one route and one page per tab. Now they
-are the frame's Task Spaces, each view a subspace drawn in place (`workbench/frame.py` PAGE_VIEWS);
+are the frame's Task Spaces, each view a subspace drawn in place (`workbench/page/frame.py` PAGE_VIEWS);
 a theme keeps them beside its own subspaces. One route serves them all,
 `/_board/workbench?view=<view>&path=<page .md>` (`frame_view.py`). The old addresses answer as it on
 a GET or HEAD (`serve.py` PAGE_VIEW_ROUTES), their POST twins keep theirs, and a Task Page's

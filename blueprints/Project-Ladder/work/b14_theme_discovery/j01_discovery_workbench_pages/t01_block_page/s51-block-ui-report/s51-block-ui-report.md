@@ -15,7 +15,7 @@ s51 · Block UI: Report
 
 **Topic:** One cell of the discovery 3 × 3, the discovery Block (one field of prior work) × Report (check), copied from the work theme's (b17 j03) and the insight theme's (b11 j01). Its drawing is haipipe-studio's five parts, drawn by `build_s51_block_ui_report.py` through j01's `discovery_ui_cells.py`; its Design is every view as the same full screen, lettered, drawn from the live discovery page on 261108 (`discovery/b01_example_prior_work`). Names are placeholders: Tools is public.
 
-**Feeds:** `reports/` q01_discovery_ladder · q02_papers_citations_bib
+**Feeds:** Q01 · Q02
 
 
 Files

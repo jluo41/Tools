@@ -8,7 +8,7 @@ what they are doing"); s06 since JL set the order by the screen: s02 Studio, s03
     still open (red)            hard and soft row by row, and the folders (reference)
 
 Read from disk on every build: this Block's own Runs (runs/*/run.yaml and each ticket's close: line), the
-Runs Space as servers/workbench/frame.py draws it for this Block, and haipipe-run's version. Typed, since they
+Runs Space as servers/workbench/page/frame.py draws it for this Block, and haipipe-run's version. Typed, since they
 are the design or sit in another repository: the hard example (Proj11-CGM-Corpus r01_rate_tir_hypo), the
 rules of ② and ③, the open points. The 261010 builder (five frames, then s05-runs) is in history/.
 
@@ -428,8 +428,8 @@ def main():
         f["height"] = tall
     below = [frame_open(runs, space), frame_reference(),
              L.tools_frame("In Tools: haipipe-run", ["1_base/project/haipipe-run"],   # its skill and code (JL 261011)
-                           [("servers/workbench/frame.py", ["runs_of"]),
-                            ("servers/workbench/runs_panel.py", ["run_types", "panel_html", "panel_markup"])],
+                           [("servers/workbench/page/frame.py", ["runs_of"]),
+                            ("servers/workbench/page/runs_panel.py", ["run_types", "panel_html", "panel_markup"])],
                            around=["haipipe-task runs a hard Run", "haipipe-studio's run-draw-<sNN> (s02)",
                                    "haipipe-report's run-report-<qNN> (s05)", "each workbench's run table names its types"],
                            note="its skill's folder and code, read from disk (JL)")]

@@ -1,6 +1,6 @@
 ---
 name: haipipe-cowork
-description: "Owns the CoWork Block (cowork/bNN_<topic>/): its board.md, its Jobs (one line of work each), its people Job j00_people/, its Questions and studio/. Use to create, update or audit a cowork Block or Job, record who has the next move, or place an email, meeting or note. Trigger: cowork, cowork block, who are we waiting on, open a job, update a job, who to ask, /haipipe-cowork."
+description: "Owns the CoWork Block (cowork/bNN_<topic>/): its board.md, its Jobs (one line of work each), its people Job j00_people/, its Questions and Studio topics. Use to create, update or audit a cowork Block or Job, record who has the next move, or place an email, meeting or note. Trigger: cowork, cowork block, who are we waiting on, open a job, update a job, who to ask, /haipipe-cowork."
 metadata:
   version: "0.2.3"
   last_updated: "2026-10-26"
@@ -22,10 +22,12 @@ Project/
     ├── emails/ meetings/ studio/   material that serves every Block
     ├── _old/                       replaced material; do not use
     └── bNN_<topic>/                Block = CoWork Board
-        ├── board.md                fixed: header, the text, the Questions register
-        ├── studio/                 fixed: the Idea Studio, one topic per sNN-<topic>/ (haipipe-studio)
-        ├── reports/qNN_<topic>/    fixed: a Question's report Page (haipipe-report); its own
-        │                           drawings in reports/qNN_<topic>/studio/
+        ├── board.md                fixed: header, the text, the Questions register (a Question's
+        │                           report: points at the topic that answers it)
+        ├── sNN-<topic>/            Studio topics beside the Jobs (haipipe-studio): each face has
+        │                           view: under its title, and a "Q01 · Answer" part per Question
+        │                           it answers; no reports/ folder (JL 261109)
+        ├── related/ delivery/      what came in; what goes out
         ├── _old/                   fixed: replaced material; do not use
         ├── j00_people/             who to ask for help (state 📇 REFERENCE)
         │   └── j00_people.md
@@ -136,8 +138,15 @@ a Question's `work:` names files inside the Block) and `## Related resources`.
 4. **No participant data, no keys.** Git keeps history. Office files, recordings and
    anything over 5 MB stay local through `cowork/.gitignore`.
 5. **Drawings are generated.** A studio topic follows `haipipe-studio`: `sNN-<topic>/` holds
-   its face `.md`, its builder `build_sNN_<topic>.py` beside the drawing, and the preview;
-   `studio/_build/` keeps only shared helpers and `make.sh`. A drawing is never edited by hand.
+   its face `.md`, its builder `build_sNN_<topic>.py` beside the drawing, and the preview.
+   A drawing is never edited by hand.
+7. **Answers live in topics, not reports/** (JL 261109: "we might not need the reports anymore").
+   The focus page never shows a `reports/qNN_*/` page. A Question's answer, evidence and limits
+   go in the face of the topic whose `**Feeds:**` names it; its board.md `report:` points at that
+   face. An older Block's `reports/`: fold each page that holds an answer into its topic, drop the
+   empty ones (the Question stays in board.md), then move `reports/` to `_old/reports/`.
+   `haipipe-studio` `studio_update.py audit` lists faces with no `view:`, no `**Why:**`, or
+   `**Feeds:**` still pointing at `reports/`.
 6. **Paths are Block-relative** inside a Block (`j02_hopkins_rit4630/emails/...`) and
    Project-relative elsewhere; never `/Users/...`.
 

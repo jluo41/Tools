@@ -1,8 +1,8 @@
 """b11 s04 · Insight structure: s04-insight-structure.excalidraw: the thinking behind the insight ladder.
 
 A design scratch (JL 261007: "please have s00 to put these thoughts into the draw with the tree and box"):
-what an Insight Project looks like; the Prototype as its own work Block whose Jobs are Prototype
-versions; the insight Board whose Jobs pin one Prototype version and one data version; the two clocks;
+what an Insight Project looks like; the Question Book as its own work Block whose Jobs are Question Book
+versions; the insight Board whose Jobs pin one Question Book version and one data version; the two clocks;
 where a new release comes from and what triggers it; and a Questions frame (the Block's register,
 read from board.md, with our idea beside each and your choice in a red box).
 
@@ -102,45 +102,45 @@ def arrow(pts, color=INK, dashed=False, label=None, label_at=None):
 PROJECT = [("<project>/", ""),
            ("├── README.md · project.yaml", "the Project's face; themes: work · insights · designs"),
            ("├── work/", "the work theme"),
-           ("│   └── bNN_<topic>_prototype/", "the Prototype: questions + code, versioned"),
+           ("│   └── bNN_<topic>_prototype/", "the Question Book: questions + code, versioned"),
            ("├── insights/", "the insight theme"),
            ("│   └── bNN_<topic>/", "the insight Board: data, Jobs, answers, handoff"),
            ("├── designs/   (optional)", "reads the Board's signed Wisdom handoff"),
            ("└── discoveries/   (optional)", "papers that suggest a method or a question"),
            ("<workspace>/<extracts>/", "the data versions, outside the Project: <d>v1 · <d>v2 …"),
-           ("", "one Prototype Block serves one insight Board, or several ?")]
+           ("", "one Question Book Block serves one insight Board, or several ?")]
 
 # ── 2 · the two Blocks: a box, its definition, its tree ─────────────────────────────────────────
-PROTO = ("bNN_<topic>_prototype/", "work theme: the Prototype, made once per version, reviewed, signed", [
+PROTO = ("bNN_<topic>_prototype/", "work theme: the Question Book, made once per version, reviewed, signed", [
     ("├── board.md", "kind: prototype · serves: insights/bNN_<topic>"),
     ("├── proposals/", "the backlog: new · fix · retire, from the Board"),
-    ("├── j01_code-v1/", "Job = Prototype version p1, frozen when closed"),
+    ("├── j01_question-v1/", "Job = Question Book version p1, frozen when closed"),
     ("│   ├── release.yaml", "every live question -> its Task (here or earlier)"),
-    ("│   ├── partitions.md · thresholds.yaml", "the cuts, power floors, compare rule: plan"),
+    ("│   ├── partitions.md · thresholds.yaml", "the segments, power floors, compare rule: plan"),
     ("│   ├── t01_D01_<q>/", "question.md · scripts/<name>.py · a test"),
     ("│   ├── t02_D02_<q>/ …", "grouped by level: D · I · K · W"),
     ("│   └── runs/", "soft: ask · plan · script · review · sign"),
-    ("├── j02_code-v2/", "only new or changed Tasks, + release.yaml"),
-    ("└── j03_code-v3/ …", "the next version, opened from proposals/")])
+    ("├── j02_question-v2/", "only new or changed Tasks, + release.yaml"),
+    ("└── j03_question-v3/ …", "the next version, opened from proposals/")])
 BOARD = ("bNN_<topic>/", "insight theme: one dataset, its versions, the answers", [
     ("├── board.md", "dataset: <d> · versions · accumulates ?"),
     ("│", "prototype: work/bNN_<topic>_prototype"),
-    ("├── meta/status.md", "written only by the checker; the cuts live in the release"),
+    ("├── meta/status.md", "written only by the checker; the segments live in the release"),
     ("├── reports/qNN_<topic>/", "the Block's own questions: D · I · K · W over the Jobs"),
-    ("├── j01_code-v1_data-v1/", "Job = Prototype p1 x data v1, frozen"),
-    ("│   ├── j01_code-v1_data-v1.md", "pins: j01_code-v1 (hash) · <d>v1"),
+    ("├── j01_question-v1_data-v1/", "Job = Question Book p1 x data v1, frozen"),
+    ("│   ├── j01_question-v1_data-v1.md", "pins: j01_question-v1 (hash) · <d>v1"),
     ("│   └── t01_D01_<q>/", "the question on this pair: its page"),
     ("│   ├── t01_D01_<q>/runs/r01_full/ …", "hard: one per partition"),
     ("│   └── reports/vs-<prev>.md", "run-compare: new · held · changed · dropped"),
-    ("├── j02_code-v1_data-v2/", "data moved"),
-    ("├── j03_code-v2_data-v2/", "code moved"),
+    ("├── j02_question-v1_data-v2/", "data moved"),
+    ("├── j03_question-v2_data-v2/", "code moved"),
     ("└── delivery/", "the signed Wisdom handoff, latest Job")])
 
 # ── 4 · where a new release comes from ──────────────────────────────────────────────────────────
 TRIGGERS = [("a level is answered", "D answers raise I questions; I raise K; K raise W"),
             ("a check fails", "a script bug, a wrong spec -> fix"),
             ("an answer is weak", "underpowered, null, unstable across Jobs -> rework or retire"),
-            ("new data, new fields", "a version adds columns -> new questions, or a new cut (a cut is plan)"),
+            ("new data, new fields", "a version adds columns -> new questions, or a new segment (a segment is plan)"),
             ("someone asks", "Design or a person needs a question answered"),
             ("a paper suggests it", "Discovery: a new method or a new question")]
 FLOW = ["proposals/\nthe backlog", "open j0N_pN+1\n(a version Job)", "ask · plan · script\nreview (another agent)",
@@ -149,20 +149,20 @@ WHEN = ["when to cut a release ?", "  a level's questions all signed", "  a batc
         "  on demand, by a person"]
 
 # ── 5 · the Questions frame: the register, our ideas, the choices ───────────────────────────────
-IDEAS = {"Q01": ("Board = data + Jobs + answers; the Prototype is its own work Block; Job = pN x vM; "
-                 "Task = a question in the Job; Run = a partition.",
-                 "Prototype in its own work Block, or inside the Board (s01 plan C)?"),
-         "Q02": ("Versions are a second axis beside partitions: versions = Jobs, partitions = Runs; the cuts are defined in the release, so a new cut is a new release.",
+IDEAS = {"Q01": ("Board = data + Jobs + answers; the Question Book is its own work Block; Job = pN x vM; "
+                 "Task = a question in the Job; Run = a segment.",
+                 "Question Book in its own work Block, or inside the Board (s01 plan C)?"),
+         "Q02": ("Versions are a second axis beside partitions: versions = Jobs, partitions = Runs; the segments are defined in the release, so a new segment is a new release.",
                  "Versions accumulate (compare, never pool) or come in batches (may pool)?"),
          "Q03": ("Gates are chips on each question row; the checker is a Board Run.",
                  "Chips, or keep a Check Space?"),
          "Q04": ("Only the latest Job's Wisdom delivers; the signed handoff names its pair (pN x vM).",
                  "Does a handoff go stale when a newer Job lands?"),
-         "Q05": ("Carry each register board over: a Prototype Block + an insight Board.",
+         "Q05": ("Carry each register board over: a Question Book Block + an insight Board.",
                  "Carry over all now, or each when next worked on?")}
-PROPOSED = ("(proposed) Q06", "How do the Prototype and the data versions evolve?",
+PROPOSED = ("(proposed) Q06", "How do the Question Book and the data versions evolve?",
             "Triggers -> proposals/ -> the next version Job -> sign -> the Board adds a Job; one clock per Job.",
-            "Signed releases, cut per level, per batch, or on demand?")
+            "Signed releases, segment per level, per batch, or on demand?")
 
 
 # ── 6 · the logic tree (JL 261007: "add things like this: the logic tree"), the s04 way ─────────
@@ -173,20 +173,20 @@ LT_BOXES = {   # key: (column, y, name, what it is)
     "work": (1, 260, "work/", "the work theme"),
     "insights": (1, 1060, "insights/", "the insight theme"),
     "designs": (1, 1720, "designs/", "optional: reads the handoff"),
-    "proto": (2, 260, "bNN_<topic>_prototype/", "the Prototype: questions + code"),
+    "proto": (2, 260, "bNN_<topic>_prototype/", "the Question Book: questions + code"),
     "board": (2, 1060, "bNN_<topic>/", "one dataset, its versions, answers"),
     "proposals": (3, 60, "proposals/", "the backlog: new · fix · retire"),
-    "version": (3, 380, "j0N_pN/", "a Prototype version, frozen when closed"),
+    "version": (3, 380, "j0N_pN/", "a Question Book version, frozen when closed"),
     "boardmd": (3, 760, "board.md", "dataset: <d> · v1 · v2 … · accumulates ?"),
     "job": (3, 1060, "j0N_pN_<d>vM/", "a Job: version × data, frozen"),
     "reports": (3, 1380, "reports/qNN_<topic>/", "the Block's questions: D · I · K · W over the Jobs"),
     "delivery": (3, 1600, "delivery/", "the signed Wisdom handoff"),
-    "cuts": (4, 150, "partitions.md · thresholds.yaml", "the cuts, power floors, compare rule: plan"),
+    "cuts": (4, 150, "partitions.md · thresholds.yaml", "the segments, power floors, compare rule: plan"),
     "release": (4, 300, "release.yaml", "every live question -> its Task"),
     "ptask": (4, 470, "tNN_<L><NN>_<q>/", "question.md · scripts/<name>.py"),
     "btask": (4, 1060, "tNN_<L><NN>_<q>/", "the question on this pair: its page"),
     "extract": (5, 760, "<d>vM  (an extract)", "outside the Project, by date"),
-    "run": (5, 1060, "runs/rNN_<partition>/", "hard: result/ · passes/")}
+    "run": (5, 1060, "runs/rNN_<segment>/", "hard: result/ · passes/")}
 LT_HOLDS = [("project", "work"), ("project", "insights"), ("project", "designs"), ("work", "proto"),
             ("insights", "board"), ("proto", "proposals"), ("proto", "version"), ("version", "cuts"), ("version", "release"),
             ("version", "ptask"), ("board", "boardmd"), ("board", "job"), ("board", "reports"),
@@ -199,7 +199,7 @@ def logic_tree(x0, y0):
     fr = base("frame", x0 - 60, y0 - 60, 10, 10, GRAY)
     fr["name"], fr["roundness"] = "Logic tree: an Insight Project", None
     FRAME[0] = fr["id"]
-    text(x0, y0, "The logic tree: what an Insight Project holds, and how its Prototype and its Board relate", 30)
+    text(x0, y0, "The logic tree: what an Insight Project holds, and how its Question Book and its Board relate", 30)
     text(x0, y0 + 48, "plain line = holds · arrow = a relationship, labelled · red dashed = open", 18, GRAY)
     top = y0 + 140
     at = {}
@@ -263,7 +263,7 @@ def logic_tree(x0, y0):
     gx, gy, gw = at["designs"]
     arrow([(dx, dy + LT_H / 2), (dx - 60, dy + LT_H / 2), (dx - 60, gy + LT_H / 2), (gx + gw, gy + LT_H / 2)], INK,
           label="reads the signed handoff", label_at=(gx + gw + 20, gy + LT_H / 2 + 14))
-    text(x0, top + 1880, "one clock per Job ?  a new Prototype version or a new data version makes a new Job, never both",
+    text(x0, top + 1880, "one clock per Job ?  a new Question Book version or a new data version makes a new Job, never both",
          19, RED)
     FRAME[0] = None
     kids = [e for e in els if e.get("frameId") == fr["id"]]
@@ -274,13 +274,13 @@ def logic_tree(x0, y0):
 
 # ── 7 · run types by level (JL 261007: "we might want to propose more run-types") ───────────────
 RUN_TYPES = [   # (level, hard, soft); a red line is proposed and open
-    ("Prototype Block", "—", "run-propose · run-open-release-pN"),
-    ("  a version Job", "—", "run-define-cuts (cuts, thresholds, compare rule) · run-sign-release (a person) · run-close-release"),
+    ("Question Book Block", "—", "run-propose · run-open-release-pN"),
+    ("  a version Job", "—", "run-define-cuts (segments, thresholds, compare rule) · run-sign-release (a person) · run-close-release"),
     ("  a question Task", "—", "run-ask · run-plan · run-review-plan · run-script · run-review-script"),
     ("insight Board", "—", "run-add-version-vM · run-add-job-pN-vM · run-check-board · run-read-<reading> · run-handoff"),
-    ("  a Job (pN x vM)", "—", "run-launch · run-power (n, power per cut, before outcomes) · run-compare-<prev> · run-close"),
-    ("  a question Task", "rNN_<partition> · rNN_cross", "run-write · run-check · run-sign (W: a person signs)")]
-ORDER = ("a Job's order:  Add a Job -> run-launch -> run-power -> per Task: rNN_<partition> -> rNN_cross -> run-write "
+    ("  a Job (pN x vM)", "—", "run-launch · run-power (n, power per segment, before outcomes) · run-compare-<prev> · run-close"),
+    ("  a question Task", "rNN_<segment> · rNN_cross", "run-write · run-check · run-sign (W: a person signs)")]
+ORDER = ("a Job's order:  Add a Job -> run-launch -> run-power -> per Task: rNN_<segment> -> rNN_cross -> run-write "
          "-> run-check -> run-compare-<prev> -> run-close (frozen)")
 
 
@@ -321,7 +321,7 @@ def register():
 
 def main():
     out = Path(sys.argv[1]) if len(sys.argv) > 1 else HERE / "s04-insight-structure.excalidraw"
-    text(0, 0, "Insight structure: a Prototype that evolves, a Board that runs it on data that grows", 40)
+    text(0, 0, "Insight structure: a Question Book that evolves, a Board that runs it on data that grows", 40)
     text(0, 62, "Design scratch: placeholders only. Red = open. Draw anywhere; your marks stay through a rebuild.",
          20, GRAY)
 
@@ -344,13 +344,13 @@ def main():
     # 3 · the two clocks
     cy = 900
     text(0, cy, "Two clocks; a Job pins one of each and is frozen once closed", 30)
-    text(0, cy + 60, "Prototype", 22)
+    text(0, cy + 60, "Question Book", 22)
     text(240, cy + 62, "p1  ->  p2 (+ I questions, a script fixed)  ->  p3 (a question retired, its successor)  …",
          18, INK, MONO)
     text(0, cy + 110, "data", 22)
     text(240, cy + 112, "<d>v1  ->  <d>v2  ->  <d>v3  …", 18, INK, MONO)
-    chain = [("j01_code-v1_data-v1", "start"), ("j02_code-v1_data-v2", "data moved"), ("j03_code-v2_data-v2", "code moved"),
-             ("j04_code-v2_data-v3", "data moved")]
+    chain = [("j01_question-v1_data-v1", "start"), ("j02_question-v1_data-v2", "data moved"), ("j03_question-v2_data-v2", "code moved"),
+             ("j04_question-v2_data-v3", "data moved")]
     x = 0
     for k, (job, moved) in enumerate(chain):
         box(x, cy + 180, 470, 100)

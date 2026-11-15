@@ -1,6 +1,6 @@
 # Released designs, every Job
 
-## j01_confirm-by-reply_method-v1-goal-only_inputs-v1 · d01 · yes-first
+## j01_confirm-by-reply_M01-goal-only-m2_inputs-v1 · d01 · yes-first
 
 {SENDER}: Reply YES to confirm your appointment on {DAY} at {TIME}. Reply STOP to opt out.
 

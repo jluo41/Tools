@@ -26,7 +26,7 @@ The writer only ever edits `candidate.md`, a copy. The Draft is not touched: wha
    argument, a sentence added or cut, or the plan (`## 1 · Structure`, owned by haipipe-draft-logic).
 3. **When unsure, it is big.** A held decision costs one click; a wrong silent change costs trust.
 
-Each big item is written as a decision: `where` (S5, P4, Section), `what` is at stake, two or three `options`, the
+Each big item is written as a decision: `where` (s5, P4, Section), `what` is at stake, two or three `options`, the
 reviewer's `lean` and `why`. NOT VERIFIABLE on an axis is never a pass either: it becomes a decision (add the source,
 narrow the claim, or accept it as open).
 

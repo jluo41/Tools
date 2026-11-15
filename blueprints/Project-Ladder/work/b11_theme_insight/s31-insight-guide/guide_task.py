@@ -2,7 +2,7 @@
 
 Read live: the Space cards from s13's screens, today's steps 3 to 5 from method.md (they are the Task's
 work), the answering and reading cards and their papers from the Guide's files. Typed here, as the
-proposal (red): the question is asked in the Prototype, so the Task's Description reads it, never edits it.
+proposal (red): the question is asked in the Question Book, so the Task's Description reads it, never edits it.
 """
 import insight_guide_live as G
 
@@ -11,16 +11,16 @@ READ = ["By multiverse", "By heterogeneity", "By sensemaking"]
 WORDS = {"Description": ("its question, read only from the release, and its records", "…/j0N_pN/tNN_<L><NN>_<q>/question.md"),
          "Idea Studio": ("optional: a drawing about this question", "studio/"),
          "Audience Report": ("its page: the answer, a part per partition", "tNN_<L><NN>_<q>.md"),
-         "Work Details": ("one Run per partition, and Cross", "runs/rNN_<partition>/"),
-         "Runs": ("hard: one per partition · soft: write, check", "runs/"),
+         "Work Details": ("one Run per segment, and Cross", "runs/rNN_<segment>/"),
+         "Runs": ("hard: one per segment · soft: write, check", "runs/"),
          "Delivery": ("none of its own: its answer goes up as a cite need", "—")}
 STEPS = [G.step_card(3, "Task"), G.step_card(4, "Task"), G.step_card(5, "Task"),
          ("? 6 · Sign (Wisdom only)", "a person signs the counsel before it leaves", "where: Audience Report › its page   signs: a person")]
 
 LEVEL = {
-    "Description": [("t", G.role("Task", "one question on one Job's pair: its runs per partition and its page")),
+    "Description": [("t", G.role("Task", "one question on one Job's pair: its runs per segment and its page")),
                     ("c", G.space_cards("Task", WORDS)),
-                    ("t", "? Description › Question is read only: a change is a proposal to the Prototype")],
+                    ("t", "? Description › Question is read only: a change is a proposal to the Question Book")],
     "Method": [("c", STEPS), ("t", "answering cards"), ("c", G.method_cards(ANSWER)),
                ("t", "reading cards"), ("c", G.method_cards(READ))],
     "RoadMap Draw": [("w", G.drawings(["s13-task-level", "s03-insight-methods"])),
@@ -38,5 +38,5 @@ ON_DISK = {
     "Related Paper": [("servers/workbench-insight/related/papers.md", "groups: the answering and reading methods")],
 }
 
-OPEN = ["? today's step words (Run each partition · Check the run · Write the page) stay, with 'where' in the six Spaces?",
-        "? a question's change goes to the Prototype's proposals/, never edited in the Task"]
+OPEN = ["? today's step words (Run each segment · Check the run · Write the page) stay, with 'where' in the six Spaces?",
+        "? a question's change goes to the Question Book's proposals/, never edited in the Task"]

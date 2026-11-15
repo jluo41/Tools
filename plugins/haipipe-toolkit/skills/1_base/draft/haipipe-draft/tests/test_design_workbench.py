@@ -152,8 +152,8 @@ class DesignItemsTest(unittest.TestCase):
                           "not tested yet, judged at the send",
                           "<span class=rid>W1</span>", "DO send <code>salience</code> to the whole population",
                           "Send salience<span class=mut> · signed</span>",
-                          # named criteria (length, optout) still mark their rules: audit M5
-                          "5 of 5 pass",
+                          # named criteria (length, optout) still mark their rules, one ✓ a rule and no tally: audit M5
+                          '<span class="g ok">✓</span>',
                           # each item folds into one fixed-height row; the selected one opens (JL 260918)
                           # a card row in three columns, under the design goal in brief (JL 261001)
                           '<details class="itemfold cardrow" open><summary><span class=c1><span class=line><b>Design 1</b> <span class=glyph',

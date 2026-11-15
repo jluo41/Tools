@@ -11,7 +11,7 @@ as sleep's: minutes in a row with the same steps, worn and level are one {"from"
 point {"at", ...} is one minute.
 """
 from ..schema import RAW_DROP
-from .hours import by_hour
+from .hours import by_hour, way_stretches
 from .preprocess import label, minute_of, preprocess
 from .schema import ASLEEP_LEVELS, AWAKE_LEVELS, INPUT_KEYS, LEVELS, RESTLESS_LEVELS, RULE_NOTE, STILL_MAX_STEPS
 
@@ -66,7 +66,7 @@ def from_input(inp: dict) -> tuple:
 
 
 def event(raw: dict = None, input: dict = None, still_max_steps: int = None) -> dict:
-    """{"raw", "input", "output", "step", "rule"}: raw as it came, the input (its minutes), the output by local hour,
+    """{"raw", "input", "output", "step", "rule", "ways"}: raw as it came, the input (its minutes), the output by local hour,
     what the preprocess step did, and the rule used. An input's timeline wins over raw's. A ValueError names what is
     wrong."""
     if not raw and not input:
@@ -88,4 +88,5 @@ def event(raw: dict = None, input: dict = None, still_max_steps: int = None) -> 
            "total": totals(tl), "items": None,
            "timeline": stretches(tl, style)}
     return {"raw": shown(raw) if raw else None, "input": inp, "output": by_hour(tl, style, rule), "step": step,
-            "rule": {"still_max_steps": rule, "note": RULE_NOTE if still_max_steps is None else "as sent"}}
+            "rule": {"still_max_steps": rule, "note": RULE_NOTE if still_max_steps is None else "as sent"},
+            "ways": way_stretches(tl, style, rule)}                # the same minutes as stretches, one way each

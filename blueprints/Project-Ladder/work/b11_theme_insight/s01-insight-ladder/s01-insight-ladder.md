@@ -1,5 +1,6 @@
 s01 · Insight ladder
 ====================
+view: findings
 
 **Tags:** `Skill`
 
@@ -24,7 +25,15 @@ against proposed) is gray.
 frame and the cleanup (`tidy`: empty Description columns dropped, frames 300 apart, red numbered)
 are this builder's own. Seed snapshot: `.s01-insight-ladder.seed.json`, beside the drawing.
 
-**Feeds:** `reports/` q01_insight_ladder (and b03's q07_workbench_mapping).
+**Feeds:** Q01 (and b03's Q07).
+
+
+Q01 · Answer
+------------
+
+**Question:** How does an insight topic climb the ladder?
+
+**Answer (open):** not written yet.
 
 
 Files
@@ -47,8 +56,8 @@ Decided so far
 1. (261006, JL: the levels "are in the board level, do you think in the job level") A DIKW level is
    a Job: Block › Work Details lists the four levels, and each level's Job tab takes the Block's six
    Spaces (s01-D24).
-2. (261007) Today's insight question screens sit under the proposed ones: Prototype (its ask and
-   needs) under Description, Insight (its partitions) under Work Details.
+2. (261007) Today's insight question screens sit under the proposed ones: Question Book (its ask and
+   needs) under Description, Insight (its segments) under Work Details.
 
 3. (261007, JL: "make your name of frame to be of the board level, job level and task level")
    Every frame is named for its level: Overview · Board level · Job level · Task level.
@@ -66,7 +75,7 @@ Decided so far
    them was undone. Cleaned instead: a Decide frame first, the Board rows' three empty Description
    columns dropped, frames 300 apart, "differs:" lines gray, and red only on the open points ① to ⑦.
 6. (261007) The Run level follows haipipe-run 0.31.0 and b10's s06-run-workbench-skill: each Run is one folder in `runs/`
-   (hard `rNN_<dataset>_<partition>/` with `result/`, soft `run-<type>-<target>/`), and each level's Runs
+   (hard `rNN_<dataset>_<segment>/` with `result/`, soft `run-<type>-<target>/`), and each level's Runs
    card is one list from `run.yaml` filtered by kind or type. Insight's move to it is open point ⑦.
 7. (261007, JL: "Board a column, job a column and then task a column") The frames sit in a grid under
    Decide: columns Board │ Job │ Task, a row per plan: row A = Board A · Job A (no tab) · Task (A and B
@@ -87,7 +96,7 @@ Open
 ④ Today's Check (a question's gates): chips on each need in Task › Work Details?
 ⑤ Meta stays on the Board?
 ⑥ The older register boards: carry over, or keep?
-⑦ Insight's Runs under the new Run contract (haipipe-run 0.31.0, b10's s06-run-workbench-skill): `<dataset>_<partition>.sh`
-  beside `results/` and `reports/` become `runs/rNN_<dataset>_<partition>/` with `result/` inside?
+⑦ Insight's Runs under the new Run contract (haipipe-run 0.31.0, b10's s06-run-workbench-skill): `<dataset>_<segment>.sh`
+  beside `results/` and `reports/` become `runs/rNN_<dataset>_<segment>/` with `result/` inside?
 
 (the drawing's Decide frame gives my answer to each; write here, or mark the drawing in red)

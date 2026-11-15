@@ -26,19 +26,17 @@ Before a Story exists, Direction and Related can also appear here. The chosen te
 
 ## 📖 Story
 
-Prose is capped at a reading measure and centred in its card, its text left-aligned; a list of rows fills the card.
+Prose shares one reading measure, centred in the card, text left-aligned; a compared table (the Research Questions) takes the card's width.
 
 | Section | Content | Layout |
 | --- | --- | --- |
 | 🧭 Direction | The chosen direction: its question large, Why now and the other labels as rows. | Big line · Label rows |
 | 💡 Pitch | The paper in one line, then its moves (tension, what we do, the answer, who cares) a sentence a line; a pending answer a muted chip. | Big line · Sentence lines |
 | 🎓 Theory | The theory being tested or extended. | Paragraph |
-| ❓ Research Questions | The paper's question large, then a row per question: the question, and beside it what it lets the paper say with its state as a chip; stacked on a phone. | Big line · Two-column rows |
-| ⚖️ Stakes and evidence | Why the answer matters and what supports it. | Left Tabs · Right Content → Notes |
+| ❓ Research Questions | The paper's question large, then one table on its left edge, a row per question: Question, Why we ask, Asked before, New here, Expected. | Big line · Table |
 | 📚 Related | Related papers grouped by the questions they bear on. | Left Tabs · Right Content → Paper |
-| 🏛️ Venues | Target venues and their fit. | Left Tabs · Right Content → Venue |
-| 🧠 Story by Section | Claims placed in reader order. | Diagram |
-| 📌 Open points | Unresolved Story choices. | Action rows |
+| 🏛️ Venues | Target venues: each card opens with its editor's test, then why it fits, what it leads with, what it still needs. | Left Tabs · Right Content → Venue |
+| 🧠 Story by Section | The story arc as the first tab, then a tab per Section in reader order: what the reader asks, comes in with, its moves numbered 1, 2, 3, leaves with, hands on, must not say, displays, then its claims. | Left Tabs · Right Content → Section |
 
 Studio appears once under Around the Work, with the Topic's drawing and mind map.
 
@@ -80,7 +78,7 @@ Evidence belongs to the Board and can support multiple writing versions.
 | 📐 Plan | Display design and venue constraints. | Diagram |
 | 🖼️ Displays | Main, supplement and other figures or tables. | Left Tabs · Right Content → PDF preview |
 | 🔍 Examples | Reference displays from the intended venue. | Diagram / Preview |
-| 🧠 Story by Section | The Story view's own section: claims placed in reader order. | Diagram |
+| 🧠 Story by Section | The Story view's own section: the arc, then a tab per Section in reader order. | Left Tabs · Right Content → Section |
 
 ## ✍️ Writing
 
@@ -128,7 +126,7 @@ Source: `paper_jobs.job_kind` and `VIEWS`; `paper_version.version_report_views`;
 
 Use Cases opens source-backed project pages grouped by SPACE, followed by Blueprint examples. Each example exposes its actual Block, Job and Tasks when present, plus a collapsible Path. Cross-SPACE locations stay in the local ignored configuration; public definitions contain only Blueprint paths. Reviewer response and whole-paper value audit currently have Blueprint examples only.
 
-The matrices describe current views and conditional sections. Job and Task pages retain their specialized Report / Work structure; these examples do not prove shared-frame migration or deployment to other SPACEs. Draft Display is conditional; the generic Draft example omits a link when that view does not exist.
+The matrices describe current views and conditional sections. Draft Tasks use the common Report frame with Review Content and Around the Work. Other Job and Task pages retain their specialized Report / Work structure; example links alone do not prove deployment to other SPACEs. Draft Display is conditional; the generic Draft example omits a link when that view does not exist.
 
 ## Grant Board · Proposed
 

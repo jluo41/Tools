@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """/haipipe-labeling <Job>: open the workbench on the step a labeling Job is at, and say where it stands.
 
-A labeling Job (`jNN_<dataset>_<label>/`) holds Tasks of five types, read from each face's `task-type:` line
-(b15 s13): items · ground truth · building · scanning · score. The work starts at the items Task (b15 s41: describe →
-items → embed) and goes on to building, then scanning. This script reads the Job from disk, finds the first
-Task with work left, opens the workbench on that Task's tab (through the workbench's own /wb, which starts or
-reuses the SPACE's host), and prints the Job's ladder with the one next thing and who does it. It writes nothing.
+A labeling Job (`jNN_<dataset>_<label>/`) holds Tasks typed by each face's `task-type:` line: items, then either
+the two loops (🧭 meaning ⇄ 🛠 expression, up to a signed release) or an older building Task, then scanning. The
+work starts at the items Task (describe → items → embed). This script reads the Job from disk, finds the one next
+thing (engine/two_loops.py for the two loops, the same rule the page opens on), opens that Task's page on the
+workbench's focus layout (through /wb, which starts or reuses the SPACE's host; the page opens on the step that
+needs you), and prints the Job's ladder with the next thing and who does it. It writes nothing.
 
     python start.py <Job or one of its Tasks> [--no-open] [--json]
 """
@@ -25,12 +26,13 @@ HERE = Path(__file__).resolve().parent
 LABELING = HERE.parents[1]                                     # skills/2_theme/labeling
 WB = LABELING.parents[1] / "1_base" / "workbench" / "workbench" / "cli" / "wb.py"
 TYPES = (("items", "📦", ("items", "data")), ("ground_truth", "📏", ("raw",)),
+         ("meaning", "🧭", ("labeling-meaning",)), ("expression", "🛠", ("labeling-expression",)),
          ("building", "🏗", ("labeling-building", "labeling")), ("scanning", "🔍", ("labeling-scanning", "labeling")),
          ("score", "📊", ("eval",)))
 
 
-def engine():
-    spec = importlib.util.spec_from_file_location("labeling_items_task", LABELING / "engine" / "items_task.py")
+def engine(name: str = "items_task"):
+    spec = importlib.util.spec_from_file_location(f"labeling_{name}_for_start", LABELING / "engine" / f"{name}.py")
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod
@@ -57,17 +59,18 @@ def tasks(job: Path) -> list:
     return out
 
 
-def open_url(root: Path, task: Path, tab: str, space: str, no_open: bool) -> str:
-    """The SPACE's host, started or reused by /wb, and the link to one tab of one Task."""
-    rel = task.relative_to(root).as_posix()
+def open_url(root: Path, folder: Path, no_open: bool, group: str = "") -> str:
+    """The SPACE's host, started or reused by /wb, and the link to one Task's (or the Job's) focus page. With no
+    group the page opens on the step that needs you; the Job's Delivery is group=delivery."""
+    rel = folder.relative_to(root).as_posix()
     got = subprocess.run([sys.executable, str(WB), "--no-open", "--json", rel], cwd=root, capture_output=True,
                          text=True)
     try:
         port = json.loads(got.stdout)["port"]
     except (ValueError, KeyError):
         raise SystemExit("the workbench did not start: " + (got.stderr.strip()[-400:] or got.stdout.strip()[-400:]))
-    url = (f"http://127.0.0.1:{port}/_board/workbench?path={quote(rel)}&theme=labeling"
-           f"&space={quote(space)}&sub={quote(tab)}")
+    url = (f"http://127.0.0.1:{port}/_board/workbench?path={quote(rel)}&layout=focus"
+           + (f"&section=report&group={quote(group)}" if group else ""))
     if not no_open:
         webbrowser.open(url)
     return url
@@ -94,17 +97,24 @@ def start(path: Path, no_open: bool = False) -> dict:
             out["now"] = {"task": items["task"].name, "type": "items", "step": n["step"], "tab": n["tab"],
                           "who": n["who"], "do": n["do"], "run": n.get("run"), "note": n.get("note"),
                           "data": n["data"], "files": n["files"]}
-            out["url"] = open_url(root, items["task"], n["tab"], "Work Details", no_open)
+            out["url"] = open_url(root, items["task"], no_open)
             return out
+    loop = engine("two_loops").job_now(job)
+    if loop is not None:
+        task = loop["task"]
+        out["now"] = {"task": task.name if task else None, "type": loop["kind"] or "release", "step": loop["step"],
+                      "who": loop["who"], "do": loop["do"]}
+        out["url"] = open_url(root, task or job, no_open, "" if task else "delivery")
+        return out
     building = next((t for t in ladder if "building" in t["types"]), None)
     if building is not None:
         out["now"] = {"task": building["task"].name, "type": "building", "who": "agent",
                       "do": "the items are ready: run /haipipe-labeling with no verb on this Task; the workflow derives "
                             "its next gate (Contract first) and stops at each human gate"}
-        out["url"] = open_url(root, building["task"], "Preparation", "Work Details", no_open)
+        out["url"] = open_url(root, building["task"], no_open)
         return out
-    out["now"] = {"who": "person", "do": "this Job has no items Task and no building Task yet: add one "
-                                         "(task-type: items, then labeling-building)"}
+    out["now"] = {"who": "person", "do": "this Job has no items Task and no labeling Task yet: add one "
+                                         "(task-type: items, then labeling-meaning and labeling-expression)"}
     return out
 
 
@@ -114,7 +124,7 @@ def words(r: dict) -> str:
         here = r["now"] and t["task"] == r["now"].get("task")
         lines.append(f"{'▶' if here else ' '} {t['icon']} {t['task']} · {t['title']}" + (f" · {t['state']}" if t["state"] else ""))
     n = r["now"] or {}
-    lines += ["", f"now   {n.get('task', '—')} · {n.get('step', n.get('type', ''))} · tab {n.get('tab', '—')}",
+    lines += ["", f"now   {n.get('task') or r['job']} · {n.get('type', '')} · step {n.get('step', '—')}",
               f"who   {n.get('who')}", f"do    {n.get('do')}"]
     if n.get("note"):
         lines.append(f"note  {n['note']}")

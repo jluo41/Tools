@@ -124,7 +124,7 @@ class Displays:
 def _braced(s, cmd, wrap=("", "")):
     """Replace `\\cmd{...}` using BALANCED braces, not a non-greedy match.
 
-    A non-greedy `\\enquote\{(.*?)\}` stops at the first `}` it meets, and a
+    A non-greedy `\\enquote\\{(.*?)\\}` stops at the first `}` it meets, and a
     .bib protects capitals as `{U}nited {S}tates`, so the very first title with
     a protected capital came out as `"…in the U"nited States` and shipped a
     mangled reference to the reader. Found 2026-07-27 on `guy2017vital`.

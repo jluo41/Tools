@@ -1,0 +1,43 @@
+"""s${nn} · ${title}: s${nn}-${slug}.excalidraw, the five-part drawing (haipipe-studio scripts/five_parts.py):
+1 Idea (why, what it hands over), 2 Now (read from the face), 3 Design (sketch_${mod}.py: A the pieces step by step,
+B how it grew, C the open choices), 4 Process (its Job, Tasks and Runs, from disk), 5 Delivery (its delivery/). A
+rebuild keeps whatever a person drew on the canvas (five_parts.marks_writer). Shape copied from a data topic's builder.
+
+    python ${script}
+"""
+import sys
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str((HERE / "${to_studio}").resolve()))
+import five_parts  # noqa: E402
+sys.path.insert(0, str(HERE))
+from sketch_${mod} import sketch_a, sketch_b, sketch_c  # noqa: E402
+
+SPEC = {
+    "title": "${title}",
+    "why": {"question": "why do we need s${nn}?",
+            "notes": ["<reason 1>", "<reason 2>", "<reason 3>"],     # three stickies, a few words each
+            "quote": "<the face's Why, or the decision that settled it>"},
+    "what": {"head": "② what s${nn} hands over", "icon": "page", "name": "<its delivery>", "type": "<delivery type>",
+             "deck_why": "stays in s${nn}'s delivery/deck/",
+             "parts": [("page", "<a piece of the delivery>", "<why it is needed>", False)]},  # (icon, name, why, done)
+    "job": ${job},                                    # the Job whose Tasks Process shows; None: "no Job yet"
+    "target": "not set yet",
+}
+
+
+def design():
+    """A on the left; B, then C, on the right."""
+    els, _ = sketch_a(690, 280)
+    x2 = max(e["x"] + e["width"] for e in els) + 160
+    more, yb = sketch_b(x2, 280)
+    els += more
+    more, _ = sketch_c(x2, yb + 40)
+    return els + more
+
+
+if __name__ == "__main__":
+    els = design()
+    right = five_parts.OX + (max(e["x"] + e["width"] for e in els) - 690) * five_parts.GROW
+    five_parts.build(HERE, SPEC, design, shift=max(1050, int(right + 200 - 2020)), writer=five_parts.marks_writer)

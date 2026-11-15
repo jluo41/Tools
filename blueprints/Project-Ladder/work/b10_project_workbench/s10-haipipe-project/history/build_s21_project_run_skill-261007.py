@@ -6,7 +6,7 @@ gray, red for what is open, green ✎ for what changed.
 
 Read from disk on every build:
 
-- the base frame's Run buttons per level and Space (servers/workbench/frame.py: vanilla() through
+- the base frame's Run buttons per level and Space (servers/workbench/page/frame.py: vanilla() through
   spaces_for, the Page Task's draft_task_spaces), and whether each names a skill
 - each skill's version and size from its SKILL.md, found by name; the deleted ones said so
 - the skill folders of 1_base/project · task · question · draft/workbench-studio · excalidraw/excalidraw-report,
@@ -301,7 +301,7 @@ def main():
     # 1 · Runs by level and Space
     fr = L.open_frame("1 · Runs by level and Space")
     L.text(0, 0, "Every Run button of the base frame, by level and Space, and who owns it", 30)
-    L.text(0, 46, "read from servers/workbench/frame.py at build time (the vanilla Spaces through spaces_for, and the Page "
+    L.text(0, 46, "read from servers/workbench/page/frame.py at build time (the vanilla Spaces through spaces_for, and the Page "
                   "Task's draft_task_spaces) · a button is named by the Run it makes, what it does under it · "
                   "names (read): the skills its run type carries · proposed: its owner · red ? = open", 16, L.GRAY)
     cols = [("Space", 300), ("button = its Run (read)", 380), ("what it does (read)", 360), ("names (read)", 260),

@@ -5,13 +5,13 @@ One idea per slide, in the deck's order; each slide is its own Excalidraw drawin
 ## What can one dataset say?
 - a level at a time: Data, Information, Knowledge, Wisdom, then the Executive answer
 ## Two clocks, one Job per pair
-- the plan moves in the Prototype, the data on the Board; one clock at a time
+- the plan moves in the Question Book, the data on the Board; one clock at a time
 ## A · Make the plan before any outcome is seen
-- proposals, ask and plan, another agent agrees, you set the cuts and sign
-## B · One Run per question × cut
+- proposals, ask and plan, another agent agrees, you set the segments and sign
+## B · One Run per question × segment
 - power before any contrast; a refusal is an answer
 ## Pool or split?
-- one test across the cuts: POOL, SPLIT or UNDETERMINED
+- one test across the segments: POOL, SPLIT or UNDETERMINED
 ## C · Answer up the levels
 - D → I → K → W → X; the page is the short answer
 ## A second agent checks every page

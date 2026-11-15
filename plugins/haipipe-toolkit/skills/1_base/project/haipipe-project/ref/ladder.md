@@ -15,11 +15,11 @@ ticket's body to haipipe-task, a Run's kinds and passes to haipipe-run.
 level   name            face               may hold                                     children
 Project Project-<name>/ project.md         studio/ delivery/ note/ and its Themes        <theme>/
 Theme   <theme>/        <theme>.md         (optional; its Blocks)                        bNN_<topic>/
-Block   bNN_<topic>/    board.md           studio/ reports/ delivery/ related/          jNN_<job>/
+Block   bNN_<topic>/    board.md           studio/ delivery/ related/                  jNN_<job>/
                                            resources/ src/
-Job     jNN_<job>/      jNN_<job>.md       studio/ reports/ delivery/ src/ sbatch/      tNN_<task>/
+Job     jNN_<job>/      jNN_<job>.md       studio/ delivery/ src/ sbatch/              tNN_<task>/
                                            runs/ (soft Runs only)
-Task    tNN_<task>/     tNN_<task>.md      studio/ reports/ delivery/ scripts/ draft/   runs/<run>/
+Task    tNN_<task>/     tNN_<task>.md      studio/ delivery/ scripts/ draft/           runs/<run>/
                                            displays/ notebooks/ tests/ workflow/ sbatch/
 Run     runs/<run>/     run.yaml           the ticket · config.yaml · result/ · passes/  pNN-<MMDD>/
 ```
@@ -103,7 +103,7 @@ families:
 today:                                   # b10's rules since 261012: `audit --today`, and /wb update step 2 (b10 s10)
   topic: '^s\d{2}[-_][A-Za-z0-9]'        # sNN-<topic>/ sits beside the Jobs or Tasks (JL 261030); studio/ keeps _groups.txt, _build/, dot names
   register: '(?m)^## Questions[ \t]*$'   # the Block face's Questions register (haipipe-report)
-  report: '^q\d{2}_'                     # reports/qNN_<topic>/, one per registered Block Question
+  report: '^q\d{2}_'                     # legacy reports/qNN_<topic>/, read until moved: an answer is a Studio topic, a review a Job (JL 261110)
   block_only: [related]                  # a Job's or a Task's moves to the Block (haipipe-related); studio/ and delivery/
                                          # live at every level and roll up to the page above (JL 261028)
   drawing: [.excalidraw, .png, .svg, .py, .md, .json]   # in studio/, these wait for a topic; other files move to the Block

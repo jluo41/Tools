@@ -15,7 +15,7 @@ s54 · Job UI: Report
 
 **Topic:** A Job's Report: the label, then each Task type's result; one cell of the labeling 3 × 3, a labeling Job (one dataset × one label) × Report (check), copied from the paper theme's (b16 j01; JL 261031: "please go ahead and update them"). Its drawing is haipipe-studio's five parts, drawn by `build_s54_job_ui_report.py` through j01's `labeling_ui_cells.py`; its Design is every view as the same full screen, lettered, settled one round each. Names are the public DICES-350 dataset's; no item text is drawn.
 
-**Feeds:** `reports/` q01_labeling_ladder
+**Feeds:** Q01
 
 
 Files

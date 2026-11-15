@@ -2,7 +2,7 @@
 name: haipipe-insight-meta
 description: >-
   InsightBoard Folder contract for Meta: inventory,
-  grain, population, window, freshness, limits, and optional partition rules
+  grain, population, window, freshness, limits, and optional segment rules
   as the scope prerequisite for answering work. Owns both Page and Task faces. Use when opening
   or refreshing an InsightBoard. Trigger: insight meta, data inventory,
   folder-kind meta, legacy page-type meta, /haipipe-insight-meta.
@@ -18,7 +18,7 @@ metadata:
   outline:
     mode: fixed
     source: "this SKILL.md"
-    shape: "Purpose and Scope → Source Inventory → Unit and Grain → Population and Window → Freshness → Known Limits; partition-major inserts Partition Register → Shared Thresholds after Purpose and Scope"
+    shape: "Purpose and Scope → Source Inventory → Unit and Grain → Population and Window → Freshness → Known Limits; partition-major inserts Segment Register → Shared Thresholds after Purpose and Scope"
 ---
 
 # /haipipe-insight-meta · establish what the board can know
@@ -28,7 +28,7 @@ Load `haipipe-draft` (its `ref/folder.md`), `haipipe-insight`, and
 new owner-authored folders use `folder-kind: meta`.
 Read `../../haipipe-insight/ref/page-v2-adapter.md` for Page lifecycle and
 evidence migration, and `../../haipipe-insight/ref/question-groups.md` before
-changing the partition register.
+changing the segment register.
 
 ## Position
 
@@ -53,24 +53,24 @@ Folders owned by Question, not divisions of Meta.
 - accepted Task/Discovery Run Results, bound through full Supporting Run ids,
   or governed page-local static sources frozen in Local Input;
 - source versions, unit/grain, population, time window, and refresh clocks;
-- the optional partition proposal and shared thresholds from `../../haipipe-insight/ref/partition.md`.
+- the optional segment proposal and shared thresholds from `../../haipipe-insight/ref/partition.md`.
 
 ## Page Face
 
 The reader promise is: **what data exists here, at what grain, for whom, for
 when, and with which limits**. Use the fixed outline declared in metadata.
-Partition-major boards insert `Partition Register` and `Shared Thresholds`
-after division 1. Each partition row names the partition by its full name
-(one lowercase word; there is no letter column), its cut (`where`), its row
-count and share, and the config stem every task uses for that cut
-(`rNN_<dataset>_<partition>`): that column is how a run is placed in its
+Segment-major boards insert `Segment Register` and `Shared Thresholds`
+after division 1. Each segment row names the segment by its full name
+(one lowercase word; there is no letter column), its segment (`where`), its row
+count and share, and the config stem every task uses for that segment
+(`rNN_<dataset>_<segment>`): that column is how a run is placed in its
 partition's table. No question, result, or conclusion appears on this face.
 
 ## Task Face
 
 Resolve every source path and Result; inspect source/run identity; reconcile grain,
 population, coverage, and freshness; record staleness rules; and, when
-partition-major, prove that the partition register is coherent. A refresh
+partition-major, prove that the segment register is coherent. A refresh
 reopens Meta and every downstream row that depended on a changed source.
 
 ### Run Profile
@@ -98,18 +98,18 @@ Folder's GI conditions still govern citation and register settlement.
 
 GI0 accepts the inventory only after the Meta Page reaches CHECK/CLOSE, all named sources
 resolve through the Page v2 evidence graph, unit/grain and population/window
-are explicit, freshness and known limits are visible, and any partition
+are explicit, freshness and known limits are visible, and any segment
 register passes its deterministic checks. A description with an unresolved
 load-bearing source is open.
 
 ## Handoff
 
 Hand Question the accepted inventory, refresh/staleness rule, and, when present,
-partition register plus shared thresholds. Do not hand it a preferred question.
+segment register plus shared thresholds. Do not hand it a preferred question.
 
 ## Files
 
 - Folder Page: `0-MT-meta/MT00-meta/MT00-meta.md`
-- Shared partition law: `../../haipipe-insight/ref/partition.md`
+- Shared segment law: `../../haipipe-insight/ref/partition.md`
 - Page adapter: `../../haipipe-insight/ref/page-v2-adapter.md`
 - This Folder owns no private scripts.

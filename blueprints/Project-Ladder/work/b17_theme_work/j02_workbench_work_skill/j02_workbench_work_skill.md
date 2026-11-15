@@ -16,7 +16,7 @@ pass per page, Block, then Job, then Task, as that page's three forms come back 
 takes out what is already decided gone (the Questions, the question map, the Scope · Task · Check · Delivery screens).
 
 The screens are not made here: j03's cells design them and design_b02_workbench builds them in
-`servers/workbench/focus_page.py`. The skill says what each page shows and what it reads from disk.
+`servers/workbench/page/focus_page.py`. The skill says what each page shows and what it reads from disk.
 
 Reshaped 261031 from j02_work_skill_homes ("Make s02's delivery"), whose two Tasks wrote haipipe-work's skill-homes
 table and handed b04 a move list. That question is not the focus any more (JL 261031: "I have no idea, this should not

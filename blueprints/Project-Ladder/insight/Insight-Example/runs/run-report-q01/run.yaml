@@ -12,5 +12,5 @@ status: done
 passes:
 - p01-1106
 writes:
-- reports/q01_gap-across-data-versions/q01_gap-across-data-versions.md
+- s04-q01-gap-across-data-versions/s04-q01-gap-across-data-versions.md
 feeds: []

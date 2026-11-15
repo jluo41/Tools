@@ -1,11 +1,11 @@
-"""proposals.py · triage a Prototype's proposals into the next release (b11 s21 phase 3; haipipe-insight ref/release.md).
+"""proposals.py · triage a Question Book's proposals into the next release (b11 s21 phase 3; haipipe-insight ref/release.md).
 
-    python proposals.py list    <Prototype>                              the open proposals, by kind
-    python proposals.py take    <Prototype> <slug> [<slug> …] --into p<N> mark a batch taken; print how to apply each
-    python proposals.py decline <Prototype> <slug> --why "…"             mark one declined, with its reason
+    python proposals.py list    <Question Book>                              the open proposals, by kind
+    python proposals.py take    <Question Book> <slug> [<slug> …] --into p<N> mark a batch taken; print how to apply each
+    python proposals.py decline <Question Book> <slug> --why "…"             mark one declined, with its reason
 
 A proposal is `proposals/<slug>.md` (kind · level · from · state · taken-in, then why), written by a Propose Run
-(`insight_ladder.py propose`). Triage (`run-triage-proposals-code-vN`) takes one batch into one release: the newest release
+(`insight_ladder.py propose`). Triage (`run-triage-proposals-question-vN`) takes one batch into one release: the newest release
 while it is still open, or the next one (opened after, with `insight_ladder.py version`). This script writes only the
 proposals' state; applying a taken proposal is the release's own Run, printed for each. Exit 1 on a refused step.
 """
@@ -24,7 +24,7 @@ _spec.loader.exec_module(IL)
 APPLY = {"new question": "insight_ladder.py question <release> <L><NN> <slug>   (run-ask-<l><nn>)",
          "fix": "insight_ladder.py change <release> <L><NN> --why \"…\"      (then plan, review, script, review again)",
          "retire": "insight_ladder.py retire <release> <L><NN> --why \"…\"",
-         "cut": "edit the release's partitions.md, then run-set-cuts-code-v<N> (a person signs the cuts)"}
+         "cut": "edit the release's partitions.md, then run-set-segments-question-v<N> (a person signs the segments)"}
 
 
 def proposals(proto: Path) -> list[tuple[Path, dict, str]]:
@@ -42,7 +42,7 @@ def _target_release(proto: Path, into: str) -> str:
     vers = IL.versions(proto)
     newest = vers[-1] if vers else None
     rel = IL.VERSION.match(newest.name).group(2) if newest else ""
-    nxt = f"code-v{IL.OJ.num(rel) + 1}" if rel else "code-v1"
+    nxt = f"question-v{IL.OJ.num(rel) + 1}" if rel else "question-v1"
     if newest is not None and str(IL.face(newest).get("state")) != "closed":
         if into != rel:
             sys.exit(f"{newest.name} is still open: a batch goes into {rel}, or sign it first")
@@ -66,7 +66,7 @@ def main(argv=None) -> int:
     ap.add_argument("--why", default="")
     a = ap.parse_args(argv)
     if IL.face_kind(a.prototype) != "prototype":
-        sys.exit(f"{a.prototype.name} is not a Prototype (board.md board-kind: prototype)")
+        sys.exit(f"{a.prototype.name} is not a Question Book (board.md board-kind: prototype)")
     allp = {p.stem: (p, fm, body) for p, fm, body in proposals(a.prototype)}
     if a.command == "list":
         open_ = [(s, fm) for s, (_, fm, _) in allp.items() if fm.get("state", "open") == "open"]

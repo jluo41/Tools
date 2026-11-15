@@ -1,3 +1,44 @@
+## 1.40.0 · 2026-11-15 · the must-check gate
+
+- `ref/must-check.md`: 69 paper rules JL has already given (MISQ replay and the SPACEs' feedback memories), each with its check (`auto` by script, `read` by a fresh reviewer), when it must hold and how often JL said it. SKILL.md's new hard rule runs it before JL sees a Section, before a close and before a send; a correction JL gives changes the file in the same change as the fix.
+- The Section sessions' first turn (`create_section_sessions.py`, used by `/haipipe-paper sessions` and `lab`): a read-only look, then the default review round (paragraph logic, then sentence logic, by fresh reviewers; skipped when the newest Draft was already reviewed at its version), and a scope rule that runs the gate.
+
+## 1.39.1 · 2026-11-14 · the Board session in the lab
+
+- The lab opens the Board session first (Lab-A, beside the Board page): the session in charge of the whole paper, named in board.md `board-session:`; a Board without one gets `<Short>-Board` on `--apply`. `--no-board` leaves it out (JL 261114).
+- `--restart` (extension 0.4.0) closes the lab's own terminals and opens them again, each resuming its session: a window reload restored the old terminals by name and started nothing.
+- `--apply` waits 3 s between windows: two quick `code --new-window` calls dropped Lab-A.
+- Terminals keep the list order (extension 0.4.1): each new terminal splits from the one before it; splitting every one from the first put the third beside the first (t03, Appendix, t04).
+
+## 1.39.0 · 2026-11-14 · the writing lab
+
+- `/haipipe-paper lab` ("start the paper writing lab"): `scripts/open_writing_lab.py` writes one VS Code workspace per group of up to four Sections (`~/.config/haipipe/labs/<paper>/`), whose tasks run on folder open, one terminal per Section; `scripts/lab_launch.py` resumes the Section's `session:` or starts it with that id and the `/haipipe-paper sessions` first turn. A Section without a session gets one written into its page header. Contract: `ref/writing-lab.md`.
+- Default `--terminal vscode`: VS Code windows with each Section's draft page (workbench view) side by side on top and its session terminal split below in the panel (extension 0.3; rewriting the workspace reopens what is missing in an open window; `--close` and `--restart` close or reload open lab windows without a click), through the Paper Writing Lab extension (`vscode-lab/`, `build_vsix.sh` packs it without npm; the author installs it once). `--terminal tmux` shows tmux sessions in Terminal instead. VS Code tasks were dropped: `task.allowAutomaticTasks` is off by default and only the author may turn it on.
+- `lab_launch.py` drops inherited `CLAUDE_*` session markers before starting claude: a lab opened from a Claude session made every Section session a child with transcript saving off.
+- `lab` also creates the Codex side: a Codex thread per Section without `codex-session:` (shown in the Codex app, paired with the Claude session); `--no-codex` skips it.
+- Page headers are read to the first `## ` heading, not 25 lines: a long header hid `codex-session:` and `session:` lines (JAMA t04, t05) and a new id would have been written twice.
+- At most eight Main sessions per writing Job: past eight, the last Main Sections share one unit `<first>-to-<last>` (AITC Long: 11 to 8). `--pages` filters after grouping, so the group is the same on every run.
+- `session-prefix:` lives in the writing Job face; board.md's line is the fallback only with one writing Job (AITC LOI and Long had one board line, so the Long sessions looked foreign). `--close` and `--restart` no longer need a prefix.
+
+## 1.38.1 · 2026-11-13 · sessions find a writing Job
+
+- `/haipipe-paper sessions` (create_section_sessions.py) looked for versions named `jNN_v*` only and stopped on a paper whose version is `jNN_writing_v<MMDD>_<desk>` ("no Story compile-order block"). It now takes either name and skips review Jobs (`jNN_review_*_v<MMDD>`); the stop message names the writing Job face. Checked on a paper with `j11_writing_v0929_misq`: plan found all 9 units without `--version`.
+
+## 1.38.0 · 2026-11-12 · W7: paragraphs of 4 to 7 sentences
+
+- JL 261112: "for other, unless having good reason, we might make sure they are between 4~7 sentences". New
+  checklist row W7 in the writing layer, ticked by `paper_check.py` for the newest writing Job ("N of M Sections;
+  off: <task> <count>"); the Abstract and exempt kinds are not counted, a `reason:` line accepts a paragraph. The
+  SKILL.md layer list now reads W1-W7.
+
+## 1.37.0 · 2026-11-11 · two layers, one source each
+
+- JL 261111: the Story's §8 holds the title, story, explanation and claims every version shares, no per-Section rows;
+  a version face's `## Narrative` holds that venue's layout only (claims to displays, display Runs, one row per
+  Section, compile order), points at §8 and copies no claim. Signed by `page.py sign-narrative` before the Sections.
+- The whole-paper structure is the version Job's Report › Structure view, never a Task. L5 in `checklist.md` and
+  `ref/paper-ladder.md` follow; `audit` flagging a face that copies claims, or a §8 with Section rows, is planned.
+
 ## 1.36.0 · 2026-11-10 · G4 needs the evidence chain to hold
 
 - JL 261110: the send gate G4 now also needs `chain_check.py` (haipipe-paper-evidence 0.15.0, The chain) to pass;

@@ -30,7 +30,7 @@ SPEC = {
                        ("page", "ui/work-step", "one step, one shape", True),
                        ("page", "ui/report-text", "sentences beside their cards", True)]},
     "job": None,
-    "target": "servers/workbench/focus_page.py (one marked HOOK) · workbench-task-draft/focus_draft.py",
+    "target": "servers/workbench/page/focus_page.py (one marked HOOK) · workbench-task-draft/focus_draft.py",
     "missing": [],
 }
 

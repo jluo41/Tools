@@ -118,7 +118,7 @@ def check_bullets(plan: Path, text: str, out: list):
         if not in_division or line.startswith("#"):
             in_bullet = False
             continue
-        if re.match(r"^- (?:\[[ xX]\]\s*)?(?:B|S)\d+\s*·", line):
+        if re.match(r"^- (?:\[[ xX]\]\s*)?(?:B|S|s)\d+\s*·", line):
             in_bullet = True
             continue
         if in_bullet and line.strip() and not line.startswith(("  ", "- ", ">")):
@@ -143,6 +143,49 @@ def check_structure(plan: Path, text: str, out: list):
     from .plan_layout import structure_draft_mismatches
     for issue in structure_draft_mismatches(text):
         out.append(Finding(FAIL, "structure", issue + "; update both in the same edit", plan.name))
+
+
+def check_ids(plan: Path, text: str, out: list):
+    """A sentence id appears once in its Draft: s1, s2, … run through the Section, never restart in each paragraph
+    (S8 and s8 are the same id). A repeat makes a bare id name no one sentence; `page.py renumber` fixes it."""
+    from .page_renumber import repeated
+    twice = repeated(text)
+    if twice:
+        out.append(Finding(FAIL, "ids", "a sentence id appears once in its Draft; repeated: " + ", ".join(twice[:8])
+                           + "; run page.py renumber (it numbers by position through the Section)", plan.name))
+    from .page_ranges import wrong                     # a heading's or Overview line's range is its paragraph's own
+    off = wrong(text)                                  # (261115: ranges shifted or left for a person to fix by hand)
+    if off:
+        out.append(Finding(FAIL, "ids", "a paragraph's range matches its sentences; off: "
+                           + "; ".join(f"line {n} reads '{a[-24:]}', should end '{b[-24:]}'" for n, a, b in off[:4])
+                           + "; run page.py renumber", plan.name))
+
+
+def check_paragraphs(page: Path, plan: Path, plan_text: str, out: list):
+    """Each paragraph of a paper Section holds 4 to 7 sentences (JL 261112: "unless having good reason, we might make
+    sure they are between 4~7 sentences"); the Abstract, an appendix, a letter and P0 are exempt, and a `reason:` line
+    under the heading accepts the count. WARN while writing; the final gate makes it a FAIL."""
+    from .paragraph_length import RANGE, off_range, section_kind
+    kind = section_kind(page.read_text(encoding="utf-8", errors="ignore"))
+    if not kind:
+        return
+    bad = [(pid, n) for pid, n, why in off_range(plan_text, kind) if not why]
+    if bad:
+        out.append(Finding(WARN, "paragraph", f"{len(bad)} paragraph(s) outside {RANGE[0]} to {RANGE[1]} sentences: "
+                           + ", ".join(f"{pid} has {n}" for pid, n in bad)
+                           + "; split a long one at its turn, join a short one to its neighbour, or give `reason:`",
+                           plan.name))
+    from .paragraph_length import title_placeholder, unsupported_expectations
+    if kind.strip().lower() == "introduction":
+        expect = unsupported_expectations(plan_text)
+        if expect:
+            out.append(Finding(WARN, "expect", f"{', '.join(expect)}: an [Expect] with Evidence: none states an answer the "
+                               "Introduction has no support for; ask the question and cite the prior result, the answer "
+                               "is the Results' (JL 261112)", plan.name))
+    held = title_placeholder(plan_text)
+    if held:
+        out.append(Finding(WARN, "title", f"{', '.join(held)}: the [Title] Bullet holds a placeholder; write the paper's "
+                           "title there (JL 261112)", plan.name))
 
 
 def _page_sentences(page_text: str) -> dict:
@@ -323,11 +366,118 @@ def check_steps(folder: Path, page: Path, plan: Path | None, out: list):
     missing = [(step, why) for step, ok, why in steps if not ok]
     for step, why in missing:
         out.append(Finding(WARN, "steps", f"{step}: {why}"))
+    from .paper_health import unsigned_content
+    held = unsigned_content(folder, page, plan, approved)
+    if held:                       # M-D15 (JL 261115): accept may write while unsigned; health names the sign
+        out.append(Finding(WARN, "order", held))
+    elif plan_text and not approved and re.search(r"(?m)^## \d+ · Draft\b", plan_text):
+        # JL 261111 (t01_introduction: § 3 written, rebound and revised twice on a plan never signed): out of order
+        out.append(Finding(WARN, "order", "§ 3 Draft is written on an unsigned plan: go back to 1 · Plan, show the "
+                           "structure, propose 2 to 4 versions, and wait for the person's word before more writing"))
+    check_row(folder, plan_text, approved, out)
+    check_narrative(folder, out)
     if not missing:
         out.append(Finding(INFO, "steps", "every step has its file (Studio and Display optional); a person still signs, accepts and sends"))
 
 
-PERSON_STEPS = ("plan not signed",)   # a person's step stays a WARN even at the final gate
+def _story_face(folder: Path) -> Path | None:
+    board = next((p for p in folder.parents if (p / "board.md").is_file()), None)
+    if board is None:
+        return None
+    m = re.search(r"(?m)^story-current:\s*(\S+)", (board / "board.md").read_text(encoding="utf-8", errors="ignore"))
+    face = board / m.group(1) / f"{m.group(1)}.md" if m else None
+    return face if face and face.is_file() else None
+
+
+def story_narrative(folder: Path) -> tuple[str, Path] | tuple[None, None]:
+    """The Board Story's § 8 Section Narrative (claims and order, shared by every version), as text."""
+    face = _story_face(folder)
+    if face is None:
+        return None, None
+    text = face.read_text(encoding="utf-8", errors="ignore")
+    m = re.search(r"(?m)^(#{2,3})\s*(?:\d+\s*·\s*)?Section Narrative\s*$", text)
+    if m is None:
+        return None, None
+    body = re.split(rf"(?m)^#{{2,{len(m.group(1))}}}\s", text[m.end():], maxsplit=1)[0]
+    return body.strip(), face
+
+
+def governing_row(folder: Path) -> tuple[str, Path] | tuple[None, None]:
+    """The row that governs this Task, as text: the table row whose first cell names the Task folder, in its Job's face
+    (a paper version's `## Narrative`), else in the Board's current Story (`story-current:`, its § 8)."""
+    faces = [folder.parent / f"{folder.parent.name}.md"]
+    story = _story_face(folder)
+    faces += [story] if story else []
+    cell = re.compile(rf"^\|\s*`?{re.escape(folder.name)}`?\s*\|")
+    for face in faces:
+        if face.is_file():
+            for line in face.read_text(encoding="utf-8", errors="ignore").splitlines():
+                if cell.match(line.strip()):
+                    return line.strip(), face
+    return None, None
+
+
+NARRATIVE_SIGN = "records/narrative-sign.md"     # a version Job's record of what its Narrative was signed against
+
+
+def sign_record(folder: Path, stem: str) -> Path:
+    return plan_dir(folder) / RECORDS / f"{stem}-sign.md"
+
+
+def signed_against(record: Path) -> str | None:
+    """The text a sign record keeps, whitespace-normalized (a content compare, never a hash; JL 260928)."""
+    if not record.is_file():
+        return None
+    m = re.search(r"(?ms)^## What it was signed against\s*\n(.*?)(?=^## |\Z)", record.read_text(encoding="utf-8", errors="ignore"))
+    return _norm(m.group(1)) if m else None
+
+
+def _norm(text: str) -> str:
+    return re.sub(r"\s+", " ", text or "").strip()
+
+
+def check_narrative(folder: Path, out: list):
+    """A version's `## Narrative` is signed before its Sections are planned (JL 261111: whole-paper structure choices
+    are the version's). The sign is `narrative-approved: ✅ …` on the version face's header, written by
+    `page.py sign-narrative`, which keeps the Story's § 8 it was signed against in the Job's records/narrative-sign.md."""
+    face = folder.parent / f"{folder.parent.name}.md"
+    if not face.is_file():
+        return
+    text = face.read_text(encoding="utf-8", errors="ignore")
+    if not re.search(r"(?m)^## Narrative\b", text):
+        return
+    if not re.search(r"(?m)^narrative-approved:\s*✅", _header(text)):
+        out.append(Finding(WARN, "narrative", f"the version's ## Narrative in {face.name} is not signed: the person "
+                           "signs it before a Section's plan (page.py sign-narrative)"))
+        return
+    kept = signed_against(folder.parent / NARRATIVE_SIGN)
+    story, sface = story_narrative(folder)
+    from .paper_health import story_row_findings
+    rows = story_row_findings(folder, story, sface) if story is not None else None
+    if rows is not None:           # M-D09: name the changed row; only a Section that restates it is told
+        out.extend(Finding(level, "narrative", msg) for level, msg in rows)
+        return
+    if kept is not None and story is not None and _norm(story) != kept:
+        out.append(Finding(WARN, "narrative", f"the Story's Section Narrative in {sface.name} changed since the version's "
+                           f"Narrative was signed: review the version against it, sign again"))
+
+
+def check_row(folder: Path, plan_text: str, approved: bool, out: list):
+    """A signed plan answers the row it was signed against (JL 261111: the Narrative moved v0.3 to v0.4 and the Section
+    never went back to Plan). `page.py sign` keeps that row in draft/records/<stem>-sign.md; a different row now is a
+    WARN."""
+    kept = signed_against(sign_record(folder, folder.name))
+    if not (approved and kept is not None):
+        return
+    row, face = governing_row(folder)
+    if row is None:
+        out.append(Finding(WARN, "row", "the row this plan was signed against is gone from its Job and Story: back to 1 · Plan"))
+    elif _norm(row) != kept:
+        out.append(Finding(WARN, "row", f"its row in {face.name} changed since the plan was signed: back to 1 · Plan, "
+                           "re-propose, re-sign"))
+
+
+PERSON_STEPS = ("plan not signed", "sign the plan")   # a person's step stays a WARN even at the final gate
 
 
 def check_printed(folder: Path, page: Path, blocks: list, out: list):
@@ -347,7 +497,12 @@ def check_printed(folder: Path, page: Path, blocks: list, out: list):
         str.maketrans({"’": "'", "‘": "'", "“": '"', "”": '"', "-": None, "–": None, "—": None})).strip()
     # A sentence that crosses a page must still match: drop the page number and the running head between its halves.
     printed = norm(re.sub(r"(?m)^\s*(\d{1,4}|DRAFT)\s*$", " ", text.replace("\f", "\n")))
-    drafts = [(b["address"], norm(b["draft"])) for b in blocks if b.get("draft")]
+    # LaTeX that prints as something else (a \\ref as its number, a \\cite as author and year, $math$ as symbols) cannot be
+    # matched as written, so a sentence that holds any is matched on its longest plain run (JL 261112: the Methods
+    # equations and the Results figure references read as missing although the PDF printed them).
+    printed_as_other = re.compile(r"\\(?:auto|C|c)?ref\{[^}]*\}|\\cite\w*\{[^}]*\}|\$[^$]*\$")
+    plain = lambda d: norm(max(printed_as_other.split(d), key=lambda seg: len(norm(seg))))
+    drafts = [(b["address"], plain(b["draft"])) for b in blocks if b.get("draft")]
     gone = [a for a, d in drafts if d and len(d) > 12 and d[:40] not in printed]
     if gone:
         out.append(Finding(FAIL, "printed", f"{len(gone)} of {len(drafts)} Draft sentences are not in the printed "
@@ -369,6 +524,10 @@ def finalize(report: dict) -> dict:
 
 
 def folder_health(target: Path, final: bool = False) -> dict:
+    from .paper_health import job_report
+    job = job_report(target)       # a version Job: its shared main-text budget (M-D11)
+    if job is not None:
+        return finalize(job) if final else job
     page = _page_md(target)
     folder, stem = page.parent, page.stem
     out: list = []
@@ -378,6 +537,8 @@ def folder_health(target: Path, final: bool = False) -> dict:
         check_header(plan, plan_text, out)
         blocks = check_bullets(plan, plan_text, out)
         check_structure(plan, plan_text, out)
+        check_ids(plan, plan_text, out)
+        check_paragraphs(page, plan, plan_text, out)
         check_sync(page.read_text(encoding="utf-8"), blocks, plan_text, out)
         check_evidence(folder, stem, plan_text, out)
     check_delivery(folder, page, out)

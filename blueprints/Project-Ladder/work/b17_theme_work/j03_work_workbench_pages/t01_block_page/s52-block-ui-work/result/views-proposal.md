@@ -262,7 +262,7 @@ will be once their agents build them today.
 
 ## The code change, named for its owner (design_b02_workbench)
 
-Once JL answers, in `servers/workbench/focus_page.py`, never edited from here:
+Once JL answers, in `servers/workbench/page/focus_page.py`, never edited from here:
 
 1. `status_html`, Block branch: Interactions first (waiting items from `interactions()`, drawn as
    `focus_draft.ix_item` draws them, moved to a shared helper); then one section per Job (heading, goal, makes

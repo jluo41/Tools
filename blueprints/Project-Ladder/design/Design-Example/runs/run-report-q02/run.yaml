@@ -11,7 +11,7 @@ status: closed
 passes:
 - p01-1108
 writes:
-- reports/q02_prediction_check/q02_prediction_check.md
+- s04-q02-prediction-check/s04-q02-prediction-check.md
 feeds: null
 by: designer agent
 started_at: '2026-11-08T11:00:00'

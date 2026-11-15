@@ -26,11 +26,6 @@
       "layout": "Task rows inside a numbered disclosure",
       "example": "Items, Meaning and Expression retain independent progress; a release does not mark every Task done.\nSkills: haipipe-task, haipipe-run."
     },
-    "🧩 View BJTR": {
-      "what": "Inspect the real Block → Job → Task → Run hierarchy by Topic. Source: Topic work links and existing child folders.",
-      "layout": "Left Topic tabs · right expandable tree → record pop-out",
-      "example": "Choose a Topic and open an associated Run without allocating a new Run.\nSkills: haipipe-studio, haipipe-job, haipipe-task, haipipe-run."
-    },
     "🔗 Dependencies": {
       "what": "Read only authored dependency information; this section is conditional. Source: face Dependencies section.",
       "layout": "Markdown inside a numbered disclosure",
@@ -187,7 +182,7 @@
       "section": "report",
       "group": "overview"
     },
-    "Status": {
+    "Plan + Results": {
       "section": "report",
       "group": "standing"
     },
@@ -200,47 +195,47 @@
       "group": "delivery"
     },
     "Data": {
-      "section": "work",
+      "section": "report",
       "group": "data"
     },
     "Items": {
-      "section": "work",
+      "section": "report",
       "group": "items"
     },
     "Embedding": {
-      "section": "work",
+      "section": "report",
       "group": "embedding"
     },
     "Frame": {
-      "section": "work",
+      "section": "report",
       "group": "frame"
     },
     "Prepare": {
-      "section": "work",
+      "section": "report",
       "group": "prepare"
     },
     "Preferences": {
-      "section": "work",
+      "section": "report",
       "group": "preferences"
     },
     "Update": {
-      "section": "work",
+      "section": "report",
       "group": "update"
     },
     "Rewrite": {
-      "section": "work",
+      "section": "report",
       "group": "rewrite"
     },
     "Run": {
-      "section": "work",
+      "section": "report",
       "group": "run"
     },
     "Evaluate": {
-      "section": "work",
+      "section": "report",
       "group": "evaluate"
     },
     "Release": {
-      "section": "work",
+      "section": "report",
       "group": "release"
     },
     "": {
@@ -253,7 +248,7 @@
       "haipipe-block / haipipe-job — Maintain purpose and scope.",
       "haipipe-mindmap — Draw the real hierarchy."
     ],
-    "Status": [
+    "Plan + Results": [
       "haipipe-job / haipipe-task / haipipe-run — Read progress.",
       "haipipe-studio — Associate Topics with work."
     ],

@@ -133,7 +133,7 @@ class PaperFocusTest(unittest.TestCase):
             self.assertIn('🧭 Around the Work', html)
             self.assertNotIn('Process</h3>', html)
             self.assertNotIn('Results</h3>', html)
-            self.assertNotIn('unassigned_QUESTION', html)
+            self.assertNotIn('unassigned_QUESTION', re.sub(r'(?s)<template id="wait-items">.*?</template>', '', html))   # the 🙋 tray lists every wait
             self.assertNotIn('view-caption', re.sub(r'<style>.*?</style>', '', html, flags=re.S))
             content = html.split('id="work-shared"', 1)[1]
             positions = [content.index(title) for _, title in w.SHARED if title in content]   # empty ones hidden (JL 261113)

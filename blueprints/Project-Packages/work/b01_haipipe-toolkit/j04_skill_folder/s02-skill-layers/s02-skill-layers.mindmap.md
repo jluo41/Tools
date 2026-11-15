@@ -24,7 +24,7 @@ built: from-topic .
   - Drawn with `../_build/sketch.py` through b03's canvas writer, … <!-- @source/3 #30dd41 -->
     Drawn with `../_build/sketch.py` through b03's canvas writer, so marks survive a rebuild.
 - Feeds <!-- @feeds #ffe8e9 -->
-  - `../reports/q01_skill_layers/` <!-- @feeds/0 #4785b9 -->
+  - `../_old/reports/q01_skill_layers/` <!-- @feeds/0 #4785b9 -->
 - Files <!-- @files #6ce6c5 -->
   - [py] [build_s02_skill_layers.py](build_s02_skill_layers.py) <!-- @files/0 #04ab61 -->
   - delivery/ <!-- @files/1 #404761 -->

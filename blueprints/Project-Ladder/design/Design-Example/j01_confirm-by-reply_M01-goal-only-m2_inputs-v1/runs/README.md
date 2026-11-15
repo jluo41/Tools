@@ -1,4 +1,4 @@
-# Runs of j01_confirm-by-reply_method-v1-goal-only_inputs-v1
+# Runs of j01_confirm-by-reply_M01-goal-only-m2_inputs-v1
 
 run types: setup-goal · setup-method · setup-inputs · open-designs · freeze-predictions · release · close (soft)
 

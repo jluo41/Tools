@@ -64,7 +64,7 @@ class StructureMapTest(unittest.TestCase):
             self.assertIn(mv.JS, out)
             self.assertNotIn("data-endpoint", out)                          # a draft posts to /_board/draft-plan
             self.assertIn('<div class=pm-para data-p="C1.P1">', out)
-            self.assertIn('<li data-s="S1" title="the opening stakes">', out)
+            self.assertIn('<li data-s="s1" title="the opening stakes">', out)
             self.assertIn('data-edit=ask data-p="C1.P1" data-raw="Why should physicians care?"', out)
             self.assertIn('<span class=pm-role data-edit=role data-raw="Stakes"', out)
 

@@ -100,7 +100,7 @@ questions:
     labels.'
   acceptance: Answered when every level names its folder and its six Spaces' content, drawn in studio/.
   work: []
-  report: reports/q01_labeling_ladder/q01_labeling_ladder.md
+  report: s01-labeling-ladder/s01-labeling-ladder.md
 - id: Q02
   title: Where do the two sides and the human gates show?
   question: How do Building and Scanning, and the human gates between them (Confirm meaning, freeze,
@@ -109,7 +109,7 @@ questions:
     and a Run the person signs; the Label Handoff is the one crossing, shown in Delivery.
   acceptance: Answered when each gate has one place on screen and the handoff's place is agreed.
   work: []
-  report: reports/q02_building_scanning_gates/q02_building_scanning_gates.md
+  report: s03-agent-role/s03-agent-role.md
 - id: Q03
   title: Where do the schema and the handoff live?
   question: Is `schema.yaml` the Block's or each Job's, and where on disk do the frozen guideline,
@@ -118,7 +118,7 @@ questions:
     Job's delivery/, read by Scanning by exact identity.
   acceptance: Answered when the disk layout is written and the workbench reads it.
   work: []
-  report: reports/q03_schema_and_handoff/q03_schema_and_handoff.md
+  report: s03-agent-role/s03-agent-role.md
 ```
 
 ## Related resources

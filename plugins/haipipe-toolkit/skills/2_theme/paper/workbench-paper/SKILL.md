@@ -8,8 +8,8 @@ description: >-
   classic frame. Trigger: Paper Workbench, paper workbench, paper theme, paper tab,
   version tab, Section tab, paper spaces, Grant Board design, /workbench-paper.
 metadata:
-  version: "0.58.0"
-  last_updated: "2026-11-09"
+  version: "0.63.0"
+  last_updated: "2026-11-12"
 ---
 
 # /workbench-paper · the paper theme on the shared frame
@@ -36,13 +36,45 @@ renderers.
    &space=<Space>&sub=<view>                                   open one Space and view
 
 <DOMAIN>/_board/workbench?path=<Board>&layout=focus&section=report&group=<key>        the focus page, Report
-<DOMAIN>/_board/workbench?path=<Board>&layout=focus&section=work&group=work-<key>     the focus page, Work
+<DOMAIN>/_board/workbench?path=<Board>&layout=focus&section=work&group=work-<key>     an old Work link: Report
    <key>: story · plan · explore · evidence · displays · draft   (views A to F)
 ```
 
-The first block is the frame layout. **Report and Work use the focus page** (`layout=focus`,
-`servers/workbench/focus_page.page_url`): `section` picks Report or Work, `group` the view, `work-` before the key on
-Work. An older `jNN_v<MMDD>_<desk>` version folder still opens.
+The first block is the frame layout. **Report is the focus page** (`layout=focus`,
+`servers/workbench/focus_page.page_url`; `group` picks the view). **Work is retired** at Block, Job and Task (JL
+261111: "the Work is no longer used"): it is off the right rail, and an old `section=work` or `work-<key>` link opens
+the same Report view. What Work's ⚙️ Process held (a version's 🪜 Sections step words, an evidence Job's or Task's
+to-do rows and how it is made) is the first numbered sections of that Report view, with no Process or Results
+heading and no grey caption under the view buttons; each view's asks stay in its last 🙋 Interaction. An older
+`jNN_v<MMDD>_<desk>` version folder still opens.
+
+**A version's Structure view comes first** (JL 261111: "it should be a view for the job workbench UI"; redone after
+"it is so ugly, could you try it again"): `group=structure` on a version's Report, before Draft-Main. Read-only,
+nothing copied (`servers/workbench-paper/paper_structure.py`). The whole-paper structure is this view, never a Task.
+Two numbered sections, no wide table, no sideways scroll at 390 px:
+
+1. **🧭 The story**: the Board Story's § 8 (shared by every version) by its parts, never its prose: from its ```text
+   block the TITLE large, the STORY in one line, the other keys (explanation, boundaries) small; the § 8 claims table
+   as small cards, each claim with its numbers; on the right the version's sign (`narrative-approved:`, written from
+   the person's words by haipipe-draft `page.py sign-narrative`): signed, not signed, or stale when the Story's § 8
+   changed since (compared as text with `<version>/records/narrative-sign.md`). Links open the Story's § 8 and the
+   face's `## Narrative` as written.
+2. **🗺️ The Sections**: one closed row per Section in compile order (the face's compile-order block), from the face's
+   per-Section table (`section | reader question | entry | ordered moves | must refuse | displays | exit`): the name
+   and the reader question, the moves as one step line, chips for the claims it carries (named in the row, or through
+   the face's "Claims to displays:" line by its figures) and its figures, a bar for its paragraph count (the current
+   Draft's `### C<n>.P<m> · <name>` headings) and its plan sign (`approved:`). Opened: comes in, must refuse, leaves
+   with, displays; its paragraphs grouped by C<n>; the venue's papers for that Section, one thin bar each (the first
+   `section.key` line of `reads/pNN-<author><year>/reading.yaml`, linked to `shots/section.jpg`), ours first (JL
+   261111: "the examples to be shared across the job level and each draft task"). One source, two levels: the row
+   reads the examples topic its Task face names in `examples:`, joined by `<author><year>`, so no file moves; each
+   draft Task's 📚 Examples card keeps showing its own Section. s04's Sections table (haipipe-paper-plan) is the
+   plan; this view is what the Drafts hold now.
+
+**A paragraph out of range is marked** (JL 261112, haipipe-paper-draft § Paragraphs of 4 to 7 sentences): on the
+Plan mind map, both in Structure and in the draft Task's Plan view (one renderer, `draft_steps._plan_map`), an off
+paragraph's box shows "❗ <n> sentences (4 to 7)" in red, and one with a `reason:` line shows "<n> sentences · reason
+given" muted; a Section's tab in Structure reads "<N> paragraphs · <k> off".
 
 **Every Run address is a link** (JL 261103: "b52.j01.t01.r01 <--- how could you make this to be clickable"). A
 `bNN.jNN[.tNN[.rNN]]`, or `bNN jNN tNN` with spaces, in a paper Board's views, a version's Work views and a draft
@@ -50,7 +82,7 @@ Section's step pages opens that folder's focus page (`?path=<folder>&layout=focu
 address's own Project, `work/` first, then `discovery/`; a Run number that is shared or missing opens its Task (then
 Job, Block). A Section name `tNN_<name>` of a writing Job opens that Section's Work › Write view. An address that
 finds no folder stays plain text, and a page never links to itself. One helper does it,
-`servers/workbench/address_links.py` (`live.address_links`: `resolve`, `href`, `linkify`, `page_linker`,
+`servers/workbench/page/address_links.py` (`live.address_links`: `resolve`, `href`, `linkify`, `page_linker`,
 `linked_views`; standard library only), applied where the views are built (`board_views`, `paper_version`,
 `focus_draft.parts`, `draft_steps.step_view`); never copy it into a page's own code.
 
@@ -97,6 +129,7 @@ of a level; anything it leaves out is the frame's vanilla Space. `level_patterns
 | Block › Work Details | Idea · Story · DataFlow · PaperFlow · Jobs | the paper's steps before its versions, each Operation (Input, Prompt) over Result (its Studio topic's drawing, then Open and Decided): Idea the Ideation topic (s01), each idea a card; Story the Story topic (s02), as sections with a card per research question; DataFlow and PaperFlow the Plan topics (s03, s04); then the versions |
 | Block › Report (focus page; legacy Work links redirect) | Idea · Story · Data + Paper Plan · Support blocks · Evidence · Displays · Writing | `layout=focus&section=report\|work&group=<key>\|work-<key>`; the views are below (🖥 The focus page) |
 | Block › Runs · Delivery | (Delivery) LaTeX · Word · Cover letter · Rounds | the Board's `runs/`; the newest version's `delivery/jNN_<version>/`; then Sections in the build, every version's Sections from its `build-manifest.json`: ready at the build, in the build or changed after it, a link to each Section's part and its folder |
+| Job › Report (focus page; Work retired, its links redirect) | Structure (first) · Draft-Main · … | Structure: 🧭 The story (§ 8 title, story, claim cards, the version's sign) · 🗺️ The Sections (a closed row per Section: question, moves, claims, figures, paragraph bar, plan sign; opened: its paragraphs and the venue's papers) |
 | Job › Description | Version · Venue rules | the version face; its venue's `call.md` |
 | Job › Audience Report | Questions · Draft-Main · Draft-Appendix · Comments · Cover letter | the face's `## Questions` and the standing J1–J5; each Section as Question │ Work │ Report with its rendered draft beside its drawing; the comments reports' `## Review Items`; the letter by paragraph |
 | Job › Work Details | All · Main · Appendix · Letters | its `t0N_` · `t2N_` · `t3N_` Tasks; the comments reports the letters answer |
@@ -126,8 +159,8 @@ supported separately; Board behavior does not imply their migration.
 | Key | View | Content sources and Sections |
 |---|---|---|
 | idea | Idea | Ideation topic: Directions and Theory; Related from the Board reference records, even when a Story exists. Direction appears here only before a Story exists. |
-| story | Story | Current Story topic and chosen direction: Direction (its question large, `**Label**:` paragraphs as label rows), Pitch (the one-sentence identity large, then the pitch a sentence a line; the stage only on the bar; `⟦pending …⟧` a muted chip), Theory, Research Questions (the paper's question large, then a row per question: the question, and beside it its `The narrative` line as "→ what it lets the paper say" with its state as a chip, stacked under 900 px; process text left out), Stakes and evidence, Related, Venues and Story by Section (left tabs: first the whole paper's Story arc, then each Section's part of the arc, its claims last). Prose keeps a 92-character measure and sits centred in its card, its text left-aligned (as every capped paragraph in a paper section does); the question rows use the card's width. |
-| plan | Data + Paper Plan | Data flow and Paper flow from their topics, then Roadmaps and the preparation plan, Runs to do and next steps to the send. |
+| story | Story | Current Story topic and chosen direction: Direction (its question large, `**Label**:` paragraphs as label rows), Pitch (the one-sentence identity large, then the pitch a sentence a line; the stage only on the bar; `⟦pending …⟧` a muted chip), Theory, Research Questions (the paper's question large, then ONE table, a row per question, every field side by side: RQ | Question | Why we ask | Asked before | New here | Expected (the report link at its end; no State column), the three middle columns from §3's table when it has them; full card width, the paper's question on its left edge; stacked per row on a phone), Related, Venues (each card's first row its editor's test, from §9's `editor's test` column, with an "Open the editor's test" pop-out when the Board has `reports/q*_editor_test_<venue slug without hyphens>*/`; under it "To pass the desk", a numbered list of the first sentence of each item in that report's `**To raise the odds**` list, hidden with no report) and Story by Section (reads § 8 as the shared narrative; left tabs, right content: first the whole paper's Story arc from § 8, then a tab per Section from the newest version's `## Narrative` row, its small line what the reader leaves with; its panel Reader asks, Comes in with, Moves as a numbered list 1, 2, 3, Leaves with, Hands on, Must not say, Displays, then its claims); no Open points section. Prose shares one 92-character measure centred in the card, text left-aligned; a compared table (the Research Questions) takes the card's width. |
+| plan | Data + Paper Plan | Two sections, the skill's Plan (JL 261111, after re-reading haipipe-paper-plan; Paper-CMS-AI-Usage r03_collect_plan_view_decisions): 1 · 🗄️ Data flow, the s03 topic's Excalidraw drawing (how the data become each answer), and 2 · 📝 Paper flow, the s04 topic's drawing (how each answer becomes the page), as Displays shows s06. Each bar carries a small Prompts button with that flow's plan prompts (Data flow: design the dataset, design the regressions, make them run; Paper flow: plan the displays). Every fact once: no summary on top, no Runs to do (§ 7 shows in the Data flow drawing), no separate Plan prompts; the § 6 reading is the Story view's 📚 Reading. A line that is only a template slot (`<...>`) is not shown. |
 | explore | Support blocks | Internal Work and external Discovery Blocks named by the paper, linked back to their source work. |
 | evidence | Evidence | Returned values and citations from evidence Jobs, with their current state. |
 | displays | Displays | The display plan, display previews (each display's state in its tab), examples, then last Story by Section from the same Story topic, the same section the Story view shows. |
@@ -136,8 +169,9 @@ supported separately; Board behavior does not imply their migration.
 **One source, several entry points.** Related in Idea and Story is the same
 `related/` material. Closest-work positioning is owned by haipipe-paper-related;
 record storage by haipipe-related. Story by Section in Story and Displays is the
-same current Story topic's `Section Narrative`, owned by haipipe-paper-story.
-Its per-version compile order remains with the writing Job and assembly. Neither
+same current Story topic's `Section Narrative` (§ 8: title, story, claims; no
+Section rows), owned by haipipe-paper-story. Its Section rows and per-version
+compile order remain with the writing Job's `## Narrative` and assembly. Neither
 extra UI entry creates another authoring location.
 
 Views and Sections depend on source content. No ideation topic means no Idea
@@ -167,8 +201,8 @@ Grant-specific rendering, examples and scaffolding are not implemented merely
 because they appear in the matrix. See the Paper router's ownership table.
 
 ```text
-servers/workbench/work_frame.py          shared sections and view ownership
-servers/workbench/skills_section.py      skill catalog and links
+servers/workbench/page/work_frame.py          shared sections and view ownership
+servers/workbench/page/skills_section.py      skill catalog and links
 servers/workbench-paper/paper_focus.py   Paper content adapter and scoped sources
                         board_views.py  View registration and classic wrappers
                         board_results.py content renderers shared across Views

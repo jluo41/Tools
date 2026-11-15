@@ -45,9 +45,9 @@ built: from-topic .
   - a Job: Block › Work Details lists … <!-- @decided-so-far/1 #da294d -->
     a Job: Block › Work Details lists the four levels, and each level's Job tab takes the Block's six Spaces (s01-D24).
   - (261007) Today's insight question screens sit under … <!-- @decided-so-far/2 #d4ed25 -->
-    (261007) Today's insight question screens sit under the proposed ones: Prototype (its ask and
-  - needs) under Description, Insight (its partitions) under … <!-- @decided-so-far/3 #6e93e8 -->
-    needs) under Description, Insight (its partitions) under Work Details.
+    (261007) Today's insight question screens sit under the proposed ones: Question Book (its ask and
+  - needs) under Description, Insight (its segments) under … <!-- @decided-so-far/3 #6e93e8 -->
+    needs) under Description, Insight (its segments) under Work Details.
   - (261007, JL: "make your name of frame … <!-- @decided-so-far/4 #cde462 -->
     (261007, JL: "make your name of frame to be of the board level, job level and task level")
   - Every frame is named for its level: … <!-- @decided-so-far/5 #b49cc7 -->
@@ -62,8 +62,8 @@ built: from-topic .
     should pay attention"; then "where is my original workbench UI?", "I want to see the plan A and plan B how to fit the workbench UI") The UI screens stay; a short text-only redraw that dropped them was undone. Cleaned instead: a Decide frame first, the Board rows' three empty Description columns dropped, frames 300 apart, "differs:" lines gray, and red only on the open points ① to ⑦.
   - (261007) The Run level follows haipipe-run 0.31.0 … <!-- @decided-so-far/10 #f3a2fa -->
     (261007) The Run level follows haipipe-run 0.31.0 and b10's s06-run-workbench-skill: each Run is one folder in `runs/`
-  - (hard `rNN_<dataset>_<partition>/` with `result/`, soft `run-<type>-<target>/`), and … <!-- @decided-so-far/11 #2cd003 -->
-    (hard `rNN_<dataset>_<partition>/` with `result/`, soft `run-<type>-<target>/`), and each level's Runs card is one list from `run.yaml` filtered by kind or type. Insight's move to it is open point ⑦.
+  - (hard `rNN_<dataset>_<segment>/` with `result/`, soft `run-<type>-<target>/`), and … <!-- @decided-so-far/11 #2cd003 -->
+    (hard `rNN_<dataset>_<segment>/` with `result/`, soft `run-<type>-<target>/`), and each level's Runs card is one list from `run.yaml` filtered by kind or type. Insight's move to it is open point ⑦.
   - (261007, JL: "Board a column, job a … <!-- @decided-so-far/12 #54cbdf -->
     (261007, JL: "Board a column, job a column and then task a column") The frames sit in a grid under
   - Decide: columns Board │ Job │ Task, … <!-- @decided-so-far/13 #2ca130 -->
@@ -76,6 +76,6 @@ built: from-topic .
   - Agree its **For:** line and **Delivery type:** … <!-- @open/0 #7b11a4 -->
     Agree its **For:** line and **Delivery type:** (ui), proposed by the agent 261030?
   - ① A or B: is a DIKW … <!-- @open/1 #a6f8c5 -->
-    ① A or B: is a DIKW level a group on the Board (A), or a Job with its own tab (B)? ② Does only j04_wisdom deliver; do D · I · K hand their answers up as cite needs? ③ Does a level get its own question map, or the Block's map at its frame? ④ Today's Check (a question's gates): chips on each need in Task › Work Details? ⑤ Meta stays on the Board? ⑥ The older register boards: carry over, or keep? ⑦ Insight's Runs under the new Run contract (haipipe-run 0.31.0, b10's s06-run-workbench-skill): `<dataset>_<partition>.sh` beside `results/` and `reports/` become `runs/rNN_<dataset>_<partition>/` with `result/` inside?
+    ① A or B: is a DIKW level a group on the Board (A), or a Job with its own tab (B)? ② Does only j04_wisdom deliver; do D · I · K hand their answers up as cite needs? ③ Does a level get its own question map, or the Block's map at its frame? ④ Today's Check (a question's gates): chips on each need in Task › Work Details? ⑤ Meta stays on the Board? ⑥ The older register boards: carry over, or keep? ⑦ Insight's Runs under the new Run contract (haipipe-run 0.31.0, b10's s06-run-workbench-skill): `<dataset>_<segment>.sh` beside `results/` and `reports/` become `runs/rNN_<dataset>_<segment>/` with `result/` inside?
   - (the drawing's Decide frame gives my answer … <!-- @open/2 #f4078f -->
     (the drawing's Decide frame gives my answer to each; write here, or mark the drawing in red)

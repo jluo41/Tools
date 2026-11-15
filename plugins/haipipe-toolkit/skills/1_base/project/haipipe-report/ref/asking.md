@@ -33,7 +33,7 @@ What does the question need fixed first?
 A level is a kind of claim the answer may make. On an Insight board the levels are the
 levels Data, Information, Knowledge and Wisdom; a Task Block or a paper names its own.
 By partition and power and By protocol reuse come from the Insight workbench, where a
-question is asked on partitions of one dataset and a Prototype is run on every dataset;
+question is asked on partitions of one dataset and a Question Book is run on every dataset;
 they apply wherever the same question is asked on several cuts or several datasets.
 
 

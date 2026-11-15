@@ -12,10 +12,10 @@ judges a candidate, or marks a Run complete on the agent's behalf.
 from __future__ import annotations
 
 import re
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
 
-from host_paths import skill_dir
+from live.design import plan_folder
 
 import yaml
 
@@ -25,61 +25,21 @@ BASES = ("brief-only", "evidence-informed")
 MODES = ("compose", "revise", "brainstorm", "theory-driven", "challenge")
 ROLES = ("evidence", "inspiration", "reference", "avoid", "base", "feedback", "handoff")
 _RD = re.compile(r"^rd(\d+)_", re.I)
-# Design Run names (JL 261001), the Page grammar with `design` as the family word:
+# Design Run names, the Page grammar with `design` as the family word:
 #   run-design-<step>-<MMDD>-design-<N>[-2]   e.g. run-design-generate-0918-design-1
 # Older `rdNN_<step>_itemNN` names are retired (rename_runs.py renames a folder once); a
 # folder not yet renamed still orders by its rd number. Order is the ticket's `sequence:`.
 RUN_NAME = re.compile(r"^run-design-(commission|generate|verify|adopt)-(\d{4})-([a-z0-9]+(?:-[a-z0-9]+)*)$")
-# A quote opens after a space or line start and closes before one, so the apostrophe
-# in "it's" or "doesn't" is never read as a quote mark (audit H1, 260918).
-_QUOTED = re.compile(r"(?<!\w)['\"‘“](.+?)['\"’”](?!\w)")
-_NEGATIVE = re.compile(r"\b(?:no|not|never|without|excludes?|avoids?|don['’]t|doesn['’]t|isn['’]t)\b", re.I)
-_ENDS = re.compile(r"\b(?:ends|ending|finishes)\s+with\b", re.I)
-_STARTS = re.compile(r"\b(?:starts|starting|begins|opens)\s+with\b", re.I)
-_RENDER = re.compile(r"\brender(?:s|ed|ing)?\b", re.I)
-_PLACEHOLDER = re.compile(r"\{[A-Za-z_]+\}")
-_MAX_CHARS = re.compile(r"(≤|<=|<|at most|max(?:imum)?|no more than|under|fewer than|less than)\s*(\d+)\s*(?:chars?|characters?|字)", re.I)
-_STRICT = ("<", "under", "fewer than", "less than")
-_MAX_CHARS_2 = re.compile(r"(\d+)\s*(?:chars?|characters?)\s*(?:max|cap|or fewer|or less)", re.I)
 
-
-class ActionError(ValueError):
-    """A refused action; the message is shown to the person unchanged."""
-
-
-# ------------------------------------------------------------------ files --
-
-def _now() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-
-
-def _dump(path: Path, obj) -> Path:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(yaml.safe_dump(obj, sort_keys=False, allow_unicode=True), encoding="utf-8")
-    return path
-
-
-def _load(path: Path) -> dict:
-    if not path.is_file():
-        return {}
-    data = yaml.safe_load(path.read_text(encoding="utf-8"))
-    return data if isinstance(data, dict) else {}
-
-
-def _ref(folder: Path, path: Path) -> dict:
-    rel = path.resolve().relative_to(folder.resolve()) if folder.resolve() in path.resolve().parents \
-        else Path(_relative(folder, path))
-    return {"path": rel.as_posix()}  # a path, never a content hash (JL 260928)
-
-
-def _relative(folder: Path, path: Path) -> str:
-    import os
-    return os.path.relpath(path.resolve(), folder.resolve())
-
-
-def _slug(text: str) -> str:
-    slug = re.sub(r"[^a-z0-9_-]+", "-", text.lower()).strip("-_")
-    return slug or "item"
+# The parts live in sibling modules; every name stays readable here (design_actions.X).
+from live.design_actions_files import ActionError, _dump, _load, _now, _ref, _relative, _slug  # noqa: F401,E402
+from live.design_actions_criteria import (_CLAUSE, _CONNECTOR, _ENDS, _MAX_CHARS, _MAX_CHARS_2,  # noqa: F401,E402
+                                          _NEGATIVE, _PLACEHOLDER, _QUOTED, _RENDER, _STARTS, _STRICT,
+                                          _judged_criterion, _phrases, compile_criteria)
+from live.design_actions_workers import (complete_run, name_worker, planned_runs, release_worker,  # noqa: F401,E402
+                                         stale_inputs, supersede)
+from live.design_actions_draft import (_COUNSEL, counsel_lines, counsel_rules, draft_request_path,  # noqa: F401,E402
+                                       open_draft_request, request_draft)
 
 
 def run_sequence(ticket: Path) -> int:
@@ -115,12 +75,6 @@ def run_name(folder: Path, step: str, item_id: str, day: datetime | None = None)
     return name
 
 
-def plan_folder(folder: Path) -> Path:
-    """A Design Page's plan folder: ``draft/`` since Page layout 0.118, else the older ``outline/``."""
-    draft = folder / "draft"
-    return draft if draft.is_dir() or not (folder / "outline").is_dir() else folder / "outline"
-
-
 def _register_path(folder: Path, stem: str) -> Path:
     return plan_folder(folder) / f"{stem}-design-items.md"
 
@@ -132,7 +86,7 @@ def next_item_id(register_text: str) -> str:
     return f"ITEM{max(numbers, default=0) + 1:02d}"
 
 
-# JL 261002: the design element is a first citizen. When the board's Design Goal names the
+# The design element is a first citizen. When the board's Design Goal names the
 # starting text's elements (`Elements:` under Resources), every new Design Item asks its
 # Generate for the element record under those names, as a rule its Verify checks.
 ELEMENT_RULE = (
@@ -221,120 +175,6 @@ def add_item(folder: Path, stem: str, fields: dict) -> dict:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(text.rstrip("\n") + "\n\n" + "\n".join(lines) + "\n", encoding="utf-8")
     return {"item": item_id, "register": path.as_posix()}
-
-
-# --------------------------------------------------------------- criteria --
-
-_CLAUSE = re.compile(r",|;|\band\b|\bbut\b|\bwhile\b|\bthen\b", re.I)
-_CONNECTOR = re.compile(r"^(?:\s|,|\bor\b|\bnor\b|\band\b)*$", re.I)
-
-
-def _phrases(rule: str) -> list[tuple[str, str]]:
-    """(kind, phrase) for every quoted phrase and {PLACEHOLDER} of a rule, in order.
-
-    Each phrase reads the words just before it, back to the last clause break:
-    "keeps 'Hi' and does not say 'urgent'" contains Hi and excludes urgent.  A
-    phrase with only "or"/"and"/commas before it shares the previous one's kind,
-    so "no 'urgent', 'act now' or 'hurry'" excludes all three."""
-    quoted = [(m.start(), m.end(), m.group(1)) for m in _QUOTED.finditer(rule)]
-    spans = quoted + [(m.start(), m.end(), m.group(0)) for m in _PLACEHOLDER.finditer(rule)
-                      if not any(a <= m.start() < b for a, b, _ in quoted)]
-    out, prev_end, prev_kind = [], 0, None
-    for start, end, phrase in sorted(spans):
-        before = rule[prev_end:start]
-        part = _CLAUSE.split(before)[-1]
-        if prev_kind and _CONNECTOR.match(before):
-            kind = prev_kind
-        else:
-            words = part if part.strip() else before
-            kind = ("excludes" if _NEGATIVE.search(words) else "ends_with" if _ENDS.search(words)
-                    else "starts_with" if _STARTS.search(words) else "contains")
-        out.append((kind, phrase))
-        prev_end, prev_kind = end, kind
-    return out
-
-
-def compile_criteria(acceptance: list[str]) -> list[dict]:
-    """Turn acceptance prose into v2 criteria; anything not mechanical is semantic.
-
-    Rule N compiles to criterion ``rNN``; a rule quoting several phrases adds
-    ``rNNb``, ``rNNc`` for the rest, so "no 'urgent' or 'act now'" excludes both.
-    A negative word (no, not, does not, never, without, avoid) before a quoted
-    phrase or a {PLACEHOLDER} makes it ``excludes``; "ends with 'X'" is
-    ``ends_with``; "under N characters" allows N - 1.
-    """
-    criteria = []
-    for index, rule in enumerate(acceptance, start=1):
-        cid = f"r{index:02d}"
-        rubric_kind = None
-        lowered = rule.casefold()
-        for label in ("semantic", "visual"):
-            if lowered.startswith(label + ":"):
-                rubric_kind = label
-                break
-        if rubric_kind:
-            fields = {}
-            for part in rule.split("|"):
-                key, sep, value = part.partition(":")
-                if not sep or not value.strip():
-                    raise ValueError(
-                        f"{rubric_kind} criterion {cid} needs criterion, observe, pass, fail, "
-                        "and not-verifiable fields separated by |"
-                    )
-                key = key.strip().casefold()
-                if key in fields:
-                    raise ValueError(f"{rubric_kind} criterion {cid} repeats {key}")
-                fields[key] = value.strip()
-            required = {rubric_kind, "observe", "pass", "fail", "not-verifiable"}
-            if set(fields) != required:
-                missing = ", ".join(sorted(required - set(fields))) or ""
-                extra = ", ".join(sorted(set(fields) - required))
-                detail = f"missing {missing}" if missing else f"unknown fields {extra}"
-                raise ValueError(f"{rubric_kind} criterion {cid} has {detail}")
-            criteria.append({
-                "id": cid, "kind": rubric_kind, "description": fields[rubric_kind],
-                "observation": fields["observe"], "pass_when": fields["pass"],
-                "fail_when": fields["fail"],
-                "not_verifiable_when": fields["not-verifiable"],
-            })
-            continue
-        hit = _MAX_CHARS.search(rule)
-        if hit:
-            limit = int(hit.group(2))
-            criteria.append({"id": cid, "kind": "max_chars",
-                             "value": limit - 1 if hit.group(1).lower() in _STRICT else limit})
-            continue
-        hit = _MAX_CHARS_2.search(rule)
-        if hit:
-            criteria.append({"id": cid, "kind": "max_chars", "value": int(hit.group(1))})
-            continue
-        phrases = _phrases(rule)
-        if phrases:
-            for n, (kind, phrase) in enumerate(phrases):
-                criteria.append({"id": cid + ("" if n == 0 else chr(ord("a") + n)), "kind": kind, "value": phrase})
-        else:
-            # A rule no built-in check can compute is judged by a reader. The
-            # person writes it as a plain sentence; the method is derived from
-            # it, so nothing has to be re-typed. Spelling the method out
-            # (`semantic: … | observe: …`) stays available and wins.
-            criteria.append(_judged_criterion(cid, rule))
-    return criteria
-
-
-def _judged_criterion(cid: str, rule: str) -> dict:
-    """A plain acceptance sentence as a judged criterion with its method named."""
-    visual = bool(_RENDER.search(rule))
-    return {
-        "id": cid, "kind": "visual" if visual else "semantic", "description": rule,
-        "observation": ("Look at the rendered screen of this draft and judge the rule as written."
-                        if visual else
-                        "Read this draft as its recipient and judge the rule as written."),
-        "pass_when": f"The draft does what the rule says: {rule}",
-        "fail_when": f"The draft does not do what the rule says: {rule}",
-        "not_verifiable_when": ("The render is missing or does not show what the rule names."
-                                if visual else
-                                "The draft does not show enough to judge the rule either way."),
-    }
 
 
 def split_evidence(line: str) -> tuple[str, str]:
@@ -509,7 +349,7 @@ def queue_generate(folder: Path, stem: str, item: dict, runs: list[dict],
     if missing:
         raise ActionError("evidence named at release is gone: " + ", ".join(missing))
     approval = folder / "results" / released["id"] / "decision.yaml"
-    ticket_path = _dump(folder / "runs" / f"{run}.yaml", {
+    _dump(folder / "runs" / f"{run}.yaml", {
         "schema": TICKET_SCHEMA, "run": run, "sequence": number, "operation": "generate",
         "worker": "haipipe-design-unit", "actor": "designer-context-pending",
         "item": item["id"], "target": item.get("title"), "config": _ref(folder, config_path),
@@ -549,7 +389,7 @@ def queue_verify(folder: Path, stem: str, item: dict, runs: list[dict]) -> dict:
     inputs, missing = _evidence_inputs(folder, evidence)
     if missing:
         raise ActionError("evidence named at release is gone: " + ", ".join(missing))
-    ticket_path = _dump(folder / "runs" / f"{run}.yaml", {
+    _dump(folder / "runs" / f"{run}.yaml", {
         "schema": TICKET_SCHEMA, "run": run, "sequence": number, "operation": "verify",
         "worker": "haipipe-design-unit", "actor": "reviewer-context-pending",
         "item": item["id"], "target": item.get("title"), "config": _ref(folder, config_path),
@@ -567,92 +407,10 @@ def queue_verify(folder: Path, stem: str, item: dict, runs: list[dict]) -> dict:
     return {"run": run, "verifies": generated["id"]}
 
 
-def complete_run(folder: Path, run: str, started_at: str = "") -> dict:
-    """The caller closes a worker Run: gate the Result, then write the receipt.
-
-    The worker wrote only ``results/<run>/`` (content, checks, result.yaml).
-    This step runs ``check_unit`` on the pair and records the truthful status:
-    ``complete`` with the next route when the gate accepts a complete judgment
-    (pass, fail, or unresolved), ``failed`` with the gate's own words when the
-    record is malformed. It never edits the Result.
-    """
-    import importlib.util
-    checker = skill_dir("haipipe-design-unit") / "scripts" / "check_unit.py"
-    spec = importlib.util.spec_from_file_location("design_unit_gate", checker)
-    gate = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(gate)
-    ticket_path = folder / "runs" / f"{run}.yaml"
-    result_path = folder / "results" / run / "result.yaml"
-    runtime_path = folder / "results" / run / "runtime.yaml"
-    if not ticket_path.is_file() or not runtime_path.is_file():
-        raise ActionError(f"{run}: no planned Ticket/receipt to close")
-    runtime = _load(runtime_path)
-    if runtime.get("status") not in ("planned", "running"):
-        raise ActionError(f"{run}: receipt is already {runtime.get('status')}")
-    if not result_path.is_file():
-        raise ActionError(f"{run}: the worker left no result.yaml; nothing to close")
-    ticket = _load(ticket_path)
-    problems = gate.validate(ticket_path, result_path)
-    result = _load(result_path)
-    verdict = str(result.get("verdict") or "")
-    now = _now()
-    runtime.update(started_at=started_at or runtime.get("queued_at") or now, finished_at=now)
-    if problems:
-        # A draft that fails the check is drafted again; a review that fails it is reviewed again.
-        runtime.update(status="failed", failure="; ".join(problems),
-                       route="verify" if ticket.get("operation") == "verify" else "generate")
-    elif ticket.get("operation") == "verify" and verdict == "fail":
-        runtime.update(status="complete", failure=None, route="generate", terminal_outcome="fail")
-    elif ticket.get("operation") == "verify" and verdict == "unresolved":
-        runtime.update(status="complete", failure=None, route="resolve-unresolved",
-                       terminal_outcome="unresolved")
-    else:
-        runtime.update(status="complete", failure=None,
-                       route="verify" if ticket.get("operation") == "generate" else "delivery",
-                       terminal_outcome=verdict or "complete")
-    _dump(runtime_path, runtime)
-    return {"run": run, "status": runtime["status"], "verdict": verdict,
-            "route": runtime.get("route"), "problems": problems}
-
-
 def adopt(folder: Path, stem: str, item: dict, runs: list[dict], decision: str,
           actor: str, words: str) -> dict:
     """Retired write entry; historical records remain readable by the presenter."""
     raise ActionError("Adopt writes are retired; independent Verify pass is ready for Delivery")
-
-
-# ------------------------------------------------------------ stale queue --
-
-def stale_inputs(folder: Path, run: str) -> list[str]:
-    """The files a queued run names that changed (or vanished) since it was queued.
-
-    Staleness is file time: an input or target modified after the run's Ticket
-    was written. Never a content hash (JL 260928). The config and approval are
-    frozen copies written with the Ticket, so only their absence counts; the
-    same rule as the records check (``check_unit.context``)."""
-    ticket_path = folder / "runs" / f"{run}.yaml"
-    ticket = _load(ticket_path)
-    queued = ticket_path.stat().st_mtime if ticket_path.is_file() else 0.0
-    frozen = [ticket.get("config"), (ticket.get("approval") or {}).get("record")]
-    named = list(ticket.get("inputs") or []) + list(ticket.get("targets") or [])
-    changed = []
-    for ref, timed in [(r, False) for r in frozen] + [(r, True) for r in named]:
-        if isinstance(ref, dict) and ref.get("path"):
-            path = (folder / str(ref["path"])).resolve()
-            if not path.is_file() or (timed and path.stat().st_mtime > queued):
-                changed.append(Path(str(ref["path"])).name)
-    return changed
-
-
-def supersede(folder: Path, run: str, reason: str) -> dict:
-    """Retire a queued run no worker has taken, with its reason; its record stays."""
-    runtime_path = folder / "results" / run / "runtime.yaml"
-    runtime = _load(runtime_path)
-    if runtime.get("status") != "planned":
-        raise ActionError(f"{run}: receipt is {runtime.get('status')}; only a queued run can be replaced")
-    runtime.update(status="superseded", failure=reason, finished_at=_now())
-    _dump(runtime_path, runtime)
-    return {"run": run, "status": "superseded"}
 
 
 def requeue(folder: Path, stem: str, item: dict, runs: list[dict]) -> dict:
@@ -678,182 +436,3 @@ def requeue(folder: Path, stem: str, item: dict, runs: list[dict]) -> dict:
     out = queue_generate(folder, stem, item, rest, feedback=feedback,
                          base_run=str(base.get("run_id") or "") if base else "")
     return {**out, "replaces": old["id"], "changed": changed}
-
-
-# ------------------------------------------------------------ batch + queue --
-
-def name_worker(folder: Path, run: str, actor: str) -> dict:
-    """Name the real worker on a planned run record before dispatch, and mark the receipt running."""
-    ticket_path = folder / "runs" / f"{run}.yaml"
-    runtime_path = folder / "results" / run / "runtime.yaml"
-    if not ticket_path.is_file() or not runtime_path.is_file():
-        raise ActionError(f"{run}: no planned run record to name")
-    runtime = _load(runtime_path)
-    if runtime.get("status") != "planned":
-        raise ActionError(f"{run}: receipt is {runtime.get('status')}, not planned")
-    ticket = _load(ticket_path)
-    ticket["actor"] = actor
-    _dump(ticket_path, ticket)
-    runtime.setdefault("worker", {})["actor"] = actor
-    runtime.pop("ticket_sha256", None)  # a leftover hash field is dropped, never refreshed
-    runtime["status"] = "running"
-    runtime["started_at"] = _now()
-    _dump(runtime_path, runtime)
-    return {"run": run, "actor": actor, "ticket": ticket_path.as_posix()}
-
-
-def release_worker(folder: Path, run: str) -> dict:
-    """A dispatched worker died and left no result: put the run record back in the queue, truthfully."""
-    ticket_path = folder / "runs" / f"{run}.yaml"
-    runtime_path = folder / "results" / run / "runtime.yaml"
-    if not ticket_path.is_file() or not runtime_path.is_file():
-        raise ActionError(f"{run}: no run record to put back")
-    runtime = _load(runtime_path)
-    if runtime.get("status") != "running":
-        raise ActionError(f"{run}: receipt is {runtime.get('status')}, not running")
-    if (folder / "results" / run / "result.yaml").is_file():
-        raise ActionError(f"{run}: a result exists; close it with the records check instead")
-    ticket = _load(ticket_path)
-    lost = str(ticket.get("actor") or "")
-    pending = ("designer" if ticket.get("operation") == "generate" else "reviewer") + "-context-pending"
-    ticket["actor"] = pending
-    _dump(ticket_path, ticket)
-    runtime.setdefault("worker", {})["actor"] = pending
-    runtime.pop("ticket_sha256", None)  # a leftover hash field is dropped, never refreshed
-    runtime["status"] = "planned"
-    runtime.pop("started_at", None)
-    runtime.setdefault("lost_workers", []).append({"actor": lost, "at": _now(), "why": "left no result"})
-    _dump(runtime_path, runtime)
-    return {"run": run, "lost": lost}
-
-
-def release_all(folder: Path, stem: str, items: list[dict], actor: str, words: str) -> dict:
-    """Release every item that has no Commission yet; one decision Run per item."""
-    todo = [i for i in items if i["state"] in ("not commissioned", "commission open")]
-    if not todo:
-        raise ActionError("nothing to release; every item already has a Commission")
-    runs = [commission(folder, stem, item, actor, words, "release")["run"] for item in todo]
-    return {"runs": runs, "items": [i["id"] for i in todo]}
-
-
-def queue_all(folder: Path, stem: str, items: list[dict]) -> dict:
-    """Queue the next agent step of every item that has one: Generate after release, Verify after generate."""
-    runs, skipped = [], []
-    for item in items:
-        if item["state"] in ("commissioned", "revise requested"):
-            runs.append(queue_generate(folder, stem, item, item["runs"])["run"])
-        elif item["state"] in ("generated", "verify invalid"):
-            runs.append(queue_verify(folder, stem, item, item["runs"])["run"])
-        elif item["state"] == "queued run out of date":
-            runs.append(requeue(folder, stem, item, item["runs"])["run"])
-        else:
-            skipped.append(item["id"])
-    if not runs:
-        raise ActionError("nothing to queue; no item is waiting for a Generate or a Verify")
-    return {"runs": runs, "skipped": skipped}
-
-
-def adopt_all(folder: Path, stem: str, items: list[dict], actor: str, words: str) -> dict:
-    """Adopt every verified item with one name and one sentence; one decision Run per item."""
-    todo = [i for i in items if i["state"] == "verified"]
-    if not todo:
-        raise ActionError("nothing to adopt; no item is verified")
-    runs = [adopt(folder, stem, item, item["runs"], "adopt", actor, words)["run"] for item in todo]
-    return {"runs": runs, "items": [i["id"] for i in todo]}
-
-
-def planned_runs(folder: Path) -> list[dict]:
-    """Every planned agent run in a folder: what the queue runner picks up."""
-    out = []
-    results = folder / "results"
-    found = [p for pat in ("rd*/runtime.yaml", "run-design-*/runtime.yaml") for p in results.glob(pat)] if results.is_dir() else []
-    for runtime_path in sorted(found):
-        runtime = _load(runtime_path)
-        if runtime.get("status") == "planned" and runtime.get("operation") in ("generate", "verify"):
-            out.append({"run": runtime.get("run") or runtime_path.parent.name,
-                        "operation": runtime.get("operation"), "item": runtime.get("item"),
-                        "ticket": (folder / str(runtime.get("ticket") or "")).as_posix(),
-                        "folder": folder.as_posix()})
-    return out
-
-
-# ------------------------------------------------------------- rules + draft --
-
-_COUNSEL = re.compile(r"^\s*(W\d+)\s+(DO NOT|DO)\s+(.+?)(?:\s{2,}\S.*)?$")
-
-
-def counsel_lines(text: str) -> list[dict]:
-    """The DO / DO NOT counsel lines of an insight page, in order.  A rule that
-    wraps goes on at the column its DO started in; only that column is read,
-    so a side column's own wrap is not glued on (FW01's W3 used to end "on the")."""
-    rows, col = [], None
-    for line in text.splitlines():
-        hit = _COUNSEL.match(line)
-        if hit:
-            rows.append({"id": hit.group(1), "do": hit.group(2) == "DO", "text": hit.group(3).strip()})
-            col = hit.start(2)
-        elif col and not line[:col].strip() and line[col:col + 1].strip():
-            rows[-1]["text"] += " " + re.split(r"\s{2,}", line[col:].strip())[0]
-        else:
-            col = None
-    for row in rows:
-        row["text"] = row["text"].rstrip(".")
-    return rows
-
-
-def counsel_rules(text: str) -> list[str]:
-    """Acceptance rules implied by the counsel: every DO NOT becomes a 'does not …' rule.
-
-    Quote the phrase to ban ("does not say 'urgent'") and it compiles to an
-    ``excludes`` check; left unquoted, the reviewer judges it (semantic)."""
-    return [f"does not {row['text'][0].lower() + row['text'][1:]}" for row in counsel_lines(text) if not row["do"]]
-
-
-def draft_request_path(folder: Path, stem: str) -> Path:
-    return plan_folder(folder) / f"{stem}-draft-request.md"
-
-
-def request_draft(folder: Path, stem: str, goal: dict, insight_rows: list[dict], missing: int,
-                  actor: str = "") -> dict:
-    """Ask the agent to draft the missing Design Items: one request file the queue runner reads."""
-    if missing < 1:
-        raise ActionError("the register already has every design the Brief asks for")
-    path = draft_request_path(folder, stem)
-    if path.is_file():
-        raise ActionError(f"a draft request is already open: {path.name}")
-    lines = [f"# draft request · {stem}", "",
-             f"asked-by: {actor or 'person'}", f"asked-at: {_now()}", f"items: {missing}",
-             f"goal: {goal.get('sentence') or '(no Brief line)'}", ""]
-    if goal.get("row"):
-        row = goal["row"]
-        lines += [f"venue: {row['venue']}", f"audience: {row['audience']}", f"job: {row['job']}", ""]
-    lines.append("## insights to draw on")
-    lines.append("")
-    if insight_rows:
-        for r in insight_rows:
-            lines.append(f"- {r.get('word', r.get('role', 'insight'))} · {r.get('path', r.get('name', ''))}"
-                         + (f" · {r['signed']}" if r.get("signed") else ""))
-            if r.get("finding"):
-                lines.append(f"  finding: {r['finding']}")
-            if r.get("consequence"):
-                lines.append(f"  then: {r['consequence']}")
-            for c in r.get("counsel") or []:
-                lines.append(f"  {'DO' if c['do'] else 'DO NOT'} {c['text']}")
-    else:
-        lines.append("- none · design from the Brief only")
-    lines += ["", "## the agent writes",
-              "", f"{missing} new Design Item blocks appended to the register through `design_actions.add_item`,",
-              "each with its own goal, stance, basis, expected, falsified, evidence line, and acceptance rules",
-              "(every DO NOT above becomes a rule). Then this file is removed.", ""]
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("\n".join(lines), encoding="utf-8")
-    return {"request": path.as_posix(), "items": missing}
-
-
-def open_draft_request(folder: Path, stem: str) -> dict | None:
-    path = draft_request_path(folder, stem)
-    if not path.is_file():
-        return None
-    text = path.read_text(encoding="utf-8")
-    field = lambda key: (re.search(rf"(?m)^{key}:\s*(.*)$", text) or [None, ""])[1]
-    return {"path": path, "items": int(field("items") or 0), "asked_by": field("asked-by"), "asked_at": field("asked-at")}

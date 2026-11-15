@@ -1,5 +1,6 @@
 s01 · Design
 ============
+view: findings
 
 **Tags:** `Structure`
 
@@ -27,7 +28,31 @@ one level each. This drawing gathers one theme across the levels, as
 `Tools/plugins/haipipe-toolkit/servers/workbench-design/guide/method.md`; the method
 folders today are `haipipe-design/ref/method-folders.md` beside it.
 
-**Feeds:** `../reports/` q01_design_ladder · q02_design_workbench · q03_insight_steers_design.
+**Feeds:** `../reports/` Q01 · Q02 · Q03.
+
+
+Q01 · Answer
+------------
+
+**Question:** How does design climb the ladder?
+
+**Answer (open):** not written yet.
+
+
+Q02 · Answer
+------------
+
+**Question:** What does the design workbench show?
+
+**Answer (open):** not written yet.
+
+
+Q03 · Answer
+------------
+
+**Question:** How does insight steer a design?
+
+**Answer (open):** not written yet.
 
 
 Files

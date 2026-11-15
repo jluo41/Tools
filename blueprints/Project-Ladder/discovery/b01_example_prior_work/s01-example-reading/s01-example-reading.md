@@ -13,7 +13,7 @@ s01 · How the example papers are read
 
 **Topic:** A placeholder topic: the path from a paper to the Bib a paper cites, and where a person checks a citation. Every paper here is made up.
 
-**Feeds:** `reports/q01-earlier-effect.md`
+**Feeds:** Q01.md`
 
 ```yaml
 frames:

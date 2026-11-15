@@ -147,12 +147,12 @@ def new_draft(stem: str, face: str, fragment: str, rel: str) -> str:
         out.append(f"- C{c} · {dtitle.replace('·', '-')} · {count} paragraph(s), carried over")
         for pn, (cn, name, para, a, b) in enumerate(plan, 1):
             if cn == c:
-                out += [f"- C{c}.P{pn} · {name}", f"  → S{a} to S{b} · {len(para)} source line(s), as written"]
+                out += [f"- C{c}.P{pn} · {name}", f"  → s{a} to s{b} · {len(para)} source line(s), as written"]
     out.append("")
-    heads = [f"### C{cn}.P{pn} · {name} · S{a} to S{b}" for pn, (cn, name, para, a, b) in enumerate(plan, 1)]
+    heads = [f"### C{cn}.P{pn} · {name} · s{a} to s{b}" for pn, (cn, name, para, a, b) in enumerate(plan, 1)]
     for h, (cn, name, para, a, b) in zip(heads, plan):
         out.append(h)
-        out += [f"- B{k} · S{a + k - 1} · {point(l)}" for k, l in enumerate(para, 1)]
+        out += [f"- B{k} · s{a + k - 1} · {point(l)}" for k, l in enumerate(para, 1)]
         out.append("")
     out += ["## 2 · Scratch · What to write here", ""]
     for h in heads:
@@ -162,7 +162,7 @@ def new_draft(stem: str, face: str, fragment: str, rel: str) -> str:
             "(content-format: latex).", ""]
     for h, (cn, name, para, a, b) in zip(heads, plan):
         out.append(h)
-        out += [f"- B{k} · S{a + k - 1} · {l.strip()}" for k, l in enumerate(para, 1)]
+        out += [f"- B{k} · s{a + k - 1} · {l.strip()}" for k, l in enumerate(para, 1)]
         out.append("")
     return "\n".join(out).rstrip("\n") + "\n"
 
@@ -207,7 +207,7 @@ def fill_draft(plan_text: str, fragment: str) -> tuple[str | None, str]:
         for (bh, k), unit in zip(bullets, units):
             if bh == h:
                 sn += 1
-                out3.append(f"- B{k} · S{sn} · {unit[0]}")
+                out3.append(f"- B{k} · s{sn} · {unit[0]}")
                 out3 += ["  " + x for x in unit[1:]]
         out3.append("")
     rest = re.split(r"(?m)^(?=## )", plan_text[s3.end():], maxsplit=1)
@@ -261,7 +261,7 @@ def dry_run(board: Path) -> None:
         if "skip" in item:
             print(f"  ·  {item['stem']:58} skip: {item['skip']}")
             continue
-        bullets = len(re.findall(r"(?m)^- B\d+[a-z]* · S\d+ · ", item["text"].split("## 3 · Draft", 1)[1]))
+        bullets = len(re.findall(r"(?m)^- B\d+[a-z]* · [Ss]\d+ · ", item["text"].split("## 3 · Draft", 1)[1]))
         print(f"  ✎  {item['stem']:58} {item['how']:12} draft/{item['draft']}  ({bullets} Bullets in § 3)")
     print("\nnothing changed (dry run)")
 

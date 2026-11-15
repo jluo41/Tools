@@ -15,7 +15,7 @@ E Handoff   7.9    not yet   Salience 5
 2. D belongs, but as drawn it lists two dates; it should show what each freeze holds.
 3. E belongs, but as drawn it is an empty state plus a rule; it should show the counsel draft and its chain to Design.
 4. Missing: the Board's own Questions (board.md `## Questions`, `reports/qNN_<topic>/`, answered across Jobs). The face says this cell feeds `reports/` q01, yet no letter shows a Board question. The section table also lists Questions for a Block's Report.
-5. Missing: Coverage (question × cut × Job) is squeezed into B as a "Readings" box with "Open"; it is a grid of its own.
+5. Missing: Coverage (question × segment × Job) is squeezed into B as a "Readings" box with "Open"; it is a grid of its own.
 
 ## Pairing with Work (s52)
 

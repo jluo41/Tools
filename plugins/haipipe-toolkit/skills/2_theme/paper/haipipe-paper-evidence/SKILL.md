@@ -3,7 +3,7 @@ name: haipipe-paper-evidence
 description: "A paper's evidence rules on top of haipipe-evidence and haipipe-display: citations only from verified CITE Results, one number per result in every Section, displays numbered and within the venue limit, each passing the display revise loop. Owns the Board's value Job (value maps, bindings, the check: values_ledger.py) and citation Job (claim groups: cite_tasks.py); reads a whole version as one ledger and flags what disagrees (evidence_ledger.py); each display version's preview.pdf is the display, then how it was made (method.md). Use before a build or a send. Trigger: paper evidence, evidence ledger, value ledger, value map, citation check, numbers disagree, verify citations, paper displays, display preview, display method, /haipipe-paper-evidence, /haipipe-paper-display."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.15.0"
+  version: "0.18.0"
   last_updated: "2026-11-10"
   aliases: [haipipe-paper-display]
   # version history: ./CHANGELOG.md
@@ -19,8 +19,7 @@ and do it". A paper Section is a draft Task (b32_draft s03, s41-D06), three fold
 base (every theme)      paper adds                  one Section Task
 haipipe-draft      ─▶   haipipe-paper-draft    ─┐   tNN_<section>/
 haipipe-evidence   ─▶   haipipe-paper-evidence ─┼─▶ ├── draft/      plan and sentences
-haipipe-display    ─▶   (this skill too)       ─┘   ├── evidence/   cards.yaml · proposals.md
-                                                    └── display/    Display<n>-<slug>/
+haipipe-display    ─▶   (this skill too)       ─┘   └── evidence/   cards.yaml · proposals.md
 ```
 
 One paper Block links many discovery Blocks (external information) and work Blocks (internal information), deposits
@@ -33,7 +32,7 @@ work/bNN_<topic>/  creates            paper/Paper-X/  evidence                  
 jNN_/tNN_/runs/rNN/result/ ──────▶   j02_evidence_value/ tNN_values-<group>/ ───▶ tNN_<section>/evidence/cards.yaml
                                        │ values first: its copies and its ids are all a display reads
                                        ▼
-discovery/bNN_ … CITE Results ──▶    j01_evidence_display/ colour-scheme.yaml ─▶ tNN_<section>/display/  frames it
+discovery/bNN_ … CITE Results ──▶    j01_evidence_display/ colour-scheme.yaml ─▶ cited in tNN_<section> (cited-in:)
                                        t01_figure1-<slug>/runs/rNN/result/figure.pdf
                                        t51_etable1-<slug>/runs/rNN/result/table-body.tex
                                      j03_evidence_cite/  tNN_<claim group>/  ───▶ \citep keys in the Section
@@ -91,9 +90,10 @@ The rules
      review and are accepted.
      A Run in that Task draws the picture or the table body into its `result/` (`figure.pdf` and `figure.png`, or
      `table-body.tex`, plus `figures.md`). A display that reads several question Jobs still lives in that one Job.
-   - The paper's unit, `tNN_<section>/display/Display<n>-<slug>/`, only frames it: its question, caption, legend,
-     number, venue size and `review/rNN.md`. Its `intake/manifest.yaml` points at the display Task's Run `result/`;
-     its `recipe/` copies the picture in and draws nothing. A display Run only draws from returned, aggregated
+   - **One display, one home (JL 261113).** The display Task holds all of it: question, caption, legend, number,
+     venue size, `cited-in:` and its `review/rNN.md`, beside the Runs that draw it. A Section keeps no
+     `display/Display<n>-<slug>/` copy; its text cites the label. An older Section's unit moves its caption and
+     reviews into the Task, then goes to `display/_old/`. A display Run only draws from returned, aggregated
      Results; no paper folder runs analysis on raw data.
    - VALUE (Ework) cards point at the same work Block's Runs, so one Block is the source of every number and
      every picture.
@@ -147,13 +147,28 @@ work Run ─▶ value Run (copies, gives ids) ─▶ display Run (draws by id) �
 5. **An older setup leaves the list.** When the setup changes, ids measured the old way stay in the old value Run
    and are not carried into the new one. No "right, but check before quoting" flags: a `flag:` on a value fails
    the check.
-6. **Staleness travels down.** A source work Task with a newer Run marks the value Task stale; a newer value Run marks
-   the displays and Section bindings that still read the old one stale.
+6. **Staleness travels down, when what was read moved.** A source work Task with a completed Run newer than the newest
+   one the value Job reads there marks the value Task stale (an older Run passed over is on purpose). A display or a
+   Section on an older value Run is stale only when something it read changed or left in the current one: a file it
+   read under `result/` no longer byte-identical, an id it prints or quotes gone or with another value. A newer value
+   Run that only adds ids leaves its readers current (JL 261111: "yes, please change them"; before, adding 25 ids
+   made 12 displays stale and 16 identical Runs were drawn again).
 7. **A second route for headline numbers.** The check recomputes the headline numbers with independent code, from
    the scores rather than from the Task's own output: a paper's own `scripts/recompute_check.py`, which the check
    runs when it is there.
 8. **One check before a send.** The chain check runs as the value Job's paper-wide Task (`t99_paper_value_check`)
    and blocks gate G4 (haipipe-paper): a version is not sent while it fails.
+9. **A Section reads the verdict; it never runs evidence itself (values, citations and displays).** The Board's evidence Jobs check every printed
+   value (j02, `result/ledger.csv`: section, sentence, status, printed, value, source) and every citation (j03,
+   `result/citations.csv`, `cited_in`). A Section keeps no `run-value-*` or `run-citation-*` Runs of its own (an
+   older one moves to `runs/_old/`). Its 3 · Evidence view shows "✅ Checked at the Board": one row per printed
+   value and citation of that Section, from each Task's newest Run, its status in colour (match, no anchor, owed,
+   differs) and the Task as a link (JL 261113, on a Section's own Runs: "do we need this? how do you think this to
+   the block level evidence???"; the workbench reader is `workbench-task-draft/board_checks.py`). Displays the same
+   (JL 261113: "Similarly, we have the displays that are in the block level as well ... we should update it to be
+   the same"): a Section keeps no display unit; each display Task's `cited-in:` names the Sections that cite it, and
+   a Section's 4 · Display view shows those Tasks, read only: picture, label, `status:`, accepted Run and the newest
+   review score.
 
 **The check**, `scripts/chain_check.py`:
 
@@ -180,7 +195,7 @@ Run address `bNN.jNN.tNN.rNN` and Section name `tNN_<name>` as a link, through t
 it in the script (JL 261103: "b52.j01.t01.r01 <--- how could you make this to be clickable"):
 
 ```python
-import sys; sys.path.insert(0, str(TOOLS / "plugins/haipipe-toolkit/servers/workbench"))
+import sys; sys.path.insert(0, str(TOOLS / "plugins/haipipe-toolkit/servers/workbench/page"))
 from address_links import page_linker          # standard library only
 link = page_linker(<the page folder the preview belongs to>, <the SPACE root>)
 html = link(html)                              # text only; tags, attributes and existing links stay as they are

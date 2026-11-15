@@ -10,4 +10,4 @@ previous: j01_prototype-p1_data-demov1
 
 # j02_prototype-p1_data-demov2
 
-Prototype p1 on data v2.
+Question Book p1 on data v2.

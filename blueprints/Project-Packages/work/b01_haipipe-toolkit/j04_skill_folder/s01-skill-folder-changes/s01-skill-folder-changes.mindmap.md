@@ -18,7 +18,7 @@ built: from-topic .
     what q02 (path fix) and q03 (labeling merge) changed in the toolkit, drawn as a results scratch: the folders before and after, who moved what, the kinds of broken path and their fix, the checks, and the open choices per question.
 - Source <!-- @source #6da13a -->
   - every fact is read when the builder … <!-- @source/0 #4fb110 -->
-    every fact is read when the builder runs. "Before" is `git ls-tree` of Tools HEAD; "now" is the disk (layers, families and their SKILL.md counts, server folders); the check lines are the Checks sections of `../reports/q02_path_fix/` and `../reports/q03_merge_subjective_label/`; the question rows come from `../board.md`.
+    every fact is read when the builder runs. "Before" is `git ls-tree` of Tools HEAD; "now" is the disk (layers, families and their SKILL.md counts, server folders); the check lines are the Checks sections of `../_old/reports/q02_path_fix/` and `../_old/reports/q03_merge_subjective_label/`; the question rows come from `../board.md`.
 - Feeds <!-- @feeds #ffe8e9 -->
   - `reports/` q02_path_fix · q03_merge_subjective_label (and q01_skill_layers' choices) <!-- @feeds/0 #165e1c -->
 - Files <!-- @files #6ce6c5 -->

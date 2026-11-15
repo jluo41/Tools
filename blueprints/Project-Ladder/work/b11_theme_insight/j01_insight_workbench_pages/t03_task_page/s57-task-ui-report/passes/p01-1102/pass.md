@@ -6,7 +6,7 @@ kind: session
 
 go through all the UI and then think about the plan about how to update them (JL 261102)
 
-Walked Answer, By cut, Across Jobs, Plan, MindMap on t44 K15: no figure under the answer, rests on reads 'cross ↗', MindMap 18 words, title is the folder name.
+Walked Answer, By segment, Across Jobs, Plan, MindMap on t44 K15: no figure under the answer, rests on reads 'cross ↗', MindMap 18 words, title is the folder name.
 
 ## Decided
 

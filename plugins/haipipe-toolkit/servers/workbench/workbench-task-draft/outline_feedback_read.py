@@ -68,7 +68,7 @@ def paragraphs(page: Path) -> dict[str, dict]:
         if heading:
             cn = int(heading.group(1))
             p = int(heading.group(2))
-            brief = re.sub(r"\s*·\s*S\d+\s+to\s+S\d+\s*$", "", heading.group(3)).strip()
+            brief = re.sub(r"\s*·\s*[Ss]\d+\s+to\s+[Ss]\d+\s*$", "", heading.group(3)).strip()
             current = "C%d.P%d" % (cn, p)
             out[current] = {"address": current, "p": p, "brief": brief, "bullets": []}
             continue

@@ -7,17 +7,17 @@ under Question-answering methods; its papers are the rows of `../../../related/p
 marks the workbench's own judgment.
 
 family: Question-answering
-move: Enumerate the cuts of the extract, score each candidate pattern by how interesting
+move: Enumerate the segments of the extract, score each candidate pattern by how interesting
   it is, and return the top k.
 status: future: a method to add later; no question is answered this way yet
 taxonomy: Exploratory [Leek 2015]; description [Hernán 2019].
 comes from: Tang 2017, top-k insights; Vartak 2015, views ranked by deviation
 reads: question · the extract · its dimensions and measures
-returns: the top k insights, each with its score, its cut, and the number of candidates
+returns: the top k insights, each with its score, its segment, and the number of candidates
   searched
 test now: T4 spec · T5 each insight says what its result says
 test in use: T7 survives a correction for the number searched · T8 found again on
-  another partition
+  another segment
 
 
 What the literature says
@@ -49,10 +49,10 @@ agent: An LLM agent turns a question into a sequence of analysis actions over th
 steps: 1. Read the question and the extract's schema. 2. Issue analysis actions on the
   cuts the spec names [Ma 2023]. 3. Score and rank the insights. 4. Return the top
   k with the number searched.
-returns: The ranked insights, each with its cut, its result file and the size of the
+returns: The ranked insights, each with its segment, its result file and the size of the
   search.
 verify: A different agent checks each sentence against its table (T5, T6) and re-runs the
-  top insights on another partition (T8).
+  top insights on another segment (T8).
 risk: Ranking by surprise rewards noise; a long search finds a striking pattern by chance
   (ours).
 evidence on AI: On 100 datasets with planted insights, an end-to-end analysis agent did

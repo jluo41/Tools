@@ -7,9 +7,10 @@ from pathlib import Path
 from urllib.parse import quote
 
 from live import draft_steps as ds
+from live import item_cards as IC, item_marks as IM
 from live.frame import esc
 from live.ui_parts import _cap, _clean, _kv, _open_btn, _plain, _side_tabs
-from live.board_read import (_after_table, _face, _field, _label_rows, _lead_sentence, _open_link, _page_url,
+from live.board_read import (_rq_table, _after_table, _face, _field, _label_rows, _lead_sentence, _open_link, _page_url,
                              _rq_lists, _table, _undated, is_version)
 
 
@@ -263,6 +264,24 @@ STORY_CSS = ("<style>.pb-story,.pb-story.pb-wide .pb-head{max-width:92ch;margin-
 RQ_CONTEXT = (("why we ask", "Why we ask"), ("how others asked", "Asked before"), ("what is new", "New here"))
 
 
+def _cards(topic: Path, root: Path) -> tuple:
+    """The Story topic's item cards (it owns its questions' ids, cards.md §4) and its path for the writer."""
+    try:
+        rel = topic.resolve().relative_to(Path(root).resolve()).as_posix()
+    except ValueError:
+        rel = ""
+    return IC.cards(topic), rel
+
+
+def _rq_head(whole, cards: dict, rel: str) -> str:
+    """The paper's question above the table, `RQ.Q`, with its marks and its cards under it."""
+    if not whole:
+        return ""
+    words = _plain(whole[1])
+    return (f'<div class=pb-rqhead data-addr="RQ.Q"><p class=pb-label>The paper\'s question {IM.marks("RQ.Q", cards)}</p>'
+            f'<p class=pb-big>{_chips(words)}</p>{IM.card_slot("RQ.Q", cards, rel, words=words)}</div>')
+
+
 def _rq_context(rq: str) -> dict:
     """{RQ number: (why we ask it, how others asked it, what is new here)} from §3's table whose header names them
     (Paper-CMS-AI-Usage 261111: "Why we ask each question, and how others asked it"); its first cell starts with the
@@ -387,7 +406,8 @@ def story_tabs(board: Path, topic: Path, root: Path, md) -> list:
         whole = re.search(r"\*\*The paper's question\*\*:?\s*(.+)", rq)
         context = _rq_context(rq)
         cols = [name for i, (_, name) in enumerate(RQ_CONTEXT) if any(v[i] for v in context.values())]
-        heads = ["", "Question"] + cols + ["Expected"]
+        heads = ["", "Question"] + cols + ["Expected", ""]        # the last column: each row's card marks (cards.md §7)
+        cards, owner = _cards(topic, root)
         body = ""
         for k, q in qs:                              # k: the item's own number (a story may start at RQ0)
             m = re.match(r"(.+?\?)\s*(.*)$", q)
@@ -398,14 +418,27 @@ def story_tabs(board: Path, topic: Path, root: Path, md) -> list:
                      + [f'<td data-h="{esc(c)}">{esc(ctx.get(c, ""))}</td>' for c in cols]
                      + [f'<td data-h="Expected">{_chips(_plain(said.get(k, "")))}{" " + link if link else ""}</td>'])
             # no State column: every question reads "nothing yet" until a Run returns (JL 261111: "no need for this, drop it")
-            body += "<tr>" + "".join(cells) + "</tr>"
+            body += (f'<tr data-addr="RQ.RQ{k}">' + "".join(cells) + f'<td class=im-c>{IM.marks(f"RQ.RQ{k}", cards)}</td></tr>'
+                     + IM.card_slot(f"RQ.RQ{k}", cards, owner, cols=len(heads), words=_plain(ask)))   # its address (cards.md §2)
         table = (f'<table class=pb-rqtab><thead><tr>{"".join(f"<th>{esc(h)}</th>" for h in heads)}</tr></thead>'
                  f'<tbody>{body}</tbody></table>')
         # one row per question, every field side by side (JL 261111: "why you don't just add more columns????? so hard
         # to review and read"); a compared table takes the card's width, the paper's question keeps the reading measure
-        tabs.append(("Research Questions", "what it asks", STORY_CSS + RQ_TABLE_CSS
-                     + (f'<div class=pb-rqhead><p class=pb-label>The paper\'s question</p><p class=pb-big>{_chips(_plain(whole[1]))}</p></div>' if whole else "")
-                     + table))
+        tabs.append(("Research Questions", "what it asks", STORY_CSS + RQ_TABLE_CSS + IM.ASSETS + _rq_head(whole, cards, owner) + table))
+    elif (keyed := _rq_table(rq))[1]:               # §3 as one keyed table (H1, "H2 check", RQ1): the same table, its rows
+        heads, rows = keyed                          # its own columns, each row addressed by its key (cards.md §2)
+        whole = re.search(r"\*\*The paper's question\*\*:?\s*(.+)", rq)
+        cards, owner = _cards(topic, root)
+        span = len(heads) + 2                        # the key, its columns, the marks
+        ask = lambda cells: _plain(next((c for h, c in zip(heads, cells) if "question" in h.lower()), ""))
+        body = "".join(f'<tr data-addr="RQ.{esc(key)}"><td class=k>{esc(label)}</td>'
+                       + "".join(f'<td data-h="{esc(h)}">{_chips(_plain(c))}</td>' for h, c in zip(heads, cells))
+                       + f'<td class=im-c>{IM.marks("RQ." + key, cards)}</td></tr>'
+                       + IM.card_slot("RQ." + key, cards, owner, cols=span, words=ask(cells))
+                       for key, label, cells in rows)
+        table = (f'<table class=pb-rqtab><thead><tr><th></th>{"".join(f"<th>{esc(h[:1].upper() + h[1:])}</th>" for h in heads)}'
+                 f'<th></th></tr></thead><tbody>{body}</tbody></table>')
+        tabs.append(("Research Questions", "what it asks", STORY_CSS + RQ_TABLE_CSS + IM.ASSETS + _rq_head(whole, cards, owner) + table))
     elif rq.strip():                                 # a Story that draws its questions its own way still shows them
         tabs.append(("Research Questions", "what it asks", md(rq, topic)))
     if "stakes" in parts:

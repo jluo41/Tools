@@ -34,7 +34,7 @@ s04 keeps only what every work page shares, the same at Block, Job and Task: the
 
 ## Read
 
-- servers/workbench/focus_page.py (page_shell, render, rail_kids)
+- servers/workbench/page/focus_page.py (page_shell, render, rail_kids)
 - haipipe-ui's page parts and Sections
 - j03 t01 r01_collect_report_and_delivery (answered)
 - runs/r02_collect_interactions_page (waiting)

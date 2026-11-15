@@ -57,7 +57,7 @@ def spaces(snap):
 
 
 def render_report(report, board, root, board_path):
-    """Show the current Page Face with the shared Page reader (workbench/page_reader.py).
+    """Show the current Page Face with the shared Page reader (workbench/page/page_reader.py).
 
     Draft Reading displays plan-bound prose. A new report may have no Draft;
     reading its Page Face must still work without allocating a writing Run.

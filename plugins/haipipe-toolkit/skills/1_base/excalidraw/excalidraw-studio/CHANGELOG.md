@@ -1,6 +1,13 @@
 excalidraw-studio · Changelog
 =============================
 
+**[unreleased] · 2026-11-12 · the five-part drawing is the default**
+
+- `new_topic.py --builder` now starts a five_parts builder and its `sketch_<topic>.py`; The look's black-only rules
+  are said to cover the draw.py drawings (special shapes, topics drawn before 261112).
+- `check.py` recognises a five-part drawing by its part names (Idea, Now, Design, Process, Delivery) and checks ⑤P
+  instead of ⑤ ⑥ ⑦: all five parts, the Design's A · B · C, no `<…>` placeholder left.
+
 **[unreleased] · 2026-11-02 · full names, never short ids**
 
 - The look gains rule 5 (JL 261102: "do not use the short name like G or m, let's try to give the full name, we need

@@ -36,7 +36,7 @@ design/Design-<name>/
 ├── design-goal.md             the shared rules every goal keeps; a person signs them     run-setup-rules
 ├── inputs/inputs-vN/                 one inputs version: rules · theory · handoff copies,       run-add-inputs-v<N>
 │   └── manifest.yaml          frozen: each file, its part of step ①, its sha256
-└── jNN_<goal>_method-vN-<slug>_inputs-vM/
+└── jNN_<goal>_M0x-<slug>-mK_inputs-vM/
     └── inputs/                the fence: goal.md · method.md · links into ../../inputs/inputs-vN/ ·
         └── manifest.yaml      what the design work may see                                run-setup-inputs-j<NN>
 ```

@@ -92,7 +92,7 @@ class DesignContextTest(unittest.TestCase):
             self.assertEqual([int(n) for n in groups], list(range(1,len(groups)+1)))
         self.assertIn('pb-copy', f.render(THEME, self.root, self.board, 'report', 'goals'))
         self.assertIn('Review and approve', f.render(THEME, self.root, self.job, 'work', 'work-release'))
-        self.assertIn('aria-label="Work"', f.render(THEME, self.root, self.job, 'work', 'work-release'))
+        self.assertNotIn('aria-label="Work"', f.render(THEME, self.root, self.job, 'work', 'work-release'))   # Work retired (JL 261111)
 
     def test_blueprint_sections_and_examples_are_real_and_routed(self):
         blueprint = REPO / 'blueprints/Project-Ladder/work/b12_theme_design'
@@ -136,7 +136,7 @@ class DesignContextTest(unittest.TestCase):
                         self.assertIn('data-title="'+case+'"', matrix)
                         for row in rows:
                             self.assertEqual(row['label'], 'Blueprint example')
-                            if kind == 'Method release':      # a Book's release: a Job with no Design Job views (261109)
+                            if kind == 'Design method':       # a Book's method type: a Job with no Design Job views (261109)
                                 self.assertTrue(d.R.is_release(row['page']))
                             else:
                                 self.assertEqual(d.level_of(row['page']).lower(), level)
@@ -145,7 +145,7 @@ class DesignContextTest(unittest.TestCase):
                                 self.assertEqual(d.R.kind_of(row['page']), role)
                         if not configured:
                             self.assertIn('No linked examples yet.', matrix)
-            self.assertEqual(list(guide['use_cases']['job']), ['Design Job', 'Method release'])
+            self.assertEqual(list(guide['use_cases']['job']), ['Design Job', 'Design method'])
         for level, kinds in guide['type_view_routes'].items():
             for kind, routes in kinds.items():
                 page = REPO / guide['examples'][level][kind]

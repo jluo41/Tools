@@ -1,6 +1,6 @@
 # Where s04's delivery goes (haipipe-studio scripts/render_delivery.py). The deck stays in deck/; ui/ holds the agreed
 # screen drafts of the six parts every work page shares, the same at Block, Job and Task (s04-D05, D06). j03's
-# t04_shared_parts writes them, one folder each; design_b02_workbench builds them into servers/workbench/focus_page.py
+# t04_shared_parts writes them, one folder each; design_b02_workbench builds them into servers/workbench/page/focus_page.py
 # (page_shell and render). Each level's Report, Work and Studio are the nine cells' (s51 to s59), in their own delivery/.
 pieces:
   - code: "frame: path, title-&-section, view buttons, goal-line, rails, pop-out"

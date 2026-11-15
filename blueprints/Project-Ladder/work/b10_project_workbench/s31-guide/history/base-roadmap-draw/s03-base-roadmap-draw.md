@@ -9,7 +9,7 @@ workbench, Studio inside a workbench.
 Split from the old `s02-guide-drawings/` (it was `shared-workbench-ui`, 261007).
 
 Open: it still draws the base before the frame (no Block · Job · Task tabs, no six Spaces). Redraw
-it from `servers/workbench/frame.py` when JL asks.
+it from `servers/workbench/page/frame.py` when JL asks.
 
 Files
 -----

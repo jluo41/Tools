@@ -21,7 +21,7 @@ JL 261007 ("how do we manage the runs here ... the soft run, the hard run, how t
 the folder and workbench"); the earlier decisions are s01-D14 and s01-D15, and the change that put them
 in the skill is `../s01-overall-tree-structure/run-skill-draft.md`.
 
-**Feeds:** `reports/q01_bjtr_boundary/` (what a Run is, and where it may sit), `q07_workbench_mapping/`
+**Feeds:** Q01 (what a Run is, and where it may sit), `Q07/`
 (the Runs panel, the Runs Space, the pop-out).
 
 
@@ -76,8 +76,8 @@ skills/1_base/project/
 ├── haipipe-related/    s04 Related
 ├── haipipe-report/     s05 Report
 └── haipipe-run/        s06 Run        ◀ this topic
-servers/workbench/frame.py         runs_of
-servers/workbench/runs_panel.py    run_types · panel_html · panel_markup
+servers/workbench/page/frame.py         runs_of
+servers/workbench/page/runs_panel.py    run_types · panel_html · panel_markup
 ```
 
 
@@ -97,7 +97,7 @@ Below                    still open (red); hard and soft row by row, and the fol
 ```
 
 Read from disk on every build: this Block's Runs (`runs/*/run.yaml`, each ticket's `close:` line), its
-Runs Space through `servers/workbench/frame.py`, and haipipe-run's version.
+Runs Space through `servers/workbench/page/frame.py`, and haipipe-run's version.
 
 
 Finding (read 261011)
@@ -145,7 +145,7 @@ s06-D07 · The Studio's fourth folding part is Runs, under Delivery (JL 261019, 
     every hard Run (`runs/rNN_*`) of every Task under the Block, Job → Task, one line each with its mark,
     status and finish day, a tally per Job and Task; read from each Run's `result/runtime.yaml`, else its
     `run.yaml`; soft Runs and history copies left out. Settles Open 4 for the Studio: rolled up from every
-    level below. Built in `servers/workbench/frame.py` (`hard_runs`, `studio_runs`), tested in
+    level below. Built in `servers/workbench/page/frame.py` (`hard_runs`, `studio_runs`), tested in
     `_host/tests/test_frame.py`; Timeline and Folder moved to the fifth and sixth parts.
 s06-D08 · SPACE Home counts Runs too (JL 261019: "能不能整个 project level 也看一下它跑得怎么样", "在 project level
     下面，也可以加个 run"): a Project's line carries its hard Runs by status (`▶️ 284 · ✅96 ❌46 🟧90 ⏳4 ⬜48`

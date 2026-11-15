@@ -7,7 +7,7 @@
   never "not run" (`job_progress`); `🟡 ACTIVE` reads as running.
 - A Job's and a Task's Delivery show their part of the Block's `delivery/<job>/<task>/` (`block_delivery_part`,
   `delivery_sources`), as haipipe-delivery files it.
-- A form's `for:` may name an insight Board's, its Prototype's or a design Block's own Studio topic
+- A form's `for:` may name an insight Board's, its Question Book's or a design Block's own Studio topic
   (`Insight-X.j02-s01`, `Prototype-b91-X-s01`, `Design-X.j01-s02`; `interaction_topic`).
 - Each insight and design view's 🙋 holds only its own forms: the theme says where a form belongs
   (`live.<theme>_focus.view_of_item`), else a child page's go to the children's view, the page's own to MindMap
@@ -299,7 +299,7 @@ Shorter description (808 -> 407 characters): what it does, when to use it, its t
 
 - JL 261012: "I cannot open you anymore", after the insight Job `j01_p1_SMSR2v1` became
   `j01_prototype-p1-basic-questions_data-SMSR2v1`. A renamed folder's face keeps `renamed-from:`; the
-  workbench route sends an old `path=` on with a 302 (`servers/workbench/frame_view.py` `renamed`), part by part,
+  workbench route sends an old `path=` on with a 302 (`servers/workbench/page/frame_view.py` `renamed`), part by part,
   so a Task under an old Job name opens too. Test: `servers/_host/tests/test_renamed_link.py`.
 
 ## 1.20.2 · 2026-10-12 · /wb update proposes the groups and their order; a rerun adds only what is new
@@ -431,7 +431,7 @@ Shorter description (808 -> 407 characters): what it does, when to use it, its t
 
 - JL 261011: "I want it to be a real timelne, and make it very concise ... Like the timeline with a axis
   down", "it should also be up to done [down]", "we can show different level of details", "We should
-  create a new sNN for it, and show the UI". `servers/workbench/frame.py` `studio_timeline`: an `<ol
+  create a new sNN for it, and show the UI". `servers/workbench/page/frame.py` `studio_timeline`: an `<ol
   class=tl-axis>` with a dot per day on one line down the page and an arrowhead at the end, the oldest day
   at the top. Three levels, buttons Days · Topics · Everything (`data-level` on the axis, CSS shows the
   parts): Days, each day's topics as sNN chips and its count; Topics, a line per topic with how many
@@ -452,7 +452,7 @@ Shorter description (808 -> 407 characters): what it does, when to use it, its t
 ## 1.16.0 · 2026-10-11 · The Studio gets a Timeline
 
 - JL 261011: "for the layout of the studio, I think we can also add another section of the Timeline".
-  `servers/workbench/frame.py`: Timeline is the Studio's third folding part, under Related, on every
+  `servers/workbench/page/frame.py`: Timeline is the Studio's third folding part, under Related, on every
   Block, Job and Task view and in every theme: one block per day, newest first, one line per topic that
   moved that day. It writes nothing; it reads each topic's decisions by the first date in them (b10 has
   110 dated, 13 undated), its sessions (`runs/run-draw-<sNN>/passes/pNN-<MMDD>/`) and the green `✎` change
@@ -468,7 +468,7 @@ Shorter description (808 -> 407 characters): what it does, when to use it, its t
 ## 1.15.1 · 2026-10-11 · Related's groups work like the Studio's
 
 - JL 261011, relayed by the b32_aid_ai session: "for the group in the related, I want it to be things like
-  this: 🎯Current 0 / Untagged 4 / + Group — for the studio". `servers/workbench/frame.py`: Related (folded
+  this: 🎯Current 0 / Untagged 4 / + Group — for the studio". `servers/workbench/page/frame.py`: Related (folded
   in the Studio, every Block, every theme) now sits under the Studio's group bar, not one heading per
   `related/` subfolder. A group is a name in the row's `group` cell of `related/related.md`
   (comma-separated; the column is added the first time a row gets a group), `related/_groups.txt` keeps
@@ -488,7 +488,7 @@ Shorter description (808 -> 407 characters): what it does, when to use it, its t
 ## 1.14.1 · 2026-10-09 · Audience Report: the paper Board's four views on every level
 
 - JL 261009: "why the Audience Report, there are not sub buttons, it is not correct", then, over the paper Board's
-  Audience Report: "I want you to follow things like this". `servers/workbench/frame.py`: on a level no theme draws
+  Audience Report: "I want you to follow things like this". `servers/workbench/page/frame.py`: on a level no theme draws
   itself (every Tools blueprint Block b01 … b17), Audience Report's third row is the paper Board's four views,
   always there: Ideation (the studio topics on ideas) · Narrative (the studio topics telling the level's story) ·
   High-level logic + Low-level work (the register's Questions, Logic │ Work │ Report, the open view) · Related

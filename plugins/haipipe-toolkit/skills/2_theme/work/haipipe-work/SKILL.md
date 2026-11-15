@@ -1,9 +1,9 @@
 ---
 name: haipipe-work
-description: "Create, route, or update work-theme Blocks. /haipipe-work update <Block> aligns an existing Block and its Job/Task pages with the current focus UI, preserving source records and checking the live views. Distinguishes Work Block from Blueprint Block; routes execution to its owning skills. Trigger: update work block, align work format, work theme, /haipipe-work."
+description: "Create, route, or update work-theme Blocks. /haipipe-work propose <Block> reads loose material and proposes the Block's own Overview and Findings sections and its Jobs; /haipipe-work update <Block> aligns an existing Block and its Job/Task pages with the current focus UI, preserving source records and checking the live views. Distinguishes Work Block from Blueprint Block; routes execution to its owning skills. Trigger: update work block, align work format, propose block structure, work theme, /haipipe-work."
 metadata:
-  version: "0.2.1"
-  last_updated: "2026-11-09"
+  version: "0.3.0"
+  last_updated: "2026-11-14"
 ---
 
 # Work theme
@@ -11,7 +11,7 @@ metadata:
 The work theme runs bounded execution work: code, data, models, calculations.
 It is one of the themes in `skills/2_theme/` (beside cowork, design, discovery,
 insight, labeling and paper). Its current focus pages use the shared
-`servers/workbench/focus_page.py` and `work_frame.py`; `servers/workbench-work`
+`servers/workbench/page/focus_page.py` and `work_frame.py`; `servers/workbench-work`
 also retains the classic workbench. It was
 called the task theme until 2026-10-07; the Task as a ladder level (Block ->
 Job -> Task -> Run) belongs to every theme and keeps its name.
@@ -45,11 +45,23 @@ The update procedure here coordinates the owning skills; read the relevant owner
 before changing its records. Do not automatically run `/wb update --apply`: its
 older structural migration can move files and impose the classic workflow layout.
 
+## Propose a Block's own structure
+
+```text
+/haipipe-work propose <Block path>
+```
+
+When a Block's material (logs, transcripts, notes, files) does not fit Goal · Requirements · MindMap or
+Data · Values · Displays, read it and propose the Block's own Overview sections, Findings sections and Jobs.
+The person ticks the proposal, then you make it: section files written by a build script, named on the face under
+`## Review Content` and `## Findings`, and real Jobs, Tasks and Runs for Plan + Results. Read
+[ref/propose.md](ref/propose.md). First case: `blueprints/Project-Replay/work/b41_agreeablerx_replay`.
+
 ## Two Block UI types within Work
 
 | UI type | Purpose | Views |
 |---|---|---|
-| 🧩 Work Block | Carry out work and return results: paper results, data pipelines, model experiments | Overview · Status · Findings · Delivery |
+| 🧩 Work Block | Carry out work and return results: paper results, data pipelines, model experiments | Overview · Plan + Results · Findings · Delivery |
 | 📐 Blueprint Block | Develop and check a theme's pages and supporting skills | The same four views, plus configured Block UI · Job UI · Task UI · Run UI |
 
 Both remain work-theme Blocks on the same B–J–T–R ladder. `Blueprint Block` is a
@@ -74,14 +86,37 @@ inside a view show its linked records; the corresponding right-rail section roll
 up this Block, Job or Task across views. Keep meaningful content differences.
 
 
+## Plan new work on the Plan + Results view (JL 261109)
+
+When a Work Block takes on new work (a sweep, a model family, a set of evals), the plan is written as
+the records the Plan + Results view reads, before any Run starts:
+
+```text
+Plan + Results row <- file
+Job type section  <- face bands:, else the Job's use-case:, else its Tasks' task-type
+Job row           <- jNN_<job>/jNN_<job>.md: goal, close, ## Tasks
+Task row          <- tNN_<task>/tNN_<task>.md: state, goal, close, task-type
+Run row (planned) <- runs/rNN_*/run.yaml status: planned, from the Job's src/gen_runs.py
+```
+
+1. **Agree the plan first**: Job and Task names, the Run count per Task, which machine; then write it.
+2. **Then the view is the plan**: open the Block's Plan + Results view and check every Job, Task and planned
+   Run is there before the first ticket runs. As tickets finish, the same rows turn ✅.
+3. **Faces stay current**: a Job or Task face that still says SCAFFOLD, or has no `state:`, makes the
+   view say "not run" over finished Runs; fix the face with the plan.
+
+`haipipe-task` `ref/lifecycle.md` § Plan holds the Task-level rule; `haipipe-job` owns the Job face.
+
+
 Route
 -----
 
 | You want to | Skill | Where |
 |---|---|---|
 | create, run, audit or close a Task folder; Plan, Build, Execute, Report; read a Run's Result | `haipipe-task` | `1_base/task/` (base: other themes call it too) |
+| propose a Block's own sections and Jobs from loose material | this skill's `ref/propose.md` | `2_theme/work/haipipe-work/` |
 | align an existing Work or Blueprint Block with the current focus UI | this skill's `ref/update.md`, coordinating the owners below | `2_theme/work/haipipe-work/` |
-| open or read a Block, Job or Task on screen (Overview, Status, Findings, Delivery) | `workbench-work` | `2_theme/work/` |
+| open or read a Block, Job or Task on screen (Overview, Plan + Results, Findings, Delivery) | `workbench-work` | `2_theme/work/` |
 | create a Work Block | `haipipe-block`, with the work-specific Task contract | `1_base/project/`; `1_base/task/` |
 | edit the Block face; edit its Job faces | `haipipe-block`; `haipipe-job` | `1_base/project/` |
 | scope or maintain Studio topics and their records | `haipipe-studio` | `1_base/project/` |

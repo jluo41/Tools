@@ -106,7 +106,7 @@ questions:
     Job whose Work Details = its Sections (Main · Appendix · Letters); a Section is a Page Task.
   acceptance: Answered when every level names its folder and its six Spaces' content, drawn in studio/.
   work: []
-  report: reports/q01_paper_ladder/q01_paper_ladder.md
+  report: s01-paper-tree-concept/s01-paper-tree-concept.md
 - id: Q02
   title: Where do venues, related papers and the built paper live?
   question: 'Where on disk and on screen do the venue folders, the related-papers table and the built
@@ -115,7 +115,7 @@ questions:
     Job's Delivery, since each version targets one venue.
   acceptance: Answered when each has one home and the open ? in b03's paper rows is settled.
   work: []
-  report: reports/q02_venues_related_built/q02_venues_related_built.md
+  report: s01-paper-tree-concept/s01-paper-tree-concept.md
 - id: Q03
   title: How do review rounds show?
   question: 'Where do a review round, its responses, the rebuttal and the revised Sections appear:
@@ -124,7 +124,7 @@ questions:
     a resubmission elsewhere is a new version Job.
   acceptance: Answered when a round's place is written and the workbench shows it.
   work: []
-  report: reports/q03_review_rounds/q03_review_rounds.md
+  report: s05-paper-report/s05-paper-report.md
 - id: Q04
   title: Where do the Story and Ideation live?
   question: 'Once a paper Board takes b03''s shape (studio topics, Questions with reports), where does
@@ -135,7 +135,7 @@ questions:
   acceptance: Answered when every Story part has one home, the workbench, the build and the skills read
     it, and one paper Board has moved and still opens and builds.
   work: []
-  report: reports/q04_story_into_topics/q04_story_into_topics.md
+  report: s01-paper-tree-concept/s01-paper-tree-concept.md
 - id: Q05
   title: Which skills and Runs make the paper theme?
   question: 'Which Runs does each level''s buttons make, which skill owns each one, where do the
@@ -146,7 +146,7 @@ questions:
   acceptance: Answered when every button's Run has a card naming its skill, agent and sign, and the
     skill folders match s21's after tree.
   work: []
-  report: reports/q05_skills_and_runs/q05_skills_and_runs.md
+  report: s21-paper-run-skill/s21-paper-run-skill.md
 ```
 
 ## Related resources

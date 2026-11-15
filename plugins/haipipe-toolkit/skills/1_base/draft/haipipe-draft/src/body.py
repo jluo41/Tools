@@ -128,31 +128,6 @@ def code_or_link(m):
 PAPER = None
 
 
-def use_paper(index):
-    """Install the dialect index AND widen the unit branch of MARKER to it.
-
-    WHY THIS IS NOT JUST AN ASSIGNMENT. `MARKER`'s unit branch was a fixed
-    naming pattern, `S-Display-<n>` or `display<NN>`, which is one paper's
-    convention rather than a rule about what a display unit is. A unit named
-    for its own page, which is what the folder rule has required since 260727,
-    only matched by luck: `S-Display-4c-…` did and `QBt3-for-display` did not,
-    so a correct unit on a board whose pages are not called `S-Display-*` could
-    never render an evidence card however finished it was. The names are known
-    at build time, so the branch is built FROM THE INDEX and matches exactly the
-    units that exist, which is both wider and stricter than a guess at a shape.
-    """
-    global PAPER, MARKER
-    PAPER = index
-    ids = {u.path.name for u in getattr(index, "displays", {}).values()
-           if getattr(u, "path", None)}
-    # A View-owned Display has a stable short id (`QBt1-Display1`) and a
-    # descriptive folder (`QBt1-Display1-main-table`). Both must open the same
-    # artifact Card; the paper dialect already maps the short id to the unit.
-    ids.update(getattr(index, "by_short", {}).keys())
-    ids = sorted(ids, key=len, reverse=True)
-    extra = ("|" + "|".join(re.escape(i) for i in ids)) if ids else ""
-    MARKER = re.compile(MARKER_SRC.replace("__UNITS__", extra))
-
 # The board's own Excalidraw host, set per build from board.md's `excalidraw:` key.
 EXCAL_HOST = ""
 

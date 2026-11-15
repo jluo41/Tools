@@ -1,7 +1,7 @@
 """s33 · Insight UI issues: s33-ui-issue.excalidraw, drawn by this builder (haipipe-studio).
 
 The review of the live Insight workbench (261008): the Board Insight-SMSR2v1, its Job, its Tasks and its
-Prototype, every Space and view, shot with headless Chrome into shots/. One lines-only table, worst first
+Question Book, every Space and view, shot with headless Chrome into shots/. One lines-only table, worst first
 (where · what is wrong · what it should be · evidence · owner), then what works and is kept, then the open
 questions in red. The rows are ISSUES below; the face (s33-ui-issue.md) carries the same list.
 
@@ -44,19 +44,19 @@ ISSUES = [
      "('Gap_rest_pp: 12 of 13 intervals exclude zero')",
      "title ↗, the answer in a sentence, the drawing, 'report qNN · status'; say 'not written' once, not per row",
      "insight_views.py _q_report, _job_current; shots/J__Audience-Report__Full-Current.png", J),
-    ("Block › Description › Prototype; Job › Description › Prototype; every question list",
+    ("Block › Description › Question Book; Job › Description › Question Book; every question list",
      "6 retired questions (D04, I15, I16, I18, K07, K13) shown as live, 'new' in this release, counted in 'D 0/5'; "
      "their replacements share titles, so the list shows duplicates (D04 = I19, I15 = I22, I16 = I23, I18 = I24)",
      "retired ones folded under 'retired', each '→ replaced by I19'; out of counts and report rows",
      "question.md retired: lines; insight_views.py _prototype, _job_prototype; shots/B__Description__Prototype.png", B),
     ("Job › Audience Report › Cross (and Block › Cross)",
-     "all 49 questions listed, 44 say 'Not asked on this cut' twice, each with its full Task Work; no POOL or SPLIT",
+     "all 49 questions listed, 44 say 'Not asked on this segment' twice, each with its full Task Work; no POOL or SPLIT",
      "only the 5 questions asked on Cross, each with its difference test and POOL or SPLIT",
      "shots/J__Audience-Report__Cross.png; insight_views.py _job_current", J),
     ("Task › Audience Report › Table · Reading",
-     "not Question │ Work │ Report: a partition table of 'answer —, how sure —'; the run findings the Job shows are "
+     "not Question │ Work │ Report: a segment table of 'answer —, how sure —'; the run findings the Job shows are "
      "missing; Reading is 'Read by: (— ↗) · Answer: —'; W01 says 'Nothing here yet' despite 5 cite needs",
-     "one row per need: need │ the Run that answers it │ what it found, by Partition × Period (s13 point 4)",
+     "one row per need: need │ the Run that answers it │ what it found, by Segment × Period (s13 point 4)",
      "shots/Tt30__Audience-Report__Table.png, Tt30__Audience-Report__Reading.png, Tt48__Audience-Report__Table.png", T),
     ("Task › Description › Question · Records",
      "Question dumps question.md as raw Python dicts (needs: E1: {'kind': 'cite', ...}); no Plan, no Data view; "
@@ -64,14 +64,14 @@ ISSUES = [
      "s13's Question · Plan · Data: the ask; the needs as a table (kind, what, pass rule, agreed); n, base rate, "
      "power per partition",
      "insight_views.py _question, _records; shots/Tt30__Description__Question.png", T),
-    ("Prototype Block, its Job and Tasks (all Spaces)",
+    ("Question Book Block, its Job and Tasks (all Spaces)",
      "opens in the generic work theme: Block shows only 'board-kind' (serves: hidden); release shows only 'state: "
      "open'; each Task 'No face file … missing' though question.md and scripts/ exist; proposals/ unseen. The Job's "
      "four '… · data questions ↗' links all open this same empty page",
-     "the release: its questions by DIKW level, cuts, thresholds, code, proposals; a Task: its question.md and script",
+     "the release: its questions by DIKW level, segments, thresholds, code, proposals; a Task: its question.md and script",
      "shots/P__home__.png, PJ__home__.png, PTt30__home__.png; insight_views.py _release_links", B),
     ("Job › Runs panel (every tab's Runs panel)",
-     "each hard-run row reads 'r01_full · a run of · Run a partition' with no Task: 38 identical 'r01_full' rows",
+     "each hard-run row reads 'r01_full · a run of · Run a segment' with no Task: 38 identical 'r01_full' rows",
      "'t30 K01 · r01_full' (the Task in the row)",
      "runs_panel.py _card_html (the theme sets no _of); shots/J__Runs__All.png", J),
     ("Runs panel '+N more'",
@@ -80,7 +80,7 @@ ISSUES = [
      "runs_panel.py CSS: .run-list .run-row display:grid beats [hidden]; shots/Tt30__Work-Details__Partitions.png", F),
     ("Job › Runs › launch · power · compare · propose · close; Task › Runs",
      "each Job view shows only the same run-order line; All folds the 181 Task runs closed; the Task's Runs panel "
-     "says rNN_<partition> 0 while 6 runs exist",
+     "says rNN_<segment> 0 while 6 runs exist",
      "each view lists its runs or says 'no launch run yet'; the Task's count matches its runs",
      "insight_views.py _job_runs, task_spaces Runs; shots/J__Runs__launch.png", J),
     ("Job › Work Details",
@@ -89,22 +89,22 @@ ISSUES = [
      "insight_views.py _tree; shots/J__Work-Details__All.png", J),
     ("Block › Work Details › quick results",
      "'full ok · youngmale ok · youngfemale ok …' repeated as text on ~40 rows",
-     "a Task × partition grid with one mark per cell, grouped by DIKW level",
+     "a Task × segment grid with one mark per cell, grouped by DIKW level",
      "insight_views.py _jobs; shots/B__Work-Details__All.png", B),
     ("Block › Audience Report › Tracks · Consistency",
      "with one Job, 49 rows of 'j01 ok · no comparison yet' and 49 rows of '— —'",
      "one line: 'one Job: nothing to track or compare yet'",
      "shots/B__Audience-Report__Full-Tracks.png, B__Audience-Report__Full-Consistency.png", B),
     ("Block › Audience Report › Findings",
-     "the partition row (Full … Cross) stays, but Findings ignores it: every partition the same",
-     "no partition row on Findings, or Findings by partition",
+     "the segment row (Full … Cross) stays, but Findings ignores it: every segment the same",
+     "no segment row on Findings, or Findings by partition",
      "insight_views.py _findings; shots/B__Audience-Report__Full-Findings.png", B),
-    ("Block › Description › Partitions; Job › Description › Dataset",
-     "'Power floor: pp.' (null shown blank); an empty 'why' column on all 7 cuts; raw 'youngmale' beside buttons "
-     "'Young male'; Dataset says power 'ok' per cut while no floor is set",
-     "'power floor: not set'; drop an empty column; one label per cut; power 'not checked' until a floor exists",
+    ("Block › Description › Segments; Job › Description › Dataset",
+     "'Power floor: pp.' (null shown blank); an empty 'why' column on all 7 segments; raw 'youngmale' beside buttons "
+     "'Young male'; Dataset says power 'ok' per segment while no floor is set",
+     "'power floor: not set'; drop an empty column; one label per segment; power 'not checked' until a floor exists",
      "thresholds.yaml power.smallest_effect_pp: null; shots/B__Description__Partitions.png", B),
-    ("Block and Job › Description › Prototype",
+    ("Block and Job › Description › Question Book",
      "'signed' reads a field question.md lacks (all '—') while agreed: ✅ 261002 is on disk; 'methods' empty on "
      "every row; release meta 'open · · Jobs'",
      "show agreed; drop or fill methods; no empty separators",
@@ -114,7 +114,7 @@ ISSUES = [
      "files open raw files in a new tab (landed 08:52 during the review)",
      "the run in the frame's pop-out (the page reader), no retired route",
      "insight_views.py run_url, render_run_page (uncommitted)", J),
-    ("every tab › Disk box face link; Prototype › Description path",
+    ("every tab › Disk box face link; Question Book › Description path",
      "a plain link to /_board/page: 59 links that leave the frame",
      "open it in the pop-out (data-pop)",
      "frame.py disk_markup (_link, not pop)", F),
@@ -127,12 +127,12 @@ ISSUES = [
      "a W Task: its signed counsel goes to the Board's handoff (s13 point 7)",
      "insight_views.py task_spaces Delivery; shots/Tt48__Delivery__.png", T),
     ("Task › Description · Audience Report",
-     "the carried board's answers (🟡 per cut in source.cells) are on disk in _old/ but shown only as raw text; "
+     "the carried board's answers (🟡 per segment in source.cells) are on disk in _old/ but shown only as raw text; "
      "no link to the old page",
      "'answered on the old board (🟡) ↗' until this Job's page is written",
      "question.md source.cells; tasks/_old/b52_sms_question_dikw", T),
-    ("Block › Runs › from below; Job › Delivery; Board › Prototype intro",
-     "Job names, 'Board › Delivery › Handoff' and the Prototype path are plain text, not links",
+    ("Block › Runs › from below; Job › Delivery; Board › Question Book intro",
+     "Job names, 'Board › Delivery › Handoff' and the Question Book path are plain text, not links",
      "link each in the frame",
      "insight_views.py _board_runs, _job_delivery, _prototype", B),
 ]
@@ -143,7 +143,7 @@ KEEP = [
     "Map: releases × data versions, the Job in its cell; Board and Job Dataset facts",
     "Block › Work Details' Job row: pins, the clock that moved, answered by DIKW level, state",
     "Job Current's Task Work steps (Compute · Reuse · Answer → the file), 'builds on', the lead lines' real numbers",
-    "Job Dataset: n and refused cuts per partition (K17 in warn)",
+    "Job Dataset: n and refused segments per segment (K17 in warn)",
     "partition buttons in words (Young male …); vs previous on a first Job: one line",
     "Runs panel buttons named by their Run, the words under, the owner skill",
     "the new flush level rows (.dikw) on Audience Report, as the old board drew them",
@@ -151,7 +151,7 @@ KEEP = [
 
 OPEN = [
     "? one owner for the Disk box: the theme per Space, or the frame reading a theme's file list",
-    "? Cross and Findings: hide the partition row, or keep it greyed",
+    "? Cross and Findings: hide the segment row, or keep it greyed",
     "? retired questions: still Tasks in a Job, or only in the release",
     "? Guide tab not reviewed (mounted by script; headless shots do not open it)",
 ]
@@ -212,7 +212,7 @@ def main():
     width = sum(w for _, w, _ in COLS)
     f1 = el("frame", 0, 0, width + 80, 100, name="1 · Insight UI issues, worst first")
     text(40, 30, "s33 · Insight UI issues · the live workbench, 261008", 34, f1["id"])
-    text(40, 80, "Board Insight-SMSR2v1 · its Job j01_code-v1_data-v1 · Tasks K01, D01, W01 · the Prototype and its Job "
+    text(40, 80, "Board Insight-SMSR2v1 · its Job j01_question-v1_data-v1 · Tasks K01, D01, W01 · the Question Book and its Job "
                  "and Tasks; every Space and view, shot into shots/", 18, f1["id"])
     for i, (date, what) in enumerate(CHANGES):          # the title frame's list of changes
         els.append(canvas.change_note(40, 112 + i * 26, what, date, f1["id"]))

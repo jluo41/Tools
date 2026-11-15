@@ -11,7 +11,6 @@ Generated: never edit it; run this again once a handoff is drafted or signed, or
 runs it after every Overall Report).
 """
 import argparse
-import re
 import sys
 from pathlib import Path
 
@@ -25,7 +24,7 @@ def _signed(value) -> str:
 
 
 def _plain(job: str) -> str:
-    """A Job in plain words, `j02 · code-v1 × data-v2`, from its folder name (an older name reads the same)."""
+    """A Job in plain words, `j02 · question-v1 × data-v2`, from its folder name (an older name reads the same)."""
     m = JOB.match(job)
     return f"j{m.group(1)} · {code_id(m.group(2))} × {data_id(m.group(4))}" if m else job
 

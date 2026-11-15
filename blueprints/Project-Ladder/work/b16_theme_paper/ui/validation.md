@@ -21,7 +21,7 @@ The matrices use the shared transposed layout and Use Cases popup. A shared colu
 
 Reviewer response and whole-paper value audit currently have Blueprint examples only. A configured address and an existing folder do not by themselves establish that a source page is reachable.
 
-Project links open each SPACE's current service. Their availability does not establish deployment of the new common frame, acceptance of a manuscript, or approval to submit it. Job and Task shared-frame migration remains open.
+Project links open each SPACE's current service. Their availability does not establish deployment of the new common frame, acceptance of a manuscript, or approval to submit it. Other Job and Task shared-frame migration remains open; the Draft Task update is recorded below.
 
 The coordinating Work session opened and closed all 23 Paper Use Cases without empty results, expanded Tasks and Path, and checked that switching cases leaves no stale content. It followed six project pages covering Block, Job and Task on two sources; all reached the intended pages. The two Blueprint-only cases were confirmed in the browser.
 
@@ -46,3 +46,25 @@ The shared Grant views were verified in the desktop browser: Idea contains four 
 ## Shared Related and section narrative
 
 The matrix places Related in both Idea and Story, and Story by Section in both Story and Displays, for Paper and Grant. The Paper renderer reuses the same source content at both entry points. Twenty-four Board/focus tests and six subtests passed; independent source review found no blocking regression. After reloading only Tools, browser checks confirmed the matrix placements and opened the section narrative under Displays; Story retains its original entry. The Blueprint Board has no related/ records, so its conditional Related section remains absent in both live views. The populated-source regression test verifies Related in Idea while a Story exists.
+
+
+## Draft Task common frame · 2026-11-11
+
+Draft Tasks now use one Report surface, with content and existing actions under
+Review Content followed by the eight shared Around the Work sections. Old Work
+links still select their step. Delivery keeps its specialized previews.
+
+Validation: 113 focused Draft, shared-frame and focus-page tests passed. Browser
+walk on the Tools summary placeholder confirmed the Plan structure, embedded
+Write editor, Evidence, revision view, and Files tree with a working Markdown
+preview. No text, approvals or revision decisions were saved. At a measured
+390 px viewport the Evidence page had a 390 px document width. Fresh-context
+skill review found two source-mapping issues (display folder and paragraph Run
+targets), both corrected and covered by regression checks.
+
+Independent placeholder UI review found no blocking regression in the inspected
+flow (9.4/10; completeness provisional for absent conditional Display data).
+Plan and Write folds, embedded editor, Skills and Files were checked without
+writes. Mobile width and document width were both 390 px. Existing shared-rail
+hover expansion made pointer targeting unstable; keyboard navigation worked.
+Repeated empty-state wording remains a nonblocking follow-up.

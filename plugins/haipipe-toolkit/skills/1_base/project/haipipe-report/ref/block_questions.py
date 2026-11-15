@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
-"""Add a Block Question with an empty report Page, a report Page for a Question already
-registered, a registered Question's group: line, or a related resource.
+"""Add a Block Question, its answer place for a Question already registered, a registered
+Question's group: line, or a related resource.
+
+Since 261109 (JL: "we will no longer have the report folder") a Question's answer is a
+`Q01 · Answer` part in the face of the Studio topic that answers it (haipipe-studio
+ref/topic-contract.md); the register's `report:` points at that face. No reports/ folder.
 
 This authors a register and Page frame, never an answer, accepted Content or Run. A frame may
 list Evidence links (files inside the Block, e.g. a Task Result or a Block sNN's drawing); they are
@@ -36,6 +40,30 @@ def frame(qid, title, question, evidence, aim=""):
 
 BLANK = {"type": "excalidraw", "version": 2, "source": "haipipe-report", "elements": [],
          "appState": {"viewBackgroundColor": "#ffffff"}, "files": {}}
+
+
+def answer_topic(board, qid, name, title, make=False):
+    """The Studio topic that answers `qid`: the Block's topic whose **Feeds:** already names it, else a new
+    `sNN-<name>/` (haipipe-studio new_topic, view: findings), whose face gets the `Q01 · Answer` part. Without
+    `make` it only checks. Returns the face path."""
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "haipipe-studio" / "scripts"))
+    import new_topic                                                    # noqa: E402  (haipipe-studio)
+    for face in sorted(board.glob("s[0-9][0-9]-*/s[0-9][0-9]-*.md")):
+        if face.stem != face.parent.name:
+            continue
+        text = face.read_text(encoding="utf-8")
+        feeds = re.search(r"(?m)^\*\*Feeds:\*\*(.*)$", text)
+        if feeds and re.search(rf"\b{re.escape(qid)}\b|\b{re.escape(qid.lower())}_", feeds.group(1)):
+            if make and f"{qid} · Answer" not in text:
+                part = new_topic.face_text(1, "x", [qid]).split("\n\n\n", 1)[-1]
+                part = part[part.index(f"{qid} · Answer"):part.index("Files\n-----")].replace("s01-<topic>", face.stem)
+                cut = text.find("\nFiles\n-----")
+                face.write_text(text[:cut + 1] + part + text[cut + 1:] if cut >= 0 else text.rstrip() + "\n\n\n" + part,
+                                encoding="utf-8")
+            return face
+    if not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,79}", name):
+        raise ValueError("Topic name must use lowercase letters, digits and -")
+    return new_topic.new_topic(board, name, title, feeds=[qid], view="findings", dry_run=not make)
 
 
 def drawing_topic(board, stem, names, title, make=False):
@@ -98,17 +126,11 @@ def update(args):
         title = (args.title or entry.get("title") or entry.get("question") or "").strip()
         if not title or "\n" in title:
             raise ValueError("Title must be nonempty single-line text")
-        stem = args.id.lower() + "_" + args.slug
-        folder = board / "reports" / stem
-        if not inside(folder, board) or folder.exists():
-            raise ValueError("Report folder already exists or escapes the Block")
-        new_page = folder / (stem + ".md")
+        name = (args.drawing[0] if args.drawing else f"{args.id.lower()}-{args.slug}").replace("_", "-")
+        new_page = answer_topic(board, args.id, name, title)       # checked here, made below
         entry["report"] = new_page.relative_to(board).as_posix()
         updated = replace_register(original, "Questions", "questions", questions)
         page_title = title
-        drawings = drawing_topic(board, stem, args.drawing, page_title)   # checked here, made below
-        evidence_links(board, folder, args.evidence)  # check given evidence before anything is written
-        page_text = None                              # framed below, once the drawings exist
     elif args.command == "add-question":
         if not QUESTION_ID.fullmatch(args.id) or any(q.get("id") == args.id for q in questions):
             raise ValueError("Question id must be new: Q and two or more digits (Q01), or Q-<word>-<number> (Q-food-1)")
@@ -128,11 +150,9 @@ def update(args):
                     or not inside(board / rel, board)
                     or not (board / rel / (rel.name + ".md")).is_file()):
                 raise ValueError(f"Work must name an existing jNN_job/tNN_task: {raw}")
-        stem = args.id.lower() + "_" + args.slug
-        folder = board / "reports" / stem
-        if not inside(folder, board) or folder.exists():
-            raise ValueError("Report folder already exists or escapes the Block")
-        new_page = folder / (stem + ".md")
+        page_title = args.title or args.question
+        name = (args.drawing[0] if args.drawing else f"{args.id.lower()}-{args.slug}").replace("_", "-")
+        new_page = answer_topic(board, args.id, name, page_title)  # checked here, made below
         entry = dict(id=args.id, title=args.title or args.question, question=args.question,
                      hypothesis=args.hypothesis or "", acceptance=args.acceptance or "",
                      work=args.work, report=new_page.relative_to(board).as_posix())
@@ -140,10 +160,6 @@ def update(args):
             entry["group"] = args.group
         questions.append(entry)
         updated = replace_register(original, "Questions", "questions", questions)
-        page_title = args.title or args.question
-        drawings = drawing_topic(board, stem, args.drawing, page_title)   # checked here, made below
-        evidence_links(board, folder, args.evidence)  # check given evidence before anything is written
-        page_text = None                              # framed below, once the drawings exist
     else:
         split = urlsplit(args.url)
         if split.scheme not in {"http", "https"} or not split.netloc or not args.title.strip():
@@ -163,18 +179,15 @@ def update(args):
     if head.read_text(encoding="utf-8") != original:
         raise ValueError("board.md changed; reread it before retrying")
     if new_page:
-        new_page.parent.mkdir(parents=True, exist_ok=False)
-        drawings = drawing_topic(board, new_page.parent.name, args.drawing, page_title, make=True)
-        evidence = list(args.evidence) + [f"{label.replace('_', ' ').capitalize()}|{path.relative_to(board).as_posix()}"
-                                          for label, path in drawings]
-        entry = next(q for q in questions if q.get("id") == args.id)
-        title = page_title if args.command == "add-report" else (args.title or args.slug.replace('_', ' '))
-        page_text = frame(args.id, title, entry.get("question", title), evidence_links(board, new_page.parent, evidence),
-                          entry.get("aim", ""))
-        new_page.write_text(page_text, encoding="utf-8")
-        (new_page.parent / "page.toml").write_text(
-            'version = 1\nsource = ' + json.dumps(new_page.name) + '\ntitle = '
-            + json.dumps(page_title, ensure_ascii=False) + '\n', encoding="utf-8")
+        new_page = answer_topic(board, args.id, new_page.parent.name.split("-", 1)[1], page_title, make=True)
+        if args.evidence:
+            links = " · ".join(f"[{label}]({target})" for label, target in evidence_links(board, new_page.parent, args.evidence))
+            text = new_page.read_text(encoding="utf-8")
+            head_at = text.find(f"{args.id} · Answer")
+            ev = text.find("**Evidence:**", head_at)
+            if head_at >= 0 and ev >= 0:
+                end = text.find("\n", ev)
+                new_page.write_text(text[:ev] + f"**Evidence:** {links}" + text[end:], encoding="utf-8")
     temporary = None
     try:
         with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=board,
@@ -242,15 +255,15 @@ def main():
     question.add_argument("--group", help="its groups on the Report's bar, comma-separated (b10 s05-D05)")
     question.add_argument("--evidence", action="append", default=[], help="label|path inside the Block")
     question.add_argument("--drawing", action="append", default=[],
-                          help="the report's one drawing: a Block sNN-<name>/ whose face feeds this report (haipipe-studio new_topic); once per Question")
-    report = commands.add_parser("add-report", help="a report Page for a Question already registered")
+                          help="the topic that answers it: a Block sNN-<name>/ (haipipe-studio new_topic); once per Question")
+    report = commands.add_parser("add-report", help="the answering topic for a Question already registered")
     report.add_argument("block", type=Path)
     report.add_argument("--id", required=True)
     report.add_argument("--slug", required=True)
     report.add_argument("--title", help="default: the Question's title, else its question")
     report.add_argument("--evidence", action="append", default=[], help="label|path inside the Block")
     report.add_argument("--drawing", action="append", default=[],
-                        help="the report's one drawing: a Block sNN-<name>/ whose face feeds this report (haipipe-studio new_topic); once per Question")
+                        help="the topic that answers it: a Block sNN-<name>/ (haipipe-studio new_topic); once per Question")
     grouped = commands.add_parser("set-group", help="a registered Question's group: line, nothing else")
     grouped.add_argument("block", type=Path)
     grouped.add_argument("--id", required=True)

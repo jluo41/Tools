@@ -68,7 +68,7 @@ frames:
   - "📍 Where it sits":
     - "🔝 the top row of the workbench: Studio | Block · Job · Task | Delivery (s03-D04)"
     - "👯 twin of s02-studio-workbench-skill; neighbours s04 Related, s05 Report, s06 Run"
-    - "🖥️ code: servers/workbench/frame.py, one look for every theme"
+    - "🖥️ code: servers/workbench/page/frame.py, one look for every theme"
     - "🔗 feeds the reports q07_workbench_mapping and q08_workbench_base"
   - "🗺️ How to read this drawing":
     - "① this frame, the words"
@@ -174,7 +174,7 @@ skills/1_base/project/
 ├── haipipe-related/    s04 Related
 ├── haipipe-report/     s05 Report
 └── haipipe-run/        s06 Run
-servers/workbench/frame.py                        delivery_parts · _delivery_row · delivery_by_source
+servers/workbench/page/frame.py                        delivery_parts · _delivery_row · delivery_by_source
                                                   · _delivery_cards (a Page Task's card per lane)
 skills/1_base/draft/haipipe-draft/src/common.py    delivery_owner · delivery_dir · delivery_source
 ```
@@ -195,7 +195,7 @@ Three frames (JL 261012; haipipe-studio 0.13.0), drawn from the `frames:` yaml a
                 card close up (s03-D08), in the workbench's colours
 ```
 
-Read from disk on every build (filled into the boxes by id): each screen through `servers/workbench/frame.py` (`frame.render`, the Runs
+Read from disk on every build (filled into the boxes by id): each screen through `servers/workbench/page/frame.py` (`frame.render`, the Runs
 panel left out), every Block's `delivery/` in `Tools/blueprints/` and in the SPACE beside Tools whose `Tools/`
 link leads here (its `examples-*/`), the decisions and open items of this face, and the skill's folder.
 
@@ -247,7 +247,7 @@ s03-D06 · From a Job or Task, the top row's Delivery opens the Block's Delivery
     to all the workbench"). A source row, Block · jNN · tNN, comes first with the open Job or Task
     picked, and each source's part shows inside it. This refines s09-D05's "the Job and Task views
     show their own part": the part is now a pick inside the Block's Delivery, not a separate page.
-    Built by the b16 session in servers/workbench/frame.py (render's Delivery mode).
+    Built by the b16 session in servers/workbench/page/frame.py (render's Delivery mode).
 
 
 Proposed

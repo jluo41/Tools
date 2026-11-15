@@ -15,7 +15,7 @@ frame with the unified look, so the insight theme takes one look per element. It
 screenshots into `shots/`, then the drawing is built from them). The 3 × 3 page designs in
 `j01_insight_workbench_pages/` (s51 to s59) now carry the page shapes; this gallery stays for single elements.
 
-**Feeds:** `reports/` q01_insight_ladder
+**Feeds:** Q01
 
 
 Decided

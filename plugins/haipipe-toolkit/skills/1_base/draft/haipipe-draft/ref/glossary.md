@@ -49,7 +49,7 @@ Read it as: **TERM** — what it is. `the path it actually names`.
   `127.0.0.1`. `<DOMAIN>/b/<board-slug>/<page-id>`
 - **short Board route** — the compact HTTP alias that redirects to one
   generated Board index or Page. `<DOMAIN>/b/<board-slug>[/<page-id>]`;
-  its resolver is `servers/space-home/home.py`.
+  its resolver is `servers/workbench/home/home.py`.
 - **plan**, also **the outline file** — the SHAPE of a page, co-developed with
   candidate prose; human approval licenses later published Content. `<page>/draft/<stem>-draft-v<G>.<S>[.<E>].md` (before 0.118: `<page>/outline/<stem>-outline-...`)
 - **Draft Space** — the reader-facing projection of the selected Markdown

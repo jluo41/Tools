@@ -9,6 +9,7 @@ from pathlib import Path
 from urllib.parse import quote
 
 from live.frame import _notes, _rel, _table, chain, esc, face
+from live.sentence_id import sid as _sid
 from live.draft_steps_assets import CARDS_CSS, CARDS_JS, NOTES_CSS, NOTES_JS
 from live.draft_steps_common import (
     _canvas_card, CARDS, _code, _fold, _header, INK, _inline, _kv, _marks, _md, _not_yet, _paragraphs, _parts,
@@ -22,6 +23,13 @@ from live.draft_step_revise_cards import (  # noqa: F401
     _paragraph_plan, _plan_cell, _proposed_cards, _review_chips, _revise_card, _revise_passes, STATE_CHIP)
 from live.draft_step_revise_notes import (  # noqa: F401
     _answered_by, card_act, _comments, _comments_path, note_act, _note_card, NOTE_LABEL, NOTE_TARGET)
+from live.draft_step_revise_history import (  # noqa: F401
+    _history_card, _merged, _plain, _sentence_history, _wordings, _yymmdd)
+from live.draft_step_revise_keys import ADDR, Keys, scored_version, scored_words, version_rows
+
+
+def _same(a, b) -> bool:
+    return " ".join((a or "").split()) == " ".join((b or "").split())
 
 
 def _first_para(part: str, d: dict) -> str:
@@ -32,21 +40,25 @@ def _first_para(part: str, d: dict) -> str:
 
 def _reading_key(head: str, d: dict) -> tuple:
     """Where a card sits in the text: the Section first, then a paragraph's first sentence, then its own sentence, in
-    the order the text reads, which an S number need not follow once a sentence has moved (S5 before S4)."""
-    m = re.match(r"[^·]+·\s*(?:S(\d+)([a-z]?)|(C\d+\.P\d+)|(C\d+))\b", head)
+    the order the text reads, which an S number need not follow once a sentence has moved (S5 before S4). A sentence
+    is named bare (s4) or by its full address (C2.P1.s4, M-D05)."""
+    m = re.match(r"[^·]+·\s*(?:(" + ADDR + r")|(C\d+\.P\d+)|(C\d+))\b", head)
     if not m:
         return (10 ** 6, "")
-    body = "\n".join(b for _, b in (d or {}).get("text", []))
-    order = {sid: i for i, sid in enumerate(re.findall(r"(?m)^- B\d+[a-z]* · (S\d+[a-z]*) · ", body))}
-    if m.group(4):                                   # a card on a whole part (C2) sits at its first paragraph, first
-        first = _first_para(m.group(4), d)           # among that paragraph's cards
-        sec = first and re.search(r"(?ms)^### " + re.escape(first) + r"\b.*?^- B\d+[a-z]* · (S\d+[a-z]*)", body)
-        return (order[sec.group(1)] - 0.6, "") if sec and sec.group(1) in order else (-1, "")
+    keys = Keys(d)
+    order = keys.order()
+    para_at = lambda pid: next((i for i, (p, _, _) in enumerate(keys.rows) if p == pid), None)
+    if m.group(3):                                   # a card on a whole part (C2) sits at its first paragraph, first
+        at = para_at(_first_para(m.group(3), d))     # among that paragraph's cards
+        return (at - 0.6, "") if at is not None else (-1, "")
     if m.group(1):
-        sid = f"S{m.group(1)}{m.group(2)}"
-        return (order[sid], "") if sid in order else (int(m.group(1)) + 10 ** 5, m.group(2))
-    sec = re.search(r"(?ms)^### " + re.escape(m.group(3)) + r"\b.*?^- B\d+[a-z]* · (S\d+[a-z]*)", body)
-    return (order[sec.group(1)] - 0.5, "") if sec and sec.group(1) in order else (10 ** 6, "")
+        sid = _sid(m.group(1))
+        if sid in order:
+            return (order[sid], "")
+        n = re.search(r"s(\d+)([a-z]?)$", sid)
+        return (int(n.group(1)) + 10 ** 5, n.group(2)) if n else (10 ** 6, "")
+    at = para_at(m.group(2))
+    return (at - 0.5, "") if at is not None else (10 ** 6, "")
 
 
 def _text_and_cards(d: dict, ev: dict, root: Path, path: Path, task: Path) -> str:
@@ -68,21 +80,31 @@ def _text_and_cards(d: dict, ev: dict, root: Path, path: Path, task: Path) -> st
     from live.draft_card_text import ref_names, ref_text   # \ref prints its display's number ("Figure 2"), as LaTeX does
     refs = ref_names(task)
     text = ref_text(text, refs)
+    # every sentence by its key: its full address when the Draft repeats a bare id, else its bare id (M-D05)
+    keys = Keys(d)
+    words = keys.words()
     # a sentence the person checked, while its words are the same (draft_step_revise_notes.checked)
     from live.draft_step_revise_notes import checked
-    held = checked(path)
-    now_words = {m.group(1): " ".join(m.group(2).split()) for _, b in d["text"]
-                 for m in re.finditer(r"(?m)^- B\d+[a-z]* · (S\d+[a-z]*) · (.*)$", b)}
-    ok = {s for s, w in held.items() if now_words.get(s) == " ".join(w.split())}
+    held = {}
+    for raw, w in checked(path).items():
+        k = keys.resolve(raw, w)
+        if k and (k not in held or _same(words.get(k), w)):
+            held[k] = w
+    ok = {k for k, w in held.items() if _same(words.get(k), w)}
     # a ✓ on an earlier wording is shown as lapsed, so the person sees which sentences to pass again (JL 261114: "when I
     # reload, the C2.P2 is not folded")
-    text = re.sub(r'<li data-s="(S\d+[a-z]*)"', lambda m: m.group(0) + (' data-checked="1"' if m.group(1) in ok else
-                  ' data-checked="stale"' if m.group(1) in held else ""), text)
+    def mark2(m):                                   # the mark goes right after data-s, before data-a
+        k = keys.resolve(re.search(r'data-a="([^"]*)"', m.group(3)).group(1) if m.group(3) else m.group(2))
+        return m.group(1) + (' data-checked="1"' if k in ok else ' data-checked="stale"' if k in held else "") + m.group(3)
+    text = re.sub(r'(<li data-s="(' + ADDR + r')")((?: data-a="(' + ADDR + r')")?)', mark2, text)
     passes = _revise_passes(path)[:1] if path.is_file() else []
     title, cs = passes[0] if passes else ("", [])
     t = _rel(task, root)
     whole = lambda h: re.match(r"[^·]+·\s*(C\d+)\s*·", h)      # `Section question · C1 · …`, not `· C1.P2 · …`
-    cs = [(h, c) for h, c in cs if not _is_report(h)]
+    on = lambda h: keys.resolve((re.match(r"[^·]+·\s*(" + ADDR + r")\b", h) or [None, ""])[1])
+    # a checked sentence gets no proposed card (M-D06): the person passed it while its words stay
+    cs = [(h, c) for h, c in cs if not _is_report(h) and not (
+        on(h) in ok and (c.get("state") or "proposed").split()[0].lower() in ("proposed", "jl's", "jl"))]
     cards = sorted(cs, key=lambda x: _reading_key(x[0], d))
     # the pass's review report is its own section above this one (_review_report; JL 261021: "把那些比较详细的 review
     # report 单独作为一个新的 section ... 我还要之前的那个 revised card section")
@@ -94,33 +116,38 @@ def _text_and_cards(d: dict, ev: dict, root: Path, path: Path, task: Path) -> st
     # the newest report scores today's text: a record that keeps its rounds in order has the latest at the bottom
     rep = next((c for h, c in reversed(passes[0][1] if passes else []) if _is_report(h)), None)
     said = _sentence_lines(rep.get("body", "")) if rep else []
+    for x, k in zip(said, keys.resolve_seq([x["raw"] for x in said])):
+        x["s"] = k or x["s"]
     # a sentence written after the newest report was made: its ★ is out of date (a card synced before it is not)
     head = rep.get("reviewer", "") or rep.get("body", "")[:600] if rep else ""
     seen = {"": _when(head)}                          # the review's date, then each sentence rescored later ("S3 and S8
-    for ids, day in re.findall(r"((?:S\d+[a-z]*(?:,\s*|\s+and\s+)?)+) (?:were|was) rescored (\S+)", head):   # were rescored …")
-        seen.update({sid: _when(day) for sid in re.findall(r"S\d+[a-z]*", ids)})
+    for ids, day in re.findall(r"((?:" + ADDR + r"(?:,\s*|\s+and\s+)?)+) (?:were|was) rescored (\S+)", head):   # were rescored …")
+        seen.update({keys.resolve(sid): _when(day) for sid in re.findall(ADDR, ids)})
     later = lambda w, t: w and t and (w[:3] > t[:3] if t[3] < 0 else w > t)   # a date alone compares by day
     since = {sid for h, c in (passes[0][1] if passes else []) if seen[""] and not _is_report(h)
              and re.match(r"(written|applied|done|accepted)\b", c.get("state", ""))   # an accepted card writes at once
-             for sid in re.findall(r"\bS\d+[a-z]*\b", h.split(" · ")[1] if " · " in h else "")
+             for sid in map(keys.resolve, re.findall(r"(?<![\w.])" + ADDR + r"\b", h.split(" · ")[1] if " · " in h else ""))
              if later(_when(c.get("state", "")), seen.get(sid) or seen[""])}
+    # a ★ on other words than the sentence has now, or on an older numbering (its id now holds other words), is stale
+    # too (M-D13): the words the review read are its Draft version's, `## Pass … · on draft v6.0`
+    old = version_rows(d, scored_version(title, rep.get("body", "") if rep else ""))
     for x in said:
-        x["stale"] = x["s"] in since
-    paras = [pid for _, b in d["text"] for pid in re.findall(r"(?m)^### (C\d+\.P\d+)\b", b)]
-    body = "\n".join(b for _, b in d["text"])
-    sids = {pid: re.findall(r"(?m)^- B\d+[a-z]* · (S\d+[a-z]*) · ", (re.search(r"(?ms)^### " + re.escape(pid) + r"\b.*?(?=^### |\Z)", body)
-                                                                 or [""])[0]) for pid in paras}
-    flows = [(k, v, next((pid for pid in paras if pid.endswith("." + k)), "")) for k, v in
-             re.findall(r"(?m)^Flow (P\d+): (.*)$", rep.get("body", "").partition("\nSentences:")[2])] if rep else []
-    words = {m.group(1): m.group(2) for _, b in d["text"] for m in re.finditer(r"(?m)^- B\d+[a-z]* · (S\d+[a-z]*) · (.*)$", b)}
+        then = scored_words(old, x["raw"], x["s"]) if old is not None else ""
+        x["stale"] = x["s"] in since or (then is None or (then != "" and not _same(then, words.get(x["s"], ""))))
+    # a checked sentence shows its ✓ only: no ★, no low tint and no suggestion, from any pass (M-D06)
+    said = [x for x in said if x["s"] not in ok]
+    sids = {pid: keys.sentences_of(pid) for pid in keys.paras}
+    flows = [(k, v, keys.flow_pid(k)) for k, v in
+             re.findall(r"(?m)^Flow (C\d+\.P\d+|P\d+): (.*)$", rep.get("body", "").partition("\nSentences:")[2])] if rep else []
     # each sentence's evidence beside it, the rows 3 · Evidence shows there (JL 261021: "这里最好也加一下 evidence ...
     # 这一块对应的 paper 是什么 ... citation、values")
     evs = {}
     for c in ev.get("cards", []):
         for n, it in enumerate(c["items"], 1):
             for sid in _s_ids(it):
-                if sid in words:
-                    evs.setdefault(sid, []).append((c, it, n))
+                k = keys.resolve(sid)
+                if k in words:
+                    evs.setdefault(k, []).append((c, it, n))
     right = list(html for _, html in sorted(
         [((_reading_key(h, d), 2), _revise_card(h, c, t, title)) for h, c in cards if not whole(h)]
         + [((_reading_key(h, d), 0), _revise_card(h, c, t, title, _first_para(whole(h).group(1), d))) for h, c in cards
@@ -137,21 +164,10 @@ def _text_and_cards(d: dict, ev: dict, root: Path, path: Path, task: Path) -> st
     right = [ref_text(cite_text(h, d), refs) for h in right]
     some = any((c.get("state") or "proposed").split()[0].lower() == "proposed" for _, c in cs)
     waiting = sum(c["state"] == "open" for c in notes)
-    # a card already written into the text, or a comment its person closed, is hidden until asked for (JL 261021:
-    # "你的这个 editing card 如果已经结束的话，就把它 hide 掉吧")
-    # revise + comments: a pass that answers the open comments first (JL 261021: "有的时候我让你 review，可能是加了一些我的
-    # comments 之类的 revise + comments")
-    ask = (f"/haipipe-draft {t} revise: answer my open comments in {_rel(notes_at, root)} first (each is my ruling), "
-           "then review the rest as usual. For each comment: change the sentence it names as an Edit card with "
-           "`Answers: Comment <n>`, or say why not; append `- Reply · <time from the clock>: <what you did, one or two "
-           "lines>` and set `State: answered`; a comment, a co-author's change or a decided card that is a rule for the whole Section goes into the Revise "
-           "rules as a new R#. Apply by default, as the Revise rules say.")
-    # the pass on the left; no filter chips (JL 261113, of "Edits 5 · Evidence 23": "maybe we don't need this
-    # anymore"): each row folds its own cards and its marks count them, so a kind filter only hid what ▸ already hides
-    # no title over the text (JL 261113: "let's the layout explain themselves"); the head holds only the copy button
-    head = ((f'<div class=rv-head><div class=rv-kinds>'
-             + (f'<button type=button class="run-copy work-act" data-copy="{esc(ask)}">Copy: revise '
-                f'with my {waiting} open comment{"s" if waiting > 1 else ""}</button>' if waiting else "") + '</div></div>')
+    # no copy button over the cards (JL 261115, on "Copy: revise with my 3 open comments": remove it): the page's own
+    # chat reads the open comments in draft/records/<stem>-comments.md; no filter chips (JL 261113) and no title over
+    # the text, so the head is empty unless there is nothing yet
+    head = (''
             if cs or notes or said or evs else '<p class=space-empty>No Revise cards yet.</p>')
     tail = ""
     body = (f'<p class=space-reads>{_code(d["file"], root)}' + (f' · {_code(path, root)}' if path.is_file() else "")
@@ -163,133 +179,6 @@ def _text_and_cards(d: dict, ev: dict, root: Path, path: Path, task: Path) -> st
             f'{waiting} comment{"s" if waiting != 1 else ""} open' if waiting else "every card decided" if cs else "no cards yet")
     return (CARDS_CSS + NOTES_CSS + _fold(f"✍️ The text and its Revise cards · {d['version']}", body, open_=True, word=word)
             + CARDS_JS + NOTES_JS)
-
-
-# ── a sentence's earlier wordings ─────────────────────────────────────────────────────────────────
-# JL 261113: "How could we see this sentence's previous versions". Every wording the Section has had, from each older
-# Draft in draft/previous/ (its §3 sentences, dated by its `date:` line) and every Revise card of every round
-# (Original, then Expected), joined to today's sentence by its words, never by its S number: S numbers are renumbered
-# when sentences move, so an old card's S may name another sentence now.
-
-def _plain(s: str) -> str:
-    """A sentence's words for matching: no citation command, no Markdown, one space between words, lowercase."""
-    s = re.sub(r"\\cite[tp]?\{[^}]*\}|\[[^\]]*\]|[*_`]", "", s)
-    return " ".join(s.split()).lower()
-
-
-def _yymmdd(text: str, fallback: str = "") -> str:
-    """The first date in a text as YYMMDD: `2026-10-24` or a bare `261024`."""
-    m = re.search(r"\b20(\d\d)-(\d\d)-(\d\d)\b", text)
-    if m:
-        return "".join(m.groups())
-    m = re.search(r"(?<!\d)(2[5-9][01]\d[0-3]\d)(?!\d)", text)
-    return m.group(1) if m else fallback
-
-
-def _wordings(d: dict, revise: Path) -> list:
-    """[(date, order, label, text)] for every earlier wording on disk: older Drafts, then each card's Original and
-    Expected."""
-    out, n = [], 0
-    draft = Path(d.get("file") or "")
-    prev = draft.parent / "previous"
-    for f in sorted(prev.glob("*.md")) if prev.is_dir() else []:
-        body = f.read_text(encoding="utf-8", errors="replace")
-        ver = (re.search(r"(?m)^(?:draft|outline)-version:\s*(\S+)", body) or re.search(r"-v(\d[\w.]*)\.md$", f.name))
-        # its last change, not its `date:` line: a Draft is often edited in place after the day it was made
-        when = datetime.date.fromtimestamp(f.stat().st_mtime).strftime("%y%m%d")
-        label = f"draft {ver.group(1) if ver else f.stem}"
-        sec = body.split("## 3 ·", 1)[1] if "## 3 ·" in body else body
-        for t in re.findall(r"(?m)^- B\d+[a-z]* · S\d+[a-z]* · (.+)$", sec):
-            if not t.startswith("["):
-                n += 1
-                out.append((when, 10 ** 6 + n, label, t.strip(), []))  # a Draft holds its day's last wording
-    if revise.is_file():
-        text = revise.read_text(encoding="utf-8", errors="replace")
-        for part in re.split(r"(?m)^## ", text)[1:]:
-            title, _, rest = part.partition("\n")
-            rank = int((re.search(r"\br(\d+)\b", title) or [None, "0"])[1]) * 1000   # round r1 before r2 on one day
-            for m in re.finditer(r"(?ms)^### ([^\n]+)\n(.*?)(?=^### |\Z)", rest):
-                f = {k: v.strip() for k, v in re.findall(r"(?m)^(?:[-*]\s+)?(Original|Expected|State|Why|By):[^\S\n]*(.*)$", m.group(2))}
-                if not f.get("Original") or not f.get("Expected"):
-                    continue
-                state = (f.get("State") or "proposed").split()[0].lower()
-                when = _yymmdd(f.get("State", ""), _yymmdd(title))
-                label = re.sub(r"\s*·\s*S\d+[a-z]*\b", "", m.group(1)).strip()
-                n += 1
-                out.append((when, rank + n, f"before: {label}", f["Original"], []))
-                # only a wording the text really had: an accepted card not yet written in is not history (JL 261114,
-                # of S13 showing a change and its undoing: "I feel the logic here is not good")
-                if state in ("written", "applied", "done"):
-                    n += 1
-                    out.append((when, rank + n, label, f["Expected"],
-                                _by({k.lower(): v for k, v in f.items()})))
-    return out
-
-
-def _sentence_history(d: dict, revise: Path) -> dict:
-    """{S: [(date, label, text)]} oldest first, each earlier wording at the sentence of today's text it is closest to
-    (at least 60% the same words, and not a fragment), consecutive repeats removed; the last line is today's."""
-    now = {m.group(1): m.group(2).strip() for _, b in d.get("text", [])
-           for m in re.finditer(r"(?m)^- B\d+[a-z]* · (S\d+[a-z]*) · (.*)$", b)}
-    if not now:
-        return {}
-    keys = {s: _plain(t) for s, t in now.items()}
-    got = {}
-    for when, n, label, text, by in sorted(_wordings(d, revise), key=lambda r: r[:4]):
-        p = _plain(text)
-        best, score = None, 0.0
-        for s, k in keys.items():
-            a, b = p.split(), k.split()
-            if not a or not b or min(len(a), len(b)) < 0.3 * max(len(a), len(b)):
-                continue
-            sm = difflib.SequenceMatcher(None, a, b)
-            same = sum(x.size for x in sm.get_matching_blocks())
-            # the same words, or the shorter wording almost whole inside the longer (a sentence split, or a clause added)
-            r = max(sm.ratio(), 0.9 * same / min(len(a), len(b)) if same / min(len(a), len(b)) >= 0.85 else 0)
-            if r > score:
-                best, score = s, r
-        if best and score >= 0.6:
-            got.setdefault(best, []).append((when, label, text, by))
-    out = {}
-    for s, rows in got.items():
-        seq = []
-        for when, label, text, by in rows:
-            if seq and _plain(seq[-1][2]) == _plain(text):
-                continue
-            seq.append((when, label, text, by))
-        # the wording that is today's text is folded into "now", and its author goes with it (JL 261113: "why you
-        # don't see this is from Ritu??"); a later card that only kept the text names no one new
-        made, since = [], ""                       # everyone whose card wrote today's text (S3b: Ritu and JL)
-        for when, label, text, by in rows:
-            if _plain(text) == keys[s] and not label.startswith("before:"):
-                made += [k for k in by if k not in made]
-                since = max(since, when)           # the last time today's text was written (JL 261113: "who made
-                                                   # this change? what is the date?"; 261114: a text written twice
-                                                   # dates from the second time)
-        if seq and _plain(seq[-1][2]) == keys[s]:
-            seq.pop()
-        if seq:
-            out[s] = seq + [("now", f"current text, since {since}" if since else "current text", now[s], made)]
-    return out
-
-
-def _history_card(sid: str, rows: list) -> str:
-    """A sentence's earlier wordings, oldest first, each set against the one before it (red out, green in); folded
-    into the row's History with the decided cards."""
-    lines, prev = [], None
-    for when, label, text, by in rows:
-        words = text if prev is None else None
-        body = esc(re.sub(r"\\cite[tp]?\{([^}]*)\}", r"[\1]", words)) if words is not None else _old_new(
-            re.sub(r"\\cite[tp]?\{([^}]*)\}", r"[\1]", prev), re.sub(r"\\cite[tp]?\{([^}]*)\}", r"[\1]", text))
-        lines.append(f'<div class="sx-h{" now" if when == "now" else ""}"><span class=sx-hw>{esc(when)} · {esc(label)} {_by_badges(by)}</span>'
-                     f'{body}</div>')
-        prev = text
-    n = len(rows) - 1
-    # newest first, each with the change it made to the one below it (JL 261113: "could we put the most recent ones to
-    # the top?"); the oldest, at the bottom, is shown whole
-    lines.reverse()
-    return (f'<div class="rv-card sx-histcard open" data-s="{esc(sid)}" data-state="history" data-n="{n}">'
-            f'<div class=lg-head><b>🕘 Earlier wordings</b> <span class=mut>{n}, newest first</span></div>{"".join(lines)}</div>')
 
 
 # the base rubric's four axes, then sentence-to-sentence flow and the anti-AI audit (JL 261021: "你这个 rubric 怎么没有
@@ -306,9 +195,12 @@ def _score_ink(n: float) -> str:
 def _sentence_lines(body: str) -> list:
     """A review report's `Sentences:` lines (haipipe-draft-review ref/sentence-logic.md), `- S<n> · logic <n>/10 · read
     <n>/10 · link: <relation>, <carried | weak | broken> · <the problem> · Fix: none | <the rewritten sentence>`, as
-    dicts; an older line, `- S<n> · <n>/10 · link: <state> · …`, has one score, read as its read score."""
+    dicts; an older line, `- S<n> · <n>/10 · link: <state> · …`, has one score, read as its read score. A line may name
+    its sentence by its full address, `- C3.P1.s1 · …` (M-D05; its `raw`), and may carry a note before its scores,
+    `- C4.P3.s22 · (v6.0 C4.P3.S4, now split) · logic …`."""
     out = []
-    for sid, rest in re.findall(r"(?m)^- (S\d+[a-z]*) · (.*)$", body.partition("\nSentences:")[2]):
+    for sid, rest in re.findall(r"(?m)^- (" + ADDR + r") · (.*)$", body.partition("\nSentences:")[2]):
+        rest = re.sub(r"^\([^)]*\) · ", "", rest)
         two = re.match(r"logic (\d+(?:\.\d+)?)/10 · read (\d+(?:\.\d+)?)/10 · (?:ai (\d+(?:\.\d+)?)/10 · )?", rest)
         one = None if two else re.match(r"(\d+(?:\.\d+)?)/10 · ", rest)
         if not (two or one):
@@ -320,7 +212,7 @@ def _sentence_lines(body: str) -> list:
         word = link.group(1).strip() if link else ""
         state = (re.search(r"\b(carried|weak|broken)\b", word) or [None, ""])[1]
         none = lambda t: "" if re.match(r"(?i)\s*(none\b|$)", t) else t.strip()   # "none (add one clause …)" too
-        out.append({"s": sid, "logic": lo, "read": rd, "ai": (two and two.group(3)) or "", "link": word, "state": state, "problem": none(problem),
+        out.append({"s": _sid(sid), "raw": _sid(sid), "logic": lo, "read": rd, "ai": (two and two.group(3)) or "", "link": word, "state": state, "problem": none(problem),
                     "fix": none(fix), "pass": min(float(v) for v in (lo or 10, rd, (two and two.group(3)) or 10)) >= 8 and state != "broken"})
     return out
 
@@ -563,7 +455,8 @@ def _revise(f: dict, folder: Path, root: Path, st: str) -> tuple:
               "and Cards, how the cards' own text scores on that audit, then `Sentences:`, one line for every "
               "sentence read in its context, as haipipe-draft-review's ref/sentence-logic.md says (`- S<n> · logic "
               "<0-10>/10 · read <0-10>/10 · ai <0-10>/10 · link: <relation>, <carried | weak | broken> · <the specific problem> · Fix: "
-              "none | the rewritten sentence`, then a `Flow P<k>:` line per paragraph); the loop of blind reviews ends "
+              "none | the rewritten sentence`, then a `Flow P<k>:` line per paragraph carrying its argument scores, read first "
+              "as haipipe-draft-review's ref/paragraph-logic.md says: order, inference, scope, missing step); the loop of blind reviews ends "
               "only when every sentence scores 8 or more on all three, with no broken link, "
               "then Now and Proposed (the paragraphs as `P1 <job> (S1 to S4) · P2 …`); then Section questions on the "
               "structure, then Edit and Review cards, each with Why, Original, Expected and State: proposed, each changing the fewest words (a card keeping under 60% of its sentence needs a defect a small edit cannot fix, never style alone); where a "

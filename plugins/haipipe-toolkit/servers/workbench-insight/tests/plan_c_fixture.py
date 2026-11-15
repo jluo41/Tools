@@ -1,8 +1,8 @@
 """A placeholder plan-C Project for the insight theme's tests and screenshots (b11 s00 · s11 · s12 · s13).
 
-Plan C (Tools/blueprints/Project-Ladder/work/b11_theme_insight): the Prototype (questions + scripts) is its own work Block whose
+Plan C (Tools/blueprints/Project-Ladder/work/b11_theme_insight): the Question Book (questions + scripts) is its own work Block whose
 Jobs are versions (j0N_pN/); the insight Board holds one dataset with dated versions, and its Jobs pin one
-Prototype version and one data version (jNN_prototype-pN_data-<d>vM/, a release without a slug). No real names
+Question Book version and one data version (jNN_prototype-pN_data-<d>vM/, a release without a slug). No real names
 and no data values: every value is a placeholder. `make(root)` writes the Project under root and returns its folder.
 
     python plan_c_fixture.py <out-dir>
@@ -17,12 +17,12 @@ import yaml
 PROJECT = "Project-InsightDemo"
 BOARD = "insights/b01_topic"
 PROTO = "work/b01_topic_prototype"
-PARTS = ("full", "part-a", "part-b")            # Cross is a test across them, not a cut of rows
+PARTS = ("full", "part-a", "part-b")            # Cross is a test across them, not a segment of rows
 QUESTIONS = {   # id -> (folder slug, level, ask, answer, read)
     "D01": ("question-a", "data", "By level", "By exploring", ""),
     "I01": ("question-b", "information", "By analysis plan", "By exploring", "By heterogeneity"),
     "K01": ("question-c", "knowledge", "By estimand", "By hypothesis test", "By multiverse"),
-    "K02": ("question-d", "knowledge", "By partition and power", "By model comparison", "By heterogeneity"),
+    "K02": ("question-d", "knowledge", "By segment and power", "By model comparison", "By heterogeneity"),
     "W01": ("question-e", "wisdom", "By goal-question-metric", "", "By sensemaking"),
     "I04": ("question-f", "information", "By question type", "By pattern mining", "By heterogeneity"),
 }
@@ -64,9 +64,9 @@ def _task(qid: str, n: int) -> str:
 def _prototype(base: Path) -> None:
     proto = base / PROTO
     _write(proto / "board.md", _front({"board-kind": "prototype", "serves": BOARD},
-                                      "# b01 · <topic> Prototype\n\nThe questions and their scripts, by version.\n"))
+                                      "# b01 · <topic> Question Book\n\nThe questions and their scripts, by version.\n"))
     _write(proto / "proposals" / "p001-a-cut.md", _front({"kind": "cut", "from": "j03_prototype-p2_data-demov2", "state": "open"},
-                                                         "# Propose a cut\n\n<why this cut>\n"))
+                                                         "# Propose a segment\n\n<why this segment>\n"))
     _write(proto / "proposals" / "p002-a-question.md", _front({"kind": "new question", "from": "q02_moved",
                                                                "state": "open"}, "# A new question\n\n<the ask>\n"))
     order = list(QUESTIONS)
@@ -83,7 +83,7 @@ def _prototype(base: Path) -> None:
             {"name": "part-a", "where": "<filter A>", "why": "<why A>"},
             {"name": "part-b", "where": "<filter B>", "why": "<why B>"},
             {"name": "cross", "of": ["part-a", "part-b"], "why": "one test of the difference"}]},
-            "# The cuts\n\nPart of the plan, fixed before any outcome.\n"))
+            "# The segments\n\nPart of the plan, fixed before any outcome.\n"))
         _write(job / "thresholds.yaml", yaml.safe_dump({"power": {"smallest_effect_pp": "<pp>", "alpha": "<alpha>"}},
                                                        sort_keys=False))
         for q, (home, change) in qs.items():
@@ -112,7 +112,7 @@ def _board(base: Path) -> None:
         "versions": [{"version": "v1", "extract": "$EXTRACTS/demo-v1", "frozen": "<date>", "rows": "<n>", "new": "the first extract"},
                      {"version": "v2", "extract": "$EXTRACTS/demo-v2", "frozen": "<date>", "rows": "<n>", "new": "<what is new>"},
                      {"version": "v3", "extract": "$EXTRACTS/demo-v3", "frozen": "<date>", "rows": "<n>", "new": "<what is new>"}]},
-        "# b01 · <topic>\n\nOne dataset, its versions, a Job per pair (Prototype version × data version).\n\n" + register))
+        "# b01 · <topic>\n\nOne dataset, its versions, a Job per pair (Question Book version × data version).\n\n" + register))
     _write(board / "meta" / "status.md", "# Status\n\n(written only by the checker)\n")
     for slug, level, title in (("q01_record", "data", "What did each Job answer?"), ("q02_moved", "information", "What moved and why?"),
                                ("q03_replicates", "knowledge", "What replicates across data versions?"),

@@ -51,7 +51,7 @@ draft manifest and lists every file under `files:`. A handoff is copied in, neve
 a newer one, which is a new inputs version.
 
 
-A Job's fence · jNN_<goal>_method-vN-<slug>_inputs-vM/inputs/
+A Job's fence · jNN_<goal>_M0x-<slug>-mK_inputs-vM/inputs/
 -------------------------------------------
 
 ```text

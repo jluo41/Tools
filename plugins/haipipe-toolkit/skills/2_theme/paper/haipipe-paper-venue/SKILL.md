@@ -2,7 +2,7 @@
 name: haipipe-paper-venue
 description: "One submission target (journal, funder, patent office): binding desk rules kept apart from observed patterns, with provenance; writes the Board's venues/<venue>/ (call.md, author kit) that each version reads. Use to research, add, refresh, compare or check a venue. Trigger: venue, journal rules, call for papers, author kit, /haipipe-paper-venue."
 metadata:
-  version: "0.12.0"
+  version: "0.12.3"
   last_updated: "2026-11-01"
   page_ruling: none
   outline:
@@ -41,7 +41,7 @@ two become one home is open (b16 Q02).
 ## 🧭 The story's venue list (0.11.0)
 
 A telling's face keeps its own venue list, `### 9 · Venues` in `sNN-story-<desk>-<idea>/` (beside the Jobs): each venue, its kind,
-why it fits, the research questions it would lead with, what it still needs, and its desk record here (or "none
+its editor's test (the short decision of a fresh-context desk screen as that venue's editor; the venue card's first row, its detail a report `reports/qNN_editor_test_<venue>/` the card opens, which keeps a `**To raise the odds**` numbered list the card shows as "To pass the desk", JL 261111), why it fits, the research questions it would lead with, what it still needs, and its desk record here (or "none
 yet") (JL 261019: "我们要不要把这个 venue 直接塞到这个 story 里面去？ ... 也要想想它适合什么样的 journal，然后搞出来一个 journal list or conference list"). The list says where the story could go; this skill keeps what each venue requires (its desk record in
 `venue/bank/1-QBv-desks/`, and a paper's `venues/<venue>/call.md`). A list row never copies a rule; a venue with no
 record has none checked, and `excalidraw-story` draws it red. First list: Project-Example-B's MIS Quarterly s02, ten venues.

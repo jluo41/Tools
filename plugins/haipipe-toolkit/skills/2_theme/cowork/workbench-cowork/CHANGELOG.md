@@ -15,7 +15,7 @@
 - `ref/cowork-method.md`, `ref/methods/cowork/`, `ref/cowork-methods.excalidraw` and
   `ref/cowork-papers.md` move to `servers/workbench-cowork/guide/` (`method.md`, `methods/cowork/`,
   `methods.excalidraw`) and `related/papers.md`; the Guide entry is `guide/guide.yaml`, and the
-  `cowork` entry and `COWORK_DESIGN` leave `servers/workbench/guide_families.py`. `ref/` keeps only
+  `cowork` entry and `COWORK_DESIGN` leave `servers/workbench/guide/guide_families.py`. `ref/` keeps only
   the Workbench Table; its `Tools ›` folder is now the server folder.
 
 ## 0.4.0 · 2026-10-07 · The cowork theme on the base frame (b13 Q01, proposed)

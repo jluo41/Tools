@@ -27,9 +27,17 @@ close   the close: line is true and the Job's items it feeds tick   checked from
 2. **Write the face's two lines**: `goal:` (what this Task delivers, one line a stranger reads) and
    `close:` (what must be true to close it).
 3. **One Run per independently closable piece**: a fold, a model, a source, a retry. Its card says its
-   `role:` (haipipe-run `run_roles.py` proposes one). An uncommissioned future Run stays a line in the
-   plan, with no folder and no number.
-4. **A plan file only when it pays**: `workflow/plan.yaml` (haipipe-run `ref/workflow.md` and
+   `role:` (haipipe-run `run_roles.py` proposes one). Every Run the person has agreed to gets its
+   folder and card now, `status: planned`, written by the Job's generator (`src/gen_runs.py`); an idea
+   nobody has agreed to yet stays a line in the Job face, with no folder and no number. A planned Run whose
+   worker is not built yet keeps `ticket: null` on its card, and `ladder.py audit` accepts it until the build
+   writes the ticket (JL 261109).
+4. **The plan is ready when the Status view shows it** (JL 261109): the Block's Status view lists the
+   Job under its group (J0N, J1N ...) with its Tasks, and each Task lists its planned Runs as ⬜. A
+   plan that lives only in chat, a Draft or a separate plan document is not ready. Open the Status
+   view (`/wb <Job path>`) and check it before the first Run starts; as Runs finish they turn ✅ there,
+   so the same rows track progress with no second record.
+5. **A plan file only when it pays**: `workflow/plan.yaml` (haipipe-run `ref/workflow.md` and
    `ref/plan-schema.md`) when Runs share routes, gates, a human HOLD or a resume point; the workbench's
    Plan view reads it. Each type skill's `ref/workflow-plan-sample.yaml` is its example.
 

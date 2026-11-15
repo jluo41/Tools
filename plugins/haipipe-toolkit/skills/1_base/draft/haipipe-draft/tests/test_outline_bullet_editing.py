@@ -108,7 +108,7 @@ class OutlineBulletEditingTest(unittest.TestCase):
             self.assertEqual(result["version"], "v1.2")
             self.assertFalse(result["created_working_shape"])
             working_text = working.read_text(encoding="utf-8")
-            self.assertIn("- B2 · S2 · A new point", working_text)
+            self.assertIn("- B2 · s2 · A new point", working_text)
             self.assertIn("Note: the added point has a bounded job", working_text)
             self.assertIn("Evidence: none · page-owned point", working_text)
             self.assertFalse((approved.parent / "S-page-outline-v1.3.md").exists())
@@ -300,10 +300,10 @@ class OutlineBulletEditorEdgesTest(unittest.TestCase):
             text = plan.read_text(encoding="utf-8")
             # numbering continues from the file's own B/S counters, the typed
             # S-slot is replaced by the allocated one, no blank line is minted
-            self.assertIn("- B3 · S3 · Close the point\n- B4 · S4 · Extend the point\n\n### C1.P2", text)
+            self.assertIn("- B3 · S3 · Close the point\n- B4 · s4 · Extend the point\n\n### C1.P2", text)
             result, err = _edit_plan_bullet(page, "append-bullet", "C1.P2", "", "Another")
             self.assertIsNone(err)
-            self.assertIn("- B1 · S4 · Open the second move\n- B2 · S5 · Another\n", plan.read_text(encoding="utf-8"))
+            self.assertIn("- B1 · S4 · Open the second move\n- B2 · s5 · Another\n", plan.read_text(encoding="utf-8"))
 
     def test_refusals_never_touch_the_plan(self):
         with tempfile.TemporaryDirectory() as directory:

@@ -14,7 +14,7 @@ Each element side by side, as drawn today, so the work theme takes the one look 
   - [why] So the work theme takes b03's picks <!-- n02 -->
     b03 `s32-element-ui`, JL 261007: "collect all types of the UI of different types of the element ... so we can unify them".
   - [feeds] Q01's levels and Q03's Run display <!-- n03 -->
-    [q01_work_ladder](../../../reports/q01_work_ladder/q01_work_ladder.md) · [q03_questions_and_runs](../../../reports/q03_questions_and_runs/q03_questions_and_runs.md)
+    [q01_work_ladder](../../../s03-q01-work-ladder/s03-q01-work-ladder.md) · [q03_questions_and_runs](../../../board.md)
 - [evidence] Shot live, page by page <!-- n04 -->
   → So which look does each element keep?
   - [walked] A work Block, one Job, one Task <!-- n05 -->

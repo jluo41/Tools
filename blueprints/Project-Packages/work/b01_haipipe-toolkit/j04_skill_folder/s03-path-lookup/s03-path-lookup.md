@@ -12,7 +12,7 @@ b04 s03 · Path lookup
 **Source:** counted from disk every build: lookups in use, literal layer paths in code and Markdown, Pages with an old-form structure-source, exported delivery scripts, moved paths git does not know yet, the venue submodule's name and path. Concerns and open questions are red text; JL's choices are pink notes.
 Drawn with `../_build/sketch.py` through b03's canvas writer, so marks survive a rebuild.
 
-**Feeds:** `../reports/q02_path_fix/`.
+**Feeds:** `../Q02.
 
 
 Files

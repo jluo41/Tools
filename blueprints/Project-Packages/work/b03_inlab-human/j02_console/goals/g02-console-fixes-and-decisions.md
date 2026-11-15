@@ -25,7 +25,7 @@ Read first
 
 - `goals/g01-console-design-and-docs.md` (how the fixtures, the shots and the drawings work).
 - `s33-console-ui-issue/` (the ranked issues and their evidence) and `s51-console-runtime/`.
-- The Job face `j02_console.md` `## Questions`, and the frames `reports/q02_copy_or_read/`,
+- The Job face `j02_console.md` `## Questions`, and the frames `s02-data-lineage/q02_copy_or_read/`,
   `q03_tasks_on_the_ladder/`, `q05_placeholder_views/`.
 - The code each step names below; for the store layouts, the haipipe code in `code/haipipe/` (Record and Case
   stages) and the `haipipe-data` skill. Read code and docs only, never a store's data (D1).

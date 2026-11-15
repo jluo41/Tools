@@ -205,7 +205,7 @@ def test_reasoned_compute_need_and_bare_refusal_are_gaps(board):
 def test_missing_spec_is_unplanned_and_wrong_cut_is_a_gap(board):
     mt02 = board / "0-MT-meta/MT02-question-information/MT02-question-information.md"
     mt02.write_text(mt02.read_text().replace("    cut: full\n", "    cut: alpha\n"))
-    assert any("spec cut is alpha" in p for p in verdicts(board)[("QI1", "I01-full")]["problems"])
+    assert any("spec segment is alpha" in p for p in verdicts(board)[("QI1", "I01-full")]["problems"])
     text = mt02.read_text()
     spec = text[text.index("    cut:"):text.index("**Needs agreed**")]
     mt02.write_text(text.replace(spec, ""))
@@ -250,7 +250,7 @@ def test_bound_run_must_be_on_the_cut_the_spec_names(board):
     cfg = board.parents[1] / "tasks/b51_x/j21_information_x/t01_rates/scripts/config/r01_full.yaml"
     cfg.write_text(cfg.read_text() + "population: {name: alpha}\n")
     r = verdicts(board)[("QI1", "I01-full")]
-    assert any("runs on population alpha; the spec's cut asks for full" in p for p in r["problems"])
+    assert any("runs on population alpha; the spec's segment asks for full" in p for p in r["problems"])
 
 
 def test_plan_must_answer_its_own_ask(board):

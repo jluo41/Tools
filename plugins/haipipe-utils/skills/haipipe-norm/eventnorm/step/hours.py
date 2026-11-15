@@ -24,20 +24,36 @@ def hour_key(t, zone: str) -> str:
     return f"{t:%Y-%m-%d %H}:00" + (f" {zone}" if zone else "")
 
 
-def span_hours(s, e, zone: str) -> dict:
-    """Each local clock hour a span touches -> (its share, its minutes), to the second (s05-D02: 16:56:22 to 17:24:41
+def span_parts(s, e, zone: str) -> dict:
+    """Each local clock hour a span touches -> (its share, its minutes, its exact share), to the second (s05-D02: 16:56:22 to 17:24:41
     is 12.83% and 87.17%, not 4 and 24 whole minutes). A span of no length is all in its start's hour."""
     import pandas as pd
     whole = (e - s).total_seconds()
     if whole <= 0:
-        return {hour_key(s, zone): (1.0, 0.0)}
+        return {hour_key(s, zone): (1.0, 0.0, 1.0)}
     out, t = {}, s
     while t < e:
         nxt = min(t.floor("h") + pd.Timedelta(hours=1), e)
         sec = (nxt - t).total_seconds()
-        out[hour_key(t, zone)] = (round(sec / whole, 4), round(sec / 60, 1))
+        out[hour_key(t, zone)] = (round(sec / whole, 4), round(sec / 60, 1), sec / whole)
         t = nxt
     return out
+
+
+def span_hours(s, e, zone: str) -> dict:
+    """Each local clock hour a span touches -> (its share, its minutes): span_parts without the exact share."""
+    return {k: v[:2] for k, v in span_parts(s, e, zone).items()}
+
+
+def whole_shares(n: int, exact: dict) -> dict:
+    """n whole steps over hours by their exact shares, adding up to n (JL 261110: the hours of 820 steps added up to
+    823 when each hour was rounded alone). Each hour gets its share rounded down; the steps left over go one each to
+    the hours with the largest remainders."""
+    floor = {k: int(n * f) for k, f in exact.items()}
+    left = n - sum(floor.values())
+    for k in sorted(exact, key=lambda k: (n * exact[k] - floor[k], exact[k]), reverse=True)[:left]:
+        floor[k] += 1
+    return floor
 
 
 def log_hours(s, e, zone: str, total: dict) -> dict:
@@ -47,9 +63,10 @@ def log_hours(s, e, zone: str, total: dict) -> dict:
     blk = {"start": start, "end": end, "total": total, "items": None, "timeline": None}
     if kind(total["minutes"]) == "day":
         return {f"{s:%Y-%m-%d}": {"share": 1.0, **blk}}
-    out = {}
-    for h, (sh, mins) in span_hours(s, e, zone).items():
-        own = {"minutes": mins, **({"steps": round(sh * total["steps"])} if total.get("steps") else {})}
+    out, spans = {}, span_parts(s, e, zone)
+    steps = whole_shares(int(total["steps"]), {h: v[2] for h, v in spans.items()}) if total.get("steps") else {}
+    for h, (sh, mins, _) in spans.items():
+        own = {"minutes": mins, **({"steps": steps[h]} if total.get("steps") else {})}
         out[h] = {"share": sh, "start": start, "end": end, "total": total, "in_hour": own, "items": None,
                   "timeline": None}
     return out

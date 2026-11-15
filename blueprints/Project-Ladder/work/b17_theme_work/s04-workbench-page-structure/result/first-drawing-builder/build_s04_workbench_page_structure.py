@@ -144,7 +144,7 @@ at('m-memory', d.text, 60, 900, 'Memory = the folders. The site is how a person 
 # ③ The plan to update the layout (261028): from today's layout=focus page to the proposal, in six steps.
 p = at('plan-frame', d.frame, 'Plan: update the layout in six steps', 2560, 1440)
 at('p-title', d.text, 60, 35, 'Plan · update the layout in six steps', 54)
-at('p-sub', d.text, 60, 110, 'Starts from servers/workbench/focus_page.py (layout=focus); the old route stays until step 6.', 28)
+at('p-sub', d.text, 60, 110, 'Starts from servers/workbench/page/focus_page.py (layout=focus); the old route stays until step 6.', 28)
 for k, (x, head, lines) in enumerate([
         (60, 'today · layout=focus', ['path', 'folder name', 'section name', 'Goal: text + criteria + question cards',
                                       'Jobs: plain links, no status']),

@@ -4,13 +4,13 @@ ref/block-contract.md (haipipe-insight). An Insight Block is a task Block: one J
 level, one Task per question. Two halves:
 
   QUESTIONS  every question.md is complete and legal: its short question, name, ask, Why now
-             and What would answer it, its partitions block and power, its live needs and their
+             and What would answer it, its segments block and power, its live needs and their
              specs, its cites one level below, its one entry script (SPEC line); review
              suspects (Q1, Q2, Q4, Q6) are printed as notes
-  RUNS       one ticket per dataset x partition it is asked on, each run's receipt, the spec's
+  RUNS       one ticket per dataset x segment it is asked on, each run's receipt, the spec's
              files and columns, its generated report, and the question's page
 
-Status is computed per question x run (<dataset>_<partition>), never read from a register:
+Status is computed per question x run (<dataset>_<segment>), never read from a register:
   —  not asked · 🚫 refused · 🟡 owed · ✅ <YYMMDD> CHECK closed and current · STALE
 
 --write writes the grid to the Block's meta/status.md (generated; never edit it).
@@ -120,7 +120,7 @@ def check_question(qid, qdir, q, qs, thresholds, partitions, prose=""):
     if asked not in ("all", "cross") and not (isinstance(asked, list) and asked and set(asked) <= set(names) - {"cross"}):
         p.append(f"{qid}: partitions.asked is all, cross, or a list of partitions.md names")
     if asked != "all" and not pb.get("not_elsewhere"):
-        p.append(f"{qid}: partitions.not_elsewhere says why it is not asked on every partition")
+        p.append(f"{qid}: partitions.not_elsewhere says why it is not asked on every segment")
     pw = pb.get("power", "none")
     if isinstance(pw, dict):
         if pw.get("test") not in TESTS:
@@ -291,7 +291,7 @@ def last_check(qfolder):
 
 # ── one question's runs ──────────────────────────────────────────────────────
 def check_partition(qf, qid, q, pq, part, shared, page):
-    """(mark, problems) for one asked question x run (<dataset>_<partition>)."""
+    """(mark, problems) for one asked question x run (<dataset>_<segment>)."""
     p = []
     ticket = qf / "runs" / f"{part}.sh"
     if not ticket.is_file() or ticket.read_text() != TICKET:
@@ -332,7 +332,7 @@ def check_partition(qf, qid, q, pq, part, shared, page):
         return "🟡", p
     reads_part = any(f"results/{part}/" in a or f"reports/{part}/" in a for arts in artifacts.values() for a in arts)
     if not reads_part:
-        p.append(f"{qf.name}: the page cites nothing of partition {part}")
+        p.append(f"{qf.name}: the page cites nothing of segment {part}")
     if chk and chk[1] == "CLOSE" and chk[0] > ended and not p:
         return f"✅ {chk[0].strftime('%y%m%d')}", p
     return "🟡", p
@@ -365,10 +365,10 @@ def run(block, strict=False):
     partitions = front(block / META / "partitions.md")[0]["partitions"]
     pnames = [x["name"] for x in partitions]
     if pnames[:1] != ["full"]:
-        problems.append(f"{META}/partitions.md: the first partition is full, unfiltered")
+        problems.append(f"{META}/partitions.md: the first segment is full, unfiltered")
     for name, extract in meta["datasets"].items():
         if "_" in str(name):
-            problems.append(f"board.md: dataset {name} has an underscore; a run is <dataset>_<partition>")
+            problems.append(f"board.md: dataset {name} has an underscore; a run is <dataset>_<segment>")
         if not str(extract).endswith(".parquet") or Path(str(extract)).is_absolute():
             problems.append(f"board.md: dataset {name} names a .parquet under the SPACE root")
     names = [f"{d}_{p}" for d in meta["datasets"] for p in pnames]          # every run, the grid's columns

@@ -68,6 +68,21 @@ def t_errors():
     return "4 refused"
 
 
+def t_ways():
+    """The minutes as stretches by their way: they cover every minute once, and add to the hours' minutes."""
+    rows = ([{"time": f"10:{m:02d}", "bpm": 70, "steps": 0} for m in range(0, 20)] +
+            [{"time": f"10:{m:02d}", "bpm": 90, "steps": 40} for m in range(20, 30)] +
+            [{"time": f"10:{m:02d}"} for m in range(30, 60)])
+    ev = event(raw={"type": "minutes", "day": "2026-10-27", "rows": rows})
+    w = ev["ways"]
+    assert [(x["way"], x["minutes"], x["why"]) for x in w] == [("still", 20, None), ("moving", 10, None),
+                                                               ("unknown", 30, "no_heart_rate")], w
+    assert w[0]["from"] == "2026-10-27 10:00" and w[-1]["to"] == "2026-10-27 11:00", w
+    h = ev["output"]["2026-10-27 10:00"]
+    assert sum(x["minutes"] for x in w) == h["minutes"] and h["still_min"] == 20, h
+    return "20 still, 10 moving, 30 unknown: three stretches, 60 minutes"
+
+
 def space() -> Path:
     for p in [HERE, *HERE.parents]:
         if (p / "env.sh").is_file() and (p / MCPHASES).is_dir():
@@ -119,6 +134,7 @@ if __name__ == "__main__":
     check("one minute, one way", t_way)
     check("typed minutes, and the input alone", t_typed)
     check("refused with a reason", t_errors)
+    check("minutes as stretches by their way", t_ways)
     root = space()
     if root:
         check("s07 ④: mcPhases day 3, the whole day", lambda: t_day3(root))

@@ -729,7 +729,7 @@ approved: ⬜
     extra = good + "\n### C1.P3 · Thanks · S4 to S4\n- B1 · S4 · Thanks.\n"
     assert any("C1.P3 is in the Draft but not in the Structure" in m for m in structure_draft_mismatches(extra))
     stale_span = good.replace("  → S1 to S2", "  → S1 to S3")
-    assert any("spans S1 to S3" in m for m in structure_draft_mismatches(stale_span))
+    assert any("spans s1 to s3" in m for m in structure_draft_mismatches(stale_span))
     assert structure_draft_mismatches(good.split("## 3 · Draft")[0]) == []      # nothing drafted yet: nothing to check
     one_line = good.replace("- C1.P1 · The finding\n  → S1 to S2", "- C1.P1 · The finding · S1 to S2")
     assert structure_draft_mismatches(one_line) == []

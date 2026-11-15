@@ -344,7 +344,7 @@ class SpaceViewTest(unittest.TestCase):
         base = self.project(root, "Project-A")
         # created out of order on purpose: the view orders the Themes, not the disk
         self.add_board(root, f"{base}/designs/B01_DesignBoard-X", "Design X")
-        self.add_board(root, f"{base}/insights/Prototype-Insight-X", "Insight X")
+        self.add_board(root, f"{base}/insights/InsightQuestionBook-Insight-X", "Insight X")
         self.add_board(root, f"{base}/paper/Paper-X", "Paper X", "dialect: paper\n")
         self.add_board(root, f"{base}/cowork/b01_partner", "CoWork X",
                        "board-kind: cowork-block\n")
@@ -364,9 +364,9 @@ class SpaceViewTest(unittest.TestCase):
             order = [page.index(f'data-theme="{theme}"') for theme in
                      ("tasks", "discoveries", "cowork", "paper", "insights", "designs")]
             self.assertEqual(order, sorted(order))
-            self.assertIn('<span class="theme-name">tasks</span>\n  '
-                          '<span class="theme-count" aria-label="2 blocks">2</span>', page)
-            self.assertIn('<span class="project-count" aria-label="7 blocks">7</span>', page)
+            self.assertIn('<span class="theme-name">tasks</span></h3>', page)
+            self.assertNotIn('theme-count', page)                           # no Block counts (AGENTS.md § Page words)
+            self.assertNotIn('project-count', page)
             self.assertLess(page.index('>b01 · Task One</a>\n  <span class="home-folder">'),
                             page.index('>b02 · Task Two</a>\n  <span class="home-folder">'))
             for kind in ("task", "discovery", "cowork", "paper", "insight", "design"):
@@ -442,16 +442,17 @@ class SpaceViewTest(unittest.TestCase):
             (root / base / "tasks" / "b01_data" / "j01_clean" / "j01_clean.md").write_text("# Clean\n")
             (runs.parent / "t01_load.md").write_text("# Load\n")
             page = render_home(root)
-            self.assertIn('<span class="project-runs" title="hard Runs in this Project, by status (▶️ is running)">⚙️ 2 Runs · ✅1 ❌1</span>', page)
+            # no Run count or tally anywhere (AGENTS.md § Page words, JL 261113): each Run's state sits on its own line
+            self.assertNotIn('project-runs', page)
             card = page[page.index('b01_data"'):]
-            self.assertIn('<span class="home-runs-tally" title="hard Runs, by status (▶️ is running)">⚙️ 2 Runs · ✅1 ❌1</span>', card)
+            self.assertNotIn('home-runs-tally', card)
             # the Runs sit under their Job, no third group (JL 261019: "merge the jobs and runs ... to save the spaces")
             self.assertNotIn('data-group="runs"', card)
             jobs = card[card.index('data-group="jobs"'):]
-            self.assertIn('⚙️ <span class="block-cards-count">2 Runs</span>', jobs)
+            self.assertNotIn('block-cards-count', jobs)
             job = jobs[jobs.index("<b>j01_clean</b>"):]
-            self.assertIn("1 Task · 2 Runs", job[:job.index("</summary>")])
-            self.assertIn('<span class="rn-tally job-tally">✅1 ❌1</span>', job[:job.index("</summary>")])
+            self.assertNotIn("2 Runs", job[:job.index("</summary>")])
+            self.assertNotIn('rn-tally', job[:job.index("</summary>")])
             self.assertIn("<b>t01_load</b>", job)
             self.assertIn("<code>r02_bad</code><span class=rn-st>failed", job)
             self.assertNotIn("<code>run-build-t01</code>", card)
@@ -478,7 +479,7 @@ class SpaceViewTest(unittest.TestCase):
                      for c in page.split('<details class="home-block"')[1:]}
             card = cards["b01_data"]
             self.assertNotIn(" open", card.split(">", 1)[0])                 # it starts folded
-            self.assertIn('<span class="home-counts" title="Studio topics · Jobs">🧠 1 · 🗂 1</span>', card)
+            self.assertNotIn('home-counts', card)                           # no counts on the folded card
             self.assertIn('data-group="studio"', card)
             self.assertIn('data-group="jobs"', card)
             # JL 261012: the Studio group reads as the workbench's Studio list, a row a topic, its drawing inside
@@ -490,7 +491,7 @@ class SpaceViewTest(unittest.TestCase):
             # JL 261012, on the Job cards: "could you make it to do the same?": a Job is a row too, opening its face
             jobs = card[card.index('data-group="jobs"'):]
             job = re.search(r'<details class="topic">.*?</details>', jobs, re.S).group(0)
-            self.assertIn('<b>j01_clean</b><span class="topic-meta">Clean the data · 1 Task</span>', job)
+            self.assertIn('<b>j01_clean</b><span class="topic-meta">Clean the data</span>', job)
             self.assertIn('<span class="job-st job-st-active">active</span>', job)
             self.assertIn('<b>t01_load</b></a><span class="rn-meta">Load</span>', job)  # its Tasks, listed
             self.assertIn('data-src="/_board/page?path=%2Fexamples%2FProject-A%2Ftasks%2Fb01_data%2Fj01_clean%2F'
@@ -794,11 +795,11 @@ class SpaceChartTest(unittest.TestCase):
             self.assertIn('<span class="home-folder">work/b01_demo</span>', page)
             self.assertNotIn("/Task/", page)
             self.assertIn('<span class="home-state" title="Board state">🟢 RUNNING</span>', page)
-            self.assertIn('<span class="theme-count" aria-label="1 blocks">1</span>', page)
+            self.assertNotIn('theme-count', page)
             self.assertRegex(page, r'data-block-key="[^"]*_legacy/b02_old"[^>]*data-archived="1"[^>]* hidden')
             self.assertIn("includeLegacy = false", page)
             shown = render_home(root, archived=True)
-            self.assertIn('<span class="theme-count" aria-label="2 blocks">2</span>', shown)
+            self.assertNotRegex(shown, r'data-block-key="[^"]*_legacy/b02_old"[^>]*data-archived="1"[^>]* hidden')
             self.assertIn('<span class="home-folder">work/_legacy/b02_old</span>', shown)
             self.assertIn("includeLegacy = true", shown)
 

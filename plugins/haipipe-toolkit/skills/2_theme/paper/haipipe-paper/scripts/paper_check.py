@@ -30,6 +30,17 @@ def display_plan():
     spec.loader.exec_module(mod)
     return mod
 
+def paragraph_length():
+    """haipipe-draft's paragraph_length module (the 4-to-7-sentence rule, JL 261112), or None when it is not here."""
+    import importlib.util
+    f = Path(__file__).resolve().parents[4] / "1_base" / "draft" / "haipipe-draft" / "src" / "paragraph_length.py"
+    if not f.is_file():
+        return None
+    spec = importlib.util.spec_from_file_location("paragraph_length", f)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
 SKIP = ("_archive", "delivery", "history", "passes")
 
 
@@ -251,7 +262,7 @@ def check(board: Path) -> list:
         sign[0].replace("**", "")[:80] if sign else "no open sign line")
     want = re.sub(r"[^a-z0-9]+", "-", field(bmd, "venue").lower()).strip("-")
     calls = sorted((board / "venues").glob("*/call.md"))
-    call = next((c for c in calls if want and (c.parent.name == want or want in c.parent.name)), calls[0] if len(calls) == 1 else None)
+    call = next((c for c in calls if want and (c.parent.name.lower() == want or want in c.parent.name.lower())), calls[0] if len(calls) == 1 else None)
     add("plan", "P5", "The venue", ("✅" if want else "⏳") if call else "⬜",
         (f"venues/{call.parent.name}/call.md" + ("" if want else " (board.md venue: not set)")) if call
         else ("no call.md" if not calls else "board.md venue: names none of " + ", ".join(c.parent.name for c in calls)))
@@ -326,6 +337,23 @@ def check(board: Path) -> list:
     add("writing", "W2", "Plans signed", "🙋" if total and signed < total else mark(signed, total),
         f"{signed} of {total} Sections signed" if total else "no Sections yet")
     add("writing", "W3", "Text written", mark(written, total), f"{written} of {total} Sections with no placeholder left" if total else "no Sections yet")
+    # W7 (JL 261112): each paragraph of a Section holds 4 to 7 sentences unless its plan gives a `reason:`; the
+    # Abstract, an appendix and a letter are exempt (haipipe-draft paragraph_length, the same rule page.py health reads)
+    pl, off, counted = paragraph_length(), [], 0
+    for j in writing[-1:]:
+        for t in tasks(j):
+            drafts = sorted((t / "draft").glob(f"{t.name}-draft-v*.md"), key=vnum)
+            kind = pl.section_kind(read(t / f"{t.name}.md")) if pl else ""
+            if not pl or not drafts or not kind or pl.exempt(kind):
+                continue
+            counted += 1
+            bad = [pid for pid, n, why in pl.off_range(read(drafts[-1]), kind) if not why]
+            if bad:
+                off.append(f"{t.name} {len(bad)}")
+    if pl:
+        add("writing", "W7", "Paragraphs of 4 to 7 sentences", ("⏳" if off else "✅") if counted else "⬜",
+            (f"{counted - len(off)} of {counted} Sections" + (f"; off: {', '.join(off)}" if off else "")) if counted
+            else "no Section plans yet")
     built = [j.name for j in writing if (board / "delivery" / j.name / "build-manifest.json").is_file()]
     add("writing", "W4", "Paper built", "✅" if built and len(built) == len(writing) else ("⏳" if built else "⬜"), ", ".join(built) or "not built")
     ready = lacking = 0                            # JL 261104: examples are a must before a Section is finished

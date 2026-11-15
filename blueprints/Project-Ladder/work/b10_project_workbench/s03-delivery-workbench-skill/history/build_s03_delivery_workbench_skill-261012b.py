@@ -8,7 +8,7 @@ Three frames, each a folder tree or a screen (JL 261012: "每一个 frame 都太
                    In Tools; red "? " leaves are still open, "✎ " leaves are changes
     ③ the screen   the expected Delivery (s03-D07) with one result card close up (s03-D08), in the workbench's colours
 
-Read on every build: each Delivery screen through servers/workbench/frame.py (frame.render, the Runs panel left
+Read on every build: each Delivery screen through servers/workbench/page/frame.py (frame.render, the Runs panel left
 out), every Block's delivery/ off the disk (in Tools/blueprints and in the SPACE beside Tools whose Tools/ link
 leads here), the decisions and open items of this topic's face, and the skill's folder and functions. The 261011
 builder (two frames) and the 261012 story builder (six frames) are in history/.
@@ -308,7 +308,7 @@ def tools_nodes():
     kids = sorted(p.name + ("/" if p.is_dir() else "") for p in SKILL.iterdir() if not p.name.startswith("."))
     return {"In Tools: Tools/plugins/haipipe-toolkit/": [
         {f"skills/1_base/project/haipipe-delivery/  (version {ver.group(1) if ver else '?'})": kids},
-        {"servers/workbench/frame.py": where_defined("servers/workbench/frame.py", [
+        {"servers/workbench/page/frame.py": where_defined("servers/workbench/page/frame.py", [
             "delivery_parts", "_delivery_row", "delivery_by_source", "_delivery_cards"])},
         {"skills/1_base/draft/haipipe-draft/src/common.py": where_defined(
             "skills/1_base/draft/haipipe-draft/src/common.py",
@@ -338,7 +338,7 @@ BACKGROUND = [
     {"Where it sits": [
         "the top row of the workbench: Studio | Block · Job · Task | Delivery (s03-D04)",
         "twin of s02-studio-workbench-skill; neighbours s04 Related, s05 Report, s06 Run",
-        "code: servers/workbench/frame.py, one look for every theme",
+        "code: servers/workbench/page/frame.py, one look for every theme",
         "feeds the reports q07_workbench_mapping and q08_workbench_base"]},
     {"How to read this drawing": [
         "① this frame, the words",

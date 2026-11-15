@@ -18,7 +18,7 @@ HERE = Path(__file__).resolve().parent
 CARDS = HERE.parent / "ref" / "run-cards.md"
 SKILLS = HERE.parents[3]                                  # plugins/haipipe-toolkit/skills
 AGENTS = SKILLS.parent / "agents"
-LEVELS = ("Guide", "Block", "Job", "Task", "Prototype", "Release", "Question")
+LEVELS = ("Guide", "Block", "Job", "Task", "Question Book", "Release", "Question")
 SPACES = ("Description", "Idea Studio", "Audience Report", "Work Details", "Runs", "Delivery")
 GUIDE = ("Method", "Related Paper")
 BUTTON = re.compile(r"^🔘 BUTTON\s+(.+?) · (" + "|".join(LEVELS) + r") › (.+?) · (\^\S+)(?: · views (.+))?$")
@@ -45,11 +45,11 @@ def cards(path: Path = CARDS) -> list[dict]:
 
 
 def run_name(card: dict) -> str:
-    """The Run a card's prompt names: `as run-…`, or a hard Run's `rNN_<partition>`."""
+    """The Run a card's prompt names: `as run-…`, or a hard Run's `rNN_<segment>`."""
     m = re.search(r"\bas (run-[^\s;,.:]+(?:\.[^\s;,:]+)*)", card["prompt"])
     if m:
         return m.group(1).rstrip(".")
-    return "rNN_<partition>" if card["pattern"].startswith(r"^r\d") else ""
+    return "rNN_<segment>" if card["pattern"].startswith(r"^r\d") else ""
 
 
 def card_for(run: str, level: str | None = None) -> dict | None:
@@ -106,7 +106,7 @@ def check(path: Path = CARDS) -> list[str]:
     return problems
 
 
-LADDER_LEVEL = {"prototype": "Prototype", "version": "Release", "question": "Question", "board": "Block", "job": "Job",
+LADDER_LEVEL = {"prototype": "Question Book", "version": "Release", "question": "Question", "board": "Block", "job": "Job",
                 "task": "Task"}
 
 
@@ -123,7 +123,7 @@ def against_scaffold(path: Path = CARDS) -> list[str]:
         level = LADDER_LEVEL[lv]
         sample = "r01_x" if hard else ("run-" + rtype if (lv, rtype) in il.ALONE else
                                        f"run-{rtype}-{il.DEFAULT_TARGET.get((lv, rtype), 'x01')}")
-        targets = ("x01", "j01", "t01", "q01", "d01", "code-v1", "data-v1", "coverage")
+        targets = ("x01", "j01", "t01", "q01", "d01", "question-v1", "data-v1", "coverage")
         names = [sample] + ([] if hard else [f"run-{rtype}-{t}" for t in targets])
         mine = [c for c in all_cards if c["level"] == level and any(re.match(c["pattern"], n) for n in names)]
         if not mine:

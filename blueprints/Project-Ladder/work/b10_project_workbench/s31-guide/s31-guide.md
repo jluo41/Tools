@@ -15,7 +15,7 @@ s31 · Guide
 of `../s02-studio-workbench-skill` (moved here from b02's s02 when b02 merged into b03; JL 261007: "for
 Guide, we will use this structure"; "just follow the style of s03 (studio and report)": b02's s03 then, s04 now).
 
-**Feeds:** `reports/q08_workbench_base/` (one shared base, a theme each).
+**Feeds:** Q08 (one shared base, a theme each).
 
 
 Files

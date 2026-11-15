@@ -1,4 +1,4 @@
-"""s31 · insight Guide: s31-insight-guide.excalidraw, the insight workbench's Guide tab, cut by level, in the
+"""s31 · insight Guide: s31-insight-guide.excalidraw, the insight workbench's Guide tab, segment by level, in the
 style of b03's s31-guide (four Views, each split Block · Job · Task, cards in one shape per View), following
 b16's s31-paper-guide (JL 261007: "follow this ... could you make the s31 for the insight guide as well?").
 
@@ -30,7 +30,7 @@ LEVELS, VIEWS = S3.LEVELS, S3.GUIDE_VIEWS
 TAB = {"Block": "the insight Board's tab", "Job": "a Job's tab (pN × vM)", "Task": "a question's tab"}
 # the insight Guide's own header line per View (b03 s31-guide's HEAD, in insight's words)
 HEAD = {"Description": ("Insight · what this family is for",
-                        "one dataset that grows, a Prototype that evolves, a Job per pair, an answer per question"),
+                        "one dataset that grows, a Question Book that evolves, a Job per pair, an answer per question"),
         "Method": ("how insight is made, by level", "add a version or a release, run the Job, read the pages, compare, hand off"),
         "RoadMap Draw": ("the insight drawings, by level", "the structure and the ladder, then each level's screens"),
         "Related Paper": ("the papers behind the method, by level", "each paper under the level its method serves")}

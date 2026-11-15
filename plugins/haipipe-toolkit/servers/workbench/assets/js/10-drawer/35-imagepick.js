@@ -11,7 +11,7 @@
      The server half needed nothing: /_board/image already accepts a base64 data
      URL and writes into the board's fig/, so the whole gap was this gesture.
 
-     Why it re-encodes instead of forwarding the file untouched: servers/space-home/write.py
+     Why it re-encodes instead of forwarding the file untouched: servers/workbench/home/write.py
      caps an image at 8MB and accepts png/jpeg/gif/webp ONLY, while a modern
      phone routinely shoots larger than the cap and an iPhone shoots HEIC, which
      is not on that list. Drawing the file through a canvas both shrinks it and

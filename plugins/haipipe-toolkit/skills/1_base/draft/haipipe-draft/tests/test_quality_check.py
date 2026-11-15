@@ -18,7 +18,7 @@ class QualityCheckContractTest(unittest.TestCase):
         cls.client = "\n".join(
             f.read_text(encoding="utf-8") for f in sorted(chat_dir.glob("*.js"))
         )
-        cls.server = (next(p for p in HERE.parents if p.name == "skills").parent / "servers/workbench/chat.py").read_text(encoding="utf-8")
+        cls.server = (next(p for p in HERE.parents if p.name == "skills").parent / "servers/workbench/studio/chat.py").read_text(encoding="utf-8")
 
     def test_client_sends_a_dedicated_scoped_quality_check(self):
         self.assertIn("✅ Quality Check", self.client)

@@ -7,7 +7,7 @@ from `plugins/haipipe-toolkit/servers/workbench-paper/studio/` (261007, JL: ever
 belongs to its theme's design Block); the server keeps no studio of its own.
 
 **Served:** the workbench's Guide › RoadMap Draw shows this drawing, view only. Its path is
-`PAPER_DESIGN` in `plugins/haipipe-toolkit/servers/workbench/guide_families.py`.
+`PAPER_DESIGN` in `plugins/haipipe-toolkit/servers/workbench/guide/guide_families.py`.
 
 
 Files

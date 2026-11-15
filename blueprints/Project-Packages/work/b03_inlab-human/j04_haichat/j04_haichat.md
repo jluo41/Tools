@@ -36,5 +36,5 @@ questions:
   acceptance: Answered when j05_chat Q02 records whether this pattern is adopted, and a first action list is drafted
     for the workbench.
   work: []
-  report: reports/q02_actions_as_mcp/q02_actions_as_mcp.md
+  report: j04_haichat.md
 ```

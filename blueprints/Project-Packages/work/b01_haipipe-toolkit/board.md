@@ -55,7 +55,7 @@ questions:
     promotion paths, and preserved question, studio and Run identities are documented
     and their references resolve.
   work: []
-  report: reports/q01_blueprints_organized/q01_blueprints_organized.md
+  report: s01-toolkit-map/s01-toolkit-map.md
 - id: Q02
   title: Does every theme follow one ladder?
   question: Do the seven themes (insight, design, cowork, discovery, labeling, paper,
@@ -66,7 +66,7 @@ questions:
   acceptance: Answered when the theme matrix (studio s02) lists each theme per level
     and every difference is kept on purpose or opened as a fix.
   work: []
-  report: reports/q02_one_ladder/q02_one_ladder.md
+  report: s02-theme-matrix/s02-theme-matrix.md
 - id: Q03
   title: How do sessions share this repo and machine safely?
   question: 'Several sessions edit Tools and run hosts on one machine at once: how
@@ -78,7 +78,6 @@ questions:
     the 261009 incident (a pattern kill that stopped six hosts and open apps) is recorded
     with its cause.
   work: []
-  report: reports/q03_sharing_safely/q03_sharing_safely.md
 - id: Q04
   title: What do we track for a studio drawing?
   question: 'A studio topic has a builder, a drawing, a seed snapshot and a preview:
@@ -89,5 +88,4 @@ questions:
   acceptance: Answered when the tracking rule is in .gitignore and haipipe-studio,
     and the largest drawings are rebuilt under a size target.
   work: []
-  report: reports/q04_studio_drawings/q04_studio_drawings.md
 ```

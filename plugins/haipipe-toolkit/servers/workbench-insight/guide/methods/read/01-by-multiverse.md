@@ -7,7 +7,7 @@ under Question-results reading methods; its papers are the rows of `../../../rel
 workbench's own judgment.
 
 family: Question-results reading
-move: Run one question through every reasonable analysis (each defensible cut, exclusion,
+move: Run one question through every reasonable analysis (each defensible segment, exclusion,
   coding and model), and report how much the answer moves.
 taxonomy: Any type, as a robustness check [Leek 2015]; any of the three tasks [Hernán
   2019].
@@ -47,7 +47,7 @@ Applied to AI
 
 agent: The agent builds the specifications from the work spec's rivals line and runs
   each as its own task output (ours).
-steps: 1. Read the spec's cut, unit, measure and rivals. 2. List the alternatives at each
+steps: 1. Read the spec's segment, unit, measure and rivals. 2. List the alternatives at each
   step. 3. Run every path. 4. Report the curve and the share that agree.
 returns: The specification curve, the share with the same sign, and the most consequential
   choices.

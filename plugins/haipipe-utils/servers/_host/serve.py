@@ -4,7 +4,7 @@ haipipe-utils API host. One process, one port, every normalizer behind its own
 prefix. The input goes in the request body, the result comes back in the
 response, and nothing is rendered.
 
-    python servers/_host/serve.py                            # 127.0.0.1:8070, every lane
+    python servers/_host/serve.py                            # $HAIPIPE_UTILS_HOST:8070 (env.sh: the tailnet address), every lane
     python servers/_host/serve.py --only insulin,medication  # a subset
     python servers/_host/serve.py --store /path/to/_WorkSpace/ExternalStore
     python servers/_host/serve.py --list                     # what would mount, no import
@@ -32,14 +32,17 @@ A lane whose bank is missing still mounts and says so on its own /healthz. A
 lane that fails to import is listed under `failed` on the host /healthz and on
 stderr, and the other lanes keep serving; `--strict` makes that a non-zero exit.
 
-NOT AUTHENTICATED, bound to 127.0.0.1 by default. Food, exercise, medication
-and insulin logs are PHI. Put a gate in front before this listens on a network.
+NOT AUTHENTICATED. It listens on ONE address, $HAIPIPE_UTILS_HOST: the SPACE's
+env.sh sets that to this machine's tailnet address (JL 261110: one address, the
+tailnet's, and no login), and it is 127.0.0.1 when unset. Food, exercise,
+medication and insulin logs are PHI.
 """
 from __future__ import annotations
 
 import argparse
 import importlib.util
 import inspect
+import json
 import os
 import sys
 from contextlib import asynccontextmanager
@@ -80,7 +83,11 @@ GALLERY = {"food": "_FoodInfo/0-inputs", "exercise": "_ExerciseInfo/0-inputs",
 EVENTS = {"food": "_FoodInfo/7-events/events.json",
           "exercise": "_ExerciseInfo/7-events/events.json",   # b51 j02 t99 r04 writes it from s02 ③ and ④
           "medication": "_MedInfo/7-events/events.json",      # b51 j03 t99 r03 writes it from ext_medication_event
-          "insulin": "_InsInfo/7-events/events.json"}         # b51 j04 t99 r04 writes it from ext_insulin_event
+          "insulin": "_InsInfo/7-events/events.json",         # b51 j04 t99 r04 writes it from ext_insulin_event
+          "step": "_StepInfo/7-events/events.json",           # b51 j05 to j08 t99 r01 write these four from the real
+          "sleep": "_SleepInfo/7-events/events.json",         #   examples their topics (s05, s06, s07, s10) show,
+          "still": "_StillInfo/7-events/events.json",         #   answered by eventnorm in process (src/event_gallery.py)
+          "stress": "_StressInfo/7-events/events.json"}
 
 
 def eventnorm_root() -> Optional[Path]:
@@ -147,6 +154,73 @@ def events(noun: str) -> Dict:
     doc = json.loads(f.read_text(encoding="utf-8")) if f and f.is_file() else {}
     return {"noun": noun, "file": f"_WorkSpace/0-RawDataStore/0-EventNorm/{EVENTS[noun]}" if noun in EVENTS else "",
             "about": doc.get("about", ""), "cards": [hidden(c) for c in doc.get("cards") or []]}
+
+
+# The saved event table of each lane (b51's ext_<noun>_event: every logged event as one row), shown on its try page
+# (JL 261110: "what is the layout of the freeze? could you show them in the website as well?").
+EVENT_TABLES = {"food": "ext_meal_event", "exercise": "ext_exercise_event", "medication": "ext_medication_event",
+                "insulin": "ext_insulin_event", "step": "ext_step_event", "sleep": "ext_sleep_event",
+                "still": "ext_still_event", "stress": "ext_stress_event"}
+PERSON_KEYED = ("AI-READI|", "MCPhases|")              # event ids that hold a person's file number
+_TABLE_CACHE: Dict = {}
+
+
+def event_table(noun: str) -> Dict:
+    """The lane's saved event table as the store holds it: its name, its versions, the one the newest release pins
+    (else the newest built), its rows, and each column with its type, what it holds, and its value on one real row.
+    A JSON column shows its first two keys; an event id that holds a person's file number shows <person>."""
+    import yaml
+    store, asset = os.environ.get("LOCAL_EXTERNAL_STORE"), EVENT_TABLES.get(noun)
+    folder = Path(store) / asset if store and asset else None
+    if not folder or not (folder / "asset.yaml").is_file():
+        return {"noun": noun, "asset": asset, "found": False}
+    contract = yaml.safe_load((folder / "asset.yaml").read_text(encoding="utf-8"))
+    versions = sorted(d.name for d in folder.iterdir() if (d / "version.yaml").is_file())
+    release, pinned = None, None
+    rel = Path(store) / "_releases"
+    for f in sorted(rel.glob("*.yaml"), key=lambda f: [int(x) for x in _re.findall(r"\d+", f.stem)] or [0], reverse=True):
+        pins = (yaml.safe_load(f.read_text(encoding="utf-8")) or {}).get("assets") or {}
+        if asset in pins:
+            release, pinned = f.stem, str(pins[asset])
+            break
+    cards = {v: yaml.safe_load((folder / v / "version.yaml").read_text(encoding="utf-8")) for v in versions}
+    newest = max(versions, key=lambda v: str(cards[v].get("built_at") or ""))
+    shown = pinned if pinned in versions else newest
+    key = (asset, shown)
+    if key not in _TABLE_CACHE:
+        import pyarrow.parquet as pq
+        pf = pq.ParquetFile(folder / shown / cards[shown]["table"])
+        row = next(pf.iter_batches(batch_size=1)).to_pylist()[0]
+        _TABLE_CACHE[key] = (pf.metadata.num_rows, {f.name: str(f.type) for f in pf.schema_arrow}, row)
+    rows, types, row = _TABLE_CACHE[key]
+    meaning = {f["name"]: " ".join(str(f.get("description") or "").split()) for f in contract.get("fields") or []}
+    key_name = (contract.get("key") or {}).get("name", "event_id")
+    meaning.setdefault(key_name, "the event's key: one row per event")
+
+    def show(name, v):
+        if v is None:
+            return None
+        if name == key_name and str(v).startswith(PERSON_KEYED):
+            parts = str(v).split("|")
+            return "|".join([parts[0], "<person>", *parts[2:]])
+        if name.endswith("_json") and isinstance(v, str):
+            try:
+                d = json.loads(v)
+                if isinstance(d, dict) and len(d) > 2:
+                    d = {**{k: d[k] for k in list(d)[:2]}, "...": f"{len(d) - 2} more"}
+                v = json.dumps(d, ensure_ascii=False)
+            except ValueError:
+                pass
+        v = str(v)
+        return v if len(v) <= 240 else v[:240] + " ..."
+
+    return {"noun": noun, "asset": asset, "found": True, "version": shown, "pinned_by": release if pinned == shown else None,
+            "newest": newest, "versions": versions, "rows": rows, "key": key_name,
+            "about": " ".join(str(contract.get("description") or "").split()),
+            "built_at": str(cards[shown].get("built_at") or "")[:10], "builder": cards[shown].get("builder"),
+            "path": f"_WorkSpace/ExternalStore/{asset}/{shown}/{cards[shown]['table']}",
+            "columns": [{"name": n, "type": t, "holds": meaning.get(n, ""), "example": show(n, row.get(n))}
+                        for n, t in types.items()]}
 
 
 def url_var(noun: str) -> str:
@@ -286,7 +360,9 @@ def create_app(only: Optional[Iterable[str]] = None, store: Optional[str] = None
         if noun == "food":                     # relative, so it holds through a host that serves this under a prefix
             query = f"?{request.url.query}" if request.url.query else ""
             return RedirectResponse(f"{MEAL}{query}", status_code=302)
-        return PAGE.read_text(encoding="utf-8")
+        origin = str(request.base_url).rstrip("/")   # this host's own address, also when the Board's /_api door asked
+        return PAGE.read_text(encoding="utf-8").replace(
+            "</head>", f"<script>window.API_ORIGIN = {json.dumps(origin)};</script>\n</head>", 1)
 
     @app.get("/try/{noun}/gallery")
     def try_gallery(noun: str):
@@ -296,6 +372,11 @@ def create_app(only: Optional[Iterable[str]] = None, store: Optional[str] = None
     def try_events(noun: str):
         """Real events of every kind of raw, for a lane with an event door; the page sends each to it live."""
         return events(lane_of(noun))
+
+    @app.get("/try/{noun}/table")
+    def try_table(noun: str):
+        """The lane's saved event table: its version, rows and columns, with one real row."""
+        return event_table(lane_of(noun))
 
     @app.get("/try/{noun}/picture/{name}")
     def try_picture(noun: str, name: str):

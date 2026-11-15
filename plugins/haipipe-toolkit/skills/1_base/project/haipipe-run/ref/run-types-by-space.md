@@ -2,7 +2,7 @@
 
 Read when a workbench button starts work, when a theme adds a button, or when you need
 the Run a button makes and the skill that owns it. Each Run button of the base frame
-(`servers/workbench/frame.py`: `vanilla()` for Block, Job and Task; `workbench-task-draft/task_draft.py`
+(`servers/workbench/page/frame.py`: `vanilla()` for Block, Job and Task; `workbench-task-draft/task_draft.py`
 `draft_task_spaces()` for a Page Task) names its skill in a `skills:` field on its run type, as the Page's run
 cards (`run-cards.md`) already do (b03 s21, 261007). This table is the same list in words.
 
@@ -97,7 +97,7 @@ cowork      Update the Block status / a job / the Job run-face-<bNN|jNN> · Open
             run-email-<slug> · Write meeting notes run-meeting-<slug> · Review a draft
             run-review-email-<slug> · and the shared Ask, report, check, draw names
 insight     Prepare extract run-add-version-<d>vM · Ask run-ask-<L><NN> · Carry a board over
-            run-carry-<board> · Register a cut run-set-cuts-p<N> · Review the questions
+            run-carry-<board> · Register a segment run-set-segments-p<N> · Review the questions
             run-review-questions-p<N> · Plan the evidence run-plan-evidence-<L><NN> · Write / Review the
             script run-write-script- / run-review-script-<L><NN> · Draw the question map
             run-map-questions · Report run-write-<tNN> · Pool or split run-pool-<tNN> · Data and

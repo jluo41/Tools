@@ -1,9 +1,9 @@
-"""run_job.py <Board Task folder> <rNN_partition> · run one question of a plan-C Job on one partition.
+"""run_job.py <Board Task folder> <rNN_partition> · run one question of a plan-C Job on one segment.
 
-Plan C (b11 s00 · s12 · s13, 261007): an insight Board's Job `jNN_code-vN-<slug>_data-vM/` pins one Prototype release
+Plan C (b11 s00 · s12 · s13, 261007): an insight Board's Job `jNN_question-vN-<slug>_data-vM/` pins one Question Book release
 (board.md `prototype:` + the Job face's `release:`) and one data version (board.md `versions:` + `data:`).
-Each of its Tasks `tNN_<L><NN>_<slug>/` is one question; its hard Runs are `runs/rNN_<partition>/`. This is
-the one runner of their tickets (`runs/rNN_<partition>/run.sh`, written by open_job.py).
+Each of its Tasks `tNN_<L><NN>_<slug>/` is one question; its hard Runs are `runs/rNN_<segment>/`. This is
+the one runner of their tickets (`runs/rNN_<segment>/run.sh`, written by open_job.py).
 
 It reads the question and its script from the release (never a copy), the cut from the release's
 partitions.md, the extract from the data version, and writes only its Run: `result/` (the tables, their
@@ -39,7 +39,7 @@ def _yaml(path):
 
 def version_extract(version: dict, root: Path) -> str:
     """A data version's data file, SPACE-relative: its `extract:`, else found in its `folder:` (the folder of
-    the data, JL 261008): the manifest.json's `output_file`, else the one .parquet on top of the folder."""
+    the data): the manifest.json's `output_file`, else the one .parquet on top of the folder."""
     if version.get("extract"):
         return str(version["extract"])
     folder = str(version.get("folder") or "").rstrip("/")
@@ -58,7 +58,7 @@ def version_extract(version: dict, root: Path) -> str:
 
 
 def resolve(task, stem):
-    """Board Task + rNN_<partition> → everything the run needs, from the names and the faces."""
+    """Board Task + rNN_<segment> → everything the run needs, from the names and the faces."""
     task = Path(task).resolve()
     job, board = task.parent, task.parent.parent
     project = board.parent.parent
@@ -70,7 +70,7 @@ def resolve(task, stem):
     rel = jface.get("release") or (jm.group(2) if jm else "")
     data = jface.get("data") or (jm.group(4) if jm else "")
     proto = project / str(bface.get("prototype", ""))
-    rdir = next((p for p in sorted(proto.glob("j*_*")) if p.is_dir()          # jNN_code-vN or jNN_code-vN_<slug>
+    rdir = next((p for p in sorted(proto.glob("j*_*")) if p.is_dir()          # jNN_question-vN or jNN_question-vN_<slug>
                  and re.match(rf"^j\d+_{rel}(_.+)?$", p.name)), None)
     if rdir is None:
         raise RQ.GateError(f"no release {rel} in {proto}")
@@ -83,11 +83,11 @@ def resolve(task, stem):
         raise RQ.GateError(f"no data version {data} in {board.name}/board.md versions:")
     m = RUN.match(stem)
     if not m:
-        raise RQ.GateError(f"{stem} is not rNN_<partition>")
+        raise RQ.GateError(f"{stem} is not rNN_<segment>")
     partitions = RQ.front(rdir / "partitions.md")[0]["partitions"]
     part = next((p for p in partitions if p["name"] == m.group(1)), None)
     if part is None:
-        raise RQ.GateError(f"{m.group(1)} is not a cut of release {rel}")
+        raise RQ.GateError(f"{m.group(1)} is not a segment of release {rel}")
     q, _ = RQ.front(qfolder / RQ.QFILE)
     if q.get("id") != qid:
         raise RQ.GateError(f"{qfolder.name}/{RQ.QFILE}: id {q.get('id')!r} is not {qid}")
@@ -101,7 +101,7 @@ def resolve(task, stem):
 
 class Ctx(RQ.Ctx):
     def result(self, qid, name, partition=None):
-        """Another question's result in this Job, on the same partition (or full from a cross run)."""
+        """Another question's result in this Job, on the same segment (or full from a cross run)."""
         part = partition or (self.partition if self.partition != "cross" else "full")
         hits = [t for t in sorted(self.block.glob(f"t*_{qid}_*")) if t.is_dir()]
         runs = [r for t in hits for r in sorted((t / "runs").glob(f"r[0-9][0-9]_{part}"))]

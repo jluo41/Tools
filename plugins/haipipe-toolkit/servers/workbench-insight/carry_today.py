@@ -31,7 +31,7 @@ def plan(block: Path) -> dict:
     job = f"j01_p1_{dataset}{version}"
     out = {f"{job}/{job}.md": (f"---\ncarried: today\nrelease: p1\ndata: {version}\nstate: open\nmoved: start\n---\n{HEAD}"
                                f"# {job}\n\nToday's questions (release p1) on {dataset} {version}: the one Job of a register "
-                               "board, carried over. Its answers stay in the partition folders.\n")}
+                               "board, carried over. Its answers stay in the segment folders.\n")}
     notes = IB.question_notes(snap)
     for k, q in enumerate(snap["questions"], 1):
         name = f"t{k:02d}_{C.qid(q['id'])}_{C.slug(notes.get(q['id'], {}).get('name') or q['question'])}"

@@ -56,11 +56,11 @@ applies to a question that has no needs yet.
 6. **Write `pass:` so a null passes.** It names what the result must contain
    (an interval, an adjustment, a held-out split, a size), never the answer.
 7. **Write the work spec of every compute need, from the ask alone.** On the
-   indented lines under the need: `cut:` (a partition, `the cell's
+   indented lines under the need: `cut:` (a segment, `the cell's
    partition`, or `cross`), `unit:` (what one row is), `measure:`, `by:` (the
    grouping or the contrast), `uncertainty:` (the interval or test), `rivals:`
    (adjusted for, or `none`), `output:` (`<file>.csv [<column>, …]`, several
-   joined by ` ; `; on a Prototype, the YAML map `output: {<file>: [<column>, …]}`).
+   joined by ` ; `; on a Question Book, the YAML map `output: {<file>: [<column>, …]}`).
    The spec computes what What would answer it names and nothing beside it.
    The output files are named for the measure, never for a
    task. This is the run proposal, written from the register and the
@@ -68,7 +68,7 @@ applies to a question that has no needs yet.
    results, and binding decides afterwards whether code already computes it.
 8. **Write the lines and leave agreement open.** Under the paragraph:
    `- E<n> · <kind> · <what> · pass: <…> | from: <…>` with its spec lines, then
-   `**Needs agreed**: ⬜` (on a Prototype, the `needs:` map and `agreed: ⬜`). A different agent that did not draft them reviews and
+   `**Needs agreed**: ⬜` (on a Question Book, the `needs:` map and `agreed: ⬜`). A different agent that did not draft them reviews and
    agrees them, recorded as `✅ <YYMMDD>` with no name or initials (a board is
    public); this skill never agrees its own plan.
 

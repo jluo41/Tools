@@ -7,6 +7,7 @@ from pathlib import Path
 from urllib.parse import quote
 
 from live.frame import _draw_url, _notes, _rel, _table, chain, esc, face, pop
+from live.sentence_id import sid as _sid
 from live.draft_steps_assets import EX_CSS, OFF_CSS
 from live.draft_steps_common import (
     _canvas_card, _code, _drawn_inside, _fold, _header, INK, _inline, _kv, _not_yet, _paragraphs, _plan_tree,
@@ -56,8 +57,8 @@ def _plan_map(d: dict, ev: dict, section: str, task: str = "", kind: str = "") -
     for c in ev["cards"]:
         for it in c["items"]:
             ink = INK["need"] if it["state"] != "have" else INK.get(c["kind"], INK["value"])
-            for k in it.get("for") or []:                  # 6, "6b" and "S6b" all name S6b's sentence
-                got = cards.setdefault("S" + str(k).lstrip("S"), {})
+            for k in it.get("for") or []:                  # 6, "6b", "S6b" and "s6b" all name s6b's sentence
+                got = cards.setdefault("s" + str(k).lstrip("Ss"), {})
                 got[c["label"]] = INK["need"] if INK["need"] in (got.get(c["label"]), ink) else ink
 
     def chips(s, words, note):                             # a ⟦check⟧ in the note in red, then the evidence cards
@@ -80,9 +81,11 @@ def _kind_of(folder: Path) -> str:
 
 
 def _bullet_block(lines: list, s: str, lo: int, hi: int) -> tuple:
-    """(start, end) of the §1 Bullet `S<s>` between lines lo and hi: its line and its indented Note and More lines."""
+    """(start, end) of the §1 Bullet `s<n>` between lines lo and hi: its line and its indented Note and More lines. The
+    id is found in either case (s8 finds an older S8)."""
+    rx = "[Ss]" + re.escape(s[1:]) if re.fullmatch(r"[Ss]\d+[a-z]*", s) else re.escape(s)
     for i in range(lo, hi):
-        if re.match(r"^- B\d+[a-z]* · " + re.escape(s) + r" · ", lines[i]):
+        if re.match(r"^- B\d+[a-z]* · " + rx + r" · ", lines[i]):
             j = i + 1
             while j < hi and lines[j].startswith((" ", "\t")) and lines[j].strip():
                 j += 1
@@ -204,14 +207,14 @@ def plan_act(root: Path, p: dict, read_only: bool = False) -> tuple:
         while not at and to > span[0] + 1 and not lines[to - 1].strip():
             to -= 1
         # the id after the point above it (S4a), so the text's S numbers stay put until Write redrafts
-        prev = [x for x in re.findall(r"(?m)^- B\d+[a-z]* · (S\d+[a-z]*) · ", "\n".join(lines[top:to]))]
-        ids = set(re.findall(r"(?m)^- B\d+[a-z]* · (S\d+[a-z]*) · ", "\n".join(lines[top:hi])))
-        m = re.match(r"S(\d+)([a-z]?)", prev[-1]) if prev else None
+        prev = [x for x in re.findall(r"(?m)^- B\d+[a-z]* · ([Ss]\d+[a-z]*) · ", "\n".join(lines[top:to]))]
+        ids = set(map(_sid, re.findall(r"(?m)^- B\d+[a-z]* · ([Ss]\d+[a-z]*) · ", "\n".join(lines[top:hi]))))
+        m = re.match(r"[Ss](\d+)([a-z]?)", prev[-1]) if prev else None
         num = m.group(1) if m else "0"
         letter = chr(ord(m.group(2)) + 1) if m and m.group(2) else "a"
-        while f"S{num}{letter}" in ids:
+        while f"s{num}{letter}" in ids:
             letter = chr(ord(letter) + 1)
-        sid = f"S{num}{letter}" if prev or ids else "S1"
+        sid = f"s{num}{letter}" if prev or ids else "s1"
         bs = [int(x) for x in re.findall(r"(?m)^- B(\d+)[a-z]* · ", "\n".join(lines[span[0]:span[1]]))]
         role = norm(p.get("role"))
         lines.insert(to, f"- B{max(bs, default=0) + 1} · {sid} · " + (f"[{role}] " if role else "") + value)
@@ -383,7 +386,7 @@ def _rubric_card(exs: list, d: dict, f: dict, root: Path) -> str:
     if exs and d and d.get("structure"):
         _, _, paras = _plan_tree(d["structure"][1])
         words = sum(len(m.group(1).split()) for _, b in d.get("text", [])
-                    for m in re.finditer(r"(?m)^- B\d+[a-z]* · S\d+[a-z]* · (.*)$", b))
+                    for m in re.finditer(r"(?m)^- B\d+[a-z]* · [Ss]\d+[a-z]* · (.*)$", b))
         n = max([len(paras)] + [max(e["paras"] or [0]) for e in exs])
         ours = {i + 1: f'<b>{esc(job)}</b><br><span class=mut>{esc(" · ".join(r for _, r, _, _ in bs if r))}</span>'
                 for i, (_, job, bs) in enumerate(paras)}

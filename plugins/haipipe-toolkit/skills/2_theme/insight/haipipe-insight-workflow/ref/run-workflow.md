@@ -19,8 +19,8 @@ existing owners and identity grammars:
 
 | Spec template | Owner / native identity | Bounded target and inputs | Result / exit | Cardinality and routes |
 |---|---|---|---|---|
-| `support.<target>` | `haipipe-task`; the answering page's ticket `run_bNNjNNtNNrNN_<partition>_<task>` (or a Discovery paper-run) | one page ticket in `<page>/runs/`: it sets `RESULT_DIR` to `<page>/results/<ticket>/` and `RUN_TICKET` to itself, then runs the task's own ticket in the DIKW Block, whose config names the board's ONE extract, the cut and `answers:` (a cross-check); the page's `answers.yaml` binds the evidence needs it serves to its files | `<page>/results/<ticket>/` (tables, `metrics.json`, `fig_*.png`) + `runtime.yaml` | 0..N per page; one task run may feed several pages, each through its own ticket and result; ready → `report` Specs, truthful failure → HOLD or declared retry |
-| `report.<QID>.<partition>` | the level's folder skill (`haipipe-insight-data` · `-information` · `-knowledge` · `-wisdom`; Knowledge also writes the pooling verdict) through the `haipipe-draft` flow; its Page Runs keep their native names (`run-structure-…`, `run-section-…`, `run-check-…`) | one answering page: its questions' agreed needs and specs, the bound current results, and the pages its cite needs name | the Page Face adopted from its Draft (`page.py adopt`), `page.py health` without FAIL, a page CHECK by a different agent, and `haipipe-insight-check` OK (`haipipe-insight` `ref/report.md`, `ref/evidence-needs.md`) | 0..1 per page at every level; close → GI2/GI3/GI4 predicate, then SETTLE |
+| `support.<target>` | `haipipe-task`; the answering page's ticket `run_bNNjNNtNNrNN_<segment>_<task>` (or a Discovery paper-run) | one page ticket in `<page>/runs/`: it sets `RESULT_DIR` to `<page>/results/<ticket>/` and `RUN_TICKET` to itself, then runs the task's own ticket in the DIKW Block, whose config names the board's ONE extract, the segment and `answers:` (a cross-check); the page's `answers.yaml` binds the evidence needs it serves to its files | `<page>/results/<ticket>/` (tables, `metrics.json`, `fig_*.png`) + `runtime.yaml` | 0..N per page; one task run may feed several pages, each through its own ticket and result; ready → `report` Specs, truthful failure → HOLD or declared retry |
+| `report.<QID>.<segment>` | the level's folder skill (`haipipe-insight-data` · `-information` · `-knowledge` · `-wisdom`; Knowledge also writes the pooling verdict) through the `haipipe-draft` flow; its Page Runs keep their native names (`run-structure-…`, `run-section-…`, `run-check-…`) | one answering page: its questions' agreed needs and specs, the bound current results, and the pages its cite needs name | the Page Face adopted from its Draft (`page.py adopt`), `page.py health` without FAIL, a page CHECK by a different agent, and `haipipe-insight-check` OK (`haipipe-insight` `ref/report.md`, `ref/evidence-needs.md`) | 0..1 per page at every level; close → GI2/GI3/GI4 predicate, then SETTLE |
 | `evidence.<page>.<item>` | `haipipe-evidence`, for an Evidence Item a bound task result does not already supply (a citation, a display unit); Page RE lineage plus its native Ticket address | one decided VALUE/CITE/DISPLAY item and frozen Local Input | typed accepted Result + native receipt, required verification satisfied | only when an item needs its own Page Evidence Run; a need bound in `answers.yaml` uses its task result as the item's Supporting Run |
 | `structure.<page>` | shared Page writing owner; `run-structure-<MMDD>-<slug>` | explicitly commissioned whole-Page map, Shape and Survey target | accepted structure Result + receipt | only when commissioned; close → selected writing targets/evidence obligations |
 | `write.<page>.<scope>` | shared Page writing owner; `run-section-<MMDD>-<slug>` or `run-paragraph-<MMDD>-<slug>` | one selected section/paragraph goal, exact parent rows and ready evidence | accepted writing Result + receipt | 0..N selected scopes; owner-defined SELF/NEW_VERSION/CLOSE/NEW_RUN routes |
@@ -49,7 +49,7 @@ and judge (every Wisdom page) has no `support` Spec; a Knowledge compute need
 always has one.
 
 Registration, evidence planning (need lines and their agreement), binding
-(`answers.yaml`), the evidence check, partition registration, Page controller
+(`answers.yaml`), the evidence check, segment registration, Page controller
 passes, Page CHECK, GI evaluation, signature recording, and Queue settlement
 are control/resource actions. They do not get Run ids. Page writing on Meta or a Question register
 may have real RP/RD Runs when explicitly commissioned; routine register edits
@@ -61,9 +61,9 @@ The concrete graph may include these edges, only where work is actually owed:
 
 ```text
 question needs (agreed) ── answers.yaml binding ──▶ support (page ticket → task run)
-support (page ticket → task run) ── current result ──▶ report.<QI>.<cut>
-report.<QI>.<cut> ── checked page ──▶ report.<QK>.<cut> (Knowledge cites it)
-report.<QK>.<cut> ── checked page ──▶ Wisdom page writing (structure/write)
+support (page ticket → task run) ── current result ──▶ report.<QI>.<segment>
+report.<QI>.<segment> ── checked page ──▶ report.<QK>.<segment> (Knowledge cites it)
+report.<QK>.<segment> ── checked page ──▶ Wisdom page writing (structure/write)
 Wisdom page ── Page CHECK + GI5 signature ──▶ Design Handoff · GI6 SETTLE
 ```
 
@@ -72,8 +72,8 @@ Run nodes. Scope inventory and question registration constrain Spec entry.
 Semantic D→I→K→W dependencies pin exact results and pages; only the required
 downstream work is instantiated. A current result or checked page satisfies
 an edge without another Run. The cross contrast consumes the mirrored Information
-results of each partition; the pooling verdict consumes Knowledge pages. Every partition-major W target depends on the current
-verdict for the exact partition set. A verified Task Wisdom RF bridge supplies
+results of each segment; the pooling verdict consumes Knowledge pages. Every partition-major W target depends on the current
+verdict for the exact segment set. A verified Task Wisdom RF bridge supplies
 an external parent to local W work under the five bridge assertions.
 
 Freeze the selected Specs, entry predicates, routes, requested answer/control targets and
@@ -86,7 +86,7 @@ only when their owners permit it; shared register writes are serialized.
 ## Runtime storage and identity
 
 A frozen definition resolves each selected template into a concrete bounded
-node. For example, answering Information question 3 on partition `alpha`: one page
+node. For example, answering Information question 3 on segment `alpha`: one page
 ticket in `I03-alpha-<slug>/runs/` calling one task run (whose config also lists
 other questions) and one report pass writing `I03-alpha-<slug>.md`. All
 placeholders must resolve from actual owner records:
@@ -274,7 +274,7 @@ Changed source/version/target marks dependent bindings stale and holds only
 affected downstream work. Preserve completed Results and receipts; commission
 replacement work through the owner's new-Run/new-version rules. Fixed-goal
 interactive writing retains its native Version/Step semantics. For a late
-partition, reopen cross and all verdict-conditioned W bindings, preserve unrelated
+segment, reopen cross and all verdict-conditioned W bindings, preserve unrelated
 D/I/K Results, and require a new person signature when any signed handoff payload changes,
 including source/verdict versions even when counsel wording is unchanged.
 A signature is reusable only for the exact unchanged signed payload whose

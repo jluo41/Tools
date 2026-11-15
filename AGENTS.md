@@ -22,7 +22,20 @@
 ## Page words
 
 - A label names a thing; it carries no count or other number that changes as work moves ("What a topic is", never "What a topic is · 3 topics"; "Runs", never "Runs · 12"). The reader sees how many by looking; a count is written only where the count is itself the answer, such as "2 questions waiting on you".
+- A page carries no check tally (JL 261113): no "6 to fix", "41 of 70 keys verified" or "🙋 6 printed numbers to fix: …" pill, banner or count line. A check's result is shown where it lands (the number, the sentence, the citation), or not at all. A checker's counts stay in its own report or receipt, never on a workbench page. The same holds for progress tallies ("3 of 7 written", "N of M done", "⚙️ 12 Runs · ✅ 10"): each item shows its own state word where it sits. A count stays only where it is itself the answer ("2 wait for you") or is a report's own finding on that report's page.
+- A page never says what state a thing is in ("Status: running", "the status is done", "State · not signed", "this plan is not signed yet"). The layout and the marks show it: an emoji mark beside the item (✅ ⬜ 🏃 ❗ 🙋), its group (Main, Appendix, Not printed), a closed or open fold, a faded or struck row, a button that appears only when the item waits on the reader. Words are kept only for what a mark cannot carry: a required action ("Sign the narrative") or the reason something failed.
+- What waits on the reader pops out where it lives, as on a Draft Lab sentence: a mark beside the item (📝 N edit cards, 🙋 N a decision, ✓ handled), its cards opening under it on a click. A section bar carries only a mark from `ui_parts.word_span`: an orange 🙋 N when something inside waits, a quiet ✓ when done, nothing otherwise; never a state word ("nothing yet", "answered", "3 of 5 done"). Every orange mark and waiting question on a page is gathered in the 🙋 N tray beside its title (`focus.js`, a native popover). A section with nothing in it is not shown, Interaction included. Any item can carry these marks and cards: its address, card files and the one writer are in `plugins/haipipe-toolkit/servers/workbench/ref/cards.md`.
+- A page never shows who asked for a design or when: no "JL 261113", "(JL 261020: …)", dated rule tags or quoted requests in a label, tooltip, button, banner or note. That provenance belongs in code comments, commit messages and docs only. Content the reader wrote (a timeline entry, a note, a commit message shown as data) stays as written.
 - A Studio topic's drawing is a drawing: the idea drawn as a pattern (cycle, timeline, tree, fan-in), never the face's lines listed as text. The method is `references/workflow-diagrams/excalidraw-diagram-skill`; the kit is `haipipe-studio/scripts/quick_draw.py`.
+
+## Keep files short
+
+- A file a person reads (code, tests, skills, docs) stays under 700 lines, so one sitting reads it whole. Aim for 600 or less.
+- Split by responsibility, never by line count: one module per part of a page, one ref file per topic, each named for what it holds. The old module keeps thin re-exports only while callers move.
+- A new file starts under the limit. A change that would push a file past it splits the file first, then makes the change.
+- A file already over the limit never grows: the part you change moves out into its own file in the same change, and the rest follows as it is touched.
+- Out of scope: `references/`, generated output (built pages, rendered drawings, receipts), data, lock files, and `CHANGELOG.md` files.
+- Several sessions edit the big shared files at once. Split one only when no other session is editing it, and say so to them first.
 
 ## Keep repository metadata aligned
 

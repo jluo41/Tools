@@ -377,7 +377,7 @@ def test_each_row_shows_its_sentence_id_and_a_new_row_gets_the_next_free_one(tmp
     Bullet and shows its sentence id; a row the person makes is a new Bullet with the id before it plus a letter."""
     page = sectioned_fixture(tmp_path)
     body = plan_card(page, path_q='/Board/board.md', file_q='Page.md')
-    assert '<div data-b="C1.P1.B2" data-s="S2">An agent names physicians itself.</div>' in body
+    assert '<div data-b="C1.P1.B2" data-s="s2">An agent names physicians itself.</div>' in body
     rows = [{'b': 'C1.P1.B1', 'text': 'Patients search online for a physician.'},
             {'b': 'C1.P1.B2', 'text': 'An agent names physicians itself.'},
             {'b': '', 'text': 'A new sentence typed after it.'},
@@ -385,14 +385,14 @@ def test_each_row_shows_its_sentence_id_and_a_new_row_gets_the_next_free_one(tmp
     result, err = save_revise(page, rows_payload(page, 'C1.P1', rows))
     assert err is None, err
     assert [(r['s'], r['text']) for r in result['rows']] == [
-        ('S1', 'Patients search online for a physician.'), ('S2', 'An agent names physicians itself.'),
-        ('S2a', 'A new sentence typed after it.'), ('S3', 'Earlier audits checked a few names by hand.'),
-        ('S3a', 'Then one more inside the row.')]
+        ('s1', 'Patients search online for a physician.'), ('s2', 'An agent names physicians itself.'),
+        ('s2a', 'A new sentence typed after it.'), ('s3', 'Earlier audits checked a few names by hand.'),
+        ('s3a', 'Then one more inside the row.')]
     assert [c['address'] for c in result['changed']] == ['C1.P1.B4', 'C1.P1.B5']
     plan = (tmp_path / 'outline' / 'Page-outline-v1.1.md').read_text()
     # the point in section 1 (for the person to rename), the sentence in section 3, never renumbered
-    assert '- B2 · S2 · [Point] Two\n- B4 · S2a · [Added] A new sentence typed after it\n- B3 · S3 · [Point] Three' in plan
-    assert '- B4 · S2a · A new sentence typed after it.\n- B3 · S3 · Earlier' in plan
+    assert '- B2 · S2 · [Point] Two\n- B4 · s2a · [Added] A new sentence typed after it\n- B3 · S3 · [Point] Three' in plan
+    assert '- B4 · s2a · A new sentence typed after it.\n- B3 · S3 · Earlier' in plan
     # sent again as shown: nothing changes, no second copy
     again, err = save_revise(page, rows_payload(page, 'C1.P1', [{'b': r['b'], 'text': r['text']} for r in result['rows']]))
     assert err is None and again['changed'] == []
@@ -424,7 +424,7 @@ def test_a_new_paragraph_opens_on_one_empty_row_and_its_sentences_get_ids(tmp_pa
     typed, err = save_revise(page, {'paragraph': 'C1.P3', 'display': 'C1.P3', 'bullets': [], 'text': 'x',
                                     'rows': [{'b': '', 'text': 'First new sentence. Second new one.'}]})
     assert err is None, err
-    assert [(r['b'], r['s']) for r in typed['rows']] == [('C1.P3.B1', 'S3a'), ('C1.P3.B2', 'S3b')]
+    assert [(r['b'], r['s']) for r in typed['rows']] == [('C1.P3.B1', 's3a'), ('C1.P3.B2', 's3b')]
     assert save_revise(page, {'paragraph': 'C1.P9', 'bullets': [], 'text': '', 'rows': []})[1] == 'C1.P9 is not in the plan; reload'
     assert add_paragraph(page, {'after': 'C1.P9'}) == (None, 'C1.P9 is not in the plan; reload')
 
@@ -448,4 +448,4 @@ def test_a_save_waits_when_the_plan_and_the_text_disagree_on_a_sentence_id():
     assert _id_clash(good) == ''
     shifted = good.replace('- B2 · S2 · [B] second\n- B3 · S1a · [N] a new point, no sentence yet',
                            '- B2 · S1a · [N] a new point, no sentence yet\n- B3 · S2 · [B] second')
-    assert 'C1.P1.B2 is S1a in the plan but S2 in the text' in _id_clash(shifted)
+    assert 'C1.P1.B2 is s1a in the plan but s2 in the text' in _id_clash(shifted)

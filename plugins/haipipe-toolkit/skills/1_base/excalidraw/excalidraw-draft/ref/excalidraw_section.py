@@ -198,7 +198,7 @@ def main(argv=None):
         board = args.paper.resolve()
         depth = args.depth or "paragraph"
         groups = [node("group", [nice(g)], [section_node(p, depth) for p in pages]) for g, pages in paper_groups(board)]
-        root = node("paper", _short(re.sub(r"(?<=[a-z])(?=[A-Z])", " ", board.name.replace("Paper-", "")), cols(W, 15), 3), groups)
+        root = node("paper", _short(re.sub(r"(?<=[a-z])(?=[A-Z])", " ", re.sub(r"^(Paper|Grant)-", "", board.name)), cols(W, 15), 3), groups)
         out = board / "paper-sections.excalidraw"          # beside the Board's face; no studio/ (JL 261031)
     else:
         page = args.page.resolve()

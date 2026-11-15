@@ -24,8 +24,8 @@ built: from-topic .
 - Source <!-- @source #6da13a -->
   - read from disk on every build: <!-- @source/0 #497260 -->
 - Feeds <!-- @feeds #ffe8e9 -->
-  - `../reports/q05_skills_and_runs/` (Q05, "Which skills and Runs make … <!-- @feeds/0 #b05eef -->
-    `../reports/q05_skills_and_runs/` (Q05, "Which skills and Runs make the paper theme?") and `../reports/q01_paper_ladder/` (run types per level).
+  - `q05_skills_and_runs/` (Q05, "Which skills and Runs make … <!-- @feeds/0 #b05eef -->
+    `q05_skills_and_runs/` (Q05, "Which skills and Runs make the paper theme?") and `../s01-paper-tree-concept/q01_paper_ladder/` (run types per level).
   - The plan is run by `../goals/g04-paper-skills.md` <!-- @feeds/1 #ac809c -->
 - Files <!-- @files #6ce6c5 -->
   - [py] [build_s21_paper_run_skill.py](build_s21_paper_run_skill.py) <!-- @files/0 #7225aa -->

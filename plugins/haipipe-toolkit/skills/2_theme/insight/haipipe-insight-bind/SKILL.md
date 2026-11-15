@@ -24,7 +24,7 @@ first. Tickets and results follow `../haipipe-insight/ref/report.md`.
 
 ## Input
 
-One answering page (`<n>-<partition>/<L><NN>-<partition>-<slug>/`), the
+One answering page (`<n>-<segment>/<L><NN>-<segment>-<slug>/`), the
 register rows of the questions its cells name, their agreed needs, and the
 Project's DIKW task Block (`work/b5N_<topic>_dikw/`).
 
@@ -36,7 +36,7 @@ Project's DIKW task Block (`work/b5N_<topic>_dikw/`).
    the spec exists. Unagreed needs may be bound; say so in the reply.
 2. **compute · match the spec exactly.** Read the Block's task pages, configs
    and the outputs their workers declare, against the spec, in this order:
-   the cut (the config's `population`), the unit (what one row is), the
+   the segment (the config's `population`), the unit (what one row is), the
    measure, the grouping or contrast, the uncertainty, the rivals, then the
    spec's output file and columns. A run fits only when every item matches. A
    run on the same topic that misses one does not fit, however close.
@@ -54,13 +54,13 @@ Project's DIKW task Block (`work/b5N_<topic>_dikw/`).
    "never varied") is bound to the run that shows the absence; write its
    `refused:` reason beside that `ticket` and its `files`.
 5. **Ticket and run.** Write the page ticket
-   `runs/run_bNNjNNtNNrNN_<partition>_<task>.sh` (it sets `RESULT_DIR` and
+   `runs/run_bNNjNNtNNrNN_<segment>_<task>.sh` (it sets `RESULT_DIR` and
    `RUN_TICKET` and execs the task's own ticket) and run it. The result is
    generated; never edit it.
 6. **Write `answers.yaml`.** compute: `ticket` and `files` (every spec output
    file; an optional `fields:` adds columns beyond the spec's). cite: `pages`,
    or omit to use the register's page for the cited question on this
-   partition. judge: `judge`. refused: `refused:` plus the probe's `ticket`
+   segment. judge: `judge`. refused: `refused:` plus the probe's `ticket`
    and `files`, only for a cell that will settle 🟡 or 🚫.
 7. **Sync the configs.** Run `ref/sync_config_answers.py <board>`: it rewrites
    each called config's `answers:` line to the need ids the board's

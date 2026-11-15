@@ -9,13 +9,13 @@ s54 · Job UI: Report
 
 **Delivery type:** ui
 
-**Covers:** the Overall Report, then the question × cut grid: A Overall (The pair's facts inside) · B Grid · C vs previous; each view its numbered sections only.
+**Covers:** the Overall Report, then the question × segment grid: A Overall (The pair's facts inside) · B Grid · C vs previous; each view its numbered sections only.
 
 **Excluded:** the other eight cells of the 3 × 3 (s51, s52, s53, s55, s56, s57, s58, s59); the old five-Space Insight page (s02); every Theme's shared frame (b10).
 
 **Topic:** One cell of the insight 3 × 3, an insight Job (one analysis plan × one data freeze) × Report (check), copied from the paper theme's (b16 j01) and the labeling theme's (b15 j01) (JL 261101: "Please understand the above two sessions and then work on the insights"). Its drawing is haipipe-studio's five parts, drawn by `build_s54_job_ui_report.py` through j01's `insight_ui_cells.py`; its Design is every view as the same full screen, lettered, settled one round each. Names are placeholders (`<dataset>`, `<d>`): a real Board holds one person's health data, and Tools is public.
 
-**Feeds:** `reports/` q01_insight_ladder
+**Feeds:** Q01
 
 
 Files
@@ -34,7 +34,7 @@ s54-job-ui-report/
 Decided
 -------
 
-s54-D01 · One grid per level (Board question × Job, Job question × cut, Task cut × step); Report opens on the answer; Work opens on what waits on the person; no Task asks the person (JL 261101: "go ahead", on the proposal in chat).
+s54-D01 · One grid per level (Board question × Job, Job question × segment, Task segment × step); Report opens on the answer; Work opens on what waits on the person; no Task asks the person (JL 261101: "go ahead", on the proposal in chat).
 
 s54-D02 · A Report view is its numbered sections only: no ⚙️ Process and 📊 Results bands and no "Nothing waits on you"; those are Work's (JL 261101: "the Process and Results will only be availabe in the Work Section"; as b16 s32-D27). The helpers stay last.
 

@@ -11,7 +11,7 @@ status: running
 passes:
 - p01-1108
 writes:
-- reports/q01_example_test/q01_example_test.md
+- s03-q01-example-test/s03-q01-example-test.md
 feeds: null
 by: designer agent
 started_at: '2026-11-08T11:10:00'

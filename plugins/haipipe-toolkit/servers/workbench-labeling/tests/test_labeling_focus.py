@@ -26,22 +26,29 @@ class LabelingFocusTest(unittest.TestCase):
         self.temp.cleanup()
 
     def test_items_task_has_the_shared_shape_on_real_preparation_content(self):
-        """Round 2: the items Task's steps are its views, each ⚙️ Process then 📊 Results then 🙋 Interaction."""
-        page = L.render(self.theme, self.root, self.items, 'items')
-        self.assertIn('placeholder words here', page)
-        self.assertIn('One item', page)
-        self.assertIn('/_board/labeling/sample?', page)
-        views = page.split('<nav class="section-views" aria-label="Views">', 1)[1].split('</nav>', 1)[0]
-        self.assertEqual(re.findall(r'>(Data|Items|Embedding)<', views), ['Data', 'Items', 'Embedding'])
-        order = [page.index(w) for w in ('⚙️ Process', '📊 Results', '🙋 Interaction')]
-        self.assertEqual(order, sorted(order))
-        rail = page.split('class="focus-rail right"', 1)[1].split('aria-label="Page sections">', 1)[1].split('</nav>', 1)[0]
-        for name in ('Report', 'Work', 'Interactions', 'Delivery', 'Skills', 'Files'):
-            self.assertIn(f'<span class="rail-name">{name}<', rail)
-        report = L.render(self.theme, self.root, self.items, 'report', 'items')
-        self.assertNotIn('⚙️ Process', report)
-        self.assertIn('📊 Results', report)
-        self.assertNotIn('<p class=pb-sess>', page)                          # no grey session line (round 2)
+        """The items Task's steps are its views, each one numbered list (the step, what it made, 🙋 Interaction), inside 📋 Review
+        Content, then 🧭 Around the Work; the rail is Report and the 8 shared sections (the Work and Paper Task's)."""
+        for section in ('items', 'work', 'report'):
+            with self.subTest(section=section):
+                page = L.render(self.theme, self.root, self.items, section, 'items')
+                self.assertIn('placeholder words here', page)
+                self.assertIn('One item', page)
+                self.assertIn('/_board/labeling/sample?', page)
+                views = page.split('<nav class="section-views" aria-label="Views">', 1)[1].split('</nav>', 1)[0]
+                self.assertEqual(re.findall(r'>(Data|Items|Embedding|Delivery)<', views),
+                                 ['Data', 'Items', 'Embedding', 'Delivery'])
+                card = page.split('<section class="focus-card">', 1)[1]          # the view itself, not the rails
+                order = [card.index(w) for w in ('📋 Review Content', '<h3 class=fd-h>1 · ', '🧭 Around the Work')]
+                review = card.split('🧭 Around the Work', 1)[0]                  # nothing asked: no 🙋 Interaction section
+                self.assertNotIn('🙋 Interaction', review)
+                self.assertNotIn('⚙️ Process', card)                            # one list, no group headings
+                self.assertEqual(order, sorted(order))
+                rail = page.split('class="focus-rail right"', 1)[1].split('aria-label="Page sections">', 1)[1].split('</nav>', 1)[0]
+                self.assertNotIn('section=work', rail)
+                for label in ('Report', 'Studio', 'Interactions', 'Decisions', 'Things to Know', 'Checklist',
+                              'Timeline', 'Skills', 'Files'):
+                    self.assertIn(label, rail)
+                self.assertNotIn('<p class=pb-sess>', page)                  # no grey session line (round 2)
 
     def test_a_job_has_the_shared_shape_with_its_tasks_in_the_left_rail(self):
         page = L.render(self.theme, self.root, self.task.parent)
@@ -49,8 +56,8 @@ class LabelingFocusTest(unittest.TestCase):
         self.assertIn(self.items.name, left)
         self.assertIn(self.task.name, left)
         views = page.split('<nav class="section-views" aria-label="Views">', 1)[1].split('</nav>', 1)[0]
-        self.assertEqual(re.findall(r'>(Overview|Status|Findings|Delivery)<', views),
-                         ['Overview', 'Status', 'Findings', 'Delivery'])
+        self.assertEqual(re.findall(r'>(Overview|Plan \+ Results|Findings|Delivery)<', views),
+                         ['Overview', 'Plan + Results', 'Findings', 'Delivery'])
         for section in ('report', 'work'):
             for view in ('overview', 'standing', 'findings', 'delivery'):
                 with self.subTest(section=section, view=view):
@@ -63,7 +70,7 @@ class LabelingFocusTest(unittest.TestCase):
                     for label in ('Studio', 'Interactions', 'Decisions', 'Things to Know', 'Checklist', 'Timeline', 'Skills', 'Files'):
                         self.assertIn(label, rail)
                     if view == 'standing':
-                        self.assertIn('View BJTR', html)
+                        self.assertNotIn('View BJTR', html)
                         self.assertNotIn('🚧 Next steps', html)
 
     def test_block_and_job_shared_scope_does_not_assign_unlinked_records_to_status(self):
@@ -124,7 +131,7 @@ class LabelingFocusTest(unittest.TestCase):
         self.assertEqual(L.next_action(job, self.root)[0], score)
 
     def test_an_older_job_link_opens_the_nearest_view(self):
-        for old, (section, view) in (('goal', ('Report', 'Overview')), ('tasks', ('Report', 'Status')),
+        for old, (section, view) in (('goal', ('Report', 'Overview')), ('tasks', ('Report', 'Plan + Results')),
                                      ('reports', ('Report', 'Findings'))):
             with self.subTest(old=old):
                 page = L.render(self.theme, self.root, self.task.parent, old)
@@ -139,7 +146,7 @@ class LabelingFocusTest(unittest.TestCase):
         (sealed/'REPORT.md').write_text('PROTECTED_SENTINEL')
         before = {str(p):p.stat().st_mtime_ns for p in self.root.rglob('*') if p.is_file()}
         page = L.render(self.theme, self.root, self.items, 'reports')
-        self.assertIn('📊 Results', page)
+        self.assertIn('📋 Review Content', page)
         self.assertNotIn('PROTECTED_SENTINEL', page)
         self.assertEqual(before, {str(p):p.stat().st_mtime_ns for p in self.root.rglob('*') if p.is_file()})
 

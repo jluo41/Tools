@@ -10,5 +10,5 @@ Made s08-studio-timeline: two frames in a row, where a line comes from --> the T
 
 ## Changed
 
-- `plugins/haipipe-toolkit/servers/workbench/frame.py (studio_timeline`
+- `plugins/haipipe-toolkit/servers/workbench/page/frame.py (studio_timeline`
 - `its CSS and script)`

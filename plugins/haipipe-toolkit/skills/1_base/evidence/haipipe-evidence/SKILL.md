@@ -110,7 +110,7 @@ Run that computed it, then these.
 
 **Binding proposals**: `propose --catalog <run>/result/values.yaml --source <task address> --sentences s.json` finds
 each catalog value printed in the page's sentences (guards: a P value only after "P ="; a whole number under 10
-never; a one-significant-digit number never) and adds a `bind VALUE <id> to S<n> "<words>"` line to proposals.md,
+never; a one-significant-digit number never) and adds a `bind VALUE <id> to s<n> "<words>"` line to proposals.md,
 on the same path as the needs below. A person ticks it once; `--adopt` writes the ticked lines as items, and a
 written item is never proposed again.
 

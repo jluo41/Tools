@@ -1,3 +1,14 @@
+## 0.13.0 · 2026-11-13 · the start door knows the two loops
+
+- `scripts/start.py` reads 🧭 meaning and 🛠 expression Tasks and opens the new focus page (`layout=focus`), which
+  opens on the step that needs you; it no longer links the old Work Details tabs. After the items Task it asks
+  `engine/two_loops.py` for the one next thing: a waiting form, an unsigned guideline, a round that sent cards back
+  to meaning, the next round, the release sign, then the Job's Delivery once the release is signed.
+- `engine/two_loops.py` is the one rule for where a meaning or expression Task opens; the workbench page
+  (`labeling_steps.default_view`) uses it too, so the door and the page agree.
+- `engine/items_task.next_step` links the items Task's focus page and names its steps Data, Items, Embedding.
+- The meaning and expression skills reply with Report › <step> links (Work is retired).
+
 ## 0.12.0 · 2026-11-01
 
 - The two loops (b15 s58, stage 2; JL 261101: "Please make them work"): a Job's building as two Tasks, 🧭 meaning (`labeling-meaning`) and 🛠 expression (`labeling-expression`); routing to the new kinds `interaction` (Frame, Report, Preferences, Update) and `expression` (a round, Release).

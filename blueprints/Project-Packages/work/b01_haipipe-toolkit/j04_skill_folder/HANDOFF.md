@@ -36,6 +36,6 @@ Checks: the engine tests; haipipe-draft tests/test_labeling.py; `serve.py --only
 
 q01 · skill layers
 ------------------
-Write down, in reports/q01_skill_layers/, what is in each layer now and the open choices JL raised: workbench-page sits in 1_base/draft (it is the Page theme's workbench, so it could go to 2_theme/page while the page core stays in base); a workbench-shared skill (the frame contract) would belong in 1_base; whether servers/ mirror the layers. The design behind it is Tools/blueprints/Project-Ladder/work/b10_project_workbench/s02-studio-workbench-skill/ and s13-task-variants/.
+Write down, in _old/reports/q01_skill_layers/, what is in each layer now and the open choices JL raised: workbench-page sits in 1_base/draft (it is the Page theme's workbench, so it could go to 2_theme/page while the page core stays in base); a workbench-shared skill (the frame contract) would belong in 1_base; whether servers/ mirror the layers. The design behind it is Tools/blueprints/Project-Ladder/work/b10_project_workbench/s02-studio-workbench-skill/ and s13-task-variants/.
 
 Report to JL in chat as each Question finishes: what changed (files, one line each), the checks and their counts, what is left.

@@ -38,7 +38,7 @@ built: from-topic .
     ![s55-job-ui-work.png](s55-job-ui-work.png)
 - Decided <!-- @decided #55615a -->
   - s55-D01 · One grid per level (Board … <!-- @decided/0 #bae438 -->
-    s55-D01 · One grid per level (Board question × Job, Job question × cut, Task cut × step); Report opens on the answer; Work opens on what waits on the person; no Task asks the person (JL 261101: "go ahead", on the proposal in chat).
+    s55-D01 · One grid per level (Board question × Job, Job question × segment, Task segment × step); Report opens on the answer; Work opens on what waits on the person; no Task asks the person (JL 261101: "go ahead", on the proposal in chat).
   - s55-D02 · Built on the focus page … <!-- @decided/1 #147935 -->
     s55-D02 · Built on the focus page first, all four letters (JL 261101: "start with s55", "follow the ones in the workbench-paper and workbench-labeling"): `servers/workbench-insight/insight_focus.py`, asked by `focus_page.py`'s hook `insight_job_work`; each view ⚙️ Process then 📊 Results with the shared ui_parts; the round 1 fixes taken (your signs first on every view, sign before close, Work B the Report's grid with each cell's next verb, state words on every row). "Run all, or one button per row": both (Launch all · Write all · Check all, and a verb in each cell).
 - Open <!-- @open #cf9b77 -->

@@ -15,7 +15,7 @@ Hidden from the skill listing (`disable-model-invocation: true`); reached throug
 
 ## 0.2.0 · 2026-10-01 · Exact spec match (JL 261001)
 
-- A compute need binds a run only when the run computes its work spec exactly (cut, unit, measure, grouping or contrast, uncertainty, rivals, output columns); otherwise the smallest change makes one match, or a new task is built from the spec. A refusal is bound to its probe run. `ref/sync_config_answers.py` rewrites each called config's `answers:` to the need ids bound to it.
+- A compute need binds a run only when the run computes its work spec exactly (segment, unit, measure, grouping or contrast, uncertainty, rivals, output columns); otherwise the smallest change makes one match, or a new task is built from the spec. A refusal is bound to its probe run. `ref/sync_config_answers.py` rewrites each called config's `answers:` to the need ids bound to it.
 
 ## 0.1.0 · 2026-10-01 · First version (JL 261001)
 

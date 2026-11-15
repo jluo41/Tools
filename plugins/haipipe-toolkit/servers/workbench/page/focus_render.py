@@ -19,6 +19,7 @@ from live.focus_interactions import card_interactions, interaction_where, known,
 from live.focus_reports import (OLD_KEYS, OLD_VIEWS, THEME_ORDER, VIEW_WORDS, blocks_under, deliverables_html,
     overview_report_html, overview_summary, question_cards, reports_html, status_view, theme_title, themes_view)
 from live.focus_tree import status_html
+from live.project_branches import branches_html
 from live.focus_studio import folder_html, related_html, studio_html, studio_none, timeline_events, timeline_html, topic_rows
 from live.focus_delivery import delivery_html
 from live.focus_themes import (_draft_css, design_views, draft_parts, insight_board_report, insight_job_work,
@@ -148,7 +149,12 @@ def report_view_map(ctx: PageContext) -> None:
                 overview["theme-" + th.name] = (theme_title(th.name), lambda th=th: PP.theme_report(th, root))
         if group in ("findings", "themes", "status"):        # an old Project link opens the Project button
             group = "mindmap"
-    elif level in ("SPACE", "Folder", "Theme"):              # JL 261029 sketch: MindMap · Summary · Blocks · Status
+    elif level in ("SPACE", "Folder"):                       # the front door (JL 261114): Home, then Chart; what each
+        from live.space_home import space_home               # Project found is its own page's, never listed here
+        overview["home"] = ("Home", lambda: space_home(folder, root))
+        if group in ("mindmap", "findings", "themes", "status", "projects"):   # an old link opens Home
+            group = "home"
+    elif level == "Theme":                                   # JL 261029 sketch: MindMap · Summary · Blocks · Status
         under = blocks_under(folder)
         overview["mindmap"] = ("MindMap", lambda: PP.mindmap_view(folder, root))
         overview["findings"] = ("Findings", overview_summary(folder, root, level, events))
@@ -219,6 +225,9 @@ def work_view_map(ctx: PageContext) -> None:
     if live_work:
         work_topics = WF.topics_for(folder, root, questions)
         def live_findings():
+            from live import work_sections
+            if own := work_sections.view_html(folder, root, data, 'findings', WF.section):   # the face names its own
+                return side_css() + own + PB_JS
             if home == 'overview-report':
                 return untabbed(overview_report_html(data, questions, folder, root, False))
             if theme.name not in ('discovery', 'cowork'):        # work: Values and Displays only (JL 261111)
@@ -255,7 +264,6 @@ def work_view_map(ctx: PageContext) -> None:
         if project_report:
             overview['deliverables'] = work['deliverables']
     if level in ("SPACE", "Folder"):                     # its Projects and progress chart are Report views now (JL 261111:
-        overview["projects"] = ("Projects", work["progress"][1])   # "the Work is no longer used")
         if level == "SPACE":                             # the SPACE's progress chart, one click away (the old Home)
             overview["chart"] = ("Chart", '<p><a class="row-verb" href="/?view=chart">Open the progress chart</a> '
                                           '<a class="row-verb" href="/?view=list">Open the list index</a></p>')
@@ -447,7 +455,8 @@ def section_body(ctx: PageContext) -> None:
                                                                             if topics else studio_none(folder, root)), "delivery": lambda: (delivery() if callable(delivery) else delivery) or '<p class="mut">Nothing handed over yet: a delivery lands in this folder\'s <code>delivery/</code> once it is agreed.</p>',
                 "related": lambda: related, "files": lambda: folder_html(folder, root),
                 "skills": lambda: page_skills(folder, root, theme.name, level, bool(draft), bool(topics), bool(inbox), paper),
-                "timeline": lambda: timeline_html(events, folder, root)}[section]()
+                "timeline": lambda: (branches_html(folder, root) if level == "Project"   # a Project: one line per Block
+                                     else timeline_html(events, folder, root))}[section]()
         head = section.title()
     ctx.section, ctx.view, ctx.views, ctx.selected, ctx.body, ctx.head, ctx.bar = section, view, views, selected, body, head, bar
 

@@ -10,4 +10,4 @@ an sNN beside the Jobs opens its own page; done 261030
 
 ## Changed
 
-- `servers/workbench/focus_page.py`
+- `servers/workbench/page/focus_page.py`

@@ -55,15 +55,15 @@ LEVELS = ["Data", "Information", "Knowledge", "Wisdom"]
 
 # the six steps: (title, board, what never varies, [(part, options)]) ----------------------------------
 STEPS = [
-    ("1 Ask the question", "Prototype", "one ask, why now, what would answer it", [
+    ("1 Ask the question", "Question Book", "one ask, why now, what would answer it", [
         ("DIKW level", LEVELS),
         ("Asking method", cards(ASK)),
         ("Signed by", ["a person"])]),
-    ("2 Plan and agree", "Prototype", "plan: partition · unit · measure · grouping · uncertainty · rivals · output", [
+    ("2 Plan and agree", "Question Book", "plan: segment · unit · measure · grouping · uncertainty · rivals · output", [
         ("Written", ["before any data is read"]),
         ("Agreed by", ["a different agent"]),
         ("Tests", tests_at(2))]),
-    ("3 Run each partition", "Instance", "the Prototype's script, a tracked copy, unchanged", [
+    ("3 Run each partition", "Instance", "the Question Book's script, a tracked copy, unchanged", [
         ("Answering method", cards(ANSWER)),
         ("Runs on", ["each partition", "the pooled extract", "a held-out partition"]),
         ("Maker", ["the script", "an agent with code"])]),
@@ -124,7 +124,7 @@ def frame_catalog(y0):
     fr = L.open_frame("1 · The catalog")
     text(0, y0, "One Insight question · the catalog: each step's parts and their options", 34)
     text(0, y0 + 50, "Read from guide/method.md and the method cards at build time. Steps 1-2 are written once, "
-                     "in the Prototype; steps 3-6 run on every dataset, in its Instance.", 20, GRAY)
+                     "in the Question Book; steps 3-6 run on every dataset, in its Instance.", 20, GRAY)
     top = y0 + 110
     xs = [i * (CW_ + 30) for i in range(len(STEPS))]
     bottom = top

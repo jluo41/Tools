@@ -70,9 +70,10 @@ class StoryReadingTest(unittest.TestCase):
         # JL 261111: "why you don't just add more columns????? so hard to review and read"
         q = self.part("❓ Research Questions", "Interaction")
         self.assertNotIn("2 of 2 open", q)                                  # no progress tally on the bar
-        self.assertIn("<div class=pb-rqhead><p class=pb-label>The paper's question</p><p class=pb-big>&lt;the whole question&gt;?</p></div>", q)
+        self.assertIn("<div class=pb-rqhead data-addr=\"RQ.Q\"><p class=pb-label>The paper's question", q)
+        self.assertIn("<p class=pb-big>&lt;the whole question&gt;?</p>", q)
         self.assertIn("<thead><tr><th></th><th>Question</th><th>Why we ask</th><th>Asked before</th><th>New here</th>"
-                      "<th>Expected</th></tr></thead>", q)
+                      "<th>Expected</th><th></th></tr></thead>", q)
         self.assertNotIn('data-h="State"', q)                                # JL 261111: "no need for this, drop it"
         first = q.split("<td class=k>RQ1</td>", 1)[1].split("</tr>", 1)[0]
         self.assertIn('<td data-h="Question">&lt;first question&gt;?</td>', first)

@@ -109,7 +109,7 @@
 ## 0.28.1 · 2026-10-07 · The Guide lives with the server (JL 261007, via b02)
 
 - Guide's files moved from this skill's `ref/` to `servers/workbench-labeling/`: `guide/guide.yaml`
-  (was the `labeling` entry of `servers/workbench/guide_families.py`, now deleted with
+  (was the `labeling` entry of `servers/workbench/guide/guide_families.py`, now deleted with
   `LABELING_SKILL` and `LABELING_DESIGN`), `guide/method.md` (was `ref/labeling-method.md`),
   `guide/methods/` (was `ref/methods/`), `guide/methods.excalidraw` (was
   `ref/labeling-methods.excalidraw`) and `related/papers.md` (was `ref/labeling-papers.md`).

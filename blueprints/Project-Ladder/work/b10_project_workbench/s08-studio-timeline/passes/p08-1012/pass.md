@@ -10,5 +10,5 @@ By topic, columns are 60 px wide (were 40); the sNN stands straight and bold at 
 
 ## Changed
 
-- `plugins/haipipe-toolkit/servers/workbench/frame.py (studio_timeline head · .tl-col CSS · --tl-cell)`
+- `plugins/haipipe-toolkit/servers/workbench/page/frame.py (studio_timeline head · .tl-col CSS · --tl-cell)`
 - `s08-studio-timeline/ (face D14)`

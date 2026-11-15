@@ -1,5 +1,6 @@
 s10 · haipipe-project: a Project's root, its update door, and the skill behind each button
 =========================================================================================
+view: findings
 
 Merged on 261012 (JL: "could we merge s21 and s10? I think we need to rename it to s10_haipipe-project ... to
 explain this skill, cuold you use /excalidraw-studio to describe it?"): s10 (Update a Block to today's rules) and
@@ -20,7 +21,25 @@ Theme folders exist and which skill owns each) and checks the shape of every lev
 Run → pass). Its update door, `/wb update <Block>`, brings any Block, old or new and of any theme, up to today's
 rules. Every Run button of the base frame names the one skill that does its work.
 
-**Feeds:** `reports/` q01_bjtr_boundary · q05_skill_per_level · q06_project_checker · q08_workbench_base
+**Feeds:** Q01 · Q05 · Q06 · Q08
+
+
+Q05 · Answer
+------------
+
+**Question:** Which skill owns each level?
+
+**Answer (partial):** Separate level skills, not one door with sub-skills: haipipe-block owns the Block, haipipe-job the Job and haipipe-task the Task; the Spaces every level shares have their own owners (haipipe-studio; haipipe-report; haipipe-run), and the levels around them keep theirs. haipipe-folder's place is still to be written.
+
+**Page:** [q05_skill_per_level.md](q05_skill_per_level/q05_skill_per_level.md): the full answer, its evidence and limits (moved from reports/)
+
+
+Q06 · Answer
+------------
+
+**Question:** What should the project checker test?
+
+**Answer (open):** not written yet.
 
 
 Files
@@ -162,7 +181,7 @@ drawing:
     - "❓ s10 Open 2: b51's ids are Q-food-1, not QNN: rename them on update, or keep both?"
   buttons:
     title: "④ Every Run button names the one skill that does its work"
-    sub: "Read from the base frame (servers/workbench/frame.py) on every build: a button names a skill, the skill opens one Run, the Run writes one folder, and its Space shows it (s21-D01, s21-D02)."
+    sub: "Read from the base frame (servers/workbench/page/frame.py) on every build: a button names a skill, the skill opens one Run, the Run writes one folder, and its Space shows it (s21-D01, s21-D02)."
     skills: [haipipe-block, haipipe-studio, haipipe-report, haipipe-job, haipipe-task, haipipe-run, haipipe-project, haipipe-delivery]
     about:
       haipipe-block: "the Block's face, its Questions, a new Block (was haipipe-board, s21-D07)"

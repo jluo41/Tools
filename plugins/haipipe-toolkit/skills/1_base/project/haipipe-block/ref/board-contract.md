@@ -43,6 +43,7 @@ workbench: <theme>              # optional: the theme that reads it, when its Th
 ## Pages                        # optional: a reading order, when the tree's order is not enough
 ## Questions                    # optional: the register (haipipe-report), a fenced yaml questions: list
 ## Related resources            # optional: the resources register (haipipe-report)
+## Data                         # optional, a work Block: a fenced yaml data: list, where its data is
 ```
 
 1. **Title line**: `# bNN · <title>`, the Block's number and a short title.
@@ -53,6 +54,21 @@ workbench: <theme>              # optional: the theme that reads it, when its Th
 4. **close**: the condition that closes the Block; usually every Question answered.
 5. **Header fields only**: `key: value` lines between the title and the first `##`; the frame's
    Description reads `board-kind`, `spine`, `goal`, `state`, `close`, `answer-status`, `status`.
+
+6. **Data** (work Block, optional): a fenced ```yaml block whose top key is `data:`, one row per
+   store the Block reads or writes; the work Findings shows it first as 🗄️ Data (JL 261111). A
+   count is never typed: `count:` points at a Result under the Block (`file:` JSON or YAML, a dotted
+   `key:`, a `label:`), one or a list, read each time the page opens.
+
+```yaml
+data:
+  - name: deid.derived
+    where: <catalog>.<schema>        # a Volume path, a share or a repo folder
+    holds: one line on what it holds
+    access: who can read it
+    link: <url>                      # optional
+    count: {file: jNN_x/tNN_x/runs/rNN_x/result/summary.json, key: tables.n, label: tables}
+```
 
 A theme's own Block template sits over this one and keeps these fields: the work theme's is
 `haipipe-task`'s `ref/block-board-template.md`; the others are each theme skill's.
@@ -69,7 +85,7 @@ A theme's own Block template sits over this one and keeps these fields: the work
 | Delivery | `delivery/` items | `delivery/` | Build the delivery → **haipipe-block** |
 
 A theme fills any Space with its own view (`servers/workbench-<theme>/<theme>_theme.py`);
-what it leaves out is the vanilla default above (`servers/workbench/frame.py` `vanilla`).
+what it leaves out is the vanilla default above (`servers/workbench/page/frame.py` `vanilla`).
 The Guide is each theme's.
 
 1. **Update the description** (`run-face-<bNN>`): edit the face's header fields and Topic;

@@ -7,35 +7,35 @@ Method
 Every question goes through six steps, in three columns: Logic (1-2), Work (3-4) and
 Report (5-6). Steps 1, 3 and 5 have methods to choose from; sections 2 to 4 give them.
 
-Steps 1 and 2 happen once, in the **Prototype**; steps 3 to 6 happen on every dataset, in
+Steps 1 and 2 happen once, in the **Question Book**; steps 3 to 6 happen on every dataset, in
 its **Instance**:
 
 ```
-Prototype · one per topic, no data          Instance · one per dataset
-steps 1-2: the partitions, the questions,   steps 3-6: a tracked copy of each script,
-their plans and their scripts       ──▶     one run per partition, the pages, the
+Question Book · one per topic, no data          Instance · one per dataset
+steps 1-2: the segments, the questions,   steps 3-6: a tracked copy of each script,
+their plans and their scripts       ──▶     one run per segment, the pages, the
                                             handoff
                                             a new dataset is a new Instance of the
-                                            same Prototype
+                                            same Question Book
 ```
 
 The questions and their code are written once and run unchanged on each dataset, so two
 datasets' answers can be compared: By protocol reuse (§ 2) built into the boards. A
-script changed in the Prototype reaches an Instance only as a new tracked copy.
+script changed in the Question Book reaches an Instance only as a new tracked copy.
 
 | step | board | what happens | where in the workbench | who decides |
 |---|---|---|---|---|
-| **1 Ask the question** | Prototype | one ask at its DIKW level, why now, and what would answer it; question-asking methods (§ 2) | Scope › Questions (Ask) · Prototype › Data … Wisdom (Review the questions) | a person signs the question |
-| **2 Plan and agree** | Prototype | the steps that would answer it, written before any data is read; then the script, written and reviewed; tests T0-T3 (§ 5) | Prototype › Data … Wisdom (Plan the evidence · Review the evidence plan · Write and Review the script) | a different agent agrees the plan |
-| **3 Run each partition** | Instance | the script runs once on each partition; question-answering methods (§ 3) | Insight › each partition (Run a partition) | the run's own receipt |
-| **4 Check the run** | Instance | the run is checked against its plan; tests T4 and T7 (§ 5) | Insight › each partition (Check alignment) | an agent that did not write the run |
-| **5 Write the page** | Instance | one page per question, a section per partition, read into an answer at its DIKW level; question-results reading methods (§ 4); tests T5 and T6 (§ 5) | Insight › each partition (Write the report) · Check › Checks (Review an answer) | an agent that did not write the page |
+| **1 Ask the question** | Question Book | one ask at its DIKW level, why now, and what would answer it; question-asking methods (§ 2) | Scope › Questions (Ask) · Question Book › Data … Wisdom (Review the questions) | a person signs the question |
+| **2 Plan and agree** | Question Book | the steps that would answer it, written before any data is read; then the script, written and reviewed; tests T0-T3 (§ 5) | Question Book › Data … Wisdom (Plan the evidence · Review the evidence plan · Write and Review the script) | a different agent agrees the plan |
+| **3 Run each segment** | Instance | the script runs once on each segment; question-answering methods (§ 3) | Insight › each segment (Run a segment) | the run's own receipt |
+| **4 Check the run** | Instance | the run is checked against its plan; tests T4 and T7 (§ 5) | Insight › each segment (Check alignment) | an agent that did not write the run |
+| **5 Write the page** | Instance | one page per question, a section per segment, read into an answer at its DIKW level; question-results reading methods (§ 4); tests T5 and T6 (§ 5) | Insight › each segment (Write the report) · Check › Checks (Review an answer) | an agent that did not write the page |
 | **6 Hand off** | Instance | a Wisdom answer goes to Design; test T8 when new data comes (§ 5) | Delivery › Handoff (Write the counsel · Draft the handoff) | a person signs the handoff |
 
 A person signs only what leaves the board or changes its meaning: the question, a change
-the question review proposes, a new partition, and the handoff. A signed change retires
+the question review proposes, a new segment, and the handoff. A signed change retires
 a question with its reason; it is never edited in place. Every method keeps the same
-question file, the same plan fields (partition, unit, measure, grouping, uncertainty,
+question file, the same plan fields (segment, unit, measure, grouping, uncertainty,
 rivals, output columns), the same second agent and the same tests; only its own step
 changes.
 
@@ -80,7 +80,7 @@ What does the question need fixed first?
 ├─ a cause, from data already   By target trial      (future)
 │  collected
 ├─ the analysis, before data    By analysis plan
-├─ where it is asked, and       By partition and power
+├─ where it is asked, and       By segment and power
 │  whether that is enough data
 └─ the same plan on new data    By protocol reuse
 ```
@@ -97,11 +97,11 @@ These eight methods serve any board's question, so they live in the question wor
 | Question-asking | By estimand | ../../../skills/1_base/project/haipipe-report/ref/asking-methods/04-by-estimand.md |
 | Question-asking | By target trial | ../../../skills/1_base/project/haipipe-report/ref/asking-methods/05-by-target-trial.md |
 | Question-asking | By analysis plan | ../../../skills/1_base/project/haipipe-report/ref/asking-methods/06-by-analysis-plan.md |
-| Question-asking | By partition and power | ../../../skills/1_base/project/haipipe-report/ref/asking-methods/07-by-partition-and-power.md |
+| Question-asking | By segment and power | ../../../skills/1_base/project/haipipe-report/ref/asking-methods/07-by-partition-and-power.md |
 | Question-asking | By protocol reuse | ../../../skills/1_base/project/haipipe-report/ref/asking-methods/08-by-protocol-reuse.md |
 
 
-3 · Step 3 in depth: run each partition
+3 · Step 3 in depth: run each segment
 ---------------------------------------
 
 Question-answering methods: how does the run find the answer? A run either looks first (reads
@@ -112,7 +112,7 @@ answer.
 ```
 Does the question name its test?
 ├─ no, look first     By exploring                   by eye, simple tables
-│                     By automated insight search    score many cuts (future)
+│                     By automated insight search    score many segments (future)
 │                     By pattern mining              rules and subgroups (future)
 └─ yes, ask first     By hypothesis test             one stated test
                       By model comparison            explain against predict
@@ -137,7 +137,7 @@ could come out.
 ```
 How could the answer be wrong?
 ├─ another analysis would change it    By multiverse
-├─ it differs by partition             By heterogeneity
+├─ it differs by segment             By heterogeneity
 └─ another explanation fits            By sensemaking
 ```
 
@@ -164,14 +164,14 @@ step 6 in use            T8 Replication, when new data comes
 | test | asks | when | source |
 |---|---|---|---|
 | T0 Covered | every word of the ask maps to a step or a refusal | step 2 · Plan | requirements traceability (Gotel & Finkelstein 1994) |
-| T1 Specified | each step names partition, unit, measure, grouping, uncertainty, rivals, output | step 2 · Plan | analysis plan content (Gamble et al. 2017; Chan et al. 2013) |
+| T1 Specified | each step names segment, unit, measure, grouping, uncertainty, rivals, output | step 2 · Plan | analysis plan content (Gamble et al. 2017; Chan et al. 2013) |
 | T2 Agreed | a different agent that did not draft the plan agrees it | step 2 · Agree | review before results (Chambers 2013) |
-| T3 Powered | each partition can detect the smallest effect that matters | step 2 · Agree | power analysis (Cohen 1992; Lakens 2022) |
+| T3 Powered | each segment can detect the smallest effect that matters | step 2 · Agree | power analysis (Cohen 1992; Lakens 2022) |
 | T4 Spec | the run's files and columns are the ones the plan names | step 4 · Check | reproducible computation (Sandve et al. 2013; Peng 2011) |
 | T5 Fidelity | each sentence says what its result says | step 5 · Page check | faithfulness to the source (Maynez et al. 2020) |
 | T6 Independent check | an agent that did not write the page checks it | step 5 · Page check | self-preference and failed self-correction (Panickssery et al. 2024; Huang et al. 2023) |
 | T7 Robustness | rival analyses give the same sign and size | step 4 · Check | multiverse and specification curve (Steegen et al. 2016; Simonsohn et al. 2020) |
-| T8 Replication | another extract, partition or time window gives it again | step 6 · in use | replication projects (Open Science Collaboration 2015; Camerer et al. 2018) |
+| T8 Replication | another extract, segment or time window gives it again | step 6 · in use | replication projects (Open Science Collaboration 2015; Camerer et al. 2018) |
 
 T4 to T6 ask whether the answer was computed and written right. Only T7 and T8 ask
 whether it is there in the world, not just in one analysis of one sample.
@@ -201,7 +201,7 @@ whether it is there in the world, not just in one analysis of one sample.
 
 No study compares these methods head to head on one question. The workbench is itself
 a bet: does a question planned before the data, agreed by a second agent and powered
-per partition give answers that hold on the next extract (T8) more often than one
+per segment give answers that hold on the next extract (T8) more often than one
 fitted to the runs already in hand?
 
 
@@ -228,7 +228,7 @@ is Discovery's work. Design reads only a signed Insight answer, never a page in 
 6.2 · Why the plan comes before the data
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Data can be cut many ways, and some cut always looks interesting. If the question and
+Data can be cut many ways, and some segment always looks interesting. If the question and
 its analysis are chosen after looking, the answer has shaped the question, and a pattern
 made by noise or by our own choices passes as a finding (Gelman & Loken 2014). Writing
 the plan first (step 2) separates testing a prediction from fitting a story to results
@@ -250,11 +250,11 @@ R1 · Terms and people
 | Estimand | | the exact number that would answer a question | [Wikipedia](https://en.wikipedia.org/wiki/Estimand) |
 | Goal question metric | | every measure has a question, every question a goal | [Wikipedia](https://en.wikipedia.org/wiki/GQM) |
 | Forking paths | | choices made after seeing data produce false findings | [Wikipedia](https://en.wikipedia.org/wiki/Forking_paths_problem) |
-| Data dredging | | searching many cuts until one looks significant | [Wikipedia](https://en.wikipedia.org/wiki/Data_dredging) |
+| Data dredging | | searching many segments until one looks significant | [Wikipedia](https://en.wikipedia.org/wiki/Data_dredging) |
 | Multiverse analysis | | one question through every reasonable analysis | [Wikipedia](https://en.wikipedia.org/wiki/Multiverse_analysis) |
 | Replication crisis | | why T8 matters | [Wikipedia](https://en.wikipedia.org/wiki/Replication_crisis) |
-| Prototype | | one board per topic: partitions, questions, plans and scripts; no data | § 1 |
-| Instance | | one board per dataset, read through one Prototype: runs, pages, handoff | § 1 |
+| Question Book | | one board per topic: segments, questions, plans and scripts; no data | § 1 |
+| Instance | | one board per dataset, read through one Question Book: runs, pages, handoff | § 1 |
 
 | person | what they gave | read more |
 |---|---|---|
@@ -269,7 +269,7 @@ R1 · Terms and people
 | Kees Dorst | induction and abduction, as the Design family uses them (2011) | [the paper](https://doi.org/10.1016/j.destud.2011.07.006) |
 
 The family names and their Chinese (question-asking 提问, question-answering 求答 and
-question-results reading 解读 methods) and the words Prototype and Instance are ours.
+question-results reading 解读 methods) and the words Question Book and Instance are ours.
 
 R2 · Which kind of question each method serves
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -287,7 +287,7 @@ prediction or causal inference; Wisdom uses the answers below it (the mapping is
 | By model comparison | predictive against inferential or causal | prediction against causal inference |
 | By hypothesis test | inferential | description or causal inference |
 | By multiverse | any type, as a robustness check | any task |
-| By heterogeneity | inferential or causal, across groups | description across cuts, or causal inference |
+| By heterogeneity | inferential or causal, across groups | description across segments, or causal inference |
 | By sensemaking | causal and mechanistic | causal inference |
 
 R3 · Where the workbench's rules come from
@@ -300,5 +300,5 @@ R3 · Where the workbench's rules come from
 | the plan is drafted before any existing run is read | By analysis plan, applied to code |
 | reuse a run only when its output is identical | By protocol reuse |
 | no cause word at Data or Information | By level; a kept causal ask goes to Knowledge and By target trial |
-| partitions and power fixed before any outcome | By partition and power |
-| partitions differ only by a test of the difference | By heterogeneity |
+| segments and power fixed before any outcome | By segment and power |
+| segments differ only by a test of the difference | By heterogeneity |

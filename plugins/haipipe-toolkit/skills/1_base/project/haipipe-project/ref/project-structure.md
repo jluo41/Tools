@@ -210,12 +210,12 @@ Boards to their owning world. No routine update moves an active Board.
 
 ## `insight/`
 
-**Current Insight layout (haipipe-insight, 261009):** a topic's Prototype is a task-world Block
-`insight/Prototype-<Topic>/` (`board-kind: prototype`, a Job per release, `proposals/`) and each
+**Current Insight layout (haipipe-insight, 261009):** a topic's Question Book is a task-world Block
+`insight/InsightQuestionBook-<Topic>/` (`board-kind: prototype`, a Job per release, `proposals/`) and each
 dataset is a Board `insight/Insight-<name>/`. haipipe-insight's SKILL.md is the authority; the
 `b5N_<topic>_dikw` Block below is its older layout (`ref/prototype_from_block.py` carries it).
 
-Insight work is a task Block since JL 261005 (the Prototype + Instance pair is retired): an
+Insight work is a task Block since JL 261005 (the Question Book + Instance pair is retired): an
 Insight topic is one Block `work/b5N_<topic>_dikw/` whose board.md says `workbench: insight`,
 one Job per DIKW level and one Task per question, each Task holding its question, its one
 script, its runs and its answering page. A new dataset is a new entry in the Block's

@@ -1,3 +1,49 @@
+## 0.33.0 · 2026-11-11 · § 8 is the shared narrative; Section rows live on the version
+
+- JL 261111, two layers, one source each: § 8 holds what every version shares (title, story arc, explanation, the
+  claims C1..Cn with their numbers) and no per-Section rows. The version face's `## Narrative` holds that venue's
+  layout (claims to displays, display Runs, one row per Section, compile order), points at § 8 and copies no claim.
+- The § 8 template is four parts: Title, Story arc, Explanation, Claims (`claim | proposition | answers | numbers |
+  evidence | boundary | lands in`). Story by Section reads § 8 for the arc and claims, each Section's tab from the
+  newest version's `## Narrative`; an older § 8 Section table is still read first.
+- The version's Narrative is signed with `page.py sign-narrative`, which keeps § 8 as text; the whole-paper structure
+  is the version Job's Report › Structure view, never a Task. `ref/integration.md` follows.
+
+## 0.32.2 · 2026-11-11 · to pass the desk
+
+- The editor's-test report keeps a `**To raise the odds**` numbered list; the venue card shows each item's first
+  sentence as "To pass the desk".
+
+## 0.32.1 · 2026-11-11 · the editor's test has a report
+
+- The `editor's test` cell is the short decision; its detail is a report `reports/qNN_editor_test_<venue>/` the venue card opens.
+
+## 0.32.0 · 2026-11-11 · Story by Section is side tabs again; venues gain an editor's test
+
+- JL 261111: "I want the left tab right content, git it back to me!!!!": the first tab is the Story arc, then a tab
+  per Section (its moves numbered 1, 2, 3); 0.29.0's numbered rows are withdrawn.
+- §9 Venues gains an `editor's test` column, the first row of each venue card (JL 261111: "you didn't give the
+  Editor Test").
+
+## 0.31.1 · 2026-11-11 · a Section's moves read as 1, 2, 3
+
+- The workbench numbers each Section's ordered moves, one per line; write them in reader order, split by `→` or `;`.
+
+## 0.31.0 · 2026-11-11 · where each part shows now
+
+- The "shows in" column reads the focused Story page: §3 is one table without a State column; §4 Stakes and §5
+  Evidence basis stay in the file and have no Story section (JL 261111: "no information from it").
+
+## 0.30.0 · 2026-11-11 · why each question, and how others asked it
+
+- §3 may carry a table `RQ | why we ask it | how others asked it | what is new here`; the workbench shows it as a
+  second line under each research question (Paper-CMS-AI-Usage 261111).
+
+## 0.29.0 · 2026-11-11 · Story by Section is numbered rows, no tabs
+
+- JL 261111: the workbench shows the arc, then one numbered row per Section in the Research Questions' row shape; no
+  per-Section tabs, so the text no longer speaks of tabs or a tab's small line.
+
 ## 0.28.0 · 2026-11-10 · the narrative pairs with its question
 
 - The Story view shows each research question with its narrative item of the same number, so item n says what

@@ -1,40 +1,40 @@
 #!/usr/bin/env python3
-"""insight_ladder.py · make the insight ladder's folders (ref/insight-ladder.md): the Prototype Block and its
+"""insight_ladder.py · make the insight ladder's folders (ref/insight-ladder.md): the Question Book Block and its
 versions and questions, the insight Board and its data versions, its Jobs and their Tasks, and a Run.
 
-    python insight_ladder.py prototype <Project>/insight/Prototype-<name> --serves insight/Insight-<name> [--title "…"]
-    python insight_ladder.py version   <prototype> --slug <what-it-is>  the next code version jNN_code-vN_<slug>/ (from the newest)
+    python insight_ladder.py prototype <Project>/insight/InsightQuestionBook-<name> --serves insight/Insight-<name> [--title "…"]
+    python insight_ladder.py version   <prototype> --slug <what-it-is>  the next question version jNN_question-vN_<slug>/ (from the newest)
     python insight_ladder.py question  <version> <L><NN> <slug>        a new question Task tNN_<L><NN>_<slug>/
     python insight_ladder.py change    <version> <L><NN> --why "…"     carry a kept question into this version to change it
     python insight_ladder.py retire    <version> <L><NN> --why "…"     drop a question from this version (kept as history)
     python insight_ladder.py sign      <version> --date YYMMDD         record the signature a person states; freezes it
-    python insight_ladder.py propose   <prototype> <slug> --kind "new question|fix|retire|cut" --from <jNN or qNN>
+    python insight_ladder.py propose   <prototype> <slug> --kind "new question|fix|retire|segment" --from <jNN or qNN>
                                                                         [--level data|information|knowledge|wisdom] [--why "…"]
-    python insight_ladder.py board     <Project>/insight/Insight-<name> --dataset <D> --prototype insight/Prototype-<name>
+    python insight_ladder.py board     <Project>/insight/Insight-<name> --dataset <D> --prototype insight/InsightQuestionBook-<name>
                                                                         [--title "…"] [--accumulates yes|no|?]
     python insight_ladder.py data      <board> data-v<M> --data-folder <SPACE-relative data folder>/ [--label "first 5 days"] [--new "…"]
                                        (or --extract <SPACE-relative .parquet> [--rows <n>], a lone file)
-    python insight_ladder.py job       <board> --release code-v<N> --data data-v<M>   the next Job jNN_code-vN-<slug>_data-vM/
+    python insight_ladder.py job       <board> --release question-v<N> --data data-v<M>   the next Job jNN_question-vN-<slug>_data-vM/
     python insight_ladder.py run       <folder> <type> [<target>]          a soft Run runs/run-<type>-<target>/
-    python insight_ladder.py run       <Board Task> partition <name|all>   a hard Run runs/rNN_<partition>/ (planned)
-    python insight_ladder.py goals     <Board, Prototype, Job or Task>     write each face's missing `goal:` line
-    python insight_ladder.py audit     <Board, Prototype or Project>       what an older folder lacks, and the step that fixes it
-    python insight_ladder.py update    <Board, Prototype or Project> [--apply]   the names, the goal lines, each Job's hash
+    python insight_ladder.py run       <Board Task> segment <name|all>   a hard Run runs/rNN_<segment>/ (planned)
+    python insight_ladder.py goals     <Board, Question Book, Job or Task>     write each face's missing `goal:` line
+    python insight_ladder.py audit     <Board, Question Book or Project>       what an older folder lacks, and the step that fixes it
+    python insight_ladder.py update    <Board, Question Book or Project> [--apply]   the names, the goal lines, each Job's hash
                                        (a dry run without --apply; an older layout is named, carried by its own script)
     (add --dry-run to any command: print what it would make; change nothing)
 
 Every page it makes carries a `goal:` line, the one line a page's header shows under its view buttons (261106): a
-Board the dataset's purpose, a Prototype its questions, a release what it holds, a question Task (its face
+Board the dataset's purpose, a Question Book its questions, a release what it holds, a question Task (its face
 tNN_<L><NN>_<slug>.md beside question.md) and a Board Task the question's ask, a Board Job what its release × data
 version answers. `goals` backfills a face written before that line, from the same source; it writes only a missing line.
 
-Two special boards (b11 s00, JL 261007 plan C; named by their kind, JL 261008), side by side in insight/ (JL 261109).
-The Prototype, `insight/Prototype-<name>/`, holds the questions and their scripts; each of its Jobs is one code version
-(a release), j0N_code-vN_<slug>/, frozen once a person signs it. The insight Board, `insight/Insight-<name>/`, holds one
-dataset and its dated data versions; each of its Jobs pins one code version and one data version,
-jNN_code-vN-<slug>_data-vM/ (JL 261109: "code-v1 x data-v1, make it readable"), and moves one clock from the Job before it (`moved: start |
+Two special boards (b11 s00, plan C; named by their kind), side by side in insight/.
+The Question Book, `insight/InsightQuestionBook-<name>/`, holds the questions and their scripts; each of its Jobs is one question version
+(a release), j0N_question-vN_<slug>/, frozen once a person signs it. The insight Board, `insight/Insight-<name>/`, holds one
+dataset and its dated data versions; each of its Jobs pins one question version and one data version,
+jNN_question-vN-<slug>_data-vM/, and moves one clock from the Job before it (`moved: start |
 data | code`). `job` checks the gates (the release is signed, the data version is in board.md, the pair is new, only
-one clock moved), then writes the Job through ref/open_job.py: its face, a Task per question, a ticket per asked cut.
+one clock moved), then writes the Job through ref/open_job.py: its face, a Task per question, a ticket per asked segment.
 A hard Run's ticket runs ref/run_job.py. A reader knows each Block by its board.md, never its folder name; the older
 bNN_ names stay readable. Every command writes only what is missing (it never overwrites a file, except the YAML it
 extends: release.yaml, board.md's versions) and prints what it made. Placeholders only: a person or an agent fills
@@ -61,11 +61,11 @@ _spec.loader.exec_module(SOFT)
 sys.path.insert(0, str(HERE.parent / "ref"))
 import open_job as OJ  # noqa: E402  (writes a Job's face, Tasks and tickets; ref/open_job.py)
 
-QID = re.compile(r"^([DIKWX])(\d\d)$")                    # X: the Executive level (JL 261012)
+QID = re.compile(r"^([DIKWX])(\d\d)$")                    # X: the Executive level
 SLUG = re.compile(r"^[a-z0-9][a-z0-9-]*$")
-VERSION = re.compile(r"^j(\d+)_(code-v\d+|p\d+)(?:_([a-z0-9][a-z0-9-]*))?$")   # a release: j02_code-v2_<slug> (JL 261109; p2 older)
-JOB = OJ.JOB                                                    # a Board Job: j03_code-v2-<slug>_data-v2
-PROTO_NAME = re.compile(r"^(Prototype-[A-Za-z0-9][A-Za-z0-9.-]*|b\d+_.+)$")    # special board; bNN_ stays readable
+VERSION = re.compile(r"^j(\d+)_((?:question|code)-v\d+|p\d+)(?:_([a-z0-9][a-z0-9-]*))?$")   # a release: j02_question-v2_<slug> (p2 older)
+JOB = OJ.JOB                                                    # a Board Job: j03_question-v2-<slug>_data-v2
+PROTO_NAME = re.compile(r"^((?:InsightQuestionBook|QuestionBook|Prototype)-[A-Za-z0-9][A-Za-z0-9.-]*|b\d+_.+)$")    # Prototype- (before 261109) and bNN_ stay readable
 BOARD_NAME = re.compile(r"^(Insight-[A-Za-z0-9][A-Za-z0-9.-]*|b\d+_.+)$")
 TASK = re.compile(r"^t(\d+)_([DIKWX]\d\d)_([a-z0-9-]+)$")     # a question Task: t03_K01_<slug>
 LOADER = getattr(yaml, "CSafeLoader", yaml.SafeLoader)   # the C loader when built (a Board has many faces)
@@ -80,7 +80,7 @@ TYPES = {
     ("version", "ask"): ("haipipe-insight-question", "haipipe-insight-agent", "none", False),
     ("version", "review-questions"): ("haipipe-report", "haipipe-insight-reviewer-agent", "a person (a change)",
                                       False),
-    ("version", "set-cuts"): ("haipipe-insight", "haipipe-insight-agent", "a person (the cuts)", False),
+    ("version", "set-segments"): ("haipipe-insight", "haipipe-insight-agent", "a person (the segments)", False),
     ("version", "sign-release"): ("haipipe-insight", "haipipe-insight-agent", "a person", False),
     ("question", "plan-evidence"): ("haipipe-insight-evidence-plan", "haipipe-insight-agent", "none", False),
     ("question", "review-plan"): ("haipipe-insight-evidence-plan", "haipipe-insight-reviewer-agent", "none", False),
@@ -104,7 +104,7 @@ TYPES = {
     ("job", "power"): ("haipipe-insight", "haipipe-insight-agent", "none", False),
     ("job", "compare"): ("haipipe-insight-knowledge", "haipipe-insight-agent", "none", False),
     ("job", "propose"): ("haipipe-insight-question", "haipipe-insight-agent", "none", False),
-    ("job", "overall"): ("haipipe-insight", "haipipe-insight-agent", "none", False),   # the Overall Report (JL 261012)
+    ("job", "overall"): ("haipipe-insight", "haipipe-insight-agent", "none", False),   # the Overall Report
     ("job", "close"): ("haipipe-insight-check", "haipipe-insight-agent", "a person", False),
     ("task", "partition"): ("haipipe-insight", "haipipe-task-orchestrator-agent", "none", True),
     ("task", "write"): ("haipipe-insight-<its level>", "haipipe-insight-agent", "none", False),
@@ -171,10 +171,10 @@ def project_of(block: Path) -> Path:
 def runs_readme(folder: Path, level: str, plan: Plan) -> None:
     plan.write(folder / "runs" / "README.md", f"# Runs of {folder.name}\n\nrun types: {RUN_TYPES[level]}\n\n"
                "One folder per Run: a soft Run is `run-<type>-<target>/` (run.yaml · its ticket · passes/), a hard Run "
-               "is `rNN_<partition>/` (run.yaml · result/). See haipipe-insight ref/insight-ladder.md § Runs.\n")
+               "is `rNN_<segment>/` (run.yaml · result/). See haipipe-insight ref/insight-ladder.md § Runs.\n")
 
 
-# ── the Prototype Block ─────────────────────────────────────────────────────────────────────────
+# ── the Question Book Block ─────────────────────────────────────────────────────────────────────────
 def versions(proto: Path) -> list[Path]:
     return sorted((p for p in proto.iterdir() if p.is_dir() and VERSION.match(p.name)),
                   key=lambda p: int(VERSION.match(p.name).group(1))) if proto.is_dir() else []
@@ -189,39 +189,39 @@ def face(folder: Path) -> dict:
 
 
 def prototype_goal(title: str) -> str:
-    """A Prototype's goal line: its questions, in its title's words."""
+    """A Question Book's goal line: its questions, in its title's words."""
     words = (title or "the questions and their scripts").strip()
-    return f"{words[:1].upper()}{words[1:]}, one signed code version at a time"
+    return f"{words[:1].upper()}{words[1:]}, one signed question version at a time"
 
 
 def prototype(path: Path, serves: str, title: str, plan: Plan) -> None:
     if not PROTO_NAME.match(path.name):
-        sys.exit(f"a Prototype is a special board, Prototype-<name> (or the older bNN_<topic>): {path.name}")
+        sys.exit(f"a Question Book is a special board, InsightQuestionBook-<name> (or the older bNN_<topic>): {path.name}")
     if path.parent.name not in ("insight", "insights", "tasks", "work"):    # tasks/ and work/: the older place
-        sys.exit(f"a Prototype lives in <Project>/insight/, beside the Board it serves: {path}")
+        sys.exit(f"a Question Book lives in <Project>/insight/, beside the Board it serves: {path}")
     plan.write(path / "board.md", with_front(
         {"board-kind": "prototype", "serves": serves, "goal": prototype_goal(title)},
-        f"\n# {path.name} · {title or 'the Prototype'}\n\n"
-        "The questions and their scripts, one Job per code version (`jNN_code-vN_<slug>/`), frozen once a person signs\n"
-        "it. A Board's Job pins one code version and one data version; a code version is cut from proposals/.\n"))
-    plan.write(path / "proposals" / "README.md", "# proposals\n\nThe backlog: new question · fix · retire · cut, one file "
+        f"\n# {path.name} · {title or 'the Question Book'}\n\n"
+        "The questions and their scripts, one Job per question version (`jNN_question-vN_<slug>/`), frozen once a person signs\n"
+        "it. A Board's Job pins one question version and one data version; a question version is cut from proposals/.\n"))
+    plan.write(path / "proposals" / "README.md", "# proposals\n\nThe backlog: new question · fix · retire · segment, one file "
                "each (`<slug>.md`: kind · level · from <job or report> · state · why). The next release is cut from here "
                "(run-triage-proposals).\n")
     runs_readme(path, "prototype", plan)
 
 
 def version(proto: Path, slug: str, plan: Plan) -> Path:
-    """The next code version: jNN_code-vN_<slug>/ with release.yaml; it starts from the newest one (every question kept).
-    The slug says what it is (JL 261008); its id is code-vN everywhere it is named (JL 261109)."""
+    """The next question version: jNN_question-vN_<slug>/ with release.yaml; it starts from the newest one (every question kept).
+    The slug says what it is; its id is question-vN everywhere it is named."""
     if slug and not SLUG.match(slug):
         sys.exit(f"--slug is a few lower-case words joined by -: {slug!r}")
     if face_kind(proto) != "prototype":
-        sys.exit(f"{proto.name} is not a Prototype Block (board.md board-kind: prototype)")
+        sys.exit(f"{proto.name} is not a Question Book Block (board.md board-kind: prototype)")
     old = versions(proto)
     if old and str(face(old[-1]).get("state")) != "closed":
         sys.exit(f"{old[-1].name} is still open: sign it (or work in it) before opening the next version")
     n = int(VERSION.match(old[-1].name).group(1)) + 1 if old else 1
-    rel = f"code-v{n}"
+    rel = f"question-v{n}"
     path = proto / (f"j{n:02d}_{rel}_{slug}" if slug else f"j{n:02d}_{rel}")
     prev = old[-1] if old else None
     kept = len(release(prev).get("questions") or {}) if prev else 0
@@ -229,7 +229,7 @@ def version(proto: Path, slug: str, plan: Plan) -> Path:
     plan.write(path / f"{path.name}.md", with_front(
         {"release": rel, "state": "open", "signed": "", "from": VERSION.match(prev.name).group(2) if prev else "",
          "goal": release_goal(n, slug.replace("-", " "), kept, cuts)},
-        f"\n# code-v{n}\n\n<what this code version changes, and which proposals it takes>\n"))
+        f"\n# question-v{n}\n\n<what this question version changes, and which proposals it takes>\n"))
     rows = {}
     if prev:
         for q, row in (release(prev).get("questions") or {}).items():
@@ -245,7 +245,7 @@ def version(proto: Path, slug: str, plan: Plan) -> Path:
             {"partitions": [{"name": "full", "where": [], "why": "every row"},
                             {"name": "<name>", "where": [{"column": "<col>", "eq": "<value>"}], "why": "<why>"},
                             {"name": "cross", "of": ["<name>", "<name>"], "why": "one test of the difference"}]},
-            "\n# The cuts\n\nPart of the plan, fixed before any outcome (run-set-cuts; a person signs them).\n"))
+            "\n# The segments\n\nPart of the plan, fixed before any outcome (run-set-segments; a person signs them).\n"))
         plan.write(path / "thresholds.yaml", dump_yaml(
             {"power": {"smallest_effect_pp": "<pp>", "alpha": 0.05, "target_power": 0.8}}))
     plan.write(path / "release.yaml", dump_yaml({"release": rel, "questions": rows}))
@@ -255,12 +255,12 @@ def version(proto: Path, slug: str, plan: Plan) -> Path:
 
 def release_goal(n: int, words: str, questions: int, cuts) -> str:
     """A release's goal line: what it is for, in words, no count (b11 round 2: "take the counts out of the goal line";
-    how many questions and cuts is its page's main line): `code-v1, example questions: the questions and their scripts
-    on the cuts it fixes`; a release still without questions says what it will hold."""
-    head = f"code-v{n}" + (f", {words}" if words else "")
+    how many questions and segments is its page's main line): `question-v1, example questions: the questions and their scripts
+    on the segments it fixes`; a release still without questions says what it will hold."""
+    head = f"question-v{n}" + (f", {words}" if words else "")
     if not questions:
         return f"{head}: its questions and their scripts, frozen once a person signs it"
-    return f"{head}: the questions and their scripts" + (" on the cuts it fixes" if cuts else "")
+    return f"{head}: the questions and their scripts" + (" on the segments it fixes" if cuts else "")
 
 
 def _rel(target: Path, base: Path) -> str:
@@ -271,7 +271,7 @@ def _rel(target: Path, base: Path) -> str:
 
 def _version_open(ver: Path) -> None:
     if not VERSION.match(ver.name) or face_kind(ver.parent) != "prototype":
-        sys.exit(f"{ver.name} is not a Prototype version (insight/Prototype-<name>/jNN_code-vN_<slug>/)")
+        sys.exit(f"{ver.name} is not a Question Book version (insight/InsightQuestionBook-<name>/jNN_question-vN_<slug>/)")
     if str(face(ver).get("state")) == "closed":
         sys.exit(f"{ver.name} is signed and frozen: open the next version (insight_ladder.py version)")
 
@@ -376,16 +376,16 @@ def sign(ver: Path, date: str, plan: Plan) -> None:
         sys.exit(f"not agreed yet (another agent agrees each new or changed question's needs): {', '.join(unagreed)}")
     parts = front(ver / "partitions.md")[0].get("partitions") or []
     if not any(p.get("name") == "full" for p in parts) or any("<" in str(p.get("name")) for p in parts):
-        sys.exit(f"{ver.name}/partitions.md: set the cuts first (run-set-cuts): `full` and every cut named")
+        sys.exit(f"{ver.name}/partitions.md: set the segments first (run-set-segments): `full` and every segment named")
     fields, body = front(ver / f"{ver.name}.md")
     fields.update(state="closed", signed=f"✅ {date}")
     plan.write(ver / f"{ver.name}.md", with_front(fields, body), replace=True)
 
 
 def propose(proto: Path, slug: str, kind: str, source: str, level: str, why: str, plan: Plan) -> Path:
-    """A proposal into the Prototype's proposals/: the only way a question or a cut reaches a new version."""
+    """A proposal into the Question Book's proposals/: the only way a question or a segment reaches a new version."""
     if face_kind(proto) != "prototype":
-        sys.exit(f"{proto.name} is not a Prototype Block (board.md board-kind: prototype)")
+        sys.exit(f"{proto.name} is not a Question Book Block (board.md board-kind: prototype)")
     if kind not in KINDS:
         sys.exit(f"--kind is one of: {' · '.join(KINDS)}")
     if not SLUG.match(slug or "") or not source:
@@ -428,11 +428,11 @@ def board(path: Path, dataset: str, proto: str, title: str, accumulates: str, pl
         sys.exit("--dataset is a short name, letters and digits, carrying no version (<D>, not <D>v1): its "
                  "versions are data-v1, data-v2, … in board.md versions:")
     if face_kind(project_of(path) / proto) != "prototype":
-        sys.exit(f"--prototype {proto}: no Prototype Block there yet (insight_ladder.py prototype)")
+        sys.exit(f"--prototype {proto}: no Question Book Block there yet (insight_ladder.py prototype)")
     plan.write(path / "board.md", with_front(
         {"board-kind": "insight-board", "workbench": "insight", "dataset": dataset, "prototype": proto,
          "accumulates": accumulates, "goal": board_goal(title, dataset), "versions": []},
-        f"\n# {title or path.name}\n\nOne dataset, its data versions, and one Job per pair (code version × data "
+        f"\n# {title or path.name}\n\nOne dataset, its data versions, and one Job per pair (question version × data "
         "version).\n\n## Questions\n\n```yaml\nquestions: []\n```\n"))
     plan.write(path / "meta" / "meta.md", f"# {dataset} · what the extract holds\n\n<grain · window · sources · "
                "limits; one line per data version on what is new>\n")
@@ -453,11 +453,11 @@ def data(path: Path, ver: str, extract: str, rows: str, new: str, plan: Plan, fo
     want = f"data-v{len(have) + 1}"
     if ver != want:
         sys.exit(f"the next data version is {want}")
-    # a folder (JL 261008): the data file, its manifest, dictionary, summary, figures and docs; the workbench
+    # a folder: the data file, its manifest, dictionary, summary, figures and docs; the workbench
     # reads them all, the Runs find the data file in it (run_job.version_extract)
     entry = ({"version": ver, "folder": folder.rstrip("/") + "/", "frozen": today()} if folder else
              {"version": ver, "extract": extract, "frozen": today(), "rows": rows or "<n>"})
-    if label:                                  # the data version's few words, shown as data-v<M> · <label> (JL 261109)
+    if label:                                  # the data version's few words, shown as data-v<M> · <label>
         entry = {"version": ver, "label": label, **{k: v for k, v in entry.items() if k != "version"}}
     fields.setdefault("versions", []).append(dict(entry, new=new or "<what is new>"))
     plan.write(path / "board.md", with_front(fields, body), replace=True)
@@ -469,7 +469,7 @@ def jobs(block: Path) -> list[Path]:
 
 
 def release_hash(ver: Path) -> str:
-    """The first 12 hex of a sha256 over the release: release.yaml, the cuts, the thresholds, every question's files."""
+    """The first 12 hex of a sha256 over the release: release.yaml, the segments, the thresholds, every question's files."""
     h = hashlib.sha256()
     files = [ver / "release.yaml", ver / "partitions.md", ver / "thresholds.yaml"]
     for row in (release(ver).get("questions") or {}).values():
@@ -483,7 +483,7 @@ def release_hash(ver: Path) -> str:
 
 
 def job(block: Path, rel: str, ver: str, plan: Plan) -> Path:
-    """The next Job: one code version × one data version, its Tasks one per question of the code version."""
+    """The next Job: one question version × one data version, its Tasks one per question of the question version."""
     if face_kind(block) != "board":
         sys.exit(f"{block.name} is not an insight Board (board.md board-kind: insight-board)")
     fm = front(block / "board.md")[0]
@@ -562,8 +562,8 @@ def _question_goal(task: Path, plan: Plan) -> None:
 
 
 def goals(folder: Path, plan: Plan) -> None:
-    """Each face's missing goal line under `folder` (a Board, a Prototype, a release, a Job, a Task), from the same
-    source its generator reads: a Board's title, a Prototype's title, a release's questions and cuts, a Job's release
+    """Each face's missing goal line under `folder` (a Board, a Question Book, a release, a Job, a Task), from the same
+    source its generator reads: a Board's title, a Question Book's title, a release's questions and segments, a Job's release
     and data version, a question's ask."""
     level = level_of(folder)
     if level == "prototype":
@@ -591,7 +591,7 @@ def goals(folder: Path, plan: Plan) -> None:
         add_goal(folder / f"{folder.name}.md", str(q.get("ask") or q.get("question") or ""), plan)
 
 
-# ── audit and update: bring an older insight folder onto the current contract (JL 261109) ──────────────────────────
+# ── audit and update: bring an older insight folder onto the current contract ──────────────────────────
 def _spec_sha(*paths: Path) -> str:
     """The receipt's hash of a question's spec or scripts (run_question.sha256, without loading pandas)."""
     h = hashlib.sha256()
@@ -605,7 +605,7 @@ def _spec_sha(*paths: Path) -> str:
 
 
 def boards_of(folder: Path) -> list[Path]:
-    """The insight Boards a folder names: a Board itself, the Board a Prototype serves, or each Board of a Project."""
+    """The insight Boards a folder names: a Board itself, the Board a Question Book serves, or each Board of a Project."""
     folder = folder.resolve()
     kind = face_kind(folder) if (folder / "board.md").is_file() else ""
     if kind == "board":
@@ -617,7 +617,7 @@ def boards_of(folder: Path) -> list[Path]:
 
 
 def older_layout(folder: Path) -> str:
-    """The step for a folder made before the Prototype and the Board (it is carried, not renamed), else ''."""
+    """The step for a folder made before the Question Book and the Board (it is carried, not renamed), else ''."""
     fm = front(folder / "board.md")[0]
     if folder.name.endswith("-InsightBoard") or (folder / "0-MT-meta").is_dir():
         return "a register board: carry it with ref/carry_over.py, then ref/prototype_from_block.py"
@@ -646,9 +646,10 @@ def stale_receipts(board: Path) -> list[Path]:
 
 
 def audit(folder: Path, quiet: bool = False) -> list[tuple]:
-    """What each Board (and its Prototype) still lacks against ref/insight-ladder.md, one row per check:
+    """What each Board (and its Question Book) still lacks against ref/insight-ladder.md, one row per check:
     (Board, check, count, the step that fixes it). Read-only."""
     import rename_code_data as RN
+    import rename_segment as RS
     rows = []
     for b in boards_of(folder) or [folder.resolve()]:
         step = older_layout(b)
@@ -657,7 +658,10 @@ def audit(folder: Path, quiet: bool = False) -> list[tuple]:
             continue
         edits, renames, move = RN.plan(b, [])
         rows.append((b, "names", len(edits) + len(renames) + bool(move),
-                     "update --apply (ref/rename_code_data.py: code-vN, data-vM, the Prototype in insight/)"))
+                     "update --apply (ref/rename_code_data.py: question-vN, data-vM, the Question Book in insight/)"))
+        w_edits, w_renames = RS.plan(b)
+        rows.append((b, "words", len(w_edits) + len(w_renames),
+                     "update --apply (ref/rename_segment.py: a person reads \"segment\")"))
         gp = Plan(True)
         goals(b, gp) if not (edits or renames or move) else None
         rows.append((b, "goals", len(gp.made), "update --apply (insight_ladder.py goals)"))
@@ -665,7 +669,7 @@ def audit(folder: Path, quiet: bool = False) -> list[tuple]:
                 and _release_of(j).is_dir() and str(face(j).get("hash", "")) != release_hash(_release_of(j))]
         rows.append((b, "hash", len(pins), "update --apply (each Job's hash: re-pinned to its release)"))
         st = stale_receipts(b) if not (edits or renames or move) else []
-        rows.append((b, "receipts", len(st), "rerun each ticket: bash <Run>/run.sh (needs env.sh at the SPACE root)"))
+        rows.append((b, "receipts", len(st), "update --apply --rerun (each ticket's run.sh; needs env.sh at the SPACE root)"))
     if not quiet:
         for b, check, n, step in rows:
             print(f"{'✅' if n == 0 else '❗'} {b.name:<28} {check:<9} {n:>4}" + ("" if n == 0 else f"   ▶ {step}"))
@@ -674,11 +678,35 @@ def audit(folder: Path, quiet: bool = False) -> list[tuple]:
     return rows
 
 
-def update(folder: Path, apply: bool) -> list[tuple]:
-    """Bring each Board and its Prototype onto the current contract, in order: the names (code-vN × data-vM, the
-    Prototype beside its Board), the missing goal lines, each Job's hash re-pinned to its release. A dry run unless
-    `apply`; an older layout is only named (it is carried, by its own script); stale receipts are listed to rerun."""
+def rerun(runs: list[Path]) -> tuple[int, int, int]:
+    """Run each stale Run's own ticket again (bash <Run>/run.sh) and say whether its tables came out the same:
+    (same, changed, failed). A rename changes a question's text, never its numbers, so `changed` is worth reading."""
+    import subprocess
+    same = changed = failed = 0
+    for i, r in enumerate(runs, 1):
+        rt = r / "result" / "runtime.yaml"
+        before = read_yaml(rt).get("tables_sha256")
+        done = subprocess.run(["bash", str(r / "run.sh")], capture_output=True, text=True)
+        after = read_yaml(rt) if rt.is_file() else {}
+        if done.returncode != 0 or after.get("status") == "failed":
+            failed += 1
+            why = (after.get("problem") or done.stderr.strip().splitlines()[-1:] or ["no receipt"])
+            print(f"  ❗ {i}/{len(runs)} {r.parent.parent.name}/{r.name}: failed · {why if isinstance(why, str) else why[0]}")
+        elif after.get("tables_sha256") != before:
+            changed += 1
+            print(f"  🔶 {i}/{len(runs)} {r.parent.parent.name}/{r.name}: rerun, its tables changed")
+        else:
+            same += 1
+    return same, changed, failed
+
+
+def update(folder: Path, apply: bool, again: bool = False) -> list[tuple]:
+    """Bring each Board and its Question Book onto the current contract, in order: the names (question-vN × data-vM, the
+    Question Book beside its Board), the words (a person reads "segment"), the missing goal lines, each Job's hash
+    re-pinned to its release, and with `again` each stale receipt rerun by its ticket. A dry run unless `apply`; an
+    older layout is only named (it is carried, by its own script); without `again` stale receipts are listed."""
     import rename_code_data as RN
+    import rename_segment as RS
     for b in boards_of(folder) or [folder.resolve()]:
         step = older_layout(b)
         if step:
@@ -686,9 +714,12 @@ def update(folder: Path, apply: bool) -> list[tuple]:
             continue
         edits, renames, move = RN.plan(b, [])
         print(f"{b.name} · names: {len(edits)} files rewritten · {len(renames)} names · "
-              f"{'1 Prototype moved' if move else 'Prototype stays'}")
+              f"{'1 Question Book moved' if move else 'Question Book stays'}")
+        w_edits, w_renames = RS.plan(b)
+        if not apply:
+            print(f"{b.name} · words: {len(w_edits)} files rewritten · {len(w_renames)} names")
         if (edits or renames or move) and not apply:
-            print("  dry run: rerun with --apply; goals and hash are planned once the names are current")
+            print("  dry run: rerun with --apply; goals, hash and receipts are planned once the names are current")
             continue
         if apply:
             for p, _, new in edits:
@@ -700,6 +731,9 @@ def update(folder: Path, apply: bool) -> list[tuple]:
                     sys.exit(f"{move[1]} exists; nothing moved")
                 move[1].parent.mkdir(parents=True, exist_ok=True)
                 move[0].rename(move[1])
+            w_edits, w_renames = RS.plan(b)                       # after the names: the Question Book may have moved
+            RS.apply(w_edits, w_renames)
+            print(f"{b.name} · words: {len(w_edits)} files rewritten · {len(w_renames)} names")
         gp = Plan(not apply)
         goals(b, gp)
         print(f"{b.name} · goals: {len(gp.made)} {'written' if apply else 'missing'}")
@@ -716,8 +750,12 @@ def update(folder: Path, apply: bool) -> list[tuple]:
                     md.write_text(text, encoding="utf-8")
         st = stale_receipts(b)
         print(f"{b.name} · receipts: {len(st)} made from an older question or script")
-        for r in st:
-            print(f"  bash {r / 'run.sh'}")
+        if apply and again and st:
+            same, changed, failed = rerun(st)
+            print(f"{b.name} · rerun: {same} with the same tables · {changed} changed · {failed} failed")
+        else:
+            for r in st:
+                print(f"  bash {r / 'run.sh'}")
     return audit(folder, quiet=not apply) if apply else []
 
 
@@ -746,7 +784,7 @@ def _default_target(folder: Path, level: str, rtype: str) -> str:
         return DEFAULT_TARGET[(level, rtype)]
     name = folder.name
     if level == "version":
-        return VERSION.match(name).group(2)                        # code-v2
+        return VERSION.match(name).group(2)                        # question-v2
     if level == "question":
         return TASK.match(name).group(2).lower()                   # k01
     if level == "job":
@@ -760,18 +798,18 @@ def _partitions(task: Path) -> list[dict]:
     jf = face(task.parent)
     ver = project_of(task.parent.parent) / str(jf.get("prototype", ""))
     parts = front(ver / "partitions.md")[0].get("partitions") or []
-    return parts                                      # rNN = the cut's place in partitions.md (open_job.py)
+    return parts                                      # rNN = the segment's place in partitions.md (open_job.py)
 
 
 def hard_run(task: Path, which: str, plan: Plan) -> list[Path]:
     parts = _partitions(task)
     names = [p["name"] for p in parts]
     if not names:
-        sys.exit(f"{task.parent.name}'s release has no cuts (partitions.md)")
+        sys.exit(f"{task.parent.name}'s release has no segments (partitions.md)")
     pick = names if which == "all" else [which]
     for p in pick:
         if p not in names:
-            sys.exit(f"{p} is not a cut of this release: {', '.join(names)}")
+            sys.exit(f"{p} is not a segment of this release: {', '.join(names)}")
     jf, qid = face(task.parent), TASK.match(task.name).group(2)
     out = []
     for p in pick:
@@ -825,9 +863,9 @@ def main(argv=None) -> list[Path]:
     ap.add_argument("folder", type=Path)
     ap.add_argument("what", nargs="?", default="", help="question/change/retire: <L><NN>; propose: <slug>; "
                                                         "data: v<M>; run: its type")
-    ap.add_argument("extra", nargs="?", default="", help="question: <slug>; run: its target (or a partition)")
+    ap.add_argument("extra", nargs="?", default="", help="question: <slug>; run: its target (or a segment)")
     ap.add_argument("--serves", default="")
-    ap.add_argument("--slug", default="", help="version: what the code version is, jNN_code-vN_<slug>")
+    ap.add_argument("--slug", default="", help="version: what the question version is, jNN_question-vN_<slug>")
     ap.add_argument("--title", default="")
     ap.add_argument("--ask", default="", help="question: the full question, one sentence (its page's goal line)")
     ap.add_argument("--why", default="")
@@ -847,6 +885,7 @@ def main(argv=None) -> list[Path]:
     ap.add_argument("--data", default="")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--apply", action="store_true", help="update: write (a dry run without it)")
+    ap.add_argument("--rerun", action="store_true", help="update --apply: run each stale receipt's ticket again")
     a = ap.parse_args(argv)
     plan = Plan(a.dry_run)
     c = a.command
@@ -876,7 +915,7 @@ def main(argv=None) -> list[Path]:
         audit(a.folder)
         return []
     elif c == "update":
-        update(a.folder, a.apply)
+        update(a.folder, a.apply, a.rerun)
         return []
     else:
         if not a.what:

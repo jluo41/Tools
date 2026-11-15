@@ -20,7 +20,7 @@ level's open points in red (JL 261007: one session per level).
 Board in a temp folder), by `paper_guide_live.py`; each level's file adds its proposals, marked "?"
 (red). The screen and card shapes are s31's (`../../b10_project_workbench/s31-guide/`).
 
-**Feeds:** `../reports/` q01_paper_ladder; the proposed Guide text goes into `guide.yaml` and
+**Feeds:** `../reports/` Q01; the proposed Guide text goes into `guide.yaml` and
 `method.md` once JL agrees.
 
 

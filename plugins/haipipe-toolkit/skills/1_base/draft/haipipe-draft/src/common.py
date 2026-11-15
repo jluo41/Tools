@@ -115,7 +115,7 @@ def evidence_run_dir(page_dir):
 def delivery_owner(folder):
     """The nearest containing Block; a standalone Page is its own owner.
 
-    Job and Task faces cannot create another storage root. Paper-* is the
+    Job and Task faces cannot create another storage root. Paper-* (and Grant-*) is the
     older Block name, also used by small source-only paper builds.
     """
     folder = Path(folder).resolve()
@@ -123,7 +123,7 @@ def delivery_owner(folder):
         name = candidate.name
         if re.match(r"^[jt]\d+_", name):
             continue
-        if (re.match(r"^b\d+_", name) or name.startswith("Paper-")
+        if (re.match(r"^b\d+_", name) or name.startswith(("Paper-", "Grant-"))
                 or (candidate / "board.md").is_file()):
             return candidate
     if any(re.match(r"^[jt]\d+_", p.name) for p in (folder, *folder.parents)):
@@ -230,7 +230,7 @@ def scene_text(scene) -> str:
     """The ONE way an Excalidraw scene is serialized (JL 260816).
 
     Two writers used to disagree: `cli/draw.py` wrote `indent=2` with raw
-    UTF-8, `servers/workbench/xcal.py` wrote `indent=1` with escapes, so a scene the split
+    UTF-8, `servers/workbench/studio/xcal.py` wrote `indent=1` with escapes, so a scene the split
     had saved never round-tripped through the CLI and every `draw.py retire`
     read the difference as a phantom concurrent edit. Both call this now, so a
     scene keeps one shape whichever hand last touched it. Raw UTF-8 keeps a

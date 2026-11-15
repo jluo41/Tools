@@ -14,14 +14,14 @@ offers Add a topic. The right rail ends Skills · Files.
 
 Redrawn 261106 to the live, aligned insight pages (servers/workbench-insight; asked 261106: "use your picks" on the
 Board, Job and Task Report walks, and Studio at every level): Board Answers · Questions · Jobs · Data · Handoff ·
-MindMap; Job Overall · Grid · vs previous · MindMap (vs previous hidden on a first Job); Task Answer · By cut · Across
+MindMap; Job Overall · Grid · vs previous · MindMap (vs previous hidden on a first Job); Task Answer · By segment · Across
 Jobs · Plan · MindMap. A changed screen carries its dated green ✎ notes under its letter, listed again under the
 screens (NOTES). A reviewed design no later ask overruled stays, red, marked "proposal" (S(..., red=True), "red",
 "redline"). The drawing is written by five_parts.marks_writer, so a person's marks on the canvas stay.
 
 The example is the theme's own public example, Insight-Example (made-up rows, arm A and arm B, three groups): a Board is
 one dataset and its data freezes; a Job is one analysis plan on one data freeze; a Task is one question (X, D, I, K or
-W level); a hard Run is one cut. Tools is public, so nothing from a private Board is drawn.
+W level); a hard Run is one segment. Tools is public, so nothing from a private Board is drawn.
 
     python insight_ui_cells.py <topic folder> <letter> <out>     one letter's screen alone, for a review round
 """
@@ -46,13 +46,13 @@ PALE = "#dee2e6"
 
 # ── the example: the theme's public Insight-Example, as the live pages show it ──────────────────────────────────────
 SPACE = "<SPACE> / Tools / blueprints / Project-Ladder / insight"
-BOARD, JOB, TASK = "Insight-Example", "j02_code-v1-example-questions_data-v2", "t03_I01_outcome-by-arm"
+BOARD, JOB, TASK = "Insight-Example", "j02_question-v1-example-questions_data-v2", "t03_I01_outcome-by-arm"
 PAGE = {"block": (BOARD, f"{SPACE} / {BOARD}", ""),
         "job": (JOB, f"{SPACE} / {BOARD} / {JOB}", ""),
         "task": (TASK, f"{SPACE} / {BOARD} / {JOB} / {TASK}", "Aim  ·  I01")}       # only a Task has a goal-line
 LEFT = {"block": (0, 4, 1), "job": (2, 12, 3), "task": (3, 9, 99)}   # this page's line, how many, the first child line
 RIGHT = ("Report", "Work", "Studio", "Interactions", "Delivery", "Timeline", "Skills", "Files")   # as served 261106
-J1, J2 = "j01_code-v1-example-questions_data-v1", JOB
+J1, J2 = "j01_question-v1-example-questions_data-v1", JOB
 
 
 # ── the screen's parts, one name each (haipipe-ui: path, title-&-section, view-button-list, goal-line, view-caption,
@@ -263,8 +263,8 @@ DG_COLS = (("question", 150), ("Full", 52), ("First", 52), ("Second", 52), ("Thi
 
 
 def k_dotgrid(eid, x, y, w, key, levels):
-    """Questions × cuts, one dot a cell, folded by DIKW level (asked 261106: "one dot, folded by DIKW level"): the open
-    level shows its rows, a column per cut, then the page and its check."""
+    """Questions × segments, one dot a cell, folded by DIKW level (asked 261106: "one dot, folded by DIKW level"): the open
+    level shows its rows, a column per segment, then the page and its check."""
     els = text(eid + "_key", x + 4, y, key, 11, BODY)
     xs, cx = [], x + 4
     for _, cw in DG_COLS:
@@ -752,14 +752,14 @@ OVERALL = (("X01 · what we found", "answered · checked"), ("X02 · what data c
 OVERALL_PANEL = (("line", "What did the example find, in one line?"), ("kv", (("", A_ONE + "."),
                                                                              ("how sure", "firm on the whole population; the two groups pool"))),
                  ("fig", "Arm B's outcome rate is the higher one\nfrom I01 · t03"),
-                 ("kv", (("", "the page, all cuts ↗"), ("check", "✅ 261106 · another agent"))))
+                 ("kv", (("", "the page, all segments ↗"), ("check", "✅ 261106 · another agent"))))
 FOUND = (("Data", "2 of 2 answered"), ("Information", "2 of 2 answered"), ("Knowledge", "1 of 2 answered"),
          ("Wisdom", "1 of 1 answered"))
 FOUND_PANEL = (("kv", (("may say", "counts, what was seen"),)),
                ("line", "D01 ✅  What does the example extract hold?"),
                ("kv", (("", "960 rows and 5 columns over 16 days; nothing missing"), ("", "answered on 2 of 2 Jobs · r01_full ↗"))),
                ("line", "D02 ✅  Are the arms and groups the size we expect?"),
-               ("kv", (("", "the arms close to even in every cut"), ("", "answered on 2 of 2 Jobs · r01_full ↗"))))
+               ("kv", (("", "the arms close to even in every segment"), ("", "answered on 2 of 2 Jobs · r01_full ↗"))))
 LEVELS_Q = (("Executive", "2 of 2 answered", (("X01", "what did the example find? · " + A_ONE),
                                               ("X02", "what can this data not say? · " + A_TWO))),
             ("Data", "2 of 2 answered", None), ("Information", "0 of 2 answered", None),
@@ -803,7 +803,7 @@ BLOCK_R = (
           ("j01", "analysis plan 1 × data freeze 1 · first ten days", "●●●●●", "8 of 8 written · closed"))),
         (S("2 · 📂 The newest Job, j02 · its Tasks", "5 of 8 written"), "levels", LEVELS_T),
         (S("3 · ⏱ What each Job moved", "one clock each"), "chain", (("j01", "the first Job"), ("j02", "the data · from j01"))))),
-    ("Data", "Each data freeze's key numbers and files, then the cuts every question runs on.", (
+    ("Data", "Each data freeze's key numbers and files, then the segments every question runs on.", (
         (S("1 · 🗄 Data freezes", "newest first"), "sidetabs",
          (("data freeze 2 · all sixteen days", "frozen 261106"), ("data freeze 1 · first ten days", "frozen 261106")),
          (("tiles", (("960", "rows"), ("5", "columns"), ("16 days", "dates"), ("261106", "frozen"), ("j02", "Jobs on it"))),
@@ -811,7 +811,7 @@ BLOCK_R = (
           ("kv", (("", "a few rows, 3 of 960, identifying columns left out"),)),
           ("table", ("date", "arm", "group", "outcome"), (("01-05", "B", "group_1", "1"), ("01-09", "A", "group_1", "1"),
                                                           ("01-11", "B", "group_1", "0"))))),
-        (S("2 · ✂️ Cuts", "power floor 20 pp"), "table", ("cut", "where", "why"),
+        (S("2 · ✂️ Segments", "power floor 20 pp"), "table", ("cut", "where", "why"),
          (("full", "every row", "every row"), ("first", "group = group_1", "the largest group, on its own"),
           ("second", "group = group_2", "the second group, on its own"), ("cross", "first against second", "do they differ?"),
           ("third", "group = group_3", "too thin to answer")),
@@ -831,8 +831,8 @@ BLOCK_WORK = work("block", BLOCK_R, {
         (S("1 · ✍️ The Overall Report", "done"), "todo",
          (("Write the Overall Report for j02", "in the Job, from the answers below it", "✅ done", ""),)),)),
     "Questions": ("Your sign on the next plan, the proposals, new questions, then the questions to ask about.", (
-        (S("1 · 📋 The next analysis plan", "2 wait for you", wait="🙋 Sign the plan analysis plan 2 · example follow-up: in the Prototype"),
-         "todo", (("Sign the plan analysis plan 2", "in the Prototype", "🙋 waiting for you", "Open in the Prototype"),
+        (S("1 · 📋 The next analysis plan", "2 wait for you", wait="🙋 Sign the plan analysis plan 2 · example follow-up: in the Question Book"),
+         "todo", (("Sign the plan analysis plan 2", "in the Question Book", "🙋 waiting for you", "Open in the Question Book"),
                   ("Triage the open proposals", "into one batch for the next plan", "🙋 waiting for you", "Open the proposals"))),
         (S("2 · ❓ New questions", "2 ready"), "todo",
          (("Propose questions", "the gaps and weak answers, as proposals for the next plan", "ready", "Copy prompt"),
@@ -843,10 +843,10 @@ BLOCK_WORK = work("block", BLOCK_R, {
           ("j01 · plan 1 × freeze 1", "✅ done", "✅ done", "✅ done", "✅ done"))),
         (S("2 · ➕ A new Job", "ready"), "todo",
          (("Add a Job", "a signed analysis plan × a data freeze, one clock moved", "ready", "Copy prompt"),)))),
-    "Data": ("A new freeze or cut, then the freezes and cuts.", (
-        (S("1 · 🗄 Freezes and cuts", "2 ready"), "todo",
-         (("Add a data freeze", "a new extract, frozen, its rows counted per cut", "ready", "Copy prompt"),
-          ("Propose a cut to the next plan", "a cut is plan, fixed before any outcome", "ready", "Copy prompt"))),)),
+    "Data": ("A new freeze or segment, then the freezes and segments.", (
+        (S("1 · 🗄 Freezes and segments", "2 ready"), "todo",
+         (("Add a data freeze", "a new extract, frozen, its rows counted per segment", "ready", "Copy prompt"),
+          ("Propose a segment to the next plan", "a segment is plan, fixed before any outcome", "ready", "Copy prompt"))),)),
     "Handoff": ("The counsel, the draft and your sign, then the Report's Handoff.", (
         (S("1 · 🤝 The handoff", "1 waits for you", wait="🙋 Sign the handoff W01: Design reads only a signed handoff"), "todo",
          (("Write the counsel", "from the latest Job's Wisdom answers", "✅ done", ""),
@@ -861,7 +861,7 @@ BLOCK_STUDIO = (                       # live studio rows; the groups by Tag and
                         STUDIO_VERBS, False),
                        ("s02-why-answers-moved", "explore", "display", "j02 runs the same analysis plan on data freeze 2.",
                         STUDIO_VERBS, True))),
-        ("", "redline", "🏷 Groups by Tag: Map · Why it moved · Cut ideas · Story for Design, each row says where"),
+        ("", "redline", "🏷 Groups by Tag: Map · Why it moved · Segment ideas · Story for Design, each row says where"),
         ("", "red", "✍️ Ask the agent", "agent", ("Copy prompt: talk and sketch",)))),
 )
 
@@ -880,9 +880,9 @@ JOB_R = (
         (S("2 · 🧷 This Job", "open"), "kv", (("plan", "analysis plan 1 · example questions"),
                                              ("freeze", "data freeze 2 · all sixteen days"), ("state", "open"),
                                              ("moved", "the data"), ("Job before", J1))))),
-    ("Grid", "Every question × cut, by DIKW level: one dot a cell.", (
+    ("Grid", "Every question × segment, by DIKW level: one dot a cell.", (
         ("", "big", "5 of 8 questions answered", "still to write: I01, I02, W01"),
-        (S("1 · 🔲 Questions × cuts", "5 of 8 answered"), "dotgrid", DG_KEY, (
+        (S("1 · 🔲 Questions × segments", "5 of 8 answered"), "dotgrid", DG_KEY, (
             ("Data", "2 of 2 answered", (("D01 extract-shape", "●————", "t01_D01 ↗", "checked"),
                                          ("D02 arm-balance", "●●●●—", "t02_D02 ↗", "checked"))),
             ("Information", "0 of 2 answered", (("I01 outcome-by-arm", "●●●○—", "waits on runs", "—"),
@@ -906,13 +906,13 @@ JOB_REPORT = report("job", JOB_R)
 JOB_WORK = work("job", JOB_R, {
     "Overall": ("Your sign and the close, the Overall Report to write, then the Report's Overall.", (
         (S("1 · 🔏 The plan and the close", "waits on the runs, the pages, the checks"), "todo",
-         (("Sign the plan analysis plan 1", "signed in the Prototype", "✅ done 261106", ""),
+         (("Sign the plan analysis plan 1", "signed in the Question Book", "✅ done 261106", ""),
           ("Close the Job", "once every page is checked", "waits on the checks", "Close"))),
         (S("2 · ✍️ Write the Overall Report", "done"), "todo",
          (("Write the Overall Report", "each Executive question's page from the answers below it", "✅ done", ""),)))),
     "Grid": ("The next act in each cell, then the grid, each cell its next verb.", (
         (S("1 · 🧮 Next in each cell", "1 to run"), "todo",
-         (("Launch all", "one Run per question × cut, from the plan's thresholds", "1 to run", "Copy prompt"),
+         (("Launch all", "one Run per question × segment, from the plan's thresholds", "1 to run", "Copy prompt"),
           ("Write all", "the next DIKW level first: I · Information", "3 to write", "Copy prompt"),
           ("Check all", "alignment and CHECK, by another agent", "2 to check", "Copy prompt"))),
         ("", "note", "⏳ running now · run-write-t06 ↗"))),
@@ -930,9 +930,9 @@ JOB_STUDIO = (
 )
 
 # ── the Task (s57 Report, s58 Work, s59 Studio) ──────────────────────────────────────────────────────────────────────
-T_ONE = "Arm B's outcome rate is 15 points above arm A's on the whole extract,\nand B leads in every cut that could be read."
+T_ONE = "Arm B's outcome rate is 15 points above arm A's on the whole extract,\nand B leads in every segment that could be read."
 TASK_MAP = (("", "verbs", ("Open all", "Close all")), ("", "tree", "t03_I01_\noutcome-by-arm", (
-    ("", "Runs", "one a cut, then the page", ("Run 1 · r01_full · the full cut", "Run 2 · the first group",
+    ("", "Runs", "one a segment, then the page", ("Run 1 · r01_full · the full segment", "Run 2 · the first group",
                                               "Run 3 · the second group", "Run 5 · r05_third · planned",
                                               "run-write-t03 · write the page")),)))
 TASK_R = (
@@ -942,8 +942,8 @@ TASK_R = (
         (S("2 · 🎯 How sure", "not checked yet"), "kv",
          (("how sure", "Wilson intervals per arm; the gap's interval excludes zero on full"),
           ("rests on", "full ↗ · first ↗ · second ↗"))))),
-    ("By cut", "Each cut this question runs on: its Run, its power, page and check.", (
-        (S("1 · 🔲 Cut × step", "3 of 4 ran"), "table", ("cut", "Run", "power", "page", "check"),
+    ("By segment", "Each segment this question runs on: its Run, its power, page and check.", (
+        (S("1 · 🔲 Segment × step", "3 of 4 ran"), "table", ("cut", "Run", "power", "page", "check"),
          (("full", "✅ ok", "enough · sees 9 points", "to write", "to check"),
           ("first", "✅ ok", "enough · sees 12 points", "to write", "to check"),
           ("second", "✅ ok", "enough · sees 15 points", "to write", "to check"),
@@ -965,21 +965,21 @@ TASK_R = (
 TASK_REPORT = report("task", TASK_R)
 TASK_WORK = work("task", TASK_R, {
     "Answer": ("The chain of roles, one verb live on the next link, then the answer.", (
-        (S("1 · 🔗 The chain", "next: run every cut"), "todo",
-         (("Plan the evidence", "writer · in the Prototype, before any Run", "✅ done", ""),
+        (S("1 · 🔗 The chain", "next: run every segment"), "todo",
+         (("Plan the evidence", "writer · in the Question Book, before any Run", "✅ done", ""),
           ("Agree the plan", "checker · another agent agrees the needs", "✅ done", ""),
-          ("Run every cut", "the scripts · one Run per cut, from the plan", "ready", "Copy prompt"),
+          ("Run every segment", "the scripts · one Run per segment, from the plan", "ready", "Copy prompt"),
           ("Write the page", "writer · from the Runs' results", "to do", ""),
           ("Check the page", "checker · in a fresh context", "to do", ""),
           ("Check the alignment", "checker · each cell against its question", "to do", ""))),)),
-    "By cut": ("The next act on each cut, then each cut's Run, power, page and check.", (
-        (S("1 · 🔲 Next on each cut", "ready"), "todo", (("Run the third cut", "r05_third", "ready", "Copy prompt"),)),
-        (S("2 · ✂️ A new cut", "ready"), "todo",
-         (("Propose a cut to the next plan", "a cut is plan, fixed before any outcome", "ready", "Copy prompt"),)))),
+    "By segment": ("The next act on each segment, then each segment's Run, power, page and check.", (
+        (S("1 · 🔲 Next on each segment", "ready"), "todo", (("Run the third segment", "r05_third", "ready", "Copy prompt"),)),
+        (S("2 · ✂️ A new segment", "ready"), "todo",
+         (("Propose a segment to the next plan", "a segment is plan, fixed before any outcome", "ready", "Copy prompt"),)))),
     "Across Jobs": ("Track this question across the Jobs, then its answer in each.", (
         (S("1 · 🔁 Track", "ready"), "todo", (("Track I01 across the Jobs", "its answer Job by Job", "ready", "Copy prompt"),)),)),
     "Plan": ("The plan's steps, then what it needs.", (
-        (S("1 · 📋 The plan", "done"), "todo", (("Plan the evidence", "in the Prototype, before any Run", "✅ done", ""),
+        (S("1 · 📋 The plan", "done"), "todo", (("Plan the evidence", "in the Question Book, before any Run", "✅ done", ""),
                                                ("Agree the plan", "another agent", "✅ done 261106", ""))),)),
     "MindMap": (MAP_CAP, ()),
 })
@@ -1007,7 +1007,7 @@ VIEWS = {   # (level, section): (the line above the screens, the views, the open
                       + OWN + "; " + RAIL, JOB_WORK, "? Close stays greyed\nuntil every check"),
     ("job", "studio"): ("one view, Topics: this Job's own topics, flat rows as live; red: Ask the agent, kept as a proposal;\n" + RAIL,
                         JOB_STUDIO, "? Ask the agent\nhere too (red)"),
-    ("task", "report"): ("Answer · By cut · Across Jobs · Plan · MindMap, read only, as live; its goal-line the question's Aim; " + CLOSED
+    ("task", "report"): ("Answer · By segment · Across Jobs · Plan · MindMap, read only, as live; its goal-line the question's Aim; " + CLOSED
                          + ";\n" + OWN + "; " + RAIL, TASK_REPORT, "? agree A to E: they\nfollow the live page"),
     ("task", "work"): ("the same views as Report: ⚙️ Process when it has a step, then 📊 Results by the same code; " + CLOSED + ";\n"
                        + OWN + "; " + RAIL, TASK_WORK, "? the chain as rows,\nits roles in each line"),
@@ -1024,14 +1024,14 @@ NOTES = {
                           "C": [(D6, "Each Job: a dot row per DIKW level"), (D6, "the newest Job · its Tasks, by level"),
                                 (D6, "🙋 holds Pooling on freeze two: 2 wait")],
                           "D": [(D6, "each freeze a card of key numbers"), (D6, "its files one click away, a few rows"),
-                                (D6, "cuts with their power floor")],
+                                (D6, "segments with their power floor")],
                           "E": [(D6, "a line per Wisdom draft, then the draft"), (D6, "the signed handoffs; 🙋 answered")],
                           "F": [(D6, "new: MindMap, the drawing and each Job"), (D6, "🙋 Interaction, unnumbered")]},
     ("block", "work"): {"A": [(D6, "no Waits-on-you section first"), (D6, "⚙️ the Overall Report: done"),
                               (D6, "📊 Results = the Report's A")],
                         "B": [(D6, "the next plan: 2 wait, its line under"), (D6, "❓ New questions: Copy prompt")],
                         "C": [(D6, "🪜 each Job's steps: j02 next: run"), (D6, "➕ a new Job; 🙋 2 wait for you")],
-                        "D": [(D6, "🗄 a new freeze or cut: 2 ready")],
+                        "D": [(D6, "🗄 a new freeze or segment: 2 ready")],
                         "E": [(D6, "🤝 sign the handoff W01: waits for you")],
                         "F": [(D6, "new: MindMap, Results only, no Process")]},
     ("block", "studio"): {"A": [(D6, "one view, Topics: flat rows as live"), (D6, "a row: stage, kind, its line, its verbs"),
@@ -1047,12 +1047,12 @@ NOTES = {
     ("job", "studio"): {"A": [(D6, "one view, Topics: this Job's s02, as live"), (D6, "red: Ask the agent, kept")]},
     ("task", "report"): {"A": [(D6, "goal-line: Aim · I01"), (D6, "the first figure large, the others small"),
                                (D6, "how sure and what it rests on")],
-                         "B": [(D6, "a power column per cut"), (D6, "the full result, its numbers")],
+                         "B": [(D6, "a power column per segment"), (D6, "the full result, its numbers")],
                          "C": [(D6, "the answer in each Job, its status")],
                          "D": [(D6, "needs: need, steps, may say, agreed")],
-                         "E": [(D6, "new: MindMap, a Run per cut")]},
-    ("task", "work"): {"A": [(D6, "🔗 the chain of roles: run every cut next"), (D6, "no Waits-on-you section first")],
-                       "B": [(D6, "🔲 the third cut to run, ✂️ a new cut")],
+                         "E": [(D6, "new: MindMap, a Run per segment")]},
+    ("task", "work"): {"A": [(D6, "🔗 the chain of roles: run every segment next"), (D6, "no Waits-on-you section first")],
+                       "B": [(D6, "🔲 the third segment to run, ✂️ a new segment")],
                        "C": [(D6, "🔁 Track: ready")],
                        "D": [(D6, "📋 the plan: done")],
                        "E": [(D6, "new: MindMap, Results only")]},
@@ -1068,12 +1068,12 @@ PIECE = {   # the why notes: what the live focus page showed when the cell was o
     ("block", "studio"): ("the Board's Studio: its topics",
                           ["no Studio section on\nthe focus page", "the Board has no\nstudio/ folder", "topics sit only\nin b11"]),
     ("job", "report"): ("a Job's Report: the Overall Report, the grid, what changed, its map",
-                        ["Tasks are listed flat,\nt01 to t20", "no question × cut\ngrid", "the Overall Report\nis not shown"]),
+                        ["Tasks are listed flat,\nt01 to t20", "no question × segment\ngrid", "the Overall Report\nis not shown"]),
     ("job", "work"): ("a Job's Work: Process, then the Report's views",
                       ["every Task says \"no\nstate recorded\"", "no sign or close\nbutton", "what moved is only\nin the Job's face"]),
     ("job", "studio"): ("a Job's Studio: its own topics",
                         ["no Studio section", "no topic names\na Job", "no talk-and-sketch\nprompt here"]),
-    ("task", "report"): ("a Task's Report: the answer, each cut, other Jobs, the plan, its map",
+    ("task", "report"): ("a Task's Report: the answer, each segment, other Jobs, the plan, its map",
                          ["Report lists Runs:\nr01_full, run-write", "the answer sits in the\nface, never shown",
                           "gates hid in the old\nCheck Space"]),
     ("task", "work"): ("a Task's Work: Process, then the Report's views",

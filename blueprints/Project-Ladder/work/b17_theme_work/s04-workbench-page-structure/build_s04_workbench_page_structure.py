@@ -6,7 +6,7 @@ Block UI Job UI and Task UI, there are some overlap, right?"); each level's Repo
 Its Design: A, the frame every work page wears, drawn on j03's own page with its parts numbered, and under it the same
 frame at the three levels; B, the right-rail's other sections, one card each, then the Interactions page's three
 designs from the waiting form, the open question in red. Every fact is read from disk on every build: the right-rail,
-its lines, the goal-line words and the view-captions from servers/workbench/focus_page.py, each section's verb from
+its lines, the goal-line words and the view-captions from servers/workbench/page/focus_page.py, each section's verb from
 haipipe-ui, the left-rail from b17's folders, the goal from j03's face, the pieces from delivery/render.yaml, the three
 designs from ../runs/r02_collect_interactions_page/. The first drawing stays whole below the Design, at 40%, its
 screenshot kept.
@@ -32,7 +32,7 @@ import five_parts  # noqa: E402
 BLOCK = HERE.parent
 J03 = BLOCK / "j03_work_workbench_pages"
 FORM = BLOCK / "runs" / "r02_collect_interactions_page"
-FOCUS = TOOLS / "plugins/haipipe-toolkit/servers/workbench/focus_page.py"
+FOCUS = TOOLS / "plugins/haipipe-toolkit/servers/workbench/page/focus_page.py"
 UI_SKILL = TOOLS / "plugins/haipipe-toolkit/skills/1_base/workbench/haipipe-ui/SKILL.md"
 SRC = FOCUS.read_text(encoding="utf-8")
 TREE = ast.parse(SRC)
@@ -159,7 +159,7 @@ SPEC = {
              "deck_why": "stays in s04's delivery/deck/, so anyone gets it in a minute",
              "parts": [("page", f"ui/{name}", why, (UI / name).exists()) for name, why in PIECES]},
     "job": J03,
-    "target": "servers/workbench/focus_page.py: page_shell, render (design_b02_workbench)",
+    "target": "servers/workbench/page/focus_page.py: page_shell, render (design_b02_workbench)",
     "missing": [(f"ui/{name}", "the agreed screen draft, not drawn yet") for name, _ in PIECES if not (UI / name).exists()],
 }
 

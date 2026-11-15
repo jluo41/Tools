@@ -117,3 +117,100 @@
   window.addEventListener('pointerup', () => { down = null; map.classList.remove('panning'); });
   setTimeout(redraw, 0);
 })();
+/* 🙋 tray (JL 261114: "if there are things for me to make decision, could they just pop out?"): every orange mark on the
+   page (a section bar's 🙋 N, a Draft Lab sentence's waiting cards) is gathered under one 🙋 beside the title. The tray is
+   a native popover (Esc or a click outside closes it); Go opens that fold, scrolls to it and flashes it. No mark, no tray. */
+(function () {
+  const h1 = document.querySelector('.focus-page > h1');
+  if (!h1 || !('popover' in HTMLElement.prototype)) return;
+  const name = el => {
+    const im = el.closest('.im-marks');                                   // an item card mark (ref/cards.md)
+    const bar = im ? (im.closest('tr[data-addr], [data-addr]:not(.im-marks)') || im.parentElement)
+                   : el.closest('.fd-h, summary, .sx-row, [data-s]');
+    const t = bar ? bar.cloneNode(true) : null;
+    if (t) t.querySelectorAll('.word, .mk, .sx-bar, .bar, button, .im-marks, .im-slot').forEach(x => x.remove());
+    return ((t && t.textContent) || el.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 90);
+  };
+  const marks = Array.from(document.querySelectorAll('.focus-content .word.you, .focus-content .sx-sum.wait, '
+    + '.focus-content .im-marks:not(.im-roll) .im-mk.im-w'));
+  const asked = document.getElementById('wait-items');                   // waiting questions at this page or below
+  const rows = asked ? Array.from(asked.content.children) : [];
+  // a bar's 🙋 N that only rolls up collection Runs (data-src="ix") is already listed as rows: never count it twice
+  if (rows.length) for (let i = marks.length - 1; i >= 0; i--) if (marks[i].dataset.src === 'ix') marks.splice(i, 1);
+  if (!marks.length && !rows.length) return;
+  const weight = m => { const k = (m.textContent.match(/\d+/) || [1])[0]; return +k || 1; };   // 🙋 3 counts 3
+  const n = rows.length + marks.reduce((t, m) => t + weight(m), 0);
+  const btn = document.createElement('button');
+  btn.type = 'button'; btn.className = 'tray-btn'; btn.textContent = '🙋 ' + n;
+  btn.title = n + (n === 1 ? ' waits' : ' wait') + ' for you'; btn.setAttribute('popovertarget', 'wait-tray');
+  const tray = document.createElement('div');
+  tray.id = 'wait-tray'; tray.setAttribute('popover', ''); tray.className = 'wait-tray';
+  tray.innerHTML = '<b>Waiting for you</b><ul></ul>';
+  const ul = tray.querySelector('ul');
+  marks.forEach(m => {
+    const li = document.createElement('li');
+    const what = document.createElement('span');
+    what.textContent = name(m) || m.title || m.textContent;
+    const go = document.createElement('button');
+    go.type = 'button'; go.textContent = 'Go';
+    go.addEventListener('click', () => {
+      tray.hidePopover();
+      for (let d = m.closest('details'); d; d = d.parentElement && d.parentElement.closest('details')) d.open = true;
+      const h = m.closest('.fd-h');
+      if (h && h.getAttribute('aria-expanded') === 'false') h.click();
+      if (m.classList.contains('sx-sum') && !m.closest('.sx-open')) m.click();
+      const slot = m.dataset.imOpen && document.querySelector('[data-im-slot="' + CSS.escape(m.dataset.imOpen) + '"]');
+      if (slot && slot.hidden) m.click();
+      const at = m.closest('tr[data-addr], .fd-sec, details, .sx-row, [data-s]') || m;
+      at.scrollIntoView({block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'});
+      at.classList.remove('tray-flash'); void at.offsetWidth; at.classList.add('tray-flash');
+    });
+    li.append(what, go); ul.append(li);
+  });
+  rows.forEach(li => { const a = li.querySelector('a'); if (a) a.classList.add('tray-open'); ul.append(li); });
+  h1.append(btn); document.body.append(tray);
+  tray.addEventListener('toggle', e => {
+    if (e.newState !== 'open') return;
+    const r = btn.getBoundingClientRect(), w = tray.offsetWidth;
+    tray.style.top = (r.bottom + 6) + 'px';
+    tray.style.left = Math.max(12, Math.min(r.right - w, innerWidth - w - 12)) + 'px';
+  });
+})();
+/* 📝 💬 on a section bar (JL 261114, mockup B: "for each section's card, we want to add the emojis" like a sentence's):
+   a bar counts what lies inside its section, 📝 edit cards that wait on you (orange) and 💬 comments; a click opens the
+   section and the first such sentence's cards, then scrolls to it and flashes it. Nothing inside, no mark. */
+(function () {
+  const bars = document.querySelectorAll('.focus-content section.fd-sec > h3.fd-h, .focus-content details.band-sec > summary');
+  bars.forEach(h => {
+    const box = h.closest('section.fd-sec, details.band-sec');
+    if (!box) return;
+    const inside = sel => Array.from(box.querySelectorAll(sel));
+    const kinds = [
+      ['📝', inside('.rv-card[data-state=proposed], .rv-card[data-state=open], .im-card.im-edit.im-e-proposed'), 'you', ' edit card', ' wait for you', '.sx-pen, .sx-sum'],
+      ['💬', inside('.rv-note:not(.nt-new), article.im-card:not(.im-edit):not(.im-c-done)'), '', ' comment', '', '.sx-cmt'],
+    ];
+    const at = h.querySelector('.word') || null;
+    kinds.forEach(([icon, list, cls, one, tail, opener]) => {
+      if (!list.length) return;
+      const n = list.length, b = document.createElement('span');
+      b.className = 'word mk bar-mk' + (cls ? ' ' + cls : ''); b.setAttribute('role', 'button'); b.tabIndex = 0;
+      b.textContent = icon + ' ' + n; b.title = n + one + (n === 1 ? '' : 's') + tail;
+      const go = e => {
+        e.preventDefault(); e.stopPropagation();
+        if (box.tagName === 'DETAILS') box.open = true;
+        else if (h.getAttribute('aria-expanded') === 'false') h.click();
+        const slot = list[0].closest('[data-im-slot]');
+        if (slot) slot.hidden = false;
+        const row = list[0].closest('.sx-row') || (slot && (slot.previousElementSibling || slot)) || list[0];
+        for (let d = row.closest('details'); d; d = d.parentElement && d.parentElement.closest('details')) d.open = true;
+        const o = row.querySelector && row.querySelector(opener);
+        if (o && !row.classList.contains('sx-open')) o.click();
+        row.scrollIntoView({block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'});
+        row.classList.remove('tray-flash'); void row.offsetWidth; row.classList.add('tray-flash');
+      };
+      b.addEventListener('click', go);
+      b.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') go(e); });
+      h.insertBefore(b, at);
+    });
+  });
+})();

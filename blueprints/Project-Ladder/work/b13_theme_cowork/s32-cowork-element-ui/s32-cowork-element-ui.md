@@ -1,5 +1,6 @@
 s32 · Cowork element UI
 =======================
+view: findings
 
 **Stage:** explore
 
@@ -16,8 +17,24 @@ draws it (`/_board/cowork-board`, flagged OLD in a red dashed box), and as b03's
 why, a green line for what changed and a red line for what is open. It is b03's `s32-element-ui` cut
 to one theme, and it adds the four elements only cowork has.
 
-**Feeds:** `../reports/` q01_cowork_ladder · q02_waiting_and_drafts · q03_cowork_delivery · and
+**Feeds:** `../reports/` Q01 · Q02 · Q03 · and
 b03's s32 (its Theme elements list, read from the heading below).
+
+
+Q02 · Answer
+------------
+
+**Question:** Where do waiting-on and drafts go?
+
+**Answer (open):** not written yet.
+
+
+Q03 · Answer
+------------
+
+**Question:** What does a cowork Block deliver?
+
+**Answer (open):** not written yet.
 
 
 Files

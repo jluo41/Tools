@@ -7,14 +7,14 @@ under Question-results reading methods; its papers are the rows of `../../../rel
 workbench's own judgment.
 
 family: Question-results reading
-move: Ask whether the answer differs across partitions, and test the difference itself,
+move: Ask whether the answer differs across segments, and test the difference itself,
   not each partition's significance.
-taxonomy: Inferential or causal, across groups [Leek 2015]; description across cuts, or
+taxonomy: Inferential or causal, across groups [Leek 2015]; description across segments, or
   causal inference when the effect is causal [Hernán 2019].
 comes from: Gelman 2006, a difference in significance is not a significant difference;
   Kent 2020, predictive heterogeneity
-reads: question · the partitions · the answer on each
-returns: the answer per partition, the difference with its interval, and a verdict: pool,
+reads: question · the segments · the answer on each
+returns: the answer per segment, the difference with its interval, and a verdict: pool,
   split or undetermined
 test now: T7 one test of the difference, not two separate tests
 test in use: T8 the split found again in new data
@@ -52,9 +52,9 @@ steps: 1. Collect each partition's answer and interval. 2. Compute the differenc
   interval [Gelman 2006]. 3. Return pool, split or undetermined.
 returns: The contrast table and the verdict, on the cross page.
 verify: A different agent checks that the verdict rests on the difference, not on one
-  partition being significant and another not (T6).
-risk: With many partitions, a split by chance is likely, and a post-hoc split is suspect
+  segment being significant and another not (T6).
+risk: With many segments, a split by chance is likely, and a post-hoc split is suspect
   [Rothwell 2005].
-evidence on AI: No study tests an AI agent judging heterogeneity across partitions yet
+evidence on AI: No study tests an AI agent judging heterogeneity across segments yet
   (ours).
 skill: haipipe-insight its cross group's POOL, SPLIT or UNDETERMINED verdict

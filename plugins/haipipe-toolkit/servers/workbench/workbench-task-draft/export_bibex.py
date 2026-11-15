@@ -436,5 +436,6 @@ document.addEventListener('click', function (ev) {
                     depth -= 1
                     if depth == 0:
                         break
-            out[key] = raw[i:j + 1]
+            # Crossref text arrives HTML-escaped ("BMJ Quality &amp; Safety"); LaTeX needs \&
+            out[key] = re.sub(r"\\?&amp;", r"\\&", raw[i:j + 1])
         return out

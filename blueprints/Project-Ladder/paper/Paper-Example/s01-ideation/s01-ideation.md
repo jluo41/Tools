@@ -7,7 +7,7 @@ s01 · Ideation
 
 **Topic:** Which direction the paper takes, and the ones it does not.
 
-**Feeds:** `reports/` q01_example
+**Feeds:** Q01
 
 
 ## Direction

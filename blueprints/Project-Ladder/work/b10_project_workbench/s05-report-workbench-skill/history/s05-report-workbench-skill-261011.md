@@ -69,8 +69,8 @@ skills/1_base/project/
 ├── haipipe-related/    s04 Related
 ├── haipipe-report/     s05 Report     ◀ this topic
 └── haipipe-run/        s06 Run
-servers/workbench/frame.py         question_rows · _report_cell · _answering · _opening
-servers/workbench/page_reader.py   page_document, a report Page in the reader
+servers/workbench/page/frame.py         question_rows · _report_cell · _answering · _opening
+servers/workbench/page/page_reader.py   page_document, a report Page in the reader
 skills/1_base/project/haipipe-report/   asks: the row, the folder
 ```
 
@@ -92,7 +92,7 @@ Below                         still open (red); this Block's Questions, row by r
 
 Read from disk on every build: `board.md` `## Questions`, each report's `answer-status`, every topic's
 `**Feeds:**` line (read as `frame.py` reads it), `runs/*/run.yaml` targets, q01's `## Figures`, the
-Report Space through `servers/workbench/frame.py`, and the two skills' versions.
+Report Space through `servers/workbench/page/frame.py`, and the two skills' versions.
 
 
 Finding (read 261011)

@@ -823,19 +823,19 @@ def next_step(path: Path, settle_runs: bool = True) -> dict:
     data = job_data(task, root)
     files = data_files(root, data["data"])
     t = rel(task, root)
-    view = lambda tab: f"/_board/workbench?path={t}&theme=labeling&space=Work+Details&sub={tab.replace(' ', '+')}"
+    view = lambda key: f"/_board/workbench?path={t}&layout=focus&section=report&group={key}"     # the Task's step
     out = {"task": t, "dataset": data["dataset"], "data": data["data"], "files": [rel(f, root) for f in files]}
-    steps = [("describe", "1 · Data"), ("items", "2 · Items"), ("embed", "3 · Embedding")]
+    steps = [("describe", "data", "Data"), ("items", "items", "Items"), ("embed", "embedding", "Embedding")]
     made = latest(task, "items")
     if made is not None and not signed(made):
-        out["note"] = (f"{made.name}'s items were made before recipes were signed: read them in 2 · Items; to remake "
+        out["note"] = (f"{made.name}'s items were made before recipes were signed: read them in the Items step; to remake "
                        "them under a signed recipe, write user feedback in its 'Make the items, again' prompt")
-    for op, tab in steps:
+    for op, key, tab in steps:
         if latest(task, op):
             continue
         open_ = next((r for r, _ in reversed(runs_of(task)) if operation_of(task, r) == op
                       and status_of(r) != "complete"), None)
-        out.update(step=op, tab=tab, workbench=view(tab))
+        out.update(step=op, tab=tab, workbench=view(key))
         if op == "describe" and not files:
             out.update(who="person", do="name the data: the Job's face needs `data:` (and `dataset:`), "
                                          "or the data is not on this machine")
@@ -845,8 +845,8 @@ def next_step(path: Path, settle_runs: bool = True) -> dict:
                        command=f"items_task.py plan {t} {op}")
         elif op in SIGNED and not signed(open_):
             out.update(who="person", run=open_.name,
-                       do=f"read {open_.name}'s {'recipe' if op == 'items' else 'build'} in the {tab} tab and press "
-                          f"{'Sign' if op == 'items' else 'Agree'}; then paste the tab's prompt")
+                       do=f"read {open_.name}'s {'recipe' if op == 'items' else 'build'} in the {tab} step and press "
+                          f"{'Sign' if op == 'items' else 'Agree'}; then paste the step's prompt")
         else:
             out.update(who="agent", run=open_.name, do=f"run {open_.name}'s ticket, then settle",
                        command=f"bash {rel(open_ / (open_.name + '.sh'), root)}")
@@ -855,9 +855,9 @@ def next_step(path: Path, settle_runs: bool = True) -> dict:
         if op != "embed" and out.get("note", "").startswith(made.name if made else "\0"):
             out.pop("note")                                   # the note is for the steps after the items
         return out
-    out.update(step="done", tab="2 · Items", workbench=view("2 · Items"), who="person",
-               do="all three steps are done; to change the items, write user feedback in the Items tab's "
-                  "'Make the items, again' prompt; then the building Task takes the items")
+    out.update(step="done", tab="Items", workbench=view("items"), who="person",
+               do="all three steps are done; to change the items, write user feedback in the Items step's "
+                  "'Make the items, again' prompt; then the meaning Task takes the items")
     return out
 
 

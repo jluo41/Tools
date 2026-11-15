@@ -45,7 +45,7 @@ skills/1_base/project/
 ├── haipipe-related/    s04 Related
 ├── haipipe-report/     s05 Report
 └── haipipe-run/        s06 Run
-servers/workbench/frame.py                        delivery_parts · _delivery_row · delivery_by_source
+servers/workbench/page/frame.py                        delivery_parts · _delivery_row · delivery_by_source
 skills/1_base/draft/haipipe-draft/src/common.py    delivery_owner · delivery_dir · delivery_source
 ```
 
@@ -81,7 +81,7 @@ s03-D06 · From a Job or Task, the top row's Delivery opens the Block's Delivery
     to all the workbench"). A source row, Block · jNN · tNN, comes first with the open Job or Task
     picked, and each source's part shows inside it. This refines s09-D05's "the Job and Task views
     show their own part": the part is now a pick inside the Block's Delivery, not a separate page.
-    Built by the b16 session in servers/workbench/frame.py (render's Delivery mode).
+    Built by the b16 session in servers/workbench/page/frame.py (render's Delivery mode).
 
 
 Open

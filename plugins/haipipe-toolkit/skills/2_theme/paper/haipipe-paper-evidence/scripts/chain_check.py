@@ -25,7 +25,8 @@ What it checks, per value Task of the Board's value Job (`jNN_evidence_value`), 
     other       any other value Task: (a) on the newest Run holding result/<dir>/SOURCE.txt copies.
 
 and for every shape: each work Run read is complete (result/runtime.yaml status completed); (c) a work Task with a newer
-completed Run than the one read makes the value Task stale (unless the value Job reads that newer Run too, on purpose);
+completed Run than the newest one the value Job reads there makes the value Task stale (an older one passed over is on purpose);
+a display or a Section on an older value Run is stale only when what it read changed or left there (its read files, its ids);
 no id sits in two value Tasks; (g) a value with a `flag` (an older setup, check before quoting) fails rule 5.
 
 The current value Run of a Task: the `RUN = "..."` constant of the value Job's src/gen_runs.py when that Run is in the
@@ -199,13 +200,21 @@ class ValueTask:
     def load_values(self):
         if not self.current:
             return
-        res = self.current / "result"
+        self.values, self.keys = self.values_of(self.current)
+
+    def run_named(self, name: str):
+        return next((r for r in runs_of(self.task) if r.name == name or r.name.startswith(name + "_")), None)
+
+    def values_of(self, run: Path) -> tuple:
+        """({id: {value, text, flag}}, {value-map key: id}) of one of this Task's Runs."""
+        values, keys = {}, {}
+        res = run / "result"
         if self.shape == "value map":
             doc = read_yaml(res / "values.yaml") or {}
             for k, v in (doc.get("values") or {}).items():
                 if isinstance(v, dict) and v.get("id"):
-                    self.keys[k] = v["id"]
-                    self.values[v["id"]] = {"value": v.get("value"), "text": v.get("shown", ""), "flag": v.get("flag")}
+                    keys[k] = v["id"]
+                    values[v["id"]] = {"value": v.get("value"), "text": v.get("shown", ""), "flag": v.get("flag")}
         else:
             f = res / "values.json"
             try:
@@ -214,7 +223,41 @@ class ValueTask:
                 doc = {}
             for i, v in (doc.items() if isinstance(doc, dict) else []):
                 if isinstance(v, dict):
-                    self.values[i] = {"value": v.get("value"), "text": v.get("text", ""), "flag": v.get("flag")}
+                    values[i] = {"value": v.get("value"), "text": v.get("text", ""), "flag": v.get("flag")}
+        return values, keys
+
+
+def tree_same(a: Path, b: Path) -> bool:
+    """A file, or every file under a folder, byte-identical in two places."""
+    if a.is_file() or b.is_file():
+        return a.is_file() and b.is_file() and filecmp.cmp(a, b, shallow=False)
+    if not (a.is_dir() and b.is_dir()):
+        return False
+    fa = sorted(x.relative_to(a) for x in a.rglob("*") if x.is_file())
+    fb = sorted(x.relative_to(b) for x in b.rglob("*") if x.is_file())
+    return fa == fb and all(filecmp.cmp(a / x, b / x, shallow=False) for x in fa)
+
+
+def moved(vt: ValueTask, run: str, subs=(), ids=()) -> list:
+    """What a reader of an older value Run read that changed or left in the current one (rule 6, JL 261111: "yes,
+    please change them"): each read path under result/ must be byte-identical, each quoted id hold the same value. A
+    newer Run that only adds ids leaves its readers current. Nothing to compare (no path, no id) counts as moved."""
+    old = vt.run_named(run)
+    if old is None:
+        return [f"{run} is not on disk"]
+    if not (subs or ids):
+        return ["it names no file or id to compare"]
+    out = []
+    for sub in subs:
+        if not tree_same(old / "result" / sub, vt.current / "result" / sub):
+            out.append(f"{sub} changed")
+    then, _ = vt.values_of(old)
+    for i in ids:
+        if i not in vt.values:
+            out.append(f"{i} left")
+        elif i in then and not same(then[i]["value"], vt.values[i]["value"]):
+            out.append(f"{i} moved")
+    return out
 
 
 def is_current(vt: ValueTask, run: str) -> bool:
@@ -290,8 +333,11 @@ def check_source_runs(rep: Report, vt: ValueTask, reads_all: set):
             continue
         if not complete(src):
             rep.fail(1, vt.task, f"reads work Run {rep.where(src)}, not complete (status {status(src) or 'none'})")
-        newer = [r for r in runs_of(src.parent.parent) if rnum(r.name) > rnum(src.name) and complete(r)
-                 and r.resolve() not in reads_all]
+        # stale only past the newest Run the value Job reads in this Task: a Run older than one already read was passed
+        # over on purpose (a pilot, an earlier copy; Paper-ScalingGlucose 261111)
+        task_runs = runs_of(src.parent.parent)
+        newest = max([rnum(r.name) for r in task_runs if r.resolve() in reads_all] + [rnum(src.name)])
+        newer = [r for r in task_runs if rnum(r.name) > newest and complete(r)]
         if newer:
             rep.fail(6, vt.task, f"stale: reads {src.name} of {rep.where(src.parent.parent)}; "
                                  f"a newer completed Run is there: {', '.join(r.name for r in newer)}")
@@ -444,12 +490,21 @@ def check_displays(rep: Report, board: Path, j02: Path, vts: dict, ids: dict):
                 rep.fail(3, run, "no run.yaml: names no value Run")
             else:
                 rep.fail(3, run, "names no value Run (no reads path into the value Job, no value_run)")
+        subs = {}
+        for r in reads:                                 # the paths under result/ it read, per value Task
+            m = re.search(rf"{re.escape(j02name)}/(t\d+[^/\s]*)/runs/r\d+[^/\s]*/result/(\S+)", r)
+            if m:
+                subs.setdefault(m.group(1), []).append(m.group(2).rstrip("/"))
         for t, r in sorted(named.items()):
             vt = vts.get(t)
             if vt is None:
                 rep.fail(3, run, f"reads value Task {t}, not on disk")
             elif not is_current(vt, r):
-                rep.fail(6, run, f"stale: reads {t}/{r}; the current value Run is {vt.current.name if vt.current else 'none'}")
+                mine = [x.get("id", "").strip() for x in rows if x.get("id") and (x.get("value_task") in (None, "", t))]
+                why = moved(vt, r, subs.get(t, []), mine)
+                if why:
+                    rep.fail(6, run, f"stale: reads {t}/{r}, and in {vt.current.name if vt.current else 'none'} "
+                                     f"{'; '.join(why[:3])}{' …' if len(why) > 3 else ''}")
         if not rows:
             continue
         col = "value" if "value" in rows[0] else "text" if "text" in rows[0] else "shown" if "shown" in rows[0] else None
@@ -501,8 +556,11 @@ def check_sections(rep: Report, board: Path, j02, vts: dict):
             if not it.get("run"):
                 rep.fail(3, h, f"{label}: the binding names no value Run")
             elif not is_current(vt, str(it["run"])):
-                rep.fail(6, h, f"stale: {label} reads {vt.name}/{it['run']}; the current value Run is "
-                               f"{vt.current.name if vt.current else 'none'}")
+                quoted = [it["value"]] if it.get("value") else []
+                why = moved(vt, str(it["run"]), (), quoted)
+                if why:
+                    rep.fail(6, h, f"stale: {label} reads {vt.name}/{it['run']}, and in "
+                                   f"{vt.current.name if vt.current else 'none'} {'; '.join(why)}")
             if vt.shape == "value map":
                 try:
                     _, values = vl.catalog(vt.task)
@@ -523,7 +581,8 @@ def check_sections(rep: Report, board: Path, j02, vts: dict):
                     or any(p.startswith(("_", ".")) for p in rel):
                 continue
             seen = set()
-            for m in ref.finditer(f.read_text(encoding="utf-8", errors="replace")):
+            text = f.read_text(encoding="utf-8", errors="replace")
+            for m in ref.finditer(text):
                 t, r = m.group(1), m.group(2).rstrip(".,;:")
                 if (t, r) in seen:
                     continue
@@ -533,7 +592,13 @@ def check_sections(rep: Report, board: Path, j02, vts: dict):
                 if vt is None:
                     rep.fail(3, f, f"names {t}/{r}, no such value Task")
                 elif not is_current(vt, r):
-                    rep.fail(6, f, f"stale: names {t}/{r}; the current value Run is {vt.current.name if vt.current else 'none'}")
+                    old = vt.run_named(r)
+                    then = vt.values_of(old)[0] if old else {}
+                    quoted = [i for i in then if re.search(rf"(?<![\w-]){re.escape(i)}(?![\w-])", text)]
+                    why = moved(vt, r, (), quoted)
+                    if why:
+                        rep.fail(6, f, f"stale: names {t}/{r}, and in {vt.current.name if vt.current else 'none'} "
+                                       f"{'; '.join(why[:3])}{' …' if len(why) > 3 else ''}")
 
 
 def check_recompute(rep: Report, board: Path, j02, project: Path):

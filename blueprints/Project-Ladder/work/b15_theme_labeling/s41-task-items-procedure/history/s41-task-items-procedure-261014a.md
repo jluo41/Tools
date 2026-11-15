@@ -185,7 +185,7 @@ s41-D03 · Each step is a tab, named the same in Work and Report: 1 · Data · 2
     step's title, state chip and Copy prompt, then ① at a glance (big numbers, one sentence), ② the picture, ③ the
     details folded. Report: ① and ② only. Older links (Itemization, 2 · Item, 3 · Item list, 4 · Embedding) open
     the matching tab. The scoreboard and the cards are shared base looks, `.stat-row` and `.card-row` in
-    `servers/workbench/frame.py` WORK_CSS, so a theme still carries no stylesheet (built 261014).
+    `servers/workbench/page/frame.py` WORK_CSS, so a theme still carries no stylesheet (built 261014).
 s41-D04 · The pictures: 1 · Data draws one row as one card per column group, its values made up (synth_df);
     2 · Items draws one made-up item (context_before │ main │ context_after, main marked) and the first 20 items by
     id and size; 3 · Embedding frames the map once built (built 261014).

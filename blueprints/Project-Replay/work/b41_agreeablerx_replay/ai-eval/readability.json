@@ -1,0 +1,229 @@
+{
+ "Overview": {
+  "🗺️ The map": {
+   "score": 6,
+   "hash": "be6ca957605d",
+   "comments": [
+    "No legend: say what a circle and a lane mean.",
+    "Sat Nov 14 sits off-screen; fit the week in one width.",
+    "At phone width the drawing shrinks unreadable; offer a scroll or list."
+   ],
+   "by": "AI-eval round 2 (fresh reader)",
+   "at": "261114 23:55"
+  },
+  "🗓️ The week": {
+   "score": 7,
+   "hash": "11ed5dfb0208",
+   "comments": [
+    "One line per day reads fast; good scan list.",
+    "Fri and Sat lines run long; cut to two topics each."
+   ],
+   "by": "AI-eval round 2 (fresh reader)",
+   "at": "261114 23:55"
+  },
+  "👥 Sessions": {
+   "score": 6,
+   "hash": "067835fc5c50",
+   "comments": [
+    "Eleven same-shaped cards repeat \"Owns Section N\"; use one table.",
+    "Session id chips are noise up front; move into a fold.",
+    "Run dates hidden; show each session's span in the row."
+   ],
+   "by": "AI-eval round 2 (fresh reader)",
+   "at": "261114 23:55"
+  }
+ },
+ "Plan + Results": {
+  "📜 Reading the record": {
+   "score": 7,
+   "hash": "8f2695683bc9",
+   "comments": [
+    "Job, Task, Run tree is clear with ✅ marks.",
+    "Ids like r01_read_log_a need a plain-word label.",
+    "\"done\" beside ✅ repeats the mark; drop the word."
+   ],
+   "by": "AI-eval round 2 (fresh reader)",
+   "at": "261114 23:55"
+  },
+  "🛠️ Build": {
+   "score": 7,
+   "hash": "95252beae0bf",
+   "comments": [
+    "Short and clear; one Job, one Run, done.",
+    "t01_build_replay and r01_build ids; add plain words."
+   ],
+   "by": "AI-eval round 2 (fresh reader)",
+   "at": "261114 23:55"
+  },
+  "📅 Sun Nov 8": {
+   "score": 8,
+   "hash": "387fd99d0688",
+   "comments": [
+    "Two timed block titles show first; easy scan.",
+    "Decided, JL asked, Built boxes make each card clear."
+   ],
+   "by": "AI-eval round 2 (fresh reader)",
+   "at": "261114 23:55"
+  },
+  "📅 Mon Nov 9": {
+   "score": 7,
+   "hash": "f43f92ddecae",
+   "comments": [
+    "Only a \"carried on\" row shows; add the day's point first."
+   ],
+   "by": "AI-eval round 2 (fresh reader)",
+   "at": "261114 23:55"
+  },
+  "📅 Tue Nov 10": {
+   "score": 7,
+   "hash": "6ef009024af6",
+   "comments": [
+    "Block titles clear, but the day's main outcome is hidden.",
+    "Open block runs long; group cards by topic chip."
+   ],
+   "by": "AI-eval round 2 (fresh reader)",
+   "at": "261114 23:55"
+  },
+  "📅 Wed Nov 11": {
+   "score": 7,
+   "hash": "28e725d5d232",
+   "comments": [
+    "Two short blocks; titles say enough.",
+    "Same \"carried on\" pattern; lead with what changed."
+   ],
+   "by": "AI-eval round 2 (fresh reader)",
+   "at": "261114 23:55"
+  },
+  "📅 Thu Nov 12": {
+   "score": 8,
+   "hash": "664d79f994b0",
+   "comments": [
+    "One block, plain title, short summary inside."
+   ],
+   "by": "AI-eval round 2 (fresh reader)",
+   "at": "261114 23:55"
+  },
+  "📅 Fri Nov 13": {
+   "score": 6,
+   "hash": "90016417fb1f",
+   "comments": [
+    "Six blocks with overlapping times; add one day headline.",
+    "First block opens to about twenty cards; fold by topic."
+   ],
+   "by": "AI-eval round 2 (fresh reader)",
+   "at": "261114 23:55"
+  },
+  "📅 Sat Nov 14": {
+   "score": 6,
+   "hash": "35241881a29b",
+   "comments": [
+    "Five overlapping blocks, no day headline; lead with the outcome.",
+    "Long card lists; group by Section chip to find details."
+   ],
+   "by": "AI-eval round 2 (fresh reader)",
+   "at": "261114 23:55"
+  }
+ },
+ "Findings": {
+  "🧪 Draft lab": {
+   "score": 7,
+   "hash": "89f99cd31b92",
+   "comments": [
+    "Three rule bullets first; good main-point lead.",
+    "Fold opens about thirty cards; group by Section.",
+    "\"✓?\" needs a word the first time."
+   ],
+   "by": "AI-eval round 2 (fresh reader)",
+   "at": "261114 23:55"
+  },
+  "✍️ Paper text": {
+   "score": 7,
+   "hash": "5e2bc1eea21b",
+   "comments": [
+    "Three plain rules up front read in seconds.",
+    "Decisions fold is long; split by Section or day."
+   ],
+   "by": "AI-eval round 2 (fresh reader)",
+   "at": "261114 23:55"
+  },
+  "🤝 Process & coordination": {
+   "score": 8,
+   "hash": "86623f90a6e9",
+   "comments": [
+    "Rules are plain and short; who owns what is clear."
+   ],
+   "by": "AI-eval round 2 (fresh reader)",
+   "at": "261114 23:55"
+  },
+  "📊 Evidence & displays": {
+   "score": 7,
+   "hash": "ed83555ed824",
+   "comments": [
+    "Clear rules; \"Block-level records\" is jargon, name the folder.",
+    "Long decisions fold; group by Section."
+   ],
+   "by": "AI-eval round 2 (fresh reader)",
+   "at": "261114 23:55"
+  },
+  "🔎 Review & scoring": {
+   "score": 7,
+   "hash": "e20f45c3422b",
+   "comments": [
+    "Rules read fast; \"independent check\" could say who checks."
+   ],
+   "by": "AI-eval round 2 (fresh reader)",
+   "at": "261114 23:55"
+  },
+  "🖼️ Page layout": {
+   "score": 7,
+   "hash": "23f5aac53dff",
+   "comments": [
+    "Rules clear for UI people; \"Structure\" view needs a word.",
+    "Decisions fold long; group by page type."
+   ],
+   "by": "AI-eval round 2 (fresh reader)",
+   "at": "261114 23:55"
+  },
+  "📦 Versions & delivery": {
+   "score": 8,
+   "hash": "bca3a8ca0428",
+   "comments": [
+    "Concrete rules: template, 55 pages, diff, folder contents."
+   ],
+   "by": "AI-eval round 2 (fresh reader)",
+   "at": "261114 23:55"
+  },
+  "🧹 Code quality": {
+   "score": 8,
+   "hash": "01a361dc845c",
+   "comments": [
+    "Three plain rules; short fold behind them."
+   ],
+   "by": "AI-eval round 2 (fresh reader)",
+   "at": "261114 23:55"
+  },
+  "❓ Still open": {
+   "score": 5,
+   "hash": "12b7f03b7993",
+   "comments": [
+    "About 36 open items, all 🙋; group by owner or Section.",
+    "Many say \"unclear\"; split real asks from unverified leftovers.",
+    "Lead with the two or three that need JL now."
+   ],
+   "by": "AI-eval round 2 (fresh reader)",
+   "at": "261114 23:55"
+  }
+ },
+ "Delivery": {
+  "📦 Deliverables": {
+   "score": 4,
+   "hash": "4937b7756b18",
+   "comments": [
+    "Only a bare \"replay.html\"; say what it shows and link it.",
+    "Website tab plus one-item list is empty-feeling; add a preview."
+   ],
+   "by": "AI-eval round 2 (fresh reader)",
+   "at": "261114 23:55"
+  }
+ }
+}

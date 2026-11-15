@@ -10,7 +10,7 @@ The Board and Design viewers read this evidence; they grant no approval.
 
 1. Wisdom CHECK-closes the intended Page and records its exact version.
    Collect all required source and verdict versions, including MT00's
-   partition register for a partition-major verdict. Resolve current
+   segment register for a partition-major verdict. Resolve current
    applicability at the source owners; a historical Result alone cannot prove it.
 2. A person states the signature for that exact payload. Wisdom records GI5 in
    `draft/records/<wisdom-stem>-log.md`, with the actor, Runtime id, Page pin, signature,
@@ -47,12 +47,12 @@ are allowed. Use exact versions, never `latest`.
 ```yaml
 schema: haipipe.insight-handoff/v1
 page:
-  path: W<NN>-<partition>-<slug>.md
+  path: W<NN>-<segment>-<slug>.md
   version: v001
 dependencies:
   - {path: <current-source-or-version-record>, version: <exact-version>}
   - {path: <current-verdict-record>, version: <exact-version>}
-gi5: {path: draft/records/W<NN>-<partition>-<slug>-log.md#signed-v001}
+gi5: {path: draft/records/W<NN>-<segment>-<slug>-log.md#signed-v001}
 gi6:
   - {path: <Question-Outline-log>#settled-qw1-v001}
 ```
@@ -92,7 +92,7 @@ target: {question: QW1, partition: full}
 signature_receipt: <exact-gi5-reference-from-index>
 ```
 
-Index one GI6 receipt per served QW at this Page's partition. The current Queue
+Index one GI6 receipt per served QW at this Page's segment. The current Queue
 cell must still settle to this Page (`✅`, or licensed `🟡 … final`). Receipt
 fields are auditable owner assertions, not cryptographic proof of a human's
 identity or an independent scientific review. Required dependency completeness

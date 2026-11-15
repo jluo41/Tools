@@ -38,7 +38,7 @@ the indented lines below it:
 **The ask**: <the question in one sentence>
 **What would answer it**: <one paragraph: the evidence in words>
 - E1 · compute · <what a run must produce> · pass: <what a result must show to count>
-    cut: <partition> | the cell's partition | cross
+    cut: <segment> | the cell's partition | cross
     unit: <what one row is, e.g. one sent invitation>
     measure: <the quantity the ask names>
     by: <the grouping or the contrast>
@@ -112,7 +112,7 @@ judge     a reading the page makes from named needs (`from: E1, E2` or full ids)
   pages already exist.
 - **An extract-level property** (a column inventory, the catalog) is computed
   once for the whole extract: its spec's `cut:` is `the whole extract`, and a
-  partition page may bind it.
+  segment page may bind it.
 - **A refusal is computed.** "The extract has no field for this" or "the design
   never varies this" is a compute need whose run shows the absence (a column
   inventory, a probe of the sent text); a refusal read off another page is not
@@ -140,14 +140,14 @@ Each answering page folder holds `answers.yaml`, authored by the bind step
 # answers.yaml · which result answers which evidence need (haipipe-insight ref/evidence-needs.md)
 QI4:
   E1:
-    ticket: run_bNNjNNtNNrNN_<partition>_<task>
+    ticket: run_bNNjNNtNNrNN_<segment>_<task>
     files: [<spec output file>.csv]
   E2:
-    pages: [I03-<partition>]
+    pages: [I03-<segment>]
 QK2:
-  E1: {ticket: run_bNNjNNtNNrNN_<partition>_<task>, files: [<spec output file>.csv]}
+  E1: {ticket: run_bNNjNNtNNrNN_<segment>_<task>, files: [<spec output file>.csv]}
   E2: judge
-  E3: {refused: "<why the answer is an absence>", ticket: run_bNNjNNtNNrNN_<partition>_<probe>, files: [<probe table>.csv]}
+  E3: {refused: "<why the answer is an absence>", ticket: run_bNNjNNtNNrNN_<segment>_<probe>, files: [<probe table>.csv]}
 ```
 
 - **The question's own run, or new work.** A compute need binds a run whose
@@ -160,11 +160,11 @@ QK2:
   never releases its own.
 - **compute** binds `ticket` (a file in the page's `runs/`, its result in
   `results/<ticket>/`) and `files`, which include every spec output file. A
-  cross page that reads one run per partition binds `tickets: [<ticket>, …]`
+  cross page that reads one run per segment binds `tickets: [<ticket>, …]`
   instead; every listed ticket must hold the files. The
   required columns are the spec's; an optional `fields:` list adds more.
 - **cite** binds `pages`; omitted, it resolves to the page the register names
-  for the cited question on this page's partition.
+  for the cited question on this page's segment.
 - **judge** binds the word `judge`.
 - **refused** binds a reason AND the probe run that shows it (`ticket`,
   `files`). Legal only on a cell that settles `🟡 … final` or `🚫`.
@@ -218,7 +218,7 @@ register cell that names a page:
 OK          every need planned with its spec, bound, fit, cited and current
 GAP         a need or spec is incomplete, unbound, its ticket or file is missing,
             its run is not ok, a spec column is absent, its config does not list
-            it, its cut is not the page's, a refusal has no probe run, a citation
+            it, its segment is not the page's, a refusal has no probe run, a citation
             is missing, or a kind breaks its level
 STALE       a bound result ended after the page's results-read
 UNBOUND     the page has no answers.yaml entry for the question

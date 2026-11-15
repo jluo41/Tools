@@ -191,13 +191,13 @@ The Studio is once per Block again (b35 s01-D05): topics hang from a rung by `**
 
 - `scripts/ladder.py update`: patches each moved ticket, finds Job-level Results, relinks references
   (prefiltered by Run name), tidies `diagram/`, Job `notebooks/` and Job `workflow/`; a world child that
-  is not a Block is reported as debt; a family Block (`Prototype-` …) is left to its owner's ladder.
+  is not a Block is reported as debt; a family Block (`InsightQuestionBook-` …) is left to its owner's ladder.
 - `ref/ladder.md`: a Task may hold `sbatch/` (haipipe-task allows it); `heavy_exempt` lets a discovery
   `paper.pdf` pass in a Project whose `project.yaml` says `visibility: private` (JL 261009).
 - A moved Run's old receipt (run.yaml `moved_from:`) is history: the audit no longer checks the paths
   it recorded (JL 261009); tickets, run.yaml and new receipts stay strict.
 - `ideations/` is a world (haipipe-ideation's home); `SKILL.md` and `ref/project-structure.md` point
-  to haipipe-insight's current Prototype + Board layout; `fn/update.md` documents ticket, relink, tidy.
+  to haipipe-insight's current Question Book + Board layout; `fn/update.md` documents ticket, relink, tidy.
 
 ## 2026-10-07 — the ladder reads paper Boards (b03 s21, for b16)
 
@@ -236,7 +236,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
   Page (the engine's `labeling/` lane) and its scoring. It replaces the `tasks/b61`-`b69`
   labeling Blocks; a dataset with no label yet stays in `tasks/`. The audit accepts it.
 - `insights/` keeps only older register-kind boards; an Insight topic is one `tasks/b5N_<topic>_dikw/` Block with
-  `workbench: insight` (haipipe-insight `ref/block-contract.md`). The Prototype + Instance pair is retired.
+  `workbench: insight` (haipipe-insight `ref/block-contract.md`). The Question Book + Instance pair is retired.
 
 ## [0.9.1] -- 2026-10-04
 
@@ -295,7 +295,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 ## [0.6.0] -- 2026-10-03
 
 - `insights/` holds an Insight topic as two boards (JL 261003):
-  `Prototype-Insight-<Topic>/`, Block level (board.md, 0-Meta/, 1-Data … 4-Wisdom/
+  `InsightQuestionBook-Insight-<Topic>/`, Block level (board.md, 0-Meta/, 1-Data … 4-Wisdom/
   question folders with their scripts, and the Block's `studio/` with the generated
   `question-map.excalidraw`), and `Instance-Insight-<Dataset>/`, one per dataset.
   The older `<Dataset>-InsightBoard/` keeps its layout until carried over.

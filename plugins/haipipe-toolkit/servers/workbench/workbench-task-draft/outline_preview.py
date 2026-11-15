@@ -232,8 +232,8 @@ def content_seeds(page):
         match = re.search(r"<!--\s*realizes:\s*(.*?)\s*-->", line)
         if not match:
             continue
-        addresses = re.findall(r"C\d+\.P\d+\.[BS]\d+", match[1])
-        addresses = [re.sub(r"\.S(\d+)$", r".B\1", a) for a in addresses]
+        addresses = re.findall(r"C\d+\.P\d+\.[BSs]\d+", match[1])
+        addresses = [re.sub(r"\.[Ss](\d+)$", r".B\1", a) for a in addresses]
         if not addresses:
             continue
         prose = re.sub(r"<!--.*?-->", "", line).strip()

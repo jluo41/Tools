@@ -119,9 +119,9 @@ def main():
     L.close_frame(fr)
     tools = L.tools_frame(                                # the skill's folder and its code (JL 261011)
         "In Tools: haipipe-related", ["1_base/project/haipipe-related"],
-        [("servers/workbench/frame.py", ["related_items", "_related_folder", "related_view", "studio_related",
+        [("servers/workbench/page/frame.py", ["related_items", "_related_folder", "related_view", "studio_related",
                                          "_related_preview", "docx_preview", "eml_preview", "_related_set_groups"]),
-         ("servers/workbench/page_reader.py", ["markdown_document"])],
+         ("servers/workbench/page/page_reader.py", ["markdown_document"])],
         around=["haipipe-studio: Related folds inside its view", "haipipe-paper builds reference.bib from paper rows",
                 "haipipe-discovery: a paper's deep read is a Task's Run", "table-papers: a workbench's papers, not this",
                 "haipipe-delivery keeps what went out, the twin"],

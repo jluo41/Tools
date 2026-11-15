@@ -3,7 +3,7 @@ id: K02
 level: knowledge
 question: <question>
 method:
-  ask: By partition and power
+  ask: By segment and power
   answer: By model comparison
   read: By heterogeneity
 agreed: ✅ <date>

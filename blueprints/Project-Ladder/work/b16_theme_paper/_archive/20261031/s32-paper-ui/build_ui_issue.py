@@ -29,7 +29,7 @@ FRAME_ISSUES = [
     ("F1", "every tab · band, Scope, Ideation, Narrative, Evidence, Plan, Records, Requirement, Disk boxes",
      "An open link to a file that is not a Page Face (a Board or version face, a studio topic face, a draft plan, "
      "a record, an evidence-items file, the rubric) goes to /_board/page, which answers 404 \"Not a Page\".",
-     "A plain reader for any file; the Page view only for a Page Face.", "workbench/frame.py:288 _reader"),
+     "A plain reader for any file; the Page view only for a Page Face.", "workbench/page/frame.py:288 _reader"),
     ("F2", "Section › Runs",
      "Embeds the Page's own runs screen with a fourth tab row (Workflow map · Page Writing · …); \"No <kind> Run "
      "yet.\" four times; the side panel says \"No runs yet.\" while the body counts Writing Runs.",
@@ -37,10 +37,10 @@ FRAME_ISSUES = [
     ("F3", "Section › Table, Reading, Draft-…, Evidence-…",
      "Each view is an iframe card inside the Space card, with its own inner tab row (All items · Card · Source): "
      "a box in a box. The fixed frame height leaves a large blank area under a short view.",
-     "Embed without the outer card; size the frame to its content.", "workbench/frame.py page_view_url"),
+     "Embed without the outer card; size the frame to its content.", "workbench/page/frame.py page_view_url"),
     ("F4", "Section › Delivery, a lane",
      "\"built; no preview for this kind yet\" when the lane's only file is a selection list, beside \"not built\".",
-     "One honest lane state: not built.", "workbench/frame.py:1227"),
+     "One honest lane state: not built.", "workbench/page/frame.py:1227"),
     ("F5", "every page",
      "The page never finishes loading, so a headless screenshot hangs unless it is given a timeout.",
      "The load event fires; long requests start after it.", "?"),

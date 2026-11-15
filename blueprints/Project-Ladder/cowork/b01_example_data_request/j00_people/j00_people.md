@@ -1,4 +1,5 @@
 # j00 · People
+emoji: 📇
 job-kind: cowork-job
 use-case: Team directory
 state: 📇 REFERENCE · kept current as a role joins a Job

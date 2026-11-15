@@ -180,3 +180,101 @@ def test_final_gate_fails_what_may_wait_while_writing(tmp_path):
     assert ("printed", FAIL) in by                         # no built PDF to read back
     signs = [f for f in final["findings"] if "not signed" in f["message"]]
     assert signs and all(f["level"] == WARN for f in signs)   # the person's step is named, never failed
+
+
+def test_draft_on_an_unsigned_plan_is_out_of_order(tmp_path):
+    """JL 261111 (t01_introduction): § 3 written, rebound and revised on a plan never signed; the final gate fails it."""
+    face = "# Sample-Page\ntask-type: draft\n\n" + FACE.split("\n", 1)[1]
+    plan = HEADER + BULLET + "\n## 3 · Draft\n\nThe first sentence is on the Page.\n"
+    folder = make(tmp_path, face=face, plan=plan)
+    assert levels(folder_health(folder), "order") == [WARN]
+    # M-D15 (JL 261115): Content already holds adopted text, so health names the sign and stays a WARN at the gate
+    held = [f for f in folder_health(folder, final=True)["findings"] if f["check"] == "order"]
+    assert [f["level"] for f in held] == [WARN]
+    assert held[0]["message"] == "Content holds text from an unsigned plan (v1.1); sign the plan"
+    bare = make(tmp_path / "b", face=face.replace(" <!-- realizes: C1.P1.B1 -->", "").replace(" <!-- realizes: C1.P1.B2 -->", ""),
+                plan=plan)
+    assert levels(folder_health(bare, final=True), "order") == [FAIL]   # nothing adopted: the old order rule
+    signed = make(tmp_path / "s", face=face, plan=plan.replace("approved: ⬜", "approved: ✅ JL 261111 · in chat: \"B\""))
+    assert levels(folder_health(signed), "order") == []
+
+
+def test_a_moved_governing_row_sends_the_section_back_to_plan(tmp_path):
+    """JL 261111: the Narrative row changed (v0.3 to v0.4) after the sign; health says go back to Plan."""
+    from src.page_sign import sign
+    (tmp_path / "board.md").write_text("# Paper-X\nboard-kind: paper-board\n", encoding="utf-8")
+    job = tmp_path / "j11_writing_v1"
+    face = "# Sample-Page\ntask-type: draft\n\n" + FACE.split("\n", 1)[1]
+    folder = make(job, face=face)
+    jf = job / "j11_writing_v1.md"
+    jf.write_text("# j11\n\n## Narrative\n\n| Section | question |\n|---|---|\n| Sample-Page | What is it? |\n", encoding="utf-8")
+    assert not sign(folder, "")["ok"]                               # the sign is the person's quoted word
+    r = sign(folder, "go with B")
+    assert r["ok"] and 'in chat: "go with B"' in r["approved"]
+    kept = (folder / "outline" / "records" / "Sample-Page-sign.md").read_text()
+    assert "| Sample-Page | What is it? |" in kept and "sha" not in kept    # the row as text, no hash
+    assert levels(folder_health(folder), "row") == []
+    jf.write_text(jf.read_text().replace("What is it?", "What changed?"), encoding="utf-8")
+    assert levels(folder_health(folder), "row") == [WARN]
+    assert levels(folder_health(folder, final=True), "row") == [FAIL]
+
+
+def test_a_version_narrative_is_signed_before_its_sections(tmp_path):
+    """JL 261111: the version's ## Narrative is signed (page.py sign-narrative); a changed Story § 8 makes it stale."""
+    from src.page_sign import sign_narrative
+    (tmp_path / "board.md").write_text("# Paper-X\nboard-kind: paper-board\nstory-current: s02-story\n", encoding="utf-8")
+    (tmp_path / "s02-story").mkdir()
+    story = tmp_path / "s02-story" / "s02-story.md"
+    story.write_text("# s02\n\n## Content\n\n### 8 · Section Narrative\n\nC1 first.\n\n#### 8.1 · Claims\n\nC1.\n\n### 9 · Venue\n\nx\n",
+                     encoding="utf-8")
+    job = tmp_path / "j11_writing_v1"
+    face = "# Sample-Page\ntask-type: draft\n\n" + FACE.split("\n", 1)[1]
+    folder = make(job, face=face)
+    jf = job / "j11_writing_v1.md"
+    jf.write_text("# j11\ngoal: the first send\n\n## Narrative\n\n| Section | question |\n|---|---|\n| Sample-Page | Q |\n",
+                  encoding="utf-8")
+    assert levels(folder_health(folder), "narrative") == [WARN]
+    assert levels(folder_health(folder, final=True), "narrative") == [FAIL]
+    r = sign_narrative(job, "this order")
+    assert r["ok"] and (job / "records" / "narrative-sign.md").is_file()
+    head = jf.read_text().split("## ")[0]
+    assert "goal: the first send" in head and 'narrative-approved: ✅ JL' in head and "story-at-sign: s02-story § 8" in head
+    assert levels(folder_health(folder), "narrative") == []
+    story.write_text(story.read_text().replace("C1 first.", "C2 first."), encoding="utf-8")
+    assert levels(folder_health(folder), "narrative") == [WARN]
+    story.write_text(story.read_text().replace("C2 first.", "C1 first.").replace("\nx\n", "\ny\n"), encoding="utf-8")
+    assert levels(folder_health(folder), "narrative") == []         # § 9 is not the Narrative
+
+
+def test_a_paper_paragraph_holds_4_to_7_sentences(tmp_path):
+    """JL 261112: "unless having good reason, we might make sure they are between 4~7 sentences"; the Abstract is
+    exempt, a `reason:` line accepts the count, the final gate fails what is left."""
+    from src.paragraph_length import off_range, paragraphs
+    plan = (HEADER + "\n## 1 · Structure\n\n### C1.P0 · Title · S0\n\n### C1.P1 · Long · S1 to S10\n\n"
+            "### C1.P2 · Fine · S11 to S15\n\n### C1.P3 · Short · S16 to S17\nreason: one claim, stated once\n\n"
+            "### C1.P4 · Bullets\n- B1 · S18 · a\n- B2 · S19 · b\n")
+    assert [(p, n) for p, n, _ in paragraphs(plan)] == [("C1.P1", 10), ("C1.P2", 5), ("C1.P3", 2), ("C1.P4", 2)]
+    assert [p for p, _, why in off_range(plan, "results") if not why] == ["C1.P1", "C1.P4"]
+    assert off_range(plan, "abstract") == []
+    face = "# Sample-Page\ntask-type: draft\nsection_kind: results\n\n" + FACE.split("\n", 1)[1]
+    folder = make(tmp_path, face=face, plan=plan)
+    found = [f for f in folder_health(folder)["findings"] if f["check"] == "paragraph"]
+    assert [f["level"] for f in found] == [WARN] and "C1.P1 has 10" in found[0]["message"] and "C1.P3" not in found[0]["message"]
+    assert levels(folder_health(folder, final=True), "paragraph") == [FAIL]
+    plain = make(tmp_path / "p", face="# Sample-Page\ntask-type: draft\n\n" + FACE.split("\n", 1)[1], plan=plan)
+    assert levels(folder_health(plain), "paragraph") == []           # no section_kind: not a paper Section
+
+
+def test_an_introduction_expect_with_no_evidence_and_a_title_placeholder_warn(tmp_path):
+    """JL 261112: "do we really have evidence for this?" and "could you put the title here?"."""
+    from src.paragraph_length import title_placeholder, unsupported_expectations
+    plan = (HEADER + "\n## 1 · Structure\n\n### C1.P0 · Title · S0\n- B0 · S0 · [Title] The paper's title.\n\n"
+            "### C1.P1 · Why · S1 to S4\n- B1 · S1 · [Expect] Large where past readings hold the answer.\n"
+            "  Evidence: none · framing\n- B2 · S2 · [Expect] Cited.\n  Evidence: E01-CITE-x\n")
+    assert unsupported_expectations(plan) == ["S1"] and title_placeholder(plan) == ["S0"]
+    face = "# Sample-Page\ntask-type: draft\nsection_kind: introduction\n\n" + FACE.split("\n", 1)[1]
+    folder = make(tmp_path, face=face, plan=plan)
+    assert levels(folder_health(folder), "expect") == [WARN] and levels(folder_health(folder), "title") == [WARN]
+    results = make(tmp_path / "r", face=face.replace("introduction", "results"), plan=plan)
+    assert levels(folder_health(results), "expect") == []           # Results may state what was expected
+

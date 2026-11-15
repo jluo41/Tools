@@ -16,31 +16,31 @@ already shows; it binds the result file instead.
 
 **Two layouts.** In an Insight Block (`block-contract.md`) the answering page is one per
 question, `jNN_<level>/tNN_<name>/tNN_<name>.md`, with one section per run
-(`<dataset>_<partition>`, partitions in `meta/partitions.md` order); its runs are
+(`<dataset>_<segment>`, segments in `meta/partitions.md` order); its runs are
 `runs/<run>.sh`, its evidence `results/<run>/` and the generated `reports/<run>/report.md`.
 The layout below is a register board's, made before the Block; such boards keep it. The
 flow and what Insight adds to the Page Face are the same for both.
 
-On a register board the report IS the answering page: one Page Folder per question per partition
-(`<L><NN>-<partition>-<slug>/`), at every level, Data, Information, Knowledge
+On a register board the report IS the answering page: one Page Folder per question per segment
+(`<L><NN>-<segment>-<slug>/`), at every level, Data, Information, Knowledge
 and Wisdom. There is no separate report file and no Insight page shape. The
 page is a `haipipe-draft` Page Face and is written through that skill's own
 flow; this reference adds only what an answer needs on top of it. The page
 folder is also a task folder, so the page sits beside the runs it rests on:
 
 ```text
-<board>/<n>-<partition>/<L><NN>-<partition>-<slug>/
-├── <L><NN>-<partition>-<slug>.md                Page Face: Opening · Content (haipipe-draft)
+<board>/<n>-<segment>/<L><NN>-<segment>-<slug>/
+├── <L><NN>-<segment>-<slug>.md                Page Face: Opening · Content (haipipe-draft)
 ├── answers.yaml                                 each evidence need → its result files (evidence-needs.md § 2)
 ├── draft/<stem>-draft-v<G>.<S>.md               the plan: Structure · Scratch · Draft (haipipe-draft)
 ├── draft/<stem>-evidence-items.md               one Evidence Item per need (evidence-needs.md § 3)
 ├── draft/records/<stem>-<record>.md             log, files, context, discussion
-├── runs/run_bNNjNNtNNrNN_<partition>_<task>.sh  one ticket per task run it rests on
+├── runs/run_bNNjNNtNNrNN_<segment>_<task>.sh  one ticket per task run it rests on
 ├── runs/run-check-<MMDD>-<slug>.md              the page CHECK (haipipe-draft)
 └── results/<ticket>/                            each ticket's result, generated
 ```
 
-The register cell names the page (`✅ <L><NN>-<partition>`), and the page names
+The register cell names the page (`✅ <L><NN>-<segment>`), and the page names
 the questions back on its `answers:` line. A page may answer several
 questions; the register cell is the join.
 
@@ -113,7 +113,7 @@ paragraphs, subsections and tables.
 1. **Lead with the point.** A subsection's first sentence says what it shows in plain
    words, with at most one number.
 2. **A list is a table.** Three or more parallel items with counts (column kinds,
-   groups, flags, partitions) go in one pipe table under the lead sentence, as the
+   groups, flags, segments) go in one pipe table under the lead sentence, as the
    lead Bullet's Draft, never one sentence per item. The table exports to Word and
    LaTeX as a real table.
 3. **Round in prose.** A percentage to one decimal (two significant figures under 1%),
@@ -122,7 +122,7 @@ paragraphs, subsections and tables.
    up, in backticks; otherwise say what it holds.
 5. **Close with what it allows.** A subsection ends with one sentence on what a reader
    can or cannot do with it, at the level's strength: arithmetic consequence below
-   Knowledge (a cut on these fields reads under half the rows), never a cause or a
+   Knowledge (a segment on these fields reads under half the rows), never a cause or a
    recommendation.
 6. **Short.** At most four sentences besides the table; a fifth fact is a table row or
    another subsection.
@@ -134,9 +134,9 @@ its next writing Run applies them.
 
 - A ticket is a call-through: it sets `RESULT_DIR` to the page's own
   `results/<ticket name>/` and `RUN_TICKET` to itself, then runs the task's own
-  ticket in the Project's DIKW Block (`work/b5N_<topic>_dikw/jNN_…/tNN_…/runs/rNN_<dataset>_<cut>.sh`).
-- The name is the full task address plus the partition and the task:
-  `run_bNNjNNtNNrNN_<partition>_<task>.sh`. Ticket and result share the stem.
+  ticket in the Project's DIKW Block (`work/b5N_<topic>_dikw/jNN_…/tNN_…/runs/rNN_<dataset>_<segment>.sh`).
+- The name is the full task address plus the segment and the task:
+  `run_bNNjNNtNNrNN_<segment>_<task>.sh`. Ticket and result share the stem.
 - One task run often feeds several pages; each page calls it with its own
   ticket and keeps its own result, so a page never reads a sibling's folder for
   its own evidence.

@@ -16,7 +16,7 @@
     {
       "name": "haipipe-utils",
       "description": "Normalizer utilities for cohort-specific food and exercise text with provenance",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "source": "./plugins/haipipe-utils",
       "category": "research"
     },

@@ -169,8 +169,8 @@ class BoardViewsTest(unittest.TestCase):
         # JL 261104: "why the mind map is not at the top and should be embedded, and where are the studios here?"
         idea = views["idea"][1]()
         self.assertIn("🎨 Studio<", idea)                                # JL 261105: "idea for multiple direction, story for one direction"
-        self.assertNotIn("🧭 Direction<span", idea)                     # a bar's title, then its state word (261106)
-        self.assertLess(story.index("🎨 Studio<"), story.index("🧭 Direction<span"))
+        self.assertNotIn("🧭 Direction<", idea)                         # a bar's title; a bar shows no state word (261114)
+        self.assertLess(story.index("🎨 Studio<"), story.index("🧭 Direction<"))
         self.assertIn("Open in Studio", story)
         self.assertNotIn("Open the mind map", story)
         self.assertEqual(story.count("<hr class=pb-rule>"), 0)          # nothing left to put under a rule
@@ -294,8 +294,9 @@ class BoardViewsTest(unittest.TestCase):
             f"# Story asks\n\nfor: {self.b.name}-s02:paper @ story\n\n## Q1 · First\n\nWhy.\n\n**Which one?**\n\n- [ ] A · Aa\n- [ ] B · Bb\n\n"
             "## Q2 · Second\n\nWhy.\n\n**Which two?**\n\n- [ ] A · Cc\n- [ ] B · Dd\n", encoding="utf-8")
         page = view()
-        # what waits is the bar's state word, and its first question shows under the closed bar (JL 261106)
-        self.assertIn('7 · 🙋 Interaction<span class="word you">2 wait for you</span></h3><p class=fd-wait>🙋 Story asks: Q1 · First</p>', page)
+        # what waits is the bar's orange mark, its sentence only on hover, and its first question under the closed bar (261114)
+        self.assertRegex(page, r'7 · 🙋 Interaction<span class="word you mk"[^>]* title="2 wait for you">🙋 2</span></h3>'
+                               r'<p class=fd-wait>🙋 Story asks: Q1 · First</p>')
         self.assertIn('data-ixq="Q1"><b>Q1 · First</b>', page)
         self.assertIn('data-ixq="Q2"><b>Q2 · Second</b>', page)
         self.assertEqual(page.count("class=pb-ixframe title"), 1)       # one form, one Copy
@@ -305,7 +306,7 @@ class BoardViewsTest(unittest.TestCase):
             "# Story asks · answers\n\n## Q1 · First\n\n- [ ] A · Aa\n- [x] B · Bb\n\n## Q2 · Second\n\nAnswer: my own decision.\n", encoding="utf-8")
         page = view()
         self.assertNotIn("waiting for you", page)
-        self.assertIn("7 · 🙋 Interaction<span class=word>answered</span></h3><style>", page)
+        self.assertIn('7 · 🙋 Interaction<span class="word ok mk" aria-label="done">✓</span></h3><style>', page)   # done: a ✓ mark (261114)
         self.assertIn(">B · Bb<", page)
         self.assertIn(">my own decision<", page)
 

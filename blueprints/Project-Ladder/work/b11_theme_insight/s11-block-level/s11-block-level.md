@@ -9,10 +9,10 @@ s11 · Block level
 
 **Delivery type:** ui
 
-**Topic:** the insight Board's tab: one dataset and its versions, a Job per pair (Prototype version × data version), its six Spaces as full screens on the shared frame (Guide · Block · Job · Task),
+**Topic:** the insight Board's tab: one dataset and its versions, a Job per pair (Question Book version × data version), its six Spaces as full screens on the shared frame (Guide · Block · Job · Task),
 each with "on disk" under it (JL 261007: "s11, s12, s13 ... for the Block level, Job level and task
 level, to make each of them, instead of nesting all the things together"). It follows s00: a Job
-pins one Prototype version and one data version; a DIKW level groups the questions inside a Job. The
+pins one Question Book version and one data version; a DIKW level groups the questions inside a Job. The
 method cards come from s03.
 
 **Source:** the screens are drawn by `../_build/insight_ui.py`, shared by s11 · s12 · s13 and s03;
@@ -37,23 +37,23 @@ Rebuild: `python build_s11_block_level.py`, then
 Proposed (261007)
 -----------------
 
-1. Description's third row is Map · Prototype · Dataset · Partitions (JL 261007). Map crosses
-   the two clocks: the data versions as columns, the Prototype releases as rows, a Job in each cell,
+1. Description's third row is Map · Question Book · Dataset · Segments (JL 261007). Map crosses
+   the two clocks: the data versions as columns, the Question Book releases as rows, a Job in each cell,
    Add a Job in an empty one.
-2. Prototype: the releases (signed, questions by D · I · K · W, new · changed · retired, the Jobs on
-   each), then `proposals/`; the questions themselves live in the Prototype Block. Dataset: the data
-   versions (extract, frozen, rows, what is new, the Jobs on each). Partitions: each cut's filter
-   and why are defined in the Prototype release, with its power threshold (part of the plan, fixed
-   before any outcome), so a new or changed cut is a new release (JL 261007: "for the partition, should
+2. Question Book: the releases (signed, questions by D · I · K · W, new · changed · retired, the Jobs on
+   each), then `proposals/`; the questions themselves live in the Question Book Block. Dataset: the data
+   versions (extract, frozen, rows, what is new, the Jobs on each). Segments: each segment's filter
+   and why are defined in the Question Book release, with its power threshold (part of the plan, fixed
+   before any outcome), so a new or changed segment is a new release (JL 261007: "for the segment, should
    we type this to the prototype as well?"). Under the definitions, the counts: a row per data version
-   and a column per partition, so the table grows down as data arrives (JL 261007: "each row is a
+   and a column per segment, so the table grows down as data arrives (JL 261007: "each row is a
    dataset, and columns are the partitions").
 3. Work Details: the Jobs, one row each (pins, the clock that moved, answered by DIKW level, state); a
-   row opens in place to its Tasks' quick results, each Task's result per partition, so the work is
+   row opens in place to its Tasks' quick results, each Task's result per segment, so the work is
    seen from the Block (JL 261007: "maybe just show the tasks's quick results"); the Job tab is for
    working on one.
 4. Audience Report: two button rows, as the Job's (JL 261007: "we can have dimension 1 and dimension
-   2"): Partition (Full · <partition A> · <partition B> · Cross) and Reading, the kinds of reading
+   2"): Segment (Full · <segment A> · <segment B> · Cross) and Reading, the kinds of reading
    across Jobs; D · I · K · W are sections inside each, and every view is a Question │ Work │ Report
    table (JL 261007: "make sure it will follow the Question, Work, and Report format"): Logic the
    question it reads, Work the Board's soft Run that reads it (↗ the Run), Report what that Run says (JL 261007: "the D I K W should be the group sections in the page ... the same
@@ -82,4 +82,4 @@ See the drawing's Questions frame (red).
 The frames follow the Space row: Description, Idea Studio, Audience Report, Work Details, Runs,
 Delivery (JL 261007), each holding all its views.
 Idea Studio's typical topics are listed to the right of its frame: s01-question-map (generated),
-s02-<what moved>, s03-<a pattern seen>, s04-<cut ideas>, s05-<handoff story>.
+s02-<what moved>, s03-<a pattern seen>, s04-<segment ideas>, s05-<handoff story>.

@@ -1,5 +1,6 @@
 s51 · Server runtime
 ====================
+view: findings
 
 **Tags:** `Server`
 
@@ -17,7 +18,7 @@ and where SPACE Home's links land. It is the first server topic: s01-s13 design 
 screens; s51 on are the served side of that design (JL 261007: "you can do it like s51_xxxx, for
 the front end part").
 
-**Feeds:** `reports/` q08_workbench_base · q09_studio_report_on_screen · q12_space_hosting ·
+**Feeds:** Q08 · Q09 · Q12 ·
 q07_workbench_mapping.
 
 **Source:** every fact in the drawing is read off the server code at build time
@@ -69,7 +70,7 @@ workbench-paper.
 
 **The Task level's routes, merged into the frame (JL 261007: "why not merge them into the base?";
 "go ahead and do it"):** they were the old Page workbench, one route and one page per tab. Now they
-are the frame's Task Spaces, each view a subspace drawn in place (`workbench/frame.py` PAGE_VIEWS);
+are the frame's Task Spaces, each view a subspace drawn in place (`workbench/page/frame.py` PAGE_VIEWS);
 a theme keeps them beside its own subspaces. One route serves them all,
 `/_board/workbench?view=<view>&path=<page .md>` (`frame_view.py`). The old addresses answer as it on
 a GET or HEAD (`serve.py` PAGE_VIEW_ROUTES), their POST twins keep theirs, and a Task Page's
@@ -95,6 +96,14 @@ addresses still answering. Next, in order: restart the live servers (all started
 serve.py change); one route table for do_GET and do_HEAD; discovery, insight and labeling onto the
 frame; retire the old board pages; the item views (run-result into the base, the rest as pop-outs);
 hosting for colleagues (Q12).
+
+Q12 · Answer
+------------
+
+**Question:** How do we host the SPACE so others can open it?
+
+**Answer (open):** not written yet.
+
 
 Files
 -----

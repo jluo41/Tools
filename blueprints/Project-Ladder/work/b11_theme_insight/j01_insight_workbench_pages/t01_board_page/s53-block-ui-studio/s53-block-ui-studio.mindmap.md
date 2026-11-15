@@ -16,7 +16,7 @@ built: from-topic .
   - ui <!-- @delivery-type/0 #636117 -->
 - Covers <!-- @covers #a6c44a -->
   - the Board's Studio topics by Tag, every … <!-- @covers/0 #ef53fb -->
-    the Board's Studio topics by Tag, every Job's too with where it lives: A Map · B Why it moved (cut ideas inside) · C Story for Design.
+    the Board's Studio topics by Tag, every Job's too with where it lives: A Map · B Why it moved (segment ideas inside) · C Story for Design.
 - Excluded <!-- @excluded #980495 -->
   - the other eight cells of the 3 … <!-- @excluded/0 #2c817e -->
     the other eight cells of the 3 × 3 (s51, s52, s54, s55, s56, s57, s58, s59); the old five-Space Insight page (s02); every Theme's shared frame (b10).
@@ -38,7 +38,7 @@ built: from-topic .
     ![s53-block-ui-studio.png](s53-block-ui-studio.png)
 - Decided <!-- @decided #55615a -->
   - s53-D01 · One grid per level (Board … <!-- @decided/0 #9b9afa -->
-    s53-D01 · One grid per level (Board question × Job, Job question × cut, Task cut × step); Report opens on the answer; Work opens on what waits on the person; no Task asks the person (JL 261101: "go ahead", on the proposal in chat).
+    s53-D01 · One grid per level (Board question × Job, Job question × segment, Task segment × step); Report opens on the answer; Work opens on what waits on the person; no Task asks the person (JL 261101: "go ahead", on the proposal in chat).
 - Open <!-- @open #cf9b77 -->
   - ? <!-- @open/0 #e90976 -->
     ? Every Job's topics on the Board's Studio (proposed: yes, each row saying where).

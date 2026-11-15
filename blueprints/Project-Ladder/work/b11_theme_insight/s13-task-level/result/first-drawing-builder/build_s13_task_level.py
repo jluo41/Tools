@@ -1,14 +1,14 @@
 """s13 · Task level: s13-task-level.excalidraw, one question's Task tab on the shared frame, its Spaces as full
 screens (JL 261007: "s11, s12, s13 ... for the Block level, Job level and task level").
 
-A Task is one question on one Job's pair (s00): drawn for K01 in j03_code-v2_data-v2. On the Insight Board every Task is
+A Task is one question on one Job's pair (s00): drawn for K01 in j03_question-v2_data-v2. On the Insight Board every Task is
 of one type, an insight question; its DIKW level changes what it may say and which methods fit, and a W Task
 cites the levels below and is signed. Its question, plan and three methods (ask, answer, read) are the pinned
 release's, read only here; a new or changed question is proposed from the Job (run-propose), not from a Task
 (JL 261007: "the question propose is conducted in the job level?"). The Task owns its Runs (hard, one per
-partition, and rNN_cross; soft write and check) and its page. It follows s12 one level down (JL 261007: "yes, I
+segment, and rNN_cross; soft write and check) and its page. It follows s12 one level down (JL 261007: "yes, I
 think so, that will be better"): the Audience Report is Question │ Work │ Report over the question's needs, need
-→ the Run that answers it → the page's sentence, filtered by Partition × Period; Work Details is the Task → Run
+→ the Run that answers it → the page's sentence, filtered by Segment × Period; Work Details is the Task → Run
 tree. Placeholders only; written through canvas.write, so every mark a person adds survives a rebuild.
 
     python build_s13_task_level.py [out.excalidraw]
@@ -22,15 +22,15 @@ import insight_ui as U  # noqa: E402
 
 text, base, path, INK, GRAY, RED, TEAL, MONO, GREEN = U.text, U.base, U.path, U.INK, U.GRAY, U.RED, U.TEAL, U.MONO, U.GREEN
 ASK, ANSWER, READ = "By estimand", "By hypothesis test", "By multiverse"
-STATUS = "K01 · in j03_code-v2_data-v2 · release p2 · <d>v2 · ✅ checked"   # no band (JL 261007): Question's first line
-TASK = "j03_code-v2_data-v2/t04_K01_<q>/"
-REL = "work/…_prototype/j02_code-v2/t04_K01_<q>/"
+STATUS = "K01 · in j03_question-v2_data-v2 · release p2 · <d>v2 · ✅ checked"   # no band (JL 261007): Question's first line
+TASK = "j03_question-v2_data-v2/t04_K01_<q>/"
+REL = "work/…_prototype/j02_question-v2/t04_K01_<q>/"
 
-MOVES = [("Insight › a question's row", "the Task tab t04_K01_<q> in j03_code-v2_data-v2: one question on one pair"),
-         ("Prototype › its question.md", "Description: Question · Plan · Data, read only from release p2; ? its three methods"),
+MOVES = [("Insight › a question's row", "the Task tab t04_K01_<q> in j03_question-v2_data-v2: one question on one pair"),
+         ("Question Book › its question.md", "Description: Question · Plan · Data, read only from release p2; ? its three methods"),
          ("(none)", "a new or changed question is proposed from the Job (run-propose), never from a Task"),
-         ("its page tNN_<name>.md", "Audience Report: Question │ Work │ Report over its needs, Partition × Period"),
-         ("Insight › each partition, its row", "Work Details: the Task → Run tree, hard per partition and cross, then soft"),
+         ("its page tNN_<name>.md", "Audience Report: Question │ Work │ Report over its needs, Segment × Period"),
+         ("Insight › each segment, its row", "Work Details: the Task → Run tree, hard per segment and cross, then soft"),
          ("Check › Gates (this question's)", "chips on the rows; checks are Runs"),
          ("(none)", "Runs: by type, and the order a Task runs in")]
 
@@ -70,7 +70,7 @@ def plan(cx, cy, cw):
     """The plan: each need with its work spec or source and its pass rule, agreed by another agent."""
     text(cx, cy, "from release p2 · agreed ✅ <date> by another agent · read only", 14, GRAY)
     y = U.table(cx, cy + 30, cw, ["need", "kind", "work spec · source", "passes when"], [0, 90, 200, 720],
-                [("E1", "compute", "cut · unit · measure · by · uncertainty · rivals · output", "<estimate> with its interval"),
+                [("E1", "compute", "segment · unit · measure · by · uncertainty · rivals · output", "<estimate> with its interval"),
                  ("E2", "compute", "the rival analyses: each defensible choice", "same sign and size (T7)"),
                  ("E3", "cite", "<source> (a Discovery Result)", "the source says <x>")], mono=(0,), h=40)
     text(cx, y + 20, "Ask covered", 15, INK)
@@ -79,14 +79,14 @@ def plan(cx, cy, cw):
 
 
 def data(cx, cy, cw):
-    """This question's n and power on each partition, read before any outcome."""
+    """This question's n and power on each segment, read before any outcome."""
     text(cx, cy, "<d>v2 · from each Run's partition_power.csv, computed before any outcome", 14, GRAY)
     y = U.table(cx, cy + 30, cw, ["partition", "n", "base rate", "power (smallest effect <pp>)", "state"],
                 [0, 220, 360, 520, 820],
-                [("full", "<n>", "<rate>", "ok", "r01 run"), ("<partition A>", "<n>", "<rate>", "ok", "r02 run"),
-                 ("<partition B>", "<n>", "<rate>", "ok", "r03 run"), ("Cross", "A against B", "", "the difference test", "r04 run")],
+                [("full", "<n>", "<rate>", "ok", "r01 run"), ("<segment A>", "<n>", "<rate>", "ok", "r02 run"),
+                 ("<segment B>", "<n>", "<rate>", "ok", "r03 run"), ("Cross", "A against B", "", "the difference test", "r04 run")],
                 mono=(0,), h=40)
-    text(cx, y + 16, "a cut too small for this question is refused here and shown, never run (as K02 on <B> in this Job)", 14, GRAY)
+    text(cx, y + 16, "a segment too small for this question is refused here and shown, never run (as K02 on <B> in this Job)", 14, GRAY)
 
 
 PERIOD = lambda part, on: [[("Partition:", 0)] + [(lab, lab == part) for lab, _ in U.PARTS],
@@ -102,10 +102,10 @@ def answer_box(cx, cy, cw, line):
 
 def current(cx, cy, cw):
     """Question │ Work │ Report over the needs, on one partition: need → the Run → the page's sentence."""
-    answer_box(cx, cy, cw, "the page on <partition A>: <one claim> · <interval> · CHECK ✅ ↗")
-    groups = [("compute", "", [("E1 · <estimate of X on Y> ↗", "r02_<partition A>/ ● ok ↗\nresult/metrics.json",
+    answer_box(cx, cy, cw, "the page on <segment A>: <one claim> · <interval> · CHECK ✅ ↗")
+    groups = [("compute", "", [("E1 · <estimate of X on Y> ↗", "r02_<segment A>/ ● ok ↗\nresult/metrics.json",
                                 '"<claim sentence>" · <interval> ↗', CHIPS["E1"]),
-                               ("E2 · the rival analyses ↗", "r02_<partition A>/ ● ok ↗\nresult/multiverse.csv",
+                               ("E2 · the rival analyses ↗", "r02_<segment A>/ ● ok ↗\nresult/multiverse.csv",
                                 '"<same sign and size across choices>" ↗', CHIPS["E2"])]),
               ("cite", "", [("E3 · <source> ↗", "a Discovery Result ↗\n(no Run here)", '"<sentence citing it>" ↗', [])])]
     y = U.qwr(cx, cy + 64, cw, HEADS, groups)
@@ -113,10 +113,10 @@ def current(cx, cy, cw):
 
 
 def cross(cx, cy, cw):
-    """On Cross: the difference test between the partitions, and the verdict the page states."""
+    """On Cross: the difference test between the segments, and the verdict the page states."""
     answer_box(cx, cy, cw, "the page on Cross: POOL · one answer for <A> and <B> ↗")
     groups = [("compute", "", [("E1 · <estimate> on A against B ↗", "r04_cross/ ● ok ↗\nA vs B: <statistic>, <p>",
-                                '"the effect does not differ by <cut>" ↗', [(2, "read: By heterogeneity")])])]
+                                '"the effect does not differ by <segment>" ↗', [(2, "read: By heterogeneity")])])]
     y = U.qwr(cx, cy + 64, cw, HEADS, groups)
     text(cx, y + 6, "one test of the difference, never two separate tests (By heterogeneity)", 14, GRAY)
 
@@ -125,9 +125,9 @@ def vs_previous(cx, cy, cw):
     """The needs against K01 in the Job before: read from the Job's run-compare-j02 report."""
     text(cx, cy, "K01 in j03 against K01 in j02 · the code moved (p1 → p2) · from j03's reports/vs-j02.md", 14, INK, MONO)
     text(cx, cy + 28, "0 new · 2 held · 1 changed · 0 dropped · 0 not comparable", 17, INK)
-    groups = [("compute", "", [("E1 · <estimate> ↗", "r02_<partition A>/ ↗ (j03)\nj02: r02_<partition A>/ ↗",
+    groups = [("compute", "", [("E1 · <estimate> ↗", "r02_<segment A>/ ↗ (j03)\nj02: r02_<segment A>/ ↗",
                                 "Δ changed: <b> → <b'> · its script changed in p2 (code)", CHIPS["E1"]),
-                               ("E2 · the rival analyses ↗", "r02_<partition A>/ ↗ (j03)", "= held: same sign and size", CHIPS["E2"])]),
+                               ("E2 · the rival analyses ↗", "r02_<segment A>/ ↗ (j03)", "= held: same sign and size", CHIPS["E2"])]),
               ("cite", "", [("E3 · <source> ↗", "a Discovery Result ↗", "= held", [])])]
     y = U.qwr(cx, cy + 66, cw, HEADS, groups)
     text(cx, y + 6, "the held rule is the release's (thresholds.yaml); a Task has no compare Run of its own", 14, GRAY)
@@ -140,19 +140,19 @@ def studio(cx, cy, cw):
     text(cx, cy + 100, "+ Add topic  ->  t04_K01_<q>/sNN-<topic>/", 16, GRAY, MONO)
 
 
-RUNS = [("r01_full/", "hard · partition", "● ok", "p01", "<MMDD>"), ("r02_<partition A>/", "hard · partition", "● ok", "p01", "<MMDD>"),
-        ("r03_<partition B>/", "hard · partition", "● ok", "p02", "<MMDD>"), ("r04_cross/", "hard · cross", "POOL", "p01", "<MMDD>"),
+RUNS = [("r01_full/", "hard · partition", "● ok", "p01", "<MMDD>"), ("r02_<segment A>/", "hard · partition", "● ok", "p01", "<MMDD>"),
+        ("r03_<segment B>/", "hard · partition", "● ok", "p02", "<MMDD>"), ("r04_cross/", "hard · cross", "POOL", "p01", "<MMDD>"),
         ("run-write-t04/", "soft · write", "closed", "p02", "<MMDD>"), ("run-check-t04/", "soft · check", "✅", "p01", "<MMDD>")]
 
 
 def tree(cx, cy, cw):
-    """The Task → Run tree: its hard Runs, one per partition and the cross, then its soft write and check."""
+    """The Task → Run tree: its hard Runs, one per segment and the cross, then its soft write and check."""
     cols = [0, 400, 600, 760, 860]
     for h, c in zip(["t04_K01_<q> › Run", "kind · type", "status", "passes", "last"], cols):
         text(cx + c + 10, cy, h, 14, GRAY)
     y = cy + 26
     path([(cx, y), (cx + cw, y)], arrow=False, color=GRAY)
-    for group, rows in [("hard · one per partition, then the cross", RUNS[:4]), ("soft", RUNS[4:])]:
+    for group, rows in [("hard · one per segment, then the cross", RUNS[:4]), ("soft", RUNS[4:])]:
         text(cx, y + 8, group, 15, INK)
         y += 32
         path([(cx, y), (cx + cw, y)], arrow=False, color=INK)
@@ -164,7 +164,7 @@ def tree(cx, cy, cw):
     text(cx, y + 14, "a Run's ↗ opens its pop-out: run.yaml, pins, n and power, passes, result/, report.md", 14, GRAY)
 
 
-ORDER = [("rNN_<partition>", "hard · each cut"), ("rNN_cross", "hard"), ("run-write-t04", "soft · the page"),
+ORDER = [("rNN_<segment>", "hard · each segment"), ("rNN_cross", "hard"), ("run-write-t04", "soft · the page"),
          ("run-check-t04", "soft · another agent"), ("? run-sign-t04", "W only: a person")]
 
 
@@ -201,35 +201,35 @@ SCREENS = [
     ("Description", DESC(1), [], READ_ONLY, plan,
      [(REL + "question.md", "needs · work spec · Ask covered · agreed"), ("check_evidence.py", "T0 covered · T1 specified")]),
     ("Description", DESC(2), [], "", data,
-     [(TASK + "runs/rNN_<partition>/result/partition_power.csv", "n · base rate · power"),
-      ("work/…_prototype/j02_code-v2/thresholds.yaml", "the smallest effect that matters")]),
+     [(TASK + "runs/rNN_<segment>/result/partition_power.csv", "n · base rate · power"),
+      ("work/…_prototype/j02_question-v2/thresholds.yaml", "the smallest effect that matters")]),
     ("Idea Studio", None, ["Add a topic"], "", studio,
      [(TASK + "studio/", "optional"), ("└── s01-<page-logic>/", "the page's argument")]),
-    ("Audience Report", PERIOD("<partition A>", 0), ["Write the Knowledge report", "Check a report"], "", current,
-     [(TASK + "t04_K01_<q>.md", "Report: the page, its sentences"), (TASK + "runs/r02_<partition A>/result/", "Work: the Run"),
+    ("Audience Report", PERIOD("<segment A>", 0), ["Write the Knowledge report", "Check a report"], "", current,
+     [(TASK + "t04_K01_<q>.md", "Report: the page, its sentences"), (TASK + "runs/r02_<segment A>/result/", "Work: the Run"),
       (REL + "question.md", "Logic: the needs (E1 · E2 · E3)")]),
     ("Audience Report", PERIOD("Cross", 0), ["Pool or split"], "", cross,
      [(TASK + "runs/r04_cross/result/", "the difference test"), (TASK + "t04_K01_<q>.md", "its Cross section")]),
-    ("Audience Report", PERIOD("<partition A>", 1), [], "from the Job's\nrun-compare-j02", vs_previous,
-     [("j03_code-v2_data-v2/reports/vs-j02.md", "the Job's comparison, this question's rows"),
-      ("j02_code-v1_data-v2/t04_K01_<q>/", "K01 in the Job before")]),
-    ("Work Details", [("All", 1), ("hard", 0), ("soft", 0)], ["Run a partition", "Check alignment"], "", tree,
-     [(TASK, "the Task"), ("├── runs/rNN_<partition>/", "hard: one per partition, + r04_cross"),
+    ("Audience Report", PERIOD("<segment A>", 1), [], "from the Job's\nrun-compare-j02", vs_previous,
+     [("j03_question-v2_data-v2/reports/vs-j02.md", "the Job's comparison, this question's rows"),
+      ("j02_question-v1_data-v2/t04_K01_<q>/", "K01 in the Job before")]),
+    ("Work Details", [("All", 1), ("hard", 0), ("soft", 0)], ["Run a segment", "Check alignment"], "", tree,
+     [(TASK, "the Task"), ("├── runs/rNN_<segment>/", "hard: one per segment, + r04_cross"),
       ("│   ├── run.yaml · passes/", "kind · status · passes · last"), ("│   └── result/", "what its pop-out previews"),
       ("└── runs/run-<type>-<target>/", "soft: write · check")]),
     ("Runs", [("All", 1), ("hard", 0), ("soft", 0), ("partition", 0), ("cross", 0), ("write", 0), ("check", 0)],
-     ["Run a partition", "Write the report", "Check a report"], "", runs,
-     [(TASK + "runs/rNN_<partition>/", "hard: result/ · passes/"), (TASK + "runs/run-<type>-<target>/", "soft: write · check")]),
+     ["Run a segment", "Write the report", "Check a report"], "", runs,
+     [(TASK + "runs/rNN_<segment>/", "hard: result/ · passes/"), (TASK + "runs/run-<type>-<target>/", "soft: write · check")]),
     ("Delivery", None, [], "", delivery, [("? " + TASK + "(W Tasks only)", "? the signed counsel, up to the Block")]),
 ]
 
 POPOUTS = [
     ("E1 · a need", [(REL + "question.md › E1", GRAY), ("kind: compute · <estimate of X on Y>", INK),
-                     ("spec: cut · unit · measure · by · uncertainty · rivals · output", INK),
+                     ("spec: segment · unit · measure · by · uncertainty · rivals · output", INK),
                      ("passes when: <estimate> with its interval", INK),
-                     ("answered by: r02_<partition A>/ ↗ · cited by: the page's sentence S3 ↗", INK),
+                     ("answered by: r02_<segment A>/ ↗ · cited by: the page's sentence S3 ↗", INK),
                      ("agreed ✅ <date> by another agent", GRAY)]),
-    ("r02_<partition A>  ·  the Run", [("run.yaml: hard · partition <A> · target t04_K01", INK),
+    ("r02_<segment A>  ·  the Run", [("run.yaml: hard · segment <A> · target t04_K01", INK),
                                       ("pins: question K01 · script <hash> · release p2 · data <d>v2", INK),
                                       ("n <n> on <A> · power ok (smallest effect <pp>)", INK), ("passes: p01 <MMDD> ok", GRAY),
                                       ("[ result/ preview: metrics · the first figure ]", GRAY),
@@ -237,14 +237,14 @@ POPOUTS = [
                                       ("open the folder  ·  Rerun  ·  Check", GRAY)]),
     ("K01 · the page", [(TASK + "t04_K01_<q>.md", GRAY), ("Answer", INK), ("  <one claim, how sure, its rivals, its limits>", GRAY),
                         ("Evidence", INK), ("  E1 → r02_<A> ↗ · E2 → r02_<A> ↗ · E3 → <source> ↗", GRAY),
-                        ("Limits  ·  Next", INK), ("a section per partition, and Cross", GRAY)]),
+                        ("Limits  ·  Next", INK), ("a section per segment, and Cross", GRAY)]),
     U.card_window(ANSWER)]
 
 QUESTIONS = [
     "? the Task's Audience Report rows are its needs: need → the Run that answers it → the page's sentence",
     "? method: { ask, answer, read } in the release's question.md, fixed with the plan and agreed with it",
     "? a new or changed question is proposed from the Job (run-propose), never from a Task",
-    "? a weak partition (low power): refused and shown in Data, never run",
+    "? a weak segment (low power): refused and shown in Data, never run",
     "? vs previous per need comes from the Job's run-compare; a Task has no compare Run of its own",
     "? run-sign: only a W Task's counsel is signed, then goes to the Block's handoff",
 ]
@@ -257,7 +257,7 @@ ASIDES = {"Idea Studio": ("typical topics, tNN_…/sNN-<topic>/", [
 def main():
     out = Path(sys.argv[1]) if len(sys.argv) > 1 else HERE / "s13-task-level.excalidraw"
     U.level_drawing(out, Path(__file__).name, "Task",
-                    "Task level: one question on one Job's pair (K01 in j03_code-v2_data-v2)",
+                    "Task level: one question on one Job's pair (K01 in j03_question-v2_data-v2)",
                     "One Task type on the Insight Board, an insight question: its question is the release's, read only; "
                     "its needs are answered by its Runs and cited by its page.", MOVES, SCREENS, POPOUTS, QUESTIONS, ASIDES,
                     changes=CHANGES)

@@ -16,7 +16,7 @@ reads: question · the extract · a target column
 returns: the surviving patterns, each with its support and its test, and the number of
   patterns tested
 test now: T4 spec · T7 survives false discovery control
-test in use: T8 holds on another partition or time window
+test in use: T8 holds on another segment or time window
 
 
 What the literature says
@@ -48,7 +48,7 @@ steps: 1. Fix the target, the item columns and the minimum support in the spec. 
   3. Test every pattern, with a correction for the number tested [Benjamini 1995].
   4. Report what survives, with the count tested.
 returns: The surviving patterns with their tests, and the number of patterns tested.
-verify: A different agent re-runs the mining on a held-out partition (T8) and checks that
+verify: A different agent re-runs the mining on a held-out segment (T8) and checks that
   the count tested matches the run (T4).
 risk: An agent may report a pattern that only looks strong because thousands were tested
   [Webb 2007].

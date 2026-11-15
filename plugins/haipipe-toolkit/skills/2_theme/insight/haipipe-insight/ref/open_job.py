@@ -1,16 +1,16 @@
-"""open_job.py <insight Board> --release code-vN --data data-vM [--previous jNN_…] [--moved code|data|start]
+"""open_job.py <insight Board> --release question-vN --data data-vM [--previous jNN_…] [--moved code|data|start]
 
 Open one plan-C Job on an insight Board (b11 s00 · s11 · s12, 261007):
-`jNN_code-vN-<release slug>_data-vM/` (`job_name`), pinning one Prototype release (board.md
+`jNN_question-vN-<release slug>_data-vM/` (`job_name`), pinning one Question Book release (board.md
 `prototype:`) and one data version (board.md `versions:`). It writes:
 
     <job>.md                              the Job's face: release, data, state open, moved, previous, and its
                                           `goal:` line, what this release × data version answers (job_goal)
     tNN_<L><NN>_<slug>/tNN_….md           one Task per question of the release: `question:`, its `goal:` (the
                                           question's ask), its answer fields empty until its page is written
-    tNN_…/runs/rNN_<partition>/run.sh     one ticket per cut the question is asked on (rNN = the cut's
+    tNN_…/runs/rNN_<segment>/run.sh     one ticket per segment the question is asked on (rNN = the segment's
                                           place in the release's partitions.md), running run_job.py
-    tNN_…/runs/rNN_<partition>/run.yaml   the Run's card, planned until its ticket runs
+    tNN_…/runs/rNN_<segment>/run.yaml   the Run's card, planned until its ticket runs
 
 A question with no compute need gets no ticket (its page cites the answers below it). Never overwrites a
 file; rerun it after a release adds a question. Prints what it made.
@@ -25,12 +25,12 @@ import yaml
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import run_question as RQ  # noqa: E402
 
-# A Board Job's folder name, read left to right (JL 261012: "make the job folder name to be human readable"; JL 261109:
-# "code-v1 x data-v1, make it readable"): j02_code-v1-example-questions_data-v2. Underscores part its three fields (the
-# number, the code version, the data version) and hyphens join the words inside one, as in a Task's tNN_<L><NN>_<slug>.
+# A Board Job's folder name, read left to right (it reads as question version × data version without
+# a lookup): j02_question-v1-example-questions_data-v2. Underscores part its three fields (the
+# number, the question version, the data version) and hyphens join the words inside one, as in a Task's tNN_<L><NN>_<slug>.
 # The older j01_prototype-p1-basic-questions_data-SMSR2v1 and jNN_pN_<D>vM still read, until rename_code_data.py
 # carries their Board over. Groups: number, release, dataset ('' in the new name), version.
-JOB_NEW = re.compile(r"^j(\d+)_(code-v\d+)(?:-[a-z0-9-]+)?_()(data-v\d+)$")
+JOB_NEW = re.compile(r"^j(\d+)_((?:question|code)-v\d+)(?:-[a-z0-9-]+)?_()(data-v\d+)$")
 JOB_OLD = re.compile(r"^j(\d+)_(?:prototype-)?(p\d+)(?:-[a-z0-9-]+)?_(?:data-)?([A-Za-z][A-Za-z0-9]*?)(v\d+)$")
 
 
@@ -50,14 +50,14 @@ JOB = Either(JOB_NEW, JOB_OLD)
 
 
 def num(vid: str) -> int:
-    """The number of a code or data version id: 2 from code-v2, data-v2, p2 or v2."""
+    """The number of a code or data version id: 2 from question-v2, data-v2, p2 or v2."""
     m = re.search(r"(\d+)$", str(vid or ""))
     return int(m.group(1)) if m else 0
 
 
 def code_id(rid: str) -> str:
-    """A code version as a person reads it: code-v1 (an older p1 reads the same)."""
-    return re.sub(r"^p(\d+)$", r"code-v\1", str(rid or ""))
+    """A question version as a person reads it: question-v1 (an older p1 reads the same)."""
+    return re.sub(r"^(?:p|code-v)(\d+)$", r"question-v\1", str(rid or ""))
 
 
 def data_id(vid: str) -> str:
@@ -66,19 +66,19 @@ def data_id(vid: str) -> str:
 
 
 def release_slug(rdir: Path) -> str:
-    """A release folder's words: `basic-questions` from j01_code-v1_basic-questions ('' for a bare jNN_code-vN)."""
+    """A release folder's words: `basic-questions` from j01_question-v1_basic-questions ('' for a bare jNN_question-vN)."""
     return rdir.name.split("_", 2)[2] if rdir.name.count("_") >= 2 else ""
 
 
 def job_name(number: int, release: str, slug: str, dataset: str, data: str) -> str:
-    """j01_code-v1-basic-questions_data-v1: the Job's number, its code version and words, its data version (one
+    """j01_question-v1-basic-questions_data-v1: the Job's number, its question version and words, its data version (one
     dataset per Board, named in board.md, so the name carries none)."""
     plan = "-".join(x for x in (code_id(release), slug) if x)
     return f"j{int(number):02d}_{plan}_{data_id(data)}"
 
 TICKET = """#!/bin/bash
-# run.sh · one hard Run of a plan-C Job: this Task's question on this cut (haipipe-insight ref/run_job.py).
-# The same lines in every ticket; the folder name is the Run (rNN_<partition>).
+# run.sh · one hard Run of a plan-C Job: this Task's question on this segment (haipipe-insight ref/run_job.py).
+# The same lines in every ticket; the folder name is the Run (rNN_<segment>).
 R="$(cd "$(dirname "$0")" && while [ ! -f env.sh ] && [ "$PWD" != / ]; do cd ..; done; pwd)"
 source "$R/env.sh" >/dev/null 2>&1
 HERE="$(cd "$(dirname "$0")" && pwd)"
@@ -93,7 +93,7 @@ def _words(rdir: Path, release: str) -> str:
 
 
 def job_goal(board, jface: dict) -> str:
-    """A Board Job's goal line, what its code version × data version answers: `What the example questions (code-v1)
+    """A Board Job's goal line, what its question version × data version answers: `What the example questions (question-v1)
     find on data-v2, all sixteen days`."""
     board = Path(board)
     face, _ = RQ.front(board / "board.md")
@@ -108,7 +108,7 @@ def job_goal(board, jface: dict) -> str:
 
 
 def question_fields(board, jface: dict, qid: str) -> dict:
-    """A Board Task's question as the Prototype's question.md holds it (its ask is the Task's goal line)."""
+    """A Board Task's question as the Question Book's question.md holds it (its ask is the Task's goal line)."""
     rdir = Path(board).parent.parent / str(jface.get("prototype") or "")
     rows = (yaml.safe_load((rdir / "release.yaml").read_text()) or {}).get("questions") or {} \
         if (rdir / "release.yaml").is_file() else {}
@@ -134,7 +134,7 @@ def open_job(board, release, data, previous="", moved="start", number=None):
     board = Path(board).resolve()
     face, _ = RQ.front(board / "board.md")
     proto = board.parent.parent / str(face.get("prototype", ""))
-    rdir = next((p for p in sorted(proto.glob("j*_*")) if p.is_dir()          # jNN_code-vN or jNN_code-vN_<slug>
+    rdir = next((p for p in sorted(proto.glob("j*_*")) if p.is_dir()          # jNN_question-vN or jNN_question-vN_<slug>
                  and re.match(rf"^j\d+_{release}(_.+)?$", p.name)), None)
     if rdir is None:
         raise SystemExit(f"no release {release} in {proto}")

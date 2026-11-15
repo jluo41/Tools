@@ -500,7 +500,7 @@ def check_coverage(page_src: pathlib.Path, plan_text: str):
             if m:
                 cn, pn, bn = int(m.group(1)), int(m.group(2)), 0
                 continue
-            m = re.match(r"^- [BS](\d+)\s*·", line)
+            m = re.match(r"^- [BSs](\d+)\s*·", line)
             if m:
                 bn = int(m.group(1))
                 bullet_evidence[f"C{cn}.P{pn}.B{bn}"] = []
@@ -687,7 +687,7 @@ _LABEL_RE = re.compile(
 
 
 _POINT_ROLE_RE = re.compile(r"^\s*\[([^\]]+)\]\s*(.*)$")
-_POINT_PREFIX_RE = re.compile(r"^(?:S\d+\s*·\s*)")
+_POINT_PREFIX_RE = re.compile(r"^(?:[Ss]\d+\s*·\s*)")
 _POINT_INLINE_LABEL_RE = re.compile(
     r"\s+(?=(?:Note|Annotation|More|Role|Transition|Evidence|Accept|"
     r"Answered|Drawn|Routed):)"
@@ -894,7 +894,7 @@ def split_embedded_draft(continuation):
 # writer emits the Draft-first shape for every drafted Bullet.
 
 _POINT_LINE = re.compile(r"^Point:\s*(.*)$", re.I)
-_SENTENCE_TAG = re.compile(r"^(S\d+[a-z]*(?:\s*(?:-|–|to)\s*S\d+[a-z]*)?\s*·\s*)")  # S7, S26a, or a range S3-S4
+_SENTENCE_TAG = re.compile(r"^([Ss]\d+[a-z]*(?:\s*(?:-|–|to)\s*[Ss]\d+[a-z]*)?\s*·\s*)")  # S7, S26a, or a range S3-S4
 _BULLET_LINE = re.compile(r"^(- (?:\[[ xX]\]\s*)?(?:B|S)\d+\s*·\s*)(.*)$")
 
 
@@ -1068,7 +1068,7 @@ def _head_words(head: str) -> list:
     statement being checked.  The same 4–11 word signal therefore remains
     useful for both imperative legacy heads and concise declarative Points.
     """
-    h = re.sub(r"^(?:S\d+\s*·\s*)", "", head.strip())
+    h = re.sub(r"^(?:[Ss]\d+\s*·\s*)", "", head.strip())
     h = re.sub(r"^\[[^\]]+\]\s*", "", h)
     h = re.sub(r"^(?:Cut:|C\d+:)\s*", "", h)
     h = re.split(r"[%s]" % _MARK_EMOJI, h)[0]

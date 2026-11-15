@@ -9,7 +9,7 @@ s21 · The run bar
 
 **Topic:** The run bar's five steps (▶ Run · Interpret · Message · Judge · Feedback) with who does each and its route; both stub runs; and every HaiChat tool with the ConsoleAction it dispatches and its gate, read from `haichat_api.py` (261009, g01).
 
-**Feeds:** `reports/` q01_console_vs_toolkit
+**Feeds:** Q01
 
 
 Files

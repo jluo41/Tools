@@ -130,10 +130,10 @@ s01-D16 · Proposed (261006): insight keeps its layout: Block = the topic, with 
     face; Jobs = the DIKW levels; Tasks = questions, one script each; Runs = `<dataset>_<partition>.sh`
     (one script serves every dataset, so the dataset is not a Job). On screen it keeps today's
     Insight workbench (haipipe-workbench-insight 0.16.0): Spaces Scope (Dataset · Partitions ·
-    Questions) · Prototype (Meta · Data · Information · Knowledge · Wisdom · RoadMap Draw) ·
+    Questions) · Question Book (Meta · Data · Information · Knowledge · Wisdom · RoadMap Draw) ·
     Insight (Full · each cut · Cross; Logic · Work · Report) · Check (Gates · Checks · Runtime) ·
     Delivery (Handoff); one dataset at a time; runs and pages open in pop-outs. In the general
-    model, Prototype is its children Space and Insight a view across them; a family may name its
+    model, Question Book is its children Space and Insight a view across them; a family may name its
     children Space and add one view across it.
 s01-D17 · Proposed (261006, from JL's mark on the Block tree): Block and Job hold `runs/` too,
     soft Runs only (each writes into one item of its level; no evidence there). A Task's
@@ -170,7 +170,7 @@ s01-D20 · Proposed (261006, JL's sketch of the paper Block tab): the Block tab 
     (`runs/`, optional, JL's later mark) · **Delivery** (`delivery/`, optional). Runs lists the
     Block's own Runs, each with its run type (the same names as the Run types panel), and the run
     types are its third row. Insight fills the five with today's views (Scope → Description, RoadMap Draw → Idea
-    Studio, Insight → Audience Report, Prototype → Work Details); today's Check is left out. The
+    Studio, Insight → Audience Report, Question Book → Work Details); today's Check is left out. The
     Task tab takes the same five (the s13 session, same day); the Job tab still uses the older
     names.
 s01-D21 · Proposed (261006, JL: "where will we save the files for the papers?"): a Block's related
@@ -198,7 +198,7 @@ s01-D23 · Proposed (261006, JL's marks on the s11 proposal): the blockers. Ever
 s01-D24 · Proposed (261006, JL: the insight DIKW levels "are in the board level, do you think in the job
     level"): a DIKW level is a Job, as the Insight Block contract already says (one Job per level,
     one Task per question), so its screens move down a tab. Block › Work Details lists the four
-    DIKW levels, each open to its questions, with no third row; today's Prototype › Data · Information ·
+    DIKW levels, each open to its questions, with no third row; today's Question Book › Data · Information ·
     Knowledge · Wisdom views become each DIKW level's Job tab. That tab is the first Job tab with the
     Block's six Spaces: Description (level.md) · Idea Studio · Audience Report (the Insight table,
     this DIKW level's rows, by partition) | Work Details (its questions, with needs and script) | Runs
@@ -344,7 +344,7 @@ Open
 1b. Insight: is a DIKW level a line of work (a Job)? a question climbing D → W = 4 Tasks? a partition =
    a Run or a Task? carry the register board over, or keep both layouts? (red in frame 2)
    Proposed in s01-D16, aligned with today's Insight workbench. Still open: does insight gain the
-   Job and Task tabs, or keep its pop-outs? Its studio as Prototype › RoadMap Draw, no Reports?
+   Job and Task tabs, or keep its pop-outs? Its studio as Question Book › RoadMap Draw, no Reports?
 1d. Level · Space · Subspace (red in frame 7): Studio types (Map · Scratch · Design · Logic)?
    Delivery types (Report · Export · Handoff)? a question's group in its qNN face or the
    register? Resources a section of the face or a folder? Reports at Task level? "view" its own

@@ -119,6 +119,26 @@ def t_log_rows():
     return "events() one a row; event() refuses two; whose row never shown"
 
 
+def t_adds_up():
+    """A row's hours hold all of its steps, and its shares add up to 1 as far as four decimals can: 820 steps over 10 hours were 823 when each hour was
+    rounded alone (the gallery's part-of-a-day row, found by adding the hours by hand, 261110)."""
+    row = {"NumberOfSteps": "820", "StartDateTime": "6/21/2023 3:54:54 PM", "EndDateTime": "6/22/2023 12:40:06 AM",
+           "TimezoneOffset": "-240", "EntrySourceID": "37"}
+    out = event(raw={"type": "log", "rows": [row]})["output"]
+    assert len(out) == 10, len(out)
+    assert sum(h["in_hour"]["steps"] for h in out.values()) == 820, [h["in_hour"]["steps"] for h in out.values()]
+    assert abs(sum(h["share"] for h in out.values()) - 1) <= 0.00005 * len(out), sum(h["share"] for h in out.values())
+    first, full = out["2023-06-21 11:00 -04:00"], out["2023-06-21 12:00 -04:00"]
+    assert first["in_hour"] == {"minutes": 5.1, "steps": 8}, first["in_hour"]        # 306 s of 31,512 s: 7.96 steps
+    assert full["share"] == 0.1142 and full["in_hour"]["steps"] in (93, 94), full    # 3,600 s: 93.68 steps
+    assert out["2023-06-21 20:00 -04:00"]["in_hour"]["steps"] in (62, 63)            # 2,406 s: 62.61 steps
+    for n in (1, 7, 128, 999, 12345):                       # any count, any split
+        row["NumberOfSteps"] = str(n)
+        o = event(raw={"type": "log", "rows": [row]})["output"]
+        assert sum(h["in_hour"]["steps"] for h in o.values()) == n, n
+    return "820 steps over 10 hours add up to 820; so do 1, 7, 128, 999 and 12,345 steps"
+
+
 def space():
     """The SPACE holding s05: above this file, else the folder it is run from or above (Tools/ is often a link)."""
     cwd = Path.cwd().resolve()
@@ -146,7 +166,8 @@ if __name__ == "__main__":
     for name, fn in (("shares to the second", t_shares), ("kinds by length", t_kinds),
                      ("an input made elsewhere", t_input_only), ("what is refused", t_refusals),
                      ("a stream: repeats, walks, hours", t_stream), ("the same walk as exercise", t_same_walk_as_exercise),
-                     ("logged rows", t_log_rows), ("s05's examples", t_examples)):
+                     ("logged rows", t_log_rows), ("the hours add up", t_adds_up),
+                     ("s05's examples", t_examples)):
         check(name, fn)
     print(f"{len(PASS)} passed, {len(FAIL)} failed")
     sys.exit(1 if FAIL else 0)

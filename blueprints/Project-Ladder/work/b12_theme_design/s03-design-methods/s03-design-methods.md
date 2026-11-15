@@ -19,7 +19,7 @@ and the papers table live with the design theme's server:
 `Tools/plugins/haipipe-toolkit/servers/workbench-design/` `guide/method.md` (cards in `guide/methods/`) ·
 `related/papers.md` (PDFs in `related/papers/`).
 
-**Feeds:** `../reports/` q01_design_ladder · q02_design_workbench.
+**Feeds:** `../reports/` Q01 · Q02.
 
 
 Files

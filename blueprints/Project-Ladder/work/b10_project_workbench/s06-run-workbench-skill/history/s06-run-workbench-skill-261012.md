@@ -72,8 +72,8 @@ skills/1_base/project/
 ├── haipipe-related/    s04 Related
 ├── haipipe-report/     s05 Report
 └── haipipe-run/        s06 Run        ◀ this topic
-servers/workbench/frame.py         runs_of
-servers/workbench/runs_panel.py    run_types · panel_html · panel_markup
+servers/workbench/page/frame.py         runs_of
+servers/workbench/page/runs_panel.py    run_types · panel_html · panel_markup
 ```
 
 
@@ -93,7 +93,7 @@ Below                    still open (red); hard and soft row by row, and the fol
 ```
 
 Read from disk on every build: this Block's Runs (`runs/*/run.yaml`, each ticket's `close:` line), its
-Runs Space through `servers/workbench/frame.py`, and haipipe-run's version.
+Runs Space through `servers/workbench/page/frame.py`, and haipipe-run's version.
 
 
 Finding (read 261011)

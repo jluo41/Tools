@@ -46,7 +46,7 @@ population/window/unit boundary.
 
 ## The page
 
-The answering page (`<n>-<partition>/K<NN>-<partition>-<slug>/`) is a
+The answering page (`<n>-<segment>/K<NN>-<segment>-<slug>/`) is a
 `haipipe-draft` Page Face written through that skill's flow
 (`../../haipipe-insight/ref/report.md` § The flow): plan, Draft, `page.py
 adopt`, `page.py health`, a page CHECK by another agent. A page may answer
@@ -96,7 +96,7 @@ A claim computes whenever its question has a compute need
 for a named rival, a held-out score, a size calculation. Each such need is a
 task in a `j3N_knowledge_<topic>` Job of the Project's DIKW Block,
 commissioned through `haipipe-task`; the Knowledge page calls it through its
-own ticket `runs/run_bNNjNNtNNrNN_<partition>_<task>.sh` (`RESULT_DIR` set to
+own ticket `runs/run_bNNjNNtNNrNN_<segment>_<task>.sh` (`RESULT_DIR` set to
 the page's `results/<ticket>/`) and binds it in `answers.yaml`. The Information
 it rests on is a cite need; the proposition, strength and boundary are judge
 needs. A page whose question has only cite and judge needs has no `runs/`.
@@ -138,7 +138,7 @@ boundary, the runs it rests on, and any pooling condition.
 
 ## Files
 
-- Page: `insight/<board>/<n>-<partition>/K<NN>-<partition>-<slug>/K<NN>-<partition>-<slug>.md`
+- Page: `insight/<board>/<n>-<segment>/K<NN>-<segment>-<slug>/K<NN>-<segment>-<slug>.md`
 - Tickets and results, when it computes: the page's `runs/<ticket>.sh` and
   `results/<ticket>/`, named in its `runs:` header
 - Binding: the page's `answers.yaml` (each need → its result files, cited page or `judge`)

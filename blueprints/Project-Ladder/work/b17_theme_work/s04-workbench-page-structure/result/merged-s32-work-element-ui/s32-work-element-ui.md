@@ -186,7 +186,7 @@ Open
 1. Pick the work looks the b03 picks leave open (the Pick frame): Space body, tables, rows and cards, header,
    one item's display, the theme's own elements.
 2. The GAP lines above are the work theme's code (`servers/workbench-work/work_theme.py`) or the base's
-   (`servers/workbench/frame.py`: the Page views, the Runs third row, "from below"); told to design-b03-project
+   (`servers/workbench/page/frame.py`: the Page views, the Runs third row, "from below"); told to design-b03-project
    (261008) so b03's s32 tracks them. No server code is changed here.
 3. A work Task's other Page views (Folder · Evidence · Value · Page Runs · Lanes) are the old Page workbench
    in an iframe; Lanes stands where the planned Delivery cards (Reports · Exports) go. Keep them for a Task

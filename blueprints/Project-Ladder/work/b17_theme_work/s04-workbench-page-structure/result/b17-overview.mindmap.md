@@ -10,19 +10,19 @@ Design what each work level holds and shows. Four report answers remain open; th
 
 - [Q01 · open] Define the work hierarchy <!-- n01 -->
   → Where does each stage belong?
-  - [question] [What does each level hold and show?](../../reports/q01_work_ladder/q01_work_ladder.md) <!-- n02 -->
+  - [question] [What does each level hold and show?](../../s03-q01-work-ladder/s03-q01-work-ladder.md) <!-- n02 -->
   - [s01] [Work ladder: Block, Job, Task and Run](../../s01-work-ladder/s01-work-ladder.mindmap.html) <!-- n03 -->
 - [Q02 · open] Place the work stages <!-- n04 -->
   → How do the results answer a question?
-  - [question] [Where do Plan, Build, Execute and Report appear?](../../reports/q02_plan_build_execute_report/q02_plan_build_execute_report.md) <!-- n05 -->
+  - [question] [Where do Plan, Build, Execute and Report appear?](../../board.md) <!-- n05 -->
   - [s04 · was s03] [Existing Work workbench and its views](../merged-s03-work-workbench/s03-work-workbench.mindmap.html) <!-- n06 -->
 - [Q03 · open] Connect questions to evidence <!-- n07 -->
   → Which skills perform and check the work?
-  - [question] [How does a report identify the Runs it reads?](../../reports/q03_questions_and_runs/q03_questions_and_runs.md) <!-- n08 -->
+  - [question] [How does a report identify the Runs it reads?](../../board.md) <!-- n08 -->
   - [proposal] Question → linked Tasks → exact Run results → report. <!-- n09 -->
 - [Q04 · open] Assign skills to the work <!-- n10 -->
   → How should the reader see this structure?
-  - [question] [Which skills are shared, and which belong to work?](../../reports/q04_work_skills/q04_work_skills.md) <!-- n11 -->
+  - [question] [Which skills are shared, and which belong to work?](../../s05-q04-work-skills/s05-q04-work-skills.md) <!-- n11 -->
   - [s02] [Work skills and their responsibilities](../../s02-work-skills/s02-work-skills.mindmap.html) <!-- n12 -->
 - [interface] Design the reader's page <!-- n13 -->
   → What must be settled before closing the Block?

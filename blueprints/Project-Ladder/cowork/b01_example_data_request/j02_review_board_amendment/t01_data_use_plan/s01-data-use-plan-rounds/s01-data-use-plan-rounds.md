@@ -18,7 +18,7 @@ cowork Block).
 went out as v1, the review board contact sent comments, v2 answered them, and the retention period waits on a person
 before v3.
 
-**Feeds:** `reports/` q02_retention_period
+**Feeds:** Q02
 
 
 Files

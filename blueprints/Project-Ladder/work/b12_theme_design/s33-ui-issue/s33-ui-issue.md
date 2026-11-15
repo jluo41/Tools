@@ -18,7 +18,7 @@ level, Space and view, shot each with headless Chrome, fetched every link, and c
 the files. It is the list the level owners work down; a fix is marked in `issues.yaml` and the drawing
 rebuilt, so the topic shows what is still open.
 
-**Feeds:** `reports/` q02_design_workbench
+**Feeds:** Q02
 
 
 Files

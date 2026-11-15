@@ -48,10 +48,10 @@ built: from-topic .
   - T7 (robustness) and T8 (replication) have no … <!-- @what-it-found-261007/7 #0fb0e2 -->
     T7 (robustness) and T8 (replication) have no code. `rivals` is a plan field only, and the
   - POOL · SPLIT verdict of By heterogeneity … <!-- @what-it-found-261007/8 #e4d085 -->
-    POOL · SPLIT verdict of By heterogeneity is described only in `ref/partition.md`.
+    POOL · SPLIT verdict of By heterogeneity is described only in `ref/segment.md`.
 - Proposed (261007) <!-- @proposed-261007 #e4f68e -->
   - The proposed screens are one topic per … <!-- @proposed-261007/0 #b2c367 -->
-    The proposed screens are one topic per level (JL 261007: "s11, s12, s13 ... instead of nesting all the things together"): `../s11-block-level/`, `../s12-job-level/`, `../s13-task-level/`. In short, each question names its three methods in its plan (Task), each row carries them as chips under its D · I · K · W heading with the partitions as the third row (Block and Job › Work Details), and a Job lists the cards that fit its level. The screen helpers and the card reader are shared in `../_build/insight_ui.py`.
+    The proposed screens are one topic per level (JL 261007: "s11, s12, s13 ... instead of nesting all the things together"): `../s11-block-level/`, `../s12-job-level/`, `../s13-task-level/`. In short, each question names its three methods in its plan (Task), each row carries them as chips under its D · I · K · W heading with the segments as the third row (Block and Job › Work Details), and a Job lists the cards that fit its level. The screen helpers and the card reader are shared in `../_build/insight_ui.py`.
 - Open <!-- @open #cf9b77 -->
   - Agree its **For:** line and **Delivery type:** … <!-- @open/0 #09a2ba -->
     Agree its **For:** line and **Delivery type:** (skill), proposed by the agent 261030?

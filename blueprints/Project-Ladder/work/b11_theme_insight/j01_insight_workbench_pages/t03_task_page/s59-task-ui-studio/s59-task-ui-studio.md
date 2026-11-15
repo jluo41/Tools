@@ -15,7 +15,7 @@ s59 · Task UI: Studio
 
 **Topic:** One cell of the insight 3 × 3, an insight Task (one question) × Studio (think), copied from the paper theme's (b16 j01) and the labeling theme's (b15 j01) (JL 261101: "Please understand the above two sessions and then work on the insights"). Its drawing is haipipe-studio's five parts, drawn by `build_s59_task_ui_studio.py` through j01's `insight_ui_cells.py`; its Design is every view as the same full screen, lettered, settled one round each. Names are placeholders (`<dataset>`, `<d>`): a real Board holds one person's health data, and Tools is public.
 
-**Feeds:** `reports/` q01_insight_ladder
+**Feeds:** Q01
 
 
 Files
@@ -34,7 +34,7 @@ s59-task-ui-studio/
 Decided
 -------
 
-s59-D01 · One grid per level (Board question × Job, Job question × cut, Task cut × step); Report opens on the answer; Work opens on what waits on the person; no Task asks the person (JL 261101: "go ahead", on the proposal in chat).
+s59-D01 · One grid per level (Board question × Job, Job question × segment, Task segment × step); Report opens on the answer; Work opens on what waits on the person; no Task asks the person (JL 261101: "go ahead", on the proposal in chat).
 
 
 Open

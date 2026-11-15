@@ -152,6 +152,21 @@ def main(argv=None):
     health.add_argument("--json", action="store_true")
     health.add_argument("--final", action="store_true",
                         help="the gate before saying a draft Task is finished: pending WARNs fail, and every Draft sentence must be in the printed PDF")
+    structure_cmd = commands.add_parser(
+        "structure", help="Print a Section's current structure (claims, paragraphs, ranges, words), or a version Job's")
+    structure_cmd.add_argument("target", type=Path, help="a Section Task folder or a version Job folder")
+    sign = commands.add_parser(
+        "sign", help="Sign the plan with the person's word from chat: approved: ✅ and the governing row's stamp")
+    sign.add_argument("page", type=Path, help="Page Folder or Page Face .md")
+    sign.add_argument("--quote", required=True, help="the person's words in chat, e.g. \"go with B\"")
+    sign.add_argument("--who", default="JL")
+    sign.add_argument("--dry-run", action="store_true")
+    sign_n = commands.add_parser(
+        "sign-narrative", help="Sign a version Job's ## Narrative with the person's word: narrative-approved: and the Story's stamp")
+    sign_n.add_argument("job", type=Path, help="the version Job folder or its face")
+    sign_n.add_argument("--quote", required=True)
+    sign_n.add_argument("--who", default="JL")
+    sign_n.add_argument("--dry-run", action="store_true")
     adopt = commands.add_parser(
         "adopt",
         help="Write the current Draft's sentences into the Page's Content, in Draft order; "
@@ -163,11 +178,15 @@ def main(argv=None):
     adopt.add_argument("--relayout", action="store_true",
                        help="lay the Content out again from the Draft first, when its paragraphs changed")
     renumber = commands.add_parser(
-        "renumber", help="Renumber the Draft's sentences S1, S2, ... in reading order, in every file that names one")
+        "renumber", help="Renumber the Draft's sentences s1, s2, ... in reading order, in every file that names one")
     renumber.add_argument("pages", type=Path, nargs="+", help="Page Folders or Page Face .md files")
     renumber.add_argument("--merged", action="append", default=[], metavar="OLD=INTO",
-                          help="an id merged into another, e.g. S15=S14, so its mentions follow it")
+                          help="an id merged into another, e.g. s15=s14, so its mentions follow it")
     renumber.add_argument("--dry-run", action="store_true", help="Say what would change; write nothing")
+    case = commands.add_parser("sentence-case", help="Write one Draft's sentence ids as s8 (an older S8 still reads)")
+    case.add_argument("draft", type=Path, help="the Draft Markdown, draft/<stem>-draft-v<N>.md")
+    case.add_argument("--records", action="store_true", help="also its draft/records/ revise, comments and checked")
+    case.add_argument("--dry-run", action="store_true", help="Print the lines that would change; write nothing")
     bump = commands.add_parser("bump", help="Move the Draft to its next version, the old one to draft/previous/")
     bump.add_argument("pages", type=Path, nargs="+", help="Page Folders or Page Face .md files")
     bump.add_argument("--to", help="the new version, e.g. v1.0 (default: the last number up by one)")
@@ -312,6 +331,24 @@ def main(argv=None):
             if any(report["verdict"] == FAIL for report in reports):
                 sys.exit(1)
             return
+        elif args.command == "structure":
+            from src.page_structure import structure
+            print(structure(args.target))
+            return
+        elif args.command == "sign":
+            from src.page_sign import render, sign as _sign
+            report = _sign(args.page, args.quote, who=args.who, dry_run=args.dry_run)
+            print(render(report))
+            if not report["ok"]:
+                sys.exit(1)
+            return
+        elif args.command == "sign-narrative":
+            from src.page_sign import render, sign_narrative
+            report = sign_narrative(args.job, args.quote, who=args.who, dry_run=args.dry_run)
+            print(render(report))
+            if not report["ok"]:
+                sys.exit(1)
+            return
         elif args.command == "adopt":
             from src.page_adopt import render, run
             reports = [run(page, plan=args.plan, dry_run=args.dry_run, relayout=args.relayout) for page in args.pages]
@@ -323,6 +360,10 @@ def main(argv=None):
             from src.page_renumber import render, renumber
             merged = dict(m.split("=", 1) for m in args.merged)
             print("\n\n".join(render(renumber(p, dry_run=args.dry_run, merged=merged)) for p in args.pages))
+            return
+        elif args.command == "sentence-case":
+            from src.sentence_case import convert, render as render_case
+            print(render_case(convert(args.draft, records=args.records, dry_run=args.dry_run), args.dry_run))
             return
         elif args.command == "bump":
             from src.page_bump import bump as _bump, render

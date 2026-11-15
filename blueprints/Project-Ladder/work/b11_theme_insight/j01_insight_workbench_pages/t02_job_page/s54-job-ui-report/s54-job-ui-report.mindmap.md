@@ -16,7 +16,7 @@ built: from-topic .
   - ui <!-- @delivery-type/0 #636117 -->
 - Covers <!-- @covers #a6c44a -->
   - the Overall Report, then the question × … <!-- @covers/0 #d41037 -->
-    the Overall Report, then the question × cut grid: A Overall (The pair's facts inside) · B Grid · C vs previous; each view 📊 Results, then ⚙️ Process.
+    the Overall Report, then the question × segment grid: A Overall (The pair's facts inside) · B Grid · C vs previous; each view 📊 Results, then ⚙️ Process.
 - Excluded <!-- @excluded #980495 -->
   - the other eight cells of the 3 … <!-- @excluded/0 #1868ea -->
     the other eight cells of the 3 × 3 (s51, s52, s53, s55, s56, s57, s58, s59); the old five-Space Insight page (s02); every Theme's shared frame (b10).
@@ -38,7 +38,7 @@ built: from-topic .
     ![s54-job-ui-report.png](s54-job-ui-report.png)
 - Decided <!-- @decided #55615a -->
   - s54-D01 · One grid per level (Board … <!-- @decided/0 #36e7fe -->
-    s54-D01 · One grid per level (Board question × Job, Job question × cut, Task cut × step); Report opens on the answer; Work opens on what waits on the person; no Task asks the person (JL 261101: "go ahead", on the proposal in chat).
+    s54-D01 · One grid per level (Board question × Job, Job question × segment, Task segment × step); Report opens on the answer; Work opens on what waits on the person; no Task asks the person (JL 261101: "go ahead", on the proposal in chat).
 - Open <!-- @open #cf9b77 -->
   - ? <!-- @open/0 #d3b45e -->
     ? Three letters, The pair folded into A (proposed, built live).

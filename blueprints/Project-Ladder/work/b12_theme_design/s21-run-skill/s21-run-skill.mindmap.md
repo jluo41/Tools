@@ -23,8 +23,8 @@ built: from-topic .
 - Source <!-- @source #6da13a -->
   - read from disk on every build: <!-- @source/0 #497260 -->
 - Feeds <!-- @feeds #ffe8e9 -->
-  - `../reports/q01_design_ladder/` (the Runs per level) and `../reports/q02_design_workbench/` … <!-- @feeds/0 #8d2bad -->
-    `../reports/q01_design_ladder/` (the Runs per level) and `../reports/q02_design_workbench/` (the Runs panel); a proposed Q04, "Which skill owns each part of the design ladder?".
+  - `../_old/reports/q01_design_ladder/` (the Runs per level) and `../_old/reports/q02_design_workbench/` … <!-- @feeds/0 #8d2bad -->
+    `../_old/reports/q01_design_ladder/` (the Runs per level) and `../_old/reports/q02_design_workbench/` (the Runs panel); a proposed Q04, "Which skill owns each part of the design ladder?".
 - Files <!-- @files #6ce6c5 -->
   - [py] [build_s21_run_skill.py](build_s21_run_skill.py) <!-- @files/0 #99bbcd -->
   - delivery/ <!-- @files/1 #404761 -->

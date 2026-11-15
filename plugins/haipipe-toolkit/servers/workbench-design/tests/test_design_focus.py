@@ -29,12 +29,15 @@ from test_design_act import set_state  # noqa: E402
 GROUPS = re.compile(r"<h3 class=pb-group>(.*?)</h3>")
 HEADS = re.compile(r"<h3 class=fd-h>(.*?)</h3>")
 BAR = re.compile(r"<h3 class=fd-h>(\d+ · .*?)</h3>", re.S)
-WORD = re.compile(r'<span class=(?:word|"word you")>[^<]+</span>')
+WORD = re.compile(r'<span class="word (?:you|ok) mk"[^>]*>[^<]+</span>')          # a bar's mark: 🙋 N waits, ✓ done
+STATE_WORD = re.compile(r'<span class=(?:word|"word you")>')                     # the retired state word
+MARK = re.compile(r'<span class="word you mk" title="[^"]+">🙋(?: \d+)?</span>|<span class="word ok mk" aria-label="done">✓</span>')
+TRAY = re.compile(r'<template id="wait-items">.*?</template>', re.S)             # the page's 🙋 tray lists every wait
 TAB = re.compile(r'<button type=button class="pb-item[^"]*" data-pbtab="[^"]*"><b>(.*?)</b>')
 
 
 def title(head: str) -> str:
-    """A bar's title: its words without the number and the state word."""
+    """A bar's title: its words without the number and the mark."""
     return H.unescape(re.sub(r"<[^>]+>", "", WORD.sub("", re.sub(r"^\d+ · ", "", head)))).strip()
 
 
@@ -67,18 +70,18 @@ class DesignFocusTest(unittest.TestCase):
             self.assertEqual({"work-" + k for k in report} | {"work-mindmap"}, set(work), folder.name)
         self.assertEqual(D.views(self.root, self.root, "work"), {})              # not a design page: the base page stays
 
-    def test_report_is_its_sections_work_is_process_then_results(self):
+    def test_each_view_is_one_numbered_list_with_no_band_headings(self):
+        """JL 261111, "the Work is no longer used": a view's steps then its results, numbered from 1 as one list, with no
+        ⚙️ Process or 📊 Results heading and no grey caption, on Report and on an old Work link alike."""
         for folder in (self.block, self.job, *self.tasks):
-            for key, (_n, build) in D.views(folder, self.root, "report").items():
-                html = build()
-                self.assertEqual(GROUPS.findall(html), [], (folder.name, key))          # Report: its sections only
-                self.assertRegex(HEADS.findall(html)[0], r"^1 · ", (folder.name, key))
-                self.assertNotIn("Waits on you", html)
-            for key, (_n, build) in D.views(folder, self.root, "work").items():
-                html = build()
-                want = ["📊 Results"] if key == "work-mindmap" else ["⚙️ Process", "📊 Results"]
-                self.assertEqual(GROUPS.findall(html), want, (folder.name, key))
-                self.assertNotIn("Traceback", html)
+            for section in ("report", "work"):
+                for key, (_n, build) in D.views(folder, self.root, section).items():
+                    html = build()
+                    self.assertEqual(GROUPS.findall(html), [], (folder.name, section, key))
+                    self.assertNotIn('<p class="view-caption">', html, (folder.name, section, key))
+                    self.assertNotIn("Traceback", html)
+                    if key.removeprefix("work-") != "mindmap":
+                        self.assertRegex(HEADS.findall(html)[0], r"^1 · ", (folder.name, section, key))
 
     def test_a_job_ready_to_release_waits_on_you(self):
         for k, t in enumerate(t for t in self.tasks if D.R.kind_of(t) == "design"):    # t99 ranked, three kept, not signed
@@ -90,7 +93,7 @@ class DesignFocusTest(unittest.TestCase):
             shutil.rmtree(self.job / "runs" / r)
         job = D.views(self.job, self.root, "work")["work-release"][1]()
         process = job.split("📊 Results")[0]
-        self.assertIn('<span class="word you">1 waits for you</span>', process)     # a Process step, its word and line
+        self.assertIn('<span class="word you mk" title="1 waits for you">🙋 1</span>', process)   # a Process step's mark
         self.assertIn("<p class=fd-wait>🙋 Review and approve", process)
         self.assertIn('data-post="/_board/design-ladder-act"', process)        # the sign, on the Release view's Process
         block = D.views(self.block, self.root, "work")["work-rounds"][1]()
@@ -116,21 +119,26 @@ class DesignFocusTest(unittest.TestCase):
     def pages(self):
         return (self.block, self.job, *self.tasks)
 
-    def test_every_design_bar_has_a_word(self):
-        """R1: every numbered bar of every Report and Work view carries its state word (the page's own 🙋 too)."""
-        missing, seen = [], 0
+    def test_a_design_bar_shows_a_mark_never_a_state_word(self):
+        """R1: a numbered bar of a Report or Work view carries no state word. What waits on the person is 🙋 with how
+        many (the sentence on hover), a finished section is ✓, any other state shows nothing."""
+        wrong, seen, marks = [], 0, set()
         for folder in self.pages():
             for section in ("report", "work"):
                 for key in FP.render(THEME, self.root, folder, section) and D.views(folder, self.root, section):
                     for m in BAR.finditer(FP.render(THEME, self.root, folder, section, key)):
                         seen += 1
-                        if not WORD.search(m.group(1)):
-                            missing.append(f"{folder.name} {section} {key}: {title(m.group(1))}")
+                        spans = re.findall(r"<span class=\"?word.*?</span>", m.group(1))
+                        marks.update(re.sub(r"<[^>]+>| \d+", "", s) for s in spans)
+                        if STATE_WORD.search(m.group(1)) or len(spans) > 1 or any(not MARK.fullmatch(s) for s in spans):
+                            wrong.append(f"{folder.name} {section} {key}: {m.group(1)}")
         self.assertGreater(seen, 150)
-        self.assertEqual(missing, [])
+        self.assertEqual(wrong, [])
+        self.assertEqual(marks, {"🙋", "✓"})                                        # both marks are drawn somewhere
 
     def test_no_view_draws_its_own_interaction(self):
-        """R2: a design view draws no 🙋 section; the page adds one 🙋 Interaction, the last section of the view."""
+        """R2: a design view draws no 🙋 section; the page adds one 🙋 Interaction, the last section of the view, and
+        only where something waits or was answered there."""
         for folder in self.pages():
             for section in ("report", "work"):
                 for key, (_n, build) in D.views(folder, self.root, section).items():
@@ -143,19 +151,17 @@ class DesignFocusTest(unittest.TestCase):
                         self.assertIn('🙋 Interactions', page)
                         self.assertNotIn('🙋 Interaction', heads)
                         continue
-                    self.assertEqual([t for t in heads if "🙋" in t], ["🙋 Interaction"], (folder.name, key))
-                    self.assertEqual(heads[-1], "🙋 Interaction", (folder.name, key))
+                    asks = [t for t in heads if "🙋" in t]
+                    self.assertIn(asks, ([], ["🙋 Interaction"]), (folder.name, key))
+                    if asks:
+                        self.assertEqual(heads[-1], "🙋 Interaction", (folder.name, key))
 
-    def test_the_report_view_is_the_work_results(self):
-        """R3: a Work view's 📊 Results are its Report view, drawn by the same function."""
+    def test_the_report_view_is_the_old_work_view(self):
+        """R3, Work retired (JL 261111): an old Work link and the Report draw the same view, by the same function."""
         for folder in self.pages():
             report, work = D.views(folder, self.root, "report"), D.views(folder, self.root, "work")
             for key, (_n, build) in report.items():
-                shown = build()
-                res = work["work-" + key][1]().split("<h3 class=pb-group>📊 Results</h3>", 1)[1].split("<script>", 1)[0]
-                res = re.sub(r"<p class=dz-next>.*?</p>$", "", res)               # Work ends on where the next step is
-                self.assertIn(res, shown, (folder.name, key))
-                self.assertNotIn("pb-copy", res, (folder.name, key))            # Report shows, Work asks
+                self.assertEqual(build(), work["work-" + key][1](), (folder.name, key))
 
     def test_the_mindmap_is_shown_at_every_level(self):
         """R6: the shared MindMap stays a view at the Block, the Job and the Task, last; Report opens on its first letter."""
@@ -193,11 +199,13 @@ class DesignFocusTest(unittest.TestCase):
         (run / "r01_collect_rank_rule.html").write_text("<!doctype html>", encoding="utf-8")
         for folder, home in ((self.job, "ranking"),):
             for key in D.views(folder, self.root, "report"):
-                last = FP.render(THEME, self.root, folder, "report", key).split("🙋 Interaction")[-1]
+                page = TRAY.sub("", FP.render(THEME, self.root, folder, "report", key))
+                last = page.split("🙋 Interaction", 1)[1] if "🙋 Interaction" in page else ""    # no rows, no section
                 (self.assertIn if key == home else self.assertNotIn)("Rank rule asks", last, (folder.name, key))
+                self.assertIn("Rank rule asks", FP.render(THEME, self.root, folder, "report", key))   # the 🙋 tray has it
         # Block support now requires an explicit View/Topic; the unassigned question stays in the rail.
         for key in D.views(self.block, self.root, "report"):
-            self.assertNotIn("Rank rule asks", FP.render(THEME, self.root, self.block, "report", key))
+            self.assertNotIn("Rank rule asks", TRAY.sub("", FP.render(THEME, self.root, self.block, "report", key)))
         self.assertIn("Rank rule asks", FP.render(THEME, self.root, self.block, "interactions"))
         self.assertEqual(D.view_of_item({"page": self.job, "about": "release choices @ next test arm"}, self.job,
                                         self.root, "Job", ["setup", "release", "mindmap"]), "release")

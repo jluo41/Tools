@@ -1,0 +1,58 @@
+s03 · Which design goes to the example test
+===========================================
+view: findings
+
+**Stage:** shaping
+
+**Why:** Which design goes to the example test?
+
+**Feeds:** Q01
+
+
+Q01 · Answer
+------------
+
+state: 🟡 DRAFT · v0.1 written by the designer agent 261108; CHECK pending
+answers: Q01
+answer-status: partial
+results-read: 2026-11-08
+
+### Opening
+
+Partly answered, with placeholder results only: j01's kept design (d01 yes-first) went to the example test e01 and
+came back; j03's kept design waits for a person's release before it can join the next test.
+
+### Content
+
+### 1 · Answer so far
+
+- j01_confirm-by-reply_M01-goal-only-m2_inputs-v1: d01 yes-first, released 261106 with a placeholder sign, tested in e01 (arm B).
+- j03_confirm-by-reply_M02-overall-performance-m1_inputs-v2: one design kept by t99; its release waits on a person.
+- j02_confirm-by-reply_M01-goal-only-m2_inputs-v2: still reasoning ideas.
+
+### 2 · What would close it
+
+The release of j03's kept design, and the person's answer on the waiting form "Next test arm" (j03, s02).
+
+Every word and number here is a placeholder on the public example Block.
+
+
+Files
+-----
+
+```text
+s03-q01-example-test/
+└── s03-q01-example-test.md        this face
+```
+
+
+Decided
+-------
+
+(none yet: a decision is one line, s03-D01 · <what was decided> (<who> <date>))
+
+
+Open
+----
+
+1. <the first open point>

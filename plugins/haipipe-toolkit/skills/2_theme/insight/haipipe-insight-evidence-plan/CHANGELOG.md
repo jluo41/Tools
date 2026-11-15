@@ -14,7 +14,7 @@ Shorter description (609 -> 362 characters): what it does, when to use it, its t
 
 ## 0.2.0 · 2026-10-01 · Work specs and the page flow (JL 261001)
 
-- Writes the work spec of every compute need (cut, unit, measure, by, uncertainty, rivals, output) from the ask alone, before any task is opened; a refusal is planned as a compute need for its probe.
+- Writes the work spec of every compute need (segment, unit, measure, by, uncertainty, rivals, output) from the ask alone, before any task is opened; a refusal is planned as a compute need for its probe.
 
 ## 0.1.0 · 2026-10-01 · First version (JL 261001)
 

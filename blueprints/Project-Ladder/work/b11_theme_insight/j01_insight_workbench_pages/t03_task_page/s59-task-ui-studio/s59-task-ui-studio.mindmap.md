@@ -38,7 +38,7 @@ built: from-topic .
     ![s59-task-ui-studio.png](s59-task-ui-studio.png)
 - Decided <!-- @decided #55615a -->
   - s59-D01 · One grid per level (Board … <!-- @decided/0 #4049eb -->
-    s59-D01 · One grid per level (Board question × Job, Job question × cut, Task cut × step); Report opens on the answer; Work opens on what waits on the person; no Task asks the person (JL 261101: "go ahead", on the proposal in chat).
+    s59-D01 · One grid per level (Board question × Job, Job question × segment, Task segment × step); Report opens on the answer; Work opens on what waits on the person; no Task asks the person (JL 261101: "go ahead", on the proposal in chat).
 - Open <!-- @open #cf9b77 -->
   - ? <!-- @open/0 #4114ac -->
     ? One view, the Task's then the Job's (proposed).

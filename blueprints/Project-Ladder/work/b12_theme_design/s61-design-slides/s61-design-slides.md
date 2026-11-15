@@ -20,7 +20,7 @@ from, the reason the next slide follows, speaker notes), drawn from this Block's
 s13, s21 and `../goals/g01-design-workbench.md`. `slide_kit.py` lays a slide out once; the drawing and the
 deck both draw with it, so the storyboard and the deck cannot drift apart.
 
-**Feeds:** `../reports/` q01_design_ladder · q02_design_workbench · q03_insight_steers_design.
+**Feeds:** `../reports/` Q01 · Q02 · Q03.
 
 
 Files

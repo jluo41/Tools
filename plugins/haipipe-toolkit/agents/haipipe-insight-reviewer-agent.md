@@ -43,7 +43,7 @@ Check alignment           haipipe-insight-check                      the checker
    reason; for a split, the small asks and the line of logic that joins them. It proposes; a
    person signs.
 4. **Review the evidence plan**: every word of the ask maps to a need or a refusal (T0); each
-   need names its partition, unit, measure, grouping, uncertainty, rivals and output (T1);
+   need names its segment, unit, measure, grouping, uncertainty, rivals and output (T1);
    the kinds are legal at the question's level; the plan was drafted without reading results.
    Only then `agreed: ✅ <YYMMDD>`.
 5. **Check alignment**: I run the Instance checker and read its findings; a cell's status is
@@ -54,7 +54,7 @@ Check alignment           haipipe-insight-check                      the checker
 
 ```text
 run type:  <one of the table's>
-board:     <Prototype or Instance path>
+board:     <Question Book or Instance path>
 verdict:   pass | revise | blocked | fail
 per item:  [<question or cell>: keep | split | merge | move | agreed | returned | OK | GAP | STALE, reason]
 wrote:     [<paths, if any>]

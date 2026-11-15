@@ -1,0 +1,121 @@
+# 🖼️ Page layout
+
+- Pages show no tallies and no status words; marks and layout show state.
+- A Section page opens on Draft; a version page opens on Structure.
+- Write and Revise merge into one Draft view; extra views are dropped.
+- **📜 The decisions**
+- **11-09 00:40** · Board page shows type and use case
+  - Decided: the Board (Block-level) page heading also shows its page type and use case, not only Jobs.
+  - JL asked: "there are no page type and use case, please rethink about it."
+  - Built: AI checked how the Work theme fills these at Block level; outcome unclear (L5 and L6 audit rules later named as changed)
+  - Session: Workbench UI
+- **11-09 00:59** · Story by Section at the bottom
+  - Decided: Story by Section moves to the bottom of the Displays view and is the same as the Story view's; "Where each display stands" is removed.
+  - JL asked: "I think this Story by Section should be at the bottom … what does "Where each display stands" this mean? maybe we don't need to use it?"
+  - Built: moved and removed (01:18)
+  - Session: Workbench UI
+- **11-09 01:25** · Drop the Plan waits for sign line
+  - Decided: remove the "🙋 Summary: Plan: waits for your sign" line.
+  - JL asked: "🙋 Summary: Plan: waits for your sign <--- we don't wnat this."
+  - Built: AI traced where the line comes from (removal outcome not shown)
+  - Session: Workbench UI
+- **11-09 01:45** · Story by Section with left tabs
+  - Decided: Story by Section uses left tabs and right content, with a whole-paper tab on top giving the story arc.
+  - JL asked: "I think for this, we should have left tab and right content. and also an overall, at the top of the tab, to describe the narrative of this papper…"
+  - Built: built from the Story topic's data (arc tab first)
+  - Session: Workbench UI
+- **11-09 02:26** · Sections show narrative, not only claims
+  - Decided: each Section tab tells its role in the arc: the reader's question coming in, how it moves, what the reader believes after, and the transition.
+  - JL asked: "I think this is not just the claims, it is also about the narratives, the arc, how to make it smooth, do you get what I mean?"
+  - Built: AI looked up where the narrative data lives; built (unclear)
+  - Session: Workbench UI
+- **11-09 16:44** · Displays belong in the design table
+  - Decided: the design table includes Displays, in sync with the page.
+  - JL asked: "you should add the display here, right? why you don't have this sesnse?"
+  - Built: added; Displays drawing made a shared function also used by work pages; earlier work in commit `058132aa1`
+  - Session: Workbench UI
+- **11-10 10:50** · Writing patterns as a Writing view section
+  - Decided: the AI writing patterns Ritu identified are shown as a new section in the paper Report's Writing view.
+  - JL asked: "could you add it to the paper workbench UI? put it in the Writing View as a new section."
+  - Built: patterns kept in the paper's `writing-patterns.md`, shown in the Writing view
+  - Session: Main paper
+- **11-10 14:48** · Revision plan lives in the workbench
+  - Decided: the revision plan goes in the workbench, not only in chat.
+  - JL asked: "No, I want you put the plan to somewhere in the workbench UI."
+  - Built: section "🗺️ Revision plan" in the paper's Writing view, above the writing patterns, kept in a file in the paper's folder
+  - Session: Main paper
+- **11-11 01:13** · Add Open in OneDrive button, no embed
+  - Decided: no live Word embed; keep the tab and add an "Open in OneDrive" button next to "Open the PDF" and "Open the Word file".
+  - JL asked: "no need to do it. I think the current version is great, you just need to add the onedrive link to [Image #8] it should be okay"
+  - Built: button planned; AI needed the shared file's web address first
+  - Session: Main paper
+- **11-13 12:27** · Rename tab to The paper · LaTeX
+  - Decided: tab name becomes "The paper · LaTeX", matching "The paper · Word" and "The paper · LaTeX diff".
+  - JL asked: "could you update the name here to be THe paper - Latex? how do you think?"
+  - Built: tab renamed
+  - Session: Main paper
+- **11-13 12:30** · Group delivery tabs under headings
+  - Decided: the delivery tab list gets group headings (LaTeX, Word, portal) instead of seven loose tabs.
+  - JL asked: "I think ew can add more subsections like the Latex, Work, portal here."
+  - Built: built test-first (failing test written first)
+  - Session: Main paper
+- **11-13 19:18** · Merge Write and Revise into Draft
+  - Decided: Write and Revise become one view named Draft.
+  - JL asked: "can you merge the Revise and Write into one View, just call it Draft? hwo do you think?"
+  - Built: naming passed to WorkBench-Paper-UI; t00 later took the work itself
+  - Session: t00 Abstract
+- **11-13 19:19** · Drop four extra views
+  - Decided: remove the Runs, MindMap, Plan + Results and Text views.
+  - JL asked: "and we dont need these views ether."
+  - Built: handed with code locations to WorkBench-Paper-UI, to do with the Draft merge
+  - Session: t00 Abstract
+- **11-13 19:40** · Update page to the sent text
+  - Decided: align the Literature Review page with the version sent to Ritu that day.
+  - JL asked: "could you update the ui based on the current ones."
+  - Built: draft, page content and rebuilt web view updated
+  - Session: t02 Literature review
+- **11-13 19:44** · Update t04 page to the new UI
+  - Decided: bring the t04 page around the prose up to the new UI (prose hold does not block it).
+  - JL asked: "we change the UI, could you update it bit?"
+  - Built: (unclear) session listed stale tabs; outcome not reported
+  - Session: t04 Empirical strategy
+- **11-13 19:52** · One plan structure at every level
+  - Decided: the plan should look the same at Block, Job and Task level, only at a different size.
+  - JL asked: "I want to make sure that the plan's structure is shared across the block and job and tasks, is that correct? like different level, but same thing to present/"
+  - Built: proposal only (AI: not yet; each level uses a different name and layout)
+  - Session: t00 Abstract
+- **11-13 19:57** · Draft first, Structure for versions
+  - Decided: a Section page opens on Draft; a version page opens on Structure with only Evidence and Display beside it.
+  - JL asked: "have you fix the problem, the current UI is so hard to use, my bro."
+  - Built: step tabs and default views changed; 216 tests pass
+  - Session: Workbench UI
+- **11-13 20:00** · Structure as main view
+  - Decided: Structure is the version page's main view.
+  - JL asked: "how do you want to udpate the view here, I want to put the Structure as the main view."
+  - Built: views already changed to MindMap, Structure, Evidence, Display; Structure panel opened
+  - Session: Main paper
+- **11-13 20:04** · Drop MindMap, Structure is the map
+  - Decided: drop the MindMap view; Structure alone.
+  - JL asked: "I maybe no need to have the MindMap, the structure is the mindmap already, please go ahead and drop it, we will just use teh Strucutre."
+  - Built: another session had dropped MindMap 4 minutes earlier; AI checked why the page still showed it
+  - Session: Main paper
+- **11-13 21:48** · Three short Draft section names
+  - Decided: the Draft view's section bars are named Drafting Workdesk, Review Report and Examples, nothing else.
+  - JL asked: "Too wordy … like 1 - Drafting Workdesk ⏎ 2 - Review Report ⏎ 3 - Examples ⏎ that's all"
+  - Built: renamed; the Examples bar's "Open ↗" and "drawn" removed
+  - Session: t00 Abstract
+- **11-13 22:10** · No tallies on pages
+  - Decided: drop the tally lines from the pages, make it a design principle, and tell every Workbench UI session to check itself.
+  - JL asked: "we don;t want this, drop them. [Image #48] drop them. and this as the design princile and tell to the Workbench-XXX-UI sessions…"
+  - Built: rule added to the shared page-words rules in Tools (AGENTS.md "Page words": no check tally); sent to the UI sessions; j11 page on 5599 live with no tallies by 22:37, two places still print "N to fix"
+  - Session: Main paper
+- **11-13 22:19** · No status words on pages
+  - Decided: pages never say in words what state a thing is in; marks and layout show it.
+  - JL asked: "could we just don't say "the stauts is xxx, status xxx" avodi the words likethis, just like the layout and UI tell it. add this to the AGENTS.md"
+  - Built: rule written into AGENTS.md "Page words"
+  - Session: Workbench UI
+- **11-14 00:30** · Match the latest UI code
+  - Decided: check the t07 page against the current Tools UI code and card State spelling.
+  - JL asked: "please update the the UI based on the latest UI code, is it udpate to date? right?"
+  - Built: page checked against the server restarted at 19:29
+  - Session: t07 Conclusion

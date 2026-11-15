@@ -339,6 +339,24 @@ def detect(text: str, rules: dict[str, Any]) -> list[dict[str, Any]]:
             )
         )
 
+    # paragraph-length (JL 261112: "unless having good reason, we might make sure they are between 4~7 sentences"):
+    # a prose paragraph (a block between blank lines, not a heading, list, table, quote or code) outside the range;
+    # one with a single sentence is a caption or a title and is left alone
+    span = rules.get("paragraphLength")
+    if span and len([b for b in re.split(r"\n\s*\n", text) if b.strip()]) > 1:   # one block is an excerpt, not a Section
+        lo, hi = span.get("min", 4), span.get("max", 7)
+        for block in re.finditer(r"(?:^|\n\n)([^\n].*?)(?=\n\n|\Z)", text, re.S):
+            para = block.group(1)
+            if para.lstrip().startswith(("#", "-", "*", "|", ">", "```", "<")) or re.match(r"\s*\d+\.\s", para):
+                continue
+            count = len(_sentences(para))
+            if count > 1 and not lo <= count <= hi:
+                line, column = _line_column(text, block.start(1))
+                findings.append({"id": "paragraph-length", "category": span.get("category", "structure"),
+                                 "weight": span.get("weight", 2), "match": para.strip()[:80], "line": line,
+                                 "column": column, "start": block.start(1), "end": block.end(1),
+                                 "note": f"{count} sentences; a paragraph holds {lo} to {hi} unless it has a good reason"})
+
     findings.sort(key=lambda item: (item["start"], item["end"], item["id"]))
     return findings
 

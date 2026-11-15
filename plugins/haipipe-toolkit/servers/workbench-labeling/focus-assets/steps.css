@@ -64,6 +64,7 @@
 .pb-tiles.ls-tiles4{grid-template-columns:repeat(4,minmax(0,1fr))}
 .pb-tile .ls-num{display:block;-webkit-line-clamp:unset;font-size:24px;font-weight:600;line-height:1.2;color:var(--ink)}
 .ls-rerun{padding:6px 12px}.ls-rerun .pb-ph{margin:0}
+.section-views{flex-wrap:wrap}.section-views a{white-space:nowrap}   /* steps wrap at every width, as the Paper Task's (focus_draft.WIDE) */
 @media(max-width:600px){.section-views{flex-wrap:wrap}.focus-page h1{font-size:21px}
  .pb-tiles.ls-tiles4{grid-template-columns:repeat(2,minmax(0,1fr))}}
 /* review C4 r01: the sign large when done; a turn and a tile open where they point; a history box one line on a phone */

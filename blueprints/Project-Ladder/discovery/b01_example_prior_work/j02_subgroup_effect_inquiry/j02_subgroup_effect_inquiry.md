@@ -2,6 +2,7 @@
 
 goal: Find earlier work that looked at <the policy> by <a characteristic>.
 close: Its Task Page is checked and every admitted paper has a truthful terminal state.
+emoji: 🔀
 answers: Q03
 state: 🔴 planned · scoped; no paper admitted yet
 

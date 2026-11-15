@@ -78,7 +78,7 @@ JOB_FAMILY_VIEWS = {
                  ["Update the Job", "Draft an email", "Write meeting notes", "Review a draft"], 0),
         "Delivery": (["its part: delivery/jNN_<job>/", "<date>-<what>/   sent   <thread>",
                       "<date>   decided   <x>   (Timeline)", "each send: a row of delivery.md"], ["Close the Job"])},
-    "insight": {   # a DIKW level (JL 261006): the Block's six Spaces; today it is a View of Block › Prototype
+    "insight": {   # a DIKW level (JL 261006): the Block's six Spaces; today it is a View of Block › Question Book
         "Description": (["level.md: what this DIKW level asks", "DIKW level: D · what was observed", "opening question: <question>",
                          "questions: 5 live · 1 retired", "shared: src/ · the task configs it calls"],
                         ["Update the DIKW level"]),
@@ -260,10 +260,10 @@ TASK_VARIANT_VIEWS = {
         "Description": (["tNN_<question>.md (answering Page)", "question.md · DIKW level D", "needs: E1 · E2"],
                         ["Plan the evidence"]),
         "Partitions": (["partition   result   page", "<p1>        ok       written", "<p2>        ok       open",
-                        "<p3>        —        —"], ["Run a partition", "Write the Data report"]),
+                        "<p3>        —        —"], ["Run a segment", "Write the Data report"]),
         "Runs": (["Run                        kind  state", "<dataset>_<p1>/            hard  ok",
                   "<dataset>_<p2>/            hard  ok", "run-check-<target>/        soft  open"],
-                 ["Run a partition", "Check alignment"])},
+                 ["Run a segment", "Check alignment"])},
     "design folder": {
         "Description": (["Design-NN-<slug>.md", "the design task: venue · who · rules"], ["Frame the aim"]),
         "Design Task": (["aim · requirements · resources", "leave out: <x>"], ["Set the rules"]),
@@ -350,7 +350,7 @@ DESIGN_NOTES = {"Description": "the Brief's row for this goal + method.md: ① s
 DIKW_NOTES = {"Description": "level.md, and Meta's counts for this DIKW level only",
               "Idea Studio": "this DIKW level's part of the question map ?",
               "Audience Report": "the Block's Insight table, this DIKW level's rows only",
-              "Work Details": "was Block › Prototype › Data: its questions = Tasks",
+              "Work Details": "was Block › Question Book › Data: its questions = Tasks",
               "Runs": "the design runs; its questions' hard Runs from below",
               "Delivery": "only j04_wisdom delivers; D · I · K hand answers up ?"}
 # a cowork Job's third rows and notes (b13 Q01, 261007): one line of work; emails and meetings are rows
@@ -554,7 +554,7 @@ SERVER = {
                          ("Story", ["Spine", "RoadMap Draw", "High-level logic + Low-level work", "Related Papers"]),
                          ("Sections", ["Main", "Appendix"]), ("Delivery", ["LaTeX", "Word", "Cover letter", "Rounds"])],
     ("insight", "board"): [GUIDE, ("Scope", ["Dataset", "Partitions", "Questions"]),
-                           ("Prototype", ["Meta", "Data", "Information", "Knowledge", "Wisdom", "RoadMap Draw"]),
+                           ("Question Book", ["Meta", "Data", "Information", "Knowledge", "Wisdom", "RoadMap Draw"]),
                            ("Insight", ["Full", "<partition>", "Cross"]), ("Check", ["Gates", "Checks", "Runtime"]),
                            ("Delivery", ["Handoff"])],
     ("design", "board"): [GUIDE, ("Design Tasks", ["<method family>", "<method family>"])],
@@ -584,7 +584,7 @@ TODAY = {
     "insight Block (DIKW)": ("insight", "board", None, "the Insight workbench, board level",
                              "Runs panel hard-coded in Python: differs from the table in every Space"),
     "insight register board": ("insight", "board", None, "the Insight workbench, board level",
-                               "a register board shows only a note in Prototype"),
+                               "a register board shows only a note in Question Book"),
     "design Board": ("design", "board", None, "the Design workbench, board level",
                      "Views are method families, not the table's Task list · Shared rules"),
     "labeling Block": ("labeling", "board", None, "the Labeling workbench, board level",
@@ -599,8 +599,8 @@ TODAY = {
                    "a row in Work › Jobs · Check › Waiting on and Drafts · Delivery › Done jobs"),
     "paper version": ("paper", "board", ["Story"], "no version today",
                       "a Job is only a line in Story's Block → Job → Task → Run tree"),
-    "DIKW level": ("insight", "board", ["Prototype", "Insight"], "a DIKW level is a View of Prototype, rows in Insight",
-                  "j01_data … j04_wisdom = Prototype's Views; its answers mixed into each partition's table"),
+    "DIKW level": ("insight", "board", ["Question Book", "Insight"], "a DIKW level is a View of Question Book, rows in Insight",
+                  "j01_data … j04_wisdom = Question Book's Views; its answers mixed into each partition's table"),
     "design method": ("design", "board", None, "a method folder 2-Design-M<NN>/ is the nearest Job",
                       "it holds every goal; one goal is a Design folder; no Job tab, a board View"),
     "labeling Job": ("labeling", "page", ["Data", "Quality"], "no Job screen: the labeling page reaches up",
@@ -613,7 +613,7 @@ TODAY = {
                       "the paper workbench lists it as a row of Sections; Story's tree has no link to it"),
     "discovery Task": ("discovery", "board", ["Work"], "a row in Work › Tasks; opens the Page workbench",
                        "also a heading in Work › Papers"),
-    "insight question": ("insight", "board", ["Prototype", "Insight"], "a row in its DIKW level View and in each partition",
+    "insight question": ("insight", "board", ["Question Book", "Insight"], "a row in its DIKW level View and in each partition",
                          "its page and Runs open as pop-outs; no Task screen"),
     "design folder": ("design", "page", None, "the design page level: the folder's own screen",
                       "Design Item and Delivery render no View tabs (the table lists some)"),
@@ -623,10 +623,10 @@ TODAY = {
 
 
 # today's Space -> the proposed column it sits under (Block: build_ladder_v4.BLOCK_COLUMNS; Job: its Spaces)
-BLOCK_UNDER = {"Guide": "Guide", "Scope": "Scope", "Prototype": "Jobs", "Insight": "Reports", "Check": "Runs",
+BLOCK_UNDER = {"Guide": "Guide", "Scope": "Scope", "Question Book": "Jobs", "Insight": "Reports", "Check": "Runs",
                "Delivery": "Delivery", "Task": "Reports", "Work": "Jobs", "Ideation": "Studio", "Story": "Reports",
                "Sections": "Jobs", "Design Tasks": "Jobs", "Jobs": "Jobs"}
-JOB_UNDER = {"Scope": ["Description", "Overview"], "Prototype": ["Work Details"], "Insight": ["Audience Report"],
+JOB_UNDER = {"Scope": ["Description", "Overview"], "Question Book": ["Work Details"], "Insight": ["Audience Report"],
              "Task": ["Tasks"], "Work": ["Tasks", "Work Details", "Overview"], "Check": ["Runs"], "Story": ["Overview"],
              "Design Tasks": ["Work Details", "Design folders"],
              "Data": ["Work Details"], "Quality": ["Audience Report"]}   # labeling (b15 Q01)
@@ -640,7 +640,7 @@ def under(variant, space, cols):
             return key
         sps = SPACES.get(variant, [])                # a Page's today Draft and Evidence: split (JL 261006)
         sp_ = {"Draft": "Audience Report", "Evidence": "Work Details",   # an insight question (JL 261007):
-               "Prototype": "Description", "Insight": "Work Details",   # its ask · its partitions
+               "Question Book": "Description", "Insight": "Work Details",   # its ask · its partitions
                "Data": "Description", "Labeling": "Work Details",       # a labeling Task (b15 Q01)
                "Quality": "Audience Report",
                "Work": "Work Details"}.get(space)                       # a discovery Task (b14 Q01)

@@ -1,0 +1,44 @@
+{
+  "name": "paper-lab",
+  "displayName": "Paper Writing Lab",
+  "description": "Opens each Section's draft page above and its session terminal below, from haipipeLab.terminals.",
+  "version": "0.6.0",
+  "publisher": "haipipe",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "Paper Writing Lab",
+      "properties": {
+        "haipipeLab.terminals": {
+          "type": "array",
+          "default": [],
+          "description": "Sections to open when the window opens: [{name, url, command, cwd}]."
+        },
+        "haipipeLab.window": {
+          "type": "object",
+          "default": {},
+          "description": "{action: close|restart|refresh, at}: open_writing_lab.py --close or --restart; acted on when it changes."
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "haipipeLab.open",
+        "title": "Paper Lab: Open pages and sessions"
+      },
+      {
+        "command": "haipipeLab.refresh",
+        "title": "Paper Lab: Refresh pages"
+      }
+    ]
+  }
+}

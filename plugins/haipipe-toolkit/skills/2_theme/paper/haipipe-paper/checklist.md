@@ -25,7 +25,7 @@ order (a dry run without `--apply`), each step a script with its own rollback.
 | L2 | Versions dated, Sections tNN | no `jNN_v<N>_` version, no `S-…` Section folder | `carry_over/rename_tasks.py --date MMDD` |
 | L3 | Writing Jobs named | no `jNN_v<MMDD>_<desk>/`: it is `jNN_writing_v<MMDD>_<desk>/`, from j11 | rename the Job and its `delivery/` folder, sweep the name |
 | L4 | The checklist topic | `sNN-paper-checklist/` exists | make it (haipipe-studio `new_topic.py`), then `paper_check.py --write` |
-| L5 | Faces the views read | the Story has its Task Roadmap (T) and Discovery Roadmap (D) tables, §8 Section Narrative opening with `#### Story arc`, and per-Section rows (§8 or a version's `## Narrative`); the data-flow topic its `-drawing.yaml` | 🙋 haipipe-paper-story, haipipe-paper-plan |
+| L5 | Faces the views read | the Story has its Task Roadmap (T) and Discovery Roadmap (D) tables, §8 Section Narrative opening with `#### Story arc`, with its claims and no per-Section rows, and per-Section rows in a version's `## Narrative` that copies no claim (the two copy checks are planned for `audit`); the data-flow topic its `-drawing.yaml` | 🙋 haipipe-paper-story, haipipe-paper-plan |
 | L6 | Pages say their use | `board.md`, every Job face and every Task face has a `use-case:` line (the b16 matrices' word) | update writes it |
 
 Missing evidence Jobs (V1) are made by update too (`paper_ladder.py evidence`).
@@ -73,6 +73,7 @@ Missing evidence Jobs (V1) are made by update too (`paper_ladder.py evidence`).
 | W1 | A writing Job | a `jNN_writing_v<MMDD>_<desk>/` (or an older `jNN_v…`) exists |
 | W2 | Plans signed | each Section's newest draft says `approved: ✅` |
 | W3 | Text written | each Section's newest draft has no `⟦…⟧` placeholder left |
+| W7 | Paragraphs of 4 to 7 sentences | each paragraph of each Section of the newest writing Job holds 4 to 7 sentences, or its plan gives a `reason:` line; shows "N of M Sections; off: <task> <count>"; the Abstract and exempt kinds are not counted (haipipe-paper-draft § Paragraphs of 4 to 7 sentences, JL 261112) |
 | W4 | Paper built | `delivery/<writing Job>/build-manifest.json` exists |
 | W6 | 📚 Examples read first | each Section of the newest send has 3 to 4 published papers of its article type read, or says `examples: none · <reason>`; made before the words (haipipe-paper-draft § Examples first) |
 | W5 | Nothing waits on a person | no waiting question set (`runs/rNN_collect_*`, status waiting) on the Board |

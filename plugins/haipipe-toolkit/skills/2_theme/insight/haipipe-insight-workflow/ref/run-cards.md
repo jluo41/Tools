@@ -2,14 +2,14 @@
 
 What the insight workbench shows in each level's Runs panel: one card per button, each with the skill, agent and sign
 of its Run and the prompt the button copies. The cards follow the insight ladder (`haipipe-insight/ref/insight-ladder.md`;
-b11 s11 · s12 · s13 · s21, JL 261007 plan C): the Prototype (its Block, a release, a question) and the insight Board
+b11 s11 · s12 · s13 · s21, JL 261007 plan C): the Question Book (its Block, a release, a question) and the insight Board
 (its Block, a Job, a Task). The owning skills keep their authority; `haipipe-insight-workflow` routes the Runs and is
 the card's skill only where it signs, launches or closes.
 
 A `🔘 BUTTON` line is `label · <Level> › <Space> · ticket pattern · views <names>`. Level is the insight Board's
-`Block`, `Job` or `Task`, the Prototype's `Prototype`, `Release` or `Question`, or the `Guide` (on every tab); Space is one of the six
+`Block`, `Job` or `Task`, the Question Book's `Question Book`, `Release` or `Question`, or the `Guide` (on every tab); Space is one of the six
 (Description · Idea Studio · Audience Report · Work Details · Runs · Delivery). The pattern is a regular expression on
-the Run's folder name: `run-<type>-<target>/` for a soft Run, `rNN_<partition>/` for a hard one. `views` names the
+the Run's folder name: `run-<type>-<target>/` for a soft Run, `rNN_<segment>/` for a hard one. `views` names the
 views the button shows in, lowercase-kebab, from either row (`map`, `findings`, `vs-previous`, `cross`); none = every
 view of the Space. `🧩 SKILL` names the one skill that does the work, `🤖 AGENT` who does the Run (a review, a check or
 an alignment is never the agent that made the thing), `✍️ SIGNS` what a person signs on it, or `none`. `💬 PROMPT` is
@@ -31,7 +31,7 @@ base frame adds its own (Add a topic); a "… ↗" link opens a file and makes n
 ✍️ SIGNS    none
 💬 PROMPT   /haipipe-discovery add a related paper to the insight Guide's related/papers.md (its claim, the method it backs, its citation), as run-add-paper-<slug>.
 
-## Block › Description · Map, Prototype, Dataset, Partitions
+## Block › Description · Map, Question Book, Dataset, Segments
 
 🔘 BUTTON   Add a data version · Block › Description · ^run-add-version-data-v\d+$ · views map dataset
 🧩 SKILL    haipipe-insight-meta
@@ -43,13 +43,13 @@ base frame adds its own (Add a topic); a "… ↗" link opens a file and makes n
 🧩 SKILL    haipipe-insight
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight add a Job to {folder}: one signed release × one data version, jNN_code-vN-<slug>_data-vM/ with a Task per question and a ticket per asked cut (insight_ladder.py job), as run-add-j<NN>; tell me which one clock moved from the Job before it (data or code), never both.
+💬 PROMPT   /haipipe-insight add a Job to {folder}: one signed release × one data version, jNN_question-vN-<slug>_data-vM/ with a Task per question and a ticket per asked segment (insight_ladder.py job), as run-add-j<NN>; tell me which one clock moved from the Job before it (data or code), never both.
 
-🔘 BUTTON   Propose a cut · Block › Description · ^run-propose-cut- · views partitions
+🔘 BUTTON   Propose a segment · Block › Description · ^run-propose-cut- · views segments
 🧩 SKILL    haipipe-insight-question
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight-question propose a cut for the Prototype {folder} reads: one file proposals/<slug>.md (kind: cut · its filter · from <the Job or reading> · why), as run-propose-cut-<slug>; a cut is part of the plan, so it lands in the next release, never on this Board.
+💬 PROMPT   /haipipe-insight-question propose a segment for the Question Book {folder} reads: one file proposals/<slug>.md (kind: cut · its filter · from <the Job or reading> · why), as run-propose-cut-<slug>; a segment is part of the plan, so it lands in the next release, never on this Board.
 
 ## Block › Idea Studio
 
@@ -59,19 +59,19 @@ base frame adds its own (Add a topic); a "… ↗" link opens a file and makes n
 ✍️ SIGNS    none
 💬 PROMPT   /haipipe-insight draw the question map of {folder} into studio/ from the release's question files (ref/question_map.py), as run-map-questions; it is generated, view only.
 
-## Block › Audience Report · Partition × Reading: Coverage · Tracks · Consistency · Findings
+## Block › Audience Report · Segment × Reading: Coverage · Tracks · Consistency · Findings
 
 🔘 BUTTON   Update the coverage · Block › Audience Report · ^run-coverage$ · views coverage
 🧩 SKILL    haipipe-insight-check
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight-check update the coverage of {folder}: which question × cut × Job has an answer, read from the Jobs' run cards and receipts, never the data, as run-coverage.
+💬 PROMPT   /haipipe-insight-check update the coverage of {folder}: which question × segment × Job has an answer, read from the Jobs' run cards and receipts, never the data, as run-coverage.
 
 🔘 BUTTON   Propose questions · Block › Audience Report · ^run-propose-coverage$ · views coverage
 🧩 SKILL    haipipe-insight-question
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight-question turn the coverage gaps of {folder} (a DIKW level with no question, a cut with no answer) into proposals in the Prototype's proposals/<slug>.md (kind · level · from: coverage · why), as run-propose-coverage; it writes nothing else.
+💬 PROMPT   /haipipe-insight-question turn the coverage gaps of {folder} (a DIKW level with no question, a segment with no answer) into proposals in the Question Book's proposals/<slug>.md (kind · level · from: coverage · why), as run-propose-coverage; it writes nothing else.
 
 🔘 BUTTON   Draw a track · Block › Audience Report · ^run-track- · views tracks
 🧩 SKILL    haipipe-insight-check
@@ -109,7 +109,7 @@ base frame adds its own (Add a topic); a "… ↗" link opens a file and makes n
 🧩 SKILL    haipipe-insight
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight add a Job to {folder}: one signed release × one data version, jNN_code-vN-<slug>_data-vM/ with a Task per question and a ticket per asked cut (insight_ladder.py job), as run-add-j<NN>; tell me which one clock moved from the Job before it (data or code), never both.
+💬 PROMPT   /haipipe-insight add a Job to {folder}: one signed release × one data version, jNN_question-vN-<slug>_data-vM/ with a Task per question and a ticket per asked segment (insight_ladder.py job), as run-add-j<NN>; tell me which one clock moved from the Job before it (data or code), never both.
 
 🔘 BUTTON   Close a Job · Block › Work Details · ^run-close-j\d+$
 🧩 SKILL    haipipe-insight-check
@@ -123,13 +123,13 @@ base frame adds its own (Add a topic); a "… ↗" link opens a file and makes n
 🧩 SKILL    haipipe-insight
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight add a Job to {folder}: one signed release × one data version, jNN_code-vN-<slug>_data-vM/ with a Task per question and a ticket per asked cut (insight_ladder.py job), as run-add-j<NN>; tell me which one clock moved from the Job before it (data or code), never both.
+💬 PROMPT   /haipipe-insight add a Job to {folder}: one signed release × one data version, jNN_question-vN-<slug>_data-vM/ with a Task per question and a ticket per asked segment (insight_ladder.py job), as run-add-j<NN>; tell me which one clock moved from the Job before it (data or code), never both.
 
 🔘 BUTTON   Update the coverage · Block › Runs · ^run-coverage$
 🧩 SKILL    haipipe-insight-check
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight-check update the coverage of {folder}: which question × cut × Job has an answer, read from the Jobs' run cards and receipts, never the data, as run-coverage.
+💬 PROMPT   /haipipe-insight-check update the coverage of {folder}: which question × segment × Job has an answer, read from the Jobs' run cards and receipts, never the data, as run-coverage.
 
 🔘 BUTTON   Check consistency · Block › Runs · ^run-consistency-
 🧩 SKILL    haipipe-insight-knowledge
@@ -149,9 +149,9 @@ base frame adds its own (Add a topic); a "… ↗" link opens a file and makes n
 🧩 SKILL    haipipe-insight-wisdom
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    the handoff
-💬 PROMPT   /haipipe-insight-wisdom draft the Design handoff of {folder} into delivery/handoff-<W>.md: the finding, its strength and the Knowledge results it rests on, its boundary, its pair (code-vN × data-vM), the design consequence and what it must not be read to say, as run-draft-handoff; I sign it (signed: ✅ <YYMMDD>).
+💬 PROMPT   /haipipe-insight-wisdom draft the Design handoff of {folder} into delivery/handoff-<W>.md: the finding, its strength and the Knowledge results it rests on, its boundary, its pair (question-vN × data-vM), the design consequence and what it must not be read to say, as run-draft-handoff; I sign it (signed: ✅ <YYMMDD>).
 
-## Job › Audience Report · Overall Report, then Partition × Period: Current · vs previous
+## Job › Audience Report · Overall Report, then Segment × Period: Current · vs previous
 
 🔘 BUTTON   Write the overall report · Job › Audience Report · ^run-overall-j\d+$ · views overall-report
 🧩 SKILL    haipipe-insight
@@ -163,25 +163,25 @@ base frame adds its own (Add a topic); a "… ↗" link opens a file and makes n
 🧩 SKILL    haipipe-insight-data
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight-data write the page of data question a question in {folder} from its Runs' generated reports, a part per cut, saying no more than the Data level allows, as run-write-t<NN>; another agent checks it.
+💬 PROMPT   /haipipe-insight-data write the page of data question a question in {folder} from its Runs' generated reports, a part per segment, saying no more than the Data level allows, as run-write-t<NN>; another agent checks it.
 
 🔘 BUTTON   Write the Information report · Job › Audience Report · ^run-write-t\d+$ · views current
 🧩 SKILL    haipipe-insight-information
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight-information write the page of information question a question in {folder} from its Runs' generated reports, a part per cut, saying no more than the Information level allows, as run-write-t<NN>; another agent checks it.
+💬 PROMPT   /haipipe-insight-information write the page of information question a question in {folder} from its Runs' generated reports, a part per segment, saying no more than the Information level allows, as run-write-t<NN>; another agent checks it.
 
 🔘 BUTTON   Write the Knowledge report · Job › Audience Report · ^run-write-t\d+$ · views current
 🧩 SKILL    haipipe-insight-knowledge
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight-knowledge write the page of knowledge question a question in {folder} from its Runs' generated reports, a part per cut, saying no more than the Knowledge level allows, as run-write-t<NN>; another agent checks it.
+💬 PROMPT   /haipipe-insight-knowledge write the page of knowledge question a question in {folder} from its Runs' generated reports, a part per segment, saying no more than the Knowledge level allows, as run-write-t<NN>; another agent checks it.
 
 🔘 BUTTON   Write the Wisdom report · Job › Audience Report · ^run-write-t\d+$ · views current
 🧩 SKILL    haipipe-insight-wisdom
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight-wisdom write the page of wisdom question a question in {folder} from its Runs' generated reports, a part per cut, saying no more than the Wisdom level allows, as run-write-t<NN>; another agent checks it.
+💬 PROMPT   /haipipe-insight-wisdom write the page of wisdom question a question in {folder} from its Runs' generated reports, a part per segment, saying no more than the Wisdom level allows, as run-write-t<NN>; another agent checks it.
 
 🔘 BUTTON   Check a report · Job › Audience Report · ^run-check-t\d+$ · views current overall-report
 🧩 SKILL    haipipe-report
@@ -205,7 +205,7 @@ base frame adds its own (Add a topic); a "… ↗" link opens a file and makes n
 🧩 SKILL    haipipe-insight-question
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight-question file each new or changed question, and each gap {folder} could not answer, as one proposals/<slug>.md in the Prototype (kind · level · from: this Job · why), as run-propose-j<NN>; it writes nothing else.
+💬 PROMPT   /haipipe-insight-question file each new or changed question, and each gap {folder} could not answer, as one proposals/<slug>.md in the Question Book (kind · level · from: this Job · why), as run-propose-j<NN>; it writes nothing else.
 
 ## Job › Work Details · the Job's steps: 1 · Launch · 2 · Run · 3 · Write · 4 · Check · 5 · Compare · 6 · Close
 
@@ -216,19 +216,19 @@ the person's notes, what is running, what a person signs) over its result. `view
 🧩 SKILL    haipipe-insight
 🤖 AGENT    haipipe-task-orchestrator-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight run the Job {folder}: check power per cut first (run-power-j<NN>), then every Task's tickets runs/rNN_<partition>/run.sh, as run-launch-j<NN>; report each Run ok, refused (with its reason) or failed.
+💬 PROMPT   /haipipe-insight run the Job {folder}: check power per segment first (run-power-j<NN>), then every Task's tickets runs/rNN_<segment>/run.sh, as run-launch-j<NN>; report each Run ok, refused (with its reason) or failed.
 
 🔘 BUTTON   Measure the power · Job › Work Details · ^run-power-j\d+$ · views launch
 🧩 SKILL    haipipe-insight
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight measure n and power per cut of {folder} before any outcome is read, against the release's thresholds.yaml, as run-power-j<NN>; a cut that cannot answer is refused with its minimum detectable effect.
+💬 PROMPT   /haipipe-insight measure n and power per segment of {folder} before any outcome is read, against the release's thresholds.yaml, as run-power-j<NN>; a segment that cannot answer is refused with its minimum detectable effect.
 
-🔘 BUTTON   Run a partition · Job › Work Details · ^r\d\d_ · views run
+🔘 BUTTON   Run a segment · Job › Work Details · ^r\d\d_ · views run
 🧩 SKILL    haipipe-insight
 🤖 AGENT    haipipe-task-orchestrator-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight run one question of {folder} on one cut: runs/rNN_<partition>/run.sh (ref/run_job.py reads the question and script from the release, writes only result/ and run.yaml); a refusal is an answer.
+💬 PROMPT   /haipipe-insight run one question of {folder} on one segment: runs/rNN_<segment>/run.sh (ref/run_job.py reads the question and script from the release, writes only result/ and run.yaml); a refusal is an answer.
 
 🔘 BUTTON   Pool or split · Job › Work Details · ^run-pool-t\d+$ · views run
 🧩 SKILL    haipipe-insight-knowledge
@@ -240,19 +240,19 @@ the person's notes, what is running, what a person signs) over its result. `view
 🧩 SKILL    haipipe-insight-data
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight-data write the page of each data question in {folder} not written yet, from its Runs' generated reports, a part per cut, saying no more than the Data level allows, as run-write-t<NN>; another agent checks it.
+💬 PROMPT   /haipipe-insight-data write the page of each data question in {folder} not written yet, from its Runs' generated reports, a part per segment, saying no more than the Data level allows, as run-write-t<NN>; another agent checks it.
 
 🔘 BUTTON   Write the Information report · Job › Work Details · ^run-write-t\d+$ · views write
 🧩 SKILL    haipipe-insight-information
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight-information write the page of each information question in {folder} not written yet, from its Runs' generated reports, a part per cut, saying no more than the Information level allows, as run-write-t<NN>; another agent checks it.
+💬 PROMPT   /haipipe-insight-information write the page of each information question in {folder} not written yet, from its Runs' generated reports, a part per segment, saying no more than the Information level allows, as run-write-t<NN>; another agent checks it.
 
 🔘 BUTTON   Write the Knowledge report · Job › Work Details · ^run-write-t\d+$ · views write
 🧩 SKILL    haipipe-insight-knowledge
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight-knowledge write the page of each knowledge question in {folder} not written yet, from its Runs' generated reports, a part per cut, saying no more than the Knowledge level allows, as run-write-t<NN>; another agent checks it.
+💬 PROMPT   /haipipe-insight-knowledge write the page of each knowledge question in {folder} not written yet, from its Runs' generated reports, a part per segment, saying no more than the Knowledge level allows, as run-write-t<NN>; another agent checks it.
 
 🔘 BUTTON   Write the Wisdom report · Job › Work Details · ^run-write-t\d+$ · views write
 🧩 SKILL    haipipe-insight-wisdom
@@ -270,7 +270,7 @@ the person's notes, what is running, what a person signs) over its result. `view
 🧩 SKILL    haipipe-insight-check
 🤖 AGENT    haipipe-insight-reviewer-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight-check check each answered cut of a question in {folder} against its question and plan, in a fresh context, as run-check-alignment-t<NN>; write only the checker's output.
+💬 PROMPT   /haipipe-insight-check check each answered segment of a question in {folder} against its question and plan, in a fresh context, as run-check-alignment-t<NN>; write only the checker's output.
 
 🔘 BUTTON   Check a report · Job › Work Details · ^run-check-t\d+$ · views check
 🧩 SKILL    haipipe-report
@@ -288,7 +288,7 @@ the person's notes, what is running, what a person signs) over its result. `view
 🧩 SKILL    haipipe-insight-question
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight-question file each new or changed question, and each gap {folder} could not answer, as one proposals/<slug>.md in the Prototype (kind · level · from: this Job · why), as run-propose-j<NN>; it writes nothing else.
+💬 PROMPT   /haipipe-insight-question file each new or changed question, and each gap {folder} could not answer, as one proposals/<slug>.md in the Question Book (kind · level · from: this Job · why), as run-propose-j<NN>; it writes nothing else.
 
 🔘 BUTTON   Close the Job · Job › Work Details · ^run-close-j\d+$ · views close
 🧩 SKILL    haipipe-insight-check
@@ -302,19 +302,19 @@ the person's notes, what is running, what a person signs) over its result. `view
 🧩 SKILL    haipipe-insight
 🤖 AGENT    haipipe-task-orchestrator-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight run the Job {folder}: check power per cut first (run-power-j<NN>), then every Task's tickets runs/rNN_<partition>/run.sh, as run-launch-j<NN>; report each Run ok, refused (with its reason) or failed.
+💬 PROMPT   /haipipe-insight run the Job {folder}: check power per segment first (run-power-j<NN>), then every Task's tickets runs/rNN_<segment>/run.sh, as run-launch-j<NN>; report each Run ok, refused (with its reason) or failed.
 
 🔘 BUTTON   Measure the power · Job › Runs · ^run-power-j\d+$ · views power
 🧩 SKILL    haipipe-insight
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight measure n and power per cut of {folder} before any outcome is read, against the release's thresholds.yaml, as run-power-j<NN>; a cut that cannot answer is refused with its minimum detectable effect.
+💬 PROMPT   /haipipe-insight measure n and power per segment of {folder} before any outcome is read, against the release's thresholds.yaml, as run-power-j<NN>; a segment that cannot answer is refused with its minimum detectable effect.
 
-🔘 BUTTON   Run a partition · Job › Runs · ^r\d\d_ · views hard
+🔘 BUTTON   Run a segment · Job › Runs · ^r\d\d_ · views hard
 🧩 SKILL    haipipe-insight
 🤖 AGENT    haipipe-task-orchestrator-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight run one question of {folder} on one cut: runs/rNN_<partition>/run.sh (ref/run_job.py reads the question and script from the release, writes only result/ and run.yaml); a refusal is an answer.
+💬 PROMPT   /haipipe-insight run one question of {folder} on one segment: runs/rNN_<segment>/run.sh (ref/run_job.py reads the question and script from the release, writes only result/ and run.yaml); a refusal is an answer.
 
 🔘 BUTTON   Compare with the Job before · Job › Runs · ^run-compare-j\d+$ · views compare
 🧩 SKILL    haipipe-insight-knowledge
@@ -326,7 +326,7 @@ the person's notes, what is running, what a person signs) over its result. `view
 🧩 SKILL    haipipe-insight-question
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight-question file each new or changed question, and each gap {folder} could not answer, as one proposals/<slug>.md in the Prototype (kind · level · from: this Job · why), as run-propose-j<NN>; it writes nothing else.
+💬 PROMPT   /haipipe-insight-question file each new or changed question, and each gap {folder} could not answer, as one proposals/<slug>.md in the Question Book (kind · level · from: this Job · why), as run-propose-j<NN>; it writes nothing else.
 
 🔘 BUTTON   Close the Job · Job › Runs · ^run-close-j\d+$ · views close
 🧩 SKILL    haipipe-insight-check
@@ -340,25 +340,25 @@ the person's notes, what is running, what a person signs) over its result. `view
 🧩 SKILL    haipipe-insight-data
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight-data write the page of data question {folder} from its Runs' generated reports, a part per cut, saying no more than the Data level allows, as run-write-t<NN>; another agent checks it.
+💬 PROMPT   /haipipe-insight-data write the page of data question {folder} from its Runs' generated reports, a part per segment, saying no more than the Data level allows, as run-write-t<NN>; another agent checks it.
 
 🔘 BUTTON   Write the Information report · Task › Audience Report · ^run-write-t\d+$
 🧩 SKILL    haipipe-insight-information
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight-information write the page of information question {folder} from its Runs' generated reports, a part per cut, saying no more than the Information level allows, as run-write-t<NN>; another agent checks it.
+💬 PROMPT   /haipipe-insight-information write the page of information question {folder} from its Runs' generated reports, a part per segment, saying no more than the Information level allows, as run-write-t<NN>; another agent checks it.
 
 🔘 BUTTON   Write the Knowledge report · Task › Audience Report · ^run-write-t\d+$
 🧩 SKILL    haipipe-insight-knowledge
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight-knowledge write the page of knowledge question {folder} from its Runs' generated reports, a part per cut, saying no more than the Knowledge level allows, as run-write-t<NN>; another agent checks it.
+💬 PROMPT   /haipipe-insight-knowledge write the page of knowledge question {folder} from its Runs' generated reports, a part per segment, saying no more than the Knowledge level allows, as run-write-t<NN>; another agent checks it.
 
 🔘 BUTTON   Write the Wisdom report · Task › Audience Report · ^run-write-t\d+$
 🧩 SKILL    haipipe-insight-wisdom
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight-wisdom write the page of wisdom question {folder} from its Runs' generated reports, a part per cut, saying no more than the Wisdom level allows, as run-write-t<NN>; another agent checks it.
+💬 PROMPT   /haipipe-insight-wisdom write the page of wisdom question {folder} from its Runs' generated reports, a part per segment, saying no more than the Wisdom level allows, as run-write-t<NN>; another agent checks it.
 
 🔘 BUTTON   Check a report · Task › Audience Report · ^run-check-t\d+$
 🧩 SKILL    haipipe-report
@@ -372,59 +372,59 @@ the person's notes, what is running, what a person signs) over its result. `view
 ✍️ SIGNS    none
 💬 PROMPT   /haipipe-insight-knowledge read the Cross Run of {folder} (rNN_cross) under the release's thresholds and write its verdict, POOL, SPLIT or UNDETERMINED, as run-pool-t<NN>; one test of the difference, never two partitions' significance compared.
 
-## Task › Work Details · Partitions
+## Task › Work Details · Segments
 
-🔘 BUTTON   Run a partition · Task › Work Details · ^r\d\d_
+🔘 BUTTON   Run a segment · Task › Work Details · ^r\d\d_
 🧩 SKILL    haipipe-insight
 🤖 AGENT    haipipe-task-orchestrator-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight run {folder} on one cut: runs/rNN_<partition>/run.sh (ref/run_job.py reads the question and script from the release, writes only result/ and run.yaml); a refusal is an answer.
+💬 PROMPT   /haipipe-insight run {folder} on one segment: runs/rNN_<segment>/run.sh (ref/run_job.py reads the question and script from the release, writes only result/ and run.yaml); a refusal is an answer.
 
 🔘 BUTTON   Check alignment · Task › Work Details · ^run-check-alignment-t\d+$
 🧩 SKILL    haipipe-insight-check
 🤖 AGENT    haipipe-insight-reviewer-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight-check check each answered cut of {folder} against its question and plan, in a fresh context, as run-check-alignment-t<NN>; write only the checker's output.
+💬 PROMPT   /haipipe-insight-check check each answered segment of {folder} against its question and plan, in a fresh context, as run-check-alignment-t<NN>; write only the checker's output.
 
 ## Task › Runs · All · hard · soft
 
-🔘 BUTTON   Run a partition · Task › Runs · ^r\d\d_ · views hard
+🔘 BUTTON   Run a segment · Task › Runs · ^r\d\d_ · views hard
 🧩 SKILL    haipipe-insight
 🤖 AGENT    haipipe-task-orchestrator-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight run {folder} on one cut: runs/rNN_<partition>/run.sh (ref/run_job.py reads the question and script from the release, writes only result/ and run.yaml); a refusal is an answer.
+💬 PROMPT   /haipipe-insight run {folder} on one segment: runs/rNN_<segment>/run.sh (ref/run_job.py reads the question and script from the release, writes only result/ and run.yaml); a refusal is an answer.
 
 🔘 BUTTON   Check alignment · Task › Runs · ^run-check-alignment-t\d+$ · views soft
 🧩 SKILL    haipipe-insight-check
 🤖 AGENT    haipipe-insight-reviewer-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight-check check each answered cut of {folder} against its question and plan, in a fresh context, as run-check-alignment-t<NN>; write only the checker's output.
+💬 PROMPT   /haipipe-insight-check check each answered segment of {folder} against its question and plan, in a fresh context, as run-check-alignment-t<NN>; write only the checker's output.
 
-## Prototype › Description · the releases, the proposals
+## Question Book › Description · the releases, the proposals
 
-🔘 BUTTON   Take the proposals · Prototype › Description · ^run-triage-proposals-code-v\d+$ · views proposals
+🔘 BUTTON   Take the proposals · Question Book › Description · ^run-triage-proposals-question-v\d+$ · views proposals
 🧩 SKILL    haipipe-insight-question
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight-question triage the open proposals of {folder} into one batch for the next release: each taken (taken-in: code-vN), declined with a reason, or left open, as run-triage-proposals-code-v<N>; one release per batch, never per proposal.
+💬 PROMPT   /haipipe-insight-question triage the open proposals of {folder} into one batch for the next release: each taken (taken-in: question-vN), declined with a reason, or left open, as run-triage-proposals-question-v<N>; one release per batch, never per proposal.
 
-🔘 BUTTON   Open a release · Prototype › Description · ^run-open-version-code-v\d+$ · views releases
+🔘 BUTTON   Open a release · Question Book › Description · ^run-open-version-question-v\d+$ · views releases
 🧩 SKILL    haipipe-insight
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight open the next release of {folder} from the newest signed one (insight_ladder.py version --slug <what-it-is>): every question kept and pointed back, the cuts, thresholds and src/ copied, as run-open-version-code-v<N>; then apply the triaged batch.
+💬 PROMPT   /haipipe-insight open the next release of {folder} from the newest signed one (insight_ladder.py version --slug <what-it-is>): every question kept and pointed back, the segments, thresholds and src/ copied, as run-open-version-question-v<N>; then apply the triaged batch.
 
-## Prototype › Idea Studio
+## Question Book › Idea Studio
 
-🔘 BUTTON   Draw the question map · Prototype › Idea Studio · ^run-map-questions$
+🔘 BUTTON   Draw the question map · Question Book › Idea Studio · ^run-map-questions$
 🧩 SKILL    haipipe-insight
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
 💬 PROMPT   /haipipe-insight draw the question map of {folder}'s newest release into studio/ (ref/question_map.py), as run-map-questions; it is generated, view only.
 
-## Prototype › Runs
+## Question Book › Runs
 
-🔘 BUTTON   Carry a board over · Prototype › Runs · ^run-carry-
+🔘 BUTTON   Carry a board over · Question Book › Runs · ^run-carry-
 🧩 SKILL    haipipe-insight
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    the carry
@@ -438,27 +438,27 @@ the person's notes, what is running, what a person signs) over its result. `view
 ✍️ SIGNS    none
 💬 PROMPT   /haipipe-insight-question ask one question into the open release {folder} from plain words: its level, id (never reused) and Task tNN_<L><NN>_<slug>/question.md (insight_ladder.py question), as run-ask-<l><nn>; never answer it here.
 
-🔘 BUTTON   Review the questions · Release › Work Details · ^run-review-questions-code-v\d+$
+🔘 BUTTON   Review the questions · Release › Work Details · ^run-review-questions-question-v\d+$
 🧩 SKILL    haipipe-report
 🤖 AGENT    haipipe-insight-reviewer-agent
 ✍️ SIGNS    a change
-💬 PROMPT   /haipipe-report review the new and changed questions of {folder} (Q1–Q7) in a fresh context, as run-review-questions-code-v<N>: propose keep, split, merge or move, never reword; I sign each change.
+💬 PROMPT   /haipipe-report review the new and changed questions of {folder} (Q1–Q7) in a fresh context, as run-review-questions-question-v<N>: propose keep, split, merge or move, never reword; I sign each change.
 
-## Release › Description · its cuts
+## Release › Description · its segments
 
-🔘 BUTTON   Set the cuts · Release › Description · ^run-set-cuts-code-v\d+$ · views partitions
+🔘 BUTTON   Set the segments · Release › Description · ^run-set-segments-question-v\d+$ · views segments
 🧩 SKILL    haipipe-insight
 🤖 AGENT    haipipe-insight-agent
-✍️ SIGNS    the cuts
-💬 PROMPT   /haipipe-insight set the cuts of {folder} before any outcome is seen: partitions.md (full, each filter, cross) and thresholds.yaml (power.smallest_effect_pp, alphas, floors), each with why, as run-set-cuts-code-v<N>; I sign the cuts.
+✍️ SIGNS    the segments
+💬 PROMPT   /haipipe-insight set the segments of {folder} before any outcome is seen: partitions.md (full, each filter, cross) and thresholds.yaml (power.smallest_effect_pp, alphas, floors), each with why, as run-set-segments-question-v<N>; I sign the segments.
 
 ## Release › Delivery · the signature
 
-🔘 BUTTON   Sign the release · Release › Delivery · ^run-sign-release-code-v\d+$
+🔘 BUTTON   Sign the release · Release › Delivery · ^run-sign-release-question-v\d+$
 🧩 SKILL    haipipe-insight
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    the release
-💬 PROMPT   /haipipe-insight get {folder} ready to sign, as run-sign-release-code-v<N>: every new or changed question agreed by another agent, every script reviewed, the cuts signed; show me the release, and record my signature (insight_ladder.py sign --date YYMMDD). It is frozen after.
+💬 PROMPT   /haipipe-insight get {folder} ready to sign, as run-sign-release-question-v<N>: every new or changed question agreed by another agent, every script reviewed, the segments signed; show me the release, and record my signature (insight_ladder.py sign --date YYMMDD). It is frozen after.
 
 ## Question › Work Details · its plan and script
 
@@ -478,7 +478,7 @@ the person's notes, what is running, what a person signs) over its result. `view
 🧩 SKILL    haipipe-insight
 🤖 AGENT    haipipe-task-creator-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight write the one script of {folder}: scripts/<slug>.py with its SPEC and COLUMNS lines, returning exactly the agreed needs' output files, reading no path and naming no dataset or cut, as run-write-script-<l><nn>.
+💬 PROMPT   /haipipe-insight write the one script of {folder}: scripts/<slug>.py with its SPEC and COLUMNS lines, returning exactly the agreed needs' output files, reading no path and naming no dataset or segment, as run-write-script-<l><nn>.
 
 🔘 BUTTON   Review the script · Question › Work Details · ^run-review-script-[dikw]\d\d$
 🧩 SKILL    haipipe-insight
@@ -496,14 +496,14 @@ it (`haipipe-insight/scripts/insight_ladder.py`).
 gate                     level      Run that passes it          what must hold
 a question agreed        Question   run-review-plan-<l><nn>     another agent agreed its needs (agreed: ✅)
 a script reviewed        Question   run-review-script-<l><nn>   another agent passed it against the agreed needs
-the cuts set             Release    run-set-cuts-code-v<N>           full and every cut named, each with why; a person signed
-a release signed         Release    run-sign-release-code-v<N>       the three above for every new or changed question;
+the segments set             Release    run-set-segments-question-v<N>           full and every segment named, each with why; a person signed
+a release signed         Release    run-sign-release-question-v<N>       the three above for every new or changed question;
                                                                 a person signed (signed: ✅ <YYMMDD>); frozen after
 a data version frozen    Block      run-add-version-data-v<M>        in board.md versions:, SPACE-relative, never edited
 a Job added              Block      run-add-j<NN>               a signed release × a frozen data version, a new pair,
                                                                 one clock moved
-power before contrast    Job        run-power-j<NN>, rNN_…      the cut can answer (MDE ≤ the smallest effect), else refused
-the output gated         Task       rNN_<partition>             the tables equal the spec's outputs; no row-level table
+power before contrast    Job        run-power-j<NN>, rNN_…      the segment can answer (MDE ≤ the smallest effect), else refused
+the output gated         Task       rNN_<segment>             the tables equal the spec's outputs; no row-level table
 a page checked           Task       run-check-t<NN>             another agent's CHECK closed after the Run's content
 a Job closed             Job        run-close-j<NN>             every page checked, the comparison written; a person signed
 a handoff signed         Block      run-draft-handoff           a person signed; Design reads only a signed handoff

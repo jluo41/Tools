@@ -7,14 +7,14 @@ the shared Guide › Method, step 1; its papers are the rows of that workbench's
 workbench's own judgment.
 
 family: Question-asking
-move: Write the questions and their code once, as a Prototype board, then run the same
+move: Write the questions and their code once, as a Question Book board, then run the same
   protocol unchanged on each dataset and compare the answers.
 taxonomy: Any level; a test of whether an answer holds beyond the dataset it came from
   (ours).
 comes from: Hripcsak 2015, one network, one data model; Schuemie 2020, prespecified
   evidence across a network of databases
-reads: the Prototype board · a new dataset's extract
-returns: the same questions answered on the new dataset, beside the Prototype's
+reads: the Question Book board · a new dataset's extract
+returns: the same questions answered on the new dataset, beside the Question Book's
   answers, and a between-dataset heterogeneity summary
 test now: T1 specified
 test in use: T8 reproduced
@@ -47,14 +47,14 @@ limitations: With the design held fixed, estimates across 10 databases ran from 
 Applied to AI
 -------------
 
-agent: The agent copies the Prototype board's questions, specs and code to a new
+agent: The agent copies the Question Book board's questions, specs and code to a new
   dataset's board and changes nothing but the extract.
 steps: 1. Check that the new extract has every column the protocol reads. 2. Run each
-  question's code unchanged. 3. Report each answer beside the Prototype's. 4. Ask the
+  question's code unchanged. 3. Report each answer beside the Question Book's. 4. Ask the
   between-dataset heterogeneity question.
 returns: The answers per dataset and their heterogeneity, never a pooled answer alone.
 verify: A second agent checks that the specs and code are identical to the
-  Prototype's (T1) and that the datasets are compared by heterogeneity, not by which
+  Question Book's (T1) and that the datasets are compared by heterogeneity, not by which
   ones came out significant (T8).
 risk: A protocol quietly adapted to fit a new dataset is a new study under the old
   name (ours).

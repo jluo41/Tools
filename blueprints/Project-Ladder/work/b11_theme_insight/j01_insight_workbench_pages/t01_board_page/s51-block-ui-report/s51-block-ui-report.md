@@ -15,7 +15,7 @@ s51 · Board UI: Report
 
 **Topic:** One cell of the insight 3 × 3, the insight Board (one dataset) × Report (check), copied from the paper theme's (b16 j01) and the labeling theme's (b15 j01) (JL 261101: "Please understand the above two sessions and then work on the insights"). Its drawing is haipipe-studio's five parts, drawn by `build_s51_block_ui_report.py` through j01's `insight_ui_cells.py`; its Design is every view as the same full screen, lettered, settled one round each. Names are placeholders (`<dataset>`, `<d>`): a real Board holds one person's health data, and Tools is public.
 
-**Feeds:** `reports/` q01_insight_ladder
+**Feeds:** Q01
 
 
 Files
@@ -34,7 +34,7 @@ s51-block-ui-report/
 Decided
 -------
 
-s51-D01 · One grid per level (Board question × Job, Job question × cut, Task cut × step); Report opens on the answer; Work opens on what waits on the person; no Task asks the person (JL 261101: "go ahead", on the proposal in chat).
+s51-D01 · One grid per level (Board question × Job, Job question × segment, Task segment × step); Report opens on the answer; Work opens on what waits on the person; no Task asks the person (JL 261101: "go ahead", on the proposal in chat).
 
 s51-D02 · A Report view is its numbered sections only: no ⚙️ Process and 📊 Results bands and no "Nothing waits on you"; those are Work's (JL 261101: "the Process and Results will only be availabe in the Work Section"; as b16 s32-D27). The helpers stay last.
 
@@ -55,7 +55,7 @@ Open
 4. ❗ Walk 261102 (the live page, every view opened and clicked; 30 views measured): A Answers is about 11,500 px and 2,300 words: the whole Overall Report sits inside it. Plan: the answers in one line each, the matrix, then the report's six figures as side tabs (one open), then what each question found folded by level. Asked: Interaction Q1.
 5. ❗ The live matrix is still the plain table; the drawing's alive cell (pages bar, X D I K W strip, the clock each Job moved) is not built. Plan: build it from s51-D03.
 6. ❗ C Jobs is a table of folder names and one long fold of Tasks. Plan: one row per Job with a dot row per DIKW level (as B), the clock it moved as a word. Asked: Q2.
-7. ❗ D Data prints the cohort summary as raw text and full folder paths, and 'accumulates: ?'. Plan: each data freeze a card (rows, dates, messages, Jobs on it); the paths and raw summary behind one Files click; cuts as chips with their rows. Asked: Q3.
+7. ❗ D Data prints the cohort summary as raw text and full folder paths, and 'accumulates: ?'. Plan: each data freeze a card (rows, dates, messages, Jobs on it); the paths and raw summary behind one Files click; segments as chips with their rows. Asked: Q3.
 8. ⚠️ E Handoff says only 'No handoff yet'. Plan: the two Wisdom questions with their draft answers and state under it. Asked: Q4.
 9. ✅ Walked and fixed today: a pinned question's share link (#q=) now follows the pin; a chip or search scrolls its card into view; question ids read as links; phone: the view buttons wrap (focus.css, every theme).
 

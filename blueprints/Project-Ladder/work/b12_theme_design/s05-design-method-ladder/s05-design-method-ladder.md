@@ -1,5 +1,6 @@
 s05 · Design method ladder
 ==========================
+view: findings
 
 **Tags:** `Structure`
 
@@ -11,11 +12,19 @@ s05 · Design method ladder
 
 **Covers:** where a design method's versions are made and tested on the ladder: the method Block, a version Job and its five Tasks (write the recipe, build its checks, bench it, compare it, release it), how a design Board's Job pins a released version, and how the Board's results come back as proposals for the next version. M05's m1 → m2 → m3 is the worked example.
 
-**Excluded:** making designs with a pinned method (the design Board, s01 and j01's pages); what a method card is in general (the Guide's 13 cards, s03-design-methods); the insight Prototype it copies (b11 s04-insight-structure).
+**Excluded:** making designs with a pinned method (the design Board, s01 and j01's pages); what a method card is in general (the Guide's 13 cards, s03-design-methods); the insight Question Book it copies (b11 s04-insight-structure).
 
-**Topic:** A design Job pins one method version, but the methods themselves (M01 to M05, versions m1 to m3) live only as files in the Tools skill registry (`haipipe-design-method/methods/`), written by hand; no Job, Task or Run shows a method being written, tested or compared, so the Block's Methods view can only name the method a Job pinned (JL 261101: "how could we highlight more about the methods? … where is the task or jobs for designing the design methods? … the designer itself should be some tasks to try"). s04 drew the answer on 261007 and it was never built: a methods Block beside the design Board, one Job per method version, a bench of fixed goals and inputs, proposals as its backlog. The insight theme built the same shape as its Prototype (`insight/Prototype-<topic>/`, one Job per release, a Board Job pins a release), live on the SMS project. This topic draws it for design, so a method version is work you try: written, benched, compared by another agent, signed, then pinned.
+**Topic:** A design Job pins one method version, but the methods themselves (M01 to M05, versions m1 to m3) live only as files in the Tools skill registry (`haipipe-design-method/methods/`), written by hand; no Job, Task or Run shows a method being written, tested or compared, so the Block's Methods view can only name the method a Job pinned (JL 261101: "how could we highlight more about the methods? … where is the task or jobs for designing the design methods? … the designer itself should be some tasks to try"). s04 drew the answer on 261007 and it was never built: a methods Block beside the design Board, one Job per method version, a bench of fixed goals and inputs, proposals as its backlog. The insight theme built the same shape as its Question Book (`insight/InsightQuestionBook-<topic>/`, one Job per release, a Board Job pins a release), live on the SMS project. This topic draws it for design, so a method version is work you try: written, benched, compared by another agent, signed, then pinned.
 
-**Feeds:** `reports/` q06_design_method_ladder
+**Feeds:** Q06
+
+
+Q06 · Answer
+------------
+
+**Question:** Where is a design method made and tried?
+
+**Answer (open):** not written yet.
 
 
 Files
@@ -36,7 +45,7 @@ Proposed (261101)
 -----------------
 
 ```text
-work/Method-bNN-<app>/                one Block: the methods this app's designs use
+design/DesignMethodBook-<app>/        one Block: the methods this app's designs use
 ├── board.md                          its methods, the bench, the proposals backlog
 ├── bench/                            fixed goals + inputs, so two versions compare on the same ground
 ├── proposals/                        from Board Jobs and Exp scores: what the next version should change
@@ -63,7 +72,8 @@ Decided
 Open
 ----
 
-1. ? One method Block per app (`work/Method-bNN-<app>/`), or one per Project shared by its design Boards.
+1. ? One Method Book per app (`design/DesignMethodBook-<app>/`, JL 261109: named as insight's
+   `InsightQuestionBook-<Topic>/`; on screen "Method Book"), or one per Project shared by its design Boards.
 2. ? Move the app-specific versions (M05 m3's `aggregate_query.py`) out of the Tools skill into the Project, or keep the
    registry in Tools and link the Project's version Jobs to it.
 3. ? What the bench is: a fixed goal and inputs version from a design Board (`inputs/i1`), or its own small set.

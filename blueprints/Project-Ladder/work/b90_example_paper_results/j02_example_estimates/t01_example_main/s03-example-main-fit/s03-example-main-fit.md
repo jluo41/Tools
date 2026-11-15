@@ -13,7 +13,7 @@ s03 · How the main fit reads
 
 **Topic:** A placeholder topic: the main fit returns nine values in values.csv; this topic settles how they are rounded and named before the paper reads them. Every number is made up.
 
-**Feeds:** `reports/q02-main-association.md`
+**Feeds:** Q02.md`
 
 
 Files

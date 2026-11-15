@@ -54,7 +54,7 @@ that last step and its file:
 t99 run-rank-t99 ─▶ project_predictions.py (haipipe-design-workflow): prediction.yaml frozen: draft, kept | dropped
                  ─▶ run-freeze-predictions-j<NN>    a person signs the predictions
                  ─▶ run-release-j<NN>               a person signs the release
-                    Design-<name>/delivery/jNN_<goal>_method-vN-<slug>_inputs-vM/designs.json · designs.md · screens/<dNN>.<ext>
+                    Design-<name>/delivery/jNN_<goal>_M0x-<slug>-mK_inputs-vM/designs.json · designs.md · screens/<dNN>.<ext>
                     Design-<name>/delivery/designs.json · designs.md · screens/<jNN>-<dNN>.<ext>
                                                    every Job's release, gathered
 ```

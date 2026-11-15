@@ -460,7 +460,7 @@ VANILLA = {  # level -> (tabs, active tab, open Space, third row, table heads, r
              ("│   └── tNN_<task>.md", "the row: kind · state"),
              ("├── src/ · sbatch/", "they mark a Job; listed in Description"),
              ("└── runs/", "soft only: run-plan-tasks · run-launch-<group>"),
-             ("servers/workbench/frame.py", "the same frame, one level down")]),
+             ("servers/workbench/page/frame.py", "the same frame, one level down")]),
     "Task": (["Guide", "Block", "Job · j11 ▾", "Task · t02 ▾"], 3, "Runs", ["All", "hard", "soft"],
              ["Run", "kind · type", "status · passes"],
              [("r01_<slug>", "hard · fit", "closed · 2"), ("r02_<slug>", "hard · evaluate", "open · 1"),
@@ -472,7 +472,7 @@ VANILLA = {  # level -> (tabs, active tab, open Space, third row, table heads, r
               ("│   ├── r01_<slug>/result/", "the Run pop-out's preview"),
               ("│   └── run-<type>-<target>/run.yaml", "a soft Run's row"),
               ("└── scripts/ · config/", "Work (the work theme: Code)"),
-              ("servers/workbench/runs_panel.py", "the panel; run.yaml cards from frame_view.py")])}
+              ("servers/workbench/page/runs_panel.py", "the panel; run.yaml cards from frame_view.py")])}
 THEMED = {  # theme -> one Block screen through its theme: (tabs, third row, rows, on disk)
     "work theme": (["Guide", "Block", "Job · j11 ▾", "Task · t02 ▾"], ["All", "j0N", "j1N", "j5N"],
                    [("j01_<data>", "3 Tasks", "done"), ("j11_<job>", "4 Tasks", "running"),
@@ -829,9 +829,9 @@ def tools_row():
     in the Tools"): the same "In Tools" frame s03 to s06 draw, read from disk."""
     bottom = max(e["y"] + e["height"] for e in L.els if e["type"] == "frame")
     fr = L.tools_frame("In Tools: haipipe-studio", ["1_base/project/haipipe-studio"],
-                       [("servers/workbench/frame.py", ["studio_cards", "_topic_row", "studio_inventory",
+                       [("servers/workbench/page/frame.py", ["studio_cards", "_topic_row", "studio_inventory",
                                                         "studio_anchor", "group_list", "studio_group_op"]),
-                        ("servers/workbench/xcal.py", ["XcalMixin"])],
+                        ("servers/workbench/studio/xcal.py", ["XcalMixin"])],
                        around=["excalidraw-report: how a drawing looks", "haipipe-run keeps run-draw-<sNN>",
                                "workbench-studio: a Page's own Studio tab", "haipipe-related: Related folds inside it (s04)"],
                        note="its skill's folder and code, read from disk (JL)")

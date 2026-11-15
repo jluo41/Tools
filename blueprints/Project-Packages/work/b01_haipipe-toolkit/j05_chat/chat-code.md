@@ -15,9 +15,9 @@ Files
 
 ```text
 plugins/haipipe-toolkit/servers/
-├── workbench/chat.py                    1869 lines  ChatMixin: /_board/chat, sessions, names, hold, release;
+├── workbench/studio/chat.py                    1869 lines  ChatMixin: /_board/chat, sessions, names, hold, release;
 │                                                    prime_context, board_prime_context, chat_guard
-├── workbench/term.py                     919 lines  TermMixin: /_board/term, PTY spawn and pump, ttyd
+├── workbench/studio/term.py                     919 lines  TermMixin: /_board/term, PTY spawn and pump, ttyd
 │                                                    fallback, labeling_tui_hold
 ├── workbench/assets/js/10-drawer/
 │   ├── 20-chat/00-open … 50-prefs-paste.js          the chat drawer (sessions, focus, render,

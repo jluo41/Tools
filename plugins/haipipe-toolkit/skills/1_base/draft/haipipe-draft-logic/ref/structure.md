@@ -171,7 +171,7 @@ short Note/Annotation/indented-dash lines into dash annotations, and places one
 `→ [relation]` between adjacent Points for `Transition:`. It does not print
 `Core statement:` or `Note:` labels, invent a role for a legacy head, or turn a
 transition into an extra Bullet/Sentence. The 4–11-word check excludes the
-`S<n> ·` slot and `[Role]` metadata and applies to the concise statement.
+`s<n> ·` slot and `[Role]` metadata and applies to the concise statement.
 
 For new or edited Bullets, the statement must be plain subject–verb planning
 language, not a command to the future writer. In a new or rewritten

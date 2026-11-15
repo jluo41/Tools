@@ -11,4 +11,4 @@ pin_method.py copied M01 m2 word for word into inputs/method.md and wrote method
 ## Changed
 
 - `inputs/method.md`
-- `j01_confirm-by-reply_method-v1-goal-only_inputs-v1.md`
+- `j01_confirm-by-reply_M01-goal-only-m2_inputs-v1.md`

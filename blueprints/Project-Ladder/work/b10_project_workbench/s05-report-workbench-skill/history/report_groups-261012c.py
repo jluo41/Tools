@@ -5,7 +5,7 @@ map, boxes with their own trees joined by named arrows, are the face's `frames:`
 with each ‹name› leaf filled from disk; ③ the screens, the base and every theme's Report today beside the proposal,
 in the workbench's own colours, with red boxes and → notes for what is not built or guessed (s07-D12).
 
-Read on every build: each theme's Report through servers/workbench/frame.py (frame.render, on one real Block or
+Read on every build: each theme's Report through servers/workbench/page/frame.py (frame.render, on one real Block or
 Job of each theme in a SPACE beside Tools), one Block, Job and Task read live, b10's board.md register and
 studio/_groups.txt, each theme file's Report settings, the paper Board's and the insight Boards' own files. The
 proposal (suggested groups, the insight topics' names) is typed: it is what s07 proposes, not what the disk holds.
@@ -33,7 +33,7 @@ import canvas  # noqa: E402  (haipipe-studio's merge-safe writer)
 
 INK, RED, MONO = L.INK, L.RED, L.MONO
 text, path, base = L.text, L.path, L.base
-FRAME_PY = L.TOOLKIT / "servers/workbench/frame.py"
+FRAME_PY = L.TOOLKIT / "servers/workbench/page/frame.py"
 
 # b10's 12 Questions in its existing Studio groups (s07-D07); Q11 is open (Guide or UI)
 B10_GROUPS = {"Q01": "Levels", "Q02": "Levels", "Q03": "Report", "Q04": "Structure", "Q05": "Run and Skill",

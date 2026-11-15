@@ -24,7 +24,7 @@ Shared letters work for C, D and E. A and B do not pair: Report A shows answers,
 ## Further improvements (beyond the rubric fixes)
 
 1. Make Work A's section 1 the Board's whole 🙋 inbox (Sign AP2, Close j03, Triage proposals, Sign the handoff), each with ready or not ready and one verb; agent work goes below, smaller. Why: it meets s52-D01 without undoing the shared letters.
-2. Answer Open question 1 ("Sign AP2 here, or only in the Prototype"): only in the Prototype; the Board shows the 🙋 row with "Open in Prototype". Same for Triage. Why: signing a release and triage are the Prototype's Runs (run-sign-release-pN, run-triage-proposals-pN), and AGENTS.md says one owner per page.
+2. Answer Open question 1 ("Sign AP2 here, or only in the Question Book"): only in the Question Book; the Board shows the 🙋 row with "Open in Question Book". Same for Triage. Why: signing a release and triage are the Question Book's Runs (run-sign-release-pN, run-triage-proposals-pN), and AGENTS.md says one owner per page.
 3. Show each Job as a row in C with its pipeline as a short chain (Runs ✅ · pages ⏳ 12 · checks ⬜ 3 · close 🙋). Why: the person needs to see why Close j03 is not ready yet, and Report C's grid holds no progress.
 4. Replace every generic "Run" with the action's verb (Write, Propose, Draft) and remove the Run ids (run-propose-j03, run-draft-handoff) and rule sentences. Why: three of five views lose Lean and Words for the same reason.
 5. Order rows by when they can be done: a 🙋 row that cannot be done yet says "not ready" and sits under the step it waits on. Why: E shows Sign above Draft, the reverse of the real order.

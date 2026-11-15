@@ -23,7 +23,7 @@ is kept once, at the Block, in its one `related/`, one row each in `related/rela
 topics and reports it feeds read it from there. It is Delivery's twin on the other side: `related/`
 is what came in, `delivery/` what went out.
 
-**Feeds:** `reports/` q07_workbench_mapping · q08_workbench_base
+**Feeds:** Q07 · Q08
 
 
 Files
@@ -54,9 +54,9 @@ skills/1_base/project/
 ├── haipipe-related/    s04 Related    ◀ this topic
 ├── haipipe-report/     s05 Report
 └── haipipe-run/        s06 Run
-servers/workbench/frame.py         related_items · _related_folder · related_view · studio_related
+servers/workbench/page/frame.py         related_items · _related_folder · related_view · studio_related
                                    _related_preview · docx_preview · eml_preview · _related_set_groups
-servers/workbench/page_reader.py   markdown_document, a .md that is no Page
+servers/workbench/page/page_reader.py   markdown_document, a .md that is no Page
 ```
 
 
@@ -86,7 +86,7 @@ s04-D05 · Related folds inside the Studio as its second part, under the topic c
     Delivery"). Folded by default; a `space=Related` link (or an older Description › Related one)
     opens the Studio with it unfolded. Not in the Guide: the Guide is the family's docs, the same in
     every Block, and related/ is this Block's own. Not a studio group: a topic group tags sNN topics, and a
-    related row is no topic (it has its own groups, s04-D07). `frame.studio_related` (servers/workbench/frame.py); it was a top-row tab
+    related row is no topic (it has its own groups, s04-D07). `frame.studio_related` (servers/workbench/page/frame.py); it was a top-row tab
     for an hour on 261011 (b16 session), and "after Delivery" (s01-D34) is dropped.
 s04-D06 · The Related view draws one folding row per `related.md` row. An opened row is the file
     itself: a Word file through `/_board/workbench?view=docx&path=<file>` (text, tables, pictures and

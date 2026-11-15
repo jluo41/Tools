@@ -113,22 +113,19 @@ opens the Board-level view instead.
 ### The Block and Job focus pages
 
 On the shared focus layout (`?layout=focus`), a labeling Block or Job is drawn by
-`servers/workbench-labeling/labeling_focus.level_page` in the shape every level shares: Report and Work both hold
-MindMap · Status · Findings, Work as ⚙️ Process then 📊 Results, each view ending in 🙋 Interaction with its own forms
-(the page's own under MindMap, a form about a release under Findings, every other form below the page under Status);
-the rails are the base page's (Report · Work · Studio · Interactions · Delivery · Timeline · Skills · Files). Findings
-leads with what each Job released: its expression Task's final labels, then the approved guideline they follow (a
-Job's name on its bars only when a Block holds more than one). Work › Status's Process is labeling's 🚧 Next steps
-(`labeling_focus.next_steps`): every form that waits first, each row opening the form itself in the pop-out, the
-first under the closed bar; then each unfinished Task's next Run. A Block's Job row says "N of M done", the words its
-Job's Tasks bar says. Delivery lists each signed release (`labeling_focus.delivery_html`: its final labels, rules,
+`servers/workbench-labeling/labeling_focus.level_page` in the shape every level shares: Report holds Overview ·
+Plan + Results · Findings · Delivery, each view its 📋 Review Content then 🧭 Around the Work; the right rail is Report
+and the eight shared sections (Studio, Interactions, Decisions, Things to Know, Checklist, Timeline, Skills, Files).
+Findings leads with what each Job released: its expression Task's final labels, then the approved guideline they
+follow (a Job's name on its bars only when a Block holds more than one). Plan + Results lists each Task and its Runs,
+and what waits for you. A Block's Job row says "N of M done", the words its Job's Tasks bar says. Delivery lists each signed release (`labeling_focus.delivery_html`: its final labels, rules,
 sign date and Run), then the Block's `delivery/`. A Task's own page is workbench-task-labeling's.
 
 ## 🧭 Guide · how the family works
 
 Guide is the first tab of both levels, mounted by the shared `mount_guide()` from
 the server's own `servers/workbench-labeling/guide/guide.yaml` (moved there from
-`servers/workbench/guide_families.py`, 261007), with its method in `guide/` and its papers
+`servers/workbench/guide/guide_families.py`, 261007), with its method in `guide/` and its papers
 in `related/` beside it. Its four Views read only family files, never a job:
 
 ```text

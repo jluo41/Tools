@@ -1,5 +1,6 @@
 s01 · The toolkit map
 =====================
+view: findings
 
 **Stage:** explore
 
@@ -9,7 +10,17 @@ s01 · The toolkit map
 
 **Topic:** Every part of `plugins/haipipe-toolkit` (the three skill layers by family, each server, the agents, the MCP server) with its size, and the shared Job or independent Theme Block that owns its design questions. It is the Block's index: when a part has no blueprint owner, the map shows it in red. Counted from disk on every rebuild (261009).
 
-**Feeds:** `reports/` q01_blueprints_organized
+**Feeds:** Q01
+
+
+Q01 · Answer
+------------
+
+**Question:** How are the toolkit's blueprints organized?
+
+**Answer (open):** The 261010 layout promotes each Theme to its own blueprint Block. The migration is implemented; the broader organization question remains open for review.
+
+**Page:** [q01_blueprints_organized.md](q01_blueprints_organized/q01_blueprints_organized.md): the full answer, its evidence and limits (moved from reports/)
 
 
 Files

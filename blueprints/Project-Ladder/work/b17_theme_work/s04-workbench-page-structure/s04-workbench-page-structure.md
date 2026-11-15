@@ -5,7 +5,7 @@ s04 · Workbench page structure: what every work page shares
 
 **Stage:** shaping
 
-**For:** a deck, and the six parts every work page shares on the focus page, the same at Block, Job and Task, as screen drafts in `delivery/ui/` (`frame/`, `interactions/`, `delivery/`, `related/`, `timeline/`, `files/`) that design_b02_workbench builds into `servers/workbench/focus_page.py`; made by `../j03_work_workbench_pages/t04_shared_parts/`, for the people who build the workbench
+**For:** a deck, and the six parts every work page shares on the focus page, the same at Block, Job and Task, as screen drafts in `delivery/ui/` (`frame/`, `interactions/`, `delivery/`, `related/`, `timeline/`, `files/`) that design_b02_workbench builds into `servers/workbench/page/focus_page.py`; made by `../j03_work_workbench_pages/t04_shared_parts/`, for the people who build the workbench
 
 **Delivery type:** ui
 
@@ -13,7 +13,7 @@ s04 · Workbench page structure: what every work page shares
 
 **Covers:** the frame of every work page: the path, the title-&-section, the view-button-list under the title, the goal-line (Purpose for a Block, Goal for a Job, Aim for a Task), the view-caption, the left-rail (siblings, the open page's children under it, sNN first), the right-rail (its sections, one line each), the pop-out over the page and the phone's section-line; and the right-rail's other sections: Interactions (answer), Delivery (hand over), Related (take in), Timeline (look back), Files (browse).
 
-**Excluded:** each level's Report, Work and Studio, the content inside the frame: the nine cells at j03's three Tasks own them (s51, s52, s53 the Block; s54, s55, s56 a Job; s57, s58, s59 a Task). Also left to their owners: the form, the Interaction button and its pop-out list (haipipe-interaction); what a delivery holds and its versions (haipipe-delivery); what Related holds (haipipe-related); the code itself, `servers/workbench/focus_page.py` (design_b02_workbench); the paper's pages (b16 j01).
+**Excluded:** each level's Report, Work and Studio, the content inside the frame: the nine cells at j03's three Tasks own them (s51, s52, s53 the Block; s54, s55, s56 a Job; s57, s58, s59 a Task). Also left to their owners: the form, the Interaction button and its pop-out list (haipipe-interaction); what a delivery holds and its versions (haipipe-delivery); what Related holds (haipipe-related); the code itself, `servers/workbench/page/focus_page.py` (design_b02_workbench); the paper's pages (b16 j01).
 
 **Topic:** the focus page's frame and right-rail, the same on every work Block, Job and Task page; what no cell owns, around each level's Report, Work and Studio (JL 261031: "the interface and the Block UI Job UI and Task UI, there are some overlap, right?"). It began as the whole page-structure discussion (location, purpose, progress and results on one page) and narrowed on 261031 to the parts every level shares; the nine cells s51 to s59 own the rest. Its drawing is haipipe-studio's five parts, drawn by `build_s04_workbench_page_structure.py`: its Design is the frame as proposed, drawn on j03's own page (A), and the right-rail's other sections with the Interactions page's three designs (B).
 
@@ -61,7 +61,7 @@ as s04, the work workbench's pages; both are kept whole in `result/merged-s03-wo
 `result/merged-s32-work-element-ui/`, and their numbers are retired (JL 261031, agreed the b17 plan).
 
 s04-D03 · One ui delivery, made by j03: the work Block, Job and Task pages, made by j03_work_workbench_pages (Phase A
-first); the code lands in `servers/workbench/focus_page.py` through its owner, design_b02_workbench; the topic sits
+first); the code lands in `servers/workbench/page/focus_page.py` through its owner, design_b02_workbench; the topic sits
 beside its Job, out of `studio/` (JL 261031, agreed the b17 plan).
 
 s04-D04 · The work pages are a 3 × 3, as the paper's (b16 j01): Block, Job and Task × Report, Work and Studio, one
@@ -150,7 +150,7 @@ Rebuild
 -------
 
 `python build_s04_workbench_page_structure.py` redraws the five parts and the card from disk: the frame's words and
-the right-rail from `servers/workbench/focus_page.py`, the left-rail from b17's folders, the goal-line from j03's face,
+the right-rail from `servers/workbench/page/focus_page.py`, the left-rail from b17's folders, the goal-line from j03's face,
 the pieces from `delivery/render.yaml`, the three Interactions designs from
 `../runs/r02_collect_interactions_page/question_collection.md`. The mind map: haipipe-mindmap
 `scripts/mindmap.py render s04-workbench-page-structure.mindmap.md`. The slides: haipipe-studio

@@ -8,12 +8,12 @@ acts:
     arrows: ['batch', 'chosen', 'review']
     note: 'keep · split · merge · move'
   - name: 'B · analysis plan'
-    steps: ["evidence plan\nper question", "script per question", "agent agrees", "you: set cuts +\nsign the analysis plan"]
-    you: ["you: set cuts +\nsign the analysis plan"]
+    steps: ["evidence plan\nper question", "script per question", "agent agrees", "you: set segments +\nsign the analysis plan"]
+    you: ["you: set segments +\nsign the analysis plan"]
     arrows: ['needs', 'code', 'agreed']
     note: 'frozen once signed: AP1, AP2 …'
   - name: 'C · run'
-    steps: ["add Job:\nanalysis plan × data freeze", "power per cut", "one Run per cut", "pool or split"]
+    steps: ["add Job:\nanalysis plan × data freeze", "power per segment", "one Run per segment", "pool or split"]
     arrows: ['tickets', 'enough rows', 'Cross']
     note: 'a refusal is an answer'
   - name: 'D · answer'

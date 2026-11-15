@@ -108,7 +108,7 @@ Builders and refresh
 The Block map
 -------------
 
-The template for a Block's map on its focus page (`parts_mindmap` in `servers/workbench/focus_page.py`). Every Block uses
+The template for a Block's map on its focus page (`parts_mindmap` in `servers/workbench/page/focus_page.py`). Every Block uses
 this same renderer; only what hangs where changes (JL 261104: "这不应该是一样一套东西吗"; "我觉得像这种 template 你应该写到
 skill 里面去").
 

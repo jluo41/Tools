@@ -107,9 +107,9 @@ On screen
    note's quote blocks folded), Word from its package, a deck drawn slide by slide, an email with
    its headers, a PDF, a page or a picture (s04-D06); versions of one thing are one row (s04-D10).
 3. **The group bar**: Current · the groups · Untagged · + Group, the Studio's own (s04-D07).
-4. **The code**: `servers/workbench/frame.py` (`related_items`, `related_view`, `studio_related`,
+4. **The code**: `servers/workbench/page/frame.py` (`related_items`, `related_view`, `studio_related`,
    `_related_preview`, `docx_preview`, `eml_preview`, `_related_set_groups`), and
-   `servers/workbench/page_reader.py` (`markdown_document`) for a Markdown file that is no Page.
+   `servers/workbench/page/page_reader.py` (`markdown_document`) for a Markdown file that is no Page.
 
 
 Add an item: run-add-related-<slug>

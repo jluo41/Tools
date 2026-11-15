@@ -16,6 +16,6 @@ partitions:
   why: one test of the difference
 ---
 
-# The cuts
+# The segments
 
 Part of the plan, fixed before any outcome.

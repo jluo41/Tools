@@ -8,7 +8,7 @@ connect the frames"):
     still open (red)            every button, for reference
 
 Read from disk on every build: every Run button of the base frame and the skill it names
-(servers/workbench/frame.py, through frame_buttons() below), so the counts and the grid cannot go stale.
+(servers/workbench/page/frame.py, through frame_buttons() below), so the counts and the grid cannot go stale.
 Typed, since they are the design: the example (Job › Report › "write the report"), the Run folders of ③,
 the Block tree of ④ and the open points. The 261007 builder (six tables in one column) is kept in
 history/ with its preview.
@@ -285,9 +285,9 @@ def frame_tools(buttons):
     # (tree line, skill folder or None, what it is, red?)
     rows = [("Tools/", None, "", False),
             ("└── plugins/haipipe-toolkit/", None, "", False),
-            ("    ├── servers/workbench/frame.py", None, f"draws the buttons; each names its skill "
+            ("    ├── servers/workbench/page/frame.py", None, f"draws the buttons; each names its skill "
              f"({sum(len(r) for r in buttons.values())})", False),
-            ("    ├── servers/workbench/runs_panel.py", None, "the Runs panel beside each Space", False),
+            ("    ├── servers/workbench/page/runs_panel.py", None, "the Runs panel beside each Space", False),
             ("    ├── servers/workbench-<theme>/", None, f"a theme's frame over the base: {len(servers)}", False),
             ("    ├── skills/1_base/project/", None, "the base: one skill per level, one per shared Space", False)]
     for k, d in enumerate(base):

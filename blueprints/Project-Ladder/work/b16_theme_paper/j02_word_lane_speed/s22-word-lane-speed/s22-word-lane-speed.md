@@ -15,7 +15,7 @@ s22 · Word lane speed: how to make a Word draft fast without losing what it giv
 
 **Topic:** JL 261104: "I think the speed here is a issue, please document it well". One sentence change cost half an hour before co-authors could see Word, and JL asked three times how long it would take. The answer turned out to be a stuck Word, not slow work: 28 minutes on the stuck one, 40 to 80 seconds on a working one. What is left open is keeping it from happening again.
 
-**Feeds:** `reports/` none yet; its form is `j02_word_lane_speed/runs/r01_collect_word_lane_speed/`
+**Feeds:** none yet; its form is `j02_word_lane_speed/runs/r01_collect_word_lane_speed/`
 
 
 What was measured

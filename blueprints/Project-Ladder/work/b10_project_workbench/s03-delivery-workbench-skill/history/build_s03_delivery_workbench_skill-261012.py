@@ -7,7 +7,7 @@ of the delivery, what are the current results"):
         -->  ③ one card, one result
     ④ every delivery/ on disk today      the rules: one per Block, one row per send      In Tools
 
-① and ④ are read on every build: each Delivery screen through servers/workbench/frame.py (frame.render, the
+① and ④ are read on every build: each Delivery screen through servers/workbench/page/frame.py (frame.render, the
 Runs panel left out) and each Block's delivery/ off the disk, in the SPACE beside this Tools folder whose Tools/
 link leads here. ② and ③ are the proposal (s03-D07, s03-D08), drawn with one real Block's files. The rules frame
 (moved here from s09's frame 2 on 261010) and In Tools are as before; the 261011 builder (those two frames
@@ -649,7 +649,7 @@ def main():
     L.close_frame(fr)
     tools = L.tools_frame(                                # the skill's folder and its code (JL 261011)
         "In Tools: haipipe-delivery", ["1_base/project/haipipe-delivery"],
-        [("servers/workbench/frame.py", ["delivery_parts", "_delivery_row", "delivery_by_source", "_delivery_cards"]),
+        [("servers/workbench/page/frame.py", ["delivery_parts", "_delivery_row", "delivery_by_source", "_delivery_cards"]),
          ("skills/1_base/draft/haipipe-draft/src/common.py",
           ["delivery_owner", "delivery_dir", "delivery_source", "delivery_relative"])],
         around=["haipipe-draft-delivery builds a Page's lanes", "haipipe-paper-assemble builds the paper",

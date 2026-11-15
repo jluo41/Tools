@@ -19,9 +19,9 @@ Shorter description (461 -> 249 characters): what it does, when to use it, its t
 - The join is the evidence need: `answers.yaml` binds each compute need to result files; the page cites `[QD<n>.E<k>]` and records `results-read:`; GI2 uses `haipipe-insight-check` instead of the config's `answers:` (which was derived from the tickets and so could not cross-check them).
 - Page shape follows `ref/report.md` § Shape (a Page Face: objective title, the Opening answers, one division per need), replacing the finding-as-headline rule.
 
-## 2.2.0 · 2026-10-01 · Partition names, not letters (JL 261001)
+## 2.2.0 · 2026-10-01 · Segment names, not letters (JL 261001)
 
-- Page paths read `<n>-<partition>/D<NN>-<partition>-<slug>/` (no partition letters).
+- Page paths read `<n>-<segment>/D<NN>-<segment>-<slug>/` (no segment letters).
 
 ## 2.1.0 · 2026-10-01 · Page tickets (JL 261001)
 

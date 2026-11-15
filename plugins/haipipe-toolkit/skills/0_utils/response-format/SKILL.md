@@ -4,8 +4,8 @@ description: "Spec for the assistant's chat reply format in this workspace: the 
 argument-hint: "(reference spec — usually not invoked directly)"
 allowed-tools: Bash, Read
 metadata:
-  version: "0.26.0"
-  last_updated: "2026-11-04"
+  version: "0.27.0"
+  last_updated: "2026-11-13"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -474,6 +474,41 @@ Task's Runs matter (which one is void, which one counts), its Runs hang under it
 one `└─ <rNN> <state> <words>` each. A Run that moved keeps one line under the map:
 `<old address> ─▶ <new address>`. The map stands in for the section's sketch, so it keeps
 the 10-line cap.
+
+## ✍️ Prose changes: sentence by sentence, by address (JL 261113)
+
+A reply that proposes, shows or reports prose for a Draft never prints it as a paragraph:
+no quoted passage, no indented block, no run-on paragraph in a fence. JL 261113, on a
+proposed paragraph shown as one quoted block: "never return the things like this … Make
+it the same to the index in the UI, sentence by sentence, and also show what changes you
+made compared to previous. You can report paragraph by paragraph."
+
+Write it paragraph by paragraph, one line per sentence, with the address the workbench
+shows (the Draft's `### C<n>.P<m> · <title>` and its `- B<k> · s<n> ·` line):
+
+```
+**C2.P3 · Wait times and patient satisfaction** · 5 → 5 sentences, against v1.3
+- `B1 · s11` ✏️ changed
+  - before: Waiting is associated with lower satisfaction in every clinic.
+  - after: Patients who wait longer report lower satisfaction in every clinic.
+- `B2 · s12` ✅ kept: Longer visits offset part of …
+- `B3 · s13` ➖ cut: repeats `C1.P1.B3`
+- `B4 · s13a` ➕ new: We see the same pattern in telehealth visits.
+- `B5 · s14` ↪ moved to `C2.P4.B2`
+**C2.P4 · Staffing** ✅ unchanged
+```
+
+1. **One heading per paragraph**: its address and title as the Draft writes them, the sentence count before → after, and the version it is compared against.
+2. **One line per sentence** in reading order, its `B<k> · s<n>` exactly as in the Draft's § 3, so the reader finds it on the page.
+3. **One mark each**: ✅ kept, ✏️ changed, ➕ new, ➖ cut (why, in a few words), ↪ moved (to which address).
+4. **✏️ shows before and after in full**; ➕ shows the new sentence in full; ✅ shows its first words only.
+5. **Unchanged paragraphs** take one line (`✅ unchanged`); a long run of them takes one count line.
+6. **The paper's sentences stay in the paper's language**, also when the reply is in Chinese.
+
+The list is a sentence inventory, so it uses dashes, and it stands in for the section's
+sketch. Why a sentence changed goes in the plain prose after the paragraphs, never mixed
+into a sentence line. A Draft owner writes the same addresses into its revise record, so
+the chat, the record and the page name each sentence the same way.
 
 ## 📎 "Show me" means in the reply (2026-09-04)
 

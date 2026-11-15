@@ -36,7 +36,7 @@ owner: haipipe-report            owner: the theme's work skills;     owner: haip
    Block report and the register's `work:` under this Job, named from the Job (JL 261011, over an
    empty j51 in REACH-SPACE). Its Ideation and Narrative read the Block's studio, as Studio does.
 
-The frame draws this row (`servers/workbench/frame.py` `question_rows`); a theme may draw
+The frame draws this row (`servers/workbench/page/frame.py` `question_rows`); a theme may draw
 its own row over it but reads the same three sources.
 
 ## The link rule

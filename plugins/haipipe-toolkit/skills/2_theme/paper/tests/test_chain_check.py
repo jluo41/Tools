@@ -121,6 +121,21 @@ def test_a_stale_source_run(cboard):
     assert any("stale: reads r01_main" in f and "r02_main" in f for f in fails(cboard, 6))
 
 
+def test_a_run_passed_over_between_two_read_runs_is_not_stale(cboard):
+    # Paper-ScalingGlucose 261111: the value Job reads r01 and r03 of one Task; r02 (a pilot, an earlier copy) is skipped
+    # on purpose; only a completed Run newer than r03 makes it stale
+    work = cboard.parents[1] / WORK_RUN
+    for name in ("r02_main", "r03_main"):
+        done(work.parent / name)
+    f = cboard / "j02_evidence_value/t01_values-main/scripts/values.yaml"
+    spec = yaml.safe_load(f.read_text())
+    spec["sources"].append({"key": "est3", "run": "j01_estimates/t01_main/runs/r03_main", "files": []})
+    f.write_text(yaml.safe_dump(spec, sort_keys=False))
+    assert not [x for x in fails(cboard, 6) if "stale: reads" in x]
+    done(work.parent / "r04_main")
+    assert any("stale: reads" in x and "r04_main" in x for x in fails(cboard, 6))
+
+
 def test_an_incomplete_source_run(cboard):
     write(cboard.parents[1] / WORK_RUN / "result" / "runtime.yaml", "status: failed\n")
     assert any("not complete (status failed)" in f for f in fails(cboard, 1))
@@ -134,11 +149,28 @@ def test_a_display_reading_work(cboard):
     assert any("reads work/ directly" in f for f in fails(cboard, 1))
 
 
+def _move_old_id(board: Path, i: str = "V_b", to: float = 9.9):
+    f = board / "j02_evidence_value/t01_values-main/runs/r01_collect_values/result/values.json"
+    d = json.loads(f.read_text())
+    d[i].update(value=to, text=f"{to:.2f}")
+    f.write_text(json.dumps(d))
+
+
 def test_a_display_on_an_old_value_run(cboard):
+    # JL 261111 ("yes, please change them"): stale only when what it read changed or left in the current Run
     card = cboard / "j01_evidence_display/t01_figure1/runs/r01_draw/run.yaml"
     card.write_text(card.read_text().replace("r02_collect_values", "r01_collect_values"))
+    assert not [f for f in fails(cboard, 6) if "t01_figure1" in f]          # same files, same ids: current
+    _move_old_id(cboard)
     got = fails(cboard, 6)
-    assert any("stale: reads t01_values-main/r01_collect_values; the current value Run is r02_collect_values" in f for f in got)
+    assert any("stale: reads t01_values-main/r01_collect_values, and in r02_collect_values V_b moved" in f for f in got), got
+
+
+def test_a_display_whose_read_file_changed(cboard):
+    card = cboard / "j01_evidence_display/t01_figure1/runs/r01_draw/run.yaml"
+    card.write_text(card.read_text().replace("r02_collect_values", "r01_collect_values"))
+    write(cboard / "j02_evidence_value/t01_values-main/runs/r01_collect_values/result/est/metrics.json", '{"n": 1}')
+    assert any("est changed" in f for f in fails(cboard, 6))
 
 
 def test_a_display_printing_a_drifted_number(cboard):
@@ -159,8 +191,11 @@ def test_a_flagged_id(cboard):
 
 def test_a_section_naming_an_old_value_run(cboard):
     f = cboard / "j11_writing_v1130_venue/t01_results/t01_results.md"
-    f.write_text(f.read_text().replace("r02_collect_values", "r01_collect_values"))
-    assert any("t01_results.md: stale: names t01_values-main/r01_collect_values" in f for f in fails(cboard, 6))
+    f.write_text(f.read_text().replace("r02_collect_values", "r01_collect_values") + "\nquotes V_b\n")
+    assert not [x for x in fails(cboard, 6) if "t01_results.md" in x]       # the id it quotes did not move
+    _move_old_id(cboard)
+    assert any("t01_results.md: stale: names t01_values-main/r01_collect_values, and in r02_collect_values V_b moved" in x
+               for x in fails(cboard, 6))
 
 
 def test_an_id_in_two_value_tasks(cboard):
@@ -225,7 +260,14 @@ def test_a_value_map_value_drifted_from_its_work_run(mboard):
 def test_a_binding_on_an_old_value_run(mboard):
     task = mboard / "j02_evidence_value" / "t01_values-main"
     shutil.copytree(task / "runs" / "r01_read_values", task / "runs" / "r02_read_values")
-    assert any("stale: RQ1-t01-001 reads t01_values-main/r01" in f for f in fails(mboard, 6))
+    assert not [f for f in fails(mboard, 6) if "RQ1-t01-001" in f]          # a newer Run, the same value: current
+    f = task / "runs" / "r02_read_values" / "result" / "values.yaml"
+    doc = yaml.safe_load(f.read_text())
+    for v in doc["values"].values():
+        if v.get("id") == "RQ1-t01-001":
+            v["value"] = 99.0
+    f.write_text(yaml.safe_dump(doc))
+    assert any("stale: RQ1-t01-001 reads t01_values-main/r01" in f and "RQ1-t01-001 moved" in f for f in fails(mboard, 6))
 
 
 def test_a_flag_in_the_value_map(mboard):

@@ -5,9 +5,10 @@ description: >-
   numbering, drawings, builders that preserve human marks, and session passes.
   Use to add or redraw a Studio topic, preview a drawing, or save a Studio session. Also covers
   proposal topics and s61-s69 slide drafts under their specific contracts.
-  How a topic's drawing looks and reads is excalidraw-studio's: load
-  /excalidraw studio before drawing or redrawing a topic (its principles,
-  draw.py, check.py). Scripts: canvas.py, render_png.py, new_topic.py and topic_slides.py. Also the Page's Studio screen: one tab with the live drawing above
+  A topic's drawing is the five-part drawing by default (five_parts.py: Idea, Now,
+  Design with its A B C sketches, Process, Delivery; icons, coloured tables, stickies);
+  excalidraw-studio's draw.py stays for special shapes (a screen, a report, a slide
+  draft); load /excalidraw studio before drawing (check.py checks both). Scripts: canvas.py, render_png.py, new_topic.py and topic_slides.py. Also the Page's Studio screen: one tab with the live drawing above
   the chat, and its lane contracts (ref/screen.md, chat.md, draw.md). Trigger: studio
   workbench, studio tab, page chat, keep this session, autodraw, chat and draw
   together, /workbench-studio (the retired name of this screen).
@@ -57,13 +58,16 @@ topics and its children's. An older Block's `sNN-<topic>/` still reads, until it
 `b17.j01-s07`, s01-D02), always followed by its names, `b17-s04:theme_work @ workbench_page_structure`,
 `b17.j01.t03-s09:theme_work.tables.cut @ which_cut_first` (s01-D03, `frame.topic_label`): never an address alone. `new_topic.py topic <Block, Job or Task>` puts the topic in that folder and refuses one past its level's limit (`--over-limit` to add it anyway). Each topic has a drawing to think on
 together and a short face that says what it settles and which Questions it feeds. This skill owns the folder, the face, the numbering, the builders that
-keep a person's marks, and the sessions. How a topic's drawing looks and reads is `excalidraw-studio`'s: load
-`/excalidraw studio` before drawing or redrawing a topic (its principles, `scripts/draw.py` to draw with,
-`scripts/check.py` to check); a report's drawing is `excalidraw-report`'s.
+keep a person's marks, and the sessions. A topic's drawing is the **five-part drawing** by default (JL 261112: "I
+want the vivid ones"): `scripts/five_parts.py`, 1 Idea, 2 Now, 3 Design (its own sketches: A the pieces step by step,
+B how it grew, C the open choices as stickies), 4 Process, 5 Delivery, with icons, coloured tables and stickies.
+`excalidraw-studio`'s `scripts/draw.py` stays for the special shapes (a screen, a report, a slide draft); load
+`/excalidraw studio` before drawing or redrawing a topic (its principles, `scripts/check.py` to check either kind); a
+report's drawing is `excalidraw-report`'s.
 
 ```text
 <Block, Job or Task>/sNN-<topic>/
-├── sNN-<topic>.md            Topic · Feeds · Files · Decided · Open
+├── sNN-<topic>.md            view: · Why · Topic · Feeds · Qnn · Answer · Files · Decided · Open
 ├── sNN-<topic>.excalidraw    the drawing (a builder's, with the person's marks kept)
 ├── sNN-<topic>.png           its preview
 ├── build_sNN_<topic>.py      the builder, when a script draws it
@@ -315,15 +319,20 @@ Add, redraw, save
 S=Tools/plugins/haipipe-toolkit/skills/1_base/project/haipipe-studio/scripts
 X=Tools/plugins/haipipe-toolkit/skills/1_base/excalidraw/excalidraw-studio/scripts
 python $S/new_topic.py topic <level> --slug <topic> --title '<title>' --band run [--feeds q01_x] [--builder]
+                                                          # --builder: five_parts builder + sketch_<topic>.py
+                                                          # --builder draw: the draw.py builder, a special shape
 python <block>/sNN-<topic>/build_sNN_<topic>.py          # redraw: the person's marks are kept
 python $S/render_png.py <drawing>.excalidraw <drawing>.png        # the preview
 python $X/check.py <drawing>.excalidraw                            # against excalidraw-studio's principles
 python $S/new_topic.py session <block> sNN --title '<session>' [--ask …] [--summary …] [--changed …]
 ```
 
-0. **Draw with excalidraw-studio**: before drawing or redrawing a topic, load `/excalidraw studio` (the Skill
-   tool) and follow its "Redraw a topic with the principles"; a new builder (`--builder`) already starts on its
-   `draw.py`, and `check.py` says what still breaks. This skill keeps the folder, the face and the sessions.
+0. **Draw the five parts**: a new builder (`--builder`) writes `build_sNN_<topic>.py` on `five_parts.py` and
+   `sketch_<topic>.py` with its Design's A · B · C stubs (the shape of b63-s04 in the Physician example); fill the
+   SPEC from the face and the sketches from the topic, rerun, and `check.py` says which parts or placeholders are
+   missing. Only a special shape (a screen, a report, a slide draft) takes `--builder draw`, the draw.py builder,
+   and follows `/excalidraw studio`'s "Redraw a topic with the principles". Existing topics keep their drawing
+   until someone redraws them. This skill keeps the folder, the face and the sessions.
 1. **Face marks**: `**Stage:**` (explore · shaping · agreed · closed), `**Topic:**`, `**Feeds:** qNN_<topic>`,
    `sNN-DNN` decisions, a numbered Open list. A person moves the stage; see `ref/topic-contract.md` § The face.
 2. **Builder**: draws through `canvas.write`; never hand-edit its output, change the builder.
@@ -331,10 +340,9 @@ python $S/new_topic.py session <block> sNN --title '<session>' [--ask …] [--su
 4. **Round**: each working session or meeting is one `passes/pNN-<MMDD>/pass.md` inside the topic: Notes, Decided,
    Started (what it sent to Work), Read (from `related/`), Changed. `new_topic.py session` writes it.
 5. **Changes**: red for open; every change to a drawing gets a short green note where it changed.
-5b. **A data topic** (`**Delivery type:** data`): its own five_parts builder, whose first Design sketch is the data
-   built step by step, a small table per step with its real columns and made-up rows (JL 261031: "what is the
-   physical data"); excalidraw-studio § A data topic, `five_parts.data_table` and `data_step`. Start by copying an
-   example builder (b63.j01-s01 or s02), not `new_topic.py --builder`, which still starts an old draw.py builder.
+5b. **A data topic** (`**Delivery type:** data`): its sketch A is the data built step by step, a small table per
+   step with its real columns and made-up rows (JL 261031: "what is the physical data"); excalidraw-studio § A data
+   topic, `five_parts.data_table` and `data_step`, already in the `sketch_<topic>.py` stub `--builder` writes.
 6. **Read it as a reader, then a reviewer** (JL 261012: "after you create such a draw, you should ask it yourself,
    If I am a reader, will this answer my questions for this job etc. Maybe you need to call a reviewer for it as
    well"): `check.py` passing is not done. Answer the reader's questions for the topic's kind (Job, Task, video or
@@ -346,7 +354,12 @@ python $S/new_topic.py session <block> sNN --title '<session>' [--ask …] [--su
 The look
 --------
 
-**How a topic's drawing reads now lives in `excalidraw-studio`** (`skills/1_base/excalidraw/excalidraw-studio/`,
+**The five-part drawing is the default** (JL 261112): `five_parts.py` draws in colour, its icons, coloured data
+tables, red question stickies and orange leanings its own, written by `five_parts.marks_writer` (`canvas.write` with
+`palette=False`, so its colours stay and a person's marks are kept). The black-only look below is for the draw.py
+drawings, the special shapes and the topics drawn before 261112.
+
+**How a draw.py drawing reads lives in `excalidraw-studio`** (`skills/1_base/excalidraw/excalidraw-studio/`,
 agreed on b31 s01-drawing-principles, 261012): its principles (one frame as large as a screen; a workflow
 map or a mind map inside; the frames as one story, in acts, joined by named arrows; a folder tree only for real
 folders; big words and one slight colour for the key point; each frame's density measured; few words in a
@@ -375,7 +388,7 @@ green  #2f9e44   a change we made, where we made it (✎ <date> …)    canvas.G
 5. **A screen in colour**: a frame that draws the workbench's screen wears the workbench's own light colours
    (JL 261012: "make the UI to be more colorful, like the same to what we see"). Mark it
    `canvas.ui_frame(frame)`; `canvas.write` then colours it by `colour_ui` from `canvas.UI`, the colours of
-   `servers/workbench/frame.py`: gray panes, white buttons, the open tab blue, a proposed one violet dashed,
+   `servers/workbench/page/frame.py`: gray panes, white buttons, the open tab blue, a proposed one violet dashed,
    stage pills in their own colours, links blue, a status word (answered, partial, open) its colour, a
    count bar blue. Red questions and green notes in it keep their colour; the rest of the drawing stays black.
 

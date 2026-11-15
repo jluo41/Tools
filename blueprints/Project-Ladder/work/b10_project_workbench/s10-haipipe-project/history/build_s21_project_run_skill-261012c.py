@@ -9,7 +9,7 @@ boxes, joined by named arrows, an emoji on every node; JL 261012: "so we can hav
                    opened file by file, the themes; joined by "names", "opens", "sits over"
 
 The structure is the `frames:` yaml in the face. A tree string starting "@" (for example "@level:Block") is
-filled from disk here on every build: the buttons and their skills (servers/workbench/frame.py), each skill
+filled from disk here on every build: the buttons and their skills (servers/workbench/page/frame.py), each skill
 folder's version, what it holds, which buttons name it, haipipe-report/ file by file. {braces} in a title,
 why or label are counts read the same way. topic_map.draw_topic does the drawing; the person's marks are kept.
 The 261007, 261012 and 261012b builders are in history/.
@@ -244,8 +244,8 @@ def tools_tree(buttons, part):
     if part == "servers":
         servers = sorted(d.name for d in (TOOLKIT / "servers").iterdir() if d.name.startswith("workbench-"))
         n = sum(len(r) for r in buttons.values())
-        return [f"✅ workbench/frame.py: draws the buttons; each names its skill ({n})",
-                "✅ workbench/runs_panel.py: the Runs panel beside each Space",
+        return [f"✅ workbench/page/frame.py: draws the buttons; each names its skill ({n})",
+                "✅ workbench/page/runs_panel.py: the Runs panel beside each Space",
                 f"🎨 workbench-<theme>/: a theme's frame over the base, {len(servers)}"]
     if part == "base":
         base = sorted((d for d in project.iterdir() if (d / "SKILL.md").is_file()),

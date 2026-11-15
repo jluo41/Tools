@@ -79,6 +79,12 @@ for reference. The same rule keeps a skill's parts private: a helper merged into
 its main skill lives at `<main>/_parts/<name>/PART.md`, is read by that skill, and
 is never listed on its own.
 
+Both installers discover `*-agent.md` files recursively inside plugin `agents/`
+trees, including skill-nested agent trees. The same exclusions apply to agents.
+Marketplace registration replaces an existing link only; if that path contains
+a real file or directory, installation stops and preserves it. Move it aside
+yourself or use `--no-marketplace` / `-NoMarketplace` to install workspace links.
+
 ### macOS and Linux
 
 To link the current skills into a specific workspace without registering the
@@ -157,12 +163,19 @@ linked, and MCP servers present in the repo but missing from `.mcp.json`. It
 writes nothing and exits 1 when anything is out of date, so a setup step can
 gate on it. Real directories you made yourself are reported and left alone.
 
+On Windows, verification also compares installer-owned agent copies with their
+sources and fails when a copy is outdated or its source has been retired.
+Unrecognized links and missing MCP registrations are informational: they do not
+affect the exit status. MCP registration remains a separate setup step.
+
 ### Sound hooks
 
-`--hooks` / `-Hooks` updates the `hooks` section in
-`~/.claude/settings.json` using the shared event and sound table in
-`install-hooks.json`. Other settings are preserved. A sound file that is not
-present on the machine leaves that hook silent.
+`--hooks` / `-Hooks` adds sound hooks to `~/.claude/settings.json` using the shared
+event and sound table in `install-hooks.json`. Existing hooks and other settings
+are preserved. Re-running the installer does not add duplicate sound commands.
+Older or manually configured sounds are left in place; remove them explicitly
+if you want to change them. A sound file that is not present on the machine
+leaves that hook silent.
 
 ### Updating the checkout
 
@@ -177,6 +190,15 @@ When adding or changing a skill, validate it from a fresh context: ask a
 subagent to invoke the skill on a realistic task, then confirm it selected the
 skill, followed its instructions, and produced the intended result. Follow any
 package-specific guidance as well.
+
+For installer and catalog changes, run the isolated regression checks:
+
+```bash
+python3 -m unittest discover -s diagnostics -p test_installers.py -v
+```
+
+The suite uses temporary checkouts and workspaces. PowerShell checks run when
+`pwsh` is installed; native Windows junction behavior still needs Windows testing.
 
 ## License
 

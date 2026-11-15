@@ -76,6 +76,19 @@ def host_is_loopback(host: str) -> bool:
         return False
 
 
+TAILNET = ipaddress.ip_network("100.64.0.0/10")
+
+
+def host_is_private(host: str) -> bool:
+    """Loopback or a Tailscale tailnet address (100.64.0.0/10): no login needed by default."""
+    if host_is_loopback(host):
+        return True
+    try:
+        return ipaddress.ip_address(host) in TAILNET
+    except ValueError:
+        return False
+
+
 class AuthMixin:
     """Gate every handler method that can read, write, or open a WebSocket."""
 

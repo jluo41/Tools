@@ -13,7 +13,7 @@ from `plugins/haipipe-toolkit/servers/workbench-cowork/studio/` (261007, JL: eve
 belongs to its theme's design Block); the server keeps no studio of its own.
 
 **Served:** the workbench's Guide › RoadMap Draw shows this drawing, view only. Its path is
-`COWORK_DESIGN` in `plugins/haipipe-toolkit/servers/workbench/guide_families.py`.
+`COWORK_DESIGN` in `plugins/haipipe-toolkit/servers/workbench/guide/guide_families.py`.
 
 
 Files

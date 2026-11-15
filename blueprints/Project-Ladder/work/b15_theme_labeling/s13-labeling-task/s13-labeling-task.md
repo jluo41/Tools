@@ -19,7 +19,7 @@ deck's newer process (version 12: Steps 0 to 7, two loops, the round report) was
 each step to its Task, its views, the files it writes and the person's gate (JL 261101: "go ahead and update them");
 the same day building split into its two loops, 🧭 meaning and 🛠 expression, so the types became six (s13-D12).
 
-**Feeds:** `reports/` q01_labeling_ladder · q02_building_scanning_gates
+**Feeds:** Q01 · Q02
 
 
 Files

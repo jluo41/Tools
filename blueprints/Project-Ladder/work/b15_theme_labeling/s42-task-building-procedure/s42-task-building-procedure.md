@@ -17,7 +17,7 @@ user to talk with the corpus and during the process to make the labeling ... get
 first real one is dices350 `t03_dices350_response_safety_labeling`. The law (who decides what, the gates, the verbs,
 the step order) stays `haipipe-labeling-building`'s (SKILL.md, ref/step-order.md); this topic draws its screens.
 
-**Feeds:** `reports/` q02_building_scanning_gates
+**Feeds:** Q02
 
 
 Files

@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"name": "Tools-SPACE",
+			"path": "."
+		}
+	],
+	"settings": {
+		"git.ignoreLimitWarning": true
+	}
+}

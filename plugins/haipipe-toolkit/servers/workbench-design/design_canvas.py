@@ -1,5 +1,5 @@
 """Two live pictures for the design theme, at the insight theme's level (b11's plan × freeze matrix and question
-canvas, JL 261102: "make it the same level"). Both read the folders only; nothing here writes.
+canvas). Both read the folders only; nothing here writes.
 
     matrix(b, root)     the Block: goals down × methods across; each cell is its chain of Jobs, each Job a card that
                         shows how far it has got (the five method steps as a strip, designs passed and kept as a bar,
@@ -33,7 +33,7 @@ def version_words(v: str) -> str:
 
 
 def inputs_words(v: str) -> str:
-    if re.match(r"^inputs-v\d+$", str(v or "")):          # the id itself, the same on screen as in folders (JL 261109)
+    if re.match(r"^inputs-v\d+$", str(v or "")):          # the id itself, the same on screen as in folders
         return str(v)
     m = re.match(r"^i(\d+)$", str(v or ""))
     return f"inputs version {m.group(1)}" if m else str(v or "no inputs yet")
@@ -99,29 +99,27 @@ def _moved(a: dict, c: dict) -> str:
 
 
 def _job_card(j: dict, newest: bool, href) -> str:
-    """Two short lines under the name (JL 261102 walk: "do not make it too word"): how far, then the best design."""
+    """Two short lines under the name, kept short so a card reads at a glance: how far, then the best design."""
     ds = j["designs"]
-    passed = sum(1 for d in ds if d["verifies"] and d["verifies"][-1]["status"] == "passed")
     kept = sum(1 for d in ds if d["state"] in OK_STATES)
     released = sum(1 for d in ds if d["state"] == "released")
     held = str(j["state"]).lower() == "held"
     steps = _steps(j)
-    done = sum(1 for _w, v in steps if v == 1)
     strip = "".join(f'<i class="s{int(v * 2)}" title="{esc(w)}{"" if v == 1 else " (started)" if v else " (not yet)"}"></i>'
                     for w, v in steps)
     top, pred = _top(j)
     state = ("held" if held else "released" if released else "waits for your review" if kept
              else "ranked" if j["ranking"] else str(j["state"]))
     pill = "ok" if released else "wait" if kept or held else "open"
-    hold = f' title="{esc(re.sub(r"\s+", " ", j["hold"])[:400])}"' if held and j["hold"] else ""
-    m = re.match(r"^\s*([+-]?[\d.]+)", str(pred or ""))
+    hold_text = re.sub(r"\s+", " ", j["hold"])[:400] if held and j["hold"] else ""
+    hold = f' title="{esc(hold_text)}"' if held and j["hold"] else ""
     return (f'<a class="dm-job{" held" if held else ""}{" newest" if newest else ""}" href="{esc(href("", "", j["path"]))}"{hold}>'
             + ('<em class=dm-new>newest</em>' if newest else "")
             + f'<span class=dm-t><b>{esc(job_words(j))}</b><span class="dm-st {pill}">{esc(state)}</span></span>'
             + (f'<span class=dm-sig>{esc(_approved_words(j))}</span>' if released else "")
             + f'<span class=dm-pin><span>method {esc(version_words(j["version"]))} ·</span> <span>{esc(inputs_words(j["inputs"]))}</span></span>'
-            + f'<span class=dm-row><span class=dm-strip>{strip}</span><span class=dm-n>{done} of 6 steps</span></span>'
-            + f'<span class=dm-n>{passed} of {len(ds) or "—"} passed · {kept} kept</span>'
+            + f'<span class=dm-row><span class=dm-strip>{strip}</span></span>'
+            + f'<span class=dm-n>{kept} kept</span>'
             + (f'<span class=dm-top><span class=dm-nm>★ {esc(design_words(top))}</span>'
                f'<b>{esc(pred_words(pred))}</b></span>' if top else "")
             + "</a>")
@@ -174,7 +172,8 @@ MATRIX_CSS = """
 .dm-lane{flex:1 1 150px;min-width:150px;max-width:260px;display:flex;flex-direction:column;gap:5px}
 .dm-empty{border:1.5px dashed #9aa1ab;border-radius:10px;color:var(--muted,#57606a);font-size:12.5px;padding:18px 8px;text-align:center}
 .dm-gk{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted,#57606a);margin-right:8px}
-.dm-h{font-size:12px;color:var(--muted,#57606a);padding:2px 4px}.dm-h b{display:block;color:var(--ink,#1e1e1e);font-size:13px;text-transform:capitalize}
+.dm-h{font-size:12px;color:var(--muted,#57606a);padding:2px 4px}
+.dm-h b{display:block;color:var(--ink,#1e1e1e);font-size:13px;text-transform:capitalize}
 .dm-goal{border:1px solid var(--line,#d0d7de);border-radius:10px;padding:8px 12px;background:#eef3fb;font-size:13.5px}
 .dm-goal b{margin-right:8px}.dm-goal span:last-child{font-size:11.5px;color:var(--muted,#57606a)}
 .dm-h{min-height:34px}
@@ -270,7 +269,8 @@ LINEAGE_CSS = """
 .dc-hint{font-size:12.5px;color:#57606a}
 .dc-bar{display:flex;gap:10px;align-items:center;font-size:13px;flex-wrap:wrap}
 .dc-bar input[type=search]{padding:4px 8px;border:1px solid #c9ccd1;border-radius:6px;width:220px;font:inherit}
-.dc-key{display:inline-flex;gap:10px;color:#57606a;flex-wrap:wrap}.dc-key i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px;border:1px solid #1e1e1e}
+.dc-key{display:inline-flex;gap:10px;color:#57606a;flex-wrap:wrap}
+.dc-key i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px;border:1px solid #1e1e1e}
 .dc-svg{width:100%;border:1px solid #d0d7de;border-radius:10px;background:#fbfbfa}
 .dc-svg .band{fill:#f2f1ee}.dc-svg .band.fence{fill:#eef3fb}.dc-svg .bandt{font:600 12px system-ui;fill:#57606a;letter-spacing:.04em}
 .dc-svg .bands{font:11px system-ui;fill:#8a8f98}.dc-svg path.flow{fill:none;stroke:#8a8f98;stroke-width:2}
@@ -279,7 +279,8 @@ LINEAGE_CSS = """
 .dc-svg .card .pr{fill:#1a7f37;font-weight:600}.dc-svg .card .pr.neg{fill:#57606a}
 .dc-svg .card{cursor:pointer;transition:opacity .15s}
 .dc-svg .card.s-kept rect,.dc-svg .card.s-released rect{fill:#c8ebd2}.dc-svg .card.s-released rect{stroke-width:2}
-.dc-svg .card.s-failed rect{fill:#ffe08a}.dc-svg .card.s-every rect{fill:#eef3fb;stroke-width:2}.dc-svg .card.s-dropped rect,.dc-svg .card.s-unused rect{fill:#eee;stroke-dasharray:4 3}
+.dc-svg .card.s-failed rect{fill:#ffe08a}.dc-svg .card.s-every rect{fill:#eef3fb;stroke-width:2}
+.dc-svg .card.s-dropped rect,.dc-svg .card.s-unused rect{fill:#eee;stroke-dasharray:4 3}
 .dc-svg .card.s-dropped text,.dc-svg .card.s-unused text{fill:#8a8f98}
 .dc-svg path.e{fill:none;stroke:#9aa1ab;stroke-width:1;opacity:.3;transition:opacity .15s}
 .dc-svg.lit .card{opacity:.38}.dc-svg.lit path.e{opacity:.04}
@@ -296,7 +297,10 @@ LINEAGE_CSS = """
 .dc-side .chips a{border:1px solid #c9ccd1;border-radius:10px;padding:1px 7px;cursor:pointer;text-decoration:none;color:inherit;font-size:12px}
 .dc-side .chips a.down{border-color:#1a7f37}.dc-side .chips a.up{border-color:#bc4c00}
 .dc-list{display:none}
-@media(max-width:700px){.dc-two{grid-template-columns:1fr}.dc-scroll{display:none}.dc-list{display:block;font-size:13px}.dc-list a{display:flex;justify-content:space-between;border:1px solid #d0d7de;border-radius:8px;padding:5px 9px;margin:4px 0;cursor:pointer;color:inherit;text-decoration:none}.dc-list a.s-dropped{border-style:dashed;color:#8a8f98}.dc-list b{color:#1a7f37}.dc-list b.neg{color:#57606a}.dc-side.on{display:block}}
+@media(max-width:700px){.dc-two{grid-template-columns:1fr}.dc-scroll{display:none}
+.dc-list{display:block;font-size:13px}.dc-list a{display:flex;justify-content:space-between;border:1px solid #d0d7de;border-radius:8px;padding:5px 9px;margin:4px 0;cursor:pointer;color:inherit;text-decoration:none}
+.dc-list a.s-dropped{border-style:dashed;color:#8a8f98}.dc-list b{color:#1a7f37}
+.dc-list b.neg{color:#57606a}.dc-side.on{display:block}}
 .dc-drop{font-size:12.5px;color:#57606a}.dc-drop a{display:inline-block;white-space:nowrap;border:1px dashed #9aa1ab;border-radius:10px;padding:1px 7px;margin:2px;cursor:pointer;color:inherit;text-decoration:none}
 """
 
@@ -392,7 +396,7 @@ def lineage(j: dict, href) -> str:
                     key=lambda n: int(n.get("rank")) if str(n.get("rank") or "").isdigit() else 99)
     phone = ('<div class=dc-list><p class=mut>Tap a design: its chain back to the fence shows below.</p>' + "".join(
         f'<a class="s-{esc(n["state"])}" data-go="{esc(n["id"])}"><span>#{esc(n.get("rank") or "")} '
-        f'{esc(n["name"].split(" · ", 1)[-1])}</span><b{' class=neg' if (n.get("pred") or "").startswith("-") else ""}>{esc((n.get("pred") or "").split(" ")[0])}</b></a>' for n in ranked)
+        f'{esc(n["name"].split(" · ", 1)[-1])}</span><b{" class=neg" if (n.get("pred") or "").startswith("-") else ""}>{esc((n.get("pred") or "").split(" ")[0])}</b></a>' for n in ranked)
         + '</div>')
     drop = ('<p class=dc-drop>Dropped at the ranking: ' + "".join(
         f'<a data-go="{esc(n["id"])}">#{esc(n.get("rank") or "")} {esc(n["name"].split(" · ", 1)[-1])}</a>' for n in dropped)

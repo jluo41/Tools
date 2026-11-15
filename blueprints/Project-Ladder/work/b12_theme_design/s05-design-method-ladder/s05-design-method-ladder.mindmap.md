@@ -21,12 +21,12 @@ built: from-topic .
     M05's m1 → m2 → m3 is the worked example.
 - Excluded <!-- @excluded #980495 -->
   - making designs with a pinned method (the … <!-- @excluded/0 #e7bbd8 -->
-    making designs with a pinned method (the design Board, s01 and j01's pages); what a method card is in general (the Guide's 13 cards, s03-design-methods); the insight Prototype it copies (b11 s04-insight-structure).
+    making designs with a pinned method (the design Board, s01 and j01's pages); what a method card is in general (the Guide's 13 cards, s03-design-methods); the insight Question Book it copies (b11 s04-insight-structure).
 - Topic <!-- @topic #7e13bd -->
   - A design Job pins one method version, … <!-- @topic/0 #3e148f -->
     A design Job pins one method version, but the methods themselves (M01 to M05, versions m1 to m3) live only as files in the Tools skill registry (`haipipe-design-method/methods/`), written by hand; no Job, Task or Run shows a method being written, tested or compared, so the Block's Methods view can only name the method a Job pinned (JL 261101: "how could we highlight more about the methods? … where is the task or jobs for designing the design methods? … the designer itself should be some tasks to try"). s04 drew the answer on 261007 and it was never built: a methods Block beside the design Board, one Job per method version, a bench of fixed goals and inputs, proposals as its backlog.
   - The insight theme built the same shape … <!-- @topic/1 #e0f04b -->
-    The insight theme built the same shape as its Prototype (`insight/Prototype-<topic>/`, one Job per release, a Board Job pins a release), live on the SMS project.
+    The insight theme built the same shape as its Question Book (`insight/InsightQuestionBook-<topic>/`, one Job per release, a Board Job pins a release), live on the SMS project.
   - This topic draws it for design, so … <!-- @topic/2 #aee59c -->
     This topic draws it for design, so a method version is work you try: written, benched, compared by another agent, signed, then pinned.
 - Feeds <!-- @feeds #ffe8e9 -->
@@ -51,7 +51,7 @@ built: from-topic .
     (none yet: a decision is one line, s05-D01 · <what was decided> (<who> <date>))
 - Open <!-- @open #cf9b77 -->
   - ? <!-- @open/0 #b2f664 -->
-    ? One method Block per app (`work/Method-bNN-<app>/`), or one per Project shared by its design Boards.
+    ? One method Block per app (`design/DesignMethodBook-<app>/`), or one per Project shared by its design Boards.
   - ? <!-- @open/1 #709a14 -->
     ? Move the app-specific versions (M05 m3's `aggregate_query.py`) out of the Tools skill into the Project, or keep the
   - registry in Tools and link the Project's … <!-- @open/2 #5fd0f0 -->

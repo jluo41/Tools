@@ -283,7 +283,7 @@ Work                        the Interaction button on the Job or Task row it hol
 Studio                      the Interaction button on the sNN card its for: address names
 Each view                   the last section of every Report and Work view of a Block, Job or Task, 🙋 Interaction:
                             the Runs at the page or below, a folding group each, a left tab per question, the same
-                            form on the right, Back and Next (JL 261104; servers/workbench/interaction_section.py)
+                            form on the right, Back and Next (JL 261104; servers/workbench/page/interaction_section.py)
 The one look                the Interactions rail and the Interaction button's pop-out draw this same section
                             (JL 261104: "make this to be the standard items for any of them")
 ```

@@ -8,10 +8,24 @@ servers/
 ├── _host/serve.py             the shared haipipe host; `--only labeling` makes it the Labeling host
 └── workbench-labeling/        🏷 the served face of workbench-labeling
     ├── labeling_theme.py      the theme on the frame: Block and Job levels
+    ├── labeling_focus.py      the focus page (`render`): Block, Job and Task; old names answer from its siblings
+    ├── labeling_focus_read.py · _frame.py · _building.py   what a page reads; the Task frame; an older building Task
+    ├── labeling_steps.py      a 🧭 meaning or 🛠 expression Task's page; old names answer from its siblings
+    ├── labeling_step_parts.py · labeling_step_states.py   the parts each step is drawn from; each step's state
+    ├── labeling_meaning_view.py · labeling_expression_view.py   the meaning steps; the expression steps
     ├── guide/ · related/      the family's Guide
     └── workbench-task-labeling/   a labeling Task's screen ⟷ skill workbench-task-labeling (b32 s41-D15)
-        ├── task_labeling.py   the frame's Spaces for a labeling Task, by its type
-        ├── labeling.py        LabelingMixin: labeling-board, labeling, and the one write door
+        ├── task_labeling.py   the frame's Spaces for a labeling Task, by its type; old names answer from below
+        ├── task_labeling_read.py · _cards.py · _steps.py   the items Task: what it reads, its cards, its steps
+        ├── labeling.py        LabelingMixin: labeling-board, labeling, and the one write door; old names
+        │                      still answer from the modules below
+        ├── labeling_job.py    read one job: its lane, canonical status, inspect
+        ├── labeling_hold.py   when chat and drawing hold, the generated page, the engine loaders
+        ├── labeling_model.py  the page's view model: Spaces, Run rows, next step, gate checks
+        ├── labeling_embedding_view.py · labeling_data_view.py   the Embedding view and the Data Space
+        ├── labeling_rounds_view.py · labeling_runs_view.py     the Labeling Space; Quality, Delivery, Runs panel
+        ├── labeling_page.py   one labeling page (`render`); its CSS and JS in page-assets/
+        ├── labeling_board.py  every labeling job on one Board
         └── assets/js/10-drawer/60-workbench-labeling.js   the drawer row a Board page shows
     (its design studio, labeling-workbench-ui.py and its drawing, lives in Tools/blueprints/Project-Ladder/work/b15_theme_labeling/s02-labeling-workbench/)
 ```
@@ -51,7 +65,7 @@ and `<page>` a Page id (`S-Label-1`). The server fills in `path=`, `file=` and
 
 `workbench-labeling/workbench-task-labeling/labeling.py` is a mixin for the shared host: it takes
 `target()`, `reply()` and the HTTP plumbing from `haipipe-toolkit/servers/_host`,
-and reads a Board's page list through one adapter, `_board_pages()`, which is
+and reads a Board's page list through one adapter, `_board_pages()` (in `labeling_job.py`), which is
 the only place it touches the Board grammar (`haipipe-toolkit/skills/1_base/draft/haipipe-draft/src`).
 The dedicated Page-folder route uses its own checked resolver and does not
 call the Board parser.
@@ -60,7 +74,7 @@ The shared Guide Space is mounted through
 and its cards are `guide/method.md`, `guide/methods/` and `guide/methods.excalidraw`, the papers
 `related/papers.md` (moved here from the skill's `ref/`, 261007). Its methods and UI diagrams describe
 the labeling family; folder links retain this host's private-source boundary.
-Each Space's Runs panel is the shared one, `haipipe-toolkit/servers/workbench/runs_panel.py`
+Each Space's Runs panel is the shared one, `haipipe-toolkit/servers/workbench/page/runs_panel.py`
 (`panel_markup`, `PANEL_CSS`, `PANEL_JS`, `SPLIT_CSS`), with Labeling's own gated Run
 cards passed in. Both follow the rules every workbench shares
 (`haipipe-toolkit/servers/README.md` "Adding a workbench"); how they were met is

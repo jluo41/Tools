@@ -12,7 +12,7 @@ related, and s05 report, and s06 run"; s07 merged in 261012, JL: "could you merg
 
 Read from disk on every build: this Block's Questions (board.md ## Questions), each report's answer-status,
 which studio topics feed each Question (their **Feeds:** lines, read as frame.py reads them), the Runs that
-target a Question (runs/*/run.yaml), q01's ## Figures, the Report Space as servers/workbench/frame.py draws
+target a Question (runs/*/run.yaml), q01's ## Figures, the Report Space as servers/workbench/page/frame.py draws
 it for this Block, and haipipe-report's version; Acts 2 to 4 read what report_groups.py says it reads. Typed,
 since they are the design: ①'s steps and colours, the open points.
 
@@ -405,8 +405,8 @@ def frame_open(qs, unread):
 
 
 TOOLS_SKILLS = ("1_base/project/haipipe-report", "1_base/project/haipipe-report/")
-TOOLS_CODE = [("servers/workbench/frame.py", ["question_rows", "_report_cell", "_answering", "_opening"]),
-              ("servers/workbench/page_reader.py", ["page_document"])]
+TOOLS_CODE = [("servers/workbench/page/frame.py", ["question_rows", "_report_cell", "_answering", "_opening"]),
+              ("servers/workbench/page/page_reader.py", ["page_document"])]
 AROUND = ["haipipe-draft writes the prose", "haipipe-studio feeds it frames (s02)",
           "haipipe-delivery keeps built files (s03)"]
 

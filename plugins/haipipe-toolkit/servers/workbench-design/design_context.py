@@ -6,7 +6,7 @@ The existing design reader remains the authority for results, next Runs and sign
 from pathlib import Path
 import re
 
-from live import design_focus as D, design_reader, design_views, design_canvas
+from live import design_focus as D, design_reader
 from live import focus_page as f, skills_section, work_frame as shared_frame
 
 
@@ -22,9 +22,8 @@ def old_view(folder, group):
 def scope(folder, root, view, topics, every, knows):
     selected = shared_frame.shared_scope(folder, root, view, topics, every, knows)
     if view:
-        from live import design_book
-        selected['ui_sources'] = [Path(module.__file__) for module in
-                                  (D, design_reader, design_views, design_canvas, design_book)] + [Path(__file__)]
+        # every module that draws a design view, the split parts too (design_focus_*.py, design_views_*.py, ...)
+        selected['ui_sources'] = sorted(Path(__file__).parent.glob('design*.py'))
     return selected
 
 
@@ -58,7 +57,8 @@ def shared_bodies(folder, root, theme, level, view, topics, own, knows, events, 
 
 def shared(folder, root, theme, level, view, topics, own, knows, events, every):
     bodies = shared_bodies(folder, root, theme, level, view, topics, own, knows, events, every)
-    return ''.join(shared_frame.section(0, title, *bodies[key]) for key, title in shared_frame.SHARED)
+    return ''.join(shared_frame.section(0, title, *bodies[key]) for key, title in shared_frame.SHARED
+                   if not shared_frame.blank(bodies[key][0]))        # an empty section is not shown
 
 
 def report_views(folder, root):
@@ -70,7 +70,7 @@ def report_views(folder, root):
     def build(key):
         if key == 'mindmap':
             content = f.parts_mindmap(folder, root)
-        elif book:                                       # a Design Method Book: its own views (JL 261109)
+        elif book:                                       # a Design Method Book: its own views
             process, results = BK.book_view(folder, root, key)
             content = D._numbered(results + process)
         else:

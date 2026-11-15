@@ -108,8 +108,8 @@
   "tag": "header"
  },
  "tabs__job.description.prototype": {
-  "page": "Job › Description › Prototype",
-  "url": "/_board/workbench?path=examples-5-design%2FProject-Application-SMSDesign%2Finsights%2FSMSR2v1-InsightBoard%2Fj01_p1_SMSR2v1&space=Description&sub=Prototype",
+  "page": "Job › Description › Question Book",
+  "url": "/_board/workbench?path=examples-5-design%2FProject-Application-SMSDesign%2Finsights%2FSMSR2v1-InsightBoard%2Fj01_p1_SMSR2v1&space=Description&sub=Question Book",
   "selector": "nav.levels|nav.spaces",
   "cut": false,
   "font": "16px 400",
@@ -120,8 +120,8 @@
   "tag": "button.wb-guide-button"
  },
  "space-job__job.description.prototype": {
-  "page": "Job › Description › Prototype",
-  "url": "/_board/workbench?path=examples-5-design%2FProject-Application-SMSDesign%2Finsights%2FSMSR2v1-InsightBoard%2Fj01_p1_SMSR2v1&space=Description&sub=Prototype",
+  "page": "Job › Description › Question Book",
+  "url": "/_board/workbench?path=examples-5-design%2FProject-Application-SMSDesign%2Finsights%2FSMSR2v1-InsightBoard%2Fj01_p1_SMSR2v1&space=Description&sub=Question Book",
   "selector": ".space-main",
   "cut": true,
   "font": "15px 400",
@@ -132,8 +132,8 @@
   "tag": "summary"
  },
  "cards__job.description.prototype": {
-  "page": "Job › Description › Prototype",
-  "url": "/_board/workbench?path=examples-5-design%2FProject-Application-SMSDesign%2Finsights%2FSMSR2v1-InsightBoard%2Fj01_p1_SMSR2v1&space=Description&sub=Prototype",
+  "page": "Job › Description › Question Book",
+  "url": "/_board/workbench?path=examples-5-design%2FProject-Application-SMSDesign%2Finsights%2FSMSR2v1-InsightBoard%2Fj01_p1_SMSR2v1&space=Description&sub=Question Book",
   "selector": "details.topic",
   "cut": false,
   "font": "15px 400",
@@ -804,8 +804,8 @@
   "tag": "button.runs-fold"
  },
  "space-block__block.description.prototype": {
-  "page": "Board › Description › Prototype",
-  "url": "/_board/workbench?path=examples-5-design%2FProject-Application-SMSDesign%2Finsights%2FSMSR2v1-InsightBoard&space=Description&sub=Prototype",
+  "page": "Board › Description › Question Book",
+  "url": "/_board/workbench?path=examples-5-design%2FProject-Application-SMSDesign%2Finsights%2FSMSR2v1-InsightBoard&space=Description&sub=Question Book",
   "selector": ".space-main",
   "cut": true,
   "font": "15px 400",
@@ -828,8 +828,8 @@
   "tag": "th"
  },
  "space-block__block.description.partitions": {
-  "page": "Board › Description › Partitions",
-  "url": "/_board/workbench?path=examples-5-design%2FProject-Application-SMSDesign%2Finsights%2FSMSR2v1-InsightBoard&space=Description&sub=Partitions",
+  "page": "Board › Description › Segments",
+  "url": "/_board/workbench?path=examples-5-design%2FProject-Application-SMSDesign%2Finsights%2FSMSR2v1-InsightBoard&space=Description&sub=Segments",
   "selector": ".space-main",
   "cut": false,
   "font": "12.5px 600",
@@ -840,8 +840,8 @@
   "tag": "th"
  },
  "table__block.description.partitions": {
-  "page": "Board › Description › Partitions",
-  "url": "/_board/workbench?path=examples-5-design%2FProject-Application-SMSDesign%2Finsights%2FSMSR2v1-InsightBoard&space=Description&sub=Partitions",
+  "page": "Board › Description › Segments",
+  "url": "/_board/workbench?path=examples-5-design%2FProject-Application-SMSDesign%2Finsights%2FSMSR2v1-InsightBoard&space=Description&sub=Segments",
   "selector": "table.wf-table",
   "cut": false,
   "font": "12.5px 600",
@@ -852,8 +852,8 @@
   "tag": "th"
  },
  "own__block.description.partitions": {
-  "page": "Board › Description › Partitions",
-  "url": "/_board/workbench?path=examples-5-design%2FProject-Application-SMSDesign%2Finsights%2FSMSR2v1-InsightBoard&space=Description&sub=Partitions",
+  "page": "Board › Description › Segments",
+  "url": "/_board/workbench?path=examples-5-design%2FProject-Application-SMSDesign%2Finsights%2FSMSR2v1-InsightBoard&space=Description&sub=Segments",
   "selector": ".space-main",
   "cut": false,
   "font": "12.5px 600",
@@ -1044,7 +1044,7 @@
   "tag": "td"
  },
  "space-block__old.prototype": {
-  "page": "old Insight board page › Prototype",
+  "page": "old Insight board page › Question Book",
   "url": "/_board/insight-board?path=examples-5-design%2FProject-Application-SMSDesign%2Finsights%2FSMSR2v1-InsightBoard%2Fboard.md&file=board.md&space=prototype",
   "selector": ".pane.on .shell",
   "cut": false,
@@ -1392,8 +1392,8 @@
   "tag": "a"
  },
  "space-task__task.work-details.partitions": {
-  "page": "Task › Work Details › Partitions",
-  "url": "/_board/workbench?path=examples-5-design%2FProject-Application-SMSDesign%2Finsights%2FSMSR2v1-InsightBoard%2Fj01_p1_SMSR2v1%2Ft05_I01_funnel-fundamentals&space=Work+Details&sub=Partitions",
+  "page": "Task › Work Details › Segments",
+  "url": "/_board/workbench?path=examples-5-design%2FProject-Application-SMSDesign%2Finsights%2FSMSR2v1-InsightBoard%2Fj01_p1_SMSR2v1%2Ft05_I01_funnel-fundamentals&space=Work+Details&sub=Segments",
   "selector": ".space-main",
   "cut": false,
   "font": "12.5px 600",
@@ -1404,8 +1404,8 @@
   "tag": "th"
  },
  "own__task.work-details.partitions": {
-  "page": "Task › Work Details › Partitions",
-  "url": "/_board/workbench?path=examples-5-design%2FProject-Application-SMSDesign%2Finsights%2FSMSR2v1-InsightBoard%2Fj01_p1_SMSR2v1%2Ft05_I01_funnel-fundamentals&space=Work+Details&sub=Partitions",
+  "page": "Task › Work Details › Segments",
+  "url": "/_board/workbench?path=examples-5-design%2FProject-Application-SMSDesign%2Finsights%2FSMSR2v1-InsightBoard%2Fj01_p1_SMSR2v1%2Ft05_I01_funnel-fundamentals&space=Work+Details&sub=Segments",
   "selector": ".space-main",
   "cut": false,
   "font": "12.5px 600",
@@ -1476,8 +1476,8 @@
   "tag": "div.space-main"
  },
  "space-b52__b52.description.prototype": {
-  "page": "b52 Block › Description › Prototype",
-  "url": "/_board/workbench?path=examples-5-design%2FProject-Application-SMSDesign%2Ftasks%2Fb52_sms_question_dikw&space=Description&sub=Prototype",
+  "page": "b52 Block › Description › Question Book",
+  "url": "/_board/workbench?path=examples-5-design%2FProject-Application-SMSDesign%2Ftasks%2Fb52_sms_question_dikw&space=Description&sub=Question Book",
   "selector": ".space-main",
   "cut": false,
   "font": "15px 400",
@@ -1500,8 +1500,8 @@
   "tag": "th"
  },
  "space-b52__b52.description.partitions": {
-  "page": "b52 Block › Description › Partitions",
-  "url": "/_board/workbench?path=examples-5-design%2FProject-Application-SMSDesign%2Ftasks%2Fb52_sms_question_dikw&space=Description&sub=Partitions",
+  "page": "b52 Block › Description › Segments",
+  "url": "/_board/workbench?path=examples-5-design%2FProject-Application-SMSDesign%2Ftasks%2Fb52_sms_question_dikw&space=Description&sub=Segments",
   "selector": ".space-main",
   "cut": false,
   "font": "12.5px 600",
@@ -1644,7 +1644,7 @@
   "tag": "button.wtab"
  },
  "space-b52__old52.prototype": {
-  "page": "old Insight board page (b52) › Prototype",
+  "page": "old Insight board page (b52) › Question Book",
   "url": "/_board/insight-board?path=examples-5-design%2FProject-Application-SMSDesign%2Ftasks%2Fb52_sms_question_dikw%2Fboard.md&file=board.md&space=prototype",
   "selector": ".pane.on .shell",
   "cut": true,

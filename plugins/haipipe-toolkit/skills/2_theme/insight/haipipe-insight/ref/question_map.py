@@ -1,12 +1,12 @@
-"""question_map.py <Insight Block | Prototype | release> [--out <file>] · draw the question map.
+"""question_map.py <Insight Block | Question Book | release> [--out <file>] · draw the question map.
 
     .venv/bin/python Tools/plugins/haipipe-toolkit/skills/2_theme/insight/haipipe-insight/ref/question_map.py \\
-        <tasks/bNN_<topic>_dikw | insight/Prototype-<Topic> | insight/Prototype-<Topic>/jNN_code-vN_<slug>> [--out <file>]
+        <tasks/bNN_<topic>_dikw | insight/InsightQuestionBook-<Topic> | insight/InsightQuestionBook-<Topic>/jNN_question-vN_<slug>> [--out <file>]
 
 An older Insight Block (one Job per DIKW level) writes `<Block>/studio/question-map.excalidraw` (block-contract.md §
 The Block). On the ladder (ref/insight-ladder.md) it reads a release's questions from its release.yaml, a kept
-question where it lives: a Prototype draws its newest release, a release folder that release; it writes
-`<Prototype>/studio/question-map.excalidraw`, or `--out` (a Studio topic's drawing, sNN-<topic>/<file>.excalidraw).
+question where it lives: a Question Book draws its newest release, a release folder that release; it writes
+`<Question Book>/studio/question-map.excalidraw`, or `--out` (a Studio topic's drawing, sNN-<topic>/<file>.excalidraw).
 One frame per level, Data · Information · Knowledge · Wisdom · Executive, one box per live question (id,
 name, the short question), and one arrow per reuse, from the question whose result is reused
 to the question that reuses it (a `cite` need's `from: <L><NN>.E<n>`). A question that reuses
@@ -39,7 +39,7 @@ WRAP = 44                                     # characters per line of the short
 
 
 def release_of(src: Path) -> Path | None:
-    """The release a ladder folder names: itself when it holds release.yaml, else a Prototype's newest release."""
+    """The release a ladder folder names: itself when it holds release.yaml, else a Question Book's newest release."""
     if (src / "release.yaml").is_file():
         return src
     face = src / "board.md"
@@ -195,9 +195,9 @@ def main(argv: list[str]) -> int:
     proto = Path(args[0]).resolve()
     rel = release_of(proto)
     if rel is None and not any((proto / d).is_dir() for d in LEVEL_DIR.values()):
-        print(f"{args[0]}: not an Insight Block (no level Job folder), a Prototype or a release")
+        print(f"{args[0]}: not an Insight Block (no level Job folder), a Question Book or a release")
         return 1
-    home = rel.parent if rel is not None else proto            # a release's map is its Prototype's
+    home = rel.parent if rel is not None else proto            # a release's map is its Question Book's
     out = (out.resolve() if out else home / "studio" / NAME)
     out.parent.mkdir(parents=True, exist_ok=True)
     scene = draw(proto)

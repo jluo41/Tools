@@ -13,7 +13,7 @@ s07 · How do topics connect?
 
 **Topic:** how topics in different Blocks connect: groups and Links lines. They often talk about the same thing; JL 261029: "I still want them to be connected". Groups (`studio/_groups.txt`, a face's `**Tags:**`) gather them, and a `**Links:**` line points from one topic to another, shown on the face (the topic page that listed them both ways is retired, s02-D05).
 
-**Feeds:** haipipe-studio (Tags, Links); `servers/workbench/focus_page.py`.
+**Feeds:** haipipe-studio (Tags, Links); `servers/workbench/page/focus_page.py`.
 
 
 Files

@@ -2,7 +2,7 @@
 
 A server folder is one of:
   · ``servers/_host``            the transport (this folder; its mixins sit in ``live/``)
-  · ``servers/space-home``    Board-level presenters (home, structure, write, activity)
+  · ``servers/workbench``     also the SPACE Home and Board-level presenters (home, structure, write, activity)
   · ``servers/workbench/workbench-task-draft/reader``     the standalone Page server and the reader appearance
   · ``servers/workbench``        the base workbench: Guide, Studio and what every theme reuses
   · ``servers/workbench/workbench-task-<type>``  one Task type's screen, for every theme: its layout
@@ -23,11 +23,15 @@ from pathlib import Path
 from host_paths import HOST, WORKBENCHES, SERVERS, TOOLKIT
 
 
+# the base workbench's code, grouped by what it draws; each group is a live folder, so `live.<module>` names stay flat
+BASE_GROUPS = ("home", "page", "studio", "guide")
+
+
 def workbench_folders():
     """The base ``workbench`` folder and its Task type folders, then the ``workbench-*`` themes, each
     followed by its own Task type folders, then every sibling plugin's."""
     base = SERVERS / "workbench"
-    found = [base] + _task_types(base) if base.is_dir() else []
+    found = [base] + [base / g for g in BASE_GROUPS if (base / g).is_dir()] + _task_types(base) if base.is_dir() else []
     themes = sorted(p for p in SERVERS.glob("workbench-*") if p.is_dir())
     for workbench in sorted(WORKBENCHES.iterdir()):
         if workbench == TOOLKIT or not (workbench / "servers").is_dir():
@@ -63,7 +67,7 @@ def workbench_name(folder):
 def server_folders():
     """Every folder that may contribute mixins or asset parts, in load order."""
     # the reader (once servers/haipipe-page) keeps its old slot, so its css still loads before the base
-    folders = [HOST, SERVERS / "space-home", SERVERS / "workbench" / "workbench-task-draft" / "reader"]
+    folders = [HOST, SERVERS / "workbench" / "workbench-task-draft" / "reader"]
     folders.extend(workbench_folders())
     return [f for f in folders if f.is_dir()]
 
@@ -93,8 +97,6 @@ WORKBENCH_ROUTES = {
                        "bibex-verify", "card", "resolve", "answer", "attach", "image"}),
     "paper": frozenset({"paper-board"}),                   # its old name, paper, dropped 261012
     "work": frozenset({"work-board"}),                     # its old name, task-board, dropped 261012
-    "cowork": frozenset({"cowork-board"}),
-    "discovery": frozenset({"discovery-board"}),
     # workbench (the base): Studio's draw, chat and terminal routes (Guide is in ALWAYS_ROUTES).
     "shared": frozenset({"chat", "chat-keep", "sessions", "session-log", "session-name",
                          "stop", "excalidraw", "excalidraw-save", "autodraw", "autodeck", "studio-group",

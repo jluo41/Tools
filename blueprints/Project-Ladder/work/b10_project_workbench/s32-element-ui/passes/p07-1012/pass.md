@@ -10,7 +10,7 @@ Two columns: an opened Question card is Logic | Report, the work one line inside
 
 ## Changed
 
-- `Tools/plugins/haipipe-toolkit/servers/workbench/frame.py`
+- `Tools/plugins/haipipe-toolkit/servers/workbench/page/frame.py`
 - `Tools/plugins/haipipe-toolkit/servers/_host/tests/test_frame.py`
 - `s32-element-ui/`
 - `s05-report-workbench-skill/s05-report-workbench-skill.md`

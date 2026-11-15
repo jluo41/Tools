@@ -60,7 +60,13 @@ while [[ $# -gt 0 ]]; do
         --all)            DO_GLOBAL=true; DO_HOOKS=true ;;
         --no-marketplace) DO_MARKETPLACE=false ;;
         --verify)         DO_VERIFY=true ;;
-        --project)        PROJECT_PATH="$2"; shift ;;
+        --project)
+            if [ $# -lt 2 ] || [ -z "$2" ] || [[ "$2" == --* ]]; then
+                echo "--project requires a workspace path" >&2
+                exit 2
+            fi
+            PROJECT_PATH="$2"; shift ;;
+        *) echo "Unknown option: $1" >&2; exit 2 ;;
     esac
     shift
 done
@@ -89,30 +95,31 @@ if [ "$DO_MARKETPLACE" = true ]; then
 
     if [ -L "$MARKETPLACE_DIR" ]; then
         rm "$MARKETPLACE_DIR"
-    elif [ -d "$MARKETPLACE_DIR" ]; then
-        echo "  Warning: $MARKETPLACE_DIR already exists as a directory. Removing..."
-        rm -rf "$MARKETPLACE_DIR"
+    elif [ -e "$MARKETPLACE_DIR" ]; then
+        echo "Marketplace path is not a link; leaving it untouched: $MARKETPLACE_DIR" >&2
+        echo "Move it aside before registering this checkout, or use --no-marketplace." >&2
+        exit 1
     fi
 
     ln -s "$SCRIPT_DIR" "$MARKETPLACE_DIR"
     echo "  Symlinked $SCRIPT_DIR -> $MARKETPLACE_DIR"
 
     if [ -f "$KNOWN_FILE" ]; then
-        python3 -c "
-import json
-with open('$KNOWN_FILE', 'r') as f:
+        python3 - "$KNOWN_FILE" "$MARKETPLACE_DIR" << 'PYEOF'
+import datetime, json, sys
+with open(sys.argv[1], 'r') as f:
     data = json.load(f)
 data['jluo41-tools'] = {
     'source': {
         'source': 'github',
         'repo': 'jluo41/Tools'
     },
-    'installLocation': '$MARKETPLACE_DIR',
-    'lastUpdated': '$(date -u +%Y-%m-%dT%H:%M:%S.000Z)'
+    'installLocation': sys.argv[2],
+    'lastUpdated': datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%S.000Z')
 }
-with open('$KNOWN_FILE', 'w') as f:
+with open(sys.argv[1], 'w') as f:
     json.dump(data, f, indent=2)
-"
+PYEOF
         echo "  Registered in known_marketplaces.json"
     else
         echo "  Warning: $KNOWN_FILE not found. Claude Code may not be installed."
@@ -133,9 +140,9 @@ fi
 if [ "$DO_VERIFY" != true ]; then
     echo ""
     echo "Done! Available plugins:"
-    python3 -c "
+    python3 - "$SCRIPT_DIR" << 'PYEOF'
 import json, os, sys
-root = os.path.join('$SCRIPT_DIR', 'plugins')
+root = os.path.join(sys.argv[1], 'plugins')
 for d in sorted(os.listdir(root)):
     if d.startswith(('_', '.')) or not os.path.isdir(os.path.join(root, d)):
         continue
@@ -151,7 +158,7 @@ for d in sorted(os.listdir(root)):
     else:
         desc = '(no plugin.json; not installable as a plugin)'
     print(f'  {name:<18}- {desc[:96]}')
-    "
+PYEOF
     echo ""
     echo "Install in Claude Code with e.g.:"
     echo "  /plugin install haipipe@jluo41-tools"
@@ -176,6 +183,8 @@ enumerate_skills() {
         skill_path="${skill_file%/SKILL.md}"
         plugin_rel="${skill_path#"$plugins_root"/}"
         plugin_name="${plugin_rel%%/*}"
+        # Only the direct package skills/ tree is installable.
+        case "${plugin_rel#*/}" in skills/*) ;; *) continue ;; esac
         rel_path="${skill_path#"$plugins_root/$plugin_name/skills/"}"
         skill_name="$(basename "$skill_path")"
 
@@ -273,8 +282,8 @@ verify_links() {
     local project="$1"
     local expected_skills expected_agents rc=0
 
-    expected_skills="$(mktemp)"
-    expected_agents="$(mktemp)"
+    expected_skills="$(mktemp "${TMPDIR:-/tmp}/tools-verify.XXXXXX")"
+    expected_agents="$(mktemp "${TMPDIR:-/tmp}/tools-verify.XXXXXX")"
 
     # Same enumeration the installer uses, so the audit can never disagree with
     # what an install would link. "<name>\t<absolute path>" per skill and alias.
@@ -292,7 +301,7 @@ verify_links() {
     fi
 
     VERIFY_PROJECT="$project" VERIFY_PLUGINS="$SCRIPT_DIR/plugins" \
-    VERIFY_SKILLS="$expected_skills" VERIFY_AGENTS="$expected_agents" python3 << 'PYEOF'
+    VERIFY_SKILLS="$expected_skills" VERIFY_AGENTS="$expected_agents" python3 << 'PYEOF' || rc=$?
 import json, os
 from pathlib import Path
 
@@ -377,8 +386,6 @@ if servers:
 
 raise SystemExit(1 if problems else 0)
 PYEOF
-    rc=$?
-
     rm -f "$expected_skills" "$expected_agents"
     if [ "$rc" = 0 ]; then
         echo "  Links are current."
@@ -481,7 +488,7 @@ install_project_skills() {
     # Compute relative path from the target skills dir back to Tools/plugins/
     # e.g., ../../Tools/plugins
     local tools_rel
-    tools_rel="$(python3 -c "import os.path; print(os.path.relpath(os.path.realpath('$SCRIPT_DIR/plugins'), os.path.realpath('$target_dir')))")"
+    tools_rel="$(python3 -c 'import os.path, sys; print(os.path.relpath(os.path.realpath(sys.argv[1]), os.path.realpath(sys.argv[2])))' "$SCRIPT_DIR/plugins" "$target_dir")"
 
     local installed cleaned skill_path plugin_name rel_path skill_name target link
     installed=0
@@ -563,7 +570,7 @@ if [ -n "$PROJECT_PATH" ]; then
     echo "Installing agents to project: $PROJECT_AGENTS ..."
     mkdir -p "$PROJECT_AGENTS"
 
-    TOOLS_REL_AGENTS="$(python3 -c "import os.path; print(os.path.relpath(os.path.realpath('$SCRIPT_DIR/plugins'), os.path.realpath('$PROJECT_AGENTS')))")"
+    TOOLS_REL_AGENTS="$(python3 -c 'import os.path, sys; print(os.path.relpath(os.path.realpath(sys.argv[1]), os.path.realpath(sys.argv[2])))' "$SCRIPT_DIR/plugins" "$PROJECT_AGENTS")"
 
     agent_installed=0
     while IFS=$'\t' read -r agent_path plugin_name rel_path; do
@@ -601,10 +608,10 @@ if [ "$DO_HOOKS" = true ]; then
     echo ""
     echo "Configuring sound hooks in settings.json..."
 
-    HOOKS_TABLE="$SCRIPT_DIR/install-hooks.json" python3 << 'PYEOF'
+    HOOKS_TABLE="$SCRIPT_DIR/install-hooks.json" HOOKS_SETTINGS="$SETTINGS_FILE" python3 << 'PYEOF'
 import json, platform, shutil, os
 
-settings_file = os.path.expanduser("~/.claude/settings.json")
+settings_file = os.environ["HOOKS_SETTINGS"]
 
 # The sound table is shared with install.ps1 (install-hooks.json), so the two
 # installers cannot drift. Each keeps its own writer; that is why Windows needs
@@ -634,15 +641,22 @@ if os.path.exists(settings_file):
     with open(settings_file, "r") as f:
         settings = json.load(f)
 
-# Merge — overwrite the hooks section, preserve everything else
-settings["hooks"] = {
-    event: [{"matcher": "*",
-             "hooks": [{"type": "command",
-                        "command": command.replace("{sound}", sound),
-                        "async": True}]}]
-    for event, sound in sounds.items()
-}
+# Add missing sounds without removing user hooks or duplicating our commands.
+hooks = settings.setdefault("hooks", {})
+for event, sound in sounds.items():
+    entries = hooks.setdefault(event, [])
+    sound_hook = {"type": "command", "command": command.replace("{sound}", sound), "async": True}
+    present = any(
+        entry.get("matcher") == "*" and any(
+            hook.get("type") == sound_hook["type"] and
+            hook.get("command") == sound_hook["command"] and hook.get("async") is True
+            for hook in entry.get("hooks", [])
+        ) for entry in entries
+    )
+    if not present:
+        entries.append({"matcher": "*", "hooks": [sound_hook]})
 
+os.makedirs(os.path.dirname(settings_file), exist_ok=True)
 with open(settings_file, "w") as f:
     json.dump(settings, f, indent=2)
 

@@ -1,5 +1,5 @@
 # The Insight family's Guide (servers/workbench-insight, 261007). Loaded by
-# servers/workbench/guide_families.py. Paths: guide/… related/… or a module are relative to
+# servers/workbench/guide/guide_families.py. Paths: guide/… related/… or a module are relative to
 # servers/workbench-insight; skill:<name>/<rest> is a skill's file; Tools/… is SPACE-relative.
 family: insight
 label: Insight
@@ -17,26 +17,26 @@ flow:
   - - Question · Logic
     - 'a question file: the ask, why now, its needs'
   - - Work
-    - its script, one run per partition
+    - its script, one run per segment
   - - Report
-    - one page per question, a section per partition, checked
+    - one page per question, a section per segment, checked
   data:
   - - Input · Data
-    - the extract, cut by one partition
+    - the extract, segment by one segment
   - - Processing
     - the power check, then run(df, ctx), then the gate
   - - Output
-    - results/<run>/ and reports/<run>/, a run being <dataset>_<partition>
+    - results/<run>/ and reports/<run>/, a run being <dataset>_<segment>
   links:
   - names
   - runs
   - fills
-  repeat: Repeat for every partition the question is asked on, then for every question; level by level, Data → Information
+  repeat: Repeat for every segment the question is asked on, then for every question; level by level, Data → Information
     → Knowledge → Wisdom, each level's answers raise the next level's questions.
 description: 'The Insight Workbench reads one dataset, version by version, and answers questions about it from Data
-  and Information up to Knowledge and Wisdom. The questions and their scripts live in a Prototype, released and signed
-  as pN; the insight Board runs one release on one data version per Job, one Task per question and one run per cut.
-  The runs compute the tables; an agent then writes each question''s page, a takeaway per cut, and another agent
+  and Information up to Knowledge and Wisdom. The questions and their scripts live in a Question Book, released and signed
+  as pN; the insight Board runs one release on one data version per Job, one Task per question and one run per segment.
+  The runs compute the tables; an agent then writes each question''s page, a takeaway per segment, and another agent
   checks it. The workbench shows what each Job found, the runs behind each answer, and what still needs a check or
   a signature.'
 skills:
@@ -49,7 +49,7 @@ skills:
 - skill: haipipe-draft-workflow
   role: One page per question, checked by an agent that did not write it
 - skill: workbench-insight
-  role: Scope, Prototype, Insight, Check and Delivery over the Block
+  role: Scope, Question Book, Insight, Check and Delivery over the Block
 # the Insight loop (JL 261003): the Method page carries these six steps in its A3; this list still
 # draws the family's RoadMap card
 method:
@@ -58,26 +58,26 @@ method:
 - - Plan and agree
   - The steps that would answer it, written before any data is read; a different agent agrees them, then the script
     is written and reviewed.
-- - Run each partition
-  - 'Work: one run per dataset and partition writes the results, its figures and its generated report. Answering
+- - Run each segment
+  - 'Work: one run per dataset and segment writes the results, its figures and its generated report. Answering
     methods, below.'
 - - Check the run
   - Another agent checks each run against its plan.
 - - Write the page
-  - 'Report: one page per question, a section per partition, read into a claim at its level; another agent''s CHECK
+  - 'Report: one page per question, a section per segment, read into a claim at its level; another agent''s CHECK
     closes it. Reading methods, below.'
 - - Hand off
   - A Wisdom answer, signed by a person, goes to Design; the Exp's data is the next extract. A signed change retires
     a question, never edits it.
 spaces:
 - - Scope
-  - 'Dataset · Partitions · Questions: this board''s own data: the extract, its cuts with their row counts, and
+  - 'Dataset · Segments · Questions: this board''s own data: the extract, its segments with their row counts, and
     the Ask box'
-- - Prototype
-  - 'Meta · Data · Information · Knowledge · Wisdom: the Block''s design: the summary, partitions and shared settings,
+- - Question Book
+  - 'Meta · Data · Information · Knowledge · Wisdom: the Block''s design: the summary, segments and shared settings,
     then each level''s questions with their needs, script and sign-off; RoadMap Draw holds the Block''s own drawings'
 - - Insight
-  - 'One View per partition, Full to Cross: each a table of the questions, Logic / Work / Report'
+  - 'One View per segment, Full to Cross: each a table of the questions, Logic / Work / Report'
 - - Check
   - 'Gates · Checks · Runtime: the Block checker''s findings and every run''s receipt'
 - - Delivery
@@ -87,7 +87,7 @@ folders:
   - Block owner
   - 'board.md: workbench: insight + datasets'
   - board.md
-- - Scope / Dataset and Partitions
+- - Scope / Dataset and Segments
   - Block owner
   - meta/
   - meta/*
@@ -97,7 +97,7 @@ folders:
   - j0[1-4]_*/t[0-9][0-9]_*/question.md
 - - Insight / Work
   - Question owners
-  - jNN_<level>/tNN_<name>/runs/<dataset>_<partition>.sh
+  - jNN_<level>/tNN_<name>/runs/<dataset>_<segment>.sh
   - j0[1-4]_*/t[0-9][0-9]_*/runs/*_*.sh
 - - Insight / Report
   - Run reports, generated
@@ -133,8 +133,8 @@ explain:
     view: papers
   - ''
   - first
-boundary: 'One task Block holds everything: the partitions and settings in meta/, one task per question with its
-  file, its one script, one run per dataset and partition, and its page. Status is computed from run receipts and
+boundary: 'One task Block holds everything: the segments and settings in meta/, one task per question with its
+  file, its one script, one run per dataset and segment, and its page. Status is computed from run receipts and
   CHECK runs. Guide never signs a question change or a handoff.'
 # the card Guide's words per level (b11 s31-insight-guide, plan C, 261007); a Space card's sub and runs
 # are read live from the frame (insight_theme.py). roadmap: per level is still open in s31, so not yet here.
@@ -143,7 +143,7 @@ levels:
     role: 'one insight topic over one growing dataset: a Job per pair (release × data version)'
     spaces:
       Description:
-        is: 'one dataset, its versions, and the Prototype it runs: the Map of Jobs'
+        is: 'one dataset, its versions, and the Question Book it runs: the Map of Jobs'
         reads: board.md · meta/ · the release
       Idea Studio:
         is: the Board's drawings, one topic after another
@@ -161,16 +161,16 @@ levels:
         is: the signed Wisdom counsel, naming the Job it came from
         reads: delivery/
   Job:
-    role: one Prototype release run on one data version; frozen once closed
+    role: one Question Book release run on one data version; frozen once closed
     spaces:
       Description:
-        is: 'its two pins: the Prototype release and the data version'
+        is: 'its two pins: the Question Book release and the data version'
         reads: jNN_prototype-…_data-<d>vM.md · the release · <d>vM
       Idea Studio:
         is: 'optional: a drawing about this pair'
         reads: studio/
       Audience Report:
-        is: 'the Overall Report (its Executive answers, one document), then Question │ Work │ Report by D · I · K · W, filtered by Partition × Period'
+        is: 'the Overall Report (its Executive answers, one document), then Question │ Work │ Report by D · I · K · W, filtered by Segment × Period'
         reads: tNN_<L><NN>_<q>.md · reports/vs-<prev>.md
       Work Details:
         is: 'the J-T-R tree: its Tasks, each open to its Runs'
@@ -182,7 +182,7 @@ levels:
         is: only the latest Job's Wisdom counsel, to the Board
         reads: → Board › Delivery
   Task:
-    role: 'one question on one Job''s pair: its runs per partition and its page'
+    role: 'one question on one Job''s pair: its runs per segment and its page'
     spaces:
       Description:
         is: its question, read only from the release, and its records
@@ -194,10 +194,10 @@ levels:
         is: 'its page: the answer, a part per partition'
         reads: tNN_<L><NN>_<q>.md
       Work Details:
-        is: one Run per partition, and Cross
-        reads: runs/rNN_<partition>/
+        is: one Run per segment, and Cross
+        reads: runs/rNN_<segment>/
       Runs:
-        is: 'hard: one per partition · soft: write, check'
+        is: 'hard: one per segment · soft: write, check'
         reads: runs/
       Delivery:
         is: 'none of its own: its answer goes up as a cite need'

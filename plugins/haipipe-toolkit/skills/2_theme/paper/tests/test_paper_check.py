@@ -194,3 +194,22 @@ def test_l5_asks_for_the_story_arc_and_the_section_rows():
         assert not paper_check.section_rows(board, "")                                    # placeholders tell nothing
         (v / "j11_writing_v0101_x.md").write_text(filled.replace("<what the reader asks here>", "Why ask?"), encoding="utf-8")
         assert paper_check.section_rows(board, "")
+
+
+def test_w7_counts_sections_with_paragraphs_outside_4_to_7():
+    """JL 261112: a paragraph holds 4 to 7 sentences unless its plan gives a reason; the Abstract is exempt."""
+    with tempfile.TemporaryDirectory() as tmp:
+        board = Path(tmp) / "Project-X" / "paper" / "Paper-X"
+        board.mkdir(parents=True)
+        (board / "board.md").write_text("# X\n", encoding="utf-8")
+        for t, kind, plan in (("t00_abstract", "abstract", "### C1.P1 · All · S1 to S9\n"),
+                              ("t01_intro", "introduction", "### C1.P1 · Fine · S1 to S5\n"),
+                              ("t02_results", "results", "### C1.P1 · Long · S1 to S10\n\n### C1.P2 · Short · S11 to S12\n"
+                               "reason: one table read once\n")):
+            sec = board / "j11_writing_v1130_venue" / t
+            (sec / "draft").mkdir(parents=True)
+            (sec / f"{t}.md").write_text(f"# {t}\nsection_kind: {kind}\n", encoding="utf-8")
+            (sec / "draft" / f"{t}-draft-v0.1.md").write_text("approved: ⬜\n\n## 1 · Structure\n\n" + plan, encoding="utf-8")
+        got = {i: (m, seen) for _, i, _, m, seen in paper_check.check(board)}
+        assert got["W7"] == ("⏳", "1 of 2 Sections; off: t02_results 1")   # the Abstract not counted; P2 has its reason
+

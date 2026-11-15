@@ -26,6 +26,7 @@ figure (sorted names). The PNG carries no timestamp, so a rerun on the same tabl
 bytes. Generated files are never edited by hand (AGENTS.md rule 0): rerun the ticket.
 """
 import math
+import traceback
 from pathlib import Path
 
 import pandas as pd
@@ -399,7 +400,7 @@ def _estimate_lead(df):
     return out
 
 
-# ── declared figures: a need names its own (JL 261011: "I didn't see much tables and figures") ──
+# ── declared figures: a need names its own (the default shapes do not show every result) ──
 def _cols(v):
     return [v] if isinstance(v, str) else list(v or [])
 
@@ -489,7 +490,7 @@ def _declared_draw(df, spec, path, title):
         fig.colorbar(im, cax=cax, label=spec.get("clabel") or spec["value"])
         fig._placed = True
     else:
-        share = spec.get("sharex", kind == "line")       # bar panels keep their own categories (JL 261011)
+        share = spec.get("sharex", kind == "line")       # bar panels keep their own categories
         fig, axs = plt.subplots(len(facets), 1, figsize=(7.2, 2.6 * len(facets) + 0.6), squeeze=False, sharex=share)
         axes = [a[0] for a in axs]
         for ax, fv in zip(axes, facets):
@@ -518,7 +519,7 @@ def _declared_draw(df, spec, path, title):
                         ax.set_xticklabels([_label(v) for v in part[spec["x"]]], fontsize=7,
                                            rotation=45 if len(pos) > 8 else 0, ha="right" if len(pos) > 8 else "center")
             if fv is not None:
-                ax.set_title(str(fv), fontsize=9, loc="left", fontweight="bold")     # a panel title in full, never cut
+                ax.set_title(str(fv), fontsize=9, loc="left", fontweight="bold")     # a panel title in full, never segment
             ax.set_ylabel(spec.get("ylabel") or ", ".join(ys), fontsize=8)
             ax.grid(axis="y", color="#e4e4e7", lw=.6)
             ax.set_axisbelow(True)                # grid lines behind the bars
@@ -544,7 +545,8 @@ def lead(df):
     k = shape(df)
     try:
         return KINDS[k][1](df) if k else []
-    except Exception:  # noqa: BLE001 · a summary that cannot be said is left out, never guessed
+    except Exception:  # noqa: BLE001 · a summary that cannot be said is left out, never guessed; stderr names why
+        traceback.print_exc()
         return []
 
 

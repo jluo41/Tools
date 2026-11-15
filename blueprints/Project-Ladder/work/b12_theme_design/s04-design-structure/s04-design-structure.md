@@ -19,7 +19,7 @@ design Board whose Jobs pin a goal, one method version and one inputs version; t
 new method version comes from and what triggers it; and the Block's questions with our ideas and the
 choices still open.
 
-**Feeds:** `../reports/` q01_design_ladder, q02_design_workbench, q03_insight_steers_design (and a
+**Feeds:** `../reports/` Q01 · Q02 · Q03 (and a
 proposed Q04, what a design method is and how it evolves).
 
 

@@ -11,7 +11,7 @@
 <text x="924.7" y="208.7" font-size="20" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Task</text>
 <text x="74.0" y="254.9" font-size="19" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Description</text>
 <text x="306.0" y="254.9" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Map · Prototype · Dataset ·</text>
-<text x="306.0" y="279.6" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Partitions</text>
+<text x="306.0" y="279.6" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Segments</text>
 <text x="615.3" y="254.9" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">the release and the data</text>
 <text x="615.3" y="279.6" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">version</text>
 <text x="924.7" y="254.9" font-size="19" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Question · Plan · Data</text>

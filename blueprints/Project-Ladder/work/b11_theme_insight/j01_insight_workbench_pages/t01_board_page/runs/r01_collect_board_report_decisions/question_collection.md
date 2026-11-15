@@ -6,7 +6,7 @@ Decided in the chat, not on a form; this topic's decisions, in the order they we
 
 ## Q1 · Matrix first
 
-Said in the chat: "I think n the block level, it should be something like Question Prototype x and Data versions, right? I remember we have a matrix for that."
+Said in the chat: "I think n the block level, it should be something like Question Question Book x and Data versions, right? I remember we have a matrix for that."
 
 **A Answers opens on the analysis plan × data freeze matrix, one cell a Job**
 

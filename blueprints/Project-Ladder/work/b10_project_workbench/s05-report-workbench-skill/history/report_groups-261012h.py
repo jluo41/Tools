@@ -10,7 +10,7 @@ narrative ... No more folder tree for the non folder items"):
     ⑤ a workflow map: how a group's name reaches the Report, step by step, with the group-or-lens gate
     ⑥ a mind map: every part of the topic around one centre, the open points red on their branches
 
-Read on every build: each theme's Report through servers/workbench/frame.py (on one real Block or Job of each theme
+Read on every build: each theme's Report through servers/workbench/page/frame.py (on one real Block or Job of each theme
 in a SPACE beside Tools), one Block, Job and Task read live, b10's board.md register and studio/_groups.txt, each
 theme file's Report settings, the paper Board's and Insight-SMSR2v1's own files. Earlier builders are in history/
 (report_groups-*.py, s07's builder until 261012).
@@ -35,7 +35,7 @@ from draw import KEY, MAP_FLOOR, FLOOR, Drawing  # noqa: E402  (excalidraw-studi
 
 INK, RED, MONO = L.INK, L.RED, L.MONO
 text, path, base = L.text, L.path, L.base
-FRAME_PY = L.TOOLKIT / "servers/workbench/frame.py"
+FRAME_PY = L.TOOLKIT / "servers/workbench/page/frame.py"
 
 # b10's 12 Questions in its existing Studio groups (s05-D11); Q11 is open (Guide or UI)
 B10_GROUPS = {"Q01": "Levels", "Q02": "Levels", "Q03": "Report", "Q04": "Structure", "Q05": "Run and Skill",

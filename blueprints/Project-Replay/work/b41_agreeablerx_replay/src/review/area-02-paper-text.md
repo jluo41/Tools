@@ -1,0 +1,301 @@
+# ✍️ Paper text
+
+- Edits stay small and keep the co-authors' wording and paragraph structure.
+- Paragraphs hold 4 to 6 sentences, by moving or merging, never filler.
+- Fewer sentences start with "We"; citations follow APA 7 style.
+- **📜 The decisions**
+- **11-08 12:53** · Add situational strength theory papers
+  - Decided: build out situational strength theory (now resting on one citation, Meyer_2009) with more papers, each DOI confirmed with Crossref first.
+  - JL asked: "do we have that literature, could we go ahead and try to add the papers? That is not that good."
+  - Built: proposal only at this point; Runs created at 13:05 (next block)
+  - Session: Main paper
+- **11-10 10:25** · JL fills the Abstract numbers
+  - Decided: JL can fill the two Abstract numbers himself by pasting a prompt, after Ritu finishes her edits.
+  - JL asked: "for the numbers, could I fill them? what is the long prompt I should have to fill these numbers?"
+  - Built: proposal only (prompt written for JL)
+  - Session: Main paper
+- **11-10 11:12** · Replace the XXX model placeholder
+  - Decided: replace "an XXX model" with "an ordinary least squares (OLS) regression with year, specialty, and state fixed effects".
+  - JL asked: "Consistent with the first prediction, results from an XXX model show that a high agreeableness score, <--- how to fix this."
+  - Built: wording given (unclear whether applied in this turn)
+  - Session: Main paper
+- **11-10 14:34** · Follow the co-authors' meeting preferences
+  - Decided: revise per the 11-10 meeting: Gordon (not Ritu) rewrote Theory and Lit Review, and Figure 1 boxes hold only construct names; OneDrive comments are read too.
+  - JL asked: "I htink you need to understand well whati s Gordon and Ritu's prefences, and also, could you check the comments from the draft in the onedrive as well?"
+  - Built: proposal only (AI read the meeting note and checked OneDrive for Gordon's draft)
+  - Session: Main paper
+- **11-10 15:29** · Add WOM in healthcare literature
+  - Decided: add a digital word of mouth (WOM) in healthcare literature stream to the Literature Review, to tie the IS contribution to it as Gordon wants.
+  - JL asked: "I think we also need to add the literature about the WOM in the healthcare, do you get it?"
+  - Built: papers found and Crossref-verified as Discovery Runs; they sit in Evidence > Citations under the tab "💬 online reviews as digital word of mouth in healthcare"
+  - Session: Main paper
+- **11-13 01:59** · Turn comments into tracked fixes
+  - Decided: the comments in the screenshot become tracked fixes, not open comments.
+  - JL asked: "for the comments here, why you don't fix them?"
+  - Built: five fixes made and the file rebuilt
+  - Session: Main paper
+- **11-13 02:11** · Split the long contribution sentence
+  - Decided: split after "clinical behavior"; "we" is the subject of the first sentence and physicians of the second.
+  - JL asked: "The study extends research on online physician reviews … <--- this is two long, how could we make it into two sentences?"
+  - Built: split sentence in the OneDrive file as JL's tracked change
+  - Session: Main paper
+- **11-13 02:39** · Keep the old sentence, fewer We
+  - Decided: keep the old sentence instead of three short sentences starting with "We".
+  - JL asked: "I think we used too many We We We, I think the old version might good enough, how do you think?"
+  - Built: change removed from the source so a rebuild will not bring it back
+  - Session: Main paper
+- **11-13 02:43** · Flip the latitude clause
+  - Decided: the finding is right but stated backwards; turn it so latitude matters, matching Ritu's lead.
+  - JL asked: "the logic here is weird/ can we say it is correct for ritu's comments?"
+  - Built: clause turned around in the source
+  - Session: Main paper
+- **11-13 02:45** · Osteoarthritis first, then latitude by condition
+  - Decided: lead the paragraph with osteoarthritis (unclear) and then explain why discretion latitude differs across low back pain, osteoarthritis, headache and cancer.
+  - JL asked: "I think we might want to make the oste to be the first one, and then explain why the LBP, OA, Headache, and Cnacer their discretion lattitude different…"
+  - Built: unclear (the AI's reply moved to Figure 1)
+  - Session: Main paper
+- **11-13 02:59** · Downplay the flagged items
+  - Decided: downplay the items shown in the screenshot (unclear which).
+  - JL asked: "what you have chnaged? I still see many things here: [Image #19] I told you to downplay them."
+  - Built: unclear; Word had opened the old SharePoint copy, which the AI closed before AutoSave overwrote the new one
+  - Session: Main paper
+- **11-13 12:51** · Citation format follows APA 7
+  - Decided: keep the five citations in one sentence, each group next to the words it supports, and print "et al." for three or more authors per APA 7.
+  - JL asked: "is this the format MISQ format? what I mean you can put it in different sentences?"
+  - Built: apacite fix being tested
+  - Session: Main paper
+- **11-13 13:02** · Drop the unsmooth sentences
+  - Decided: drop the sentences.
+  - JL asked: "do we need this sentences? we can drop them, I feel this is not smooth."
+  - Built: dropped; only Taylor et al. 2025 leaves the reference list
+  - Session: Main paper
+- **11-13 13:10** · Keep underscored and end on the gap
+  - Decided: "underscored" stays and the paragraph ends on the gap.
+  - JL asked: "but here we also want to say that, this is underscored, do you get it? to show that there is a gap here."
+  - Built: built into the Round 3 PDF
+  - Session: Main paper
+- **11-13 13:14** · Roll back the underscore paragraph
+  - Decided: roll the paragraph back to before the edits.
+  - JL asked: "wait, could we just rollback? underscore is highlighted, right, not ignored, I misundersand the word. maybwe can rolle back."
+  - Built: paragraph restored; gap sentence and margin notes 4 and 5 removed
+  - Session: Main paper
+- **11-13 13:16** · Add the gap sentence back
+  - Decided: add the gap sentence back so the paragraph links workplace studies to physicians.
+  - JL asked: "for the one you that we highlight the gap, maybe we can add that gap back? how do you think?"
+  - Built: gap sentence restored, leading into the four pain conditions
+  - Session: Main paper
+- **11-13 13:17** · Paragraphs of 4 to 7 sentences
+  - Decided: balance the three-sentence paragraph to 4 by moving a finding in, not adding filler.
+  - JL asked: "each paragraph is in the sentneces of 4~7? thisone is only three, how do you think you can balance this."
+  - Built: Gao et al. 2015 result moved into the paragraph
+  - Session: Main paper
+- **11-13 13:21** · Section 2.3 paragraphs at 4 to 6
+  - Decided: every Section 2.3 paragraph holds 4 to 6 sentences, by moving or merging, no new claims.
+  - JL asked: "could you make it to be 4-6 sentences?"
+  - Built: four paragraphs reworked
+  - Session: Main paper
+- **11-13 13:44** · Rewrite the overstated isolation paragraph
+  - Decided: the claim overstates two antibiotic studies; rewrite the paragraph so each sentence leads into the next.
+  - JL asked: "Studies have linked physicians' traits to prescribing … is this really? I don't think so." then "show it sentence by sentence to read more smooth"
+  - Built: paragraph rewritten and built into the LaTeX
+  - Session: Main paper
+- **11-13 13:47** · Shorter gap, no conflict with JAMA paper
+  - Decided: drop "We are not aware of a study…" (it conflicts with our own JAMA paper), stop listing studies, make the gap clinical discretion.
+  - JL asked: "我觉得这个 summary 写得有点太差了，能不能不要说那么详细呢？就是我们还有一个 Jama paper, 跟这是一样 topic 呢"
+  - Built: paragraph cut to 4 sentences; Ritu's two edited sentences restored word for word
+  - Session: Main paper
+- **11-13 13:59** · Fewer "we" in Methods
+  - Decided: cut "we"/"our" in the paragraph down to one, same meaning.
+  - JL asked: "I think the "we" is used too frequent, so hard."
+  - Built: paragraph rewritten (Methods had 62 "we"/"our")
+  - Session: Main paper
+- **11-13 15:33** · Fix co-author comments, drop notes
+  - Decided: check each Ritu and Gordon comment against the Round 3 text, fix it, and cut their margin notes.
+  - JL asked: "have you read them and fix them? no need to leave the comments."
+  - Built: check started
+  - Session: Main paper
+- **11-13 19:04** · Minor edits only, measured for similarity
+  - Decided: only small sentence edits, each measured for closeness to the original; paragraph merges left out.
+  - JL asked: "plesae do the minor changes, everytime you chnage, one evaluation is that how similar your sentences is the same to previous sentences."
+  - Built: three small sentence edits in the t05 draft
+  - Session: t05 Results
+- **11-13 19:10** · No large changes
+  - Decided: every Conclusion edit stays small.
+  - JL asked: "everytime we nade the chanse, make sure we don't make huge changes."
+  - Built: 6 phrase swaps in the t07 draft, sentence count and order unchanged
+  - Session: t07 Conclusion
+- **11-13 19:14** · Keep the paragraph structure
+  - Decided: the original structure stays; the paragraph break goes back.
+  - JL asked: "what are the huge change you made? You changed the structure?"
+  - Built: paragraph break restored
+  - Session: t01 Introduction
+- **11-13 22:34** · W1 to W5 are content decisions
+  - Decided: W1 to W5 (what the Abstract must claim: D39, D40, the Story brief) are content decisions and belong in the Section contract shown in the Plan view; only size and shape rules stay writing rules.
+  - JL asked: "No, I don't think this is about the writing, this is mode like the decisions to make, right?"
+  - Built: decisions moved out of the writing rules
+  - Session: t00 Abstract
+- **11-13 22:46** · S41 per JL's choice
+  - Decided: S41 takes JL's choice; a citation for Ritu's comment is looked for.
+  - JL asked: "let this, we I make the choice, what should we do next? and I think we should add the citaiton to RItu;s comments, did we find it or not?"
+  - Built: S41 updated; citation search outcome unclear
+  - Session: t01 Introduction
+- **11-13 23:41** · Apply JL's card decisions and comments
+  - Decided: JL's two card decisions and three comments (S4b, S5, S7) are written into the Abstract.
+  - JL asked: "and check my decision and comments, how d you update them accordingly"
+  - Built: written; no cards left open; checked on the live page
+  - Session: t00 Abstract
+- **11-13 23:45** · Round the corpus counts
+  - Decided: write the corpus counts rounded as 4.1 million reviews and 227 thousand physicians (no b52 key held them).
+  - JL asked: "can we just say 227 thousounds and 4.1 million? please udpate it."
+  - Built: interrupted; applied later as "227 thousand" at 00:14
+  - Session: t00 Abstract
+- **11-13 23:59** · S6b answer first, then contribution
+  - Decided: S6b takes option A: the answer first, then the contribution, joined by "thereby".
+  - JL asked: "1. A: answer first, then the contribution, linked by "thereby". <-- I think this one is better, please do it."
+  - Built: confirmed by JL at 00:10 ("I confirmed, go ahead"); Abstract settled at 258 words, change sent to the main session for LaTeX
+  - Session: t00 Abstract
+- **11-14 00:13** · S4a says 227 thousand
+  - Decided: S4a says "227 thousand" ("277" read as a typo; the real count 226,999 rounds to 227 thousand).
+  - JL asked: "227,000 physicians. <-- could we say 277 thousands, not 227,000? otherwise, we just say 226,599"
+  - Built: S4a changed; confirmed by JL at 00:23; text, rule, version and plan updated and LaTeX fragment rebuilt
+  - Session: t00 Abstract
+- **11-14 00:15** · Greenwald too weak; drop the metaphor
+  - Decided: Greenwald is only weakly related; S8's card recommends option B, delete the metaphor.
+  - JL asked: "do you think the paper from Greenwald is related or not?"
+  - Built: S8 card changed to option B
+  - Session: t01 Introduction
+- **11-14 00:28** · Adopt JL's sentence changes
+  - Decided: JL's reviewer-wording swaps (S1, S8, S16) and checks of S1 to S16 go into the page.
+  - JL asked: "can you read the changes I made so far and update them"
+  - Built: page text and web view updated; S1 in LaTeX, S8 and S16 queued for the main session's rebuild
+  - Session: t02 Literature review
+- **11-14 00:40** · Apply JL's Conclusion comment
+  - Decided: rewrite S7a to say what JL meant; keep JL's reviewer fixes on S1 and S3.
+  - JL asked: "please check my comments for the conclusion"
+  - Built: S7a rewritten and comment marked answered; S1, S3 and ticks on S1, S2 in the page
+  - Session: t07 Conclusion
+- **11-14 00:44** · Leave metformin out of Theory
+  - Decided: Theory does not mention metformin (AI recommendation; JL did not object, explicit approval unclear).
+  - JL asked: "for this part, do we need to mention the metformin? how do you think?"
+  - Built: proposal only
+  - Session: t03 Theory
+- **11-14 01:02** · New suggestion for Introduction S40
+  - Decided: write a new suggestion saying how decision support reduces variation; the sentence is Introduction S40.
+  - JL asked: "how do you think this will help? please update the suggestion again."
+  - Built: new suggestion sent to the t01 session; nothing changed in t01
+  - Session: t07 Conclusion
+- **11-14 01:03** · Drop S15 phrase, merge S25 into S24
+  - Decided: drop the phrase in S15 and merge S25 into S24, as JL suggested.
+  - JL asked: "I have add my comments, please think about how to update it."
+  - Built: S15, S24 and S25 written by 01:16 and added to Ritu's PDF list
+  - Session: t01 Introduction
+- **11-14 01:04** · Abstract gives counts in full
+  - Decided: S4a gives both counts in full (the reviews and the 226,149 physicians), not rounded.
+  - JL asked: "maybe we can just report the full number in the abstract?" then "could we five the full number of the 3.6 million?"
+  - Built: S4a bound to the on-disk Run; LaTeX fragment rebuilt; other two sessions told; confirmed by JL at 01:12
+  - Session: t00 Abstract
+- **11-14 01:13** · Apply new comments and swaps
+  - Decided: apply comments on S17 (add a citation) and S25 (lift its AI score), and "Use this" swaps on S17, S21, S24.
+  - JL asked: "I have add my comments, how do you think you can update them."
+  - Built: applied to the Literature Review page
+  - Session: t02 Literature review
+- **11-14 01:24** · S38 takes option A
+  - Decided: S38 ("too long") takes option A and is split into two sentence rows; every card is now decided.
+  - JL asked: "I have give you my decision, pelase continue"
+  - Built: S38 written; page, Ritu's PDF and LaTeX export match at 43 sentences, all ✓
+  - Session: t01 Introduction
+- **11-14 01:38** · Apply S5 and S7 comments
+  - Decided: apply JL's comments on S5 and S7.
+  - JL asked: "I added my feedbacks, please determine the changes."
+  - Built: both applied, marked answered, and re-scored
+  - Session: t07 Conclusion
+- **11-14 01:51** · Edit cards for paragraph 1
+  - Decided: propose small edits to two of paragraph 1's three sentences.
+  - JL asked: "I added my comments, please give edit recommendation to the paragraph 1."
+  - Built: two A/B cards on the Theory page
+  - Session: t03 Theory
+- **11-14 02:09** · Adopt changes, propose for comments
+  - Decided: adopt JL's 8 changes and write a proposal card for each of 6 comments.
+  - JL asked: "I made changes, please check my comments and think about how to propose the editing"
+  - Built: 8 changes in page text and LaTeX output, queued for the main build; cards written
+  - Session: t02 Literature review
+- **11-14 02:13** · Apply feedback on S17, S20, S32
+  - Decided: apply JL's choices on S17, S20 and S32, adding the requested citation to S32.
+  - JL asked: "check my feedback"
+  - Built: page text and LaTeX output updated, queued for the main build
+  - Session: t02 Literature review
+- **11-14 02:19** · Delete the Connelly and Ones item
+  - Decided: delete it, since Connelly and Ones 2010 is cited in Theory, Empirical Strategy and Discussion (whether a sentence or only the citation is unclear).
+  - JL asked: "[Image #11] could we just delete this?"
+  - Built: deleted from the Literature Review
+  - Session: t02 Literature review
+- **11-14 02:27** · Rewrite last paragraph as option C
+  - Decided: keep Ritu's two sentences, cut S55 and S56, add one sentence per stream on what it misses; a 5-sentence wrap-up.
+  - JL asked: "how do you propose to edit that last paragraph?" … "okay, please rewrite it."
+  - Built: rewritten in page text and LaTeX output, passed to the main session; independent reviewer scoring it
+  - Session: t02 Literature review
+- **11-14 02:35** · Adopt latest swaps
+  - Decided: adopt JL's reviewer-wording swaps on S55 and S57 and the S38 transition chosen earlier.
+  - JL asked: "how about now?"
+  - Built: page text and LaTeX output, queued for the main build
+  - Session: t02 Literature review
+- **11-14 02:43** · Option A: cut S32
+  - Decided: cut S32 and move its citation into S33.
+  - JL asked: "[Image #8] I will do A, pleas continue to update it, I will do the refresh"
+  - Built: page and LaTeX edits updated; cut cards rewritten so accepting does not write "(cut)" into the Draft
+  - Session: t03 Theory
+- **11-14 02:43** · Adopt all 7 cards
+  - Decided: all 7 cards are adopted (session's reading of "go ahead").
+  - JL asked: "go ahead, is it good to go now>"
+  - Built: S21, S46, S47 written into the draft
+  - Session: t05 Results
+- **11-14 02:59** · Apply S50 and S77 option A
+  - Decided: S50 and S77 take option A.
+  - JL asked: "please do it"
+  - Built: page synced, LaTeX edits to main session, delivery re-exported
+  - Session: t04 Empirical strategy
+- **11-14 03:14** · Cut S50 and S51
+  - Decided: JL adopted the card cutting S50 and S51 (the other nine traits); S52 and S53 speak only of agreeableness.
+  - JL asked: "I added my comments, what is the next step."
+  - Built: draft, page and delivery updated
+  - Session: t04 Empirical strategy
+- **11-14 03:16** · Apply all t22 suggestions
+  - Decided: apply all 12 t22 suggestions.
+  - JL asked: "for t22, I agree on all of them."
+  - Built: 8 cards that passed the blind A/B check plus reviewer fixes on S7, S14, S19, S20
+  - Session: Appendix
+- **11-14 03:20** · Apply JL's 9 decisions
+  - Decided: write JL's 9 card choices into the Discussion.
+  - JL asked: "okay, check my feedback, and update them."
+  - Built: draft v1.4, LaTeX edits file, page re-adopted
+  - Session: t06 Discussion
+- **11-14 03:21** · Delete S31
+  - Decided: delete S31 ("A request does not mean that the treatment is inappropriate...").
+  - JL asked: "[Image #14] <-- we can delete this."
+  - Built: S31 removed from the Theory page
+  - Session: t03 Theory
+- **11-14 03:33** · Fix S29 and S22; check numbers
+  - Decided: apply S29 and S22; the main session confirms the run behind 2.79 and 9.26.
+  - JL asked: "confirm go ahead"
+  - Built: page and rebuilt web, LaTeX and Word files; number check passed to Pp-AgreeableRx-Discrention-v1108
+  - Session: t05 Results
+- **11-14 03:43** · Apply S22 reviewer wording
+  - Decided: JL's "Use this" on S22 is applied.
+  - JL asked: "I add the new feedback, could you check it."
+  - Built: page and web, LaTeX and Word files
+  - Session: t05 Results
+- **11-14 03:51** · Re-review C2.P3 changes
+  - Decided: C2.P3 was changed too much; JL cut both cut cards; fix numbering left at 1, 2, 3, 6, 7.
+  - JL asked: "plesae check my feedback, why you changed so much in the C2.P3, please review it agian."
+  - Built: duplicate "keep" option removed; renumbering fix started
+  - Session: t06 Discussion
+- **11-14 03:52** · Restore the dropped S20 card
+  - Decided: restore the new sentence after S20 saying the four Appendix D checks all hold.
+  - JL asked: "should we get it back?"
+  - Built: on the page and in rebuilt web, LaTeX and Word files
+  - Session: t05 Results
+- **11-14 03:55** · Move S12 out of C2.P3
+  - Decided: move S12 (the mechanism sentence) unchanged to C2.P4 after S20, leaving C2.P3 a 4-sentence argument.
+  - JL asked: "No, I am not sure what is the logic we want to have for C2.P3, could you check it?" … "yes, do it"
+  - Built: C2.P4 renumbered B1 to B6 after a "B3a" label broke the page tool; re-adopting
+  - Session: t06 Discussion

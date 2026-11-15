@@ -1,8 +1,8 @@
 # Register-board workflow · the older layout (until carried over)
 
 > **Older layout (261008).** This was `haipipe-insight-workflow`'s SKILL.md body (2.3.0), kept word for word for the
-> register boards (`*-InsightBoard`, MT00-MT04) until each is carried into a Prototype release. The insight ladder's
-> workflow is the SKILL.md now: run cards, gates and routing between the Prototype and the insight Board.
+> register boards (`*-InsightBoard`, MT00-MT04) until each is carried into a Question Book release. The insight ladder's
+> workflow is the SKILL.md now: run cards, gates and routing between the Question Book and the insight Board.
 
 
 ## (was) /haipipe-insight workflow · execute Runs and record their dependencies
@@ -31,7 +31,7 @@ Supporting Run dependency; it does not copy or recount that execution.
 Workflow Definition = bounded Run Specs + dependency/Route graph + completion rules
 Workflow Runtime    = workflow_runtime_id + actual owner-native Run instances
                       + receipt references + control records + ready/waiting work
-Question Group      = partition × DIKW target, a derived scheduling/status view
+Question Group      = segment × DIKW target, a derived scheduling/status view
 ```
 
 There is no Phase object or current-Phase state. Meta, Question, Data,
@@ -42,7 +42,7 @@ need zero, one, or several native Runs. A Run Spec has one bounded target and
 close rule; only an allocated native Ticket and receipt establish a Run.
 
 The runtime enumerates the page tickets that answer questions (an answering
-page's `runs/run_bNNjNNtNNrNN_<partition>_<task>.sh`, which sets `RESULT_DIR`
+page's `runs/run_bNNjNNtNNrNN_<segment>_<task>.sh`, which sets `RESULT_DIR`
 to the page's `results/<ticket>/` and calls a task run in the Project's DIKW
 Block whose config's `answers:` cross-checks the question), the Report runs
 that write or refresh the answering page's `.md` from its own results, and the
@@ -76,7 +76,7 @@ close the Runtime. A required unresolved gate leaves it `held`, never complete.
 
 | Kind | Owner | Persistent resource |
 |---|---|---|
-| Meta | `haipipe-insight-meta` | MT00 source inventory, grain, window, freshness, limits and partition register |
+| Meta | `haipipe-insight-meta` | MT00 source inventory, grain, window, freshness, limits and segment register |
 | Question | `haipipe-insight-question` | MT01–MT04 stable questions and per-partition Queue cells |
 | Data | `haipipe-insight-data` | observations: the answering page's ticket results; the page says them in words |
 | Information | `haipipe-insight-information` | reproducible derivations: the answering page's ticket results and the page that reads them |
@@ -92,13 +92,13 @@ SETTLE is a Question-owned resource update. GI0-GI6 are stable predicate keys,
 not execution positions. Passing a predicate authorizes only the exact
 resource/version/target named in its receipt.
 
-## Question Groups and partitions
+## Question Groups and segments
 
 A Question Group is a derived `partition × DIKW target` view of Queue cells;
 its state never allocates a Run or settles its members together. Load
-[`ref/partition-policy.md`](partition-policy.md) for audience eligibility,
-COLUMN/cross/full-only routing, pooling, or late partition arrival. MT00 alone
-registers a partition; Question owns its asks and cell state. `cross` owns comparisons,
+[`ref/segment-policy.md`](segment-policy.md) for audience eligibility,
+COLUMN/cross/full-only routing, pooling, or late segment arrival. MT00 alone
+registers a segment; Question owns its asks and cell state. `cross` owns comparisons,
 has no raw D rows, and every partition-major W depends on the current verdict.
 
 ## 🔁 Semantic dependencies across answer targets
@@ -138,12 +138,12 @@ clause, which is per-column-set.
 
 ```text
 GI0  inventory ready      MT00 names the board's ONE extract and it resolves · the four
-                          registers exist · on partition-major the partition register
-                          (with one config stem per cut) and the shared-threshold
+                          registers exist · on partition-major the segment register
+                          (with one config stem per segment) and the shared-threshold
                           pointer exist
 GI1  question registered      the cell's row carries target, raiser, what-would-answer
                           with its evidence needs (kinds legal at the level;
-                          haipipe-insight ref/evidence-needs.md), and a state cell · its partition is on MT00's register (a W
+                          haipipe-insight ref/evidence-needs.md), and a state cell · its segment is on MT00's register (a W
                           cell also needs its partition's folder for the W page)
 GI2  observations citable   the answering page's ticket for the QD question has a
                           current `ok` receipt for the board's extract in the page's
@@ -156,7 +156,7 @@ GI3  derivation citable   the same for a QI question (needs, specs, health and p
                           included), and its page (required for
                           Information) traces every number to a file in its own results and keeps
                           nulls visible (cross contrast: mirrored Information results of
-                          each partition, the one exception)
+                          each segment, the one exception)
 GI4  parent/verdict ready   the Knowledge page passed a fresh-context check: every
                           number traces to a current named result, haipipe-insight-check
                           finds every need bound, fit, cited and current (no compute
@@ -166,8 +166,8 @@ GI4  parent/verdict ready   the Knowledge page passed a fresh-context check: eve
                           bridge passes all five bridge assertions · on
                           partition-major the cross group's current POOL, SPLIT, or
                           UNDETERMINED verdict page cites the predeclared shared
-                          thresholds and is current against the partition register —
-                          a late partition voids this gate
+                          thresholds and is current against the segment register —
+                          a late segment voids this gate
 GI5  handoff authorized      ✋ the handoff's `signed:` row reads `✅ <initials> <YYMMDD>`
                           (haipipe-insight-wisdom) · `⬜` blocks · no machine
                           writes it · receipt pins the exact Page and dependencies
@@ -177,7 +177,7 @@ GI5  handoff authorized      ✋ the handoff's `signed:` row reads `✅ <initial
                           has no GI5 pass or Design handoff; Question records GI6
                           under its two-receipt rule
 GI6  answer settled               no overclaim from haipipe-insight-check on the cell, then the
-                          register cell flips ✅ <page id> (`✅ <L><NN>-<partition>`), or 🚫 with a reason, or
+                          register cell flips ✅ <page id> (`✅ <L><NN>-<segment>`), or 🚫 with a reason, or
                           🟡 <page id> final when the answer states why the remainder cannot
                           close (haipipe-insight-question) — always naming the answering
                           page, whose state line names the question back (`answers QI2`) ·
@@ -214,17 +214,17 @@ input.
 ```text
 Meta        0-MT-meta/MT00-meta/
 Question        0-MT-meta/MT01-MT04/
-D/I/K     <N>-<partition>/<R><NN>-<partition>-<slug>/ (Job/Task): <slug>.md (Report) ·
+D/I/K     <N>-<segment>/<R><NN>-<segment>-<slug>/ (Job/Task): <slug>.md (Report) ·
           runs/<ticket>.sh + results/<ticket>/ (Work) · 9-cross/ (pinned
           last) for cross pages · old level-major
           boards: 1-D-data/ · 2-I-information/ · 3-K-knowledge/
-Wisdom    each partition's folder <N>-<partition>/W<NN>-<partition>-<slug>/ (no runs/
+Wisdom    each partition's folder <N>-<segment>/W<NN>-<segment>-<slug>/ (no runs/
           when it reasons only from other pages)
 ```
 
-These are disk groups, not Question Groups. The derived projection cuts across
-them: an MT02 column exposes `QG-<partition>-I`, while partition group `<partition>` exposes
-`QG-<partition>-D`, `QG-<partition>-I`, `QG-<partition>-K`, and `QG-<partition>-W`.
+These are disk groups, not Question Groups. The derived projection segments across
+them: an MT02 column exposes `QG-<segment>-I`, while segment group `<segment>` exposes
+`QG-<segment>-D`, `QG-<segment>-I`, `QG-<segment>-K`, and `QG-<segment>-W`.
 
 ## 🧾 Runtime records
 
@@ -235,7 +235,7 @@ duplicates their authority. `ref/run-workflow.md` defines the envelope.
 
 A GI/resource update leaves one dated control receipt in the granting Folder's
 `draft/records/<stem>-log.md`, except a 🟡 final settlement, which leaves two (see migration rules).
-MT00 records GI0 and partition registration; Question registers record GI1,
+MT00 records GI0 and segment registration; Question registers record GI1,
 GI2-GI4 (the register facing the answer's level, since a run or a run result has no
 Folder log) and GI6; Wisdom records GI5. Include the runtime id,
 exact target, evidence/version, assertion, actor, outcome and next action.

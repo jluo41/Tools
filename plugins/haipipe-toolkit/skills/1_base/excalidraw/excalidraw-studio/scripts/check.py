@@ -21,6 +21,9 @@ A paper read onto a canvas keeps excalidraw-read's own words (a reading under re
 readings by topic_drawing.py): ⑥ ⑦ name it, not judge, as the shapes table in SKILL.md says.
 A drawing with no frames (excalidraw-workflow's building map keeps its own column layout): ③ names it, not judge.
 A detail frame (Drawing.detail: a video's full frame) holds the detail ⑦ sends out: ⑥ measures it instead.
+A five-part drawing (haipipe-studio five_parts.py, the default topic drawing) keeps its own look: icons,
+coloured tables and stickies, no frames. The old density rules (⑤ ⑥ ⑦) do not judge it; instead ⑤P checks its five
+parts are all there (1 Idea, 2 Now, 3 Design, 4 Process, 5 Delivery) and its Design holds its A · B · C sketches.
 """
 from __future__ import annotations
 
@@ -176,9 +179,44 @@ def crossings(arrows, fs):
     return out
 
 
+PARTS = {1: "Idea", 2: "Now", 3: "Design", 4: "Process", 5: "Delivery"}   # haipipe-studio five_parts.PART_NAMES
+PART_MIN = 40                         # five_parts.PART_SIZE is 46; a person's resize down to 40 still counts
+
+
+def part_names(els) -> set:
+    """The five parts' names drawn large (five_parts.part, 46 px); found by their words, since a drawing written with
+    the person's marks kept (five_parts.marks_writer, canvas.write) carries content ids, not part1 … part5."""
+    return {str(e.get("text")) for e in els if e.get("type") == "text" and e.get("fontSize", 0) >= PART_MIN
+            and str(e.get("text")) in PARTS.values()}
+
+
+def is_five_parts(els) -> bool:
+    """A five_parts drawing: at least its Idea, Now and Design."""
+    return {"Idea", "Now", "Design"} <= part_names(els)
+
+
+def five_parts_check(path, els):
+    """⑤P: the five parts present, and the Design's sketches A · B · C (their titles start "A ·", "B ·", "C ·")."""
+    names = part_names(els)
+    have = [k for k in PARTS if PARTS[k] in names]
+    texts = [str(e.get("text", "")) for e in els if e.get("type") == "text"]
+    sketches = [k for k in "ABC" if any(t.startswith(f"{k} ·") for t in texts)]
+    stubs = sum(1 for t in texts if re.search(r"<[^<>]{2,}>", t))
+    missing = [PARTS[k] for k in PARTS if k not in have]
+    parts = ("✅ all five parts" if not missing else "❌ missing " + ", ".join(missing))
+    design = ("✅ Design holds A · B · C" if len(sketches) == 3 else
+              "🔶 Design holds " + (" · ".join(sketches) or "no lettered sketch") + " (A the pieces, B how it grew, C the open choices)")
+    return {"drawing": Path(path).name, "frames": 0, "five": True, "rows": [], "slide": False, "s00": False,
+            "③": "a five-part drawing (haipipe-studio five_parts.py): its own look; ⑤ ⑥ ⑦ do not judge it",
+            "⑤P": [parts, design] + ([f"❌ {stubs} placeholder words left (<…>): fill them from the face"] if stubs else
+                                     ["✅ no placeholder words left"])}
+
+
 def check(path):
     path = Path(path)
     els = [e for e in json.loads(path.read_text(encoding="utf-8"))["elements"] if not e.get("isDeleted")]
+    if is_five_parts(els):
+        return five_parts_check(path, els)
     fs = frames_of(els)
     slide = canvas.is_slide_draft(path)                  # s61-s69: excalidraw-slide's sizes and words
     s00 = canvas.is_s00(path)                            # a Block's s00: block_index.py's words (⑦)
@@ -204,6 +242,8 @@ def check(path):
 
 
 def report(r):
+    if r.get("five"):
+        return "\n".join([f"{r['drawing']}: {r['③']}"] + [f"      ⑤P {x}" for x in r["⑤P"]])
     out = [f"{r['drawing']}: {r['frames']} frames · ③ {r['③']}" +
            (" · a slide draft: sizes and words are excalidraw-slide's" if r.get("slide") else "")]
     for f in r["rows"]:

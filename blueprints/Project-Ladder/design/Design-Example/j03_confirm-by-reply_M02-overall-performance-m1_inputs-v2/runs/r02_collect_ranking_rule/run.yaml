@@ -1,7 +1,7 @@
 run: r02_collect_ranking_rule
 kind: hard
 type: collect
-scope: Tools/blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_method-v2-overall-performance_inputs-v2
+scope: Tools/blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_M02-overall-performance-m1_inputs-v2
 target: Design-Example.j03-s02:release_choices @ ranking_rule
 ticket: null
 skill: haipipe-interaction

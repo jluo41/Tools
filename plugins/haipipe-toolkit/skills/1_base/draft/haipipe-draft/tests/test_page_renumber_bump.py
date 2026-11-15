@@ -79,15 +79,15 @@ def _page(tmp_path: Path) -> Path:
 def test_renumber_follows_the_text_in_every_file(tmp_path):
     folder = _page(tmp_path)
     report = renumber(folder)
-    assert report["mapping"] == {"S3": "S2", "S2": "S3", "S22": "S4"}
+    assert report["mapping"] == {"s3": "s2", "s2": "s3", "s22": "s4"}
     draft = (folder / "draft" / "t01_note-draft-v0.4.md").read_text()
-    assert "- B2 · S2 · It costs money" in draft and "- B4 · S4 · A new sentence." in draft
-    assert "- B2 · S2 · [Cost] The cost" in draft                          # §1 follows §3
+    assert "- B2 · s2 · It costs money" in draft and "- B4 · s4 · A new sentence." in draft
+    assert "- B2 · s2 · [Cost] The cost" in draft                          # §1 follows §3
     assert "    for:\n    - 2\n" in (folder / "evidence" / "cards.yaml").read_text()
     comments = (folder / "draft" / "records" / "t01_note-comments.md").read_text()
-    assert "### Comment 1 · S4" in comments and "Reply · 2026-10-21 10:05: S4 stays after S3." in comments
+    assert "### Comment 1 · s4" in comments and "Reply · 2026-10-21 10:05: s4 stays after s3." in comments
     assert "Note · 2026-10-21 10:00: S22 is odd" in comments               # the person's note stays as written
-    assert "### Edit · S2 · the cost\nWhy: S2 needs a number" in (folder / "draft" / "records" / "t01_note-revise.md").read_text()
+    assert "### Edit · s2 · the cost\nWhy: s2 needs a number" in (folder / "draft" / "records" / "t01_note-revise.md").read_text()
     assert renumber(folder)["mapping"] == {}                                # once in order, nothing to do
 
 
@@ -124,7 +124,7 @@ def test_renumber_keeps_word_addresses_and_marks_a_cut_id(tmp_path):
     report = renumber(folder)
     text = revise.read_text(encoding="utf-8")
     assert "P8.S3" in text and "02-literature:P4.S3" in text      # Word addresses untouched
-    assert "C1.P1.S2" in text and "Edit · S2 · the cost" in text  # page addresses renumbered (S3 reads second)
-    assert "Edit · S4-cut · a cut sentence" in text                # S22 became S4, so the cut S4 is marked
-    assert report["mapping"]["S4"] == "S4-cut"
+    assert "C1.P1.s2" in text and "Edit · s2 · the cost" in text  # page addresses renumbered (S3 reads second)
+    assert "Edit · s4-cut · a cut sentence" in text                # S22 became S4, so the cut S4 is marked
+    assert report["mapping"]["s4"] == "s4-cut"
     assert renumber(folder)["mapping"] == {}                        # a second run changes nothing

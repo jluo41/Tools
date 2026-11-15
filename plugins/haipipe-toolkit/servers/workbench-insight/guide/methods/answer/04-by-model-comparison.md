@@ -12,7 +12,7 @@ move: Fit an explanatory model and a predictive model to the same question, scor
 taxonomy: Predictive against inferential or causal [Leek 2015]; prediction against causal
   inference [Hernán 2019].
 comes from: Breiman 2001, two cultures; Shmueli 2010, explain or predict
-reads: question · the extract · a held-out partition
+reads: question · the extract · a held-out segment
 returns: each model's fit, its held-out score against a simple benchmark, and the goal it
   serves
 test now: T4 spec · T7 held-out score against a simple benchmark
@@ -45,8 +45,8 @@ Applied to AI
 -------------
 
 agent: The agent fits both models from the spec's columns, and does not look at the
-  held-out partition while fitting (ours).
-steps: 1. Split by the spec's partition. 2. Fit the benchmark, the explanatory model and
+  held-out segment while fitting (ours).
+steps: 1. Split by the spec's segment. 2. Fit the benchmark, the explanatory model and
   the predictive model. 3. Score all three on the held-out part. 4. Write which goal
   each serves.
 returns: A table of the models, their held-out scores against the benchmark, and the goal

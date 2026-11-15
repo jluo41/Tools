@@ -12,7 +12,7 @@ groups its Questions, in every theme.
 
 **Topic:** how a Report groups its Questions, theme by theme. Today every Block of every theme shows
 the paper Board's four buttons, Ideation · Narrative · High-level logic + Low-level work · Related
-Questions (`AUDIENCE_VIEWS`, servers/workbench/frame.py, since 261009), and two of them list studio
+Questions (`AUDIENCE_VIEWS`, servers/workbench/page/frame.py, since 261009), and two of them list studio
 topics, not Questions. JL 261011, on a screenshot of b10's Report: "for the Report, definitely, the
 groups should not be design in this way ... these group names should be predefined and also can be
 added if we want? ... I think for the groups in the report, this will be an very important question
@@ -98,7 +98,7 @@ frames:
     - "🎨 theme, the kind of Block: work, cowork, paper, insight, design, discovery, labeling; base: none"
   - 📍 Where it sits:
     - 🧱 b10 keeps the rule and the table; each theme Block, b11 to b17, its own list
-    - 🖥️ the code is servers/workbench/frame.py, one look for Studio, Related and Report
+    - 🖥️ the code is servers/workbench/page/frame.py, one look for Studio, Related and Report
     - "🔗 it feeds q03_block_questions and q09_studio_report_on_screen"
 - title: 🗺️ Report groups, from a Question's name to every screen
   intro: Each box says why it is there; the arrows say how one part leads to the next. ❓ is still open.
@@ -195,7 +195,7 @@ reads the same off the disk on every build.
 ```text
 skills/1_base/project/haipipe-report/   the register: a Question's group: line
 skills/1_base/project/haipipe-report/      the Report (s05)
-servers/workbench/frame.py                 question_rows · group_list · studio_group_op
+servers/workbench/page/frame.py                 question_rows · group_list · studio_group_op
                                            AUDIENCE_VIEWS · WHO_ASKS, the four buttons today
 servers/workbench-<theme>/<theme>_theme.py each theme's Report row today; its starting groups
 ```
@@ -240,7 +240,7 @@ and the real Boards:
    asleep · cross, one cut at a time; row 3 the readings, Coverage · Tracks · Consistency · Findings; the
    body folds by Data · Information · Knowledge · Wisdom, read off each Question's id (release p2: 20
    Questions, D 6 · I 6 · K 6 · W 2). A Job: the partitions, then Current · vs previous; a Task: Table ·
-   Reading. Its board.md register is empty: the Questions live in the Prototype's release (release.yaml,
+   Reading. Its board.md register is empty: the Questions live in the Question Book's release (release.yaml,
    one question.md each). No `group:` anywhere.
 5. Insight's subjects cut across its levels: sleep (I03 · K04 · K05), walking (I04 · K02), stress and
    heart (I05 · K03), events (D05 · I06 · K06), glucose control (I01 · I02 · K01).
@@ -318,7 +318,7 @@ s07-D08 · Proposed (JL 261011): a theme may also predefine **standing Questions
     changed since the last send?, J5 a revision only; `STANDING` in paper_theme.py). This is where "what
     are the typical questions to ask" (JL 261011, to the sNN session) gets each theme's answer.
 
-s07-D09 · Built 261011 in servers/workbench/frame.py (workbench 1.19.0). `report_view` draws each Question as
+s07-D09 · Built 261011 in servers/workbench/page/frame.py (workbench 1.19.0). `report_view` draws each Question as
     a folding card, as a Studio topic is (⋮⋮ · its id and title · its chips · state and work · Add to
     Current), opened on its Logic │ Work │ Report row, under `group_list(kind="reports")`; the vanilla
     Report has no second row any more. `_question_records` reads the register once for the cards and for
@@ -347,7 +347,7 @@ s07-D10 · Proposed (JL 261012, on Insight-SMSR2v1's Job Report: "besides the pe
     Timing 5 (I04 I09 · K03 K07 K17), Demographics 4 (I03 I07 I20 · K02), Data quality 4 (D01 D04 D05 · I19),
     Place and income 5, Medical context 4, Behaviour 4, Wording 3, Partitions 3, Sender 3, Prior messages 3,
     Funnel 2. The names are guessed from the Task names until agreed; a Question's topic is a `group:` line
-    in its question.md in the Prototype (Open 7).
+    in its question.md in the Question Book (Open 7).
 s07-D11 · Decided (JL 261012, through the b10 watcher: "go ahead and do all"): the drawing is three frames,
     each a folder tree: ① Background, ② the Tree, ③ the screens, today beside proposed for the base and
     every theme. The 261011 four frames (the screens, Across the themes, Paper and insight today, In Tools)
@@ -357,7 +357,7 @@ s07-D12 · Decided and built (JL 261012: "for each group, I think we might have 
     colors"): a Report group's button takes the colour of where its name comes from: **gray**, fixed by the
     theme (`Theme.report_fixed`, `report_cards`; no ×); **amber**, suggested by the theme and shown even when
     empty (`Theme.report_groups`, and "Random thoughts" in every theme, s07-D02); **white**, the Block's own
-    (+ Group). The bar's help line names the colours. Built in `servers/workbench/frame.py` (`group_list`
+    (+ Group). The bar's help line names the colours. Built in `servers/workbench/page/frame.py` (`group_list`
     takes `fixed`; `--grp-fixed-*`, `--grp-sug-*`, light and dark; `REPORT_SUGGESTED`). The suggested groups of
     s07-D03 are set for work (Data · Pilot · Evaluation, `work_theme.py`) and cowork (Needs · Works ·
     Blockers, `cowork_theme.py`); the guessed ones (design, discovery, labeling) are not. A drawing shows the
@@ -416,7 +416,7 @@ Open
    research question needs no group line, and `nmi-cgm-scaling-axes` keeps working unedited. b16 s05
    Open 5 asks which name the screen keeps, RQ0 or Q00 (JL's choice).
 7. An insight topic (Sleep; Variants, Timing): a `group:` line in each question.md's front matter in the
-   Prototype, so every Board of that Prototype shares it? And agree the 12 SMS topic names (s07-D10).
+   Question Book, so every Board of that Question Book shares it? And agree the 12 SMS topic names (s07-D10).
 8. A paper's research questions have two names, RQ0 to RQ6 in the Story and Q00 to Q06 in the
    register: which one does the screen keep (b16 s05 Open 5, JL's choice)?
 

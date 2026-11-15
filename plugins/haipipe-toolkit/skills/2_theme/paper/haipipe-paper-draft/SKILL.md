@@ -2,8 +2,8 @@
 name: haipipe-paper-draft
 description: "The paper's draft Task: one Section, the Abstract or a letter of one version (task-type: draft), the paper's rules on top of haipipe-draft; executes one row of the version's ## Narrative and keeps its Requirement (venue rules, rubric, SUB-* rows). Evidence and displays follow haipipe-paper-evidence; the whole manuscript is haipipe-paper-assemble. Use to add, outline, draft, revise, check or retarget one Section. Also opens as /haipipe-paper-section."
 metadata:
-  version: "0.20.0"
-  last_updated: "2026-11-04"
+  version: "0.26.0"
+  last_updated: "2026-11-13"
   aliases: [haipipe-paper-section]
   folder_owner: canonical
   legacy_page_type: section
@@ -20,6 +20,8 @@ metadata:
 
 # /haipipe-paper-draft · one paper Section as a draft Task
 
+> **Working a Section follows JL's method** (261115): the structure loop, the draft loop and evidence beside them, [`ref/section-method.md`](ref/section-method.md); each step is a must-check row (haipipe-paper M-E01 to M-E09).
+
 A paper Section is a draft Task (b32_draft s03, s41-D06; JL 261019: "we have the paper to combine the evidence and
 draft together to make a draft task"). The base gives every theme the same three folders, one writer each; the paper
 adds its rules to two of them:
@@ -28,8 +30,8 @@ adds its rules to two of them:
 base (every theme)      paper adds                  one Section Task
 haipipe-draft      ─▶   haipipe-paper-draft    ─┐   tNN_<section>/
 haipipe-evidence   ─▶   haipipe-paper-evidence ─┼─▶ ├── draft/      plan and sentences (this skill)
-haipipe-display    ─▶   (in paper-evidence)    ─┘   ├── evidence/   cards (haipipe-paper-evidence)
-                                                    └── display/    figures and tables
+haipipe-display    ─▶   (in paper-evidence)    ─┘   └── evidence/   cards (haipipe-paper-evidence); a display is
+                                                                    its Board Task's, bound by `cited-in:`
 ```
 
 Was `haipipe-paper-section` until 261019; that name is an alias, and a face's `page-type: section` resolves here
@@ -50,9 +52,10 @@ do not invent Page paths, accepted Results, or a release to complete a proposal.
 
 ## Paper ownership and entry
 
-This skill owns the Paper Section Page and its `page-type: section` contract below. Enter through gate G3, one page per
-row of its version face's `## Narrative` (an older Board's Story §8), each row released by a person independently
-(the Release a Section card). A new Section is made by `haipipe-paper/scripts/paper_ladder.py task <version>
+This skill owns the Paper Section Page and its `page-type: section` contract below. Enter through gate G3: one draft
+Task per Section row of its version face's `## Narrative` (that venue's layout; the Story's § 8 holds the shared
+claims and no Section rows, and only an older Board still keeps Section rows there). The person signs the version's
+Narrative first (`page.py sign-narrative`), then releases each row independently (the Release a Section card). A new Section is made by `haipipe-paper/scripts/paper_ladder.py task <version>
 t0N_<title>` (the Add a Section card), with its reader-contract header; its `reports/` come with their first item.
 Gate G4 marks the assembled build SUBMISSION-READY versus DRAFT; assemble
 is a separately commissioned build, and runs anytime from `delivery/` on the Story's
@@ -71,14 +74,16 @@ Authority order:
 
 ```text
 Story Seed divisions (§1–§5: identity and evidence boundaries)
+  → Story § 8, the shared narrative (title, story, claims C1..Cn and their numbers)
   → selected Venue rules
-  → its row in the version face's ## Narrative (an older Board: the Story §8 row and Story version)
+  → the version face's ## Narrative, signed (the layout: claims to displays, this Section's row)
   → venue × section-kind structure/template
   → landed Page-local evidence
   → current prose
 ```
 
-Prose never outranks a changed Section Narrative row or binding desk rule.
+Prose never outranks a changed § 8 claim, a changed Section row or a binding desk rule. A Section quotes the
+claims by id from § 8; neither the version face nor the Section copies their wording.
 
 ## 📏 Requirement (b16 s13, JL 261007)
 
@@ -140,6 +145,72 @@ No transition set off by commas either (JL 261104: "don't use things like ' , ho
 
 The Introduction says its hypotheses in words, with no `H1` or `H2` label; the labels start where the theory section states them (JL 261104: "why we have the H1 here?").
 
+## 📏 Paragraphs of 4 to 7 sentences (JL 261112)
+
+A paragraph of a paper Section holds 4 to 7 sentences (JL 261112: "abstract should be okay. for other, unless having
+good reason, we might make sure they are between 4~7 sentences"). The count is read from the paragraph heading
+`### C<n>.P<m> · <name> · s<a> to s<b>` (b - a + 1), else from the Bullets (`- B<n> · ...`) under it. Exempt: the
+Abstract (section_kind `abstract` or `summary`), appendix, supplement and Extended Data legends, letters and
+responses, and a P0 title paragraph. A good reason is written as a `reason: <why>` line under the paragraph heading;
+the paragraph is then accepted and shown muted, not as an error.
+
+To fix one out of range: split a long paragraph at its natural turn. Join parallel sentences with "and" or "while",
+never a semicolon. Add a framing sentence only when a split leaves 3. Change § 1 and § 3 in one edit, remap the
+evidence items' targets, then run `page.py adopt --relayout`, `page.py export` and `page.py health`. The check is
+`page.py health` row `paragraph` (WARN while writing, FAIL with `--final`), read by haipipe-draft
+`src/paragraph_length.py`; haipipe-paper `scripts/paper_check.py` row W7 and `cli/anti_slop.py` finding
+`paragraph-length` use the same range.
+
+## 🏷️ Titles read like the text (JL 261112)
+
+Part titles (C<n>), paragraph titles (C<n>.P<m>), plan Bullet labels, arcs and Narrative reader questions are
+academic and understandable on the first read. They show on the Plan map and the Structure view, so they are read
+like the text (JL 261112, on "Here we measure what scale buys for each use": "I don't know why here we use the word
+of 'buy', you should call the subagent to review them to make sure they are academic and human understandable").
+A blind reviewer subagent, never the writer, scores each title 1 to 10 on academic register, first-read
+understanding, and naming what the paragraph is about. A title under 8 is rewritten, and the rewrite goes to the
+§ 1 and § 3 headings together.
+
+No metaphor or casual verb in a title or label: buy, bought, pay, paid, pays off, win, land, lands and their kin.
+Name the measured quantity instead ("how error changes with scale for each task"). The check is `cli/anti_slop.py`
+rule `title-metaphor` (category title), which reads heading lines, `arc:` lines and `[Label]` bullet labels, never
+body prose; `in-group-shorthand` reads the same lines, and `money-metaphor` reads the prose.
+
+## 📝 Writing patterns found on ScalingGlucose (261111-261112)
+
+Each came from JL on Paper-ScalingGlucose-NatSeries2026, in the shape of a Board's `writing-patterns.md`: the
+pattern, JL's words, our sentence, the fix, and the check that holds it where one can.
+
+1. **Paragraphs of 4 to 7 sentences.** JL: "unless having good reason, we might make sure they are between 4~7
+   sentences". Ours: Introduction P3 had 10, P5 had 13. Fix: split at the natural turn (10 into 4 + 6, 13 into
+   6 + 6); the Abstract is exempt, and a `reason:` line under the heading accepts an exception (§ Paragraphs of 4
+   to 7 sentences). Check: `page.py health` row `paragraph`, checklist W7, anti_slop `paragraph-length`.
+2. **Titles reviewed blind.** JL: "you should call the subagent to review them to make sure they are academic and
+   human understandable". Ours: 50 of 80 titles rewritten after review. Fix: a blind reviewer scores each title,
+   label, arc and reader question; under 8 is rewritten in § 1 and § 3 together (§ Titles read like the text).
+3. **No money metaphors.** JL: "I don't know why here we use the word of 'buy'". Ours: "Here we measure what scale
+   buys for each use". Fix: name the measured quantity, "where scale reduces error", "how scale changes error for
+   each task". Check: anti_slop `title-metaphor` (titles, labels, arcs) and `money-metaphor` (prose; a literal paid
+   claim is not flagged).
+4. **No in-group shorthand in titles.** Ours: "rolled forward", "head", "route", "grid", "roadmap", "use". Fix:
+   "recursive rollout", "linear head on the frozen model", "the way data were added", "model sizes and
+   configurations", "study design", "downstream task". Check: anti_slop `in-group-shorthand` (titles only).
+5. **The research questions stated together.** JL: "where are the two questions? i didn't see it." Fix: ask them
+   as questions with "?", one right after the other ("First, …? Second, …?"), never split by other sentences.
+   No automatic check; the cold read looks for it.
+6. **No post-hoc "We expected …" in the Introduction.** JL: "do we really have evidence for this?" Ours: an
+   `[Expect]` Bullet with `Evidence: none`. Fix: ask the question, give the known prior result with its citation,
+   leave the answer to the Results. Check: `page.py health` row `expect` (an Introduction's `[Expect]` Bullet whose
+   Evidence line says none).
+7. **The title paragraph holds the title.** JL: "could you put the title here?" Ours: C1.P0's Bullet read "The
+   paper's title." Fix: write the paper's title in the `[Title]` Bullet. Check: `page.py health` row `title`.
+8. **The whole paper's structure before a Section's plan.** The version's `## Narrative` is signed (`page.py
+   sign-narrative`) and shown in Report › Structure beside the Board Story § 8 (the shared title, story and
+   claims); a Section's plan follows its row. Check: `page.py health` rows `narrative` and `row`.
+9. **Examples as one drawing per Section.** Each example paper is one area of the examples drawing (its screenshot,
+   then its logic as a mind map), drawn by `excalidraw-read ref/section_screens.py draw <topic>` and read beside
+   our own plan in Report › Structure (frame jump per paper).
+
 ## 🧑‍🤝‍🧑 Co-authors' patterns, every sentence, and the easier-to-read check (JL 261110)
 
 JL 261110: "will you add it and update it to the /haipipe-paper?"; "ask the agent to read each sentences to see
@@ -154,13 +225,18 @@ their comments, a meeting), the paper keeps what they want and checks every sent
    follow the house rules: no semicolons, no transition set off by commas, no longer than the original. Run
    `haipipe-draft-review` `cli/anti_slop.py audit` on the rewrites, before the easier-to-read check (JL 261110:
    the first round's kept rewrites scored worse than the originals on it, 26 against 19, and ran 9% longer).
-3. **Every sentence is reviewed**: one blind reviewer per Section (never the writer), reading the round's newest
+3. **Every paragraph, then every sentence, is reviewed** (JL 261115: "review the paragraph level logics, to check
+   whether the logic is correct or not"). First one blind reviewer per Section reads each paragraph as an argument
+   (`haipipe-draft-review` `ref/paragraph-logic.md`: order with no A-B-A return, every conclusion resting on named
+   sentences, no claim wider than its findings, no missing step); a move or a missing step is a Section question the
+   person signs before any sentence changes. Then one blind reviewer per Section (never the writer), reading the round's newest
    text, scores each sentence 1 to 10 against `ai-tells.md` § 5, the Board's patterns and the comments in that
    Section; under 8 gets a rewrite that keeps every number, citation and claim. A round is a Job on the Board, not a
    `reports/` folder (JL 261110: "we will no long using the reports/ plesae use the job or studio"):
    `jNN_review_<who>_v<MMDD>/` (face `for: <writing Job>`), its Tasks `t01_sentence_review` (the comments as
-   received in `result/feedback/`, the reviews in `result/review/review-<section>.md`), `t02_readability_check` and
-   `t03_tracked_word`. A Job named with "review" is never read as a writing version.
+   received in `result/feedback/`, the reviews in `result/review/review-<section>.md`), `t02_readability_check`,
+   `t03_paragraph_logic` (`result/logic-<section>.md`, run before the sentence review although numbered after it,
+   since it was added later) and `t04_tracked_word` (a round made before 261115 may hold it as `t03_tracked_word`). A Job named with "review" is never read as a writing version.
 4. **The easier-to-read check**: before a rewrite becomes a Revise card's default, a fresh reader (not the
    reviewer, not the writer) reads it in place: the sentence before, then the original and the rewrite in random
    order as A and B, then the sentence after. It answers two questions per pair: which one is easier to
@@ -171,10 +247,34 @@ their comments, a meeting), the paper keeps what they want and checks every sent
 5. **Back to the co-authors as tracked changes**: accepted cards are adopted into the Section, and the same edits
    go onto a copy of the co-authors' own latest file as tracked changes by the person who answers them
    (`excalidraw-draft/ref/track_changes.py` `write_tracked`): their comments and tracked changes stay. The edits are
-   `t03_tracked_word/scripts/edits.yaml` (find, new, why), its Run writes `delivery/<writing Job>/word-tracked/`, the
+   `t04_tracked_word/scripts/edits.yaml` (find, new, why), its Run writes `delivery/<writing Job>/word-tracked/`, the
    send's third paper beside the PDF and the Word file (JL 261110: "the Word-Change-Track, which is based on the
    previous change tracks from professors and you add the changes as well"). It is written locally;
    `word_round.py push` sends it only on the person's word.
+
+## 🏷 The Abstract carries the title (JL 261111)
+
+JL 261111: "the abstract should contains the title"; "you will have C1.P0 for S0 ... C1.P0 Title". An Abstract's Draft
+opens with its own paragraph `### C1.P0 · Title · s0` holding one Bullet, `- B0 · s0 · <the paper's title>.`, and the
+abstract proper follows as `### C1.P1 · <subject> · s1 to s<n>`. The title paragraph prints as its own line above the
+abstract; the venue's word limit is counted on C1.P1 (state both counts on the Draft's `form:` line). Because s0 states
+the claim, the last sentence of C1.P1 does not restate the title: it closes on what the reader should do or what it
+means (JL 261111 on "We conclude that scaling laws are not universal …": "This sentence is kind of akward"; it became
+"Builders should test scale task by task rather than assume one law."). The paper-wide title in
+`delivery/<job>/paper-build.toml` and the version face's **Title:** line carry the same words; the version face is the
+Story owner's to change. P0 and B0 are real numbers to `src/plan_shape.py` since 261111 (they were read as "no number"
+and became P1 and B1).
+
+## 🗣 Showing prose changes in a reply (JL 261113)
+
+A reply never shows proposed or changed Draft prose as a paragraph (a quote, an indented block, a fenced
+passage). JL 261113: "never return the things like this … Make it the same to the index in the UI, sentence by
+sentence, and also show what changes you made compared to previous. You can report paragraph by paragraph."
+Report it paragraph by paragraph, one line per sentence with the address the workbench shows (`C<n>.P<m> ·
+<title>`, then `B<k> · s<n>` as in § 3 of the Draft), a mark (✅ kept, ✏️ changed, ➕ new, ➖ cut, ↪ moved) and,
+for a changed sentence, its before and after in full, against a named version. The format and its example are
+`response-format` § Prose changes: sentence by sentence, by address. The revise record (`draft/records/<stem>-revise.md`)
+names each sentence by the same address, so chat, record and page agree.
 
 ## 📚 Examples first: a must (JL 261022; 261104)
 
@@ -209,6 +309,25 @@ same part, never before: a Studio topic `sNN-<task>-<venue>-examples` (`/excalid
 topic, two the author guide quotes), named by the Section canvas's `examples:` line, so the canvas draws ours beside
 them. The writer follows their moves and lengths and names each departure (haipipe-draft-writing `ref/writing.md` § 0).
 JL 261022: "你应该先找 example，看看别人是怎么写 abstract 的，然后再看怎么写".
+
+After the Examples, a Section starts at 1 · Plan and stays there until the person signs (JL 261111): the structure
+versions are proposed against the examples and the Section's `## Narrative` row, the person's word is written by
+`page.py sign --quote`, and Write, Evidence and Revise refuse an unsigned plan (haipipe-draft § The Plan gate). The
+sign keeps the Section's Narrative row as text in `draft/records/<stem>-sign.md`; when that row changes after the
+sign, `page.py health` gives `row` and the Section goes back to Plan.
+The version's `## Narrative` is signed before that (`page.py sign-narrative <version> --quote "…"` writes
+`narrative-approved:` and `story-at-sign:` on the version face and keeps the Story's § 8 as text in
+`<version>/records/narrative-sign.md`). Health's `narrative` row warns while the version's Narrative is unsigned or
+the Story's § 8 has changed since; `row` and `narrative` WARN, and FAIL with `--final`. Whole-paper structure choices
+are the version's, seen in the version Job's Report › Structure view beside the Story's § 8 (workbench-paper); the
+structure is a view, never a Task.
+
+**Examples: one source, shown at two levels (JL 261111: "the examples to be shared across the job level and each
+draft task").** Example papers belong to the version, because they are chosen by its venue. Read the same papers for
+every Section of a version, each paper under the same `reads/pNN-<author><year>/` name in each Section's examples
+topic. The Task's 📚 Examples card shows its own Section, as above. The version Job's Structure view adds a third
+panel, Examples: each example paper's section layout beside our paper map, joined across the Sections' examples
+topics by paper (`pNN-<author><year>`). Nothing is copied; a paper read for one Section only shows that one Section.
 
 ## ⚙️ Paper Section Run profile
 
@@ -276,8 +395,8 @@ transition-in/out   required joins to neighboring Sections
 ```
 
 If the Section Narrative row is missing or stale, CONTEXT records its exact
-source and returns `HOLD` to `haipipe-paper-story`, the owner of the Story page
-and its §8 narrative and detailed Section rows. If Venue
+source and returns `HOLD` to `haipipe-paper-story`, the owner of the Story page,
+its § 8 shared narrative and the version face's `## Narrative` rows. If Venue
 authority is missing or stale, it returns `HOLD` to
 `haipipe-paper-venue`, the owning QBv bank Page Type; Venue is a shared reference library. After the exact owner repairs and versions the source, the
 Section resumes at CONTEXT/PREPARE. Section work never repairs upstream
@@ -392,22 +511,22 @@ known limitation or unresolved need
 
 **A Section quotes, it never computes (0.20.0, JL 261110).** Every number in its prose is a value id of the value
 Job, bound by id, and the Section names the value Run it quotes (its VALUE card or binding says the Run, never "the
-newest"). A number with no id gets one in the value Job first; a newer value Run marks the binding stale until the
-Section is read again (haipipe-paper-evidence, The chain; `chain_check.py` says where it breaks).
+newest"). A number with no id gets one in the value Job first; a binding goes stale when an id it quotes moves or leaves
+in a newer value Run, and stays current when that Run only adds ids (haipipe-paper-evidence, The chain; `chain_check.py` says where it breaks).
 
 **The plan is a list of sentence slots (0.5.3, JL 260831).** One bullet is one
-sentence slot, `S<n> · <what the sentence does>` in 4 to 11 plain words;
-paragraphs group by move (`### C2.P1 · Problem and question · S1 to S3`); a
-finding carries its claim id plus a word (`S6 · C1: <the number and its unit>,
+sentence slot, `s<n> · <what the sentence does>` in 4 to 11 plain words;
+paragraphs group by move (`### C2.P1 · Problem and question · s1 to s3`); a
+finding carries its claim id plus a word (`s6 · C1: <the number and its unit>,
 comparison owed`); one `Cut:` bullet names what leaves the section and where it
 goes; a Note is one line and never the drafted sentence, which lives on the
 page. The approved specimen is quoted in `workbench-task-draft` §✂️.
 
 **Structure and Draft move together (JL 261102: "when you update the draft, you should also udpate teh structure as
 well")**. A Draft Markdown's `## 1 · Structure` is the plan of its `## 3 · Draft`, so every edit to the sentences
-makes the same change to the plan in that edit: a sentence added or cut adds or cuts its Bullet (`- B<k> · S<n> ·
+makes the same change to the plan in that edit: a sentence added or cut adds or cuts its Bullet (`- B<k> · s<n> ·
 [Role] what it does`, with its `Evidence:` line), a sentence moved moves its Bullet, a paragraph added, split, merged
-or renamed changes its `### C<n>.P<m> · <title> · S<a> to S<b>` heading in sections 1, 2 and 3 and its entry in the
+or renamed changes its `### C<n>.P<m> · <title> · s<a> to s<b>` heading in sections 1, 2 and 3 and its entry in the
 Structure Overview, and the S numbers and spans are renumbered to match. A new structure is a new draft version
 (`draft-v<G>.<S+1>`, the older one moved to `draft/previous/`), never a section 3 rewritten under the old plan; its
 Evidence Items and the face's `evidence-allowlist:` follow their sentences. `page.py health <Task>` checks it
@@ -446,7 +565,8 @@ without knowing the planning vocabulary.
 
 ## 🃏 Evidence is haipipe-paper-evidence's
 
-What backs a sentence (a citation, a value, a display) is the Section's `evidence/` and `display/`, under
+What backs a sentence (a citation, a value, a display) is made in the Board's evidence Jobs and bound in the
+Section's `evidence/` (a display by its Task's `cited-in:`, JL 261113), under
 `haipipe-paper-evidence` on top of the base `haipipe-evidence` and `haipipe-display` (moved there 261019). This skill
 writes the words and keeps every consequential sentence one of three things, which the evidence skill checks:
 
@@ -496,7 +616,7 @@ face "How much changes" (every paragraph) ─▶ CONTEXT cites it ─▶ SHAPE: 
 5. **Routes agree.** Every Review Item a reading links lands on this Section in the comments report's `lands on`
    column; a missing route is fixed in the report, never only in the reading.
 
-Worked example: Paper-TestToLearn-MS2026, s10 to s16, the sent `j01_v0429_mansci` read for `j02_v1007_mansci`:
+Worked example: Paper-TestToLearn-MS2026, S10 to S16, the sent `j01_v0429_mansci` read for `j02_v1007_mansci`:
 107 rows, 13 KEEP · 47 REWRITE · 26 CUT · 21 MOVE.
 
 ## ✉️ A cover letter's words (JL 261104)
@@ -522,6 +642,7 @@ you make them to be complete?"):
 | The contract block | every field of § 📥 Required contract block is on the face, none left as `<…>` | the face |
 | The Requirement | `W<n>` rules for the Section's own writing; the venue's `V<n>` when its desk has a division, else the reason in `structure-division:` | `draft/records/<stem>-requirement.md` |
 | 📚 Examples ⛔ first | before Plan: `examples:` names the topic of 3 to 4 published papers of the same article type, each Section read whole with its moves and lengths and each departure of ours named, or says `examples: none · <reason>` (a cover letter: journals publish none) | the face, `page.py health`'s `0 · Examples` row |
+| 1 · Plan signed | the version's `narrative-approved: ✅` first (`page.py sign-narrative`), then `approved: ✅ … · in chat: "…"` by `page.py sign`, before any § 3 sentence; health shows no `order`, `row` or `narrative` row | the Draft Markdown, `page.py health` |
 | Evidence for every number | each number, citation and display a sentence uses has an item, and each `Evidence:` line in § 1 names it | `draft/<stem>-evidence-items.md` |
 | Its own delivery | web, LaTeX and Word built under `delivery/<job>/<task>/` (`page.py export`); a letter's face says `delivery-builder: <the paper's build.py>`, so its LaTeX and Word lanes are the letter as uploaded (date, addressee, signature), never a Section print | the Delivery tab |
 | Into the paper | a Section: its LaTeX fragment in the version's paper build; a letter: the cover letter lane (`[coverletter] task`) builds it and the portal packet carries it | `delivery/<writing Job>/` |
@@ -539,6 +660,7 @@ you make them to be complete?"):
 - Venue rules are distinguished from pack observations.
 - The generated TeX/PDF/DOCX reflects the accepted Page version.
 - CHECK, not prose completion, closes the Section.
+- The must-check gate passes (haipipe-paper `ref/must-check.md`): no rule fails without its id and reason named.
 
 `page_ruling: none` is explicit for the per-Section Page. CHECK may close one
 unit when its Section contract and artifact-specific gates pass. Paper gate G4

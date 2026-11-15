@@ -40,7 +40,7 @@ Live page: `http://100.121.165.84:5623/_board/workbench?layout=focus&path=bluepr
 - The form format and its limits: `plugins/haipipe-toolkit/skills/1_base/workbench/haipipe-interaction/SKILL.md`.
 - How a page reads (five rules, one verb per section, the view-button-list): `skills/1_base/workbench/haipipe-ui/SKILL.md`.
 - The cell's own face (its Rules and Open): `<task>/s1N-<level>-ui-<section>/s1N-<level>-ui-<section>.md`.
-- What the code does today: `plugins/haipipe-toolkit/servers/workbench/focus_page.py` (`render`, the `overview`, `work`,
+- What the code does today: `plugins/haipipe-toolkit/servers/workbench/page/focus_page.py` (`render`, the `overview`, `work`,
   `studio_views` and `rail` dictionaries).
 - The sibling cells already decided by JL: b17 `blueprints/Project-Ladder/work/b17_theme_work/j03_work_workbench_pages/`
   (s51 to s59, s51-D01 to D06: Report views by delivery type, no Questions, one word per delivery) and b16

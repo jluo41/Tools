@@ -43,7 +43,7 @@ def test_the_table_is_generated_from_the_cards():
 
 def test_card_for_finds_a_run_by_its_folder_name():
     assert RC.card_for("run-add-j03", "Block")["label"] == "Add a Job"
-    assert RC.card_for("r02_part-a", "Task")["label"] == "Run a partition"
+    assert RC.card_for("r02_part-a", "Task")["label"] == "Run a segment"
     assert RC.card_for("run-compare-j02", "Job")["skill"] == "haipipe-insight-knowledge"
 
 
@@ -58,12 +58,12 @@ def _front_set(md: Path, **kv):
 
 def test_next_run_walks_the_gates(tmp_path):
     p = tmp_path / "Project-Demo"
-    proto, board = p / "insight" / "Prototype-Demo", p / "insight" / "Insight-Demo"
+    proto, board = p / "insight" / "InsightQuestionBook-Demo", p / "insight" / "Insight-Demo"
     L = lambda *a: IL.main([str(x) for x in a])  # noqa: E731
     L("prototype", proto, "--serves", "insight/Insight-Demo")
-    assert NR.state(proto)[1] == "run-open-version-code-v1"
+    assert NR.state(proto)[1] == "run-open-version-question-v1"
     L("version", proto, "--slug", "first")
-    v = proto / "j01_code-v1_first"
+    v = proto / "j01_question-v1_first"
     assert NR.state(v)[1].startswith("run-ask-")
     L("question", v, "D01", "shape")
     assert NR.state(v)[1] == "run-plan-evidence-d01"
@@ -74,16 +74,16 @@ def test_next_run_walks_the_gates(tmp_path):
     assert NR.state(v)[1] == "run-write-script-d01"
     (q.parent / "scripts").mkdir()
     (q.parent / "scripts" / "shape.py").write_text('SPEC = "D01"\n', encoding="utf-8")
-    assert NR.state(v)[1] == "run-set-cuts-code-v1"
+    assert NR.state(v)[1] == "run-set-segments-question-v1"
     (v / "partitions.md").write_text("---\npartitions:\n- {name: full, where: []}\n---\n", encoding="utf-8")
-    assert NR.state(v)[1].startswith("run-sign-release-code-v1")
+    assert NR.state(v)[1].startswith("run-sign-release-question-v1")
     L("sign", v, "--date", "261008")
-    L("board", board, "--dataset", "Demo", "--prototype", "insight/Prototype-Demo")
+    L("board", board, "--dataset", "Demo", "--prototype", "insight/InsightQuestionBook-Demo")
     assert NR.state(board)[1] == "run-add-version-data-v1"
     L("data", board, "data-v1", "--extract", "_WorkSpace/<store>/demo_v1.parquet")
     assert NR.state(board)[1] == "run-add-j01"
-    L("job", board, "--release", "code-v1", "--data", "data-v1")
-    job = board / "j01_code-v1-first_data-v1"      # the Job name since haipipe-insight 3.4.0
+    L("job", board, "--release", "question-v1", "--data", "data-v1")
+    job = board / "j01_question-v1-first_data-v1"      # the Job name since haipipe-insight 3.4.0
     assert NR.state(job)[1] == "run-launch-j01"
     (job / "runs" / "run-launch-j01").mkdir(parents=True)
     run = job / "t01_D01_shape" / "runs" / "r01_full"
@@ -99,4 +99,4 @@ def test_next_run_walks_the_gates(tmp_path):
     assert NR.state(job)[1].startswith("run-close-j01")
     _front_set(job / f"{job.name}.md", state="closed")
     L("data", board, "data-v2", "--extract", "_WorkSpace/<store>/demo_v2.parquet")
-    assert NR.state(board)[1].startswith("run-add-j02 (code-v1 on data-v2: data moved)")
+    assert NR.state(board)[1].startswith("run-add-j02 (question-v1 on data-v2: data moved)")

@@ -13,7 +13,7 @@ s03 · Example release choices
 
 **Topic:** expression asks nothing while it rewrites; once a round is released, its use is the person's call. This topic holds those few choices, asked on one waiting form, so the release is used as the person means.
 
-**Feeds:** `reports/` none yet
+**Feeds:** none yet
 
 
 Files

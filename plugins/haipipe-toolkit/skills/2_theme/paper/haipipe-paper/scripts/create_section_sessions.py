@@ -68,20 +68,42 @@ def claude_title(sid):
     return None
 
 
+def writing_jobs(paper):
+    """The version folders: jNN_v<MMDD>_<desk> or jNN_writing_v<MMDD>_<desk> (a review Job is not one), by jNN."""
+    return sorted((p for p in paper.glob("j[0-9][0-9]_*") if p.is_dir() and (p / f"{p.name}.md").is_file()
+                   and re.match(r"j\d\d_(?:writing_)?v\d{4}", p.name)), key=lambda p: int(p.name[1:3]))
+
+
 def board_prefix(paper):
+    """The session prefix of the writing Job worked on: its face's `session-prefix:`. board.md's line is the
+    fallback only for a paper with one writing Job; two in flight (a letter and a full proposal) each name their
+    own, so one Job's sessions are never taken for another's (JL 261114, AITC LOI and Long)."""
+    v = current_version(paper)
+    if v:
+        own = header_value(v / f"{v.name}.md", "session-prefix")
+        if own:
+            return own
+        if len(writing_jobs(paper)) > 1:
+            return ""
     return header_value(paper / "board.md", "session-prefix")
 
 
 def record_prefix(paper, prefix):
-    """Keep the chosen prefix in board.md so every later run names sessions the same way."""
-    md = paper / "board.md"
+    """Keep the chosen prefix so every later run names sessions the same way: in the writing Job face (board.md
+    on an older Board without one)."""
+    v = current_version(paper)
+    md = v / f"{v.name}.md" if v else paper / "board.md"
     lines = md.read_text(encoding="utf-8").split("\n")
-    head = range(min(25, len(lines)))
-    after = next((i for key in ("dialect:", "paper-root:", "source:") for i in head
-                  if lines[i].startswith(key)), None)
-    if after is None:
-        after = next((i for i in head if lines[i].startswith("# ")), 0)
-    lines.insert(after + 1, f"session-prefix: {prefix}")
+    head = range(header_end(lines))
+    hit = [i for i in head if lines[i].startswith("session-prefix:")]
+    if hit:
+        lines[hit[0]] = f"session-prefix: {prefix}"
+    else:
+        after = next((i for key in ("dialect:", "paper-root:", "source:", "state:", "owner:") for i in head
+                      if lines[i].startswith(key)), None)
+        if after is None:
+            after = next((i for i in head if lines[i].startswith("# ")), 0)
+        lines.insert(after + 1, f"session-prefix: {prefix}")
     md.write_text("\n".join(lines), encoding="utf-8")
 
 
@@ -125,8 +147,8 @@ def current_version(paper):
         if not (v / f"{v.name}.md").is_file():
             raise SystemExit(f"--version {VERSION}: no version face {v.name}.md under {paper}")
         return v
-    found = sorted((p for p in paper.glob("j[0-9][0-9]_v*") if p.is_dir() and (p / f"{p.name}.md").is_file()),
-                   key=lambda p: int(p.name[1:3]))
+    # jNN_v<MMDD>_<desk> (b16 Q05) or jNN_writing_v<MMDD>_<desk>; a review Job (jNN_review_*_v<MMDD>) is not a version
+    found = writing_jobs(paper)
     return found[-1] if found else None
 
 
@@ -181,10 +203,16 @@ def section_pages(paper):
     return out
 
 
-def build_units(pages, appendix):
+MAX_UNITS = 8   # JL 261114: more than eight sessions per paper is too many to manage
+
+
+def build_units(pages, appendix, max_units=MAX_UNITS):
     """A unit is what one session owns: one Main page, or with --appendix one
     (the default) the whole Appendix group, whose pages are small and coupled
-    (shared letters, table numbers and cross-appendix rulings)."""
+    (shared letters, table numbers and cross-appendix rulings). Past max_units,
+    the last Main pages share one unit `<first>-to-<last>` so a paper never has
+    more than max_units Main sessions (a grant's 11 sections become 7 + one group);
+    the Appendix unit is extra."""
     units, appx, appx_group = [], [], None
     for pid, md, group, is_appx in pages:
         if is_appx and appendix == "one":
@@ -194,6 +222,14 @@ def build_units(pages, appendix):
             units.append({"key": pid, "pages": [(pid, md)], "folder": md.parent})
     if appx:
         units.append({"key": "Appendix", "pages": appx, "folder": appx_group})
+    mains = [u for u in units if u["key"] != "Appendix"]
+    over = len(mains) - max_units   # Main Sections only; the Appendix keeps its own session
+    if max_units and over > 0 and len(mains) > over:
+        tail = mains[-(over + 1):]
+        pages_ = [pg for u in tail for pg in u["pages"]]
+        first, last = tail[0]["key"].split("_")[0], tail[-1]["key"].split("_")[0]
+        group = {"key": f"{first}-to-{last}", "pages": pages_, "folder": tail[0]["folder"].parent}
+        units = mains[:-(over + 1)] + [group] + [u for u in units if u["key"] == "Appendix"]
     return units
 
 
@@ -203,8 +239,14 @@ def unit_header(unit, key):
     return vals.pop() if len(vals) == 1 else ""
 
 
+def header_end(lines):
+    """The page header runs from the title to the first `## ` heading (a long header passes 25 lines)."""
+    return next((i for i, x in enumerate(lines[1:], 1) if x.startswith("## ")), min(60, len(lines)))
+
+
 def header_value(md, key):
-    for line in md.read_text(encoding="utf-8", errors="replace").splitlines()[:25]:
+    lines = md.read_text(encoding="utf-8", errors="replace").splitlines()
+    for line in lines[:header_end(lines)]:
         if line.startswith(key + ":"):
             return line.split(":", 1)[1].strip()
     return ""
@@ -213,13 +255,15 @@ def header_value(md, key):
 def write_header(md, key, value):
     """Replace the header's `<key>:` line, or add it after `session:` / `method:` / `owner:` / `state:`."""
     lines = md.read_text(encoding="utf-8").split("\n")
-    head = range(min(25, len(lines)))
+    head = range(header_end(lines))
     hit = [i for i in head if lines[i].startswith(key + ":")]
     if hit:
         lines[hit[0]] = f"{key}: {value}"
     else:
         after = next((idx for anchor in ("session:", "method:", "owner:", "state:")   # a ladder Task face has state:
                       for idx in [i for i in head if lines[i].startswith(anchor)][:1]), None)
+        if after is None:   # a Board face (board.md) has none of them: after its last `key: value` header line
+            after = next((i for i in reversed(head) if re.match(r"^[\w-]+: \S", lines[i])), None)
         if after is None:
             raise RuntimeError(f"{md}: no header `method:`, `owner:` or `state:` line to anchor `{key}:`")
         lines.insert(after + 1, f"{key}: {value}")
@@ -237,6 +281,16 @@ Your folder: {rel(unit['folder'])}/  (draft/, results/, runs/, delivery/ are you
 Your brief: the row for {page_id} in the Section Narrative (C8) of {rel(story)}"""
         own, first = "your own page folder", "read your page, its Story C8 row, and the newest file in draft/"
         line1 = "this page's state in one line"
+    elif unit["key"] != "Appendix":
+        listed = "\n".join(f"  - {rel(md)}" for _, md in unit["pages"])
+        head = f"""You are the owning session for {len(unit['pages'])} Section Pages of the paper {paper.name}, as one group.
+
+Your pages:
+{listed}
+Your folders: each listed page's own folder (its draft/, results/, runs/, delivery/ are yours)
+Your brief: these pages' rows in the Section Narrative (C8) of {rel(story)}"""
+        own, first = "the listed page folders", "read each listed page, its Story C8 row, and the newest file in its draft/"
+        line1 = "each page's state in one line, in page order"
     else:
         listed = "\n".join(f"  - {rel(md)}" for _, md in unit["pages"])
         head = f"""You are the owning session for the WHOLE APPENDIX of the paper {paper.name}: every Section Page in one group.
@@ -256,8 +310,9 @@ Scope rules:
 3. Never start a compute or regression Run unasked.
 4. Before any edit, load the haipipe-paper-draft skill (and haipipe-draft for the page contract).
 5. While the author has a Run open, edit only the Draft file draft/<stem>-draft-v<N>.md; Page Content, logs, receipts, results/ and delivery wait for the Run's close.
+6. Before the author sees any prose, a new Draft version or a closed page, run the must-check gate (haipipe-paper ref/must-check.md, "The gate"): fix each failing rule, or name its id and why it stays. A correction the author gives you goes into that file with its check in the same change as the fix.
 
-First turn, READ ONLY: {first}. Then reply: line 1 = {line1}; then a numbered list of what is done, what is open, and the one next step. Then stop and wait."""
+First turn: {first}. Then the default review round (must-check M-D03), unless the newest Draft version already has a review Run at that version: fresh reviewer subagents that did not write the text run haipipe-draft-review ref/paragraph-logic.md, then ref/sentence-logic.md; rewrites under 8 are judged by fresh blind A/B readers; only kept rewrites go into the next Draft version, numbers and citations untouched; the results go into the paper's review Job as its next rNN. Then reply: line 1 = {line1}; line 2 = reviewed · under 8 · pairs · kept · meaning changed · new Draft version (or "skipped, already reviewed at vX"); then a numbered list of what is done, what is open, and the one next step. Then stop and wait."""
 
 
 # ---------------------------------------------------------------- Claude
@@ -420,20 +475,21 @@ def main():
     root = repo_root(paper)
     recorded = board_prefix(paper)
     if a.prefix and recorded and a.prefix != recorded:
-        sys.exit(f"board.md records session-prefix: {recorded}; use it, or edit board.md first")
+        sys.exit(f"the writing Job (or board.md) records session-prefix: {recorded}; use it, or edit that line first")
     a.prefix = a.prefix or recorded
     if not a.prefix:
         sys.exit("pass --prefix <Short>: two or three words naming this paper, unused by other papers")
     story, order = compile_order(paper)
     if not story or not order:
-        sys.exit("no Story `haipipe:compile-order` block: settle the Section structure (Story C8) first")
+        sys.exit("no `haipipe:compile-order` block in the newest writing Job face (or the Story): settle the Section structure first")
     pages = section_pages(paper)
+    units = build_units(pages, a.appendix)
     if a.pages:
         wanted = set(a.pages)
-        pages = [p for p in pages if p[0] in wanted]
         missing = wanted - {p[0] for p in pages}
         if missing:
             sys.exit("no Section Page folder for: " + ", ".join(sorted(missing)))
+        units = [u for u in units if u["key"] in wanted or any(pid in wanted for pid, _ in u["pages"])]
     mapped = {}
     if a.codex_map:
         for line in Path(a.codex_map).read_text(encoding="utf-8").splitlines():
@@ -442,7 +498,7 @@ def main():
                 mapped[parts[0]] = (parts[1], parts[2].strip() if len(parts) > 2 else "")
 
     plan = []
-    for unit in build_units(pages, a.appendix):
+    for unit in units:
         key = unit["key"]
         name = f"{a.prefix}-{key}"
         sid, tid = unit_header(unit, "session"), unit_header(unit, "codex-session")
@@ -453,7 +509,7 @@ def main():
             tid = ""                                # a foreign session's Codex line is not this unit's
         # an Appendix unit may keep one older Codex thread per page; then its Codex side is present
         page_tids = {header_value(md, "codex-session") for _, md in unit["pages"]}
-        per_page = not foreign and len(page_tids) > 1 and all(t and codex_live(t) for t in page_tids)
+        per_page = key == "Appendix" and not foreign and len(page_tids) > 1 and all(t and codex_live(t) for t in page_tids)
         if c_live and not tid and not per_page and key not in mapped and not a.replace:
             ptid, pname = paired_codex(root, sid)
             if ptid:                                 # already paired: bind it, do not create a second
@@ -462,9 +518,9 @@ def main():
         mk_claude = "claude" in providers and (a.replace or not c_live)
         mk_codex = "codex" in providers and key not in mapped and (a.replace or not x_live)
         plan.append((unit, sid, tid, mk_claude, mk_codex, per_page))
-        note = "" if key == "Appendix" or key in order else "  (not in compile order)"
+        note = "" if len(unit["pages"]) > 1 or key in order else "  (not in compile order)"
         pages_line = "".join(f"\n   · {pid}{'' if pid in order else '  (not in compile order)'}"
-                             for pid, _ in unit["pages"]) if key == "Appendix" else ""
+                             for pid, _ in unit["pages"]) if len(unit["pages"]) > 1 else ""
         print(f"{a.prefix}-{key}{note}{pages_line}\n"
               f"   claude {'create' if mk_claude else 'keep  '}  session: {sid[:8] or '-'}{' (live)' if c_live else foreign}\n"
               f"   codex  {'create' if mk_codex else ('bind  ' if key in mapped else 'keep  ')}"

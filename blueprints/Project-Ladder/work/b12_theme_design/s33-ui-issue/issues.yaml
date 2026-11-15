@@ -17,11 +17,11 @@ issues:
 - {rank: 1, owner: b03, where: "every tab › every file link (Disk box, Inputs table, Goal, Method, Report titles)",
    wrong: "Every link to a plain .md (goal.md, method.md, rules.md, the inputs files, a Job or Task face, board.md) opens a 404 'Not a Page: Input is not a Page Face'.",
    should: "The pop-out shows any .md read-only; the Page reader stays for Page Faces.",
-   evidence: "curl /_board/page?path=/…/inputs/goal.md → 404; workbench/frame.py:288 (_reader)"}
+   evidence: "curl /_board/page?path=/…/inputs/goal.md → 404; workbench/page/frame.py:288 (_reader)"}
 - {rank: 2, owner: b03, where: "every tab › Disk box › .md rows",
    wrong: "Disk rows for .md files are plain links without the pop-out mark, so a click leaves the frame (and lands on the 404).",
    should: "Open in the frame's pop-out like every other file link.",
-   evidence: "workbench/frame.py:492 (_link, no data-pop); B__Audience-Report__Questions board.md"}
+   evidence: "workbench/page/frame.py:492 (_link, no data-pop); B__Audience-Report__Questions board.md"}
 - {rank: 3, owner: s11, where: "Block › Work Details · Audience Report › Method scorecard · Description › Methods",
    wrong: "Kept designs count as not passed, so the two Jobs furthest along (ranked, 10 kept) read '0 of 10 passed', 'pass 0%', 'm2: 0 passed', while less-advanced Jobs read 93%.",
    should: "Count passed, kept and released as passed; say 'kept 10 of 15' once a Job is ranked.",
@@ -37,7 +37,7 @@ issues:
 - {rank: 6, owner: b03, where: "every tab › Runs panel with more than 4 runs",
    wrong: "'+N more' shows but every row stays visible: j01 Design display lists 18 verify rows above '+14 more'.",
    should: "Four rows, then '+N more'.",
-   evidence: "workbench/runs_panel.py:438 (.run-row display:grid beats hidden) vs 574-580; full/j01__Audience-Report__Design-display.png"}
+   evidence: "workbench/page/runs_panel.py:438 (.run-row display:grid beats hidden) vs 574-580; full/j01__Audience-Report__Design-display.png"}
 - {rank: 7, owner: s12, where: "Job j05 › every Space",
    wrong: "j05 is held (face state: held, with its reason) but no view says so: Description shows 'set up 3 of 3', Reason ideas says t00 has not reasoned yet.",
    should: "A held line with its reason on Description; empty states say 'held'.",
@@ -49,7 +49,7 @@ issues:
 - {rank: 9, owner: s11, where: "Block › Audience Report › Questions",
    wrong: "The theme draws its own row (Question │ Task Work │ Report, pills, 'Question n') instead of the shared Logic │ Work │ Report row: no 'from the Idea Studio', no report drawing, no 'report qNN · status'.",
    should: "Use the frame's question rows (b03's studio-and-report design); the theme only adds the Jobs to Work.",
-   evidence: "design_views.py:463-516 vs workbench/frame.py:742 (question_rows)"}
+   evidence: "design_views.py:463-516 vs workbench/page/frame.py:742 (question_rows)"}
 - {rank: 10, owner: s12, where: "Job › Delivery › designs.md, designs.json",
    wrong: "Only 'Nothing released yet' although j01–j04 each have 10 kept designs ranked with draft predictions waiting for a person.",
    should: "The kept N word for word with predictions, marked 'waiting for freeze and release'.",
@@ -113,7 +113,7 @@ issues:
 - {rank: 25, owner: b03, where: "every tab › Runs panel rows",
    wrong: "Every run row repeats 'a run of · run-add-job-<jNN>' under its name: a filler line on every row.",
    should: "Drop it in the compact list; the type is already the selected button.",
-   evidence: "workbench/runs_panel.py:221, 568; B__Description__Map.png"}
+   evidence: "workbench/page/runs_panel.py:221, 568; B__Description__Map.png"}
 - {rank: 26, owner: s11, where: "Block › Runs (every view)",
    wrong: "The body lists the Runs and the Runs panel lists them again; the panel lacks run-setup-rules, run-add-inputs, run-add-observed, run-score and run-report, and does not follow the view (Set up shows add-job).",
    should: "List each Run once; the panel's types follow the open view.",

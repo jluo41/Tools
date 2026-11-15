@@ -29,7 +29,7 @@ owns only the design theme's delta: what each Space shows at each level of the d
 ## Where it runs
 
 ```text
-servers/workbench-design/design_theme.py    the theme on the base frame (servers/workbench/frame.py): THEME "design"
+servers/workbench-design/design_theme.py    the theme on the base frame (servers/workbench/page/frame.py): THEME "design"
 servers/workbench-design/design_reader.py   reads a ladder Block from disk (read-only): board · job · design · runs
 servers/workbench-design/design_views.py    draws each level's six Spaces from what the reader returns
 servers/workbench-design/guide/             the Guide: guide.yaml, method.md and the method cards, related/
@@ -42,11 +42,11 @@ by step: t00, the designs in order with the dropped folded at the end, t99).
 
 ## A Job is named by its folder
 
-Every view that names a Job shows its folder name as it is, `jNN_<goal name>_method-vN-<slug>_inputs-vM` on a Board
-with a Design Method Book (`j03_confirm-by-reply_method-v2-overall-performance_inputs-v2`), else
+Every view that names a Job shows its folder name as it is, `jNN_<goal name>_M0x-<slug>-mK_inputs-vM` on a Board
+with a Design Method Book (`j03_confirm-by-reply_M02-overall-performance-m1_inputs-v2`), else
 `jNN_<goal name>_<method name>` (`j01_prepare-before-visit_goal-only`), as the Job ▾ menu does: a card title, a link, a list of Jobs, a column head
 (JL 261011: "I don't want we just have jNN here, not readable"). Never the bare `jNN`: it says nothing on its own.
-The ids (`G01`, `M01 m2`, `method-v1`, `inputs-v1`) stay on the face as pins and may follow the name as plain detail. An older id-form
+The ids (`G01`, `M01 m2`, `inputs-v1`) stay on the face as pins and may follow the name as plain detail. An older id-form
 folder (`j03_g01-review-new-rx_m04-actionable-insights`) shows the same way, by its folder name.
 
 Two Jobs can share their words: one method's two versions on one goal (`j05_review-new-rx_raw-data-agent` pins M05 m2
@@ -95,7 +95,7 @@ The six-Space frame and older Design Folder boards also retain their existing co
 ### Earlier Block layout; current Job and Task layout
 
 The focus page (`layout=focus`, what `/wb` opens) draws a design Block, Job and Task in b12 j01's letters, with the
-parts every theme's page shares (`servers/workbench/ui_parts.py`): Report is a view's 📊 Results only; Work is ⚙️ Process
+parts every theme's page shares (`servers/workbench/page/ui_parts.py`): Report is a view's 📊 Results only; Work is ⚙️ Process
 (🙋 what waits on you first, then the view's steps, each row ending in a state word, its Run's prompt one Copy away)
 over the same Results. `servers/workbench-design/design_focus.py` draws them; `focus_page.py` asks it through one hook,
 `design_views`, as it asks the paper and insight themes'.
@@ -190,7 +190,7 @@ methods and the design unit, s11 · s12 · s13 the levels, s21 Runs and skills).
 ## Older board page
 
 An older board (`B00_DesignBoard-<name>/` with `0-BR-brief/` and `2-Design[-M<NN>]/Design-NN-<slug>/`) keeps its
-own workbench until it is carried over: the page (`servers/workbench-design/design.py`, `/_board/design`) and the
+own workbench until it is carried over: the page (`servers/workbench-design/design.py` reads and serves it, `design_page.py` draws it, `/_board/design`) and the
 board (`designboard.py`, `/_board/design-board`). Its contract is [ref/legacy/older-page.md](ref/legacy/older-page.md)
 (this skill's text before 261007), the board grain [ref/design-board.md](ref/design-board.md), and the Space ↔ file
 maps [ref/space-mapping.md](ref/space-mapping.md) (page) and

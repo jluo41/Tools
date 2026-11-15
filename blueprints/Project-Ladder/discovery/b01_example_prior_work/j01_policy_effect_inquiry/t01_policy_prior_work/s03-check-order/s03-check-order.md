@@ -13,7 +13,7 @@ s03 · Which paper to check first
 
 **Topic:** A placeholder topic: one paper's citation waits for a person; which comes first. Every paper here is made up.
 
-**Feeds:** `reports/q02-setting.md`
+**Feeds:** Q02.md`
 
 ```yaml
 frames:

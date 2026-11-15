@@ -1,9 +1,9 @@
 ---
 name: haipipe-paper
-description: "The router for the Paper family, including manuscript and grant types; manuscript runtime commands are implemented and Grant-specific support must be verified. For a paper on the ladder: a paper Board, one version Job per send, one Task per Section, Abstract or letter; routes to the Story, Ideation, Venue, Section, comments and assembly owners. Use for paper setup (paper_ladder.py), bringing an older paper folder onto the latest layout (paper_ladder.py audit, update), where a paper stands (checklist.md, paper_check.py, its sNN-paper-checklist topic), the delivery and its requirements, the submission portal (paper_ladder.py submission, portal_fill.py), drafting, or reviews. Trigger: paper, paper Board, grant proposal, Grant Board, version, send, update the paper folder, paper checklist, delivery requirements, cover letter, submission portal, /haipipe-paper."
+description: "The router for the Paper family, including manuscript and grant types; manuscript runtime commands are implemented; a grant Board is Grant-<Slug>/ (paper_ladder.py board makes it, board-kind: grant-board). For a paper on the ladder: a paper Board, one version Job per send, one Task per Section, Abstract or letter; routes to the Story, Ideation, Venue, Section, comments and assembly owners. Use for paper setup (paper_ladder.py), bringing an older paper folder onto the latest layout (paper_ladder.py audit, update), where a paper stands (checklist.md, paper_check.py, its sNN-paper-checklist topic), the delivery and its requirements, the submission portal (paper_ladder.py submission, portal_fill.py), drafting, or reviews. Trigger: paper, paper Board, grant proposal, Grant Board, version, send, update the paper folder, paper checklist, delivery requirements, cover letter, submission portal, writing lab, start the paper writing lab, /haipipe-paper."
 metadata:
-  version: "1.36.0"
-  last_updated: "2026-11-09"
+  version: "1.40.0"
+  last_updated: "2026-11-15"
   summary: "Paper owns the journey and composition; the shared Page owns each Paper Page's lifecycle and release."
 ---
 
@@ -13,6 +13,8 @@ metadata:
 > ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; AGENTS.md rule 6). For a paper that is its `delivery/` folder and every Page's `delivery/<lane>/`: fix the Page or the build code, then rebuild.
 >
 > ⛔ **No sha256 or other content hashes** (hard rule, JL 260928; AGENTS.md rule 9). A version is its number and date; staleness is file time or `git diff`. Never write, check or pin a hash.
+>
+> ⛔ **Must-check before JL sees it** (hard rule, JL 261115: "make them into the skills of /haipipe-paper, and ask them to be must check them"). [`ref/must-check.md`](ref/must-check.md) holds every paper rule JL has already given, each with its check. Before JL sees a Section, before a Section closes and before a send, run its gate: `auto` rules by script, `read` rules by a fresh reviewer that did not write the text; fix a failure or name its id and reason. A correction JL gives, directly or relayed by another session, changes that file in the same change as the fix; a rule already there means its check was too weak, so strengthen the check.
 
 `haipipe-paper` is the Paper-family router. It does not implement the Page
 workflow and it does not replace the specialist Page Type contracts.
@@ -42,12 +44,18 @@ findings distinct from proposed future outcomes.
 | Section drafts and assembled outputs | [haipipe-paper-draft](../haipipe-paper-draft/SKILL.md), [haipipe-paper-assemble](../haipipe-paper-assemble/SKILL.md) | Writing and Delivery |
 | Reading and rendering these records | [workbench-paper](../workbench-paper/SKILL.md) | Shared Paper frame |
 
-**Implementation boundary:** the manuscript Paper runtime is implemented; the
-Grant column in the design matrix records the agreed family relationship and
-proposed Grant-specific Sections. It does not establish a Grant renderer,
-scaffold, submission adapter or working example. Inspect those capabilities
-before applying a manuscript command to a grant. A matrix entry does not by
-itself authorize migrating an existing grant folder or submitting an application.
+**A grant Board is `Grant-<Slug>/`** (JL 261112: "It should not be a Paper-xxx, it should be Grant-xxxx"). It sits
+in the Project's `paper/` beside the Paper Boards. `paper_ladder.py board <paper/>Grant-<Slug>` writes its face
+with `board-kind: grant-board` and `use-case: Initial application`; `version`, `task`, `evidence`, `submission` and
+`paper_check.py` then work on it as on a Paper Board. The code that finds a paper Board by its name accepts both
+prefixes (haipipe-draft `common.py`, haipipe-project `ladder.py`, the workbench `address_links.py`, the evidence
+scripts). First example: `examples-0-cowork/Project-AITC-Dementia/paper/Grant-AITC-Dementia/` (an LOI).
+
+**Implementation boundary:** the Grant scaffold is implemented; there is no Grant renderer of its own (the
+workbench shows a grant Board with the paper views) and no grant-specific Section template or submission adapter
+yet. A Grant Section Task uses the manuscript Section template; the call's content items live in
+`venues/<call>/call.md`. A matrix entry does not by itself authorize migrating an existing grant folder or
+submitting an application.
 
 ## 🧭 Four layers: plan, explore, evidence, writing (JL 261031; b16-s01-paper-tree-concept)
 
@@ -74,7 +82,7 @@ still reads.
 
 ## ✅ Where a paper stands: `checklist.md`
 
-JL 261031: "here we should also try to add the checklist.md, so everytime, the haipipe-paper we can have the things like check the progress"; JL 261101: "what is the final checklist we should have? what is the delivery, and what is the delivery requirements"; "make the checklist to be a sNN as well". [`checklist.md`](checklist.md) lists what a paper needs, from its question to the send: ⓪ Layout L1-L5, ① Plan P1-P9, ② Explore E1-E3, ③ Evidence V1-V5, ④ Writing W1-W5, ⑤ Delivery D1-D11. `scripts/paper_check.py <Paper-Board>` ticks every line a file can prove (✅ done, ⏳ under way, ⬜ not yet, 🙋 waits on a person). Run it whenever someone asks where a paper stands, and answer from its lines.
+JL 261031: "here we should also try to add the checklist.md, so everytime, the haipipe-paper we can have the things like check the progress"; JL 261101: "what is the final checklist we should have? what is the delivery, and what is the delivery requirements"; "make the checklist to be a sNN as well". [`checklist.md`](checklist.md) lists what a paper needs, from its question to the send: ⓪ Layout L1-L5, ① Plan P1-P9, ② Explore E1-E3, ③ Evidence V1-V5, ④ Writing W1-W7, ⑤ Delivery D1-D11. `scripts/paper_check.py <Paper-Board>` ticks every line a file can prove (✅ done, ⏳ under way, ⬜ not yet, 🙋 waits on a person). Run it whenever someone asks where a paper stands, and answer from its lines.
 
 ```text
 paper_check.py <Board>            print the checklist; change nothing
@@ -117,16 +125,26 @@ L3 jNN_v<MMDD>_<desk>/             renamed jNN_writing_v<MMDD>_<desk>/ (from j11
                                    its delivery/<job>/ folder and build inputs too, the whole name swept
 V1 missing evidence Jobs           paper_ladder.py evidence
 L4 no checklist topic              sNN-paper-checklist/ (haipipe-studio new_topic.py --over-limit), then paper_check.py --write
-L5 faces the views read            🙋 not mechanical: haipipe-paper-story (T, D tables, §8 Section Narrative, its #### Story arc,
-                                   the per-Section rows), haipipe-paper-plan (-drawing.yaml)
+L5 faces the views read            🙋 not mechanical: haipipe-paper-story (T, D tables, §8 Section Narrative, its #### Story arc
+                                   and claims; the per-Section rows on the version's ## Narrative), haipipe-paper-plan
+                                   (-drawing.yaml)
 L6 a page face with no use-case:   writes the matrices' word under the H1: Board, Job, Task (🙋 when none fits)
 ```
 
 **L5, the story the views read (JL 261109).** Report › Story and › Displays show Story by Section: first the whole
-paper's Story arc (§8 `#### Story arc`), then each Section's part of the arc (the per-Section table, first header
-`Section`, in §8 or the newest writing version's `## Narrative`, newest first), its claims last. L5 asks for both;
-`haipipe-paper-story` writes them. `version` writes the table's header and `task` adds the new Section's row with
-`<placeholders>`, which count as unwritten until a person or haipipe-paper-story fills them.
+paper's Story arc (§8 `#### Story arc`), then a tab per Section, its part of the arc (the per-Section table, first header
+`Section`, in the newest writing version's `## Narrative`; an older Board's §8 table is still read first), its claims
+last. L5 asks for both; `haipipe-paper-story` writes them. `version` writes the table's header and `task` adds the new
+Section's row with `<placeholders>`, which count as unwritten until a person or haipipe-paper-story fills them.
+
+**Two layers, one source each (JL 261111).** The Story's §8 holds what every version shares: title, story,
+explanation, the claims C1..Cn with their numbers, and no per-Section rows. A new version face's `## Narrative` holds
+that venue's layout only: claims to displays, display Runs, one row per Section, the compile order; it points at the
+Story's §8 (`tells:`) and copies no claim. `version` scaffolds that section, the person signs it with `page.py
+sign-narrative <version> --quote "…"` (haipipe-draft § The Plan gate) before any Section's `page.py sign`, and the
+whole-paper structure is the version Job's Report › Structure view (workbench-paper), never a Task. Planned for
+`audit` (L5, not yet in `paper_ladder.py`): flag a version face whose `## Narrative` copies claim propositions, and a
+Story §8 that still holds a per-Section table.
 
 **L6, every page says its use (JL 261108, 261109).** Each Board, Job and Task page shows its type and use case under
 its title. The workbench never guesses a use: it shows the face's `use-case:` line, or the one use a type has in
@@ -194,9 +212,9 @@ Route a request by the level it names:
 
 | Level | Folder | Its owners |
 |---|---|---|
-| Board | `Paper-<Slug>/`: face, its topics `sNN-<topic>/` beside the Jobs (no `studio/` folder), `reports/`, `runs/`, `venues/`, `related/`, `delivery/` | Story and Ideation (studio topics and Board Questions), Venue, Related through Discovery |
+| Board | `Paper-<Slug>/` (a grant: `Grant-<Slug>/`): face, its topics `sNN-<topic>/` beside the Jobs (no `studio/` folder), `reports/`, `runs/`, `venues/`, `related/`, `delivery/` | Story and Ideation (studio topics and Board Questions), Venue, Related through Discovery |
 | evidence | `j01_evidence_display/`, `j02_evidence_value/`, `j03_evidence_cite/`: one Task per display, value group or claim group | haipipe-paper-evidence (rules), haipipe-display (drawing) |
-| version (writing) | `j11_writing_v<MMDD>_<desk>/` (older `jNN_v<MMDD>_<desk>/`): face with `## Narrative` and `## Questions`, its Tasks; output in Block `delivery/<version>/` | the Section release (G3), comments reports, assembly and send (G4, G5) |
+| version (writing) | `j11_writing_v<MMDD>_<desk>/` (older `jNN_v<MMDD>_<desk>/`): face with `## Narrative` (the layout, signed by `sign-narrative`; its Report › Structure view) and `## Questions`, its Tasks; output in Block `delivery/<version>/` | the Section release (G3), comments reports, assembly and send (G4, G5) |
 | Task | `t00_abstract` · `t0N_` Main · `t2N_` Appendix · `t3N_` letters | `haipipe-paper-draft` over haipipe-draft's seven steps (below) |
 | Run | `runs/run-<type>-<target>/` (its `run.yaml`, ticket and `passes/`, as `haipipe-run` has it); a Section's are the Page engine's | the run cards, `haipipe-paper-workflow/ref/run-cards.md` |
 
@@ -325,6 +343,7 @@ Resolve the paper root and target Page before changing anything.
 | write or revise one manuscript/appendix unit | `haipipe-paper-draft`, one step at a time (A Section, step by step) |
 | check a Section's or a version's evidence, citations, numbers or displays | `haipipe-paper-evidence` |
 | give each Section Page its own session, or message the Section sessions | `/haipipe-paper sessions`: [`ref/section-sessions.md`](ref/section-sessions.md) and `scripts/create_section_sessions.py` |
+| start the paper writing lab: VS Code windows (draft page above, Claude session below), the Board session (board.md `board-session:`) first, plus a Codex thread per Section | `/haipipe-paper lab`: [`ref/writing-lab.md`](ref/writing-lab.md) and `scripts/open_writing_lab.py` |
 | take in or answer one batch of comments (review, meeting, coauthor, advisor) | `haipipe-paper-comments` |
 | check paper or one family's status | `/haipipe-paper status` (command, not a Page Type) |
 | run one Page through its lifecycle | `haipipe-draft-workflow` |
@@ -350,6 +369,11 @@ Resolve the paper root and target Page before changing anything.
 /haipipe-paper sessions [paper]        a named Claude session + Codex thread per
                                        Section (one for the Appendix), once the
                                        writing Job's ## Narrative fixes them
+/haipipe-paper lab [paper]             the writing lab: VS Code windows, the Board session
+                                       (board-session:) first, then each Section's
+                                       draft page on top and its Claude session below;
+                                       creates missing Claude sessions and a Codex thread
+                                       per Section (Codex app), paired
 /haipipe-paper comments <new|id>
 /haipipe-paper assemble [paper]        runs anytime · a build made while gate G4
                                        fails is watermarked DRAFT in its receipt
@@ -425,7 +449,7 @@ Once the compile order in the writing Job face's `## Narrative` fixes the Sectio
 gives each Main Section Page, and the Appendix group as one unit, a named Claude
 session and a named Codex thread (`<Short>-<unit>`, `<Short>-<unit>-Codex`),
 pairs them, records both ids in the page header (`session:`, `codex-session:`),
-and stops the Claude session after a read-only first turn so `/resume` can open
+and stops the Claude session after its first turn (a read-only look, then the default review round) so `/resume` can open
 it. Plan first (no `--apply`), then create. Read
 [`ref/section-sessions.md`](ref/section-sessions.md) for units, the scope rules
 each session starts with, and how to message a session afterwards.
@@ -472,9 +496,10 @@ topic-entry tooling, stage-specific craft, and their helper scripts are outside
 the current Paper runtime. This door does not load them.
 
 A telling's seed (identity, pitch, stakes) and its roadmaps live in its studio
-topic, alongside the shared Section Narrative. Its research questions live in
-Board Questions with reports. Each writing version's `## Narrative` holds its
-concrete Section bindings and compile order, aligned with the Story topic;
+topic, alongside the shared Section Narrative (§8: title, story, claims). Its
+research questions live in Board Questions with reports. Each writing version's
+`## Narrative` holds its layout (Section rows, claims to displays, compile order),
+pointing at the Story's §8 and copying no claim;
 execution, Section, compile and comments records stay with their native owners. The router reads no retired child
 Page, compatibility alias, or fallback source.
 

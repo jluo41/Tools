@@ -101,7 +101,7 @@ History
 -------
 
 - 261007: first drawn as the frame "work ladder · Q01", one row per level (Block, Job, Task, Run) and one column per Space (Description | Idea Studio · Audience Report | Work Details | Runs · Delivery), today's Task workbench views moved into it and nine open points in red; below it the Board, Job and Task rows from b10's shared definitions. Kept whole: `result/first-drawing.excalidraw` and `result/first-drawing-builder/build_s01_work_ladder.py`.
-- Q01 ("How does work climb the ladder?") was proposed 261007 and stayed open; its report `../reports/q01_work_ladder/` goes with the Questions (s01-D06).
+- Q01 ("How does work climb the ladder?") was proposed 261007 and stayed open; its report `../s03-q01-work-ladder/q01_work_ladder/` goes with the Questions (s01-D06).
 - 261026: the mind map written from that drawing, frame by frame: `result/old-mindmap-261031/`.
 - 261029: three idea pictures and their deck ("Every rung, the same five doors?", "Four rungs, each holds less", "The answer sits on its Job?"): `result/old-slides-261031/`. Their asks are settled: no page for a Run (s01-D04), a Job keeps `src/` and `sbatch/` for the code its Tasks share (haipipe-project `ref/ladder.md`), no answers to place (s01-D06).
 - 261030: redrawn in five parts by `studio_update.py`, the first drawing as its Design: `result/five-part-drawing-261030/`.

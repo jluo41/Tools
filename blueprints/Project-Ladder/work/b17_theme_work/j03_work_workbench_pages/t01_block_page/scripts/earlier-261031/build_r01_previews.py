@@ -53,7 +53,7 @@ DELIVERIES = [
     {"id": "s04", "name": "Work pages", "type": "ui", "topic": "s04-workbench-page-structure",
      "job": "j03_work_workbench_pages", "stage": "⏳ shaping", "deck": "slides/idea-01-what-is-a-block.png",
      "pieces": ["deck/", "block-page", "job-task-pages", "element-picks"],
-     "goes": "servers/workbench/focus_page.py, built by design_b02_workbench",
+     "goes": "servers/workbench/page/focus_page.py, built by design_b02_workbench",
      "thing": ('<div class="mini"><div class="mini-crumb">… / work / b17_theme_work</div>'
                '<div class="mini-h1">b17_theme_work<span>Report</span></div>'
                '<div class="mini-views"><i class="on">MindMap</i><i>All</i><i>s01</i><i>s02</i><i>s04</i></div>'

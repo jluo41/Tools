@@ -1,0 +1,15 @@
+run: r01_build
+kind: hard
+role: make
+type: agent
+scope: blueprints/Project-Replay/work/b41_agreeablerx_replay/j02_replay_build/t01_build_replay
+skill: haipipe-task
+ticket: r01_build.sh
+worker: src/build.py
+says: build the topics, sections and page from the logs
+host: this machine
+time: a few seconds
+status: done
+started_by: '261114: the Block's own structure (Review Content, Findings, Jobs)'
+reads: [src/decisions-A.md, src/decisions-B.md, src/takeaways.md, src/page.tpl.html]
+writes: [src/data.json, src/review/, delivery/website/replay.html]

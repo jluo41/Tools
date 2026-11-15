@@ -3,6 +3,7 @@
 Task, a Run, as the design theme's design_ladder.py makes its own (b16 Q05).
 
     python paper_ladder.py board   <paper/>Paper-<Slug>  [--title "<paper>"]             a new paper Board
+    python paper_ladder.py board   <paper/>Grant-<Slug>  [--title "<grant>"]             a new grant Board (board-kind: grant-board)
     python paper_ladder.py version <board> --desk <desk> --date MMDD [--venue "<venue>"]  the first (or a fresh) version
     python paper_ladder.py next    <board> --from <version> --date MMDD [--desk <desk>]   the next version, from an earlier one
                                                                                           (--desk: a new desk when the paper retargets)
@@ -197,13 +198,20 @@ def _write(path: Path, text: str, made: list) -> None:
 
 
 def board(path: Path, title: str, dry: bool) -> list:
-    if not re.match(r"^Paper-[A-Za-z0-9-]+$", path.name):
-        sys.exit(f"stop: a paper Board folder is Paper-<Slug>: {path.name}")
+    m = re.match(r"^(Paper|Grant)-[A-Za-z0-9-]+$", path.name)
+    if not m:
+        sys.exit(f"stop: a paper Board folder is Paper-<Slug>, a grant Board folder is Grant-<Slug>: {path.name}")
+    grant = m.group(1) == "Grant"               # one family, two types (SKILL.md § Paper types): the face says which
+    kind, use, noun = ("grant-board", "Initial application", "grant") if grant else ("paper-board", "Manuscript development", "paper")
+    ask = ("<the question the project answers, in one sentence>" if grant else
+           "<the question the paper answers, in one sentence>")
+    done = ("<what makes this application done: submitted, invited, funded>" if grant else
+            "<what makes this paper done: sent, answered, accepted>")
     files = {                                   # the face only: a Space folder comes with its first item
-        "board.md": f"# {title or '<paper>'}\n\nuse-case: Manuscript development\nboard-kind: paper-board\ndialect: paper\npaper-root: .\n"
-                    "story-current: none yet\nspine: <the question the paper answers, in one sentence>\n"
-                    "close: <what makes this paper done: sent, answered, accepted>\n\n## Topic\n\n"
-                    "<what the paper argues and for whom>\n\n## Pages\n\n## Questions\n\n```yaml\nquestions: []\n```\n",
+        "board.md": f"# {title or f'<{noun}>'}\n\nuse-case: {use}\nboard-kind: {kind}\ndialect: paper\npaper-root: .\n"
+                    f"story-current: none yet\nspine: {ask}\n"
+                    f"close: {done}\n\n## Topic\n\n"
+                    f"<what the {noun} argues and for whom>\n\n## Pages\n\n## Questions\n\n```yaml\nquestions: []\n```\n",
     }
     made = []
     if dry:

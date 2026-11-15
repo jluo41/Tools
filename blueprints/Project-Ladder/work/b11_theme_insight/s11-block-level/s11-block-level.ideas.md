@@ -3,8 +3,8 @@
 The open ideas of this topic, one per slide: written from its face as a quick scratch (261031); a person edits them here, and its pictures come when asked.
 
 ## Block level
-- the insight Board's tab: one dataset and its versions, a Job per pair (Prototype version × data…
-- It follows s00: a Job pins one Prototype version and one data version
+- the insight Board's tab: one dataset and its versions, a Job per pair (Question Book version × data…
+- It follows s00: a Job pins one Question Book version and one data version
 - a DIKW level groups the questions inside a Job
 
 ## What it hands over

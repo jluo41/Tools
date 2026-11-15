@@ -32,9 +32,40 @@ def context_topics(board, root, topics):
     return out
 
 
+_SCOPE: dict = {}
+SCOPE_TTL = 10.0                                 # seconds: a page render asks twice (its 🙋 rows, then its sections)
+
+
+def _shared(board, root, view, topics, every, knows):
+    """shared_frame.shared_scope once per render (Project-UI profile 261114: 2 calls, 4.8 s). The two calls differ only
+    in `knows`, so the scan runs without it and the notes are picked here by the same rule: inside this page, and on
+    this view (its own `view:`, its topic, or a page the view holds)."""
+    import time
+    key = (str(board), view, tuple(str(r[0]) for r in topics),
+           tuple((str(r.get('path')), r.get('state')) for r in every))
+    now, hit = time.monotonic(), _SCOPE.get(key)
+    if hit and now - hit[0] < SCOPE_TTL:
+        base = hit[1]
+    else:
+        base = shared_frame.shared_scope(board, root, view, topics, every, [])
+        _SCOPE.clear()                           # one render's answer at a time
+        _SCOPE[key] = (now, base)
+    within = lambda p: p is not None and (Path(p) == board or board in Path(p).parents)
+    topic_paths = {row[0] for row in base['topics']}
+    def matches(item):
+        if not view:
+            return True
+        if item.get('view'):
+            return shared_frame.view_key(item['view']) == shared_frame.view_key(view)
+        if item.get('topic') is not None:
+            return Path(item['topic']) in topic_paths
+        return item.get('page') in base['pages']
+    return {**base, 'topics': list(base['topics']), 'knows': [r for r in knows if within(r.get('page')) and matches(r)]}
+
+
 def scope(board, root, view, topics, every, knows):
     view = shared_frame.view_key(view) if view else None
-    result = shared_frame.shared_scope(board, root, view, context_topics(board, root, topics), every, knows)
+    result = _shared(board, root, view, context_topics(board, root, topics), every, knows)
     selected = {row[0] for row in result['topics']}
     result['topics'] = [row for row in topics if row[0] in selected]
     if view:

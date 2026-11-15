@@ -40,6 +40,8 @@ sys.path.insert(0, str(HERE))
 import five_parts as fp  # noqa: E402
 from gallery_scan import SKIP, SNN, level_of  # noqa: E402
 
+VIEWS = ("overview", "standing", "status", "findings", "delivery", "ui-block", "ui-job", "ui-task", "ui-run")
+PLACEHOLDER = "why do we need s"                           # what the 10-31 run drew when a face had no Why (261109)
 TYPES = ("skill", "ui", "code", "draft", "display", "data")
 LIMITS = {"Block": 9, "Job": 5, "Task": 3}
 ICON = {"skill": "book", "ui": "code", "code": "code", "draft": "doc", "display": "page", "data": "page"}
@@ -90,6 +92,11 @@ def line_of(text: str, name: str) -> str:
     return re.sub(r"\s+", " ", m.group(1)).strip() if m else ""
 
 
+def why_of(text: str) -> str:
+    """The question the Idea part asks: the face's **Why:** line, written by a person or an agent, never made up here."""
+    return line_of(text, "Why")
+
+
 def dtype_of(text: str) -> str:
     m = re.search(r"(?mi)^\*\*Delivery type:\*\*[^\S\n]*`?([A-Za-z]+)", text)
     return m.group(1).lower() if m and m.group(1).lower() in TYPES else ""
@@ -130,8 +137,24 @@ def checks(topic: Path, counts: dict) -> list[tuple[str, str, str]]:
         out.append(("apply", "render", "no delivery/render.yaml"))
     if not (topic / f"{topic.name}.mindmap.md").is_file():
         out.append(("apply", "mindmap", "no mind map"))
-    if not custom_built(topic) and not five_part(topic / f"{topic.name}.excalidraw"):
-        out.append(("apply", "draw", "drawing not in five parts"))
+    view = re.search(r"(?m)^view:[^\S\n]*(\S+)", text.split("\n\n## ")[0])
+    if not view and not re.search(r"(?m)^\*\*Tags:\*\*.*`(overview|standing|status|findings|delivery)`", text):
+        out.append(("person", "view", "no view: line, so no focus view shows it (overview · standing · findings · "
+                                      "delivery, JL 261109)"))
+    elif view and view.group(1).casefold() not in VIEWS:
+        out.append(("person", "view", f"view: {view.group(1)} is not a view ({' · '.join(VIEWS)})"))
+    if re.search(r"(?m)^\*\*Feeds:\*\*.*reports/", text):
+        out.append(("person", "feeds", "**Feeds:** points at reports/: the answer goes in this face as a "
+                                       "'Q01 · Answer' part (JL 261109)"))
+    drawing = topic / f"{topic.name}.excalidraw"
+    if not custom_built(topic) and five_part(drawing) and PLACEHOLDER in drawing.read_text(encoding="utf-8",
+                                                                                          errors="ignore"):
+        out.append(("person", "placeholder", "its drawing says 'why do we need sNN?': write **Why:**, then redraw"))
+    if not custom_built(topic) and not five_part(drawing):
+        if why_of(text):
+            out.append(("apply", "draw", "drawing not in five parts"))
+        else:
+            out.append(("person", "why", "no **Why:** line: the five parts are not drawn without it (261109)"))
     elif not custom_built(topic) and old_builders(topic):
         out.append(("apply", "builder", "an old builder beside its five-part drawing"))
     if not (topic / f"{topic.name}.slides.html").is_file():
@@ -255,7 +278,7 @@ def spec_of(topic: Path) -> dict:
         pieces = []
     target = next((Path(p["to"]).name for p in pieces if isinstance(p, dict) and "to" in p), "") or "not set yet"
     return {"title": title,
-            "why": {"question": f"why do we need {nn}?", "notes": notes or ["(its Topic, not written yet)"],
+            "why": {"question": why_of(text), "notes": notes or ["(its Topic, not written yet)"],
                     "quote": f"{q.group(1)}: “{q.group(2)}”" if q else ""},
             "what": {"head": f"② what {nn} hands over", "icon": ICON.get(dtype, "doc"),
                      "name": fp.textwrap.shorten(for_line, 34, placeholder="…") if for_line else "not named yet",
@@ -265,6 +288,8 @@ def spec_of(topic: Path) -> dict:
 
 
 def draw(topic: Path) -> Path:
+    if not why_of(face(topic).read_text(encoding="utf-8", errors="ignore")):
+        raise SystemExit(f"{topic.name}: no **Why:** line; a person or agent writes it first, nothing drawn (261109)")
     kept = keep_old(topic)
     els = kept_design(topic, kept)
     wide = max((e["x"] + e["width"] for e in els), default=1300)

@@ -397,7 +397,7 @@ def read_draft(path, docx):
             para, cur = m.group(1), None
             PARA_BRIEF[para] = m.group(2) or ""
             continue
-        m = re.match(r"^- B(\d+)[a-z]* · S(\d+) · (.*\S)\s*$", line)
+        m = re.match(r"^- B(\d+)[a-z]* · [Ss](\d+) · (.*\S)\s*$", line)
         if m and sid is not None:
             cur = [int(m.group(2)), [], m.group(3), f"{para}.B{m.group(1)}"]
             out[sid].append(cur)
@@ -469,7 +469,7 @@ def cmd_seed(a):
                 p, b, last = p + 1, 0, here
                 out += ([""] if k else []) + [f"### C{c}.P{p} · " + " ".join(sent.split()[:6]) + " ..."]
             b += 1
-            out += [f"- B{b} · S{k + 1} · {sent}",
+            out += [f"- B{b} · s{k + 1} · {sent}",
                     "  Point: " + (f"[Change] {titles[ids[k][0]]}" if ids[k] else "[Original] The file author's sentence")]
             if ids[k]:
                 out.append("  Change: " + ", ".join(f"{i} · {titles[i]}" for i in ids[k]))
@@ -881,7 +881,7 @@ def cmd_draw(a):
         raise SystemExit(f"changes whose part names no section of {docx.name}: {missing}")
     lost = [w["id"] for w in review.get("items") or [] if w["id"] not in done_r]
     if lost:
-        raise SystemExit(f"review notes whose `at` names no sentence of the draft (C<k>.P<m>.S<n>): {lost}")
+        raise SystemExit(f"review notes whose `at` names no sentence of the draft (C<k>.P<m>.s<n>): {lost}")
     if not s_frames:
         side["height"] = y + 30
     rp.FRAME[0] = None
@@ -930,7 +930,7 @@ def sentence_band(sents, sid, y):
     yy = top = y + 40
     for k, (sent, changed) in enumerate(sents, 1):
         color = GREEN if changed else rp.INK
-        lab = f"S{k}"
+        lab = f"s{k}"
         rp.text(X0 - 10 - len(lab) * 16 * 0.55, yy + 3, lab, 16, color)
         e = rp.text(X0 + 12, yy, rp.wrap(sent, BAND - 24, 20), 20, color)
         e.update(originalText=sent, autoResize=False, width=BAND - 24,
@@ -960,7 +960,7 @@ def sentence_column(sents, sid, y, width=PIC2, size=20):
             rp.text(X1 + 4, yy, label, max(18, size - 6), rp.INK)
             yy, top, last = yy + size + 12, yy + size + 12, para
         color = GREEN if ids else rp.INK
-        lab = f"S{n}"
+        lab = f"s{n}"
         lsz = max(16, size - 6)
         rp.text(X1 - 8 - len(lab) * lsz * 0.55, yy + 3, lab, lsz, color)
         e = rp.text(X1 + 12, yy, rp.wrap(sent, width - 24, size), size, color)
@@ -969,7 +969,7 @@ def sentence_column(sents, sid, y, width=PIC2, size=20):
                                           "address": address}})
         for i in ids:
             where.setdefault(i, (yy, yy + e["height"]))
-        where[f"{para}.S{n}"] = (yy, yy + e["height"])  # a review note finds its sentence by address ("C2.P4.S9")
+        where[f"{para}.s{n}"] = where[f"{para}.S{n}"] = (yy, yy + e["height"])  # a review note's `at`: C2.P4.s9 (or S9)
         yy += e["height"] + 8
     if last is not None:
         close(top, yy)
@@ -1024,7 +1024,7 @@ def cmd_edits(a):
             m = re.match(r"^### (C\d+\.P\d+)", line)
             if m:
                 para = m.group(1)
-            m = re.match(r"^(- B(\d+)[a-z]* · S\d+ · )(.*\S)\s*$", line)
+            m = re.match(r"^(- B(\d+)[a-z]* · [Ss]\d+ · )(.*\S)\s*$", line)
             if section == "Draft" and m and (f"{para}.B{m.group(2)}", m.group(3)) in built:
                 lines[k] = m.group(1) + built[(f"{para}.B{m.group(2)}", m.group(3))]
                 hit += 1
@@ -1039,7 +1039,7 @@ def cmd_edits(a):
         print(f"applied {len(rows)} sentence edit(s) to {sfile.name}; rebuild the drawing")
     for part, n, before, after in rows:
         _, removed, added, _ = split_change(before, after)
-        print(f"{NAME.get(part, part)} · S{n}\n  before: {before}\n  after:  {after}\n"
+        print(f"{NAME.get(part, part)} · s{n}\n  before: {before}\n  after:  {after}\n"
               f"  change: \"{removed.strip()}\" -> \"{added.strip()}\"\n")
     return rows
 

@@ -207,9 +207,9 @@ def markdown(spec: dict, answers: dict | None = None) -> str:
 
 # the Studio topic an interaction is attached to (JL 261031: "the interaction page should be attached to one studio as
 # well"): the sNN at the head of its for: address, b17-s04 or b16.j01.t03-s38
-# a Block's bNN, or a named Board's own folder name, which has no bNN: a paper Board (Paper-X-s04, Paper-X.j11-s05), an
-# insight Board or its Prototype (Insight-X-s01, Prototype-X-s01), a design Block (Design-X.j01-s02) (261106)
-NAMED = r"(?:Paper|Insight|Design|Prototype)-[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*?"
+# a Block's bNN, or a named Board's own folder name, which has no bNN: a paper or grant Board (Paper-X-s04, Paper-X.j11-s05, Grant-X-s06), an
+# insight Board or its Question Book (Insight-X-s01, InsightQuestionBook-X-s01), a design Block (Design-X.j01-s02) (261106)
+NAMED = r"(?:Paper|Grant|Insight|Design|InsightQuestionBook|QuestionBook|Prototype)-[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*?"
 TOPIC = re.compile(rf"\s*((?:b\d+|{NAMED})(?:\.[jt]\d+)*-s\d+)\b")
 EXAMPLE_FOR = "b17-s04:theme_work @ workbench_page_structure"
 
@@ -795,10 +795,10 @@ def picks(pasted: str) -> tuple[dict, list, list]:
 
 def run_chain(here: Path) -> tuple:
     """The folders a form's path must end with to name this Run: from its Project (a `Project-*` folder; else its
-    Block, `bNN_*` or a named Board `Paper-*`, `Insight-*`, `Design-*`, `Prototype-*`; else its page) down to the Run. Hosts serve a SPACE root, so a host's path holds them."""
+    Block, `bNN_*` or a named Board `Paper-*`, `Grant-*`, `Insight-*`, `Design-*`, `InsightQuestionBook-*`; else its page) down to the Run. Hosts serve a SPACE root, so a host's path holds them."""
     above = [here, *here.parents]
     anchor = (next((p for p in above if p.name.startswith("Project-")), None)
-              or next((p for p in above if re.match(r"^(b\d{2,}_|Paper-|Insight-|Design-|Prototype-)", p.name)), None)
+              or next((p for p in above if re.match(r"^(b\d{2,}_|Paper-|Grant-|Insight-|Design-|InsightQuestionBook-|QuestionBook-|Prototype-)", p.name)), None)
               or here.parent.parent)                   # the page that holds runs/
     return here.relative_to(anchor.parent).parts
 

@@ -1,3 +1,9 @@
+## 0.3.0 · 2026-11-11 · s04 is the plan, the Structure view is what is written
+
+- JL 261111: s04's Sections table is the plan (word budget, order, displays, dates); the version Job's Report ›
+  Structure view shows the paper map the Drafts hold now. When they disagree, the Drafts count for what is written.
+- The first version's `## Narrative` is seeded from s04 and aligned with the Story's §8 claims; §8 holds no Section rows.
+
 ## 0.2.2 · 2026-11-08 · Paper types and shared content ownership
 
 - Grant is a type within Paper; its specific runtime remains proposed.

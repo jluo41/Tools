@@ -17,7 +17,8 @@ never load:
 
 Aliases still read: PUBLIC_URL and TAILSCALE_URL mean DOMAIN; LOCAL_PORT and
 TAILSCALE_PORT mean PORT. A deployment may namespace every key with its own
-`<PREFIX>_` (`MYLAB_DOMAIN=...`); the prefix is stripped. Nothing here names one
+`<PREFIX>_` (`MYLAB_DOMAIN=...`); the prefix is stripped. Bare canonical keys
+take precedence over their prefixed forms, regardless of line order. Nothing here names one
 person or one SPACE: the same host serves any repository that carries the file.
 
 DOMAIN is a variable on purpose. Every link body the host prints or redirects
@@ -48,8 +49,22 @@ def server_config_dir(root: str | Path) -> Path:
 
 def _value(raw: str) -> str:
     value = raw.strip()
-    if " #" in value:
-        value = value.split(" #", 1)[0].rstrip()
+    quote = ""
+    escaped = False
+    for index, char in enumerate(value):
+        if escaped:
+            escaped = False
+            continue
+        if char == "\\" and quote != "'":
+            escaped = True
+        elif quote:
+            if char == quote:
+                quote = ""
+        elif char in "\"'":
+            quote = char
+        elif char == "#" and index > 0 and value[index - 1].isspace():
+            value = value[:index].rstrip()
+            break
     if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
         value = value[1:-1]
     return value.strip()
@@ -81,12 +96,13 @@ def load_server_config(root: str | Path) -> dict[str, str]:
         lines = path.read_text(encoding="utf-8", errors="ignore").splitlines()
     except OSError:
         return values
-    for raw in lines:
-        match = _LINE.match(raw)
-        if not match:
-            continue
+    matches = [match for raw in lines if (match := _LINE.match(raw))]
+    bare_canonical = {match.group(1) for match in matches if match.group(1) in CANONICAL_KEYS}
+    for match in matches:
         key = _known(match.group(1))
         if not key:
+            continue
+        if match.group(1) != key and key in bare_canonical:
             continue
         value = _value(match.group(2))
         if key in ALIAS_KEYS:

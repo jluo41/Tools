@@ -21,7 +21,7 @@ Why A: The same as Board Answers; one screen tall.
 
 Grid lists 55 rows by folder name, "✅ ok" written in every cell.
 
-**How does each question × cut cell show?**
+**How does each question × segment cell show?**
 
 - [x] A · One dot, folded by DIKW level
   [preview](q2-a.html)

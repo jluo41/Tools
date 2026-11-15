@@ -8,6 +8,7 @@ import re
 from pathlib import Path
 
 from live.frame import _draw_url, _notes, _reader, _rel, chain, esc, face, pop
+from live.sentence_id import sid as _sid
 
 
 # set while the focus page draws a step (focus_draft.py): each Result card is then a section, never a fold
@@ -85,7 +86,18 @@ def read_draft(folder: Path) -> dict:
             out["text"].append((title, body))
     if out["draft"]:
         out["text"] = [out["draft"]]
+    # an older draft writes S8: the parts read here carry s8, so every key and data-s on the page is one case
+    for k in ("structure", "scratch", "draft"):
+        out[k] = out[k] and (out[k][0], norm_ids(out[k][1]))
+    out["text"] = [(t, norm_ids(b)) for t, b in out["text"]]
     return out
+
+
+def norm_ids(body: str) -> str:
+    """The draft's sentence ids in lowercase: `- B2 · S3 · ` lines, `C1.P2.S3` addresses, `· S1 to S2` spans."""
+    body = re.sub(r"(?m)^(\s*-?\s*B\d+[a-z]* · )([Ss]\d+[a-z]*)( · )", lambda m: m.group(1) + _sid(m.group(2)) + m.group(3), body)
+    body = re.sub(r"\bC\d+\.P\d+\.[Ss]\d+[a-z]*\b", lambda m: _sid(m.group(0)), body)
+    return re.sub(r"(?m)^(#{2,4} .*·\s*)([Ss]\d+[a-z]*(?:\s+to\s+[Ss]\d+[a-z]*)?)(\s*)$", lambda m: m.group(1) + _sid(m.group(2)) + m.group(3), body)
 
 
 def _signed(d: dict) -> bool:
@@ -102,9 +114,9 @@ def _paragraphs(body: str) -> list:
             if cur:
                 out.append(cur)
             continue
-        b = re.match(r"^- B\d+[a-z]* · (S\d+[a-z]*) · (?:\[([^\]]+)\]\s*)?(.*\S)", line)   # S3a: a split sentence
+        b = re.match(r"^- B\d+[a-z]* · ([Ss]\d+[a-z]*) · (?:\[([^\]]+)\]\s*)?(.*\S)", line)   # S3a: a split sentence
         if cur is not None and b:
-            cur[1].append((b.group(1), b.group(2) or "", b.group(3)))
+            cur[1].append((_sid(b.group(1)), b.group(2) or "", b.group(3)))
     return out
 
 
@@ -127,7 +139,7 @@ def _marks(ev: dict) -> dict:
     for c in ev["cards"]:
         for it in c["items"]:
             ink = INK["need"] if it["state"] != "have" else INK.get(c["kind"], INK["value"])
-            sids = ["S" + str(n).lstrip("S") for n in it.get("for") or []] or ["*"]
+            sids = [_sid("s" + str(n).lstrip("Ss")) for n in it.get("for") or []] or ["*"]
             for phrase in map(str, it.get("anchor") or []):   # a bare number in YAML (3.35) reads as a float
                 _add_mark(out, phrase, ink, c["label"])
                 for sid in sids:
@@ -250,10 +262,10 @@ def _inline(text: str, marks: dict) -> str:
 def _sentence(item: str, marks: dict) -> str:
     """A §3 line, `B1 · S1 · text`: its sentence number small and grey, then the sentence, each in its own span, so the
     text column can hang the numbers in a gutter on the left (CARDS_CSS)."""
-    m = re.match(r"^B\d+[a-z]* · (S\d+[a-z]*) · (.*)$", item)
+    m = re.match(r"^B\d+[a-z]* · ([Ss]\d+[a-z]*) · (.*)$", item)
     if m and isinstance(marks, _Marks):
-        marks = {**marks.by_sentence.get("*", {}), **marks.by_sentence.get(m.group(1), {})}
-    return (f'<span class="mut s-no" style="font-size:12px">{esc(m.group(1))}</span> '
+        marks = {**marks.by_sentence.get("*", {}), **marks.by_sentence.get(_sid(m.group(1)), {})}
+    return (f'<span class="mut s-no" style="font-size:12px">{esc(_sid(m.group(1)))}</span> '
             f'<span class=s-tx>{_inline(m.group(2), marks)}</span>' if m else _inline(item, marks))
 
 
@@ -305,13 +317,13 @@ def _md(text: str, marks: dict, parts: dict = None, rows: bool = False) -> str:
                     items[-1] += " " + line.strip()
             if rows:
                 for i in items:
-                    m = re.match(r"^B[0-9]+[a-z]* · (S[0-9]+[a-z]*) · ", i)
-                    a = (f"{pid}.{m.group(1)}" if pid else m.group(1)) if m else ""
-                    out.append(_sx_row(f'<ul><li data-s="{m.group(1)}" data-a="{esc(a)}">{_sentence(i, marks)}</li></ul>', a)
+                    m = re.match(r"^B[0-9]+[a-z]* · ([Ss][0-9]+[a-z]*) · ", i)
+                    a = _sid(f"{pid}.{m.group(1)}" if pid else m.group(1)) if m else ""
+                    out.append(_sx_row(f'<ul><li data-s="{_sid(m.group(1))}" data-a="{esc(a)}">{_sentence(i, marks)}</li></ul>', a)
                                if m else f"<ul><li>{_sentence(i, marks)}</li></ul>")
                 continue
             out.append("<ul>" + "".join(
-                f'<li{(" data-s=" + chr(34) + m.group(1) + chr(34)) if (m := re.match(r"^B[0-9]+[a-z]* · (S[0-9]+[a-z]*) · ", i)) else ""}>'
+                f'<li{(" data-s=" + chr(34) + _sid(m.group(1)) + chr(34)) if (m := re.match(r"^B[0-9]+[a-z]* · ([Ss][0-9]+[a-z]*) · ", i)) else ""}>'
                 f"{_sentence(i, marks)}</li>" for i in items) + "</ul>")
         else:
             out.append(f'<p style="line-height:1.6">{_inline(" ".join(x.strip() for x in lines), marks)}</p>')
@@ -367,10 +379,10 @@ def _plan_tree(body: str) -> tuple:
             if q and para:
                 asks[para] = q.group(1)
             continue
-        b = re.match(r"^- B\d+[a-z]* · (S\d+[a-z]*) · (?:\[([^\]]+)\]\s*)?(.*\S)", line)
+        b = re.match(r"^- B\d+[a-z]* · ([Ss]\d+[a-z]*) · (?:\[([^\]]+)\]\s*)?(.*\S)", line)
         n = re.match(r"^\s+Note:\s*(.*\S)", line)
         if b:
-            last = [b.group(1), b.group(2) or "", b.group(3), ""]
+            last = [_sid(b.group(1)), b.group(2) or "", b.group(3), ""]
             cur[2].append(last)
         elif n and last and cur[2] and cur[2][-1] is last:
             last[3] = n.group(1)

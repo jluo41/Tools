@@ -1,6 +1,17 @@
 haipipe-ui · Changelog
 ======================
 
+## [0.6.1] - 2026-11-13
+
+- JL 261113: "if the section is empty, then we can hide that section". Page rule 11: a section holding only its grey
+  "none yet" line is not drawn, and a group heading over only empty sections goes too; done for 🧭 Around the Work.
+
+## [0.6.0] - 2026-11-11
+
+- JL 261111: "the Work is no longer used". Report is the one place: what Process held (to-do rows, steps, how it is
+  made) is the view's first numbered sections, no ⚙️ Process or 📊 Results heading; old Work links open the same
+  Report view. Done in the paper theme; the sections table, page rule 6 and section rules 7 and 8 say so.
+
 ## [0.5.0] - 2026-11-06
 
 - Walks by script, one per kind of page: `scripts/walk_shoot.py` (read-only fresh browser; each section, view, closed bar,
@@ -28,7 +39,7 @@ haipipe-ui · Changelog
 - The Sections table's Report views read MindMap · Status · Findings (it still said Standing · Answers · Questions).
 - New right-rail section **Skills** (JL 261105: "a new tab in the right rail, named 'SKILL', and we can show the most
   relevent skills"): the theme's door and workbench skill, the level's skill, its views' and its Runs' skills, side tabs
-  with a Copy prompt each (`servers/workbench/skills_section.py`). The "🧰 Skills that do it" Process step is gone from
+  with a Copy prompt each (`servers/workbench/page/skills_section.py`). The "🧰 Skills that do it" Process step is gone from
   every Work view: the rail shows them once.
 - The walk is a short video to pause (JL 261105: "could you embed the gif as the report as well?"; "a very quick video
   and we can pause in the middle"): `scripts/walk_player.py` makes a self-contained player from a walk's GIF (play,
@@ -60,7 +71,7 @@ haipipe-ui · Changelog
 ## [0.4.1] - 2026-11-04
 
 - A Block's Status: closed numbered sections per band, a row per Job, each row opening to its Tasks and Runs; no
-  next-step sentences (JL 261104, on b01_clm_foundation_model, agreed: "这个做得很好"). Built in `focus_page.py`
+  next-step sentences (JL 261104, on b01_c_q25_clm_fm, agreed: "这个做得很好"). Built in `focus_page.py`
   `band_board`.
 
 ## [0.4.0] - 2026-11-02
@@ -92,7 +103,7 @@ coloured state pill, one verb; s33-D06, from b15 s58) and the plan row (Open, "u
 A PROCESS title names the step, never a count (JL's rule "labels carry no counts", decided 261101). Phone `@media`
 rules come after the base rules they change (that bug failed five views on phone, s32-D21). The helpers after the
 dashed rule are the drawing and the mind map only; Interactions moved into PROCESS 1. Pointers now name the code
-where it lives: `servers/workbench/ui_parts.py` and `servers/workbench-paper/board_*.py`; `focus_draft.py` is the
+where it lives: `servers/workbench/page/ui_parts.py` and `servers/workbench-paper/board_*.py`; `focus_draft.py` is the
 draft Task page only. The paper Board's views are seven, A to G, Venue inside Story (s32-D12).
 `scripts/shoot.py` takes the whole page by default; `--viewport` takes only the first screen.
 

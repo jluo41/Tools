@@ -5,7 +5,7 @@
     ladder.py update <path> [--apply] [--today]            dry run unless --apply
 
 --today adds b10's rules since 261012 (the table's `today:` key): studio topics, the Questions register,
-reports/ for each Block Question, related/ at the Block only (b10 s10; studio/ and delivery/ live at every level
+a Studio topic's answer part for each Block Question (no reports/, 261109), related/ at the Block only (b10 s10; studio/ and delivery/ live at every level
 since JL 261028, with one sNN numbering per Block); and, at a work Block, the
 workflow rules since 261021: the face's workbench-layout line, each Job's ## Deliverables and emoji, each work
 Task's goal and close, each Run card's role (update --today --apply writes it), no stand-in receipt.
@@ -104,10 +104,10 @@ def family_of(block: Path) -> str:
         return "cowork"
     if block.name.startswith("Labeling-") or block.parent.name in ("labeling", "labelings"):
         return "labeling"
-    if block.name.startswith("Paper-") or block.parent.name in ("paper", "papers"):
+    if block.name.startswith(("Paper-", "Grant-")) or block.parent.name in ("paper", "papers"):
         return "paper"
     # the special boards are named by their kind (haipipe-block, JL 261008)
-    if block.name.startswith(("Insight-", "Prototype-")) or block.parent.name in ("insight", "insights"):
+    if block.name.startswith(("Insight-", "InsightQuestionBook-", "QuestionBook-", "Prototype-")) or block.parent.name in ("insight", "insights"):
         return "insight"
     if block.name.startswith("Design-") or block.parent.name in ("design", "designs"):
         return "design"
@@ -233,15 +233,25 @@ def audit_run(d: Path, fam: str, work_task: bool, where: str, root: Path) -> Nod
     soft = (".md", ".sh") if name.startswith("run-delivery-") else (".md",)
     # A collection Run's ticket is the form a person answers, rendered from its question_collection.md
     # (haipipe-interaction, JL 261031); it is the one hard Run allowed under any page.
-    collect = kind == "hard" and bool(NAMES["collect"].match(name))
+    # rNN_collect_<slug> is also an ordinary hard Run's name (b51's r01_collect_scaling_data gathers numbers): it is a
+    # collection Run only when it holds its questions or its form (JL 261110 /wb update).
+    collect = kind == "hard" and bool(NAMES["collect"].match(name)) and (
+        (d / "question_collection.md").is_file() or (d / f"{name}.html").is_file())
     hard = (".html",) if collect else (".sh", ".cmd", ".ps1", ".yaml", ".yml")
     tickets = [d / f"{name}{e}" for e in (hard if kind == "hard" else soft)]
     ticket = next((t for t in tickets if t.is_file()), None)
-    if kind and not ticket:
-        node.add("failed", f"no ticket ({tickets[0].name})")
     card = {}
     if (d / "run.yaml").is_file():
-        card = yaml.safe_load(face_text(d / "run.yaml")) or {}
+        try:
+            card = yaml.safe_load(face_text(d / "run.yaml")) or {}
+        except yaml.YAMLError as e:                  # one bad card is a finding, never a crash of the whole audit
+            node.add("failed", f"run.yaml is not valid YAML (line {getattr(e, 'problem_mark', None) and e.problem_mark.line + 1})")
+        card = card if isinstance(card, dict) else {}
+    # An agreed Run gets its folder and card at plan time, status: planned (haipipe-task lifecycle § Plan); when
+    # its worker is not built yet the card says ticket: null and the ticket comes with the build (JL 261109).
+    if kind and not ticket and not (str(card.get("status", "")) == "planned" and not card.get("ticket")):
+        node.add("failed", f"no ticket ({tickets[0].name})")
+    if (d / "run.yaml").is_file():
         if card.get("run") != name:
             node.add("failed", f"run.yaml says run: {card.get('run')}")
         if kind and card.get("kind") != kind:
@@ -342,7 +352,7 @@ def audit_path(path: Path, root: Path, only: bool = False) -> list[Node]:
                 continue
             if NAMES["block"].match(b.name):
                 nodes.append(audit_block(b, root, only))
-            elif family_of(b) != "task":              # a family's own Block (Prototype-, Insight-, Design-…)
+            elif family_of(b) != "task":              # a family's own Block (InsightQuestionBook-, Insight-, Design-…)
                 continue                              # its owner's ladder checks it
             else:
                 odd = Node(b, "block")
@@ -399,12 +409,10 @@ def today_findings(block: Path) -> list[tuple[str, str]]:
     if not reg:
         out.append(("debt", f"today: {face.name} has no ## Questions register"))
     else:
-        ids = re.findall(r"(?m)^\s*-\s+id:\s*(Q\d+)", text[reg.end():])
-        have = {d.name.split("_")[0].upper() for d in (block / "reports").glob("q[0-9]*_*") if d.is_dir()} \
-            if (block / "reports").is_dir() else set()
-        miss = [q for q in ids if q.upper() not in have]
-        if miss:
-            out.append(("debt", f"today: no reports/qNN_*/ for {', '.join(miss)}"))
+        # JL 261109: no reports/ folder; a Question's answer is a `Q01 · Answer` part of the topic that answers it
+        if (block / "reports").is_dir():
+            out.append(("debt", "today: reports/ still here; fold each answer into its Studio topic "
+                                "(haipipe-studio reports_to_topics.py), then it moves to _old/reports/"))
     jobs = sorted(d for d in block.iterdir() if d.is_dir() and NAMES["job"].match(d.name))
     tasks = [t for j in jobs for t in sorted(j.iterdir()) if t.is_dir() and NAMES["task"].match(t.name)]
     for lvl in jobs + tasks:

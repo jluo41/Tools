@@ -22,7 +22,10 @@ day, so its row points to its OpenAlex record, which was fetched for title, auth
 and description; Open Library lists its O'Reilly Media editions (2012). Settles 2012 is
 cited by the DOI of its Springer reissue in the Synthesis Lectures series (first published
 by Morgan & Claypool, 2012). Each `why here` line was judged from the abstract or the
-publisher's page only, not from the full text.
+publisher's page only, not from the full text, except YouTA: added 2026-11-12 after
+checking the author-uploaded methods and limitations and matching its title and year
+against DOI registry records. Its design implications and reading scope are recorded in
+`blueprints/Project-Ladder/work/b15_theme_labeling/s02-labeling-workbench/youta-2026.md`.
 
 | group | role | key | paper | venue | doi | why here | pdf |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -31,6 +34,7 @@ publisher's page only, not from the full text.
 | by audit sample; by written guideline | review | ★ | Artstein & Poesio 2008 · Inter-Coder Agreement for Computational Linguistics | Computational Linguistics | 10.1162/coli.07-034-R2 | agreement coefficients (Krippendorff's alpha, Scott's pi, Cohen's kappa) and their assumptions: how agreement between executors and human gold is measured and read |  |
 | by weak-model committee | evidence | ★ | Gilardi, Alizadeh & Kubli 2023 · ChatGPT outperforms crowd workers for text-annotation tasks | Proceedings of the National Academy of Sciences | 10.1073/pnas.2305016120 | zero-shot ChatGPT beat crowd workers on relevance, stance, topic and frame annotation at a fraction of the cost: why LLM executors pre-label each batch |  |
 | by risk routing; by weak-model committee | evidence | ★ | Wang, Kim, Rahman et al. 2024 · Human-LLM Collaborative Annotation Through Effective Verification of LLM Labels | Proceedings of the CHI Conference on Human Factors in Computing Systems | 10.1145/3613904.3641960 | LLMs label and explain, a verifier flags doubtful labels, and humans re-annotate those: LLM labels are checked by a human rather than taken as gold |  |
+| by risk routing; by written guideline; by unit recipe | evidence |  | Fernández-Martínez 2026 · YouTA: A context-aware corpus annotation tool for critical discourse analysis of YouTube comments | Applied Corpus Linguistics 6(3), 100226 | 10.1016/j.acorp.2026.100226 | context-linked annotation, hierarchical schemes and traceable human review of LLM suggestions inform item context and review controls; its model-assisted reference labels do not establish independent blind evaluation |  |
 | by weak-model committee | review |  | Tan, Li, Wang et al. 2024 · Large Language Models for Data Annotation and Synthesis: A Survey | Proceedings of EMNLP 2024 | 10.18653/v1/2024.emnlp-main.54 | how LLM annotations are generated, assessed and used, and their limits: where the weak executors and their evaluation sit in the wider field |  |
 | by disagreement draw; by random first round | review | ★ | Settles 2012 · Active Learning | Synthesis Lectures on Artificial Intelligence and Machine Learning | 10.1007/978-3-031-01560-1 | the scenarios and query-selection algorithms of active learning: the sampler's disagreement- and boundary-focused batches after a random first round |  |
 | by disagreement draw | evidence |  | Ein-Dor, Halfon, Gera et al. 2020 · Active Learning for BERT: An Empirical Study | Proceedings of EMNLP 2020 | 10.18653/v1/2020.emnlp-main.638 | with a small budget and skewed classes, active learning lifts BERT classifiers, most when the starting set is biased: selected later rounds reach rare label values |  |

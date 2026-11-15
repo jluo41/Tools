@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Start the haipipe-utils API host from a bare shell.
 #
-#   Tools/plugins/haipipe-utils/servers/_host/run.sh                       # 127.0.0.1:8070, every lane
+#   Tools/plugins/haipipe-utils/servers/_host/run.sh                       # $HAIPIPE_UTILS_HOST:8070 (env.sh: the tailnet address), every lane
 #   Tools/plugins/haipipe-utils/servers/_host/run.sh --only insulin        # one lane
 #   Tools/plugins/haipipe-utils/servers/_host/run.sh --store /path/to/_WorkSpace/ExternalStore
 #   HAIPIPE_UTILS_PORT=9000 .../run.sh

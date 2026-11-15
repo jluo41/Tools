@@ -2,8 +2,8 @@
 
 An Insight Block (ref/block-contract.md) is a task Block: one Job per DIKW level, one Task
 per question (`tNN_<name>/` with `question.md`, `scripts/`, the page). Every question with a
-compute need gets one ticket per dataset (board.md `datasets:`) x partition it is asked on:
-`runs/<dataset>_<partition>.sh`, the same lines in every ticket, so a run has no config of its
+compute need gets one ticket per dataset (board.md `datasets:`) x segment it is asked on:
+`runs/<dataset>_<segment>.sh`, the same lines in every ticket, so a run has no config of its
 own. The code is never copied: each Task's `scripts/` is the one copy.
 
 Never overwrites a file. Prints what it made, and any ticket for a run the Block no longer asks.
@@ -17,7 +17,7 @@ from run_question import (META, asked_partitions, block_meta, front, live_needs,
                           question_folders, question_id)
 
 TICKET = """#!/bin/bash
-# <dataset>_<partition>.sh · runs this question on one dataset x partition, writing results/<run>/
+# <dataset>_<segment>.sh · runs this question on one dataset x segment, writing results/<run>/
 # and reports/<run>/ (haipipe-insight ref/block-contract.md § The run). The same lines in every
 # run ticket; the file name is the run.
 R="$(cd "$(dirname "$0")" && while [ ! -f env.sh ] && [ "$PWD" != / ]; do cd ..; done; pwd)"
@@ -28,7 +28,7 @@ exec "$R/.venv/bin/python" "$R/Tools/plugins/haipipe-toolkit/skills/2_theme/insi
 
 
 def wanted_runs(block, q, partitions):
-    """The run stems a question owes: every dataset x asked partition, when it has a compute need."""
+    """The run stems a question owes: every dataset x asked segment, when it has a compute need."""
     if not any(n.get("kind") == "compute" for n in live_needs(q).values()):
         return []                                           # no compute need: the page alone, no run
     return [f"{d}_{p}" for d in block_meta(block)["datasets"] for p in asked_partitions(q, partitions)]

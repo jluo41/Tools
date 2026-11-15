@@ -28,10 +28,13 @@ class DrawingTopicTest(unittest.TestCase):
         done = add_question(self.block, "--drawing", "api_food")
         self.assertEqual(done.returncode, 0, done.stderr)
         topic = self.block / "s01-api-food"
-        self.assertIn("**Feeds:** `reports/` q01_input_forms", (topic / "s01-api-food.md").read_text(encoding="utf-8"))
+        self.assertIn("**Feeds:** Q01", (topic / "s01-api-food.md").read_text(encoding="utf-8"))
         self.assertTrue((topic / "s01-api-food.excalidraw").is_file())
-        page = (self.block / "reports" / "q01_input_forms" / "q01_input_forms.md").read_text(encoding="utf-8")
-        self.assertIn("(../../s01-api-food/s01-api-food.excalidraw)", page)
+        face = (topic / "s01-api-food.md").read_text(encoding="utf-8")   # the answer lives in the topic (JL 261109)
+        self.assertIn("Q01 · Answer", face)
+        self.assertIn("view: findings", face)
+        self.assertIn("report: s01-api-food/s01-api-food.md", (self.block / "board.md").read_text(encoding="utf-8"))
+        self.assertFalse((self.block / "reports").exists())
         self.assertEqual(list(self.block.rglob("studio")), [])
 
     def test_a_full_block_refuses_before_board_md_changes(self):

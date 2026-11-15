@@ -43,19 +43,21 @@ class InsightFocusTest(unittest.TestCase):
 
     def test_the_letters_of_the_report(self):
         self.assertEqual([n for n, _ in IF.job_work_views(self.open, self.root).values()],
-                         ["Overall", "Grid", "vs previous", "MindMap"])
+                         ["Findings", "Changes", "Progress", "MindMap"])
         self.assertEqual(IF.job_work_views(self.board, self.root), {})          # the Board is not a Job
         self.assertEqual(IF.job_work_views(self.open / "t03_K01_question-c", self.root), {})
 
-    def test_each_view_is_process_then_results_your_signs_in_overall(self):
+    def test_each_view_is_one_list_your_signs_in_overall(self):
+        """JL 261111, "the Work is no longer used": its steps then its results, one numbered list, no band heading."""
         for key, _ in IF.VIEWS:
             html = self.view(self.open, key)
-            self.assertEqual(GROUPS.findall(html), ["⚙️ Process", "📊 Results"], key)
+            self.assertEqual(GROUPS.findall(html), [], key)
+            self.assertNotIn('<p class="view-caption">', html, key)
             self.assertFalse(any("🙋" in h for h in HEADS.findall(html)), key)     # no 🙋 of its own (R2)
         html = self.view(self.open, "overall")                    # your signs: a step of Overall's Process
-        self.assertRegex(HEADS.findall(html)[0], r"^1 · 🔏 The plan and the close")
-        self.assertLess(html.index("Sign the plan"), html.index("Close the Job"))   # sign before close
-        self.assertNotIn("Sign the plan", self.view(self.open, "grid"))
+        self.assertRegex(HEADS.findall(html)[0], r"^1 · 🔏 Sign and close")
+        self.assertLess(html.index("Sign and close"), html.index("Close the Job"))   # sign before close
+        self.assertNotIn("Sign and close", self.view(self.open, "grid"))
 
     def test_the_close_waits_until_every_step_is_done(self):
         html = self.view(self.open, "overall")
@@ -63,26 +65,26 @@ class InsightFocusTest(unittest.TestCase):
         self.assertIn("the launch, the runs, the pages, the checks", html)
         self.assertIn("<button type=button class=fd-btn disabled>Close</button>", html)
         self.assertNotIn('data-post="/_board/insight-act"', html)
-        self.assertNotIn("What the close freezes", html)              # shown once the close is yours to sign
+        self.assertNotIn("What the close locks", html)              # shown once the close is yours to sign
 
     def test_an_unsigned_plan_waits_on_you(self):
         A.set_front(self.root / F.PROJECT / F.PROTO / "j02_p2" / "j02_p2.md", {"signed": ""})   # the plan p2
         html = self.view(self.open, "overall")
-        self.assertIn('<span class="word you">1 waits for you</span>', html)        # the bar's word, then its line
-        self.assertIn("<p class=fd-wait>🙋 Sign the plan", html)
-        self.assertIn("Sign in the Prototype", html)
-        self.assertIn("its plan is not signed", self.view(self.open, "overall"))
+        self.assertIn('<span class="word you mk" title="1 waits for you">🙋 1</span>', html)   # the bar's mark, then its line
+        self.assertIn("<p class=fd-wait>🙋 Sign ", html)
+        self.assertIn("Sign in the Question Book", html)
+        self.assertNotIn("is not signed", self.view(self.open, "overall"))   # the waiting line says it; no state sentence
 
     def test_the_grid_cells_carry_their_next_verb(self):
         html = self.view(self.open, "grid")
-        self.assertEqual(html.count("Questions × cuts"), 1)              # one grid, not two
-        self.assertIn('class="pb-pill ">launch</span>', html.split("📊 Results")[1])   # a planned Run: launch it
+        self.assertEqual(html.count("🔲 Progress"), 1)              # one grid, not two
+        self.assertIn('class="pb-pill ">launch</span>', html)        # a planned Run: launch it
         self.assertNotIn(">launch</span>", self.view(self.closed, "grid"))
         self.assertEqual(self.view(self.closed, "grid").count("<!--pb-prompt-->"), 0)   # nothing left to run
 
     def test_the_focus_page_shows_them_in_work(self):
         html = FP.render(THEME, self.root, self.open, "work", "work-grid")
-        self.assertIn("Questions × cuts", html)
+        self.assertIn("🔲 Progress", html)
         self.assertIn("Overall", html)
         self.assertNotIn("Traceback", html)
 
@@ -90,7 +92,7 @@ class InsightFocusTest(unittest.TestCase):
 
 class InsightLettersTest(unittest.TestCase):
     """The Board's Report and Work, the Job's Report, the Task's Report and Work (b11 j01 s51, s52, s54, s57, s58):
-    a Report is its numbered sections only; a Work view is ⚙️ Process then 📊 Results."""
+    a Report is its numbered sections only; an old Work view its steps then its results, one list (JL 261111)."""
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.root = Path(self.tmp.name).resolve()
@@ -114,28 +116,29 @@ class InsightLettersTest(unittest.TestCase):
     def work_ok(self, views, keys):
         self.assertEqual(list(views), ["work-" + k for k in keys] + ["work-mindmap"])   # the MindMap last (R6)
         for key, (_, build) in views.items():
-            want = ["📊 Results"] if key == "work-mindmap" else ["⚙️ Process", "📊 Results"]
-            self.assertEqual(GROUPS.findall(build())[:2], want, key)
+            html = build()
+            self.assertEqual(GROUPS.findall(html), [], key)              # no ⚙️ Process or 📊 Results heading
+            self.assertNotIn('<p class="view-caption">', html, key)
 
     def test_board(self):
-        keys = ["answers", "questions", "jobs", "data", "handoff"]
+        keys = ["answers", "questions", "data", "handoff", "jobs"]
         self.report_ok(IF.board_report_views(self.board, self.root), keys)
         work = IF.board_work_views(self.board, self.root)
         self.work_ok(work, keys)
-        self.assertRegex(HEADS.findall(work["work-questions"][1]())[0], r"^1 · 📋 The next code version")
+        self.assertRegex(HEADS.findall(work["work-questions"][1]())[0], r"^1 · 📋 The next question version")
 
     def test_job_report(self):
         views = IF.job_report_views(self.job, self.root)
-        self.assertEqual(list(views), ["overall", "grid", "vs-previous", "mindmap"])
+        self.assertEqual(list(views), ["overall", "vs-previous", "grid", "mindmap"])
         for _, build in views.values():
             self.assertNotIn("<h3 class=pb-group>", build())
 
     def test_task(self):
-        keys = ["answer", "by-cut", "across-jobs", "plan"]
+        keys = ["answer", "across-jobs", "plan"]
         self.report_ok(IF.task_views(self.task, self.root, "report"), keys + ["mindmap"])   # its own map (round 2)
         work = IF.task_views(self.task, self.root, "work")
         self.work_ok(work, keys)
-        chain = work["work-answer"][1]().split("📊 Results")[0]
+        chain = work["work-answer"][1]()
         self.assertGreaterEqual(chain.count("class=pb-todo>"), 6)           # the chain of roles, a row per link
         self.assertIn("checker · ", chain)
         self.assertNotIn("🙋", work["work-answer"][1]())                  # a Task never asks you
@@ -147,8 +150,8 @@ class InsightLettersTest(unittest.TestCase):
     def test_a_question_with_no_run_shows_its_answer(self):
         """W01 cites the answers below it and has no Run: what it found is its newest answer, not "Not asked"."""
         html = IF.board_report_views(self.board, self.root)["answers"][1]()
-        found = html.split("What each question found", 1)[1]
-        self.assertNotIn("Not asked on this cut", found)
+        found = html.split("🔎 Answers", 1)[1]
+        self.assertNotIn("Not asked on this segment", found)
         self.assertIn("it cites the answers below it", found)
         jobs = IF.board_report_views(self.board, self.root)["jobs"][1]()
         self.assertIn("cites the answers below it", jobs)                  # W01 has no Run, by design: never "not run"
@@ -161,7 +164,7 @@ class InsightLettersTest(unittest.TestCase):
                 shutil.rmtree(t)
         html = IF.board_report_views(self.board, self.root)["answers"][1]()
         row = html.split("id=question-K02", 1)[1].split("id=question-", 1)[0]
-        self.assertNotIn("Not asked on this cut", row)
+        self.assertNotIn("Not asked on this segment", row)
         self.assertIn("asked on cross", row)
 
     def test_a_draft_plan_reads_its_kept_questions_from_the_newest_job(self):
@@ -177,17 +180,17 @@ class InsightLettersTest(unittest.TestCase):
         self.assertIn('"state": "open"', html)                         # the newest Job's page, not an older answer
 
     def test_a_question_with_no_run_rests_on_what_it_cites(self):
-        """W01 has no Run: its Answer rests on, and its By cut lists, the Tasks its page cites, never "no Run yet"."""
+        """W01 has no Run: its Answer rests on, and its By segment lists, the Tasks its page cites, never "no Run yet"."""
         w = next(p for p in self.job.iterdir() if p.name.startswith("t05_W01"))
         page = w / f"{w.name}.md"
         page.write_text(page.read_text(encoding="utf-8") + "\n- It rests on the test (K01 · t03).\n", encoding="utf-8")
         views = IF.task_views(w, self.root, "report")
         self.assertIn("K01", views["answer"][1]().split("How sure", 1)[1])
         self.assertNotIn("no Run yet", views["answer"][1]())
-        self.assertIn("What it cites", views["by-cut"][1]())
+        self.assertIn("What it cites", views["answer"][1]())             # By segment is a section of Answer (JL 261109)
 
     def test_a_collection_run_is_not_a_cut(self):
-        """A 🙋 form under a Task (runs/rNN_collect_<slug>/, kind hard, type collect) is no cut of its question."""
+        """A 🙋 form under a Task (runs/rNN_collect_<slug>/, kind hard, type collect) is no segment of its question."""
         from live import insight_plan_c as P
         F._write(self.task / "runs" / "r09_collect_a_form" / "run.yaml", "run: r09_collect_a_form\nkind: hard\ntype: collect\nstatus: waiting\n")
         self.assertNotIn("r09_collect_a_form", [h["run"] for h in P.task(self.task)["hard"]])
@@ -206,10 +209,10 @@ class InsightLettersTest(unittest.TestCase):
         F._write(self.board / "delivery" / "handoff-w02.md", F._front({"counsel": "W02", "job": "j03_prototype-p2_data-demov2",
                                                                        "signed": ""}, "# W02 · a draft\n"))
         work = IF.board_work_views(self.board, self.root)["work-handoff"][1]()
-        self.assertIn("Sign the handoff W02", work)
-        self.assertIn("waiting for you", work.split("Sign the handoff W02", 1)[1][:400])
-        self.assertIn("<p class=fd-wait>🙋 Sign the handoff W02", work)          # its waiting line, under the closed bar
-        self.assertIn("W02 waits for a person", IF.board_report_views(self.board, self.root)["handoff"][1]())
+        self.assertIn("Sign the advice W02", work)
+        self.assertIn("waiting for you", work.split("Sign the advice W02", 1)[1][:400])
+        self.assertIn("<p class=fd-wait>🙋 Sign the advice W02", work)          # its waiting line, under the closed bar
+        self.assertIn("W02 waits for your sign", IF.board_report_views(self.board, self.root)["handoff"][1]())
 
     # ── the shared page rules (haipipe-ui, 261106) ──────────────────────────────────────────────────────────────
     def every_view(self):
@@ -226,21 +229,23 @@ class InsightLettersTest(unittest.TestCase):
             for key, (_, build) in views.items():
                 yield f"{where} {key}", build()
 
-    def test_every_bar_has_a_state_word(self):
-        """R1: every numbered bar carries its state word on its right; the state never sits in the title."""
+    def test_a_bar_has_a_mark_or_nothing(self):
+        """A numbered bar never shows a state word: on its right sits an orange 🙋 (with how many wait for you), a quiet
+        ✓, or nothing. The state never sits in the title either."""
+        mark = r'<span class="word you mk" title="[^"]*">🙋(?: \d+)?</span>|<span class="word ok mk" aria-label="done">✓</span>'
         for where, html in self.every_view():
             for head in HEADS.findall(html):
-                self.assertRegex(head, r'<span class="?word', f"{where}: {head}")
-                title = re.sub(r"<span class=\"?word.*", "", head)
+                title, _, right = head.partition("<span")
+                self.assertRegex("<span" + right if right else "", rf"^(?:{mark})?$", f"{where}: {head}")
                 self.assertNotRegex(title, r"Nothing waits|Waits on you|Next: ", where)
 
     def test_no_view_draws_its_own_interaction(self):
         """R2: 🙋 Interaction is the page's, added last to every view; no insight view draws a 🙋 section."""
         for where, html in self.every_view():
-            self.assertFalse([h for h in HEADS.findall(html) if "🙋" in h], where)
+            self.assertFalse([h for h in HEADS.findall(html) if "🙋" in h.partition("<span")[0]], where)   # a bar's 🙋 mark is not a section
 
     def test_no_count_in_a_side_tab_label(self):
-        """R4: a side tab's label carries no count; its state word may ("2 of 3 answered")."""
+        """R4: a side tab's label carries no count; its state is a word ("partly answered")."""
         for where, html in self.every_view():
             for label in re.findall(r'class="pb-item[^"]*"[^>]*><b>(.*?)</b>', html):
                 self.assertNotRegex(label, r"\(\d+\)|\b\d+ (questions|Tasks|runs|Jobs|open)\b", f"{where}: {label}")
@@ -248,8 +253,8 @@ class InsightLettersTest(unittest.TestCase):
         self.assertIn("pb-tabset pb-side", side)                         # what each question found: side tabs
 
     def test_report_view_is_work_results(self):
-        """R3: each Work view's 📊 Results is its Report view, drawn by the same function: the same large line and
-        the same sections, in order."""
+        """R3: each Work view ends on its Report view, drawn by the same function: the same large line and the same
+        sections, in order, after its steps (JL 261111: one list, no 📊 Results heading)."""
         titles = lambda html: [re.sub(r"<span class=\"?word.*|^\d+ · ", "", h) for h in HEADS.findall(html)]
         big = lambda html: re.findall(r"<p class=in-big>(.*?)</p>", html)
         pairs = [(IF.board_report_views(self.board, self.root), IF.board_work_views(self.board, self.root)),
@@ -259,10 +264,9 @@ class InsightLettersTest(unittest.TestCase):
             for key, (_, build) in report.items():
                 if key == "mindmap":
                     continue
-                res = work["work-" + key][1]().split("<h3 class=pb-group>📊 Results</h3>", 1)[1]
-                shown = build()
-                self.assertEqual(titles(res), titles(shown), key)
-                self.assertEqual(big(res), big(shown), key)
+                res, shown = work["work-" + key][1](), build()
+                self.assertEqual(titles(res)[len(titles(res)) - len(titles(shown)):], titles(shown), key)
+                self.assertEqual(big(res)[len(big(res)) - len(big(shown)):], big(shown), key)
 
     def test_vs_previous_waits_for_a_second_job(self):
         """JL 261106: the vs previous button stays hidden until a second Job exists."""
@@ -290,8 +294,8 @@ if __name__ == "__main__":
 
 
 class RoundOneTest(unittest.TestCase):
-    """The b11 design loop's round 1 (261106): a Prototype's own parts and state words, one count for every "N of M",
-    the Grid's question opening its answer, a freeze's folder found from any root, a cite-only Task's By cut."""
+    """The b11 design loop's round 1 (261106): a Question Book's own parts and state words, one count for every "N of M",
+    the Grid's question opening its answer, a freeze's folder found from any root, a cite-only Task's By segment."""
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.root = Path(self.tmp.name).resolve()
@@ -304,10 +308,10 @@ class RoundOneTest(unittest.TestCase):
 
     def test_a_prototype_shows_its_questions_and_their_state_words(self):
         parts = IF.prototype_parts(self.proto, self.root, "Block")
-        self.assertEqual([p[0] for p in parts], ["❓ Questions", "📮 Proposals", "✂️ Cuts"])
+        self.assertEqual([p[0] for p in parts], ["❓ Questions", "📮 Ideas", "✂️ Segments"])
         self.assertIn("2 wait for you", [p[1] for p in parts])                 # two open proposals, the person's
         status = IF.prototype_status(self.proto, self.root, "Block")
-        self.assertTrue(all(s[1].startswith("closed · signed ✅") for s in status))  # release.yaml's state and sign
+        self.assertTrue(all(s[1] == "✅" for s in status))                       # release.yaml's state and sign, as a mark
         words = " ".join(s[1] for s in status) + "".join(s[2] for s in status)
         for gone in ("no state", "not run", "0 of"):
             self.assertNotIn(gone, words)
@@ -315,26 +319,26 @@ class RoundOneTest(unittest.TestCase):
         self.assertEqual([s[0] for s in IF.prototype_status(job, self.root, "Job")], ["📜 The release"])  # questions:
         levels = IF.prototype_parts(job, self.root, "Job")[0]                   # Findings' (round 2)
         self.assertEqual(levels[0], "❓ Questions")                             # by DIKW level at a release
-        self.assertIn("agreed", levels[1])
+        self.assertEqual(levels[1], "✅")                                       # its state as a mark
 
     def test_a_prototype_is_signed_and_triaged_on_its_own_work(self):
-        """Round 2: the Prototype's Work · Findings carries the triage and the sign, each a Copy prompt for
+        """Round 2: the Question Book's Work · Findings carries the triage and the sign, each a Copy prompt for
         /haipipe-insight; Status says "nothing to do" when nothing waits; a release's map groups its questions by
         DIKW level; Status and Findings each open with a main line."""
         A.set_front(self.root / F.PROJECT / F.PROTO / "j02_p2" / "j02_p2.md", {"signed": "", "state": "draft"})
         steps = IF.prototype_process(self.proto, self.root, "Block", "findings")
         body = steps[0][2]
-        self.assertIn("Triage the open proposals", body)
+        self.assertIn("Sort the open ideas", body)
         self.assertIn("Sign ", body)
         self.assertIn("/haipipe-insight ", body)
         self.assertIn("for you", steps[0][1])
         job = next(p for p in sorted(self.proto.iterdir()) if p.name.startswith("j01_"))
-        self.assertEqual(IF.prototype_process(job, self.root, "Job", "standing")[0][1], "nothing to do")
+        self.assertEqual(IF.prototype_process(job, self.root, "Job", "standing")[0][1], "✅")
         self.assertIsNone(IF.prototype_process(job, self.root, "Job", "mindmap"))
         levels = [lv for lv, _ in IF.prototype_map_branches(job, self.root, "Job")]
         self.assertTrue(levels and set(levels) <= {"Data", "Information", "Knowledge", "Wisdom", "Executive"})
-        self.assertIn("closed, signed ✅", IF.prototype_lead(job, self.root, "Job", "standing"))
-        self.assertIn("questions agreed and scripted", IF.prototype_lead(job, self.root, "Job", "findings"))
+        self.assertIn("✅", IF.prototype_lead(job, self.root, "Job", "standing"))
+        self.assertRegex(IF.prototype_lead(job, self.root, "Job", "findings"), r"\d+ questions")
         for _, _, panel in IF.prototype_delivery_tabs(self.proto, self.root, "Block"):
             self.assertNotIn("Nothing handed over yet", panel)
 
@@ -343,11 +347,12 @@ class RoundOneTest(unittest.TestCase):
         j = P.job(self.job)
         done, asked = V.written_of(j["tasks"])
         grid = IF.job_report_views(self.job, self.root)["grid"][1]()
-        self.assertIn(f"{done} of {asked} answered", grid)
+        self.assertIn(V.far(done, asked, "answered"), grid)                    # a state word, never a tally
+        self.assertNotRegex(grid, r"\d+ of \d+ (answered|written)")
         jobs = IF.board_report_views(self.board, self.root)["jobs"][1]()
-        self.assertIn(f"{done} of {asked} written", jobs)                      # the same Job, the same count (the
+        self.assertIn(V.far(done, asked, "written"), jobs)                     # the same Job, the same word (the
         answers = IF.board_report_views(self.board, self.root)["answers"][1]()  # plans × freezes: Jobs' alone, round 2)
-        self.assertNotIn("Code versions × data versions", answers)
+        self.assertNotIn("Question versions × data versions", answers)
 
     def test_the_grid_question_opens_its_answer(self):
         grid = IF.job_report_views(self.job, self.root)["grid"][1]()
@@ -367,10 +372,10 @@ class RoundOneTest(unittest.TestCase):
         page = w / f"{w.name}.md"
         page.write_text(page.read_text(encoding="utf-8") + "\n- It rests on the test (K01 · t03).\n", encoding="utf-8")
         report = IF.task_views(w, self.root, "report")
-        self.assertEqual(report["by-cut"][0], "By cut")                         # the settled view name
-        self.assertIn("The answers it cites, each with its page", report["by-cut"][1]())
+        self.assertNotIn("by-cut", report)                                         # a section of Answer now (JL 261109)
+        self.assertIn("🔗 What it cites", report["answer"][1]())
         work = IF.task_views(w, self.root, "work")
-        self.assertNotIn("Next on each cut", work["work-by-cut"][1]())
-        self.assertNotIn("A new cut", work["work-by-cut"][1]())
+        self.assertNotIn("Next on each segment", work["work-answer"][1]())
+        self.assertNotIn("A new segment", work["work-answer"][1]())
         self.assertIn("Gather what it cites", work["work-answer"][1]())
-        self.assertNotIn("Run every cut", work["work-answer"][1]())
+        self.assertNotIn("Run every segment", work["work-answer"][1]())

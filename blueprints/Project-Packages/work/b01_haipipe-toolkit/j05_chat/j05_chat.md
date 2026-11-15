@@ -7,7 +7,7 @@ emoji: 💬
 
 ## Topic
 
-The workbench once carried a chat and a terminal in a side drawer (`servers/workbench/chat.py`, `term.py` and the
+The workbench once carried a chat and a terminal in a side drawer (`servers/workbench/studio/chat.py`, `term.py` and the
 drawer's chat and terminal scripts). No live page loads them any more: the frame's right panel is Disk and Runs, and
 each Run's prompt is one click away. The code stays where it is and is still served (JL 261009: "don't delete
 it"); `chat-code.md` maps every file, route and dependent, and what retiring it would take (Q01).

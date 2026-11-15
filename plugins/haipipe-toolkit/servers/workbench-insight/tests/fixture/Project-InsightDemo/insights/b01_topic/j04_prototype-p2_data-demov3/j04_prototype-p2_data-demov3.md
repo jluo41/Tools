@@ -10,4 +10,4 @@ previous: j03_prototype-p2_data-demov2
 
 # j04_prototype-p2_data-demov3
 
-Prototype p2 on data v3.
+Question Book p2 on data v3.

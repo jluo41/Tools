@@ -1,14 +1,16 @@
 ---
 name: haipipe-draft-review
-description: "The judge of prose and of a built Page, never of its own text. Mode 1 reviews any text (plain English, rubric, anti-AI, humanizer evaluators, sentence-by-sentence logic) and returns located findings; Mode 2 is the Page check gate (CLOSE, CONTEXT, OUTLINE, EVIDENCE, CONTENT or HOLD). Trigger: review prose, too AI, humanize, plain English check, page check, quality gate, /haipipe-draft-review, /haipipe-writing, /haipipe-draft-check."
+description: "The judge of prose and of a built Page, never of its own text. Mode 1 reviews any text (plain English, rubric, anti-AI, humanizer evaluators, paragraph and sentence-by-sentence logic) and returns located findings; Mode 2 is the Page check gate (CLOSE, CONTEXT, OUTLINE, EVIDENCE, CONTENT or HOLD). Trigger: review prose, too AI, humanize, plain English check, page check, quality gate, /haipipe-draft-review, /haipipe-writing, /haipipe-draft-check."
 metadata:
-  version: "0.5.0"
-  last_updated: "2026-11-04"
+  version: "0.9.0"
+  last_updated: "2026-11-15"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 allowed-tools: [Read, Write, Edit, Grep, Glob, AskUserQuestion]
 ---
 
 # /haipipe-draft-review · judge prose, never write it
+
+> In a paper Section, the reviews run as the draft loop's D1 and D2 (haipipe-paper-draft `ref/section-method.md`): paragraph logic and sentence logic by fresh reviewers, pass 8 or more, blind A/B keeps only "easier and the same meaning".
 
 This skill replaces two older ones: the evaluate side of `haipipe-writing` and the
 Page gate `haipipe-draft-check`. The drafting side of `haipipe-writing` now lives in
@@ -59,6 +61,11 @@ evidence, verdicts and the smallest fixes. A local edit checks its protected
 meaning and affected seam; a Section also checks coverage and argument across
 paragraphs. Do not turn a local check into a whole-Page review.
 
+0a. **Paragraph logic**: [ref/paragraph-logic.md](ref/paragraph-logic.md). Before the sentences, the paragraph is
+   read as one argument: a skeleton of roles and topics, then six checks scored 0-10 (question answered, order with no
+   A-B-A return, inference, scope, complete, shape) and the smallest paragraph-level fix. A move or a missing step goes
+   to the writer as a Section question, since the person signs the Structure (JL 261115: "review the paragraph level
+   logics, to check whether the logic is correct or not").
 0. **Sentence by sentence logic**: [ref/sentence-logic.md](ref/sentence-logic.md). For a paragraph or a Section,
    every sentence is read in its context and gets its own line: its link to the sentence before (the relation, and
    carried, weak or broken), whether every pointer and every setup's payoff hold, the specific problem, a logic
@@ -81,12 +88,24 @@ paragraphs. Do not turn a local check into a whole-Page review.
    Adapter and provenance: [ref/anti-slop-adapter.md](ref/anti-slop-adapter.md),
    [ref/anti-slop-attribution.md](ref/anti-slop-attribution.md). A finding routes to the
    writer for a bounded revision; it is not an AI detector or an acceptance threshold.
-4. **Evaluators by register**: pick one per candidate, never both.
+   Two rules from JL 261112: `paragraph-length` flags each prose paragraph outside 4 to 7 sentences
+   (`ref/anti-slop-rules.json` key `paragraphLength`, min 4, max 7; skipped when the text is a single block, an
+   excerpt), and `title-metaphor` (category title) flags buy, pay, win, land and their kin on heading lines, `arc:`
+   lines and `[Label]` bullet labels, never in body prose. Two more from the same day: `in-group-shorthand` flags
+   "rolled forward", "head" (not "linear head"), "route", "grid", "roadmap" and "each use" on the same title lines,
+   and `money-metaphor` flags "where scale buys", "pays off" and their kin in prose; a literal paid claim is not
+   flagged.
+4. **Blind title review** (JL 261112): every part title (C<n>), paragraph title (C<n>.P<m>), plan Bullet label,
+   arc and Narrative reader question is scored by a reviewer subagent that is never the writer, 1 to 10 on academic
+   register, first-read understanding, and naming what the paragraph is about. A title under 8 is rewritten by the
+   writer, and the rewrite goes to the § 1 and § 3 headings together. Titles show on the Plan map and the Structure
+   view, so they are read like the text.
+5. **Evaluators by register**: pick one per candidate, never both.
    `_parts/academic-humanizer/` for papers, theses, rebuttals and proposals;
    `_parts/humanizer/` for general register. Upstream both are rewriters; here
    they return findings only (adapters: [ref/methods/](ref/methods/)). Every other
    anti-AI skill is read, not called: [ref/external/README.md](ref/external/README.md).
-5. **Style input**: `_parts/writing-dna-skill/` distills an author corpus into a
+6. **Style input**: `_parts/writing-dna-skill/` distills an author corpus into a
    frozen Writing DNA. It is an input the writer applies and the reviewer checks
    against, never a fact source. Selection and trace:
    [ref/method-adapter-contract.md](ref/method-adapter-contract.md) and the catalog
@@ -129,6 +148,7 @@ haipipe-draft-review/
 ├── CHANGELOG.md              version history (older history in ref/history/)
 ├── ref/
 │   ├── page-check.md         mode 2: the Page check gate
+│   ├── paragraph-logic.md    each paragraph as an argument: order, inference, scope, missing steps
 │   ├── sentence-logic.md     each sentence in context: link, pointers, setup and payoff, logic and read scores
 │   ├── plain-rules.md        the plain-English rules and the ruling behind each
 │   ├── ai-tells.md           how a machine writes

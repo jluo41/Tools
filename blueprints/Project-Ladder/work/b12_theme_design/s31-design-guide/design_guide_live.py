@@ -3,7 +3,7 @@
 Read at build time from the design workbench's own files, so the drawing shows what the Guide renders today:
 servers/workbench-design/guide/guide.yaml (description, skills), guide/method.md (the six steps, the
 thirteen method cards, the five tests), related/papers.md (its group column: a method, `all methods` or
-`tests`); and the six Spaces' third rows and run types from the live frame (servers/workbench/frame.py with
+`tests`); and the six Spaces' third rows and run types from the live frame (servers/workbench/page/frame.py with
 the design theme), over a placeholder design ladder made by the design scaffold in a temp folder.
 """
 import re

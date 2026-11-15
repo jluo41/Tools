@@ -1,3 +1,9 @@
+## 0.3.0 · 2026-11-11 · Plan is the entry
+
+- JL 261111 (t01_introduction written and revised on a plan never signed): new section "🚦 Plan is the entry". Write,
+  Evidence, Display and Revise return here while `approved:` lacks ✅ or health names `order`/`row`; the sign is the
+  person's word in chat, written by `page.py sign --quote` (haipipe-draft 0.139.0).
+
 ## 0.2.0 · 2026-10-22 · Propose first: versions to compare, examples from the target venue only
 
 - JL 261022: "我觉得你也更新一下 skill，永远把 propose 这个方法放到首位 ... 一定要 propose 几个 option，然后我可以选".

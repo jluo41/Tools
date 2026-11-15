@@ -95,7 +95,7 @@ class VersionAndJobsTest(unittest.TestCase):
             for key in keys:
                 page = self.render(self.b / job, "report", key)
                 self.assertNotIn("Process</h3>", page, (job, key))
-                self.assertIn("🙋 Interaction<span", page, (job, key))
+                self.assertNotIn("Nothing asked yet", page, (job, key))     # no collection Run, no 🙋 section (261114)
         displays = self.render(self.b / "j01_evidence_display", "work", "work-display-list")
         self.assertNotIn("Where each display stands", displays)      # its state is its tab's (JL 261109)
         self.assertIn("Displays</h3>", displays)                           # no "1 of 1 drawn" tally on the bar
@@ -211,15 +211,15 @@ class VersionAndJobsTest(unittest.TestCase):
         form(self.version, "r01_collect_story", "Story asks", "Paper-X-s02:paper @ story")
         form(self.b / "j02_evidence_value" / "t01_values", "r01_collect_values", "Value asks")
         form(self.version / "t00_summary", "r01_collect_words", "Section asks")
-        story = self.render(self.b, "report", "story")
+        story = re.sub(r'(?s)<template id="wait-items">.*?</template>', "", self.render(self.b, "report", "story"))   # the 🙋 tray lists every wait
         self.assertIn("Story asks", story)
         self.assertNotIn("Value asks", story)
-        evidence = self.render(self.b, "report", "evidence")
+        evidence = re.sub(r'(?s)<template id="wait-items">.*?</template>', "", self.render(self.b, "report", "evidence"))
         self.assertNotIn("Value asks", evidence)  # a folder's type does not assign a question to a View
         self.assertNotIn("Story asks", evidence)
-        writing = self.render(self.b, "report", "draft")
+        writing = re.sub(r'(?s)<template id="wait-items">.*?</template>', "", self.render(self.b, "report", "draft"))
         self.assertNotIn("Section asks", writing)  # unassigned questions remain in the rail
-        version = self.render(self.version, "report", "draft-main")      # a version takes the draft Task's bands
+        version = re.sub(r'(?s)<template id="wait-items">.*?</template>', "", self.render(self.version, "report", "draft-main"))      # a version takes the draft Task's bands
         self.assertIn("📋 Review Content", version)                       # (JL 261113): its forms on its own rail;
         self.assertNotIn("Story asks", version)                           # an empty 🧭 band is hidden
         self.assertIn("Story asks", self.render(self.version, "interactions"))

@@ -25,12 +25,12 @@ An Insight Block (`../haipipe-insight/ref/block-contract.md`):
 ```
 
 It checks every question.md (question, name, ask, Why now, What would answer it,
-partitions and power, live needs and their specs, cites one level below, script and
+segments and power, live needs and their specs, cites one level below, script and
 SPEC line; retired needs are kept and never run or cited), prints question-review
 suspects as notes (Q1 the ask joins two questions, Q2 a need no judge reads, Q4 a cause
 word in a Data or Information ask, Q6 two questions compute the same table;
 haipipe-insight-question judges them), and computes every question × run cell
-(`<dataset>_<partition>`): — not asked · 🚫 refused · 🟡 owed · ✅ <YYMMDD> (the page's
+(`<dataset>_<segment>`): — not asked · 🚫 refused · 🟡 owed · ✅ <YYMMDD> (the page's
 latest CHECK closed CLOSE after its results' content_since, results-read current, every
 need cited) · STALE (the script, question file, shared src, or a result it read changed).
 Exit 1 on any problem.
@@ -42,7 +42,7 @@ A board made before it (registers and a task Block):
     --format text|json     # text (default): counts, then every cell that is not OK
     --strict               # UNPLANNED cells fail too
     --question <QID>       # one question
-    --page <L><NN>-<partition>   # one page
+    --page <L><NN>-<segment>   # one page
 ```
 
 Exit 0: no overclaim. Exit 1: a `✅` cell is GAP, STALE or UNBOUND (or, under
@@ -57,7 +57,7 @@ planned   the question has live need lines; every compute need has all seven
 bound     the page's answers.yaml has the question and every live need
 fit       compute: the ticket is in runs/, its runtime.yaml says ok, every spec
           output file is bound and exists, every spec column is in its CSV
-          header or JSON keys, the spec's cut is the page's partition, and the
+          header or JSON keys, the spec's segment is the page's segment, and the
           config the ticket calls lists the need id under answers: · cite: the
           cited page exists and binds the borrowed need · refused: only on a 🟡
           or 🚫 cell, and bound to its probe run

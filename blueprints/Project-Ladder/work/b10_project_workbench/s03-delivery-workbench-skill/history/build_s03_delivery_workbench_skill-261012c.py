@@ -8,7 +8,7 @@ face's `frames:` yaml through topic_map.draw_frames; this builder fills the live
                    delivery/ on disk and the skill's folder are read live; a ❓ leaf is an open point
     ③ the screen   the expected Delivery (s03-D07) with one result card close up (s03-D08), in the workbench's colours
 
-Read on every build: each Delivery screen through servers/workbench/frame.py (frame.render, the Runs panel left
+Read on every build: each Delivery screen through servers/workbench/page/frame.py (frame.render, the Runs panel left
 out), every Block's delivery/ off the disk (in Tools/blueprints and in the SPACE beside Tools whose Tools/ link
 leads here), the decisions and open items of this topic's face, and the skill's folder and functions. The older
 builders (261011, 261012, 261012b) are in history/.
@@ -309,7 +309,7 @@ def tools_nodes():
     kids = sorted(p.name + ("/" if p.is_dir() else "") for p in SKILL.iterdir() if not p.name.startswith("."))
     return {"In Tools: Tools/plugins/haipipe-toolkit/": [
         {f"skills/1_base/project/haipipe-delivery/  (version {ver.group(1) if ver else '?'})": kids},
-        {"servers/workbench/frame.py": where_defined("servers/workbench/frame.py", [
+        {"servers/workbench/page/frame.py": where_defined("servers/workbench/page/frame.py", [
             "delivery_parts", "delivery_by_source", "_delivery_cards"])},
         {"skills/1_base/draft/haipipe-draft/src/common.py": where_defined(
             "skills/1_base/draft/haipipe-draft/src/common.py",
@@ -360,7 +360,7 @@ def tools_tree():
     kids = sorted(p.name + ("/" if p.is_dir() else "") for p in SKILL.iterdir() if not p.name.startswith("."))
     return [
         f"🧰 haipipe-delivery/ v{ver.group(1) if ver else '?'}: " + " · ".join(kids),
-        {"🖥️ servers/workbench/frame.py": where_defined("servers/workbench/frame.py", [
+        {"🖥️ servers/workbench/page/frame.py": where_defined("servers/workbench/page/frame.py", [
             "delivery_parts", "delivery_by_source", "_delivery_cards"])},
         {"🧱 haipipe-draft/src/common.py": where_defined(
             "skills/1_base/draft/haipipe-draft/src/common.py", ["delivery_owner", "delivery_dir", "delivery_source"])},

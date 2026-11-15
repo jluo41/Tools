@@ -1,5 +1,6 @@
 s11 · The Group scope
 =====================
+view: findings
 
 **Stage:** explore
 
@@ -9,7 +10,17 @@ s11 · The Group scope
 
 **Topic:** Every view with the scope toggle on Group, shot on the synthetic fixtures, with what each reads on disk. Only Case and Annotate are built at this scope; seven views show a placeholder (261009, g01).
 
-**Feeds:** `reports/` q05_placeholder_views
+**Feeds:** Q05
+
+
+Q05 · Answer
+------------
+
+**Question:** Build or drop the placeholder views?
+
+**Answer (answered):** Hide what is not built. A view that is only a placeholder at a scope leaves the rail and the tab strip at that scope, and the agent cannot open it there; it comes back the day it is built. Nothing new was built under this Question.
+
+**Page:** [q05_placeholder_views.md](q05_placeholder_views/q05_placeholder_views.md): the full answer, its evidence and limits (moved from reports/)
 
 
 Files

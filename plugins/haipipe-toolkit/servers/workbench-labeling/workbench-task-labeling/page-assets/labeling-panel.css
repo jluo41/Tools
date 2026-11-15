@@ -1,0 +1,5 @@
+
+.run-card header b{font-size:13px;overflow-wrap:anywhere}
+.run-results{font-size:12px;overflow-wrap:anywhere}
+.run-state.st-running{color:var(--ok);border-color:var(--ok)}
+.run-state.st-blocked,.run-state.st-failed{color:var(--warn);border-color:var(--warn)}

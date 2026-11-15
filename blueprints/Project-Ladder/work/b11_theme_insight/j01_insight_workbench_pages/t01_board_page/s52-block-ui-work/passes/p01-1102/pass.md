@@ -23,7 +23,7 @@ Walked Work's five views; Process rows work; D Data's Results repeat the whole D
 
 ## Next
 
-- Cut D Data's Results to the freeze cards
+- Segment D Data's Results to the freeze cards
 - redraw s52's B screen with the asking canvas.
 
 ## Read
@@ -32,7 +32,7 @@ Walked Work's five views; Process rows work; D Data's Results repeat the whole D
 
 ## Changed
 
-- Work Answers' Results cut to the matrix; Work Questions gets Ask about a question (canvas
+- Work Answers' Results segment to the matrix; Work Questions gets Ask about a question (canvas
 - Ask
 - Follow up
 - Propose mine; copy only).

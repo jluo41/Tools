@@ -70,8 +70,8 @@ skills/1_base/project/
 ├── haipipe-related/    s04 Related
 ├── haipipe-report/     s05 Report     ◀ this topic
 └── haipipe-run/        s06 Run
-servers/workbench/frame.py         question_rows · _report_cell · _answering · _opening
-servers/workbench/page_reader.py   page_document, a report Page in the reader
+servers/workbench/page/frame.py         question_rows · _report_cell · _answering · _opening
+servers/workbench/page/page_reader.py   page_document, a report Page in the reader
 skills/1_base/project/haipipe-report/   asks: the row, the folder
 ```
 
@@ -211,7 +211,7 @@ What the drawing holds
 
 Read from disk on every build: `board.md` `## Questions`, each report's `answer-status`, every topic's
 `**Feeds:**` line (read as `frame.py` reads it), `runs/*/run.yaml` targets, q01's `## Figures`, the
-Report Space through `servers/workbench/frame.py`, and the two skills' versions.
+Report Space through `servers/workbench/page/frame.py`, and the two skills' versions.
 
 
 Finding (read 261011)
@@ -239,7 +239,7 @@ s05-D03 · Decided (JL 261012, through the b10 watcher: "go ahead and do all"): 
 s05-D04 · Built 261012, four Opens settled: Open 3, a Question's Work cell also lists this level's own Runs whose
     run.yaml `target:` is its id (b10 Q05 reads "run-check-q05 done · run-report-q05 done"); Open 8, a bare
     `Q08` in a Feeds line is read as `q08`, so s32 counts for Q08 (both by the b10-report session in
-    `servers/workbench/frame.py`, `_question_records`, `_note_facts`, `_report_page`). Opens 4 and 7 were
+    `servers/workbench/page/frame.py`, `_question_records`, `_note_facts`, `_report_page`). Opens 4 and 7 were
     settled by s07-D09: the Report's third row is gone, one card per Question under the group bar. Open 5 by
     s07-D13: every level shows its bar, and a Task with no Question lists its own Page under it.
 s05-D05 · Decided (JL 261012, through the b10 watcher): the drawing is boxes with trees joined by named arrows, an emoji on every node (haipipe-studio 0.13.0); the old builder, face and preview are in history/ (-261012b).

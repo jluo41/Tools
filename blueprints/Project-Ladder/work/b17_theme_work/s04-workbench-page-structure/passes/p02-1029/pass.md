@@ -23,7 +23,7 @@ Built and checked each change on the live page; surveyed 288 Blocks and every sk
 
 ## Started
 
-- servers/workbench/focus_page.py
+- servers/workbench/page/focus_page.py
 - haipipe-ui 0.1.6
 - haipipe-studio 0.16.0
 - haipipe-project 0.19.2

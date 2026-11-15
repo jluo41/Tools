@@ -28,7 +28,7 @@ META = textwrap.dedent("""\
 
     #### 2 · Partition Register
 
-    **Partitions**: the only place a partition is defined.
+    **Segments**: the only place a segment is defined.
 
     ```text
     name     population block          config      group
@@ -111,7 +111,7 @@ DATA = textwrap.dedent("""\
 
     **The ask**: how many rows reach each step?
 
-    **Why now**: a partition needs its own denominator.
+    **Why now**: a segment needs its own denominator.
 
     A second paragraph of why.
 
@@ -256,7 +256,7 @@ def test_every_field_is_carried_word_for_word(old, tmp_path):
     d2 = q(proto, "j01_data/t02_funnel_counts/question.md")
     assert d2["question"] == "how many rows reach each step?"
     text = (proto / "j01_data/t02_funnel_counts/question.md").read_text()
-    assert "**Why now**: a partition needs its own denominator.\n\nA second paragraph of why." in text
+    assert "**Why now**: a segment needs its own denominator.\n\nA second paragraph of why." in text
     w1 = proto / "j04_wisdom/t01_send_slate/question.md"
     assert "**What we expect to lose here**: the predicted tiers." in w1.read_text()
     assert q(proto, "j04_wisdom/t01_send_slate/question.md")["question"] == "which should we send?"

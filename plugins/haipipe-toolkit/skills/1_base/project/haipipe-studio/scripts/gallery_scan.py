@@ -54,7 +54,7 @@ def level_of(folder: Path) -> str:
     if SNN.match(n):
         return "sNN"
     for pat, lv in ((r"^b\d+", "Block"), (r"^j\d+_", "Job"), (r"^t\d+_", "Task"),
-                    (r"^(Paper|Insight|Prototype|Design)-", "Block"), (PROJ, "Project")):
+                    (r"^(Paper|Insight|InsightQuestionBook|QuestionBook|Prototype|Design)-", "Block"), (PROJ, "Project")):
         if re.match(pat, n):
             return lv
     if n in WORLDS:

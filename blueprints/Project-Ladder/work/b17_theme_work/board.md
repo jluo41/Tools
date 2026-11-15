@@ -103,7 +103,7 @@ questions:
   acceptance: Answered when every level names its folder and its six Spaces' content,
     drawn in studio/.
   work: []
-  report: reports/q01_work_ladder/q01_work_ladder.md
+  report: s03-q01-work-ladder/s03-q01-work-ladder.md
 - id: Q02
   title: Where do Plan, Build, Execute and Report show?
   question: 'How do a Task''s four phases appear in the six Spaces: Description, Work
@@ -114,7 +114,6 @@ questions:
   acceptance: Answered when each phase has one place and today's Task Work tree has
     a home.
   work: []
-  report: reports/q02_plan_build_execute_report/q02_plan_build_execute_report.md
 - id: Q03
   title: How does a Question read its Runs?
   question: How does a Block Question's report Page name and read the Tasks' Runs
@@ -123,7 +122,6 @@ questions:
     Audience Report links its Tasks; the Runs Space lists the Runs per Question.
   acceptance: Answered when the link is written both ways and drawn.
   work: []
-  report: reports/q03_questions_and_runs/q03_questions_and_runs.md
 - id: Q04
   title: Which skills make the work theme?
   question: Which of today's 1_base/task skills belong to the work theme (2_theme/work),
@@ -136,7 +134,7 @@ questions:
   acceptance: Answered when each skill in 1_base/task has a home JL agrees, drawn
     in studio/, and b04 has moved the files.
   work: []
-  report: reports/q04_work_skills/q04_work_skills.md
+  report: s05-q04-work-skills/s05-q04-work-skills.md
 ```
 
 ## Related resources

@@ -17,7 +17,7 @@ The open ideas of this topic, one per slide: written from its face as a quick sc
 - Proposed (261007, JL: "we want to unify things
 
 ## Still open
-- Once picked: the base (servers/workbench/frame.py CSS, runs_panel.py) draws each picked look,
+- Once picked: the base (servers/workbench/page/frame.py CSS, runs_panel.py) draws each picked look,
 - The Report's group bar on paper, insight, design, discovery and labeling (Finding 1): each theme's
 - The old Insight and Design board pages (Finding 3): retire them, as paper's and discovery's were?
 ask: Pick one look per element: write the letter you keep on its frame, or draw a new one

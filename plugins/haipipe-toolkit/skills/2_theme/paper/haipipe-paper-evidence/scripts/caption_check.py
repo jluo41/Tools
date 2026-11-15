@@ -8,6 +8,9 @@ method.md opens with a ## Message of 1 to 3 sentences; a display with none, or a
 
     python caption_check.py <paper>/j01_evidence_display [--legend 75] [--table-legend 120] [--title 15]
 
+And each caption's cross-references (M-D12): every "Figure N", "Table N", "Extended Data Fig. N" a caption names is a
+display the current numbering has (each Task face's `label:`); a mismatch is named and fails.
+
 A venue's limit wins over these defaults: `at most N words` in the caption row of the Board's venues/<venue>/call.md, or --legend.
 """
 from __future__ import annotations
@@ -97,6 +100,73 @@ def messages(job: Path) -> list:
     return rows
 
 
+# ── cross-references (haipipe-paper ref/must-check.md M-D12) ────────────────────────────────────────────────────────
+# A caption that names "Figure 2 and Table 1" must name displays the current numbering has; the numbering is each
+# display Task face's `label:` (Figure 4, Extended Data Figure 1, Extended Data Table 2), its caption the float.tex of
+# the Run the face says is `printed:` (else the newest Run).
+REF = re.compile(r"\b(Extended\s+Data\s+|Supplementary\s+)?(Fig(?:ure)?s?\.?|Tables?)\s+(\d+)((?:\s*(?:,|and|to|–|-)\s*\d+)*)")
+
+
+def _key(ed: str, word: str, n: int) -> str:
+    kind = "Table" if word.lower().startswith("table") else "Figure"
+    return ("Extended Data " if ed and ed.strip().lower().startswith("extended") else "") + f"{kind} {n}"
+
+
+def refs(text: str) -> list:
+    """Every display a text names, as 'Figure 2', 'Table 1', 'Extended Data Figure 3' (a range or list expanded);
+    a Supplementary one is left out."""
+    t = re.sub(r"~|\\[ ,]", " ", text)
+    out = []
+    for m in REF.finditer(t):
+        if m.group(1) and m.group(1).strip().lower().startswith("supplementary"):
+            continue
+        nums, prev, ranged = [int(m.group(3))], int(m.group(3)), False
+        for sep, n in re.findall(r"(,|and|to|–|-)\s*(\d+)", m.group(4) or ""):
+            n = int(n)
+            nums += list(range(prev + 1, n + 1)) if sep in ("to", "–", "-") and n > prev else [n]
+            prev = n
+        out += [_key(m.group(1) or "", m.group(2), n) for n in nums]
+    return out
+
+
+def numbering(job: Path) -> dict:
+    """{'Figure 4': task name} from each display Task face's `label:`."""
+    have = {}
+    for task in sorted(t for t in job.glob("t[0-9]*_*") if t.is_dir()):
+        face = task / f"{task.name}.md"
+        m = re.search(r"(?m)^label:\s*(.+)$", face.read_text(encoding="utf-8", errors="ignore")) if face.is_file() else None
+        got = refs(m.group(1).split("·")[0]) if m else []
+        if got:
+            have[got[0]] = task.name
+    return have
+
+
+def printed_float(task: Path):
+    face = task / f"{task.name}.md"
+    m = re.search(r"(?m)^printed:\s*(\S+)", face.read_text(encoding="utf-8", errors="ignore")) if face.is_file() else None
+    f = task / "runs" / m.group(1) / "result" / "float.tex" if m else None
+    return f if f and f.is_file() else newest_float(task)
+
+
+def caption_text(float_tex: str) -> str:
+    m = re.search(r"\\caption(\[[^\]]*\])?\{", float_tex)
+    return _braced(float_tex, m.end() - 1) if m else ""
+
+
+def cross_refs(job: Path) -> list:
+    """One row per caption reference the numbering lacks: (task, run, the reference)."""
+    have = numbering(job)
+    rows = []
+    for task in sorted(t for t in job.glob("t[0-9]*_*") if t.is_dir()):
+        f = printed_float(task)
+        if f is None:
+            continue
+        for ref in dict.fromkeys(refs(caption_text(f.read_text(encoding="utf-8", errors="ignore")))):
+            if ref not in have:
+                rows.append((task.name, f.parts[-3], ref))
+    return rows
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("job", type=Path)
@@ -115,7 +185,11 @@ def main() -> int:
             print(f"❗ {task} · {run}: {problem}")
     missing = sum(bool(r[-1]) for r in said)
     print(f"{len(said) - missing} of {len(said)} displays say their message")
-    return 1 if bad or missing else 0
+    wrong = cross_refs(a.job)
+    for task, run, ref in wrong:
+        print(f"❗ {task} · {run}: the caption names {ref}, which the current numbering does not have")
+    print(f"captions name only displays that exist: {'no' if wrong else 'yes'}")
+    return 1 if bad or missing or wrong else 0
 
 
 if __name__ == "__main__":

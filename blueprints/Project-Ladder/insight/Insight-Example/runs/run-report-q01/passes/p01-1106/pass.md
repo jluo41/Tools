@@ -6,8 +6,8 @@ answer the Board's question over the Jobs' answers
 
 ## Summary
 
-reports/q01_gap-across-data-versions/: the gap held across the data versions; the pooling verdict moved
+s04-q01-gap-across-data-versions/: the gap held across the data versions; the pooling verdict moved
 
 ## Changed
 
-- `reports/q01_gap-across-data-versions/q01_gap-across-data-versions.md`
+- `s04-q01-gap-across-data-versions/s04-q01-gap-across-data-versions.md`

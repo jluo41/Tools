@@ -49,6 +49,15 @@ class PaperLadderTest(unittest.TestCase):
             self.assertIn(field, face)
         self.assertEqual([p.name for p in self.board.iterdir()], ["board.md"])   # no folder ahead of its content
 
+    def test_grant_board_says_grant(self) -> None:
+        grant = Path(self.tmp.name) / "Grant-Demo"                    # one family, two types (JL 261112)
+        quiet(L.main, ["board", str(grant), "--title", "Demo grant"])
+        face = (grant / "board.md").read_text()
+        for field in ("board-kind: grant-board", "use-case: Initial application", "dialect: paper"):
+            self.assertIn(field, face)
+        with self.assertRaises(SystemExit):
+            quiet(L.main, ["board", str(Path(self.tmp.name) / "Proposal-Demo")])
+
     def test_evidence_jobs_come_first_and_writing_jobs_from_j11(self) -> None:
         # one paper Block links many discovery Blocks (external) and work Blocks (internal), deposits them into its
         # evidence Jobs, and writes them into papers (JL 261031)
@@ -124,38 +133,38 @@ class PaperLadderTest(unittest.TestCase):
         self.assertFalse((n / "t01_introduction" / "studio").exists()) # Studio is the Board's (b10 s09-D01)
         self.assertIn("from: j11_writing_v0101_desk", (n / "j12_writing_v0202_desk.md").read_text())
         quiet(R.main, [str(self.board), "add", "j11_writing_v0101_desk/RD01-editor-0916", "--to", "j12_writing_v0202_desk"])
-        rep = n / "reports" / "q01_editor-0916" / "q01_editor-0916.md"
+        job = self.board / "j31_review_editor_v0916"            # a review batch is a Job on the Board (JL 261110)
+        rep = job / "t01_editor_comments" / "t01_editor_comments.md"
         self.assertTrue(rep.is_file())
+        self.assertFalse((n / "reports").exists())
         self.assertIn("page-type: comments", rep.read_text())
-        self.assertIn("group: comments", (n / "j12_writing_v0202_desk.md").read_text())
-        self.assertIn("responds-to: reports/q01_editor-0916/q01_editor-0916.md", (n / "j12_writing_v0202_desk.md").read_text())
-        self.assertNotIn("\nanswers:", (n / "j12_writing_v0202_desk.md").read_text())      # answers: is for Question ids
-        self.assertIn("answers: Q01", rep.read_text())                               # the report names its Question
-        self.assertIn("answer-status: open", rep.read_text())
+        self.assertIn("for: j12_writing_v0202_desk", (job / "j31_review_editor_v0916.md").read_text())
+        self.assertIn("responds-to: j31_review_editor_v0916", (n / "j12_writing_v0202_desk.md").read_text())
+        self.assertNotIn("\nanswers:", (n / "j12_writing_v0202_desk.md").read_text())
         quiet(R.main, [str(self.board), "rollback"])     # the add, then the next: the Board as it was
         quiet(L.main, ["rollback", str(self.board)])
         self.assertEqual(snapshot(self.board), before)
 
     def test_route_and_reply_a_review_item(self) -> None:
         quiet(L.main, ["version", str(self.board), "--desk", "desk", "--date", "0101"])
-        rep = self.board / "j11_writing_v0101_desk" / "reports" / "q01_editor-0916"
+        rep = self.board / "j31_review_editor_v0916" / "t01_editor_comments"
         rep.mkdir(parents=True)
-        face = rep / "q01_editor-0916.md"
-        face.write_text("# q01_editor-0916 · Editor decision\n\npage-type: comments\n\n## Review Items\n\n"
+        face = rep / "t01_editor_comments.md"
+        face.write_text("# t01_editor_comments · Editor decision\n\npage-type: comments\n\n## Review Items\n\n"
                         "| item | cites | lands on | work | reply | state |\n|---|---|---|---|---|---|\n"
                         "| Review-causal-claim | R1.1 · E1.2 |  |  |  | open |\n| Review-sample | R2.1 |  |  |  | open |\n")
         before = snapshot(self.board)
-        quiet(R.main, [str(self.board), "route", "j11_writing_v0101_desk/reports/q01_editor-0916", "Review-causal-claim",
+        quiet(R.main, [str(self.board), "route", "j31_review_editor_v0916/t01_editor_comments", "Review-causal-claim",
                        "--to", "t04_results ¶2 · C2"])
         text = face.read_text()
         self.assertIn("| Review-causal-claim | R1.1 · E1.2 | t04_results ¶2 · C2 | run-revise-causal-claim |  | routed |",
                       text)
         self.assertIn("| Review-sample | R2.1 |  |  |  | open |", text)          # the other row is untouched
-        quiet(R.main, [str(self.board), "reply", "j11_writing_v0101_desk/reports/q01_editor-0916", "Review-causal-claim",
+        quiet(R.main, [str(self.board), "reply", "j31_review_editor_v0916/t01_editor_comments", "Review-causal-claim",
                        "--reply", "P3"])
         self.assertIn("| run-revise-causal-claim | P3 | answered |", face.read_text())
         with self.assertRaises(SystemExit):              # an item that is not there
-            quiet(R.main, [str(self.board), "reply", "j11_writing_v0101_desk/reports/q01_editor-0916", "Review-x",
+            quiet(R.main, [str(self.board), "reply", "j31_review_editor_v0916/t01_editor_comments", "Review-x",
                            "--reply", "P1"])
         quiet(R.main, [str(self.board), "rollback"])
         quiet(R.main, [str(self.board), "rollback"])

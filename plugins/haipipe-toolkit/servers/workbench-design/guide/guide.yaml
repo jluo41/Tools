@@ -1,5 +1,5 @@
 # The design family's Guide (the design theme's server: servers/workbench-design). Loaded by
-# servers/workbench/guide_families.py. Paths: guide/… related/… or a module are relative to
+# servers/workbench/guide/guide_families.py. Paths: guide/… related/… or a module are relative to
 # servers/workbench-design; skill:<name>/<rest> is a skill's file; Tools/… is SPACE-relative.
 # Method (guide/method.md, its cards in guide/methods/) and Related Paper (related/papers.md, its
 # open-licensed PDFs in related/papers/) are read by designboard.py's theory embed. The drawings stay

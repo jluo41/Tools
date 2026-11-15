@@ -23,7 +23,7 @@ a new question              ──▶ a new register row INSIDE the board
 a subgroup of the extract   ──▶ a PARTITION inside the board, never a board
 a subgroup + SPLIT verdict  ──▶ MAY become a child board · the verdict is its birth
                                 certificate, necessary and not sufficient: the child
-                                still needs its own consumer (partition.md)
+                                still needs its own consumer (segment.md)
 ```
 
 Re-extracting a subgroup's rows into their own parquet does not make them "a
@@ -44,7 +44,7 @@ holds (the Insight workbench draws them as three columns):
 
 ```text
 LOGIC    the question       MT01–MT04 register rows       what is asked, why, its evidence needs
-WORK     the runs           <page>/runs/ + <page>/results/   what was computed, on which cut
+WORK     the runs           <page>/runs/ + <page>/results/   what was computed, on which segment
                             <page>/answers.yaml              which file answers which need
 REPORT   what it says       <page>/<page>.md               the answer in words, each need cited
 ```
@@ -65,7 +65,7 @@ export RESULT_DIR="${PAGE}/results/$(basename "$0" .sh)"
 exec "${PAGE}/../../../../work/b5N_<topic>_dikw/j21_information_<topic>/t02_contrast/runs/r02_<dataset>_alpha.sh"
 ```
 
-The task config the ticket runs names the extract, the cut and the questions:
+The task config the ticket runs names the extract, the segment and the questions:
 
 ```yaml
 # work/b5N_<topic>_dikw/j21_information_<topic>/t01_rates/scripts/config/r02_<dataset>_alpha.yaml
@@ -87,7 +87,7 @@ Authority to conclude lifts one level at a time. Each level's answer cites
 named results below it:
 
 ```text
-① MT00       the board's ONE extract and its partitions · set at scaffold
+① MT00       the board's ONE extract and its segments · set at scaffold
 ② Data         a run observes exact sources            its results ARE the answer · the page says what was observed
 ③ Information  a run derives rates and contrasts        its results ARE the answer · the report says what they show
 ④ Knowledge    a report claims from named results      strength · rivals · boundary
@@ -106,7 +106,7 @@ named results below it:
 
 Level-skipping is a CHECK routing failure, with exactly two exceptions, both
 inside the cross group: the contrast Information answer derives from MIRRORED
-Information results of each partition (I-from-I), and the pooling verdict
+Information results of each segment (I-from-I), and the pooling verdict
 cites the heterogeneity Knowledge report (K-from-K), because its subject is a
 claim about claims.
 
@@ -134,7 +134,7 @@ an optional **Expected** line written before any run exists (the board's
 hypothesis; `haipipe-insight-question`). Its derived Question Group is
 `partition × target level`: `QI3` under alpha belongs to `QG-alpha-I`,
 while the same `QI3` under full belongs to `QG-full-I`. The id is never duplicated or
-partition-suffixed (`QK1` spans all eligible partitions; there is no `QK1-alpha`).
+partition-suffixed (`QK1` spans all eligible segments; there is no `QK1-alpha`).
 `question-groups.md` owns membership, cross routing, state, and sorting.
 
 ## The three pens · who may write what
@@ -154,7 +154,7 @@ handoff      EXPORTS, never re-derives             the Wisdom page's signed divi
 
 A run's results are generated, never written by a pen: a run writes them and a
 rerun replaces them. The join is a round trip through one question id: the
-register cell cites the answering page (`✅ <L><NN>-<partition>`), and the page's state line
+register cell cites the answering page (`✅ <L><NN>-<segment>`), and the page's state line
 names the register's id back (`answers QI2`).
 `board.md`'s spine and close are DERIVED HEADERS of the same record: the
 registers are authoritative, a header that disagrees with them is stale, and
@@ -169,13 +169,13 @@ separate books.
 insight/<Dataset>-InsightBoard/              Block: one extract
 ├── board.md                    spine · close · extract (no store: results live in pages)
 ├── 0-MT-meta/
-│   ├── MT00-meta/              the ONE extract · partitions (one config name per cut) · thresholds
+│   ├── MT00-meta/              the ONE extract · segments (one config name per segment) · thresholds
 │   └── MT01-MT04/              the four registers: Queue grid + one division per question
-├── <n>-<partition>/                         Job: one partition (1-full, 2-<partition>, …, 9-cross)
-│   └── <L><NN>-<partition>-<slug>/          Task: one answering page (id <L><NN>-<partition>)
-│       ├── <L><NN>-<partition>-<slug>.md    REPORT · the page says what its results show
+├── <n>-<segment>/                         Job: one segment (1-full, 2-<segment>, …, 9-cross)
+│   └── <L><NN>-<segment>-<slug>/          Task: one answering page (id <L><NN>-<segment>)
+│       ├── <L><NN>-<segment>-<slug>.md    REPORT · the page says what its results show
 │       ├── answers.yaml                      WORK · each evidence need → its result files
-│       ├── runs/run_bNNjNNtNNrNN_<partition>_<task>.sh   WORK · calls a task run
+│       ├── runs/run_bNNjNNtNNrNN_<segment>_<task>.sh   WORK · calls a task run
 │       └── results/<ticket>/                 WORK · generated, light: tables, figures, receipt
 └── board/                      the built site, generated
 ```
@@ -202,7 +202,7 @@ work/b5N_<topic>_dikw/          board.md (board-kind: task-block) · src/ shared
 └── j4N_wisdom_<topic>/          Wisdom computations, when any
 ```
 
-A range with no work has no Job. A new dataset or a new partition is a new
+A range with no work has no Job. A new dataset or a new segment is a new
 config and run in an existing Task, never a new Task. Every worker ends with a
 Look step (a shared `src/` figures helper in the DIKW Block) that draws the run's tables
 into `fig_*.png` beside them.

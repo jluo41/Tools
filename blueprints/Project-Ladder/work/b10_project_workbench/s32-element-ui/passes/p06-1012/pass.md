@@ -10,7 +10,7 @@ Delivery cards and group bar on every theme, each theme part kept below (paper d
 
 ## Changed
 
-- `Tools/plugins/haipipe-toolkit/servers/workbench/frame.py`
+- `Tools/plugins/haipipe-toolkit/servers/workbench/page/frame.py`
 - `Tools/plugins/haipipe-toolkit/servers/workbench-paper/paper_theme.py`
 - `Tools/plugins/haipipe-toolkit/servers/workbench-paper/tests/test_paper_theme.py`
 - `Tools/plugins/haipipe-toolkit/servers/workbench-cowork/cowork_theme.py`

@@ -1,6 +1,14 @@
 response-format — Changelog
 ===========================
 
+**[0.27.0] · 2026-11-13 · Prose changes: sentence by sentence, by address**
+
+JL 261113, on a proposed paragraph shown as one quoted block: "never return the things like this … Make it the
+same to the index in the UI, sentence by sentence, and also show what changes you made compared to previous."
+New section: proposed or changed Draft prose is reported paragraph by paragraph, one line per sentence with its
+workbench address (`C<n>.P<m>`, `B<k> · S<n>`), a mark (kept, changed, new, cut, moved) and before/after for a
+changed sentence, compared against a named version. Mirrored in haipipe-draft and haipipe-paper-draft.
+
 **[0.26.0] · 2026-11-04 · Never a bare rNN, jNN, tNN or sNN**
 
 JL 261104: "when you say rNN, etc, please also add the name as well". "Never a bare index" now says it covers

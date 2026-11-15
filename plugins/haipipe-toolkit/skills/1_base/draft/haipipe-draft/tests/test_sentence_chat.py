@@ -48,7 +48,7 @@ class SentenceChatContractTest(unittest.TestCase):
         # the bug JL caught on 260819 ("the paragraph should not change
         # every sentence").
         self.assertIn(
-            "var shortId = contentId + '.P' + nextP + '.S' + nextS", self.js
+            "var shortId = contentId + '.P' + nextP + '.s' + nextS", self.js
         )
         self.assertIn("p.classList.contains('pnew')", self.js)
         self.assertIn("var fullId = sec.id + '.' + shortId", self.js)

@@ -45,7 +45,7 @@ def q(path: str) -> str:
 
 PROJ = "examples-5-design/Project-Application-SMSDesign"
 BOARD = f"{PROJ}/insights/SMSR2v1-InsightBoard"                 # plan C: its Jobs pair a release and a data version
-JOB = f"{BOARD}/j01_code-v1_data-v1"
+JOB = f"{BOARD}/j01_question-v1_data-v1"
 TASK = f"{JOB}/t05_I01_funnel-fundamentals"
 B52 = f"{PROJ}/tasks/b52_sms_question_dikw"                     # today's layout: an Insight Block, `workbench: insight`
 B52J = f"{B52}/j01_data"
@@ -59,14 +59,14 @@ def wb(folder: str, space: str, sub: str = "") -> str:
 
 
 # every Space and view the insight theme draws, per level: (level key, its name, folder, [(Space, [views])]).
-# A partition is the same view on another cut, so one partition (Full) stands for them, and Cross once.
+# A segment is the same view on another segment, so one segment (Full) stands for them, and Cross once.
 LEVELS = [
     ("block", "Board (plan C)", BOARD, [
-        ("Description", ["Map", "Prototype", "Dataset", "Partitions"]), ("Idea Studio", [""]),
+        ("Description", ["Map", "Question Book", "Dataset", "Partitions"]), ("Idea Studio", [""]),
         ("Audience Report", ["Full/Coverage", "Full/Tracks", "Full/Consistency", "Full/Findings", "Cross/Findings"]),
         ("Work Details", ["All", "p1"]), ("Runs", ["All", "soft", "from below"]), ("Delivery", ["Handoff"])]),
     ("job", "Job (one release × one data version)", JOB, [
-        ("Description", ["Prototype", "Dataset"]), ("Idea Studio", [""]),
+        ("Description", ["Question Book", "Dataset"]), ("Idea Studio", [""]),
         ("Audience Report", ["Full/Current", "Full/vs previous", "Cross/Current"]),
         ("Work Details", ["All", "hard", "soft"]),
         ("Runs", ["All", "hard", "soft", "launch", "power", "compare", "propose", "close"]), ("Delivery", [""])]),
@@ -74,7 +74,7 @@ LEVELS = [
         ("Description", ["Question", "Records"]), ("Idea Studio", [""]), ("Audience Report", ["Table", "Reading"]),
         ("Work Details", ["Partitions"]), ("Runs", ["All", "hard", "soft"]), ("Delivery", [""])]),
     ("b52", "Insight Block, today's layout (Block)", B52, [
-        ("Description", ["Map", "Prototype", "Dataset", "Partitions"]), ("Idea Studio", [""]),
+        ("Description", ["Map", "Question Book", "Dataset", "Partitions"]), ("Idea Studio", [""]),
         ("Audience Report", ["Full/Coverage", "Full/Tracks", "Full/Consistency", "Full/Findings"]),
         ("Work Details", [""]), ("Runs", [""]), ("Delivery", [""])]),
     ("b52job", "Insight Block, today's layout (a Job: the base's own)", B52J,
@@ -94,7 +94,7 @@ PAGES = [(f"{lv}.{slug(sp)}.{slug(v)}", f"{SHORT[lv]} › {sp}" + (f" › {v.rep
           wb(folder, sp, v)) for lv, _, folder, spaces in LEVELS for sp, views in spaces for v in views]
 OLD_BOARD = f"/_board/insight-board?path={q(BOARD + '/board.md')}&file=board.md"
 OLD_B52 = f"/_board/insight-board?path={q(B52 + '/board.md')}&file=board.md"
-OLD_SPACES = [("scope", "Scope"), ("prototype", "Prototype"), ("insight", "Insight"), ("check", "Check"), ("delivery", "Delivery")]
+OLD_SPACES = [("scope", "Scope"), ("prototype", "Question Book"), ("insight", "Insight"), ("check", "Check"), ("delivery", "Delivery")]
 PAGES += [(f"old.{k}", f"old Insight board page › {lab}", f"{OLD_BOARD}&space={k}") for k, lab in OLD_SPACES]
 PAGES += [(f"old52.{k}", f"old Insight board page (b52) › {lab}", f"{OLD_B52}&space={k}") for k, lab in OLD_SPACES]
 PAGES += [
@@ -118,7 +118,7 @@ OLD_PANES = [f"old.{k}" for k, _ in OLD_SPACES]
 # the Nth visible x; "a,b" the first of them on the page.
 ELEMENTS = [
     ("tabs", "1 · Top tabs", "the level row (Guide · Block · Job ▾ · Task ▾) and the six Spaces",
-     [(P("block", "Description", "Map"), "nav.levels|nav.spaces"), (P("job", "Description", "Prototype"), "nav.levels|nav.spaces"),
+     [(P("block", "Description", "Map"), "nav.levels|nav.spaces"), (P("job", "Description", "Question Book"), "nav.levels|nav.spaces"),
       (P("task", "Description", "Question"), "nav.levels|nav.spaces"), (P("b52", "Description", "Map"), "nav.levels|nav.spaces"),
       ("old.insight", "nav.spaces")]),
     ("views", "2 · View row", "the views of the open Space; in Audience Report a second row under it (Reading or Period)",
@@ -150,7 +150,7 @@ ELEMENTS = [
       (P("task", "Audience Report", "Table"), "table.wf-table"), (P("task", "Runs", "All"), "table.wf-table"),
       (P("b52", "Runs"), "table.wf-table"), ("old.scope", ".pane.on table"), ("old.check", ".pane.on table")]),
     ("cards", "6 · Rows and cards", "one item, closed or open",
-     [(P("block", "Audience Report", "Full/Coverage"), "details.topic"), (P("job", "Description", "Prototype"), "details.topic"),
+     [(P("block", "Audience Report", "Full/Coverage"), "details.topic"), (P("job", "Description", "Question Book"), "details.topic"),
       (P("job", "Work Details", "All"), "details.topic"), (P("b52", "Idea Studio"), ".space-main details"),
       (P("b52", "Work Details"), "details.topic"), ("old.prototype", ".pane.on details.lvl,.pane.on details"),
       ("old.insight", ".pane.on .card,.pane.on details")]),
@@ -168,7 +168,7 @@ ELEMENTS = [
     ("item", "10 · One item's display", "one question, one run: the item itself",
      [(P("task", "Description", "Question"), ".space-main"), (P("task", "Audience Report", "Reading"), ".space-main"),
       (P("b52task", "Description"), ".space-main"), ("old.item", "main,body"), ("old.run", "main,body")]),
-    ("own", "11 · Insight's own elements", "what only the insight theme draws: the two clocks' Map, the cuts and their power, "
+    ("own", "11 · Insight's own elements", "what only the insight theme draws: the two clocks' Map, the segments and their power, "
      "the Reading and Period rows, the handoff, Check's gates",
      [(P("block", "Description", "Map"), ".space-main table"), (P("block", "Description", "Partitions"), ".space-main"),
       (P("job", "Description", "Dataset"), ".space-main"), (P("block", "Audience Report", "Full/Coverage"), "nth:1:nav.subs"),
@@ -189,7 +189,7 @@ PROPOSALS = {
               ["one view row, b03's pick E: the tabs' shape, padding 5px 12px, the open one washed blue",
                "the insight theme's second row (Reading: · Period:) is drawn in the same look under the partitions"],
               "took b03's E look; no pills",
-              "? Audience Report stacks two view rows (partition, then Reading or Period): one row, or the second as a filter?"),
+              "? Audience Report stacks two view rows (segment, then Reading or Period): one row, or the second as a filter?"),
     "report": (("b03.report", ".q-head-row|nth:0:.q-row:not(.q-head-row)"),
                ["one row per question: Question │ Work │ Report, at Board, Job and Task",
                 "the Question cell as the Insight row (b03 s32-D05): Question N and its state dot, the short name, one "
@@ -198,13 +198,13 @@ PROPOSALS = {
                "? the insight theme draws its own Logic cell (bold id + the whole question), not frame.question_cell"),
     "space-block": ((P("block", "Audience Report", "Full/Coverage"), ".split"),
                     ["one content box and one right column, Disk · Runs, at every level",
-                     "the insight body kept for insight only (b03 s32-D07): partitions as views, levels folded, a row per question"],
+                     "the insight body kept for insight only (b03 s32-D07): segments as views, levels folded, a row per question"],
                     "kept: the frame's box; insight's body for insight only", ""),
     "space-job": ((P("job", "Audience Report", "Full/Current"), ".split"),
-                  ["the same box as the Board: the Job's questions by level, the partitions as views"],
+                  ["the same box as the Board: the Job's questions by level, the segments as views"],
                   "kept: the frame's box", ""),
     "space-task": ((P("task", "Audience Report", "Table"), ".split"),
-                   ["the same box: one question, its partitions as rows, its Runs beside"],
+                   ["the same box: one question, its segments as rows, its Runs beside"],
                    "kept: the frame's box", ""),
     "space-b52": ((P("b52", "Audience Report", "Full/Findings"), ".split"),
                   ["today's-layout Block: the same box, the old page's content drawn in the frame's look"],
@@ -243,7 +243,7 @@ PROPOSALS = {
              "proposed: an item opens in the frame (its Task, or the pop-out)",
              "? the old question page (/_board/insight) and run page (/_board/insight-run) are still served"),
     "own": ((P("job", "Description", "Dataset"), ".space-main"),
-            ["the theme's own content, drawn with the frame's parts only: the Map, the cuts and their power, the handoff "
+            ["the theme's own content, drawn with the frame's parts only: the Map, the segments and their power, the handoff "
              "are frame tables; the Reading and Period rows are view rows"],
             "kept: the content; the frame's tables and rows",
             "? Check's gates (old Check Space) have no place yet: chips on the row are dropped (no tags) (b11 Q03)"),
@@ -306,7 +306,7 @@ LAST_W = [0]
 
 
 def picture(path: Path, x: float, y: float, frame_w: float, px: int = 1100) -> float:
-    """b03's picture(), with the embedded image cut to `px` wide so the many Space bodies stay light."""
+    """b03's picture(), with the embedded image segment to `px` wide so the many Space bodies stay light."""
     from PIL import Image
     im = Image.open(path).convert("RGB")
     if im.width > px:

@@ -18,7 +18,7 @@ reads; each line's fix, which is its owning skill's
 **Topic:** One line per thing the paper needs, each ✅ done, ⏳ under way, ⬜ not yet or 🙋 waiting on a person, with
 what the check saw. `paper_check.py <Board> --write` ticks it below the GENERATED line; what is above stays as written.
 
-**Feeds:** `reports/` (none: it reads every layer)
+**Feeds:** (none: it reads every layer)
 
 
 Files

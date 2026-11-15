@@ -64,7 +64,7 @@ def on_frame() -> list:
 
 
 def live_frame():
-    """servers/workbench/frame.py through the live namespace, as the server loads it (themes included)."""
+    """servers/workbench/page/frame.py through the live namespace, as the server loads it (themes included)."""
     from host_paths import bootstrap
     bootstrap()
     from live import frame

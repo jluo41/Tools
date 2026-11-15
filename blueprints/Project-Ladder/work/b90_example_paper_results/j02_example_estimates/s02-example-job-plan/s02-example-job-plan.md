@@ -13,7 +13,7 @@ s02 · How the estimates Job runs
 
 **Topic:** A placeholder topic: the estimates Job returns the main and subgroup values, arranges them, and hands over a clean copy. Which table goes out, and in which lanes, is decided here. Every number is made up.
 
-**Feeds:** `reports/q02-main-association.md`
+**Feeds:** Q02.md`
 
 
 Files

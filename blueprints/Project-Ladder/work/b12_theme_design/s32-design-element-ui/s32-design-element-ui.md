@@ -17,7 +17,7 @@ pages draw it (flagged OLD), and as s11 · s12 · s13 plan it. Beside each eleme
 one look, b03's picks kept, with why, a green line for what changed and a red line for what is open. It
 is b03's `s32-element-ui` cut to one theme, and it adds the elements that only design has.
 
-**Feeds:** `../reports/` q02_design_workbench · and b03's s32 (its Theme elements list).
+**Feeds:** `../reports/` Q02 · and b03's s32 (its Theme elements list).
 
 
 Files

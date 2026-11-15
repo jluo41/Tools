@@ -1,5 +1,6 @@
 b02 s02 · Base map
 ==================
+view: findings
 
 **Stage:** explore
 
@@ -15,7 +16,25 @@ only one theme, and base skills nobody outside their family names.
 (`name`, /name, "name", skill: name, or a whole hyphenated name; history left out). Drawn with
 b04's helpers through b03's canvas writer, so marks survive a rebuild.
 
-**Feeds:** `../reports/q01_base_map/` (answer drafted), and Q03's candidates.
+**Feeds:** `../Q01 (answer drafted), and Q03's candidates.
+
+
+Q01 · Answer
+------------
+
+**Question:** What does each base family give the themes?
+
+**Answer (open):** A first answer, drawn from disk in [s02 base map](../../s02-base-map/s02-base-map.excalidraw) (counts are files that name a skill, not proven calls). Two base families are called by every theme, two by most, and four by only one or two themes. One theme, discovery, is named by six of the other seven themes, so it behaves like base.
+
+**Page:** [q01_base_map.md](q01_base_map/q01_base_map.md): the full answer, its evidence and limits (moved from reports/)
+
+
+Q03 · Answer
+------------
+
+**Question:** What sits in base but is not base?
+
+**Answer (open):** not written yet.
 
 
 Files

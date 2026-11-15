@@ -47,7 +47,7 @@ button text, send timing, variants, or another Design artifact.
 
 One registered QW ask; Application audience/context/decision; source versions;
 and unresolved gaps. Its epistemic parent is either named local Knowledge
-pages (`<n>-<partition>/K<NN>-<partition>-<slug>/`) with strength, rivals and boundary, or
+pages (`<n>-<segment>/K<NN>-<segment>-<slug>/`) with strength, rivals and boundary, or
 one exact
 `Task Insight instance/item@execution-version/RF<n>` plus Result path,
 accepted by the workflow's pre-climbed
@@ -60,7 +60,7 @@ The page is a `haipipe-draft` Page Face written through that skill's flow
 needs: the cite needs name the Knowledge relied on, the judge needs give the
 counsel and the forbidden overreach, and the last division is the Design
 Handoff. Every `W<n>` names the Knowledge page it rests on, by question id
-and partition (`← QK2 · full`, the page its register cell names), and cites
+and segment (`← QK2 · full`, the page its register cell names), and cites
 the needs it answers (`[QW1.E1]`), bound in the page's `answers.yaml`; on a board made before page tickets, an exact Page
 v2 `PARENTS` record for its K page. For a bridge Folder, `Knowledge Cited`
 names exact external K/W/RF row ids and the item execution through a Supporting
@@ -85,7 +85,7 @@ Then contextualize it here. Under a valid
 POOL verdict, non-template W Folders close by explicit deferral and export no
 handoff. Under `UNDETERMINED`, the template W may answer only for the full
 extract. An unanswered non-template W may use `🟡 <page> final` only when its
-Page states why that partition answer cannot close and what evidence or
+Page states why that segment answer cannot close and what evidence or
 decision could change it. This is a licensed non-answer: it has no GI5 pass,
 signature, handoff, or Design binding; the Page omits the `SERVES` and `signed:`
 rows that identify an exported handoff. The Question owner records its partial

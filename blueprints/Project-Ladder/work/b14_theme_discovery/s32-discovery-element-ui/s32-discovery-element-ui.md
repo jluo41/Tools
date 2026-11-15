@@ -16,7 +16,7 @@ frame: one look, b03's picks kept, with why, a green line for what changed and a
 open. It is b03's `s32-element-ui` cut to one theme, and it adds the elements only discovery has, and
 every discovery button with the Run name it needs.
 
-**Feeds:** `../reports/` q01_discovery_ladder · q02_papers_citations_bib · and b03's s32, which
+**Feeds:** `../reports/` Q01 · Q02 · and b03's s32, which
 reads the list under the heading below.
 
 

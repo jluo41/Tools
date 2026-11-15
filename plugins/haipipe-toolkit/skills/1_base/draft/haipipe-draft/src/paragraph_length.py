@@ -3,7 +3,7 @@ make each paragraph about 4 to 6 sentences", then "abstract should be okay. for 
 might make sure they are between 4~7 sentences").
 
 One reader for every check: `page.py health` (the `paragraph` row), haipipe-paper's paper_check, the review audit and
-the workbench's Plan maps. A paragraph is a `### C<n>.P<m> · <name> · S<a> to S<b>` heading of a draft's
+the workbench's Plan maps. A paragraph is a `### C<n>.P<m> · <name> · s<a> to s<b>` heading of a draft's
 `## 1 · Structure`; its count is b - a + 1, else the Bullets (`- B<n> · …`) under it. A `reason: <why>` line under the
 heading accepts a count outside the range. The Abstract, an appendix or supplement (legends), a letter and a P0 title
 paragraph are exempt.
@@ -17,7 +17,7 @@ EXEMPT = ("abstract", "summary", "appendix", "supplement", "supplementary", "ext
           "letter", "cover letter", "cover-letter", "response")
 
 HEAD = re.compile(r"(?m)^###\s+(C\d+\.P\d+)\s*·\s*(.*?)\s*$")
-SPAN = re.compile(r"·\s*S(\d+)[a-z]*(?:\s+to\s+S(\d+)[a-z]*)?\s*$")
+SPAN = re.compile(r"·\s*[Ss](\d+)[a-z]*(?:\s+to\s+[Ss](\d+)[a-z]*)?\s*$")
 BULLET = re.compile(r"(?m)^\s*-\s*B\d+\b")
 REASON = re.compile(r"(?mi)^\s*(?:[-*]\s*)?reason:\s*(.+?)\s*$")
 
@@ -70,7 +70,7 @@ def section_kind(face_text: str) -> str:
 
 
 # Two more plan patterns from ScalingGlucose (JL 261112), read by page.py health beside the paragraph row
-BULLET_LINE = re.compile(r"(?m)^\s*-\s*B\d+\s*·\s*(S\d+[a-z]*)\s*·\s*\[([^\]]+)\]\s*(.*)$")
+BULLET_LINE = re.compile(r"(?m)^\s*-\s*B\d+\s*·\s*([Ss]\d+[a-z]*)\s*·\s*\[([^\]]+)\]\s*(.*)$")
 
 
 def unsupported_expectations(plan_text: str) -> list:

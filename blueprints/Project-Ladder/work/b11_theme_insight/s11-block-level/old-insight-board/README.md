@@ -8,8 +8,8 @@ for the new screens. They show a register board, one Space each, taken at 1600 p
 
 | file                       | old Space › view                          | where it lives now                          |
 |----------------------------|-------------------------------------------|---------------------------------------------|
-| 01-scope.png               | Scope (the dataset, the partitions)       | Board › Description › Dataset · Partitions  |
-| 02-prototype.png           | Prototype                                 | Board › Description › Prototype             |
+| 01-scope.png               | Scope (the dataset, the segments)       | Board › Description › Dataset · Segments  |
+| 02-prototype.png           | Question Book                                 | Board › Description › Question Book             |
 | 03-insight-full.png        | Insight › Full                            | Job › Audience Report › Full · Current      |
 | 04-insight-full-QW1.png    | Insight › Full, a Wisdom question opened  | Job › Audience Report, its W row            |
 | 05-insight-youngmale.png   | Insight › Young male                      | Job › Audience Report › Young male          |

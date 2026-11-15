@@ -20,7 +20,7 @@ the reason the next slide follows, speaker notes), drawn from this Block's s00, 
 the Insight Guide's `method.md` (the published evidence). The slide layout is b12's `slide_kit.py`, loaded
 by path, so the two theme decks lay out the same way and the storyboard and the deck cannot drift apart.
 
-**Feeds:** `../reports/` q01_insight_ladder · q02_partitions_pooling · q04_level_delivery.
+**Feeds:** `../reports/` Q01 · Q02 · Q04.
 
 
 Files

@@ -30,7 +30,7 @@ A CITE card is someone else's work, found by a discovery Task (haipipe-discovery
 ## What a card shows
 
 1. **Header**: `CITE 3 · b01.j21.t05 · <the Task's title>`.
-2. **Per item**: its sentences (S5), the anchor words, the paper's title, then authors, year, venue and Run.
+2. **Per item**: its sentences (s5), the anchor words, the paper's title, then authors, year, venue and Run.
 3. **The quote**: each `fact` id's sentence, so a reader sees exactly what the paper says.
 
 ## Choosing the topic

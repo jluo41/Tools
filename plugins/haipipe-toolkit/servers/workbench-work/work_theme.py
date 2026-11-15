@@ -1,4 +1,4 @@
-"""The work theme on the base frame (servers/workbench/frame.py): only what differs from vanilla.
+"""The work theme on the base frame (servers/workbench/page/frame.py): only what differs from vanilla.
 
 A work Task (s13, Tools/blueprints/Project-Ladder/work/b10_project_workbench/s13-task-variants): Description is Scope · Plan,
 Audience Report is Draft · Report, Work Details is Code · Review · Notebooks; its Runs are grouped
@@ -78,7 +78,7 @@ RUN_NAMES = {"Plan a Task": "run-plan-<tNN>", "Build the Task": "run-build-<tNN>
              "Review the Task code": "run-review-code-<tNN>"}
 
 def claims(block) -> bool:
-    """A Prototype Block (`board-kind: prototype`, insight's questions and their scripts) wherever it sits: since JL
+    """A Question Book Block (`board-kind: prototype`, insight's questions and their scripts) wherever it sits: since JL
     261109 it lives in insight/ beside the Board it serves, and still opens on the work page with insight's
     prototype_ parts (focus_page.page_module)."""
     face_md = Path(block) / "board.md"

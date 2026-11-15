@@ -1,7 +1,7 @@
-"""The insight theme on the base frame (servers/workbench/frame.py): only what differs from vanilla.
+"""The insight theme on the base frame (servers/workbench/page/frame.py): only what differs from vanilla.
 
 Two layouts (b11, 261007). Plan C (a Board whose board.md names its `prototype:`, or whose Jobs pair a
-release and a data version, jNN_code-vN-<slug>_data-vM/): every level is drawn by insight_views.py
+release and a data version, jNN_question-vN-<slug>_data-vM/): every level is drawn by insight_views.py
 from the folders (insight_plan_c.py): the Board (s11), a Job (s12), a Task (s13). Today's layout (a register board in
 insights/, or an Insight Block in tasks/ claimed by `workbench: insight`): the Block tab below, from the
 old page's data, with b11's Map, the Reading row (Coverage · Tracks · Consistency · Findings) and Check's
@@ -10,16 +10,16 @@ gates as chips on each question row; its Jobs and Tasks stay the base's own.
 The notes below describe today's layout.
 
 An insight Board reads one dataset (Tools/blueprints/Project-Ladder/work/b11_theme_insight). b11 proposes (s11, 261007) a Job
-per pair, Prototype version × data version; no Board has those Jobs on disk yet, so this theme fills
+per pair, Question Book version × data version; no Board has those Jobs on disk yet, so this theme fills
 the Block tab from today's folders, with the old page's content (JL: carry over what exists) drawn in
-the base's look only (JL 261007: no theme stylesheet): the frame's .topic folds, .wf-table, .q-row,
+the base's look only (no theme stylesheet): the frame's .topic folds, .wf-table, .q-row,
 .chip, .st-ok / .st-warn, and the bj- work rows. b03 (s02-studio-workbench-skill) placed the old Spaces:
 
-    Description      Prototype · Dataset · Partitions      (was Scope › Dataset · Partitions, and Prototype)
+    Description      Question Book · Dataset · Segments      (was Scope › Dataset · Segments, and Question Book)
     Idea Studio      vanilla: studio/ topics; the generated question map is a row (studio/)
-    Audience Report  one view per partition, the old Insight Space: D · I · K · W sections, each
-                     question a Question │ Work │ Report row (was Insight › <partition>)
-    Work Details     the answering pages, one fold per folder (a partition, or a DIKW level)
+    Audience Report  one view per segment, the old Insight Space: D · I · K · W sections, each
+                     question a Question │ Work │ Report row (was Insight › <segment>)
+    Work Details     the answering pages, one fold per folder (a segment, or a DIKW level)
     Runs             the task calls that answer the questions, with their status
     Delivery         Handoff: the person-signed Wisdom answers (was Delivery › Handoff)
 
@@ -30,6 +30,7 @@ linked from the band. Read-only: nothing here writes; a run type only copies its
 """
 from __future__ import annotations
 
+import traceback
 from pathlib import Path
 
 from live import insight_plan_c as PC
@@ -62,20 +63,17 @@ def _mark(mark: str, text: str = "") -> str:
     return f'<span class={cls}>{esc(mark)}{(" " + esc(text)) if text else ""}</span>'
 
 
-def _fold(title: str, meta: str, body: str, opened: bool = False) -> str:
-    return (f'<details class=topic{" open" if opened else ""}><summary><b>{esc(title)}</b>'
-            f'<span class=topic-meta>{esc(meta)}</span></summary>'
-            f'<div style="padding:8px 14px">{body}</div></details>')
+_fold = V._fold                                   # one fold, drawn the same in the older Spaces and the newer views
 
 
 def _parts(snap: dict) -> list[dict]:
-    """The partitions some question is asked on, in MT00's order."""
+    """The segments some question is asked on, in MT00's order."""
     return [p for p in snap["partitions"] if any(p["id"] in q["cells"] for q in snap["questions"])]
 
 
 # ── Description ────────────────────────────────────────────────────────────────────────────────
 def _prototype(snap: dict) -> str:
-    """The questions, by level: what is asked and on which cuts (the Prototype's release, or the
+    """The questions, by level: what is asked and on which segments (the Question Book's release, or the
     register board's MT01-MT04)."""
     notes, parts = IB.question_notes(snap), _parts(snap)
     out = []
@@ -101,7 +99,7 @@ def _partitions(snap: dict) -> str:
              f'<code>{esc(r["where"] or ("no rows of its own" if r["id"] == IB.CROSS else "—"))}</code>',
              esc(r["rows"] or "—"), esc(r["share"] or "—"),
              esc((r.get("config") or "—") + (".yaml" if r.get("config") else ""))) for r in snap["partitions"]]
-    return ('<p class=mut>Cuts of this one extract. A cut is one config per task, never a second dataset.</p>'
+    return ('<p class=mut>Segments of this one extract. A segment is one config per task, never a second dataset.</p>'
             + table(("partition", "where", "rows", "share", "config"), rows))
 
 
@@ -110,19 +108,19 @@ def _map(snap: dict) -> str:
     per pair comes with plan C, so each cell is today's runs on that dataset."""
     datasets = list(snap.get("datasets") or []) or ["the extract"]
     runs = IB.work_runs(snap)
-    cells = [f'<span class=st-ok>{len(runs)} run{"" if len(runs) == 1 else "s"} today</span>' for _ in datasets]
-    return ('<p class=mut>The two clocks crossed: Prototype releases as rows, data versions as columns. This Board '
+    cells = [f'<span class=st-ok>{"runs today" if runs else "no run today"}</span>' for _ in datasets]
+    return ('<p class=mut>The two clocks crossed: Question Book releases as rows, data versions as columns. This Board '
             'is today\'s layout: one set of questions, not yet versioned, so one row; a Job per pair comes with '
             'plan C (b11 s00).</p>' + table(["release \\ data"] + datasets, [["<b>today</b>"] + cells]))
 
 
-DESCRIPTION = (("Map", _map), ("Prototype", _prototype), ("Dataset", _dataset), ("Partitions", _partitions))
+DESCRIPTION = (("Map", _map), ("Question Book", _prototype), ("Dataset", _dataset), ("Partitions", _partitions))
 READINGS = ("Coverage", "Tracks", "Consistency", "Findings")
 
 
-# ── Audience Report: a view per partition, Question │ Work │ Report ─────────────────────────────
+# ── Audience Report: a view per segment, Question │ Work │ Report ─────────────────────────────
 def _cell_runs(snap: dict, q: dict, pid: str, answered: dict) -> list[dict] | None:
-    """The task runs behind one question on one partition, as the old Work column finds them;
+    """The task runs behind one question on one segment, as the old Work column finds them;
     None when the question is not asked there."""
     cell = q["cells"].get(pid, IB._parse_cell("·"))
     page = snap["by_id"].get(cell.get("page", ""))
@@ -147,7 +145,7 @@ def _cell_runs(snap: dict, q: dict, pid: str, answered: dict) -> list[dict] | No
 def _report(snap: dict, q: dict, pid: str) -> str:
     cell = q["cells"].get(pid, IB._parse_cell("·"))
     if cell["mark"] == "·":
-        return '<p class=mut>Not asked on this cut</p>'
+        return '<p class=mut>Not asked on this segment</p>'
     page = snap["by_id"].get(cell.get("page", ""))
     if cell["mark"] == "🚫" and not page:
         head, why = IB._REASONS.get(cell["note"], ("No answer", cell["note"]))
@@ -170,7 +168,8 @@ def _gate_chips(snap: dict, qid: str, pid: str, cell: dict) -> str:
         return ""
     try:
         gates = IB._cell_view(snap, qid, pid)["gates"]
-    except Exception:
+    except Exception:  # noqa: BLE001 · the row is drawn without its chips; the server log names what broke
+        traceback.print_exc()
         return ""
     cls = {"passed": "st-ok", "held": "st-warn", "refused": "st-warn"}
     chips = " ".join(f'<span class="chip {cls.get(g["state"], "mut")}" title="{esc(g["name"])} · {esc(g["note"])}">'
@@ -180,7 +179,7 @@ def _gate_chips(snap: dict, qid: str, pid: str, cell: dict) -> str:
 
 
 def _coverage(snap: dict, pid: str) -> str:
-    """Coverage on today's layout: what was asked and answered on this cut, by DIKW level."""
+    """Coverage on today's layout: what was asked and answered on this segment, by DIKW level."""
     out = []
     for lv, name in LEVELS:
         qs = [q for q in snap["questions"] if q["id"][1] == lv]
@@ -188,7 +187,7 @@ def _coverage(snap: dict, pid: str) -> str:
             continue
         rows = [(f'<b>{esc(q["id"][2:])}</b>', esc(q["question"]),
                  _mark(q["cells"].get(pid, IB._parse_cell("·"))["mark"])) for q in qs]
-        out.append(_fold(f"{name} questions", str(len(qs)), table(("#", "question", "on this cut"), rows), opened=True))
+        out.append(_fold(f"{name} questions", str(len(qs)), table(("#", "question", "on this segment"), rows), opened=True))
     return "".join(out) or '<p class=mut>No question registered on this Board yet.</p>'
 
 
@@ -201,7 +200,7 @@ def _one_job(snap: dict, pid: str) -> str:
 def _audience(snap: dict, pid: str) -> str:
     notes, answered = IB.question_notes(snap), IB._answered_by(snap)
     row = next((p for p in snap["partitions"] if p["id"] == pid), {})
-    size = f'{row["rows"]} rows' if row.get("rows") else ("compares the cuts" if pid == IB.CROSS else "")
+    size = f'{row["rows"]} rows' if row.get("rows") else ("compares the segments" if pid == IB.CROSS else "")
     head = ('<div class="q-row q-head-row"><div>Question · the logic</div><div>Work · the runs</div>'
             '<div>Report · what it says</div></div>')
     out = [f'<p class=mut>{esc(IB._part_label(snap, pid))}{(" · " + esc(size)) if size else ""}</p>']
@@ -224,12 +223,12 @@ def _audience(snap: dict, pid: str) -> str:
             rows.append(f'<div class=q-row id="question-{esc(q["id"])}"><div class=q-l>{logic}</div>'
                         f'<div class=q-w>{work}</div><div class=q-r>{_report(snap, q, pid)}</div></div>')
         out.append(_fold(f"{name} questions", str(len(qs)), head + "".join(rows), opened=True))
-    return "".join(out) if len(out) > 1 else out[0] + '<p class=mut>No question is asked on this cut.</p>'
+    return "".join(out) if len(out) > 1 else out[0] + '<p class=mut>No question is asked on this segment.</p>'
 
 
 # ── Work Details, Runs, Delivery ─────────────────────────────────────────────────────────────────
 def _pages(snap: dict, block: Path) -> str:
-    """The answering pages, one fold per folder under the Board (a partition, or a DIKW level)."""
+    """The answering pages, one fold per folder under the Board (a segment, or a DIKW level)."""
     groups: dict[str, list[dict]] = {}
     for p in snap["pages"]:
         path = Path(p["path"])
@@ -311,11 +310,11 @@ def claims(block):
 # today's layout's buttons (the old page's run cards), named by the Run each makes (haipipe-run ref/run-types-by-space.md
 # rule 6, b11 s21's names); a hard Run keeps its rNN_ name. Plan C's are named in insight_views.RUNS.
 RUN_NAMES = {"Prepare extract": "run-add-version-data-v<M>", "Ask": "run-ask-<L><NN>", "Carry a board over": "run-carry-<board>",
-             "Register a cut": "run-set-cuts-code-v<N>", "Review the questions": "run-review-questions-code-v<N>",
+             "Register a segment": "run-set-segments-question-v<N>", "Review the questions": "run-review-questions-question-v<N>",
              "Plan the evidence": "run-plan-evidence-<L><NN>", "Write the script": "run-write-script-<L><NN>",
              "Review the script": "run-review-script-<L><NN>", "Draw the question map": "run-map-questions",
-             "Report": "run-write-<tNN>", "Pool or split": "run-pool-<tNN>", "Data runs": "rNN_<partition>",
-             "Information runs": "rNN_<partition>", "Mechanical check": "run-check-alignment-<tNN>",
+             "Report": "run-write-<tNN>", "Pool or split": "run-pool-<tNN>", "Data runs": "rNN_<segment>",
+             "Information runs": "rNN_<segment>", "Mechanical check": "run-check-alignment-<tNN>",
              "Answer review": "run-check-<tNN>", "Handoff draft": "run-draft-handoff"}
 
 

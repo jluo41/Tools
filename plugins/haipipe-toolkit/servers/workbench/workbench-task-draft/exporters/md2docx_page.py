@@ -124,6 +124,32 @@ def latex_content_to_markdown(lines):
     return out
 
 
+
+# A Section Page's Content numbers its paragraphs `#### C1.P3 · …`; the subsection a C<n> opens is
+# named in the adopted draft's Structure Overview (`- C1 · Prescribing variation …`). Without it,
+# the exported Section printed no 2.1, 2.2 at all (JL 261114, the MISQ Literature Review).
+def chapter_titles(path, raw_page):
+    """{C<n>: its title} from the draft the page head names (`content: draft v1.4`), or {}."""
+    import pathlib
+    head = raw_page.split("\n## ", 1)[0]
+    m = re.search(r"(?m)^content:\s*draft\s+(v[\d.]+)", head)
+    if not m:
+        return {}
+    page = pathlib.Path(path)
+    name = "%s-draft-%s.md" % (page.stem, m.group(1))
+    for draft in (page.parent / "draft" / name, page.parent / "draft" / "previous" / name):
+        if draft.is_file():
+            text = draft.read_text(encoding="utf-8", errors="replace")
+            found = {}
+            for key, title in re.findall(r"(?m)^- (C\d+) · (.+?)\s*$", text.split("\n### C", 1)[0]):
+                # C0 is the untitled opening; a `§5.1` prefix and a `· eight paragraphs` note are working words
+                title = re.sub(r"^\u00a7\s*\d+(?:\.\d+)*\s*", "", title).split(" · ")[0].strip()
+                if key != "C0" and title:
+                    found[key] = title
+            return found if len(found) > 1 else {}     # one subsection under a section is no division
+    return {}
+
+
 def parse_page(path, keep_fences=False):
     """Return the blocks of `## Content`, dropping what QC5's read-and-drop
     table drops. A `>` lane binds to the paragraph ABOVE it, which is QC0's
@@ -170,8 +196,16 @@ def parse_page(path, keep_fences=False):
     insight = bool(re.search(r"(?m)^folder-kind:\s*(data|information|knowledge|wisdom)\s*$",
                              raw_page.split("\n## ", 1)[0]))
     abstract = is_abstract_page(raw_page)
-    if page_title and not own_h1:
+    # `part-headings: sections` (haipipe-draft page_adopt, JL 261114): one draft Task holds several Sections, each
+    # its own `### <name>` in Content, so the Task's own title is not a printed heading.
+    sections_task = bool(re.search(r"(?m)^part-headings:\s*sections\s*$", raw_page.split("\n## ", 1)[0]))
+    if page_title and not own_h1 and not sections_task:
         blocks.append(("h", 1, page_title))
+    # a page that writes its own `### 2.1 …` keeps them; otherwise each C<n> opens its subsection
+    own_h2 = any(re.match(r"^### (?:\u00a7\s*)?\d+\.\d+\s", l) for l in lines[start + 1:end])
+    chapters = {} if (own_h2 or abstract or insight) else chapter_titles(path, raw_page)
+    number = re.match(r"^# .*?\u00a7\s*(\d+)\b", lines[0]) if lines else None
+    opened = []
     in_fence, fenced = False, 0
     body = lines[start + 1:end]
     if content_format(raw_page) == "latex":
@@ -204,6 +238,7 @@ def parse_page(path, keep_fences=False):
             # so the sigil is stripped on the way out (JL 2026-07-27). A heading
             # that was ONLY a § carries no title and is dropped.
             title = s[4:].strip().lstrip("\u00a7").strip()
+            title = re.sub(r"^(\d+(?:\.\d+)*)\s+·\s+", r"\1 ", title)    # `6.1 · Implications` prints `6.1 Implications`
             if not title:
                 prev_was_para = False
                 continue
@@ -253,6 +288,15 @@ def parse_page(path, keep_fences=False):
             prev_was_para = False
             continue
         if s.startswith("#### "):
+            c = re.match(r"^#### (C\d+)\.P\d+\b", s)
+            if c and c.group(1) in chapters and c.group(1) not in opened and not skipping:
+                opened.append(c.group(1))
+                title = chapters[c.group(1)]
+                if sections_task:
+                    blocks.append(("h", 1, title))       # each part is a Section of its own
+                else:
+                    blocks.append(("h", 2, "%s.%d %s" % (number.group(1), len(opened), title)
+                                   if number else title))
             # the paragraph job line is SCAFFOLDING, not manuscript. But the
             # heading itself IS the paragraph boundary, and nothing downstream
             # could see that before, so joining had nowhere to break.

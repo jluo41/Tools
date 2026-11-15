@@ -1,3 +1,15 @@
+## 0.12.3 · 2026-11-11 · to pass the desk
+
+- The editor's-test report keeps a `**To raise the odds**` numbered list, shown on the venue card as "To pass the desk".
+
+## 0.12.2 · 2026-11-11 · the editor's test report
+
+- The editor's test cell is the short decision; the full desk screen is a report `reports/qNN_editor_test_<venue>/`.
+
+## 0.12.1 · 2026-11-11 · the editor's test
+
+- A Story's venue list names each venue's editor's test, the first row of its card on the Story page.
+
 ## 0.12.0 · 2026-11-01 · the venue's display rules
 
 - JL 261101: "the display like that should also follow the venue, the venue we are using". `call.md` gains a

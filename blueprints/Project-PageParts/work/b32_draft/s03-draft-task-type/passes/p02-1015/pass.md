@@ -10,4 +10,4 @@ Yes, clean them, go ahead and do all.
 
 ## Changed
 
-- `servers/workbench/frame.py; skills/1_base/task/10_evidence/; haipipe-task 1.15.0; paper_ladder.py; section templates; haipipe-project ladder.py; s03 face and builder`
+- `servers/workbench/page/frame.py; skills/1_base/task/10_evidence/; haipipe-task 1.15.0; paper_ladder.py; section templates; haipipe-project ladder.py; s03 face and builder`

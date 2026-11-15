@@ -1,11 +1,12 @@
 s04 · Insight structure
 =======================
+view: findings
 
 **Tags:** `Skill`
 
 **Stage:** explore
 
-**For:** a deck, and the shape of an Insight Project: Prototype versions, data versions, two clocks, for the people who write the toolkit skills
+**For:** a deck, and the shape of an Insight Project: Question Book versions, data versions, two clocks, for the people who write the toolkit skills
 
 **Delivery type:** skill
 
@@ -13,12 +14,20 @@ s04 · Insight structure
 in every Block (JL 2026-10-12: "for every block, we also want to have the s00-overview").
 
 **Topic:** the thinking behind the insight ladder (JL 261007): what an Insight Project looks like; the
-Prototype as its own work Block whose Jobs are Prototype versions; the insight Board whose Jobs pin one
-Prototype version and one data version; the two clocks; where a new release comes from and what
+Question Book as its own work Block whose Jobs are Question Book versions; the insight Board whose Jobs pin one
+Question Book version and one data version; the two clocks; where a new release comes from and what
 triggers it; and the Block's questions with our ideas and the choices still open.
 
-**Feeds:** `reports/` q01_insight_ladder, q02_partitions_pooling, q03_question_gates,
-q04_level_delivery, q05_register_boards (and a proposed Q06, the Prototype and data versions).
+**Feeds:** Q01 · Q02 · Q03,
+q04_level_delivery, q05_register_boards (and a proposed Q06, the Question Book and data versions).
+
+
+Q02 · Answer
+------------
+
+**Question:** How do segments and pooling show?
+
+**Answer (open):** not written yet.
 
 
 Files
@@ -41,11 +50,11 @@ What the drawing holds
 1. An Insight Project: `work/bNN_<topic>_prototype/` (the questions and their code) beside
    `insights/bNN_<topic>/` (one dataset, its versions, the answers); designs and discoveries optional;
    the data versions outside the Project.
-2. The two Blocks, each a box, a definition and its tree. Prototype Block: one Job per Prototype
-   version (`j01_code-v1`, `j02_code-v2`), frozen when closed; a version Job holds `release.yaml` (every live
+2. The two Blocks, each a box, a definition and its tree. Question Book Block: one Job per Question Book
+   version (`j01_question-v1`, `j02_question-v2`), frozen when closed; a version Job holds `release.yaml` (every live
    question, pointing to its Task here or in an earlier version) and only new or changed Tasks;
-   `proposals/` is the backlog. Insight Board: one Job per pair, Prototype version × data version
-   (`j03_code-v2_data-v2`); its Tasks are the questions on that pair, its Runs one per partition. Arrows: the
+   `proposals/` is the backlog. Insight Board: one Job per pair, Question Book version × data version
+   (`j03_question-v2_data-v2`); its Tasks are the questions on that pair, its Runs one per segment. Arrows: the
    Board's Job uses a version by path and hash, never a copy; the Board sends proposals back.
 3. Two clocks and the chain of Jobs; one clock per Job, so a change in an answer has one cause.
 4. Where a new release comes from: six triggers (a level answered, a check failed, a weak answer, new
@@ -59,13 +68,13 @@ What the drawing holds
    a version by path and hash; its Task runs that version's script; the Job pins a data version; its
    pages feed the answers across Jobs; the answers send proposals back; the signed handoff goes to
    Design), red dashed for what is open (when the backlog opens the next version; one clock per Job).
-7. (261007, with s11 and s12) The cuts are plan: `partitions.md` and `thresholds.yaml` live in each
-   Prototype release, so a new or changed cut is a new release; the Board's `meta/` keeps only the
+7. (261007, with s11 and s12) The segments are plan: `partitions.md` and `thresholds.yaml` live in each
+   Question Book release, so a new or changed segment is a new release; the Board's `meta/` keeps only the
    checker's `status.md`. The Board's `reports/qNN_<topic>/` hold the Block's own questions, a second
    D · I · K · W over the Jobs' answers.
 8. (261007, JL: "we might want to propose more run-types") A frame, Run types by level: hard Runs only at
-   a question Task of a Job (rNN_<partition>, rNN_cross); soft Runs at every level (Prototype: propose,
-   open a release, define cuts, sign, close, ask, plan, script, reviews; Board: add a version, add a Job,
+   a question Task of a Job (rNN_<segment>, rNN_cross); soft Runs at every level (Question Book: propose,
+   open a release, define segments, sign, close, ask, plan, script, reviews; Board: add a version, add a Job,
    check, read across Jobs, handoff; Job: launch, power, compare with the previous Job, close; Task:
    write, check, sign). A Job's order: launch -> power -> runs -> cross -> write -> check -> compare ->
    close. The compare rule (what "held" means) is plan, in the release's thresholds.yaml; the Job's
@@ -75,8 +84,8 @@ What the drawing holds
 Open
 ----
 
-1. One Prototype Block per insight Board, or may several Boards share one?
-2. Signed releases: cut per level, per batch of proposals, or on demand?
+1. One Question Book Block per insight Board, or may several Boards share one?
+2. Signed releases: segment per level, per batch of proposals, or on demand?
 3. One clock per Job?
 4. Versions: accumulate (compare, never pool) or batches (may pool)?
 5. Does a signed handoff go stale when a newer Job lands?

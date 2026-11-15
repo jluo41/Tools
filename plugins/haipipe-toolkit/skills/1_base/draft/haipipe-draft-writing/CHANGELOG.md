@@ -1,3 +1,9 @@
+## 0.30.0 · 2026-11-11 · the plan is signed first
+
+- JL 261111 (t01_introduction): WRITE's entry gates start with the plan's sign; without `approved: ✅`, or with
+  health `order`/`row`, the turn goes to 1 · Plan. Revise (`ref/revise.md`) checks the structure before writing
+  sentence cards; a failed structure gives Section question cards only and returns to Plan.
+
 ## 0.29.0 · 2026-11-10 · a Revise card shows its sentence review
 
 - JL 261110 (the per-sentence review and the easier-to-read verdict beside each card): a card may carry `Score: <n>/10`

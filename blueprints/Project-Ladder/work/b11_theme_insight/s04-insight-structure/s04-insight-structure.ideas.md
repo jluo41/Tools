@@ -4,15 +4,15 @@ The open ideas of this topic, one per slide: written from its face as a quick sc
 
 ## Insight structure
 - the thinking behind the insight ladder: what an Insight Project looks like
-- the Prototype as its own work Block whose Jobs are Prototype versions
-- the insight Board whose Jobs pin one Prototype version and one data version
+- the Question Book as its own work Block whose Jobs are Question Book versions
+- the insight Board whose Jobs pin one Question Book version and one data version
 
 ## What it hands over
-- a deck, and the shape of an Insight Project: Prototype versions, data versions, two clocks, for the people who write the…
+- a deck, and the shape of an Insight Project: Question Book versions, data versions, two clocks, for the people who write the…
 - a skill
 
 ## Still open
-- Signed releases: cut per level, per batch of proposals, or on demand?
+- Signed releases: segment per level, per batch of proposals, or on demand?
 - One clock per Job?
 - Versions: accumulate (compare, never pool) or batches (may pool)?
-ask: One Prototype Block per insight Board, or may several Boards share one?
+ask: One Question Book Block per insight Board, or may several Boards share one?

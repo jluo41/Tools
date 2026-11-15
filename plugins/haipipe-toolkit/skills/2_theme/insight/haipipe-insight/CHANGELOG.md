@@ -1,24 +1,57 @@
 # haipipe-insight · version history
 
+## 3.9.0 · 2026-11-09 · update carries the words and reruns the receipts
+
+- `/haipipe-insight update <Board>` is one procedure (`ref/update.md`): audit, dry run, apply, rerun, verify.
+- New check `words` (`ref/rename_segment.py`): "cut" and "partition" become "segment" in every sentence a person
+  reads, and `run-set-cuts` becomes `run-set-segments`; the machine names a receipt hashes stay.
+- `update --apply --rerun` runs each stale Run's ticket and says whether its tables came out the same
+  (`tables_sha256`): same, changed, failed.
+- A Run's `report.md` shows the column `partition` as "segment"; the table file keeps its column.
+
+## 3.8.0 · 2026-11-09 · question-vN, segment, and pages a newcomer can read
+
+- JL 261109, after three fresh reviews of the pages: a question version's id is `question-vN` (was `code-vN` for a
+  day; "code" read as software). Folders, YAML and pages say the same id; readers still accept `code-vN` and `pN`,
+  and `insight_ladder.py update` carries either onto `question-vN` (`ref/rename_code_data.py`).
+- "Segment" is the word a person reads for a part of the data (was "cut" in prose and "partition" in files). The
+  machine names stay, because every receipt hashes them: `partitions.md`, the `partition:` / `partitions:` / `cut:`
+  keys, `partition_power.csv`, the view key `by-cut`. The run type is `run-set-segments`; `ref/segment.md` and
+  `ref/segment-policy.md` are the renamed references.
+- Pages: Board Findings · Questions · Data · Advice · Jobs; Question Book Questions · Ideas · Versions; Job Findings ·
+  Changes · Progress; Task Answer · Changes · Method. Each thing is shown once (the question list, the segments, the
+  ideas), section titles are one to three words, a Report view prints no caption, and a Job that is not closed is
+  "open", a data version "locked".
+- The example Board's receipts were rerun on the reworded questions (same tables, checked by `tables_sha256`).
+
+## 3.7.0 · 2026-11-09 · the Question Book
+
+- JL 261109: "Question Book" replaces "Prototype", a name a non-technical reader understands: the questions we ask
+  of the data and how each is answered, one signed question version at a time. The folder is `insight/InsightQuestionBook-<Topic>/`
+  (was `Prototype-<Topic>/`); `board-kind: prototype`, the `prototype:` key and the code's `prototype_` names stay.
+- Readers accept both folder names; `insight_ladder.py update` moves a `Prototype-<T>` or `work/Prototype-bNN-<T>`
+  to `insight/InsightQuestionBook-<T>`.
+- A Question Book's page: Questions · Versions · Ideas · Method · MindMap, the questions drawn version by version.
+
 ## 3.6.0 · 2026-11-09 · /haipipe-insight update
 
-- `insight_ladder.py audit <Board, Prototype or Project>` (read-only) and `update [--apply]` (a dry run without it):
+- `insight_ladder.py audit <Board, Question Book or Project>` (read-only) and `update [--apply]` (a dry run without it):
   names (via `ref/rename_code_data.py`), missing goal lines, each Job's hash re-pinned, stale receipts listed.
 - `ref/rename_code_data.py` no longer rewrites what names another thing: the Board's own folder name, a data
   version's `folder:`/`extract:` path, a register board's `*-InsightBoard` name, a `renamed-from:` line, a code
   file's `p1`/`v2` variables, or a dataset id inside a file name (`20250616_SMSR2v1_…`). Found by a dry run on a
   real Board, before anything was applied. "data version v1" now reads "data-v1", not "data version data-v1".
 
-## 3.5.0 · 2026-11-09 · code-v1 × data-v1, and the Prototype beside its Board
+## 3.5.0 · 2026-11-09 · question-v1 × data-v1, and the Question Book beside its Board
 
-- JL 261109: "code-v1 x data-v1, make it readable". A release is `code-vN` (was `pN`, shown as AP<N> or
+- JL 261109: "code-v1 x data-v1, make it readable". A release is `question-vN` (was `pN`, shown as AP<N> or
   "analysis plan N"), a data version is `data-vM` (was `vM`, shown as F<M> or "data freeze M"). The screen, the
-  folder names, the faces and the Run names say the same id. A Board Job is `jNN_code-vN-<slug>_data-vM/`
-  (one dataset per Board, so the name carries none); a release is `jNN_code-vN_<slug>/`.
-- The Prototype moves from `<Project>/work/Prototype-bNN-<Topic>/` to `<Project>/insight/Prototype-<Topic>/`, beside
+  folder names, the faces and the Run names say the same id. A Board Job is `jNN_question-vN-<slug>_data-vM/`
+  (one dataset per Board, so the name carries none); a release is `jNN_question-vN_<slug>/`.
+- The Question Book moves from `<Project>/work/Prototype-bNN-<Topic>/` to `<Project>/insight/InsightQuestionBook-<Topic>/`, beside
   the Board it serves. The work theme claims `board-kind: prototype` wherever it sits, so its page is unchanged.
 - The readers (`ref/open_job.py` `JOB`, `insight_plan_c.JOB_NAME`, `VERSION`) still read the older names, and the
-  screen shows an older `p1`/`v1` as `code-v1`/`data-v1`, until `ref/rename_code_data.py` carries the Board over
+  screen shows an older `p1`/`v1` as `question-v1`/`data-v1`, until `ref/rename_code_data.py` carries the Board over
   (dry run by default, `--apply` writes). `blueprints/Project-Ladder/insight/` is carried.
 
 ## [3.4.1] — 2026-10-26
@@ -41,7 +74,7 @@ Door for hidden helpers (workflow, bind): they leave the skill listing (`disable
   X ids; a Task with no Run shows its answer.
 - The Overall Report (JL 261012: "before the Full, we should have a Overall Report ... we can click and read it"):
   the Audience Report's first button, before Full, at the Job and the Board (its latest Job's), reads the Executive
-  answers as one document, each `(K01 · t30)` a link to that Task's page; no cut's table lists X. New run type
+  answers as one document, each `(K01 · t30)` a link to that Task's page; no segment's table lists X. New run type
   `run-overall-j<NN>` (Job) writes the X pages and the print.
 - New `ref/overall_report.py <Job>`: the Overall Report in print, the Board's `delivery/<job>/overall-report.html`
   and `.pdf` (headless Chrome): page 1 the answers, page 2 the figures; the Job's Delivery tab lists them.
@@ -89,26 +122,26 @@ Door for hidden helpers (workflow, bind): they leave the skill listing (`disable
 ## 3.1.1 · 2026-10-09 · Theme folders are singular
 
 - `scripts/insight_ladder.py` accepts a Board under `insight/` (or the older `insights/`); usage names
-  `work/Prototype-…` and `insight/Insight-…`. Docs name the singular folders.
+  `work/InsightQuestionBook-…` and `insight/Insight-…`. Docs name the singular folders.
 
 ## 3.1.0 · 2026-10-08 · A release, from proposals to a signature (b11 s21 phase 3)
 
-- New `ref/release.md`: the life of a release (triage → open → ask · plan · script → review → cuts → sign),
-  `release.yaml` (questions, kept · changed · new, retired), the cuts (full, cross, power before contrast, the pooling
+- New `ref/release.md`: the life of a release (triage → open → ask · plan · script → review → segments → sign),
+  `release.yaml` (questions, kept · changed · new, retired), the segments (full, cross, power before contrast, the pooling
   verdict) and signing; one release per triaged batch.
-- `ref/partition.md` marked as the register board's older layout; on the ladder the cuts are `release.md`'s.
+- `ref/segment.md` marked as the register board's older layout; on the ladder the segments are `release.md`'s.
 - `scripts/insight_ladder.py`: release folders may say what they are, `jNN_pN_<slug>` (`version --slug`); the Board's
   Propose Run defaults to `run-propose-coverage`; Run the Job and Sign the release name haipipe-insight, Close names
   haipipe-insight-check, Check consistency is the reviewer's (the run cards, phase 2).
 
-## 3.0.0 · 2026-10-08 · The Prototype and the insight Board, two special boards that work together (b11 s21 phase 1)
+## 3.0.0 · 2026-10-08 · The Question Book and the insight Board, two special boards that work together (b11 s21 phase 1)
 
-- New `ref/insight-ladder.md`, the contract: the Prototype `tasks/Prototype-bNN-<Topic>/` (questions + scripts, a Job
+- New `ref/insight-ladder.md`, the contract: the Question Book `tasks/Prototype-bNN-<Topic>/` (questions + scripts, a Job
   per release `jNN_pN/`, signed and frozen; `proposals/` its backlog) and the insight Board `insights/Insight-<name>/`
   (one dataset and its versions in board.md; a Job per release × data version `jNN_pN_<D>vM/`, a Task per question,
-  a hard Run per cut `runs/rNN_<partition>/`). Twelve rules, the Runs by level with their owners, the six Spaces.
+  a hard Run per segment `runs/rNN_<segment>/`). Twelve rules, the Runs by level with their owners, the six Spaces.
 - New `scripts/insight_ladder.py`: prototype · version · question · change · retire · sign · propose · board · data ·
-  job · run, with the gates (agreed questions and cuts before signing; a signed release, a frozen data version, a new
+  job · run, with the gates (agreed questions and segments before signing; a signed release, a frozen data version, a new
   pair and one clock per Job). `job` writes through `ref/open_job.py`; a hard Run's ticket runs `ref/run_job.py`.
 - New `tests/test_insight_ladder.py`: the scaffold makes each level, keeps its gates, and the workbench's own reader
   (`servers/workbench-insight/insight_plan_c.py`) reads the result back.
@@ -117,11 +150,11 @@ Door for hidden helpers (workflow, bind): they leave the skill listing (`disable
 - `SKILL.md` rewritten as the door for the two boards; the Insight Block (`ref/block-contract.md`) and the register
   board (`ref/board-contract.md`) are older layouts, read until carried over.
 
-## 2.11.0 · 2026-10-05 · One Insight Block in tasks/ replaces Prototype + Instance (JL 261005)
+## 2.11.0 · 2026-10-05 · One Insight Block in tasks/ replaces Question Book + Instance (JL 261005)
 
 - New `ref/block-contract.md` (was prototype-contract.md): an Insight topic is one task Block `tasks/b5N_<topic>_dikw/`,
   `workbench: insight`, `datasets:`, `meta/`, one Job per level, one Task per question (`question.md`, `scripts/`, the page).
-  A run is `<dataset>_<partition>` with no per-run config; the code exists once (no copy, lock or sync).
+  A run is `<dataset>_<segment>` with no per-run config; the code exists once (no copy, lock or sync).
 - `ref/run_question.py` resolves a task folder and a run; `ref/scaffold_block.py` (was scaffold_instance.py) writes the
   tickets of questions with a compute need; `ref/sync_instance.py` is retired. `carry_over.py`, `question_map.py` and
   `write_answer_page.py` read and write the Block layout.
@@ -131,11 +164,11 @@ Door for hidden helpers (workflow, bind): they leave the skill listing (`disable
 - Ask, work, report at every level: Knowledge tests across results and Wisdom tests its counsel, each
   through a script (`ctx.result(<QID>, <file>)` reads the level below; its `reads:` in the receipt
   make the run STALE when one changes). `COLUMNS = "none"` runs a script that reads only results.
-- New `ref/figures.py`: the runner draws `results/<partition>/fig_<need>_<table>.png` from the result
+- New `ref/figures.py`: the runner draws `results/<segment>/fig_<need>_<table>.png` from the result
   tables by their shape (rates with intervals, message x level, stability, balance, missing, share,
   an estimate beside its interval for Knowledge tests),
   deterministic bytes, never from the rows.
-- `reports/<partition>/report.md` is THE report: per need its plain lead lines, its figures, its
+- `reports/<segment>/report.md` is THE report: per need its plain lead lines, its figures, its
   tables rounded, the power table last. The page is the short answer that reads it.
 - The receipt carries `tables_sha256` and `content_since`; a rerun that writes the same tables keeps
   `content_since`, so a page read and a CHECK made since stay current.
@@ -149,12 +182,12 @@ Door for hidden helpers (workflow, bind): they leave the skill listing (`disable
 
 ## 2.8.1 · 2026-10-03 · report.md names both layouts
 
-- `ref/report.md` opens by naming the Prototype layout (one page per question, a section per partition, `runs/<partition>.sh`) beside the register board's, which it goes on to describe; before, a writer reading only it would make one page per partition.
+- `ref/report.md` opens by naming the Question Book layout (one page per question, a section per segment, `runs/<segment>.sh`) beside the register board's, which it goes on to describe; before, a writer reading only it would make one page per segment.
 
-## 2.8.0 · 2026-10-03 · The Prototype is the Block, with its studio (JL 261003)
+## 2.8.0 · 2026-10-03 · The Question Book is the Block, with its studio (JL 261003)
 
-- `ref/prototype-contract.md`: the Prototype carries the Block's `studio/`, no longer optional; an Instance shows its Prototype's.
-- New `ref/question_map.py <Prototype>`: writes `studio/question-map.excalidraw` from the question files, one frame per level, one box per live question, one arrow per reuse (`cite` need), a dashed box for a question linked to no other; retired questions counted on the frame. Generated: rerun after a question changes, never edit it.
+- `ref/prototype-contract.md`: the Question Book carries the Block's `studio/`, no longer optional; an Instance shows its Question Book's.
+- New `ref/question_map.py <Question Book>`: writes `studio/question-map.excalidraw` from the question files, one frame per level, one box per live question, one arrow per reuse (`cite` need), a dashed box for a question linked to no other; retired questions counted on the frame. Generated: rerun after a question changes, never edit it.
 
 ## 2.7.1 · 2026-10-02 · An Instance may keep studio/ (JL 261002)
 
@@ -162,20 +195,20 @@ Door for hidden helpers (workflow, bind): they leave the skill listing (`disable
 
 ## 2.7.0 · 2026-10-02 · Question file v2 and the carry-over (JL 261002)
 
-- Question file v2 (`ref/prototype-contract.md`): `question` (the short wording), `name`, `ask`, `source` (where it was carried from), `partitions` (asked, not_elsewhere, power), live and retired `needs` in the register's own spec fields (cut, unit, measure, by, uncertainty, rivals, output), `agreed`; Why now and What would answer it as prose. `0-Meta` holds `meta.md`, `partitions.md` (filters, then the reasons) and `thresholds.yaml` with one board-wide `power.smallest_effect_pp`; a question may override it with `effect` and `effect_reason`.
-- New `ref/carry_over.py`: a register board becomes a Prototype word for word (Queue wording, name, ask, why now, what would answer it, every need, agreed); ids `Q<L><n>` → `<L><NN>`; a logic refusal (full-only, defer) is not asked there, a data refusal is asked and refused again by its run; `--check` compares every field and rebuilds each division byte for byte; two runs write the same bytes.
+- Question file v2 (`ref/prototype-contract.md`): `question` (the short wording), `name`, `ask`, `source` (where it was carried from), `partitions` (asked, not_elsewhere, power), live and retired `needs` in the register's own spec fields (segment, unit, measure, by, uncertainty, rivals, output), `agreed`; Why now and What would answer it as prose. `0-Meta` holds `meta.md`, `partitions.md` (filters, then the reasons) and `thresholds.yaml` with one board-wide `power.smallest_effect_pp`; a question may override it with `effect` and `effect_reason`.
+- New `ref/carry_over.py`: a register board becomes a Question Book word for word (Queue wording, name, ask, why now, what would answer it, every need, agreed); ids `Q<L><n>` → `<L><NN>`; a logic refusal (full-only, defer) is not asked there, a data refusal is asked and refused again by its run; `--check` compares every field and rebuilds each division byte for byte; two runs write the same bytes.
 - `ref/evidence-needs.md`: coverage adds no need; "one thing" and "needs form a logic" are question-review tests; a cause word in a Data or Information ask is a review note, never a silent rewording.
-- `ref/run_question.py`: live needs only; json outputs by dotted key, one json file shared by several needs; the report header names the question. `ref/scaffold_instance.py --prototype --extract` writes a new Instance's board.md. `ref/write_answer_page.py`: an Instance page has one division per partition, in partitions.md order.
+- `ref/run_question.py`: live needs only; json outputs by dotted key, one json file shared by several needs; the report header names the question. `ref/scaffold_instance.py --prototype --extract` writes a new Instance's board.md. `ref/write_answer_page.py`: an Instance page has one division per segment, in partitions.md order.
 - `ref/run_question.py` `shared_paths`: a run rests only on the shared `src/` modules its scripts import (followed through their imports), so adding a module for one question no longer makes every run STALE.
 - A signed change retires a need (`retired:`, successor `supersedes:`) or a whole question (`retired:`, `superseded_by:`), records `changes:` and the new question's `source: {from, signed}`; a retired question is asked nowhere and has no live needs (`asked_partitions`, `live_needs`).
-- A cross run also gets `ctx.full`, the whole extract with the script's columns, so a cross question can compare each partition with the extract it is cut from.
+- A cross run also gets `ctx.full`, the whole extract with the script's columns, so a cross question can compare each segment with the extract it is cut from.
 - `shared_digest`: a run rests only on the thresholds.yaml sections its scripts and imported modules name (and `power` for a powered question), so a key added for one question leaves every other run current.
 
-## 2.6.0 · 2026-10-02 · Prototype and Instance boards (JL 261002)
+## 2.6.0 · 2026-10-02 · Question Book and Instance boards (JL 261002)
 
-- New `ref/prototype-contract.md`: a Prototype board (`insights/Prototype-Insight-<Topic>/`) holds the partitions and `0-Meta/` (input, partitions, thresholds) and one folder per question, `<L><NN>-<name>/` in its level folder `1-Data` … `4-Wisdom` (its question file and its one script; a need is `<L><NN>.E<n>`); an Instance board (`insights/Instance-Insight-<Dataset>/`) names the Prototype and one extract and holds one page folder per question × partition the Prototype asks. Each question says whether it generalizes to a partition: `partitions.meaning` (logic) and `partitions.power` (the minimum detectable effect at the partition's n, computed before any contrast). Status is computed, never typed.
-- New `ref/run_question.py` (the one runner: resolve, receipt, filter, power, script, output gate, write) and `ref/scaffold_instance.py` (page folders and their `runs/compute.sh`). No B-J-T-R inside a Prototype; the question id is the address.
-- New `ref/record_check.py`: records a read-only check agent's verdict as the page's check Run and, on CLOSE, approves the plan (a v0 plan is promoted to v1.0). `ref/write_answer_page.py` writes Instance pages (header `question:` and `partition:`, no `state:`, items read `results/compute/`). Layout: `0-Meta/` plus level folders `1-Data` … `4-Wisdom`; question folders `<L><NN>-<name>`, needs `<L><NN>.E<n>`, Instance pages `<L><NN>-<partition>-<name>`.
+- New `ref/prototype-contract.md`: a Question Book board (`insights/InsightQuestionBook-Insight-<Topic>/`) holds the segments and `0-Meta/` (input, segments, thresholds) and one folder per question, `<L><NN>-<name>/` in its level folder `1-Data` … `4-Wisdom` (its question file and its one script; a need is `<L><NN>.E<n>`); an Instance board (`insights/Instance-Insight-<Dataset>/`) names the Question Book and one extract and holds one page folder per question × segment the Question Book asks. Each question says whether it generalizes to a partition: `partitions.meaning` (logic) and `partitions.power` (the minimum detectable effect at the partition's n, computed before any contrast). Status is computed, never typed.
+- New `ref/run_question.py` (the one runner: resolve, receipt, filter, power, script, output gate, write) and `ref/scaffold_instance.py` (page folders and their `runs/compute.sh`). No B-J-T-R inside a Question Book; the question id is the address.
+- New `ref/record_check.py`: records a read-only check agent's verdict as the page's check Run and, on CLOSE, approves the plan (a v0 plan is promoted to v1.0). `ref/write_answer_page.py` writes Instance pages (header `question:` and `partition:`, no `state:`, items read `results/compute/`). Layout: `0-Meta/` plus level folders `1-Data` … `4-Wisdom`; question folders `<L><NN>-<name>`, needs `<L><NN>.E<n>`, Instance pages `<L><NN>-<segment>-<name>`.
 
 ## 2.5.0 · 2026-10-02 · The question owns its run (JL 261002)
 
@@ -183,7 +216,7 @@ Door for hidden helpers (workflow, bind): they leave the skill listing (`disable
 
 ## 2.4.0 · 2026-10-01 · Work specs and the page flow (JL 261001)
 
-- Work specs: every compute need carries cut, unit, measure, grouping or contrast, uncertainty, rivals and output columns, written from the ask before any task is searched; binding is exact-match only; configs list need ids; refusals need a probe run. `ref/report.md` defines no page shape of its own: every answering page at every level is a haipipe-draft Page written through its flow (plan with one Evidence Item and division per need, Draft, adopt, health, page CHECK).
+- Work specs: every compute need carries segment, unit, measure, grouping or contrast, uncertainty, rivals and output columns, written from the ask before any task is searched; binding is exact-match only; configs list need ids; refusals need a probe run. `ref/report.md` defines no page shape of its own: every answering page at every level is a haipipe-draft Page written through its flow (plan with one Evidence Item and division per need, Draft, adopt, health, page CHECK).
 
 ## 2.3.0 · 2026-10-01 · Evidence needs join Logic, Work and Report (JL 261001)
 
@@ -192,19 +225,19 @@ Door for hidden helpers (workflow, bind): they leave the skill listing (`disable
 - The page ticket is no longer called the join; a config's `answers:` is a cross-check derived from the bindings.
 - `ref/report.md` § Shape: the answering page is a Page Face (`haipipe-draft`): an objective title, an Opening that carries the answer, one Content division per evidence need; `state:` holds the state word only, `answers:` and `strength:` are their own lines; Aims, States, Files and Log move to `draft/records/`. Replaces the rule that the headline states the finding.
 
-## 2.2.0 · 2026-10-01 · Partition names, not letters (JL 261001)
+## 2.2.0 · 2026-10-01 · Segment names, not letters (JL 261001)
 
-- Partitions carry no letters: folders `<n>-<partition>/` (`1-full/` … `9-cross/`), page ids `<L><NN>-<partition>`, Question Groups `QG-<partition>-<L>`, `🚫 full-only`; reserved-letter rule removed; examples made generic.
+- Segments carry no letters: folders `<n>-<segment>/` (`1-full/` … `9-cross/`), page ids `<L><NN>-<segment>`, Question Groups `QG-<segment>-<L>`, `🚫 full-only`; reserved-letter rule removed; examples made generic.
 
 ## 2.1.0 · 2026-10-01 · The answering page is the report; page tickets (JL 261001)
 
 - No `reports/` folder and no board store `_results/`: the answering page's `.md` is the report,
-  and its folder is also a task folder with `runs/run_bNNjNNtNNrNN_<partition>_<task>.sh`
+  and its folder is also a task folder with `runs/run_bNNjNNtNNrNN_<segment>_<task>.sh`
   call-through tickets (`RESULT_DIR` = the page's `results/<ticket>/`) and those results.
 - Register cells name the page (`✅ FI02`); the page names the question back (`answers QI2`).
   The page ticket is the join; a config's `answers:` is a cross-check.
 - Verbs `climb`, `settle`, `report`, `check` and the resource laws follow `ref/report.md` and
-  `ref/board-contract.md`; `ref/partition.md` drops the `RESULT_STORE` dispatch.
+  `ref/board-contract.md`; `ref/segment.md` drops the `RESULT_STORE` dispatch.
 
 ## 2.0.0 · 2026-10-01 · One dataset, one board in insights/; Logic · Work · Report (JL 261001)
 
@@ -222,8 +255,8 @@ Door for hidden helpers (workflow, bind): they leave the skill listing (`disable
 
 ## 1.7.0 · 2026-10-01 · Reports (JL 261001)
 
-- New `report` verb and `ref/report.md`: one Markdown file per question per partition at
-  `reports/<partition>/<QID>.md` (headline, answer, strength, limit, the runs it read), not a
+- New `report` verb and `ref/report.md`: one Markdown file per question per segment at
+  `reports/<segment>/<QID>.md` (headline, answer, strength, limit, the runs it read), not a
   Page Folder. The Insight workbench shows it as the Report column beside Logic and Work.
 
 ## 1.6.4 · 2026-09-29 · outline/ to draft/ in current-layout prose (JL 260929)
@@ -238,14 +271,14 @@ Door for hidden helpers (workflow, bind): they leave the skill listing (`disable
 ## 1.6.2 — 2026-09-20
 
 - Publish the Knowledge strength rubric and the evidence-supported
-  `UNDETERMINED` partition verdict; preserve the signed-handoff boundary for
+  `UNDETERMINED` segment verdict; preserve the signed-handoff boundary for
   licensed partial-final non-answers.
 - Migration: preserve old verdicts, signatures, and settled cells; route new
   or reopened work through the owner contracts and Workflow reference.
 
 ## 1.6.1 — 2026-09-20
 
-- Clarify Run/Runtime/resource vocabulary; route conditional board and partition rules to references. Define successor question ids and current signed handoff eligibility.
+- Clarify Run/Runtime/resource vocabulary; route conditional board and segment rules to references. Define successor question ids and current signed handoff eligibility.
 - Migration: preserve existing records; see the scoped migration reference and current handoff contract.
 
 1.6.0 · 260920
@@ -257,11 +290,11 @@ Door for hidden helpers (workflow, bind): they leave the skill listing (`disable
 1.5.0 · 260916
 - `question|ask` and `verdict` now point at real procedures
   (`haipipe-application/fn/question.md`, `fn/verdict.md`): a person asks in
-  plain words, the verb decides level, partitions and lineage, then writes the
+  plain words, the verb decides level, segments and lineage, then writes the
   row through `python3 -m live.insightboard ask`.
 - `check|review` names `haipipe-draft-check`; `for-question` is
   `haipipe-insight-question`; the workbench's audit view is the Check Space.
-- Fix the bare `ref/partition.md` path: the file lives under haipipe-application.
+- Fix the bare `ref/segment.md` path: the file lives under haipipe-application.
 
 1.4.0 · 260916
 - Add a read-only board grooming projection: mechanical checks, partial
@@ -323,7 +356,7 @@ Recovered from the SKILL.md frontmatter summary on 260827, when the family retir
 
 - 1.0.0 (260831): I0-I5 each own a Folder contract with Page Face, Task Face,
   workbench profile, gate and handoff. The door retains lane-wide climb,
-  register, partition and signing laws.
+  register, segment and signing laws.
 
 - 0.6.0 (260828, page-type normalization): the door NAMES its six page types. Nine contracts share `application/page-types/`, so the folder cannot say which door owns which, and neither door named its own roster — this one named three of six, the design door two of three and not its namesake. The roster is names only: versions are read from disk by `/haipipe-skillset-status` and the dated family table lives in `application/README.md` §Family status, so nothing here can go stale. §The Climb Law also becomes the family's single statement of the chain: the four level contracts now CITE it where they carried four byte-identical copies.
 

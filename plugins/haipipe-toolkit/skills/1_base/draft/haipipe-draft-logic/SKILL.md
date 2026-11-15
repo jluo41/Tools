@@ -2,8 +2,8 @@
 name: haipipe-draft-logic
 description: "The plan of a Page, before any prose: gather its context (PREPARE), shape the Structure and survey each Bullet's evidence needs (SHAPE, SURVEY, run-structure-<slug>), and keep rough thinking in Scratch. Writes no prose (haipipe-draft-writing) and judges nothing (haipipe-draft-review). Trigger: plan, page outline, structure Run, SHAPE, SURVEY, page context, scratch, /haipipe-draft-logic, /haipipe-draft-structure, /haipipe-draft-context, /haipipe-draft-scratch."
 metadata:
-  version: "0.2.1"
-  last_updated: "2026-10-26"
+  version: "0.3.0"
+  last_updated: "2026-11-11"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -18,6 +18,16 @@ haipipe-draft-review    (reads all three)                     is it good
 ```
 
 Run names did not change: `Page.context`, `run-structure-<slug>`, `run-scratch-<target>`.
+
+## 🚦 Plan is the entry (JL 261111)
+
+Every later step comes back here while the plan is unsigned. When Write, Evidence, Display or Revise finds
+`approved:` without ✅ on the current Draft Markdown, or `page.py health` names `order` or `row`, this skill takes the
+turn whatever the prompt asked: show the `## 1 · Structure` map, propose 2 to 4 structure versions with one lean
+(below), and wait. The person's word in chat is the sign; write it with
+`../haipipe-draft/cli/page.py sign <task> --quote "<their words>"`, which also keeps, as text, the row that governs the
+Section (its Job's `## Narrative` row, else the Story's § 8 row). When that row later changes, the Section is back
+here (haipipe-draft § The Plan gate).
 
 ## 🙋 Propose first: versions to compare, then the person picks (JL 261022)
 

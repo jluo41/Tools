@@ -4,9 +4,9 @@
 <text x="60.0" y="78.4" font-size="42" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Inside one Job: power first, then run, check, compare and</text>
 <text x="60.0" y="128.8" font-size="42" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">propose</text>
 <text x="60.0" y="183.7" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
-<text x="83.0" y="183.7" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Power is checked before any outcome is read, so a weak cut is refused and shown, never run.</text>
+<text x="83.0" y="183.7" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Power is checked before any outcome is read, so a weak segment is refused and shown, never run.</text>
 <text x="60.0" y="223.6" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
-<text x="83.0" y="223.6" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Each partition is its own hard Run; Cross runs one test of the difference.</text>
+<text x="83.0" y="223.6" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Each segment is its own hard Run; Cross runs one test of the difference.</text>
 <text x="60.0" y="263.5" font-size="23" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
 <text x="83.0" y="263.5" font-size="23" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Compare and propose come after the checks, so a proposal rests on checked answers.</text>
 <rect x="60.0" y="415.2" width="136.6" height="160.0" rx="3" fill="none" stroke="#8a8a8a" stroke-width="1.5" stroke-dasharray="6,4"/>
@@ -18,12 +18,12 @@
 <polyline points="216.6,501.2 226.6,495.2 216.6,489.2" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
 <rect x="230.6" y="415.2" width="136.6" height="160.0" rx="3" fill="none" stroke="#1f5aa8" stroke-width="1.5"/>
 <text x="298.9" y="455.3" font-size="22" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="middle">power</text>
-<text x="298.9" y="492.6" font-size="18" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="middle">n per cut;</text>
+<text x="298.9" y="492.6" font-size="18" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="middle">n per segment;</text>
 <text x="298.9" y="516.0" font-size="18" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="middle">refuse</text>
 <polyline points="371.1,495.2 397.1,495.2" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
 <polyline points="387.1,501.2 397.1,495.2 387.1,489.2" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>
 <rect x="401.1" y="415.2" width="136.6" height="160.0" rx="3" fill="none" stroke="#1f5aa8" stroke-width="1.5"/>
-<text x="469.4" y="455.3" font-size="22" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="middle">rNN_&lt;cut&gt;</text>
+<text x="469.4" y="455.3" font-size="22" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="middle">rNN_&lt;segment&gt;</text>
 <text x="469.4" y="492.6" font-size="18" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="middle">hard ·</text>
 <text x="469.4" y="516.0" font-size="18" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="middle">result/</text>
 <polyline points="541.7,495.2 567.7,495.2" fill="none" stroke="#1c1c1c" stroke-width="1.6"/>

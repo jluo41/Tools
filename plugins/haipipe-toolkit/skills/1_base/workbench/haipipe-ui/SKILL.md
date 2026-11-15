@@ -13,7 +13,7 @@ description: >-
   ui rules, is this page clear, five-second test, page design, redesign this page, design loop, ui rubrics, walk the
   page in chrome, click through the ui, /haipipe-ui.
 metadata:
-  version: "0.5.0"
+  version: "0.6.1"
   last_updated: "2026-11-04"
   # version history: ./CHANGELOG.md
 ---
@@ -34,7 +34,7 @@ and Related". This skill is that rule, and a review that checks a live page agai
 
 /workbench owns the data contract (what each page reads and writes). This skill owns only what a reader sees and
 does. The look is the classic workbench's (JL 261029: "follow the css like this"): its colour tokens
-(`servers/workbench/frame.py` `:root`: white ground, near-black text, blue `#1864ab` for the current thing), bold
+(`servers/workbench/page/frame.py` `:root`: white ground, near-black text, blue `#1864ab` for the current thing), bold
 headings, and content in white boxes with a 1 px grey border and rounded corners; a new page copies these, never
 invents a palette. It never changes the style (fonts, colours, borders): a redesign moves structure, not looks (JL 261028:
 "don't change the style of the old one ... propose the new structure").
@@ -157,8 +157,12 @@ and a reviewer scores Plain, Modern and Complete against it. A page that breaks 
    under Findings, the forms below the page under Status, the page's own under MindMap; on a version, Section or
    evidence Job page its own forms (`focus_page.view_items`). The rail's Interactions keeps everything at the page or
    below; an empty view says "Nothing asked yet.".
-6. **Report shows; Work does the same views.** Work is Process, then the same Results the Report draws, by the same code;
-   switching sections keeps the view.
+6. **Report is the one place (JL 261111: "the Work is no longer used").** Work repeated Report, and each part of its
+   Process already has a section: waiting is Interactions, skills are Skills, what happened is Timeline, what left is
+   Delivery. So a page has no Work section: what Process held (a view's to-do rows, its steps, how it is made) is the
+   first numbered sections of that Report view, with no ⚙️ Process or 📊 Results heading, and an old `section=work`
+   or `work-<key>` link opens the same Report view. Done in the paper theme (Block, Job, Task); the other themes move
+   when their owners do.
 7. **Embed the real thing.** A drawing, a site, a paper or a map is shown in place, never described; every address is a
    link.
 8. **An emoji and a plain name for each section; one question per view.** Two views that answer different questions
@@ -166,6 +170,16 @@ and a reviewer scores Plain, Modern and Complete against it. A page that breaks 
 9. **Flag what needs the person.** A question waiting, a proposal to agree, a fixed thing: each marked where it shows.
 10. **Delete what is not needed.** Shown once: no step repeats a section (Process never repeats 🙋 Interaction, 261105);
     an unneeded line, row or view is removed, not kept "just in case".
+11. **An empty section is hidden (JL 261113).** A section with nothing in it, only its grey "none yet" line, is not
+    drawn, so a reader sees only the parts that hold something; the heading over a group whose sections are all empty
+    goes too. Done for 🧭 Around the Work (`work_frame.shared` skips a section `work_frame.blank` finds empty).
+12. **Every section carries its ★ AI-eval (JL 261114).** Each numbered section's bar ends in a star: `★ 8` is a fresh
+    reader's readability score out of 10, `★ 8?` means the text changed since it was read, `☆` means it was never
+    read; opened, the section starts with the reader's comments. After you change a section's content, run
+    `servers/workbench/page/section_eval.py packet <page> --root <SPACE> --base <server>`, have a NEW agent (never the
+    writer) score each section for a person who reads the first line and the pictures, write
+    `<page>/ai-eval/readability.json`, and fix any section under 7 before calling the change done. `check` lists
+    ★ / ★? / ☆ per section.
 
 How to work on a page: walk it in Chrome before showing it; when it reads badly, compare it with a page at the same
 level first and name the one difference (0.4.3); keep what was agreed on a rebuild; record a big decision on the
@@ -180,8 +194,8 @@ Report     check       the results and the progress                MindMap · St
                                                                     theme's own views replace them, as a paper Board's
                                                                     Idea to Writing); MindMap · Findings · Themes ·
                                                                     Status above the Block
-Work       do          the same views as Report (work theme,         same buttons as Report (· Deliverables);
-                       paper Board): Process, then the same Results  elsewhere Progress (· Deliverables)
+Work       do          retired (JL 261111): Report holds its to-dos; paper: gone; other themes: same buttons as
+                       an old link opens the same Report view        Report until their owners move them
 Studio     think       sNN topics: slides, drawing, mind map        one button per group, no All; Other last;
                                                                     Topics when no topic has a group
 Interactions answer  every interaction at this page or below       All · Needs your input · Answered (always on the
@@ -241,7 +255,7 @@ Files      browse      the folder itself, its tree                  Folder (one 
    words and the first result line of each Task under its `work:`; then 🧠 Maps, one tab per mind map in a Task's newest
    `runs/*/result/maps/` (JL 261104); last 📦 Delivery, tabs Models · Data · Website (JL
    261104: "fold / merge the delivery to the Findings"). Delivery stays on the rail too.
-7. **Work has the same views as Report** (work theme, Block, Job and Task; JL 261104: "why we have the progress? it
+7. **Work is retired** (JL 261111, rule 6 of the person's page rules); where a theme still has it, **Work has the same views as Report** (work theme, Block, Job and Task; JL 261104: "why we have the progress? it
    should have the same view to the report"), as on a paper Board: ⚙️ Process first (closed: 🙋 waiting on you, the
    view's things to do, 🧰 skills), then 📊 Results, the Report's view drawn by the same code. Work opens on Status, whose
    rows add each Task's output and the Answer button; a Task's Results are its Runs with their output. A paper version
@@ -252,7 +266,8 @@ Files      browse      the folder itself, its tree                  Folder (one 
    display Job Plan · Displays · Examples; value Job Values · Check (its t99 check Task); citation Job Citations · Check;
    submission Job Cover letter · Portal (`servers/workbench-paper/paper_jobs.py`).
 8. **Report shows, Work asks** (JL 261102: "the questions should be in the Work, for the report, we just show the
-   report"). A Report view may be explored (hover, pin, compare, folds, a share link) but holds no Ask box, Copy
+   report"), until Work is retired: then a view's asks and to-dos sit in that Report view, its to-do rows first and
+   its forms in its last 🙋 Interaction (JL 261111). A Report view may be explored (hover, pin, compare, folds, a share link) but holds no Ask box, Copy
    prompt, propose or sign control; those live in the same letter's Work view, over the same picture.
 
 
@@ -430,7 +445,7 @@ however clean. The shape that passes, kept the same in every view (JL 261031: "I
    one place a form shows (261105; it was PROCESS 1 from b16 s32-D22 to 261105).
 
 `paper_ui_cells.py` draws this (`band`, `sec_block` with `big`, `cardtabs`, `cardtabchain`, `chain_only`,
-`narrative`, `sidetabs`, `todo`, `one_line`, `ask`, `picture`). The live code: `servers/workbench/ui_parts.py` holds the
+`narrative`, `sidetabs`, `todo`, `one_line`, `ask`, `picture`). The live code: `servers/workbench/page/ui_parts.py` holds the
 shared pieces (`_side_tabs`, `_band`, `_pill`, `_todo`, `_plan_html`, `PB_CSS`), and
 `servers/workbench-paper/board_*.py` the views: `board_results.py` one view function per paper part (`idea_view` to
 `writing_view`), `board_process.py` the PROCESS band, `board_views.py` the two bands put together (`banded`).

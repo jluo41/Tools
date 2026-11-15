@@ -1,3 +1,10 @@
+## 1.10.0 · 2026-11-11 · G3 signs the version Narrative first
+
+- JL 261111, two layers: the Story's §8 holds the shared claims and no Section rows; the version face's `## Narrative`
+  is that venue's layout. G3 now starts with `page.py sign-narrative <version>`, then each Section row's release and
+  its plan sign (`page.py sign`); G4 needs `page.py health --final` free of `order`, `row` and `narrative` FAIL rows.
+  The structure is the version Job's Report › Structure view, never a Task.
+
 ## 1.9.5 · 2026-11-01 · b16 review 261101: current paper names
 
 - version Jobs are named `jNN_writing_v<MMDD>_<desk>` (from j11), no longer `jNN_v<MMDD>_<desk>`; Studio topics are `sNN-…` beside the Jobs, no longer under `studio/` (file-system projection, run-cards.md).

@@ -1,6 +1,5 @@
 """overall_figures.py · the Overall Report's figures: one plain picture per Executive answer, so a reader gets the
-outcome at a glance (JL 261013: "for the general report ... no things like the figures to show it to quickly get the
-outcome").
+outcome at a glance (the summary report needs a picture per answer).
 
 An Executive Task page names its figures in its face, `figures:`, one entry each:
 

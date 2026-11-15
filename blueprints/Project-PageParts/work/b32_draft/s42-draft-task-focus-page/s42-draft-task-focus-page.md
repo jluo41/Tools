@@ -12,7 +12,7 @@ made (its result) natively, with no iframe, no fold, no card in a card; where St
 Report shows for a draft Task.
 
 **Excluded:** the seven steps themselves and what each writes (s41-task-draft-procedure; haipipe-draft); the base
-focus page every level shares (`servers/workbench/focus_page.py`, built by the session "Basic-Design-BJTR-v2"); the
+focus page every level shares (`servers/workbench/page/focus_page.py`, built by the session "Basic-Design-BJTR-v2"); the
 page parts' names (haipipe-ui 0.1.8, "Page parts: one name each").
 
 **Topic:** JL 261031, on `t00_summary`'s focus page: "why I cannot see what we have prepared for the /haipipe-draft?
@@ -92,6 +92,8 @@ s42-D04 · Built in `workbench-task-draft/focus_draft.py`; `focus_page.py` holds
 s42-D09 · Each section's box is its heading bar only; the content follows below, unboxed (JL 261031, relayed: "could we put the box just in the section? and the content below it we should be outside of the box").
 s42-D10 · Ask the agent stays only on 1 · Plan, 2 · Write and 5 · Revise; 4 · Display hides when the text calls no Table or Figure (JL 261031, relayed: "I don't think we need this").
 s42-D11 · The plan mind map stays inside its own bounded frame and scrolls there (JL 261031, relayed: "why the mindmap here is not embeded? as before"). Recorded: runs/r02_collect_draft_page_chat_decisions.
+s42-D12 · Supersedes D05 to D07 (261113): a paper Section page has Report only, views 1 · Draft (opens first), 2 · Plan, 3 · Evidence, 4 · Display; Work, MindMap, Text and Status are gone, and an old Work, Write or Revise link opens Draft. Live: focus_draft_steps.work_views.
+s42-D13 · Draft shows five numbered sections, no state word on a bar: ✍️ Draft Lab (each sentence beside its cards), 📋 Review Report, 📚 Examples, 📏 Writing Rubric, ⚖️ Decisions; no Where this step stands, Ask the agent, Input or Runs (261113; drawn in b16 s39). Live: focus_draft_steps.step_html.
 
 
 Open

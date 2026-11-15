@@ -125,5 +125,33 @@ class RefuseToRegressTests(unittest.TestCase):
         self.assertEqual(judged["refused"], ["gamma2022"])
 
 
+class ChapterSubsectionTests(unittest.TestCase):
+    """A Section Page's C<n> chapters print as subsections, titled from the adopted draft (261114)."""
+
+    def build(self, overview):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        d = Path(tmp.name) / "t02_review"
+        (d / "draft").mkdir(parents=True)
+        (d / "draft" / "t02_review-draft-v1.4.md").write_text(
+            "# draft\n\n### Structure Overview\n\n" + overview + "\n### C1.P1 · x\n- B1 · S1 · x\n")
+        page = d / "t02_review.md"
+        page.write_text("# t02_review · §2 Literature Review\n\ncontent: draft v1.4 · adopted\n\n## Content\n\n"
+                        "### §2 Literature Review\n\n#### C1.P1 · a\n\nOne.\n\n#### C1.P2 · b\n\nTwo.\n\n"
+                        "#### C2.P3 · c\n\nThree.\n\n## Aims\n")
+        return md2tex.build_section(str(page), md2tex.md2docx.Displays(tmp.name), [])
+
+    def test_each_chapter_opens_one_subsection(self):
+        tex = self.build("- C0 · Opening\n- C1 · §2.1 Prescribing variation · two paragraphs\n- C1.P1 · a\n"
+                         "- C2 · Clinical discretion\n")
+        self.assertEqual(tex.count("\\subsection{"), 2)
+        self.assertIn("\\subsection{Prescribing variation}", tex)
+        self.assertLess(tex.index("Prescribing variation"), tex.index("One."))
+        self.assertLess(tex.index("Two."), tex.index("Clinical discretion"))
+
+    def test_a_single_chapter_is_no_subsection(self):
+        self.assertNotIn("\\subsection", self.build("- C1 · Introduction · eight paragraphs\n"))
+
+
 if __name__ == "__main__":
     unittest.main()

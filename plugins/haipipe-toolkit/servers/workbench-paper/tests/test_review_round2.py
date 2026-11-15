@@ -116,13 +116,13 @@ class ReviewRound2Test(unittest.TestCase):
             if "j03_evidence_cite" not in page.split("<title>")[1][:40]:                 # the check, once, a line; the
                 self.assertIn("The whole-paper check", page)                              # citation Job's Check view owns it
             self.assertNotIn('<b>t99_check</b>', page)                                    # never a tab of its own
-            self.assertNotIn("<iframe", page.split("Citations</h3>")[1].split("🙋 Interaction")[0])   # cards, no frame
+            self.assertNotIn("<iframe", re.split(r"<h3 class=fd-h>|🧭 Around the Work|</main>", page.split("Citations</h3>")[1])[0])   # cards, no frame
         check = self.render(self.b / "j03_evidence_cite", "report", "cite-check")
         self.assertIn("Check</h3>", check)
         self.assertNotIn("keys verified", check)
         self.assertIn('<div class="ev-row bad"><b>key2022</b>', check)                   # its state, on its own card
         listed = self.render(self.b / "j03_evidence_cite", "report", "cite-list")
-        self.assertNotIn("class=ev-row", listed.split("Citations</h3>")[1].split("🙋 Interaction")[0])   # r03: one line per
+        self.assertNotIn("class=ev-row", re.split(r"<h3 class=fd-h>|🧭 Around the Work|</main>", listed.split("Citations</h3>")[1])[0])   # r03: one line per
         self.assertIn("class=ev-row", check)                                                            # key; Check: cards
 
     def test_the_values_word_agrees_with_the_check(self):
@@ -135,7 +135,7 @@ class ReviewRound2Test(unittest.TestCase):
         self.assertIn("Check</h3>", check)
         self.assertIn('<span class="w fd-you">differs from its Run</span>', check)  # the differing number's own row
         self.assertIn("4.10", check)
-        self.assertNotIn("iframe", check.split("Check</h3>")[1].split("🙋 Interaction")[0])   # each row drawn
+        self.assertNotIn("iframe", re.split(r"<h3 class=fd-h>|🧭 Around the Work|</main>", check.split("Check</h3>")[1])[0])   # each row drawn
 
     def test_a_submission_links_its_own_versions_letter(self):
         letter = self.render(self.b / "j21_submission_v1130_desk", "work", "work-letter")
@@ -177,7 +177,7 @@ class ReviewRound2Test(unittest.TestCase):
         self.assertIn("Its values</h3>", values)                                    # no "1 differs" tally
         self.assertNotIn("1 differs", values)
         walk = self.render(self.b / "j21_submission_v1130_desk" / "t02_portal-walk", "report", "findings")
-        self.assertIn("starter, not walked", walk)
+        self.assertNotIn("starter, not walked", walk)                 # a bar shows no state word (261114)
         self.assertIn("🙋 A person starts this walk", walk)
 
 

@@ -11,7 +11,7 @@ blocks with `Supporting Runs`, `Local Run` and `Decide` lines). The draft Task's
    value is from the citation, then it should be the Ecite"); each item keeps its Evidence Item id (`item:`) and
    its label.
 2. **for**: the sentence numbers of the Bullets the item serves, read from §1 of the newest draft
-   (`- B<k> · S<n> · …` under `### C<x>.P<y>`); a suffixed id (`S3a`) counts as its number; none found → 0.
+   (`- B<k> · s<n> · …` under `### C<x>.P<y>`, an older S<n> too); a suffixed id (`s3a`) counts as its number; none found → 0.
 3. **need** when there is nothing to read: a Run still to make (`new-run`, `new-task`, `new-job`, proposed at that
    level), an address that no longer resolves in the Project's `discovery/` or `work/` (say a Block that moved), or
    no Supporting Run at all. `cards.py propose` turns each need into a line a person ticks.
@@ -35,7 +35,7 @@ import cards  # noqa: E402
 ITEM = re.compile(r"^### (E\d+[a-z]?)-(CITE|VALUE|DISPLAY)-([\w-]+)\s*·\s*([^·\n]*)(?:·\s*(.*))?$")
 FIELD = re.compile(r"^- \*\*([\w ]+)\*\*:\s*(.*)$")
 SUPPORT = re.compile(r"(Discovery|Execution)\s*·\s*([\w -]+?)\s*·\s*(b\d+(?:j\d+)?(?:t\d+)?(?:r\d+)?)\b")
-BULLET = re.compile(r"^- B(\d+)[a-z]* · S(\d+)[a-z]* · ")
+BULLET = re.compile(r"^- B(\d+)[a-z]* · [Ss](\d+)[a-z]* · ")
 HEAD = re.compile(r"^### (C\d+\.P\d+)\b")
 DRAFT = re.compile(r"-(?:draft|outline)-v(\d+(?:\.\d+)*)\.md$")
 

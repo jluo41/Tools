@@ -48,19 +48,19 @@ def define_option_a():
     L.VARIANT_SKILLS[A_BLOCK] = L.VARIANT_SKILLS[B_BLOCK]
     LV.TODAY[A_BLOCK] = LV.TODAY[B_BLOCK]
     views = dict(L.VIEW_FAMILY["insight"])
-    views["Levels"] = (["Question · need      partitions   script", "▾ t01_<question>      full · <cut>  ok",
+    views["Levels"] = (["Question · need      segments   script", "▾ t01_<question>      full · <segment>  ok",
                        "    E1 compute: <spec>  bound", "    E2 cite: <source>   open",
                        "▸ t02_<question>      full          ok", "▸ t03_<question>      —             —",
                        "pick a question → the Task tab"],
                       ["Ask a Question", "Review the questions", "Plan the evidence", "Write the script"], 1)
-    views["Runs"] = ([("Run", "type", "writes", "state"), ("run-cut-<cut>", "Register a cut", "meta/", "closed · p02"),
+    views["Runs"] = ([("Run", "type", "writes", "state"), ("run-cut-<segment>", "Register a segment", "meta/", "closed · p02"),
                       ("run-review-questions-d", "Review the questions", "j01", "closed · p01"),
                       ("run-plan-evidence-t01", "Plan the evidence", "t01", "open · p02"),
                       ("run-map-questions", "Draw the question map", "studio/", "open · p03")],
-                     ["Register a cut", "Review the questions", "Plan the evidence", "Draw the question map"], 2)
+                     ["Register a segment", "Review the questions", "Plan the evidence", "Draw the question map"], 2)
     L.VIEW_FAMILY["insight-a"] = views
     L.BLOCK_ROWS[("insight-a", "Jobs")] = (["Meta", "Data", "Information", "Knowledge", "Wisdom"], "Data")
-    L.FAMILY_CAPTIONS[("insight-a", "Jobs")] = "A: a DIKW level is a group here, as today's Prototype; a question opens its Task tab"
+    L.FAMILY_CAPTIONS[("insight-a", "Jobs")] = "A: a DIKW level is a group here, as today's Question Book; a question opens its Task tab"
     L.FAMILY_CAPTIONS[("insight-a", "Runs")] = "A: the DIKW levels' design Runs mix with the Block's own ?"
     return (A_BLOCK, "bNN_<topic>_dikw/", keep)
 
@@ -75,19 +75,19 @@ A_JOB_VIEWS = {
                          ("Question 2 <question>", "E1 → full · ok", "page <id>"),
                          ("Question 3 <question>", "E2 → not bound", "No answer")],
                         ["Write the Data report", "Check alignment"], 0),
-    "Work Details": (["Board › Work Details › Data", "▾ D01 <question>      full · <cut>  ok",
+    "Work Details": (["Board › Work Details › Data", "▾ D01 <question>      full · <segment>  ok",
                       "    E1 compute: <spec>  bound", "    E2 cite: <source>   open",
                       "▸ D02 <question>      full          ok", "▸ D03 <question>      —             —",
                       "pick a question → the Task tab"],
                      ["Ask a Question", "Review the questions", "Plan the evidence", "Write the script"], 1),
-    "Runs": ([("Run", "type", "writes", "state"), ("run-cut-<cut>", "Register a cut", "meta/", "closed · p02"),
+    "Runs": ([("Run", "type", "writes", "state"), ("run-cut-<segment>", "Register a segment", "meta/", "closed · p02"),
               ("run-review-questions-d", "Review the questions", "j01", "closed · p01"),
               ("run-plan-evidence-t01", "Plan the evidence", "t01", "open · p02"),
               ("run-map-questions", "Draw the question map", "studio/", "open · p03")],
-             ["Register a cut", "Review the questions", "Plan the evidence"], 2),
+             ["Register a segment", "Review the questions", "Plan the evidence"], 2),
     "Delivery": (["no Job tab under plan A", "the DIKW level's answers: Board ›", "  Audience Report, filtered",
                   "W: Board › Delivery › Handoff"], ["Write the counsel", "Draft the handoff"])}
-A_JOB_ROWS = {"Description": ["Level"], "Idea Studio": [], "Audience Report": ["Full", "<cut>", "Cross"],
+A_JOB_ROWS = {"Description": ["Level"], "Idea Studio": [], "Audience Report": ["Full", "<segment>", "Cross"],
               "Work Details": ["Data", "Information", "Knowledge", "Wisdom"],
               "Runs": ["All", "cut", "review", "plan", "map"], "Delivery": []}
 A_JOB_NOTES = {"Description": "A: lives on the Board, above the DIKW level's questions",
@@ -143,10 +143,10 @@ def rename_frames():
 
 
 # ── the open points (red, numbered), shown first in the Decide frame ─────────────────────────────
-OPEN = [("①", "Plan C: a Job = one Prototype release × one data version? (A and B, below, are the earlier options)",
-         "Yes: the Board holds the Prototype (made once, DIKW as groups) and the dataset; each Job runs one release on "
-         "one version; a Task is a question in that Job; a Run is one partition."),
-        ("②", "Is each Prototype release signed by a person (p1, p2, …)?",
+OPEN = [("①", "Plan C: a Job = one Question Book release × one data version? (A and B, below, are the earlier options)",
+         "Yes: the Board holds the Question Book (made once, DIKW as groups) and the dataset; each Job runs one release on "
+         "one version; a Task is a question in that Job; a Run is one segment."),
+        ("②", "Is each Question Book release signed by a person (p1, p2, …)?",
          "Yes, as a handoff is signed today: the set of live questions and their scripts that a Job may run."),
         ("③", "One clock per Job: only the release or only the data version moves between neighbouring Jobs?",
          "Yes, so a change in an answer has one cause: new data, or new code. Backfill (new code on old data) "
@@ -163,8 +163,8 @@ OPEN = [("①", "Plan C: a Job = one Prototype release × one data version? (A a
         ("⑧", "The older register boards: carry over or keep?",
          "Carry each over (carry_over.py, word for word) when next worked on; read-only until then.")]
 
-LADDER = [("Board", "b5N_<topic>_dikw/", "the Prototype (made once) + the dataset"),
-          ("Job", "j03_code-v2_<dataset>0807/", "one release × one data version"),
+LADDER = [("Board", "b5N_<topic>_dikw/", "the Question Book (made once) + the dataset"),
+          ("Job", "j03_question-v2_<dataset>0807/", "one release × one data version"),
           ("Task", "t01_D01_<question>/", "one question in that Job: its page"),
           ("Run", "runs/r01_full/", "one partition: hard")]
 
@@ -183,7 +183,7 @@ DECIDE = "Decide · plan C, and the open points"
 def decide():
     """The first frame: the ladder of plan C, and the open points with my answers."""
     fr = L.open_frame(DECIDE)
-    L.text(0, 0, "Insight ladder: plan C, the Prototype and its Jobs", 30)
+    L.text(0, 0, "Insight ladder: plan C, the Question Book and its Jobs", 30)
     L.text(0, 46, "Plan C first (the screens and how it evolves), then the earlier options A and B. "
                   "Red waits on you; gray is today's workbench.", 16, L.GRAY)
     x = 0
@@ -209,7 +209,7 @@ sys.path.insert(0, str(B03 / "s02-studio-workbench-skill"))
 import build_s02_studio_workbench_skill as S2  # noqa: E402  (chrome, runs_panel, on_disk: the base's look)
 UI = S2.UI
 INK, GRAY, RED, TEAL, MONO = L.INK, L.GRAY, L.RED, L.TEAL, L.MONO
-TABS = ["Guide", "Board", "Job · j03_code-v2_0807 ▾", "Task · D01 ▾"]
+TABS = ["Guide", "Board", "Job · j03_question-v2_0807 ▾", "Task · D01 ▾"]
 
 
 def cells(x, y, heads, rows, cols):
@@ -227,7 +227,7 @@ def cells(x, y, heads, rows, cols):
 
 
 C_SCREENS = [   # (title, tab on, Space, third row, heads, cols, rows, run buttons, recent, on disk)
-    ("Board › Work Details: the Prototype", 1, "Work Details",
+    ("Board › Work Details: the Question Book", 1, "Work Details",
      ["Data", "Information", "Knowledge", "Wisdom", "Meta", "Releases", "Jobs"],
      ["Question", "needs · script · signed", "release"], [0, 380, 760],
      [("D01 <question> ↗", "✓ · ✓ · ✓", "p1"), ("D02 <question> ↗", "✓ · ✓ fixed · ✓", "p2"),
@@ -240,9 +240,9 @@ C_SCREENS = [   # (title, tab on, Space, third row, heads, cols, rows, run butto
       ("│   ├── information/ … wisdom/", "the same, one folder per question"),
       ("│   └── releases.yaml", "p1 · p2: the signed sets ②"),
       ("├── runs/", "soft: ask · plan · script · sign · add a version"),
-      ("└── j01_code-v1_<d>0801/ …", "the Jobs (Work Details › Jobs)"),
+      ("└── j01_question-v1_<d>0801/ …", "the Jobs (Work Details › Jobs)"),
       ("insight_theme.py", "servers/workbench-insight/: level names, third rows")]),
-    ("Board › Audience Report: across the Jobs", 1, "Audience Report", ["Across Jobs", "Full", "<cut>", "Cross"],
+    ("Board › Audience Report: across the Jobs", 1, "Audience Report", ["Across Jobs", "Full", "<segment>", "Cross"],
      ["Question", "j01 p1×0801 · j02 p1×0807", "j03 p2×0807"], [0, 380, 760],
      [("D01 <question>", "ok · ok", "ok · held"), ("D02 <question>", ("stale · stale (old script)", GRAY), "ok · new script"),
       ("I01 <question>", ("— · —  (new in p2)", GRAY), "ok"), ("D03 <question>", "ok · ok", ("retired", GRAY))],
@@ -251,23 +251,23 @@ C_SCREENS = [   # (title, tab on, Space, third row, heads, cols, rows, run butto
       ("each Run's run.yaml", "question id · script hash · release · version"),
       ("meta/status.md", "this table, written only by the checker"),
       ("", "compare two Jobs only when one clock moved ③")]),
-    ("Job › Work Details: one release × one version", 2, "Work Details", ["Full", "<cut>", "Cross"],
+    ("Job › Work Details: one release × one version", 2, "Work Details", ["Full", "<segment>", "Cross"],
      ["Question (Logic)", "Work: its runs", "Report"], [0, 380, 760],
-     [("t01_D01_<question> ↗", "r01_full ok · r02_<cut> ok", "page ✓"),
-      ("t02_D02_<question> ↗", "r01_full ok · r02_<cut> —", "page draft"),
+     [("t01_D01_<question> ↗", "r01_full ok · r02_<segment> ok", "page ✓"),
+      ("t02_D02_<question> ↗", "r01_full ok · r02_<segment> —", "page draft"),
       ("t05_I01_<question> ↗", "r01_full ok", ("no answer", GRAY))],
      ["Run the Job", "Write the pages", "Close the Job"], "run-launch-j03   p01 running",
-     [("j03_code-v2_<d>0807/", ""), ("├── j03_code-v2_<d>0807.md", "the band: release p2 · version 0807 · frozen when closed"),
+     [("j03_question-v2_<d>0807/", ""), ("├── j03_question-v2_<d>0807.md", "the band: release p2 · version 0807 · frozen when closed"),
       ("├── t01_D01_<question>/ …", "one Task per live question of p2"),
       ("└── runs/", "soft: run-launch-j03 · run-close-j03"),
       ("", "a new release or a new version → a new Job ③")]),
     ("Task › Runs: one question in that Job", 3, "Runs", ["All", "hard", "soft"],
      ["Run", "kind · partition", "status · passes"], [0, 380, 760],
-     [("r01_full ↗", "hard · full", "closed · 1"), ("r02_<cut> ↗", "hard · <cut>", "closed · 1"),
+     [("r01_full ↗", "hard · full", "closed · 1"), ("r02_<segment> ↗", "hard · <segment>", "closed · 1"),
       ("run-write-page", "soft · the page", "open · 1"), ("run-check-page", "soft · check ⑥", "—")],
-     ["Run a partition", "Write the page", "Check the page"], "r02_<cut>   p01 closed",
-     [("t01_D01_<question>/", ""), ("├── t01_D01_<question>.md", "the page: the short answer, a part per partition ⑤"),
-      ("├── question → prototype/…/D01/", "read from the Prototype, never copied"),
+     ["Run a segment", "Write the page", "Check the page"], "r02_<segment>   p01 closed",
+     [("t01_D01_<question>/", ""), ("├── t01_D01_<question>.md", "the page: the short answer, a part per segment ⑤"),
+      ("├── question → prototype/…/D01/", "read from the Question Book, never copied"),
       ("└── runs/r01_full/", "run.yaml · ticket · config · result/ · passes/"),
       ("", "result/report.md (generated): the page cites it")])]
 
@@ -275,7 +275,7 @@ C_SCREENS = [   # (title, tab on, Space, third row, heads, cols, rows, run butto
 def plan_c(x0, y0):
     """Plan C on screen: Board (twice), Job, Task, then a Run's pop-out; each with its folders beneath."""
     fr = L.open_frame("Plan C · insight on the base, at each level")
-    L.text(x0, y0, "Plan C on screen: the Board holds the Prototype; a Job runs one release on one data version", 34)
+    L.text(x0, y0, "Plan C on screen: the Board holds the Question Book; a Job runs one release on one data version", 34)
     L.text(x0, y0 + 50, "Each screen is the base frame with the insight theme on it; a row's ↗ opens the level below, "
                         "or a Run's pop-out. The folders it reads are beneath it.", 20, GRAY)
     for i, (title, on, space, third, heads, cols, rows, buttons, recent, disk) in enumerate(C_SCREENS):
@@ -288,7 +288,7 @@ def plan_c(x0, y0):
     px = x0 + len(C_SCREENS) * (UI.SW + 120)
     L.text(px, y0 + 110, "pop-out, from a Run row's ↗", 24)
     UI.window(px, y0 + 150, UI.PW, 600, "r01_full  ·  the Run", [
-        "run.yaml: hard · partition full · target t01_D01", "pins: question D01 · script a3f9",
+        "run.yaml: hard · segment full · target t01_D01", "pins: question D01 · script a3f9",
         "      release p2 · data <dataset>0807", "passes: p01 1008 ok",
         "[ result/ preview: metrics · the first figure ]", "  result/report.md (generated) → the page cites it",
         "  open the folder · Rerun · Check"])
@@ -299,15 +299,15 @@ def evolve(x0, y0):
     """How plan C evolves: two clocks, the chain of Jobs, and the loop that makes the next release."""
     fr = L.open_frame("Plan C · how it evolves")
     L.text(x0, y0, "How it evolves: two clocks, one Job per step", 34)
-    L.text(x0, y0 + 50, "The Prototype and the data both grow; a Job pins one of each and is frozen once closed.", 20, GRAY)
+    L.text(x0, y0 + 50, "The Question Book and the data both grow; a Job pins one of each and is frozen once closed.", 20, GRAY)
     ty = y0 + 130
-    L.text(x0, ty, "Prototype", 22)
+    L.text(x0, ty, "Question Book", 22)
     L.text(x0 + 220, ty + 2, "p1: D01–D05   →   p2: + I01–I04, D02's script fixed   →   p3: D03 retired → D07  …", 18,
            INK, MONO)
     L.text(x0, ty + 50, "data", 22)
     L.text(x0 + 220, ty + 52, "<d>0801   →   <d>0807   →   <d>0815  …", 18, INK, MONO)
-    chain = [("j01_code-v1_<d>0801", "start"), ("j02_code-v1_<d>0807", "data moved"), ("j03_code-v2_<d>0807", "code moved"),
-             ("j04_code-v2_<d>0815", "data moved")]
+    chain = [("j01_question-v1_<d>0801", "start"), ("j02_question-v1_<d>0807", "data moved"), ("j03_question-v2_<d>0807", "code moved"),
+             ("j04_question-v2_<d>0815", "data moved")]
     cy, x = ty + 140, x0
     for k, (job, moved) in enumerate(chain):
         L.base("rectangle", x, cy, 520, 110, INK, 1.5)

@@ -2,19 +2,27 @@
 
     python new_topic.py topic <level folder> --slug <topic> --title '<title>'
                               [--band concept|related|level|run|guide|procedure|server|slides] [--nn NN] [--feeds q01_x,q02_y]
-                              [--builder] [--dry-run]
+                              [--builder [five|draw]] [--dry-run]
     python new_topic.py session <level folder> sNN --title '…' [--kind session|meeting] [--ask '…'] [--summary '…']
                                 [--decided 'a; b'] [--started j02,t01] [--answered 'Q01: …'] [--next 'a; b']
                                 [--read related/x.md] [--changed a,b]
                               [--date MMDD]
 
-`topic` makes `sNN-<topic>/` directly in the level given, a Block, a Job or a Task, beside its jNN_/tNN_ folders (JL 261030:
-"we don't have the studio/sNN, we just have sNN, along side with jNN, to make it visible directly"; an older `sNN-<topic>/`
-still counts), at most LIMITS[level] per level ("we might have many sNN, but we need to control the numbers"), numbered once across the Block, with its face `sNN-<topic>.md` (Topic ·
-For · Covers · Excluded · Feeds · Files · Decided · Open; one sNN, one idea, one delivery, JL 261030) and its mind map `sNN-<topic>.mindmap.md` (built from that face), numbered in its band: s01-s09 concepts · s11-s19 levels · s21-s29 runs and
-skills · s31-s39 Guide · s41-s49 Task procedures · s51-s59 server · s61-s69 slide drafts · s10-s19 related work, on a paper Board only (haipipe-paper-related). Every topic also gets its quick drawing `sNN-<topic>.excalidraw` (quick_draw.py), a light scratch
-opened from the ✎ on its line in the Block's map; `--builder` adds `build_sNN_<topic>.py`, a builder on excalidraw-studio's draw.py that draws
-through canvas.write (a rebuild keeps the person's marks), and runs it once.
+`topic` makes `sNN-<topic>/` directly in the level given (a Block, a Job or a Task), beside its jNN_/tNN_ folders so
+it is seen right away; an older `studio/sNN-<topic>/` still counts. A level holds at most LIMITS[level] topics, and
+numbers run once across the Block. Each topic gets:
+  - its face `sNN-<topic>.md` (Topic · For · Covers · Excluded · Feeds · Files · Decided · Open): one topic, one idea,
+    one delivery;
+  - its mind map `sNN-<topic>.mindmap.md`, built from that face;
+  - a number in its band (BANDS): s01-s09 concepts · s11-s19 levels · s21-s29 runs and skills · s31-s39 Guide ·
+    s41-s49 Task procedures · s51-s59 server · s61-s69 slide drafts · s10-s19 related work (paper Boards only);
+  - its quick drawing `sNN-<topic>.excalidraw` (quick_draw.py), a light scratch opened from the ✎ on its map line.
+
+`--builder` instead writes `build_sNN_<topic>.py`, the five-part drawing on five_parts.py (1 Idea, 2 Now, 3 Design,
+4 Process, 5 Delivery; the default for every kind of topic, since colour, icons and tables read faster than plain
+lines), and `sketch_<topic>.py`, its Design's A · B · C stubs (A the pieces step by step, B how it grew, C the open
+choices); both start from templates/. A rebuild keeps the person's marks (five_parts.marks_writer). `--builder draw`
+writes the older builder on excalidraw-studio's draw.py instead, for a special shape (a screen, a report, a slide draft).
 
 `session` saves one round of the topic (a working session or a meeting) inside it, `passes/pNN-<MMDD>/pass.md`:
 Notes, Decided, Started, Answered, Next, Read, Changed.
@@ -27,16 +35,25 @@ import re
 import subprocess
 import sys
 from pathlib import Path
+from string import Template
 
 HERE = Path(__file__).resolve().parent
 RUN_SCRIPTS = HERE.parents[1] / "haipipe-run" / "scripts"
 # the close rule of a topic's soft Run, written into its ticket when the first session makes it; without one
 # the ticket said `close: <what settles it>` and the Run had no end (b10 s06-D06, 261011)
 DRAW_CLOSE = "a person moves the topic's Stage to agreed, or names what is still wrong in red on the drawing"
-LIMITS = {"Block": 9, "Job": 5, "Task": 3}    # sNN per level; more means the level is really two (JL 261030)
+LIMITS = {"Block": 9, "Job": 5, "Task": 3}    # sNN per level; more means the level is really two
 BANDS = {"concept": (1, 9), "related": (10, 19), "level": (11, 19), "run": (21, 29), "guide": (31, 39), "procedure": (41, 49), "server": (51, 59),
          "slides": (61, 69)}
 SLUG = re.compile(r"^[a-z0-9][a-z0-9-]*$")
+
+
+TEMPLATES = HERE / "templates"
+
+
+def template(name: str, **fields) -> str:
+    """templates/<name> with its ${field} slots filled: a builder or sketch file a new topic starts from."""
+    return Template((TEMPLATES / name).read_text(encoding="utf-8")).substitute(fields)
 
 
 def topics(level: Path) -> dict[int, Path]:
@@ -52,7 +69,7 @@ def topics(level: Path) -> dict[int, Path]:
 
 
 def block_topics(level: Path) -> dict[int, Path]:
-    """{NN: folder} across the whole Block: its own studio/, its Jobs' and its Tasks' (JL 261028: Studio lives at
+    """{NN: folder} across the whole Block: its own studio/, its Jobs' and its Tasks' (Studio lives at
     every level, with one sNN numbering per Block, so a number names one topic)."""
     block = block_owner(level)
     out = dict(topics(block))
@@ -73,11 +90,33 @@ def next_in_band(level: Path, band: str) -> int:
     raise ValueError(f"the {band} band s{lo:02d}-s{hi:02d} is full in {level.name}")
 
 
-def face_text(nn: int, title: str, feeds: list[str], at: str = "") -> str:
+VIEWS = ("overview", "standing", "findings", "delivery", "ui-block", "ui-job", "ui-task", "ui-run")
+
+
+def question_ids(feeds: list[str]) -> list[str]:
+    """`Q01`, `q01` or an older `q01_<topic>` stem -> `Q01`: the Block Question a topic answers."""
+    out = []
+    for f in feeds:
+        m = re.match(r"[Qq](\d\d)\b|[Qq](\d\d)_", f.strip())
+        q = f"Q{m.group(1) or m.group(2)}" if m else f.strip()
+        if q and q not in out:
+            out.append(q)
+    return out
+
+
+def face_text(nn: int, title: str, feeds: list[str], at: str = "", view: str = "overview") -> str:
+    """The face. `view:` sits right under the underline: the focus page shows a topic only in its view.
+    Each Question it feeds gets its answer part here, since a topic, not a reports/qNN page, holds the answer."""
     name = f"s{nn:02d} · {title}"
-    feed = " · ".join(feeds) if feeds else "<the Questions it feeds: qNN_<topic>>"
+    qs = question_ids(feeds)
+    feed = " · ".join(qs) if qs else "<the Block Questions it answers: Q01 · Q02, or none>"
+    answers = [line for q in qs for line in (
+        f"{q} · Answer", "-" * len(f"{q} · Answer"), "",
+        "**Answer:** <the answer today, in one or two sentences>", "",
+        f"**Evidence:** [<frame name>](s{nn:02d}-<topic>.excalidraw) · <a file in the Block>", "",
+        "**Limits:** <what the answer does not cover yet>", "", "")]
     return "\n".join([
-        name, "=" * len(name), "",
+        name, "=" * len(name), f"view: {view}", "",
         "**Stage:** explore", "",
         *([f"**At:** {at}", ""] if at else []),
         "**For:** <its one delivery: a deck, and the thing the deck is about (a draft, a figure, code or skills, a data"
@@ -85,9 +124,10 @@ def face_text(nn: int, title: str, feeds: list[str], at: str = "") -> str:
         "**Delivery type:** <one word: skill · ui · code · draft · display · data; never deck, every sNN has one>", "",
         "**Covers:** <what this sNN decides, in a few parts>", "",
         "**Excluded:** <what it leaves to other sNN or Blocks, each named>", "",
+        "**Why:** <the one question this topic answers, in a sentence; the five-part drawing asks it>", "",
         "**Topic:** <one paragraph: what this topic thinks through, and why now>", "",
-        f"**Feeds:** `reports/` {feed}", "",
-        "", "Files", "-----", "",
+        f"**Feeds:** {feed}", "",
+        "", *answers, "Files", "-----", "",
         "```text", f"s{nn:02d}-<topic>/", f"├── s{nn:02d}-<topic>.md        this face", "└── <drawings, builder>",
         "```", "",
         "", "Decided", "-------", "",
@@ -95,50 +135,6 @@ def face_text(nn: int, title: str, feeds: list[str], at: str = "") -> str:
         "", "Open", "----", "",
         "1. <the first open point>", "",
         "(write here, or mark the drawing in red)", ""])
-
-
-BUILDER = '''"""s{nn} · {title}: s{nn}-{slug}.excalidraw, drawn by this builder.
-
-How it looks and reads: /excalidraw-studio, its principles and scripts/draw.py (frames, a map, the key point,
-the density badge, acts). The topic, its face and sessions: /haipipe-studio. A rebuild keeps whatever a person drew
-on the canvas (canvas.write, a seed snapshot beside the drawing). Check it: excalidraw-studio's scripts/check.py.
-
-    python {script}
-"""
-import sys
-from pathlib import Path
-
-HERE = Path(__file__).resolve().parent
-sys.path.insert(0, str((HERE / "{to_draw}").resolve()))
-from draw import Drawing, canvas  # noqa: E402  (excalidraw-studio's helpers; canvas.write keeps a person's marks)
-
-# every change to this drawing: (date YYMMDD, what changed). Each gets a green note where it changed
-# (canvas.change_note beside the changed thing) and a line in the title frame (JL 261007)
-CHANGES = []
-
-
-def main():
-    out = HERE / "s{nn}-{slug}.excalidraw"
-    d = Drawing()
-    f1 = d.frame("① {title}")                                    # one idea, one screen-sized frame
-    d.heading("s{nn} · {title}", "<one line: what this frame says>")
-    d.key(40, 196, 1400, 140)                                     # the frame's key point, the one slight colour
-    d.para(64, 220, "<the key point, in one line>", 1350, 30)
-    d.flow([{{"title": "<step 1>", "lines": ["<a fact read from disk>"]}},     # inside: a workflow map, or d.mind_map
-            {{"title": "<step 2>", "lines": ["<a fact>"]}},
-            {{"title": "? <an open question, in red>", "lines": []}}], 40, 400, 2480, labels=["<leads to>", "<then>"])
-    for i, (date, what) in enumerate(CHANGES):                    # the title frame's list of changes
-        e = canvas.change_note(1480, 220 + i * 26, what, date, f1["id"])
-        e["id"] = f"c{{i}}"
-        d.els.append(e)
-    d.badge(f1)                                                   # its density, measured
-    d.acts([{{"name": "Act 1 · <what the topic is about>", "frames": [f1["id"]]}}])
-    d.write(out, "{script}")
-
-
-if __name__ == "__main__":
-    main()
-'''
 
 
 def block_owner(level: Path) -> Path:
@@ -154,10 +150,12 @@ def level_kind(level: Path) -> str:
 
 def new_topic(level: Path, slug: str, title: str, band: str = "concept", nn: int | None = None,
               feeds: list[str] | None = None, builder: bool = False, dry_run: bool = False,
-              over_limit: bool = False) -> Path:
+              over_limit: bool = False, view: str = "overview") -> Path:
+    if view not in VIEWS:
+        raise ValueError(f"view {view!r}: one of {' · '.join(VIEWS)}")
     if not level.is_dir():
         raise ValueError(f"{level}: no such folder")
-    # The topic sits in the level's own folder, beside its Jobs or Tasks (b35-s01: no studio/ folder, JL 261030); its
+    # The topic sits in the level's own folder, beside its Jobs or Tasks (no studio/ folder); its
     # number is unique in the Block, its address b17.j01-s07 (s01-D02) read from where it sits.
     if not SLUG.match(slug):
         raise ValueError(f"slug {slug!r}: lower-case letters, digits and - only")
@@ -176,18 +174,27 @@ def new_topic(level: Path, slug: str, title: str, band: str = "concept", nn: int
     if dry_run:
         return md
     folder.mkdir(parents=True)
-    (folder / "delivery" / "deck").mkdir(parents=True)   # its agreed version goes here, then renders out (JL 261030)
-    feeds = [f.strip().removeprefix("reports/").strip("/") for f in feeds or []]   # `reports/q01_x` or `q01_x`
-    md.write_text(face_text(nn, title, feeds).replace("<topic>", slug), encoding="utf-8")
+    (folder / "delivery" / "deck").mkdir(parents=True)   # its agreed version goes here, then renders out
+    feeds = [f.strip().removeprefix("reports/").strip("/") for f in feeds or []]   # `Q01`, or an older `reports/q01_x`
+    md.write_text(face_text(nn, title, feeds, view=view).replace("<topic>", slug), encoding="utf-8")
     if builder:
-        script = folder / f"build_s{nn:02d}_{slug.replace('-', '_')}.py"
-        draw = HERE.parents[2] / "excalidraw" / "excalidraw-studio" / "scripts"   # excalidraw-studio's draw.py
-        to_draw = os.path.relpath(draw, folder.resolve())       # both resolved: the builder resolves its own path
-        script.write_text(BUILDER.format(nn=f"{nn:02d}", title=title, slug=slug, script=script.name,
-                                         to_draw=Path(to_draw).as_posix()), encoding="utf-8")
+        mod = slug.replace('-', '_')
+        script = folder / f"build_s{nn:02d}_{mod}.py"
+        if builder == "draw":                                    # a special shape: excalidraw-studio's draw.py
+            draw = HERE.parents[2] / "excalidraw" / "excalidraw-studio" / "scripts"
+            to_draw = os.path.relpath(draw, folder.resolve())   # both resolved: the builder resolves its own path
+            script.write_text(template("draw_builder.py.tmpl", nn=f"{nn:02d}", title=title, slug=slug, script=script.name,
+                                             to_draw=Path(to_draw).as_posix()), encoding="utf-8")
+        else:                                                    # the five-part drawing, the default
+            to_studio = Path(os.path.relpath(HERE, folder.resolve())).as_posix()
+            job = "str(HERE.parent)" if kind == "Job" else "None"
+            args = dict(nn=f"{nn:02d}", title=title.replace('"', "'"), slug=slug, mod=mod, script=script.name,
+                        to_studio=to_studio, job=job)
+            (folder / f"sketch_{mod}.py").write_text(template("sketch.py.tmpl", **args), encoding="utf-8")
+            script.write_text(template("five_builder.py.tmpl", **args), encoding="utf-8")
         subprocess.run([sys.executable, str(script)], check=True, capture_output=True)
     mind_map(folder)
-    if not builder:                  # every topic gets its quick drawing by default, the ✎ on its Block-map line (JL 261029)
+    if not builder:                  # every topic gets its quick drawing by default, the ✎ on its Block-map line
         import quick_draw
         quick_draw.quick(folder)
     return md
@@ -195,7 +202,7 @@ def new_topic(level: Path, slug: str, title: str, band: str = "concept", nn: int
 
 def mind_map(topic: Path) -> Path:
     """The topic's other side, its mind map `sNN-<topic>.mindmap.md`, started beside the face just written (the mind map
-    skill, haipipe-mindmap): every sNN has both, its drawing and its map, linked by number (JL 261026)."""
+    skill, haipipe-mindmap): every sNN has both, its drawing and its map, linked by number."""
     scripts = HERE.parents[1] / "haipipe-mindmap" / "scripts"
     sys.path.insert(0, str(scripts))
     import mindmap
@@ -206,7 +213,7 @@ def save_session(level: Path, snn: str, title: str, ask: str = "", summary: str 
                  date: str = "", kind: str = "session", decided=None, started=None, read=None, answered=None,
                  next_=None) -> Path:
     """One round of the topic: a working session or a meeting, kept inside the topic as `passes/pNN-<MMDD>/pass.md`
-    (JL 261029: a Studio is the discussion; its rounds live with it). It says what was discussed (Notes), what was
+    (a Studio is the discussion, so its rounds live with it). It says what was discussed (Notes), what was
     decided, what it sent to Work (Started) and to Report (Answered), what goes back to the Studio (Next), and what it
     read from related/. A topic with idea pictures gets its deck regathered after it (topic_slides.py)."""
     m = re.fullmatch(r"s(\d+)", snn)
@@ -244,7 +251,9 @@ def main() -> int:
     p.add_argument("--band", default="concept", choices=sorted(BANDS))
     p.add_argument("--nn", type=int)
     p.add_argument("--feeds", default="")
-    p.add_argument("--builder", action="store_true")
+    p.add_argument("--view", default="overview", choices=list(VIEWS))
+    p.add_argument("--builder", nargs="?", const="five", choices=("five", "draw"), default=None,
+                   help="five (default): the five-part drawing and its sketch_<topic>.py; draw: the draw.py builder")
     p.add_argument("--dry-run", action="store_true")
     p.add_argument("--over-limit", action="store_true")
     p = sub.add_parser("session")
@@ -258,7 +267,7 @@ def main() -> int:
     split = lambda v: [x.strip() for x in v.split(",") if x.strip()]
     try:
         if a.cmd == "topic":
-            out = new_topic(a.level, a.slug, a.title, a.band, a.nn, split(a.feeds), a.builder, a.dry_run, a.over_limit)
+            out = new_topic(a.level, a.slug, a.title, a.band, a.nn, split(a.feeds), a.builder, a.dry_run, a.over_limit, a.view)
         else:
             out = save_session(a.level, a.snn, a.title, a.ask, a.summary, split(a.changed), a.date, a.kind,
                                [x.strip() for x in a.decided.split(";") if x.strip()], split(a.started), split(a.read),

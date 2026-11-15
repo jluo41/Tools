@@ -9,7 +9,7 @@ The 261012 builders are in history/ (-261012, -261012b).
 
 Read from disk on every build: this Block's Questions (board.md ## Questions), each report's answer-status,
 which studio topics feed each Question (their **Feeds:** lines, read as frame.py reads them), the Runs that
-target a Question (runs/*/run.yaml), q01's ## Figures, the Report Space as servers/workbench/frame.py draws
+target a Question (runs/*/run.yaml), q01's ## Figures, the Report Space as servers/workbench/page/frame.py draws
 it for this Block, and haipipe-report's version. Typed, since they are the design: the level tree of ①, the
 link rule of ②, the walk of ③, the open points.
 
@@ -160,10 +160,10 @@ def fills(qs, unread, space, versions):
         "📋 Jobs and Tasks: " + (" · ".join(str(w) for w in q["work"]) or "none (no Jobs here)"),
         "🏃 Runs on it: " + (" · ".join(str(r) for r in q["runs"]) or "none"),
         "📝 report: " + (f"{q['report'].relative_to(BLOCK)} · {q['status']}" if q["report"] else "none")]}]
-    fn = SERVERS / "workbench/frame.py"
+    fn = SERVERS / "workbench/page/frame.py"
     code = [("✅ " if "not found" not in (w := where(f, fn)) else "❓ ") + w for f in
             ("question_rows", "_report_cell", "_answering", "_opening")]
-    code.append("✅ " + where("page_document", SERVERS / "workbench/page_reader.py"))
+    code.append("✅ " + where("page_document", SERVERS / "workbench/page/page_reader.py"))
     for tag, text in unread:
         fed.append(f"❓ {tag}'s Feeds line ({text.strip('`. ')[:30]}) is not read")
     figs = [f"🖼️ {t}  >  \"{n}\"" for t, n in figures()]
@@ -217,7 +217,7 @@ def screen_frame(qs, frame):
                        r'.*?<span class=topic-meta>(.*?)</span>', html, re.S)
     fr = L.open_frame("The Report Space on screen")
     canvas.ui_frame(fr, since="261012")                      # a screen: the workbench's colours (JL 261012)
-    say(0, 0, f"Block {BLOCK.name.split('_')[0]} > Report  (read from servers/workbench/frame.py)", 34)
+    say(0, 0, f"Block {BLOCK.name.split('_')[0]} > Report  (read from servers/workbench/page/frame.py)", 34)
     say(0, 56, "One card per Question under the group bar, at Block, Job and Task. Groups: white is the Block's own, "
         "gray fixed by the theme, amber suggested.", 22)
     x, y = 0, 120

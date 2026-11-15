@@ -5,7 +5,7 @@
 - Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
   `design/`, `labeling/`, `ideation/`; the older plural names still read.
 
-## 2.0.0 · 2026-10-08 · Questions in a Prototype release; proposals and their triage (b11 s21 phase 3)
+## 2.0.0 · 2026-10-08 · Questions in a Question Book release; proposals and their triage (b11 s21 phase 3)
 
 - `SKILL.md` rewritten for the ladder (the folder contract's nine sections): proposals (`proposals/<slug>.md`: kind ·
   level · from · state · taken-in), triage into one release per batch, asking into a release (id never reused, `tNN`
@@ -19,7 +19,7 @@
 
 ## 1.9.0 · 2026-10-02 · The question review, Q1-Q7 (JL 261002)
 
-- GI1 adds the question review: one thing, logic, consumer, level, answerable, new, open. A reviewer agent proposes keep, split, merge or move with reasons; a person signs; a signed change retires the old question, never edits it. The check only flags Q1, Q2, Q4 and Q6 suspects. On a Prototype board the question file v2 holds the register division's fields.
+- GI1 adds the question review: one thing, logic, consumer, level, answerable, new, open. A reviewer agent proposes keep, split, merge or move with reasons; a person signs; a signed change retires the old question, never edits it. The check only flags Q1, Q2, Q4 and Q6 suspects. On a Question Book board the question file v2 holds the register division's fields.
 
 ## 1.8.0 · 2026-10-01 · Work specs and the page flow (JL 261001)
 
@@ -31,9 +31,9 @@
 - GI1 requires needs with kinds legal at the level; GI6 requires `haipipe-insight-check` to find no overclaim on the cell. A ✅ cell the check fails drops to 🟡.
 - The handoff to the next level carries the needs.
 
-## 1.6.0 · 2026-10-01 · Partition names, not letters (JL 261001)
+## 1.6.0 · 2026-10-01 · Segment names, not letters (JL 261001)
 
-- Settled cells read `✅ <L><NN>-<partition>`; Question Groups `QG-<partition>-<L>`; refusal token `🚫 full-only`.
+- Settled cells read `✅ <L><NN>-<segment>`; Question Groups `QG-<segment>-<L>`; refusal token `🚫 full-only`.
 
 ## 1.5.0 · 2026-10-01 · Cells name the answering page (JL 261001)
 
@@ -57,7 +57,7 @@
   `UNDETERMINED` partial-final Wisdom answer; both receipts quote the shared
   licensing sentence, and the route creates no Design handoff.
 - Migration: preserve settled cells; use the route only for new or reopened
-  work under a current partition verdict.
+  work under a current segment verdict.
 
 ## 1.3.1 — 2026-09-20
 
@@ -74,7 +74,7 @@
 
 ## 1.2.0 — 2026-09-13
 
-- Define each Question Group as the derived intersection of one MT00 partition
+- Define each Question Group as the derived intersection of one MT00 segment
   scope and this register's DIKW target, for example `QG-B-I` or `QG-F-W`.
 - Keep one stable question row and CELL-level authority; no group Folder,
   duplicated question, or independently written group state is introduced.
@@ -104,8 +104,8 @@
 Recovered from the SKILL.md frontmatter summary on 260827, when the family retired the `summary:` field: version history lives here and is never loaded at invocation.
 
 - 0.3.0 (260827, cold-read audit): the state vocabulary gains `🟡 partial` (answered in part; never folded into an answered count; row stays lap-eligible) and the annotated-`⬜` convention (`⬜ calc` — a reason, still OPEN, never a refusal), both legalizing what the first partition-major board already practiced with a private legend; and the precedence rule: when a header count and the Queue rows disagree, the Queue rows are the record.
-- 0.2.1 (JL 260823): X is a column only where routed, not a partition; the three cell rules joined the closing checks; ⬜ may name the planned page.
-- 0.2.0 (JL 260823): on a partition-major board the Queue gains one column per partition; a question is written once and asked per partition, a blank cell is illegal, a dot cell is an explicit X-routing.
+- 0.2.1 (JL 260823): X is a column only where routed, not a segment; the three cell rules joined the closing checks; ⬜ may name the planned page.
+- 0.2.0 (JL 260823): on a partition-major board the Queue gains one column per segment; a question is written once and asked per segment, a blank cell is illegal, a dot cell is an explicit X-routing.
 - 0.1.0 split the register out of MT00-meta by level.
 
 - 0.4.0 (260827, fieldtest F13 + the 🟡 termination law): the 🚫 grammar unified — refusal reasons and the tombstone share one form, `🚫 <reason>`, closed-without-answer always; and a `🟡` cell gains its exit — `🟡 <page> final` when the page states why the remainder cannot close, settled-partial, out of the lap, never in an answered count. A00's 8 🟡 cells were blocked by vocabulary, not evidence.

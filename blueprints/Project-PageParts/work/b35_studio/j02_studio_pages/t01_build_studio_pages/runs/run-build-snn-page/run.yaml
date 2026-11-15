@@ -11,5 +11,5 @@ status: done
 passes:
 - p01-1030
 writes:
-- servers/workbench/focus_page.py
+- servers/workbench/page/focus_page.py
 feeds: []

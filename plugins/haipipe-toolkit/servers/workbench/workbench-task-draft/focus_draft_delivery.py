@@ -145,7 +145,7 @@ def aim(folder: Path) -> str:
     return m.group(1).strip() if m else ""
 
 
-SENT = re.compile(r"^- B\d+ · (S\d+[a-z]*) · (?:\[[^\]]+\]\s*)?(.*\S)")
+SENT = re.compile(r"^- B\d+ · ([Ss]\d+[a-z]*) · (?:\[[^\]]+\]\s*)?(.*\S)")
 
 
 def branches(folder: Path, root: Path) -> list:
@@ -156,7 +156,7 @@ def branches(folder: Path, root: Path) -> list:
     d = ds.read_draft(folder)
     if not d or not (d.get("text") or d.get("structure")):
         return content_branches(folder) + answers_branch(folder, root)   # r02: Text showed the adopted Content while
-    said, order = {}, []                                 # the map said "Nothing to map yet"; §3: S<n> -> its sentence
+    said, order = {}, []                                 # the map said "Nothing to map yet"; §3: s<n> -> its sentence
     for _, body in d["text"]:
         para = None
         for line in body.splitlines():
@@ -196,7 +196,7 @@ def content_branches(folder: Path) -> list:
     for k, (pid, name, text) in enumerate(p for p in paragraphs(folder) if p[2]):
         sents = [re.sub(r"\\cite[pt]?\{([^}]*)\}", lambda m: "[" + m.group(1).replace(",", ", ") + "]", x)
                  for x in split_sentences(text)]               # a citation command reads as its keys, as on Text
-        kids = [mmbuild.built(f"{folder}/c/{k}/S{j}", f"[S{j}] {' '.join(x.split()[:8])}", [], [x])
+        kids = [mmbuild.built(f"{folder}/c/{k}/s{j}", f"[s{j}] {' '.join(x.split()[:8])}", [], [x])
                 for j, x in enumerate(sents, 1)]
         out.append(mmbuild.built(f"{folder}/c/{k}", f"[{pid}] {name or pid}", kids))
     return out

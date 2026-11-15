@@ -335,6 +335,13 @@ references:
     license: unknown
     notes: "Workflow diagram replaced by Nature Paper Skills upstream repo submodule. Local snapshot backup: /tmp/workflow-diagrams-backup-20260620/nature-paper-skills."
 
+  - name: EditHere
+    path: references/edithere
+    type: git-submodule
+    url: https://github.com/Inginnng/EditHere
+    license: PolyForm-Noncommercial-1.0.0
+    notes: "Source-available visual annotation and layout-feedback tool, not unrestricted open source. Commercial use requires separate authorization under upstream licensing. Preserve LICENSE and NOTICE. Reference for screenshot-linked human feedback, stable page IDs, review snapshots, and structured Agent handoff; not installed or integrated. See references/edithere-review.md."
+
 candidates_from_screenshots:
   - name: CCFA-Skill
     status: unresolved

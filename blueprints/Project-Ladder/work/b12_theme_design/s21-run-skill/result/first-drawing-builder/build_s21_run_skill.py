@@ -221,7 +221,7 @@ FOLDERS = {
     "haipipe-design/ref/design-ladder.md": ("haipipe-design/ref/design-ladder.md", "rewrite",
         "the three levels as s11 – s13 draw them", "it was s01's ladder: _by-, 3-part method.md", "1"),
     "haipipe-design/scripts/design_ladder.py": ("haipipe-design/scripts/design_ladder.py", "rewrite",
-        "jNN_<goal>_method-vN-<slug>_inputs-vM/ · t00 · tNN · t99 · run-<type>-<target>", "it wrote _by- and rNN_ names", "1"),
+        "jNN_<goal>_M0x-<slug>-mK_inputs-vM/ · t00 · tNN · t99 · run-<type>-<target>", "it wrote _by- and rNN_ names", "1"),
     "haipipe-design/ref/method-folders.md": ("haipipe-design/ref/legacy/method-folders.md", "move",
         "the old 2-Design-M<NN>-<slug>/ groups", "read only, until the old boards carry over", "1"),
     "haipipe-design/agents/haipipe-designer-agent.md": ("haipipe-design/agents/haipipe-designer-agent.md", "rewrite",

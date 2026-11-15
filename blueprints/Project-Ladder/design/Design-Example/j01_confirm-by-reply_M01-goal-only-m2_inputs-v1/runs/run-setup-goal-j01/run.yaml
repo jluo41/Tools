@@ -1,7 +1,7 @@
 run: run-setup-goal-j01
 kind: soft
 type: setup-goal
-scope: j01_confirm-by-reply_method-v1-goal-only_inputs-v1
+scope: j01_confirm-by-reply_M01-goal-only-m2_inputs-v1
 target: j01
 ticket: null
 skill: haipipe-design-goal

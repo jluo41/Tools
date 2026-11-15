@@ -23,7 +23,7 @@ built: from-topic .
 - Served <!-- @served #4de0b1 -->
   - the workbench's Guide › RoadMap Draw shows … <!-- @served/0 #0e0dcc -->
     the workbench's Guide › RoadMap Draw shows this drawing, view only.
-  - Its path is `LABELING_DESIGN` in `plugins/haipipe-toolkit/servers/workbench/guide_families.py` <!-- @served/1 #714abd -->
+  - Its path is `LABELING_DESIGN` in `plugins/haipipe-toolkit/servers/workbench/guide/guide_families.py` <!-- @served/1 #714abd -->
 - Files <!-- @files #6ce6c5 -->
   - delivery/ <!-- @files/0 #404761 -->
   - [md] [labeling-shared-rules.md](labeling-shared-rules.md) <!-- @files/1 #035f12 -->

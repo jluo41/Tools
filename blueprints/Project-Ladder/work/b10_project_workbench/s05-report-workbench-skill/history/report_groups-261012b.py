@@ -5,7 +5,7 @@ Three frames, each a folder tree (JL 261012: "每一个 frame 都太像一张 sl
 it is still open; ③ the screens, each theme's Report today beside the proposal (JL 261012: "for each theme and the
 base, you should show how the report' groups looks like").
 
-Read on every build: each theme's Report through servers/workbench/frame.py (frame.render, on one real Block or
+Read on every build: each theme's Report through servers/workbench/page/frame.py (frame.render, on one real Block or
 Job of each theme in a SPACE beside Tools), b10's board.md register and studio/_groups.txt, each theme file's
 Report hooks, the paper Board's and the insight Boards' own files. The proposal (starting groups, the insight
 topics' names) is typed: it is what s07 proposes, not what the disk holds yet. The 261011 builder (four frames)
@@ -33,7 +33,7 @@ import canvas  # noqa: E402  (haipipe-studio's merge-safe writer)
 
 INK, RED, MONO = L.INK, L.RED, L.MONO
 text, path, base = L.text, L.path, L.base
-FRAME_PY = L.TOOLKIT / "servers/workbench/frame.py"
+FRAME_PY = L.TOOLKIT / "servers/workbench/page/frame.py"
 
 # b10's 12 Questions in its existing Studio groups (s07-D07); Q11 is open (Guide or UI)
 B10_GROUPS = {"Q01": "Levels", "Q02": "Levels", "Q03": "Report", "Q04": "Structure", "Q05": "Run and Skill",
@@ -488,7 +488,7 @@ def theme_nodes(reads):
                                                                              for t, q in topics.items()]},
                      f"{n['board']} the same way: " + " · ".join(f"{s} {len(q)}" for s, q in n["subjects"].items()),
                      "? the topic names are guessed from the Task names: agree them",
-                     "? a topic's group: line goes in each question.md of the Prototype, so every Board of it "
+                     "? a topic's group: line goes in each question.md of the Question Book, so every Board of it "
                      "shares it (Open 7)"]
         elif theme == "design":
             kids += ["today's Block is an older Design Folder board; a design ladder Block reads as the base",
@@ -565,7 +565,7 @@ def tree_nodes(reads):
         {"In Tools: Tools/plugins/haipipe-toolkit/": [
             {"skills/1_base/project/haipipe-report/": ["the register: a Question's group: line"]},
             {"skills/1_base/project/haipipe-report/": ["the Report itself (s05)"]},
-            {"servers/workbench/frame.py": ["report_view · group_list · _register_set_groups · question_rows"]},
+            {"servers/workbench/page/frame.py": ["report_view · group_list · _register_set_groups · question_rows"]},
             {"servers/workbench-<theme>/<theme>_theme.py": [
                 "Report hooks set: " + (", ".join(f"{t} {'+'.join(hooks(t))}" for t in THEME_PY if hooks(t))
                                         or "none of the seven (read on this build)")]}]},
@@ -592,7 +592,7 @@ BACKGROUND = [
         "theme: the kind of Block (work, cowork, paper, insight, design, discovery, labeling); base: none"]},
     {"Where it sits": [
         "b10 keeps the rule and the table; each theme Block, b11 to b17, its own list (Open 5)",
-        "code: servers/workbench/frame.py, one look for Studio, Related and Report",
+        "code: servers/workbench/page/frame.py, one look for Studio, Related and Report",
         "feeds the Questions q03_block_questions and q09_studio_report_on_screen"]},
     {"How to read this drawing": [
         "① this frame, the words",

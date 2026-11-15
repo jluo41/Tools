@@ -1,5 +1,6 @@
 s05 · Paper Report: research questions and review rounds
 ========================================================
+view: findings
 
 **Tags:** `Structure`
 
@@ -15,7 +16,17 @@ s05 · Paper Report: research questions and review rounds
 questions. This topic settles where a review round and its answers live, and what each paper level
 must report.
 
-**Feeds:** `reports/` q03_review_rounds · q04_story_into_topics
+**Feeds:** Q03 · Q04
+
+
+Q03 · Answer
+------------
+
+**Question:** How do review rounds show?
+
+**Answer (partial):** A review round is a report, not a Task and not a new Board: the reviewers' comments are one batch, kept as a report of type comments in the version that answers them. The response is that version's letter Task, and the revised Sections are the next version, which starts as a copy of the last one's authored files. b10 gave every level its own Report (s09-D02), so the round shows in the version's Report, where a reader of that send expects it.
+
+**Page:** [q03_review_rounds.md](q03_review_rounds/q03_review_rounds.md): the full answer, its evidence and limits (moved from reports/)
 
 
 Files

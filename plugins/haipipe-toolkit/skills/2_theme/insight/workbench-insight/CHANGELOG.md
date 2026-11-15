@@ -2,7 +2,7 @@
 
 - JL 261102: "update it to the versions you expected in s51, s52, s54, s55, s57 and s58". `insight_focus.py` adds the
   Board's Report and Work (Answers · Questions · Jobs · Data · Handoff), the Job's Report (Overall · Grid · vs previous)
-  and the Task's Report and Work (Answer · By cut · Across Jobs · Plan). Reports are numbered sections only; Work is
+  and the Task's Report and Work (Answer · By segment · Across Jobs · Plan). Reports are numbered sections only; Work is
   Process then Results. `focus_page.py`: hooks `insight_board_report`, `insight_views_for`; an insight page opens on its
   first letter and its letters carry their own caption.
 - Tests: `InsightLettersTest` (4).
@@ -38,7 +38,7 @@
   The draft Task's `_step_box`, `_prompt_box`, `_part` and `_kv` draw it (imported, as the paper Board does). A bare link
   opens the step that comes next; `All`, `hard`, `soft` open 2 · Run, which keeps the old tree as its last card.
 - Each tab's buttons are the new Job › Work Details cards (haipipe-insight-workflow 3.1.0); `ref/workbench-table.md`
-  regenerated (71 rows). Job › Dataset's cut table is `_cut_table`, shared with 1 · Launch (no data rows there).
+  regenerated (71 rows). Job › Dataset's segment table is `_cut_table`, shared with 1 · Launch (no data rows there).
 - Tests: `JobWorkStepsTest` (5). Clicked in a real browser (`servers/workbench-insight/checks/job_work_browser.mjs`,
   headless Chrome over its debugging port): every tab opens from its own tab link, the panel opens on a click, a typed
   note goes out with Copy prompt and survives a reload, the Runs panel holds each step's cards, a run mark's pop-out
@@ -52,7 +52,7 @@
   `j01 · first ladder × first 5 days`. The Map's corner reads `analysis plan \ data freeze`, its rows `AP1 · first
   ladder`, its columns `F1 · first 5 days` (`insight_plan_c.plan_code`, `freeze_code`, `freeze_words`, `job_title`;
   `insight_views._vlabel`). A scaffold placeholder (`<what is new>`) is never shown as words. A Map cell links its
-  Job as `j01` (its row and column already say the plan and the data); a Job's Prototype line reads `Analysis plan`.
+  Job as `j01` (its row and column already say the plan and the data); a Job's Question Book line reads `Analysis plan`.
 
 ## 1.0.2 · 2026-10-11 · A Task page shows its figures
 
@@ -80,79 +80,79 @@
 ## 0.16.0 · 2026-10-05 · Insight Blocks (JL 261005)
 
 - An Insight Block (a task Block with `workbench: insight`) is read by `instance_reader.py` one dataset at a time
-  (`&dataset=`); Home opens it here. The Prototype Space shows the Block's own design; the copy and sync columns
-  are gone with the Instance. Run links carry `<dataset>_<partition>`.
+  (`&dataset=`); Home opens it here. The Question Book Space shows the Block's own design; the copy and sync columns
+  are gone with the Instance. Run links carry `<dataset>_<segment>`.
 
 ## 0.15.0 · 2026-10-05 · The Report column is the run's report (JL 261005)
 
-- On a Prototype board, a Report cell shows the run's generated `reports/<partition>/report.md` lead lines and opens
+- On a Question Book board, a Report cell shows the run's generated `reports/<segment>/report.md` lead lines and opens
   the run; the question's page is named under it. The run pop-out shows the report first, figures inline
   (`paper._md_view(text, base=)` renders an image line), the receipt folded.
 
-## 0.14.0 · 2026-10-03 · Partitions are the Insight Views; RoadMap Draw moves to the Prototype (JL 261003)
+## 0.14.0 · 2026-10-03 · Segments are the Insight Views; RoadMap Draw moves to the Question Book (JL 261003)
 
-- The Insight Space's Views are its partitions, Full to Cross, in the View-tab look; the Questions and Studio tabs are gone.
-- The working drawings move to Prototype › RoadMap Draw, in the Prototype's `studio/`, so every board of this kind sees the same ones.
+- The Insight Space's Views are its segments, Full to Cross, in the View-tab look; the Questions and Studio tabs are gone.
+- The working drawings move to Question Book › RoadMap Draw, in the Question Book's `studio/`, so every board of this kind sees the same ones.
 - Workbench Table, design drawing and Guide text follow.
-- A question's needs read as numbered steps in words, 🧮 Compute · 📎 Reuse · ⚖️ Answer, in the Insight Space's Work column and More ("How it is answered"); the E id stays in the files and shows only as a tooltip. The Prototype level rows show no steps: a question there reads as its ask, why now and what would answer it.
-- Prototype › RoadMap Draw opens on the generated question map (`haipipe-insight` `ref/question_map.py`), view only, flagged when a question file is newer; any other drawing in `studio/` follows. The Add drawing form is gone.
-- The two Insight agents exist (JL 261003): `agents/haipipe-insight-agent.md` makes (carry over, record the extract, register a cut, plan the evidence, draw the question map, write the pages, pool or split, counsel, draft the handoff, add a method) and `agents/haipipe-insight-reviewer-agent.md` judges (review the questions, review the evidence plan, check alignment) and never its own work. The Workbench Table drops their `(new)` marks.
+- A question's needs read as numbered steps in words, 🧮 Compute · 📎 Reuse · ⚖️ Answer, in the Insight Space's Work column and More ("How it is answered"); the E id stays in the files and shows only as a tooltip. The Question Book level rows show no steps: a question there reads as its ask, why now and what would answer it.
+- Question Book › RoadMap Draw opens on the generated question map (`haipipe-insight` `ref/question_map.py`), view only, flagged when a question file is newer; any other drawing in `studio/` follows. The Add drawing form is gone.
+- The two Insight agents exist (JL 261003): `agents/haipipe-insight-agent.md` makes (carry over, record the extract, register a segment, plan the evidence, draw the question map, write the pages, pool or split, counsel, draft the handoff, add a method) and `agents/haipipe-insight-reviewer-agent.md` judges (review the questions, review the evidence plan, check alignment) and never its own work. The Workbench Table drops their `(new)` marks.
 - The question-asking cards and the question review move to the question world (JL 261003): the eight cards are `haipipe-report/ref/asking-methods/` (Guide › Method's step 1 still shows them, from there), the review Q1-Q7 is `haipipe-report/ref/review.md` (the Workbench Table's and Runs panel's "Review the questions"). Insight keeps its answering and reading cards.
 - The ladder is general (JL 261003: "it can be all kinds of data"): each level's question in a form for any data (X a factor, Y an outcome), with examples from three kinds of data (clinic visits, sensor readings, shop orders) instead of one made-up messaging example, on the page (§ 2.1) and in the drawing; the drawing's text widths are wider, so no title is clipped.
-- The three families are named for what they work on (JL 261003): Question-asking (step 1), Question-answering (step 3) and Question-results reading (step 5); on the page, the cards, the drawing and the papers' `all methods` groups. The Prototype is stated: section 1 says steps 1-2 happen once in the Prototype and steps 3-6 on every dataset in its Instance (By protocol reuse built into the boards), the step table gains a board column, the drawing labels the columns by board, and the Reference defines Prototype and Instance (ours).
-- The methods drawing is redrawn in Design's dense style (JL 261003: "too thin") by a new author script, `servers/workbench-insight/studio/methods_drawing.py`: the ladder on the example; the question, the extract and the Prototype → the six steps (Logic · Work · Report, the ask-again loops) → Design, with the learning loop back to the next extract; the three families with all 16 cards (move, reads, tests, sources, study count from the papers table); the nine tests at their steps; the bet. The Method page has no box around its fold cards.
+- The three families are named for what they work on (JL 261003): Question-asking (step 1), Question-answering (step 3) and Question-results reading (step 5); on the page, the cards, the drawing and the papers' `all methods` groups. The Question Book is stated: section 1 says steps 1-2 happen once in the Question Book and steps 3-6 on every dataset in its Instance (By protocol reuse built into the boards), the step table gains a board column, the drawing labels the columns by board, and the Reference defines Question Book and Instance (ours).
+- The methods drawing is redrawn in Design's dense style (JL 261003: "too thin") by a new author script, `servers/workbench-insight/studio/methods_drawing.py`: the ladder on the example; the question, the extract and the Question Book → the six steps (Logic · Work · Report, the ask-again loops) → Design, with the learning loop back to the next extract; the three families with all 16 cards (move, reads, tests, sources, study count from the papers table); the nine tests at their steps; the bet. The Method page has no box around its fold cards.
 - Every Method section is a fold card in the Guide's RoadMap style (JL 261003: "make each section collapsable"): "Methods drawing" first, then sections 1 to 6 and the Reference; the six steps open, the rest closed; a fold's canvas loads when it opens. No Chinese in any title (section headings, card family headers); Chinese stays in the text.
 - Guide › Method takes the six steps as its spine (JL 261003, after Design's: "how first, then the detail behind the steps that need it, then why"): the drawing, then 1 · the six steps in one table (what happens, where in the workbench, who decides; the old A3 and D merged), 2-4 · steps 1, 3 and 5 in depth (asking, answering and reading methods, each with its decision tree and cards; the ladder and the example sit in step 1), 5 · checking (each test placed at its step: T0-T3 step 2, T4 and T7 step 4, T5 and T6 step 5, T8 in use; then the evidence), 6 · why it works (where Insight sits; why the plan comes before the data), and the Reference, folded. Each step appears once.
 - Guide › Method follows the Design family's A to E shape (JL 261003, through the Design session: "not smooth"): "The method in one picture" (the drawing, moved to the top), then `insight-method.md` as A · What the work is (one made-up example climbs the ladder; A3 holds the six steps, so Guide's explain entry is "only" and its own step list is skipped), B · The methods (three families, each named by one question; which method when; the 16 cards), C · How an answer is checked, D · In the workbench, and E · Reference folded (terms and people with Wikipedia and DOI links, each checked; the type and task map; where the rules come from). No file notes on screen; one version of each idea; the family names and their Chinese marked as ours. Cards carry the three families on their `family:` line.
-- Guide › Method is rewritten as one page, `ref/insight-method.md`, replacing `insight-discovery-methods.md` and `insight-design-methods.md` (JL 261003: "Design methods" read as the Design board, "Discovery methods" as `haipipe-discovery`). It opens with where Insight sits (Discovery · Insight · Design) and the ladder, then names the methods after a question's three columns: asking (Logic, 8 cards, `methods/ask/`; By question type joins them), answering (Work, 5, `methods/answer/`) and reading (Report, 3, `methods/read/`). One test ladder: T0-T3 before the run, T4-T7 after it, T8 in use; the cards and paper rows renumbered to it. The Guide's numbered steps above the page are the same loop (Ask the question · Plan and agree · Run each partition · Check the run · Write the page · Hand off), so the page never repeats it; last comes the section "The methods drawing" (`ref/insight-methods.excalidraw`, relabelled to the three families, editable). No tabs.
+- Guide › Method is rewritten as one page, `ref/insight-method.md`, replacing `insight-discovery-methods.md` and `insight-design-methods.md` (JL 261003: "Design methods" read as the Design board, "Discovery methods" as `haipipe-discovery`). It opens with where Insight sits (Discovery · Insight · Design) and the ladder, then names the methods after a question's three columns: asking (Logic, 8 cards, `methods/ask/`; By question type joins them), answering (Work, 5, `methods/answer/`) and reading (Report, 3, `methods/read/`). One test ladder: T0-T3 before the run, T4-T7 after it, T8 in use; the cards and paper rows renumbered to it. The Guide's numbered steps above the page are the same loop (Ask the question · Plan and agree · Run each segment · Check the run · Write the page · Hand off), so the page never repeats it; last comes the section "The methods drawing" (`ref/insight-methods.excalidraw`, relabelled to the three families, editable). No tabs.
 - The board header is the title alone: the `all boards · board index` line is gone, on the board and on the board list.
 
-## 0.13.0 · 2026-10-03 · A Prototype Space (JL 261003)
+## 0.13.0 · 2026-10-03 · A Question Book Space (JL 261003)
 
-- New Space after Scope: Prototype, with Views Meta · Data · Information · Knowledge · Wisdom. Meta is the former Scope › Prototype view plus the partitions in words and the shared settings; each level View lists its questions as folding rows (chips: partitions, needs, script, agreed) with retired ones folded. Scope keeps Dataset · Partitions · Questions.
-- Space order Guide · Scope · Prototype · Insight · Check · Delivery: data, then what is asked and by which code, then the answers. Written as a shared rule in `workbench-shared/README.md` § Space order.
-- Workbench Table: every View is a live tab (Prototype's design runs, Insight's runs under Questions, Check's Runtime, Delivery's Handoff); the design drawing's Part 1 has one column per Space and Part 2 gains the Prototype panel.
+- New Space after Scope: Question Book, with Views Meta · Data · Information · Knowledge · Wisdom. Meta is the former Scope › Question Book view plus the segments in words and the shared settings; each level View lists its questions as folding rows (chips: segments, needs, script, agreed) with retired ones folded. Scope keeps Dataset · Segments · Questions.
+- Space order Guide · Scope · Question Book · Insight · Check · Delivery: data, then what is asked and by which code, then the answers. Written as a shared rule in `workbench-shared/README.md` § Space order.
+- Workbench Table: every View is a live tab (Question Book's design runs, Insight's runs under Questions, Check's Runtime, Delivery's Handoff); the design drawing's Part 1 has one column per Space and Part 2 gains the Question Book panel.
 
 ## 0.12.1 · 2026-10-02 · Workbench Table in the Guide, with folders (JL 261002)
 
-- The Workbench Table gains the Folder column: where each run writes, in the Prototype, the Instance or Tools. The two Guide rows, which sat after the Notes and so were never read, are back in the table.
+- The Workbench Table gains the Folder column: where each run writes, in the Question Book, the Instance or Tools. The two Guide rows, which sat after the Notes and so were never read, are back in the table.
 - Guide › RoadMap Draw shows the table (Space · View · Run type · Agent · Skill · Folder) in place of the Skills, Workbench and Folders lists; Agent and Skill share one column; the family entry names it with `table`.
 - The table starts with Guide, as the workbench does, with all four Guide Views; Description and RoadMap Draw have no run.
-- The RoadMap card is clean (its name only), its drawn table has the Folder column, and under it a Workflow drawn from the entry's `flow`: Question (Logic) → Work → Report over Input → Processing → Output, and the loop over partitions, questions and levels. The design drawing above it folds ("Workbench design").
+- The RoadMap card is clean (its name only), its drawn table has the Folder column, and under it a Workflow drawn from the entry's `flow`: Question (Logic) → Work → Report over Input → Processing → Output, and the loop over segments, questions and levels. The design drawing above it folds ("Workbench design").
 - A Guide opened alone forwards to its Insight board with the Guide open (`board_route`), or lists the Instance boards (`boards`); the board page keeps its Space tabs in view while Guide's canvases load.
 - A trackpad pinch or ctrl-scroll no longer zooms the tab on the board, Guide or methods page (it zoomed every 127.0.0.1 port at once); keyboard zoom and the canvases' own zoom stay.
 - Check › Gates labels a gate Gate-I0 … Gate-I6 (its id, GI0 …, stays in records and is the card's tooltip); Insight's Space tabs and View tabs follow the shared Guide's tab style (16px, a light-blue fill when selected), so the Guide and Insight rows look the same.
 - The Guide's Views and content sit in one box (`wg-shell`), the same box a Space's content sits in.
-- Scope › Prototype is laid out for the reader: a card with the Prototype and four numbers, one table by level (questions, needs, scripts, this board's copies, retired), only the copies that need action as chips grouped by state, and the design files last with the shared code folded.
+- Scope › Question Book is laid out for the reader: a card with the Question Book and four numbers, one table by level (questions, needs, scripts, this board's copies, retired), only the copies that need action as chips grouped by state, and the design files last with the shared code folded.
 - The design drawing's frames stand apart: one 240px gap between frames, 40px inside each.
 
 ## 0.12.0 · 2026-10-02 · Guide holds the method, Scope holds the data (JL 261002)
 
-- The shared Guide has four Views: Description · Method · RoadMap Draw · Related Paper. Insight's Method View shows the Prototype → Instance steps and then the discovery and design method cards with the Methods studio; RoadMap Draw is the whole design drawing, view only; Related Paper is the papers file. Both card pages come from `render_methods_embed`.
-- Scope is the board's own data: Dataset · Partitions · Prototype · Questions. The Methods tab is gone, and Scope's Runs panel drops Add a method and Add a paper, which are Guide rows in the Workbench Table.
-- Test: the methods test now checks that Scope has Prototype and no Methods, and that the embed page serves the cards and papers.
+- The shared Guide has four Views: Description · Method · RoadMap Draw · Related Paper. Insight's Method View shows the Question Book → Instance steps and then the discovery and design method cards with the Methods studio; RoadMap Draw is the whole design drawing, view only; Related Paper is the papers file. Both card pages come from `render_methods_embed`.
+- Scope is the board's own data: Dataset · Segments · Question Book · Questions. The Methods tab is gone, and Scope's Runs panel drops Add a method and Add a paper, which are Guide rows in the Workbench Table.
+- Test: the methods test now checks that Scope has Question Book and no Methods, and that the embed page serves the cards and papers.
 
 ## 0.11.0 · 2026-10-02 · Insight › Studio and the Guide (JL 261002)
 
 - Insight › Studio: a view beside Questions with the board's own working drawings, `studio/<name>.excalidraw` beside `board.md`, as folding rows (view only until Edit drawing; Open full screen; Add drawing). Scenes are minted and saved by the shared Studio routes, following the shared Workbench design's Task alignment. A space in a new name is saved as `_`, since the shared route takes the path as written.
-- The shared Guide's Insight entry describes the Prototype and Instance boards: its skills, the five-step method, the Spaces and a folder map that resolves from an Instance board.
+- The shared Guide's Insight entry describes the Question Book and Instance boards: its skills, the five-step method, the Spaces and a folder map that resolves from an Instance board.
 - Guide Views lead with the design drawing (JL 261002: the generated UI map is replaced by the workbench UI design we want): the generator wraps Parts 1, 2-3 and 4-5 in named frames, and each Guide View opens its frame view only, its generated drawing folded beneath. The drawing gains Insight › Studio and Check › Runtime tabs; nothing else in it moves.
 
 ## 0.10.0 · 2026-10-02 · Carried questions and their runs (JL 261002)
 
-- A Prototype and Instance board shows its carried short question and name in the Logic cell, and the ask, Why now, What would answer it and any other carried field under More; the Dataset view reads `0-Meta/meta.md`; a register page reads `<level>/level.md`. Layout unchanged.
-- Workbench Table: Scope › Questions gains Carry a board over and Review the questions (a person signs a change); Insight › Work's Bind the work and Run a ticket become Write the script, Review the script and Run a partition; Settle the cell is gone (status is computed).
+- A Question Book and Instance board shows its carried short question and name in the Logic cell, and the ask, Why now, What would answer it and any other carried field under More; the Dataset view reads `0-Meta/meta.md`; a register page reads `<level>/level.md`. Layout unchanged.
+- Workbench Table: Scope › Questions gains Carry a board over and Review the questions (a person signs a change); Insight › Work's Bind the work and Run a ticket become Write the script, Review the script and Run a segment; Settle the cell is gone (status is computed).
 
 ## 0.9.0 · 2026-10-02 · Methods move to Scope, with a Methods studio (JL 261002)
 
-- Methods is a Scope tab (Dataset · Partitions · Methods · Questions); Insight keeps Questions. Its views: Discovery methods · Design methods · Methods studio · Papers. Methods studio embeds `ref/insight-methods.excalidraw` in the Excalidraw canvas, as the Design board's Theory › Methods studio does. The Workbench Table's Add a method and Add a paper rows move to Scope; the design drawing's Part 2 follows. Card and index wording names Scope › Methods.
+- Methods is a Scope tab (Dataset · Segments · Methods · Questions); Insight keeps Questions. Its views: Discovery methods · Design methods · Methods studio · Papers. Methods studio embeds `ref/insight-methods.excalidraw` in the Excalidraw canvas, as the Design board's Theory › Methods studio does. The Workbench Table's Add a method and Add a paper rows move to Scope; the design drawing's Part 2 follows. Card and index wording names Scope › Methods.
 
 ## 0.8.0 · 2026-10-02 · Insight › Methods (JL 261002)
 
 - New sub-space Insight › Methods beside Questions, with three views: Discovery methods, Design methods, Papers. Cards and paper cards use the Design workbench's renderers. New files: `ref/insight-discovery-methods.md`, `ref/insight-design-methods.md`, `ref/methods/discovery/`, `ref/methods/design/`, `ref/insight-papers.md`.
 - Runs panel (Insight Space): Add a method, Add a paper.
 
-## 0.5.0 · 2026-10-01 · Partition names, not letters (JL 261001)
+## 0.5.0 · 2026-10-01 · Segment names, not letters (JL 261001)
 
 - Register example uses the partition-name page id (`I<NN>-full`) and generic task/run names.
 
@@ -172,7 +172,7 @@
   "Answer" page link left it); Report shows what the answer says: a report file when one
   exists, else the old answer page's headline and Opening, marked as such.
 - The Runs panel's Knowledge answer and Wisdom answer types became one Report type.
-- A report opens as a document: `/_board/insight?board=&report=<partition>:<QID>`.
+- A report opens as a document: `/_board/insight?board=&report=<segment>:<QID>`.
 
 ## 0.4.0 · 2026-10-01 · The answering page is the report (JL 261001)
 
@@ -186,12 +186,12 @@
   four Spaces (Scope · Insight · Check · Delivery), a dataset banner on every Space, a Runs
   panel beside each. Run Space and Evidence Space are gone: runs sit in the panels and on
   the Work side; the workflow runtime index moved to Check › Runtime.
-- Insight › Questions: one High/Low table per partition. Logic is the MT01–MT04 questions by
+- Insight › Questions: one High/Low table per segment. Logic is the MT01–MT04 questions by
   level and number (no QK codes on screen); Work is the task calls that answer them, joined by
-  each config's `answers:` line and its MT00 partition. Cross lists only its own questions.
+  each config's `answers:` line and its MT00 segment. Cross lists only its own questions.
 - A run opens its results in a pop-out (`/_board/insight-run`); a page opens as a document
   (`/_board/insight`). The page-level workbench (This page · Cites · Cited by · Gates · Log)
-  and the question × partition grid are retired.
+  and the question × segment grid are retired.
 - `_task_calls` counts one call per task and name: tickets symlinked to one `_run.sh` had
   collapsed into a single call.
 

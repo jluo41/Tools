@@ -15,7 +15,7 @@ built: from-topic .
   - ui <!-- @delivery-type/0 #636117 -->
 - Topic <!-- @topic #7e13bd -->
   - the Insight workbench as it is built … <!-- @topic/0 #b1ec02 -->
-    the Insight workbench as it is built today: its five Spaces after the Guide (Scope · Prototype · Insight · Check · Delivery), every View, every run type with its skill and agent, and where each reads and writes on disk.
+    the Insight workbench as it is built today: its five Spaces after the Guide (Scope · Question Book · Insight · Check · Delivery), every View, every run type with its skill and agent, and where each reads and writes on disk.
   - It is the "before" that s01-insight-ladder's proposal … <!-- @topic/1 #4bd752 -->
     It is the "before" that s01-insight-ladder's proposal replaces.
   - Moved here from `plugins/haipipe-toolkit/servers/workbench-insight/studio/` (261007, JL: the … <!-- @topic/2 #66e153 -->
@@ -24,7 +24,7 @@ built: from-topic .
   - the workbench's Guide › RoadMap Draw shows … <!-- @served/0 #0e0dcc -->
     the workbench's Guide › RoadMap Draw shows this drawing, view only.
   - The path is `explain.roadmap-draw` in `plugins/haipipe-toolkit/servers/workbench-insight/guide/guide.yaml` (the … <!-- @served/1 #7e9d58 -->
-    The path is `explain.roadmap-draw` in `plugins/haipipe-toolkit/servers/workbench-insight/guide/guide.yaml` (the Insight Guide, moved out of `servers/workbench/guide_families.py` on 261007).
+    The path is `explain.roadmap-draw` in `plugins/haipipe-toolkit/servers/workbench-insight/guide/guide.yaml` (the Insight Guide, moved out of `servers/workbench/guide/guide_families.py` on 261007).
 - Feeds <!-- @feeds #ffe8e9 -->
   - `reports/` q01_insight_ladder (the View each level replaces), … <!-- @feeds/0 #8f91fe -->
     `reports/` q01_insight_ladder (the View each level replaces), q03_question_gates (today's Check Space).

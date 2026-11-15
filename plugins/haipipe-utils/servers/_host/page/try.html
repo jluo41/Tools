@@ -203,6 +203,7 @@ tr.check td { font-size:12.5px; color:var(--mut); white-space:normal; }
 .card.open { grid-column:1 / -1; }
 .card-top { display:flex; gap:10px; align-items:flex-start; justify-content:space-between; }
 .card h3 { font-size:15.5px; line-height:1.35; }
+.tag.hand { background:var(--sunk); color:var(--ink); margin-left:6px; }
 .tag { display:inline-block; font:500 11.5px/1.6 var(--mono); padding:1px 8px; border-radius:6px; background:var(--accent-soft); color:var(--accent); white-space:nowrap; }
 .card .step { font-size:13px; color:var(--mut); line-height:1.45; }
 .mini { display:flex; gap:8px; flex-wrap:wrap; }
@@ -237,6 +238,16 @@ tr.check td { font-size:12.5px; color:var(--mut); white-space:normal; }
 .gal-detail .pager button { padding:4px 10px; font-size:13px; }
 .gal-detail .step { font-size:14px; color:var(--mut); }
 .gal-detail details { font-size:13px; color:var(--mut); }
+details.tbl { background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px 18px; margin-top:18px; }
+details.tbl > summary { cursor:pointer; display:flex; gap:14px; align-items:baseline; flex-wrap:wrap; }
+details.tbl .tbl-h { font-weight:700; font-size:17px; color:var(--ink); }
+.tbl-wrap { overflow-x:auto; margin-top:10px; }
+table.tbl-cols { border-collapse:collapse; width:100%; font-size:12.5px; }
+table.tbl-cols th { text-align:left; color:var(--mut); font-weight:600; padding:6px 10px; border-bottom:1px solid var(--line); white-space:nowrap; }
+table.tbl-cols td { padding:6px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+table.tbl-cols td.c-name, table.tbl-cols td.c-type, table.tbl-cols td.c-ex { font-family:var(--mono); font-size:12px; }
+table.tbl-cols td.c-name { font-weight:600; white-space:nowrap; } table.tbl-cols td.c-type { color:var(--mut); white-space:nowrap; }
+table.tbl-cols td.c-ex { word-break:break-word; max-width:460px; }
 .gal-detail details summary { cursor:pointer; color:var(--ink); font-weight:600; font-size:12.5px; }
 .gal-detail details p { margin:6px 0 0; line-height:1.5; }
 
@@ -329,6 +340,15 @@ tr.check td { font-size:12.5px; color:var(--mut); white-space:normal; }
     <p class="small" id="gfolder" hidden></p>
     <div class="cards" id="cards"></div>
   </section>
+
+  <section id="tableArea" hidden>
+    <details class="tbl">
+      <summary><span class="tbl-h" id="tableHead">🗄 The event table</span><span class="small mut" id="tableLine"></span></summary>
+      <p class="small mut" id="tableAbout"></p>
+      <div class="tbl-wrap"><table class="tbl-cols"><thead><tr><th>column</th><th>type</th><th>what it holds</th><th>one real row</th></tr></thead><tbody id="tableCols"></tbody></table></div>
+      <p class="small mut" id="tablePath"></p>
+    </details>
+  </section>
 </main>
 
 <script>
@@ -339,8 +359,8 @@ tr.check td { font-size:12.5px; color:var(--mut); white-space:normal; }
   const noun = parts.pop(); parts.pop();
   const base = parts.join('/');
   if (noun === 'food') { location.replace(`${base}/try/meal${location.search}`); return; }   // a host that follows the 302 itself
-  const EMOJI = { meal: '🍎', exercise: '🏃', medication: '💊', insulin: '💉', step: '👣', sleep: '😴', still: '🪑' };
-  const ACCENT = { meal: '#2f9e44', exercise: '#1c7ed6', medication: '#7048e8', insulin: '#e8590c', step: '#0c8599', sleep: '#5f3dc4', still: '#868e96' };
+  const EMOJI = { meal: '🍎', exercise: '🏃', medication: '💊', insulin: '💉', step: '👣', sleep: '😴', still: '🪑', stress: '😣' };
+  const ACCENT = { meal: '#2f9e44', exercise: '#1c7ed6', medication: '#7048e8', insulin: '#e8590c', step: '#0c8599', sleep: '#5f3dc4', still: '#868e96', stress: '#c2255c' };
   // How a gallery card's input becomes a request, and how a typed box becomes one: per lane. `event` names the lane's
   // event door; such a lane sends its box and its cards there.
   const LANES = {
@@ -612,6 +632,79 @@ tr.check td { font-size:12.5px; color:var(--mut); white-space:normal; }
         empty: 'Type when they were in bed in the box first.',
       },
     },
+    stress: {                                                      // b51 j08, s10, s18 (JL 261109: built as still's)
+      event: 'event',
+      py: 'from eventnorm.stress import event',
+      readOut: ['for hour, h in ev["output"].items():', '    print(hour, h["rest_min"], h["low_min"], h["medium_min"], h["high_min"], h["active_min"], h["unknown_min"], h["mean"])'],
+      examples: '10:00 to 10:20 score 20; 10:20 to 10:35 score 62; 10:35 to 10:45 active; 10:45 to 11:00 off',
+      read: 'stress',
+      // The headline: minutes at each level, the mean of the scored ones, and how much of the span was scored at all.
+      tiles: output => {
+        const hs = Object.values(output || {});
+        if (!hs.length) return null;
+        if (hs[0].grain === 'day')
+          return [{ k: 'Day score', v: hs[0].score, u: '', hl: true }, { k: 'Which way', conf: 'DAY', note: hs[0].direction || '' }];
+        const add = k => hs.reduce((a, h) => a + (num(h[k]) || 0), 0);
+        const all = add('minutes'), scored = add('scored_min'), pts = hs.reduce((a, h) => a + (num(h.mean) || 0) * (num(h.scored_min) || 0), 0);
+        const sure = !scored ? { conf: 'MISS', note: 'no minute was scored' }
+          : scored < all / 2 ? { conf: 'PARTLY', note: `${scored} of ${all} minutes scored` }
+          : { conf: 'MEASURED', note: `${scored} of ${all} minutes scored` };
+        return [{ k: 'Mean score', v: scored ? r1(pts / scored) : null, u: '', hl: true },
+                { k: 'High', v: add('high_min'), u: 'min' }, { k: 'Medium', v: add('medium_min'), u: 'min' },
+                { k: 'Low', v: add('low_min'), u: 'min' }, { k: 'Rest', v: add('rest_min'), u: 'min' },
+                { k: 'Active', v: add('active_min'), u: 'min' }, { k: 'Unknown', v: add('unknown_min'), u: 'min' },
+                { k: 'How sure', ...sure }];
+      },
+      mini: c => {
+        const t = LANES.stress.tiles(c.output) || [], v = k => (t.find(x => x.k === k) || {}).v;
+        const n = Object.keys(c.output || {}).length;
+        if (v('Day score') != null) return `day score ${v('Day score')} · higher is calmer`;
+        return [`mean ${v('Mean score') == null ? '—' : v('Mean score')}`, `${r1(v('High'))} min high`, `${r1(v('Rest'))} rest`,
+                `${r1(v('Active'))} active`, `${r1(v('Unknown'))} unknown`, `${n} hour${n === 1 ? '' : 's'}`].join(' · ');
+      },
+      // "10:00 to 10:20 score 20; 10:35 to 10:45 active; 10:45 to 11:00 off": a stretch a part, on the box's date; a
+      // score 0 to 100, active (-2), not measured (-1), or off (no reading). A raw of one reading a minute.
+      fromText: text => {
+        const parts = text.split(/[;\n]/).map(s => s.trim()).filter(Boolean), rows = [];
+        const v = $('when').value;
+        if (!v) throw new Error('Set the day these readings are on.');
+        const day = v.slice(0, 10);
+        let first = null, last = null;
+        for (const p of parts) {
+          const m = p.match(/(\d{1,2}):(\d{2})\s*(?:to|-|–)\s*(\d{1,2}):(\d{2})(.*)/);
+          if (!m) throw new Error(`"${p}": write a stretch as "10:00 to 10:20 score 20", or paste a raw or an input JSON.`);
+          const a = parseInt(m[1], 10) * 60 + parseInt(m[2], 10), b = parseInt(m[3], 10) * 60 + parseInt(m[4], 10), w = m[5].toLowerCase();
+          if (b <= a) throw new Error(`"${p}": its end must be after its start, on one day.`);
+          if (first === null || a < first) first = a;
+          if (last === null || b > last) last = b;
+          const sc = w.match(/(?:score\s*)?(\d{1,3})\b/);
+          const val = /\bactive\b/.test(w) ? -2 : /not measured|unknown/.test(w) ? -1 : /\boff\b/.test(w) ? null : sc ? parseInt(sc[1], 10) : null;
+          if (val === null) continue;
+          for (let i = a; i < b; i++) rows.push({ time: `${day} ${pad(Math.floor(i / 60))}:${pad(i % 60)}`, value: val });
+        }
+        if (!rows.length) throw new Error('Give at least one stretch with a score, active or not measured.');
+        const at = i => `${day} ${pad(Math.floor(i / 60))}:${pad(i % 60)}`;
+        return { raw: { type: 'readings', start: at(first), ...(last < 1440 ? { end: at(last) } : {}), rows } };
+      },
+      texts: {
+        title: 'readings in, each hour six ways out',
+        flow: 'raw ─▶ preprocess: each reading in its own minute ─▶ input JSON, the minutes as stretches at one level ─▶ each minute one level: rest, low, medium, high, active, unknown ─▶ output by local hour, with its mean score',
+        try: '✍️ Try some readings',
+        hint: 'Type stretches of minutes, a semicolon between them ("10:00 to 10:20 score 20; 10:35 to 10:45 active; '
+          + '10:45 to 11:00 off"): a <code>score</code> 0 to 100, <code>active</code>, <code>not measured</code>, or <code>off</code>. '
+          + 'Or paste a raw JSON <code>{"type", "rows"}</code> (<code>readings</code>: rows <code>{"time", "value"}</code>, a Garmin\'s, '
+          + 'one a minute, <code>offset</code> minutes for UTC times; <code>day_score</code>: mcPhases\' stress_score.csv rows of one day) '
+          + 'or an input JSON <code>{"timeline": [{"from", "to", "level", "mean"}]}</code>. A Garmin score is higher for more '
+          + 'stress; a Fitbit day score is higher for calmer, and stays its day.',
+        when: 'on',
+        gallery: '🖼 Gallery: real hours, every kind of raw, its input and its output',
+        what: 'the readings',
+        readHead: 'The readings, read, hour by hour',
+        py: 'The request the page sends, as Python: import the API in this SPACE, or post it to the API host. '
+          + 'It follows the box: send some readings, and it changes.',
+        empty: 'Type some readings in the box first.',
+      },
+    },
     still: {                                                       // b51 s07, s17 (JL 261027: build its page as food's)
       event: 'event',
       py: 'from eventnorm.still import event',
@@ -764,7 +857,7 @@ tr.check td { font-size:12.5px; color:var(--mut); white-space:normal; }
 
   // ---- one interface: a tab for every event type; a lane this host does not serve is shown, greyed
   const ORDER = [['meal', 'Meal'], ['exercise', 'Exercise'], ['medication', 'Medication'], ['insulin', 'Insulin'],
-                 ['step', 'Steps'], ['sleep', 'Sleep'], ['still', 'Still']];
+                 ['step', 'Steps'], ['sleep', 'Sleep'], ['still', 'Still'], ['stress', 'Stress']];
   function drawLanes(served) {
     const known = ORDER.map(([k]) => k), extra = served.filter(k => !known.includes(k)).map(k => [k, k]);
     $('lanes').insertAdjacentHTML('beforeend', [...ORDER, ...extra].map(([k, label]) => {
@@ -795,9 +888,9 @@ tr.check td { font-size:12.5px; color:var(--mut); white-space:normal; }
     const ks = Object.keys(v);
     return ks.length ? '{\n' + ks.map(k => `${inner}${JSON.stringify(k)}: ${py(v[k], inner)}`).join(',\n') + ',\n' + ind + '}' : '{}';
   };
-  // The API host for a script: this page's own origin on the API host; through the board host's login, the API
-  // host itself, which answers only on the machine that runs it.
-  const apiHost = base === '' ? location.origin : 'http://127.0.0.1:8070';
+  // The API host for a script: this page's own origin on the API host; through the Board's /_api door, the API
+  // host's own address, which the host writes into the page (window.API_ORIGIN).
+  const apiHost = base === '' ? location.origin : (window.API_ORIGIN || location.origin);
   const readOut = ['for hour, h in ev["output"].items():',
                    '    print(hour, h["share"], (h["total"] or {}).get("macros"))'];
   // A file sent from the page: the Python reads the same file, not its thousands of rows written out.
@@ -816,7 +909,7 @@ tr.check td { font-size:12.5px; color:var(--mut); white-space:normal; }
       $('pyHttp').textContent = ['import requests', ...readFile(up).filter(l => l !== ''), '',
         `body = {"raw": ${raw}}`,
         `ev = requests.post("${apiHost}/${noun}/${lane.event}", json=body, timeout=120).json()`, ...out].join('\n');
-      $('pyHost').textContent = base === '' ? `${apiHost}: this host` : `${apiHost}: on the machine that runs the API`;
+      $('pyHost').textContent = base === '' ? `${apiHost}: this host` : `${apiHost}: the API host`;
       $('pyArea').hidden = false;
       return;
     }
@@ -825,7 +918,7 @@ tr.check td { font-size:12.5px; color:var(--mut); white-space:normal; }
     $('pyLocal').textContent = [imp, '', 'ev = event(', ...args, ')', ...out].join('\n');
     $('pyHttp').textContent = ['import requests', '', `body = ${py(body)}`,
       `ev = requests.post("${apiHost}/${noun}/${lane.event}", json=body, timeout=120).json()`, ...out].join('\n');
-    $('pyHost').textContent = base === '' ? `${apiHost}: this host` : `${apiHost}: on the machine that runs the API`;
+    $('pyHost').textContent = base === '' ? `${apiHost}: this host` : `${apiHost}: the API host`;
     $('pyArea').hidden = false;
   }
   function copyButtons(root) {
@@ -1057,6 +1150,34 @@ tr.check td { font-size:12.5px; color:var(--mut); white-space:normal; }
     if (ev.rule) html += `<tr class="check"><td colspan="8">📏 the rule: still is at most ${esc(ev.rule.still_max_steps)} steps a minute · ${esc(ev.rule.note || '')}</td></tr>`;
     return html;
   }
+  // A stress event (b51 s10, s18): each hour its minutes six ways, adding to its minutes, its mean score, and why the
+  // unknown ones are unknown. A Fitbit day score is one row: its day, its hours unknown.
+  function stressTable(ev) {
+    if (!ev.output) return `<tr><td>no event: ${esc(ev.step || '')}</td></tr>`;
+    const day = Object.values(ev.output).find(h => h.grain === 'day');
+    if (day) {
+      let html = '<tr><th>day</th><th>score</th><th>sleep</th><th>responsiveness</th><th>exertion</th><th>which way</th></tr>';
+      for (const [d, h] of Object.entries(ev.output))
+        html += `<tr><td>${esc(d)}</td><td class="num">${words(h.score)}</td><td>${esc(h.sleep || '—')}</td>`
+          + `<td>${esc(h.responsiveness || '—')}</td><td>${esc(h.exertion || '—')}</td><td>${esc(h.direction || '')}</td></tr>`;
+      return html + '<tr class="check"><td colspan="6">📏 a day score stays its day: its hours are unknown</td></tr>';
+    }
+    let html = '<tr><th>hour</th><th>minutes</th><th>rest</th><th>low</th><th>medium</th><th>high</th><th>active</th>'
+      + '<th>unknown</th><th>why unknown</th><th>mean score</th></tr>';
+    const ks = ['minutes', 'rest_min', 'low_min', 'medium_min', 'high_min', 'active_min', 'unknown_min'], sum = {};
+    let pts = 0, n = 0;
+    for (const [hour, h] of Object.entries(ev.output)) {
+      const why = Object.entries(h.unknown_why || {}).filter(([, c]) => c).map(([k, c]) => `${c} ${k.replace(/_/g, ' ')}`).join(', ');
+      html += `<tr><td>${esc(hour)}</td>` + ks.map(k => `<td class="num">${words(h[k])}</td>`).join('')
+        + `<td>${why ? esc(why) : '—'}</td><td class="num">${h.mean == null ? '—' : words(h.mean)}</td></tr>`;
+      ks.forEach(k => { sum[k] = (sum[k] || 0) + (num(h[k]) || 0); });
+      if (h.mean != null) { pts += num(h.mean) * (num(h.scored_min) || 0); n += num(h.scored_min) || 0; }
+    }
+    html += `<tr class="total"><td>the event: its hours added up</td>` + ks.map(k => `<td class="num">${r1(sum[k])}</td>`).join('')
+      + `<td></td><td class="num">${n ? r1(pts / n) : '—'}</td></tr>`;
+    return html + '<tr class="check"><td colspan="10">📏 Garmin\'s own bands: rest 0 to 25, low 26 to 50, medium 51 to 75, high 76 to 100; '
+      + '-2 is active (too much movement to score), -1 is unknown</td></tr>';
+  }
   function readTable(ev) {
     if (lane.read === 'exercise') return exerciseTable(ev);
     if (lane.read === 'medication') return medicationTable(ev);
@@ -1064,6 +1185,7 @@ tr.check td { font-size:12.5px; color:var(--mut); white-space:normal; }
     if (lane.read === 'step') return stepTable(ev);
     if (lane.read === 'sleep') return sleepTable(ev);
     if (lane.read === 'still') return stillTable(ev);
+    if (lane.read === 'stress') return stressTable(ev);
     const name = {};
     (ev.input && ev.input.items || []).forEach(it => { name[it.id] = it.food + (it.amount ? ` · ${it.amount}` : ''); });
     let html = '<tr><th>hour</th><th>share</th><th>item</th><th>matched</th><th>conf</th><th>serving</th><th>carbs</th><th>calories</th><th>GI</th><th>GL</th></tr>';
@@ -1312,6 +1434,10 @@ tr.check td { font-size:12.5px; color:var(--mut); white-space:normal; }
   // A card's note says what its step line does not: the part after the step, when it starts with it.
   const noteOf = c => !c.note ? '' : c.step && c.note.startsWith(c.step) ? c.note.slice(c.step.length).replace(/^[;:,]\s*/, '') : c.note;
 
+  // A card whose numbers were also worked out by hand from the raw row, and match (by_hand: numbers, how).
+  const handTag = c => c.by_hand ? `<span class="tag hand">✋ ${esc(c.by_hand.numbers)} numbers match by hand</span>` : '';
+  const handHow = c => c.by_hand ? `<details><summary>Worked out by hand</summary><p>${esc(c.by_hand.how)}</p></details>` : '';
+
   // How many items: the input's lines, and the output's foods when a dish line became several (JL 261029).
   function itemCount(c) {
     const its = ((c.input || {}).items || []).length;
@@ -1339,7 +1465,7 @@ tr.check td { font-size:12.5px; color:var(--mut); white-space:normal; }
   function eventCard(c, i) {
     return `
       <div class="card" id="card-${i}">
-        <div class="card-top"><h3>${esc(c.title)}</h3><span class="tag">${esc(c.kind)}</span></div>
+        <div class="card-top"><h3>${esc(c.title)}</h3><span class="tag">${esc(c.kind)}</span>${handTag(c)}</div>
         <div class="step">${esc(c.step || '')}${noteOf(c) ? ` <span class="faint">· ${esc(noteOf(c))}</span>` : ''}</div>
         ${cardMini(c)}
         <div class="stages" id="panes-${i}" hidden>
@@ -1378,10 +1504,11 @@ tr.check td { font-size:12.5px; color:var(--mut); white-space:normal; }
     const c = cards[i];
     document.querySelectorAll('.gal-item').forEach(b => b.classList.toggle('on', +b.dataset.pick === i));
     $('galDetail').innerHTML = `
-      <div class="top"><h3>${esc(c.title)}</h3><span class="tag">${esc(c.kind)}</span>
+      <div class="top"><h3>${esc(c.title)}</h3><span class="tag">${esc(c.kind)}</span>${handTag(c)}
         <span class="pager"><button class="ghost" data-step="-1" aria-label="previous example">‹</button>${i + 1} / ${cards.length}<button class="ghost" data-step="1" aria-label="next example">›</button></span></div>
       <div class="step">${esc(c.step || '')}</div>
       ${noteOf(c) ? `<details><summary>Why it reads this way</summary><p>${esc(noteOf(c))}</p></details>` : ''}
+      ${handHow(c)}
       ${cardMini(c)}
       <div class="stages">
         <div class="stage"><div class="stage-h"><span class="n">1</span>📄 Raw, as it arrives<span class="sp"></span>${FOLDS}</div>${picHtml(picUrl(c))}<pre>${rawHtml(c.raw)}</pre></div>
@@ -1404,6 +1531,18 @@ tr.check td { font-size:12.5px; color:var(--mut); white-space:normal; }
         <div class="card-actions"><button data-run="${i}" ${lane ? '' : 'disabled'}>Try it live</button><button data-put="${i}" ${lane ? '' : 'disabled'}>Put it in the box</button><span id="res-${i}" class="res"></span></div>
       </div>`;
   }
+
+  // The saved event table of this noun: its version, rows and columns, one real row beside them. Closed until clicked.
+  fetch(`${base}/try/${noun}/table`).then(r => r.ok ? r.json() : null).then(t => {
+    if (!t || !t.found) return;
+    $('tableArea').hidden = false;
+    $('tableHead').textContent = `🗄 The event table: every ${noun} event saved as one row`;
+    $('tableLine').textContent = `${t.asset} · ${t.version}${t.pinned_by ? ' (pinned by ' + t.pinned_by + ')' : ''} · ${t.rows.toLocaleString()} rows · ${t.columns.length} columns · key ${t.key}`
+      + (t.newest !== t.version ? ` · newest built: ${t.newest}` : '');
+    $('tableAbout').textContent = t.about;
+    $('tableCols').innerHTML = t.columns.map(c => `<tr><td class="c-name">${esc(c.name)}</td><td class="c-type">${esc(c.type)}</td><td>${esc(c.holds || '')}</td><td class="c-ex">${c.example === null ? '<span class="mut">empty</span>' : esc(c.example)}</td></tr>`).join('');
+    $('tablePath').textContent = `${t.path} · built ${t.built_at} by ${t.builder || ''}`;
+  }).catch(() => {});
 
   fetch(`${base}/try/${noun}/${EVENT ? 'events' : 'gallery'}`).then(r => r.json()).then(g => {
     cards = g.cards || [];

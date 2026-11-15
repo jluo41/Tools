@@ -272,7 +272,7 @@ Hidden from the skill listing (`disable-model-invocation: true`); reached throug
 
 ## [0.7.0] · 2026-10-13 · layout: explained, JL's sketch: a wide frame, Tasks as steps, results outside
 
-- Asked 261013 on WellDoc Proj11 `work/b01_clm_foundation_model` s21 (j01 pretrain), over one evening: "make ⑦ 📚 j01
+- Asked 261013 on WellDoc Proj11 `work/b01_c_q25_clm_fm` s21 (j01 pretrain), over one evening: "make ⑦ 📚 j01
   · pretrain: explained from zero to be the main … others to support it"; "make it to be per tasks"; "each task to a
   row, did you really carefully read the content of the /excalidraw-job????"; "why you don't just make the main frame
   to be wider"; "read [the Paper-LLMRecPhy-work] session" (its rules: 主次分明, stairs, 留白, results small, never a

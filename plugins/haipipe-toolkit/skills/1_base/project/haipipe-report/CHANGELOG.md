@@ -54,4 +54,4 @@ Shorter description (1270 -> 452 characters): what it does, when to use it, its 
 - `scripts/build_report_drawing.py` moved in from `excalidraw-report/ref/`, which keeps a
   shim. Its output's `source` field now names this skill.
 - `scripts/check_report.py`: new, the row reader and mechanical check.
-- `servers/workbench/frame.py` `_answering` reads `<id>.E<n>` as its Question.
+- `servers/workbench/page/frame.py` `_answering` reads `<id>.E<n>` as its Question.

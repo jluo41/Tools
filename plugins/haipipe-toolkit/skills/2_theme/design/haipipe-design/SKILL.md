@@ -7,13 +7,16 @@ description: >-
   t99 review whole), and their run-<type>-<target> Runs. Owns the ladder contract
   and its scaffold (design_ladder.py), sets up Blocks, launches Jobs and opens
   their design Tasks, and routes everything else to the goal, method, unit,
-  workflow and delivery owners. Use to set up a design Block, launch a Job, open
-  its design Tasks, audit a design folder's names and faces, find who owns a
-  design Run, or read an older Design Folder board; where a Job stands and which
+  workflow and delivery owners. `/haipipe-design update <Block>` brings an older
+  design Block onto the current names (Jobs `M0x-<slug>-mK_inputs-vM`,
+  `inputs/inputs-vN`) and makes its Design Method Book. Use to set up a design
+  Block, launch a Job, open its design Tasks, audit or update a design folder's
+  names and faces, find who owns a design Run, or read an older Design Folder board; where a Job stands and which
   Run is next is haipipe-design-workflow's. Ends at a person's release; sending,
   the experiment and its measurement belong downstream. Trigger: design Block,
   set up a design Block, launch a design Job, open the design Tasks, design
-  ladder, /haipipe-design.
+  ladder, update design block, update the old design Block, Design Method Book,
+  /haipipe-design, /haipipe-design update.
 metadata:
   version: "0.4.2"
   last_updated: "2026-10-26"
@@ -47,24 +50,27 @@ Read [ref/design-ladder.md](ref/design-ladder.md) on every invocation that creat
 folder. In one picture (designed in `Tools/blueprints/Project-Ladder/work/b12_theme_design`, s11 · s12 · s13 · s21):
 
 ```text
-design/DesignMethodBook-<Topic>/  Block: the method, one Job per release jNN_method-vN_<slug>/, proposals/ its backlog
+design/DesignMethodBook-<Topic>/  Block: the designer of one kind of thing; one Job per method type jNN_M0x-<slug>/
 design/Design-<name>/             Block: one application, one channel; goals signed, inputs versions, Exp results
-└── jNN_<goal>_method-vN-<slug>_inputs-vM/   Job: goal G01 × release method-v2 × inputs-v2 → N designs; inputs/ is its fence
+└── jNN_<goal>_M0x-<slug>-mK_inputs-vM/   Job: goal G01 × method M02 m1 × inputs-v2 → N designs; inputs/ is its fence
     ├── t00_reason-ideas/          ② reason ideas           run-reason-t00            (hard)
     ├── tNN_d<NN>_<slug>/          ③ ④ one design           run-generate-d<NN> · run-verify-d<NN>-v<k> (hard)
     │                                                       run-revise-d<NN>          (soft)
     └── t99_review-whole/          ⑤ review whole           run-rank-t99              (hard)
 ```
 
-A design method's own versions live in a **Design Method Book** beside the Board, `design/DesignMethodBook-<Topic>/`
-(JL 261109: named as insight's `insight/InsightQuestionBook-<Topic>/`; on screen "Design Method Book", views Method ·
-Versions · Ideas · Scorecard · MindMap). Each release `jNN_method-vN_<slug>/` is cut from a registered version
-(`from: M01 m2`) and signed by a person; the Board names its Book (`method-book:`) and each Job its release
-(`release: method-vN`). Example: `blueprints/Project-Ladder/design/DesignMethodBook-Example/` beside `Design-Example/`.
+A **Design Method Book** beside the Board, `design/DesignMethodBook-<Topic>/`, is the designer of one channel:
+sms, a checklist (JL 261109: named as insight's `insight/InsightQuestionBook-<Topic>/`; on screen "Design Method
+Book", views Method · Versions · Ideas · Scorecard · MindMap). `<Topic>` names the channel, and its face says
+it (`channel: sms`, the line its Boards carry too). The channel's own rules are the venue pack (`venue/venue-<channel>/`); an application's shared rules stay on its Board (`design-goal.md`), signed there. It holds one Job per method type `jNN_M0x-<slug>/`; types sit side by side and are compared (M01 goal
+only, M02 overall performance), and only `mK` is a version of one type, signed by a person (`versions:` on the type's
+face, `mK.md` frozen beside it). A method does not change when the materials do: new materials are a new inputs
+version. One Board designs in one channel: it names its Book (`method-book:`), and each Job pins a type and a
+version (`method: M01 m2`). Example: `blueprints/Project-Ladder/design/DesignMethodBook-Example/` beside `Design-Example/`.
 
 ```bash
 python scripts/design_ladder.py book design/DesignMethodBook-<Topic> --serves design/Design-<name>
-python scripts/design_ladder.py release design/DesignMethodBook-<Topic>/j01_method-v1_goal-only --from "M01 m2"
+python scripts/design_ladder.py release design/DesignMethodBook-<Topic>/j01_M01-goal-only --from "M01 m2"
 ```
 
 A design method is the recipe that turns a goal and its inputs into N designs in five steps (① See input · ② Reason
@@ -77,6 +83,7 @@ inputs), so a change in the designs has one cause.
 | The request is about | Owner |
 |---|---|
 | the ladder's folders, names and faces; a new Block, Job or Task folder; `run-add-job`, `run-open-designs` | `haipipe-design` (this skill, `scripts/design_ladder.py`) |
+| an older Block onto the current names, with its Design Method Book: `/haipipe-design update <Block>` | `haipipe-design` (this skill, [ref/update.md](ref/update.md)) |
 | the goal list, the shared rules, an inputs version, a Job's `inputs/` fence: `run-add-goal`, `run-setup-rules`, `run-add-inputs`, `run-setup-goal`, `run-setup-inputs` | `haipipe-design-goal` |
 | what a method is, its versions, the scorecard, a proposal, an Exp's results: `run-setup-method`, `run-propose-method`, `run-add-observed`, `run-score` | `haipipe-design-method` |
 | one step of a method on one target: `run-reason-t00`, `run-generate`, `run-verify`, `run-revise`, `run-rank-t99` | `haipipe-design-unit` |
@@ -100,7 +107,7 @@ refuses any of them missing, an unsigned release, and a folder whose words diffe
 pins; `n` comes from the goal's line (`--n` only to say the same):
 
 ```bash
-python scripts/design_ladder.py job design/Design-<name>/j03_<goal-name>_method-v2-<slug>_inputs-v2 --goal G01 --release method-v2 --inputs inputs-v2 --moved method
+python scripts/design_ladder.py job design/Design-<name>/j03_<goal-name>_M02-overall-performance-m1_inputs-v2 --goal G01 --moved method
 python scripts/design_ladder.py job design/Design-<name>/j03_<goal-name>_<method-name> --goal G01 --method "M04 m2" --inputs i2 --moved method   # no Book: older names
 python scripts/design_ladder.py run design/Design-<name> add-job j03
 ```
@@ -135,6 +142,21 @@ passes). Each command writes only what is missing.
 - Generated or Run-written files (a Run's `result/`, `delivery/designs.json`) are never edited by hand: change the
   source and run the Run again.
 
+## Update an older Block
+
+```text
+/haipipe-design update <Block path>             audit, dry run, apply, verify
+/haipipe-design update <Block path> --check     audit and dry run only; nothing is written
+/haipipe-design update <design/ folder>         every Design Board in it
+```
+
+Read [ref/update.md](ref/update.md) first and follow it. It brings a Board that still names things the older way
+(`inputs/i1`, `jNN_<goal name>_<method name>`) onto the current names and makes its Design Method Book
+(`DesignMethodBook-<Channel>`), through `scripts/design_ladder.py audit` and `update [--apply]`
+(`scripts/design_update.py`). It never rewrites a file whose hash a manifest records, never signs a method version
+(a person does), and never touches another Block. The much older `B00_DesignBoard-<name>/` layout is not its job:
+see Older layout below.
+
 ## Older layout
 
 An older board (`B00_DesignBoard-<name>/` with `0-BR-brief/`, `2-Design[-M<NN>]/Design-NN-<slug>/`, Design Items,
@@ -152,8 +174,10 @@ haipipe-design/
 ├── agents/haipipe-designer-agent.md      reason · generate · revise
 ├── agents/haipipe-design-reviewer-agent.md   verify · rank · the fence check
 ├── ref/design-ladder.md                  the contract: tree · rules · Runs · Spaces
+├── ref/update.md                         /haipipe-design update: an older Block onto the current names
 ├── ref/legacy/                           the older Design Folder board
-├── scripts/design_ladder.py              the scaffold: block · job · task · run
+├── scripts/design_ladder.py              the scaffold: block · book · method · job · task · run · audit · update
+├── scripts/design_update.py              what audit and update do
 ├── scripts/carry_over/                   one-time moves
 └── tests/test_ladder_scaffold.py         the scaffold, and that the workbench reads it
 ```

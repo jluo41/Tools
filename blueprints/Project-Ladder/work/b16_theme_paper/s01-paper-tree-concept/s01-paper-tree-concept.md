@@ -1,5 +1,6 @@
 s01 · Paper tree concept: plan, explore, evidence, writing
 =========================================================
+view: findings
 
 renamed-from: s01-paper-tree (JL 261031: "call the paper_tree to be paper_tree_concept")
 
@@ -20,7 +21,37 @@ ladder said only that each level's studio/ and reports/ hold "its own"; this top
 (first drawn as s05-venue-boundary, then s05-board-job-boundary, the same day; JL: "it should be the board job
 and task boundary").
 
-**Feeds:** `reports/` q01_paper_ladder · q02_venues_related_built · q04_story_into_topics
+**Feeds:** Q01 · Q02 · Q04
+
+
+Q01 · Answer
+------------
+
+**Question:** How does a paper climb the ladder?
+
+**Answer (partial):** A paper Board is venue-free and close to the scientific work. A Job is one version for one venue: it selects which questions and results to report, orders its Sections and answers comments. A Task writes one Section, Abstract or letter. The paper cites Results from the Project's work and discovery Tasks; the Job does not call that scientific work.
+
+**Page:** [q01_paper_ladder.md](q01_paper_ladder/q01_paper_ladder.md): the full answer, its evidence and limits (moved from reports/)
+
+
+Q02 · Answer
+------------
+
+**Question:** Where do venues, related papers and the built paper live?
+
+**Answer (partial):** Two of the three already have one home, set by b10 for every Block: the built paper goes to the Board's `delivery/`, one folder per version, and related papers go to the Board's `related/`. Only the venue is the paper's own question: whether its call and author kit stay in `venues/<venue>/` at the Board or become rows of `related/`.
+
+**Page:** [q02_venues_related_built.md](q02_venues_related_built/q02_venues_related_built.md): the full answer, its evidence and limits (moved from reports/)
+
+
+Q04 · Answer
+------------
+
+**Question:** Where do the Story and Ideation live?
+
+**Answer (partial):** A paper Board takes b03's shape. Ideation and each telling of the paper are studio topics (`s01-ideation/`, `studio/sNN-story-<telling>/`), each research question is a Board Question grouped by its topic with a report (`reports/qNN_<question>/`), and the Section Narrative with its compile order moves to the version that tells it. The Story and Ideation skills stay, called from the Studio and the Report.
+
+**Page:** [q04_story_into_topics.md](q04_story_into_topics/q04_story_into_topics.md): the full answer, its evidence and limits (moved from reports/)
 
 
 Files

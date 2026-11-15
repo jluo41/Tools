@@ -15,7 +15,7 @@ it. New on 261012 (JL: "how could I host it and share it with others? ... share 
 use the JHU jhed accouunt to verify it? ... How hard it will be?"; then "maybe we can have the s52 about host and
 share with the team?").
 
-**Feeds:** `reports/` q12_space_hosting
+**Feeds:** Q12
 
 
 Files

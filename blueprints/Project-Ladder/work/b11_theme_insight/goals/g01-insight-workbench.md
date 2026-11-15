@@ -29,34 +29,34 @@ Read first (the design is the source of truth; never edit these drawings)
 The design (settled: implement)
 -------------------------------
 
-1. Plan C. The Prototype (questions + scripts) is its own work Block; its Jobs are versions `j0N_pN/`,
-   each with `release.yaml`, `partitions.md`, `thresholds.yaml` (cuts, power floors, compare rule). The
-   insight Board holds one dataset with dated versions; its Jobs are `j0N_pN_<d>vM/` (one Prototype
+1. Plan C. The Question Book (questions + scripts) is its own work Block; its Jobs are versions `j0N_pN/`,
+   each with `release.yaml`, `partitions.md`, `thresholds.yaml` (segments, power floors, compare rule). The
+   insight Board holds one dataset with dated versions; its Jobs are `j0N_pN_<d>vM/` (one Question Book
    version × one data version, pinned by path + hash, frozen once closed); a Job's Tasks are its
-   questions; their hard Runs are `runs/rNN_<partition>/` (+ `rNN_cross`).
-2. Board (s11): Description = Map · Prototype · Dataset · Partitions; Work Details = the Jobs, the
-   open one expanded to its Tasks' quick results; Audience Report = Partition × Reading (Coverage ·
+   questions; their hard Runs are `runs/rNN_<segment>/` (+ `rNN_cross`).
+2. Board (s11): Description = Map · Question Book · Dataset · Segments; Work Details = the Jobs, the
+   open one expanded to its Tasks' quick results; Audience Report = Segment × Reading (Coverage ·
    Tracks · Consistency · Findings), D · I · K · W as sections, every view Question │ Work │ Report;
-   Runs = the Board's soft runs (add a data version, add a Job, propose a cut, run-coverage,
+   Runs = the Board's soft runs (add a data version, add a Job, propose a segment, run-coverage,
    run-track-<q>, run-consistency-<jA>-<jB>, run-report-<qNN>, check the Board, handoff), then hard
    from below; Delivery = the signed Wisdom counsel naming its Job.
 3. Job (s12): no band; the line "pN × <d>vM · closed, frozen · moved from <prev>: the code | the data"
-   opens Description › Prototype. Description = Prototype · Dataset; Audience Report = Question │ Work │ Report by D · I · K · W,
-   filtered by Partition × Period (Current · vs previous); vs previous reads only
+   opens Description › Question Book. Description = Question Book · Dataset; Audience Report = Question │ Work │ Report by D · I · K · W,
+   filtered by Segment × Period (Current · vs previous); vs previous reads only
    `reports/vs-<prev>.md` (written by the Job's run-compare-<prev>), statuses new question · new
    finding · held · changed · dropped · not comparable; Work Details = the Job → Task → Run tree;
    Runs = run-launch · run-power · run-compare-<prev> · run-propose-<job> · run-close, then the Tasks';
    run-propose-<job> (button "Propose questions", on vs previous and in Runs) files new or changed
-   questions to the Prototype's proposals/; a Task proposes nothing.
+   questions to the Question Book's proposals/; a Task proposes nothing.
 4. Task (s13): one Task type, an insight question on its Job's pair. No band; the line
    "K01 · in <job> · release pN · <d>vM · ✅ checked" opens Description › Question.
    Description = Question · Plan · Data, read only from the release (the ask, DIKW level, why now,
    signed; the needs with work spec, pass rule, Ask covered; each partition's n, base rate, power);
    no propose button (a change is proposed from the Job, run-propose-<job>). Audience Report =
    Question │ Work │ Report over the question's needs (need → the Run that answers it → the page's
-   sentence), filtered by Partition × Period; Cross shows the difference test and POOL or SPLIT;
+   sentence), filtered by Segment × Period; Cross shows the difference test and POOL or SPLIT;
    vs previous reads this question's rows of the Job's `reports/vs-<prev>.md`. Work Details = the
-   Task → Run tree; Runs = by type, in order rNN_<partition> → rNN_cross → run-write → run-check
+   Task → Run tree; Runs = by type, in order rNN_<segment> → rNN_cross → run-write → run-check
    (→ run-sign, W only); Delivery only for a W Task.
 5. Pop-outs: every ↗ opens one: the question (`question.md`, read only), a Run (run.yaml, pins, n and
    power, passes, result preview, report.md), the Cross Run, the page, a method card.
@@ -66,14 +66,14 @@ The design (settled: implement)
 Still open (do NOT decide; render nothing for them; list them in the report)
 -----------------------------------------------------------------------------
 
-What "held" means; backfill Jobs; whether a handoff goes stale; Findings per partition; whether
-Readings re-run automatically; a Board Run's own pop-out; the Prototype's steps in the Guide.
+What "held" means; backfill Jobs; whether a handoff goes stale; Findings per segment; whether
+Readings re-run automatically; a Board Run's own pop-out; the Question Book's steps in the Guide.
 
 
 Data on disk today (carry over what exists)
 -------------------------------------------
 
-- No plan-C Board exists yet: build a placeholder plan-C Board + Prototype Block as a test fixture in
+- No plan-C Board exists yet: build a placeholder plan-C Board + Question Book Block as a test fixture in
   a temp folder (no real names, no data values) and render plan C from it.
 - `examples-5-design/Project-Application-SMSDesign/tasks/b52_sms_question_dikw` (board.md
   `workbench: insight`; one Job per DIKW level, today's layout): DONE by the base owner (261007,
@@ -92,7 +92,7 @@ Rules
 - Read-only workbench: nothing writes; a run type only copies its prompt.
 - Base look only: the frame's classes, no theme stylesheet.
 - Say "DIKW level", never the old word. Paths relative to the SPACE root in anything written.
-- No PHI: counts, rates and cut names only; never a row-level value or an identifier.
+- No PHI: counts, rates and segment names only; never a row-level value or an identifier.
 - Never hand-edit generated files (`results/`, `reports/<run>/`, `delivery/`, `notebooks/`).
 - Do not commit or push.
 

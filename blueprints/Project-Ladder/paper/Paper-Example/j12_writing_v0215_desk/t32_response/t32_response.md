@@ -9,7 +9,7 @@ structure-source: paper/haipipe-paper-draft/ref/generic-template.md
 state: ⬜ OPEN · plan to write
 content: draft v0.1 · adopted 261106 0139
 story-row: j12_writing_v0215_desk ## Narrative / t32_response
-responds-to: ../reports/q01_review-0110/q01_review-0110.md
+responds-to: j31_review_reviewers_v0110
 reader-question: <what did the authors change for each point the reviewers raised, and where?>
 entry-state: <the editor holds the decision letter and the reviewers' points on version 1>
 exit-state: <the editor sees each point answered once, with the Section and paragraph that changed>

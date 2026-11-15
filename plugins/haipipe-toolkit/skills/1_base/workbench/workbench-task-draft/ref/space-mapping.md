@@ -21,7 +21,7 @@ data-space=bullet  · lens=div       · servers/workbench/workbench-task-draft/o
 data-space=evidence· lens=evidence  · servers/workbench/workbench-task-draft/space_views.py (Card view: evidence.py)
 data-space=delivery· lens=delivery  · servers/workbench/workbench-task-draft/space_views.py
 lens=run (no button)                · servers/workbench/workbench-task-draft/runs.py
-Runs panel (each Space)             · servers/workbench/runs_panel.py
+Runs panel (each Space)             · servers/workbench/page/runs_panel.py
 ```
 
 `Bullet`, `div`, and `/_board/evidence` or `/_board/runs` are implementation

@@ -1,19 +1,19 @@
 ---
-release: method-v1
-from: M01 m2
-state: closed
-signed: ✅ 261106
+method: M01
 title: goal only
-goal: 'method-v1, goal only: the designs read the goal and the shared rules, nothing else'
+state: closed
+versions:
+  m2: ✅ 261106
+goal: 'M01, goal only: the designs read the goal and the shared rules, nothing else'
 ---
 
-# method-v1 · goal only
+# M01 · goal only
 
-The baseline release: every design reads the goal and the shared rules only, no data of ours and no theory. Every
-later release is compared with it. It is cut from the registered method M01 m2 and frozen in `method.md` beside this
+The baseline type: every design reads the goal and the shared rules only, no data of ours and no theory. Every other
+type is compared with it. Its signed version m2 is copied from the Guide's library and frozen in `m2.md` beside this
 face.
 
-## Steps
+## Steps of m2
 
 ```text
 ① See input       goal only
@@ -25,5 +25,5 @@ face.
 
 ## Used by
 
-- design/Design-Example/j01_confirm-by-reply_method-v1-goal-only_inputs-v1 (released, tested in e01)
-- design/Design-Example/j02_confirm-by-reply_method-v1-goal-only_inputs-v2 (still reasoning)
+- design/Design-Example/j01_confirm-by-reply_M01-goal-only-m2_inputs-v1 (released, tested in e01)
+- design/Design-Example/j02_confirm-by-reply_M01-goal-only-m2_inputs-v2 (still reasoning)

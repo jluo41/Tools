@@ -70,11 +70,11 @@ Rules
 Where it shows
 --------------
 
-The shared renderer `servers/workbench/related_papers.py` (`papers_page`) draws the
+The shared renderer `servers/workbench/guide/related_papers.py` (`papers_page`) draws the
 table as cards: one band per group, a head counting papers by role, journal, UTD24 and
 PDF; closed, a card is the title then who · year · venue; open, why it is here, its links
 (publisher or source page, the PDF, the Paper Run), the abstract and the PDF itself. A
-family names its table as `papers_table` in `servers/workbench/guide_families.py`,
+family names its table as `papers_table` in `servers/workbench/guide/guide_families.py`,
 and Guide › Related Paper renders it; Design and Insight frame their own theory pages,
 which render through the same module.
 

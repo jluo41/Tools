@@ -29,16 +29,16 @@ read-only keys for boards made before page tickets.
 ## Position
 
 Information answers a `QI` question from the board's extract and hands a
-reproducible pattern to Knowledge. Partition-major cross contrasts are the only
+reproducible pattern to Knowledge. Segment-major cross contrasts are the only
 legal same-level derivation: they read the mirrored Information results of
-each partition and say how they differ.
+each segment and say how they differ.
 
 ## What an Information answer is
 
 A reproducible pattern: a rate, a contrast, a segment, a distribution, a null.
 A statement that can be disputed on grounds other than arithmetic has become a
-Knowledge claim and does not belong here. Covariates are cuts inside a run
-(groupings), not partitions.
+Knowledge claim and does not belong here. Covariates are segments inside a run
+(groupings), not segments.
 
 ## The run · Work
 
@@ -46,12 +46,12 @@ Knowledge claim and does not belong here. Covariates are cuts inside a run
   chosen or built from each need's work spec, never the other way round. One
   run may serve several needs when each spec is met exactly by its own output
   file (a grouping per need); the config's `answers:` lists those need ids.
-- One config per dataset × partition, stem `rNN_<dataset>_<cut>`; the
-  partition is the config's `population.where`, read against MT00's
-  partition register. Thresholds come from the Job's shared file, never
-  restated in a config, so every partition runs at identical floors.
+- One config per dataset × segment, stem `rNN_<dataset>_<segment>`; the
+  segment is the config's `population.where`, read against MT00's
+  segment register. Thresholds come from the Job's shared file, never
+  restated in a config, so every segment runs at identical floors.
 - The answering page calls it through its own ticket
-  `runs/run_bNNjNNtNNrNN_<partition>_<task>.sh`, which sets `RESULT_DIR` to the
+  `runs/run_bNNjNNtNNrNN_<segment>_<task>.sh`, which sets `RESULT_DIR` to the
   page's `results/<ticket>/` and `RUN_TICKET` to itself. One task run may feed
   several pages, each through its own ticket and result.
 - The join is the evidence need: the page's `answers.yaml` binds each compute
@@ -97,10 +97,10 @@ nulls and contradictions. Never turn arithmetic into a claim in the handoff.
 
 ## Files
 
-- Task run: `work/b5N_<topic>_dikw/j2N_information_<topic>/tNN_<task>/scripts/config/rNN_<dataset>_<cut>.yaml` + `runs/rNN_….sh`
-- Page ticket: `insight/<board>/<n>-<partition>/I<NN>-<partition>-<slug>/runs/run_bNNjNNtNNrNN_<partition>_<task>.sh`
-- Result: `insight/<board>/<n>-<partition>/I<NN>-<partition>-<slug>/results/<ticket>/`
-- Page: `insight/<board>/<n>-<partition>/I<NN>-<partition>-<slug>/I<NN>-<partition>-<slug>.md`
-- Binding: `insight/<board>/<n>-<partition>/I<NN>-<partition>-<slug>/answers.yaml` (each need → its result files)
+- Task run: `work/b5N_<topic>_dikw/j2N_information_<topic>/tNN_<task>/scripts/config/rNN_<dataset>_<segment>.yaml` + `runs/rNN_….sh`
+- Page ticket: `insight/<board>/<n>-<segment>/I<NN>-<segment>-<slug>/runs/run_bNNjNNtNNrNN_<segment>_<task>.sh`
+- Result: `insight/<board>/<n>-<segment>/I<NN>-<segment>-<slug>/results/<ticket>/`
+- Page: `insight/<board>/<n>-<segment>/I<NN>-<segment>-<slug>/I<NN>-<segment>-<slug>.md`
+- Binding: `insight/<board>/<n>-<segment>/I<NN>-<segment>-<slug>/answers.yaml` (each need → its result files)
 - Legacy: a board made before page tickets keeps its results in its old store
   (`ref/board-contract.md` § Boards made before page tickets).

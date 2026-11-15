@@ -136,11 +136,15 @@ def tick(eid, x, y):
     return line(eid, [(x, y + 12), (x + 9, y + 22), (x + 26, y)], GR, 3)
 
 
+PART_NAMES = ("Idea", "Now", "Design", "Process", "Delivery")   # excalidraw-studio check.py finds the parts by these
+PART_SIZE = 46                                                   # and by this size; keep both in step with check.py
+
+
 def part(k, x, y, icon, name, sub, color, gap=90):
     """A part of the flow: a faint giant number behind, a big icon, its name and what it answers."""
     els = text(f"num{k}", x - 150, y - 190, str(k), 260, "#e9ecef")
     els += icon
-    return els + text(f"part{k}", x + gap, y - 26, name, 46, color) + text(f"part{k}_sub", x + gap + 2, y + 30, sub, 20, BODY)
+    return els + text(f"part{k}", x + gap, y - 26, name, PART_SIZE, color) + text(f"part{k}_sub", x + gap + 2, y + 30, sub, 20, BODY)
 
 
 def room(k, x, y):
@@ -276,7 +280,7 @@ def idea(topic, spec):
     """1 Idea: ① why we must make this sNN, ② what it hands over (JL 261030: "why we must create this studio, and the
     second one will be what this studio will deliver"), no boxes."""
     nn, why, what = topic.name.split("-")[0], spec["why"], spec["what"]
-    els = part(1, 0, 190, bulb("icon1", 40, 190, 36), "Idea", "why we do it", OR)
+    els = part(1, 0, 190, bulb("icon1", 40, 190, 36), PART_NAMES[0], "why we do it", OR)
     els += text("why_h", 0, 262, f"\u2460 why we must make {nn}", 18, OR)
     els += bubble("ask", 0, 300, 440, 150, why["question"])
     for k, (cx, cy, w, a) in enumerate(((95, 575, 190, -0.06), (290, 585, 180, 0.05), (480, 575, 190, -0.03))):
@@ -316,7 +320,7 @@ def now(topic, spec):
     els = arrow("go1n", [(445, 380), (560, 300), (640, 300)], TEAL, width=3)
     pin = [_el("ellipse", "icon2", 664, 158, 30, 30, TEAL, "#c5f6fa", strokeWidth=2)]
     pin += poly("icon2_tip", [(666, 180), (692, 180), (679, 210)], TEAL, "#c5f6fa")
-    els += part(2, 660, 190, pin, "Now", "how far this sNN has got", TEAL, 60)
+    els += part(2, 660, 190, pin, PART_NAMES[1], "how far this sNN has got", TEAL, 60)
     stage = (re.search(r"(?m)^\*\*Stage:\*\*\s*`?(\w+)", face) or [None, "explore"])[1]
     els += line("now_stage_line", [(680, 300), (1220, 300)], TEAL, 2)
     for k, st in enumerate(STAGES):
@@ -374,7 +378,7 @@ def design_part(sketches):
     d0 = len(els)
     pencil = poly("icon3", [(690, 160), (722, 160), (722, 214), (706, 236), (690, 214)], TITLE, "#d0ebff")
     pencil += poly("icon3_tip", [(690, 214), (722, 214), (706, 236)], TITLE, "#ffe066")
-    els += part(3, 690, 190, pencil, "Design", "proposals for the idea; changed a lot along the way", TITLE, 60)
+    els += part(3, 690, 190, pencil, PART_NAMES[2], "proposals for the idea; changed a lot along the way", TITLE, 60)
     els += sketches
     for e in els[d0:]:
         grow(e)
@@ -385,7 +389,7 @@ def process(topic, spec):
     """4 Process: the sNN's Job, its Tasks and Runs, each ticked from disk; no Job yet says so."""
     job = spec.get("job")
     els = arrow("go23", [(2020, 600), (2110, 560), (2170, 620)], PU, width=3)
-    els += part(4, 2210, 250, gear("icon4", 2250, 250), "Process", "how: one Job, its Tasks, their Runs", PU, 110)
+    els += part(4, 2210, 250, gear("icon4", 2250, 250), PART_NAMES[3], "how: one Job, its Tasks, their Runs", PU, 110)
     if not job or not Path(job).is_dir():
         els += text("job_none", 2210, 360, "no Job yet: the work that makes this delivery\nstarts once its Design is agreed", 18, INK)
         return els + room(4, 2210, 520)
@@ -441,7 +445,7 @@ def delivery(topic, spec):
     DX = 3110
     els = arrow("go34", [(2900, 760), (2980, 740), (DX - 20, 800)], GR, width=3)
     els += stamp("agreed", 2990, 620)
-    els += part(5, DX, 300, gift("icon5", DX - 5, 285, 76, 58), "Delivery", "what this sNN hands over", GR)
+    els += part(5, DX, 300, gift("icon5", DX - 5, 285, 76, 58), PART_NAMES[4], "what this sNN hands over", GR)
     rendered = render_delivery.render(topic)
     ink = {"\u2705": GR, "\u2b1c": RE}
     els += text("dl_in_h", DX, 380, f"in {topic.name}/delivery/", 17, GR)

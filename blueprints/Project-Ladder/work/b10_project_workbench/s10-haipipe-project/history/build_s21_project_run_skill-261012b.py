@@ -8,7 +8,7 @@
                    what it holds and the buttons that name it; haipipe-report/ opened file by file
 
 Read from disk on every build: every Run button of the base frame and the skill it names
-(servers/workbench/frame.py, through frame_buttons() below), the skill folders in Tools/ (version, ref ·
+(servers/workbench/page/frame.py, through frame_buttons() below), the skill folders in Tools/ (version, ref ·
 scripts · tests) and the files of haipipe-report/. Typed, since they are the design: the Run folders, the
 Block tree and the open points. The 261007 builder and the 261012 four-story builder are in history/.
 
@@ -220,7 +220,7 @@ def background_nodes(buttons):
             "Page Task: a Task that writes one Page; it names seven draft skills",
             "theme: the kind of Block (work, cowork, paper ...); it keeps its own skills over the base"]},
         {"Where it sits": [
-            "code: servers/workbench/frame.py gives each button its skills: field (s21-D02)",
+            "code: servers/workbench/page/frame.py gives each button its skills: field (s21-D02)",
             "the whole Run contract is s06-run-workbench-skill",
             "feeds the Questions q05_skill_per_level and q08_workbench_base"]},
         {"How to read this drawing": [
@@ -339,8 +339,8 @@ def tools_nodes(buttons):
         q.startswith(".") or q == "__pycache__" for q in p.relative_to(folder).parts)),
         key=lambda p: (p.name != "SKILL.md", len(p.relative_to(folder).parts), p.relative_to(folder).as_posix()))
     return [
-        {"servers/": [f"workbench/frame.py: draws the buttons; each names its skill ({sum(len(r) for r in buttons.values())})",
-                      "workbench/runs_panel.py: the Runs panel beside each Space",
+        {"servers/": [f"workbench/page/frame.py: draws the buttons; each names its skill ({sum(len(r) for r in buttons.values())})",
+                      "workbench/page/runs_panel.py: the Runs panel beside each Space",
                       f"workbench-<theme>/: a theme's frame over the base, {len(servers)}"]},
         {"skills/1_base/project/: the base, one skill per level, one per shared Space": base_kids},
         {"skills/1_base/ (the others the buttons name)": other},

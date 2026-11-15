@@ -64,7 +64,7 @@ Notes
   declared store; a Result's path keeps the `tNN_<task>/results/rNN_<run>/` shape either way.
   CODE_REVIEW.md sits beside the code it reviews (a Task's, or a Job's shared `src/`).
 - **Guide › Method.** The method steps live in the `task` entry of
-  `servers/workbench/guide_families.py`; Method has no run.
+  `servers/workbench/guide/guide_families.py`; Method has no run.
 - **Delivery.** Reports lists every report whose `answer-status` is `answered`; building it
   as a web page, LaTeX and Word is the Page delivery run, and a person signs its release.
 - **Person signs.** What changes the Block's meaning: a Question and a change to it, the

@@ -4,17 +4,17 @@ board-kind: task-block
 package: plugins/haipipe-toolkit
 theme: insight
 ui-block: blueprints/Project-Ladder/insight/Insight-Example
-ui-block: blueprints/Project-Ladder/insight/Prototype-Example
-ui-job: blueprints/Project-Ladder/insight/Insight-Example/j01_code-v1-example-questions_data-v1
-ui-job: blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2
-ui-job: blueprints/Project-Ladder/insight/Prototype-Example/j01_code-v1_example-questions
-ui-task: blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2/t01_D01_extract-shape
-ui-task: blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2/t03_I01_outcome-by-arm
-ui-task: blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2/t05_K01_gap-holds
-ui-task: blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2/t06_W01_next-round
-ui-task: blueprints/Project-Ladder/insight/Insight-Example/j02_code-v1-example-questions_data-v2/t07_X01_what-we-found
+ui-block: blueprints/Project-Ladder/insight/InsightQuestionBook-Example
+ui-job: blueprints/Project-Ladder/insight/Insight-Example/j01_question-v1-example-questions_data-v1
+ui-job: blueprints/Project-Ladder/insight/Insight-Example/j02_question-v1-example-questions_data-v2
+ui-job: blueprints/Project-Ladder/insight/InsightQuestionBook-Example/j01_question-v1_example-questions
+ui-task: blueprints/Project-Ladder/insight/Insight-Example/j02_question-v1-example-questions_data-v2/t01_D01_extract-shape
+ui-task: blueprints/Project-Ladder/insight/Insight-Example/j02_question-v1-example-questions_data-v2/t03_I01_outcome-by-arm
+ui-task: blueprints/Project-Ladder/insight/Insight-Example/j02_question-v1-example-questions_data-v2/t05_K01_gap-holds
+ui-task: blueprints/Project-Ladder/insight/Insight-Example/j02_question-v1-example-questions_data-v2/t06_W01_next-round
+ui-task: blueprints/Project-Ladder/insight/Insight-Example/j02_question-v1-example-questions_data-v2/t07_X01_what-we-found
 shared-blueprint: b01_haipipe-toolkit
-spine: Design questions about the insight Theme as one ladder: what an insight Board (one dataset), an analysis plan × data freeze Job, a question Task and a cut Run each hold and show, how partitions and pooling appear, where a question's gates live, what each level delivers, and what becomes of the older register boards.
+spine: Design questions about the insight Theme as one ladder: what an insight Board (one dataset), a question version × data version Job, a question Task and a segment Run each hold and show, how segments and pooling appear, where a question's gates live, what each level delivers, and what becomes of the older register boards.
 close: Each recorded question has a report Page with an answer status, and every answered question names the skill, workbench or builder change that settled it.
 session: Ladder-b11-Insight-v1031
 
@@ -22,17 +22,17 @@ session: Ladder-b11-Insight-v1031
 
 The insight Theme answers what one dataset can and cannot say, climbing Data → Information →
 Knowledge → Wisdom. Its layout (plan C, `haipipe-insight` ref/insight-ladder.md) has two folders: a
-Prototype (`insight/Prototype-<Topic>/`, the questions and their scripts, one Job per release, read as
-an analysis plan AP<N>) and an insight Board (`insight/Insight-<dataset>/`, one dataset and its data
-freezes F<M>). A Board Job runs one analysis plan on one data freeze (`jNN_pN_<d>vM/`); a Task is one
-question at one level (`tNN_<L><NN>_<slug>/`); a hard Run is one cut (`r01_full`, `r02_<cut>`,
+Question Book (`insight/InsightQuestionBook-<Topic>/`, the questions and their scripts, one Job per question version
+`question-vN`) and an insight Board (`insight/Insight-<dataset>/`, one dataset and its data versions
+`data-vM`). A Board Job runs one question version on one data version (`jNN_question-vN-<slug>_data-vM/`); a Task is one
+question at one level (`tNN_<L><NN>_<slug>/`); a hard Run is one segment (`r01_full`, `r02_<segment>`,
 `r04_cross`). The older layouts (an Insight Block with `j01_data` … `j04_wisdom`; a register board
 `*-InsightBoard`) keep their shape until carried over.
 
 The original focus-page design gives every level Report (check), Work (do) and Studio (think).
 The 261101 baseline used the base's vanilla views; the later Insight renderer now supplies the
 Board's Answers, Questions, Jobs, Data and Handoff; the Job's Overall, Grid and vs previous; and the
-Task's Answer, By cut, Across Jobs and Plan. Each also has MindMap. The earlier five-Space and
+Task's Answer, By segment, Across Jobs and Plan. Each also has MindMap. The earlier five-Space and
 six-Space drawings remain historical references. This Block asks how Insight fits the ladder level
 by level, and what it needs that no other theme has.
 
@@ -51,7 +51,7 @@ are recorded in [acceptance](ui/acceptance.md); private mappings remain in ignor
 
 Keep the three levels and their different responsibilities. Overview, Status, Findings and Delivery
 remain a proposal, not a requirement for adopting Review Content and Around the Work. The linked
-Prototype keeps its own question/script and release responsibilities. The [new Task discussion](ui/task-design.md)
+Question Book keeps its own question/script and release responsibilities. The [new Task discussion](ui/task-design.md)
 separates ongoing data enrichment, question development and literature/theory work from finite Tasks,
 with inputs, outputs, completion evidence and placement options. No new Task kinds are implemented.
 
@@ -77,7 +77,7 @@ chat section -> Related question -> haipipe-report -> skill, workbench or builde
 theme's (b16 j01) and the labeling theme's (b15 j01): Board, Job and Task × Report, Work and Studio, one
 sNN each (s51 to s59, labeling's numbers), every view drawn as the same full screen, lettered, settled
 one letter per round. All nine are drawn by its `insight_ui_cells.py`. In the later designs the Job
-has Overall, Grid and vs previous; the Task has Answer, By cut, Across Jobs and Plan. DIKW levels
+has Overall, Grid and vs previous; the Task has Answer, By segment, Across Jobs and Plan. DIKW levels
 classify the questions, not separate analysis Jobs. The earlier level sketches s11 · s12 · s13
 (six Spaces each) are the "before" it refines. The Work alignment tables preserve this design
 history while proposing a new shared frame.
@@ -96,7 +96,7 @@ b11_theme_insight/
 ├── s01-insight-ladder/          the proposal: every level, Board to Task, options A and B
 ├── s02-insight-workbench/       today's old five-Space Insight page (the Guide's RoadMap Draw serves it)
 ├── s03-insight-methods/         the methods: the cards, their code; and the Guide's methods drawing
-├── s04-insight-structure/       the thinking: Prototype versions × data versions, the two clocks
+├── s04-insight-structure/       the thinking: Question Book versions × data versions, the two clocks
 ├── s05-insight-workflow/        the whole workflow as one map: 16 steps in five zones, the loops, who signs
 ├── s11-block-level/             the Block tab, six Spaces (before j01's s51 to s53)
 ├── s12-job-level/               a Job tab, six Spaces (before s54 to s56)
@@ -120,28 +120,28 @@ those three are frozen drawings now; j01 replaces them.
 questions:
 - id: Q01
   title: How does an insight topic climb the ladder?
-  question: What do the insight Block, a DIKW level Job, a question Task and a dataset × partition
+  question: What do the insight Block, a DIKW level Job, a question Task and a dataset × segment
     Run each hold and show on screen, and which of today's Insight workbench Views moves to
     which level?
-  hypothesis: The Block keeps what spans the levels (the dataset and partitions, the full Insight
+  hypothesis: The Block keeps what spans the levels (the dataset and segments, the full Insight
     table, Meta's counts, the handoff); each level is a Job with the Block's six Spaces, Work
-    Details = its questions; each question is a Task, Work Details = its partitions; each
-    Run is one dataset × partition with its generated report.
+    Details = its questions; each question is a Task, Work Details = its segments; each
+    Run is one dataset × segment with its generated report.
   acceptance: Answered when every level names its folder, its six Spaces' content and the
     today View it replaces, drawn in s01-insight-ladder and agreed.
   work: []
-  report: reports/q01_insight_ladder/q01_insight_ladder.md
+  report: s01-insight-ladder/s01-insight-ladder.md
 - id: Q02
-  title: How do partitions and pooling show?
-  question: Where do an extract's partitions (Full, the cuts, Cross) and a question's pooling
-    verdict (POOL, SPLIT, UNDETERMINED) show at each level, and how is a cut added?
-  hypothesis: Partitions are the third row of Audience Report at Block, Job and Task; the
-    pooling verdict is a Knowledge question's own row under Cross; a cut is a Block Run (register
-    a cut) that adds a Run per question, never a new folder.
-  acceptance: Answered when each level's screen places the partitions and the verdict, and
-    registering a cut names the Runs it makes.
+  title: How do segments and pooling show?
+  question: Where do an extract's segments (Full, the segments, Cross) and a question's pooling
+    verdict (POOL, SPLIT, UNDETERMINED) show at each level, and how is a segment added?
+  hypothesis: Segments are the third row of Audience Report at Block, Job and Task; the
+    pooling verdict is a Knowledge question's own row under Cross; a segment is a Block Run (register
+    a segment) that adds a Run per question, never a new folder.
+  acceptance: Answered when each level's screen places the segments and the verdict, and
+    registering a segment names the Runs it makes.
   work: []
-  report: reports/q02_partitions_pooling/q02_partitions_pooling.md
+  report: s04-insight-structure/s04-insight-structure.md
 - id: Q03
   title: Where do a question's gates live?
   question: Today's Check Space shows a question's seven gates, its checks and its runtime;
@@ -152,7 +152,7 @@ questions:
   acceptance: Answered when every one of today's Check Views has a place in the six Spaces,
     or a stated reason to keep a Check Space for insight.
   work: []
-  report: reports/q03_question_gates/q03_question_gates.md
+  report: s02-insight-workbench/s02-insight-workbench.md
 - id: Q04
   title: What does each level deliver?
   question: 'What does each DIKW level hand on, to whom, and where: do Data, Information and
@@ -164,7 +164,7 @@ questions:
   acceptance: Answered when each level's Delivery is either empty with a reason or names what
     it releases, and the handoff path to b12 is written.
   work: []
-  report: reports/q04_level_delivery/q04_level_delivery.md
+  report: s05-insight-workflow/s05-insight-workflow.md
 - id: Q05
   title: What becomes of the register boards?
   question: Should the older register boards (insights/<Dataset>-InsightBoard/) be carried
@@ -175,7 +175,6 @@ questions:
   acceptance: Answered when the choice is made, each existing register board has a named plan,
     and the workbench's handling of the older layout is written.
   work: []
-  report: reports/q05_register_boards/q05_register_boards.md
 ```
 
 ## Related resources
@@ -197,10 +196,10 @@ resources:
   - Q01
   - Q02
   - Q03
-  contribution: Today's five Spaces, the Prototype and Insight Views, the Check Space and the pop-outs.
+  contribution: Today's five Spaces, the Question Book and Insight Views, the Check Space and the pop-outs.
   notes: ''
 - title: b10_project_workbench Q07 (how the workbench maps onto the ladder)
-  url: ../b10_project_workbench/reports/q07_workbench_mapping/q07_workbench_mapping.md
+  url: ../b10_project_workbench/s02-studio-workbench-skill/s02-studio-workbench-skill.md
   questions:
   - Q01
   contribution: The six Spaces every level shares, and the builder that draws them.

@@ -7,9 +7,10 @@ When --host, --port, --space-name, --public-url, or --auth-file is omitted,
 the matching non-secret setting in <root>/.server_config/settings.env is used.
 The explicit --public-read flag allows anonymous generated Board pages and
 the read-only Page Design and InsightBoard projections while keeping interactive tools
-authenticated. --no-auth disables HTTP Basic Auth
-for a trusted private network such as a Tailscale tailnet. --no-terminal can
-be combined with --no-auth when only the Page surfaces are needed.
+authenticated. Login is off by default on loopback and tailnet (100.64.0.0/10)
+hosts; it turns on when --auth-file (or settings AUTH_FILE without NO_AUTH)
+names an auth file. A LAN or 0.0.0.0 host still needs --auth-file or --no-auth.
+--no-terminal can be combined with no login when only the Page surfaces are needed.
 
 Page prose is read-only. Retired comment, sentence, edit-sentence, card,
 resolve, and discuss endpoints return 405, including requests from older tabs.
@@ -170,28 +171,17 @@ _UTF8_TYPES = {"application/javascript", "application/json", "application/xml",
                "image/svg+xml"}
 
 
-# A theme's board page answers at /_board/<theme>-board, named as its theme is (JL 261007: "make them
-# the same to the theme name"). The names two had before (task-board, paper) answered as them until 261012,
-# when they were dropped (JL: "yes, this one should be droped"): nothing links them any more.
-# One Page Task's views were a route each (the old Page workbench, one page per tab); they are the
-# frame's Task Spaces now (JL 261007: "why not merge them into the base"), served by the frame route
-# as `/_board/workbench?view=<view>`. A GET or HEAD of an old address answers as that; its POST twin
-# (the tab contract's write) keeps its address.
-PAGE_VIEW_ROUTES = {"/_board/folderstat": "folder", "/_board/draft": "draft", "/_board/outline": "draft",
-                    "/_board/value": "value", "/_board/evidence": "evidence", "/_board/delivery": "delivery",
-                    "/_board/runs": "runs", "/_board/pageruns": "pageruns"}
+# Old page-view addresses live in serve_routes.py; re-exported here for callers of serve.
+from serve_routes import PAGE_VIEW_ROUTES, new_route_name  # noqa: E402,F401
+from serve_post import PostMixin  # noqa: E402
+from slow_watch import SlowWatchMixin  # noqa: E402
+
+STAMP_KEEP = 3.0                         # seconds a Draft folder's newest-change stamp is reused across tabs
+_STAMPS: dict = {}                       # folder -> (time, stamp)
+from serve_cli import daemonize, main  # noqa: E402,F401
 
 
-def new_route_name(path: str, method: str = "GET") -> str:
-    """On a GET or HEAD, `/_board/runs?x` -> `/_board/workbench?view=runs&x`; any other path as it is."""
-    head, sep, query = path.partition("?")
-    view = PAGE_VIEW_ROUTES.get(head) if method in ("GET", "HEAD") else None
-    if view:
-        return "/_board/workbench?view=" + view + ("&" + query if query else "")
-    return head + sep + query
-
-
-class Handler(ShareMixin, AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ApiProxyMixin, PageReaderMixin, ExportMixin, PlugViewMixin, FolderStatMixin, InsightBoardMixin, DesignMixin, DesignBoardMixin, TaskBoardMixin, WorkbenchGuideMixin, SharedWorkbenchMixin, FrameMixin, OutlineMixin, PaperWorkbenchMixin, ValueMixin, EvidenceTabMixin, DeliveryTabMixin, LabelingMixin, PageRunsMixin, RunsTabMixin, SimpleHTTPRequestHandler):
+class Handler(SlowWatchMixin, PostMixin, ShareMixin, AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ApiProxyMixin, PageReaderMixin, ExportMixin, PlugViewMixin, FolderStatMixin, InsightBoardMixin, DesignMixin, DesignBoardMixin, TaskBoardMixin, WorkbenchGuideMixin, SharedWorkbenchMixin, FrameMixin, OutlineMixin, PaperWorkbenchMixin, ValueMixin, EvidenceTabMixin, DeliveryTabMixin, LabelingMixin, PageRunsMixin, RunsTabMixin, SimpleHTTPRequestHandler):
     root = Path(".")
     space_name = ""
     public_url = ""
@@ -330,6 +320,36 @@ class Handler(ShareMixin, AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteM
         self.end_headers()
         return True
 
+    def draft_stamp_view(self):
+        from urllib.parse import parse_qs, urlsplit
+        rel = (parse_qs(urlsplit(self.path).query).get("path") or [""])[0].strip("/")
+        root = Path(self.root).resolve()
+        folder = (root / rel).resolve()
+        newest = 0.0
+        hit = _STAMPS.get(str(folder))                    # every open tab of a Draft polls this every few seconds:
+        if hit and time.monotonic() - hit[0] < STAMP_KEEP:  # tabs on one page share one walk
+            newest = hit[1]
+        elif rel and folder.is_dir() and root in folder.parents:
+            # results/ and data/ hold run output a Draft page never shows; walking them on every poll hung a host
+            skip = {"runs", "delivery", "_archive", "__pycache__", "workflow", "previous", "results", "data",
+                    "node_modules"}
+            for dirpath, dirs, files in os.walk(folder):
+                dirs[:] = [d for d in dirs if d not in skip and not d.startswith(".")]
+                for f in files:
+                    if f.endswith((".md", ".yaml", ".yml", ".csv", ".bib")):
+                        try:
+                            newest = max(newest, os.stat(os.path.join(dirpath, f)).st_mtime)
+                        except OSError:
+                            pass
+            _STAMPS[str(folder)] = (time.monotonic(), newest)
+        body = json.dumps({"stamp": newest}).encode()
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
     def do_GET(self):
         self.path = new_route_name(self.path)
         if not self.require_request_auth():
@@ -402,6 +422,10 @@ class Handler(ShareMixin, AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteM
         if self.path.split("?", 1)[0] == "/_board/labeling":
             # 🏷 four Spaces over one labeling/ lane
             return self.labeling_view()
+        if self.path.split("?", 1)[0] == "/_board/draft-stamp":
+            # 🔄 the newest change time of one page folder's text and records, so an open page reloads itself when an
+            # agent or another tab writes (JL 261114: "How to make the UI to be auto refreshed to show the changes?")
+            return self.draft_stamp_view()
         if self.path == "/_board/health":
             # checks/smoke.py 的探针：跑 chat 的是不是带 SDK 的解释器，只有
             # 进程自己答得出 —— ps 看到的是 venv 软链解析后的裸二进制，在外面
@@ -531,599 +555,7 @@ class Handler(ShareMixin, AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteM
         if self.reject_private_static(fallback=True):
             return
         return SimpleHTTPRequestHandler.do_HEAD(self)
-    def do_POST(self):
-        self.path = new_route_name(self.path, "POST")
-        if not self.require_request_auth():
-            return
-        if self.reject_disabled_terminal():
-            return
-        if self.reject_outside_only():
-            return
-        # every POST from another site is refused, before any route reads its body (toolkit review 261031: a
-        # text/plain form on any web page reached excalidraw-save, chat, structure, cowork, design and insight
-        # writes; a browser always sends Origin on a cross-site POST, and "null" from a sandbox or file page)
-        origin = self.headers.get("Origin")
-        if origin is not None and urllib.parse.urlparse(origin).netloc != (self.headers.get("Host") or ""):
-            return self.reply(403, {"ok": False, "err": "cross-origin write refused"})
-        if self.path.startswith("/_term/"):
-            if self._term_route():
-                return
-            return self.proxy_term()
-        if self.is_api_request():                # a normalizer API call from its try page, behind this login
-            return self.proxy_api()
-        if not self.path.startswith("/_board/"):
-            return self.send_error(404)
-        try:
-            n = int(self.headers.get("Content-Length") or 0)
-            p = json.loads(self.rfile.read(n) or b"{}")
-        except Exception as e:
-            return self.reply(400, {"ok": False, "err": f"请求体不是 JSON：{e}"})
-        if self.path.split("?", 1)[0] in {
-            "/_board/comment", "/_board/edit-sentence", "/_board/resolve",
-            "/_board/discuss", "/_board/sentence", "/_board/card",
-        }:
-            return self.reply(405, {
-                "ok": False,
-                "err": "Page is read-only. Copy a prompt to request a change.",
-            })
-        if self.path == "/_board/activity":
-            try:
-                res, err = self.activity(p)
-            except Exception as e:
-                return self.reply(500, {"ok": False, "err": f"{type(e).__name__}: {e}"})
-            if err:
-                return self.reply(400, {"ok": False, "err": err})
-            return self.reply(200, res)
-        if self.path == "/_board/answer":
-            # 批准/拒绝一次工具调用 —— 不指向任何文件，所以在 target() 之前处理
-            a = ASKS.get(str(p.get("id")))
-            if not a:
-                return self.reply(404, {"ok": False, "err": "这个请求已经过期了"})
-            a["ok"] = bool(p.get("ok"))
-            a["always"] = bool(p.get("always"))
-            a["ev"].set()
-            return self.reply(200, {"ok": True})
-        if self.path == "/_board/autodraw":
-            # ✨ the Draw tab's button: Claude authors this page's scene
-            # (JL 260815). Targets a .excalidraw, so it never reaches target().
-            # Threading server, so the minutes it thinks block nobody.
-            try:
-                from live.autodraw import autodraw
-                res = autodraw(self.root, p)
-            except Exception as e:
-                return self.reply(500, {"ok": False, "err": f"{type(e).__name__}: {e}"})
-            return self.reply(200 if res.get("ok") else 400, res)
-        if self.path == "/_board/autodeck":
-            # ✨ the Slides surfaces' button: Claude authors this page's deck
-            # (JL 260815: the deck is the AI deck, and a button regenerates it).
-            # Targets slide/<page>-deck.html, so it never reaches target().
-            # Threading server, so the minutes it thinks block nobody.
-            try:
-                from live.autodeck import autodeck
-                res = autodeck(self.root, p)
-            except Exception as e:
-                return self.reply(500, {"ok": False, "err": f"{type(e).__name__}: {e}"})
-            return self.reply(200 if res.get("ok") else 400, res)
-        if self.path == "/_board/excalidraw-save":
-            # Targets a .excalidraw file, not a Q file, so it never reaches
-            # target(). Also the one endpoint sendBeacon posts, on unload.
-            try:
-                res = self.save_excalidraw(p)
-            except Exception as e:
-                return self.reply(500, {"ok": False, "err": f"{type(e).__name__}: {e}"})
-            status = 200 if res.get("ok") else (409 if res.get("conflict") else 400)
-            return self.reply(status, res)
-        if self.path == "/_board/studio-group":
-            # A Studio group is a tag on each topic's **Tags:** line (b10 s02-D16): add a topic to
-            # a group, take it out, or delete the group. Targets a Block's Studio, not a Page file.
-            from live.frame import studio_group_op
-            try:
-                res, err = studio_group_op(self.root, p)
-            except Exception as e:
-                return self.reply(500, {"ok": False, "err": f"{type(e).__name__}: {e}"})
-            return self.reply(200 if not err else 400, {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/terms":       # 列出所有在跑的终端（跨板）
-            return self.reply(200, {"ok": True, "terms": self.list_terms()})
-        if self.path == "/_board/killall":     # 一键全关
-            n = len(TERMS)
-            kill_all_terms()
-            if live_chat.HOST is not None:      # held chat clients go too (QD1)
-                live_chat.HOST.close_all()
-            HOLD.clear()
-            return self.reply(200, {"ok": True, "closed": n})
-        if self.path == "/_board/structure":
-            # Targets the BOARD, not one Q file, so it resolves the folder itself
-            # instead of going through target() (which insists on a Q*.md name).
-            page = unquote(p.get("path") or "")
-            board = (self.root / page.lstrip("/")).resolve().parent
-            try:
-                board.relative_to(self.root.resolve())
-            except ValueError:
-                return self.reply(400, {"ok": False, "err": "越出了 --root"})
-            if not (board / "board.md").exists():
-                return self.reply(400, {"ok": False, "err": f"{board} 里没有 board.md"})
-            try:
-                res, err = structure_op(board, p)
-            except Exception as e:
-                return self.reply(500, {"ok": False, "err": f"{type(e).__name__}: {e}"})
-            if err:
-                return self.reply(400, {"ok": False, "err": err})
-            return self.reply(200, {"ok": True, "build": self.rebuild(board),
-                                    **(res or {})})
-        # 🎨 Board-level Design routes take {path} only (no Page file), so they
-        # are answered before the Page-target check below.
-        if self.path == "/_board/design-board":      # the live URL, for the workbench menu
-            res, err = self.plug_design_board(p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/work-board":
-            res, err = self.plug_task_board(p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/design-board-act":  # add design tasks · open a Design Folder for a line
-            res, err = self.design_board_act(p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/draft-card":
-            # a person's Accept, Reject or edited Expected on one Revise card of a draft Task (b32 s41-D32)
-            from urllib.parse import urlparse
-            origin = self.headers.get("Origin") or ""
-            if origin and urlparse(origin).netloc != (self.headers.get("Host") or ""):
-                return self.reply(403, {"ok": False, "err": "cross-origin write refused"})
-            from live.draft_steps import card_act
-            code, res = card_act(self.root, p, read_only=getattr(self.server, "read_only", False))
-            return self.reply(code, res)
-        if self.path == "/_board/draft-comment":
-            # a person's comment on a sentence of a draft Task, left in 5 · Revise and answered by its passes (JL 261021)
-            from urllib.parse import urlparse
-            origin = self.headers.get("Origin") or ""
-            if origin and urlparse(origin).netloc != (self.headers.get("Host") or ""):
-                return self.reply(403, {"ok": False, "err": "cross-origin write refused"})
-            from live.draft_steps import note_act
-            code, res = note_act(self.root, p, read_only=getattr(self.server, "read_only", False))
-            return self.reply(code, res)
-        if self.path == "/_board/draft-rule":
-            # a rule added on a draft Task's 4 · Writing Rubric, into its tab's file (JL 261113)
-            from urllib.parse import urlparse
-            origin = self.headers.get("Origin") or ""
-            if origin and urlparse(origin).netloc != (self.headers.get("Host") or ""):
-                return self.reply(403, {"ok": False, "err": "cross-origin write refused"})
-            from live.draft_rubric import rule_act
-            code, res = rule_act(self.root, p, read_only=getattr(self.server, "read_only", False))
-            return self.reply(code, res)
-        if self.path == "/_board/draft-plan":
-            # a person's change on a draft Task's §1 mind map: a point's words or role, a paragraph's name, a point
-            # added, taken out or moved (JL 261020: "how could I operate and edit it?")
-            from urllib.parse import urlparse
-            origin = self.headers.get("Origin") or ""
-            if origin and urlparse(origin).netloc != (self.headers.get("Host") or ""):
-                return self.reply(403, {"ok": False, "err": "cross-origin write refused"})
-            from live.draft_steps import plan_act
-            code, res = plan_act(self.root, p, read_only=getattr(self.server, "read_only", False))
-            return self.reply(code, res)
-        if self.path == "/_board/mindmap":
-            # a person's change on a Studio topic's structured side (its mNN mind map, drawn as the draft's §1 map):
-            # a node's words, a node added, taken out or moved, written into its .mindmap.md (haipipe-studio)
-            from urllib.parse import urlparse
-            origin = self.headers.get("Origin") or ""
-            if origin and urlparse(origin).netloc != (self.headers.get("Host") or ""):
-                return self.reply(403, {"ok": False, "err": "cross-origin write refused"})
-            from live.frame import mindmap_module
-            code, res = mindmap_module().act(self.root, p, read_only=getattr(self.server, "read_only", False))
-            return self.reply(code, res)
-        if self.path in ("/_board/insight-act", "/_board/design-ladder-act"):
-            # a person's own action on an insight or design screen (b11 s12, b12 s12; JL 261023: "design the work in a
-            # way that we human can operate this system as well"): a CHECK, a Job's close, a release approved. A sign
-            # comes only from a page of this host, never from a request with no page behind it.
-            from urllib.parse import urlparse
-            origin = self.headers.get("Origin") or ""
-            if not origin or urlparse(origin).netloc != (self.headers.get("Host") or ""):
-                return self.reply(403, {"ok": False, "err": "a person's action comes from this workbench's page"})
-            if self.path == "/_board/insight-act":
-                from live.insight_act import act
-            else:
-                from live.design_ladder_act import act
-            code, res = act(self.root, p, read_only=getattr(self.server, "read_only", False))
-            return self.reply(code, res)
-        if self.path == "/_board/labeling/items":
-            # an items Task's Sign or Agree on a planned Run's card (b15 s41-D10)
-            code, res = self.labeling_items_act(p)
-            return self.reply(code, res)
-        if self.path == "/_board/labeling/notes":
-            # an image pasted into a prompt's notes, kept in the Task's notes/ (b15 s41-D14)
-            code, res = self.labeling_notes(p)
-            return self.reply(code, res)
-        if self.path == "/_board/labeling/approve":
-            # your sign on a meaning Task's guideline mNN (b15 s58-D15): expression runs only on a signed meaning
-            code, res = self.labeling_approve(p)
-            return self.reply(code, res)
-        if self.path == "/_board/labeling/act":
-            # The Labeling door resolves Board-backed and standalone Page targets itself.
-            code, res = self.labeling_act(p)
-            return self.reply(code, res)
-        if isinstance(p.get("group"), str) and p["group"]:
-            # A group-level session names its group in text; any other "group"
-            # value belongs to the route (it once crashed the labeling door).
-            # 组级会话（JL 260731）：身份是组的文件夹，不是哪个页面文件。
-            # chat/term/sessions/session-name/release/stop 都吃这个 f。
-            page = unquote(p.get("path") or "")
-            board = (self.root / page.lstrip("/")).resolve().parent
-            try:
-                board.relative_to(self.root.resolve())
-            except ValueError:
-                return self.reply(400, {"ok": False, "err": "越出了 --root"})
-            f = group_folder(board, p["group"])
-            if f is None:
-                return self.reply(400, {"ok": False,
-                                        "err": f"这块板里找不到组 {p['group']!r} 的文件夹"})
-        else:
-            f, board = self.target(p)
-        if f is None:
-            return self.reply(400, {"ok": False, "err": board})
-        if self.path == "/_board/image":
-            # 存图不写 .md，也就不重建 —— 随后的 discuss/comment 写盘时才重建。
-            try:
-                res, err = self.save_image(board, p)
-            except Exception as e:
-                return self.reply(500, {"ok": False, "err": f"{type(e).__name__}: {e}"})
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        # The DERIVED paper-facing workbenches (workbench roster):
-        # each writes into the page's own workbench folder and answers with the
-        # URL the right-pane tab frames. One route per workbench, one mixin.
-        if self.path == "/_board/latex":      # page -> latex/<stem>.tex + .pdf
-            res, err = self.export_latex(p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/word":       # page -> word/<stem>.docx + PDF twin
-            res, err = self.export_word(p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/bibex":      # refresh the page-owned bib + view
-            res, err = self.export_bibex(p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/bibex-verify":   # the human ✓: one verified field
-            res, err = self.bibex_verify(p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/bibex-entry":    # the pen: land a person's entry
-            res, err = self.bibex_entry(p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        # The 🛠 skill map workbench (/_board/skill, skill-order, skill-entry,
-        # skillview, mdview) was retired on 2026-09-21; the outline/skill/ lane
-        # stays an authored store with no served surface.
-        # Meeting records moved above Page scope on 260904. Existing
-        # <page>/meeting/ bytes remain readable through Folder/static paths,
-        # but the Board server must not mint or present new Page-local records.
-        if self.path in {"/_board/meeting", "/_board/meeting-entry"}:
-            return self.reply(410, {
-                "ok": False,
-                "err": "Page-local meetings are retired; use "
-                       "haipipe-project-meeting at project or SPACE level",
-            })
-        # The EVIDENCE workbenches' read-only surfaces (QPf5 · QPf9): the view
-        # lists the page's units or cards and writes nothing but itself.
-        if self.path == "/_board/folderstat":  # 📂 the tab spec's write() twin
-            res, err = self.plug_folderstat(p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        if self.path in ("/_board/draft", "/_board/outline"):  # 🧭 the same live twin (QPf12)
-            res, err = self.plug_outline(p)
-            if not err and (res or {}).get("version") and p.get("action") != "edit-preview":
-                # A Bullet write changed the Markdown Shape: rebuild so the
-                # Page's compact Outline table shows the working version too.
-                res["build"] = self.rebuild(board)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/design":     # 🎨 read-only Design Folder surface
-            res, err = self.plug_design(p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/design-act":  # 🎨 the two human gates + the agent queue
-            res, err = self.design_act(p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/insight-board":  # 🔎 read-only InsightBoard surface
-            res, err = self.plug_insight_board(p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/insight":       # 🔎 page-level Insight surface
-            res, err = self.plug_insight_page(p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/value":       # 🔢 the same live twin (QPw4v)
-            res, err = self.plug_value(p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/delivery":    # 📤 the same live twin (JL 260831)
-            res, err = self.plug_delivery(p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/evidence":    # 🧾 the same live twin (JL 260831)
-            res, err = self.plug_evidence(p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/labeling-board":  # 🏷 Board-level tab contract + probe
-            res, err = self.plug_labeling_board(p)
-            return self.reply(200 if not err else 400, {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/labeling":    # 🏷 four Spaces over one labeling/ lane
-            res, err = self.plug_labeling(p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/runs":        # ⚙️ read-only Run overview
-            res, err = self.plug_runs(p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/display":    # list display/ units + previews
-            res, err = self.plug_display(p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/probe":      # list probe/ cards + states
-            res, err = self.plug_probe(p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/term-type":   # a surface types one line into the PTY
-            res, err = self.term_type(f, p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/local-cmd":    # the command that lands in this session
-            res, err = self.local_cmd(f, p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/term-probe":   # is this target's PTY still alive?
-            res, err = self.term_probe(f)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/term":
-            res, err = self.terminal(f, p, board)
-            return self.reply(200 if not err else 409,
-                              {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/sessions":    # 拣选器：这一题的会话清单（QD1 Law 260731）
-            res, err = self.sessions_list(f, p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/chat-keep":      # sessions land in studio/chat/ (QPf4, JL 260815)
-            return self.reply(200, self.keep_sessions(f, p))
-        if self.path == "/_board/session-log":    # that session's transcript (JL 260801)
-            res, err = self.session_log(f, p), None
-            return self.reply(200, res)
-        if self.path == "/_board/session-name":   # 给 session 起名/改名（QD1 260731）
-            res, err = self.name_session(f, p)
-            return self.reply(200 if not err else 400,
-                              {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/release":
-            # park:true（页面 reload 的 beacon、⌨ 切回抽屉）→ 宽限停靠，进程活着；
-            # 不带 park（killall、测试、显式关）→ 老样子直接杀。
-            if p.get("park"):
-                res, _ = self.park(f)
-            else:
-                res, _ = self.kill_term(f)
-            return self.reply(200, {"ok": True, **(res or {})})
-        if self.path == "/_board/stop":
-            ev = RUNS.get(str(f))
-            if ev:
-                ev.set()
-            return self.reply(200, {"ok": True, "stopping": bool(ev)})
-        if self.path == "/_board/attach":   # QD2 R1: rejoin a turn already running
-            res, err = self.attach(f, p)
-            if res == "STREAMED":
-                return                      # attach wrote its own NDJSON response
-            return self.reply(200, {"ok": not err, "err": err, **(res or {})})
-        ACTS = {"/_board/diagram": self.add_diagram,
-                "/_board/excalidraw": self.new_excalidraw,
-                "/_board/chat": None}
-        if self.path not in ACTS:
-            return self.reply(404, {"ok": False, "err": "没有这个接口"})
-        try:
-            res, err = (self.chat(f, p, board) if self.path == "/_board/chat"
-                        else ACTS[self.path](f, p))
-        except Exception as e:
-            return self.reply(500, {"ok": False, "err": f"{type(e).__name__}: {e}"})
-        if err:
-            return self.reply(400, {"ok": False, "err": err})
-        if res == "STREAMED":
-            return                      # 流式那条路已经自己把响应写完了
-        body = {"ok": True, "file": f.name, "build": self.rebuild(board)}
-        if isinstance(res, dict):
-            body.update(res)
-        return self.reply(200, body)
-
-def daemonize(log):
-    """双 fork 脱离终端。macOS 没有 setsid，nohup 又常被上游进程组连坐，
-    所以自己来 —— 这样服务器不会跟着某个 shell 一起消失。"""
-    if os.fork() > 0:
-        os._exit(0)
-    os.setsid()
-    if os.fork() > 0:
-        os._exit(0)
-    fd = os.open(log, os.O_WRONLY | os.O_CREAT | os.O_APPEND, 0o644)
-    os.dup2(fd, 1)
-    os.dup2(fd, 2)
-    os.close(os.open(os.devnull, os.O_RDONLY))
 
 
 if __name__ == "__main__":
-    # 这个进程往往是从某个 Claude Code 会话的 shell 里起的：把「我是子会话」的
-    # 标记就地摘掉，SDK 抽屉和 PTY 终端两条 spawn 路都不再继承它 —— 否则板上
-    # 开的 claude 会关掉 transcript 落盘（QD3 Lesson，260731）。
-    for _k in ("CLAUDE_CODE_CHILD_SESSION", "CLAUDE_CODE_SESSION_ID",
-               "CLAUDECODE", "CLAUDE_CODE_ENTRYPOINT", "CLAUDE_PID"):
-        os.environ.pop(_k, None)
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--root", default=".")
-    ap.add_argument("--port", type=int, default=None,
-                    help="listener port; root .server_config wins when omitted")
-    ap.add_argument("--host", default=None,
-                    help="绑哪个地址。默认只绑 loopback；给 tailnet 地址（100.x）"
-                         "就能从自己别的设备直接打开，不用 VS Code 转发端口；"
-                         "root .server_config wins when omitted")
-    ap.add_argument("--daemon", metavar="LOGFILE",
-                    help="后台跑，输出写进这个文件")
-    ap.add_argument("--ttyd", action="store_true",
-                    help="终端走 ttyd 旧路（保险丝；默认 serve.py 自己管 PTY）")
-    ap.add_argument("--no-hold", action="store_true",
-                    help="QD2 M1 fuse: boot a claude per POST like before, "
-                         "instead of holding one per question")
-    ap.add_argument("--auth-file", metavar="PATH",
-                    help="optional username:password file; required for a non-loopback host")
-    ap.add_argument("--no-auth", action="store_true",
-                    help="disable HTTP Basic Auth; only use on a trusted private network")
-    ap.add_argument("--no-terminal", action="store_true",
-                    help="disable /_term/ and PTY control endpoints")
-    ap.add_argument("--public-read", action="store_true",
-                    help="allow anonymous generated Board pages while keeping interactive tools authenticated")
-    ap.add_argument("--space-name", default="",
-                    help="display name for the SPACE Home (settings.env SPACE_NAME)")
-    ap.add_argument("--public-url", default="",
-                    help="DOMAIN, the reader-facing origin (also env HAIPIPE_DOMAIN or "
-                         "settings.env DOMAIN); links are printed as <DOMAIN>/w/...")
-    ap.add_argument("--index-url", default="",
-                    help="workbench Index destination; defaults to this SPACE's studio index")
-    ap.add_argument("--share", action="store_true",
-                    help="share mode (b10 s52): people sign in with an emailed code and open only what "
-                         ".server_config/access.yaml grants them; read-only for all but its owners")
-    ap.add_argument("--only", default="",
-                    help="serve only these workbenches, comma-separated (%s); terminal, "
-                         "chat and Board write routes are then 404. `--only labeling` is the "
-                         "annotator-only Labeling host (own port and auth; SPACE name Labeling)."
-                         % ", ".join(sorted(WORKBENCH_ROUTES)))
-    a = ap.parse_args()
-    only = frozenset(w.strip() for w in a.only.split(",") if w.strip())
-    unknown = sorted(only - set(WORKBENCH_ROUTES))
-    if unknown:
-        ap.error("--only: unknown workbench %s; choose from %s"
-                 % (", ".join(unknown), ", ".join(sorted(WORKBENCH_ROUTES))))
-    if only and "shared" not in only:
-        a.no_terminal = True      # an --only host is a reader or annotator door, not a shell
-    config = load_server_config(a.root)
-    config_dir = server_config_dir(a.root)
-    # A SPACE whose settings.env says NO_AUTH=1 chose the tailnet as its only
-    # gate, so a plain start keeps that choice instead of turning login on from
-    # AUTH_FILE. An explicit --auth-file or --public-read still wins.
-    if (not a.auth_file and not a.public_read
-            and config.get("NO_AUTH", "").lower() in {"1", "true", "yes"}):
-        a.no_auth = True
-    host = (a.host or config.get("BIND_HOST") or
-            config.get("TAILSCALE_ADDRESS") or "127.0.0.1").strip()
-    port = a.port
-    if port is None:
-        raw_port = config.get("PORT")
-        try:
-            port = int(raw_port) if raw_port else 5599
-        except ValueError:
-            ap.error(f"invalid port in {config_dir / 'settings.env'}: {raw_port!r}")
-    if a.no_auth and a.public_read:
-        ap.error("--no-auth and --public-read are mutually exclusive")
-    if a.no_auth:
-        auth_file = None
-    else:
-        auth_arg = a.auth_file or config.get("AUTH_FILE")
-        if auth_arg:
-            auth_path = Path(auth_arg).expanduser()
-            if not auth_path.is_absolute() and not a.auth_file:
-                auth_path = Path(a.root).resolve() / auth_path
-            auth_file = auth_path.resolve()
-        else:
-            auth_file = None
-    space_name = (a.space_name or ("Labeling" if only == {"labeling"} else "")
-                  or config.get("SPACE_NAME") or "").strip()
-    public_url = configured_domain(a.public_url, config)
-    if a.share:                       # the emailed code is the sign-in; no Basic auth beside it
-        auth_file, a.no_auth = None, False
-        try:
-            shared = Handler.configure_share(a.root)
-        except (OSError, ValueError) as exc:
-            ap.error(f"--share: {exc}")
-        print(f"[share] on: {len(shared.owners)} owner(s), {len(shared.grants)} grant(s), mail "
-              f"{'from ' + shared.mail_from if shared.acs else 'not set up (owner codes go to this log)'}",
-              file=sys.stderr, flush=True)
-    if not host_is_loopback(host) and auth_file is None and not a.no_auth and not a.share:
-        ap.error("--auth-file is required when --host is not loopback")
-    if a.public_read and auth_file is None:
-        ap.error("--public-read requires --auth-file for interactive Board tools")
-    try:
-        Handler.configure_auth(auth_file)
-    except AuthConfigError as exc:
-        ap.error(str(exc))
-    # 260731 三次踩同一个坑：用系统 python 起 5599，页面照样 200，可 💬 每一轮
-    # 都 400（claude_agent_sdk 要 3.10+）。人记不住的规矩交给代码——当前解释器
-    # 没有 SDK 而 --root 下有 .venv 时，原地 exec 换成 venv 的 python 重启自己；
-    # venv 也没有 SDK 就不换（防死循环），只警告一声继续跑。
-    try:
-        import claude_agent_sdk  # noqa: F401
-    except ImportError:
-        venv_py = Path(a.root).resolve() / ".venv" / "bin" / "python"
-        if venv_py.exists() and Path(sys.executable).resolve() != venv_py.resolve():
-            os.execv(str(venv_py), [str(venv_py)] + sys.argv)
-        print("⚠️  这个 python 没有 claude_agent_sdk —— 💬 chat 会一直 400。"
-              "用仓库的 .venv/bin/python 跑 serve.py。", file=sys.stderr)
-    base.USE_TTYD = a.ttyd
-    live_chat.HOLD_CHAT = not a.no_hold
-    if a.daemon:
-        daemonize(str(Path(a.daemon).resolve()))
-    Handler.root = Path(a.root).resolve()
-    Handler.public_read = a.public_read
-    Handler.terminal_enabled = not a.no_terminal
-    Handler.space_name = space_name
-    Handler.public_url = public_url
-    Handler.workbench_index_url = a.index_url or config.get("INDEX_URL") or "/?view=radial&measure=studios"
-    Handler.only = only
-    base.BIND_HOST = host
-    srv = ThreadingHTTPServer((host, port),
-                              partial(Handler, directory=str(Handler.root)))
-    # A non-loopback --host binds THAT ADDRESS ONLY, which quietly breaks the
-    # path most people are actually on: a VS Code / ssh -L forward connects to
-    # 127.0.0.1 on THIS machine, so a tailnet-only bind leaves the tunnel
-    # pointing at a closed port and the board simply will not open (JL 260726,
-    # twice in one evening). Loopback is therefore always ALSO served: it adds
-    # no exposure that a local process does not already have, and it means
-    # choosing a wider address never costs you the narrow one.
-    loop = None
-    if not host_is_loopback(host) and host != "0.0.0.0":
-        try:
-            loop = ThreadingHTTPServer(("127.0.0.1", port),
-                                       partial(Handler, directory=str(Handler.root)))
-            threading.Thread(target=loop.serve_forever, daemon=True).start()
-        except OSError as e:
-            print(f"   ⚠️ loopback {port} 没起来：{e}", flush=True)
-    tok, src = oauth_token(Handler.root)
-    try:
-        import claude_agent_sdk  # noqa: F401
-        sdk = "on"
-    except ImportError:
-        sdk = "off（这个 Python 没装 SDK，聊天接口不可用）"
-    domain_lines = "".join(
-        f"   DOMAIN: {origin:<32} ({why})\n" for origin, why in domains(config, host, port, public_url))
-    first_domain = (domains(config, host, port, public_url) or [(f"http://{host}:{port}", "")])[0][0]
-    print(f"📡 http://{host}:{port}  root={Handler.root}\n"
-          + ("" if not loop else
-             f"   ＋ http://127.0.0.1:{port} 也在听（VS Code / ssh -L 走的是这个）\n")
-          + domain_lines
-          + f"   short routes: {first_domain}/b/<board>[/<page>]  ·  {first_domain}/w/<board>[/<page>[/<tab>]]\n"
-          + ("" if not only else
-             f"   only: {', '.join(sorted(only))} workbench routes; terminal, chat and Board writes are 404\n")
-          + ("" if host_is_loopback(host) else
-             (f"   ⚠️ 绑的不是 loopback：{host} 能到的设备都能用 /_term/ 开 shell\n"
-              if a.no_auth and not a.no_terminal else
-              (f"   ℹ️ 绑的不是 loopback：{host} 的终端入口已关闭\n"
-               if a.no_auth else
-              (f"   ℹ️ {host} 能到的设备可匿名读 Board；/_term/ 和写入仍需认证\n"
-               if a.public_read else
-               f"   ℹ️ {host} 能到的设备必须先认证\n"))))
-          + ("   终端：disabled (--no-terminal)\n" if a.no_terminal else "")
-          + f"   评论 / 状态：直接写在这台机器上\n"
-          f"   认证：{('off (--no-auth; Tailscale boundary only)' if a.no_auth else ('public Board read; interactive tools protected (' + str(len(Handler.auth_users)) + ' accounts)' if a.public_read else ('on (' + str(len(Handler.auth_users)) + ' accounts)' if Handler.auth_users else 'off (local only)')))}\n"
-          f"   聊天：{sdk} · 默认 {MODELS[DEFAULT_MODEL]} / effort={DEFAULT_EFFORT}\n"
-          f"   OAuth 来源：{src}"
-          + ("（长期 token）" if tok else "（沿用 claude 已登录的身份）")
-          + "\n   Ctrl-C 停", flush=True)
-    # 启动先清上一轮遗留（主力，不依赖退出信号），退出再尽力收一次
-    reap_stale_terms()
-    atexit.register(kill_all_terms)
-    signal.signal(signal.SIGTERM, lambda *_: (kill_all_terms(), os._exit(0)))
-    try:
-        srv.serve_forever()
-    except KeyboardInterrupt:
-        kill_all_terms()
+    main(Handler)

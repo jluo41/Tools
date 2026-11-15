@@ -41,7 +41,7 @@ receipt: <exact-upstream-runtime-receipt-path>
 The adapter maps these fields to real worker flags/environment/config. Unknown
 keys and unresolved dataset fields fail visibly. Validate the effective input
 and output in the producing receipt; never fall back to test data. Freeze the
-effective config and recipe/code version before work. Output location alone is
+effective config and recipe/question version before work. Output location alone is
 not execution identity. The producing execution is distinct from the consumer
 RI; its own Ticket and receipt name that producing identity. The frozen receipt
 must report `execution`, `run_id`, or `run`, matching `producer_execution`, with
@@ -101,7 +101,7 @@ Task paths. Insight interpretation Results stay at
 
 Before claiming a shared entry is instance-ready, execute it on two small
 synthetic independent datasets with distinguishable expected outputs. Verify
-one unchanged recipe, disjoint outputs/scratch, actual input and code version
+one unchanged recipe, disjoint outputs/scratch, actual input and question version
 in receipts, rejection of unknown parameters, distinct identity after a data
 version change, and an unchanged original test execution. These checks test
 the adapter, not scientific findings.

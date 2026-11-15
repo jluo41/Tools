@@ -1,0 +1,50 @@
+"""s${nn}'s Design sketches, drawn at local size (five_parts grows them): A, the pieces step by step (a data topic:
+each step a small table with its real column names and made-up rows, five_parts.data_table and data_step); B, how the
+design grew and why, as stickies; C, the face's Open list as choices, the leaning starred. Each returns (els, bottom).
+Imported by ${script}.
+"""
+import sys
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str((HERE / "${to_studio}").resolve()))
+from five_parts import *  # noqa: E402,F401,F403
+
+
+def sketch_a(x, y):
+    """A: the pieces step by step, each leading to the next."""
+    els = text("pa", x, y, "A · <the pieces, step by step>", 18, TITLE)
+    els += shapes("pa_s", x, y + 26, "<the delivery piece it shapes>")
+    t, b0 = data_table("a0", x, y + 70, "<step 1>", ["<col>", "<col>", "<col>"], [80, 80, 80],
+                       [("<a>", "<b>", "<c>"), ("<a>", "<b>", "<c>")], NAVY, SEM["plain"][0], "<what one row is>")
+    els += t
+    y1 = b0 + 90
+    els += data_step("a1", [(x + 120, b0 + 4), (x + 120, y1 - 6)], "<what this step does>", OR)
+    t, b1 = data_table("a2", x, y1, "<step 2>", ["<col>", "<col>"], [100, 100], [("<a>", "<b>")], OR, SEM["start"][0])
+    return els + t, b1 + 40
+
+
+def sketch_b(x, y):
+    """B: how the design grew: stations left to right, what each taught."""
+    els = text("pb", x, y, "B · how the design grew, and why", 18, TITLE)
+    stations = [("<first try>", "<what it taught>"), ("<now>", "<why it changed>")]
+    for k, (st, lesson) in enumerate(stations):
+        cx = x + 120 + k * 260
+        els += sticky(f"bs{k}", cx, y + 110, 220, 80, st, 15, 0.0, (SEM["start"][0], OR) if k == len(stations) - 1 else STICKY)
+        els += sticky(f"bl{k}", cx, y + 220, 220, 90, lesson, 14, 0.02 * (k - 0.5))
+        if k < len(stations) - 1:
+            els += data_step(f"ba{k}", [(cx + 112, y + 110), (cx + 148, y + 110)], "", INK)
+    return els, y + 290
+
+
+def sketch_c(x, y):
+    """C: the open choices, options side by side, the leaning starred (★), an unknown marked (?)."""
+    els = text("pc", x, y, "C · open choices", 18, TITLE)
+    rows = [("<an open question>", ["★ <the leaning>", "<another option>"])]
+    for r, (q, opts) in enumerate(rows):
+        ry = y + 100 + r * 140
+        els += sticky(f"cq{r}", x + 110, ry, 210, 90, q, 15, -0.03, RED, RE)
+        for k, o in enumerate(opts):
+            colors = (SEM["start"][0], OR) if o.startswith("★") else RED if o.startswith("?") else STICKY
+            els += sticky(f"co{r}_{k}", x + 340 + k * 200, ry, 180, 80, o, 15, 0.03 * (k - 1), colors)
+    return els, y + 100 + len(rows) * 140

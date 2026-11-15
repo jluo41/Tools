@@ -2,7 +2,7 @@
 
 Three frames: ① Background, a folder tree; ② the Run, boxes with their own trees joined by named arrows (a button
 starts a Run, a Run keeps passes and a result, the screen lists them, the skill owns the card); ③ the screen, this
-Block's Runs Space as servers/workbench/frame.py draws it, beside the skill (a ui_frame, drawn here).
+Block's Runs Space as servers/workbench/page/frame.py draws it, beside the skill (a ui_frame, drawn here).
 Frames ① and ② are the face's `frames:` yaml, drawn by topic_map.draw_topic; the words in ‹ › are filled from the
 disk on every build: this Block's Runs (runs/*/run.yaml and each ticket's close: line), the Runs Space as
 frame.py draws it, haipipe-run's version. The 261010 and 261012 builders are in history/.
@@ -95,7 +95,7 @@ def frame_screen(space, version):
     fr = L.open_frame("The screen: Runs Space and skill")
     canvas.ui_frame(fr, since="261012")                      # a screen: the workbench's colours (JL 261012)
     L.text(0, 0, "The screen: Block b10 › Runs, and /haipipe-run", T)
-    y = say(0, 58, "Read from servers/workbench/frame.py; buttons start Runs, the list reads each run.yaml.", SUB) + 30
+    y = say(0, 58, "Read from servers/workbench/page/frame.py; buttons start Runs, the list reads each run.yaml.", SUB) + 30
     x = 0
     for k, s in enumerate(subs):                              # the third row
         w = int(len(s) * BODY * 0.55) + 40

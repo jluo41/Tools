@@ -1,8 +1,8 @@
 """run_question, scaffold_block and check_block on a toy Insight Block.
 
 ref/block-contract.md: an Insight Block is a task Block (board-kind: task-block, workbench: insight):
-meta/ (partitions, thresholds), one Job per level (j01_data … j04_wisdom), one Task per question
-(tNN_<name>/: question.md, scripts/, runs/<dataset>_<partition>.sh, results/, reports/, its page).
+meta/ (segments, thresholds), one Job per level (j01_data … j04_wisdom), one Task per question
+(tNN_<name>/: question.md, scripts/, runs/<dataset>_<segment>.sh, results/, reports/, its page).
 """
 import sys
 import textwrap

@@ -230,3 +230,17 @@ def test_a_changed_paragraph_set_is_relaid_never_typed_and_the_gap_shows_until_t
     assert "Zeta six. <!-- realizes: C1.P3.B1 -->" in text and "content: draft v1.0 · adopted" in text
     assert content_gap(folder) is None
     assert sync(folder)[0]["level"] == "OK"
+
+
+def test_part_headings_print_only_when_the_face_asks():
+    from src.page_adopt import _skeleton
+    plan = ("### Structure Overview\n\n- C1 · Data\n- C1.P1 · One\n- C2 · Fits\n- C2.P2 · Two\n\n"
+            "## 3 · Draft · Reading and Revise\n\n### C1.P1 · One · S1 to S1\n- B1 · S1 · Alpha.\n\n"
+            "### C2.P2 · Two · S1 to S1\n- B1 · S1 · Beta.\n")
+    face = "# t04_methods · §4 Methods\nsection_kind: methods\n%s\n## Content\n"
+    on = _skeleton(face % "part-headings: print", plan)
+    off = _skeleton(face % "", plan)
+    assert "### §4.1 Data" in on and "### §4.2 Fits" in on
+    first = next(i for i, l in enumerate(on) if l.startswith("#### C1.P1"))
+    assert on.index("### §4.1 Data") < first < on.index("### §4.2 Fits")
+    assert not any(l.startswith("### §4.") for l in off)

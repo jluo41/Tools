@@ -13,7 +13,7 @@ s01 · How the example estimates hang together
 
 **Topic:** A placeholder topic: which Run returns which number, and how the main and subgroup estimates relate. Every number is made up.
 
-**Feeds:** `reports/q02-main-association.md`
+**Feeds:** Q02.md`
 
 
 Files

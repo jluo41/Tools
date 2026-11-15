@@ -66,7 +66,7 @@ def _paragraphs(task: Path) -> list:
         return []
     text = plan.read_text(encoding="utf-8", errors="ignore")
     m = re.search(r"(?ms)^## 1 · Structure\b(.*?)(?=^## \d+ · |\Z)", text)
-    return [(a, re.sub(r"\s*·\s*S\d+[a-z]*(?:\s+to\s+S\d+[a-z]*)?\s*$", "", b)) for a, b in PARA_HEAD.findall(m.group(1) if m else text)
+    return [(a, re.sub(r"\s*·\s*[Ss]\d+[a-z]*(?:\s+to\s+[Ss]\d+[a-z]*)?\s*$", "", b)) for a, b in PARA_HEAD.findall(m.group(1) if m else text)
             if not a.endswith(".P0")]                       # P0 is the title, not a paragraph
 
 

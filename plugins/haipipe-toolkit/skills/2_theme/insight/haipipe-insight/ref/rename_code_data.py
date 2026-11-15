@@ -1,16 +1,17 @@
-"""rename_code_data.py <insight Board> [--also <path> ...] [--apply] · carry a Board and its Prototype onto code-v/data-v.
+"""rename_code_data.py <insight Board> [--also <path> ...] [--apply] · carry a Board and its Question Book onto question-v/data-v.
 
-JL 261109: a release is `code-vN` (was `pN`, shown as AP<N>), a data version is `data-vM` (was `vM`, shown as F<M>),
-and the Prototype sits beside the Board it serves, `<Project>/insight/Prototype-<Topic>/` (was
-`<Project>/work/Prototype-bNN-<Topic>/`). One pass, for a Board and its Prototype together:
+A release is `question-vN` (was `pN`, shown as AP<N>), a data version is `data-vM` (was `vM`, shown as F<M>),
+and the Question Book sits beside the Board it serves, `<Project>/insight/InsightQuestionBook-<Topic>/` (was
+`<Project>/work/Prototype-bNN-<Topic>/`). One pass, for a Board and its Question Book together:
 
-  folders   work/Prototype-bNN-<T>/                       ->  insight/Prototype-<T>/
-            jNN_pN_<slug>/                                ->  jNN_code-vN_<slug>/
-            jNN_prototype-pN-<slug>_data-<D>vM/           ->  jNN_code-vN-<slug>_data-vM/
-            data/vM/ · run-<type>-pN/ · …                 ->  data/data-vM/ · run-<type>-code-vN/ · …
-  ids       release: pN · data: vM · AP<N> · F<M>         ->  release: code-vN · data: data-vM · code-vN · data-vM
+  folders   work/Prototype-bNN-<T>/                       ->  insight/InsightQuestionBook-<T>/
+            jNN_pN_<slug>/                                ->  jNN_question-vN_<slug>/
+            jNN_prototype-pN-<slug>_data-<D>vM/           ->  jNN_question-vN-<slug>_data-vM/
+            data/vM/ · run-<type>-pN/ · …                 ->  data/data-vM/ · run-<type>-question-vN/ · …
+            jNN_code-vN_<slug>/ · code-vN (the id for a day)  ->  jNN_question-vN_<slug>/ · question-vN
+  ids       release: pN · data: vM · AP<N> · F<M>         ->  release: question-vN · data: data-vM · question-vN · data-vM
 
-Every text file under the Board and the Prototype is rewritten, names and bare ids; an `--also` path (a design Block,
+Every text file under the Board and the Question Book is rewritten, names and bare ids; an `--also` path (a design Block,
 a doc that names the example) gets the whole names only. Never rewritten: the Board's own folder name, each data
 version's `folder:`/`extract:` path (data outside the Board), a register board's `*-InsightBoard` name, a data: URI (its `p1 × v2` prose may be about another layout). Dry run by default: it prints each folder it would rename and each changed line, then a count.
 `--apply` writes. Generated files are rewritten for their paths; rerun the Board's tickets after (run_job.py) so the
@@ -40,26 +41,28 @@ def front(path: Path) -> dict:
 
 
 def rules(dataset: str, old_proto: str, new_proto: str) -> tuple:
-    """(names, ids): the whole names, rewritten everywhere; then the bare ids, only inside the Board and the Prototype."""
+    """(names, ids): the whole names, rewritten everywhere; then the bare ids, only inside the Board and the Question Book."""
     old_name, new_name = old_proto.rsplit("/", 1)[-1], new_proto.rsplit("/", 1)[-1]
     d = re.escape(dataset)
     names = [
-        (re.compile(rf"(?<![\w])j(\d+)_prototype-p(\d+)(-[a-z0-9-]+)?_data-{d}v(\d+)(?![0-9])"), r"j\1_code-v\2\3_data-v\4"),
-        (re.compile(r"(?<![\w])j(\d+)_p(\d+)_([A-Z][A-Za-z0-9]*?|<[dD]>)v(\d+)(?![0-9])"), r"j\1_code-v\2_data-v\4"),
-        (re.compile(r"(?<![\w])j(\d+)_p(\d+)(?![0-9])"), r"j\1_code-v\2"),
+        (re.compile(rf"(?<![\w])j(\d+)_prototype-p(\d+)(-[a-z0-9-]+)?_data-{d}v(\d+)(?![0-9])"), r"j\1_question-v\2\3_data-v\4"),
+        (re.compile(r"(?<![\w])j(\d+)_p(\d+)_([A-Z][A-Za-z0-9]*?|<[dD]>)v(\d+)(?![0-9])"), r"j\1_question-v\2_data-v\4"),
+        (re.compile(r"(?<![\w])j(\d+)_p(\d+)(?![0-9])"), r"j\1_question-v\2"),
+        (re.compile(r"(?<![A-Za-z0-9])code-v(?=\d)"), "question-v"),          # code-vN was the id for a day
         (re.compile(re.escape(old_proto) + r"(?![\w-])"), new_proto),
         (re.compile(re.escape(old_name) + r"(?![\w])"), new_name),
         (re.compile(rf"(?<![A-Za-z0-9_])(?:data-)?{d}v(\d+)(?![0-9])"), r"data-v\1"),   # not inside a file name
     ]
     ids = [
         (re.compile(r"Analysis plan AP(\d+) \(release p\d+\) on data freeze F(\d+) \(data version v\d+\)"),
-         r"code-v\1 on data-v\2"),
-        (re.compile(r"(?<![\w-])AP(\d+)\b"), r"code-v\1"),
+         r"question-v\1 on data-v\2"),
+        (re.compile(r"(?<![\w-])AP(\d+)\b"), r"question-v\1"),
+        (re.compile(r"\b([Cc])ode([ -])version(s?)\b"), lambda m: ("Q" if m.group(1) == "C" else "q") + f"uestion{m.group(2)}version{m.group(3)}"),
         (re.compile(r"(?<![\w-])F(\d+)\b"), r"data-v\1"),
-        (re.compile(r"\banalysis plan (\d+)\b"), r"code-v\1"),
+        (re.compile(r"\banalysis plan (\d+)\b"), r"question-v\1"),
         (re.compile(r"\bdata freeze (\d+)\b"), r"data-v\1"),
-        (re.compile(r"(?<![\w])(?<!code-)(?<!data-)(?<!draft-)v([1-9]\d*)(?![\w.])"), r"data-v\1"),
-        (re.compile(r"(?<![\w])p([1-9]\d*)(?![\w.])"), r"code-v\1"),
+        (re.compile(r"(?<![\w])(?<!question-)(?<!code-)(?<!data-)(?<!draft-)v([1-9]\d*)(?![\w.])"), r"data-v\1"),
+        (re.compile(r"(?<![\w])p([1-9]\d*)(?![\w.])"), r"question-v\1"),
     ]
     return names, ids
 
@@ -117,7 +120,9 @@ def plan(board: Path, also: list) -> tuple:
         sys.exit(f"{board}: board.md names no dataset: or prototype:")
     project = board.parent.parent
     proto = project / old_rel
-    new_rel = "insight/" + re.sub(r"^Prototype-b\d+-", "Prototype-", proto.name) if old_rel.startswith("work/") else old_rel
+    if not proto.exists() and (project / "insight" / proto.name).is_dir():   # prototype: still says work/, the folder
+        proto = project / "insight" / proto.name                            # already moved beside its Board
+    new_rel = "insight/" + re.sub(r"^(?:Prototype|QuestionBook)-(?:b\d+-)?", "InsightQuestionBook-", proto.name)   # a Question Book
     names, ids = rules(dataset, old_rel, new_rel)
     keep = kept(board)
     tops = [t for t in [board, proto, *also] if t.exists()]
@@ -139,7 +144,7 @@ def plan(board: Path, also: list) -> tuple:
                     renames.append((p, p.with_name(n)))
         elif rewrite(top.name, rs, keep) != top.name:
             renames.append((top, top.with_name(rewrite(top.name, rs, keep))))
-    move = (proto, project / new_rel) if new_rel != old_rel else None
+    move = (proto, project / new_rel) if proto.exists() and proto != project / new_rel else None
     return edits, renames, move
 
 
@@ -160,7 +165,7 @@ def main() -> int:
         print(f"mv {src}  ->  {dst.name}")
     if move:
         print(f"mv {move[0]}  ->  {move[1]}")
-    print(f"\n{len(edits)} files rewritten · {len(renames)} names · {'1 Prototype moved' if move else 'Prototype stays'}"
+    print(f"\n{len(edits)} files rewritten · {len(renames)} names · {'1 Question Book moved' if move else 'Question Book stays'}"
           + ("" if a.apply else " · dry run, nothing written"))
     if not a.apply:
         return 0

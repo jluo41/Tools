@@ -29,10 +29,11 @@ from src.plan_shape import canonical_plan
 from src.plan_layout import (from_canonical, is_sectioned, normalize_overview, overview_lines,
                              set_overview, to_canonical)
 from live.outline_preview import page_lock
+from live.sentence_id import sid as _sid
 
 _DIVISION_RE = re.compile(r"^## C(\d+)\b\s*(?:·\s*(.*))?$")
 _PARAGRAPH_RE = re.compile(r"^### (C\d+\.P\d+)\b\s*(?:·\s*(.*))?$")
-_SPAN_RE = re.compile(r"\s*·\s*S\d+\s+to\s+S\d+\s*$")
+_SPAN_RE = re.compile(r"\s*·\s*[Ss]\d+\s+to\s+[Ss]\d+\s*$")
 _LINE_RE = re.compile(r"^\s*(?:-\s*)?(C\d+(?:\.P\d+)?)\s*(?:·\s*(.*?))?\s*$")
 MAX_TEXT = 20000
 
@@ -165,11 +166,11 @@ def overview_html(entries: list[str]) -> str:
         note = line.strip().lstrip("→").strip()
         if current is None:
             continue
-        span = re.match(r"^(S\d+(?:\s+to\s+S\d+)?)\s*(?:·\s*(.*))?$", note)
+        span = re.match(r"^([Ss]\d+(?:\s+to\s+[Ss]\d+)?)\s*(?:·\s*(.*))?$", note)
         nxt = re.match(r"^(C\d+\.P\d+)\s*:\s*(.*)$", note)
         if span:
             current.append('<div class=sov-job><span class=sov-span>%s</span>%s</div>'
-                           % (_e(span.group(1)), _e(span.group(2) or "")))
+                           % (_e(_sid(span.group(1))), _e(span.group(2) or "")))
         elif nxt:
             current.append('<div class=sov-next>→ <span class=sov-addr>%s</span>%s</div>'
                            % (_e(nxt.group(1)), _e(nxt.group(2))))

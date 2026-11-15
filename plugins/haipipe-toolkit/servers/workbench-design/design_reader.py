@@ -3,19 +3,23 @@
 The ladder: a design Block `bNN_<app>/` holds its goal list (board.md ## Goals), its inputs versions
 (`inputs/inputs-vN/` + manifest.yaml; an older Block's `inputs/iN/` reads the same), what an Exp returned
 (`observed/eNN_<exp>/arms.csv`), its soft Runs (`runs/run-<type>-<target>/`, every one soft, s11) and its `delivery/`.
-A Job `jNN_<goal>_method-vN-<slug>_inputs-vM/` (older: `jNN_<goal>_<design-method>/`) pins one goal, one registered
-method version and one inputs version by its face's `goal:` · `method:` · `inputs:` lines, and the Design Method
-Book's release it runs by `release:` (JL 261109: the Book is the method's own Block, as the Insight Question Book is
-the questions', `design/DesignMethodBook-<Topic>/`, one Job per release `jNN_method-vN_<slug>/`); its `inputs/` is the fence (goal.md · method.md · links into the Block's inputs version · manifest.yaml);
+A Job `jNN_<goal>_M0x-<slug>-mK_inputs-vM/` (older: `jNN_<goal>_<design-method>/`) pins one goal, one registered
+method version and one inputs version by its face's `goal:` · `method:` · `inputs:` lines. The Design Method Book is
+the designer of one kind of thing (`design/DesignMethodBook-<Topic>/`, beside its Board as the Insight
+Question Book is beside its): one Job per method type `jNN_M0x-<slug>/`, its signed versions on the face
+(`versions:`) and frozen beside it (`mK.md`). A Job's `inputs/` is the fence (goal.md · method.md · links into the
+Block's inputs version · manifest.yaml);
 its Tasks are t00 (② reason ideas), one per design (③ ④) and t99 (⑤ review whole). A Block is on this ladder
 when one of its Jobs pins a registered method (M01 – M05); any other design Block keeps today's reading.
 Read-only: this module only reads.
 """
 from __future__ import annotations
 
-from src.common import delivery_dir, delivery_lane_dir, delivery_relative
+from src.common import delivery_dir
 import csv
 import re
+import sys
+import traceback
 from datetime import datetime
 from pathlib import Path
 
@@ -50,8 +54,6 @@ def registry(path: Path | None = None) -> dict:
 METHOD_PIN = re.compile(r"^(M\d\d)\s*(m\d+)?")
 DESIGN_TASK = re.compile(r"^t(\d+)_d(\d+)_(.+)$")
 FENCED = re.compile(r"(?s)```[a-z]*\n(.*?)\n?```")   # a design's words in a fenced block, a note around it (release.py)
-FENCE_PARTS = ("Goal · how much is set", "Goal · for whom", "Information · whose", "Information · form",
-               "Examples", "Tools", "Reading", "From the last unit")      # step ① See input's parts (s03)
 
 
 _LOADER = getattr(yaml, "CSafeLoader", yaml.SafeLoader)          # the C parser where installed: ~10× faster
@@ -70,7 +72,11 @@ def _cached(path: Path, parse):
             _CACHE.clear()
         try:
             _CACHE[key] = parse(path.read_text(encoding="utf-8", errors="ignore"))
-        except (OSError, yaml.YAMLError, ValueError):
+        except OSError:
+            _CACHE[key] = None
+        except (yaml.YAMLError, ValueError):  # a broken file reads as empty; the log names it, once per version
+            print(f"design_reader: cannot parse {path}", file=sys.stderr)
+            traceback.print_exc()
             _CACHE[key] = None
     return _CACHE[key]
 
@@ -194,12 +200,14 @@ def goal_pin(value) -> str:
 
 
 def is_job(folder: Path) -> bool:
-    """A Job on the ladder: a jNN_ folder whose face pins a registered method."""
-    return folder.name.startswith("j") and folder.is_dir() and bool(method_pin(front(face(folder)).get("method"))[0])
+    """A Job on the ladder: a jNN_ folder whose face pins a registered method (a Design Method Book's jNN_ folder is
+    a method type, never a Job)."""
+    return (folder.name.startswith("j") and folder.is_dir() and bool(method_pin(front(face(folder)).get("method"))[0])
+            and not is_method_book(folder.parent))
 
 
 def is_method_book(block: Path) -> bool:
-    """A Design Method Book: its face says `board-kind: design-method-book` (JL 261109)."""
+    """A Design Method Book: its face says `board-kind: design-method-book`."""
     try:
         return bool(re.search(r"(?m)^board-kind:\s*design-method-book\s*$",
                               (block / "board.md").read_text(encoding="utf-8", errors="ignore")))
@@ -208,14 +216,15 @@ def is_method_book(block: Path) -> bool:
 
 
 def is_release(folder: Path) -> bool:
-    """A Book's release: a jNN_ folder in a Design Method Book whose face names its `release:`."""
+    """A Book's method type: a jNN_ folder in a Design Method Book whose face names its `method:` (M01)."""
     return (folder.is_dir() and re.match(r"^j\d+_", folder.name) is not None and is_method_book(folder.parent)
-            and bool(front(face(folder)).get("release")))
+            and bool(front(face(folder)).get("method")))
 
 
 def method_book(book: Path, root: Path | None = None) -> dict:
-    """A Design Method Book: its releases (oldest first, each with its frozen method.md and the Board Jobs that run it),
-    its proposals, and the Boards it serves (board.md `serves:`, a path under the Project)."""
+    """A Design Method Book, the designer of one channel (board.md `channel:`, as its Boards'): its method types (one Job each,
+    `jNN_M0x-<slug>/`), each type's signed versions as releases (`M01 m2`, its frozen `m2.md`, the Board Jobs that pin
+    it), its proposals, and the Boards it serves (board.md `serves:`, a path under the Project)."""
     md = book / "board.md"
     f = front(md)
     project = book.parent.parent
@@ -226,20 +235,27 @@ def method_book(book: Path, root: Path | None = None) -> dict:
         for p in sorted(b.iterdir()):
             if re.match(r"^j\d+_", p.name) and is_job(p):
                 jobs.append({**job(p), "board": b})
-    releases = []
+    types, releases = [], []
     for p in sorted(book.iterdir()) if book.is_dir() else []:
         if not (re.match(r"^j\d+_", p.name) and p.is_dir()):
             continue
         rf = front(face(p))
-        rel_id = str(rf.get("release", ""))
-        if not rel_id:
+        mid = str(rf.get("method", ""))
+        if not mid:
             continue
-        card = front(p / "method.md") if (p / "method.md").is_file() else {}
-        releases.append({"path": p, "name": p.name, "id": rel_id, "from": str(rf.get("from", "")),
-                         "state": str(rf.get("state", "—")), "signed": str(rf.get("signed", "")),
-                         "title": str(rf.get("title", "")), "goal": str(rf.get("goal", "")), "face": rf,
-                         "card": card if isinstance(card, dict) else {}, "steps": (card or {}).get("steps") or {},
-                         "sees": (card or {}).get("sees") or [], "jobs": [j for j in jobs if j["release"] == rel_id]})
+        signed = rf.get("versions") if isinstance(rf.get("versions"), dict) else {}
+        mine = []
+        for ver in sorted(signed, key=lambda v: (int(re.sub(r"\D", "", str(v)) or 0), str(v))):
+            card = front(p / f"{ver}.md") if (p / f"{ver}.md").is_file() else {}
+            card = card if isinstance(card, dict) else {}
+            mine.append({"path": p, "name": p.name, "id": f"{mid} {ver}", "method": mid, "version": str(ver),
+                         "card_path": p / f"{ver}.md", "state": str(rf.get("state", "—")),
+                         "signed": str(signed.get(ver) or ""), "title": str(rf.get("title", "")),
+                         "goal": str(rf.get("goal", "")), "face": rf, "card": card,
+                         "steps": card.get("steps") or {}, "sees": card.get("sees") or [],
+                         "jobs": [j for j in jobs if j["release"] == f"{mid} {ver}"]})
+        types.append({"path": p, "name": p.name, "method": mid, "title": str(rf.get("title", "")), "releases": mine})
+        releases += mine
     proposals = []
     pdir = book / "proposals"
     for p in sorted(pdir.glob("*.md")) if pdir.is_dir() else []:
@@ -253,8 +269,8 @@ def method_book(book: Path, root: Path | None = None) -> dict:
         proposals.append({"path": p, "slug": p.stem, "title": head, "kind": str(pf.get("kind", "")),
                           "step": str(pf.get("step", "")), "from": str(pf.get("from", "")),
                           "state": str(pf.get("state", "")), "taken_in": str(pf.get("taken-in", "")), "body": body})
-    return {"path": book, "face": md, "goal": str(f.get("goal", "")), "boards": boards, "jobs": jobs,
-            "releases": releases, "proposals": proposals}
+    return {"path": book, "face": md, "goal": str(f.get("goal", "")), "channel": str(f.get("channel", "")).strip().lower(),
+            "boards": boards, "jobs": jobs, "types": types, "releases": releases, "proposals": proposals}
 
 
 def book_of(block: Path) -> Path | None:
@@ -339,7 +355,7 @@ def job(jdir: Path) -> dict:
     return {"path": jdir, "name": jdir.name, "id": jdir.name.split("_")[0], "goal": goal_pin(f.get("goal")),
             "method": mid, "version": version, "method_name": METHODS.get(mid, ("", ""))[0],
             "type": METHODS.get(mid, ("", "—"))[1], "sha": str(f.get("method-sha", "")), "inputs": str(f.get("inputs", "")),
-            "release": str(f.get("release", "")),
+            "release": f"{mid} {version}".strip(),
             "state": str(f.get("state", "—")), "moved": str(f.get("moved", "")), "n": f.get("n", ""),
             "face": f, "fence": fence, "manifest": manifest if isinstance(manifest, dict) else {},
             "method_card": method if isinstance(method, dict) else {}, "files": files, "runs": runs(jdir),
@@ -401,7 +417,7 @@ def block_goals(block: Path | None) -> list:
 
 
 def venue_of(folder: Path | None) -> str:
-    """The channel a design is drawn in (JL 261011: "it is not message"): the venue of the goal its Job pins,
+    """The channel a design is drawn in: the venue of the goal its Job pins,
     from board.md ## Goals, lowercased (sms · checklist · questionnaire · …); "" when none is found, which the
     views read as an SMS (the older Blocks)."""
     if folder is None:

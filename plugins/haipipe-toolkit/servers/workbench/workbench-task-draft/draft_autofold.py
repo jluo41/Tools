@@ -13,7 +13,15 @@ sentence in view); and the fold is judged on the page's first open only: after a
 AUTOFOLD_JS = """<script>(function(){if(window.sxAutofold)return;window.sxAutofold=1;
  var f0=window.fetch;window.fetch=function(u,o){if(o&&/post/i.test(o.method||'')&&/^\\/_board\\/draft-/.test(String(u)))
   window.sxQuiet=Date.now()+6000;return f0.apply(this,arguments);};          /* the page's own write never reloads it */
- window.sxPill=function(reload){if(document.querySelector('.sx-pill'))return;var b=document.createElement('button');
+ /* a change from elsewhere reloads by itself once the reader has been still for 3 s (JL 261114: "why not the auto
+    relaod"); until then the pill shows, so a page never moves under a hand that is scrolling, clicking or typing */
+ var lastAct=Date.now();['scroll','mousedown','keydown','touchstart','wheel'].forEach(function(k){
+  window.addEventListener(k,function(){lastAct=Date.now();},{passive:true,capture:true});});
+ function busy(){var a=document.activeElement;if(a&&(a.isContentEditable||/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)))return true;
+  if(document.querySelector('.rv-card.editing,.rv-note.writing,.rv-note.nt-new'))return true;
+  var sel=window.getSelection&&window.getSelection();return !!(sel&&String(sel).trim());}
+ var pend=null;setInterval(function(){if(pend&&!document.hidden&&Date.now()-lastAct>3000&&!busy()){var r=pend;pend=null;r();}},1000);
+ window.sxPill=function(reload){pend=reload;if(document.querySelector('.sx-pill'))return;var b=document.createElement('button');
   b.type='button';b.className='sx-pill';b.textContent='↻ Show changes';b.onclick=function(){b.disabled=true;reload();};
   b.style.cssText='position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:50;padding:5px 14px;border-radius:14px;'
    +'border:1px solid var(--line,#ddd);background:var(--paper,#fff);color:var(--ink,#222);font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,.12);cursor:pointer';

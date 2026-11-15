@@ -293,7 +293,7 @@ shows them under four buttons in Work Details. The base frame adds its own (Add 
 🧩 SKILL    haipipe-paper-story
 🤖 AGENT    haipipe-draft-writing-agent
 ✍️ SIGNS    release of one Section (G3)
-💬 PROMPT   Release <target> of {folder} for writing (G3): check its row in the face's ## Narrative is ready, then record the release in that row; a person signs it.
+💬 PROMPT   Release <target> of {folder} for writing (G3): check the face's narrative-approved: is ✅ (page.py sign-narrative) and its row in the face's ## Narrative is ready, then record the release in that row; a person signs it.
 
 🔘 BUTTON   Add comments · Job › Audience Report · ^run-add-comments- · views comments
 🏷 RUN      run-add-comments-<qNN>

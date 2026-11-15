@@ -1,4 +1,4 @@
-"""The design theme on the base frame (servers/workbench/frame.py): only what differs from vanilla.
+"""The design theme on the base frame (servers/workbench/page/frame.py): only what differs from vanilla.
 
 The design ladder (Tools/blueprints/Project-Ladder/work/b12_theme_design, s01-design; the contract is
 skills/2_theme/design/haipipe-design/ref/design-ladder.md):
@@ -20,6 +20,7 @@ and the older board keeps its own workbench (/_board/design-board).
 from __future__ import annotations
 
 import re
+import traceback
 from pathlib import Path
 
 from live import design_reader as DR
@@ -89,7 +90,8 @@ def _elements(task: Path) -> list:
     try:
         import yaml
         data = yaml.safe_load(path.read_text(encoding="utf-8")) or []
-    except Exception:
+    except Exception:                     # a broken elements.yaml shows as no elements; the log says why
+        traceback.print_exc()
         return []
     return data if isinstance(data, list) else data.get("elements", []) if isinstance(data, dict) else []
 
@@ -202,8 +204,7 @@ def _task(folder: Path, root: Path, sub: str) -> dict:
     return out
 
 
-# ── an older board on the frame: its method groups and Design Folders (JL 261008: "the frame has no display for
-# design items") ──────────────────────────────────────────────────────────────────────────────────
+# ── an older board on the frame: its method groups and Design Folders ──────────────────────────────────────────────────────────────────────────────────
 # An older DesignBoard (B00_DesignBoard-<name>/ with 2-Design[-M<NN>-<slug>]/Design-NN-<slug>/) reads on the frame as
 # Block · Job (a method group) · Task (one Design Folder). A Task's Work Details and Delivery frame the older page's
 # own Design and Delivery Spaces in place (one card per design: Design · Rationale · Evaluation), as the frame does
@@ -282,7 +283,7 @@ STEP_GROUPS = {"t00": ("Task · t00 · reason ideas", "② Reason ideas"), "t99"
 def _job_option(folder: Path):
     """A ladder Job in the Job ▾ dropdown: its folder name as it is, and, when another Job of the Block shares its
     words (one method's two versions, or one method on two inputs versions), the pins that tell them apart, then
-    `held` (JL 261023, on j05 and j06_review-new-rx_raw-data-agent: "why we have two here?"). None: the name alone."""
+    `held`, so two Jobs with the same words never read as a duplicate. None: the name alone."""
     words = folder.name.split("_", 1)[-1]
     twins = [p for p in folder.parent.iterdir() if p.is_dir() and re.match(r"^j\d+_", p.name)
              and p.name.split("_", 1)[-1] == words and DR.is_job(p)]

@@ -109,7 +109,7 @@ one box; its Runs panel starts folded to the strip and opens on a click. The col
 and tab sizes are the Insight workbench's, kept once in `space_views.SPACE_CSS`; the
 Spine shows each division by name, never its C-code. Guide reads the server's
 `servers/workbench-paper/guide/guide.yaml` (family `paper`, loaded by
-`workbench/guide_families.py`): `description`, the Workbench Table, which stays in this skill,
+`workbench/guide/guide_families.py`): `description`, the Workbench Table, which stays in this skill,
 `ref/workbench-table.md` (each working row is one `run-cards.md` button; its 🤖 AGENT,
 🧩 SKILL and ✍️ SIGNS lines agree, `table-workbench --check --cards`), the papers
 `servers/workbench-paper/related/papers.md` (`table-papers`),
@@ -316,7 +316,7 @@ first `Story<X>`) when it exists, else the first drawing there, else the Story's
 new. The canvas is the server's self-hosted Excalidraw
 (`/_excalidraw/?board=<path>&edit=1`), loaded when the tab shows; every stroke saves
 through `/_board/excalidraw-save`. The server writes the empty file the first time the
-canvas opens (`mint_board_scene` in `servers/workbench/xcal.py`: a plain scene,
+canvas opens (`mint_board_scene` in `servers/workbench/studio/xcal.py`: a plain scene,
 only in a `studio/` folder beside a `board.md`); rendering the page writes nothing. With more
 than one `.excalidraw` in `studio/`, each is a button above the canvas, the Story's own first;
 "Open full screen ↗" opens the same canvas in its own tab. One tab holds the pen: a second

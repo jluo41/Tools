@@ -65,7 +65,8 @@ def test_goal_counts_runs_not_passes_or_soft_work_and_never_grants_acceptance(bo
     assert len(rows) == 1
     content = work_progress.goal_view("Task", task, root, {task: rows}, "Audience Report")
     assert "Freeze answers" in content
-    assert "<b>📊 1 Run</b>" in content                                  # the hard Run only, never the soft one
+    assert "<b>📊 Runs</b>" in content and "run-report-table" not in content   # the hard Run only, never the soft one;
+    #                                                                    no count on the page (JL 261113)
     assert "Goal accepted by a person: not recorded" in content
     assert "100%" not in content
 
@@ -170,11 +171,11 @@ def test_goal_is_a_checklist_ticked_from_disk(board):
     assert content.count('<ul class=dtree>') == 1                           # one tree, never two lists
     assert text.index("j01_tables") < text.index("t01_answers") < text.index("Answers table") < text.index("Across all Jobs")
     assert "✅ Answers table" in text and "☐ The reporttodo" in text and "✅ The table, checked" in text
-    assert "j01_tables🔶 1 of 2" in text                                    # the Run finished; no fold file yet
+    assert "j01_tables🔶 in progress" in text                                    # the Run finished; no fold file yet
     assert "12 requests agree" in text                                      # the Run's key result beside its item
-    assert "2 of 4 delivered" in text and "Goal accepted by a person: not recorded" in text
+    assert "in progress" in text and " of 4" not in text and "Goal accepted by a person: not recorded" in text
     job_view = re.sub(r"<[^>]+>", "", work_progress.goal_cards("Job", job, root, work_progress.snapshot("Job", job), "Audience Report"))
-    assert "t01_answers✅ 1 of 1" in job_view and "☐ Second fold" in job_view
+    assert "t01_answers✅ done" in job_view and "☐ Second fold" in job_view
 
 
 def test_a_tasks_runs_group_by_role(board):
@@ -209,7 +210,7 @@ def test_each_task_opens_with_its_own_report_above_its_items(board):
     assert content.index("t01_answers") < row < content.index("<b>Answers table</b>")   # first under the Task
     page = work_progress.render_task_about(task, root)
     for words in ("<h1>📂 Answers compared</h1>", "<b>Goal.</b> One table of the answers.", "<b>Close when.</b> r01 stored it.",
-                  "1 of 1 items delivered · 2 Runs", "view=work-run", ">r01_compare</a>", "📊 figures", "The answers, <b>compared</b>.",
+                  "Items done · Runs ✅ finished", "view=work-run", ">r01_compare</a>", "📊 figures", "The answers, <b>compared</b>.",
                   "Answers table</b>: One row per answer.", "<h2>Figures</h2>", "01_by_rank.png"):
         assert words in page, words
 
@@ -229,7 +230,7 @@ def test_each_job_opens_with_its_own_overview_above_its_tasks(board):
     assert 'data-pop="About · j01_tables"' in content
     page = work_progress.render_about(job, root)                                         # the page it pops out
     for words in ("<h1>🗂 j01 · Tables</h1>", "<b>Goal.</b> Every answer in one table.",
-                  "<b>Close when.</b> The table is stored.", "1 of 1 items delivered · 1 Tasks · Runs ✅ 1",
+                  "<b>Close when.</b> The table is stored.", "Items done · Runs ✅ finished",
                   "<th>Task</th>", "One table of <b>answers</b>", "<h2>Background</h2>",
                   "<h2>What it hands on</h2>", "Answers table</b>: One row per answer."):
         assert words in page, words

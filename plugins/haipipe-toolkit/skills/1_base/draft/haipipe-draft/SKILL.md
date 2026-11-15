@@ -2,8 +2,8 @@
 name: haipipe-draft
 description: "The draft behind every Page: create, edit, build and serve a self-contained Page Folder from a file, without a Board; owns the Page Face contract, which Run Spec holds authority, and a draft Task's seven steps (Studio, Plan, Write, Evidence, Display, Revise, Delivery). Planning is haipipe-draft-logic. Trigger: draft, draft folder, file to page, create a page, Page Face, Run Spec, draft steps, /haipipe-draft, /haipipe-page."
 metadata:
-  version: "0.138.2"
-  last_updated: "2026-11-04"
+  version: "0.143.0"
+  last_updated: "2026-11-13"
   aliases: [haipipe-page]
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -47,12 +47,41 @@ does. Only a person signs, ticks, accepts or sends.
 | Step (tab) | Its prompt | Owner it loads | Writes | Waits for you |
 |---|---|---|---|---|
 | 🎨 Studio | `/haipipe-studio <block> <sNN>` | haipipe-studio | the Block's `sNN-<topic>/`; what you settle goes into §1 (s41-D25) | optional |
-| 📐 1 · Plan | `/haipipe-draft <task> structure` | haipipe-draft-logic `ref/context.md`, `ref/structure.md`, `ref/scratch.md` | `draft/records/<stem>-context.md`; `## 1 · Structure`; you type `## 2 · Scratch` here, a note per paragraph (JL 261020: "I think we should move the scratch here") | ✍ Sign: you type ✅ on `approved:` |
+| 📐 1 · Plan | `/haipipe-draft <task> structure` | haipipe-draft-logic `ref/context.md`, `ref/structure.md`, `ref/scratch.md` | `draft/records/<stem>-context.md`; `## 1 · Structure`; you type `## 2 · Scratch` here, a note per paragraph (JL 261020: "I think we should move the scratch here") | ✍ Sign: your word in chat ("go with B"); the agent writes it with `page.py sign --quote` |
 | ✍️ 2 · Write | `/haipipe-draft <task> write` | haipipe-draft-writing `ref/writing.md` | `## 3 · Draft` from §1 and its Scratch (one sentence per Bullet, ⟦pending⟧ where a value waits), keeping the sentences you typed, in a new `-draft-v<N>.md`; the old one to `previous/` | none: a first draft, no rules yet (s41-D26) |
 | 🔎 3 · Evidence | `/haipipe-evidence <task>` | haipipe-evidence `cards.py` | `evidence/cards.yaml`, `evidence/proposals.md`; cards are CITE and VALUE, one topic (a Task) each, items CITE 1.2 | ☐ you tick each ask |
 | 🖼 4 · Display | `/haipipe-display <task>` | haipipe-display (its five renderers) | `display/Display<n>-<slug>/`: README (claim, kind, `label: Table 1`, built_on its cards), recipe, assets, preview; shown beside the sentence that calls it | ✍ you write `accepted:` in its README |
-| 🔁 5 · Revise | `/haipipe-draft <task> revise` + your notes (your own sentences are typed in 2 · Write) | haipipe-draft-writing `ref/revise.md`; excalidraw-draft `section_canvas.py` when the Section has a canvas | `draft/records/<stem>-revise.md` rewritten as one pass, the latest (`## Pass <k> · <date> · on draft v<N>`; undecided cards still true carry over, older passes stay in git), first as the venue's reviewer, structure before sentences; one `### <Edit · Review · Section question> · S<n> · <what>` card each: Why, Original, Expected, State; accepted cards into §3 as the next version | ✍ on each card ✓ Accept, ✗ Reject or ✎ Edit its words (the cards file only); then `/haipipe-draft <task> apply` writes the accepted ones as the next version |
+| 🔁 5 · Revise | `/haipipe-draft <task> revise` + your notes (your own sentences are typed in 2 · Write) | haipipe-draft-writing `ref/revise.md`; excalidraw-draft `section_canvas.py` when the Section has a canvas | `draft/records/<stem>-revise.md` rewritten as one pass, the latest (`## Pass <k> · <date> · on draft v<N>`; undecided cards still true carry over, older passes stay in git), first as the venue's reviewer, structure before sentences; one `### <Edit · Review · Section question> · s<n> · <what>` card each: Why, Original, Expected, State; accepted cards into §3 as the next version | ✍ on each card ✓ Accept, ✗ Reject or ✎ Edit its words (the cards file only); then `/haipipe-draft <task> apply` writes the accepted ones as the next version |
 | 📤 Delivery | `/haipipe-draft <task> deliver`, `check`; `/haipipe-delivery` render, pull | haipipe-delivery (`page.py export`, `word_round.py`), haipipe-draft-review | the Block's `delivery/<jNN>/<tNN>/`; `render/<name>-v<N>/p-<k>.png` | ✍ you send; another round? |
+
+### 🚦 The Plan gate (JL 261111)
+
+The steps run in order, Plan → Write → Evidence → Display → Revise → Delivery, and the sign on the plan is a gate,
+not a note (the case: `t01_introduction` of Paper-ScalingGlucose-NatSeries2026 was written, rebound and revised
+twice on a plan never signed, then its structure came into question).
+
+1. **Every later step reads the plan state first.** Write, Evidence, Display and Revise open the current Draft
+   Markdown; if `approved:` does not start with ✅, the reply starts at 1 · Plan whatever the prompt named ("revise
+   in a loop", "make v0.11"): show the `## 1 · Structure` map, propose 2 to 4 structure versions with one lean
+   (haipipe-draft-logic, Propose first), and wait.
+2. **The sign is the person's word in chat** ("go with B", "this structure"). The agent writes it, never decides it:
+   `page.py sign <task> --quote "<their words>"` sets `approved: ✅ JL <yymmdd> · in chat: "<quote>"` and keeps the
+   row that governs the Task (its Job's `## Narrative` row; only an older Board whose Story § 8 still holds Section
+   rows uses that row) as text in `draft/records/<stem>-sign.md`; no hash, health compares the text. No button, no
+   second loop.
+3. **Written before the sign is out of order.** `page.py health` gives `order` WARN when `## 3 · Draft` exists on an
+   unsigned plan; `health --final` makes it FAIL. The plain "plan not signed" line stays a WARN at the final gate
+   while no § 3 exists, because the sign is the person's.
+4. **A moved row sends the Section back to Plan.** When the governing row changes after the sign, `health` gives
+   `row` WARN (FAIL at `--final`): re-propose against the new row, then sign again.
+5. **A version's Narrative is signed first.** In a Job whose face has `## Narrative` (a paper version: that venue's
+   layout, one row per Section), the person signs that Narrative before any Section's plan: `page.py sign-narrative
+   <job> --quote "…"` writes `narrative-approved: ✅ JL <yymmdd> · in chat: "…"` and a readable `story-at-sign:` on the
+   face's header and keeps the Story's § 8 (the shared narrative: title, story, claims) as text in
+   `<job>/records/narrative-sign.md`. Then each Section's `page.py sign`. Section health gives `narrative` WARN while
+   the version's Narrative is unsigned or the Story's § 8 has moved since (FAIL at `--final`).
+6. **Revise checks the structure before sentences.** If the structure fails, the pass holds Section question cards
+   only and returns to Plan (haipipe-draft-writing `ref/revise.md`).
 
 The old controller operations still answer and map onto the steps: CONTEXT and OUTLINE are 1 · Plan,
 EVIDENCE is 3 · Evidence and 4 · Display, CONTENT is 2 · Write and 5 · Revise, CHECK is Delivery's `check`. The screen reads
@@ -107,9 +136,12 @@ Delivery is the letter as uploaded (JL 261102: "this is not the version to submi
 
 **When adopt refuses because the paragraphs changed** (a paragraph added, cut, split or merged), run `page.py adopt --relayout <task>`: it lays `## Content` out again from the Draft and writes the `content: draft v<N> · adopted …` line. Never type Content by hand to get past the refusal (JL 261102: the cover letter's Content was typed by hand, no `content:` line was written, and its PDF printed draft v0.1 beside a v0.3 plan). Until Content is adopted, `page.py health` says so (`content`: "Content prints draft v0.1; the current draft is v0.3"; a FAIL under `--final`) and every Delivery tab shows the same warning above the file, so an old print is never read as the latest.
 
-`page.py renumber <page-folder>` renumbers the sentences S1, S2, … in reading order in every file that names one (the
+`page.py renumber <page-folder>` renumbers the sentences s1, s2, … in reading order in every file that names one (the
 Draft, `evidence/cards.yaml`, the Revise cards, rules and comments; a person's own notes stay as written) after a
-sentence is added, moved or merged (`--merged S15=S14`); `--dry-run` says what would change.
+sentence is added, moved or merged (`--merged s15=s14`); `--dry-run` says what would change. A Draft whose ids restart
+in each paragraph is renumbered by position through the Section (`page.py health` fails it: a sentence id appears
+once in its Draft). A sentence id is written `s8`; an older `S8` is read as the same sentence, and
+`page.py sentence-case <draft> --records [--dry-run]` rewrites one Draft and its records to `s`.
 
 Code keeps every record here, so an agent types none (JL 260928: agents keep
 text, code keeps records). `adopt` writes the header line `content: draft v<N> ·
@@ -343,9 +375,11 @@ one Page-level CONTENT pass applies the accepted candidates, integrates the
 evidence, builds the declared web/LaTeX/Word outputs, and routes one exact
 version to CHECK. While the barrier is open, the Draft Space is current
 and delivery is explicitly stale by design. For an interactive Page, the
-person's explicit next-step instruction is the authority for this pass; the
-Outline's `approved:` marker is optional supporting metadata and must not create
-a second approval loop.
+person's explicit next-step instruction is the authority for this pass. That
+instruction does not replace the plan's sign: a pass runs only on a plan whose
+`approved:` starts with ✅, written from the person's own words in chat by
+`page.py sign` (§ The Plan gate). The sign is that one word, never a second
+approval loop or a button.
 
 ## ✅ Page configuration and completion checklist
 
@@ -392,7 +426,7 @@ python3 <toolkit>/skills/1_base/draft/haipipe-draft/cli/page.py migrate-addresse
 python3 <toolkit>/skills/1_base/draft/haipipe-draft/cli/page.py migrate-drafts <existing-page-folder>
 python3 <toolkit>/skills/1_base/draft/haipipe-draft/cli/page.py outline-tidy <page.md | page-folder> [--dry-run]
 python3 <toolkit>/skills/1_base/draft/haipipe-draft/cli/page.py draft-layout <page-folder | board | tasks-dir> [--sort-runs] [--archive-evidence] [--dry-run]
-python3 <toolkit>/skills/1_base/draft/haipipe-draft/cli/page.py health <page-folder>... [--json]
+python3 <toolkit>/skills/1_base/draft/haipipe-draft/cli/page.py health|structure <page-folder | version-job>... [--json]   # structure: print it verbatim when asked (must-check M-D14)
 python3 <toolkit>/skills/1_base/draft/haipipe-draft/cli/page.py adopt <page-folder>... [--plan <draft.md>] [--dry-run]
 python3 <toolkit>/skills/1_base/draft/haipipe-draft/cli/page.py check-page-folder <page-folder | board-folder>... [--json]
 python3 <toolkit>/skills/1_base/draft/haipipe-draft/cli/page.py inspect <page-folder>
@@ -629,7 +663,7 @@ title line, its sentences and job, and the question that leads to the next:
 ```text
 - C1 · Introduction
 - C1.P1 · Physician prescribing behavior
-  → S1 to S6 · quality and spending · comparable decisions · opioid example
+  → s1 to s6 · quality and spending · comparable decisions · opioid example
   → C1.P2: Could interpersonal dispositions help explain variation?
 ```
 
@@ -1089,7 +1123,7 @@ sentence/paragraph feedback request is already a selection: resume a matching
 open Page Run or allocate the next typed Page-local RP for an independent goal.
 When the person enters or resumes an open Run before giving feedback, return
 the pre-Step review packet with the complete selected paragraphs separated by
-visible `### PNN · Cn.Pm` blocks, `S1...Sn` labels, proposed next Step number,
+visible `### PNN · Cn.Pm` blocks, `s1...sn` labels, proposed next Step number,
 review scope, and the three direct links;
 do not create a journal Step yet. After feedback arrives, resume current
 decisions and affected sources; make the narrow patch, save feedback and
@@ -1228,6 +1262,17 @@ thread      D07            board-wide, cited from any page
 
 Every id inside a fenced figure renders as a link.
 
+## 🗣 Showing prose changes in a reply (JL 261113)
+
+A reply never shows proposed or changed Draft prose as a paragraph (a quote, an indented block, a fenced
+passage). JL 261113: "never return the things like this … Make it the same to the index in the UI, sentence by
+sentence, and also show what changes you made compared to previous. You can report paragraph by paragraph."
+Report it paragraph by paragraph, one line per sentence with the address the workbench shows (`C<n>.P<m> ·
+<title>`, then `B<k> · s<n>` as in § 3 of the Draft), a mark (✅ kept, ✏️ changed, ➕ new, ➖ cut, ↪ moved) and,
+for a changed sentence, its before and after in full, against a named version. The format and its example are
+`response-format` § Prose changes: sentence by sentence, by address. The revise record (`draft/records/<stem>-revise.md`)
+names each sentence by the same address, so chat, record and page agree.
+
 ## ✅ Closing checks
 
 **The final gate (JL 261102: "I think /haipipe-draft should do this final checklist before saying it is finished").** Before any reply says a draft Task is finished, done, complete or ready, run `page.py health --final <task>` and paste its rows. It is `health` with nothing left to wait: Content that differs from the current draft, a stale export and a missing step file fail instead of warning, and its `printed` check reads the built `latex/<stem>.pdf` back (pdftotext) and fails if any § 3 sentence is not in it. Only a person's own step (the sign) stays a warning, named so it is not forgotten and never ticked by the agent. A FAIL means the reply says what is still open, never "finished".
@@ -1242,6 +1287,20 @@ Every id inside a fenced figure renders as a link.
   report its WARN rows rather than calling the Folder done. It judges no prose:
   Page CHECK still does that. `draft/evidence/bibex/` is live export output
   (`src/common.py::evidence_lane_dir`) and is not flagged as retired.
+- Row `paragraph` (JL 261112): each paragraph holds 4 to 7 sentences, counted
+  from its `### C<n>.P<m> · <name> · s<a> to s<b>` heading, else its Bullets.
+  WARN while writing, FAIL with `--final`, naming each paragraph id and its
+  count; a `reason: <why>` line under the heading accepts it. It runs only for
+  a page whose face has `section_kind:` and skips the exempt kinds (abstract,
+  summary, appendix and supplement legends, letters, responses, a P0 title).
+  Its one reader is `src/paragraph_length.py` (`RANGE`, `EXEMPT`,
+  `paragraphs()`, `off_range()`, `section_kind()`), shared with haipipe-paper
+  W7 and haipipe-draft-review `paragraph-length`.
+- Rows `expect` and `title` (JL 261112, from the same module): an
+  Introduction's `[Expect]` Bullet whose Evidence line says none ("do we really
+  have evidence for this?": ask the question, cite the prior result, leave the
+  answer to the Results), and a `[Title]` Bullet that still holds a placeholder
+  ("could you put the title here?"). Both WARN, FAIL with `--final`.
 - For Page creation or whole-Page completion, apply `ref/page-checklist.md`
   and name unmet, deferred or untested checks; never promote a scaffold,
   a static build or an inferred human approval into completion.

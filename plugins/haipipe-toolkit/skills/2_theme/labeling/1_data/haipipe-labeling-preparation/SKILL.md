@@ -21,7 +21,7 @@ metadata:
 ## The items Task (b15 s41-task-items-procedure)
 
 An items Task (`task-type: items`, or the older `data`) turns its Job's raw data into the items a person labels.
-This skill is its one main skill: every prompt its three tabs copy names it, and it calls any other skill itself.
+This skill is its one main skill: every prompt its three steps copy names it, and it calls any other skill itself.
 The engine is `$TOOLS_ROOT/plugins/haipipe-toolkit/skills/2_theme/labeling/engine/items_task.py`; each step is a
 hard Run in the Task's own `runs/`, run through its ticket, whose worker is the Task's `scripts/prepare.py` (a
 forwarder `plan` writes).
@@ -34,15 +34,15 @@ read where the Job stands with the labeling door's start script:
 "$PYTHON_BIN" "$TOOLS_ROOT/plugins/haipipe-toolkit/skills/2_theme/labeling/haipipe-labeling/scripts/start.py" <path>
 ```
 
-It opens the workbench in the browser on the tab of the step now (starting the SPACE's host when none runs) and
+It opens the workbench in the browser on the page of the step now (starting the SPACE's host when none runs) and
 prints the Job's Tasks, the step, `who` does it, `do` what, and `open`: the full link. Tell the person in a few
-lines: the steps done, the step now, and that tab, giving the full `open` link (never a bare `/_board/...` path).
+lines: the steps done, the step now, and that step's page, giving the full `open` link (never a bare `/_board/...` path).
 Then:
 
-1. `who: agent`: do that step now, as below, and stop at its end: after describe, say to reload 1 · Data; after
-   planning items or embed, say to read the proposal in the tab and press Sign or Agree.
-2. `who: person`: do nothing; say what to press, in which tab, and that the next message is the same start message.
-3. Called again: the script reads the Job again; when it says `agent` and a ticket, run it, settle, say which tab to
+1. `who: agent`: do that step now, as below, and stop at its end: after describe, say to reload the Data step; after
+   planning items or embed, say to read the proposal in that step and press Sign or Agree.
+2. `who: person`: do nothing; say what to press, in which step, and that the next message is the same start message.
+3. Called again: the script reads the Job again; when it says `agent` and a ticket, run it, settle, say which step to
    reload. A `note` (items made before recipes were signed, say) is said to the person as it is.
 
 Below, `items_task.py` stands for `"$PYTHON_BIN" "$TOOLS_ROOT/plugins/haipipe-toolkit/skills/2_theme/labeling/engine/items_task.py"`:

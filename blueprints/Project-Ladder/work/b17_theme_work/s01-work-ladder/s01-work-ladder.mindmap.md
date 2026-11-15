@@ -71,7 +71,7 @@ built: from-topic .
   - 261007: first drawn as the frame "work … <!-- @history/0 #f8d419 -->
     261007: first drawn as the frame "work ladder · Q01", one row per level (Block, Job, Task, Run) and one column per Space (Description | Idea Studio · Audience Report | Work Details | Runs · Delivery), today's Task workbench views moved into it and nine open points in red; below it the Board, Job and Task rows from b10's shared definitions. Kept whole: `result/first-drawing.excalidraw` and `result/first-drawing-builder/build_s01_work_ladder.py`.
   - Q01 ("How does work climb the ladder?") … <!-- @history/1 #f9f0f2 -->
-    Q01 ("How does work climb the ladder?") was proposed 261007 and stayed open; its report `../reports/q01_work_ladder/` goes with the Questions (s01-D06).
+    Q01 ("How does work climb the ladder?") was proposed 261007 and stayed open; its report `../s03-q01-work-ladder/q01_work_ladder/` goes with the Questions (s01-D06).
   - 261026: the mind map written from that … <!-- @history/2 #adff37 -->
     261026: the mind map written from that drawing, frame by frame: `result/old-mindmap-261031/`.
   - 261029: three idea pictures and their deck … <!-- @history/3 #dad76b -->

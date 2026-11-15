@@ -15,7 +15,7 @@ from live.ui_parts import _bar, _cap, _plain, _section, _when, plural_word
 from live.board_read import view_topics, _face, _field, _folder_line, _rq_lists, _table, explore_tree
 from live.board_evidence import evidence_body  # noqa: F401  (callers import it from here)
 # moved out by part of the page; the names callers still import from here
-from live.board_story import (_story_arc, _section_rows, _narrative, _direction_theory, _no_theory,  # noqa: F401
+from live.board_story import (RQ_TABLE_CSS, _story_arc, _section_rows, _narrative, _direction_theory, _no_theory,  # noqa: F401
                               idea_tabs, story_tabs)
 from live.board_related import related_section  # noqa: F401
 from live.board_canvas import _canvas, _topic_canvas, _display_examples  # noqa: F401
@@ -134,6 +134,13 @@ def story_view(board: Path, root: Path, md, items=(), *, studio=True) -> str:
             out += _bar(None, "🎨 Studio", _studio_panel(topic, root) + REDRAW, stage)
         tabs = {h: (w, p) for h, w, p in story_tabs(board, topic, root, md)}
         parts = _face(topic)[1]
+        def flush(html):
+            """A Story part written as Markdown starts at the bar's left edge, as the Research Questions do, its words
+            at the reading measure and a compared table the card's full width, styled as the RQ table (Paper-CMS-AI-Usage
+            261114: "one page has two left edges and two widths")."""
+            return (RQ_TABLE_CSS + "<style>.pb-prose>p,.pb-prose>ul,.pb-prose>ol{max-width:880px;margin:0 0 10px}.pb-prose .pb-rqtab td:first-child,.pb-prose .pb-rqtab th:first-child{width:auto}</style>"
+                    + '<div class=pb-prose>' + re.sub(r"<table(?=[\s>])(?![^>]*class=)", "<table class=pb-rqtab", html) + '</div>')
+
         def bar(emoji, name, body, word):
             nonlocal n, out
             n += 1
@@ -146,7 +153,7 @@ def story_view(board: Path, root: Path, md, items=(), *, studio=True) -> str:
             bar("💡", "Pitch", tabs["Pitch"][1], stage)
         said = _field(parts.get("identity", ""), "Theory")
         whole = parts.get("theory", "")
-        bar("🎓", "Theory", md(whole or said, topic) if whole or said else _no_theory(
+        bar("🎓", "Theory", flush(md(whole or said, topic)) if whole or said else _no_theory(
             board, "a <code>**Theory**:</code> line in the Story's Identity (haipipe-paper-story)."), _written(whole or said))
         if "Research Questions" in tabs:
             bar("❓", "Research Questions", tabs["Research Questions"][1], _rq_word(parts.get("research questions", "")))

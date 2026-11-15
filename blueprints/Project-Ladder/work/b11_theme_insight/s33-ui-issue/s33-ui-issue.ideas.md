@@ -12,7 +12,7 @@ The open ideas of this topic, one per slide: written from its face as a quick sc
 - a ui
 
 ## Still open
-- Cross and Findings: hide the partition row, or keep it greyed?
+- Cross and Findings: hide the segment row, or keep it greyed?
 - Retired questions: still Tasks in a Job, or only in the release?
 - The Guide tab was not reviewed (a script mounts it
 ask: One owner for the Disk box: the theme per Space, or the frame reading a theme's file list?

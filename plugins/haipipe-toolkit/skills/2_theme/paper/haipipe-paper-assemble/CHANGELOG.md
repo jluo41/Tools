@@ -1,3 +1,15 @@
+## 0.20.0 · 2026-11-13 · margin notes in the LaTeX diff
+
+- JL 261113: change notes and the co-authors' important or unsolved comments beside the change in the diff. `latex_diff.py --notes notes.yaml`: each note `{at, note, who?, comment?}` prints numbered in a 2.8 in right margin of an 11 x 11 in page; a reviewer comment shows in orange with the reply after it. A note is moved out of the latexdiff block it falls in (inside the underline box it broke the compile) and never into a heading or caption; an `at` not found is reported and skipped. § What changed since the last round, "Margin notes".
+- Run on a 52-page MISQ paper: 60-page diff with 16 notes, all placed, 0 LaTeX errors.
+- Fresh-agent test (placeholder rooms): notes numbered beside their changes, reviewer quote shown, a missing `at` reported; but an `at` spanning a changed heading was skipped, because latexdiff markup splits it. `locate()` now matches the words across that markup (a deleted run skipped whole); retest placed both notes.
+
+## 0.19.0 · 2026-11-13 · the LaTeX diff between two rounds
+
+- JL 261113: "could you have the latex version of diff? ... could you update the /haipipe-paper-assemble for this purpose as well?" New `scripts/latex_diff.py --old <room|git:REV:path> --new <room> --out <pdf>`: latexdiff --flatten of two LaTeX rooms, compiled with BibTeX. References are left out of the diff (latexdiff broke apacite's .bbl, "Use of \@item doesn't match its definition"); BibTeX builds one list from both rounds' entries, so a citation in deleted text resolves. Relative inputs are made absolute, so a room copied anywhere still finds its tables and figures. § What changed since the last round.
+- Fresh-agent test on placeholder rooms: a deleted citation vanished (latexdiff's --disable-citation-markup hid it and BibTeX dropped its entry); the flag is gone, a deleted citation is struck and keeps its entry. The section now says what a room needs, that files outside the room are not diffed, and the full path to run.
+- Run on a 55-page MISQ paper (Round 2 against Round 3): 64-page diff, 0 LaTeX errors. The workbench paper panel shows `delivery/<job>/latex-diff/*-latexdiff.pdf` as "The paper · LaTeX diff" (servers/workbench-paper/board_results.py `_latex_diff`).
+
 ## 0.18.0 · 2026-11-04 · a working Word copy with no page measuring
 
 - JL 261104: "we can use method B, as long as the table is at the top of that page" (b16.j02-s22, form Q1). `build.py --word-draft` sets `HAIPIPE_WORD_DRAFT`, `word_can_measure` says no, so each display takes the floating frame already in `float_display_to_top`. The manifest says `word_draft`; `freeze` refuses it and `publish` skips it. A plain build is unchanged.

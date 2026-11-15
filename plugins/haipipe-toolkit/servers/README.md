@@ -9,14 +9,14 @@ lab, or one deployment.
 ```
 servers/
 ├── _host/               the transport: serve.py, auth, config, the `live` namespace, shell JS
-├── space-home/          SPACE Home and Board-level writes (home, structure, write, activity)
-├── workbench/           🧭 the base, under every theme: 🎨 Studio (draw/Excalidraw, chat,
+├── workbench/           🧭 the base, under every theme: the SPACE Home and Board writes (home,
+│                        structure, write, activity), 🎨 Studio (draw/Excalidraw, chat,
 │                        terminal, slides, vendored xterm) and the read-only Guide Space;
 │                        with no theme on top it is the vanilla workbench
 │   └── workbench-task-draft/      the layout of a `task-type: draft` Task (once task-page, once
 │       │                workbench-page): outline, evidence, value, runs, delivery (latex/word/
 │       │                bibex exports), folder status, plugview; exporters/ holds the md2tex,
-│       │                md2docx and docx2pdf writers
+│       │                md2docx and docx2pdf writers (md2tex and md2docx keep their parts beside them)
 │       └── reader/      the standalone Page server and the reader appearance (page.css, css/);
 │                        once servers/haipipe-page (JL 261014)
 ├── workbench-paper/     📄 the Paper workbench
@@ -65,7 +65,7 @@ and they take the same two words:
 `<board>` is the folder's slug (`01-topic-260722` → `topic`), `<page>` the
 Board's page id (`QA1`, `S-Label-1`). `home.py` resolves both against the Boards
 Home already discovers and fills in `path=`, `file=` (and `page=` for labeling) itself.
-A Board opens in the base frame (`workbench/frame.py`, JL 261007), in its theme; every theme is
+A Board opens in the base frame (`workbench/page/frame.py`, JL 261007), in its theme; every theme is
 on the frame. The page carries no band line and no link to a theme's older page (JL 261007). An
 `--only <workbench>` host serves no frame, so there `/w/<board>` and `/b/<board>` still open
 the theme's own page. The
@@ -139,7 +139,7 @@ Every folder here (and every `plugins/*/servers/workbench-*`) may hold:
 | One workbench only, own port and DOMAIN, no terminal, chat or Board writes | `python servers/_host/serve.py --root <root> --only <workbench>` |
 | The labeling host, for annotators | `python plugins/haipipe-toolkit/servers/_host/serve.py --only labeling --root <root>` |
 | One standalone Page Folder | `python skills/1_base/draft/haipipe-draft/cli/page.py serve <page>` (imports `servers/workbench/workbench-task-draft/reader/standalone_server.py`; its workbench is `<DOMAIN>/w`) |
-| One Page in the reader | `<DOMAIN>/_board/page?path=/<page .md or folder>`: the Page engine's `render_page`, the same document `page.py export --lane web` writes (`workbench/page_reader.py`) |
+| One Page in the reader | `<DOMAIN>/_board/page?path=/<page .md or folder>`: the Page engine's `render_page`, the same document `page.py export --lane web` writes (`workbench/page/page_reader.py`) |
 | Prove a refactor changed no response | `python servers/_host/tests/gate_live.py --fixture <board> --file <page-rel> --save … --diff …` |
 
 ## Adding a workbench · what every workbench does the same way
@@ -153,7 +153,7 @@ Families older than a rule are listed in that test's `GAPS` with what they still
    tab sizes the Insight workbench and Guide use; do not restyle them per workbench.
    Spaces run Guide → setup → work → Delivery (`workbench/README.md` § Space order).
 2. **One Guide, four Views.** Description · Method · RoadMap Draw · Related Paper, filled
-   from the family's entry in `workbench/guide_families.py`:
+   from the family's entry in `workbench/guide/guide_families.py`:
    - `description`: what the workbench does, in a short paragraph;
    - `method`: its steps as text;
    - `method_doc` and `method_drawing`, with a `method` explain to `/_board/guide?mode=method`
@@ -183,7 +183,7 @@ Families older than a rule are listed in that test's `GAPS` with what they still
 5. **No icon of its own.** The host answers `/favicon*` only for the Excalidraw app, so
    every workbench tab shows the browser's default icon. Do not add one.
 6. **Runs on the right.** Every working Space, Guide included, puts its runs in the shared
-   Runs panel to the right of its content: `workbench/runs_panel.py` (`panel_markup`,
+   Runs panel to the right of its content: `workbench/page/runs_panel.py` (`panel_markup`,
    `PANEL_CSS`, `PANEL_JS`, and `SPLIT_CSS` for the layout), fed by the family's run cards or
    Workbench Table. It stays on the right at every width and folds to a vertical "◂ Runs"
    tab. Guide's panel lists the Workbench Table rows whose Space is Guide.

@@ -1,3 +1,11 @@
+## 0.106.0 · 2026-11-11 · Draft Task joins the common Report frame
+
+- Unified Report navigation, numbered Review Content, and the eight unnumbered
+  Around the Work sections; old Work links retain their step.
+- Preserved drafting editors, prompts, human decisions and Delivery previews.
+- Added view-scoped context and source-file browsing through the common renderers.
+- Clearly separated the current focus-page contract from historical layouts.
+
 ## 0.105.0 · 2026-11-06 · round-3 Section fixes: keys link to the bib, Now from the steps, one sign wait
 
 - Each [key] in a Section's text links to its row in Work › 3 · Evidence's new 📚 Its bib (each entry of the Section's
@@ -311,7 +319,7 @@ Links, commands and companions repointed at the helper skills merged into `haipi
   to work". Every step's Copy prompt now ends, after `user feedback:`, with `session: <name> runs this Task. If you
   are not <name>, send this whole message to <name> with SendMessage and stop; if <name> is not running, do it
   here.` (`draft_steps._session`, `_prompt_box`; the shared copy script appends a button's `data-tail`,
-  `servers/workbench/runs_panel.py`). The name is the Task face's `session:` line, else its Job face's; shown under
+  `servers/workbench/page/runs_panel.py`). The name is the Task face's `session:` line, else its Job face's; shown under
   the notes box as it is copied. The Studio tab shows each topic as its own card (no "The logic sketch" box around
   them), and a topic another one draws by `examples:` (s26 inside s22) is shown once, inside it: 1 · Plan's
   Examples card is then that Section canvas.
@@ -385,7 +393,7 @@ Links, commands and companions repointed at the helper skills merged into `haipi
 
 ## 0.100.0 · 2026-10-07 · The Page views are the frame's Task Spaces (JL 261007)
 
-- One Page Task's views were a route and a page each (draft, evidence, value, runs, pageruns, delivery, folderstat; outline the old name of draft). They are now subspaces of the frame's Task level, drawn in place: Description › Folder, Audience Report › Draft, Work Details › Evidence · Value, Runs › Page Runs, Delivery › Lanes (`servers/workbench/frame.py` PAGE_VIEWS). A theme keeps them beside its own subspaces.
+- One Page Task's views were a route and a page each (draft, evidence, value, runs, pageruns, delivery, folderstat; outline the old name of draft). They are now subspaces of the frame's Task level, drawn in place: Description › Folder, Audience Report › Draft, Work Details › Evidence · Value, Runs › Page Runs, Delivery › Lanes (`servers/workbench/page/frame.py` PAGE_VIEWS). A theme keeps them beside its own subspaces.
 - One route serves them: `/_board/workbench?view=<view>&path=<page .md>` (`frame_view.py`). The old addresses answer as it on a GET or HEAD (`serve.py` PAGE_VIEW_ROUTES); the POST twins keep theirs. `/w/<block>/<page>/<tab>` of a Task's Page opens its Space in the frame.
 - Tests: `_host/tests/test_page_view_routes.py` (new), `_host/tests/test_frame.py`.
 

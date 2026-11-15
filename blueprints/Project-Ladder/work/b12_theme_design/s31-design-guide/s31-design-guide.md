@@ -23,7 +23,7 @@ scaffold makes in a temp folder, by `design_guide_live.py`. Each level's file ad
 "?" (red), from s00 and s11 to s13. The screen and card shapes are s31's
 (`../../b10_project_workbench/s31-guide/`); the builder is b16's s31, with the design Guide's words.
 
-**Feeds:** `../reports/` q01_design_ladder · q02_design_workbench; the proposed Guide text goes into
+**Feeds:** `../reports/` Q01 · Q02; the proposed Guide text goes into
 `guide.yaml` (a `levels:` section) and `method.md` once JL agrees.
 
 

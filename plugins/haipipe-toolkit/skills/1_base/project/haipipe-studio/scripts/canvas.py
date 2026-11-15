@@ -47,12 +47,12 @@ KEY = "#fff3bf"
 ACCENT, ACCENT_FILL, MUTED = "#1971c2", "#d0ebff", "#868e96"
 SLIDE_PALETTE = (ACCENT, MUTED)
 # a screen drawn in a studio drawing wears the workbench's own light colours, read from
-# servers/workbench/frame.py's CSS (JL 261012: "make the UI to be more colorful, like the same to what we
+# servers/workbench/page/frame.py's CSS (JL 261012: "make the UI to be more colorful, like the same to what we
 # see"); the rest of the drawing stays black, red and green. A builder marks the frame with ui_frame().
 UI = {"wash": "#f8f9fa", "box": "#ffffff", "line": "#ced4da", "edge": "#adb5bd", "text": "#1c1c1c",
       "mut": "#6f6f6b", "link": "#3e5c84", "on": "#1864ab", "on_bg": "#e7f5ff",
       "new": "#7048e8", "new_bg": "#f3f0ff", "dot": "#3e5c84"}   # dot: the Timeline's bubble, var(--acc) at .8
-# a Report group button by its kind, as the workbench colours it (servers/workbench/frame.py --grp-*; b10 s05-D16,
+# a Report group button by its kind, as the workbench colours it (servers/workbench/page/frame.py --grp-*; b10 s05-D16,
 # JL 261012): a box whose customData has ui_kind "fixed" (the theme's, from the Question) or "suggested" (the theme's
 # starting group); a Block's own group stays a plain button
 UI_KIND = {"fixed": ("#868e96", "#e9ecef"), "suggested": ("#f08c00", "#fff4e6")}

@@ -23,7 +23,7 @@ boards made before page tickets.
 ## Position
 
 Data answers a `QD` question after GI1 and supplies observations to
-Information. It is answered by its page folder `<n>-<partition>/D<NN>-<partition>-<slug>/`:
+Information. It is answered by its page folder `<n>-<segment>/D<NN>-<segment>-<slug>/`:
 the Work column is the page's `runs/` tickets and `results/`, and the Report
 column is the page's `.md` (`ref/report.md`): for Data, a brief statement of what was observed.
 
@@ -38,18 +38,18 @@ Information.
 
 - A task in the Project's DIKW Block, in a `j1N_data_<topic>` Job (extract
   shape, catalogs, balance checks). The task is dataset-neutral; one config
-  per dataset × partition, stem `rNN_<dataset>_<cut>`.
-- The config names the board's extract (`input.parquet_path`), the cut
+  per dataset × segment, stem `rNN_<dataset>_<segment>`.
+- The config names the board's extract (`input.parquet_path`), the segment
   (`population.where`) and the needs its calling pages bind
   (`answers: [QD1.E1]`, re-derived from their `answers.yaml`).
 - The answering page calls it through its own ticket
-  `runs/run_bNNjNNtNNrNN_<partition>_<task>.sh`, which sets `RESULT_DIR` to the
+  `runs/run_bNNjNNtNNrNN_<segment>_<task>.sh`, which sets `RESULT_DIR` to the
   page's `results/<ticket>/` and `RUN_TICKET` to itself; the result holds the
   tables, `metrics.json`, the Look step's `fig_*.png` and `runtime.yaml`
   (written before the work, finalized after its result gate passes).
 - The join is the evidence need: the page's `answers.yaml` binds each
   compute need of the question (`QD<n>.E<k>`) to this result only when the
-  run computes the need's work spec exactly (cut, unit, measure, grouping,
+  run computes the need's work spec exactly (segment, unit, measure, grouping,
   uncertainty, rivals, output columns) (`../../haipipe-insight/ref/evidence-needs.md`). The config's
   `answers:` is a cross-check, never the join.
 - Only aggregate, light output in the result; a file over 10 MB or a
@@ -87,10 +87,10 @@ and coverage/gaps. Do not hand it a precomputed claim.
 
 ## Files
 
-- Task run: `work/b5N_<topic>_dikw/j1N_data_<topic>/tNN_<task>/scripts/config/rNN_<dataset>_<cut>.yaml` + `runs/rNN_….sh`
-- Page ticket: `insight/<board>/<n>-<partition>/D<NN>-<partition>-<slug>/runs/run_bNNjNNtNNrNN_<partition>_<task>.sh`
-- Result: `insight/<board>/<n>-<partition>/D<NN>-<partition>-<slug>/results/<ticket>/`
-- Page: `insight/<board>/<n>-<partition>/D<NN>-<partition>-<slug>/D<NN>-<partition>-<slug>.md`
-- Binding: `insight/<board>/<n>-<partition>/D<NN>-<partition>-<slug>/answers.yaml` (each need → its result files)
+- Task run: `work/b5N_<topic>_dikw/j1N_data_<topic>/tNN_<task>/scripts/config/rNN_<dataset>_<segment>.yaml` + `runs/rNN_….sh`
+- Page ticket: `insight/<board>/<n>-<segment>/D<NN>-<segment>-<slug>/runs/run_bNNjNNtNNrNN_<segment>_<task>.sh`
+- Result: `insight/<board>/<n>-<segment>/D<NN>-<segment>-<slug>/results/<ticket>/`
+- Page: `insight/<board>/<n>-<segment>/D<NN>-<segment>-<slug>/D<NN>-<segment>-<slug>.md`
+- Binding: `insight/<board>/<n>-<segment>/D<NN>-<segment>-<slug>/answers.yaml` (each need → its result files)
 - Legacy: a board made before page tickets keeps its results in its old store
   (`ref/board-contract.md` § Boards made before page tickets).

@@ -44,7 +44,7 @@ questions:
   acceptance: Answered when the instruction file holds a one-line pointer and the
     skill’s change history shows how quickly a copy would have gone stale.
   work: []
-  report: reports/q01_point_or_restate/q01_point_or_restate.md
+  report: s05-q01-point-or-restate/s05-q01-point-or-restate.md
 - id: Q02
   title: How are questions recorded and answered?
   question: What is a board question, how big should it be, where does it live, and
@@ -54,7 +54,7 @@ questions:
   acceptance: Answered when one skill owns the question contract, the reply format
     links questions at topic size, and a proposed question can become a folder.
   work: []
-  report: reports/q02_questions/q02_questions.md
+  report: s06-q02-questions/s06-q02-questions.md
 - id: Q03
   title: How does a pull sync every repo?
   question: How does one pull bring DrFirst-SPACE, the Tools-SPACE clone behind its
@@ -66,7 +66,7 @@ questions:
     Tools folder, missing ignore setting, unpushed pin, false fetch errors) has its
     fix, and one more pull runs from the steps alone.
   work: []
-  report: reports/q03_repo_sync/q03_repo_sync.md
+  report: j01_utils.md
 - id: Q04
   title: Can one Project live in two SPACEs?
   question: 'Can one Project be a submodule of two SPACEs at once, and what has to
@@ -76,7 +76,7 @@ questions:
   acceptance: A rule for which SPACE owns a shared Project, how its data store is
     copied, and the push order for a rename or move.
   work: []
-  report: reports/q04_project_two_spaces/q04_project_two_spaces.md
+  report: j01_utils.md
 - id: Q05
   title: Where does labeling work live in a Project?
   question: Where does labeling work live in a Project, and what are its Block, Job,
@@ -86,7 +86,7 @@ questions:
   acceptance: One layout used by all labeling Projects, each level named, and the
     labeling workbench opening every labeling Page in it.
   work: []
-  report: reports/q05_labeling_world/q05_labeling_world.md
+  report: j01_utils.md
 ```
 
 ## Related resources

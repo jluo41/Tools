@@ -38,7 +38,7 @@ built: from-topic .
     ![s51-block-ui-report.png](s51-block-ui-report.png)
 - Decided <!-- @decided #55615a -->
   - s51-D01 · One grid per level (Board … <!-- @decided/0 #82dfdc -->
-    s51-D01 · One grid per level (Board question × Job, Job question × cut, Task cut × step); Report opens on the answer; Work opens on what waits on the person; no Task asks the person (JL 261101: "go ahead", on the proposal in chat).
+    s51-D01 · One grid per level (Board question × Job, Job question × segment, Task segment × step); Report opens on the answer; Work opens on what waits on the person; no Task asks the person (JL 261101: "go ahead", on the proposal in chat).
 - Open <!-- @open #cf9b77 -->
   - ? <!-- @open/0 #2ff014 -->
     ? Open on the newest closed Job (proposed), or on the newest Job as a preview.

@@ -59,7 +59,7 @@ draws). It reads the Block's files on every open and stores nothing.
 | Delivery › Reports | answered reports, word for word | report Pages |
 | Delivery › Done jobs | Jobs whose state is ✅ DONE | job page headers |
 
-Each Space has the shared Runs panel on the right (`servers/workbench/runs_panel.py`),
+Each Space has the shared Runs panel on the right (`servers/workbench/page/runs_panel.py`),
 folded at first; its run types are the rows of `ref/workbench-table.md` for that Space,
 each with its agent, skill and a prompt to copy. Nothing starts a run, and nothing sends
 a message: the person signs every send.
@@ -69,7 +69,7 @@ A draft is an `emails/*.md` whose name contains `draft` or whose header has
 
 ## On the base frame (proposed, b13 Q01)
 
-The same Block also opens in the base frame every theme shares (`servers/workbench/frame.py`):
+The same Block also opens in the base frame every theme shares (`servers/workbench/page/frame.py`):
 `/_board/workbench?path=<Block or Job folder>`. The levels are Guide · Block · Job ▾ · Task ▾, and
 each level has the six Spaces Description | Idea Studio · Audience Report | Work Details | Runs ·
 Delivery. `servers/workbench-cowork/cowork_theme.py` fills them; anything it leaves out is the

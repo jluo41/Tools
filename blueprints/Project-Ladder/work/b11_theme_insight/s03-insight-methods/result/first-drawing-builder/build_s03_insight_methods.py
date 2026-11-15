@@ -4,7 +4,7 @@ Tools and then create the excalidraw"; "you can follow s02-studio-workbench-skil
 
 1 · Three families           asking, answering, reading side by side: step, cards, skills, papers, tests
 2 · From card to screen      the card files -> the renderers -> Guide › Method; red: no card reaches a run
-3 · Today                    Guide › Method, Guide › Related Paper, Insight › a partition, today's UI,
+3 · Today                    Guide › Method, Guide › Related Paper, Insight › a segment, today's UI,
                              each with "on disk" under it, and the pop-outs a ↗ opens; the proposed
                              screens are one topic per level, s11 Block · s12 Job · s13 Task
 4 · The sixteen cards        each card's move, reads, returns, tests, source and the skill it names
@@ -105,7 +105,7 @@ def frame_compare(y0):
     text(0, y0, f"Insight methods: {len(ALL)} cards in three families, chosen at steps 1, 3 and 5", 34)
     text(0, y0 + 50, "Every question takes the same six steps; only steps 1, 3 and 5 have a method to choose. "
                      "Read from the cards and guide/method.md at build time.", 20, GRAY)
-    rows = [("step", lambda f: f"{f[2]} · " + ["Ask: Logic, in the Prototype", "", "Run each partition: Work, in the Instance", "",
+    rows = [("step", lambda f: f"{f[2]} · " + ["Ask: Logic, in the Question Book", "", "Run each partition: Work, in the Instance", "",
                                                  "Write the page: Report, in the Instance"][f[2] - 1], INK),
             ("asks", lambda f: f[3], INK),
             ("choose by", lambda f: TREES[f[0]].split("\n")[0], INK),
@@ -199,11 +199,11 @@ def frame_flow(x0, y0):
 
 # ── 3 · on screen ───────────────────────────────────────────────────────────────────────────
 SW, SH, RW = 1500, 980, 360
-SPACES = ["Guide", "|", "Scope", "Prototype", "Insight", "Check", "Delivery"]
-SUB = {"Guide": ["Description", "Method", "RoadMap Draw", "Related Paper"], "Insight": ["Full", "<partition A>", "<partition B>", "Cross"]}
+SPACES = ["Guide", "|", "Scope", "Question Book", "Insight", "Check", "Delivery"]
+SUB = {"Guide": ["Description", "Method", "RoadMap Draw", "Related Paper"], "Insight": ["Full", "<segment A>", "<segment B>", "Cross"]}
 RUNS = {"Method": (["Add a method"], "haipipe-insight-agent\nworkbench-insight\nwrites guide/methods/<family>/"),
         "Related Paper": (["Add a paper"], "haipipe-discovery-orchestrator-agent\nhaipipe-discovery\nwrites related/papers.md"),
-        "<partition A>": (["Run a partition", "Write the Data report", "Check alignment", "Pool or split"],
+        "<segment A>": (["Run a segment", "Write the Data report", "Check alignment", "Pool or split"],
                           "recent: run-<type>-<target>\nclosed · p02")}
 
 
@@ -296,7 +296,7 @@ def screen_papers(x, y):
 
 
 def screen_partition(x, y):
-    cx, cy, cw = screen(x, y, "Insight", "<partition A>")
+    cx, cy, cw = screen(x, y, "Insight", "<segment A>")
     heads, cols = ["Logic · the question", "Work · its script and run", "Report · the page"], [0, 340, 680]
     for h, c in zip(heads, cols):
         text(cx + c + 10, cy, h, 16, GRAY)
@@ -306,7 +306,7 @@ def screen_partition(x, y):
         for c in cols[1:]:
             path([(cx + c, ry), (cx + c, ry + 190)], arrow=False, color=GRAY)
         text(cx + 10, ry + 12, f"{qid} · <question>\n{level} · signed ✅", 15, INK)
-        text(cx + cols[1] + 10, ry + 12, "scripts/<qid>.py\nruns/<dataset>_<partition>.sh\n● ok · power ok", 14, INK, MONO)
+        text(cx + cols[1] + 10, ry + 12, "scripts/<qid>.py\nruns/<dataset>_<segment>.sh\n● ok · power ok", 14, INK, MONO)
         text(cx + cols[2] + 10, ry + 12, "<page title> ↗\nAnswer: <one line>\nCHECK ✅", 15, INK)
         ry += 204
     text(cx, ry + 6, "no row says which method its question used: see s11 · s12: three method chips on each row", 14, RED)
@@ -330,15 +330,15 @@ FILES = {  # screen -> (tree line, what on screen it feeds); a path in [] is che
         ("servers/workbench-insight/related/", ""),
         ("├── papers.md", "one row per paper: group = method · role · ★ key · why here"),
         ("└── papers/", "a kept PDF (none yet)"),
-        ("servers/workbench/related_papers.py", "papers_page: the shared view, one group each"),
+        ("servers/workbench/guide/related_papers.py", "papers_page: the shared view, one group each"),
         ("skills/0_utils/table-papers/", "the Related Paper rule"),
     ],
     "partition": [
         ("bNN_<topic>_dikw/  (an Insight Block)", ""),
         ("├── meta/partitions.md · thresholds.yaml", "the third row; power.smallest_effect_pp"),
         ("├── j01_data/t01_<name>/", "a row: D01"),
-        ("│   ├── question.md", "Logic: ask · DIKW level · needs · partitions · power · agreed"),
-        ("│   ├── scripts/ · runs/<dataset>_<partition>.sh", "Work"),
+        ("│   ├── question.md", "Logic: ask · DIKW level · needs · segments · power · agreed"),
+        ("│   ├── scripts/ · runs/<dataset>_<segment>.sh", "Work"),
         ("│   ├── results/<run>/ · reports/<run>/", "partition_power.csv, the gated tables"),
         ("│   └── t01_<name>.md", "Report: the page, CHECK by another agent"),
         ("skills/2_theme/insight/…/ref/run_question.py", "runs a cell: power, run(df, ctx), gate"),
@@ -402,7 +402,7 @@ def frame_screens(x0, y0):
                       "s12 Job · s13 Task.", 20, GRAY)
     for i, (label, fn, key) in enumerate([("Guide › Method", screen_method, "method"),
                                           ("Guide › Related Paper", screen_papers, "papers"),
-                                          ("Insight › <partition A>", screen_partition, "partition")]):
+                                          ("Insight › <segment A>", screen_partition, "partition")]):
         x = x0 + i * (SW + 120)
         text(x, y0 + 110, label, 24)
         fn(x, y0 + 150)
@@ -460,7 +460,7 @@ LINKS = {  # skill -> (code key, label); None = no code runs it
     "haipipe-insight-evidence-plan": ("check_evidence", "the plan answers\nits ask: T0 · T1 · T2"),
     "haipipe-insight-data": ("run_question", "power, run, gate\nT3 · T4"),
     "haipipe-insight-knowledge": ("record_check", "a CHECK by another\nagent: T5 · T6"),
-    "haipipe-insight": (None, "POOL · SPLIT: prose only\n(ref/partition.md)")}
+    "haipipe-insight": (None, "POOL · SPLIT: prose only\n(ref/segment.md)")}
 
 
 def frame_tree(x0, y0):
@@ -529,12 +529,12 @@ def frame_tree(x0, y0):
 QUESTIONS = [
     "? record the method: method: {ask, answer, read} in question.md (frame 3b, Task), checked by check_block",
     "? who picks the methods: part of Plan the evidence (agreed with the plan), or its own Run, Pick the methods",
-    "? Job › Audience Report once Work Details holds the table: the answers only (question × partition, Cross verdict)",
+    "? Job › Audience Report once Work Details holds the table: the answers only (question × segment, Cross verdict)",
     "? a Job holds one DIKW level (as decided), not a topic climbing D → W: keep it",
     "? a method outside its DIKW levels (by the card's taxonomy): a red chip, or a check_block problem",
     "? the 7 proposed skills (haipipe-insight-by-<method>): build them, or keep the cards as guidance an agent reads",
     "? T7 robustness and T8 replication: a run kind each (rival analyses; the same question on the next extract)",
-    "? By heterogeneity's POOL · SPLIT verdict is prose (ref/partition.md): give it code",
+    "? By heterogeneity's POOL · SPLIT verdict is prose (ref/segment.md): give it code",
     "? the 3 future cards (target trial, automated insight search, pattern mining): Guide, or a backlog",
     "? answering and reading cards live in the server, asking cards in a base skill: move them to skills too",
     "? the card renderer lives in workbench-design: move method_cards to the shared base (b03 s02)",

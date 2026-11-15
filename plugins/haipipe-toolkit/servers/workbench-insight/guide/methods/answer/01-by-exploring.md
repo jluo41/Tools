@@ -15,7 +15,7 @@ reads: question · the extract · its columns
 returns: the observations, each with the table or figure it was seen in, and the number
   of views looked at
 test now: T4 spec · T5 each observation says what its table says
-test in use: T8 seen again on another partition
+test in use: T8 seen again on another segment
 
 
 What the literature says
@@ -54,7 +54,7 @@ returns: The observations, each tied to its result file, and the number of views
   at.
 verify: A different agent checks that each observation says what its table shows (T5,
   T6). An observation becomes a claim only after another method tests it (ours).
-risk: An agent can look at many cuts quickly and report the striking ones, which
+risk: An agent can look at many segments quickly and report the striking ones, which
   multiplies false patterns [Zgraggen 2018].
 evidence on AI: On 264 discovery tasks drawn from published papers, the best LLM system
   scored only 25% [Majumder 2024]. No study tests an agent's exploratory

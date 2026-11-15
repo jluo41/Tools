@@ -9,7 +9,7 @@ tells: studio/sNN-story-<telling>
 from: j11_writing_v1130_desk
 goal: <the paper this send puts before Example Journal>
 close: <sent, and every comment it drew answered>
-responds-to: reports/q01_review-0110/q01_review-0110.md
+responds-to: j31_review_reviewers_v0110
 
 ## Tasks
 
@@ -35,5 +35,5 @@ questions:
   title: 'Reviewer comments on version 1'
   question: 'What must the next version change, and say in its response letter, so that every point the reviewers raised on version 1 is answered once? Three placeholder points came back: one on how <the policy> was assigned, one on a placebo check for Table 1, and one on the introduction''s opening question. Each is one Review Item below, routed to the Section that answers it; the reply is written in the response letter, t32_response.'
   group: comments
-  report: reports/q01_review-0110/q01_review-0110.md
+  report: ../j31_review_reviewers_v0110/t01_reviewer_comments/t01_reviewer_comments.md
 ```

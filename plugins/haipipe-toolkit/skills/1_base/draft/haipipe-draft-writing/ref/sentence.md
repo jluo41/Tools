@@ -27,10 +27,13 @@ The grammar's authority is `haipipe-draft/ref/board-form.md` → Body grammar; t
 One prose line in the source is one sentence on the page: that is why prose is written ONE SENTENCE PER LINE (`check.py` warns on a hard wrap, because a wrapped sentence renders as a broken row).
 
 ```
-QB8.C1.P1.S1        Content division 1 · paragraph 1 · sentence 1
-                    UPPERCASE+digit tokens, so a section slug can
-                    never collide with a coordinate
+QB8.C1.P1.s1        Content division 1 · paragraph 1 · sentence 1
+                    C, P and B are UPPERCASE+digit, the sentence a
+                    lowercase s+digit, so a section slug can never
+                    collide with a coordinate
 ```
+
+A sentence id is written with a lowercase `s` (`s8`, `s3b`, `C1.P2.s8`, `- B2 · s3 · …`, `s1 to s10`), so it never reads like a Studio topic (`s01`, `s02-D01`). An older `S8` is read as the same sentence everywhere; `page.py sentence-case <draft> --records` rewrites one Draft and its records to `s`.
 
 The rendered address locates the passage in a copied prompt. It is recomputed on rebuild, so the agent must also use the source path and quoted wording when finding a sentence.
 
@@ -42,7 +45,7 @@ The rendered address locates the passage in a copied prompt. It is recomputed on
 sentence contract           haipipe-draft
 ─────────────────────            ──────────────────────────────
 what a sentence IS               rendering it (src/body.py)
-what may attach, and how         the source helpers (servers/space-home/write.py)
+what may attach, and how         the source helpers (servers/workbench/home/write.py)
 which gesture reaches which      the controls (assets/js/40-sentence/)
 where a write may land           the checker (cli/check.py)
 the two anchors                  the recorded drive (tests/drive_sentence.py)

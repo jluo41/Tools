@@ -1,29 +1,54 @@
 ---
 name: workbench-task-draft
 description: >-
-  The Page workbench of one Page, paired with servers/workbench/workbench-task-draft: three
-  Spaces (Draft, Evidence, Delivery), each with its content on the left and
-  its own Runs panel on the right, over the Page's draft/ folder. Draft reads
-  the three-section Draft Markdown (Table, Reading, Scratch, Revise); Evidence
-  reads the Evidence Markdown and its Results (Citations, Displays, Values,
-  Supporting Runs); Delivery shows the built web, LaTeX, Word and slides
-  files. The Runs panel lists each view's run types from run-cards.md and
-  copies prompts; it starts nothing. Also owns the 📂 Folder tab. Trigger:
-  page workbench, workbench link, Draft Space, Evidence Space, Delivery
-  Space, Runs panel, run type, run card, add a run button, draft folder, plan
-  file, record shape, evidence bundle, delivery tab, folder tab, stale
-  workbench, workbench-page, /workbench-page, /workbench-task-draft.
+  Open and interpret a Draft Task's workbench: one Report containing Text,
+  Plan, Write, Evidence, conditional Display, Revise, Runs, MindMap and Status.
+  Each view has Review Content followed by the shared Around the Work sections.
+  Keeps the draft editors, human sign actions, evidence and delivery previews.
+  Also documents the legacy three-Space page and its source-file contracts.
+  Trigger: draft task UI, draft workbench, draft folder, stale draft page,
+  workbench-page, /workbench-task-draft.
 metadata:
-  version: "0.104.19"
-  last_updated: "2026-11-03"
+  version: "0.106.0"
+  last_updated: "2026-11-11"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# /workbench-task-draft · three Spaces, Runs on the right
+# /workbench-task-draft · Draft Task Report
 
 Code: `servers/workbench/workbench-task-draft/` (this skill is its manual; it was called `workbench-page` until 2026-10-16, s41-D14).
 The folder holds the whole draft Task type: `task_draft.py` lays out the frame's Spaces for a Task whose face says
 `task-type: draft`, and the other modules are the views it embeds (s41-D15: one folder per Task type, `workbench-task-<type>/`).
+
+## Current focus-page contract · 2026-11-11
+
+This contract governs `layout=focus`. The historical layouts below document older
+routes and source formats; they do not prescribe the current navigation.
+
+- One **Report** surface: Text, Plan, Write, Evidence, Display when the text calls
+  a display, Revise, Runs, MindMap and Plan + Results (Status). Step state words
+  remain beside their buttons. A bare Task opens the waiting step; bare Report
+  opens Text. Old Work links open their corresponding Report view.
+- **Review Content** contains the existing content, then its step state, prompts,
+  input and Runs, numbered continuously. Keep the plan sign action, Scratch and
+  writing editors, citation links and revision decisions on their existing handlers.
+- **Around the Work** follows every Report view: Studio, Interactions, Decisions,
+  Things to Know, Checklist, Timeline, Skills and Files, unnumbered and using the
+  common renderer. The right rail opens each section across the Task. Delivery
+  remains a separate destination with PDF, Word, Web and built-file views.
+- View context follows explicit `view:` first, then linked Topics. Existing native
+  Draft Run families supply a fallback only without explicit ownership. Unknown
+  records remain reachable through the aggregate rail. No records are copied.
+- Files uses the common folder tree and preview. It links the current view's draft,
+  evidence or display sources, its selected Runs, relevant skills and renderer code.
+- `focus_draft.py` supplies content and controls; `draft_context.py` adapts scope;
+  `focus_page.py` supplies routing and the shared frame. Changes to the classic
+  three-Space page alone will not update this focused Task UI.
+- Validate old Work links, all Report views, editing controls without saving,
+  sign/accept controls without submitting, shared sections, Files previews and
+  Delivery. Walk a Tools placeholder and obtain an independent UI review.
+
+## Historical layouts and source contracts
 
 ## 🪜 A draft Task on the frame · seven step tabs (b32 s41, built 2026-10-20)
 
@@ -124,8 +149,8 @@ Report: the same seven, Results only · Table · Questions
   `draft_steps.note_act`: add · reply · done · reopen · delete, refused when its state changed on disk). A sentence a
   comment still waits on shows 💬. Each pass answers the open comments (haipipe-draft-writing ref/revise.md): the card
   that changes the sentence says `Answers: Comment <n>` and shows 💬 answers Comment <n>, the comment shows ↳ that card
-  and the pass's Reply, and its person closes it with ✓ Done or ↩ Reply (it opens again). The cards' header has
-  Copy: revise with my <n> open comments while one is open ("你的 change 怎么跟我的 comments 一起来做交互").
+  and the pass's Reply, and its person closes it with ✓ Done or ↩ Reply (it opens again). No copy button hands the
+  comments to an agent (removed 261115): a pass, or the page's chat, reads them from that file.
 - 3 · Evidence's Result is laid out as 5 · Revise's: the text one column with no space between sentences, and at each
   sentence on the right its card, a one-line row per Evidence item that backs it, what backs it on hover (JL 261020: "I
   want it to be left to be the orignal text, and the right to be the evidence"; "我想要保证这个 draft 在 revise、evidence、
@@ -208,7 +233,7 @@ names. Each Space's Views and content sit in one box (`.space-split>.space-main`
 its Runs panel starts folded to the strip until the person opens it (`panel_html(...,
 folded=True)`; a person's own fold or open is remembered). The shell's colors and tab
 sizes are the Insight workbench's, kept once in `space_views.SPACE_CSS`, which Page and
-Paper share. Guide reads the `page` entry of `workbench/guide_families.py`:
+Paper share. Guide reads the `page` entry of `workbench/guide/guide_families.py`:
 `description`, the Workbench Table `ref/workbench-table.md`, the papers
 `servers/workbench/workbench-task-draft/related/papers.md` (`table-papers`),
 Method's page `servers/workbench/workbench-task-draft/guide/method.md` with its cards in `guide/methods/` and its editable
@@ -563,7 +588,7 @@ nothing.
 - `../../draft/haipipe-draft-workflow/ref/run-cards.md` · the run types and prompts the panel shows
 - `../../../../servers/workbench/workbench-task-draft/outline.py` · the page shell, the Spaces, the Draft views
 - `../../../../servers/workbench/workbench-task-draft/space_views.py` · Evidence and Delivery tabs, views, selection
-- `../../../../servers/workbench/runs_panel.py` · the Runs panel
+- `../../../../servers/workbench/page/runs_panel.py` · the Runs panel
 - `../../../../servers/workbench/workbench-task-draft/outline_structure.py` · `outline_scratch.py` · `outline_revise.py` · the three writers
 - `../../../../servers/workbench/workbench-task-draft/evidence.py` · `delivery.py` · `export.py` · `exporters/` · `runs.py` · `folderstat.py`
 - `../../../../servers/workbench/workbench-task-draft/studio/page-workbench-design.excalidraw` · the design drawing

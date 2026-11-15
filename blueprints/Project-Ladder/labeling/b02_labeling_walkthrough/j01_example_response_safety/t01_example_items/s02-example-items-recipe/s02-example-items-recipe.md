@@ -13,7 +13,7 @@ s02 · Example items recipe
 
 **Topic:** the items Task proposes a recipe from the Data cards; a person reads it and signs it before any item is made. This topic holds the questions that sign rests on, asked on one waiting form.
 
-**Feeds:** `reports/` none yet
+**Feeds:** none yet
 
 
 Files

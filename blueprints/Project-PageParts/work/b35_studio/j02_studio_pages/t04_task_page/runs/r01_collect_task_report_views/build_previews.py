@@ -51,9 +51,9 @@ RUNS_T02 = [("r01_collect_block_report_views", "s11"), ("r02_collect_block_work_
             ("r03_collect_block_studio_views", "s13")]
 RUNS_T01 = [  # newest first; all done 261030 (their run.yaml and pass p01-1030)
     ("run-build-studio-in-a-page", "JL 261030: \"we just have sNN, along side with jNN, to make it visible directly\"",
-     "Status view and sNN beside the Jobs", ["servers/workbench/focus_page.py", "servers/workbench/frame.py"]),
+     "Status view and sNN beside the Jobs", ["servers/workbench/page/focus_page.py", "servers/workbench/page/frame.py"]),
     ("run-build-snn-page", "JL 261029: \"so I think studio should have a page as well\"",
-     "an sNN beside the Jobs opens its own page", ["servers/workbench/focus_page.py"]),
+     "an sNN beside the Jobs opens its own page", ["servers/workbench/page/focus_page.py"]),
     ("run-build-popout-size", "JL 261030: \"could you make the margin here to be smaller?\"",
      "the pop-out fills 96% x 94%", ["servers/workbench/focus-assets/focus.css"]),
     ("run-build-card-picture", "JL 261030: \"go ahead and work on that\"",

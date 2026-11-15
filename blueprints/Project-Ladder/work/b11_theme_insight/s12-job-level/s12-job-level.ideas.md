@@ -3,8 +3,8 @@
 The open ideas of this topic, one per slide: written from its face as a quick scratch (261031); a person edits them here, and its pictures come when asked.
 
 ## Job level
-- one Job's tab, drawn for j03_code-v2_data-v2: one Prototype version × one data version (s00), its six…
-- It follows s00: a Job pins one Prototype version and one data version
+- one Job's tab, drawn for j03_question-v2_data-v2: one Question Book version × one data version (s00), its six…
+- It follows s00: a Job pins one Question Book version and one data version
 - a DIKW level groups the questions inside a Job
 
 ## What it hands over

@@ -55,8 +55,8 @@ The proposed Checklist evidence/reviewer state machine is not implemented. These
 - `plugins/haipipe-toolkit/skills/1_base/project/haipipe-job/scripts/new_job.py`: `new_job`
 - `plugins/haipipe-toolkit/servers/workbench-work/work_theme.py`: `spaces`
 - `plugins/haipipe-toolkit/servers/workbench-work/work_progress.py`: workflow layout
-- `plugins/haipipe-toolkit/servers/workbench/focus_page.py`: `page_module`, `job_findings`, `status_now_html`, `render`
-- `plugins/haipipe-toolkit/servers/workbench/frame.py`: `task_type`, `_task_modules`
+- `plugins/haipipe-toolkit/servers/workbench/page/focus_page.py`: `page_module`, `job_findings`, `status_now_html`, `render`
+- `plugins/haipipe-toolkit/servers/workbench/page/frame.py`: `task_type`, `_task_modules`
 - `plugins/haipipe-toolkit/servers/workbench-cowork/cowork_focus.py`: `job_status`, `parts`
 - `plugins/haipipe-toolkit/servers/workbench-discovery/discovery_focus.py`: `parts`, `status`
 - `plugins/haipipe-toolkit/servers/workbench-insight/insight_prototype.py`: release adapter

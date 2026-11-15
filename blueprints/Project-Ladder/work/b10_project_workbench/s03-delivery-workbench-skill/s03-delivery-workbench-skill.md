@@ -20,7 +20,7 @@ each subfolder leads back to the Job or Task folder that made it. A Report stays
 the expected UI and card UI for showing the results of the delivery, what are the current results"): today's
 five Delivery screens, the one screen we expect, and one card per result.
 
-**Feeds:** `reports/` q07_workbench_mapping · q08_workbench_base
+**Feeds:** Q07 · Q08
 
 
 Files
@@ -53,7 +53,7 @@ skills/1_base/project/
 ├── haipipe-related/    s04 Related
 ├── haipipe-report/     s05 Report
 └── haipipe-run/        s06 Run
-servers/workbench/frame.py                        delivery_parts · _delivery_row · delivery_by_source
+servers/workbench/page/frame.py                        delivery_parts · _delivery_row · delivery_by_source
                                                   · _delivery_cards (a Page Task's card per lane)
 skills/1_base/draft/haipipe-draft/src/common.py    delivery_owner · delivery_dir · delivery_source
 ```
@@ -76,7 +76,7 @@ One sentence, told left to right by three frames joined with arrows:
 Below                    ④ every delivery/ on disk today, one row per Block; the rules; In Tools
 ```
 
-Read from disk on every build: each screen through `servers/workbench/frame.py` (`frame.render`, the Runs
+Read from disk on every build: each screen through `servers/workbench/page/frame.py` (`frame.render`, the Runs
 panel left out), and every Block's `delivery/` in `Tools/blueprints/` and in the SPACE beside Tools whose
 `Tools/` link leads here (its `examples-*/`).
 
@@ -128,14 +128,14 @@ s03-D06 · From a Job or Task, the top row's Delivery opens the Block's Delivery
     to all the workbench"). A source row, Block · jNN · tNN, comes first with the open Job or Task
     picked, and each source's part shows inside it. This refines s09-D05's "the Job and Task views
     show their own part": the part is now a pick inside the Block's Delivery, not a separate page.
-    Built by the b16 session in servers/workbench/frame.py (render's Delivery mode).
+    Built by the b16 session in servers/workbench/page/frame.py (render's Delivery mode).
 s03-D09 · Delivery also folds inside the Studio, the third part, under Related and above Timeline (JL
     261014: "a new item after the Related to name it as the delivery ... We will show all the delivery
     and preview them here"): what came in, then what went out. It holds every result of the Block's
     delivery/, from every Job and Task, as Delivery's own cards (s03-D08, `delivery_view`), each opened
     on its preview, under the same group bar; its line counts the results by kind (PDF · Word · Web
     page). The top row's Delivery (s03-D04) stays the full view: its source row, By source, its build.
-    Built 261014 in servers/workbench/frame.py (`studio_delivery`).
+    Built 261014 in servers/workbench/page/frame.py (`studio_delivery`).
 s03-D10 · One deliverable is one item, however many files and versions it has (JL 261014: "for the
     delivery, I think we just make the item to be the same ... all of them should one Delivery Item,
     and within it, we can see different versions"; "一个东西，我们会有一个 version 又一个 version ...

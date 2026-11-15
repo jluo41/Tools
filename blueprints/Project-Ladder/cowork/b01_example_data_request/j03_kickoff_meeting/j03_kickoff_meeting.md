@@ -6,6 +6,7 @@ waiting-on: nobody
 since: 2026-10-15
 goal: The partner office and our team agree what the request asks for.
 close: The kickoff notes are sent.
+emoji: 🤝
 
 ## Content
 

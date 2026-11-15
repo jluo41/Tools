@@ -166,7 +166,7 @@ def resolve_focus(value, pages, groups):
 
 def board_url(board, root, base_url, anchor):
     """The link a human clicks: the short route `/b/<slug>[/<page>]`, which opens a Page in
-    the shared live reader or the Board in its workbench (servers/space-home/home.py owns
+    the shared live reader or the Board in its workbench (servers/workbench/home/home.py owns
     the slug). Nothing is built, so the link is good the moment the Page exists (JL 261004:
     the Board's static site is retired). A group code or an index anchor opens the Board."""
     try:

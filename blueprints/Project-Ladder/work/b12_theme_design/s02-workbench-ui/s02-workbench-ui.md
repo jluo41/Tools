@@ -17,7 +17,7 @@ It is what Guide › RoadMap Draw shows for the design family.
 Guide's RoadMap Draw opens it here (moved from `servers/workbench-design/studio/`, 261007: the servers
 hold code only).
 
-**Feeds:** `../reports/` q02_design_workbench.
+**Feeds:** `../reports/` Q02.
 
 
 Files

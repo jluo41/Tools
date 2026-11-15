@@ -37,14 +37,9 @@
       "example": "A short pitch connects the question, contribution and intended reader."
     },
     "❓ Research Questions": {
-      "what": "Read the paper's question, then a row per research question: the question, and beside it what it lets the paper say if answered, its state as a chip.",
-      "layout": "Big line · Two-column rows",
+      "what": "Read the paper's question, then one table, a row per research question with every field side by side: the question, why we ask it, how others asked it, what is new here, what it lets the paper say (with its report link).",
+      "layout": "Big line · Table",
       "example": "RQ0 describes the cohort; RQ1 asks about the main effect; RQ2 asks for whom it changes."
-    },
-    "⚖️ Stakes and evidence": {
-      "what": "Compare why an answer matters with the evidence and boundaries supporting it.",
-      "layout": "Left Tabs · Right Content → Notes",
-      "example": "Keep the claimed contribution within the study design’s supported scope."
     },
     "📚 Related": {
       "what": "Read related papers under the question each paper bears on.",
@@ -52,14 +47,14 @@
       "example": "A prior study can support more than one question without duplicating its source record."
     },
     "🏛️ Venues": {
-      "what": "Review target venues, fit and remaining desk requirements.",
+      "what": "Review target venues: each card opens with its editor's test (the one question its editor asks first), then fit and remaining desk requirements.",
       "layout": "Left Tabs · Right Content → Venue",
       "example": "Read the venue’s call and identify the contribution to lead with."
     },
     "🧠 Story by Section": {
-      "what": "See where the claims land in the manuscript’s reader order.",
-      "layout": "Diagram",
-      "example": "C1 appears in Introduction and Results; C2 appears in Results and Discussion."
+      "what": "Read the story arc as the first tab, then a tab per Section in reader order: what the reader asks, comes in with, its moves numbered 1, 2, 3, leaves with, how it hands on, what it must not say, its displays, then its claims.",
+      "layout": "Left Tabs · Right Content → Section",
+      "example": "Introduction: Is billed AI used by physicians? → the reader wants the physician-level count."
     },
     "🗄️ Data flow": {
       "what": "Follow how the inputs become the evidence needed for each question.",
@@ -239,7 +234,7 @@
     "📝 The text": {
       "what": "The latest draft or adopted text, with sentence evidence and change cards when present.",
       "layout": "Text on the left · Evidence and review cards on the right",
-      "example": "Source: draft history and adopted Content. Review decisions are made in Work → Revise. Skill: haipipe-draft-writing."
+      "example": "Source: draft history and adopted Content. Review decisions are made in Report → Revise. Skill: haipipe-draft-writing."
     },
     "💬 Points and replies": {
       "what": "Each reviewer point beside its response and affected manuscript Sections.",
@@ -1326,11 +1321,6 @@
           "what": "Connect the proposed research questions and hypotheses to the specific aims.",
           "example_title": "Proposed grant example",
           "example": "Each aim names a question and the evidence needed to answer it."
-        },
-        "⚖️ Stakes and evidence": {
-          "what": "Connect the importance of the proposed work to existing evidence, uncertainty and feasibility.",
-          "example_title": "Proposed grant example",
-          "example": "Preliminary evidence supports feasibility without presenting proposed outcomes as established results."
         },
         "📚 Related": {
           "what": "Position the proposed research against related literature and existing approaches.",

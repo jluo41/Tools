@@ -9,3 +9,4 @@ One of the three Projects of `Tools/blueprints/` (JL 261028: blueprints holds Pr
 - `work/b01_haipipe-toolkit`: Shared toolkit foundations: utilities, base skills, skill layout, and chat; one Job per area. The shared ladder and workbench belong to b10_project_workbench. Theme design belongs to the peer b11–b17 Blocks.
 - `work/b02_haipipe-utils`: The blueprint of the `plugins/haipipe-utils` package: the normalizers that turn free text in a cohort's own dialect into typed, referenced numbers, and the API that serves them.
 - `work/b03_inlab-human`: The blueprint of the `plugins/inlab-human` package: in-lab human evaluation of deployed prediction endpoints, in two modes (a reader study and a clinician console), over one endpoint tool.
+- [Daily News & Resources](work/b04_daily_news_resources/board.md): Dated external news and resources, their relevance to the packages, and links to the Blueprint work that uses them.

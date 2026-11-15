@@ -8,6 +8,7 @@ next: pick the retention period, then send the amendment draft
 ticket: RB-0001
 goal: The review board approves the amendment that lets the partner office send the extract.
 close: The amendment is approved and filed with the data-use plan.
+emoji: 📋
 
 ## Content
 

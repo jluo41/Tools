@@ -1,7 +1,6 @@
 """A person's own actions on the design ladder's screens (b12 s12, 261023): Review and approve a Job's release.
 
-JL 261023: "you can design the work in a way that we human can operate this system as well", then "go ahead and do
-it". Review and approve was signed through an agent ("signed: … · in chat"); here the person reads each kept design,
+A person can run the ladder without an agent. Review and approve was signed through an agent ("signed: … · in chat"); here the person reads each kept design,
 its prediction and its why on the Job's Delivery, ticks that they did, and approves once. The write is
 haipipe-design-delivery's own `release.py` (it checks every design before it writes anything, freezes the
 predictions with today's date, writes the Job's and the Block's delivery/ and marks each design released), then a

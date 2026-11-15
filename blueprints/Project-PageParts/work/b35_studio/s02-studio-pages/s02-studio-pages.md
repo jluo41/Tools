@@ -5,7 +5,7 @@ s02 · The Studio on every page
 
 **Tags:** Studio
 
-**For:** a deck, and the Studio's UI in the workbench (`servers/workbench/focus_page.py`, `focus.css`): the Studio inside a Block, Job or Task page, and, since s02-D05, an sNN's card as the place every link to it lands (JL 261030: "what I want to achieve is how to get the UI for the studio page"; "like the studio embed in other page, and studio itself as a page").
+**For:** a deck, and the Studio's UI in the workbench (`servers/workbench/page/focus_page.py`, `focus.css`): the Studio inside a Block, Job or Task page, and, since s02-D05, an sNN's card as the place every link to it lands (JL 261030: "what I want to achieve is how to get the UI for the studio page"; "like the studio embed in other page, and studio itself as a page").
 
 **Delivery type:** ui
 
@@ -19,7 +19,7 @@ s02 · The Studio on every page
 
 From b35 s07 (topic-links), merged 261030: how topics in different Blocks connect: groups and Links lines. They often talk about the same thing; JL 261029: "I still want them to be connected". Groups (`studio/_groups.txt`, a face's `**Tags:**`) gather them, and a `**Links:**` line points from one topic to another, shown on the face (the topic page that listed them both ways is retired, s02-D05).
 
-**Feeds:** `servers/workbench/focus_page.py`; haipipe-ui (the page rules); haipipe-studio (Tags, Links).
+**Feeds:** `servers/workbench/page/focus_page.py`; haipipe-ui (the page rules); haipipe-studio (Tags, Links).
 
 
 Files

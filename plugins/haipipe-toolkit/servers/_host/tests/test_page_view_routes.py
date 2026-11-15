@@ -31,7 +31,7 @@ class PageViewRouteTest(unittest.TestCase):
         self.assertFalse(R.route_allowed("/_board/workbench?path=x", {"page"}))
 
     def test_every_view_has_a_method_and_every_old_route_a_view(self):
-        sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "workbench"))
+        sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "workbench" / "page"))
         import frame_view  # noqa: E402
         self.assertEqual(set(serve.PAGE_VIEW_ROUTES.values()), set(frame_view.VIEW_METHODS))
         for method in frame_view.VIEW_METHODS.values():

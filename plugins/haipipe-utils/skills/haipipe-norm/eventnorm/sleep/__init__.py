@@ -15,6 +15,8 @@ them to build their own page accordingly", relayed by EventStore-Food-v2).
     schema.py      the raw types, the input's keys, the kinds by length
     preprocess.py  raw to input: the longest row is the night, shorter rows inside it its pieces, clipped and joined
     hours.py       joined, minutes_by_hour: each local hour its minutes in bed, asleep, awake in bed or unknown
+    nights.py      one person's rows cut into nights: repeats once, pieces only in their own device's night,
+                   Apple's rows with no whole row joined (b01's three findings, 261109)
     assemble.py    event(), events()
 
 Lifted from b51 s06's drawing builder (studio/_build/topic_frames.py: joined, minutes_by_hour, sleep_night_dict),
@@ -23,4 +25,5 @@ POST /sleep/event (servers/api-sleep/server.py).
 """
 from .assemble import event, events            # noqa: E402
 from .hours import joined, minutes_by_hour, night_hours  # noqa: E402
+from .nights import cut, nights                # noqa: E402
 from .preprocess import preprocess              # noqa: E402

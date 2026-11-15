@@ -19,7 +19,7 @@ These audits are design evidence. They did not execute a real labeling experimen
 | Workbench has item actions, not decision-report submit/save | Build a real new-mode view and engine store, then verify actual browser persistence | T01–T05 |
 | Audit suggested new meaning/ storage; early draft reused rounds/ | Adopt J/meaning/ for rule-level records; keep rounds/ unchanged for legacy item events | CONTRACTS section 1 |
 | One audit treated all choices as preferences; another allowed exact rule approval | Exact displayed patch plus clear selection can approve that exact scope; custom/qualified comments need interpretation confirmation | T09 and submission contract |
-| Prototype exports explicitly say rule_preference_only | Preserve that narrow scope on import; never retroactively upgrade it | T09 |
+| Question Book exports explicitly say rule_preference_only | Preserve that narrow scope on import; never retroactively upgrade it | T09 |
 | Early draft listed publish as browser action | Publication/integration initially remain engine/command-line tools; browser only reads/responds | CONTRACTS section 12, T04 |
 | Existing human_id and attest do not verify identity | Label evidence accurately; external respondents need authenticated assigned-job permission | T04 |
 | Existing shared non-owners cannot POST | Do not grant broad owner access to bypass this; retain disabled shared response until narrow capability exists | T04 and PLAN |

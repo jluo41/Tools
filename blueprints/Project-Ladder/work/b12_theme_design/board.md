@@ -5,13 +5,13 @@ package: plugins/haipipe-toolkit
 theme: design
 ui-block: blueprints/Project-Ladder/design/Design-Example
 ui-block: blueprints/Project-Ladder/design/DesignMethodBook-Example
-ui-job: blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_method-v2-overall-performance_inputs-v2
-ui-job: blueprints/Project-Ladder/design/Design-Example/j01_confirm-by-reply_method-v1-goal-only_inputs-v1
-ui-job: blueprints/Project-Ladder/design/Design-Example/j02_confirm-by-reply_method-v1-goal-only_inputs-v2
-ui-job: blueprints/Project-Ladder/design/DesignMethodBook-Example/j02_method-v2_overall-performance
-ui-task: blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_method-v2-overall-performance_inputs-v2/t00_reason-ideas
-ui-task: blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_method-v2-overall-performance_inputs-v2/t02_d02_reminder-one-ask
-ui-task: blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_method-v2-overall-performance_inputs-v2/t99_review-whole
+ui-job: blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_M02-overall-performance-m1_inputs-v2
+ui-job: blueprints/Project-Ladder/design/Design-Example/j01_confirm-by-reply_M01-goal-only-m2_inputs-v1
+ui-job: blueprints/Project-Ladder/design/Design-Example/j02_confirm-by-reply_M01-goal-only-m2_inputs-v2
+ui-job: blueprints/Project-Ladder/design/DesignMethodBook-Example/j02_M02-overall-performance
+ui-task: blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_M02-overall-performance-m1_inputs-v2/t00_reason-ideas
+ui-task: blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_M02-overall-performance-m1_inputs-v2/t02_d02_reminder-one-ask
+ui-task: blueprints/Project-Ladder/design/Design-Example/j03_confirm-by-reply_M02-overall-performance-m1_inputs-v2/t99_review-whole
 shared-blueprint: b01_haipipe-toolkit
 spine: How the design theme sits on the Block → Job → Task → Run ladder and shows in its workbench: a design Board for one application, a Job for one goal done by one design method returning N designs, a Task for one design, and the Runs that commission, generate, verify and revise them; how an insight Block steers a design through one handoff; and which skill and workbench owns each part.
 close: Each recorded question has a report Page with an answer status; the drawings in studio/ match the shared definitions in b10_project_workbench, and every open point is either decided or carried as a question.
@@ -24,7 +24,7 @@ pass; running the experiment is outside it. This Block designs that theme's plac
 
 ```text
 design/Design-<name>/             Block: one application, one channel; goals signed, inputs versions, Exp results
-└── jNN_<goal>_method-vN-<slug>_inputs-vM/           Job: goal G01 × method M04 m2 × inputs inputs-v2 → N designs; inputs/ is its fence
+└── jNN_<goal>_M0x-<slug>-mK_inputs-vM/           Job: goal G01 × method M04 m2 × inputs inputs-v2 → N designs; inputs/ is its fence
     ├── inputs/                    goal.md · method.md (the pinned version) · manifest.yaml
     ├── t00_reason-ideas/          ② reason ideas        run-reason-t00
     ├── tNN_d<NN>_<slug>/          ③ ④ one design        run-generate-d<NN> · run-verify-d<NN>-v<k> · run-revise-d<NN>

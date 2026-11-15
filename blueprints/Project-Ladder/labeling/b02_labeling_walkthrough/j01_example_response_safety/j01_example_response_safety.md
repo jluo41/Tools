@@ -1,4 +1,5 @@
 # Response safety on synthetic chats
+emoji: 🏷️
 state: 🙋 waits for you · 1 of 3 done; e02 released 30 final labels; the items recipe and the release choices wait for you
 session: example-labeling
 goal: Run the two loops on 30 synthetic chats.

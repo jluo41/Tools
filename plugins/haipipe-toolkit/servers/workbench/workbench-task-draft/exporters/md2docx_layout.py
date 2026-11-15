@@ -94,7 +94,9 @@ DISCUSSION_LANES = ("JL", "CC", "USER", "Also")
 # MAJOR HEADS in the export: "(Closing paragraph -- no subsection title)" in §2
 # and "Display drafts (markdown-first; NOW FILED as DR requests …)" in §5
 # (JL 260727).
-SKIP_DIVISIONS = ("Stage Record", "Stage Contract")
+# "Title": a Section page may hold the paper title as its own division so it can be reviewed and commented on; the
+# build prints the title from paper-build.toml, so the exporters skip it (JL 261115, AITC LOI t01 C0 · Title).
+SKIP_DIVISIONS = ("Stage Record", "Stage Contract", "Title")
 UNNUMBERED_OK = ("Abstract", "References", "Acknowledgements", "Appendix")
 
 
@@ -122,11 +124,11 @@ def is_abstract_page(raw_page):
 
 
 def abstract_label(title):
-    """`2.1 · Question`, `Question`, or the layout `page.py adopt` writes, `C1.P1 · Question · S1 to S2`
+    """`2.1 · Question`, `Question`, or the layout `page.py adopt` writes, `C1.P1 · Question · s1 to s2`
     -> `Question`; None when it is not a label."""
     name = re.sub(r"^\d+(?:\.\d+)*\s*(?:·\s*)?", "", title).strip()
     name = re.sub(r"^C\d+\.P\d+\s*·\s*", "", name)
-    name = re.sub(r"\s*·\s*S\d+[a-z]*(?:\s+to\s+S\d+[a-z]*)?\s*$", "", name).strip()
+    name = re.sub(r"\s*·\s*[Ss]\d+[a-z]*(?:\s+to\s+[Ss]\d+[a-z]*)?\s*$", "", name).strip()
     return next((x for x in ABSTRACT_LABELS if x.lower() == name.lower()), None)
 
 NUMTOK = re.compile(r"[+-]?\d[\d,]*(?:\.\d+)?%?")

@@ -1,3 +1,13 @@
+## 0.10.2 · 2026-11-11 · Findings is Values and Displays
+
+- 🧠 Maps returns to Findings, after Displays and only when the work drew maps (JL 261111).
+- A work Block's Findings leads with 🗄️ Data: one row per store from board.md's `data:` block (name, where, holds, access, link), counts read from a Result file and key (JL 261111).
+- A work page's Findings is exactly 🔢 Values and 🖼️ Displays, each keeping its slot when empty (JL 261111).
+
+## 0.10.1 · 2026-11-09 · Plan + Results and Findings order
+
+- Status is now Plan + Results, one section per Job type; View BJTR removed; Findings order 🗂️ Data, 🖼️ Displays, 🧠 Maps; no ❓ or ✍️ Answers sections on a work Block.
+
 ## 0.10.0 · 2026-11-09 · current format and update door
 
 - Lead with current focus pages, Work/Blueprint UI types, and shared view-versus-rail scope.
@@ -48,7 +58,7 @@ Shorter description (780 -> 417 characters): what it does, when to use it, its t
 ## 0.7.4 · 2026-10-09 · No hand-drawn font
 
 - JL 261009: "do not use the hand written font, it is very hard to read"; "could you write to the related skill to do not use that font?". `servers/workbench-work/question_map.py` writes its words in Nunito (`fontFamily` 6), not Comic
-  Shanns (8); the Guide's tables (`servers/workbench/workbench_guide.py`, shared by every theme) too, with
+  Shanns (8); the Guide's tables (`servers/workbench/guide/workbench_guide.py`, shared by every theme) too, with
   Cascadia (3) kept for code.
 
 ## 0.7.3 · 2026-10-09 · RoadMap Draw lists the studio topics and their sessions

@@ -6,8 +6,12 @@ Board Page workbenches:
 - `md2tex.py` reads one accepted Page and emits TeX. It refuses to replace a fragment
   that would lose a citation key (or that it did not write): `❌ REFUSED`, exit 2, the
   old fragment kept; `--accept-dropped-keys` lets a key go when another Section cites
-  it or a revise card removed it (tests: `test_md2tex.py`).
-- `md2docx.py` reads the same Page and emits DOCX.
+  it or a revise card removed it (tests: `test_md2tex.py`). Its prose rendering
+  lives in `md2tex_prose.py`.
+- `md2docx.py` reads the same Page and emits DOCX (`main()` and the command line).
+  Its parts: `md2docx_inputs.py` (reading the Page), `md2docx_layout.py`,
+  `md2docx_page.py`, `md2docx_inline.py`, `md2docx_tables.py` and
+  `md2docx_docx.py` (the `Docx` writer).
 - `docx2pdf.py` renders the DOCX twin used by the Word surface.
 
 They are server code beside their caller, not Paper routing logic and not a

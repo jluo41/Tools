@@ -1,7 +1,7 @@
 """Freeze a Block's inputs version, or build a Job's inputs/ fence (ref/inputs.md).
 
     python make_inputs.py freeze <block>/inputs/inputs-vN [--new "<what changed>"] [--rules r2]   (an older Block: iN)
-    python make_inputs.py job    <block>/jNN_<goal>_method-vN-<slug>_inputs-vM   (an older Block: jNN_<goal>_<method>)
+    python make_inputs.py job    <block>/jNN_<goal>_M0x-<slug>-mK_inputs-vM   (an older Block: jNN_<goal>_<method>)
 
 freeze writes inputs/inputs-vN/manifest.yaml: every file with the first 12 hex of its sha256, keeping a parts: list a draft
 manifest already has. job writes the Job's inputs/goal.md from its pinned goal (board.md ## Goals), links every file

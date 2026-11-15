@@ -153,12 +153,12 @@ def _source_realizations(page_text):
     scaffolds = {}
     source_realizations = {}
     for m in re.finditer(r"(?m)^([^\n]*?)<!--\s*realizes:\s*"
-                         r"(C\d+\.P\d+\.[BS]\d+)\s*-->\s*$", page_text):
-        address = re.sub(r"\.S(\d+)$", r".B\1", m.group(2))
+                         r"(C\d+\.P\d+\.[BSs]\d+)\s*-->\s*$", page_text):
+        address = re.sub(r"\.[Ss](\d+)$", r".B\1", m.group(2))
         prose = reader_prose(m.group(1)).strip()
         if prose:
             source_realizations.setdefault(address, []).append(prose)
-        sm = re.search(r"\b(C\d+\.P\d+\.S\d+)\b", m.group(1))
+        sm = re.search(r"\b(C\d+\.P\d+\.[Ss]\d+)\b", m.group(1))
         if sm:
             # canonical B key: a slot plan's realizes may say .S<n>; slot
             # number == position, so it is the same bullet (JAMA repro 260831)

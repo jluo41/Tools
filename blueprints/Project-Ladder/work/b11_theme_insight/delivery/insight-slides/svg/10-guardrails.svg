@@ -12,13 +12,13 @@
 <text x="80.0" y="328.1" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
 <text x="101.0" y="328.1" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">T0 – T3 gate the plan</text>
 <rect x="357.0" y="180.3" width="269.0" height="299.1" rx="3" fill="none" stroke="#d4d4d0" stroke-width="1.5"/>
-<text x="377.0" y="222.8" font-size="25" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Planned cuts</text>
+<text x="377.0" y="222.8" font-size="25" fill="#1c1c1c" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">Planned segments</text>
 <text x="377.0" y="265.5" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
 <text x="398.0" y="265.5" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">filters and power</text>
 <text x="398.0" y="292.8" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">floors live in the</text>
 <text x="398.0" y="320.1" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">release</text>
 <text x="377.0" y="355.4" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
-<text x="398.0" y="355.4" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">a weak cut is refused</text>
+<text x="398.0" y="355.4" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">a weak segment is refused</text>
 <text x="398.0" y="382.7" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">and shown</text>
 <text x="377.0" y="418.0" font-size="21" fill="#3f3f46" font-weight="bold" font-family="'Times New Roman', Times, serif" text-anchor="start">•</text>
 <text x="398.0" y="418.0" font-size="21" fill="#3f3f46" font-weight="normal" font-family="'Times New Roman', Times, serif" text-anchor="start">Cross tests the</text>

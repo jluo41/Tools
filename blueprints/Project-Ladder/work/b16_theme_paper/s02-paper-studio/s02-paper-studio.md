@@ -19,7 +19,7 @@ the built paper) and the loop back when a review comes in; row 3, the proposed `
 ScalingGlucose's Studio today and what is open. The view numbers (b16 s02 = the Studio's design) are for
 the blueprint Blocks; a real paper Board numbers its own topics by content (s01-ideation, s02-story-…).
 
-**Feeds:** `reports/` q04_story_into_topics
+**Feeds:** Q04
 
 
 Files

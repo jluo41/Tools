@@ -186,7 +186,7 @@ b16's s34 board_ui_studio, the paper Board's Studio:
 
 ## The code change, named for its owner
 
-Owner: design_b02_workbench, in `servers/workbench/focus_page.py`; this cell never edits it.
+Owner: design_b02_workbench, in `servers/workbench/page/focus_page.py`; this cell never edits it.
 
 1. `render()`, Studio: buttons from `frame.studio_group_order(folder)`, then tags not listed, then `OTHER`; no button for
    an empty group; open on the first group where a card's form waits, else the first button.

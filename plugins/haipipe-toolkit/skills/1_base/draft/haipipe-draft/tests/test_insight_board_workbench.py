@@ -216,7 +216,7 @@ class InsightBoardWorkbenchTest(unittest.TestCase):
                 method = render_methods_embed(root, "method")
                 papers = render_methods_embed(root, "papers")
             # Scope is this board's own data; the family's methods and papers are the Guide's
-            self.assertIn('data-space="prototype">Prototype</button>', html)   # its own Space (JL 261003)
+            self.assertIn('data-space="prototype">Question Book</button>', html)   # its own Space (JL 261003)
             self.assertNotIn('data-view="prototype"', html)                     # no longer a Scope tab
             self.assertLess(html.index('data-space="scope">'), html.index('data-space="prototype">'))
             self.assertNotIn('data-view="methods"', html)

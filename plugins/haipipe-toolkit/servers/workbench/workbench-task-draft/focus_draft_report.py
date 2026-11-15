@@ -13,7 +13,7 @@ from live.focus_draft_steps import _facts, flatten, word
 
 # ── Report: check ───────────────────────────────────────────────────────────────────────────────────
 def paragraphs(folder: Path) -> list:
-    """[(paragraph id, its name, its text)] of the face's adopted `## Content` (`#### C1.P1 · Background · S1 to S2`)."""
+    """[(paragraph id, its name, its text)] of the face's adopted `## Content` (`#### C1.P1 · Background · s1 to s2`)."""
     md = face(folder)
     text = md.read_text(encoding="utf-8", errors="ignore") if md else ""
     text = text.split("\n## Content", 1)[1] if "\n## Content" in text else ""

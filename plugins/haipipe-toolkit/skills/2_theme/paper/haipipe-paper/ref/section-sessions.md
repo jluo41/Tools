@@ -46,7 +46,7 @@ this skill's `scripts/` folder:
 
 For each unit it:
 
-1. **Claude**: starts `claude --bg -n <Short>-<unit>` from the repository root with a read-only first turn, writes the UUID into each page header's `session:` line, and stops it once that turn is idle, because `/resume` refuses a running background session;
+1. **Claude**: starts `claude --bg -n <Short>-<unit>` from the repository root with its first turn (a read-only look, then the default review round, must-check M-D03), writes the UUID into each page header's `session:` line, and stops it once that turn is idle, because `/resume` refuses a running background session;
 2. **Codex**: starts a thread through `codex app-server`, names it `<Short>-<unit>-Codex` with `thread/name/set`, runs the same first turn, and writes its id into each page header's `codex-session:` line;
 3. **Pair**: registers an identity-only call-peer pair `<Short>-<unit>` (sync off).
 
@@ -103,3 +103,9 @@ exact lines; the owner applies it inside its own folder.
 The command creates no Page, Run, Result or receipt and never decides which
 Section exists: the writing Job face's `## Narrative` does. Pairing is identity-only (`sync` stays off); reading a
 peer's history is the call-peer skill's `READ_EXISTING_PEER`.
+
+## At most eight, one prefix per writing Job (261114)
+
+Past eight Main Sections, the last ones share one unit `<first>-to-<last>` with one Claude session and one Codex
+thread; the Appendix unit is extra. `session-prefix:` is kept in the writing Job face; board.md's line is the
+fallback for a paper with one writing Job.

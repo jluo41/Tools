@@ -2,13 +2,13 @@
 name: haipipe-insight-workflow
 description: >-
   Where an insight folder stands and which Run is next, on the insight ladder:
-  the Prototype (its releases and questions) and the insight Board (its data
+  the Question Book (its releases and questions) and the insight Board (its data
   versions, Jobs and Tasks). Owns the run cards (one card per workbench button:
   its Run, skill, agent, sign and prompt), the gates between levels (agreed
-  questions, set cuts, a signed release, a frozen data version, one clock per
+  questions, set segments, a signed release, a frozen data version, one clock per
   Job, power before contrast, a checked page, a signed close and handoff), and
   routing each Run to the skill that does it. Use to ask what is next for a
-  Prototype, release, Board, Job or Task, to find who owns a button, to check the
+  Question Book, release, Board, Job or Task, to find who owns a button, to check the
   cards, or to run the older register boards' workflow until they are carried
   over. Trigger: what next, next Run, run card, gate, insight workflow, where
   does this Job stand, who owns this button, /haipipe-insight workflow.
@@ -45,16 +45,16 @@ What is next
 
 ```text
 release   a question with no plan → run-plan-evidence · not agreed → run-review-plan · a compute need with no
-          script → run-write-script · cuts not set → run-set-cuts · all set → run-sign-release (a person)
-Prototype no release → run-open-version-p1 · the newest signed and proposals open → triage, then the next release
+          script → run-write-script · segments not set → run-set-segments · all set → run-sign-release (a person)
+Question Book no release → run-open-version-p1 · the newest signed and proposals open → triage, then the next release
 Board     no data version → run-add-version-v1 · no Job → run-add-j01 · the newest Job closed and a new data
           version or a new signed release waiting → run-add-j<NN> (one clock) · else the readings
-Job       not launched → run-launch · a cut not run → its run.sh · a page not written → run-write · not checked →
+Job       not launched → run-launch · a segment not run → its run.sh · a page not written → run-write · not checked →
           run-check · all checked and a Job before it → run-compare · then run-close (a person)
 Task      the same, for one question
 ```
 
-It never runs or writes anything. A person or an agent presses the button the card names; a refusal (a cut too
+It never runs or writes anything. A person or an agent presses the button the card names; a refusal (a segment too
 thin to answer) counts as done.
 
 
@@ -63,7 +63,7 @@ The gates
 
 The full table is `ref/run-cards.md § Gates`; the scaffold (`haipipe-insight/scripts/insight_ladder.py`) refuses to
 pass them. In short: a question's needs are agreed by another agent and its script reviewed by another agent; the
-cuts are set before any outcome and signed; a release is signed by a person and then frozen; a data version is
+segments are set before any outcome and signed; a release is signed by a person and then frozen; a data version is
 frozen when added; a Job pairs a signed release with a frozen data version, a new pair, one clock moved; power is
 checked before any contrast; a page is CHECKed by another agent; a Job is closed by a person once every page is
 checked and it is compared with the Job before it; a handoff is signed by a person before Design reads it.
@@ -82,7 +82,7 @@ judges      haipipe-insight-reviewer-agent      reviews questions and plans, che
             haipipe-task-reviewer-agent         reviews a script
 runs        haipipe-task-orchestrator-agent     launches a Job, runs a hard Run's ticket
 writes code haipipe-task-creator-agent          writes a question's script
-signs       a person                            the cuts, a release, a Job's close, a handoff
+signs       a person                            the segments, a release, a Job's close, a handoff
 ```
 
 A judging Run is never done by the agent that made what it judges, on that level.
@@ -93,7 +93,7 @@ Older boards
 
 A register board (`*-InsightBoard`, MT00-MT04) keeps its own workflow until it is carried into a release:
 [`ref/register-board-workflow.md`](ref/register-board-workflow.md), with `ref/run-workflow.md`,
-`ref/partition-policy.md`, `ref/authorization.md`, `ref/handoff-record.md`, `ref/task-rf-bridge.md` and
+`ref/segment-policy.md`, `ref/authorization.md`, `ref/handoff-record.md`, `ref/task-rf-bridge.md` and
 `ref/migration.md` as before. An Insight Block with one Job per DIKW level is carried with
 `haipipe-insight/ref/prototype_from_block.py`.
 

@@ -10,5 +10,5 @@ By topic, column heads carry the full name slanted 45° (s08-D12). Every day fro
 
 ## Changed
 
-- `plugins/haipipe-toolkit/servers/workbench/frame.py (studio_timeline · tlGaps · .tl-col · .tl-quiet)`
+- `plugins/haipipe-toolkit/servers/workbench/page/frame.py (studio_timeline · tlGaps · .tl-col · .tl-quiet)`
 - `s08-studio-timeline/ (face D12 and D13 · builder notes · preview)`

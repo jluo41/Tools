@@ -15,7 +15,7 @@ s55 · Job UI: Work
 
 **Topic:** One cell of the insight 3 × 3, an insight Job (one analysis plan × one data freeze) × Work (do), copied from the paper theme's (b16 j01) and the labeling theme's (b15 j01) (JL 261101: "Please understand the above two sessions and then work on the insights"). Its drawing is haipipe-studio's five parts, drawn by `build_s55_job_ui_work.py` through j01's `insight_ui_cells.py`; its Design is every view as the same full screen, lettered, settled one round each. Names are placeholders (`<dataset>`, `<d>`): a real Board holds one person's health data, and Tools is public.
 
-**Feeds:** `reports/` q01_insight_ladder
+**Feeds:** Q01
 
 
 Files
@@ -34,7 +34,7 @@ s55-job-ui-work/
 Decided
 -------
 
-s55-D01 · One grid per level (Board question × Job, Job question × cut, Task cut × step); Report opens on the answer; Work opens on what waits on the person; no Task asks the person (JL 261101: "go ahead", on the proposal in chat).
+s55-D01 · One grid per level (Board question × Job, Job question × segment, Task segment × step); Report opens on the answer; Work opens on what waits on the person; no Task asks the person (JL 261101: "go ahead", on the proposal in chat).
 
 s55-D02 · Built on the focus page first, all four letters (JL 261101: "start with s55", "follow the ones in the workbench-paper and workbench-labeling"): `servers/workbench-insight/insight_focus.py`, asked by `focus_page.py`'s hook `insight_job_work`; each view ⚙️ Process then 📊 Results with the shared ui_parts; the round 1 fixes taken (your signs first on every view, sign before close, Work B the Report's grid with each cell's next verb, state words on every row). "Run all, or one button per row": both (Launch all · Write all · Check all, and a verb in each cell).
 

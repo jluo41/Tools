@@ -2,6 +2,7 @@
 
 goal: Read the earlier studies of <the policy> and its effect on <an outcome>, one placeholder paper per Run.
 close: Its Task Page is checked, every paper is read and its Evidence Bib is handed over.
+emoji: 📚
 answers: Q01
 state: 🟡 waiting on you · one paper's citation to check
 

@@ -115,13 +115,13 @@ external/       → this skill owns only the read-only root boundary
 ```
 
 Insight and Design are peer worlds (JL 261001: "no more applications"). An
-Insight topic is one task Block (JL 261005; the Prototype + Instance pair is retired):
+Insight topic is one task Block (JL 261005; the Question Book + Instance pair is retired):
 `work/b5N_<topic>_dikw/` with `workbench: insight` in its board.md, one Job per DIKW
 level, one Task per question holding its question, its one script, its runs and its
 answering page. A new dataset is a new `datasets:` entry, never a copy of the code.
 
-**Current Insight layout (haipipe-insight, 261009):** a topic's Prototype is a task-world Block
-`insight/Prototype-<Topic>/` (`board-kind: prototype`, a Job per release, `proposals/`) and each
+**Current Insight layout (haipipe-insight, 261009):** a topic's Question Book is a task-world Block
+`insight/InsightQuestionBook-<Topic>/` (`board-kind: prototype`, a Job per release, `proposals/`) and each
 dataset is a Board `insight/Insight-<name>/`. haipipe-insight's SKILL.md is the authority; the
 `b5N_<topic>_dikw` Block below is its older layout (`ref/prototype_from_block.py` carries it).
 

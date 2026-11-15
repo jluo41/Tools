@@ -6,13 +6,13 @@
 - Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
   `design/`, `labeling/`, `ideation/`; the older plural names still read.
 
-## 1.5.0 · 2026-10-01 · Partition names, not letters (JL 261001)
+## 1.5.0 · 2026-10-01 · Segment names, not letters (JL 261001)
 
-- MT00's partition register has no letter column; partitions are named by one lowercase word.
+- MT00's segment register has no letter column; segments are named by one lowercase word.
 
 ## 1.4.0 · 2026-10-01 · Runs and reports (JL 261001)
 
-- MT00 names the board's ONE extract (the board's identity; a second extract is a second board) and each partition row names the config stem every task uses for the cut.
+- MT00 names the board's ONE extract (the board's identity; a second extract is a second board) and each segment row names the config stem every task uses for the segment.
 
 ## 1.3.0 — 2026-09-20
 
@@ -24,13 +24,13 @@
 
 ## 1.1.1 — 2026-09-16
 
-- Fix the bare `ref/partition.md` reference to the umbrella's real path.
+- Fix the bare `ref/segment.md` reference to the umbrella's real path.
 
 ## 1.1.0 — 2026-09-13
 
 - Rebase I0 on Page v2 Context/Evidence/CHECK: cross-Folder sources enter as
   accepted Supporting Run Results and governed local static inputs are frozen.
-- Retire active PageX and Probe selection; partition changes now also recompute
+- Retire active PageX and Probe selection; segment changes now also recompute
   the derived partition-by-DIKW Question Groups.
 
 ## 1.0.0 — 2026-08-31
@@ -41,7 +41,7 @@
 ## 0.3.0 — 2026-08-28
 
 - Gains `## Receipts`. GI0 and every PARTITION BIRTH leave their dated Log row on this page, and until now that duty lived only in `haipipe-insight-workflow` §Phase receipts — which the ruler is explicit does not count, because the page's author reads the page's contract and not the machine file. This closes the last ⑥ gap on the insight side together with for-question 0.5.0.
-- The birth receipt is the load-bearing half. A partition's register ROW is the only place it was ever declared, and retiring a partition edits that row away: on 260828 A00 minted `J · minorityzip` and `L · lowincome`, discovered both failed clause ①, and withdrew them — after which the register alone reads as though the board never considered a socioeconomic cut. The Log row is what preserves which candidate failed which clause, which is the part that stops the next reader proposing the same cut.
+- The birth receipt is the load-bearing half. A partition's register ROW is the only place it was ever declared, and retiring a segment edits that row away: on 260828 A00 minted `J · minorityzip` and `L · lowincome`, discovered both failed clause ①, and withdrew them — after which the register alone reads as though the board never considered a socioeconomic segment. The Log row is what preserves which candidate failed which clause, which is the part that stops the next reader proposing the same segment.
 - Migration: OWE-ON-NEXT-TOUCH. The new closing check adds no gate a person must pass; a live MT00 owes its birth rows when next opened.
 
 ## 0.2.0 — 2026-08-21

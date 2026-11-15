@@ -16,7 +16,7 @@ built: from-topic .
   - ui <!-- @delivery-type/0 #636117 -->
 - Covers <!-- @covers #a6c44a -->
   - the same letters, your inbox first on … <!-- @covers/0 #afc064 -->
-    the same letters, your inbox first on every view (sign the plan and triage in the Prototype, sign the handoff): A Answers · B Questions · C Jobs (each Job's steps, add one) · D Data · E Handoff; each view ⚙️ Process, then 📊 Results.
+    the same letters, your inbox first on every view (sign the plan and triage in the Question Book, sign the handoff): A Answers · B Questions · C Jobs (each Job's steps, add one) · D Data · E Handoff; each view ⚙️ Process, then 📊 Results.
 - Excluded <!-- @excluded #980495 -->
   - the other eight cells of the 3 … <!-- @excluded/0 #606724 -->
     the other eight cells of the 3 × 3 (s51, s53, s54, s55, s56, s57, s58, s59); the old five-Space Insight page (s02); every Theme's shared frame (b10).
@@ -38,7 +38,7 @@ built: from-topic .
     ![s52-block-ui-work.png](s52-block-ui-work.png)
 - Decided <!-- @decided #55615a -->
   - s52-D01 · One grid per level (Board … <!-- @decided/0 #032e07 -->
-    s52-D01 · One grid per level (Board question × Job, Job question × cut, Task cut × step); Report opens on the answer; Work opens on what waits on the person; no Task asks the person (JL 261101: "go ahead", on the proposal in chat).
+    s52-D01 · One grid per level (Board question × Job, Job question × segment, Task segment × step); Report opens on the answer; Work opens on what waits on the person; no Task asks the person (JL 261101: "go ahead", on the proposal in chat).
 - Open <!-- @open #cf9b77 -->
   - ? <!-- @open/0 #b61e55 -->
     ? The inbox on every view (proposed, as the Job's signs), or only on A.

@@ -39,7 +39,7 @@ The tree
 --------
 
 ```text
-paper/Paper-<Slug>/                  Board: one paper
+paper/Paper-<Slug>/                  Board: one paper (a grant: paper/Grant-<Slug>/, board-kind: grant-board)
 ├── board.md                         its face (haipipe-block): board-kind: paper-board · dialect: paper ·
 │                                    story-current · venue · spine · close · work-block · discovery-block ·
 │                                    ## Pages (### J01 · j01_evidence_display, … ### J11 · j11_writing_v<MMDD>_<desk>)
@@ -72,7 +72,8 @@ paper/Paper-<Slug>/                  Board: one paper
 └── j11_writing_v<MMDD>_<desk>/      writing Job: one version, one send to one venue, named for the day it is sent
     ├── j11_writing_v<MMDD>_<desk>.md  its face (haipipe-job): send · desk · venue · state · tells · from · goal ·
     │                                close · responds-to (the comments report it answers) · ## Tasks (in order) ·
-    │                                ## Narrative (one row per Section; the compile order) · ## Questions
+    │                                ## Narrative (the layout: points at the Story §8, claims to displays,
+    │                                one row per Section, the compile order; copies no claim) · ## Questions
     ├── reports/ · runs/             the version's own Questions (the standing J1-J5 first) and Runs; its
     │                                drawings are Board topics (sNN-<topic>/, b10 s09-D01)
     │   └── reports/qNN_<kind>-<MMDD>/   a comments batch: page-type: comments, in the version that answers it
@@ -103,7 +104,7 @@ Each level
 
 ```text
 level     folder                    face                       made by                       its Runs
-Board     Paper-<Slug>/             board.md                   paper_ladder.py board         runs/run-<type>-<target>/
+Board     Paper-|Grant-<Slug>/      board.md                   paper_ladder.py board         runs/run-<type>-<target>/
 evidence  j01_evidence_display/ …  j01_evidence_display.md    paper_ladder.py evidence      runs/run-<type>-<target>/
 version   j11_writing_v<MMDD>_<desk>/  j11_writing_….md       paper_ladder.py version|next  runs/run-<type>-<target>/
 Task      tNN_<title>/              tNN_<title>.md             paper_ladder.py task          the Page workflow's (page.py open-run)

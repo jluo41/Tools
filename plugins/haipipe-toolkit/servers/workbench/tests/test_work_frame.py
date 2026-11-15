@@ -276,7 +276,7 @@ class WorkFrameTest(unittest.TestCase):
         self.assertIn('aria-current="page">Overview</a>', old_map)
         old_delivery = f.render(theme, self.root, self.block, 'delivery')
         self.assertIn('aria-current="page">Delivery</a>', old_delivery)
-        self.assertIn('No acceptance recorded yet.', old_delivery)
+        self.assertNotIn('Acceptance', old_delivery.split('Around the Work')[0])   # JL 261114: empty, not drawn
 
     def test_delivery_feedback_has_explicit_view_ownership(self):
         rows = [{'page': self.block, 'view': 'delivery'}, {'page': self.block, 'view': ''}]

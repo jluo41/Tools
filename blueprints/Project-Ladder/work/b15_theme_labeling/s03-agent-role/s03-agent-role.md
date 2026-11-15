@@ -1,5 +1,6 @@
 s03 · Agent role in subjective labeling
 ======================================
+view: findings
 
 **Tags:** `concept` · `labeling`
 
@@ -11,7 +12,25 @@ s03 · Agent role in subjective labeling
 
 **Topic:** Judgment-centered annotation: one system helps users articulate and apply a standard, whether they begin with a rough idea and unlabeled corpus or existing labeled data. Human high-level judgments guide many items; the agent organizes cases, rules, conflicts, execution and audit. Proposed design; benefits remain to be tested.
 
-**Feeds:** `reports/` q02_building_scanning_gates · q03_schema_and_handoff
+**Feeds:** Q02 · Q03
+
+Q02 · Answer
+------------
+
+**Question:** Where do the two sides and the human gates show?
+
+**Answer (open):** Proposed (261014), waiting for JL: the two sides are two **Task types** of the Job, split at the signed Label Handoff: 🏗 building (`task-type: labeling-building`) and 🔍 scanning (`task-type: labeling-scanning`). Each gate sits on its side's Task: Confirm meaning (G0) and Freeze in building, the test lock and Audit in scanning. The Handoff is the one crossing: building's Delivery hands it on, scanning's Description reads it. Today's one labeling Page is both sides at once, and the workbench shows its views in that order.
+
+**Page:** [q02_building_scanning_gates.md](q02_building_scanning_gates/q02_building_scanning_gates.md): the full answer, its evidence and limits (moved from reports/)
+
+
+Q03 · Answer
+------------
+
+**Question:** Where do the schema and the handoff live?
+
+**Answer (open):** not written yet.
+
 
 Files
 -----

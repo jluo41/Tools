@@ -359,6 +359,36 @@
       "flags": "i",
       "pattern": ",\\s*(however|therefore|moreover|furthermore|thus|nevertheless|nonetheless|consequently|in turn|by contrast|in contrast|for example|for instance)\\s*,",
       "note": "A transition set off by commas interrupts the sentence: rewrite so the sentence flows (JL 261104: \"don't use things like ' , however ,', Try to make a sentence to be smooth\")."
+    },
+    {
+      "id": "title-metaphor",
+      "category": "title",
+      "weight": 2,
+      "flags": "im",
+      "pattern": "^(?:#{1,6}[^\\n]*|arc:[^\\n]*|[^\\n]*\\[[^\\]\\n]*)\\b(?:buy|buys|bought|pay|pays|paid|pays off|spend|spends|spent|win|wins|won|land|lands|landed)\\b",
+      "note": "JL 261112: \"I don't know why here we use the word of 'buy'\": a part, paragraph or Bullet title, an arc and a reader question name the measured quantity in academic words (\"how error changes with scale for each task\"), never a metaphor or casual verb."
+    },
+    {
+      "id": "money-metaphor",
+      "category": "metaphor",
+      "weight": 1,
+      "pattern": "\\b(?:what|where)\\s+(?:scale|size|data|compute|it)\\s+(?:buys|bought|pays)\\b|\\bpays off\\b|\\b(?:buys|bought)\\s+(?:a|an|the|more|less|little|much)?\\s*(?:gain|improvement|accuracy|error|performance)",
+      "note": "JL 261112: \"I don't know why here we use the word of 'buy'\": in prose too, name the measured quantity (\"where scale reduces error\"). Billing and payment words used literally (a paid claim) are not flagged."
+    },
+    {
+      "id": "in-group-shorthand",
+      "category": "title",
+      "weight": 2,
+      "flags": "im",
+      "pattern": "^(?:#{1,6}[^\\n]*|arc:[^\\n]*|[^\\n]*\\[[^\\]\\n]*)\\b(?:rolled forward|roll(?:ed)? out|(?<!linear )heads?|route|routes|grid|roadmap|each use)\\b",
+      "note": "JL 261112: a title says what a newcomer understands on first read: \"recursive rollout\", \"linear head on the frozen model\", \"the way data were added\", \"model sizes and configurations\", \"study design\", \"downstream task\"."
     }
-  ]
+  ],
+  "paragraphLength": {
+    "min": 4,
+    "max": 7,
+    "weight": 2,
+    "category": "structure",
+    "note": "JL 261112: a paragraph holds 4 to 7 sentences unless it has a good reason; the Abstract and figure legends are exempt in page.py health, while this audit reports every prose paragraph."
+  }
 }

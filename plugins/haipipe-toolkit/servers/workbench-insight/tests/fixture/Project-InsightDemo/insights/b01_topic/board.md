@@ -23,7 +23,7 @@ versions:
 
 # b01 · <topic>
 
-One dataset, its versions, a Job per pair (Prototype version × data version).
+One dataset, its versions, a Job per pair (Question Book version × data version).
 
 ## Questions
 

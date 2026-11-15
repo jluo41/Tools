@@ -1,7 +1,6 @@
-"""A person's own actions on the insight screens (b11 s12, 261023): CHECK a page, sign a Job's close.
+"""A person's own actions on the insight screens (b11 s12): CHECK a page, sign a Job's close.
 
-JL 261023: "you can design the work in a way that we human can operate this system as well", then "go ahead and do
-it". Until now a person acted only through an agent ("signed: ✅ … · in chat"). Each action here re-reads the files,
+A person can act on the board directly, without an agent in between. Before this a person acted only through an agent ("signed: ✅ … · in chat"). Each action here re-reads the files,
 checks the gate the screen shows, and writes what an agent's Run would: the page's `check:` line or the Job face's
 `state: closed`, and a pass of the soft Run (`run-check-tNN`, `run-close-jNN`) through haipipe-run's soft_run.py, its
 card saying `by: a person`. Board files carry no names (✅ <YYMMDD> · a person). The route is `POST

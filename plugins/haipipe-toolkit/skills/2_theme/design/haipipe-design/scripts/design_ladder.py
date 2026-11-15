@@ -2,18 +2,21 @@
 
     python design_ladder.py block   <design/>Design-<name>  [--title "<application>"] [--channel sms]
     python design_ladder.py book    <design/>DesignMethodBook-<Topic> --serves design/Design-<name>
-    python design_ladder.py release <book>/jNN_method-vN_<slug> --from "M04 m2"   one release, its method.md frozen
-    python design_ladder.py job     <block>/jNN_<goal>_method-vN-<slug>_inputs-vM --goal G01 --release method-vN
-                                    --inputs inputs-vM [--n 10] [--moved start|method|inputs]
-    python design_ladder.py job     <block>/jNN_<goal>_method-vN-<slug>_inputs-vM  --goal G01 --method "M04 m2" --inputs i2   (a Board
+    python design_ladder.py method  <book>/jNN_M0x-<slug> --version mK     one method type, its version mK.md frozen
+    python design_ladder.py job     <block>/jNN_<goal>_M0x-<slug>-mK_inputs-vM --goal G01
+                                    [--n 10] [--moved start|method|inputs]   (the pins are read from the name)
+    python design_ladder.py job     <block>/jNN_<goal>_<method>  --goal G01 --method "M04 m2" --inputs i2   (a Board
                                     with no Book: the older names)
     python design_ladder.py task  <job> t00                   t00_reason-ideas/   (② reason ideas)
     python design_ladder.py task  <job> d<NN> <slug>          tNN_d<NN>_<slug>/   (③ ④ one design)
     python design_ladder.py task  <job> t99                   t99_review-whole/   (⑤ review whole)
     python design_ladder.py run   <folder> <type> [<target>]  runs/run-<type>-<target>/ with its run.yaml
     python design_ladder.py goals <block>                     each Job face's `goal: G01` gets its name: `G01 · <name>`
+    python design_ladder.py audit  <block | design/>          what an older Board still names the old way (read-only)
+    python design_ladder.py update <block | design/> [--apply]  bring it onto the current names, with its Book
+                                                              (design_update.py; a dry run unless --apply)
 
-Every Run is named run-<type>-<target> (JL 261007); reason, generate, verify and rank are hard (their own result/),
+Every Run is named run-<type>-<target>; reason, generate, verify and rank are hard (their own result/),
 the rest soft (passes/). A Job Run's target defaults to the Job's id, a Task Run's to the Task's (t00, t99, d<NN>);
 a verify names the draft it reads, d<NN>-v<k>: k = 1 for the generate's draft, plus one per revise pass that wrote
 a design.md. `job` checks run-add-job's gates: the goal is in board.md ## Goals and signed, the method version is
@@ -38,14 +41,14 @@ RUN_TYPES = {"Block": "add-goal · setup-rules · add-inputs · add-job · propo
              "t00": "reason (hard)",
              "design": "generate (hard) · verify (hard, another agent) · revise (soft)",
              "t99": "rank (hard, another agent)"}
-# a Job folder is jNN_<goal name>_<method name> (JL 261011: "make the j01 job folder name to be as readable as
-# possible"): the goal's `name:` in board.md ## Goals and the method's registry slug, j01_prepare-before-visit_goal-only.
+# a Job folder is jNN_<goal name>_<method name>: the goal's `name:` in board.md ## Goals and the method's registry slug, j01_prepare-before-visit_goal-only.
 # The ids live in the face's pins. The older id form j03_g01[-<goal-slug>]_m04[-<method-slug>] stays readable.
 JOB = re.compile(r"^j\d+_([a-z0-9]+(?:-[a-z0-9]+)*)_([a-z0-9]+(?:-[a-z0-9]+)*)$")
-# a Board with a Design Method Book (JL 261109): jNN_<goal name>_method-vN-<release slug>_inputs-vM, the Book's release
-# and the inputs version in the name, as the insight Board's jNN_code-vN-<slug>_data-vM
-JOB_V = re.compile(r"^j\d+_([a-z0-9]+(?:-[a-z0-9]+)*)_(method-v\d+)-([a-z0-9]+(?:-[a-z0-9]+)*)_(inputs-v\d+)$")
-RELEASE = re.compile(r"^j\d+_(method-v\d+)_([a-z0-9]+(?:-[a-z0-9]+)*)$")
+# a Board with a Design Method Book: jNN_<goal name>_M0x-<slug>-mK_inputs-vM, the method type, its
+# version and the inputs version in the name, as the insight Board's jNN_question-vN-<slug>_data-vM. Method types sit
+# side by side (M01 goal only, M02 overall performance); only mK is a version.
+JOB_V = re.compile(r"^j\d+_([a-z0-9]+(?:-[a-z0-9]+)*)_(M\d\d)-([a-z0-9]+(?:-[a-z0-9]+)*)-(m\d+)_(inputs-v\d+)$")
+METHOD_TYPE = re.compile(r"^j\d+_(M\d\d)-([a-z0-9]+(?:-[a-z0-9]+)*)$")
 BOOK_NAME = re.compile(r"^DesignMethodBook-[A-Za-z0-9][A-Za-z0-9.-]*$")
 JOB_IDS = re.compile(r"^j\d+_(g\d+)(?:-[a-z0-9-]+)?_(m\d+)(-[a-z0-9-]+)?$")
 METHOD = re.compile(r"^(M\d\d) (m\d+)$")
@@ -94,8 +97,7 @@ def _readme(folder: Path, level: str, made: list) -> None:
            "Run writes its level's own files and keeps passes/.\n", made)
 
 
-# a design Block is a special board, named by its kind (JL 261008: "Paper, Insight, (and Question Book), and Design, these
-# four are the special boards"): Design-<name>[-<YYMMDD>]; bNN_<app> stays readable
+# a design Block is a special board, named by its kind: Design-<name>[-<YYMMDD>]; bNN_<app> stays readable
 BLOCK_NAME = re.compile(r"^(Design-[A-Za-z0-9][A-Za-z0-9.-]*|b\d+_.+)$")
 
 
@@ -117,19 +119,22 @@ def block(path: Path, title: str, channel: str, made: list) -> None:
 
 
 def book(path: Path, serves: str, made: list) -> None:
-    """A Design Method Book: its face (board-kind: design-method-book, serves:), proposals/, and the served Board's
-    `method-book:` line when it has none."""
+    """A Design Method Book, the designer of one channel: its face (board-kind: design-method-book, channel: read
+    from the Board it serves, serves:), proposals/, and the served Board's `method-book:` line when it has none."""
     if not BOOK_NAME.match(path.name):
         sys.exit(f"a Design Method Book folder is DesignMethodBook-<Topic>: {path.name}")
     if not re.match(r"^design/Design-[A-Za-z0-9][A-Za-z0-9.-]*$", serves or ""):
         sys.exit(f"--serves is the Board it serves, design/Design-<name>: {serves!r}")
-    _write(path / "board.md", _front([("board-kind", "design-method-book"), ("serves", serves),
-                                      ("goal", "<the method, one signed release at a time>")],
-                                     f"# {path.name} · <the method in words>\n\nOne Job per release (jNN_method-vN_<slug>/), "
-                                     "frozen once a person signs it; the next release is cut from proposals/.\n"), made)
-    _write(path / "proposals" / "README.md", "# proposals\n\nThe backlog: a change to one step of the method, one file "
-           "each (<slug>.md: kind · step · from · state · why). The next release is cut from here once a person signs.\n", made)
     board = path.parent.parent / serves / "board.md"
+    ch = re.search(r"(?m)^channel:\s*(\S+)", board.read_text(encoding="utf-8")) if board.is_file() else None
+    _write(path / "board.md", _front([("board-kind", "design-method-book"), ("channel", ch.group(1) if ch else "<channel>"),
+                                      ("serves", serves),
+                                      ("goal", f"The {ch.group(1) if ch else '<channel>'} designer: its method types, each version signed")],
+                                     f"# {path.name} · the {ch.group(1) if ch else '<channel>'} designer\n\nOne Job per method type "
+                                     "(jNN_M0x-<slug>/), its versions (mK.md) frozen once a person signs them; a "
+                                     "type's next version is cut from proposals/.\n"), made)
+    _write(path / "proposals" / "README.md", "# proposals\n\nThe backlog: a change to one step of the method, one file "
+           "each (<slug>.md: kind · step · from · state · why). A type's next version is cut from here once a person signs.\n", made)
     if board.is_file():
         text = board.read_text(encoding="utf-8")
         if not re.search(r"(?m)^method-book:", text):
@@ -139,22 +144,46 @@ def book(path: Path, serves: str, made: list) -> None:
             made.append(board)
 
 
-def release(path: Path, source: str, made: list) -> None:
-    """One release of a Book: its face (release, from, state, signed '') and method.md, the registered version it is
-    cut from, frozen; a person signs it through haipipe-design-method."""
-    m = RELEASE.match(path.name)
+def serve(book_dir: Path, board: Path) -> None:
+    """Add a Board to a Book's `serves:` line and name the Book on the Board's face, when either is missing."""
+    rel = f"{board.parent.name}/{board.name}"
+    face = book_dir / "board.md"
+    text = face.read_text(encoding="utf-8")
+    m = re.search(r"(?m)^serves:\s*(.*)$", text)
+    if m and rel not in [s.strip() for s in m.group(1).split(",")]:
+        face.write_text(text.replace(m.group(0), f"serves: {m.group(1).strip()}, {rel}", 1), encoding="utf-8")
+    btext = (board / "board.md").read_text(encoding="utf-8")
+    if not re.search(r"(?m)^method-book:", btext):
+        line = f"method-book: {book_dir.parent.name}/{book_dir.name}\n"
+        (board / "board.md").write_text(re.sub(r"(?m)^(board-kind:.*\n)", lambda x: x.group(1) + line, btext, count=1), encoding="utf-8")
+
+
+def method(path: Path, version: str, made: list) -> None:
+    """One method type of a Book (jNN_M0x-<slug>/): its face (method, title, state, versions) and the version's card
+    mK.md, copied from the Guide's library and frozen. The version waits unsigned (`mK: ''`); a person signs it
+    through haipipe-design-method. A type that is already there gains the version."""
+    m = METHOD_TYPE.match(path.name)
     if not m or not BOOK_NAME.match(path.parent.name):
-        sys.exit(f"a release is <book>/jNN_method-vN_<slug>: {path}")
-    if not METHOD.match(source or ""):
-        sys.exit(f"--from is the registered method version it is cut from (M04 m2): {source!r}")
-    mid, version = METHOD.match(source).groups()
+        sys.exit(f"a method type is <book>/jNN_M0x-<slug>: {path}")
+    if not re.match(r"^m\d+$", version or ""):
+        sys.exit(f"--version is the registered version to take (m2): {version!r}")
+    mid, slug = m.groups()
+    if method_card(mid)[0] != slug:
+        sys.exit(f"{mid} is registered as {mid}-{method_card(mid)[0] or '?'} (pin_method.py --list): {path.name}")
     card = next(iter(sorted(REGISTRY.glob(f"{mid}-*/{version}.md"))), None)
     if card is None:
-        sys.exit(f"{source} is not registered in haipipe-design-method/methods/ (pin_method.py --list)")
-    _write(path / f"{path.name}.md", _front([("release", m.group(1)), ("from", source), ("state", "open"), ("signed", "''"),
-                                             ("title", m.group(2).replace("-", " "))],
-                                            f"# {m.group(1)} · {m.group(2).replace('-', ' ')}\n"), made)
-    _write(path / "method.md", card.read_text(encoding="utf-8"), made)
+        sys.exit(f"{mid} {version} is not registered in haipipe-design-method/methods/ (pin_method.py --list)")
+    face = path / f"{path.name}.md"
+    if not face.exists():
+        _write(face, f"---\nmethod: {mid}\ntitle: {slug.replace('-', ' ')}\nstate: open\nversions:\n  {version}: ''\n---\n\n"
+               f"# {mid} · {slug.replace('-', ' ')}\n", made)
+    elif not re.search(rf"(?m)^  {version}:", face.read_text(encoding="utf-8")):
+        text = face.read_text(encoding="utf-8")
+        text = (re.sub(r"(?m)^versions:\n((?:  .*\n)*)", lambda v: v.group(0) + f"  {version}: ''\n", text, count=1)
+                if re.search(r"(?m)^versions:", text) else text.replace("\n---\n", f"\nversions:\n  {version}: ''\n---\n", 1))
+        face.write_text(text, encoding="utf-8")
+        made.append(face)
+    _write(path / f"{version}.md", card.read_text(encoding="utf-8"), made)
 
 
 def book_of(block: Path) -> Path | None:
@@ -163,21 +192,21 @@ def book_of(block: Path) -> Path | None:
     return block.parent.parent / m.group(1) if m else None
 
 
-def release_from(block: Path, rel: str) -> tuple:
-    """(registered pin, release slug) of a Board's Book release `method-vN`: its face's `from:`."""
+def signed_version(block: Path, mid: str, slug: str, version: str) -> None:
+    """Stop unless the Board's Book holds the method type and a person signed this version of it."""
     bk = book_of(block)
     if bk is None or not bk.is_dir():
         sys.exit(f"{block.name}/board.md names no Design Method Book (method-book:); run design_ladder.py book first")
-    for d in sorted(bk.glob("j*_method-v*_*")):
-        m = RELEASE.match(d.name)
-        if m and m.group(1) == rel:
-            face = (d / f"{d.name}.md").read_text(encoding="utf-8") if (d / f"{d.name}.md").is_file() else ""
-            src = re.search(r"(?m)^from:\s*(.+)$", face)
-            signed = re.search(r"(?m)^signed:\s*(.*)$", face)
-            if not signed or not signed.group(1).strip().strip("'\""):
-                sys.exit(f"{rel} is not signed: a person signs a release before a Job runs it")
-            return (src.group(1).strip() if src else ""), m.group(2)
-    sys.exit(f"{rel} is not a release of {bk.name}")
+    kind = next((d for d in sorted(bk.glob(f"j*_{mid}-{slug}")) if METHOD_TYPE.match(d.name)), None)
+    if kind is None:
+        sys.exit(f"{mid}-{slug} is not a method type of {bk.name}; run design_ladder.py method first")
+    face = kind / f"{kind.name}.md"
+    fm = re.match(r"(?s)^---\n(.*?)\n---\n", face.read_text(encoding="utf-8")) if face.is_file() else None
+    versions = ((yaml.safe_load(fm.group(1)) or {}) if fm else {}).get("versions") or {}
+    if version not in versions:
+        sys.exit(f"{mid} {version} is not a version of {kind.name}; run design_ladder.py method {kind.name} --version {version}")
+    if not str(versions.get(version) or "").strip():
+        sys.exit(f"{mid} {version} is not signed: a person signs a method version before a Job runs it")
 
 
 def goals(block: Path) -> list:
@@ -265,24 +294,26 @@ def goals_named(block: Path, made: list) -> None:
         made.append(face)
 
 
-def job_v(path: Path, goal: str, rel: str, inputs: str, n, moved: str, made: list) -> None:
-    """A Job on a Board with a Design Method Book: jNN_<goal name>_method-vN-<slug>_inputs-vM, its release resolved to
-    the registered version it was cut from (`method:`) and named (`release:`)."""
+def job_v(path: Path, goal: str, n, moved: str, made: list) -> None:
+    """A Job on a Board with a Design Method Book: jNN_<goal name>_M0x-<slug>-mK_inputs-vM. Its pins are read from the
+    name (`method: M0x mK`, `inputs: inputs-vM`); the Book must hold that method type with the version signed."""
     m = JOB_V.match(path.name)
     if not m:
-        sys.exit(f"a Job folder is jNN_<goal name>_method-vN-<slug>_inputs-vM: {path.name}")
+        sys.exit(f"a Job folder is jNN_<goal name>_M0x-<slug>-mK_inputs-vM: {path.name}")
     if not re.match(r"^G\d\d$", goal or ""):
         sys.exit(f"--goal is a goal id from the Block's goal list (G01): {goal!r}")
-    pin, slug = release_from(path.parent, rel)
+    _name, mid, slug, version, inputs = m.groups()
+    signed_version(path.parent, mid, slug, version)
+    pin = f"{mid} {version}"
     g = next((x for x in goals(path.parent) if str(x.get("id")) == goal), None) or {}
-    want = (str(g.get("name") or "").strip().lower(), rel, slug, inputs)
-    if m.groups() != want:
-        sys.exit(f"the folder is named by its pins: {path.name.split('_', 1)[0]}_{want[0]}_{rel}-{slug}_{inputs}")
+    want = str(g.get("name") or "").strip().lower()
+    if m.group(1) != want:
+        sys.exit(f"the folder is named by its pins: {path.name.split('_', 1)[0]}_{want}_{mid}-{slug}-{version}_{inputs}")
     if (path / f"{path.name}.md").exists():
         return
     n = _gates(path.parent, goal, pin, inputs, n)
     _write(path / f"{path.name}.md", _front(
-        [("goal", goal_pin(path.parent, goal)), ("method", pin), ("release", rel),
+        [("goal", goal_pin(path.parent, goal)), ("method", pin),
          ("method-sha", "<sha, written by run-setup-method>"), ("inputs", inputs), ("n", n), ("state", "open"),
          ("moved", moved)], f"# {_job_title(path.parent, goal, pin)}\n"), made)
     (path / "inputs").mkdir(parents=True, exist_ok=True)
@@ -323,7 +354,7 @@ def job(path: Path, goal: str, method: str, inputs: str, n, moved: str, made: li
 
 def task(job_dir: Path, which: str, slug: str, made: list) -> Path:
     if not (JOB.match(job_dir.name) or JOB_V.match(job_dir.name)):
-        sys.exit(f"a Task sits in a Job folder jNN_<goal name>_method-vN-<slug>_inputs-vM: {job_dir.name}")
+        sys.exit(f"a Task sits in a Job folder jNN_<goal name>_M0x-<slug>-mK_inputs-vM: {job_dir.name}")
     if which == "t00":
         path, kind, step = job_dir / "t00_reason-ideas", "t00", "②"
         _write(path / f"{path.name}.md", _front([("state", "open"), ("step", step), ("task-type", "design-reason")],
@@ -410,7 +441,7 @@ def run(folder: Path, rtype: str, target: str, made: list) -> Path:
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("level", choices=("block", "book", "release", "job", "task", "run", "goals"))
+    ap.add_argument("level", choices=("block", "book", "method", "job", "task", "run", "goals", "audit", "update"))
     ap.add_argument("folder", type=Path)
     ap.add_argument("what", nargs="?", default="", help="task: t00 · t99 · d<NN>; run: its type")
     ap.add_argument("extra", nargs="?", default="", help="task d<NN>: its slug; run: its target")
@@ -419,23 +450,32 @@ def main(argv=None):
     ap.add_argument("--goal", default="")
     ap.add_argument("--method", default="")
     ap.add_argument("--inputs", default="")
-    ap.add_argument("--release", default="", help="job: the Book's release it runs (method-v2)")
-    ap.add_argument("--from", dest="source", default="", help="release: the registered version it is cut from (M01 m2)")
+    ap.add_argument("--apply", action="store_true", help="update: write the changes (a dry run without it)")
+    ap.add_argument("--version", default="", help="method: the registered version the Book takes (m2)")
     ap.add_argument("--serves", default="", help="book: the Board it serves (design/Design-<name>)")
     ap.add_argument("--n", type=int, default=None, help="N; the goal's n by default")
     ap.add_argument("--moved", default="start", choices=("start", "method", "inputs"))
     a = ap.parse_args(argv)
     made = []
+    if a.level in ("audit", "update"):
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        sys.dont_write_bytecode = True                      # an update leaves nothing in this skill's folder
+        import design_update as U
+        if a.level == "audit":
+            U.audit(a.folder, lambda mid: method_card(mid)[0])
+        else:
+            U.update(a.folder, a.apply, sys.modules[__name__])
+        return 0
     if a.level == "block":
         block(a.folder, a.title, a.channel, made)
     elif a.level == "goals":
         goals_named(a.folder, made)
     elif a.level == "book":
         book(a.folder, a.serves, made)
-    elif a.level == "release":
-        release(a.folder, a.source, made)
-    elif a.level == "job" and (a.release or JOB_V.match(a.folder.name)):
-        job_v(a.folder, a.goal, a.release, a.inputs, a.n, a.moved, made)
+    elif a.level == "method":
+        method(a.folder, a.version, made)
+    elif a.level == "job" and JOB_V.match(a.folder.name):
+        job_v(a.folder, a.goal, a.n, a.moved, made)
     elif a.level == "job":
         job(a.folder, a.goal, a.method, a.inputs, a.n, a.moved, made)
     elif a.level == "task":

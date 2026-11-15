@@ -36,9 +36,9 @@ def main():
 
     f2 = d.frame("② Each version is a Job you try")
     d.heading("A method Block: each version is a Job you try",
-              "As insight's Prototype (one Job per release), drawn in s04 on 261007 and never built")
+              "As insight's Question Book (one Job per release), drawn in s04 on 261007 and never built")
     d.key(40, 196, 1400, 140)
-    d.para(64, 220, "work/Method-bNN-<app>/ · one Job per version, jNN_<method>_m<k>", 1350, 30)
+    d.para(64, 220, "design/DesignMethodBook-<app>/ · one Job per version, jNN_<method>_m<k>", 1350, 30)
     d.flow([{"title": "t01 Write the recipe", "lines": ["the five steps' prompts", "what ① may read, its tools"]},
             {"title": "t02 Build its checks", "lines": ["T0 rules · T1 sources", "T2 critique · T3 pretest"]},
             {"title": "t03 Bench it", "lines": ["bench/: fixed goals + inputs", "→ N designs"]},

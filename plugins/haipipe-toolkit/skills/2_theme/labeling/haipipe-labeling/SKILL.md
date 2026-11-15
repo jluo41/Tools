@@ -12,8 +12,8 @@ description: >-
   a labeling Job folder, it opens the workbench on the step the Job is at and
   guides the person through it, one step at a time, from the items Task on.
 metadata:
-  version: "0.12.0"
-  last_updated: "2026-11-01"
+  version: "0.13.0"
+  last_updated: "2026-11-13"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -43,19 +43,24 @@ expression (`labeling-expression`: rounds of Rewrite → Run → Evaluate under 
 meaning ⇄ expression → scanning. Each of their steps is a prompt the workbench page copies; route it below.
 
 1. **Open and read.** Run `"$PYTHON_BIN" "$TOOLS_ROOT/plugins/haipipe-toolkit/skills/2_theme/labeling/haipipe-labeling/scripts/start.py" <Job>`.
-   It reads the Job from disk (writes nothing), opens the workbench on the tab of the step the Job is at
-   (starting the SPACE's host through /wb when none runs) and prints the Job's Tasks, the one step now, `who`
-   does it and what. `--no-open` only prints; `--json` for the fields.
+   It reads the Job from disk (writes nothing), opens the Task's page on the workbench's focus layout (starting
+   the SPACE's host through /wb when none runs; the page opens on the step that needs you) and prints the Job's
+   Tasks, the one step now, `who` does it and what. For the two loops it asks `engine/two_loops.py`, the same rule
+   the page opens on: a waiting form first, then an unsigned guideline, then a round that sent cards back to
+   meaning, then the next round or the release sign. `--no-open` only prints; `--json` for the fields.
 2. **Say where it stands**, in a few lines: the Job's Tasks with ▶ on the current one, the data it reads, the step
-   now, any `note` as it is, and the tab now open by its full `open` link (never a bare `/_board/...` path).
+   now, any `note` as it is, and the page now open by its full `open` link (never a bare `/_board/...` path).
 3. **Guide that one step**, then stop:
    - `who: agent` on the items Task: do it now through `/haipipe-labeling preparation` (its "The items Task"):
      describe runs to the end; items and embed stop once their recipe or build is proposed. Then tell the person
-     what to look at in the open tab, and what to press.
-   - `who: person`: say exactly what to press in which tab (Sign the recipe, Agree the build), and that the next
-     message is this same start message, or the tab's own Copy prompt.
-   - the building Task: the items are ready; continue with the no-argument behaviour below on that Task.
-4. **Every message after** is the same start message (or a tab's prompt, with its `user feedback:` line). The
+     what to look at in the open step, and what to press.
+   - `who: agent` on the 🧭 meaning Task: run its step through `/haipipe-labeling interaction`; on the 🛠
+     expression Task, run the round through `/haipipe-labeling expression`.
+   - `who: person`: say exactly what to press in which step (Sign the recipe, Agree the build, answer the form,
+     sign mNN, sign the release), and that the next message is this same start message, or the step's own Copy
+     prompt.
+   - an older building Task: the items are ready; continue with the no-argument behaviour below on that Task.
+4. **Every message after** is the same start message (or a step's prompt, with its `user feedback:` line). The
    script reads the Job again, so the guide moves on by itself; nothing is remembered between messages.
 
 A person's feedback rides on the message as a `user feedback:` line; on the items Task it goes into the step's

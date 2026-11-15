@@ -12,7 +12,7 @@
 - `ref/discovery-method.md` → `servers/workbench-discovery/guide/method.md`, `ref/methods/` →
   `guide/methods/`, `ref/discovery-methods.excalidraw` → `guide/methods.excalidraw`,
   `ref/discovery-papers.md` → `servers/workbench-discovery/related/papers.md`; their links fixed.
-- The `discovery` entry and `DISCOVERY_DESIGN` leave `servers/workbench/guide_families.py`; the
+- The `discovery` entry and `DISCOVERY_DESIGN` leave `servers/workbench/guide/guide_families.py`; the
   same entry is `servers/workbench-discovery/guide/guide.yaml` (RoadMap Draw: the b14 design Block's
   `s02-discovery-workbench/`). `ref/workbench-table.md` stays here; its `Tools ›` is the server folder.
 

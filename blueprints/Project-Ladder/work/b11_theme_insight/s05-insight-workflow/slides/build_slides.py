@@ -55,8 +55,8 @@ class Slide(Drawing):
 def s01(d):
     d.head(1, "What can one dataset say?", "Insight answers it a level at a time, and says how sure each answer is.")
     d.card(120, 420, 360, 300, "🗄️ one dataset", ["a frozen data folder", "its rows, its columns"], INK)
-    steps = [("D · Data", "what was observed", TEAL), ("I · Information", "patterns, by cut", BLUE),
-             ("K · Knowledge", "only what survives the cuts", PURPLE), ("W · Wisdom", "counsel, signed by you", ORANGE)]
+    steps = [("D · Data", "what was observed", TEAL), ("I · Information", "patterns, by segment", BLUE),
+             ("K · Knowledge", "only what survives the segments", PURPLE), ("W · Wisdom", "counsel, signed by you", ORANGE)]
     for k, (t, w_, c) in enumerate(steps):
         x, y = 640 + k * 300, 760 - k * 150
         d.card(x, y, 420, 130, t, [w_], c)
@@ -67,7 +67,7 @@ def s01(d):
 
 
 def s02(d):
-    d.head(2, "Two clocks, one Job per pair", "The plan moves in the Prototype, the data moves on the Board; each Job pins one of each.")
+    d.head(2, "Two clocks, one Job per pair", "The plan moves in the Question Book, the data moves on the Board; each Job pins one of each.")
     d.text(700, 300, "F1 · first window", 30, MUTED)
     d.text(1200, 300, "F2 · whole record", 30, MUTED)
     d.text(260, 420, "AP1 · first plan", 30, MUTED)
@@ -94,16 +94,16 @@ def chain(d, x, y, items, w=360, gap=70):
 
 
 def s03(d):
-    d.head(3, "A · Make the plan before any outcome is seen", "Questions, scripts and cuts are set and signed in the Prototype, then frozen.")
-    chain(d, 120, 360, [("01 · Proposals", ["questions, fixes, cuts", "a batch at a time"], BLUE),
+    d.head(3, "A · Make the plan before any outcome is seen", "Questions, scripts and segments are set and signed in the Question Book, then frozen.")
+    chain(d, 120, 360, [("01 · Proposals", ["questions, fixes, segments", "a batch at a time"], BLUE),
                         ("02 · Ask, plan the evidence", ["a question at its level", "its needs, each with a pass condition"], BLUE),
                         ("03 · Another agent agrees", ["the plan and the script", "by one that did not write them"], BLUE),
-                        ("04 · 🙋 You set the cuts and sign", ["partitions and thresholds", "then the plan is frozen"], ORANGE)])
-    d.foot("A Board runs only a signed plan; the cuts belong to it, never to the results.")
+                        ("04 · 🙋 You set the segments and sign", ["partitions and thresholds", "then the plan is frozen"], ORANGE)])
+    d.foot("A Board runs only a signed plan; the segments belong to it, never to the results.")
 
 
 def s04(d):
-    d.head(4, "B · One Run per question × cut", "Power is read before any contrast; a cut too thin is refused, and that refusal is an answer.")
+    d.head(4, "B · One Run per question × segment", "Power is read before any contrast; a segment too thin is refused, and that refusal is an answer.")
     cols = ("full", "awake", "asleep", "cross")
     rows = [("D01 · what was observed", ("✅ ok", "·", "·", "·")), ("I01 · a pattern", ("✅ ok", "✅ ok", "🚫 refused", "·")),
             ("K01 · what holds", ("✅ ok", "✅ ok", "✅ ok", "pool?")), ("W01 · counsel", ("", "", "", ""))]
@@ -125,13 +125,13 @@ def s04(d):
 
 
 def s05(d):
-    d.head(5, "Pool or split?", "When cuts disagree, one test across them decides whether the answer is one or two.")
+    d.head(5, "Pool or split?", "When segments disagree, one test across them decides whether the answer is one or two.")
     d.card(140, 360, 420, 160, "awake", ["one answer"], BLUE)
     d.card(140, 600, 420, 160, "asleep", ["another answer"], BLUE)
     d.card(760, 470, 380, 180, "Cross", ["one test of the difference"], PURPLE)
     d.arrow([(560, 440), (760, 530)], INK)
     d.arrow([(560, 680), (760, 600)], INK)
-    for k, (t, w_, c) in enumerate((("POOL", "one answer for both", TEAL), ("SPLIT", "an answer per cut", ORANGE),
+    for k, (t, w_, c) in enumerate((("POOL", "one answer for both", TEAL), ("SPLIT", "an answer per segment", ORANGE),
                                     ("UNDETERMINED", "not enough to say", MUTED))):
         d.card(1340, 300 + k * 200, 440, 160, t, [w_], c)
         d.arrow([(1140, 560), (1340, 380 + k * 200)], PURPLE)
@@ -186,25 +186,25 @@ def s09(d):
 def s10(d):
     d.head(10, "Who does what", "Agents do thirteen of the sixteen steps; you act at three.")
     steps = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16"]
-    you = {"04": "set cuts, sign the plan", "13": "close the Job", "16": "sign the handoff"}
+    you = {"04": "set segments, sign the plan", "13": "close the Job", "16": "sign the handoff"}
     for k, s in enumerate(steps):
         x, y = 140 + (k % 8) * 210, 330 + (k // 8) * 220
         c = ORANGE if s in you else BLUE
         d.card(x, y, 170, 160, s, ["you" if s in you else "agent"], c, 30)
-    d.para(140, 800, "🙋 04 set the cuts and sign the plan · 13 close each Job · 16 sign the handoff", 1600, 32, ORANGE)
+    d.para(140, 800, "🙋 04 set the segments and sign the plan · 13 close each Job · 16 sign the handoff", 1600, 32, ORANGE)
     d.foot("Every other step is an agent's, and every one is checked by a second agent or a gate.")
 
 
 def s11(d):
     d.head(11, "Still open", "Laying the steps beside the screens shows three gaps.")
-    for k, (t, w_) in enumerate((("❓ Where is a question planned?", "steps 02 and 03 live in the Prototype; no Board or Job screen asks for a plan"),
+    for k, (t, w_) in enumerate((("❓ Where is a question planned?", "steps 02 and 03 live in the Question Book; no Board or Job screen asks for a plan"),
                                  ("❓ The Board's own questions", "step 14 has no row on Board Work yet"),
                                  ("❓ A handoff before any Wisdom answer", "steps 15 and 16 wait on the counsel; the Handoff view has little to show"))):
         d.card(140, 300 + k * 220, 1640, 180, t, [w_], RED)
 
 
 SLIDES = [("01", "one-dataset", "What can one dataset say?", s01), ("02", "two-clocks", "Two clocks, one Job per pair", s02),
-          ("03", "make-the-plan", "A · Make the plan before any outcome", s03), ("04", "run-per-cut", "B · One Run per question × cut", s04),
+          ("03", "make-the-plan", "A · Make the plan before any outcome", s03), ("04", "run-per-cut", "B · One Run per question × segment", s04),
           ("05", "pool-or-split", "Pool or split?", s05), ("06", "up-the-levels", "C · Answer up the levels", s06),
           ("07", "second-agent", "A second agent checks every page", s07), ("08", "what-changed", "D · What changed since the Job before?", s08),
           ("09", "handoff", "E · From answers to a signed handoff", s09), ("10", "who-does-what", "Who does what", s10),

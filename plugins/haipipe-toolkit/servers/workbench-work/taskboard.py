@@ -385,11 +385,12 @@ def _task_html(task: dict) -> str:
     readings = "".join(f'<tr><td>{_e(r["id"])}</td><td>{_e(r["topic"])}</td>'
                        f'<td><code>{_e(r["verdict"])}</code></td><td>{_e(r["ruling"])}</td></tr>'
                        for r in t["reading"]["rows"])
-    reading = f'{t["reading"]["signed"]}/{t["reading"]["total"]} signed' if t["reading"]["total"] else "Not recorded"
+    reading = (("signed" if t["reading"]["signed"] == t["reading"]["total"] else "partly signed" if t["reading"]["signed"]
+                else "not signed") if t["reading"]["total"] else "Not recorded")   # a state word, no tally (JL 261113)
     search = " ".join((t["id"], t["title"], t["name"], *t["issues"]))
     return f'''<article class="tw-task" data-search="{_e(search.lower())}" data-job="{_e(t['job'])}" data-state="{t['execution']}" data-attention="{str(bool(t['issues'])).lower()}">
 <details id="{_e(t['id'])}"><summary><div class="tw-task-name"><code>{_e(t['id'])}</code><strong>{_e(t['title'])}</strong></div>
-<span class="tw-task-state">{_badge(t['execution'])}<span class="tw-muted">{len(t['issues'])} to review</span></span></summary>
+<span class="tw-task-state">{_badge(t['execution'])}</span></summary>
 <div class="tw-task-detail"><div class="tw-links">{_link(t['page_url'], 'Page')}{_link(t['runs_url'], 'Runs')}{_link(t['folder_url'], 'Folder')}{_link(t['source_url'], 'Source')}</div>
 <p>Page state (declared): <strong>{_e(t['page_state'])}</strong></p>
 {'<ul class="tw-findings">' + warnings + '</ul>' if warnings else '<p>No findings in this projection. Folder closure still requires the owning workflow and current Page CHECK.</p>'}

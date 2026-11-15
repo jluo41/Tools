@@ -1,5 +1,6 @@
 s01 · labeling ladder
 ======================
+view: findings
 
 **Stage:** explore
 
@@ -15,7 +16,17 @@ holds, its skills, and its screens, the proposal (teal, solid) above today's wor
 (`build_ladder_v4.py`, `level_views.py`) and drawn by `../../b10_project_workbench/studio/_build/theme_ladder.py`;
 edit the rows there and this drawing follows on its next build.
 
-**Feeds:** `../reports/` q01 (the ladder question).
+**Feeds:** Q01 · `../reports/` q01 (the ladder question).
+
+
+Q01 · Answer
+------------
+
+**Question:** How does a labeling job climb the ladder?
+
+**Answer (open):** Agreed with JL (261014): the **Job** is one dataset × one label, and its Tasks come in five **types**, each named by the Task face's `task-type:` line: 📦 items (`data`), 🔑 keys (`raw`), 🏗 building (`labeling-building`), 🔍 scanning (`labeling-scanning`), 📊 score (`eval`). Building and scanning meet only at the signed Label Handoff; today's one labeling Page (`task-type: labeling`) is both. The workbench shows this since 261014: Job › Work gives each Task its type and state and a dashed card for each type still to make; the items Task's Report opens on Itemization · Embedding. Drawn in [s13-labeling-task](../../s13-labeling-task/s13-labeling-task.md). The 261007 proposal below (four step Tasks, prepare · keys · label · score) is the earlier form of these types. The **Block** groups the Jobs; the Run is one operation, `rNN_<operation>_<target>/`.
+
+**Page:** [q01_labeling_ladder.md](q01_labeling_ladder/q01_labeling_ladder.md): the full answer, its evidence and limits (moved from reports/)
 
 
 Files
