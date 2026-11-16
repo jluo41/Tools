@@ -268,20 +268,20 @@ class DesignBoardSnapshotTest(unittest.TestCase):
             papers = render_theory_embed(snap, "papers")
             # the Paper workbench's Related Papers card: the title, then who, when and which journal
             for label in ('<div class="view on" data-view="papers">',
-                          '<div class="lw-k">By exploring<span class="lw-kn">1</span></div>',
-                          '<div class="lw-k">All methods<span class="lw-kn">1</span></div>',
-                          '<div class="lw-k">By theory<span class="lw-kn">2</span></div>',
+                          '<div class="lw-k">By exploring</div>',
+                          '<div class="lw-k">All methods</div>',
+                          '<div class="lw-k">By theory</div>',
                           '<div class="rp-title">The Sciences of the Artificial</div>',
                           "<span>Simon · 1969 · MIT Press</span>", "<span>Prestwich et al. · 2013 · Health Psychology</span>", "<span>Michie et al. · 2011 · Implementation Science</span>",
                           'href="https://doi.org/10.1037/a0032853"', "theory use not reliably linked to effect",
-                          "4 journals and publishers", "No free full text here"):
+                          "No free full text here"):
                 self.assertIn(label, papers)
             self.assertNotIn("4 papers ·", papers)                                   # a page carries no tally (AGENTS.md § Page words)
             # Guide frames this page to read, not to run (JL 261002): no Runs panel, no "Add a paper"
             self.assertNotIn("class=runs-panel", papers)
             # a band shows its key papers and folds the rest; a band with none shows them all (JL 261002)
             theory_band = papers.split('<div class="lw-k">By theory', 1)[1].split('<div class="lw-k">', 1)[0]
-            self.assertIn("<details class=rp-more><summary>1 more paper</summary>", theory_band)
+            self.assertIn("<details class=rp-more><summary>More papers</summary>", theory_band)
             self.assertLess(theory_band.index("Does theory influence"), theory_band.index("rp-more"))
             self.assertNotIn("rp-more", papers.split('<div class="lw-k">By exploring', 1)[1].split("</section>", 1)[0])
             # a UTD24 journal is marked on its card (JL 261002), the others are not
@@ -406,7 +406,7 @@ class DesignBoardSnapshotTest(unittest.TestCase):
             # a card with its PDF says so in words, and the view can show only those
             self.assertEqual(page.count('<span class=rp-pdf title="the PDF opens inside this card">PDF</span>'), 2)
             self.assertEqual(page.count('<details class="rp-card has-pdf" id='), 2)
-            self.assertIn("Show only the 2 papers with a PDF", page)
+            self.assertIn("Show only the papers with a PDF", page)
             self.assertIn('<section class="rp-band has-pdf">', page)
             self.assertIn('<section class="rp-band">', page)                     # Tests has no PDF
             self.assertIn("<summary>Abstract</summary><p>Ideas from an LLM made stories alike.</p>", page)

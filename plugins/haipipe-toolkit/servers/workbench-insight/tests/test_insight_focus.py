@@ -338,8 +338,9 @@ class RoundOneTest(unittest.TestCase):
         self.assertIn('<li id="pq-X02">', html)
         self.assertIn("details.pb-fold", html)
         self.assertNotIn("<details", PP._by_level(qs, self.root))              # a version's level tabs keep plain lists
-        body = IF.prototype_parts(self.proto, self.root, "Block")[0][2]
-        self.assertIn("<details class=pb-fold", body)
+        from live.insight_focus_book import prototype_views
+        page = prototype_views(self.proto, self.root, "Block")["questions"][1]()   # the Question Book's Report view
+        self.assertIn("<details class=pb-fold", page)
 
     def test_a_prototype_is_signed_and_triaged_on_its_own_work(self):
         """Round 2: the Question Book's Work · Findings carries the triage and the sign, each a Copy prompt for
